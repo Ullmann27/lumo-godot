@@ -8,6 +8,9 @@ outer_radius = 0.95
 rings = 32
 ring_segments = 12
 
+[sub_resource type="QuadMesh" id="QuadMesh_plane"]
+size = Vector2(1.9, 1.9)
+
 [sub_resource type="SphereShape3D" id="SphereShape3D_touch"]
 radius = 1.40
 
@@ -22,18 +25,22 @@ roughness = 0.30
 [node name="HubPortal" type="Node3D"]
 script = ExtResource("1_script")
 
+[node name="PortalPlane" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.01)
+mesh = SubResource("QuadMesh_plane")
+
 [node name="Ring" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("TorusMesh_ring")
 material_override = SubResource("StandardMaterial3D_ring")
 
 [node name="Label" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.80, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.85, 0)
 text = "Portal"
 billboard = 1
-pixel_size = 0.005
+pixel_size = 0.006
 modulate = Color(1, 1, 1, 1)
-outline_size = 6
+outline_size = 8
 outline_modulate = Color(0, 0, 0, 0.7)
 
 [node name="TouchArea" type="Area3D" parent="."]

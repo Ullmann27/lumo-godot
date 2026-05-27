@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://b1lumomatskybkdr01"]
+
+[ext_resource type="Texture2D" path="res://assets/generated/lumo3d_assets/sky_gradients/sunrise_magic.png" id="1_albe"]
+
+[resource]
+shading_mode = 0
+albedo_texture = ExtResource("1_albe")

@@ -105,6 +105,42 @@ func _apply_viewport(profile: Profile) -> void:
 			vp.use_taa = true
 
 
+## Empfohlene Anzahl Sterne im MultiMesh-Sternenfeld je Profil.
+func get_star_count() -> int:
+	match current_profile:
+		Profile.LOW:
+			return 12
+		Profile.MEDIUM:
+			return 40
+		Profile.HIGH:
+			return 80
+	return 40
+
+
+## Empfohlene Anzahl Billboard-Decorations (Kristalle/Buecher) je Profil.
+func get_billboard_count() -> int:
+	match current_profile:
+		Profile.LOW:
+			return 0
+		Profile.MEDIUM:
+			return 3
+		Profile.HIGH:
+			return 6
+	return 3
+
+
+## Portal-Emission-Multiplier je Profil (Glow regelbar).
+func get_portal_emission_multiplier() -> float:
+	match current_profile:
+		Profile.LOW:
+			return 0.5
+		Profile.MEDIUM:
+			return 1.0
+		Profile.HIGH:
+			return 1.4
+	return 1.0
+
+
 ## Rekursive Tree-Suche fuer WorldEnvironment - meistens an der Wurzel.
 func _find_world_environment(node: Node) -> WorldEnvironment:
 	if node is WorldEnvironment:

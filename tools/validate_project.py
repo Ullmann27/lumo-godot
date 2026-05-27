@@ -123,6 +123,97 @@ def main() -> int:
     else:
         emit("FAIL", "manifest", "assets/manifests/assets.json fehlt")
 
+    # 7b. Generated Asset Pack (lumo3d_assets)
+    pack_root = REPO / "assets" / "generated" / "lumo3d_assets"
+    if not pack_root.is_dir():
+        emit("FAIL", "asset-pack", f"missing dir: {pack_root.relative_to(REPO)}")
+    else:
+        emit("PASS", "asset-pack", f"present: {pack_root.relative_to(REPO)}")
+        # pack manifest valid
+        pmf = pack_root / "asset_manifest.json"
+        if pmf.is_file():
+            try:
+                pm_data = json.loads(pmf.read_text())
+                emit("PASS", "asset-pack-manifest",
+                     f"valid JSON, {sum(pm_data.get('counts', {}).values())} assets in counts")
+            except json.JSONDecodeError as exc:
+                emit("FAIL", "asset-pack-manifest", f"JSON kaputt: {exc}")
+        else:
+            emit("FAIL", "asset-pack-manifest", "asset_manifest.json fehlt")
+        # PNG count
+        png_count = len(list(pack_root.rglob("*.png")))
+        if png_count >= 100:
+            emit("PASS", "asset-pack-png-count", f"{png_count} PNG files")
+        else:
+            emit("FAIL", "asset-pack-png-count", f"only {png_count} PNG files (< 100)")
+        # Required subdirs (FAIL if missing - that's pack corruption)
+        for sub in ["textures/albedo", "textures/normal", "textures/emission",
+                    "particles", "billboards", "portals", "sky_gradients",
+                    "ui_panels", "masks"]:
+            p = pack_root / sub
+            if p.is_dir() and any(p.glob("*.png")):
+                emit("PASS", "asset-pack-category", f"{sub}: {len(list(p.glob('*.png')))} PNGs")
+            else:
+                emit("FAIL", "asset-pack-category", f"missing or empty: {sub}")
+
+    # 7c. Generated material .tres files
+    mat_gen_dir = REPO / "assets" / "materials" / "generated"
+    required_mats = [
+        "mat_grass_magic.tres", "mat_stone_warm.tres", "mat_wood_warm.tres",
+        "mat_hologrid_cyan.tres", "mat_crystal_floor.tres",
+        "mat_portal_learn.tres", "mat_portal_games.tres", "mat_portal_parent.tres",
+        "mat_sky_backdrop.tres", "mat_billboard_crystal.tres",
+        "mat_billboard_book.tres", "mat_particle_gold.tres",
+    ]
+    for m in required_mats:
+        p = mat_gen_dir / m
+        if p.is_file():
+            emit("PASS", "generated-material", m)
+        else:
+            emit("FAIL", "generated-material", f"missing: {m}")
+
+    # 7d. Central manifest contains new texture categories
+    if manifest_path.is_file():
+        try:
+            data2 = json.loads(manifest_path.read_text())
+            for needed in ["textures", "normal_maps", "emission_maps",
+                           "particles", "billboards", "portals", "sky", "ui",
+                           "masks", "materials"]:
+                items = data2.get(needed, {})
+                if isinstance(items, dict) and len(items) > 0:
+                    emit("PASS", "central-manifest", f"{needed}: {len(items)} IDs")
+                else:
+                    emit("FAIL", "central-manifest", f"central manifest missing/empty: {needed}")
+        except json.JSONDecodeError:
+            pass  # already FAILed above
+
+    # 7e. Home scene references at least 1 generated material on Insel +
+    #     uses portal scene which loads portal materials
+    home_path = REPO / "scenes" / "app" / "home_3d.tscn"
+    home_ctl = REPO / "scripts" / "app" / "home_controller.gd"
+    if home_ctl.is_file():
+        ctl_text = home_ctl.read_text()
+        if "mat_stone_warm" in ctl_text or "mat_grass_magic" in ctl_text:
+            emit("PASS", "home-island-material", "home_controller references generated island material")
+        else:
+            emit("FAIL", "home-island-material", "home_controller does NOT reference any generated insel material")
+        if "mat_sky_backdrop" in ctl_text:
+            emit("PASS", "home-sky", "home_controller references mat_sky_backdrop")
+        else:
+            emit("WARN", "home-sky", "home_controller has no sky backdrop reference")
+        if "mat_billboard" in ctl_text:
+            emit("PASS", "home-billboards", "home_controller references billboard materials")
+        else:
+            emit("WARN", "home-billboards", "home_controller has no billboard references")
+    portal_script = REPO / "scripts" / "hub" / "portal_interaction.gd"
+    if portal_script.is_file():
+        pt = portal_script.read_text()
+        n_portals = sum(1 for m in ["mat_portal_learn", "mat_portal_games", "mat_portal_parent"] if m in pt)
+        if n_portals == 3:
+            emit("PASS", "home-portal-materials", "all 3 portal materials wired")
+        else:
+            emit("FAIL", "home-portal-materials", f"only {n_portals}/3 portal materials wired")
+
     # 8. Verbot: keine Flutter-Kernstruktur
     for forbidden in ["pubspec.yaml", "lib/main.dart"]:
         if (REPO / forbidden).exists():

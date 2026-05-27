@@ -1,0 +1,17 @@
+[gd_resource type="StandardMaterial3D" load_steps=5 format=3 uid="uid://b1lumomatcrstflr01"]
+
+[ext_resource type="Texture2D" path="res://assets/generated/lumo3d_assets/textures/albedo/crystal_floor_albedo.png" id="1_albe"]
+[ext_resource type="Texture2D" path="res://assets/generated/lumo3d_assets/textures/normal/crystal_floor_normal.png" id="2_norm"]
+[ext_resource type="Texture2D" path="res://assets/generated/lumo3d_assets/textures/emission/crystal_floor_emission.png" id="3_emis"]
+
+[resource]
+albedo_texture = ExtResource("1_albe")
+metallic = 0.05
+roughness = 0.75
+normal_enabled = true
+normal_scale = 0.8
+normal_texture = ExtResource("2_norm")
+emission_enabled = true
+emission_energy_multiplier = 0.8
+emission_texture = ExtResource("3_emis")
+emission_operator = 1

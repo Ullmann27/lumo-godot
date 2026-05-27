@@ -18,6 +18,14 @@ const PORTAL_LABELS: Dictionary = {
 	"parent": "Eltern",
 }
 
+# Material-IDs in assets/manifests/assets.json -> generierte Portal-PNGs aus
+# dem Asset-Pack.
+const PORTAL_MATERIAL_IDS: Dictionary = {
+	"learn": "mat_portal_learn",
+	"games": "mat_portal_games",
+	"parent": "mat_portal_parent",
+}
+
 @export var portal_type: String = "learn"
 @export var idle_rotation_speed: float = 0.35
 
@@ -37,6 +45,7 @@ func set_portal_type(new_type: String) -> void:
 
 func _apply_type() -> void:
 	var color: Color = PORTAL_COLORS.get(portal_type, Color(1, 1, 1, 1))
+	# 1) Torus-Ring: behaelt das Fallback-StandardMaterial3D
 	var ring: MeshInstance3D = $Ring as MeshInstance3D
 	if ring != null:
 		var mat: StandardMaterial3D = ring.material_override as StandardMaterial3D
@@ -46,9 +55,22 @@ func _apply_type() -> void:
 		mat.albedo_color = color
 		mat.emission_enabled = true
 		mat.emission = color
-		mat.emission_energy_multiplier = 1.4
+		var emission_mul: float = 1.4
+		if Engine.has_singleton("PerformanceManager"):
+			var pm: Node = Engine.get_singleton("PerformanceManager")
+			if pm.has_method("get_portal_emission_multiplier"):
+				emission_mul = pm.call("get_portal_emission_multiplier")
+		mat.emission_energy_multiplier = emission_mul
 		mat.metallic = 0.10
 		mat.roughness = 0.30
+	# 2) Portal-Plane: generierte transparente Portal-PNG aus AssetLoader
+	var plane: MeshInstance3D = $PortalPlane as MeshInstance3D
+	if plane != null:
+		var mat_id: String = PORTAL_MATERIAL_IDS.get(portal_type, "mat_portal_learn")
+		var portal_mat: Material = AssetLoader.get_material(mat_id)
+		if portal_mat != null:
+			plane.material_override = portal_mat
+	# 3) Label
 	var label: Label3D = $Label as Label3D
 	if label != null:
 		label.text = PORTAL_LABELS.get(portal_type, portal_type)

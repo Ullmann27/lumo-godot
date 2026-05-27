@@ -360,25 +360,121 @@ lumo-godot/
    regenerieren als versionieren).
 6. **Keine bezahlten APIs** ohne explizite Heinz-Anweisung.
 
+## Generated Asset Pack (lumo3d_assets)
+
+**Stand**: 176 PNG-Originale + JSON-Manifest integriert in
+`assets/generated/lumo3d_assets/`. Lizenzlage: programmgenerierte
+Originale ohne fremde Bitmaps/Logos/Watermarks - kein
+Lizenzrisiko, kein Attribution-Zwang.
+
+```
+assets/generated/lumo3d_assets/
+  asset_manifest.json    Pack-Manifest (pack_name, counts, assets)
+  README.md
+  docs/GODOT_IMPORT_NOTES.md
+  textures/albedo/       12 PNG (grass_magic, stone_warm, wood_warm_soft, ...)
+  textures/normal/       12 PNG (passend zu albedo, fuer PBR-Materialien)
+  textures/emission/     23 PNG (portal_*/hologrid_*/crystal_*)
+  particles/             32 PNG (gold/cyan/violet/green *_particle_01..08)
+  billboards/            28 PNG (crystal/star/orb/book/number)
+  portals/               20 PNG (portal_learn_*/games_*/parent_*/magic_*)
+  sky_gradients/         12 PNG (sunrise_magic, twilight_violet, dream_blue, ...)
+  ui_panels/             16 PNG (panel_gold/cyan/wood/sky)
+  masks/                 20 PNG (radial/dissolve/pulse-Masken)
+```
+
+### Generierte Materialien (`assets/materials/generated/`)
+
+12 `.tres` StandardMaterial3D mit albedo/normal/emission je nach Quelle:
+
+| Material | Verwendung | Texturen |
+|---|---|---|
+| `mat_stone_warm` | Home-Insel-Boden | stone_warm albedo + normal |
+| `mat_grass_magic` | alternativ Insel | grass_magic albedo + normal |
+| `mat_wood_warm` | spaeter Brett/Tisch | wood_warm_soft albedo + normal |
+| `mat_hologrid_cyan` | Hologramm-Plates | hologrid_cyan albedo + normal + emission |
+| `mat_crystal_floor` | Glanz-Boden | crystal_floor albedo + normal + emission |
+| `mat_portal_learn` | Portal "Lernen" Plane | portal_learn_01 + emission, unshaded + add-blend |
+| `mat_portal_games` | Portal "Spiele" Plane | portal_games_01 + emission, unshaded + add-blend |
+| `mat_portal_parent` | Portal "Eltern" Plane | portal_parent_01 + emission, unshaded + add-blend |
+| `mat_sky_backdrop` | Home-Backdrop-Plane | sunrise_magic Sky-Gradient, unshaded |
+| `mat_billboard_crystal` | Deko-Billboards | crystal_billboard_01, unshaded + alpha |
+| `mat_billboard_book` | Deko-Billboards | book_billboard_04, unshaded + alpha |
+| `mat_particle_gold` | spaeter GPUParticles3D | gold_particle_01, unshaded + alpha |
+
+Portal-Materialien sind **double-sided** (`cull_mode = CULL_DISABLED`)
+und **additiv geblendet** (`blend_mode = BLEND_MODE_ADD`) damit die
+Magie bei jeder Kamerarichtung leuchtet.
+
+### Home-Szene nutzt das Asset-Pack
+
+- **Insel**: PlaneMesh 14x14 mit `mat_stone_warm` (PBR mit Normal-Map)
+- **Backdrop**: QuadMesh 60x30 hinter der Szene mit `mat_sky_backdrop` (unshaded Sky-Gradient)
+- **Portale**: jedes hat eine QuadMesh `PortalPlane` mit `mat_portal_<type>`, dazu der bisherige Torus-Ring fuer 3D-Tiefe und das Label3D
+- **Decorations**: 0-6 Billboard-Quads (Crystal/Book) auf der Insel-Peripherie, Material aus AssetLoader; Anzahl per Profil
+
+### AssetLoader-API (erweitert)
+
+```gdscript
+AssetLoader.get_model("lumo_fox") -> Node3D       # nie null (Magenta-Box)
+AssetLoader.get_texture("lumo_par_gold_particle_01") -> Texture2D  # nie null (Magenta-Schachbrett)
+AssetLoader.get_material("mat_portal_learn") -> Material  # null wenn ID unbekannt
+AssetLoader.has_asset(id) -> bool                  # ueber ALLE Kategorien
+```
+
+Logs:
+- `asset_material_loaded:<id>` bei Erfolg
+- `asset_texture_loaded:<id>` bei Erfolg
+- `asset_texture_missing_using_placeholder:<id>` bei Fallback
+- WARN bei jedem fehlenden Asset
+
+## Performance Profile vs Asset-Nutzung
+
+| Profil | Sterne (MultiMesh) | Billboards | Portal-Emission | Glow/SSAO |
+|---|---|---|---|---|
+| LOW | 12 | 0 | x 0.5 | aus |
+| MEDIUM | 40 | 3 | x 1.0 | Glow+Fog |
+| HIGH | 80 | 6 | x 1.4 | alles + Vol-Fog |
+
+`PerformanceManager.get_star_count()`,
+`get_billboard_count()`, `get_portal_emission_multiplier()` werden vom
+HomeController und PortalInteraction beim Spawn bzw. `_apply_type()`
+abgefragt. Profil-Wechsel zur Laufzeit spawnt nicht neu — gilt erst beim
+naechsten Home-Mount.
+
+## Texture-Compression Empfehlung (KTX2 / Basis Universal)
+
+Aktueller Container-Build hat Texturen unkomprimiert (PNG je 10-25 KB,
+gesamt ~6.7 MB). Fuer Android-Release vor APK-Build:
+
+1. Im Editor: alle PNGs in `assets/generated/lumo3d_assets/` markieren
+   → Import-Tab → `compress/mode` = `VRAM Compressed` (S3TC/BPTC) ODER
+   `Basis Universal` (kleinste APK)
+2. Oder per CLI: `gltfpack -tc` / `toktx --bcmp --genmipmap`
+3. Alpha-Texturen (particles/billboards/portals): sparsam einsetzen,
+   Overdraw begrenzen, Plane-Groesse moderat halten
+
 ## Aktuelle To-Dos
 
 - [x] Mobile App Shell mit Boot → Intro → Home → Portale
 - [x] 5 Autoloads (EventBus, PerformanceManager, MobileRuntime, SceneRouter, AssetLoader)
-- [x] PerformanceManager mit LOW/MEDIUM/HIGH Profilen
+- [x] PerformanceManager mit LOW/MEDIUM/HIGH Profilen + Star/Billboard/Emission-Helpern
 - [x] Touch-Orbit-Kamera mit Tap-vs-Drag-Trennung
 - [x] Portal-System mit Area3D-Raycast
 - [x] Lumo-Companion-Platzhalter aus Primitiven
-- [x] MultiMesh-Sternenfeld (80 Sterne, 1 Draw-Call)
+- [x] MultiMesh-Sternenfeld (Anzahl per Profil, 1 Draw-Call)
 - [x] ID-basiertes Asset-Manifest mit Magenta-Placeholder
 - [x] Holographic-Shader auf gl_compat-kompatibel
 - [x] validate_project.py + build_android.sh
 - [x] Headless-CI sauber gruen
+- [x] **Asset-Pack `lumo3d_assets` integriert** (176 PNG, 12 Materialien, AssetLoader-API erweitert)
+- [x] Home-Szene nutzt Insel-Material + Sky-Backdrop + Portal-Texturen + Billboards
 - [ ] **Naechster Schritt** (Heinz entscheidet):
   - Android-SDK + Keystore einrichten → echte APK
-  - Premium Visual Pass auf Home (mehr Lampen, Spiegel-Insel, Lumo-Animation)
-  - Erstes Mini-Game `star_collect_game` als Portal-Ziel
   - Echtes `lumo_fox.glb` (Blender oder Meshy mit API-Key)
-- [ ] KTX2-Texturkompression-Pipeline wenn echte Texturen kommen
+  - Premium Visual Tuning (PostFX, LightmapGI-Bake der Insel)
+  - Erstes Mini-Game `star_collect_game` als Portal-Ziel
+- [ ] KTX2/Basis-Universal-Konvertierung der Pack-Texturen vor APK-Release
 - [ ] LightmapGI-Bake der statischen Home-Insel
 
 ## Tools-Status im Container (Stand 2026-05-27)
