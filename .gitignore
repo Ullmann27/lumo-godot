@@ -27,3 +27,4 @@ assets/textures/*.exr
 
 # WICHTIG: export_presets.cfg WIRD committed (Build-Config, nicht User-Cache).
 # project.godot wird natuerlich auch committed.
+android/build/

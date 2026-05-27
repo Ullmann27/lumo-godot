@@ -217,7 +217,51 @@ mkdir -p exports/android
 APK_PATH="exports/android/lumo3d-debug.apk"
 rm -f "$APK_PATH"
 "$GODOT" --headless --import 2>&1 | tail -2
-"$GODOT" --headless --export-debug "Android" "$APK_PATH" 2>&1 | tee /tmp/build_android.log | tail -10
+
+# Godot 4.6.3 hat einen stillen Configuration-Error im normalen Android-
+# Export-Plugin. Workaround: --export-pack + manueller Gradle-Build mit
+# Android-Source-Template, dann strip+sign.
+echo
+echo "Schritt 1: PCK via --export-pack erzeugen..."
+"$GODOT" --headless --export-pack "Android" exports/android/lumo3d.pck 2>&1 | tail -2
+
+echo "Schritt 2: Source-Template entpacken..."
+mkdir -p android/build
+if [[ ! -f android/build/gradlew ]]; then
+    TPL_ROOT="$HOME/.local/share/godot/export_templates/${VERSION_SHORT}"
+    unzip -q -o "$TPL_ROOT/android_source.zip" -d android/build/
+fi
+
+echo "Schritt 3: PCK in Gradle-Source kopieren..."
+mkdir -p android/build/src/main/assets/_cl_
+cp exports/android/lumo3d.pck android/build/src/main/assets/_cl_/
+
+echo "Schritt 4: Gradle assembleDebug (kann 2-3 min dauern)..."
+chmod +x android/build/gradlew
+(cd android/build && ./gradlew assembleDebug --quiet 2>&1) | tail -5
+
+RAW_APK=android/build/build/outputs/apk/standard/debug/android_debug.apk
+if [[ ! -f "$RAW_APK" ]]; then
+    echo "RESULT: FAIL - Gradle-Build erzeugte keine APK"
+    exit 1
+fi
+
+echo "Schritt 5: arm64-only strip + zipalign + apksigner sign..."
+WORK=/tmp/apk_build_$$
+rm -rf "$WORK"
+mkdir -p "$WORK"
+( cd "$WORK" && unzip -q "$ROOT/$RAW_APK" && \
+  rm -rf lib/x86 lib/x86_64 lib/armeabi-v7a META-INF && \
+  zip -r9 -q /tmp/lumo3d-stripped-$$.apk . )
+
+"$ZIPALIGN" -p -f 4 /tmp/lumo3d-stripped-$$.apk /tmp/lumo3d-aligned-$$.apk
+"$APKSIGNER" sign \
+    --ks "$KS" \
+    --ks-pass pass:android --key-pass pass:android \
+    --ks-key-alias androiddebugkey \
+    --out "$APK_PATH" \
+    /tmp/lumo3d-aligned-$$.apk
+rm -rf "$WORK" /tmp/lumo3d-stripped-$$.apk /tmp/lumo3d-aligned-$$.apk
 
 # ── 10. APK Verify ─────────────────────────────────────────────────────
 if [[ ! -f "$APK_PATH" ]]; then
