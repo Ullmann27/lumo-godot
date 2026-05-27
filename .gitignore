@@ -8,6 +8,16 @@
 # Export-Output (lokale Builds nicht ins Repo)
 exports/
 
+# AI-generierte / Dryrun-Asset-Outputs (werden via tools/fetch_assets.py
+# bei Bedarf regeneriert - Source-of-Truth ist tools/assets.json).
+assets/models/*.glb
+assets/models/*.gltf
+assets/textures/*.png
+assets/textures/*.jpg
+assets/textures/*.exr
+!assets/models/.gitkeep
+!assets/textures/.gitkeep
+
 # Translations-Cache (nicht im Repo)
 *.translation
 

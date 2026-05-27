@@ -17,6 +17,10 @@ run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+EventBus="*res://scripts/event_bus.gd"
+
 [display]
 
 window/size/viewport_width=1280
@@ -26,6 +30,15 @@ window/stretch/aspect="expand"
 
 [rendering]
 
+; Plattform-spezifische Renderer-Pfade:
+;  - Desktop/Native -> Forward+ (Vulkan, voller Featureset)
+;  - Mobile         -> Mobile (Vulkan-Lite, schlanker fuer Smartphones)
+;  - Web            -> gl_compatibility (GLES3, max. Browser-Kompatibilitaet)
 renderer/rendering_method="forward_plus"
+renderer/rendering_method.mobile="mobile"
+renderer/rendering_method.web="gl_compatibility"
 anti_aliasing/quality/msaa_3d=2
-environment/defaults/default_clear_color=Color(0.10, 0.12, 0.18, 1)
+anti_aliasing/quality/screen_space_aa=1
+environment/defaults/default_clear_color=Color(0.05, 0.07, 0.13, 1)
+environment/defaults/default_environment="res://scenes/default_env.tres"
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3

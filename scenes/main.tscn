@@ -1,55 +1,50 @@
-[gd_scene load_steps=6 format=3 uid="uid://b1lumo3dmain01"]
+[gd_scene load_steps=8 format=3 uid="uid://b1lumo3dmain01"]
 
 [ext_resource type="Script" path="res://scripts/rotator.gd" id="1_rotator"]
+[ext_resource type="Script" path="res://scripts/asset_loader.gd" id="2_loader"]
+[ext_resource type="Script" path="res://scripts/main_controller.gd" id="3_main"]
+[ext_resource type="Environment" path="res://scenes/default_env.tres" id="4_env"]
+[ext_resource type="Shader" path="res://shaders/holographic.gdshader" id="5_holo"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_test"]
 size = Vector3(1.5, 1.5, 1.5)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_box"]
-albedo_color = Color(1, 0.48, 0.18, 1)
-metallic = 0.2
-roughness = 0.35
-emission_enabled = true
-emission = Color(1, 0.72, 0.42, 1)
-emission_energy_multiplier = 0.18
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
-sky_top_color = Color(0.18, 0.24, 0.42, 1)
-sky_horizon_color = Color(0.42, 0.34, 0.32, 1)
-ground_bottom_color = Color(0.10, 0.08, 0.12, 1)
-ground_horizon_color = Color(0.32, 0.22, 0.20, 1)
-sun_angle_max = 30.0
-sun_curve = 0.15
-
-[sub_resource type="Sky" id="Sky_main"]
-sky_material = SubResource("ProceduralSkyMaterial_sky")
-
-[sub_resource type="Environment" id="Environment_main"]
-background_mode = 2
-sky = SubResource("Sky_main")
-ambient_light_source = 3
-tonemap_mode = 2
-glow_enabled = true
-glow_intensity = 0.6
-glow_bloom = 0.15
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_holo"]
+shader = ExtResource("5_holo")
+shader_parameter/base_color = Color(0.30, 0.85, 1.00, 1)
+shader_parameter/edge_color = Color(1.00, 0.55, 0.20, 1)
+shader_parameter/grid_density = 18.0
+shader_parameter/grid_line_width = 0.04
+shader_parameter/scan_speed = 1.2
+shader_parameter/fresnel_power = 2.5
+shader_parameter/pulse_speed = 1.6
+shader_parameter/emission_strength = 2.2
 
 [node name="Main" type="Node3D"]
+script = ExtResource("3_main")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_main")
+environment = ExtResource("4_env")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 4, 0)
 light_color = Color(1, 0.95, 0.85, 1)
 light_energy = 1.2
 shadow_enabled = true
+directional_shadow_max_distance = 35.0
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.92, 0.39, 0, -0.39, 0.92, 0, 1.5, 4)
 fov = 60.0
+near = 0.05
+far = 200.0
 
-[node name="TestCube" type="MeshInstance3D" parent="."]
+[node name="HoloCube" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("BoxMesh_test")
-material_override = SubResource("StandardMaterial3D_box")
+material_override = SubResource("ShaderMaterial_holo")
 script = ExtResource("1_rotator")
+
+[node name="AssetLoader" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
+script = ExtResource("2_loader")

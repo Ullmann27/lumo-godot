@@ -16,16 +16,34 @@ mit der Flutter-App `/home/user/lumo-lernen/`.
 
 ```
 lumo-godot/
-  project.godot       # Engine-Config
-  CLAUDE.md           # Diese Datei
-  icon.svg            # App-Icon
+  project.godot                 # Engine-Config + Autoloads + Renderer-Pfade
+  CLAUDE.md                     # Diese Datei
+  icon.svg                      # App-Icon
+  export_presets.cfg            # Web + Android Build-Profiles
+  .gitignore                    # .godot/ + exports/ + Import-Cache
   scenes/
-    main.tscn         # Hauptszene mit Camera3D + Sonne + Wuerfel
+    main.tscn                   # Root: Main(+main_controller) + Sun + Camera +
+                                #   HoloCube(+rotator + ShaderMaterial) +
+                                #   AssetLoader(+asset_loader)
+    default_env.tres            # Environment: VolumetricFog + SSAO + Glow
   scripts/
-    rotator.gd        # Rotation-Logik fuer den Test-Wuerfel
+    event_bus.gd                # Autoload: globale Signals (Event-Bus)
+    main_controller.gd          # Bindet EventBus-Listener im Main
+    rotator.gd                  # Sichtbare Rotation, emittiert speed_changed
+    asset_loader.gd             # Scannt assets/models/ + instanziiert .glb
+  shaders/
+    holographic.gdshader        # Spatial-Shader: Grid + Scanline + Fresnel
   assets/
-    models/           # .glb / .obj fuer 3D-Objekte (Blender-Export)
-    textures/         # PBR-Maps (diffuse, normal, roughness)
+    models/                     # .glb (statisch oder via tools/fetch_assets.py)
+    textures/                   # PBR-Maps (CC0 von Poly Haven, optional)
+  tools/
+    fetch_assets.py             # KI-Asset-Pipeline (Meshy/Replicate -> .glb)
+    assets.json                 # Batch-Config fuer fetch_assets.py
+    build_web.sh                # CI/CD: --export-release Web -> exports/web/
+    serve_web.py                # Localhost-Server fuer Web-Build + Perf-Log
+  exports/                      # (gitignored) lokale Build-Outputs
+    web/index.html              # nach build_web.sh
+    android/lumo3d.apk          # nach 'godot --export-release Android ...'
 ```
 
 ## Code-Stil-Richtlinien
@@ -68,6 +86,139 @@ Windows/Mac-System mit installiertem Godot 4.6.3.
 - [ ] Optional: PBR-Texturen via Hugging Face / Poly Haven CC0
 - [ ] Heinz oeffnet das Projekt einmal im echten Godot-Editor um die
       Szene live zu sehen + lokale Export-Templates installieren
+
+## High-Performance Rendering-Pipeline
+
+Plattform-spezifische Renderer (`project.godot`):
+
+| Plattform | Renderer | Begruendung |
+|---|---|---|
+| Desktop / Native | `forward_plus` (Vulkan) | Voller Featureset: SSAO, Volumetric Fog, Glow |
+| Mobile (Android) | `mobile` (Vulkan-Lite) | Schlanker fuer Smartphones, gleiche Shader |
+| Web (HTML5/WASM) | `gl_compatibility` (GLES3) | Max. Browser-Kompatibilitaet, kein Vulkan-WebGPU-Risiko |
+
+Aktive Post-Processing-Effekte in `scenes/default_env.tres`:
+
+- **Volumetric Fog**: Density 0.045, light albedo Lila-Tinted, length 65m,
+  GI-Inject 0.5 (Licht streut realistisch durch Nebel)
+- **SSAO** (Screen-Space Ambient Occlusion): Radius 1.4, Intensity 1.6,
+  Power 1.8 (sichtbare Schatten in Ecken/Spalten)
+- **Glow/Bloom**: Intensity 0.85, Bloom 0.18, HDR-Threshold 1.0
+  (Emission > 1 leuchtet, kombiniert mit Tonemap=Filmic)
+- **Fog** (Standard depth fog): Density 0.012, aerial perspective 0.35
+- **Adjustments**: Saturation 1.15, Contrast 1.08 (knackigere Farben)
+
+## Reaktive Architektur: Event-Bus + Holographic Shader
+
+### Event-Bus (`scripts/event_bus.gd`, Autoload `EventBus`)
+
+Globale Signals fuer lose Knoten-Kopplung:
+
+| Signal | Wer feuert | Wer hoert | Zweck |
+|---|---|---|---|
+| `scene_loaded(name)` | `main_controller.gd` | beliebig | App-Start-Heartbeat |
+| `assets_load_complete(count)` | `asset_loader.gd` | `main_controller.gd` | Count der dyn. geladenen .glb |
+| `asset_instanced(path, node)` | `asset_loader.gd` | beliebig | Pro-Item-Event waehrend Load |
+| `rotation_speed_changed(y, x)` | `rotator.gd` | `main_controller.gd` | Demo-Reaktivitaet |
+| `cube_interacted(intensity)` | TBD (UI/Tap) | TBD (Shader-Param-Animator) | spaeter |
+
+### Holographic Shader (`shaders/holographic.gdshader`)
+
+Cyberpunk-Effekt auf dem HoloCube. Parameter im Inspector + via
+ShaderMaterial-Uniforms:
+
+- `base_color` (Cyan #4DD9FF) - Grundfarbe der Grid-Linien
+- `edge_color` (Orange #FF8C33) - Fresnel-Ringraender
+- `grid_density` (1-64) - Anzahl Linien pro UV-Achse
+- `scan_speed` - Geschwindigkeit der wandernden Scanline
+- `fresnel_power` - Schaerfe des Edge-Glows
+- `pulse_speed` - Atem-Tempo
+- `emission_strength` - Master-Multiplier (>1 triggert Bloom)
+
+Render-Mode: `unshaded, blend_add` - addiert auf Hintergrund (kein
+Albedo), reagiert daher direkt mit dem Volumetric Fog dahinter.
+
+## KI-Asset-Pipeline (`tools/fetch_assets.py`)
+
+Holt prozedurale 3D-Modelle aus externen AI-APIs:
+
+```bash
+# Eine einzelne Anfrage
+python3 tools/fetch_assets.py --prompt "low-poly sci-fi crate" --provider meshy
+
+# Batch-Modus aus JSON
+python3 tools/fetch_assets.py --config tools/assets.json
+```
+
+Provider:
+
+| Provider | API-Key (env) | Output |
+|---|---|---|
+| `meshy` | `MESHY_API_KEY` | .glb in `assets/models/` |
+| `replicate` | `REPLICATE_API_TOKEN` (+ `REPLICATE_MODEL_VERSION`) | .glb |
+| `dryrun` | - | Placeholder-GLB (gueltiges leeres glTF) |
+
+Ohne Key faellt der Provider automatisch auf `dryrun` zurueck - das
+Skript laeuft IMMER durch, die Godot-AssetLoader-Pipeline kann nie
+ueber Null-Bytes stolpern.
+
+Der **Godot-AssetLoader** (`scripts/asset_loader.gd`) scannt
+`res://assets/models/` beim App-Start, instanziiert jede `.glb` via
+`GLTFDocument.append_from_file()`, verteilt sie entlang der X-Achse und
+emittiert `asset_instanced` + `assets_load_complete` ueber den EventBus.
+
+## CI/CD-Build-Pipeline
+
+### Web (HTML5/WebAssembly)
+
+```bash
+# Komplett-Build (laedt Templates automatisch wenn fehlen, ~900 MB)
+tools/build_web.sh
+
+# Oder explizit Debug-Build (mit Profiler)
+tools/build_web.sh --debug
+```
+
+Output: `exports/web/{index.html, index.wasm, index.pck, index.js, ...}`
+
+**Bekanntes Problem (Container-Headless):** `godot --headless
+--export-release "Web"` liefert aktuell `Cannot export project ... due
+to configuration errors` OHNE detaillierte Meldung. Das `--export-pack`
+funktioniert sauber (PCK wird generiert), nur der HTML-Wrapper-Schritt
+scheitert an der Validierung. Workaround: einmal lokal im Editor
+"Project > Export > Web > Export Project" laufen lassen - Godot
+synchronisiert dabei die Preset-Defaults und fixt das stillschweigend.
+Danach laeuft der Headless-Build im Container.
+
+```bash
+# Sanity-Test ohne HTML-Wrapper (immer erfolgreich)
+godot --headless --export-pack "Web" exports/web/lumo3d.pck
+```
+
+### Localhost-Server fuer Tests
+
+```bash
+# Default: 127.0.0.1:8000
+python3 tools/serve_web.py
+
+# Auf allen Interfaces
+python3 tools/serve_web.py --bind 0.0.0.0 --port 8000
+```
+
+Setzt `Cross-Origin-Opener-Policy: same-origin` +
+`Cross-Origin-Embedder-Policy: require-corp` (sonst kein SharedArrayBuffer
+- Godot 4 Web-Builds brauchen das fuer Threads). Logs in
+`/tmp/lumo_serve.log` fuer Performance-Profiling der Anfragen.
+
+### Android
+
+```bash
+godot --headless --export-release "Android" exports/android/lumo3d.apk
+```
+
+Templates muessen lokal installiert sein (Editor > Manage Export
+Templates). Im Container ist Android-Build nicht praktikabel (Android
+SDK + JDK + Build-Tools brauchen ~3 GB).
 
 ## Architektur der Hauptszene (`scenes/main.tscn`)
 
