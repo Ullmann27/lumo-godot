@@ -1,348 +1,395 @@
-# CLAUDE.md - Lumo 3D (Godot 4.x)
+# CLAUDE.md - Lumo 3D Mobile App Shell (Godot 4.6.3)
 
-Dieses Projekt ist ein **neues, separates** Godot 4.x 3D-Projekt.
-Es liegt unter `/home/user/lumo-godot/` und teilt sich KEINE Dateien
-mit der Flutter-App `/home/user/lumo-lernen/`.
+> **Tech-Leitlinie**: Nutze moderne Mobile-3D-Techniken: Godot Mobile
+> Renderer, Quality Profiles, GLB/glTF Asset Pipeline, KTX2/BasisU
+> Texturkompression, PBR Materials, Mobile Shader Fallbacks, Touch
+> Raycasting, Safe-Area UI, GPU Instancing/MultiMesh, LOD/Culling,
+> baked lighting, Headless CI und Android Export Diagnostics. Ziel ist
+> keine Tech-Demo, sondern eine performante 3D-Lernwelt auf Android.
+
+Dieses Projekt ist eine **separate** Godot 4.x 3D-App.
+Es liegt unter `/home/user/lumo-godot/` und teilt KEINE Dateien mit
+der Flutter-App `/home/user/lumo-lernen/` (HEAD bleibt unangetastet).
+
+## App-Flow
+
+```
+Boot (boot.tscn)
+  ↓ 0.5 s, ColorRect + Label "Lumo"
+Intro 3D (intro_3d.tscn)
+  ↓ 4.5 s ODER Tap/Klick = skip
+  ↓ leuchtender Stern + Kamera-Dolly
+Home 3D (home_3d.tscn)
+  ↓ Lumo + 3 Portale + MultiMesh-Sternenfeld
+  ↓ Touch-Orbit-Kamera (Drag yaw/pitch, Tap = Portal-Pick)
+Portal-Tap
+  ↓ EventBus.portal_selected(type)
+  ↓ Demo-Log: "portal_<type>_selected"
+```
+
+## Autoloads (project.godot)
+
+| Name | Pfad | Zweck |
+|---|---|---|
+| `EventBus` | `scripts/systems/event_bus.gd` | globale Signals (10 Stueck) |
+| `PerformanceManager` | `scripts/systems/performance_manager.gd` | LOW/MEDIUM/HIGH Profile |
+| `MobileRuntime` | `scripts/app/mobile_runtime.gd` | Safe-Area + Engine-Defaults |
+| `SceneRouter` | `scripts/app/scene_router.gd` | `goto("boot"|"intro"|"home"|"loading")` |
+| `AssetLoader` | `scripts/systems/asset_loader.gd` | ID-basiertes Manifest-Loading + Placeholder |
+
+Reihenfolge in project.godot ist wichtig: EventBus zuerst (alle anderen
+abhaengig), AssetLoader zuletzt (haengt vom Manifest ab das stehen muss).
 
 ## Engine & Sprache
 
 - Godot **4.6.3-stable** (lokal unter `/home/user/tools/godot`)
-- **GDScript** mit statischer Typisierung (`var x: int`, `func foo() -> bool`)
-- Renderer: Forward Plus (3D-orientiert, modernste Pipeline)
-- MSAA 4x fuer 3D, weiches Antialiasing
-- Standard-Aufloesung 1280x720, stretch=canvas_items
-
-## Projekt-Struktur
-
-```
-lumo-godot/
-  project.godot                 # Engine-Config + Autoloads + Renderer-Pfade
-  CLAUDE.md                     # Diese Datei
-  icon.svg                      # App-Icon
-  export_presets.cfg            # Web + Android Build-Profiles
-  .gitignore                    # .godot/ + exports/ + Import-Cache
-  scenes/
-    main.tscn                   # Root: Main(+main_controller) + Sun + Camera +
-                                #   HoloCube(+rotator + ShaderMaterial) +
-                                #   AssetLoader(+asset_loader)
-    default_env.tres            # Environment: VolumetricFog + SSAO + Glow
-  scripts/
-    event_bus.gd                # Autoload: globale Signals (Event-Bus)
-    main_controller.gd          # Bindet EventBus-Listener im Main
-    rotator.gd                  # Sichtbare Rotation, emittiert speed_changed
-    asset_loader.gd             # Scannt assets/models/ + instanziiert .glb
-  shaders/
-    holographic.gdshader        # Spatial-Shader: Grid + Scanline + Fresnel
-  assets/
-    models/                     # .glb (statisch oder via tools/fetch_assets.py)
-    textures/                   # PBR-Maps (CC0 von Poly Haven, optional)
-  tools/
-    fetch_assets.py             # KI-Asset-Pipeline (Meshy/Replicate -> .glb)
-    assets.json                 # Batch-Config fuer fetch_assets.py
-    build_web.sh                # CI/CD: --export-release Web -> exports/web/
-    serve_web.py                # Localhost-Server fuer Web-Build + Perf-Log
-  exports/                      # (gitignored) lokale Build-Outputs
-    web/index.html              # nach build_web.sh
-    android/lumo3d.apk          # nach 'godot --export-release Android ...'
-```
-
-## Code-Stil-Richtlinien
-
-- **Statische Typisierung** ueberall wo moeglich:
-  - `var speed: float = 1.5`
-  - `func _process(delta: float) -> void:`
-  - Klassen-Variablen mit Typ-Annotation
-- `class_name` fuer wiederverwendbare Skripte
-- `@export` fuer Editor-konfigurierbare Felder
-- Konstanten in `SCREAMING_SNAKE_CASE`
-- Funktionen + Variablen in `snake_case`
-- Szenen-Namen in `PascalCase` (z.B. `MainScene.tscn`)
-- `gdlint scripts/datei.gd` vor Commit, `gdformat scripts/datei.gd` zum
-  Formatieren (Tool: gdtoolkit 4.5.0 unter `~/.local/bin/`)
-
-## Headless-Modus
-
-Der Container hat keine GUI - der Godot-Editor laesst sich nur ueber
-`--headless` betreiben. Bedeutet:
-- `godot --headless --quit` -> Projekt parse-checken
-- `godot --headless --check-only path.gd` -> einzelnes Script pruefen
-- Keine visuelle Vorschau, kein Editor-Viewport im Container
-
-Echte 3D-Wiedergabe (Spielen + Sehen) braucht ein Linux-Desktop oder ein
-Windows/Mac-System mit installiertem Godot 4.6.3.
-
-## Aktuelle To-Dos
-
-- [x] Step 1: Projekt-Struktur + Godot 4.6.3 lokal
-- [x] Step 2: CLAUDE.md (diese Datei)
-- [x] Step 3: 3D-Hauptszene main.tscn (Node3D-Root, Camera3D,
-      DirectionalLight3D, WorldEnvironment, MeshInstance3D Box)
-- [x] Step 4: scripts/rotator.gd mit _process(delta) Rotation
-- [x] Step 5: Headless-Parse-Check (--import + --quit-after 60)
-- [x] Step 6: export_presets.cfg fuer Web + Android
-- [x] Step 7: Git-Repo init + erster Commit
-- [ ] Optional: Blender-Asset-Pipeline (Blender ist nicht installiert -
-      muss noch via apt oder Snap nachgezogen werden)
-- [ ] Optional: PBR-Texturen via Hugging Face / Poly Haven CC0
-- [ ] Heinz oeffnet das Projekt einmal im echten Godot-Editor um die
-      Szene live zu sehen + lokale Export-Templates installieren
+- **GDScript** mit statischer Typisierung
+- Renderer pro Plattform:
+  - **Forward+** auf Desktop/Native (voller Featureset)
+  - **Mobile** auf Android (Vulkan-Lite, schlanker)
+  - **gl_compatibility** auf Web (GLES3, max. Browser-Kompatibilitaet)
+- Orientation: **Portrait** (handheld)
+- Default-Viewport: 720x1280 (Hochformat)
 
 ## High-Performance Rendering-Pipeline
 
-Plattform-spezifische Renderer (`project.godot`):
+Aktiv in `scenes/default_env.tres` (wird ueber
+`rendering/environment/defaults/default_environment` projektweit
+aktiviert; pro Szene kann ein eigenes WorldEnvironment ueberschrieben
+werden):
 
-| Plattform | Renderer | Begruendung |
-|---|---|---|
-| Desktop / Native | `forward_plus` (Vulkan) | Voller Featureset: SSAO, Volumetric Fog, Glow |
-| Mobile (Android) | `mobile` (Vulkan-Lite) | Schlanker fuer Smartphones, gleiche Shader |
-| Web (HTML5/WASM) | `gl_compatibility` (GLES3) | Max. Browser-Kompatibilitaet, kein Vulkan-WebGPU-Risiko |
+- **Volumetric Fog**: density 0.025, warm-cremig (95/78/55), length 50m
+- **SSAO**: radius 1.2, intensity 1.2, power 1.6
+- **Glow/Bloom**: intensity 0.75, bloom 0.20, hdr_threshold 1.0
+- **Fog** (Standard depth fog): density 0.010, warm aerial perspective
+- **Filmic Tonemapping**, exposure 1.0, white 6.0
+- **Adjustments**: saturation 1.10, contrast 1.05 (warmer Look)
+- **Sky**: ProceduralSky orange→violett Sonnenuntergangsgradient
 
-Aktive Post-Processing-Effekte in `scenes/default_env.tres`:
+## Performance Quality Profiles (PerformanceManager)
 
-- **Volumetric Fog**: Density 0.045, light albedo Lila-Tinted, length 65m,
-  GI-Inject 0.5 (Licht streut realistisch durch Nebel)
-- **SSAO** (Screen-Space Ambient Occlusion): Radius 1.4, Intensity 1.6,
-  Power 1.8 (sichtbare Schatten in Ecken/Spalten)
-- **Glow/Bloom**: Intensity 0.85, Bloom 0.18, HDR-Threshold 1.0
-  (Emission > 1 leuchtet, kombiniert mit Tonemap=Filmic)
-- **Fog** (Standard depth fog): Density 0.012, aerial perspective 0.35
-- **Adjustments**: Saturation 1.15, Contrast 1.08 (knackigere Farben)
+| Profil | Glow | Fog | Vol-Fog | SSAO | MSAA | TAA | Default-Plattform |
+|---|---|---|---|---|---|---|---|
+| **LOW** | aus | aus | aus | aus | 0 | aus | (manueller Override) |
+| **MEDIUM** | an | an | aus | aus | 2x | aus | Android, iOS, Web |
+| **HIGH** | an | an | an | an | 4x | an | Linux, macOS, Windows |
 
-## Reaktive Architektur: Event-Bus + Holographic Shader
+`PerformanceManager.set_profile(Profile.LOW)` setzt sofort alle
+Environment + Viewport-Flags um. Per Plattform wird beim Start
+automatisch das passende Profil gewaehlt.
 
-### Event-Bus (`scripts/event_bus.gd`, Autoload `EventBus`)
+**Wichtig**: Volumetric Fog, SSAO, TAA, FSR2 sind **Forward+-only**.
+Beim Mobile-Renderer werden sie automatisch ignoriert - kein
+Code-Schaden, der LOW-Branch ist nur explizit zur Sicherheit.
 
-Globale Signals fuer lose Knoten-Kopplung:
+## Reaktive Architektur (EventBus)
 
-| Signal | Wer feuert | Wer hoert | Zweck |
+10 globale Signals lose Knoten-Kopplung:
+
+```gdscript
+EventBus.boot_started
+EventBus.scene_loaded(scene_name)
+EventBus.scene_changed(from_id, to_id)
+EventBus.asset_loader_ready(model_count)
+EventBus.assets_load_complete(count)
+EventBus.asset_instanced(path, node)
+EventBus.quality_profile_changed(profile_name)
+EventBus.platform_detected(platform_name)
+EventBus.portal_selected(portal_type)        # "learn" | "games" | "parent"
+EventBus.portal_hovered(portal_type, hovered)
+EventBus.companion_ready
+EventBus.companion_reaction(reaction)
+```
+
+## Mobile Bedienung (Touch + Safe-Area)
+
+### Touch-Orbit-Kamera (`scripts/camera/mobile_touch_camera.gd`)
+
+- **Drag horizontal** = yaw (Kamera-Drehung um Insel)
+- **Drag vertikal** = pitch (clamped -0.45..-0.05 rad, kein Ueberschlag)
+- **Mouse-Wheel** = Radius (clamped 4.0..9.0)
+- **Tap-vs-Drag**: <8 px Distanz + <250 ms Dauer = Tap (Event durchlassen)
+- Mouse-Fallback fuer Desktop (linke Maustaste = ScreenDrag)
+- Sanfte Interpolation via `lerp(position, desired, follow_lerp_speed*delta)`
+
+### Safe-Area (`scripts/ui/mobile_safe_area.gd` + MobileRuntime)
+
+- `MobileRuntime.get_safe_area_insets() -> Rect2`
+- Fallback bei fehlenden Werten: Top 32 px, Bottom 48 px, Side 16 px
+- `MobileSafeArea.apply_safe_margins(control)` setzt offsets
+
+### Portal-Picking (3D-Raycast)
+
+- Jedes `HubPortal` hat eine `Area3D` mit SphereShape3D r=1.4
+  (groesser als das visuelle Torus-Mesh!) - grosse Touch-Targets
+- `input_ray_pickable=true` aktiviert Touch-Raycast vom Viewport
+- Bei Tap: kurzer Scale-Pulse 1.0 → 1.18 → 1.0 + EventBus-Emit
+
+## ID-basiertes Asset-Manifest
+
+`assets/manifests/assets.json` definiert IDs:
+
+```json
+{
+  "models": {
+    "lumo_fox": "res://assets/models/lumo_fox.glb",
+    ...
+  },
+  "materials": { ... },
+  "_fetch_prompts": { ... }  // optional fuer fetch_assets.py
+}
+```
+
+**AssetLoader-API** (Autoload):
+
+```gdscript
+var fox: Node3D = AssetLoader.get_model("lumo_fox")  # NIE null
+AssetLoader.has_model("lumo_fox")                      # bool
+var mat: Material = AssetLoader.get_material("holographic_soft")
+```
+
+Wenn ein Asset fehlt: **Magenta-Box-Placeholder** mit Label "missing: id"
+wird zurueckgegeben. Niemals null, niemals Crash.
+
+## Lumo Companion (Platzhalter aus Primitiven)
+
+`scenes/characters/lumo_companion.tscn` baut Lumo aus Capsule + Sphere +
+Box-Ohren ohne externes Asset. Idle-Bob (Sinus 6 cm Amplitude) plus
+Look-At-Camera wenn `look_target_path` gesetzt ist.
+
+Spaeter ersetzbar durch echtes `assets/models/lumo_fox.glb` via
+`AssetLoader.get_model("lumo_fox")` als Kind statt der Primitiven.
+
+## MultiMesh Sternenfeld (`scripts/hub/star_field.gd`)
+
+Ein **MultiMeshInstance3D** mit 80 Sterne-Instanzen auf einer Kugelschale
+um die Home-Insel. **Ein Draw-Call fuer alle 80**. Pro Frame werden nur
+10 Sterne animiert (Subset-Bobbing) - 8x billiger als 80 einzeln zu
+updaten. SphereMesh radius 0.5 + emissive StandardMaterial3D
+(`shading_mode = SHADING_MODE_UNSHADED`, `vertex_color_use_as_albedo`).
+
+Pattern fuer spaetere Sterne im Mini-Game / Konfetti: gleiche Datei
+kopieren, `star_count` hochsetzen, `PALETTE` anpassen.
+
+## Mobile Shader Fallbacks
+
+Der vorhandene `assets/shaders/holographic.gdshader` ist
+`unshaded + blend_add` - **gl_compat-kompatibel** und lauft auf allen
+drei Renderern. Bei neuen Shadern auf folgende Regeln achten:
+
+- `render_mode unshaded` macht den Shader Renderer-agnostisch
+- Keine `hint_screen_texture` (Forward+ only)
+- Keine `hint_depth_texture` ohne Fallback (gl_compat hat sie eingeschraenkt)
+- PerformanceManager kann via ShaderMaterial-Uniform `emission_strength`
+  drosseln statt den Shader auszuschalten
+
+## CC0-Asset-Quellen (optional, fuer spaetere Iterationen)
+
+In dieser Mission wurden KEINE externen Assets heruntergeladen. Bei
+Bedarf sind diese CC0-Quellen Heinz' freie Wahl:
+
+| Quelle | URL | Format | Lizenz |
 |---|---|---|---|
-| `scene_loaded(name)` | `main_controller.gd` | beliebig | App-Start-Heartbeat |
-| `assets_load_complete(count)` | `asset_loader.gd` | `main_controller.gd` | Count der dyn. geladenen .glb |
-| `asset_instanced(path, node)` | `asset_loader.gd` | beliebig | Pro-Item-Event waehrend Load |
-| `rotation_speed_changed(y, x)` | `rotator.gd` | `main_controller.gd` | Demo-Reaktivitaet |
-| `cube_interacted(intensity)` | TBD (UI/Tap) | TBD (Shader-Param-Animator) | spaeter |
+| Poly Haven | https://polyhaven.com | .hdr, .exr, PBR-Texturen, kleine .glb | CC0 |
+| ambientCG | https://ambientcg.com | PBR-Materialien, HDRIs, Decals | CC0 |
+| Kenney | https://kenney.nl | Game-Asset-Kits, UI, Audio | CC0 |
 
-### Holographic Shader (`shaders/holographic.gdshader`)
+**Regel**: bei tatsaechlicher Nutzung URL + Lizenz pro Datei in einem
+`assets/CREDITS.md` vermerken (auch wenn CC0 keine Attribution fordert -
+Doku fuer Heinz, was woher kommt).
 
-Cyberpunk-Effekt auf dem HoloCube. Parameter im Inspector + via
-ShaderMaterial-Uniforms:
+## Texturkompression-Empfehlung (KTX2 / Basis Universal)
 
-- `base_color` (Cyan #4DD9FF) - Grundfarbe der Grid-Linien
-- `edge_color` (Orange #FF8C33) - Fresnel-Ringraender
-- `grid_density` (1-64) - Anzahl Linien pro UV-Achse
-- `scan_speed` - Geschwindigkeit der wandernden Scanline
-- `fresnel_power` - Schaerfe des Edge-Glows
-- `pulse_speed` - Atem-Tempo
-- `emission_strength` - Master-Multiplier (>1 triggert Bloom)
-
-Render-Mode: `unshaded, blend_add` - addiert auf Hintergrund (kein
-Albedo), reagiert daher direkt mit dem Volumetric Fog dahinter.
-
-## KI-Asset-Pipeline (`tools/fetch_assets.py`)
-
-Holt prozedurale 3D-Modelle aus externen AI-APIs:
+Godot 4.6 unterstuetzt **KTX2** mit Basis Universal nativ. Workflow
+fuer spaeter:
 
 ```bash
-# Eine einzelne Anfrage
-python3 tools/fetch_assets.py --prompt "low-poly sci-fi crate" --provider meshy
+# CLI-Tool toktx aus KTX-Software (apt: ktx) konvertiert PNG/JPG -> KTX2
+toktx --bcmp --genmipmap out.ktx2 in.png
 
-# Batch-Modus aus JSON
-python3 tools/fetch_assets.py --config tools/assets.json
+# ODER via gltfpack (Teil von meshoptimizer):
+gltfpack -i model.gltf -o model.glb -tc
 ```
 
-Provider:
+Vorteile auf Mobile: ~4-8x kleinere VRAM-Belegung, GPU-Direct-Decode,
+keine CPU-Decompression-Pause beim Laden. Empfehlung:
 
-| Provider | API-Key (env) | Output |
-|---|---|---|
-| `meshy` | `MESHY_API_KEY` | .glb in `assets/models/` |
-| `replicate` | `REPLICATE_API_TOKEN` (+ `REPLICATE_MODEL_VERSION`) | .glb |
-| `dryrun` | - | Placeholder-GLB (gueltiges leeres glTF) |
+- 3D-Texturen: 1024 px max, KTX2-komprimiert
+- Pixel-Art: NICHT komprimieren (Artefakte sichtbar)
+- HDRIs: bleiben .hdr / .exr (Mobile profitiert von 1024 px Resize)
 
-Ohne Key faellt der Provider automatisch auf `dryrun` zurueck - das
-Skript laeuft IMMER durch, die Godot-AssetLoader-Pipeline kann nie
-ueber Null-Bytes stolpern.
+## LOD / Culling / Baked Lighting (Empfehlung fuer spaeter)
 
-Der **Godot-AssetLoader** (`scripts/asset_loader.gd`) scannt
-`res://assets/models/` beim App-Start, instanziiert jede `.glb` via
-`GLTFDocument.append_from_file()`, verteilt sie entlang der X-Achse und
-emittiert `asset_instanced` + `assets_load_complete` ueber den EventBus.
+- **Frustum-Culling**: Godot-Default, automatisch aktiv
+- **Manuelles LOD**: `MeshInstance3D.lod_bias` oder
+  `visibility_range_begin/end` per Mesh
+- **Occlusion Culling**: `OccluderInstance3D` mit Box-Occludern in
+  Mini-Games mit mehreren Raeumen (Home-Insel braucht das noch nicht)
+- **LightmapGI**: fuer statische Home-Insel-Geometrie - drastisch
+  billiger als Realtime-Shadows auf Handy. Pipeline: alle statischen
+  Meshes -> `use_in_baked_light = true` -> LightmapGI-Knoten -> Bake
 
-## CI/CD-Build-Pipeline
-
-### Web (HTML5/WebAssembly)
+## CI / Validation
 
 ```bash
-# Komplett-Build (laedt Templates automatisch wenn fehlen, ~900 MB)
-tools/build_web.sh
+# Vor jedem Commit
+~/.local/bin/gdlint $(find scripts -name '*.gd' -type f)
+~/.local/bin/gdformat --check $(find scripts -name '*.gd' -type f)
+python3 tools/validate_project.py
 
-# Oder explizit Debug-Build (mit Profiler)
-tools/build_web.sh --debug
+# Engine-Smoke
+/home/user/tools/godot --headless --import
+/home/user/tools/godot --headless --quit-after 60 res://scenes/app/boot.tscn
+/home/user/tools/godot --headless --quit-after 60 res://scenes/app/home_3d.tscn
 ```
 
-Output: `exports/web/{index.html, index.wasm, index.pck, index.js, ...}`
+`validate_project.py` prueft:
+- Pflicht-Verzeichnisse (scenes/app, scripts/systems, assets/manifests, ...)
+- Pflicht-Szenen + Pflicht-Skripte
+- Autoloads in project.godot
+- Manifest valides JSON + Per-Asset-WARN bei fehlender Datei
+- Keine Flutter-Dateien im Repo
+- Tools ausfuehrbar
+- CLAUDE.md hat Schluesselwoerter "mobile", "boot", "home", "performance"
 
-**Bekanntes Problem (Container-Headless):** `godot --headless
---export-release "Web"` liefert aktuell `Cannot export project ... due
-to configuration errors` OHNE detaillierte Meldung. Das `--export-pack`
-funktioniert sauber (PCK wird generiert), nur der HTML-Wrapper-Schritt
-scheitert an der Validierung. Workaround: einmal lokal im Editor
-"Project > Export > Web > Export Project" laufen lassen - Godot
-synchronisiert dabei die Preset-Defaults und fixt das stillschweigend.
-Danach laeuft der Headless-Build im Container.
+Exit 0 bei PASS oder WARN; Exit 1 nur bei FAIL.
+
+## Build & Export
+
+### Android (Diagnose-getrieben)
 
 ```bash
-# Sanity-Test ohne HTML-Wrapper (immer erfolgreich)
+tools/build_android.sh
+```
+
+Prueft Godot-Binary, Export-Templates, Preset, JDK, Android SDK,
+Debug-Keystore. Bei jeder Luecke gibt es einen konkreten Next-Step
+(z.B. `apt install openjdk-17-jdk-headless`, `keytool ... debug.keystore`).
+Nur wenn alle PASS: echter APK-Export. Sonst Exit 1 + Bericht.
+
+Aktueller Container-Stand (2026-05-27): 4 PASS / 2 WARN (Android SDK +
+Keystore fehlen). APK-Build erst nach lokaler Heinz-Einrichtung
+moeglich.
+
+### Web
+
+```bash
+tools/build_web.sh        # Komplett-Pipeline (laedt Templates wenn fehlen)
+```
+
+**Bekanntes Problem**: `--export-release "Web"` liefert
+`Cannot export project ... due to configuration errors` ohne Detail.
+`--export-pack` funktioniert (PCK wird generiert). Workaround:
+
+```bash
+# Pack-only - funktioniert immer
 godot --headless --export-pack "Web" exports/web/lumo3d.pck
+
+# HTML-Wrapper: einmal lokal im Desktop-Editor "Project > Export >
+# Web > Export Project" laufen lassen, danach im Headless ok
 ```
 
-### Localhost-Server fuer Tests
+### Localhost-Server
 
 ```bash
-# Default: 127.0.0.1:8000
-python3 tools/serve_web.py
-
-# Auf allen Interfaces
-python3 tools/serve_web.py --bind 0.0.0.0 --port 8000
+python3 tools/serve_web.py            # http://127.0.0.1:8000
 ```
 
 Setzt `Cross-Origin-Opener-Policy: same-origin` +
-`Cross-Origin-Embedder-Policy: require-corp` (sonst kein SharedArrayBuffer
-- Godot 4 Web-Builds brauchen das fuer Threads). Logs in
-`/tmp/lumo_serve.log` fuer Performance-Profiling der Anfragen.
+`Cross-Origin-Embedder-Policy: require-corp` (Pflicht fuer Godot Web
+mit SharedArrayBuffer + Threads). Loggt jede Anfrage nach
+`/tmp/lumo_serve.log`.
 
-### Android
-
-```bash
-godot --headless --export-release "Android" exports/android/lumo3d.apk
-```
-
-Templates muessen lokal installiert sein (Editor > Manage Export
-Templates). Im Container ist Android-Build nicht praktikabel (Android
-SDK + JDK + Build-Tools brauchen ~3 GB).
-
-## Architektur der Hauptszene (`scenes/main.tscn`)
+## Verzeichnisstruktur
 
 ```
-Main (Node3D)                          <- Root, Container fuer alles
-├── WorldEnvironment                   <- Grundbeleuchtung + Sky + Bloom
-│     environment:
-│       background_mode = 2 (Sky)
-│       sky = ProceduralSkyMaterial
-│       tonemap = Filmic
-│       glow_enabled = true, intensity 0.6, bloom 0.15
-│       ambient_light_source = 3 (vom Sky)
-├── Sun (DirectionalLight3D)           <- "Sonne", warmes Licht von oben
-│     position (0, 4, 0), Vorw-Neigung
-│     color (1, 0.95, 0.85), energy 1.2
-│     shadow_enabled = true
-├── Camera3D                           <- Default Kamera
-│     position (0, 1.5, 4), FOV 60deg
-│     leicht nach unten geneigt um Cube anzuschauen
-└── TestCube (MeshInstance3D)          <- Sichtbares 3D-Testobjekt
-      mesh = BoxMesh 1.5x1.5x1.5
-      material = StandardMaterial3D
-        albedo orange (1, 0.48, 0.18)
-        metallic 0.2, roughness 0.35
-        emission orange-warm energy 0.18
-      script = rotator.gd
-        _process(delta): rotation.y += speed_y*delta
-                         rotation.x += speed_x*delta
+lumo-godot/
+  project.godot                    # Engine + Autoloads + Renderer-Pfade
+  CLAUDE.md                        # Diese Datei
+  icon.svg                         # App-Icon
+  export_presets.cfg               # Web + Android Profiles
+  .gitignore                       # .godot/ + exports/ + assets/models/*.glb
+  scenes/
+    app/
+      boot.tscn, intro_3d.tscn, home_3d.tscn, loading_screen.tscn
+    hub/
+      hub_portal.tscn, star_field.tscn
+    characters/
+      lumo_companion.tscn
+    games/
+      .gitkeep                     # spaeter Mini-Games
+    default_env.tres
+  scripts/
+    app/
+      app_boot.gd, scene_router.gd, mobile_runtime.gd,
+      intro_controller.gd, home_controller.gd
+    camera/
+      mobile_touch_camera.gd
+    characters/
+      lumo_companion.gd
+    hub/
+      portal_interaction.gd, star_field.gd
+    systems/
+      event_bus.gd, performance_manager.gd, asset_loader.gd
+    ui/
+      mobile_safe_area.gd
+  assets/
+    manifests/assets.json
+    materials/holographic_soft.tres
+    shaders/holographic.gdshader
+    models/             # .glb (gitignored - via AI oder manuell)
+    textures/           # PBR-Maps (gitignored)
+    audio/              # Sounds (spaeter)
+    generated/          # AI-output
+  tools/
+    validate_project.py
+    build_android.sh
+    build_web.sh
+    serve_web.py
+    fetch_assets.py
+  exports/              # (gitignored) lokale Build-Outputs
 ```
 
-### Kamera-Setup
+## Wichtige Schutzregeln
 
-- Position: `(0, 1.5, 4)` - 1.5 m hoch, 4 m hinter dem Cube
-- FOV: 60 Grad (mittelweit, kein Fisheye)
-- Leichte Nach-unten-Neigung in der Transform-Matrix damit der Cube
-  zentral im Bild sitzt
-- Aktuell statisch - spaeter optional Orbit-Kamera (Mouse-Drag) via
-  zusaetzliches Skript
+1. **KEINE Dateien aus `/home/user/lumo-lernen/` aendern.**
+2. **KEIN Editor-GUI starten** im Container (nur Headless funktioniert).
+3. **Vor Commit immer `gdlint` + `gdformat --check` + `validate_project.py`** durchlaufen.
+4. **CC0-Lizenz**: jede externe Datei mit URL + Lizenz dokumentieren.
+5. **Keine grossen Binaerdateien committen** (Texturen >1 MB lieber
+   regenerieren als versionieren).
+6. **Keine bezahlten APIs** ohne explizite Heinz-Anweisung.
 
-### Render-Pipeline
+## Aktuelle To-Dos
 
-- **Renderer**: Forward Plus (3D-State-of-the-Art in Godot 4)
-- **MSAA**: 4x in 3D fuer weiche Kanten
-- **Bloom/Glow**: aktiv, Intensitaet 0.6 - Orange-Material des Cubes
-  glueht leicht
-- **Tonemap**: Filmic (kontrastreicher als Linear)
-- **Sky**: ProceduralSkyMaterial mit dunkelblauem Top + warmem Horizont
-
-## CLI-Cheatsheet
-
-Alle Befehle aus `/home/user/lumo-godot/` ausfuehren, Godot-Binary liegt
-unter `/home/user/tools/godot`.
-
-### Entwicklung (im Cloud-Container)
-
-```bash
-# Projekt-Cache neu aufbauen (nach Asset-Aenderung)
-/home/user/tools/godot --headless --import
-
-# Smoke-Test der Szene (60 Frames ~1s, sauber beenden)
-/home/user/tools/godot --headless --verbose \
-  --quit-after 60 res://scenes/main.tscn
-
-# GDScript-Lint
-~/.local/bin/gdlint scripts/*.gd
-
-# GDScript-Format (Schreibt zurueck)
-~/.local/bin/gdformat scripts/*.gd
-
-# GDScript-Format Check ohne Aenderung
-~/.local/bin/gdformat --check scripts/*.gd
-```
-
-### Build & Export (auf Heinz' Desktop, NICHT im Container)
-
-Voraussetzung: Export-Templates fuer Godot 4.6.3 lokal installiert
-(einmaliger Download von ~500 MB pro Plattform via Editor > Manage
-Export Templates ODER via CLI):
-
-```bash
-# Web (HTML5/WebAssembly)
-godot --headless --export-release "Web" exports/web/index.html
-
-# Android (arm64-v8a, debug-keystore)
-godot --headless --export-release "Android" exports/android/lumo3d.apk
-```
-
-### Testen der Builds
-
-```bash
-# Web im lokalen Browser
-python3 -m http.server -d exports/web 8000
-# -> http://localhost:8000
-
-# Android aufs Handy via adb
-adb install -r exports/android/lumo3d.apk
-adb shell am start -n dev.ullmann.lumo3d/com.godot.game.GodotApp
-```
-
-## Git-Workflow
-
-```bash
-cd /home/user/lumo-godot
-git status                    # Aenderungen sehen
-git add scenes/ scripts/      # Spezifisch stagen, NICHT git add -A
-git commit -m "feat: ..."     # Klare Conventional-Commit-Nachricht
-```
-
-KEIN Auto-Push - Heinz pusht selbst nach GitHub wenn er bereit ist.
+- [x] Mobile App Shell mit Boot → Intro → Home → Portale
+- [x] 5 Autoloads (EventBus, PerformanceManager, MobileRuntime, SceneRouter, AssetLoader)
+- [x] PerformanceManager mit LOW/MEDIUM/HIGH Profilen
+- [x] Touch-Orbit-Kamera mit Tap-vs-Drag-Trennung
+- [x] Portal-System mit Area3D-Raycast
+- [x] Lumo-Companion-Platzhalter aus Primitiven
+- [x] MultiMesh-Sternenfeld (80 Sterne, 1 Draw-Call)
+- [x] ID-basiertes Asset-Manifest mit Magenta-Placeholder
+- [x] Holographic-Shader auf gl_compat-kompatibel
+- [x] validate_project.py + build_android.sh
+- [x] Headless-CI sauber gruen
+- [ ] **Naechster Schritt** (Heinz entscheidet):
+  - Android-SDK + Keystore einrichten → echte APK
+  - Premium Visual Pass auf Home (mehr Lampen, Spiegel-Insel, Lumo-Animation)
+  - Erstes Mini-Game `star_collect_game` als Portal-Ziel
+  - Echtes `lumo_fox.glb` (Blender oder Meshy mit API-Key)
+- [ ] KTX2-Texturkompression-Pipeline wenn echte Texturen kommen
+- [ ] LightmapGI-Bake der statischen Home-Insel
 
 ## Tools-Status im Container (Stand 2026-05-27)
 
-| Tool      | Status                  | Pfad                                    |
-|-----------|-------------------------|-----------------------------------------|
-| Godot 4.6 | installiert             | /home/user/tools/godot                  |
-| gdlint    | installiert             | ~/.local/bin/gdlint                     |
-| gdformat  | installiert             | ~/.local/bin/gdformat                   |
-| Blender   | **NICHT installiert**   | (apt install blender oder snap)         |
-| Python 3  | installiert (3.11)      | /usr/bin/python3                        |
-
-## Wichtige Regeln
-
-1. KEINE Dateien aus `/home/user/lumo-lernen/` aendern.
-2. KEIN Editor-Modus starten (nur Headless funktioniert hier).
-3. Vor Commit immer `gdlint` durchlaufen.
-4. Wenn die Lumo-Lernen-Flutter-App beruehrt werden muss: separate
-   Session, anderes Verzeichnis.
+| Tool | Status | Pfad |
+|---|---|---|
+| Godot 4.6.3 | installiert | /home/user/tools/godot |
+| Export-Templates 4.6.3.stable | installiert | ~/.local/share/godot/export_templates/4.6.3.stable/ |
+| gdlint / gdformat | installiert | ~/.local/bin/ |
+| JDK 21 | installiert | /usr/bin/java |
+| Android SDK | **NICHT installiert** | (apt + setup) |
+| Debug-Keystore | **NICHT vorhanden** | (keytool generieren) |
+| Blender | **NICHT installiert** | (optional, apt install -y blender) |
+| Python 3.11 | installiert | /usr/bin/python3 |

@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=3 uid="uid://b1lumo3dintro01"]
+
+[ext_resource type="Script" path="res://scripts/app/intro_controller.gd" id="1_script"]
+[ext_resource type="Environment" path="res://scenes/default_env.tres" id="2_env"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_star"]
+radius = 0.6
+height = 1.2
+radial_segments = 16
+rings = 8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_star"]
+albedo_color = Color(1.00, 0.85, 0.45, 1)
+emission_enabled = true
+emission = Color(1.00, 0.75, 0.30, 1)
+emission_energy_multiplier = 2.5
+metallic = 0.0
+roughness = 0.20
+
+[node name="Intro" type="Node3D"]
+script = ExtResource("1_script")
+star_path = NodePath("Star")
+camera_path = NodePath("Camera3D")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.85, -0.35, 0.40, 0.0, 0.75, 0.66, -0.53, -0.56, 0.64, 0, 5, 2)
+light_color = Color(1.00, 0.90, 0.78, 1)
+light_energy = 1.0
+shadow_enabled = false
+
+[node name="Star" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, 0, 1.0, 0)
+mesh = SubResource("SphereMesh_star")
+material_override = SubResource("StandardMaterial3D_star")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.96, 0.28, 0, -0.28, 0.96, 0, 1.5, 5.5)
+fov = 55.0
+near = 0.05
+far = 80.0

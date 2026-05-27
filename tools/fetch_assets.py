@@ -7,7 +7,7 @@ Replicate, optional Hugging Face) und legt sie in assets/models/ ab,
 damit Godot's AssetLoader sie beim naechsten App-Start instanziiert.
 
 Konfiguration via JSON oder Kommandozeile:
-    python3 tools/fetch_assets.py --config tools/assets.json
+    python3 tools/fetch_assets.py --config assets/manifests/assets.json
     python3 tools/fetch_assets.py --prompt "low-poly sci-fi crate" --provider meshy
     python3 tools/fetch_assets.py --prompt "neon hologram orb"     --provider replicate
 

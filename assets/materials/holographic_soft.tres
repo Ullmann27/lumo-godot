@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://b1lumo3dholosoft01"]
+
+[ext_resource type="Shader" path="res://assets/shaders/holographic.gdshader" id="1_holoshader"]
+
+[resource]
+shader = ExtResource("1_holoshader")
+shader_parameter/base_color = Color(1.00, 0.90, 0.72, 1)
+shader_parameter/edge_color = Color(1.00, 0.72, 0.42, 1)
+shader_parameter/grid_density = 8.0
+shader_parameter/grid_line_width = 0.06
+shader_parameter/scan_speed = 0.7
+shader_parameter/fresnel_power = 2.0
+shader_parameter/pulse_speed = 1.0
+shader_parameter/emission_strength = 1.2

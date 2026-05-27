@@ -1,0 +1,41 @@
+{
+  "_doc": "Lumo 3D Asset Manifest. AssetLoader liest hier ID->Pfad. Fehlende Dateien sind OK - AssetLoader liefert Magenta-Placeholder + WARN. _fetch_prompts ist optionale Info fuer tools/fetch_assets.py (Meshy/Replicate).",
+  "models": {
+    "lumo_fox": "res://assets/models/lumo_fox.glb",
+    "hub_island": "res://assets/models/hub_island.glb",
+    "portal_learn": "res://assets/models/portal_learn.glb",
+    "portal_games": "res://assets/models/portal_games.glb",
+    "portal_parent": "res://assets/models/portal_parent.glb",
+    "star_collectible": "res://assets/models/star_collectible.glb"
+  },
+  "materials": {
+    "holographic_soft": "res://assets/materials/holographic_soft.tres"
+  },
+  "audio": {},
+  "_fetch_prompts": {
+    "lumo_fox": {
+      "provider": "meshy",
+      "prompt": "low-poly friendly cartoon fox mascot, warm orange fur, big eyes, soft style, t-pose, single GLB"
+    },
+    "hub_island": {
+      "provider": "meshy",
+      "prompt": "low-poly floating magical island base, warm tones, soft glow edges, single GLB"
+    },
+    "portal_learn": {
+      "provider": "meshy",
+      "prompt": "low-poly magical portal ring, warm gold color, glowing emissive, simple torus form"
+    },
+    "portal_games": {
+      "provider": "meshy",
+      "prompt": "low-poly magical portal ring, turquoise color, glowing emissive, simple torus form"
+    },
+    "portal_parent": {
+      "provider": "meshy",
+      "prompt": "low-poly magical portal ring, soft violet color, glowing emissive, simple torus form"
+    },
+    "star_collectible": {
+      "provider": "meshy",
+      "prompt": "low-poly 5-pointed star, golden warm color, emissive yellow center"
+    }
+  }
+}

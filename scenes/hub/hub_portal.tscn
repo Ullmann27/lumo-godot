@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3 uid="uid://b1lumo3dhubportal01"]
+
+[ext_resource type="Script" path="res://scripts/hub/portal_interaction.gd" id="1_script"]
+
+[sub_resource type="TorusMesh" id="TorusMesh_ring"]
+inner_radius = 0.70
+outer_radius = 0.95
+rings = 32
+ring_segments = 12
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_touch"]
+radius = 1.40
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ring"]
+albedo_color = Color(1.0, 0.78, 0.30, 1)
+emission_enabled = true
+emission = Color(1.0, 0.78, 0.30, 1)
+emission_energy_multiplier = 1.4
+metallic = 0.10
+roughness = 0.30
+
+[node name="HubPortal" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("TorusMesh_ring")
+material_override = SubResource("StandardMaterial3D_ring")
+
+[node name="Label" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.80, 0)
+text = "Portal"
+billboard = 1
+pixel_size = 0.005
+modulate = Color(1, 1, 1, 1)
+outline_size = 6
+outline_modulate = Color(0, 0, 0, 0.7)
+
+[node name="TouchArea" type="Area3D" parent="."]
+input_ray_pickable = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TouchArea"]
+shape = SubResource("SphereShape3D_touch")
