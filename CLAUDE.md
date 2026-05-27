@@ -502,6 +502,69 @@ gesamt ~6.7 MB). Fuer Android-Release vor APK-Build:
 3. Alpha-Texturen (particles/billboards/portals): sparsam einsetzen,
    Overdraw begrenzen, Plane-Groesse moderat halten
 
+## Lumo Character System (animiert)
+
+10 Referenzbilder (Master/Orthographic/Facial/Mouth/Eye/Gesture/Walk/
+Jump/Turnaround/Interaction) liegen unter
+`assets/characters/lumo/reference/`. Aus diesen Sheets gebaut:
+
+### Subsysteme
+
+| Datei | Rolle |
+|---|---|
+| `scripts/characters/lumo/lumo_animation_state.gd` | State-Enum + Helper (is_valid/is_loop/is_overlay) |
+| `scripts/characters/lumo/lumo_eye_system.gd` | 8 Eye-States + 5 Brow-States + Auto-Blink alle 3-6 s |
+| `scripts/characters/lumo/lumo_mouth_system.gd` | 14 Visemes + speak_text_preview() + start/stop_speaking |
+| `scripts/characters/lumo/lumo_behavior_controller.gd` | 14 Pflicht-Animationen via Tween + Aliase greet/speak/etc |
+| `scripts/characters/lumo/lumo_character_controller.gd` | Public API auf Root (austauschbar gegen GLB-Wrapper) |
+| `scripts/characters/lumo/lumo_reference_board.gd` | Showcase-Tafel mit 10 PNGs als 3D-Planes |
+
+### Charakter-Aufbau (`scenes/characters/lumo/lumo_character.tscn`)
+
+VisualRoot/Body (CapsuleMesh fur-orange) + Hoodie (CapsuleMesh violett)
++ HoodieHood + StarEmblem gelb + ArmLeft/ArmRight (Node3D + CapsuleMesh
+fuer Pivot-Rotation) + LegLeft/LegRight + Tail + TailTip.
+VisualRoot/Head/HeadMesh + Snout + EarLeft/EarRight + EyeSystem
+(EyeLeft/EyeRight mit Weiss + Pupille + BrowLeft/BrowRight) +
+MouthSystem (1 CapsuleMesh fuer Viseme-Skalen).
+
+Spaeter ersetzbar: `assets/models/lumo_fox.glb` einhaengen unter
+VisualRoot statt der Primitiven - die Controller-API bleibt identisch.
+
+### Public API (`LumoCharacterController`)
+
+```gdscript
+lumo.play_behavior("greet")        # = greeting_wave
+lumo.play_behavior("speak")        # = speak_explain
+lumo.play_behavior("celebrate")
+lumo.play_behavior("walk")         # = walk_loop
+lumo.play_behavior("jump")         # = jump_hop
+lumo.play_behavior("point")        # = point_portal
+lumo.play_behavior("reward")       # = reward_star
+lumo.set_eye_state("happy_squint")
+lumo.set_brow_state("curious")
+lumo.set_mouth_shape("o")
+lumo.speak_text_preview("Hallo Lumo")
+lumo.start_speaking() / stop_speaking()
+```
+
+### Showcase (`scenes/characters/lumo/lumo_showcase.tscn`)
+
+Cyclet `greet → speak → celebrate → walk → jump` mit 1.6 s Intervall +
+zeigt Reference-Board mit allen 10 Sheets als 3D-Planes hinter Lumo.
+Headless laeuft sauber (`lumo_showcase_ready` Log + Behavior-Logs).
+
+### Performance-Strategie
+
+- Eyes: 2 SphereMesh + 2 Pupillen + 2 Brauen — alle Scale/Rotation
+  per Code, kein AnimationPlayer-Track
+- Mouth: 1 CapsuleMesh, Viseme = Scale-Wechsel (kein Mesh-Swap)
+- Behaviors: Tween-basiert, kein Skelett — Mobile-tauglich
+- 60-FPS-Ziel: bei MEDIUM-Profil unkritisch (max ~30 sichtbare Meshes
+  in Home + 80 MultiMesh-Sterne = 1 Draw-Call)
+- Auto-Blink ist pausierbar via `auto_blink_enabled = false` in
+  LOW-Profil sinnvoll wenn weitere Sparmassnahmen noetig
+
 ## Aktuelle To-Dos
 
 - [x] Mobile App Shell mit Boot → Intro → Home → Portale

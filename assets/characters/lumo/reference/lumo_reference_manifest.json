@@ -1,0 +1,114 @@
+{
+  "pack_name": "LUMO 3D Claude Ready Character ZIP",
+  "purpose": "Reference images plus master prompt for Claude Code to build an animated Godot 3D LUMO character system.",
+  "current_project_context": {
+    "flutter_head": "e705bcc",
+    "godot_head": "df55e99",
+    "previous_asset_commit": "deecf63",
+    "mobile_shell_commit": "6b2798a"
+  },
+  "image_count": 20,
+  "images": [
+    {
+      "filename": "01_master_character_sheet.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/01_master_character_sheet.png",
+      "size_bytes": 1797916
+    },
+    {
+      "filename": "02_orthographic_model_sheet.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/02_orthographic_model_sheet.png",
+      "size_bytes": 1851796
+    },
+    {
+      "filename": "03_facial_expression_sheet.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/03_facial_expression_sheet.png",
+      "size_bytes": 1779483
+    },
+    {
+      "filename": "04_mouth_viseme_sheet.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/04_mouth_viseme_sheet.png",
+      "size_bytes": 2000102
+    },
+    {
+      "filename": "05_eye_blink_sheet.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/05_eye_blink_sheet.png",
+      "size_bytes": 1909497
+    },
+    {
+      "filename": "06_gesture_arm_pose_sheet.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/06_gesture_arm_pose_sheet.png",
+      "size_bytes": 1786242
+    },
+    {
+      "filename": "07_walk_cycle_keyposes.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/07_walk_cycle_keyposes.png",
+      "size_bytes": 1498191
+    },
+    {
+      "filename": "08_jump_hop_keyposes.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/08_jump_hop_keyposes.png",
+      "size_bytes": 1793366
+    },
+    {
+      "filename": "09_turnaround_rotation_sheet.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/09_turnaround_rotation_sheet.png",
+      "size_bytes": 1700864
+    },
+    {
+      "filename": "10_interaction_app_behavior_sheet.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/10_interaction_app_behavior_sheet.png",
+      "size_bytes": 1943890
+    },
+    {
+      "filename": "de_lumo_der_freundliche_lernbegleiter.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/de_lumo_der_freundliche_lernbegleiter.png",
+      "size_bytes": 1797916
+    },
+    {
+      "filename": "de_lumo_3d_modelluebersicht.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/de_lumo_3d_modelluebersicht.png",
+      "size_bytes": 1851796
+    },
+    {
+      "filename": "de_gesichtsausdruck_tabelle_des_fuchses.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/de_gesichtsausdruck_tabelle_des_fuchses.png",
+      "size_bytes": 1779483
+    },
+    {
+      "filename": "de_mundformen_fuer_sprechanimation.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/de_mundformen_fuer_sprechanimation.png",
+      "size_bytes": 2000102
+    },
+    {
+      "filename": "de_lumo_augen_und_augenbrauenanimation_guide.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/de_lumo_augen_und_augenbrauenanimation_guide.png",
+      "size_bytes": 1909497
+    },
+    {
+      "filename": "de_gesten_und_armposen_eines_fuchses.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/de_gesten_und_armposen_eines_fuchses.png",
+      "size_bytes": 1786242
+    },
+    {
+      "filename": "de_lumo_der_froehliche_walk_cycle.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/de_lumo_der_froehliche_walk_cycle.png",
+      "size_bytes": 1498191
+    },
+    {
+      "filename": "de_lumo_der_freundliche_fuchs_jump.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/de_lumo_der_freundliche_fuchs_jump.png",
+      "size_bytes": 1793366
+    },
+    {
+      "filename": "de_lumo_character_turnaround_reference_sheet.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/de_lumo_character_turnaround_reference_sheet.png",
+      "size_bytes": 1700864
+    },
+    {
+      "filename": "de_interaktions_und_verhaltensuebersicht.png",
+      "relative_path": "01_LUMO_REFERENCE_IMAGES/de_interaktions_und_verhaltensuebersicht.png",
+      "size_bytes": 1943890
+    }
+  ],
+  "required_first_read": "00_READ_FIRST/MASTERPROMPT_FOR_CLAUDE.md"
+}

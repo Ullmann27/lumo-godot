@@ -5,7 +5,7 @@
 ## AssetLoader auf die Bodenplane an. Lauscht auf EventBus.portal_selected.
 extends Node3D
 
-const COMPANION_SCENE: PackedScene = preload("res://scenes/characters/lumo_companion.tscn")
+const COMPANION_SCENE: PackedScene = preload("res://scenes/characters/lumo/lumo_character.tscn")
 const PORTAL_SCENE: PackedScene = preload("res://scenes/hub/hub_portal.tscn")
 const STAR_FIELD_SCENE: PackedScene = preload("res://scenes/hub/star_field.tscn")
 
@@ -58,6 +58,18 @@ func _spawn_companion() -> void:
 	var companion: Node3D = COMPANION_SCENE.instantiate() as Node3D
 	companion.position = Vector3(0.0, 0.0, 0.0)
 	add_child(companion)
+	# Begruessung ausloesen sobald LUMO bereit ist - geht ueber EventBus
+	# damit wir hier nicht direkt auf den Knoten zugreifen muessen.
+	EventBus.companion_ready.connect(_on_companion_ready, CONNECT_ONE_SHOT)
+
+
+func _on_companion_ready() -> void:
+	# greet einmal, danach bleibt LUMO im idle_bounce (auto-applied vom
+	# LumoCharacterController).
+	for node in get_children():
+		if node is LumoCharacterController:
+			(node as LumoCharacterController).play_behavior("greet")
+			break
 
 
 func _spawn_portals() -> void:

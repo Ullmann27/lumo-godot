@@ -242,5 +242,21 @@
     "lumo_mask_mask_18": "res://assets/generated/lumo3d_assets/masks/mask_18.png",
     "lumo_mask_mask_19": "res://assets/generated/lumo3d_assets/masks/mask_19.png",
     "lumo_mask_mask_20": "res://assets/generated/lumo3d_assets/masks/mask_20.png"
+  },
+  "lumo_reference": {
+    "lumo_ref_master": "res://assets/characters/lumo/reference/01_master_character_sheet.png",
+    "lumo_ref_orthographic": "res://assets/characters/lumo/reference/02_orthographic_model_sheet.png",
+    "lumo_ref_facial": "res://assets/characters/lumo/reference/03_facial_expression_sheet.png",
+    "lumo_ref_mouth_visemes": "res://assets/characters/lumo/reference/04_mouth_viseme_sheet.png",
+    "lumo_ref_eye_blink": "res://assets/characters/lumo/reference/05_eye_blink_sheet.png",
+    "lumo_ref_gesture_arm": "res://assets/characters/lumo/reference/06_gesture_arm_pose_sheet.png",
+    "lumo_ref_walk_cycle": "res://assets/characters/lumo/reference/07_walk_cycle_keyposes.png",
+    "lumo_ref_jump_hop": "res://assets/characters/lumo/reference/08_jump_hop_keyposes.png",
+    "lumo_ref_turnaround": "res://assets/characters/lumo/reference/09_turnaround_rotation_sheet.png",
+    "lumo_ref_interaction": "res://assets/characters/lumo/reference/10_interaction_app_behavior_sheet.png"
+  },
+  "character_scenes": {
+    "lumo_character": "res://scenes/characters/lumo/lumo_character.tscn",
+    "lumo_showcase": "res://scenes/characters/lumo/lumo_showcase.tscn"
   }
 }

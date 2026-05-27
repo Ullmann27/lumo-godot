@@ -214,6 +214,39 @@ def main() -> int:
         else:
             emit("FAIL", "home-portal-materials", f"only {n_portals}/3 portal materials wired")
 
+    # 7f. LUMO Character System
+    lumo_ref_dir = REPO / "assets" / "characters" / "lumo" / "reference"
+    if lumo_ref_dir.is_dir():
+        pngs = list(lumo_ref_dir.glob("*.png"))
+        if len(pngs) >= 10:
+            emit("PASS", "lumo-reference", f"{len(pngs)} PNG sheets in reference/")
+        else:
+            emit("FAIL", "lumo-reference", f"nur {len(pngs)} sheets (<10) in reference/")
+    else:
+        emit("FAIL", "lumo-reference", "assets/characters/lumo/reference/ fehlt")
+    lumo_ref_manifest = lumo_ref_dir / "lumo_reference_manifest.json"
+    if lumo_ref_manifest.is_file():
+        try:
+            json.loads(lumo_ref_manifest.read_text())
+            emit("PASS", "lumo-reference-manifest", "lumo_reference_manifest.json valide")
+        except json.JSONDecodeError as exc:
+            emit("FAIL", "lumo-reference-manifest", f"JSON kaputt: {exc}")
+    else:
+        emit("WARN", "lumo-reference-manifest", "lumo_reference_manifest.json fehlt")
+    for lumo_file in [
+        "scenes/characters/lumo/lumo_character.tscn",
+        "scenes/characters/lumo/lumo_showcase.tscn",
+        "scripts/characters/lumo/lumo_character_controller.gd",
+        "scripts/characters/lumo/lumo_behavior_controller.gd",
+        "scripts/characters/lumo/lumo_animation_state.gd",
+        "scripts/characters/lumo/lumo_eye_system.gd",
+        "scripts/characters/lumo/lumo_mouth_system.gd",
+        "scripts/characters/lumo/lumo_reference_board.gd",
+        "scripts/app/showcase_controller.gd",
+    ]:
+        check_file(REPO / lumo_file, "FAIL", "lumo-system")
+    # Fehlende echte GLBs bleiben WARN (siehe Asset-Check oben).
+
     # 8. Verbot: keine Flutter-Kernstruktur
     for forbidden in ["pubspec.yaml", "lib/main.dart"]:
         if (REPO / forbidden).exists():

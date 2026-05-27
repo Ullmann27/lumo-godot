@@ -31,6 +31,13 @@ signal portal_hovered(portal_type: String, hovered: bool)
 signal companion_ready
 signal companion_reaction(reaction: String)
 
+# ── LUMO Character (animiertes Charakter-System) ──────────────────
+signal lumo_behavior_started(behavior: String)
+signal lumo_behavior_finished(behavior: String)
+signal lumo_mouth_shape_changed(shape: String)
+signal lumo_eye_state_changed(state: String)
+signal lumo_showcase_ready
+
 # ── Legacy (Demo-Cube, falls jemand spaeter so etwas wiederbelebt) ─
 signal cube_interacted(intensity: float)
 signal rotation_speed_changed(speed_y: float, speed_x: float)

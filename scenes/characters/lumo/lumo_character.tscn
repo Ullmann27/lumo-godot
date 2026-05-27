@@ -1,0 +1,231 @@
+[gd_scene load_steps=20 format=3 uid="uid://b1lumo3dcharacter01"]
+
+[ext_resource type="Script" path="res://scripts/characters/lumo/lumo_character_controller.gd" id="1_root"]
+[ext_resource type="Script" path="res://scripts/characters/lumo/lumo_behavior_controller.gd" id="2_beh"]
+[ext_resource type="Script" path="res://scripts/characters/lumo/lumo_eye_system.gd" id="3_eye"]
+[ext_resource type="Script" path="res://scripts/characters/lumo/lumo_mouth_system.gd" id="4_mth"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fur"]
+albedo_color = Color(1.00, 0.62, 0.30, 1)
+metallic = 0.03
+roughness = 0.65
+emission_enabled = true
+emission = Color(0.85, 0.42, 0.18, 1)
+emission_energy_multiplier = 0.08
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fur_light"]
+albedo_color = Color(1.00, 0.92, 0.82, 1)
+metallic = 0.0
+roughness = 0.70
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hoodie"]
+albedo_color = Color(0.46, 0.30, 0.78, 1)
+metallic = 0.04
+roughness = 0.55
+emission_enabled = true
+emission = Color(0.28, 0.16, 0.55, 1)
+emission_energy_multiplier = 0.06
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_star"]
+albedo_color = Color(1.00, 0.88, 0.32, 1)
+metallic = 0.20
+roughness = 0.25
+emission_enabled = true
+emission = Color(1.00, 0.78, 0.20, 1)
+emission_energy_multiplier = 1.20
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eye_white"]
+albedo_color = Color(1.00, 0.99, 0.96, 1)
+metallic = 0.0
+roughness = 0.20
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eye_pupil"]
+albedo_color = Color(0.08, 0.06, 0.10, 1)
+metallic = 0.10
+roughness = 0.15
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mouth"]
+albedo_color = Color(0.40, 0.10, 0.20, 1)
+metallic = 0.0
+roughness = 0.40
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_brow"]
+albedo_color = Color(0.30, 0.18, 0.10, 1)
+metallic = 0.0
+roughness = 0.65
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
+radius = 0.46
+height = 0.95
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+radius = 0.42
+height = 0.84
+
+[sub_resource type="SphereMesh" id="SphereMesh_snout"]
+radius = 0.20
+height = 0.36
+
+[sub_resource type="BoxMesh" id="BoxMesh_ear"]
+size = Vector3(0.13, 0.22, 0.06)
+
+[sub_resource type="SphereMesh" id="SphereMesh_eye"]
+radius = 0.09
+height = 0.18
+
+[sub_resource type="SphereMesh" id="SphereMesh_pupil"]
+radius = 0.045
+height = 0.09
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_limb"]
+radius = 0.09
+height = 0.55
+
+[node name="LumoCharacter" type="Node3D"]
+script = ExtResource("1_root")
+behavior_controller_path = NodePath("BehaviorController")
+eye_system_path = NodePath("VisualRoot/Head/EyeSystem")
+mouth_system_path = NodePath("VisualRoot/Head/MouthSystem")
+
+[node name="BehaviorController" type="Node3D" parent="."]
+script = ExtResource("2_beh")
+character_root_path = NodePath("..")
+visual_root_path = NodePath("../VisualRoot")
+body_path = NodePath("../VisualRoot/Body")
+arm_left_path = NodePath("../VisualRoot/Body/ArmLeft")
+arm_right_path = NodePath("../VisualRoot/Body/ArmRight")
+eye_system_path = NodePath("../VisualRoot/Head/EyeSystem")
+mouth_system_path = NodePath("../VisualRoot/Head/MouthSystem")
+
+[node name="VisualRoot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Body" type="Node3D" parent="VisualRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+
+[node name="BodyMesh" type="MeshInstance3D" parent="VisualRoot/Body"]
+mesh = SubResource("CapsuleMesh_body")
+material_override = SubResource("StandardMaterial3D_fur")
+
+[node name="Hoodie" type="MeshInstance3D" parent="VisualRoot/Body"]
+transform = Transform3D(1.05, 0, 0, 0, 0.55, 0, 0, 0, 1.05, 0, -0.12, 0)
+mesh = SubResource("CapsuleMesh_body")
+material_override = SubResource("StandardMaterial3D_hoodie")
+
+[node name="HoodieHood" type="MeshInstance3D" parent="VisualRoot/Body"]
+transform = Transform3D(1.10, 0, 0, 0, 0.85, 0, 0, 0, 1.10, 0, 0.40, -0.05)
+mesh = SubResource("SphereMesh_head")
+material_override = SubResource("StandardMaterial3D_hoodie")
+
+[node name="StarEmblem" type="MeshInstance3D" parent="VisualRoot/Body"]
+transform = Transform3D(0.28, 0, 0, 0, 0.04, 0, 0, 0, 0.28, 0, -0.08, 0.40)
+mesh = SubResource("CapsuleMesh_body")
+material_override = SubResource("StandardMaterial3D_star")
+
+[node name="ArmLeft" type="Node3D" parent="VisualRoot/Body"]
+transform = Transform3D(0.97, -0.26, 0, 0.26, 0.97, 0, 0, 0, 1, -0.50, 0.18, 0)
+
+[node name="ArmLeftMesh" type="MeshInstance3D" parent="VisualRoot/Body/ArmLeft"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.27, 0)
+mesh = SubResource("CapsuleMesh_limb")
+material_override = SubResource("StandardMaterial3D_fur")
+
+[node name="ArmRight" type="Node3D" parent="VisualRoot/Body"]
+transform = Transform3D(0.97, 0.26, 0, -0.26, 0.97, 0, 0, 0, 1, 0.50, 0.18, 0)
+
+[node name="ArmRightMesh" type="MeshInstance3D" parent="VisualRoot/Body/ArmRight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.27, 0)
+mesh = SubResource("CapsuleMesh_limb")
+material_override = SubResource("StandardMaterial3D_fur")
+
+[node name="LegLeft" type="MeshInstance3D" parent="VisualRoot/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, -0.58, 0)
+mesh = SubResource("CapsuleMesh_limb")
+material_override = SubResource("StandardMaterial3D_fur")
+
+[node name="LegRight" type="MeshInstance3D" parent="VisualRoot/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, -0.58, 0)
+mesh = SubResource("CapsuleMesh_limb")
+material_override = SubResource("StandardMaterial3D_fur")
+
+[node name="Tail" type="MeshInstance3D" parent="VisualRoot/Body"]
+transform = Transform3D(0.85, 0.53, 0, -0.53, 0.85, 0, 0, 0, 1, 0, 0.05, -0.45)
+mesh = SubResource("CapsuleMesh_limb")
+material_override = SubResource("StandardMaterial3D_fur")
+
+[node name="TailTip" type="MeshInstance3D" parent="VisualRoot/Body"]
+transform = Transform3D(0.55, 0, 0, 0, 0.55, 0, 0, 0, 0.55, 0.18, 0.35, -0.78)
+mesh = SubResource("SphereMesh_eye")
+material_override = SubResource("StandardMaterial3D_fur_light")
+
+[node name="Head" type="Node3D" parent="VisualRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.40, 0.08)
+
+[node name="HeadMesh" type="MeshInstance3D" parent="VisualRoot/Head"]
+mesh = SubResource("SphereMesh_head")
+material_override = SubResource("StandardMaterial3D_fur")
+
+[node name="Snout" type="MeshInstance3D" parent="VisualRoot/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0.34)
+mesh = SubResource("SphereMesh_snout")
+material_override = SubResource("StandardMaterial3D_fur_light")
+
+[node name="EarLeft" type="MeshInstance3D" parent="VisualRoot/Head"]
+transform = Transform3D(0.93, 0.34, 0, -0.34, 0.93, 0, 0, 0, 1, -0.22, 0.36, -0.04)
+mesh = SubResource("BoxMesh_ear")
+material_override = SubResource("StandardMaterial3D_fur")
+
+[node name="EarRight" type="MeshInstance3D" parent="VisualRoot/Head"]
+transform = Transform3D(0.93, -0.34, 0, 0.34, 0.93, 0, 0, 0, 1, 0.22, 0.36, -0.04)
+mesh = SubResource("BoxMesh_ear")
+material_override = SubResource("StandardMaterial3D_fur")
+
+[node name="EyeSystem" type="Node3D" parent="VisualRoot/Head"]
+script = ExtResource("3_eye")
+eye_left_path = NodePath("EyeLeft")
+eye_right_path = NodePath("EyeRight")
+brow_left_path = NodePath("BrowLeft")
+brow_right_path = NodePath("BrowRight")
+
+[node name="EyeLeft" type="Node3D" parent="VisualRoot/Head/EyeSystem"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, 0.08, 0.32)
+
+[node name="EyeWhiteL" type="MeshInstance3D" parent="VisualRoot/Head/EyeSystem/EyeLeft"]
+mesh = SubResource("SphereMesh_eye")
+material_override = SubResource("StandardMaterial3D_eye_white")
+
+[node name="EyePupilL" type="MeshInstance3D" parent="VisualRoot/Head/EyeSystem/EyeLeft"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.05)
+mesh = SubResource("SphereMesh_pupil")
+material_override = SubResource("StandardMaterial3D_eye_pupil")
+
+[node name="EyeRight" type="Node3D" parent="VisualRoot/Head/EyeSystem"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16, 0.08, 0.32)
+
+[node name="EyeWhiteR" type="MeshInstance3D" parent="VisualRoot/Head/EyeSystem/EyeRight"]
+mesh = SubResource("SphereMesh_eye")
+material_override = SubResource("StandardMaterial3D_eye_white")
+
+[node name="EyePupilR" type="MeshInstance3D" parent="VisualRoot/Head/EyeSystem/EyeRight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.05)
+mesh = SubResource("SphereMesh_pupil")
+material_override = SubResource("StandardMaterial3D_eye_pupil")
+
+[node name="BrowLeft" type="MeshInstance3D" parent="VisualRoot/Head/EyeSystem"]
+transform = Transform3D(0.16, 0, 0, 0, 0.04, 0, 0, 0, 0.06, -0.16, 0.22, 0.36)
+mesh = SubResource("BoxMesh_ear")
+material_override = SubResource("StandardMaterial3D_brow")
+
+[node name="BrowRight" type="MeshInstance3D" parent="VisualRoot/Head/EyeSystem"]
+transform = Transform3D(0.16, 0, 0, 0, 0.04, 0, 0, 0, 0.06, 0.16, 0.22, 0.36)
+mesh = SubResource("BoxMesh_ear")
+material_override = SubResource("StandardMaterial3D_brow")
+
+[node name="MouthSystem" type="Node3D" parent="VisualRoot/Head"]
+script = ExtResource("4_mth")
+mouth_mesh_path = NodePath("MouthMesh")
+
+[node name="MouthMesh" type="MeshInstance3D" parent="VisualRoot/Head/MouthSystem"]
+transform = Transform3D(0.18, 0, 0, 0, 0.03, 0, 0, 0, 0.10, 0, -0.18, 0.48)
+mesh = SubResource("CapsuleMesh_body")
+material_override = SubResource("StandardMaterial3D_mouth")
