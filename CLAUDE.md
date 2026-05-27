@@ -262,14 +262,62 @@ Exit 0 bei PASS oder WARN; Exit 1 nur bei FAIL.
 tools/build_android.sh
 ```
 
-Prueft Godot-Binary, Export-Templates, Preset, JDK, Android SDK,
-Debug-Keystore. Bei jeder Luecke gibt es einen konkreten Next-Step
-(z.B. `apt install openjdk-17-jdk-headless`, `keytool ... debug.keystore`).
-Nur wenn alle PASS: echter APK-Export. Sonst Exit 1 + Bericht.
+Prueft 9 Voraussetzungen, jede einzeln PASS/WARN/FAIL:
 
-Aktueller Container-Stand (2026-05-27): 4 PASS / 2 WARN (Android SDK +
-Keystore fehlen). APK-Build erst nach lokaler Heinz-Einrichtung
-moeglich.
+| # | Check | Im Container | Wenn FAIL |
+|---|---|---|---|
+| 1 | Godot Binary 4.6.x | ✅ PASS | GODOT_BIN setzen |
+| 2 | Export-Templates 4.6.3.stable/android_*.apk | ✅ PASS | tpz von godotengine.org laden |
+| 3 | Android-Preset in export_presets.cfg | ✅ PASS | Preset anlegen |
+| 4a | JDK (java) | ✅ PASS (OpenJDK 21) | apt install openjdk-17-jdk-headless |
+| 4b | keytool / jarsigner | ✅ PASS | (Teil des JDK) |
+| 5 | ANDROID_HOME / ANDROID_SDK_ROOT | ❌ FAIL | siehe lokale Einrichtung unten |
+| 6a | sdkmanager im PATH | ⚠️ WARN | cmdline-tools installieren |
+| 6b | adb (platform-tools) | ⚠️ WARN | sdkmanager 'platform-tools' |
+| 6c | apksigner (build-tools) | ⚠️ WARN | sdkmanager 'build-tools;34.0.0' |
+| 7 | build-tools/ Verzeichnis | ⚠️ WARN | sdkmanager 'build-tools;34.0.0' |
+| 8 | platform-tools/ Verzeichnis | ⚠️ WARN | sdkmanager 'platform-tools' |
+| 9 | Debug-Keystore (~/.android/debug.keystore) | ✅ PASS (im Container vorhanden) | `bash tools/setup_android_keystore.sh` |
+
+Aktueller Container-Stand (2026-05-27): **7 PASS / 5 WARN / 1 FAIL**.
+Der einzige FAIL ist Android-SDK - das laesst sich in einer headless
+Cloud-Umgebung nicht sauber installieren (>3 GB Download + Lizenz-Click).
+Heinz erledigt das einmalig lokal.
+
+### Lokale Android-Setup-Reihenfolge (auf Heinz' Desktop / Laptop)
+
+```bash
+# 1. Android Studio installieren (oder nur cmdline-tools)
+#    macOS:   brew install --cask android-commandlinetools
+#    Linux:   sudo apt install android-sdk      (Ubuntu/Debian)
+#             ODER manuell:
+#             https://developer.android.com/studio#command-line-tools-only
+
+# 2. ANDROID_HOME setzen (zur Shell-Rc-Datei hinzufuegen)
+export ANDROID_HOME="$HOME/Android/Sdk"     # typischer Pfad
+export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
+
+# 3. SDK-Komponenten via sdkmanager
+yes | sdkmanager --licenses
+sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-34"
+
+# 4. Debug-Keystore erzeugen (idempotent, im Repo)
+bash tools/setup_android_keystore.sh
+
+# 5. Diagnose - sollte 13 PASS / 0 FAIL ergeben, dann startet der Build
+bash tools/build_android.sh
+# -> exports/android/lumo3d.apk
+
+# 6. APK aufs Handy
+adb install -r exports/android/lumo3d.apk
+```
+
+### Debug-Keystore (`tools/setup_android_keystore.sh`)
+
+Erzeugt `~/.android/debug.keystore` mit Android-Standard-Parametern
+(alias=androiddebugkey, storepass=keypass=android, CN="Android Debug").
+Idempotent — laeuft kein zweites Mal wenn der Keystore schon da ist.
+RSA 3072-bit, gueltig 9999 Tage.
 
 ### Web
 
