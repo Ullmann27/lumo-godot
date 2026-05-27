@@ -1,11 +1,48 @@
 <svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#FFB96B"/>
-      <stop offset="1" stop-color="#FF7A2F"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5a3a99"/>
+      <stop offset="1" stop-color="#2a1850"/>
+    </linearGradient>
+    <radialGradient id="aura" cx="0.5" cy="0.5" r="0.6">
+      <stop offset="0" stop-color="#FFD37A" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#FFD37A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFA365"/>
+      <stop offset="1" stop-color="#E66A22"/>
+    </linearGradient>
+    <linearGradient id="star" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFF1A0"/>
+      <stop offset="1" stop-color="#FFB42E"/>
     </linearGradient>
   </defs>
-  <rect width="128" height="128" rx="22" fill="url(#g)"/>
-  <text x="50%" y="58%" text-anchor="middle" font-family="sans-serif"
-        font-size="64" font-weight="900" fill="#fff">3D</text>
+
+  <rect width="128" height="128" rx="24" fill="url(#bg)"/>
+  <circle cx="64" cy="64" r="56" fill="url(#aura)"/>
+
+  <!-- Lumo Fuchs-Kopf -->
+  <ellipse cx="64" cy="74" rx="32" ry="28" fill="url(#fur)"/>
+  <!-- Ohren -->
+  <polygon points="40,52 52,40 56,62" fill="url(#fur)"/>
+  <polygon points="88,52 76,40 72,62" fill="url(#fur)"/>
+  <!-- Ohren-Innen -->
+  <polygon points="44,52 51,46 53,58" fill="#5a3a99"/>
+  <polygon points="84,52 77,46 75,58" fill="#5a3a99"/>
+  <!-- Schnauze -->
+  <ellipse cx="64" cy="82" rx="14" ry="10" fill="#FFE0B0"/>
+  <!-- Augen -->
+  <circle cx="54" cy="70" r="4.5" fill="#1a1230"/>
+  <circle cx="74" cy="70" r="4.5" fill="#1a1230"/>
+  <circle cx="55.5" cy="68.5" r="1.5" fill="#fff"/>
+  <circle cx="75.5" cy="68.5" r="1.5" fill="#fff"/>
+  <!-- Nase -->
+  <ellipse cx="64" cy="80" rx="3" ry="2.2" fill="#3a1a10"/>
+  <!-- Mund -->
+  <path d="M 58,86 Q 64,90 70,86" stroke="#3a1a10" stroke-width="2"
+        fill="none" stroke-linecap="round"/>
+
+  <!-- Stern oben -->
+  <polygon points="64,12 68,22 79,22 70,29 73,40 64,33 55,40 58,29 49,22 60,22"
+           fill="url(#star)" stroke="#a06a10" stroke-width="1"/>
 </svg>

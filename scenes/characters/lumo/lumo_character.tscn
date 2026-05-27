@@ -90,6 +90,13 @@ behavior_controller_path = NodePath("BehaviorController")
 eye_system_path = NodePath("VisualRoot/Head/EyeSystem")
 mouth_system_path = NodePath("VisualRoot/Head/MouthSystem")
 
+[node name="Aura" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+light_color = Color(1.00, 0.78, 0.42, 1)
+light_energy = 1.2
+omni_range = 2.6
+omni_attenuation = 1.8
+
 [node name="BehaviorController" type="Node3D" parent="."]
 script = ExtResource("2_beh")
 character_root_path = NodePath("..")
