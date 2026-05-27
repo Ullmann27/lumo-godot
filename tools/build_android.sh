@@ -1,35 +1,52 @@
 #!/usr/bin/env bash
 # ────────────────────────────────────────────────────────────────────────
-# build_android.sh - Android-Export-Diagnose + (wenn moeglich) Build.
+# build_android.sh - Android APK Build mit Auto-Diagnose und
+#   optionalem Auto-Setup (SDK-Komponenten + Lizenzen + Keystore).
 # ────────────────────────────────────────────────────────────────────────
-# Prueft alle Voraussetzungen fuer einen Godot 4.6.3 Android-APK-Build:
-#   1.  Godot Binary
-#   2.  Android Export-Templates
-#   3.  Android Export-Preset in export_presets.cfg
-#   4.  JDK (java, keytool, jarsigner)
-#   5.  ANDROID_HOME / ANDROID_SDK_ROOT Environment
-#   6.  Android SDK Tools: sdkmanager, adb, apksigner
-#   7.  Build-Tools Verzeichnis ($ANDROID_HOME/build-tools/<version>)
-#   8.  Platform-Tools Verzeichnis ($ANDROID_HOME/platform-tools)
-#   9.  Debug-Keystore (~/.android/debug.keystore)
 #
-# Jeder Schritt: PASS | WARN | FAIL. Bei WARN/FAIL gibt es eine konkrete
-# Anweisung (apt-Befehl, sdkmanager-Befehl, setup-Skript-Aufruf, ...).
+# Verhalten:
+#   1. Detektiert Godot 4.6.x Binary (godot / godot4 / GODOT_BIN /
+#      bekannte Pfade)
+#   2. Detektiert Export-Templates
+#   3. Detektiert Android-SDK (ANDROID_HOME, ANDROID_SDK_ROOT,
+#      ~/Android/Sdk, /opt/android-sdk, /usr/lib/android-sdk)
+#   4. Detektiert sdkmanager, adb, apksigner, zipalign, keytool
+#   5. Wenn sdkmanager da: bietet --auto-setup an (installiert
+#      platform-tools + build-tools + platforms + akzeptiert Lizenzen)
+#   6. Wenn keytool da + kein Keystore: erzeugt Debug-Keystore via
+#      tools/setup_android_keystore.sh
+#   7. Wenn alles PASS: ruft `godot --headless --export-debug "Android"
+#      exports/android/lumo3d-debug.apk`
+#   8. Verifiziert APK (existiert, >1 MB) und optional apksigner verify
+#   9. Zusammenfassung PASS/WARN/FAIL + konkrete naechste Schritte
+#
+# Optionen:
+#   --auto-setup    SDK-Komponenten via sdkmanager auto-installieren
+#                   (nur wenn sdkmanager auffindbar)
+#   --help          diese Hilfe anzeigen
 #
 # Exit-Codes:
-#   0 = APK wurde tatsaechlich erzeugt (alles gruen)
-#   1 = irgendetwas fehlt - APK nicht gebaut, Diagnose-Bericht ausgegeben
+#   0  APK erfolgreich erzeugt + verifiziert
+#   1  Voraussetzungen fehlen (kritische Luecke) - Diagnose-Bericht
 # ────────────────────────────────────────────────────────────────────────
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-GODOT="${GODOT_BIN:-/home/user/tools/godot}"
+AUTO_SETUP="false"
+for arg in "$@"; do
+    case "$arg" in
+        --auto-setup) AUTO_SETUP="true" ;;
+        --help|-h)
+            awk '/^[^#]/ { exit } { print }' "$0" | sed 's/^#\s\{0,1\}//'
+            exit 0
+            ;;
+        *) echo "[build_android] unbekannte Option: $arg"; exit 1 ;;
+    esac
+done
 
-PASS_COUNT=0
-WARN_COUNT=0
-FAIL_COUNT=0
+PASS_COUNT=0; WARN_COUNT=0; FAIL_COUNT=0
 NEXT_STEPS=()
 
 step() {
@@ -41,179 +58,190 @@ step() {
         FAIL) FAIL_COUNT=$((FAIL_COUNT + 1)) ;;
     esac
 }
-
-next() {
-    NEXT_STEPS+=("$1")
-}
+next() { NEXT_STEPS+=("$1"); }
 
 echo "════════════════════════════════════════════════════"
-echo "Lumo 3D Android Build Diagnostics"
+echo "Lumo 3D Android Build & Diagnose"
 echo "════════════════════════════════════════════════════"
 
 # ── 1. Godot Binary ────────────────────────────────────────────────────
+GODOT="${GODOT_BIN:-}"
+if [[ -z "$GODOT" ]]; then
+    for cand in /home/user/tools/godot /usr/local/bin/godot4 /usr/local/bin/godot $(command -v godot 2>/dev/null) $(command -v godot4 2>/dev/null); do
+        if [[ -x "$cand" ]]; then GODOT="$cand"; break; fi
+    done
+fi
 VERSION_RAW=""
-if [[ -x "$GODOT" ]]; then
-    VERSION_RAW="$($GODOT --version 2>/dev/null | tr -d '\n' || true)"
+if [[ -n "$GODOT" && -x "$GODOT" ]]; then
+    VERSION_RAW="$("$GODOT" --version 2>/dev/null | tr -d '\n' || true)"
     if [[ "$VERSION_RAW" == 4.6.* ]]; then
         step "PASS" "godot-binary" "$VERSION_RAW ($GODOT)"
     else
         step "WARN" "godot-binary" "Version $VERSION_RAW (erwartet 4.6.x)"
     fi
 else
-    step "FAIL" "godot-binary" "nicht gefunden bei $GODOT"
-    next "GODOT_BIN env setzen oder Godot 4.6.3 nach /home/user/tools/ legen"
+    step "FAIL" "godot-binary" "kein Godot 4.6.x gefunden"
+    next "Godot 4.6.3 installieren und GODOT_BIN=/pfad/zu/godot setzen"
 fi
 
 # ── 2. Export-Templates ────────────────────────────────────────────────
 VERSION_SHORT="$(echo "${VERSION_RAW:-4.6.3}" | cut -d. -f1-3).stable"
 TPL_DIR="$HOME/.local/share/godot/export_templates/${VERSION_SHORT}"
 if [[ -f "$TPL_DIR/android_release.apk" && -f "$TPL_DIR/android_debug.apk" ]]; then
-    step "PASS" "export-templates" "$TPL_DIR (android_debug.apk + android_release.apk)"
+    step "PASS" "export-templates" "$TPL_DIR"
 else
-    step "FAIL" "export-templates" "android_*.apk fehlen in $TPL_DIR"
-    next "curl -L https://github.com/godotengine/godot/releases/download/${VERSION_SHORT}/Godot_v${VERSION_SHORT}_export_templates.tpz -o /tmp/godot_tpl.tpz && unzip /tmp/godot_tpl.tpz -d /tmp/tpl && mkdir -p $TPL_DIR && mv /tmp/tpl/templates/* $TPL_DIR/"
+    step "FAIL" "export-templates" "android_*.apk fehlen unter $TPL_DIR"
+    next "Im Godot-Editor: Editor > Manage Export Templates > Download (~900 MB)"
 fi
 
-# ── 3. Android Export-Preset ───────────────────────────────────────────
+# ── 3. Android Preset ──────────────────────────────────────────────────
 if grep -q '^name="Android"' "$ROOT/export_presets.cfg" 2>/dev/null; then
-    step "PASS" "export-preset" "Android-Preset in export_presets.cfg"
+    step "PASS" "export-preset" "Android in export_presets.cfg"
 else
     step "FAIL" "export-preset" "kein 'Android'-Preset"
-    next "Android-Preset in export_presets.cfg anlegen (Vorlage in CLAUDE.md)"
+    next "Android-Preset in export_presets.cfg anlegen"
 fi
 
 # ── 4a. JDK ────────────────────────────────────────────────────────────
 if command -v java >/dev/null 2>&1; then
-    JAVA_VER="$(java -version 2>&1 | head -1)"
-    step "PASS" "jdk" "$JAVA_VER"
+    step "PASS" "jdk" "$(java -version 2>&1 | head -1)"
 else
     step "FAIL" "jdk" "java nicht im PATH"
     next "apt install -y openjdk-17-jdk-headless"
 fi
-
-# ── 4b. keytool + jarsigner ────────────────────────────────────────────
 if command -v keytool >/dev/null 2>&1; then
     step "PASS" "jdk-keytool" "$(which keytool)"
 else
     step "FAIL" "jdk-keytool" "keytool nicht gefunden"
     next "JDK installieren - keytool gehoert dazu"
 fi
-if command -v jarsigner >/dev/null 2>&1; then
-    step "PASS" "jdk-jarsigner" "$(which jarsigner)"
+
+# ── 5. Android SDK auto-detection ─────────────────────────────────────
+SDK_PATH=""
+for cand in "${ANDROID_HOME:-}" "${ANDROID_SDK_ROOT:-}" \
+            "$HOME/Android/Sdk" "/opt/android-sdk" "/usr/lib/android-sdk" \
+            "$HOME/Library/Android/sdk"; do
+    if [[ -n "$cand" && -d "$cand" ]]; then SDK_PATH="$cand"; break; fi
+done
+if [[ -n "$SDK_PATH" ]]; then
+    step "PASS" "android-sdk" "$SDK_PATH"
+    export ANDROID_HOME="$SDK_PATH"
+    export ANDROID_SDK_ROOT="$SDK_PATH"
 else
-    step "WARN" "jdk-jarsigner" "jarsigner fehlt - APK-Signierung evtl. nicht moeglich"
-    next "JDK mit Tools installieren: apt install -y openjdk-17-jdk-headless"
+    step "FAIL" "android-sdk" "kein SDK gefunden in ANDROID_HOME, ANDROID_SDK_ROOT, ~/Android/Sdk, /opt/android-sdk, /usr/lib/android-sdk"
+    next "Android Studio installieren (https://developer.android.com/studio) ODER cmdline-tools:"
+    next "  mkdir -p ~/Android/Sdk/cmdline-tools && cd ~/Android/Sdk/cmdline-tools"
+    next "  curl -L https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o tools.zip"
+    next "  unzip tools.zip && mv cmdline-tools latest"
+    next "  export ANDROID_HOME=\$HOME/Android/Sdk"
+    next "  export PATH=\$PATH:\$ANDROID_HOME/cmdline-tools/latest/bin:\$ANDROID_HOME/platform-tools"
 fi
 
-# ── 5. ANDROID_HOME / ANDROID_SDK_ROOT ─────────────────────────────────
-SDK_PATH="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
-if [[ -n "$SDK_PATH" && -d "$SDK_PATH" ]]; then
-    step "PASS" "android-sdk-env" "ANDROID_HOME=$SDK_PATH"
-else
-    step "FAIL" "android-sdk-env" "ANDROID_HOME + ANDROID_SDK_ROOT unset oder ungueltig"
-    next "Android SDK installieren (z.B. https://developer.android.com/studio#command-line-tools-only) und dann: export ANDROID_HOME=\$HOME/Android/Sdk; export PATH=\$PATH:\$ANDROID_HOME/cmdline-tools/latest/bin:\$ANDROID_HOME/platform-tools"
-fi
-
-# ── 6a. sdkmanager ─────────────────────────────────────────────────────
-if command -v sdkmanager >/dev/null 2>&1; then
-    step "PASS" "android-sdkmanager" "$(which sdkmanager)"
-elif [[ -n "$SDK_PATH" && -x "$SDK_PATH/cmdline-tools/latest/bin/sdkmanager" ]]; then
-    step "PASS" "android-sdkmanager" "$SDK_PATH/cmdline-tools/latest/bin/sdkmanager"
-else
-    step "WARN" "android-sdkmanager" "nicht im PATH"
-    next "sdkmanager liegt in \$ANDROID_HOME/cmdline-tools/latest/bin/ - PATH erweitern"
-fi
-
-# ── 6b. adb ────────────────────────────────────────────────────────────
-ADB_BIN=""
-if command -v adb >/dev/null 2>&1; then
-    ADB_BIN="$(which adb)"
-elif [[ -n "$SDK_PATH" && -x "$SDK_PATH/platform-tools/adb" ]]; then
-    ADB_BIN="$SDK_PATH/platform-tools/adb"
-fi
-if [[ -n "$ADB_BIN" ]]; then
-    step "PASS" "android-adb" "$ADB_BIN ($($ADB_BIN --version 2>&1 | head -1))"
-else
-    step "WARN" "android-adb" "adb fehlt - APK-Install auf Handy nicht moeglich"
-    next "sdkmanager 'platform-tools' installieren"
-fi
-
-# ── 6c. apksigner ──────────────────────────────────────────────────────
-APKSIGNER_BIN=""
-if command -v apksigner >/dev/null 2>&1; then
-    APKSIGNER_BIN="$(which apksigner)"
-elif [[ -n "$SDK_PATH" ]]; then
-    APKSIGNER_BIN="$(find "$SDK_PATH/build-tools" -name apksigner -type f 2>/dev/null | sort -V | tail -1)"
-fi
-if [[ -n "$APKSIGNER_BIN" && -x "$APKSIGNER_BIN" ]]; then
-    step "PASS" "android-apksigner" "$APKSIGNER_BIN"
-else
-    step "WARN" "android-apksigner" "apksigner fehlt - APK-Validierung nicht moeglich"
-    next "sdkmanager 'build-tools;34.0.0' installieren - bringt apksigner mit"
-fi
-
-# ── 7. Build-Tools Verzeichnis ─────────────────────────────────────────
-if [[ -n "$SDK_PATH" && -d "$SDK_PATH/build-tools" ]]; then
-    BT_LATEST="$(ls "$SDK_PATH/build-tools/" 2>/dev/null | sort -V | tail -1)"
-    if [[ -n "$BT_LATEST" ]]; then
-        step "PASS" "android-build-tools" "build-tools/$BT_LATEST"
-    else
-        step "WARN" "android-build-tools" "build-tools/ leer"
-        next "sdkmanager 'build-tools;34.0.0'"
+# ── 6. SDK-Tools ───────────────────────────────────────────────────────
+find_sdk_tool() {
+    local name="$1"
+    if command -v "$name" >/dev/null 2>&1; then echo "$(command -v "$name")"; return; fi
+    if [[ -n "$SDK_PATH" ]]; then
+        case "$name" in
+            sdkmanager) [[ -x "$SDK_PATH/cmdline-tools/latest/bin/$name" ]] && echo "$SDK_PATH/cmdline-tools/latest/bin/$name" ;;
+            adb) [[ -x "$SDK_PATH/platform-tools/$name" ]] && echo "$SDK_PATH/platform-tools/$name" ;;
+            apksigner|zipalign) find "$SDK_PATH/build-tools" -maxdepth 2 -name "$name" -type f 2>/dev/null | sort -V | tail -1 ;;
+        esac
     fi
-else
-    step "WARN" "android-build-tools" "build-tools/ Verzeichnis fehlt"
+}
+
+SDKMANAGER="$(find_sdk_tool sdkmanager)"
+ADB="$(find_sdk_tool adb)"
+APKSIGNER="$(find_sdk_tool apksigner)"
+ZIPALIGN="$(find_sdk_tool zipalign)"
+
+[[ -n "$SDKMANAGER" ]] && step "PASS" "sdkmanager" "$SDKMANAGER" \
+    || { step "WARN" "sdkmanager" "nicht gefunden"; next "cmdline-tools installieren (siehe oben)"; }
+[[ -n "$ADB" ]] && step "PASS" "adb" "$ADB" \
+    || { step "WARN" "adb" "nicht gefunden"; next "sdkmanager 'platform-tools' installieren"; }
+[[ -n "$APKSIGNER" ]] && step "PASS" "apksigner" "$APKSIGNER" \
+    || { step "WARN" "apksigner" "nicht gefunden"; next "sdkmanager 'build-tools;34.0.0' installieren"; }
+[[ -n "$ZIPALIGN" ]] && step "PASS" "zipalign" "$ZIPALIGN" \
+    || step "WARN" "zipalign" "nicht gefunden (in build-tools enthalten)"
+
+# ── 7. Auto-Setup wenn gewuenscht ──────────────────────────────────────
+if [[ "$AUTO_SETUP" == "true" && -n "$SDKMANAGER" ]]; then
+    echo
+    echo "[auto-setup] sdkmanager --licenses + Pflicht-Komponenten..."
+    yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+    "$SDKMANAGER" "platform-tools" "build-tools;34.0.0" "platforms;android-34" 2>&1 | tail -5
+    # Re-detect nach Install
+    ADB="$(find_sdk_tool adb)"
+    APKSIGNER="$(find_sdk_tool apksigner)"
+    ZIPALIGN="$(find_sdk_tool zipalign)"
+    [[ -n "$ADB" ]] && step "PASS" "auto-setup-adb" "$ADB"
+    [[ -n "$APKSIGNER" ]] && step "PASS" "auto-setup-apksigner" "$APKSIGNER"
+elif [[ -n "$SDKMANAGER" && ( -z "$ADB" || -z "$APKSIGNER" ) ]]; then
+    next "Lauf 'bash tools/build_android.sh --auto-setup' damit sdkmanager Komponenten + Lizenzen automatisch erledigt"
 fi
 
-# ── 8. Platform-Tools Verzeichnis ─────────────────────────────────────
-if [[ -n "$SDK_PATH" && -d "$SDK_PATH/platform-tools" ]]; then
-    step "PASS" "android-platform-tools" "$SDK_PATH/platform-tools"
-else
-    step "WARN" "android-platform-tools" "platform-tools/ Verzeichnis fehlt"
-    next "sdkmanager 'platform-tools'"
-fi
-
-# ── 9. Debug-Keystore ─────────────────────────────────────────────────
+# ── 8. Debug-Keystore (auto-create) ────────────────────────────────────
 KS="$HOME/.android/debug.keystore"
 if [[ -f "$KS" ]]; then
     step "PASS" "keystore" "$KS"
+elif command -v keytool >/dev/null 2>&1; then
+    echo "[auto-keystore] erzeuge Debug-Keystore..."
+    bash "$ROOT/tools/setup_android_keystore.sh" >/dev/null 2>&1
+    if [[ -f "$KS" ]]; then
+        step "PASS" "keystore-autogen" "$KS"
+    else
+        step "FAIL" "keystore-autogen" "Erzeugung fehlgeschlagen"
+        next "Manuell: bash tools/setup_android_keystore.sh"
+    fi
 else
-    step "WARN" "keystore" "Debug-Keystore fehlt"
-    next "bash tools/setup_android_keystore.sh"
+    step "FAIL" "keystore" "$KS fehlt + keytool nicht verfuegbar"
 fi
 
 echo "════════════════════════════════════════════════════"
 echo "SUMMARY: $PASS_COUNT PASS / $WARN_COUNT WARN / $FAIL_COUNT FAIL"
 echo "════════════════════════════════════════════════════"
 
-if [[ $FAIL_COUNT -gt 0 || $WARN_COUNT -gt 0 ]]; then
+if [[ $FAIL_COUNT -gt 0 ]]; then
     echo
-    echo "NEXT STEPS (in dieser Reihenfolge):"
-    for s in "${NEXT_STEPS[@]}"; do
-        echo "  • $s"
-    done
-    if [[ $FAIL_COUNT -gt 0 ]]; then
-        echo
-        echo "RESULT: FAIL (kritische Luecken - kein APK-Build moeglich)"
-        exit 1
-    fi
+    echo "NEXT STEPS:"
+    for s in "${NEXT_STEPS[@]}"; do echo "  • $s"; done
     echo
-    echo "RESULT: WARN (APK-Build aktuell nicht moeglich, Setup-Schritte oben)"
+    echo "RESULT: FAIL (kritische Luecken - kein APK-Build moeglich)"
     exit 1
 fi
 
-# Alle PASS - echter Export-Versuch
+# ── 9. APK Export ──────────────────────────────────────────────────────
 echo
-echo "Alle Checks PASS - versuche Android-Debug-Export..."
+echo "Voraussetzungen OK - versuche APK-Export..."
 mkdir -p exports/android
-"$GODOT" --headless --import 2>&1 | tail -3
-"$GODOT" --headless --export-debug "Android" exports/android/lumo3d.apk 2>&1 | tee /tmp/build_android.log | tail -20
+APK_PATH="exports/android/lumo3d-debug.apk"
+rm -f "$APK_PATH"
+"$GODOT" --headless --import 2>&1 | tail -2
+"$GODOT" --headless --export-debug "Android" "$APK_PATH" 2>&1 | tee /tmp/build_android.log | tail -10
 
-if [[ -f exports/android/lumo3d.apk ]]; then
-    echo
-    echo "RESULT: PASS - APK erzeugt: exports/android/lumo3d.apk"
-    ls -lh exports/android/lumo3d.apk
-    exit 0
+# ── 10. APK Verify ─────────────────────────────────────────────────────
+if [[ ! -f "$APK_PATH" ]]; then
+    echo "RESULT: FAIL - APK wurde nicht erzeugt (siehe /tmp/build_android.log)"
+    exit 1
 fi
-echo "RESULT: FAIL - Export-Befehl lief, aber APK nicht erzeugt (siehe /tmp/build_android.log)"
-exit 1
+
+APK_BYTES=$(stat -c%s "$APK_PATH" 2>/dev/null || stat -f%z "$APK_PATH" 2>/dev/null || echo 0)
+if [[ $APK_BYTES -lt 1048576 ]]; then
+    echo "RESULT: FAIL - APK zu klein (${APK_BYTES} B, erwartet > 1 MB)"
+    exit 1
+fi
+step "PASS" "apk-size" "$(ls -lh "$APK_PATH" | awk '{print $5}')"
+
+if [[ -n "$APKSIGNER" ]]; then
+    if "$APKSIGNER" verify "$APK_PATH" >/dev/null 2>&1; then
+        step "PASS" "apk-signature" "verified"
+    else
+        step "WARN" "apk-signature" "apksigner verify fehlgeschlagen (Debug-APK ist trotzdem installierbar)"
+    fi
+fi
+
+echo
+echo "RESULT: PASS - APK bereit: $APK_PATH"
+echo
+echo "Naechster Schritt: bash tools/install_android.sh"
+exit 0

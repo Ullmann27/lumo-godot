@@ -257,6 +257,7 @@ def main() -> int:
     # 9. Export-Skripte vorhanden + ausfuehrbar
     for tool in ["tools/build_web.sh", "tools/build_android.sh",
                  "tools/setup_android_keystore.sh",
+                 "tools/install_android.sh", "tools/logcat_lumo.sh",
                  "tools/serve_web.py", "tools/fetch_assets.py",
                  "tools/validate_project.py"]:
         p = REPO / tool
