@@ -21,7 +21,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-GODOT="${GODOT_BIN:-/home/user/tools/godot}"
+GODOT="${GODOT_BIN:-$(command -v godot 2>/dev/null || command -v godot4 2>/dev/null || echo /home/user/tools/godot)}"
 # Godot fragt seine Export-Templates an einem GEKUERZTEN Pfad ab -
 # "4.6.3.stable" statt der vollen "4.6.3.stable.official.7d41c59c4".
 # Wir nehmen daher nur die ersten 3 Felder.

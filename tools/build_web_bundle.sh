@@ -20,7 +20,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
-GODOT="${GODOT_BIN:-/home/user/tools/godot}"
+GODOT="${GODOT_BIN:-$(command -v godot 2>/dev/null || command -v godot4 2>/dev/null || echo /home/user/tools/godot)}"
 VERSION_SHORT="$("$GODOT" --version | cut -d. -f1-3).stable"
 TPL_ZIP="$HOME/.local/share/godot/export_templates/${VERSION_SHORT}/web_nothreads_release.zip"
 
