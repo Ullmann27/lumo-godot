@@ -130,11 +130,30 @@ jobs:
           mkdir -p android/build/src/main/assets/_cl_
           cp exports/android/lumo3d.pck android/build/src/main/assets/_cl_/
 
+      - name: Apply Lumo patches (launcher icons + app_name in all locales)
+        run: |
+          # Launcher Icons
+          mkdir -p android/build/src/main/res
+          cp -r tools/android_patches/res/* android/build/src/main/res/
+          # App-Name "Lumo 3D" in alle 42 Locale-Files schreiben
+          for f in $(find android/build/res -name "godot_project_name_string.xml"); do
+            cat > "$f" <<'EOL'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <string name="godot_project_name_string">Lumo 3D</string>
+          </resources>
+          EOL
+          done
+          echo "patched $(find android/build/res -name 'godot_project_name_string.xml' | wc -l) locale files"
+
       - name: Gradle assembleDebug
         run: |
           cd android/build
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon \
+            -Pexport_package_name=dev.ullmann.lumo3d \
+            -Pexport_version_name=${{ github.ref_name }} \
+            -Pexport_version_code=${{ github.run_number }}
 
       - name: Strip arm64-only + sign APK
         run: |

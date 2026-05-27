@@ -236,9 +236,16 @@ echo "Schritt 3: PCK in Gradle-Source kopieren..."
 mkdir -p android/build/src/main/assets/_cl_
 cp exports/android/lumo3d.pck android/build/src/main/assets/_cl_/
 
+echo "Schritt 3b: Lumo Patches (app_name + launcher icons) anwenden..."
+mkdir -p android/build/src/main/res
+cp -r tools/android_patches/res/* android/build/src/main/res/
+
 echo "Schritt 4: Gradle assembleDebug (kann 2-3 min dauern)..."
 chmod +x android/build/gradlew
-(cd android/build && ./gradlew assembleDebug --quiet 2>&1) | tail -5
+(cd android/build && ./gradlew assembleDebug --quiet \
+    -Pexport_package_name=dev.ullmann.lumo3d \
+    -Pexport_version_name=0.1.1 \
+    -Pexport_version_code=2 2>&1) | tail -5
 
 RAW_APK=android/build/build/outputs/apk/standard/debug/android_debug.apk
 if [[ ! -f "$RAW_APK" ]]; then
