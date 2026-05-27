@@ -36,6 +36,18 @@ light_color = Color(0.55, 0.70, 1.00, 1)
 light_energy = 0.4
 shadow_enabled = false
 
+[node name="RimLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, -1.8)
+light_color = Color(1.00, 0.55, 0.80, 1)
+light_energy = 1.5
+omni_range = 6.0
+
+[node name="LumoSpot" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 1.4)
+light_color = Color(1.00, 0.85, 0.55, 1)
+light_energy = 0.9
+omni_range = 3.5
+
 [node name="Backdrop" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, -22)
 mesh = SubResource("QuadMesh_backdrop")

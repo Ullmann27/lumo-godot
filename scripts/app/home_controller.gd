@@ -128,5 +128,13 @@ func _spawn_billboards() -> void:
 
 
 func _on_portal_selected(portal_type: String) -> void:
-	# Demo-Log fuer Heinz' Verifikation des Portal-Flows.
 	print("portal_%s_selected" % portal_type)
+	# Lumo zeigt erst auf das Portal, danach Szenenwechsel via Router.
+	for node in get_children():
+		if node is LumoCharacterController:
+			(node as LumoCharacterController).play_behavior("point_portal")
+			break
+	# Kurz warten damit der Tap-Pulse + point-Geste sichtbar sind, dann goto.
+	var tw: Tween = create_tween()
+	tw.tween_interval(0.55)
+	tw.tween_callback(func(): SceneRouter.goto(portal_type))

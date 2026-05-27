@@ -19,12 +19,12 @@ metallic = 0.0
 roughness = 0.70
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hoodie"]
-albedo_color = Color(0.46, 0.30, 0.78, 1)
-metallic = 0.04
-roughness = 0.55
+albedo_color = Color(0.52, 0.32, 0.85, 1)
+metallic = 0.08
+roughness = 0.48
 emission_enabled = true
-emission = Color(0.28, 0.16, 0.55, 1)
-emission_energy_multiplier = 0.06
+emission = Color(0.35, 0.18, 0.65, 1)
+emission_energy_multiplier = 0.12
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_star"]
 albedo_color = Color(1.00, 0.88, 0.32, 1)
@@ -36,8 +36,11 @@ emission_energy_multiplier = 1.20
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eye_white"]
 albedo_color = Color(1.00, 0.99, 0.96, 1)
-metallic = 0.0
-roughness = 0.20
+metallic = 0.05
+roughness = 0.15
+emission_enabled = true
+emission = Color(0.95, 0.92, 0.78, 1)
+emission_energy_multiplier = 0.20
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eye_pupil"]
 albedo_color = Color(0.08, 0.06, 0.10, 1)

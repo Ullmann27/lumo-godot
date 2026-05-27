@@ -214,6 +214,17 @@ def main() -> int:
         else:
             emit("FAIL", "home-portal-materials", f"only {n_portals}/3 portal materials wired")
 
+    # 7e2. Portal-Target-Szenen (Phase 1 Content)
+    for portal_file in [
+        "scenes/games/star_collect.tscn",
+        "scenes/games/learn_card.tscn",
+        "scenes/games/parent_settings.tscn",
+        "scripts/games/star_collect_game.gd",
+        "scripts/games/learn_card.gd",
+        "scripts/games/parent_settings.gd",
+    ]:
+        check_file(REPO / portal_file, "FAIL", "portal-content")
+
     # 7f. LUMO Character System
     lumo_ref_dir = REPO / "assets" / "characters" / "lumo" / "reference"
     if lumo_ref_dir.is_dir():
@@ -255,7 +266,7 @@ def main() -> int:
             emit("PASS", "no-flutter", f"absent: {forbidden}")
 
     # 9. Export-Skripte vorhanden + ausfuehrbar
-    for tool in ["tools/build_web.sh", "tools/build_android.sh",
+    for tool in ["tools/build_web.sh", "tools/build_web_bundle.sh", "tools/build_android.sh",
                  "tools/setup_android_keystore.sh",
                  "tools/install_android.sh", "tools/logcat_lumo.sh",
                  "tools/serve_web.py", "tools/fetch_assets.py",

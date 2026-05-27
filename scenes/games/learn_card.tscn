@@ -1,0 +1,95 @@
+[gd_scene load_steps=6 format=3 uid="uid://b1lumo3dlearncard01"]
+
+[ext_resource type="Script" path="res://scripts/games/learn_card.gd" id="1_game"]
+[ext_resource type="PackedScene" path="res://scenes/characters/lumo/lumo_character.tscn" id="2_lumo"]
+[ext_resource type="Environment" path="res://scenes/default_env.tres" id="3_env"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_card"]
+size = Vector2(2.4, 3.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_card"]
+albedo_color = Color(1.00, 0.62, 0.30, 1)
+emission_enabled = true
+emission = Color(1.00, 0.62, 0.30, 1)
+emission_energy_multiplier = 0.3
+
+[node name="LearnCard" type="Node3D"]
+script = ExtResource("1_game")
+lumo_path = NodePath("LumoCharacter")
+card_label_path = NodePath("UILayer/CardLabel")
+word_label_path = NodePath("UILayer/WordLabel")
+card_mesh_path = NodePath("Card")
+next_button_path = NodePath("UILayer/NextButton")
+back_button_path = NodePath("UILayer/BackButton")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("3_env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.85, -0.35, 0.40, 0.0, 0.75, 0.66, -0.53, -0.56, 0.64, 0, 5, 2)
+light_color = Color(1.00, 0.92, 0.80, 1)
+light_energy = 1.2
+
+[node name="Card" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 1.8, -0.5)
+mesh = SubResource("QuadMesh_card")
+material_override = SubResource("StandardMaterial3D_card")
+
+[node name="LumoCharacter" parent="." instance=ExtResource("2_lumo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.96, 0.28, 0, -0.28, 0.96, 0, 1.8, 5.5)
+fov = 55.0
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="CardLabel" type="Label" parent="UILayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.0
+offset_top = 56.0
+offset_right = 120.0
+offset_bottom = 200.0
+text = "A"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 140
+theme_override_colors/font_color = Color(1.00, 0.95, 0.60, 1)
+
+[node name="WordLabel" type="Label" parent="UILayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -240.0
+offset_top = 220.0
+offset_right = 240.0
+offset_bottom = 280.0
+text = "Apfel"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 44
+theme_override_colors/font_color = Color(1.00, 0.85, 0.50, 1)
+
+[node name="NextButton" type="Button" parent="UILayer"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -140.0
+offset_top = -160.0
+offset_right = 140.0
+offset_bottom = -90.0
+text = "Weiter"
+theme_override_font_sizes/font_size = 32
+
+[node name="BackButton" type="Button" parent="UILayer"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -180.0
+offset_top = 56.0
+offset_right = -32.0
+offset_bottom = 112.0
+text = "Zuruck"
+theme_override_font_sizes/font_size = 24
