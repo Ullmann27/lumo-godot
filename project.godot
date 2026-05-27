@@ -1,0 +1,31 @@
+; Godot Engine project configuration file
+;
+; Lumo 3D - Lead-3D-Entwickler Setup (Heinz 2026-05-27)
+; Format-Version 5 entspricht Godot 4.4+.
+; Manuell geschrieben, Editor wird beim ersten Start beigetragene Felder
+; ergaenzen (z.B. config/features, autoloads etc).
+
+config_version=5
+
+[application]
+
+config/name="Lumo 3D"
+config/description="Native 3D-App, Godot 4.x, GDScript. Start einer
+modernen 3D-Spielwelt - hier landet der erste 3D-Test (rotierender
+Wuerfel) damit die Engine sichtbar laeuft."
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.6", "Forward Plus")
+config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
+anti_aliasing/quality/msaa_3d=2
+environment/defaults/default_clear_color=Color(0.10, 0.12, 0.18, 1)

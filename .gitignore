@@ -1,0 +1,19 @@
+# Godot 4+ specific ignores
+.godot/
+.import/
+
+# Imported resources (Godot regeneriert beim Editor-Start)
+*.import
+
+# Export-Output (lokale Builds nicht ins Repo)
+exports/
+
+# Translations-Cache (nicht im Repo)
+*.translation
+
+# Editor-User-Cache
+.vscode/
+.idea/
+
+# WICHTIG: export_presets.cfg WIRD committed (Build-Config, nicht User-Cache).
+# project.godot wird natuerlich auch committed.
