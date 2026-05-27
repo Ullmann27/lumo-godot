@@ -71,8 +71,11 @@ jobs:
       - name: Linux smoke test
         run: |
           chmod +x exports/linux/lumo-godot-linux.x86_64
-          ./exports/linux/lumo-godot-linux.x86_64 --headless --quit-after 60 2>&1 | tee /tmp/linux.log | tail -15
-          grep -q "scene_loaded\|character_ready" /tmp/linux.log && echo "Linux OK" || (echo "Linux smoke FAILED"; exit 1)
+          # 360 frames ~ 6s, reicht durch Boot -> Intro -> Home
+          ./exports/linux/lumo-godot-linux.x86_64 --headless --quit-after 360 2>&1 | tee /tmp/linux.log | tail -20
+          grep -qE "scene_loaded|character_ready|\\[Intro\\] start" /tmp/linux.log \
+            && echo "Linux OK" \
+            || (echo "Linux smoke FAILED (no Boot/Intro/Home log line found)"; exit 1)
       - name: Linux ZIP
         run: |
           cd exports/linux && zip -r9 ../packages/lumo-godot-linux.zip . && cd ../..
