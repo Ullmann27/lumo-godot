@@ -66,11 +66,13 @@ func _show_card(idx: int) -> void:
 
 func _on_next() -> void:
 	if _index + 1 < CARDS.size():
+		AudioManager.play_sfx("card_next")
 		_show_card(_index + 1)
 	else:
 		# Fertig - kurz feiern dann zurueck
 		if _lumo != null:
 			_lumo.play_behavior("celebrate")
+		AudioManager.play_sfx("celebrate")
 		var tw: Tween = create_tween()
 		tw.tween_interval(1.8)
 		tw.tween_callback(_back_to_home)

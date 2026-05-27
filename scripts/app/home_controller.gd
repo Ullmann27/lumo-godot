@@ -129,6 +129,7 @@ func _spawn_billboards() -> void:
 
 func _on_portal_selected(portal_type: String) -> void:
 	print("portal_%s_selected" % portal_type)
+	AudioManager.play_sfx("portal_tap")
 	# Lumo zeigt erst auf das Portal, danach Szenenwechsel via Router.
 	for node in get_children():
 		if node is LumoCharacterController:

@@ -27,9 +27,7 @@ func _ready() -> void:
 	platform = OS.get_name()
 	EventBus.platform_detected.emit(platform)
 	print("[Perf] platform_detected:%s" % platform)
-	# Default-Profil je Plattform:
-	#   Android / Web -> MEDIUM (konservativ)
-	#   Linux / macOS / Windows -> HIGH (Desktop)
+	# Default-Profil je Plattform; persistierte Wahl gewinnt wenn vorhanden.
 	var auto_profile: Profile = Profile.MEDIUM
 	match platform:
 		"Linux", "macOS", "Windows":
@@ -38,19 +36,34 @@ func _ready() -> void:
 			auto_profile = Profile.MEDIUM
 		_:
 			auto_profile = Profile.MEDIUM
+	if Engine.has_singleton("SettingsStore"):
+		var store: Node = Engine.get_singleton("SettingsStore")
+		if store.has_method("get_profile"):
+			match store.call("get_profile"):
+				"low":
+					auto_profile = Profile.LOW
+				"medium":
+					auto_profile = Profile.MEDIUM
+				"high":
+					auto_profile = Profile.HIGH
 	# Warte einen Frame damit der erste WorldEnvironment im Tree ist.
 	await get_tree().process_frame
-	set_profile(auto_profile)
+	set_profile(auto_profile, false)
 
 
 ## Setzt das Quality-Profil und applied alle Schalter.
-func set_profile(profile: Profile) -> void:
+## persist=true: schreibt nach user://settings.cfg (default true)
+func set_profile(profile: Profile, persist: bool = true) -> void:
 	current_profile = profile
 	var name: String = _PROFILE_NAMES.get(profile, "medium")
 	print("[Perf] quality_profile:%s" % name)
 	_apply_environment(profile)
 	_apply_viewport(profile)
 	EventBus.quality_profile_changed.emit(name)
+	if persist and Engine.has_singleton("SettingsStore"):
+		var store: Node = Engine.get_singleton("SettingsStore")
+		if store.has_method("set_profile"):
+			store.call("set_profile", name)
 
 
 func get_profile_name() -> String:

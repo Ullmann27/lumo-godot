@@ -21,6 +21,8 @@ func _ready() -> void:
 	_wire_button(high_button_path, _on_high)
 	_wire_button(audio_button_path, _on_audio_toggle)
 	_wire_button(back_button_path, _back_to_home)
+	if Engine.has_singleton("AudioManager"):
+		_audio_muted = Engine.get_singleton("AudioManager").is_muted()
 	_update_profile_label()
 	print("[Parent] scene_loaded")
 
@@ -48,7 +50,10 @@ func _on_high() -> void:
 
 func _on_audio_toggle() -> void:
 	_audio_muted = not _audio_muted
-	AudioServer.set_bus_mute(0, _audio_muted)
+	if Engine.has_singleton("AudioManager"):
+		Engine.get_singleton("AudioManager").set_muted(_audio_muted)
+	else:
+		AudioServer.set_bus_mute(0, _audio_muted)
 	print("[Parent] audio_muted:%s" % _audio_muted)
 	_update_profile_label()
 

@@ -101,6 +101,7 @@ func _collect(star: Node3D) -> void:
 	_collected += 1
 	_update_counter()
 	EventBus.companion_reaction.emit("star_collected")
+	AudioManager.play_sfx("star_collected")
 	print("[StarCollect] collected:%d/%d" % [_collected, STAR_COUNT])
 	if _collected >= STAR_COUNT:
 		_finish()
@@ -115,6 +116,7 @@ func _finish() -> void:
 	_finished = true
 	if _lumo != null:
 		_lumo.play_behavior("celebrate")
+	AudioManager.play_sfx("celebrate")
 	if _counter_label != null:
 		_counter_label.text = "Geschafft!"
 	# Nach 2.4s zurueck

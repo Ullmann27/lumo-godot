@@ -24,10 +24,12 @@ config/icon="res://icon.svg"
 [autoload]
 
 EventBus="*res://scripts/systems/event_bus.gd"
+SettingsStore="*res://scripts/systems/settings_store.gd"
 PerformanceManager="*res://scripts/systems/performance_manager.gd"
 MobileRuntime="*res://scripts/app/mobile_runtime.gd"
 SceneRouter="*res://scripts/app/scene_router.gd"
 AssetLoader="*res://scripts/systems/asset_loader.gd"
+AudioManager="*res://scripts/systems/audio_manager.gd"
 
 [display]
 
