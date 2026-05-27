@@ -1,0 +1,186 @@
+name: Lumo 3D Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: 4.6.3
+  GODOT_STATUS: stable
+  GODOT_TAG: 4.6.3-stable
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Cache Godot binary + templates
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot-bin
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_TAG }}-v2
+
+      - name: Install Godot ${{ env.GODOT_VERSION }}
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot-bin
+          curl -L -o /tmp/godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_TAG}/Godot_v${GODOT_TAG}_linux.x86_64.zip"
+          unzip -q -o /tmp/godot.zip -d ~/godot-bin
+          mv ~/godot-bin/Godot_v${GODOT_TAG}_linux.x86_64 ~/godot-bin/godot
+          chmod +x ~/godot-bin/godot
+
+      - name: Install Godot export templates
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -L -o /tmp/tpl.tpz \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_TAG}/Godot_v${GODOT_TAG}_export_templates.tpz"
+          mkdir -p /tmp/tpl_unpack
+          unzip -q -o /tmp/tpl.tpz -d /tmp/tpl_unpack
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}
+          mv /tmp/tpl_unpack/templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}/
+          rm -rf /tmp/tpl_unpack /tmp/tpl.tpz
+
+      - name: Set PATH
+        run: echo "$HOME/godot-bin" >> $GITHUB_PATH
+
+      - name: Verify Godot
+        run: godot --version
+
+      - name: Project import
+        run: |
+          mkdir -p exports/linux exports/web exports/android exports/packages
+          godot --headless --import || true
+
+      # ────────────────── LINUX ──────────────────
+      - name: Linux export
+        run: godot --headless --export-release "Linux" exports/linux/lumo-godot-linux.x86_64
+      - name: Linux smoke test
+        run: |
+          chmod +x exports/linux/lumo-godot-linux.x86_64
+          ./exports/linux/lumo-godot-linux.x86_64 --headless --quit-after 60 2>&1 | tee /tmp/linux.log | tail -15
+          grep -q "scene_loaded\|character_ready" /tmp/linux.log && echo "Linux OK" || (echo "Linux smoke FAILED"; exit 1)
+      - name: Linux ZIP
+        run: |
+          cd exports/linux && zip -r9 ../packages/lumo-godot-linux.zip . && cd ../..
+
+      # ────────────────── WEB (browser-fertig) ──────────────────
+      - name: Web bundle (template + pck + patched HTML)
+        run: bash tools/build_web_bundle.sh
+      - name: Web ZIP
+        run: |
+          cd exports/web && zip -r9 ../packages/lumo-godot-web.zip . && cd ../..
+
+      # ────────────────── ANDROID (Gradle workaround) ──────────────────
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools build-tools;34.0.0 platforms;android-34"
+
+      - name: Create debug keystore
+        run: |
+          mkdir -p ~/.android
+          if [[ ! -f ~/.android/debug.keystore ]]; then
+            keytool -keyalg RSA -genkeypair \
+              -alias androiddebugkey \
+              -keypass android \
+              -keystore ~/.android/debug.keystore \
+              -storepass android \
+              -dname "CN=Android Debug,O=Android,C=US" \
+              -validity 9999 \
+              -deststoretype pkcs12
+          fi
+
+      - name: Godot editor settings (SDK path for export plugin)
+        run: |
+          mkdir -p ~/.config/godot
+          cat > ~/.config/godot/editor_settings-4.6.tres <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/debug_keystore = "$HOME/.android/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          EOF
+
+      - name: PCK for Android
+        run: godot --headless --export-pack "Android" exports/android/lumo3d.pck
+
+      - name: Source-template unpack
+        run: |
+          mkdir -p android/build
+          unzip -q -o ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}/android_source.zip -d android/build/
+          mkdir -p android/build/src/main/assets/_cl_
+          cp exports/android/lumo3d.pck android/build/src/main/assets/_cl_/
+
+      - name: Gradle assembleDebug
+        run: |
+          cd android/build
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Strip arm64-only + sign APK
+        run: |
+          RAW=android/build/build/outputs/apk/standard/debug/android_debug.apk
+          test -f "$RAW" || (echo "no APK produced"; exit 1)
+          WORK=$(mktemp -d)
+          (cd "$WORK" && unzip -q "$GITHUB_WORKSPACE/$RAW" && \
+           rm -rf lib/x86 lib/x86_64 lib/armeabi-v7a META-INF && \
+           zip -r9 -q /tmp/lumo-stripped.apk .)
+          BT=$ANDROID_HOME/build-tools/34.0.0
+          $BT/zipalign -p -f 4 /tmp/lumo-stripped.apk /tmp/lumo-aligned.apk
+          $BT/apksigner sign \
+            --ks ~/.android/debug.keystore \
+            --ks-pass pass:android --key-pass pass:android \
+            --ks-key-alias androiddebugkey \
+            --out exports/android/lumo3d-debug.apk \
+            /tmp/lumo-aligned.apk
+          $BT/apksigner verify exports/android/lumo3d-debug.apk
+          ls -lh exports/android/lumo3d-debug.apk
+          rm -rf "$WORK" /tmp/lumo-stripped.apk /tmp/lumo-aligned.apk
+
+      # ────────────────── ARTIFACTS ──────────────────
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-godot-linux
+          path: exports/packages/lumo-godot-linux.zip
+          retention-days: 30
+
+      - name: Upload Web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-godot-web
+          path: exports/packages/lumo-godot-web.zip
+          retention-days: 30
+
+      - name: Upload Android APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-godot-android
+          path: exports/android/lumo3d-debug.apk
+          retention-days: 30
+
+      # ────────────────── RELEASE on tag push ──────────────────
+      - name: Create release (on tag push)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            exports/packages/lumo-godot-linux.zip
+            exports/packages/lumo-godot-web.zip
+            exports/android/lumo3d-debug.apk
