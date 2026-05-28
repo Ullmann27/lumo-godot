@@ -30,6 +30,7 @@ MobileRuntime="*res://scripts/app/mobile_runtime.gd"
 SceneRouter="*res://scripts/app/scene_router.gd"
 AssetLoader="*res://scripts/systems/asset_loader.gd"
 AudioManager="*res://scripts/systems/audio_manager.gd"
+ProgressStore="*res://scripts/systems/progress_store.gd"
 
 [display]
 

@@ -1,0 +1,174 @@
+[gd_scene load_steps=8 format=3 uid="uid://b1lumo3dhub01"]
+
+[ext_resource type="Script" path="res://scripts/games/reading_hub.gd" id="1_hub"]
+[ext_resource type="PackedScene" path="res://scenes/characters/lumo/lumo_character.tscn" id="2_lumo"]
+[ext_resource type="Environment" path="res://scenes/default_env.tres" id="3_env"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_floor"]
+top_radius = 8.0
+bottom_radius = 8.0
+height = 0.20
+radial_segments = 48
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.30, 0.18, 0.42, 1)
+metallic = 0.12
+roughness = 0.70
+emission_enabled = true
+emission = Color(0.55, 0.35, 0.78, 1)
+emission_energy_multiplier = 0.22
+
+[sub_resource type="SphereMesh" id="SphereMesh_dome"]
+radius = 14.0
+height = 28.0
+radial_segments = 24
+rings = 12
+is_hemisphere = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dome"]
+cull_mode = 1
+albedo_color = Color(0.12, 0.08, 0.22, 1)
+emission_enabled = true
+emission = Color(0.38, 0.25, 0.58, 1)
+emission_energy_multiplier = 0.55
+
+[node name="ReadingHub" type="Node3D"]
+script = ExtResource("1_hub")
+lumo_path = NodePath("LumoCharacter")
+stars_label_path = NodePath("UILayer/TopHUD/Stars")
+letters_label_path = NodePath("UILayer/TopHUD/Letters")
+streak_label_path = NodePath("UILayer/TopHUD/Streak")
+back_button_path = NodePath("UILayer/BackButton")
+card_alphabet_path = NodePath("UILayer/Cards/Card1")
+card_picture_path = NodePath("UILayer/Cards/Card2")
+card_sound_path = NodePath("UILayer/Cards/Card3")
+card_build_path = NodePath("UILayer/Cards/Card4")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("3_env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.92, -0.25, 0.30, 0.0, 0.78, 0.62, -0.39, -0.57, 0.72, 0, 7, 2)
+light_color = Color(1.0, 0.92, 0.85, 1)
+light_energy = 1.10
+shadow_enabled = true
+
+[node name="StageSpot" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.20, 0.98, 0, -0.98, 0.20, 0, 6.5, 1.5)
+light_color = Color(1.0, 0.85, 1.00, 1)
+light_energy = 3.5
+spot_range = 12.0
+spot_angle = 38.0
+
+[node name="Dome" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_dome")
+material_override = SubResource("StandardMaterial3D_dome")
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+mesh = SubResource("CylinderMesh_floor")
+material_override = SubResource("StandardMaterial3D_floor")
+
+[node name="LumoCharacter" parent="." instance=ExtResource("2_lumo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.94, 0.34, 0, -0.34, 0.94, 0, 2.8, 6.2)
+fov = 58.0
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="Header" type="Label" parent="UILayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 24.0
+offset_right = 300.0
+offset_bottom = 80.0
+text = "Lese-Welt"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 56
+theme_override_colors/font_color = Color(1.00, 0.92, 0.55, 1)
+
+[node name="TopHUD" type="HBoxContainer" parent="UILayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -360.0
+offset_top = 90.0
+offset_right = 360.0
+offset_bottom = 140.0
+alignment = 1
+theme_override_constants/separation = 48
+
+[node name="Stars" type="Label" parent="UILayer/TopHUD"]
+text = "★ 0"
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1.00, 0.85, 0.40, 1)
+
+[node name="Letters" type="Label" parent="UILayer/TopHUD"]
+text = "🔤 0 / 26"
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.85, 1.00, 0.70, 1)
+
+[node name="Streak" type="Label" parent="UILayer/TopHUD"]
+text = "🔥 Rekord 0"
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1.00, 0.65, 0.45, 1)
+
+[node name="BackButton" type="Button" parent="UILayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 72.0
+text = "Zuruck"
+theme_override_font_sizes/font_size = 22
+
+[node name="Cards" type="GridContainer" parent="UILayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -440.0
+offset_top = -80.0
+offset_right = 440.0
+offset_bottom = 320.0
+columns = 4
+theme_override_constants/h_separation = 24
+
+[node name="Card1" type="Button" parent="UILayer/Cards"]
+custom_minimum_size = Vector2(200, 260)
+text = "🔤
+Buchstaben
+ABC"
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(1.00, 0.92, 0.55, 1)
+
+[node name="Card2" type="Button" parent="UILayer/Cards"]
+custom_minimum_size = Vector2(200, 260)
+text = "🍎
+Bild-Match
+Welcher Anfang?"
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1.00, 0.92, 0.55, 1)
+
+[node name="Card3" type="Button" parent="UILayer/Cards"]
+custom_minimum_size = Vector2(200, 260)
+text = "🔊
+Anlaut-Hören
+Was hörst du?"
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.78, 0.92, 1.00, 1)
+
+[node name="Card4" type="Button" parent="UILayer/Cards"]
+custom_minimum_size = Vector2(200, 260)
+text = "🧩
+Wort bauen
+Reihenfolge"
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.85, 1.00, 0.70, 1)

@@ -1,0 +1,242 @@
+[gd_scene load_steps=8 format=3 uid="uid://b1lumo3dslm01"]
+
+[ext_resource type="Script" path="res://scripts/games/multi_choice_game.gd" id="1_game"]
+[ext_resource type="PackedScene" path="res://scenes/characters/lumo/lumo_character.tscn" id="2_lumo"]
+[ext_resource type="Environment" path="res://scenes/default_env.tres" id="3_env"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_floor"]
+top_radius = 7.5
+bottom_radius = 7.5
+height = 0.20
+radial_segments = 48
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.20, 0.30, 0.40, 1)
+metallic = 0.10
+roughness = 0.75
+emission_enabled = true
+emission = Color(0.30, 0.45, 0.65, 1)
+emission_energy_multiplier = 0.20
+
+[sub_resource type="SphereMesh" id="SphereMesh_dome"]
+radius = 12.0
+height = 24.0
+radial_segments = 24
+rings = 12
+is_hemisphere = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dome"]
+cull_mode = 1
+albedo_color = Color(0.08, 0.14, 0.22, 1)
+emission_enabled = true
+emission = Color(0.25, 0.40, 0.60, 1)
+emission_energy_multiplier = 0.55
+
+[node name="SoundLetterMatch" type="Node3D"]
+script = ExtResource("1_game")
+mode = "sound"
+lumo_path = NodePath("LumoCharacter")
+prompt_emoji_label_path = NodePath("UILayer/Prompt/Emoji")
+prompt_word_label_path = NodePath("UILayer/Prompt/Word")
+question_counter_path = NodePath("UILayer/TopHUD/Counter")
+stars_counter_path = NodePath("UILayer/TopHUD/Stars")
+streak_label_path = NodePath("UILayer/StreakBanner")
+back_button_path = NodePath("UILayer/BackButton")
+replay_button_path = NodePath("UILayer/ResultOverlay/Panel/VBox/ReplayButton")
+speaker_button_path = NodePath("UILayer/SpeakerButton")
+tiles_root_path = NodePath("UILayer/Tiles")
+result_overlay_path = NodePath("UILayer/ResultOverlay")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("3_env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.92, -0.25, 0.30, 0.0, 0.78, 0.62, -0.39, -0.57, 0.72, 0, 7, 2)
+light_color = Color(0.80, 0.90, 1.00, 1)
+light_energy = 0.90
+shadow_enabled = true
+
+[node name="StageSpot" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.20, 0.98, 0, -0.98, 0.20, 0, 6.5, 1.5)
+light_color = Color(0.85, 0.95, 1.00, 1)
+light_energy = 3.5
+spot_range = 12.0
+spot_angle = 38.0
+
+[node name="Dome" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("SphereMesh_dome")
+material_override = SubResource("StandardMaterial3D_dome")
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+mesh = SubResource("CylinderMesh_floor")
+material_override = SubResource("StandardMaterial3D_floor")
+
+[node name="LumoCharacter" parent="." instance=ExtResource("2_lumo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 0, 1.0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.94, 0.34, 0, -0.34, 0.94, 0, 2.8, 6.2)
+fov = 58.0
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="TopHUD" type="HBoxContainer" parent="UILayer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 88.0
+theme_override_constants/separation = 32
+
+[node name="Counter" type="Label" parent="UILayer/TopHUD"]
+text = "1 / 10"
+theme_override_font_sizes/font_size = 36
+theme_override_colors/font_color = Color(0.70, 0.85, 1.00, 1)
+size_flags_horizontal = 0
+
+[node name="Spacer" type="Control" parent="UILayer/TopHUD"]
+size_flags_horizontal = 3
+
+[node name="Stars" type="Label" parent="UILayer/TopHUD"]
+text = "★ 0"
+theme_override_font_sizes/font_size = 36
+theme_override_colors/font_color = Color(1.00, 0.85, 0.40, 1)
+size_flags_horizontal = 0
+horizontal_alignment = 2
+
+[node name="BackButton" type="Button" parent="UILayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_top = 96.0
+offset_right = -24.0
+offset_bottom = 144.0
+text = "Zuruck"
+theme_override_font_sizes/font_size = 22
+
+[node name="Prompt" type="VBoxContainer" parent="UILayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -260.0
+offset_top = 110.0
+offset_right = 260.0
+offset_bottom = 460.0
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="Emoji" type="Label" parent="UILayer/Prompt"]
+text = "🔊"
+theme_override_font_sizes/font_size = 220
+horizontal_alignment = 1
+
+[node name="Word" type="Label" parent="UILayer/Prompt"]
+text = "Hör genau zu!"
+theme_override_font_sizes/font_size = 38
+theme_override_colors/font_color = Color(0.78, 0.88, 1.00, 1)
+horizontal_alignment = 1
+
+[node name="SpeakerButton" type="Button" parent="UILayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -90.0
+offset_top = 380.0
+offset_right = 90.0
+offset_bottom = 460.0
+text = "🔊 Nochmal"
+theme_override_font_sizes/font_size = 32
+
+[node name="Tiles" type="HBoxContainer" parent="UILayer"]
+anchors_preset = 7
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -260.0
+offset_right = -24.0
+offset_bottom = -90.0
+alignment = 1
+theme_override_constants/separation = 32
+
+[node name="ChoiceA" type="Button" parent="UILayer/Tiles"]
+custom_minimum_size = Vector2(150, 170)
+text = "A"
+theme_override_font_sizes/font_size = 110
+
+[node name="ChoiceB" type="Button" parent="UILayer/Tiles"]
+custom_minimum_size = Vector2(150, 170)
+text = "B"
+theme_override_font_sizes/font_size = 110
+
+[node name="ChoiceC" type="Button" parent="UILayer/Tiles"]
+custom_minimum_size = Vector2(150, 170)
+text = "C"
+theme_override_font_sizes/font_size = 110
+
+[node name="ChoiceD" type="Button" parent="UILayer/Tiles"]
+custom_minimum_size = Vector2(150, 170)
+text = "D"
+theme_override_font_sizes/font_size = 110
+
+[node name="StreakBanner" type="Label" parent="UILayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -260.0
+offset_top = 40.0
+offset_right = 260.0
+offset_bottom = 90.0
+text = "🔥 STREAK x3!"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 48
+theme_override_colors/font_color = Color(0.60, 0.85, 1.00, 1)
+visible = false
+
+[node name="ResultOverlay" type="Control" parent="UILayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 0
+visible = false
+
+[node name="Bg" type="ColorRect" parent="UILayer/ResultOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.60)
+
+[node name="Panel" type="PanelContainer" parent="UILayer/ResultOverlay"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -180.0
+offset_right = 260.0
+offset_bottom = 180.0
+
+[node name="VBox" type="VBoxContainer" parent="UILayer/ResultOverlay/Panel"]
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="UILayer/ResultOverlay/Panel/VBox"]
+text = "Gut gemacht!"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 56
+theme_override_colors/font_color = Color(0.78, 0.92, 1.00, 1)
+
+[node name="Stats" type="Label" parent="UILayer/ResultOverlay/Panel/VBox"]
+text = "8 / 10 richtig\n+12 ★"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+
+[node name="ReplayButton" type="Button" parent="UILayer/ResultOverlay/Panel/VBox"]
+text = "Nochmal spielen"
+theme_override_font_sizes/font_size = 28

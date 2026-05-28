@@ -15,6 +15,9 @@ const SFX_PRESETS: Dictionary = {
 	"celebrate": {"freq": 660.0, "dur": 0.35, "kind": "chirp_up"},
 	"card_next": {"freq": 520.0, "dur": 0.08, "kind": "sine"},
 	"back": {"freq": 320.0, "dur": 0.12, "kind": "chirp_down"},
+	"ui_confirm": {"freq": 720.0, "dur": 0.10, "kind": "chirp_up"},
+	"ui_cancel": {"freq": 280.0, "dur": 0.18, "kind": "chirp_down"},
+	"ui_back": {"freq": 360.0, "dur": 0.10, "kind": "chirp_down"},
 }
 
 const SAMPLE_RATE: float = 22050.0

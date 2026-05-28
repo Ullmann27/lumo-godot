@@ -165,6 +165,11 @@ func _select_letter(idx: int) -> void:
 	# Lumo zeigt auf die Tafel + macht "speak_explain"
 	if _lumo != null:
 		_lumo.play_behavior("point")
+	# Erkundungs-Belohnung: 1 Stern pro NEUEM Buchstaben (nicht bei
+	# wiederholten Taps, sonst trivial Sterne-Farmen)
+	if not ProgressStore.is_letter_learned(letter):
+		ProgressStore.mark_letter_learned(letter)
+		ProgressStore.add_stars(1)
 	print("[Alphabet] letter:%s" % letter)
 
 
@@ -189,4 +194,4 @@ func _back_to_home() -> void:
 		_read_all_tween.kill()
 	if _lumo != null:
 		_lumo.play_behavior("idle")
-	SceneRouter.goto("home")
+	SceneRouter.goto("reading_hub")
