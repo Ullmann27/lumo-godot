@@ -132,9 +132,12 @@ jobs:
 
       - name: Apply Lumo patches (launcher icons + app_name in all locales)
         run: |
-          # Launcher Icons
+          # Launcher Icons (nur PNGs, keine .import-Sidecars)
           mkdir -p android/build/src/main/res
-          cp -r tools/android_patches/res/* android/build/src/main/res/
+          (cd tools/android_patches && find res -type f -name "*.png") | while read f; do
+            mkdir -p "android/build/src/main/$(dirname $f)"
+            cp "tools/android_patches/$f" "android/build/src/main/$f"
+          done
           # App-Name "Lumo 3D" in alle 42 Locale-Files schreiben
           for f in $(find android/build/res -name "godot_project_name_string.xml"); do
             cat > "$f" <<'EOL'

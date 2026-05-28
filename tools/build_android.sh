@@ -238,7 +238,7 @@ cp exports/android/lumo3d.pck android/build/src/main/assets/_cl_/
 
 echo "Schritt 3b: Lumo Patches (app_name + launcher icons) anwenden..."
 mkdir -p android/build/src/main/res
-cp -r tools/android_patches/res/* android/build/src/main/res/
+(cd tools/android_patches && find res -type f -name "*.png") | while read f; do mkdir -p "android/build/src/main/$(dirname $f)"; cp "tools/android_patches/$f" "android/build/src/main/$f"; done
 
 echo "Schritt 4: Gradle assembleDebug (kann 2-3 min dauern)..."
 chmod +x android/build/gradlew
