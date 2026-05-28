@@ -62,6 +62,28 @@ func play_sfx(name: String) -> void:
 	_player.play()
 
 
+## Spielt eine Voice-WAV-Datei aus assets/audio/voice/ ab.
+## path: relativ ab voice/ ohne Endung, z.B. "letters/a" oder "words/apfel"
+func play_voice(path: String) -> void:
+	if _muted:
+		return
+	var full: String = "res://assets/audio/voice/%s.wav" % path
+	if _cache.has(full):
+		_player.stream = _cache[full]
+		_player.play()
+		return
+	if not ResourceLoader.exists(full):
+		push_warning("[Audio] voice missing: %s" % full)
+		return
+	var stream: AudioStream = ResourceLoader.load(full) as AudioStream
+	if stream == null:
+		push_warning("[Audio] voice not playable: %s" % full)
+		return
+	_cache[full] = stream
+	_player.stream = stream
+	_player.play()
+
+
 func _get_or_make(name: String) -> AudioStream:
 	if _cache.has(name):
 		return _cache[name]

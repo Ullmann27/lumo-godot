@@ -14,7 +14,8 @@ const SCENES: Dictionary = {
 	"intro": "res://scenes/app/intro_3d.tscn",
 	"home": "res://scenes/app/home_3d.tscn",
 	"loading": "res://scenes/app/loading_screen.tscn",
-	"learn": "res://scenes/games/learn_card.tscn",
+	"learn": "res://scenes/games/alphabet_carousel.tscn",
+	"learn_old": "res://scenes/games/learn_card.tscn",
 	"games": "res://scenes/games/star_collect.tscn",
 	"parent": "res://scenes/games/parent_settings.tscn",
 }

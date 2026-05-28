@@ -1,0 +1,86 @@
+[gd_scene load_steps=6 format=3 uid="uid://b1lumo3dalphabet01"]
+
+[ext_resource type="Script" path="res://scripts/games/alphabet_carousel.gd" id="1_game"]
+[ext_resource type="PackedScene" path="res://scenes/characters/lumo/lumo_character.tscn" id="2_lumo"]
+[ext_resource type="Environment" path="res://scenes/default_env.tres" id="3_env"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_floor"]
+top_radius = 7.0
+bottom_radius = 7.0
+height = 0.20
+radial_segments = 32
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.45, 0.30, 0.40, 1)
+metallic = 0.05
+roughness = 0.80
+emission_enabled = true
+emission = Color(0.60, 0.35, 0.25, 1)
+emission_energy_multiplier = 0.10
+
+[node name="AlphabetCarousel" type="Node3D"]
+script = ExtResource("1_game")
+lumo_path = NodePath("LumoCharacter")
+back_button_path = NodePath("UILayer/BackButton")
+read_all_button_path = NodePath("UILayer/ReadAllButton")
+current_label_path = NodePath("UILayer/CurrentLabel")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("3_env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.85, -0.35, 0.40, 0.0, 0.75, 0.66, -0.53, -0.56, 0.64, 0, 6, 2)
+light_color = Color(1.00, 0.92, 0.80, 1)
+light_energy = 1.1
+shadow_enabled = true
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+mesh = SubResource("CylinderMesh_floor")
+material_override = SubResource("StandardMaterial3D_floor")
+
+[node name="LumoCharacter" parent="." instance=ExtResource("2_lumo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.92, 0.39, 0, -0.39, 0.92, 0, 3, 6.5)
+fov = 60.0
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="CurrentLabel" type="Label" parent="UILayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.0
+offset_top = 40.0
+offset_right = 120.0
+offset_bottom = 200.0
+text = "?"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 120
+theme_override_colors/font_color = Color(1.00, 0.92, 0.55, 1)
+
+[node name="ReadAllButton" type="Button" parent="UILayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -160.0
+offset_right = 160.0
+offset_bottom = -100.0
+text = "Alle vorlesen"
+theme_override_font_sizes/font_size = 28
+
+[node name="BackButton" type="Button" parent="UILayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -180.0
+offset_top = 40.0
+offset_right = -32.0
+offset_bottom = 100.0
+text = "Zuruck"
+theme_override_font_sizes/font_size = 24
