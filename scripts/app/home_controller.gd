@@ -135,7 +135,35 @@ func _on_portal_selected(portal_type: String) -> void:
 		if node is LumoCharacterController:
 			(node as LumoCharacterController).play_behavior("point_portal")
 			break
-	# Kurz warten damit der Tap-Pulse + point-Geste sichtbar sind, dann goto.
+	# Kurz warten damit der Tap-Pulse + point-Geste sichtbar sind, dann handeln.
 	var tw: Tween = create_tween()
 	tw.tween_interval(0.55)
-	tw.tween_callback(func(): SceneRouter.goto(portal_type))
+	tw.tween_callback(func(): _handle_portal(portal_type))
+
+
+## Inter-App-Architektur (Heinz 2026-06-03): das "Lernen"-Portal öffnet die
+## echte Flutter-Lern-App per Deep-Link. Gelingt das nicht (Flutter nicht
+## installiert oder nicht Android), fällt es freundlich auf die interne
+## 3D-Lese-Welt zurück. Alle anderen Portale bleiben intern.
+func _handle_portal(portal_type: String) -> void:
+	if portal_type == "learn":
+		var launched: bool = FlutterBridge.launch_learning_app("learn")
+		if launched:
+			print("[Home] handed off to Flutter learning app")
+			return
+		# Fallback: Flutter nicht da -> Hinweis + interne Lese-Welt.
+		_show_flutter_hint()
+	SceneRouter.goto(portal_type)
+
+
+func _show_flutter_hint() -> void:
+	var hint: Label = get_node_or_null("UILayer/FlutterHint") as Label
+	if hint == null:
+		return
+	hint.text = "Lumo Lernen-App nicht gefunden.\nWir öffnen die 3D-Lese-Welt."
+	hint.modulate = Color(1, 1, 1, 1)
+	hint.show()
+	var tw: Tween = create_tween()
+	tw.tween_interval(2.2)
+	tw.tween_property(hint, "modulate:a", 0.0, 0.5)
+	tw.tween_callback(hint.hide)

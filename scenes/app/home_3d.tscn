@@ -67,3 +67,22 @@ target_path = NodePath("..")
 radius = 6.0
 yaw = 0.0
 pitch = -0.25
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="FlutterHint" type="Label" parent="UILayer"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -160.0
+offset_right = 320.0
+offset_bottom = -80.0
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(1.0, 0.92, 0.6, 1)
+visible = false
