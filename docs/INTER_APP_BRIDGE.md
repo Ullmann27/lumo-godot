@@ -7,7 +7,7 @@ Stand: 2026-06-03
 ```
 ┌─────────────────────────┐         lumolernen://open          ┌──────────────────────────┐
 │  Lumo 3D (Godot)         │   ───── Android Deep-Link ─────▶   │  Lumo Lernen (Flutter)   │
-│  Package dev.ullmann.lumo3d │                                 │  Package dev.ullmann.lumo │
+│  Package dev.ullmann.lumo3d │                                 │  Package dev.ullmann.lumo.lumo_lernen │
 │  3D-Erlebnis-Einstieg    │                                    │  Lernsystem (Aufgaben)   │
 └─────────────────────────┘                                    └──────────────────────────┘
 ```

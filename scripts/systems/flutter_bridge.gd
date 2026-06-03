@@ -22,8 +22,10 @@ extends RefCounted
 ## Deep-Link-Schema das die Flutter-App via intent-filter beansprucht.
 const SCHEME: String = "lumolernen"
 
-## Erwartetes Android-Package der Flutter-Lern-App (Doku/Referenz).
-const FLUTTER_PACKAGE: String = "dev.ullmann.lumo"
+## Android-Package der Flutter-Lern-App (Doku/Referenz - die Bridge selbst
+## löst über das SCHEME auf, nicht über das Package, daher nur informativ).
+## Verifiziert via aapt an Release build-215: dev.ullmann.lumo.lumo_lernen
+const FLUTTER_PACKAGE: String = "dev.ullmann.lumo.lumo_lernen"
 
 
 ## Versucht die Flutter-Lern-App zu öffnen, optional mit Ziel-Bereich.
