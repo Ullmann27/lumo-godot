@@ -13,13 +13,19 @@ import sys
 import tempfile
 import zipfile
 
+if __package__:
+    from .prepare_android_assets import COMMAND_LINE, check_pack_header, decode_command_line
+else:
+    from prepare_android_assets import COMMAND_LINE, check_pack_header, decode_command_line
+
 
 ABIS = ("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
 REQUIRED = (
     "AndroidManifest.xml",
     "classes.dex",
     "resources.arsc",
-    "assets/_cl_/lumo3d.pck",
+    "assets/lumo3d.pck",
+    "assets/_cl_",
 )
 
 
@@ -59,6 +65,12 @@ def _check_archive(archive: zipfile.ZipFile, abi: str, allow_other_abis: bool) -
     damaged = archive.testzip()
     if damaged is not None:
         raise ValueError(f"APK ZIP CRC failed: {damaged}")
+    if any(name.startswith("assets/_cl_/") for name in names):
+        raise ValueError("assets/_cl_ must be a command-line file, not a directory")
+    if decode_command_line(archive.read("assets/_cl_")) != COMMAND_LINE:
+        raise ValueError("Android startup must point to res://lumo3d.pck")
+    with archive.open("assets/lumo3d.pck") as pack:
+        check_pack_header(pack.read(20))
 
 
 def prepare_apk(source: Path, output: Path, abi: str = "arm64-v8a") -> None:
@@ -82,7 +94,7 @@ def prepare_apk(source: Path, output: Path, abi: str = "arm64-v8a") -> None:
                     if _jar_signature(entry.filename):
                         continue
                     retained = copy.copy(entry)
-                    if entry.filename == "resources.arsc":
+                    if entry.filename in ("resources.arsc", "assets/lumo3d.pck"):
                         retained.compress_type = zipfile.ZIP_STORED
                     prepared.writestr(retained, original.read(entry))
             temporary_path.replace(output)

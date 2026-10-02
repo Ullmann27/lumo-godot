@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+# Install the universal APK on an already booted emulator and verify real startup.
+# Usage: ADB_SERIAL=emulator-5554 bash tools/test_android_startup.sh path/to/app.apk
+set -Eeuo pipefail
+
+lumo_apk=${1:-exports/android/lumo3d-debug.apk}
+if [[ "$lumo_apk" != /* ]]; then lumo_apk="$PWD/$lumo_apk"; fi
+lumo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+cd "$lumo_root"
+lumo_package=dev.ullmann.lumo3d
+lumo_log="$lumo_root/exports/android/android-startup.log"
+mkdir -p "$(dirname "$lumo_log")"
+: > "$lumo_log"
+lumo_capture=$(mktemp "${lumo_log}.logcat.XXXXXX")
+
+finish() {
+    local status=$?
+    if [[ -s "$lumo_capture" ]]; then
+        printf '\n[AndroidStartup] Captured logcat\n' >> "$lumo_log"
+        cat "$lumo_capture" >> "$lumo_log"
+    fi
+    rm -f "$lumo_capture"
+    if (( status != 0 )); then
+        printf '[AndroidStartup] Diagnostics: %s\n' "$lumo_log" >&2
+    fi
+}
+trap finish EXIT
+
+fail() {
+    printf '[AndroidStartup] FAIL: %s\n' "$*" | tee -a "$lumo_log" >&2
+    exit 1
+}
+
+lumo_adb=${ADB:-}
+if [[ -z "$lumo_adb" ]]; then
+    lumo_adb=$(command -v adb || true)
+fi
+if [[ -z "$lumo_adb" ]]; then
+    for candidate in "${ANDROID_HOME:-}/platform-tools/adb" "${ANDROID_SDK_ROOT:-}/platform-tools/adb"; do
+        if [[ -x "$candidate" ]]; then lumo_adb=$candidate; break; fi
+    done
+fi
+[[ -n "$lumo_adb" && -x "$lumo_adb" ]] || fail "adb not found"
+[[ -f "$lumo_apk" ]] || fail "APK not found: $lumo_apk"
+lumo_adb_args=()
+lumo_serial=${ADB_SERIAL:-${ANDROID_SERIAL:-}}
+if [[ -n "$lumo_serial" ]]; then lumo_adb_args=(-s "$lumo_serial"); fi
+adb_cmd() { timeout 15s "$lumo_adb" "${lumo_adb_args[@]}" "$@"; }
+
+printf '[AndroidStartup] APK: %s\n' "$lumo_apk" | tee -a "$lumo_log"
+adb_cmd get-state >> "$lumo_log" 2>&1 || fail "Android device is unavailable or ambiguous"
+if ! timeout 60s "$lumo_adb" "${lumo_adb_args[@]}" install -r "$lumo_apk" >> "$lumo_log" 2>&1; then
+    fail "adb install failed; see install output in the log"
+fi
+adb_cmd shell am force-stop "$lumo_package" >> "$lumo_log" 2>&1 || fail "Could not stop previous app instance"
+adb_cmd logcat -c >> "$lumo_log" 2>&1 || fail "Could not clear logcat"
+lumo_resolved=$(adb_cmd shell cmd package resolve-activity --brief \
+    -a android.intent.action.MAIN -c android.intent.category.LAUNCHER "$lumo_package" 2>&1) \
+    || fail "Launcher activity resolution failed"
+printf '%s\n' "$lumo_resolved" >> "$lumo_log"
+lumo_activity=$(printf '%s\n' "$lumo_resolved" | tr -d '\r' | \
+    awk '/^dev\.ullmann\.lumo3d\/[^[:space:]]+$/ { component=$0 } END { print component }')
+[[ -n "$lumo_activity" ]] || fail "No MAIN/LAUNCHER activity found for $lumo_package"
+printf '[AndroidStartup] Launcher: %s\n' "$lumo_activity" | tee -a "$lumo_log"
+if ! adb_cmd shell am start -W -a android.intent.action.MAIN \
+    -c android.intent.category.LAUNCHER -n "$lumo_activity" >> "$lumo_log" 2>&1; then
+    fail "Android rejected activity launch"
+fi
+if grep -Eiq 'Error:|Permission Denial|SecurityException|unable to resolve|does not exist|Status: (error|timeout)' "$lumo_log"; then
+    fail "Activity launch was denied or failed"
+fi
+
+capture_logcat() {
+    adb_cmd logcat -d -v threadtime > "$lumo_capture" 2>&1 || fail "Could not capture logcat"
+    if grep -Eiq "Couldn.t load project|Could not load.*(project|main pack)|Failed.*(main pack|project\.binary|\.pck)|FATAL EXCEPTION|Fatal signal|SIGSEGV|SIGABRT|SCRIPT ERROR|Parse Error" "$lumo_capture"; then
+        grep -Ein "Couldn.t load project|Could not load.*(project|main pack)|Failed.*(main pack|project\.binary|\.pck)|FATAL EXCEPTION|Fatal signal|SIGSEGV|SIGABRT|SCRIPT ERROR|Parse Error" "$lumo_capture" | head -12 >&2 || true
+        fail "Project loading, script, Java or native crash detected"
+    fi
+}
+
+lumo_deadline=$((SECONDS + 60))
+lumo_started=0
+while (( SECONDS < lumo_deadline )); do
+    capture_logcat
+    if grep -Fq '[Boot] starting' "$lumo_capture" \
+        && grep -Eq '\[Router\] goto:(games|home|kart|jump)[[:space:]]' "$lumo_capture" \
+        && grep -Eq '\[Lumo\] (character|companion)_ready' "$lumo_capture"; then
+        adb_cmd shell pidof "$lumo_package" >> "$lumo_log" 2>&1 || fail "App exited after boot markers"
+        lumo_started=1
+        break
+    fi
+    sleep 2
+done
+(( lumo_started == 1 )) || fail "Boot, route and loaded-character markers were not all observed within 60 seconds"
+sleep 2
+capture_logcat
+lumo_pid=$(adb_cmd shell pidof "$lumo_package" | tr -d '\r') || fail "App crashed or exited after startup"
+[[ "$lumo_pid" =~ ^[0-9]+([[:space:]][0-9]+)*$ ]] || fail "No live app process after startup"
+printf '[AndroidStartup] PASS: Boot + scene route + Lumo ready; process %s remains alive. Log: %s\n' \
+    "$lumo_pid" "$lumo_log" | tee -a "$lumo_log"

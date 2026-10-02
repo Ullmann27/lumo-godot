@@ -233,8 +233,7 @@ if [[ ! -f android/build/gradlew ]]; then
 fi
 
 echo "Schritt 3: PCK in Gradle-Source kopieren..."
-mkdir -p android/build/src/main/assets/_cl_
-cp exports/android/lumo3d.pck android/build/src/main/assets/_cl_/
+python3 tools/prepare_android_assets.py exports/android/lumo3d.pck android/build/src/main/assets || exit 1
 
 echo "Schritt 3b: Lumo Patches (app_name + launcher icons) anwenden..."
 mkdir -p android/build/src/main/res

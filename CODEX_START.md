@@ -36,3 +36,9 @@ speichert die Ressourcentabelle unkomprimiert und prüft deren Datenoffset
 nach dem Ausrichten und Signieren. CI und lokaler Android-Bau verwenden
 denselben Helfer; Build Tools 35 richten gespeicherte native Bibliotheken
 zusätzlich auf 16-KB-Grenzen aus. Paketname und Signatur bleiben gleich.
+
+Android-Startkorrektur: `_cl_` ist eine binäre Datei für Startargumente,
+kein Ordner für Spieldaten. `prepare_android_assets.py` legt `lumo3d.pck`
+direkt in `assets` ab und schreibt `--main-pack res://lumo3d.pck` in die
+Startdatei. Die fertige APK wird auf diese Verknüpfung geprüft. CI startet
+zusätzlich das exportierte Spielpaket aus einem leeren Arbeitsverzeichnis.

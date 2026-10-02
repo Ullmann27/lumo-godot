@@ -125,8 +125,7 @@ jobs:
         run: |
           mkdir -p android/build
           unzip -q -o ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}/android_source.zip -d android/build/
-          mkdir -p android/build/src/main/assets/_cl_
-          cp exports/android/lumo3d.pck android/build/src/main/assets/_cl_/
+          python3 tools/prepare_android_assets.py exports/android/lumo3d.pck android/build/src/main/assets
 
       - name: Apply Lumo patches (launcher icons + app_name in all locales)
         run: |
@@ -150,6 +149,16 @@ jobs:
       - name: Prepare native route bridge
         run: python3 tools/prepare_android_bridge.py
 
+      - name: Boot exported Android project data
+        run: |
+          APK_PACK="$GITHUB_WORKSPACE/android/build/src/main/assets/lumo3d.pck"
+          BOOT_DIR=$(mktemp -d)
+          (cd "$BOOT_DIR" && godot --headless --audio-driver Dummy --main-pack "$APK_PACK" --quit-after 360) 2>&1 | tee /tmp/android-pack-boot.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/android-pack-boot.log; then exit 1; fi
+          grep -q '\[Boot\] starting' /tmp/android-pack-boot.log
+          grep -q '\[Router\] goto:' /tmp/android-pack-boot.log
+          rm -rf "$BOOT_DIR"
+
       - name: Gradle assembleDebug
         run: |
           cd android/build
@@ -158,6 +167,22 @@ jobs:
             -Pexport_package_name=dev.ullmann.lumo3d \
             -Pexport_version_name=0.2.0-school-test \
             -Pexport_version_code=${{ github.run_number }}
+
+      - name: Enable Android emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Install and launch Android app
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
+          script: bash tools/test_android_startup.sh android/build/build/outputs/apk/standard/debug/android_debug.apk
 
       - name: Strip arm64-only + sign APK
         run: |
@@ -198,6 +223,7 @@ jobs:
           name: lumo-sonnenhafen-android-and-images
           path: |
             exports/android/lumo3d-debug.apk
+            exports/android/android-startup.log
             exports/screenshots/*.png
             exports/packages/SHA256SUMS.txt
           if-no-files-found: error
@@ -222,6 +248,7 @@ jobs:
             Separate Godot-Spiel-App dev.ullmann.lumo3d, arm64. Kein Flutter-App-Update.
             APK-Verpackung korrigiert: resources.arsc bleibt unkomprimiert und ausgerichtet;
             Signatur, Ressourcenformat und ZIP-Ausrichtung werden vor der Veröffentlichung geprüft.
+            Android-Start: PCK und binäre Startargumente werden geprüft und die App im Emulator gestartet.
           files: |
             exports/packages/lumo-godot-linux.zip
             exports/packages/lumo-godot-web.zip
