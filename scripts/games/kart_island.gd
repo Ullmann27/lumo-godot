@@ -153,7 +153,7 @@ func _build_world() -> void:
 		var angle: float = float(i) * TAU / 10.0
 		_ball(self, Vector3(cos(angle) * 65, 15 + float(i % 3) * 4, sin(angle) * 60), Vector3(8, 2.5, 4), Color("ffffff"))
 	crystal_mesh = _gem_mesh()
-	for i in range(18):
+	for i in range(18 * TOTAL_LAPS):
 		var d: float = float(i) * track_length / 18.0 + 5.0
 		var gem := Node3D.new()
 		add_child(gem)
@@ -363,8 +363,7 @@ func _physics_process(delta: float) -> void:
 		if gem.visible:
 			gem.rotation.y += delta * 1.7
 	for i in range(gems.size()):
-		if gems[i].visible and distance > gem_distances[i] + 3:
-			gems[i].hide()
+		gems[i].visible = not collected.has(i) and gem_distances[i] >= distance - 3 and gem_distances[i] <= distance + 28
 	if countdown > 0:
 		countdown -= delta
 		if countdown < 3:

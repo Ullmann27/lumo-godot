@@ -25,4 +25,4 @@ func _ready() -> void:
 			options[pair[0]] = pair[1]
 	SceneRouter.launch_options = options
 	var target: String = str(options.get("scene", ""))
-	SceneRouter.goto(target if target in ["kart", "home"] else "intro")
+	SceneRouter.goto(target if target in ["kart", "jump", "home", "games"] else "games")

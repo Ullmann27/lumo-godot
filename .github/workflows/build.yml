@@ -180,7 +180,9 @@ jobs:
           rm -rf "$WORK" /tmp/lumo-stripped.apk /tmp/lumo-aligned.apk
 
       - name: Render real engine screenshots
-        run: xvfb-run -a godot --rendering-method gl_compatibility --script scripts/tests/kart_render.gd
+        run: |
+          xvfb-run -a godot --rendering-method gl_compatibility --script scripts/tests/kart_render.gd
+          xvfb-run -a godot --rendering-method gl_compatibility --script scripts/tests/kart_render.gd -- --game=jump
 
       - name: Publish tested packages
         if: github.event_name != 'pull_request'
@@ -191,7 +193,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           prerelease: true
           make_latest: false
-          body: "Echtes 3D-Rennen mit Lumo, Touchsteuerung, zwei Runden, Gegnern, Kristallen, Drift-Boosts und pausierenden Lernstopps. Godot-Import, 4000 Aufgabenvarianten und Spielmechanik geprüft. Fotos zeigen die echte laufende Engine. Android-Paket für arm64; Geräte- und Unterrichtstest ausständig."
+          body: "Zwei echte 3D-Spiele mit Lumo: Insel-Cup mit Gegnern, Drift-Boosts und Lernstopps; Wolkeninseln mit Sprüngen, echten Kollisionen, Kontrollpunkten und Lerninseln. Klasse und Fach sind in der Spieleauswahl wählbar. Godot-Import, 4000 Aufgabenvarianten und Spielmechanik geprüft. Fotos zeigen die echte laufende Engine. Android-Paket für arm64; Geräte- und Unterrichtstest ausständig."
           files: |
             exports/packages/lumo-godot-linux.zip
             exports/packages/lumo-godot-web.zip

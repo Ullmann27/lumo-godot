@@ -14,7 +14,7 @@ if marker not in s:
         android.net.Uri uri = intent == null ? null : intent.getData();
         if (uri == null || !"lumo3d".equals(uri.getScheme())) return false;
         String scene = uri.getHost();
-        return "kart".equals(scene) || "home".equals(scene);
+        return "kart".equals(scene) || "home".equals(scene) || "jump".equals(scene);
     }
 
     @Override
@@ -55,4 +55,4 @@ for manifest in (root/'android/build').rglob('AndroidManifest.xml'):
         for cat in ('DEFAULT','BROWSABLE'):ET.SubElement(intent,'category',{a('name'):'android.intent.category.'+cat})
         ET.SubElement(intent,'data',{a('scheme'):'lumo3d'})
         ET.indent(tree);tree.write(manifest,encoding='utf-8',xml_declaration=True)
-print('Native Lumo routes prepared: kart, home; grade 1–4; no arbitrary engine flags')
+print('Native Lumo routes prepared: kart, jump, home; grade 1–4; no arbitrary engine flags')
