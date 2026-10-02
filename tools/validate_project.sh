@@ -16,7 +16,7 @@ grep -qE '\[KartTouchTests\] PASS' /tmp/lumo-kart-touch-tests.log
 
 # Real GPU state (MultiMesh colours and transforms) needs a rendering server.
 if command -v xvfb-run >/dev/null 2>&1; then
-  timeout 120s xvfb-run -a "$GODOT" --rendering-method gl_compatibility --script scripts/tests/kart_world_regression.gd 2>&1 | tee /tmp/lumo-world-tests.log
+  timeout 120s xvfb-run -a "$GODOT" --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_world_regression.gd 2>&1 | tee /tmp/lumo-world-tests.log
   if grep -qE "SCRIPT ERROR|Parse Error|ERROR:" /tmp/lumo-world-tests.log; then exit 1; fi
   grep -qE "\[KartWorldTests\] PASS" /tmp/lumo-world-tests.log
 fi
