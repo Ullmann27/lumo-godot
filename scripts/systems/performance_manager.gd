@@ -115,7 +115,7 @@ func _apply_viewport(profile: Profile) -> void:
 			vp.use_taa = false
 		Profile.HIGH:
 			vp.msaa_3d = Viewport.MSAA_4X
-			vp.use_taa = true
+			vp.use_taa = RenderingServer.get_current_rendering_method() == "forward_plus"
 
 
 ## Empfohlene Anzahl Sterne im MultiMesh-Sternenfeld je Profil.
