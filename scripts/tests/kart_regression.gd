@@ -7,6 +7,10 @@ func _run() -> void:
 	var questions = load("res://scripts/games/kart_questions.gd")
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 82741
+	var calculation := RegEx.new()
+	calculation.compile("^(\\d+) ([+−·]) (\\d+) = \\?$")
+	var numbers := RegEx.new()
+	numbers.compile("\\d+")
 	for grade in range(1, 5):
 		for subject in ["Mathematik", "Deutsch"]:
 			for i in range(500):
@@ -14,6 +18,22 @@ func _run() -> void:
 				assert(q.options.size() == 3)
 				assert(q.options.count(q.answer) == 1)
 				assert(q.options[0] != q.options[1] and q.options[1] != q.options[2] and q.options[0] != q.options[2])
+				if subject == "Mathematik":
+					var match_result: RegExMatch = calculation.search(q.prompt)
+					var expected: int = 0
+					if match_result:
+						var a: int = int(match_result.get_string(1))
+						var b: int = int(match_result.get_string(3))
+						match match_result.get_string(2):
+							"+": expected = a + b
+							"−": expected = a - b
+							"·": expected = a * b
+					else:
+						var values: Array[RegExMatch] = numbers.search_all(q.prompt)
+						assert(values.size() == 2)
+						expected = int(values[0].get_string()) + int(values[1].get_string())
+					assert(str(expected) == q.answer)
+					assert(expected >= 0 and expected <= [0, 10, 100, 1000, 10000][grade])
 	var scene: PackedScene = load("res://scenes/games/kart_island.tscn")
 	var game = scene.instantiate()
 	root.add_child(game)
