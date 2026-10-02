@@ -168,6 +168,20 @@ jobs:
             -Pexport_version_name=0.2.0-school-test \
             -Pexport_version_code=${{ github.run_number }}
 
+      - name: Prepare signed Android emulator package
+        run: |
+          RAW=android/build/build/outputs/apk/standard/debug/android_debug.apk
+          BT=$ANDROID_HOME/build-tools/35.0.0
+          python3 tools/package_android_apk.py prepare "$RAW" /tmp/lumo-emulator-prepared.apk --abi x86_64
+          $BT/zipalign -P 16 -f 4 /tmp/lumo-emulator-prepared.apk /tmp/lumo-emulator-aligned.apk
+          $BT/apksigner sign \
+            --ks ~/.android/debug.keystore \
+            --ks-pass pass:android --key-pass pass:android --ks-key-alias androiddebugkey \
+            --out exports/android/lumo3d-emulator-test.apk /tmp/lumo-emulator-aligned.apk
+          $BT/apksigner verify exports/android/lumo3d-emulator-test.apk
+          python3 tools/package_android_apk.py verify exports/android/lumo3d-emulator-test.apk --abi x86_64
+          rm -f /tmp/lumo-emulator-prepared.apk /tmp/lumo-emulator-aligned.apk
+
       - name: Enable Android emulator acceleration
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -182,7 +196,15 @@ jobs:
           arch: x86_64
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
-          script: bash tools/test_android_startup.sh android/build/build/outputs/apk/standard/debug/android_debug.apk
+          script: bash tools/test_android_startup.sh exports/android/lumo3d-emulator-test.apk
+
+      - name: Preserve Android startup diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-android-startup-diagnostics
+          path: exports/android/android-startup.log
+          if-no-files-found: ignore
 
       - name: Strip arm64-only + sign APK
         run: |

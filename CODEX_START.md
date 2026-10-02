@@ -42,3 +42,6 @@ kein Ordner für Spieldaten. `prepare_android_assets.py` legt `lumo3d.pck`
 direkt in `assets` ab und schreibt `--main-pack res://lumo3d.pck` in die
 Startdatei. Die fertige APK wird auf diese Verknüpfung geprüft. CI startet
 zusätzlich das exportierte Spielpaket aus einem leeren Arbeitsverzeichnis.
+Der Emulator erhält eine aus demselben Gradle-Bau erstellte, ausgerichtete
+und signierte x86_64-APK. Das rohe Godot-Gradle-Ergebnis ist standardmäßig
+unsigniert und darf nicht direkt für einen Installationstest verwendet werden.

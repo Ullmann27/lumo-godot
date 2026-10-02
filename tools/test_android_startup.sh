@@ -22,6 +22,7 @@ finish() {
     rm -f "$lumo_capture"
     if (( status != 0 )); then
         printf '[AndroidStartup] Diagnostics: %s\n' "$lumo_log" >&2
+        cat "$lumo_log" >&2
     fi
 }
 trap finish EXIT
@@ -49,7 +50,35 @@ adb_cmd() { timeout 15s "$lumo_adb" "${lumo_adb_args[@]}" "$@"; }
 
 printf '[AndroidStartup] APK: %s\n' "$lumo_apk" | tee -a "$lumo_log"
 adb_cmd get-state >> "$lumo_log" 2>&1 || fail "Android device is unavailable or ambiguous"
-if ! timeout 60s "$lumo_adb" "${lumo_adb_args[@]}" install -r "$lumo_apk" >> "$lumo_log" 2>&1; then
+{
+    printf '[AndroidStartup] APK bytes: %s\n' "$(wc -c < "$lumo_apk")"
+    for property in ro.build.version.sdk ro.product.cpu.abilist ro.product.cpu.abi; do
+        printf '[AndroidStartup] %s: ' "$property"
+        adb_cmd shell getprop "$property" || true
+    done
+    printf '[AndroidStartup] Android /data free space:\n'
+    adb_cmd shell df -h /data || true
+    if command -v python3 >/dev/null 2>&1; then
+        python3 - "$lumo_apk" <<'PY'
+import sys, zipfile
+with zipfile.ZipFile(sys.argv[1]) as archive:
+    abis = sorted({name.split('/')[1] for name in archive.namelist()
+                   if name.startswith('lib/') and name.endswith('.so')})
+    print('[AndroidStartup] Packaged native ABIs: ' + (', '.join(abis) or '(none)'))
+PY
+    fi
+    lumo_aapt=${AAPT:-$(command -v aapt || true)}
+    if [[ -z "$lumo_aapt" ]]; then
+        for candidate in "${ANDROID_HOME:-}"/build-tools/*/aapt "${ANDROID_SDK_ROOT:-}"/build-tools/*/aapt; do
+            if [[ -x "$candidate" ]]; then lumo_aapt=$candidate; fi
+        done
+    fi
+    if [[ -n "$lumo_aapt" && -x "$lumo_aapt" ]]; then
+        "$lumo_aapt" dump badging "$lumo_apk" 2>&1 | \
+            grep -E '^(package:|sdkVersion:|targetSdkVersion:|native-code:)' || true
+    fi
+} 2>&1 | tee -a "$lumo_log"
+if ! timeout 60s "$lumo_adb" "${lumo_adb_args[@]}" install -r "$lumo_apk" 2>&1 | tee -a "$lumo_log"; then
     fail "adb install failed; see install output in the log"
 fi
 adb_cmd shell am force-stop "$lumo_package" >> "$lumo_log" 2>&1 || fail "Could not stop previous app instance"
