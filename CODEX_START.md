@@ -28,3 +28,11 @@ der Karts. Nahaufnahmen behalten die modellierten Tierfahrer und Animationen.
 Prüfungen starten mit `GODOT_BIN=/pfad/zu/godot bash tools/validate_project.sh`.
 Engine: Godot 4.6.3 stable. Ergebnisse und Downloads nur nach erfolgreichem
 Build als abgeschlossen bezeichnen.
+
+Installationskorrektur: Der alte Strip-Schritt komprimierte `resources.arsc`.
+Android 11+ lehnt das bei targetSdk >= 30 ab, selbst wenn Signatur und
+`zipalign -c` bestehen. `tools/package_android_apk.py` erhält das ZIP-Format,
+speichert die Ressourcentabelle unkomprimiert und prüft deren Datenoffset
+nach dem Ausrichten und Signieren. CI und lokaler Android-Bau verwenden
+denselben Helfer; Build Tools 35 richten gespeicherte native Bibliotheken
+zusätzlich auf 16-KB-Grenzen aus. Paketname und Signatur bleiben gleich.
