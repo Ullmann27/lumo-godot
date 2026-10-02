@@ -90,7 +90,7 @@ body {
 	z-index: 1;
 }
 		</style>
-		
+		<meta name="description" content="Lumos 3D-Abenteuer: Insel-Cup und Wolkeninseln mit Lernstopps für die Volksschule.">
 	</head>
 	<body>
 		<canvas id="canvas">
@@ -117,7 +117,7 @@ const GODOT_CONFIG = {
     "experimentalVK": false,
     "focusCanvas": true,
     "gdextensionLibs": [],
-    "fileSizes": {"index.pck": 20196368, "index.wasm": 37700666},
+    "fileSizes": {"index.pck": 20215544, "index.wasm": 37700666},
     "serviceWorker": ""
 };
 const GODOT_THREADS_ENABLED = false;
@@ -223,5 +223,8 @@ const engine = new Engine(GODOT_CONFIG);
 	}
 }());
 		</script>
-	</body>
+	<style>#lumo-help{position:fixed;z-index:20;bottom:14px;left:50%;transform:translateX(-50%);max-width:90%;padding:14px 20px;border-radius:16px;background:#fff9ed;color:#343457;font:16px system-ui;text-align:center}#lumo-help a{color:#5441b7}#lumo-help[hidden]{display:none}</style>
+<aside id="lumo-help" hidden>Dein Browser kann diese 3D-Spiele hier nicht anzeigen. Du kannst sie mit der Android-App spielen: <a href="https://github.com/Ullmann27/lumo-godot/releases" target="_blank" rel="noopener">Lumo 3D herunterladen</a>.</aside>
+<script>const notice=document.getElementById('status-notice');if(notice){new MutationObserver(()=>{if(notice.textContent.includes('WebGL2'))document.getElementById('lumo-help').hidden=false;}).observe(notice,{childList:true,subtree:true});}</script>
+</body>
 </html>
