@@ -2,7 +2,7 @@ name: Lumo 3D Build
 
 on:
   push:
-    branches: [main, codex/lumo-island-cup-2026-10-02]
+    branches: [main, codex/lumo-island-cup-2026-10-02, codex/lumo-kart-sunharbor-2026-10-02]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -181,24 +181,52 @@ jobs:
 
       - name: Render real engine screenshots
         run: |
-          xvfb-run -a godot --rendering-method gl_compatibility --script scripts/tests/kart_render.gd
-          xvfb-run -a godot --rendering-method gl_compatibility --script scripts/tests/kart_render.gd -- --game=jump
+          xvfb-run -a godot --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_showcase.gd 2>&1 | tee /tmp/lumo-showcase.log
+          xvfb-run -a godot --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/app_showcase.gd 2>&1 | tee /tmp/lumo-app-showcase.log
+          xvfb-run -a godot --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_render.gd -- --game=jump 2>&1 | tee /tmp/lumo-jump-showcase.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-showcase.log /tmp/lumo-app-showcase.log /tmp/lumo-jump-showcase.log; then exit 1; fi
+          test -s exports/screenshots/sonnenhafen-driver.png
+          test -s exports/screenshots/lumo-existing-home.png
+          test -s exports/screenshots/lumo-jump-3d.png
+
+      - name: Record package checksums
+        run: |
+          sha256sum exports/android/lumo3d-debug.apk exports/packages/lumo-godot-web.zip exports/packages/lumo-godot-linux.zip > exports/packages/SHA256SUMS.txt
+
+      - name: Preserve Android package and real screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sonnenhafen-android-and-images
+          path: |
+            exports/android/lumo3d-debug.apk
+            exports/screenshots/*.png
+            exports/packages/SHA256SUMS.txt
+          if-no-files-found: error
 
       - name: Publish tested packages
         if: github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: school-3d-${{ github.run_number }}
-          name: Lumo Insel-Cup 3D Test ${{ github.run_number }}
+          name: Lumo Sonnenhafen 3D Test ${{ github.run_number }}
           target_commitish: ${{ github.sha }}
           prerelease: true
           make_latest: false
-          body: "Zwei echte 3D-Spiele mit Lumo: Insel-Cup mit Gegnern, Drift-Boosts und Lernstopps; Wolkeninseln mit Sprüngen, echten Kollisionen, Kontrollpunkten und Lerninseln. Klasse und Fach sind in der Spieleauswahl wählbar. Godot-Import, 4000 Aufgabenvarianten und Spielmechanik geprüft. Fotos zeigen die echte laufende Engine. Android-Paket für arm64; Geräte- und Unterrichtstest ausständig."
+          body: |
+            Sonnenhafen-Cup für Android: Neon-Analogstick, Drift/Boost mit zweitem Daumen,
+            sechs Tierfahrer, 398m Hafenstrecke, Brücken, Lernfragen während der Fahrt,
+            Pause und gespeicherte Runden. Neu: Display-Cutouts/Fold-Resize, räumliche
+            Farb-Batches und Fahrzeug-LOD. Tests prüfen zwei vollständige Rennen,
+            4000 Aufgabenvarianten, Zweifingerbedienung und GPU-Farbdaten.
+            Die Bilder stammen aus der laufenden Engine. Ziel sind flüssige 60 FPS;
+            echte Android-Leistungsmessung und die endgültige Grafikqualität bleiben offen.
+            Separate Godot-Spiel-App dev.ullmann.lumo3d, arm64. Kein Flutter-App-Update.
           files: |
             exports/packages/lumo-godot-linux.zip
             exports/packages/lumo-godot-web.zip
             exports/android/lumo3d-debug.apk
             exports/screenshots/*.png
+            exports/packages/SHA256SUMS.txt
 
       - name: Publish trial on existing GitHub Pages
         if: github.event_name != 'pull_request'
@@ -206,5 +234,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: exports/web
-          destination_dir: island-cup
+          destination_dir: ${{ github.ref_name == 'codex/lumo-kart-sunharbor-2026-10-02' && 'sonnenhafen' || 'island-cup' }}
           keep_files: true

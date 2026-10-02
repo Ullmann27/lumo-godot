@@ -1,0 +1,30 @@
+# Lumo Sonnenhafen – Fortsetzung
+
+Aktiver Spielstand: Sonnenhafen-Cup im Zweig
+`codex/lumo-kart-sunharbor-2026-10-02`. Stand: 2. Oktober 2026.
+
+- [Implementierung, Grenzen und Prüfungen](docs/SONNENHAFEN_2026-10-02.md)
+- Rennablauf: `scripts/games/kart_island.gd`
+- Hafenwelt: `scripts/games/kart_world.gd`
+- Fahrzeuge und Tierfahrer: `scripts/games/kart_vehicle.gd`
+- Touchsteuerung: `kart_joystick.gd`, `kart_touch_action.gd`
+- Android-/Web-Bau und echte Bilder: `.github/workflows/build.yml`
+
+Die Flutter-Lernapp liegt getrennt in
+[Ullmann27/lumo-lernen](https://github.com/Ullmann27/lumo-lernen).
+Ihre APK 274 ist kein Sonnenhafen-Spielpaket.
+
+Der Nutzer erwartet eine deutlich hochwertigere Kartwelt, einen analogen
+Neon-Stick links, Daumenaktionen rechts und flüssige 60 FPS. Vor wesentlichen
+Änderungen sollen echte Bilder gezeigt werden. Das aktuelle Rennen bleibt
+eine überprüfbare Ausbaustufe: eine Strecke mit geführter Fahrt. Weitere
+Strecken, freie Fahrphysik und die endgültige Grafikqualität sind offen.
+60 FPS müssen auf einem echten Android-Gerät gemessen werden.
+
+Diese Fortsetzung berücksichtigt Display-Cutouts und Fold-Resizes, bündelt
+farbige Dekorationen in räumlichen GPU-Batches und reduziert die Zeichenarbeit
+der Karts. Nahaufnahmen behalten die modellierten Tierfahrer und Animationen.
+
+Prüfungen starten mit `GODOT_BIN=/pfad/zu/godot bash tools/validate_project.sh`.
+Engine: Godot 4.6.3 stable. Ergebnisse und Downloads nur nach erfolgreichem
+Build als abgeschlossen bezeichnen.

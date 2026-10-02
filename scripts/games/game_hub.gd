@@ -1,5 +1,6 @@
 extends Node3D
 
+
 func _ready() -> void:
 	var world := WorldEnvironment.new()
 	var env := Environment.new()
@@ -33,7 +34,7 @@ func _ready() -> void:
 	safe.add_child(column)
 	column.add_child(_button("‹ Zur 3D-Welt", func(): SceneRouter.goto("home")))
 	column.add_child(_label("Lumos 3D-Abenteuer", 32))
-	column.add_child(_label("Wähle dein Spiel. An den Lernstopps wartet Lumo auf dich.", 23))
+	column.add_child(_label("Wähle dein Spiel. Beim Kartfahren lädt Lernen deinen Boost.", 23))
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(spacer)
@@ -58,11 +59,15 @@ func _ready() -> void:
 	subject.selected = 1 if SceneRouter.launch_options.get("subject", "") == "Deutsch" else 0
 	choices.add_child(subject)
 	var launch := func(scene: String):
-		SceneRouter.launch_options = {"grade": grade.selected + 1, "subject": "Deutsch" if subject.selected == 1 else "Mathematik"}
+		SceneRouter.launch_options = {
+			"grade": grade.selected + 1,
+			"subject": "Deutsch" if subject.selected == 1 else "Mathematik"
+		}
 		SceneRouter.goto(scene)
-	column.add_child(_button("Insel-Cup · Kart fahren", func(): launch.call("kart")))
+	column.add_child(_button("Sonnenhafen-Cup · Kart fahren", func(): launch.call("kart")))
 	column.add_child(_button("Wolkeninseln · Springen", func(): launch.call("jump")))
 	column.add_child(_button("Sterne in der 3D-Welt sammeln", func(): launch.call("stars")))
+
 
 func _label(text: String, size: int) -> Label:
 	var label := Label.new()
@@ -72,6 +77,7 @@ func _label(text: String, size: int) -> Label:
 	label.add_theme_font_size_override("font_size", size)
 	label.add_theme_color_override("font_color", Color("343457"))
 	return label
+
 
 func _button(text: String, action: Callable) -> Button:
 	var button := Button.new()
