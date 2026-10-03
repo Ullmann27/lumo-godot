@@ -9,6 +9,7 @@ class FakeHost:
 	var rewards: Array[Dictionary] = []
 	var returns: Array[Dictionary] = []
 	var accept_rewards: bool = true
+	var accept_returns: bool = true
 
 	func getLaunchOptions() -> String:
 		return JSON.stringify(
@@ -21,8 +22,11 @@ class FakeHost:
 		rewards.append(JSON.parse_string(payload))
 		return true
 
-	func returnToApp(destination: String, payload: String) -> void:
+	func returnToApp(destination: String, payload: String) -> bool:
+		if not accept_returns:
+			return false
 		returns.append({"destination": destination, "payload": JSON.parse_string(payload)})
+		return true
 
 
 func _initialize() -> void:
@@ -31,6 +35,7 @@ func _initialize() -> void:
 
 func _run() -> void:
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
+	DirAccess.remove_absolute("user://lumo_host_pending_rewards.cfg")
 	var bridge = root.get_node("HostBridge")
 	assert(not bridge.is_embedded(), "Standalone has no native host")
 	assert(not bridge.return_to_app("games"))
@@ -42,10 +47,13 @@ func _run() -> void:
 	root.get_node("ProgressStore").synchronize_host_wallet()
 	assert(root.get_node("ProgressStore").total_stars() == 31)
 	fake.accept_rewards = false
-	assert(not bridge.reward({"resultId": "retry-test", "stars": 3}))
+	var retry_payload := {
+		"resultId": "retry-test", "status": "completed", "game": "kart", "stars": 3, "solved": 0
+	}
+	assert(not bridge.reward(retry_payload))
 	assert(not bridge._result_ids.has("retry-test"))
 	fake.accept_rewards = true
-	assert(bridge.reward({"resultId": "retry-test", "stars": 3}))
+	assert(bridge.reward(retry_payload))
 	assert(fake.rewards.size() == 1)
 	fake.rewards.clear()
 	assert(bridge.launch_options().scene == "kart")
@@ -92,13 +100,43 @@ func _run() -> void:
 	assert(game.paused and game.result_id == first_id, "Resume preserves reward identity")
 	game._resume()
 	game.correct_count = 3
+	fake.accept_rewards = false
 	game._finish()
+	assert(fake.rewards.is_empty())
+	assert(
+		bridge.reward_is_recoverable(first_id), "Failed host reward has a durable completed backup"
+	)
+	assert(FileAccess.file_exists(bridge.PENDING_REWARDS))
+	var recovered = bridge.get_script().new()
+	root.add_child(recovered)
+	recovered._host = fake
+	recovered._options = bridge.launch_options()
+	recovered._load_pending_rewards()
+	assert(recovered._pending_rewards[first_id].status == "completed")
+	assert(recovered._pending_rewards[first_id].stars == 9)
+	assert(not recovered.retry_pending_rewards(), "Another failed host write keeps the backup")
+	recovered.queue_free()
+	await process_frame
+	game._return_to_app("learn")
+	assert(fake.returns.size() == 1 and not bridge._return_pending)
+	assert(game.finished and game.modal.visible and game.message.text == bridge.SAVE_FAILURE)
+	assert(game.modal_column.has_node("HostSaveFailure"))
+	fake.accept_rewards = true
+	fake.accept_returns = false
+	game._return_to_app("learn")
+	assert(fake.returns.size() == 1 and not bridge._return_pending)
+	assert(
+		game.finished and game.modal.visible,
+		"Failed native final return leaves result and engine usable"
+	)
 	assert(fake.rewards.size() == 1 and fake.rewards[0].stars == 9)
 	assert(fake.rewards[0].resultId == first_id and fake.rewards[0].status == "completed")
 	game._finish()
 	bridge.reward(game.result_payload)
 	assert(fake.rewards.size() == 1, "Completed reward must be idempotent")
+	fake.accept_returns = true
 	game._return_to_app("learn")
+	assert(not FileAccess.file_exists(bridge.PENDING_REWARDS))
 	assert(fake.returns.size() == 2 and fake.returns[1].destination == "learn")
 	assert(fake.returns[1].payload.resultId == first_id and fake.returns[1].payload.stars == 9)
 	game.queue_free()

@@ -437,6 +437,8 @@ func _return_to_app(destination: String) -> void:
 	_save_session()
 	if finished:
 		HostBridge.reward(result_payload)
+		if HostBridge.reward_is_recoverable(result_id):
+			DirAccess.remove_absolute(SESSION)
 	var payload: Dictionary = (
 		result_payload
 		if finished
@@ -449,8 +451,21 @@ func _return_to_app(destination: String) -> void:
 			"subject": subject
 		}
 	)
-	if not HostBridge.return_to_app(destination, payload):
-		SceneRouter.goto("learn" if destination == "learn" else "games")
+	if HostBridge.is_embedded():
+		if not HostBridge.return_to_app(destination, payload):
+			_show_host_save_failure()
+		return
+	SceneRouter.goto("learn" if destination == "learn" else "games")
+
+
+func _show_host_save_failure() -> void:
+	message.text = HostBridge.SAVE_FAILURE
+	if not modal_column.has_node("HostSaveFailure"):
+		var label := _label(HostBridge.SAVE_FAILURE, 20)
+		label.name = "HostSaveFailure"
+		label.add_theme_color_override("font_color", Color("a14f3b"))
+		modal_column.add_child(label)
+		modal_column.move_child(label, 1)
 
 
 func _finish() -> void:
@@ -458,7 +473,6 @@ func _finish() -> void:
 		return
 	finished = true
 	_stop_input()
-	DirAccess.remove_absolute(SESSION)
 	var stars: int = 3 + completed_questions.size() * 2 + collected.size()
 	ProgressStore.add_stars(stars)
 	result_payload = {
@@ -471,7 +485,9 @@ func _finish() -> void:
 		"grade": grade,
 		"subject": subject
 	}
-	HostBridge.reward(result_payload)
+	var reward_accepted: bool = HostBridge.reward(result_payload)
+	if HostBridge.reward_is_recoverable(result_id):
+		DirAccess.remove_absolute(SESSION)
 	_clear_modal()
 	modal_column.add_child(_label("Wolkeninseln geschafft! ★", 29))
 	modal_column.add_child(
@@ -487,6 +503,8 @@ func _finish() -> void:
 	modal_column.add_child(_button("Zur Spieleauswahl", func(): _return_to_app("games")))
 	modal_column.add_child(_button("Zum Lernen", func(): _return_to_app("learn")))
 	modal.show()
+	if HostBridge.is_embedded() and not reward_accepted:
+		_show_host_save_failure()
 	print("[Jump] finished: stars=%d questions=%d" % [stars, completed_questions.size()])
 
 
