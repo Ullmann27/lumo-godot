@@ -279,12 +279,33 @@ Geprüfter Programmstand: `028ba1b61b835ac000e963bcf8456cb90db56f51`.
   p95 **238,6 ms**, 492 Draw Calls. Dies ist eine andere Maschine als die
   oben dokumentierte lokale Messung und weiterhin kein 60-FPS-Nachweis.
 
-Die Ausbaustufe ist damit technisch als Teststand überprüfbar. **60 FPS auf
+Die Desktop-Ausbaustufe ist damit technisch als Teststand überprüfbar. **60 FPS auf
 echter Zielhardware, die endgültige Referenzgrafik und die unter „Offen“
 genannten Anforderungen bleiben offen.** Die Android-Prüfung verwendet
 einen x86_64-Emulator; die ausgelieferte arm64-Datei benötigt zusätzlich
 einen echten Gerätetest. Spätere Dokumentationskorrekturen ändern diesen
 geprüften Programmstand nicht.
+
+### Sichtprüfung des Android-Bildes: zusätzlicher Fehler
+
+Das tatsächliche Android-Bild aus Test 41 zeigte trotz erfolgreicher
+Startmarker eine schwarze rechte Bildschirmhälfte. **Test 41 ist daher
+keine Freigabe der Android-Darstellung.** Das Rennen wartet jetzt vor dem
+Welt-/HUD-Aufbau auf eine tatsächlich ins Querformat gewechselte native
+Fensterfläche und zwei abgeschlossene Renderframes. Ein Abbruch während
+dieser Initialisierung überschreibt keinen gültigen Renn-Checkpoint.
+
+Die native Bildprüfung liest den echten Screenshot und prüft Querformat
+sowie sichtbaren Inhalt in allen drei Bildschirmdritteln. Schwarze/
+abgeschnittene Bereiche brechen die Pipeline ab. Das alte fehlerhafte
+Android-Bild wird von dieser Prüfung nachweislich abgewiesen; dessen PNG
+wurde zusätzlich an fünf Stellen mit Pillow verglichen. Die Prüfung
+wartet bis zu 40 Sekunden auf einen vollständig gerenderten Frame, prüft
+währenddessen weiter Prozess und Fehlerlog und akzeptiert keinen Fehler
+als erfolgreichen Start. Bild-/Log-Diagnose bleibt auch bei Fehlern erhalten.
+
+26 Python-Prüfungen bestehen (drei neue Bild-Regressionen); die erneute
+installierte Android-Bildprüfung für diesen Programmstand steht noch aus.
 
 Lokal erneut bestanden: 23 Python-Prüfungen, zwei vollständige Rennen,
 4000 Aufgabenvarianten, echte Zweifinger-GUI-Ereignisse, Safe-Area-Resize,

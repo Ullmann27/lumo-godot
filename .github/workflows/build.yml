@@ -203,7 +203,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lumo-android-startup-diagnostics
-          path: exports/android/android-startup.log
+          path: |
+            exports/android/android-startup.log
+            exports/android/sonnenhafen-android-start.png
           if-no-files-found: ignore
 
       - name: Strip arm64-only + sign APK

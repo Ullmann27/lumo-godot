@@ -75,6 +75,7 @@ var previous_orientation: int = DisplayServer.SCREEN_PORTRAIT
 
 
 func _ready() -> void:
+	set_physics_process(false)
 	rng.randomize()
 	grade = clampi(int(SceneRouter.launch_options.get("grade", 1)), 1, 4)
 	subject = (
@@ -87,6 +88,10 @@ func _ready() -> void:
 	get_window().content_scale_size = Vector2i(1280, 720)
 	if OS.has_feature("android") or OS.has_feature("ios"):
 		DisplayServer.screen_set_orientation(DisplayServer.SCREEN_SENSOR_LANDSCAPE)
+		var viewport_ready: bool = await _wait_for_landscape()
+		if not viewport_ready:
+			push_error("Kart landscape surface did not resize before scene initialization")
+			return
 	elif DisplayServer.get_name() != "headless" and not OS.has_feature("web"):
 		get_window().size = Vector2i(1280, 720)
 	_build_world()
@@ -100,6 +105,26 @@ func _ready() -> void:
 		_pause()
 		message.text = "Dein Rennen ist gespeichert. Fahre weiter, wenn du bereit bist."
 	print("[Kart] ready: Sonnenhafen, length=%.1fm, six racers" % track_length)
+	set_physics_process(true)
+
+
+func _wait_for_landscape() -> bool:
+	# Native rotation is asynchronous. Build the heavy scene after the surface resizes.
+	var deadline: int = Time.get_ticks_msec() + 20000
+	while Time.get_ticks_msec() < deadline:
+		var pixels: Vector2i = DisplayServer.window_get_size()
+		if pixels.x > pixels.y and get_window().size.x > get_window().size.y:
+			await RenderingServer.frame_post_draw
+			await RenderingServer.frame_post_draw
+			print(
+				(
+					"[KartViewport] landscape surface=%s logical=%s"
+					% [pixels, get_viewport().get_visible_rect().size]
+				)
+			)
+			return true
+		await get_tree().process_frame
+	return false
 
 
 func _build_world() -> void:
@@ -757,7 +782,7 @@ func _save_preferences() -> void:
 
 
 func _save_session() -> void:
-	if finished or abandoned:
+	if finished or abandoned or not is_instance_valid(player):
 		return
 	var config := ConfigFile.new()
 	config.set_value("race", "version", 1)
