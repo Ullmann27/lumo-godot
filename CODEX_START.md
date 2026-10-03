@@ -20,8 +20,12 @@ Nach dem tatsächlichen „Zum Lernen“-Touch verschwand jedoch der gesamte
 Emulator. Host-gfxstream meldete fehlende GL-Kontexte; eine Renderer-Störung
 ist wahrscheinlich, ohne gesicherten Gastlog/Exit-Signal kein belegter
 App-Crash. Der vollständige Androidlauf bleibt **offen und unveröffentlicht**.
-Die Testumgebung wird korrigiert; die bereits gebauten APK-Bytes bleiben
-unverändert. Aktueller Prüfstand und endgültiger Download werden im
+Der folgende KVM-Lauf `37132721782` mit Emulator 36.3.10 bestätigt auch den
+nativen Lern-Rückweg: Flutter bleibt aktiv, die Engine beendet, Akademie und
+lokale Plusaufgabe mit Hilfe/Antwort/gespeichertem Fortschritt funktionieren.
+Dieser Gesamtlauf scheiterte erst an der Memory-QA-Beobachtung. Das vollständige
+Memory-/Karten-/Fold-/Neustartergebnis und der Download bleiben offen.
+Die bereits gebauten APK-Bytes bleiben unverändert. Aktueller Prüfstand und endgültiger Download werden im
 [Flutter-Integrationsbericht](https://github.com/Ullmann27/lumo-lernen/blob/codex/lumo-unified-android-2026-10-03/docs/UNIFIED_ANDROID_2026-10-03.md)
 geführt. Kein Test auf einem echten Nutzerhandy.
 
