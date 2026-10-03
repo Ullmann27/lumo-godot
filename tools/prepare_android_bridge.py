@@ -54,7 +54,7 @@ for manifest in (root/'android/build').rglob('AndroidManifest.xml'):
     activity.set(a('resizeableActivity'), 'true')
     changes = set((activity.get(a('configChanges')) or '').split('|')) - {''}
     changes.update(('orientation', 'screenSize', 'smallestScreenSize', 'density',
-                    'uiMode', 'colorMode', 'fontScale', 'fontWeightAdjustment'))
+                    'uiMode', 'colorMode', 'fontScale', 'fontWeightAdjustment', 'assetsPaths'))
     activity.set(a('configChanges'), '|'.join(sorted(changes)))
     # Godot 4.6 exposes its launcher alias; the real activity stays private.
     launcher = next((e for e in doc.findall('application/activity-alias')

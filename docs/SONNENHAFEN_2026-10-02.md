@@ -236,7 +236,18 @@ Der URI-Filter lag auf Godots nicht exportierter Activity. Er liegt jetzt
 auf dem vorhandenen öffentlichen Launcher-Alias, beschränkt auf die Hosts
 `kart`, `jump` und `home`. Die Activity bleibt privat. Der Python-Test
 verwendet die echte Alias-Struktur und prüft auch wiederholte Vorbereitung
-sowie unveränderten MAIN-Start. Erneute Android-Route-Prüfung noch ausstehend.
+sowie unveränderten MAIN-Start. Der Android-Route-Test 37086224200 besteht.
+Der parallele Lauf 37086221446 fand jedoch weiterhin eine Activity-Neuerstellung
+beim Einspielen von System-Overlays, noch vor dem Engine-Start. Deshalb wird
+zusätzlich `assetsPaths` verarbeitet. Godots 3D-Inhalte und Farben liegen im
+PCK; sie beziehen keine dynamischen Farbdaten aus Androids Ressourcen.
+Die erneute Prüfung nach dieser letzten Korrektur ist noch ausstehend.
+
+Quelle für diesen konkreten Android-Konfigurationsfall:
+[Android Developers, AndroidManifestActivity_configChanges](https://developer.android.com/reference/android/R.styleable#AndroidManifestActivity_configChanges),
+abgerufen am 3. Oktober 2026. `assetsPaths` behandelt Änderungen an
+Ressourcenpfaden, beispielsweise neu aktivierte Runtime-Overlays. Der
+Starttest bricht außerdem bei Godot-Engine-Fehlern aus dem nativen Log ab.
 
 Lokal erneut bestanden: 23 Python-Prüfungen, zwei vollständige Rennen,
 4000 Aufgabenvarianten, echte Zweifinger-GUI-Ereignisse, Safe-Area-Resize,

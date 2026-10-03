@@ -101,8 +101,9 @@ fi
 
 capture_logcat() {
     adb_cmd logcat -d -v threadtime > "$lumo_capture" 2>&1 || fail "Could not capture logcat"
-    if grep -Eiq "Couldn.t load project|Could not load.*(project|main pack)|Failed.*(main pack|project\.binary|\.pck)|FATAL EXCEPTION|Fatal signal|SIGSEGV|SIGABRT|SCRIPT ERROR|Parse Error" "$lumo_capture"; then
-        grep -Ein "Couldn.t load project|Could not load.*(project|main pack)|Failed.*(main pack|project\.binary|\.pck)|FATAL EXCEPTION|Fatal signal|SIGSEGV|SIGABRT|SCRIPT ERROR|Parse Error" "$lumo_capture" | head -12 >&2 || true
+    local error_pattern="Couldn.t load project|Could not load.*(project|main pack)|Failed.*(main pack|project\.binary|\.pck)|FATAL EXCEPTION|Fatal signal|SIGSEGV|SIGABRT|SCRIPT ERROR|Parse Error|godot[[:space:]]*:.*ERROR:"
+    if grep -Eiq "$error_pattern" "$lumo_capture"; then
+        grep -Ein "$error_pattern" "$lumo_capture" | head -12 >&2 || true
         fail "Project loading, script, Java or native crash detected"
     fi
 }

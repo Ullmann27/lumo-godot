@@ -50,4 +50,4 @@ class NativeRouteBridgeTest(unittest.TestCase):
             self.assertEqual(activity.get(ns + 'screenOrientation'), 'portrait')
             self.assertEqual(activity.get(ns + 'resizeableActivity'), 'true')
             changes = set(activity.get(ns + 'configChanges').split('|'))
-            self.assertTrue({'orientation', 'screenSize', 'colorMode', 'uiMode'} <= changes)
+            self.assertTrue({'orientation', 'screenSize', 'colorMode', 'uiMode', 'assetsPaths'} <= changes)
