@@ -29,6 +29,22 @@ class FakeHost:
 		return true
 
 
+class IntegerHost:
+	extends Node
+	# Mirror JavaObject's actual JNI jboolean -> Variant INT return type.
+	var response: Variant = 1
+	var reward_calls: Array[Dictionary] = []
+	var return_calls: Array[Dictionary] = []
+
+	func reward(payload: String) -> Variant:
+		reward_calls.append(JSON.parse_string(payload))
+		return response
+
+	func returnToApp(destination: String, payload: String) -> Variant:
+		return_calls.append({"destination": destination, "payload": JSON.parse_string(payload)})
+		return response
+
+
 func _initialize() -> void:
 	call_deferred("_run")
 
@@ -51,6 +67,7 @@ func _run() -> void:
 	var bridge = root.get_node("HostBridge")
 	assert(not bridge.is_embedded(), "Standalone has no native host")
 	assert(not bridge.return_to_app("games"))
+	_test_integer_ack_bridge(bridge)
 	var fake := FakeHost.new()
 	root.add_child(fake)
 	bridge._host = fake
@@ -227,3 +244,56 @@ func _run() -> void:
 		"[HostBridgeTests] PASS: jump native reward, question pause, save/resume identity, Back to games"
 	)
 	quit(0)
+
+
+func _test_integer_ack_bridge(bridge: Node) -> void:
+	assert(bridge.durable_ack(true) and bridge.durable_ack(1))
+	for rejected in [false, 0, 2, null, "1", "true", 1.0]:
+		assert(not bridge.durable_ack(rejected), "Only BOOL true or INT 1 confirms durable storage")
+	var host := IntegerHost.new()
+	root.add_child(host)
+	bridge._host = host
+	bridge._options = {"sessionId": "integer-ack"}
+	var payload := {
+		"resultId": "integer-result",
+		"status": "completed",
+		"game": "kart",
+		"stars": 11,
+		"solved": 4
+	}
+	assert(bridge.reward(payload), "Actual JNI INT 1 must acknowledge the saved reward")
+	assert(
+		bridge.reward(payload) and host.reward_calls.size() == 1,
+		"Acknowledged reward is deduplicated"
+	)
+	assert(not FileAccess.file_exists(bridge.PENDING_REWARDS))
+	for rejected in [false, 0, 2, null, "1", "true", 1.0]:
+		host.response = rejected
+		assert(not bridge.return_to_app("games", payload))
+		assert(not bridge._return_pending, "Rejected native return leaves the engine open")
+		var pending := payload.duplicate(true)
+		pending.resultId = "integer-pending"
+		assert(not bridge.reward(pending))
+		assert(not bridge._result_ids.has("integer-pending"))
+		assert(bridge.reward_is_recoverable("integer-pending"))
+		assert(
+			FileAccess.file_exists(bridge.PENDING_REWARDS),
+			"Failed ACK retains durable retry backup"
+		)
+		assert(not bridge.retry_pending_rewards())
+		host.response = 1
+		assert(bridge.retry_pending_rewards())
+		assert(not FileAccess.file_exists(bridge.PENDING_REWARDS))
+		bridge._result_ids.erase("integer-pending")
+	assert(bridge.return_to_app("learn", payload))
+	assert(bridge._return_pending and host.return_calls[-1].destination == "learn")
+	var return_count: int = host.return_calls.size()
+	assert(bridge.return_to_app("learn", payload) and host.return_calls.size() == return_count)
+	bridge._host = null
+	bridge._options.clear()
+	bridge._result_ids.clear()
+	bridge._return_pending = false
+	host.queue_free()
+	print(
+		"[HostBridgeTests] PASS: actual JNI integer ACK, strict rejection, reward dedup/backup, return"
+	)

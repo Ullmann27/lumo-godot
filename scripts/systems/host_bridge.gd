@@ -63,6 +63,17 @@ func new_result_id() -> String:
 	)
 
 
+static func durable_ack(accepted: Variant) -> bool:
+	# Godot 4.6.3 Android JavaObject returns JNI jboolean as Variant(uint8_t),
+	# hence TYPE_INT 0/1. Keep desktop/mock BOOL support without coercing other
+	# numbers, strings or nil into a successful durable storage acknowledgement.
+	if typeof(accepted) == TYPE_BOOL:
+		return accepted
+	if typeof(accepted) == TYPE_INT:
+		return accepted == 1
+	return false
+
+
 func reward(payload: Dictionary) -> bool:
 	var result_id: String = str(payload.get("resultId", ""))
 	if result_id.is_empty():
@@ -75,7 +86,7 @@ func reward(payload: Dictionary) -> bool:
 		_pending_rewards[result_id] = payload.duplicate(true)
 		_save_pending_rewards()
 		var accepted = _host.call("reward", JSON.stringify(payload))
-		if accepted != true:
+		if not durable_ack(accepted):
 			push_warning("[LumoHost] reward not saved; retry on return: %s" % result_id)
 			return false
 		print("[LumoHost] reward reported: %s" % result_id)
@@ -138,7 +149,7 @@ func return_to_app(destination: String, payload: Dictionary = {}) -> bool:
 	var result: Dictionary = payload.duplicate(true)
 	result["sessionId"] = str(_options.get("sessionId", ""))
 	var accepted = _host.call("returnToApp", target, JSON.stringify(result))
-	if accepted != true:
+	if not durable_ack(accepted):
 		return_failed.emit(SAVE_FAILURE)
 		return false
 	_return_pending = true
