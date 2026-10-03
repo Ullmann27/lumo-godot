@@ -1,7 +1,12 @@
 # Lumo Sonnenhafen – Fortsetzung
 
 Aktiver Spielstand: Sonnenhafen-Cup im Zweig
-`codex/lumo-kart-sunharbor-2026-10-02`. Stand: 2. Oktober 2026.
+`codex/lumo-kart-sunharbor-2026-10-02`. Stand: 3. Oktober 2026.
+
+[Geprüfte Testpakete und echte Bilder: school-3d-41](https://github.com/Ullmann27/lumo-godot/releases/tag/school-3d-41).
+Programmstand `028ba1b61b835ac000e963bcf8456cb90db56f51`: beide CI-Läufe
+bestanden, einschließlich installiertem Android-Start, direktem Kart-URI
+und Querformatwechsel. 60 FPS auf echter Hardware bleiben offen.
 
 - [Implementierung, Grenzen und Prüfungen](docs/SONNENHAFEN_2026-10-02.md)
 - Rennablauf: `scripts/games/kart_island.gd`

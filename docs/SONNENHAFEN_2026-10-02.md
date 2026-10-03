@@ -246,7 +246,7 @@ GLSL-Linkfehler im alten SwiftShader-4.0-GLES-Treiber des Emulators:
 `GL_MAX_FRAGMENT_UNIFORM_VECTORS (261)`. CI nutzt deshalb jetzt den aktuellen
 `swangle`-Modus (ANGLE über SwiftShader). Die Fehlerprüfung bleibt unverändert
 streng; Fehler werden nicht herausgefiltert. Die erneute Prüfung mit diesem
-Backend ist bei Erstellung noch ausstehend.
+Backend besteht nun in beiden abschließenden Läufen (siehe Ergebnis unten).
 
 Quelle für diesen konkreten Android-Konfigurationsfall:
 [Android Developers, AndroidManifestActivity_configChanges](https://developer.android.com/reference/android/R.styleable#AndroidManifestActivity_configChanges),
@@ -261,6 +261,30 @@ Weitere technische Quellen, abgerufen am 3. Oktober 2026:
   derselbe Uniform-Fehler ist für den SwiftShader-GLES-Treiber berichtet.
   Das ist ein Anhaltspunkt für die Backend-Wahl, kein Nachweis, dass
   beliebige reale Geräte fehlerfrei rendern.
+
+### Abschließendes Ergebnis dieser Ausbaustufe
+
+Geprüfter Programmstand: `028ba1b61b835ac000e963bcf8456cb90db56f51`.
+- [Push-Prüfung 37087422681](https://github.com/Ullmann27/lumo-godot/actions/runs/37087422681): **bestanden**.
+- [PR-Prüfung 37087427932](https://github.com/Ullmann27/lumo-godot/actions/runs/37087427932): **bestanden**.
+- In beiden Läufen: installierter Android-Normalstart und direkter
+  Kart-URI samt Querformatwechsel; lebender Prozess, keine erkannten
+  Projekt-, Skript-, Java-, nativen Engine- oder Shader-Linkfehler.
+- APK-Verpackung, Signatur und Ausrichtung geprüft; exportiertes Linux-Spiel
+  gestartet. 23 Python-Prüfungen und alle oben genannten Engine-Regressionen
+  bestanden. Aktuelle Desktop-Bilder und ein Android-Emulator-Bild liegen bei.
+- [Testpakete und Bilder: school-3d-41](https://github.com/Ullmann27/lumo-godot/releases/tag/school-3d-41).
+  APK: arm64, 47.962.129 Bytes. Zusätzlich Linux-/Browser-Paket und SHA256SUMS.
+- Erneute CI-Renderprüfung (Software, 1280 × 720): normal p50 **225,8 ms**,
+  p95 **238,6 ms**, 492 Draw Calls. Dies ist eine andere Maschine als die
+  oben dokumentierte lokale Messung und weiterhin kein 60-FPS-Nachweis.
+
+Die Ausbaustufe ist damit technisch als Teststand überprüfbar. **60 FPS auf
+echter Zielhardware, die endgültige Referenzgrafik und die unter „Offen“
+genannten Anforderungen bleiben offen.** Die Android-Prüfung verwendet
+einen x86_64-Emulator; die ausgelieferte arm64-Datei benötigt zusätzlich
+einen echten Gerätetest. Spätere Dokumentationskorrekturen ändern diesen
+geprüften Programmstand nicht.
 
 Lokal erneut bestanden: 23 Python-Prüfungen, zwei vollständige Rennen,
 4000 Aufgabenvarianten, echte Zweifinger-GUI-Ereignisse, Safe-Area-Resize,
