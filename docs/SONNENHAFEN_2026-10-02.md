@@ -241,13 +241,26 @@ Der parallele Lauf 37086221446 fand jedoch weiterhin eine Activity-Neuerstellung
 beim Einspielen von System-Overlays, noch vor dem Engine-Start. Deshalb wird
 zusätzlich `assetsPaths` verarbeitet. Godots 3D-Inhalte und Farben liegen im
 PCK; sie beziehen keine dynamischen Farbdaten aus Androids Ressourcen.
-Die erneute Prüfung nach dieser letzten Korrektur ist noch ausstehend.
+Die strengere Engine-Fehlerprüfung in 37086838935/37086836048 zeigte außerdem
+GLSL-Linkfehler im alten SwiftShader-4.0-GLES-Treiber des Emulators:
+`GL_MAX_FRAGMENT_UNIFORM_VECTORS (261)`. CI nutzt deshalb jetzt den aktuellen
+`swangle`-Modus (ANGLE über SwiftShader). Die Fehlerprüfung bleibt unverändert
+streng; Fehler werden nicht herausgefiltert. Die erneute Prüfung mit diesem
+Backend ist bei Erstellung noch ausstehend.
 
 Quelle für diesen konkreten Android-Konfigurationsfall:
 [Android Developers, AndroidManifestActivity_configChanges](https://developer.android.com/reference/android/R.styleable#AndroidManifestActivity_configChanges),
 abgerufen am 3. Oktober 2026. `assetsPaths` behandelt Änderungen an
 Ressourcenpfaden, beispielsweise neu aktivierte Runtime-Overlays. Der
 Starttest bricht außerdem bei Godot-Engine-Fehlern aus dem nativen Log ab.
+
+Weitere technische Quellen, abgerufen am 3. Oktober 2026:
+- [Android Emulator: Grafikbeschleunigung](https://developer.android.com/studio/run/emulator-acceleration):
+  `swangle` ist ein dokumentierter Modus; `swiftshader_indirect` ist veraltet.
+- [Godot-Fehlerbericht #109550](https://github.com/godotengine/godot/issues/109550):
+  derselbe Uniform-Fehler ist für den SwiftShader-GLES-Treiber berichtet.
+  Das ist ein Anhaltspunkt für die Backend-Wahl, kein Nachweis, dass
+  beliebige reale Geräte fehlerfrei rendern.
 
 Lokal erneut bestanden: 23 Python-Prüfungen, zwei vollständige Rennen,
 4000 Aufgabenvarianten, echte Zweifinger-GUI-Ereignisse, Safe-Area-Resize,

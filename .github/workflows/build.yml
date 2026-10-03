@@ -195,7 +195,7 @@ jobs:
           target: google_apis
           arch: x86_64
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
+          emulator-options: -no-window -gpu swangle -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
           script: bash tools/test_android_startup.sh exports/android/lumo3d-emulator-test.apk
 
       - name: Preserve Android startup diagnostics
