@@ -13,4 +13,22 @@ func _ready() -> void:
 	await get_tree().process_frame
 	# Kurzer Splash-Moment damit der User wahrnimmt: App startet
 	await get_tree().create_timer(0.5).timeout
-	SceneRouter.goto("intro")
+	var options: Dictionary = {}
+	if OS.has_feature("web"):
+		var raw = JavaScriptBridge.eval(
+			"JSON.stringify(Object.fromEntries(new URL(window.location.href).searchParams))"
+		)
+		var parsed = JSON.parse_string(str(raw))
+		if parsed is Dictionary:
+			options = parsed
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--") and arg.contains("="):
+			var pair = arg.trim_prefix("--").split("=", true, 1)
+			options[pair[0]] = pair[1]
+	# A native host carries the child's actual selected grade and subject.
+	# It takes precedence over standalone command-line defaults.
+	if HostBridge.is_embedded():
+		options.merge(HostBridge.launch_options(), true)
+	SceneRouter.launch_options = options
+	var target: String = str(options.get("scene", ""))
+	SceneRouter.goto(target if target in ["kart", "jump", "home", "games"] else "games")
