@@ -22,12 +22,36 @@ func _assert_inside(control: Control, bounds: Rect2) -> void:
 	assert(rect.end.x <= bounds.end.x + 1 and rect.end.y <= bounds.end.y + 1)
 
 
+func _android_back() -> void:
+	root.propagate_notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	root.go_back_requested.emit()
+	await create_timer(0.05).timeout
+
+
+func _resume_touch() -> void:
+	var button: Button = game.modal_column.get_child(2)
+	assert(button.text == "Weiterfahren")
+	var at: Vector2 = button.get_global_rect().get_center()
+	_touch(4, at, true)
+	await process_frame
+	_touch(4, at, false)
+	await process_frame
+	assert(not game.paused, "Real GUI touch resumes the paused race")
+
+
 func _run() -> void:
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	root.size = Vector2i(1280, 720)
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
+	game.countdown = 3
+	await process_frame
+	await _android_back()
+	await process_frame
+	await process_frame
+	assert(game.paused and game.countdown == 3 and not quit_on_go_back)
+	await _resume_touch()
 	game.countdown = 0
 	game.racing = true
 	game.paused = false
@@ -66,7 +90,14 @@ func _run() -> void:
 	var title: Label = game.lesson_column.get_child(0).get_child(0)
 	assert(title.size.x > 300 and title.size.y < 60, "Lesson heading must remain horizontal")
 	assert(game.lesson.size.y < 300, "Lesson card must not cover the whole race")
-	game._pause()
+	var pending_answer: String = game.active_question.answer
+	await _android_back()
+	await process_frame
+	await process_frame
+	assert(game.paused and game.question_open and game.active_question.answer == pending_answer)
+	await _resume_touch()
+	assert(game.question_open and game.lesson.visible)
+	await _android_back()
 	await process_frame
 	await process_frame
 	assert(game.modal.get_global_rect().end.y <= root.size.y)
@@ -94,6 +125,9 @@ func _run() -> void:
 	game.queue_free()
 	await process_frame
 	print(
-		"[KartTouchTests] PASS: real two-finger GUI, release outside, learning/pause, scaled safe areas"
+		(
+			"[KartTouchTests] PASS: real two-finger GUI, window Back countdown/question pause, "
+			+ "touch resume, release outside, learning/pause, scaled safe areas"
+		)
 	)
 	quit(0)

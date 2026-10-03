@@ -35,6 +35,7 @@ var result_payload: Dictionary = {}
 var abandoned: bool = false
 var save_timer: float = 0.0
 var previous_auto_accept_quit: bool = true
+var previous_quit_on_go_back: bool = true
 
 
 func _ready() -> void:
@@ -45,7 +46,9 @@ func _ready() -> void:
 		subject = "Mathematik"
 	result_id = HostBridge.new_result_id()
 	previous_auto_accept_quit = get_tree().auto_accept_quit
+	previous_quit_on_go_back = get_tree().quit_on_go_back
 	get_tree().auto_accept_quit = false
+	get_tree().quit_on_go_back = false
 	_build_world()
 	_build_ui()
 	message.text = "Lumos Wolkeninseln\nPfeile zum Laufen · Springen über die Lücken"
@@ -587,3 +590,4 @@ func _notification(what: int) -> void:
 func _exit_tree() -> void:
 	_save_session()
 	get_tree().auto_accept_quit = previous_auto_accept_quit
+	get_tree().quit_on_go_back = previous_quit_on_go_back

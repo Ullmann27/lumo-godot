@@ -80,6 +80,7 @@ var previous_scale := Vector2i(720, 1280)
 var previous_size := Vector2i(720, 1280)
 var previous_orientation: int = DisplayServer.SCREEN_PORTRAIT
 var previous_auto_accept_quit: bool = true
+var previous_quit_on_go_back: bool = true
 
 
 func _ready() -> void:
@@ -92,7 +93,10 @@ func _ready() -> void:
 	result_id = HostBridge.new_result_id()
 	# Android Back is handled by the race; it must not kill an unsaved session.
 	previous_auto_accept_quit = get_tree().auto_accept_quit
+	previous_quit_on_go_back = get_tree().quit_on_go_back
 	get_tree().auto_accept_quit = false
+	# Android Back has its own SceneTree auto-quit, independent of window close.
+	get_tree().quit_on_go_back = false
 	_load_preferences()
 	previous_scale = get_window().content_scale_size
 	previous_size = get_window().size
@@ -983,6 +987,7 @@ func _notification(what: int) -> void:
 
 func _exit_tree() -> void:
 	get_tree().auto_accept_quit = previous_auto_accept_quit
+	get_tree().quit_on_go_back = previous_quit_on_go_back
 	if is_instance_valid(engine_player):
 		engine_player.stop()
 		engine_playback = null

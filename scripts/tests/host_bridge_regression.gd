@@ -33,7 +33,19 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 
+func _android_back() -> void:
+	# Match Godot Window::_event_callback: notify the scene first, then emit
+	# the actual signal connected to SceneTree's independent auto-quit handler.
+	root.propagate_notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	root.go_back_requested.emit()
+	# A SceneTree quit is applied at the end of the frame; survive that frame.
+	await create_timer(0.05).timeout
+
+
 func _run() -> void:
+	var original_auto_quit: bool = auto_accept_quit
+	var original_back_quit: bool = quit_on_go_back
+	assert(original_back_quit, "Exercise the real default Android Back auto-quit")
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	DirAccess.remove_absolute("user://lumo_host_pending_rewards.cfg")
 	var bridge = root.get_node("HostBridge")
@@ -76,6 +88,21 @@ func _run() -> void:
 	root.add_child(game)
 	game.set_physics_process(false)
 	await process_frame
+	assert(not auto_accept_quit and not quit_on_go_back)
+	# The KVM failure occurred during the real countdown, before racing began.
+	game.countdown = 3.0
+	await _android_back()
+	assert(game.paused and game.countdown == 3.0 and fake.returns.is_empty())
+	await process_frame
+	game._resume()
+	game._open_question()
+	var kart_question: String = game.active_question.answer
+	await _android_back()
+	assert(game.paused and game.question_open and fake.returns.is_empty())
+	await process_frame
+	game._resume()
+	assert(game.question_open and game.active_question.answer == kart_question)
+	game._skip_question()
 	game.countdown = 0
 	game.racing = true
 	assert(game.grade == 4 and game.subject == "Logik")
@@ -86,12 +113,13 @@ func _run() -> void:
 	assert(game.paused and FileAccess.file_exists(game.SESSION))
 	game._physics_process(1.0)
 	assert(game.distance == before)
-	game._notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	await _android_back()
 	assert(fake.returns.size() == 1 and fake.returns[0].destination == "games")
 	assert(fake.returns[0].payload.status == "paused" and fake.rewards.is_empty())
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
+	assert(auto_accept_quit == original_auto_quit and quit_on_go_back == original_back_quit)
 	bridge._return_pending = false
 	game = scene.instantiate()
 	root.add_child(game)
@@ -165,8 +193,10 @@ func _run() -> void:
 	game.checkpoint = 3
 	game._open_question()
 	var question: String = game.active_question.answer
-	game._notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	await _android_back()
 	assert(game.paused and game.question_open)
+	assert(not auto_accept_quit and not quit_on_go_back)
+	await process_frame
 	game._resume()
 	assert(game.active_question.answer == question)
 	game._answer(question)
@@ -187,11 +217,12 @@ func _run() -> void:
 	assert(fake.rewards[1].resultId == jump_id and fake.rewards[1].solved == 1)
 	game._finish()
 	assert(fake.rewards.size() == 2)
-	game._notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	await _android_back()
 	assert(fake.returns.size() == 3 and fake.returns[2].destination == "games")
 	assert(fake.returns[2].payload.game == "jump" and fake.returns[2].payload.status == "completed")
 	game.queue_free()
 	await process_frame
+	assert(auto_accept_quit == original_auto_quit and quit_on_go_back == original_back_quit)
 	print(
 		"[HostBridgeTests] PASS: jump native reward, question pause, save/resume identity, Back to games"
 	)
