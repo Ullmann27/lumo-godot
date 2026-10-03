@@ -105,12 +105,12 @@ Diese wurden nicht durch eine pauschale Neuformatierung verdeckt.
 
 ### Leistungsmessung mit Software-Grafik
 
-1280 × 720, OpenGL Compatibility, Mesa llvmpipe (LLVM 20.1.2), synthetische
-Kamerapositionen des Render-Tests: normales Profil ca. 133 ms Median /
-148 ms p95; leichte Grafik ebenfalls ca. 133 / 148 ms. Etwa 874 gegenüber
-425 Draw Calls in der letzten erfassten Ansicht. Diese Umgebung erreicht
-damit keine flüssige Zielbildrate. Sie ist kein Android-GPU-Benchmark.
-Eine Leistungsfreigabe wird ausdrücklich nicht behauptet.
+1280 × 720, OpenGL Compatibility, Mesa llvmpipe (LLVM 20.1.2), feststehende
+Kamerapositionen: aktuelle lokale monotone Messung normal 240,4 ms Median /
+264,7 ms p95, leicht 125,9 / 145,8 ms. Aktuell 492 beziehungsweise 275 Draw
+Calls in der letzten Vergleichsansicht. Alte Angaben von etwa 133 ms nutzten
+begrenztes Engine-delta und sind ungültig. Die Software-Umgebung erreicht
+keine 60 FPS; sie ist kein Android-GPU-Benchmark und keine Leistungsfreigabe.
 
 ```sh
 GODOT_BIN=godot bash tools/validate_project.sh
@@ -262,7 +262,7 @@ Weitere technische Quellen, abgerufen am 3. Oktober 2026:
   Das ist ein Anhaltspunkt für die Backend-Wahl, kein Nachweis, dass
   beliebige reale Geräte fehlerfrei rendern.
 
-### Abschließendes Ergebnis dieser Ausbaustufe
+### Zwischenergebnis vor der nativen Bildkontrolle
 
 Geprüfter Programmstand: `028ba1b61b835ac000e963bcf8456cb90db56f51`.
 - [Push-Prüfung 37087422681](https://github.com/Ullmann27/lumo-godot/actions/runs/37087422681): **bestanden**.
@@ -311,10 +311,17 @@ diese leere Fläche akzeptiert. Sie verlangt jetzt zusätzlich mindestens
 acht Farbgruppen und einen ausreichenden Anteil heller dargestellter Pixel
 in jedem Bildschirmdrittel. Dunkle und helle leere Flächen werden abgewiesen.
 Der echte Desktop-Rennframe besteht, der leere Android-Frame 43 fällt durch.
-28 Python-Prüfungen bestehen; die installierte Android-Prüfung mit dem
-verschärften Bildkriterium steht noch aus.
+28 Python-Prüfungen bestehen. Die verschärfte installierte Android-Prüfung
+besteht in PR-Lauf 37089322354 (Programmstand
+`a3beff602481dee993736bc15e9d0f1f6572ca07`). Sie weist zuerst den leeren Frame
+ab und akzeptiert anschließend den vollständig gerenderten Rennframe.
+Die tatsächliche Aufnahme, 640 × 320 einschließlich Systemleisten, wurde
+visuell geprüft: Strecke, Fahrzeug, HUD, Karte und beide Daumensteuerungen
+sind über die ganze Spielfläche sichtbar. Der parallele Push-Lauf brach
+beim Auslesen von Logcat ab. Seine einmalige Wiederholung besteht ebenfalls;
+der erste Abbruch bleibt dokumentiert und wurde nicht als App-Absturz ausgelegt.
 
-Lokal erneut bestanden: 23 Python-Prüfungen, zwei vollständige Rennen,
+Lokal erneut bestanden: 28 Python-Prüfungen, zwei vollständige Rennen,
 4000 Aufgabenvarianten, echte Zweifinger-GUI-Ereignisse, Safe-Area-Resize,
 Checkpoint/Wiederaufnahme, Jump-Regression, Fahrzeug-LOD/Geometrie/Farben
 und Weltfarben/-Transformationen mit OpenGL. Fünf aktuelle Spielbilder wurden
@@ -329,3 +336,26 @@ Viseme und eine tatsächlich laufende Idle-Animation. Die Mimik wird nach dem
 Beenden der vorherigen Animation gesetzt, damit sie nicht durch deren
 Mund-Reset verloren geht. Spieleauswahl und bestehende Godot-Home wurden
 erneut gerendert und visuell geprüft. Die Flutter-Hauptapp ist unverändert.
+
+### Geprüfter Stand: Test 45
+
+Programmstand `a3beff602481dee993736bc15e9d0f1f6572ca07`:
+- [PR-Lauf 37089322354](https://github.com/Ullmann27/lumo-godot/actions/runs/37089322354): **bestanden**.
+- [Push-Lauf 37089320025, Wiederholung](https://github.com/Ullmann27/lumo-godot/actions/runs/37089320025): **bestanden**.
+- Beide prüfen 28 Python-Tests, die Engine-Regressionen, den installierten
+  Android-Normalstart und den Kart-URI mit Querformat sowie tatsächlichem Bild.
+  Das Bildkriterium weist leere Flächen ab; die echte Aufnahme wurde auch
+  manuell auf sichtbare Strecke, Kart, HUD und Daumensteuerungen kontrolliert.
+- [Test 45: APK, Linux-/Browser-Paket, Bilder, Prüfsummen](https://github.com/Ullmann27/lumo-godot/releases/tag/school-3d-45).
+  arm64-APK: 47.966.225 Bytes. APK-Verpackung, Signatur und Ausrichtung geprüft;
+  native Ausführung hier mit der passenden x86_64-APK im API-35-Emulator.
+- Letzte CI-Software-Renderprüfung, 1280 × 720: Median 227,7 ms /
+  p95 239,3 ms, 492 Draw Calls, 66 Stichproben. Unterschiedliche CI-Maschinen
+  liefern unterschiedliche Bildzeiten. Keine dieser Software-Prüfungen
+  belegt 60 FPS auf einem echten Gerät oder während einer vollständigen Fahrt.
+
+**Offen:** 60 FPS auf konkreter Zielhardware nachweisen, arm64-Gerätetest,
+endgültige Grafikqualität, freie Fahrphysik und sämtliche unter „Offen“
+genannten Anforderungen des Gesamtauftrags. Die nächste Etappe benötigt
+das Gerätemodell und eine echte GPU-/Bildzeitmessung bei längerer Fahrt,
+um passende Optimierungen und Qualitätseinstellungen abzuleiten.
