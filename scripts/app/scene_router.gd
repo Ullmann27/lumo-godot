@@ -33,6 +33,9 @@ var current_scene_id: String = "boot"
 
 
 func goto(scene_id: String) -> void:
+	if current_scene_id != "boot" and scene_id in ["home", "games", "learn"]:
+		if HostBridge.return_to_app("learn" if scene_id == "learn" else "games"):
+			return
 	if not SCENES.has(scene_id):
 		push_warning("[Router] unbekannte scene_id: %s" % scene_id)
 		return

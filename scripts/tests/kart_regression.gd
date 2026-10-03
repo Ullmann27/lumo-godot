@@ -14,7 +14,7 @@ func _run() -> void:
 	var numbers := RegEx.new()
 	numbers.compile("\\d+")
 	for grade in range(1, 5):
-		for subject in ["Mathematik", "Deutsch"]:
+		for subject in ["Mathematik", "Deutsch", "Sachunterricht", "Logik"]:
 			for i in range(500):
 				var q: Dictionary = questions.make(grade, subject, rng)
 				assert(q.options.size() == 3)
@@ -69,6 +69,7 @@ func _run() -> void:
 		game.elapsed = 0
 		game.question_index = 0
 		game.correct_count = 0
+		game.checkpoint_index = 0
 		game._physics_process(.2)
 		assert(game.distance > 0)
 		game._open_question()
@@ -77,8 +78,12 @@ func _run() -> void:
 		game._answer(wrong)
 		assert(game.question_open and game.wrong_count == 1)
 		var before: float = game.distance
+		var before_elapsed: float = game.elapsed
+		var before_rivals: Array = game.opponent_distances.duplicate()
 		game._physics_process(.2)
-		assert(game.distance > before, "Learning must not stop the race")
+		assert(game.distance == before, "Learning must pause Lumo's kart")
+		assert(game.elapsed == before_elapsed, "Thinking time is excluded from race time")
+		assert(game.opponent_distances == before_rivals, "All rivals wait during learning")
 		game._pause()
 		before = game.distance
 		game._physics_process(1)
@@ -149,6 +154,7 @@ func _run() -> void:
 				game._answer(game.active_question.answer)
 			frames += 1
 		assert(game.finished and game.distance >= game.track_length * 2)
+		assert(game.checkpoint_index == 16 and not game.result_id.is_empty())
 		assert(game.correct_count == 6 and game.modal.visible)
 		var stars: int = root.get_node("ProgressStore").total_stars()
 		game._finish()
@@ -164,7 +170,7 @@ func _run() -> void:
 		await process_frame
 	print(
 		(
-			"[KartTests] PASS: 4000 questions, two full races, analogue multi-touch, drift, "
+			"[KartTests] PASS: 8000 questions, two full races, analogue multi-touch, drift, "
 			+ "braking, pause, save/resume, no duplicate rewards"
 		)
 	)

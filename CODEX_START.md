@@ -1,5 +1,12 @@
 # Lumo Sonnenhafen – Fortsetzung
 
+Aktuelle Integration in **eine Flutter-Android-App** im Zweig
+`codex/lumo-unified-kart-2026-10-03`: [Host-Schnittstelle, neue Rennlogik und
+ausgeführte lokale Prüfungen](docs/LUMO_HOST_2026-10-03.md).
+Die unten dokumentierten Android-Releases 41/43/45 gehören zum vorherigen
+separaten Godot-Paket; sie bestätigen keinen Build der gemeinsamen APK.
+
+
 Aktiver Spielstand: Sonnenhafen-Cup im Zweig
 `codex/lumo-kart-sunharbor-2026-10-02`. Stand: 3. Oktober 2026.
 

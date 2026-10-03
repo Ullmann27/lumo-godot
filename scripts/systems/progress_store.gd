@@ -33,6 +33,15 @@ var _current_streak: int = 0
 
 func _ready() -> void:
 	_load()
+	synchronize_host_wallet()
+
+
+func synchronize_host_wallet() -> void:
+	if HostBridge.is_embedded():
+		# Flutter owns spendable stars; refresh the local snapshot at every launch.
+		_stars = maxi(0, int(HostBridge.launch_options().get("stars", 0)))
+		_save()
+		print("[Progress] host wallet synchronized: %d" % _stars)
 
 
 func _load() -> void:

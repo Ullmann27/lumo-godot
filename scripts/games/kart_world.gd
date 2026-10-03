@@ -357,6 +357,32 @@ func _road() -> void:
 			)
 	_arch(0, "LUMO · SONNENHAFEN", Color("7b68c7"))
 	_arch(length * 0.47, "WOLKENBRÜCKE", Color("309caa"))
+	# Paired coloured flags are the visible ordered lap checkpoints.
+	var checkpoint_colors: Array[Color] = [
+		Color("77d8c5"), Color("f8c968"), Color("b8a0e5"), Color("f69e88")
+	]
+	for gate in range(1, 8):
+		var d: float = length * float(gate) / 8.0
+		var basis: Basis = frame(d)
+		for side in [-1.0, 1.0]:
+			var at: Vector3 = position_at(d, side * 6.1)
+			_prop(
+				"cylinder", at + basis.y * 2.1, Vector3(0.075, 4.2, 0.075), Color("eef5df"), basis
+			)
+			_prop(
+				"box",
+				at + basis.y * 3.5 + basis.x * side * 0.65,
+				Vector3(1.3, 0.8, 0.055),
+				checkpoint_colors[gate % checkpoint_colors.size()],
+				basis
+			)
+			_prop(
+				"box",
+				at + basis.y * 3.5 + basis.x * side * 0.65 + basis.z * 0.045,
+				Vector3(0.25, 0.25, 0.035),
+				Color("fff2ca"),
+				basis.rotated(basis.z, PI / 4.0)
+			)
 
 
 func _settlement() -> void:
@@ -385,6 +411,7 @@ func _settlement() -> void:
 		var d: float = fraction * length
 		var p: Vector3 = position_at(d, 6.8)
 		var basis: Basis = frame(d)
+		var turn: float = 1.0 if basis.x.dot(forward(d + 12)) >= 0 else -1.0
 		_prop("box", p + Vector3.UP * 1.8, Vector3(2.3, 1.5, 0.12), Color("26485d"), basis)
 		for offset in [-0.55, 0.45]:
 			_prop(
@@ -392,14 +419,14 @@ func _settlement() -> void:
 				p + Vector3.UP * 2.04 + basis.x * offset + basis.z * 0.09,
 				Vector3(0.7, 0.18, 0.05),
 				Color("ffe39a"),
-				basis.rotated(basis.z, -0.5)
+				basis.rotated(basis.z, -0.5 * turn)
 			)
 			_prop(
 				"box",
 				p + Vector3.UP * 1.72 + basis.x * offset + basis.z * 0.09,
 				Vector3(0.7, 0.18, 0.05),
 				Color("ffe39a"),
-				basis.rotated(basis.z, 0.5)
+				basis.rotated(basis.z, 0.5 * turn)
 			)
 
 

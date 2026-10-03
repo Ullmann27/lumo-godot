@@ -3,6 +3,7 @@ extends Node3D
 const QUESTIONS = preload("res://scripts/games/kart_questions.gd")
 const LUMO = preload("res://scenes/characters/lumo/lumo_character.tscn")
 const ISLAND_COUNT: int = 12
+const SESSION: String = "user://jump_session.cfg"
 var actor: CharacterBody3D
 var camera: Camera3D
 var islands: Array[Vector3] = []
@@ -29,15 +30,30 @@ var message: Label
 var modal: PanelContainer
 var modal_column: VBoxContainer
 var material_cache: Dictionary = {}
+var result_id: String = ""
+var result_payload: Dictionary = {}
+var abandoned: bool = false
+var save_timer: float = 0.0
+var previous_auto_accept_quit: bool = true
+
 
 func _ready() -> void:
 	rng.randomize()
 	grade = clampi(int(SceneRouter.launch_options.get("grade", 1)), 1, 4)
-	subject = "Deutsch" if SceneRouter.launch_options.get("subject", "") == "Deutsch" else "Mathematik"
+	subject = str(SceneRouter.launch_options.get("subject", "Mathematik"))
+	if subject not in ["Mathematik", "Deutsch", "Sachunterricht", "Logik"]:
+		subject = "Mathematik"
+	result_id = HostBridge.new_result_id()
+	previous_auto_accept_quit = get_tree().auto_accept_quit
+	get_tree().auto_accept_quit = false
 	_build_world()
 	_build_ui()
 	message.text = "Lumos Wolkeninseln\nPfeile zum Laufen · Springen über die Lücken"
+	if _restore_session():
+		_pause()
+		message.text = "Dein Abenteuer wartet am letzten Kontrollpunkt."
 	print("[Jump] ready: true 3D, grade=%d, subject=%s" % [grade, subject])
+
 
 func _material(color: Color) -> StandardMaterial3D:
 	if material_cache.has(color):
@@ -48,6 +64,7 @@ func _material(color: Color) -> StandardMaterial3D:
 	material_cache[color] = mat
 	return mat
 
+
 func _box(parent: Node3D, position: Vector3, size: Vector3, color: Color) -> MeshInstance3D:
 	var mesh := BoxMesh.new()
 	mesh.size = size
@@ -57,6 +74,7 @@ func _box(parent: Node3D, position: Vector3, size: Vector3, color: Color) -> Mes
 	node.position = position
 	parent.add_child(node)
 	return node
+
 
 func _sphere(parent: Node3D, position: Vector3, size: Vector3, color: Color) -> MeshInstance3D:
 	var mesh := SphereMesh.new()
@@ -71,6 +89,7 @@ func _sphere(parent: Node3D, position: Vector3, size: Vector3, color: Color) -> 
 	node.position = position
 	parent.add_child(node)
 	return node
+
 
 func _build_world() -> void:
 	var world := WorldEnvironment.new()
@@ -93,7 +112,9 @@ func _build_world() -> void:
 	sun.directional_shadow_max_distance = 45
 	add_child(sun)
 	for i in range(ISLAND_COUNT):
-		var point := Vector3(sin(float(i) * 0.75) * 3.0, sin(float(i) * 0.55) * 0.9, -float(i) * 8.0)
+		var point := Vector3(
+			sin(float(i) * 0.75) * 3.0, sin(float(i) * 0.55) * 0.9, -float(i) * 8.0
+		)
 		islands.append(point)
 		var ground := StaticBody3D.new()
 		ground.position = point
@@ -124,7 +145,12 @@ func _build_world() -> void:
 			_box(ground, Vector3(-2.7, 1.1, -1.7), Vector3(0.3, 1.7, 0.3), Color("b18b68"))
 			_sphere(ground, Vector3(-2.7, 2.2, -1.7), Vector3(0.9, 1.1, 0.9), Color("73c87f"))
 	for i in range(14):
-		_sphere(self, Vector3(-22 + float(i % 3) * 20, -4 - float(i % 2) * 2, -float(i) * 7), Vector3(8, 1.5, 4), Color("e8efff"))
+		_sphere(
+			self,
+			Vector3(-22 + float(i % 3) * 20, -4 - float(i % 2) * 2, -float(i) * 7),
+			Vector3(8, 1.5, 4),
+			Color("e8efff")
+		)
 	actor = CharacterBody3D.new()
 	actor.floor_snap_length = 0.3
 	add_child(actor)
@@ -147,6 +173,7 @@ func _build_world() -> void:
 	camera.position = actor.position + Vector3(0, 5.5, 9)
 	camera.look_at(actor.position + Vector3(0, 1, -4))
 
+
 func _build_ui() -> void:
 	var layer := CanvasLayer.new()
 	add_child(layer)
@@ -160,7 +187,7 @@ func _build_ui() -> void:
 	safe.add_child(column)
 	var top := HBoxContainer.new()
 	column.add_child(top)
-	top.add_child(_button("‹ Welt", func(): SceneRouter.goto("home")))
+	top.add_child(_button("‹ Spiele", _pause))
 	hud = _label("Insel 1/12", 21)
 	hud.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(hud)
@@ -175,7 +202,9 @@ func _build_ui() -> void:
 	controls.add_theme_constant_override("separation", 8)
 	column.add_child(controls)
 	for direction in [Vector2.LEFT, Vector2.UP, Vector2.DOWN, Vector2.RIGHT]:
-		var labels: Dictionary = {Vector2.LEFT: "◀", Vector2.UP: "▲", Vector2.DOWN: "▼", Vector2.RIGHT: "▶"}
+		var labels: Dictionary = {
+			Vector2.LEFT: "◀", Vector2.UP: "▲", Vector2.DOWN: "▼", Vector2.RIGHT: "▶"
+		}
 		var button := _button(labels[direction], func(): pass)
 		button.custom_minimum_size = Vector2(76, 78)
 		button.button_down.connect(func(): _set_direction(direction, true))
@@ -198,8 +227,13 @@ func _build_ui() -> void:
 	layer.add_child(modal)
 	modal_column = VBoxContainer.new()
 	modal_column.add_theme_constant_override("separation", 14)
-	modal.add_child(modal_column)
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	modal.add_child(scroll)
+	modal_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(modal_column)
 	modal.hide()
+
 
 func _label(text: String, size: int) -> Label:
 	var label := Label.new()
@@ -209,6 +243,7 @@ func _label(text: String, size: int) -> Label:
 	label.add_theme_font_size_override("font_size", size)
 	label.add_theme_color_override("font_color", Color("343457"))
 	return label
+
 
 func _button(text: String, callback: Callable) -> Button:
 	var button := Button.new()
@@ -227,11 +262,13 @@ func _button(text: String, callback: Callable) -> Button:
 	button.pressed.connect(callback)
 	return button
 
+
 func _physics_process(delta: float) -> void:
 	if not is_instance_valid(actor):
 		return
-	for crystal in crystals:
-		crystal.rotation.y += delta
+	if not paused and not finished and not question_open:
+		for crystal in crystals:
+			crystal.rotation.y += delta
 	if not paused and not finished and not question_open:
 		var keyboard := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 		var direction: Vector2 = (keyboard + touch_direction).limit_length()
@@ -249,14 +286,23 @@ func _physics_process(delta: float) -> void:
 			actor.velocity.y -= 18 * delta
 		actor.move_and_slide()
 		if direction.length() > 0.1:
-			actor.rotation.y = lerp_angle(actor.rotation.y, atan2(-direction.x, -direction.y), minf(1, delta * 10))
+			actor.rotation.y = lerp_angle(
+				actor.rotation.y, atan2(-direction.x, -direction.y), minf(1, delta * 10)
+			)
 		if actor.position.y < -8:
 			_respawn()
 		if actor.is_on_floor():
 			for i in range(islands.size()):
 				var point: Vector3 = islands[i]
-				if absf(actor.position.x - point.x) < 3.5 and absf(actor.position.z - point.z) < 3.0 and absf(actor.position.y - point.y) < 0.7:
+				if (
+					absf(actor.position.x - point.x) < 3.5
+					and absf(actor.position.z - point.z) < 3.0
+					and absf(actor.position.y - point.y) < 0.7
+				):
+					var previous_checkpoint: int = checkpoint
 					checkpoint = maxi(checkpoint, i)
+					if checkpoint > previous_checkpoint:
+						_save_session()
 					if i in [3, 6, 9] and not completed_questions.has(i):
 						_open_question()
 					elif i == ISLAND_COUNT - 1:
@@ -266,10 +312,19 @@ func _physics_process(delta: float) -> void:
 			if crystals[i].visible and actor.position.distance_to(crystals[i].position) < 1.4:
 				crystals[i].hide()
 				collected[i] = true
+				_save_session()
+		save_timer += delta
+		if save_timer >= 5.0:
+			save_timer = 0
+			_save_session()
 	var desired: Vector3 = actor.position + Vector3(0, 5.5, 9)
 	camera.position = camera.position.lerp(desired, minf(1, delta * 5))
 	camera.look_at(actor.position + Vector3(0, 1, -4))
-	hud.text = "Insel %d/%d\n%d Kristalle · %d Lernstopps" % [checkpoint + 1, ISLAND_COUNT, collected.size(), completed_questions.size()]
+	hud.text = (
+		"Insel %d/%d\n%d Kristalle · %d Lernstopps"
+		% [checkpoint + 1, ISLAND_COUNT, collected.size(), completed_questions.size()]
+	)
+
 
 func _set_direction(direction: Vector2, pressed: bool) -> void:
 	if pressed:
@@ -280,10 +335,12 @@ func _set_direction(direction: Vector2, pressed: bool) -> void:
 	for held in held_directions:
 		touch_direction += held
 
+
 func _stop_input() -> void:
 	held_directions.clear()
 	touch_direction = Vector2.ZERO
 	jump_buffer = 0
+
 
 func _respawn() -> void:
 	falls += 1
@@ -292,10 +349,12 @@ func _respawn() -> void:
 	_stop_input()
 	message.text = "Wir versuchen es noch einmal. Dein Kontrollpunkt ist gespeichert."
 
+
 func _clear_modal() -> void:
 	for child in modal_column.get_children():
 		modal_column.remove_child(child)
 		child.queue_free()
+
 
 func _open_question() -> void:
 	question_open = true
@@ -307,6 +366,11 @@ func _open_question() -> void:
 		if not recent_questions.has(active_question.prompt):
 			break
 	recent_questions.append(active_question.prompt)
+	_save_session()
+	_show_question()
+
+
+func _show_question() -> void:
 	_clear_modal()
 	modal_column.add_child(_label("Lerninsel · %d. Klasse · %s" % [grade, subject], 19))
 	modal_column.add_child(_label(active_question.prompt, 27))
@@ -315,44 +379,193 @@ func _open_question() -> void:
 	modal_column.add_child(_label("Lumo wartet auf dich. Du hast Zeit zum Nachdenken.", 18))
 	modal.show()
 
+
 func _answer(answer: String) -> void:
+	if not question_open or paused or finished:
+		return
 	if answer == active_question.answer:
 		completed_questions[checkpoint] = true
 		question_open = false
 		modal.hide()
 		message.text = "Richtig! Weiter zur nächsten Wolkeninsel."
+		_save_session()
 	else:
 		wrong_count += 1
 		var hint: String = active_question.hint
 		if wrong_count >= 3:
 			hint += "\nDie Lösung ist %s. Tippe sie an und spring weiter." % active_question.answer
-		modal_column.get_child(modal_column.get_child_count() - 1).text = "Wir schauen gemeinsam hin: " + hint
+		modal_column.get_child(modal_column.get_child_count() - 1).text = (
+			"Wir schauen gemeinsam hin: " + hint
+		)
+
 
 func _pause() -> void:
-	if question_open or finished:
+	if paused or finished:
 		return
 	paused = true
 	_stop_input()
+	actor.velocity = Vector3.ZERO
+	_save_session()
 	_clear_modal()
 	modal_column.add_child(_label("Kleine Pause", 28))
-	modal_column.add_child(_button("Weiterspielen", func(): paused = false; modal.hide()))
-	modal_column.add_child(_button("Zur 3D-Welt", func(): SceneRouter.goto("home")))
+	modal_column.add_child(_button("Weiterspielen", _resume))
+	modal_column.add_child(
+		_button("Zur Spieleauswahl · Abenteuer behalten", func(): _return_to_app("games"))
+	)
+	modal_column.add_child(
+		_button("Zum Lernen · Abenteuer behalten", func(): _return_to_app("learn"))
+	)
+	modal_column.add_child(_button("Abenteuer neu beginnen", _restart))
 	modal.show()
+
+
+func _resume() -> void:
+	paused = false
+	if question_open:
+		_show_question()
+	else:
+		modal.hide()
+
+
+func _restart() -> void:
+	abandoned = true
+	DirAccess.remove_absolute(SESSION)
+	SceneRouter.goto("jump")
+
+
+func _return_to_app(destination: String) -> void:
+	_save_session()
+	if finished:
+		HostBridge.reward(result_payload)
+	var payload: Dictionary = (
+		result_payload
+		if finished
+		else {
+			"game": "jump",
+			"resultId": result_id,
+			"status": "paused",
+			"stars": 0,
+			"grade": grade,
+			"subject": subject
+		}
+	)
+	if not HostBridge.return_to_app(destination, payload):
+		SceneRouter.goto("learn" if destination == "learn" else "games")
+
 
 func _finish() -> void:
 	if finished:
 		return
 	finished = true
+	_stop_input()
+	DirAccess.remove_absolute(SESSION)
 	var stars: int = 3 + completed_questions.size() * 2 + collected.size()
 	ProgressStore.add_stars(stars)
+	result_payload = {
+		"game": "jump",
+		"sessionId": str(SceneRouter.launch_options.get("sessionId", "")),
+		"resultId": result_id,
+		"status": "completed",
+		"stars": stars,
+		"solved": completed_questions.size(),
+		"grade": grade,
+		"subject": subject
+	}
+	HostBridge.reward(result_payload)
 	_clear_modal()
 	modal_column.add_child(_label("Wolkeninseln geschafft! ★", 29))
-	modal_column.add_child(_label("%d Lernstopps · %d Kristalle\n+%d Sterne" % [completed_questions.size(), collected.size(), stars], 23))
+	modal_column.add_child(
+		_label(
+			(
+				"%d Lernstopps · %d Kristalle\n+%d Sterne"
+				% [completed_questions.size(), collected.size(), stars]
+			),
+			23
+		)
+	)
 	modal_column.add_child(_button("Noch ein Abenteuer", func(): SceneRouter.goto("jump")))
-	modal_column.add_child(_button("Zum Insel-Cup", func(): SceneRouter.goto("kart")))
+	modal_column.add_child(_button("Zur Spieleauswahl", func(): _return_to_app("games")))
+	modal_column.add_child(_button("Zum Lernen", func(): _return_to_app("learn")))
 	modal.show()
 	print("[Jump] finished: stars=%d questions=%d" % [stars, completed_questions.size()])
 
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
+		if finished:
+			_return_to_app("games")
+		elif paused:
+			_resume()
+		else:
+			_pause()
+
+
+func _save_session() -> void:
+	if finished or abandoned or not is_instance_valid(actor):
+		return
+	var config := ConfigFile.new()
+	config.set_value("jump", "version", 1)
+	config.set_value("jump", "grade", grade)
+	config.set_value("jump", "subject", subject)
+	for key in [
+		"result_id",
+		"checkpoint",
+		"falls",
+		"collected",
+		"completed_questions",
+		"active_question",
+		"recent_questions",
+		"wrong_count",
+		"question_open"
+	]:
+		config.set_value("jump", key, get(key))
+	if config.save(SESSION + ".tmp") == OK:
+		var error: Error = DirAccess.rename_absolute(SESSION + ".tmp", SESSION)
+		if error != OK:
+			push_warning("Jump checkpoint could not be saved: %s" % error)
+
+
+func _restore_session() -> bool:
+	var config := ConfigFile.new()
+	if config.load(SESSION) != OK or config.get_value("jump", "version", 0) != 1:
+		return false
+	if (
+		config.get_value("jump", "grade", 0) != grade
+		or config.get_value("jump", "subject", "") != subject
+	):
+		return false
+	for key in [
+		"result_id",
+		"checkpoint",
+		"falls",
+		"collected",
+		"completed_questions",
+		"active_question",
+		"wrong_count",
+		"question_open"
+	]:
+		set(key, config.get_value("jump", key, get(key)))
+	recent_questions.assign(config.get_value("jump", "recent_questions", recent_questions))
+	checkpoint = clampi(checkpoint, 0, ISLAND_COUNT - 2)
+	actor.position = islands[checkpoint] + Vector3(0, 0.5, 1)
+	actor.velocity = Vector3.ZERO
+	for i in range(crystals.size()):
+		crystals[i].visible = not collected.has(i)
+	return true
+
+
+func _notification(what: int) -> void:
+	if not is_instance_valid(modal):
+		return
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		if paused or finished:
+			_return_to_app("games")
+		else:
+			_pause()
+	elif what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
 		_pause()
+
+
+func _exit_tree() -> void:
+	_save_session()
+	get_tree().auto_accept_quit = previous_auto_accept_quit

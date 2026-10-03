@@ -1,5 +1,6 @@
 extends Node3D
-## Guided arcade racing, original Lumo world and uninterrupted learning boosts.
+# gdlint: disable=max-file-lines
+## Guided arcade racing, original Lumo world and safe paused learning moments.
 
 const QUESTIONS = preload("res://scripts/games/kart_questions.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
@@ -16,6 +17,7 @@ var world: LumoRaceWorld
 var track_length: float
 var distance: float = 0.0
 var lane: float = 0.0
+var lateral_velocity: float = 0.0
 var steering: float = 0.0
 var brake: float = 0.0
 var speed: float = 0.0
@@ -40,6 +42,11 @@ var player: LumoRaceKart
 var camera: Camera3D
 var opponents: Array[LumoRaceKart] = []
 var opponent_distances: Array[float] = [-4, -7, -10, -13, -16]
+var opponent_lanes: Array[float] = [-3.2, -1.65, -0.1, 1.45, 3.0]
+var rival_contact_timer: float = 0.0
+var checkpoint_index: int = 0
+var result_id: String = ""
+var result_payload: Dictionary = {}
 var gems: Array[Node3D] = []
 var gem_distances: Array[float] = []
 var collected: Dictionary = {}
@@ -72,15 +79,20 @@ var crystal_mesh: ArrayMesh
 var previous_scale := Vector2i(720, 1280)
 var previous_size := Vector2i(720, 1280)
 var previous_orientation: int = DisplayServer.SCREEN_PORTRAIT
+var previous_auto_accept_quit: bool = true
 
 
 func _ready() -> void:
 	set_physics_process(false)
 	rng.randomize()
 	grade = clampi(int(SceneRouter.launch_options.get("grade", 1)), 1, 4)
-	subject = (
-		"Deutsch" if SceneRouter.launch_options.get("subject", "") == "Deutsch" else "Mathematik"
-	)
+	subject = str(SceneRouter.launch_options.get("subject", "Mathematik"))
+	if subject not in ["Mathematik", "Deutsch", "Sachunterricht", "Logik"]:
+		subject = "Mathematik"
+	result_id = HostBridge.new_result_id()
+	# Android Back is handled by the race; it must not kill an unsaved session.
+	previous_auto_accept_quit = get_tree().auto_accept_quit
+	get_tree().auto_accept_quit = false
 	_load_preferences()
 	previous_scale = get_window().content_scale_size
 	previous_size = get_window().size
@@ -264,7 +276,7 @@ func _build_ui() -> void:
 	safe.add_child(column)
 	var top := HBoxContainer.new()
 	column.add_child(top)
-	top.add_child(_button("‹ Welt", _pause))
+	top.add_child(_button("‹ Spiele", _pause))
 	var hud_panel := PanelContainer.new()
 	hud_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hud_panel.add_theme_stylebox_override("panel", _style(Color("fff4dd")))
@@ -404,7 +416,7 @@ func _physics_process(delta: float) -> void:
 		)
 		if countdown == 0:
 			racing = true
-	if racing and not paused and not finished:
+	if racing and not paused and not finished and not question_open:
 		elapsed += delta
 		var axis: float = Input.get_axis("ui_left", "ui_right")
 		if Input.is_physical_key_pressed(KEY_A):
@@ -413,11 +425,9 @@ func _physics_process(delta: float) -> void:
 			axis += 1
 		if absf(axis) < 0.01:
 			axis = steering
-		if question_open:
-			axis = 0
-			lane = move_toward(lane, 0, delta * 3.0)
-		else:
-			lane = clampf(lane + axis * delta * 5.2, -4.7, 4.7)
+		# A short acceleration/deceleration makes touch steering less abrupt.
+		lateral_velocity = move_toward(lateral_velocity, axis * 5.2, delta * 24.0)
+		lane = clampf(lane + lateral_velocity * delta, -4.7, 4.7)
 		var target: float = 23.0 if boost_time > 0 else 16.0
 		target *= 1.0 - (0.4 * brake if not question_open else 0)
 		if absf(lane) > 4.25:
@@ -431,19 +441,29 @@ func _physics_process(delta: float) -> void:
 		distance += speed * delta
 		boost_time = maxf(0, boost_time - delta)
 		hit_timer = maxf(0, hit_timer - delta)
+		rival_contact_timer = maxf(0, rival_contact_timer - delta)
 		for i in range(opponents.size()):
 			var rival_speed: float = (
 				14.2 + i * 0.25 if difficulty == "gemuetlich" else 16.3 + i * 0.2
 			)
+			# Rivals gently choose an open lane instead of stacking through Lumo.
+			var desired_lane: float = -3.2 + float(i) * 1.55 + sin(elapsed * 0.45 + i) * 0.35
+			var gap: float = opponent_distances[i] - distance
+			if absf(gap) < 7.0 and absf(desired_lane - lane) < 1.3:
+				desired_lane = clampf(lane + (1.0 if i % 2 == 0 else -1.0) * 1.65, -4.0, 4.0)
+			opponent_lanes[i] = move_toward(opponent_lanes[i], desired_lane, delta * 1.5)
+			if gap < 0 and gap > -3.0 and absf(opponent_lanes[i] - lane) < 1.2:
+				rival_speed = minf(rival_speed, maxf(0, speed - 1.0))
 			opponent_distances[i] += delta * (rival_speed + sin(elapsed * 0.7 + i) * 0.7)
 		_track_events()
+		_update_checkpoints()
 		if (
 			not question_open
 			and question_index < 6
 			and distance >= track_length * TOTAL_LAPS * float(question_index + 1) / 7
 		):
 			_open_question()
-		if distance >= track_length * TOTAL_LAPS:
+		if distance >= track_length * TOTAL_LAPS and checkpoint_index >= TOTAL_LAPS * 8:
 			_finish()
 		save_timer += delta
 		if save_timer >= 5:
@@ -465,15 +485,22 @@ func _physics_process(delta: float) -> void:
 			mini(TOTAL_LAPS, int(distance / track_length) + 1),
 			TOTAL_LAPS,
 			place,
-			int(speed * 3.6),
+			0 if question_open or paused or finished else int(speed * 3.6),
 			collected.size()
 		]
 	)
 	boost_button.text = "BOOST\n◆ %d" % boosts
-	boost_button.disabled = boosts == 0 or paused or not racing or finished
+	boost_button.disabled = boosts == 0 or paused or not racing or finished or question_open
 	drift_button.disabled = paused or not racing or finished or question_open
 	joystick.set_enabled(racing and not paused and not finished and not question_open)
-	if engine_playback and not muted and racing and not paused and not finished:
+	if (
+		engine_playback
+		and not muted
+		and racing
+		and not paused
+		and not finished
+		and not question_open
+	):
 		for i in range(engine_playback.get_frames_available()):
 			var phase: float = (
 				(float(Time.get_ticks_usec()) / 1000000.0 + float(i) / 22050) * (70 + speed * 5)
@@ -483,6 +510,17 @@ func _physics_process(delta: float) -> void:
 
 
 func _track_events() -> void:
+	for i in range(opponents.size()):
+		if (
+			rival_contact_timer <= 0
+			and absf(opponent_distances[i] - distance) < 1.7
+			and absf(opponent_lanes[i] - lane) < 1.2
+		):
+			rival_contact_timer = 0.8
+			hit_timer = maxf(hit_timer, 0.35)
+			var away: float = 1.0 if lane >= opponent_lanes[i] else -1.0
+			lane = clampf(lane + away * 0.22, -4.7, 4.7)
+			message.text = "Sanfter Kart-Rempler – du bleibst auf der Strecke."
 	for i in range(gems.size()):
 		if (
 			not collected.has(i)
@@ -509,26 +547,35 @@ func _track_events() -> void:
 			boost_time = maxf(boost_time, 1.0)
 
 
+func _update_checkpoints() -> void:
+	# Eight ordered gates per lap make progress explicit and restorable.
+	var spacing: float = track_length / 8.0
+	while checkpoint_index < TOTAL_LAPS * 8 and distance >= (checkpoint_index + 1) * spacing:
+		checkpoint_index += 1
+		if checkpoint_index == 8:
+			message.text = "Runde 1 geschafft! Noch eine Runde durch den Sonnenhafen."
+
+
 func _update_vehicles(_delta: float) -> void:
 	player.position = _track_position(distance, lane) + world.frame(distance).y * 0.035
 	var drift_yaw: float = -steering * 0.22 if drifting else -steering * 0.08
 	player.quaternion = Quaternion(world.frame(distance)) * Quaternion(Vector3.UP, drift_yaw)
 	player.set_motion(
-		speed if racing and not paused and not finished else 0,
+		speed if racing and not paused and not finished and not question_open else 0,
 		steering,
-		boost_time > 0 and not paused and not finished,
+		boost_time > 0 and not paused and not finished and not question_open,
 		drifting and not paused
 	)
 	for i in range(opponents.size()):
 		var kart: LumoRaceKart = opponents[i]
-		var side: float = -3.2 + float(i) * 1.55 + sin(elapsed * 0.45 + i) * 0.15
+		var side: float = opponent_lanes[i]
 		kart.position = (
 			_track_position(opponent_distances[i], side)
 			+ world.frame(opponent_distances[i]).y * 0.035
 		)
 		kart.quaternion = Quaternion(world.frame(opponent_distances[i]))
 		kart.set_motion(
-			15 if racing and not paused and not finished else 0,
+			15 if racing and not paused and not finished and not question_open else 0,
 			sin(elapsed + i) * 0.12,
 			false,
 			false
@@ -546,7 +593,7 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 
 
 func _boost() -> void:
-	if boosts > 0 and racing and not paused and not finished:
+	if boosts > 0 and racing and not paused and not finished and not question_open:
 		boosts -= 1
 		boost_time = 3.2
 		message.text = "Lumo-Boost!"
@@ -569,7 +616,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		elif event.pressed and event.keycode == KEY_SPACE:
 			_boost()
 		elif event.pressed and event.keycode == KEY_ESCAPE:
-			if paused:
+			if finished:
+				_return_to_world()
+			elif paused:
 				_resume()
 			else:
 				_pause()
@@ -586,6 +635,7 @@ func _open_question() -> void:
 		return
 	question_open = true
 	steering = 0
+	lateral_velocity = 0
 	brake = 0
 	drifting = false
 	wrong_count = 0
@@ -613,7 +663,7 @@ func _show_question() -> void:
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		answers.add_child(button)
 	lesson_column.add_child(answers)
-	lesson_hint = _label("Lumo fährt für dich weiter. Du kannst auch pausieren.", 17)
+	lesson_hint = _label("Alle Karts warten. Nimm dir Zeit – danach geht dein Rennen weiter.", 17)
 	lesson_column.add_child(lesson_hint)
 	lesson.visible = not paused
 
@@ -628,6 +678,7 @@ func _answer(answer: String) -> void:
 		question_open = false
 		lesson.hide()
 		message.text = "Richtig! " + active_question.hint + " · Boost geladen."
+		_save_session()
 	else:
 		wrong_count += 1
 		lesson_hint.text = active_question.hint
@@ -642,6 +693,7 @@ func _skip_question() -> void:
 	question_index += 1
 	lesson.hide()
 	message.text = "Weiter geht's. Die nächste Lernfrage kommt später."
+	_save_session()
 
 
 func _pause() -> void:
@@ -649,6 +701,7 @@ func _pause() -> void:
 		return
 	paused = true
 	steering = 0
+	lateral_velocity = 0
 	brake = 0
 	drifting = false
 	drift_charge = 0
@@ -698,7 +751,8 @@ func _pause() -> void:
 			_save_preferences()
 	)
 	modal_column.add_child(challenge)
-	modal_column.add_child(_button("Zur Welt · Rennen behalten", _return_to_world))
+	modal_column.add_child(_button("Zur Spieleauswahl · Rennen behalten", _return_to_world))
+	modal_column.add_child(_button("Zum Lernen · Rennen behalten", func(): _return_to_app("learn")))
 	modal_column.add_child(_button("Rennen abbrechen", _abandon, Color("a14f3b")))
 	modal.show()
 
@@ -711,14 +765,33 @@ func _resume() -> void:
 
 
 func _return_to_world() -> void:
+	_return_to_app("games")
+
+
+func _return_to_app(destination: String) -> void:
 	_save_session()
-	SceneRouter.goto("home")
+	if finished:
+		HostBridge.reward(result_payload)
+	var payload: Dictionary = (
+		result_payload
+		if finished
+		else {
+			"game": "kart",
+			"status": "abandoned" if abandoned else "paused",
+			"resultId": result_id,
+			"grade": grade,
+			"subject": subject,
+			"stars": 0
+		}
+	)
+	if not HostBridge.return_to_app(destination, payload):
+		SceneRouter.goto("learn" if destination == "learn" else "games")
 
 
 func _abandon() -> void:
 	abandoned = true
 	DirAccess.remove_absolute(SESSION)
-	SceneRouter.goto("home")
+	_return_to_app("games")
 
 
 func _finish() -> void:
@@ -731,6 +804,24 @@ func _finish() -> void:
 	DirAccess.remove_absolute(SESSION)
 	var earned: int = 3 + correct_count * 2
 	ProgressStore.add_stars(earned)
+	var place: int = 1
+	for rival_distance in opponent_distances:
+		if rival_distance > distance:
+			place += 1
+	result_payload = {
+		"game": "kart",
+		"sessionId": str(SceneRouter.launch_options.get("sessionId", "")),
+		"resultId": result_id,
+		"status": "completed",
+		"stars": earned,
+		"solved": correct_count,
+		"elapsedSeconds": snappedf(elapsed, 0.1),
+		"place": place,
+		"grade": grade,
+		"subject": subject
+	}
+	# Save the host reward immediately; Back/process teardown must not lose it.
+	HostBridge.reward(result_payload)
 	var config := ConfigFile.new()
 	config.load("user://kart_records.cfg")
 	var key: String = "sonnenhafen_%s_%d_%s" % [subject, grade, difficulty]
@@ -743,8 +834,8 @@ func _finish() -> void:
 	modal_column.add_child(
 		_label(
 			(
-				"%.1f Sekunden · %d Lernfragen gelöst\n+%d Sterne · %d Kristalle"
-				% [elapsed, correct_count, earned, collected.size()]
+				"Platz %d von 6 · %.1f Sekunden · %d Lernfragen gelöst\n+%d Sterne · %d Kristalle"
+				% [place, elapsed, correct_count, earned, collected.size()]
 			),
 			23
 		)
@@ -753,7 +844,8 @@ func _finish() -> void:
 		_label("Neue Bestzeit!" if elapsed < best else "Bestzeit: %.1f Sekunden" % best, 20)
 	)
 	modal_column.add_child(_button("Noch ein Rennen", func(): SceneRouter.goto("kart")))
-	modal_column.add_child(_button("Zur 3D-Welt", func(): SceneRouter.goto("home")))
+	modal_column.add_child(_button("Zur Spieleauswahl", _return_to_world))
+	modal_column.add_child(_button("Zum Lernen", func(): _return_to_app("learn")))
 	modal.show()
 	print("[Kart] finished: stars=%d questions=%d" % [earned, correct_count])
 
@@ -785,11 +877,13 @@ func _save_session() -> void:
 	if finished or abandoned or not is_instance_valid(player):
 		return
 	var config := ConfigFile.new()
-	config.set_value("race", "version", 1)
+	config.set_value("race", "version", 2)
 	config.set_value("race", "grade", grade)
 	config.set_value("race", "subject", subject)
 	for key in [
 		"distance",
+		"result_id",
+		"checkpoint_index",
 		"lane",
 		"speed",
 		"countdown",
@@ -800,6 +894,7 @@ func _save_session() -> void:
 		"correct_count",
 		"wrong_count",
 		"opponent_distances",
+		"opponent_lanes",
 		"collected",
 		"recent_questions",
 		"active_question",
@@ -815,7 +910,7 @@ func _save_session() -> void:
 
 func _restore_session() -> bool:
 	var config := ConfigFile.new()
-	if config.load(SESSION) != OK or config.get_value("race", "version", 0) != 1:
+	if config.load(SESSION) != OK or int(config.get_value("race", "version", 0)) not in [1, 2]:
 		return false
 	if (
 		config.get_value("race", "grade", 0) != grade
@@ -827,6 +922,8 @@ func _restore_session() -> bool:
 		return false
 	for key in [
 		"distance",
+		"result_id",
+		"checkpoint_index",
 		"lane",
 		"speed",
 		"countdown",
@@ -843,6 +940,9 @@ func _restore_session() -> bool:
 	]:
 		set(key, config.get_value("race", key, get(key)))
 	opponent_distances.assign(config.get_value("race", "opponent_distances", opponent_distances))
+	opponent_lanes.assign(config.get_value("race", "opponent_lanes", opponent_lanes))
+	if config.get_value("race", "version", 0) == 1:
+		checkpoint_index = clampi(int(distance / (track_length / 8.0)), 0, TOTAL_LAPS * 8)
 	recent_questions.assign(config.get_value("race", "recent_questions", recent_questions))
 	racing = countdown <= 0
 	_update_vehicles(0)
@@ -851,12 +951,20 @@ func _restore_session() -> bool:
 
 
 func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		if not is_instance_valid(modal):
+			return
+		if finished or paused:
+			_return_to_world()
+		else:
+			_pause()
 	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
 		if is_instance_valid(modal) and not finished:
 			_pause()
 
 
 func _exit_tree() -> void:
+	get_tree().auto_accept_quit = previous_auto_accept_quit
 	if is_instance_valid(engine_player):
 		engine_player.stop()
 		engine_playback = null

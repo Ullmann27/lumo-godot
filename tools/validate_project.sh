@@ -6,6 +6,9 @@ if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-import.log; then exit 1;
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_regression.gd 2>&1 | tee /tmp/lumo-kart-tests.log
 if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-tests.log; then exit 1; fi
 grep -qE '\[KartTests\] PASS' /tmp/lumo-kart-tests.log
+timeout 120s "$GODOT" --headless --script scripts/tests/host_bridge_regression.gd 2>&1 | tee /tmp/lumo-host-tests.log
+if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-host-tests.log; then exit 1; fi
+grep -qE '\[HostBridgeTests\] PASS' /tmp/lumo-host-tests.log
 timeout 120s "$GODOT" --headless --script scripts/tests/jump_regression.gd 2>&1 | tee /tmp/lumo-jump-tests.log
 if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-jump-tests.log; then exit 1; fi
 grep -qE '\[JumpTests\] PASS' /tmp/lumo-jump-tests.log
