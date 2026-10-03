@@ -57,6 +57,8 @@ var drift_button: Control
 var joystick: Control
 var modal: PanelContainer
 var modal_column: VBoxContainer
+var modal_scroll: ScrollContainer
+var pause_navigation: HBoxContainer
 var lesson: PanelContainer
 var lesson_column: VBoxContainer
 var lesson_hint: Label
@@ -348,11 +350,29 @@ func _build_ui() -> void:
 	safe_ui.add_child(modal)
 	modal_column = VBoxContainer.new()
 	modal_column.add_theme_constant_override("separation", 10)
-	var scroll := ScrollContainer.new()
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	modal.add_child(scroll)
+	var modal_body := VBoxContainer.new()
+	modal_body.add_theme_constant_override("separation", 10)
+	modal.add_child(modal_body)
+	modal_scroll = ScrollContainer.new()
+	modal_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	modal_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	modal_body.add_child(modal_scroll)
 	modal_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(modal_column)
+	modal_scroll.add_child(modal_column)
+	# Return actions stay outside the scrolling settings on compact landscapes.
+	pause_navigation = HBoxContainer.new()
+	pause_navigation.name = "PauseNavigation"
+	pause_navigation.add_theme_constant_override("separation", 10)
+	modal_body.add_child(pause_navigation)
+	var games := _button("Zur Spieleauswahl", _return_to_world)
+	games.name = "ReturnToGames"
+	var learn := _button("Zum Lernen", func(): _return_to_app("learn"))
+	learn.name = "ReturnToLearning"
+	for button in [games, learn]:
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.custom_minimum_size.y = 76
+		pause_navigation.add_child(button)
+	pause_navigation.hide()
 	modal.hide()
 	lesson = PanelContainer.new()
 	lesson.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -712,6 +732,8 @@ func _pause() -> void:
 	lesson.hide()
 	_save_session()
 	_clear_column(modal_column)
+	modal_scroll.scroll_vertical = 0
+	pause_navigation.show()
 	modal_column.add_child(_label("Kleine Pause im Sonnenhafen", 28))
 	modal_column.add_child(_label("Dein Rennen wartet. Du kannst später hier weiterfahren.", 19))
 	modal_column.add_child(_button("Weiterfahren", _resume))
@@ -755,8 +777,6 @@ func _pause() -> void:
 			_save_preferences()
 	)
 	modal_column.add_child(challenge)
-	modal_column.add_child(_button("Zur Spieleauswahl · Rennen behalten", _return_to_world))
-	modal_column.add_child(_button("Zum Lernen · Rennen behalten", func(): _return_to_app("learn")))
 	modal_column.add_child(_button("Rennen abbrechen", _abandon, Color("a14f3b")))
 	modal.show()
 
@@ -850,6 +870,7 @@ func _finish() -> void:
 		config.set_value("times", key, elapsed)
 		config.save("user://kart_records.cfg")
 	_clear_column(modal_column)
+	pause_navigation.hide()
 	modal_column.add_child(_label("Sonnenhafen-Cup geschafft! ★", 30))
 	modal_column.add_child(
 		_label(
