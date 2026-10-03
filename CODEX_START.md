@@ -6,8 +6,24 @@ ausgeführte lokale Prüfungen](docs/LUMO_HOST_2026-10-03.md).
 Die unten dokumentierten Android-Releases 41/43/45 gehören zum vorherigen
 separaten Godot-Paket; sie bestätigen keinen Build der gemeinsamen APK.
 
+Aktueller überprüfbarer Übergabestand: Die gemeinsame Flutter-APK 278 absolvierte
+im API-35-KVM-Emulator tatsächlich zwei Sonnenhafen-Runden, vier richtige
+Lernfragen und zwei übersprungene Fragen. HUD 2/2 und Ergebnis Platz 1/6,
+47,8 Sekunden, 16 Kristalle und +11 angezeigte Sterne sind erfasst (Lauf
+`37124995594`). Am Ziel erschien ein echter Fehler bei der Host-Bestätigung;
+gemeinsame Wallet, Ergebnis-Neustart und Rückkehr sind damit noch nicht freigegeben.
 
-Aktiver Spielstand: Sonnenhafen-Cup im Zweig
+Gespeicherter Fix `3759c156`: Godot 4.6.3 liefert Java Boolean über JNI tatsächlich
+als Integer 0/1. `HostBridge` akzeptiert nun ausschließlich Bool true oder
+Integer 1 bei Reward und Rückkehr; andere Werte bleiben Fehler mit dauerhafter
+Retry-Datei. Vollständiger Godot-Projektvalidator, Integer-/Boolean-Hostregressionen,
+`gdlint` und 32 Flutter-Kart-QA-Prüfungen bestanden lokal. APK 279 wird mit diesem
+Pin gebaut; ihre vollständige Android-Prüfung ist **noch offen**. Details und
+Beweisgrenzen stehen in der oben verlinkten Host-Übergabe. Keine App-Funktion
+allein aufgrund dieser Dokumentation als auf dem echten Handy getestet melden.
+
+
+Historischer separater Spielstand: Sonnenhafen-Cup im Zweig
 `codex/lumo-kart-sunharbor-2026-10-02`. Stand: 3. Oktober 2026.
 
 [Geprüfte Testpakete und echte Bilder: school-3d-45](https://github.com/Ullmann27/lumo-godot/releases/tag/school-3d-45).
