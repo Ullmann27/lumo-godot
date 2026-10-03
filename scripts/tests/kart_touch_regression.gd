@@ -44,6 +44,7 @@ func _run() -> void:
 	root.size = Vector2i(1280, 720)
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
+	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "gemuetlich"})
 	game.set_physics_process(false)
 	game.countdown = 3
 	await process_frame
@@ -130,4 +131,5 @@ func _run() -> void:
 			+ "touch resume, release outside, learning/pause, scaled safe areas"
 		)
 	)
+	await create_timer(0.12).timeout
 	quit(0)

@@ -68,6 +68,7 @@ func _run() -> void:
 	bridge._options = {"sessionId": "pause-layout"}
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
+	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "gemuetlich"})
 	game.set_physics_process(false)
 	await _settle()
 	root.size = Vector2i(800, 480)
@@ -84,7 +85,7 @@ func _run() -> void:
 		_inside(button, game.safe_ui.get_global_rect())
 		assert(button.get_global_rect().size.y * root.size.y / root.get_visible_rect().size.y >= 44)
 	_inside(_button("Weiterfahren"), game.modal_scroll.get_global_rect())
-	_inside(_button("Leichte Grafik"), game.modal_scroll.get_global_rect())
+	_inside(_button("Grafik:"), game.modal_scroll.get_global_rect())
 	var output: String = OS.get_environment("LUMO_QA_DIR")
 	if output.is_empty():
 		output = "user://"
@@ -119,7 +120,7 @@ func _run() -> void:
 			_inside(button, game.modal.get_global_rect())
 			_inside(button, game.safe_ui.get_global_rect())
 		_inside(_button("Weiterfahren"), game.modal_scroll.get_global_rect())
-		_inside(_button("Leichte Grafik"), game.modal_scroll.get_global_rect())
+		_inside(_button("Grafik:"), game.modal_scroll.get_global_rect())
 		await _tap(learn)
 		assert(host.returns[-1].destination == "learn")
 		bridge._return_pending = false
@@ -135,4 +136,5 @@ func _run() -> void:
 			+ "visible actions/settings, touch games/learn/resume"
 		)
 	)
+	await create_timer(0.12).timeout
 	quit(0)

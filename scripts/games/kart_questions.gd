@@ -341,3 +341,29 @@ static func _question(
 		options[i] = options[j]
 		options[j] = swap
 	return {"prompt": prompt, "answer": answer, "options": options, "hint": hint}
+
+
+static func competence(grade: int, subject: String, question: Dictionary) -> String:
+	var prompt: String = str(question.get("prompt", ""))
+	if subject == "Mathematik":
+		var limit: int = [10, 100, 1000, 10000][clampi(grade, 1, 4) - 1]
+		if " · " in prompt:
+			return "Kleines Einmaleins"
+		if " − " in prompt:
+			return "Subtraktion bis %d" % limit
+		if " + " in prompt:
+			return "Addition bis %d" % limit
+		return "Sachaufgaben: Addition bis %d" % limit
+	if subject == "Deutsch":
+		if "reimt" in prompt:
+			return "Reimwörter"
+		if "Silben" in prompt:
+			return "Silben zählen"
+		if "Wortart" in prompt:
+			return "Wortarten"
+		if "Mitvergangenheit" in prompt:
+			return "Mitvergangenheit"
+		return "Artikel und Namenwörter"
+	if subject == "Logik":
+		return "Farbmuster fortsetzen" if "Farbe" in prompt else "Zahlenfolgen fortsetzen"
+	return "Sachwissen, %d. Klasse" % clampi(grade, 1, 4)
