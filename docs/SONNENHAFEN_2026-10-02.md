@@ -304,8 +304,15 @@ wartet bis zu 40 Sekunden auf einen vollständig gerenderten Frame, prüft
 währenddessen weiter Prozess und Fehlerlog und akzeptiert keinen Fehler
 als erfolgreichen Start. Bild-/Log-Diagnose bleibt auch bei Fehlern erhalten.
 
-26 Python-Prüfungen bestehen (drei neue Bild-Regressionen); die erneute
-installierte Android-Bildprüfung für diesen Programmstand steht noch aus.
+Der erneute Lauf 37088663906 bestand formal, aber das tatsächliche Bild 43
+zeigte nur Godots dunkle Hintergrundfarbe. **Auch Test 43 ist keine Freigabe
+der Android-Darstellung.** Die Bildprüfung hatte nur Abdeckung geprüft und
+diese leere Fläche akzeptiert. Sie verlangt jetzt zusätzlich mindestens
+acht Farbgruppen und einen ausreichenden Anteil heller dargestellter Pixel
+in jedem Bildschirmdrittel. Dunkle und helle leere Flächen werden abgewiesen.
+Der echte Desktop-Rennframe besteht, der leere Android-Frame 43 fällt durch.
+28 Python-Prüfungen bestehen; die installierte Android-Prüfung mit dem
+verschärften Bildkriterium steht noch aus.
 
 Lokal erneut bestanden: 23 Python-Prüfungen, zwei vollständige Rennen,
 4000 Aufgabenvarianten, echte Zweifinger-GUI-Ereignisse, Safe-Area-Resize,

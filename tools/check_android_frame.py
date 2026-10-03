@@ -1,7 +1,7 @@
-"""Check the real Sonnenhafen screenshot for landscape and large black regions.
+"""Reject blank/clipped real Sonnenhafen Android screenshots.
 
 Uses only the standard library. Supports Android screencap's 8-bit RGB/RGBA PNGs.
-This checks viewport coverage; it is not an FPS or complete visual quality test.
+This checks coverage and rendered detail, not FPS or complete visual quality.
 """
 from pathlib import Path
 import struct
@@ -62,20 +62,30 @@ def validate_frame(data):
     width, height, channels, rows = pixels_from_png(data)
     if width <= height or width < 320 or height < 160:
         raise ValueError(f'Expected a landscape race frame; got {width}x{height}')
-    fractions = []
+    fractions, detail = [], []
     # Exclude Android's status/navigation bars and inspect each third of the image.
     for third in range(3):
-        count = visible = 0
+        count = visible = bright = 0
+        colours = set()
         for y in range(height // 8, height * 7 // 8, 3):
             for x in range(width * third // 3 + 3, width * (third + 1) // 3 - 3, 3):
                 at = x * channels
-                visible += max(rows[y][at:at + 3]) > 24
+                rgb = rows[y][at:at + 3]
+                visible += max(rgb) > 24
+                bright += max(rgb) >= 80
+                colours.add(tuple(value // 16 for value in rgb))
                 count += 1
         fraction = visible / max(1, count)
         fractions.append(round(fraction, 3))
         if fraction < 0.65:
             raise ValueError(f'Black/clipped race region in third {third + 1}: {fraction:.1%} visible')
-    return {'size': [width, height], 'visible_fractions': fractions}
+        # A full-size clear colour/splash can satisfy coverage while rendering no game.
+        bright_fraction = bright / max(1, count)
+        if len(colours) < 8 or bright_fraction < 0.2:
+            raise ValueError(f'Blank race region in third {third + 1}: '
+                             f'{len(colours)} colour bins, {bright_fraction:.1%} bright')
+        detail.append({'colour_bins': len(colours), 'bright_fraction': round(bright_fraction, 3)})
+    return {'size': [width, height], 'visible_fractions': fractions, 'detail': detail}
 
 
 if __name__ == '__main__':
