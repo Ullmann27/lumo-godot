@@ -246,6 +246,7 @@ jobs:
           path: |
             exports/android/lumo3d-debug.apk
             exports/android/android-startup.log
+            exports/android/sonnenhafen-android-start.png
             exports/screenshots/*.png
             exports/packages/SHA256SUMS.txt
           if-no-files-found: error
@@ -271,10 +272,12 @@ jobs:
             APK-Verpackung korrigiert: resources.arsc bleibt unkomprimiert und ausgerichtet;
             Signatur, Ressourcenformat und ZIP-Ausrichtung werden vor der Veröffentlichung geprüft.
             Android-Start: PCK und binäre Startargumente werden geprüft und die App im Emulator gestartet.
+            Zusätzlich geprüft: direkter Kart-Einstieg mit Wechsel ins Querformat.
           files: |
             exports/packages/lumo-godot-linux.zip
             exports/packages/lumo-godot-web.zip
             exports/android/lumo3d-debug.apk
+            exports/android/sonnenhafen-android-start.png
             exports/screenshots/*.png
             exports/packages/SHA256SUMS.txt
 

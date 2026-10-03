@@ -127,3 +127,31 @@ lumo_pid=$(adb_cmd shell pidof "$lumo_package" | tr -d '\r') || fail "App crashe
 [[ "$lumo_pid" =~ ^[0-9]+([[:space:]][0-9]+)*$ ]] || fail "No live app process after startup"
 printf '[AndroidStartup] PASS: Boot + scene route + Lumo ready; process %s remains alive. Log: %s\n' \
     "$lumo_pid" "$lumo_log" | tee -a "$lumo_log"
+
+# Exercise the actual game route and its portrait-to-landscape startup, too.
+cat "$lumo_capture" >> "$lumo_log"
+adb_cmd shell am force-stop "$lumo_package" >> "$lumo_log" 2>&1 || fail "Could not stop menu instance"
+adb_cmd logcat -c >> "$lumo_log" 2>&1 || fail "Could not clear route logcat"
+printf '[AndroidStartup] Launch direct kart route\n' | tee -a "$lumo_log"
+adb_cmd shell am start -W -a android.intent.action.VIEW -p "$lumo_package" \
+    -d 'lumo3d://kart?grade=2' >> "$lumo_log" 2>&1 || fail "Android rejected kart route"
+lumo_deadline=$((SECONDS + 60))
+lumo_started=0
+while (( SECONDS < lumo_deadline )); do
+    capture_logcat
+    if grep -Fq '[Kart] ready: Sonnenhafen' "$lumo_capture" \
+        && grep -Eq '\[Router\] goto:kart[[:space:]]' "$lumo_capture"; then
+        lumo_started=1
+        break
+    fi
+    sleep 2
+done
+(( lumo_started == 1 )) || fail "Direct kart route did not initialize within 60 seconds"
+sleep 3
+capture_logcat
+adb_cmd shell pidof "$lumo_package" >> "$lumo_log" 2>&1 || fail "Kart exited after orientation change"
+adb_cmd exec-out screencap -p > "$lumo_root/exports/android/sonnenhafen-android-start.png" \
+    || fail "Could not capture running Android race"
+[[ -s "$lumo_root/exports/android/sonnenhafen-android-start.png" ]] || fail "Empty Android screenshot"
+printf '[AndroidStartup] PASS: direct kart route initialized and remained alive after orientation change\n' \
+    | tee -a "$lumo_log"

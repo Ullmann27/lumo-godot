@@ -220,7 +220,8 @@ Normalprofil, 1280 × 720, llvmpipe (Software-Renderer): Median **240,4 ms**,
 p95 **264,7 ms**, 66 Stichproben, 492 Draw Calls. Das ist deutlich über dem
 60-FPS-Budget von rund 16,7 ms. Die verschiedenen feststehenden Kameraansichten
 sind eine Renderprüfung, kein Benchmark eines vollständigen fahrenden Rennens.
-Ein Nachweis auf echter Android-GPU bleibt **offen**.
+Leichtes Profil: Median **125,9 ms**, p95 **145,8 ms**, 66 Stichproben,
+275 Draw Calls. Ein Nachweis auf echter Android-GPU bleibt **offen**.
 
 Die installierte Android-Prüfung hat zuvor eine Activity-Neuerstellung vor
 abgeschlossenem Engine-Start gefunden. Manifest und Projekt verwenden nun
@@ -228,8 +229,10 @@ dieselbe Startausrichtung (Hochformat); die Activity verarbeitet außerdem
 Orientierungs-, Farbmodus- und UI-Konfigurationswechsel selbst. Das Rennen
 wechselt weiterhin ins Querformat. APK-Installation im Test erfolgt ohne
 Androids inkrementelle Bereitstellung. Der erneute installierte Starttest
-steht bei Erstellung dieses Eintrags noch aus; eine Paketprüfung allein
-gilt nicht als erfolgreicher App-Start.
+auf Android API 35 besteht (Actions-Lauf 37085119053): Boot, Spieleauswahl,
+geladener Lumo und anschließend weiterhin lebender Prozess. Der folgende
+Änderungssatz prüft zusätzlich den direkten Kart-URI und den Wechsel
+ins Querformat; dieser neue Prüfteil ist bei Erstellung noch ausstehend.
 
 Lokal erneut bestanden: 23 Python-Prüfungen, zwei vollständige Rennen,
 4000 Aufgabenvarianten, echte Zweifinger-GUI-Ereignisse, Safe-Area-Resize,
@@ -237,3 +240,12 @@ Checkpoint/Wiederaufnahme, Jump-Regression, Fahrzeug-LOD/Geometrie/Farben
 und Weltfarben/-Transformationen mit OpenGL. Fünf aktuelle Spielbilder wurden
 von der laufenden Engine erzeugt. Keine Skript- oder Renderfehler; die
 Software-Umgebung meldet eingeschränkte VSync-Unterstützung.
+
+Die App-Bilder haben zwei vorhandene Lumo-Animationsfehler sichtbar gemacht:
+Der Pose-Reset verschob den Körper von seinem Modellversatz auf 0; Viseme
+ersetzten die kleine Mundskalierung durch volle Modellgröße. Beides ist
+korrigiert. Ein separater Engine-Test prüft alle Verhalten, proportionierte
+Viseme und eine tatsächlich laufende Idle-Animation. Die Mimik wird nach dem
+Beenden der vorherigen Animation gesetzt, damit sie nicht durch deren
+Mund-Reset verloren geht. Spieleauswahl und bestehende Godot-Home wurden
+erneut gerendert und visuell geprüft. Die Flutter-Hauptapp ist unverändert.

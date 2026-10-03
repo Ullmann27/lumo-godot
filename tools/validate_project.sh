@@ -14,6 +14,10 @@ timeout 120s "$GODOT" --headless --script scripts/tests/kart_touch_regression.gd
 if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-touch-tests.log; then exit 1; fi
 grep -qE '\[KartTouchTests\] PASS' /tmp/lumo-kart-touch-tests.log
 
+timeout 120s "$GODOT" --headless --script scripts/tests/lumo_character_regression.gd 2>&1 | tee /tmp/lumo-character-tests.log
+if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-character-tests.log; then exit 1; fi
+grep -qE '\[LumoCharacterTests\] PASS' /tmp/lumo-character-tests.log
+
 # Real GPU state (MultiMesh colours and transforms) needs a rendering server.
 if command -v xvfb-run >/dev/null 2>&1; then
   timeout 120s xvfb-run -a "$GODOT" --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_world_regression.gd 2>&1 | tee /tmp/lumo-world-tests.log
