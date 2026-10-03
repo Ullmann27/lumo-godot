@@ -208,6 +208,32 @@ In derselben letzten Vergleichsansicht:
 | Normal: Draw Calls | 874 | 492 | −43,7 % |
 | Leicht: Draw Calls | 425 | 275 | −35,3 % |
 
-Median bleibt in dieser Software-Umgebung 133,3 ms; p95 normal 146,6 ms,
-leicht 150,0 ms. Die Zeichenarbeit ist reduziert, eine höhere Bildrate
-ist durch diese Messung ausdrücklich nicht belegt. Android-GPU-Test offen.
+Die damals gemeldeten Bildzeiten verwendeten Godots `delta`, das bei sehr
+langsamer Darstellung begrenzt werden kann. Sie sind **keine verlässlichen
+realen Bildzeiten** und werden nicht als FPS-Nachweis verwendet.
+
+### Prüfung am 3. Oktober 2026
+
+Die Bildprüfung misst nun echte monotone Zeit zwischen Frames. PNG-Auslesen
+und Speichern werden aus den gewöhnlichen Bildzeit-Stichproben ausgeschlossen.
+Normalprofil, 1280 × 720, llvmpipe (Software-Renderer): Median **240,4 ms**,
+p95 **264,7 ms**, 66 Stichproben, 492 Draw Calls. Das ist deutlich über dem
+60-FPS-Budget von rund 16,7 ms. Die verschiedenen feststehenden Kameraansichten
+sind eine Renderprüfung, kein Benchmark eines vollständigen fahrenden Rennens.
+Ein Nachweis auf echter Android-GPU bleibt **offen**.
+
+Die installierte Android-Prüfung hat zuvor eine Activity-Neuerstellung vor
+abgeschlossenem Engine-Start gefunden. Manifest und Projekt verwenden nun
+dieselbe Startausrichtung (Hochformat); die Activity verarbeitet außerdem
+Orientierungs-, Farbmodus- und UI-Konfigurationswechsel selbst. Das Rennen
+wechselt weiterhin ins Querformat. APK-Installation im Test erfolgt ohne
+Androids inkrementelle Bereitstellung. Der erneute installierte Starttest
+steht bei Erstellung dieses Eintrags noch aus; eine Paketprüfung allein
+gilt nicht als erfolgreicher App-Start.
+
+Lokal erneut bestanden: 23 Python-Prüfungen, zwei vollständige Rennen,
+4000 Aufgabenvarianten, echte Zweifinger-GUI-Ereignisse, Safe-Area-Resize,
+Checkpoint/Wiederaufnahme, Jump-Regression, Fahrzeug-LOD/Geometrie/Farben
+und Weltfarben/-Transformationen mit OpenGL. Fünf aktuelle Spielbilder wurden
+von der laufenden Engine erzeugt. Keine Skript- oder Renderfehler; die
+Software-Umgebung meldet eingeschränkte VSync-Unterstützung.

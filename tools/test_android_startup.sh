@@ -78,7 +78,7 @@ PY
             grep -E '^(package:|sdkVersion:|targetSdkVersion:|native-code:)' || true
     fi
 } 2>&1 | tee -a "$lumo_log"
-if ! timeout 60s "$lumo_adb" "${lumo_adb_args[@]}" install -r "$lumo_apk" 2>&1 | tee -a "$lumo_log"; then
+if ! timeout 60s "$lumo_adb" "${lumo_adb_args[@]}" install --no-incremental -r "$lumo_apk" 2>&1 | tee -a "$lumo_log"; then
     fail "adb install failed; see install output in the log"
 fi
 adb_cmd shell am force-stop "$lumo_package" >> "$lumo_log" 2>&1 || fail "Could not stop previous app instance"

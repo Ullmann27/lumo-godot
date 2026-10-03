@@ -49,10 +49,17 @@ for manifest in (root/'android/build').rglob('AndroidManifest.xml'):
     tree=ET.parse(manifest); doc=tree.getroot()
     activity=next((e for e in doc.findall('application/activity') if (e.get(a('name')) or '').endswith('GodotApp')),None)
     if activity is None: continue
+    # Match the portrait project before native startup; the race switches to landscape.
+    activity.set(a('screenOrientation'), 'portrait')
+    activity.set(a('resizeableActivity'), 'true')
+    changes = set((activity.get(a('configChanges')) or '').split('|')) - {''}
+    changes.update(('orientation', 'screenSize', 'smallestScreenSize', 'density',
+                    'uiMode', 'colorMode', 'fontScale', 'fontWeightAdjustment'))
+    activity.set(a('configChanges'), '|'.join(sorted(changes)))
     if not any(e.get(a('scheme'))=='lumo3d' for e in activity.findall('intent-filter/data')):
         intent=ET.SubElement(activity,'intent-filter')
         ET.SubElement(intent,'action',{a('name'):'android.intent.action.VIEW'})
         for cat in ('DEFAULT','BROWSABLE'):ET.SubElement(intent,'category',{a('name'):'android.intent.category.'+cat})
         ET.SubElement(intent,'data',{a('scheme'):'lumo3d'})
-        ET.indent(tree);tree.write(manifest,encoding='utf-8',xml_declaration=True)
+    ET.indent(tree);tree.write(manifest,encoding='utf-8',xml_declaration=True)
 print('Native Lumo routes prepared: kart, jump, home; grade 1–4; no arbitrary engine flags')

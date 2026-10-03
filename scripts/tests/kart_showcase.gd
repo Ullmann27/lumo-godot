@@ -4,6 +4,8 @@ extends SceneTree
 var frame_index: int = 0
 var game
 var samples: Array[float] = []
+var previous_frame_usec: int = 0
+var omit_next_sample: bool = false
 
 
 func _initialize() -> void:
@@ -39,15 +41,21 @@ func _capture(name: String) -> void:
 	if game.lightweight:
 		name += "-lightweight"
 	assert(screenshot.save_png("res://exports/screenshots/" + name + ".png") == OK)
+	# PNG readback and file I/O must not count as ordinary rendering time.
+	omit_next_sample = true
 	print("[KartRender] " + name)
 
 
-func _process(delta: float) -> bool:
+func _process(_delta: float) -> bool:
 	if not is_instance_valid(game):
 		return false
 	frame_index += 1
-	if frame_index > 10:
-		samples.append(delta * 1000)
+	var now_usec: int = Time.get_ticks_usec()
+	if frame_index > 10 and previous_frame_usec > 0 and not omit_next_sample:
+		# Engine delta can be clamped when software rendering is very slow.
+		samples.append(float(now_usec - previous_frame_usec) / 1000.0)
+	previous_frame_usec = now_usec
+	omit_next_sample = false
 	if frame_index == 20:
 		_capture("sonnenhafen-race")
 		game.distance = game.track_length * 0.31
@@ -82,13 +90,17 @@ func _process(delta: float) -> bool:
 		samples.sort()
 		print(
 			(
-				"[KartRender] %s p50=%.1fms p95=%.1fms draw_calls=%d objects=%d"
+				(
+					"[KartRender] %s wall_clock p50=%.1fms p95=%.1fms "
+					+ "draw_calls=%d objects=%d samples=%d"
+				)
 				% [
 					RenderingServer.get_video_adapter_name(),
 					samples[samples.size() / 2],
 					samples[int(samples.size() * 0.95)],
 					Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),
-					Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME)
+					Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME),
+					samples.size()
 				]
 			)
 		)

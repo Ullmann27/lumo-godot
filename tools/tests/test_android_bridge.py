@@ -29,3 +29,9 @@ class NativeRouteBridgeTest(unittest.TestCase):
             data = document.findall('application/activity/intent-filter/data')
             self.assertEqual(len(data), 1)
             self.assertEqual(data[0].get('{http://schemas.android.com/apk/res/android}scheme'), 'lumo3d')
+            activity = document.find('application/activity')
+            ns = '{http://schemas.android.com/apk/res/android}'
+            self.assertEqual(activity.get(ns + 'screenOrientation'), 'portrait')
+            self.assertEqual(activity.get(ns + 'resizeableActivity'), 'true')
+            changes = set(activity.get(ns + 'configChanges').split('|'))
+            self.assertTrue({'orientation', 'screenSize', 'colorMode', 'uiMode'} <= changes)
