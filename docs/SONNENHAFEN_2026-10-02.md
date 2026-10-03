@@ -230,9 +230,13 @@ Orientierungs-, Farbmodus- und UI-Konfigurationswechsel selbst. Das Rennen
 wechselt weiterhin ins Querformat. APK-Installation im Test erfolgt ohne
 Androids inkrementelle Bereitstellung. Der erneute installierte Starttest
 auf Android API 35 besteht (Actions-Lauf 37085119053): Boot, Spieleauswahl,
-geladener Lumo und anschließend weiterhin lebender Prozess. Der folgende
-Änderungssatz prüft zusätzlich den direkten Kart-URI und den Wechsel
-ins Querformat; dieser neue Prüfteil ist bei Erstellung noch ausstehend.
+geladener Lumo und anschließend weiterhin lebender Prozess. Der zusätzliche
+Kart-URI-Test (37085628250) fand einen bislang verdeckten Bridge-Fehler:
+Der URI-Filter lag auf Godots nicht exportierter Activity. Er liegt jetzt
+auf dem vorhandenen öffentlichen Launcher-Alias, beschränkt auf die Hosts
+`kart`, `jump` und `home`. Die Activity bleibt privat. Der Python-Test
+verwendet die echte Alias-Struktur und prüft auch wiederholte Vorbereitung
+sowie unveränderten MAIN-Start. Erneute Android-Route-Prüfung noch ausstehend.
 
 Lokal erneut bestanden: 23 Python-Prüfungen, zwei vollständige Rennen,
 4000 Aufgabenvarianten, echte Zweifinger-GUI-Ereignisse, Safe-Area-Resize,

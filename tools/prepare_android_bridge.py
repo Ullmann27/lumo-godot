@@ -56,10 +56,24 @@ for manifest in (root/'android/build').rglob('AndroidManifest.xml'):
     changes.update(('orientation', 'screenSize', 'smallestScreenSize', 'density',
                     'uiMode', 'colorMode', 'fontScale', 'fontWeightAdjustment'))
     activity.set(a('configChanges'), '|'.join(sorted(changes)))
-    if not any(e.get(a('scheme'))=='lumo3d' for e in activity.findall('intent-filter/data')):
-        intent=ET.SubElement(activity,'intent-filter')
-        ET.SubElement(intent,'action',{a('name'):'android.intent.action.VIEW'})
-        for cat in ('DEFAULT','BROWSABLE'):ET.SubElement(intent,'category',{a('name'):'android.intent.category.'+cat})
-        ET.SubElement(intent,'data',{a('scheme'):'lumo3d'})
+    # Godot 4.6 exposes its launcher alias; the real activity stays private.
+    launcher = next((e for e in doc.findall('application/activity-alias')
+                     if e.get(a('targetActivity')) == activity.get(a('name'))
+                     and (e.get(a('name')) or '').endswith('GodotAppLauncher')), None)
+    if launcher is None:
+        raise RuntimeError('GodotAppLauncher alias missing from Android source template')
+    activity.set(a('exported'), 'false')
+    launcher.set(a('exported'), 'true')
+    # Move legacy filters off the private activity and normalize old broad routes.
+    for owner in (activity, launcher):
+        for intent in list(owner.findall('intent-filter')):
+            if any(e.get(a('scheme')) == 'lumo3d' for e in intent.findall('data')):
+                owner.remove(intent)
+    intent=ET.SubElement(launcher,'intent-filter')
+    ET.SubElement(intent,'action',{a('name'):'android.intent.action.VIEW'})
+    for cat in ('DEFAULT','BROWSABLE'):
+        ET.SubElement(intent,'category',{a('name'):'android.intent.category.'+cat})
+    for route in ('kart', 'jump', 'home'):
+        ET.SubElement(intent,'data',{a('scheme'):'lumo3d', a('host'): route})
     ET.indent(tree);tree.write(manifest,encoding='utf-8',xml_declaration=True)
 print('Native Lumo routes prepared: kart, jump, home; grade 1–4; no arbitrary engine flags')
