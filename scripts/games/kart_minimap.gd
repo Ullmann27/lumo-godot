@@ -8,9 +8,17 @@ var bounds := Rect2(-75, -65, 150, 125)
 
 func configure(game: Node3D) -> void:
 	race = game
+	path.clear()
+	if race.mode == "arena" or not is_instance_valid(race.world):
+		return
+	var minimum := Vector2(INF, INF)
+	var maximum := Vector2(-INF, -INF)
 	for i in range(181):
 		var p: Vector3 = race._track_position(float(i) * race.track_length / 180, 0)
 		path.append(Vector2(p.x, p.z))
+		minimum = minimum.min(Vector2(p.x, p.z))
+		maximum = maximum.max(Vector2(p.x, p.z))
+	bounds = Rect2(minimum - Vector2.ONE * 5, maximum - minimum + Vector2.ONE * 10)
 
 
 func _map(point: Vector2) -> Vector2:
@@ -30,8 +38,8 @@ func _draw() -> void:
 	draw_polyline(mapped, Color("24465b"), 7, true)
 	draw_polyline(mapped, Color("d6eff0"), 3, true)
 	for i in range(race.opponents.size()):
-		var point: Vector3 = race._track_position(race.opponent_distances[i], 0)
+		var point: Vector3 = race.opponents[i].position
 		draw_circle(_map(Vector2(point.x, point.z)), 4, race.opponents[i].vehicle_color)
 	var point: Vector3 = race.player.position
 	draw_circle(_map(Vector2(point.x, point.z)), 7, Color("263549"))
-	draw_circle(_map(Vector2(point.x, point.z)), 5, Color("fff2bb"))
+	draw_circle(_map(Vector2(point.x, point.z)), 5, Color("91f4ff"))

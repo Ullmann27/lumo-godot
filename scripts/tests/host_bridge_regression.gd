@@ -106,23 +106,21 @@ func _run() -> void:
 	game.set_physics_process(false)
 	await process_frame
 	assert(not auto_accept_quit and not quit_on_go_back)
+	# The garage precedes every race since the holographic Kart; start one like the child does.
+	game.lightweight = true
+	game._start_selected_race(
+		{"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen"}
+	)
 	# The KVM failure occurred during the real countdown, before racing began.
 	game.countdown = 3.0
 	await _android_back()
 	assert(game.paused and game.countdown == 3.0 and fake.returns.is_empty())
 	await process_frame
 	game._resume()
-	game._open_question()
-	var kart_question: String = game.active_question.answer
-	await _android_back()
-	assert(game.paused and game.question_open and fake.returns.is_empty())
-	await process_frame
-	game._resume()
-	assert(game.question_open and game.active_question.answer == kart_question)
-	game._skip_question()
 	game.countdown = 0
 	game.racing = true
-	assert(game.grade == 4 and game.subject == "Logik")
+	# Kart ignores grade/subject launch options: no learning questions in a race.
+	assert("grade" not in game and "question_open" not in game)
 	var first_id: String = game.result_id
 	game._physics_process(1.0)
 	var before: float = game.distance
@@ -141,10 +139,12 @@ func _run() -> void:
 	game = scene.instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
+	game.lightweight = true
 	await process_frame
+	assert(game.menu_active and game.saved_session_available, "The garage offers the saved race")
+	game._resume_saved_race()
 	assert(game.paused and game.result_id == first_id, "Resume preserves reward identity")
 	game._resume()
-	game.correct_count = 3
 	fake.accept_rewards = false
 	game._finish()
 	assert(fake.rewards.is_empty())
@@ -158,7 +158,8 @@ func _run() -> void:
 	recovered._options = bridge.launch_options()
 	recovered._load_pending_rewards()
 	assert(recovered._pending_rewards[first_id].status == "completed")
-	assert(recovered._pending_rewards[first_id].stars == 9)
+	assert(recovered._pending_rewards[first_id].stars == 3)
+	assert(recovered._pending_rewards[first_id].solved == 0, "Host requires an integer solved")
 	assert(not recovered.retry_pending_rewards(), "Another failed host write keeps the backup")
 	recovered.queue_free()
 	await process_frame
@@ -174,7 +175,8 @@ func _run() -> void:
 		game.finished and game.modal.visible,
 		"Failed native final return leaves result and engine usable"
 	)
-	assert(fake.rewards.size() == 1 and fake.rewards[0].stars == 9)
+	assert(fake.rewards.size() == 1 and fake.rewards[0].stars == 3)
+	assert(not fake.rewards[0].has("learning_events") and not fake.rewards[0].has("grade"))
 	assert(fake.rewards[0].resultId == first_id and fake.rewards[0].status == "completed")
 	game._finish()
 	bridge.reward(game.result_payload)
@@ -183,7 +185,7 @@ func _run() -> void:
 	game._return_to_app("learn")
 	assert(not FileAccess.file_exists(bridge.PENDING_REWARDS))
 	assert(fake.returns.size() == 2 and fake.returns[1].destination == "learn")
-	assert(fake.returns[1].payload.resultId == first_id and fake.returns[1].payload.stars == 9)
+	assert(fake.returns[1].payload.resultId == first_id and fake.returns[1].payload.stars == 3)
 	game.queue_free()
 	await process_frame
 	game = scene.instantiate()

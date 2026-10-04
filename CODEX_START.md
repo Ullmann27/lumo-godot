@@ -1,3 +1,20 @@
+# Aktuelle holografische Kart-Fortsetzung
+
+Aktiver Zweig: `codex/lumo-holographic-kart-2026-10-03`.
+Der neue Stand enthält vier frei fahrbare Welten, sechs Modi, das vollständige
+Auswahlmenü, persistente Geisterfahrt, neue Figuren/Karts und eigene Musik.
+Lern-Cup-Einzelereignisse werden bei Rückkehr über die Android-Brücke übertragen.
+Die Flutter-App pinnt diesen Quellstand in `config/godot-source.json` für Build 281.
+
+Echte neue Aufnahmen: `docs/screenshots/holographic-*` und
+`docs/screenshots/lumo-holographic-cover.png`. Quellen/Prüfungen:
+`docs/HOLOGRAPHIC_CHARACTERS.md`, `docs/KART_WORLDS_2026-10-03.md` und
+`assets/audio/kart/README.md`. Die zwölf zusätzlichen generierten Entwürfe
+sind Zielbilder und keine Screenshots dieses Builds. Android-Bau, Installation
+und FPS-Nachweis für Build 281 sind noch offen.
+
+Die nachfolgenden Notizen betreffen den übernommenen Stand bis APK 280.
+
 # Lumo Sonnenhafen – Fortsetzung
 
 Aktuelle Integration in **eine Flutter-Android-App** im Zweig

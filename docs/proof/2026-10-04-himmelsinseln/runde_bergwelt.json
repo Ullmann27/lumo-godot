@@ -1,0 +1,20 @@
+{
+  "android_performance_measurement": false,
+  "capture": "actual Godot engine render, xvfb + gl_compatibility",
+  "checkpoints": 16,
+  "driver": "automated steering towards the road 10 m ahead; no position changes",
+  "frames": 83,
+  "lap_times": [
+    19.5333333333335,
+    37.8833333333325
+  ],
+  "mode": "race",
+  "physics_hz": 60,
+  "place": 1,
+  "race_seconds": 37.88,
+  "resets": 0,
+  "stars": 3,
+  "tokens_collected": 24,
+  "track": "bergwelt",
+  "wall_contacts": 0
+}
