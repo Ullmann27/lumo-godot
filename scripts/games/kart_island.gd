@@ -21,6 +21,9 @@ const PREFERENCES: String = "user://kart_preferences.cfg"
 const SESSION_VERSION: int = 4
 const SESSION_VERSIONS: Array[int] = [1, 2, 3, 4]
 const MODE_IDS: Array[String] = ["race", "cup", "time_trial", "training", "arena"]
+## Drift turbo tiers: blue after 0.8 s of full steering, orange after 1.8 s.
+const DRIFT_TIERS: Array[float] = [0.8, 1.8]
+const DRIFT_BOOST_SECONDS: Array[float] = [1.0, 1.8]
 var curve: Curve3D
 var world: LumoRaceWorld
 var track_length: float
@@ -35,6 +38,11 @@ var elapsed: float = 0.0
 var boost_time: float = 0.0
 var boosts: int = 1
 var drift_charge: float = 0.0
+var drift_tier_count: Array[int] = [0, 0]
+var wall_contacts: int = 0
+var wall_sound_timer: float = 0.0
+var wrong_way: bool = false
+var wrong_way_seconds: float = 0.0
 var drifting: bool = false
 var racing: bool = false
 var finished: bool = false
@@ -401,6 +409,10 @@ func _begin_race() -> void:
 	brake = 0
 	control_brake = 0
 	drift_charge = 0
+	drift_tier_count = [0, 0]
+	wall_contacts = 0
+	wrong_way = false
+	wrong_way_seconds = 0
 	drifting = false
 	shield_time = 0
 	item = ""
@@ -715,6 +727,7 @@ func _physics_process(delta: float) -> void:
 		hit_timer = maxf(0, hit_timer - delta)
 		shield_time = maxf(0, shield_time - delta)
 		rival_contact_timer = maxf(0, rival_contact_timer - delta)
+		wall_sound_timer = maxf(0, wall_sound_timer - delta)
 		if mode == "arena":
 			_update_arena(delta)
 			if elapsed >= 90:
@@ -807,6 +820,11 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		return
 	road = world.sample_road(player.position, previous_road_distance)
 	lane = float(road.lateral)
+	if absf(lane) > WORLD.WALL_LATERAL:
+		_collide_with_rail(road)
+		road = world.sample_road(player.position, previous_road_distance)
+		lane = float(road.lateral)
+	_update_wrong_way(road, delta)
 	var road_distance: float = float(road.distance)
 	var travel: float = fposmod(road_distance - previous_road_distance + track_length * 0.5, track_length) - track_length * 0.5
 	if absf(lane) < ROAD_WIDTH * 0.5 + 2.0:
@@ -825,6 +843,37 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var right: Vector3 = forward.cross(normal).normalized()
 	var ground_forward: Vector3 = normal.cross(right).normalized()
 	player.basis = Basis(right, normal, -ground_forward).orthonormalized()
+
+
+func _collide_with_rail(road: Dictionary) -> void:
+	# The rail is a wall: stay on its inner face and slide along it.
+	var road_basis: Basis = road.basis
+	var side: float = signf(lane)
+	player.position -= road_basis.x * (lane - side * WORLD.WALL_LATERAL)
+	var into_wall: float = physical_velocity.dot(road_basis.x) * side
+	if into_wall <= 0.0:
+		return
+	wall_contacts += 1
+	physical_velocity -= road_basis.x * side * into_wall * 1.3
+	speed *= clampf(1.0 - into_wall * 0.03, 0.72, 0.98)
+	var along: float = _heading(float(road.distance))
+	if absf(angle_difference(player_heading, along)) > PI / 2:
+		along += PI
+	player_heading = lerp_angle(player_heading, along, minf(1.0, 0.25 + into_wall * 0.04))
+	if wall_sound_timer <= 0.0 and into_wall > 2.0:
+		wall_sound_timer = 0.4
+		_sound_effect("collision")
+
+
+func _update_wrong_way(road: Dictionary, delta: float) -> void:
+	var against: bool = speed > 4.0 and physical_velocity.dot(road.forward) < -2.0
+	wrong_way_seconds = wrong_way_seconds + delta if against else 0.0
+	var now_wrong: bool = wrong_way_seconds > 1.5
+	if now_wrong and not wrong_way:
+		message.text = "Falsche Richtung! Dreh um."
+	elif wrong_way and not now_wrong:
+		message.text = "Richtig unterwegs. Weiter so!"
+	wrong_way = now_wrong
 
 
 func _drive_opponents(delta: float) -> void:
@@ -853,6 +902,13 @@ func _drive_opponents(delta: float) -> void:
 		var travel: float = fposmod(float(next.distance) - float(sampled.distance) + track_length * 0.5, track_length) - track_length * 0.5
 		opponent_distances[i] += travel
 		opponent_lanes[i] = float(next.lateral)
+		var rival_lateral: float = float(next.lateral)
+		if absf(rival_lateral) > WORLD.WALL_LATERAL and absf(rival_lateral) <= ROAD_WIDTH * 0.5 + 1:
+			# Rivals respect the same rail wall as the player.
+			var rail_side: float = signf(rival_lateral)
+			var overlap: float = rival_lateral - rail_side * WORLD.WALL_LATERAL
+			rival.position -= (next.basis as Basis).x * overlap
+			opponent_lanes[i] = rail_side * WORLD.WALL_LATERAL
 		rival.position.y = float(next.height) + 0.035
 		if absf(float(next.lateral)) > ROAD_WIDTH * 0.5 + 1:
 			rival.transform = world.reset_transform(opponent_distances[i], target_lane)
@@ -909,7 +965,12 @@ func _update_hud() -> void:
 	var enabled: bool = racing and not paused and not finished
 	boost_button.text = "BOOST\n◆ %d" % boosts
 	boost_button.disabled = boosts == 0 or not enabled
-	drift_button.text = "DRIFT\n" + ("BEREIT!" if drift_charge >= 0.8 else "HALTEN")
+	var drift_state: String = "HALTEN"
+	if drift_charge >= DRIFT_TIERS[1]:
+		drift_state = "ORANGE!"
+	elif drift_charge >= DRIFT_TIERS[0]:
+		drift_state = "BLAU!"
+	drift_button.text = "DRIFT\n" + drift_state
 	drift_button.disabled = not enabled
 	item_button.text = {"": "ITEM\n◇", "shield": "SCHILD\n◎", "pulse": "IMPULS\n✧", "boost": "WIND\n➜"}.get(item, "ITEM")
 	item_button.disabled = item.is_empty() or not enabled
@@ -1073,8 +1134,11 @@ func _boost() -> void:
 
 func _release_drift() -> void:
 	drifting = false
-	if racing and not paused and not finished and drift_charge >= 0.8:
-		boost_time = maxf(boost_time, 1.6)
+	if racing and not paused and not finished and drift_charge >= DRIFT_TIERS[0]:
+		var tier: int = 1 if drift_charge >= DRIFT_TIERS[1] else 0
+		drift_tier_count[tier] += 1
+		boost_time = maxf(boost_time, DRIFT_BOOST_SECONDS[tier])
+		message.text = "Oranger Drift-Turbo!" if tier == 1 else "Blauer Drift-Turbo!"
 		_sound_effect("drift")
 	drift_charge = 0
 

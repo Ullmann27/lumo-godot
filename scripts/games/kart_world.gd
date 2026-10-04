@@ -4,6 +4,10 @@ extends Node3D
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const WIDTH: float = 10.8
+## Continuous guardrails: the drawn rail and the collision wall are the same line.
+const RAIL_LATERAL: float = 6.05
+## Furthest a kart centre may go; its wheels then touch the rail face.
+const WALL_LATERAL: float = 5.0
 const DECORATION_CELL: float = 48.0
 var curve: Curve3D
 var length: float = 0.0
@@ -384,10 +388,12 @@ func _road() -> void:
 		for side in [-1.0,1.0]:
 			var curb: Color=Color("eff3e5") if i%4<2 else edge_color.darkened(0.16)
 			_prop("box",position_at(d,side*5.5)+basis.y*0.02,Vector3(0.48,0.12,step+0.03),curb,basis)
-			if bridge or i%8<5:
-				_prop("box",position_at(d,side*6.05)+Vector3.UP*0.97,Vector3(0.14,0.13,step+0.05),Color("edf3df") if track_id!="holo_city" else Color("6bc9e5"),basis)
-				if bridge: _prop("box",position_at(d,side*6.05)+Vector3.UP*0.54,Vector3(0.09,0.10,step+0.05),Color("7d9aa4"),basis)
-				if i%3==0: _prop("box",position_at(d,side*6.05)+Vector3.UP*0.52,Vector3(0.14,1.10,0.17),Color("647e91"),basis)
+			# The rail is continuous because it is also the wall the kart collides with.
+			var rail_at: Vector3=position_at(d,side*RAIL_LATERAL)
+			var rail_color: Color=Color("edf3df") if track_id!="holo_city" else Color("6bc9e5")
+			_prop("box",rail_at+Vector3.UP*0.97,Vector3(0.14,0.13,step+0.05),rail_color,basis)
+			_prop("box",rail_at+Vector3.UP*0.54,Vector3(0.09,0.10,step+0.05),Color("7d9aa4"),basis)
+			if i%3==0: _prop("box",rail_at+Vector3.UP*0.52,Vector3(0.14,1.10,0.17),Color("647e91"),basis)
 		if i%8<3: _prop("box",p+basis.y*0.02,Vector3(0.13,0.018,step+0.02),Color("e6ead9"),basis)
 		if bridge and i%13==0:
 			var base_y: float=maxf(-2.3,_ground_height(p.x,p.z))

@@ -100,9 +100,9 @@ func _run() -> void:
 	game.brake = 0
 	game._reset_kart()
 	game.drifting = true
-	game.drift_charge = 1.1
+	game.drift_charge = 2.0
 	game._release_drift()
-	assert(game.boost_time >= 1.6)
+	assert(game.boost_time >= 1.8, "A long drift releases the orange turbo")
 	game._save_session()
 	var saved_position: Vector3 = game.player.position
 	var saved_result_id: String = game.result_id
