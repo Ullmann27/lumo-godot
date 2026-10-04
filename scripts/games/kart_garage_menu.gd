@@ -238,7 +238,7 @@ func _refresh() -> void:
 		choices.add_child(grid)
 		card_parent = grid
 	if step == 3 and setup.mode in ["cup", "arena"]:
-		var cup_text: String = "KRISTALL-ARENA\n90 Sekunden · Kristalle sammeln · Rivalen überholen" if setup.mode == "arena" else "DER STERNEN-CUP\nSonnenhafen → Zauberwald → Wolkenpass → Holo City"
+		var cup_text: String = "KRISTALL-ARENA\n90 Sekunden · Kristalle sammeln · Rivalen überholen" if setup.mode == "arena" else "DER STERNEN-CUP\nSonnenhafen → Zauberwald → Himmelsinseln → Holo City"
 		var card := _button(cup_text, func(): pass, true)
 		card.custom_minimum_size.y = 110
 		choices.add_child(card)

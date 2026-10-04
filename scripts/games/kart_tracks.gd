@@ -22,10 +22,11 @@ static func definition(id: String) -> Dictionary:
 			}
 		"bergwelt":
 			return {
-				"id": id, "name": "Wolkenpass", "subtitle": "Gipfel, Schluchten und Wolkenbrücken",
-				"accent": Color("9cdcff"), "asphalt": Color("53687b"),
-				"sky": Color("378dcc"), "horizon": Color("d9edf2"), "fog": Color("c3dcec"),
-				"sun": Color("fff0d6"), "ground": Color("738c84"), "seed": 63181,
+				# Himmelsinseln Sprint (reference k07): road carried by floating islands at night.
+				"id": id, "name": "Himmelsinseln", "subtitle": "Hoch hinaus. Gemeinsam weiter!",
+				"accent": Color("4fe6ff"), "asphalt": Color("2b3550"),
+				"sky": Color("0b1a4a"), "horizon": Color("3b3f9a"), "fog": Color("3a4c98"),
+				"sun": Color("c3d0ff"), "ground": Color("4f9a44"), "seed": 63181,
 				"points": PackedVector3Array([
 					Vector3(0, 4, 65), Vector3(43, 6, 55), Vector3(71, 12, 26),
 					Vector3(51, 17, -2), Vector3(75, 20, -38), Vector3(36, 21, -65),

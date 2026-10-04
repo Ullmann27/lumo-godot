@@ -42,13 +42,18 @@ func _test_walls(track: String) -> void:
 			game._physics_process(STEP)
 			widest = maxf(widest, absf(game.lane))
 		var wall: float = game.WORLD.WALL_LATERAL
-		assert(widest <= wall + 0.02, "%s: the kart stays inside the rail (%.2f m)" % [track, widest])
+		assert(
+			widest <= wall + 0.02, "%s: the kart stays inside the rail (%.2f m)" % [track, widest]
+		)
 		assert(game.wall_contacts > 10, "%s: the rail was actually hit" % track)
 		assert(game.reset_count == 0, "%s: a rail hit never drops the kart" % track)
 		assert(game.distance - start_distance > 25.0, "%s: the kart slides along the rail" % track)
-		print("[KartPhysics] %s side %+d: widest %.2f m, %d wall contacts, %.0f m along the rail" % [
-			track, int(side), widest, game.wall_contacts, game.distance - start_distance
-		])
+		print(
+			(
+				"[KartPhysics] %s side %+d: widest %.2f m, %d wall contacts, %.0f m along the rail"
+				% [track, int(side), widest, game.wall_contacts, game.distance - start_distance]
+			)
+		)
 
 
 func _test_drift_tiers() -> void:

@@ -10,6 +10,7 @@ const RECORDS = preload("res://scripts/games/kart_records.gd")
 const ARENA = preload("res://scripts/games/kart_arena.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
+const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
 const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
@@ -90,6 +91,7 @@ var materials: Dictionary = {}
 var boxes: Dictionary = {}
 var sphere_mesh: SphereMesh
 var crystal_mesh: ArrayMesh
+var star_mesh: ArrayMesh
 var race_root: Node3D
 var garage: Control
 var menu_active: bool = true
@@ -209,6 +211,7 @@ func _build_world() -> void:
 	world = null
 	arena = null
 	crystal_mesh = _gem_mesh()
+	star_mesh = SHAPES.star()
 	if mode == "arena":
 		arena = ARENA.new()
 		race_root.add_child(arena)
@@ -224,15 +227,16 @@ func _build_world() -> void:
 		curve = world.curve
 		track_length = world.length
 		for i in range(24):
+			# Gold star tokens (reference k03) on the courses; the arena keeps its crystals.
 			var d: float = (float(i) + 0.5) * track_length / 24
-			var gem: MeshInstance3D = _mesh(race_root, crystal_mesh, _track_position(d, float(i % 3 - 1) * 2.3) + Vector3.UP * 0.9, Color("89f3ff"))
-			gems.append(gem)
+			var at: Vector3 = _track_position(d, float(i % 3 - 1) * 2.3) + Vector3.UP * 0.95
+			var token: MeshInstance3D = _mesh(race_root, star_mesh, at, Color("ffc94a"))
+			token.scale = Vector3.ONE * 0.55
+			token.material_override = _glow_material(Color("ffc94a"), 0.6)
+			gems.append(token)
 			gem_distances.append(d)
 		for fraction in [0.12, 0.42, 0.74]:
-			var d: float = fraction * track_length
-			for i in range(5):
-				var strip := _box(race_root, _track_position(d + i * 0.55, 0) + world.frame(d).y * 0.04, Vector3(4.2, 0.025, 0.25), Color("6ce5da"))
-				strip.basis = world.frame(d)
+			_turbo_pad(fraction * track_length)
 	player = VEHICLE.new()
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, selected_driver)
 	player.configure(selected_driver, driver.color, selected_kart)
@@ -957,11 +961,11 @@ func _update_hud() -> void:
 	if mode == "arena":
 		hud.text = "KRISTALL-ARENA    %02d:%02d    ◆ %d    PLATZ %d / 6" % [int(maxf(0, 90 - elapsed)) / 60, int(maxf(0, 90 - elapsed)) % 60, arena_scores, place]
 	elif mode == "training":
-		hud.text = "FREIES TRAINING    %d km/h    ◆ %d    PAUSE → BEENDEN" % [int(speed * 3.6), collected.size()]
+		hud.text = "FREIES TRAINING    %d km/h    ★ %d    PAUSE → BEENDEN" % [int(speed * 3.6), collected.size()]
 	elif mode == "time_trial":
 		hud.text = "ZEITFAHREN    RUNDE %d / %d    %.2f s    %d km/h" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, elapsed, int(speed * 3.6)]
 	else:
-		hud.text = "RUNDE %d / %d    PLATZ %d / 6    %d km/h    ◆ %d" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, place, int(speed * 3.6), collected.size()]
+		hud.text = "RUNDE %d / %d    PLATZ %d / 6    %d km/h    ★ %d" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, place, int(speed * 3.6), collected.size()]
 	var enabled: bool = racing and not paused and not finished
 	boost_button.text = "BOOST\n◆ %d" % boosts
 	boost_button.disabled = boosts == 0 or not enabled
@@ -1597,6 +1601,40 @@ func _gem_mesh() -> ArrayMesh:
 			tool.add_vertex(points[index])
 	tool.generate_normals()
 	return tool.commit()
+
+
+func _glow_material(color: Color, energy: float = 1.2) -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.emission_enabled = true
+	material.emission = color
+	material.emission_energy_multiplier = energy
+	material.roughness = 0.35
+	return material
+
+
+## Turbo pad (reference k03): dark plate, three glowing chevrons, orange side lights.
+## It covers exactly the boost zone checked in _track_events.
+func _turbo_pad(distance_on_track: float) -> void:
+	var basis: Basis = world.frame(distance_on_track + 1.1)
+	var centre: Vector3 = _track_position(distance_on_track + 1.1, 0) + basis.y * 0.035
+	var plate := _box(race_root, centre, Vector3(4.4, 0.04, 2.6), Color("142a6e"))
+	plate.basis = basis
+	var cyan := _glow_material(Color("4fe6ff"), 1.6)
+	var orange := _glow_material(Color("ff9a3c"), 1.4)
+	for side in [-1.0, 1.0]:
+		var bar_at: Vector3 = centre + basis.x * side * 2.15 + basis.y * 0.02
+		var bar := _box(race_root, bar_at, Vector3(0.18, 0.05, 2.6), Color("ff9a3c"))
+		bar.basis = basis
+		bar.material_override = orange
+	for chevron in range(3):
+		var tip: Vector3 = centre - basis.z * (0.85 - chevron * 0.75) + basis.y * 0.03
+		for arm in [-1.0, 1.0]:
+			var arm_basis: Basis = basis * Basis(Vector3.UP, arm * 0.62)
+			var piece_at: Vector3 = tip + basis.x * arm * 0.55 + basis.z * 0.34
+			var piece := _box(race_root, piece_at, Vector3(1.3, 0.04, 0.2), Color("4fe6ff"))
+			piece.basis = arm_basis
+			piece.material_override = cyan
 
 
 func _mesh(parent: Node3D, mesh: Mesh, position: Vector3, color: Color) -> MeshInstance3D:

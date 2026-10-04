@@ -3,6 +3,7 @@ extends Node3D
 ## Four original banked courses. Spatial GPU batches preserve Android performance.
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
+const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
 const RAIL_LATERAL: float = 6.05
@@ -38,12 +39,19 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 	track_name = definition.name
 	_rng.seed = definition.seed
 	_make_curve()
+	if track_id=="bergwelt":
+		# Himmelsinseln Sprint (reference k07): the road is carried by floating islands.
+		SKY_ISLANDS.environment(self)
+		_road()
+		SKY_ISLANDS.build(self)
+		SKY_ISLANDS.chevrons(self)
+		_flush_instances()
+		return
 	_lighting()
 	_terrain()
 	_road()
 	match track_id:
 		"zauberwald": _forest()
-		"bergwelt": _alpine()
 		"holo_city": _city()
 		_: _harbour()
 	_navigation()
@@ -150,6 +158,14 @@ func _shape(kind: String) -> Mesh:
 		"sail": mesh = SHAPES.sail()
 		"flower": mesh = SHAPES.flower()
 		"crystal": mesh = SHAPES.crystal()
+		"star": mesh = SHAPES.star()
+		"cone":
+			var cone := CylinderMesh.new()
+			cone.top_radius=0.0
+			cone.bottom_radius=1.0
+			cone.height=1.0
+			cone.radial_segments=16
+			mesh=cone
 		"glass_tower": mesh = SHAPES.glass_tower()
 		"ball":
 			var sphere := SphereMesh.new()
@@ -260,7 +276,7 @@ func _is_bridge(distance: float) -> bool:
 	var t: float=fposmod(distance,length)/length
 	match track_id:
 		"holo_city": return true
-		"bergwelt": return (t>0.20 and t<0.39) or (t>0.72 and t<0.86)
+		"bergwelt": return SKY_ISLANDS.is_bridge(t)
 		"zauberwald": return t>0.15 and t<0.33
 		_: return t>0.20 and t<0.45
 
@@ -369,9 +385,11 @@ func _road() -> void:
 	var asphalt := ShaderMaterial.new()
 	asphalt.shader=preload("res://assets/shaders/kart_asphalt.gdshader")
 	asphalt.set_shader_parameter("road_tint",definition.asphalt)
-	asphalt.set_shader_parameter("night_course",1.0 if track_id=="holo_city" else 0.0)
+	var night: float={"holo_city":1.0,"bergwelt":0.15}.get(track_id,0.0)
+	asphalt.set_shader_parameter("night_course",night)
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
 	var shoulder_color := Color("d9d9c5") if track_id=="sonnenhafen" else Color("90b4bd")
+	if track_id=="bergwelt": shoulder_color=Color("2a3f8f")
 	var edge_color: Color=definition.accent
 	for side in [-1.0,1.0]:
 		_ribbon("RaisedShoulder",side*5.42,side*6.10,-0.06,_material(shoulder_color))
@@ -387,15 +405,24 @@ func _road() -> void:
 		var bridge: bool=_is_bridge(d)
 		for side in [-1.0,1.0]:
 			var curb: Color=Color("eff3e5") if i%4<2 else edge_color.darkened(0.16)
-			_prop("box",position_at(d,side*5.5)+basis.y*0.02,Vector3(0.48,0.12,step+0.03),curb,basis)
+			if track_id!="bergwelt":
+				_prop("box",position_at(d,side*5.5)+basis.y*0.02,Vector3(0.48,0.12,step+0.03),curb,basis)
 			# The rail is continuous because it is also the wall the kart collides with.
 			var rail_at: Vector3=position_at(d,side*RAIL_LATERAL)
 			var rail_color: Color=Color("edf3df") if track_id!="holo_city" else Color("6bc9e5")
-			_prop("box",rail_at+Vector3.UP*0.97,Vector3(0.14,0.13,step+0.05),rail_color,basis)
-			_prop("box",rail_at+Vector3.UP*0.54,Vector3(0.09,0.10,step+0.05),Color("7d9aa4"),basis)
-			if i%3==0: _prop("box",rail_at+Vector3.UP*0.52,Vector3(0.14,1.10,0.17),Color("647e91"),basis)
+			var lower_color: Color=Color("7d9aa4")
+			if track_id=="bergwelt":
+				# Reference guardrail: blue and white bands with gold caps.
+				rail_color=SKY_ISLANDS.RAIL_BLUE if i%6<3 else Color("f1f4ff")
+				lower_color=Color("1d3a9a")
+			_prop("box",rail_at+Vector3.UP*0.97,Vector3(0.16,0.2,step+0.05),rail_color,basis)
+			_prop("box",rail_at+Vector3.UP*0.54,Vector3(0.11,0.14,step+0.05),lower_color,basis)
+			if i%3==0:
+				_prop("box",rail_at+Vector3.UP*0.52,Vector3(0.14,1.10,0.17),Color("647e91"),basis)
+				if track_id=="bergwelt":
+					_prop("ball",rail_at+Vector3.UP*1.12,Vector3.ONE*0.13,SKY_ISLANDS.GOLD,basis,true)
 		if i%8<3: _prop("box",p+basis.y*0.02,Vector3(0.13,0.018,step+0.02),Color("e6ead9"),basis)
-		if bridge and i%13==0:
+		if bridge and i%13==0 and track_id!="bergwelt":
 			var base_y: float=maxf(-2.3,_ground_height(p.x,p.z))
 			var pillar_height: float=maxf(0.3,p.y-base_y-0.4)
 			_prop("box",p-Vector3.UP*0.48,Vector3(12.4,0.56,0.90),Color("526f84"),basis)
@@ -406,11 +433,17 @@ func _road() -> void:
 	for row in range(2):
 		for column in range(16):
 			_prop("box",position_at(row*0.64+1.0,(column-7.5)*0.65)+frame(0).y*0.035,Vector3(0.65,0.035,0.64),Color("f6fbfa") if (row+column)%2==0 else Color("162940"),frame(0))
-	_arch(0.0,track_name.to_upper(),definition.accent)
+	if track_id=="bergwelt":
+		SKY_ISLANDS.start_gate(self)
+		SKY_ISLANDS.road_lights(self)
+	else:
+		_arch(0.0,track_name.to_upper(),definition.accent)
 	match track_id:
 		"sonnenhafen": _suspension_bridge(length*0.295,37.0)
 		"zauberwald": _tree_tunnel(length*0.51)
-		"bergwelt": _snow_tunnel(length*0.51)
+		"bergwelt":
+			_snow_tunnel(length*SKY_ISLANDS.CAVE,SKY_ISLANDS.CAVE_PALETTE)
+			SKY_ISLANDS.cave_crystals(self,length*SKY_ISLANDS.CAVE)
 		"holo_city":
 			for fraction in [0.21,0.45,0.69]: _holo_gate(length*fraction)
 
@@ -420,15 +453,20 @@ func _beam(a: Vector3, b: Vector3, width: float, color: Color, glow: bool=false)
 	var basis: Basis=Basis.looking_at(delta.normalized(),up)
 	_prop("box",(a+b)*0.5,Vector3(width,width,delta.length()),color,basis,glow)
 
-func _suspension_bridge(distance: float, span: float) -> void:
+func _suspension_bridge(distance: float, span: float, palette: Dictionary={}) -> void:
+	var tower: Color=palette.get("tower",Color("e7e1c7"))
+	var cap: Color=palette.get("cap",Color("446b85"))
+	var crossbeam: Color=palette.get("crossbeam",Color("dfe2d0"))
+	var cable: Color=palette.get("cable",Color("48697e"))
+	var hanger: Color=palette.get("hanger",Color("dce5de"))
 	for end in [-1.0,1.0]:
 		var d: float=distance+end*span*0.5
 		var basis: Basis=frame(d)
 		for side in [-1.0,1.0]:
 			var foot: Vector3=position_at(d,side*6.55)
-			_prop("box",foot+Vector3.UP*5.4,Vector3(1.05,12.0,1.0),Color("e7e1c7"),basis)
-			_prop("box",foot+Vector3.UP*11.6,Vector3(1.5,0.35,1.3),Color("446b85"),basis)
-		_prop("box",position_at(d)+Vector3.UP*10.6,Vector3(14.0,0.75,1.0),Color("dfe2d0"),basis)
+			_prop("box",foot+Vector3.UP*5.4,Vector3(1.05,12.0,1.0),tower,basis)
+			_prop("box",foot+Vector3.UP*11.6,Vector3(1.5,0.35,1.3),cap,basis)
+		_prop("box",position_at(d)+Vector3.UP*10.6,Vector3(14.0,0.75,1.0),crossbeam,basis)
 	for side in [-1.0,1.0]:
 		for i in range(19):
 			var t: float=float(i)/19.0
@@ -437,8 +475,8 @@ func _suspension_bridge(distance: float, span: float) -> void:
 			var next_d: float=distance-span*0.5+next_t*span
 			var p: Vector3=position_at(d,side*6.55)+Vector3.UP*(3.0+pow(t*2.0-1.0,2.0)*8.0)
 			var q: Vector3=position_at(next_d,side*6.55)+Vector3.UP*(3.0+pow(next_t*2.0-1.0,2.0)*8.0)
-			_beam(p,q,0.14,Color("48697e"))
-			_beam(position_at(d,side*6.55)+Vector3.UP*1.05,p,0.055,Color("dce5de"))
+			_beam(p,q,0.14,cable)
+			_beam(position_at(d,side*6.55)+Vector3.UP*1.05,p,0.055,hanger)
 
 func _navigation() -> void:
 	for gate in range(1,8):
@@ -501,11 +539,6 @@ func _tree(at: Vector3, size: float, rng: RandomNumberGenerator) -> void:
 	_prop("crown",at+Vector3.UP*size*4.1,Vector3(2.1,1.75,1.85)*size,tint,branch_basis)
 	_prop("crown",at+branch_basis.x*size*1.0+Vector3.UP*size*3.55,Vector3(1.45,1.1,1.35)*size,tint.lightened(0.055),branch_basis)
 	if not low_detail: _prop("crown",at-branch_basis.x*size*0.95+Vector3.UP*size*3.65,Vector3(1.25,1.2,1.35)*size,tint.darkened(0.06),branch_basis)
-
-func _fir(at: Vector3, size: float, snow: bool=false) -> void:
-	_prop("cylinder",at+Vector3.UP*size*1.5,Vector3(0.20,3.0,0.20)*size,Color("756051"))
-	_prop("fir",at+Vector3.UP*size*1.2,Vector3(1.5,4.2,1.5)*size,Color("386a67"))
-	if snow: _prop("fir",at+Vector3.UP*size*2.3,Vector3(1.15,3.4,1.15)*size,Color("e1eeec"))
 
 func _flower_patch(at: Vector3, color: Color, count: int=8) -> void:
 	for i in range(count):
@@ -663,30 +696,12 @@ func _branch(a: Vector3,b: Vector3,radius: float,color: Color) -> void:
 	var basis: Basis=Basis.looking_at(direction,up)*Basis(Vector3.RIGHT,PI/2)
 	_prop("cylinder",(a+b)*0.5,Vector3(radius,(b-a).length(),radius),color,basis)
 
-func _alpine() -> void:
-	for i in range(135 if not low_detail else 80):
-		var p := Vector3(_rng.randf_range(-94,94),0,_rng.randf_range(-84,84))
-		if Vector2(p.x/96.0,p.z/87.0).length()>1.0 or _near_road(p,10.0): continue
-		p.y=_ground_height(p.x,p.z)
-		_fir(p,_rng.randf_range(0.85,1.8),i%3==0)
-	for i in range(48):
-		var d: float=float(i)*length/48.0
-		var p: Vector3=position_at(d,9.5 if i%2==0 else -10.0)
-		p.y=_ground_height(p.x,p.z)+0.4
-		_prop("rock",p,Vector3(2.6,3.0,2.2),Color("92a5ab"),Basis(Vector3.UP,float(i)))
-		if i%3==0: _prop("rock",p+Vector3.UP*1.5,Vector3(2.15,1.1,1.9),Color("e7f0eb"),Basis(Vector3.UP,float(i)))
-	for i in range(5):
-		var d: float=18.0+i*length/5.0
-		if _is_bridge(d): continue
-		var p: Vector3=position_at(d,-17)
-		p.y=_ground_height(p.x,p.z)
-		_house(p,Basis(Vector3.UP,atan2(-forward(d).x,-forward(d).z)),Color("d5cab3"),i)
-	for i in range(6):
-		var p := Vector3(-17+i*1.2,_ground_height(-17+i*1.2,-18),-18+sin(float(i))*2)
-		_prop("crystal",p,Vector3(1.2,2.3+float(i%3),1.2),Color("90cddd"))
-	_suspension_bridge(length*0.785,34.0)
-
-func _snow_tunnel(distance: float) -> void:
+func _snow_tunnel(distance: float, palette: Dictionary={}) -> void:
+	var inner: Color=palette.get("inner",Color("819da6"))
+	var outer: Color=palette.get("outer",Color("dce9e5"))
+	var stripes: Array=palette.get("stripes",[Color("b5c6c6"),Color("9aafb5")])
+	var boulder: Color=palette.get("boulder",Color("91a7ac"))
+	var lamp: Color=palette.get("lamp",Color("d8f0f4"))
 	# A continuous curved stone vault: joined inner/outer surfaces, no box roof.
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -702,7 +717,7 @@ func _snow_tunnel(distance: float) -> void:
 					var station: float=d+corner.x
 					vertices.append(position_at(station)+frame(station).x*cos(angle)*(6.7+layer*1.25)+Vector3.UP*sin(angle)*(6.6+layer*1.05))
 				for index in ([0,2,1,1,2,3] if layer==0 else [0,1,2,1,3,2]):
-					surface.set_color(Color("819da6") if layer==0 else Color("dce9e5"))
+					surface.set_color(inner if layer==0 else outer)
 					surface.add_vertex(vertices[index])
 	surface.generate_normals()
 	var vault := MeshInstance3D.new()
@@ -722,12 +737,12 @@ func _snow_tunnel(distance: float) -> void:
 			var b: float=float(segment+1)*PI/20.0
 			var p: Vector3=position_at(d)+basis.x*cos(a)*7.28+Vector3.UP*sin(a)*7.1
 			var q: Vector3=position_at(d)+basis.x*cos(b)*7.28+Vector3.UP*sin(b)*7.1
-			_beam(p,q,1.1,Color("b5c6c6") if segment%2==0 else Color("9aafb5"))
+			_beam(p,q,1.1,stripes[segment%2])
 		for side in [-1.0,1.0]:
-			_prop("rock",position_at(d,side*9.1)+Vector3.UP*1.8,Vector3(3.7,4.8,4.5),Color("91a7ac"),basis)
+			_prop("rock",position_at(d,side*9.1)+Vector3.UP*1.8,Vector3(3.7,4.8,4.5),boulder,basis)
 	for i in range(7):
 		var d: float=distance-10.0+i*3.3
-		_prop("box",position_at(d)+Vector3.UP*6.28,Vector3(1.2,0.07,0.25),Color("d8f0f4"),frame(d),true)
+		_prop("box",position_at(d)+Vector3.UP*6.28,Vector3(1.2,0.07,0.25),lamp,frame(d),true)
 
 func _city() -> void:
 	for x in range(-4,5):

@@ -105,3 +105,29 @@ static func glass_tower() -> ArrayMesh:
 			surface.add_vertex(p)
 	surface.generate_normals()
 	return surface.commit()
+
+
+static func star() -> ArrayMesh:
+	# Five-pointed star token, 0.24 m thick, facing +Z.
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var outline: Array[Vector2] = []
+	for i in range(10):
+		var angle: float = PI / 2.0 + float(i) * PI / 5.0
+		var radius: float = 1.0 if i % 2 == 0 else 0.46
+		outline.append(Vector2(cos(angle), sin(angle)) * radius)
+	for i in range(10):
+		var a: Vector2 = outline[i]
+		var b: Vector2 = outline[(i + 1) % 10]
+		for p in [Vector3(0, 0, 0.18), Vector3(a.x, a.y, 0.12), Vector3(b.x, b.y, 0.12)]:
+			surface.add_vertex(p)
+		for p in [Vector3(0, 0, -0.18), Vector3(b.x, b.y, -0.12), Vector3(a.x, a.y, -0.12)]:
+			surface.add_vertex(p)
+		var corners: Array[Vector3] = [
+			Vector3(a.x, a.y, 0.12), Vector3(a.x, a.y, -0.12),
+			Vector3(b.x, b.y, 0.12), Vector3(b.x, b.y, -0.12)
+		]
+		for index in [0, 1, 2, 2, 1, 3]:
+			surface.add_vertex(corners[index])
+	surface.generate_normals()
+	return surface.commit()

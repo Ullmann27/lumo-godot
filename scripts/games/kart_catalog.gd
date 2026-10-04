@@ -4,7 +4,7 @@ extends RefCounted
 const TRACKS: Array[Dictionary] = [
 	{"id": "sonnenhafen", "name": "Sonnenhafen", "tag": "MEER · BRÜCKEN · WEITE KURVEN", "color": Color("64dfeb"), "description": "Über die Hafenbrücke, am Leuchtturm vorbei und direkt ans Meer."},
 	{"id": "zauberwald", "name": "Zauberwald", "tag": "WALD · LEUCHTEN · GEHEIMNISSE", "color": Color("87eac1"), "description": "Leuchtende Pilze und große Baumwipfel begleiten deine Fahrt."},
-	{"id": "bergwelt", "name": "Wolkenpass", "tag": "BERGE · HÖHEN · AUSSICHT", "color": Color("a9caff"), "description": "Hoch über dem Tal warten weite Kehren und schwebende Wolken."},
+	{"id": "bergwelt", "name": "Himmelsinseln", "tag": "INSELN · WASSERFÄLLE · STERNE", "color": Color("9cc9ff"), "description": "Hoch über den Wolken: schwebende Inseln, Wasserfälle und die Schwebestadt."},
 	{"id": "holo_city", "name": "Holo City", "tag": "ZUKUNFT · NEON · NACHT", "color": Color("baabff"), "description": "Zwischen gläsernen Türmen und schimmernden Lichtbändern."}
 ]
 const MODES: Array[Dictionary] = [
