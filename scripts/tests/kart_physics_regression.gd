@@ -115,6 +115,43 @@ func _test_lap_validity() -> void:
 	assert(not game.finished)
 
 
+func _test_pedals() -> void:
+	await _start("training", "sonnenhafen")
+	game.auto_gas = false
+	_face(game._heading(0), 0.0)
+	for frame in range(60):
+		game._physics_process(STEP)
+	assert(game.speed < 0.5, "Without GAS the kart does not drive off")
+	game.gas_held = true
+	for frame in range(90):
+		game._physics_process(STEP)
+	assert(game.speed > 10.0, "Holding GAS accelerates (%.1f m/s)" % game.speed)
+	game.gas_held = false
+	game.control_brake = 1.0
+	for frame in range(90):
+		game._physics_process(STEP)
+	assert(game.speed < 1.0, "BREMSE stops the kart")
+	for frame in range(90):
+		game._physics_process(STEP)
+	assert(game.speed < -1.0, "Holding BREMSE while stopped reverses slowly")
+	game.control_brake = 0.0
+	# The pedal pad sits fully on screen without overlapping buttons.
+	game._update_hud()
+	await process_frame
+	var screen: Rect2 = root.get_visible_rect()
+	var rects: Array[Rect2] = []
+	for button in [
+		game.gas_button, game.brake_button, game.drift_button, game.boost_button, game.item_button
+	]:
+		var rect: Rect2 = button.get_global_rect()
+		assert(screen.encloses(rect), "Pedal pad button on screen")
+		for other in rects:
+			assert(not rect.grow(-4).intersects(other), "Pad buttons do not overlap")
+		rects.append(rect)
+	assert(not game.joystick.get_global_rect().intersects(rects[0]), "Stick and GAS are apart")
+	game.auto_gas = true
+
+
 func _run() -> void:
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	root.size = Vector2i(1280, 720)
@@ -128,6 +165,7 @@ func _run() -> void:
 	await _test_drift_tiers()
 	await _test_wrong_way()
 	await _test_lap_validity()
+	await _test_pedals()
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
@@ -135,7 +173,8 @@ func _run() -> void:
 	print(
 		(
 			"[KartPhysics] PASS: rail walls on four courses at full turbo, sliding contact, "
-			+ "blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap"
+			+ "blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, "
+			+ "GAS/BREMSE pedals with reverse and an on-screen pad"
 		)
 	)
 	# The audio mix thread releases the course music late.

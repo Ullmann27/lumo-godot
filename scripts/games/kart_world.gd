@@ -23,6 +23,8 @@ var track_name: String = "Sonnenhafen"
 var road_width: float = WIDTH
 var definition: Dictionary = {}
 var checkpoint_positions := PackedVector3Array()
+## Jump layout (ramp, take-off, gap end) on courses that have one; empty elsewhere.
+var jump: Dictionary = {}
 var _road_samples := PackedVector3Array()
 var _road_distances := PackedFloat32Array()
 var _rng := RandomNumberGenerator.new()
@@ -39,11 +41,14 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 	track_name = definition.name
 	_rng.seed = definition.seed
 	_make_curve()
+	jump={}
 	if track_id=="bergwelt":
 		# Himmelsinseln Sprint (reference k07): the road is carried by floating islands.
+		jump=SKY_ISLANDS.jump_layout(length)
 		SKY_ISLANDS.environment(self)
 		_road()
 		SKY_ISLANDS.build(self)
+		SKY_ISLANDS.jump_dressing(self)
 		SKY_ISLANDS.chevrons(self)
 		_flush_instances()
 		return
@@ -127,6 +132,24 @@ func sample_road(world_position: Vector3, hint_distance: float = -1.0) -> Dictio
 	var lateral: float = (world_position-centre).dot(basis.x)
 	var surface_position: Vector3 = centre+basis.x*lateral
 	return {"distance":best_distance,"lateral":lateral,"height":surface_position.y,"position":surface_position,"basis":basis,"on_road":absf(lateral)<=WIDTH*0.5,"width":WIDTH,"forward":-basis.z}
+
+func in_gap(distance: float) -> bool:
+	return SKY_ISLANDS.in_gap(jump,fposmod(distance,length))
+
+## Height of the ramp surface above the road at this distance (0 without a ramp).
+func ramp_height(distance: float) -> float:
+	if jump.is_empty(): return 0.0
+	var d: float=fposmod(distance,length)
+	if d<jump.ramp_start or d>=jump.take_off: return 0.0
+	return (d-jump.ramp_start)/(jump.take_off-jump.ramp_start)*jump.height
+
+## Visual jump arc for computer rivals: they follow the ramp and fly a fixed arc over the gap.
+func rival_arc(distance: float) -> float:
+	var d: float=fposmod(distance,length)
+	if jump.is_empty() or d<jump.ramp_start or d>=jump.gap_end: return 0.0
+	if d<jump.take_off: return ramp_height(d)
+	var u: float=(d-jump.take_off)/(jump.gap_end-jump.take_off)
+	return jump.height*(1.0-u)+6.0*u*(1.0-u)
 
 func reset_transform(distance: float, lateral: float = 0.0) -> Transform3D:
 	var basis: Basis = frame(distance)
@@ -369,6 +392,7 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 	for i in range(count):
 		var d: float=float(i)*length/count
 		var next: float=float(i+1)*length/count
+		if in_gap((d+next)*0.5): continue
 		var vertices: Array[Vector3]=[position_at(d,left)+frame(d).y*height,position_at(d,right)+frame(d).y*(height-down),position_at(next,left)+frame(next).y*height,position_at(next,right)+frame(next).y*(height-down)]
 		for index in ([0,2,1,1,2,3] if left < right else [0,1,2,1,3,2]):
 			surface.set_uv(Vector2(left if index%2==0 else right,d if index<2 else next))
@@ -400,6 +424,7 @@ func _road() -> void:
 	var step: float=length/count
 	for i in range(count):
 		var d: float=i*step+step*0.5
+		if in_gap(d): continue
 		var p: Vector3=position_at(d)
 		var basis: Basis=frame(d)
 		var bridge: bool=_is_bridge(d)

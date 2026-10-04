@@ -25,6 +25,11 @@ const MODE_IDS: Array[String] = ["race", "cup", "time_trial", "training", "arena
 ## Drift turbo tiers: blue after 0.8 s of full steering, orange after 1.8 s.
 const DRIFT_TIERS: Array[float] = [0.8, 1.8]
 const DRIFT_BOOST_SECONDS: Array[float] = [1.0, 1.8]
+## Arcade jump: strong gravity and a capped take-off speed keep flights short and readable.
+## Tuned on the Himmelsinseln gap: 17 m/s (Entdecken) clears it, a crawl below ~13 m/s falls,
+## turbo speed lands before the crystal cave.
+const JUMP_GRAVITY: float = 30.0
+const JUMP_MAX_LIFT: float = 4.0
 var curve: Curve3D
 var world: LumoRaceWorld
 var track_length: float
@@ -41,6 +46,12 @@ var boosts: int = 1
 var drift_charge: float = 0.0
 var drift_tier_count: Array[int] = [0, 0]
 var wall_contacts: int = 0
+var airborne: bool = false
+var vertical_speed: float = 0.0
+var air_time: float = 0.0
+var jump_count: int = 0
+var landing_count: int = 0
+var gap_falls: int = 0
 var wall_sound_timer: float = 0.0
 var wrong_way: bool = false
 var wrong_way_seconds: float = 0.0
@@ -67,6 +78,12 @@ var message: Label
 var boost_button: Control
 var drift_button: Control
 var joystick: Control
+var gas_button: Control
+var brake_button: Control
+## Right-thumb pedals. With "Auto-Gas" the kart accelerates by itself (keyboard, tests, younger
+## children); otherwise GAS must be held, as on a handheld kart racer.
+var gas_held: bool = false
+var auto_gas: bool = true
 var modal_backdrop: ColorRect
 var modal: PanelContainer
 var modal_column: VBoxContainer
@@ -415,6 +432,12 @@ func _begin_race() -> void:
 	drift_charge = 0
 	drift_tier_count = [0, 0]
 	wall_contacts = 0
+	airborne = false
+	vertical_speed = 0
+	air_time = 0
+	jump_count = 0
+	landing_count = 0
+	gap_falls = 0
 	wrong_way = false
 	wrong_way_seconds = 0
 	drifting = false
@@ -436,7 +459,11 @@ func _begin_race() -> void:
 	if is_instance_valid(kart_audio):
 		kart_audio.set_paused(false)
 		kart_audio.play_track("arena" if mode == "arena" else track_id)
-	message.text = "Automatisches Gas · Stick lenkt und bremst · Rechts: Drift, Boost und Gegenstand" if OS.has_feature("android") or OS.has_feature("ios") else "Automatisches Gas · A/D: lenken · S: bremsen · Umschalt: Drift · Leertaste: Boost · E: Item"
+	message.text = (
+		"Stick links lenkt · rechts GAS halten, BREMSE, DRIFT, BOOST, ITEM"
+		if OS.has_feature("android") or OS.has_feature("ios")
+		else "W: Gas · S: Bremse · A/D: lenken · Umschalt: Drift · Leertaste: Boost · E: Item"
+	)
 	_save_preferences()
 	_save_session()
 
@@ -529,6 +556,41 @@ func _action(text: String, callback: Callable, color: Color, diameter: float) ->
 	return button
 
 
+## Right-hand cluster like a handheld kart racer: big GAS under the thumb, BREMSE beside it,
+## DRIFT and BOOST above, ITEM to the left. Every button tracks its own finger.
+func _build_pedal_pad() -> Control:
+	var pad := Control.new()
+	pad.name = "PedalPad"
+	pad.custom_minimum_size = Vector2(440, 300)
+	pad.size_flags_vertical = Control.SIZE_SHRINK_END
+	pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	gas_button = _action("GAS", func(): pass, Color("7cf29c"), 156)
+	gas_button.name = "GasPedal"
+	gas_button.button_down.connect(func(): gas_held = true)
+	gas_button.button_up.connect(func(): gas_held = false)
+	brake_button = _action("BREMSE", func(): pass, Color("ff8a7a"), 116)
+	brake_button.name = "BrakePedal"
+	brake_button.button_down.connect(func(): control_brake = 1.0)
+	brake_button.button_up.connect(func(): control_brake = 0.0)
+	drift_button = _action("DRIFT\nHALTEN", func(): pass, Color("bc8eff"), 106)
+	drift_button.button_down.connect(func(): drifting = racing and not paused)
+	drift_button.button_up.connect(_release_drift)
+	boost_button = _action("BOOST\n◆ 1", _boost, Color("66f7e8"), 112)
+	item_button = _action("ITEM\n◇", _use_item, Color("a7c5ff"), 94)
+	var layout: Array = [
+		[gas_button, Vector2(361, 222)], [brake_button, Vector2(222, 242)],
+		[drift_button, Vector2(232, 108)], [boost_button, Vector2(370, 66)],
+		[item_button, Vector2(98, 228)]
+	]
+	for entry in layout:
+		var button: Control = entry[0]
+		var centre: Vector2 = entry[1]
+		button.size = button.custom_minimum_size
+		button.position = centre - button.custom_minimum_size * 0.5
+		pad.add_child(button)
+	return pad
+
+
 func _build_ui() -> void:
 	var layer := CanvasLayer.new()
 	add_child(layer)
@@ -583,34 +645,23 @@ func _build_ui() -> void:
 	controls.add_theme_constant_override("separation", 20)
 	column.add_child(controls)
 	joystick = JOYSTICK.new()
-	joystick.custom_minimum_size = Vector2(188, 188)
-	joystick.axis_changed.connect(
-		func(value: Vector2):
-			steering = value.x
-			brake = maxf(0, value.y)
-	)
+	joystick.custom_minimum_size = Vector2(200, 200)
+	joystick.size_flags_vertical = Control.SIZE_SHRINK_END
+	# The stick only steers; braking has its own pedal on the right.
+	joystick.axis_changed.connect(func(value: Vector2): steering = value.x)
 	controls.add_child(joystick)
 	var gap := Control.new()
 	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	controls.add_child(gap)
-	item_button = _action("ITEM\n◇", _use_item, Color("a7c5ff"), 94)
-	item_button.size_flags_vertical = Control.SIZE_SHRINK_END
-	controls.add_child(item_button)
-	drift_button = _action("DRIFT\nHALTEN", func(): pass, Color("bc8eff"), 106)
-	drift_button.size_flags_vertical = Control.SIZE_SHRINK_END
-	drift_button.button_down.connect(func(): drifting = racing and not paused)
-	drift_button.button_up.connect(_release_drift)
-	controls.add_child(drift_button)
-	boost_button = _action("BOOST\n◆ 1", _boost, Color("66f7e8"), 138)
-	boost_button.size_flags_vertical = Control.SIZE_SHRINK_END
-	controls.add_child(boost_button)
+	controls.add_child(_build_pedal_pad())
 	map_panel = PanelContainer.new()
-	map_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
+	# Top right, below the HUD bar, so it never covers the right-thumb pedal pad.
+	map_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	map_panel.offset_left = -210
 	map_panel.offset_right = -22
-	map_panel.offset_top = -78
-	map_panel.offset_bottom = 78
+	map_panel.offset_top = 104
+	map_panel.offset_bottom = 260
 	map_panel.add_theme_stylebox_override("panel", _style(Color(0.03, 0.08, 0.15, 0.9)))
 	map_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	safe_ui.add_child(map_panel)
@@ -776,13 +827,18 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var kart: Dictionary = CATALOG.entry(CATALOG.KARTS, selected_kart)
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
 	var target: float = 20.5 * float(kart.speed) * float(rules.speed)
+	var throttle: float = 1.0 if _gas_active() else 0.0
 	if mode == "arena":
 		target *= 0.68
 		if difficulty == "gemuetlich":
 			target *= 1.0 - absf(axis) * 0.24
 	if boost_time > 0:
 		target *= 1.42
+	target *= throttle
 	target *= 1.0 - braking * 0.94
+	# Holding BREMSE while (almost) stopped and without gas reverses slowly, to get unstuck.
+	if braking > 0.5 and throttle == 0.0 and speed < 1.0:
+		target = -5.0
 	if hit_timer > 0:
 		target *= 0.45
 	var road: Dictionary = {}
@@ -796,8 +852,14 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 			var correction: float = angle_difference(player_heading, _heading(float(road.distance)))
 			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
 	var acceleration: float = (20.0 if braking > 0.1 else 10.0) * float(kart.accel)
-	speed = move_toward(speed, target, delta * acceleration)
-	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * float(kart.turn) * clampf(speed / 8.0, 0, 1)
+	if not airborne:
+		speed = move_toward(speed, target, delta * acceleration)
+	var grip_turn: float = clampf(absf(speed) / 8.0, 0, 1)
+	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * float(kart.turn) * grip_turn
+	if speed < 0.0:
+		turn_rate = -turn_rate
+	if airborne:
+		turn_rate *= 0.35
 	player_heading -= axis * turn_rate * delta
 	var forward := Vector3(-sin(player_heading), 0, -cos(player_heading))
 	var grip: float = 3.1 if drifting else 9.0
@@ -832,7 +894,8 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var road_distance: float = float(road.distance)
 	var travel: float = fposmod(road_distance - previous_road_distance + track_length * 0.5, track_length) - track_length * 0.5
 	if absf(lane) < ROAD_WIDTH * 0.5 + 2.0:
-		player.position.y = float(road.height) + 0.035
+		if not _move_vertically(road, road_distance, delta):
+			return
 		offroad_seconds = 0
 		if absf(travel) <= maxf(3.0, speed * delta * 2.5):
 			distance = maxf(0.0, distance + travel)
@@ -847,6 +910,83 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var right: Vector3 = forward.cross(normal).normalized()
 	var ground_forward: Vector3 = normal.cross(right).normalized()
 	player.basis = Basis(right, normal, -ground_forward).orthonormalized()
+	var pitch: float = 0.0
+	if airborne:
+		pitch = clampf(vertical_speed * 0.05, -0.32, 0.32)
+	elif world.ramp_height(road_distance) > 0.0:
+		pitch = float(world.jump.angle)
+	if pitch != 0.0:
+		player.basis = player.basis.rotated(right, pitch).orthonormalized()
+
+
+## Ground contact, ramp, take-off, flight, landing and the cloud rescue over the gap.
+## Returns false when the kart was rescued (the caller then stops this physics step).
+func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> bool:
+	var ground: float = float(road.height) + 0.035 + world.ramp_height(road_distance)
+	var jump: Dictionary = world.jump
+	if not airborne and not jump.is_empty():
+		var leaving_ramp: bool = (
+			previous_road_distance >= jump.ramp_start
+			and previous_road_distance < jump.take_off
+			and road_distance >= jump.take_off
+			and road_distance < jump.gap_end
+		)
+		if leaving_ramp:
+			airborne = true
+			jump_count += 1
+			air_time = 0.0
+			vertical_speed = minf(speed * sin(float(jump.angle)), JUMP_MAX_LIFT)
+			message.text = "Sprung!"
+		elif world.in_gap(road_distance):
+			# Rolled or reversed into the gap without take-off: there is no road here.
+			airborne = true
+			vertical_speed = 0.0
+			air_time = 0.0
+	if not airborne:
+		player.position.y = ground
+		return true
+	vertical_speed -= JUMP_GRAVITY * delta
+	player.position.y += vertical_speed * delta
+	air_time += delta
+	if world.in_gap(road_distance):
+		if player.position.y < float(road.height) - 2.5:
+			_rescue_from_gap()
+			return false
+	elif player.position.y <= ground:
+		player.position.y = ground
+		airborne = false
+		landing_count += 1
+		if air_time > 0.35:
+			boost_time = maxf(boost_time, 1.2)
+			message.text = "Super gelandet! Turbo!"
+			_sound_effect("drift")
+		air_time = 0.0
+		vertical_speed = 0.0
+	return true
+
+
+func _rescue_from_gap() -> void:
+	# A cloud carries the kart just past the gap: no repeated falls, no shortcut.
+	var target: float = float(world.jump.gap_end) + 3.0
+	distance += fposmod(target - previous_road_distance, track_length)
+	previous_road_distance = target
+	player.transform = world.reset_transform(target)
+	player_heading = _heading(target)
+	speed = 8.0
+	physical_velocity = Vector3(-sin(player_heading), 0, -cos(player_heading)) * speed
+	airborne = false
+	vertical_speed = 0.0
+	air_time = 0.0
+	gap_falls += 1
+	reset_count += 1
+	ghost_valid = false
+	message.text = "Eine Wolke trägt dich weiter. Mehr Schwung beim nächsten Sprung!"
+
+
+func _gas_active() -> bool:
+	if auto_gas or gas_held:
+		return true
+	return Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)
 
 
 func _collide_with_rail(road: Dictionary) -> void:
@@ -913,7 +1053,7 @@ func _drive_opponents(delta: float) -> void:
 			var overlap: float = rival_lateral - rail_side * WORLD.WALL_LATERAL
 			rival.position -= (next.basis as Basis).x * overlap
 			opponent_lanes[i] = rail_side * WORLD.WALL_LATERAL
-		rival.position.y = float(next.height) + 0.035
+		rival.position.y = float(next.height) + 0.035 + world.rival_arc(float(next.distance))
 		if absf(float(next.lateral)) > ROAD_WIDTH * 0.5 + 1:
 			rival.transform = world.reset_transform(opponent_distances[i], target_lane)
 			opponent_headings[i] = _heading(opponent_distances[i])
@@ -979,6 +1119,9 @@ func _update_hud() -> void:
 	item_button.text = {"": "ITEM\n◇", "shield": "SCHILD\n◎", "pulse": "IMPULS\n✧", "boost": "WIND\n➜"}.get(item, "ITEM")
 	item_button.disabled = item.is_empty() or not enabled
 	joystick.set_enabled(enabled)
+	gas_button.disabled = not enabled
+	brake_button.disabled = not enabled
+	gas_button.visible = not auto_gas
 
 
 func _place() -> int:
@@ -1240,6 +1383,16 @@ func _pause() -> void:
 			_save_preferences()
 	)
 	modal_column.add_child(challenge)
+	var gas_mode := _button("Gas: automatisch" if auto_gas else "Gas: GAS-Taste halten", func(): pass)
+	gas_mode.name = "GasModeToggle"
+	gas_mode.pressed.connect(
+		func():
+			auto_gas = not auto_gas
+			gas_held = false
+			gas_mode.text = "Gas: automatisch" if auto_gas else "Gas: GAS-Taste halten"
+			_save_preferences()
+	)
+	modal_column.add_child(gas_mode)
 	modal_column.add_child(_button("Neue Fahrt auswählen", _leave_race_for_menu))
 	modal_column.add_child(_button("Rennen abbrechen", _abandon, Color("3a4577")))
 	modal.show()
@@ -1448,6 +1601,9 @@ func _load_preferences() -> void:
 		config.get_value("race", "lightweight", SettingsStore.get_profile() == "low")
 	)
 	muted = bool(config.get_value("race", "muted", false))
+	# Touch devices start with the GAS pedal; keyboard and automated runs keep auto-gas.
+	var touch_device: bool = OS.has_feature("android") or OS.has_feature("ios")
+	auto_gas = bool(config.get_value("race", "auto_gas", not touch_device))
 	difficulty = str(config.get_value("race", "difficulty", "gemuetlich"))
 	graphics_profile = str(config.get_value("race", "graphics_profile", "low" if lightweight else "high"))
 	if graphics_profile not in ["high", "medium", "low"]:
@@ -1461,6 +1617,7 @@ func _save_preferences() -> void:
 	config.set_value("race", "lightweight", lightweight)
 	config.set_value("race", "graphics_profile", graphics_profile)
 	config.set_value("race", "muted", muted)
+	config.set_value("race", "auto_gas", auto_gas)
 	config.set_value("race", "difficulty", difficulty)
 	config.save(PREFERENCES)
 	_update_audio()

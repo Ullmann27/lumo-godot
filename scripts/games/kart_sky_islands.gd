@@ -12,12 +12,19 @@ const WATERFALL = preload("res://assets/shaders/kart_waterfall.gdshader")
 ## Course fractions carried by islands (start, floating town, crystal cave, temple ruins).
 ## Everything between them is bridge.
 const ISLANDS: Array[Vector2] = [
-	Vector2(-0.07, 0.13), Vector2(0.27, 0.40), Vector2(0.46, 0.58), Vector2(0.66, 0.77)
+	Vector2(-0.07, 0.13), Vector2(0.27, 0.40), Vector2(0.514, 0.60), Vector2(0.68, 0.77)
 ]
 const TOWN: float = 0.335
-const CAVE: float = 0.52
+const CAVE: float = 0.555
 const RUINS: float = 0.715
-const SUSPENSION: float = 0.62
+const SUSPENSION: float = 0.635
+## Jump (k03 shortcut ramp): ramp on the downhill bridge before the crystal-cave island,
+## then open sky until that island begins. Metres along the course.
+const RAMP_LENGTH: float = 7.0
+const GAP_LENGTH: float = 8.0
+const RAMP_HEIGHT: float = 1.8
+## Islands extend this far beyond their span (see _road_island).
+const ISLAND_PADDING: float = 10.0
 const CLOUD_LEVEL: float = -38.0
 const MOON_DIRECTION := Vector3(0.32, 0.42, -0.85)
 const GRASS := Color("4f9a44")
@@ -53,6 +60,81 @@ static func is_bridge(t: float) -> bool:
 		elif t >= span.x and t <= span.y:
 			return false
 	return true
+
+
+## Ramp start, ramp end (take-off) and gap end (landing edge) in metres; the gap ends exactly
+## where the crystal-cave island begins.
+static func jump_layout(length: float) -> Dictionary:
+	var gap_end: float = ISLANDS[2].x * length - ISLAND_PADDING
+	var take_off: float = gap_end - GAP_LENGTH
+	return {
+		"ramp_start": take_off - RAMP_LENGTH,
+		"take_off": take_off,
+		"gap_end": gap_end,
+		"height": RAMP_HEIGHT,
+		"angle": atan2(RAMP_HEIGHT, RAMP_LENGTH)
+	}
+
+
+static func in_gap(jump: Dictionary, distance: float) -> bool:
+	return not jump.is_empty() and distance >= jump.take_off and distance < jump.gap_end
+
+
+## The orange shortcut ramp with yellow chevrons, light barriers across the gap and a glowing
+## landing edge.
+static func jump_dressing(world) -> void:
+	var jump: Dictionary = world.jump
+	var steps: int = 10
+	for i in range(steps):
+		var d0: float = jump.ramp_start + float(i) * RAMP_LENGTH / steps
+		var d1: float = d0 + RAMP_LENGTH / steps
+		var basis: Basis = world.frame((d0 + d1) * 0.5)
+		var rise: float = (float(i) + 0.5) / steps * RAMP_HEIGHT
+		var at: Vector3 = world.position_at((d0 + d1) * 0.5) + basis.y * (rise * 0.5)
+		world._prop("box", at, Vector3(10.6, rise + 0.08, d1 - d0 + 0.02), Color("8a4b1c"), basis)
+	# Smooth driving surface on top of the stepped body, with glowing chevrons.
+	var middle: float = jump.ramp_start + RAMP_LENGTH * 0.5
+	var mid_basis: Basis = world.frame(middle)
+	var slope: Basis = mid_basis.rotated(mid_basis.x, float(jump.angle))
+	var slab_at: Vector3 = world.position_at(middle) + mid_basis.y * (RAMP_HEIGHT * 0.5 + 0.04)
+	var slab_length: float = sqrt(RAMP_LENGTH * RAMP_LENGTH + RAMP_HEIGHT * RAMP_HEIGHT)
+	world._prop("box", slab_at, Vector3(10.6, 0.12, slab_length), Color("ff9d3c"), slope)
+	for chevron in range(3):
+		var along: float = (float(chevron) - 1.0) * 2.1
+		var tip: Vector3 = slab_at - slope.z * along + slope.y * 0.08
+		for arm in [-1.0, 1.0]:
+			var arm_basis: Basis = slope * Basis(Vector3.UP, arm * 0.62)
+			var arm_at: Vector3 = tip + slope.x * arm * 0.9 + slope.z * 0.4
+			world._prop("box", arm_at, Vector3(2.2, 0.03, 0.32), Color("ffe36b"), arm_basis, true)
+	for side in [-1.0, 1.0]:
+		var a: Vector3 = world.position_at(jump.take_off, side * world.RAIL_LATERAL) + Vector3.UP
+		var b: Vector3 = world.position_at(jump.gap_end, side * world.RAIL_LATERAL) + Vector3.UP
+		world._beam(a, b, 0.08, CYAN, true)
+		world._beam(a - Vector3.UP * 0.45, b - Vector3.UP * 0.45, 0.06, CYAN, true)
+		for end in [jump.take_off, jump.gap_end]:
+			var post: Vector3 = world.position_at(end, side * world.RAIL_LATERAL)
+			world._prop("box", post + Vector3.UP * 1.2, Vector3(0.35, 2.4, 0.35), NAVY)
+			world._prop(
+				"ball", post + Vector3.UP * 2.5, Vector3.ONE * 0.3, ORANGE, Basis.IDENTITY, true
+			)
+	var landing: Basis = world.frame(jump.gap_end + 0.6)
+	world._prop(
+		"box",
+		world.position_at(jump.gap_end + 0.6) + landing.y * 0.04,
+		Vector3(10.6, 0.05, 0.5),
+		ORANGE,
+		landing,
+		true
+	)
+	var sign_basis: Basis = world.frame(jump.ramp_start - 14.0)
+	var sign_at: Vector3 = world.position_at(jump.ramp_start - 14.0, 7.6)
+	world._prop("box", sign_at + Vector3.UP * 1.4, Vector3(0.14, 2.8, 0.14), NAVY)
+	world._prop(
+		"box", sign_at + Vector3.UP * 2.6, Vector3(3.2, 1.2, 0.16), Color("1c3aa6"), sign_basis
+	)
+	world._sign(
+		sign_at + Vector3.UP * 2.6 + sign_basis.z * 0.1, sign_basis, "SPRUNG!\nSchwung holen", 0.012
+	)
 
 
 static func environment(world) -> void:
@@ -331,7 +413,7 @@ static func _bridges(world, _rng: RandomNumberGenerator) -> void:
 	for i in range(count):
 		var d: float = (float(i) + 0.5) * step
 		var t: float = d / length
-		if not is_bridge(t) or absf(t - SUSPENSION) < 0.035:
+		if not is_bridge(t) or absf(t - SUSPENSION) < 0.035 or in_gap(world.jump, d):
 			continue
 		var basis: Basis = world.frame(d)
 		var at: Vector3 = world.position_at(d)
@@ -896,6 +978,8 @@ static func road_lights(world) -> void:
 	var count: int = ceili(length / step)
 	for i in range(count):
 		var d: float = (float(i) + 0.5) * step
+		if in_gap(world.jump, d):
+			continue
 		var basis: Basis = world.frame(d)
 		for side in [-1.0, 1.0]:
 			var glow: Color = ORANGE if i % 4 < 2 else CYAN
