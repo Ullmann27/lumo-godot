@@ -35,7 +35,8 @@ func _no_learning_data(payload: Dictionary) -> void:
 func _host_json_is_integer(host) -> void:
 	# Dart's jsonDecode only yields an int for "0", not "0.0" (embedded_game_service.dart).
 	for value in host.raw:
-		assert('"solved":0' in value and '"solved":0.0' not in value, "Host JSON needs an integer solved: " + value)
+		var integer: bool = '"solved":0' in value and '"solved":0.0' not in value
+		assert(integer, "Host JSON needs an integer solved: " + value)
 
 
 func _fresh_game():
@@ -60,7 +61,10 @@ func _run() -> void:
 	var host := Host.new()
 	root.add_child(host)
 	bridge._host = host
-	bridge._options = {"sessionId": "kart-race-bridge-test", "soundEnabled": false, "grade": 3, "subject": "Deutsch"}
+	# grade/subject still arrive from the host (Jump uses them); Kart must ignore them.
+	bridge._options = {
+		"sessionId": "kart-race-bridge-test", "soundEnabled": false, "grade": 3, "subject": "Deutsch"
+	}
 	scene = load("res://scenes/games/kart_island.tscn")
 	var game = await _fresh_game()
 	for entry in game.CATALOG.MODES:
@@ -101,7 +105,9 @@ func _run() -> void:
 	game._return_to_app("learn")
 	assert(host.returns[-1].status == "completed" and host.returns[-1].resultId == race_id)
 	DirAccess.make_dir_recursive_absolute("res://exports/holographic-proof")
-	var example := FileAccess.open("res://exports/holographic-proof/kart-race-result-example.json", FileAccess.WRITE)
+	var example := FileAccess.open(
+		"res://exports/holographic-proof/kart-race-result-example.json", FileAccess.WRITE
+	)
 	# Exact bytes the native host received for the completed race.
 	example.store_string(host.raw[-1])
 	example.close()
@@ -174,6 +180,13 @@ func _run() -> void:
 	bridge._options = {}
 	host.queue_free()
 	scene = null
-	await create_timer(.12).timeout
-	print("[KartRaceBridge] PASS: no learning data, stable pause/return/resume ID, one reward, solved int, failed ACK keeps save, star cup without tasks, legacy learning-cup save finishes")
+	# Five scenes played garage music; the audio mix thread releases those playbacks late.
+	await create_timer(0.5).timeout
+	print(
+		(
+			"[KartRaceBridge] PASS: no learning data, stable pause/return/resume ID, one reward, "
+			+ "solved int, failed ACK keeps save, star cup without tasks, "
+			+ "legacy learning-cup save finishes"
+		)
+	)
 	quit(0)

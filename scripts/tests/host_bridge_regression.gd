@@ -108,7 +108,9 @@ func _run() -> void:
 	assert(not auto_accept_quit and not quit_on_go_back)
 	# The garage precedes every race since the holographic Kart; start one like the child does.
 	game.lightweight = true
-	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "gemuetlich"})
+	game._start_selected_race(
+		{"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen"}
+	)
 	# The KVM failure occurred during the real countdown, before racing began.
 	game.countdown = 3.0
 	await _android_back()
@@ -139,7 +141,7 @@ func _run() -> void:
 	game.set_physics_process(false)
 	game.lightweight = true
 	await process_frame
-	assert(game.menu_active and game.saved_session_available, "The saved race is offered in the garage")
+	assert(game.menu_active and game.saved_session_available, "The garage offers the saved race")
 	game._resume_saved_race()
 	assert(game.paused and game.result_id == first_id, "Resume preserves reward identity")
 	game._resume()

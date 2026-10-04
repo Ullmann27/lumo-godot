@@ -110,7 +110,13 @@ func _run() -> void:
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
-	print("[KartModesTests] PASS: 4-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks")
+	print(
+		(
+			"[KartModesTests] PASS: 4-race star cup without tasks, legacy learn_cup -> cup, "
+			+ "arena completion, training completion, ordered gates, persistent interpolated ghost, "
+			+ "durable earned unlocks"
+		)
+	)
 	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
 	await create_timer(0.12).timeout
 	quit(0)

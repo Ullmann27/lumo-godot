@@ -153,7 +153,10 @@ func _ready() -> void:
 		get_window().size = Vector2i(1280, 720)
 	_build_ui()
 	_build_engine_sound()
-	saved_session_available = session_config.load(SESSION) == OK and int(session_config.get_value("race", "version", 0)) in SESSION_VERSIONS
+	saved_session_available = (
+		session_config.load(SESSION) == OK
+		and int(session_config.get_value("race", "version", 0)) in SESSION_VERSIONS
+	)
 	_show_garage()
 	set_physics_process(true)
 	print("[Kart] Holographic garage ready: five modes, four worlds, free steering")
@@ -1424,20 +1427,26 @@ func _save_session() -> void:
 
 func _restore_session() -> bool:
 	var config := ConfigFile.new()
-	if config.load(SESSION) != OK or int(config.get_value("race", "version", 0)) not in SESSION_VERSIONS:
+	if config.load(SESSION) != OK:
+		return false
+	if int(config.get_value("race", "version", 0)) not in SESSION_VERSIONS:
 		return false
 	var saved_distance: float = float(config.get_value("race", "distance", -1))
 	if saved_distance < 0 or not is_finite(saved_distance):
 		return false
 	var keys: Array[String] = [
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed", "boost_time", "boosts",
-		"collected", "difficulty", "mode", "track_id", "selected_driver", "selected_kart", "player_heading", "previous_road_distance", "cup_index",
+		"collected", "difficulty", "mode", "track_id", "selected_driver", "selected_kart",
+		"player_heading", "previous_road_distance", "cup_index",
 		"pending_cup_next", "finished", "completed_race", "result_payload", "arena_scores", "item", "shield_time",
 		"reset_count", "setup_snapshot"
 	]
 	for key in keys:
 		set(key, config.get_value("race", key, get(key)))
-	for key in ["opponent_distances", "opponent_lanes", "cup_points", "cup_results", "arena_pickup_timers", "opponent_scores", "opponent_targets", "opponent_headings"]:
+	for key in [
+		"opponent_distances", "opponent_lanes", "cup_points", "cup_results",
+		"arena_pickup_timers", "opponent_scores", "opponent_targets", "opponent_headings"
+	]:
 		var target: Array = get(key)
 		target.assign(config.get_value("race", key, target))
 	if int(config.get_value("race", "version", 0)) < 3:

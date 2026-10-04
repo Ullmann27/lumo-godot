@@ -90,7 +90,7 @@ func _run() -> void:
 	await process_frame
 	assert(game.paused and game.modal.visible, "Back pauses the running race")
 	await _resume_touch()
-	assert(not game.modal.visible and game.racing, "Touch resumes the race directly, without any task panel")
+	assert(not game.modal.visible and game.racing, "Touch resumes the race, no task panel")
 	assert("lesson" not in game and "question_open" not in game, "Kart has no learning panel")
 	await _android_back()
 	await process_frame

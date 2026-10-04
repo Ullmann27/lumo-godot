@@ -56,7 +56,9 @@ func _run() -> void:
 	assert(game.garage._entries().size() == 5, "Five usable mode choices")
 	for entry in game.garage._entries():
 		assert(str(entry.id) != "learn_cup", "No learning cup in Kart")
-	for removed in ["question_open", "active_question", "learning_events", "lesson", "correct_count", "grade", "subject"]:
+	for removed in [
+		"question_open", "active_question", "learning_events", "lesson", "correct_count", "grade"
+	]:
 		assert(removed not in game, "Kart has no learning-question state: " + removed)
 	game.lightweight = true
 	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "flott"})
@@ -131,7 +133,8 @@ func _run() -> void:
 	assert(game.finished, "A freely steered kart must complete two actual laps")
 	assert(game.checkpoint_index == 16 and game.distance >= game.track_length * 2)
 	assert(game.modal.visible and game.result_payload.status == "completed")
-	assert(game.result_payload.stars == 3 and game.result_payload.solved == 0, "Plain race reward, host-compatible solved")
+	assert(game.result_payload.stars == 3, "Plain race reward")
+	assert(game.result_payload.solved == 0, "The Flutter host needs an integer solved")
 	for removed in ["grade", "subject", "learning_events"]:
 		assert(not game.result_payload.has(removed), "No learning data in the race result: " + removed)
 	var stars: int = root.get_node("ProgressStore").total_stars()
@@ -142,7 +145,12 @@ func _run() -> void:
 	game.queue_free()
 	await process_frame
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
-	print("[KartTests] PASS: 8000 shared Jump questions; no Kart learning state; free steering; real full race; brake/drift; pause; save/resume; one award")
+	print(
+		(
+			"[KartTests] PASS: 8000 shared Jump questions; no Kart learning state; free steering; "
+			+ "real full race; brake/drift; pause; save/resume; one award"
+		)
+	)
 	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
 	await create_timer(0.12).timeout
 	quit(0)
