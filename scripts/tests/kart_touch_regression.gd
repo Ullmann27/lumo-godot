@@ -85,19 +85,13 @@ func _run() -> void:
 	_touch(1, Vector2(600, 400), false)
 	await process_frame
 	assert(game.steering == 0)
-	game._open_question()
-	await process_frame
-	await process_frame
-	var title: Label = game.lesson_column.get_child(0).get_child(0)
-	assert(title.size.x > 300 and title.size.y < 60, "Lesson heading must remain horizontal")
-	assert(game.lesson.size.y < 300, "Lesson card must not cover the whole race")
-	var pending_answer: String = game.active_question.answer
 	await _android_back()
 	await process_frame
 	await process_frame
-	assert(game.paused and game.question_open and game.active_question.answer == pending_answer)
+	assert(game.paused and game.modal.visible, "Back pauses the running race")
 	await _resume_touch()
-	assert(game.question_open and game.lesson.visible)
+	assert(not game.modal.visible and game.racing, "Touch resumes the race directly, without any task panel")
+	assert("lesson" not in game and "question_open" not in game, "Kart has no learning panel")
 	await _android_back()
 	await process_frame
 	await process_frame
@@ -107,7 +101,7 @@ func _run() -> void:
 	await process_frame
 	var safe_bounds: Rect2 = game.safe_ui.get_global_rect()
 	assert(safe_bounds == Rect2(48, 24, 1216, 656))
-	for control in [game.joystick, game.boost_button, game.drift_button, game.lesson, game.modal]:
+	for control in [game.joystick, game.boost_button, game.drift_button, game.modal]:
 		_assert_inside(control, safe_bounds)
 	# A Fold/orientation resize can change both canvas scale and the cutout edges.
 	root.size = Vector2i(720, 1280)
@@ -117,7 +111,7 @@ func _run() -> void:
 	await process_frame
 	await process_frame
 	safe_bounds = game.safe_ui.get_global_rect()
-	for control in [game.joystick, game.boost_button, game.drift_button, game.lesson, game.modal]:
+	for control in [game.joystick, game.boost_button, game.drift_button, game.modal]:
 		_assert_inside(control, safe_bounds)
 	game._notification(Node.NOTIFICATION_APPLICATION_PAUSED)
 	assert(game.paused and game.steering == 0)
@@ -127,8 +121,8 @@ func _run() -> void:
 	await process_frame
 	print(
 		(
-			"[KartTouchTests] PASS: real two-finger GUI, window Back countdown/question pause, "
-			+ "touch resume, release outside, learning/pause, scaled safe areas"
+			"[KartTouchTests] PASS: real two-finger GUI, window Back countdown/race pause, "
+			+ "touch resume, release outside, no learning panel, scaled safe areas"
 		)
 	)
 	await create_timer(0.12).timeout

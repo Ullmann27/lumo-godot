@@ -237,7 +237,7 @@ func _refresh() -> void:
 		grid.add_theme_constant_override("v_separation", 10)
 		choices.add_child(grid)
 		card_parent = grid
-	if step == 3 and setup.mode in ["cup", "learn_cup", "arena"]:
+	if step == 3 and setup.mode in ["cup", "arena"]:
 		var cup_text: String = "KRISTALL-ARENA\n90 Sekunden · Kristalle sammeln · Rivalen überholen" if setup.mode == "arena" else "DER STERNEN-CUP\nSonnenhafen → Zauberwald → Wolkenpass → Holo City"
 		var card := _button(cup_text, func(): pass, true)
 		card.custom_minimum_size.y = 110
@@ -260,7 +260,7 @@ func _refresh() -> void:
 			card_parent.add_child(card)
 	var selected_entry: Dictionary = CATALOG.entry(_entries(), str(setup[key]))
 	detail.text = str(selected_entry.get("description", selected_entry.get("tag", "")))
-	if step == 3 and setup.mode in ["cup", "learn_cup"]:
+	if step == 3 and setup.mode == "cup":
 		detail.text = "Vier Rennen. Eine Gesamtwertung. Dein Sternenpokal wartet."
 	elif step == 3 and setup.mode == "arena":
 		detail.text = "Frei fahren und Kristalle sammeln. Nach 90 Sekunden gewinnt die höchste Punktzahl."

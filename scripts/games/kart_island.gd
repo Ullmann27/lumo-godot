@@ -1,13 +1,13 @@
 extends Node3D
 # gdlint: disable=max-file-lines
-## Free steering arcade racing, original Lumo worlds, six complete modes and host-safe saves.
+## Free steering arcade racing, original Lumo worlds, five complete modes and host-safe saves.
+## Product rule (Heinz, 2026-10-04): no learning questions, learning cups or answer timers in Kart.
 
 const KART_AUDIO = preload("res://scripts/games/kart_audio.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const GARAGE = preload("res://scripts/games/kart_garage_menu.gd")
 const RECORDS = preload("res://scripts/games/kart_records.gd")
 const ARENA = preload("res://scripts/games/kart_arena.gd")
-const QUESTIONS = preload("res://scripts/games/kart_questions.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
@@ -17,6 +17,10 @@ const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
 const PREFERENCES: String = "user://kart_preferences.cfg"
+## Version 4 drops the removed learning-question state; older saves still resume as plain races.
+const SESSION_VERSION: int = 4
+const SESSION_VERSIONS: Array[int] = [1, 2, 3, 4]
+const MODE_IDS: Array[String] = ["race", "cup", "time_trial", "training", "arena"]
 var curve: Curve3D
 var world: LumoRaceWorld
 var track_length: float
@@ -36,12 +40,6 @@ var racing: bool = false
 var finished: bool = false
 var paused: bool = false
 var abandoned: bool = false
-var question_open: bool = false
-var question_index: int = 0
-var correct_count: int = 0
-var wrong_count: int = 0
-var grade: int = 1
-var subject: String = "Mathematik"
 var rng := RandomNumberGenerator.new()
 var player: LumoRaceKart
 var camera: Camera3D
@@ -65,14 +63,7 @@ var modal: PanelContainer
 var modal_column: VBoxContainer
 var modal_scroll: ScrollContainer
 var pause_navigation: HBoxContainer
-var lesson: PanelContainer
-var lesson_column: VBoxContainer
-var lesson_hint: Label
 var safe_ui: Control
-var active_question: Dictionary = {}
-var recent_questions: Array[String] = []
-var learning_events: Array[Dictionary] = []
-var learning_event_sequence: int = 0
 var muted: bool = false
 var host_sound_enabled: bool = true
 var host_reduce_motion: bool = false
@@ -143,10 +134,6 @@ var previous_quit_on_go_back: bool = true
 func _ready() -> void:
 	set_physics_process(false)
 	rng.randomize()
-	grade = clampi(int(SceneRouter.launch_options.get("grade", 1)), 1, 4)
-	subject = str(SceneRouter.launch_options.get("subject", "Mathematik"))
-	if subject not in ["Mathematik", "Deutsch", "Sachunterricht", "Logik"]:
-		subject = "Mathematik"
 	result_id = HostBridge.new_result_id()
 	previous_auto_accept_quit = get_tree().auto_accept_quit
 	previous_quit_on_go_back = get_tree().quit_on_go_back
@@ -166,13 +153,10 @@ func _ready() -> void:
 		get_window().size = Vector2i(1280, 720)
 	_build_ui()
 	_build_engine_sound()
-	saved_session_available = session_config.load(SESSION) == OK and int(session_config.get_value("race", "version", 0)) in [1, 2, 3]
-	if saved_session_available:
-		learning_events.assign(session_config.get_value("race", "learning_events", []))
-		learning_event_sequence = int(session_config.get_value("race", "learning_event_sequence", 0))
+	saved_session_available = session_config.load(SESSION) == OK and int(session_config.get_value("race", "version", 0)) in SESSION_VERSIONS
 	_show_garage()
 	set_physics_process(true)
-	print("[Kart] Holographic garage ready: six modes, four worlds, free steering")
+	print("[Kart] Holographic garage ready: five modes, four worlds, free steering")
 
 
 func _wait_for_landscape() -> bool:
@@ -345,7 +329,6 @@ func _show_garage() -> void:
 	paused = false
 	modal.hide()
 	modal_backdrop.hide()
-	lesson.hide()
 	hud_content.hide()
 	map_panel.hide()
 	if is_instance_valid(race_root):
@@ -360,7 +343,9 @@ func _show_garage() -> void:
 	garage.reduced_motion = reduced_motion
 	garage.graphics_profile = graphics_profile
 	if not setup_snapshot.is_empty():
-		garage.setup = setup_snapshot.duplicate(true)
+		var restored: Dictionary = setup_snapshot.duplicate(true)
+		restored["mode"] = _known_mode(str(restored.get("mode", "race")))
+		garage.setup = restored
 	garage.start_requested.connect(_start_selected_race)
 	garage.resume_requested.connect(_resume_saved_race)
 	garage.exit_requested.connect(_return_to_app)
@@ -369,9 +354,7 @@ func _show_garage() -> void:
 
 func _start_selected_race(setup: Dictionary) -> void:
 	setup_snapshot = setup.duplicate(true)
-	mode = str(setup.get("mode", "race"))
-	if mode not in ["race", "cup", "time_trial", "training", "learn_cup", "arena"]:
-		mode = "race"
+	mode = _known_mode(str(setup.get("mode", "race")))
 	selected_driver = str(setup.get("driver", "fox"))
 	selected_kart = str(setup.get("kart", "comet"))
 	track_id = str(setup.get("track", "sonnenhafen"))
@@ -379,9 +362,16 @@ func _start_selected_race(setup: Dictionary) -> void:
 	cup_index = 0
 	cup_points = [0, 0, 0, 0, 0, 0]
 	cup_results.clear()
-	if mode in ["cup", "learn_cup"]:
+	if mode == "cup":
 		track_id = str(CATALOG.TRACKS[0].id)
 	_begin_race()
+
+
+static func _known_mode(requested: String) -> String:
+	# Saved setups from older builds may still name the removed learning cup.
+	if requested == "learn_cup":
+		return "cup"
+	return requested if requested in MODE_IDS else "race"
 
 
 func _begin_race() -> void:
@@ -390,13 +380,11 @@ func _begin_race() -> void:
 	menu_active = false
 	hud_content.show()
 	modal.hide()
-	lesson.hide()
 	finished = false
 	completed_race = false
 	paused = false
 	racing = false
 	abandoned = false
-	question_open = false
 	pending_cup_next = false
 	distance = 0
 	lane = 0
@@ -415,16 +403,12 @@ func _begin_race() -> void:
 	item = ""
 	physical_velocity = Vector3.ZERO
 	checkpoint_index = 0
-	question_index = 0
-	correct_count = 0
-	wrong_count = 0
 	arena_scores = 0
 	reset_count = 0
 	offroad_seconds = 0
 	ghost_valid = true
 	best_record = false
 	collected.clear()
-	recent_questions.clear()
 	opponent_distances = [-4, -7, -10, -13, -16]
 	opponent_lanes = [-3.2, -1.65, -0.1, 1.45, 3.0]
 	result_id = HostBridge.new_result_id()
@@ -441,7 +425,7 @@ func _begin_race() -> void:
 func _resume_saved_race() -> void:
 	if session_config.load(SESSION) != OK:
 		return
-	mode = str(session_config.get_value("race", "mode", "race"))
+	mode = _known_mode(str(session_config.get_value("race", "mode", "race")))
 	track_id = str(session_config.get_value("race", "track_id", "sonnenhafen"))
 	selected_driver = str(session_config.get_value("race", "selected_driver", "fox"))
 	selected_kart = str(session_config.get_value("race", "selected_kart", "comet"))
@@ -451,6 +435,11 @@ func _resume_saved_race() -> void:
 	hud_content.show()
 	_build_world()
 	if _restore_session():
+		if completed_race and not finished:
+			# A pre-version-4 learning cup could be saved after the finish line while its
+			# question was open. The race is complete, so show and award the result now.
+			_finish()
+			return
 		if is_instance_valid(kart_audio):
 			kart_audio.play_track("arena" if mode == "arena" else track_id)
 		_pause()
@@ -591,7 +580,7 @@ func _build_ui() -> void:
 	controls.add_child(item_button)
 	drift_button = _action("DRIFT\nHALTEN", func(): pass, Color("bc8eff"), 106)
 	drift_button.size_flags_vertical = Control.SIZE_SHRINK_END
-	drift_button.button_down.connect(func(): drifting = racing and not paused and not question_open)
+	drift_button.button_down.connect(func(): drifting = racing and not paused)
 	drift_button.button_up.connect(_release_drift)
 	controls.add_child(drift_button)
 	boost_button = _action("BOOST\n◆ 1", _boost, Color("66f7e8"), 138)
@@ -650,18 +639,6 @@ func _build_ui() -> void:
 		pause_navigation.add_child(button)
 	pause_navigation.hide()
 	modal.hide()
-	lesson = PanelContainer.new()
-	lesson.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	lesson.offset_left = 200
-	lesson.offset_right = -200
-	lesson.offset_top = 108
-	lesson.offset_bottom = 300
-	lesson.add_theme_stylebox_override("panel", _style(Color("0b1b32"), 22))
-	safe_ui.add_child(lesson)
-	lesson_column = VBoxContainer.new()
-	lesson_column.add_theme_constant_override("separation", 8)
-	lesson.add_child(lesson_column)
-	lesson.hide()
 	get_viewport().size_changed.connect(_update_safe_area)
 	_update_safe_area()
 
@@ -717,7 +694,7 @@ func _physics_process(delta: float) -> void:
 		if countdown == 0:
 			racing = true
 			_update_audio()
-	if racing and not paused and not finished and not question_open:
+	if racing and not paused and not finished:
 		elapsed += delta
 		var axis: float = Input.get_axis("ui_left", "ui_right")
 		if Input.is_physical_key_pressed(KEY_A):
@@ -768,7 +745,7 @@ func _physics_process(delta: float) -> void:
 	_update_vehicles(delta)
 	_update_camera(delta)
 	_update_hud()
-	if engine_playback and not muted and host_sound_enabled and racing and not paused and not finished and not question_open:
+	if engine_playback and not muted and host_sound_enabled and racing and not paused and not finished:
 		for i in range(engine_playback.get_frames_available()):
 			var phase: float = (float(Time.get_ticks_usec()) / 1000000.0 + float(i) / 22050) * (70 + speed * 5)
 			var sample: float = sin(phase * TAU) * 0.025
@@ -926,7 +903,7 @@ func _update_hud() -> void:
 		hud.text = "ZEITFAHREN    RUNDE %d / %d    %.2f s    %d km/h" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, elapsed, int(speed * 3.6)]
 	else:
 		hud.text = "RUNDE %d / %d    PLATZ %d / 6    %d km/h    ◆ %d" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, place, int(speed * 3.6), collected.size()]
-	var enabled: bool = racing and not paused and not finished and not question_open
+	var enabled: bool = racing and not paused and not finished
 	boost_button.text = "BOOST\n◆ %d" % boosts
 	boost_button.disabled = boosts == 0 or not enabled
 	drift_button.text = "DRIFT\n" + ("BEREIT!" if drift_charge >= 0.8 else "HALTEN")
@@ -974,7 +951,7 @@ func _track_events() -> void:
 
 
 func _use_item() -> void:
-	if item.is_empty() or not racing or paused or finished or question_open:
+	if item.is_empty() or not racing or paused or finished:
 		return
 	_sound_effect("item")
 	match item:
@@ -1064,7 +1041,7 @@ func _update_checkpoints() -> void:
 func _update_vehicles(_delta: float) -> void:
 	if not is_instance_valid(player):
 		return
-	var enabled: bool = racing and not paused and not finished and not question_open
+	var enabled: bool = racing and not paused and not finished
 	player.set_motion(speed if enabled else 0, steering, boost_time > 0 and enabled, drifting and enabled)
 	if not enabled:
 		for kart in opponents:
@@ -1084,7 +1061,7 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 
 
 func _boost() -> void:
-	if boosts > 0 and racing and not paused and not finished and not question_open:
+	if boosts > 0 and racing and not paused and not finished:
 		boosts -= 1
 		boost_time = 3.2
 		message.text = "Lumo-Boost!"
@@ -1107,7 +1084,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			if not event.pressed:
 				_release_drift()
 			else:
-				drifting = racing and not paused and not question_open
+				drifting = racing and not paused
 		elif event.pressed and event.keycode == KEY_SPACE:
 			_boost()
 		elif event.pressed and event.keycode == KEY_E:
@@ -1129,101 +1106,10 @@ func _clear_column(column: VBoxContainer) -> void:
 		child.queue_free()
 
 
-func _open_question() -> void:
-	if finished or question_open or paused:
-		return
-	question_open = true
-	_update_audio()
-	if is_instance_valid(kart_audio):
-		kart_audio.set_paused(true)
-	steering = 0
-	lateral_velocity = 0
-	brake = 0
-	drifting = false
-	wrong_count = 0
-	for i in range(30):
-		active_question = QUESTIONS.make(grade, subject, rng)
-		if not recent_questions.has(active_question.prompt):
-			break
-	recent_questions.append(active_question.prompt)
-	_ensure_learning_task()
-	_show_question()
-	_record_learning_event("started")
-	_save_session()
-
-
-func _show_question() -> void:
-	_clear_column(lesson_column)
-	var row := HBoxContainer.new()
-	var title := _label("LERN-BOOST · %d. KLASSE · %s" % [grade, subject], 17)
-	title.autowrap_mode = TextServer.AUTOWRAP_OFF
-	row.add_child(title)
-	row.add_child(_button("Später ›", _skip_question, Color("2b6576")))
-	lesson_column.add_child(row)
-	lesson_column.add_child(_label(active_question.prompt, 25))
-	var answers := HBoxContainer.new()
-	answers.add_theme_constant_override("separation", 10)
-	for answer in active_question.options:
-		var button := _button(answer, func(): _answer(answer))
-		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		answers.add_child(button)
-	lesson_column.add_child(answers)
-	lesson_hint = _label(str(active_question.get("_last_hint", "Alle Karts warten. Nimm dir Zeit – danach geht dein Rennen weiter.")), 17)
-	lesson_column.add_child(lesson_hint)
-	lesson.visible = not paused
-
-
-func _answer(answer: String) -> void:
-	if not question_open or paused or finished:
-		return
-	_record_learning_event("answered", {"answer": answer, "correct": answer == active_question.answer})
-	if answer == active_question.answer:
-		_record_learning_event("completed", {"correct": true})
-		correct_count += 1
-		boosts = mini(3, boosts + 1)
-		question_index += 1
-		question_open = false
-		_update_audio()
-		if is_instance_valid(kart_audio):
-			kart_audio.set_paused(false)
-		lesson.hide()
-		message.text = "Richtig! " + active_question.hint + " · Boost geladen."
-		if completed_race:
-			_finish()
-		_save_session()
-	else:
-		wrong_count += 1
-		lesson_hint.text = active_question.hint
-		if wrong_count >= 3:
-			lesson_hint.text += " · Die Lösung ist %s. Probiere sie aus." % active_question.answer
-		if str(active_question.get("_last_hint", "")) != lesson_hint.text:
-			active_question["_hint_used"] = true
-			active_question["_last_hint"] = lesson_hint.text
-			_record_learning_event("hint", {"hint": lesson_hint.text})
-		_save_session()
-
-
-func _skip_question() -> void:
-	if not question_open or finished or paused:
-		return
-	_mark_learning_paused("skipped")
-	question_open = false
-	_update_audio()
-	if is_instance_valid(kart_audio):
-		kart_audio.set_paused(false)
-	question_index += 1
-	lesson.hide()
-	message.text = "Weiter geht's. Die nächste Lernfrage kommt später."
-	if completed_race:
-		_finish()
-	_save_session()
-
-
 func _pause() -> void:
 	if finished or paused or menu_active:
 		return
 	paused = true
-	_mark_learning_paused("pause")
 	_update_audio()
 	if is_instance_valid(kart_audio):
 		kart_audio.set_paused(true)
@@ -1232,7 +1118,6 @@ func _pause() -> void:
 	brake = 0
 	drifting = false
 	drift_charge = 0
-	lesson.hide()
 	_save_session()
 	_clear_column(modal_column)
 	modal_scroll.scroll_vertical = 0
@@ -1295,13 +1180,8 @@ func _resume() -> void:
 	paused = false
 	_update_audio()
 	if is_instance_valid(kart_audio):
-		kart_audio.set_paused(question_open)
+		kart_audio.set_paused(false)
 	modal.hide()
-	if question_open:
-		active_question["_paused"] = false
-		_show_question()
-		_record_learning_event("started", {"resumed": true})
-		_save_session()
 
 
 func _return_to_world() -> void:
@@ -1313,19 +1193,15 @@ func _host_return_payload() -> Dictionary:
 		return result_payload.duplicate(true)
 	return {
 		"game": "kart", "status": "abandoned" if abandoned else "paused",
-		"resultId": "%s_activity_%d" % [result_id, learning_events.size()] if not learning_events.is_empty() else result_id,
-		"grade": grade, "subject": subject, "stars": 0,
-		"learning_events": learning_events.duplicate(true)
+		"resultId": result_id, "stars": 0, "solved": 0
 	}
 
 
 func _return_to_app(destination: String) -> void:
-	if not finished:
-		_mark_learning_paused("return")
 	_save_session()
 	if finished:
 		HostBridge.reward(result_payload)
-		if mode not in ["cup", "learn_cup"] and HostBridge.reward_is_recoverable(result_id):
+		if mode != "cup" and HostBridge.reward_is_recoverable(result_id):
 			DirAccess.remove_absolute(SESSION)
 	var payload: Dictionary = _host_return_payload()
 	if HostBridge.is_embedded():
@@ -1350,7 +1226,6 @@ func _show_host_save_failure() -> void:
 
 
 func _abandon() -> void:
-	_mark_learning_paused("abandoned")
 	_save_session()
 	abandoned = true
 	_return_to_app("games")
@@ -1363,37 +1238,29 @@ func _finish() -> void:
 	racing = false
 	_update_audio()
 	paused = false
-	if mode == "learn_cup" and question_index == 0:
-		# All racing has ended before the task opens. No question interrupts a turn.
-		modal.hide()
-		_open_question()
-		return
 	finished = true
 	if is_instance_valid(kart_audio):
 		kart_audio.set_paused(false)
 	_sound_effect("finish")
-	question_open = false
-	lesson.hide()
 	var place: int = _place()
-	var earned: int = 3 + correct_count * 2
+	var earned: int = 3
 	if mode == "training":
 		earned = 1 if elapsed >= 45 else 0
 	if earned > 0:
 		ProgressStore.add_stars(earned)
 	result_payload = {
 		"game": "kart", "sessionId": str(SceneRouter.launch_options.get("sessionId", "")),
+		# The Flutter host requires an integer "solved"; Kart has no learning tasks.
 		"resultId": result_id, "status": "completed", "stars": earned,
-		"solved": correct_count, "elapsedSeconds": snappedf(elapsed, 0.1),
-		"place": place, "grade": grade, "subject": subject,
+		"solved": 0, "elapsedSeconds": snappedf(elapsed, 0.1), "place": place,
 		"mode": mode, "track": track_id, "driver": selected_driver, "kart": selected_kart,
-		"checkpoints": checkpoint_index, "resets": reset_count,
-		"learning_events": learning_events.duplicate(true)
+		"checkpoints": checkpoint_index, "resets": reset_count
 	}
 	if mode == "arena":
 		result_payload["crystals"] = arena_scores
 	if mode == "time_trial":
 		best_record = records.finish(elapsed, ghost_valid)
-	if mode in ["cup", "learn_cup"]:
+	if mode == "cup":
 		var ranking: Array[Dictionary] = [{"id": 0, "distance": distance}]
 		for i in range(opponents.size()):
 			ranking.append({"id": i + 1, "distance": opponent_distances[i]})
@@ -1421,7 +1288,7 @@ func _show_result() -> void:
 		title = "Gut trainiert!"
 	elif mode == "arena":
 		title = "Kristall-Arena geschafft!"
-	elif mode in ["cup", "learn_cup"]:
+	elif mode == "cup":
 		title = "Rennen %d von 4 geschafft!" % (cup_index + 1) if pending_cup_next else "Dein Sternen-Cup ist geschafft!"
 	modal_column.add_child(_label(title, 30))
 	var details: String = "%.1f Sekunden · +%d Sterne" % [elapsed, int(result_payload.get("stars", 0))]
@@ -1429,13 +1296,11 @@ func _show_result() -> void:
 		details = "Platz %d von 6 · " % int(result_payload.get("place", 1)) + details
 	if mode == "arena":
 		details += "\n%d Kristalle gesammelt" % arena_scores
-	if correct_count > 0:
-		details += "\n%d Lernaufgabe gelöst" % correct_count
 	modal_column.add_child(_label(details, 23))
 	if mode == "time_trial":
 		var record_text: String = "Deine neue Bestzeit – Geisterfahrt gespeichert!" if best_record else ("Bestzeit: %.2f Sekunden" % records.previous_best if records.previous_best > 0 else "Erste Trainingszeit. Ohne Zurücksetzen wird deine Geisterfahrt gespeichert.")
 		modal_column.add_child(_label(record_text, 20))
-	if mode in ["cup", "learn_cup"]:
+	if mode == "cup":
 		var names: Array[String] = [str(CATALOG.entry(CATALOG.DRIVERS, selected_driver).name), "Milo", "Nova", "Borin", "Yuki", "Fynn"]
 		var standings: Array[Dictionary] = []
 		for i in range(cup_points.size()):
@@ -1458,12 +1323,9 @@ func _show_result() -> void:
 func _next_cup_race() -> void:
 	if not pending_cup_next or not finished:
 		return
-	var next_boosts: int = mini(3, 1 + correct_count) if mode == "learn_cup" else 1
 	cup_index += 1
 	track_id = str(CATALOG.TRACKS[cup_index].id)
 	_begin_race()
-	boosts = next_boosts
-	_save_session()
 
 
 func _restart_setup() -> void:
@@ -1539,17 +1401,14 @@ func _save_session() -> void:
 	if abandoned or menu_active or not is_instance_valid(player):
 		return
 	var config := ConfigFile.new()
-	config.set_value("race", "version", 3)
-	config.set_value("race", "grade", grade)
-	config.set_value("race", "subject", subject)
+	config.set_value("race", "version", SESSION_VERSION)
 	for key in [
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed",
-		"boost_time", "boosts", "question_index", "correct_count", "wrong_count", "opponent_distances",
-		"opponent_lanes", "collected", "recent_questions", "active_question", "question_open", "difficulty",
+		"boost_time", "boosts", "opponent_distances", "opponent_lanes", "collected", "difficulty",
 		"mode", "track_id", "selected_driver", "selected_kart", "player_heading", "previous_road_distance",
 		"cup_index", "cup_points", "cup_results", "pending_cup_next", "finished", "completed_race", "result_payload",
 		"arena_scores", "arena_pickup_timers", "opponent_scores", "opponent_targets", "opponent_headings",
-		"item", "shield_time", "reset_count", "setup_snapshot", "learning_events", "learning_event_sequence"
+		"item", "shield_time", "reset_count", "setup_snapshot"
 	]:
 		config.set_value("race", key, get(key))
 	config.set_value("race", "player_position", player.position)
@@ -1565,23 +1424,20 @@ func _save_session() -> void:
 
 func _restore_session() -> bool:
 	var config := ConfigFile.new()
-	if config.load(SESSION) != OK or int(config.get_value("race", "version", 0)) not in [1, 2, 3]:
-		return false
-	if config.get_value("race", "grade", 0) != grade or config.get_value("race", "subject", "") != subject:
+	if config.load(SESSION) != OK or int(config.get_value("race", "version", 0)) not in SESSION_VERSIONS:
 		return false
 	var saved_distance: float = float(config.get_value("race", "distance", -1))
 	if saved_distance < 0 or not is_finite(saved_distance):
 		return false
 	var keys: Array[String] = [
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed", "boost_time", "boosts",
-		"question_index", "correct_count", "wrong_count", "collected", "active_question", "question_open", "difficulty",
-		"mode", "track_id", "selected_driver", "selected_kart", "player_heading", "previous_road_distance", "cup_index",
+		"collected", "difficulty", "mode", "track_id", "selected_driver", "selected_kart", "player_heading", "previous_road_distance", "cup_index",
 		"pending_cup_next", "finished", "completed_race", "result_payload", "arena_scores", "item", "shield_time",
-		"reset_count", "setup_snapshot", "learning_event_sequence"
+		"reset_count", "setup_snapshot"
 	]
 	for key in keys:
 		set(key, config.get_value("race", key, get(key)))
-	for key in ["opponent_distances", "opponent_lanes", "recent_questions", "cup_points", "cup_results", "arena_pickup_timers", "opponent_scores", "opponent_targets", "opponent_headings", "learning_events"]:
+	for key in ["opponent_distances", "opponent_lanes", "cup_points", "cup_results", "arena_pickup_timers", "opponent_scores", "opponent_targets", "opponent_headings"]:
 		var target: Array = get(key)
 		target.assign(config.get_value("race", key, target))
 	if int(config.get_value("race", "version", 0)) < 3:
@@ -1596,6 +1452,7 @@ func _restore_session() -> bool:
 			opponents[i].position = positions[i]
 	player.rotation.y = player_heading
 	ghost_valid = false
+	mode = _known_mode(mode)
 	racing = countdown <= 0 and not completed_race
 	_update_vehicles(0)
 	_update_camera(1, true)
@@ -1715,10 +1572,10 @@ func _build_engine_sound() -> void:
 func _update_audio() -> void:
 	if is_instance_valid(kart_audio):
 		kart_audio.set_muted(muted or not host_sound_enabled)
-		kart_audio.set_paused(paused or question_open)
+		kart_audio.set_paused(paused)
 	if not is_instance_valid(engine_player):
 		return
-	if muted or not host_sound_enabled or menu_active or paused or question_open or finished or not racing:
+	if muted or not host_sound_enabled or menu_active or paused or finished or not racing:
 		engine_player.stop()
 		engine_playback = null
 	elif not engine_player.playing:
@@ -1729,36 +1586,3 @@ func _update_audio() -> void:
 func _sound_effect(kind: String) -> void:
 	if is_instance_valid(kart_audio):
 		kart_audio.effect(kind)
-
-
-func _ensure_learning_task() -> void:
-	if active_question.is_empty():
-		return
-	if str(active_question.get("_task_id", "")).is_empty():
-		active_question["_task_id"] = "%s_task_%d" % [result_id, question_index + 1]
-	if str(active_question.get("_unit", "")).is_empty():
-		active_question["_unit"] = QUESTIONS.competence(grade, subject, active_question)
-
-
-func _record_learning_event(type: String, details: Dictionary = {}) -> void:
-	if active_question.is_empty():
-		return
-	_ensure_learning_task()
-	learning_event_sequence += 1
-	var event: Dictionary = {
-		"id": "%s_learning_%d" % [result_id, learning_event_sequence],
-		"type": type, "task_id": str(active_question._task_id),
-		"subject": subject, "unit": str(active_question._unit),
-		"prompt": str(active_question.prompt), "grade": grade,
-		"hint_used": bool(active_question.get("_hint_used", false)),
-		"occurred_at": Time.get_datetime_string_from_system(true) + "Z"
-	}
-	event.merge(details, true)
-	learning_events.append(event)
-
-
-func _mark_learning_paused(reason: String) -> void:
-	if not question_open or active_question.is_empty() or bool(active_question.get("_paused", false)):
-		return
-	active_question["_paused"] = true
-	_record_learning_event("paused", {"reason": reason})

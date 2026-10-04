@@ -37,7 +37,7 @@ func _run() -> void:
 		var coordinates: Dictionary = TextServerManager.get_primary_interface().font_get_variation_coordinates(font.get_rids()[0])
 		assert(float(coordinates.get(2003265652, 200)) >= 600, "Actual rendered font must use semibold weight")
 		var mode_grid: GridContainer = game.garage.choices.get_child(0)
-		assert(mode_grid.get_child_count() == 6)
+		assert(mode_grid.get_child_count() == 5, "Five race modes; the learning cup is gone")
 		for mode_button in mode_grid.get_children():
 			assert(root.get_visible_rect().encloses(mode_button.get_global_rect()), "Every mode must be visible")
 		await _tap(mode_grid.get_child(1))
@@ -59,7 +59,7 @@ func _run() -> void:
 		game.abandoned = true
 		game.queue_free()
 		await _settle()
-		print("[KartMenuFlow] %s: six visible modes, five actual touch steps, started cup race" % pixels)
+		print("[KartMenuFlow] %s: five visible modes, five actual touch steps, started cup race" % pixels)
 	print("[KartMenuFlow] PASS: complete pixel-touch setup at1280x720 and800x480, semibold font, every mode visible")
 	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
 	await create_timer(0.12).timeout

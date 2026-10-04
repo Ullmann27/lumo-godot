@@ -6,6 +6,7 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	# The question generator is shared with the Jump learning game; Kart itself never asks.
 	var questions = load("res://scripts/games/kart_questions.gd")
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 82741
@@ -52,7 +53,11 @@ func _run() -> void:
 	game.set_physics_process(false)
 	await process_frame
 	assert(game.menu_active and game.garage.visible, "The garage must precede any race")
-	assert(game.garage._entries().size() == 6, "Six usable mode choices")
+	assert(game.garage._entries().size() == 5, "Five usable mode choices")
+	for entry in game.garage._entries():
+		assert(str(entry.id) != "learn_cup", "No learning cup in Kart")
+	for removed in ["question_open", "active_question", "learning_events", "lesson", "correct_count", "grade", "subject"]:
+		assert(removed not in game, "Kart has no learning-question state: " + removed)
 	game.lightweight = true
 	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "flott"})
 	await process_frame
@@ -72,24 +77,15 @@ func _run() -> void:
 	assert(game.player.position == position_before, "Race progress cannot move the physical kart along rails")
 	game.distance -= 30
 	game.steering = 0
-	game._open_question()
-	var correct: String = game.active_question.answer
-	var wrong: String = game.active_question.options.filter(func(a): return a != correct)[0]
-	game._answer(wrong)
-	assert(game.question_open and game.wrong_count == 1)
+	game._pause()
 	var before: float = game.distance
 	var before_elapsed: float = game.elapsed
 	var before_rivals: Array = game.opponent_distances.duplicate()
 	game._physics_process(.2)
 	assert(game.distance == before and game.elapsed == before_elapsed)
-	assert(game.opponent_distances == before_rivals, "All rivals wait during learning")
-	game._pause()
-	game._answer(correct)
-	assert(game.correct_count == 0, "No answers during pause")
+	assert(game.opponent_distances == before_rivals, "All rivals wait during the pause")
 	game._resume()
-	game._answer(correct)
-	game._answer(correct)
-	assert(not game.question_open and game.correct_count == 1)
+	assert(not game.paused and game.racing, "Resume continues the race without any task")
 	game.boosts = 1
 	game._boost()
 	assert(game.boost_time > 0 and game.boosts == 0)
@@ -135,6 +131,9 @@ func _run() -> void:
 	assert(game.finished, "A freely steered kart must complete two actual laps")
 	assert(game.checkpoint_index == 16 and game.distance >= game.track_length * 2)
 	assert(game.modal.visible and game.result_payload.status == "completed")
+	assert(game.result_payload.stars == 3 and game.result_payload.solved == 0, "Plain race reward, host-compatible solved")
+	for removed in ["grade", "subject", "learning_events"]:
+		assert(not game.result_payload.has(removed), "No learning data in the race result: " + removed)
 	var stars: int = root.get_node("ProgressStore").total_stars()
 	game._finish()
 	assert(root.get_node("ProgressStore").total_stars() == stars, "A result must award once")
@@ -143,7 +142,7 @@ func _run() -> void:
 	game.queue_free()
 	await process_frame
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
-	print("[KartTests] PASS: 8000 learning questions; free steering; real full race; brake/drift; pause; save/resume; one award")
+	print("[KartTests] PASS: 8000 shared Jump questions; no Kart learning state; free steering; real full race; brake/drift; pause; save/resume; one award")
 	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
 	await create_timer(0.12).timeout
 	quit(0)

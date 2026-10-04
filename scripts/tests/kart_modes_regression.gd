@@ -30,26 +30,29 @@ func _run() -> void:
 	game.distance = game.track_length * 0.5
 	game._update_checkpoints()
 	assert(game.checkpoint_index == 0, "Skipping four ordered gates must not create progress")
-	await _start("learn_cup")
+	await _start("cup")
 	for round_index in range(4):
 		assert(game.track_id == game.CATALOG.TRACKS[round_index].id)
 		game.distance = game.track_length * 2
 		game.checkpoint_index = 16
 		game.elapsed = 80 + round_index
 		game._finish()
-		assert(game.question_open and not game.racing and not game.finished, "Learning opens only after the race")
+		assert(game.finished and not game.racing, "A cup race ends directly with its result, no task")
 		var position: Vector3 = game.player.position
 		game._physics_process(1)
 		assert(game.player.position == position)
-		game._answer(str(game.active_question.answer))
-		assert(game.finished and game.cup_results.size() == round_index + 1)
+		assert(game.cup_results.size() == round_index + 1)
 		assert(game.cup_points[0] == (round_index + 1) * 12)
+		assert(game.result_payload.stars == 3 and game.result_payload.solved == 0)
 		if round_index < 3:
 			assert(game.pending_cup_next)
 			game._next_cup_race()
-			assert(game.boosts == 2, "The solved between-race task grants a usable boost in the next race")
+			assert(game.boosts == 1, "Every cup race starts with the same single boost")
 			await process_frame
 	assert(not game.pending_cup_next and game.cup_index == 3)
+	# Saved setups from older builds may still name the removed learning cup.
+	await _start("learn_cup")
+	assert(game.mode == "cup" and game.track_id == game.CATALOG.TRACKS[0].id)
 	await _start("arena")
 	assert(game.gems.size() == 30 and game.opponents.size() == 5)
 	game.player.position = game.gems[0].position
@@ -107,7 +110,7 @@ func _run() -> void:
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
-	print("[KartModesTests] PASS: 4-race learning cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks")
+	print("[KartModesTests] PASS: 4-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks")
 	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
 	await create_timer(0.12).timeout
 	quit(0)

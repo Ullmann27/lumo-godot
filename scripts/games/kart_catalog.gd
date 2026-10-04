@@ -1,5 +1,6 @@
 extends RefCounted
 ## Original Lumo race rules and shared menu data. Unlocks are earned, never charged.
+## Kart is a reward game: learning happens in the app, never inside a race.
 const TRACKS: Array[Dictionary] = [
 	{"id": "sonnenhafen", "name": "Sonnenhafen", "tag": "MEER · BRÜCKEN · WEITE KURVEN", "color": Color("64dfeb"), "description": "Über die Hafenbrücke, am Leuchtturm vorbei und direkt ans Meer."},
 	{"id": "zauberwald", "name": "Zauberwald", "tag": "WALD · LEUCHTEN · GEHEIMNISSE", "color": Color("87eac1"), "description": "Leuchtende Pilze und große Baumwipfel begleiten deine Fahrt."},
@@ -11,7 +12,6 @@ const MODES: Array[Dictionary] = [
 	{"id": "cup", "name": "Sternen-Cup", "tag": "VIER WELTEN · EIN POKAL", "description": "Fahre alle vier Strecken. Jeder Platz zählt für die Gesamtwertung."},
 	{"id": "time_trial", "name": "Zeitfahren", "tag": "DU GEGEN DEINEN GEIST", "description": "Verbessere deine Bestzeit. Deine beste Fahrt fährt als Geist mit."},
 	{"id": "training", "name": "Freies Training", "tag": "ENTDECKEN OHNE DRUCK", "description": "Lerne lenken, bremsen und driften. Du bestimmst, wann du fertig bist."},
-	{"id": "learn_cup", "name": "Lern-Cup", "tag": "FAHREN · DENKEN · WACHSEN", "description": "Vier Rennen mit einer entspannten Lernpause nach jedem Ziel."},
 	{"id": "arena", "name": "Kristall-Arena", "tag": "90 SEKUNDEN ABENTEUER", "description": "Sammle mehr Kristalle als deine Rivalen. Schild und Impuls helfen dir."}
 ]
 const DRIVERS: Array[Dictionary] = [
