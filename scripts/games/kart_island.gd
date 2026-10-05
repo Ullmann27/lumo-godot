@@ -1242,8 +1242,10 @@ func _reset_kart() -> void:
 		player.position = Vector3(0, 0.035, 28)
 		player_heading = 0
 	else:
-		var safe_distance: float = maxf(float(checkpoint_index) * track_length / 8.0, distance - 6.0)
-		distance = minf(safe_distance, (checkpoint_index + 1) * track_length / 8.0 - 1.0)
+		var checkpoint_floor: float = float(checkpoint_index) * track_length / 8.0
+		var checkpoint_ceiling: float = (checkpoint_index + 1) * track_length / 8.0 - 1.0
+		var candidate: float = maxf(checkpoint_floor, distance - 6.0)
+		distance = world.safe_respawn_distance(candidate, checkpoint_floor, checkpoint_ceiling)
 		lane = 0
 		player.transform = world.reset_transform(distance)
 		player_heading = _heading(distance)
