@@ -108,3 +108,16 @@ Der gezielte Engine-Test protokolliert den Touch-Signalpfad, die angenommene Boo
 - Rivalen sollen Items aktiv taktisch einsetzen;
 - weitere neun Referenzwelten auf denselben Detailstandard skalieren;
 - Fold-7/FPS weiterhin nicht als getestet behaupten.
+
+
+### Rivalen-Item-Taktik
+
+- Rivalen besitzen jetzt eigene Item-Slots, Cooldowns, Boost-Zeit und Schild-Zeit.
+- Rivalen nehmen dieselben Mystery-Box-Positionen als Item-Quelle wahr.
+- Überhol-/Comeback-Logik nutzt die aktuelle Platzierung des jeweiligen Rivalen.
+- Boost wird taktisch genutzt, wenn der Spieler vor dem Rivalen liegt.
+- Lichtimpuls kann den Spieler aus kurzer Distanz abbremsen, sofern kein Schild aktiv ist.
+- Rivalen-Schild blockiert den Lichtimpuls des Spielers.
+- `kart_physics_regression.gd` prüft Boost-Nutzung, Schild und Rivalen-Pulse.
+
+Aktueller Stage-2-Head nach dieser Erweiterung: `b048d1eba00f8ac9f2a2c9a5d25cf69a023b2dd6`.
