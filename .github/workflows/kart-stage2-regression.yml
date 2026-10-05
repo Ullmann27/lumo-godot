@@ -1,0 +1,94 @@
+name: Verify Lumo Kart Stage 2
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/kart-stage2-regression.yml
+      - assets/shaders/kart_*.gdshader
+      - scripts/games/kart_*.gd
+      - scripts/tests/kart_*.gd
+      - docs/track_expansion/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kart-stage2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Static project validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/validate_project.py
+
+      - name: Import project and parse GDScript/shaders
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --editor --import --quit \
+            > "$RUNNER_TEMP/godot-import.log" 2>&1
+          cat "$RUNNER_TEMP/godot-import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/godot-import.log"
+
+      - name: Track geometry contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script res://scripts/tests/kart_track_contract.gd \
+            > "$RUNNER_TEMP/track-contract.log" 2>&1
+          cat "$RUNNER_TEMP/track-contract.log"
+          ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/track-contract.log"
+          grep -F '[TrackContract]' "$RUNNER_TEMP/track-contract.log"
+          grep -F 'bergwelt' "$RUNNER_TEMP/track-contract.log"
+
+      - name: Kart physics regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script res://scripts/tests/kart_physics_regression.gd \
+            > "$RUNNER_TEMP/kart-physics.log" 2>&1
+          cat "$RUNNER_TEMP/kart-physics.log"
+          ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-physics.log"
+          grep -F '[KartPhysics]' "$RUNNER_TEMP/kart-physics.log"
+
+      - name: Fold and pause layout regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script res://scripts/tests/kart_pause_layout_regression.gd \
+            > "$RUNNER_TEMP/kart-fold.log" 2>&1
+          cat "$RUNNER_TEMP/kart-fold.log"
+          ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-fold.log"
+          grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/kart-fold.log"
+
+      - name: Upload regression logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kart-stage2-regression-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/godot-import.log
+            ${{ runner.temp }}/track-contract.log
+            ${{ runner.temp }}/kart-physics.log
+            ${{ runner.temp }}/kart-fold.log
+          if-no-files-found: warn
+          retention-days: 14
