@@ -41,6 +41,20 @@ func _inside(control: Control, rectangle: Rect2) -> void:
 	)
 
 
+func _physical_size(control: Control) -> Vector2:
+	return control.get_global_rect().size * Vector2(root.size) / root.get_visible_rect().size
+
+
+func _assert_race_controls_fit() -> void:
+	for control in [game.joystick, game.pedal_pad, game.gas_button, game.brake_button, game.boost_button, game.item_button]:
+		_inside(control, game.safe_ui.get_global_rect())
+	var joystick_pixels := _physical_size(game.joystick)
+	var gas_pixels := _physical_size(game.gas_button)
+	assert(joystick_pixels.x >= 88.0 and joystick_pixels.y >= 88.0)
+	assert(gas_pixels.x >= 44.0 and gas_pixels.y >= 44.0)
+	assert(game.camera.fov >= 64.0 and game.camera.fov <= 80.0)
+
+
 func _tap(control: Control) -> void:
 	# Window injects physical pixels and transforms them into its scaled canvas,
 	# matching native touchscreen delivery on the 800x480 display.
@@ -74,6 +88,9 @@ func _run() -> void:
 	root.size = Vector2i(800, 480)
 	await _settle()
 	game._apply_safe_area(Rect2(0, 32, 0, 24), Vector2(800, 480))
+	game._on_viewport_resized()
+	await _settle()
+	_assert_race_controls_fit()
 	root.propagate_notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
 	root.go_back_requested.emit()
 	await _settle()
@@ -111,11 +128,19 @@ func _run() -> void:
 	assert(host.returns.size() == 2 and host.returns[1].destination == "learn")
 	assert(host.returns[1].payload.resultId == host.returns[0].payload.resultId)
 	bridge._return_pending = false
-	for pixels in [Vector2i(904, 2316), Vector2i(1812, 2176), Vector2i(800, 480)]:
+	for pixels in [
+		Vector2i(904, 2316),
+		Vector2i(1812, 2176),
+		Vector2i(2176, 1812),
+		Vector2i(2208, 1840),
+		Vector2i(800, 480),
+	]:
 		root.size = pixels
 		await _settle()
 		game._apply_safe_area(Rect2(0, 32, 0, 24), Vector2(pixels))
+		game._on_viewport_resized()
 		await _settle()
+		_assert_race_controls_fit()
 		for button in [games, learn]:
 			_inside(button, game.modal.get_global_rect())
 			_inside(button, game.safe_ui.get_global_rect())
@@ -132,8 +157,8 @@ func _run() -> void:
 	host.queue_free()
 	print(
 		(
-			"[KartPauseLayoutTests] PASS: actual 800x480/Fold windows, "
-			+ "visible actions/settings, touch games/learn/resume"
+			"[KartPauseLayoutTests] PASS: actual compact/Fold resize windows, "
+			+ "adaptive race controls/camera, visible actions/settings, touch games/learn/resume"
 		)
 	)
 	await create_timer(0.12).timeout
