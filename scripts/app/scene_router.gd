@@ -21,14 +21,22 @@ const SCENES: Dictionary = {
 	"sound_letter_match": "res://scenes/games/sound_letter_match.tscn",
 	"word_build": "res://scenes/games/word_build.tscn",
 	"learn_old": "res://scenes/games/learn_card.tscn",
-	"games": "res://scenes/games/star_collect.tscn",
+	"games": "res://scenes/games/game_hub.tscn",
+	"kart": "res://scenes/games/kart_island.tscn",
+	"jump": "res://scenes/games/jump_islands.tscn",
+	"stars": "res://scenes/games/star_collect.tscn",
 	"parent": "res://scenes/games/parent_settings.tscn",
 }
 
+var launch_options: Dictionary = {}
 var current_scene_id: String = "boot"
 
 
 func goto(scene_id: String) -> void:
+	if current_scene_id != "boot" and scene_id in ["home", "games", "learn"]:
+		if HostBridge.is_embedded():
+			HostBridge.return_to_app("learn" if scene_id == "learn" else "games")
+			return
 	if not SCENES.has(scene_id):
 		push_warning("[Router] unbekannte scene_id: %s" % scene_id)
 		return
