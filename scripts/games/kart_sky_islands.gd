@@ -874,6 +874,7 @@ static func _split_sky_bridge(world, _distance: float) -> void:
 		{"lane": 3.0, "text": "HAUPTWEG", "color": ORANGE},
 	]:
 		var marker_at: Vector3 = world.position_at(entry_d, float(lane_marker.lane))
+		var marker_color: Color = lane_marker["color"]
 		world._prop(
 			"box",
 			marker_at + Vector3.UP * 1.5,
@@ -892,7 +893,7 @@ static func _split_sky_bridge(world, _distance: float) -> void:
 			"box",
 			marker_at + Vector3.UP * 2.75 + entry_basis.z * 0.09,
 			Vector3(2.85, 0.82, 0.04),
-			Color(lane_marker.color),
+			marker_color,
 			entry_basis,
 			true
 		)
