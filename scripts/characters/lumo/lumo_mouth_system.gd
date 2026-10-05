@@ -51,6 +51,7 @@ const SHAPE_SCALES: Dictionary = {
 @export var speak_viseme_interval: float = 0.18
 
 var _mouth: Node3D
+var _base_scale := Vector3.ONE
 var _current_shape: String = "rest"
 var _speaking: bool = false
 var _speak_tw: Tween
@@ -58,6 +59,8 @@ var _speak_tw: Tween
 
 func _ready() -> void:
 	_mouth = get_node_or_null(mouth_mesh_path) as Node3D
+	if _mouth != null:
+		_base_scale = _mouth.scale
 	set_mouth_shape("rest")
 
 
@@ -67,7 +70,7 @@ func set_mouth_shape(shape: String) -> void:
 		return
 	_current_shape = shape
 	if _mouth != null:
-		_mouth.scale = SHAPE_SCALES[shape]
+		_mouth.scale = _base_scale * SHAPE_SCALES[shape]
 	EventBus.lumo_mouth_shape_changed.emit(shape)
 
 
