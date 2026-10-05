@@ -22,6 +22,10 @@ func _run() -> void:
 			)
 			assert(not world.in_gap(safe_reset), "Reset must never place the kart inside the sky gap")
 			assert(safe_reset<float(world.jump.ramp_start), "Reset returns before the jump danger zone")
+			var lap2_gap: float=world.length+inside_gap
+			var lap2_reset: float=world.safe_respawn_distance(lap2_gap,world.length+world.length*3.0/8.0,world.length+world.length*4.0/8.0-1.0)
+			assert(lap2_reset>world.length)
+			assert(not world.in_gap(lap2_reset))
 		assert(world.position_at(0).distance_to(world.position_at(world.length))<0.001)
 		assert(world.checkpoint_positions.size()==8)
 		var min_radius: float=INF
