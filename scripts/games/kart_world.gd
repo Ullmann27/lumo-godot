@@ -60,6 +60,8 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 		"holo_city": _city()
 		_: _harbour()
 	_navigation()
+	if track_id=="sonnenhafen":
+		_grand_prix_dressing()
 	_flush_instances()
 
 func _make_curve() -> void:
@@ -298,13 +300,13 @@ func _lighting() -> void:
 	sky.sky_material=atmosphere
 	environment.sky=sky
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color=Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0")
-	environment.ambient_light_energy=0.22 if track_id!="holo_city" else 0.40
-	environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR
-	environment.tonemap_exposure=0.9
+	environment.ambient_light_color=Color("d9ebff") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
+	environment.ambient_light_energy=0.36 if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
+	environment.tonemap_mode=Environment.TONE_MAPPER_FILMIC if track_id=="sonnenhafen" else Environment.TONE_MAPPER_LINEAR
+	environment.tonemap_exposure=1.05 if track_id=="sonnenhafen" else 0.9
 	environment.fog_enabled=true
 	environment.fog_light_color=definition.fog
-	environment.fog_density=0.0010 if track_id!="zauberwald" else 0.003
+	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.003)
 	environment.fog_aerial_perspective=0.22
 	var world_environment := WorldEnvironment.new()
 	world_environment.environment=environment
@@ -312,7 +314,7 @@ func _lighting() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees=Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0)
 	sun.light_color=definition.sun
-	sun.light_energy=0.70 if track_id!="holo_city" else 0.42
+	sun.light_energy=0.98 if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42)
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -384,10 +386,20 @@ func _terrain() -> void:
 	var land := MeshInstance3D.new()
 	land.name="SculptedIslandTerrain"
 	land.mesh=surface.commit()
-	var material := _material(Color.WHITE).duplicate() as StandardMaterial3D
-	material.vertex_color_use_as_albedo=true
-	material.vertex_color_is_srgb=true
-	land.material_override=material
+	if track_id=="sonnenhafen":
+		var stylized := ShaderMaterial.new()
+		stylized.shader=preload("res://assets/shaders/kart_stylized_vertex_tint.gdshader")
+		stylized.set_shader_parameter("top_tint",Color("f6ffdf"))
+		stylized.set_shader_parameter("side_tint",Color("a4d577"))
+		stylized.set_shader_parameter("bottom_tint",Color("7a9a72"))
+		stylized.set_shader_parameter("overall_tint",Color("f3ffd9"))
+		stylized.set_shader_parameter("roughness_value",0.90)
+		land.material_override=stylized
+	else:
+		var material := _material(Color.WHITE).duplicate() as StandardMaterial3D
+		material.vertex_color_use_as_albedo=true
+		material.vertex_color_is_srgb=true
+		land.material_override=material
 	add_child(land)
 	var water := MeshInstance3D.new()
 	water.name="AnimatedCoastalWater"
@@ -461,6 +473,8 @@ func _road() -> void:
 		var bridge: bool=_is_bridge(d)
 		for side in [-1.0,1.0]:
 			var curb: Color=Color("eff3e5") if i%4<2 else edge_color.darkened(0.16)
+			if track_id=="sonnenhafen":
+				curb=Color("f7f4ea") if i%4<2 else Color("e84f45")
 			if track_id!="bergwelt":
 				_prop("box",position_at(d,side*5.5)+basis.y*0.02,Vector3(0.48,0.12,step+0.03),curb,basis)
 			# The rail is continuous because it is also the wall the kart collides with.
@@ -492,6 +506,8 @@ func _road() -> void:
 	if track_id=="bergwelt":
 		SKY_ISLANDS.start_gate(self)
 		SKY_ISLANDS.road_lights(self)
+	elif track_id=="sonnenhafen":
+		_arch(0.0,"LUMO GRAND PRIX",Color("65dff5"))
 	else:
 		_arch(0.0,track_name.to_upper(),definition.accent)
 	match track_id:
@@ -601,6 +617,179 @@ func _flower_patch(at: Vector3, color: Color, count: int=8) -> void:
 		var p: Vector3=at+Vector3(_rng.randf_range(-1.5,1.5),0,_rng.randf_range(-1.5,1.5))
 		p.y=_ground_height(p.x,p.z)+0.10
 		_prop("flower",p,Vector3.ONE*_rng.randf_range(0.75,1.3),color)
+
+func _grand_prix_dressing() -> void:
+	# Bright, readable family-racer scenery: big silhouettes at speed, dense detail near the road.
+	# Geometry stays original to Lumo; the composition follows generic circuit-design conventions.
+	_start_grandstand(length*0.018,-1.0)
+	_start_grandstand(length*0.055,1.0)
+	_grid_boxes()
+	_roadside_chevrons()
+	_roadside_streetlights()
+	_coastal_waterfall_setpiece(length*0.585,1.0)
+
+
+func _grid_boxes() -> void:
+	var basis: Basis=frame(0.0)
+	for row in range(6):
+		var d: float=3.0+float(row)*2.35
+		for lane_index in range(2):
+			var lateral: float=(-2.1 if lane_index==0 else 2.1)+(1.0 if row%2==0 else -1.0)*0.45
+			_prop(
+				"box",
+				position_at(d,lateral)+basis.y*0.025,
+				Vector3(1.05,0.018,0.48),
+				Color("f8fbf4"),
+				frame(d)
+			)
+
+
+func _start_grandstand(distance: float, side: float) -> void:
+	var basis: Basis=frame(distance)
+	var at: Vector3=position_at(distance,side*18.5)
+	at.y=_ground_height(at.x,at.z)
+	var face: Basis=basis.rotated(Vector3.UP,PI if side<0.0 else 0.0)
+	# Four seating terraces.
+	for tier in range(4):
+		var local: Vector3=basis.x*side*(float(tier)*1.35)+Vector3.UP*(0.55+float(tier)*0.72)
+		_prop(
+			"box",
+			at+local,
+			Vector3(18.0,0.62,2.2),
+			Color("d8e2e5").darkened(float(tier)*0.025),
+			face
+		)
+	# Roof and truss.
+	for support in [-1.0,1.0]:
+		_prop(
+			"box",
+			at+basis.z*support*7.8+Vector3.UP*5.7,
+			Vector3(0.24,6.3,0.24),
+			Color("5b7185"),
+			face
+		)
+	_prop("box",at+Vector3.UP*6.45,Vector3(18.8,0.35,5.6),Color("f4f0dc"),face)
+	_prop("box",at+Vector3.UP*6.67,Vector3(19.2,0.12,5.9),Color("54b9d1"),face)
+	# GPU-batched crowd dots.
+	var crowd_colors: Array[Color]=[
+		Color("ffcf5a"),Color("6ad8e8"),Color("f080a4"),Color("8cdf7f"),Color("9e8ff0")
+	]
+	for row in range(4):
+		for seat in range(18):
+			var p: Vector3=(
+				at
+				+basis.z*(-7.2+float(seat)*0.84)
+				+basis.x*side*(float(row)*1.34)
+				+Vector3.UP*(1.22+float(row)*0.72)
+			)
+			_prop(
+				"ball",
+				p,
+				Vector3.ONE*0.22,
+				crowd_colors[(row*3+seat)%crowd_colors.size()]
+			)
+	var sign_at: Vector3=at+Vector3.UP*5.2-basis.x*side*0.25
+	_prop("box",sign_at,Vector3(7.2,1.1,0.18),Color("123b63"),face)
+	_sign(sign_at+basis.x*side*0.11,face,"LUMO  GRAND  PRIX",0.013)
+
+
+func _roadside_chevrons() -> void:
+	for fraction in [0.14,0.25,0.39,0.52,0.70,0.84]:
+		var d: float=length*fraction
+		var bend: float=forward(d).cross(forward(d+9.0)).y
+		var outer: float=-1.0 if bend>0.0 else 1.0
+		for board in range(3):
+			var bd: float=d+(float(board)-1.0)*3.0
+			var basis: Basis=frame(bd)
+			var at: Vector3=position_at(bd,outer*7.15)+Vector3.UP*1.65
+			_prop("box",at,Vector3(1.65,1.45,0.14),Color("ffd449"),basis)
+			# Two dark diagonal strokes form an original Lumo circuit chevron.
+			var turn: float=1.0 if outer>0.0 else -1.0
+			for stripe in [-0.30,0.30]:
+				_prop(
+					"box",
+					at+basis.x*stripe+basis.z*0.09,
+					Vector3(0.72,0.18,0.06),
+					Color("1b2835"),
+					basis.rotated(basis.z,turn*0.72)
+				)
+
+
+func _roadside_streetlights() -> void:
+	for i in range(14):
+		var d: float=(float(i)+0.5)*length/14.0
+		var side: float=-1.0 if i%2==0 else 1.0
+		var basis: Basis=frame(d)
+		var at: Vector3=position_at(d,side*7.4)
+		_prop("cylinder",at+Vector3.UP*2.8,Vector3(0.09,5.6,0.09),Color("485c68"))
+		_prop(
+			"box",
+			at+Vector3.UP*5.55-basis.x*side*0.55,
+			Vector3(1.15,0.16,0.28),
+			Color("465969"),
+			basis
+		)
+		_prop(
+			"box",
+			at+Vector3.UP*5.42-basis.x*side*0.82,
+			Vector3(0.48,0.06,0.18),
+			Color("e8fbff"),
+			basis,
+			true
+		)
+
+
+func _coastal_waterfall_setpiece(distance: float, side: float) -> void:
+	var basis: Basis=frame(distance)
+	var road_at: Vector3=position_at(distance)
+	var cliff_at: Vector3=position_at(distance,side*22.0)
+	cliff_at.y=road_at.y-2.4
+	# Layered rock/grass terrace so the waterfall belongs to the landscape instead of floating.
+	for layer in range(5):
+		var depth: float=float(layer)
+		_prop(
+			"rock",
+			cliff_at+basis.x*side*(depth*1.25)+Vector3.UP*(2.2-depth*1.3),
+			Vector3(8.5-depth*0.55,3.8,7.2-depth*0.35),
+			Color("c39159").darkened(depth*0.035),
+			Basis(Vector3.UP,float(layer)*0.27)
+		)
+	_prop(
+		"box",
+		cliff_at-basis.x*side*0.6+Vector3.UP*4.35,
+		Vector3(10.2,0.45,8.0),
+		Color("65be55"),
+		basis
+	)
+	var lip: Vector3=cliff_at-basis.x*side*0.5+Vector3.UP*4.2
+	var bottom_y: float=-2.0
+	var fall_height: float=maxf(7.0,lip.y-bottom_y)
+	var waterfall := MeshInstance3D.new()
+	waterfall.name="LumoCoastalWaterfall"
+	var quad := QuadMesh.new()
+	quad.size=Vector2(3.8,fall_height)
+	waterfall.mesh=quad
+	waterfall.position=Vector3(lip.x,(lip.y+bottom_y)*0.5,lip.z)
+	waterfall.basis=Basis(basis.z,Vector3.UP,basis.x*side).orthonormalized()
+	var water_material := ShaderMaterial.new()
+	water_material.shader=preload("res://assets/shaders/kart_waterfall.gdshader")
+	water_material.set_shader_parameter("water",Color("73d8ff"))
+	water_material.set_shader_parameter("foam",Color("f4ffff"))
+	waterfall.material_override=water_material
+	waterfall.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(waterfall)
+	for spray in range(7):
+		_prop(
+			"ball",
+			Vector3(lip.x,bottom_y+0.45,lip.z)
+				+basis.z*(float(spray)-3.0)*0.45
+				+basis.x*side*sin(float(spray))*0.65,
+			Vector3(0.45,0.20,0.45),
+			Color("e9ffff"),
+			Basis.IDENTITY,
+			true
+		)
+
 
 func _harbour() -> void:
 	var palette: Array[Color]=[Color("efe5c4"),Color("94c7c3"),Color("bfc7db"),Color("e8c2a1"),Color("c8d7b0")]
