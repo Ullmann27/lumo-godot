@@ -27,6 +27,8 @@ Der gezielte Engine-Test protokolliert den Touch-Signalpfad, die angenommene Boo
 
 ### Offen und nächste Schritte
 
+- Fold-/Resize-Pass ist jetzt als separate Etappe vor Fold-Freigabe und Streckenausbau in `TRACK_BUILD_ROADMAP.md` aufgenommen. Befund: `size_changed` aktualisiert nur Safe-Area-Margen; Kart fordert Landscape an; adaptive Controls und Hinge-Handling sind noch nicht nachgewiesen.
+- Als nächstes vor Laufzeitänderungen die genaue Flutter-Testmatrix aus lumo-lernen PR #197 (`docs/TASK_FOLD_2026-10-05.md`) abrufen und die portrait-Activity-/Sensor-Landscape-Grenze mit dem zuständigen Bearbeiter koordinieren. Die Web-Abfrage auf den angegebenen Dateipfad lieferte 404; Matrix hier daher nur anhand des Godot-Kommentars erfasst. Keine Flutter-Datei oder kein Manifest wurde geändert.
 - Auf einem echten Android-Gerät Eingabe-zu-Physik-/Audio-Latenz prüfen; keine Gerätewerte aus dem Harness ableiten.
 - Bodenpfeile anhand lokaler Streckentangenten prüfen und gegebenenfalls pro Segment korrigieren; gekrümmte, geneigte und gespiegelte Segmente abdecken.
 - Erst nach separatem Claim einen vorhandenen Abschnitt mit echter Streckengeometrie erweitern und Runde, Rampe, Landung, Checkpoints und KI-Fahrt nachweisen.
