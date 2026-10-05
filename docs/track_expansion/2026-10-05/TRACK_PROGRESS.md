@@ -222,8 +222,8 @@ Details: `docs/track_expansion/2026-10-05/OPEN_SOURCE_TRACK_TECH.md`.
 ### Validierungsstand
 
 - Letzter vollständig abgeschlossener Stage-2-GitHub-Lauf vor dieser Etappe: Workflow `37355529872` auf `b310aa0e224c3b1c26d26e506fe933a9df6e90d5`: **PASS**.
-- Aktueller GitHub-Lauf für den Wolkenweg-Code: `37366707233` auf `251c157772a22d0d442a375462ea408d3c06faea`: beim letzten Abruf **QUEUED**, daher noch kein PASS/FAIL behauptet.
-- Fold-Gerätetest, reales Android-Gerät und FPS-Messung: **SKIP** – nicht ausgeführt.
+- GitHub-Workflow `37367174927` auf `8b587a4526940cfd24b4bb448030709a275ecab2`: **PASS** – 117 PASS / 7 WARN / 0 FAIL; Godot 4.6.3 Import/Parse, Track-Contract, Kart-Physics, Xvfb-Fold-/Pause-Matrix und Sonnenhafen-/Himmelsinseln-Runtime-Captures bestanden. `[KartSplit]` bestätigt Wolkenweg +2,20 m und Hauptweg +0,00 m.
+- Physisches Fold-Gerät, reales Android-Gerät und FPS-Messung: **SKIP** – nicht ausgeführt; Xvfb ist kein Geräte- oder FPS-Nachweis.
 - `lumo-lernen` pinnt den neuen Stand noch nicht: PR-#197-Branch `chatgpt/fold-resize-fix-2026-10-05` steht auf Godot `a369da2dc208fcd9d5451c7007d8b1f9e7bf52a1`; Test-APK-Branch `chatgpt/lumo-test-apk-2026-10-05` auf `2ba65940eb250e7fac5a4bbaccdc6d730daed307`. Vor einer neuen APK muss der freigegebene PR-#18-SHA bewusst aktualisiert und die Provenienz erneut geprüft werden.
 
 ### Nächster Schritt
