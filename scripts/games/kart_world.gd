@@ -167,13 +167,20 @@ func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_dist
 	var safe: float = clampf(candidate, lower, upper)
 	if jump.is_empty():
 		return safe
-	var d: float = fposmod(safe, length)
-	var danger_start: float = maxf(lower, float(jump.ramp_start) - 1.5)
-	var danger_end: float = minf(upper, float(jump.gap_end) + 2.5)
-	if d >= danger_start and d <= danger_end:
-		return maxf(lower, float(jump.ramp_start) - 4.0)
+	var local_distance: float = fposmod(safe, length)
+	var danger_start: float = float(jump.ramp_start) - 1.5
+	var danger_end: float = float(jump.gap_end) + 2.5
+	if local_distance < danger_start or local_distance > danger_end:
+		return safe
+	# Race distance is cumulative across laps; jump geometry is local to one lap.
+	var lap_origin: float = safe - local_distance
+	var before_jump: float = lap_origin + float(jump.ramp_start) - 4.0
+	if before_jump >= lower:
+		return minf(before_jump, upper)
+	var after_gap: float = lap_origin + float(jump.gap_end) + 3.0
+	if after_gap <= upper:
+		return maxf(after_gap, lower)
 	return safe
-
 
 func reset_transform(distance: float, lateral: float = 0.0) -> Transform3D:
 	var basis: Basis = frame(distance)
