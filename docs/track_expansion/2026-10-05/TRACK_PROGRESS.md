@@ -229,3 +229,41 @@ Details: `docs/track_expansion/2026-10-05/OPEN_SOURCE_TRACK_TECH.md`.
 ### Nächster Schritt
 
 Erst den Wolkenweg-Lauf abschließen und einen reproduzierbaren Fehler gegebenenfalls minimal korrigieren. Danach ist der nächste unbeanspruchte Produktblock die Übertragung des bewährten Detail-/Setpiece-Prinzips auf die übrigen Streckenwelten, weiterhin weltweise und begrenzt statt als großer gleichzeitiger Umbau.
+
+
+
+## Etappe 6 – Zauberwald Qualitäts-Skalierung
+
+- Agent: ChatGPT, direkt auf PR #18 / `chatgpt/kart-himmelsinseln-stage2-2026-10-05`.
+- Ausgangs-Head: `f7118a0c5d39b405d7945f160a75705bee7657de`.
+- Claim-Prüfung vor Umsetzung: keine offenen Review-Threads oder Reviews und kein neuer PR-Kommentar, der den nächsten Welt-Ausbau beansprucht.
+- Opus-Richtung bleibt erhalten: dunkles Waldblau, Türkis/Cyan, Flieder/Violett, biolumineszente Pilze/Kristalle; keine fremden Franchise-Assets oder kopierten Streckenlayouts.
+
+### Direkt umgesetzt
+
+- `b80c536a2273f3d37520d043335bc0db13bbdff0` – erster weltweiser Skalierungsschritt nach Himmelsinseln:
+  - zwei große leuchtende Wald-Bögen bei ca. 23,5 % und 78,5 % der Runde;
+  - vier klar lesbare Kristall-/Pilz-Beacon-Zonen;
+  - zusätzliche Glühkugeln nur im höheren Detailmodus;
+  - eigener größerer Pilzhain als Landmarke bei ca. 72 %;
+  - vorhandener Baumtunnel und `LICHTERHAIN` bleiben unverändert eingebettet.
+- `2449b8586f9dc784f8ea4c02256e6ed4916c044a` – Zauberwald-Showcase-Harness mit sechs fest definierten Kamerapositionen ergänzt. Der Harness ist eingecheckt und vom Import-Parser erfasst, wird vom bestehenden Stage-2-Workflow aber noch nicht als eigener Capture-Schritt ausgeführt.
+
+### Validierung
+
+- Der zuvor abgebrochene Workflow `37367669408` auf `f7118a0c5d39b405d7945f160a75705bee7657de` wurde gezielt neu gestartet und endete vollständig **PASS**.
+- GitHub-Workflow `37377702786` auf `2449b8586f9dc784f8ea4c02256e6ed4916c044a`: **PASS**.
+  - Static project validator: PASS.
+  - Godot 4.6.3 Import / GDScript- und Shader-Parse: PASS, einschließlich des neuen Zauberwald-Codes und des neuen Showcase-Skripts.
+  - Track geometry contract: PASS.
+  - Kart physics regression: PASS.
+  - Xvfb-Fold-/Pause-Layoutregression: PASS.
+  - Bestehende Sonnenhafen-/Himmelsinseln-Runtime-Captures: PASS.
+- Eigenständiger Zauberwald-Runtime-Capture: **SKIP** – der neue Showcase-Harness ist noch nicht im bestehenden Workflow-Capture-Schritt aufgerufen.
+- Physisches Fold-Gerät, reales Android-Gerät und FPS-Messung: **SKIP** – nicht ausgeführt.
+
+### Integrationsgrenze
+
+- PR #18 bleibt offen und mergebar; der Branch ist gegenüber `integration/lumo-kart-opus-tracks-2026-10-05` weiterhin divergiert und liegt 1 Commit hinter der Base.
+- `lumo-lernen` PR #197 pinnt weiterhin `a369da2dc208fcd9d5451c7007d8b1f9e7bf52a1` und damit einen älteren Godot-Stand. Vor einer neuen APK muss der freigegebene PR-#18-SHA bewusst gepinnt und die Provenienz erneut geprüft werden.
+- Nächster begrenzter Welt-Ausbau: `holo_city` oder die nächste noch nicht auf Referenzqualität gebrachte Welt; weiter weltweise statt als gleichzeitiger Zehn-Welten-Umbau.
