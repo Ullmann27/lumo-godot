@@ -131,3 +131,42 @@ Aktueller Stage-2-Head nach dieser Erweiterung: `b048d1eba00f8ac9f2a2c9a5d25cf69
 - `894720592473d886b8f599a5251cec1002723898` adds a later-lap regression assertion; execution is still SKIP until a Godot runner is available.
 - lumo-lernen PR #197 still pins Godot `a369da2dc208fcd9d5451c7007d8b1f9e7bf52a1`, not this Stage-2 branch. A future candidate build must deliberately update that pin only after Kart validation and then verify provenance again.
 - No Fold-device or FPS claim.
+
+
+## Etappe 4 – Sonnenhafen Referenzqualitäts-Pass
+
+Auslöser: Heinz' neue Family-Kart-Racer-Referenzbilder mit breiten Asphaltkurven, rot/weißen Curbs, Fels-/Gras-Terrassen, Tribünen, Wasserfall, Streckenbeleuchtung und klaren Item-Reihen.
+
+### Recherche vor der Umsetzung
+
+- TheDuckCow/godot-road-generator 0.9.4 (MIT) als Straßen-/Lane-/Authoring-Referenz geprüft.
+- TokisanGames/Terrain3D (MIT) als Terrain-Authoring-Kandidat geprüft; noch keine Runtime-Abhängigkeit.
+- GDQuest godot-shaders (Source MIT) für stylized directional tint / Wasserfall-Techniken geprüft.
+- Godot SurfaceTool + MultiMesh bleiben Versandbasis der mobilen Lumo-Strecken.
+
+Details: `docs/track_expansion/2026-10-05/OPEN_SOURCE_TRACK_TECH.md`.
+
+### Direkt umgesetzt
+
+- neuer stylized vertex-tint Shader für prozedurale Lumo-Terrainmeshes,
+- Sonnenhafen auf filmische, hellere Tagesbeleuchtung abgestimmt,
+- rot/weiße Curbs,
+- `LUMO GRAND PRIX`-Starttor,
+- echte Startaufstellungs-Markierungen,
+- zwei prozedurale Tribünen mit MultiMesh-kompatibler Crowd,
+- gelb/schwarze Kurven-Warnboards,
+- Straßenlaternen,
+- eigener Küsten-Wasserfall mit Fels- und Grasterrasse,
+- keine fremden Franchise-Assets, Logos, Figuren oder exakten Streckenlayouts übernommen.
+
+### Lizenz / Attribution
+
+- `THIRD_PARTY_NOTICES.md` ergänzt.
+- Der neue Lumo-Shader ist für unsere Vertex-Farben umgeschrieben; keine GDQuest-Art-Assets wurden importiert.
+
+### Abnahme noch offen
+
+- Godot-Parser/Runtime für aktuellen Head,
+- echter Sonnenhafen-Runtime-Screenshot,
+- Performance-/Draw-Call-Messung,
+- Fold-Geräte-FPS weiterhin nicht als geprüft behaupten.
