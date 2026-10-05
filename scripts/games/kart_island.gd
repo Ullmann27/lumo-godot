@@ -76,6 +76,9 @@ var result_payload: Dictionary = {}
 var gems: Array[Node3D] = []
 var gem_distances: Array[float] = []
 var collected: Dictionary = {}
+var item_boxes: Array[Node3D] = []
+var item_box_distances: Array[float] = []
+var item_box_collected: Dictionary = {}
 var hud: Label
 var message: Label
 var boost_button: Control
@@ -230,6 +233,9 @@ func _build_world() -> void:
 	add_child(race_root)
 	gems.clear()
 	gem_distances.clear()
+	item_boxes.clear()
+	item_box_distances.clear()
+	item_box_collected.clear()
 	obstacle_distances.clear()
 	opponents.clear()
 	opponent_headings.clear()
@@ -267,6 +273,15 @@ func _build_world() -> void:
 			gem_distances.append(d)
 		for fraction in [0.12, 0.42, 0.74]:
 			_turbo_pad(fraction * track_length)
+		var item_layout: Array = [
+			[0.18, -2.7],
+			[0.34, 2.7],
+			[0.53, 0.0],
+			[0.69, -2.7],
+			[0.86, 2.7],
+		]
+		for entry in item_layout:
+			_item_box(float(entry[0]) * track_length, float(entry[1]))
 	player = VEHICLE.new()
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, selected_driver)
 	player.configure(selected_driver, driver.color, selected_kart)
@@ -974,6 +989,14 @@ func _physics_process(delta: float) -> void:
 			gems[i].visible = not collected.has(key)
 		if gems[i].visible and not paused and not reduced_motion:
 			gems[i].rotation.y += delta * 1.7
+	if mode != "arena":
+		var item_lap: int = int(distance / track_length)
+		for i in range(item_boxes.size()):
+			var item_key: int = item_lap * item_boxes.size() + i
+			item_boxes[i].visible = not item_box_collected.has(item_key)
+			if item_boxes[i].visible and not paused and not reduced_motion:
+				item_boxes[i].rotation.y += delta * 1.35
+				item_boxes[i].rotation.x = sin(elapsed * 2.0 + float(i)) * 0.08
 	if is_instance_valid(shield_visual):
 		shield_visual.visible = shield_time > 0
 	if is_instance_valid(pulse_visual):
@@ -1329,6 +1352,17 @@ func _track_events() -> void:
 				boosts = mini(3, boosts + 1)
 			if collected.size() % 2 == 0 and item.is_empty():
 				item = ["shield", "pulse", "boost"][rng.randi_range(0, 2)]
+	for i in range(item_boxes.size()):
+		var item_key: int = lap * item_boxes.size() + i
+		if (
+			not item_box_collected.has(item_key)
+			and player.position.distance_to(item_boxes[i].position) < 2.0
+		):
+			item_box_collected[item_key] = true
+			if item.is_empty():
+				item = _roll_item_for_place(_place())
+				message.text = "Überraschungs-Item!"
+				_sound_effect("item")
 	for fraction in [0.12, 0.42, 0.74]:
 		if absf(fposmod(distance, track_length) - fraction * track_length - 1.1) < 1.2 and absf(lane) < 2.1:
 			boost_time = maxf(boost_time, 1.0)
@@ -1997,6 +2031,43 @@ func _turbo_pad(distance_on_track: float) -> void:
 			var piece := _box(race_root, piece_at, Vector3(1.3, 0.04, 0.2), Color("4fe6ff"))
 			piece.basis = geometry.basis
 			piece.material_override = cyan
+
+
+static func _item_pool_for_place(place: int) -> Array[String]:
+	if place >= 5:
+		return ["boost", "boost", "boost", "shield", "shield", "pulse"]
+	if place >= 3:
+		return ["boost", "boost", "shield", "shield", "pulse", "pulse"]
+	return ["boost", "shield", "shield", "pulse", "pulse", "pulse"]
+
+
+func _roll_item_for_place(place: int) -> String:
+	var pool: Array[String] = _item_pool_for_place(place)
+	return pool[rng.randi_range(0, pool.size() - 1)]
+
+
+func _item_box(distance_on_track: float, lateral: float) -> void:
+	var basis: Basis = world.frame(distance_on_track)
+	var node := Node3D.new()
+	node.name = "MysteryItemBox"
+	node.position = _track_position(distance_on_track, lateral) + basis.y * 0.85
+	node.basis = basis
+	race_root.add_child(node)
+	var core := _box(node, Vector3.ZERO, Vector3(1.25, 1.25, 1.25), Color("3756c9"))
+	core.material_override = _glow_material(Color("627dff"), 1.0)
+	for axis in [-1.0, 1.0]:
+		var stripe := _box(
+			node,
+			Vector3(axis * 0.66, 0.0, 0.0),
+			Vector3(0.08, 1.36, 1.36),
+			Color("5ff2ff")
+		)
+		stripe.material_override = _glow_material(Color("5ff2ff"), 1.5)
+	var diamond := _box(node, Vector3(0.0, 0.0, 0.68), Vector3(0.34, 0.34, 0.08), Color("ffc94a"))
+	diamond.rotation.z = PI * 0.25
+	diamond.material_override = _glow_material(Color("ffc94a"), 1.4)
+	item_boxes.append(node)
+	item_box_distances.append(distance_on_track)
 
 
 func _mesh(parent: Node3D, mesh: Mesh, position: Vector3, color: Color) -> MeshInstance3D:
