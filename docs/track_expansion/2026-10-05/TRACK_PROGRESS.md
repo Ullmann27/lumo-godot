@@ -22,6 +22,7 @@ Der gezielte Engine-Test protokolliert den Touch-Signalpfad, die angenommene Boo
 - `tools/validate_project.py`: 117 PASS, 7 WARN, 0 FAIL. Die Warnungen betreffen fehlende optionale Modell-Assets und ein nicht ausführbares Build-Tool.
 - `tools/validate_project.sh`: alle vorhandenen Testgruppen bestanden (Kart, Physik, Sprung, Touch, Welt, Pause-Layout, Fahrzeug und Host-Brücke).
 - `git diff --check`: bestanden. `gdlint` und `gdformat` waren in der Sandbox nicht installiert.
+- Read-only Kart-Physics-Review: keine hochsicheren Regressionen gefunden. PR-Validierung lieferte keine CodeQL-Analyse für GDScript; der allgemeine Code-Review-Dienst konnte das angeforderte Modell nicht starten. PR #15 hatte zum Prüfzeitpunkt keine GitHub-Check-Runs.
 - Keine Geräteprüfung, kein Laufzeit-Screenshot und keine FPS-Messung durchgeführt.
 
 ### Offen und nächste Schritte
