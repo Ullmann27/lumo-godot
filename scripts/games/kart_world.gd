@@ -1005,7 +1005,75 @@ func _forest() -> void:
 		var d: float=_rng.randf_range(0,length)
 		var p: Vector3=position_at(d,_rng.randf_range(-14,14))+Vector3.UP*_rng.randf_range(2.5,6.0)
 		_prop("ball",p,Vector3.ONE*0.065,Color("e1f0a3"),Basis.IDENTITY,true)
+	_forest_reference_dressing()
 	_arch(length*0.63,"LICHTERHAIN",Color("b2dcdf"))
+
+
+func _forest_reference_dressing() -> void:
+	# First world-by-world quality pass after Himmelsinseln: keep the established
+	# teal/lilac Opus forest language, but add large silhouettes that read at race speed.
+	_forest_glow_arch(length*0.235,Color("8ee8e3"),Color("aa91ec"))
+	_forest_glow_arch(length*0.785,Color("9adff2"),Color("d4a0f0"))
+	var beacon_fractions: Array[float]=[0.12,0.34,0.69,0.89]
+	for fraction in beacon_fractions:
+		var d: float=length*fraction
+		var basis: Basis=frame(d)
+		for side in [-1.0,1.0]:
+			var at: Vector3=position_at(d,side*8.6)
+			at.y=_ground_height(at.x,at.z)
+			var crystal_color: Color=Color("79e1de") if side<0.0 else Color("b9a1ed")
+			_prop("crystal",at+Vector3.UP*1.25,Vector3(0.42,1.7,0.42),crystal_color,basis,true)
+			_mushroom(at+basis.z*1.9-basis.x*side*0.7,1.05)
+			if not low_detail:
+				for orb in range(3):
+					var orb_offset: Vector3=(
+						basis.z*(float(orb)-1.0)*1.2
+						+basis.x*side*(0.45+float(orb)*0.18)
+						+Vector3.UP*(3.0+float(orb)*0.7)
+					)
+					var orb_color: Color=Color("f0f7b0") if orb%2==0 else Color("a8ddff")
+					_prop("ball",at+orb_offset,Vector3.ONE*(0.085+float(orb)*0.012),orb_color,Basis.IDENTITY,true)
+	var glade_d: float=length*0.72
+	var glade_basis: Basis=frame(glade_d)
+	for side in [-1.0,1.0]:
+		var glade_at: Vector3=position_at(glade_d,side*11.2)
+		glade_at.y=_ground_height(glade_at.x,glade_at.z)
+		_mushroom(glade_at,2.35)
+		_mushroom(glade_at+glade_basis.z*2.9-glade_basis.x*side*1.2,1.55)
+		_prop("crown",glade_at+Vector3.UP*0.35,Vector3(3.8,0.62,3.2),Color("4b8d79"),glade_basis)
+
+
+func _forest_glow_arch(distance: float, color_a: Color, color_b: Color) -> void:
+	var basis: Basis=frame(distance)
+	var centre: Vector3=position_at(distance)
+	var points: Array[Vector3]=[]
+	for segment in range(9):
+		var angle: float=PI-float(segment)*PI/8.0
+		points.append(
+			centre
+			+basis.x*(cos(angle)*7.1)
+			+basis.y*(0.55+sin(angle)*7.0)
+		)
+	for segment in range(8):
+		_beam(
+			points[segment],
+			points[segment+1],
+			0.17,
+			color_a if segment%2==0 else color_b,
+			true
+		)
+	for side in [-1.0,1.0]:
+		var root: Vector3=position_at(distance,side*7.0)
+		_prop(
+			"crystal",
+			root+basis.y*1.0,
+			Vector3(0.55,2.2,0.55),
+			color_a if side<0.0 else color_b,
+			basis,
+			true
+		)
+		_mushroom(root+basis.z*1.7-basis.x*side*0.4,1.15)
+
 
 func _mushroom(at: Vector3, size: float) -> void:
 	_prop("cylinder",at+Vector3.UP*size*0.70,Vector3(0.15,1.4,0.15)*size,Color("c5d2bb"))
