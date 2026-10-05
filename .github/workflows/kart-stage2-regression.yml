@@ -73,8 +73,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          timeout 240s Godot_v4.6.3-stable_linux.x86_64 \
-            --headless --path . --script res://scripts/tests/kart_pause_layout_regression.gd \
+          # This regression intentionally asserts a real desktop/window backend because it
+          # captures rendered frames and injects physical-pixel touch coordinates.
+          # Run it under Xvfb instead of Godot --headless.
+          timeout 300s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . \
+            --rendering-method gl_compatibility \
+            --audio-driver Dummy \
+            --script res://scripts/tests/kart_pause_layout_regression.gd \
             > "$RUNNER_TEMP/kart-fold.log" 2>&1
           cat "$RUNNER_TEMP/kart-fold.log"
           ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-fold.log"
