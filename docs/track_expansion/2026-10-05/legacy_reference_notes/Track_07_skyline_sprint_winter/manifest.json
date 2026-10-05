@@ -1,0 +1,32 @@
+{
+  "track_number": 7,
+  "title": "Skyline Sprint – Winter Variant",
+  "variant": "Winter wonderland variant",
+  "theme": "snowy alpine mountain course with icy caverns and winter ramps",
+  "environment": "snow mountains, ice tunnels, alpine bridges, cabins, loop in cliffside",
+  "hazards": "low traction, icy drifts, snow spray visibility, fast downhill sections",
+  "signature_features": "ice caves, winter loop, jump ramp, mountain resort feel",
+  "learning_integration": "seasonal and science/weather themed signage opportunity",
+  "files": {
+    "hero_2560": "track_07_hero_2560.png",
+    "hero_original": "track_07_hero_original.png",
+    "shared_core_assets": [
+      "boost_pad_1536.png",
+      "mystery_box_1536.png",
+      "iq_fox_1536.png",
+      "slime_hazard_1536.png",
+      "loop_module_1536.png",
+      "energy_bolt_1536.png",
+      "turbo_crystal_1536.png",
+      "jump_ramp_1536.png",
+      "magnet_powerup_1536.png",
+      "shield_bubble_1536.png"
+    ],
+    "docs": [
+      "DESIGN_BRIEF.md",
+      "DETAIL_CHECKLIST_120.md",
+      "COPILOT_PROMPT.md",
+      "OPUS_HANDOFF.md"
+    ]
+  }
+}
