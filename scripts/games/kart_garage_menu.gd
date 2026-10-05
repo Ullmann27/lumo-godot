@@ -11,6 +11,12 @@ var stars: int = 0
 var unlocked_ids: Array = []
 var has_saved_race: bool = false
 var choices: VBoxContainer
+var setup_row: GridContainer
+var page_margin: MarginContainer
+var brand_label: Label
+var learn_button: Button
+var footer: GridContainer
+var footer_spacer: Control
 var title_label: Label
 var subtitle: Label
 var detail: Label
@@ -40,20 +46,20 @@ func _ready() -> void:
 	glow.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
 	glow.offset_left = -560
 	add_child(glow)
-	var margin := MarginContainer.new()
-	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	page_margin = MarginContainer.new()
+	page_margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right", "top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 28)
-	add_child(margin)
+		page_margin.add_theme_constant_override("margin_" + side, 28)
+	add_child(page_margin)
 	var body := VBoxContainer.new()
 	body.add_theme_constant_override("separation", 16)
-	margin.add_child(body)
+	page_margin.add_child(body)
 	var header := HBoxContainer.new()
 	header.custom_minimum_size.y = 60
-	var brand := _label("LUMO  /  KART", 22, Color("f4f8ff"))
-	brand.autowrap_mode = TextServer.AUTOWRAP_OFF
-	brand.custom_minimum_size.x = 215
-	header.add_child(brand)
+	brand_label = _label("LUMO  /  KART", 22, Color("f4f8ff"))
+	brand_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	brand_label.custom_minimum_size.x = 215
+	header.add_child(brand_label)
 	var grow := Control.new()
 	grow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(grow)
@@ -61,19 +67,22 @@ func _ready() -> void:
 	progress_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	progress_label.custom_minimum_size.x = 150
 	header.add_child(progress_label)
-	header.add_child(_button("Zum Lernen", func(): exit_requested.emit("learn"), false))
+	learn_button = _button("Zum Lernen", func(): exit_requested.emit("learn"), false)
+	header.add_child(learn_button)
 	body.add_child(header)
 	steps_label = _label("", 15, Color("9cb3ce"))
 	body.add_child(steps_label)
-	var row := HBoxContainer.new()
-	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	row.add_theme_constant_override("separation", 28)
-	body.add_child(row)
+	setup_row = GridContainer.new()
+	setup_row.columns = 2
+	setup_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	setup_row.add_theme_constant_override("h_separation", 28)
+	setup_row.add_theme_constant_override("v_separation", 14)
+	body.add_child(setup_row)
 	var left := VBoxContainer.new()
 	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	left.size_flags_stretch_ratio = 1.35
+	left.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	left.add_theme_constant_override("separation", 10)
-	row.add_child(left)
+	setup_row.add_child(left)
 	title_label = _label("", 36, Color("f4f8ff"))
 	left.add_child(title_label)
 	subtitle = _label("", 18, Color("b5c9df"))
@@ -88,8 +97,8 @@ func _ready() -> void:
 	scroll.add_child(choices)
 	var right := VBoxContainer.new()
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	right.size_flags_stretch_ratio = 1.0
-	row.add_child(right)
+	right.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	setup_row.add_child(right)
 	var viewport_panel := PanelContainer.new()
 	viewport_panel.add_theme_stylebox_override("panel", _glass(false))
 	viewport_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -158,20 +167,100 @@ func _ready() -> void:
 	detail = _label("", 20, Color("dceaff"))
 	detail.custom_minimum_size.y = 74
 	right.add_child(detail)
-	var footer := HBoxContainer.new()
-	footer.add_theme_constant_override("separation", 14)
+	footer = GridContainer.new()
+	footer.columns = 4
+	footer.add_theme_constant_override("h_separation", 14)
+	footer.add_theme_constant_override("v_separation", 8)
 	body.add_child(footer)
 	back_button = _button("Zurück", _back, false)
 	footer.add_child(back_button)
 	if has_saved_race:
-		footer.add_child(_button("Gespeichertes Rennen", func(): resume_requested.emit(), false))
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	footer.add_child(spacer)
+		var resume_button := _button("Gespeichertes Rennen", func(): resume_requested.emit(), false)
+		resume_button.name = "ResumeRace"
+		footer.add_child(resume_button)
+	footer_spacer = Control.new()
+	footer_spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	footer.add_child(footer_spacer)
 	next_button = _button("Weiter →", _next, true)
 	next_button.custom_minimum_size.x = 240
 	footer.add_child(next_button)
+	get_viewport().size_changed.connect(_apply_responsive_layout)
+	call_deferred("_apply_responsive_layout")
 	_refresh()
+
+
+func _apply_responsive_layout() -> void:
+	if not is_inside_tree() or not is_instance_valid(setup_row):
+		return
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	var window_size: Vector2 = Vector2(get_window().size)
+	if (
+		viewport_size.x <= 0.0
+		or viewport_size.y <= 0.0
+		or window_size.x <= 0.0
+		or window_size.y <= 0.0
+	):
+		return
+	var ui_scale: float = maxf(viewport_size.x / window_size.x, viewport_size.y / window_size.y)
+	var compact: bool = window_size.x < 760 or window_size.x < window_size.y
+	var small: bool = window_size.x < 520
+	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.03, 10.0, 28.0)
+	_apply_ui_scale(self, ui_scale)
+	for side in ["left", "right", "top", "bottom"]:
+		page_margin.add_theme_constant_override("margin_" + side, roundi(margin * ui_scale))
+	var safe_insets := Rect2()
+	if OS.has_feature("android") or OS.has_feature("ios"):
+		safe_insets = MobileRuntime.get_safe_area_insets()
+		var screen: Vector2i = DisplayServer.screen_get_size()
+		var safe_rect: Rect2i = DisplayServer.get_display_safe_area()
+		if screen.x > 0 and screen.y > 0 and safe_rect.has_area():
+			safe_insets.position.x = maxf(safe_insets.position.x, safe_rect.position.x)
+			safe_insets.position.y = maxf(safe_insets.position.y, safe_rect.position.y)
+			safe_insets.size.x = maxf(safe_insets.size.x, screen.x - safe_rect.end.x)
+			safe_insets.size.y = maxf(safe_insets.size.y, screen.y - safe_rect.end.y)
+	var physical_size: Vector2 = Vector2(get_window().size)
+	if physical_size.x > 0.0 and physical_size.y > 0.0:
+		var scale: Vector2 = viewport_size / physical_size
+		page_margin.offset_left = safe_insets.position.x * scale.x
+		page_margin.offset_top = safe_insets.position.y * scale.y
+		page_margin.offset_right = -safe_insets.size.x * scale.x
+		page_margin.offset_bottom = -safe_insets.size.y * scale.y
+	setup_row.columns = 1 if compact else 2
+	setup_row.add_theme_constant_override(
+		"h_separation", roundi((14 if compact else 28) * ui_scale)
+	)
+	setup_row.add_theme_constant_override("v_separation", roundi((14 if compact else 0) * ui_scale))
+	brand_label.custom_minimum_size.x = (138 if small else 215) * ui_scale
+	brand_label.add_theme_font_size_override("font_size", roundi((18 if small else 22) * ui_scale))
+	progress_label.visible = not small
+	learn_button.text = "Lernen" if small else "Zum Lernen"
+	learn_button.custom_minimum_size = Vector2(96 if small else 148, 56 if compact else 72) * ui_scale
+	footer.columns = 2 if compact else 4
+	footer_spacer.visible = not compact
+	back_button.custom_minimum_size = Vector2(112 if small else 148, 56 if compact else 72) * ui_scale
+	next_button.custom_minimum_size = Vector2(148 if small else 240, 56 if compact else 72) * ui_scale
+	for child in footer.get_children():
+		if child is Button and child.name == "ResumeRace":
+			child.custom_minimum_size = Vector2(112 if small else 148, 56 if compact else 72) * ui_scale
+
+
+func _apply_ui_scale(control: Node, ui_scale: float) -> void:
+	if control is Control:
+		var ui_control: Control = control
+		if not ui_control.has_meta("kart_base_minimum_size"):
+			ui_control.set_meta("kart_base_minimum_size", ui_control.custom_minimum_size)
+		ui_control.custom_minimum_size = (
+			ui_control.get_meta("kart_base_minimum_size") * ui_scale
+		)
+		if ui_control is Label or ui_control is Button:
+			if not ui_control.has_meta("kart_base_font_size"):
+				ui_control.set_meta("kart_base_font_size", ui_control.get_theme_font_size("font_size"))
+			ui_control.add_theme_font_size_override(
+				"font_size", roundi(float(ui_control.get_meta("kart_base_font_size")) * ui_scale)
+			)
+	for child in control.get_children():
+		_apply_ui_scale(child, ui_scale)
+
 
 func _glass(selected: bool) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()

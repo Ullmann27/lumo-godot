@@ -1,13 +1,13 @@
 # Kart-Streckenausbau – Roadmap
 
 - Referenzbasis: Godot-PR #14, `7351f1756e1910389450e041185b846823a97e92`.
-- Aktueller Umsetzungsstand: Godot-PR #15; Turbo-Code und Regression `1c090c112400762e349647b60d20733be824b46c`.
+- Aktueller Umsetzungsstand: Godot-PR #17 auf `integration/lumo-kart-opus-tracks-2026-10-05`; Turbo-Code und Regression `1c090c112400762e349647b60d20733be824b46c`.
 - Die zehn ZIP-Pakete und ihre PNGs sind Themen-/Detailreferenzen, keine fertigen Laufzeitmodelle oder Strecken. Keine zusätzlichen Strecken oder Geräte-FPS werden hier als fertig behauptet.
 
 ## Reihenfolge und Abhängigkeiten
 
 1. **Boost-Reaktion – implementiert, automatisiert geprüft.** Die physische Beschleunigung reagiert ab dem ersten Physikschritt auf einen akzeptierten Turbo; VFX-/Audiostatus und Bedien-Sperren sind im Regressionstest enthalten. Echte Geräte-Latenz bleibt offen.
-2. **Fold-/Resize-Pass – eingeplant, vor Streckenausbau und Fold-Freigabe.** Der momentane `size_changed`-Handler wendet nur Safe-Area-Margen neu an. Controls und Kamera sind noch nicht als adaptive Fold-Layouts abgenommen; der Startpfad wartet auf Landscape. Laufzeitfixes erst nach separatem Claim und Abgleich mit dem Flutter-Auftrag PR #197.
+2. **Fold-/Resize-Pass – Desktop-/Fensterregression bestanden, Geräteabnahme offen.** Viewport-Änderungen wenden Safe-Area und Layout erneut an; HUD/Touch/Pause/Ergebnis, Garage und Kamera reagieren auf die aktuelle Fenstergröße. Der Kart fordert weiter Sensor-Landscape an, bricht aber nach drei Sekunden ohne Landschaftsfläche nicht mehr ab und meldet den Hostkonflikt. Es gibt keinen bestätigten Godot-/Host-Vertrag für Falz-/Hinge-Occlusion; das bleibt eine Plattformlücke. Die reale Fold-Abnahme ist offen.
 3. **Bodenpfeile – offen.** Tatsächliche Pfeilrichtung mit lokaler Tangente und Fahrtrichtung auf geraden, gebogenen, geneigten und gespiegelten Segmenten vergleichen. Vor Änderung betroffene Renderer-/Geometriepfade feststellen; keine globale 180°-Korrektur.
 4. **Ein vollständiger Ausbauabschnitt – offen.** Auf vorhandenem Kursstil aufbauen: echte 3D-Fahrbahn, stabile Anschluss-Sockets und Collider, längere Streckenführung, Rampe mit Landung, Checkpoints/Respawn und KI-Weg. Erst nach vollständiger Runde und Vorher-/Nachher-Spielaufnahmen abnehmen.
 5. **Zehn eigenständige Welten – offen und von Schritt 4 abhängig.** Unterschiedliche Streckengeometrie und Dramaturgie statt Farbvarianten; gemeinsam nutzbare, geprüfte Bauteil-Schnittstellen.
@@ -18,8 +18,8 @@
 
 ### Befund vor Umsetzung
 
-- `scripts/games/kart_island.gd` setzt intern eine 1280×720-Landschaftsfläche, fordert Sensor-Landscape an und bricht die Initialisierung ab, wenn die Fläche nicht rechtzeitig Landscape meldet.
-- Das `Viewport.size_changed`-Signal ruft aktuell `_update_safe_area()` auf; es gibt dort keine getrennte adaptive Neuberechnung der HUD-, Joystick-, Pedal-, Boost-, Item- und Pause-Layouts.
+- `scripts/games/kart_island.gd` setzt intern eine 1280×720-Landschaftsfläche und fordert Sensor-Landscape an. Bei anhaltendem Nicht-Landscape fährt die Szene nun nach drei Sekunden mit responsivem Layout fort, statt leer abzubrechen.
+- Das `Viewport.size_changed`-Signal aktualisiert Safe-Area und adaptive HUD-, Joystick-, Pedal-, Boost-, Item-, Minimap-, Modal- und Ergebnislayouts; Garage und Vorschau reagieren ebenfalls auf Größenwechsel.
 - Safe-Area-Werte werden skaliert, aber es gibt noch keinen belegten Godot-/Host-Vertrag für die Position oder Breite einer inneren Falz. Safe-Area allein darf nicht als Hinge-Erkennung ausgegeben werden.
 - Die Flutter-Seite meldet eine portrait-Orientierung der erzeugten `LumoGameActivity`, während Kart Sensor-Landscape anfordert. Diese Host-/Godot-Grenze muss mit PR #197 geklärt werden; kein Portrait-Lock oder ungeprüfter Manifest-/Pin-Wechsel in diesem Kart-PR.
 
@@ -31,11 +31,12 @@
 4. Kamera-/Szenenkomposition bei geschlossenem Außendisplay, geöffnetem Innendisplay und Zwischen-/Split-Screen-Größen visuell prüfen. Seitenverhältnis nicht durch Skalieren der 3D-Szene verfälschen; vertikales FOV, sichtbare Strecke und UI-Safe-Framing gezielt abstimmen.
 5. Auf echtem Foldable vollständigen Ablauf prüfen: Garage und Auswahl → Start/Rennen → Sprung/Looping → Resize/Fold während Rennen → Pause/Fortsetzen → Zieleinfahrt → Ergebnis/Neustart. Zusätzlich Resize beim Öffnen/Schließen der Activity sowie Rückkehr vom Host testen.
 6. Physik, Geschwindigkeit, Streckenmaß, Collider und Boost bleiben in Welt-/Sekundeneinheiten; Fenster- und Pixelmaße beeinflussen ausschließlich Darstellung, Layout und Eingabeabbildung.
-7. Vor Laufzeitänderungen die genaue Datei `docs/TASK_FOLD_2026-10-05.md` und Testmatrix aus lumo-lernen PR #197 lesen, mit dem zuständigen Flutter-Bearbeiter koordinieren und dessen Branch/PR unverändert lassen. Diese Datei war bei der Erstellung dieser Roadmap nicht abrufbar; die Matrix oben übernimmt daher nur die ausdrücklich im Godot-Kommentar genannten Punkte.
+7. Die Testmatrix aus lumo-lernen PR #197 (`docs/TASK_FOLD_2026-10-05.md`) wurde vor dem Godot-Pass gelesen. Flutter-/Android-Host-Dateien und dessen Branch/PR bleiben unverändert; Orientierung und Falz-Metadaten weiter mit dem zuständigen Bearbeiter koordinieren.
 
 ## Abnahmegrenzen
 
 - Geometrie und Kollision werden im Godot-Spiel getestet; PNG-Referenzen und Konzeptbilder sind keine Laufzeitnachweise.
+- Desktop-Xvfb-Aufnahmen der dp-Matrix sind UI-Regressionsbelege, aber keine Android-/Fold-Geräteaufnahmen. Ohne Host-Geometrie werden Hinge-/Occlusion-Flächen nicht als unterstützt behauptet.
 - Jede Strecke benötigt vollständigen Rundenlauf, KI-Durchfahrt, Checkpoint-/Respawn-, Pause- und Host-Prüfungen.
 - Eine bestandene Desktop-/Headless-Resize-Regression ist keine Fold-Geräteabnahme. Geräte-, Hinge-, Touch-, Renderer- und Frame-Pacing-Befunde getrennt dokumentieren.
 - Headless-Ergebnisse belegen keine visuelle Qualität und keine 60 FPS auf einem Fold 7. Dafür sind echte Geräteaufnahmen und Frame-Pacing-Messungen nötig.

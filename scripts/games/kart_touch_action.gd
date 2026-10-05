@@ -32,6 +32,25 @@ func _ready() -> void:
 	label.add_theme_color_override("font_color", accent.lightened(0.35))
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(label)
+	_apply_label_size()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED:
+		_apply_label_size()
+
+
+func _apply_label_size() -> void:
+	if is_instance_valid(label):
+		var ui_scale: float = 1.0
+		if is_inside_tree():
+			var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+			var window_size: Vector2 = Vector2(get_window().size)
+			if window_size.x > 0.0 and window_size.y > 0.0:
+				ui_scale = maxf(viewport_size.x / window_size.x, viewport_size.y / window_size.y)
+		var diameter_dp: float = minf(size.x, size.y) / maxf(ui_scale, 0.01)
+		var font_size: int = clampi(roundi(diameter_dp * 0.17), 13, 21)
+		label.add_theme_font_size_override("font_size", roundi(font_size * ui_scale))
 
 
 func _gui_input(event: InputEvent) -> void:
