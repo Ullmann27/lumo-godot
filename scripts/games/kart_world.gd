@@ -155,6 +155,19 @@ func ramp_height(distance: float) -> float:
 	if d<jump.ramp_start or d>=jump.take_off: return 0.0
 	return (d-jump.ramp_start)/(jump.take_off-jump.ramp_start)*jump.height
 
+## Raised optional lane on Himmelsinseln. Other tracks stay unchanged.
+func alternate_route_height(distance: float, lateral: float) -> float:
+	if track_id != "bergwelt":
+		return 0.0
+	return SKY_ISLANDS.split_route_height(length, distance, lateral)
+
+
+func alternate_route_pitch(distance: float, lateral: float) -> float:
+	if track_id != "bergwelt":
+		return 0.0
+	return SKY_ISLANDS.split_route_pitch(length, distance, lateral)
+
+
 ## Visual jump arc for computer rivals: they follow the ramp and fly a fixed arc over the gap.
 func rival_arc(distance: float) -> float:
 	var d: float=fposmod(distance,length)
