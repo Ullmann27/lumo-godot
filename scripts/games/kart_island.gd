@@ -18,6 +18,9 @@ const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
 const PREFERENCES: String = "user://kart_preferences.cfg"
+const BOOST_ACCELERATION_MULTIPLIER: float = 2.0
+const DESIGN_VIEWPORT := Vector2(1280.0, 720.0)
+const PEDAL_PAD_BASE_SIZE := Vector2(440.0, 300.0)
 ## Version 4 drops the removed learning-question state; older saves still resume as plain races.
 const SESSION_VERSION: int = 4
 const SESSION_VERSIONS: Array[int] = [1, 2, 3, 4]
@@ -88,6 +91,7 @@ var modal_backdrop: ColorRect
 var modal: PanelContainer
 var modal_column: VBoxContainer
 var modal_scroll: ScrollContainer
+var modal_padding: MarginContainer
 var pause_navigation: HBoxContainer
 var safe_ui: Control
 var muted: bool = false
@@ -148,6 +152,12 @@ var control_brake: float = 0.0
 var map: Control
 var map_panel: PanelContainer
 var hud_content: MarginContainer
+var controls_row: HBoxContainer
+var controls_gap: Control
+var pedal_pad: Control
+var top_menu_button: Button
+var top_reset_button: Button
+var top_pause_button: Button
 var saved_session_available: bool = false
 var session_config := ConfigFile.new()
 var graphics_profile: String = "high"
@@ -174,8 +184,11 @@ func _ready() -> void:
 	if OS.has_feature("android") or OS.has_feature("ios"):
 		DisplayServer.screen_set_orientation(DisplayServer.SCREEN_SENSOR_LANDSCAPE)
 		if not await _wait_for_landscape():
-			push_error("Kart landscape surface did not resize before scene initialization")
-			return
+			push_warning(
+				"[KartFold] Host surface stayed non-landscape; continuing with responsive layout. "
+				+ "The Kart still requests sensor-landscape; host orientation and hinge geometry "
+				+ "must be provided by the Android integration."
+			)
 	elif DisplayServer.get_name() != "headless" and not OS.has_feature("web"):
 		get_window().size = Vector2i(1280, 720)
 	_build_ui()
@@ -191,7 +204,7 @@ func _ready() -> void:
 
 func _wait_for_landscape() -> bool:
 	# Native rotation is asynchronous. Build the heavy scene after the surface resizes.
-	var deadline: int = Time.get_ticks_msec() + 20000
+	var deadline: int = Time.get_ticks_msec() + 3000
 	while Time.get_ticks_msec() < deadline:
 		var pixels: Vector2i = DisplayServer.window_get_size()
 		if pixels.x > pixels.y and get_window().size.x > get_window().size.y:
@@ -307,6 +320,7 @@ func _build_world() -> void:
 		opponent_headings.append(0.0)
 	camera = Camera3D.new()
 	camera.fov = 68
+	camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	camera.current = true
 	camera.far = 450 if graphics_profile == "high" else (340 if graphics_profile == "medium" else 260)
 	race_root.add_child(camera)
@@ -561,9 +575,10 @@ func _action(text: String, callback: Callable, color: Color, diameter: float) ->
 func _build_pedal_pad() -> Control:
 	var pad := Control.new()
 	pad.name = "PedalPad"
-	pad.custom_minimum_size = Vector2(440, 300)
+	pad.custom_minimum_size = PEDAL_PAD_BASE_SIZE
 	pad.size_flags_vertical = Control.SIZE_SHRINK_END
 	pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pedal_pad = pad
 	gas_button = _action("GAS", func(): pass, Color("7cf29c"), 156)
 	gas_button.name = "GasPedal"
 	gas_button.button_down.connect(func(): gas_held = true)
@@ -573,21 +588,28 @@ func _build_pedal_pad() -> Control:
 	brake_button.button_down.connect(func(): control_brake = 1.0)
 	brake_button.button_up.connect(func(): control_brake = 0.0)
 	drift_button = _action("DRIFT\nHALTEN", func(): pass, Color("bc8eff"), 106)
+	drift_button.name = "DriftAction"
 	drift_button.button_down.connect(func(): drifting = racing and not paused)
 	drift_button.button_up.connect(_release_drift)
 	boost_button = _action("BOOST\n◆ 1", _boost, Color("66f7e8"), 112)
+	boost_button.name = "BoostAction"
 	item_button = _action("ITEM\n◇", _use_item, Color("a7c5ff"), 94)
+	item_button.name = "ItemAction"
 	var layout: Array = [
-		[gas_button, Vector2(361, 222)], [brake_button, Vector2(222, 242)],
-		[drift_button, Vector2(232, 108)], [boost_button, Vector2(370, 66)],
-		[item_button, Vector2(98, 228)]
+		[gas_button, Vector2(361, 222), 156],
+		[brake_button, Vector2(222, 242), 116],
+		[drift_button, Vector2(232, 108), 106],
+		[boost_button, Vector2(370, 66), 112],
+		[item_button, Vector2(98, 228), 94]
 	]
 	for entry in layout:
 		var button: Control = entry[0]
 		var centre: Vector2 = entry[1]
+		button.set_meta("kart_base_centre", centre)
+		button.set_meta("kart_base_diameter", entry[2])
+		pad.add_child(button)
 		button.size = button.custom_minimum_size
 		button.position = centre - button.custom_minimum_size * 0.5
-		pad.add_child(button)
 	return pad
 
 
@@ -619,16 +641,21 @@ func _build_ui() -> void:
 	safe.add_child(column)
 	var top := HBoxContainer.new()
 	column.add_child(top)
-	top.add_child(_button("‹ Menü", _pause))
-	top.add_child(_button("↺", _reset_kart))
+	top_menu_button = _button("‹ Menü", _pause)
+	top.add_child(top_menu_button)
+	top_reset_button = _button("↺", _reset_kart)
+	top.add_child(top_reset_button)
 	var hud_panel := PanelContainer.new()
 	hud_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hud_panel.add_theme_stylebox_override("panel", _style(Color("102441")))
 	top.add_child(hud_panel)
 	hud = _label("SONNENHAFEN", 23)
 	hud.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hud.autowrap_mode = TextServer.AUTOWRAP_OFF
+	hud.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	hud_panel.add_child(hud)
-	top.add_child(_button("Ⅱ Pause", _pause))
+	top_pause_button = _button("Ⅱ Pause", _pause)
+	top.add_child(top_pause_button)
 	message = _label("", 21)
 	message.add_theme_color_override("font_color", Color("f4f8ff"))
 	message.add_theme_color_override("font_shadow_color", Color("203f58"))
@@ -640,21 +667,22 @@ func _build_ui() -> void:
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(spacer)
-	var controls := HBoxContainer.new()
-	controls.alignment = BoxContainer.ALIGNMENT_BEGIN
-	controls.add_theme_constant_override("separation", 20)
-	column.add_child(controls)
+	controls_row = HBoxContainer.new()
+	controls_row.alignment = BoxContainer.ALIGNMENT_BEGIN
+	controls_row.add_theme_constant_override("separation", 20)
+	column.add_child(controls_row)
 	joystick = JOYSTICK.new()
 	joystick.custom_minimum_size = Vector2(200, 200)
 	joystick.size_flags_vertical = Control.SIZE_SHRINK_END
 	# The stick only steers; braking has its own pedal on the right.
 	joystick.axis_changed.connect(func(value: Vector2): steering = value.x)
-	controls.add_child(joystick)
-	var gap := Control.new()
-	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	controls.add_child(gap)
-	controls.add_child(_build_pedal_pad())
+	controls_row.add_child(joystick)
+	controls_gap = Control.new()
+	controls_gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	controls_gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	controls_row.add_child(controls_gap)
+	pedal_pad = _build_pedal_pad()
+	controls_row.add_child(pedal_pad)
 	map_panel = PanelContainer.new()
 	# Top right, below the HUD bar, so it never covers the right-thumb pedal pad.
 	map_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
@@ -692,8 +720,13 @@ func _build_ui() -> void:
 	modal_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	modal_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	modal_body.add_child(modal_scroll)
+	modal_padding = MarginContainer.new()
+	modal_padding.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	for side in ["left", "right", "top", "bottom"]:
+		modal_padding.add_theme_constant_override("margin_" + side, 8)
+	modal_scroll.add_child(modal_padding)
 	modal_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	modal_scroll.add_child(modal_column)
+	modal_padding.add_child(modal_column)
 	# Return actions stay outside the scrolling settings on compact landscapes.
 	pause_navigation = HBoxContainer.new()
 	pause_navigation.name = "PauseNavigation"
@@ -709,7 +742,7 @@ func _build_ui() -> void:
 		pause_navigation.add_child(button)
 	pause_navigation.hide()
 	modal.hide()
-	get_viewport().size_changed.connect(_update_safe_area)
+	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	_update_safe_area()
 
 
@@ -732,6 +765,12 @@ func _apply_safe_area(insets: Rect2, physical_size: Vector2) -> void:
 	safe_ui.offset_top = scaled.position.y
 	safe_ui.offset_right = -scaled.size.x
 	safe_ui.offset_bottom = -scaled.size.y
+	call_deferred("_apply_responsive_layout")
+
+
+func _on_viewport_size_changed() -> void:
+	_update_safe_area()
+	_apply_responsive_layout()
 
 
 func _update_safe_area() -> void:
@@ -749,6 +788,135 @@ func _update_safe_area() -> void:
 			insets.size.x = maxf(insets.size.x, screen.x - unobscured.end.x)
 			insets.size.y = maxf(insets.size.y, screen.y - unobscured.end.y)
 	_apply_safe_area(insets, Vector2(get_window().size))
+	_apply_responsive_layout()
+
+
+func _apply_responsive_layout() -> void:
+	if (
+		not is_inside_tree()
+		or not is_instance_valid(safe_ui)
+		or not is_instance_valid(controls_row)
+	):
+		return
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	var window_size: Vector2 = Vector2(get_window().size)
+	if (
+		viewport_size.x <= 0.0
+		or viewport_size.y <= 0.0
+		or window_size.x <= 0.0
+		or window_size.y <= 0.0
+	):
+		return
+	var ui_scale: float = maxf(viewport_size.x / window_size.x, viewport_size.y / window_size.y)
+	var display_size: Vector2 = window_size
+	var compact: bool = display_size.x < 900.0 or display_size.x < display_size.y
+	var compact_portrait: bool = display_size.x < display_size.y
+	var margin_dp: float = clampf(minf(display_size.x, display_size.y) * 0.025, 10.0, 22.0)
+	_apply_ui_scale(safe_ui, ui_scale)
+	for side in ["left", "right", "top", "bottom"]:
+		hud_content.add_theme_constant_override("margin_" + side, roundi(margin_dp * ui_scale))
+	var available_width: float = maxf(1.0, safe_ui.size.x / ui_scale - margin_dp * 2.0)
+	if compact_portrait:
+		var gap: float = 4.0
+		var stick_size: float = clampf(available_width * 0.32, 88.0, 154.0)
+		var pad_width: float = maxf(152.0, available_width - stick_size - gap)
+		var pad_height: float = clampf(display_size.y * 0.24, 176.0, 240.0)
+		joystick.custom_minimum_size = Vector2.ONE * stick_size * ui_scale
+		pedal_pad.custom_minimum_size = Vector2(pad_width, pad_height) * ui_scale
+		controls_row.add_theme_constant_override("separation", roundi(gap * ui_scale))
+		controls_gap.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		controls_gap.custom_minimum_size = Vector2(gap * ui_scale, 1.0)
+		var diameter: float = maxf(44.0, minf(68.0, minf(pad_width * 0.28, pad_height * 0.26)))
+		var compact_positions: Dictionary = {
+			"DriftAction": Vector2(pad_width * 0.28, pad_height * 0.2),
+			"BoostAction": Vector2(pad_width * 0.72, pad_height * 0.2),
+			"ItemAction": Vector2(pad_width * 0.28, pad_height * 0.5),
+			"BrakePedal": Vector2(pad_width * 0.72, pad_height * 0.5),
+			"GasPedal": Vector2(pad_width * 0.5, pad_height * 0.82)
+		}
+		for child in pedal_pad.get_children():
+			if not child is Control:
+				continue
+			var button: Control = child
+			var button_size: float = diameter * (1.15 if button.name == "GasPedal" else 1.0)
+			button.custom_minimum_size = Vector2.ONE * button_size * ui_scale
+			button.size = button.custom_minimum_size
+			button.position = compact_positions[button.name] * ui_scale - button.size * 0.5
+	else:
+		var size_scale: float = clampf(
+			minf(display_size.y / 720.0, available_width / 700.0), 0.64, 1.0
+		)
+		joystick.custom_minimum_size = Vector2.ONE * 200.0 * size_scale * ui_scale
+		pedal_pad.custom_minimum_size = Vector2(440.0, 300.0) * size_scale * ui_scale
+		controls_row.add_theme_constant_override("separation", roundi(20.0 * size_scale * ui_scale))
+		controls_gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		controls_gap.custom_minimum_size = Vector2.ZERO
+		for child in pedal_pad.get_children():
+			if not child is Control:
+				continue
+			var button: Control = child
+			var base_centre: Vector2 = button.get_meta("kart_base_centre")
+			var button_size: float = float(button.get_meta("kart_base_diameter")) * size_scale
+			button.custom_minimum_size = Vector2.ONE * button_size * ui_scale
+			button.size = button.custom_minimum_size
+			button.position = base_centre * size_scale * ui_scale - button.size * 0.5
+	top_menu_button.visible = not compact
+	top_reset_button.visible = not compact
+	top_pause_button.visible = true
+	var top_button_size: Vector2 = Vector2(112, 56) if compact else Vector2(80, 58)
+	hud.add_theme_font_size_override(
+		"font_size", roundi((15.0 if compact_portrait else (18.0 if compact else 23.0)) * ui_scale)
+	)
+	var modal_width: float = minf(
+		620.0 * ui_scale, maxf(1.0, safe_ui.size.x - margin_dp * 2.0 * ui_scale)
+	)
+	var modal_height: float = minf(
+		520.0 * ui_scale, maxf(1.0, safe_ui.size.y - margin_dp * 2.0 * ui_scale)
+	)
+	for side in ["left", "right", "top", "bottom"]:
+		modal_padding.add_theme_constant_override("margin_" + side, roundi(8.0 * ui_scale))
+	for button in [top_menu_button, top_reset_button, top_pause_button]:
+		button.custom_minimum_size = top_button_size * ui_scale
+	for button in pause_navigation.get_children():
+		if button is Button:
+			button.custom_minimum_size.y = (44.0 if compact else 76.0) * ui_scale
+			button.custom_minimum_size.x = maxf(
+				44.0 * ui_scale, (modal_width - 24.0 * ui_scale) * 0.5
+			)
+			button.add_theme_font_size_override(
+				"font_size", roundi((15.0 if compact else 18.0) * ui_scale)
+			)
+			if compact:
+				button.text = "Spiele" if button.name == "ReturnToGames" else "Lernen"
+			else:
+				button.text = (
+					"Zur Spieleauswahl"
+					if button.name == "ReturnToGames"
+					else "Zum Lernen"
+				)
+	map_panel.visible = mode != "arena" and not compact
+	modal.offset_left = -modal_width * 0.5
+	modal.offset_right = modal_width * 0.5
+	modal.offset_top = -modal_height * 0.5
+	modal.offset_bottom = modal_height * 0.5
+
+
+func _apply_ui_scale(control: Node, ui_scale: float) -> void:
+	if control is Control:
+		var ui_control: Control = control
+		if not ui_control.has_meta("kart_base_minimum_size"):
+			ui_control.set_meta("kart_base_minimum_size", ui_control.custom_minimum_size)
+		ui_control.custom_minimum_size = (
+			ui_control.get_meta("kart_base_minimum_size") * ui_scale
+		)
+		if ui_control is Label or ui_control is Button:
+			if not ui_control.has_meta("kart_base_font_size"):
+				ui_control.set_meta("kart_base_font_size", ui_control.get_theme_font_size("font_size"))
+			ui_control.add_theme_font_size_override(
+				"font_size", roundi(float(ui_control.get_meta("kart_base_font_size")) * ui_scale)
+			)
+	for child in control.get_children():
+		_apply_ui_scale(child, ui_scale)
 
 
 func _physics_process(delta: float) -> void:
@@ -832,7 +1000,8 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		target *= 0.68
 		if difficulty == "gemuetlich":
 			target *= 1.0 - absf(axis) * 0.24
-	if boost_time > 0:
+	var boost_active: bool = boost_time > 0
+	if boost_active:
 		target *= 1.42
 	target *= throttle
 	target *= 1.0 - braking * 0.94
@@ -852,7 +1021,9 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 			var correction: float = angle_difference(player_heading, _heading(float(road.distance)))
 			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
 	var acceleration: float = (20.0 if braking > 0.1 else 10.0) * float(kart.accel)
-	if not airborne:
+	if boost_active and target > speed:
+		acceleration *= BOOST_ACCELERATION_MULTIPLIER
+	if not airborne or boost_active:
 		speed = move_toward(speed, target, delta * acceleration)
 	var grip_turn: float = clampf(absf(speed) / 8.0, 0, 1)
 	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * float(kart.turn) * grip_turn
@@ -1267,8 +1438,17 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 	var target: Vector3 = player.position + ahead * 7.0 + Vector3.UP * 1.2
 	camera.position = desired if snap else camera.position.lerp(desired, minf(1, delta * 5.5))
 	camera.look_at(target)
-	var target_fov: float = 68 if reduced_motion else (76 if boost_time > 0 and not paused else 68)
+	var baseline_fov: float = 68 if reduced_motion else (76 if boost_time > 0 and not paused else 68)
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	var aspect: float = viewport_size.x / maxf(1.0, viewport_size.y)
+	var target_fov: float = _resize_compensated_fov(baseline_fov, aspect)
 	camera.fov = lerpf(camera.fov, target_fov, minf(1, delta * 3))
+
+
+static func _resize_compensated_fov(vertical_fov: float, aspect: float) -> float:
+	var reference_aspect: float = 16.0 / 9.0
+	var horizontal_span: float = tan(deg_to_rad(vertical_fov) * 0.5) * reference_aspect
+	return clampf(rad_to_deg(2.0 * atan(horizontal_span / maxf(aspect, 0.1))), 40.0, 110.0)
 
 
 func _boost() -> void:
@@ -1396,6 +1576,8 @@ func _pause() -> void:
 	modal_column.add_child(_button("Neue Fahrt auswählen", _leave_race_for_menu))
 	modal_column.add_child(_button("Rennen abbrechen", _abandon, Color("3a4577")))
 	modal.show()
+	_apply_responsive_layout()
+	call_deferred("_apply_responsive_layout")
 
 
 func _resume() -> void:
@@ -1542,6 +1724,8 @@ func _show_result() -> void:
 	modal_column.add_child(_button("Zur Spieleauswahl", _return_to_world))
 	modal_column.add_child(_button("Zum Lernen", func(): _return_to_app("learn")))
 	modal.show()
+	_apply_responsive_layout()
+	call_deferred("_apply_responsive_layout")
 
 
 func _next_cup_race() -> void:
@@ -1770,6 +1954,24 @@ func _glow_material(color: Color, energy: float = 1.2) -> StandardMaterial3D:
 	return material
 
 
+## Build one chevron arm from a track frame. The arm always converges toward
+## local travel (-basis.z), so visual boost arrows cannot silently point backwards.
+static func _chevron_arm_geometry(track_basis: Basis, side: float) -> Dictionary:
+	var forward := (-track_basis.z).normalized()
+	var right := track_basis.x.normalized()
+	var up := track_basis.y.normalized()
+	var tip := forward * 0.38
+	var tail := -forward * 0.42 + right * side * 0.72
+	var direction := (tip - tail).normalized()
+	var local_z := direction.cross(up).normalized()
+	return {
+		"basis": Basis(direction, up, local_z),
+		"offset": (tip + tail) * 0.5,
+		"direction": direction,
+		"forward": forward,
+	}
+
+
 ## Turbo pad (reference k03): dark plate, three glowing chevrons, orange side lights.
 ## It covers exactly the boost zone checked in _track_events.
 func _turbo_pad(distance_on_track: float) -> void:
@@ -1784,13 +1986,14 @@ func _turbo_pad(distance_on_track: float) -> void:
 		var bar := _box(race_root, bar_at, Vector3(0.18, 0.05, 2.6), Color("ff9a3c"))
 		bar.basis = basis
 		bar.material_override = orange
+	var travel := (-basis.z).normalized()
 	for chevron in range(3):
-		var tip: Vector3 = centre - basis.z * (0.85 - chevron * 0.75) + basis.y * 0.03
+		var anchor: Vector3 = centre + travel * (0.85 - chevron * 0.75) + basis.y * 0.03
 		for arm in [-1.0, 1.0]:
-			var arm_basis: Basis = basis * Basis(Vector3.UP, arm * 0.62)
-			var piece_at: Vector3 = tip + basis.x * arm * 0.55 + basis.z * 0.34
+			var geometry: Dictionary = _chevron_arm_geometry(basis, arm)
+			var piece_at: Vector3 = anchor + geometry.offset
 			var piece := _box(race_root, piece_at, Vector3(1.3, 0.04, 0.2), Color("4fe6ff"))
-			piece.basis = arm_basis
+			piece.basis = geometry.basis
 			piece.material_override = cyan
 
 
