@@ -21,10 +21,14 @@ const SCENES: Dictionary = {
 	"sound_letter_match": "res://scenes/games/sound_letter_match.tscn",
 	"word_build": "res://scenes/games/word_build.tscn",
 	"learn_old": "res://scenes/games/learn_card.tscn",
-	"games": "res://scenes/games/star_collect.tscn",
+	"games": "res://scenes/games/game_hub.tscn",
+	"kart": "res://scenes/games/kart_island.tscn",
+	"jump": "res://scenes/games/jump_islands.tscn",
+	"stars": "res://scenes/games/star_collect.tscn",
 	"parent": "res://scenes/games/parent_settings.tscn",
 }
 
+var launch_options: Dictionary = {}
 var current_scene_id: String = "boot"
 
 

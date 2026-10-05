@@ -64,7 +64,7 @@ config = (
 )
 replacements = {
     "$GODOT_PROJECT_NAME": "Lumo 3D",
-    "$GODOT_HEAD_INCLUDE": "",
+    "$GODOT_HEAD_INCLUDE": "<meta name=\"description\" content=\"Lumos 3D-Abenteuer: Insel-Cup und Wolkeninseln mit Lernstopps für die Volksschule.\">",
     "$GODOT_SPLASH_COLOR": "#0a0a14",
     "$GODOT_SPLASH_CLASSES": "show-image--false fullsize--false use-filter--true",
     "$GODOT_SPLASH": "",
@@ -76,6 +76,7 @@ replacements = {
 }
 for k, v in replacements.items():
     html = html.replace(k, v)
+html = html.replace('</body>', '<style>#lumo-help{position:fixed;z-index:20;bottom:14px;left:50%;transform:translateX(-50%);max-width:90%;padding:14px 20px;border-radius:16px;background:#fff9ed;color:#343457;font:16px system-ui;text-align:center}#lumo-help a{color:#5441b7}#lumo-help[hidden]{display:none}</style>\n<aside id="lumo-help" hidden>Dein Browser kann diese 3D-Spiele hier nicht anzeigen. Du kannst sie mit der Android-App spielen: <a href="https://github.com/Ullmann27/lumo-godot/releases" target="_blank" rel="noopener">Lumo 3D herunterladen</a>.</aside>\n<script>const notice=document.getElementById(\'status-notice\');if(notice){const update=()=>{if(notice.textContent.includes(\'WebGL2\'))document.getElementById(\'lumo-help\').hidden=false;};update();new MutationObserver(update).observe(notice,{childList:true,subtree:true});}</script>\n</body>')
 Path("exports/web/index.html").write_text(html)
 import re
 left = re.findall(r"\$GODOT_[A-Z_]+", html)

@@ -2,8 +2,13 @@ name: Lumo 3D Build
 
 on:
   push:
+    branches: [main, codex/lumo-island-cup-2026-10-02]
+  pull_request:
     branches: [main]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 env:
   GODOT_VERSION: 4.6.3
@@ -63,7 +68,8 @@ jobs:
       - name: Project import
         run: |
           mkdir -p exports/linux exports/web exports/android exports/packages
-          godot --headless --import || true
+          python3 -m unittest discover -s tools/tests -v
+          bash tools/validate_project.sh
 
       # ────────────────── LINUX ──────────────────
       - name: Linux export
@@ -93,19 +99,11 @@ jobs:
         with:
           packages: "platform-tools build-tools;34.0.0 platforms;android-34"
 
-      - name: Create debug keystore
+      - name: Use stable Lumo test signing
         run: |
           mkdir -p ~/.android
-          if [[ ! -f ~/.android/debug.keystore ]]; then
-            keytool -keyalg RSA -genkeypair \
-              -alias androiddebugkey \
-              -keypass android \
-              -keystore ~/.android/debug.keystore \
-              -storepass android \
-              -dname "CN=Android Debug,O=Android,C=US" \
-              -validity 9999 \
-              -deststoretype pkcs12
-          fi
+          curl -fL https://raw.githubusercontent.com/Ullmann27/lumo-lernen/main/tools/lumo-debug.keystore -o ~/.android/debug.keystore
+          echo "af536f19a882d7de1aed2bb4ae5b6bde9235112e0be1dc8ffacd08f3aecf0cfb  $HOME/.android/debug.keystore" | sha256sum -c -
 
       - name: Godot editor settings (SDK path for export plugin)
         run: |
@@ -149,13 +147,16 @@ jobs:
           done
           echo "patched $(find android/build/res -name 'godot_project_name_string.xml' | wc -l) locale files"
 
+      - name: Prepare native route bridge
+        run: python3 tools/prepare_android_bridge.py
+
       - name: Gradle assembleDebug
         run: |
           cd android/build
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon \
             -Pexport_package_name=dev.ullmann.lumo3d \
-            -Pexport_version_name=${{ github.ref_name }} \
+            -Pexport_version_name=0.2.0-school-test \
             -Pexport_version_code=${{ github.run_number }}
 
       - name: Strip arm64-only + sign APK
@@ -178,34 +179,32 @@ jobs:
           ls -lh exports/android/lumo3d-debug.apk
           rm -rf "$WORK" /tmp/lumo-stripped.apk /tmp/lumo-aligned.apk
 
-      # ────────────────── ARTIFACTS ──────────────────
-      - name: Upload Linux artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: lumo-godot-linux
-          path: exports/packages/lumo-godot-linux.zip
-          retention-days: 30
+      - name: Render real engine screenshots
+        run: |
+          xvfb-run -a godot --rendering-method gl_compatibility --script scripts/tests/kart_render.gd
+          xvfb-run -a godot --rendering-method gl_compatibility --script scripts/tests/kart_render.gd -- --game=jump
 
-      - name: Upload Web artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: lumo-godot-web
-          path: exports/packages/lumo-godot-web.zip
-          retention-days: 30
-
-      - name: Upload Android APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: lumo-godot-android
-          path: exports/android/lumo3d-debug.apk
-          retention-days: 30
-
-      # ────────────────── RELEASE on tag push ──────────────────
-      - name: Create release (on tag push)
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Publish tested packages
+        if: github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: school-3d-${{ github.run_number }}
+          name: Lumo Insel-Cup 3D Test ${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          make_latest: false
+          body: "Zwei echte 3D-Spiele mit Lumo: Insel-Cup mit Gegnern, Drift-Boosts und Lernstopps; Wolkeninseln mit Sprüngen, echten Kollisionen, Kontrollpunkten und Lerninseln. Klasse und Fach sind in der Spieleauswahl wählbar. Godot-Import, 4000 Aufgabenvarianten und Spielmechanik geprüft. Fotos zeigen die echte laufende Engine. Android-Paket für arm64; Geräte- und Unterrichtstest ausständig."
           files: |
             exports/packages/lumo-godot-linux.zip
             exports/packages/lumo-godot-web.zip
             exports/android/lumo3d-debug.apk
+            exports/screenshots/*.png
+
+      - name: Publish trial on existing GitHub Pages
+        if: github.event_name != 'pull_request'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: exports/web
+          destination_dir: island-cup
+          keep_files: true
