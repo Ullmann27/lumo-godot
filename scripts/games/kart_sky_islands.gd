@@ -19,6 +19,13 @@ const CAVE: float = 0.555
 const RUINS: float = 0.715
 const SUSPENSION: float = 0.635
 const STAR_GATE: float = 0.865
+## Second physical setpiece: the left lane climbs onto a short elevated "Wolkenweg" while
+## the right lane stays on the main deck. Both rejoin before the Sternentor.
+const SPLIT_ROUTE: float = 0.805
+const SPLIT_SPAN: float = 24.0
+const SPLIT_RISE: float = 6.0
+const SPLIT_HEIGHT: float = 2.2
+const SPLIT_LEFT_LANE: float = -2.8
 ## Jump (k03 shortcut ramp): ramp on the downhill bridge before the crystal-cave island,
 ## then open sky until that island begins. Metres along the course.
 const RAMP_LENGTH: float = 7.0
@@ -79,6 +86,44 @@ static func jump_layout(length: float) -> Dictionary:
 
 static func in_gap(jump: Dictionary, distance: float) -> bool:
 	return not jump.is_empty() and distance >= jump.take_off and distance < jump.gap_end
+
+
+static func split_route_layout(length: float) -> Dictionary:
+	var centre: float = SPLIT_ROUTE * length
+	return {
+		"start": centre - SPLIT_SPAN * 0.5,
+		"end": centre + SPLIT_SPAN * 0.5,
+		"rise": SPLIT_RISE,
+		"height": SPLIT_HEIGHT,
+		"lane": SPLIT_LEFT_LANE,
+	}
+
+
+static func split_route_height(length: float, distance: float, lateral: float) -> float:
+	var layout: Dictionary = split_route_layout(length)
+	var d: float = fposmod(distance, length)
+	var start: float = float(layout.start)
+	var finish: float = float(layout.end)
+	if d < start or d > finish:
+		return 0.0
+	var longitudinal: float = 1.0
+	var rise: float = float(layout.rise)
+	if d < start + rise:
+		longitudinal = smoothstep(0.0, 1.0, (d - start) / rise)
+	elif d > finish - rise:
+		longitudinal = smoothstep(0.0, 1.0, (finish - d) / rise)
+	# Smoothly blend from the centre divider toward the raised left lane so changing lanes
+	# never teleports the kart vertically.
+	var lane_mix: float = clampf((-lateral - 0.45) / 1.85, 0.0, 1.0)
+	lane_mix = smoothstep(0.0, 1.0, lane_mix)
+	return float(layout.height) * longitudinal * lane_mix
+
+
+static func split_route_pitch(length: float, distance: float, lateral: float) -> float:
+	var sample: float = 0.35
+	var before: float = split_route_height(length, distance - sample, lateral)
+	var after: float = split_route_height(length, distance + sample, lateral)
+	return atan2(after - before, sample * 2.0)
 
 
 ## The orange shortcut ramp with yellow chevrons, light barriers across the gap and a glowing
@@ -193,6 +238,7 @@ static func build(world) -> void:
 	_waterfall_islands(world, rng)
 	_floating_town(world, TOWN * world.length, rng)
 	_temple_ruins(world, RUINS * world.length, rng)
+	_split_sky_bridge(world, SPLIT_ROUTE * world.length)
 	_star_gate_run(world, STAR_GATE * world.length)
 	_backdrop(world, rng)
 	_blimp(world)
@@ -768,6 +814,94 @@ static func _banner(world, at: Vector3, basis: Basis, text: String) -> void:
 		true
 	)
 	world._sign(at + Vector3.UP * 4.9 + facing.x * 0.9 + facing.z * 0.06, facing, text, 0.012)
+
+
+## Choice setpiece between the ruins and Sternentor. The raised left lane is backed by
+## split_route_height(), so this is not a PNG/visual fake: the kart and rivals actually climb it.
+## It stays inside the existing rail envelope and rejoins before the next landmark.
+static func _split_sky_bridge(world, _distance: float) -> void:
+	var layout: Dictionary = split_route_layout(world.length)
+	var start: float = float(layout.start)
+	var finish: float = float(layout.end)
+	var step: float = 1.2
+	var count: int = ceili((finish - start) / step)
+	for i in range(count):
+		var d: float = start + (float(i) + 0.5) * (finish - start) / float(count)
+		var height: float = split_route_height(world.length, d, SPLIT_LEFT_LANE)
+		var pitch: float = split_route_pitch(world.length, d, SPLIT_LEFT_LANE)
+		var basis: Basis = world.frame(d)
+		var slope: Basis = basis.rotated(basis.x, pitch)
+		var centre: Vector3 = world.position_at(d, SPLIT_LEFT_LANE) + basis.y * (height - 0.10)
+		world._prop(
+			"box",
+			centre,
+			Vector3(4.65, 0.20, (finish - start) / float(count) + 0.06),
+			Color("243f9e"),
+			slope
+		)
+		for edge in [-5.05, -0.55]:
+			var edge_at: Vector3 = world.position_at(d, edge) + basis.y * (height + 0.045)
+			world._prop(
+				"box",
+				edge_at,
+				Vector3(0.13, 0.055, (finish - start) / float(count) * 0.88),
+				CYAN if edge < -2.0 else CRYSTAL_VIOLET,
+				slope,
+				true
+			)
+		if i % 4 == 0 and height > 0.35:
+			var support: Vector3 = world.position_at(d, SPLIT_LEFT_LANE)
+			world._prop(
+				"box",
+				support + basis.y * (height * 0.5 - 0.14),
+				Vector3(0.34, maxf(0.45, height), 0.34),
+				STONE_DARK,
+				basis
+			)
+		if i % 5 == 2 and height > 1.0:
+			world._prop(
+				"star",
+				centre + basis.y * 1.0,
+				Vector3.ONE * 0.34,
+				GOLD,
+				basis,
+				true
+			)
+	var entry_d: float = start - 3.0
+	var entry_basis: Basis = world.frame(entry_d)
+	for lane_marker in [
+		{"lane": -3.0, "text": "WOLKENWEG", "color": CYAN},
+		{"lane": 3.0, "text": "HAUPTWEG", "color": ORANGE},
+	]:
+		var marker_at: Vector3 = world.position_at(entry_d, float(lane_marker.lane))
+		world._prop(
+			"box",
+			marker_at + Vector3.UP * 1.5,
+			Vector3(0.14, 3.0, 0.14),
+			NAVY,
+			entry_basis
+		)
+		world._prop(
+			"box",
+			marker_at + Vector3.UP * 2.75,
+			Vector3(3.1, 1.05, 0.16),
+			Color("173c8d"),
+			entry_basis
+		)
+		world._prop(
+			"box",
+			marker_at + Vector3.UP * 2.75 + entry_basis.z * 0.09,
+			Vector3(2.85, 0.82, 0.04),
+			Color(lane_marker.color),
+			entry_basis,
+			true
+		)
+		world._sign(
+			marker_at + Vector3.UP * 2.75 + entry_basis.z * 0.11,
+			entry_basis,
+			str(lane_marker.text),
+			0.010
+		)
 
 
 ## Final high-speed setpiece: a sequence of luminous sky arches after the ruins.
