@@ -121,3 +121,13 @@ Der gezielte Engine-Test protokolliert den Touch-Signalpfad, die angenommene Boo
 - `kart_physics_regression.gd` prüft Boost-Nutzung, Schild und Rivalen-Pulse.
 
 Aktueller Stage-2-Head nach dieser Erweiterung: `b048d1eba00f8ac9f2a2c9a5d25cf69a023b2dd6`.
+
+
+### Validation follow-up
+
+- Copilot checked commit `cc8cafb0e0ac3a37b0adc6a9f927aa8908c3c870`: `tools/validate_project.py` passed with 117 PASS / 7 WARN / 0 FAIL.
+- Godot parser/lint and the focused Kart regression scripts remain SKIP because Godot/gdlint/gdformat are not available in that runner.
+- Manual review found a later-lap respawn edge case: cumulative race distance was compared directly with lap-local jump geometry. `cc8cafb0e0ac3a37b0adc6a9f927aa8908c3c870` fixes the local/cumulative distance handling.
+- `894720592473d886b8f599a5251cec1002723898` adds a later-lap regression assertion; execution is still SKIP until a Godot runner is available.
+- lumo-lernen PR #197 still pins Godot `a369da2dc208fcd9d5451c7007d8b1f9e7bf52a1`, not this Stage-2 branch. A future candidate build must deliberately update that pin only after Kart validation and then verify provenance again.
+- No Fold-device or FPS claim.
