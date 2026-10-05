@@ -64,9 +64,19 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 
 func _make_curve() -> void:
 	var original_points: PackedVector3Array = definition.points
+	var source_points:=PackedVector3Array()
+	var horizontal_scale: float = 1.18 if track_id == "bergwelt" else 1.0
+	for point in original_points:
+		source_points.append(Vector3(point.x * horizontal_scale, point.y, point.z * horizontal_scale))
 	var points:=PackedVector3Array()
-	for i in range(original_points.size()):
-		points.append(original_points[i]*0.5+(original_points[posmod(i-1,original_points.size())]+original_points[(i+1)%original_points.size()])*0.25)
+	for i in range(source_points.size()):
+		points.append(
+			source_points[i] * 0.5
+			+ (
+				source_points[posmod(i - 1, source_points.size())]
+				+ source_points[(i + 1) % source_points.size()]
+			) * 0.25
+		)
 	curve = Curve3D.new()
 	curve.bake_interval = 0.35
 	for i in range(points.size() + 1):
@@ -150,6 +160,20 @@ func rival_arc(distance: float) -> float:
 	if d<jump.take_off: return ramp_height(d)
 	var u: float=(d-jump.take_off)/(jump.gap_end-jump.take_off)
 	return jump.height*(1.0-u)+6.0*u*(1.0-u)
+
+func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_distance: float) -> float:
+	var lower: float = maxf(0.0, floor_distance)
+	var upper: float = maxf(lower + 0.5, ceiling_distance)
+	var safe: float = clampf(candidate, lower, upper)
+	if jump.is_empty():
+		return safe
+	var d: float = fposmod(safe, length)
+	var danger_start: float = maxf(lower, float(jump.ramp_start) - 1.5)
+	var danger_end: float = minf(upper, float(jump.gap_end) + 2.5)
+	if d >= danger_start and d <= danger_end:
+		return maxf(lower, float(jump.ramp_start) - 4.0)
+	return safe
+
 
 func reset_transform(distance: float, lateral: float = 0.0) -> Transform3D:
 	var basis: Basis = frame(distance)
