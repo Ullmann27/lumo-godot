@@ -50,15 +50,31 @@ static func definition(id: String) -> Dictionary:
 			}
 		_:
 			return {
-				"id": "sonnenhafen", "name": "Sonnenhafen", "subtitle": "Eine Runde entlang der goldenen Küste",
+				"id": "sonnenhafen",
+				"name": "Sonnenhafen",
+				"subtitle": "Grand Prix zwischen Klippen, Hafen und Wasserfall",
 				"accent": Color("77dbe0"), "asphalt": Color("3d556b"),
 				"sky": Color("197acb"), "horizon": Color("83c8ee"), "fog": Color("afd8e7"),
 				"sun": Color("ffe5bc"), "ground": Color("7caa69"), "seed": 109021,
+				# Long-form coastal circuit: stadium straight -> uphill cliff S -> high hairpin ->
+				# harbour descent -> bridge approach -> waterfront sweep -> final technical bends.
 				"points": PackedVector3Array([
-					Vector3(0, 1.6, 54), Vector3(36, 1.9, 50), Vector3(66, 2.8, 25),
-					Vector3(58, 7.2, -4), Vector3(75, 9.2, -32), Vector3(39, 8.0, -64),
-					Vector3(5, 3.2, -53), Vector3(-27, 2.3, -63), Vector3(-64, 3.4, -37),
-					Vector3(-43, 4.1, -9), Vector3(-67, 7.4, 15), Vector3(-42, 6.1, 45),
-					Vector3(-19, 2.8, 59)
+					Vector3(0, 1.8, 72),
+					Vector3(42, 2.2, 69),
+					Vector3(77, 3.8, 49),
+					Vector3(94, 7.0, 19),
+					Vector3(78, 12.5, -8),
+					Vector3(94, 15.5, -43),
+					Vector3(67, 13.0, -78),
+					Vector3(31, 8.0, -91),
+					Vector3(2, 5.5, -70),
+					Vector3(-24, 7.0, -86),
+					Vector3(-61, 10.0, -77),
+					Vector3(-89, 14.5, -48),
+					Vector3(-84, 18.0, -13),
+					Vector3(-55, 19.0, 12),
+					Vector3(-78, 13.0, 43),
+					Vector3(-50, 7.5, 70),
+					Vector3(-18, 3.2, 80)
 				])
 			}
