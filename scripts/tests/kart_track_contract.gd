@@ -1,5 +1,6 @@
 extends SceneTree
 ## Surface projection, seam and geometry contracts required by free driving.
+const SKY_ISLANDS=preload("res://scripts/games/kart_sky_islands.gd")
 func _initialize() -> void:
 	call_deferred("_run")
 func _run() -> void:
@@ -10,6 +11,17 @@ func _run() -> void:
 		world.definition=definitions.definition(id)
 		world._make_curve()
 		assert(world.length>340.0)
+		if id=="bergwelt":
+			assert(world.length>400.0, "Himmelsinseln must remain a long-form course")
+			world.jump=SKY_ISLANDS.jump_layout(world.length)
+			var inside_gap: float=(float(world.jump.take_off)+float(world.jump.gap_end))*0.5
+			var safe_reset: float=world.safe_respawn_distance(
+				inside_gap,
+				0.0,
+				world.length/8.0*5.0
+			)
+			assert(not world.in_gap(safe_reset), "Reset must never place the kart inside the sky gap")
+			assert(safe_reset<float(world.jump.ramp_start), "Reset returns before the jump danger zone")
 		assert(world.position_at(0).distance_to(world.position_at(world.length))<0.001)
 		assert(world.checkpoint_positions.size()==8)
 		var min_radius: float=INF
