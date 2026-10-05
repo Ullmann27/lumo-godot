@@ -9,6 +9,9 @@ func _run() -> void:
 	for id in definitions.IDS:
 		var world=script.new()
 		world.definition=definitions.definition(id)
+		# _make_curve() contains track-specific authoring scale. Mirror build() by setting
+		# track_id before invoking the geometry contract directly.
+		world.track_id=id
 		world._make_curve()
 		assert(world.length>340.0)
 		if id=="bergwelt":
