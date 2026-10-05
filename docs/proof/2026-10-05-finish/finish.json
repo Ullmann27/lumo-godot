@@ -1,0 +1,9 @@
+{
+  "android_performance_measurement": false,
+  "best_lap": 17.55,
+  "capture": "actual Godot engine render, xvfb + gl_compatibility",
+  "finish_camera_frames": 193,
+  "place": 1,
+  "race_seconds": 36.28,
+  "track": "himmelsinseln"
+}

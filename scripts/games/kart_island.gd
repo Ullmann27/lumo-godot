@@ -58,6 +58,14 @@ var wrong_way_seconds: float = 0.0
 var drifting: bool = false
 var racing: bool = false
 var finished: bool = false
+## Zieleinlauf-Kamerafahrt: läuft nach dem Ziel, bevor das Ergebnis erscheint.
+const FINISH_CINE_SECONDS: float = 3.2
+var finish_cine_left: float = 0.0
+var finish_coast_speed: float = 0.0
+var finish_place: int = 0
+var finish_confetti: Node3D
+var lap_times: Array[float] = []
+var lap_started_at: float = 0.0
 var paused: bool = false
 var abandoned: bool = false
 var rng := RandomNumberGenerator.new()
@@ -455,6 +463,10 @@ func _begin_race() -> void:
 	opponent_lanes = [-3.2, -1.65, -0.1, 1.45, 3.0]
 	result_id = HostBridge.new_result_id()
 	result_payload = {}
+	finish_cine_left = 0.0
+	finish_place = 0
+	lap_times.clear()
+	lap_started_at = 0.0
 	_build_world()
 	if is_instance_valid(kart_audio):
 		kart_audio.set_paused(false)
@@ -484,7 +496,7 @@ func _resume_saved_race() -> void:
 		if completed_race and not finished:
 			# A pre-version-4 learning cup could be saved after the finish line while its
 			# question was open. The race is complete, so show and award the result now.
-			_finish()
+			_finish(false)
 			return
 		if is_instance_valid(kart_audio):
 			kart_audio.play_track("arena" if mode == "arena" else track_id)
@@ -753,6 +765,9 @@ func _update_safe_area() -> void:
 
 func _physics_process(delta: float) -> void:
 	if menu_active or not is_instance_valid(player):
+		return
+	if finished and finish_cine_left > 0.0:
+		_update_finish_cine(delta)
 		return
 	if not paused and not finished and countdown > 0:
 		countdown = maxf(0, countdown - delta)
@@ -1246,6 +1261,8 @@ func _update_checkpoints() -> void:
 	if distance >= target and distance < target + maxf(4.0, speed * 0.3):
 		checkpoint_index += 1
 		if checkpoint_index % 8 == 0:
+			lap_times.append(elapsed - lap_started_at)
+			lap_started_at = elapsed
 			message.text = "Runde geschafft! Weiter so." if mode == "training" else "Letzte Runde!"
 
 
@@ -1455,7 +1472,9 @@ func _abandon() -> void:
 	_return_to_app("games")
 
 
-func _finish() -> void:
+## [param cinematic] false: Ergebnis sofort zeigen (z. B. gespeichertes Rennen
+## nach dem Ziel wieder geöffnet), ohne Zielfahrt.
+func _finish(cinematic: bool = true) -> void:
 	if finished or menu_active:
 		return
 	completed_race = true
@@ -1495,10 +1514,21 @@ func _finish() -> void:
 		pending_cup_next = cup_index < CATALOG.TRACKS.size() - 1
 		result_payload["cupRound"] = cup_index + 1
 		result_payload["cupPoints"] = cup_points[0]
+	if lap_times.is_empty() or elapsed - lap_started_at > 1.0:
+		lap_times.append(elapsed - lap_started_at)
+	result_payload["bestLapSeconds"] = snappedf(_best_lap(), 0.001)
+	result_payload["starTokens"] = collected.size()
 	var reward_accepted: bool = HostBridge.reward(result_payload)
 	_save_session()
-	_show_result()
-	if HostBridge.is_embedded() and not reward_accepted:
+	var save_failed: bool = HostBridge.is_embedded() and not reward_accepted
+	if cinematic and not save_failed:
+		_start_finish_cine(place)
+	else:
+		# Speicherproblem: Ergebnis und Hinweis sofort zeigen, nichts verdecken.
+		if is_instance_valid(player) and player.has_method("celebrate"):
+			player.celebrate(place)
+		_show_result()
+	if save_failed:
 		_show_host_save_failure()
 	print("[Kart] completed: mode=%s track=%s stars=%d place=%d" % [mode, track_id, earned, place])
 
@@ -1514,13 +1544,30 @@ func _show_result() -> void:
 		title = "Kristall-Arena geschafft!"
 	elif mode == "cup":
 		title = "Rennen %d von 4 geschafft!" % (cup_index + 1) if pending_cup_next else "Dein Sternen-Cup ist geschafft!"
-	modal_column.add_child(_label(title, 30))
-	var details: String = "%.1f Sekunden · +%d Sterne" % [elapsed, int(result_payload.get("stars", 0))]
-	if mode not in ["training", "time_trial"]:
-		details = "Platz %d von 6 · " % int(result_payload.get("place", 1)) + details
+	var ranked: bool = mode not in ["training", "time_trial", "arena"]
+	var place_now: int = int(result_payload.get("place", 1))
+	if ranked and not (mode == "cup" and not pending_cup_next and cup_index > 0):
+		title = _place_title(place_now)
+	var title_label: Label = _label(title, 34 if ranked else 30)
+	title_label.name = "ResultTitle"
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if ranked:
+		title_label.add_theme_color_override("font_color", _place_color(place_now))
+	modal_column.add_child(title_label)
+	if ranked:
+		var cheer: Label = _label(_place_cheer(place_now), 21)
+		cheer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		modal_column.add_child(cheer)
+	var stats: Label = _label(_result_stats_text(), 21)
+	stats.name = "ResultStats"
+	modal_column.add_child(stats)
+	var details: String = ""
+	if ranked:
+		details = "Platz %d von 6" % place_now
 	if mode == "arena":
-		details += "\n%d Kristalle gesammelt" % arena_scores
-	modal_column.add_child(_label(details, 23))
+		details += ("\n" if details != "" else "") + "%d Kristalle gesammelt" % arena_scores
+	if details != "":
+		modal_column.add_child(_label(details, 21))
 	if mode == "time_trial":
 		var record_text: String = "Deine neue Bestzeit – Geisterfahrt gespeichert!" if best_record else ("Bestzeit: %.2f Sekunden" % records.previous_best if records.previous_best > 0 else "Erste Trainingszeit. Ohne Zurücksetzen wird deine Geisterfahrt gespeichert.")
 		modal_column.add_child(_label(record_text, 20))
@@ -1537,11 +1584,157 @@ func _show_result() -> void:
 		if pending_cup_next:
 			modal_column.add_child(_button("Weiter: " + str(CATALOG.TRACKS[cup_index + 1].name), _next_cup_race))
 	if not pending_cup_next:
-		modal_column.add_child(_button("Noch einmal fahren", _restart_setup))
+		modal_column.add_child(_button("Noch einmal fahren", _restart_setup, Color("1e7fe0")))
 	modal_column.add_child(_button("Neue Fahrt auswählen", _leave_race_for_menu))
 	modal_column.add_child(_button("Zur Spieleauswahl", _return_to_world))
 	modal_column.add_child(_button("Zum Lernen", func(): _return_to_app("learn")))
 	modal.show()
+
+
+func _best_lap() -> float:
+	var best: float = 0.0
+	for lap in lap_times:
+		if lap > 0.5 and (best == 0.0 or lap < best):
+			best = lap
+	return best
+
+
+func _format_time(seconds: float) -> String:
+	var whole: int = int(seconds)
+	return "%02d:%02d.%03d" % [whole / 60, whole % 60, int(round((seconds - whole) * 1000.0)) % 1000]
+
+
+func _result_stats_text() -> String:
+	var lines: PackedStringArray = ["Gesamtzeit   " + _format_time(elapsed)]
+	var best: float = _best_lap()
+	if best > 0.0 and mode not in ["arena", "training"]:
+		lines.append("Beste Runde   " + _format_time(best))
+	lines.append("Sterne gesammelt   %d" % collected.size())
+	lines.append("Belohnung   +%d Sterne" % int(result_payload.get("stars", 0)))
+	return "\n".join(lines)
+
+
+func _place_title(place: int) -> String:
+	match place:
+		1:
+			return "1. PLATZ!"
+		2:
+			return "2. Platz!"
+		3:
+			return "3. Platz!"
+	return "Platz %d" % place
+
+
+func _place_cheer(place: int) -> String:
+	match place:
+		1:
+			return "Lumo jubelt – du hast gewonnen!"
+		2:
+			return "Super gefahren – Silber für dich!"
+		3:
+			return "Stark – du stehst auf dem Treppchen!"
+	return "Gut gekämpft! Beim nächsten Mal geht es weiter nach vorn."
+
+
+func _place_color(place: int) -> Color:
+	match place:
+		1:
+			return Color("ffd86b")
+		2:
+			return Color("dfe8f2")
+		3:
+			return Color("e7a066")
+	return Color("9fe4ff")
+
+
+## Zieleinlauf: Eingabe ist schon aus, das Kart rollt aus, die Kamera fährt
+## seitlich nach vorn auf Lumo, Lumo reagiert auf den Platz. Danach erscheint
+## das Ergebnis über der weiterlaufenden 3D-Szene.
+func _start_finish_cine(place: int) -> void:
+	finish_place = place
+	finish_coast_speed = maxf(speed, 6.0)
+	modal.hide()
+	if is_instance_valid(player) and player.has_method("celebrate"):
+		player.celebrate(place if mode not in ["training", "time_trial", "arena"] else 1)
+	message.text = _place_title(place) if mode not in ["training", "time_trial", "arena"] else "Ziel!"
+	finish_cine_left = 0.35 if reduced_motion else FINISH_CINE_SECONDS
+	if place == 1 and not reduced_motion and not lightweight and mode not in ["training", "time_trial", "arena"]:
+		_spawn_finish_confetti()
+
+
+func _update_finish_cine(delta: float) -> void:
+	finish_cine_left = maxf(0.0, finish_cine_left - delta)
+	var total: float = 0.35 if reduced_motion else FINISH_CINE_SECONDS
+	var t: float = clampf(1.0 - finish_cine_left / total, 0.0, 1.0)
+	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
+	# Ausrollen mit sanfter Bremsung, nicht abrupt stehen bleiben.
+	finish_coast_speed = move_toward(finish_coast_speed, 0.0, delta * maxf(6.0, finish_coast_speed * 0.55))
+	player.position += ahead * finish_coast_speed * delta
+	player.set_motion(finish_coast_speed, 0.0, false, false)
+	for kart in opponents:
+		kart.set_motion(0, 0, false, false)
+	if is_instance_valid(camera):
+		var blend: float = smoothstep(0.0, 1.0, t)
+		var side := Vector3(-ahead.z, 0, ahead.x)
+		var angle: float = lerpf(0.0, PI * 0.78, blend)
+		var radius: float = lerpf(6.6, 4.6, blend)
+		var offset: Vector3 = (-ahead * cos(angle) + side * sin(angle)) * radius
+		var desired: Vector3 = player.position + offset + Vector3.UP * lerpf(3.5, 1.7, blend)
+		camera.position = camera.position.lerp(desired, minf(1.0, delta * 6.0))
+		camera.look_at(player.position + Vector3.UP * 1.25)
+		camera.fov = lerpf(camera.fov, 56.0, minf(1.0, delta * 2.0))
+	_update_hud()
+	if finish_cine_left <= 0.0:
+		_show_result()
+
+
+func _input(event: InputEvent) -> void:
+	# Ein Tipp während der Zielfahrt zeigt das Ergebnis sofort.
+	if finished and finish_cine_left > 0.0:
+		var tap: bool = (event is InputEventScreenTouch and event.pressed) or (event is InputEventMouseButton and event.pressed)
+		if tap:
+			_skip_finish_cine()
+			get_viewport().set_input_as_handled()
+
+
+func _skip_finish_cine() -> void:
+	if finished and finish_cine_left > 0.0:
+		finish_cine_left = 0.0
+		_show_result()
+
+
+func _spawn_finish_confetti() -> void:
+	if is_instance_valid(finish_confetti):
+		finish_confetti.queue_free()
+	var particles := CPUParticles3D.new()
+	particles.amount = 70
+	particles.lifetime = 2.4
+	particles.one_shot = true
+	particles.explosiveness = 0.85
+	particles.direction = Vector3.UP
+	particles.spread = 55.0
+	particles.initial_velocity_min = 5.0
+	particles.initial_velocity_max = 9.0
+	particles.gravity = Vector3(0, -7.5, 0)
+	particles.scale_amount_min = 0.6
+	particles.scale_amount_max = 1.1
+	var quad := QuadMesh.new()
+	quad.size = Vector2(0.12, 0.07)
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.vertex_color_use_as_albedo = true
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	quad.material = mat
+	particles.mesh = quad
+	var ramp := Gradient.new()
+	ramp.set_color(0, Color("ffd86b"))
+	ramp.add_point(0.5, Color("53ddfd"))
+	ramp.set_color(1, Color("ff8be8"))
+	particles.color_initial_ramp = ramp
+	particles.position = player.position + Vector3.UP * 2.2
+	race_root.add_child(particles)
+	particles.emitting = true
+	finish_confetti = particles
 
 
 func _next_cup_race() -> void:

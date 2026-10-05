@@ -18,6 +18,11 @@ var wheel_pivots: Array[Node3D] = []
 var wheel_rotors: Array[Node3D] = []
 var eyes: Array[Node3D] = []
 var head: Node3D
+var drive_arm_right: Node3D
+var cheer_arm: Node3D
+## Platz beim Zieleinlauf (0 = keine Feier). 1–3 jubeln, ab 4 aufmunternd.
+var celebration_place: int = 0
+var celebration_time: float = 0.0
 var tail: Node3D
 var steering_wheel: Node3D
 var driver: Node3D
@@ -500,17 +505,22 @@ func _make_driver() -> void:
 	if companion_mode:
 		_make_companion_limbs(fur)
 	else:
+		drive_arm_right = Node3D.new()
+		drive_arm_right.name = "DriveArmRight"
+		driver.add_child(drive_arm_right)
 		for side in [-1.0, 1.0]:
-			var sleeve := _mesh(driver, _loft([Vector4(0.0, 0.07, 0.065, 0), Vector4(0.13, 0.11, 0.10, 0), Vector4(0.29, 0.081, 0.08, 0), Vector4(0.42, 0.065, 0.060, 0)], true, 20, 4), Vector3(side * 0.24, 1.20, 0.10), NAVY, 0.03, 0.72)
+			var arm_parent: Node3D = driver if side < 0 else drive_arm_right
+			var sleeve := _mesh(arm_parent, _loft([Vector4(0.0, 0.07, 0.065, 0), Vector4(0.13, 0.11, 0.10, 0), Vector4(0.29, 0.081, 0.08, 0), Vector4(0.42, 0.065, 0.060, 0)], true, 20, 4), Vector3(side * 0.24, 1.20, 0.10), NAVY, 0.03, 0.72)
 			sleeve.quaternion = Quaternion(Vector3.UP, Vector3(side * 0.13, -0.22, -0.37).normalized())
-			_ellipsoid(driver, Vector3(side * 0.29, 1.215, 0.015), Vector3(0.092, 0.056, 0.096), WHITE, 0.07, 0.6)
-			_ribbon(driver, [Vector3(side * 0.318, 1.225, 0.07), Vector3(side * 0.344, 1.11, -0.12), Vector3(side * 0.31, 1.03, -0.27)], 0.012, ICE, 0.12)
+			_ellipsoid(arm_parent, Vector3(side * 0.29, 1.215, 0.015), Vector3(0.092, 0.056, 0.096), WHITE, 0.07, 0.6)
+			_ribbon(arm_parent, [Vector3(side * 0.318, 1.225, 0.07), Vector3(side * 0.344, 1.11, -0.12), Vector3(side * 0.31, 1.03, -0.27)], 0.012, ICE, 0.12)
 			_ellipsoid(driver, Vector3(side * 0.16, 0.81, -0.24), Vector3(0.105, 0.105, 0.20), NAVY, 0, 0.72)
-			var glove := _ellipsoid(driver, Vector3(side * 0.16, 1.055, -0.34), Vector3(0.079, 0.070, 0.083), WHITE, 0, 0.68)
+			var glove := _ellipsoid(arm_parent, Vector3(side * 0.16, 1.055, -0.34), Vector3(0.079, 0.070, 0.083), WHITE, 0, 0.68)
 			glove.rotation.z = side * -0.2
 			for digit in range(3):
-				_ellipsoid(driver, Vector3(side * (0.126 + digit * 0.027), 1.036, -0.393), Vector3(0.016, 0.036, 0.022), WHITE, 0, 0.68)
+				_ellipsoid(arm_parent, Vector3(side * (0.126 + digit * 0.027), 1.036, -0.393), Vector3(0.016, 0.036, 0.022), WHITE, 0, 0.68)
 			_ellipsoid(driver, Vector3(side * 0.18, 0.80, -0.39), Vector3(0.12, 0.09, 0.14), WHITE, 0.08, 0.6)
+		_make_cheer_arm()
 	head = Node3D.new()
 	head.name = "LumoHead"
 	head.position = Vector3(0, 1.68, 0.07)
@@ -561,6 +571,37 @@ func _make_driver() -> void:
 			var stripe := _mesh(head, _loft([Vector4(-0.15, 0.028, 0.014, -0.28), Vector4(0.06, 0.059, 0.013, -0.310), Vector4(0.29, 0.039, 0.01, -0.172)], true, 16, 4), Vector3(side * 0.17, 0, 0), Color("e8f2fa"))
 			stripe.rotation.z = side * -0.16
 	_make_tail(fur, cream)
+
+
+func _make_cheer_arm() -> void:
+	# Erhobener rechter Arm für den Jubel im Ziel, sonst unsichtbar.
+	cheer_arm = Node3D.new()
+	cheer_arm.name = "CheerArm"
+	cheer_arm.position = Vector3(0.29, 1.215, 0.015)
+	cheer_arm.visible = false
+	driver.add_child(cheer_arm)
+	_mesh(cheer_arm, _loft([Vector4(0.0, 0.07, 0.065, 0), Vector4(0.13, 0.11, 0.10, 0), Vector4(0.29, 0.081, 0.08, 0), Vector4(0.40, 0.065, 0.060, 0)], true, 18, 3), Vector3.ZERO, NAVY, 0.02, 0.75)
+	_ribbon(cheer_arm, [Vector3(0.07, 0.02, 0.0), Vector3(0.07, 0.20, 0.0), Vector3(0.06, 0.36, 0.0)], 0.011, ICE, 0.15)
+	var glove := _ellipsoid(cheer_arm, Vector3(0, 0.46, 0), Vector3(0.085, 0.09, 0.085), WHITE, 0, 0.68)
+	glove.rotation.x = -0.2
+	# Nach einem Neuaufbau (Grafikstufe) bleibt die Feier sichtbar.
+	if celebration_place > 0:
+		celebrate(celebration_place)
+
+
+## Lumo reagiert auf seine Platzierung: 1 = beide Gesten + Kopf hoch,
+## 2/3 = Faust in die Luft, ab 4 = freundliches Nicken (keine Strafe).
+func celebrate(place: int) -> void:
+	celebration_place = maxi(0, place)
+	celebration_time = 0.0
+	if is_instance_valid(cheer_arm):
+		cheer_arm.visible = celebration_place >= 1 and celebration_place <= 3
+	if is_instance_valid(drive_arm_right):
+		drive_arm_right.visible = not (celebration_place >= 1 and celebration_place <= 3)
+
+
+func clear_celebration() -> void:
+	celebrate(0)
 
 
 func _make_companion_limbs(fur: Color) -> void:
@@ -833,6 +874,22 @@ func _process(delta: float) -> void:
 		if blink_phase < 0.14:
 			blink = maxf(0.07, absf(blink_phase - 0.07) / 0.07)
 		eye.scale.y = blink
+	if celebration_place > 0:
+		celebration_time += delta
+		var wave: float = 0.0 if reduced_motion else sin(celebration_time * TAU * 1.4)
+		if is_instance_valid(cheer_arm) and cheer_arm.visible:
+			cheer_arm.rotation.z = -0.25 + wave * 0.22
+			cheer_arm.rotation.x = -0.15
+		if is_instance_valid(head):
+			if celebration_place == 1:
+				head.rotation.x = -0.12 + wave * 0.03
+			elif celebration_place <= 3:
+				head.rotation.x = -0.07
+			else:
+				head.rotation.x = 0.05 + absf(wave) * 0.05
+			head.rotation.y = lerpf(head.rotation.y, 0.35, minf(1, delta * 3))
+		if driver and not reduced_motion and celebration_place <= 3:
+			driver.position.y = absf(sin(celebration_time * PI * 2.2)) * (0.05 if celebration_place == 1 else 0.025)
 	if jaw:
 		jaw.rotation.x = speaking_amount * 0.45
 		jaw.position.y = -0.257 - speaking_amount * 0.035
