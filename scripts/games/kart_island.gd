@@ -1128,7 +1128,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 ## Ground contact, ramp, take-off, flight, landing and the cloud rescue over the gap.
 ## Returns false when the kart was rescued (the caller then stops this physics step).
 func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> bool:
-	var ground: float = float(road.height) + 0.035 + world.ramp_height(road_distance)
+	var ground: float = float(road.height) + 0.035 + world.ramp_height(road_distance) + world.alternate_route_height(road_distance, lane)
 	var jump: Dictionary = world.jump
 	if not airborne and not jump.is_empty():
 		var leaving_ramp: bool = (
