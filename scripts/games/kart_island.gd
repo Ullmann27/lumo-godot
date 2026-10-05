@@ -1121,6 +1121,8 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		pitch = clampf(vertical_speed * 0.05, -0.32, 0.32)
 	elif world.ramp_height(road_distance) > 0.0:
 		pitch = float(world.jump.angle)
+	else:
+		pitch = world.alternate_route_pitch(road_distance, lane)
 	if pitch != 0.0:
 		player.basis = player.basis.rotated(right, pitch).orthonormalized()
 
@@ -1315,14 +1317,25 @@ func _drive_opponents(delta: float) -> void:
 			var overlap: float = rival_lateral - rail_side * WORLD.WALL_LATERAL
 			rival.position -= (next.basis as Basis).x * overlap
 			opponent_lanes[i] = rail_side * WORLD.WALL_LATERAL
-		rival.position.y = float(next.height) + 0.035 + world.rival_arc(float(next.distance))
+		rival.position.y = (
+			float(next.height)
+			+ 0.035
+			+ world.rival_arc(float(next.distance))
+			+ world.alternate_route_height(float(next.distance), rival_lateral)
+		)
 		if absf(float(next.lateral)) > ROAD_WIDTH * 0.5 + 1:
 			rival.transform = world.reset_transform(opponent_distances[i], target_lane)
 			opponent_headings[i] = _heading(opponent_distances[i])
 		else:
 			var normal: Vector3 = (next.basis as Basis).y
 			var right: Vector3 = forward.cross(normal).normalized()
-			rival.basis = Basis(right, normal, -normal.cross(right)).orthonormalized()
+			var rival_basis: Basis = Basis(right, normal, -normal.cross(right)).orthonormalized()
+			var route_pitch: float = world.alternate_route_pitch(
+				float(next.distance), rival_lateral
+			)
+			if absf(route_pitch) > 0.001:
+				rival_basis = rival_basis.rotated(right, route_pitch).orthonormalized()
+			rival.basis = rival_basis
 		rival.set_motion(
 			target_speed,
 			clampf(-angle, -1, 1),
