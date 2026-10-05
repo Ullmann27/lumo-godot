@@ -170,3 +170,62 @@ Details: `docs/track_expansion/2026-10-05/OPEN_SOURCE_TRACK_TECH.md`.
 - echter Sonnenhafen-Runtime-Screenshot,
 - Performance-/Draw-Call-Messung,
 - Fold-Geräte-FPS weiterhin nicht als geprüft behaupten.
+
+
+## Etappe 5 – Physischer Wolkenweg-Split auf Himmelsinseln
+
+- Agent: ChatGPT, direkt auf dem bestehenden PR-#18-Branch.
+- Ausgangs-Head: `b310aa0e224c3b1c26d26e506fe933a9df6e90d5`.
+- Implementierungs-Head vor dieser Fortschrittsnotiz: `251c157772a22d0d442a375462ea408d3c06faea`.
+- Abgrenzung: nur Himmelsinseln; vorhandene Opus-Farb-/Landmarkenrichtung bleibt erhalten. Kein Merge nach `main`, kein Force-Push.
+- Claim-Prüfung vor Umsetzung: keine offenen Review-Threads oder Reviews und kein neuer PR-Kommentar, der diesen nächsten Setpiece-Schritt beansprucht. Stage 2 und Rivalen-Item-Taktik waren bereits umgesetzt.
+
+### Direkt umgesetzt
+
+1. **Zweite echte Routenentscheidung**
+   - zwischen Tempelruinen und Sternentor liegt jetzt der erhöhte linke `WOLKENWEG`;
+   - die rechte `HAUPTWEG`-Spur bleibt auf der ursprünglichen Fahrbahnhöhe;
+   - der Split beginnt und endet weich und ist vollständig vor dem Sternentor wieder zusammengeführt.
+
+2. **Physische Fahrhöhe statt Dekor-Attrappe**
+   - `split_route_height()` bildet die zusätzliche Höhe längs und quer kontinuierlich ab;
+   - Spieler-Fahrhöhe und Fahrzeugneigung verwenden diese Funktion;
+   - Rivalen verwenden dieselbe Höhen-/Neigungslogik entsprechend ihrer tatsächlichen Spur;
+   - die visuelle Wolkenweg-Platte, Leuchtkanten und Stützen folgen derselben Geometrie.
+
+3. **Opus-Richtung bewahrt**
+   - bestehende Himmelsinseln-Palette mit Cyan, Violett, Gold und Navy weiterverwendet;
+   - keine fremden Franchise-Assets oder kopierten Streckenbauteile;
+   - keine Änderung an bestehendem Sprung, Mystery Items oder Sternentor.
+
+### Regressionen
+
+- `kart_track_contract.gd` schützt:
+  - ausreichenden Abstand zum bestehenden Sprung;
+  - Rejoin vor dem Sternentor;
+  - erhöhte linke Spur bei unveränderter rechter Hauptspur;
+  - weichen Beginn/Ende sowie positive/negative Rampenneigung.
+- `kart_physics_regression.gd` enthält `_test_wolkenweg_split_route()`:
+  - linke Spur ist physisch >1,5 m erhöht;
+  - rechte Spur bleibt auf Originalhöhe;
+  - `_move_vertically()` setzt den Spieler tatsächlich auf beide unterschiedlichen Fahrhöhen.
+
+### Commits dieser Etappe
+
+- `92d3ed7fef7bc6830379dbf14b5ef85327188534` – Wolkenweg-Setpiece und Höhenprofil.
+- `4554879e4830faecfa381e9fc2262fc1d8c267e3` – World-API für alternative Routenhöhe/-neigung.
+- `61646c0443da20c5212214311341a55a72a77321` – Rejoin-Abstand vor Sternentor korrigiert.
+- `de992325585ec12fc1062669b051ab9a2b7360aa` / `9c59091dad1b47ad28516b5cdcdd9e388e52fe07` – Spieler-/Rivalen-Fahrhöhe und Neigung.
+- `4e653d4617b68698403f1e4527b8ab58fe3f899d` – Track-/Physics-Regressionen.
+- `251c157772a22d0d442a375462ea408d3c06faea` – typisierte Markerfarbe.
+
+### Validierungsstand
+
+- Letzter vollständig abgeschlossener Stage-2-GitHub-Lauf vor dieser Etappe: Workflow `37355529872` auf `b310aa0e224c3b1c26d26e506fe933a9df6e90d5`: **PASS**.
+- Aktueller GitHub-Lauf für den Wolkenweg-Code: `37366707233` auf `251c157772a22d0d442a375462ea408d3c06faea`: beim letzten Abruf **QUEUED**, daher noch kein PASS/FAIL behauptet.
+- Fold-Gerätetest, reales Android-Gerät und FPS-Messung: **SKIP** – nicht ausgeführt.
+- `lumo-lernen` pinnt den neuen Stand noch nicht: PR-#197-Branch `chatgpt/fold-resize-fix-2026-10-05` steht auf Godot `a369da2dc208fcd9d5451c7007d8b1f9e7bf52a1`; Test-APK-Branch `chatgpt/lumo-test-apk-2026-10-05` auf `2ba65940eb250e7fac5a4bbaccdc6d730daed307`. Vor einer neuen APK muss der freigegebene PR-#18-SHA bewusst aktualisiert und die Provenienz erneut geprüft werden.
+
+### Nächster Schritt
+
+Erst den Wolkenweg-Lauf abschließen und einen reproduzierbaren Fehler gegebenenfalls minimal korrigieren. Danach ist der nächste unbeanspruchte Produktblock die Übertragung des bewährten Detail-/Setpiece-Prinzips auf die übrigen Streckenwelten, weiterhin weltweise und begrenzt statt als großer gleichzeitiger Umbau.
