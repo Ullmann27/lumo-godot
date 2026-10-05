@@ -60,3 +60,51 @@ Der gezielte Engine-Test protokolliert den Touch-Signalpfad, die angenommene Boo
 - Für die Godot-Commits dieser Etappe war zum Dokumentationszeitpunkt kein automatischer GitHub-Workflow-Run vorhanden. Die neuen Regressionen sind eingecheckt, aber ein tatsächlicher Godot-Lauf muss noch als PASS/FAIL/SKIP nachgetragen werden.
 - Kein echter Fold-7-Test und keine FPS-Messung ausgeführt.
 - Nächster Produktblock: vollständigen Muster-Streckenabschnitt im bestehenden Opus-Stil ausbauen und danach die zehn Welten skalieren.
+
+
+## Etappe 3 – Himmelsinseln Stage 2 + Mystery Items
+
+- Basis: integrierter Kart-Stand aus PR #17 / `edc47b6`.
+- Arbeitsbranch: `chatgpt/kart-himmelsinseln-stage2-2026-10-05`.
+
+### Direkt umgesetzt
+
+1. **Himmelsinseln verlängert**
+   - nur `bergwelt` wird horizontal um Faktor 1,18 skaliert;
+   - Kurvenradien werden dadurch nicht künstlich enger;
+   - prozedurale Inseln, Brücken, Cave, Ruinen und Deko folgen weiterhin der echten Streckenkurve.
+
+2. **Neues Sternentor-Setpiece**
+   - sieben leuchtende Torbögen nach den Tempelruinen;
+   - Cyan/Violett-Wechsel, Goldsterne, eigener Streckenmarker;
+   - kontinuierliche Fahrbahn, kein Fake-Tunnel und keine erfundene Kollision.
+
+3. **Sicheres Respawn am Sprung**
+   - neue `safe_respawn_distance()`-Regel;
+   - Reset landet nicht im offenen Gap und nicht mitten in der Rampen-Gefahrenzone;
+   - bestehende geordnete Checkpoint-Logik bleibt erhalten.
+
+4. **Mystery-/Zufallsboxen**
+   - fünf sichtbare, leuchtende Item-Boxen pro Runde;
+   - jede Box kann pro Runde einmal eingesammelt werden;
+   - Position 5–6 erhält höhere Boost-Chance als Führende;
+   - vorhandene Items bleiben `boost`, `shield`, `pulse`.
+
+### Regressionen
+
+- `kart_track_contract.gd` schützt:
+  - Himmelsinseln als Long-Form-Kurs (>400 m),
+  - Respawn außerhalb des Sprung-Gaps.
+- `kart_physics_regression.gd` schützt:
+  - fünf Mystery-Boxen,
+  - stärkere Catch-up-Boost-Gewichtung hinten,
+  - unmittelbaren Item-Pickup.
+
+### Noch offen
+
+- tatsächlichen Godot-Prüflauf für diese Etappe ausführen;
+- echte Laufzeit-Screenshots des neuen Sternentors;
+- zweites physisches Sprung-/Alternativrouten-Setpiece;
+- Rivalen sollen Items aktiv taktisch einsetzen;
+- weitere neun Referenzwelten auf denselben Detailstandard skalieren;
+- Fold-7/FPS weiterhin nicht als getestet behaupten.
