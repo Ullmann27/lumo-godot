@@ -651,8 +651,8 @@ func _grand_prix_lane_markings() -> void:
 
 
 func _terraced_cliffs() -> void:
-	# Layered warm rock + green caps reproduce the readable, stacked landscape language of
-	# premium family racers while keeping the geometry entirely original to Lumo.
+	# Layered warm rock + green organic caps. Avoid boxy "wall blocks": the repeated pieces use
+	# the existing low-poly rock/crown meshes so the silhouette reads as sculpted terrain.
 	var sections: Array=[
 		[0.17,-1.0,18.0],
 		[0.31,1.0,15.0],
@@ -671,34 +671,42 @@ func _terraced_cliffs() -> void:
 			var d: float=centre_d-span*0.5+float(slice)*span/6.0
 			var basis: Basis=frame(d)
 			var road_y: float=position_at(d).y
-			var outward: float=9.4+sin(float(slice)*0.8)*1.3
+			var outward: float=10.3+sin(float(slice)*0.8)*1.1
 			for tier in range(3):
-				var height: float=2.1+float(tier)*2.25
-				var lateral: float=outward+float(tier)*2.25
+				var lateral: float=outward+float(tier)*2.8
 				var at: Vector3=position_at(d,side*lateral)
-				at.y=road_y+height*0.5-0.5
+				at.y=road_y+1.25+float(tier)*2.15
+				for chunk in range(2):
+					var chunk_offset: Vector3=(
+						basis.z*(float(chunk)-0.5)*1.55
+						+basis.x*side*sin(float(slice+chunk))*0.55
+					)
+					_prop(
+						"rock",
+						at+chunk_offset,
+						Vector3(
+							3.2+float(tier)*0.35,
+							2.6+float(tier)*0.55,
+							3.4+float(chunk)*0.45
+						),
+						rock_colors[mini(tier,rock_colors.size()-1)],
+						Basis(Vector3.UP,float(slice*2+tier+chunk)*0.29)
+					)
 				_prop(
-					"box",
-					at,
-					Vector3(3.7, height, 3.9),
-					rock_colors[mini(tier,rock_colors.size()-1)],
-					basis
-				)
-				_prop(
-					"box",
-					at+Vector3.UP*(height*0.5+0.22),
-					Vector3(3.95,0.38,4.15),
-					Color("65bd4f").lightened(float(tier)*0.025),
+					"crown",
+					at+Vector3.UP*(1.55+float(tier)*0.36),
+					Vector3(3.9+float(tier)*0.32,0.62,3.7),
+					Color("5db64e").lightened(float(tier)*0.035),
 					basis
 				)
 			if slice%2==0:
-				var tree_at: Vector3=position_at(d,side*(outward+6.0))
-				tree_at.y=road_y+6.2
-				_prop("cylinder",tree_at,Vector3(0.34,4.0,0.34),Color("795039"))
+				var tree_at: Vector3=position_at(d,side*(outward+7.4))
+				tree_at.y=road_y+6.0
+				_prop("cylinder",tree_at,Vector3(0.30,3.8,0.30),Color("795039"))
 				_prop(
 					"crown",
-					tree_at+Vector3.UP*2.7,
-					Vector3(2.2,1.7,2.0),
+					tree_at+Vector3.UP*2.6,
+					Vector3(2.3,1.7,2.1),
 					Color("3f9b52").lightened(float(slice%3)*0.05)
 				)
 
