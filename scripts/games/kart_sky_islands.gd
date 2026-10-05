@@ -21,8 +21,8 @@ const SUSPENSION: float = 0.635
 const STAR_GATE: float = 0.865
 ## Second physical setpiece: the left lane climbs onto a short elevated "Wolkenweg" while
 ## the right lane stays on the main deck. Both rejoin before the Sternentor.
-const SPLIT_ROUTE: float = 0.805
-const SPLIT_SPAN: float = 24.0
+const SPLIT_ROUTE: float = 0.800
+const SPLIT_SPAN: float = 22.0
 const SPLIT_RISE: float = 6.0
 const SPLIT_HEIGHT: float = 2.2
 const SPLIT_LEFT_LANE: float = -2.8
