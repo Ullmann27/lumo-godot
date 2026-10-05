@@ -19,6 +19,8 @@ const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
 const PREFERENCES: String = "user://kart_preferences.cfg"
 const BOOST_ACCELERATION_MULTIPLIER: float = 2.0
+const DESIGN_VIEWPORT := Vector2(1280.0, 720.0)
+const PEDAL_PAD_BASE_SIZE := Vector2(440.0, 300.0)
 ## Version 4 drops the removed learning-question state; older saves still resume as plain races.
 const SESSION_VERSION: int = 4
 const SESSION_VERSIONS: Array[int] = [1, 2, 3, 4]
@@ -573,9 +575,10 @@ func _action(text: String, callback: Callable, color: Color, diameter: float) ->
 func _build_pedal_pad() -> Control:
 	var pad := Control.new()
 	pad.name = "PedalPad"
-	pad.custom_minimum_size = Vector2(440, 300)
+	pad.custom_minimum_size = PEDAL_PAD_BASE_SIZE
 	pad.size_flags_vertical = Control.SIZE_SHRINK_END
 	pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pedal_pad = pad
 	gas_button = _action("GAS", func(): pass, Color("7cf29c"), 156)
 	gas_button.name = "GasPedal"
 	gas_button.button_down.connect(func(): gas_held = true)
@@ -604,9 +607,9 @@ func _build_pedal_pad() -> Control:
 		var centre: Vector2 = entry[1]
 		button.set_meta("kart_base_centre", centre)
 		button.set_meta("kart_base_diameter", entry[2])
+		pad.add_child(button)
 		button.size = button.custom_minimum_size
 		button.position = centre - button.custom_minimum_size * 0.5
-		pad.add_child(button)
 	return pad
 
 
@@ -815,7 +818,7 @@ func _apply_responsive_layout() -> void:
 	var available_width: float = maxf(1.0, safe_ui.size.x / ui_scale - margin_dp * 2.0)
 	if compact_portrait:
 		var gap: float = 4.0
-		var stick_size: float = clampf(available_width * 0.32, 76.0, 154.0)
+		var stick_size: float = clampf(available_width * 0.32, 88.0, 154.0)
 		var pad_width: float = maxf(152.0, available_width - stick_size - gap)
 		var pad_height: float = clampf(display_size.y * 0.24, 176.0, 240.0)
 		joystick.custom_minimum_size = Vector2.ONE * stick_size * ui_scale
@@ -1951,6 +1954,24 @@ func _glow_material(color: Color, energy: float = 1.2) -> StandardMaterial3D:
 	return material
 
 
+## Build one chevron arm from a track frame. The arm always converges toward
+## local travel (-basis.z), so visual boost arrows cannot silently point backwards.
+static func _chevron_arm_geometry(track_basis: Basis, side: float) -> Dictionary:
+	var forward := (-track_basis.z).normalized()
+	var right := track_basis.x.normalized()
+	var up := track_basis.y.normalized()
+	var tip := forward * 0.38
+	var tail := -forward * 0.42 + right * side * 0.72
+	var direction := (tip - tail).normalized()
+	var local_z := direction.cross(up).normalized()
+	return {
+		"basis": Basis(direction, up, local_z),
+		"offset": (tip + tail) * 0.5,
+		"direction": direction,
+		"forward": forward,
+	}
+
+
 ## Turbo pad (reference k03): dark plate, three glowing chevrons, orange side lights.
 ## It covers exactly the boost zone checked in _track_events.
 func _turbo_pad(distance_on_track: float) -> void:
@@ -1965,13 +1986,14 @@ func _turbo_pad(distance_on_track: float) -> void:
 		var bar := _box(race_root, bar_at, Vector3(0.18, 0.05, 2.6), Color("ff9a3c"))
 		bar.basis = basis
 		bar.material_override = orange
+	var travel := (-basis.z).normalized()
 	for chevron in range(3):
-		var tip: Vector3 = centre - basis.z * (0.85 - chevron * 0.75) + basis.y * 0.03
+		var anchor: Vector3 = centre + travel * (0.85 - chevron * 0.75) + basis.y * 0.03
 		for arm in [-1.0, 1.0]:
-			var arm_basis: Basis = basis * Basis(Vector3.UP, arm * 0.62)
-			var piece_at: Vector3 = tip + basis.x * arm * 0.55 + basis.z * 0.34
+			var geometry: Dictionary = _chevron_arm_geometry(basis, arm)
+			var piece_at: Vector3 = anchor + geometry.offset
 			var piece := _box(race_root, piece_at, Vector3(1.3, 0.04, 0.2), Color("4fe6ff"))
-			piece.basis = arm_basis
+			piece.basis = geometry.basis
 			piece.material_override = cyan
 
 

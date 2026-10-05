@@ -76,6 +76,19 @@ func _assert_race_layout(pixels: Vector2i) -> void:
 		)
 
 
+func _physical_size(control: Control) -> Vector2:
+	return control.get_global_rect().size * Vector2(root.size) / root.get_visible_rect().size
+
+
+func _assert_race_controls_fit() -> void:
+	var safe_rect: Rect2 = game.safe_ui.get_global_rect()
+	for control in [game.joystick, game.pedal_pad, game.gas_button, game.brake_button, game.boost_button, game.item_button]:
+		_inside(control, safe_rect)
+	var joystick_pixels: Vector2 = _physical_size(game.joystick)
+	assert(joystick_pixels.x >= 88.0 and joystick_pixels.y >= 88.0)
+	assert(game.camera.fov >= 40.0 and game.camera.fov <= 110.0)
+
+
 func _tap(control: Control) -> void:
 	# Window injects physical pixels and transforms them into its scaled canvas,
 	# matching native touchscreen delivery on the 800x480 display.
@@ -133,6 +146,7 @@ func _run() -> void:
 	await _settle()
 	game._apply_responsive_layout()
 	await _settle()
+	_assert_race_controls_fit()
 	root.propagate_notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
 	root.go_back_requested.emit()
 	await _settle()
@@ -173,10 +187,12 @@ func _run() -> void:
 	var fold_matrix: Array[Vector2i] = [
 		Vector2i(320, 720), Vector2i(360, 800), Vector2i(412, 915), Vector2i(600, 960),
 		Vector2i(768, 1024), Vector2i(840, 720), Vector2i(1024, 768), Vector2i(1280, 800),
-		Vector2i(904, 2316), Vector2i(1812, 2176), Vector2i(800, 480)
+		Vector2i(904, 2316), Vector2i(1812, 2176), Vector2i(2176, 1812),
+		Vector2i(2208, 1840), Vector2i(800, 480)
 	]
 	for pixels in fold_matrix:
 		await _assert_race_layout(pixels)
+		_assert_race_controls_fit()
 		for button in [games, learn]:
 			_inside(button, game.modal.get_global_rect())
 			_inside(button, game.safe_ui.get_global_rect())

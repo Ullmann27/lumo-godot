@@ -240,6 +240,47 @@ func _test_boost_gates_and_restart() -> void:
 	assert(game.boosts == 1 and game.boost_time == 0, "Restart resets charges and active boost")
 
 
+func _track_frame(forward: Vector3, normal: Vector3, mirrored: bool = false) -> Basis:
+	var tangent: Vector3 = forward.normalized()
+	var up: Vector3 = (normal - tangent * normal.dot(tangent)).normalized()
+	var right: Vector3 = tangent.cross(up).normalized()
+	if mirrored:
+		right = -right
+	return Basis(right, up, -tangent)
+
+
+func _test_boost_chevrons_follow_travel() -> void:
+	var samples: Array[Dictionary] = [
+		{"name": "straight", "basis": Basis.IDENTITY},
+		{"name": "curve", "basis": _track_frame(Vector3(1, 0, -1), Vector3.UP)},
+		{"name": "sloped", "basis": _track_frame(Vector3(0.8, 0.5, -0.2), Vector3.UP)},
+		{
+			"name": "mirrored",
+			"basis": _track_frame(Vector3(0.8, 0.5, -0.2), Vector3.UP, true)
+		},
+		{"name": "vertical", "basis": _track_frame(Vector3.UP, Vector3.RIGHT)}
+	]
+	for sample in samples:
+		var basis: Basis = sample.basis
+		var forward: Vector3 = (-basis.z).normalized()
+		var right: Vector3 = basis.x.normalized()
+		var left_arm: Dictionary = game._chevron_arm_geometry(basis, -1.0)
+		var right_arm: Dictionary = game._chevron_arm_geometry(basis, 1.0)
+		for geometry in [left_arm, right_arm]:
+			assert(
+				Vector3(geometry.direction).dot(forward) > 0.45,
+				"%s chevron arm must converge in local travel direction" % sample.name
+			)
+			assert(
+				absf(Vector3(geometry.direction).dot(Vector3(basis.y))) < 0.001,
+				"%s chevron arm stays on the track plane" % sample.name
+			)
+		assert(
+			Vector3(left_arm.offset).dot(right) < Vector3(right_arm.offset).dot(right),
+			"%s chevron arms stay mirrored left/right" % sample.name
+		)
+
+
 func _test_boost_pad_and_airborne() -> void:
 	await _start("training", "sonnenhafen")
 	_face(game._heading(0), 5.0)
@@ -277,6 +318,7 @@ func _run() -> void:
 	await _test_boost_response()
 	await _test_boost_gates_and_restart()
 	await _test_boost_pad_and_airborne()
+	await _test_boost_chevrons_follow_travel()
 	await _test_pedals()
 	game.abandoned = true
 	game.queue_free()
@@ -286,7 +328,7 @@ func _run() -> void:
 		(
 			"[KartPhysics] PASS: rail walls on four courses at full turbo, sliding contact, "
 			+ "blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, "
-			+ "GAS/BREMSE pedals with reverse and an on-screen pad"
+			+ "GAS/BREMSE pedals with reverse, on-screen pad and forward-facing boost chevrons"
 		)
 	)
 	# The audio mix thread releases the course music late.
