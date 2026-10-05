@@ -300,10 +300,10 @@ func _lighting() -> void:
 	sky.sky_material=atmosphere
 	environment.sky=sky
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color=Color("d9ebff") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
-	environment.ambient_light_energy=0.36 if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
+	environment.ambient_light_color=Color("c8e0f4") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
+	environment.ambient_light_energy=0.28 if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
 	environment.tonemap_mode=Environment.TONE_MAPPER_FILMIC if track_id=="sonnenhafen" else Environment.TONE_MAPPER_LINEAR
-	environment.tonemap_exposure=1.05 if track_id=="sonnenhafen" else 0.9
+	environment.tonemap_exposure=0.94 if track_id=="sonnenhafen" else 0.9
 	environment.fog_enabled=true
 	environment.fog_light_color=definition.fog
 	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.003)
@@ -314,7 +314,7 @@ func _lighting() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees=Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0)
 	sun.light_color=definition.sun
-	sun.light_energy=0.98 if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42)
+	sun.light_energy=0.84 if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42)
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -389,10 +389,10 @@ func _terrain() -> void:
 	if track_id=="sonnenhafen":
 		var stylized := ShaderMaterial.new()
 		stylized.shader=preload("res://assets/shaders/kart_stylized_vertex_tint.gdshader")
-		stylized.set_shader_parameter("top_tint",Color("f6ffdf"))
-		stylized.set_shader_parameter("side_tint",Color("a4d577"))
-		stylized.set_shader_parameter("bottom_tint",Color("7a9a72"))
-		stylized.set_shader_parameter("overall_tint",Color("f3ffd9"))
+		stylized.set_shader_parameter("top_tint",Color("e8f4cf"))
+		stylized.set_shader_parameter("side_tint",Color("91bd72"))
+		stylized.set_shader_parameter("bottom_tint",Color("657b68"))
+		stylized.set_shader_parameter("overall_tint",Color("e6efcf"))
 		stylized.set_shader_parameter("roughness_value",0.90)
 		land.material_override=stylized
 	else:
@@ -624,9 +624,83 @@ func _grand_prix_dressing() -> void:
 	_start_grandstand(length*0.018,-1.0)
 	_start_grandstand(length*0.055,1.0)
 	_grid_boxes()
+	_grand_prix_lane_markings()
+	_terraced_cliffs()
 	_roadside_chevrons()
 	_roadside_streetlights()
 	_coastal_waterfall_setpiece(length*0.585,1.0)
+
+
+func _grand_prix_lane_markings() -> void:
+	# Two dashed lane separators make the road read as a real circuit from chase-camera height.
+	var dash_spacing: float=5.6
+	var count: int=ceili(length/dash_spacing)
+	for i in range(count):
+		var d: float=float(i)*dash_spacing+1.4
+		if in_gap(d):
+			continue
+		var basis: Basis=frame(d)
+		for lateral in [-1.85,1.85]:
+			_prop(
+				"box",
+				position_at(d,lateral)+basis.y*0.024,
+				Vector3(0.10,0.016,2.15),
+				Color("f4f2df"),
+				basis
+			)
+
+
+func _terraced_cliffs() -> void:
+	# Layered warm rock + green caps reproduce the readable, stacked landscape language of
+	# premium family racers while keeping the geometry entirely original to Lumo.
+	var sections: Array=[
+		[0.17,-1.0,18.0],
+		[0.31,1.0,15.0],
+		[0.47,-1.0,20.0],
+		[0.72,1.0,18.0],
+		[0.86,-1.0,16.0],
+	]
+	var rock_colors: Array[Color]=[
+		Color("c98a4b"),Color("b87943"),Color("a96d3e"),Color("945d38")
+	]
+	for section in sections:
+		var centre_d: float=float(section[0])*length
+		var side: float=float(section[1])
+		var span: float=float(section[2])
+		for slice in range(7):
+			var d: float=centre_d-span*0.5+float(slice)*span/6.0
+			var basis: Basis=frame(d)
+			var road_y: float=position_at(d).y
+			var outward: float=9.4+sin(float(slice)*0.8)*1.3
+			for tier in range(3):
+				var height: float=2.1+float(tier)*2.25
+				var lateral: float=outward+float(tier)*2.25
+				var at: Vector3=position_at(d,side*lateral)
+				at.y=road_y+height*0.5-0.5
+				_prop(
+					"box",
+					at,
+					Vector3(3.7, height, 3.9),
+					rock_colors[mini(tier,rock_colors.size()-1)],
+					basis
+				)
+				_prop(
+					"box",
+					at+Vector3.UP*(height*0.5+0.22),
+					Vector3(3.95,0.38,4.15),
+					Color("65bd4f").lightened(float(tier)*0.025),
+					basis
+				)
+			if slice%2==0:
+				var tree_at: Vector3=position_at(d,side*(outward+6.0))
+				tree_at.y=road_y+6.2
+				_prop("cylinder",tree_at,Vector3(0.34,4.0,0.34),Color("795039"))
+				_prop(
+					"crown",
+					tree_at+Vector3.UP*2.7,
+					Vector3(2.2,1.7,2.0),
+					Color("3f9b52").lightened(float(slice%3)*0.05)
+				)
 
 
 func _grid_boxes() -> void:
