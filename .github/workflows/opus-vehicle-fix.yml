@@ -1,0 +1,66 @@
+name: Verify isolated Opus vehicle repair
+on:
+  workflow_dispatch:
+  push:
+    branches: ['codex/opus-vehicle-regression-fix']
+    paths: ['.github/workflows/opus-vehicle-fix.yml', 'scripts/patches/opus-vehicle.patch']
+permissions:
+  contents: write
+concurrency:
+  group: opus-vehicle-repair
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/codex/opus-vehicle-regression-fix'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/opus-vehicle-regression-fix
+      - name: Apply reviewed two-file repair without touching other source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git apply --check scripts/patches/opus-vehicle.patch
+          git apply --index scripts/patches/opus-vehicle.patch
+          printf '%s\n' 'ab0dd86af8c91a4cda7ab0afa2dfc3168f7d5593c5cf67245bda1a90cf9d6820  scripts/games/kart_vehicle.gd' '73c64fb35a9dc0468b3417557583aad492003f49062ef2a88af45221285f871c  scripts/tests/kart_vehicle_regression.gd' | sha256sum --check
+      - name: Install matching official Godot
+        run: |
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Build isolated geometry fixture
+        run: |
+          mkdir -p "$RUNNER_TEMP/geometry/project/scripts/games" "$RUNNER_TEMP/geometry/project/scripts/tests" proof
+          cp scripts/games/kart_vehicle.gd "$RUNNER_TEMP/geometry/project/scripts/games/"
+          cp scripts/tests/kart_vehicle_regression.gd "$RUNNER_TEMP/geometry/project/scripts/tests/"
+          printf 'config_version=5\n\n[application]\nconfig/name="Isolated Kart Geometry Probe"\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n' > "$RUNNER_TEMP/geometry/project/project.godot"
+      - name: Run exact five-driver geometry regression
+        run: |
+          set -euo pipefail
+          timeout 60s Godot_v4.6.3-stable_linux.x86_64 --headless --path "$RUNNER_TEMP/geometry/project" --editor --import --quit > proof/import.log 2>&1
+          ! grep -E 'SCRIPT ERROR:|Parse Error:' proof/import.log
+          timeout 60s Godot_v4.6.3-stable_linux.x86_64 --headless --path "$RUNNER_TEMP/geometry/project" --script res://scripts/tests/kart_vehicle_regression.gd > proof/vehicle.log 2>&1
+          cat proof/vehicle.log
+          ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' proof/vehicle.log
+          grep -F '[KartVehicle] Geometry/colours, shadows, animations, effects, LOD and hysteresis passed' proof/vehicle.log
+      - name: Save verified source on this branch only
+        run: |
+          set -euo pipefail
+          test "$(git diff --cached --name-only | wc -l)" -eq 2
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(kart): preserve unindexed badges in near/far batches and strengthen regression'
+          git push origin HEAD:refs/heads/codex/opus-vehicle-regression-fix
+          git rev-parse HEAD | tee proof/GODOT-REVISION.txt
+          sha256sum scripts/games/kart_vehicle.gd scripts/tests/kart_vehicle_regression.gd > proof/SOURCE-SHA256.txt
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opus-vehicle-repair-${{ github.run_id }}
+          path: proof/
+          retention-days: 14
+          if-no-files-found: warn
