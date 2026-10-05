@@ -255,6 +255,44 @@ func _test_rival_item_tactics() -> void:
 	assert(game.hit_timer > 0.0, "Rival pulse can pressure the player at close range")
 
 
+func _test_wolkenweg_split_route() -> void:
+	await _start("training", "bergwelt")
+	var midpoint: float = game.track_length * 0.800
+	var raised_height: float = game.world.alternate_route_height(midpoint, -3.0)
+	var main_height: float = game.world.alternate_route_height(midpoint, 3.0)
+	assert(raised_height > 1.5, "Wolkenweg must provide a physical raised left lane")
+	assert(main_height < 0.01, "Main lane must stay on the original road surface")
+
+	game.player.position = game.world.position_at(midpoint, -3.0)
+	game.previous_road_distance = midpoint
+	game.distance = midpoint
+	game.lane = -3.0
+	var raised_road: Dictionary = game.world.sample_road(game.player.position, midpoint)
+	var raised_base: float = float(raised_road.height) + 0.035
+	assert(game._move_vertically(raised_road, midpoint, STEP))
+	assert(
+		game.player.position.y > raised_base + 1.5,
+		"Player kart physically climbs onto the Wolkenweg deck"
+	)
+
+	game.player.position = game.world.position_at(midpoint, 3.0)
+	game.previous_road_distance = midpoint
+	game.distance = midpoint
+	game.lane = 3.0
+	game.airborne = false
+	var main_road: Dictionary = game.world.sample_road(game.player.position, midpoint)
+	var main_base: float = float(main_road.height) + 0.035
+	assert(game._move_vertically(main_road, midpoint, STEP))
+	assert(
+		absf(game.player.position.y - main_base) < 0.05,
+		"Parallel main lane remains physically on the original road"
+	)
+	print(
+		"[KartSplit] PASS: Wolkenweg raised %.2f m while main lane stayed at %.2f m"
+		% [raised_height, main_height]
+	)
+
+
 func _test_boost_gates_and_restart() -> void:
 	await _start("training", "sonnenhafen")
 	game.boosts = 1
@@ -367,6 +405,7 @@ func _run() -> void:
 	await _test_boost_chevrons_follow_travel()
 	await _test_mystery_item_boxes()
 	await _test_rival_item_tactics()
+	await _test_wolkenweg_split_route()
 	await _test_pedals()
 	game.abandoned = true
 	game.queue_free()
@@ -376,7 +415,8 @@ func _run() -> void:
 		(
 			"[KartPhysics] PASS: rail walls on four courses at full turbo, sliding contact, "
 			+ "blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, "
-			+ "GAS/BREMSE pedals with reverse, on-screen pad and forward-facing boost chevrons"
+			+ "GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, "
+			+ "and a physical Wolkenweg split route"
 		)
 	)
 	# The audio mix thread releases the course music late.
