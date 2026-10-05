@@ -19,6 +19,8 @@ const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
 const PREFERENCES: String = "user://kart_preferences.cfg"
 const BOOST_ACCELERATION_MULTIPLIER: float = 2.0
+const DESIGN_VIEWPORT := Vector2(1280.0, 720.0)
+const PEDAL_PAD_BASE_SIZE := Vector2(440.0, 300.0)
 ## Version 4 drops the removed learning-question state; older saves still resume as plain races.
 const SESSION_VERSION: int = 4
 const SESSION_VERSIONS: Array[int] = [1, 2, 3, 4]
@@ -149,6 +151,7 @@ var control_brake: float = 0.0
 var map: Control
 var map_panel: PanelContainer
 var hud_content: MarginContainer
+var pedal_pad: Control
 var saved_session_available: bool = false
 var session_config := ConfigFile.new()
 var graphics_profile: String = "high"
@@ -562,9 +565,10 @@ func _action(text: String, callback: Callable, color: Color, diameter: float) ->
 func _build_pedal_pad() -> Control:
 	var pad := Control.new()
 	pad.name = "PedalPad"
-	pad.custom_minimum_size = Vector2(440, 300)
+	pad.custom_minimum_size = PEDAL_PAD_BASE_SIZE
 	pad.size_flags_vertical = Control.SIZE_SHRINK_END
 	pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pedal_pad = pad
 	gas_button = _action("GAS", func(): pass, Color("7cf29c"), 156)
 	gas_button.name = "GasPedal"
 	gas_button.button_down.connect(func(): gas_held = true)
@@ -578,18 +582,33 @@ func _build_pedal_pad() -> Control:
 	drift_button.button_up.connect(_release_drift)
 	boost_button = _action("BOOST\n◆ 1", _boost, Color("66f7e8"), 112)
 	item_button = _action("ITEM\n◇", _use_item, Color("a7c5ff"), 94)
+	for button in [gas_button, brake_button, drift_button, boost_button, item_button]:
+		pad.add_child(button)
+	_layout_pedal_pad(1.0)
+	return pad
+
+
+func _layout_pedal_pad(scale: float) -> void:
+	if not is_instance_valid(pedal_pad):
+		return
+	var s := clampf(scale, 0.72, 1.12)
+	pedal_pad.custom_minimum_size = PEDAL_PAD_BASE_SIZE * s
 	var layout: Array = [
-		[gas_button, Vector2(361, 222)], [brake_button, Vector2(222, 242)],
-		[drift_button, Vector2(232, 108)], [boost_button, Vector2(370, 66)],
-		[item_button, Vector2(98, 228)]
+		[gas_button, Vector2(361, 222), 156.0],
+		[brake_button, Vector2(222, 242), 116.0],
+		[drift_button, Vector2(232, 108), 106.0],
+		[boost_button, Vector2(370, 66), 112.0],
+		[item_button, Vector2(98, 228), 94.0],
 	]
 	for entry in layout:
 		var button: Control = entry[0]
-		var centre: Vector2 = entry[1]
+		if not is_instance_valid(button):
+			continue
+		var centre: Vector2 = entry[1] * s
+		var diameter: float = float(entry[2]) * s
+		button.custom_minimum_size = Vector2.ONE * diameter
 		button.size = button.custom_minimum_size
 		button.position = centre - button.custom_minimum_size * 0.5
-		pad.add_child(button)
-	return pad
 
 
 func _build_ui() -> void:
@@ -710,8 +729,58 @@ func _build_ui() -> void:
 		pause_navigation.add_child(button)
 	pause_navigation.hide()
 	modal.hide()
-	get_viewport().size_changed.connect(_update_safe_area)
+	get_viewport().size_changed.connect(_on_viewport_resized)
+	_on_viewport_resized()
+
+
+static func _responsive_camera_fov(logical_size: Vector2) -> float:
+	if logical_size.x <= 0.0 or logical_size.y <= 0.0:
+		return 68.0
+	var aspect: float = logical_size.x / logical_size.y
+	return clampf(68.0 + ((16.0 / 9.0) - aspect) * 6.0, 64.0, 72.0)
+
+
+func _responsive_control_scale(logical_size: Vector2) -> float:
+	if logical_size.x <= 0.0 or logical_size.y <= 0.0:
+		return 1.0
+	return clampf(logical_size.y / DESIGN_VIEWPORT.y, 0.78, 1.12)
+
+
+func _apply_responsive_layout() -> void:
+	if not is_instance_valid(safe_ui):
+		return
+	var logical_size: Vector2 = get_viewport().get_visible_rect().size
+	var scale := _responsive_control_scale(logical_size)
+	if is_instance_valid(joystick):
+		joystick.custom_minimum_size = Vector2.ONE * 200.0 * scale
+	_layout_pedal_pad(scale)
+	if is_instance_valid(map_panel):
+		var map_width := clampf(188.0 * scale, 150.0, 220.0)
+		var map_height := clampf(156.0 * scale, 120.0, 178.0)
+		map_panel.offset_left = -map_width - 22.0 * scale
+		map_panel.offset_right = -22.0 * scale
+		map_panel.offset_top = 104.0 * scale
+		map_panel.offset_bottom = map_panel.offset_top + map_height
+		if is_instance_valid(map):
+			map.custom_minimum_size = Vector2(
+				maxf(120.0, map_width - 28.0 * scale),
+				maxf(96.0, map_height - 28.0 * scale)
+			)
+	if is_instance_valid(modal):
+		var half_width := clampf(logical_size.x * 0.24, 260.0, 360.0)
+		var half_height := clampf(logical_size.y * 0.36, 220.0, 285.0)
+		modal.offset_left = -half_width
+		modal.offset_right = half_width
+		modal.offset_top = -half_height
+		modal.offset_bottom = half_height
+	if is_instance_valid(camera):
+		var base_fov := _responsive_camera_fov(logical_size)
+		camera.fov = base_fov + (8.0 if boost_time > 0.0 and not reduced_motion and not paused else 0.0)
+
+
+func _on_viewport_resized() -> void:
 	_update_safe_area()
+	_apply_responsive_layout()
 
 
 static func _scaled_safe_insets(
@@ -1271,7 +1340,10 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 	var target: Vector3 = player.position + ahead * 7.0 + Vector3.UP * 1.2
 	camera.position = desired if snap else camera.position.lerp(desired, minf(1, delta * 5.5))
 	camera.look_at(target)
-	var target_fov: float = 68 if reduced_motion else (76 if boost_time > 0 and not paused else 68)
+	var base_fov := _responsive_camera_fov(get_viewport().get_visible_rect().size)
+	var target_fov: float = (
+		base_fov if reduced_motion else (base_fov + 8.0 if boost_time > 0 and not paused else base_fov)
+	)
 	camera.fov = lerpf(camera.fov, target_fov, minf(1, delta * 3))
 
 
