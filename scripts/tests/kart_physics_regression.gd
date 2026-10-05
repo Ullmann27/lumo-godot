@@ -209,6 +209,20 @@ func _test_boost_response() -> void:
 	game.boost_button._release()
 
 
+func _test_mystery_item_boxes() -> void:
+	await _start("training", "bergwelt")
+	assert(game.item_boxes.size() == 5, "Race course exposes five mystery item boxes")
+	var leader_pool: Array[String] = game._item_pool_for_place(1)
+	var comeback_pool: Array[String] = game._item_pool_for_place(6)
+	assert(leader_pool.count("boost") < comeback_pool.count("boost"))
+	assert(comeback_pool.count("boost") >= 3, "Back positions receive stronger catch-up odds")
+	game.item = ""
+	game.player.position = game.item_boxes[0].position
+	game._track_events()
+	assert(not game.item.is_empty(), "Touching a mystery box grants an item immediately")
+	assert(game.item_box_collected.has(0), "Collected mystery box stays hidden for the current lap")
+
+
 func _test_boost_gates_and_restart() -> void:
 	await _start("training", "sonnenhafen")
 	game.boosts = 1
@@ -319,6 +333,7 @@ func _run() -> void:
 	await _test_boost_gates_and_restart()
 	await _test_boost_pad_and_airborne()
 	await _test_boost_chevrons_follow_travel()
+	await _test_mystery_item_boxes()
 	await _test_pedals()
 	game.abandoned = true
 	game.queue_free()
