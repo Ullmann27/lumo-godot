@@ -720,6 +720,18 @@ func _paint_mesh(mesh: Mesh, color: Color) -> ArrayMesh:
 	colors.resize(arrays[Mesh.ARRAY_VERTEX].size())
 	colors.fill(color)
 	arrays[Mesh.ARRAY_COLOR] = colors
+	# SurfaceTool.append_from() does not synthesize indices for unindexed
+	# triangles. Mixed batches would silently omit those pieces (star badges)
+	# once another source contributes an index buffer. Preserve every vertex
+	# and the original winding by indexing unindexed triangles explicitly.
+	var indices: PackedInt32Array = (
+		arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
+	)
+	if indices.is_empty():
+		indices.resize(colors.size())
+		for index in range(indices.size()):
+			indices[index] = index
+		arrays[Mesh.ARRAY_INDEX] = indices
 	var painted := ArrayMesh.new()
 	painted.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	return painted

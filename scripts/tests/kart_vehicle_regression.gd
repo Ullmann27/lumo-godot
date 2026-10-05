@@ -22,7 +22,19 @@ class ReferenceKart:
 					tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 					tool.set_material(material)
 					surfaces[key] = tool
-				surfaces[key].append_from(child.mesh, 0, child.transform)
+				# Independent reference: enumerate triangle corners explicitly,
+				# including authored meshes that have no index array.
+				var arrays: Array = child.mesh.surface_get_arrays(0)
+				var source_indices: PackedInt32Array = (
+					arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
+				)
+				if source_indices.is_empty():
+					for index in range(arrays[Mesh.ARRAY_VERTEX].size()):
+						source_indices.append(index)
+					arrays[Mesh.ARRAY_INDEX] = source_indices
+				var indexed := ArrayMesh.new()
+				indexed.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+				surfaces[key].append_from(indexed, 0, child.transform)
 				child.free()
 			elif child is Node3D:
 				_merge_static(child)
@@ -33,6 +45,13 @@ class ReferenceKart:
 			var node := MeshInstance3D.new()
 			node.mesh = mesh
 			parent.add_child(node)
+
+
+class AuthoredKart:
+	extends ReferenceKart
+	func _merge_static(_parent: Node3D) -> void:
+		# Count actual authored triangles independently of either batching path.
+		pass
 
 
 func _initialize() -> void:
@@ -89,6 +108,23 @@ func _summary(kart: LumoRaceKart) -> Dictionary:
 	return result
 
 
+func _authored_far_index_count(node: Node3D, kart: LumoRaceKart) -> int:
+	var count: int = 0
+	for child in node.get_children():
+		if child is MeshInstance3D:
+			if kart.flames.has(child) or kart.sparks.has(child):
+				continue
+			var geometry: Mesh = kart._far_geometry(child.mesh)
+			var arrays: Array = geometry.surface_get_arrays(0)
+			var indices: PackedInt32Array = (
+				arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
+			)
+			count += indices.size() if not indices.is_empty() else arrays[Mesh.ARRAY_VERTEX].size()
+		elif child is Node3D:
+			count += _authored_far_index_count(child, kart)
+	return count
+
+
 func _run() -> void:
 	var camera := Camera3D.new()
 	root.add_child(camera)
@@ -104,8 +140,15 @@ func _run() -> void:
 		kart.configure(kind, Color("7760ef"))
 		root.add_child(kart)
 		kart.set_process(false)
+		var authored := AuthoredKart.new()
+		authored.configure(kind, Color("7760ef"))
+		root.add_child(authored)
+		authored.set_process(false)
+		var authored_geometry: Dictionary = _summary(authored)
 		var original: Dictionary = _summary(reference)
 		var optimized: Dictionary = _summary(kart)
+		assert(original.triangle_indices == authored_geometry.triangle_indices, "Reference must retain every authored triangle, including unindexed badges")
+		assert(original.vertices == authored_geometry.vertices, "Reference must retain all authored vertices")
 		assert(
 			original.vertices == optimized.vertices,
 			"Full-detail vertex count must remain unchanged"
@@ -133,11 +176,13 @@ func _run() -> void:
 					"Full-detail paints retain their positions within one 8-bit channel step"
 				)
 		assert(
-			optimized.surfaces < original.surfaces * 0.7,
+			optimized.surfaces < original.surfaces * 0.7 and optimized.surfaces <= 64,
 			"Vertex colours must meaningfully reduce near material passes"
 		)
 		assert(kart.far_mesh.mesh.get_surface_count() == 1, "Distant kart draws a single surface")
 		var far_vertices: int = kart.far_mesh.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size()
+		var far_indices: PackedInt32Array = kart.far_mesh.mesh.surface_get_arrays(0)[Mesh.ARRAY_INDEX]
+		assert(far_indices.size() == _authored_far_index_count(authored, authored), "Distant batching must also retain every reduced triangle and badge")
 		assert(
 			far_vertices < optimized.vertices * 0.5,
 			"Distant geometry must be substantially cheaper"
@@ -170,7 +215,7 @@ func _run() -> void:
 		)
 		kart.set_motion(16, 0.5, true, true)
 		var wheel_before: Quaternion = kart.wheel_rotors[0].quaternion
-		kart.animation_time = 4.26
+		kart.animation_time = 0.0
 		kart._process(0.06)
 		assert(not kart.far_detail and not kart.far_mesh.visible)
 		assert(
@@ -178,7 +223,15 @@ func _run() -> void:
 			"Near wheels keep rotating"
 		)
 		assert(absf(kart.wheel_pivots[0].rotation.y) > 0.1, "Near front wheels keep steering")
-		assert(is_equal_approx(kart.eyes[0].scale.y, 0.08), "Near driver keeps blinking")
+		# Test an entire blink cycle rather than the timing of a previous animation.
+		var minimum_eye_open: float = 1.0
+		var maximum_eye_open: float = 0.0
+		for frame in range(500):
+			kart._process(0.01)
+			minimum_eye_open = minf(minimum_eye_open, kart.eyes[0].scale.y)
+			maximum_eye_open = maxf(maximum_eye_open, kart.eyes[0].scale.y)
+			assert(kart.eyes[0].scale.y >= 0.0 and kart.eyes[0].scale.y <= 1.0)
+		assert(minimum_eye_open < 0.15 and maximum_eye_open > 0.99, "Near driver keeps blinking and reopening eyes")
 		assert(absf(kart.head.rotation.y) > 0.001 and absf(kart.steering_wheel.rotation.z) > 0.1)
 		if kart.tail:
 			assert(absf(kart.tail.rotation.y) > 0.001, "Near tails keep moving")
@@ -208,10 +261,10 @@ func _run() -> void:
 		)
 		for effect in kart.flames + kart.sparks:
 			assert(effect.visible, "Boost/drift feedback remains visible in distant LOD")
-		camera.position.z = 27
+		camera.position.z = kart.detail_distance - kart.DETAIL_HYSTERESIS * 0.5
 		kart._update_detail(camera)
 		assert(kart.far_detail, "Hysteresis prevents switching every frame at the boundary")
-		camera.position.z = 24
+		camera.position.z = kart.detail_distance - kart.DETAIL_HYSTERESIS - 1.0
 		kart._update_detail(camera)
 		assert(not kart.far_detail)
 		for mesh_node in kart.near_meshes:
@@ -228,12 +281,13 @@ func _run() -> void:
 			assert(not effect.visible, "Stopping clears all effects")
 		print(
 			(
-				"[KartVehicle] %s near_surfaces=%d->%d near_vertices=%d far_vertices=%d far_surfaces=1"
-				% [kind, original.surfaces, optimized.surfaces, optimized.vertices, far_vertices]
+				"[KartVehicle] %s near_surfaces=%d->%d near_vertices=%d far_vertices=%d far_surfaces=1 triangles_preserved=%d"
+				% [kind, original.surfaces, optimized.surfaces, optimized.vertices, far_vertices, optimized.triangle_indices / 3]
 			)
 		)
 		kart.free()
 		reference.free()
+		authored.free()
 	camera.free()
 	print("[KartVehicle] Geometry/colours, shadows, animations, effects, LOD and hysteresis passed")
 	quit(0)
