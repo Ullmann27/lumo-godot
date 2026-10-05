@@ -91,15 +91,15 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p exports/screenshots exports/sky-islands
-          timeout 180s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+          timeout 220s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
             --path . \
             --rendering-method gl_compatibility \
             --audio-driver Dummy \
-            --script res://scripts/tests/kart_world_showcase.gd \
-            -- --track=sonnenhafen \
+            --script res://scripts/tests/kart_sonnenhafen_showcase.gd \
             > "$RUNNER_TEMP/kart-sonnenhafen-capture.log" 2>&1
           cat "$RUNNER_TEMP/kart-sonnenhafen-capture.log"
-          test -s exports/screenshots/world-sonnenhafen.png
+          test -s exports/sonnenhafen/01_start_grid.png
+          test -s exports/sonnenhafen/06_overview.png
           timeout 220s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
             --path . \
             --rendering-method gl_compatibility \
@@ -121,7 +121,7 @@ jobs:
             ${{ runner.temp }}/kart-fold.log
             ${{ runner.temp }}/kart-sonnenhafen-capture.log
             ${{ runner.temp }}/kart-sky-capture.log
-            exports/screenshots/world-sonnenhafen.png
+            exports/sonnenhafen/*.png
             exports/sky-islands/*.png
           if-no-files-found: warn
           retention-days: 14
