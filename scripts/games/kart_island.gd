@@ -18,6 +18,7 @@ const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
 const PREFERENCES: String = "user://kart_preferences.cfg"
+const BOOST_ACCELERATION_MULTIPLIER: float = 2.0
 ## Version 4 drops the removed learning-question state; older saves still resume as plain races.
 const SESSION_VERSION: int = 4
 const SESSION_VERSIONS: Array[int] = [1, 2, 3, 4]
@@ -832,7 +833,8 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		target *= 0.68
 		if difficulty == "gemuetlich":
 			target *= 1.0 - absf(axis) * 0.24
-	if boost_time > 0:
+	var boost_active: bool = boost_time > 0
+	if boost_active:
 		target *= 1.42
 	target *= throttle
 	target *= 1.0 - braking * 0.94
@@ -852,7 +854,9 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 			var correction: float = angle_difference(player_heading, _heading(float(road.distance)))
 			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
 	var acceleration: float = (20.0 if braking > 0.1 else 10.0) * float(kart.accel)
-	if not airborne:
+	if boost_active and target > speed:
+		acceleration *= BOOST_ACCELERATION_MULTIPLIER
+	if not airborne or boost_active:
 		speed = move_toward(speed, target, delta * acceleration)
 	var grip_turn: float = clampf(absf(speed) / 8.0, 0, 1)
 	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * float(kart.turn) * grip_turn

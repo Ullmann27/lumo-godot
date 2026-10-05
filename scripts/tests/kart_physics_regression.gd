@@ -152,6 +152,115 @@ func _test_pedals() -> void:
 	game.auto_gas = true
 
 
+func _test_boost_response() -> void:
+	await _start("training", "sonnenhafen")
+	_face(game._heading(0), 5.0)
+	game.steering = 0.6
+	game._physics_process(STEP)
+	var unboosted_delta: float = game.speed - 5.0
+
+	await _start("training", "sonnenhafen")
+	game._update_hud()
+	game.muted = false
+	game.host_sound_enabled = true
+	game.kart_audio.set_muted(false)
+	_face(game._heading(0), 5.0)
+	game.steering = 0.6
+	var speed_before: float = game.speed
+	var effect_cursor_before: int = int(game.kart_audio.get("_effect_cursor"))
+	var effect_players: Array = game.kart_audio.get("_effects")
+	var boost_audio_player: AudioStreamPlayer = (
+		effect_players[effect_cursor_before] as AudioStreamPlayer
+	)
+	var input_usec: int = Time.get_ticks_usec()
+	game.boost_button._press()
+	var accepted_usec: int = Time.get_ticks_usec()
+	assert(game.boosts == 0 and game.boost_time == 3.2, "Touch accepts and consumes one boost")
+	game._physics_process(STEP)
+	var physics_usec: int = Time.get_ticks_usec()
+	var speed_delta: float = game.speed - speed_before
+	var feedback_visible: bool = game.player.motion_boost
+	var effect_cursor_after: int = int(game.kart_audio.get("_effect_cursor"))
+	assert(
+		speed_delta > unboosted_delta * 1.5,
+		"Boost increases speed on its first physics step (%.3f vs %.3f)" % [speed_delta, unboosted_delta]
+	)
+	assert(feedback_visible, "Boost flame is active on the first physics step")
+	assert(
+		effect_cursor_after == (effect_cursor_before + 1) % effect_players.size(),
+		"Boost sound starts on accepted input"
+	)
+	assert(boost_audio_player.playing, "Boost sound begins on accepted input")
+	assert(absf(game.player_heading - game._heading(0)) > 0.0001, "Steering remains active with boost")
+	print(
+		(
+			"[KartBoost] input→accepted %d µs, accepted→physics %d µs, "
+			+ "speed +%.3f m/s (normal +%.3f), VFX/audio active"
+		)
+		% [accepted_usec - input_usec, physics_usec - accepted_usec, speed_delta, unboosted_delta]
+	)
+	game.boost_button._release()
+	var boost_time_after_first_tap: float = game.boost_time
+	game.boost_button._press()
+	assert(
+		game.boosts == 0 and game.boost_time == boost_time_after_first_tap,
+		"A second tap cannot queue an empty boost"
+	)
+	game.boost_button._release()
+
+
+func _test_boost_gates_and_restart() -> void:
+	await _start("training", "sonnenhafen")
+	game.boosts = 1
+	game.racing = false
+	game.countdown = 1.0
+	game._update_hud()
+	assert(game.boost_button.disabled, "Boost is visibly locked during the countdown")
+	game._boost()
+	assert(game.boosts == 1 and game.boost_time == 0, "Countdown cannot queue a boost")
+	game.racing = true
+	game.paused = true
+	game._update_hud()
+	assert(game.boost_button.disabled, "Boost is visibly locked while paused")
+	game._boost()
+	assert(game.boosts == 1 and game.boost_time == 0, "Pause cannot queue a boost")
+	game.paused = false
+	game._physics_process(STEP)
+	assert(game.boosts == 1 and game.boost_time == 0, "Paused input stays rejected after resume")
+	game.finished = true
+	game._update_hud()
+	assert(game.boost_button.disabled, "Boost is visibly locked after finishing")
+	game._boost()
+	assert(game.boosts == 1 and game.boost_time == 0, "Finished race cannot queue a boost")
+	game.finished = false
+	game.boosts = 0
+	game._boost()
+	assert(game.boost_time == 0, "An empty boost slot cannot activate later")
+	await _start("training", "sonnenhafen")
+	assert(game.boosts == 1 and game.boost_time == 0, "Restart resets charges and active boost")
+
+
+func _test_boost_pad_and_airborne() -> void:
+	await _start("training", "sonnenhafen")
+	_face(game._heading(0), 5.0)
+	game.distance = game.track_length * 0.12 + 1.1
+	game._track_events()
+	assert(game.boost_time >= 1.0, "Crossing a boost pad activates turbo")
+	var pad_speed: float = game.speed
+	game._physics_process(STEP)
+	assert(game.speed > pad_speed, "Boost pad accelerates on its first physics step")
+
+	await _start("training", "sonnenhafen")
+	_face(game._heading(0), 5.0)
+	game.airborne = true
+	game.player.position.y += 2.0
+	game._boost()
+	var airborne_speed: float = game.speed
+	game._physics_process(STEP)
+	assert(game.speed > airborne_speed, "Boost also accelerates during a ramp jump")
+	assert(game.airborne, "Boost does not cancel the jump")
+
+
 func _run() -> void:
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	root.size = Vector2i(1280, 720)
@@ -165,6 +274,9 @@ func _run() -> void:
 	await _test_drift_tiers()
 	await _test_wrong_way()
 	await _test_lap_validity()
+	await _test_boost_response()
+	await _test_boost_gates_and_restart()
+	await _test_boost_pad_and_airborne()
 	await _test_pedals()
 	game.abandoned = true
 	game.queue_free()
