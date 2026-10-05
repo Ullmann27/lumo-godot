@@ -1,0 +1,109 @@
+name: Finalize verified track reference upload
+on:
+  push:
+    branches: [codex/track-reference-import-2026-10-05]
+    paths: [.github/workflows/finalize-track-reference-upload-2026-10-05.yml]
+permissions: {}
+concurrency:
+  group: lumo-track-reference-import-2026-10-05
+  cancel-in-progress: false
+jobs:
+  finalize:
+    if: github.repository == 'Ullmann27/lumo-godot' && github.ref == 'refs/heads/codex/track-reference-import-2026-10-05' && github.actor == 'Ullmann27'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      RELEASE_ID: '403811175'
+      IMPORT_SHA: c40c6eb894d650688f95fd8cbd1c621908acb90e
+      RELEASE_TAG: track-reference-packs-2026-10-05
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Check existing uploaded draft, not a new upload
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Drafts are obtained by release ID: /releases/tags/{tag} returned 404 before publication.
+          gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > "$RUNNER_TEMP/release.json"
+          python3 - <<'PY'
+          import hashlib,json,os,subprocess,zipfile
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          release=json.loads((root/'release.json').read_text())
+          assert release['id']==403811175
+          assert release['tag_name']==os.environ['RELEASE_TAG']
+          assert release['target_commitish']==os.environ['IMPORT_SHA']
+          assert release['draft'] is True and release['prerelease'] is True
+          assets={a['name']:a for a in release['assets']}
+          manifest=json.loads(Path('docs/track_expansion/2026-10-05/IMPORT_MANIFEST.json').read_text())
+          rows={r['name']:r for r in manifest['archives']}
+          extra={'Lumo_Kart_All_Track_Packs_Master.zip','IMPORT_REPORT.json','SHA256SUMS.txt','RELEASE_SHA256SUMS.txt'}
+          assert len(assets)==15 and set(assets)==set(rows)|extra
+          for name,row in rows.items():
+              a=assets[name]
+              assert a['state']=='uploaded' and a['size']==row['bytes'], name
+              assert a['digest']=='sha256:'+row['sha256'], name
+          for name in ('IMPORT_REPORT.json','SHA256SUMS.txt'):
+              data=Path('docs/track_expansion/2026-10-05',name).read_bytes()
+              assert assets[name]['size']==len(data)
+              assert assets[name]['digest']=='sha256:'+hashlib.sha256(data).hexdigest()
+          def download(name):
+              a=assets[name]
+              path=root/name
+              with path.open('wb') as out:
+                  subprocess.run(['gh','api',f"repos/{os.environ['GITHUB_REPOSITORY']}/releases/assets/{a['id']}",'-H','Accept: application/octet-stream'],check=True,stdout=out)
+              assert path.stat().st_size==a['size'], name
+              h=hashlib.sha256()
+              with path.open('rb') as f:
+                  for b in iter(lambda:f.read(1048576),b''): h.update(b)
+              assert a['digest']=='sha256:'+h.hexdigest(), name
+              return path
+          sums=download('RELEASE_SHA256SUMS.txt')
+          listed={line.split('  ',1)[1]:line.split('  ',1)[0] for line in sums.read_text().splitlines()}
+          assert set(listed)==set(assets)-{'RELEASE_SHA256SUMS.txt'}
+          for name,sha in listed.items(): assert assets[name]['digest']=='sha256:'+sha, name
+          master=download('Lumo_Kart_All_Track_Packs_Master.zip')
+          with zipfile.ZipFile(master) as z:
+              assert set(z.namelist())==set(rows)|{'SHA256SUMS.txt','READ_FIRST.txt'}
+              assert z.testzip() is None
+              for name,row in rows.items():
+                  h=hashlib.sha256(); size=0
+                  with z.open(name) as f:
+                      for block in iter(lambda:f.read(1048576),b''):
+                          h.update(block); size+=len(block)
+                  assert size==row['bytes'] and h.hexdigest()==row['sha256'], name
+          result={'release_id':release['id'],'tag':release['tag_name'],'import_sha':os.environ['IMPORT_SHA'],
+                  'asset_count':15,'original_archives_verified':11,'master_download_and_inner_archives_verified':True,
+                  'all_asset_sizes_and_sha256_verified':True,'runtime_changes':False}
+          (root/'verification.json').write_text(json.dumps(result,indent=2)+'\n')
+          print(json.dumps(result),flush=True)
+          PY
+      - name: Publish only the verified reference draft
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/verification.json"
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" \
+            -F draft=false -f make_latest=false > "$RUNNER_TEMP/published.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          r=json.loads((root/'published.json').read_text())
+          assert r['id']==403811175 and not r['draft'] and r['prerelease']
+          assert r['tag_name']=='track-reference-packs-2026-10-05'
+          assert len(r['assets'])==15 and r['published_at']
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('# Reference upload verified and published\n\n'+r['html_url']+'\n\n')
+              f.write((root/'verification.json').read_text())
+          print(r['html_url'])
+          PY
