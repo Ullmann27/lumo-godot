@@ -240,6 +240,23 @@ func _test_boost_gates_and_restart() -> void:
 	assert(game.boosts == 1 and game.boost_time == 0, "Restart resets charges and active boost")
 
 
+func _test_boost_chevrons_follow_travel() -> void:
+	var basis := Basis.IDENTITY
+	for side in [-1.0, 1.0]:
+		var geometry: Dictionary = game._chevron_arm_geometry(basis, side)
+		var direction: Vector3 = geometry.direction
+		var forward: Vector3 = geometry.forward
+		assert(
+			direction.dot(forward) > 0.45,
+			"Boost chevron arm must converge in local travel direction"
+		)
+	assert(
+		game._chevron_arm_geometry(Basis.IDENTITY, -1.0).offset.x
+		< game._chevron_arm_geometry(Basis.IDENTITY, 1.0).offset.x,
+		"Chevron arms stay mirrored left/right around the travel axis"
+	)
+
+
 func _test_boost_pad_and_airborne() -> void:
 	await _start("training", "sonnenhafen")
 	_face(game._heading(0), 5.0)
@@ -277,6 +294,7 @@ func _run() -> void:
 	await _test_boost_response()
 	await _test_boost_gates_and_restart()
 	await _test_boost_pad_and_airborne()
+	await _test_boost_chevrons_follow_travel()
 	await _test_pedals()
 	game.abandoned = true
 	game.queue_free()
@@ -286,7 +304,7 @@ func _run() -> void:
 		(
 			"[KartPhysics] PASS: rail walls on four courses at full turbo, sliding contact, "
 			+ "blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, "
-			+ "GAS/BREMSE pedals with reverse and an on-screen pad"
+			+ "GAS/BREMSE pedals with reverse, on-screen pad and forward-facing boost chevrons"
 		)
 	)
 	# The audio mix thread releases the course music late.
