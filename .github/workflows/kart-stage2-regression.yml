@@ -86,6 +86,29 @@ jobs:
           ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-fold.log"
           grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/kart-fold.log"
 
+      - name: Capture actual Sonnenhafen and Himmelsinseln runtime frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/screenshots exports/sky-islands
+          timeout 180s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . \
+            --rendering-method gl_compatibility \
+            --audio-driver Dummy \
+            --script res://scripts/tests/kart_world_showcase.gd \
+            -- --track=sonnenhafen \
+            > "$RUNNER_TEMP/kart-sonnenhafen-capture.log" 2>&1
+          cat "$RUNNER_TEMP/kart-sonnenhafen-capture.log"
+          test -s exports/screenshots/world-sonnenhafen.png
+          timeout 220s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . \
+            --rendering-method gl_compatibility \
+            --audio-driver Dummy \
+            --script res://scripts/tests/kart_sky_islands_showcase.gd \
+            > "$RUNNER_TEMP/kart-sky-capture.log" 2>&1
+          cat "$RUNNER_TEMP/kart-sky-capture.log"
+          test -s exports/sky-islands/07_overview.png
+
       - name: Upload regression logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -96,5 +119,9 @@ jobs:
             ${{ runner.temp }}/track-contract.log
             ${{ runner.temp }}/kart-physics.log
             ${{ runner.temp }}/kart-fold.log
+            ${{ runner.temp }}/kart-sonnenhafen-capture.log
+            ${{ runner.temp }}/kart-sky-capture.log
+            exports/screenshots/world-sonnenhafen.png
+            exports/sky-islands/*.png
           if-no-files-found: warn
           retention-days: 14
