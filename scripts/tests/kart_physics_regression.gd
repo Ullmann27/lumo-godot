@@ -223,6 +223,38 @@ func _test_mystery_item_boxes() -> void:
 	assert(game.item_box_collected.has(0), "Collected mystery box stays hidden for the current lap")
 
 
+func _test_rival_item_tactics() -> void:
+	await _start("race", "bergwelt")
+	assert(game.opponent_items.size() == 5)
+	assert(game.opponent_boost_times.size() == 5)
+	assert(game.opponent_shield_times.size() == 5)
+
+	game.distance = 20.0
+	game.opponent_distances[0] = 10.0
+	game.opponent_items[0] = "boost"
+	game.opponent_boost_times[0] = 0.0
+	game._update_rival_item_tactics(0, Vector3(0, 0, 12), STEP)
+	assert(game.opponent_items[0].is_empty())
+	assert(game.opponent_boost_times[0] > 0.0, "Trailing rival uses boost to attack the gap")
+
+	game.opponent_items[1] = "shield"
+	game.opponent_shield_times[1] = 0.0
+	game._update_rival_item_tactics(1, Vector3(0, 0, 5), STEP)
+	assert(game.opponent_shield_times[1] > 0.0, "Nearby rival can protect itself")
+
+	game.opponent_stuns[1] = 0.0
+	game.item = "pulse"
+	game.player.position = game.opponents[1].position
+	game._use_item()
+	assert(game.opponent_stuns[1] == 0.0, "Rival shield blocks the player's pulse")
+
+	game.hit_timer = 0.0
+	game.shield_time = 0.0
+	game.opponent_items[2] = "pulse"
+	game._update_rival_item_tactics(2, Vector3(0, 0, 5), STEP)
+	assert(game.hit_timer > 0.0, "Rival pulse can pressure the player at close range")
+
+
 func _test_boost_gates_and_restart() -> void:
 	await _start("training", "sonnenhafen")
 	game.boosts = 1
@@ -334,6 +366,7 @@ func _run() -> void:
 	await _test_boost_pad_and_airborne()
 	await _test_boost_chevrons_follow_travel()
 	await _test_mystery_item_boxes()
+	await _test_rival_item_tactics()
 	await _test_pedals()
 	game.abandoned = true
 	game.queue_free()
