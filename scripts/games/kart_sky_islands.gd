@@ -18,6 +18,7 @@ const TOWN: float = 0.335
 const CAVE: float = 0.555
 const RUINS: float = 0.715
 const SUSPENSION: float = 0.635
+const STAR_GATE: float = 0.865
 ## Jump (k03 shortcut ramp): ramp on the downhill bridge before the crystal-cave island,
 ## then open sky until that island begins. Metres along the course.
 const RAMP_LENGTH: float = 7.0
@@ -192,6 +193,7 @@ static func build(world) -> void:
 	_waterfall_islands(world, rng)
 	_floating_town(world, TOWN * world.length, rng)
 	_temple_ruins(world, RUINS * world.length, rng)
+	_star_gate_run(world, STAR_GATE * world.length)
 	_backdrop(world, rng)
 	_blimp(world)
 
@@ -766,6 +768,63 @@ static func _banner(world, at: Vector3, basis: Basis, text: String) -> void:
 		true
 	)
 	world._sign(at + Vector3.UP * 4.9 + facing.x * 0.9 + facing.z * 0.06, facing, text, 0.012)
+
+
+## Final high-speed setpiece: a sequence of luminous sky arches after the ruins.
+## The roadway stays continuous; this is a visual/reading landmark, not a fake collision tunnel.
+static func _star_gate_run(world, distance: float) -> void:
+	var span: float = 34.0
+	var arches: int = 7
+	for index in range(arches):
+		var d: float = distance - span * 0.5 + float(index) * span / float(arches - 1)
+		var basis: Basis = world.frame(d)
+		var centre: Vector3 = world.position_at(d)
+		var pulse: Color = CYAN if index % 2 == 0 else CRYSTAL_VIOLET
+		for side in [-1.0, 1.0]:
+			var foot: Vector3 = world.position_at(d, side * 6.45)
+			world._prop("box", foot + basis.y * 2.6, Vector3(0.34, 5.2, 0.34), NAVY, basis)
+			world._prop(
+				"box",
+				foot + basis.y * 5.1,
+				Vector3(0.50, 0.20, 0.50),
+				pulse,
+				basis,
+				true
+			)
+		world._prop(
+			"box",
+			centre + basis.y * 5.25,
+			Vector3(13.2, 0.28, 0.34),
+			pulse,
+			basis,
+			true
+		)
+		for star_side in [-1.0, 1.0]:
+			world._prop(
+				"star",
+				centre + basis.y * 6.1 + basis.x * star_side * 3.4,
+				Vector3.ONE * (0.50 if index % 2 == 0 else 0.38),
+				GOLD,
+				basis,
+				true
+			)
+	# A readable entry marker makes the section recognizable at speed.
+	var entry_basis: Basis = world.frame(distance - span * 0.5 - 4.0)
+	var entry_at: Vector3 = world.position_at(distance - span * 0.5 - 4.0, -7.4)
+	world._prop("box", entry_at + Vector3.UP * 1.6, Vector3(0.16, 3.2, 0.16), NAVY, entry_basis)
+	world._prop(
+		"box",
+		entry_at + Vector3.UP * 3.0,
+		Vector3(3.6, 1.25, 0.18),
+		Color("173c8d"),
+		entry_basis
+	)
+	world._sign(
+		entry_at + Vector3.UP * 3.0 + entry_basis.z * 0.1,
+		entry_basis,
+		"STERNENTOR\nVOLLGAS!",
+		0.012
+	)
 
 
 static func _backdrop(world, rng: RandomNumberGenerator) -> void:
