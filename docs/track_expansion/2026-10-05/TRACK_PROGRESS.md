@@ -267,3 +267,49 @@ Erst den Wolkenweg-Lauf abschließen und einen reproduzierbaren Fehler gegebenen
 - PR #18 bleibt offen und mergebar; der Branch ist gegenüber `integration/lumo-kart-opus-tracks-2026-10-05` weiterhin divergiert und liegt 1 Commit hinter der Base.
 - `lumo-lernen` PR #197 pinnt weiterhin `a369da2dc208fcd9d5451c7007d8b1f9e7bf52a1` und damit einen älteren Godot-Stand. Vor einer neuen APK muss der freigegebene PR-#18-SHA bewusst gepinnt und die Provenienz erneut geprüft werden.
 - Nächster begrenzter Welt-Ausbau: `holo_city` oder die nächste noch nicht auf Referenzqualität gebrachte Welt; weiter weltweise statt als gleichzeitiger Zehn-Welten-Umbau.
+
+
+## Etappe 7 – Holo City Referenzqualitäts-Pass
+
+- Agent: ChatGPT, direkt auf PR #18 / `chatgpt/kart-himmelsinseln-stage2-2026-10-05`.
+- Ausgangs-Head: `8ea903e3ef2398bd761ee23039e78c3db89a6808`.
+- Keine offenen Review-Threads oder fremden Claims auf diesem Produktblock.
+
+### Direkt umgesetzt
+
+1. **Stadt dichter und lesbarer**
+   - höherer Tower-Dichtegrad im High-Detail-Profil;
+   - vorhandene Glas-/Neon-Sprache bleibt erhalten;
+   - zusätzliche Fahrbahn-Lichtmarkierungen in Cyan/Violett.
+
+2. **Neue große Setpieces**
+   - `NOVA-LINK` und `AURORA-LINK` als hoch liegende Skybridges;
+   - `LUMO NEXUS` und `STAR CORE` als hohe Landmark-Spire mit Leuchtringen;
+   - Billboard-Canyon und zusätzliche Transit-Beacons;
+   - vorhandene Holo-Gates bleiben erhalten.
+
+3. **Echte Runtime-Abnahme**
+   - neuer `kart_holo_city_showcase.gd` mit sechs reproduzierbaren Kamerapositionen;
+   - Stage-2-Workflow erfasst jetzt Sonnenhafen, Himmelsinseln, Zauberwald und Holo City als echte Godot-Runtime-PNGs.
+
+4. **Vorbereitung auf mehr als vier Strecken**
+   - Sternen-Cup-UI und Ergebnisanzeige beziehen die Rennanzahl jetzt aus `CATALOG.TRACKS.size()`;
+   - Garage erzeugt die Cup-Streckenfolge dynamisch aus dem Track-Katalog;
+   - `kart_modes_regression.gd` skaliert mit der tatsächlichen Track-Anzahl;
+   - eigener CI-Schritt für den dynamischen Cup-Flow ergänzt.
+
+### Validierung
+
+- Workflow `37418699124` auf Head `7e860234fa9d3e0d511f3a4a43fb8487c6de9d5d`: **PASS**.
+  - Static project validator: PASS.
+  - Godot 4.6.3 Import / GDScript- und Shader-Parse: PASS.
+  - Track geometry contract: PASS.
+  - Kart physics regression: PASS.
+  - Kart mode + dynamischer Cup: PASS.
+  - Xvfb-Fold-/Pause-Layoutregression: PASS.
+  - Runtime-Captures aller vier aktuellen Welten: PASS.
+- Physisches Fold-Gerät / Android-FPS: weiterhin **SKIP** – nicht behauptet.
+
+### Nächster unbeanspruchter Produktblock
+
+Die bestehende Vier-Strecken-Basis ist jetzt technisch auf einen größeren Track-Katalog vorbereitet. Nächster Schritt: die fünfte eigenständige Welt aus den vorhandenen Referenzpaketen als vollständige Fahrstrecke anlegen, statt weitere harte Vier-Welten-Annahmen einzubauen. Favorisierte Reihenfolge: Crystal Canyon / Kristall-Canyon zuerst, danach Vulkan, Wüste, Galaxy, Candy/Cloud und Learning-Lab – jeweils weltweise mit Runtime-Capture und Regression.
