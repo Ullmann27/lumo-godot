@@ -73,6 +73,10 @@ jobs:
               exit 1
             fi
             cat "$RUNNER_TEMP/track-pack-$track.log"
+            if grep -E "SCRIPT ERROR:|Parse Error:|ERROR: Failed to load script|Compile Error:" "$RUNNER_TEMP/track-pack-$track.log"; then
+              echo "Godot script/compile error detected for $track"
+              exit 1
+            fi
             test -s "exports/track-pack-views/$track/capture_report.json"
             count=$(find "exports/track-pack-views/$track" -maxdepth 1 -name "*.png" | wc -l)
             test "$count" -eq 48
@@ -135,9 +139,10 @@ jobs:
         with:
           name: Lumo-Kart-Track-Developer-Packs-ALL
           path: |
-            dist/track_developer_packs/Lumo_Kart_Track_Developer_Packs_ALL.zip
+            dist/track_developer_packs/Lumo_Kart_Track_Developer_Packs_*.zip
             dist/track_developer_packs/PACK_INDEX.md
             dist/track_developer_packs/pack_summary.json
+            dist/track_developer_packs/bundle_manifest.json
             dist/track_developer_packs/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 30
