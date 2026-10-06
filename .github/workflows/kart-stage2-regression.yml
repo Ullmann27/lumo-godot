@@ -78,7 +78,7 @@ jobs:
             > "$RUNNER_TEMP/kart-modes.log" 2>&1
           cat "$RUNNER_TEMP/kart-modes.log"
           ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-modes.log"
-          grep -F '[KartModes]' "$RUNNER_TEMP/kart-modes.log"
+          grep -F '[KartModesTests] PASS:' "$RUNNER_TEMP/kart-modes.log"
 
       - name: Fold and pause layout regression
         shell: bash
