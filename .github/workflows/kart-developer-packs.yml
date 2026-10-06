@@ -7,6 +7,7 @@ on:
     paths:
       - "docs/track_expansion/2026-10-06/**"
       - "scripts/games/**"
+      - "scripts/tests/kart_track_pack_48_view_capture.gd"
       - "scenes/games/track_authoring/**"
       - "assets/shaders/kart_*.gdshader"
       - "tools/validate_track_packs.py"
@@ -18,6 +19,7 @@ on:
     paths:
       - "docs/track_expansion/2026-10-06/**"
       - "scripts/games/**"
+      - "scripts/tests/kart_track_pack_48_view_capture.gd"
       - "scenes/games/track_authoring/**"
       - "assets/shaders/kart_*.gdshader"
       - "tools/validate_track_packs.py"
@@ -41,8 +43,38 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+
       - name: Validate structured track packs
         run: python3 tools/validate_track_packs.py
+
+      - name: Render 48 developer views per track
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/track-pack-views
+          for track in sonnenhafen zauberwald bergwelt holo_city; do
+            timeout 480s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+              --path . \
+              --rendering-method gl_compatibility \
+              --audio-driver Dummy \
+              --script res://scripts/tests/kart_track_pack_48_view_capture.gd \
+              -- --track-id="$track" \
+              > "$RUNNER_TEMP/track-pack-$track.log" 2>&1
+            cat "$RUNNER_TEMP/track-pack-$track.log"
+            test -s "exports/track-pack-views/$track/capture_report.json"
+            count=$(find "exports/track-pack-views/$track" -maxdepth 1 -name "*.png" | wc -l)
+            test "$count" -eq 48
+            grep -F "[TrackPackViews] PASS track=$track captured=48" "$RUNNER_TEMP/track-pack-$track.log"
+          done
 
       - name: Build deterministic developer ZIPs
         run: python3 tools/build_track_developer_packs.py
