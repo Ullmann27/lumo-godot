@@ -86,20 +86,20 @@ func _build_runtime_items() -> void:
 	item_root.name = "DeveloperPackMysteryPrisms"
 	world.add_child(item_root)
 
-	var helper = KART_ISLAND.new()
+	var helper: Node = KART_ISLAND.new()
 	helper.set("world", world)
 	helper.set("race_root", item_root)
 	for zone in pack.get("mystery_prism_zones", []):
-		var fraction := float(zone.get("route_fraction", 0.0))
-		var lateral := float(zone.get("lateral_m", 0.0))
+		var fraction: float = float(zone.get("route_fraction", 0.0))
+		var lateral: float = float(zone.get("lateral_m", 0.0))
 		helper.call("_item_box", fraction * world.length, lateral)
 
 
 func _compute_route_bounds() -> void:
-	var minimum := Vector3(INF, INF, INF)
-	var maximum := Vector3(-INF, -INF, -INF)
+	var minimum: Vector3 = Vector3(INF, INF, INF)
+	var maximum: Vector3 = Vector3(-INF, -INF, -INF)
 	for i in range(128):
-		var d := world.length * float(i) / 128.0
+		var d: float = float(world.length) * float(i) / 128.0
 		var p: Vector3 = world.position_at(d)
 		minimum.x = min(minimum.x, p.x)
 		minimum.y = min(minimum.y, p.y)
@@ -116,8 +116,8 @@ func _build_debug_overlays() -> void:
 	ai_debug_root.name = "AIRacingLineDebug"
 	world.add_child(ai_debug_root)
 	for anchor in pack.get("ai_racing_line", []):
-		var d := float(anchor.get("route_fraction", 0.0)) * world.length
-		var lateral := float(anchor.get("lateral_m", 0.0))
+		var d: float = float(anchor.get("route_fraction", 0.0)) * float(world.length)
+		var lateral: float = float(anchor.get("lateral_m", 0.0))
 		var p: Vector3 = world.position_at(d) + world.frame(d) * Vector3(lateral, 1.0, 0.0)
 		_add_sphere(ai_debug_root, p, 0.85, Color("ffd84d"))
 
@@ -125,7 +125,7 @@ func _build_debug_overlays() -> void:
 	collision_debug_root.name = "CollisionGuideDebug"
 	world.add_child(collision_debug_root)
 	for i in range(48):
-		var d := world.length * float(i) / 48.0
+		var d: float = float(world.length) * float(i) / 48.0
 		for lateral in [-6.05, 6.05]:
 			var rail_p: Vector3 = world.position_at(d) + world.frame(d) * Vector3(lateral, 0.5, 0.0)
 			_add_box(collision_debug_root, rail_p, Vector3(0.35, 1.0, 1.8), Color("31d8ff"))
@@ -133,13 +133,13 @@ func _build_debug_overlays() -> void:
 			var wall_p: Vector3 = world.position_at(d) + world.frame(d) * Vector3(lateral, 0.85, 0.0)
 			_add_box(collision_debug_root, wall_p, Vector3(0.28, 1.7, 1.5), Color("ff5a6e"))
 	for checkpoint in pack.get("checkpoints", []):
-		var d := float(checkpoint.get("route_fraction", 0.0)) * world.length
+		var d: float = float(checkpoint.get("route_fraction", 0.0)) * float(world.length)
 		_add_box(collision_debug_root, world.position_at(d) + Vector3.UP * 2.4, Vector3(0.8, 4.8, 0.8), Color("5dff91"))
 
 	shortcut_debug_root = Node3D.new()
 	shortcut_debug_root.name = "ShortcutAnchorDebug"
 	world.add_child(shortcut_debug_root)
-	var shortcut_fraction := _shortcut_fraction()
+	var shortcut_fraction: float = _shortcut_fraction()
 	_add_sphere(
 		shortcut_debug_root,
 		world.position_at(shortcut_fraction * world.length) + Vector3.UP * 2.4,
@@ -153,8 +153,8 @@ func _build_debug_overlays() -> void:
 
 
 func _add_sphere(parent: Node3D, position: Vector3, radius: float, color: Color) -> void:
-	var instance := MeshInstance3D.new()
-	var mesh := SphereMesh.new()
+	var instance: MeshInstance3D = MeshInstance3D.new()
+	var mesh: SphereMesh = SphereMesh.new()
 	mesh.radius = radius
 	mesh.height = radius * 2.0
 	instance.mesh = mesh
@@ -164,8 +164,8 @@ func _add_sphere(parent: Node3D, position: Vector3, radius: float, color: Color)
 
 
 func _add_box(parent: Node3D, position: Vector3, size: Vector3, color: Color) -> void:
-	var instance := MeshInstance3D.new()
-	var mesh := BoxMesh.new()
+	var instance: MeshInstance3D = MeshInstance3D.new()
+	var mesh: BoxMesh = BoxMesh.new()
 	mesh.size = size
 	instance.mesh = mesh
 	instance.position = position
@@ -174,7 +174,7 @@ func _add_box(parent: Node3D, position: Vector3, size: Vector3, color: Color) ->
 
 
 func _debug_material(color: Color) -> StandardMaterial3D:
-	var material := StandardMaterial3D.new()
+	var material: StandardMaterial3D = StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.albedo_color = color
 	material.emission_enabled = true
@@ -191,11 +191,11 @@ func _build_loop_preview() -> void:
 	loop_root.set_meta("requires_inverted_physics_contract", true)
 	world.add_child(loop_root)
 
-	var vertices := PackedVector3Array()
-	var indices := PackedInt32Array()
+	var vertices: PackedVector3Array = PackedVector3Array()
+	var indices: PackedInt32Array = PackedInt32Array()
 	for i in range(LOOP_SEGMENTS + 1):
-		var theta := -PI * 0.5 + TAU * float(i) / float(LOOP_SEGMENTS)
-		var center := Vector3(
+		var theta: float = -PI * 0.5 + TAU * float(i) / float(LOOP_SEGMENTS)
+		var center: Vector3 = Vector3(
 			0.0,
 			LOOP_RADIUS_M + LOOP_RADIUS_M * sin(theta),
 			-LOOP_RADIUS_M * cos(theta)
@@ -203,10 +203,10 @@ func _build_loop_preview() -> void:
 		vertices.append(center + Vector3(-LOOP_ROAD_WIDTH_M * 0.5, 0.0, 0.0))
 		vertices.append(center + Vector3(LOOP_ROAD_WIDTH_M * 0.5, 0.0, 0.0))
 	for i in range(LOOP_SEGMENTS):
-		var a := i * 2
-		var b := a + 1
-		var c := a + 2
-		var d := a + 3
+		var a: int = i * 2
+		var b: int = a + 1
+		var c: int = a + 2
+		var d: int = a + 3
 		indices.append(a)
 		indices.append(c)
 		indices.append(b)
@@ -218,10 +218,10 @@ func _build_loop_preview() -> void:
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = vertices
 	arrays[Mesh.ARRAY_INDEX] = indices
-	var mesh := ArrayMesh.new()
+	var mesh: ArrayMesh = ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 
-	var instance := MeshInstance3D.new()
+	var instance: MeshInstance3D = MeshInstance3D.new()
 	instance.mesh = mesh
 	instance.material_override = _debug_material(_loop_color())
 	loop_root.add_child(instance)
@@ -243,7 +243,7 @@ func _loop_color() -> Color:
 
 func _place_current_view() -> void:
 	var view: Dictionary = views[capture_index]
-	var kind := str(view.get("kind", ""))
+	var kind: String = str(view.get("kind", ""))
 	var cam: Dictionary = view.get("camera", {})
 
 	camera.projection = Camera3D.PROJECTION_PERSPECTIVE
@@ -290,13 +290,13 @@ func _place_current_view() -> void:
 
 func _place_orbit(view: Dictionary, cam: Dictionary) -> void:
 	kart.visible = false
-	var fraction := _route_fraction(str(view.get("target", "route_fraction:0.500")), 0.5)
-	var target := world.position_at(fraction * world.length)
+	var fraction: float = _route_fraction(str(view.get("target", "route_fraction:0.500")), 0.5)
+	var target: Vector3 = world.position_at(fraction * float(world.length))
 	target.y += float(cam.get("target_height_m", 8.0))
-	var azimuth := deg_to_rad(float(cam.get("azimuth_deg", 0.0)))
-	var elevation := deg_to_rad(float(cam.get("elevation_deg", 30.0)))
-	var distance := float(cam.get("distance_m", 105.0))
-	var direction := Vector3(
+	var azimuth: float = deg_to_rad(float(cam.get("azimuth_deg", 0.0)))
+	var elevation: float = deg_to_rad(float(cam.get("elevation_deg", 30.0)))
+	var distance: float = float(cam.get("distance_m", 105.0))
+	var direction: Vector3 = Vector3(
 		cos(elevation) * sin(azimuth),
 		sin(elevation),
 		cos(elevation) * cos(azimuth)
@@ -306,39 +306,39 @@ func _place_orbit(view: Dictionary, cam: Dictionary) -> void:
 
 
 func _place_driver(view: Dictionary, cam: Dictionary) -> void:
-	var fraction := _route_fraction(str(view.get("target", "route_fraction:0.000")), 0.0)
-	var d := fraction * world.length
+	var fraction: float = _route_fraction(str(view.get("target", "route_fraction:0.000")), 0.0)
+	var d: float = fraction * float(world.length)
 	kart.transform = world.reset_transform(d, 0.0)
-	var distance := float(cam.get("distance_m", 9.0))
-	var elevation := deg_to_rad(float(cam.get("elevation_deg", 18.0)))
-	var local_offset := Vector3(0.0, 1.8 + sin(elevation) * distance, cos(elevation) * distance)
+	var distance: float = float(cam.get("distance_m", 9.0))
+	var elevation: float = deg_to_rad(float(cam.get("elevation_deg", 18.0)))
+	var local_offset: Vector3 = Vector3(0.0, 1.8 + sin(elevation) * distance, cos(elevation) * distance)
 	camera.position = kart.position + world.frame(d) * local_offset
 	camera.look_at(world.position_at(d + 16.0) + Vector3.UP * 1.5, Vector3.UP)
 
 
 func _place_signature(view: Dictionary, cam: Dictionary) -> void:
-	var setpiece_id := str(view.get("target", "")).trim_prefix("setpiece:")
-	var fraction := _setpiece_fraction(setpiece_id, 0.5)
-	var d := fraction * world.length
-	var target := world.position_at(d) + Vector3.UP * 2.6
-	var distance := float(cam.get("distance_m", 34.0))
-	var elevation := deg_to_rad(float(cam.get("elevation_deg", 24.0)))
-	var side := str(cam.get("side", "front"))
-	var signed_distance := distance if side == "front" else -distance
-	var local_offset := Vector3(0.0, sin(elevation) * distance + 2.0, cos(elevation) * signed_distance)
+	var setpiece_id: String = str(view.get("target", "")).trim_prefix("setpiece:")
+	var fraction: float = _setpiece_fraction(setpiece_id, 0.5)
+	var d: float = fraction * float(world.length)
+	var target: Vector3 = world.position_at(d) + Vector3.UP * 2.6
+	var distance: float = float(cam.get("distance_m", 34.0))
+	var elevation: float = deg_to_rad(float(cam.get("elevation_deg", 24.0)))
+	var side: String = str(cam.get("side", "front"))
+	var signed_distance: float = distance if side == "front" else -distance
+	var local_offset: Vector3 = Vector3(0.0, sin(elevation) * distance + 2.0, cos(elevation) * signed_distance)
 	camera.position = target + world.frame(d) * local_offset
 	camera.look_at(target, Vector3.UP)
 
 
 func _place_loop(view: Dictionary, cam: Dictionary) -> void:
-	var setpiece_id := str(view.get("target", "")).trim_prefix("setpiece:")
-	var fraction := _setpiece_fraction(setpiece_id, 0.72)
-	var d := fraction * world.length
+	var setpiece_id: String = str(view.get("target", "")).trim_prefix("setpiece:")
+	var fraction: float = _setpiece_fraction(setpiece_id, 0.72)
+	var d: float = fraction * float(world.length)
 	loop_root.transform = world.reset_transform(d, 0.0)
 	loop_root.visible = true
-	var target := loop_root.global_position + Vector3.UP * LOOP_RADIUS_M
-	var axis := str(cam.get("axis", "side"))
-	var distance := float(cam.get("distance_m", 54.0))
+	var target: Vector3 = loop_root.global_position + Vector3.UP * LOOP_RADIUS_M
+	var axis: String = str(cam.get("axis", "side"))
+	var distance: float = float(cam.get("distance_m", 54.0))
 	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
 	camera.size = float(cam.get("orthographic_size_m", 58.0))
 	if axis == "top":
@@ -352,25 +352,25 @@ func _place_loop(view: Dictionary, cam: Dictionary) -> void:
 func _place_item_lane(cam: Dictionary) -> void:
 	var zones: Array = pack.get("mystery_prism_zones", [])
 	assert(not zones.is_empty())
-	var fraction := float(zones[0].get("route_fraction", 0.18))
-	var lateral := float(zones[0].get("lateral_m", 0.0))
-	var d := fraction * world.length
+	var fraction: float = float(zones[0].get("route_fraction", 0.18))
+	var lateral: float = float(zones[0].get("lateral_m", 0.0))
+	var d: float = fraction * float(world.length)
 	kart.transform = world.reset_transform(d, lateral)
-	var distance := float(cam.get("distance_m", 12.0))
-	var elevation := deg_to_rad(float(cam.get("elevation_deg", 16.0)))
-	var local_offset := Vector3(0.0, 1.8 + sin(elevation) * distance, cos(elevation) * distance)
+	var distance: float = float(cam.get("distance_m", 12.0))
+	var elevation: float = deg_to_rad(float(cam.get("elevation_deg", 16.0)))
+	var local_offset: Vector3 = Vector3(0.0, 1.8 + sin(elevation) * distance, cos(elevation) * distance)
 	camera.position = kart.position + world.frame(d) * local_offset
 	camera.look_at(world.position_at(d + 20.0) + Vector3.UP * 1.5, Vector3.UP)
 
 
 func _place_shortcut(cam: Dictionary) -> void:
-	var fraction := _shortcut_fraction()
-	var d := fraction * world.length
-	var target := world.position_at(d) + Vector3.UP * 2.2
-	var azimuth := deg_to_rad(float(cam.get("azimuth_deg", 25.0)))
-	var elevation := deg_to_rad(float(cam.get("elevation_deg", 30.0)))
-	var distance := float(cam.get("distance_m", 30.0))
-	var direction := Vector3(
+	var fraction: float = _shortcut_fraction()
+	var d: float = fraction * float(world.length)
+	var target: Vector3 = world.position_at(d) + Vector3.UP * 2.2
+	var azimuth: float = deg_to_rad(float(cam.get("azimuth_deg", 25.0)))
+	var elevation: float = deg_to_rad(float(cam.get("elevation_deg", 30.0)))
+	var distance: float = float(cam.get("distance_m", 30.0))
+	var direction: Vector3 = Vector3(
 		cos(elevation) * sin(azimuth),
 		sin(elevation),
 		cos(elevation) * cos(azimuth)
@@ -382,7 +382,7 @@ func _place_shortcut(cam: Dictionary) -> void:
 func _place_orthographic(axis: String, size_m: float, target: Vector3) -> void:
 	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
 	camera.size = size_m
-	var distance := max(size_m * 0.85, 100.0)
+	var distance: float = maxf(size_m * 0.85, 100.0)
 	match axis:
 		"top":
 			camera.position = target + Vector3.UP * distance
@@ -416,7 +416,7 @@ func _setpiece_fraction(setpiece_id: String, fallback: float) -> float:
 
 func _shortcut_fraction() -> float:
 	for setpiece in pack.get("signature_setpieces", []):
-		var folded := (
+		var folded: String = (
 			str(setpiece.get("id", ""))
 			+ " "
 			+ str(setpiece.get("name", ""))
@@ -445,8 +445,8 @@ func _safe_name(value: String) -> String:
 
 
 func _finish_report() -> void:
-	var report_path := out_dir + "/capture_report.json"
-	var file := FileAccess.open(report_path, FileAccess.WRITE)
+	var report_path: String = out_dir + "/capture_report.json"
+	var file: FileAccess = FileAccess.open(report_path, FileAccess.WRITE)
 	assert(file != null)
 	file.store_string(JSON.stringify(capture_report, "\t"))
 	file.close()
@@ -459,8 +459,8 @@ func _process(_delta: float) -> bool:
 		return false
 
 	var view: Dictionary = views[capture_index]
-	var filename := _safe_name(str(view.get("id", "view_" + str(capture_index)))) + ".png"
-	var image := root.get_texture().get_image()
+	var filename: String = _safe_name(str(view.get("id", "view_" + str(capture_index)))) + ".png"
+	var image: Image = root.get_texture().get_image()
 	assert(image.save_png(out_dir + "/" + filename) == OK)
 	capture_report.append(
 		{
