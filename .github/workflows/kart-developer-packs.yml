@@ -12,6 +12,17 @@ on:
       - "tools/validate_track_packs.py"
       - "tools/build_track_developer_packs.py"
       - ".github/workflows/kart-developer-packs.yml"
+  pull_request:
+    branches:
+      - chatgpt/kart-himmelsinseln-stage2-2026-10-05
+    paths:
+      - "docs/track_expansion/2026-10-06/**"
+      - "scripts/games/**"
+      - "scenes/games/track_authoring/**"
+      - "assets/shaders/kart_*.gdshader"
+      - "tools/validate_track_packs.py"
+      - "tools/build_track_developer_packs.py"
+      - ".github/workflows/kart-developer-packs.yml"
   workflow_dispatch:
 
 permissions:
