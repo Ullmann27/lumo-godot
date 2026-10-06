@@ -1,6 +1,0 @@
-id,name,route_fraction,lateral_m,pickup_radius_m,once_per_lap,core_items,runtime_source
-MP-01,Lumo Mystery Prism 1,0.18,-2.7,2.0,True,"[""boost"", ""shield"", ""pulse""]",kart_island.gd:item_layout + _item_box + _track_events
-MP-02,Lumo Mystery Prism 2,0.34,2.7,2.0,True,"[""boost"", ""shield"", ""pulse""]",kart_island.gd:item_layout + _item_box + _track_events
-MP-03,Lumo Mystery Prism 3,0.53,0.0,2.0,True,"[""boost"", ""shield"", ""pulse""]",kart_island.gd:item_layout + _item_box + _track_events
-MP-04,Lumo Mystery Prism 4,0.69,-2.7,2.0,True,"[""boost"", ""shield"", ""pulse""]",kart_island.gd:item_layout + _item_box + _track_events
-MP-05,Lumo Mystery Prism 5,0.86,2.7,2.0,True,"[""boost"", ""shield"", ""pulse""]",kart_island.gd:item_layout + _item_box + _track_events

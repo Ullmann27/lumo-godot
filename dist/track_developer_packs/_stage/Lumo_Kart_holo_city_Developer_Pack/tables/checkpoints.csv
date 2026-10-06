@@ -1,9 +1,0 @@
-id,route_fraction,respawn,source
-CP-01,0.0,stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt,kart_world.gd:_make_curve + kart_island.gd:_reset_kart
-CP-02,0.125,stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt,kart_world.gd:_make_curve + kart_island.gd:_reset_kart
-CP-03,0.25,stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt,kart_world.gd:_make_curve + kart_island.gd:_reset_kart
-CP-04,0.375,stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt,kart_world.gd:_make_curve + kart_island.gd:_reset_kart
-CP-05,0.5,stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt,kart_world.gd:_make_curve + kart_island.gd:_reset_kart
-CP-06,0.625,stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt,kart_world.gd:_make_curve + kart_island.gd:_reset_kart
-CP-07,0.75,stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt,kart_world.gd:_make_curve + kart_island.gd:_reset_kart
-CP-08,0.875,stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt,kart_world.gd:_make_curve + kart_island.gd:_reset_kart

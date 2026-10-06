@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scripts/games/authoring/sky_halo_loop_authoring.gd" id="1_authoring"]
-
-[node name="SkyHaloLoopAuthoring" type="Node3D"]
-script = ExtResource("1_authoring")
