@@ -6,6 +6,9 @@ on:
       - .github/workflows/kart-stage2-regression.yml
       - assets/shaders/kart_*.gdshader
       - scripts/games/kart_*.gd
+      - scripts/games/authoring/**
+      - scenes/games/track_authoring/**
+      - tools/validate_track_packs.py
       - scripts/tests/kart_*.gd
       - docs/track_expansion/**
   workflow_dispatch:
@@ -36,6 +39,12 @@ jobs:
           set -euo pipefail
           python3 tools/validate_project.py
 
+      - name: Validate structured track developer packs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/validate_track_packs.py
+
       - name: Import project and parse GDScript/shaders
         shell: bash
         run: |
@@ -57,6 +66,17 @@ jobs:
           ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/track-contract.log"
           grep -F '[TrackContract]' "$RUNNER_TEMP/track-contract.log"
           grep -F 'bergwelt' "$RUNNER_TEMP/track-contract.log"
+
+      - name: Sky Halo authoring safety contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script res://scripts/tests/kart_sky_halo_authoring_contract.gd \
+            > "$RUNNER_TEMP/sky-halo-contract.log" 2>&1
+          cat "$RUNNER_TEMP/sky-halo-contract.log"
+          ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/sky-halo-contract.log"
+          grep -F '[SkyHaloContract]' "$RUNNER_TEMP/sky-halo-contract.log"
 
       - name: Kart physics regression
         shell: bash
@@ -141,6 +161,17 @@ jobs:
           test -s exports/holo-city/01_nova_link.png
           test -s exports/holo-city/06_overview.png
 
+          mkdir -p exports/sky-halo-authoring
+          timeout 180s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . \
+            --rendering-method gl_compatibility \
+            --audio-driver Dummy \
+            --script res://scripts/tests/kart_sky_halo_authoring_showcase.gd \
+            > "$RUNNER_TEMP/sky-halo-capture.log" 2>&1
+          cat "$RUNNER_TEMP/sky-halo-capture.log"
+          test -s exports/sky-halo-authoring/01_side.png
+          test -s exports/sky-halo-authoring/02_three_quarter.png
+
       - name: Upload regression logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -156,9 +187,12 @@ jobs:
             ${{ runner.temp }}/kart-sky-capture.log
             ${{ runner.temp }}/kart-zauberwald-capture.log
             ${{ runner.temp }}/kart-holo-city-capture.log
+            ${{ runner.temp }}/sky-halo-contract.log
+            ${{ runner.temp }}/sky-halo-capture.log
             exports/sonnenhafen/*.png
             exports/sky-islands/*.png
             exports/zauberwald/*.png
             exports/holo-city/*.png
+            exports/sky-halo-authoring/*.png
           if-no-files-found: warn
           retention-days: 14
