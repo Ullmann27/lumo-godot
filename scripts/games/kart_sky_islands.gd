@@ -390,7 +390,7 @@ static func _road_island(world, span: Vector2, seed: int, rng: RandomNumberGener
 	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	island.material_override = material
 	world.add_child(island)
-	_island_dressing(world, rings, rng)
+	_island_dressing(world, rings, rng, seed)
 
 
 static func _at_height(point: Vector3, height: float) -> Vector3:
@@ -398,7 +398,11 @@ static func _at_height(point: Vector3, height: float) -> Vector3:
 
 
 ## Trees, bushes, rocks, lanterns and hanging rocks on and under a road island.
-static func _island_dressing(world, rings: Array, rng: RandomNumberGenerator) -> void:
+static func _island_dressing(
+	world, rings: Array, rng: RandomNumberGenerator, seed: int
+) -> void:
+	var detail_rng := RandomNumberGenerator.new()
+	detail_rng.seed = seed + 0x51A1
 	for i in range(2, rings.size() - 2, 2):
 		var ring: Array = rings[i]
 		for side in [0, 6]:
@@ -439,26 +443,27 @@ static func _island_dressing(world, rings: Array, rng: RandomNumberGenerator) ->
 					Basis(Vector3.UP, rng.randf() * TAU)
 				)
 			if i % 4 == 0:
-				var cluster_t: float = rng.randf_range(0.68, 0.96)
+				var cluster_t: float = detail_rng.randf_range(0.68, 0.96)
 				var cluster_at: Vector3 = inner.lerp(rim, cluster_t)
 				cluster_at.y = lerpf(inner.y, rim.y, cluster_t) + 0.12
-				if rng.randf() < 0.72:
-					var crystal_color: Color = CRYSTAL_VIOLET if rng.randf() < 0.55 else CYAN
+				if detail_rng.randf() < 0.72:
+					var crystal_color: Color = CRYSTAL_VIOLET if detail_rng.randf() < 0.55 else CYAN
 					world._prop(
 						"crystal",
 						cluster_at,
-						Vector3(0.8, 1.45, 0.8) * rng.randf_range(0.8, 1.35),
+						Vector3(0.8, 1.45, 0.8) * detail_rng.randf_range(0.8, 1.35),
 						crystal_color,
-						Basis(Vector3.UP, rng.randf() * TAU),
+						Basis(Vector3.UP, detail_rng.randf() * TAU),
 						true
 					)
-				if rng.randf() < 0.6:
+				if detail_rng.randf() < 0.6:
 					world._prop(
 						"rock",
-						cluster_at + Vector3(rng.randf_range(-1.3, 1.3), -0.2, rng.randf_range(-1.3, 1.3)),
-						Vector3(1.6, 1.0, 1.5) * rng.randf_range(0.7, 1.15),
+						cluster_at
+						+ Vector3(detail_rng.randf_range(-1.3, 1.3), -0.2, detail_rng.randf_range(-1.3, 1.3)),
+						Vector3(1.6, 1.0, 1.5) * detail_rng.randf_range(0.7, 1.15),
 						ROCK_DARK,
-						Basis(Vector3.UP, rng.randf() * TAU)
+						Basis(Vector3.UP, detail_rng.randf() * TAU)
 					)
 		if i % 6 == 0:
 			var keel: Vector3 = ring[9]
@@ -788,6 +793,8 @@ static func _floating_town(world, distance: float, rng: RandomNumberGenerator) -
 
 static func _temple_ruins(world, distance: float, rng: RandomNumberGenerator) -> void:
 	var basis: Basis = world.frame(distance)
+	var detail_rng := RandomNumberGenerator.new()
+	detail_rng.seed = int(round(distance * 10.0)) + 0x7E4A
 	var outward := Vector3(basis.x.x, 0, basis.x.z).normalized()
 	var ahead := Vector3(-outward.z, 0, outward.x)
 	var ground: float = (
@@ -863,14 +870,18 @@ static func _temple_ruins(world, distance: float, rng: RandomNumberGenerator) ->
 		var side: float = -1.0 if cluster % 2 == 0 else 1.0
 		var at: Vector3 = (
 			base
-			+ ahead * rng.randf_range(-9.0, 9.0)
-			+ outward * side * rng.randf_range(3.0, 6.5)
+			+ ahead * detail_rng.randf_range(-9.0, 9.0)
+			+ outward * side * detail_rng.randf_range(3.0, 6.5)
 		)
-		var rubble_basis := temple_basis.rotated(Vector3.UP, rng.randf_range(-0.3, 0.3))
+		var rubble_basis := temple_basis.rotated(Vector3.UP, detail_rng.randf_range(-0.3, 0.3))
 		world._prop(
 			"box",
-			at + Vector3.UP * rng.randf_range(0.35, 0.8),
-			Vector3(rng.randf_range(1.2, 2.4), rng.randf_range(0.5, 1.2), rng.randf_range(1.0, 2.0)),
+			at + Vector3.UP * detail_rng.randf_range(0.35, 0.8),
+			Vector3(
+				detail_rng.randf_range(1.2, 2.4),
+				detail_rng.randf_range(0.5, 1.2),
+				detail_rng.randf_range(1.0, 2.0)
+			),
 			STONE_DARK if cluster % 3 == 0 else STONE,
 			rubble_basis
 		)
@@ -887,7 +898,7 @@ static func _temple_ruins(world, distance: float, rng: RandomNumberGenerator) ->
 				at - ahead * 0.8,
 				Vector3(1.5, 1.2, 1.4),
 				ROCK,
-				Basis(Vector3.UP, rng.randf() * TAU)
+				Basis(Vector3.UP, detail_rng.randf() * TAU)
 			)
 
 

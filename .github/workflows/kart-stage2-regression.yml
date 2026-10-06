@@ -140,6 +140,8 @@ jobs:
             > "$RUNNER_TEMP/kart-sky-capture.log" 2>&1
           cat "$RUNNER_TEMP/kart-sky-capture.log"
           test -s exports/sky-islands/07_overview.png
+          test -s exports/sky-islands/08_mystery_prisms.png
+          grep -F '[SkyShots] runtime Mystery Prisms=5' "$RUNNER_TEMP/kart-sky-capture.log"
 
           timeout 220s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
             --path . \

@@ -359,10 +359,16 @@ Die bestehende Vier-Strecken-Basis ist jetzt technisch auf einen größeren Trac
 - Die vorhandenen Mystery-Prisms sind auf Himmelsinseln 18 % größer; Item-IDs, Pickup-Radius und Item-Logik bleiben unverändert.
 - Wasserfälle erhalten eine obere Austrittskante, felsige Lippe und kleine Splash-/Mist-Gruppen; Low-Detail rendert eine statt drei Mistkugeln, ohne Wasserfall oder Streckenhinweise auszublenden.
 - Kristallhöhle erhält engere, räumlich gestaffelte Cyan-/Violett-Cluster; Tempelruinen erhalten seitliche Stützen, Trümmer und Moosvegetation außerhalb der Fahrbahn.
-- `kart_sky_islands_showcase.gd` und bestehende Physik-/Track-/Fold-Tests wurden nicht geändert.
+- Der vorhandene Sky-Islands-Capture-Harness rendert die fünf Prisms jetzt über dieselbe `_item_box()`-Runtime-Methode wie das Rennen und enthält einen zusätzlichen vergleichbaren Nahblick. Bestehende Physik-/Track-/Fold-Regressionen bleiben unverändert.
 
 ### Validierung
 
 - Vorheriger Vergleichsstand: Runtime-PNGs aus Workflow `37448549605` auf `45888cfb13b38ddf218936f66c57fa16ef59b89f`.
-- Neue gleichartige Himmelsinseln-Runtime-Captures und Godot-Regressionen: **ausstehend**; Ergebnisse und Ergebnis-SHA werden nach dem aktuellen Workflow-Lauf ergänzt.
+- `python3 tools/validate_project.py`: **PASS**, 117 PASS / 7 optionale WARN / 0 FAIL.
+- `python3 tools/validate_track_packs.py`: **PASS**, alle vier Packs und Sky-Halo-Autoringsperre.
+- Godot **4.6.3** `--headless --editor --import --quit`: **PASS**, keine Script-/Shader-Parsefehler.
+- **PASS** `scripts/tests/kart_track_contract.gd`, `scripts/tests/kart_physics_regression.gd`, `scripts/tests/kart_modes_regression.gd`, `scripts/tests/kart_world_regression.gd`, `scripts/tests/kart_sky_halo_authoring_contract.gd` und `scripts/tests/kart_pause_layout_regression.gd` (Xvfb).
+- **PASS** `scripts/tests/kart_sky_islands_showcase.gd`: acht neue 1280×720 PNGs (`01_start_gate` bis `08_mystery_prisms`), PNG-Chunk-CRC und Bilddaten dekodiert; Harness bestätigt fünf Runtime-Mystery-Prisms.
+- Lokales `gdlint`/`gdformat`: **SKIP**, nicht installiert; Godot-Parser/Import bestand.
+- GitHub Run `37450441469` für den vorherigen Commit `4932469149a07e7a2bd17a5c8703d8fc21984866`: **SKIP**, `action_required`, keine Jobs/Logs. Die obigen Engine- und Capture-Nachweise sind lokale Godot-4.6.3-Läufe, keine Actions-Ausführung.
 - Keine Fold-7-Geräte- oder FPS-Aussage.
