@@ -343,3 +343,26 @@ Die bestehende Vier-Strecken-Basis ist jetzt technisch auf einen größeren Trac
 - Godot-Import/Parser, Laufzeitdarstellung des Sky-Halo-Meshes und vollständige Player-/AI-/Respawn-/Reverse-/Checkpoint-Läufe: **SKIP**, bis der aktuelle PR-Head im Godot-Workflow geprüft ist.
 - Runtime-Captures des neuen Authoring-Prototyps: **SKIP**; er ist absichtlich kein Runtime-Rennsetpiece.
 - Kein Fold-Gerätetest, keine FPS-Messung und kein Merge nach `main`.
+
+
+## Etappe 9 – Himmelsinseln Visual-Detail-Pass
+
+- Ausgangs-Head: `45888cfb13b38ddf218936f66c57fa16ef59b89f`.
+- Begrenzung: nur bestehende Himmelsinseln-Geometrie und -Darstellung; keine Fahrphysik-, Checkpoint-, Respawn-, KI- oder Fold-Änderung.
+- Sky Halo bleibt authoring-only, ohne Runtime-Verkabelung oder Collision.
+
+### Direkt umgesetzt
+
+- Gestaffelte Randcluster aus Felsen und Cyan-/Violett-Kristallen ergänzen die bestehenden Inseln; sie bleiben außerhalb des Straßenrands und werden über die vorhandenen MultiMesh-Zellgruppen gerendert.
+- Himmelsinseln-Asphalt erhält dezente 13-m-Fugen und etwas stärkere Gummierung. Andere Strecken erhalten den Shader unverändert.
+- Warnschilder erscheinen nur an stärkeren Kurven, außerhalb der Leitplanken; zusätzliche Lampen variieren Form, Höhe und Cyan-/Gold-Akzent und bleiben gebündelt.
+- Die vorhandenen Mystery-Prisms sind auf Himmelsinseln 18 % größer; Item-IDs, Pickup-Radius und Item-Logik bleiben unverändert.
+- Wasserfälle erhalten eine obere Austrittskante, felsige Lippe und kleine Splash-/Mist-Gruppen; Low-Detail rendert eine statt drei Mistkugeln, ohne Wasserfall oder Streckenhinweise auszublenden.
+- Kristallhöhle erhält engere, räumlich gestaffelte Cyan-/Violett-Cluster; Tempelruinen erhalten seitliche Stützen, Trümmer und Moosvegetation außerhalb der Fahrbahn.
+- `kart_sky_islands_showcase.gd` und bestehende Physik-/Track-/Fold-Tests wurden nicht geändert.
+
+### Validierung
+
+- Vorheriger Vergleichsstand: Runtime-PNGs aus Workflow `37448549605` auf `45888cfb13b38ddf218936f66c57fa16ef59b89f`.
+- Neue gleichartige Himmelsinseln-Runtime-Captures und Godot-Regressionen: **ausstehend**; Ergebnisse und Ergebnis-SHA werden nach dem aktuellen Workflow-Lauf ergänzt.
+- Keine Fold-7-Geräte- oder FPS-Aussage.

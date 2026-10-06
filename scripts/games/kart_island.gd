@@ -2145,6 +2145,7 @@ func _item_box(distance_on_track: float, lateral: float) -> void:
 	node.name = "MysteryItemBox"
 	node.position = _track_position(distance_on_track, lateral) + basis.y * 0.85
 	node.basis = basis
+	node.scale = Vector3.ONE * (1.18 if world.track_id == "bergwelt" else 1.0)
 	race_root.add_child(node)
 	var core := _box(node, Vector3.ZERO, Vector3(1.25, 1.25, 1.25), Color("3756c9"))
 	core.material_override = _glow_material(Color("627dff"), 1.0)

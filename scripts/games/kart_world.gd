@@ -469,6 +469,7 @@ func _road() -> void:
 	asphalt.set_shader_parameter("road_tint",definition.asphalt)
 	var night: float={"holo_city":1.0,"bergwelt":0.15}.get(track_id,0.0)
 	asphalt.set_shader_parameter("night_course",night)
+	asphalt.set_shader_parameter("sky_island_detail",1.0 if track_id=="bergwelt" else 0.0)
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
 	var shoulder_color := Color("d9d9c5") if track_id=="sonnenhafen" else Color("90b4bd")
 	if track_id=="bergwelt": shoulder_color=Color("2a3f8f")
@@ -521,6 +522,7 @@ func _road() -> void:
 	if track_id=="bergwelt":
 		SKY_ISLANDS.start_gate(self)
 		SKY_ISLANDS.road_lights(self)
+		SKY_ISLANDS.road_surface_details(self)
 	elif track_id=="sonnenhafen":
 		_arch(0.0,"LUMO GRAND PRIX",Color("65dff5"))
 	else:

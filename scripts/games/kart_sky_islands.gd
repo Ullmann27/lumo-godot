@@ -438,6 +438,28 @@ static func _island_dressing(world, rings: Array, rng: RandomNumberGenerator) ->
 					ROCK,
 					Basis(Vector3.UP, rng.randf() * TAU)
 				)
+			if i % 4 == 0:
+				var cluster_t: float = rng.randf_range(0.68, 0.96)
+				var cluster_at: Vector3 = inner.lerp(rim, cluster_t)
+				cluster_at.y = lerpf(inner.y, rim.y, cluster_t) + 0.12
+				if rng.randf() < 0.72:
+					var crystal_color: Color = CRYSTAL_VIOLET if rng.randf() < 0.55 else CYAN
+					world._prop(
+						"crystal",
+						cluster_at,
+						Vector3(0.8, 1.45, 0.8) * rng.randf_range(0.8, 1.35),
+						crystal_color,
+						Basis(Vector3.UP, rng.randf() * TAU),
+						true
+					)
+				if rng.randf() < 0.6:
+					world._prop(
+						"rock",
+						cluster_at + Vector3(rng.randf_range(-1.3, 1.3), -0.2, rng.randf_range(-1.3, 1.3)),
+						Vector3(1.6, 1.0, 1.5) * rng.randf_range(0.7, 1.15),
+						ROCK_DARK,
+						Basis(Vector3.UP, rng.randf() * TAU)
+					)
 		if i % 6 == 0:
 			var keel: Vector3 = ring[9]
 			world._prop(
@@ -633,9 +655,34 @@ static func _waterfall(world, lip: Vector3, outward: Vector3, width: float) -> v
 	fall.material_override = material
 	fall.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	world.add_child(fall)
+	var lip_basis := Basis.looking_at(outward, Vector3.UP)
+	world._prop(
+		"box",
+		lip + outward * 0.55 + Vector3.UP * 0.12,
+		Vector3(width + 0.8, 0.18, 1.1),
+		Color("c9f5ff"),
+		lip_basis,
+		true
+	)
+	world._prop(
+		"rock",
+		lip + outward * 0.45 - Vector3.UP * 0.38,
+		Vector3(width * 1.35, 0.72, 1.25),
+		ROCK,
+		lip_basis
+	)
+	var splash: Vector3 = lip + outward * 3.8 + Vector3.UP * (bottom - lip.y + 1.8)
+	for puff in range(1 if world.low_detail else 3):
+		var offset: Vector3 = along * (float(puff) - 1.0) * width * 0.3
+		world._prop(
+			"ball",
+			splash + offset,
+			Vector3(width * 0.42, 0.7, 1.2),
+			Color("d7f4ff")
+		)
 	world._prop(
 		"crown",
-		lip + outward * 2.6 + Vector3.UP * (bottom - lip.y + 1.5),
+		splash + Vector3.UP * 0.1,
 		Vector3(width * 1.1, 2.0, width),
 		Color("eef3ff")
 	)
@@ -786,6 +833,25 @@ static func _temple_ruins(world, distance: float, rng: RandomNumberGenerator) ->
 			Basis.IDENTITY,
 			true
 		)
+	for support in range(4):
+		var side: float = -1.0 if support < 2 else 1.0
+		var along: float = -7.5 if support % 2 == 0 else 7.5
+		var at: Vector3 = base + ahead * along + outward * side * 3.5
+		var height: float = 3.8 if support % 2 == 0 else 2.9
+		world._prop(
+			"cylinder",
+			at + Vector3.UP * height * 0.5,
+			Vector3(0.62, height, 0.62),
+			STONE_DARK,
+			temple_basis
+		)
+		world._prop(
+			"box",
+			at + Vector3.UP * height,
+			Vector3(1.2, 0.32, 1.2),
+			STONE,
+			temple_basis
+		)
 	for vine in range(5):
 		world._prop(
 			"crown",
@@ -793,6 +859,36 @@ static func _temple_ruins(world, distance: float, rng: RandomNumberGenerator) ->
 			Vector3(0.9, 0.6, 0.8),
 			MOSS
 		)
+	for cluster in range(8):
+		var side: float = -1.0 if cluster % 2 == 0 else 1.0
+		var at: Vector3 = (
+			base
+			+ ahead * rng.randf_range(-9.0, 9.0)
+			+ outward * side * rng.randf_range(3.0, 6.5)
+		)
+		var rubble_basis := temple_basis.rotated(Vector3.UP, rng.randf_range(-0.3, 0.3))
+		world._prop(
+			"box",
+			at + Vector3.UP * rng.randf_range(0.35, 0.8),
+			Vector3(rng.randf_range(1.2, 2.4), rng.randf_range(0.5, 1.2), rng.randf_range(1.0, 2.0)),
+			STONE_DARK if cluster % 3 == 0 else STONE,
+			rubble_basis
+		)
+		if cluster % 2 == 0:
+			world._prop(
+				"crown",
+				at + Vector3.UP * 0.8 + ahead * 0.65,
+				Vector3(1.4, 0.6, 1.1),
+				MOSS
+			)
+		if cluster % 4 == 1:
+			world._prop(
+				"rock",
+				at - ahead * 0.8,
+				Vector3(1.5, 1.2, 1.4),
+				ROCK,
+				Basis(Vector3.UP, rng.randf() * TAU)
+			)
 
 
 static func _banner(world, at: Vector3, basis: Basis, text: String) -> void:
@@ -1130,14 +1226,14 @@ static func chevrons(world) -> void:
 static func cave_crystals(world, distance: float) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 5150
-	for i in range(14):
-		var d: float = distance - 13.0 + float(i) * 2.0
+	for i in range(18):
+		var d: float = distance - 13.5 + float(i) * 1.6
 		var basis: Basis = world.frame(d)
 		for side in [-1.0, 1.0]:
 			if rng.randf() < 0.35:
 				continue
 			var at: Vector3 = (
-				world.position_at(d, side * rng.randf_range(6.6, 7.4))
+				world.position_at(d, side * rng.randf_range(7.4, 8.4))
 				+ Vector3.UP * rng.randf_range(0.0, 3.5)
 			)
 			var tilt := Basis(basis.z, side * rng.randf_range(0.2, 0.6))
@@ -1145,6 +1241,17 @@ static func cave_crystals(world, distance: float) -> void:
 			world._prop(
 				"crystal", at, Vector3(0.5, 0.9, 0.5) * rng.randf_range(0.8, 1.6), tint, tilt, true
 			)
+			if i % 3 == 0:
+				for shard in range(2):
+					var shard_tint: Color = CYAN if tint == CRYSTAL_VIOLET else CRYSTAL_VIOLET
+					world._prop(
+						"crystal",
+						at + basis.x * side * (0.45 + float(shard) * 0.3) + Vector3.UP * (0.1 + shard * 0.2),
+						Vector3(0.38, 0.78, 0.38) * (1.0 - float(shard) * 0.18),
+						shard_tint,
+						tilt.rotated(basis.z, -side * 0.24),
+						true
+					)
 	for end in [-1.0, 1.0]:
 		var d: float = distance + end * 13.5
 		for side in [-1.0, 1.0]:
@@ -1183,5 +1290,70 @@ static func road_lights(world) -> void:
 				Vector3(0.36, 0.06, step * 0.82),
 				glow,
 				basis,
+				true
+			)
+
+
+## Restrained, batched warning posts sit beyond the rails only on stronger turns.
+static func road_surface_details(world) -> void:
+	var count: int = ceili(world.length / 8.0)
+	for i in range(count):
+		var d: float = (float(i) + 0.5) * 8.0
+		if in_gap(world.jump, d):
+			continue
+		var before: Vector3 = -world.frame(d - 3.0).z
+		var after: Vector3 = -world.frame(d + 3.0).z
+		var turn: float = before.cross(after).y
+		if absf(turn) < 0.11:
+			continue
+		var side: float = 1.0 if turn > 0.0 else -1.0
+		var basis: Basis = world.frame(d)
+		var at: Vector3 = world.position_at(d, side * 7.15)
+		world._prop(
+			"box",
+			at + basis.y * 1.55,
+			Vector3(0.16, 3.1, 0.16),
+			NAVY if i % 3 else STONE_DARK,
+			basis
+		)
+		world._prop(
+			"box",
+			at + basis.y * 2.7,
+			Vector3(1.05, 0.88, 0.12),
+			Color("e8d58c") if i % 2 == 0 else Color("f1eee5"),
+			basis
+		)
+		world._prop(
+			"box",
+			at + basis.y * 2.7 - basis.z * 0.075,
+			Vector3(0.52, 0.075, 0.035),
+			ORANGE if i % 2 == 0 else NAVY,
+			basis,
+			true
+		)
+
+	var lamp_count: int = ceili(world.length / (42.0 if world.low_detail else 32.0))
+	for i in range(lamp_count):
+		var d: float = (float(i) + 0.5) * world.length / lamp_count
+		if in_gap(world.jump, d):
+			continue
+		var basis: Basis = world.frame(d)
+		for side in [-1.0, 1.0]:
+			var at: Vector3 = world.position_at(d, side * 7.8)
+			var height: float = 3.3 if i % 3 == 0 else 2.8
+			var tint: Color = CYAN if (i + int(side)) % 2 == 0 else GOLD
+			world._prop(
+				"cylinder",
+				at + basis.y * height * 0.5,
+				Vector3(0.11, height, 0.11),
+				NAVY if i % 3 else STONE_DARK,
+				basis
+			)
+			world._prop(
+				"ball",
+				at + basis.y * (height + 0.15),
+				Vector3.ONE * (0.22 if i % 3 else 0.29),
+				tint,
+				Basis.IDENTITY,
 				true
 			)
