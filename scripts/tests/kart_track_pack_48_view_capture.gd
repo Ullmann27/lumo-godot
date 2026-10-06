@@ -4,7 +4,6 @@ extends SceneTree
 
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
-const KART_ISLAND = preload("res://scripts/games/kart_island.gd")
 
 const CAPTURE_SIZE := Vector2i(960, 540)
 const LOOP_RADIUS_M := 12.0
@@ -86,13 +85,49 @@ func _build_runtime_items() -> void:
 	item_root.name = "DeveloperPackMysteryPrisms"
 	world.add_child(item_root)
 
-	var helper: Node = KART_ISLAND.new()
-	helper.set("world", world)
-	helper.set("race_root", item_root)
 	for zone in pack.get("mystery_prism_zones", []):
 		var fraction: float = float(zone.get("route_fraction", 0.0))
 		var lateral: float = float(zone.get("lateral_m", 0.0))
-		helper.call("_item_box", fraction * world.length, lateral)
+		var d: float = fraction * float(world.length)
+		var position: Vector3 = (
+			world.position_at(d)
+			+ world.frame(d) * Vector3(lateral, 1.45, 0.0)
+		)
+		_add_mystery_prism(item_root, position, str(zone.get("id", "prism")))
+
+
+func _add_mystery_prism(parent: Node3D, position: Vector3, prism_id: String) -> void:
+	var holder: Node3D = Node3D.new()
+	holder.name = prism_id
+	holder.position = position
+	parent.add_child(holder)
+
+	var body: MeshInstance3D = MeshInstance3D.new()
+	var crystal: CylinderMesh = CylinderMesh.new()
+	crystal.top_radius = 0.38
+	crystal.bottom_radius = 0.72
+	crystal.height = 1.7
+	crystal.radial_segments = 6
+	body.mesh = crystal
+	body.rotation_degrees = Vector3(0.0, 30.0, 0.0)
+	body.material_override = _debug_material(Color("4fe9ff"))
+	holder.add_child(body)
+
+	var core: MeshInstance3D = MeshInstance3D.new()
+	var core_mesh: BoxMesh = BoxMesh.new()
+	core_mesh.size = Vector3(0.42, 0.42, 0.42)
+	core.mesh = core_mesh
+	core.rotation_degrees = Vector3(35.0, 35.0, 35.0)
+	core.material_override = _debug_material(Color("ff5ce1"))
+	holder.add_child(core)
+
+	var marker: Label3D = Label3D.new()
+	marker.text = "?"
+	marker.font_size = 72
+	marker.position = Vector3(0.0, 0.05, 0.5)
+	marker.modulate = Color.WHITE
+	marker.outline_size = 8
+	holder.add_child(marker)
 
 
 func _compute_route_bounds() -> void:
