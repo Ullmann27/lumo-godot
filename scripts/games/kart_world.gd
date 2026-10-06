@@ -57,7 +57,9 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 	_road()
 	match track_id:
 		"zauberwald": _forest()
-		"holo_city": _city()
+		"holo_city":
+			_city()
+			_holo_city_dressing()
 		_: _harbour()
 	_navigation()
 	if track_id=="sonnenhafen":
@@ -1153,12 +1155,18 @@ func _snow_tunnel(distance: float, palette: Dictionary={}) -> void:
 		_prop("box",position_at(d)+Vector3.UP*6.28,Vector3(1.2,0.07,0.25),lamp,frame(d),true)
 
 func _city() -> void:
-	for x in range(-4,5):
-		for z in range(-4,5):
-			var p := Vector3(x*19.0+_rng.randf_range(-2,2),-1.1,z*17.0+_rng.randf_range(-2,2))
-			if _near_road(p,11.0): continue
-			_city_tower(p,_rng.randf_range(6,10),_rng.randf_range(12,38),x+z)
-	for i in range(20):
+	var grid_radius: int = 4 if low_detail else 5
+	for x in range(-grid_radius,grid_radius+1):
+		for z in range(-grid_radius,grid_radius+1):
+			var p := Vector3(x*18.0+_rng.randf_range(-2,2),-1.1,z*16.0+_rng.randf_range(-2,2))
+			if _near_road(p,10.5): continue
+			_city_tower(
+				p,
+				_rng.randf_range(6,11),
+				_rng.randf_range(14,42 if not low_detail else 34),
+				x+z
+			)
+	for i in range(24 if not low_detail else 18):
 		var angle: float=float(i)*TAU/20.0
 		_city_tower(Vector3(cos(angle)*160,-3,sin(angle)*145),_rng.randf_range(10,17),_rng.randf_range(35,75),i)
 	for i in range(11):
@@ -1173,6 +1181,131 @@ func _city() -> void:
 		var b: float=float(i+1)*TAU/48.0
 		_beam(Vector3(cos(a)*13,26+sin(a)*7,0),Vector3(cos(b)*13,26+sin(b)*7,0),0.32,Color("67d9ed"),true)
 	_prop("crystal",Vector3(0,17,0),Vector3(3,7,3),Color("a0caec"))
+
+func _holo_city_dressing() -> void:
+	# Dense high-speed night boulevard. Everything is original Lumo geometry, optimized through
+	# the existing MultiMesh batching path.
+	_holo_lane_lights()
+	_holo_skybridge(length*0.29,"NOVA-LINK")
+	_holo_skybridge(length*0.64,"AURORA-LINK")
+	_holo_landmark_spire(length*0.41,-1.0,"LUMO NEXUS")
+	_holo_landmark_spire(length*0.82,1.0,"STAR CORE")
+	_holo_billboard_canyon()
+	_holo_transit_beacons()
+
+
+func _holo_lane_lights() -> void:
+	var spacing: float=4.6
+	var count: int=ceili(length/spacing)
+	for i in range(count):
+		var d: float=float(i)*spacing+1.0
+		if in_gap(d):
+			continue
+		var basis: Basis=frame(d)
+		var glow: Color=Color("66e8ff") if i%2==0 else Color("b596ff")
+		for lateral in [-2.1,2.1]:
+			_prop(
+				"box",
+				position_at(d,lateral)+basis.y*0.034,
+				Vector3(0.07,0.018,1.65),
+				glow,
+				basis,
+				true
+			)
+
+
+func _holo_skybridge(distance: float, label: String) -> void:
+	var basis: Basis=frame(distance)
+	var centre: Vector3=position_at(distance)
+	var cyan:=Color("6beaff")
+	var violet:=Color("aa8cff")
+	# Two pylons outside the rail and one high-clearance bridge deck.
+	for side in [-1.0,1.0]:
+		var foot: Vector3=position_at(distance,side*8.7)
+		_prop("box",foot+Vector3.UP*5.0,Vector3(0.65,10.0,0.75),Color("243968"),basis)
+		_prop(
+			"box",
+			foot+Vector3.UP*8.6,
+			Vector3(0.90,0.18,1.05),
+			cyan if side<0.0 else violet,
+			basis,
+			true
+		)
+	_prop("box",centre+Vector3.UP*8.1,Vector3(18.0,0.55,2.4),Color("20355d"),basis)
+	_prop("box",centre+Vector3.UP*8.42,Vector3(17.3,0.08,2.1),cyan,basis,true)
+	# Under-deck light ribs make the bridge readable at race speed.
+	for rib in range(7):
+		_prop(
+			"box",
+			centre+basis.x*(-6.6+float(rib)*2.2)+Vector3.UP*7.72,
+			Vector3(0.12,0.12,1.75),
+			violet if rib%2==0 else cyan,
+			basis,
+			true
+		)
+	_sign(centre+Vector3.UP*9.0+basis.z*1.25,basis,label,0.014)
+
+
+func _holo_landmark_spire(distance: float, side: float, label: String) -> void:
+	var basis: Basis=frame(distance)
+	var base: Vector3=position_at(distance,side*22.0)
+	base.y=maxf(-1.0,_ground_height(base.x,base.z))
+	var height: float=34.0
+	_prop(
+		"glass_tower",
+		base+Vector3.UP*height*0.5,
+		Vector3(8.5,height,8.5),
+		Color("2c4e7a")
+	)
+	for ring in range(4):
+		var ring_y: float=7.5+float(ring)*6.3
+		for segment in range(16):
+			var a: float=float(segment)*TAU/16.0
+			var b: float=float(segment+1)*TAU/16.0
+			var p: Vector3=base+Vector3(cos(a)*6.2,ring_y,sin(a)*6.2)
+			var q: Vector3=base+Vector3(cos(b)*6.2,ring_y,sin(b)*6.2)
+			_beam(p,q,0.13,Color("6deaff") if ring%2==0 else Color("ae91ff"),true)
+	var sign_at: Vector3=base+Vector3.UP*18.0-basis.x*side*4.6
+	_prop("box",sign_at,Vector3(6.8,2.2,0.18),Color("13284b"),basis)
+	_sign(sign_at+basis.z*0.11,basis,label,0.013)
+
+
+func _holo_billboard_canyon() -> void:
+	var labels: Array[String]=["LUMO // GO","NOVA // FAST","AURORA // CUP","STAR // WAY"]
+	for i in range(10 if not low_detail else 6):
+		var d: float=(float(i)+0.5)*length/(10.0 if not low_detail else 6.0)
+		var side: float=-1.0 if i%2==0 else 1.0
+		var basis: Basis=frame(d)
+		var at: Vector3=position_at(d,side*10.2)+Vector3.UP*(4.3+float(i%3))
+		_prop("box",at,Vector3(5.0,2.8,0.18),Color("122a4d"),basis)
+		_prop(
+			"box",
+			at+basis.z*0.11,
+			Vector3(4.65,2.45,0.04),
+			Color("4f7ca4"),
+			basis,
+			true
+		)
+		_sign(at+basis.z*0.14,basis,labels[i%labels.size()],0.011)
+
+
+func _holo_transit_beacons() -> void:
+	for i in range(18):
+		var d: float=(float(i)+0.35)*length/18.0
+		var side: float=-1.0 if i%2==0 else 1.0
+		var basis: Basis=frame(d)
+		var at: Vector3=position_at(d,side*7.3)
+		var glow: Color=Color("5ce9ff") if i%3!=0 else Color("b48fff")
+		_prop("cylinder",at+Vector3.UP*1.7,Vector3(0.12,3.4,0.12),Color("28435f"))
+		_prop(
+			"crystal",
+			at+Vector3.UP*3.55,
+			Vector3(0.38,0.85,0.38),
+			glow,
+			basis,
+			true
+		)
+
 
 func _city_tower(at: Vector3, width: float, height: float, index: int) -> void:
 	var base := Color("29435e") if posmod(index,2)==0 else Color("344a69")
