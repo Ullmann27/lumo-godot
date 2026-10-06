@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "authority": "scripts/games/kart_tracks.gd:LumoKartTracks.IDS",
+  "pack_ids": [
+    "sonnenhafen",
+    "zauberwald",
+    "bergwelt",
+    "holo_city"
+  ],
+  "minimum_details_per_pack": 120,
+  "required_views_per_pack": 48,
+  "files": {
+    "sonnenhafen": "sonnenhafen.json",
+    "zauberwald": "zauberwald.json",
+    "bergwelt": "bergwelt.json",
+    "holo_city": "holo_city.json"
+  }
+}

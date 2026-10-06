@@ -1,0 +1,2162 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "lumo.track.bergwelt.2026-10-06",
+  "track_id": "bergwelt",
+  "display_name": "Himmelsinseln",
+  "subtitle": "Hoch hinaus. Gemeinsam weiter!",
+  "units": "metres",
+  "status": "authoring_source",
+  "authorities": {
+    "catalog": "scripts/games/kart_tracks.gd:LumoKartTracks.definition",
+    "world_builder": "scripts/games/kart_sky_islands.gd",
+    "curve_builder": "scripts/games/kart_world.gd:LumoRaceWorld._make_curve",
+    "road_builder": "scripts/games/kart_world.gd:LumoRaceWorld._road",
+    "spec": "docs/track_expansion/2026-10-06/TRACK_DEVELOPER_PACK_SPEC.md",
+    "no_parallel_spline": true
+  },
+  "route": {
+    "control_point_ids": [
+      "CP00",
+      "CP01",
+      "CP02",
+      "CP03",
+      "CP04",
+      "CP05",
+      "CP06",
+      "CP07",
+      "CP08",
+      "CP09",
+      "CP10",
+      "CP11"
+    ],
+    "control_point_labels": [
+      "Startinsel",
+      "Wasserfallinsel A",
+      "Brückenanstieg",
+      "Hängeseilbrücke",
+      "Wasserfallinsel B",
+      "Kristallhöhleninsel",
+      "Wasserfallinsel C",
+      "Wasserfallinsel D",
+      "Wolkenweg-Einstieg",
+      "Tempelruinen",
+      "Wasserfallinsel E",
+      "Hauptweg-Rücklauf"
+    ],
+    "control_points_xyz_m": [
+      [
+        0.0,
+        4.0,
+        65.0
+      ],
+      [
+        43.0,
+        6.0,
+        55.0
+      ],
+      [
+        71.0,
+        12.0,
+        26.0
+      ],
+      [
+        51.0,
+        17.0,
+        -2.0
+      ],
+      [
+        75.0,
+        20.0,
+        -38.0
+      ],
+      [
+        36.0,
+        21.0,
+        -65.0
+      ],
+      [
+        3.0,
+        17.0,
+        -45.0
+      ],
+      [
+        -27.0,
+        13.0,
+        -66.0
+      ],
+      [
+        -67.0,
+        9.0,
+        -36.0
+      ],
+      [
+        -54.0,
+        13.0,
+        -5.0
+      ],
+      [
+        -73.0,
+        16.0,
+        25.0
+      ],
+      [
+        -38.0,
+        8.0,
+        54.0
+      ]
+    ],
+    "runtime_horizontal_scale": 1.18,
+    "top_down_centerline": {
+      "coordinate_plane": "X/Z",
+      "closed": true,
+      "sample_interval_m": 0.35,
+      "control_point_smoothing": "current*0.5 + previous*0.25 + next*0.25",
+      "runtime_tangent_scale": 0.22,
+      "runtime_reference": "kart_world.gd:_make_curve; use world.position_at(distance,lateral) for route samples"
+    }
+  },
+  "road": {
+    "width_m": 10.8,
+    "visible_rail_lateral_m": 6.05,
+    "collision_wall_lateral_m": 5.0,
+    "invariant": "The visual rail and collision wall must be measured independently and remain consistent with kart_world.gd."
+  },
+  "geometry_guides": {
+    "road": {
+      "authoring": "Follow existing closed Catmull-Rom/Bézier centerline; 10.8-m full-width ribbon; visible and collision rails share declared lateral offsets."
+    },
+    "ramp": {
+      "authoring": "Use existing jump_layout and measured landing corridor; no additional route spline."
+    },
+    "bridge": {
+      "authoring": "Build bridge as centerline-following deck modules, width 13.4 m for the existing Sky bridge convention or source-module width when not a Sky module; keep support mesh and collision proxy separate."
+    },
+    "tunnel": {
+      "authoring": "Use existing centerline tangent and define clear height/width; use a visual vault and separately inspect the simple collision envelope."
+    },
+    "full_loop": {
+      "authoring": "360-degree planar loop centered on existing route anchor; prototype geometry only at 0.900 route fraction.",
+      "status": "planned_requires_inverted_physics",
+      "runtime_enabled": false,
+      "collision_enabled": false,
+      "centerline_radius_m": 12.0,
+      "road_width_m": 10.8,
+      "vertical_rise_m": 24.0,
+      "approach_length_m": 18.0,
+      "surface_segments": 96,
+      "prototype_scene": "res://scenes/games/track_authoring/sky_halo_loop_authoring.tscn",
+      "gate": "Do not place on race Centerline or enable until gravity/up, camera, AI, collision, checkpoint/respawn, and full Player+AI 360-degree run all pass."
+    }
+  },
+  "signature_setpieces": [
+    {
+      "id": "floating_island_chain",
+      "name": "Schwebende Himmelsinseln",
+      "status": "implemented",
+      "anchor_fraction": 0.07,
+      "authority": "kart_sky_islands.gd:_road_island",
+      "dimensions_m": {
+        "x": 20.0,
+        "y": 11.0,
+        "z": 25.0
+      },
+      "palette_role": "Grasdeck, Mooslippe, gestaffelte Felskeele",
+      "handoff_notes": [
+        "Prüfe vier vorhandene Inselspannen aus ISLANDS statt freier Inselplatzierung.",
+        "Prüfe ±6.3-m-Fahrbahnrand über der Inseloberfläche ohne sichtbare Decklücke.",
+        "Prüfe Inselkeel und Seitenwobble bleiben vom Fahrbahnmesh getrennte Deko."
+      ]
+    },
+    {
+      "id": "jump_gap",
+      "name": "Orange Rampe und offener Gap",
+      "status": "implemented",
+      "anchor_fraction": 0.495,
+      "authority": "kart_sky_islands.gd:jump_layout + jump_dressing",
+      "dimensions_m": {
+        "x": 7.0,
+        "y": 1.8,
+        "z": 8.0
+      },
+      "palette_role": "Orange Rampenplatte, gelbe Chevrons, Cyan-Gapmarker",
+      "handoff_notes": [
+        "Prüfe RAMP_LENGTH=7 m, RAMP_HEIGHT=1.8 m und GAP_LENGTH=8 m unverändert.",
+        "Prüfe offene Gap-Grenzen entsprechen take_off bis gap_end aus jump_layout().",
+        "Prüfe safe_respawn_distance vermeidet Rampenpuffer 1.5 m und Gap-Endpuffer 2.5 m."
+      ]
+    },
+    {
+      "id": "temple_ruins",
+      "name": "Tempelruinen",
+      "status": "implemented",
+      "anchor_fraction": 0.715,
+      "authority": "kart_sky_islands.gd:_temple_ruins",
+      "dimensions_m": {
+        "x": 32.0,
+        "y": 16.0,
+        "z": 28.0
+      },
+      "palette_role": "Steinruinen, Banner, goldene Tempelmarken",
+      "handoff_notes": [
+        "Prüfe Landmarkenmittelpunkt bleibt RUINS=0.715 auf der Katalog-Centerline.",
+        "Prüfe jeder Ruinenpfeiler steht auf Insel-/Deko-Fläche außerhalb ±6.05-m-Rails.",
+        "Prüfe der feste Seed erzeugt bei identischem Track-Seed dieselbe Ruinenanordnung."
+      ]
+    },
+    {
+      "id": "wolkenweg_split",
+      "name": "WOLKENWEG / HAUPTWEG Split",
+      "status": "implemented",
+      "anchor_fraction": 0.8,
+      "authority": "kart_sky_islands.gd:split_route_layout + _split_sky_bridge",
+      "dimensions_m": {
+        "x": 22.0,
+        "y": 6.0,
+        "z": 4.65
+      },
+      "palette_role": "Cyan-Hochspur links, violette Kante und Original-Hauptspur",
+      "handoff_notes": [
+        "Prüfe SPLIT_SPAN=22 m, SPLIT_RISE=6 m und SPLIT_HEIGHT=2.2 m.",
+        "Prüfe linke Fahrspur bei −2.8 m steigt; rechte Spur bleibt auf 0 m Zusatzhöhe.",
+        "Prüfe Rejoin vor STAR_GATE=0.865 mit vorhandenem 17-m-Abstand."
+      ]
+    },
+    {
+      "id": "star_gate",
+      "name": "Siebenbogiges Sternentor",
+      "status": "implemented",
+      "anchor_fraction": 0.865,
+      "authority": "kart_sky_islands.gd:_star_gate_run",
+      "dimensions_m": {
+        "x": 34.0,
+        "y": 6.1,
+        "z": 13.2
+      },
+      "palette_role": "Cyan/Violett-Wechsel, Goldsterne",
+      "handoff_notes": [
+        "Prüfe sieben Bogenstationen gleichmäßig über 34 m.",
+        "Prüfe Goldsterne sitzen 6.1 m hoch und ±3.4 m seitlich auf jedem zweiten Farbschema.",
+        "Prüfe Hauptfahrbahn bleibt kontinuierlich und der Bogen erhält keine Fake-Tunnelcollision."
+      ]
+    },
+    {
+      "id": "crystal_cave",
+      "name": "Kristallhöhle",
+      "status": "implemented",
+      "anchor_fraction": 0.555,
+      "authority": "kart_world.gd:_snow_tunnel + kart_sky_islands.gd:cave_crystals",
+      "dimensions_m": {
+        "x": 24.0,
+        "y": 7.1,
+        "z": 13.4
+      },
+      "palette_role": "Violetter Kristallkern und steinerne Gewölbeschale",
+      "handoff_notes": [
+        "Prüfe Höhlenanker bleibt CAVE=0.555 und gehört zur vorhandenen dritten Insel.",
+        "Prüfe Tunnel-Lichthöhe 6.6 m und Außenhülle 7.65 m gemäß _snow_tunnel().",
+        "Prüfe sieben innere Lichtbalken folgen dem 3.3-m-Rhythmus der Höhlenstrecke."
+      ]
+    },
+    {
+      "id": "lumo_blimp",
+      "name": "Lumo-Luftschiff",
+      "status": "implemented",
+      "anchor_fraction": 0.82,
+      "authority": "kart_sky_islands.gd:_blimp",
+      "dimensions_m": {
+        "x": 16.0,
+        "y": 5.4,
+        "z": 9.0
+      },
+      "palette_role": "Kobaltblauer Rumpf mit beidseitigem LUMO KART Schild",
+      "handoff_notes": [
+        "Prüfe Luftschiff-Zentrum bleibt bei (-28,48,-40) Weltmetern.",
+        "Prüfe Rumpfmaß 9×3.4×3.4 m ist aus der Rennkamera als Silhouette lesbar.",
+        "Prüfe Schildtext beidseitig und alle Luftschiffteile bleiben reine Deko."
+      ]
+    },
+    {
+      "id": "island_waterfalls",
+      "name": "Insel-Wasserfallkette",
+      "status": "implemented",
+      "anchor_fraction": 0.62,
+      "authority": "kart_sky_islands.gd:_waterfall_islands + _waterfall",
+      "dimensions_m": {
+        "x": 36.0,
+        "y": 38.0,
+        "z": 8.0
+      },
+      "palette_role": "Fünf sichtbare Seitenfälle vor der Wolkenmeer-Ebene",
+      "handoff_notes": [
+        "Prüfe sechs Wasserfall-Inselpunkte aus der bestehenden spots-Liste.",
+        "Prüfe Wasserfall-Meshes enden oberhalb CLOUD_LEVEL=−38 m ohne Fahrbahnquerung.",
+        "Prüfe sechs vorhandene Positionen bleiben ± zur Fahrtrichtung alternierend."
+      ]
+    },
+    {
+      "id": "suspension_bridge",
+      "name": "Goldene Hängeseilbrücke",
+      "status": "implemented",
+      "anchor_fraction": 0.635,
+      "authority": "kart_sky_islands.gd:_bridges",
+      "dimensions_m": {
+        "x": 30.0,
+        "y": 12.0,
+        "z": 14.0
+      },
+      "palette_role": "Goldkabel, Navy-Querträger, helle Hänger",
+      "handoff_notes": [
+        "Prüfe SUSPENSION=0.635 und 30-m-Spannweite aus dem vorhandenen Builder.",
+        "Prüfe 19 Hänger je Seite folgen der bestehenden Höhenparabel.",
+        "Prüfe Rampen-Gap wird nicht mit der Hängeseilbrücke überlagert."
+      ]
+    },
+    {
+      "id": "sky_halo_loop",
+      "name": "Sky Halo Loop",
+      "status": "planned_requires_inverted_physics",
+      "anchor_fraction": 0.9,
+      "authority": "scenes/games/track_authoring/sky_halo_loop_authoring.tscn",
+      "dimensions_m": {
+        "x": 12.0,
+        "y": 24.0,
+        "z": 10.8
+      },
+      "palette_role": "Cyan/Gold Authoringkanten auf navy Loopdeck",
+      "handoff_notes": [
+        "Prüfe isoliertes 360°-Authoringmesh mit 12-m-Mittelradius und 10.8-m-Belag.",
+        "Setpiece bleibt runtime_driveable=false und collision_included=false.",
+        "Freigabe erfordert alle sechs Spec-Inversionsgates plus vollständigen Player-/AI-Rundlauf."
+      ]
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "CP-01",
+      "route_fraction": 0.0,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-02",
+      "route_fraction": 0.125,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-03",
+      "route_fraction": 0.25,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-04",
+      "route_fraction": 0.375,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-05",
+      "route_fraction": 0.5,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-06",
+      "route_fraction": 0.625,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-07",
+      "route_fraction": 0.75,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-08",
+      "route_fraction": 0.875,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    }
+  ],
+  "ai_racing_line": [
+    {
+      "id": "AI-01",
+      "route_fraction": 0.05,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 44,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-02",
+      "route_fraction": 0.15,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 50,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-03",
+      "route_fraction": 0.25,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 56,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-04",
+      "route_fraction": 0.35,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 48,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-05",
+      "route_fraction": 0.45,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 62,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-06",
+      "route_fraction": 0.55,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 52,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-07",
+      "route_fraction": 0.65,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 60,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-08",
+      "route_fraction": 0.75,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 46,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-09",
+      "route_fraction": 0.85,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 58,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-10",
+      "route_fraction": 0.95,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 54,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    }
+  ],
+  "mystery_prism_zones": [
+    {
+      "id": "MP-01",
+      "name": "Lumo Mystery Prism 1",
+      "route_fraction": 0.18,
+      "lateral_m": -2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-02",
+      "name": "Lumo Mystery Prism 2",
+      "route_fraction": 0.34,
+      "lateral_m": 2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-03",
+      "name": "Lumo Mystery Prism 3",
+      "route_fraction": 0.53,
+      "lateral_m": 0.0,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-04",
+      "name": "Lumo Mystery Prism 4",
+      "route_fraction": 0.69,
+      "lateral_m": -2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-05",
+      "name": "Lumo Mystery Prism 5",
+      "route_fraction": 0.86,
+      "lateral_m": 2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    }
+  ],
+  "fairness": {
+    "basis": "TRACK_DEVELOPER_PACK_SPEC.md; recommended design weights, not a claim of runtime probabilities",
+    "core_items": [
+      "boost",
+      "shield",
+      "pulse"
+    ],
+    "rank_weights": [
+      {
+        "place": "1",
+        "boost": 0.25,
+        "shield": 0.45,
+        "pulse": 0.3
+      },
+      {
+        "place": "2",
+        "boost": 0.32,
+        "shield": 0.4,
+        "pulse": 0.28
+      },
+      {
+        "place": "3-4",
+        "boost": 0.45,
+        "shield": 0.35,
+        "pulse": 0.2
+      },
+      {
+        "place": "5",
+        "boost": 0.6,
+        "shield": 0.25,
+        "pulse": 0.15
+      },
+      {
+        "place": "6",
+        "boost": 0.7,
+        "shield": 0.2,
+        "pulse": 0.1
+      }
+    ],
+    "rule": "Catch-up only through item weights; no teleportation or hidden top-speed advantage."
+  },
+  "palette": [
+    "Nachthimmel #0b1a4a",
+    "Inselgras #4f9a44",
+    "Cyanrail #2c5bd1",
+    "Sternengold #ffc94a",
+    "Kristallviolett #b07bff"
+  ],
+  "details": [
+    {
+      "id": "BERGWELT-001",
+      "kind": "control_point",
+      "title": "CP00 — Startinsel — Control-Point-Koordinate",
+      "anchor": "CP00",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=0 m, y=4 m, z=65 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "BERGWELT-002",
+      "kind": "control_point",
+      "title": "CP01 — Wasserfallinsel A — Control-Point-Koordinate",
+      "anchor": "CP01",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=43 m, y=6 m, z=55 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "BERGWELT-003",
+      "kind": "control_point",
+      "title": "CP02 — Brückenanstieg — Control-Point-Koordinate",
+      "anchor": "CP02",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=71 m, y=12 m, z=26 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "BERGWELT-004",
+      "kind": "control_point",
+      "title": "CP03 — Hängeseilbrücke — Control-Point-Koordinate",
+      "anchor": "CP03",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=51 m, y=17 m, z=-2 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "BERGWELT-005",
+      "kind": "control_point",
+      "title": "CP04 — Wasserfallinsel B — Control-Point-Koordinate",
+      "anchor": "CP04",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=75 m, y=20 m, z=-38 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "BERGWELT-006",
+      "kind": "control_point",
+      "title": "CP05 — Kristallhöhleninsel — Control-Point-Koordinate",
+      "anchor": "CP05",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=36 m, y=21 m, z=-65 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "BERGWELT-007",
+      "kind": "control_point",
+      "title": "CP06 — Wasserfallinsel C — Control-Point-Koordinate",
+      "anchor": "CP06",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=3 m, y=17 m, z=-45 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "BERGWELT-008",
+      "kind": "control_point",
+      "title": "CP07 — Wasserfallinsel D — Control-Point-Koordinate",
+      "anchor": "CP07",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-27 m, y=13 m, z=-66 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "BERGWELT-009",
+      "kind": "control_point",
+      "title": "CP08 — Wolkenweg-Einstieg — Control-Point-Koordinate",
+      "anchor": "CP08",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-67 m, y=9 m, z=-36 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "BERGWELT-010",
+      "kind": "control_point",
+      "title": "CP09 — Tempelruinen — Control-Point-Koordinate",
+      "anchor": "CP09",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-54 m, y=13 m, z=-5 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "BERGWELT-011",
+      "kind": "control_point",
+      "title": "CP10 — Wasserfallinsel E — Control-Point-Koordinate",
+      "anchor": "CP10",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-73 m, y=16 m, z=25 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "BERGWELT-012",
+      "kind": "control_point",
+      "title": "CP11 — Hauptweg-Rücklauf — Control-Point-Koordinate",
+      "anchor": "CP11",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-38 m, y=8 m, z=54 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "BERGWELT-013",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP00 → CP01 — Breite und Übergang",
+      "anchor": "CP00→CP01",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Startinsel und Wasserfallinsel A; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "BERGWELT-014",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP01 → CP02 — Breite und Übergang",
+      "anchor": "CP01→CP02",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Wasserfallinsel A und Brückenanstieg; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "BERGWELT-015",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP02 → CP03 — Breite und Übergang",
+      "anchor": "CP02→CP03",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Brückenanstieg und Hängeseilbrücke; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "BERGWELT-016",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP03 → CP04 — Breite und Übergang",
+      "anchor": "CP03→CP04",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Hängeseilbrücke und Wasserfallinsel B; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "BERGWELT-017",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP04 → CP05 — Breite und Übergang",
+      "anchor": "CP04→CP05",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Wasserfallinsel B und Kristallhöhleninsel; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "BERGWELT-018",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP05 → CP06 — Breite und Übergang",
+      "anchor": "CP05→CP06",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Kristallhöhleninsel und Wasserfallinsel C; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "BERGWELT-019",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP06 → CP07 — Breite und Übergang",
+      "anchor": "CP06→CP07",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Wasserfallinsel C und Wasserfallinsel D; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "BERGWELT-020",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP07 → CP08 — Breite und Übergang",
+      "anchor": "CP07→CP08",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Wasserfallinsel D und Wolkenweg-Einstieg; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "BERGWELT-021",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP08 → CP09 — Breite und Übergang",
+      "anchor": "CP08→CP09",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Wolkenweg-Einstieg und Tempelruinen; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "BERGWELT-022",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP09 → CP10 — Breite und Übergang",
+      "anchor": "CP09→CP10",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Tempelruinen und Wasserfallinsel E; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "BERGWELT-023",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP10 → CP11 — Breite und Übergang",
+      "anchor": "CP10→CP11",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Wasserfallinsel E und Hauptweg-Rücklauf; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "BERGWELT-024",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP11 → CP00 — Breite und Übergang",
+      "anchor": "CP11→CP00",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Hauptweg-Rücklauf und Startinsel; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "BERGWELT-025",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 1 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.000 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.000×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "BERGWELT-026",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 2 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.125 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.125×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "BERGWELT-027",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 3 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.250 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.250×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "BERGWELT-028",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 4 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.375 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.375×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "BERGWELT-029",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 5 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.500 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.500×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "BERGWELT-030",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 6 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.625 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.625×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "BERGWELT-031",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 7 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.750 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.750×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "BERGWELT-032",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 8 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.875 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.875×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "BERGWELT-033",
+      "kind": "signature_setpiece",
+      "title": "Schwebende Himmelsinseln — Abnahmepunkt 1",
+      "anchor": "0.070 track fraction / floating_island_chain",
+      "verification": "Prüfe vier vorhandene Inselspannen aus ISLANDS statt freier Inselplatzierung.",
+      "authority": "kart_sky_islands.gd:_road_island"
+    },
+    {
+      "id": "BERGWELT-034",
+      "kind": "signature_setpiece",
+      "title": "Schwebende Himmelsinseln — Abnahmepunkt 2",
+      "anchor": "0.070 track fraction / floating_island_chain",
+      "verification": "Prüfe ±6.3-m-Fahrbahnrand über der Inseloberfläche ohne sichtbare Decklücke.",
+      "authority": "kart_sky_islands.gd:_road_island"
+    },
+    {
+      "id": "BERGWELT-035",
+      "kind": "signature_setpiece",
+      "title": "Schwebende Himmelsinseln — Abnahmepunkt 3",
+      "anchor": "0.070 track fraction / floating_island_chain",
+      "verification": "Prüfe Inselkeel und Seitenwobble bleiben vom Fahrbahnmesh getrennte Deko.",
+      "authority": "kart_sky_islands.gd:_road_island"
+    },
+    {
+      "id": "BERGWELT-036",
+      "kind": "signature_setpiece",
+      "title": "Orange Rampe und offener Gap — Abnahmepunkt 1",
+      "anchor": "0.495 track fraction / jump_gap",
+      "verification": "Prüfe RAMP_LENGTH=7 m, RAMP_HEIGHT=1.8 m und GAP_LENGTH=8 m unverändert.",
+      "authority": "kart_sky_islands.gd:jump_layout + jump_dressing"
+    },
+    {
+      "id": "BERGWELT-037",
+      "kind": "signature_setpiece",
+      "title": "Orange Rampe und offener Gap — Abnahmepunkt 2",
+      "anchor": "0.495 track fraction / jump_gap",
+      "verification": "Prüfe offene Gap-Grenzen entsprechen take_off bis gap_end aus jump_layout().",
+      "authority": "kart_sky_islands.gd:jump_layout + jump_dressing"
+    },
+    {
+      "id": "BERGWELT-038",
+      "kind": "signature_setpiece",
+      "title": "Orange Rampe und offener Gap — Abnahmepunkt 3",
+      "anchor": "0.495 track fraction / jump_gap",
+      "verification": "Prüfe safe_respawn_distance vermeidet Rampenpuffer 1.5 m und Gap-Endpuffer 2.5 m.",
+      "authority": "kart_sky_islands.gd:jump_layout + jump_dressing"
+    },
+    {
+      "id": "BERGWELT-039",
+      "kind": "signature_setpiece",
+      "title": "Tempelruinen — Abnahmepunkt 1",
+      "anchor": "0.715 track fraction / temple_ruins",
+      "verification": "Prüfe Landmarkenmittelpunkt bleibt RUINS=0.715 auf der Katalog-Centerline.",
+      "authority": "kart_sky_islands.gd:_temple_ruins"
+    },
+    {
+      "id": "BERGWELT-040",
+      "kind": "signature_setpiece",
+      "title": "Tempelruinen — Abnahmepunkt 2",
+      "anchor": "0.715 track fraction / temple_ruins",
+      "verification": "Prüfe jeder Ruinenpfeiler steht auf Insel-/Deko-Fläche außerhalb ±6.05-m-Rails.",
+      "authority": "kart_sky_islands.gd:_temple_ruins"
+    },
+    {
+      "id": "BERGWELT-041",
+      "kind": "signature_setpiece",
+      "title": "Tempelruinen — Abnahmepunkt 3",
+      "anchor": "0.715 track fraction / temple_ruins",
+      "verification": "Prüfe der feste Seed erzeugt bei identischem Track-Seed dieselbe Ruinenanordnung.",
+      "authority": "kart_sky_islands.gd:_temple_ruins"
+    },
+    {
+      "id": "BERGWELT-042",
+      "kind": "signature_setpiece",
+      "title": "WOLKENWEG / HAUPTWEG Split — Abnahmepunkt 1",
+      "anchor": "0.800 track fraction / wolkenweg_split",
+      "verification": "Prüfe SPLIT_SPAN=22 m, SPLIT_RISE=6 m und SPLIT_HEIGHT=2.2 m.",
+      "authority": "kart_sky_islands.gd:split_route_layout + _split_sky_bridge"
+    },
+    {
+      "id": "BERGWELT-043",
+      "kind": "signature_setpiece",
+      "title": "WOLKENWEG / HAUPTWEG Split — Abnahmepunkt 2",
+      "anchor": "0.800 track fraction / wolkenweg_split",
+      "verification": "Prüfe linke Fahrspur bei −2.8 m steigt; rechte Spur bleibt auf 0 m Zusatzhöhe.",
+      "authority": "kart_sky_islands.gd:split_route_layout + _split_sky_bridge"
+    },
+    {
+      "id": "BERGWELT-044",
+      "kind": "signature_setpiece",
+      "title": "WOLKENWEG / HAUPTWEG Split — Abnahmepunkt 3",
+      "anchor": "0.800 track fraction / wolkenweg_split",
+      "verification": "Prüfe Rejoin vor STAR_GATE=0.865 mit vorhandenem 17-m-Abstand.",
+      "authority": "kart_sky_islands.gd:split_route_layout + _split_sky_bridge"
+    },
+    {
+      "id": "BERGWELT-045",
+      "kind": "signature_setpiece",
+      "title": "Siebenbogiges Sternentor — Abnahmepunkt 1",
+      "anchor": "0.865 track fraction / star_gate",
+      "verification": "Prüfe sieben Bogenstationen gleichmäßig über 34 m.",
+      "authority": "kart_sky_islands.gd:_star_gate_run"
+    },
+    {
+      "id": "BERGWELT-046",
+      "kind": "signature_setpiece",
+      "title": "Siebenbogiges Sternentor — Abnahmepunkt 2",
+      "anchor": "0.865 track fraction / star_gate",
+      "verification": "Prüfe Goldsterne sitzen 6.1 m hoch und ±3.4 m seitlich auf jedem zweiten Farbschema.",
+      "authority": "kart_sky_islands.gd:_star_gate_run"
+    },
+    {
+      "id": "BERGWELT-047",
+      "kind": "signature_setpiece",
+      "title": "Siebenbogiges Sternentor — Abnahmepunkt 3",
+      "anchor": "0.865 track fraction / star_gate",
+      "verification": "Prüfe Hauptfahrbahn bleibt kontinuierlich und der Bogen erhält keine Fake-Tunnelcollision.",
+      "authority": "kart_sky_islands.gd:_star_gate_run"
+    },
+    {
+      "id": "BERGWELT-048",
+      "kind": "signature_setpiece",
+      "title": "Kristallhöhle — Abnahmepunkt 1",
+      "anchor": "0.555 track fraction / crystal_cave",
+      "verification": "Prüfe Höhlenanker bleibt CAVE=0.555 und gehört zur vorhandenen dritten Insel.",
+      "authority": "kart_world.gd:_snow_tunnel + kart_sky_islands.gd:cave_crystals"
+    },
+    {
+      "id": "BERGWELT-049",
+      "kind": "signature_setpiece",
+      "title": "Kristallhöhle — Abnahmepunkt 2",
+      "anchor": "0.555 track fraction / crystal_cave",
+      "verification": "Prüfe Tunnel-Lichthöhe 6.6 m und Außenhülle 7.65 m gemäß _snow_tunnel().",
+      "authority": "kart_world.gd:_snow_tunnel + kart_sky_islands.gd:cave_crystals"
+    },
+    {
+      "id": "BERGWELT-050",
+      "kind": "signature_setpiece",
+      "title": "Kristallhöhle — Abnahmepunkt 3",
+      "anchor": "0.555 track fraction / crystal_cave",
+      "verification": "Prüfe sieben innere Lichtbalken folgen dem 3.3-m-Rhythmus der Höhlenstrecke.",
+      "authority": "kart_world.gd:_snow_tunnel + kart_sky_islands.gd:cave_crystals"
+    },
+    {
+      "id": "BERGWELT-051",
+      "kind": "signature_setpiece",
+      "title": "Lumo-Luftschiff — Abnahmepunkt 1",
+      "anchor": "0.820 track fraction / lumo_blimp",
+      "verification": "Prüfe Luftschiff-Zentrum bleibt bei (-28,48,-40) Weltmetern.",
+      "authority": "kart_sky_islands.gd:_blimp"
+    },
+    {
+      "id": "BERGWELT-052",
+      "kind": "signature_setpiece",
+      "title": "Lumo-Luftschiff — Abnahmepunkt 2",
+      "anchor": "0.820 track fraction / lumo_blimp",
+      "verification": "Prüfe Rumpfmaß 9×3.4×3.4 m ist aus der Rennkamera als Silhouette lesbar.",
+      "authority": "kart_sky_islands.gd:_blimp"
+    },
+    {
+      "id": "BERGWELT-053",
+      "kind": "signature_setpiece",
+      "title": "Lumo-Luftschiff — Abnahmepunkt 3",
+      "anchor": "0.820 track fraction / lumo_blimp",
+      "verification": "Prüfe Schildtext beidseitig und alle Luftschiffteile bleiben reine Deko.",
+      "authority": "kart_sky_islands.gd:_blimp"
+    },
+    {
+      "id": "BERGWELT-054",
+      "kind": "signature_setpiece",
+      "title": "Insel-Wasserfallkette — Abnahmepunkt 1",
+      "anchor": "0.620 track fraction / island_waterfalls",
+      "verification": "Prüfe sechs Wasserfall-Inselpunkte aus der bestehenden spots-Liste.",
+      "authority": "kart_sky_islands.gd:_waterfall_islands + _waterfall"
+    },
+    {
+      "id": "BERGWELT-055",
+      "kind": "signature_setpiece",
+      "title": "Insel-Wasserfallkette — Abnahmepunkt 2",
+      "anchor": "0.620 track fraction / island_waterfalls",
+      "verification": "Prüfe Wasserfall-Meshes enden oberhalb CLOUD_LEVEL=−38 m ohne Fahrbahnquerung.",
+      "authority": "kart_sky_islands.gd:_waterfall_islands + _waterfall"
+    },
+    {
+      "id": "BERGWELT-056",
+      "kind": "signature_setpiece",
+      "title": "Insel-Wasserfallkette — Abnahmepunkt 3",
+      "anchor": "0.620 track fraction / island_waterfalls",
+      "verification": "Prüfe sechs vorhandene Positionen bleiben ± zur Fahrtrichtung alternierend.",
+      "authority": "kart_sky_islands.gd:_waterfall_islands + _waterfall"
+    },
+    {
+      "id": "BERGWELT-057",
+      "kind": "signature_setpiece",
+      "title": "Goldene Hängeseilbrücke — Abnahmepunkt 1",
+      "anchor": "0.635 track fraction / suspension_bridge",
+      "verification": "Prüfe SUSPENSION=0.635 und 30-m-Spannweite aus dem vorhandenen Builder.",
+      "authority": "kart_sky_islands.gd:_bridges"
+    },
+    {
+      "id": "BERGWELT-058",
+      "kind": "signature_setpiece",
+      "title": "Goldene Hängeseilbrücke — Abnahmepunkt 2",
+      "anchor": "0.635 track fraction / suspension_bridge",
+      "verification": "Prüfe 19 Hänger je Seite folgen der bestehenden Höhenparabel.",
+      "authority": "kart_sky_islands.gd:_bridges"
+    },
+    {
+      "id": "BERGWELT-059",
+      "kind": "signature_setpiece",
+      "title": "Goldene Hängeseilbrücke — Abnahmepunkt 3",
+      "anchor": "0.635 track fraction / suspension_bridge",
+      "verification": "Prüfe Rampen-Gap wird nicht mit der Hängeseilbrücke überlagert.",
+      "authority": "kart_sky_islands.gd:_bridges"
+    },
+    {
+      "id": "BERGWELT-060",
+      "kind": "signature_setpiece",
+      "title": "Sky Halo Loop — Abnahmepunkt 1",
+      "anchor": "0.900 track fraction / sky_halo_loop",
+      "verification": "Prüfe isoliertes 360°-Authoringmesh mit 12-m-Mittelradius und 10.8-m-Belag.",
+      "authority": "scenes/games/track_authoring/sky_halo_loop_authoring.tscn"
+    },
+    {
+      "id": "BERGWELT-061",
+      "kind": "signature_setpiece",
+      "title": "Sky Halo Loop — Abnahmepunkt 2",
+      "anchor": "0.900 track fraction / sky_halo_loop",
+      "verification": "Setpiece bleibt runtime_driveable=false und collision_included=false.",
+      "authority": "scenes/games/track_authoring/sky_halo_loop_authoring.tscn"
+    },
+    {
+      "id": "BERGWELT-062",
+      "kind": "signature_setpiece",
+      "title": "Sky Halo Loop — Abnahmepunkt 3",
+      "anchor": "0.900 track fraction / sky_halo_loop",
+      "verification": "Freigabe erfordert alle sechs Spec-Inversionsgates plus vollständigen Player-/AI-Rundlauf.",
+      "authority": "scenes/games/track_authoring/sky_halo_loop_authoring.tscn"
+    },
+    {
+      "id": "BERGWELT-063",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 1 — Position und Fangradius",
+      "anchor": "0.18 track fraction, lateral -2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.18×track_length und Spur -2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "BERGWELT-064",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 1 — Core-Item-Vertrag",
+      "anchor": "MP-01",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "BERGWELT-065",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 2 — Position und Fangradius",
+      "anchor": "0.34 track fraction, lateral +2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.34×track_length und Spur +2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "BERGWELT-066",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 2 — Core-Item-Vertrag",
+      "anchor": "MP-02",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "BERGWELT-067",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 3 — Position und Fangradius",
+      "anchor": "0.53 track fraction, lateral +0.0 m",
+      "verification": "Prüfe Runtime-Zone bei 0.53×track_length und Spur +0.0 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "BERGWELT-068",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 3 — Core-Item-Vertrag",
+      "anchor": "MP-03",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "BERGWELT-069",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 4 — Position und Fangradius",
+      "anchor": "0.69 track fraction, lateral -2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.69×track_length und Spur -2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "BERGWELT-070",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 4 — Core-Item-Vertrag",
+      "anchor": "MP-04",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "BERGWELT-071",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 5 — Position und Fangradius",
+      "anchor": "0.86 track fraction, lateral +2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.86×track_length und Spur +2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "BERGWELT-072",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 5 — Core-Item-Vertrag",
+      "anchor": "MP-05",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "BERGWELT-073",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 1 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.050 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.050, Zieltempo 44 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "BERGWELT-074",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 2 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.150 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.150, Zieltempo 50 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "BERGWELT-075",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 3 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.250 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.250, Zieltempo 56 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "BERGWELT-076",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 4 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.350 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.350, Zieltempo 48 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "BERGWELT-077",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 5 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.450 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.450, Zieltempo 62 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "BERGWELT-078",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 6 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.550 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.550, Zieltempo 52 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "BERGWELT-079",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 7 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.650 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.650, Zieltempo 60 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "BERGWELT-080",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 8 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.750 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.750, Zieltempo 46 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "BERGWELT-081",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 9 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.850 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.850, Zieltempo 58 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "BERGWELT-082",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 10 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.950 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.950, Zieltempo 54 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "BERGWELT-083",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Rail/Visual",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe sichtbare Rail bei ±6.05 m und Collision-Wall-Zentrum bei ±5.00 m; dokumentiere beide Maße getrennt.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "BERGWELT-084",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Road width",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe 10.8-m-Fahrbahn einschließlich Randlinie; freie Fahrspur darf nicht durch Deko verengt werden.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "BERGWELT-085",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Checkpoint seam",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Trigger an Achtelgrenze und Loop-Seam ohne Doppelauslösung bei modulo track_length.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "BERGWELT-086",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Item pickup",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Lumo Mystery Prism Reichweite <2.0 m und pro-Lap-ID auf Mehrfachauslösung.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "BERGWELT-087",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Deko separation",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Setpiece-Deko gegen Rail-Abstand; nur ausdrücklich authorisierte Straßenmodule erhalten Collision.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "BERGWELT-088",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Ramp landing",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Rampenanfang, Absprung und Landekorridor separat gegen Gap- und Reset-Puffer.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "BERGWELT-089",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Loop gate",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Loop bleibt ohne Collision solange Upside-down Player, AI und Respawn nicht bestanden sind.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "BERGWELT-090",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Low-detail parity",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe, dass Collision-/Checkpoint-/Item-Geometrie im Low-Detail-Profil identisch zur High-Stufe bleibt.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "BERGWELT-091",
+      "kind": "visual_material",
+      "title": "Visual-QA — Asphalt",
+      "anchor": "Himmelsinseln materials",
+      "verification": "Asphalt-Shader erhält den Track-Farbton und zeigt Centerline-Markierungen ohne Transparenzoverdraw.",
+      "authority": "scripts/games/kart_sky_islands.gd:material builders"
+    },
+    {
+      "id": "BERGWELT-092",
+      "kind": "visual_material",
+      "title": "Visual-QA — Curb",
+      "anchor": "Himmelsinseln materials",
+      "verification": "Curb-Segmente bleiben 0.48 m breit und alternieren als gut lesbares Rot/Weiß am Sonnenhafen.",
+      "authority": "scripts/games/kart_sky_islands.gd:material builders"
+    },
+    {
+      "id": "BERGWELT-093",
+      "kind": "visual_material",
+      "title": "Visual-QA — Normal",
+      "anchor": "Himmelsinseln materials",
+      "verification": "Berechne Terrain-Normalen nach Vertexfarben; prüfe Seitenflächen auf konsistente Beleuchtung.",
+      "authority": "scripts/games/kart_sky_islands.gd:material builders"
+    },
+    {
+      "id": "BERGWELT-094",
+      "kind": "visual_material",
+      "title": "Visual-QA — Glow",
+      "anchor": "Himmelsinseln materials",
+      "verification": "Leuchtmaterialien sind auf Landmark-Akzente begrenzt und überstrahlen weder Rails noch Item-Silhouette.",
+      "authority": "scripts/games/kart_sky_islands.gd:material builders"
+    },
+    {
+      "id": "BERGWELT-095",
+      "kind": "visual_material",
+      "title": "Visual-QA — Fog",
+      "anchor": "Himmelsinseln materials",
+      "verification": "Prüfe Hintergrundkontrast am Horizont; Rennbahn und Checkpoint-Fahnen bleiben im Nebel lesbar.",
+      "authority": "scripts/games/kart_sky_islands.gd:material builders"
+    },
+    {
+      "id": "BERGWELT-096",
+      "kind": "visual_material",
+      "title": "Visual-QA — Camera scale",
+      "anchor": "Himmelsinseln materials",
+      "verification": "Prüfe Setpiece-Silhouette aus Fahrer-Chase-Kamera und aus 55° Orbit-View.",
+      "authority": "scripts/games/kart_sky_islands.gd:material builders"
+    },
+    {
+      "id": "BERGWELT-097",
+      "kind": "visual_material",
+      "title": "Visual-QA — Water/material",
+      "anchor": "Himmelsinseln materials",
+      "verification": "Wasserfall-/Wasserflächen bleiben separate Materialien mit Schatten aus, falls sie transparent sind.",
+      "authority": "scripts/games/kart_sky_islands.gd:material builders"
+    },
+    {
+      "id": "BERGWELT-098",
+      "kind": "visual_material",
+      "title": "Visual-QA — Texture policy",
+      "anchor": "Himmelsinseln materials",
+      "verification": "Pack-Geometrie nutzt vorhandene Materialien/Atlanten; keine neuen externen Bilder ohne Attribution.",
+      "authority": "scripts/games/kart_sky_islands.gd:material builders"
+    },
+    {
+      "id": "BERGWELT-099",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Crowds",
+      "anchor": "Himmelsinseln",
+      "verification": "Crowd-/wiederholte Tribünenpunkte müssen über vorhandene Instance-Batches zusammengefasst sein.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "BERGWELT-100",
+      "kind": "performance_qa",
+      "title": "Performance-QA — LOD0",
+      "anchor": "Himmelsinseln",
+      "verification": "LOD0 enthält Landmark-Silhouette und Streckenführung, nicht hunderte kleinteilige Schattenobjekte.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "BERGWELT-101",
+      "kind": "performance_qa",
+      "title": "Performance-QA — LOD1",
+      "anchor": "Himmelsinseln",
+      "verification": "Low-Detail reduziert reine Dekoration; Centerline, Fahrbahn, Rail und Item-Zonen bleiben unverändert.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "BERGWELT-102",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Shadows",
+      "anchor": "Himmelsinseln",
+      "verification": "Hintergrundberge, transparente Wasserfälle und UI-nahe Prisms schalten unnötige Schatten ab.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "BERGWELT-103",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Materials",
+      "anchor": "Himmelsinseln",
+      "verification": "Wiederholte Streckenteile referenzieren gemeinsame Materialinstanzen oder Atlas-Materialien.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "BERGWELT-104",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Transparent",
+      "anchor": "Himmelsinseln",
+      "verification": "Transparente/ additive VFX sind auf ausgewiesene Wasser-, Glow- und Prismflächen begrenzt.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "BERGWELT-105",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Collision budget",
+      "anchor": "Himmelsinseln",
+      "verification": "Kollision verwendet einfache Rails/Trigger/Proxies; Deko-Vertices werden nicht als Mesh-Collider missbraucht.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "BERGWELT-106",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Frame target",
+      "anchor": "Himmelsinseln",
+      "verification": "60-FPS bleibt Zielbudget, aber kein Gerät-PASS ohne physische Messung.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "BERGWELT-107",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — road",
+      "anchor": "Himmelsinseln",
+      "verification": "Die Straßenführung folgt ausschließlich kart_tracks.gd und kart_world.gd; Belagsbreite beträgt 10.8 m.",
+      "authority": "scripts/games/kart_sky_islands.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "BERGWELT-108",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — ramp",
+      "anchor": "Himmelsinseln",
+      "verification": "Rampen werden als eigenes authoring mesh plus getrennte Collision-/Landing-Prüfung dokumentiert.",
+      "authority": "scripts/games/kart_sky_islands.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "BERGWELT-109",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — bridge",
+      "anchor": "Himmelsinseln",
+      "verification": "Brücken verwenden die bestehende Centerline als Achse; Stützen liegen außerhalb des freien 10.8-m-Korridors.",
+      "authority": "scripts/games/kart_sky_islands.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "BERGWELT-110",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — tunnel",
+      "anchor": "Himmelsinseln",
+      "verification": "Tunnel definieren lichte Höhe/Breite, Randkollision und Kamera-Freiraum getrennt vom Deko-Vault.",
+      "authority": "scripts/games/kart_sky_islands.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "BERGWELT-111",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — full_loop",
+      "anchor": "Himmelsinseln",
+      "verification": "Loop ist ein 360°-Authoringmodul; aktivierbarer Runtime-Track bleibt bis Inversionsvertrag gesperrt.",
+      "authority": "scripts/games/kart_sky_islands.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "BERGWELT-112",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — centerline",
+      "anchor": "Himmelsinseln",
+      "verification": "Top-down-Mapping speichert Control Points in Metern und verweist auf vorhandene Runtime-Samplingregeln.",
+      "authority": "scripts/games/kart_sky_islands.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "BERGWELT-113",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — engine_audio",
+      "anchor": "Himmelsinseln",
+      "verification": "Prüfe Motor-/Fahrbahn-Ambience über alle acht Sektoren ohne Lernfrage oder Antworttimer.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "BERGWELT-114",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — setpiece_audio",
+      "anchor": "Himmelsinseln",
+      "verification": "Signature-Audio cue beginnt am Setpiece-Anker und endet vor dem Folge-Checkpoint.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "BERGWELT-115",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — item_audio",
+      "anchor": "Himmelsinseln",
+      "verification": "Pickup-Sound signalisiert ein erworbenes Prism; Item-ID bleibt boost/shield/pulse.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "BERGWELT-116",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — landing_vfx",
+      "anchor": "Himmelsinseln",
+      "verification": "Sprung-Landeeffekt sitzt am bestehenden Gap-Landing; kein VFX verändert Kollisionshöhe.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "BERGWELT-117",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — dust_vfx",
+      "anchor": "Himmelsinseln",
+      "verification": "Staub/Partikel bleiben in der Fahrbahnzone und verdecken keine Pfeile oder Mystery Prisms.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "BERGWELT-118",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — glow_vfx",
+      "anchor": "Himmelsinseln",
+      "verification": "Emissionspulse bleibt zeitlich begrenzt, ohne Screen-Space-Shader-Abhängigkeit für Mobile.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "BERGWELT-119",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — camera_shake",
+      "anchor": "Himmelsinseln",
+      "verification": "Kamerareaktion bleibt klein und deterministisch an realen Kontakt/Jump gebunden.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "BERGWELT-120",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — audio_mix",
+      "anchor": "Himmelsinseln",
+      "verification": "Wasserfall/Stadt/Wald-Ambience ist leiser als Item-, Rail- und Checkpoint-Feedback.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    }
+  ],
+  "views": [
+    {
+      "id": "BERGWELT-ORBIT-A000-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 12,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A000-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 30,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A000-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 55,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A000-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 75,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A045-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 12,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A045-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 30,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A045-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 55,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A045-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 75,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A090-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 12,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A090-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 30,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A090-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 55,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A090-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 75,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A135-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 12,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A135-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 30,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A135-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 55,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A135-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 75,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A180-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 12,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A180-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 30,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A180-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 55,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A180-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 75,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A225-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 12,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A225-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 30,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A225-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 55,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A225-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 75,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A270-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 12,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A270-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 30,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A270-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 55,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A270-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 75,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A315-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 12,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A315-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 30,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A315-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 55,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORBIT-A315-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 75,
+        "distance_m": 116,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Himmelsinseln horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "BERGWELT-ORTHO-TOP",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "orthographic_size_m": 250
+      },
+      "acceptance": "Vollständige Himmelsinseln-Route inklusive aller 12 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "BERGWELT-ORTHO-FRONT",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "front",
+        "orthographic_size_m": 250
+      },
+      "acceptance": "Vollständige Himmelsinseln-Route inklusive aller 12 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "BERGWELT-ORTHO-LEFT",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "left",
+        "orthographic_size_m": 250
+      },
+      "acceptance": "Vollständige Himmelsinseln-Route inklusive aller 12 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "BERGWELT-ORTHO-RIGHT",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "right",
+        "orthographic_size_m": 250
+      },
+      "acceptance": "Vollständige Himmelsinseln-Route inklusive aller 12 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "BERGWELT-DRIVER-START",
+      "kind": "driver",
+      "target": "route_fraction:0.000",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im start-Sektor."
+    },
+    {
+      "id": "BERGWELT-DRIVER-FIRST_TURN",
+      "kind": "driver",
+      "target": "route_fraction:0.140",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im first_turn-Sektor."
+    },
+    {
+      "id": "BERGWELT-DRIVER-MIDDLE",
+      "kind": "driver",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im middle-Sektor."
+    },
+    {
+      "id": "BERGWELT-DRIVER-LAST_SECTOR",
+      "kind": "driver",
+      "target": "route_fraction:0.875",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im last_sector-Sektor."
+    },
+    {
+      "id": "BERGWELT-SIGNATURE-FRONT",
+      "kind": "signature",
+      "target": "setpiece:floating_island_chain",
+      "camera": {
+        "projection": "perspective",
+        "side": "front",
+        "distance_m": 34,
+        "elevation_deg": 24
+      },
+      "acceptance": "Schwebende Himmelsinseln vollständig mit Zufahrt, Maßstab zur 10.8-m-Bahn und lesbarer Beschriftung erfasst."
+    },
+    {
+      "id": "BERGWELT-SIGNATURE-BACK",
+      "kind": "signature",
+      "target": "setpiece:floating_island_chain",
+      "camera": {
+        "projection": "perspective",
+        "side": "back",
+        "distance_m": 34,
+        "elevation_deg": 24
+      },
+      "acceptance": "Schwebende Himmelsinseln vollständig mit Zufahrt, Maßstab zur 10.8-m-Bahn und lesbarer Beschriftung erfasst."
+    },
+    {
+      "id": "BERGWELT-LOOP-SIDE",
+      "kind": "loop",
+      "target": "setpiece:sky_halo_loop",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "side",
+        "distance_m": 54,
+        "orthographic_size_m": 58
+      },
+      "acceptance": "Geschlossene 360°-Mittelachse, 12-m-Radius, 10.8-m-Deck und authoring-only Status bleiben sichtbar."
+    },
+    {
+      "id": "BERGWELT-LOOP-TOP",
+      "kind": "loop",
+      "target": "setpiece:sky_halo_loop",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "distance_m": 54,
+        "orthographic_size_m": 58
+      },
+      "acceptance": "Geschlossene 360°-Mittelachse, 12-m-Radius, 10.8-m-Deck und authoring-only Status bleiben sichtbar."
+    },
+    {
+      "id": "BERGWELT-ITEM-LANE",
+      "kind": "item_lane",
+      "target": "mystery_prism_zones",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 16,
+        "distance_m": 12
+      },
+      "acceptance": "Mindestens drei vorwärts sichtbare Lumo Mystery Prisms, Spurabstände und Pickup-Korridor sind erkennbar."
+    },
+    {
+      "id": "BERGWELT-SHORTCUT-ENTRY",
+      "kind": "shortcut_entry",
+      "target": "signature_shortcut_or_ramp",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 25,
+        "elevation_deg": 30,
+        "distance_m": 30
+      },
+      "acceptance": "Abzweig/Rampe, Einfahrt, Landekorridor und Rückkehr auf bestehende Centerline sind gleichzeitig lesbar."
+    },
+    {
+      "id": "BERGWELT-AI-TOP",
+      "kind": "ai_debug",
+      "target": "ai_racing_line",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "orthographic_size_m": 150
+      },
+      "acceptance": "Zehn KI-Anker, seitliche Überholreserve und Fahrer-Referenzcenterline sind unterscheidbar."
+    },
+    {
+      "id": "BERGWELT-COLLISION-DEBUG",
+      "kind": "collision_debug",
+      "target": "road_rail_checkpoint_item_collision",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "overlay": "collision_debug"
+      },
+      "acceptance": "10.8-m-Straße, ±6.05-m-Visualrail, ±5.0-m-Wall und Checkpoint-/Item-Triggergrenzen sind getrennt sichtbar."
+    }
+  ],
+  "qa": {
+    "collision": "simple road rail/checkpoint/item proxies only; decorative geometry does not imply collision",
+    "low_detail_parity": "track width, route, item positions, checkpoint and safe respawn must match high detail",
+    "learning_separation": "no quiz, answer timer, learning cup, or correct-answer boost in race",
+    "performance": "MultiMesh repeated props; separate mobile LOD0/LOD1/background; avoid unnecessary transparent materials and background shadows"
+  }
+}

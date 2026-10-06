@@ -1,0 +1,2277 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "lumo.track.sonnenhafen.2026-10-06",
+  "track_id": "sonnenhafen",
+  "display_name": "Sonnenhafen",
+  "subtitle": "Grand Prix zwischen Klippen, Hafen und Wasserfall",
+  "units": "metres",
+  "status": "authoring_source",
+  "authorities": {
+    "catalog": "scripts/games/kart_tracks.gd:LumoKartTracks.definition",
+    "world_builder": "scripts/games/kart_world.gd",
+    "curve_builder": "scripts/games/kart_world.gd:LumoRaceWorld._make_curve",
+    "road_builder": "scripts/games/kart_world.gd:LumoRaceWorld._road",
+    "spec": "docs/track_expansion/2026-10-06/TRACK_DEVELOPER_PACK_SPEC.md",
+    "no_parallel_spline": true
+  },
+  "route": {
+    "control_point_ids": [
+      "CP00",
+      "CP01",
+      "CP02",
+      "CP03",
+      "CP04",
+      "CP05",
+      "CP06",
+      "CP07",
+      "CP08",
+      "CP09",
+      "CP10",
+      "CP11",
+      "CP12",
+      "CP13",
+      "CP14",
+      "CP15",
+      "CP16"
+    ],
+    "control_point_labels": [
+      "Startaufstellung",
+      "Stadionbogen",
+      "Küsten-S",
+      "Klippenanstieg",
+      "Lighthouse-Hairpin",
+      "Nordkante",
+      "Waterfront-Sweep",
+      "Pier-Zufahrt",
+      "Klippenbogen",
+      "Hafenabfahrt",
+      "Fährkanal",
+      "Zielbogen",
+      "Küstenrücklauf",
+      "Hafenrampe",
+      "Südklippe",
+      "Stadionrückseite",
+      "Startgerade"
+    ],
+    "control_points_xyz_m": [
+      [
+        0.0,
+        1.8,
+        72.0
+      ],
+      [
+        42.0,
+        2.2,
+        69.0
+      ],
+      [
+        77.0,
+        3.8,
+        49.0
+      ],
+      [
+        94.0,
+        7.0,
+        19.0
+      ],
+      [
+        78.0,
+        12.5,
+        -8.0
+      ],
+      [
+        94.0,
+        15.5,
+        -43.0
+      ],
+      [
+        67.0,
+        13.0,
+        -78.0
+      ],
+      [
+        31.0,
+        8.0,
+        -91.0
+      ],
+      [
+        2.0,
+        5.5,
+        -70.0
+      ],
+      [
+        -24.0,
+        7.0,
+        -86.0
+      ],
+      [
+        -61.0,
+        10.0,
+        -77.0
+      ],
+      [
+        -89.0,
+        14.5,
+        -48.0
+      ],
+      [
+        -84.0,
+        18.0,
+        -13.0
+      ],
+      [
+        -55.0,
+        19.0,
+        12.0
+      ],
+      [
+        -78.0,
+        13.0,
+        43.0
+      ],
+      [
+        -50.0,
+        7.5,
+        70.0
+      ],
+      [
+        -18.0,
+        3.2,
+        80.0
+      ]
+    ],
+    "runtime_horizontal_scale": 1.0,
+    "top_down_centerline": {
+      "coordinate_plane": "X/Z",
+      "closed": true,
+      "sample_interval_m": 0.35,
+      "control_point_smoothing": "current*0.5 + previous*0.25 + next*0.25",
+      "runtime_tangent_scale": 0.22,
+      "runtime_reference": "kart_world.gd:_make_curve; use world.position_at(distance,lateral) for route samples"
+    }
+  },
+  "road": {
+    "width_m": 10.8,
+    "visible_rail_lateral_m": 6.05,
+    "collision_wall_lateral_m": 5.0,
+    "invariant": "The visual rail and collision wall must be measured independently and remain consistent with kart_world.gd."
+  },
+  "geometry_guides": {
+    "road": {
+      "authoring": "Follow existing closed Catmull-Rom/Bézier centerline; 10.8-m full-width ribbon; visible and collision rails share declared lateral offsets."
+    },
+    "ramp": {
+      "authoring": "Place ramp mesh on this pack’s named existing CP interval; authoring geometry and collision proxy remain separate."
+    },
+    "bridge": {
+      "authoring": "Build bridge as centerline-following deck modules, width 13.4 m for the existing Sky bridge convention or source-module width when not a Sky module; keep support mesh and collision proxy separate."
+    },
+    "tunnel": {
+      "authoring": "Use existing centerline tangent and define clear height/width; use a visual vault and separately inspect the simple collision envelope."
+    },
+    "full_loop": {
+      "authoring": "360-degree planar loop centered on existing route anchor; prototype geometry only at 0.880 route fraction.",
+      "status": "planned_requires_inverted_physics",
+      "runtime_enabled": false,
+      "collision_enabled": false,
+      "centerline_radius_m": 12.0,
+      "road_width_m": 10.8,
+      "vertical_rise_m": 24.0,
+      "approach_length_m": 18.0,
+      "surface_segments": 96,
+      "prototype_scene": null,
+      "gate": "Do not place on race Centerline or enable until gravity/up, camera, AI, collision, checkpoint/respawn, and full Player+AI 360-degree run all pass."
+    }
+  },
+  "signature_setpieces": [
+    {
+      "id": "start_gate",
+      "name": "LUMO GRAND PRIX Starttor",
+      "status": "implemented",
+      "anchor_fraction": 0.0,
+      "authority": "kart_world.gd:_arch + _grid_boxes",
+      "dimensions_m": {
+        "x": 15.6,
+        "y": 9.85,
+        "z": 1.2
+      },
+      "palette_role": "Cyan auf dunklem Stadionblau",
+      "handoff_notes": [
+        "Prüfe Querträgerbreite 13.7 m gegen 10.8-m-Fahrbahn plus Seitenraum.",
+        "Prüfe 6 Grid-Reihen mit 2 versetzten Startspuren und 2.35-m-Längsabstand.",
+        "Prüfe lesbare Vorwärts- und Rückseitenbeschriftung im 0-m-Routenanker."
+      ]
+    },
+    {
+      "id": "stadium_straight",
+      "name": "Stadiongerade mit Doppeltribünen",
+      "status": "implemented",
+      "anchor_fraction": 0.035,
+      "authority": "kart_world.gd:_start_grandstand",
+      "dimensions_m": {
+        "x": 19.2,
+        "y": 6.67,
+        "z": 5.9
+      },
+      "palette_role": "Kalkweiß, Türkis, fünf Crowd-Farben",
+      "handoff_notes": [
+        "Prüfe je Tribüne 4 Sitzterrassen mit 0.72-m-Höhenstufe.",
+        "Prüfe Crowd als 4×18 Instanzpunkte je Tribüne statt Einzelschatten.",
+        "Prüfe Dachspannweite 19.2 m und freie Sicht auf die 10.8-m-Startbahn."
+      ]
+    },
+    {
+      "id": "cliff_s_bend",
+      "name": "Klippen-S-Kurve",
+      "status": "implemented",
+      "anchor_fraction": 0.17,
+      "authority": "kart_world.gd:_terraced_cliffs",
+      "dimensions_m": {
+        "x": 20.0,
+        "y": 12.5,
+        "z": 18.0
+      },
+      "palette_role": "Vier warme Felslagen und Gras-Kronen",
+      "handoff_notes": [
+        "Prüfe äußere Felskante mindestens 10.3 m seitlich ab Centerline.",
+        "Prüfe 3 Höhenstaffeln mit 2.15-m-Tierabstand und Baum-Silhouette.",
+        "Prüfe Richtungspfeile auf der Kurvenaußenseite bei 0.14 Rundenanteil."
+      ]
+    },
+    {
+      "id": "harbor_suspension_bridge",
+      "name": "Hafen-Hängebrücke",
+      "status": "implemented",
+      "anchor_fraction": 0.295,
+      "authority": "kart_world.gd:_suspension_bridge",
+      "dimensions_m": {
+        "x": 37.0,
+        "y": 12.0,
+        "z": 14.0
+      },
+      "palette_role": "Kalksteinpfeiler, stahlblaue Kappen",
+      "handoff_notes": [
+        "Prüfe Brückenspannweite 37 m um den 0.295-Routenanker.",
+        "Prüfe 19 Kabelsegmente pro Seite auf durchgängige Hänger ohne Fahrbahn-Collision.",
+        "Prüfe Turmfüße bei ±6.55 m außerhalb der kartseitigen WALL_LATERAL-Grenze."
+      ]
+    },
+    {
+      "id": "harbor_descent",
+      "name": "Hafenabfahrt",
+      "status": "implemented",
+      "anchor_fraction": 0.39,
+      "authority": "kart_tracks.gd:CP03–CP05",
+      "dimensions_m": {
+        "x": 18.0,
+        "y": 15.5,
+        "z": 35.0
+      },
+      "palette_role": "Asphaltkorridor mit heller Curb-Folge",
+      "handoff_notes": [
+        "Prüfe Centerline-Höhenabfall aus CP04/CP05 statt einer zweiten Abfahrtskurve.",
+        "Prüfe rot/weißen Curb-Wechsel im 1.4-m-Sampling des Road-Builders.",
+        "Prüfe Sichtlinie auf das Hafenbecken bei 0.39 Routenanteil ohne Tunnelüberdeckung."
+      ]
+    },
+    {
+      "id": "waterfall_terrace",
+      "name": "Küsten-Wasserfallterrasse",
+      "status": "implemented",
+      "anchor_fraction": 0.585,
+      "authority": "kart_world.gd:_coastal_waterfall_setpiece",
+      "dimensions_m": {
+        "x": 22.0,
+        "y": 14.0,
+        "z": 8.5
+      },
+      "palette_role": "Fünf Felslagen, Graslippe, cyanfarbener Wasserfall",
+      "handoff_notes": [
+        "Prüfe Wasserfall-Quadbreite 3.8 m und freies Sichtfenster vom Fahrer bei 0.585.",
+        "Prüfe fünf Felsstufen auf anliegende Terrassen statt schwebender Einzelwand.",
+        "Prüfe Wasserfall-Sprühpunkte ohne dynamische Schatten und ohne Fahrbahn-Kollision."
+      ]
+    },
+    {
+      "id": "waterfront_sweep",
+      "name": "Waterfront-Sweep",
+      "status": "implemented",
+      "anchor_fraction": 0.7,
+      "authority": "kart_world.gd:_grand_prix_lane_markings",
+      "dimensions_m": {
+        "x": 10.8,
+        "y": 5.6,
+        "z": 2.15
+      },
+      "palette_role": "Zwei helle Leitlinien über blauem Asphalt",
+      "handoff_notes": [
+        "Prüfe zwei Längsdashes bei ±1.85 m auf durchgehende Sicht aus Fahrerhöhe.",
+        "Prüfe Fahrbahnmitte mit 5.6-m-Dash-Rhythmus und 2.15-m-Markierungssegment.",
+        "Prüfe die äußere Kurvenseite mit drei 1.65-m-Chevron-Tafeln pro Marker."
+      ]
+    },
+    {
+      "id": "lighthouse_hairpin",
+      "name": "Leuchtturm-Haarnadel",
+      "status": "planned",
+      "anchor_fraction": 0.76,
+      "authority": "kart_tracks.gd:CP12–CP15",
+      "dimensions_m": {
+        "x": 22.0,
+        "y": 24.0,
+        "z": 18.0
+      },
+      "palette_role": "Heller Leuchtturmkörper auf äußerer Klippe",
+      "handoff_notes": [
+        "Platziere Leuchtturm außerhalb des 6.05-m-Rail-Offsets und des 10.8-m-Belags.",
+        "Authoring-Ziel: 24-m-Turm plus 3-m-Lichtkopf bleibt innerhalb Horizont-Silhouette.",
+        "Verifiziere den Hairpin-Radius gegen die bestehende Control-Point-Kurve, nicht per Ersatzspline."
+      ]
+    },
+    {
+      "id": "pier_tunnel",
+      "name": "Pier-Tunnel",
+      "status": "planned",
+      "anchor_fraction": 0.82,
+      "authority": "kart_tracks.gd:CP14–CP16",
+      "dimensions_m": {
+        "x": 24.0,
+        "y": 8.0,
+        "z": 10.8
+      },
+      "palette_role": "Kalksteinrippen mit warmen Abstandslampen",
+      "handoff_notes": [
+        "Setze den 24-m-Tunnel entlang der bestehenden CP14→CP16-Fahrtrichtung.",
+        "Prüfe 8-m lichte Höhe über der 10.8-m-Fahrbahn für Chase-Kamera und Rivalen.",
+        "Kollision bleibt aus einfachen Tunnelrippen; Deko-Meshes erhalten keine Vollflächen-Kollision."
+      ]
+    },
+    {
+      "id": "seabreeze_loop",
+      "name": "Seabreeze Loop",
+      "status": "planned_requires_inverted_physics",
+      "anchor_fraction": 0.88,
+      "authority": "authoring guide: 2026-10-06 full_loop geometry",
+      "dimensions_m": {
+        "x": 12.0,
+        "y": 24.0,
+        "z": 10.8
+      },
+      "palette_role": "Küsten-Cyan auf kalkfarbenem Loopdeck",
+      "handoff_notes": [
+        "Authoring-Mittelradius 12 m und Fahrbahnbreite 10.8 m dokumentieren.",
+        "Status bleibt planned_requires_inverted_physics bis 360°-Player-/AI-/Respawn-Vertrag besteht.",
+        "Keine Runtime-Spline, Kollision oder Cup-Verknüpfung vor allen sechs Inversions-Gates."
+      ]
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "CP-01",
+      "route_fraction": 0.0,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-02",
+      "route_fraction": 0.125,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-03",
+      "route_fraction": 0.25,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-04",
+      "route_fraction": 0.375,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-05",
+      "route_fraction": 0.5,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-06",
+      "route_fraction": 0.625,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-07",
+      "route_fraction": 0.75,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-08",
+      "route_fraction": 0.875,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    }
+  ],
+  "ai_racing_line": [
+    {
+      "id": "AI-01",
+      "route_fraction": 0.05,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 44,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-02",
+      "route_fraction": 0.15,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 50,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-03",
+      "route_fraction": 0.25,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 56,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-04",
+      "route_fraction": 0.35,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 48,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-05",
+      "route_fraction": 0.45,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 62,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-06",
+      "route_fraction": 0.55,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 52,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-07",
+      "route_fraction": 0.65,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 60,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-08",
+      "route_fraction": 0.75,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 46,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-09",
+      "route_fraction": 0.85,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 58,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-10",
+      "route_fraction": 0.95,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 54,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    }
+  ],
+  "mystery_prism_zones": [
+    {
+      "id": "MP-01",
+      "name": "Lumo Mystery Prism 1",
+      "route_fraction": 0.18,
+      "lateral_m": -2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-02",
+      "name": "Lumo Mystery Prism 2",
+      "route_fraction": 0.34,
+      "lateral_m": 2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-03",
+      "name": "Lumo Mystery Prism 3",
+      "route_fraction": 0.53,
+      "lateral_m": 0.0,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-04",
+      "name": "Lumo Mystery Prism 4",
+      "route_fraction": 0.69,
+      "lateral_m": -2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-05",
+      "name": "Lumo Mystery Prism 5",
+      "route_fraction": 0.86,
+      "lateral_m": 2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    }
+  ],
+  "fairness": {
+    "basis": "TRACK_DEVELOPER_PACK_SPEC.md; recommended design weights, not a claim of runtime probabilities",
+    "core_items": [
+      "boost",
+      "shield",
+      "pulse"
+    ],
+    "rank_weights": [
+      {
+        "place": "1",
+        "boost": 0.25,
+        "shield": 0.45,
+        "pulse": 0.3
+      },
+      {
+        "place": "2",
+        "boost": 0.32,
+        "shield": 0.4,
+        "pulse": 0.28
+      },
+      {
+        "place": "3-4",
+        "boost": 0.45,
+        "shield": 0.35,
+        "pulse": 0.2
+      },
+      {
+        "place": "5",
+        "boost": 0.6,
+        "shield": 0.25,
+        "pulse": 0.15
+      },
+      {
+        "place": "6",
+        "boost": 0.7,
+        "shield": 0.2,
+        "pulse": 0.1
+      }
+    ],
+    "rule": "Catch-up only through item weights; no teleportation or hidden top-speed advantage."
+  },
+  "palette": [
+    "Sonnenhafen-Asphalt #3d556b",
+    "Korallen-Curb #e84f45",
+    "Kalkstein #c98a4b",
+    "Terrassengrün #5db64e",
+    "Küstenwasser #73d8ff"
+  ],
+  "details": [
+    {
+      "id": "SONNENHAFEN-001",
+      "kind": "control_point",
+      "title": "CP00 — Startaufstellung — Control-Point-Koordinate",
+      "anchor": "CP00",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=0 m, y=1.8 m, z=72 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-002",
+      "kind": "control_point",
+      "title": "CP01 — Stadionbogen — Control-Point-Koordinate",
+      "anchor": "CP01",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=42 m, y=2.2 m, z=69 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-003",
+      "kind": "control_point",
+      "title": "CP02 — Küsten-S — Control-Point-Koordinate",
+      "anchor": "CP02",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=77 m, y=3.8 m, z=49 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-004",
+      "kind": "control_point",
+      "title": "CP03 — Klippenanstieg — Control-Point-Koordinate",
+      "anchor": "CP03",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=94 m, y=7 m, z=19 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-005",
+      "kind": "control_point",
+      "title": "CP04 — Lighthouse-Hairpin — Control-Point-Koordinate",
+      "anchor": "CP04",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=78 m, y=12.5 m, z=-8 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-006",
+      "kind": "control_point",
+      "title": "CP05 — Nordkante — Control-Point-Koordinate",
+      "anchor": "CP05",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=94 m, y=15.5 m, z=-43 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-007",
+      "kind": "control_point",
+      "title": "CP06 — Waterfront-Sweep — Control-Point-Koordinate",
+      "anchor": "CP06",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=67 m, y=13 m, z=-78 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-008",
+      "kind": "control_point",
+      "title": "CP07 — Pier-Zufahrt — Control-Point-Koordinate",
+      "anchor": "CP07",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=31 m, y=8 m, z=-91 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-009",
+      "kind": "control_point",
+      "title": "CP08 — Klippenbogen — Control-Point-Koordinate",
+      "anchor": "CP08",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=2 m, y=5.5 m, z=-70 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-010",
+      "kind": "control_point",
+      "title": "CP09 — Hafenabfahrt — Control-Point-Koordinate",
+      "anchor": "CP09",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-24 m, y=7 m, z=-86 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-011",
+      "kind": "control_point",
+      "title": "CP10 — Fährkanal — Control-Point-Koordinate",
+      "anchor": "CP10",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-61 m, y=10 m, z=-77 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-012",
+      "kind": "control_point",
+      "title": "CP11 — Zielbogen — Control-Point-Koordinate",
+      "anchor": "CP11",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-89 m, y=14.5 m, z=-48 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-013",
+      "kind": "control_point",
+      "title": "CP12 — Küstenrücklauf — Control-Point-Koordinate",
+      "anchor": "CP12",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-84 m, y=18 m, z=-13 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-014",
+      "kind": "control_point",
+      "title": "CP13 — Hafenrampe — Control-Point-Koordinate",
+      "anchor": "CP13",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-55 m, y=19 m, z=12 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-015",
+      "kind": "control_point",
+      "title": "CP14 — Südklippe — Control-Point-Koordinate",
+      "anchor": "CP14",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-78 m, y=13 m, z=43 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-016",
+      "kind": "control_point",
+      "title": "CP15 — Stadionrückseite — Control-Point-Koordinate",
+      "anchor": "CP15",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-50 m, y=7.5 m, z=70 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-017",
+      "kind": "control_point",
+      "title": "CP16 — Startgerade — Control-Point-Koordinate",
+      "anchor": "CP16",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-18 m, y=3.2 m, z=80 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "SONNENHAFEN-018",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP00 → CP01 — Breite und Übergang",
+      "anchor": "CP00→CP01",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Startaufstellung und Stadionbogen; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-019",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP01 → CP02 — Breite und Übergang",
+      "anchor": "CP01→CP02",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Stadionbogen und Küsten-S; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-020",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP02 → CP03 — Breite und Übergang",
+      "anchor": "CP02→CP03",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Küsten-S und Klippenanstieg; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-021",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP03 → CP04 — Breite und Übergang",
+      "anchor": "CP03→CP04",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Klippenanstieg und Lighthouse-Hairpin; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-022",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP04 → CP05 — Breite und Übergang",
+      "anchor": "CP04→CP05",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Lighthouse-Hairpin und Nordkante; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-023",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP05 → CP06 — Breite und Übergang",
+      "anchor": "CP05→CP06",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Nordkante und Waterfront-Sweep; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-024",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP06 → CP07 — Breite und Übergang",
+      "anchor": "CP06→CP07",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Waterfront-Sweep und Pier-Zufahrt; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-025",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP07 → CP08 — Breite und Übergang",
+      "anchor": "CP07→CP08",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Pier-Zufahrt und Klippenbogen; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-026",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP08 → CP09 — Breite und Übergang",
+      "anchor": "CP08→CP09",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Klippenbogen und Hafenabfahrt; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-027",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP09 → CP10 — Breite und Übergang",
+      "anchor": "CP09→CP10",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Hafenabfahrt und Fährkanal; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-028",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP10 → CP11 — Breite und Übergang",
+      "anchor": "CP10→CP11",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Fährkanal und Zielbogen; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-029",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP11 → CP12 — Breite und Übergang",
+      "anchor": "CP11→CP12",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Zielbogen und Küstenrücklauf; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-030",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP12 → CP13 — Breite und Übergang",
+      "anchor": "CP12→CP13",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Küstenrücklauf und Hafenrampe; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-031",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP13 → CP14 — Breite und Übergang",
+      "anchor": "CP13→CP14",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Hafenrampe und Südklippe; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-032",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP14 → CP15 — Breite und Übergang",
+      "anchor": "CP14→CP15",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Südklippe und Stadionrückseite; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-033",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP15 → CP16 — Breite und Übergang",
+      "anchor": "CP15→CP16",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Stadionrückseite und Startgerade; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-034",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP16 → CP00 — Breite und Übergang",
+      "anchor": "CP16→CP00",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Startgerade und Startaufstellung; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "SONNENHAFEN-035",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 1 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.000 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.000×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "SONNENHAFEN-036",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 2 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.125 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.125×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "SONNENHAFEN-037",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 3 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.250 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.250×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "SONNENHAFEN-038",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 4 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.375 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.375×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "SONNENHAFEN-039",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 5 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.500 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.500×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "SONNENHAFEN-040",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 6 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.625 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.625×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "SONNENHAFEN-041",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 7 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.750 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.750×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "SONNENHAFEN-042",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 8 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.875 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.875×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "SONNENHAFEN-043",
+      "kind": "signature_setpiece",
+      "title": "LUMO GRAND PRIX Starttor — Abnahmepunkt 1",
+      "anchor": "0.000 track fraction / start_gate",
+      "verification": "Prüfe Querträgerbreite 13.7 m gegen 10.8-m-Fahrbahn plus Seitenraum.",
+      "authority": "kart_world.gd:_arch + _grid_boxes"
+    },
+    {
+      "id": "SONNENHAFEN-044",
+      "kind": "signature_setpiece",
+      "title": "LUMO GRAND PRIX Starttor — Abnahmepunkt 2",
+      "anchor": "0.000 track fraction / start_gate",
+      "verification": "Prüfe 6 Grid-Reihen mit 2 versetzten Startspuren und 2.35-m-Längsabstand.",
+      "authority": "kart_world.gd:_arch + _grid_boxes"
+    },
+    {
+      "id": "SONNENHAFEN-045",
+      "kind": "signature_setpiece",
+      "title": "LUMO GRAND PRIX Starttor — Abnahmepunkt 3",
+      "anchor": "0.000 track fraction / start_gate",
+      "verification": "Prüfe lesbare Vorwärts- und Rückseitenbeschriftung im 0-m-Routenanker.",
+      "authority": "kart_world.gd:_arch + _grid_boxes"
+    },
+    {
+      "id": "SONNENHAFEN-046",
+      "kind": "signature_setpiece",
+      "title": "Stadiongerade mit Doppeltribünen — Abnahmepunkt 1",
+      "anchor": "0.035 track fraction / stadium_straight",
+      "verification": "Prüfe je Tribüne 4 Sitzterrassen mit 0.72-m-Höhenstufe.",
+      "authority": "kart_world.gd:_start_grandstand"
+    },
+    {
+      "id": "SONNENHAFEN-047",
+      "kind": "signature_setpiece",
+      "title": "Stadiongerade mit Doppeltribünen — Abnahmepunkt 2",
+      "anchor": "0.035 track fraction / stadium_straight",
+      "verification": "Prüfe Crowd als 4×18 Instanzpunkte je Tribüne statt Einzelschatten.",
+      "authority": "kart_world.gd:_start_grandstand"
+    },
+    {
+      "id": "SONNENHAFEN-048",
+      "kind": "signature_setpiece",
+      "title": "Stadiongerade mit Doppeltribünen — Abnahmepunkt 3",
+      "anchor": "0.035 track fraction / stadium_straight",
+      "verification": "Prüfe Dachspannweite 19.2 m und freie Sicht auf die 10.8-m-Startbahn.",
+      "authority": "kart_world.gd:_start_grandstand"
+    },
+    {
+      "id": "SONNENHAFEN-049",
+      "kind": "signature_setpiece",
+      "title": "Klippen-S-Kurve — Abnahmepunkt 1",
+      "anchor": "0.170 track fraction / cliff_s_bend",
+      "verification": "Prüfe äußere Felskante mindestens 10.3 m seitlich ab Centerline.",
+      "authority": "kart_world.gd:_terraced_cliffs"
+    },
+    {
+      "id": "SONNENHAFEN-050",
+      "kind": "signature_setpiece",
+      "title": "Klippen-S-Kurve — Abnahmepunkt 2",
+      "anchor": "0.170 track fraction / cliff_s_bend",
+      "verification": "Prüfe 3 Höhenstaffeln mit 2.15-m-Tierabstand und Baum-Silhouette.",
+      "authority": "kart_world.gd:_terraced_cliffs"
+    },
+    {
+      "id": "SONNENHAFEN-051",
+      "kind": "signature_setpiece",
+      "title": "Klippen-S-Kurve — Abnahmepunkt 3",
+      "anchor": "0.170 track fraction / cliff_s_bend",
+      "verification": "Prüfe Richtungspfeile auf der Kurvenaußenseite bei 0.14 Rundenanteil.",
+      "authority": "kart_world.gd:_terraced_cliffs"
+    },
+    {
+      "id": "SONNENHAFEN-052",
+      "kind": "signature_setpiece",
+      "title": "Hafen-Hängebrücke — Abnahmepunkt 1",
+      "anchor": "0.295 track fraction / harbor_suspension_bridge",
+      "verification": "Prüfe Brückenspannweite 37 m um den 0.295-Routenanker.",
+      "authority": "kart_world.gd:_suspension_bridge"
+    },
+    {
+      "id": "SONNENHAFEN-053",
+      "kind": "signature_setpiece",
+      "title": "Hafen-Hängebrücke — Abnahmepunkt 2",
+      "anchor": "0.295 track fraction / harbor_suspension_bridge",
+      "verification": "Prüfe 19 Kabelsegmente pro Seite auf durchgängige Hänger ohne Fahrbahn-Collision.",
+      "authority": "kart_world.gd:_suspension_bridge"
+    },
+    {
+      "id": "SONNENHAFEN-054",
+      "kind": "signature_setpiece",
+      "title": "Hafen-Hängebrücke — Abnahmepunkt 3",
+      "anchor": "0.295 track fraction / harbor_suspension_bridge",
+      "verification": "Prüfe Turmfüße bei ±6.55 m außerhalb der kartseitigen WALL_LATERAL-Grenze.",
+      "authority": "kart_world.gd:_suspension_bridge"
+    },
+    {
+      "id": "SONNENHAFEN-055",
+      "kind": "signature_setpiece",
+      "title": "Hafenabfahrt — Abnahmepunkt 1",
+      "anchor": "0.390 track fraction / harbor_descent",
+      "verification": "Prüfe Centerline-Höhenabfall aus CP04/CP05 statt einer zweiten Abfahrtskurve.",
+      "authority": "kart_tracks.gd:CP03–CP05"
+    },
+    {
+      "id": "SONNENHAFEN-056",
+      "kind": "signature_setpiece",
+      "title": "Hafenabfahrt — Abnahmepunkt 2",
+      "anchor": "0.390 track fraction / harbor_descent",
+      "verification": "Prüfe rot/weißen Curb-Wechsel im 1.4-m-Sampling des Road-Builders.",
+      "authority": "kart_tracks.gd:CP03–CP05"
+    },
+    {
+      "id": "SONNENHAFEN-057",
+      "kind": "signature_setpiece",
+      "title": "Hafenabfahrt — Abnahmepunkt 3",
+      "anchor": "0.390 track fraction / harbor_descent",
+      "verification": "Prüfe Sichtlinie auf das Hafenbecken bei 0.39 Routenanteil ohne Tunnelüberdeckung.",
+      "authority": "kart_tracks.gd:CP03–CP05"
+    },
+    {
+      "id": "SONNENHAFEN-058",
+      "kind": "signature_setpiece",
+      "title": "Küsten-Wasserfallterrasse — Abnahmepunkt 1",
+      "anchor": "0.585 track fraction / waterfall_terrace",
+      "verification": "Prüfe Wasserfall-Quadbreite 3.8 m und freies Sichtfenster vom Fahrer bei 0.585.",
+      "authority": "kart_world.gd:_coastal_waterfall_setpiece"
+    },
+    {
+      "id": "SONNENHAFEN-059",
+      "kind": "signature_setpiece",
+      "title": "Küsten-Wasserfallterrasse — Abnahmepunkt 2",
+      "anchor": "0.585 track fraction / waterfall_terrace",
+      "verification": "Prüfe fünf Felsstufen auf anliegende Terrassen statt schwebender Einzelwand.",
+      "authority": "kart_world.gd:_coastal_waterfall_setpiece"
+    },
+    {
+      "id": "SONNENHAFEN-060",
+      "kind": "signature_setpiece",
+      "title": "Küsten-Wasserfallterrasse — Abnahmepunkt 3",
+      "anchor": "0.585 track fraction / waterfall_terrace",
+      "verification": "Prüfe Wasserfall-Sprühpunkte ohne dynamische Schatten und ohne Fahrbahn-Kollision.",
+      "authority": "kart_world.gd:_coastal_waterfall_setpiece"
+    },
+    {
+      "id": "SONNENHAFEN-061",
+      "kind": "signature_setpiece",
+      "title": "Waterfront-Sweep — Abnahmepunkt 1",
+      "anchor": "0.700 track fraction / waterfront_sweep",
+      "verification": "Prüfe zwei Längsdashes bei ±1.85 m auf durchgehende Sicht aus Fahrerhöhe.",
+      "authority": "kart_world.gd:_grand_prix_lane_markings"
+    },
+    {
+      "id": "SONNENHAFEN-062",
+      "kind": "signature_setpiece",
+      "title": "Waterfront-Sweep — Abnahmepunkt 2",
+      "anchor": "0.700 track fraction / waterfront_sweep",
+      "verification": "Prüfe Fahrbahnmitte mit 5.6-m-Dash-Rhythmus und 2.15-m-Markierungssegment.",
+      "authority": "kart_world.gd:_grand_prix_lane_markings"
+    },
+    {
+      "id": "SONNENHAFEN-063",
+      "kind": "signature_setpiece",
+      "title": "Waterfront-Sweep — Abnahmepunkt 3",
+      "anchor": "0.700 track fraction / waterfront_sweep",
+      "verification": "Prüfe die äußere Kurvenseite mit drei 1.65-m-Chevron-Tafeln pro Marker.",
+      "authority": "kart_world.gd:_grand_prix_lane_markings"
+    },
+    {
+      "id": "SONNENHAFEN-064",
+      "kind": "signature_setpiece",
+      "title": "Leuchtturm-Haarnadel — Abnahmepunkt 1",
+      "anchor": "0.760 track fraction / lighthouse_hairpin",
+      "verification": "Platziere Leuchtturm außerhalb des 6.05-m-Rail-Offsets und des 10.8-m-Belags.",
+      "authority": "kart_tracks.gd:CP12–CP15"
+    },
+    {
+      "id": "SONNENHAFEN-065",
+      "kind": "signature_setpiece",
+      "title": "Leuchtturm-Haarnadel — Abnahmepunkt 2",
+      "anchor": "0.760 track fraction / lighthouse_hairpin",
+      "verification": "Authoring-Ziel: 24-m-Turm plus 3-m-Lichtkopf bleibt innerhalb Horizont-Silhouette.",
+      "authority": "kart_tracks.gd:CP12–CP15"
+    },
+    {
+      "id": "SONNENHAFEN-066",
+      "kind": "signature_setpiece",
+      "title": "Leuchtturm-Haarnadel — Abnahmepunkt 3",
+      "anchor": "0.760 track fraction / lighthouse_hairpin",
+      "verification": "Verifiziere den Hairpin-Radius gegen die bestehende Control-Point-Kurve, nicht per Ersatzspline.",
+      "authority": "kart_tracks.gd:CP12–CP15"
+    },
+    {
+      "id": "SONNENHAFEN-067",
+      "kind": "signature_setpiece",
+      "title": "Pier-Tunnel — Abnahmepunkt 1",
+      "anchor": "0.820 track fraction / pier_tunnel",
+      "verification": "Setze den 24-m-Tunnel entlang der bestehenden CP14→CP16-Fahrtrichtung.",
+      "authority": "kart_tracks.gd:CP14–CP16"
+    },
+    {
+      "id": "SONNENHAFEN-068",
+      "kind": "signature_setpiece",
+      "title": "Pier-Tunnel — Abnahmepunkt 2",
+      "anchor": "0.820 track fraction / pier_tunnel",
+      "verification": "Prüfe 8-m lichte Höhe über der 10.8-m-Fahrbahn für Chase-Kamera und Rivalen.",
+      "authority": "kart_tracks.gd:CP14–CP16"
+    },
+    {
+      "id": "SONNENHAFEN-069",
+      "kind": "signature_setpiece",
+      "title": "Pier-Tunnel — Abnahmepunkt 3",
+      "anchor": "0.820 track fraction / pier_tunnel",
+      "verification": "Kollision bleibt aus einfachen Tunnelrippen; Deko-Meshes erhalten keine Vollflächen-Kollision.",
+      "authority": "kart_tracks.gd:CP14–CP16"
+    },
+    {
+      "id": "SONNENHAFEN-070",
+      "kind": "signature_setpiece",
+      "title": "Seabreeze Loop — Abnahmepunkt 1",
+      "anchor": "0.880 track fraction / seabreeze_loop",
+      "verification": "Authoring-Mittelradius 12 m und Fahrbahnbreite 10.8 m dokumentieren.",
+      "authority": "authoring guide: 2026-10-06 full_loop geometry"
+    },
+    {
+      "id": "SONNENHAFEN-071",
+      "kind": "signature_setpiece",
+      "title": "Seabreeze Loop — Abnahmepunkt 2",
+      "anchor": "0.880 track fraction / seabreeze_loop",
+      "verification": "Status bleibt planned_requires_inverted_physics bis 360°-Player-/AI-/Respawn-Vertrag besteht.",
+      "authority": "authoring guide: 2026-10-06 full_loop geometry"
+    },
+    {
+      "id": "SONNENHAFEN-072",
+      "kind": "signature_setpiece",
+      "title": "Seabreeze Loop — Abnahmepunkt 3",
+      "anchor": "0.880 track fraction / seabreeze_loop",
+      "verification": "Keine Runtime-Spline, Kollision oder Cup-Verknüpfung vor allen sechs Inversions-Gates.",
+      "authority": "authoring guide: 2026-10-06 full_loop geometry"
+    },
+    {
+      "id": "SONNENHAFEN-073",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 1 — Position und Fangradius",
+      "anchor": "0.18 track fraction, lateral -2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.18×track_length und Spur -2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "SONNENHAFEN-074",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 1 — Core-Item-Vertrag",
+      "anchor": "MP-01",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "SONNENHAFEN-075",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 2 — Position und Fangradius",
+      "anchor": "0.34 track fraction, lateral +2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.34×track_length und Spur +2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "SONNENHAFEN-076",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 2 — Core-Item-Vertrag",
+      "anchor": "MP-02",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "SONNENHAFEN-077",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 3 — Position und Fangradius",
+      "anchor": "0.53 track fraction, lateral +0.0 m",
+      "verification": "Prüfe Runtime-Zone bei 0.53×track_length und Spur +0.0 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "SONNENHAFEN-078",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 3 — Core-Item-Vertrag",
+      "anchor": "MP-03",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "SONNENHAFEN-079",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 4 — Position und Fangradius",
+      "anchor": "0.69 track fraction, lateral -2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.69×track_length und Spur -2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "SONNENHAFEN-080",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 4 — Core-Item-Vertrag",
+      "anchor": "MP-04",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "SONNENHAFEN-081",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 5 — Position und Fangradius",
+      "anchor": "0.86 track fraction, lateral +2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.86×track_length und Spur +2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "SONNENHAFEN-082",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 5 — Core-Item-Vertrag",
+      "anchor": "MP-05",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "SONNENHAFEN-083",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 1 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.050 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.050, Zieltempo 44 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "SONNENHAFEN-084",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 2 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.150 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.150, Zieltempo 50 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "SONNENHAFEN-085",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 3 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.250 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.250, Zieltempo 56 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "SONNENHAFEN-086",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 4 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.350 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.350, Zieltempo 48 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "SONNENHAFEN-087",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 5 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.450 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.450, Zieltempo 62 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "SONNENHAFEN-088",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 6 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.550 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.550, Zieltempo 52 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "SONNENHAFEN-089",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 7 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.650 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.650, Zieltempo 60 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "SONNENHAFEN-090",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 8 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.750 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.750, Zieltempo 46 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "SONNENHAFEN-091",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 9 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.850 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.850, Zieltempo 58 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "SONNENHAFEN-092",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 10 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.950 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.950, Zieltempo 54 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "SONNENHAFEN-093",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Rail/Visual",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe sichtbare Rail bei ±6.05 m und Collision-Wall-Zentrum bei ±5.00 m; dokumentiere beide Maße getrennt.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "SONNENHAFEN-094",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Road width",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe 10.8-m-Fahrbahn einschließlich Randlinie; freie Fahrspur darf nicht durch Deko verengt werden.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "SONNENHAFEN-095",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Checkpoint seam",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Trigger an Achtelgrenze und Loop-Seam ohne Doppelauslösung bei modulo track_length.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "SONNENHAFEN-096",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Item pickup",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Lumo Mystery Prism Reichweite <2.0 m und pro-Lap-ID auf Mehrfachauslösung.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "SONNENHAFEN-097",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Deko separation",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Setpiece-Deko gegen Rail-Abstand; nur ausdrücklich authorisierte Straßenmodule erhalten Collision.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "SONNENHAFEN-098",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Ramp landing",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Rampenanfang, Absprung und Landekorridor separat gegen Gap- und Reset-Puffer.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "SONNENHAFEN-099",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Loop gate",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Loop bleibt ohne Collision solange Upside-down Player, AI und Respawn nicht bestanden sind.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "SONNENHAFEN-100",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Low-detail parity",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe, dass Collision-/Checkpoint-/Item-Geometrie im Low-Detail-Profil identisch zur High-Stufe bleibt.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "SONNENHAFEN-101",
+      "kind": "visual_material",
+      "title": "Visual-QA — Asphalt",
+      "anchor": "Sonnenhafen materials",
+      "verification": "Asphalt-Shader erhält den Track-Farbton und zeigt Centerline-Markierungen ohne Transparenzoverdraw.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "SONNENHAFEN-102",
+      "kind": "visual_material",
+      "title": "Visual-QA — Curb",
+      "anchor": "Sonnenhafen materials",
+      "verification": "Curb-Segmente bleiben 0.48 m breit und alternieren als gut lesbares Rot/Weiß am Sonnenhafen.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "SONNENHAFEN-103",
+      "kind": "visual_material",
+      "title": "Visual-QA — Normal",
+      "anchor": "Sonnenhafen materials",
+      "verification": "Berechne Terrain-Normalen nach Vertexfarben; prüfe Seitenflächen auf konsistente Beleuchtung.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "SONNENHAFEN-104",
+      "kind": "visual_material",
+      "title": "Visual-QA — Glow",
+      "anchor": "Sonnenhafen materials",
+      "verification": "Leuchtmaterialien sind auf Landmark-Akzente begrenzt und überstrahlen weder Rails noch Item-Silhouette.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "SONNENHAFEN-105",
+      "kind": "visual_material",
+      "title": "Visual-QA — Fog",
+      "anchor": "Sonnenhafen materials",
+      "verification": "Prüfe Hintergrundkontrast am Horizont; Rennbahn und Checkpoint-Fahnen bleiben im Nebel lesbar.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "SONNENHAFEN-106",
+      "kind": "visual_material",
+      "title": "Visual-QA — Camera scale",
+      "anchor": "Sonnenhafen materials",
+      "verification": "Prüfe Setpiece-Silhouette aus Fahrer-Chase-Kamera und aus 55° Orbit-View.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "SONNENHAFEN-107",
+      "kind": "visual_material",
+      "title": "Visual-QA — Water/material",
+      "anchor": "Sonnenhafen materials",
+      "verification": "Wasserfall-/Wasserflächen bleiben separate Materialien mit Schatten aus, falls sie transparent sind.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "SONNENHAFEN-108",
+      "kind": "visual_material",
+      "title": "Visual-QA — Texture policy",
+      "anchor": "Sonnenhafen materials",
+      "verification": "Pack-Geometrie nutzt vorhandene Materialien/Atlanten; keine neuen externen Bilder ohne Attribution.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "SONNENHAFEN-109",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Crowds",
+      "anchor": "Sonnenhafen",
+      "verification": "Crowd-/wiederholte Tribünenpunkte müssen über vorhandene Instance-Batches zusammengefasst sein.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "SONNENHAFEN-110",
+      "kind": "performance_qa",
+      "title": "Performance-QA — LOD0",
+      "anchor": "Sonnenhafen",
+      "verification": "LOD0 enthält Landmark-Silhouette und Streckenführung, nicht hunderte kleinteilige Schattenobjekte.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "SONNENHAFEN-111",
+      "kind": "performance_qa",
+      "title": "Performance-QA — LOD1",
+      "anchor": "Sonnenhafen",
+      "verification": "Low-Detail reduziert reine Dekoration; Centerline, Fahrbahn, Rail und Item-Zonen bleiben unverändert.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "SONNENHAFEN-112",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Shadows",
+      "anchor": "Sonnenhafen",
+      "verification": "Hintergrundberge, transparente Wasserfälle und UI-nahe Prisms schalten unnötige Schatten ab.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "SONNENHAFEN-113",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Materials",
+      "anchor": "Sonnenhafen",
+      "verification": "Wiederholte Streckenteile referenzieren gemeinsame Materialinstanzen oder Atlas-Materialien.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "SONNENHAFEN-114",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Transparent",
+      "anchor": "Sonnenhafen",
+      "verification": "Transparente/ additive VFX sind auf ausgewiesene Wasser-, Glow- und Prismflächen begrenzt.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "SONNENHAFEN-115",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Collision budget",
+      "anchor": "Sonnenhafen",
+      "verification": "Kollision verwendet einfache Rails/Trigger/Proxies; Deko-Vertices werden nicht als Mesh-Collider missbraucht.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "SONNENHAFEN-116",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Frame target",
+      "anchor": "Sonnenhafen",
+      "verification": "60-FPS bleibt Zielbudget, aber kein Gerät-PASS ohne physische Messung.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "SONNENHAFEN-117",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — road",
+      "anchor": "Sonnenhafen",
+      "verification": "Die Straßenführung folgt ausschließlich kart_tracks.gd und kart_world.gd; Belagsbreite beträgt 10.8 m.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "SONNENHAFEN-118",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — ramp",
+      "anchor": "Sonnenhafen",
+      "verification": "Rampen werden als eigenes authoring mesh plus getrennte Collision-/Landing-Prüfung dokumentiert.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "SONNENHAFEN-119",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — bridge",
+      "anchor": "Sonnenhafen",
+      "verification": "Brücken verwenden die bestehende Centerline als Achse; Stützen liegen außerhalb des freien 10.8-m-Korridors.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "SONNENHAFEN-120",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — tunnel",
+      "anchor": "Sonnenhafen",
+      "verification": "Tunnel definieren lichte Höhe/Breite, Randkollision und Kamera-Freiraum getrennt vom Deko-Vault.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "SONNENHAFEN-121",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — full_loop",
+      "anchor": "Sonnenhafen",
+      "verification": "Loop ist ein 360°-Authoringmodul; aktivierbarer Runtime-Track bleibt bis Inversionsvertrag gesperrt.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "SONNENHAFEN-122",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — centerline",
+      "anchor": "Sonnenhafen",
+      "verification": "Top-down-Mapping speichert Control Points in Metern und verweist auf vorhandene Runtime-Samplingregeln.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "SONNENHAFEN-123",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — engine_audio",
+      "anchor": "Sonnenhafen",
+      "verification": "Prüfe Motor-/Fahrbahn-Ambience über alle acht Sektoren ohne Lernfrage oder Antworttimer.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "SONNENHAFEN-124",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — setpiece_audio",
+      "anchor": "Sonnenhafen",
+      "verification": "Signature-Audio cue beginnt am Setpiece-Anker und endet vor dem Folge-Checkpoint.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "SONNENHAFEN-125",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — item_audio",
+      "anchor": "Sonnenhafen",
+      "verification": "Pickup-Sound signalisiert ein erworbenes Prism; Item-ID bleibt boost/shield/pulse.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "SONNENHAFEN-126",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — landing_vfx",
+      "anchor": "Sonnenhafen",
+      "verification": "Sprung-Landeeffekt sitzt am bestehenden Gap-Landing; kein VFX verändert Kollisionshöhe.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "SONNENHAFEN-127",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — dust_vfx",
+      "anchor": "Sonnenhafen",
+      "verification": "Staub/Partikel bleiben in der Fahrbahnzone und verdecken keine Pfeile oder Mystery Prisms.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "SONNENHAFEN-128",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — glow_vfx",
+      "anchor": "Sonnenhafen",
+      "verification": "Emissionspulse bleibt zeitlich begrenzt, ohne Screen-Space-Shader-Abhängigkeit für Mobile.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "SONNENHAFEN-129",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — camera_shake",
+      "anchor": "Sonnenhafen",
+      "verification": "Kamerareaktion bleibt klein und deterministisch an realen Kontakt/Jump gebunden.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "SONNENHAFEN-130",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — audio_mix",
+      "anchor": "Sonnenhafen",
+      "verification": "Wasserfall/Stadt/Wald-Ambience ist leiser als Item-, Rail- und Checkpoint-Feedback.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    }
+  ],
+  "views": [
+    {
+      "id": "SONNENHAFEN-ORBIT-A000-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A000-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A000-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A000-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A045-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A045-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A045-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A045-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A090-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A090-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A090-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A090-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A135-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A135-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A135-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A135-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A180-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A180-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A180-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A180-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A225-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A225-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A225-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A225-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A270-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A270-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A270-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A270-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A315-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A315-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A315-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORBIT-A315-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Sonnenhafen horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "SONNENHAFEN-ORTHO-TOP",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "orthographic_size_m": 250
+      },
+      "acceptance": "Vollständige Sonnenhafen-Route inklusive aller 17 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "SONNENHAFEN-ORTHO-FRONT",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "front",
+        "orthographic_size_m": 250
+      },
+      "acceptance": "Vollständige Sonnenhafen-Route inklusive aller 17 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "SONNENHAFEN-ORTHO-LEFT",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "left",
+        "orthographic_size_m": 250
+      },
+      "acceptance": "Vollständige Sonnenhafen-Route inklusive aller 17 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "SONNENHAFEN-ORTHO-RIGHT",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "right",
+        "orthographic_size_m": 250
+      },
+      "acceptance": "Vollständige Sonnenhafen-Route inklusive aller 17 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "SONNENHAFEN-DRIVER-START",
+      "kind": "driver",
+      "target": "route_fraction:0.000",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im start-Sektor."
+    },
+    {
+      "id": "SONNENHAFEN-DRIVER-FIRST_TURN",
+      "kind": "driver",
+      "target": "route_fraction:0.140",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im first_turn-Sektor."
+    },
+    {
+      "id": "SONNENHAFEN-DRIVER-MIDDLE",
+      "kind": "driver",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im middle-Sektor."
+    },
+    {
+      "id": "SONNENHAFEN-DRIVER-LAST_SECTOR",
+      "kind": "driver",
+      "target": "route_fraction:0.875",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im last_sector-Sektor."
+    },
+    {
+      "id": "SONNENHAFEN-SIGNATURE-FRONT",
+      "kind": "signature",
+      "target": "setpiece:start_gate",
+      "camera": {
+        "projection": "perspective",
+        "side": "front",
+        "distance_m": 34,
+        "elevation_deg": 24
+      },
+      "acceptance": "LUMO GRAND PRIX Starttor vollständig mit Zufahrt, Maßstab zur 10.8-m-Bahn und lesbarer Beschriftung erfasst."
+    },
+    {
+      "id": "SONNENHAFEN-SIGNATURE-BACK",
+      "kind": "signature",
+      "target": "setpiece:start_gate",
+      "camera": {
+        "projection": "perspective",
+        "side": "back",
+        "distance_m": 34,
+        "elevation_deg": 24
+      },
+      "acceptance": "LUMO GRAND PRIX Starttor vollständig mit Zufahrt, Maßstab zur 10.8-m-Bahn und lesbarer Beschriftung erfasst."
+    },
+    {
+      "id": "SONNENHAFEN-LOOP-SIDE",
+      "kind": "loop",
+      "target": "setpiece:seabreeze_loop",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "side",
+        "distance_m": 54,
+        "orthographic_size_m": 58
+      },
+      "acceptance": "Geschlossene 360°-Mittelachse, 12-m-Radius, 10.8-m-Deck und authoring-only Status bleiben sichtbar."
+    },
+    {
+      "id": "SONNENHAFEN-LOOP-TOP",
+      "kind": "loop",
+      "target": "setpiece:seabreeze_loop",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "distance_m": 54,
+        "orthographic_size_m": 58
+      },
+      "acceptance": "Geschlossene 360°-Mittelachse, 12-m-Radius, 10.8-m-Deck und authoring-only Status bleiben sichtbar."
+    },
+    {
+      "id": "SONNENHAFEN-ITEM-LANE",
+      "kind": "item_lane",
+      "target": "mystery_prism_zones",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 16,
+        "distance_m": 12
+      },
+      "acceptance": "Mindestens drei vorwärts sichtbare Lumo Mystery Prisms, Spurabstände und Pickup-Korridor sind erkennbar."
+    },
+    {
+      "id": "SONNENHAFEN-SHORTCUT-ENTRY",
+      "kind": "shortcut_entry",
+      "target": "signature_shortcut_or_ramp",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 25,
+        "elevation_deg": 30,
+        "distance_m": 30
+      },
+      "acceptance": "Abzweig/Rampe, Einfahrt, Landekorridor und Rückkehr auf bestehende Centerline sind gleichzeitig lesbar."
+    },
+    {
+      "id": "SONNENHAFEN-AI-TOP",
+      "kind": "ai_debug",
+      "target": "ai_racing_line",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "orthographic_size_m": 150
+      },
+      "acceptance": "Zehn KI-Anker, seitliche Überholreserve und Fahrer-Referenzcenterline sind unterscheidbar."
+    },
+    {
+      "id": "SONNENHAFEN-COLLISION-DEBUG",
+      "kind": "collision_debug",
+      "target": "road_rail_checkpoint_item_collision",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "overlay": "collision_debug"
+      },
+      "acceptance": "10.8-m-Straße, ±6.05-m-Visualrail, ±5.0-m-Wall und Checkpoint-/Item-Triggergrenzen sind getrennt sichtbar."
+    }
+  ],
+  "qa": {
+    "collision": "simple road rail/checkpoint/item proxies only; decorative geometry does not imply collision",
+    "low_detail_parity": "track width, route, item positions, checkpoint and safe respawn must match high detail",
+    "learning_separation": "no quiz, answer timer, learning cup, or correct-answer boost in race",
+    "performance": "MultiMesh repeated props; separate mobile LOD0/LOD1/background; avoid unnecessary transparent materials and background shadows"
+  }
+}

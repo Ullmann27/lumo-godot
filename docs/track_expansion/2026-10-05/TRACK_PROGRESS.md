@@ -313,3 +313,33 @@ Erst den Wolkenweg-Lauf abschließen und einen reproduzierbaren Fehler gegebenen
 ### Nächster unbeanspruchter Produktblock
 
 Die bestehende Vier-Strecken-Basis ist jetzt technisch auf einen größeren Track-Katalog vorbereitet. Nächster Schritt: die fünfte eigenständige Welt aus den vorhandenen Referenzpaketen als vollständige Fahrstrecke anlegen, statt weitere harte Vier-Welten-Annahmen einzubauen. Favorisierte Reihenfolge: Crystal Canyon / Kristall-Canyon zuerst, danach Vulkan, Wüste, Galaxy, Candy/Cloud und Learning-Lab – jeweils weltweise mit Runtime-Capture und Regression.
+
+
+## Etappe 8 – strukturierte Track-Developer-Packs und Sky-Halo-Authoring-Prototyp
+
+- Ausgangs-Head: `9f20f3e94cc1607f9668f674185a982ffed3ceba`.
+- Verbindliche Produktgrenze: `docs/track_expansion/2026-10-06/TRACK_DEVELOPER_PACK_SPEC.md`.
+- Scope: vier vorhandene Katalogstrecken; keine alternative Spline-/Streckenarchitektur und keine Aktivierung von Inversionsphysik.
+
+### Developer-Packs
+
+`docs/track_expansion/2026-10-06/packs/` enthält je eine maschinenlesbare JSON-Quelle für Sonnenhafen, Zauberwald, Himmelsinseln und Hologramm-City plus Manifest. Die Packs enthalten:
+
+- **130 / 120 / 120 / 122** einzeln benannte, überprüfbare Details in Katalogreihenfolge;
+- jeweils genau **48** definierte Views mit 32 Orbitwinkeln, vier Orthographic-, vier Driver-, zwei Signature-, zwei Loop- und vier Debug-/Spezialansichten;
+- die originalen Control-Point-Koordinaten aus `kart_tracks.gd`, Runtime-Samplingregeln, 10,8-m-Fahrbahnbreite, Rail-/Wall-Maße, acht Checkpoint-Anker, zehn KI-Linienanker, Setpiece-Status, Material-/Performance-/Collision-QA und Mystery-Prism-Zonen;
+- ausschließlich die Core-Items `boost`, `shield` und `pulse` sowie die in der Spec festgehaltenen positionsabhängigen Fairnessgewichte.
+
+`tools/validate_track_packs.py` prüft JSON, Control-Point-Abgleich, Mindestzahlen, eindeutige IDs, View-Verteilung, Mystery-Item-Vertrag und Loop-Sperre. Letzter lokaler Lauf: alle vier Packs und der Sky-Halo-Sicherheitsvertrag **PASS**; `python3 tools/validate_project.py`: **117 PASS / 7 WARN / 0 FAIL**.
+
+### Sky Halo
+
+- `scenes/games/track_authoring/sky_halo_loop_authoring.tscn` und `scripts/games/authoring/sky_halo_loop_authoring.gd` erzeugen einen 360°-Mesh-Prototyp auf Basis eines 12-m-Mittelradius, 10,8-m-Fahrbahnbreite und 96 Segmenten.
+- Das Authoring-Szeneobjekt markiert sich als nicht befahrbar, enthält keine Physics-Collider und wird von `kart_world.gd` nicht geladen. Es ersetzt keine bestehende Himmelsinseln-Spline.
+- Die vier Loopings bleiben `planned_requires_inverted_physics`; Gravitation/Up-Vektor, Kamera, KI, Collision, Checkpoint/Respawn und kompletter Player-/AI-Lauf sind nicht als bestanden behauptet.
+
+### Noch nicht validiert
+
+- Godot-Import/Parser, Laufzeitdarstellung des Sky-Halo-Meshes und vollständige Player-/AI-/Respawn-/Reverse-/Checkpoint-Läufe: **SKIP**, bis der aktuelle PR-Head im Godot-Workflow geprüft ist.
+- Runtime-Captures des neuen Authoring-Prototyps: **SKIP**; er ist absichtlich kein Runtime-Rennsetpiece.
+- Kein Fold-Gerätetest, keine FPS-Messung und kein Merge nach `main`.
