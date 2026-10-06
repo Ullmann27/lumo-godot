@@ -1,0 +1,27 @@
+{
+  "bridge": {
+    "authoring": "Build bridge as centerline-following deck modules, width 13.4 m for the existing Sky bridge convention or source-module width when not a Sky module; keep support mesh and collision proxy separate."
+  },
+  "full_loop": {
+    "approach_length_m": 18.0,
+    "authoring": "360-degree planar loop centered on existing route anchor; prototype geometry only at 0.900 route fraction.",
+    "centerline_radius_m": 12.0,
+    "collision_enabled": false,
+    "gate": "Do not place on race Centerline or enable until gravity/up, camera, AI, collision, checkpoint/respawn, and full Player+AI 360-degree run all pass.",
+    "prototype_scene": "res://scenes/games/track_authoring/sky_halo_loop_authoring.tscn",
+    "road_width_m": 10.8,
+    "runtime_enabled": false,
+    "status": "planned_requires_inverted_physics",
+    "surface_segments": 96,
+    "vertical_rise_m": 24.0
+  },
+  "ramp": {
+    "authoring": "Use existing jump_layout and measured landing corridor; no additional route spline."
+  },
+  "road": {
+    "authoring": "Follow existing closed Catmull-Rom/Bézier centerline; 10.8-m full-width ribbon; visible and collision rails share declared lateral offsets."
+  },
+  "tunnel": {
+    "authoring": "Use existing centerline tangent and define clear height/width; use a visual vault and separately inspect the simple collision envelope."
+  }
+}
