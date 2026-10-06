@@ -1820,7 +1820,11 @@ func _show_result() -> void:
 	elif mode == "arena":
 		title = "Kristall-Arena geschafft!"
 	elif mode == "cup":
-		title = "Rennen %d von 4 geschafft!" % (cup_index + 1) if pending_cup_next else "Dein Sternen-Cup ist geschafft!"
+		title = (
+			"Rennen %d von %d geschafft!" % [cup_index + 1, CATALOG.TRACKS.size()]
+			if pending_cup_next
+			else "Dein Sternen-Cup ist geschafft!"
+		)
 	modal_column.add_child(_label(title, 30))
 	var details: String = "%.1f Sekunden · +%d Sterne" % [elapsed, int(result_payload.get("stars", 0))]
 	if mode not in ["training", "time_trial"]:
