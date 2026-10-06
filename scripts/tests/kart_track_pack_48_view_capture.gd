@@ -17,6 +17,7 @@ var world
 var camera: Camera3D
 var kart
 var item_root: Node3D
+var item_lane_preview_root: Node3D
 var ai_debug_root: Node3D
 var collision_debug_root: Node3D
 var shortcut_debug_root: Node3D
@@ -64,6 +65,7 @@ func _setup() -> void:
 	kart.set_process(false)
 
 	_build_runtime_items()
+	_build_item_lane_preview()
 	_compute_route_bounds()
 	_build_debug_overlays()
 	_build_loop_preview()
@@ -94,6 +96,32 @@ func _build_runtime_items() -> void:
 			+ world.frame(d) * Vector3(lateral, 1.45, 0.0)
 		)
 		_add_mystery_prism(item_root, position, str(zone.get("id", "prism")))
+
+
+func _build_item_lane_preview() -> void:
+	item_lane_preview_root = Node3D.new()
+	item_lane_preview_root.name = "MysteryPrismLanePreview"
+	world.add_child(item_lane_preview_root)
+
+	var zones: Array = pack.get("mystery_prism_zones", [])
+	assert(zones.size() >= 3)
+	var base_fraction: float = float(zones[0].get("route_fraction", 0.18))
+	var base_d: float = base_fraction * float(world.length)
+	for i in range(3):
+		var zone: Dictionary = zones[i]
+		var d: float = fposmod(base_d + 8.0 + float(i) * 5.5, float(world.length))
+		var lateral: float = float(zone.get("lateral_m", 0.0))
+		var position: Vector3 = (
+			world.position_at(d)
+			+ world.frame(d) * Vector3(lateral, 1.45, 0.0)
+		)
+		_add_mystery_prism(
+			item_lane_preview_root,
+			position,
+			"lane_preview_" + str(i + 1)
+		)
+
+	item_lane_preview_root.visible = false
 
 
 func _add_mystery_prism(parent: Node3D, position: Vector3, prism_id: String) -> void:
@@ -226,40 +254,36 @@ func _build_loop_preview() -> void:
 	loop_root.set_meta("requires_inverted_physics_contract", true)
 	world.add_child(loop_root)
 
-	var vertices: PackedVector3Array = PackedVector3Array()
-	var indices: PackedInt32Array = PackedInt32Array()
-	for i in range(LOOP_SEGMENTS + 1):
-		var theta: float = -PI * 0.5 + TAU * float(i) / float(LOOP_SEGMENTS)
-		var center: Vector3 = Vector3(
+	var segment_length: float = 2.0 * LOOP_RADIUS_M * sin(PI / float(LOOP_SEGMENTS)) * 1.08
+	var road_material: StandardMaterial3D = _debug_material(_loop_color())
+	var rail_material: StandardMaterial3D = _debug_material(Color("ffffff"))
+	for i in range(LOOP_SEGMENTS):
+		var theta: float = -PI * 0.5 + TAU * (float(i) + 0.5) / float(LOOP_SEGMENTS)
+		var holder: Node3D = Node3D.new()
+		holder.position = Vector3(
 			0.0,
 			LOOP_RADIUS_M + LOOP_RADIUS_M * sin(theta),
 			-LOOP_RADIUS_M * cos(theta)
 		)
-		vertices.append(center + Vector3(-LOOP_ROAD_WIDTH_M * 0.5, 0.0, 0.0))
-		vertices.append(center + Vector3(LOOP_ROAD_WIDTH_M * 0.5, 0.0, 0.0))
-	for i in range(LOOP_SEGMENTS):
-		var a: int = i * 2
-		var b: int = a + 1
-		var c: int = a + 2
-		var d: int = a + 3
-		indices.append(a)
-		indices.append(c)
-		indices.append(b)
-		indices.append(b)
-		indices.append(c)
-		indices.append(d)
+		holder.rotation.x = theta - PI * 0.5
+		loop_root.add_child(holder)
 
-	var arrays: Array = []
-	arrays.resize(Mesh.ARRAY_MAX)
-	arrays[Mesh.ARRAY_VERTEX] = vertices
-	arrays[Mesh.ARRAY_INDEX] = indices
-	var mesh: ArrayMesh = ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+		var slab: MeshInstance3D = MeshInstance3D.new()
+		var slab_mesh: BoxMesh = BoxMesh.new()
+		slab_mesh.size = Vector3(LOOP_ROAD_WIDTH_M, 0.72, segment_length)
+		slab.mesh = slab_mesh
+		slab.material_override = road_material
+		holder.add_child(slab)
 
-	var instance: MeshInstance3D = MeshInstance3D.new()
-	instance.mesh = mesh
-	instance.material_override = _debug_material(_loop_color())
-	loop_root.add_child(instance)
+		for side in [-1.0, 1.0]:
+			var rail: MeshInstance3D = MeshInstance3D.new()
+			var rail_mesh: BoxMesh = BoxMesh.new()
+			rail_mesh.size = Vector3(0.34, 1.2, segment_length)
+			rail.mesh = rail_mesh
+			rail.position = Vector3(side * (LOOP_ROAD_WIDTH_M * 0.5 - 0.18), 0.58, 0.0)
+			rail.material_override = rail_material
+			holder.add_child(rail)
+
 	loop_root.visible = false
 
 
@@ -286,6 +310,7 @@ func _place_current_view() -> void:
 	camera.size = 120.0
 	kart.visible = true
 	item_root.visible = true
+	item_lane_preview_root.visible = false
 	ai_debug_root.visible = false
 	collision_debug_root.visible = false
 	shortcut_debug_root.visible = false
@@ -305,6 +330,8 @@ func _place_current_view() -> void:
 			kart.visible = false
 			_place_loop(view, cam)
 		"item_lane":
+			item_root.visible = false
+			item_lane_preview_root.visible = true
 			_place_item_lane(cam)
 		"shortcut_entry":
 			shortcut_debug_root.visible = true
@@ -386,16 +413,15 @@ func _place_loop(view: Dictionary, cam: Dictionary) -> void:
 
 func _place_item_lane(cam: Dictionary) -> void:
 	var zones: Array = pack.get("mystery_prism_zones", [])
-	assert(not zones.is_empty())
+	assert(zones.size() >= 3)
 	var fraction: float = float(zones[0].get("route_fraction", 0.18))
-	var lateral: float = float(zones[0].get("lateral_m", 0.0))
 	var d: float = fraction * float(world.length)
-	kart.transform = world.reset_transform(d, lateral)
+	kart.transform = world.reset_transform(d, 0.0)
 	var distance: float = float(cam.get("distance_m", 12.0))
 	var elevation: float = deg_to_rad(float(cam.get("elevation_deg", 16.0)))
-	var local_offset: Vector3 = Vector3(0.0, 1.8 + sin(elevation) * distance, cos(elevation) * distance)
+	var local_offset: Vector3 = Vector3(0.0, 2.0 + sin(elevation) * distance, cos(elevation) * distance)
 	camera.position = kart.position + world.frame(d) * local_offset
-	camera.look_at(world.position_at(d + 20.0) + Vector3.UP * 1.5, Vector3.UP)
+	camera.look_at(world.position_at(d + 16.0) + Vector3.UP * 1.65, Vector3.UP)
 
 
 func _place_shortcut(cam: Dictionary) -> void:
@@ -469,6 +495,8 @@ func _capture_state(kind: String) -> String:
 			return "authoring_preview_non_driveable"
 		"ai_debug", "collision_debug":
 			return "runtime_debug_overlay"
+		"item_lane":
+			return "authoring_pickup_corridor_preview"
 		"shortcut_entry":
 			return "runtime_or_planned_anchor_context"
 		_:
