@@ -1,0 +1,97 @@
+name: Lumo Kart Developer Packs
+
+on:
+  push:
+    branches:
+      - chatgpt/kart-developer-packs-zip-2026-10-06
+    paths:
+      - "docs/track_expansion/2026-10-06/**"
+      - "scripts/games/**"
+      - "scenes/games/track_authoring/**"
+      - "assets/shaders/kart_*.gdshader"
+      - "tools/validate_track_packs.py"
+      - "tools/build_track_developer_packs.py"
+      - ".github/workflows/kart-developer-packs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-track-developer-packs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate structured track packs
+        run: python3 tools/validate_track_packs.py
+
+      - name: Build deterministic developer ZIPs
+        run: python3 tools/build_track_developer_packs.py
+
+      - name: Verify ZIP integrity and size limits
+        shell: bash
+        run: |
+          set -euo pipefail
+          ls -lh dist/track_developer_packs/*.zip
+          for file in dist/track_developer_packs/*.zip; do
+            unzip -t "$file" >/dev/null
+            size=$(stat -c%s "$file")
+            if [ "$size" -gt $((30 * 1024 * 1024)) ]; then
+              echo "ZIP exceeds 30 MiB: $file ($size bytes)"
+              exit 1
+            fi
+          done
+          cat dist/track_developer_packs/SHA256SUMS.txt
+          cat dist/track_developer_packs/pack_summary.json
+
+      - name: Upload Sonnenhafen pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lumo-Kart-Sonnenhafen-Developer-Pack
+          path: dist/track_developer_packs/Lumo_Kart_sonnenhafen_Developer_Pack.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload Zauberwald pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lumo-Kart-Zauberwald-Developer-Pack
+          path: dist/track_developer_packs/Lumo_Kart_zauberwald_Developer_Pack.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload Himmelsinseln pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lumo-Kart-Himmelsinseln-Developer-Pack
+          path: dist/track_developer_packs/Lumo_Kart_bergwelt_Developer_Pack.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload Hologramm-City pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lumo-Kart-Hologramm-City-Developer-Pack
+          path: dist/track_developer_packs/Lumo_Kart_holo_city_Developer_Pack.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload complete developer bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lumo-Kart-Track-Developer-Packs-ALL
+          path: |
+            dist/track_developer_packs/Lumo_Kart_Track_Developer_Packs_ALL.zip
+            dist/track_developer_packs/PACK_INDEX.md
+            dist/track_developer_packs/pack_summary.json
+            dist/track_developer_packs/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
