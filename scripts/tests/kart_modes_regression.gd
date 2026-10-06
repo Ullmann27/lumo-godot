@@ -114,10 +114,11 @@ func _run() -> void:
 	await process_frame
 	print(
 		(
-			"[KartModesTests] PASS: 4-race star cup without tasks, legacy learn_cup -> cup, "
+			"[KartModesTests] PASS: %d-race star cup without tasks, legacy learn_cup -> cup, "
 			+ "arena completion, training completion, ordered gates, persistent interpolated ghost, "
 			+ "durable earned unlocks"
 		)
+		% cup_track_count
 	)
 	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
 	await create_timer(0.12).timeout
