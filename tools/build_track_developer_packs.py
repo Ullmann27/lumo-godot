@@ -471,17 +471,58 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    all_zip = OUT_ROOT / "Lumo_Kart_Track_Developer_Packs_ALL.zip"
-    with zipfile.ZipFile(all_zip, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
-        for path in sorted(OUT_ROOT.iterdir()):
-            if path.is_file() and path.name != all_zip.name:
+    metadata_paths = [
+        OUT_ROOT / "PACK_INDEX.md",
+        OUT_ROOT / "pack_summary.json",
+        OUT_ROOT / "SHA256SUMS.txt",
+    ]
+    pack_zip_paths = [OUT_ROOT / row["zip"] for row in summary_rows]
+    max_payload = MAX_ZIP_BYTES - (512 * 1024)
+    bundle_groups: list[list[Path]] = [[]]
+    bundle_payload = 0
+    for path in pack_zip_paths:
+        size = path.stat().st_size
+        if size >= max_payload:
+            die(path.name + ": too large to place in a split delivery bundle")
+        if bundle_groups[-1] and bundle_payload + size >= max_payload:
+            bundle_groups.append([])
+            bundle_payload = 0
+        bundle_groups[-1].append(path)
+        bundle_payload += size
+
+    bundle_rows = []
+    for index_part, group in enumerate(bundle_groups, start=1):
+        if len(bundle_groups) == 1:
+            bundle_name = "Lumo_Kart_Track_Developer_Packs_ALL.zip"
+        else:
+            bundle_name = "Lumo_Kart_Track_Developer_Packs_PART_" + str(index_part).zfill(2) + ".zip"
+        bundle_path = OUT_ROOT / bundle_name
+        with zipfile.ZipFile(
+            bundle_path,
+            "w",
+            compression=zipfile.ZIP_DEFLATED,
+            compresslevel=9,
+        ) as archive:
+            for path in metadata_paths + group:
                 info = zipfile.ZipInfo(path.name)
                 info.date_time = (2026, 10, 6, 0, 0, 0)
                 info.compress_type = zipfile.ZIP_DEFLATED
                 info.external_attr = 0o644 << 16
                 archive.writestr(info, path.read_bytes())
-    if all_zip.stat().st_size >= MAX_ZIP_BYTES:
-        die("Combined ZIP must be smaller than 30 MiB; split before delivery")
+        if bundle_path.stat().st_size >= MAX_ZIP_BYTES:
+            die(bundle_name + ": split bundle must be smaller than 30 MiB")
+        bundle_rows.append(
+            {
+                "name": bundle_name,
+                "bytes": bundle_path.stat().st_size,
+                "contains": [path.name for path in group],
+                "sha256": hashlib.sha256(bundle_path.read_bytes()).hexdigest(),
+            }
+        )
+
+    (OUT_ROOT / "bundle_manifest.json").write_text(
+        stable_json(bundle_rows), encoding="utf-8"
+    )
 
     print("[TrackDeveloperPacks] PASS")
     for row in summary_rows:
@@ -497,7 +538,15 @@ def main() -> int:
             + " bytes / "
             + row["sha256"][:12]
         )
-    print("  combined: " + str(all_zip.stat().st_size) + " bytes")
+    for row in bundle_rows:
+        print(
+            "  bundle: "
+            + row["name"]
+            + " / "
+            + str(row["bytes"])
+            + " bytes / "
+            + ", ".join(row["contains"])
+        )
     return 0
 
 
