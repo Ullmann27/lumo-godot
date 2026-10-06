@@ -212,6 +212,13 @@ func _test_boost_response() -> void:
 func _test_mystery_item_boxes() -> void:
 	await _start("training", "bergwelt")
 	assert(game.item_boxes.size() == 5, "Race course exposes five mystery item boxes")
+	for box in game.item_boxes:
+		assert(
+			is_equal_approx(box.scale.x, 1.18)
+			and is_equal_approx(box.scale.y, 1.18)
+			and is_equal_approx(box.scale.z, 1.18),
+			"Himmelsinseln mystery prisms keep the readability scale from the visual pass"
+		)
 	var leader_pool: Array[String] = game._item_pool_for_place(1)
 	var comeback_pool: Array[String] = game._item_pool_for_place(6)
 	assert(leader_pool.count("boost") < comeback_pool.count("boost"))
