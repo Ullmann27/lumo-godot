@@ -69,6 +69,17 @@ jobs:
           ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-physics.log"
           grep -F '[KartPhysics]' "$RUNNER_TEMP/kart-physics.log"
 
+      - name: Kart mode and dynamic cup regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 300s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script res://scripts/tests/kart_modes_regression.gd \
+            > "$RUNNER_TEMP/kart-modes.log" 2>&1
+          cat "$RUNNER_TEMP/kart-modes.log"
+          ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-modes.log"
+          grep -F '[KartModes]' "$RUNNER_TEMP/kart-modes.log"
+
       - name: Fold and pause layout regression
         shell: bash
         run: |
@@ -139,6 +150,7 @@ jobs:
             ${{ runner.temp }}/godot-import.log
             ${{ runner.temp }}/track-contract.log
             ${{ runner.temp }}/kart-physics.log
+            ${{ runner.temp }}/kart-modes.log
             ${{ runner.temp }}/kart-fold.log
             ${{ runner.temp }}/kart-sonnenhafen-capture.log
             ${{ runner.temp }}/kart-sky-capture.log
