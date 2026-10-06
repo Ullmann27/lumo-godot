@@ -62,13 +62,16 @@ jobs:
           set -euo pipefail
           mkdir -p exports/track-pack-views
           for track in sonnenhafen zauberwald bergwelt holo_city; do
-            timeout 480s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            if ! timeout 480s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
               --path . \
               --rendering-method gl_compatibility \
               --audio-driver Dummy \
               --script res://scripts/tests/kart_track_pack_48_view_capture.gd \
               -- --track-id="$track" \
-              > "$RUNNER_TEMP/track-pack-$track.log" 2>&1
+              > "$RUNNER_TEMP/track-pack-$track.log" 2>&1; then
+              cat "$RUNNER_TEMP/track-pack-$track.log"
+              exit 1
+            fi
             cat "$RUNNER_TEMP/track-pack-$track.log"
             test -s "exports/track-pack-views/$track/capture_report.json"
             count=$(find "exports/track-pack-views/$track" -maxdepth 1 -name "*.png" | wc -l)
