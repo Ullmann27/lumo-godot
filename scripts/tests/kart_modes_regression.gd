@@ -31,7 +31,9 @@ func _run() -> void:
 	game._update_checkpoints()
 	assert(game.checkpoint_index == 0, "Skipping four ordered gates must not create progress")
 	await _start("cup")
-	for round_index in range(4):
+	var cup_track_count: int = game.CATALOG.TRACKS.size()
+	assert(cup_track_count >= 4)
+	for round_index in range(cup_track_count):
 		assert(game.track_id == game.CATALOG.TRACKS[round_index].id)
 		game.distance = game.track_length * 2
 		game.checkpoint_index = 16
@@ -44,12 +46,12 @@ func _run() -> void:
 		assert(game.cup_results.size() == round_index + 1)
 		assert(game.cup_points[0] == (round_index + 1) * 12)
 		assert(game.result_payload.stars == 3 and game.result_payload.solved == 0)
-		if round_index < 3:
+		if round_index < cup_track_count - 1:
 			assert(game.pending_cup_next)
 			game._next_cup_race()
 			assert(game.boosts == 1, "Every cup race starts with the same single boost")
 			await process_frame
-	assert(not game.pending_cup_next and game.cup_index == 3)
+	assert(not game.pending_cup_next and game.cup_index == cup_track_count - 1)
 	# Saved setups from older builds may still name the removed learning cup.
 	await _start("learn_cup")
 	assert(game.mode == "cup" and game.track_id == game.CATALOG.TRACKS[0].id)
