@@ -391,8 +391,8 @@ def zip_directory(stage: Path, destination: Path) -> str:
             info.external_attr = 0o644 << 16
             archive.writestr(info, path.read_bytes())
     size = destination.stat().st_size
-    if size > MAX_ZIP_BYTES:
-        die(destination.name + ": exceeds 30 MiB limit")
+    if size >= MAX_ZIP_BYTES:
+        die(destination.name + ": must be smaller than 30 MiB")
     return hashlib.sha256(destination.read_bytes()).hexdigest()
 
 
@@ -460,8 +460,8 @@ def main() -> int:
                 info.compress_type = zipfile.ZIP_DEFLATED
                 info.external_attr = 0o644 << 16
                 archive.writestr(info, path.read_bytes())
-    if all_zip.stat().st_size > MAX_ZIP_BYTES:
-        die("Combined ZIP exceeds 30 MiB; split before delivery")
+    if all_zip.stat().st_size >= MAX_ZIP_BYTES:
+        die("Combined ZIP must be smaller than 30 MiB; split before delivery")
 
     print("[TrackDeveloperPacks] PASS")
     for row in summary_rows:

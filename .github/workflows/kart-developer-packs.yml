@@ -55,8 +55,8 @@ jobs:
           for file in dist/track_developer_packs/*.zip; do
             unzip -t "$file" >/dev/null
             size=$(stat -c%s "$file")
-            if [ "$size" -gt $((30 * 1024 * 1024)) ]; then
-              echo "ZIP exceeds 30 MiB: $file ($size bytes)"
+            if [ "$size" -ge $((30 * 1024 * 1024)) ]; then
+              echo "ZIP must be smaller than 30 MiB: $file ($size bytes)"
               exit 1
             fi
           done
