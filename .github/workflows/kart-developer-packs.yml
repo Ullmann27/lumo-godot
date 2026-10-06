@@ -8,6 +8,7 @@ on:
       - "docs/track_expansion/2026-10-06/**"
       - "scripts/games/**"
       - "scripts/tests/kart_track_pack_48_view_capture.gd"
+      - "scripts/tests/kart_track_pack_geometry_export.gd"
       - "scenes/games/track_authoring/**"
       - "assets/shaders/kart_*.gdshader"
       - "tools/validate_track_packs.py"
@@ -20,6 +21,7 @@ on:
       - "docs/track_expansion/2026-10-06/**"
       - "scripts/games/**"
       - "scripts/tests/kart_track_pack_48_view_capture.gd"
+      - "scripts/tests/kart_track_pack_geometry_export.gd"
       - "scenes/games/track_authoring/**"
       - "assets/shaders/kart_*.gdshader"
       - "tools/validate_track_packs.py"
@@ -33,7 +35,7 @@ permissions:
 jobs:
   build-track-developer-packs:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 40
     steps:
       - name: Checkout exact branch
         uses: actions/checkout@v4
@@ -55,6 +57,30 @@ jobs:
 
       - name: Validate structured track packs
         run: python3 tools/validate_track_packs.py
+
+      - name: Export and re-import runtime geometry
+        shell: bash
+        run: |
+          set -euo pipefail
+          for track in sonnenhafen zauberwald bergwelt holo_city; do
+            log="$RUNNER_TEMP/geometry-$track.log"
+            if ! Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+              --script res://scripts/tests/kart_track_pack_geometry_export.gd \
+              -- --track-id="$track" > "$log" 2>&1; then
+              cat "$log"
+              exit 1
+            fi
+            cat "$log"
+            if grep -E "SCRIPT ERROR:|Parse Error:|ERROR: Failed to load script|Compile Error:" "$log"; then
+              echo "Godot geometry export/import error detected for $track"
+              exit 1
+            fi
+            grep -F "[TrackPackGeometry] PASS track=$track" "$log"
+            test -s "exports/track-pack-geometry/$track/runtime_world.glb"
+            test -s "exports/track-pack-geometry/$track/authoring_full_loop.glb"
+            test -s "exports/track-pack-geometry/$track/runtime_geometry_inventory.json"
+            test -s "exports/track-pack-geometry/$track/authoring_loop_inventory.json"
+          done
 
       - name: Render 48 developer views per track
         shell: bash
@@ -106,7 +132,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Lumo-Kart-Sonnenhafen-Developer-Pack
-          path: dist/track_developer_packs/Lumo_Kart_sonnenhafen_Developer_Pack.zip
+          path: dist/track_developer_packs/Lumo_Kart_sonnenhafen_Developer_Pack*.zip
           if-no-files-found: error
           retention-days: 30
 
@@ -114,7 +140,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Lumo-Kart-Zauberwald-Developer-Pack
-          path: dist/track_developer_packs/Lumo_Kart_zauberwald_Developer_Pack.zip
+          path: dist/track_developer_packs/Lumo_Kart_zauberwald_Developer_Pack*.zip
           if-no-files-found: error
           retention-days: 30
 
@@ -122,7 +148,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Lumo-Kart-Himmelsinseln-Developer-Pack
-          path: dist/track_developer_packs/Lumo_Kart_bergwelt_Developer_Pack.zip
+          path: dist/track_developer_packs/Lumo_Kart_bergwelt_Developer_Pack*.zip
           if-no-files-found: error
           retention-days: 30
 
@@ -130,7 +156,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Lumo-Kart-Hologramm-City-Developer-Pack
-          path: dist/track_developer_packs/Lumo_Kart_holo_city_Developer_Pack.zip
+          path: dist/track_developer_packs/Lumo_Kart_holo_city_Developer_Pack*.zip
           if-no-files-found: error
           retention-days: 30
 

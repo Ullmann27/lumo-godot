@@ -4,11 +4,9 @@ extends SceneTree
 
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
+const LOOP_PREVIEW = preload("res://scripts/games/authoring/track_authoring_loop_preview.gd")
 
-const CAPTURE_SIZE := Vector2i(960, 540)
-const LOOP_RADIUS_M := 12.0
-const LOOP_ROAD_WIDTH_M := 10.8
-const LOOP_SEGMENTS := 96
+const CAPTURE_SIZE := Vector2i(1920, 1080)
 
 var track_id: String = ""
 var pack: Dictionary = {}
@@ -27,6 +25,8 @@ var frame_index: int = 0
 var out_dir: String = ""
 var route_center := Vector3.ZERO
 var route_extent_m: float = 180.0
+var route_bounds_min := Vector3.ZERO
+var route_bounds_max := Vector3.ZERO
 var capture_report: Array = []
 
 
@@ -161,8 +161,8 @@ func _add_mystery_prism(parent: Node3D, position: Vector3, prism_id: String) -> 
 func _compute_route_bounds() -> void:
 	var minimum: Vector3 = Vector3(INF, INF, INF)
 	var maximum: Vector3 = Vector3(-INF, -INF, -INF)
-	for i in range(128):
-		var d: float = float(world.length) * float(i) / 128.0
+	for i in range(256):
+		var d: float = float(world.length) * float(i) / 256.0
 		var p: Vector3 = world.position_at(d)
 		minimum.x = min(minimum.x, p.x)
 		minimum.y = min(minimum.y, p.y)
@@ -171,7 +171,10 @@ func _compute_route_bounds() -> void:
 		maximum.y = max(maximum.y, p.y)
 		maximum.z = max(maximum.z, p.z)
 	route_center = (minimum + maximum) * 0.5
-	route_extent_m = max(maximum.x - minimum.x, maximum.z - minimum.z) + 35.0
+	route_bounds_min = minimum
+	route_bounds_max = maximum
+	var half_diagonal := Vector2(maximum.x - minimum.x, maximum.z - minimum.z).length() * 0.5
+	route_extent_m = maxf(half_diagonal * 2.0 + 24.0, 40.0)
 
 
 func _build_debug_overlays() -> void:
@@ -247,57 +250,11 @@ func _debug_material(color: Color) -> StandardMaterial3D:
 
 
 func _build_loop_preview() -> void:
-	loop_root = Node3D.new()
-	loop_root.name = "AuthoringOnlyFullLoop"
-	loop_root.set_meta("runtime_driveable", false)
-	loop_root.set_meta("collision_included", false)
-	loop_root.set_meta("requires_inverted_physics_contract", true)
+	loop_root = LOOP_PREVIEW.new()
+	loop_root.configure(track_id)
 	world.add_child(loop_root)
 
-	var segment_length: float = 2.0 * LOOP_RADIUS_M * sin(PI / float(LOOP_SEGMENTS)) * 1.08
-	var road_material: StandardMaterial3D = _debug_material(_loop_color())
-	var rail_material: StandardMaterial3D = _debug_material(Color("ffffff"))
-	for i in range(LOOP_SEGMENTS):
-		var theta: float = -PI * 0.5 + TAU * (float(i) + 0.5) / float(LOOP_SEGMENTS)
-		var holder: Node3D = Node3D.new()
-		holder.position = Vector3(
-			0.0,
-			LOOP_RADIUS_M + LOOP_RADIUS_M * sin(theta),
-			-LOOP_RADIUS_M * cos(theta)
-		)
-		holder.rotation.x = theta - PI * 0.5
-		loop_root.add_child(holder)
-
-		var slab: MeshInstance3D = MeshInstance3D.new()
-		var slab_mesh: BoxMesh = BoxMesh.new()
-		slab_mesh.size = Vector3(LOOP_ROAD_WIDTH_M, 0.72, segment_length)
-		slab.mesh = slab_mesh
-		slab.material_override = road_material
-		holder.add_child(slab)
-
-		for side in [-1.0, 1.0]:
-			var rail: MeshInstance3D = MeshInstance3D.new()
-			var rail_mesh: BoxMesh = BoxMesh.new()
-			rail_mesh.size = Vector3(0.34, 1.2, segment_length)
-			rail.mesh = rail_mesh
-			rail.position = Vector3(side * (LOOP_ROAD_WIDTH_M * 0.5 - 0.18), 0.58, 0.0)
-			rail.material_override = rail_material
-			holder.add_child(rail)
-
 	loop_root.visible = false
-
-
-func _loop_color() -> Color:
-	match track_id:
-		"sonnenhafen":
-			return Color("48e7ff")
-		"zauberwald":
-			return Color("7cff83")
-		"bergwelt":
-			return Color("ffd75a")
-		"holo_city":
-			return Color("ff54e8")
-	return Color("54dcff")
 
 
 func _place_current_view() -> void:
@@ -305,6 +262,7 @@ func _place_current_view() -> void:
 	var kind: String = str(view.get("kind", ""))
 	var cam: Dictionary = view.get("camera", {})
 
+	_restore_world_visibility()
 	camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	camera.fov = 58.0
 	camera.size = 120.0
@@ -352,12 +310,13 @@ func _place_current_view() -> void:
 
 func _place_orbit(view: Dictionary, cam: Dictionary) -> void:
 	kart.visible = false
-	var fraction: float = _route_fraction(str(view.get("target", "route_fraction:0.500")), 0.5)
-	var target: Vector3 = world.position_at(fraction * float(world.length))
+	var target: Vector3 = route_center
 	target.y += float(cam.get("target_height_m", 8.0))
 	var azimuth: float = deg_to_rad(float(cam.get("azimuth_deg", 0.0)))
 	var elevation: float = deg_to_rad(float(cam.get("elevation_deg", 30.0)))
-	var distance: float = float(cam.get("distance_m", 105.0))
+	var requested_distance: float = float(cam.get("distance_m", 105.0))
+	var fit_distance: float = route_extent_m / (2.0 * tan(deg_to_rad(camera.fov * 0.5)))
+	var distance: float = maxf(requested_distance, fit_distance)
 	var direction: Vector3 = Vector3(
 		cos(elevation) * sin(azimuth),
 		sin(elevation),
@@ -398,17 +357,33 @@ func _place_loop(view: Dictionary, cam: Dictionary) -> void:
 	var d: float = fraction * float(world.length)
 	loop_root.transform = world.reset_transform(d, 0.0)
 	loop_root.visible = true
-	var target: Vector3 = loop_root.global_position + Vector3.UP * LOOP_RADIUS_M
+	_isolate_loop_preview()
+	var radius: float = LOOP_PREVIEW.RADIUS_M
+	var target: Vector3 = loop_root.to_global(Vector3(0.0, radius, 0.0))
 	var axis: String = str(cam.get("axis", "side"))
 	var distance: float = float(cam.get("distance_m", 54.0))
 	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-	camera.size = float(cam.get("orthographic_size_m", 58.0))
+	camera.size = radius * 2.9
 	if axis == "top":
-		camera.position = target + Vector3.UP * distance
-		camera.look_at(target, Vector3.FORWARD)
+		camera.position = target + loop_root.global_basis * Vector3(0.82, 0.88, 1.05) * distance
+		camera.look_at(target, loop_root.global_basis.y)
 	else:
-		camera.position = target + world.frame(d) * Vector3(distance, 0.0, 0.0)
-		camera.look_at(target, Vector3.UP)
+		camera.position = target + loop_root.global_basis.x * distance
+		camera.look_at(target, loop_root.global_basis.y)
+
+
+func _isolate_loop_preview() -> void:
+	for child in world.get_children():
+		if child == loop_root or child is WorldEnvironment or child is Light3D:
+			continue
+		if child is VisualInstance3D:
+			child.visible = false
+
+
+func _restore_world_visibility() -> void:
+	for child in world.get_children():
+		if child is VisualInstance3D:
+			child.visible = true
 
 
 func _place_item_lane(cam: Dictionary) -> void:
@@ -442,8 +417,24 @@ func _place_shortcut(cam: Dictionary) -> void:
 
 func _place_orthographic(axis: String, size_m: float, target: Vector3) -> void:
 	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-	camera.size = size_m
-	var distance: float = maxf(size_m * 0.85, 100.0)
+	var aspect_ratio: float = float(CAPTURE_SIZE.x) / float(CAPTURE_SIZE.y)
+	var horizontal_span := route_bounds_max.x - route_bounds_min.x
+	var vertical_span := route_bounds_max.y - route_bounds_min.y
+	var depth_span := route_bounds_max.z - route_bounds_min.z
+	var minimum_fitted_size := 0.0
+	if axis == "top":
+		minimum_fitted_size = route_extent_m * 1.08
+	elif axis == "front":
+		minimum_fitted_size = maxf(vertical_span + 24.0, (horizontal_span + 24.0) / aspect_ratio) * 1.10
+	else:
+		minimum_fitted_size = maxf(vertical_span + 24.0, (depth_span + 24.0) / aspect_ratio) * 1.10
+	camera.size = maxf(size_m, minimum_fitted_size)
+	var distance: float = maxf(camera.size * 0.85, 100.0)
+	if axis != "top":
+		for node_name in ["SculptedIslandTerrain", "AnimatedCoastalWater"]:
+			var occluder := world.get_node_or_null(node_name) as VisualInstance3D
+			if occluder:
+				occluder.visible = false
 	match axis:
 		"top":
 			camera.position = target + Vector3.UP * distance
@@ -522,6 +513,7 @@ func _process(_delta: float) -> bool:
 		return false
 
 	var view: Dictionary = views[capture_index]
+	var kind: String = str(view.get("kind", ""))
 	var filename: String = _safe_name(str(view.get("id", "view_" + str(capture_index)))) + ".png"
 	var image: Image = root.get_texture().get_image()
 	assert(image.save_png(out_dir + "/" + filename) == OK)
@@ -533,6 +525,20 @@ func _process(_delta: float) -> bool:
 			"acceptance": view.get("acceptance"),
 			"file": filename,
 			"capture_state": _capture_state(str(view.get("kind", ""))),
+			"image_size_px": [image.get_width(), image.get_height()],
+			"camera": {
+				"projection": "orthogonal" if camera.projection == Camera3D.PROJECTION_ORTHOGONAL else "perspective",
+				"position_m": [camera.global_position.x, camera.global_position.y, camera.global_position.z],
+				"target_m": _camera_target(view, kind),
+				"orthographic_size_m": camera.size if camera.projection == Camera3D.PROJECTION_ORTHOGONAL else null,
+				"fov_degrees": camera.fov if camera.projection == Camera3D.PROJECTION_PERSPECTIVE else null,
+			},
+			"framing": {
+				"route_bounds_min_m": [route_bounds_min.x, route_bounds_min.y, route_bounds_min.z],
+				"route_bounds_max_m": [route_bounds_max.x, route_bounds_max.y, route_bounds_max.z],
+				"route_length_m": world.length,
+				"loop_runtime_driveable": false if kind == "loop" else null,
+			},
 		}
 	)
 	print("[TrackPackViews] captured ", track_id, " ", capture_index + 1, "/48 ", filename)
@@ -544,3 +550,32 @@ func _process(_delta: float) -> bool:
 	else:
 		_place_current_view()
 	return false
+
+
+func _camera_target(view: Dictionary, kind: String) -> Array[float]:
+	if kind in ["orthographic", "ai_debug", "collision_debug"]:
+		return [route_center.x, route_center.y, route_center.z]
+	if kind == "loop":
+		var radius: float = LOOP_PREVIEW.RADIUS_M
+		var target: Vector3 = loop_root.to_global(Vector3(0.0, radius, 0.0))
+		return [target.x, target.y, target.z]
+	if kind == "orbit":
+		var orbit_target: Vector3 = route_center + Vector3.UP * 8.0
+		return [orbit_target.x, orbit_target.y, orbit_target.z]
+	if kind == "item_lane":
+		var zones: Array = pack.get("mystery_prism_zones", [])
+		var distance: float = float(zones[0].get("route_fraction", 0.18)) * world.length
+		var target: Vector3 = world.position_at(distance + 16.0) + Vector3.UP * 1.65
+		return [target.x, target.y, target.z]
+	if kind == "signature":
+		var setpiece_id: String = str(view.get("target", "")).trim_prefix("setpiece:")
+		var distance: float = _setpiece_fraction(setpiece_id, 0.5) * world.length
+		var target: Vector3 = world.position_at(distance) + Vector3.UP * 2.6
+		return [target.x, target.y, target.z]
+	if kind == "shortcut_entry":
+		var target: Vector3 = world.position_at(_shortcut_fraction() * world.length) + Vector3.UP * 2.2
+		return [target.x, target.y, target.z]
+	var target_text: String = str(view.get("target", ""))
+	var fraction := _route_fraction(target_text, 0.5)
+	var target: Vector3 = world.position_at(fraction * world.length)
+	return [target.x, target.y, target.z]

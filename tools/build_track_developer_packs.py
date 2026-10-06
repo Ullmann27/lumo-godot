@@ -17,6 +17,7 @@ PACK_ROOT = ROOT / "docs/track_expansion/2026-10-06/packs"
 OUT_ROOT = ROOT / "dist/track_developer_packs"
 PACK_IDS = ("sonnenhafen", "zauberwald", "bergwelt", "holo_city")
 MAX_ZIP_BYTES = 30 * 1024 * 1024
+PACK_PART_RAW_BUDGET_BYTES = 24 * 1024 * 1024
 REQUIRED_VIEWS = 48
 MIN_DETAILS = 101
 
@@ -28,6 +29,9 @@ COMMON_SOURCE_PATHS = (
     "assets/shaders/kart_asphalt.gdshader",
     "assets/shaders/kart_stylized_vertex_tint.gdshader",
     "tools/validate_track_packs.py",
+    "scripts/tests/kart_track_pack_48_view_capture.gd",
+    "scripts/tests/kart_track_pack_geometry_export.gd",
+    "scripts/games/authoring/track_authoring_loop_preview.gd",
     "docs/track_expansion/2026-10-06/TRACK_DEVELOPER_PACK_SPEC.md",
 )
 
@@ -37,12 +41,20 @@ TRACK_SOURCE_PATHS = {
     "bergwelt": (
         "scenes/games/track_authoring/sky_halo_loop_authoring.tscn",
         "scripts/games/authoring/sky_halo_loop_authoring.gd",
+        "scripts/games/authoring/track_authoring_loop_preview.gd",
         "scripts/tests/kart_sky_halo_authoring_contract.gd",
         "scripts/tests/kart_sky_halo_authoring_showcase.gd",
         "scripts/tests/kart_sky_islands_showcase.gd",
     ),
     "holo_city": ("scripts/tests/kart_holo_city_showcase.gd",),
 }
+
+GEOMETRY_EXPORT_FILES = (
+    "runtime_world.glb",
+    "runtime_geometry_inventory.json",
+    "authoring_full_loop.glb",
+    "authoring_loop_inventory.json",
+)
 
 
 def die(message: str) -> None:
@@ -122,7 +134,7 @@ def copy_sources(track_id: str, stage: Path) -> list[str]:
 def copy_runtime_views(track_id: str, stage: Path) -> list[str]:
     source_dir = ROOT / "exports/track-pack-views" / track_id
     if not source_dir.is_dir():
-        return []
+        die(track_id + ": runtime capture directory is missing")
     destination_dir = stage / "runtime_views"
     destination_dir.mkdir(parents=True, exist_ok=True)
     copied: list[str] = []
@@ -130,12 +142,42 @@ def copy_runtime_views(track_id: str, stage: Path) -> list[str]:
         if source.is_file() and source.suffix.lower() in {".png", ".json"}:
             shutil.copy2(source, destination_dir / source.name)
             copied.append(source.name)
+    pngs = [name for name in copied if name.lower().endswith(".png")]
+    report_path = destination_dir / "capture_report.json"
+    if len(pngs) != REQUIRED_VIEWS or not report_path.is_file():
+        die(track_id + ": requires 48 PNG captures and capture_report.json")
+    report = read_json(report_path)
+    if len(report) != REQUIRED_VIEWS or {item.get("file") for item in report} != set(pngs):
+        die(track_id + ": capture report does not match the 48 rendered PNGs")
+    for entry in report:
+        if entry.get("image_size_px") != [1920, 1080]:
+            die(track_id + ": capture resolution must be native 1920x1080")
     return copied
 
 
-def readme_text(pack: dict[str, Any], copied_sources: list[str], runtime_views: list[str]) -> str:
+def copy_geometry_exports(track_id: str, stage: Path) -> list[str]:
+    source_dir = ROOT / "exports/track-pack-geometry" / track_id
+    copied = []
+    destination_dir = stage / "geometry"
+    for filename in GEOMETRY_EXPORT_FILES:
+        source = source_dir / filename
+        if not source.is_file():
+            die(track_id + ": required geometry export is missing: " + filename)
+        destination_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination_dir / filename)
+        copied.append(filename)
+    return copied
+
+
+def readme_text(
+    pack: dict[str, Any],
+    copied_sources: list[str],
+    runtime_views: list[str],
+    geometry_exports: list[str],
+) -> str:
     source_lines = "\n".join("- " + item for item in copied_sources) or "- none"
     runtime_pngs = len([item for item in runtime_views if item.lower().endswith(".png")])
+    geometry_glbs = len([item for item in geometry_exports if item.lower().endswith(".glb")])
     return f"""# Lumo Kart Developer Pack - {pack["display_name"]}
 
 Pack-ID: {pack["pack_id"]}
@@ -155,6 +197,7 @@ codebase. It contains no third-party branded racing-game assets.
 - {len(pack["ai_racing_line"])} AI racing-line anchors
 - {len(pack["mystery_prism_zones"])} Lumo Mystery Prism zones
 - {runtime_pngs} rendered developer-view PNGs included in this build
+- {geometry_glbs} importable GLB geometry exports from the current Godot world
 - road width: {pack["road"]["width_m"]} m
 - geometry guides: {", ".join(pack["geometry_guides"].keys())}
 
@@ -165,6 +208,7 @@ codebase. It contains no third-party branded racing-game assets.
 - guides/: geometry, shot, item, loop, implementation and QA handoff
 - source_snapshots/: relevant Godot, shader and test sources from this build
 - runtime_views/: rendered Godot views plus capture_report.json when CI capture is available
+- geometry/: importable runtime-world and isolated authoring-loop GLBs with JSON inventories
 - manifest.json: counts, provenance and safety state
 
 ## Hard rules
@@ -177,6 +221,8 @@ codebase. It contains no third-party branded racing-game assets.
 5. Repeated props should remain MultiMesh/batch friendly with mobile LODs and
    simple collision meshes.
 6. 60 FPS is a target budget; no physical-device PASS without measurement.
+7. geometry/authoring_full_loop.glb is a visualization only; it has no collision
+   and is not driveable.
 
 ## Source snapshots
 
@@ -327,6 +373,7 @@ def build_stage(pack: dict[str, Any], track_id: str) -> Path:
 
     copied_sources = copy_sources(track_id, stage)
     runtime_views = copy_runtime_views(track_id, stage)
+    geometry_exports = copy_geometry_exports(track_id, stage)
     (stage / "pack.json").write_text(stable_json(pack), encoding="utf-8")
 
     write_csv(
@@ -375,7 +422,11 @@ def build_stage(pack: dict[str, Any], track_id: str) -> Path:
     (guides / "LOOPING_INVERSION_CONTRACT.md").write_text(loop_contract_text(pack), encoding="utf-8")
     (guides / "ITEM_SYSTEM.md").write_text(item_text(pack), encoding="utf-8")
     (guides / "QA_ACCEPTANCE.md").write_text(qa_text(pack), encoding="utf-8")
-    (stage / "README.md").write_text(readme_text(pack, copied_sources, runtime_views), encoding="utf-8")
+    (stage / "README.md").write_text(
+        readme_text(pack, copied_sources, runtime_views, geometry_exports), encoding="utf-8"
+    )
+    runtime_inventory = read_json(stage / "geometry/runtime_geometry_inventory.json")
+    loop_inventory = read_json(stage / "geometry/authoring_loop_inventory.json")
 
     manifest = {
         "schema_version": "1.0.0",
@@ -391,29 +442,59 @@ def build_stage(pack: dict[str, Any], track_id: str) -> Path:
         "source_snapshots": copied_sources,
         "runtime_capture_files": runtime_views,
         "runtime_capture_pngs": len([item for item in runtime_views if item.lower().endswith(".png")]),
+        "runtime_capture_resolution_px": [1920, 1080],
         "runtime_loop_enabled": pack["geometry_guides"]["full_loop"]["runtime_enabled"],
+        "geometry_export_files": geometry_exports,
+        "runtime_mesh_nodes": runtime_inventory["mesh_nodes"],
+        "runtime_mesh_instances": runtime_inventory["mesh_instances"],
+        "runtime_geometry_glb_imported_mesh_nodes": runtime_inventory["imported_mesh_nodes"],
+        "collision_objects": runtime_inventory["collision_object_count"],
+        "authoring_loop_mesh_nodes": loop_inventory["mesh_nodes"],
+        "authoring_loop_glb_imported_mesh_nodes": loop_inventory["imported_mesh_nodes"],
+        "authoring_loop_runtime_driveable": loop_inventory["runtime_driveable"],
+        "authoring_loop_collision_included": loop_inventory["collision_included"],
         "max_zip_bytes": MAX_ZIP_BYTES,
     }
     (stage / "manifest.json").write_text(stable_json(manifest), encoding="utf-8")
     return stage
 
 
-def zip_directory(stage: Path, destination: Path) -> str:
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(destination, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
-        for path in sorted(stage.rglob("*")):
-            if not path.is_file():
-                continue
-            arcname = Path(stage.name) / path.relative_to(stage)
-            info = zipfile.ZipInfo(str(arcname).replace("\\", "/"))
-            info.date_time = (2026, 10, 6, 0, 0, 0)
-            info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = 0o644 << 16
-            archive.writestr(info, path.read_bytes())
-    size = destination.stat().st_size
-    if size >= MAX_ZIP_BYTES:
-        die(destination.name + ": must be smaller than 30 MiB")
-    return hashlib.sha256(destination.read_bytes()).hexdigest()
+def zip_directory_parts(stage: Path, destination: Path) -> list[Path]:
+    files = [path for path in sorted(stage.rglob("*")) if path.is_file()]
+    groups: list[list[Path]] = [[]]
+    group_bytes = 0
+    for path in files:
+        size = path.stat().st_size
+        if size >= PACK_PART_RAW_BUDGET_BYTES:
+            die(path.name + ": too large to place in a delivery part")
+        if groups[-1] and group_bytes + size > PACK_PART_RAW_BUDGET_BYTES:
+            groups.append([])
+            group_bytes = 0
+        groups[-1].append(path)
+        group_bytes += size
+
+    destinations = []
+    for index_part, group in enumerate(groups, start=1):
+        part_path = destination
+        if len(groups) > 1:
+            part_path = destination.with_name(
+                destination.stem + "_PART_" + str(index_part).zfill(2) + destination.suffix
+            )
+        part_path.parent.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(
+            part_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9
+        ) as archive:
+            for path in group:
+                arcname = Path(stage.name) / path.relative_to(stage)
+                info = zipfile.ZipInfo(str(arcname).replace("\\", "/"))
+                info.date_time = (2026, 10, 6, 0, 0, 0)
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.external_attr = 0o644 << 16
+                archive.writestr(info, path.read_bytes())
+        if part_path.stat().st_size >= MAX_ZIP_BYTES:
+            die(part_path.name + ": must be smaller than 30 MiB")
+        destinations.append(part_path)
+    return destinations
 
 
 def main() -> int:
@@ -427,18 +508,32 @@ def main() -> int:
         pack = read_json(PACK_ROOT / (track_id + ".json"))
         validate_pack(pack, track_id)
         stage = build_stage(pack, track_id)
+        stage_manifest = read_json(stage / "manifest.json")
+        runtime_views = stage_manifest["runtime_capture_files"]
+        geometry_exports = stage_manifest["geometry_export_files"]
         zip_path = OUT_ROOT / ("Lumo_Kart_" + track_id + "_Developer_Pack.zip")
-        digest = zip_directory(stage, zip_path)
-        checksums.append((digest, zip_path.name))
+        pack_parts = zip_directory_parts(stage, zip_path)
+        pack_part_rows = []
+        for part_path in pack_parts:
+            digest = hashlib.sha256(part_path.read_bytes()).hexdigest()
+            checksums.append((digest, part_path.name))
+            pack_part_rows.append(
+                {"name": part_path.name, "bytes": part_path.stat().st_size, "sha256": digest}
+            )
+        runtime_inventory = read_json(stage / "geometry/runtime_geometry_inventory.json")
+        loop_inventory = read_json(stage / "geometry/authoring_loop_inventory.json")
         summary_rows.append(
             {
                 "track_id": track_id,
                 "display_name": pack["display_name"],
                 "details": len(pack["details"]),
                 "views": len(pack["views"]),
-                "zip": zip_path.name,
-                "bytes": zip_path.stat().st_size,
-                "sha256": digest,
+                "pngs": len([name for name in runtime_views if name.lower().endswith(".png")]),
+                "geometry_exports": geometry_exports,
+                "runtime_mesh_nodes": runtime_inventory["mesh_nodes"],
+                "runtime_mesh_instances": runtime_inventory["mesh_instances"],
+                "authoring_loop_mesh_nodes": loop_inventory["mesh_nodes"],
+                "parts": pack_part_rows,
             }
         )
 
@@ -458,11 +553,11 @@ def main() -> int:
             + " details, "
             + str(row["views"])
             + " views, "
-            + row["zip"]
-            + ", "
-            + str(row["bytes"])
-            + " bytes, SHA256 "
-            + row["sha256"]
+            + str(row["pngs"])
+            + " PNGs, "
+            + str(row["runtime_mesh_instances"])
+            + " runtime mesh instances, parts: "
+            + ", ".join(part["name"] for part in row["parts"])
         )
     (OUT_ROOT / "PACK_INDEX.md").write_text("\n".join(index) + "\n", encoding="utf-8")
     (OUT_ROOT / "pack_summary.json").write_text(stable_json(summary_rows), encoding="utf-8")
@@ -476,7 +571,11 @@ def main() -> int:
         OUT_ROOT / "pack_summary.json",
         OUT_ROOT / "SHA256SUMS.txt",
     ]
-    pack_zip_paths = [OUT_ROOT / row["zip"] for row in summary_rows]
+    pack_zip_paths = [
+        OUT_ROOT / part["name"]
+        for row in summary_rows
+        for part in row["parts"]
+    ]
     max_payload = MAX_ZIP_BYTES - (512 * 1024)
     bundle_groups: list[list[Path]] = [[]]
     bundle_payload = 0
@@ -526,6 +625,7 @@ def main() -> int:
 
     print("[TrackDeveloperPacks] PASS")
     for row in summary_rows:
+        total_part_bytes = sum(part["bytes"] for part in row["parts"])
         print(
             "  "
             + row["track_id"]
@@ -534,9 +634,14 @@ def main() -> int:
             + " details / "
             + str(row["views"])
             + " views / "
-            + str(row["bytes"])
-            + " bytes / "
-            + row["sha256"][:12]
+            + str(row["pngs"])
+            + " PNGs / "
+            + str(row["runtime_mesh_instances"])
+            + " runtime mesh instances / "
+            + str(total_part_bytes)
+            + " bytes across "
+            + str(len(row["parts"]))
+            + " pack ZIP part(s)"
         )
     for row in bundle_rows:
         print(

@@ -2094,7 +2094,7 @@
       "camera": {
         "projection": "orthographic",
         "axis": "front",
-        "orthographic_size_m": 250
+        "orthographic_size_m": 120
       },
       "acceptance": "Vollständige Sonnenhafen-Route inklusive aller 17 Control Points und Routenabschluss liegt im Bild."
     },
@@ -2105,7 +2105,7 @@
       "camera": {
         "projection": "orthographic",
         "axis": "left",
-        "orthographic_size_m": 250
+        "orthographic_size_m": 120
       },
       "acceptance": "Vollständige Sonnenhafen-Route inklusive aller 17 Control Points und Routenabschluss liegt im Bild."
     },
@@ -2116,7 +2116,7 @@
       "camera": {
         "projection": "orthographic",
         "axis": "right",
-        "orthographic_size_m": 250
+        "orthographic_size_m": 120
       },
       "acceptance": "Vollständige Sonnenhafen-Route inklusive aller 17 Control Points und Routenabschluss liegt im Bild."
     },
