@@ -119,8 +119,23 @@ def copy_sources(track_id: str, stage: Path) -> list[str]:
     return copied
 
 
-def readme_text(pack: dict[str, Any], copied_sources: list[str]) -> str:
+def copy_runtime_views(track_id: str, stage: Path) -> list[str]:
+    source_dir = ROOT / "exports/track-pack-views" / track_id
+    if not source_dir.is_dir():
+        return []
+    destination_dir = stage / "runtime_views"
+    destination_dir.mkdir(parents=True, exist_ok=True)
+    copied: list[str] = []
+    for source in sorted(source_dir.iterdir()):
+        if source.is_file() and source.suffix.lower() in {".png", ".json"}:
+            shutil.copy2(source, destination_dir / source.name)
+            copied.append(source.name)
+    return copied
+
+
+def readme_text(pack: dict[str, Any], copied_sources: list[str], runtime_views: list[str]) -> str:
     source_lines = "\n".join("- " + item for item in copied_sources) or "- none"
+    runtime_pngs = len([item for item in runtime_views if item.lower().endswith(".png")])
     return f"""# Lumo Kart Developer Pack - {pack["display_name"]}
 
 Pack-ID: {pack["pack_id"]}
@@ -139,6 +154,7 @@ codebase. It contains no third-party branded racing-game assets.
 - {len(pack["checkpoints"])} checkpoint/respawn anchors
 - {len(pack["ai_racing_line"])} AI racing-line anchors
 - {len(pack["mystery_prism_zones"])} Lumo Mystery Prism zones
+- {runtime_pngs} rendered developer-view PNGs included in this build
 - road width: {pack["road"]["width_m"]} m
 - geometry guides: {", ".join(pack["geometry_guides"].keys())}
 
@@ -148,6 +164,7 @@ codebase. It contains no third-party branded racing-game assets.
 - tables/: CSV exports for DCC, level tools, sheets and QA
 - guides/: geometry, shot, item, loop, implementation and QA handoff
 - source_snapshots/: relevant Godot, shader and test sources from this build
+- runtime_views/: rendered Godot views plus capture_report.json when CI capture is available
 - manifest.json: counts, provenance and safety state
 
 ## Hard rules
@@ -309,6 +326,7 @@ def build_stage(pack: dict[str, Any], track_id: str) -> Path:
     stage.mkdir(parents=True)
 
     copied_sources = copy_sources(track_id, stage)
+    runtime_views = copy_runtime_views(track_id, stage)
     (stage / "pack.json").write_text(stable_json(pack), encoding="utf-8")
 
     write_csv(
@@ -357,7 +375,7 @@ def build_stage(pack: dict[str, Any], track_id: str) -> Path:
     (guides / "LOOPING_INVERSION_CONTRACT.md").write_text(loop_contract_text(pack), encoding="utf-8")
     (guides / "ITEM_SYSTEM.md").write_text(item_text(pack), encoding="utf-8")
     (guides / "QA_ACCEPTANCE.md").write_text(qa_text(pack), encoding="utf-8")
-    (stage / "README.md").write_text(readme_text(pack, copied_sources), encoding="utf-8")
+    (stage / "README.md").write_text(readme_text(pack, copied_sources, runtime_views), encoding="utf-8")
 
     manifest = {
         "schema_version": "1.0.0",
@@ -371,6 +389,8 @@ def build_stage(pack: dict[str, Any], track_id: str) -> Path:
         "ai_racing_line_anchors": len(pack["ai_racing_line"]),
         "mystery_prisms": len(pack["mystery_prism_zones"]),
         "source_snapshots": copied_sources,
+        "runtime_capture_files": runtime_views,
+        "runtime_capture_pngs": len([item for item in runtime_views if item.lower().endswith(".png")]),
         "runtime_loop_enabled": pack["geometry_guides"]["full_loop"]["runtime_enabled"],
         "max_zip_bytes": MAX_ZIP_BYTES,
     }
