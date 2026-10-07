@@ -16,6 +16,7 @@ const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
 const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
+const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
@@ -71,6 +72,7 @@ var abandoned: bool = false
 var rng := RandomNumberGenerator.new()
 var player: LumoRaceKart
 var camera: Camera3D
+var speed_fx: Node3D
 var opponents: Array[LumoRaceKart] = []
 var opponent_distances: Array[float] = [-4, -7, -10, -13, -16]
 var opponent_lanes: Array[float] = [-3.2, -1.65, -0.1, 1.45, 3.0]
@@ -360,11 +362,15 @@ func _build_world() -> void:
 		opponent_targets.append(i * 5)
 		opponent_headings.append(0.0)
 	camera = Camera3D.new()
-	camera.fov = 68
+	camera.fov = VISUAL_GRADE.BASE_FOV
 	camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	camera.current = true
 	camera.far = 450 if graphics_profile == "high" else (340 if graphics_profile == "medium" else 260)
 	race_root.add_child(camera)
+	speed_fx = SPEED_FX.new()
+	speed_fx.name = "CameraSpeedFx"
+	camera.add_child(speed_fx)
+	speed_fx.set_motion(0.0, false, reduced_motion)
 	if mode == "arena":
 		player.position = Vector3(0, 0.04, 28)
 		player_heading = 0
@@ -1650,6 +1656,8 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 		if snap
 		else lerpf(camera.fov, target_fov, minf(1.0, delta * VISUAL_GRADE.FOV_LERP))
 	)
+	if is_instance_valid(speed_fx):
+		speed_fx.set_motion(speed_ratio, boost_time > 0.0 and not paused, reduced_motion)
 
 
 static func _resize_compensated_fov(vertical_fov: float, aspect: float) -> float:
