@@ -252,7 +252,7 @@ func _apply_responsive_layout() -> void:
 		if child is Button and child.name == "ResumeRace":
 			child.custom_minimum_size = Vector2(112 if small else 148, 56 if compact else 72) * ui_scale
 	_set_physical_minimum(header_row, Vector2(0, 36 if short_landscape else 60), ui_scale)
-	_set_physical_minimum(preview_container, Vector2(150, 96) if short_landscape else Vector2(250, 240), ui_scale)
+	_set_physical_minimum(preview_container, Vector2(150, 80 if window_size.y < 440 else 96) if short_landscape else Vector2(250, 240), ui_scale)
 	body_column.add_theme_constant_override("separation", roundi((6 if short_landscape else 16) * ui_scale))
 	_set_physical_font(title_label, 22 if short_landscape else 36, ui_scale)
 	_set_physical_font(steps_label, 12 if short_landscape else 15, ui_scale)
@@ -286,7 +286,7 @@ func _apply_responsive_layout() -> void:
 		for card in cards:
 			if card is Button:
 				var tiny: bool = window_size.y < 440
-				var height: float = (44 if tiny else 60) if short_landscape else (94 if step == 0 else 74)
+				var height: float = (44 if tiny else 60) if short_landscape else (80 if step == 0 else 74)
 				_set_physical_minimum(card, Vector2(0, height), ui_scale)
 				_set_physical_font(card, (14 if tiny else 16) if short_landscape else 19, ui_scale)
 

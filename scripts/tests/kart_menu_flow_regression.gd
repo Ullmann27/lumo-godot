@@ -69,7 +69,7 @@ func _run() -> void:
 		game.abandoned = true
 		game.queue_free()
 		await _settle()
-		print("[KartMenuFlow] %s: five visible modes, five actual touch steps, started cup race" % pixels)
+		print("[KartMenuFlow] %s: five modes, five actual touch steps, started cup race" % pixels)
 	print("[KartMenuFlow] PASS: complete pixel-touch setup at1280x720,800x480,640x320; real preview and footer remain visible")
 	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
 	await create_timer(0.12).timeout
