@@ -71,7 +71,9 @@ jobs:
           test -s exports/video-reference-grade/01_holo_city_chase.png
           test -s exports/video-reference-grade/02_holo_city_boost.png
           test -s exports/video-reference-grade/03_himmelsinseln_chase.png
-          test -s exports/video-reference-grade/04_reduced_motion.png
+          test -s exports/video-reference-grade/04_sonnenhafen_chase.png
+          test -s exports/video-reference-grade/05_zauberwald_chase.png
+          test -s exports/video-reference-grade/06_reduced_motion.png
       - name: Existing rival fairness
         shell: bash
         run: |
