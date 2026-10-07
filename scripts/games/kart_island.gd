@@ -14,6 +14,7 @@ const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
 const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
+const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
@@ -33,6 +34,9 @@ const DRIFT_BOOST_SECONDS: Array[float] = [1.0, 1.8]
 ## turbo speed lands before the crystal cave.
 const JUMP_GRAVITY: float = 30.0
 const JUMP_MAX_LIFT: float = 4.0
+## AI pulse is deliberately telegraphed: children get a readable dodge/shield window.
+const RIVAL_PULSE_WARNING_SECONDS: float = 0.65
+const RIVAL_PULSE_RADIUS: float = 9.5
 var curve: Curve3D
 var world: LumoRaceWorld
 var track_length: float
@@ -140,6 +144,8 @@ var opponent_items: Array[String] = []
 var opponent_item_cooldowns: Array[float] = []
 var opponent_boost_times: Array[float] = []
 var opponent_shield_times: Array[float] = []
+var opponent_pulse_warning_times: Array[float] = []
+var opponent_item_fx: Array = []
 var opponent_scores: Array[int] = []
 var opponent_targets: Array[int] = []
 var arena: Node3D
@@ -248,6 +254,8 @@ func _build_world() -> void:
 	opponent_item_cooldowns.clear()
 	opponent_boost_times.clear()
 	opponent_shield_times.clear()
+	opponent_pulse_warning_times.clear()
+	opponent_item_fx.clear()
 	opponent_scores.clear()
 	opponent_targets.clear()
 	arena_pickup_timers.clear()
@@ -342,6 +350,11 @@ func _build_world() -> void:
 		opponent_item_cooldowns.append(0.0)
 		opponent_boost_times.append(0.0)
 		opponent_shield_times.append(0.0)
+		opponent_pulse_warning_times.append(0.0)
+		var rival_fx = RIVAL_ITEM_FX.new()
+		rival_fx.set_reduced_motion(reduced_motion)
+		opponent.add_child(rival_fx)
+		opponent_item_fx.append(rival_fx)
 		opponent_scores.append(0)
 		opponent_targets.append(i * 5)
 		opponent_headings.append(0.0)
@@ -1241,12 +1254,44 @@ func _opponent_place(index: int) -> int:
 	return clampi(place, 1, 6)
 
 
+func _sync_rival_item_fx(index: int) -> void:
+	if index < 0 or index >= opponent_item_fx.size():
+		return
+	var fx = opponent_item_fx[index]
+	fx.set_item(opponent_items[index] if index < opponent_items.size() else "")
+	fx.set_shield(opponent_shield_times[index] if index < opponent_shield_times.size() else 0.0)
+	fx.set_pulse_warning(
+		opponent_pulse_warning_times[index] if index < opponent_pulse_warning_times.size() else 0.0,
+		RIVAL_PULSE_WARNING_SECONDS
+	)
+	fx.set_stunned(opponent_stuns[index] if index < opponent_stuns.size() else 0.0)
+
+
 func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) -> void:
-	if index >= opponent_items.size():
+	if index >= opponent_items.size() or index >= opponent_pulse_warning_times.size():
 		return
 	opponent_item_cooldowns[index] = maxf(0.0, opponent_item_cooldowns[index] - delta)
 	opponent_boost_times[index] = maxf(0.0, opponent_boost_times[index] - delta)
 	opponent_shield_times[index] = maxf(0.0, opponent_shield_times[index] - delta)
+
+	# AI pulse is fair and readable: warn first, then resolve against the player's
+	# *current* distance/shield. Moving out of range during the warning dodges it.
+	var warning_before: float = opponent_pulse_warning_times[index]
+	if warning_before > 0.0:
+		opponent_pulse_warning_times[index] = maxf(0.0, warning_before - delta)
+		if warning_before > 0.0 and opponent_pulse_warning_times[index] <= 0.0:
+			if index < opponent_item_fx.size():
+				opponent_item_fx[index].fire_pulse()
+			if local_gap.length() <= RIVAL_PULSE_RADIUS:
+				if shield_time > 0.0:
+					message.text = "Sternenschild blockt den Rivalen-Impuls!"
+					_sound_effect("item")
+				else:
+					hit_timer = maxf(hit_timer, 0.38)
+					message.text = "Rivalen-Impuls trifft – kurz gebremst!"
+					_sound_effect("collision")
+		_sync_rival_item_fx(index)
+		return
 
 	if opponent_items[index].is_empty() and opponent_item_cooldowns[index] <= 0.0:
 		var local_distance: float = fposmod(opponent_distances[index], track_length)
@@ -1261,6 +1306,7 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 				break
 
 	if opponent_items[index].is_empty():
+		_sync_rival_item_fx(index)
 		return
 
 	var progress_gap: float = distance - opponent_distances[index]
@@ -1270,15 +1316,16 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 				opponent_boost_times[index] = 2.2
 				opponent_items[index] = ""
 		"pulse":
-			if local_gap.length() < 9.0 and shield_time <= 0.0:
-				hit_timer = maxf(hit_timer, 0.38)
-				message.text = "Rivale setzt einen Lichtimpuls ein!"
-				_sound_effect("collision")
+			if local_gap.length() < RIVAL_PULSE_RADIUS + 1.5:
+				opponent_pulse_warning_times[index] = RIVAL_PULSE_WARNING_SECONDS
 				opponent_items[index] = ""
+				message.text = "Rivale lädt Lichtimpuls – Abstand oder Schild!"
+				_sound_effect("item")
 		"shield":
 			if local_gap.length() < 7.0:
 				opponent_shield_times[index] = 5.0
 				opponent_items[index] = ""
+	_sync_rival_item_fx(index)
 
 
 func _drive_opponents(delta: float) -> void:
@@ -1300,6 +1347,7 @@ func _drive_opponents(delta: float) -> void:
 			target_speed *= 1.32
 		target_speed *= clampf(1.0 - absf(angle) * 0.33, 0.58, 1.0)
 		opponent_stuns[i] = maxf(0, opponent_stuns[i] - delta)
+		_sync_rival_item_fx(i)
 		if opponent_stuns[i] > 0:
 			target_speed *= 0.3
 		var forward := Vector3(-sin(opponent_headings[i]), 0, -cos(opponent_headings[i]))
@@ -1882,7 +1930,18 @@ func _rebuild_graphics() -> void:
 	for rival in opponents:
 		rival_transforms.append(rival.transform)
 	var state: Dictionary = {}
-	for key in ["opponent_headings", "opponent_scores", "opponent_targets", "opponent_stuns", "arena_pickup_timers"]:
+	for key in [
+		"opponent_headings",
+		"opponent_scores",
+		"opponent_targets",
+		"opponent_stuns",
+		"opponent_items",
+		"opponent_item_cooldowns",
+		"opponent_boost_times",
+		"opponent_shield_times",
+		"opponent_pulse_warning_times",
+		"arena_pickup_timers",
+	]:
 		state[key] = get(key).duplicate()
 	var saved_recording: Array = records.recording.duplicate(true)
 	var saved_replay_index: int = records.replay_index
@@ -1894,6 +1953,8 @@ func _rebuild_graphics() -> void:
 	for key in state:
 		var target: Array = get(key)
 		target.assign(state[key])
+	for i in range(opponent_item_fx.size()):
+		_sync_rival_item_fx(i)
 	records.recording = saved_recording
 	records.replay_index = saved_replay_index
 	_update_camera(1, true)
