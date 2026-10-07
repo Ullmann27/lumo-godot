@@ -3,7 +3,8 @@ extends Node3D
 ## Four original banked courses. Spatial GPU batches preserve Android performance.
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
-const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")\nconst VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
+const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
+const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
 const RAIL_LATERAL: float = 6.05
