@@ -929,7 +929,7 @@ func _apply_responsive_layout() -> void:
 				child.custom_minimum_size = Vector2.ONE * float(spec[1]) * ui_scale
 				child.size = child.custom_minimum_size
 				child.position = Vector2(spec[0]) * ui_scale - child.size * 0.5
-				child.get_child(0).add_theme_font_size_override("font_size", roundi(12.0 * ui_scale))
+				child.call_deferred("_apply_label_size")
 	else:
 		var size_scale: float = clampf(
 			minf(display_size.y / 720.0, available_width / 700.0), 0.64, 1.0

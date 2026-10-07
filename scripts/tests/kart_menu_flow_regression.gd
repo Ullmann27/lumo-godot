@@ -66,6 +66,7 @@ func _run() -> void:
 		# Use Android's default manual accelerator for the complete control view.
 		game.auto_gas = false
 		game._update_hud()
+		await _settle()
 		# The garage-to-race transition must apply the actual driving layout
 		# itself. Do not call its layout methods here to repair a broken result.
 		for control in [game.joystick, game.pedal_pad, game.top_pause_button]:
@@ -76,6 +77,12 @@ func _run() -> void:
 			assert(game.pedal_pad.get_global_rect().grow(0.02).encloses(action.get_global_rect()), "Action exceeds its pad beyond subpixel rounding")
 			var physical: Vector2 = action.size * Vector2(root.size) / root.get_visible_rect().size
 			assert(minf(physical.x, physical.y) >= 43.99)
+			var action_font: Font = action.label.get_theme_font("font")
+			var action_font_size: int = action.label.get_theme_font_size("font_size")
+			var action_lines: PackedStringArray = action.text.split("\n")
+			for line in action_lines:
+				assert(action_font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, action_font_size).x <= action.size.x, "Every complete pedal label must fit after Android-sized layout")
+			assert(action_font.get_height(action_font_size) * action_lines.size() <= action.size.y, "Multiline pedal labels must remain fully visible")
 		assert(not game.map_panel.visible or pixels.x >= 900)
 		for frame in range(220):
 			game._physics_process(1.0 / 60)
