@@ -63,7 +63,9 @@ func _sync_caption() -> void:
 		return
 	var parts: PackedStringArray = text.split("\n")
 	label.text = parts[0]
-	label.add_theme_color_override("font_color", Color("9baec7") if disabled else Color("f6fcff"))
+	# Keep the action name readable on a bright track even when no item is
+	# available. The muted panel and artwork already communicate disabled state.
+	label.add_theme_color_override("font_color", Color("dce8f8") if disabled else Color("f6fcff"))
 	tooltip_text = {"gas": "Gas halten", "brake": "Bremsen / rückwärts fahren",
 		"drift": "Drift halten", "boost": "Raketen-Boost", "item": "Item einsetzen"}.get(icon_id, text)
 	badge.text = parts[1].replace("◆", "").strip_edges() if parts.size() > 1 and icon_id == "boost" else ""

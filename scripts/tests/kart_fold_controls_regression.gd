@@ -44,7 +44,7 @@ func _run() -> void:
 	game.message.text = "Lenken · Gas halten · Los geht’s!"
 	game._update_hud()
 	var actions: Array = [game.gas_button, game.brake_button, game.drift_button, game.boost_button, game.item_button]
-	var matrix: Array[Vector2i] = [Vector2i(800,360),Vector2i(320,720),Vector2i(1280,720),Vector2i(600,960),Vector2i(840,720),Vector2i(2176,1812),Vector2i(1812,2176),Vector2i(1280,720)]
+	var matrix: Array[Vector2i] = [Vector2i(800,360),Vector2i(320,720),Vector2i(1280,720),Vector2i(600,960),Vector2i(840,720),Vector2i(2176,1812),Vector2i(1812,2176),Vector2i(2316,904),Vector2i(640,320),Vector2i(1280,720)]
 	for pixels in matrix:
 		root.size = pixels
 		await _settle()
@@ -75,6 +75,26 @@ func _run() -> void:
 			assert(is_equal_approx(_pixels(game.gas_button).x,52.0), "Short phone sizing changed")
 		measurements.append({"surface": [pixels.x,pixels.y],"stick_px":_pixels(game.joystick).x,"gas_px":_pixels(game.gas_button).x,"boost_px":_pixels(game.boost_button).x})
 		assert(root.get_texture().get_image().save_png(output.path_join("kart-controls-%dx%d.png" % [pixels.x,pixels.y])) == OK)
+	# Exercise both real item states on the long cover display. A visible empty
+	# item must not fire; an acquired shield must be consumed exactly once.
+	root.size = Vector2i(2316,904)
+	await _settle()
+	game._apply_safe_area(Rect2(12,20,16,16),Vector2(root.size))
+	game.item = ""
+	game._update_hud()
+	await _settle()
+	assert(game.item_button.disabled, "Empty inventory must disable item action")
+	await _touch(4,game.item_button.get_global_rect().get_center(),true)
+	assert(not game.item_button.held and game.item.is_empty(), "Empty item cannot activate")
+	await _touch(4,Vector2(420,250),false)
+	assert(root.get_texture().get_image().save_png(output.path_join("kart-cover-empty-item.png")) == OK)
+	game.item = "shield"
+	game._update_hud()
+	await _touch(4,game.item_button.get_global_rect().get_center(),true)
+	assert(game.item.is_empty() and game.shield_time > 0.0, "Acquired shield must activate")
+	await _touch(4,Vector2(420,250),false)
+	game._update_hud()
+	assert(game.item_button.disabled, "Consumed item must become unavailable")
 	root.size = Vector2i(840,720)
 	await _settle()
 	game._apply_safe_area(Rect2(12,20,16,16),Vector2(root.size))
@@ -106,6 +126,6 @@ func _run() -> void:
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
-	print("[KartFoldControls] PASS: eight resizes, scaled Fold targets, phone sizes, distinct artwork, no overlap, real three-finger driving, release outside and pause")
+	print("[KartFoldControls] PASS: ten resizes, scaled Fold targets, cover and compact sizes, actual empty/shield item actions, distinct artwork, no overlap, real three-finger driving, release outside and pause")
 	await create_timer(0.15).timeout
 	quit.call_deferred(0)
