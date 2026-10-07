@@ -2,10 +2,19 @@ class_name LumoKartTracks
 extends RefCounted
 ## Original course designs. Distances and heights are metres in the shared world.
 
-const IDS: Array[String] = ["sonnenhafen", "zauberwald", "bergwelt", "holo_city"]
+const EXPANSION = preload("res://scripts/games/kart_expansion_tracks.gd")
+static var IDS: Array[String] = _all_ids()
+
+static func _all_ids() -> Array[String]:
+	var result: Array[String] = ["sonnenhafen", "zauberwald", "bergwelt", "holo_city"]
+	result.append_array(EXPANSION.IDS)
+	result.make_read_only()
+	return result
 
 
 static func definition(id: String) -> Dictionary:
+	if id in EXPANSION.IDS:
+		return EXPANSION.definition(id)
 	match id:
 		"zauberwald":
 			return {

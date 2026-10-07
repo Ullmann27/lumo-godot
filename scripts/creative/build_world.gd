@@ -363,7 +363,7 @@ func _rebuild() -> void:
 
 
 func _camera_update() -> void:
-	if not is_instance_valid(camera):
+	if not is_instance_valid(camera) or not camera.is_inside_tree():
 		return
 	camera.position = (
 		focus + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * radius

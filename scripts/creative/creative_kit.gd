@@ -19,7 +19,7 @@ func material(color: Color, glow: bool = false, glass: bool = false) -> Standard
 	if glow:
 		mat.emission_enabled = true
 		mat.emission = color
-		mat.emission_energy_multiplier = 1.3
+		mat.emission_energy_multiplier = 0.55
 	if glass:
 		mat.roughness = 0.18
 		mat.metallic = 0.28
@@ -38,7 +38,7 @@ func textured(kind: String, tint: Color = Color.WHITE) -> StandardMaterial3D:
 	mat.albedo_color = tint
 	mat.uv1_triplanar = true
 	mat.uv1_world_triplanar = true
-	mat.uv1_scale = Vector3.ONE * (0.65 if kind == "stone" else 0.45)
+	mat.uv1_scale = Vector3.ONE * (0.12 if kind == "stone" else 0.35)
 	mat.roughness = 0.83
 	materials[key] = mat
 	return mat

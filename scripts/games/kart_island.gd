@@ -9,6 +9,7 @@ const GARAGE = preload("res://scripts/games/kart_garage_menu.gd")
 const RECORDS = preload("res://scripts/games/kart_records.gd")
 const ARENA = preload("res://scripts/games/kart_arena.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
+const PHYSICAL_LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
@@ -130,6 +131,8 @@ var mode: String = "race"
 var track_id: String = "sonnenhafen"
 var selected_driver: String = "fox"
 var selected_kart: String = "comet"
+var loop_state = PHYSICAL_LOOP.new()
+var loop_count: int = 0
 var player_heading: float = 0.0
 var physical_velocity := Vector3.ZERO
 var previous_road_distance: float = 0.0
@@ -215,7 +218,7 @@ func _ready() -> void:
 	)
 	_show_garage()
 	set_physics_process(true)
-	print("[Kart] Holographic garage ready: five modes, four worlds, free steering")
+	print("[Kart] Holographic garage ready: five modes, twelve worlds, free steering")
 
 
 func _wait_for_landscape() -> bool:
@@ -1047,6 +1050,8 @@ func _physics_process(delta: float) -> void:
 
 
 func _drive_player(delta: float, axis: float, braking: float) -> void:
+	if mode != "arena" and _drive_loop(delta, axis, braking):
+		return
 	var kart: Dictionary = CATALOG.entry(CATALOG.KARTS, selected_kart)
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
 	var target: float = 20.5 * float(kart.speed) * float(rules.speed)
@@ -1145,6 +1150,44 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		pitch = world.alternate_route_pitch(road_distance, lane)
 	if pitch != 0.0:
 		player.basis = player.basis.rotated(right, pitch).orthonormalized()
+
+
+func _drive_loop(delta: float, axis: float, braking: float) -> bool:
+	if not is_instance_valid(world) or world.loop_layout.is_empty():
+		loop_state.active = false
+		return false
+	var layout: Dictionary = world.loop_layout
+	if not loop_state.active:
+		var road: Dictionary = world.sample_road(player.position, previous_road_distance)
+		var entry_offset: float = float(road.distance) - float(layout.start)
+		if absf(entry_offset) > 1.0 or absf(float(road.lateral) - float(layout.lane)) > 0.9 or speed < 16.0 or physical_velocity.dot(road.forward) < 8:
+			return false
+		loop_state.enter(layout, speed, distance - entry_offset)
+		airborne = false
+		message.text = "Loop! Halte deinen Schwung."
+	player.transform = loop_state.advance(world, delta, axis, braking, _gas_active())
+	speed = loop_state.speed
+	if loop_state.active:
+		previous_road_distance = float(layout.start) + loop_state.progress * PHYSICAL_LOOP.ADVANCE
+		distance = loop_state.entry_progress + loop_state.progress * PHYSICAL_LOOP.ADVANCE
+		lane = float(layout.lane) + loop_state.lateral
+		physical_velocity = -player.basis.z * speed
+		return true
+	var exit_distance: float = float(layout.start) + (0 if loop_state.failed else PHYSICAL_LOOP.ADVANCE)
+	distance = loop_state.entry_progress + (0 if loop_state.failed else PHYSICAL_LOOP.ADVANCE)
+	previous_road_distance = exit_distance
+	player_heading = _heading(exit_distance)
+	player.transform = world.reset_transform(exit_distance, float(layout.lane))
+	if loop_state.failed:
+		speed = 8
+		ghost_valid = false
+		message.text = "Wieder sicher auf der Straße. Mit mehr Schwung klappt der Loop!"
+	else:
+		loop_count += 1
+		boost_time = maxf(boost_time, 1.5)
+		message.text = "Loop geschafft! Sternenturbo!"
+	physical_velocity = Vector3(-sin(player_heading), 0, -cos(player_heading)) * speed
+	return true
 
 
 ## Ground contact, ramp, take-off, flight, landing and the cloud rescue over the gap.
@@ -1400,6 +1443,7 @@ func _drive_opponents(delta: float) -> void:
 
 
 func _reset_kart() -> void:
+	loop_state.active = false
 	if menu_active or not is_instance_valid(player) or finished:
 		return
 	if mode == "arena":
@@ -1615,6 +1659,13 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 		return
 	# Heinz' racing references keep the kart large in frame and put the horizon/
 	# setpiece directly ahead. Speed stretches the view; boost never teleports it.
+	if loop_state.active:
+		var origin: Vector3 = world.position_at(float(world.loop_layout.start), float(world.loop_layout.lane))
+		var entry_basis: Basis = world.frame(float(world.loop_layout.start))
+		var desired_loop: Vector3 = origin + entry_basis.x * 12 + entry_basis.z * 15 + Vector3.UP * 11
+		camera.position = camera.position.lerp(desired_loop, minf(1, delta * 4))
+		camera.look_at(player.position + Vector3.UP * 0.6)
+		return
 	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
 	var right := Vector3(-ahead.z, 0, ahead.x)
 	var speed_ratio: float = clampf(absf(speed) / 25.0, 0.0, 1.0)
@@ -2055,7 +2106,14 @@ func _save_session() -> void:
 		"item", "shield_time", "reset_count", "setup_snapshot"
 	]:
 		config.set_value("race", key, get(key))
-	config.set_value("race", "player_position", player.position)
+	if loop_state.active:
+		# A interrupted loop resumes safely on its entry road, with no lap shortcut.
+		config.set_value("race", "distance", loop_state.entry_progress)
+		config.set_value("race", "previous_road_distance", float(world.loop_layout.start))
+		config.set_value("race", "player_heading", _heading(float(world.loop_layout.start)))
+		config.set_value("race", "player_position", world.reset_transform(float(world.loop_layout.start), float(world.loop_layout.lane)).origin)
+	else:
+		config.set_value("race", "player_position", player.position)
 	var positions: Array[Vector3] = []
 	for rival in opponents:
 		positions.append(rival.position)

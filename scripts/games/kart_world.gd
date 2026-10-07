@@ -1,6 +1,7 @@
 class_name LumoRaceWorld
 extends Node3D
 ## Four original banked courses. Spatial GPU batches preserve Android performance.
+const EXPANSION = preload("res://scripts/games/kart_expansion_world.gd")
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
@@ -26,6 +27,7 @@ var definition: Dictionary = {}
 var checkpoint_positions := PackedVector3Array()
 ## Jump layout (ramp, take-off, gap end) on courses that have one; empty elsewhere.
 var jump: Dictionary = {}
+var loop_layout: Dictionary = {}
 var _road_samples := PackedVector3Array()
 var _road_distances := PackedFloat32Array()
 var _rng := RandomNumberGenerator.new()
@@ -43,6 +45,7 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 	_rng.seed = definition.seed
 	_make_curve()
 	jump={}
+	loop_layout={}
 	if track_id=="bergwelt":
 		# Himmelsinseln Sprint (reference k07): the road is carried by floating islands.
 		jump=SKY_ISLANDS.jump_layout(length)
@@ -54,6 +57,14 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 		_flush_instances()
 		return
 	_lighting()
+	if track_id in TRACKS.EXPANSION.IDS:
+		EXPANSION.prepare(self)
+		EXPANSION.environment(self)
+		_road()
+		EXPANSION.build(self)
+		_navigation()
+		_flush_instances()
+		return
 	_terrain()
 	_road()
 	match track_id:
@@ -231,6 +242,13 @@ func _shape(kind: String) -> Mesh:
 		"flower": mesh = SHAPES.flower()
 		"crystal": mesh = SHAPES.crystal()
 		"star": mesh = SHAPES.star()
+		"torus":
+			var ring := TorusMesh.new()
+			ring.inner_radius = 0.27
+			ring.outer_radius = 0.5
+			ring.rings = 24
+			ring.ring_segments = 12
+			mesh = ring
 		"cone":
 			var cone := CylinderMesh.new()
 			cone.top_radius=0.0
@@ -485,6 +503,8 @@ func _road() -> void:
 	asphalt.set_shader_parameter("cinematic_grade",float(visual.road_grade))
 	asphalt.set_shader_parameter("road_gloss",float(visual.road_gloss))
 	asphalt.set_shader_parameter("edge_energy",float(visual.edge_energy))
+	if track_id == "candy_cloud":
+		asphalt.shader = preload("res://assets/shaders/kart_candy_road.gdshader")
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
 	var shoulder_color := Color("d9d9c5") if track_id=="sonnenhafen" else Color("90b4bd")
 	if track_id=="bergwelt": shoulder_color=Color("2a3f8f")
@@ -512,7 +532,7 @@ func _road() -> void:
 		var bridge: bool=_is_bridge(d)
 		for side in [-1.0,1.0]:
 			var curb: Color=Color("eff3e5") if i%4<2 else edge_color.darkened(0.16)
-			if track_id=="sonnenhafen":
+			if track_id in ["sonnenhafen", "candy_cloud"]:
 				curb=Color("f7f4ea") if i%4<2 else Color("e84f45")
 			if track_id!="bergwelt":
 				_prop("box",position_at(d,side*5.5)+basis.y*0.02,Vector3(0.48,0.12,step+0.03),curb,basis)
