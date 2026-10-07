@@ -7,7 +7,7 @@ extends RefCounted
 
 const NIGHT_SKY = preload("res://assets/shaders/kart_night_sky.gdshader")
 const CLOUD_SEA = preload("res://assets/shaders/kart_cloud_sea.gdshader")
-const WATERFALL = preload("res://assets/shaders/kart_waterfall.gdshader")
+const WATERFALL = preload("res://assets/shaders/kart_waterfall.gdshader")\nconst VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 
 ## Course fractions carried by islands (start, floating town, crystal cave, temple ruins).
 ## Everything between them is bridge.
@@ -184,6 +184,7 @@ static func jump_dressing(world) -> void:
 
 
 static func environment(world) -> void:
+	var visual: Dictionary = VISUAL_GRADE.environment_profile("bergwelt", world.low_detail)
 	var environment := Environment.new()
 	environment.background_mode = Environment.BG_SKY
 	var sky := Sky.new()
@@ -194,13 +195,17 @@ static func environment(world) -> void:
 	environment.sky = sky
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color("8597dd")
-	environment.ambient_light_energy = 0.42
+	environment.ambient_light_energy = 0.48 if not world.low_detail else 0.36
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	environment.tonemap_exposure = 1.0
-	environment.glow_enabled = true
-	environment.glow_intensity = 0.85
-	environment.glow_bloom = 0.06
-	environment.glow_hdr_threshold = 0.9
+	environment.tonemap_exposure = float(visual.exposure)
+	environment.glow_enabled = bool(visual.glow)
+	environment.glow_intensity = float(visual.glow_intensity)
+	environment.glow_bloom = float(visual.glow_bloom)
+	environment.glow_hdr_threshold = float(visual.glow_threshold)
+	environment.adjustment_enabled = not world.low_detail
+	environment.adjustment_brightness = float(visual.brightness)
+	environment.adjustment_contrast = float(visual.contrast)
+	environment.adjustment_saturation = float(visual.saturation)
 	environment.fog_enabled = true
 	environment.fog_light_color = Color("3a4c98")
 	environment.fog_density = 0.0014
