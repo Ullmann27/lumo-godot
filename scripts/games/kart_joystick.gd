@@ -1,6 +1,8 @@
 extends Control
 ## Analogue touch stick: owns one finger, leaving the other free for actions.
 
+const FOX_EMBLEM = preload("res://assets/kart/controls/steering.svg")
+
 signal axis_changed(value: Vector2)
 var axis := Vector2.ZERO
 var target := Vector2.ZERO
@@ -12,7 +14,7 @@ var enabled: bool = true
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	custom_minimum_size = Vector2(188, 188)
-	tooltip_text = "Lenken: Stick links oder rechts. Nach unten: langsamer fahren."
+	tooltip_text = "Lenken: Stick nach links oder rechts ziehen."
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -72,8 +74,13 @@ func set_enabled(value: bool) -> void:
 
 
 func _process(delta: float) -> void:
-	axis = axis.lerp(target, minf(1.0, delta * 18))
-	queue_redraw()
+	var next: Vector2 = axis.lerp(target, minf(1.0, delta * 18))
+	if next.distance_squared_to(axis) > 0.000001:
+		axis = next
+		queue_redraw()
+	elif axis != target:
+		axis = target
+		queue_redraw()
 
 
 func _draw() -> void:
@@ -90,11 +97,12 @@ func _draw() -> void:
 	for direction in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
 		var marker: Vector2 = center + direction * (radius - 10)
 		draw_line(marker - direction * 5, marker + direction * 1, Color(cyan, 0.7), 3, true)
-	var knob: Vector2 = center + axis * radius * 0.72
-	draw_line(center, knob, Color(cyan, 0.15), 18, true)
-	draw_circle(knob + Vector2(0, 5), 34, Color(0.005, 0.02, 0.07, 0.6))
-	draw_circle(knob, 32, Color("263753"))
-	draw_arc(knob, 32, 0, TAU, 64, cyan, 3, true)
-	draw_arc(knob, 28, PI * 1.1, PI * 1.9, 30, violet, 4, true)
-	draw_circle(knob - Vector2(5, 7), 19, Color(0.35, 0.52, 0.72, 0.22))
-	draw_circle(knob, 5, Color("dcffff"))
+	var knob_radius: float = radius * 0.40
+	var knob: Vector2 = center + axis * radius * 0.56
+	draw_line(center, knob, Color(cyan, 0.17), radius * 0.30, true)
+	draw_circle(knob + Vector2(0, knob_radius * 0.12), knob_radius * 1.08, Color(0.005, 0.02, 0.07, 0.65))
+	draw_circle(knob, knob_radius, Color("264b76"))
+	draw_arc(knob, knob_radius, 0, TAU, 64, cyan, maxf(2.0, radius * 0.035), true)
+	draw_arc(knob, knob_radius * 0.86, PI * 1.1, PI * 1.9, 30, violet, maxf(2.0, radius * 0.035), true)
+	var emblem_size: float = knob_radius * 1.72
+	draw_texture_rect(FOX_EMBLEM, Rect2(knob - Vector2.ONE * emblem_size * 0.5, Vector2.ONE * emblem_size), false)
