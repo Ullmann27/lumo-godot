@@ -95,5 +95,6 @@ func _run() -> void:
 	game.abandoned = true
 	game.queue_free()
 	await _settle()
+	await create_timer(0.8).timeout
 	print("[KartVisualQuality] PASS: menu, four sizes, real previews and four worlds")
 	quit(0)

@@ -314,6 +314,11 @@ func _flush_instances() -> void:
 		var material: StandardMaterial3D=_material(Color.WHITE,group.get("glow",false))
 		material.vertex_color_use_as_albedo=true
 		material.vertex_color_is_srgb=true
+		if track_id == "candy_cloud" and not group.get("glow", false):
+			material = material.duplicate()
+			material.albedo_color = Color(0.73, 0.73, 0.73)
+			material.roughness = 0.90 if group.kind == "ball" else 0.42
+			material.metallic = 0.03
 		node.material_override=material
 		if group.kind == "volcano_mountain":
 			var basalt := ShaderMaterial.new()
@@ -367,7 +372,7 @@ func _lighting() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees=Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0)
 	sun.light_color=definition.sun
-	sun.light_energy=0.84 if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42)
+	sun.light_energy=0.56 if track_id=="candy_cloud" else (0.84 if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -376,8 +381,8 @@ func _lighting() -> void:
 	add_child(sun)
 	var fill := DirectionalLight3D.new()
 	fill.rotation_degrees=Vector3(-28,145,0)
-	fill.light_color=Color("9bccea")
-	fill.light_energy=0.10
+	fill.light_color=Color("e0a18b") if track_id=="volcano_night" else Color("9bccea")
+	fill.light_energy=0.18 if track_id=="volcano_night" else 0.10
 	fill.shadow_enabled=false
 	add_child(fill)
 
@@ -518,6 +523,7 @@ func _road() -> void:
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
 	var shoulder_color := Color("d9d9c5") if track_id=="sonnenhafen" else Color("90b4bd")
 	if track_id=="bergwelt": shoulder_color=Color("2a3f8f")
+	if track_id=="volcano_night": shoulder_color=Color("3b303c")
 	var edge_color: Color=definition.accent
 	for side in [-1.0,1.0]:
 		_ribbon("RaisedShoulder",side*5.42,side*6.10,-0.06,_material(shoulder_color))
@@ -550,6 +556,11 @@ func _road() -> void:
 			var rail_at: Vector3=position_at(d,side*RAIL_LATERAL)
 			var rail_color: Color=Color("edf3df") if track_id!="holo_city" else Color("6bc9e5")
 			var lower_color: Color=Color("7d9aa4")
+			if track_id=="volcano_night":
+				rail_color=Color("685161")
+				lower_color=Color("302d40")
+				_prop("box",rail_at+Vector3.UP*0.25,Vector3(0.45,0.5,step+0.08),Color("3c3344"),basis)
+				_prop("box",rail_at+Vector3.UP*1.12,Vector3(0.09,0.07,step+0.02),Color("f09848"),basis,true)
 			if track_id=="bergwelt":
 				# Reference guardrail: blue and white bands with gold caps.
 				rail_color=SKY_ISLANDS.RAIL_BLUE if i%6<3 else Color("f1f4ff")

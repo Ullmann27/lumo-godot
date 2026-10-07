@@ -109,6 +109,11 @@ func _ready() -> void:
 			false
 		)
 		tab.custom_minimum_size = Vector2(0, 40)
+		for state in ["normal", "hover", "pressed", "focus"]:
+			var tab_style := _glass(index == step)
+			tab_style.content_margin_top = 6
+			tab_style.content_margin_bottom = 6
+			tab.add_theme_stylebox_override(state, tab_style)
 		tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		step_strip.add_child(tab)
 		step_buttons.append(tab)
@@ -303,7 +308,9 @@ func _apply_responsive_layout() -> void:
 	)
 	setup_row.add_theme_constant_override("v_separation", roundi((14 if compact else 0) * ui_scale))
 	brand_label.custom_minimum_size.x = (150 if small else 260) * ui_scale
-	brand_label.add_theme_font_size_override("font_size", roundi((22 if small else 36) * ui_scale))
+	brand_label.add_theme_font_size_override(
+		"font_size", roundi((22 if small or short_landscape else 36) * ui_scale)
+	)
 	for index in range(step_buttons.size()):
 		var tab: Button = step_buttons[index]
 		tab.text = (
@@ -323,7 +330,7 @@ func _apply_responsive_layout() -> void:
 	learn_button.custom_minimum_size = (
 		Vector2(96 if small else 148, 56 if compact else 72) * ui_scale
 	)
-	footer.columns = 2 if compact else 4
+	footer.columns = 2 if compact else (4 if has_saved_race else 3)
 	footer_spacer.visible = not compact
 	back_button.custom_minimum_size = (
 		Vector2(112 if small else 148, 56 if compact else 72) * ui_scale
@@ -340,9 +347,9 @@ func _apply_responsive_layout() -> void:
 	_set_physical_minimum(
 		preview_container,
 		(
-			Vector2(150, 80 if window_size.y < 440 else 96)
+			Vector2(150, 64 if window_size.y < 440 else 96)
 			if short_landscape
-			else (Vector2(150, 140) if small else Vector2(250, 240))
+			else (Vector2(150, 112) if small else Vector2(250, 185))
 		),
 		ui_scale
 	)
@@ -503,7 +510,10 @@ func _refresh() -> void:
 	steps_label.text = "%d / 5     MODUS  ·  FAHRER  ·  KART  ·  WELT  ·  TEMPO" % (step + 1)
 	progress_label.text = "★ %d Sterne" % stars
 	for index in range(step_buttons.size()):
-		step_buttons[index].add_theme_stylebox_override("normal", _glass(index == step))
+		var tab_style := _glass(index == step)
+		tab_style.content_margin_top = 6
+		tab_style.content_margin_bottom = 6
+		step_buttons[index].add_theme_stylebox_override("normal", tab_style)
 	preview_title.text = "DEINE STRECKE" if step == 3 else "DEINE GARAGE"
 	preview_caption.text = (
 		"Deine Rennwelt · ziehen zum Drehen"
@@ -628,7 +638,11 @@ func _refresh_preview() -> void:
 		preview_world = WORLD.new()
 		preview_world.build(true, str(setup.track))
 		for child in preview_world.get_children():
-			if child is WorldEnvironment or child is Light3D:
+			if (
+				child is WorldEnvironment
+				or child is Light3D
+				or (child is MeshInstance3D and child.mesh is PlaneMesh)
+			):
 				preview_world.remove_child(child)
 				child.queue_free()
 		preview_world.scale = Vector3.ONE * 0.010

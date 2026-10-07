@@ -322,6 +322,13 @@ static func _candy_world(world) -> void:
 		var angle: float = i * TAU / 18.0
 		_cloud_island(world, Vector3(sin(angle) * 185, -4 + i % 3 * 4, cos(angle) * 185), 28)
 
+	# Soft overhead cloud silhouettes give the sky several distinct depth layers.
+	for i in range(12):
+		var angle: float = i * TAU / 12.0
+		_cloud_island(
+			world, Vector3(sin(angle) * 155, 42 + i % 3 * 11, cos(angle) * 155), 18 + i % 3 * 4
+		)
+
 
 static func _volcano_world(world) -> void:
 	# Stone aqueduct supports along the suspended circuit.
