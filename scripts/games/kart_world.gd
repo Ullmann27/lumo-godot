@@ -3,7 +3,7 @@ extends Node3D
 ## Four original banked courses. Spatial GPU batches preserve Android performance.
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
-const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
+const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")\nconst VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
 const RAIL_LATERAL: float = 6.05
@@ -302,6 +302,7 @@ func _flush_instances() -> void:
 	groups.clear()
 
 func _lighting() -> void:
+	var visual: Dictionary=VISUAL_GRADE.environment_profile(track_id,low_detail)
 	var environment := Environment.new()
 	environment.background_mode=Environment.BG_SKY
 	var sky := Sky.new()
@@ -317,8 +318,16 @@ func _lighting() -> void:
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color=Color("c8e0f4") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
 	environment.ambient_light_energy=0.28 if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
-	environment.tonemap_mode=Environment.TONE_MAPPER_FILMIC if track_id=="sonnenhafen" else Environment.TONE_MAPPER_LINEAR
-	environment.tonemap_exposure=0.94 if track_id=="sonnenhafen" else 0.9
+	environment.tonemap_mode=Environment.TONE_MAPPER_FILMIC
+	environment.tonemap_exposure=float(visual.exposure)
+	environment.glow_enabled=bool(visual.glow)
+	environment.glow_intensity=float(visual.glow_intensity)
+	environment.glow_bloom=float(visual.glow_bloom)
+	environment.glow_hdr_threshold=float(visual.glow_threshold)
+	environment.adjustment_enabled=not low_detail
+	environment.adjustment_brightness=float(visual.brightness)
+	environment.adjustment_contrast=float(visual.contrast)
+	environment.adjustment_saturation=float(visual.saturation)
 	environment.fog_enabled=true
 	environment.fog_light_color=definition.fog
 	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.003)
@@ -468,14 +477,27 @@ func _road() -> void:
 	asphalt.shader=preload("res://assets/shaders/kart_asphalt.gdshader")
 	asphalt.set_shader_parameter("road_tint",definition.asphalt)
 	var night: float={"holo_city":1.0,"bergwelt":0.15}.get(track_id,0.0)
+	var visual: Dictionary=VISUAL_GRADE.environment_profile(track_id,low_detail)
 	asphalt.set_shader_parameter("night_course",night)
 	asphalt.set_shader_parameter("sky_island_detail",1.0 if track_id=="bergwelt" else 0.0)
+	asphalt.set_shader_parameter("edge_glow_color",definition.accent)
+	asphalt.set_shader_parameter("cinematic_grade",float(visual.road_grade))
+	asphalt.set_shader_parameter("road_gloss",float(visual.road_gloss))
+	asphalt.set_shader_parameter("edge_energy",float(visual.edge_energy))
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
 	var shoulder_color := Color("d9d9c5") if track_id=="sonnenhafen" else Color("90b4bd")
 	if track_id=="bergwelt": shoulder_color=Color("2a3f8f")
 	var edge_color: Color=definition.accent
 	for side in [-1.0,1.0]:
 		_ribbon("RaisedShoulder",side*5.42,side*6.10,-0.06,_material(shoulder_color))
+		if not low_detail and track_id!="bergwelt":
+			_ribbon(
+				"CinematicLightEdge",
+				side*5.79,
+				side*5.91,
+				0.046,
+				_material(edge_color,true)
+			)
 		_ribbon("RoadFoundation",side*6.1,side*6.13,-0.06,_material(Color("566b74")),0.70)
 		_ribbon("EdgePaint",side*5.1,side*5.24,0.015,_material(Color("f5f7e9")))
 		if track_id=="holo_city": _ribbon("ContinuousLightEdge",side*5.83,side*5.94,0.045,_material(edge_color,true))
