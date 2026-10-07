@@ -22,6 +22,7 @@ const SCENES: Dictionary = {
 	"word_build": "res://scenes/games/word_build.tscn",
 	"learn_old": "res://scenes/games/learn_card.tscn",
 	"games": "res://scenes/games/game_hub.tscn",
+	"puzzle": "res://scenes/creative/puzzle_world.tscn",
 	"build": "res://scenes/creative/build_world.tscn",
 	"rhythm": "res://scenes/creative/rhythm_world.tscn",
 	"treasure": "res://scenes/creative/treasure_world.tscn",

@@ -49,6 +49,15 @@ jobs:
           if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' exports/creative-build/adventure-runtime.log; then exit 1; fi
           test -s exports/creative-build/06_rhythm_play.png
           test -s exports/creative-build/09_treasure_inventory.png
+      - name: Native puzzle picking, dragging, snapping and saved progress
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -o pipefail
+          timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --resolution 1280x720 --script res://scripts/tests/creative_puzzle_capture.gd 2>&1 | tee exports/creative-build/puzzle-runtime.log
+          if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' exports/creative-build/puzzle-runtime.log; then exit 1; fi
+          test -s exports/creative-build/10_puzzle_12_parts.png
+          test -s exports/creative-build/11_puzzle_96_parts.png
       - name: Eight new circuits, jump physics and driveable loop checks
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'

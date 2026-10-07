@@ -49,6 +49,15 @@ static func environment(world) -> void:
 			child.environment.tonemap_exposure = 1.15
 			if world.track_id == "galaxy_ringway":
 				child.environment.fog_enabled = false
+			if world.track_id in ["volcano_night", "galaxy_ringway"]:
+				var night := ShaderMaterial.new()
+				night.shader = preload("res://assets/shaders/kart_night_sky.gdshader")
+				night.set_shader_parameter("zenith", Color("040b24"))
+				night.set_shader_parameter("horizon", Color("14214d"))
+				night.set_shader_parameter("glow", Color("283d69"))
+				night.set_shader_parameter("below", Color("0c1838"))
+				child.environment.sky.sky_material = night
+				child.environment.ambient_light_energy = 0.25
 	if world.track_id in ["volcano_night", "galaxy_ringway", "winter_sprint", "crystal_canyon"]:
 		world._prop(
 			"ball", Vector3(20, 92, -185), Vector3.ONE * 11, Color("cbdcff"), Basis.IDENTITY, true
@@ -88,7 +97,7 @@ static func build(world) -> void:
 					_temple(world, at + basis.x * side * 5, basis, Color("adb49b"))
 				world._prop("crown", at + Vector3(4, 0, 2), Vector3(5, 1.7, 4), Color("3d8262"))
 			"candy_cloud":
-				world._prop("crown", at - Vector3.UP * 6, Vector3(12, 4, 9), Color("f0cbef"))
+				world._prop("crown", at - Vector3.UP * 6, Vector3(12, 7, 9), Color("f0cbef"))
 				if i % 3 == 0:
 					_candy_castle(world, at, basis, Color("f4b9db") if i % 2 else Color("b5d8f8"))
 				else:
@@ -327,7 +336,7 @@ static func _candy_cane(world, at: Vector3, basis: Basis) -> void:
 
 static func _volcano(world) -> void:
 	var at := Vector3(0, -8, -175)
-	world._prop("cone", at + Vector3.UP * 40, Vector3(68, 90, 68), Color("343246"))
+	world._prop("volcano_mountain", at, Vector3(68, 90, 68), Color.WHITE)
 	world._prop(
 		"cone", at + Vector3.UP * 83, Vector3(12, 12, 12), Color("ff8a3e"), Basis.IDENTITY, true
 	)

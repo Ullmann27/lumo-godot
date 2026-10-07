@@ -235,6 +235,7 @@ func _shape(kind: String) -> Mesh:
 	match kind:
 		"crown": mesh = SHAPES.crown()
 		"fir": mesh = SHAPES.fir()
+		"volcano_mountain": mesh = preload("res://scripts/games/kart_volcano_mesh.gd").create()
 		"rock": mesh = SHAPES.rock()
 		"mountain": mesh = SHAPES.mountain()
 		"hull": mesh = SHAPES.boat_hull()
@@ -309,6 +310,10 @@ func _flush_instances() -> void:
 		material.vertex_color_use_as_albedo=true
 		material.vertex_color_is_srgb=true
 		node.material_override=material
+		if group.kind == "volcano_mountain":
+			var basalt := ShaderMaterial.new()
+			basalt.shader = preload("res://assets/shaders/kart_basalt.gdshader")
+			node.material_override = basalt
 		if group.kind=="glass_tower":
 			var glass:=ShaderMaterial.new()
 			glass.shader=preload("res://assets/shaders/kart_city_glass.gdshader")

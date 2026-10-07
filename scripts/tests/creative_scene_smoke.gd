@@ -7,6 +7,7 @@ func _initialize() -> void:
 
 func _run() -> void:
 	for path in [
+		"res://scripts/creative/puzzle_world.gd",
 		"res://scripts/creative/build_world.gd",
 		"res://scripts/creative/rhythm_world.gd",
 		"res://scripts/creative/treasure_world.gd"
@@ -17,6 +18,7 @@ func _run() -> void:
 			quit(1)
 			return
 	for path in [
+		"res://scenes/creative/puzzle_world.tscn",
 		"res://scenes/creative/build_world.tscn",
 		"res://scenes/creative/rhythm_world.tscn",
 		"res://scenes/creative/treasure_world.tscn"

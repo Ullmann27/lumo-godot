@@ -14,7 +14,10 @@ func _run() -> void:
 	assert(state.place("stone", Vector3i(-4, 0, 0)).is_empty())
 	assert(not state.place("wood", Vector3i(-4, 0, 0)).is_empty(), "Overlapping volumes rejected")
 	assert(state.place("stone", Vector3i(-4, 1, 0)).is_empty())
-	assert(not state.remove(int(state.pieces[0].uid)), "A load-bearing part cannot leave floating blocks")
+	assert(
+		not state.remove(int(state.pieces[0].uid)),
+		"A load-bearing part cannot leave floating blocks"
+	)
 	assert(state.undo() and state.pieces.size() == 1)
 	assert(state.redo() and state.pieces.size() == 2)
 	state.template("bridge")
@@ -28,6 +31,11 @@ func _run() -> void:
 		if piece.part == "door":
 			state.remove(int(piece.uid))
 	assert(not state.challenge_passes("house"), "Walls and roof without a door are not a house")
+	state.template("castle")
+	assert(state.challenge_passes("castle"))
+	assert(state.pieces.size() > 140)
+	state.template("village")
+	assert(state.challenge_passes("village"))
 	state.template("tower")
 	assert(state.challenge_passes("tower"))
 	var restored = STATE.new()
@@ -49,13 +57,13 @@ func _run() -> void:
 	root.add_child(game)
 	await process_frame
 	game.save_path = "user://creative_build_qa.json"
-	game.model.template("house")
-	game.model.place("tree", Vector3i(-11, 0, 0))
+	game.model.template("castle")
+	game.model.place("tree", Vector3i(-11, 0, 3))
 	game.model.place("lantern", Vector3i(-4, 0, -4))
 	game.model.place("flowers", Vector3i(-7, 0, 1))
 	game._rebuild()
-	game.focus = Vector3(-3, 1, 0)
-	game.radius = 24
+	game.focus = Vector3(-6, 2, -4)
+	game.radius = 29
 	game._camera_update()
 	await _capture("01_bauwelt_house")
 	game.model.place("bridge", Vector3i(-1, 0, 2))

@@ -220,6 +220,24 @@ func challenge_passes(id: String) -> bool:
 			if piece.part in ["tree", "flowers", "bench", "lantern"]:
 				kinds[piece.part] = true
 		return kinds.size() == 4
+	if id == "castle":
+		var towers := 0
+		for piece in pieces:
+			if piece.part == "roof_round" and int(piece.y) >= 6:
+				towers += 1
+		return towers >= 4 and challenge_passes("house")
+	if id == "village":
+		var doors := 0
+		for piece in pieces:
+			if piece.part == "door":
+				doors += 1
+		return (
+			doors >= 3
+			and challenge_passes("house")
+			and challenge_passes("garden")
+			and challenge_passes("bridge")
+		)
+
 	return false
 
 
@@ -271,7 +289,10 @@ func restore(data: Dictionary) -> bool:
 	pieces = restored
 	completed.clear()
 	for id in data.get("completed", []):
-		if str(id) in ["house", "bridge", "tower", "garden"] and not completed.has(str(id)):
+		if (
+			str(id) in ["house", "bridge", "tower", "garden", "castle", "village"]
+			and not completed.has(str(id))
+		):
 			completed.append(str(id))
 	next_id = maxi(largest + 1, int(data.get("next_id", 1)))
 	free_build = bool(data.get("free_build", false))
@@ -289,6 +310,46 @@ func template(id: String) -> void:
 					continue
 				place("door" if x == 1 and z == 2 else "wall", Vector3i(-8 + x, 0, -5 + z))
 		place("roof", Vector3i(-8, 2, -5))
+	elif id == "castle":
+		for origin in [
+			Vector3i(-13, 0, -11), Vector3i(-5, 0, -11), Vector3i(-13, 0, -3), Vector3i(-5, 0, -3)
+		]:
+			for y in range(6):
+				for x in range(2):
+					for z in range(2):
+						place("sand", origin + Vector3i(x, y, z))
+			place("roof_round", origin + Vector3i(0, 6, 0))
+		for x in range(-11, -5):
+			for z in [-11, -2]:
+				place("wall", Vector3i(x, 0, z))
+				place("wall", Vector3i(x, 2, z))
+		for z in range(-9, -3):
+			for x in [-13, -4]:
+				place("wall", Vector3i(x, 0, z))
+				place("wall", Vector3i(x, 2, z))
+		for x in range(-10, -7):
+			for z in range(-8, -5):
+				if x == -9 and z == -7:
+					continue
+				place("door" if x == -9 and z == -6 else "wall", Vector3i(x, 0, z))
+		place("roof", Vector3i(-10, 2, -8))
+		place("lantern", Vector3i(-7, 0, -7))
+		place("flowers", Vector3i(-6, 0, -8))
+	elif id == "village":
+		for origin in [Vector3i(-12, 0, -10), Vector3i(-7, 0, -10), Vector3i(7, 0, -7)]:
+			for x in range(3):
+				for z in range(3):
+					if x == 1 and z == 1:
+						continue
+					place("door" if x == 1 and z == 2 else "wall", origin + Vector3i(x, 0, z))
+			place("roof", origin + Vector3i(0, 2, 0))
+		place("tree", Vector3i(-11, 0, -2))
+		place("flowers", Vector3i(-7, 0, -2))
+		place("bench", Vector3i(-9, 0, 1))
+		place("lantern", Vector3i(-5, 0, 1))
+		place("bridge", Vector3i(-1, 0, 2))
+		place("bridge", Vector3i(2, 0, 2))
+
 	elif id == "bridge":
 		place("bridge", Vector3i(-1, 0, 2))
 		place("bridge", Vector3i(2, 0, 2))

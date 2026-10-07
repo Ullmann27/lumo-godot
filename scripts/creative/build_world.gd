@@ -80,9 +80,9 @@ func _ready() -> void:
 	guide.visible = false
 	_ui()
 	if not load_world(false):
-		model.template("house")
+		model.template("castle")
 		# Start with a usable scene and leave the first bridge task for the child.
-		model.place("tree", Vector3i(-11, 0, -1))
+		model.place("tree", Vector3i(-11, 0, 3))
 		model.place("lantern", Vector3i(-4, 0, -4))
 		model.place("flowers", Vector3i(-7, 0, 1))
 	_rebuild()
@@ -287,7 +287,7 @@ func _ui() -> void:
 	)
 	camera_tools.add_child(
 		KIT.button(
-			"⌖",
+			"Mitte",
 			func():
 				focus = Vector3(-2, 0, 0)
 				orbit = 0.62
@@ -587,7 +587,10 @@ func _update_labels() -> void:
 		"bridge": "Verbinde die Inseln\nBaue einen durchgehenden Weg über den Fluss.",
 		"house": "Ein Zuhause für Lumo\nBaue Wände, eine Haustür und ein getragenes Dach.",
 		"tower": "Turm der Sterne\nEine Laterne auf einem tragenden Turm: mindestens 5 Ebenen.",
-		"garden": "Ein Garten zum Verweilen\nBaum, Blumen, Bank und Laterne gehören zusammen."
+		"garden": "Ein Garten zum Verweilen\nBaum, Blumen, Bank und Laterne gehören zusammen.",
+		"castle":
+		"Das große Sternenschloss\nBaue vier Türme mit Dächern und ein bewohnbares Haus im Hof.",
+		"village": "Ein Dorf für Freunde\nDrei Häuser, ein Garten und eine Brücke gehören zusammen."
 	}
 	goal_label.text = (
 		str(texts[goal]) + ("\n✓ Schon geschafft" if model.completed.has(goal) else "")
@@ -638,7 +641,7 @@ func load_world(show_message: bool = true) -> bool:
 			status.text = "Dieser Spielstand ist beschädigt. Deine offene Welt bleibt erhalten."
 		return false
 	goal = str(raw.get("goal", "bridge"))
-	if goal not in ["house", "bridge", "tower", "garden"]:
+	if goal not in ["house", "bridge", "tower", "garden", "castle", "village"]:
 		goal = "bridge"
 	if raw.get("camera") is Dictionary:
 		orbit = float(raw.camera.get("orbit", 0.62))
@@ -661,7 +664,7 @@ func load_world(show_message: bool = true) -> bool:
 func _choice_dialog(title: String, items: Array, action: Callable) -> void:
 	var dialog := Window.new()
 	dialog.title = title
-	dialog.size = Vector2i(360, 380)
+	dialog.size = Vector2i(390, 500)
 	dialog.transient = true
 	dialog.exclusive = true
 	add_child(dialog)
@@ -720,6 +723,8 @@ func _templates() -> void:
 	_choice_dialog(
 		"Neue Welt / Vorlage",
 		[
+			["castle", "Großes Sternenschloss"],
+			["village", "Dorf für Freunde"],
 			["house", "Starter-Haus"],
 			["bridge", "Brücke"],
 			["tower", "Sternenturm"],
@@ -744,7 +749,9 @@ func _goals() -> void:
 			["house", "Ein Zuhause bauen"],
 			["bridge", "Die Inseln verbinden"],
 			["tower", "Turm der Sterne"],
-			["garden", "Ein Garten zum Verweilen"]
+			["garden", "Ein Garten zum Verweilen"],
+			["castle", "Großes Sternenschloss"],
+			["village", "Dorf für Freunde"]
 		],
 		_select_goal
 	)
