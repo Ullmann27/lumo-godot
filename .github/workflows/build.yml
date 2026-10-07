@@ -188,6 +188,11 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Prepare actual Android screenshot touch reader
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y python3-pil tesseract-ocr tesseract-ocr-deu
+
       - name: Install and launch Android app
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -206,6 +211,9 @@ jobs:
           path: |
             exports/android/android-startup.log
             exports/android/kart-garage-android-start.png
+            exports/android/kart-garage-step-*.png
+            exports/android/android-garage-touches.json
+            exports/android/sonnenhafen-android-start.png
           if-no-files-found: ignore
 
       - name: Strip arm64-only + sign APK
@@ -249,6 +257,9 @@ jobs:
             exports/android/lumo3d-debug.apk
             exports/android/android-startup.log
             exports/android/kart-garage-android-start.png
+            exports/android/kart-garage-step-*.png
+            exports/android/android-garage-touches.json
+            exports/android/sonnenhafen-android-start.png
             exports/screenshots/*.png
             exports/packages/SHA256SUMS.txt
           if-no-files-found: error
@@ -280,6 +291,7 @@ jobs:
             exports/packages/lumo-godot-web.zip
             exports/android/lumo3d-debug.apk
             exports/android/kart-garage-android-start.png
+            exports/android/sonnenhafen-android-start.png
             exports/screenshots/*.png
             exports/packages/SHA256SUMS.txt
 

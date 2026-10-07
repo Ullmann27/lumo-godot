@@ -24,7 +24,7 @@ func _tap(control: Control) -> void:
 
 func _run() -> void:
 	assert(DisplayServer.get_name() != "headless")
-	for pixels in [Vector2i(1280, 720), Vector2i(800, 480)]:
+	for pixels in [Vector2i(1280, 720), Vector2i(800, 480), Vector2i(640, 320)]:
 		game = load("res://scenes/games/kart_island.tscn").instantiate()
 		root.add_child(game)
 		game.set_physics_process(false)
@@ -38,8 +38,12 @@ func _run() -> void:
 		assert(float(coordinates.get(2003265652, 200)) >= 600, "Actual rendered font must use semibold weight")
 		var mode_grid: GridContainer = game.garage.choices.get_child(0)
 		assert(mode_grid.get_child_count() == 5, "Five race modes; the learning cup is gone")
-		for mode_button in mode_grid.get_children():
-			assert(root.get_visible_rect().encloses(mode_button.get_global_rect()), "Every mode must be visible")
+		if pixels.y >= 440:
+			for mode_button in mode_grid.get_children():
+				assert(root.get_visible_rect().encloses(mode_button.get_global_rect()), "Every mode must be visible")
+		else:
+			assert(root.get_visible_rect().encloses(game.garage.preview_container.get_global_rect()), "Short landscape keeps the real preview on screen")
+			assert(root.get_visible_rect().encloses(mode_grid.get_child(1).get_global_rect()), "Visible cup choice must be touchable; further modes scroll")
 		await _tap(mode_grid.get_child(1))
 		assert(game.garage.setup.mode == "cup")
 		await _settle()
@@ -60,7 +64,7 @@ func _run() -> void:
 		game.queue_free()
 		await _settle()
 		print("[KartMenuFlow] %s: five visible modes, five actual touch steps, started cup race" % pixels)
-	print("[KartMenuFlow] PASS: complete pixel-touch setup at1280x720 and800x480, semibold font, every mode visible")
+	print("[KartMenuFlow] PASS: complete pixel-touch setup at1280x720,800x480,640x320; real preview and footer remain visible")
 	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
 	await create_timer(0.12).timeout
 	quit(0)

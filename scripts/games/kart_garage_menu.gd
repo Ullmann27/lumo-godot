@@ -33,6 +33,9 @@ var preview_caption: Label
 var reduced_motion: bool = false
 var graphics_profile: String = "high"
 var progress_label: Label
+var body_column: VBoxContainer
+var header_row: HBoxContainer
+var preview_container: SubViewportContainer
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -52,9 +55,11 @@ func _ready() -> void:
 		page_margin.add_theme_constant_override("margin_" + side, 28)
 	add_child(page_margin)
 	var body := VBoxContainer.new()
+	body_column = body
 	body.add_theme_constant_override("separation", 16)
 	page_margin.add_child(body)
 	var header := HBoxContainer.new()
+	header_row = header
 	header.custom_minimum_size.y = 60
 	brand_label = _label("LUMO  /  KART", 22, Color("f4f8ff"))
 	brand_label.autowrap_mode = TextServer.AUTOWRAP_OFF
@@ -104,6 +109,7 @@ func _ready() -> void:
 	viewport_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	right.add_child(viewport_panel)
 	var viewport_box := SubViewportContainer.new()
+	preview_container = viewport_box
 	viewport_box.stretch = true
 	viewport_box.custom_minimum_size = Vector2(250, 240)
 	viewport_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -204,6 +210,7 @@ func _apply_responsive_layout() -> void:
 	var ui_scale: float = maxf(viewport_size.x / window_size.x, viewport_size.y / window_size.y)
 	var compact: bool = window_size.x < 760 or window_size.x < window_size.y
 	var small: bool = window_size.x < 520
+	var short_landscape: bool = window_size.x >= window_size.y and window_size.y < 440
 	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.03, 10.0, 28.0)
 	_apply_ui_scale(self, ui_scale)
 	for side in ["left", "right", "top", "bottom"]:
@@ -225,14 +232,16 @@ func _apply_responsive_layout() -> void:
 		page_margin.offset_top = safe_insets.position.y * scale.y
 		page_margin.offset_right = -safe_insets.size.x * scale.x
 		page_margin.offset_bottom = -safe_insets.size.y * scale.y
-	setup_row.columns = 1 if compact else 2
+	# Short landscape screens retain two columns. Stacking the 3D preview below
+	# the choices previously pushed the footer outside the Android surface.
+	setup_row.columns = 1 if window_size.x < window_size.y else 2
 	setup_row.add_theme_constant_override(
 		"h_separation", roundi((14 if compact else 28) * ui_scale)
 	)
 	setup_row.add_theme_constant_override("v_separation", roundi((14 if compact else 0) * ui_scale))
 	brand_label.custom_minimum_size.x = (138 if small else 215) * ui_scale
 	brand_label.add_theme_font_size_override("font_size", roundi((18 if small else 22) * ui_scale))
-	progress_label.visible = not small
+	progress_label.visible = not small and not short_landscape
 	learn_button.text = "Lernen" if small else "Zum Lernen"
 	learn_button.custom_minimum_size = Vector2(96 if small else 148, 56 if compact else 72) * ui_scale
 	footer.columns = 2 if compact else 4
@@ -242,6 +251,44 @@ func _apply_responsive_layout() -> void:
 	for child in footer.get_children():
 		if child is Button and child.name == "ResumeRace":
 			child.custom_minimum_size = Vector2(112 if small else 148, 56 if compact else 72) * ui_scale
+	_set_physical_minimum(header_row, Vector2(0, 36 if short_landscape else 60), ui_scale)
+	_set_physical_minimum(preview_container, Vector2(150, 96) if short_landscape else Vector2(250, 240), ui_scale)
+	body_column.add_theme_constant_override("separation", roundi((6 if short_landscape else 16) * ui_scale))
+	_set_physical_font(title_label, 22 if short_landscape else 36, ui_scale)
+	_set_physical_font(steps_label, 12 if short_landscape else 15, ui_scale)
+	subtitle.visible = not short_landscape
+	detail.visible = not short_landscape
+	preview_caption.visible = not short_landscape
+	if short_landscape:
+		footer.columns = 3 if has_saved_race else 2
+		footer_spacer.hide()
+		for button in [learn_button, back_button, next_button]:
+			_set_physical_minimum(button, Vector2(148, 44), ui_scale)
+			_set_physical_font(button, 16, ui_scale)
+		for button in footer.get_children():
+			if button is Button and button.name == "ResumeRace":
+				_set_physical_minimum(button, Vector2(148, 44), ui_scale)
+				_set_physical_font(button, 16, ui_scale)
+	else:
+		_set_physical_minimum(learn_button, Vector2(96 if small else 148, 56 if compact else 72), ui_scale)
+		_set_physical_minimum(back_button, Vector2(112 if small else 148, 56 if compact else 72), ui_scale)
+		_set_physical_minimum(next_button, Vector2(148 if small else 240, 56 if compact else 72), ui_scale)
+		for button in [learn_button, back_button, next_button]:
+			_set_physical_font(button, 19, ui_scale)
+		for button in footer.get_children():
+			if button is Button and button.name == "ResumeRace":
+				_set_physical_minimum(button, Vector2(112 if small else 148, 56 if compact else 72), ui_scale)
+				_set_physical_font(button, 19, ui_scale)
+
+
+func _set_physical_minimum(control: Control, physical: Vector2, ui_scale: float) -> void:
+	control.set_meta("kart_base_minimum_size", physical)
+	control.custom_minimum_size = physical * ui_scale
+
+
+func _set_physical_font(control: Control, physical: int, ui_scale: float) -> void:
+	control.set_meta("kart_base_font_size", physical)
+	control.add_theme_font_size_override("font_size", roundi(physical * ui_scale))
 
 
 func _apply_ui_scale(control: Node, ui_scale: float) -> void:
@@ -369,6 +416,7 @@ func _refresh() -> void:
 	back_button.text = "Spieleauswahl" if step == 0 else "← Zurück"
 	next_button.text = "Rennen starten →" if step == 4 else "Weiter →"
 	_refresh_preview()
+	_apply_responsive_layout.call_deferred()
 
 func _select(key: String, value: String) -> void:
 	setup[key] = value

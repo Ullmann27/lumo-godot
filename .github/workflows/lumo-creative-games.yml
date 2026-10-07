@@ -17,7 +17,7 @@ jobs:
       - name: Install matching engine and software graphics
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y xvfb libgl1-mesa-dri mesa-vulkan-drivers
+          sudo apt-get install -y ripgrep xvfb libgl1-mesa-dri mesa-vulkan-drivers
           curl -fsSL --retry 2 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o /tmp/godot.zip
           unzip -q /tmp/godot.zip -d /tmp/godot-engine
           echo /tmp/godot-engine >> "$GITHUB_PATH"
@@ -58,6 +58,15 @@ jobs:
           if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' exports/creative-build/puzzle-runtime.log; then exit 1; fi
           test -s exports/creative-build/10_puzzle_12_parts.png
           test -s exports/creative-build/11_puzzle_96_parts.png
+      - name: Real five-step kart selection on desktop and short landscape
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -o pipefail
+          timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_menu_flow_regression.gd 2>&1 | tee exports/creative-build/menu-runtime.log
+          if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' exports/creative-build/menu-runtime.log; then exit 1; fi
+          rg -F '[KartMenuFlow] PASS:' exports/creative-build/menu-runtime.log
+          cp exports/holographic-proof/menu-flow-*.png exports/creative-build/
       - name: Eight new circuits, jump physics and driveable loop checks
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'

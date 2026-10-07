@@ -148,19 +148,25 @@ while (( SECONDS < lumo_deadline )); do
     sleep 2
 done
 (( lumo_started == 1 )) || fail "Direct kart route did not initialize within 60 seconds"
+adb_cmd exec-out screencap -p > "$lumo_root/exports/android/kart-garage-android-start.png" \
+    || fail "Could not capture actual Android kart garage"
+# Complete the real five-step selection using button text/bounds read from
+# current screenshots. The scene marker alone is not proof of a usable menu.
+python3 tools/tap_android_garage.py "$lumo_root/exports/android" \
+    || fail "Could not complete real Android kart selection"
 lumo_deadline=$((SECONDS + 40))
 lumo_frame_ready=0
 while (( SECONDS < lumo_deadline )); do
     capture_logcat
     adb_cmd shell pidof "$lumo_package" >> "$lumo_log" 2>&1 || fail "Kart exited after orientation change"
-    adb_cmd exec-out screencap -p > "$lumo_root/exports/android/kart-garage-android-start.png" \
-        || fail "Could not capture running Android kart garage"
-    if python3 tools/check_android_frame.py "$lumo_root/exports/android/kart-garage-android-start.png" >> "$lumo_log" 2>&1; then
+    adb_cmd exec-out screencap -p > "$lumo_root/exports/android/sonnenhafen-android-start.png" \
+        || fail "Could not capture running Android race"
+    if python3 tools/check_android_frame.py "$lumo_root/exports/android/sonnenhafen-android-start.png" >> "$lumo_log" 2>&1; then
         lumo_frame_ready=1
         break
     fi
     sleep 2
 done
-(( lumo_frame_ready == 1 )) || fail "Android kart garage remained black or clipped after landscape transition"
-printf '[AndroidStartup] PASS: direct kart route initialized and remained alive after orientation change\n' \
+(( lumo_frame_ready == 1 )) || fail "Android race remained black or clipped after actual five-step selection"
+printf '[AndroidStartup] PASS: direct kart route, five actual selection steps and rendered race after orientation change\n' \
     | tee -a "$lumo_log"
