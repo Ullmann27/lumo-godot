@@ -131,7 +131,19 @@ printf '[AndroidStartup] PASS: Boot + scene route + Lumo ready; process %s remai
 
 # Exercise the actual game route and its portrait-to-landscape startup, too.
 cat "$lumo_capture" >> "$lumo_log"
-adb_cmd shell am force-stop "$lumo_package" >> "$lumo_log" 2>&1 || fail "Could not stop menu instance"
+# Close the menu like a user before opening a fresh route. Force-stopping it
+# immediately after first-frame readiness can interrupt GLES shader-cache
+# writes and produce an incomplete cache header in the second process.
+adb_cmd shell input keyevent KEYCODE_BACK >> "$lumo_log" 2>&1 || fail "Could not close menu normally"
+lumo_close_deadline=$((SECONDS + 25))
+while (( SECONDS < lumo_close_deadline )); do
+    if ! adb_cmd shell pidof "$lumo_package" >/dev/null 2>&1; then break; fi
+    sleep 1
+done
+if adb_cmd shell pidof "$lumo_package" >/dev/null 2>&1; then
+    fail "Menu process did not finish its normal Android Back shutdown"
+fi
+printf '[AndroidStartup] PASS: normal menu shutdown completed before fresh route\n' | tee -a "$lumo_log"
 adb_cmd logcat -c >> "$lumo_log" 2>&1 || fail "Could not clear route logcat"
 printf '[AndroidStartup] Launch direct kart route\n' | tee -a "$lumo_log"
 adb_cmd shell am start -W -a android.intent.action.VIEW -p "$lumo_package" \
