@@ -1,8 +1,8 @@
 # Lumo: playable games and track expansion — 7 October 2026
 
-Runtime source: `148decd2b34af7bfb5f1504c166d42411f8e99e1`.
-Successful real-render workflow: https://github.com/Ullmann27/lumo-godot/actions/runs/37638972311
-Artifact: `lumo-creative-runtime-37638972311` (artifact ID `11491515729`; exact name can be checked in that run).
+Runtime source: `9d99fd9b5a0f5383199675ba9213290f5b511f61`.
+Successful real-render workflow: https://github.com/Ullmann27/lumo-godot/actions/runs/37644437370
+Artifact: `lumo-creative-runtime-37644437370` (artifact ID `11493287124`; exact name can be checked in that run).
 
 ## Resulting playable behavior
 
@@ -75,19 +75,25 @@ The actual garage-to-race transition now recomputes the driving layout, restores
 the HUD anchors after changing minimum sizes, and uses two rows of >=44px actions
 in short landscape. The menu-flow regression checks the controls after real
 setup input without manually repairing the resulting layout. Three additional
-race PNGs cover 1280×720, 800×480 and 640×320. The final screenshot run uses test
-head `62acd9f9bc7aa2b882610bd9eac198b486fd366d`; runtime remains the pin above.
+race PNGs cover 1280×720, 800×480 and 640×320. The final screenshot run uses exactly the runtime pin above. Complete button
+words and multiline labels are measured against their actual font metrics
+after compact resizing; every label must fit within its touch area. This fixes
+the clipped BREMSE/DRIFT labels observed on the integrated Android APK.
 
 ## Complete engine and native Android check
 
 General workflow https://github.com/Ullmann27/lumo-godot/actions/runs/37640847776
 passed on test/documentation head `bd5f95a6ec91ad951d8cd137db1522b7f3d54b21`.
-Runtime is unchanged from the APK pin. Project import, all regressions, Linux
+This precedes the final label-fitting correction. Project import, all regressions, Linux
 export/smoke, Web packaging, Android native package and real five-step touch
 selection passed. Android restarted the first menu normally before opening the
 fresh Kart route; rendered race and small landscape controls were captured.
 The diagnostics artifact is `11491659300`; package/images artifact `11492907272`.
 No release or Pages publication ran on this pull-request event.
+The final runtime has a second full check at
+https://github.com/Ullmann27/lumo-godot/actions/runs/37644447126.
+This final check passed, including the actual Android launch, five setup
+touches, compact rendered race and Linux/Web/Android packaging.
 
 ## Limits and next evidence
 
