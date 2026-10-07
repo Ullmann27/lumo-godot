@@ -7,7 +7,8 @@ extends RefCounted
 
 const NIGHT_SKY = preload("res://assets/shaders/kart_night_sky.gdshader")
 const CLOUD_SEA = preload("res://assets/shaders/kart_cloud_sea.gdshader")
-const WATERFALL = preload("res://assets/shaders/kart_waterfall.gdshader")\nconst VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
+const WATERFALL = preload("res://assets/shaders/kart_waterfall.gdshader")
+const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 
 ## Course fractions carried by islands (start, floating town, crystal cave, temple ruins).
 ## Everything between them is bridge.
