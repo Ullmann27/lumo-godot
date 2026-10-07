@@ -44,9 +44,16 @@ static func environment(world) -> void:
 		if child is WorldEnvironment:
 			child.environment.fog_density = 0.0005
 			child.environment.ambient_light_energy = (
-				0.48 if world.track_id == "candy_cloud" else 0.32
+				0.28 if world.track_id == "candy_cloud" else 0.25
 			)
-			child.environment.tonemap_exposure = 1.15
+			child.environment.tonemap_exposure = 0.95
+			if world.track_id == "candy_cloud":
+				var candy_sky := ShaderMaterial.new()
+				candy_sky.shader = preload("res://assets/shaders/kart_candy_sky.gdshader")
+				child.environment.sky.sky_material = candy_sky
+				child.environment.ambient_light_color = Color("bac5ec")
+				child.environment.ambient_light_energy = 0.20
+				child.environment.fog_light_color = Color("afb9e4")
 			if world.track_id == "galaxy_ringway":
 				child.environment.fog_enabled = false
 			if world.track_id in ["volcano_night", "galaxy_ringway"]:
@@ -59,7 +66,7 @@ static func environment(world) -> void:
 				night.set_shader_parameter("glow", Color("283d69"))
 				night.set_shader_parameter("below", Color("0c1838"))
 				child.environment.sky.sky_material = night
-				child.environment.ambient_light_energy = 0.25
+				child.environment.ambient_light_energy = 0.30
 	if world.track_id in ["volcano_night", "galaxy_ringway", "winter_sprint", "crystal_canyon"]:
 		world._prop(
 			"ball", Vector3(20, 92, -185), Vector3.ONE * 11, Color("cbdcff"), Basis.IDENTITY, true
@@ -99,36 +106,9 @@ static func build(world) -> void:
 					_temple(world, at + basis.x * side * 5, basis, Color("adb49b"))
 				world._prop("crown", at + Vector3(4, 0, 2), Vector3(5, 1.7, 4), Color("3d8262"))
 			"candy_cloud":
-				world._prop("crown", at - Vector3.UP * 6, Vector3(12, 7, 9), Color("f0cbef"))
-				if i % 3 == 0:
-					_candy_castle(world, at, basis, Color("f4b9db") if i % 2 else Color("b5d8f8"))
-				else:
-					world._prop(
-						"cylinder", at + Vector3.UP * 3.5, Vector3(0.28, 7, 0.28), Color("fbecdf")
-					)
-					world._prop(
-						"torus",
-						at + Vector3.UP * 8,
-						Vector3.ONE * 6.5,
-						Color("ecba78"),
-						basis.rotated(basis.x, PI * 0.5)
-					)
-					world._prop(
-						"torus",
-						at + Vector3.UP * 8.1,
-						Vector3(6.3, 0.78, 6.3),
-						Color("f5a4d5"),
-						basis.rotated(basis.x, PI * 0.5)
-					)
-					for j in range(5):
-						world._prop(
-							"ball",
-							at + Vector3(sin(j) * 2.2, 8 + cos(j) * 2.2, 0),
-							Vector3.ONE * 0.32,
-							[Color("69d9f3"), Color("ffe085"), Color("d195fa")][j % 3]
-						)
-				if i % 4 == 0:
-					_candy_cane(world, at + basis.x * 7, basis)
+				# The architectural kit supplies palaces, iced donuts and cloud islands.
+				if i % 5 == 0:
+					_candy_cane(world, at, basis)
 			"volcano_night":
 				world._prop(
 					"rock", at - Vector3.UP * 6, Vector3(10, 13, 12), Color("363546"), angle
@@ -350,14 +330,26 @@ static func _volcano(world) -> void:
 		var heights := [0.0, 0.15, 0.34, 0.56, 0.77, 0.94, 1.0]
 		var radii := [1.0, 0.93, 0.76, 0.56, 0.35, 0.20, 0.18]
 		var previous := Vector3.ZERO
-		for j in range(heights.size()):
-			# Follow the actual basalt surface; a straight cone line sinks inside ridges.
-			var ridge: float = 1.0 + sin(angle * 7 + 0.4) * 0.065 + sin(angle * 13 + j * 0.7) * 0.028
-			var radius: float = radii[j] * ridge * 68.0 + 2.0
-			var height: float = (heights[j] + (sin(angle * 7) * 0.012 if j > 0 else 0)) * 90.0
-			var point := at + Vector3(sin(angle) * radius, height, cos(angle) * radius)
+		for j in range(33):
+			var t: float = j / 32.0
+			var section: int = mini(int(t * 6.0), 5)
+			var fraction: float = t * 6.0 - section
+			var a: float = angle + sin(t * 17 + i * 2.4) * 0.065 * (1.0 - t)
+			var ridge: float = 1.0 + sin(a * 7 + 0.4) * 0.065 + sin(a * 13 + t * 4.2) * 0.028
+			var radius: float = (
+				lerpf(radii[section], radii[section + 1], fraction) * ridge * 68.0 + 1.0
+			)
+			var height: float = lerpf(heights[section], heights[section + 1], fraction) * 90.0
+			var point := at + Vector3(sin(a) * radius, height, cos(a) * radius)
 			if j > 0:
-				world._beam(previous, point, 1.7 + float(6 - j) * 0.16, Color("ff792f"), true)
+				world._beam(previous, point, 1.25 + (1.0 - t) * 0.7, Color("da4826"), true)
+				world._beam(
+					previous + Vector3.UP * 0.09,
+					point + Vector3.UP * 0.09,
+					0.50 + (1.0 - t) * 0.35,
+					Color("ffbb4c"),
+					true
+				)
 			previous = point
 		world._prop(
 			"ball",
@@ -368,5 +360,13 @@ static func _volcano(world) -> void:
 	for i in range(9):
 		var d: float = world.length * (0.10 + i * 0.09)
 		var basis: Basis = world.frame(d)
-		var top: Vector3 = world.position_at(d, 16) + Vector3.UP * 14
-		world._beam(top, top - Vector3.UP * 24, 2, Color("ff8837"), true)
+		var top: Vector3 = world.position_at(d, 19) + Vector3.UP * 10
+		var previous: Vector3 = top
+		for j in range(1, 9):
+			var t: float = j / 8.0
+			var point: Vector3 = top + basis.x * sin(t * PI) * 3.5 - Vector3.UP * t * 22
+			world._beam(previous, point, 0.8 + t * 0.45, Color("ee652c"), true)
+			previous = point
+		for j in range(5):
+			var spray: Vector3 = previous + basis.x * (j - 2) * 0.8 + Vector3.UP * (1 + j % 3)
+			world._prop("ball", spray, Vector3.ONE * 0.22, Color("ffb955"), Basis.IDENTITY, true)

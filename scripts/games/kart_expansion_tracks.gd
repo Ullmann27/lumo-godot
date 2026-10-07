@@ -31,8 +31,7 @@ const CATALOG: Array[Dictionary] = [
 		"name": "Candy Cloud Circuit",
 		"tag": "REGENBOGEN · DONUTS · WOLKEN",
 		"color": Color("f5a9dc"),
-		"description":
-		"Die Regenbogenstraße aus deinem Video: Zuckerburgen und riesige Donuts in den Wolken."
+		"description": "Durch Zuckerpaläste, bunte Donuts und Wolkenbögen auf der Regenbogenstraße."
 	},
 	{
 		"id": "volcano_night",
@@ -40,7 +39,7 @@ const CATALOG: Array[Dictionary] = [
 		"tag": "LAVA · NACHT · TURBORAMPE",
 		"color": Color("ffac60"),
 		"description":
-		"Die Vulkanstrecke aus deinem Video: dunkler Asphalt, Lavastürze und orange Turbopfeile."
+		"Über dunkle Vulkanbrücken, durch Festungstore und an glühenden Lavafällen vorbei."
 	},
 	{
 		"id": "winter_sprint",

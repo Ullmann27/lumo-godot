@@ -1,6 +1,7 @@
 class_name LumoRaceWorld
 extends Node3D
 ## Four original banked courses. Spatial GPU batches preserve Android performance.
+const LANDMARKS = preload("res://scripts/games/kart_landmarks.gd")
 const EXPANSION = preload("res://scripts/games/kart_expansion_world.gd")
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
@@ -32,7 +33,9 @@ var _road_samples := PackedVector3Array()
 var _road_distances := PackedFloat32Array()
 var _rng := RandomNumberGenerator.new()
 
-func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
+func build(
+	lightweight: bool, selected_track: String = "sonnenhafen", geometry_only: bool = false
+) -> void:
 	for child in get_children():
 		remove_child(child)
 		child.queue_free()
@@ -49,19 +52,23 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 	if track_id=="bergwelt":
 		# Himmelsinseln Sprint (reference k07): the road is carried by floating islands.
 		jump=SKY_ISLANDS.jump_layout(length)
-		SKY_ISLANDS.environment(self)
+		if not geometry_only:
+			SKY_ISLANDS.environment(self)
 		_road()
 		SKY_ISLANDS.build(self)
 		SKY_ISLANDS.jump_dressing(self)
 		SKY_ISLANDS.chevrons(self)
 		_flush_instances()
 		return
-	_lighting()
+	if not geometry_only:
+		_lighting()
 	if track_id in TRACKS.EXPANSION.IDS:
 		EXPANSION.prepare(self)
-		EXPANSION.environment(self)
+		if not geometry_only:
+			EXPANSION.environment(self)
 		_road()
 		EXPANSION.build(self)
+		LANDMARKS.build(self)
 		_navigation()
 		_flush_instances()
 		return
@@ -76,6 +83,7 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 	_navigation()
 	if track_id=="sonnenhafen":
 		_grand_prix_dressing()
+	LANDMARKS.build(self)
 	_flush_instances()
 
 func _make_curve() -> void:
@@ -233,6 +241,8 @@ func _shape(kind: String) -> Mesh:
 	if meshes.has(kind): return meshes[kind]
 	var mesh: Mesh
 	match kind:
+		"arch": mesh = LANDMARKS.arch_mesh()
+		"icing": mesh = LANDMARKS.icing_mesh()
 		"crown": mesh = SHAPES.crown()
 		"fir": mesh = SHAPES.fir()
 		"volcano_mountain": mesh = preload("res://scripts/games/kart_volcano_mesh.gd").create()
@@ -262,8 +272,8 @@ func _shape(kind: String) -> Mesh:
 			var sphere := SphereMesh.new()
 			sphere.radius=1.0
 			sphere.height=2.0
-			sphere.radial_segments=16
-			sphere.rings=8
+			sphere.radial_segments=20 if low_detail else 32
+			sphere.rings=10 if low_detail else 16
 			mesh=sphere
 		"cylinder":
 			var cylinder := CylinderMesh.new()
@@ -309,6 +319,11 @@ func _flush_instances() -> void:
 		var material: StandardMaterial3D=_material(Color.WHITE,group.get("glow",false))
 		material.vertex_color_use_as_albedo=true
 		material.vertex_color_is_srgb=true
+		if track_id == "candy_cloud" and not group.get("glow", false):
+			material = material.duplicate()
+			material.albedo_color = Color(0.73, 0.73, 0.73)
+			material.roughness = 0.90 if group.kind == "ball" else 0.42
+			material.metallic = 0.03
 		node.material_override=material
 		if group.kind == "volcano_mountain":
 			var basalt := ShaderMaterial.new()
@@ -342,7 +357,7 @@ func _lighting() -> void:
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color=Color("c8e0f4") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
 	environment.ambient_light_energy=0.28 if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
-	environment.tonemap_mode=Environment.TONE_MAPPER_FILMIC
+	environment.tonemap_mode=Environment.TONE_MAPPER_ACES if track_id in ["candy_cloud", "volcano_night"] else Environment.TONE_MAPPER_FILMIC
 	environment.tonemap_exposure=float(visual.exposure)
 	environment.glow_enabled=bool(visual.glow)
 	environment.glow_intensity=float(visual.glow_intensity)
@@ -362,7 +377,7 @@ func _lighting() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees=Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0)
 	sun.light_color=definition.sun
-	sun.light_energy=0.84 if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42)
+	sun.light_energy=0.56 if track_id=="candy_cloud" else (0.84 if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -371,8 +386,8 @@ func _lighting() -> void:
 	add_child(sun)
 	var fill := DirectionalLight3D.new()
 	fill.rotation_degrees=Vector3(-28,145,0)
-	fill.light_color=Color("9bccea")
-	fill.light_energy=0.10
+	fill.light_color=Color("e0a18b") if track_id=="volcano_night" else Color("9bccea")
+	fill.light_energy=0.18 if track_id=="volcano_night" else 0.10
 	fill.shadow_enabled=false
 	add_child(fill)
 
@@ -500,7 +515,7 @@ func _road() -> void:
 	var asphalt := ShaderMaterial.new()
 	asphalt.shader=preload("res://assets/shaders/kart_asphalt.gdshader")
 	asphalt.set_shader_parameter("road_tint",definition.asphalt)
-	var night: float={"holo_city":1.0,"bergwelt":0.15}.get(track_id,0.0)
+	var night: float={"holo_city":1.0,"volcano_night":1.0,"bergwelt":0.15}.get(track_id,0.0)
 	var visual: Dictionary=VISUAL_GRADE.environment_profile(track_id,low_detail)
 	asphalt.set_shader_parameter("night_course",night)
 	asphalt.set_shader_parameter("sky_island_detail",1.0 if track_id=="bergwelt" else 0.0)
@@ -513,6 +528,7 @@ func _road() -> void:
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
 	var shoulder_color := Color("d9d9c5") if track_id=="sonnenhafen" else Color("90b4bd")
 	if track_id=="bergwelt": shoulder_color=Color("2a3f8f")
+	if track_id=="volcano_night": shoulder_color=Color("3b303c")
 	var edge_color: Color=definition.accent
 	for side in [-1.0,1.0]:
 		_ribbon("RaisedShoulder",side*5.42,side*6.10,-0.06,_material(shoulder_color))
@@ -545,6 +561,11 @@ func _road() -> void:
 			var rail_at: Vector3=position_at(d,side*RAIL_LATERAL)
 			var rail_color: Color=Color("edf3df") if track_id!="holo_city" else Color("6bc9e5")
 			var lower_color: Color=Color("7d9aa4")
+			if track_id=="volcano_night":
+				rail_color=Color("685161")
+				lower_color=Color("302d40")
+				_prop("box",rail_at+Vector3.UP*0.25,Vector3(0.45,0.5,step+0.08),Color("3c3344"),basis)
+				_prop("box",rail_at+Vector3.UP*1.12,Vector3(0.09,0.07,step+0.02),Color("f09848"),basis,true)
 			if track_id=="bergwelt":
 				# Reference guardrail: blue and white bands with gold caps.
 				rail_color=SKY_ISLANDS.RAIL_BLUE if i%6<3 else Color("f1f4ff")
