@@ -3,6 +3,7 @@ extends Node3D
 ## Free steering arcade racing, original Lumo worlds, five complete modes and host-safe saves.
 ## Product rule (Heinz, 2026-10-04): no learning questions, learning cups or answer timers in Kart.
 
+const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const KART_AUDIO = preload("res://scripts/games/kart_audio.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const GARAGE = preload("res://scripts/games/kart_garage_menu.gd")
@@ -598,6 +599,7 @@ func _label(text: String, size: int = 23) -> Label:
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_font_override("font", UI.HEADING)
 	label.add_theme_color_override("font_color", Color("f4f8ff"))
 	return label
 
@@ -681,13 +683,7 @@ func _build_ui() -> void:
 	add_child(layer)
 	safe_ui = Control.new()
 	safe_ui.name = "RaceSafeArea"
-	var interface_theme := Theme.new()
-	var interface_font := FontVariation.new()
-	interface_font.base_font = load("res://assets/fonts/Nunito-Variable.ttf")
-	# Godot requires the numeric OpenType wght tag; a string silently keeps weight200.
-	interface_font.variation_opentype = {2003265652: 600.0}
-	interface_theme.default_font = interface_font
-	safe_ui.theme = interface_theme
+	safe_ui.theme = UI.create()
 	safe_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	safe_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(safe_ui)
@@ -1028,6 +1024,9 @@ func _apply_responsive_layout() -> void:
 
 
 func _apply_ui_scale(control: Node, ui_scale: float) -> void:
+	# The garage owns its responsive typography and preview sizing.
+	if control == garage:
+		return
 	if control is Control:
 		var ui_control: Control = control
 		if not ui_control.has_meta("kart_base_minimum_size"):

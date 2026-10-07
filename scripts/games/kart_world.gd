@@ -1,6 +1,7 @@
 class_name LumoRaceWorld
 extends Node3D
 ## Four original banked courses. Spatial GPU batches preserve Android performance.
+const LANDMARKS = preload("res://scripts/games/kart_landmarks.gd")
 const EXPANSION = preload("res://scripts/games/kart_expansion_world.gd")
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
@@ -62,6 +63,7 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 		EXPANSION.environment(self)
 		_road()
 		EXPANSION.build(self)
+		LANDMARKS.build(self)
 		_navigation()
 		_flush_instances()
 		return
@@ -76,6 +78,7 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 	_navigation()
 	if track_id=="sonnenhafen":
 		_grand_prix_dressing()
+	LANDMARKS.build(self)
 	_flush_instances()
 
 func _make_curve() -> void:
@@ -233,6 +236,8 @@ func _shape(kind: String) -> Mesh:
 	if meshes.has(kind): return meshes[kind]
 	var mesh: Mesh
 	match kind:
+		"arch": mesh = LANDMARKS.arch_mesh()
+		"icing": mesh = LANDMARKS.icing_mesh()
 		"crown": mesh = SHAPES.crown()
 		"fir": mesh = SHAPES.fir()
 		"volcano_mountain": mesh = preload("res://scripts/games/kart_volcano_mesh.gd").create()
@@ -262,8 +267,8 @@ func _shape(kind: String) -> Mesh:
 			var sphere := SphereMesh.new()
 			sphere.radius=1.0
 			sphere.height=2.0
-			sphere.radial_segments=16
-			sphere.rings=8
+			sphere.radial_segments=20 if low_detail else 32
+			sphere.rings=10 if low_detail else 16
 			mesh=sphere
 		"cylinder":
 			var cylinder := CylinderMesh.new()
@@ -342,7 +347,7 @@ func _lighting() -> void:
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color=Color("c8e0f4") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
 	environment.ambient_light_energy=0.28 if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
-	environment.tonemap_mode=Environment.TONE_MAPPER_FILMIC
+	environment.tonemap_mode=Environment.TONE_MAPPER_ACES
 	environment.tonemap_exposure=float(visual.exposure)
 	environment.glow_enabled=bool(visual.glow)
 	environment.glow_intensity=float(visual.glow_intensity)
@@ -500,7 +505,7 @@ func _road() -> void:
 	var asphalt := ShaderMaterial.new()
 	asphalt.shader=preload("res://assets/shaders/kart_asphalt.gdshader")
 	asphalt.set_shader_parameter("road_tint",definition.asphalt)
-	var night: float={"holo_city":1.0,"bergwelt":0.15}.get(track_id,0.0)
+	var night: float={"holo_city":1.0,"volcano_night":1.0,"bergwelt":0.15}.get(track_id,0.0)
 	var visual: Dictionary=VISUAL_GRADE.environment_profile(track_id,low_detail)
 	asphalt.set_shader_parameter("night_course",night)
 	asphalt.set_shader_parameter("sky_island_detail",1.0 if track_id=="bergwelt" else 0.0)

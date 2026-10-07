@@ -44,9 +44,9 @@ static func environment(world) -> void:
 		if child is WorldEnvironment:
 			child.environment.fog_density = 0.0005
 			child.environment.ambient_light_energy = (
-				0.48 if world.track_id == "candy_cloud" else 0.32
+				0.28 if world.track_id == "candy_cloud" else 0.25
 			)
-			child.environment.tonemap_exposure = 1.15
+			child.environment.tonemap_exposure = 0.95
 			if world.track_id == "galaxy_ringway":
 				child.environment.fog_enabled = false
 			if world.track_id in ["volcano_night", "galaxy_ringway"]:
@@ -59,7 +59,7 @@ static func environment(world) -> void:
 				night.set_shader_parameter("glow", Color("283d69"))
 				night.set_shader_parameter("below", Color("0c1838"))
 				child.environment.sky.sky_material = night
-				child.environment.ambient_light_energy = 0.25
+				child.environment.ambient_light_energy = 0.30
 	if world.track_id in ["volcano_night", "galaxy_ringway", "winter_sprint", "crystal_canyon"]:
 		world._prop(
 			"ball", Vector3(20, 92, -185), Vector3.ONE * 11, Color("cbdcff"), Basis.IDENTITY, true
@@ -99,36 +99,9 @@ static func build(world) -> void:
 					_temple(world, at + basis.x * side * 5, basis, Color("adb49b"))
 				world._prop("crown", at + Vector3(4, 0, 2), Vector3(5, 1.7, 4), Color("3d8262"))
 			"candy_cloud":
-				world._prop("crown", at - Vector3.UP * 6, Vector3(12, 7, 9), Color("f0cbef"))
-				if i % 3 == 0:
-					_candy_castle(world, at, basis, Color("f4b9db") if i % 2 else Color("b5d8f8"))
-				else:
-					world._prop(
-						"cylinder", at + Vector3.UP * 3.5, Vector3(0.28, 7, 0.28), Color("fbecdf")
-					)
-					world._prop(
-						"torus",
-						at + Vector3.UP * 8,
-						Vector3.ONE * 6.5,
-						Color("ecba78"),
-						basis.rotated(basis.x, PI * 0.5)
-					)
-					world._prop(
-						"torus",
-						at + Vector3.UP * 8.1,
-						Vector3(6.3, 0.78, 6.3),
-						Color("f5a4d5"),
-						basis.rotated(basis.x, PI * 0.5)
-					)
-					for j in range(5):
-						world._prop(
-							"ball",
-							at + Vector3(sin(j) * 2.2, 8 + cos(j) * 2.2, 0),
-							Vector3.ONE * 0.32,
-							[Color("69d9f3"), Color("ffe085"), Color("d195fa")][j % 3]
-						)
-				if i % 4 == 0:
-					_candy_cane(world, at + basis.x * 7, basis)
+				# The architectural kit supplies palaces, iced donuts and cloud islands.
+				if i % 5 == 0:
+					_candy_cane(world, at, basis)
 			"volcano_night":
 				world._prop(
 					"rock", at - Vector3.UP * 6, Vector3(10, 13, 12), Color("363546"), angle
