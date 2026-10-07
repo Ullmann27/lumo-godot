@@ -1,8 +1,8 @@
 # Lumo: playable games and track expansion — 7 October 2026
 
-Runtime source: `9136662953a42cd60cfe3cdf05fbd6497b13bfb1`.
-Successful real-render workflow: https://github.com/Ullmann27/lumo-godot/actions/runs/37614750293
-Artifact: `lumo-creative-runtime-37614750293` (artifact ID `11479533267`; exact name can be checked in that run).
+Runtime source: `148decd2b34af7bfb5f1504c166d42411f8e99e1`.
+Successful real-render workflow: https://github.com/Ullmann27/lumo-godot/actions/runs/37638972311
+Artifact: `lumo-creative-runtime-37638972311` (artifact ID `11491515729`; exact name can be checked in that run).
 
 ## Resulting playable behavior
 
@@ -57,13 +57,37 @@ Godot, not image generation. Existing design-target assets remain intact.
 ## Meaningful verification
 
 Godot 4.6.3 ran the actual scenes on Ubuntu/Mesa llvmpipe. The workflow produced
-21 gameplay/menu PNGs from the tested source. Tests cover real scene startup;
+27 gameplay/menu PNGs from the tested source. Tests cover real scene startup;
 supported/unsupported building, overlap, removal safety, connected bridge,
 house/castle/village goals, undo/redo and rejected corrupt saves; rhythm
 timing/early release/slide/pause; clue proximity and inventory gates; puzzle
 matching edges, wrong-slot rejection, real input picking/drag/snap and JSON
 resume; eight distinct driving worlds, ramp flight/landing and three complete
 loop inversion/recovery paths. All passed.
+
+The garage additionally passes five real screenshot/pixel-directed setup
+steps and starts a cup at 1280×720, 800×480 and 640×320 with simulated safe insets.
+Short landscape uses a compact two-column preview, correctly cached control
+minimum sizes and a bounded cup summary. The embedded garage does not apply
+safe insets twice. Its preview and footer stay inside the visible safe area.
+
+The actual garage-to-race transition now recomputes the driving layout, restores
+the HUD anchors after changing minimum sizes, and uses two rows of >=44px actions
+in short landscape. The menu-flow regression checks the controls after real
+setup input without manually repairing the resulting layout. Three additional
+race PNGs cover 1280×720, 800×480 and 640×320. The final screenshot run uses test
+head `62acd9f9bc7aa2b882610bd9eac198b486fd366d`; runtime remains the pin above.
+
+## Complete engine and native Android check
+
+General workflow https://github.com/Ullmann27/lumo-godot/actions/runs/37640847776
+passed on test/documentation head `bd5f95a6ec91ad951d8cd137db1522b7f3d54b21`.
+Runtime is unchanged from the APK pin. Project import, all regressions, Linux
+export/smoke, Web packaging, Android native package and real five-step touch
+selection passed. Android restarted the first menu normally before opening the
+fresh Kart route; rendered race and small landscape controls were captured.
+The diagnostics artifact is `11491659300`; package/images artifact `11492907272`.
+No release or Pages publication ran on this pull-request event.
 
 ## Limits and next evidence
 
