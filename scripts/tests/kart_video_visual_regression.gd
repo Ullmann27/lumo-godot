@@ -109,6 +109,15 @@ func _run() -> void:
 	_validate_grade("bergwelt")
 	await _capture("03_himmelsinseln_chase")
 
+	# The same material/light system must cover the bright and forest worlds too.
+	_place("sonnenhafen", 0.38, 0.2, 20.0, false)
+	_validate_grade("sonnenhafen")
+	await _capture("04_sonnenhafen_chase")
+
+	_place("zauberwald", 0.34, -0.35, 19.0, false)
+	_validate_grade("zauberwald")
+	await _capture("05_zauberwald_chase")
+
 	# Reduced motion must keep a steady baseline view rather than speed-punching the camera.
 	game.reduced_motion = true
 	game.speed = 25.0
@@ -116,7 +125,7 @@ func _run() -> void:
 	game._update_camera(1.0, true)
 	assert(absf(game.camera.fov - VISUAL_GRADE.BASE_FOV) < 0.5)
 	assert(int(game.speed_fx.visual_state().visible_count) == 0)
-	await _capture("04_reduced_motion")
+	await _capture("06_reduced_motion")
 
 	game.abandoned = true
 	game.queue_free()
