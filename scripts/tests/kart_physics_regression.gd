@@ -183,7 +183,10 @@ func _test_boost_response() -> void:
 	var effect_cursor_after: int = int(game.kart_audio.get("_effect_cursor"))
 	assert(
 		speed_delta > unboosted_delta * 1.5,
-		"Boost increases speed on its first physics step (%.3f vs %.3f)" % [speed_delta, unboosted_delta]
+		(
+			"Boost increases speed on its first physics step (%.3f vs %.3f)"
+			% [speed_delta, unboosted_delta]
+		)
 	)
 	assert(feedback_visible, "Boost flame is active on the first physics step")
 	assert(
@@ -191,13 +194,22 @@ func _test_boost_response() -> void:
 		"Boost sound starts on accepted input"
 	)
 	assert(boost_audio_player.playing, "Boost sound begins on accepted input")
-	assert(absf(game.player_heading - game._heading(0)) > 0.0001, "Steering remains active with boost")
+	assert(
+		absf(game.player_heading - game._heading(0)) > 0.0001, "Steering remains active with boost"
+	)
 	print(
 		(
-			"[KartBoost] input→accepted %d µs, accepted→physics %d µs, "
-			+ "speed +%.3f m/s (normal +%.3f), VFX/audio active"
+			(
+				"[KartBoost] input→accepted %d µs, accepted→physics %d µs, "
+				+ "speed +%.3f m/s (normal +%.3f), VFX/audio active"
+			)
+			% [
+				accepted_usec - input_usec,
+				physics_usec - accepted_usec,
+				speed_delta,
+				unboosted_delta
+			]
 		)
-		% [accepted_usec - input_usec, physics_usec - accepted_usec, speed_delta, unboosted_delta]
 	)
 	game.boost_button._release()
 	var boost_time_after_first_tap: float = game.boost_time
@@ -214,9 +226,11 @@ func _test_mystery_item_boxes() -> void:
 	assert(game.item_boxes.size() == 5, "Race course exposes five mystery item boxes")
 	for box in game.item_boxes:
 		assert(
-			is_equal_approx(box.scale.x, 1.18)
-			and is_equal_approx(box.scale.y, 1.18)
-			and is_equal_approx(box.scale.z, 1.18),
+			(
+				is_equal_approx(box.scale.x, 1.18)
+				and is_equal_approx(box.scale.y, 1.18)
+				and is_equal_approx(box.scale.z, 1.18)
+			),
 			"Himmelsinseln mystery prisms keep the readability scale from the visual pass"
 		)
 	var leader_pool: Array[String] = game._item_pool_for_place(1)
@@ -263,22 +277,14 @@ func _test_rival_item_tactics() -> void:
 		game.hit_timer == 0.0 and game.opponent_pulse_warning_times[2] > 0.0,
 		"Rival pulse must warn before it can affect the player"
 	)
-	game._update_rival_item_tactics(
-		2,
-		Vector3(0, 0, 5),
-		game.RIVAL_PULSE_WARNING_SECONDS + STEP
-	)
+	game._update_rival_item_tactics(2, Vector3(0, 0, 5), game.RIVAL_PULSE_WARNING_SECONDS + STEP)
 	assert(game.hit_timer > 0.0, "Rival pulse can pressure a player who stays in range")
 
 	game.hit_timer = 0.0
 	game.shield_time = 4.0
 	game.opponent_items[3] = "pulse"
 	game._update_rival_item_tactics(3, Vector3(0, 0, 5), STEP)
-	game._update_rival_item_tactics(
-		3,
-		Vector3(0, 0, 5),
-		game.RIVAL_PULSE_WARNING_SECONDS + STEP
-	)
+	game._update_rival_item_tactics(3, Vector3(0, 0, 5), game.RIVAL_PULSE_WARNING_SECONDS + STEP)
 	assert(game.hit_timer == 0.0, "Player shield blocks a telegraphed rival pulse")
 
 
@@ -315,8 +321,10 @@ func _test_wolkenweg_split_route() -> void:
 		"Parallel main lane remains physically on the original road"
 	)
 	print(
-		"[KartSplit] PASS: Wolkenweg raised %.2f m while main lane stayed at %.2f m"
-		% [raised_height, main_height]
+		(
+			"[KartSplit] PASS: Wolkenweg raised %.2f m while main lane stayed at %.2f m"
+			% [raised_height, main_height]
+		)
 	)
 
 
@@ -365,10 +373,7 @@ func _test_boost_chevrons_follow_travel() -> void:
 		{"name": "straight", "basis": Basis.IDENTITY},
 		{"name": "curve", "basis": _track_frame(Vector3(1, 0, -1), Vector3.UP)},
 		{"name": "sloped", "basis": _track_frame(Vector3(0.8, 0.5, -0.2), Vector3.UP)},
-		{
-			"name": "mirrored",
-			"basis": _track_frame(Vector3(0.8, 0.5, -0.2), Vector3.UP, true)
-		},
+		{"name": "mirrored", "basis": _track_frame(Vector3(0.8, 0.5, -0.2), Vector3.UP, true)},
 		{"name": "vertical", "basis": _track_frame(Vector3.UP, Vector3.RIGHT)}
 	]
 	for sample in samples:
@@ -420,6 +425,8 @@ func _run() -> void:
 	root.add_child(game)
 	game.set_physics_process(false)
 	game.lightweight = true
+	# Drive deterministically even after a previous manual-pedal test saved preferences.
+	game.auto_gas = true
 	await process_frame
 	for track in game.CATALOG.TRACKS:
 		await _test_walls(str(track.id))

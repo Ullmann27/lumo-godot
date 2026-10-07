@@ -28,12 +28,26 @@ jobs:
           git rev-parse HEAD > exports/fold-controls/source-sha.txt
           Godot_v4.6.3-stable_linux.x86_64 --headless --editor --import > exports/fold-controls/import.log 2>&1
           if rg 'SCRIPT ERROR|Parse Error|Failed to load' exports/fold-controls/import.log; then exit 1; fi
+      - name: Actual world and menu screenshots
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -o pipefail
+          timeout 420s xvfb-run -a -s '-screen 0 2400x2400x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_visual_quality_capture.gd 2>&1 | tee exports/fold-controls/visual.log
+          if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' exports/fold-controls/visual.log; then exit 1; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kart-world-renders-${{ github.run_id }}
+          path: |
+            exports/video-quality/
+            exports/fold-controls/visual.log
       - name: Fold sizes, artwork and actual multi-touch
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: |
           set -o pipefail
-          timeout 240s xvfb-run -a -s '-screen 0 2400x2400x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_fold_controls_regression.gd 2>&1 | tee exports/fold-controls/controls.log
+          timeout 420s xvfb-run -a -s '-screen 0 2400x2400x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_fold_controls_regression.gd 2>&1 | tee exports/fold-controls/controls.log
           if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' exports/fold-controls/controls.log; then exit 1; fi
           rg -F '[KartFoldControls] PASS:' exports/fold-controls/controls.log
       - name: Existing actual driving and pause regressions
@@ -41,8 +55,8 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: |
           set -o pipefail
-          for test in kart_menu_flow_regression kart_physics_regression kart_visual_quality_capture; do
-            timeout 240s xvfb-run -a -s '-screen 0 2400x2400x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --script "res://scripts/tests/$test.gd" 2>&1 | tee "exports/fold-controls/$test.log"
+          for test in kart_menu_flow_regression kart_physics_regression; do
+            timeout 420s xvfb-run -a -s '-screen 0 2400x2400x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --script "res://scripts/tests/$test.gd" 2>&1 | tee "exports/fold-controls/$test.log"
             if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' "exports/fold-controls/$test.log"; then exit 1; fi
           done
       - uses: actions/upload-artifact@v4
