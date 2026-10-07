@@ -661,7 +661,7 @@ func _build_pedal_pad() -> Control:
 	var layout: Array = [
 		[gas_button, Vector2(361, 222), 156],
 		[brake_button, Vector2(222, 242), 116],
-		[drift_button, Vector2(232, 108), 106],
+		[drift_button, Vector2(228, 108), 106],
 		[boost_button, Vector2(370, 66), 112],
 		[item_button, Vector2(98, 228), 94]
 	]
