@@ -205,7 +205,7 @@ jobs:
           name: lumo-android-startup-diagnostics
           path: |
             exports/android/android-startup.log
-            exports/android/sonnenhafen-android-start.png
+            exports/android/kart-garage-android-start.png
           if-no-files-found: ignore
 
       - name: Strip arm64-only + sign APK
@@ -248,7 +248,7 @@ jobs:
           path: |
             exports/android/lumo3d-debug.apk
             exports/android/android-startup.log
-            exports/android/sonnenhafen-android-start.png
+            exports/android/kart-garage-android-start.png
             exports/screenshots/*.png
             exports/packages/SHA256SUMS.txt
           if-no-files-found: error
@@ -279,7 +279,7 @@ jobs:
             exports/packages/lumo-godot-linux.zip
             exports/packages/lumo-godot-web.zip
             exports/android/lumo3d-debug.apk
-            exports/android/sonnenhafen-android-start.png
+            exports/android/kart-garage-android-start.png
             exports/screenshots/*.png
             exports/packages/SHA256SUMS.txt
 
