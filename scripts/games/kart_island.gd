@@ -639,24 +639,29 @@ func _build_pedal_pad() -> Control:
 	pedal_pad = pad
 	gas_button = _action("GAS", func(): pass, Color("7cf29c"), 156)
 	gas_button.name = "GasPedal"
+	gas_button.icon_id = "gas"
 	gas_button.button_down.connect(func(): gas_held = true)
 	gas_button.button_up.connect(func(): gas_held = false)
 	brake_button = _action("BREMSE", func(): pass, Color("ff8a7a"), 116)
 	brake_button.name = "BrakePedal"
+	brake_button.icon_id = "brake"
 	brake_button.button_down.connect(func(): control_brake = 1.0)
 	brake_button.button_up.connect(func(): control_brake = 0.0)
 	drift_button = _action("DRIFT\nHALTEN", func(): pass, Color("bc8eff"), 106)
 	drift_button.name = "DriftAction"
+	drift_button.icon_id = "drift"
 	drift_button.button_down.connect(func(): drifting = racing and not paused)
 	drift_button.button_up.connect(_release_drift)
 	boost_button = _action("BOOST\n◆ 1", _boost, Color("66f7e8"), 112)
 	boost_button.name = "BoostAction"
+	boost_button.icon_id = "boost"
 	item_button = _action("ITEM\n◇", _use_item, Color("a7c5ff"), 94)
 	item_button.name = "ItemAction"
+	item_button.icon_id = "item"
 	var layout: Array = [
 		[gas_button, Vector2(361, 222), 156],
 		[brake_button, Vector2(222, 242), 116],
-		[drift_button, Vector2(232, 108), 106],
+		[drift_button, Vector2(228, 108), 106],
 		[boost_button, Vector2(370, 66), 112],
 		[item_button, Vector2(98, 228), 94]
 	]
@@ -882,7 +887,32 @@ func _apply_responsive_layout() -> void:
 	for side in ["left", "right", "top", "bottom"]:
 		hud_content.add_theme_constant_override("margin_" + side, roundi(margin_dp * ui_scale))
 	var available_width: float = maxf(1.0, safe_ui.size.x / ui_scale - margin_dp * 2.0)
-	if compact_portrait:
+	# Near-square inner displays need a proper large control deck. Use the current
+	# available surface, not a Samsung model name or the fixed 1280x720 canvas.
+	var shortest: float = minf(display_size.x, display_size.y)
+	var expanded_controls: bool = shortest >= 600.0 and maxf(display_size.x, display_size.y) / shortest <= 1.65
+	if expanded_controls:
+		var deck_scale: float = minf(shortest / 640.0, available_width / 698.0)
+		deck_scale = clampf(deck_scale, 0.70, 2.65)
+		joystick.custom_minimum_size = Vector2.ONE * 248.0 * deck_scale * ui_scale
+		pedal_pad.custom_minimum_size = Vector2(410, 324) * deck_scale * ui_scale
+		controls_row.add_theme_constant_override("separation", roundi(20.0 * deck_scale * ui_scale))
+		controls_gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		controls_gap.custom_minimum_size = Vector2.ZERO
+		var fold_actions: Dictionary = {
+			"DriftAction": [Vector2(168, 84), 116.0],
+			"BoostAction": [Vector2(318, 66), 124.0],
+			"ItemAction": [Vector2(54, 150), 100.0],
+			"BrakePedal": [Vector2(158, 260), 108.0],
+			"GasPedal": [Vector2(312, 232), 176.0]
+		}
+		for child in pedal_pad.get_children():
+			if child is Control:
+				var spec: Array = fold_actions[child.name]
+				child.custom_minimum_size = Vector2.ONE * float(spec[1]) * deck_scale * ui_scale
+				child.size = child.custom_minimum_size
+				child.position = Vector2(spec[0]) * deck_scale * ui_scale - child.size * 0.5
+	elif compact_portrait:
 		var gap: float = 4.0
 		var stick_size: float = clampf(available_width * 0.32, 88.0, 154.0)
 		var pad_width: float = maxf(152.0, available_width - stick_size - gap)
@@ -929,7 +959,6 @@ func _apply_responsive_layout() -> void:
 				child.custom_minimum_size = Vector2.ONE * float(spec[1]) * ui_scale
 				child.size = child.custom_minimum_size
 				child.position = Vector2(spec[0]) * ui_scale - child.size * 0.5
-				child.get_child(0).add_theme_font_size_override("font_size", roundi(12.0 * ui_scale))
 	else:
 		var size_scale: float = clampf(
 			minf(display_size.y / 720.0, available_width / 700.0), 0.64, 1.0
@@ -948,6 +977,9 @@ func _apply_responsive_layout() -> void:
 			button.custom_minimum_size = Vector2.ONE * button_size * ui_scale
 			button.size = button.custom_minimum_size
 			button.position = base_centre * size_scale * ui_scale - button.size * 0.5
+	for action in pedal_pad.get_children():
+		if action.has_method("_apply_label_size"):
+			action._apply_label_size()
 	top_menu_button.visible = not compact
 	top_reset_button.visible = not compact
 	top_pause_button.visible = true
