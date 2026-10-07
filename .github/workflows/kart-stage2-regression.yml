@@ -53,7 +53,10 @@ jobs:
             --headless --path . --editor --import --quit \
             > "$RUNNER_TEMP/godot-import.log" 2>&1
           cat "$RUNNER_TEMP/godot-import.log"
-          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/godot-import.log"
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/godot-import.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/godot-import.log"
+            exit 1
+          fi
 
       - name: Track geometry contract
         shell: bash
@@ -63,7 +66,10 @@ jobs:
             --headless --path . --script res://scripts/tests/kart_track_contract.gd \
             > "$RUNNER_TEMP/track-contract.log" 2>&1
           cat "$RUNNER_TEMP/track-contract.log"
-          ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/track-contract.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/track-contract.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/track-contract.log"
+            exit 1
+          fi
           grep -F '[TrackContract]' "$RUNNER_TEMP/track-contract.log"
           grep -F 'bergwelt' "$RUNNER_TEMP/track-contract.log"
 
@@ -75,7 +81,10 @@ jobs:
             --headless --path . --script res://scripts/tests/kart_sky_halo_authoring_contract.gd \
             > "$RUNNER_TEMP/sky-halo-contract.log" 2>&1
           cat "$RUNNER_TEMP/sky-halo-contract.log"
-          ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/sky-halo-contract.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/sky-halo-contract.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/sky-halo-contract.log"
+            exit 1
+          fi
           grep -F '[SkyHaloContract]' "$RUNNER_TEMP/sky-halo-contract.log"
 
       - name: Kart physics regression
@@ -86,7 +95,10 @@ jobs:
             --headless --path . --script res://scripts/tests/kart_physics_regression.gd \
             > "$RUNNER_TEMP/kart-physics.log" 2>&1
           cat "$RUNNER_TEMP/kart-physics.log"
-          ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-physics.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-physics.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/kart-physics.log"
+            exit 1
+          fi
           grep -F '[KartPhysics]' "$RUNNER_TEMP/kart-physics.log"
 
       - name: Kart mode and dynamic cup regression
@@ -97,7 +109,10 @@ jobs:
             --headless --path . --script res://scripts/tests/kart_modes_regression.gd \
             > "$RUNNER_TEMP/kart-modes.log" 2>&1
           cat "$RUNNER_TEMP/kart-modes.log"
-          ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-modes.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-modes.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/kart-modes.log"
+            exit 1
+          fi
           grep -F '[KartModesTests] PASS:' "$RUNNER_TEMP/kart-modes.log"
 
       - name: Fold and pause layout regression
@@ -114,7 +129,10 @@ jobs:
             --script res://scripts/tests/kart_pause_layout_regression.gd \
             > "$RUNNER_TEMP/kart-fold.log" 2>&1
           cat "$RUNNER_TEMP/kart-fold.log"
-          ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-fold.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-fold.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/kart-fold.log"
+            exit 1
+          fi
           grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/kart-fold.log"
 
       - name: Capture actual runtime frames for four track worlds
