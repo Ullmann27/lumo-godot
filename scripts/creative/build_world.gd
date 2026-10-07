@@ -673,14 +673,7 @@ func _choice_dialog(title: String, items: Array, action: Callable) -> void:
 	panel.add_child(box)
 	box.add_child(KIT.label(title, 23))
 	for item in items:
-		box.add_child(
-			KIT.button(
-				item[1],
-				func():
-					action.call(item[0])
-					dialog.queue_free()
-			)
-		)
+		box.add_child(KIT.button(item[1], _choose.bind(action, item[0], dialog)))
 	box.add_child(KIT.button("Abbrechen", dialog.queue_free))
 	dialog.close_requested.connect(dialog.queue_free)
 	dialog.popup_centered()
@@ -699,24 +692,28 @@ func _slots() -> void:
 				)
 			]
 		)
-	_choice_dialog(
-		"Deine sechs Welten",
-		items,
-		func(id: int):
-			if not save_world(false):
-				return
-			slot = id
-			save_path = "user://lumo_build_" + child_key + "_" + str(slot) + ".json"
-			if not load_world(false):
-				model = STATE.new()
-				goal = "bridge"
-				focus = Vector3(-2, 0, 0)
-				dirty = true
-				_rebuild()
-				_camera_update()
-			status.text = "Welt %d ist geöffnet. Hier kannst du deine eigene Idee bauen." % slot
-			_update_labels()
-	)
+	_choice_dialog("Deine sechs Welten", items, _open_slot)
+
+
+func _choose(action: Callable, id: Variant, dialog: Window) -> void:
+	action.call(id)
+	dialog.queue_free()
+
+
+func _open_slot(id: int) -> void:
+	if not save_world(false):
+		return
+	slot = id
+	save_path = "user://lumo_build_" + child_key + "_" + str(slot) + ".json"
+	if not load_world(false):
+		model = STATE.new()
+		goal = "bridge"
+		focus = Vector3(-2, 0, 0)
+		dirty = true
+		_rebuild()
+		_camera_update()
+	status.text = "Welt %d ist geöffnet. Hier kannst du deine eigene Idee bauen." % slot
+	_update_labels()
 
 
 func _templates() -> void:
@@ -729,12 +726,15 @@ func _templates() -> void:
 			["garden", "Garten"],
 			["empty", "Leere Insel"]
 		],
-		func(id: String):
-			model.template(id)
-			dirty = true
-			_rebuild()
-			status.text = "Vorlage geöffnet. Rückgängig bringt deine vorherige Welt zurück."
+		_select_template
 	)
+
+
+func _select_template(id: String) -> void:
+	model.template(id)
+	dirty = true
+	_rebuild()
+	status.text = "Vorlage geöffnet. Rückgängig bringt deine vorherige Welt zurück."
 
 
 func _goals() -> void:
@@ -746,11 +746,14 @@ func _goals() -> void:
 			["tower", "Turm der Sterne"],
 			["garden", "Ein Garten zum Verweilen"]
 		],
-		func(id: String):
-			goal = id
-			dirty = true
-			_update_labels()
+		_select_goal
 	)
+
+
+func _select_goal(id: String) -> void:
+	goal = id
+	dirty = true
+	_update_labels()
 
 
 func _test_challenge() -> void:

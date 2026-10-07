@@ -3,6 +3,9 @@ on:
   push:
     branches: [chatgpt/lumo-complete-games-2026-10-07]
   workflow_dispatch:
+concurrency:
+  group: lumo-creative-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -24,12 +27,18 @@ jobs:
           git rev-parse HEAD > exports/creative-build/source-sha.txt
           Godot_v4.6.3-stable_linux.x86_64 --headless --editor --import > exports/creative-build/import.log 2>&1
           if rg 'SCRIPT ERROR|Parse Error|Failed to load script' exports/creative-build/import.log; then exit 1; fi
+      - name: Parse all creative game scripts
+        run: |
+          for source in scripts/creative/*.gd scripts/tests/creative_*.gd; do
+            Godot_v4.6.3-stable_linux.x86_64 --headless --check-only --script "$source" >> exports/creative-build/parse.log 2>&1 || exit 1
+          done
+          if rg "SCRIPT ERROR|Parse Error|Failed to load script" exports/creative-build/parse.log; then exit 1; fi
       - name: Actual Bauwelt play and screenshot checks
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: |
           set -o pipefail
-          xvfb-run -a -s '-screen 0 1280x720x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --resolution 1280x720 --script res://scripts/tests/creative_build_capture.gd 2>&1 | tee exports/creative-build/runtime.log
+          timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --resolution 1280x720 --script res://scripts/tests/creative_build_capture.gd 2>&1 | tee exports/creative-build/runtime.log
           if rg 'SCRIPT ERROR|Assertion failed|Parse Error' exports/creative-build/runtime.log; then exit 1; fi
           test -s exports/creative-build/01_bauwelt_house.png
           test -s exports/creative-build/02_bauwelt_bridge_test.png

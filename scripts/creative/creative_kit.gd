@@ -211,11 +211,11 @@ func part_node(item: Dictionary) -> StaticBody3D:
 			shape.size = size * 0.98
 			mesh(body, shape, mid, color, glow, item.shape == "glass")
 			collision(body, mid, size * 0.98)
-	if item.shape in ["wall", "stone", "sand", "arch", "pillar", "stairs"]:
+	if item.id in ["stone", "sand"] or item.shape in ["wall", "arch", "pillar", "stairs"]:
 		for child in body.get_children():
 			if child is MeshInstance3D:
 				child.material_override = textured("stone", color.lightened(0.45))
-	if item.shape in ["wood", "bridge", "bench"]:
+	if item.id == "wood" or item.shape in ["bridge", "bench"]:
 		for child in body.get_children():
 			if child is MeshInstance3D:
 				child.material_override = textured("wood", color.lightened(0.5))
