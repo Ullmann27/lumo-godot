@@ -13,6 +13,7 @@ func _settle() -> void:
 func _tap(control: Control) -> void:
 	assert(control.is_visible_in_tree())
 	assert(root.get_visible_rect().encloses(control.get_global_rect()), "The complete action must be visible before touch")
+	assert(game.safe_ui.get_global_rect().encloses(control.get_global_rect()), "Touch action must stay inside the safe screen area")
 	var position: Vector2 = control.get_global_rect().get_center() * Vector2(root.size) / root.get_visible_rect().size
 	for pressed in [true, false]:
 		var touch := InputEventScreenTouch.new()
@@ -32,6 +33,11 @@ func _run() -> void:
 		await _settle()
 		root.size = pixels
 		await _settle()
+		# Simulate camera/status/navigation insets through the same parent that
+		# handles them on Android; the garage must not apply them a second time.
+		game._apply_safe_area(Rect2(16, 32, 16, 48), Vector2(pixels))
+		game.garage._apply_responsive_layout()
+		await _settle()
 		assert(game.menu_active)
 		var font: Font = game.safe_ui.theme.default_font
 		var coordinates: Dictionary = TextServerManager.get_primary_interface().font_get_variation_coordinates(font.get_rids()[0])
@@ -40,10 +46,10 @@ func _run() -> void:
 		assert(mode_grid.get_child_count() == 5, "Five race modes; the learning cup is gone")
 		if pixels.y >= 440:
 			for mode_button in mode_grid.get_children():
-				assert(root.get_visible_rect().encloses(mode_button.get_global_rect()), "Every mode must be visible")
+				assert(game.garage.choices.get_parent().get_global_rect().encloses(mode_button.get_global_rect()), "Every mode must fit the actual scroll viewport")
 		else:
 			assert(root.get_visible_rect().encloses(game.garage.preview_container.get_global_rect()), "Short landscape keeps the real preview on screen")
-			assert(root.get_visible_rect().encloses(mode_grid.get_child(1).get_global_rect()), "Visible cup choice must be touchable; further modes scroll")
+			assert(game.garage.choices.get_parent().get_global_rect().encloses(mode_grid.get_child(1).get_global_rect()), "Visible cup choice must be touchable; further modes scroll")
 		await _tap(mode_grid.get_child(1))
 		assert(game.garage.setup.mode == "cup")
 		await _settle()

@@ -216,7 +216,7 @@ func _apply_responsive_layout() -> void:
 	for side in ["left", "right", "top", "bottom"]:
 		page_margin.add_theme_constant_override("margin_" + side, roundi(margin * ui_scale))
 	var safe_insets := Rect2()
-	if OS.has_feature("android") or OS.has_feature("ios"):
+	if (OS.has_feature("android") or OS.has_feature("ios")) and not get_parent().get_meta("kart_safe_insets_applied", false):
 		safe_insets = MobileRuntime.get_safe_area_insets()
 		var screen: Vector2i = DisplayServer.screen_get_size()
 		var safe_rect: Rect2i = DisplayServer.get_display_safe_area()
