@@ -13,6 +13,9 @@ import unicodedata
 
 from PIL import Image
 
+# OCR shares the software-rendered emulator host; bound its thread usage.
+os.environ.setdefault('OMP_THREAD_LIMIT', '1')
+
 
 def normalized(text):
     plain = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode()
@@ -37,7 +40,8 @@ def main():
             screenshot.write_bytes(png)
             image = Image.open(io.BytesIO(png)).convert('RGB')
             expanded = out / 'garage-ocr-input.png'
-            image.resize((image.width*2, image.height*2)).save(expanded)
+            contrast = image.convert('L').point(lambda value: 0 if value >= 170 else 255)
+            contrast.resize((image.width*2, image.height*2)).save(expanded)
             raw = subprocess.run(['tesseract', str(expanded), 'stdout', '--psm', '11',
                                   '-l', 'deu+eng', 'tsv'], check=True,
                                  capture_output=True, text=True, timeout=30).stdout
@@ -50,15 +54,18 @@ def main():
             targets = []
             for words in lines.values():
                 words.sort(key=lambda w: int(w['left']))
-                text = ' '.join(w['text'] for w in words)
-                if wanted not in normalized(text):
-                    continue
-                x0 = min(int(w['left']) for w in words)/2
-                y0 = min(int(w['top']) for w in words)/2
-                x1 = max(int(w['left'])+int(w['width']) for w in words)/2
-                y1 = max(int(w['top'])+int(w['height']) for w in words)/2
-                if y0 >= image.height*.6:
-                    targets.append((len(text), text, [x0,y0,x1,y1]))
+                for start in range(len(words)):
+                    for end in range(start+1, min(len(words), start+8)+1):
+                        span = words[start:end]
+                        text = ' '.join(w['text'] for w in span)
+                        if wanted != normalized(text):
+                            continue
+                        x0 = min(int(w['left']) for w in span)/2
+                        y0 = min(int(w['top']) for w in span)/2
+                        x1 = max(int(w['left'])+int(w['width']) for w in span)/2
+                        y1 = max(int(w['top'])+int(w['height']) for w in span)/2
+                        if y0 >= image.height*.6:
+                            targets.append((len(text), text, [x0,y0,x1,y1]))
             if targets:
                 _, text, bounds = min(targets)
                 x0,y0,x1,y1 = bounds
