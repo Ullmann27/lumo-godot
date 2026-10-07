@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "status": "PARTIAL / NOT FINISHED",
+  "reference_repo": "Ullmann27/lumo-lernen",
+  "reference_sha": "90c239898c2f5fe7230dda05cb9e499069162208",
+  "files": [
+    {
+      "filename": "puzzle_board.webp",
+      "purpose": "Binding visual and functional reference; not runtime wallpaper",
+      "destination": "docs/puzzle/2026-10-07/references/puzzle_board.webp",
+      "bytes": 345968,
+      "sha256": "cdd24b96b07dbaa2909704ba06531ceb46fe58fd6f48d2909c080f2b305b49d3",
+      "origin": "lumo-lernen/docs/lumo_game_specs/2026-10-05/04_puzzle/lumo_puzzle_asset_flow_board.webp"
+    },
+    {
+      "filename": "puzzle_key_art.webp",
+      "purpose": "Binding art reference; not runtime wallpaper",
+      "destination": "docs/puzzle/2026-10-07/references/puzzle_key_art.webp",
+      "bytes": 361438,
+      "sha256": "5ec855d118eb77e8f984f641d9c51b1b54081d53d2c2433a3fe8ded7208090da",
+      "origin": "lumo-lernen/docs/lumo_game_specs/2026-10-05/04_puzzle/lumo_puzzle_key_art.webp"
+    },
+    {
+      "filename": "moonlight_castle_source.png",
+      "purpose": "New clean continuous illustration source for 3D jigsaw front faces; not a 3D model",
+      "destination": "docs/puzzle/2026-10-07/raw/moonlight_castle_source.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 3294998,
+      "sha256": "e332489b7f6ea67bc1696caa02f2522abaac2919336b087e0ed1bfc94402f69b",
+      "alpha": "opaque motif by design; piece masks are a later derived asset",
+      "origin": "Built-in image generation during this active session; exact prompt in ASSET_PROMPT.md",
+      "visual_status": "NOT FINISHED; more realistic castle/detail density than approved thumbnail"
+    }
+  ],
+  "blocked_3d_assets": [
+    {
+      "id": "lumo_puzzle_rig",
+      "status": "BLOCKED_3D_ASSET",
+      "requirement": "Orange/white Lumo fox with cyan star scarf and dark backpack, glTF 2.0 embedded materials, Skeleton/Skinned Mesh, idle/blink/look/puzzle_pick/puzzle_place/point/celebrate clips and tail/ears/scarf secondary motion"
+    }
+  ],
+  "open_assets": ["magic_waterfalls motif", "treehouse_village motif", "sunny_bay motif", "wood and glass puzzle material variants", "reference-faithful environment props"]
+}
