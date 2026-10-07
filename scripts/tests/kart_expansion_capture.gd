@@ -16,7 +16,7 @@ func _start(id: String) -> void:
 	game.set_physics_process(false)
 	game.countdown = 0
 	game.racing = true
-	game.loop_state = LOOP.new()
+	assert(not game.loop_state.active and game.loop_count == 0, "New race clears old loop state")
 	await process_frame
 
 
@@ -86,10 +86,16 @@ func _run() -> void:
 			var completed: int = game.loop_count
 			game._drive_player(1.0 / 60, 0, 0)
 			assert(game.loop_state.active, "Right lane enters an actual physical loop")
+			var captured_loop: bool = false
 			for i in range(500):
 				if not game.loop_state.active:
 					break
 				game._drive_player(1.0 / 60, 0, 0)
+				if id == "candy_cloud" and not captured_loop and game.loop_state.progress > 0.48 and "--logic-only" not in OS.get_cmdline_user_args():
+					captured_loop = true
+					game.message.text = "Candy Cloud: im befahrbaren Looping"
+					game._update_camera(1, true)
+					await _capture("track_candy_loop_in_motion")
 			assert(game.loop_count == completed + 1 and not game.loop_state.failed)
 			assert(
 				(

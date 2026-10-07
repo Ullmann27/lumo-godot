@@ -325,7 +325,11 @@ func _answer(choice: int) -> void:
 	if not model.answer(choice, player.position):
 		toast.text = "Schau noch einmal genau hin. Du kannst es wieder versuchen."
 		return
-	_save()
+	if not _save():
+		toast.text = "Dein Fund ist da. Speichern war nicht möglich; bitte erneut speichern."
+		_update()
+		_close_modal()
+		return
 	_update()
 	_close_modal()
 	toast.text = "Gefunden: " + model.inventory[-1] + "! Dein Rucksack wächst."

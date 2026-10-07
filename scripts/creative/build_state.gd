@@ -321,8 +321,13 @@ func template(id: String) -> void:
 			place("roof_round", origin + Vector3i(0, 6, 0))
 		for x in range(-11, -5):
 			for z in [-11, -2]:
+				if z == -2 and x in [-9, -8, -7]:
+					continue
 				place("wall", Vector3i(x, 0, z))
 				place("wall", Vector3i(x, 2, z))
+		place("arch", Vector3i(-9, 0, -2))
+		for z in range(-1, 4):
+			place("path", Vector3i(-8, 0, z))
 		for z in range(-9, -3):
 			for x in [-13, -4]:
 				place("wall", Vector3i(x, 0, z))

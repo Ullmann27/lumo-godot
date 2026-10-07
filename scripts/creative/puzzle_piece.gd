@@ -12,7 +12,7 @@ static func create(model, id: int, picture: Texture2D) -> StaticBody3D:
 	for index in triangles:
 		var p: Vector2 = outline[index]
 		surface.set_normal(Vector3.UP)
-		surface.set_uv((target + p + model.BOARD * 0.5) / model.BOARD)
+		surface.set_uv((target + p + model.board_size() * 0.5) / model.board_size())
 		surface.add_vertex(Vector3(p.x, 0.16, p.y))
 	var picture_mat := StandardMaterial3D.new()
 	picture_mat.albedo_texture = picture

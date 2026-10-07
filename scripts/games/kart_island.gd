@@ -471,6 +471,8 @@ static func _known_mode(requested: String) -> String:
 
 
 func _begin_race() -> void:
+	loop_state = PHYSICAL_LOOP.new()
+	loop_count = 0
 	if is_instance_valid(garage):
 		garage.queue_free()
 	menu_active = false

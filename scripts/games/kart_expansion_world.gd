@@ -50,6 +50,8 @@ static func environment(world) -> void:
 			if world.track_id == "galaxy_ringway":
 				child.environment.fog_enabled = false
 			if world.track_id in ["volcano_night", "galaxy_ringway"]:
+				child.environment.fog_light_color = Color("14214d")
+				child.environment.fog_light_energy = 0.25
 				var night := ShaderMaterial.new()
 				night.shader = preload("res://assets/shaders/kart_night_sky.gdshader")
 				night.set_shader_parameter("zenith", Color("040b24"))
@@ -345,9 +347,18 @@ static func _volcano(world) -> void:
 	)
 	for i in range(7):
 		var angle: float = i * TAU / 7
-		var top: Vector3 = at + Vector3(sin(angle) * 10, 87, cos(angle) * 10)
-		var bottom: Vector3 = at + Vector3(sin(angle) * 60, 4, cos(angle) * 60)
-		world._beam(top, bottom, 2.6, Color("ff792f"), true)
+		var heights := [0.0, 0.15, 0.34, 0.56, 0.77, 0.94, 1.0]
+		var radii := [1.0, 0.93, 0.76, 0.56, 0.35, 0.20, 0.18]
+		var previous := Vector3.ZERO
+		for j in range(heights.size()):
+			# Follow the actual basalt surface; a straight cone line sinks inside ridges.
+			var ridge: float = 1.0 + sin(angle * 7 + 0.4) * 0.065 + sin(angle * 13 + j * 0.7) * 0.028
+			var radius: float = radii[j] * ridge * 68.0 + 2.0
+			var height: float = (heights[j] + (sin(angle * 7) * 0.012 if j > 0 else 0)) * 90.0
+			var point := at + Vector3(sin(angle) * radius, height, cos(angle) * radius)
+			if j > 0:
+				world._beam(previous, point, 1.7 + float(6 - j) * 0.16, Color("ff792f"), true)
+			previous = point
 		world._prop(
 			"ball",
 			at + Vector3(sin(angle) * 15, 105 + i * 4, cos(angle) * 12),

@@ -17,6 +17,8 @@ var safe_ui: Control
 var piece_root: Node3D
 var nodes: Array[StaticBody3D] = []
 var guide: MeshInstance3D
+var board_frame: MeshInstance3D
+var board_base: MeshInstance3D
 var hint_marker: MeshInstance3D
 var info: Label
 var status: Label
@@ -48,8 +50,8 @@ func _ready() -> void:
 	save_path = "user://lumo_puzzle_" + child + ".json"
 	kit.environment(self)
 	kit.box(self, Vector3(0, -0.28, 0), Vector3(22, 0.45, 11), Color("142e53"))
-	kit.box(self, Vector3(0, -0.015, 0), Vector3(10.0, 0.1, 6.4), Color("8ac9e8"), true)
-	kit.box(self, Vector3(0, 0.07, 0), Vector3(9.7, 0.1, 6.1), Color("142942"))
+	board_frame = kit.box(self, Vector3(0, -0.015, 0), Vector3.ONE, Color("8ac9e8"), true)
+	board_base = kit.box(self, Vector3(0, 0.07, 0), Vector3.ONE, Color("142942"))
 	for side in [-1.0, 1.0]:
 		kit.box(self, Vector3(side * 7.3, -0.02, 0), Vector3(4.6, 0.16, 6.8), Color("294369"))
 		kit.castle(self, Vector3(side * 12, -0.5, -8), 0.8)
@@ -64,7 +66,7 @@ func _ready() -> void:
 	add_child(piece_root)
 	guide = MeshInstance3D.new()
 	var plane := PlaneMesh.new()
-	plane.size = STATE.BOARD
+	plane.size = model.board_size()
 	guide.mesh = plane
 	guide.position.y = 0.13
 	guide.visible = false
@@ -203,6 +205,10 @@ func _resume() -> void:
 
 
 func _build_pieces() -> void:
+	var size: Vector2 = model.board_size()
+	board_frame.scale = Vector3(size.x + 0.4, 0.1, size.y + 0.4)
+	board_base.scale = Vector3(size.x + 0.1, 0.1, size.y + 0.1)
+	guide.mesh.size = size
 	for child in piece_root.get_children():
 		piece_root.remove_child(child)
 		child.queue_free()

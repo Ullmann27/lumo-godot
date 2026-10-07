@@ -133,8 +133,8 @@ func _ground() -> void:
 		add_child(plant)
 	for i in range(7):
 		var at := Vector3(-35 + float(i) * 12, -7 + float(i % 3) * 3, -29 - float(i % 2) * 8)
-		var rock := kit.mesh(self, kit.SHAPES.rock(), at, Color("68719d"))
-		rock.scale = Vector3(8, 10, 7)
+		var rock := kit.mesh(self, preload("res://scripts/creative/floating_island.gd").create(), at, Color("68719d"))
+		rock.material_override = kit.textured("stone", Color("7e8dac"))
 		var lawn := kit.cylinder(self, at + Vector3.UP * 4.5, 5.1, 0.35, Color("65a99d"))
 		lawn.material_override = kit.textured("grass", Color("80b8a9"))
 		if i in [1, 3, 5]:
@@ -148,7 +148,6 @@ func _ground() -> void:
 			fall.position = at + Vector3(3.6, -4, 0)
 			fall.scale.y = 3
 			add_child(fall)
-		kit.sphere(self, at + Vector3(6, 2, 1), Vector3(7, 1.4, 3.5), Color("405b89"))
 
 
 func _resize() -> void:

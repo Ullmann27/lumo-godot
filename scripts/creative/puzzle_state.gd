@@ -2,7 +2,6 @@ extends RefCounted
 ## Matching jigsaw pieces, original shared edges and validated per-child snapshots.
 const COUNTS = [12, 24, 48, 96]
 const GRIDS = [Vector2i(4, 3), Vector2i(6, 4), Vector2i(8, 6), Vector2i(12, 8)]
-const BOARD = Vector2(9.6, 6.0)
 var count: int = 12
 var columns: int = 4
 var rows: int = 3
@@ -38,14 +37,20 @@ func setup(total: int, image: int) -> void:
 		)
 
 
+func board_size() -> Vector2:
+	# Keep original artwork square or widescreen, including saved puzzles.
+	return Vector2(6.0, 6.0) if motif == 0 else Vector2(9.6, 5.4)
+
+
 func cell_size() -> Vector2:
-	return BOARD / Vector2(columns, rows)
+	return board_size() / Vector2(columns, rows)
 
 
 func target(id: int) -> Vector2:
 	var cell := cell_size()
+	var board := board_size()
 	return Vector2(
-		(id % columns + 0.5) * cell.x - BOARD.x * 0.5, (id / columns + 0.5) * cell.y - BOARD.y * 0.5
+		(id % columns + 0.5) * cell.x - board.x * 0.5, (id / columns + 0.5) * cell.y - board.y * 0.5
 	)
 
 
@@ -111,7 +116,7 @@ func try_snap(id: int, at: Vector2) -> bool:
 	moves += 1
 	pieces[id].x = at.x
 	pieces[id].z = at.y
-	pieces[id]["tray"] = absf(at.x) > BOARD.x * 0.5 or absf(at.y) > BOARD.y * 0.5
+	pieces[id]["tray"] = absf(at.x) > board_size().x * 0.5 or absf(at.y) > board_size().y * 0.5
 	if at.distance_to(target(id)) > minf(cell_size().x, cell_size().y) * 0.32:
 		return false
 	pieces[id].locked = true
