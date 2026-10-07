@@ -1056,6 +1056,42 @@ static func _star_gate_run(world, distance: float) -> void:
 				basis,
 				true
 			)
+	# Aurora crown: rounded luminous ribs and cloud banks create the layered,
+	# high-altitude depth requested by the gameplay references. Decorative only.
+	var aurora_colors: Array[Color]=[CYAN,CRYSTAL_VIOLET,GOLD,CYAN]
+	for arch_index in range(4):
+		var arch_d: float=distance-12.0+float(arch_index)*8.0
+		var arch_basis: Basis=world.frame(arch_d)
+		var arch_centre: Vector3=world.position_at(arch_d)
+		var arch_color: Color=aurora_colors[arch_index]
+		for segment in range(18):
+			var a: float=PI-float(segment)*PI/18.0
+			var b: float=PI-float(segment+1)*PI/18.0
+			var p: Vector3=(
+				arch_centre
+				+arch_basis.x*cos(a)*7.1
+				+arch_basis.y*(1.25+sin(a)*6.0)
+			)
+			var q: Vector3=(
+				arch_centre
+				+arch_basis.x*cos(b)*7.1
+				+arch_basis.y*(1.25+sin(b)*6.0)
+			)
+			world._beam(p,q,0.10,arch_color,true)
+	# Puffy side clouds sit well beyond the guardrail and never affect driving.
+	for cloud_index in range(12):
+		var cloud_d: float=distance-24.0+float(cloud_index)*4.4
+		var side: float=-1.0 if cloud_index%2==0 else 1.0
+		var cloud_basis: Basis=world.frame(cloud_d)
+		var cloud_at: Vector3=world.position_at(cloud_d,side*(12.5+float(cloud_index%3)*2.2))
+		cloud_at+=cloud_basis.y*(1.4+float(cloud_index%2)*0.7)
+		for puff in range(3):
+			world._prop(
+				"ball",
+				cloud_at+cloud_basis.x*side*(float(puff)-1.0)*1.5+Vector3.UP*sin(float(puff))*0.45,
+				Vector3(2.5+float(puff)*0.35,1.05+float(puff%2)*0.35,1.8+float(puff)*0.25),
+				Color("cbd8ff") if cloud_index%3 else Color("eed8ff")
+			)
 	# A readable entry marker makes the section recognizable at speed.
 	var entry_basis: Basis = world.frame(distance - span * 0.5 - 4.0)
 	var entry_at: Vector3 = world.position_at(distance - span * 0.5 - 4.0, -7.4)
