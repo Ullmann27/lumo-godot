@@ -53,6 +53,22 @@ jobs:
           cat "$RUNNER_TEMP/rival-feedback.log"
           ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/rival-feedback.log"
           grep -F '[KartRivalFeedback] PASS:' "$RUNNER_TEMP/rival-feedback.log"
+      - name: Capture real rival item feedback frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/rival-feedback
+          timeout 220s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . \
+            --rendering-method gl_compatibility \
+            --audio-driver Dummy \
+            --script res://scripts/tests/kart_rival_item_showcase.gd \
+            > "$RUNNER_TEMP/rival-shots.log" 2>&1
+          cat "$RUNNER_TEMP/rival-shots.log"
+          ! grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/rival-shots.log"
+          grep -F '[KartRivalShots] PASS:' "$RUNNER_TEMP/rival-shots.log"
+          test "$(find exports/rival-feedback -maxdepth 1 -name '*.png' | wc -l)" -eq 4
+
       - name: Existing mode regression
         shell: bash
         run: |
@@ -81,7 +97,9 @@ jobs:
           path: |
             ${{ runner.temp }}/import.log
             ${{ runner.temp }}/rival-feedback.log
+            ${{ runner.temp }}/rival-shots.log
             ${{ runner.temp }}/kart-modes.log
             ${{ runner.temp }}/kart-physics.log
+            exports/rival-feedback/*.png
           if-no-files-found: warn
           retention-days: 14
