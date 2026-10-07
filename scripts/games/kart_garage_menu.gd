@@ -303,6 +303,9 @@ func _apply_responsive_layout() -> void:
 	# Short landscape screens retain two columns. Stacking the 3D preview below
 	# the choices previously pushed the footer outside the Android surface.
 	setup_row.columns = 1 if window_size.x < window_size.y else 2
+	setup_row.get_child(1).size_flags_vertical = (
+		Control.SIZE_FILL if small else Control.SIZE_EXPAND_FILL
+	)
 	setup_row.add_theme_constant_override(
 		"h_separation", roundi((14 if compact else 28) * ui_scale)
 	)
@@ -354,10 +357,11 @@ func _apply_responsive_layout() -> void:
 		ui_scale
 	)
 	body_column.add_theme_constant_override(
-		"separation", roundi((6 if short_landscape else 16) * ui_scale)
+		"separation", roundi((6 if short_landscape else (8 if small else 16)) * ui_scale)
 	)
 	_set_physical_font(title_label, 22 if short_landscape else (28 if small else 36), ui_scale)
 	_set_physical_font(steps_label, 12 if short_landscape else 15, ui_scale)
+	_set_physical_font(subtitle, 14 if small else 18, ui_scale)
 	subtitle.visible = not short_landscape
 	detail.visible = not short_landscape and not small
 	preview_caption.visible = not short_landscape and not small
