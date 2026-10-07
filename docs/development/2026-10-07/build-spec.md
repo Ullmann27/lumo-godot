@@ -1,0 +1,5 @@
+# Bauwelt
+
+Reference: lumo_bauwelt_creative_build_board.webp, 2026-10-05. Actual 3D meshes and physics, 32×32 editable grid, river separating banks. Construction pieces retain dimensions/colliders; camera orbit/zoom/tilt/pan, rotating placement, snapping, removal, undo/redo, six save slots, templates and four checkable challenges. Structural support and overlapping volumes are validated before each placement. A bridge test needs a continuous connected deck over the river; a house needs supporting walls, a door and a roof; a tower needs height and a light. No generic building-count rewards. IDs persist with challenges to avoid repeat rewards after reload. Saves belong to supplied childKey (standalone fallback until host adds that field).
+
+No fully rigged GLB exists in the current source. Existing animated Lumo is preserved for race; no new primitive fox replaces the reference character. Bauwelt uses a glowing star as the construction/path indicator while the production character remains VISUAL_GAP.
