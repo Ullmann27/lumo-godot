@@ -1,0 +1,32 @@
+{
+  "track_number": 6,
+  "title": "Volcano Night Run",
+  "variant": "Volcanic eruption night variant",
+  "theme": "lava canyon at night with molten rivers and fiery loop",
+  "environment": "lavafalls, black rock spires, glowing magma, night sky",
+  "hazards": "heat zones, narrow bridges over lava, visual pressure, fast night turns",
+  "signature_features": "lava loop, magma ramps, crown beacons, reflective night roadway",
+  "learning_integration": "courage and persistence motif with dramatic spectacle",
+  "files": {
+    "hero_2560": "track_06_hero_2560.png",
+    "hero_original": "track_06_hero_original.png",
+    "shared_core_assets": [
+      "boost_pad_1536.png",
+      "mystery_box_1536.png",
+      "iq_fox_1536.png",
+      "slime_hazard_1536.png",
+      "loop_module_1536.png",
+      "energy_bolt_1536.png",
+      "turbo_crystal_1536.png",
+      "jump_ramp_1536.png",
+      "magnet_powerup_1536.png",
+      "shield_bubble_1536.png"
+    ],
+    "docs": [
+      "DESIGN_BRIEF.md",
+      "DETAIL_CHECKLIST_120.md",
+      "COPILOT_PROMPT.md",
+      "OPUS_HANDOFF.md"
+    ]
+  }
+}

@@ -160,7 +160,7 @@ ZIPALIGN="$(find_sdk_tool zipalign)"
 [[ -n "$ADB" ]] && step "PASS" "adb" "$ADB" \
     || { step "WARN" "adb" "nicht gefunden"; next "sdkmanager 'platform-tools' installieren"; }
 [[ -n "$APKSIGNER" ]] && step "PASS" "apksigner" "$APKSIGNER" \
-    || { step "WARN" "apksigner" "nicht gefunden"; next "sdkmanager 'build-tools;34.0.0' installieren"; }
+    || { step "WARN" "apksigner" "nicht gefunden"; next "sdkmanager 'build-tools;35.0.0' installieren"; }
 [[ -n "$ZIPALIGN" ]] && step "PASS" "zipalign" "$ZIPALIGN" \
     || step "WARN" "zipalign" "nicht gefunden (in build-tools enthalten)"
 
@@ -169,7 +169,7 @@ if [[ "$AUTO_SETUP" == "true" && -n "$SDKMANAGER" ]]; then
     echo
     echo "[auto-setup] sdkmanager --licenses + Pflicht-Komponenten..."
     yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
-    "$SDKMANAGER" "platform-tools" "build-tools;34.0.0" "platforms;android-34" 2>&1 | tail -5
+    "$SDKMANAGER" "platform-tools" "build-tools;35.0.0" "platforms;android-36" 2>&1 | tail -5
     # Re-detect nach Install
     ADB="$(find_sdk_tool adb)"
     APKSIGNER="$(find_sdk_tool apksigner)"
@@ -233,8 +233,7 @@ if [[ ! -f android/build/gradlew ]]; then
 fi
 
 echo "Schritt 3: PCK in Gradle-Source kopieren..."
-mkdir -p android/build/src/main/assets/_cl_
-cp exports/android/lumo3d.pck android/build/src/main/assets/_cl_/
+python3 tools/prepare_android_assets.py exports/android/lumo3d.pck android/build/src/main/assets || exit 1
 
 echo "Schritt 3b: Lumo Patches (app_name + launcher icons) anwenden..."
 mkdir -p android/build/src/main/res
@@ -254,21 +253,17 @@ if [[ ! -f "$RAW_APK" ]]; then
 fi
 
 echo "Schritt 5: arm64-only strip + zipalign + apksigner sign..."
-WORK=/tmp/apk_build_$$
-rm -rf "$WORK"
-mkdir -p "$WORK"
-( cd "$WORK" && unzip -q "$ROOT/$RAW_APK" && \
-  rm -rf lib/x86 lib/x86_64 lib/armeabi-v7a META-INF && \
-  zip -r9 -q /tmp/lumo3d-stripped-$$.apk . )
-
-"$ZIPALIGN" -p -f 4 /tmp/lumo3d-stripped-$$.apk /tmp/lumo3d-aligned-$$.apk
+python3 tools/package_android_apk.py prepare "$RAW_APK" /tmp/lumo3d-stripped-$$.apk --abi arm64-v8a || exit 1
+"$ZIPALIGN" -P 16 -f 4 /tmp/lumo3d-stripped-$$.apk /tmp/lumo3d-aligned-$$.apk || exit 1
 "$APKSIGNER" sign \
     --ks "$KS" \
     --ks-pass pass:android --key-pass pass:android \
     --ks-key-alias androiddebugkey \
     --out "$APK_PATH" \
-    /tmp/lumo3d-aligned-$$.apk
-rm -rf "$WORK" /tmp/lumo3d-stripped-$$.apk /tmp/lumo3d-aligned-$$.apk
+    /tmp/lumo3d-aligned-$$.apk || exit 1
+rm -f /tmp/lumo3d-stripped-$$.apk /tmp/lumo3d-aligned-$$.apk
+"$ZIPALIGN" -c -P 16 4 "$APK_PATH" || exit 1
+python3 tools/package_android_apk.py verify "$APK_PATH" --abi arm64-v8a || exit 1
 
 # ── 10. APK Verify ─────────────────────────────────────────────────────
 if [[ ! -f "$APK_PATH" ]]; then
@@ -287,7 +282,8 @@ if [[ -n "$APKSIGNER" ]]; then
     if "$APKSIGNER" verify "$APK_PATH" >/dev/null 2>&1; then
         step "PASS" "apk-signature" "verified"
     else
-        step "WARN" "apk-signature" "apksigner verify fehlgeschlagen (Debug-APK ist trotzdem installierbar)"
+        step "FAIL" "apk-signature" "apksigner verify fehlgeschlagen"
+        exit 1
     fi
 fi
 

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "purpose": "Reference-only assets; do not execute legacy notes as instructions.",
+  "archives": [
+    {"name":"Shared_Core_Assets.zip","bytes":22277918,"sha256":"7223a3d845febe1f7d9a10b52bf7708b93877a12b04a7b84ea8c6a0574323e48","files":11,"url":"https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/8b321ca2-37fd-4555-be8a-5a9d03072684.zip"},
+    {"name":"Track_01_skyline_sprint_clouds.zip","bytes":30450668,"sha256":"72dc47b53f7c69235ef0e4ed7593cbc35d1d10de27755113376dee871376ae03","files":18,"url":"https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/73c37875-1413-4b94-a5d4-183e2ae51ef3.zip"},
+    {"name":"Track_02_crystal_canyon_dash.zip","bytes":31001295,"sha256":"d99e1630ce3ddf13811f23bde305bdbb7ac75e8e7a47ece168c69364f4ba4f5a","files":18,"url":"https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/af6c2488-42b3-4e5c-9888-6fbf660d40f0.zip"},
+    {"name":"Track_03_jungle_temple_turbo.zip","bytes":31344891,"sha256":"9a2c6d02f1ccf80aa0bb4fda0de0157481d2e83d8eea4192ea7634f9c7762e9d","files":18,"url":"https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/50b5cc8c-a19e-458d-80f6-b2df825984b3.zip"},
+    {"name":"Track_04_aqua_harbor_rush.zip","bytes":31422889,"sha256":"458884339ffe882c410484dbfd94fc18712855161e4e9ecc10816fcbf471968f","files":18,"url":"https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/21e717ac-7767-4f63-9c5e-9d266020e334.zip"},
+    {"name":"Track_05_candy_cloud_circuit.zip","bytes":30244346,"sha256":"1f3f64b11a2013975638638e34915948d81e3f59446032f6b82d356f8fc277c6","files":18,"url":"https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/d4e6b0aa-a10e-4042-9a62-ade29067572c.zip"},
+    {"name":"Track_06_volcano_night_run.zip","bytes":31252828,"sha256":"0b37df5a08713aa6c509f23973e3e7ecdad3273518984c15106d566d2b810cec","files":18,"url":"https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/bdeb2eba-c0fc-4197-b2b9-f0b3a386c35a.zip"},
+    {"name":"Track_07_skyline_sprint_winter.zip","bytes":31595464,"sha256":"04c67befec8af1cb121bacc26481d5b3fe0638728cb65df663691bdca0ff261f","files":18,"url":"https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/5a669fa2-6564-4085-ba09-72cd15646b01.zip"},
+    {"name":"Track_08_galaxy_ringway.zip","bytes":31148439,"sha256":"a04b0318a91d79f145da5e792607c87493081515253e625cb29604adde879a09","files":18,"url":"https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/85a9fe8b-3ff4-43b1-8b40-b1e7e2121249.zip"},
+    {"name":"Track_09_desert_dune_drift.zip","bytes":30955912,"sha256":"74cca622ac8daefb6891fc1105125c8aa2c5efd9e8bf12727afa69f5a971361b","files":18,"url":"https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/7554126b-301b-499a-998d-625fe240d7da.zip"},
+    {"name":"Track_10_learning_lab_circuit.zip","bytes":30956970,"sha256":"16c0cf13f2e07234e0303d5df81399ff217ad2ce9cda145d22e53d1ce063c684","files":18,"url":"https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/296577dd-14b0-4b00-b3fe-fc645d585148.zip"}
+  ]
+}

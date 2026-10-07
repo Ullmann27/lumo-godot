@@ -1,0 +1,32 @@
+{
+  "track_number": 3,
+  "title": "Jungle Temple Turbo",
+  "variant": "Temple valley adventure variant",
+  "theme": "lush jungle temple world with waterfalls and rope bridges",
+  "environment": "jungle foliage, temple gates, vine-covered ruins, torches, rope bridges",
+  "hazards": "swinging logs, stone rollers, narrow wood bridges, blind jumps",
+  "signature_features": "temple gate focal point, jump ramp, rope bridge traversal, jungle obstacle set",
+  "learning_integration": "exploration and discovery theme with jungle puzzle motifs",
+  "files": {
+    "hero_2560": "track_03_hero_2560.png",
+    "hero_original": "track_03_hero_original.png",
+    "shared_core_assets": [
+      "boost_pad_1536.png",
+      "mystery_box_1536.png",
+      "iq_fox_1536.png",
+      "slime_hazard_1536.png",
+      "loop_module_1536.png",
+      "energy_bolt_1536.png",
+      "turbo_crystal_1536.png",
+      "jump_ramp_1536.png",
+      "magnet_powerup_1536.png",
+      "shield_bubble_1536.png"
+    ],
+    "docs": [
+      "DESIGN_BRIEF.md",
+      "DETAIL_CHECKLIST_120.md",
+      "COPILOT_PROMPT.md",
+      "OPUS_HANDOFF.md"
+    ]
+  }
+}

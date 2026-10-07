@@ -1,0 +1,2162 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "lumo.track.zauberwald.2026-10-06",
+  "track_id": "zauberwald",
+  "display_name": "Zauberwald",
+  "subtitle": "Lichter zwischen den Baumkronen",
+  "units": "metres",
+  "status": "authoring_source",
+  "authorities": {
+    "catalog": "scripts/games/kart_tracks.gd:LumoKartTracks.definition",
+    "world_builder": "scripts/games/kart_world.gd",
+    "curve_builder": "scripts/games/kart_world.gd:LumoRaceWorld._make_curve",
+    "road_builder": "scripts/games/kart_world.gd:LumoRaceWorld._road",
+    "spec": "docs/track_expansion/2026-10-06/TRACK_DEVELOPER_PACK_SPEC.md",
+    "no_parallel_spline": true
+  },
+  "route": {
+    "control_point_ids": [
+      "CP00",
+      "CP01",
+      "CP02",
+      "CP03",
+      "CP04",
+      "CP05",
+      "CP06",
+      "CP07",
+      "CP08",
+      "CP09",
+      "CP10",
+      "CP11"
+    ],
+    "control_point_labels": [
+      "Waldstart",
+      "Kristallpfad",
+      "Pilzbeacon",
+      "Bachbogen",
+      "Wurzelanstieg",
+      "Baumtunnel",
+      "Lichterhain-Zugang",
+      "Pilzhain",
+      "Nordlichtbogen",
+      "Waldspiegelung",
+      "Wurzel-S",
+      "Kristallrücklauf"
+    ],
+    "control_points_xyz_m": [
+      [
+        0.0,
+        1.4,
+        60.0
+      ],
+      [
+        35.0,
+        2.0,
+        48.0
+      ],
+      [
+        64.0,
+        5.0,
+        24.0
+      ],
+      [
+        46.0,
+        8.5,
+        -8.0
+      ],
+      [
+        60.0,
+        6.2,
+        -42.0
+      ],
+      [
+        26.0,
+        2.0,
+        -66.0
+      ],
+      [
+        -10.0,
+        3.5,
+        -55.0
+      ],
+      [
+        -47.0,
+        6.0,
+        -64.0
+      ],
+      [
+        -73.0,
+        8.0,
+        -27.0
+      ],
+      [
+        -44.0,
+        5.2,
+        -3.0
+      ],
+      [
+        -60.0,
+        2.2,
+        27.0
+      ],
+      [
+        -27.0,
+        1.5,
+        53.0
+      ]
+    ],
+    "runtime_horizontal_scale": 1.0,
+    "top_down_centerline": {
+      "coordinate_plane": "X/Z",
+      "closed": true,
+      "sample_interval_m": 0.35,
+      "control_point_smoothing": "current*0.5 + previous*0.25 + next*0.25",
+      "runtime_tangent_scale": 0.22,
+      "runtime_reference": "kart_world.gd:_make_curve; use world.position_at(distance,lateral) for route samples"
+    }
+  },
+  "road": {
+    "width_m": 10.8,
+    "visible_rail_lateral_m": 6.05,
+    "collision_wall_lateral_m": 5.0,
+    "invariant": "The visual rail and collision wall must be measured independently and remain consistent with kart_world.gd."
+  },
+  "geometry_guides": {
+    "road": {
+      "authoring": "Follow existing closed Catmull-Rom/Bézier centerline; 10.8-m full-width ribbon; visible and collision rails share declared lateral offsets."
+    },
+    "ramp": {
+      "authoring": "Place ramp mesh on this pack’s named existing CP interval; authoring geometry and collision proxy remain separate."
+    },
+    "bridge": {
+      "authoring": "Build bridge as centerline-following deck modules, width 13.4 m for the existing Sky bridge convention or source-module width when not a Sky module; keep support mesh and collision proxy separate."
+    },
+    "tunnel": {
+      "authoring": "Use existing centerline tangent and define clear height/width; use a visual vault and separately inspect the simple collision envelope."
+    },
+    "full_loop": {
+      "authoring": "360-degree planar loop centered on existing route anchor; prototype geometry only at 0.875 route fraction.",
+      "status": "planned_requires_inverted_physics",
+      "runtime_enabled": false,
+      "collision_enabled": false,
+      "centerline_radius_m": 12.0,
+      "road_width_m": 10.8,
+      "vertical_rise_m": 24.0,
+      "approach_length_m": 18.0,
+      "surface_segments": 96,
+      "prototype_scene": null,
+      "gate": "Do not place on race Centerline or enable until gravity/up, camera, AI, collision, checkpoint/respawn, and full Player+AI 360-degree run all pass."
+    }
+  },
+  "signature_setpieces": [
+    {
+      "id": "forest_entry_arch",
+      "name": "Türkis-violetter Waldlichtbogen A",
+      "status": "implemented",
+      "anchor_fraction": 0.235,
+      "authority": "kart_world.gd:_forest_glow_arch",
+      "dimensions_m": {
+        "x": 14.2,
+        "y": 14.0,
+        "z": 0.34
+      },
+      "palette_role": "Türkis und Flieder in 8 Beam-Segmenten",
+      "handoff_notes": [
+        "Prüfe Bogenradius 7.1 m und Scheitelhöhe 7.55 m ab Fahrbahn.",
+        "Prüfe acht leuchtende Balken plus zwei 2.2-m-Kristallfüße pro Portal.",
+        "Prüfe Durchfahrt bleibt optisch markiert und fügt keine Kollisionswand hinzu."
+      ]
+    },
+    {
+      "id": "mushroom_beacon_12",
+      "name": "Kristall-/Pilz-Beacon 12%",
+      "status": "implemented",
+      "anchor_fraction": 0.12,
+      "authority": "kart_world.gd:_forest_reference_dressing",
+      "dimensions_m": {
+        "x": 17.2,
+        "y": 5.5,
+        "z": 3.0
+      },
+      "palette_role": "Türkis links, Flieder rechts, drei Low-count-Orbs",
+      "handoff_notes": [
+        "Prüfe Beacon-Paare bei ±8.6 m relativ zum Centerline-Anker.",
+        "Prüfe 1.7-m-Kristallhöhe und 1.05-m-Pilzkappe als Landmarkenmaß.",
+        "Prüfe optionale Orb-Gruppe existiert nur außerhalb des Low-Detail-Profils."
+      ]
+    },
+    {
+      "id": "mushroom_beacon_34",
+      "name": "Kristall-/Pilz-Beacon 34%",
+      "status": "implemented",
+      "anchor_fraction": 0.34,
+      "authority": "kart_world.gd:_forest_reference_dressing",
+      "dimensions_m": {
+        "x": 17.2,
+        "y": 5.5,
+        "z": 3.0
+      },
+      "palette_role": "Türkis links, Flieder rechts",
+      "handoff_notes": [
+        "Prüfe Beacon-Mitte exakt bei 0.34 der vorhandenen Runde.",
+        "Prüfe Pilz steht 1.9 m längs versetzt und kollidiert nicht mit der 10.8-m-Bahn.",
+        "Prüfe Kontrast des violetten Seitenbeacons gegen dunkles Waldblau."
+      ]
+    },
+    {
+      "id": "root_tunnel",
+      "name": "Baumtunnel",
+      "status": "implemented",
+      "anchor_fraction": 0.51,
+      "authority": "kart_world.gd:_tree_tunnel",
+      "dimensions_m": {
+        "x": 21.0,
+        "y": 9.6,
+        "z": 14.0
+      },
+      "palette_role": "Verzweigte Wurzeln und Moosdächer",
+      "handoff_notes": [
+        "Prüfe vier Querrahmen mit 7-m-Längsabstand über den bestehenden Tunnelanker.",
+        "Prüfe höchste Kronenlage 9.6 m über Centerline-Boden.",
+        "Prüfe zwei seitliche Kristallmarker und Pilze bleiben außerhalb der Rails."
+      ]
+    },
+    {
+      "id": "crystal_glade",
+      "name": "Pilzhain",
+      "status": "implemented",
+      "anchor_fraction": 0.72,
+      "authority": "kart_world.gd:_forest_reference_dressing",
+      "dimensions_m": {
+        "x": 22.4,
+        "y": 4.7,
+        "z": 9.0
+      },
+      "palette_role": "Zwei Pilzgrößen, moosiger Kronenring",
+      "handoff_notes": [
+        "Prüfe Hainanker bei 0.72 Runde und ±11.2 m seitlichem Abstand.",
+        "Prüfe Hauptpilzmaß 2.35 m sowie Begleitpilzmaß 1.55 m.",
+        "Prüfe Kronenfläche 3.8×3.2 m bleibt Dekoration außerhalb des Fahrbands."
+      ]
+    },
+    {
+      "id": "lichen_grove",
+      "name": "LICHTERHAIN",
+      "status": "implemented",
+      "anchor_fraction": 0.63,
+      "authority": "kart_world.gd:_arch",
+      "dimensions_m": {
+        "x": 14.0,
+        "y": 7.65,
+        "z": 1.0
+      },
+      "palette_role": "Helles Cyan-Türkis über Waldasphalt",
+      "handoff_notes": [
+        "Prüfe bestehendes Namensschild bleibt exakt LICHTERHAIN.",
+        "Prüfe Querträgerhöhe 6.9 m und seitliche Stützenposition ±6.48 m.",
+        "Prüfe das Setpiece sitzt bei 0.63 Rundenlänge auf der Bestands-Centerline."
+      ]
+    },
+    {
+      "id": "root_bridge",
+      "name": "Wurzelbrücke",
+      "status": "planned",
+      "anchor_fraction": 0.405,
+      "authority": "kart_tracks.gd:CP03–CP05",
+      "dimensions_m": {
+        "x": 26.0,
+        "y": 7.0,
+        "z": 12.0
+      },
+      "palette_role": "Geflochtene Wurzelbögen mit Mooslicht",
+      "handoff_notes": [
+        "Authoring-Start/Ende aus CP03 und CP05 der vorhandenen Zauberwald-Kurve ableiten.",
+        "Brückenbogen erhält 7-m-Mindestfreiraum oberhalb des 10.8-m-Belags.",
+        "Jede tragende Wurzel erhält eigenes ID-/Collision-QA-Element im Pack."
+      ]
+    },
+    {
+      "id": "crystal_cave_route",
+      "name": "Kristallhöhlen-Seitenroute",
+      "status": "planned",
+      "anchor_fraction": 0.69,
+      "authority": "kart_tracks.gd:CP07–CP09",
+      "dimensions_m": {
+        "x": 34.0,
+        "y": 8.0,
+        "z": 10.8
+      },
+      "palette_role": "Fliederkristalle, türkisfarbene Höhlenlippe",
+      "handoff_notes": [
+        "Abzweig an 0.69 der bestehenden Centerline; keine zweite Kurskurve anlegen.",
+        "Seitenspur muss vor dem Checkpoint bei 0.75 wieder auf dieselbe Centerline führen.",
+        "Cave-Geometrie trennt Lichtmesh, Fahrbelag und einfache Collision-Proxy-Maße."
+      ]
+    },
+    {
+      "id": "canopy_ramp",
+      "name": "Baumkronen-Rampe",
+      "status": "planned",
+      "anchor_fraction": 0.78,
+      "authority": "kart_tracks.gd:CP09–CP11",
+      "dimensions_m": {
+        "x": 7.0,
+        "y": 1.8,
+        "z": 10.8
+      },
+      "palette_role": "Lichtblätter markieren den Rampenscheitel",
+      "handoff_notes": [
+        "Rampenkörper erhält 7-m-Länge und 1.8-m-Höhenziel als Authoring-Startwert.",
+        "Landekorridor endet innerhalb der bestehenden 0.875-Checkpoint-Sektion.",
+        "Respawn-QA deckt Rampe und Landefläche getrennt ab; vorerst nicht aktivieren."
+      ]
+    },
+    {
+      "id": "vine_loop",
+      "name": "Vine Loop",
+      "status": "planned_requires_inverted_physics",
+      "anchor_fraction": 0.875,
+      "authority": "authoring guide: 2026-10-06 full_loop geometry",
+      "dimensions_m": {
+        "x": 12.0,
+        "y": 24.0,
+        "z": 10.8
+      },
+      "palette_role": "Violette Ranken auf türkisgrünem Loopdeck",
+      "handoff_notes": [
+        "Authoring-Mittelradius 12 m und Fahrbahnbreite 10.8 m dokumentieren.",
+        "Status bleibt planned_requires_inverted_physics bis 360°-Player-/AI-/Respawn-Vertrag besteht.",
+        "Keine Runtime-Spline, Kollision oder Cup-Verknüpfung vor allen sechs Inversions-Gates."
+      ]
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "CP-01",
+      "route_fraction": 0.0,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-02",
+      "route_fraction": 0.125,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-03",
+      "route_fraction": 0.25,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-04",
+      "route_fraction": 0.375,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-05",
+      "route_fraction": 0.5,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-06",
+      "route_fraction": 0.625,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-07",
+      "route_fraction": 0.75,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-08",
+      "route_fraction": 0.875,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    }
+  ],
+  "ai_racing_line": [
+    {
+      "id": "AI-01",
+      "route_fraction": 0.05,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 44,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-02",
+      "route_fraction": 0.15,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 50,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-03",
+      "route_fraction": 0.25,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 56,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-04",
+      "route_fraction": 0.35,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 48,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-05",
+      "route_fraction": 0.45,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 62,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-06",
+      "route_fraction": 0.55,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 52,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-07",
+      "route_fraction": 0.65,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 60,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-08",
+      "route_fraction": 0.75,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 46,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-09",
+      "route_fraction": 0.85,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 58,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-10",
+      "route_fraction": 0.95,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 54,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    }
+  ],
+  "mystery_prism_zones": [
+    {
+      "id": "MP-01",
+      "name": "Lumo Mystery Prism 1",
+      "route_fraction": 0.18,
+      "lateral_m": -2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-02",
+      "name": "Lumo Mystery Prism 2",
+      "route_fraction": 0.34,
+      "lateral_m": 2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-03",
+      "name": "Lumo Mystery Prism 3",
+      "route_fraction": 0.53,
+      "lateral_m": 0.0,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-04",
+      "name": "Lumo Mystery Prism 4",
+      "route_fraction": 0.69,
+      "lateral_m": -2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-05",
+      "name": "Lumo Mystery Prism 5",
+      "route_fraction": 0.86,
+      "lateral_m": 2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    }
+  ],
+  "fairness": {
+    "basis": "TRACK_DEVELOPER_PACK_SPEC.md; recommended design weights, not a claim of runtime probabilities",
+    "core_items": [
+      "boost",
+      "shield",
+      "pulse"
+    ],
+    "rank_weights": [
+      {
+        "place": "1",
+        "boost": 0.25,
+        "shield": 0.45,
+        "pulse": 0.3
+      },
+      {
+        "place": "2",
+        "boost": 0.32,
+        "shield": 0.4,
+        "pulse": 0.28
+      },
+      {
+        "place": "3-4",
+        "boost": 0.45,
+        "shield": 0.35,
+        "pulse": 0.2
+      },
+      {
+        "place": "5",
+        "boost": 0.6,
+        "shield": 0.25,
+        "pulse": 0.15
+      },
+      {
+        "place": "6",
+        "boost": 0.7,
+        "shield": 0.2,
+        "pulse": 0.1
+      }
+    ],
+    "rule": "Catch-up only through item weights; no teleportation or hidden top-speed advantage."
+  },
+  "palette": [
+    "Waldasphalt #374b5c",
+    "Türkislaub #428978",
+    "Lilabeacon #b9a1ed",
+    "Kristallcyan #79e1de",
+    "Nachtnebel #90b9c3"
+  ],
+  "details": [
+    {
+      "id": "ZAUBERWALD-001",
+      "kind": "control_point",
+      "title": "CP00 — Waldstart — Control-Point-Koordinate",
+      "anchor": "CP00",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=0 m, y=1.4 m, z=60 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "ZAUBERWALD-002",
+      "kind": "control_point",
+      "title": "CP01 — Kristallpfad — Control-Point-Koordinate",
+      "anchor": "CP01",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=35 m, y=2 m, z=48 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "ZAUBERWALD-003",
+      "kind": "control_point",
+      "title": "CP02 — Pilzbeacon — Control-Point-Koordinate",
+      "anchor": "CP02",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=64 m, y=5 m, z=24 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "ZAUBERWALD-004",
+      "kind": "control_point",
+      "title": "CP03 — Bachbogen — Control-Point-Koordinate",
+      "anchor": "CP03",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=46 m, y=8.5 m, z=-8 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "ZAUBERWALD-005",
+      "kind": "control_point",
+      "title": "CP04 — Wurzelanstieg — Control-Point-Koordinate",
+      "anchor": "CP04",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=60 m, y=6.2 m, z=-42 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "ZAUBERWALD-006",
+      "kind": "control_point",
+      "title": "CP05 — Baumtunnel — Control-Point-Koordinate",
+      "anchor": "CP05",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=26 m, y=2 m, z=-66 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "ZAUBERWALD-007",
+      "kind": "control_point",
+      "title": "CP06 — Lichterhain-Zugang — Control-Point-Koordinate",
+      "anchor": "CP06",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-10 m, y=3.5 m, z=-55 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "ZAUBERWALD-008",
+      "kind": "control_point",
+      "title": "CP07 — Pilzhain — Control-Point-Koordinate",
+      "anchor": "CP07",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-47 m, y=6 m, z=-64 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "ZAUBERWALD-009",
+      "kind": "control_point",
+      "title": "CP08 — Nordlichtbogen — Control-Point-Koordinate",
+      "anchor": "CP08",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-73 m, y=8 m, z=-27 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "ZAUBERWALD-010",
+      "kind": "control_point",
+      "title": "CP09 — Waldspiegelung — Control-Point-Koordinate",
+      "anchor": "CP09",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-44 m, y=5.2 m, z=-3 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "ZAUBERWALD-011",
+      "kind": "control_point",
+      "title": "CP10 — Wurzel-S — Control-Point-Koordinate",
+      "anchor": "CP10",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-60 m, y=2.2 m, z=27 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "ZAUBERWALD-012",
+      "kind": "control_point",
+      "title": "CP11 — Kristallrücklauf — Control-Point-Koordinate",
+      "anchor": "CP11",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-27 m, y=1.5 m, z=53 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "ZAUBERWALD-013",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP00 → CP01 — Breite und Übergang",
+      "anchor": "CP00→CP01",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Waldstart und Kristallpfad; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "ZAUBERWALD-014",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP01 → CP02 — Breite und Übergang",
+      "anchor": "CP01→CP02",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Kristallpfad und Pilzbeacon; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "ZAUBERWALD-015",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP02 → CP03 — Breite und Übergang",
+      "anchor": "CP02→CP03",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Pilzbeacon und Bachbogen; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "ZAUBERWALD-016",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP03 → CP04 — Breite und Übergang",
+      "anchor": "CP03→CP04",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Bachbogen und Wurzelanstieg; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "ZAUBERWALD-017",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP04 → CP05 — Breite und Übergang",
+      "anchor": "CP04→CP05",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Wurzelanstieg und Baumtunnel; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "ZAUBERWALD-018",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP05 → CP06 — Breite und Übergang",
+      "anchor": "CP05→CP06",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Baumtunnel und Lichterhain-Zugang; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "ZAUBERWALD-019",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP06 → CP07 — Breite und Übergang",
+      "anchor": "CP06→CP07",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Lichterhain-Zugang und Pilzhain; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "ZAUBERWALD-020",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP07 → CP08 — Breite und Übergang",
+      "anchor": "CP07→CP08",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Pilzhain und Nordlichtbogen; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "ZAUBERWALD-021",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP08 → CP09 — Breite und Übergang",
+      "anchor": "CP08→CP09",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Nordlichtbogen und Waldspiegelung; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "ZAUBERWALD-022",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP09 → CP10 — Breite und Übergang",
+      "anchor": "CP09→CP10",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Waldspiegelung und Wurzel-S; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "ZAUBERWALD-023",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP10 → CP11 — Breite und Übergang",
+      "anchor": "CP10→CP11",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Wurzel-S und Kristallrücklauf; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "ZAUBERWALD-024",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP11 → CP00 — Breite und Übergang",
+      "anchor": "CP11→CP00",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Kristallrücklauf und Waldstart; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "ZAUBERWALD-025",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 1 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.000 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.000×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "ZAUBERWALD-026",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 2 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.125 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.125×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "ZAUBERWALD-027",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 3 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.250 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.250×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "ZAUBERWALD-028",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 4 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.375 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.375×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "ZAUBERWALD-029",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 5 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.500 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.500×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "ZAUBERWALD-030",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 6 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.625 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.625×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "ZAUBERWALD-031",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 7 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.750 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.750×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "ZAUBERWALD-032",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 8 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.875 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.875×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "ZAUBERWALD-033",
+      "kind": "signature_setpiece",
+      "title": "Türkis-violetter Waldlichtbogen A — Abnahmepunkt 1",
+      "anchor": "0.235 track fraction / forest_entry_arch",
+      "verification": "Prüfe Bogenradius 7.1 m und Scheitelhöhe 7.55 m ab Fahrbahn.",
+      "authority": "kart_world.gd:_forest_glow_arch"
+    },
+    {
+      "id": "ZAUBERWALD-034",
+      "kind": "signature_setpiece",
+      "title": "Türkis-violetter Waldlichtbogen A — Abnahmepunkt 2",
+      "anchor": "0.235 track fraction / forest_entry_arch",
+      "verification": "Prüfe acht leuchtende Balken plus zwei 2.2-m-Kristallfüße pro Portal.",
+      "authority": "kart_world.gd:_forest_glow_arch"
+    },
+    {
+      "id": "ZAUBERWALD-035",
+      "kind": "signature_setpiece",
+      "title": "Türkis-violetter Waldlichtbogen A — Abnahmepunkt 3",
+      "anchor": "0.235 track fraction / forest_entry_arch",
+      "verification": "Prüfe Durchfahrt bleibt optisch markiert und fügt keine Kollisionswand hinzu.",
+      "authority": "kart_world.gd:_forest_glow_arch"
+    },
+    {
+      "id": "ZAUBERWALD-036",
+      "kind": "signature_setpiece",
+      "title": "Kristall-/Pilz-Beacon 12% — Abnahmepunkt 1",
+      "anchor": "0.120 track fraction / mushroom_beacon_12",
+      "verification": "Prüfe Beacon-Paare bei ±8.6 m relativ zum Centerline-Anker.",
+      "authority": "kart_world.gd:_forest_reference_dressing"
+    },
+    {
+      "id": "ZAUBERWALD-037",
+      "kind": "signature_setpiece",
+      "title": "Kristall-/Pilz-Beacon 12% — Abnahmepunkt 2",
+      "anchor": "0.120 track fraction / mushroom_beacon_12",
+      "verification": "Prüfe 1.7-m-Kristallhöhe und 1.05-m-Pilzkappe als Landmarkenmaß.",
+      "authority": "kart_world.gd:_forest_reference_dressing"
+    },
+    {
+      "id": "ZAUBERWALD-038",
+      "kind": "signature_setpiece",
+      "title": "Kristall-/Pilz-Beacon 12% — Abnahmepunkt 3",
+      "anchor": "0.120 track fraction / mushroom_beacon_12",
+      "verification": "Prüfe optionale Orb-Gruppe existiert nur außerhalb des Low-Detail-Profils.",
+      "authority": "kart_world.gd:_forest_reference_dressing"
+    },
+    {
+      "id": "ZAUBERWALD-039",
+      "kind": "signature_setpiece",
+      "title": "Kristall-/Pilz-Beacon 34% — Abnahmepunkt 1",
+      "anchor": "0.340 track fraction / mushroom_beacon_34",
+      "verification": "Prüfe Beacon-Mitte exakt bei 0.34 der vorhandenen Runde.",
+      "authority": "kart_world.gd:_forest_reference_dressing"
+    },
+    {
+      "id": "ZAUBERWALD-040",
+      "kind": "signature_setpiece",
+      "title": "Kristall-/Pilz-Beacon 34% — Abnahmepunkt 2",
+      "anchor": "0.340 track fraction / mushroom_beacon_34",
+      "verification": "Prüfe Pilz steht 1.9 m längs versetzt und kollidiert nicht mit der 10.8-m-Bahn.",
+      "authority": "kart_world.gd:_forest_reference_dressing"
+    },
+    {
+      "id": "ZAUBERWALD-041",
+      "kind": "signature_setpiece",
+      "title": "Kristall-/Pilz-Beacon 34% — Abnahmepunkt 3",
+      "anchor": "0.340 track fraction / mushroom_beacon_34",
+      "verification": "Prüfe Kontrast des violetten Seitenbeacons gegen dunkles Waldblau.",
+      "authority": "kart_world.gd:_forest_reference_dressing"
+    },
+    {
+      "id": "ZAUBERWALD-042",
+      "kind": "signature_setpiece",
+      "title": "Baumtunnel — Abnahmepunkt 1",
+      "anchor": "0.510 track fraction / root_tunnel",
+      "verification": "Prüfe vier Querrahmen mit 7-m-Längsabstand über den bestehenden Tunnelanker.",
+      "authority": "kart_world.gd:_tree_tunnel"
+    },
+    {
+      "id": "ZAUBERWALD-043",
+      "kind": "signature_setpiece",
+      "title": "Baumtunnel — Abnahmepunkt 2",
+      "anchor": "0.510 track fraction / root_tunnel",
+      "verification": "Prüfe höchste Kronenlage 9.6 m über Centerline-Boden.",
+      "authority": "kart_world.gd:_tree_tunnel"
+    },
+    {
+      "id": "ZAUBERWALD-044",
+      "kind": "signature_setpiece",
+      "title": "Baumtunnel — Abnahmepunkt 3",
+      "anchor": "0.510 track fraction / root_tunnel",
+      "verification": "Prüfe zwei seitliche Kristallmarker und Pilze bleiben außerhalb der Rails.",
+      "authority": "kart_world.gd:_tree_tunnel"
+    },
+    {
+      "id": "ZAUBERWALD-045",
+      "kind": "signature_setpiece",
+      "title": "Pilzhain — Abnahmepunkt 1",
+      "anchor": "0.720 track fraction / crystal_glade",
+      "verification": "Prüfe Hainanker bei 0.72 Runde und ±11.2 m seitlichem Abstand.",
+      "authority": "kart_world.gd:_forest_reference_dressing"
+    },
+    {
+      "id": "ZAUBERWALD-046",
+      "kind": "signature_setpiece",
+      "title": "Pilzhain — Abnahmepunkt 2",
+      "anchor": "0.720 track fraction / crystal_glade",
+      "verification": "Prüfe Hauptpilzmaß 2.35 m sowie Begleitpilzmaß 1.55 m.",
+      "authority": "kart_world.gd:_forest_reference_dressing"
+    },
+    {
+      "id": "ZAUBERWALD-047",
+      "kind": "signature_setpiece",
+      "title": "Pilzhain — Abnahmepunkt 3",
+      "anchor": "0.720 track fraction / crystal_glade",
+      "verification": "Prüfe Kronenfläche 3.8×3.2 m bleibt Dekoration außerhalb des Fahrbands.",
+      "authority": "kart_world.gd:_forest_reference_dressing"
+    },
+    {
+      "id": "ZAUBERWALD-048",
+      "kind": "signature_setpiece",
+      "title": "LICHTERHAIN — Abnahmepunkt 1",
+      "anchor": "0.630 track fraction / lichen_grove",
+      "verification": "Prüfe bestehendes Namensschild bleibt exakt LICHTERHAIN.",
+      "authority": "kart_world.gd:_arch"
+    },
+    {
+      "id": "ZAUBERWALD-049",
+      "kind": "signature_setpiece",
+      "title": "LICHTERHAIN — Abnahmepunkt 2",
+      "anchor": "0.630 track fraction / lichen_grove",
+      "verification": "Prüfe Querträgerhöhe 6.9 m und seitliche Stützenposition ±6.48 m.",
+      "authority": "kart_world.gd:_arch"
+    },
+    {
+      "id": "ZAUBERWALD-050",
+      "kind": "signature_setpiece",
+      "title": "LICHTERHAIN — Abnahmepunkt 3",
+      "anchor": "0.630 track fraction / lichen_grove",
+      "verification": "Prüfe das Setpiece sitzt bei 0.63 Rundenlänge auf der Bestands-Centerline.",
+      "authority": "kart_world.gd:_arch"
+    },
+    {
+      "id": "ZAUBERWALD-051",
+      "kind": "signature_setpiece",
+      "title": "Wurzelbrücke — Abnahmepunkt 1",
+      "anchor": "0.405 track fraction / root_bridge",
+      "verification": "Authoring-Start/Ende aus CP03 und CP05 der vorhandenen Zauberwald-Kurve ableiten.",
+      "authority": "kart_tracks.gd:CP03–CP05"
+    },
+    {
+      "id": "ZAUBERWALD-052",
+      "kind": "signature_setpiece",
+      "title": "Wurzelbrücke — Abnahmepunkt 2",
+      "anchor": "0.405 track fraction / root_bridge",
+      "verification": "Brückenbogen erhält 7-m-Mindestfreiraum oberhalb des 10.8-m-Belags.",
+      "authority": "kart_tracks.gd:CP03–CP05"
+    },
+    {
+      "id": "ZAUBERWALD-053",
+      "kind": "signature_setpiece",
+      "title": "Wurzelbrücke — Abnahmepunkt 3",
+      "anchor": "0.405 track fraction / root_bridge",
+      "verification": "Jede tragende Wurzel erhält eigenes ID-/Collision-QA-Element im Pack.",
+      "authority": "kart_tracks.gd:CP03–CP05"
+    },
+    {
+      "id": "ZAUBERWALD-054",
+      "kind": "signature_setpiece",
+      "title": "Kristallhöhlen-Seitenroute — Abnahmepunkt 1",
+      "anchor": "0.690 track fraction / crystal_cave_route",
+      "verification": "Abzweig an 0.69 der bestehenden Centerline; keine zweite Kurskurve anlegen.",
+      "authority": "kart_tracks.gd:CP07–CP09"
+    },
+    {
+      "id": "ZAUBERWALD-055",
+      "kind": "signature_setpiece",
+      "title": "Kristallhöhlen-Seitenroute — Abnahmepunkt 2",
+      "anchor": "0.690 track fraction / crystal_cave_route",
+      "verification": "Seitenspur muss vor dem Checkpoint bei 0.75 wieder auf dieselbe Centerline führen.",
+      "authority": "kart_tracks.gd:CP07–CP09"
+    },
+    {
+      "id": "ZAUBERWALD-056",
+      "kind": "signature_setpiece",
+      "title": "Kristallhöhlen-Seitenroute — Abnahmepunkt 3",
+      "anchor": "0.690 track fraction / crystal_cave_route",
+      "verification": "Cave-Geometrie trennt Lichtmesh, Fahrbelag und einfache Collision-Proxy-Maße.",
+      "authority": "kart_tracks.gd:CP07–CP09"
+    },
+    {
+      "id": "ZAUBERWALD-057",
+      "kind": "signature_setpiece",
+      "title": "Baumkronen-Rampe — Abnahmepunkt 1",
+      "anchor": "0.780 track fraction / canopy_ramp",
+      "verification": "Rampenkörper erhält 7-m-Länge und 1.8-m-Höhenziel als Authoring-Startwert.",
+      "authority": "kart_tracks.gd:CP09–CP11"
+    },
+    {
+      "id": "ZAUBERWALD-058",
+      "kind": "signature_setpiece",
+      "title": "Baumkronen-Rampe — Abnahmepunkt 2",
+      "anchor": "0.780 track fraction / canopy_ramp",
+      "verification": "Landekorridor endet innerhalb der bestehenden 0.875-Checkpoint-Sektion.",
+      "authority": "kart_tracks.gd:CP09–CP11"
+    },
+    {
+      "id": "ZAUBERWALD-059",
+      "kind": "signature_setpiece",
+      "title": "Baumkronen-Rampe — Abnahmepunkt 3",
+      "anchor": "0.780 track fraction / canopy_ramp",
+      "verification": "Respawn-QA deckt Rampe und Landefläche getrennt ab; vorerst nicht aktivieren.",
+      "authority": "kart_tracks.gd:CP09–CP11"
+    },
+    {
+      "id": "ZAUBERWALD-060",
+      "kind": "signature_setpiece",
+      "title": "Vine Loop — Abnahmepunkt 1",
+      "anchor": "0.875 track fraction / vine_loop",
+      "verification": "Authoring-Mittelradius 12 m und Fahrbahnbreite 10.8 m dokumentieren.",
+      "authority": "authoring guide: 2026-10-06 full_loop geometry"
+    },
+    {
+      "id": "ZAUBERWALD-061",
+      "kind": "signature_setpiece",
+      "title": "Vine Loop — Abnahmepunkt 2",
+      "anchor": "0.875 track fraction / vine_loop",
+      "verification": "Status bleibt planned_requires_inverted_physics bis 360°-Player-/AI-/Respawn-Vertrag besteht.",
+      "authority": "authoring guide: 2026-10-06 full_loop geometry"
+    },
+    {
+      "id": "ZAUBERWALD-062",
+      "kind": "signature_setpiece",
+      "title": "Vine Loop — Abnahmepunkt 3",
+      "anchor": "0.875 track fraction / vine_loop",
+      "verification": "Keine Runtime-Spline, Kollision oder Cup-Verknüpfung vor allen sechs Inversions-Gates.",
+      "authority": "authoring guide: 2026-10-06 full_loop geometry"
+    },
+    {
+      "id": "ZAUBERWALD-063",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 1 — Position und Fangradius",
+      "anchor": "0.18 track fraction, lateral -2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.18×track_length und Spur -2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "ZAUBERWALD-064",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 1 — Core-Item-Vertrag",
+      "anchor": "MP-01",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "ZAUBERWALD-065",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 2 — Position und Fangradius",
+      "anchor": "0.34 track fraction, lateral +2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.34×track_length und Spur +2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "ZAUBERWALD-066",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 2 — Core-Item-Vertrag",
+      "anchor": "MP-02",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "ZAUBERWALD-067",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 3 — Position und Fangradius",
+      "anchor": "0.53 track fraction, lateral +0.0 m",
+      "verification": "Prüfe Runtime-Zone bei 0.53×track_length und Spur +0.0 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "ZAUBERWALD-068",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 3 — Core-Item-Vertrag",
+      "anchor": "MP-03",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "ZAUBERWALD-069",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 4 — Position und Fangradius",
+      "anchor": "0.69 track fraction, lateral -2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.69×track_length und Spur -2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "ZAUBERWALD-070",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 4 — Core-Item-Vertrag",
+      "anchor": "MP-04",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "ZAUBERWALD-071",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 5 — Position und Fangradius",
+      "anchor": "0.86 track fraction, lateral +2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.86×track_length und Spur +2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "ZAUBERWALD-072",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 5 — Core-Item-Vertrag",
+      "anchor": "MP-05",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "ZAUBERWALD-073",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 1 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.050 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.050, Zieltempo 44 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "ZAUBERWALD-074",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 2 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.150 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.150, Zieltempo 50 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "ZAUBERWALD-075",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 3 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.250 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.250, Zieltempo 56 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "ZAUBERWALD-076",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 4 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.350 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.350, Zieltempo 48 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "ZAUBERWALD-077",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 5 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.450 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.450, Zieltempo 62 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "ZAUBERWALD-078",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 6 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.550 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.550, Zieltempo 52 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "ZAUBERWALD-079",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 7 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.650 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.650, Zieltempo 60 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "ZAUBERWALD-080",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 8 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.750 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.750, Zieltempo 46 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "ZAUBERWALD-081",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 9 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.850 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.850, Zieltempo 58 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "ZAUBERWALD-082",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 10 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.950 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.950, Zieltempo 54 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "ZAUBERWALD-083",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Rail/Visual",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe sichtbare Rail bei ±6.05 m und Collision-Wall-Zentrum bei ±5.00 m; dokumentiere beide Maße getrennt.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "ZAUBERWALD-084",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Road width",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe 10.8-m-Fahrbahn einschließlich Randlinie; freie Fahrspur darf nicht durch Deko verengt werden.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "ZAUBERWALD-085",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Checkpoint seam",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Trigger an Achtelgrenze und Loop-Seam ohne Doppelauslösung bei modulo track_length.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "ZAUBERWALD-086",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Item pickup",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Lumo Mystery Prism Reichweite <2.0 m und pro-Lap-ID auf Mehrfachauslösung.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "ZAUBERWALD-087",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Deko separation",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Setpiece-Deko gegen Rail-Abstand; nur ausdrücklich authorisierte Straßenmodule erhalten Collision.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "ZAUBERWALD-088",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Ramp landing",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Rampenanfang, Absprung und Landekorridor separat gegen Gap- und Reset-Puffer.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "ZAUBERWALD-089",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Loop gate",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Loop bleibt ohne Collision solange Upside-down Player, AI und Respawn nicht bestanden sind.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "ZAUBERWALD-090",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Low-detail parity",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe, dass Collision-/Checkpoint-/Item-Geometrie im Low-Detail-Profil identisch zur High-Stufe bleibt.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "ZAUBERWALD-091",
+      "kind": "visual_material",
+      "title": "Visual-QA — Asphalt",
+      "anchor": "Zauberwald materials",
+      "verification": "Asphalt-Shader erhält den Track-Farbton und zeigt Centerline-Markierungen ohne Transparenzoverdraw.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "ZAUBERWALD-092",
+      "kind": "visual_material",
+      "title": "Visual-QA — Curb",
+      "anchor": "Zauberwald materials",
+      "verification": "Curb-Segmente bleiben 0.48 m breit und alternieren als gut lesbares Rot/Weiß am Sonnenhafen.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "ZAUBERWALD-093",
+      "kind": "visual_material",
+      "title": "Visual-QA — Normal",
+      "anchor": "Zauberwald materials",
+      "verification": "Berechne Terrain-Normalen nach Vertexfarben; prüfe Seitenflächen auf konsistente Beleuchtung.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "ZAUBERWALD-094",
+      "kind": "visual_material",
+      "title": "Visual-QA — Glow",
+      "anchor": "Zauberwald materials",
+      "verification": "Leuchtmaterialien sind auf Landmark-Akzente begrenzt und überstrahlen weder Rails noch Item-Silhouette.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "ZAUBERWALD-095",
+      "kind": "visual_material",
+      "title": "Visual-QA — Fog",
+      "anchor": "Zauberwald materials",
+      "verification": "Prüfe Hintergrundkontrast am Horizont; Rennbahn und Checkpoint-Fahnen bleiben im Nebel lesbar.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "ZAUBERWALD-096",
+      "kind": "visual_material",
+      "title": "Visual-QA — Camera scale",
+      "anchor": "Zauberwald materials",
+      "verification": "Prüfe Setpiece-Silhouette aus Fahrer-Chase-Kamera und aus 55° Orbit-View.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "ZAUBERWALD-097",
+      "kind": "visual_material",
+      "title": "Visual-QA — Water/material",
+      "anchor": "Zauberwald materials",
+      "verification": "Wasserfall-/Wasserflächen bleiben separate Materialien mit Schatten aus, falls sie transparent sind.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "ZAUBERWALD-098",
+      "kind": "visual_material",
+      "title": "Visual-QA — Texture policy",
+      "anchor": "Zauberwald materials",
+      "verification": "Pack-Geometrie nutzt vorhandene Materialien/Atlanten; keine neuen externen Bilder ohne Attribution.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "ZAUBERWALD-099",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Crowds",
+      "anchor": "Zauberwald",
+      "verification": "Crowd-/wiederholte Tribünenpunkte müssen über vorhandene Instance-Batches zusammengefasst sein.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "ZAUBERWALD-100",
+      "kind": "performance_qa",
+      "title": "Performance-QA — LOD0",
+      "anchor": "Zauberwald",
+      "verification": "LOD0 enthält Landmark-Silhouette und Streckenführung, nicht hunderte kleinteilige Schattenobjekte.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "ZAUBERWALD-101",
+      "kind": "performance_qa",
+      "title": "Performance-QA — LOD1",
+      "anchor": "Zauberwald",
+      "verification": "Low-Detail reduziert reine Dekoration; Centerline, Fahrbahn, Rail und Item-Zonen bleiben unverändert.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "ZAUBERWALD-102",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Shadows",
+      "anchor": "Zauberwald",
+      "verification": "Hintergrundberge, transparente Wasserfälle und UI-nahe Prisms schalten unnötige Schatten ab.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "ZAUBERWALD-103",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Materials",
+      "anchor": "Zauberwald",
+      "verification": "Wiederholte Streckenteile referenzieren gemeinsame Materialinstanzen oder Atlas-Materialien.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "ZAUBERWALD-104",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Transparent",
+      "anchor": "Zauberwald",
+      "verification": "Transparente/ additive VFX sind auf ausgewiesene Wasser-, Glow- und Prismflächen begrenzt.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "ZAUBERWALD-105",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Collision budget",
+      "anchor": "Zauberwald",
+      "verification": "Kollision verwendet einfache Rails/Trigger/Proxies; Deko-Vertices werden nicht als Mesh-Collider missbraucht.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "ZAUBERWALD-106",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Frame target",
+      "anchor": "Zauberwald",
+      "verification": "60-FPS bleibt Zielbudget, aber kein Gerät-PASS ohne physische Messung.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "ZAUBERWALD-107",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — road",
+      "anchor": "Zauberwald",
+      "verification": "Die Straßenführung folgt ausschließlich kart_tracks.gd und kart_world.gd; Belagsbreite beträgt 10.8 m.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "ZAUBERWALD-108",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — ramp",
+      "anchor": "Zauberwald",
+      "verification": "Rampen werden als eigenes authoring mesh plus getrennte Collision-/Landing-Prüfung dokumentiert.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "ZAUBERWALD-109",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — bridge",
+      "anchor": "Zauberwald",
+      "verification": "Brücken verwenden die bestehende Centerline als Achse; Stützen liegen außerhalb des freien 10.8-m-Korridors.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "ZAUBERWALD-110",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — tunnel",
+      "anchor": "Zauberwald",
+      "verification": "Tunnel definieren lichte Höhe/Breite, Randkollision und Kamera-Freiraum getrennt vom Deko-Vault.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "ZAUBERWALD-111",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — full_loop",
+      "anchor": "Zauberwald",
+      "verification": "Loop ist ein 360°-Authoringmodul; aktivierbarer Runtime-Track bleibt bis Inversionsvertrag gesperrt.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "ZAUBERWALD-112",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — centerline",
+      "anchor": "Zauberwald",
+      "verification": "Top-down-Mapping speichert Control Points in Metern und verweist auf vorhandene Runtime-Samplingregeln.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "ZAUBERWALD-113",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — engine_audio",
+      "anchor": "Zauberwald",
+      "verification": "Prüfe Motor-/Fahrbahn-Ambience über alle acht Sektoren ohne Lernfrage oder Antworttimer.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "ZAUBERWALD-114",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — setpiece_audio",
+      "anchor": "Zauberwald",
+      "verification": "Signature-Audio cue beginnt am Setpiece-Anker und endet vor dem Folge-Checkpoint.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "ZAUBERWALD-115",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — item_audio",
+      "anchor": "Zauberwald",
+      "verification": "Pickup-Sound signalisiert ein erworbenes Prism; Item-ID bleibt boost/shield/pulse.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "ZAUBERWALD-116",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — landing_vfx",
+      "anchor": "Zauberwald",
+      "verification": "Sprung-Landeeffekt sitzt am bestehenden Gap-Landing; kein VFX verändert Kollisionshöhe.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "ZAUBERWALD-117",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — dust_vfx",
+      "anchor": "Zauberwald",
+      "verification": "Staub/Partikel bleiben in der Fahrbahnzone und verdecken keine Pfeile oder Mystery Prisms.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "ZAUBERWALD-118",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — glow_vfx",
+      "anchor": "Zauberwald",
+      "verification": "Emissionspulse bleibt zeitlich begrenzt, ohne Screen-Space-Shader-Abhängigkeit für Mobile.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "ZAUBERWALD-119",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — camera_shake",
+      "anchor": "Zauberwald",
+      "verification": "Kamerareaktion bleibt klein und deterministisch an realen Kontakt/Jump gebunden.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "ZAUBERWALD-120",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — audio_mix",
+      "anchor": "Zauberwald",
+      "verification": "Wasserfall/Stadt/Wald-Ambience ist leiser als Item-, Rail- und Checkpoint-Feedback.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    }
+  ],
+  "views": [
+    {
+      "id": "ZAUBERWALD-ORBIT-A000-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A000-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A000-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A000-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A045-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A045-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A045-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A045-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A090-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A090-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A090-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A090-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A135-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A135-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A135-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A135-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A180-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A180-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A180-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A180-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A225-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A225-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A225-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A225-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A270-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A270-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A270-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A270-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A315-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A315-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A315-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORBIT-A315-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Zauberwald horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "ZAUBERWALD-ORTHO-TOP",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "orthographic_size_m": 220
+      },
+      "acceptance": "Vollständige Zauberwald-Route inklusive aller 12 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "ZAUBERWALD-ORTHO-FRONT",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "front",
+        "orthographic_size_m": 90
+      },
+      "acceptance": "Vollständige Zauberwald-Route inklusive aller 12 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "ZAUBERWALD-ORTHO-LEFT",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "left",
+        "orthographic_size_m": 90
+      },
+      "acceptance": "Vollständige Zauberwald-Route inklusive aller 12 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "ZAUBERWALD-ORTHO-RIGHT",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "right",
+        "orthographic_size_m": 90
+      },
+      "acceptance": "Vollständige Zauberwald-Route inklusive aller 12 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "ZAUBERWALD-DRIVER-START",
+      "kind": "driver",
+      "target": "route_fraction:0.000",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im start-Sektor."
+    },
+    {
+      "id": "ZAUBERWALD-DRIVER-FIRST_TURN",
+      "kind": "driver",
+      "target": "route_fraction:0.140",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im first_turn-Sektor."
+    },
+    {
+      "id": "ZAUBERWALD-DRIVER-MIDDLE",
+      "kind": "driver",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im middle-Sektor."
+    },
+    {
+      "id": "ZAUBERWALD-DRIVER-LAST_SECTOR",
+      "kind": "driver",
+      "target": "route_fraction:0.875",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im last_sector-Sektor."
+    },
+    {
+      "id": "ZAUBERWALD-SIGNATURE-FRONT",
+      "kind": "signature",
+      "target": "setpiece:forest_entry_arch",
+      "camera": {
+        "projection": "perspective",
+        "side": "front",
+        "distance_m": 34,
+        "elevation_deg": 24
+      },
+      "acceptance": "Türkis-violetter Waldlichtbogen A vollständig mit Zufahrt, Maßstab zur 10.8-m-Bahn und lesbarer Beschriftung erfasst."
+    },
+    {
+      "id": "ZAUBERWALD-SIGNATURE-BACK",
+      "kind": "signature",
+      "target": "setpiece:forest_entry_arch",
+      "camera": {
+        "projection": "perspective",
+        "side": "back",
+        "distance_m": 34,
+        "elevation_deg": 24
+      },
+      "acceptance": "Türkis-violetter Waldlichtbogen A vollständig mit Zufahrt, Maßstab zur 10.8-m-Bahn und lesbarer Beschriftung erfasst."
+    },
+    {
+      "id": "ZAUBERWALD-LOOP-SIDE",
+      "kind": "loop",
+      "target": "setpiece:vine_loop",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "side",
+        "distance_m": 54,
+        "orthographic_size_m": 58
+      },
+      "acceptance": "Geschlossene 360°-Mittelachse, 12-m-Radius, 10.8-m-Deck und authoring-only Status bleiben sichtbar."
+    },
+    {
+      "id": "ZAUBERWALD-LOOP-TOP",
+      "kind": "loop",
+      "target": "setpiece:vine_loop",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "distance_m": 54,
+        "orthographic_size_m": 58
+      },
+      "acceptance": "Geschlossene 360°-Mittelachse, 12-m-Radius, 10.8-m-Deck und authoring-only Status bleiben sichtbar."
+    },
+    {
+      "id": "ZAUBERWALD-ITEM-LANE",
+      "kind": "item_lane",
+      "target": "mystery_prism_zones",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 16,
+        "distance_m": 12
+      },
+      "acceptance": "Mindestens drei vorwärts sichtbare Lumo Mystery Prisms, Spurabstände und Pickup-Korridor sind erkennbar."
+    },
+    {
+      "id": "ZAUBERWALD-SHORTCUT-ENTRY",
+      "kind": "shortcut_entry",
+      "target": "signature_shortcut_or_ramp",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 25,
+        "elevation_deg": 30,
+        "distance_m": 30
+      },
+      "acceptance": "Abzweig/Rampe, Einfahrt, Landekorridor und Rückkehr auf bestehende Centerline sind gleichzeitig lesbar."
+    },
+    {
+      "id": "ZAUBERWALD-AI-TOP",
+      "kind": "ai_debug",
+      "target": "ai_racing_line",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "orthographic_size_m": 150
+      },
+      "acceptance": "Zehn KI-Anker, seitliche Überholreserve und Fahrer-Referenzcenterline sind unterscheidbar."
+    },
+    {
+      "id": "ZAUBERWALD-COLLISION-DEBUG",
+      "kind": "collision_debug",
+      "target": "road_rail_checkpoint_item_collision",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "overlay": "collision_debug"
+      },
+      "acceptance": "10.8-m-Straße, ±6.05-m-Visualrail, ±5.0-m-Wall und Checkpoint-/Item-Triggergrenzen sind getrennt sichtbar."
+    }
+  ],
+  "qa": {
+    "collision": "simple road rail/checkpoint/item proxies only; decorative geometry does not imply collision",
+    "low_detail_parity": "track width, route, item positions, checkpoint and safe respawn must match high detail",
+    "learning_separation": "no quiz, answer timer, learning cup, or correct-answer boost in race",
+    "performance": "MultiMesh repeated props; separate mobile LOD0/LOD1/background; avoid unnecessary transparent materials and background shadows"
+  }
+}

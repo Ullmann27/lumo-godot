@@ -1,0 +1,2050 @@
+{
+  "schema_version": 1,
+  "reference_only": true,
+  "runtime_code_changed": false,
+  "unique_pngs": 30,
+  "runtime_meshes": 0,
+  "archives": [
+    {
+      "name": "Shared_Core_Assets.zip",
+      "bytes": 22277918,
+      "sha256": "7223a3d845febe1f7d9a10b52bf7708b93877a12b04a7b84ea8c6a0574323e48",
+      "files": 11,
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/8b321ca2-37fd-4555-be8a-5a9d03072684.zip",
+      "download_sha256_verified": true,
+      "crc_ok": true,
+      "generic_placeholder_lines": 0,
+      "runtime_meshes": 0
+    },
+    {
+      "name": "Track_01_skyline_sprint_clouds.zip",
+      "bytes": 30450668,
+      "sha256": "72dc47b53f7c69235ef0e4ed7593cbc35d1d10de27755113376dee871376ae03",
+      "files": 18,
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/73c37875-1413-4b94-a5d4-183e2ae51ef3.zip",
+      "download_sha256_verified": true,
+      "crc_ok": true,
+      "generic_placeholder_lines": 104,
+      "runtime_meshes": 0
+    },
+    {
+      "name": "Track_02_crystal_canyon_dash.zip",
+      "bytes": 31001295,
+      "sha256": "d99e1630ce3ddf13811f23bde305bdbb7ac75e8e7a47ece168c69364f4ba4f5a",
+      "files": 18,
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/af6c2488-42b3-4e5c-9888-6fbf660d40f0.zip",
+      "download_sha256_verified": true,
+      "crc_ok": true,
+      "generic_placeholder_lines": 104,
+      "runtime_meshes": 0
+    },
+    {
+      "name": "Track_03_jungle_temple_turbo.zip",
+      "bytes": 31344891,
+      "sha256": "9a2c6d02f1ccf80aa0bb4fda0de0157481d2e83d8eea4192ea7634f9c7762e9d",
+      "files": 18,
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/50b5cc8c-a19e-458d-80f6-b2df825984b3.zip",
+      "download_sha256_verified": true,
+      "crc_ok": true,
+      "generic_placeholder_lines": 104,
+      "runtime_meshes": 0
+    },
+    {
+      "name": "Track_04_aqua_harbor_rush.zip",
+      "bytes": 31422889,
+      "sha256": "458884339ffe882c410484dbfd94fc18712855161e4e9ecc10816fcbf471968f",
+      "files": 18,
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/21e717ac-7767-4f63-9c5e-9d266020e334.zip",
+      "download_sha256_verified": true,
+      "crc_ok": true,
+      "generic_placeholder_lines": 104,
+      "runtime_meshes": 0
+    },
+    {
+      "name": "Track_05_candy_cloud_circuit.zip",
+      "bytes": 30244346,
+      "sha256": "1f3f64b11a2013975638638e34915948d81e3f59446032f6b82d356f8fc277c6",
+      "files": 18,
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/d4e6b0aa-a10e-4042-9a62-ade29067572c.zip",
+      "download_sha256_verified": true,
+      "crc_ok": true,
+      "generic_placeholder_lines": 104,
+      "runtime_meshes": 0
+    },
+    {
+      "name": "Track_06_volcano_night_run.zip",
+      "bytes": 31252828,
+      "sha256": "0b37df5a08713aa6c509f23973e3e7ecdad3273518984c15106d566d2b810cec",
+      "files": 18,
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/bdeb2eba-c0fc-4197-b2b9-f0b3a386c35a.zip",
+      "download_sha256_verified": true,
+      "crc_ok": true,
+      "generic_placeholder_lines": 104,
+      "runtime_meshes": 0
+    },
+    {
+      "name": "Track_07_skyline_sprint_winter.zip",
+      "bytes": 31595464,
+      "sha256": "04c67befec8af1cb121bacc26481d5b3fe0638728cb65df663691bdca0ff261f",
+      "files": 18,
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/5a669fa2-6564-4085-ba09-72cd15646b01.zip",
+      "download_sha256_verified": true,
+      "crc_ok": true,
+      "generic_placeholder_lines": 104,
+      "runtime_meshes": 0
+    },
+    {
+      "name": "Track_08_galaxy_ringway.zip",
+      "bytes": 31148439,
+      "sha256": "a04b0318a91d79f145da5e792607c87493081515253e625cb29604adde879a09",
+      "files": 18,
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/85a9fe8b-3ff4-43b1-8b40-b1e7e2121249.zip",
+      "download_sha256_verified": true,
+      "crc_ok": true,
+      "generic_placeholder_lines": 104,
+      "runtime_meshes": 0
+    },
+    {
+      "name": "Track_09_desert_dune_drift.zip",
+      "bytes": 30955912,
+      "sha256": "74cca622ac8daefb6891fc1105125c8aa2c5efd9e8bf12727afa69f5a971361b",
+      "files": 18,
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/7554126b-301b-499a-998d-625fe240d7da.zip",
+      "download_sha256_verified": true,
+      "crc_ok": true,
+      "generic_placeholder_lines": 104,
+      "runtime_meshes": 0
+    },
+    {
+      "name": "Track_10_learning_lab_circuit.zip",
+      "bytes": 30956970,
+      "sha256": "16c0cf13f2e07234e0303d5df81399ff217ad2ce9cda145d22e53d1ce063c684",
+      "files": 18,
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3JBiq3Q9vttoZVrKhdbYLuTHXre/296577dd-14b0-4b00-b3fe-fc645d585148.zip",
+      "download_sha256_verified": true,
+      "crc_ok": true,
+      "generic_placeholder_lines": 104,
+      "runtime_meshes": 0
+    }
+  ],
+  "members": [
+    {
+      "archive": "Shared_Core_Assets.zip",
+      "member": "Shared_Core_Assets/energy_bolt_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/energy_bolt_1536.png",
+      "sha256": "ebc032b57575149526931d2530b95470344c4a8d36df73d7ee8b1d216328988f",
+      "bytes": 2248020,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Shared_Core_Assets.zip",
+      "member": "Shared_Core_Assets/README.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Shared_Core_Assets/README.md",
+      "sha256": "eba126a7e776da86da3d553a896850abeb1c6a63e702c9ae4f5141d4307d2a43",
+      "bytes": 493,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Shared_Core_Assets.zip",
+      "member": "Shared_Core_Assets/loop_module_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/loop_module_1536.png",
+      "sha256": "3b9ea6c2f90cd404b27e5ad40ac109f2348d6f0c8034f9b9d23865d31628430f",
+      "bytes": 2375287,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Shared_Core_Assets.zip",
+      "member": "Shared_Core_Assets/mystery_box_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/mystery_box_1536.png",
+      "sha256": "3094a017a59578287652443645ca2c5aa60d15967affc18a64af212bd895581c",
+      "bytes": 2325659,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Shared_Core_Assets.zip",
+      "member": "Shared_Core_Assets/turbo_crystal_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/turbo_crystal_1536.png",
+      "sha256": "8a94c0fbca43d24b65adc9a867a7f3271ddb2b1f1b884abc33ccb37d3a896772",
+      "bytes": 1786271,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Shared_Core_Assets.zip",
+      "member": "Shared_Core_Assets/boost_pad_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/boost_pad_1536.png",
+      "sha256": "115c716b205cad9e3ad169b1e92e4d3d0791b7d9a1b5ce4f3657bd6e03de8352",
+      "bytes": 1884141,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Shared_Core_Assets.zip",
+      "member": "Shared_Core_Assets/magnet_powerup_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/magnet_powerup_1536.png",
+      "sha256": "fefd94bbc3d309c6a06d78a106078c9da94df4509e5dea9c89f8c864ae8487ce",
+      "bytes": 2218906,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Shared_Core_Assets.zip",
+      "member": "Shared_Core_Assets/slime_hazard_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/slime_hazard_1536.png",
+      "sha256": "dedd117242af0d1027286f96036423de3ceb07d4b0c1cee515cceca47e673ae5",
+      "bytes": 2657905,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Shared_Core_Assets.zip",
+      "member": "Shared_Core_Assets/jump_ramp_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/jump_ramp_1536.png",
+      "sha256": "ee97d028b1216e7809ede8acb3f91b30e7ad8a016e2aa973376b3770871daefe",
+      "bytes": 2382312,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Shared_Core_Assets.zip",
+      "member": "Shared_Core_Assets/iq_fox_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/iq_fox_1536.png",
+      "sha256": "86f6d92c75daa033f12cf98626ab222a823759bbaa381a97d200b09d6304b94f",
+      "bytes": 2437823,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Shared_Core_Assets.zip",
+      "member": "Shared_Core_Assets/shield_bubble_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/shield_bubble_1536.png",
+      "sha256": "fadbedfb3ee335051ad264cb86f3cb87ec77dd7b7c1cbe70bf589f6a22b2ae8b",
+      "bytes": 1959409,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/manifest.json",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_01_skyline_sprint_clouds/manifest.json",
+      "sha256": "7f5a5495334f5c67191320ca5e4298e6ec5ae3edcf35defea3285d84e9b75133",
+      "bytes": 1128,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/README_TRACK_PACK.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_01_skyline_sprint_clouds/README_TRACK_PACK.md",
+      "sha256": "913d18c2abc92ce451cf55ffa3a304a3363b4c36d6c7204ef9d9277337f31bde",
+      "bytes": 727,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/shared_core_assets/energy_bolt_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/energy_bolt_1536.png",
+      "sha256": "ebc032b57575149526931d2530b95470344c4a8d36df73d7ee8b1d216328988f",
+      "bytes": 2248020,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/shared_core_assets/loop_module_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/loop_module_1536.png",
+      "sha256": "3b9ea6c2f90cd404b27e5ad40ac109f2348d6f0c8034f9b9d23865d31628430f",
+      "bytes": 2375287,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/shared_core_assets/mystery_box_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/mystery_box_1536.png",
+      "sha256": "3094a017a59578287652443645ca2c5aa60d15967affc18a64af212bd895581c",
+      "bytes": 2325659,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/shared_core_assets/turbo_crystal_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/turbo_crystal_1536.png",
+      "sha256": "8a94c0fbca43d24b65adc9a867a7f3271ddb2b1f1b884abc33ccb37d3a896772",
+      "bytes": 1786271,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/shared_core_assets/boost_pad_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/boost_pad_1536.png",
+      "sha256": "115c716b205cad9e3ad169b1e92e4d3d0791b7d9a1b5ce4f3657bd6e03de8352",
+      "bytes": 1884141,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/shared_core_assets/magnet_powerup_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/magnet_powerup_1536.png",
+      "sha256": "fefd94bbc3d309c6a06d78a106078c9da94df4509e5dea9c89f8c864ae8487ce",
+      "bytes": 2218906,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/shared_core_assets/slime_hazard_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/slime_hazard_1536.png",
+      "sha256": "dedd117242af0d1027286f96036423de3ceb07d4b0c1cee515cceca47e673ae5",
+      "bytes": 2657905,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/shared_core_assets/jump_ramp_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/jump_ramp_1536.png",
+      "sha256": "ee97d028b1216e7809ede8acb3f91b30e7ad8a016e2aa973376b3770871daefe",
+      "bytes": 2382312,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/shared_core_assets/iq_fox_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/iq_fox_1536.png",
+      "sha256": "86f6d92c75daa033f12cf98626ab222a823759bbaa381a97d200b09d6304b94f",
+      "bytes": 2437823,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/shared_core_assets/shield_bubble_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/shield_bubble_1536.png",
+      "sha256": "fadbedfb3ee335051ad264cb86f3cb87ec77dd7b7c1cbe70bf589f6a22b2ae8b",
+      "bytes": 1959409,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/reference_images/track_01_hero_original.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_01_skyline_sprint_clouds/track_01_hero_original.png",
+      "sha256": "d20efafce34267f0d3c7f11131f0a10ceb5211d89077a20efc6998ea929781ef",
+      "bytes": 2522884,
+      "category": "hero_reference",
+      "width": 1672,
+      "height": 941,
+      "resampled": false
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/reference_images/track_01_hero_2560.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_01_skyline_sprint_clouds/track_01_hero_2560.png",
+      "sha256": "178463a25e9396ed2c40bb78f751d882bbaa3556a7df6f2acfdc8329dd067926",
+      "bytes": 5637428,
+      "category": "hero_reference",
+      "width": 2560,
+      "height": 1440,
+      "resampled": true
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/docs/OPUS_HANDOFF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_01_skyline_sprint_clouds/docs/OPUS_HANDOFF.md",
+      "sha256": "7efbd9732a1e2244f46876a67aa95cf115b8bb53c58a42789a4d42ab5de2072f",
+      "bytes": 305,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/docs/DESIGN_BRIEF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_01_skyline_sprint_clouds/docs/DESIGN_BRIEF.md",
+      "sha256": "b432df24cd0b3c19294fa2d4094c05245101889a2a0745c865b836a2890b1d86",
+      "bytes": 701,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/docs/COPILOT_PROMPT.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_01_skyline_sprint_clouds/docs/COPILOT_PROMPT.md",
+      "sha256": "6cf18e392bfc8c394e516c23614b9cb41ac1572ebe2db2b9cf6fd1b4651754f2",
+      "bytes": 703,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_01_skyline_sprint_clouds.zip",
+      "member": "Track_01_skyline_sprint_clouds/docs/DETAIL_CHECKLIST_120.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_01_skyline_sprint_clouds/docs/DETAIL_CHECKLIST_120.md",
+      "sha256": "1216dba2458e4eba72c17b5cb088358e1718ac7e7765ae2b208ff8ca0cef6d2f",
+      "bytes": 7365,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/manifest.json",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_02_crystal_canyon_dash/manifest.json",
+      "sha256": "393336203ae35a4439112f6d6df47e227e431468b2beb99998e39884e6a1baa5",
+      "bytes": 1101,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/README_TRACK_PACK.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_02_crystal_canyon_dash/README_TRACK_PACK.md",
+      "sha256": "e34378bc6b2a240fde50107f536478a2e52be3b04e96ba7945779ecc14d75072",
+      "bytes": 700,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/shared_core_assets/energy_bolt_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/energy_bolt_1536.png",
+      "sha256": "ebc032b57575149526931d2530b95470344c4a8d36df73d7ee8b1d216328988f",
+      "bytes": 2248020,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/shared_core_assets/loop_module_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/loop_module_1536.png",
+      "sha256": "3b9ea6c2f90cd404b27e5ad40ac109f2348d6f0c8034f9b9d23865d31628430f",
+      "bytes": 2375287,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/shared_core_assets/mystery_box_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/mystery_box_1536.png",
+      "sha256": "3094a017a59578287652443645ca2c5aa60d15967affc18a64af212bd895581c",
+      "bytes": 2325659,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/shared_core_assets/turbo_crystal_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/turbo_crystal_1536.png",
+      "sha256": "8a94c0fbca43d24b65adc9a867a7f3271ddb2b1f1b884abc33ccb37d3a896772",
+      "bytes": 1786271,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/shared_core_assets/boost_pad_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/boost_pad_1536.png",
+      "sha256": "115c716b205cad9e3ad169b1e92e4d3d0791b7d9a1b5ce4f3657bd6e03de8352",
+      "bytes": 1884141,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/shared_core_assets/magnet_powerup_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/magnet_powerup_1536.png",
+      "sha256": "fefd94bbc3d309c6a06d78a106078c9da94df4509e5dea9c89f8c864ae8487ce",
+      "bytes": 2218906,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/shared_core_assets/slime_hazard_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/slime_hazard_1536.png",
+      "sha256": "dedd117242af0d1027286f96036423de3ceb07d4b0c1cee515cceca47e673ae5",
+      "bytes": 2657905,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/shared_core_assets/jump_ramp_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/jump_ramp_1536.png",
+      "sha256": "ee97d028b1216e7809ede8acb3f91b30e7ad8a016e2aa973376b3770871daefe",
+      "bytes": 2382312,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/shared_core_assets/iq_fox_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/iq_fox_1536.png",
+      "sha256": "86f6d92c75daa033f12cf98626ab222a823759bbaa381a97d200b09d6304b94f",
+      "bytes": 2437823,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/shared_core_assets/shield_bubble_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/shield_bubble_1536.png",
+      "sha256": "fadbedfb3ee335051ad264cb86f3cb87ec77dd7b7c1cbe70bf589f6a22b2ae8b",
+      "bytes": 1959409,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/reference_images/track_02_hero_original.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_02_crystal_canyon_dash/track_02_hero_original.png",
+      "sha256": "e413f30fcc3aa332857ca0aa2eeeebc78a3135092831325aec52aebeda2d0959",
+      "bytes": 2677991,
+      "category": "hero_reference",
+      "width": 1672,
+      "height": 941,
+      "resampled": false
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/reference_images/track_02_hero_2560.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_02_crystal_canyon_dash/track_02_hero_2560.png",
+      "sha256": "7c7f6a6ed779c97cab9825519d964a3eb2f95c9be931320bc9de0dfd7b2a69ce",
+      "bytes": 6032591,
+      "category": "hero_reference",
+      "width": 2560,
+      "height": 1440,
+      "resampled": true
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/docs/OPUS_HANDOFF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_02_crystal_canyon_dash/docs/OPUS_HANDOFF.md",
+      "sha256": "7efbd9732a1e2244f46876a67aa95cf115b8bb53c58a42789a4d42ab5de2072f",
+      "bytes": 305,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/docs/DESIGN_BRIEF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_02_crystal_canyon_dash/docs/DESIGN_BRIEF.md",
+      "sha256": "2a8664cd0fe1ca518ecc0680a3693c1ab92db4a0207d357c03c278c5696224ae",
+      "bytes": 670,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/docs/COPILOT_PROMPT.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_02_crystal_canyon_dash/docs/COPILOT_PROMPT.md",
+      "sha256": "6cf18e392bfc8c394e516c23614b9cb41ac1572ebe2db2b9cf6fd1b4651754f2",
+      "bytes": 703,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_02_crystal_canyon_dash.zip",
+      "member": "Track_02_crystal_canyon_dash/docs/DETAIL_CHECKLIST_120.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_02_crystal_canyon_dash/docs/DETAIL_CHECKLIST_120.md",
+      "sha256": "b6f44c6cbe55cca2fdfd6c1b5d11e71e58e3a94a616966167d8cafb82b482ee3",
+      "bytes": 7879,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/manifest.json",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_03_jungle_temple_turbo/manifest.json",
+      "sha256": "32e267ed8783327f92862cbce821fdc564055b8ef5b03d3c14b7396fe1fda488",
+      "bytes": 1115,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/README_TRACK_PACK.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_03_jungle_temple_turbo/README_TRACK_PACK.md",
+      "sha256": "e84fcdc09129d6f4871d814e0bf0636a9ad3940cc18e996ef2998d18031d171d",
+      "bytes": 714,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/shared_core_assets/energy_bolt_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/energy_bolt_1536.png",
+      "sha256": "ebc032b57575149526931d2530b95470344c4a8d36df73d7ee8b1d216328988f",
+      "bytes": 2248020,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/shared_core_assets/loop_module_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/loop_module_1536.png",
+      "sha256": "3b9ea6c2f90cd404b27e5ad40ac109f2348d6f0c8034f9b9d23865d31628430f",
+      "bytes": 2375287,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/shared_core_assets/mystery_box_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/mystery_box_1536.png",
+      "sha256": "3094a017a59578287652443645ca2c5aa60d15967affc18a64af212bd895581c",
+      "bytes": 2325659,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/shared_core_assets/turbo_crystal_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/turbo_crystal_1536.png",
+      "sha256": "8a94c0fbca43d24b65adc9a867a7f3271ddb2b1f1b884abc33ccb37d3a896772",
+      "bytes": 1786271,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/shared_core_assets/boost_pad_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/boost_pad_1536.png",
+      "sha256": "115c716b205cad9e3ad169b1e92e4d3d0791b7d9a1b5ce4f3657bd6e03de8352",
+      "bytes": 1884141,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/shared_core_assets/magnet_powerup_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/magnet_powerup_1536.png",
+      "sha256": "fefd94bbc3d309c6a06d78a106078c9da94df4509e5dea9c89f8c864ae8487ce",
+      "bytes": 2218906,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/shared_core_assets/slime_hazard_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/slime_hazard_1536.png",
+      "sha256": "dedd117242af0d1027286f96036423de3ceb07d4b0c1cee515cceca47e673ae5",
+      "bytes": 2657905,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/shared_core_assets/jump_ramp_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/jump_ramp_1536.png",
+      "sha256": "ee97d028b1216e7809ede8acb3f91b30e7ad8a016e2aa973376b3770871daefe",
+      "bytes": 2382312,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/shared_core_assets/iq_fox_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/iq_fox_1536.png",
+      "sha256": "86f6d92c75daa033f12cf98626ab222a823759bbaa381a97d200b09d6304b94f",
+      "bytes": 2437823,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/shared_core_assets/shield_bubble_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/shield_bubble_1536.png",
+      "sha256": "fadbedfb3ee335051ad264cb86f3cb87ec77dd7b7c1cbe70bf589f6a22b2ae8b",
+      "bytes": 1959409,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/reference_images/track_03_hero_2560.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_03_jungle_temple_turbo/track_03_hero_2560.png",
+      "sha256": "723c76424469fb07750043996f02c89b4c9e985614f182776f8c7d7bb1a3976d",
+      "bytes": 6270402,
+      "category": "hero_reference",
+      "width": 2560,
+      "height": 1440,
+      "resampled": true
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/reference_images/track_03_hero_original.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_03_jungle_temple_turbo/track_03_hero_original.png",
+      "sha256": "9c31dde80fb61aca41bda233763db4c8ceae44fb6f73633f3471ac383c5b61ac",
+      "bytes": 2783734,
+      "category": "hero_reference",
+      "width": 1672,
+      "height": 941,
+      "resampled": false
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/docs/OPUS_HANDOFF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_03_jungle_temple_turbo/docs/OPUS_HANDOFF.md",
+      "sha256": "7efbd9732a1e2244f46876a67aa95cf115b8bb53c58a42789a4d42ab5de2072f",
+      "bytes": 305,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/docs/DESIGN_BRIEF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_03_jungle_temple_turbo/docs/DESIGN_BRIEF.md",
+      "sha256": "eb09e5c37c6f99370b6ecaffde55effc499f151f9cc96e37186ca9fad95018eb",
+      "bytes": 682,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/docs/COPILOT_PROMPT.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_03_jungle_temple_turbo/docs/COPILOT_PROMPT.md",
+      "sha256": "6cf18e392bfc8c394e516c23614b9cb41ac1572ebe2db2b9cf6fd1b4651754f2",
+      "bytes": 703,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_03_jungle_temple_turbo.zip",
+      "member": "Track_03_jungle_temple_turbo/docs/DETAIL_CHECKLIST_120.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_03_jungle_temple_turbo/docs/DETAIL_CHECKLIST_120.md",
+      "sha256": "c3da546f6c1a679576ad8d8e329ed7cbcd650d38cf442e7241af0426d5850fda",
+      "bytes": 7881,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/manifest.json",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_04_aqua_harbor_rush/manifest.json",
+      "sha256": "f1df47fd541586ab5d1803a5e10da8add9d628246712d3f4eae7c7d0ed863473",
+      "bytes": 1078,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/README_TRACK_PACK.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_04_aqua_harbor_rush/README_TRACK_PACK.md",
+      "sha256": "a2fb805754622ef4337738e8bdc129d245d6a6d4880e8f36eb69c184b77ef141",
+      "bytes": 677,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/shared_core_assets/energy_bolt_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/energy_bolt_1536.png",
+      "sha256": "ebc032b57575149526931d2530b95470344c4a8d36df73d7ee8b1d216328988f",
+      "bytes": 2248020,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/shared_core_assets/loop_module_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/loop_module_1536.png",
+      "sha256": "3b9ea6c2f90cd404b27e5ad40ac109f2348d6f0c8034f9b9d23865d31628430f",
+      "bytes": 2375287,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/shared_core_assets/mystery_box_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/mystery_box_1536.png",
+      "sha256": "3094a017a59578287652443645ca2c5aa60d15967affc18a64af212bd895581c",
+      "bytes": 2325659,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/shared_core_assets/turbo_crystal_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/turbo_crystal_1536.png",
+      "sha256": "8a94c0fbca43d24b65adc9a867a7f3271ddb2b1f1b884abc33ccb37d3a896772",
+      "bytes": 1786271,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/shared_core_assets/boost_pad_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/boost_pad_1536.png",
+      "sha256": "115c716b205cad9e3ad169b1e92e4d3d0791b7d9a1b5ce4f3657bd6e03de8352",
+      "bytes": 1884141,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/shared_core_assets/magnet_powerup_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/magnet_powerup_1536.png",
+      "sha256": "fefd94bbc3d309c6a06d78a106078c9da94df4509e5dea9c89f8c864ae8487ce",
+      "bytes": 2218906,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/shared_core_assets/slime_hazard_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/slime_hazard_1536.png",
+      "sha256": "dedd117242af0d1027286f96036423de3ceb07d4b0c1cee515cceca47e673ae5",
+      "bytes": 2657905,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/shared_core_assets/jump_ramp_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/jump_ramp_1536.png",
+      "sha256": "ee97d028b1216e7809ede8acb3f91b30e7ad8a016e2aa973376b3770871daefe",
+      "bytes": 2382312,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/shared_core_assets/iq_fox_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/iq_fox_1536.png",
+      "sha256": "86f6d92c75daa033f12cf98626ab222a823759bbaa381a97d200b09d6304b94f",
+      "bytes": 2437823,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/shared_core_assets/shield_bubble_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/shield_bubble_1536.png",
+      "sha256": "fadbedfb3ee335051ad264cb86f3cb87ec77dd7b7c1cbe70bf589f6a22b2ae8b",
+      "bytes": 1959409,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/reference_images/track_04_hero_original.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_04_aqua_harbor_rush/track_04_hero_original.png",
+      "sha256": "887bb60273a21abff309b7cfa32800d04a013b6863994f777af9afac5e766344",
+      "bytes": 2806037,
+      "category": "hero_reference",
+      "width": 1672,
+      "height": 941,
+      "resampled": false
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/reference_images/track_04_hero_2560.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_04_aqua_harbor_rush/track_04_hero_2560.png",
+      "sha256": "82110c3cd59ec63e56792ae65c61ff3ae4b466a564e45c5caaf35822f5788679",
+      "bytes": 6326637,
+      "category": "hero_reference",
+      "width": 2560,
+      "height": 1440,
+      "resampled": true
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/docs/OPUS_HANDOFF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_04_aqua_harbor_rush/docs/OPUS_HANDOFF.md",
+      "sha256": "7efbd9732a1e2244f46876a67aa95cf115b8bb53c58a42789a4d42ab5de2072f",
+      "bytes": 305,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/docs/DESIGN_BRIEF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_04_aqua_harbor_rush/docs/DESIGN_BRIEF.md",
+      "sha256": "7f6c0fc0eecd784727b6953de6d51a4e511e04769a86224408639b3526dcd181",
+      "bytes": 649,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/docs/COPILOT_PROMPT.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_04_aqua_harbor_rush/docs/COPILOT_PROMPT.md",
+      "sha256": "6cf18e392bfc8c394e516c23614b9cb41ac1572ebe2db2b9cf6fd1b4651754f2",
+      "bytes": 703,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_04_aqua_harbor_rush.zip",
+      "member": "Track_04_aqua_harbor_rush/docs/DETAIL_CHECKLIST_120.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_04_aqua_harbor_rush/docs/DETAIL_CHECKLIST_120.md",
+      "sha256": "d05773068f8fc10c90e6b3d1e2a477acb637c3742f6ed7a48b04c54928c3c269",
+      "bytes": 7556,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/manifest.json",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_05_candy_cloud_circuit/manifest.json",
+      "sha256": "b3b0957c54e51a2744c4f0e170503a47ade4527bb99dcea9dd5a22136145a7f0",
+      "bytes": 1097,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/README_TRACK_PACK.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_05_candy_cloud_circuit/README_TRACK_PACK.md",
+      "sha256": "111b0e2efe83a3d807584c3389578597221573280fb2cd12ecf4d5ecd3cf0947",
+      "bytes": 696,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/shared_core_assets/energy_bolt_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/energy_bolt_1536.png",
+      "sha256": "ebc032b57575149526931d2530b95470344c4a8d36df73d7ee8b1d216328988f",
+      "bytes": 2248020,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/shared_core_assets/loop_module_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/loop_module_1536.png",
+      "sha256": "3b9ea6c2f90cd404b27e5ad40ac109f2348d6f0c8034f9b9d23865d31628430f",
+      "bytes": 2375287,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/shared_core_assets/mystery_box_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/mystery_box_1536.png",
+      "sha256": "3094a017a59578287652443645ca2c5aa60d15967affc18a64af212bd895581c",
+      "bytes": 2325659,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/shared_core_assets/turbo_crystal_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/turbo_crystal_1536.png",
+      "sha256": "8a94c0fbca43d24b65adc9a867a7f3271ddb2b1f1b884abc33ccb37d3a896772",
+      "bytes": 1786271,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/shared_core_assets/boost_pad_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/boost_pad_1536.png",
+      "sha256": "115c716b205cad9e3ad169b1e92e4d3d0791b7d9a1b5ce4f3657bd6e03de8352",
+      "bytes": 1884141,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/shared_core_assets/magnet_powerup_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/magnet_powerup_1536.png",
+      "sha256": "fefd94bbc3d309c6a06d78a106078c9da94df4509e5dea9c89f8c864ae8487ce",
+      "bytes": 2218906,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/shared_core_assets/slime_hazard_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/slime_hazard_1536.png",
+      "sha256": "dedd117242af0d1027286f96036423de3ceb07d4b0c1cee515cceca47e673ae5",
+      "bytes": 2657905,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/shared_core_assets/jump_ramp_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/jump_ramp_1536.png",
+      "sha256": "ee97d028b1216e7809ede8acb3f91b30e7ad8a016e2aa973376b3770871daefe",
+      "bytes": 2382312,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/shared_core_assets/iq_fox_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/iq_fox_1536.png",
+      "sha256": "86f6d92c75daa033f12cf98626ab222a823759bbaa381a97d200b09d6304b94f",
+      "bytes": 2437823,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/shared_core_assets/shield_bubble_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/shield_bubble_1536.png",
+      "sha256": "fadbedfb3ee335051ad264cb86f3cb87ec77dd7b7c1cbe70bf589f6a22b2ae8b",
+      "bytes": 1959409,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/reference_images/track_05_hero_original.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_05_candy_cloud_circuit/track_05_hero_original.png",
+      "sha256": "9e3a9c6b74b63109aa97a62b469bb03d353d26a15d2a4f30b6d1fcafeea29518",
+      "bytes": 2462933,
+      "category": "hero_reference",
+      "width": 1672,
+      "height": 941,
+      "resampled": false
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/reference_images/track_05_hero_2560.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_05_candy_cloud_circuit/track_05_hero_2560.png",
+      "sha256": "616b45fdf6e194c15a85465f3f4071e4ff786aa8dca3b161cdca5d44df679a7f",
+      "bytes": 5490706,
+      "category": "hero_reference",
+      "width": 2560,
+      "height": 1440,
+      "resampled": true
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/docs/OPUS_HANDOFF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_05_candy_cloud_circuit/docs/OPUS_HANDOFF.md",
+      "sha256": "7efbd9732a1e2244f46876a67aa95cf115b8bb53c58a42789a4d42ab5de2072f",
+      "bytes": 305,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/docs/DESIGN_BRIEF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_05_candy_cloud_circuit/docs/DESIGN_BRIEF.md",
+      "sha256": "8c324ef6bad0c8c82f8ac0728fad566f8821b1c1a97d2091674982789fcb871b",
+      "bytes": 670,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/docs/COPILOT_PROMPT.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_05_candy_cloud_circuit/docs/COPILOT_PROMPT.md",
+      "sha256": "6cf18e392bfc8c394e516c23614b9cb41ac1572ebe2db2b9cf6fd1b4651754f2",
+      "bytes": 703,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_05_candy_cloud_circuit.zip",
+      "member": "Track_05_candy_cloud_circuit/docs/DETAIL_CHECKLIST_120.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_05_candy_cloud_circuit/docs/DETAIL_CHECKLIST_120.md",
+      "sha256": "7f033edf57d7dc5655482bfa083405ec0058eba78c947d60eac847f12cd09290",
+      "bytes": 7881,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/manifest.json",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_06_volcano_night_run/manifest.json",
+      "sha256": "819e5d19ef2766957bed6850e15456a13c523d1df2a572b528191315a9999ec2",
+      "bytes": 1083,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/README_TRACK_PACK.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_06_volcano_night_run/README_TRACK_PACK.md",
+      "sha256": "a829a73f29d2e1b7d00dd2306975208adff41acd5c954accb154d117061cb35b",
+      "bytes": 682,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/shared_core_assets/energy_bolt_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/energy_bolt_1536.png",
+      "sha256": "ebc032b57575149526931d2530b95470344c4a8d36df73d7ee8b1d216328988f",
+      "bytes": 2248020,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/shared_core_assets/loop_module_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/loop_module_1536.png",
+      "sha256": "3b9ea6c2f90cd404b27e5ad40ac109f2348d6f0c8034f9b9d23865d31628430f",
+      "bytes": 2375287,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/shared_core_assets/mystery_box_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/mystery_box_1536.png",
+      "sha256": "3094a017a59578287652443645ca2c5aa60d15967affc18a64af212bd895581c",
+      "bytes": 2325659,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/shared_core_assets/turbo_crystal_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/turbo_crystal_1536.png",
+      "sha256": "8a94c0fbca43d24b65adc9a867a7f3271ddb2b1f1b884abc33ccb37d3a896772",
+      "bytes": 1786271,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/shared_core_assets/boost_pad_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/boost_pad_1536.png",
+      "sha256": "115c716b205cad9e3ad169b1e92e4d3d0791b7d9a1b5ce4f3657bd6e03de8352",
+      "bytes": 1884141,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/shared_core_assets/magnet_powerup_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/magnet_powerup_1536.png",
+      "sha256": "fefd94bbc3d309c6a06d78a106078c9da94df4509e5dea9c89f8c864ae8487ce",
+      "bytes": 2218906,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/shared_core_assets/slime_hazard_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/slime_hazard_1536.png",
+      "sha256": "dedd117242af0d1027286f96036423de3ceb07d4b0c1cee515cceca47e673ae5",
+      "bytes": 2657905,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/shared_core_assets/jump_ramp_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/jump_ramp_1536.png",
+      "sha256": "ee97d028b1216e7809ede8acb3f91b30e7ad8a016e2aa973376b3770871daefe",
+      "bytes": 2382312,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/shared_core_assets/iq_fox_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/iq_fox_1536.png",
+      "sha256": "86f6d92c75daa033f12cf98626ab222a823759bbaa381a97d200b09d6304b94f",
+      "bytes": 2437823,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/shared_core_assets/shield_bubble_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/shield_bubble_1536.png",
+      "sha256": "fadbedfb3ee335051ad264cb86f3cb87ec77dd7b7c1cbe70bf589f6a22b2ae8b",
+      "bytes": 1959409,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/reference_images/track_06_hero_original.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_06_volcano_night_run/track_06_hero_original.png",
+      "sha256": "a55032a7775f74e02ac969d0b5895194b9c8d9d599dca35a10dd7c184cbbdb03",
+      "bytes": 2752453,
+      "category": "hero_reference",
+      "width": 1672,
+      "height": 941,
+      "resampled": false
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/reference_images/track_06_hero_2560.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_06_volcano_night_run/track_06_hero_2560.png",
+      "sha256": "26982d70dd2c6594df7891fc76bfa7a4b1205f3c44e7c5c4e3e3dc98ccceda7b",
+      "bytes": 6210013,
+      "category": "hero_reference",
+      "width": 2560,
+      "height": 1440,
+      "resampled": true
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/docs/OPUS_HANDOFF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_06_volcano_night_run/docs/OPUS_HANDOFF.md",
+      "sha256": "7efbd9732a1e2244f46876a67aa95cf115b8bb53c58a42789a4d42ab5de2072f",
+      "bytes": 305,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/docs/DESIGN_BRIEF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_06_volcano_night_run/docs/DESIGN_BRIEF.md",
+      "sha256": "4985d4565187c591942be5ffd132e4d3f4108cafc5fc46ffba33ac9098b8ac81",
+      "bytes": 650,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/docs/COPILOT_PROMPT.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_06_volcano_night_run/docs/COPILOT_PROMPT.md",
+      "sha256": "6cf18e392bfc8c394e516c23614b9cb41ac1572ebe2db2b9cf6fd1b4651754f2",
+      "bytes": 703,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_06_volcano_night_run.zip",
+      "member": "Track_06_volcano_night_run/docs/DETAIL_CHECKLIST_120.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_06_volcano_night_run/docs/DETAIL_CHECKLIST_120.md",
+      "sha256": "c67721deb6c5e9a909bc0c3ee3a0d2e896cf787056aaa8a857445b77123390d2",
+      "bytes": 7656,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/manifest.json",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_07_skyline_sprint_winter/manifest.json",
+      "sha256": "15ce146d4ce0ec1ae74ac7a906c4ec5b02b867bb9e885a7c8b116888e4f48a5e",
+      "bytes": 1111,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/README_TRACK_PACK.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_07_skyline_sprint_winter/README_TRACK_PACK.md",
+      "sha256": "7f6a92400819884644a0b830dde65c7e30122bc2bd99a19e9a333e0002da13ef",
+      "bytes": 710,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/shared_core_assets/energy_bolt_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/energy_bolt_1536.png",
+      "sha256": "ebc032b57575149526931d2530b95470344c4a8d36df73d7ee8b1d216328988f",
+      "bytes": 2248020,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/shared_core_assets/loop_module_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/loop_module_1536.png",
+      "sha256": "3b9ea6c2f90cd404b27e5ad40ac109f2348d6f0c8034f9b9d23865d31628430f",
+      "bytes": 2375287,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/shared_core_assets/mystery_box_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/mystery_box_1536.png",
+      "sha256": "3094a017a59578287652443645ca2c5aa60d15967affc18a64af212bd895581c",
+      "bytes": 2325659,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/shared_core_assets/turbo_crystal_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/turbo_crystal_1536.png",
+      "sha256": "8a94c0fbca43d24b65adc9a867a7f3271ddb2b1f1b884abc33ccb37d3a896772",
+      "bytes": 1786271,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/shared_core_assets/boost_pad_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/boost_pad_1536.png",
+      "sha256": "115c716b205cad9e3ad169b1e92e4d3d0791b7d9a1b5ce4f3657bd6e03de8352",
+      "bytes": 1884141,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/shared_core_assets/magnet_powerup_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/magnet_powerup_1536.png",
+      "sha256": "fefd94bbc3d309c6a06d78a106078c9da94df4509e5dea9c89f8c864ae8487ce",
+      "bytes": 2218906,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/shared_core_assets/slime_hazard_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/slime_hazard_1536.png",
+      "sha256": "dedd117242af0d1027286f96036423de3ceb07d4b0c1cee515cceca47e673ae5",
+      "bytes": 2657905,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/shared_core_assets/jump_ramp_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/jump_ramp_1536.png",
+      "sha256": "ee97d028b1216e7809ede8acb3f91b30e7ad8a016e2aa973376b3770871daefe",
+      "bytes": 2382312,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/shared_core_assets/iq_fox_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/iq_fox_1536.png",
+      "sha256": "86f6d92c75daa033f12cf98626ab222a823759bbaa381a97d200b09d6304b94f",
+      "bytes": 2437823,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/shared_core_assets/shield_bubble_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/shield_bubble_1536.png",
+      "sha256": "fadbedfb3ee335051ad264cb86f3cb87ec77dd7b7c1cbe70bf589f6a22b2ae8b",
+      "bytes": 1959409,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/reference_images/track_07_hero_original.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_07_skyline_sprint_winter/track_07_hero_original.png",
+      "sha256": "c1fe29f3cc87121fa36521e25c9fa0ea38ca2050c65285332b9cb281c66f9ded",
+      "bytes": 2866591,
+      "category": "hero_reference",
+      "width": 1672,
+      "height": 941,
+      "resampled": false
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/reference_images/track_07_hero_2560.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_07_skyline_sprint_winter/track_07_hero_2560.png",
+      "sha256": "4346cc5d28ef01ec787638f2a76748510153c9f04df95ec2a6993a3bd1cb4d09",
+      "bytes": 6436571,
+      "category": "hero_reference",
+      "width": 2560,
+      "height": 1440,
+      "resampled": true
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/docs/OPUS_HANDOFF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_07_skyline_sprint_winter/docs/OPUS_HANDOFF.md",
+      "sha256": "7efbd9732a1e2244f46876a67aa95cf115b8bb53c58a42789a4d42ab5de2072f",
+      "bytes": 305,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/docs/DESIGN_BRIEF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_07_skyline_sprint_winter/docs/DESIGN_BRIEF.md",
+      "sha256": "2cd9cde832484a3caacdec28e1e27ad07db9765b73742f9fd9b15c32410849cd",
+      "bytes": 684,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/docs/COPILOT_PROMPT.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_07_skyline_sprint_winter/docs/COPILOT_PROMPT.md",
+      "sha256": "6cf18e392bfc8c394e516c23614b9cb41ac1572ebe2db2b9cf6fd1b4651754f2",
+      "bytes": 703,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_07_skyline_sprint_winter.zip",
+      "member": "Track_07_skyline_sprint_winter/docs/DETAIL_CHECKLIST_120.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_07_skyline_sprint_winter/docs/DETAIL_CHECKLIST_120.md",
+      "sha256": "b9cbbb6439190ba6c792a703368e963266cca287d9f3295f485cfc57a11a3abb",
+      "bytes": 9362,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/manifest.json",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_08_galaxy_ringway/manifest.json",
+      "sha256": "b3822d942c5a0d7b9f8d420778d8d9e929d5e23cf0d465d945f25fa6d2d900d5",
+      "bytes": 1105,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/README_TRACK_PACK.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_08_galaxy_ringway/README_TRACK_PACK.md",
+      "sha256": "334d35525407d4ee08006ae42fe425c93529b175f5ad644aabd6c0f6bdf3f0ee",
+      "bytes": 704,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/shared_core_assets/energy_bolt_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/energy_bolt_1536.png",
+      "sha256": "ebc032b57575149526931d2530b95470344c4a8d36df73d7ee8b1d216328988f",
+      "bytes": 2248020,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/shared_core_assets/loop_module_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/loop_module_1536.png",
+      "sha256": "3b9ea6c2f90cd404b27e5ad40ac109f2348d6f0c8034f9b9d23865d31628430f",
+      "bytes": 2375287,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/shared_core_assets/mystery_box_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/mystery_box_1536.png",
+      "sha256": "3094a017a59578287652443645ca2c5aa60d15967affc18a64af212bd895581c",
+      "bytes": 2325659,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/shared_core_assets/turbo_crystal_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/turbo_crystal_1536.png",
+      "sha256": "8a94c0fbca43d24b65adc9a867a7f3271ddb2b1f1b884abc33ccb37d3a896772",
+      "bytes": 1786271,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/shared_core_assets/boost_pad_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/boost_pad_1536.png",
+      "sha256": "115c716b205cad9e3ad169b1e92e4d3d0791b7d9a1b5ce4f3657bd6e03de8352",
+      "bytes": 1884141,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/shared_core_assets/magnet_powerup_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/magnet_powerup_1536.png",
+      "sha256": "fefd94bbc3d309c6a06d78a106078c9da94df4509e5dea9c89f8c864ae8487ce",
+      "bytes": 2218906,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/shared_core_assets/slime_hazard_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/slime_hazard_1536.png",
+      "sha256": "dedd117242af0d1027286f96036423de3ceb07d4b0c1cee515cceca47e673ae5",
+      "bytes": 2657905,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/shared_core_assets/jump_ramp_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/jump_ramp_1536.png",
+      "sha256": "ee97d028b1216e7809ede8acb3f91b30e7ad8a016e2aa973376b3770871daefe",
+      "bytes": 2382312,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/shared_core_assets/iq_fox_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/iq_fox_1536.png",
+      "sha256": "86f6d92c75daa033f12cf98626ab222a823759bbaa381a97d200b09d6304b94f",
+      "bytes": 2437823,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/shared_core_assets/shield_bubble_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/shield_bubble_1536.png",
+      "sha256": "fadbedfb3ee335051ad264cb86f3cb87ec77dd7b7c1cbe70bf589f6a22b2ae8b",
+      "bytes": 1959409,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/reference_images/track_08_hero_original.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_08_galaxy_ringway/track_08_hero_original.png",
+      "sha256": "3ab9efdfb0fdebb33812e51a45807a7c8d0388649304eee8f6efd5860d64bc14",
+      "bytes": 2723756,
+      "category": "hero_reference",
+      "width": 1672,
+      "height": 941,
+      "resampled": false
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/reference_images/track_08_hero_2560.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_08_galaxy_ringway/track_08_hero_2560.png",
+      "sha256": "9539ad77ea5c4b23acb95d4c5cdda2ee0a3c09a6116bece7985df4a29a6d2b33",
+      "bytes": 6134631,
+      "category": "hero_reference",
+      "width": 2560,
+      "height": 1440,
+      "resampled": true
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/docs/OPUS_HANDOFF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_08_galaxy_ringway/docs/OPUS_HANDOFF.md",
+      "sha256": "7efbd9732a1e2244f46876a67aa95cf115b8bb53c58a42789a4d42ab5de2072f",
+      "bytes": 305,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/docs/DESIGN_BRIEF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_08_galaxy_ringway/docs/DESIGN_BRIEF.md",
+      "sha256": "b87c29c4e95d41fe8c93d44295000e36516da54ff291ea23b3bf707a218d1a44",
+      "bytes": 680,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/docs/COPILOT_PROMPT.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_08_galaxy_ringway/docs/COPILOT_PROMPT.md",
+      "sha256": "6cf18e392bfc8c394e516c23614b9cb41ac1572ebe2db2b9cf6fd1b4651754f2",
+      "bytes": 703,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_08_galaxy_ringway.zip",
+      "member": "Track_08_galaxy_ringway/docs/DETAIL_CHECKLIST_120.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_08_galaxy_ringway/docs/DETAIL_CHECKLIST_120.md",
+      "sha256": "34d4b3fa389dc869c2348164735a28d4269b7ea1e8b4e2b07a95e83e35c60eb7",
+      "bytes": 7380,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/manifest.json",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_09_desert_dune_drift/manifest.json",
+      "sha256": "f309e7b3b1e71f3267719cb5ce30265a5430d738260273efdf153de57505e83b",
+      "bytes": 1088,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/README_TRACK_PACK.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_09_desert_dune_drift/README_TRACK_PACK.md",
+      "sha256": "77141081fb7bd9459631f4312b7d85835a1eba21952a4e8db1a095c04cd1b05d",
+      "bytes": 687,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/shared_core_assets/energy_bolt_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/energy_bolt_1536.png",
+      "sha256": "ebc032b57575149526931d2530b95470344c4a8d36df73d7ee8b1d216328988f",
+      "bytes": 2248020,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/shared_core_assets/loop_module_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/loop_module_1536.png",
+      "sha256": "3b9ea6c2f90cd404b27e5ad40ac109f2348d6f0c8034f9b9d23865d31628430f",
+      "bytes": 2375287,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/shared_core_assets/mystery_box_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/mystery_box_1536.png",
+      "sha256": "3094a017a59578287652443645ca2c5aa60d15967affc18a64af212bd895581c",
+      "bytes": 2325659,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/shared_core_assets/turbo_crystal_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/turbo_crystal_1536.png",
+      "sha256": "8a94c0fbca43d24b65adc9a867a7f3271ddb2b1f1b884abc33ccb37d3a896772",
+      "bytes": 1786271,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/shared_core_assets/boost_pad_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/boost_pad_1536.png",
+      "sha256": "115c716b205cad9e3ad169b1e92e4d3d0791b7d9a1b5ce4f3657bd6e03de8352",
+      "bytes": 1884141,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/shared_core_assets/magnet_powerup_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/magnet_powerup_1536.png",
+      "sha256": "fefd94bbc3d309c6a06d78a106078c9da94df4509e5dea9c89f8c864ae8487ce",
+      "bytes": 2218906,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/shared_core_assets/slime_hazard_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/slime_hazard_1536.png",
+      "sha256": "dedd117242af0d1027286f96036423de3ceb07d4b0c1cee515cceca47e673ae5",
+      "bytes": 2657905,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/shared_core_assets/jump_ramp_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/jump_ramp_1536.png",
+      "sha256": "ee97d028b1216e7809ede8acb3f91b30e7ad8a016e2aa973376b3770871daefe",
+      "bytes": 2382312,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/shared_core_assets/iq_fox_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/iq_fox_1536.png",
+      "sha256": "86f6d92c75daa033f12cf98626ab222a823759bbaa381a97d200b09d6304b94f",
+      "bytes": 2437823,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/shared_core_assets/shield_bubble_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/shield_bubble_1536.png",
+      "sha256": "fadbedfb3ee335051ad264cb86f3cb87ec77dd7b7c1cbe70bf589f6a22b2ae8b",
+      "bytes": 1959409,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/reference_images/track_09_hero_original.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_09_desert_dune_drift/track_09_hero_original.png",
+      "sha256": "0d33e710751fc3f0c8a933a3c9836ca392eca3a78480ee634dc59a23caf8f3f3",
+      "bytes": 2672938,
+      "category": "hero_reference",
+      "width": 1672,
+      "height": 941,
+      "resampled": false
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/reference_images/track_09_hero_2560.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_09_desert_dune_drift/track_09_hero_2560.png",
+      "sha256": "bfe4ff877043649e396eb559c55c7b482a5d41f792f5654e66bf6db3dcaad1c0",
+      "bytes": 5992574,
+      "category": "hero_reference",
+      "width": 2560,
+      "height": 1440,
+      "resampled": true
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/docs/OPUS_HANDOFF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_09_desert_dune_drift/docs/OPUS_HANDOFF.md",
+      "sha256": "7efbd9732a1e2244f46876a67aa95cf115b8bb53c58a42789a4d42ab5de2072f",
+      "bytes": 305,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/docs/DESIGN_BRIEF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_09_desert_dune_drift/docs/DESIGN_BRIEF.md",
+      "sha256": "b358c144026199274f90399498c44fbcdb7dd448f250d5fa9c00cdc09c77ce8b",
+      "bytes": 661,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/docs/COPILOT_PROMPT.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_09_desert_dune_drift/docs/COPILOT_PROMPT.md",
+      "sha256": "6cf18e392bfc8c394e516c23614b9cb41ac1572ebe2db2b9cf6fd1b4651754f2",
+      "bytes": 703,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_09_desert_dune_drift.zip",
+      "member": "Track_09_desert_dune_drift/docs/DETAIL_CHECKLIST_120.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_09_desert_dune_drift/docs/DETAIL_CHECKLIST_120.md",
+      "sha256": "9bb9478eef589953b08ebb9c3e1d62327dedfc71fd257b5bcc6c3f16094b8190",
+      "bytes": 7673,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/manifest.json",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_10_learning_lab_circuit/manifest.json",
+      "sha256": "6e88a60b4a5c5f727a5827edd3496723ce073ca5a3cedb70d29de201ad57d94b",
+      "bytes": 1146,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/README_TRACK_PACK.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_10_learning_lab_circuit/README_TRACK_PACK.md",
+      "sha256": "552debbdc8de6687dfc44d2ae28ac734d3a687a444bb8a2d61502a9c521c3f96",
+      "bytes": 745,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/shared_core_assets/energy_bolt_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/energy_bolt_1536.png",
+      "sha256": "ebc032b57575149526931d2530b95470344c4a8d36df73d7ee8b1d216328988f",
+      "bytes": 2248020,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/shared_core_assets/loop_module_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/loop_module_1536.png",
+      "sha256": "3b9ea6c2f90cd404b27e5ad40ac109f2348d6f0c8034f9b9d23865d31628430f",
+      "bytes": 2375287,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/shared_core_assets/mystery_box_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/mystery_box_1536.png",
+      "sha256": "3094a017a59578287652443645ca2c5aa60d15967affc18a64af212bd895581c",
+      "bytes": 2325659,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/shared_core_assets/turbo_crystal_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/turbo_crystal_1536.png",
+      "sha256": "8a94c0fbca43d24b65adc9a867a7f3271ddb2b1f1b884abc33ccb37d3a896772",
+      "bytes": 1786271,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/shared_core_assets/boost_pad_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/boost_pad_1536.png",
+      "sha256": "115c716b205cad9e3ad169b1e92e4d3d0791b7d9a1b5ce4f3657bd6e03de8352",
+      "bytes": 1884141,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/shared_core_assets/magnet_powerup_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/magnet_powerup_1536.png",
+      "sha256": "fefd94bbc3d309c6a06d78a106078c9da94df4509e5dea9c89f8c864ae8487ce",
+      "bytes": 2218906,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/shared_core_assets/slime_hazard_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/slime_hazard_1536.png",
+      "sha256": "dedd117242af0d1027286f96036423de3ceb07d4b0c1cee515cceca47e673ae5",
+      "bytes": 2657905,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/shared_core_assets/jump_ramp_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/jump_ramp_1536.png",
+      "sha256": "ee97d028b1216e7809ede8acb3f91b30e7ad8a016e2aa973376b3770871daefe",
+      "bytes": 2382312,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/shared_core_assets/iq_fox_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/iq_fox_1536.png",
+      "sha256": "86f6d92c75daa033f12cf98626ab222a823759bbaa381a97d200b09d6304b94f",
+      "bytes": 2437823,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/shared_core_assets/shield_bubble_1536.png",
+      "path": "docs/design_targets/2026-10-05-tracks/shared_icons/shield_bubble_1536.png",
+      "sha256": "fadbedfb3ee335051ad264cb86f3cb87ec77dd7b7c1cbe70bf589f6a22b2ae8b",
+      "bytes": 1959409,
+      "category": "icon_reference",
+      "width": 1536,
+      "height": 1536,
+      "resampled": true
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/reference_images/track_10_hero_2560.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_10_learning_lab_circuit/track_10_hero_2560.png",
+      "sha256": "5d204b26f66b7a9aeb91f7289e01e610d0953ea8968b8206891de3c5015caa8b",
+      "bytes": 6000828,
+      "category": "hero_reference",
+      "width": 2560,
+      "height": 1440,
+      "resampled": true
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/reference_images/track_10_hero_original.png",
+      "path": "docs/design_targets/2026-10-05-tracks/Track_10_learning_lab_circuit/track_10_hero_original.png",
+      "sha256": "9e5ce4c243887bb904750774148b5a09f5f9e0849650b66de58e0484935ec86a",
+      "bytes": 2665103,
+      "category": "hero_reference",
+      "width": 1672,
+      "height": 941,
+      "resampled": false
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/docs/OPUS_HANDOFF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_10_learning_lab_circuit/docs/OPUS_HANDOFF.md",
+      "sha256": "7efbd9732a1e2244f46876a67aa95cf115b8bb53c58a42789a4d42ab5de2072f",
+      "bytes": 305,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/docs/DESIGN_BRIEF.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_10_learning_lab_circuit/docs/DESIGN_BRIEF.md",
+      "sha256": "eec8d0b499d14e9effe84f0290d42f245f210cd543379e0e85a282f1b525eebb",
+      "bytes": 720,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/docs/COPILOT_PROMPT.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_10_learning_lab_circuit/docs/COPILOT_PROMPT.md",
+      "sha256": "6cf18e392bfc8c394e516c23614b9cb41ac1572ebe2db2b9cf6fd1b4651754f2",
+      "bytes": 703,
+      "category": "legacy_note"
+    },
+    {
+      "archive": "Track_10_learning_lab_circuit.zip",
+      "member": "Track_10_learning_lab_circuit/docs/DETAIL_CHECKLIST_120.md",
+      "path": "docs/track_expansion/2026-10-05/legacy_reference_notes/Track_10_learning_lab_circuit/docs/DETAIL_CHECKLIST_120.md",
+      "sha256": "c7a62bf10404c37ef00e82c92723f52306e14cb62c1874cd67de7a7202409894",
+      "bytes": 8029,
+      "category": "legacy_note"
+    }
+  ]
+}

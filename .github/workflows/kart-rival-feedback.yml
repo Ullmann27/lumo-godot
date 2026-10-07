@@ -1,0 +1,124 @@
+name: Lumo Kart Rival Feedback
+
+on:
+  push:
+    branches:
+      - chatgpt/kart-rival-feedback-2026-10-07
+    paths:
+      - "scripts/games/kart_island.gd"
+      - "scripts/games/kart_rival_item_fx.gd"
+      - "scripts/tests/kart_rival_item_feedback_regression.gd"
+      - "scripts/tests/kart_rival_item_showcase.gd"
+      - "scripts/tests/kart_physics_regression.gd"
+      - ".github/workflows/kart-rival-feedback.yml"
+  pull_request:
+    paths:
+      - "scripts/games/kart_island.gd"
+      - "scripts/games/kart_rival_item_fx.gd"
+      - "scripts/tests/kart_rival_item_feedback_regression.gd"
+      - "scripts/tests/kart_rival_item_showcase.gd"
+      - "scripts/tests/kart_physics_regression.gd"
+      - ".github/workflows/kart-rival-feedback.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rival-feedback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import and parse
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit \
+            > "$RUNNER_TEMP/import.log" 2>&1
+          cat "$RUNNER_TEMP/import.log"
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' "$RUNNER_TEMP/import.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/import.log"
+            exit 1
+          fi
+      - name: Rival item fairness and visuals
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 220s Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --script res://scripts/tests/kart_rival_item_feedback_regression.gd \
+            > "$RUNNER_TEMP/rival-feedback.log" 2>&1
+          cat "$RUNNER_TEMP/rival-feedback.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/rival-feedback.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/rival-feedback.log"
+            exit 1
+          fi
+          grep -F '[KartRivalFeedback] PASS:' "$RUNNER_TEMP/rival-feedback.log"
+      - name: Capture real rival item feedback frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/rival-feedback
+          timeout 220s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . \
+            --rendering-method gl_compatibility \
+            --audio-driver Dummy \
+            --script res://scripts/tests/kart_rival_item_showcase.gd \
+            > "$RUNNER_TEMP/rival-shots.log" 2>&1
+          cat "$RUNNER_TEMP/rival-shots.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/rival-shots.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/rival-shots.log"
+            exit 1
+          fi
+          grep -F '[KartRivalShots] PASS:' "$RUNNER_TEMP/rival-shots.log"
+          test "$(find exports/rival-feedback -maxdepth 1 -name '*.png' | wc -l)" -eq 4
+
+      - name: Existing mode regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 300s Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --script res://scripts/tests/kart_modes_regression.gd \
+            > "$RUNNER_TEMP/kart-modes.log" 2>&1
+          cat "$RUNNER_TEMP/kart-modes.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-modes.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/kart-modes.log"
+            exit 1
+          fi
+          grep -F '[KartModesTests] PASS:' "$RUNNER_TEMP/kart-modes.log"
+      - name: Existing physics regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --script res://scripts/tests/kart_physics_regression.gd \
+            > "$RUNNER_TEMP/kart-physics.log" 2>&1
+          cat "$RUNNER_TEMP/kart-physics.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-physics.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/kart-physics.log"
+            exit 1
+          fi
+          grep -F '[KartPhysics]' "$RUNNER_TEMP/kart-physics.log"
+      - name: Preserve evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kart-rival-feedback-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/import.log
+            ${{ runner.temp }}/rival-feedback.log
+            ${{ runner.temp }}/rival-shots.log
+            ${{ runner.temp }}/kart-modes.log
+            ${{ runner.temp }}/kart-physics.log
+            exports/rival-feedback/*.png
+          if-no-files-found: warn
+          retention-days: 14

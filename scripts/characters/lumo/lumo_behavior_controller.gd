@@ -54,6 +54,7 @@ var _mouth: LumoMouthSystem
 var _arm_left: Node3D
 var _arm_right: Node3D
 var _body: Node3D
+var _body_rest_y: float = 0.0
 var _visual: Node3D
 var _current_behavior: String = ""
 var _active_tween: Tween
@@ -66,6 +67,8 @@ func _ready() -> void:
 	_arm_left = get_node_or_null(arm_left_path) as Node3D
 	_arm_right = get_node_or_null(arm_right_path) as Node3D
 	_body = get_node_or_null(body_path) as Node3D
+	if _body != null:
+		_body_rest_y = _body.position.y
 	_visual = get_node_or_null(visual_root_path) as Node3D
 
 
@@ -80,8 +83,8 @@ func play_behavior(name: String) -> void:
 	_current_behavior = resolved
 	print("behavior:%s" % resolved)
 	EventBus.lumo_behavior_started.emit(resolved)
-	_apply_face(resolved)
 	_stop_active_tween()
+	_apply_face(resolved)
 	match resolved:
 		"idle":
 			_behavior_idle()
@@ -140,7 +143,7 @@ func _reset_pose_partial() -> void:
 	if _arm_right != null:
 		_arm_right.rotation = Vector3(0, 0, deg_to_rad(15))
 	if _body != null:
-		_body.position.y = 0.0
+		_body.position.y = _body_rest_y
 	if _visual != null:
 		_visual.position.y = 0.0
 

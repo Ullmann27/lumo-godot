@@ -1,0 +1,123 @@
+name: Import verified track references 2026-10-05
+on:
+  push:
+    branches: [codex/track-reference-import-2026-10-05]
+    paths:
+      - .github/workflows/import-track-references-2026-10-05.yml
+      - tools/import_track_reference_packs.py
+      - tools/test_track_reference_import.py
+      - docs/track_expansion/2026-10-05/IMPORT_MANIFEST.json
+permissions: {}
+concurrency:
+  group: lumo-track-reference-import-2026-10-05
+  cancel-in-progress: false
+jobs:
+  import:
+    if: github.repository == 'Ullmann27/lumo-godot' && github.ref == 'refs/heads/codex/track-reference-import-2026-10-05' && github.actor == 'Ullmann27'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      EXPECTED_BRANCH: codex/track-reference-import-2026-10-05
+      RELEASE_TAG: track-reference-packs-2026-10-05
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - name: Verify importer identity and negative controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object tools/import_track_reference_packs.py)" = 022d4cf2431e2c534ed4c3f16a7af8c44ae3e339
+          python3 tools/test_track_reference_import.py
+      - name: Download, verify and safely import reference files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/import_track_reference_packs.py \
+            --manifest docs/track_expansion/2026-10-05/IMPORT_MANIFEST.json \
+            --downloads "$RUNNER_TEMP/lumo-track-zips"
+          test -f docs/design_targets/2026-10-05-tracks/.gdignore
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('docs/track_expansion/2026-10-05/IMPORT_REPORT.json')
+          report=json.loads(p.read_text())
+          assert len(report['archives']) == 11
+          assert report['unique_pngs'] == 30
+          assert report['runtime_meshes'] == 0
+          assert all(r['crc_ok'] and r['download_sha256_verified'] for r in report['archives'])
+          assert sum(r['generic_placeholder_lines'] for r in report['archives']) == 1040
+          print('All eleven archives verified; thirty unique reference PNGs; no runtime meshes.')
+          PY
+      - name: Commit only reference data to isolated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/$EXPECTED_BRANCH"
+          CURRENT=$(git ls-remote origin "refs/heads/$EXPECTED_BRANCH" | cut -f1)
+          test "$CURRENT" = "$GITHUB_SHA"
+          git add -- docs/design_targets/2026-10-05-tracks docs/track_expansion/2026-10-05
+          git diff --cached --name-only > "$RUNNER_TEMP/import-paths.txt"
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          files=Path(os.environ['RUNNER_TEMP'],'import-paths.txt').read_text().splitlines()
+          prefixes=('docs/design_targets/2026-10-05-tracks/', 'docs/track_expansion/2026-10-05/')
+          assert files and all(p.startswith(prefixes) for p in files), files
+          assert not any(p.endswith(('.gd','.tscn','.glb','.gltf','.apk')) for p in files)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'assets(reference): import verified ten-track concept pack, preserve original graphics'
+          git push origin "HEAD:refs/heads/$EXPECTED_BRANCH"
+          echo "IMPORT_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Upload original archives and master as reference prerelease
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'A release already exists: refuse replacement; inspect before retrying.' >&2
+            exit 1
+          fi
+          cat > "$RUNNER_TEMP/reference-release-notes.md" <<EOF
+          # Lumo Kart – zehn Strecken-Referenzpakete
+
+          Elf Original-ZIPs plus Master-ZIP. SHA-256 und Archiv-CRC wurden vor dem Upload verifiziert.
+          **Referenzbilder und Bauunterlagen, keine fertigen 3D-Modelle oder neuen spielbaren Strecken.**
+          Die 120-Punkte-Listen enthalten je 104 allgemeine Platzhalter. Der aktuelle Bauauftrag ersetzt diese unzureichende Vorgabe.
+          Kein produktiver Spiel-Release und keine APK. Opus' bestehende Laufzeitgrafik wurde nicht geändert.
+
+          [Vollständiger Bauauftrag](https://github.com/$GITHUB_REPOSITORY/blob/$IMPORT_SHA/docs/track_expansion/2026-10-05/IMPLEMENTATION_ORDER.md)
+          [Entpackte Bildreferenzen](https://github.com/$GITHUB_REPOSITORY/tree/$IMPORT_SHA/docs/design_targets/2026-10-05-tracks)
+          [Importbericht](https://github.com/$GITHUB_REPOSITORY/blob/$IMPORT_SHA/docs/track_expansion/2026-10-05/IMPORT_REPORT.json)
+          EOF
+          gh release create "$RELEASE_TAG" "$RUNNER_TEMP/lumo-track-zips/"* \
+            --repo "$GITHUB_REPOSITORY" --target "$IMPORT_SHA" \
+            --title 'Lumo Kart – zehn Strecken-Referenzpakete' \
+            --notes-file "$RUNNER_TEMP/reference-release-notes.md" \
+            --draft --prerelease --latest=false
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RUNNER_TEMP/reference-release.json"
+          python3 - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          release=json.loads((root/'reference-release.json').read_text())
+          assets={a['name']:a for a in release['assets']}
+          expected={p.name:p for p in (root/'lumo-track-zips').iterdir() if p.is_file()}
+          assert set(assets)==set(expected), (set(assets),set(expected))
+          for name,path in expected.items():
+              asset=assets[name]
+              assert asset['state']=='uploaded' and asset['size']==path.stat().st_size, name
+              digest=hashlib.sha256(path.read_bytes()).hexdigest()
+              assert asset.get('digest')=='sha256:'+digest, (name,asset.get('digest'))
+          print(f'GitHub confirmed size and SHA-256 digest for all {len(assets)} release assets.')
+          PY
+          gh release edit "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft=false
+          echo "Reference release: https://github.com/$GITHUB_REPOSITORY/releases/tag/$RELEASE_TAG" >> "$GITHUB_STEP_SUMMARY"
+          echo "Reference commit: $IMPORT_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo 'No runtime graphics, physics, characters or Flutter pins changed.' >> "$GITHUB_STEP_SUMMARY"

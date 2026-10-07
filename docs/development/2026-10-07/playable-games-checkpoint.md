@@ -1,0 +1,110 @@
+# Lumo: playable games and track expansion — 7 October 2026
+
+Runtime source: `9d99fd9b5a0f5383199675ba9213290f5b511f61`.
+Successful real-render workflow: https://github.com/Ullmann27/lumo-godot/actions/runs/37644437370
+Artifact: `lumo-creative-runtime-37644437370` (artifact ID `11493287124`; exact name can be checked in that run).
+
+## Resulting playable behavior
+
+The Flutter creative shelf can enter four native scenes using the existing
+private Android game process and durable HostBridge. SceneRouter and AppBoot
+accept puzzle/build/rhythm/treasure alongside the established kart and jump.
+All four creative scenes apply native safe insets, use landscape, pause on
+Android Back/background, and return through the existing host bridge.
+
+- **Bauwelt:** 28 building parts; 33×33 area, height 20, at most 768 parts;
+  quarter-turn placement; occupied-volume and support validation; meaningful
+  house, connected bridge, tower, garden, castle and village goals; 64 undo/redo
+  steps; six independent worlds per child; atomic JSON saves, camera recovery,
+  templates and real collision meshes. The initial castle contains 161 parts.
+  A successful goal gives 3 stars / 24 XP exactly once per child and goal.
+- **Puzzle:** original matching interlocking 3D meshes, 12/24/48/96 parts,
+  three existing/original motifs, tray paging, edge filter, image preview,
+  hint marker, actual ray-pick/lift/drag and correct-slot snap. Square and wide
+  artwork retains its proportions. Atomic saves retain free and placed pieces,
+  moves, hints, elapsed time and result identity. No reward before completion.
+- **Rhythm:** three original synthesized songs (96/108/120 BPM), four lanes,
+  tap/hold/slide/star notes, touch or D/F/G/H, three timing difficulties,
+  accuracy/combo/results, audio/time pause and saved best results. Zero-input
+  rounds cannot earn stars. Unfinished songs restart rather than resume after
+  process death; this is distinct from the saved best results.
+- **Treasure:** original island, castle, garden and river route; seven clues
+  gated by actual distance, correct answers and inventory; a locked bridge
+  that cannot be jumped past; physical walking/jumping; inventory view; atomic
+  per-child chapter/position/result saves. Completion gives 3 stars / 40 XP.
+
+Learning remains in Flutter. Kart races do not ask learning questions.
+
+## Kart expansion
+
+The four established worlds remain. Eight separate circuits bring the menu and
+cup to twelve worlds. Their measured new lengths are 691–803 m: Crystal Canyon,
+Jungle Temple, Candy Cloud, Volcano Night, Winter Sprint, Galaxy Ringway,
+Desert Drift and Learning Lab. Landmarks, road/sky materials and track geometry
+differ; the expansion is not twelve copies with renamed labels.
+
+Five circuits have physical ramp launches and landing recovery. Candy,
+Volcano and Galaxy have optional momentum-dependent right-lane loops with
+actual inversion, upright camera, insufficient-speed exit and safe recovery.
+Rivals retain the main racing lane. Existing shield/impulse warnings and
+fairness feedback from PR21 remain.
+
+Reference direction is grounded in Heinz's two 10-second Candy/Volcano videos,
+the supplied 2026-10-05 track boards and existing Opus fox/kart design. Original
+sandstone imagery is identified as generated art; runtime captures come from
+Godot, not image generation. Existing design-target assets remain intact.
+
+## Meaningful verification
+
+Godot 4.6.3 ran the actual scenes on Ubuntu/Mesa llvmpipe. The workflow produced
+27 gameplay/menu PNGs from the tested source. Tests cover real scene startup;
+supported/unsupported building, overlap, removal safety, connected bridge,
+house/castle/village goals, undo/redo and rejected corrupt saves; rhythm
+timing/early release/slide/pause; clue proximity and inventory gates; puzzle
+matching edges, wrong-slot rejection, real input picking/drag/snap and JSON
+resume; eight distinct driving worlds, ramp flight/landing and three complete
+loop inversion/recovery paths. All passed.
+
+The garage additionally passes five real screenshot/pixel-directed setup
+steps and starts a cup at 1280×720, 800×480 and 640×320 with simulated safe insets.
+Short landscape uses a compact two-column preview, correctly cached control
+minimum sizes and a bounded cup summary. The embedded garage does not apply
+safe insets twice. Its preview and footer stay inside the visible safe area.
+
+The actual garage-to-race transition now recomputes the driving layout, restores
+the HUD anchors after changing minimum sizes, and uses two rows of >=44px actions
+in short landscape. The menu-flow regression checks the controls after real
+setup input without manually repairing the resulting layout. Three additional
+race PNGs cover 1280×720, 800×480 and 640×320. The final screenshot run uses exactly the runtime pin above. Complete button
+words and multiline labels are measured against their actual font metrics
+after compact resizing; every label must fit within its touch area. This fixes
+the clipped BREMSE/DRIFT labels observed on the integrated Android APK.
+
+## Complete engine and native Android check
+
+General workflow https://github.com/Ullmann27/lumo-godot/actions/runs/37640847776
+passed on test/documentation head `bd5f95a6ec91ad951d8cd137db1522b7f3d54b21`.
+This precedes the final label-fitting correction. Project import, all regressions, Linux
+export/smoke, Web packaging, Android native package and real five-step touch
+selection passed. Android restarted the first menu normally before opening the
+fresh Kart route; rendered race and small landscape controls were captured.
+The diagnostics artifact is `11491659300`; package/images artifact `11492907272`.
+No release or Pages publication ran on this pull-request event.
+The final runtime has a second full check at
+https://github.com/Ullmann27/lumo-godot/actions/runs/37644447126.
+This final check passed, including the actual Android launch, five setup
+touches, compact rendered race and Linux/Web/Android packaging.
+
+## Limits and next evidence
+
+These are playable development scenes, not a completed visual approval against
+the videos. Candy/Volcano still have a **VISUAL_GAP** in model detail, environment
+density, lighting and animation. The preserved Lumo character is a procedural
+animated model, not a verified production skinned GLB. A physical Samsung/Fold
+frame-rate, thermal, touch/hinge or 60-FPS acceptance has not been performed.
+The APK runtime probe separately reports installation, profile, save, pause,
+reward and actual native scene behavior; it does not imply full song/puzzle/
+treasure completion or all twelve complete races on Android.
+
+The branch stays isolated. No main merge, release publication or physical-device
+approval is implied by this checkpoint.
