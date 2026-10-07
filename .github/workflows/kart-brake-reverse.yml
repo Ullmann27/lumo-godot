@@ -1,0 +1,95 @@
+name: Lumo Kart Brake and Reverse
+
+on:
+  push:
+    branches:
+      - chatgpt/kart-brake-reverse-2026-10-07
+    paths:
+      - "scripts/games/kart_island.gd"
+      - "scripts/games/kart_vehicle.gd"
+      - "scripts/tests/kart_brake_reverse_feedback_regression.gd"
+      - "scripts/tests/kart_physics_regression.gd"
+      - "scripts/tests/kart_touch_regression.gd"
+      - "scripts/tests/kart_vehicle_regression.gd"
+      - ".github/workflows/kart-brake-reverse.yml"
+  pull_request:
+    paths:
+      - "scripts/games/kart_island.gd"
+      - "scripts/games/kart_vehicle.gd"
+      - "scripts/tests/kart_brake_reverse_feedback_regression.gd"
+      - "scripts/tests/kart_physics_regression.gd"
+      - "scripts/tests/kart_touch_regression.gd"
+      - "scripts/tests/kart_vehicle_regression.gd"
+      - ".github/workflows/kart-brake-reverse.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  brake-reverse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import and parse
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit > "$RUNNER_TEMP/import.log" 2>&1
+          cat "$RUNNER_TEMP/import.log"
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' "$RUNNER_TEMP/import.log"; then exit 1; fi
+      - name: Brake and reverse contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 220s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://scripts/tests/kart_brake_reverse_feedback_regression.gd > "$RUNNER_TEMP/brake-reverse.log" 2>&1
+          cat "$RUNNER_TEMP/brake-reverse.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/brake-reverse.log"; then exit 1; fi
+          grep -F '[KartBrakeReverse] PASS:' "$RUNNER_TEMP/brake-reverse.log"
+      - name: Existing physics
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 260s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://scripts/tests/kart_physics_regression.gd > "$RUNNER_TEMP/physics.log" 2>&1
+          cat "$RUNNER_TEMP/physics.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/physics.log"; then exit 1; fi
+          grep -F '[KartPhysics] PASS:' "$RUNNER_TEMP/physics.log"
+      - name: Existing two-finger touch
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 260s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 --path . --rendering-method gl_compatibility --audio-driver Dummy --script res://scripts/tests/kart_touch_regression.gd > "$RUNNER_TEMP/touch.log" 2>&1
+          cat "$RUNNER_TEMP/touch.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/touch.log"; then exit 1; fi
+          grep -F '[KartTouchTests] PASS:' "$RUNNER_TEMP/touch.log"
+      - name: Existing vehicle geometry and LOD
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 280s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://scripts/tests/kart_vehicle_regression.gd > "$RUNNER_TEMP/vehicle.log" 2>&1
+          cat "$RUNNER_TEMP/vehicle.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/vehicle.log"; then exit 1; fi
+          grep -F '[KartVehicle] Geometry/colours' "$RUNNER_TEMP/vehicle.log"
+      - name: Preserve evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kart-brake-reverse-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/import.log
+            ${{ runner.temp }}/brake-reverse.log
+            ${{ runner.temp }}/physics.log
+            ${{ runner.temp }}/touch.log
+            ${{ runner.temp }}/vehicle.log
+          if-no-files-found: warn
+          retention-days: 14
