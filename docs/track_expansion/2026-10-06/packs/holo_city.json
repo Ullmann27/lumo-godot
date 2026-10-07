@@ -2002,7 +2002,7 @@
       "camera": {
         "projection": "orthographic",
         "axis": "front",
-        "orthographic_size_m": 220
+        "orthographic_size_m": 100
       },
       "acceptance": "Vollständige Hologramm-City-Route inklusive aller 13 Control Points und Routenabschluss liegt im Bild."
     },
@@ -2013,7 +2013,7 @@
       "camera": {
         "projection": "orthographic",
         "axis": "left",
-        "orthographic_size_m": 220
+        "orthographic_size_m": 100
       },
       "acceptance": "Vollständige Hologramm-City-Route inklusive aller 13 Control Points und Routenabschluss liegt im Bild."
     },
@@ -2024,7 +2024,7 @@
       "camera": {
         "projection": "orthographic",
         "axis": "right",
-        "orthographic_size_m": 220
+        "orthographic_size_m": 100
       },
       "acceptance": "Vollständige Hologramm-City-Route inklusive aller 13 Control Points und Routenabschluss liegt im Bild."
     },

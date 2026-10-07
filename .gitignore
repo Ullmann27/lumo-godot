@@ -31,3 +31,6 @@ android/build/
 
 __pycache__/
 *.pyc
+
+# Generated developer-pack build output (GitHub Actions artifacts only)
+dist/
