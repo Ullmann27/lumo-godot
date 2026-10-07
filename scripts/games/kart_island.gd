@@ -688,20 +688,20 @@ func _build_ui() -> void:
 	safe.add_child(column)
 	var top := HBoxContainer.new()
 	column.add_child(top)
-	top_menu_button = _button("‹ Menü", _pause)
+	top_menu_button = _button("‹ Menü", _pause, Color(0.035, 0.085, 0.16, 0.82))
 	top.add_child(top_menu_button)
-	top_reset_button = _button("↺", _reset_kart)
+	top_reset_button = _button("↺", _reset_kart, Color(0.035, 0.085, 0.16, 0.82))
 	top.add_child(top_reset_button)
 	var hud_panel := PanelContainer.new()
 	hud_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hud_panel.add_theme_stylebox_override("panel", _style(Color("102441")))
+	hud_panel.add_theme_stylebox_override("panel", _style(Color(0.035, 0.085, 0.16, 0.76)))
 	top.add_child(hud_panel)
 	hud = _label("SONNENHAFEN", 23)
 	hud.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hud.autowrap_mode = TextServer.AUTOWRAP_OFF
 	hud.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	hud_panel.add_child(hud)
-	top_pause_button = _button("Ⅱ Pause", _pause)
+	top_pause_button = _button("Ⅱ Pause", _pause, Color(0.035, 0.085, 0.16, 0.82))
 	top.add_child(top_pause_button)
 	message = _label("", 21)
 	message.add_theme_color_override("font_color", Color("f4f8ff"))
@@ -737,7 +737,7 @@ func _build_ui() -> void:
 	map_panel.offset_right = -22
 	map_panel.offset_top = 104
 	map_panel.offset_bottom = 260
-	map_panel.add_theme_stylebox_override("panel", _style(Color(0.03, 0.08, 0.15, 0.9)))
+	map_panel.add_theme_stylebox_override("panel", _style(Color(0.025, 0.065, 0.13, 0.78)))
 	map_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	safe_ui.add_child(map_panel)
 	map = MINIMAP.new()
