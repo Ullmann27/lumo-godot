@@ -259,7 +259,27 @@ func _test_rival_item_tactics() -> void:
 	game.shield_time = 0.0
 	game.opponent_items[2] = "pulse"
 	game._update_rival_item_tactics(2, Vector3(0, 0, 5), STEP)
-	assert(game.hit_timer > 0.0, "Rival pulse can pressure the player at close range")
+	assert(
+		game.hit_timer == 0.0 and game.opponent_pulse_warning_times[2] > 0.0,
+		"Rival pulse must warn before it can affect the player"
+	)
+	game._update_rival_item_tactics(
+		2,
+		Vector3(0, 0, 5),
+		game.RIVAL_PULSE_WARNING_SECONDS + STEP
+	)
+	assert(game.hit_timer > 0.0, "Rival pulse can pressure a player who stays in range")
+
+	game.hit_timer = 0.0
+	game.shield_time = 4.0
+	game.opponent_items[3] = "pulse"
+	game._update_rival_item_tactics(3, Vector3(0, 0, 5), STEP)
+	game._update_rival_item_tactics(
+		3,
+		Vector3(0, 0, 5),
+		game.RIVAL_PULSE_WARNING_SECONDS + STEP
+	)
+	assert(game.hit_timer == 0.0, "Player shield blocks a telegraphed rival pulse")
 
 
 func _test_wolkenweg_split_route() -> void:
