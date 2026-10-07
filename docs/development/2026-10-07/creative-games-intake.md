@@ -1,6 +1,6 @@
 # Lumo Spielewelt: zusammenhängende Umsetzung
 
-Flutter basis: b6a0afa421e5e854345ac5cc2be1813a7c3e50 (PR207, exact actual SHA recorded by git).
+Flutter basis: b6a0afa421e5e854345bfac5cc2be1813a7c3e50 (PR207, exact actual SHA recorded by git).
 Godot basis: 06d27c33f2273ecd3d32bb863c62303c7e51ad44 (PR22; includes PR21 rival warning).
 Own branches: chatgpt/lumo-complete-games-2026-10-07 in both repositories.
 
