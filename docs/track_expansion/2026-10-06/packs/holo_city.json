@@ -1,0 +1,2185 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "lumo.track.holo_city.2026-10-06",
+  "track_id": "holo_city",
+  "display_name": "Hologramm-City",
+  "subtitle": "Über den Dächern der Zukunft",
+  "units": "metres",
+  "status": "authoring_source",
+  "authorities": {
+    "catalog": "scripts/games/kart_tracks.gd:LumoKartTracks.definition",
+    "world_builder": "scripts/games/kart_world.gd",
+    "curve_builder": "scripts/games/kart_world.gd:LumoRaceWorld._make_curve",
+    "road_builder": "scripts/games/kart_world.gd:LumoRaceWorld._road",
+    "spec": "docs/track_expansion/2026-10-06/TRACK_DEVELOPER_PACK_SPEC.md",
+    "no_parallel_spline": true
+  },
+  "route": {
+    "control_point_ids": [
+      "CP00",
+      "CP01",
+      "CP02",
+      "CP03",
+      "CP04",
+      "CP05",
+      "CP06",
+      "CP07",
+      "CP08",
+      "CP09",
+      "CP10",
+      "CP11",
+      "CP12"
+    ],
+    "control_point_labels": [
+      "NEXUS-Start",
+      "NOVA-LINK",
+      "Billboard-Canyon A",
+      "LUMO NEXUS",
+      "Skyline-Knick",
+      "Billboard-Canyon B",
+      "AURORA-LINK",
+      "Transitbogen",
+      "STAR CORE",
+      "Holo-Gate Süd",
+      "Neon-Hochfahrt",
+      "NEXUS-Rücklauf",
+      "Stadtportal"
+    ],
+    "control_points_xyz_m": [
+      [
+        0.0,
+        9.0,
+        64.0
+      ],
+      [
+        45.0,
+        9.0,
+        57.0
+      ],
+      [
+        74.0,
+        13.0,
+        32.0
+      ],
+      [
+        76.0,
+        20.0,
+        -5.0
+      ],
+      [
+        48.0,
+        23.0,
+        -24.0
+      ],
+      [
+        63.0,
+        19.0,
+        -58.0
+      ],
+      [
+        24.0,
+        12.0,
+        -75.0
+      ],
+      [
+        -12.0,
+        11.0,
+        -59.0
+      ],
+      [
+        -54.0,
+        16.0,
+        -69.0
+      ],
+      [
+        -79.0,
+        22.0,
+        -25.0
+      ],
+      [
+        -55.0,
+        18.0,
+        4.0
+      ],
+      [
+        -76.0,
+        11.0,
+        34.0
+      ],
+      [
+        -39.0,
+        9.0,
+        64.0
+      ]
+    ],
+    "runtime_horizontal_scale": 1.0,
+    "top_down_centerline": {
+      "coordinate_plane": "X/Z",
+      "closed": true,
+      "sample_interval_m": 0.35,
+      "control_point_smoothing": "current*0.5 + previous*0.25 + next*0.25",
+      "runtime_tangent_scale": 0.22,
+      "runtime_reference": "kart_world.gd:_make_curve; use world.position_at(distance,lateral) for route samples"
+    }
+  },
+  "road": {
+    "width_m": 10.8,
+    "visible_rail_lateral_m": 6.05,
+    "collision_wall_lateral_m": 5.0,
+    "invariant": "The visual rail and collision wall must be measured independently and remain consistent with kart_world.gd."
+  },
+  "geometry_guides": {
+    "road": {
+      "authoring": "Follow existing closed Catmull-Rom/Bézier centerline; 10.8-m full-width ribbon; visible and collision rails share declared lateral offsets."
+    },
+    "ramp": {
+      "authoring": "Place ramp mesh on this pack’s named existing CP interval; authoring geometry and collision proxy remain separate."
+    },
+    "bridge": {
+      "authoring": "Build bridge as centerline-following deck modules, width 13.4 m for the existing Sky bridge convention or source-module width when not a Sky module; keep support mesh and collision proxy separate."
+    },
+    "tunnel": {
+      "authoring": "Use existing centerline tangent and define clear height/width; use a visual vault and separately inspect the simple collision envelope."
+    },
+    "full_loop": {
+      "authoring": "360-degree planar loop centered on existing route anchor; prototype geometry only at 0.880 route fraction.",
+      "status": "planned_requires_inverted_physics",
+      "runtime_enabled": false,
+      "collision_enabled": false,
+      "centerline_radius_m": 12.0,
+      "road_width_m": 10.8,
+      "vertical_rise_m": 24.0,
+      "approach_length_m": 18.0,
+      "surface_segments": 96,
+      "prototype_scene": null,
+      "gate": "Do not place on race Centerline or enable until gravity/up, camera, AI, collision, checkpoint/respawn, and full Player+AI 360-degree run all pass."
+    }
+  },
+  "signature_setpieces": [
+    {
+      "id": "nova_link",
+      "name": "NOVA-LINK Skybridge",
+      "status": "implemented",
+      "anchor_fraction": 0.29,
+      "authority": "kart_world.gd:_holo_skybridge",
+      "dimensions_m": {
+        "x": 18.0,
+        "y": 10.0,
+        "z": 2.4
+      },
+      "palette_role": "Cyan-Deck mit sieben violett/cyan Unterrippen",
+      "handoff_notes": [
+        "Prüfe Brückendeckbreite 18 m und Höhe 8.1 m über bestehender Straße.",
+        "Prüfe sieben Licht-Rippen mit 2.2-m-Abstand längs der 18-m-Spannweite.",
+        "Prüfe beide Pylone stehen auf ±8.7 m außerhalb des 6.05-m-Railversatzes."
+      ]
+    },
+    {
+      "id": "lumo_nexus",
+      "name": "LUMO NEXUS Landmark-Spire",
+      "status": "implemented",
+      "anchor_fraction": 0.41,
+      "authority": "kart_world.gd:_holo_landmark_spire",
+      "dimensions_m": {
+        "x": 8.5,
+        "y": 34.0,
+        "z": 8.5
+      },
+      "palette_role": "Glasblauer Turm mit vier Neon-Ringgeschossen",
+      "handoff_notes": [
+        "Prüfe 34-m-Turm mit 8.5-m-Fußmaß außerhalb der Streckenrails.",
+        "Prüfe vier Ringlagen beginnen bei 7.5 m und steigen im Abstand 6.3 m.",
+        "Prüfe Beschriftung LUMO NEXUS zur Straßenkamera bei 0.41 Rundenanteil."
+      ]
+    },
+    {
+      "id": "billboard_canyon",
+      "name": "Billboard-Canyon",
+      "status": "implemented",
+      "anchor_fraction": 0.5,
+      "authority": "kart_world.gd:_holo_billboard_canyon",
+      "dimensions_m": {
+        "x": 5.0,
+        "y": 4.3,
+        "z": 0.18
+      },
+      "palette_role": "Zehn Originaltafeln mit vier Lumo-Renntexten",
+      "handoff_notes": [
+        "Prüfe High-Detail-Ziel zehn Tafeln und Low-Detail-Ziel sechs Tafeln.",
+        "Prüfe Tafelformat 5×2.8 m und alternierende Straßenseite.",
+        "Prüfe Textsatz bleibt LUMO/NOVA/AURORA/STAR ohne fremde Markenbegriffe."
+      ]
+    },
+    {
+      "id": "aurora_link",
+      "name": "AURORA-LINK Skybridge",
+      "status": "implemented",
+      "anchor_fraction": 0.64,
+      "authority": "kart_world.gd:_holo_skybridge",
+      "dimensions_m": {
+        "x": 18.0,
+        "y": 10.0,
+        "z": 2.4
+      },
+      "palette_role": "Violett-Cyan-Deck über der Nachtfahrbahn",
+      "handoff_notes": [
+        "Prüfe AURORA-LINK exakt an 0.64 Rundenanteil der bestehenden Kurve.",
+        "Prüfe neonfarbene Deckkante auf 17.3×2.1 m statt transparenter Vollflächen.",
+        "Prüfe die zwei 10-m-Pylone nutzen bestehende Wiederholungs-/Batch-Materialien."
+      ]
+    },
+    {
+      "id": "star_core",
+      "name": "STAR CORE Spire",
+      "status": "implemented",
+      "anchor_fraction": 0.82,
+      "authority": "kart_world.gd:_holo_landmark_spire",
+      "dimensions_m": {
+        "x": 8.5,
+        "y": 34.0,
+        "z": 8.5
+      },
+      "palette_role": "Türkis/Violett-Ringe auf nächtlicher Skyline",
+      "handoff_notes": [
+        "Prüfe STAR CORE bei 0.82 und auf der rechten Außenseite.",
+        "Prüfe Ringdurchmesser 12.4 m und 16 Segmente je Ringlage.",
+        "Prüfe Seitenbeschilderung und Ringlicht ohne fahrbahnnahe Kollisionsobjekte."
+      ]
+    },
+    {
+      "id": "holo_gates",
+      "name": "Holo-Gates",
+      "status": "implemented",
+      "anchor_fraction": 0.45,
+      "authority": "kart_world.gd:_holo_gate",
+      "dimensions_m": {
+        "x": 13.4,
+        "y": 8.8,
+        "z": 0.42
+      },
+      "palette_role": "Türkis leuchtende seitliche Gate-Rahmen",
+      "handoff_notes": [
+        "Prüfe vorhandene Gate-Fraktionen 0.21, 0.45 und 0.69.",
+        "Prüfe 8.4-m-Stützen und 9-m-Querträger an allen drei Instanzen.",
+        "Prüfe Gate-Emissivteile tragen Lichtfarbe, aber keine aktive Collision."
+      ]
+    },
+    {
+      "id": "transit_beacons",
+      "name": "Transit-Beacons",
+      "status": "implemented",
+      "anchor_fraction": 0.55,
+      "authority": "kart_world.gd:_holo_transit_beacons",
+      "dimensions_m": {
+        "x": 3.4,
+        "y": 3.55,
+        "z": 0.85
+      },
+      "palette_role": "Cyan- und Fliederkristalle auf alternierenden Seiten",
+      "handoff_notes": [
+        "Prüfe 18 Beacon-Stationen mit alternierender Seite und 1/18-Streckenabstand.",
+        "Prüfe 3.4-m-Stelenhöhe und 0.85-m-Kristallhöhe.",
+        "Prüfe jeder dritte Beacon wechselt zu Flieder, übrige bleiben Cyan."
+      ]
+    },
+    {
+      "id": "maglev_tunnel",
+      "name": "Maglev-Tunnel",
+      "status": "planned",
+      "anchor_fraction": 0.34,
+      "authority": "kart_tracks.gd:CP02–CP05",
+      "dimensions_m": {
+        "x": 28.0,
+        "y": 9.0,
+        "z": 10.8
+      },
+      "palette_role": "Nexusblaue Rippen und versetzte Cyan-Lichtbänder",
+      "handoff_notes": [
+        "Setze die Tunnellängsachse auf bestehende CP02→CP05 Tangente.",
+        "Prüfe 9-m lichte Höhe über der Fahrbahn für Loop-unabhängige Kamera.",
+        "Prüfe einfaches Tunnel-Collisionproxy bleibt separat vom Neon-Rippenmesh."
+      ]
+    },
+    {
+      "id": "rooftop_split",
+      "name": "Rooftop-Split",
+      "status": "planned",
+      "anchor_fraction": 0.7,
+      "authority": "kart_tracks.gd:CP07–CP10",
+      "dimensions_m": {
+        "x": 22.0,
+        "y": 4.0,
+        "z": 5.4
+      },
+      "palette_role": "Zwei lesbare Fahrspuren zwischen Dachkanten",
+      "handoff_notes": [
+        "Authoring-Gabelung bleibt auf derselben vorhandenen geschlossenen Route.",
+        "Prüfe jede Spur mindestens 5.4 m breit; Außenrails fluchten an 6.05 m.",
+        "Prüfe beide Spuren vor Checkpoint 7 zum identischen Centerline-Sample zurückführen."
+      ]
+    },
+    {
+      "id": "neon_orbital_loop",
+      "name": "Neon Orbital Loop",
+      "status": "planned_requires_inverted_physics",
+      "anchor_fraction": 0.88,
+      "authority": "authoring guide: 2026-10-06 full_loop geometry",
+      "dimensions_m": {
+        "x": 12.0,
+        "y": 24.0,
+        "z": 10.8
+      },
+      "palette_role": "Neoncyan und Aurora-Flieder auf dunklem Loopdeck",
+      "handoff_notes": [
+        "Authoring-Mittelradius 12 m und Fahrbahnbreite 10.8 m dokumentieren.",
+        "Status bleibt planned_requires_inverted_physics bis 360°-Player-/AI-/Respawn-Vertrag besteht.",
+        "Keine Runtime-Spline, Kollision oder Cup-Verknüpfung vor allen sechs Inversions-Gates."
+      ]
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "CP-01",
+      "route_fraction": 0.0,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-02",
+      "route_fraction": 0.125,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-03",
+      "route_fraction": 0.25,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-04",
+      "route_fraction": 0.375,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-05",
+      "route_fraction": 0.5,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-06",
+      "route_fraction": 0.625,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-07",
+      "route_fraction": 0.75,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "CP-08",
+      "route_fraction": 0.875,
+      "respawn": "stay within this checkpoint eighth; apply world.safe_respawn_distance() on bergwelt",
+      "source": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    }
+  ],
+  "ai_racing_line": [
+    {
+      "id": "AI-01",
+      "route_fraction": 0.05,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 44,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-02",
+      "route_fraction": 0.15,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 50,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-03",
+      "route_fraction": 0.25,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 56,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-04",
+      "route_fraction": 0.35,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 48,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-05",
+      "route_fraction": 0.45,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 62,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-06",
+      "route_fraction": 0.55,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 52,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-07",
+      "route_fraction": 0.65,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 60,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-08",
+      "route_fraction": 0.75,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 46,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-09",
+      "route_fraction": 0.85,
+      "lateral_m": -3.0,
+      "target_speed_kmh": 58,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    },
+    {
+      "id": "AI-10",
+      "route_fraction": 0.95,
+      "lateral_m": 3.0,
+      "target_speed_kmh": 54,
+      "overtake_clearance_m": 1.4,
+      "source": "authoring target on existing centerline; not an alternate spline"
+    }
+  ],
+  "mystery_prism_zones": [
+    {
+      "id": "MP-01",
+      "name": "Lumo Mystery Prism 1",
+      "route_fraction": 0.18,
+      "lateral_m": -2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-02",
+      "name": "Lumo Mystery Prism 2",
+      "route_fraction": 0.34,
+      "lateral_m": 2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-03",
+      "name": "Lumo Mystery Prism 3",
+      "route_fraction": 0.53,
+      "lateral_m": 0.0,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-04",
+      "name": "Lumo Mystery Prism 4",
+      "route_fraction": 0.69,
+      "lateral_m": -2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "MP-05",
+      "name": "Lumo Mystery Prism 5",
+      "route_fraction": 0.86,
+      "lateral_m": 2.7,
+      "pickup_radius_m": 2.0,
+      "once_per_lap": true,
+      "core_items": [
+        "boost",
+        "shield",
+        "pulse"
+      ],
+      "runtime_source": "kart_island.gd:item_layout + _item_box + _track_events"
+    }
+  ],
+  "fairness": {
+    "basis": "TRACK_DEVELOPER_PACK_SPEC.md; recommended design weights, not a claim of runtime probabilities",
+    "core_items": [
+      "boost",
+      "shield",
+      "pulse"
+    ],
+    "rank_weights": [
+      {
+        "place": "1",
+        "boost": 0.25,
+        "shield": 0.45,
+        "pulse": 0.3
+      },
+      {
+        "place": "2",
+        "boost": 0.32,
+        "shield": 0.4,
+        "pulse": 0.28
+      },
+      {
+        "place": "3-4",
+        "boost": 0.45,
+        "shield": 0.35,
+        "pulse": 0.2
+      },
+      {
+        "place": "5",
+        "boost": 0.6,
+        "shield": 0.25,
+        "pulse": 0.15
+      },
+      {
+        "place": "6",
+        "boost": 0.7,
+        "shield": 0.2,
+        "pulse": 0.1
+      }
+    ],
+    "rule": "Catch-up only through item weights; no teleportation or hidden top-speed advantage."
+  },
+  "palette": [
+    "Nachtasphalt #152d49",
+    "Nexuscyan #6beaff",
+    "Auroraviolett #aa8cff",
+    "Glasblau #2c4e7a",
+    "Leitkante #6ee4f4"
+  ],
+  "details": [
+    {
+      "id": "HOLO_CITY-001",
+      "kind": "control_point",
+      "title": "CP00 — NEXUS-Start — Control-Point-Koordinate",
+      "anchor": "CP00",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=0 m, y=9 m, z=64 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-002",
+      "kind": "control_point",
+      "title": "CP01 — NOVA-LINK — Control-Point-Koordinate",
+      "anchor": "CP01",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=45 m, y=9 m, z=57 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-003",
+      "kind": "control_point",
+      "title": "CP02 — Billboard-Canyon A — Control-Point-Koordinate",
+      "anchor": "CP02",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=74 m, y=13 m, z=32 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-004",
+      "kind": "control_point",
+      "title": "CP03 — LUMO NEXUS — Control-Point-Koordinate",
+      "anchor": "CP03",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=76 m, y=20 m, z=-5 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-005",
+      "kind": "control_point",
+      "title": "CP04 — Skyline-Knick — Control-Point-Koordinate",
+      "anchor": "CP04",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=48 m, y=23 m, z=-24 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-006",
+      "kind": "control_point",
+      "title": "CP05 — Billboard-Canyon B — Control-Point-Koordinate",
+      "anchor": "CP05",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=63 m, y=19 m, z=-58 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-007",
+      "kind": "control_point",
+      "title": "CP06 — AURORA-LINK — Control-Point-Koordinate",
+      "anchor": "CP06",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=24 m, y=12 m, z=-75 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-008",
+      "kind": "control_point",
+      "title": "CP07 — Transitbogen — Control-Point-Koordinate",
+      "anchor": "CP07",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-12 m, y=11 m, z=-59 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-009",
+      "kind": "control_point",
+      "title": "CP08 — STAR CORE — Control-Point-Koordinate",
+      "anchor": "CP08",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-54 m, y=16 m, z=-69 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-010",
+      "kind": "control_point",
+      "title": "CP09 — Holo-Gate Süd — Control-Point-Koordinate",
+      "anchor": "CP09",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-79 m, y=22 m, z=-25 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-011",
+      "kind": "control_point",
+      "title": "CP10 — Neon-Hochfahrt — Control-Point-Koordinate",
+      "anchor": "CP10",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-55 m, y=18 m, z=4 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-012",
+      "kind": "control_point",
+      "title": "CP11 — NEXUS-Rücklauf — Control-Point-Koordinate",
+      "anchor": "CP11",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-76 m, y=11 m, z=34 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-013",
+      "kind": "control_point",
+      "title": "CP12 — Stadtportal — Control-Point-Koordinate",
+      "anchor": "CP12",
+      "verification": "Vergleiche den Katalogpunkt exakt mit x=-39 m, y=9 m, z=64 m; keine Pack-seitige Spline darf ihn ersetzen.",
+      "authority": "scripts/games/kart_tracks.gd:definition().points"
+    },
+    {
+      "id": "HOLO_CITY-014",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP00 → CP01 — Breite und Übergang",
+      "anchor": "CP00→CP01",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen NEXUS-Start und NOVA-LINK; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-015",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP01 → CP02 — Breite und Übergang",
+      "anchor": "CP01→CP02",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen NOVA-LINK und Billboard-Canyon A; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-016",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP02 → CP03 — Breite und Übergang",
+      "anchor": "CP02→CP03",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Billboard-Canyon A und LUMO NEXUS; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-017",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP03 → CP04 — Breite und Übergang",
+      "anchor": "CP03→CP04",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen LUMO NEXUS und Skyline-Knick; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-018",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP04 → CP05 — Breite und Übergang",
+      "anchor": "CP04→CP05",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Skyline-Knick und Billboard-Canyon B; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-019",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP05 → CP06 — Breite und Übergang",
+      "anchor": "CP05→CP06",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Billboard-Canyon B und AURORA-LINK; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-020",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP06 → CP07 — Breite und Übergang",
+      "anchor": "CP06→CP07",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen AURORA-LINK und Transitbogen; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-021",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP07 → CP08 — Breite und Übergang",
+      "anchor": "CP07→CP08",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Transitbogen und STAR CORE; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-022",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP08 → CP09 — Breite und Übergang",
+      "anchor": "CP08→CP09",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen STAR CORE und Holo-Gate Süd; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-023",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP09 → CP10 — Breite und Übergang",
+      "anchor": "CP09→CP10",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Holo-Gate Süd und Neon-Hochfahrt; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-024",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP10 → CP11 — Breite und Übergang",
+      "anchor": "CP10→CP11",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Neon-Hochfahrt und NEXUS-Rücklauf; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-025",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP11 → CP12 — Breite und Übergang",
+      "anchor": "CP11→CP12",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen NEXUS-Rücklauf und Stadtportal; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-026",
+      "kind": "centerline_segment",
+      "title": "Centerline-Sektor CP12 → CP00 — Breite und Übergang",
+      "anchor": "CP12→CP00",
+      "verification": "Sample den gesamten vorhandenen Catmull-Rom/Bézier-Sektor zwischen Stadtportal und NEXUS-Start; Belag bleibt 10.8 m breit und Tangente wechselt ohne sichtbaren Sprung.",
+      "authority": "kart_world.gd:_make_curve + _road"
+    },
+    {
+      "id": "HOLO_CITY-027",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 1 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.000 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.000×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "HOLO_CITY-028",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 2 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.125 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.125×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "HOLO_CITY-029",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 3 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.250 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.250×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "HOLO_CITY-030",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 4 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.375 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.375×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "HOLO_CITY-031",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 5 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.500 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.500×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "HOLO_CITY-032",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 6 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.625 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.625×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "HOLO_CITY-033",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 7 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.750 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.750×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "HOLO_CITY-034",
+      "kind": "checkpoint_respawn",
+      "title": "Checkpoint 8 — 1/8 Routenintervall und Respawn",
+      "anchor": "0.875 track fraction",
+      "verification": "Leite den Kontrollpunkt bei 0.875×track_length aus checkpoint_positions ab; Reset bleibt im zugehörigen Achtel und respektiert bei Himmelsinseln jump_layout().",
+      "authority": "kart_world.gd:_make_curve + kart_island.gd:_reset_kart"
+    },
+    {
+      "id": "HOLO_CITY-035",
+      "kind": "signature_setpiece",
+      "title": "NOVA-LINK Skybridge — Abnahmepunkt 1",
+      "anchor": "0.290 track fraction / nova_link",
+      "verification": "Prüfe Brückendeckbreite 18 m und Höhe 8.1 m über bestehender Straße.",
+      "authority": "kart_world.gd:_holo_skybridge"
+    },
+    {
+      "id": "HOLO_CITY-036",
+      "kind": "signature_setpiece",
+      "title": "NOVA-LINK Skybridge — Abnahmepunkt 2",
+      "anchor": "0.290 track fraction / nova_link",
+      "verification": "Prüfe sieben Licht-Rippen mit 2.2-m-Abstand längs der 18-m-Spannweite.",
+      "authority": "kart_world.gd:_holo_skybridge"
+    },
+    {
+      "id": "HOLO_CITY-037",
+      "kind": "signature_setpiece",
+      "title": "NOVA-LINK Skybridge — Abnahmepunkt 3",
+      "anchor": "0.290 track fraction / nova_link",
+      "verification": "Prüfe beide Pylone stehen auf ±8.7 m außerhalb des 6.05-m-Railversatzes.",
+      "authority": "kart_world.gd:_holo_skybridge"
+    },
+    {
+      "id": "HOLO_CITY-038",
+      "kind": "signature_setpiece",
+      "title": "LUMO NEXUS Landmark-Spire — Abnahmepunkt 1",
+      "anchor": "0.410 track fraction / lumo_nexus",
+      "verification": "Prüfe 34-m-Turm mit 8.5-m-Fußmaß außerhalb der Streckenrails.",
+      "authority": "kart_world.gd:_holo_landmark_spire"
+    },
+    {
+      "id": "HOLO_CITY-039",
+      "kind": "signature_setpiece",
+      "title": "LUMO NEXUS Landmark-Spire — Abnahmepunkt 2",
+      "anchor": "0.410 track fraction / lumo_nexus",
+      "verification": "Prüfe vier Ringlagen beginnen bei 7.5 m und steigen im Abstand 6.3 m.",
+      "authority": "kart_world.gd:_holo_landmark_spire"
+    },
+    {
+      "id": "HOLO_CITY-040",
+      "kind": "signature_setpiece",
+      "title": "LUMO NEXUS Landmark-Spire — Abnahmepunkt 3",
+      "anchor": "0.410 track fraction / lumo_nexus",
+      "verification": "Prüfe Beschriftung LUMO NEXUS zur Straßenkamera bei 0.41 Rundenanteil.",
+      "authority": "kart_world.gd:_holo_landmark_spire"
+    },
+    {
+      "id": "HOLO_CITY-041",
+      "kind": "signature_setpiece",
+      "title": "Billboard-Canyon — Abnahmepunkt 1",
+      "anchor": "0.500 track fraction / billboard_canyon",
+      "verification": "Prüfe High-Detail-Ziel zehn Tafeln und Low-Detail-Ziel sechs Tafeln.",
+      "authority": "kart_world.gd:_holo_billboard_canyon"
+    },
+    {
+      "id": "HOLO_CITY-042",
+      "kind": "signature_setpiece",
+      "title": "Billboard-Canyon — Abnahmepunkt 2",
+      "anchor": "0.500 track fraction / billboard_canyon",
+      "verification": "Prüfe Tafelformat 5×2.8 m und alternierende Straßenseite.",
+      "authority": "kart_world.gd:_holo_billboard_canyon"
+    },
+    {
+      "id": "HOLO_CITY-043",
+      "kind": "signature_setpiece",
+      "title": "Billboard-Canyon — Abnahmepunkt 3",
+      "anchor": "0.500 track fraction / billboard_canyon",
+      "verification": "Prüfe Textsatz bleibt LUMO/NOVA/AURORA/STAR ohne fremde Markenbegriffe.",
+      "authority": "kart_world.gd:_holo_billboard_canyon"
+    },
+    {
+      "id": "HOLO_CITY-044",
+      "kind": "signature_setpiece",
+      "title": "AURORA-LINK Skybridge — Abnahmepunkt 1",
+      "anchor": "0.640 track fraction / aurora_link",
+      "verification": "Prüfe AURORA-LINK exakt an 0.64 Rundenanteil der bestehenden Kurve.",
+      "authority": "kart_world.gd:_holo_skybridge"
+    },
+    {
+      "id": "HOLO_CITY-045",
+      "kind": "signature_setpiece",
+      "title": "AURORA-LINK Skybridge — Abnahmepunkt 2",
+      "anchor": "0.640 track fraction / aurora_link",
+      "verification": "Prüfe neonfarbene Deckkante auf 17.3×2.1 m statt transparenter Vollflächen.",
+      "authority": "kart_world.gd:_holo_skybridge"
+    },
+    {
+      "id": "HOLO_CITY-046",
+      "kind": "signature_setpiece",
+      "title": "AURORA-LINK Skybridge — Abnahmepunkt 3",
+      "anchor": "0.640 track fraction / aurora_link",
+      "verification": "Prüfe die zwei 10-m-Pylone nutzen bestehende Wiederholungs-/Batch-Materialien.",
+      "authority": "kart_world.gd:_holo_skybridge"
+    },
+    {
+      "id": "HOLO_CITY-047",
+      "kind": "signature_setpiece",
+      "title": "STAR CORE Spire — Abnahmepunkt 1",
+      "anchor": "0.820 track fraction / star_core",
+      "verification": "Prüfe STAR CORE bei 0.82 und auf der rechten Außenseite.",
+      "authority": "kart_world.gd:_holo_landmark_spire"
+    },
+    {
+      "id": "HOLO_CITY-048",
+      "kind": "signature_setpiece",
+      "title": "STAR CORE Spire — Abnahmepunkt 2",
+      "anchor": "0.820 track fraction / star_core",
+      "verification": "Prüfe Ringdurchmesser 12.4 m und 16 Segmente je Ringlage.",
+      "authority": "kart_world.gd:_holo_landmark_spire"
+    },
+    {
+      "id": "HOLO_CITY-049",
+      "kind": "signature_setpiece",
+      "title": "STAR CORE Spire — Abnahmepunkt 3",
+      "anchor": "0.820 track fraction / star_core",
+      "verification": "Prüfe Seitenbeschilderung und Ringlicht ohne fahrbahnnahe Kollisionsobjekte.",
+      "authority": "kart_world.gd:_holo_landmark_spire"
+    },
+    {
+      "id": "HOLO_CITY-050",
+      "kind": "signature_setpiece",
+      "title": "Holo-Gates — Abnahmepunkt 1",
+      "anchor": "0.450 track fraction / holo_gates",
+      "verification": "Prüfe vorhandene Gate-Fraktionen 0.21, 0.45 und 0.69.",
+      "authority": "kart_world.gd:_holo_gate"
+    },
+    {
+      "id": "HOLO_CITY-051",
+      "kind": "signature_setpiece",
+      "title": "Holo-Gates — Abnahmepunkt 2",
+      "anchor": "0.450 track fraction / holo_gates",
+      "verification": "Prüfe 8.4-m-Stützen und 9-m-Querträger an allen drei Instanzen.",
+      "authority": "kart_world.gd:_holo_gate"
+    },
+    {
+      "id": "HOLO_CITY-052",
+      "kind": "signature_setpiece",
+      "title": "Holo-Gates — Abnahmepunkt 3",
+      "anchor": "0.450 track fraction / holo_gates",
+      "verification": "Prüfe Gate-Emissivteile tragen Lichtfarbe, aber keine aktive Collision.",
+      "authority": "kart_world.gd:_holo_gate"
+    },
+    {
+      "id": "HOLO_CITY-053",
+      "kind": "signature_setpiece",
+      "title": "Transit-Beacons — Abnahmepunkt 1",
+      "anchor": "0.550 track fraction / transit_beacons",
+      "verification": "Prüfe 18 Beacon-Stationen mit alternierender Seite und 1/18-Streckenabstand.",
+      "authority": "kart_world.gd:_holo_transit_beacons"
+    },
+    {
+      "id": "HOLO_CITY-054",
+      "kind": "signature_setpiece",
+      "title": "Transit-Beacons — Abnahmepunkt 2",
+      "anchor": "0.550 track fraction / transit_beacons",
+      "verification": "Prüfe 3.4-m-Stelenhöhe und 0.85-m-Kristallhöhe.",
+      "authority": "kart_world.gd:_holo_transit_beacons"
+    },
+    {
+      "id": "HOLO_CITY-055",
+      "kind": "signature_setpiece",
+      "title": "Transit-Beacons — Abnahmepunkt 3",
+      "anchor": "0.550 track fraction / transit_beacons",
+      "verification": "Prüfe jeder dritte Beacon wechselt zu Flieder, übrige bleiben Cyan.",
+      "authority": "kart_world.gd:_holo_transit_beacons"
+    },
+    {
+      "id": "HOLO_CITY-056",
+      "kind": "signature_setpiece",
+      "title": "Maglev-Tunnel — Abnahmepunkt 1",
+      "anchor": "0.340 track fraction / maglev_tunnel",
+      "verification": "Setze die Tunnellängsachse auf bestehende CP02→CP05 Tangente.",
+      "authority": "kart_tracks.gd:CP02–CP05"
+    },
+    {
+      "id": "HOLO_CITY-057",
+      "kind": "signature_setpiece",
+      "title": "Maglev-Tunnel — Abnahmepunkt 2",
+      "anchor": "0.340 track fraction / maglev_tunnel",
+      "verification": "Prüfe 9-m lichte Höhe über der Fahrbahn für Loop-unabhängige Kamera.",
+      "authority": "kart_tracks.gd:CP02–CP05"
+    },
+    {
+      "id": "HOLO_CITY-058",
+      "kind": "signature_setpiece",
+      "title": "Maglev-Tunnel — Abnahmepunkt 3",
+      "anchor": "0.340 track fraction / maglev_tunnel",
+      "verification": "Prüfe einfaches Tunnel-Collisionproxy bleibt separat vom Neon-Rippenmesh.",
+      "authority": "kart_tracks.gd:CP02–CP05"
+    },
+    {
+      "id": "HOLO_CITY-059",
+      "kind": "signature_setpiece",
+      "title": "Rooftop-Split — Abnahmepunkt 1",
+      "anchor": "0.700 track fraction / rooftop_split",
+      "verification": "Authoring-Gabelung bleibt auf derselben vorhandenen geschlossenen Route.",
+      "authority": "kart_tracks.gd:CP07–CP10"
+    },
+    {
+      "id": "HOLO_CITY-060",
+      "kind": "signature_setpiece",
+      "title": "Rooftop-Split — Abnahmepunkt 2",
+      "anchor": "0.700 track fraction / rooftop_split",
+      "verification": "Prüfe jede Spur mindestens 5.4 m breit; Außenrails fluchten an 6.05 m.",
+      "authority": "kart_tracks.gd:CP07–CP10"
+    },
+    {
+      "id": "HOLO_CITY-061",
+      "kind": "signature_setpiece",
+      "title": "Rooftop-Split — Abnahmepunkt 3",
+      "anchor": "0.700 track fraction / rooftop_split",
+      "verification": "Prüfe beide Spuren vor Checkpoint 7 zum identischen Centerline-Sample zurückführen.",
+      "authority": "kart_tracks.gd:CP07–CP10"
+    },
+    {
+      "id": "HOLO_CITY-062",
+      "kind": "signature_setpiece",
+      "title": "Neon Orbital Loop — Abnahmepunkt 1",
+      "anchor": "0.880 track fraction / neon_orbital_loop",
+      "verification": "Authoring-Mittelradius 12 m und Fahrbahnbreite 10.8 m dokumentieren.",
+      "authority": "authoring guide: 2026-10-06 full_loop geometry"
+    },
+    {
+      "id": "HOLO_CITY-063",
+      "kind": "signature_setpiece",
+      "title": "Neon Orbital Loop — Abnahmepunkt 2",
+      "anchor": "0.880 track fraction / neon_orbital_loop",
+      "verification": "Status bleibt planned_requires_inverted_physics bis 360°-Player-/AI-/Respawn-Vertrag besteht.",
+      "authority": "authoring guide: 2026-10-06 full_loop geometry"
+    },
+    {
+      "id": "HOLO_CITY-064",
+      "kind": "signature_setpiece",
+      "title": "Neon Orbital Loop — Abnahmepunkt 3",
+      "anchor": "0.880 track fraction / neon_orbital_loop",
+      "verification": "Keine Runtime-Spline, Kollision oder Cup-Verknüpfung vor allen sechs Inversions-Gates.",
+      "authority": "authoring guide: 2026-10-06 full_loop geometry"
+    },
+    {
+      "id": "HOLO_CITY-065",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 1 — Position und Fangradius",
+      "anchor": "0.18 track fraction, lateral -2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.18×track_length und Spur -2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "HOLO_CITY-066",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 1 — Core-Item-Vertrag",
+      "anchor": "MP-01",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "HOLO_CITY-067",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 2 — Position und Fangradius",
+      "anchor": "0.34 track fraction, lateral +2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.34×track_length und Spur +2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "HOLO_CITY-068",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 2 — Core-Item-Vertrag",
+      "anchor": "MP-02",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "HOLO_CITY-069",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 3 — Position und Fangradius",
+      "anchor": "0.53 track fraction, lateral +0.0 m",
+      "verification": "Prüfe Runtime-Zone bei 0.53×track_length und Spur +0.0 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "HOLO_CITY-070",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 3 — Core-Item-Vertrag",
+      "anchor": "MP-03",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "HOLO_CITY-071",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 4 — Position und Fangradius",
+      "anchor": "0.69 track fraction, lateral -2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.69×track_length und Spur -2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "HOLO_CITY-072",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 4 — Core-Item-Vertrag",
+      "anchor": "MP-04",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "HOLO_CITY-073",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 5 — Position und Fangradius",
+      "anchor": "0.86 track fraction, lateral +2.7 m",
+      "verification": "Prüfe Runtime-Zone bei 0.86×track_length und Spur +2.7 m; Pickupdistanz bleibt unter 2.0 m, dieselbe Zone nur einmal pro Runde.",
+      "authority": "kart_island.gd:item_layout + _item_box + _track_events"
+    },
+    {
+      "id": "HOLO_CITY-074",
+      "kind": "mystery_prism",
+      "title": "Lumo Mystery Prism 5 — Core-Item-Vertrag",
+      "anchor": "MP-05",
+      "verification": "Erlaube ausschließlich boost, shield und pulse; kontrolliere Slot-Leerheit vor Zuweisung und ordne Chancen nach Fahrerplatz statt durch Streckenteleport.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Mystery-Item-System"
+    },
+    {
+      "id": "HOLO_CITY-075",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 1 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.050 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.050, Zieltempo 44 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "HOLO_CITY-076",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 2 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.150 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.150, Zieltempo 50 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "HOLO_CITY-077",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 3 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.250 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.250, Zieltempo 56 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "HOLO_CITY-078",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 4 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.350 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.350, Zieltempo 48 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "HOLO_CITY-079",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 5 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.450 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.450, Zieltempo 62 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "HOLO_CITY-080",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 6 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.550 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.550, Zieltempo 52 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "HOLO_CITY-081",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 7 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.650 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.650, Zieltempo 60 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "HOLO_CITY-082",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 8 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.750 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.750, Zieltempo 46 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "HOLO_CITY-083",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 9 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.850 track fraction, lane -3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.850, Zieltempo 58 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "HOLO_CITY-084",
+      "kind": "ai_racing_line",
+      "title": "KI-Linie 10 — Sektoranker, Zieltempo und Überholkorridor",
+      "anchor": "0.950 track fraction, lane +3.0 m",
+      "verification": "Verifiziere Racing-Line-Anker bei 0.950, Zieltempo 54 km/h als Authoring-Ziel, mindestens 1.4 m seitliche Überholreserve und dieselbe Centerline wie der Spieler.",
+      "authority": "kart_world.gd:position_at + kart_island.gd:_update_opponents"
+    },
+    {
+      "id": "HOLO_CITY-085",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Rail/Visual",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe sichtbare Rail bei ±6.05 m und Collision-Wall-Zentrum bei ±5.00 m; dokumentiere beide Maße getrennt.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "HOLO_CITY-086",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Road width",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe 10.8-m-Fahrbahn einschließlich Randlinie; freie Fahrspur darf nicht durch Deko verengt werden.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "HOLO_CITY-087",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Checkpoint seam",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Trigger an Achtelgrenze und Loop-Seam ohne Doppelauslösung bei modulo track_length.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "HOLO_CITY-088",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Item pickup",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Lumo Mystery Prism Reichweite <2.0 m und pro-Lap-ID auf Mehrfachauslösung.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "HOLO_CITY-089",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Deko separation",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Setpiece-Deko gegen Rail-Abstand; nur ausdrücklich authorisierte Straßenmodule erhalten Collision.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "HOLO_CITY-090",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Ramp landing",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe Rampenanfang, Absprung und Landekorridor separat gegen Gap- und Reset-Puffer.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "HOLO_CITY-091",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Loop gate",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Loop bleibt ohne Collision solange Upside-down Player, AI und Respawn nicht bestanden sind.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "HOLO_CITY-092",
+      "kind": "collision_qa",
+      "title": "Collision-QA — Low-detail parity",
+      "anchor": "road envelope / related setpiece",
+      "verification": "Prüfe, dass Collision-/Checkpoint-/Item-Geometrie im Low-Detail-Profil identisch zur High-Stufe bleibt.",
+      "authority": "kart_world.gd:WIDTH, RAIL_LATERAL, WALL_LATERAL; kart_island.gd"
+    },
+    {
+      "id": "HOLO_CITY-093",
+      "kind": "visual_material",
+      "title": "Visual-QA — Asphalt",
+      "anchor": "Hologramm-City materials",
+      "verification": "Asphalt-Shader erhält den Track-Farbton und zeigt Centerline-Markierungen ohne Transparenzoverdraw.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "HOLO_CITY-094",
+      "kind": "visual_material",
+      "title": "Visual-QA — Curb",
+      "anchor": "Hologramm-City materials",
+      "verification": "Curb-Segmente bleiben 0.48 m breit und alternieren als gut lesbares Rot/Weiß am Sonnenhafen.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "HOLO_CITY-095",
+      "kind": "visual_material",
+      "title": "Visual-QA — Normal",
+      "anchor": "Hologramm-City materials",
+      "verification": "Berechne Terrain-Normalen nach Vertexfarben; prüfe Seitenflächen auf konsistente Beleuchtung.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "HOLO_CITY-096",
+      "kind": "visual_material",
+      "title": "Visual-QA — Glow",
+      "anchor": "Hologramm-City materials",
+      "verification": "Leuchtmaterialien sind auf Landmark-Akzente begrenzt und überstrahlen weder Rails noch Item-Silhouette.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "HOLO_CITY-097",
+      "kind": "visual_material",
+      "title": "Visual-QA — Fog",
+      "anchor": "Hologramm-City materials",
+      "verification": "Prüfe Hintergrundkontrast am Horizont; Rennbahn und Checkpoint-Fahnen bleiben im Nebel lesbar.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "HOLO_CITY-098",
+      "kind": "visual_material",
+      "title": "Visual-QA — Camera scale",
+      "anchor": "Hologramm-City materials",
+      "verification": "Prüfe Setpiece-Silhouette aus Fahrer-Chase-Kamera und aus 55° Orbit-View.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "HOLO_CITY-099",
+      "kind": "visual_material",
+      "title": "Visual-QA — Water/material",
+      "anchor": "Hologramm-City materials",
+      "verification": "Wasserfall-/Wasserflächen bleiben separate Materialien mit Schatten aus, falls sie transparent sind.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "HOLO_CITY-100",
+      "kind": "visual_material",
+      "title": "Visual-QA — Texture policy",
+      "anchor": "Hologramm-City materials",
+      "verification": "Pack-Geometrie nutzt vorhandene Materialien/Atlanten; keine neuen externen Bilder ohne Attribution.",
+      "authority": "scripts/games/kart_world.gd:material builders"
+    },
+    {
+      "id": "HOLO_CITY-101",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Crowds",
+      "anchor": "Hologramm-City",
+      "verification": "Crowd-/wiederholte Tribünenpunkte müssen über vorhandene Instance-Batches zusammengefasst sein.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "HOLO_CITY-102",
+      "kind": "performance_qa",
+      "title": "Performance-QA — LOD0",
+      "anchor": "Hologramm-City",
+      "verification": "LOD0 enthält Landmark-Silhouette und Streckenführung, nicht hunderte kleinteilige Schattenobjekte.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "HOLO_CITY-103",
+      "kind": "performance_qa",
+      "title": "Performance-QA — LOD1",
+      "anchor": "Hologramm-City",
+      "verification": "Low-Detail reduziert reine Dekoration; Centerline, Fahrbahn, Rail und Item-Zonen bleiben unverändert.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "HOLO_CITY-104",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Shadows",
+      "anchor": "Hologramm-City",
+      "verification": "Hintergrundberge, transparente Wasserfälle und UI-nahe Prisms schalten unnötige Schatten ab.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "HOLO_CITY-105",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Materials",
+      "anchor": "Hologramm-City",
+      "verification": "Wiederholte Streckenteile referenzieren gemeinsame Materialinstanzen oder Atlas-Materialien.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "HOLO_CITY-106",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Transparent",
+      "anchor": "Hologramm-City",
+      "verification": "Transparente/ additive VFX sind auf ausgewiesene Wasser-, Glow- und Prismflächen begrenzt.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "HOLO_CITY-107",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Collision budget",
+      "anchor": "Hologramm-City",
+      "verification": "Kollision verwendet einfache Rails/Trigger/Proxies; Deko-Vertices werden nicht als Mesh-Collider missbraucht.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "HOLO_CITY-108",
+      "kind": "performance_qa",
+      "title": "Performance-QA — Frame target",
+      "anchor": "Hologramm-City",
+      "verification": "60-FPS bleibt Zielbudget, aber kein Gerät-PASS ohne physische Messung.",
+      "authority": "TRACK_DEVELOPER_PACK_SPEC.md:Performance"
+    },
+    {
+      "id": "HOLO_CITY-109",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — road",
+      "anchor": "Hologramm-City",
+      "verification": "Die Straßenführung folgt ausschließlich kart_tracks.gd und kart_world.gd; Belagsbreite beträgt 10.8 m.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "HOLO_CITY-110",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — ramp",
+      "anchor": "Hologramm-City",
+      "verification": "Rampen werden als eigenes authoring mesh plus getrennte Collision-/Landing-Prüfung dokumentiert.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "HOLO_CITY-111",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — bridge",
+      "anchor": "Hologramm-City",
+      "verification": "Brücken verwenden die bestehende Centerline als Achse; Stützen liegen außerhalb des freien 10.8-m-Korridors.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "HOLO_CITY-112",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — tunnel",
+      "anchor": "Hologramm-City",
+      "verification": "Tunnel definieren lichte Höhe/Breite, Randkollision und Kamera-Freiraum getrennt vom Deko-Vault.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "HOLO_CITY-113",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — full_loop",
+      "anchor": "Hologramm-City",
+      "verification": "Loop ist ein 360°-Authoringmodul; aktivierbarer Runtime-Track bleibt bis Inversionsvertrag gesperrt.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "HOLO_CITY-114",
+      "kind": "geometry_authoring",
+      "title": "Geometrie-Guide — centerline",
+      "anchor": "Hologramm-City",
+      "verification": "Top-down-Mapping speichert Control Points in Metern und verweist auf vorhandene Runtime-Samplingregeln.",
+      "authority": "scripts/games/kart_world.gd + TRACK_DEVELOPER_PACK_SPEC.md:Looping-Sicherheitsregel"
+    },
+    {
+      "id": "HOLO_CITY-115",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — engine_audio",
+      "anchor": "Hologramm-City",
+      "verification": "Prüfe Motor-/Fahrbahn-Ambience über alle acht Sektoren ohne Lernfrage oder Antworttimer.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "HOLO_CITY-116",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — setpiece_audio",
+      "anchor": "Hologramm-City",
+      "verification": "Signature-Audio cue beginnt am Setpiece-Anker und endet vor dem Folge-Checkpoint.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "HOLO_CITY-117",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — item_audio",
+      "anchor": "Hologramm-City",
+      "verification": "Pickup-Sound signalisiert ein erworbenes Prism; Item-ID bleibt boost/shield/pulse.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "HOLO_CITY-118",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — landing_vfx",
+      "anchor": "Hologramm-City",
+      "verification": "Sprung-Landeeffekt sitzt am bestehenden Gap-Landing; kein VFX verändert Kollisionshöhe.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "HOLO_CITY-119",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — dust_vfx",
+      "anchor": "Hologramm-City",
+      "verification": "Staub/Partikel bleiben in der Fahrbahnzone und verdecken keine Pfeile oder Mystery Prisms.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "HOLO_CITY-120",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — glow_vfx",
+      "anchor": "Hologramm-City",
+      "verification": "Emissionspulse bleibt zeitlich begrenzt, ohne Screen-Space-Shader-Abhängigkeit für Mobile.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "HOLO_CITY-121",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — camera_shake",
+      "anchor": "Hologramm-City",
+      "verification": "Kamerareaktion bleibt klein und deterministisch an realen Kontakt/Jump gebunden.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    },
+    {
+      "id": "HOLO_CITY-122",
+      "kind": "audio_vfx_qa",
+      "title": "Audio-/VFX-QA — audio_mix",
+      "anchor": "Hologramm-City",
+      "verification": "Wasserfall/Stadt/Wald-Ambience ist leiser als Item-, Rail- und Checkpoint-Feedback.",
+      "authority": "kart_island.gd + existing Lumo audio/VFX pipeline"
+    }
+  ],
+  "views": [
+    {
+      "id": "HOLO_CITY-ORBIT-A000-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A000-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A000-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A000-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 0,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A045-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A045-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A045-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A045-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 45,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A090-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A090-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A090-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A090-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 90,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A135-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A135-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A135-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A135-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 135,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A180-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A180-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A180-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A180-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 180,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A225-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A225-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A225-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A225-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 225,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A270-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A270-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A270-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A270-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 270,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A315-E12",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 12,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A315-E30",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 30,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A315-E55",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 55,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORBIT-A315-E75",
+      "kind": "orbit",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 315,
+        "elevation_deg": 75,
+        "distance_m": 104,
+        "target_height_m": 8.0
+      },
+      "acceptance": "Frame closed centerline, 10.8-m road and Hologramm-City horizon at fixed azimuth/elevation; no crop hides route seam."
+    },
+    {
+      "id": "HOLO_CITY-ORTHO-TOP",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "orthographic_size_m": 220
+      },
+      "acceptance": "Vollständige Hologramm-City-Route inklusive aller 13 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "HOLO_CITY-ORTHO-FRONT",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "front",
+        "orthographic_size_m": 100
+      },
+      "acceptance": "Vollständige Hologramm-City-Route inklusive aller 13 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "HOLO_CITY-ORTHO-LEFT",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "left",
+        "orthographic_size_m": 100
+      },
+      "acceptance": "Vollständige Hologramm-City-Route inklusive aller 13 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "HOLO_CITY-ORTHO-RIGHT",
+      "kind": "orthographic",
+      "target": "route_centerline_bounds",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "right",
+        "orthographic_size_m": 100
+      },
+      "acceptance": "Vollständige Hologramm-City-Route inklusive aller 13 Control Points und Routenabschluss liegt im Bild."
+    },
+    {
+      "id": "HOLO_CITY-DRIVER-START",
+      "kind": "driver",
+      "target": "route_fraction:0.000",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im start-Sektor."
+    },
+    {
+      "id": "HOLO_CITY-DRIVER-FIRST_TURN",
+      "kind": "driver",
+      "target": "route_fraction:0.140",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im first_turn-Sektor."
+    },
+    {
+      "id": "HOLO_CITY-DRIVER-MIDDLE",
+      "kind": "driver",
+      "target": "route_fraction:0.500",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im middle-Sektor."
+    },
+    {
+      "id": "HOLO_CITY-DRIVER-LAST_SECTOR",
+      "kind": "driver",
+      "target": "route_fraction:0.875",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 18,
+        "distance_m": 9.0
+      },
+      "acceptance": "Fahrerhöhe zeigt Fahrspur, nächste Leitmarkierung und seitliche Rail im last_sector-Sektor."
+    },
+    {
+      "id": "HOLO_CITY-SIGNATURE-FRONT",
+      "kind": "signature",
+      "target": "setpiece:nova_link",
+      "camera": {
+        "projection": "perspective",
+        "side": "front",
+        "distance_m": 34,
+        "elevation_deg": 24
+      },
+      "acceptance": "NOVA-LINK Skybridge vollständig mit Zufahrt, Maßstab zur 10.8-m-Bahn und lesbarer Beschriftung erfasst."
+    },
+    {
+      "id": "HOLO_CITY-SIGNATURE-BACK",
+      "kind": "signature",
+      "target": "setpiece:nova_link",
+      "camera": {
+        "projection": "perspective",
+        "side": "back",
+        "distance_m": 34,
+        "elevation_deg": 24
+      },
+      "acceptance": "NOVA-LINK Skybridge vollständig mit Zufahrt, Maßstab zur 10.8-m-Bahn und lesbarer Beschriftung erfasst."
+    },
+    {
+      "id": "HOLO_CITY-LOOP-SIDE",
+      "kind": "loop",
+      "target": "setpiece:neon_orbital_loop",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "side",
+        "distance_m": 54,
+        "orthographic_size_m": 58
+      },
+      "acceptance": "Geschlossene 360°-Mittelachse, 12-m-Radius, 10.8-m-Deck und authoring-only Status bleiben sichtbar."
+    },
+    {
+      "id": "HOLO_CITY-LOOP-TOP",
+      "kind": "loop",
+      "target": "setpiece:neon_orbital_loop",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "distance_m": 54,
+        "orthographic_size_m": 58
+      },
+      "acceptance": "Geschlossene 360°-Mittelachse, 12-m-Radius, 10.8-m-Deck und authoring-only Status bleiben sichtbar."
+    },
+    {
+      "id": "HOLO_CITY-ITEM-LANE",
+      "kind": "item_lane",
+      "target": "mystery_prism_zones",
+      "camera": {
+        "projection": "perspective",
+        "mode": "driver_chase",
+        "azimuth_deg": 0,
+        "elevation_deg": 16,
+        "distance_m": 12
+      },
+      "acceptance": "Mindestens drei vorwärts sichtbare Lumo Mystery Prisms, Spurabstände und Pickup-Korridor sind erkennbar."
+    },
+    {
+      "id": "HOLO_CITY-SHORTCUT-ENTRY",
+      "kind": "shortcut_entry",
+      "target": "signature_shortcut_or_ramp",
+      "camera": {
+        "projection": "perspective",
+        "azimuth_deg": 25,
+        "elevation_deg": 30,
+        "distance_m": 30
+      },
+      "acceptance": "Abzweig/Rampe, Einfahrt, Landekorridor und Rückkehr auf bestehende Centerline sind gleichzeitig lesbar."
+    },
+    {
+      "id": "HOLO_CITY-AI-TOP",
+      "kind": "ai_debug",
+      "target": "ai_racing_line",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "orthographic_size_m": 150
+      },
+      "acceptance": "Zehn KI-Anker, seitliche Überholreserve und Fahrer-Referenzcenterline sind unterscheidbar."
+    },
+    {
+      "id": "HOLO_CITY-COLLISION-DEBUG",
+      "kind": "collision_debug",
+      "target": "road_rail_checkpoint_item_collision",
+      "camera": {
+        "projection": "orthographic",
+        "axis": "top",
+        "overlay": "collision_debug"
+      },
+      "acceptance": "10.8-m-Straße, ±6.05-m-Visualrail, ±5.0-m-Wall und Checkpoint-/Item-Triggergrenzen sind getrennt sichtbar."
+    }
+  ],
+  "qa": {
+    "collision": "simple road rail/checkpoint/item proxies only; decorative geometry does not imply collision",
+    "low_detail_parity": "track width, route, item positions, checkpoint and safe respawn must match high detail",
+    "learning_separation": "no quiz, answer timer, learning cup, or correct-answer boost in race",
+    "performance": "MultiMesh repeated props; separate mobile LOD0/LOD1/background; avoid unnecessary transparent materials and background shadows"
+  }
+}

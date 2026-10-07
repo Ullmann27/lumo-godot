@@ -18,6 +18,14 @@ const TOWN: float = 0.335
 const CAVE: float = 0.555
 const RUINS: float = 0.715
 const SUSPENSION: float = 0.635
+const STAR_GATE: float = 0.865
+## Second physical setpiece: the left lane climbs onto a short elevated "Wolkenweg" while
+## the right lane stays on the main deck. Both rejoin before the Sternentor.
+const SPLIT_ROUTE: float = 0.800
+const SPLIT_SPAN: float = 22.0
+const SPLIT_RISE: float = 6.0
+const SPLIT_HEIGHT: float = 2.2
+const SPLIT_LEFT_LANE: float = -2.8
 ## Jump (k03 shortcut ramp): ramp on the downhill bridge before the crystal-cave island,
 ## then open sky until that island begins. Metres along the course.
 const RAMP_LENGTH: float = 7.0
@@ -78,6 +86,44 @@ static func jump_layout(length: float) -> Dictionary:
 
 static func in_gap(jump: Dictionary, distance: float) -> bool:
 	return not jump.is_empty() and distance >= jump.take_off and distance < jump.gap_end
+
+
+static func split_route_layout(length: float) -> Dictionary:
+	var centre: float = SPLIT_ROUTE * length
+	return {
+		"start": centre - SPLIT_SPAN * 0.5,
+		"end": centre + SPLIT_SPAN * 0.5,
+		"rise": SPLIT_RISE,
+		"height": SPLIT_HEIGHT,
+		"lane": SPLIT_LEFT_LANE,
+	}
+
+
+static func split_route_height(length: float, distance: float, lateral: float) -> float:
+	var layout: Dictionary = split_route_layout(length)
+	var d: float = fposmod(distance, length)
+	var start: float = float(layout.start)
+	var finish: float = float(layout.end)
+	if d < start or d > finish:
+		return 0.0
+	var longitudinal: float = 1.0
+	var rise: float = float(layout.rise)
+	if d < start + rise:
+		longitudinal = smoothstep(0.0, 1.0, (d - start) / rise)
+	elif d > finish - rise:
+		longitudinal = smoothstep(0.0, 1.0, (finish - d) / rise)
+	# Smoothly blend from the centre divider toward the raised left lane so changing lanes
+	# never teleports the kart vertically.
+	var lane_mix: float = clampf((-lateral - 0.45) / 1.85, 0.0, 1.0)
+	lane_mix = smoothstep(0.0, 1.0, lane_mix)
+	return float(layout.height) * longitudinal * lane_mix
+
+
+static func split_route_pitch(length: float, distance: float, lateral: float) -> float:
+	var sample: float = 0.35
+	var before: float = split_route_height(length, distance - sample, lateral)
+	var after: float = split_route_height(length, distance + sample, lateral)
+	return atan2(after - before, sample * 2.0)
 
 
 ## The orange shortcut ramp with yellow chevrons, light barriers across the gap and a glowing
@@ -192,6 +238,8 @@ static func build(world) -> void:
 	_waterfall_islands(world, rng)
 	_floating_town(world, TOWN * world.length, rng)
 	_temple_ruins(world, RUINS * world.length, rng)
+	_split_sky_bridge(world, SPLIT_ROUTE * world.length)
+	_star_gate_run(world, STAR_GATE * world.length)
 	_backdrop(world, rng)
 	_blimp(world)
 
@@ -342,7 +390,7 @@ static func _road_island(world, span: Vector2, seed: int, rng: RandomNumberGener
 	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	island.material_override = material
 	world.add_child(island)
-	_island_dressing(world, rings, rng)
+	_island_dressing(world, rings, rng, seed)
 
 
 static func _at_height(point: Vector3, height: float) -> Vector3:
@@ -350,7 +398,11 @@ static func _at_height(point: Vector3, height: float) -> Vector3:
 
 
 ## Trees, bushes, rocks, lanterns and hanging rocks on and under a road island.
-static func _island_dressing(world, rings: Array, rng: RandomNumberGenerator) -> void:
+static func _island_dressing(
+	world, rings: Array, rng: RandomNumberGenerator, seed: int
+) -> void:
+	var detail_rng := RandomNumberGenerator.new()
+	detail_rng.seed = seed + 0x51A1
 	for i in range(2, rings.size() - 2, 2):
 		var ring: Array = rings[i]
 		for side in [0, 6]:
@@ -390,6 +442,29 @@ static func _island_dressing(world, rings: Array, rng: RandomNumberGenerator) ->
 					ROCK,
 					Basis(Vector3.UP, rng.randf() * TAU)
 				)
+			if i % 4 == 0:
+				var cluster_t: float = detail_rng.randf_range(0.68, 0.96)
+				var cluster_at: Vector3 = inner.lerp(rim, cluster_t)
+				cluster_at.y = lerpf(inner.y, rim.y, cluster_t) + 0.12
+				if detail_rng.randf() < 0.72:
+					var crystal_color: Color = CRYSTAL_VIOLET if detail_rng.randf() < 0.55 else CYAN
+					world._prop(
+						"crystal",
+						cluster_at,
+						Vector3(0.8, 1.45, 0.8) * detail_rng.randf_range(0.8, 1.35),
+						crystal_color,
+						Basis(Vector3.UP, detail_rng.randf() * TAU),
+						true
+					)
+				if detail_rng.randf() < 0.6:
+					world._prop(
+						"rock",
+						cluster_at
+						+ Vector3(detail_rng.randf_range(-1.3, 1.3), -0.2, detail_rng.randf_range(-1.3, 1.3)),
+						Vector3(1.6, 1.0, 1.5) * detail_rng.randf_range(0.7, 1.15),
+						ROCK_DARK,
+						Basis(Vector3.UP, detail_rng.randf() * TAU)
+					)
 		if i % 6 == 0:
 			var keel: Vector3 = ring[9]
 			world._prop(
@@ -585,9 +660,34 @@ static func _waterfall(world, lip: Vector3, outward: Vector3, width: float) -> v
 	fall.material_override = material
 	fall.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	world.add_child(fall)
+	var lip_basis := Basis.looking_at(outward, Vector3.UP)
+	world._prop(
+		"box",
+		lip + outward * 0.55 + Vector3.UP * 0.12,
+		Vector3(width + 0.8, 0.18, 1.1),
+		Color("c9f5ff"),
+		lip_basis,
+		true
+	)
+	world._prop(
+		"rock",
+		lip + outward * 0.45 - Vector3.UP * 0.38,
+		Vector3(width * 1.35, 0.72, 1.25),
+		ROCK,
+		lip_basis
+	)
+	var splash: Vector3 = lip + outward * 3.8 + Vector3.UP * (bottom - lip.y + 1.8)
+	for puff in range(1 if world.low_detail else 3):
+		var offset: Vector3 = along * (float(puff) - 1.0) * width * 0.3
+		world._prop(
+			"ball",
+			splash + offset,
+			Vector3(width * 0.42, 0.7, 1.2),
+			Color("d7f4ff")
+		)
 	world._prop(
 		"crown",
-		lip + outward * 2.6 + Vector3.UP * (bottom - lip.y + 1.5),
+		splash + Vector3.UP * 0.1,
 		Vector3(width * 1.1, 2.0, width),
 		Color("eef3ff")
 	)
@@ -693,6 +793,8 @@ static func _floating_town(world, distance: float, rng: RandomNumberGenerator) -
 
 static func _temple_ruins(world, distance: float, rng: RandomNumberGenerator) -> void:
 	var basis: Basis = world.frame(distance)
+	var detail_rng := RandomNumberGenerator.new()
+	detail_rng.seed = int(round(distance * 10.0)) + 0x7E4A
 	var outward := Vector3(basis.x.x, 0, basis.x.z).normalized()
 	var ahead := Vector3(-outward.z, 0, outward.x)
 	var ground: float = (
@@ -738,6 +840,25 @@ static func _temple_ruins(world, distance: float, rng: RandomNumberGenerator) ->
 			Basis.IDENTITY,
 			true
 		)
+	for support in range(4):
+		var side: float = -1.0 if support < 2 else 1.0
+		var along: float = -7.5 if support % 2 == 0 else 7.5
+		var at: Vector3 = base + ahead * along + outward * side * 3.5
+		var height: float = 3.8 if support % 2 == 0 else 2.9
+		world._prop(
+			"cylinder",
+			at + Vector3.UP * height * 0.5,
+			Vector3(0.62, height, 0.62),
+			STONE_DARK,
+			temple_basis
+		)
+		world._prop(
+			"box",
+			at + Vector3.UP * height,
+			Vector3(1.2, 0.32, 1.2),
+			STONE,
+			temple_basis
+		)
 	for vine in range(5):
 		world._prop(
 			"crown",
@@ -745,6 +866,40 @@ static func _temple_ruins(world, distance: float, rng: RandomNumberGenerator) ->
 			Vector3(0.9, 0.6, 0.8),
 			MOSS
 		)
+	for cluster in range(8):
+		var side: float = -1.0 if cluster % 2 == 0 else 1.0
+		var at: Vector3 = (
+			base
+			+ ahead * detail_rng.randf_range(-9.0, 9.0)
+			+ outward * side * detail_rng.randf_range(3.0, 6.5)
+		)
+		var rubble_basis := temple_basis.rotated(Vector3.UP, detail_rng.randf_range(-0.3, 0.3))
+		world._prop(
+			"box",
+			at + Vector3.UP * detail_rng.randf_range(0.35, 0.8),
+			Vector3(
+				detail_rng.randf_range(1.2, 2.4),
+				detail_rng.randf_range(0.5, 1.2),
+				detail_rng.randf_range(1.0, 2.0)
+			),
+			STONE_DARK if cluster % 3 == 0 else STONE,
+			rubble_basis
+		)
+		if cluster % 2 == 0:
+			world._prop(
+				"crown",
+				at + Vector3.UP * 0.8 + ahead * 0.65,
+				Vector3(1.4, 0.6, 1.1),
+				MOSS
+			)
+		if cluster % 4 == 1:
+			world._prop(
+				"rock",
+				at - ahead * 0.8,
+				Vector3(1.5, 1.2, 1.4),
+				ROCK,
+				Basis(Vector3.UP, detail_rng.randf() * TAU)
+			)
 
 
 static func _banner(world, at: Vector3, basis: Basis, text: String) -> void:
@@ -766,6 +921,152 @@ static func _banner(world, at: Vector3, basis: Basis, text: String) -> void:
 		true
 	)
 	world._sign(at + Vector3.UP * 4.9 + facing.x * 0.9 + facing.z * 0.06, facing, text, 0.012)
+
+
+## Choice setpiece between the ruins and Sternentor. The raised left lane is backed by
+## split_route_height(), so this is not a PNG/visual fake: the kart and rivals actually climb it.
+## It stays inside the existing rail envelope and rejoins before the next landmark.
+static func _split_sky_bridge(world, _distance: float) -> void:
+	var layout: Dictionary = split_route_layout(world.length)
+	var start: float = float(layout.start)
+	var finish: float = float(layout.end)
+	var step: float = 1.2
+	var count: int = ceili((finish - start) / step)
+	for i in range(count):
+		var d: float = start + (float(i) + 0.5) * (finish - start) / float(count)
+		var height: float = split_route_height(world.length, d, SPLIT_LEFT_LANE)
+		var pitch: float = split_route_pitch(world.length, d, SPLIT_LEFT_LANE)
+		var basis: Basis = world.frame(d)
+		var slope: Basis = basis.rotated(basis.x, pitch)
+		var centre: Vector3 = world.position_at(d, SPLIT_LEFT_LANE) + basis.y * (height - 0.10)
+		world._prop(
+			"box",
+			centre,
+			Vector3(4.65, 0.20, (finish - start) / float(count) + 0.06),
+			Color("243f9e"),
+			slope
+		)
+		for edge in [-5.05, -0.55]:
+			var edge_at: Vector3 = world.position_at(d, edge) + basis.y * (height + 0.045)
+			world._prop(
+				"box",
+				edge_at,
+				Vector3(0.13, 0.055, (finish - start) / float(count) * 0.88),
+				CYAN if edge < -2.0 else CRYSTAL_VIOLET,
+				slope,
+				true
+			)
+		if i % 4 == 0 and height > 0.35:
+			var support: Vector3 = world.position_at(d, SPLIT_LEFT_LANE)
+			world._prop(
+				"box",
+				support + basis.y * (height * 0.5 - 0.14),
+				Vector3(0.34, maxf(0.45, height), 0.34),
+				STONE_DARK,
+				basis
+			)
+		if i % 5 == 2 and height > 1.0:
+			world._prop(
+				"star",
+				centre + basis.y * 1.0,
+				Vector3.ONE * 0.34,
+				GOLD,
+				basis,
+				true
+			)
+	var entry_d: float = start - 3.0
+	var entry_basis: Basis = world.frame(entry_d)
+	for lane_marker in [
+		{"lane": -3.0, "text": "WOLKENWEG", "color": CYAN},
+		{"lane": 3.0, "text": "HAUPTWEG", "color": ORANGE},
+	]:
+		var marker_at: Vector3 = world.position_at(entry_d, float(lane_marker.lane))
+		var marker_color: Color = lane_marker["color"]
+		world._prop(
+			"box",
+			marker_at + Vector3.UP * 1.5,
+			Vector3(0.14, 3.0, 0.14),
+			NAVY,
+			entry_basis
+		)
+		world._prop(
+			"box",
+			marker_at + Vector3.UP * 2.75,
+			Vector3(3.1, 1.05, 0.16),
+			Color("173c8d"),
+			entry_basis
+		)
+		world._prop(
+			"box",
+			marker_at + Vector3.UP * 2.75 + entry_basis.z * 0.09,
+			Vector3(2.85, 0.82, 0.04),
+			marker_color,
+			entry_basis,
+			true
+		)
+		world._sign(
+			marker_at + Vector3.UP * 2.75 + entry_basis.z * 0.11,
+			entry_basis,
+			str(lane_marker.text),
+			0.010
+		)
+
+
+## Final high-speed setpiece: a sequence of luminous sky arches after the ruins.
+## The roadway stays continuous; this is a visual/reading landmark, not a fake collision tunnel.
+static func _star_gate_run(world, distance: float) -> void:
+	var span: float = 34.0
+	var arches: int = 7
+	for index in range(arches):
+		var d: float = distance - span * 0.5 + float(index) * span / float(arches - 1)
+		var basis: Basis = world.frame(d)
+		var centre: Vector3 = world.position_at(d)
+		var pulse: Color = CYAN if index % 2 == 0 else CRYSTAL_VIOLET
+		for side in [-1.0, 1.0]:
+			var foot: Vector3 = world.position_at(d, side * 6.45)
+			world._prop("box", foot + basis.y * 2.6, Vector3(0.34, 5.2, 0.34), NAVY, basis)
+			world._prop(
+				"box",
+				foot + basis.y * 5.1,
+				Vector3(0.50, 0.20, 0.50),
+				pulse,
+				basis,
+				true
+			)
+		world._prop(
+			"box",
+			centre + basis.y * 5.25,
+			Vector3(13.2, 0.28, 0.34),
+			pulse,
+			basis,
+			true
+		)
+		for star_side in [-1.0, 1.0]:
+			world._prop(
+				"star",
+				centre + basis.y * 6.1 + basis.x * star_side * 3.4,
+				Vector3.ONE * (0.50 if index % 2 == 0 else 0.38),
+				GOLD,
+				basis,
+				true
+			)
+	# A readable entry marker makes the section recognizable at speed.
+	var entry_basis: Basis = world.frame(distance - span * 0.5 - 4.0)
+	var entry_at: Vector3 = world.position_at(distance - span * 0.5 - 4.0, -7.4)
+	world._prop("box", entry_at + Vector3.UP * 1.6, Vector3(0.16, 3.2, 0.16), NAVY, entry_basis)
+	world._prop(
+		"box",
+		entry_at + Vector3.UP * 3.0,
+		Vector3(3.6, 1.25, 0.18),
+		Color("173c8d"),
+		entry_basis
+	)
+	world._sign(
+		entry_at + Vector3.UP * 3.0 + entry_basis.z * 0.1,
+		entry_basis,
+		"STERNENTOR\nVOLLGAS!",
+		0.012
+	)
 
 
 static func _backdrop(world, rng: RandomNumberGenerator) -> void:
@@ -936,14 +1237,14 @@ static func chevrons(world) -> void:
 static func cave_crystals(world, distance: float) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 5150
-	for i in range(14):
-		var d: float = distance - 13.0 + float(i) * 2.0
+	for i in range(18):
+		var d: float = distance - 13.5 + float(i) * 1.6
 		var basis: Basis = world.frame(d)
 		for side in [-1.0, 1.0]:
 			if rng.randf() < 0.35:
 				continue
 			var at: Vector3 = (
-				world.position_at(d, side * rng.randf_range(6.6, 7.4))
+				world.position_at(d, side * rng.randf_range(7.4, 8.4))
 				+ Vector3.UP * rng.randf_range(0.0, 3.5)
 			)
 			var tilt := Basis(basis.z, side * rng.randf_range(0.2, 0.6))
@@ -951,6 +1252,17 @@ static func cave_crystals(world, distance: float) -> void:
 			world._prop(
 				"crystal", at, Vector3(0.5, 0.9, 0.5) * rng.randf_range(0.8, 1.6), tint, tilt, true
 			)
+			if i % 3 == 0:
+				for shard in range(2):
+					var shard_tint: Color = CYAN if tint == CRYSTAL_VIOLET else CRYSTAL_VIOLET
+					world._prop(
+						"crystal",
+						at + basis.x * side * (0.45 + float(shard) * 0.3) + Vector3.UP * (0.1 + shard * 0.2),
+						Vector3(0.38, 0.78, 0.38) * (1.0 - float(shard) * 0.18),
+						shard_tint,
+						tilt.rotated(basis.z, -side * 0.24),
+						true
+					)
 	for end in [-1.0, 1.0]:
 		var d: float = distance + end * 13.5
 		for side in [-1.0, 1.0]:
@@ -989,5 +1301,70 @@ static func road_lights(world) -> void:
 				Vector3(0.36, 0.06, step * 0.82),
 				glow,
 				basis,
+				true
+			)
+
+
+## Restrained, batched warning posts sit beyond the rails only on stronger turns.
+static func road_surface_details(world) -> void:
+	var count: int = ceili(world.length / 8.0)
+	for i in range(count):
+		var d: float = (float(i) + 0.5) * 8.0
+		if in_gap(world.jump, d):
+			continue
+		var before: Vector3 = -world.frame(d - 3.0).z
+		var after: Vector3 = -world.frame(d + 3.0).z
+		var turn: float = before.cross(after).y
+		if absf(turn) < 0.11:
+			continue
+		var side: float = 1.0 if turn > 0.0 else -1.0
+		var basis: Basis = world.frame(d)
+		var at: Vector3 = world.position_at(d, side * 7.15)
+		world._prop(
+			"box",
+			at + basis.y * 1.55,
+			Vector3(0.16, 3.1, 0.16),
+			NAVY if i % 3 else STONE_DARK,
+			basis
+		)
+		world._prop(
+			"box",
+			at + basis.y * 2.7,
+			Vector3(1.05, 0.88, 0.12),
+			Color("e8d58c") if i % 2 == 0 else Color("f1eee5"),
+			basis
+		)
+		world._prop(
+			"box",
+			at + basis.y * 2.7 - basis.z * 0.075,
+			Vector3(0.52, 0.075, 0.035),
+			ORANGE if i % 2 == 0 else NAVY,
+			basis,
+			true
+		)
+
+	var lamp_count: int = ceili(world.length / (42.0 if world.low_detail else 32.0))
+	for i in range(lamp_count):
+		var d: float = (float(i) + 0.5) * world.length / lamp_count
+		if in_gap(world.jump, d):
+			continue
+		var basis: Basis = world.frame(d)
+		for side in [-1.0, 1.0]:
+			var at: Vector3 = world.position_at(d, side * 7.8)
+			var height: float = 3.3 if i % 3 == 0 else 2.8
+			var tint: Color = CYAN if (i + int(side)) % 2 == 0 else GOLD
+			world._prop(
+				"cylinder",
+				at + basis.y * height * 0.5,
+				Vector3(0.11, height, 0.11),
+				NAVY if i % 3 else STONE_DARK,
+				basis
+			)
+			world._prop(
+				"ball",
+				at + basis.y * (height + 0.15),
+				Vector3.ONE * (0.22 if i % 3 else 0.29),
+				tint,
+				Basis.IDENTITY,
 				true
 			)

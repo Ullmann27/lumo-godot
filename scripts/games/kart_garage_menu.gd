@@ -308,7 +308,13 @@ func _entries() -> Array[Dictionary]:
 func _refresh() -> void:
 	var keys: Array[String] = ["mode", "driver", "kart", "track", "difficulty"]
 	var titles: Array[String] = ["Dein nächstes Abenteuer", "Wer fährt mit?", "Dein Kart. Dein Stil.", "Wohin geht die Reise?", "Finde dein Tempo"]
-	var descriptions: Array[String] = ["Wähle, wie du heute fahren möchtest.", "Gemeinsam wird jede Fahrt besonders.", "Sterne aus dem Lernen öffnen neue Möglichkeiten.", "Vier Welten voller kleiner Entdeckungen.", "Du kannst das Tempo vor jedem Rennen ändern."]
+	var descriptions: Array[String] = [
+		"Wähle, wie du heute fahren möchtest.",
+		"Gemeinsam wird jede Fahrt besonders.",
+		"Sterne aus dem Lernen öffnen neue Möglichkeiten.",
+		"%d Welten voller kleiner Entdeckungen." % CATALOG.TRACKS.size(),
+		"Du kannst das Tempo vor jedem Rennen ändern.",
+	]
 	title_label.text = titles[step]
 	subtitle.text = descriptions[step]
 	steps_label.text = "%d / 5     MODUS  ·  FAHRER  ·  KART  ·  WELT  ·  TEMPO" % (step + 1)
@@ -327,7 +333,14 @@ func _refresh() -> void:
 		choices.add_child(grid)
 		card_parent = grid
 	if step == 3 and setup.mode in ["cup", "arena"]:
-		var cup_text: String = "KRISTALL-ARENA\n90 Sekunden · Kristalle sammeln · Rivalen überholen" if setup.mode == "arena" else "DER STERNEN-CUP\nSonnenhafen → Zauberwald → Himmelsinseln → Holo City"
+		var track_names := PackedStringArray()
+		for track in CATALOG.TRACKS:
+			track_names.append(str(track.name))
+		var cup_text: String = (
+			"KRISTALL-ARENA\n90 Sekunden · Kristalle sammeln · Rivalen überholen"
+			if setup.mode == "arena"
+			else "DER STERNEN-CUP\n" + " → ".join(track_names)
+		)
 		var card := _button(cup_text, func(): pass, true)
 		card.custom_minimum_size.y = 110
 		choices.add_child(card)
@@ -350,7 +363,7 @@ func _refresh() -> void:
 	var selected_entry: Dictionary = CATALOG.entry(_entries(), str(setup[key]))
 	detail.text = str(selected_entry.get("description", selected_entry.get("tag", "")))
 	if step == 3 and setup.mode == "cup":
-		detail.text = "Vier Rennen. Eine Gesamtwertung. Dein Sternenpokal wartet."
+		detail.text = "%d Rennen. Eine Gesamtwertung. Dein Sternenpokal wartet." % CATALOG.TRACKS.size()
 	elif step == 3 and setup.mode == "arena":
 		detail.text = "Frei fahren und Kristalle sammeln. Nach 90 Sekunden gewinnt die höchste Punktzahl."
 	back_button.text = "Spieleauswahl" if step == 0 else "← Zurück"

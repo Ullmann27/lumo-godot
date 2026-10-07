@@ -209,6 +209,97 @@ func _test_boost_response() -> void:
 	game.boost_button._release()
 
 
+func _test_mystery_item_boxes() -> void:
+	await _start("training", "bergwelt")
+	assert(game.item_boxes.size() == 5, "Race course exposes five mystery item boxes")
+	for box in game.item_boxes:
+		assert(
+			is_equal_approx(box.scale.x, 1.18)
+			and is_equal_approx(box.scale.y, 1.18)
+			and is_equal_approx(box.scale.z, 1.18),
+			"Himmelsinseln mystery prisms keep the readability scale from the visual pass"
+		)
+	var leader_pool: Array[String] = game._item_pool_for_place(1)
+	var comeback_pool: Array[String] = game._item_pool_for_place(6)
+	assert(leader_pool.count("boost") < comeback_pool.count("boost"))
+	assert(comeback_pool.count("boost") >= 3, "Back positions receive stronger catch-up odds")
+	game.item = ""
+	game.player.position = game.item_boxes[0].position
+	game._track_events()
+	assert(not game.item.is_empty(), "Touching a mystery box grants an item immediately")
+	assert(game.item_box_collected.has(0), "Collected mystery box stays hidden for the current lap")
+
+
+func _test_rival_item_tactics() -> void:
+	await _start("race", "bergwelt")
+	assert(game.opponent_items.size() == 5)
+	assert(game.opponent_boost_times.size() == 5)
+	assert(game.opponent_shield_times.size() == 5)
+
+	game.distance = 20.0
+	game.opponent_distances[0] = 10.0
+	game.opponent_items[0] = "boost"
+	game.opponent_boost_times[0] = 0.0
+	game._update_rival_item_tactics(0, Vector3(0, 0, 12), STEP)
+	assert(game.opponent_items[0].is_empty())
+	assert(game.opponent_boost_times[0] > 0.0, "Trailing rival uses boost to attack the gap")
+
+	game.opponent_items[1] = "shield"
+	game.opponent_shield_times[1] = 0.0
+	game._update_rival_item_tactics(1, Vector3(0, 0, 5), STEP)
+	assert(game.opponent_shield_times[1] > 0.0, "Nearby rival can protect itself")
+
+	game.opponent_stuns[1] = 0.0
+	game.item = "pulse"
+	game.player.position = game.opponents[1].position
+	game._use_item()
+	assert(game.opponent_stuns[1] == 0.0, "Rival shield blocks the player's pulse")
+
+	game.hit_timer = 0.0
+	game.shield_time = 0.0
+	game.opponent_items[2] = "pulse"
+	game._update_rival_item_tactics(2, Vector3(0, 0, 5), STEP)
+	assert(game.hit_timer > 0.0, "Rival pulse can pressure the player at close range")
+
+
+func _test_wolkenweg_split_route() -> void:
+	await _start("training", "bergwelt")
+	var midpoint: float = game.track_length * 0.800
+	var raised_height: float = game.world.alternate_route_height(midpoint, -3.0)
+	var main_height: float = game.world.alternate_route_height(midpoint, 3.0)
+	assert(raised_height > 1.5, "Wolkenweg must provide a physical raised left lane")
+	assert(main_height < 0.01, "Main lane must stay on the original road surface")
+
+	game.player.position = game.world.position_at(midpoint, -3.0)
+	game.previous_road_distance = midpoint
+	game.distance = midpoint
+	game.lane = -3.0
+	var raised_road: Dictionary = game.world.sample_road(game.player.position, midpoint)
+	var raised_base: float = float(raised_road.height) + 0.035
+	assert(game._move_vertically(raised_road, midpoint, STEP))
+	assert(
+		game.player.position.y > raised_base + 1.5,
+		"Player kart physically climbs onto the Wolkenweg deck"
+	)
+
+	game.player.position = game.world.position_at(midpoint, 3.0)
+	game.previous_road_distance = midpoint
+	game.distance = midpoint
+	game.lane = 3.0
+	game.airborne = false
+	var main_road: Dictionary = game.world.sample_road(game.player.position, midpoint)
+	var main_base: float = float(main_road.height) + 0.035
+	assert(game._move_vertically(main_road, midpoint, STEP))
+	assert(
+		absf(game.player.position.y - main_base) < 0.05,
+		"Parallel main lane remains physically on the original road"
+	)
+	print(
+		"[KartSplit] PASS: Wolkenweg raised %.2f m while main lane stayed at %.2f m"
+		% [raised_height, main_height]
+	)
+
+
 func _test_boost_gates_and_restart() -> void:
 	await _start("training", "sonnenhafen")
 	game.boosts = 1
@@ -319,6 +410,9 @@ func _run() -> void:
 	await _test_boost_gates_and_restart()
 	await _test_boost_pad_and_airborne()
 	await _test_boost_chevrons_follow_travel()
+	await _test_mystery_item_boxes()
+	await _test_rival_item_tactics()
+	await _test_wolkenweg_split_route()
 	await _test_pedals()
 	game.abandoned = true
 	game.queue_free()
@@ -328,7 +422,8 @@ func _run() -> void:
 		(
 			"[KartPhysics] PASS: rail walls on four courses at full turbo, sliding contact, "
 			+ "blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, "
-			+ "GAS/BREMSE pedals with reverse, on-screen pad and forward-facing boost chevrons"
+			+ "GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, "
+			+ "and a physical Wolkenweg split route"
 		)
 	)
 	# The audio mix thread releases the course music late.

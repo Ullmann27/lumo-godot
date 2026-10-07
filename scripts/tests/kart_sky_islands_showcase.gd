@@ -38,6 +38,23 @@ func _setup() -> void:
 	world.add_child(kart)
 	kart.configure("fox", Color("3586bc"), "comet")
 	kart.set_process(false)
+	var item_preview: Node = load("res://scripts/games/kart_island.gd").new()
+	item_preview.set("world", world)
+	var item_root := Node3D.new()
+	item_root.name = "RuntimeMysteryPrisms"
+	root.add_child(item_root)
+	item_preview.set("race_root", item_root)
+	var item_layout: Array = [
+		[0.18, -2.7],
+		[0.34, 2.7],
+		[0.53, 0.0],
+		[0.69, -2.7],
+		[0.86, 2.7],
+	]
+	for entry in item_layout:
+		item_preview.call("_item_box", float(entry[0]) * world.length, float(entry[1]))
+	assert(item_preview.get("item_boxes").size() == item_layout.size())
+	print("[SkyShots] runtime Mystery Prisms=", item_layout.size())
 	# name, track fraction, lateral kart, camera offset (local), look-ahead distance
 	shots = [
 		["01_start_gate", -0.035, 0.0, Vector3(0.0, 3.8, 9.5), 22.0],
@@ -46,7 +63,8 @@ func _setup() -> void:
 		["04_suspension_bridge", 0.585, 0.0, Vector3(0.0, 3.6, 9.0), 18.0],
 		["05_crystal_cave", 0.46, 0.0, Vector3(0.0, 3.8, 9.0), 16.0],
 		["06_temple_ruins", 0.69, 1.0, Vector3(-1.0, 3.6, 8.5), 14.0],
-		["07_overview", 0.0, 0.0, Vector3(0.0, 0.0, 0.0), 0.0]
+		["07_overview", 0.0, 0.0, Vector3(0.0, 0.0, 0.0), 0.0],
+		["08_mystery_prisms", 0.16, -2.7, Vector3(0.0, 3.4, 8.5), 13.0]
 	]
 	_place()
 

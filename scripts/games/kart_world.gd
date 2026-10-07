@@ -57,16 +57,30 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 	_road()
 	match track_id:
 		"zauberwald": _forest()
-		"holo_city": _city()
+		"holo_city":
+			_city()
+			_holo_city_dressing()
 		_: _harbour()
 	_navigation()
+	if track_id=="sonnenhafen":
+		_grand_prix_dressing()
 	_flush_instances()
 
 func _make_curve() -> void:
 	var original_points: PackedVector3Array = definition.points
+	var source_points:=PackedVector3Array()
+	var horizontal_scale: float = 1.18 if track_id == "bergwelt" else 1.0
+	for point in original_points:
+		source_points.append(Vector3(point.x * horizontal_scale, point.y, point.z * horizontal_scale))
 	var points:=PackedVector3Array()
-	for i in range(original_points.size()):
-		points.append(original_points[i]*0.5+(original_points[posmod(i-1,original_points.size())]+original_points[(i+1)%original_points.size()])*0.25)
+	for i in range(source_points.size()):
+		points.append(
+			source_points[i] * 0.5
+			+ (
+				source_points[posmod(i - 1, source_points.size())]
+				+ source_points[(i + 1) % source_points.size()]
+			) * 0.25
+		)
 	curve = Curve3D.new()
 	curve.bake_interval = 0.35
 	for i in range(points.size() + 1):
@@ -143,6 +157,19 @@ func ramp_height(distance: float) -> float:
 	if d<jump.ramp_start or d>=jump.take_off: return 0.0
 	return (d-jump.ramp_start)/(jump.take_off-jump.ramp_start)*jump.height
 
+## Raised optional lane on Himmelsinseln. Other tracks stay unchanged.
+func alternate_route_height(distance: float, lateral: float) -> float:
+	if track_id != "bergwelt":
+		return 0.0
+	return SKY_ISLANDS.split_route_height(length, distance, lateral)
+
+
+func alternate_route_pitch(distance: float, lateral: float) -> float:
+	if track_id != "bergwelt":
+		return 0.0
+	return SKY_ISLANDS.split_route_pitch(length, distance, lateral)
+
+
 ## Visual jump arc for computer rivals: they follow the ramp and fly a fixed arc over the gap.
 func rival_arc(distance: float) -> float:
 	var d: float=fposmod(distance,length)
@@ -150,6 +177,27 @@ func rival_arc(distance: float) -> float:
 	if d<jump.take_off: return ramp_height(d)
 	var u: float=(d-jump.take_off)/(jump.gap_end-jump.take_off)
 	return jump.height*(1.0-u)+6.0*u*(1.0-u)
+
+func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_distance: float) -> float:
+	var lower: float = maxf(0.0, floor_distance)
+	var upper: float = maxf(lower + 0.5, ceiling_distance)
+	var safe: float = clampf(candidate, lower, upper)
+	if jump.is_empty():
+		return safe
+	var local_distance: float = fposmod(safe, length)
+	var danger_start: float = float(jump.ramp_start) - 1.5
+	var danger_end: float = float(jump.gap_end) + 2.5
+	if local_distance < danger_start or local_distance > danger_end:
+		return safe
+	# Race distance is cumulative across laps; jump geometry is local to one lap.
+	var lap_origin: float = safe - local_distance
+	var before_jump: float = lap_origin + float(jump.ramp_start) - 4.0
+	if before_jump >= lower:
+		return minf(before_jump, upper)
+	var after_gap: float = lap_origin + float(jump.gap_end) + 3.0
+	if after_gap <= upper:
+		return maxf(after_gap, lower)
+	return safe
 
 func reset_transform(distance: float, lateral: float = 0.0) -> Transform3D:
 	var basis: Basis = frame(distance)
@@ -267,13 +315,13 @@ func _lighting() -> void:
 	sky.sky_material=atmosphere
 	environment.sky=sky
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color=Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0")
-	environment.ambient_light_energy=0.22 if track_id!="holo_city" else 0.40
-	environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR
-	environment.tonemap_exposure=0.9
+	environment.ambient_light_color=Color("c8e0f4") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
+	environment.ambient_light_energy=0.28 if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
+	environment.tonemap_mode=Environment.TONE_MAPPER_FILMIC if track_id=="sonnenhafen" else Environment.TONE_MAPPER_LINEAR
+	environment.tonemap_exposure=0.94 if track_id=="sonnenhafen" else 0.9
 	environment.fog_enabled=true
 	environment.fog_light_color=definition.fog
-	environment.fog_density=0.0010 if track_id!="zauberwald" else 0.003
+	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.003)
 	environment.fog_aerial_perspective=0.22
 	var world_environment := WorldEnvironment.new()
 	world_environment.environment=environment
@@ -281,7 +329,7 @@ func _lighting() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees=Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0)
 	sun.light_color=definition.sun
-	sun.light_energy=0.70 if track_id!="holo_city" else 0.42
+	sun.light_energy=0.84 if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42)
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -353,10 +401,20 @@ func _terrain() -> void:
 	var land := MeshInstance3D.new()
 	land.name="SculptedIslandTerrain"
 	land.mesh=surface.commit()
-	var material := _material(Color.WHITE).duplicate() as StandardMaterial3D
-	material.vertex_color_use_as_albedo=true
-	material.vertex_color_is_srgb=true
-	land.material_override=material
+	if track_id=="sonnenhafen":
+		var stylized := ShaderMaterial.new()
+		stylized.shader=preload("res://assets/shaders/kart_stylized_vertex_tint.gdshader")
+		stylized.set_shader_parameter("top_tint",Color("e8f4cf"))
+		stylized.set_shader_parameter("side_tint",Color("91bd72"))
+		stylized.set_shader_parameter("bottom_tint",Color("657b68"))
+		stylized.set_shader_parameter("overall_tint",Color("e6efcf"))
+		stylized.set_shader_parameter("roughness_value",0.90)
+		land.material_override=stylized
+	else:
+		var material := _material(Color.WHITE).duplicate() as StandardMaterial3D
+		material.vertex_color_use_as_albedo=true
+		material.vertex_color_is_srgb=true
+		land.material_override=material
 	add_child(land)
 	var water := MeshInstance3D.new()
 	water.name="AnimatedCoastalWater"
@@ -411,6 +469,7 @@ func _road() -> void:
 	asphalt.set_shader_parameter("road_tint",definition.asphalt)
 	var night: float={"holo_city":1.0,"bergwelt":0.15}.get(track_id,0.0)
 	asphalt.set_shader_parameter("night_course",night)
+	asphalt.set_shader_parameter("sky_island_detail",1.0 if track_id=="bergwelt" else 0.0)
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
 	var shoulder_color := Color("d9d9c5") if track_id=="sonnenhafen" else Color("90b4bd")
 	if track_id=="bergwelt": shoulder_color=Color("2a3f8f")
@@ -430,6 +489,8 @@ func _road() -> void:
 		var bridge: bool=_is_bridge(d)
 		for side in [-1.0,1.0]:
 			var curb: Color=Color("eff3e5") if i%4<2 else edge_color.darkened(0.16)
+			if track_id=="sonnenhafen":
+				curb=Color("f7f4ea") if i%4<2 else Color("e84f45")
 			if track_id!="bergwelt":
 				_prop("box",position_at(d,side*5.5)+basis.y*0.02,Vector3(0.48,0.12,step+0.03),curb,basis)
 			# The rail is continuous because it is also the wall the kart collides with.
@@ -461,6 +522,9 @@ func _road() -> void:
 	if track_id=="bergwelt":
 		SKY_ISLANDS.start_gate(self)
 		SKY_ISLANDS.road_lights(self)
+		SKY_ISLANDS.road_surface_details(self)
+	elif track_id=="sonnenhafen":
+		_arch(0.0,"LUMO GRAND PRIX",Color("65dff5"))
 	else:
 		_arch(0.0,track_name.to_upper(),definition.accent)
 	match track_id:
@@ -570,6 +634,261 @@ func _flower_patch(at: Vector3, color: Color, count: int=8) -> void:
 		var p: Vector3=at+Vector3(_rng.randf_range(-1.5,1.5),0,_rng.randf_range(-1.5,1.5))
 		p.y=_ground_height(p.x,p.z)+0.10
 		_prop("flower",p,Vector3.ONE*_rng.randf_range(0.75,1.3),color)
+
+func _grand_prix_dressing() -> void:
+	# Bright, readable family-racer scenery: big silhouettes at speed, dense detail near the road.
+	# Geometry stays original to Lumo; the composition follows generic circuit-design conventions.
+	_start_grandstand(length*0.018,-1.0)
+	_start_grandstand(length*0.055,1.0)
+	_grid_boxes()
+	_grand_prix_lane_markings()
+	_terraced_cliffs()
+	_roadside_chevrons()
+	_roadside_streetlights()
+	_coastal_waterfall_setpiece(length*0.585,1.0)
+
+
+func _grand_prix_lane_markings() -> void:
+	# Two dashed lane separators make the road read as a real circuit from chase-camera height.
+	var dash_spacing: float=5.6
+	var count: int=ceili(length/dash_spacing)
+	for i in range(count):
+		var d: float=float(i)*dash_spacing+1.4
+		if in_gap(d):
+			continue
+		var basis: Basis=frame(d)
+		for lateral in [-1.85,1.85]:
+			_prop(
+				"box",
+				position_at(d,lateral)+basis.y*0.024,
+				Vector3(0.10,0.016,2.15),
+				Color("f4f2df"),
+				basis
+			)
+
+
+func _terraced_cliffs() -> void:
+	# Layered warm rock + green organic caps. Avoid boxy "wall blocks": the repeated pieces use
+	# the existing low-poly rock/crown meshes so the silhouette reads as sculpted terrain.
+	var sections: Array=[
+		[0.17,-1.0,18.0],
+		[0.31,1.0,15.0],
+		[0.47,-1.0,20.0],
+		[0.72,1.0,18.0],
+		[0.86,-1.0,16.0],
+	]
+	var rock_colors: Array[Color]=[
+		Color("c98a4b"),Color("b87943"),Color("a96d3e"),Color("945d38")
+	]
+	for section in sections:
+		var centre_d: float=float(section[0])*length
+		var side: float=float(section[1])
+		var span: float=float(section[2])
+		for slice in range(7):
+			var d: float=centre_d-span*0.5+float(slice)*span/6.0
+			var basis: Basis=frame(d)
+			var road_y: float=position_at(d).y
+			var outward: float=10.3+sin(float(slice)*0.8)*1.1
+			for tier in range(3):
+				var lateral: float=outward+float(tier)*2.8
+				var at: Vector3=position_at(d,side*lateral)
+				at.y=road_y+1.25+float(tier)*2.15
+				for chunk in range(2):
+					var chunk_offset: Vector3=(
+						basis.z*(float(chunk)-0.5)*1.55
+						+basis.x*side*sin(float(slice+chunk))*0.55
+					)
+					_prop(
+						"rock",
+						at+chunk_offset,
+						Vector3(
+							3.2+float(tier)*0.35,
+							2.6+float(tier)*0.55,
+							3.4+float(chunk)*0.45
+						),
+						rock_colors[mini(tier,rock_colors.size()-1)],
+						Basis(Vector3.UP,float(slice*2+tier+chunk)*0.29)
+					)
+				_prop(
+					"crown",
+					at+Vector3.UP*(1.55+float(tier)*0.36),
+					Vector3(3.9+float(tier)*0.32,0.62,3.7),
+					Color("5db64e").lightened(float(tier)*0.035),
+					basis
+				)
+			if slice%2==0:
+				var tree_at: Vector3=position_at(d,side*(outward+7.4))
+				tree_at.y=road_y+6.0
+				_prop("cylinder",tree_at,Vector3(0.30,3.8,0.30),Color("795039"))
+				_prop(
+					"crown",
+					tree_at+Vector3.UP*2.6,
+					Vector3(2.3,1.7,2.1),
+					Color("3f9b52").lightened(float(slice%3)*0.05)
+				)
+
+
+func _grid_boxes() -> void:
+	var basis: Basis=frame(0.0)
+	for row in range(6):
+		var d: float=3.0+float(row)*2.35
+		for lane_index in range(2):
+			var lateral: float=(-2.1 if lane_index==0 else 2.1)+(1.0 if row%2==0 else -1.0)*0.45
+			_prop(
+				"box",
+				position_at(d,lateral)+basis.y*0.025,
+				Vector3(1.05,0.018,0.48),
+				Color("f8fbf4"),
+				frame(d)
+			)
+
+
+func _start_grandstand(distance: float, side: float) -> void:
+	var basis: Basis=frame(distance)
+	var at: Vector3=position_at(distance,side*18.5)
+	at.y=_ground_height(at.x,at.z)
+	var face: Basis=basis.rotated(Vector3.UP,PI if side<0.0 else 0.0)
+	# Four seating terraces.
+	for tier in range(4):
+		var local: Vector3=basis.x*side*(float(tier)*1.35)+Vector3.UP*(0.55+float(tier)*0.72)
+		_prop(
+			"box",
+			at+local,
+			Vector3(18.0,0.62,2.2),
+			Color("d8e2e5").darkened(float(tier)*0.025),
+			face
+		)
+	# Roof and truss.
+	for support in [-1.0,1.0]:
+		_prop(
+			"box",
+			at+basis.z*support*7.8+Vector3.UP*5.7,
+			Vector3(0.24,6.3,0.24),
+			Color("5b7185"),
+			face
+		)
+	_prop("box",at+Vector3.UP*6.45,Vector3(18.8,0.35,5.6),Color("f4f0dc"),face)
+	_prop("box",at+Vector3.UP*6.67,Vector3(19.2,0.12,5.9),Color("54b9d1"),face)
+	# GPU-batched crowd dots.
+	var crowd_colors: Array[Color]=[
+		Color("ffcf5a"),Color("6ad8e8"),Color("f080a4"),Color("8cdf7f"),Color("9e8ff0")
+	]
+	for row in range(4):
+		for seat in range(18):
+			var p: Vector3=(
+				at
+				+basis.z*(-7.2+float(seat)*0.84)
+				+basis.x*side*(float(row)*1.34)
+				+Vector3.UP*(1.22+float(row)*0.72)
+			)
+			_prop(
+				"ball",
+				p,
+				Vector3.ONE*0.22,
+				crowd_colors[(row*3+seat)%crowd_colors.size()]
+			)
+	var sign_at: Vector3=at+Vector3.UP*5.2-basis.x*side*0.25
+	_prop("box",sign_at,Vector3(7.2,1.1,0.18),Color("123b63"),face)
+	_sign(sign_at+basis.x*side*0.11,face,"LUMO  GRAND  PRIX",0.013)
+
+
+func _roadside_chevrons() -> void:
+	for fraction in [0.14,0.25,0.39,0.52,0.70,0.84]:
+		var d: float=length*fraction
+		var bend: float=forward(d).cross(forward(d+9.0)).y
+		var outer: float=-1.0 if bend>0.0 else 1.0
+		for board in range(3):
+			var bd: float=d+(float(board)-1.0)*3.0
+			var basis: Basis=frame(bd)
+			var at: Vector3=position_at(bd,outer*7.15)+Vector3.UP*1.65
+			_prop("box",at,Vector3(1.65,1.45,0.14),Color("ffd449"),basis)
+			# Two dark diagonal strokes form an original Lumo circuit chevron.
+			var turn: float=1.0 if outer>0.0 else -1.0
+			for stripe in [-0.30,0.30]:
+				_prop(
+					"box",
+					at+basis.x*stripe+basis.z*0.09,
+					Vector3(0.72,0.18,0.06),
+					Color("1b2835"),
+					basis.rotated(basis.z,turn*0.72)
+				)
+
+
+func _roadside_streetlights() -> void:
+	for i in range(14):
+		var d: float=(float(i)+0.5)*length/14.0
+		var side: float=-1.0 if i%2==0 else 1.0
+		var basis: Basis=frame(d)
+		var at: Vector3=position_at(d,side*7.4)
+		_prop("cylinder",at+Vector3.UP*2.8,Vector3(0.09,5.6,0.09),Color("485c68"))
+		_prop(
+			"box",
+			at+Vector3.UP*5.55-basis.x*side*0.55,
+			Vector3(1.15,0.16,0.28),
+			Color("465969"),
+			basis
+		)
+		_prop(
+			"box",
+			at+Vector3.UP*5.42-basis.x*side*0.82,
+			Vector3(0.48,0.06,0.18),
+			Color("e8fbff"),
+			basis,
+			true
+		)
+
+
+func _coastal_waterfall_setpiece(distance: float, side: float) -> void:
+	var basis: Basis=frame(distance)
+	var road_at: Vector3=position_at(distance)
+	var cliff_at: Vector3=position_at(distance,side*22.0)
+	cliff_at.y=road_at.y-2.4
+	# Layered rock/grass terrace so the waterfall belongs to the landscape instead of floating.
+	for layer in range(5):
+		var depth: float=float(layer)
+		_prop(
+			"rock",
+			cliff_at+basis.x*side*(depth*1.25)+Vector3.UP*(2.2-depth*1.3),
+			Vector3(8.5-depth*0.55,3.8,7.2-depth*0.35),
+			Color("c39159").darkened(depth*0.035),
+			Basis(Vector3.UP,float(layer)*0.27)
+		)
+	_prop(
+		"box",
+		cliff_at-basis.x*side*0.6+Vector3.UP*4.35,
+		Vector3(10.2,0.45,8.0),
+		Color("65be55"),
+		basis
+	)
+	var lip: Vector3=cliff_at-basis.x*side*0.5+Vector3.UP*4.2
+	var bottom_y: float=-2.0
+	var fall_height: float=maxf(7.0,lip.y-bottom_y)
+	var waterfall := MeshInstance3D.new()
+	waterfall.name="LumoCoastalWaterfall"
+	var quad := QuadMesh.new()
+	quad.size=Vector2(3.8,fall_height)
+	waterfall.mesh=quad
+	waterfall.position=Vector3(lip.x,(lip.y+bottom_y)*0.5,lip.z)
+	waterfall.basis=Basis(basis.z,Vector3.UP,basis.x*side).orthonormalized()
+	var water_material := ShaderMaterial.new()
+	water_material.shader=preload("res://assets/shaders/kart_waterfall.gdshader")
+	water_material.set_shader_parameter("water",Color("73d8ff"))
+	water_material.set_shader_parameter("foam",Color("f4ffff"))
+	waterfall.material_override=water_material
+	waterfall.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(waterfall)
+	for spray in range(7):
+		_prop(
+			"ball",
+			Vector3(lip.x,bottom_y+0.45,lip.z)
+				+basis.z*(float(spray)-3.0)*0.45
+				+basis.x*side*sin(float(spray))*0.65,
+			Vector3(0.45,0.20,0.45),
+			Color("e9ffff"),
+			Basis.IDENTITY,
+			true
+		)
+
 
 func _harbour() -> void:
 	var palette: Array[Color]=[Color("efe5c4"),Color("94c7c3"),Color("bfc7db"),Color("e8c2a1"),Color("c8d7b0")]
@@ -690,7 +1009,75 @@ func _forest() -> void:
 		var d: float=_rng.randf_range(0,length)
 		var p: Vector3=position_at(d,_rng.randf_range(-14,14))+Vector3.UP*_rng.randf_range(2.5,6.0)
 		_prop("ball",p,Vector3.ONE*0.065,Color("e1f0a3"),Basis.IDENTITY,true)
+	_forest_reference_dressing()
 	_arch(length*0.63,"LICHTERHAIN",Color("b2dcdf"))
+
+
+func _forest_reference_dressing() -> void:
+	# First world-by-world quality pass after Himmelsinseln: keep the established
+	# teal/lilac Opus forest language, but add large silhouettes that read at race speed.
+	_forest_glow_arch(length*0.235,Color("8ee8e3"),Color("aa91ec"))
+	_forest_glow_arch(length*0.785,Color("9adff2"),Color("d4a0f0"))
+	var beacon_fractions: Array[float]=[0.12,0.34,0.69,0.89]
+	for fraction in beacon_fractions:
+		var d: float=length*fraction
+		var basis: Basis=frame(d)
+		for side in [-1.0,1.0]:
+			var at: Vector3=position_at(d,side*8.6)
+			at.y=_ground_height(at.x,at.z)
+			var crystal_color: Color=Color("79e1de") if side<0.0 else Color("b9a1ed")
+			_prop("crystal",at+Vector3.UP*1.25,Vector3(0.42,1.7,0.42),crystal_color,basis,true)
+			_mushroom(at+basis.z*1.9-basis.x*side*0.7,1.05)
+			if not low_detail:
+				for orb in range(3):
+					var orb_offset: Vector3=(
+						basis.z*(float(orb)-1.0)*1.2
+						+basis.x*side*(0.45+float(orb)*0.18)
+						+Vector3.UP*(3.0+float(orb)*0.7)
+					)
+					var orb_color: Color=Color("f0f7b0") if orb%2==0 else Color("a8ddff")
+					_prop("ball",at+orb_offset,Vector3.ONE*(0.085+float(orb)*0.012),orb_color,Basis.IDENTITY,true)
+	var glade_d: float=length*0.72
+	var glade_basis: Basis=frame(glade_d)
+	for side in [-1.0,1.0]:
+		var glade_at: Vector3=position_at(glade_d,side*11.2)
+		glade_at.y=_ground_height(glade_at.x,glade_at.z)
+		_mushroom(glade_at,2.35)
+		_mushroom(glade_at+glade_basis.z*2.9-glade_basis.x*side*1.2,1.55)
+		_prop("crown",glade_at+Vector3.UP*0.35,Vector3(3.8,0.62,3.2),Color("4b8d79"),glade_basis)
+
+
+func _forest_glow_arch(distance: float, color_a: Color, color_b: Color) -> void:
+	var basis: Basis=frame(distance)
+	var centre: Vector3=position_at(distance)
+	var points: Array[Vector3]=[]
+	for segment in range(9):
+		var angle: float=PI-float(segment)*PI/8.0
+		points.append(
+			centre
+			+basis.x*(cos(angle)*7.1)
+			+basis.y*(0.55+sin(angle)*7.0)
+		)
+	for segment in range(8):
+		_beam(
+			points[segment],
+			points[segment+1],
+			0.17,
+			color_a if segment%2==0 else color_b,
+			true
+		)
+	for side in [-1.0,1.0]:
+		var root: Vector3=position_at(distance,side*7.0)
+		_prop(
+			"crystal",
+			root+basis.y*1.0,
+			Vector3(0.55,2.2,0.55),
+			color_a if side<0.0 else color_b,
+			basis,
+			true
+		)
+		_mushroom(root+basis.z*1.7-basis.x*side*0.4,1.15)
+
 
 func _mushroom(at: Vector3, size: float) -> void:
 	_prop("cylinder",at+Vector3.UP*size*0.70,Vector3(0.15,1.4,0.15)*size,Color("c5d2bb"))
@@ -770,12 +1157,18 @@ func _snow_tunnel(distance: float, palette: Dictionary={}) -> void:
 		_prop("box",position_at(d)+Vector3.UP*6.28,Vector3(1.2,0.07,0.25),lamp,frame(d),true)
 
 func _city() -> void:
-	for x in range(-4,5):
-		for z in range(-4,5):
-			var p := Vector3(x*19.0+_rng.randf_range(-2,2),-1.1,z*17.0+_rng.randf_range(-2,2))
-			if _near_road(p,11.0): continue
-			_city_tower(p,_rng.randf_range(6,10),_rng.randf_range(12,38),x+z)
-	for i in range(20):
+	var grid_radius: int = 4 if low_detail else 5
+	for x in range(-grid_radius,grid_radius+1):
+		for z in range(-grid_radius,grid_radius+1):
+			var p := Vector3(x*18.0+_rng.randf_range(-2,2),-1.1,z*16.0+_rng.randf_range(-2,2))
+			if _near_road(p,10.5): continue
+			_city_tower(
+				p,
+				_rng.randf_range(6,11),
+				_rng.randf_range(14,42 if not low_detail else 34),
+				x+z
+			)
+	for i in range(24 if not low_detail else 18):
 		var angle: float=float(i)*TAU/20.0
 		_city_tower(Vector3(cos(angle)*160,-3,sin(angle)*145),_rng.randf_range(10,17),_rng.randf_range(35,75),i)
 	for i in range(11):
@@ -790,6 +1183,131 @@ func _city() -> void:
 		var b: float=float(i+1)*TAU/48.0
 		_beam(Vector3(cos(a)*13,26+sin(a)*7,0),Vector3(cos(b)*13,26+sin(b)*7,0),0.32,Color("67d9ed"),true)
 	_prop("crystal",Vector3(0,17,0),Vector3(3,7,3),Color("a0caec"))
+
+func _holo_city_dressing() -> void:
+	# Dense high-speed night boulevard. Everything is original Lumo geometry, optimized through
+	# the existing MultiMesh batching path.
+	_holo_lane_lights()
+	_holo_skybridge(length*0.29,"NOVA-LINK")
+	_holo_skybridge(length*0.64,"AURORA-LINK")
+	_holo_landmark_spire(length*0.41,-1.0,"LUMO NEXUS")
+	_holo_landmark_spire(length*0.82,1.0,"STAR CORE")
+	_holo_billboard_canyon()
+	_holo_transit_beacons()
+
+
+func _holo_lane_lights() -> void:
+	var spacing: float=4.6
+	var count: int=ceili(length/spacing)
+	for i in range(count):
+		var d: float=float(i)*spacing+1.0
+		if in_gap(d):
+			continue
+		var basis: Basis=frame(d)
+		var glow: Color=Color("66e8ff") if i%2==0 else Color("b596ff")
+		for lateral in [-2.1,2.1]:
+			_prop(
+				"box",
+				position_at(d,lateral)+basis.y*0.034,
+				Vector3(0.07,0.018,1.65),
+				glow,
+				basis,
+				true
+			)
+
+
+func _holo_skybridge(distance: float, label: String) -> void:
+	var basis: Basis=frame(distance)
+	var centre: Vector3=position_at(distance)
+	var cyan:=Color("6beaff")
+	var violet:=Color("aa8cff")
+	# Two pylons outside the rail and one high-clearance bridge deck.
+	for side in [-1.0,1.0]:
+		var foot: Vector3=position_at(distance,side*8.7)
+		_prop("box",foot+Vector3.UP*5.0,Vector3(0.65,10.0,0.75),Color("243968"),basis)
+		_prop(
+			"box",
+			foot+Vector3.UP*8.6,
+			Vector3(0.90,0.18,1.05),
+			cyan if side<0.0 else violet,
+			basis,
+			true
+		)
+	_prop("box",centre+Vector3.UP*8.1,Vector3(18.0,0.55,2.4),Color("20355d"),basis)
+	_prop("box",centre+Vector3.UP*8.42,Vector3(17.3,0.08,2.1),cyan,basis,true)
+	# Under-deck light ribs make the bridge readable at race speed.
+	for rib in range(7):
+		_prop(
+			"box",
+			centre+basis.x*(-6.6+float(rib)*2.2)+Vector3.UP*7.72,
+			Vector3(0.12,0.12,1.75),
+			violet if rib%2==0 else cyan,
+			basis,
+			true
+		)
+	_sign(centre+Vector3.UP*9.0+basis.z*1.25,basis,label,0.014)
+
+
+func _holo_landmark_spire(distance: float, side: float, label: String) -> void:
+	var basis: Basis=frame(distance)
+	var base: Vector3=position_at(distance,side*22.0)
+	base.y=maxf(-1.0,_ground_height(base.x,base.z))
+	var height: float=34.0
+	_prop(
+		"glass_tower",
+		base+Vector3.UP*height*0.5,
+		Vector3(8.5,height,8.5),
+		Color("2c4e7a")
+	)
+	for ring in range(4):
+		var ring_y: float=7.5+float(ring)*6.3
+		for segment in range(16):
+			var a: float=float(segment)*TAU/16.0
+			var b: float=float(segment+1)*TAU/16.0
+			var p: Vector3=base+Vector3(cos(a)*6.2,ring_y,sin(a)*6.2)
+			var q: Vector3=base+Vector3(cos(b)*6.2,ring_y,sin(b)*6.2)
+			_beam(p,q,0.13,Color("6deaff") if ring%2==0 else Color("ae91ff"),true)
+	var sign_at: Vector3=base+Vector3.UP*18.0-basis.x*side*4.6
+	_prop("box",sign_at,Vector3(6.8,2.2,0.18),Color("13284b"),basis)
+	_sign(sign_at+basis.z*0.11,basis,label,0.013)
+
+
+func _holo_billboard_canyon() -> void:
+	var labels: Array[String]=["LUMO // GO","NOVA // FAST","AURORA // CUP","STAR // WAY"]
+	for i in range(10 if not low_detail else 6):
+		var d: float=(float(i)+0.5)*length/(10.0 if not low_detail else 6.0)
+		var side: float=-1.0 if i%2==0 else 1.0
+		var basis: Basis=frame(d)
+		var at: Vector3=position_at(d,side*10.2)+Vector3.UP*(4.3+float(i%3))
+		_prop("box",at,Vector3(5.0,2.8,0.18),Color("122a4d"),basis)
+		_prop(
+			"box",
+			at+basis.z*0.11,
+			Vector3(4.65,2.45,0.04),
+			Color("4f7ca4"),
+			basis,
+			true
+		)
+		_sign(at+basis.z*0.14,basis,labels[i%labels.size()],0.011)
+
+
+func _holo_transit_beacons() -> void:
+	for i in range(18):
+		var d: float=(float(i)+0.35)*length/18.0
+		var side: float=-1.0 if i%2==0 else 1.0
+		var basis: Basis=frame(d)
+		var at: Vector3=position_at(d,side*7.3)
+		var glow: Color=Color("5ce9ff") if i%3!=0 else Color("b48fff")
+		_prop("cylinder",at+Vector3.UP*1.7,Vector3(0.12,3.4,0.12),Color("28435f"))
+		_prop(
+			"crystal",
+			at+Vector3.UP*3.55,
+			Vector3(0.38,0.85,0.38),
+			glow,
+			basis,
+			true
+		)
+
 
 func _city_tower(at: Vector3, width: float, height: float, index: int) -> void:
 	var base := Color("29435e") if posmod(index,2)==0 else Color("344a69")

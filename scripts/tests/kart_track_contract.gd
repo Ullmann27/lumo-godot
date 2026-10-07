@@ -1,5 +1,6 @@
 extends SceneTree
 ## Surface projection, seam and geometry contracts required by free driving.
+const SKY_ISLANDS=preload("res://scripts/games/kart_sky_islands.gd")
 func _initialize() -> void:
 	call_deferred("_run")
 func _run() -> void:
@@ -8,8 +9,36 @@ func _run() -> void:
 	for id in definitions.IDS:
 		var world=script.new()
 		world.definition=definitions.definition(id)
+		# _make_curve() contains track-specific authoring scale. Mirror build() by setting
+		# track_id before invoking the geometry contract directly.
+		world.track_id=id
 		world._make_curve()
 		assert(world.length>340.0)
+		if id=="bergwelt":
+			assert(world.length>400.0, "Himmelsinseln must remain a long-form course")
+			world.jump=SKY_ISLANDS.jump_layout(world.length)
+			var inside_gap: float=(float(world.jump.take_off)+float(world.jump.gap_end))*0.5
+			var safe_reset: float=world.safe_respawn_distance(
+				inside_gap,
+				0.0,
+				world.length/8.0*5.0
+			)
+			assert(not world.in_gap(safe_reset), "Reset must never place the kart inside the sky gap")
+			assert(safe_reset<float(world.jump.ramp_start), "Reset returns before the jump danger zone")
+			var lap2_gap: float=world.length+inside_gap
+			var lap2_reset: float=world.safe_respawn_distance(lap2_gap,world.length+world.length*3.0/8.0,world.length+world.length*4.0/8.0-1.0)
+			assert(lap2_reset>world.length)
+			assert(not world.in_gap(lap2_reset))
+			var split: Dictionary=SKY_ISLANDS.split_route_layout(world.length)
+			assert(float(split.start)>float(world.jump.gap_end)+20.0)
+			assert(float(split.end)<SKY_ISLANDS.STAR_GATE*world.length-17.0, "Wolkenweg rejoins before Sternentor")
+			var split_mid: float=(float(split.start)+float(split.end))*0.5
+			assert(world.alternate_route_height(split_mid,-3.0)>1.5, "Wolkenweg left lane is physically raised")
+			assert(world.alternate_route_height(split_mid,3.0)<0.01, "Main lane remains on the original road surface")
+			assert(absf(world.alternate_route_height(float(split.start)-0.5,-3.0))<0.01)
+			assert(absf(world.alternate_route_height(float(split.end)+0.5,-3.0))<0.01)
+			assert(world.alternate_route_pitch(float(split.start)+2.0,-3.0)>0.0)
+			assert(world.alternate_route_pitch(float(split.end)-2.0,-3.0)<0.0)
 		assert(world.position_at(0).distance_to(world.position_at(world.length))<0.001)
 		assert(world.checkpoint_positions.size()==8)
 		var min_radius: float=INF

@@ -76,6 +76,9 @@ var result_payload: Dictionary = {}
 var gems: Array[Node3D] = []
 var gem_distances: Array[float] = []
 var collected: Dictionary = {}
+var item_boxes: Array[Node3D] = []
+var item_box_distances: Array[float] = []
+var item_box_collected: Dictionary = {}
 var hud: Label
 var message: Label
 var boost_button: Control
@@ -133,6 +136,10 @@ var item: String = ""
 var item_button: Control
 var opponent_headings: Array[float] = []
 var opponent_stuns: Array[float] = []
+var opponent_items: Array[String] = []
+var opponent_item_cooldowns: Array[float] = []
+var opponent_boost_times: Array[float] = []
+var opponent_shield_times: Array[float] = []
 var opponent_scores: Array[int] = []
 var opponent_targets: Array[int] = []
 var arena: Node3D
@@ -230,10 +237,17 @@ func _build_world() -> void:
 	add_child(race_root)
 	gems.clear()
 	gem_distances.clear()
+	item_boxes.clear()
+	item_box_distances.clear()
+	item_box_collected.clear()
 	obstacle_distances.clear()
 	opponents.clear()
 	opponent_headings.clear()
 	opponent_stuns.clear()
+	opponent_items.clear()
+	opponent_item_cooldowns.clear()
+	opponent_boost_times.clear()
+	opponent_shield_times.clear()
 	opponent_scores.clear()
 	opponent_targets.clear()
 	arena_pickup_timers.clear()
@@ -267,6 +281,15 @@ func _build_world() -> void:
 			gem_distances.append(d)
 		for fraction in [0.12, 0.42, 0.74]:
 			_turbo_pad(fraction * track_length)
+		var item_layout: Array = [
+			[0.18, -2.7],
+			[0.34, 2.7],
+			[0.53, 0.0],
+			[0.69, -2.7],
+			[0.86, 2.7],
+		]
+		for entry in item_layout:
+			_item_box(float(entry[0]) * track_length, float(entry[1]))
 	player = VEHICLE.new()
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, selected_driver)
 	player.configure(selected_driver, driver.color, selected_kart)
@@ -315,6 +338,10 @@ func _build_world() -> void:
 		race_root.add_child(opponent)
 		opponents.append(opponent)
 		opponent_stuns.append(0.0)
+		opponent_items.append("")
+		opponent_item_cooldowns.append(0.0)
+		opponent_boost_times.append(0.0)
+		opponent_shield_times.append(0.0)
 		opponent_scores.append(0)
 		opponent_targets.append(i * 5)
 		opponent_headings.append(0.0)
@@ -974,6 +1001,14 @@ func _physics_process(delta: float) -> void:
 			gems[i].visible = not collected.has(key)
 		if gems[i].visible and not paused and not reduced_motion:
 			gems[i].rotation.y += delta * 1.7
+	if mode != "arena":
+		var item_lap: int = int(distance / track_length)
+		for i in range(item_boxes.size()):
+			var item_key: int = item_lap * item_boxes.size() + i
+			item_boxes[i].visible = not item_box_collected.has(item_key)
+			if item_boxes[i].visible and not paused and not reduced_motion:
+				item_boxes[i].rotation.y += delta * 1.35
+				item_boxes[i].rotation.x = sin(elapsed * 2.0 + float(i)) * 0.08
 	if is_instance_valid(shield_visual):
 		shield_visual.visible = shield_time > 0
 	if is_instance_valid(pulse_visual):
@@ -1086,6 +1121,8 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		pitch = clampf(vertical_speed * 0.05, -0.32, 0.32)
 	elif world.ramp_height(road_distance) > 0.0:
 		pitch = float(world.jump.angle)
+	else:
+		pitch = world.alternate_route_pitch(road_distance, lane)
 	if pitch != 0.0:
 		player.basis = player.basis.rotated(right, pitch).orthonormalized()
 
@@ -1093,7 +1130,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 ## Ground contact, ramp, take-off, flight, landing and the cloud rescue over the gap.
 ## Returns false when the kart was rescued (the caller then stops this physics step).
 func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> bool:
-	var ground: float = float(road.height) + 0.035 + world.ramp_height(road_distance)
+	var ground: float = float(road.height) + 0.035 + world.ramp_height(road_distance) + world.alternate_route_height(road_distance, lane)
 	var jump: Dictionary = world.jump
 	if not airborne and not jump.is_empty():
 		var leaving_ramp: bool = (
@@ -1191,6 +1228,59 @@ func _update_wrong_way(road: Dictionary, delta: float) -> void:
 	wrong_way = now_wrong
 
 
+func _opponent_place(index: int) -> int:
+	if index < 0 or index >= opponent_distances.size():
+		return 6
+	var progress: float = opponent_distances[index]
+	var place: int = 1
+	if distance > progress:
+		place += 1
+	for other in range(opponent_distances.size()):
+		if other != index and opponent_distances[other] > progress:
+			place += 1
+	return clampi(place, 1, 6)
+
+
+func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) -> void:
+	if index >= opponent_items.size():
+		return
+	opponent_item_cooldowns[index] = maxf(0.0, opponent_item_cooldowns[index] - delta)
+	opponent_boost_times[index] = maxf(0.0, opponent_boost_times[index] - delta)
+	opponent_shield_times[index] = maxf(0.0, opponent_shield_times[index] - delta)
+
+	if opponent_items[index].is_empty() and opponent_item_cooldowns[index] <= 0.0:
+		var local_distance: float = fposmod(opponent_distances[index], track_length)
+		for box_distance in item_box_distances:
+			var offset: float = (
+				fposmod(local_distance - box_distance + track_length * 0.5, track_length)
+				- track_length * 0.5
+			)
+			if absf(offset) < 1.4:
+				opponent_items[index] = _roll_item_for_place(_opponent_place(index))
+				opponent_item_cooldowns[index] = 1.8
+				break
+
+	if opponent_items[index].is_empty():
+		return
+
+	var progress_gap: float = distance - opponent_distances[index]
+	match opponent_items[index]:
+		"boost":
+			if progress_gap > 1.0 and progress_gap < 28.0:
+				opponent_boost_times[index] = 2.2
+				opponent_items[index] = ""
+		"pulse":
+			if local_gap.length() < 9.0 and shield_time <= 0.0:
+				hit_timer = maxf(hit_timer, 0.38)
+				message.text = "Rivale setzt einen Lichtimpuls ein!"
+				_sound_effect("collision")
+				opponent_items[index] = ""
+		"shield":
+			if local_gap.length() < 7.0:
+				opponent_shield_times[index] = 5.0
+				opponent_items[index] = ""
+
+
 func _drive_opponents(delta: float) -> void:
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
 	for i in range(opponents.size()):
@@ -1198,6 +1288,7 @@ func _drive_opponents(delta: float) -> void:
 		var sampled: Dictionary = world.sample_road(rival.position, fposmod(opponent_distances[i], track_length))
 		var target_lane: float = clampf(-2.8 + i * 1.35 + sin(elapsed * 0.35 + i) * 0.3, -3.4, 3.4)
 		var local_gap: Vector3 = player.position - rival.position
+		_update_rival_item_tactics(i, local_gap, delta)
 		if local_gap.length() < 7 and absf(float(sampled.lateral) - lane) < 1.3:
 			target_lane = clampf(lane + (1.8 if i % 2 == 0 else -1.8), -3.8, 3.8)
 		var aim: Vector3 = world.position_at(float(sampled.distance) + 10.0, target_lane)
@@ -1205,6 +1296,8 @@ func _drive_opponents(delta: float) -> void:
 		var angle: float = angle_difference(opponent_headings[i], desired_heading)
 		opponent_headings[i] += clampf(angle, -1.55 * delta, 1.55 * delta)
 		var target_speed: float = 20.5 * float(rules.speed) * float(rules.rival) * (0.97 + i * 0.014)
+		if opponent_boost_times[i] > 0.0:
+			target_speed *= 1.32
 		target_speed *= clampf(1.0 - absf(angle) * 0.33, 0.58, 1.0)
 		opponent_stuns[i] = maxf(0, opponent_stuns[i] - delta)
 		if opponent_stuns[i] > 0:
@@ -1224,15 +1317,31 @@ func _drive_opponents(delta: float) -> void:
 			var overlap: float = rival_lateral - rail_side * WORLD.WALL_LATERAL
 			rival.position -= (next.basis as Basis).x * overlap
 			opponent_lanes[i] = rail_side * WORLD.WALL_LATERAL
-		rival.position.y = float(next.height) + 0.035 + world.rival_arc(float(next.distance))
+		rival.position.y = (
+			float(next.height)
+			+ 0.035
+			+ world.rival_arc(float(next.distance))
+			+ world.alternate_route_height(float(next.distance), rival_lateral)
+		)
 		if absf(float(next.lateral)) > ROAD_WIDTH * 0.5 + 1:
 			rival.transform = world.reset_transform(opponent_distances[i], target_lane)
 			opponent_headings[i] = _heading(opponent_distances[i])
 		else:
 			var normal: Vector3 = (next.basis as Basis).y
 			var right: Vector3 = forward.cross(normal).normalized()
-			rival.basis = Basis(right, normal, -normal.cross(right)).orthonormalized()
-		rival.set_motion(target_speed, clampf(-angle, -1, 1), false, false)
+			var rival_basis: Basis = Basis(right, normal, -normal.cross(right)).orthonormalized()
+			var route_pitch: float = world.alternate_route_pitch(
+				float(next.distance), rival_lateral
+			)
+			if absf(route_pitch) > 0.001:
+				rival_basis = rival_basis.rotated(right, route_pitch).orthonormalized()
+			rival.basis = rival_basis
+		rival.set_motion(
+			target_speed,
+			clampf(-angle, -1, 1),
+			opponent_boost_times[i] > 0.0,
+			false
+		)
 
 
 func _reset_kart() -> void:
@@ -1242,8 +1351,10 @@ func _reset_kart() -> void:
 		player.position = Vector3(0, 0.035, 28)
 		player_heading = 0
 	else:
-		var safe_distance: float = maxf(float(checkpoint_index) * track_length / 8.0, distance - 6.0)
-		distance = minf(safe_distance, (checkpoint_index + 1) * track_length / 8.0 - 1.0)
+		var checkpoint_floor: float = float(checkpoint_index) * track_length / 8.0
+		var checkpoint_ceiling: float = (checkpoint_index + 1) * track_length / 8.0 - 1.0
+		var candidate: float = maxf(checkpoint_floor, distance - 6.0)
+		distance = world.safe_respawn_distance(candidate, checkpoint_floor, checkpoint_ceiling)
 		lane = 0
 		player.transform = world.reset_transform(distance)
 		player_heading = _heading(distance)
@@ -1327,6 +1438,17 @@ func _track_events() -> void:
 				boosts = mini(3, boosts + 1)
 			if collected.size() % 2 == 0 and item.is_empty():
 				item = ["shield", "pulse", "boost"][rng.randi_range(0, 2)]
+	for i in range(item_boxes.size()):
+		var item_key: int = lap * item_boxes.size() + i
+		if (
+			not item_box_collected.has(item_key)
+			and player.position.distance_to(item_boxes[i].position) < 2.0
+		):
+			item_box_collected[item_key] = true
+			if item.is_empty():
+				item = _roll_item_for_place(_place())
+				message.text = "Überraschungs-Item!"
+				_sound_effect("item")
 	for fraction in [0.12, 0.42, 0.74]:
 		if absf(fposmod(distance, track_length) - fraction * track_length - 1.1) < 1.2 and absf(lane) < 2.1:
 			boost_time = maxf(boost_time, 1.0)
@@ -1347,7 +1469,10 @@ func _use_item() -> void:
 			pulse_age = 0
 			pulse_visual.position = player.position + Vector3.UP * 0.15
 			for i in range(opponents.size()):
-				if player.position.distance_to(opponents[i].position) < 13:
+				if (
+					player.position.distance_to(opponents[i].position) < 13
+					and opponent_shield_times[i] <= 0.0
+				):
 					opponent_stuns[i] = 2.3
 			message.text = "Lichtimpuls: Rivalen in deiner Nähe werden kurz langsamer."
 	item = ""
@@ -1695,7 +1820,11 @@ func _show_result() -> void:
 	elif mode == "arena":
 		title = "Kristall-Arena geschafft!"
 	elif mode == "cup":
-		title = "Rennen %d von 4 geschafft!" % (cup_index + 1) if pending_cup_next else "Dein Sternen-Cup ist geschafft!"
+		title = (
+			"Rennen %d von %d geschafft!" % [cup_index + 1, CATALOG.TRACKS.size()]
+			if pending_cup_next
+			else "Dein Sternen-Cup ist geschafft!"
+		)
 	modal_column.add_child(_label(title, 30))
 	var details: String = "%.1f Sekunden · +%d Sterne" % [elapsed, int(result_payload.get("stars", 0))]
 	if mode not in ["training", "time_trial"]:
@@ -1995,6 +2124,44 @@ func _turbo_pad(distance_on_track: float) -> void:
 			var piece := _box(race_root, piece_at, Vector3(1.3, 0.04, 0.2), Color("4fe6ff"))
 			piece.basis = geometry.basis
 			piece.material_override = cyan
+
+
+static func _item_pool_for_place(place: int) -> Array[String]:
+	if place >= 5:
+		return ["boost", "boost", "boost", "shield", "shield", "pulse"]
+	if place >= 3:
+		return ["boost", "boost", "shield", "shield", "pulse", "pulse"]
+	return ["boost", "shield", "shield", "pulse", "pulse", "pulse"]
+
+
+func _roll_item_for_place(place: int) -> String:
+	var pool: Array[String] = _item_pool_for_place(place)
+	return pool[rng.randi_range(0, pool.size() - 1)]
+
+
+func _item_box(distance_on_track: float, lateral: float) -> void:
+	var basis: Basis = world.frame(distance_on_track)
+	var node := Node3D.new()
+	node.name = "MysteryItemBox"
+	node.position = _track_position(distance_on_track, lateral) + basis.y * 0.85
+	node.basis = basis
+	node.scale = Vector3.ONE * (1.18 if world.track_id == "bergwelt" else 1.0)
+	race_root.add_child(node)
+	var core := _box(node, Vector3.ZERO, Vector3(1.25, 1.25, 1.25), Color("3756c9"))
+	core.material_override = _glow_material(Color("627dff"), 1.0)
+	for axis in [-1.0, 1.0]:
+		var stripe := _box(
+			node,
+			Vector3(axis * 0.66, 0.0, 0.0),
+			Vector3(0.08, 1.36, 1.36),
+			Color("5ff2ff")
+		)
+		stripe.material_override = _glow_material(Color("5ff2ff"), 1.5)
+	var diamond := _box(node, Vector3(0.0, 0.0, 0.68), Vector3(0.34, 0.34, 0.08), Color("ffc94a"))
+	diamond.rotation.z = PI * 0.25
+	diamond.material_override = _glow_material(Color("ffc94a"), 1.4)
+	item_boxes.append(node)
+	item_box_distances.append(distance_on_track)
 
 
 func _mesh(parent: Node3D, mesh: Mesh, position: Vector3, color: Color) -> MeshInstance3D:
