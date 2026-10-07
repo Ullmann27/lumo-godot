@@ -1213,6 +1213,7 @@ func _holo_city_dressing() -> void:
 	_holo_lane_lights()
 	_holo_skybridge(length*0.29,"NOVA-LINK")
 	_holo_skybridge(length*0.64,"AURORA-LINK")
+	_holo_speed_tunnel(length*0.60)
 	_holo_landmark_spire(length*0.41,-1.0,"LUMO NEXUS")
 	_holo_landmark_spire(length*0.82,1.0,"STAR CORE")
 	_holo_billboard_canyon()
@@ -1234,6 +1235,65 @@ func _holo_lane_lights() -> void:
 				position_at(d,lateral)+basis.y*0.034,
 				Vector3(0.07,0.018,1.65),
 				glow,
+				basis,
+				true
+			)
+
+
+func _holo_speed_tunnel(distance: float) -> void:
+	# Large race-readable Aurora tunnel: visible several seconds before entry.
+	# Decorative only; roadway, collision and AI path remain unchanged.
+	var cyan:=Color("58ebff")
+	var violet:=Color("b987ff")
+	var gold:=Color("ffd060")
+	var span: float=44.0
+	var frames: int=9
+	for index in range(frames):
+		var d: float=distance-span*0.5+float(index)*span/float(frames-1)
+		var basis: Basis=frame(d)
+		var centre: Vector3=position_at(d)
+		var accent: Color=cyan if index%3==0 else (violet if index%3==1 else gold)
+		# Tapered pylons and layered top ribs create a stronger silhouette than small signs.
+		for side in [-1.0,1.0]:
+			var foot: Vector3=position_at(d,side*6.55)
+			_prop("box",foot+basis.y*3.0,Vector3(0.28,6.0,0.36),Color("162d59"),basis)
+			_prop(
+				"box",
+				foot+basis.y*5.35-basis.x*side*0.55,
+				Vector3(1.55,0.16,0.30),
+				accent,
+				basis.rotated(basis.z,side*0.38),
+				true
+			)
+		_prop(
+			"box",
+			centre+basis.y*6.05,
+			Vector3(13.3,0.16,0.30),
+			accent,
+			basis,
+			true
+		)
+		if index%2==0:
+			_prop(
+				"star",
+				centre+basis.y*7.05,
+				Vector3.ONE*0.46,
+				accent,
+				basis,
+				true
+			)
+	# Far-side holographic towers frame the vanishing point without narrowing the road.
+	for side in [-1.0,1.0]:
+		var d: float=distance+span*0.30
+		var basis: Basis=frame(d)
+		var at: Vector3=position_at(d,side*15.0)
+		_prop("glass_tower",at+Vector3.UP*9.0,Vector3(4.8,18.0,4.8),Color("284d79"))
+		for level in range(3):
+			_prop(
+				"box",
+				at+Vector3.UP*(5.0+float(level)*4.8),
+				Vector3(5.4,0.14,5.4),
+				cyan if (level+int(side))%2==0 else violet,
 				basis,
 				true
 			)
