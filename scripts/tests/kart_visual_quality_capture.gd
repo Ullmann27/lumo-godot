@@ -93,6 +93,9 @@ func _run() -> void:
 			game._update_hud()
 			await _capture("%s-%03d" % [track, roundi(fraction * 1000)])
 	game.abandoned = true
+	# Do not activate the project fallback sky while draining the freed game.
+	# Its reflection targets otherwise allocate just before renderer shutdown.
+	root.world_3d.fallback_environment = null
 	game.queue_free()
 	await _settle()
 	await create_timer(0.8).timeout
