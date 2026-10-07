@@ -31,4 +31,4 @@ func _ready() -> void:
 		options.merge(HostBridge.launch_options(), true)
 	SceneRouter.launch_options = options
 	var target: String = str(options.get("scene", ""))
-	SceneRouter.goto(target if target in ["kart", "jump", "home", "games"] else "games")
+	SceneRouter.goto(target if target in ["kart", "jump", "build", "rhythm", "treasure", "home", "games"] else "games")
