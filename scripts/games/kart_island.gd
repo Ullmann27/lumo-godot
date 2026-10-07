@@ -15,6 +15,8 @@ const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
 const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
 const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
+const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
+const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
@@ -70,6 +72,7 @@ var abandoned: bool = false
 var rng := RandomNumberGenerator.new()
 var player: LumoRaceKart
 var camera: Camera3D
+var speed_fx: Node3D
 var opponents: Array[LumoRaceKart] = []
 var opponent_distances: Array[float] = [-4, -7, -10, -13, -16]
 var opponent_lanes: Array[float] = [-3.2, -1.65, -0.1, 1.45, 3.0]
@@ -359,11 +362,15 @@ func _build_world() -> void:
 		opponent_targets.append(i * 5)
 		opponent_headings.append(0.0)
 	camera = Camera3D.new()
-	camera.fov = 68
+	camera.fov = VISUAL_GRADE.BASE_FOV
 	camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	camera.current = true
 	camera.far = 450 if graphics_profile == "high" else (340 if graphics_profile == "medium" else 260)
 	race_root.add_child(camera)
+	speed_fx = SPEED_FX.new()
+	speed_fx.name = "CameraSpeedFx"
+	camera.add_child(speed_fx)
+	speed_fx.set_motion(0.0, false, reduced_motion)
 	if mode == "arena":
 		player.position = Vector3(0, 0.04, 28)
 		player_heading = 0
@@ -681,20 +688,20 @@ func _build_ui() -> void:
 	safe.add_child(column)
 	var top := HBoxContainer.new()
 	column.add_child(top)
-	top_menu_button = _button("‹ Menü", _pause)
+	top_menu_button = _button("‹ Menü", _pause, Color(0.035, 0.085, 0.16, 0.82))
 	top.add_child(top_menu_button)
-	top_reset_button = _button("↺", _reset_kart)
+	top_reset_button = _button("↺", _reset_kart, Color(0.035, 0.085, 0.16, 0.82))
 	top.add_child(top_reset_button)
 	var hud_panel := PanelContainer.new()
 	hud_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hud_panel.add_theme_stylebox_override("panel", _style(Color("102441")))
+	hud_panel.add_theme_stylebox_override("panel", _style(Color(0.035, 0.085, 0.16, 0.76)))
 	top.add_child(hud_panel)
 	hud = _label("SONNENHAFEN", 23)
 	hud.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hud.autowrap_mode = TextServer.AUTOWRAP_OFF
 	hud.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	hud_panel.add_child(hud)
-	top_pause_button = _button("Ⅱ Pause", _pause)
+	top_pause_button = _button("Ⅱ Pause", _pause, Color(0.035, 0.085, 0.16, 0.82))
 	top.add_child(top_pause_button)
 	message = _label("", 21)
 	message.add_theme_color_override("font_color", Color("f4f8ff"))
@@ -730,7 +737,7 @@ func _build_ui() -> void:
 	map_panel.offset_right = -22
 	map_panel.offset_top = 104
 	map_panel.offset_bottom = 260
-	map_panel.add_theme_stylebox_override("panel", _style(Color(0.03, 0.08, 0.15, 0.9)))
+	map_panel.add_theme_stylebox_override("panel", _style(Color(0.025, 0.065, 0.13, 0.78)))
 	map_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	safe_ui.add_child(map_panel)
 	map = MINIMAP.new()
@@ -1606,16 +1613,51 @@ func _update_vehicles(_delta: float) -> void:
 func _update_camera(delta: float, snap: bool = false) -> void:
 	if not is_instance_valid(camera):
 		return
+	# Heinz' racing references keep the kart large in frame and put the horizon/
+	# setpiece directly ahead. Speed stretches the view; boost never teleports it.
 	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
-	var desired: Vector3 = player.position - ahead * 6.6 + Vector3.UP * 3.5
-	var target: Vector3 = player.position + ahead * 7.0 + Vector3.UP * 1.2
-	camera.position = desired if snap else camera.position.lerp(desired, minf(1, delta * 5.5))
+	var right := Vector3(-ahead.z, 0, ahead.x)
+	var speed_ratio: float = clampf(absf(speed) / 25.0, 0.0, 1.0)
+	var chase_distance: float = VISUAL_GRADE.camera_distance(speed_ratio)
+	var air_lift: float = 0.28 if airborne and not reduced_motion else 0.0
+	var lateral_lead: float = 0.0 if reduced_motion else clampf(steering, -1.0, 1.0) * 0.24
+	var desired: Vector3 = (
+		player.position
+		- ahead * chase_distance
+		+ right * lateral_lead
+		+ Vector3.UP * (VISUAL_GRADE.CAMERA_HEIGHT + air_lift)
+	)
+	var target: Vector3 = (
+		player.position
+		+ ahead * (VISUAL_GRADE.CAMERA_LOOK_AHEAD + speed_ratio * 1.8)
+		+ Vector3.UP * VISUAL_GRADE.CAMERA_TARGET_HEIGHT
+	)
+	camera.position = (
+		desired
+		if snap
+		else camera.position.lerp(desired, minf(1.0, delta * VISUAL_GRADE.CAMERA_LERP))
+	)
 	camera.look_at(target)
-	var baseline_fov: float = 68 if reduced_motion else (76 if boost_time > 0 and not paused else 68)
+	if not reduced_motion:
+		var roll: float = (
+			-clampf(steering, -1.0, 1.0)
+			* VISUAL_GRADE.CAMERA_ROLL_MAX
+			* (0.35 + speed_ratio * 0.65)
+		)
+		camera.rotate_object_local(Vector3(0, 0, 1), roll)
+	var baseline_fov: float = VISUAL_GRADE.camera_fov(
+		speed_ratio, boost_time > 0.0 and not paused, reduced_motion
+	)
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
 	var aspect: float = viewport_size.x / maxf(1.0, viewport_size.y)
 	var target_fov: float = _resize_compensated_fov(baseline_fov, aspect)
-	camera.fov = lerpf(camera.fov, target_fov, minf(1, delta * 3))
+	camera.fov = (
+		target_fov
+		if snap
+		else lerpf(camera.fov, target_fov, minf(1.0, delta * VISUAL_GRADE.FOV_LERP))
+	)
+	if is_instance_valid(speed_fx):
+		speed_fx.set_motion(speed_ratio, boost_time > 0.0 and not paused, reduced_motion)
 
 
 static func _resize_compensated_fov(vertical_fov: float, aspect: float) -> float:

@@ -8,6 +8,7 @@ extends RefCounted
 const NIGHT_SKY = preload("res://assets/shaders/kart_night_sky.gdshader")
 const CLOUD_SEA = preload("res://assets/shaders/kart_cloud_sea.gdshader")
 const WATERFALL = preload("res://assets/shaders/kart_waterfall.gdshader")
+const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 
 ## Course fractions carried by islands (start, floating town, crystal cave, temple ruins).
 ## Everything between them is bridge.
@@ -184,6 +185,7 @@ static func jump_dressing(world) -> void:
 
 
 static func environment(world) -> void:
+	var visual: Dictionary = VISUAL_GRADE.environment_profile("bergwelt", world.low_detail)
 	var environment := Environment.new()
 	environment.background_mode = Environment.BG_SKY
 	var sky := Sky.new()
@@ -194,13 +196,17 @@ static func environment(world) -> void:
 	environment.sky = sky
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color("8597dd")
-	environment.ambient_light_energy = 0.42
+	environment.ambient_light_energy = 0.48 if not world.low_detail else 0.36
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	environment.tonemap_exposure = 1.0
-	environment.glow_enabled = true
-	environment.glow_intensity = 0.85
-	environment.glow_bloom = 0.06
-	environment.glow_hdr_threshold = 0.9
+	environment.tonemap_exposure = float(visual.exposure)
+	environment.glow_enabled = bool(visual.glow)
+	environment.glow_intensity = float(visual.glow_intensity)
+	environment.glow_bloom = float(visual.glow_bloom)
+	environment.glow_hdr_threshold = float(visual.glow_threshold)
+	environment.adjustment_enabled = not world.low_detail
+	environment.adjustment_brightness = float(visual.brightness)
+	environment.adjustment_contrast = float(visual.contrast)
+	environment.adjustment_saturation = float(visual.saturation)
 	environment.fog_enabled = true
 	environment.fog_light_color = Color("3a4c98")
 	environment.fog_density = 0.0014
@@ -1049,6 +1055,42 @@ static func _star_gate_run(world, distance: float) -> void:
 				GOLD,
 				basis,
 				true
+			)
+	# Aurora crown: rounded luminous ribs and cloud banks create the layered,
+	# high-altitude depth requested by the gameplay references. Decorative only.
+	var aurora_colors: Array[Color]=[CYAN,CRYSTAL_VIOLET,GOLD,CYAN]
+	for arch_index in range(4):
+		var arch_d: float=distance-12.0+float(arch_index)*8.0
+		var arch_basis: Basis=world.frame(arch_d)
+		var arch_centre: Vector3=world.position_at(arch_d)
+		var arch_color: Color=aurora_colors[arch_index]
+		for segment in range(18):
+			var a: float=PI-float(segment)*PI/18.0
+			var b: float=PI-float(segment+1)*PI/18.0
+			var p: Vector3=(
+				arch_centre
+				+arch_basis.x*cos(a)*7.1
+				+arch_basis.y*(1.25+sin(a)*6.0)
+			)
+			var q: Vector3=(
+				arch_centre
+				+arch_basis.x*cos(b)*7.1
+				+arch_basis.y*(1.25+sin(b)*6.0)
+			)
+			world._beam(p,q,0.10,arch_color,true)
+	# Puffy side clouds sit well beyond the guardrail and never affect driving.
+	for cloud_index in range(12):
+		var cloud_d: float=distance-24.0+float(cloud_index)*4.4
+		var side: float=-1.0 if cloud_index%2==0 else 1.0
+		var cloud_basis: Basis=world.frame(cloud_d)
+		var cloud_at: Vector3=world.position_at(cloud_d,side*(12.5+float(cloud_index%3)*2.2))
+		cloud_at+=cloud_basis.y*(1.4+float(cloud_index%2)*0.7)
+		for puff in range(3):
+			world._prop(
+				"ball",
+				cloud_at+cloud_basis.x*side*(float(puff)-1.0)*1.5+Vector3.UP*sin(float(puff))*0.45,
+				Vector3(2.5+float(puff)*0.35,1.05+float(puff%2)*0.35,1.8+float(puff)*0.25),
+				Color("cbd8ff") if cloud_index%3 else Color("eed8ff")
 			)
 	# A readable entry marker makes the section recognizable at speed.
 	var entry_basis: Basis = world.frame(distance - span * 0.5 - 4.0)

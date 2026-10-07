@@ -4,6 +4,7 @@ extends Node3D
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
+const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
 const RAIL_LATERAL: float = 6.05
@@ -302,6 +303,7 @@ func _flush_instances() -> void:
 	groups.clear()
 
 func _lighting() -> void:
+	var visual: Dictionary=VISUAL_GRADE.environment_profile(track_id,low_detail)
 	var environment := Environment.new()
 	environment.background_mode=Environment.BG_SKY
 	var sky := Sky.new()
@@ -317,8 +319,16 @@ func _lighting() -> void:
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color=Color("c8e0f4") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
 	environment.ambient_light_energy=0.28 if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
-	environment.tonemap_mode=Environment.TONE_MAPPER_FILMIC if track_id=="sonnenhafen" else Environment.TONE_MAPPER_LINEAR
-	environment.tonemap_exposure=0.94 if track_id=="sonnenhafen" else 0.9
+	environment.tonemap_mode=Environment.TONE_MAPPER_FILMIC
+	environment.tonemap_exposure=float(visual.exposure)
+	environment.glow_enabled=bool(visual.glow)
+	environment.glow_intensity=float(visual.glow_intensity)
+	environment.glow_bloom=float(visual.glow_bloom)
+	environment.glow_hdr_threshold=float(visual.glow_threshold)
+	environment.adjustment_enabled=not low_detail
+	environment.adjustment_brightness=float(visual.brightness)
+	environment.adjustment_contrast=float(visual.contrast)
+	environment.adjustment_saturation=float(visual.saturation)
 	environment.fog_enabled=true
 	environment.fog_light_color=definition.fog
 	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.003)
@@ -468,14 +478,27 @@ func _road() -> void:
 	asphalt.shader=preload("res://assets/shaders/kart_asphalt.gdshader")
 	asphalt.set_shader_parameter("road_tint",definition.asphalt)
 	var night: float={"holo_city":1.0,"bergwelt":0.15}.get(track_id,0.0)
+	var visual: Dictionary=VISUAL_GRADE.environment_profile(track_id,low_detail)
 	asphalt.set_shader_parameter("night_course",night)
 	asphalt.set_shader_parameter("sky_island_detail",1.0 if track_id=="bergwelt" else 0.0)
+	asphalt.set_shader_parameter("edge_glow_color",definition.accent)
+	asphalt.set_shader_parameter("cinematic_grade",float(visual.road_grade))
+	asphalt.set_shader_parameter("road_gloss",float(visual.road_gloss))
+	asphalt.set_shader_parameter("edge_energy",float(visual.edge_energy))
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
 	var shoulder_color := Color("d9d9c5") if track_id=="sonnenhafen" else Color("90b4bd")
 	if track_id=="bergwelt": shoulder_color=Color("2a3f8f")
 	var edge_color: Color=definition.accent
 	for side in [-1.0,1.0]:
 		_ribbon("RaisedShoulder",side*5.42,side*6.10,-0.06,_material(shoulder_color))
+		if not low_detail and track_id!="bergwelt":
+			_ribbon(
+				"CinematicLightEdge",
+				side*5.79,
+				side*5.91,
+				0.046,
+				_material(edge_color,true)
+			)
 		_ribbon("RoadFoundation",side*6.1,side*6.13,-0.06,_material(Color("566b74")),0.70)
 		_ribbon("EdgePaint",side*5.1,side*5.24,0.015,_material(Color("f5f7e9")))
 		if track_id=="holo_city": _ribbon("ContinuousLightEdge",side*5.83,side*5.94,0.045,_material(edge_color,true))
@@ -646,6 +669,45 @@ func _grand_prix_dressing() -> void:
 	_roadside_chevrons()
 	_roadside_streetlights()
 	_coastal_waterfall_setpiece(length*0.585,1.0)
+	_coastal_sun_gate(length*0.38)
+
+
+func _coastal_sun_gate(distance: float) -> void:
+	# A large coastal landmark brings the horizon/detail density up to the new chase-camera target.
+	# Decoration only: road, collision, AI and checkpoint geometry are untouched.
+	var cyan:=Color("55e8ff")
+	var gold:=Color("ffd36b")
+	var coral:=Color("ff9b75")
+	for gate_index in range(5):
+		var d: float=distance-14.0+float(gate_index)*7.0
+		var basis: Basis=frame(d)
+		var centre: Vector3=position_at(d)
+		var color: Color=cyan if gate_index%2==0 else gold
+		for segment in range(14):
+			var a: float=PI-float(segment)*PI/14.0
+			var b: float=PI-float(segment+1)*PI/14.0
+			var p: Vector3=centre+basis.x*cos(a)*7.0+basis.y*(1.05+sin(a)*5.7)
+			var q: Vector3=centre+basis.x*cos(b)*7.0+basis.y*(1.05+sin(b)*5.7)
+			_beam(p,q,0.105,color,true)
+		if gate_index==2:
+			_prop("star",centre+basis.y*7.4,Vector3.ONE*0.55,coral,basis,true)
+	for side in [-1.0,1.0]:
+		var d: float=distance+5.5
+		var basis: Basis=frame(d)
+		var at: Vector3=position_at(d,side*13.0)
+		at.y=maxf(position_at(d).y-0.5,_ground_height(at.x,at.z))
+		_prop("cylinder",at+Vector3.UP*4.0,Vector3(0.55,8.0,0.55),Color("f0e4c8"))
+		_prop("cylinder",at+Vector3.UP*8.4,Vector3(1.25,0.35,1.25),Color("315f81"))
+		_prop("crystal",at+Vector3.UP*9.4,Vector3(0.75,1.45,0.75),cyan if side<0 else coral,basis,true)
+		for palm in range(3):
+			var palm_at: Vector3=at+basis.z*(float(palm)-1.0)*3.2+basis.x*side*2.4
+			_prop("cylinder",palm_at+Vector3.UP*2.8,Vector3(0.22,5.6,0.22),Color("8c6542"))
+			_prop("crown",palm_at+Vector3.UP*6.0,Vector3(2.6,0.75,2.4),Color("4ca96d"),basis)
+	var sign_basis: Basis=frame(distance-19.0)
+	var sign_at: Vector3=position_at(distance-19.0,-8.8)+Vector3.UP*3.6
+	_prop("box",sign_at,Vector3(4.8,1.55,0.16),Color("133c61"),sign_basis)
+	_prop("box",sign_at+sign_basis.z*0.10,Vector3(4.5,1.3,0.04),cyan,sign_basis,true)
+	_sign(sign_at+sign_basis.z*0.14,sign_basis,"SONNENBOGEN",0.011)
 
 
 func _grand_prix_lane_markings() -> void:
@@ -1017,6 +1079,8 @@ func _forest_reference_dressing() -> void:
 	# First world-by-world quality pass after Himmelsinseln: keep the established
 	# teal/lilac Opus forest language, but add large silhouettes that read at race speed.
 	_forest_glow_arch(length*0.235,Color("8ee8e3"),Color("aa91ec"))
+	_forest_glow_arch(length*0.34,Color("69edcf"),Color("d590ff"))
+	_forest_magic_canopy(length*0.34)
 	_forest_glow_arch(length*0.785,Color("9adff2"),Color("d4a0f0"))
 	var beacon_fractions: Array[float]=[0.12,0.34,0.69,0.89]
 	for fraction in beacon_fractions:
@@ -1045,6 +1109,37 @@ func _forest_reference_dressing() -> void:
 		_mushroom(glade_at,2.35)
 		_mushroom(glade_at+glade_basis.z*2.9-glade_basis.x*side*1.2,1.55)
 		_prop("crown",glade_at+Vector3.UP*0.35,Vector3(3.8,0.62,3.2),Color("4b8d79"),glade_basis)
+
+
+func _forest_magic_canopy(distance: float) -> void:
+	# Oversized luminous flora creates foreground/midground depth without narrowing the road.
+	var basis: Basis=frame(distance)
+	var cyan:=Color("73f4dc")
+	var violet:=Color("d394ff")
+	var gold:=Color("f5e691")
+	for side in [-1.0,1.0]:
+		var base: Vector3=position_at(distance,side*10.6)
+		base.y=_ground_height(base.x,base.z)
+		_mushroom(base,2.8)
+		_mushroom(base+basis.z*3.3-basis.x*side*1.1,1.9)
+		_prop("crystal",base+basis.z*-2.7+Vector3.UP*1.5,Vector3(0.75,2.8,0.75),cyan if side<0 else violet,basis,true)
+		for orb in range(5):
+			var orbit: float=float(orb)*TAU/5.0
+			_prop(
+				"ball",
+				base+basis.x*cos(orbit)*2.6+basis.z*sin(orbit)*2.1+Vector3.UP*(4.5+float(orb%2)*0.8),
+				Vector3.ONE*(0.14+float(orb%3)*0.025),
+				gold if orb%2==0 else (cyan if side<0 else violet),
+				Basis.IDENTITY,
+				true
+			)
+	# Suspended firefly constellation over the road; visual only, high enough for clearance.
+	for spark in range(13):
+		var d: float=distance-9.0+float(spark)*1.5
+		var spark_basis: Basis=frame(d)
+		var lateral: float=sin(float(spark)*1.7)*3.2
+		var at: Vector3=position_at(d,lateral)+spark_basis.y*(6.0+float(spark%3)*0.65)
+		_prop("ball",at,Vector3.ONE*0.10,gold if spark%3==0 else (cyan if spark%2==0 else violet),Basis.IDENTITY,true)
 
 
 func _forest_glow_arch(distance: float, color_a: Color, color_b: Color) -> void:
@@ -1190,6 +1285,7 @@ func _holo_city_dressing() -> void:
 	_holo_lane_lights()
 	_holo_skybridge(length*0.29,"NOVA-LINK")
 	_holo_skybridge(length*0.64,"AURORA-LINK")
+	_holo_speed_tunnel(length*0.60)
 	_holo_landmark_spire(length*0.41,-1.0,"LUMO NEXUS")
 	_holo_landmark_spire(length*0.82,1.0,"STAR CORE")
 	_holo_billboard_canyon()
@@ -1211,6 +1307,65 @@ func _holo_lane_lights() -> void:
 				position_at(d,lateral)+basis.y*0.034,
 				Vector3(0.07,0.018,1.65),
 				glow,
+				basis,
+				true
+			)
+
+
+func _holo_speed_tunnel(distance: float) -> void:
+	# Large race-readable Aurora tunnel: visible several seconds before entry.
+	# Decorative only; roadway, collision and AI path remain unchanged.
+	var cyan:=Color("58ebff")
+	var violet:=Color("b987ff")
+	var gold:=Color("ffd060")
+	var span: float=44.0
+	var frames: int=9
+	for index in range(frames):
+		var d: float=distance-span*0.5+float(index)*span/float(frames-1)
+		var basis: Basis=frame(d)
+		var centre: Vector3=position_at(d)
+		var accent: Color=cyan if index%3==0 else (violet if index%3==1 else gold)
+		# Tapered pylons and layered top ribs create a stronger silhouette than small signs.
+		for side in [-1.0,1.0]:
+			var foot: Vector3=position_at(d,side*6.55)
+			_prop("box",foot+basis.y*3.0,Vector3(0.28,6.0,0.36),Color("162d59"),basis)
+			_prop(
+				"box",
+				foot+basis.y*5.35-basis.x*side*0.55,
+				Vector3(1.55,0.16,0.30),
+				accent,
+				basis.rotated(basis.z,side*0.38),
+				true
+			)
+		_prop(
+			"box",
+			centre+basis.y*6.05,
+			Vector3(13.3,0.16,0.30),
+			accent,
+			basis,
+			true
+		)
+		if index%2==0:
+			_prop(
+				"star",
+				centre+basis.y*7.05,
+				Vector3.ONE*0.46,
+				accent,
+				basis,
+				true
+			)
+	# Far-side holographic towers frame the vanishing point without narrowing the road.
+	for side in [-1.0,1.0]:
+		var d: float=distance+span*0.30
+		var basis: Basis=frame(d)
+		var at: Vector3=position_at(d,side*15.0)
+		_prop("glass_tower",at+Vector3.UP*9.0,Vector3(4.8,18.0,4.8),Color("284d79"))
+		for level in range(3):
+			_prop(
+				"box",
+				at+Vector3.UP*(5.0+float(level)*4.8),
+				Vector3(5.4,0.14,5.4),
+				cyan if (level+int(side))%2==0 else violet,
 				basis,
 				true
 			)
