@@ -14,7 +14,8 @@ const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
 const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
-const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")\nconst VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
+const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
+const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
