@@ -63,12 +63,16 @@ func _run() -> void:
 			await _settle()
 		assert(not game.menu_active and game.mode == "cup" and game.track_id == "sonnenhafen")
 		assert(is_instance_valid(game.player) and game.opponents.size() == 5)
+		# Use Android's default manual accelerator for the complete control view.
+		game.auto_gas = false
+		game._update_hud()
 		# The garage-to-race transition must apply the actual driving layout
 		# itself. Do not call its layout methods here to repair a broken result.
 		for control in [game.joystick, game.pedal_pad, game.top_pause_button]:
 			assert(root.get_visible_rect().encloses(control.get_global_rect()), "Race controls must fit the real viewport after menu start")
 			assert(game.safe_ui.get_global_rect().encloses(control.get_global_rect()), "Race controls must stay inside the existing safe insets")
 		for action in game.pedal_pad.get_children():
+			assert(action.is_visible_in_tree())
 			assert(game.pedal_pad.get_global_rect().grow(0.02).encloses(action.get_global_rect()), "Action exceeds its pad beyond subpixel rounding")
 			var physical: Vector2 = action.size * Vector2(root.size) / root.get_visible_rect().size
 			assert(minf(physical.x, physical.y) >= 43.99)

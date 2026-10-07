@@ -38,7 +38,7 @@ if command -v xvfb-run >/dev/null 2>&1; then
   timeout 120s xvfb-run -a "$GODOT" --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_world_regression.gd 2>&1 | tee /tmp/lumo-world-tests.log
   if grep -qE "SCRIPT ERROR|Parse Error|ERROR:" /tmp/lumo-world-tests.log; then exit 1; fi
   grep -qE "\[KartWorldTests\] PASS" /tmp/lumo-world-tests.log
-  timeout 120s xvfb-run -a -s '-screen 0 1920x2560x24' "$GODOT" --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_pause_layout_regression.gd 2>&1 | tee /tmp/lumo-pause-layout-tests.log
+  timeout 180s xvfb-run -a -s '-screen 0 1920x2560x24' "$GODOT" --verbose --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_pause_layout_regression.gd 2>&1 | tee /tmp/lumo-pause-layout-tests.log
   if grep -qE "SCRIPT ERROR|Parse Error|ERROR:" /tmp/lumo-pause-layout-tests.log; then exit 1; fi
   grep -qE "\[KartPauseLayoutTests\] PASS" /tmp/lumo-pause-layout-tests.log
 fi

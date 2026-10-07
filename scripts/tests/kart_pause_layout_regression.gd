@@ -245,5 +245,6 @@ func _run() -> void:
 			+ "safe-area controls, pause/results layout and touch navigation"
 		)
 	)
-	await create_timer(0.12).timeout
-	quit(0)
+	await create_timer(0.25).timeout
+	# Let the asynchronous runner release its locals before SceneTree teardown.
+	quit.call_deferred(0)
