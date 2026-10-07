@@ -532,6 +532,10 @@ func _begin_race() -> void:
 	)
 	_save_preferences()
 	_save_session()
+	# Showing the race after the garage changes container minimum sizes. The
+	# world also changes minimap visibility; resolve both for the actual surface.
+	_apply_responsive_layout()
+	_apply_responsive_layout.call_deferred()
 
 
 func _resume_saved_race() -> void:
@@ -546,6 +550,8 @@ func _resume_saved_race() -> void:
 	menu_active = false
 	hud_content.show()
 	_build_world()
+	_apply_responsive_layout()
+	_apply_responsive_layout.call_deferred()
 	if _restore_session():
 		if completed_race and not finished:
 			# A pre-version-4 learning cup could be saved after the finish line while its
@@ -864,8 +870,15 @@ func _apply_responsive_layout() -> void:
 	var display_size: Vector2 = window_size
 	var compact: bool = display_size.x < 900.0 or display_size.x < display_size.y
 	var compact_portrait: bool = display_size.x < display_size.y
+	var short_landscape: bool = not compact_portrait and safe_ui.size.y / ui_scale < 360.0
 	var margin_dp: float = clampf(minf(display_size.x, display_size.y) * 0.025, 10.0, 22.0)
+	if short_landscape:
+		margin_dp = 8.0
 	_apply_ui_scale(safe_ui, ui_scale)
+	hud_content.get_child(0).add_theme_constant_override("separation", roundi(2.0 * ui_scale) if short_landscape else 12)
+	message.autowrap_mode = TextServer.AUTOWRAP_OFF if short_landscape else TextServer.AUTOWRAP_WORD_SMART
+	message.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	message.add_theme_font_size_override("font_size", roundi((14.0 if short_landscape else 21.0) * ui_scale))
 	for side in ["left", "right", "top", "bottom"]:
 		hud_content.add_theme_constant_override("margin_" + side, roundi(margin_dp * ui_scale))
 	var available_width: float = maxf(1.0, safe_ui.size.x / ui_scale - margin_dp * 2.0)
@@ -895,6 +908,28 @@ func _apply_responsive_layout() -> void:
 			button.custom_minimum_size = Vector2.ONE * button_size * ui_scale
 			button.size = button.custom_minimum_size
 			button.position = compact_positions[button.name] * ui_scale - button.size * 0.5
+	elif short_landscape:
+		# A short landscape needs two rows of thumb actions, not a scaled-down
+		# 300px-tall cluster. Every action remains at least 44 physical pixels.
+		joystick.custom_minimum_size = Vector2.ONE * 96.0 * ui_scale
+		pedal_pad.custom_minimum_size = Vector2(180, 100) * ui_scale
+		controls_row.add_theme_constant_override("separation", roundi(8.0 * ui_scale))
+		controls_gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		controls_gap.custom_minimum_size = Vector2.ZERO
+		var short_actions: Dictionary = {
+			"DriftAction": [Vector2(84, 24), 48.0],
+			"BoostAction": [Vector2(148, 24), 48.0],
+			"ItemAction": [Vector2(24, 74), 44.0],
+			"BrakePedal": [Vector2(84, 74), 48.0],
+			"GasPedal": [Vector2(148, 74), 52.0]
+		}
+		for child in pedal_pad.get_children():
+			if child is Control:
+				var spec: Array = short_actions[child.name]
+				child.custom_minimum_size = Vector2.ONE * float(spec[1]) * ui_scale
+				child.size = child.custom_minimum_size
+				child.position = Vector2(spec[0]) * ui_scale - child.size * 0.5
+				child.get_child(0).add_theme_font_size_override("font_size", roundi(12.0 * ui_scale))
 	else:
 		var size_scale: float = clampf(
 			minf(display_size.y / 720.0, available_width / 700.0), 0.64, 1.0
@@ -917,8 +952,10 @@ func _apply_responsive_layout() -> void:
 	top_reset_button.visible = not compact
 	top_pause_button.visible = true
 	var top_button_size: Vector2 = Vector2(112, 56) if compact else Vector2(80, 58)
+	if short_landscape:
+		top_button_size = Vector2(92, 44)
 	hud.add_theme_font_size_override(
-		"font_size", roundi((15.0 if compact_portrait else (18.0 if compact else 23.0)) * ui_scale)
+		"font_size", roundi((15.0 if compact_portrait or short_landscape else (18.0 if compact else 23.0)) * ui_scale)
 	)
 	var modal_width: float = minf(
 		620.0 * ui_scale, maxf(1.0, safe_ui.size.x - margin_dp * 2.0 * ui_scale)
@@ -930,6 +967,7 @@ func _apply_responsive_layout() -> void:
 		modal_padding.add_theme_constant_override("margin_" + side, roundi(8.0 * ui_scale))
 	for button in [top_menu_button, top_reset_button, top_pause_button]:
 		button.custom_minimum_size = top_button_size * ui_scale
+		button.add_theme_font_size_override("font_size", roundi((15.0 if short_landscape else 21.0) * ui_scale))
 	for button in pause_navigation.get_children():
 		if button is Button:
 			button.custom_minimum_size.y = (44.0 if compact else 76.0) * ui_scale
@@ -947,11 +985,14 @@ func _apply_responsive_layout() -> void:
 					if button.name == "ReturnToGames"
 					else "Zum Lernen"
 				)
-	map_panel.visible = mode != "arena" and not compact
+	map_panel.visible = mode != "arena" and not compact and not short_landscape
 	modal.offset_left = -modal_width * 0.5
 	modal.offset_right = modal_width * 0.5
 	modal.offset_top = -modal_height * 0.5
 	modal.offset_bottom = modal_height * 0.5
+	# A Container can grow its offsets while an old minimum size is being
+	# rescaled. Restore the anchored rectangle after all new minimums are set.
+	hud_content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
 func _apply_ui_scale(control: Node, ui_scale: float) -> void:

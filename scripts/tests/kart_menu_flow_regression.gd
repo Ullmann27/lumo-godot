@@ -63,14 +63,26 @@ func _run() -> void:
 			await _settle()
 		assert(not game.menu_active and game.mode == "cup" and game.track_id == "sonnenhafen")
 		assert(is_instance_valid(game.player) and game.opponents.size() == 5)
+		# The garage-to-race transition must apply the actual driving layout
+		# itself. Do not call its layout methods here to repair a broken result.
+		for control in [game.joystick, game.pedal_pad, game.top_pause_button]:
+			assert(root.get_visible_rect().encloses(control.get_global_rect()), "Race controls must fit the real viewport after menu start")
+			assert(game.safe_ui.get_global_rect().encloses(control.get_global_rect()), "Race controls must stay inside the existing safe insets")
+		for action in game.pedal_pad.get_children():
+			assert(game.pedal_pad.get_global_rect().grow(0.02).encloses(action.get_global_rect()), "Action exceeds its pad beyond subpixel rounding")
+			var physical: Vector2 = action.size * Vector2(root.size) / root.get_visible_rect().size
+			assert(minf(physical.x, physical.y) >= 43.99)
+		assert(not game.map_panel.visible or pixels.x >= 900)
 		for frame in range(220):
 			game._physics_process(1.0 / 60)
 		assert(game.racing and game.elapsed > 0)
+		await _settle()
+		root.get_texture().get_image().save_png("res://exports/holographic-proof/race-flow-%dx%d.png" % [pixels.x, pixels.y])
 		game.abandoned = true
 		game.queue_free()
 		await _settle()
 		print("[KartMenuFlow] %s: five modes, five actual touch steps, started cup race" % pixels)
-	print("[KartMenuFlow] PASS: complete pixel-touch setup at1280x720,800x480,640x320; real preview and footer remain visible")
+	print("[KartMenuFlow] PASS: real setup-to-driving touches at1280x720,800x480,640x320; preview, footer and >=44px race controls inside safe bounds")
 	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
 	await create_timer(0.12).timeout
 	quit(0)

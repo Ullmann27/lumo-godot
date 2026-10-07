@@ -21,11 +21,11 @@ func _setup() -> void:
 	var scene: PackedScene = load("res://scenes/games/kart_island.tscn")
 	game = scene.instantiate()
 	root.add_child(game)
+	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "gemuetlich"})
 	game.set_physics_process(false)
 	game.countdown = 0
 	game.paused = false
 	game.racing = true
-	game.question_index = 6
 	game.modal.hide()
 	game.distance = 26
 	game.speed = 16
@@ -67,11 +67,11 @@ func _process(_delta: float) -> bool:
 	if frame_index == 35:
 		_capture("sonnenhafen-bridge")
 		game.boost_time = 0
-		game._open_question()
+		game._pause()
 		game._physics_process(0)
 	if frame_index == 50:
-		_capture("sonnenhafen-learning")
-		game._skip_question()
+		_capture("sonnenhafen-pause")
+		game._resume()
 		# A second view shows the actual modelled driver and front of the kart.
 		var at: Vector3 = game.player.position
 		game.camera.position = at + game.world.frame(game.distance) * Vector3(3.2, 2.0, -4.4)
@@ -106,5 +106,11 @@ func _process(_delta: float) -> bool:
 		)
 		game.abandoned = true
 		game.queue_free()
-		quit(0)
+		_finish_capture.call_deferred()
 	return false
+
+
+func _finish_capture() -> void:
+	await process_frame
+	await create_timer(0.15).timeout
+	quit(0)
