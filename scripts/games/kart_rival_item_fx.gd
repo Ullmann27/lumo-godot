@@ -17,6 +17,7 @@ var elapsed: float = 0.0
 var item_orb: MeshInstance3D
 var item_ring: MeshInstance3D
 var shield_bubble: MeshInstance3D
+var shield_ring: MeshInstance3D
 var warning_ring: MeshInstance3D
 var pulse_ring: MeshInstance3D
 var stun_ring: MeshInstance3D
@@ -55,18 +56,18 @@ func _ring(radius: float, thickness: float, color: Color, alpha: float) -> MeshI
 func _build() -> void:
 	item_orb = MeshInstance3D.new()
 	var orb_mesh := SphereMesh.new()
-	orb_mesh.radius = 0.18
-	orb_mesh.height = 0.36
+	orb_mesh.radius = 0.28
+	orb_mesh.height = 0.56
 	orb_mesh.radial_segments = 12
 	orb_mesh.rings = 6
 	item_orb.mesh = orb_mesh
-	item_orb.position = Vector3(0.0, 2.05, 0.0)
+	item_orb.position = Vector3(0.0, 2.28, 0.0)
 	item_orb.visible = false
 	item_orb.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(item_orb)
 
-	item_ring = _ring(0.27, 0.055, Color("ffffff"), 0.85)
-	item_ring.position = Vector3(0.0, 2.05, 0.0)
+	item_ring = _ring(0.42, 0.08, Color("ffffff"), 0.92)
+	item_ring.position = Vector3(0.0, 2.28, 0.0)
 	item_ring.rotation.x = PI * 0.5
 	item_ring.visible = false
 	add_child(item_ring)
@@ -79,17 +80,22 @@ func _build() -> void:
 	shield_mesh.rings = 9
 	shield_bubble.mesh = shield_mesh
 	shield_bubble.position.y = 0.95
-	shield_bubble.material_override = _material(Color("66e8ff"), 0.12, 0.65)
+	shield_bubble.material_override = _material(Color("66e8ff"), 0.20, 0.95)
 	shield_bubble.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	shield_bubble.visible = false
 	add_child(shield_bubble)
 
-	warning_ring = _ring(1.18, 0.12, Color("d694ff"), 0.72)
+	shield_ring = _ring(1.48, 0.11, Color("9af4ff"), 0.88)
+	shield_ring.position.y = 0.20
+	shield_ring.visible = false
+	add_child(shield_ring)
+
+	warning_ring = _ring(1.55, 0.18, Color("e5a0ff"), 0.90)
 	warning_ring.position.y = 0.10
 	warning_ring.visible = false
 	add_child(warning_ring)
 
-	pulse_ring = _ring(1.05, 0.14, Color("b5efff"), 0.75)
+	pulse_ring = _ring(1.38, 0.20, Color("b5efff"), 0.88)
 	pulse_ring.position.y = 0.12
 	pulse_ring.visible = false
 	add_child(pulse_ring)
@@ -121,10 +127,15 @@ func set_item(value: String) -> void:
 
 
 func set_shield(seconds: float) -> void:
+	var visible_shield: bool = seconds > 0.0
 	if is_instance_valid(shield_bubble):
-		shield_bubble.visible = seconds > 0.0
-		if shield_bubble.visible:
-			shield_bubble.scale = Vector3.ONE * (1.0 if reduced_motion else 1.0 + sin(elapsed * 4.0) * 0.025)
+		shield_bubble.visible = visible_shield
+	if is_instance_valid(shield_ring):
+		shield_ring.visible = visible_shield
+	if visible_shield:
+		var scale_value: float = 1.0 if reduced_motion else 1.0 + sin(elapsed * 4.0) * 0.035
+		shield_bubble.scale = Vector3.ONE * scale_value
+		shield_ring.scale = Vector3.ONE * scale_value
 
 
 func set_pulse_warning(remaining: float, duration: float) -> void:
@@ -172,6 +183,7 @@ func visual_state() -> Dictionary:
 		"held_item": held_item,
 		"item_visible": is_instance_valid(item_orb) and item_orb.visible,
 		"shield_visible": is_instance_valid(shield_bubble) and shield_bubble.visible,
+		"shield_ring_visible": is_instance_valid(shield_ring) and shield_ring.visible,
 		"warning_visible": is_instance_valid(warning_ring) and warning_ring.visible,
 		"pulse_visible": is_instance_valid(pulse_ring) and pulse_ring.visible,
 		"stun_visible": is_instance_valid(stun_ring) and stun_ring.visible,
