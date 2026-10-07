@@ -37,6 +37,10 @@ const JUMP_MAX_LIFT: float = 4.0
 ## AI pulse is deliberately telegraphed: children get a readable dodge/shield window.
 const RIVAL_PULSE_WARNING_SECONDS: float = 0.65
 const RIVAL_PULSE_RADIUS: float = 9.5
+## Brake must remain intuitive with the child-friendly Auto-Gas profile:
+## stop first, then intentionally hold to engage a slow reverse.
+const REVERSE_ENGAGE_SECONDS: float = 0.28
+const REVERSE_SPEED: float = 5.0
 var curve: Curve3D
 var world: LumoRaceWorld
 var track_length: float
@@ -162,6 +166,8 @@ var ghost_valid: bool = true
 var best_record: bool = false
 var setup_snapshot: Dictionary = {}
 var control_brake: float = 0.0
+var brake_visual_amount: float = 0.0
+var reverse_hold_time: float = 0.0
 var map: Control
 var map_panel: PanelContainer
 var hud_content: MarginContainer
@@ -483,6 +489,8 @@ func _begin_race() -> void:
 	steering = 0
 	brake = 0
 	control_brake = 0
+	brake_visual_amount = 0.0
+	reverse_hold_time = 0.0
 	drift_charge = 0
 	drift_tier_count = [0, 0]
 	wall_contacts = 0
@@ -985,6 +993,7 @@ func _physics_process(delta: float) -> void:
 		var braking: float = maxf(brake, control_brake)
 		if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
 			braking = 1.0
+		brake_visual_amount = braking
 		_drive_player(delta, axis, braking)
 		boost_time = maxf(0, boost_time - delta)
 		hit_timer = maxf(0, hit_timer - delta)
@@ -1043,7 +1052,8 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var kart: Dictionary = CATALOG.entry(CATALOG.KARTS, selected_kart)
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
 	var target: float = 20.5 * float(kart.speed) * float(rules.speed)
-	var throttle: float = 1.0 if _gas_active() else 0.0
+	var manual_gas: bool = _manual_gas_active()
+	var throttle: float = 1.0 if auto_gas or manual_gas else 0.0
 	if mode == "arena":
 		target *= 0.68
 		if difficulty == "gemuetlich":
@@ -1051,11 +1061,23 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var boost_active: bool = boost_time > 0
 	if boost_active:
 		target *= 1.42
-	target *= throttle
-	target *= 1.0 - braking * 0.94
-	# Holding BREMSE while (almost) stopped and without gas reverses slowly, to get unstuck.
-	if braking > 0.5 and throttle == 0.0 and speed < 1.0:
-		target = -5.0
+
+	# BREMSE always wins over passive Auto-Gas. Once almost stopped, holding
+	# BREMSE deliberately for a short moment selects a bounded reverse. An
+	# explicit GAS finger/key cancels reverse engagement.
+	if braking > 0.5 and not airborne and not manual_gas:
+		if speed <= 0.9:
+			reverse_hold_time += delta
+		else:
+			reverse_hold_time = 0.0
+		if speed < -0.1 or reverse_hold_time >= REVERSE_ENGAGE_SECONDS:
+			target = -REVERSE_SPEED
+		else:
+			target = 0.0
+	else:
+		reverse_hold_time = 0.0
+		target *= throttle
+		target *= 1.0 - braking * 0.94
 	if hit_timer > 0:
 		target *= 0.45
 	var road: Dictionary = {}
@@ -1204,10 +1226,16 @@ func _rescue_from_gap() -> void:
 	message.text = "Eine Wolke trägt dich weiter. Mehr Schwung beim nächsten Sprung!"
 
 
+func _manual_gas_active() -> bool:
+	return (
+		gas_held
+		or Input.is_physical_key_pressed(KEY_W)
+		or Input.is_physical_key_pressed(KEY_UP)
+	)
+
+
 func _gas_active() -> bool:
-	if auto_gas or gas_held:
-		return true
-	return Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)
+	return auto_gas or _manual_gas_active()
 
 
 func _collide_with_rail(road: Dictionary) -> void:
@@ -1598,6 +1626,7 @@ func _update_vehicles(_delta: float) -> void:
 		return
 	var enabled: bool = racing and not paused and not finished
 	player.set_motion(speed if enabled else 0, steering, boost_time > 0 and enabled, drifting and enabled)
+	player.set_braking(brake_visual_amount if enabled else 0.0)
 	if not enabled:
 		for kart in opponents:
 			kart.set_motion(0, 0, false, false)
