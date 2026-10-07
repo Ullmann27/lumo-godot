@@ -8,12 +8,16 @@ on:
       - "scripts/games/kart_island.gd"
       - "scripts/games/kart_rival_item_fx.gd"
       - "scripts/tests/kart_rival_item_feedback_regression.gd"
+      - "scripts/tests/kart_rival_item_showcase.gd"
+      - "scripts/tests/kart_physics_regression.gd"
       - ".github/workflows/kart-rival-feedback.yml"
   pull_request:
     paths:
       - "scripts/games/kart_island.gd"
       - "scripts/games/kart_rival_item_fx.gd"
       - "scripts/tests/kart_rival_item_feedback_regression.gd"
+      - "scripts/tests/kart_rival_item_showcase.gd"
+      - "scripts/tests/kart_physics_regression.gd"
       - ".github/workflows/kart-rival-feedback.yml"
   workflow_dispatch:
 
