@@ -73,6 +73,16 @@ func _run() -> void:
 	_touch(1, stick_at, true)
 	await process_frame
 	assert(game.steering > 0.5, "Real GUI touch must reach the analogue stick")
+	# A second right-thumb finger can hold BREMSE without stealing the steering finger.
+	var brake_at: Vector2 = game.brake_button.get_global_rect().get_center()
+	_touch(3, brake_at, true)
+	await process_frame
+	assert(game.control_brake == 1.0, "Independent brake touch reaches the pedal")
+	assert(game.steering > 0.5, "Steering stays captured while BREMSE is held")
+	_touch(3, brake_at, false)
+	await process_frame
+	assert(game.control_brake == 0.0)
+	assert(game.steering > 0.5, "Releasing BREMSE does not release the steering finger")
 	var action_at: Vector2 = game.boost_button.get_global_rect().get_center()
 	game.boosts = 1
 	_touch(2, action_at, true)
@@ -122,7 +132,7 @@ func _run() -> void:
 	print(
 		(
 			"[KartTouchTests] PASS: real two-finger GUI, window Back countdown/race pause, "
-			+ "touch resume, release outside, no learning panel, scaled safe areas"
+			+ "touch resume, simultaneous steering+BREMSE, release outside, no learning panel, scaled safe areas"
 		)
 	)
 	await create_timer(0.12).timeout
