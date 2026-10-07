@@ -33,7 +33,9 @@ var _road_samples := PackedVector3Array()
 var _road_distances := PackedFloat32Array()
 var _rng := RandomNumberGenerator.new()
 
-func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
+func build(
+	lightweight: bool, selected_track: String = "sonnenhafen", geometry_only: bool = false
+) -> void:
 	for child in get_children():
 		remove_child(child)
 		child.queue_free()
@@ -50,17 +52,20 @@ func build(lightweight: bool, selected_track: String = "sonnenhafen") -> void:
 	if track_id=="bergwelt":
 		# Himmelsinseln Sprint (reference k07): the road is carried by floating islands.
 		jump=SKY_ISLANDS.jump_layout(length)
-		SKY_ISLANDS.environment(self)
+		if not geometry_only:
+			SKY_ISLANDS.environment(self)
 		_road()
 		SKY_ISLANDS.build(self)
 		SKY_ISLANDS.jump_dressing(self)
 		SKY_ISLANDS.chevrons(self)
 		_flush_instances()
 		return
-	_lighting()
+	if not geometry_only:
+		_lighting()
 	if track_id in TRACKS.EXPANSION.IDS:
 		EXPANSION.prepare(self)
-		EXPANSION.environment(self)
+		if not geometry_only:
+			EXPANSION.environment(self)
 		_road()
 		EXPANSION.build(self)
 		LANDMARKS.build(self)

@@ -50,6 +50,7 @@ var step_strip: HBoxContainer
 var step_buttons: Array[Button] = []
 var preview_world: Node3D
 var preview_title: Label
+var preview_camera: Camera3D
 
 
 func _ready() -> void:
@@ -226,6 +227,7 @@ func _ready() -> void:
 		star.material_override = star_material
 		preview.add_child(star)
 	var camera := Camera3D.new()
+	preview_camera = camera
 	camera.position = Vector3(3.2, 2.2, -4.5)
 	camera.fov = 37
 	preview.add_child(camera)
@@ -638,9 +640,13 @@ func _refresh_preview() -> void:
 	preview_kart.set_graphics_quality(graphics_profile)
 	preview_pivot.add_child(preview_kart)
 	preview_kart.visible = step != 3
+	preview_camera.position = Vector3(3.2, 3.2, -4.5) if step == 3 else Vector3(3.2, 2.2, -4.5)
+	preview_camera.look_at(Vector3(0, 0.15 if step == 3 else 0.85, 0))
 	if step == 3:
 		preview_world = WORLD.new()
-		preview_world.build(true, str(setup.track))
+		# The garage owns lighting. Never allocate and immediately discard a Sky
+		# for a diorama: GLES3 can still have its radiance update queued.
+		preview_world.build(true, str(setup.track), true)
 		for child in preview_world.get_children():
 			if (
 				child is WorldEnvironment
