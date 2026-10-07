@@ -14,7 +14,7 @@ const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
 const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
-const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
+const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")\nconst VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
@@ -1606,16 +1606,49 @@ func _update_vehicles(_delta: float) -> void:
 func _update_camera(delta: float, snap: bool = false) -> void:
 	if not is_instance_valid(camera):
 		return
+	# Heinz' racing references keep the kart large in frame and put the horizon/
+	# setpiece directly ahead. Speed stretches the view; boost never teleports it.
 	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
-	var desired: Vector3 = player.position - ahead * 6.6 + Vector3.UP * 3.5
-	var target: Vector3 = player.position + ahead * 7.0 + Vector3.UP * 1.2
-	camera.position = desired if snap else camera.position.lerp(desired, minf(1, delta * 5.5))
+	var right := Vector3(-ahead.z, 0, ahead.x)
+	var speed_ratio: float = clampf(absf(speed) / 25.0, 0.0, 1.0)
+	var chase_distance: float = VISUAL_GRADE.camera_distance(speed_ratio)
+	var air_lift: float = 0.28 if airborne and not reduced_motion else 0.0
+	var lateral_lead: float = 0.0 if reduced_motion else clampf(steering, -1.0, 1.0) * 0.24
+	var desired: Vector3 = (
+		player.position
+		- ahead * chase_distance
+		+ right * lateral_lead
+		+ Vector3.UP * (VISUAL_GRADE.CAMERA_HEIGHT + air_lift)
+	)
+	var target: Vector3 = (
+		player.position
+		+ ahead * (VISUAL_GRADE.CAMERA_LOOK_AHEAD + speed_ratio * 1.8)
+		+ Vector3.UP * VISUAL_GRADE.CAMERA_TARGET_HEIGHT
+	)
+	camera.position = (
+		desired
+		if snap
+		else camera.position.lerp(desired, minf(1.0, delta * VISUAL_GRADE.CAMERA_LERP))
+	)
 	camera.look_at(target)
-	var baseline_fov: float = 68 if reduced_motion else (76 if boost_time > 0 and not paused else 68)
+	if not reduced_motion:
+		var roll: float = (
+			-clampf(steering, -1.0, 1.0)
+			* VISUAL_GRADE.CAMERA_ROLL_MAX
+			* (0.35 + speed_ratio * 0.65)
+		)
+		camera.rotate_object_local(Vector3(0, 0, 1), roll)
+	var baseline_fov: float = VISUAL_GRADE.camera_fov(
+		speed_ratio, boost_time > 0.0 and not paused, reduced_motion
+	)
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
 	var aspect: float = viewport_size.x / maxf(1.0, viewport_size.y)
 	var target_fov: float = _resize_compensated_fov(baseline_fov, aspect)
-	camera.fov = lerpf(camera.fov, target_fov, minf(1, delta * 3))
+	camera.fov = (
+		target_fov
+		if snap
+		else lerpf(camera.fov, target_fov, minf(1.0, delta * VISUAL_GRADE.FOV_LERP))
+	)
 
 
 static func _resize_compensated_fov(vertical_fov: float, aspect: float) -> float:
