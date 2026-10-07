@@ -39,8 +39,10 @@ func _place(track: String, fraction: float, lane: float, speed_value: float, boo
 	game.boost_time = 2.0 if boosting else 0.0
 	game.player.transform = game.world.reset_transform(game.distance, lane)
 	game.player_heading = game._heading(game.distance)
+	game.message.text = ""
 	game._update_camera(1.0, true)
 	game._update_vehicles(0.0)
+	game._update_hud()
 
 
 func _capture(name: String) -> void:
@@ -97,6 +99,9 @@ func _run() -> void:
 	game._update_camera(1.0, true)
 	assert(game.camera.fov >= VISUAL_GRADE.BOOST_FOV - 0.5)
 	assert(game.camera.fov > base_fov + 6.0)
+	var boost_fx: Dictionary = game.speed_fx.visual_state()
+	assert(bool(boost_fx.boosting))
+	assert(int(boost_fx.visible_count) >= 10, "Boost must add readable camera-local speed streaks.")
 	await _capture("02_holo_city_boost")
 
 	# Himmelsinseln uses its own Environment path; it must receive the same grade.
@@ -110,6 +115,7 @@ func _run() -> void:
 	game.boost_time = 2.0
 	game._update_camera(1.0, true)
 	assert(absf(game.camera.fov - VISUAL_GRADE.BASE_FOV) < 0.5)
+	assert(int(game.speed_fx.visual_state().visible_count) == 0)
 	await _capture("04_reduced_motion")
 
 	game.abandoned = true
