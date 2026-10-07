@@ -210,7 +210,7 @@ func _apply_responsive_layout() -> void:
 	var ui_scale: float = maxf(viewport_size.x / window_size.x, viewport_size.y / window_size.y)
 	var compact: bool = window_size.x < 760 or window_size.x < window_size.y
 	var small: bool = window_size.x < 520
-	var short_landscape: bool = window_size.x >= window_size.y and window_size.y < 440
+	var short_landscape: bool = window_size.x >= window_size.y and window_size.y < 600
 	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.03, 10.0, 28.0)
 	_apply_ui_scale(self, ui_scale)
 	for side in ["left", "right", "top", "bottom"]:
@@ -279,6 +279,16 @@ func _apply_responsive_layout() -> void:
 			if button is Button and button.name == "ResumeRace":
 				_set_physical_minimum(button, Vector2(112 if small else 148, 56 if compact else 72), ui_scale)
 				_set_physical_font(button, 19, ui_scale)
+	# The choices are independently scrollable. Keep their first row and the
+	# footer usable at320px, while all five modes fit the800x480 layout.
+	for child in choices.get_children():
+		var cards: Array = child.get_children() if child is GridContainer else [child]
+		for card in cards:
+			if card is Button:
+				var tiny: bool = window_size.y < 440
+				var height: float = (44 if tiny else 60) if short_landscape else (94 if step == 0 else 74)
+				_set_physical_minimum(card, Vector2(0, height), ui_scale)
+				_set_physical_font(card, (14 if tiny else 16) if short_landscape else 19, ui_scale)
 
 
 func _set_physical_minimum(control: Control, physical: Vector2, ui_scale: float) -> void:
@@ -380,15 +390,13 @@ func _refresh() -> void:
 		choices.add_child(grid)
 		card_parent = grid
 	if step == 3 and setup.mode in ["cup", "arena"]:
-		var track_names := PackedStringArray()
-		for track in CATALOG.TRACKS:
-			track_names.append(str(track.name))
 		var cup_text: String = (
 			"KRISTALL-ARENA\n90 Sekunden · Kristalle sammeln · Rivalen überholen"
 			if setup.mode == "arena"
-			else "DER STERNEN-CUP\n" + " → ".join(track_names)
+			else "DER STERNEN-CUP\n%d Rennen · %d Welten · ein Sternenpokal" % [CATALOG.TRACKS.size(), CATALOG.TRACKS.size()]
 		)
 		var card := _button(cup_text, func(): pass, true)
+		card.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		card.custom_minimum_size.y = 110
 		choices.add_child(card)
 	else:
