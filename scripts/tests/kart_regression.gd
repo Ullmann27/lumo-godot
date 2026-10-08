@@ -132,7 +132,24 @@ func _run() -> void:
 			await process_frame
 	assert(game.finished, "A freely steered kart must complete two actual laps")
 	assert(game.checkpoint_index == 16 and game.distance >= game.track_length * 2)
-	assert(game.modal.visible and game.result_payload.status == "completed")
+	# Zieleinlauf: erst Kamerafahrt mit ausrollendem Kart, dann das Ergebnis.
+	assert(game.result_payload.status == "completed", "Reward is decided at the line")
+	assert(not game.modal.visible and game.finish_cine_left > 0, "Finish camera runs before the result")
+	assert(not game.controls_row.visible, "Driving controls are hidden during the finish camera")
+	var line_position: Vector3 = game.player.position
+	var behind := Vector3(sin(game.player_heading), 0, cos(game.player_heading))
+	var cine_frames: int = 0
+	while not game.modal.visible and cine_frames < 600:
+		game._physics_process(1.0 / 60)
+		cine_frames += 1
+	assert(game.modal.visible, "The result appears after the finish camera")
+	assert(cine_frames >= 150 and cine_frames <= 220, "Finish camera lasts about three seconds")
+	assert(game.player.position.distance_to(line_position) > 3.0, "The kart rolls on after the line")
+	var view: Vector3 = (game.camera.position - game.player.position).normalized()
+	assert(view.dot(behind) < 0.2, "The camera ends beside/in front of Lumo, not behind")
+	assert(game.player.celebration_place == int(game.result_payload.place), "Lumo reacts to the place")
+	assert(game.modal_column.has_node("ResultStats"), "Result shows time, best lap and stars")
+	assert(game.result_payload.has("bestLapSeconds") and float(game.result_payload.bestLapSeconds) > 0)
 	assert(game.result_payload.stars == 3, "Plain race reward")
 	assert(game.result_payload.solved == 0, "The Flutter host needs an integer solved")
 	for removed in ["grade", "subject", "learning_events"]:

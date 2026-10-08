@@ -48,6 +48,11 @@ var arm_joints: Array[Node3D] = []
 var elbow_joints: Array[Node3D] = []
 var leg_joints: Array[Node3D] = []
 var ear_joints: Array[Node3D] = []
+## Platz beim Zieleinlauf (0 = keine Feier): 1 jubelt am stärksten, 2–3 freuen
+## sich, ab 4 nickt Lumo aufmunternd. Nutzt nur vorhandene Gelenke, keine
+## zusätzliche Geometrie.
+var celebration_place: int = 0
+var celebration_time: float = 0.0
 
 
 func configure(kind: String, color: Color, variant: String = "") -> void:
@@ -145,6 +150,11 @@ func set_driver_character(value: String) -> void:
 	animal = _animal_id(value)
 	if _built:
 		_rebuild()
+
+
+func celebrate(place: int) -> void:
+	celebration_place = maxi(0, place)
+	celebration_time = 0.0
 
 
 func set_speaking(amount: float) -> void:
@@ -920,3 +930,30 @@ func _process(delta: float) -> void:
 		tail.rotation.y = 0.5 + sin(animation_time * 2.6) * 0.085 - motion_steer * 0.11
 	if steering_wheel:
 		steering_wheel.rotation.z = -motion_steer * 0.40
+	if celebration_place > 0:
+		_apply_celebration(delta)
+
+
+func _apply_celebration(delta: float) -> void:
+	celebration_time += delta
+	var happy: bool = celebration_place <= 3
+	var tempo: float = 1.7 if celebration_place == 1 else 1.15
+	var beat: float = 0.0 if reduced_motion else sin(celebration_time * TAU * tempo)
+	if driver:
+		# Freudensprung im Sitz: Platz 1 hüpft, 2–3 wippen, ab 4 bleibt Lumo ruhig.
+		var hop: float = 0.0 if reduced_motion or not happy else absf(beat) * (0.075 if celebration_place == 1 else 0.035)
+		driver.position.y = hop
+		driver.rotation.z = beat * (0.05 if happy else 0.0)
+	if head:
+		var nod: float = 0.06 + absf(beat) * 0.06
+		head.rotation.x = lerpf(head.rotation.x, (-0.16 if celebration_place == 1 else -0.08) if happy else nod, minf(1, delta * 6))
+		head.rotation.z = beat * (0.09 if happy else 0.02)
+		# Zur Kamera drehen, die beim Zieleinlauf seitlich nach vorn schwenkt.
+		head.rotation.y = lerpf(head.rotation.y, 0.3, minf(1, delta * 3))
+	for ear in ear_joints:
+		ear.rotation.x = lerpf(ear.rotation.x, (-0.22 if happy else 0.08) + beat * 0.06, minf(1, delta * 6))
+	if tail:
+		tail.rotation.y = 0.5 + beat * (0.38 if happy else 0.12)
+	if jaw and happy:
+		# Fröhlich offener Mund, solange Lumo nicht spricht.
+		jaw.rotation.x = maxf(jaw.rotation.x, 0.22 + absf(beat) * 0.12)
