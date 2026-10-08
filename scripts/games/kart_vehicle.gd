@@ -503,7 +503,8 @@ func _build_loft(spec: Dictionary) -> void:
 			_make_wheel(side, axle, width)
 
 
-func _make_cockpit(body: Node3D, paint: Color) -> void:
+## with_hoop = false: Der Baukasten bringt eigene Überrollbügel mit (_make_cage).
+func _make_cockpit(body: Node3D, paint: Color, with_hoop: bool = true) -> void:
 	body.set_meta("seat_design", "contoured_bucket")
 	# The boots rest inside a clear footwell behind the bonnet, on physical pedals.
 	for side in [-1.0, 1.0]:
@@ -531,8 +532,10 @@ func _make_cockpit(body: Node3D, paint: Color) -> void:
 		], true, 16, 3, 0.78), Vector3(side * 0.285, 0, 0), NAVY, 0.0, 0.78)
 		_ribbon(body, [Vector3(side * 0.22, 0.80, 0.410), Vector3(side * 0.27, 0.96, 0.432), Vector3(side * 0.26, 1.03, 0.447), Vector3(side * 0.18, 1.07, 0.450)], 0.007, WHITE, 0.18)
 		# The hoop is fixed into the coachwork, with a visible mounting collar at each foot.
-		_ellipsoid(body, Vector3(side * 0.33, 0.69, 0.35), Vector3(0.067, 0.034, 0.065), paint, 0.35, 0.26)
-	_ribbon(body, [Vector3(-0.32, 0.69, 0.35), Vector3(-0.35, 1.02, 0.45), Vector3(-0.23, 1.10, 0.47), Vector3(0.23, 1.10, 0.47), Vector3(0.35, 1.02, 0.45), Vector3(0.32, 0.69, 0.35)], 0.027, CHROME, 0.6)
+		if with_hoop:
+			_ellipsoid(body, Vector3(side * 0.33, 0.69, 0.35), Vector3(0.067, 0.034, 0.065), paint, 0.35, 0.26)
+	if with_hoop:
+		_ribbon(body, [Vector3(-0.32, 0.69, 0.35), Vector3(-0.35, 1.02, 0.45), Vector3(-0.23, 1.10, 0.47), Vector3(0.23, 1.10, 0.47), Vector3(0.35, 1.02, 0.45), Vector3(0.32, 0.69, 0.35)], 0.027, CHROME, 0.6)
 	for seam in range(3):
 		_box(body, Vector3(0, 0.90 + seam * 0.075, 0.441), Vector3(0.35, 0.005, 0.006), INK)
 
@@ -1099,15 +1102,15 @@ func _letter_l_outline(cx: float, cz: float, w: float, h: float, bar: float) -> 
 const BODY_DEFAULTS: Dictionary = {
 	"wheel_r_f": 0.38, "wheel_r_r": 0.38, "wheel_w_f": 0.34, "wheel_w_r": 0.40,
 	"track_f": 0.84, "track_r": 0.88, "axle_f": -0.70, "axle_r": 0.68,
-	"nose": 0.0, "hood_w": 1.0, "pod_w": 1.0, "pods": true, "seat_h": 1.0,
+	"nose": 0.0, "hood_w": 1.0, "pod_w": 1.0, "pods": true,
 	"hoop": 1, "front_wing": false, "rear_wing": 0, "bullbar": false, "stacks": 0,
 	"armor": false, "star": false, "knobby": false, "scoop": false, "tall_hood": 0.0,
 }
 const BODIES: Dictionary = {
 	"dragster": {"wheel_r_f": 0.30, "wheel_r_r": 0.47, "wheel_w_f": 0.20, "wheel_w_r": 0.54, "track_f": 0.62, "track_r": 0.92, "nose": 0.16, "hood_w": 0.78, "pod_w": 0.7, "stacks": 2, "scoop": true, "hoop": 1},
-	"buggy": {"wheel_r_f": 0.44, "wheel_r_r": 0.46, "wheel_w_f": 0.34, "wheel_w_r": 0.38, "track_f": 0.94, "track_r": 0.98, "hood_w": 0.86, "pods": false, "hoop": 2, "knobby": true, "seat_h": 1.06, "nose": -0.06},
+	"buggy": {"wheel_r_f": 0.44, "wheel_r_r": 0.46, "wheel_w_f": 0.34, "wheel_w_r": 0.38, "track_f": 0.94, "track_r": 0.98, "hood_w": 0.86, "pods": false, "hoop": 2, "knobby": true, "nose": -0.06},
 	"heavy": {"wheel_r_f": 0.40, "wheel_r_r": 0.42, "wheel_w_f": 0.44, "wheel_w_r": 0.48, "track_f": 0.90, "track_r": 0.94, "hood_w": 1.14, "pod_w": 1.18, "bullbar": true, "armor": true, "stacks": 2, "hoop": 1, "tall_hood": 0.08},
-	"phantom": {"wheel_r_f": 0.36, "wheel_r_r": 0.37, "wheel_w_f": 0.30, "wheel_w_r": 0.36, "track_f": 0.80, "track_r": 0.84, "nose": 0.14, "hood_w": 1.0, "pod_w": 0.96, "hoop": 0, "seat_h": 0.94},
+	"phantom": {"wheel_r_f": 0.36, "wheel_r_r": 0.37, "wheel_w_f": 0.30, "wheel_w_r": 0.36, "track_f": 0.80, "track_r": 0.84, "nose": 0.14, "hood_w": 1.0, "pod_w": 0.96, "hoop": 0},
 	"champion": {"wheel_r_f": 0.38, "wheel_r_r": 0.39, "wheel_w_f": 0.34, "wheel_w_r": 0.40, "track_f": 0.84, "track_r": 0.88, "nose": 0.06, "hood_w": 1.06, "hoop": 1, "rear_wing": 2, "star": true},
 }
 
@@ -1156,7 +1159,6 @@ func _build_aero(spec: Dictionary) -> void:
 	var nose: float = float(b.nose)
 	var hood_w: float = float(b.hood_w)
 	var pod_w: float = float(b.pod_w)
-	var seat_h: float = float(b.seat_h)
 	var body := Node3D.new()
 	body.name = "AuroraCoachwork"
 	add_child(body)
@@ -1210,12 +1212,8 @@ func _build_aero(spec: Dictionary) -> void:
 		_tube(body, [Vector3(side * 0.43, 0.66, -0.34), Vector3(side * 0.47, 0.70, 0.02), Vector3(side * 0.47, 0.68, 0.46)], 0.021, accent, 0.3, 0.4)
 		_tube(body, [Vector3(side * 0.485, 0.70, 0.46), Vector3(side * 0.485, 1.06, 0.50)], 0.048, accent, 0.25, 0.4, 0.0, 10)
 	_make_cage(body, int(b.hoop))
-	# --- Schalensitz: Sitzfläche, Lehne, Wangen, Leuchtnähte
-	_round_slab(body, _shape([[0.25, -0.12], [0.28, 0.10], [0.27, 0.40]]), 0.50, 0.74, 0.78, 0.035, 0.07, CARBON, 0.0, 0.82, 0.0, false)
-	_round_slab(body, _shape([[0.28, 0.35], [0.31, 0.45]]), 0.60, 0.98 * seat_h + 0.02, 1.06 * seat_h + 0.02, 0.04, 0.08, CARBON, 0.0, 0.82)
-	for side in [-1.0, 1.0]:
-		_round_slab(body, PackedVector2Array([Vector2(side * 0.285, 0.05), Vector2(side * 0.325, 0.08), Vector2(side * 0.335, 0.40), Vector2(side * 0.285, 0.40)]), 0.60, 0.80, 0.98 * seat_h, 0.025, 0.03, CARBON, 0.0, 0.82, 0.0, false)
-		_tube(body, [Vector3(side * 0.235, 1.00 * seat_h, 0.33), Vector3(side * 0.255, 0.80, 0.335), Vector3(side * 0.235, 0.77, 0.12)], 0.006, neon, 0.0, 0.3, NEON_GLOW, 6)
+	# --- Schalensitz, Fußraum und Pedale wie bei der Loft-Karosserie: passt zum abgesenkten Fahrer.
+	_make_cockpit(body, paint, false)
 	# --- Heckblock mit Lüftung, Sechseck-Rücklicht, orangen Ecken
 	var rear_top: float = 0.74 if int(b.stacks) == 0 else 0.62
 	_round_slab(body, _shape([[0.40, 0.50], [0.50, 0.72], [0.50, 1.08], [0.38, 1.21]]), 0.26, rear_top, rear_top - 0.10, 0.06, 0.09, CARBON, 0.35, 0.45)
@@ -1242,9 +1240,6 @@ func _build_aero(spec: Dictionary) -> void:
 		_rear_wing(body, int(b.rear_wing), paint, trim, neon, bool(b.star))
 	if bool(b.armor):
 		_armor_plates(body, accent)
-	# --- Pedale und Fußraum
-	for side in [-1.0, 1.0]:
-		_box(body, Vector3(side * 0.10, 0.62, -0.30), Vector3(0.09, 0.012, 0.11), Color("05080e"), 0.2)
 	# --- Unterboden-Leuchten
 	if bool(spec.underglow) or str(spec.body) == "phantom":
 		_bar(body, Vector3(0, 0.10, -0.95), Vector3(0, 0.10, 0.95), 0.80, 0.008, neon, 0.0, 0.3, 1.1)
