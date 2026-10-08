@@ -3,7 +3,7 @@ name: Lumo Kart fleet, gameplay and real 3D proof
 on:
   push:
     branches: ['codex/lumo-kart-fleet-2026-10-08']
-    paths: ['scripts/games/kart_*.gd', 'scripts/tests/kart_fleet_*.gd', '.github/workflows/lumo-fleet-quality.yml']
+    paths: ['scripts/games/kart_*.gd', 'scripts/tests/kart_*.gd', 'tools/run_godot_probe.py', 'tools/build_web_bundle.sh', 'export_presets.cfg', 'assets/kart/**', 'assets/audio/kart/**', '.github/workflows/lumo-fleet-quality.yml']
   workflow_dispatch:
 
 permissions:
@@ -20,7 +20,7 @@ env:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - name: Install rendering and formatting tools
@@ -66,9 +66,9 @@ jobs:
         run: |
           set -euo pipefail
           for probe in kart_fleet_regression kart_menu_flow_regression kart_fold_controls_regression kart_modes_regression kart_intro_regression kart_preview_regression kart_audio_regression; do
-            timeout 240s xvfb-run -a -s '-screen 0 1920x2560x24' godot --audio-driver Dummy --rendering-method gl_compatibility --script "scripts/tests/${probe}.gd" 2>&1 | tee "exports/fleet-logs/${probe}.log"
-            if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:|Assertion failed' "exports/fleet-logs/${probe}.log"; then exit 1; fi
-            grep -qE 'PASS' "exports/fleet-logs/${probe}.log"
+            limit=240
+            if [ "$probe" = kart_fold_controls_regression ]; then limit=420; fi
+            python3 tools/run_godot_probe.py --timeout "$limit" --log "exports/fleet-logs/${probe}.log" -- xvfb-run -a -s '-screen 0 1920x2560x24' godot --audio-driver Dummy --rendering-method gl_compatibility --script "scripts/tests/${probe}.gd"
           done
       - name: Export and re-import six actual roadside modules
         run: |

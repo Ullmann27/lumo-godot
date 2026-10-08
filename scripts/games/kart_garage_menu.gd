@@ -386,7 +386,9 @@ func _apply_responsive_layout() -> void:
 	preview_title.visible = not short_landscape and not small
 	_set_physical_minimum(view_choice, Vector2(0, 44), ui_scale)
 	_set_physical_font(view_choice, 14 if short_landscape else 16, ui_scale)
-	view_choice.offset_left = -(144 if short_landscape else 176) * ui_scale
+	view_choice.set_item_text(0, "Rundum" if short_landscape else "Rundum ansehen")
+	view_choice.set_item_text(5, "Oben" if short_landscape else "Von oben")
+	view_choice.offset_left = -(100 if short_landscape else 176) * ui_scale
 	view_choice.offset_right = -4 * ui_scale
 	view_choice.offset_top = 4 * ui_scale
 	view_choice.offset_bottom = 48 * ui_scale
@@ -721,8 +723,8 @@ func _choose_preview_view(index: int) -> void:
 	]
 	preview_camera.position = views[inspection_view]
 	preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE if inspection_view == 0 else Camera3D.PROJECTION_ORTHOGONAL
-	preview_camera.size = 3.9 if inspection_view == 5 else 3.5
-	preview_camera.look_at(Vector3(0, 0.85, 0), Vector3.FORWARD if inspection_view == 5 else Vector3.UP)
+	preview_camera.size = 3.9 if inspection_view == 5 else 2.8
+	preview_camera.look_at(Vector3(0, 1.0, 0), Vector3.FORWARD if inspection_view == 5 else Vector3.UP)
 	if inspection_view != 0:
 		preview_angle = 0.0
 		preview_pivot.rotation.y = 0.0

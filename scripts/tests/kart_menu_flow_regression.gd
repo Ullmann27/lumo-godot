@@ -90,6 +90,13 @@ func _run() -> void:
 		for step in range(5):
 			assert(game.garage.step == step)
 			if step == 2:
+				assert(game.garage.choices.get_child_count() == 9)
+				var new_kart: Control = game.garage.choices.get_child(3)
+				game.garage.choices.get_parent().ensure_control_visible(new_kart)
+				await _settle()
+				await _tap(new_kart)
+				await _settle()
+				assert(game.garage.setup.kart == "gecko_velo")
 				var inspect: OptionButton = game.garage.view_choice
 				assert(inspect.is_visible_in_tree())
 				assert(game.safe_ui.get_global_rect().encloses(inspect.get_global_rect()))
