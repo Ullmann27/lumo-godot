@@ -43,6 +43,14 @@ const JUMP_MAX_LIFT: float = 4.0
 ## AI pulse is deliberately telegraphed: children get a readable dodge/shield window.
 const RIVAL_PULSE_WARNING_SECONDS: float = 0.65
 const RIVAL_PULSE_RADIUS: float = 9.5
+## Save only bounded gameplay durations; absent fields keep older sessions neutral.
+const RIVAL_SESSION_TIMERS: Dictionary = {
+	"opponent_stuns": 2.3,
+	"opponent_item_cooldowns": 1.8,
+	"opponent_boost_times": 2.2,
+	"opponent_shield_times": 5.0,
+	"opponent_pulse_warning_times": RIVAL_PULSE_WARNING_SECONDS,
+}
 ## Streckenvorschau vor dem Countdown: Kameraflug über markante Abschnitte,
 ## jederzeit per Tippen/Taste überspringbar, entfällt bei reduzierten Animationen.
 const PREVIEW_SECONDS: float = 5.0
@@ -1201,10 +1209,8 @@ func _physics_process(delta: float) -> void:
 		if gems[i].visible and not paused and not reduced_motion:
 			gems[i].rotation.y += delta * 1.7
 	if mode != "arena":
-		var item_lap: int = int(distance / track_length)
+		_sync_item_box_visibility()
 		for i in range(item_boxes.size()):
-			var item_key: int = item_lap * item_boxes.size() + i
-			item_boxes[i].visible = not item_box_collected.has(item_key)
 			if item_boxes[i].visible and not paused and not reduced_motion:
 				item_boxes[i].rotation.y += delta * 1.35
 				item_boxes[i].rotation.x = sin(elapsed * 2.0 + float(i)) * 0.08
@@ -1638,6 +1644,9 @@ func _reset_kart() -> void:
 	speed = 0
 	physical_velocity = Vector3.ZERO
 	offroad_seconds = 0
+	airborne = false
+	vertical_speed = 0.0
+	air_time = 0.0
 	reset_count += 1
 	ghost_valid = false
 	message.text = "Wieder sicher auf der Strecke. Du schaffst das!"
@@ -2617,6 +2626,7 @@ func _leave_race_for_menu() -> void:
 func _rebuild_graphics() -> void:
 	var saved_transform: Transform3D = player.transform
 	var saved_heading: float = player_heading
+	var saved_item_boxes: Dictionary = item_box_collected.duplicate()
 	var rival_transforms: Array[Transform3D] = []
 	for rival in opponents:
 		rival_transforms.append(rival.transform)
@@ -2644,6 +2654,8 @@ func _rebuild_graphics() -> void:
 	for key in state:
 		var target: Array = get(key)
 		target.assign(state[key])
+	item_box_collected.assign(saved_item_boxes)
+	_sync_item_box_visibility()
 	for i in range(opponent_item_fx.size()):
 		_sync_rival_item_fx(i)
 	records.recording = saved_recording
@@ -2705,8 +2717,10 @@ func _save_session() -> void:
 		"mode", "track_id", "selected_driver", "selected_kart", "player_heading", "previous_road_distance",
 		"cup_index", "cup_points", "cup_results", "pending_cup_next", "finished", "completed_race", "result_payload",
 		"arena_scores", "arena_pickup_timers", "opponent_scores", "opponent_targets", "opponent_headings",
-		"item", "shield_time", "reset_count", "setup_snapshot"
+		"item", "shield_time", "reset_count", "setup_snapshot", "item_box_collected", "opponent_items"
 	]:
+		config.set_value("race", key, get(key))
+	for key in RIVAL_SESSION_TIMERS:
 		config.set_value("race", key, get(key))
 	if loop_state.active:
 		# A interrupted loop resumes safely on its entry road, with no lap shortcut.
@@ -2750,6 +2764,7 @@ func _restore_session() -> bool:
 	]:
 		var target: Array = get(key)
 		target.assign(config.get_value("race", key, target))
+	_restore_item_continuity(config)
 	if int(config.get_value("race", "version", 0)) < 3:
 		checkpoint_index = clampi(int(distance / (track_length / 8.0)), 0, TOTAL_LAPS * 8)
 		player.transform = world.reset_transform(distance, lane)
@@ -2769,6 +2784,43 @@ func _restore_session() -> bool:
 	if finished:
 		_show_result()
 	return true
+
+
+func _sync_item_box_visibility() -> void:
+	var lap: int = int(distance / track_length)
+	for i in range(item_boxes.size()):
+		item_boxes[i].visible = not item_box_collected.has(lap * item_boxes.size() + i)
+
+
+func _restore_item_continuity(config: ConfigFile) -> void:
+	item_box_collected.clear()
+	var saved_pickups = config.get_value("race", "item_box_collected", {})
+	if saved_pickups is Dictionary:
+		for key in saved_pickups:
+			if (
+				typeof(key) == TYPE_INT and key >= 0
+				and typeof(saved_pickups[key]) == TYPE_BOOL and saved_pickups[key]
+			):
+				item_box_collected[key] = true
+	_sync_item_box_visibility()
+	var saved_items = config.get_value("race", "opponent_items", [])
+	for i in range(opponents.size()):
+		var saved_item: String = ""
+		if saved_items is Array and i < saved_items.size() and saved_items[i] is String:
+			saved_item = saved_items[i]
+		opponent_items[i] = saved_item if saved_item in ["boost", "shield", "pulse"] else ""
+	for key in RIVAL_SESSION_TIMERS:
+		var timers: Array = get(key)
+		var saved_timers = config.get_value("race", key, [])
+		for i in range(opponents.size()):
+			var seconds: float = 0.0
+			if saved_timers is Array and i < saved_timers.size():
+				var value = saved_timers[i]
+				if typeof(value) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(value)):
+					seconds = clampf(float(value), 0.0, float(RIVAL_SESSION_TIMERS[key]))
+			timers[i] = seconds
+	for i in range(opponent_item_fx.size()):
+		_sync_rival_item_fx(i)
 
 
 func _notification(what: int) -> void:

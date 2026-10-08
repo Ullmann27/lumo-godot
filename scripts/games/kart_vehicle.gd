@@ -63,6 +63,9 @@ const ARM_REST_DIR := Vector3(-0.13, -0.16, -0.355)
 const ARM_CHEER_DIR := Vector3(0.42, 0.78, -0.06)
 var arm_right: Node3D
 var arm_blend: float = 0.0
+var racing_arm_joints: Array[Node3D] = []
+var racing_rest_grips: Array[Vector3] = []
+var wheel_rest_grips: Array[Vector3] = []
 
 
 func configure(kind: String, color: Color, variant: String = "") -> void:
@@ -189,6 +192,9 @@ func _rebuild() -> void:
 	elbow_joints.clear()
 	leg_joints.clear()
 	ear_joints.clear()
+	racing_arm_joints.clear()
+	racing_rest_grips.clear()
+	wheel_rest_grips.clear()
 	head = null
 	tail = null
 	jaw = null
@@ -683,6 +689,81 @@ func _make_steering_wheel() -> void:
 	_rod(self, Vector3(0, 0.68, -0.22), steering_wheel.position, 0.035, INK, 0.4)
 
 
+func _racing_sleeve_frame(side: float, fraction: float) -> Transform3D:
+	var wrist := Vector3(-side * 0.13, -0.16, -0.355)
+	var along: Vector3 = wrist.normalized()
+	var length_value: float = wrist.length() - 0.045
+	var bend := Vector3(side * 0.09, -0.015, 0)
+	bend -= along * bend.dot(along)
+	var centre: Vector3 = along * length_value * fraction + bend * sin(PI * fraction)
+	var tangent: Vector3 = along * length_value + bend * PI * cos(PI * fraction)
+	return Transform3D(Basis(Quaternion(Vector3.UP, tangent.normalized())), centre)
+
+
+func _curve_racing_sleeve(source: ArrayMesh, side: float) -> ArrayMesh:
+	var arrays: Array = source.surface_get_arrays(0)
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var wrist := Vector3(-side * 0.13, -0.16, -0.355)
+	var length_value: float = wrist.length() - 0.045
+	for i in range(vertices.size()):
+		var point: Vector3 = vertices[i]
+		var frame: Transform3D = _racing_sleeve_frame(side, point.y / length_value)
+		vertices[i] = frame * Vector3(point.x, 0, point.z)
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var normals := PackedVector3Array()
+	normals.resize(vertices.size())
+	for triangle in range(0, indices.size(), 3):
+		var a: int = indices[triangle]
+		var b: int = indices[triangle + 1]
+		var c: int = indices[triangle + 2]
+		var normal := (vertices[c] - vertices[a]).cross(vertices[b] - vertices[a])
+		normals[a] += normal
+		normals[b] += normal
+		normals[c] += normal
+	for i in range(normals.size()):
+		normals[i] = normals[i].normalized()
+	arrays[Mesh.ARRAY_VERTEX] = vertices
+	arrays[Mesh.ARRAY_NORMAL] = normals
+	var sleeve := ArrayMesh.new()
+	sleeve.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	if source.has_meta("far_geometry"):
+		sleeve.set_meta("far_geometry", _curve_racing_sleeve(source.get_meta("far_geometry"), side))
+	return sleeve
+
+
+func _make_racing_sleeve(limb: Node3D, side: float, is_lumo: bool) -> void:
+	var wrist := Vector3(-side * 0.13, -0.16, -0.355)
+	var cuff_distance: float = wrist.length() - 0.045
+	var sleeve_shape: ArrayMesh = _curve_racing_sleeve(
+		_loft([
+			Vector4(0, 0.075, 0.075, 0),
+			Vector4(0.11, 0.105, 0.098, 0),
+			Vector4(0.23, 0.086, 0.082, 0),
+			Vector4(cuff_distance, 0.064, 0.060, 0)
+		], true, 20, 4), side
+	)
+	var sleeve := _mesh(limb, sleeve_shape, Vector3.ZERO, NAVY, 0.0, 0.82)
+	sleeve.name = "RacingSleeve"
+	sleeve_shape.set_meta("cuff_vertex_start", sleeve_shape.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size() - 20)
+	sleeve_shape.set_meta("cuff_vertex_count", 20)
+	var seam: Array[Vector3] = []
+	var sleeve_arrays: Array = sleeve_shape.surface_get_arrays(0)
+	var sleeve_vertices: PackedVector3Array = sleeve_arrays[Mesh.ARRAY_VERTEX]
+	var sleeve_normals: PackedVector3Array = sleeve_arrays[Mesh.ARRAY_NORMAL]
+	# Sewn cyan follows the real curved surface; approximating its radius
+	# would bury the middle of the seam underneath the elbow.
+	for row in [1, 3, 5, 7, 9, 11]:
+		var vertex: int = row * 20 + (0 if side > 0 else 10)
+		seam.append(sleeve_vertices[vertex] + sleeve_normals[vertex] * 0.005)
+	_ribbon(limb, seam, 0.009, ICE)
+	if is_lumo:
+		for band in range(2):
+			var frame: Transform3D = _racing_sleeve_frame(side, 0.26 + band * 0.12)
+			var stripe := _ring(limb, Vector3.ZERO, 0.098, 0.116, ORANGE if band == 0 else WHITE)
+			stripe.scale.y = 1.35
+			_attach(stripe, frame)
+
+
 func _make_driver() -> void:
 	var fur: Color = {"fox": Color("ed762d"), "otter": Color("ad8064"), "rabbit": Color("cedbe8"), "badger": Color("64718a"), "cat": Color("d4b396")}.get(animal, Color("ed762d"))
 	var cream := Color("f4f2ea") if animal == "fox" else Color("eaf4f9")
@@ -723,38 +804,43 @@ func _make_driver() -> void:
 		_make_companion_limbs(fur)
 	else:
 		for side in [-1.0, 1.0]:
-			# Rechter Arm von Lumo hängt an einem Schultergelenk; alles andere bleibt am Körper.
-			var limb: Node3D = driver
-			var origin := Vector3.ZERO
+			# Retain the authored arm shells at their existing shoulders. Both
+			# grips follow the physical wheel while the torso leans underneath.
+			var origin := Vector3(
+				side * SHOULDER_RIGHT.x, SHOULDER_RIGHT.y, SHOULDER_RIGHT.z
+			)
+			var limb := Node3D.new()
+			limb.name = "ArmLeft" if side < 0 else "ArmRight"
+			limb.position = origin
+			driver.add_child(limb)
+			racing_arm_joints.append(limb)
 			if is_lumo and side > 0:
-				arm_right = Node3D.new()
-				arm_right.name = "ArmRight"
-				arm_right.position = SHOULDER_RIGHT
-				driver.add_child(arm_right)
-				limb = arm_right
-				origin = SHOULDER_RIGHT
-			var sleeve := _mesh(limb, _loft([Vector4(0.0, 0.07, 0.065, 0), Vector4(0.13, 0.11, 0.10, 0), Vector4(0.29, 0.081, 0.08, 0), Vector4(0.42, 0.065, 0.060, 0)], true, 20, 4), Vector3(side * 0.24, 1.20, 0.10) - origin, NAVY, 0.03, 0.72)
-			sleeve.quaternion = Quaternion(Vector3.UP, Vector3(side * 0.13, -0.22, -0.37).normalized())
+				arm_right = limb
+			_make_racing_sleeve(limb, side, is_lumo)
 			_ellipsoid(limb, Vector3(side * 0.29, 1.215, 0.015) - origin, Vector3(0.092, 0.056, 0.096), NAVY if is_lumo else WHITE, 0.07, 0.6)
-			var seam: Array[Vector3] = []
-			for point in [Vector3(side * 0.318, 1.225, 0.07), Vector3(side * 0.344, 1.11, -0.12), Vector3(side * 0.31, 1.03, -0.27)]:
-				seam.append(point - origin)
-			_ribbon(limb, seam, 0.012, ICE, 0.12)
-			if is_lumo:
-				# Orange-weiße Ärmelstreifen wie auf der Jacke der Vorlage.
-				for band in range(2):
-					var at := Vector3(side * (0.315 - band * 0.012), 1.135 - band * 0.05, -0.085 - band * 0.06)
-					var stripe := _ring(limb, at - origin, 0.070, 0.100, ORANGE if band == 0 else WHITE, 0.18)
-					stripe.scale.y = 1.8
-					stripe.quaternion = Quaternion(Vector3.UP, Vector3(side * 0.13, -0.22, -0.37).normalized())
 			var leg := _ellipsoid(driver, Vector3(side * 0.16, 0.81, -0.18), Vector3(0.105, 0.105, 0.16), NAVY, 0, 0.72)
 			leg.name = "SeatedLegLeft" if side < 0 else "SeatedLegRight"
 			var glove_color: Color = GLOVE if is_lumo else WHITE
 			var glove := _ellipsoid(limb, Vector3(side * 0.16, 1.055, -0.34) - origin, Vector3(0.079, 0.070, 0.083), glove_color, 0, 0.68)
 			glove.name = "GripGlove"
 			glove.rotation.z = side * -0.2
+			var grip := Node3D.new()
+			grip.name = "SteeringGripAnchor"
+			grip.position = glove.position
+			limb.add_child(grip)
+			racing_rest_grips.append(grip.position)
+			wheel_rest_grips.append(
+				steering_wheel.transform.affine_inverse() * (origin + grip.position)
+			)
 			for digit in range(3):
 				_ellipsoid(limb, Vector3(side * (0.126 + digit * 0.027), 1.036, -0.393) - origin, Vector3(0.016, 0.036, 0.022), glove_color, 0, 0.68)
+			# These are fabric sleeves, sewn stripes and cloth gloves, not
+			# metallic body trim. Share their matte finish while vertex colours
+			# retain every navy/cyan/orange/white detail after arm batching.
+			for cloth_part in limb.get_children():
+				if cloth_part is MeshInstance3D:
+					var finish: StandardMaterial3D = cloth_part.material_override
+					cloth_part.material_override = _mat(finish.albedo_color, 0.0, 0.82)
 			var boot := _ellipsoid(driver, Vector3(side * 0.18, 0.80, -0.24), Vector3(0.12, 0.09, 0.14), NAVY, 0.08, 0.6)
 			boot.name = "RacingBootLeft" if side < 0 else "RacingBootRight"
 			var sole := _ellipsoid(driver, Vector3(side * 0.18, 0.742, -0.24), Vector3(0.119, 0.026, 0.15), WHITE, 0.08, 0.6)
@@ -1169,18 +1255,49 @@ func _process(delta: float) -> void:
 		tail.rotation.y = 0.63 + sin(animation_time * 2.6) * 0.055 - motion_steer * 0.07
 	if steering_wheel:
 		steering_wheel.rotation.z = -motion_steer * 0.40
-	if arm_right:
-		var cheer: bool = celebration_place >= 1 and celebration_place <= 3
-		# Hand folgt leicht dem Lenkrad; beim Jubel geht der Arm hoch nach außen und winkt.
-		arm_blend = move_toward(arm_blend, 1.0 if cheer else 0.0, delta * 3.2)
-		var raise: float = smoothstep(0.0, 1.0, arm_blend)
-		var cheer_q := Quaternion(ARM_REST_DIR.normalized(), ARM_CHEER_DIR.normalized())
-		var pose: Quaternion = Quaternion.IDENTITY.slerp(cheer_q, raise)
-		var wave: float = 0.0 if reduced_motion else sin(celebration_time * TAU * 1.8) * 0.3 * raise
-		var steer_follow: float = -motion_steer * 0.08 * (1.0 - raise)
-		arm_right.quaternion = Quaternion(Vector3.BACK, wave + steer_follow) * pose
 	if celebration_place > 0:
 		_apply_celebration(delta)
+	_solve_steering_grips(delta)
+
+
+func _solve_steering_grips(delta: float) -> void:
+	if not steering_wheel or not driver:
+		return
+	var cheer: bool = arm_right != null and celebration_place >= 1 and celebration_place <= 3
+	arm_blend = move_toward(arm_blend, 1.0 if cheer else 0.0, delta * 3.2)
+	var raise: float = smoothstep(0.0, 1.0, arm_blend)
+	for i in range(racing_arm_joints.size()):
+		var arm: Node3D = racing_arm_joints[i]
+		var rest: Vector3 = racing_rest_grips[i]
+		var target: Vector3 = (
+			driver.to_local(steering_wheel.to_global(wheel_rest_grips[i])) - arm.position
+		)
+		# Rotate around the unchanged shoulder and stretch only along the arm
+		# direction. This reaches the rim without scaling its width or adding
+		# a second rig/skin. The rest pose remains geometrically identical.
+		var alignment := Basis(Quaternion(Vector3.UP, rest.normalized()))
+		var stretch_ratio: float = target.length() / rest.length()
+		var stretch: Basis = (
+			alignment * Basis.from_scale(Vector3(1, stretch_ratio, 1)) * alignment.transposed()
+		)
+		var rotation := Quaternion(rest.normalized(), target.normalized())
+		var grip_pose := Basis(rotation) * stretch
+		if arm == arm_right and raise > 0.0:
+			# Existing victory deliberately releases only the right hand; the
+			# left stays on the moving wheel throughout the finish coast.
+			var wave: float = 0.0 if reduced_motion else sin(celebration_time * TAU * 1.8) * 0.3
+			var cheer_pose := (
+				Quaternion(Vector3.BACK, wave)
+				* Quaternion(ARM_REST_DIR.normalized(), ARM_CHEER_DIR.normalized())
+			)
+			var cheer_stretch: Basis = (
+				alignment
+				* Basis.from_scale(Vector3(1, lerpf(stretch_ratio, 1.0, raise), 1))
+				* alignment.transposed()
+			)
+			arm.basis = Basis(rotation.slerp(cheer_pose, raise)) * cheer_stretch
+		else:
+			arm.basis = grip_pose
 
 
 func _apply_celebration(delta: float) -> void:
