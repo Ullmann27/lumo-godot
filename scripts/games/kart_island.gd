@@ -71,6 +71,8 @@ const GRID_ROLL_SECONDS: float = 2.0
 const GRID_ROLL_DISTANCE: float = 9.0
 var grid_from: Array[Transform3D] = []
 var grid_to: Array[Transform3D] = []
+## Zuletzt beim Einrollen gesetzte Lage je Kart (erkennt Karts, die von außen versetzt wurden).
+var grid_last: Array[Transform3D] = []
 ## Startampel: drei rote Lampen im Takt des Countdowns, dann alle grün.
 const START_GREEN_SECONDS: float = 0.9
 var start_lights: PanelContainer
@@ -599,7 +601,7 @@ func _begin_race() -> void:
 		kart_audio.set_paused(false)
 		kart_audio.play_track("arena" if mode == "arena" else track_id)
 	message.text = (
-		"Stick links lenkt · rechts GAS halten, BREMSE, DRIFT, BOOST, ITEM"
+		"Stick links lenkt · rechts GAS halten, BREMSE, DRIFT, SPEED, ITEM"
 		if OS.has_feature("android") or OS.has_feature("ios")
 		else "W: Gas · S: Bremse · A/D: lenken · Umschalt: Drift · Leertaste: Boost · E: Item"
 	)
@@ -726,7 +728,7 @@ func _build_pedal_pad() -> Control:
 	drift_button.icon_id = "drift"
 	drift_button.button_down.connect(func(): drifting = racing and not paused)
 	drift_button.button_up.connect(_release_drift)
-	boost_button = _action("BOOST\n◆ 1", _boost, Color("66f7e8"), 112)
+	boost_button = _action("SPEED\n◆ 1", _boost, Color("66f7e8"), 112)
 	boost_button.name = "BoostAction"
 	boost_button.icon_id = "boost"
 	item_button = _action("ITEM\n◇", _use_item, Color("a7c5ff"), 94)
@@ -1134,8 +1136,9 @@ func _physics_process(delta: float) -> void:
 			if not paused:
 				_update_preview(delta)
 			return
-		# Countdown wurde von außen beendet (Fortsetzen, Tests): Vorschau entfällt.
-		_end_preview()
+		# Countdown wurde von außen beendet (Tests): Vorschau entfällt, von außen
+		# gesetzte Lage und Blickrichtung bleiben erhalten.
+		_end_preview(false)
 	if not paused and not finished and countdown > 0:
 		countdown = maxf(0, countdown - delta)
 		var tick: int = ceili(countdown)
@@ -1656,7 +1659,7 @@ func _update_hud() -> void:
 	else:
 		hud.text = "RUNDE %d / %d    PLATZ %d / 6    %d km/h    ★ %d" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, place, int(speed * 3.6), collected.size()]
 	var enabled: bool = racing and not paused and not finished
-	boost_button.text = "BOOST\n◆ %d" % boosts
+	boost_button.text = "SPEED\n◆ %d" % boosts
 	boost_button.disabled = boosts == 0 or not enabled
 	var drift_state: String = "HALTEN"
 	if drift_charge >= DRIFT_TIERS[1]:
@@ -1958,13 +1961,22 @@ func _update_preview(delta: float) -> void:
 		_end_preview()
 
 
-func _end_preview() -> void:
+func _end_preview(snap_all: bool = true) -> void:
 	preview_left = 0.0
 	message.visible = true
 	if is_instance_valid(preview_card):
 		preview_card.hide()
-	_roll_grid(1.0)
+	if snap_all:
+		_roll_grid(1.0)
+	else:
+		# Nur Karts, die noch in ihrer Einroll-Lage stehen, auf den Startplatz.
+		var karts: Array = [player] + opponents
+		for i in range(mini(karts.size(), mini(grid_to.size(), grid_last.size()))):
+			if is_instance_valid(karts[i]) and karts[i].transform.is_equal_approx(grid_last[i]):
+				karts[i].transform = grid_to[i]
+				karts[i].set_motion(0.0, 0.0, false, false)
 	grid_from.clear()
+	grid_last.clear()
 	_update_camera(1.0, true)
 
 
@@ -1973,6 +1985,7 @@ func _end_preview() -> void:
 func _prepare_grid_roll() -> void:
 	grid_from.clear()
 	grid_to.clear()
+	grid_last.clear()
 	if mode == "arena" or not is_instance_valid(player):
 		return
 	var karts: Array = [player] + opponents
@@ -2000,10 +2013,13 @@ func _roll_grid(progress: float) -> void:
 	var p: float = clampf(progress, 0.0, 1.0)
 	var eased: float = 1.0 - pow(1.0 - p, 3.0)
 	var karts: Array = [player] + opponents
+	grid_last.clear()
 	for i in range(mini(karts.size(), grid_to.size())):
 		if not is_instance_valid(karts[i]):
+			grid_last.append(Transform3D())
 			continue
 		karts[i].transform = grid_to[i] if p >= 1.0 else grid_from[i].interpolate_with(grid_to[i], eased)
+		grid_last.append(karts[i].transform)
 		# Räder drehen sich passend zum Ausrollen; danach stehen sie still.
 		var rolling: float = 0.0 if p >= 1.0 else 3.0 * GRID_ROLL_DISTANCE / GRID_ROLL_SECONDS * pow(1.0 - p, 2.0)
 		karts[i].set_motion(rolling, 0.0, false, false)

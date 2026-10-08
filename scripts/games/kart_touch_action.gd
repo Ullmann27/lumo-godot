@@ -9,6 +9,14 @@ const ICONS: Dictionary = {
 	"item": preload("res://assets/kart/controls/item.svg"),
 }
 var icon_id: String = "boost"
+const ART: Dictionary = {
+	"drift": [preload("res://assets/kart/controls/reference/drift_normal.png"), preload("res://assets/kart/controls/reference/drift_pressed.png"), preload("res://assets/kart/controls/reference/drift_disabled.png")],
+	"gas": [preload("res://assets/kart/controls/reference/gas_normal.png"), preload("res://assets/kart/controls/reference/gas_pressed.png"), preload("res://assets/kart/controls/reference/gas_disabled.png")],
+	"brake": [preload("res://assets/kart/controls/reference/bremse_normal.png"), preload("res://assets/kart/controls/reference/bremse_pressed.png"), preload("res://assets/kart/controls/reference/bremse_disabled.png")],
+	"boost": [preload("res://assets/kart/controls/reference/speed_normal.png"), preload("res://assets/kart/controls/reference/speed_pressed.png"), preload("res://assets/kart/controls/reference/speed_disabled.png")],
+	"item": [preload("res://assets/kart/controls/reference/item_normal.png"), preload("res://assets/kart/controls/reference/item_pressed.png"), preload("res://assets/kart/controls/reference/item_disabled.png")],
+}
+const LABEL_FONT = preload("res://assets/fonts/Nunito-Black.ttf")
 var press_depth: float = 0.0:
 	set(value):
 		press_depth = value
@@ -46,6 +54,7 @@ func _ready() -> void:
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_override("font", LABEL_FONT)
 	label.add_theme_color_override("font_shadow_color", Color("06182d"))
 	label.add_theme_constant_override("shadow_offset_y", 2)
 	add_child(label)
@@ -83,10 +92,10 @@ func _apply_label_size() -> void:
 	if not is_instance_valid(label):
 		return
 	var side: float = minf(size.x, size.y)
-	label.position = Vector2(0, side * 0.66)
-	label.size = Vector2(size.x, side * 0.25)
+	label.position = Vector2(0, side * 0.69)
+	label.size = Vector2(size.x, side * 0.21)
 	# The label and artwork grow with the actual button, also on dense Fold screens.
-	var ratio: float = 0.145 if label.text.length() > 5 else 0.175
+	var ratio: float = 0.125 if label.text.length() > 5 else 0.155
 	label.add_theme_font_size_override("font_size", maxi(10, roundi(side * ratio)))
 	badge.position = Vector2(side * 0.74, side * 0.02)
 	badge.size = Vector2.ONE * side * 0.25
@@ -157,6 +166,17 @@ func _draw_panel(rectangle: Rect2, fill: Color, border: Color, width: float) -> 
 
 func _draw() -> void:
 	var side: float = minf(size.x, size.y)
+	if ART.has(icon_id):
+		var state: int = 2 if disabled else (1 if held else 0)
+		var texture: Texture2D = ART[icon_id][state]
+		# Source face = 400/512 px; preserve the original generous visible button.
+		var extent: float = side * 1.12
+		draw_texture_rect(texture, Rect2((size - Vector2.ONE * extent) * 0.5, Vector2.ONE * extent), false)
+		if is_instance_valid(badge) and badge.visible:
+			draw_circle(Vector2(side * 0.865, side * 0.145), side * 0.125, Color("113657"))
+			var tint: Color = Color("9bb6d6") if disabled else Color("72e6ff")
+			draw_arc(Vector2(side * 0.865, side * 0.145), side * 0.125, 0, TAU, 32, tint, side * 0.015, true)
+		return
 	var inset: float = side * 0.045
 	var shift: float = press_depth * side * 0.045
 	var face := Rect2(Vector2(inset, inset + shift), Vector2.ONE * (side - inset * 2.0))
