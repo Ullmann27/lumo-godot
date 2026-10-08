@@ -10,11 +10,23 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 
+func _drop_game() -> void:
+	# Finish pending render uploads before releasing the scene, then drain the
+	# deferred frees before a new instance claims its viewports and textures.
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+	game.abandoned = true
+	root.world_3d.fallback_environment = null
+	game.queue_free()
+	game = null
+	await process_frame
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+
+
 func _fresh(mode: String = "race", track: String = "sonnenhafen") -> void:
 	if is_instance_valid(game):
-		game.abandoned = true
-		game.queue_free()
-		await process_frame
+		await _drop_game()
 	game = scene.instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
@@ -56,6 +68,11 @@ func _cannot_recollect() -> void:
 
 func _quality_change() -> void:
 	game._pause()
+	# A real menu tap follows a rendered frame. Let a freshly restored world
+	# finish its texture uploads before the callback rebuilds that world.
+	await process_frame
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
 	var found: bool = false
 	for control in game.modal_column.get_children():
 		if control is Button and control.text.begins_with("Grafik:"):
@@ -102,9 +119,7 @@ func _test_reopen() -> void:
 	assert(
 		saved.get_value("race", "item_box_collected", {}).has(0), "Save contains the consumed key"
 	)
-	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	await _drop_game()
 	game = scene.instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
@@ -150,9 +165,7 @@ func _test_rival_reopen() -> void:
 	game._pause()
 	var expected: Dictionary = _rival_states()
 	game._save_session()
-	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	await _drop_game()
 	game = scene.instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
@@ -299,9 +312,12 @@ func _run() -> void:
 		await _test_rival_reopen()
 		await _test_save_compatibility()
 		await _test_flight_reset()
-	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	await _drop_game()
+	scene = null
+	for frame in range(8):
+		await process_frame
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	await create_timer(0.5).timeout
 	print(
