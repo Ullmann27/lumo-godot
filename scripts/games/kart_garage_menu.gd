@@ -9,6 +9,11 @@ const WORLD = preload("res://scripts/games/kart_world.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
+const FLEET = preload("res://scripts/games/kart_fleet.gd")
+const STAGE = preload("res://scripts/games/kart_stage.gd")
+const CARD = preload("res://scripts/games/kart_vehicle_card.gd")
+const BARS = preload("res://scripts/games/kart_stat_bars.gd")
+const WORKSHOP = preload("res://scripts/games/kart_workshop.gd")
 var setup: Dictionary = {
 	"mode": "race",
 	"driver": "fox",
@@ -19,6 +24,14 @@ var setup: Dictionary = {
 var step: int = 0
 var stars: int = 0
 var unlocked_ids: Array = []
+## Tuning-Werkstatt des Kindes (Stufen, Aussehen, Sterne); vom Spiel gesetzt.
+var workshop
+var workshop_view: Control
+var preview_viewport: SubViewport
+var kart_panel: VBoxContainer
+var kart_bars
+var workshop_button: Button
+var kart_summary: Label
 var has_saved_race: bool = false
 var choices: VBoxContainer
 var setup_row: GridContainer
@@ -165,78 +178,37 @@ func _ready() -> void:
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	viewport.msaa_3d = Viewport.MSAA_2X
 	viewport_box.add_child(viewport)
+	preview_viewport = viewport
 	preview = Node3D.new()
 	viewport.add_child(preview)
-	var environment := WorldEnvironment.new()
-	var environment_resource := Environment.new()
-	environment_resource.background_mode = Environment.BG_CANVAS
-	environment_resource.background_color = Color("0c1d36")
-	environment_resource.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	environment_resource.ambient_light_color = Color("b0cfff")
-	environment_resource.ambient_light_energy = 0.40
-	environment_resource.tonemap_mode = Environment.TONE_MAPPER_ACES
-	environment.environment = environment_resource
-	preview.add_child(environment)
-	var key := DirectionalLight3D.new()
-	key.rotation_degrees = Vector3(-42, -35, 0)
-	key.light_color = Color("e1f1ff")
-	key.light_energy = 0.8
-	key.shadow_enabled = true
-	preview.add_child(key)
-	var rim := OmniLight3D.new()
-	rim.position = Vector3(-2, 2.6, 1)
-	rim.light_color = Color("63dfff")
-	rim.light_energy = 0.4
-	rim.omni_range = 9
-	preview.add_child(rim)
-	var podium := MeshInstance3D.new()
-	var podium_mesh := CylinderMesh.new()
-	podium_mesh.top_radius = 2.0
-	podium_mesh.bottom_radius = 2.05
-	podium_mesh.height = 0.18
-	podium_mesh.radial_segments = 64
-	podium.mesh = podium_mesh
-	podium.position.y = -0.13
-	var podium_mat := StandardMaterial3D.new()
-	podium_mat.albedo_color = Color("12304c")
-	podium_mat.metallic = 0.7
-	podium_mat.roughness = 0.3
-	podium.material_override = podium_mat
-	preview.add_child(podium)
-	for radius in [2.04, 2.30]:
-		var ring := MeshInstance3D.new()
-		var torus := TorusMesh.new()
-		torus.inner_radius = radius
-		torus.outer_radius = radius + 0.035
-		torus.rings = 64
-		ring.mesh = torus
-		ring.position.y = -0.04
-		var light_material := StandardMaterial3D.new()
-		light_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		light_material.albedo_color = Color("45d9ef")
-		ring.material_override = light_material
-		preview.add_child(ring)
-	for index in range(8):
-		var star := MeshInstance3D.new()
-		star.mesh = SHAPES.star()
-		star.scale = Vector3.ONE * (0.035 + index % 3 * 0.015)
-		star.position = Vector3(sin(index * 2.4) * 2.5, 0.7 + index % 4 * 0.5, cos(index * 2.4) * 2)
-		var star_material := StandardMaterial3D.new()
-		star_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		star_material.albedo_color = Color("a8deee")
-		star.material_override = star_material
-		preview.add_child(star)
-	var camera := Camera3D.new()
-	preview_camera = camera
-	camera.position = Vector3(3.2, 2.2, -4.5)
-	camera.fov = 37
-	preview.add_child(camera)
-	camera.look_at(Vector3(0, 0.85, 0))
-	preview_pivot = Node3D.new()
-	preview.add_child(preview_pivot)
+	var built: Dictionary = STAGE.build(preview)
+	preview_camera = built.camera
+	preview_pivot = built.pivot
 	preview_caption = _label("Ziehen zum Drehen", 14, Color("8faac8"))
 	preview_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	right.add_child(preview_caption)
+	kart_panel = VBoxContainer.new()
+	kart_panel.add_theme_constant_override("separation", 6)
+	kart_panel.visible = false
+	right.add_child(kart_panel)
+	var kart_head := HBoxContainer.new()
+	kart_head.add_theme_constant_override("separation", 10)
+	kart_panel.add_child(kart_head)
+	kart_summary = _label("", 16, Color("dceaff"))
+	kart_summary.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	kart_summary.autowrap_mode = TextServer.AUTOWRAP_OFF
+	kart_summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	kart_summary.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	kart_head.add_child(kart_summary)
+	workshop_button = _button("Werkstatt", _open_workshop, true)
+	workshop_button.name = "WorkshopButton"
+	workshop_button.custom_minimum_size = Vector2(190, 52)
+	kart_head.add_child(workshop_button)
+	kart_bars = BARS.new()
+	kart_bars.name = "KartStats"
+	kart_bars.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	kart_bars.reduced_motion = reduced_motion
+	kart_panel.add_child(kart_bars)
 	detail = _label("", 20, Color("dceaff"))
 	detail.custom_minimum_size.y = 74
 	right.add_child(detail)
@@ -365,7 +337,18 @@ func _apply_responsive_layout() -> void:
 	_set_physical_font(steps_label, 12 if short_landscape else 15, ui_scale)
 	_set_physical_font(subtitle, 14 if small else 18, ui_scale)
 	subtitle.visible = not short_landscape
-	detail.visible = not short_landscape and not small
+	detail.visible = not short_landscape and not small and step != 2
+	kart_panel.visible = step == 2
+	kart_summary.visible = not short_landscape
+	# Hochformat und Fold-Innendisplay: Die Karten brauchen den Platz, die Werte stehen schon auf ihnen.
+	var stacked: bool = window_size.x < window_size.y
+	kart_bars.visible = not short_landscape and not (stacked and step == 2)
+	if stacked and step == 2:
+		_set_physical_minimum(preview_container, Vector2(150, 110), ui_scale)
+	kart_bars.row_height = (16.0 if small else 21.0) * ui_scale
+	kart_bars.font_scale = ui_scale
+	_set_physical_minimum(workshop_button, Vector2(120 if small else 190, 44 if short_landscape else 52), ui_scale)
+	_set_physical_font(workshop_button, 15 if short_landscape else 18, ui_scale)
 	preview_caption.visible = not short_landscape and not small
 	preview_title.visible = not short_landscape and not small
 	if short_landscape:
@@ -408,6 +391,8 @@ func _apply_responsive_layout() -> void:
 				var height: float = (
 					(44 if tiny else 60) if short_landscape else (80 if step == 0 else 74)
 				)
+				if step == 2:
+					height = 74 if short_landscape else 118
 				_set_physical_minimum(card, Vector2(0, height), ui_scale)
 				_set_physical_font(card, (14 if tiny else 16) if short_landscape else 19, ui_scale)
 				if card.has_method("apply_size"):
@@ -531,7 +516,7 @@ func _refresh() -> void:
 		child.queue_free()
 	var key: String = keys[step]
 	var card_parent: Container = choices
-	if step == 0:
+	if step == 0 or step == 2:
 		var grid := GridContainer.new()
 		grid.columns = 2
 		grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -556,6 +541,26 @@ func _refresh() -> void:
 		for item in _entries():
 			var unlocked: bool = CATALOG.unlocked(item, stars, unlocked_ids)
 			var selected: bool = setup[key] == item.id
+			if step == 2:
+				var kart_card := CARD.new()
+				kart_card.item = item
+				kart_card.locked = not unlocked
+				kart_card.missing_stars = maxi(0, int(item.unlock) - stars)
+				kart_card.stats = FLEET.base_stats(str(item.id))
+				kart_card.bonus = _bonus_for(str(item.id))
+				kart_card.tuning_level = workshop.total_level(str(item.id)) if workshop != null else 0
+				kart_card.name = "KartCard_" + str(item.id)
+				kart_card.add_theme_stylebox_override("normal", _glass(selected))
+				kart_card.add_theme_stylebox_override("hover", _glass(true))
+				kart_card.add_theme_stylebox_override("pressed", _glass(true))
+				kart_card.add_theme_stylebox_override("focus", _glass(true))
+				kart_card.add_theme_stylebox_override("disabled", _glass(false))
+				kart_card.pressed.connect(func(): _select(key, str(item.id)))
+				kart_card.custom_minimum_size = Vector2(0, 118)
+				kart_card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				kart_card.disabled = not unlocked
+				card_parent.add_child(kart_card)
+				continue
 			var card := CHOICE.new()
 			card.title = str(item.name)
 			card.caption = (
@@ -588,6 +593,7 @@ func _refresh() -> void:
 			card_parent.add_child(card)
 	var selected_entry: Dictionary = CATALOG.entry(_entries(), str(setup[key]))
 	detail.text = str(selected_entry.get("description", selected_entry.get("tag", "")))
+	_refresh_kart_panel()
 	if step == 3 and setup.mode == "cup":
 		detail.text = (
 			"%d Rennen. Eine Gesamtwertung. Dein Sternenpokal wartet." % CATALOG.TRACKS.size()
@@ -601,6 +607,10 @@ func _refresh() -> void:
 
 
 func _select(key: String, value: String) -> void:
+	# Gesperrtes (zu wenige Sterne) lässt sich nicht wählen, auch nicht per Tastatur oder Skript.
+	var entry: Dictionary = CATALOG.entry(_entries(), value)
+	if str(entry.get("id", "")) == value and not CATALOG.unlocked(entry, stars, unlocked_ids):
+		return
 	setup[key] = value
 	_refresh.call_deferred()
 
@@ -622,7 +632,7 @@ func _back() -> void:
 
 
 func _refresh_preview() -> void:
-	var signature: String = str(setup.driver) + str(setup.kart) + str(setup.track) + str(step == 3)
+	var signature: String = str(setup.driver) + str(setup.kart) + str(setup.track) + str(step == 3) + (str(workshop.look(str(setup.kart))) if workshop != null else "")
 	if signature == preview_signature:
 		return
 	preview_signature = signature
@@ -635,6 +645,8 @@ func _refresh_preview() -> void:
 		preview_kart.queue_free()
 	preview_kart = VEHICLE.new()
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, str(setup.driver))
+	if workshop != null:
+		preview_kart.set_look(workshop.look(str(setup.kart)))
 	preview_kart.configure(str(setup.driver), driver.color, str(setup.kart))
 	preview_kart.reduced_motion = reduced_motion
 	preview_kart.set_graphics_quality(graphics_profile)
@@ -675,3 +687,64 @@ func _process(delta: float) -> void:
 	if not rotate_drag and not reduced_motion:
 		preview_angle += delta * 0.14
 	preview_pivot.rotation.y = preview_angle
+
+
+func _bonus_for(kart_id: String) -> Dictionary:
+	if workshop == null:
+		return {}
+	var extra: Dictionary = workshop.bonus(kart_id)
+	var base: Dictionary = FLEET.base_stats(kart_id)
+	for key in FLEET.STATS:
+		extra[key] = minf(float(extra[key]), maxf(0.0, FLEET.MAX_STAT - float(base[key])))
+	return extra
+
+
+func _refresh_kart_panel() -> void:
+	if step != 2:
+		return
+	var id: String = str(setup.kart)
+	var item: Dictionary = FLEET.entry(id)
+	var level: int = workshop.total_level(id) if workshop != null else 0
+	kart_summary.text = "%s · %s%s" % [item.name, item.role, " · Tuning %d" % level if level > 0 else ""]
+	kart_bars.set_values(FLEET.base_stats(id), _bonus_for(id))
+	workshop_button.disabled = workshop == null or not CATALOG.unlocked(item, stars, unlocked_ids)
+	workshop_button.text = "Werkstatt · ★ %d" % workshop.available() if workshop != null else "Werkstatt"
+
+
+func _open_workshop() -> void:
+	if workshop == null or is_instance_valid(workshop_view):
+		return
+	workshop_view = WORKSHOP.new()
+	workshop_view.tuning = workshop
+	workshop_view.kart_id = str(setup.kart)
+	workshop_view.driver_id = str(setup.driver)
+	workshop_view.reduced_motion = reduced_motion
+	workshop_view.graphics_profile = graphics_profile
+	workshop_view.name = "Workshop"
+	workshop_view.closed.connect(_close_workshop)
+	workshop_view.changed.connect(_on_workshop_changed)
+	add_child(workshop_view)
+	if is_instance_valid(preview_viewport):
+		preview_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+
+
+func _close_workshop() -> void:
+	if is_instance_valid(workshop_view):
+		workshop_view.queue_free()
+		workshop_view = null
+	if is_instance_valid(preview_viewport):
+		preview_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	preview_signature = ""
+	_refresh()
+
+
+func _on_workshop_changed() -> void:
+	preview_signature = ""
+
+
+## Android-Zurück schließt zuerst die Werkstatt; false = Garage kümmert sich nicht darum.
+func handle_back() -> bool:
+	if is_instance_valid(workshop_view):
+		_close_workshop()
+		return true
+	return false

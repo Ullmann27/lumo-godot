@@ -355,6 +355,7 @@ func _build_world() -> void:
 			_item_box(float(entry[0]) * track_length, float(entry[1]))
 	player = VEHICLE.new()
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, selected_driver)
+	player.set_look(_ensure_workshop().look(selected_kart))
 	player.configure(selected_driver, driver.color, selected_kart)
 	player.reduced_motion = reduced_motion
 	player.set_graphics_quality(graphics_profile)
@@ -393,9 +394,10 @@ func _build_world() -> void:
 	var animals: Array[String] = ["otter", "rabbit", "badger", "cat", "fox"]
 	var colors: Array[Color] = [Color("75d7f1"), Color("a696ee"), Color("83dab9"), Color("c8d8ef"), Color("6987db")]
 	var rival_count: int = 0 if mode in ["time_trial", "training"] else 5
+	var rival_karts: Array[String] = _rival_karts()
 	for i in range(rival_count):
 		var opponent: LumoRaceKart = VEHICLE.new()
-		opponent.configure(animals[i], colors[i], ["comet", "glider", "turbo"][i % 3])
+		opponent.configure(animals[i], colors[i], rival_karts[i % rival_karts.size()])
 		opponent.reduced_motion = reduced_motion
 		opponent.set_graphics_quality(graphics_profile)
 		race_root.add_child(opponent)
@@ -485,6 +487,7 @@ func _show_garage() -> void:
 	garage = GARAGE.new()
 	garage.stars = ProgressStore.total_stars()
 	garage.unlocked_ids = records.earned_unlocks
+	garage.workshop = _ensure_workshop()
 	garage.has_saved_race = saved_session_available
 	garage.reduced_motion = reduced_motion
 	garage.graphics_profile = graphics_profile
@@ -1234,6 +1237,19 @@ func _ensure_workshop():
 		workshop = TUNING.new(child, ProgressStore.lifetime_stars())
 	workshop.report_lifetime(ProgressStore.lifetime_stars())
 	return workshop
+
+
+## Fünf verschiedene Karts für die Gegner: nie das eigene, je Strecke eine andere Mischung.
+func _rival_karts() -> Array[String]:
+	var pool: Array[String] = []
+	for id in FLEET.ids():
+		if id != selected_kart:
+			pool.append(id)
+	var result: Array[String] = []
+	var offset: int = absi(hash(track_id)) % pool.size()
+	for index in range(5):
+		result.append(pool[(offset + index) % pool.size()])
+	return result
 
 
 ## Fahrfaktoren des gewählten Karts samt Tuning (Comet ohne Tuning ist überall 1,0).
@@ -2805,6 +2821,9 @@ func _notification(what: int) -> void:
 			intro.leave()
 			return
 		if menu_active:
+			# Die Werkstatt schließt sich zuerst; erst danach verlässt Zurück den Kart.
+			if is_instance_valid(garage) and garage.has_method("handle_back") and garage.handle_back():
+				return
 			_return_to_world()
 		elif finished or paused:
 			_return_to_world()
