@@ -13,7 +13,14 @@ const WHITE := Color("edf9ff")
 const CHROME := Color("b7cddd")
 const ORANGE := Color("f08a2c")
 const GLOVE := Color("1d2230")
+const CARBON := Color("0b1019")
+const GUNMETAL := Color("2a3342")
+## Leuchtstärke aller Neonteile: stark genug fürs Glühen, aber noch farbig (kein weißes Ausbrennen).
+const NEON_GLOW: float = 1.15
 
+## Aussehen aus Tuning und Flotte (siehe _resolved_look); leer = Werksvorgabe des Karts.
+var look: Dictionary = {}
+var chassis_look: Dictionary = {}
 var vehicle_color: Color = Color("357cba")
 var animal: String = "fox"
 var kart_style: String = "comet"
@@ -350,157 +357,728 @@ func _ribbon(parent: Node3D, points: Array[Vector3], radius: float, color: Color
 		_ellipsoid(parent, points[i], Vector3.ONE * radius, color, metal, 0.25)
 
 
+# ---------------------------------------------------------------------------
+# Hard-Surface-Baukasten: kantige Platten, Rohre und Leuchtbalken. Alles wird mit den
+# vorhandenen Materialfamilien gebaut, damit _merge_static() es zu wenigen Flächen bündelt.
+# ---------------------------------------------------------------------------
+
+func _tri(tool: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, outward: Vector3) -> void:
+	# Godot dreht Vorderseiten im Uhrzeigersinn: Dreieck so ordnen, dass die Normale nach außen zeigt.
+	var normal: Vector3 = (c - a).cross(b - a)
+	if normal.length_squared() < 0.0000001:
+		return
+	if normal.dot(outward) < 0.0:
+		var swap: Vector3 = b
+		b = c
+		c = swap
+		normal = -normal
+	normal = normal.normalized()
+	tool.set_normal(normal)
+	tool.add_vertex(a)
+	tool.set_normal(normal)
+	tool.add_vertex(b)
+	tool.set_normal(normal)
+	tool.add_vertex(c)
+
+
+## Kantige Platte über einem Umriss (x, z): senkrechte Wand, Fase, schräge Oberseite.
+## y0 = Unterkante, y_front/y_back = Höhe der Oberseite am vordersten/hintersten Punkt.
+func _slab(parent: Node3D, outline: PackedVector2Array, y0: float, y_front: float, y_back: float, inset: float, color: Color, metal: float = 0.0, rough: float = 0.5, glow: float = 0.0, far: bool = true) -> MeshInstance3D:
+	var points := PackedVector2Array(outline)
+	var count: int = points.size()
+	var area: float = 0.0
+	var min_z: float = INF
+	var max_z: float = -INF
+	for index in range(count):
+		var a: Vector2 = points[index]
+		var b: Vector2 = points[(index + 1) % count]
+		area += a.x * b.y - b.x * a.y
+		min_z = minf(min_z, a.y)
+		max_z = maxf(max_z, a.y)
+	if area < 0.0:
+		points.reverse()
+	var span: float = maxf(0.0001, max_z - min_z)
+	var inner := PackedVector2Array()
+	for index in range(count):
+		var previous: Vector2 = points[(index - 1 + count) % count]
+		var current: Vector2 = points[index]
+		var following: Vector2 = points[(index + 1) % count]
+		var e1: Vector2 = (current - previous).normalized()
+		var e2: Vector2 = (following - current).normalized()
+		var n1 := Vector2(-e1.y, e1.x)
+		var n2 := Vector2(-e2.y, e2.x)
+		var shift: Vector2 = (n1 + n2) * inset / maxf(0.25, 1.0 + n1.dot(n2))
+		inner.append(current + shift)
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var bevel: float = inset * 0.9
+	for index in range(count):
+		var j: int = (index + 1) % count
+		var p0: Vector2 = points[index]
+		var p1: Vector2 = points[j]
+		var t0: float = y_front + (y_back - y_front) * clampf((p0.y - min_z) / span, 0.0, 1.0)
+		var t1: float = y_front + (y_back - y_front) * clampf((p1.y - min_z) / span, 0.0, 1.0)
+		var edge: Vector2 = (p1 - p0).normalized()
+		var out := Vector3(edge.y, 0.0, -edge.x)
+		var b0 := Vector3(p0.x, y0, p0.y)
+		var b1 := Vector3(p1.x, y0, p1.y)
+		var w0 := Vector3(p0.x, t0 - bevel, p0.y)
+		var w1 := Vector3(p1.x, t1 - bevel, p1.y)
+		_tri(tool, b0, b1, w1, out)
+		_tri(tool, b0, w1, w0, out)
+		if inset > 0.0:
+			var q0: Vector2 = inner[index]
+			var q1: Vector2 = inner[j]
+			var h0: float = y_front + (y_back - y_front) * clampf((q0.y - min_z) / span, 0.0, 1.0)
+			var h1: float = y_front + (y_back - y_front) * clampf((q1.y - min_z) / span, 0.0, 1.0)
+			var u0 := Vector3(q0.x, h0, q0.y)
+			var u1 := Vector3(q1.x, h1, q1.y)
+			var slope := Vector3(out.x, 1.0, out.z)
+			_tri(tool, w0, w1, u1, slope)
+			_tri(tool, w0, u1, u0, slope)
+	var cap_points: PackedVector2Array = inner if inset > 0.0 else points
+	var cap: PackedInt32Array = Geometry2D.triangulate_polygon(cap_points)
+	for index in range(0, cap.size(), 3):
+		var c0: Vector2 = cap_points[cap[index]]
+		var c1: Vector2 = cap_points[cap[index + 1]]
+		var c2: Vector2 = cap_points[cap[index + 2]]
+		var v0 := Vector3(c0.x, y_front + (y_back - y_front) * clampf((c0.y - min_z) / span, 0.0, 1.0), c0.y)
+		var v1 := Vector3(c1.x, y_front + (y_back - y_front) * clampf((c1.y - min_z) / span, 0.0, 1.0), c1.y)
+		var v2 := Vector3(c2.x, y_front + (y_back - y_front) * clampf((c2.y - min_z) / span, 0.0, 1.0), c2.y)
+		_tri(tool, v0, v1, v2, Vector3.UP)
+	var mesh: ArrayMesh = tool.commit()
+	if not far:
+		mesh.set_meta("far_skip", true)
+	var node := MeshInstance3D.new()
+	node.mesh = mesh
+	node.material_override = _mat(color, metal, rough, glow)
+	parent.add_child(node)
+	return node
+
+
+## Rundet die Ecken eines Umrisses (x, z) mit Kreisbögen vom Radius `radius` (begrenzt auf die halbe Kante).
+func _rounded_polygon(points: PackedVector2Array, radius: float, samples: int = 3) -> PackedVector2Array:
+	var count: int = points.size()
+	var area: float = 0.0
+	for index in range(count):
+		var a: Vector2 = points[index]
+		var b: Vector2 = points[(index + 1) % count]
+		area += a.x * b.y - b.x * a.y
+	var ordered := PackedVector2Array(points)
+	if area < 0.0:
+		ordered.reverse()
+	var result := PackedVector2Array()
+	for index in range(count):
+		var previous: Vector2 = ordered[(index - 1 + count) % count]
+		var current: Vector2 = ordered[index]
+		var following: Vector2 = ordered[(index + 1) % count]
+		var to_previous: Vector2 = previous - current
+		var to_next: Vector2 = following - current
+		var cut: float = minf(radius, minf(to_previous.length(), to_next.length()) * 0.5)
+		if cut < 0.0005 or absf(to_previous.normalized().dot(to_next.normalized())) > 0.995:
+			result.append(current)
+			continue
+		var start: Vector2 = current + to_previous.normalized() * cut
+		var end: Vector2 = current + to_next.normalized() * cut
+		for step in range(samples + 1):
+			var t: float = float(step) / float(samples)
+			# Quadratischer Bézier-Bogen mit der Ecke als Kontrollpunkt.
+			result.append(start * (1.0 - t) * (1.0 - t) + current * 2.0 * (1.0 - t) * t + end * t * t)
+	return result
+
+
+## Weich gerundete Platte: senkrechte Wand, ein Viertelkreis als Kante und eine geneigte Oberseite,
+## alles mit glatten Normalen (wie ein spritzgegossenes Karosserieteil). `fillet` ist der Kantenradius,
+## `corner` der Eckenradius des Umrisses. Oberseite = lineare Neigung von vorn (y_front) nach hinten (y_back).
+func _round_slab(parent: Node3D, outline: PackedVector2Array, y0: float, y_front: float, y_back: float, fillet: float, corner: float, color: Color, metal: float = 0.0, rough: float = 0.5, glow: float = 0.0, far: bool = true, segments: int = 3, crown: float = 0.0) -> MeshInstance3D:
+	var points: PackedVector2Array = _rounded_polygon(outline, corner)
+	var count: int = points.size()
+	var min_z: float = INF
+	var max_z: float = -INF
+	var min_x: float = INF
+	var max_x: float = -INF
+	for point in points:
+		min_z = minf(min_z, point.y)
+		max_z = maxf(max_z, point.y)
+		min_x = minf(min_x, point.x)
+		max_x = maxf(max_x, point.x)
+	var span: float = maxf(0.0001, max_z - min_z)
+	var slope: float = (y_back - y_front) / span
+	var up_vector: Vector3 = Vector3(0.0, 1.0, -slope).normalized()
+	var outward: Array[Vector2] = []
+	for index in range(count):
+		var previous: Vector2 = points[(index - 1 + count) % count]
+		var current: Vector2 = points[index]
+		var following: Vector2 = points[(index + 1) % count]
+		var e1: Vector2 = (current - previous).normalized()
+		var e2: Vector2 = (following - current).normalized()
+		var n: Vector2 = Vector2(e1.y, -e1.x) + Vector2(e2.y, -e2.x)
+		outward.append(n.normalized() if n.length() > 0.0001 else Vector2(e2.y, -e2.x))
+	var vertices := PackedVector3Array()
+	var normals := PackedVector3Array()
+	var indices := PackedInt32Array()
+	var rings: int = segments + 2
+	for ring in range(rings):
+		for index in range(count):
+			var p: Vector2 = points[index]
+			var out2: Vector2 = outward[index]
+			var out3 := Vector3(out2.x, 0.0, out2.y)
+			var top: float = y_front + slope * (p.y - min_z)
+			var vertex: Vector3
+			var normal: Vector3
+			if ring == 0:
+				vertex = Vector3(p.x, y0, p.y)
+				normal = out3
+			else:
+				var theta: float = (PI * 0.5) * float(ring - 1) / float(segments)
+				var inset: float = fillet * (1.0 - cos(theta))
+				var lift: float = top - fillet + fillet * sin(theta)
+				var shifted: Vector2 = p - out2 * inset
+				vertex = Vector3(shifted.x, lift, shifted.y)
+				normal = (out3 * cos(theta) + up_vector * sin(theta)).normalized()
+			vertices.append(vertex)
+			normals.append(normal)
+	for ring in range(rings - 1):
+		for index in range(count):
+			var j: int = (index + 1) % count
+			var a: int = ring * count + index
+			var b: int = ring * count + j
+			var c: int = (ring + 1) * count + index
+			var d: int = (ring + 1) * count + j
+			for triangle in [[a, c, b], [b, c, d]]:
+				var face: Vector3 = (vertices[triangle[2]] - vertices[triangle[0]]).cross(vertices[triangle[1]] - vertices[triangle[0]])
+				var hint: Vector3 = normals[triangle[0]] + normals[triangle[1]] + normals[triangle[2]]
+				if face.dot(hint) < 0.0:
+					indices.append_array(PackedInt32Array([triangle[0], triangle[2], triangle[1]]))
+				else:
+					indices.append_array(PackedInt32Array(triangle))
+	# Deckel: Oberkante triangulieren (Ring `rings - 1`), optional leicht gewölbt.
+	var top_start: int = (rings - 1) * count
+	var cap_points := PackedVector2Array()
+	for index in range(count):
+		cap_points.append(Vector2(vertices[top_start + index].x, vertices[top_start + index].z))
+	var cap: PackedInt32Array = Geometry2D.triangulate_polygon(cap_points)
+	for index in range(0, cap.size(), 3):
+		var i0: int = top_start + cap[index]
+		var i1: int = top_start + cap[index + 1]
+		var i2: int = top_start + cap[index + 2]
+		var face: Vector3 = (vertices[i2] - vertices[i0]).cross(vertices[i1] - vertices[i0])
+		if face.dot(up_vector) < 0.0:
+			indices.append_array(PackedInt32Array([i0, i2, i1]))
+		else:
+			indices.append_array(PackedInt32Array([i0, i1, i2]))
+	var arrays: Array = []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = vertices
+	arrays[Mesh.ARRAY_NORMAL] = normals
+	arrays[Mesh.ARRAY_INDEX] = indices
+	var mesh := ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	if not far:
+		mesh.set_meta("far_skip", true)
+	var node := MeshInstance3D.new()
+	node.mesh = mesh
+	node.material_override = _mat(color, metal, rough, glow)
+	parent.add_child(node)
+	return node
+
+
+## Platte in beliebiger Lage (z. B. senkrecht auf der Rückseite): lokale Oberseite zeigt nach +Y.
+func _panel(parent: Node3D, outline: PackedVector2Array, at: Vector3, euler: Vector3, thickness: float, inset: float, color: Color, metal: float = 0.0, rough: float = 0.5, glow: float = 0.0, far: bool = false) -> MeshInstance3D:
+	var node: MeshInstance3D = _slab(parent, outline, 0.0, thickness, thickness, inset, color, metal, rough, glow, far)
+	node.position = at
+	node.rotation = euler
+	return node
+
+
+func _shape(half: Array, mirrored: bool = true) -> PackedVector2Array:
+	# half: Punkte (x, z) der rechten Seite von vorn nach hinten; gespiegelt ergibt das den ganzen Umriss.
+	var result := PackedVector2Array()
+	for point in half:
+		result.append(Vector2(point[0], point[1]))
+	if mirrored:
+		for index in range(half.size() - 1, -1, -1):
+			var point: Array = half[index]
+			if absf(float(point[0])) > 0.0001:
+				result.append(Vector2(-float(point[0]), float(point[1])))
+	return result
+
+
+func _curve(points: Array, steps: int = 6) -> Array[Vector3]:
+	# Weiche Kurve durch die Punkte (Catmull-Rom), z. B. für Rohre.
+	var result: Array[Vector3] = []
+	var count: int = points.size()
+	for index in range(count - 1):
+		var p0: Vector3 = points[maxi(0, index - 1)]
+		var p1: Vector3 = points[index]
+		var p2: Vector3 = points[index + 1]
+		var p3: Vector3 = points[mini(count - 1, index + 2)]
+		for step in range(steps):
+			var t: float = float(step) / float(steps)
+			result.append(0.5 * ((2.0 * p1) + (-p0 + p2) * t + (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t * t + (-p0 + 3.0 * p1 - 3.0 * p2 + p3) * t * t * t))
+	result.append(points[count - 1])
+	return result
+
+
+## Glattes Rohr entlang eines Linienzugs, mit runden Enden.
+func _tube(parent: Node3D, points: Array, radius: float, color: Color, metal: float = 0.0, rough: float = 0.5, glow: float = 0.0, sides: int = 8, far: bool = false) -> MeshInstance3D:
+	var count: int = points.size()
+	var vertices := PackedVector3Array()
+	var normals := PackedVector3Array()
+	var indices := PackedInt32Array()
+	var carry := Vector3.ZERO
+	for index in range(count):
+		var tangent: Vector3
+		if index == 0:
+			tangent = (points[1] - points[0]).normalized()
+		elif index == count - 1:
+			tangent = (points[index] - points[index - 1]).normalized()
+		else:
+			tangent = ((points[index] - points[index - 1]).normalized() + (points[index + 1] - points[index]).normalized()).normalized()
+		var reference: Vector3 = carry if index > 0 and carry.length_squared() > 0.5 else (Vector3.UP if absf(tangent.dot(Vector3.UP)) < 0.9 else Vector3.RIGHT)
+		var side_axis: Vector3 = tangent.cross(reference)
+		if side_axis.length_squared() < 0.0001:
+			side_axis = tangent.cross(Vector3.RIGHT)
+		side_axis = side_axis.normalized()
+		var up_axis: Vector3 = side_axis.cross(tangent).normalized()
+		carry = up_axis
+		var widen: float = 1.0
+		if index > 0 and index < count - 1:
+			var before: Vector3 = (points[index] - points[index - 1]).normalized()
+			var after: Vector3 = (points[index + 1] - points[index]).normalized()
+			widen = 1.0 / maxf(0.55, sqrt((1.0 + before.dot(after)) * 0.5))
+		for corner in range(sides):
+			var angle: float = TAU * float(corner) / float(sides)
+			var direction: Vector3 = side_axis * cos(angle) + up_axis * sin(angle)
+			vertices.append(points[index] + direction * radius * widen)
+			normals.append(direction)
+	for index in range(count - 1):
+		for corner in range(sides):
+			var a: int = index * sides + corner
+			var b: int = index * sides + (corner + 1) % sides
+			var c: int = (index + 1) * sides + corner
+			var d: int = (index + 1) * sides + (corner + 1) % sides
+			for triangle in [[a, c, b], [b, c, d]]:
+				var normal: Vector3 = (vertices[triangle[2]] - vertices[triangle[0]]).cross(vertices[triangle[1]] - vertices[triangle[0]])
+				var outward: Vector3 = normals[triangle[0]] + normals[triangle[1]] + normals[triangle[2]]
+				if normal.dot(outward) < 0.0:
+					indices.append_array(PackedInt32Array([triangle[0], triangle[2], triangle[1]]))
+				else:
+					indices.append_array(PackedInt32Array(triangle))
+	for end in [0, count - 1]:
+		var center_index: int = vertices.size()
+		vertices.append(points[end])
+		var cap_normal: Vector3 = (points[0] - points[1]).normalized() if end == 0 else (points[count - 1] - points[count - 2]).normalized()
+		normals.append(cap_normal)
+		for corner in range(sides):
+			var a: int = end * sides + corner
+			var b: int = end * sides + (corner + 1) % sides
+			var normal: Vector3 = (vertices[b] - vertices[center_index]).cross(vertices[a] - vertices[center_index])
+			if normal.dot(cap_normal) < 0.0:
+				indices.append_array(PackedInt32Array([center_index, b, a]))
+			else:
+				indices.append_array(PackedInt32Array([center_index, a, b]))
+	var arrays: Array = []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = vertices
+	arrays[Mesh.ARRAY_NORMAL] = normals
+	arrays[Mesh.ARRAY_INDEX] = indices
+	var mesh := ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	if not far:
+		mesh.set_meta("far_skip", true)
+	var node := MeshInstance3D.new()
+	node.mesh = mesh
+	node.material_override = _mat(color, metal, rough, glow)
+	parent.add_child(node)
+	return node
+
+
+## Flacher Balken zwischen zwei Punkten (Leuchtstreifen, Zierleisten, Streben).
+func _bar(parent: Node3D, from: Vector3, to: Vector3, width: float, height: float, color: Color, metal: float = 0.0, rough: float = 0.5, glow: float = 0.0, far: bool = false) -> MeshInstance3D:
+	var length: float = from.distance_to(to)
+	var direction: Vector3 = (to - from).normalized()
+	var node: MeshInstance3D = _box(parent, (from + to) * 0.5, Vector3(width, height, length), color, metal)
+	node.material_override = _mat(color, metal, rough, glow)
+	var up: Vector3 = Vector3.UP if absf(direction.dot(Vector3.UP)) < 0.95 else Vector3.RIGHT
+	node.basis = Basis.looking_at(direction, up)
+	if not far:
+		node.mesh = node.mesh.duplicate()
+		node.mesh.set_meta("far_skip", true)
+	return node
+
+## Aussehen des Karts: Werksvorgabe der Flotte, Neonfarbe nach Fahrer, darüber das Tuning.
+func _resolved_look() -> Dictionary:
+	var base: Dictionary = FLEET.entry(kart_style).look
+	var result: Dictionary = {
+		"body": str(base.body),
+		"paint": base.paint,
+		"trim": base.trim,
+		"accent": base.accent,
+		"neon": (base.neon as Color).lerp(vehicle_color, 0.35),
+		"rim": Color("c9d6e6"),
+		"rim_neon": false,
+		"levels": {},
+		"underglow": false,
+	}
+	for key in look:
+		if key == "neon" and not bool(look.get("neon_custom", false)):
+			continue
+		result[key] = look[key]
+	return result
+
+
+func set_look(value: Dictionary) -> void:
+	look = value.duplicate(true)
+	if _built:
+		_rebuild()
+
+
+func _hood_top(z: float) -> float:
+	return 0.50 + 0.16 * clampf((z + 1.17) / 0.81, 0.0, 1.0)
+
+
+func _letter_l_outline(cx: float, cz: float, w: float, h: float, bar: float) -> PackedVector2Array:
+	# Von vorn gelesen steht der Stamm links = +x; „oben“ des Buchstabens zeigt nach hinten (+z).
+	return PackedVector2Array([
+		Vector2(cx + w * 0.5, cz + h * 0.5), Vector2(cx + w * 0.5 - bar, cz + h * 0.5),
+		Vector2(cx + w * 0.5 - bar, cz - h * 0.5 + bar), Vector2(cx - w * 0.5, cz - h * 0.5 + bar),
+		Vector2(cx - w * 0.5, cz - h * 0.5), Vector2(cx + w * 0.5, cz - h * 0.5)])
+
+
 func _build() -> void:
 	name = "Kart_" + animal + "_" + kart_style
-	var body := Node3D.new()
-	body.name = "AuroraCoachwork"
-	add_child(body)
-	var width: float = 1.1 if kart_style == "turbo" else (0.91 if kart_style == "glider" else 1.0)
-	body.scale.x = width
-	var paint: Color = vehicle_color.lerp(Color("297cc0"), 0.25)
-	var shell: Array[Vector4] = [
-		Vector4(-1.16, 0.015, 0.018, 0.50), Vector4(-1.07, 0.24, 0.065, 0.51),
-		Vector4(-0.81, 0.45, 0.17, 0.52), Vector4(-0.48, 0.58, 0.20, 0.50),
-		Vector4(0.06, 0.61, 0.14, 0.45), Vector4(0.55, 0.61, 0.15, 0.46),
-		Vector4(0.91, 0.48, 0.15, 0.49), Vector4(1.05, 0.20, 0.065, 0.50),
-		Vector4(1.08, 0.01, 0.015, 0.50)]
-	_mesh(body, _loft(shell, false, 32, 5, 0.75), Vector3.ZERO, paint, 0.42, 0.24)
-	var hull := _mesh(body, _loft([
-		Vector4(-1.09, 0.015, 0.01, 0.34), Vector4(-0.75, 0.51, 0.08, 0.33),
-		Vector4(0.02, 0.63, 0.09, 0.31), Vector4(0.74, 0.54, 0.08, 0.32),
-		Vector4(1.03, 0.01, 0.01, 0.36)], false, 24, 3, 0.6), Vector3.ZERO, INK, 0.2, 0.35)
-	hull.name = "CarbonLowerHull"
-	# Long bonnet, raised shoulder pods, smooth white nose stripe.
-	_mesh(body, _loft([
-		Vector4(-1.10, 0.01, 0.01, 0.54), Vector4(-0.9, 0.28, 0.06, 0.60),
-		Vector4(-0.65, 0.37, 0.12, 0.67), Vector4(-0.43, 0.32, 0.115, 0.70),
-		Vector4(-0.32, 0.25, 0.04, 0.65), Vector4(-0.29, 0.01, 0.01, 0.60)], false), Vector3.ZERO, paint.lightened(0.1), 0.48, 0.22)
-	_mesh(body, _loft([
-		Vector4(-1.055, 0.015, 0.004, 0.584), Vector4(-0.85, 0.075, 0.01, 0.682),
-		Vector4(-0.60, 0.085, 0.012, 0.795), Vector4(-0.43, 0.075, 0.01, 0.810),
-		Vector4(-0.36, 0.01, 0.003, 0.78)], false, 20, 3), Vector3.ZERO, WHITE, 0.18, 0.27)
-	for side in [-1.0, 1.0]:
-		var sidepod := _mesh(body, _loft([
-			Vector4(-0.52, 0.008, 0.015, 0.54), Vector4(-0.30, 0.12, 0.145, 0.54),
-			Vector4(0.32, 0.12, 0.14, 0.52), Vector4(0.69, 0.055, 0.10, 0.53),
-			Vector4(0.78, 0.008, 0.01, 0.55)], false, 24, 4, 0.8), Vector3(side * 0.53, 0, 0), paint, 0.4, 0.24)
-		sidepod.name = "SculptedSidePod"
-		_ribbon(body, [Vector3(side * 0.61, 0.58, -0.31), Vector3(side * 0.65, 0.56, 0.0), Vector3(side * 0.63, 0.55, 0.36), Vector3(side * 0.55, 0.55, 0.64)], 0.014, ICE, 0.15, 0.9)
-		for vent in range(3):
-			var panel := _box(body, Vector3(side * 0.645, 0.60, 0.20 + vent * 0.11), Vector3(0.012, 0.08, 0.044), INK, 0.4)
-			panel.rotation.z = side * -0.18
-		_ribbon(body, [Vector3(side * 0.19, 0.624, -1.079), Vector3(side * 0.34, 0.639, -0.979), Vector3(side * 0.42, 0.619, -0.854)], 0.018, WHITE, 0.2, 1.0)
-		# The light blades are inset into dark headlight housings.
-		_ribbon(body, [Vector3(side * 0.19, 0.59, -1.05), Vector3(side * 0.35, 0.60, -0.952), Vector3(side * 0.43, 0.58, -0.83)], 0.037, INK, 0.4)
-		# Exhausts have an inset nozzle and a separate animated boost flame.
-		_rod(body, Vector3(side * 0.33, 0.46, 0.79), Vector3(side * 0.37, 0.52, 1.16), 0.105, CHROME, 0.75, 0.24)
-		_rod(body, Vector3(side * 0.37, 0.52, 1.14), Vector3(side * 0.371, 0.52, 1.18), 0.079, INK, 0.3)
-		var nozzle := _ring(body, Vector3(side * 0.37, 0.52, 1.183), 0.071, 0.084, ICE, 0.3, 0.8)
-		nozzle.rotation.x = PI / 2.0
-		var flame := _mesh(self, _loft([Vector4(0, 0.055, 0.055, 0), Vector4(0.18, 0.10, 0.09, 0), Vector4(0.60, 0.002, 0.002, 0)], false, 16, 3), Vector3(side * 0.37 * width, 0.52, 1.20), ICE, 0.0, 0.25, 2.0)
-		flame.hide()
-		flame.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		flames.append(flame)
-	# Cockpit shell, padded seat and roll hoop with integrated light.
-	_mesh(body, _loft([
-		Vector4(0.63, 0.21, 0.12, 0.18), Vector4(0.79, 0.31, 0.12, 0.23),
-		Vector4(1.09, 0.33, 0.11, 0.29), Vector4(1.16, 0.25, 0.05, 0.30)], true, 24, 4, 0.65), Vector3.ZERO, INK, 0.12, 0.65)
-	_ellipsoid(body, Vector3(0, 0.68, 0.09), Vector3(0.30, 0.095, 0.30), NAVY, 0.0, 0.78)
-	_ribbon(body, [Vector3(-0.32, 0.72, 0.34), Vector3(-0.34, 1.11, 0.40), Vector3(-0.23, 1.19, 0.43), Vector3(0.23, 1.19, 0.43), Vector3(0.34, 1.11, 0.40), Vector3(0.32, 0.72, 0.34)], 0.03, CHROME, 0.6)
-	# Wing is a shaped aerofoil, with style-specific stance and endplates.
-	var wing_height: float = 1.04 if kart_style == "glider" else (0.95 if kart_style == "turbo" else 0.89)
-	var wing_span: float = 1.65 if kart_style == "glider" else 1.35
-	for side in [-1.0, 1.0]:
-		_rod(body, Vector3(side * 0.40, 0.57, 0.77), Vector3(side * 0.45, wing_height, 0.95), 0.035, INK, 0.45)
-	var wing := _mesh(body, _loft([
-		Vector4(-wing_span / 2, 0.008, 0.008, 0), Vector4(-wing_span * 0.43, 0.18, 0.040, 0),
-		Vector4(0.0, 0.17, 0.047, 0), Vector4(wing_span * 0.43, 0.18, 0.04, 0),
-		Vector4(wing_span / 2, 0.008, 0.008, 0)], false, 24, 3, 0.8), Vector3(0, wing_height, 0.98), WHITE, 0.36, 0.24)
-	wing.rotation.y = PI / 2.0
-	_ribbon(body, [Vector3(-wing_span * 0.42, wing_height + 0.037, 1.05), Vector3(0, wing_height + 0.047, 1.05), Vector3(wing_span * 0.42, wing_height + 0.037, 1.05)], 0.012, ICE, 0.3, 0.7)
-	if kart_style == "turbo":
-		for side in [-1.0, 1.0]:
-			_mesh(body, _loft([Vector4(-0.48, 0.01, 0.01, 0), Vector4(-0.36, 0.11, 0.12, 0), Vector4(0.39, 0.13, 0.12, 0), Vector4(0.60, 0.01, 0.01, 0)], false, 20, 3), Vector3(side * 0.70, 0.54, 0), WHITE, 0.38, 0.3)
-	for side in [-1.0, 1.0]:
-		for axle in [-0.66, 0.66]:
-			_make_wheel(side, axle, width)
-	_make_steering_wheel()
+	var spec: Dictionary = _resolved_look()
+	chassis_look = spec
+	_build_aero(spec)
+	_make_steering_wheel(spec)
 	_make_driver()
 	_make_far_mesh()
 	_merge_static(self)
 
 
-func _make_wheel(side: float, axle: float, stance: float) -> void:
+## Maße und Ausstattung je Karosserie. Alles, was fehlt, übernimmt BODY_DEFAULTS.
+const BODY_DEFAULTS: Dictionary = {
+	"wheel_r_f": 0.38, "wheel_r_r": 0.38, "wheel_w_f": 0.34, "wheel_w_r": 0.40,
+	"track_f": 0.84, "track_r": 0.88, "axle_f": -0.70, "axle_r": 0.68,
+	"nose": 0.0, "hood_w": 1.0, "pod_w": 1.0, "pods": true, "seat_h": 1.0,
+	"hoop": 1, "front_wing": false, "rear_wing": 0, "bullbar": false, "stacks": 0,
+	"armor": false, "star": false, "knobby": false, "scoop": false, "tall_hood": 0.0,
+}
+const BODIES: Dictionary = {
+	"aero": {},
+	"glider": {"wheel_r_f": 0.34, "wheel_r_r": 0.35, "wheel_w_f": 0.28, "wheel_w_r": 0.34, "track_f": 0.74, "track_r": 0.78, "nose": 0.10, "hood_w": 0.9, "pod_w": 0.82, "hoop": 0, "front_wing": true, "rear_wing": 2},
+	"gt": {"wheel_r_f": 0.35, "wheel_r_r": 0.36, "wheel_w_f": 0.38, "wheel_w_r": 0.44, "track_f": 0.88, "track_r": 0.92, "nose": 0.20, "hood_w": 1.12, "pod_w": 1.12, "hoop": 0, "rear_wing": 1, "seat_h": 0.94},
+	"dragster": {"wheel_r_f": 0.30, "wheel_r_r": 0.47, "wheel_w_f": 0.20, "wheel_w_r": 0.54, "track_f": 0.62, "track_r": 0.92, "nose": 0.16, "hood_w": 0.78, "pod_w": 0.7, "stacks": 2, "scoop": true, "hoop": 1},
+	"buggy": {"wheel_r_f": 0.44, "wheel_r_r": 0.46, "wheel_w_f": 0.34, "wheel_w_r": 0.38, "track_f": 0.94, "track_r": 0.98, "hood_w": 0.86, "pods": false, "hoop": 2, "knobby": true, "seat_h": 1.06, "nose": -0.06},
+	"heavy": {"wheel_r_f": 0.40, "wheel_r_r": 0.42, "wheel_w_f": 0.44, "wheel_w_r": 0.48, "track_f": 0.90, "track_r": 0.94, "hood_w": 1.14, "pod_w": 1.18, "bullbar": true, "armor": true, "stacks": 2, "hoop": 1, "tall_hood": 0.08},
+	"phantom": {"wheel_r_f": 0.36, "wheel_r_r": 0.37, "wheel_w_f": 0.30, "wheel_w_r": 0.36, "track_f": 0.80, "track_r": 0.84, "nose": 0.14, "hood_w": 1.0, "pod_w": 0.96, "hoop": 0, "seat_h": 0.94},
+	"champion": {"wheel_r_f": 0.38, "wheel_r_r": 0.39, "wheel_w_f": 0.34, "wheel_w_r": 0.40, "track_f": 0.84, "track_r": 0.88, "nose": 0.06, "hood_w": 1.06, "hoop": 1, "rear_wing": 2, "star": true},
+}
+
+
+func _body_params(body: String) -> Dictionary:
+	var result: Dictionary = BODY_DEFAULTS.duplicate()
+	result.merge(BODIES.get(body, {}), true)
+	return result
+
+
+## Sucht auf einem geschlossenen Umriss den zusammenhängenden Abschnitt mit z < z_limit (Nase).
+func _front_run(points: PackedVector2Array, z_limit: float) -> Array[Vector2]:
+	var count: int = points.size()
+	var start: int = -1
+	for index in range(count):
+		if points[index].y >= z_limit and points[(index + 1) % count].y < z_limit:
+			start = (index + 1) % count
+			break
+	var run: Array[Vector2] = []
+	if start < 0:
+		return run
+	var cursor: int = start
+	while points[cursor].y < z_limit and run.size() < count:
+		run.append(points[cursor])
+		cursor = (cursor + 1) % count
+	return run
+
+
+func _star_outline(cx: float, cz: float, outer: float, inner: float) -> PackedVector2Array:
+	var result := PackedVector2Array()
+	for index in range(10):
+		var angle: float = -PI / 2.0 + float(index) * TAU / 10.0
+		var r: float = outer if index % 2 == 0 else inner
+		result.append(Vector2(cx + cos(angle) * r, cz + sin(angle) * r))
+	return result
+
+
+## Die Flotte: eine Grundbauweise (Schalensitz, Wanne, Haube, Seitenkästen, Heckblock, Räder),
+## die je Karosserie in Maßen und Anbauteilen abweicht (siehe BODIES).
+func _build_aero(spec: Dictionary) -> void:
+	var b: Dictionary = _body_params(str(spec.body))
+	var paint: Color = spec.paint
+	var trim: Color = spec.trim
+	var accent: Color = spec.accent
+	var neon: Color = spec.neon
+	var nose: float = float(b.nose)
+	var hood_w: float = float(b.hood_w)
+	var pod_w: float = float(b.pod_w)
+	var seat_h: float = float(b.seat_h)
+	var body := Node3D.new()
+	body.name = "AuroraCoachwork"
+	add_child(body)
+	# --- Wanne (dunkler Unterbau)
+	_round_slab(body, _shape([[0.30 * hood_w, -1.10 - nose], [0.42 * hood_w, -0.92 - nose], [0.46, -0.40], [0.46, 0.55], [0.43, 1.10], [0.30, 1.21]]), 0.14, 0.46, 0.62, 0.05, 0.14, CARBON, 0.0, 0.5)
+	# --- Haube: weich gerundetes Schild, leuchtendes L (oder Stern), orange U-Linie, silberne Zierlinien
+	var hood_height: float = float(b.tall_hood)
+	var hood_outline: PackedVector2Array = _shape([[0.20 * hood_w, -1.19 - nose], [0.34 * hood_w, -1.04 - nose], [0.43 * hood_w, -0.75 - nose * 0.4], [0.44 * hood_w, -0.50], [0.37, -0.36]])
+	_round_slab(body, hood_outline, 0.34, 0.50 + hood_height, 0.66 + hood_height, 0.075, 0.11, paint, 0.42, 0.24)
+	var l_front: float = -0.92 - nose * 0.3
+	var l_back: float = -0.58
+	var top_front: float = 0.50 + hood_height + 0.16 * clampf((l_front + 1.17) / 0.81, 0.0, 1.0)
+	var top_back: float = 0.50 + hood_height + 0.16 * clampf((l_back + 1.17) / 0.81, 0.0, 1.0)
+	if bool(b.star):
+		_slab(body, _star_outline(0.0, -0.74, 0.18, 0.075), top_front - 0.03, top_front + 0.012, top_back + 0.012, 0.006, neon, 0.0, 0.3, NEON_GLOW, false)
+	else:
+		_slab(body, _letter_l_outline(0.0, (l_front + l_back) * 0.5, 0.27, l_back - l_front, 0.078), top_front - 0.03, top_front + 0.010, top_back + 0.010, 0.006, neon, 0.0, 0.3, NEON_GLOW, false)
+	var rounded_hood: PackedVector2Array = _rounded_polygon(hood_outline, 0.11)
+	var run: Array[Vector2] = _front_run(rounded_hood, -0.50)
+	var u_line: Array = []
+	for point in run:
+		var t: float = 0.50 + hood_height + 0.16 * clampf((point.y + 1.17) / 0.81, 0.0, 1.0)
+		u_line.append(Vector3(point.x * 0.985, t - 0.062, point.y))
+	if u_line.size() >= 2:
+		_tube(body, u_line, 0.017, accent, 0.3, 0.35)
+	for side in [-1.0, 1.0]:
+		_tube(body, [Vector3(side * 0.33 * hood_w, 0.60 + hood_height + 0.004, -0.42), Vector3(side * 0.27 * hood_w, 0.55 + hood_height, -0.72), Vector3(side * 0.14 * hood_w, 0.51 + hood_height, -1.08 - nose * 0.6)], 0.014, trim, 0.5, 0.25)
+	# --- Nasenflügel in Lackfarbe mit Leuchtaugen, dunkler Mittelgrill
+	var front_z: float = -1.22 - nose
+	_round_slab(body, _shape([[0.0, front_z], [0.16, front_z + 0.005], [0.12, front_z + 0.14]]), 0.12, 0.26, 0.28, 0.025, 0.04, CARBON, 0.3, 0.45)
+	for side in [-1.0, 1.0]:
+		var wing: PackedVector2Array = PackedVector2Array([Vector2(side * 0.14, front_z + 0.01), Vector2(side * 0.62 * hood_w, front_z + 0.06), Vector2(side * 0.84 * hood_w, front_z + 0.22), Vector2(side * 0.74 * hood_w, front_z + 0.29), Vector2(side * 0.16, front_z + 0.23)])
+		_round_slab(body, wing, 0.14, 0.31, 0.37, 0.04, 0.06, paint, 0.42, 0.24)
+		_bar(body, Vector3(side * 0.30, 0.285, front_z + 0.015), Vector3(side * 0.76 * hood_w, 0.305, front_z + 0.165), 0.024, 0.052, neon, 0.0, 0.3, NEON_GLOW)
+		_bar(body, Vector3(side * 0.22, 0.205, front_z + 0.015), Vector3(side * 0.66 * hood_w, 0.215, front_z + 0.12), 0.014, 0.012, accent, 0.3, 0.4)
+	for slit in range(3):
+		_bar(body, Vector3(-0.07 + slit * 0.07, 0.19, front_z - 0.002), Vector3(-0.07 + slit * 0.07, 0.25, front_z - 0.002), 0.012, 0.012, Color("05080e"))
+	if bool(b.front_wing):
+		_front_wing(body, paint, trim, neon, front_z - 0.16)
+	if bool(b.bullbar):
+		_bull_bar(body, front_z)
+	# --- Seitenkästen mit Leuchtleiste, orange Cockpitkante und Käfigstreben
+	for side in [-1.0, 1.0]:
+		if bool(b.pods):
+			var pod: PackedVector2Array = PackedVector2Array([Vector2(side * 0.46, -0.28), Vector2(side * (0.46 + 0.31 * pod_w), -0.25), Vector2(side * (0.46 + 0.35 * pod_w), 0.00), Vector2(side * (0.46 + 0.31 * pod_w), 0.27), Vector2(side * 0.46, 0.30)])
+			_round_slab(body, pod, 0.16, 0.44, 0.54, 0.07, 0.13, paint, 0.42, 0.24)
+			var edge: float = 0.46 + 0.375 * pod_w
+			_bar(body, Vector3(side * edge, 0.205, -0.20), Vector3(side * edge, 0.205, 0.22), 0.016, 0.032, neon, 0.0, 0.3, NEON_GLOW)
+			var top_edge: float = 0.46 + 0.28 * pod_w
+			_tube(body, [Vector3(side * top_edge, 0.50, -0.20), Vector3(side * (top_edge + 0.03), 0.52, 0.02), Vector3(side * top_edge, 0.55, 0.24)], 0.014, trim, 0.5, 0.25)
+		_tube(body, [Vector3(side * 0.43, 0.66, -0.34), Vector3(side * 0.47, 0.70, 0.02), Vector3(side * 0.47, 0.68, 0.46)], 0.021, accent, 0.3, 0.4)
+		_tube(body, [Vector3(side * 0.485, 0.70, 0.46), Vector3(side * 0.485, 1.06, 0.50)], 0.048, accent, 0.25, 0.4, 0.0, 10)
+	_make_cage(body, int(b.hoop))
+	# --- Schalensitz: Sitzfläche, Lehne, Wangen, Leuchtnähte
+	_round_slab(body, _shape([[0.25, -0.12], [0.28, 0.10], [0.27, 0.40]]), 0.50, 0.74, 0.78, 0.035, 0.07, CARBON, 0.0, 0.82, 0.0, false)
+	_round_slab(body, _shape([[0.28, 0.35], [0.31, 0.45]]), 0.60, 0.98 * seat_h + 0.02, 1.06 * seat_h + 0.02, 0.04, 0.08, CARBON, 0.0, 0.82)
+	for side in [-1.0, 1.0]:
+		_round_slab(body, PackedVector2Array([Vector2(side * 0.285, 0.05), Vector2(side * 0.325, 0.08), Vector2(side * 0.335, 0.40), Vector2(side * 0.285, 0.40)]), 0.60, 0.80, 0.98 * seat_h, 0.025, 0.03, CARBON, 0.0, 0.82, 0.0, false)
+		_tube(body, [Vector3(side * 0.235, 1.00 * seat_h, 0.33), Vector3(side * 0.255, 0.80, 0.335), Vector3(side * 0.235, 0.77, 0.12)], 0.006, neon, 0.0, 0.3, NEON_GLOW, 6)
+	# --- Heckblock mit Lüftung, Sechseck-Rücklicht, orangen Ecken
+	var rear_top: float = 0.74 if int(b.stacks) == 0 else 0.62
+	_round_slab(body, _shape([[0.40, 0.50], [0.50, 0.72], [0.50, 1.08], [0.38, 1.21]]), 0.26, rear_top, rear_top - 0.10, 0.06, 0.09, CARBON, 0.35, 0.45)
+	var hex := PackedVector2Array([Vector2(-0.09, 0.0), Vector2(-0.045, -0.075), Vector2(0.045, -0.075), Vector2(0.09, 0.0), Vector2(0.045, 0.075), Vector2(-0.045, 0.075)])
+	_panel(body, hex, Vector3(0.0, 0.58 - (0.0 if int(b.stacks) == 0 else 0.08), 1.215), Vector3(PI / 2.0, 0.0, 0.0), 0.02, 0.012, neon, 0.0, 0.3, NEON_GLOW)
+	_bar(body, Vector3(-0.16, 0.45 - (0.0 if int(b.stacks) == 0 else 0.08), 1.225), Vector3(0.16, 0.45 - (0.0 if int(b.stacks) == 0 else 0.08), 1.225), 0.018, 0.035, neon, 0.0, 0.3, NEON_GLOW)
+	for slit in range(3):
+		_bar(body, Vector3(-0.17, 0.30 + slit * 0.034, 1.224), Vector3(0.17, 0.30 + slit * 0.034, 1.224), 0.012, 0.014, Color("05080e"))
+	for side in [-1.0, 1.0]:
+		_bar(body, Vector3(side * 0.32, 0.78, 1.17), Vector3(side * 0.53, 0.71, 1.12), 0.022, 0.05, neon, 0.0, 0.3, NEON_GLOW)
+		_bar(body, Vector3(side * 0.51, 0.70, 1.12), Vector3(side * 0.30, 0.43, 1.215), 0.02, 0.02, accent, 0.3, 0.4)
+		# Achsgehäuse verbinden Wanne und Räder
+		_rod(body, Vector3(side * 0.44, float(b.wheel_r_r), float(b.axle_r)), Vector3(side * (float(b.track_r) - float(b.wheel_w_r) * 0.5), float(b.wheel_r_r), float(b.axle_r)), 0.075, CARBON, 0.4, 0.45)
+		_rod(body, Vector3(side * 0.40, 0.33, float(b.axle_f)), Vector3(side * (float(b.track_f) - float(b.wheel_w_f) * 0.5), float(b.wheel_r_f), float(b.axle_f)), 0.06, CARBON, 0.4, 0.45)
+		# Düsen für den Boost
+		_ring(body, Vector3(side * 0.30, 0.36, 1.225), 0.045, 0.062, GUNMETAL, 0.6, 0.0).rotation.x = PI / 2.0
+		var flame := _mesh(self, _loft([Vector4(0, 0.052, 0.052, 0), Vector4(0.18, 0.095, 0.085, 0), Vector4(0.60, 0.002, 0.002, 0)], false, 16, 3), Vector3(side * 0.30, 0.36, 1.235), neon, 0.0, 0.25, 2.0)
+		flame.hide()
+		flame.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		flames.append(flame)
+	if int(b.stacks) > 0:
+		_exhaust_stacks(body, int(b.stacks), bool(b.scoop))
+	if int(b.rear_wing) > 0:
+		_rear_wing(body, int(b.rear_wing), paint, trim, neon, bool(b.star))
+	if bool(b.armor):
+		_armor_plates(body, accent)
+	# --- Pedale und Fußraum
+	for side in [-1.0, 1.0]:
+		_box(body, Vector3(side * 0.10, 0.62, -0.30), Vector3(0.09, 0.012, 0.11), Color("05080e"), 0.2)
+	# --- Unterboden-Leuchten
+	if bool(spec.underglow) or str(spec.body) == "phantom":
+		_bar(body, Vector3(0, 0.10, -0.95), Vector3(0, 0.10, 0.95), 0.80, 0.008, neon, 0.0, 0.3, 1.1)
+	# --- Räder
+	for side in [-1.0, 1.0]:
+		_make_wheel(side, float(b.axle_f), float(b.wheel_r_f), float(b.wheel_w_f), float(b.track_f), spec, bool(b.knobby))
+		_make_wheel(side, float(b.axle_r), float(b.wheel_r_r), float(b.wheel_w_r), float(b.track_r), spec, bool(b.knobby))
+
+
+## Überrollbügel: 0 keiner, 1 Bügel hinter dem Fahrer, 2 voller Käfig (Buggy).
+func _make_cage(body: Node3D, kind: int) -> void:
+	if kind <= 0:
+		return
+	for side in [-1.0, 1.0]:
+		_tube(body, [Vector3(side * 0.50, 0.56, 0.52), Vector3(side * 0.52, 0.98, 0.58), Vector3(side * 0.34, 1.20, 0.62)], 0.03, CARBON, 0.3, 0.45)
+	_tube(body, [Vector3(-0.34, 1.20, 0.62), Vector3(0.0, 1.24, 0.63), Vector3(0.34, 1.20, 0.62)], 0.03, CARBON, 0.3, 0.45)
+	if kind >= 2:
+		for side in [-1.0, 1.0]:
+			_tube(body, [Vector3(side * 0.47, 0.64, -0.36), Vector3(side * 0.44, 1.05, -0.28), Vector3(side * 0.34, 1.20, 0.30), Vector3(side * 0.34, 1.20, 0.62)], 0.03, CARBON, 0.3, 0.45)
+		_tube(body, [Vector3(-0.44, 1.05, -0.28), Vector3(0.0, 1.10, -0.30), Vector3(0.44, 1.05, -0.28)], 0.03, CARBON, 0.3, 0.45)
+		_tube(body, [Vector3(-0.36, 1.20, 0.30), Vector3(0.0, 1.24, 0.31), Vector3(0.36, 1.20, 0.30)], 0.026, CARBON, 0.3, 0.45)
+
+
+func _front_wing(body: Node3D, paint: Color, trim: Color, neon: Color, z: float) -> void:
+	_round_slab(body, PackedVector2Array([Vector2(-0.80, z), Vector2(0.80, z), Vector2(0.80, z + 0.16), Vector2(-0.80, z + 0.16)]), 0.16, 0.21, 0.23, 0.02, 0.04, paint, 0.4, 0.25)
+	for side in [-1.0, 1.0]:
+		_round_slab(body, PackedVector2Array([Vector2(side * 0.80, z - 0.01), Vector2(side * 0.84, z - 0.01), Vector2(side * 0.84, z + 0.19), Vector2(side * 0.80, z + 0.19)]), 0.12, 0.40, 0.44, 0.012, 0.02, trim, 0.4, 0.3)
+	_bar(body, Vector3(-0.74, 0.215, z - 0.004), Vector3(0.74, 0.215, z - 0.004), 0.012, 0.014, neon, 0.0, 0.3, NEON_GLOW)
+
+
+func _bull_bar(body: Node3D, front_z: float) -> void:
+	_tube(body, [Vector3(-0.66, 0.30, front_z - 0.04), Vector3(-0.62, 0.52, front_z - 0.10), Vector3(0.62, 0.52, front_z - 0.10), Vector3(0.66, 0.30, front_z - 0.04)], 0.04, GUNMETAL, 0.6, 0.35)
+	_tube(body, [Vector3(-0.30, 0.52, front_z - 0.10), Vector3(-0.30, 0.24, front_z - 0.02)], 0.032, GUNMETAL, 0.6, 0.35)
+	_tube(body, [Vector3(0.30, 0.52, front_z - 0.10), Vector3(0.30, 0.24, front_z - 0.02)], 0.032, GUNMETAL, 0.6, 0.35)
+	_tube(body, [Vector3(0.0, 0.52, front_z - 0.10), Vector3(0.0, 0.24, front_z - 0.02)], 0.032, GUNMETAL, 0.6, 0.35)
+
+
+func _exhaust_stacks(body: Node3D, count: int, scoop: bool) -> void:
+	var offsets: Array[float] = []
+	if count >= 2:
+		offsets.append(-0.30)
+		offsets.append(0.30)
+	else:
+		offsets.append(0.0)
+	for x in offsets:
+		_tube(body, [Vector3(x, 0.60, 0.95), Vector3(x, 1.20, 0.98)], 0.058, Color("b7cddd"), 0.75, 0.25)
+		_ring(body, Vector3(x, 1.215, 0.98), 0.052, 0.088, GUNMETAL, 0.6, 0.0)
+	if scoop:
+		_round_slab(body, _shape([[0.10, 0.62], [0.17, 0.78], [0.12, 0.96]]), 0.62, 0.70, 0.86, 0.03, 0.05, GUNMETAL, 0.6, 0.35)
+
+
+func _rear_wing(body: Node3D, kind: int, paint: Color, trim: Color, neon: Color, star: bool) -> void:
+	if kind == 1:
+		# Entenbürzel über dem Heck
+		_round_slab(body, _shape([[0.46, 1.06], [0.52, 1.30]]), 0.60, 0.74, 0.86, 0.03, 0.06, paint, 0.4, 0.25)
+		return
+	for side in [-1.0, 1.0]:
+		_tube(body, [Vector3(side * 0.34, 0.70, 1.02), Vector3(side * 0.40, 1.14, 1.12)], 0.034, CARBON, 0.3, 0.45)
+		_round_slab(body, PackedVector2Array([Vector2(side * 0.80, 1.04), Vector2(side * 0.86, 1.04), Vector2(side * 0.86, 1.34), Vector2(side * 0.80, 1.34)]), 1.06, 1.36, 1.40, 0.012, 0.02, trim, 0.4, 0.3)
+	_round_slab(body, _shape([[0.80, 1.06], [0.80, 1.32]]), 1.16, 1.20, 1.26, 0.025, 0.04, paint, 0.42, 0.24)
+	_bar(body, Vector3(-0.76, 1.255, 1.335), Vector3(0.76, 1.255, 1.335), 0.014, 0.018, neon, 0.0, 0.3, NEON_GLOW)
+	if star:
+		_slab(body, _star_outline(0.0, 1.19, 0.10, 0.042), 1.215, 1.236, 1.236, 0.004, trim, 0.4, 0.3, 0.0, false)
+
+
+func _armor_plates(body: Node3D, accent: Color) -> void:
+	for side in [-1.0, 1.0]:
+		_round_slab(body, PackedVector2Array([Vector2(side * 0.80, -0.30), Vector2(side * 0.90, -0.26), Vector2(side * 0.92, 0.26), Vector2(side * 0.80, 0.30)]), 0.20, 0.56, 0.56, 0.02, 0.03, GUNMETAL, 0.55, 0.4, 0.0, false)
+		_bar(body, Vector3(side * 0.925, 0.30, -0.22), Vector3(side * 0.925, 0.46, -0.04), 0.012, 0.05, accent, 0.2, 0.4)
+		_bar(body, Vector3(side * 0.925, 0.30, 0.04), Vector3(side * 0.925, 0.46, 0.22), 0.012, 0.05, accent, 0.2, 0.4)
+
+
+func _make_wheel(side: float, axle: float, radius: float, width: float, track: float, spec: Dictionary, knobby: bool = false) -> void:
+	var neon: Color = spec.neon
+	var rim_color: Color = Color.WHITE if bool(spec.rim_neon) else spec.rim
+	var half: float = width * 0.5
 	var pivot := Node3D.new()
 	pivot.name = "SteeringHub" if axle < 0 else "RearHub"
-	pivot.position = Vector3(side * 0.77 * stance, 0.35, axle)
+	pivot.position = Vector3(side * track, radius, axle)
 	pivot.set_meta("front", axle < 0)
+	pivot.set_meta("height", radius)
 	add_child(pivot)
 	wheel_pivots.append(pivot)
 	var rotor := Node3D.new()
 	rotor.rotation.z = PI / 2.0
 	pivot.add_child(rotor)
 	wheel_rotors.append(rotor)
-	# Rounded shoulder racing tyre, with actual recessed shoulder grooves.
-	var tyre_profile: Array[Vector4] = [Vector4(-0.19, 0.23, 0.23, 0), Vector4(-0.17, 0.30, 0.30, 0), Vector4(-0.105, 0.35, 0.35, 0), Vector4(0.105, 0.35, 0.35, 0), Vector4(0.17, 0.30, 0.30, 0), Vector4(0.19, 0.23, 0.23, 0)]
-	_mesh(rotor, _loft(tyre_profile, true, 32, 3), Vector3.ZERO, Color("0c1422"), 0.02, 0.83)
-	for shoulder in [-0.095, 0.095]:
-		# Rillen teilen die Gummi-Materialfamilie des Reifens (ein Render-Durchgang weniger je Rad).
-		var groove := _ring(rotor, Vector3(0, shoulder, 0), 0.346, 0.352, Color("242f40"), 0.0)
-		groove.material_override = _mat(Color("242f40"), 0.02, 0.83)
-	var outside: float = -side * 0.193
-	var brake := CylinderMesh.new()
-	brake.top_radius = 0.205
-	brake.bottom_radius = 0.205
-	brake.height = 0.014
-	brake.radial_segments = 24
-	_mesh(rotor, brake, Vector3(0, outside, 0), Color("233247"), 0.6, 0.3)
-	_ring(rotor, Vector3(0, outside - side * 0.018, 0), 0.199, 0.232, CHROME, 0.78)
-	_ring(rotor, Vector3(0, outside - side * 0.027, 0), 0.224, 0.231, ICE, 0.3, 0.4)
+	# Reifen mit gerundeter Schulter
+	var tyre: Array[Vector4] = [
+		Vector4(-half, radius * 0.60, radius * 0.60, 0), Vector4(-half * 0.94, radius * 0.80, radius * 0.80, 0),
+		Vector4(-half * 0.64, radius * 0.97, radius * 0.97, 0), Vector4(-half * 0.30, radius, radius, 0),
+		Vector4(half * 0.30, radius, radius, 0), Vector4(half * 0.64, radius * 0.97, radius * 0.97, 0),
+		Vector4(half * 0.94, radius * 0.80, radius * 0.80, 0), Vector4(half, radius * 0.60, radius * 0.60, 0)]
+	_mesh(rotor, _loft(tyre, true, 36, 3), Vector3.ZERO, Color("0b111b"), 0.0, 0.83)
+	var outside: float = -side * half
+	var inward: float = side
+	# Felge: dunkle Scheibe, Leuchtring auf der Reifenflanke, fünf Speichen, Nabenkappe
+	var disc := CylinderMesh.new()
+	disc.top_radius = radius * 0.63
+	disc.bottom_radius = radius * 0.63
+	disc.height = 0.022
+	disc.radial_segments = 28
+	_mesh(rotor, disc, Vector3(0, outside + inward * 0.016, 0), GUNMETAL, 0.7, 0.3)
+	var glow_ring: MeshInstance3D = _ring(rotor, Vector3(0, outside, 0), radius * 0.655 - 0.016, radius * 0.655 + 0.016, neon, 0.0, NEON_GLOW)
+	glow_ring.material_override = _mat(neon, 0.0, 0.3, NEON_GLOW)
 	for spoke in range(5):
 		var angle: float = float(spoke) * TAU / 5.0
-		var start := Vector3(cos(angle) * 0.047, outside - side * 0.034, sin(angle) * 0.047)
-		var end := Vector3(cos(angle + 0.18) * 0.207, outside - side * 0.023, sin(angle + 0.18) * 0.207)
-		_rod(rotor, start, end, 0.022, WHITE, 0.64, 0.22)
-		var valve := Vector3(cos(angle + 0.4) * 0.16, outside - side * 0.01, sin(angle + 0.4) * 0.16)
-		_ellipsoid(rotor, valve, Vector3(0.013, 0.010, 0.013), INK)
-	_ellipsoid(rotor, Vector3(0, outside - side * 0.04, 0), Vector3(0.071, 0.029, 0.071), vehicle_color, 0.65, 0.25)
-	_ellipsoid(rotor, Vector3(0, outside - side * 0.065, 0), Vector3(0.026, 0.01, 0.026), ICE, 0.7, 0.2)
-	# Contact tread slashes stay restrained rather than producing noisy checker tyres.
-	for tread in range(18):
-		var angle: float = float(tread) * TAU / 18.0
-		var at := Vector3(cos(angle) * 0.351, 0, sin(angle) * 0.351)
-		var cut := _box(rotor, at, Vector3(0.014, 0.16, 0.012), Color("070d16"))
-		cut.rotation.y = -angle
-		cut.rotation.z = 0.22
-	_rod(self, Vector3(side * 0.38, 0.36, axle - 0.09), pivot.position + Vector3(0, 0, 0.06), 0.026, CHROME, 0.72)
-	_rod(self, Vector3(side * 0.38, 0.36, axle + 0.09), pivot.position - Vector3(0, 0, 0.06), 0.026, CHROME, 0.72)
-	var spring_start := Vector3(side * 0.46, 0.64, axle)
-	var spring_end := pivot.position + Vector3(0, 0.035, 0)
-	_rod(self, spring_start, spring_end, 0.032, CHROME, 0.7)
-	for loop in range(5):
-		var coil := _ring(self, spring_start.lerp(spring_end, 0.19 + float(loop) * 0.13), 0.048, 0.063, ICE, 0.48)
+		var from := Vector3(cos(angle) * 0.05, outside - inward * 0.002, sin(angle) * 0.05)
+		var to := Vector3(cos(angle + 0.16) * radius * 0.60, outside - inward * 0.002, sin(angle + 0.16) * radius * 0.60)
+		_bar(rotor, from, to, 0.05, 0.020, rim_color, 0.65, 0.28, 1.2 if bool(spec.rim_neon) else 0.0)
+	_ellipsoid(rotor, Vector3(0, outside - inward * 0.012, 0), Vector3(0.050, 0.020, 0.050), GUNMETAL, 0.7, 0.28)
+	var cap: MeshInstance3D = _ellipsoid(rotor, Vector3(0, outside - inward * 0.024, 0), Vector3(0.026, 0.010, 0.026), neon)
+	cap.material_override = _mat(neon, 0.0, 0.3, NEON_GLOW)
+	# Bremsscheibe hinter den Speichen, Sattel steht still am Achsträger
+	var brake := CylinderMesh.new()
+	brake.top_radius = radius * 0.50
+	brake.bottom_radius = radius * 0.50
+	brake.height = 0.012
+	brake.radial_segments = 24
+	_mesh(rotor, brake, Vector3(0, outside + inward * 0.075, 0), Color("323d4f"), 0.7, 0.3)
+	var caliper: MeshInstance3D = _box(pivot, Vector3(side * (half - 0.06), radius * 0.46, 0.0), Vector3(0.05, 0.12, 0.09), spec.accent, 0.35)
+	caliper.material_override = _mat(spec.accent, 0.35, 0.35)
+	# Profil: zwei Längsrillen; Geländereifen bekommen grobe Stollen am Rand
+	for groove in [-0.30, 0.30]:
+		var groove_ring: MeshInstance3D = _ring(rotor, Vector3(0, half * groove, 0), radius - 0.006, radius + 0.002, Color("05090f"), 0.0)
+		groove_ring.material_override = _mat(Color("05090f"), 0.0, 0.83)
+	if knobby:
+		for lug in range(20):
+			var angle: float = float(lug) * TAU / 20.0
+			for row in [-1.0, 1.0]:
+				var at := Vector3(cos(angle) * radius * 0.99, row * half * 0.52, sin(angle) * radius * 0.99)
+				var block := _box(rotor, at, Vector3(0.026, half * 0.62, 0.075), Color("0b111b"), 0.0)
+				block.material_override = _mat(Color("0b111b"), 0.0, 0.83)
+				block.rotation.y = -angle
+	# Aufhängung: Querlenker, Feder und Dämpfer
+	var hub: Vector3 = pivot.position
+	_rod(self, Vector3(side * 0.40, 0.30, axle - 0.12), hub + Vector3(-side * (half - 0.04), -0.02, -0.02), 0.024, GUNMETAL, 0.6, 0.3)
+	_rod(self, Vector3(side * 0.40, 0.30, axle + 0.12), hub + Vector3(-side * (half - 0.04), -0.02, 0.02), 0.024, GUNMETAL, 0.6, 0.3)
+	var spring_start := Vector3(side * 0.47, 0.62, axle)
+	var spring_end := hub + Vector3(-side * (half - 0.07), 0.04, 0)
+	_rod(self, spring_start, spring_end, 0.03, GUNMETAL, 0.6, 0.3)
+	for loop in range(4):
+		var coil := _ring(self, spring_start.lerp(spring_end, 0.22 + float(loop) * 0.16), 0.045, 0.058, spec.accent, 0.35)
 		coil.quaternion = Quaternion(Vector3.UP, (spring_end - spring_start).normalized())
 	if axle > 0:
-		var spark := _mesh(self, _loft([Vector4(0, 0.07, 0.013, 0), Vector4(0.2, 0.03, 0.035, 0), Vector4(0.45, 0.002, 0.002, 0)], false, 12, 2), pivot.position + Vector3(0, -0.29, 0.14), ICE, 0, 0.3, 2.0)
+		var spark := _mesh(self, _loft([Vector4(0, 0.07, 0.013, 0), Vector4(0.2, 0.03, 0.035, 0), Vector4(0.45, 0.002, 0.002, 0)], false, 12, 2), hub + Vector3(0, -radius + 0.07, 0.14), neon, 0, 0.3, 2.0)
 		spark.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		spark.hide()
 		sparks.append(spark)
 
 
-func _make_steering_wheel() -> void:
+func _make_steering_wheel(spec: Dictionary) -> void:
+	var neon: Color = spec.neon
 	steering_wheel = Node3D.new()
 	steering_wheel.name = "SteeringWheel"
 	steering_wheel.position = Vector3(0, 1.035, -0.33)
 	steering_wheel.rotation.x = -0.45
 	add_child(steering_wheel)
-	var wheel := _ring(steering_wheel, Vector3.ZERO, 0.135, 0.175, INK)
+	var wheel := _ring(steering_wheel, Vector3.ZERO, 0.135, 0.175, CARBON, 0.0, 0.0)
 	wheel.rotation.x = PI / 2
-	_rod(steering_wheel, Vector3(-0.13, 0, 0), Vector3(0.13, 0, 0), 0.022, CHROME, 0.6)
-	_rod(steering_wheel, Vector3(0, 0, 0), Vector3(0, -0.13, 0), 0.02, CHROME, 0.6)
-	_ellipsoid(steering_wheel, Vector3(0, 0, -0.023), Vector3(0.065, 0.042, 0.017), NAVY, 0.4, 0.3)
-	_ellipsoid(steering_wheel, Vector3(0, 0, -0.04), Vector3(0.018, 0.018, 0.007), ICE, 0.3, 0.25)
-	_rod(self, Vector3(0, 0.68, -0.22), steering_wheel.position, 0.035, INK, 0.4)
+	var inner := _ring(steering_wheel, Vector3.ZERO, 0.114, 0.127, neon, 0.0, NEON_GLOW)
+	inner.rotation.x = PI / 2
+	inner.material_override = _mat(neon, 0.0, 0.3, NEON_GLOW)
+	_rod(steering_wheel, Vector3(-0.13, 0, 0), Vector3(0.13, 0, 0), 0.022, GUNMETAL, 0.6)
+	_rod(steering_wheel, Vector3(0, 0, 0), Vector3(0, -0.13, 0), 0.02, GUNMETAL, 0.6)
+	_ellipsoid(steering_wheel, Vector3(0, 0, -0.023), Vector3(0.065, 0.042, 0.017), CARBON, 0.4, 0.3)
+	var hub_light := _ellipsoid(steering_wheel, Vector3(0, 0, -0.04), Vector3(0.022, 0.022, 0.007), neon)
+	hub_light.material_override = _mat(neon, 0.0, 0.3, NEON_GLOW)
+	_rod(self, Vector3(0, 0.66, -0.46), steering_wheel.position, 0.035, CARBON, 0.4)
 
 
 func _make_driver() -> void:
@@ -862,7 +1440,7 @@ func _far_geometry(mesh: Mesh) -> Mesh:
 func _append_far(parent: Node3D, transform_from_kart: Transform3D, tool: SurfaceTool) -> void:
 	for child in parent.get_children():
 		if child is MeshInstance3D:
-			if flames.has(child) or sparks.has(child):
+			if flames.has(child) or sparks.has(child) or child.mesh.has_meta("far_skip"):
 				continue
 			var material: StandardMaterial3D = child.material_override
 			tool.append_from(_paint_mesh(_far_geometry(child.mesh), material.albedo_color), 0, transform_from_kart * child.transform)
@@ -933,7 +1511,8 @@ func _process(delta: float) -> void:
 	for i in range(wheel_rotors.size()):
 		wheel_rotors[i].quaternion = Quaternion(Vector3.BACK, PI / 2) * Quaternion(Vector3.UP, wheel_spin_phase)
 		wheel_pivots[i].rotation.y = -motion_steer * 0.34 if wheel_pivots[i].get_meta("front") else 0.0
-		wheel_pivots[i].position.y = 0.35 if reduced_motion else 0.35 + sin(animation_time * 11.0 + i * 1.7) * minf(0.010, absf(motion_speed) * 0.0005)
+		var hub_height: float = float(wheel_pivots[i].get_meta("height", 0.35))
+		wheel_pivots[i].position.y = hub_height if reduced_motion else hub_height + sin(animation_time * 11.0 + i * 1.7) * minf(0.010, absf(motion_speed) * 0.0005)
 	if driver:
 		driver.rotation.z = lerpf(driver.rotation.z, -motion_steer * 0.06, minf(1, delta * 7.0))
 		driver.position.y = 0.0 if reduced_motion else sin(animation_time * 7.0) * minf(0.009, absf(motion_speed) * 0.0006)

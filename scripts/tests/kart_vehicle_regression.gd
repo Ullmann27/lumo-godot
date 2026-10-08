@@ -112,7 +112,7 @@ func _authored_far_index_count(node: Node3D, kart: LumoRaceKart) -> int:
 	var count: int = 0
 	for child in node.get_children():
 		if child is MeshInstance3D:
-			if kart.flames.has(child) or kart.sparks.has(child):
+			if kart.flames.has(child) or kart.sparks.has(child) or child.mesh.has_meta("far_skip"):
 				continue
 			var geometry: Mesh = kart._far_geometry(child.mesh)
 			var arrays: Array = geometry.surface_get_arrays(0)
