@@ -16,12 +16,15 @@ var view_index: int = 0
 var wait: int = 0
 var sheet: Image
 var out_path: String = "res://exports/screenshots/lumo-driver-views.png"
+## --cheer: Lumo jubelt (Platz 1) – Arm oben, winkt.
+var cheer: bool = false
 
 
 func _initialize() -> void:
 	var args := OS.get_cmdline_user_args()
 	if args.size() > 0:
 		out_path = args[0]
+	cheer = args.has("--cheer")
 	root.size = Vector2i(640, 640)
 	var world := Node3D.new()
 	root.add_child(world)
@@ -48,6 +51,8 @@ func _initialize() -> void:
 	world.add_child(kart)
 	kart.call("configure", "fox", Color("1d4fa0"))
 	kart.call("set_motion", 0.0, 0.0, false, false)
+	if cheer:
+		kart.call("celebrate", 1)
 	camera = Camera3D.new()
 	camera.fov = 34
 	world.add_child(camera)
@@ -63,7 +68,7 @@ func _place() -> void:
 
 func _process(_delta: float) -> bool:
 	wait += 1
-	if wait < (40 if view_index == 0 else 12):
+	if wait < (70 if view_index == 0 else 12):
 		return false
 	var shot: Image = root.get_texture().get_image()
 	shot.convert(Image.FORMAT_RGBA8)

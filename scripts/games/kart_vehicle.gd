@@ -53,6 +53,13 @@ var ear_joints: Array[Node3D] = []
 ## zusätzliche Geometrie.
 var celebration_place: int = 0
 var celebration_time: float = 0.0
+## Lumos rechter Arm hängt an einem Schultergelenk: Lenken, Winken, Jubeln.
+const SHOULDER_RIGHT := Vector3(0.29, 1.215, 0.015)
+## Schulter → Hand am Lenkrad (Ruhe) und Schulter → Hand hoch und nach außen (Jubel).
+const ARM_REST_DIR := Vector3(-0.13, -0.16, -0.355)
+const ARM_CHEER_DIR := Vector3(0.42, 0.78, -0.06)
+var arm_right: Node3D
+var arm_blend: float = 0.0
 
 
 func configure(kind: String, color: Color, variant: String = "") -> void:
@@ -182,6 +189,7 @@ func _rebuild() -> void:
 	head = null
 	tail = null
 	jaw = null
+	arm_right = null
 	far_mesh = null
 	far_detail = false
 	if companion_mode:
@@ -436,14 +444,16 @@ func _make_wheel(side: float, axle: float, stance: float) -> void:
 	var tyre_profile: Array[Vector4] = [Vector4(-0.19, 0.23, 0.23, 0), Vector4(-0.17, 0.30, 0.30, 0), Vector4(-0.105, 0.35, 0.35, 0), Vector4(0.105, 0.35, 0.35, 0), Vector4(0.17, 0.30, 0.30, 0), Vector4(0.19, 0.23, 0.23, 0)]
 	_mesh(rotor, _loft(tyre_profile, true, 32, 3), Vector3.ZERO, Color("0c1422"), 0.02, 0.83)
 	for shoulder in [-0.095, 0.095]:
-		_ring(rotor, Vector3(0, shoulder, 0), 0.346, 0.352, Color("242f40"), 0.0)
+		# Rillen teilen die Gummi-Materialfamilie des Reifens (ein Render-Durchgang weniger je Rad).
+		var groove := _ring(rotor, Vector3(0, shoulder, 0), 0.346, 0.352, Color("242f40"), 0.0)
+		groove.material_override = _mat(Color("242f40"), 0.02, 0.83)
 	var outside: float = -side * 0.193
 	var brake := CylinderMesh.new()
 	brake.top_radius = 0.205
 	brake.bottom_radius = 0.205
 	brake.height = 0.014
 	brake.radial_segments = 24
-	_mesh(rotor, brake, Vector3(0, outside, 0), Color("233247"), 0.6, 0.4)
+	_mesh(rotor, brake, Vector3(0, outside, 0), Color("233247"), 0.6, 0.3)
 	_ring(rotor, Vector3(0, outside - side * 0.018, 0), 0.199, 0.232, CHROME, 0.78)
 	_ring(rotor, Vector3(0, outside - side * 0.027, 0), 0.224, 0.231, ICE, 0.3, 0.4)
 	for spoke in range(5):
@@ -454,7 +464,7 @@ func _make_wheel(side: float, axle: float, stance: float) -> void:
 		var valve := Vector3(cos(angle + 0.4) * 0.16, outside - side * 0.01, sin(angle + 0.4) * 0.16)
 		_ellipsoid(rotor, valve, Vector3(0.013, 0.010, 0.013), INK)
 	_ellipsoid(rotor, Vector3(0, outside - side * 0.04, 0), Vector3(0.071, 0.029, 0.071), vehicle_color, 0.65, 0.25)
-	_ellipsoid(rotor, Vector3(0, outside - side * 0.065, 0), Vector3(0.026, 0.01, 0.026), ICE, 0.35, 0.2)
+	_ellipsoid(rotor, Vector3(0, outside - side * 0.065, 0), Vector3(0.026, 0.01, 0.026), ICE, 0.7, 0.2)
 	# Contact tread slashes stay restrained rather than producing noisy checker tyres.
 	for tread in range(18):
 		var angle: float = float(tread) * TAU / 18.0
@@ -527,23 +537,36 @@ func _make_driver() -> void:
 		_make_companion_limbs(fur)
 	else:
 		for side in [-1.0, 1.0]:
-			var sleeve := _mesh(driver, _loft([Vector4(0.0, 0.07, 0.065, 0), Vector4(0.13, 0.11, 0.10, 0), Vector4(0.29, 0.081, 0.08, 0), Vector4(0.42, 0.065, 0.060, 0)], true, 20, 4), Vector3(side * 0.24, 1.20, 0.10), NAVY, 0.03, 0.72)
+			# Rechter Arm von Lumo hängt an einem Schultergelenk; alles andere bleibt am Körper.
+			var limb: Node3D = driver
+			var origin := Vector3.ZERO
+			if is_lumo and side > 0:
+				arm_right = Node3D.new()
+				arm_right.name = "ArmRight"
+				arm_right.position = SHOULDER_RIGHT
+				driver.add_child(arm_right)
+				limb = arm_right
+				origin = SHOULDER_RIGHT
+			var sleeve := _mesh(limb, _loft([Vector4(0.0, 0.07, 0.065, 0), Vector4(0.13, 0.11, 0.10, 0), Vector4(0.29, 0.081, 0.08, 0), Vector4(0.42, 0.065, 0.060, 0)], true, 20, 4), Vector3(side * 0.24, 1.20, 0.10) - origin, NAVY, 0.03, 0.72)
 			sleeve.quaternion = Quaternion(Vector3.UP, Vector3(side * 0.13, -0.22, -0.37).normalized())
-			_ellipsoid(driver, Vector3(side * 0.29, 1.215, 0.015), Vector3(0.092, 0.056, 0.096), NAVY if is_lumo else WHITE, 0.07, 0.6)
-			_ribbon(driver, [Vector3(side * 0.318, 1.225, 0.07), Vector3(side * 0.344, 1.11, -0.12), Vector3(side * 0.31, 1.03, -0.27)], 0.012, ICE, 0.12)
+			_ellipsoid(limb, Vector3(side * 0.29, 1.215, 0.015) - origin, Vector3(0.092, 0.056, 0.096), NAVY if is_lumo else WHITE, 0.07, 0.6)
+			var seam: Array[Vector3] = []
+			for point in [Vector3(side * 0.318, 1.225, 0.07), Vector3(side * 0.344, 1.11, -0.12), Vector3(side * 0.31, 1.03, -0.27)]:
+				seam.append(point - origin)
+			_ribbon(limb, seam, 0.012, ICE, 0.12)
 			if is_lumo:
 				# Orange-weiße Ärmelstreifen wie auf der Jacke der Vorlage.
 				for band in range(2):
 					var at := Vector3(side * (0.315 - band * 0.012), 1.135 - band * 0.05, -0.085 - band * 0.06)
-					var stripe := _ring(driver, at, 0.070, 0.100, ORANGE if band == 0 else WHITE, 0.18)
+					var stripe := _ring(limb, at - origin, 0.070, 0.100, ORANGE if band == 0 else WHITE, 0.18)
 					stripe.scale.y = 1.8
 					stripe.quaternion = Quaternion(Vector3.UP, Vector3(side * 0.13, -0.22, -0.37).normalized())
 			_ellipsoid(driver, Vector3(side * 0.16, 0.81, -0.24), Vector3(0.105, 0.105, 0.20), NAVY, 0, 0.72)
 			var glove_color: Color = GLOVE if is_lumo else WHITE
-			var glove := _ellipsoid(driver, Vector3(side * 0.16, 1.055, -0.34), Vector3(0.079, 0.070, 0.083), glove_color, 0, 0.68)
+			var glove := _ellipsoid(limb, Vector3(side * 0.16, 1.055, -0.34) - origin, Vector3(0.079, 0.070, 0.083), glove_color, 0, 0.68)
 			glove.rotation.z = side * -0.2
 			for digit in range(3):
-				_ellipsoid(driver, Vector3(side * (0.126 + digit * 0.027), 1.036, -0.393), Vector3(0.016, 0.036, 0.022), glove_color, 0, 0.68)
+				_ellipsoid(limb, Vector3(side * (0.126 + digit * 0.027), 1.036, -0.393) - origin, Vector3(0.016, 0.036, 0.022), glove_color, 0, 0.68)
 			_ellipsoid(driver, Vector3(side * 0.18, 0.80, -0.39), Vector3(0.12, 0.09, 0.14), WHITE, 0.08, 0.6)
 	head = Node3D.new()
 	head.name = "LumoHead"
@@ -930,6 +953,16 @@ func _process(delta: float) -> void:
 		tail.rotation.y = 0.5 + sin(animation_time * 2.6) * 0.085 - motion_steer * 0.11
 	if steering_wheel:
 		steering_wheel.rotation.z = -motion_steer * 0.40
+	if arm_right:
+		var cheer: bool = celebration_place >= 1 and celebration_place <= 3
+		# Hand folgt leicht dem Lenkrad; beim Jubel geht der Arm hoch nach außen und winkt.
+		arm_blend = move_toward(arm_blend, 1.0 if cheer else 0.0, delta * 3.2)
+		var raise: float = smoothstep(0.0, 1.0, arm_blend)
+		var cheer_q := Quaternion(ARM_REST_DIR.normalized(), ARM_CHEER_DIR.normalized())
+		var pose: Quaternion = Quaternion.IDENTITY.slerp(cheer_q, raise)
+		var wave: float = 0.0 if reduced_motion else sin(celebration_time * TAU * 1.8) * 0.3 * raise
+		var steer_follow: float = -motion_steer * 0.08 * (1.0 - raise)
+		arm_right.quaternion = Quaternion(Vector3.BACK, wave + steer_follow) * pose
 	if celebration_place > 0:
 		_apply_celebration(delta)
 
