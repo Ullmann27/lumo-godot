@@ -2488,8 +2488,9 @@ func _best_lap() -> float:
 
 
 func _format_time(seconds: float) -> String:
-	var whole: int = int(seconds)
-	return "%02d:%02d.%03d" % [whole / 60, whole % 60, int(round((seconds - whole) * 1000.0)) % 1000]
+	var total_milliseconds: int = roundi(seconds * 1000.0)
+	var whole: int = total_milliseconds / 1000
+	return "%02d:%02d.%03d" % [whole / 60, whole % 60, total_milliseconds % 1000]
 
 
 func _result_stats_text() -> String:

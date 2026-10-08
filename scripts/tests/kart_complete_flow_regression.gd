@@ -188,9 +188,21 @@ func _run() -> void:
 		if game.finish_cine_left <= 0:
 			break
 	assert(game.modal.visible)
+	var actual_stats_label: Label = game.modal_column.get_node("ResultStats")
+	assert(actual_stats_label.is_visible_in_tree())
+	var actual_stats: String = actual_stats_label.text
+	assert(
+		actual_stats.contains(
+			"Beste Runde   " + game._format_time(float(game.result_payload.bestLapSeconds))
+		),
+		"Actual displayed best lap agrees with the rounded result payload"
+	)
 	await _capture("04-result")
 	var report := {
 		"result": game.result_payload.duplicate(true),
+		"actual_result_stats_text": actual_stats,
+		"result_stats_visible": actual_stats_label.is_visible_in_tree(),
+		"best_lap_seconds_unrounded": game._best_lap(),
 		"ordered_gates": trace,
 		"actual_menu_touch_steps": 5,
 		"save_reopen_resume": resumed,

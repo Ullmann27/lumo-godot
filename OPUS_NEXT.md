@@ -1,3 +1,17 @@
+# Aktuelle Ergebniszeit-Korrektur für1906 · 8. Oktober2026
+
+Zuerst [die geprüfte kleine Zeitformat-Korrektur](docs/TIME_FORMAT_2026-10-08.md)
+lesen. BASE ist exaktad3ee9c9a1e2cfa60a6d2fe4970181b3150a1a1b;
+aktuellen RESULT/PIN am frischen Branch-HEAD prüfen. Beobachteter1905-Fail:
+sichtbare beste Runde40.000 statt tatsächlicher41.000 Sekunden. Neue feste
+29er-Zeitprobe BASE21PASS/8FAIL → Korrektur29PASS/0FAIL. Tatsächlicher
+CompleteFlow zeigt nun41.000 und erhält16Gates, Resume, ACK und eineBelohnung.
+Die bisherigen21Proben/37Modalchecks bleiben, App ergänzt Prüfung22 und
+braucht neueAPK1906. NeueAPK-/Android-Abnahme noch ausstehend;
+**VISUAL_GAP / NOT FINISHED**. Main undReleases bleiben unverändert.
+
+Die folgende1905-Übergabe bleibt der vorherige unveränderte Buildnachweis.
+
 # Aktueller integrierter Grafik-/Runtime-Kandidat1905 · 8. Oktober2026
 
 Zuerst [die aktuelle1905-Übergabe](docs/INTEGRATED_GRAPHICS_RUNTIME_1905_2026-10-08.md)
