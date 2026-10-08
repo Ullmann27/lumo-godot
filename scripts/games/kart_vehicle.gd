@@ -748,7 +748,8 @@ func _make_driver() -> void:
 			glove.rotation.z = side * -0.2
 			for digit in range(3):
 				_ellipsoid(limb, Vector3(side * (0.126 + digit * 0.027), 1.036, -0.393) - origin, Vector3(0.016, 0.036, 0.022), glove_color, 0, 0.68)
-			_ellipsoid(driver, Vector3(side * 0.18, 0.80, -0.39), Vector3(0.12, 0.09, 0.14), WHITE, 0.08, 0.6)
+			_ellipsoid(driver, Vector3(side * 0.18, 0.80, -0.39), Vector3(0.12, 0.09, 0.14), NAVY, 0.08, 0.6)
+			_ellipsoid(driver, Vector3(side * 0.18, 0.742, -0.405), Vector3(0.119, 0.026, 0.15), WHITE, 0.08, 0.6)
 	head = Node3D.new()
 	head.name = "LumoHead"
 	head.position = Vector3(0, 1.68, 0.07)
@@ -760,6 +761,9 @@ func _make_driver() -> void:
 	for side in [-1.0, 1.0]:
 		var cheek := _fur(head, _loft([Vector4(-0.15, 0.045, 0.035, -0.012), Vector4(-0.045, 0.145, 0.130, -0.010), Vector4(0.095, 0.16, 0.135, 0.005), Vector4(0.245, 0.11, 0.077, 0.023), Vector4(0.335, 0.010, 0.013, 0.050)], false, 32, 4), Vector3(side * 0.12, -0.16, -0.21), cream, 700, 0.028, 821 + int(side))
 		cheek.rotation.y = side * PI / 2
+		# The white cheek fringe wraps around the lower sides of the head and
+		# remains recognizable in the player's binding rear-camera reference.
+		_fur(head, _loft([Vector4(-0.285, 0.012, 0.018, 0), Vector4(-0.22, 0.10, 0.125, 0.018), Vector4(-0.16, 0.137, 0.153, 0.008), Vector4(-0.10, 0.067, 0.102, 0), Vector4(-0.075, 0.005, 0.010, 0)], true, 28, 4), Vector3(side * 0.315, 0, 0.044), cream, 330, 0.025, 531 + int(side))
 		# Purposeful tufts on cheeks and brow establish a fox silhouette at race distance.
 		for tuft in range(2):
 			var leaf := _mesh(head, _loft([Vector4(0, 0.05, 0.022, 0), Vector4(0.055, 0.055, 0.035, 0), Vector4(0.115, 0.002, 0.002, 0.018)], true, 16, 3), Vector3(side * (0.28 + tuft * 0.025), -0.11 - tuft * 0.06, -0.15), cream)
@@ -789,7 +793,7 @@ func _make_driver() -> void:
 	_ribbon(head, [Vector3(-0.127, -0.192, -0.32), Vector3(-0.101, -0.216, -0.342), Vector3(-0.057, -0.221, -0.352)], 0.008, Color("714333"))
 	_ribbon(head, [Vector3(0.127, -0.192, -0.32), Vector3(0.101, -0.216, -0.342), Vector3(0.057, -0.221, -0.352)], 0.008, Color("714333"))
 	for tuft in range(3):
-		var quiff := _mesh(head, _loft([Vector4(0, 0.034, 0.03, 0), Vector4(0.09, 0.048, 0.047, 0), Vector4(0.18, 0.003, 0.005, 0.058)], true, 18, 4), Vector3(-0.10 + tuft * 0.068, 0.30, -0.06 + tuft * 0.018), fur)
+		var quiff := _fur(head, _loft([Vector4(0, 0.034, 0.03, 0), Vector4(0.055, 0.038, 0.034, 0), Vector4(0.11, 0.003, 0.005, 0.030)], true, 18, 4), Vector3(-0.10 + tuft * 0.068, 0.30, -0.06 + tuft * 0.018), fur, 90, 0.019, 175 + tuft)
 		quiff.rotation.z = 0.15 + tuft * 0.14
 	if animal == "fox":
 		_make_goggles()
@@ -825,6 +829,10 @@ func _make_goggles() -> void:
 		_attach(glass, lens * Transform3D(Basis(), Vector3(0, 0.004, 0)))
 		_attach(_ellipsoid(head, Vector3.ZERO, Vector3(0.022, 0.006, 0.016), Color.WHITE, 0, 0.1), lens * Transform3D(Basis(), Vector3(-0.024, 0.022, -0.024)))
 	_ellipsoid(head, base * Vector3(0, 0.02, -0.27), Vector3(0.042, 0.026, 0.028), CHROME, 0.08, 0.22)
+	var buckle := _box(head, Vector3(0, 0.292, 0.269), Vector3(0.081, 0.060, 0.021), CHROME, 0.35)
+	buckle.material_override = _mat(CHROME, 0.35, 0.26)
+	var insert := _box(head, Vector3(0, 0.292, 0.281), Vector3(0.053, 0.033, 0.006), NAVY, 0.35)
+	insert.material_override = _mat(NAVY, 0.35, 0.26)
 
 
 ## Setzt ein Teil relativ zu einem lokalen Bezugsrahmen, behält aber seine
@@ -843,7 +851,7 @@ func _glow_letter_l(parent: Node3D, at: Vector3, size: float, facing_back: bool)
 	var stem := _box(parent, at + Vector3(stem_x, 0, 0), Vector3(bar, size, 0.012), ICE)
 	var foot := _box(parent, at + Vector3(foot_x, -size * 0.5 + bar * 0.5, 0), Vector3(size * 0.78, bar, 0.012), ICE)
 	for piece in [stem, foot]:
-		piece.material_override = _mat(ICE, 0.0, 0.3, 0.85)
+		piece.material_override = _mat(Color("25bfff"), 0.0, 0.3, 0.4)
 
 
 func _make_companion_limbs(fur: Color) -> void:
