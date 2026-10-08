@@ -20,6 +20,7 @@ const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
 const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
+const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
@@ -2913,19 +2914,7 @@ func _item_box(distance_on_track: float, lateral: float) -> void:
 	node.basis = basis
 	node.scale = Vector3.ONE * (1.18 if world.track_id == "bergwelt" else 1.0)
 	race_root.add_child(node)
-	var core := _box(node, Vector3.ZERO, Vector3(1.25, 1.25, 1.25), Color("3756c9"))
-	core.material_override = _glow_material(Color("627dff"), 1.0)
-	for axis in [-1.0, 1.0]:
-		var stripe := _box(
-			node,
-			Vector3(axis * 0.66, 0.0, 0.0),
-			Vector3(0.08, 1.36, 1.36),
-			Color("5ff2ff")
-		)
-		stripe.material_override = _glow_material(Color("5ff2ff"), 1.5)
-	var diamond := _box(node, Vector3(0.0, 0.0, 0.68), Vector3(0.34, 0.34, 0.08), Color("ffc94a"))
-	diamond.rotation.z = PI * 0.25
-	diamond.material_override = _glow_material(Color("ffc94a"), 1.4)
+	MYSTERY_PRISM.build(node)
 	item_boxes.append(node)
 	item_box_distances.append(distance_on_track)
 

@@ -8,6 +8,8 @@ The closer racing camera keeps the actual driver and kart recognizable at speed;
 
 The bonnet ends in front of a real footwell. Both seated legs/boots clear its geometry, and both soles meet physical pedals. These clearances and contact bounds are checked on the authored meshes before material batching. Fold action targets also retain a positive inset within their own deck after safe-area changes.
 
+Mystery pickups use an original eight-facet violet prism with gold edges. Shared opaque geometry keeps each pickup to two surfaces and bounds core emission so its colour remains visible. Existing pickup placement, catch-up odds and collection state are unchanged. The isolated geometry CI fixture includes both fleet and fur dependencies.
+
 Track detail adds bounded service decks, marshals, spectators and planted light columns. Footprints clear nearby parallel lanes and jump gaps. High/low profiles use spatial MultiMesh batches. Previous harbor placement and fleet geometry work is preserved. Claude’s 640855f preview/physics fix is included.
 
 Real capture commands: `godot --rendering-method gl_compatibility --script scripts/tests/kart_reference_capture.gd`, `kart_visual_quality_capture.gd`, `kart_fold_controls_regression.gd`. Captures are runtime evidence, not concept images. Texture illustrations in Flutter menus remain illustrations.
