@@ -15,7 +15,6 @@ var bonus: Dictionary = {}
 var thumb: TextureRect
 var title_label: Label
 var role_label: Label
-var tag_label: Label
 var lock_label: Label
 var bars
 var margin: MarginContainer
@@ -59,8 +58,6 @@ func _ready() -> void:
 	role_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	role_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	column.add_child(role_label)
-	tag_label = Label.new()
-	tag_label.visible = false
 	bars = BARS.new()
 	bars.show_labels = false
 	bars.show_numbers = false
@@ -102,7 +99,6 @@ func apply_size(scale_factor: float, compact: bool) -> void:
 		margin.add_theme_constant_override("margin_" + side, roundi((4 if compact else 8) * scale_factor))
 	title_label.add_theme_font_size_override("font_size", roundi((15 if compact else 21) * scale_factor))
 	role_label.add_theme_font_size_override("font_size", roundi((10 if compact else 12) * scale_factor))
-	tag_label.add_theme_font_size_override("font_size", roundi(12 * scale_factor))
 	lock_label.add_theme_font_size_override("font_size", roundi((11 if compact else 13) * scale_factor))
 	badge.add_theme_font_size_override("font_size", roundi(11 * scale_factor))
 	bars.row_height = (7.0 if compact else 10.0) * scale_factor
