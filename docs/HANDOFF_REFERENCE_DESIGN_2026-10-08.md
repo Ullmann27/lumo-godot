@@ -6,6 +6,8 @@ All five actions use separate normal/pressed/disabled transparent PNGs. The firs
 
 The closer racing camera keeps the actual driver and kart recognizable at speed; boost FOV remains bounded. Near-square display controls use a narrow right column so ITEM does not cover the driver's back. Regression checks include the projected driver centre, actual touch-target size and simultaneous gas/steering/speed ownership. Model/export probes disable the project fallback sky before draining the freed scene, preventing two reflection resources from leaking at exit.
 
+The camera looks slightly farther down so stopped rear tyres and bumper also remain visible. Wide cover displays retain the baseline vertical field of view instead of shrinking it below the phone baseline. The visual regression projects all authored near-mesh bounds into phone, cover and inner viewports at rest, speed and reduced motion, requires a three-percent margin, and saves the stopped views and measurements.
+
 The bonnet ends in front of a real footwell. Both seated legs/boots clear its geometry, and both soles meet physical pedals. These clearances and contact bounds are checked on the authored meshes before material batching. Fold action targets also retain a positive inset within their own deck after safe-area changes.
 
 Mystery pickups use an original eight-facet violet prism with gold edges. Shared opaque geometry keeps each pickup to two surfaces and bounds core emission so its colour remains visible. Existing pickup placement, catch-up odds and collection state are unchanged. The isolated geometry CI fixture includes both fleet and fur dependencies.
