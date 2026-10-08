@@ -13,6 +13,8 @@ var captures: Array[String] = []
 var case_results: Array[Dictionary] = []
 var taps: Array[Dictionary] = []
 var gui_events: Array[Dictionary] = []
+var gas_mode_preparations: Array[Dictionary] = []
+var race_touch_states: Array[Dictionary] = []
 var presses: Dictionary = {}
 var previous_touch_emulation := false
 var phase := "setup"
@@ -279,6 +281,48 @@ func _pause() -> void:
 	_watch_buttons()
 
 
+func _prepare_gas_mode(automatic: bool) -> bool:
+	var gas := _button("Gas:")
+	var expected := "Gas: automatisch" if automatic else "Gas: GAS-Taste halten"
+	var before := {"caption": gas.text, "state": _snapshot(), "tap_count": taps.size()}
+	var revealed := await _reveal(gas)
+	# Shared native probes can legitimately leave either saved mode. Use the public
+	# caption and a real tap rather than blindly inverting that persisted choice.
+	if revealed and gas.text != expected:
+		await _tap(gas)
+	gas_mode_preparations.append(
+		{
+			"phase": phase,
+			"requested_auto_gas": automatic,
+			"before": before,
+			"after": {"caption": gas.text, "state": _snapshot(), "tap_count": taps.size()},
+			"revealed": revealed
+		}
+	)
+	return await _expect(
+		revealed and gas.text == expected and game.auto_gas == automatic,
+		(
+			"Observed public Gas mode is automatic before full race"
+			if automatic
+			else "Observed public Gas mode is manual before race touch ownership"
+		)
+	)
+
+
+func _record_race_touch_state(label: String) -> void:
+	race_touch_states.append(
+		{
+			"label": label,
+			"milliseconds": Time.get_ticks_msec(),
+			"state": _snapshot(),
+			"gas_visible": game.gas_button.is_visible_in_tree(),
+			"gas_disabled": game.gas_button.disabled,
+			"gas_pixels": str(_pixels(game.gas_button)),
+			"stick_pixels": str(_pixels(game.joystick))
+		}
+	)
+
+
 func _resize(size: Vector2i) -> void:
 	root.size = size
 	await _settle()
@@ -418,8 +462,8 @@ func _run() -> void:
 	await _resize(Vector2i(1280, 720))
 	await _top()
 	await _capture("10-phone-restored-pause")
-	await _reveal(_button("Gas:"))
-	await _tap(_button("Gas:"))
+	if not await _prepare_gas_mode(false):
+		return
 	await _top()
 	var resume := _button("Weiterfahren")
 	id = resume.get_instance_id()
@@ -436,10 +480,12 @@ func _run() -> void:
 			break
 	game._physics_process(STEP)
 	await _settle()
+	_record_race_touch_state("before-distinct-fingers")
 	var stick := _pixels(game.joystick)
 	await _touch(1, stick.get_center() + Vector2(stick.size.x * 0.22, 0), true)
 	await _touch(2, _pixels(game.gas_button).get_center(), true)
 	game._physics_process(STEP)
+	_record_race_touch_state("after-distinct-fingers-and-physics")
 	await _capture("11-racing-multitouch")
 	if not await _expect(
 		(
@@ -455,13 +501,14 @@ func _run() -> void:
 		return
 	await _touch(1, Vector2(1, 1), false)
 	await _touch(2, Vector2(1, 1), false)
+	_record_race_touch_state("after-release-outside")
 	if not await _expect(
 		game.steering == 0 and not game.gas_held, "Race fingers release outside their controls"
 	):
 		return
 	await _pause()
-	await _reveal(_button("Gas:"))
-	await _tap(_button("Gas:"))
+	if not await _prepare_gas_mode(true):
+		return
 	await _top()
 	await _tap(_button("Weiterfahren"))
 	for frame in range(10000):
@@ -520,6 +567,8 @@ func _finish(code: int, failure: String) -> void:
 		"cases": case_results,
 		"taps": taps,
 		"gui_events": gui_events,
+		"gas_mode_preparations": gas_mode_preparations,
+		"race_touch_states": race_touch_states,
 		"inputs": inputs,
 		"captures": captures,
 		"scope":
