@@ -1,5 +1,5 @@
 extends SceneTree
-## Garage und Werkstatt: acht Karts als Karten (gesperrte gedimmt), Wertebalken, Werkstatt öffnen,
+## Garage und Werkstatt: vierzehn Karts als Karten (gesperrte gedimmt), Wertebalken, Werkstatt öffnen,
 ## Teile verbessern, Aussehen ansehen/kaufen/wählen, Sterne zurückholen, Zurück-Taste und Layout
 ## auf Querformat, Fold-Größen und Hochformat. Mit Anzeige (xvfb).
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
@@ -36,7 +36,7 @@ func _check_cards() -> void:
 	garage._refresh()
 	await _settle()
 	var grid: GridContainer = garage.choices.get_child(0)
-	assert(grid.get_child_count() == 8, "Acht Kart-Karten")
+	assert(grid.get_child_count() == 14, "Vierzehn Kart-Karten")
 	var locked: int = 0
 	for card in grid.get_children():
 		assert(card.name.begins_with("KartCard_"))
@@ -180,5 +180,5 @@ func _run() -> void:
 	game.queue_free()
 	await _settle()
 	DirAccess.remove_absolute("user://kart_preferences.cfg")
-	print("[KartWorkshop] PASS: acht Kart-Karten mit gesperrten Karts, Wertebalken, Werkstatt öffnen/verbessern/kaufen/zurückholen, Zurück-Taste und Layout auf 1280×720, 800×480, 640×320, 412×915, 690×829")
+	print("[KartWorkshop] PASS: vierzehn Kart-Karten mit gesperrten Karts, Wertebalken, Werkstatt öffnen/verbessern/kaufen/zurückholen, Zurück-Taste und Layout auf 1280×720, 800×480, 640×320, 412×915, 690×829")
 	quit(0)
