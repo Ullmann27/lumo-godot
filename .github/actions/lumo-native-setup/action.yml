@@ -1,0 +1,40 @@
+name: Lumo native renderer setup
+description: Matching Godot engine, templates and renderer for isolated QA jobs
+runs:
+  using: composite
+  steps:
+  - name: Install rendering and formatting tools
+    run: |
+      sudo apt-get update -qq
+      sudo apt-get install -y xvfb libgl1-mesa-dri ffmpeg
+      python3 -m pip install gdtoolkit
+      mkdir -p exports/fleet-proof exports/fleet-models exports/fleet-video exports/fleet-logs
+      git rev-parse HEAD > exports/fleet-logs/SOURCE-COMMIT.txt
+    shell: bash
+  - name: Cache matching engine and export templates
+    id: cache
+    uses: actions/cache@v4
+    with:
+      path: |
+        ~/godot-bin
+        ~/.local/share/godot/export_templates
+      key: godot-4.6.3-stable-v2
+  - name: Install official engine and templates
+    if: steps.cache.outputs.cache-hit != 'true'
+    run: |
+      curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" "https://github.com/godotengine/godot/releases/download/${GODOT_TAG}/Godot_v${GODOT_TAG}_linux.x86_64.zip"
+      mkdir -p "$HOME/godot-bin"
+      unzip -q -o "$RUNNER_TEMP/godot.zip" -d "$HOME/godot-bin"
+      mv "$HOME/godot-bin/Godot_v${GODOT_TAG}_linux.x86_64" "$HOME/godot-bin/godot"
+      chmod +x "$HOME/godot-bin/godot"
+      curl -fL --retry 3 -o "$RUNNER_TEMP/templates.tpz" "https://github.com/godotengine/godot/releases/download/${GODOT_TAG}/Godot_v${GODOT_TAG}_export_templates.tpz"
+      unzip -q -o "$RUNNER_TEMP/templates.tpz" -d "$RUNNER_TEMP/templates"
+      mkdir -p "$HOME/.local/share/godot/export_templates/4.6.3.stable"
+      mv "$RUNNER_TEMP/templates/templates/"* "$HOME/.local/share/godot/export_templates/4.6.3.stable/"
+    shell: bash
+  - name: Expose engine commands
+    shell: bash
+    run: |
+      echo "$HOME/godot-bin" >> "$GITHUB_PATH"
+      mkdir -p exports/fleet-logs
+      git rev-parse HEAD > exports/fleet-logs/SOURCE-COMMIT.txt

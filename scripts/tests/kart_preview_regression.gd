@@ -11,16 +11,23 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 
+func _settle() -> void:
+	await process_frame
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+
+
 func _new_race(track: String) -> void:
 	if is_instance_valid(game):
 		game.abandoned = true
-		game.free()
+		game.queue_free()
+		await _settle()
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
-	await process_frame
+	await _settle()
 	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": track, "difficulty": "flott"})
-	await process_frame
+	await _settle()
 
 
 func _run() -> void:
@@ -142,6 +149,6 @@ func _run() -> void:
 	print("[KartPreview] PASS: 5-s-Kamerafahrt mit Titel, einrollende Startaufstellung, Startampel 3-2-1-grün, eingefrorener Countdown, weicher Übergang, Überspringen, Pause, reduzierte Bewegung, Fortsetzen")
 	game.abandoned = true
 	game.queue_free()
-	await process_frame
+	await _settle()
 	await create_timer(0.2).timeout
 	quit(0)
