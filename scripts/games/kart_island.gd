@@ -1893,7 +1893,10 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 static func _resize_compensated_fov(vertical_fov: float, aspect: float) -> float:
 	var reference_aspect: float = 16.0 / 9.0
 	var horizontal_span: float = tan(deg_to_rad(vertical_fov) * 0.5) * reference_aspect
-	return clampf(rad_to_deg(2.0 * atan(horizontal_span / maxf(aspect, 0.1))), 40.0, 110.0)
+	# Wide cover displays gain horizontal visibility instead of cropping the
+	# driver's kart by shrinking the vertical field of view below its baseline.
+	var compensated: float = rad_to_deg(2.0 * atan(horizontal_span / maxf(aspect, 0.1)))
+	return clampf(maxf(vertical_fov, compensated), 40.0, 110.0)
 
 
 func _boost() -> void:
