@@ -60,6 +60,8 @@ var preview_left: float = 0.0
 var preview_total: float = 0.0
 ## Kart-Einstieg: "auto" zeigt das Intro beim ersten Menü (nicht bei reduzierter
 ## Bewegung und nicht in automatisierten --script-Prüfungen), "force"/"off" für Tests.
+var music_volume: float = 1.0
+var effects_volume: float = 1.0
 var intro_mode: String = "auto"
 var intro_done: bool = false
 var intro: Control
@@ -1210,7 +1212,7 @@ func _physics_process(delta: float) -> void:
 	if engine_playback and not muted and host_sound_enabled and racing and not paused and not finished:
 		for i in range(engine_playback.get_frames_available()):
 			var phase: float = (float(Time.get_ticks_usec()) / 1000000.0 + float(i) / 22050) * (70 + speed * 5)
-			var sample: float = sin(phase * TAU) * 0.025
+			var sample: float = sin(phase * TAU) * 0.025 * effects_volume
 			engine_playback.push_frame(Vector2(sample, sample))
 
 
@@ -2204,6 +2206,12 @@ func _pause() -> void:
 	)
 	sound.disabled = not host_sound_enabled
 	modal_column.add_child(sound)
+	modal_column.add_child(_volume_row("Musik", music_volume, func(value: float):
+		music_volume = value
+		_apply_volumes()))
+	modal_column.add_child(_volume_row("Effekte", effects_volume, func(value: float):
+		effects_volume = value
+		_apply_volumes()))
 	var detail := _button("Grafik: " + {"high": "Hoch", "medium": "Ausgewogen", "low": "Leicht"}.get(graphics_profile, "Hoch"), func(): pass)
 	detail.pressed.connect(
 		func():
@@ -2635,6 +2643,8 @@ func _load_preferences() -> void:
 		config.get_value("race", "lightweight", SettingsStore.get_profile() == "low")
 	)
 	muted = bool(config.get_value("race", "muted", false))
+	music_volume = clampf(float(config.get_value("race", "music_volume", 1.0)), 0.0, 1.0)
+	effects_volume = clampf(float(config.get_value("race", "effects_volume", 1.0)), 0.0, 1.0)
 	# Touch devices start with the GAS pedal; keyboard and automated runs keep auto-gas.
 	var touch_device: bool = OS.has_feature("android") or OS.has_feature("ios")
 	auto_gas = bool(config.get_value("race", "auto_gas", not touch_device))
@@ -2651,6 +2661,8 @@ func _save_preferences() -> void:
 	config.set_value("race", "lightweight", lightweight)
 	config.set_value("race", "graphics_profile", graphics_profile)
 	config.set_value("race", "muted", muted)
+	config.set_value("race", "music_volume", music_volume)
+	config.set_value("race", "effects_volume", effects_volume)
 	config.set_value("race", "auto_gas", auto_gas)
 	config.set_value("race", "difficulty", difficulty)
 	config.save(PREFERENCES)
@@ -2930,6 +2942,7 @@ func _build_engine_sound() -> void:
 	kart_audio = KART_AUDIO.new()
 	add_child(kart_audio)
 	kart_audio.set_muted(muted or not host_sound_enabled)
+	kart_audio.set_volumes(music_volume, effects_volume)
 	engine_player = AudioStreamPlayer.new()
 	var stream := AudioStreamGenerator.new()
 	stream.mix_rate = 22050
@@ -2951,6 +2964,36 @@ func _update_audio() -> void:
 	elif not engine_player.playing:
 		engine_player.play()
 		engine_playback = engine_player.get_stream_playback()
+
+
+## Lautstärkezeile im Pausenmenü: große Schieberegler (10 %-Schritte), sofort hörbar.
+func _volume_row(title: String, value: float, on_change: Callable) -> Control:
+	var row := HBoxContainer.new()
+	row.name = "Volume" + title
+	row.add_theme_constant_override("separation", 14)
+	var label := _label(title, 20)
+	label.size_flags_horizontal = Control.SIZE_FILL
+	label.custom_minimum_size.x = 120
+	row.add_child(label)
+	var slider := HSlider.new()
+	slider.name = "Slider"
+	slider.min_value = 0
+	slider.max_value = 100
+	slider.step = 10
+	slider.value = roundf(value * 100.0)
+	slider.custom_minimum_size = Vector2(220, 48)
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.tooltip_text = title + "-Lautstärke"
+	slider.value_changed.connect(func(v: float):
+		on_change.call(v / 100.0)
+		_save_preferences())
+	row.add_child(slider)
+	return row
+
+
+func _apply_volumes() -> void:
+	if is_instance_valid(kart_audio):
+		kart_audio.set_volumes(music_volume, effects_volume)
 
 
 func _sound_effect(kind: String) -> void:

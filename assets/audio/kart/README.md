@@ -1,5 +1,26 @@
 # Original Lumo Kart music and effects
 
+## Version 2 (8. Oktober 2026): zeitgemäße Rennmusik
+
+Die fünf Musikstücke wurden mit `tools/art/generate_kart_music.py` (Seed 20261008) neu
+komponiert und synthetisiert – ebenfalls ohne Aufnahmen, Samples, MIDI oder fremde Melodien.
+Je Welt ~60–77 s mit Intro, Strophe, Refrain, Breakdown und zweitem Refrain; Kick/Clap/
+Hi-Hats, Sidechain-Bass, Supersaw-Akkorde, Lead mit Ping-Pong-Delay, Arpeggio, Riser, Hall per
+Faltung, 44,1 kHz Stereo, Lautheit −14 LUFS, Spitzen ≤ −1,7 dBFS. Für Handylautsprecher ist der
+Tiefbass begrenzt (Anteil unter 60 Hz 4–7 %). Schleifen sind nahtlos (Filter und Hall laufen
+zirkulär; die Nahtstelle ist ein normaler Taktanfang). Die Effekte unten stammen weiterhin aus
+Version 1. Musik und Effekte sind im Pausenmenü getrennt regelbar.
+
+| Datei | Stil | Tempo |
+|---|---|---|
+| garage.ogg | warmer Future-Bass, Glasklänge | 100 BPM |
+| sonnenhafen.ogg | Tropical-House, Steeldrum-Lead | 118 BPM |
+| zauberwald.ogg | magischer Electro-Pop, Glocken | 112 BPM |
+| bergwelt.ogg | euphorischer Dance-Pop, Supersaws | 126 BPM |
+| holo_city.ogg | Synthwave/Electro, Neon-Arpeggio | 132 BPM |
+
+## Version 1 (3. Oktober 2026)
+
 All melodies, arrangements, oscillators, percussion and sound effects in this
 folder were created specifically for Lumo on 2026-10-03. No external recordings,
 samples, MIDI files or existing game music were used. The synthesis source is

@@ -22,6 +22,9 @@ var _paused: bool = false
 var _focused: bool = true
 var _background: bool = false
 var _fade: Tween
+## Getrennte Lautstärken (0–1) für Musik und Effekte; die Motorgeräusche folgen den Effekten.
+var music_volume: float = 1.0
+var effects_volume: float = 1.0
 
 
 func _ready() -> void:
@@ -46,6 +49,23 @@ func _ensure_players() -> void:
 		player.volume_db = EFFECT_DB
 		add_child(player)
 		_effects.append(player)
+
+
+func set_volumes(music: float, effects: float) -> void:
+	music_volume = clampf(music, 0.0, 1.0)
+	effects_volume = clampf(effects, 0.0, 1.0)
+	if not _music.is_empty() and _music[_active].playing:
+		if is_instance_valid(_fade):
+			_fade.kill()
+		_music[_active].volume_db = music_db()
+
+
+func music_db() -> float:
+	return QUIET_DB if music_volume <= 0.01 else MUSIC_DB + linear_to_db(music_volume)
+
+
+func effect_db() -> float:
+	return QUIET_DB if effects_volume <= 0.01 else EFFECT_DB + linear_to_db(effects_volume)
 
 
 func play_menu() -> void:
@@ -79,12 +99,12 @@ func _play_music(track: String) -> void:
 	var next := _music[_active]
 	next.stop()
 	next.stream = stream
-	next.volume_db = QUIET_DB if previous.playing else MUSIC_DB
+	next.volume_db = QUIET_DB if previous.playing else music_db()
 	next.play()
 	if previous.playing and is_inside_tree():
 		_fade = create_tween().set_parallel(true)
 		_fade.tween_property(previous, "volume_db", QUIET_DB, 0.45)
-		_fade.tween_property(next, "volume_db", MUSIC_DB, 0.45)
+		_fade.tween_property(next, "volume_db", music_db(), 0.45)
 		_fade.chain().tween_callback(previous.stop)
 	_apply_pause()
 
@@ -105,7 +125,7 @@ func effect(kind: String) -> void:
 	_effect_cursor = (_effect_cursor + 1) % _effects.size()
 	player.stop()
 	player.stream = stream
-	player.volume_db = EFFECT_DB - 4.0 if kind == "collision" else EFFECT_DB
+	player.volume_db = effect_db() - 4.0 if kind == "collision" else effect_db()
 	player.play()
 
 
