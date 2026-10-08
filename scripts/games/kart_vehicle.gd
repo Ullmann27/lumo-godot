@@ -919,8 +919,10 @@ func _make_eye(side: float, fur_shadow: Color) -> void:
 	eyes.append(eye)
 	_ellipsoid(eye, Vector3(0, 0.005, 0.006), Vector3(0.134, 0.155, 0.064), fur_shadow)
 	_ellipsoid(eye, Vector3(0, 0, -0.009), Vector3(0.119, 0.141, 0.065), WHITE, 0, 0.3)
-	_ellipsoid(eye, Vector3(-side * 0.008, -0.009, -0.066), Vector3(0.075, 0.093, 0.018), Color("965123") if animal == "fox" else Color("287788"), 0.08, 0.22)
-	_ellipsoid(eye, Vector3(-side * 0.008, -0.004, -0.081), Vector3(0.049, 0.062, 0.013), Color("080c12"), 0.10, 0.15)
+	var iris_size := Vector3(0.099, 0.117, 0.018) if animal == "fox" else Vector3(0.075, 0.093, 0.018)
+	var pupil_size := Vector3(0.065, 0.078, 0.013) if animal == "fox" else Vector3(0.049, 0.062, 0.013)
+	_ellipsoid(eye, Vector3(-side * 0.008, -0.009, -0.066), iris_size, Color("965123") if animal == "fox" else Color("287788"), 0.08, 0.22)
+	_ellipsoid(eye, Vector3(-side * 0.008, -0.004, -0.081), pupil_size, Color("080c12"), 0.10, 0.15)
 	_ellipsoid(eye, Vector3(-0.026, 0.032, -0.093), Vector3(0.019, 0.025, 0.008), Color.WHITE, 0, 0.1)
 	_ellipsoid(eye, Vector3(0.020, -0.038, -0.093), Vector3(0.007, 0.010, 0.004), Color.WHITE, 0, 0.1)
 

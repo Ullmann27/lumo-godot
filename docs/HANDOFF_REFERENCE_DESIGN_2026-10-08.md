@@ -4,6 +4,8 @@ The starter Comet retains navy/anthracite coachwork, cyan lights, restrained gol
 
 All five actions use separate normal/pressed/disabled transparent PNGs. The first four come from the approved asset pack; DRIFT is an additional matching original control. Captions use Nunito at runtime. The base and thumb of the analog stick remain separate textures, with a 0.4 physical diameter ratio and 128/1024 travel.
 
+The closer racing camera keeps the actual driver and kart recognizable at speed; boost FOV remains bounded. Near-square display controls use a narrow right column so ITEM does not cover the driver's back. Regression checks include the projected driver centre, actual touch-target size and simultaneous gas/steering/speed ownership. Model/export probes disable the project fallback sky before draining the freed scene, preventing two reflection resources from leaking at exit.
+
 Track detail adds bounded service decks, marshals, spectators and planted light columns. Footprints clear nearby parallel lanes and jump gaps. High/low profiles use spatial MultiMesh batches. Previous harbor placement and fleet geometry work is preserved. Claude’s 640855f preview/physics fix is included.
 
 Real capture commands: `godot --rendering-method gl_compatibility --script scripts/tests/kart_reference_capture.gd`, `kart_visual_quality_capture.gd`, `kart_fold_controls_regression.gd`. Captures are runtime evidence, not concept images. Texture illustrations in Flutter menus remain illustrations.

@@ -140,6 +140,7 @@ func _run() -> void:
 		camera.look_at(Vector3(0, 1.3, 0))
 		await _capture("module-" + kind + "-front")
 		prop.free()
+	root.world_3d.fallback_environment = null
 	stage.free()
 	var game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
@@ -184,7 +185,8 @@ func _run() -> void:
 		"[FleetCapture] PASS: 36 native kart views, 12 prop views, 9 kart GLBs, 4 live race captures"
 	)
 	game.abandoned = true
+	root.world_3d.fallback_environment = null
 	game.queue_free()
 	await process_frame
-	await create_timer(0.12).timeout
+	await create_timer(0.8).timeout
 	quit()

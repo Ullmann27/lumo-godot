@@ -92,6 +92,9 @@ func _run() -> void:
 	assert(game.camera.position.y - game.player.position.y < 3.4)
 	var base_fov: float = game.camera.fov
 	assert(base_fov >= VISUAL_GRADE.BASE_FOV and base_fov <= VISUAL_GRADE.SPEED_FOV + 0.5)
+	var driver_top: Vector2 = game.camera.unproject_position(game.player.head.global_position + Vector3.UP * 0.70)
+	var wheel_bottom: Vector2 = game.camera.unproject_position(game.player.global_position + Vector3.UP * 0.05)
+	assert(wheel_bottom.y - driver_top.y >= 170.0, "Driver and kart must remain recognizable in the actual racing camera")
 	await _capture("01_holo_city_chase")
 
 	game.boost_time = 2.0
@@ -128,8 +131,9 @@ func _run() -> void:
 	await _capture("06_reduced_motion")
 
 	game.abandoned = true
+	root.world_3d.fallback_environment = null
 	game.queue_free()
 	await process_frame
 	print("[KartVideoGrade] PASS: close chase framing, glossy emissive road, filmic glow/contrast, bounded boost FOV")
-	await create_timer(0.12).timeout
+	await create_timer(0.8).timeout
 	quit(0)

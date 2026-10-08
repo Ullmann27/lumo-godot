@@ -3,16 +3,16 @@ extends RefCounted
 ## Shared visual target derived from Heinz' 1280x720 racing references.
 ## Original Lumo art direction only: no third-party names, logos or geometry.
 
-const CAMERA_DISTANCE_NEAR: float = 5.45
-const CAMERA_DISTANCE_FAST: float = 6.15
-const CAMERA_HEIGHT: float = 2.72
-const CAMERA_LOOK_AHEAD: float = 9.6
+const CAMERA_DISTANCE_NEAR: float = 4.35
+const CAMERA_DISTANCE_FAST: float = 4.8
+const CAMERA_HEIGHT: float = 2.6
+const CAMERA_LOOK_AHEAD: float = 7.6
 const CAMERA_TARGET_HEIGHT: float = 1.12
 const CAMERA_LERP: float = 7.4
 const CAMERA_ROLL_MAX: float = 0.052
-const BASE_FOV: float = 64.0
-const SPEED_FOV: float = 70.0
-const BOOST_FOV: float = 78.0
+const BASE_FOV: float = 55.0
+const SPEED_FOV: float = 60.0
+const BOOST_FOV: float = 68.0
 const FOV_LERP: float = 4.8
 
 
