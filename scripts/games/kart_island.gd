@@ -2290,6 +2290,7 @@ func _update_finish_cine(delta: float) -> void:
 	finish_coast_speed = move_toward(finish_coast_speed, 0.0, delta * maxf(6.0, finish_coast_speed * 0.55))
 	player.position += ahead * finish_coast_speed * delta
 	player.set_motion(finish_coast_speed, 0.0, false, false)
+	speed = finish_coast_speed
 	if is_instance_valid(camera):
 		var blend: float = smoothstep(0.0, 1.0, t)
 		var side := Vector3(-ahead.z, 0, ahead.x)
