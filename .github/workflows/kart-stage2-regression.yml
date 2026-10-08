@@ -135,6 +135,16 @@ jobs:
           fi
           grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/kart-fold.log"
 
+      - name: Actual swipe over pause settings buttons
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --log exports/touch-scroll/probe.log \
+            --timeout 120 --required '[PauseTouchScroll] PASS:' -- \
+            xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 --path . \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://scripts/tests/kart_pause_touch_scroll_regression.gd
+
       - name: Capture actual runtime frames for four track worlds
         shell: bash
         run: |
@@ -214,5 +224,6 @@ jobs:
             exports/zauberwald/*.png
             exports/holo-city/*.png
             exports/sky-halo-authoring/*.png
+            exports/touch-scroll/**
           if-no-files-found: warn
           retention-days: 14

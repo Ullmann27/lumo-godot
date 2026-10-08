@@ -689,6 +689,9 @@ func _label(text: String, size: int = 23) -> Label:
 
 func _button(text: String, callback: Callable, color: Color = Color("153757")) -> Button:
 	var button := Button.new()
+	# Let the enclosing ScrollContainer receive a swipe that begins on a
+	# settings button. Its scroll-begin notification cancels the button press.
+	button.mouse_filter = Control.MOUSE_FILTER_PASS
 	button.text = text
 	button.custom_minimum_size = Vector2(80, 58)
 	button.add_theme_font_size_override("font_size", 21)

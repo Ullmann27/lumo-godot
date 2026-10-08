@@ -10,6 +10,7 @@ static func build(
 	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
 	var normals: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
 	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var source_colors: PackedColorArray = arrays[Mesh.ARRAY_COLOR] if arrays[Mesh.ARRAY_COLOR] != null else PackedColorArray()
 	var cumulative := PackedFloat32Array()
 	var total: float = 0.0
 	for i in range(0, indices.size(), 3):
@@ -53,9 +54,14 @@ static func build(
 		var tangent: Vector3 = normal.cross(groom).normalized()
 		var length_value: float = strand_length * rng.randf_range(0.68, 1.2)
 		var tip: Vector3 = at + normal * length_value * 0.55 + groom * length_value * 0.65
-		var width: float = length_value * 0.19
-		var root_color: Color = color.darkened(rng.randf_range(0.0, 0.14))
-		var tip_color: Color = color.lightened(rng.randf_range(0.01, 0.08))
+		var width: float = length_value * 0.075
+		var pigment: Color = color
+		if source_colors.size() == vertices.size():
+			pigment *= source_colors[a] * wa + source_colors[b] * wb + source_colors[c] * wc
+		# Fine, gently shaded fibres avoid the coarse confetti appearance of
+		# wide, high-contrast triangles while keeping the same strand budget.
+		var root_color: Color = pigment.darkened(rng.randf_range(0.0, 0.045))
+		var tip_color: Color = pigment.lightened(rng.randf_range(0.01, 0.035))
 		# A narrow triangular prism remains visible from both race and garage cameras.
 		var root_points: Array[Vector3] = [
 			at - tangent * width, at + tangent * width, at + normal * width
