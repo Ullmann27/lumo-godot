@@ -142,4 +142,6 @@ func _run() -> void:
 	print("[KartPreview] PASS: 5-s-Kamerafahrt mit Titel, einrollende Startaufstellung, Startampel 3-2-1-grün, eingefrorener Countdown, weicher Übergang, Überspringen, Pause, reduzierte Bewegung, Fortsetzen")
 	game.abandoned = true
 	game.queue_free()
+	await process_frame
+	await create_timer(0.2).timeout
 	quit(0)
