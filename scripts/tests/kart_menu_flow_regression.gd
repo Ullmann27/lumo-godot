@@ -89,6 +89,26 @@ func _run() -> void:
 		await _settle()
 		for step in range(5):
 			assert(game.garage.step == step)
+			if step == 2:
+				assert(game.garage.choices.get_child_count() == 9)
+				var new_kart: Control = game.garage.choices.get_child(3)
+				game.garage.choices.get_parent().ensure_control_visible(new_kart)
+				await _settle()
+				await _tap(new_kart)
+				await _settle()
+				assert(game.garage.setup.kart == "gecko_velo")
+				var inspect: OptionButton = game.garage.view_choice
+				assert(inspect.is_visible_in_tree())
+				assert(game.safe_ui.get_global_rect().encloses(inspect.get_global_rect()))
+				assert(inspect.size.y * root.size.y / root.get_visible_rect().size.y >= 43.99)
+				game.garage._choose_preview_view(2)
+				await _settle()
+				root.get_texture().get_image().save_png(
+					(
+						"res://exports/holographic-proof/garage-inspection-%dx%d.png"
+						% [pixels.x, pixels.y]
+					)
+				)
 			assert(
 				(
 					(

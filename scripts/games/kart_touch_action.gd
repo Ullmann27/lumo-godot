@@ -1,35 +1,33 @@
 extends Control
 ## Independent right-thumb action, including simultaneous multi-touch.
 
-## Heinz' Bedienelemente-Blatt: gemeinsamer Glasrahmen plus ein Symbol je Aktion. Drift, Schild,
-## Impuls und Wind fehlen auf dem Blatt und sind im selben Stil gezeichnet (tools/art/make_hud_icons.py).
-const FRAME: Texture2D = preload("res://assets/kart/hud/frame.png")
 const ICONS: Dictionary = {
-	"gas": preload("res://assets/kart/hud/icon_gas.png"),
-	"boost": preload("res://assets/kart/hud/icon_boost.png"),
-	"drift": preload("res://assets/kart/hud/icon_drift.png"),
-	"brake": preload("res://assets/kart/hud/icon_brake.png"),
-	"item": preload("res://assets/kart/hud/icon_item.png"),
+	"gas": preload("res://assets/kart/controls/gas.svg"),
+	"boost": preload("res://assets/kart/controls/boost.svg"),
+	"drift": preload("res://assets/kart/controls/drift.svg"),
+	"brake": preload("res://assets/kart/controls/brake.svg"),
+	"item": preload("res://assets/kart/controls/item.svg"),
+}
+var icon_id: String = "boost"
+const ART: Dictionary = {
+	"drift": [preload("res://assets/kart/controls/reference/drift_normal.png"), preload("res://assets/kart/controls/reference/drift_pressed.png"), preload("res://assets/kart/controls/reference/drift_disabled.png")],
+	"gas": [preload("res://assets/kart/controls/reference/gas_normal.png"), preload("res://assets/kart/controls/reference/gas_pressed.png"), preload("res://assets/kart/controls/reference/gas_disabled.png")],
+	"brake": [preload("res://assets/kart/controls/reference/bremse_normal.png"), preload("res://assets/kart/controls/reference/bremse_pressed.png"), preload("res://assets/kart/controls/reference/bremse_disabled.png")],
+	"boost": [preload("res://assets/kart/controls/reference/speed_normal.png"), preload("res://assets/kart/controls/reference/speed_pressed.png"), preload("res://assets/kart/controls/reference/speed_disabled.png")],
+	"item": [preload("res://assets/kart/controls/reference/item_normal.png"), preload("res://assets/kart/controls/reference/item_pressed.png"), preload("res://assets/kart/controls/reference/item_disabled.png")],
+}
+const LABEL_FONT = preload("res://assets/fonts/Nunito-Black.ttf")
+## Was im Item-Knopf liegt, zeigt ein kleines Abzeichen (Schild, Impuls oder Wind).
+const ITEM_BADGES: Dictionary = {
 	"shield": preload("res://assets/kart/hud/icon_shield.png"),
 	"pulse": preload("res://assets/kart/hud/icon_pulse.png"),
-	"wind": preload("res://assets/kart/hud/icon_wind.png"),
+	"boost": preload("res://assets/kart/hud/icon_wind.png"),
 }
-## Symbolmitte und -größe im Rahmen (Anteile der Rahmenbreite), aus dem Blatt vermessen.
-const ICON_FIT: Dictionary = {
-	"gas": [Vector2(0.489, 0.459), 0.711],
-	"brake": [Vector2(0.492, 0.459), 0.720],
-	"boost": [Vector2(0.468, 0.462), 0.668],
-	"item": [Vector2(0.486, 0.459), 0.705],
-	"drift": [Vector2(0.50, 0.46), 0.70],
-	"shield": [Vector2(0.50, 0.46), 0.66],
-	"pulse": [Vector2(0.50, 0.46), 0.70],
-	"wind": [Vector2(0.50, 0.46), 0.68],
-}
-var icon_id: String = "boost":
+var item_kind: String = "":
 	set(value):
-		if icon_id == value:
+		if item_kind == value:
 			return
-		icon_id = value
+		item_kind = value
 		queue_redraw()
 var press_depth: float = 0.0:
 	set(value):
@@ -68,6 +66,7 @@ func _ready() -> void:
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_override("font", LABEL_FONT)
 	label.add_theme_color_override("font_shadow_color", Color("06182d"))
 	label.add_theme_constant_override("shadow_offset_y", 2)
 	add_child(label)
@@ -105,10 +104,10 @@ func _apply_label_size() -> void:
 	if not is_instance_valid(label):
 		return
 	var side: float = minf(size.x, size.y)
-	label.position = Vector2(0, side * 0.66)
-	label.size = Vector2(size.x, side * 0.25)
+	label.position = Vector2(0, side * 0.69)
+	label.size = Vector2(size.x, side * 0.21)
 	# The label and artwork grow with the actual button, also on dense Fold screens.
-	var ratio: float = 0.145 if label.text.length() > 5 else 0.175
+	var ratio: float = 0.125 if label.text.length() > 5 else 0.155
 	label.add_theme_font_size_override("font_size", maxi(10, roundi(side * ratio)))
 	badge.position = Vector2(side * 0.74, side * 0.02)
 	badge.size = Vector2.ONE * side * 0.25
@@ -168,25 +167,46 @@ func _release() -> void:
 	queue_redraw()
 
 
+func _draw_panel(rectangle: Rect2, fill: Color, border: Color, width: float) -> void:
+	var style := StyleBoxFlat.new()
+	style.bg_color = fill
+	style.border_color = border
+	style.set_border_width_all(maxi(1, roundi(width)))
+	style.set_corner_radius_all(roundi(rectangle.size.x * 0.30))
+	draw_style_box(style, rectangle)
+
+
 func _draw() -> void:
 	var side: float = minf(size.x, size.y)
-	var shift: float = press_depth * side * 0.03
-	var fade: float = 0.55 if disabled else 1.0
-	var frame_height: float = side * float(FRAME.get_height()) / float(FRAME.get_width())
-	var frame := Rect2(Vector2((size.x - side) * 0.5, (size.y - frame_height) * 0.5 + shift), Vector2(side, frame_height))
+	if ART.has(icon_id):
+		var state: int = 2 if disabled else (1 if held else 0)
+		var texture: Texture2D = ART[icon_id][state]
+		# Source face = 400/512 px; preserve the original generous visible button.
+		var extent: float = side * 1.12
+		draw_texture_rect(texture, Rect2((size - Vector2.ONE * extent) * 0.5, Vector2.ONE * extent), false)
+		if is_instance_valid(badge) and badge.visible:
+			draw_circle(Vector2(side * 0.865, side * 0.145), side * 0.125, Color("113657"))
+			var tint: Color = Color("9bb6d6") if disabled else Color("72e6ff")
+			draw_arc(Vector2(side * 0.865, side * 0.145), side * 0.125, 0, TAU, 32, tint, side * 0.015, true)
+		if ITEM_BADGES.has(item_kind):
+			var middle := Vector2(side * 0.84, side * 0.17)
+			var radius: float = side * 0.17
+			draw_circle(middle, radius, Color("0d2440"))
+			draw_arc(middle, radius, 0, TAU, 40, Color("9bb6d6") if disabled else Color("72e6ff"), side * 0.018, true)
+			draw_texture_rect(ITEM_BADGES[item_kind], Rect2(middle - Vector2.ONE * radius * 0.95, Vector2.ONE * radius * 1.9), false)
+		return
+	var inset: float = side * 0.045
+	var shift: float = press_depth * side * 0.045
+	var face := Rect2(Vector2(inset, inset + shift), Vector2.ONE * (side - inset * 2.0))
 	var tint: Color = Color("67809b") if disabled else accent
-	if held:
-		draw_circle(frame.get_center(), side * 0.50, Color(tint, 0.20))
-	var base := Color(0.62, 0.70, 0.82, fade) if disabled else Color.WHITE
-	if held:
-		base = Color(1.12, 1.12, 1.12)
-	draw_texture_rect(FRAME, frame, false, base)
-	var fit: Array = ICON_FIT.get(icon_id, ICON_FIT["boost"])
+	_draw_panel(face.grow(side * 0.035), Color(tint, 0.10), Color(tint, 0.15), side * 0.02)
+	_draw_panel(Rect2(face.position + Vector2(0, side * 0.045 - shift), face.size), Color("061326"), Color("08152d"), 2)
+	_draw_panel(face, Color("1a385b").lerp(tint, 0.34 if held else 0.15), tint, side * 0.027)
+	var highlight := Rect2(face.position + Vector2(side * 0.06, side * 0.035), Vector2(side * 0.70, side * 0.22))
+	_draw_panel(highlight, Color(tint, 0.10), Color(tint, 0.0), 0)
 	var icon: Texture2D = ICONS.get(icon_id, ICONS["boost"])
-	var extent: float = float(fit[1]) * side
-	var middle: Vector2 = frame.position + Vector2(float(fit[0].x) * frame.size.x, float(fit[0].y) * frame.size.y)
-	var icon_tint := Color(0.66, 0.72, 0.82, 0.72) if disabled else Color(1.08, 1.08, 1.08) if held else Color.WHITE
-	draw_texture_rect(icon, Rect2(middle - Vector2.ONE * extent * 0.5, Vector2.ONE * extent), false, icon_tint)
+	var artwork := Rect2(Vector2(side * 0.18, side * 0.04 + shift), Vector2.ONE * side * 0.64)
+	draw_texture_rect(icon, artwork, false, Color(0.60, 0.67, 0.78, 0.82) if disabled else Color.WHITE)
 	if is_instance_valid(badge) and badge.visible:
 		draw_circle(Vector2(side * 0.865, side * 0.145), side * 0.125, Color("113657"))
 		draw_arc(Vector2(side * 0.865, side * 0.145), side * 0.125, 0, TAU, 32, tint, side * 0.015, true)

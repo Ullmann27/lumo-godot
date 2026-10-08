@@ -13,6 +13,9 @@ func _start(mode: String, track: String) -> void:
 	game._start_selected_race(
 		{"mode": mode, "driver": "fox", "kart": "comet", "track": track, "difficulty": "flott"}
 	)
+	# Finish the new grid-roll preview before a probe sets its own heading.
+	# Otherwise the first manual physics tick restores the forward start pose.
+	game._end_preview()
 	game.countdown = 0
 	game.racing = true
 	await process_frame
@@ -225,6 +228,24 @@ func _test_mystery_item_boxes() -> void:
 	await _start("training", "bergwelt")
 	assert(game.item_boxes.size() == 5, "Race course exposes five mystery item boxes")
 	for box in game.item_boxes:
+		assert(box.get_meta("mystery_visual") == "lumo_prism")
+		var core: MeshInstance3D = box.get_node("MysteryPrismCore")
+		var edges: MeshInstance3D = box.get_node("MysteryPrismEdges")
+		assert(
+			core.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size() == 24,
+			"Mystery pickup has eight true triangular facets"
+		)
+		assert(box.get_child_count() == 2, "Readable pickup keeps only two opaque draw surfaces")
+		var finish: StandardMaterial3D = core.material_override
+		assert(
+			finish.albedo_color.b > 0.5 and finish.albedo_color.g < 0.4,
+			"Prism retains its violet colour"
+		)
+		assert(
+			finish.emission_energy_multiplier <= 0.25,
+			"Core emission cannot bleach the faceted pickup"
+		)
+		assert(edges.material_override.albedo_color.r > 0.9)
 		assert(
 			(
 				is_equal_approx(box.scale.x, 1.18)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Zeichnet die Symbole, die Heinz' Bedienelemente-Blatt nicht enthält (Drift, Schild, Impuls, Wind),
-im selben Stil wie Pedal, Bremsscheibe, Rakete und Würfel: Glasverlauf, helle Kante, farbiges Leuchten.
-Ausgabe: assets/kart/hud/icon_drift.png, icon_shield.png, icon_pulse.png, icon_wind.png (256 x 256, RGBA).
+"""Zeichnet die Abzeichen für den Inhalt des Item-Knopfs (Schild, Impuls, Wind), die Heinz'
+Bedienelemente-Blatt nicht enthält: Glasverlauf, helle Kante, farbiges Leuchten.
+Ausgabe: assets/kart/hud/icon_shield.png, icon_pulse.png, icon_wind.png (256 x 256, RGBA).
 Aufruf: python3 tools/art/make_hud_icons.py
 """
 import math
@@ -75,36 +75,6 @@ def stroke_mask(points, width):
     return mask.filter(ImageFilter.GaussianBlur(1.6))
 
 
-def drift():
-    # Kart von oben, quer ins Rutschen gedreht, mit zwei Reifenspuren dahinter.
-    body = Image.new("L", (S, S), 0)
-    d = ImageDraw.Draw(body)
-    cx, cy = 600, 470
-    d.rounded_rectangle((cx - 120, cy - 190, cx + 120, cy + 190), radius=90, fill=255)
-    for dx in (-165, 165):
-        for dy in (-120, 120):
-            d.rounded_rectangle((cx + dx - 40, cy + dy - 62, cx + dx + 40, cy + dy + 62), radius=26, fill=255)
-    body = body.rotate(32, center=(cx, cy), resample=Image.BICUBIC)
-    # Ausschnitt für das Cockpit
-    cockpit = Image.new("L", (S, S), 0)
-    ImageDraw.Draw(cockpit).rounded_rectangle((cx - 62, cy - 70, cx + 62, cy + 60), radius=44, fill=255)
-    cockpit = cockpit.rotate(32, center=(cx, cy), resample=Image.BICUBIC)
-    body = ImageChops.subtract(body, cockpit.point(lambda v: int(v * 0.85)))
-    canvas = finish(body, (236, 214, 255), (146, 92, 255), glow=(176, 120, 255))
-    for offset, alpha in ((0, 255), (86, 200)):
-        trail = bezier((130 + offset * 0.2, 840 - offset), (330 + offset * 0.4, 520 - offset), (470 + offset * 0.3, 610 - offset * 0.9))
-        mask = stroke_mask(trail, 40)
-        mask = mask.point(lambda v, a=alpha: int(v * a / 255))
-        canvas.alpha_composite(finish(mask, (255, 186, 244), (255, 96, 214), glow=(255, 110, 220)))
-    # Funken
-    sparks = Image.new("L", (S, S), 0)
-    sd = ImageDraw.Draw(sparks)
-    for x, y, r in ((300, 330, 24), (210, 450, 16), (820, 760, 20), (720, 840, 13)):
-        sd.polygon([(x, y - r * 1.6), (x + r * 0.5, y - r * 0.5), (x + r * 1.6, y), (x + r * 0.5, y + r * 0.5), (x, y + r * 1.6), (x - r * 0.5, y + r * 0.5), (x - r * 1.6, y), (x - r * 0.5, y - r * 0.5)], fill=255)
-    canvas.alpha_composite(finish(sparks.filter(ImageFilter.GaussianBlur(1.2)), (255, 255, 255), (255, 214, 120), glow=(255, 200, 100)))
-    return canvas
-
-
 def shield():
     cx = S // 2
     outline = (bezier((cx, 140), (cx + 330, 170), (cx + 330, 430)) + bezier((cx + 330, 430), (cx + 300, 700), (cx, 890))
@@ -159,7 +129,7 @@ def wind():
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    for name, make in (("drift", drift), ("shield", shield), ("pulse", pulse), ("wind", wind)):
+    for name, make in (("shield", shield), ("pulse", pulse), ("wind", wind)):
         image = make().resize((256, 256), Image.LANCZOS)
         image.save(OUT / f"icon_{name}.png")
         print(name)

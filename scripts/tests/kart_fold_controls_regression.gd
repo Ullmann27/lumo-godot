@@ -33,6 +33,7 @@ func _run() -> void:
 	root.add_child(game)
 	await _settle()
 	game._start_selected_race({"mode":"training", "driver":"fox", "kart":"comet", "track":"candy_cloud", "difficulty":"gemuetlich"})
+	game._end_preview()
 	game.set_physics_process(false)
 	game.auto_gas = false
 	game.countdown = 0
@@ -69,6 +70,9 @@ func _run() -> void:
 		if expanded:
 			assert(_pixels(game.joystick).x >= shortest * 0.30, "Fold stick must remain prominent")
 			assert(_pixels(game.gas_button).x >= shortest * 0.21, "Fold gas button must grow with display")
+			var driver_center: Vector2 = game.camera.unproject_position(game.player.global_position + Vector3.UP * 0.8)
+			for action in actions:
+				assert(not action.get_global_rect().has_point(driver_center), "Fold action hides the driver's back: %s" % action.name)
 		if pixels == Vector2i(1280,720):
 			assert(is_equal_approx(_pixels(game.gas_button).x,156.0), "Normal landscape sizing changed")
 		if pixels == Vector2i(800,360):

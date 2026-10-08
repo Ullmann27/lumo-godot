@@ -22,6 +22,7 @@ const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
 const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
+const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
@@ -44,6 +45,14 @@ const JUMP_MAX_LIFT: float = 4.0
 ## AI pulse is deliberately telegraphed: children get a readable dodge/shield window.
 const RIVAL_PULSE_WARNING_SECONDS: float = 0.65
 const RIVAL_PULSE_RADIUS: float = 9.5
+## Save only bounded gameplay durations; absent fields keep older sessions neutral.
+const RIVAL_SESSION_TIMERS: Dictionary = {
+	"opponent_stuns": 2.3,
+	"opponent_item_cooldowns": 1.8,
+	"opponent_boost_times": 2.2,
+	"opponent_shield_times": 5.0,
+	"opponent_pulse_warning_times": RIVAL_PULSE_WARNING_SECONDS,
+}
 ## Streckenvorschau vor dem Countdown: Kameraflug über markante Abschnitte,
 ## jederzeit per Tippen/Taste überspringbar, entfällt bei reduzierten Animationen.
 const PREVIEW_SECONDS: float = 5.0
@@ -610,7 +619,7 @@ func _begin_race() -> void:
 		kart_audio.set_paused(false)
 		kart_audio.play_track("arena" if mode == "arena" else track_id)
 	message.text = (
-		"Stick links lenkt · rechts GAS halten, BREMSE, DRIFT, BOOST, ITEM"
+		"Stick links lenkt · rechts GAS halten, BREMSE, DRIFT, SPEED, ITEM"
 		if OS.has_feature("android") or OS.has_feature("ios")
 		else "W: Gas · S: Bremse · A/D: lenken · Umschalt: Drift · Leertaste: Boost · E: Item"
 	)
@@ -738,7 +747,7 @@ func _build_pedal_pad() -> Control:
 	drift_button.icon_id = "drift"
 	drift_button.button_down.connect(func(): drifting = racing and not paused)
 	drift_button.button_up.connect(_release_drift)
-	boost_button = _action("BOOST\n◆ 1", _boost, Color("66f7e8"), 112)
+	boost_button = _action("SPEED\n◆ 1", _boost, Color("66f7e8"), 112)
 	boost_button.name = "BoostAction"
 	boost_button.icon_id = "boost"
 	item_button = _action("ITEM\n◇", _use_item, Color("a7c5ff"), 94)
@@ -978,19 +987,24 @@ func _apply_responsive_layout() -> void:
 	var shortest: float = minf(display_size.x, display_size.y)
 	var expanded_controls: bool = shortest >= 600.0 and maxf(display_size.x, display_size.y) / shortest <= 1.65
 	if expanded_controls:
-		var deck_scale: float = minf(shortest / 640.0, available_width / 698.0)
+		# Leave the chase camera's central driver visible on inner Fold displays.
+		# The right actions form a narrower two-column deck; touch targets still
+		# grow with the short edge rather than filling the entire lower screen.
+		var deck_scale: float = minf(shortest / 760.0, available_width / 596.0)
 		deck_scale = clampf(deck_scale, 0.70, 2.65)
 		joystick.custom_minimum_size = Vector2.ONE * 248.0 * deck_scale * ui_scale
-		pedal_pad.custom_minimum_size = Vector2(410, 324) * deck_scale * ui_scale
+		# Keep a real inset around every target, including scaled floating-point
+		# bounds when a Fold display resizes and the safe area is reapplied.
+		pedal_pad.custom_minimum_size = Vector2(328, 352) * deck_scale * ui_scale
 		controls_row.add_theme_constant_override("separation", roundi(20.0 * deck_scale * ui_scale))
 		controls_gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		controls_gap.custom_minimum_size = Vector2.ZERO
 		var fold_actions: Dictionary = {
-			"DriftAction": [Vector2(168, 84), 116.0],
-			"BoostAction": [Vector2(318, 66), 124.0],
-			"ItemAction": [Vector2(54, 150), 100.0],
-			"BrakePedal": [Vector2(158, 260), 108.0],
-			"GasPedal": [Vector2(312, 232), 176.0]
+			"DriftAction": [Vector2(62, 62), 116.0],
+			"BoostAction": [Vector2(236, 70), 124.0],
+			"ItemAction": [Vector2(62, 180), 100.0],
+			"BrakePedal": [Vector2(62, 294), 108.0],
+			"GasPedal": [Vector2(236, 254), 176.0]
 		}
 		for child in pedal_pad.get_children():
 			if child is Control:
@@ -1205,10 +1219,8 @@ func _physics_process(delta: float) -> void:
 		if gems[i].visible and not paused and not reduced_motion:
 			gems[i].rotation.y += delta * 1.7
 	if mode != "arena":
-		var item_lap: int = int(distance / track_length)
+		_sync_item_box_visibility()
 		for i in range(item_boxes.size()):
-			var item_key: int = item_lap * item_boxes.size() + i
-			item_boxes[i].visible = not item_box_collected.has(item_key)
 			if item_boxes[i].visible and not paused and not reduced_motion:
 				item_boxes[i].rotation.y += delta * 1.35
 				item_boxes[i].rotation.x = sin(elapsed * 2.0 + float(i)) * 0.08
@@ -1679,6 +1691,9 @@ func _reset_kart() -> void:
 	speed = 0
 	physical_velocity = Vector3.ZERO
 	offroad_seconds = 0
+	airborne = false
+	vertical_speed = 0.0
+	air_time = 0.0
 	reset_count += 1
 	ghost_valid = false
 	message.text = "Wieder sicher auf der Strecke. Du schaffst das!"
@@ -1706,7 +1721,7 @@ func _update_hud() -> void:
 	else:
 		hud.text = "RUNDE %d / %d    PLATZ %d / 6    %d km/h    ★ %d" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, place, int(speed * 3.6), collected.size()]
 	var enabled: bool = racing and not paused and not finished
-	boost_button.text = "BOOST\n◆ %d" % boosts
+	boost_button.text = "SPEED\n◆ %d" % boosts
 	boost_button.disabled = boosts == 0 or not enabled
 	var drift_state: String = "HALTEN"
 	if drift_charge >= DRIFT_TIERS[1]:
@@ -1716,7 +1731,7 @@ func _update_hud() -> void:
 	drift_button.text = "DRIFT\n" + drift_state
 	drift_button.disabled = not enabled
 	item_button.text = {"": "ITEM\n◇", "shield": "SCHILD\n◎", "pulse": "IMPULS\n✧", "boost": "WIND\n➜"}.get(item, "ITEM")
-	item_button.icon_id = {"shield": "shield", "pulse": "pulse", "boost": "wind"}.get(item, "item")
+	item_button.item_kind = item
 	item_button.disabled = item.is_empty() or not enabled
 	joystick.set_enabled(enabled)
 	gas_button.disabled = not enabled
@@ -2659,6 +2674,7 @@ func _leave_race_for_menu() -> void:
 func _rebuild_graphics() -> void:
 	var saved_transform: Transform3D = player.transform
 	var saved_heading: float = player_heading
+	var saved_item_boxes: Dictionary = item_box_collected.duplicate()
 	var rival_transforms: Array[Transform3D] = []
 	for rival in opponents:
 		rival_transforms.append(rival.transform)
@@ -2686,6 +2702,8 @@ func _rebuild_graphics() -> void:
 	for key in state:
 		var target: Array = get(key)
 		target.assign(state[key])
+	item_box_collected.assign(saved_item_boxes)
+	_sync_item_box_visibility()
 	for i in range(opponent_item_fx.size()):
 		_sync_rival_item_fx(i)
 	records.recording = saved_recording
@@ -2747,8 +2765,10 @@ func _save_session() -> void:
 		"mode", "track_id", "selected_driver", "selected_kart", "player_heading", "previous_road_distance",
 		"cup_index", "cup_points", "cup_results", "pending_cup_next", "finished", "completed_race", "result_payload",
 		"arena_scores", "arena_pickup_timers", "opponent_scores", "opponent_targets", "opponent_headings",
-		"item", "shield_time", "reset_count", "setup_snapshot"
+		"item", "shield_time", "reset_count", "setup_snapshot", "item_box_collected", "opponent_items"
 	]:
+		config.set_value("race", key, get(key))
+	for key in RIVAL_SESSION_TIMERS:
 		config.set_value("race", key, get(key))
 	if loop_state.active:
 		# A interrupted loop resumes safely on its entry road, with no lap shortcut.
@@ -2792,6 +2812,7 @@ func _restore_session() -> bool:
 	]:
 		var target: Array = get(key)
 		target.assign(config.get_value("race", key, target))
+	_restore_item_continuity(config)
 	if int(config.get_value("race", "version", 0)) < 3:
 		checkpoint_index = clampi(int(distance / (track_length / 8.0)), 0, TOTAL_LAPS * 8)
 		player.transform = world.reset_transform(distance, lane)
@@ -2811,6 +2832,43 @@ func _restore_session() -> bool:
 	if finished:
 		_show_result()
 	return true
+
+
+func _sync_item_box_visibility() -> void:
+	var lap: int = int(distance / track_length)
+	for i in range(item_boxes.size()):
+		item_boxes[i].visible = not item_box_collected.has(lap * item_boxes.size() + i)
+
+
+func _restore_item_continuity(config: ConfigFile) -> void:
+	item_box_collected.clear()
+	var saved_pickups = config.get_value("race", "item_box_collected", {})
+	if saved_pickups is Dictionary:
+		for key in saved_pickups:
+			if (
+				typeof(key) == TYPE_INT and key >= 0
+				and typeof(saved_pickups[key]) == TYPE_BOOL and saved_pickups[key]
+			):
+				item_box_collected[key] = true
+	_sync_item_box_visibility()
+	var saved_items = config.get_value("race", "opponent_items", [])
+	for i in range(opponents.size()):
+		var saved_item: String = ""
+		if saved_items is Array and i < saved_items.size() and saved_items[i] is String:
+			saved_item = saved_items[i]
+		opponent_items[i] = saved_item if saved_item in ["boost", "shield", "pulse"] else ""
+	for key in RIVAL_SESSION_TIMERS:
+		var timers: Array = get(key)
+		var saved_timers = config.get_value("race", key, [])
+		for i in range(opponents.size()):
+			var seconds: float = 0.0
+			if saved_timers is Array and i < saved_timers.size():
+				var value = saved_timers[i]
+				if typeof(value) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(value)):
+					seconds = clampf(float(value), 0.0, float(RIVAL_SESSION_TIMERS[key]))
+			timers[i] = seconds
+	for i in range(opponent_item_fx.size()):
+		_sync_rival_item_fx(i)
 
 
 func _notification(what: int) -> void:
@@ -2959,19 +3017,7 @@ func _item_box(distance_on_track: float, lateral: float) -> void:
 	node.basis = basis
 	node.scale = Vector3.ONE * (1.18 if world.track_id == "bergwelt" else 1.0)
 	race_root.add_child(node)
-	var core := _box(node, Vector3.ZERO, Vector3(1.25, 1.25, 1.25), Color("3756c9"))
-	core.material_override = _glow_material(Color("627dff"), 1.0)
-	for axis in [-1.0, 1.0]:
-		var stripe := _box(
-			node,
-			Vector3(axis * 0.66, 0.0, 0.0),
-			Vector3(0.08, 1.36, 1.36),
-			Color("5ff2ff")
-		)
-		stripe.material_override = _glow_material(Color("5ff2ff"), 1.5)
-	var diamond := _box(node, Vector3(0.0, 0.0, 0.68), Vector3(0.34, 0.34, 0.08), Color("ffc94a"))
-	diamond.rotation.z = PI * 0.25
-	diamond.material_override = _glow_material(Color("ffc94a"), 1.4)
+	MYSTERY_PRISM.build(node)
 	item_boxes.append(node)
 	item_box_distances.append(distance_on_track)
 
@@ -3066,3 +3112,4 @@ func _apply_volumes() -> void:
 func _sound_effect(kind: String) -> void:
 	if is_instance_valid(kart_audio):
 		kart_audio.effect(kind)
+

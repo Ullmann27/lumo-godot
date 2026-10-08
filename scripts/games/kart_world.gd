@@ -7,6 +7,9 @@ const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
+const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
+const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
+const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
 const RAIL_LATERAL: float = 6.05
@@ -58,6 +61,8 @@ func build(
 		SKY_ISLANDS.build(self)
 		SKY_ISLANDS.jump_dressing(self)
 		SKY_ISLANDS.chevrons(self)
+		FLEET_DRESSING.build(self)
+		TRACK_DETAIL.build(self)
 		_flush_instances()
 		return
 	if not geometry_only:
@@ -70,6 +75,8 @@ func build(
 		EXPANSION.build(self)
 		LANDMARKS.build(self)
 		_navigation()
+		FLEET_DRESSING.build(self)
+		TRACK_DETAIL.build(self)
 		_flush_instances()
 		return
 	_terrain()
@@ -84,6 +91,8 @@ func build(
 	if track_id=="sonnenhafen":
 		_grand_prix_dressing()
 	LANDMARKS.build(self)
+	FLEET_DRESSING.build(self)
+	TRACK_DETAIL.build(self)
 	_flush_instances()
 
 func _make_curve() -> void:
@@ -1014,12 +1023,7 @@ func _harbour() -> void:
 		p.y=_ground_height(p.x,p.z)
 		_tree(p,_rng.randf_range(0.8,1.35),_rng)
 		if i%3==0: _flower_patch(p+Vector3(2,0,1),Color("eef0b1"),5)
-	for pier in range(3):
-		var at := Vector3(96.0,-1.9,31.0-pier*15.0)
-		_prop("box",at,Vector3(21,0.45,2.0),Color("aa8964"))
-		for board in range(30): _prop("box",at+Vector3(-10.0+board*0.68,0.24,0),Vector3(0.025,0.035,1.95),Color("796e59"))
-		for i in range(3): _boat(at+Vector3(-7+i*6.3,-0.35,4.3),palette[(i+pier)%palette.size()],i%2==0)
-	_lighthouse(Vector3(88,_ground_height(88,-34),-34))
+	HARBOR_DRESSING.build(self)
 	_windmill(Vector3(-17,_ground_height(-17,12),12))
 	for i in range(30):
 		var angle: float=float(i)*TAU/30.0
@@ -1533,3 +1537,4 @@ func _holo_gate(distance: float) -> void:
 		_prop("box",at+basis.x*side*6.7+Vector3.UP*4.2,Vector3(0.32,8.4,0.42),Color("78deef"),basis,true)
 		_prop("box",at+basis.x*side*5.6+Vector3.UP*8.2,Vector3(2.7,0.32,0.42),Color("78deef"),basis.rotated(basis.z,side*0.5),true)
 	_prop("box",at+Vector3.UP*8.8,Vector3(9.0,0.32,0.42),Color("91dce9"),basis,true)
+

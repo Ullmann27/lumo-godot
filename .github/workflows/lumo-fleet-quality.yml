@@ -1,0 +1,145 @@
+name: Lumo Kart fleet, gameplay and real 3D proof
+permissions:
+  contents: read
+concurrency:
+  group: lumo-fleet-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  GODOT_TAG: 4.6.3-stable
+  LIBGL_ALWAYS_SOFTWARE: '1'
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/lumo-native-setup
+    - name: Check authoring style and source contracts
+      run: |
+        echo "$HOME/godot-bin" >> "$GITHUB_PATH"
+        gdlint scripts/games/kart_fleet.gd scripts/games/kart_fleet_dressing.gd scripts/tests/kart_fleet_regression.gd scripts/tests/kart_fleet_capture.gd scripts/tests/kart_fleet_movie.gd scripts/tests/kart_fleet_prop_export.gd
+        gdformat --check scripts/games/kart_fleet.gd scripts/games/kart_fleet_dressing.gd scripts/tests/kart_fleet_regression.gd scripts/tests/kart_fleet_capture.gd scripts/tests/kart_fleet_movie.gd scripts/tests/kart_fleet_prop_export.gd
+        python3 tools/validate_project.py
+        python3 -m unittest discover -s tools/tests -v
+    - name: Existing physics, bridge, vehicle, character and input regressions
+      run: |
+        set -euo pipefail
+        godot --version | tee exports/fleet-logs/ENGINE.txt
+        bash tools/validate_project.sh 2>&1 | tee exports/fleet-logs/project-validation.log
+    - name: Fleet and actual compact-screen menu regression
+      run: |
+        set -euo pipefail
+        for probe in kart_fleet_regression kart_vehicle_detail_regression kart_harbor_regression kart_track_detail_regression kart_menu_flow_regression kart_fold_controls_regression kart_modes_regression kart_intro_regression kart_preview_regression kart_audio_regression; do
+          limit=240
+          if [ "$probe" = kart_fold_controls_regression ]; then limit=420; fi
+          python3 tools/run_godot_probe.py --timeout "$limit" --log "exports/fleet-logs/${probe}.log" -- xvfb-run -a -s '-screen 0 1920x2560x24' godot --audio-driver Dummy --rendering-method gl_compatibility --script "scripts/tests/${probe}.gd"
+        done
+    - name: Collect all verification logs
+      if: always()
+      run: |
+        mkdir -p exports/fleet-logs
+        cp /tmp/lumo-*.log exports/fleet-logs/ 2>/dev/null || true
+    - name: Upload gameplay and touch verification
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: lumo-kart-fleet-checks-${{ github.sha }}
+        path: |
+          exports/fleet-logs/
+          exports/holographic-proof/menu-flow-*.png
+          exports/holographic-proof/race-flow-*.png
+          exports/holographic-proof/garage-inspection-*.png
+        retention-days: 30
+        if-no-files-found: warn
+  render-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/lumo-native-setup
+    - name: Import exact source for real renders
+      run: |
+        set -euo pipefail
+        timeout 120s godot --headless --editor --import --quit 2>&1 | tee exports/fleet-logs/render-import.log
+        if grep -qE "SCRIPT ERROR|Parse Error|ERROR:" exports/fleet-logs/render-import.log; then exit 1; fi
+    - name: Export and re-import six actual roadside modules
+      run: |
+        set -euo pipefail
+        timeout 60s godot --headless --script scripts/tests/kart_fleet_prop_export.gd 2>&1 | tee exports/fleet-logs/fleet-props.log
+        if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:|Assertion failed' exports/fleet-logs/fleet-props.log; then exit 1; fi
+        grep -qF '[FleetProps] PASS' exports/fleet-logs/fleet-props.log
+    - name: Real engine model renders, live race frames and GLBs
+      run: |
+        set -euo pipefail
+        timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' godot --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_fleet_capture.gd 2>&1 | tee exports/fleet-logs/capture.log
+        if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:|Assertion failed' exports/fleet-logs/capture.log; then exit 1; fi
+        grep -qF '[FleetCapture] PASS' exports/fleet-logs/capture.log
+        python3 - <<'PY'
+        import json, pathlib, struct
+        models = pathlib.Path('exports/fleet-models')
+        assert len(list(models.glob('*.glb'))) == 9
+        assert len(list(pathlib.Path('exports/fleet-proof').glob('*.png'))) == 52
+        for p in models.glob('*.glb'):
+            data = p.read_bytes()
+            magic, version, size = struct.unpack_from('<III', data)
+            assert (magic, version, size) == (0x46546C67, 2, len(data)), p
+        assert len(json.loads((models / 'models.json').read_text())) == 9
+        print('GLB v2 headers, 9 models and 52 actual renders verified')
+        PY
+    - name: Record actual animated models
+      run: |
+        set -euo pipefail
+        timeout 240s xvfb-run -a -s '-screen 0 960x540x24' godot --audio-driver Dummy --rendering-method gl_compatibility --resolution 960x540 --fixed-fps 24 --write-movie exports/fleet-video/native-fleet.avi --script scripts/tests/kart_fleet_movie.gd 2>&1 | tee exports/fleet-logs/movie.log
+        if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' exports/fleet-logs/movie.log; then exit 1; fi
+        ffmpeg -y -i exports/fleet-video/native-fleet.avi -an -c:v libx264 -crf 20 -pix_fmt yuv420p -movflags +faststart exports/fleet-video/Lumo_Kart_3D_Flotte.mp4
+        rm exports/fleet-video/native-fleet.avi
+    - name: Capture the marina from real geometry and its exact garage portraits
+      run: |
+        set -euo pipefail
+        python3 tools/run_godot_probe.py --timeout 120 --log exports/fleet-logs/harbor-capture.log -- xvfb-run -a -s '-screen 0 1280x720x24' godot --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_harbor_regression.gd -- --capture
+        python3 tools/run_godot_probe.py --timeout 120 --log exports/fleet-logs/garage-art.log -- xvfb-run -a -s '-screen 0 512x512x24' godot --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_garage_art_capture.gd
+    - name: Make playable web build
+      run: |
+        set -euo pipefail
+        bash tools/build_web_bundle.sh 2>&1 | tee exports/fleet-logs/web-build.log
+        cd exports/web
+        zip -q -r ../Lumo_Kart_Web_Testversion.zip .
+    - name: Upload proof and reusable geometry
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: lumo-kart-fleet-proof-${{ github.sha }}
+        path: |
+          exports/fleet-logs/
+          exports/fleet-proof/
+          exports/fleet-models/
+          exports/fleet-props/
+          exports/fleet-video/
+          exports/harbor-proof/
+          exports/garage-art/
+        retention-days: 30
+        if-no-files-found: warn
+    - name: Upload playable build
+      uses: actions/upload-artifact@v4
+      with:
+        name: lumo-kart-fleet-web-${{ github.sha }}
+        path: exports/Lumo_Kart_Web_Testversion.zip
+        retention-days: 30
+        if-no-files-found: error
+'on':
+  push:
+    branches:
+    - codex/lumo-kart-fleet-2026-10-08
+    - codex/lumo-kart-stage2-2026-10-08
+    - codex/lumo-reference-design-2026-10-08
+    paths:
+    - scripts/games/kart_*.gd
+    - scripts/tests/kart_*.gd
+    - tools/run_godot_probe.py
+    - tools/build_web_bundle.sh
+    - export_presets.cfg
+    - assets/kart/**
+    - assets/audio/kart/**
+    - .github/workflows/lumo-fleet-quality.yml
+    - .github/actions/lumo-native-setup/action.yml
+  workflow_dispatch: null

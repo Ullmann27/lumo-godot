@@ -1,14 +1,12 @@
 extends Control
 ## Analogue touch stick: owns one finger, leaving the other free for actions.
 
-## Heinz' Bedienelemente-Blatt: Lenkring mit Pfeilen und runder Lenkknopf. Kern = heller Teil ohne Leuchten.
-const RING: Texture2D = preload("res://assets/kart/hud/joystick_ring.png")
-const KNOB: Texture2D = preload("res://assets/kart/hud/joystick_knob.png")
-const RING_CORE_RATIO: float = 0.8353
-const KNOB_CORE_RATIO: float = 0.7381
-## Knopf-Kern im Verhältnis zum Ring-Kern und wie weit der Knopf auslenkt (Anteil des Ring-Kernradius).
-const KNOB_TO_RING: float = 0.5458
-const KNOB_TRAVEL: float = 0.42
+const BASE = preload("res://assets/kart/controls/reference/stick_basis.png")
+const KNOB = preload("res://assets/kart/controls/reference/stick_knopf_normal.png")
+const KNOB_PRESSED = preload("res://assets/kart/controls/reference/stick_knopf_pressed.png")
+## Source: 1024 px base, 512 px knob; physical diameter ratio = 0.4.
+const KNOB_CANVAS_RATIO: float = 0.5
+const KNOB_TRAVEL_RATIO: float = 128.0 / 1024.0
 
 signal axis_changed(value: Vector2)
 var axis := Vector2.ZERO
@@ -65,6 +63,7 @@ func _move(at: Vector2) -> void:
 	if target.length() < 0.08:
 		target = Vector2.ZERO
 	axis_changed.emit(target)
+	queue_redraw()
 
 
 func _reset() -> void:
@@ -72,12 +71,14 @@ func _reset() -> void:
 	mouse_active = false
 	target = Vector2.ZERO
 	axis_changed.emit(target)
+	queue_redraw()
 
 
 func set_enabled(value: bool) -> void:
 	enabled = value
 	if not value:
 		_reset()
+	queue_redraw()
 
 
 func _process(delta: float) -> void:
@@ -92,12 +93,10 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var center: Vector2 = size * 0.5
-	var ring_core: float = minf(size.x, size.y) * 0.88
-	var ring_extent: float = ring_core / RING_CORE_RATIO
-	var fade: Color = Color(1, 1, 1, 1.0) if enabled else Color(0.62, 0.7, 0.82, 0.55)
-	draw_texture_rect(RING, Rect2(center - Vector2.ONE * ring_extent * 0.5, Vector2.ONE * ring_extent), false, fade)
-	var knob_core: float = ring_core * KNOB_TO_RING
-	var knob_extent: float = knob_core / KNOB_CORE_RATIO
-	var knob: Vector2 = center + axis * ring_core * 0.5 * KNOB_TRAVEL
-	draw_circle(knob + Vector2(0, knob_core * 0.07), knob_core * 0.52, Color(0.0, 0.03, 0.09, 0.38 if enabled else 0.2))
-	draw_texture_rect(KNOB, Rect2(knob - Vector2.ONE * knob_extent * 0.5, Vector2.ONE * knob_extent), false, fade)
+	var side: float = minf(size.x, size.y)
+	var tint: Color = Color.WHITE if enabled else Color(0.68, 0.74, 0.84, 0.82)
+	draw_texture_rect(BASE, Rect2(center - Vector2.ONE * side * 0.5, Vector2.ONE * side), false, tint)
+	var knob_size: float = side * KNOB_CANVAS_RATIO
+	var knob_center: Vector2 = center + axis * side * KNOB_TRAVEL_RATIO
+	var texture: Texture2D = KNOB_PRESSED if touch_id >= 0 or mouse_active else KNOB
+	draw_texture_rect(texture, Rect2(knob_center - Vector2.ONE * knob_size * 0.5, Vector2.ONE * knob_size), false, tint)

@@ -89,4 +89,6 @@ func _run() -> void:
 		DirAccess.make_dir_recursive_absolute(out_path.get_base_dir())
 		assert(sheet.save_png(out_path) == OK)
 	print("[KartIntro] PASS: Einfahrt, Drift, Logo, Freude, Tippen/Zurück überspringen, Menü danach bedienbar, kein Intro in Prüfungen")
+	# Let the asynchronous audio mixer release the final stopped playback.
+	await create_timer(0.2).timeout
 	quit(0)
