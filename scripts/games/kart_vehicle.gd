@@ -3,6 +3,7 @@ extends Node3D
 ## Original Lumo Aurora-series racers. All geometry is authored here, no external IP.
 ## The lofted bodywork/character shells use shared normals and retain animated joints.
 
+const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const FAR_DETAIL_DISTANCE: float = 32.0
 const DETAIL_HYSTERESIS: float = 4.0
 const INK := Color("101c30")
@@ -139,7 +140,7 @@ func _animal_id(value: String) -> String:
 
 
 func _style_id(value: String) -> String:
-	return value if value in ["comet", "glider", "turbo"] else "comet"
+	return value if FLEET.has(value) else "comet"
 
 
 func configure_variant(value: String) -> void:

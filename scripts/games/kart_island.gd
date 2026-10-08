@@ -6,6 +6,8 @@ extends Node3D
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const KART_AUDIO = preload("res://scripts/games/kart_audio.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
+const FLEET = preload("res://scripts/games/kart_fleet.gd")
+const TUNING = preload("res://scripts/games/kart_tuning.gd")
 const GARAGE = preload("res://scripts/games/kart_garage_menu.gd")
 const INTRO = preload("res://scripts/games/kart_intro.gd")
 const RECORDS = preload("res://scripts/games/kart_records.gd")
@@ -174,6 +176,10 @@ var mode: String = "race"
 var track_id: String = "sonnenhafen"
 var selected_driver: String = "fox"
 var selected_kart: String = "comet"
+## Tuning-Werkstatt des aktuellen Kindes (Stufen, Aussehen, Sternebudget) und die daraus
+## berechneten Fahrfaktoren des gewählten Karts. Leer = Werte direkt aus der Flotte.
+var workshop
+var kart_factors: Dictionary = {}
 var loop_state = PHYSICAL_LOOP.new()
 var loop_count: int = 0
 var player_heading: float = 0.0
@@ -532,6 +538,7 @@ static func _known_mode(requested: String) -> String:
 
 
 func _begin_race() -> void:
+	_refresh_kart_factors()
 	loop_state = PHYSICAL_LOOP.new()
 	loop_count = 0
 	if is_instance_valid(garage):
@@ -619,6 +626,7 @@ func _resume_saved_race() -> void:
 	track_id = str(session_config.get_value("race", "track_id", "sonnenhafen"))
 	selected_driver = str(session_config.get_value("race", "selected_driver", "fox"))
 	selected_kart = str(session_config.get_value("race", "selected_kart", "comet"))
+	_refresh_kart_factors()
 	if is_instance_valid(garage):
 		garage.queue_free()
 	menu_active = false
@@ -1219,12 +1227,36 @@ func _physics_process(delta: float) -> void:
 			engine_playback.push_frame(Vector2(sample, sample))
 
 
+## Werkstatt des aktuellen Kindes (einmal anlegen; die Sterne kommen aus dem Fortschritt).
+func _ensure_workshop():
+	if workshop == null:
+		var child: String = str(HostBridge.launch_options().get("childKey", "standalone"))
+		workshop = TUNING.new(child, ProgressStore.lifetime_stars())
+	workshop.report_lifetime(ProgressStore.lifetime_stars())
+	return workshop
+
+
+## Fahrfaktoren des gewählten Karts samt Tuning (Comet ohne Tuning ist überall 1,0).
+func _refresh_kart_factors() -> void:
+	kart_factors = _ensure_workshop().multipliers(selected_kart)
+
+
+func _factor(name: String, fallback: float = 1.0) -> float:
+	if kart_factors.is_empty():
+		_refresh_kart_factors()
+	return float(kart_factors.get(name, fallback))
+
+
+## Boost-Dauer des Karts: ein starker Turbo hält länger.
+func _boost_for(seconds: float) -> float:
+	return seconds * _factor("boost_time")
+
+
 func _drive_player(delta: float, axis: float, braking: float) -> void:
 	if mode != "arena" and _drive_loop(delta, axis, braking):
 		return
-	var kart: Dictionary = CATALOG.entry(CATALOG.KARTS, selected_kart)
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
-	var target: float = 20.5 * float(kart.speed) * float(rules.speed)
+	var target: float = 20.5 * _factor("speed") * float(rules.speed)
 	var throttle: float = 1.0 if _gas_active() else 0.0
 	if mode == "arena":
 		target *= 0.68
@@ -1232,38 +1264,38 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 			target *= 1.0 - absf(axis) * 0.24
 	var boost_active: bool = boost_time > 0
 	if boost_active:
-		target *= 1.42
+		target *= 1.0 + 0.42 * _factor("boost_power")
 	target *= throttle
 	target *= 1.0 - braking * 0.94
 	# Holding BREMSE while (almost) stopped and without gas reverses slowly, to get unstuck.
 	if braking > 0.5 and throttle == 0.0 and speed < 1.0:
 		target = -5.0
 	if hit_timer > 0:
-		target *= 0.45
+		target *= _factor("stability", 0.45)
 	var road: Dictionary = {}
 	if mode != "arena":
 		road = world.sample_road(player.position, previous_road_distance)
 		lane = float(road.lateral)
 		if absf(lane) > ROAD_WIDTH * 0.48:
-			target *= 0.54
+			target *= _factor("offroad", 0.54)
 		# Beginner assistance nudges the steering at the shoulder; movement stays physical.
 		if difficulty == "gemuetlich" and absf(lane) > ROAD_WIDTH * 0.31:
 			var correction: float = angle_difference(player_heading, _heading(float(road.distance)))
 			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
-	var acceleration: float = (20.0 if braking > 0.1 else 10.0) * float(kart.accel)
+	var acceleration: float = 20.0 * _factor("brake") if braking > 0.1 else 10.0 * _factor("accel")
 	if boost_active and target > speed:
 		acceleration *= BOOST_ACCELERATION_MULTIPLIER
 	if not airborne or boost_active:
 		speed = move_toward(speed, target, delta * acceleration)
 	var grip_turn: float = clampf(absf(speed) / 8.0, 0, 1)
-	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * float(kart.turn) * grip_turn
+	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * _factor("turn") * grip_turn
 	if speed < 0.0:
 		turn_rate = -turn_rate
 	if airborne:
 		turn_rate *= 0.35
 	player_heading -= axis * turn_rate * delta
 	var forward := Vector3(-sin(player_heading), 0, -cos(player_heading))
-	var grip: float = 3.1 if drifting else 9.0
+	var grip: float = 3.1 if drifting else 9.0 * _factor("grip")
 	physical_velocity = physical_velocity.lerp(forward * speed, minf(1, delta * grip))
 	player.position += physical_velocity * delta
 	if drifting and speed > 6:
@@ -1354,7 +1386,7 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 		message.text = "Wieder sicher auf der Straße. Mit mehr Schwung klappt der Loop!"
 	else:
 		loop_count += 1
-		boost_time = maxf(boost_time, 1.5)
+		boost_time = maxf(boost_time, _boost_for(1.5))
 		message.text = "Loop geschafft! Sternenturbo!"
 	physical_velocity = Vector3(-sin(player_heading), 0, -cos(player_heading)) * speed
 	return true
@@ -1398,7 +1430,7 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 		airborne = false
 		landing_count += 1
 		if air_time > 0.35:
-			boost_time = maxf(boost_time, 1.2)
+			boost_time = maxf(boost_time, _boost_for(1.2))
 			message.text = "Super gelandet! Turbo!"
 			_sound_effect("drift")
 		air_time = 0.0
@@ -1720,7 +1752,7 @@ func _track_events() -> void:
 				_sound_effect("item")
 	for fraction in [0.12, 0.42, 0.74]:
 		if absf(fposmod(distance, track_length) - fraction * track_length - 1.1) < 1.2 and absf(lane) < 2.1:
-			boost_time = maxf(boost_time, 1.0)
+			boost_time = maxf(boost_time, _boost_for(1.0))
 
 
 func _use_item() -> void:
@@ -1729,7 +1761,7 @@ func _use_item() -> void:
 	_sound_effect("item")
 	match item:
 		"boost":
-			boost_time = maxf(boost_time, 3.0)
+			boost_time = maxf(boost_time, _boost_for(3.0))
 			message.text = "Rückenwind!"
 		"shield":
 			shield_time = 6.0
@@ -1892,7 +1924,7 @@ static func _resize_compensated_fov(vertical_fov: float, aspect: float) -> float
 func _boost() -> void:
 	if boosts > 0 and racing and not paused and not finished:
 		boosts -= 1
-		boost_time = 3.2
+		boost_time = _boost_for(3.2)
 		message.text = "Lumo-Boost!"
 		_sound_effect("boost")
 
@@ -1902,7 +1934,7 @@ func _release_drift() -> void:
 	if racing and not paused and not finished and drift_charge >= DRIFT_TIERS[0]:
 		var tier: int = 1 if drift_charge >= DRIFT_TIERS[1] else 0
 		drift_tier_count[tier] += 1
-		boost_time = maxf(boost_time, DRIFT_BOOST_SECONDS[tier])
+		boost_time = maxf(boost_time, _boost_for(DRIFT_BOOST_SECONDS[tier]))
 		message.text = "Oranger Drift-Turbo!" if tier == 1 else "Blauer Drift-Turbo!"
 		_sound_effect("drift")
 	drift_charge = 0

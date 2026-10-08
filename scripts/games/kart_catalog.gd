@@ -2,6 +2,7 @@ extends RefCounted
 ## Original Lumo race rules and shared menu data. Unlocks are earned, never charged.
 ## Kart is a reward game: learning happens in the app, never inside a race.
 const EXPANSION = preload("res://scripts/games/kart_expansion_tracks.gd")
+const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const BASE_TRACKS: Array[Dictionary] = [
 	{"id": "sonnenhafen", "name": "Sonnenhafen", "tag": "MEER · BRÜCKEN · WEITE KURVEN", "color": Color("64dfeb"), "description": "Über die Hafenbrücke, am Leuchtturm vorbei und direkt ans Meer."},
 	{"id": "zauberwald", "name": "Zauberwald", "tag": "WALD · LEUCHTEN · GEHEIMNISSE", "color": Color("87eac1"), "description": "Leuchtende Pilze und große Baumwipfel begleiten deine Fahrt."},
@@ -28,11 +29,8 @@ const DRIVERS: Array[Dictionary] = [
 	{"id": "rabbit", "name": "Nova", "tag": "NEUGIERIG UND FLINK", "color": Color("c0abff"), "unlock": 6},
 	{"id": "otter", "name": "Milo", "tag": "ENTSPANNT INS ABENTEUER", "color": Color("75e6ce"), "unlock": 12}
 ]
-const KARTS: Array[Dictionary] = [
-	{"id": "comet", "name": "Comet", "tag": "AUSGEWOGEN", "description": "Tempo ●●●  Lenkung ●●●  Schub ●●●", "speed": 1.0, "turn": 1.0, "accel": 1.0, "unlock": 0},
-	{"id": "glider", "name": "Glider", "tag": "LEICHT ZU LENKEN", "description": "Tempo ●●  Lenkung ●●●●  Schub ●●●", "speed": 0.93, "turn": 1.13, "accel": 1.12, "unlock": 8},
-	{"id": "turbo", "name": "Aurora GT", "tag": "SCHNELL AUF GERADEN", "description": "Tempo ●●●●  Lenkung ●●  Schub ●●", "speed": 1.1, "turn": 0.94, "accel": 0.88, "unlock": 18}
-]
+## Die Flotte mit Werten, Preisen und Aussehen steht in kart_fleet.gd.
+static var KARTS: Array[Dictionary] = FLEET.KARTS
 const DIFFICULTIES: Array[Dictionary] = [
 	{"id": "gemuetlich", "name": "Entdecken", "tag": "MIT LENKHILFE", "description": "Gemütliches Tempo. Lumo hilft sanft am Fahrbahnrand.", "speed": 0.83, "rival": 0.71},
 	{"id": "flott", "name": "Abenteuer", "tag": "DEIN EIGENES TEMPO", "description": "Mehr Tempo, freie Lenkung und ausgeglichene Rivalen.", "speed": 1.0, "rival": 0.87},
