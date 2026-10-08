@@ -41,6 +41,10 @@ const JUMP_MAX_LIFT: float = 4.0
 ## AI pulse is deliberately telegraphed: children get a readable dodge/shield window.
 const RIVAL_PULSE_WARNING_SECONDS: float = 0.65
 const RIVAL_PULSE_RADIUS: float = 9.5
+## Streckenvorschau vor dem Countdown: Kameraflug über markante Abschnitte,
+## jederzeit per Tippen/Taste überspringbar, entfällt bei reduzierten Animationen.
+const PREVIEW_SECONDS: float = 5.0
+const PREVIEW_BLEND_SECONDS: float = 1.1
 var curve: Curve3D
 var world: LumoRaceWorld
 var track_length: float
@@ -51,6 +55,8 @@ var steering: float = 0.0
 var brake: float = 0.0
 var speed: float = 0.0
 var countdown: float = 3.5
+var preview_left: float = 0.0
+var preview_total: float = 0.0
 var elapsed: float = 0.0
 var boost_time: float = 0.0
 var boosts: int = 1
@@ -490,6 +496,8 @@ func _begin_race() -> void:
 	elapsed = 0
 	countdown = 3.5
 	last_countdown_tick = 4
+	preview_total = PREVIEW_SECONDS if mode != "arena" and not reduced_motion else 0.0
+	preview_left = preview_total
 	speed = 0
 	boost_time = 0
 	boosts = 1
@@ -1047,6 +1055,13 @@ func _apply_ui_scale(control: Node, ui_scale: float) -> void:
 func _physics_process(delta: float) -> void:
 	if menu_active or not is_instance_valid(player):
 		return
+	if preview_left > 0.0:
+		if countdown > 0.0 and not finished:
+			if not paused:
+				_update_preview(delta)
+			return
+		# Countdown wurde von außen beendet (Fortsetzen, Tests): Vorschau entfällt.
+		_end_preview()
 	if not paused and not finished and countdown > 0:
 		countdown = maxf(0, countdown - delta)
 		var tick: int = ceili(countdown)
@@ -1811,8 +1826,61 @@ func _release_drift() -> void:
 	drift_charge = 0
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	# Ein Tippen oder Klick überspringt die Streckenvorschau.
+	if preview_left > 0.0 and not paused and (
+		(event is InputEventScreenTouch and event.pressed)
+		or (event is InputEventMouseButton and event.pressed)
+	):
+		_end_preview()
+		get_viewport().set_input_as_handled()
+
+
+func _track_entry(id: String) -> Dictionary:
+	for track in CATALOG.TRACKS:
+		if str(track.id) == id:
+			return track
+	return {}
+
+
+func _update_preview(delta: float) -> void:
+	preview_left = maxf(0.0, preview_left - delta)
+	var t: float = 1.0 - preview_left / maxf(preview_total, 0.001)
+	var entry := _track_entry(track_id)
+	message.text = "%s\n%s · Tippen zum Überspringen" % [str(entry.get("name", "")), str(entry.get("tag", ""))]
+	# Flug über den Großteil der Runde bis kurz hinter die Startlinie.
+	var fly: float = clampf(t / (1.0 - PREVIEW_BLEND_SECONDS / PREVIEW_SECONDS), 0.0, 1.0)
+	var eased: float = fly * fly * (3.0 - 2.0 * fly)
+	var along: float = track_length * lerpf(0.18, 0.97, eased)
+	var basis: Basis = world.frame(along)
+	var swing: float = sin(eased * PI * 2.0) * 7.0
+	var from: Vector3 = world.position_at(along) + basis.x * swing + basis.z * 9.0 + Vector3.UP * (6.5 + sin(eased * PI) * 4.0)
+	var look: Vector3 = world.position_at(along + 16.0) + Vector3.UP * 1.2
+	var flight := Transform3D(Basis(), from).looking_at(look, Vector3.UP)
+	# Letzte gut eine Sekunde: weich in die Verfolgerkamera hinter Lumo gleiten.
+	var blend: float = clampf((t - (1.0 - PREVIEW_BLEND_SECONDS / PREVIEW_SECONDS)) / (PREVIEW_BLEND_SECONDS / PREVIEW_SECONDS), 0.0, 1.0)
+	if blend > 0.0:
+		_update_camera(1.0, true)
+		var chase: Transform3D = camera.global_transform
+		camera.global_transform = flight.interpolate_with(chase, blend * blend * (3.0 - 2.0 * blend))
+	else:
+		camera.global_transform = flight
+	_update_vehicles(0)
+	if preview_left <= 0.0:
+		_end_preview()
+
+
+func _end_preview() -> void:
+	preview_left = 0.0
+	message.text = ""
+	_update_camera(1.0, true)
+
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey and not event.echo:
+		if preview_left > 0.0 and event.pressed and not paused:
+			_end_preview()
+			return
 		if menu_active:
 			return
 		if event.keycode == KEY_SHIFT:
