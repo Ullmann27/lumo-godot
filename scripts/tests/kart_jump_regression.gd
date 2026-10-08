@@ -14,6 +14,8 @@ func _start(mode: String, track: String) -> void:
 	game._start_selected_race(
 		{"mode": mode, "driver": "fox", "kart": "comet", "track": track, "difficulty": "flott"}
 	)
+	# Probe placement begins after the intro has restored the starting grid.
+	game._end_preview()
 	game.countdown = 0
 	game.racing = true
 	await process_frame

@@ -37,6 +37,10 @@ static func build(world) -> void:
 		if world._near_road(at, ROAD_CLEARANCE + radius):
 			continue
 		at.y = world.position_at(d).y - 0.12
+		if world.track_id in ["sonnenhafen", "zauberwald", "holo_city"]:
+			at.y = world._ground_height(at.x, at.z)
+			if at.y < -2.0:
+				continue
 		var basis: Basis = world.frame(d)
 		basis = Basis(Vector3.UP, basis.get_euler().y)
 		add_prop(world, kind, at, basis)

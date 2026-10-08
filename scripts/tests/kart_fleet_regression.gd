@@ -56,6 +56,9 @@ func _run() -> void:
 			var signature: String = str(info)
 			assert(not signatures.has(signature), "New designs need distinct physical profiles")
 			signatures[signature] = true
+		print(
+			"[KartFleet] %s: %d surfaces, %d vertices" % [entry.id, shape.surfaces, shape.vertices]
+		)
 		kart.free()
 	var fallback = VEHICLE.new()
 	fallback.configure("fox", Color.WHITE, "unknown_future_kart")
@@ -88,5 +91,34 @@ func _run() -> void:
 		world.build(false, track, true)
 		assert(world.get_meta("fleet_dressing_detail_count", 0) > 0)
 		world.free()
+	var game = load("res://scenes/games/kart_island.tscn").instantiate()
+	root.add_child(game)
+	game.set_physics_process(false)
+	game.lightweight = true
+	for id in FLEET.IDS:
+		game._start_selected_race(
+			{
+				"mode": "training",
+				"driver": "fox",
+				"kart": id,
+				"track": "sonnenhafen",
+				"difficulty": "flott"
+			}
+		)
+		game._end_preview()
+		game.countdown = 0
+		game.racing = true
+		game.auto_gas = true
+		assert(game.player.kart_style == id and game.selected_kart == id)
+		for frame in range(90):
+			game._physics_process(1.0 / 60.0)
+		assert(game.speed > 5.0 and game.distance > 4.0, "Every new kart must actually drive")
+		game._save_session()
+		var saved := ConfigFile.new()
+		assert(saved.load(game.SESSION) == OK)
+		assert(str(saved.get_value("race", "selected_kart", "")) == id)
+	game.abandoned = true
+	game.queue_free()
+	await process_frame
 	print("[KartFleet] PASS: 9 designs, animated chassis, LOD, budgets, garage views, scenery")
 	quit()

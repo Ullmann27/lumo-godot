@@ -4,6 +4,7 @@ const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
+const PROP_EXPORT = preload("res://scripts/tests/kart_fleet_prop_export.gd")
 
 var stage: Node3D
 var camera: Camera3D
@@ -126,6 +127,19 @@ func _run() -> void:
 	var report := FileAccess.open("res://exports/fleet-models/models.json", FileAccess.WRITE)
 	report.store_string(JSON.stringify(model_report, "  "))
 	report.close()
+	for kind in DRESSING.KINDS:
+		var prop: Node3D = PROP_EXPORT.build_model(kind)
+		stage.add_child(prop)
+		camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+		camera.position = Vector3(6, 5.5, -9.8)
+		camera.look_at(Vector3(0, 1.3, 0))
+		await _capture("module-" + kind + "-hero")
+		camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+		camera.size = 6.0
+		camera.position = Vector3(0, 1.3, -9.8)
+		camera.look_at(Vector3(0, 1.3, 0))
+		await _capture("module-" + kind + "-front")
+		prop.free()
 	stage.free()
 	var game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
@@ -166,7 +180,9 @@ func _run() -> void:
 	await process_frame
 	game._apply_responsive_layout()
 	await _capture("fleet-compact-640x320")
-	print("[FleetCapture] PASS: 36 native model views, 9 GLBs, 4 live race captures")
+	print(
+		"[FleetCapture] PASS: 36 native kart views, 12 prop views, 9 kart GLBs, 4 live race captures"
+	)
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
