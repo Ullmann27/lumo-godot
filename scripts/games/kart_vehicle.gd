@@ -423,6 +423,10 @@ func _build_loft(spec: Dictionary) -> void:
 	body.scale.x = width
 	# Lumo's starter racer retains the reference navy paint across character choices.
 	var paint: Color = Color("172c49") if kart_style == "comet" else vehicle_color.lerp(Color("297cc0"), 0.25)
+	# Glider (perlweiß) und Aurora GT (violett) tragen ihren Flottenlack, damit sie sich in der
+	# Auswahl von den blauen Profil-Designs abheben.
+	if kart_style == "glider" or kart_style == "turbo":
+		paint = spec.paint
 	if not fleet_profile.is_empty():
 		paint = Color(str(fleet_profile.paint))
 	# Lack aus der Werkstatt ersetzt die Werksfarbe.
