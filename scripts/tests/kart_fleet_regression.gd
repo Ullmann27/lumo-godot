@@ -12,6 +12,12 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 
+func _settle() -> void:
+	await process_frame
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+
+
 func _geometry(node: Node3D, kart, result: Dictionary) -> void:
 	for child in node.get_children():
 		if child is MeshInstance3D:
@@ -59,7 +65,8 @@ func _run() -> void:
 		print(
 			"[KartFleet] %s: %d surfaces, %d vertices" % [entry.id, shape.surfaces, shape.vertices]
 		)
-		kart.free()
+		kart.queue_free()
+		await _settle()
 	var fallback = VEHICLE.new()
 	fallback.configure("fox", Color.WHITE, "unknown_future_kart")
 	assert(fallback.kart_style == "comet")
@@ -84,13 +91,16 @@ func _run() -> void:
 	garage._refresh()
 	garage._choose_preview_view(0)
 	assert(garage.preview_camera.projection == Camera3D.PROJECTION_PERSPECTIVE)
-	garage.free()
+	garage.queue_free()
+	await _settle()
 	for track in ["sonnenhafen", "zauberwald", "holo_city"]:
 		var world = WORLD.new()
 		root.add_child(world)
 		world.build(false, track, true)
+		await _settle()
 		assert(world.get_meta("fleet_dressing_detail_count", 0) > 0)
-		world.free()
+		world.queue_free()
+		await _settle()
 	var game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
@@ -106,6 +116,7 @@ func _run() -> void:
 			}
 		)
 		game._end_preview()
+		await _settle()
 		game.countdown = 0
 		game.racing = true
 		game.auto_gas = true
@@ -119,7 +130,7 @@ func _run() -> void:
 		assert(str(saved.get_value("race", "selected_kart", "")) == id)
 	game.abandoned = true
 	game.queue_free()
-	await process_frame
+	await _settle()
 	await create_timer(0.2).timeout
 	print("[KartFleet] PASS: 9 designs, animated chassis, LOD, budgets, garage views, scenery")
 	quit()

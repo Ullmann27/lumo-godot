@@ -8,6 +8,7 @@ func _initialize() -> void:
 
 func _start(mode: String, track: String = "sonnenhafen") -> void:
 	game._start_selected_race({"mode": mode, "driver": "fox", "kart": "comet", "track": track, "difficulty": "gemuetlich"})
+	game._end_preview()
 	game.countdown = 0
 	game.racing = true
 	await process_frame
@@ -49,6 +50,7 @@ func _run() -> void:
 		if round_index < cup_track_count - 1:
 			assert(game.pending_cup_next)
 			game._next_cup_race()
+			game._end_preview()
 			assert(game.boosts == 1, "Every cup race starts with the same single boost")
 			await process_frame
 	assert(not game.pending_cup_next and game.cup_index == cup_track_count - 1)

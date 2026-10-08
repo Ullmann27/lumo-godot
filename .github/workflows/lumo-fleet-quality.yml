@@ -67,20 +67,20 @@ jobs:
           set -euo pipefail
           for probe in kart_fleet_regression kart_menu_flow_regression kart_fold_controls_regression kart_modes_regression kart_intro_regression kart_preview_regression kart_audio_regression; do
             timeout 240s xvfb-run -a -s '-screen 0 1920x2560x24' godot --audio-driver Dummy --rendering-method gl_compatibility --script "scripts/tests/${probe}.gd" 2>&1 | tee "exports/fleet-logs/${probe}.log"
-            ! grep -qE 'SCRIPT ERROR|Parse Error|ERROR:|Assertion failed' "exports/fleet-logs/${probe}.log"
+            if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:|Assertion failed' "exports/fleet-logs/${probe}.log"; then exit 1; fi
             grep -qE 'PASS' "exports/fleet-logs/${probe}.log"
           done
       - name: Export and re-import six actual roadside modules
         run: |
           set -euo pipefail
           timeout 60s godot --headless --script scripts/tests/kart_fleet_prop_export.gd 2>&1 | tee exports/fleet-logs/fleet-props.log
-          ! grep -qE 'SCRIPT ERROR|Parse Error|ERROR:|Assertion failed' exports/fleet-logs/fleet-props.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:|Assertion failed' exports/fleet-logs/fleet-props.log; then exit 1; fi
           grep -qF '[FleetProps] PASS' exports/fleet-logs/fleet-props.log
       - name: Real engine model renders, live race frames and GLBs
         run: |
           set -euo pipefail
           timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' godot --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_fleet_capture.gd 2>&1 | tee exports/fleet-logs/capture.log
-          ! grep -qE 'SCRIPT ERROR|Parse Error|ERROR:|Assertion failed' exports/fleet-logs/capture.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:|Assertion failed' exports/fleet-logs/capture.log; then exit 1; fi
           grep -qF '[FleetCapture] PASS' exports/fleet-logs/capture.log
           python3 - <<'PY'
           import json, pathlib, struct
@@ -98,7 +98,7 @@ jobs:
         run: |
           set -euo pipefail
           timeout 240s xvfb-run -a -s '-screen 0 960x540x24' godot --audio-driver Dummy --rendering-method gl_compatibility --resolution 960x540 --fixed-fps 24 --write-movie exports/fleet-video/native-fleet.avi --script scripts/tests/kart_fleet_movie.gd 2>&1 | tee exports/fleet-logs/movie.log
-          ! grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' exports/fleet-logs/movie.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' exports/fleet-logs/movie.log; then exit 1; fi
           ffmpeg -y -i exports/fleet-video/native-fleet.avi -an -c:v libx264 -crf 20 -pix_fmt yuv420p -movflags +faststart exports/fleet-video/Lumo_Kart_3D_Flotte.mp4
           rm exports/fleet-video/native-fleet.avi
       - name: Make playable web build
@@ -120,6 +120,9 @@ jobs:
           path: |
             exports/fleet-logs/
             exports/fleet-proof/
+            exports/holographic-proof/menu-flow-*.png
+            exports/holographic-proof/race-flow-*.png
+            exports/holographic-proof/garage-inspection-*.png
             exports/fleet-models/
             exports/fleet-props/
             exports/fleet-video/

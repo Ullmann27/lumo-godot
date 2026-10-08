@@ -59,4 +59,5 @@ func _run() -> void:
 	await process_frame
 	DirAccess.remove_absolute("user://kart_preferences.cfg")
 	print("[KartAudio] PASS: fünf neue Schleifen > 55 s, Musik/Effekte getrennt regelbar, sofort wirksam, gespeichert")
+	await create_timer(0.2).timeout
 	quit(0)

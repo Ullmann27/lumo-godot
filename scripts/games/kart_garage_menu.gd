@@ -246,7 +246,13 @@ func _ready() -> void:
 	for title in ["Rundum ansehen", "Vorne", "Links", "Hinten", "Rechts", "Von oben"]:
 		view_choice.add_item(title)
 	view_choice.item_selected.connect(_choose_preview_view)
-	right.add_child(view_choice)
+	# Overlay the existing preview instead of adding height to the setup column.
+	# A separate row would push the footer below short Android safe areas.
+	var inspection_overlay := Control.new()
+	inspection_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	viewport_panel.add_child(inspection_overlay)
+	inspection_overlay.add_child(view_choice)
+	view_choice.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	detail = _label("", 20, Color("dceaff"))
 	detail.custom_minimum_size.y = 74
 	right.add_child(detail)
@@ -380,6 +386,11 @@ func _apply_responsive_layout() -> void:
 	preview_title.visible = not short_landscape and not small
 	_set_physical_minimum(view_choice, Vector2(0, 44), ui_scale)
 	_set_physical_font(view_choice, 14 if short_landscape else 16, ui_scale)
+	view_choice.offset_left = -(144 if short_landscape else 176) * ui_scale
+	view_choice.offset_right = -4 * ui_scale
+	view_choice.offset_top = 4 * ui_scale
+	view_choice.offset_bottom = 48 * ui_scale
+	view_choice.visible = step in [1, 2]
 	if short_landscape:
 		footer.columns = 3 if has_saved_race else 2
 		footer_spacer.hide()

@@ -33,6 +33,7 @@ func _run() -> void:
 	root.add_child(game)
 	await _settle()
 	game._start_selected_race({"mode":"training", "driver":"fox", "kart":"comet", "track":"candy_cloud", "difficulty":"gemuetlich"})
+	game._end_preview()
 	game.set_physics_process(false)
 	game.auto_gas = false
 	game.countdown = 0
