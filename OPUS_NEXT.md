@@ -1,3 +1,17 @@
+# Aktueller integrierter Grafik-/Runtime-Kandidat1905 · 8. Oktober2026
+
+Zuerst [die aktuelle1905-Übergabe](docs/INTEGRATED_GRAPHICS_RUNTIME_1905_2026-10-08.md)
+lesen. Aktiver Integrationsbranch/PR29 verbindet die bewiesene37er-Modalfixture
+mit selektiven Referenzgrafikverbesserungen aus PR30. ScopedModalrouting,
+Fahrphysik, Kamera, Kontakte und vollständige Kontinuität bleiben erhalten.
+Die App pinnt den frischen tatsächlichenHEAD fürAPK1905; alte1904-APK-/Android-
+Ergebnisse gelten nicht automatisch fürdiesenStand. LokaleskombiniertesGL:
+37PASS/sechsDrags/14echtePNG. Vollständige neueAPK/Android-Abnahmeausstehend.
+**VISUAL_GAP / NOT FINISHED**. Main undReleases bleiben unverändert.
+
+Die folgendenÜbergaben sindhistorisch; ihreSHAs/Testzahlen ersetzen keinen
+frischenHEAD-/Pin-/APK-Provenienznachweis.
+
 # Aktuelle Fortsetzung: Kart-Modal-Touch · 8. Oktober 2026
 
 Zuerst [das neue geprüfte Modal-Touch-Paket](docs/MODAL_TOUCH_2026-10-08.md)

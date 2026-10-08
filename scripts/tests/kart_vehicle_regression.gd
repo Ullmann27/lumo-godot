@@ -163,7 +163,49 @@ func _authored_far_index_count(node: Node3D, kart: LumoRaceKart) -> int:
 	return count
 
 
+func _paints_match(reference: Dictionary, current: Dictionary) -> bool:
+	# Every packed vertex may satisfy only one authored vertex. Summing all
+	# colours within the tolerance double-counts adjacent iris/fur pigments.
+	var needed: Dictionary = reference.duplicate()
+	var available: Dictionary = current.duplicate()
+	for color: Color in needed:
+		var exact: int = mini(needed[color], available.get(color, 0))
+		needed[color] -= exact
+		available[color] = available.get(color, 0) - exact
+	for color: Color in needed:
+		for packed: Color in available:
+			if needed[color] == 0:
+				break
+			# Godot stores mesh vertex colours at 8-bit channel precision.
+			if (
+				maxf(
+					absf(color.r - packed.r),
+					maxf(absf(color.g - packed.g), absf(color.b - packed.b))
+				)
+				<= 1.0 / 255.0 + 0.00001
+			):
+				var matched: int = mini(needed[color], available[packed])
+				needed[color] -= matched
+				available[packed] -= matched
+		if needed[color] != 0:
+			return false
+	for count: int in available.values():
+		if count != 0:
+			return false
+	return true
+
+
 func _run() -> void:
+	var close_pigments := {Color8(117, 66, 32): 7, Color8(117, 66, 31): 2}
+	assert(
+		_paints_match(close_pigments, close_pigments),
+		"Adjacent identical pigments must not be double-counted"
+	)
+	assert(
+		not _paints_match(close_pigments, {Color8(117, 66, 32): 7}),
+		"Missing coloured vertices must fail"
+	)
+	assert(not _paints_match(close_pigments, {Color8(10, 10, 10): 9}), "Changed pigments must fail")
 	var camera := Camera3D.new()
 	root.add_child(camera)
 	camera.position = Vector3(0, 0, 6)
@@ -206,20 +248,10 @@ func _run() -> void:
 			original.samples == optimized.samples, "All full-detail positions must remain unchanged"
 		)
 		for position in original.paint:
-			for color: Color in original.paint[position]:
-				var matches: int = 0
-				for packed_color: Color in optimized.paint[position]:
-					# Godot stores mesh vertex colours at 8-bit channel precision.
-					if (
-						absf(color.r - packed_color.r) <= 1.0 / 255.0 + 0.00001
-						and absf(color.g - packed_color.g) <= 1.0 / 255.0 + 0.00001
-						and absf(color.b - packed_color.b) <= 1.0 / 255.0 + 0.00001
-					):
-						matches += optimized.paint[position][packed_color]
-				assert(
-					matches == original.paint[position][color],
-					"Full-detail paints retain their positions within one 8-bit channel step"
-				)
+			assert(
+				_paints_match(original.paint[position], optimized.paint[position]),
+				"Full-detail paints retain their positions and counts within one 8-bit channel step"
+			)
 		assert(
 			optimized.surfaces < original.surfaces * 0.7 and optimized.surfaces <= 64,
 			"Vertex colours must meaningfully reduce near material passes"
@@ -334,7 +366,10 @@ func _run() -> void:
 			assert(not effect.visible, "Stopping clears all effects")
 		print(
 			(
-				"[KartVehicle] %s near_surfaces=%d->%d near_vertices=%d far_vertices=%d far_surfaces=1 triangles_preserved=%d"
+				(
+					"[KartVehicle] %s near_surfaces=%d->%d near_vertices=%d "
+					+ "far_vertices=%d far_surfaces=1 triangles_preserved=%d"
+				)
 				% [
 					kind,
 					original.surfaces,

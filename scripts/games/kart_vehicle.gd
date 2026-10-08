@@ -14,6 +14,7 @@ const ORANGE := Color("f08a2c")
 const GLOVE := Color("1d2230")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const FUR = preload("res://scripts/games/kart_fur_geometry.gd")
+const CHARACTER_FINISH = preload("res://scripts/games/kart_character_finish.gd")
 
 var vehicle_color: Color = Color("357cba")
 var animal: String = "fox"
@@ -237,6 +238,13 @@ func _mesh(parent: Node3D, geometry: Mesh, at: Vector3, color: Color, metal: flo
 	node.mesh = geometry
 	node.position = at
 	node.material_override = _mat(color, metal, rough, glow)
+	if geometry.surface_get_arrays(0)[Mesh.ARRAY_COLOR] != null:
+		# Authored meshes and the batched runtime must interpret pigmentation
+		# identically. Keep coloured finishes distinct from plain white pieces.
+		var pigment_finish := node.material_override.duplicate() as StandardMaterial3D
+		pigment_finish.vertex_color_use_as_albedo = true
+		pigment_finish.vertex_color_is_srgb = true
+		node.material_override = pigment_finish
 	parent.add_child(node)
 	return node
 
@@ -411,7 +419,10 @@ func _build() -> void:
 		Vector4(1.08, 0.01, 0.015, 0.50)]
 	if not fleet_profile.is_empty():
 		shell = FLEET.shell(kart_style)
-	_mesh(body, _loft(shell, false, 32, 5, 0.75), Vector3.ZERO, paint, 0.42, 0.24)
+	_mesh(
+		body, _loft(shell, false, 32, 5, 0.75), Vector3.ZERO, paint,
+		0.42, 0.44 if kart_style == "comet" else 0.24
+	)
 	var hull := _mesh(body, _loft([
 		Vector4(-1.09, 0.015, 0.01, 0.34), Vector4(-0.75, 0.51, 0.08, 0.33),
 		Vector4(0.02, 0.63, 0.09, 0.31), Vector4(0.74, 0.54, 0.08, 0.32),
@@ -423,10 +434,19 @@ func _build() -> void:
 		Vector4(-0.65, 0.37, 0.12, 0.67), Vector4(-0.52, 0.32, 0.105, 0.70),
 		Vector4(-0.46, 0.25, 0.03, 0.65), Vector4(-0.43, 0.01, 0.01, 0.60)], false), Vector3.ZERO, paint.lightened(0.1), 0.48, 0.22)
 	bonnet.name = "BonnetShell"
-	_mesh(body, _loft([
-		Vector4(-1.055, 0.015, 0.004, 0.584), Vector4(-0.85, 0.075, 0.01, 0.682),
-		Vector4(-0.60, 0.085, 0.012, 0.795), Vector4(-0.52, 0.075, 0.01, 0.810),
-		Vector4(-0.46, 0.01, 0.003, 0.685)], false, 20, 3), Vector3.ZERO, INK if kart_style == "comet" else WHITE, 0.18, 0.27)
+	if kart_style == "comet":
+		var badge := Node3D.new()
+		badge.name = "BonnetLumoBadge"
+		badge.position = Vector3(0, 0.802, -0.66)
+		badge.rotation.x = PI / 2.0 - 0.24
+		body.add_child(badge)
+		_glow_letter_l(badge, Vector3.ZERO, 0.17, false)
+	if kart_style != "comet":
+		_mesh(body, _loft([
+			Vector4(-1.055, 0.015, 0.004, 0.584), Vector4(-0.85, 0.075, 0.01, 0.682),
+			Vector4(-0.60, 0.085, 0.012, 0.795), Vector4(-0.52, 0.075, 0.01, 0.810),
+			Vector4(-0.46, 0.01, 0.003, 0.685)], false, 20, 3),
+			Vector3.ZERO, INK if kart_style == "comet" else WHITE, 0.18, 0.27)
 	for side in [-1.0, 1.0]:
 		var sidepod := _mesh(body, _loft([
 			Vector4(-0.52, 0.008, 0.015, 0.54), Vector4(-0.30, 0.12, 0.145, 0.54),
@@ -437,15 +457,40 @@ func _build() -> void:
 		for vent in range(3):
 			var panel := _box(body, Vector3(side * 0.645, 0.60, 0.20 + vent * 0.11), Vector3(0.012, 0.08, 0.044), INK, 0.4)
 			panel.rotation.z = side * -0.18
-		_ribbon(body, [Vector3(side * 0.19, 0.624, -1.079), Vector3(side * 0.34, 0.639, -0.979), Vector3(side * 0.42, 0.619, -0.854)], 0.018, WHITE, 0.2, 1.0)
+		_ribbon(
+			body,
+			[Vector3(side * 0.19, 0.624, -1.079), Vector3(side * 0.34, 0.639, -0.979),
+			Vector3(side * 0.42, 0.619, -0.854)],
+			0.021, ICE if kart_style == "comet" else WHITE, 0.2, 1.0
+		)
 		# The light blades are inset into dark headlight housings.
 		_ribbon(body, [Vector3(side * 0.19, 0.59, -1.05), Vector3(side * 0.35, 0.60, -0.952), Vector3(side * 0.43, 0.58, -0.83)], 0.037, INK, 0.4)
-		# Exhausts have an inset nozzle and a separate animated boost flame.
-		_rod(body, Vector3(side * 0.33, 0.46, 0.79), Vector3(side * 0.37, 0.52, 1.16), 0.105, CHROME, 0.75, 0.24)
-		_rod(body, Vector3(side * 0.37, 0.52, 1.14), Vector3(side * 0.371, 0.52, 1.18), 0.079, INK, 0.3)
-		var nozzle := _ring(body, Vector3(side * 0.37, 0.52, 1.183), 0.071, 0.084, ICE, 0.3, 0.8)
-		nozzle.rotation.x = PI / 2.0
-		var flame := _mesh(self, _loft([Vector4(0, 0.055, 0.055, 0), Vector4(0.18, 0.10, 0.09, 0), Vector4(0.60, 0.002, 0.002, 0)], false, 16, 3), Vector3(side * 0.37 * width, 0.52, 1.20), ICE, 0.0, 0.25, 2.0)
+		# Lumo's reference racer has compact inset boost ports in its armoured
+		# power unit. Other fleet styles retain their cylindrical exhausts.
+		var port_x: float = 0.14 if kart_style == "comet" else 0.37
+		var port_y: float = 0.43 if kart_style == "comet" else 0.52
+		if kart_style == "comet":
+			_box(body, Vector3(side * port_x, port_y, 1.125), Vector3(0.18, 0.09, 0.12), INK, 0.35)
+			var port := _box(
+				body, Vector3(side * port_x, port_y, 1.188), Vector3(0.12, 0.022, 0.006), ICE, 0.35
+			)
+			port.material_override = _mat(ICE, 0.18, 0.26, 0.8)
+		else:
+			_rod(
+				body, Vector3(side * 0.33, 0.46, 0.79), Vector3(side * 0.37, 0.52, 1.16),
+				0.105, CHROME, 0.75, 0.24
+			)
+			_rod(body, Vector3(side * 0.37, 0.52, 1.14), Vector3(side * 0.371, 0.52, 1.18), 0.079, INK, 0.3)
+			var nozzle := _ring(body, Vector3(side * 0.37, 0.52, 1.183), 0.071, 0.084, ICE, 0.3, 0.8)
+			nozzle.rotation.x = PI / 2.0
+		var flame := _mesh(
+			self,
+			_loft([
+				Vector4(0, 0.055, 0.055, 0), Vector4(0.18, 0.10, 0.09, 0),
+				Vector4(0.60, 0.002, 0.002, 0)
+			], false, 16, 3),
+			Vector3(side * port_x * width, port_y, 1.20), ICE, 0.0, 0.25, 2.0
+		)
 		flame.hide()
 		flame.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		flames.append(flame)
@@ -456,14 +501,28 @@ func _build() -> void:
 	var wing_span: float = 1.65 if kart_style == "glider" else 1.35
 	wing_height = float(fleet_profile.get("wing_y", wing_height))
 	wing_span = float(fleet_profile.get("wing", wing_span))
-	for side in [-1.0, 1.0]:
-		_rod(body, Vector3(side * 0.40, 0.57, 0.77), Vector3(side * 0.45, wing_height, 0.95), 0.035, INK, 0.45)
-	var wing := _mesh(body, _loft([
-		Vector4(-wing_span / 2, 0.008, 0.008, 0), Vector4(-wing_span * 0.43, 0.18, 0.040, 0),
-		Vector4(0.0, 0.17, 0.047, 0), Vector4(wing_span * 0.43, 0.18, 0.04, 0),
-		Vector4(wing_span / 2, 0.008, 0.008, 0)], false, 24, 3, 0.8), Vector3(0, wing_height, 0.98), paint if kart_style == "comet" else WHITE, 0.36, 0.24)
-	wing.rotation.y = PI / 2.0
-	_ribbon(body, [Vector3(-wing_span * 0.42, wing_height + 0.037, 1.05), Vector3(0, wing_height + 0.047, 1.05), Vector3(wing_span * 0.42, wing_height + 0.037, 1.05)], 0.012, ICE, 0.3, 0.7)
+	if kart_style == "comet":
+		wing_height = 0.73
+		wing_span = 1.22
+	if kart_style != "comet":
+		for side in [-1.0, 1.0]:
+			_rod(
+				body, Vector3(side * 0.40, 0.57, 0.77), Vector3(side * 0.45, wing_height, 0.95),
+				0.035, INK, 0.45
+			)
+		var wing := _mesh(body, _loft([
+			Vector4(-wing_span / 2, 0.008, 0.008, 0), Vector4(-wing_span * 0.43, 0.18, 0.040, 0),
+			Vector4(0.0, 0.17, 0.047, 0), Vector4(wing_span * 0.43, 0.18, 0.04, 0),
+			Vector4(wing_span / 2, 0.008, 0.008, 0)], false, 24, 3, 0.8),
+			Vector3(0, wing_height, 0.98), paint if kart_style == "comet" else WHITE, 0.36, 0.24)
+		wing.rotation.y = PI / 2.0
+		_ribbon(
+			body,
+			[Vector3(-wing_span * 0.42, wing_height + 0.037, 1.05),
+			Vector3(0, wing_height + 0.047, 1.05),
+			Vector3(wing_span * 0.42, wing_height + 0.037, 1.05)],
+			0.012, ICE, 0.3, 0.7
+		)
 	if kart_style == "turbo":
 		for side in [-1.0, 1.0]:
 			_mesh(body, _loft([Vector4(-0.48, 0.01, 0.01, 0), Vector4(-0.36, 0.11, 0.12, 0), Vector4(0.39, 0.13, 0.12, 0), Vector4(0.60, 0.01, 0.01, 0)], false, 20, 3), Vector3(side * 0.70, 0.54, 0), WHITE, 0.38, 0.3)
@@ -529,13 +588,17 @@ func _make_body_details(body: Node3D, paint: Color, wing_height: float, wing_spa
 		_ellipsoid(body, Vector3(side * 0.22, 0.562, 1.006), Vector3(0.112, 0.045, 0.044), INK, 0.35, 0.26)
 		var lamp := _ellipsoid(body, Vector3(side * 0.22, 0.568, 1.045), Vector3(0.085, 0.020, 0.012), Color("ff515e"), 0.18, 0.26)
 		lamp.material_override = _mat(Color("ff515e"), 0.18, 0.26, 0.45)
-		# Endplates join the tips of the aerofoil and give the wing a finished side silhouette.
-		var endplate := _mesh(body, _loft([
-			Vector4(-0.07, 0.008, 0.025, 0), Vector4(-0.025, 0.021, 0.13, 0),
-			Vector4(0.08, 0.019, 0.13, 0.025), Vector4(0.14, 0.005, 0.07, 0.035)
-		], true, 16, 3, 0.7), Vector3(side * wing_span * 0.47, wing_height, 0.98), paint, 0.35, 0.26)
-		endplate.rotation.z = -side * 0.08
-		_box(body, Vector3(side * (wing_span * 0.47 + 0.02), wing_height + 0.065, 1.002), Vector3(0.009, 0.027, 0.11), WHITE, 0.35)
+		if kart_style != "comet":
+			# Endplates join the tips of the aerofoil and give the wing a finished side silhouette.
+			var endplate := _mesh(body, _loft([
+				Vector4(-0.07, 0.008, 0.025, 0), Vector4(-0.025, 0.021, 0.13, 0),
+				Vector4(0.08, 0.019, 0.13, 0.025), Vector4(0.14, 0.005, 0.07, 0.035)
+			], true, 16, 3, 0.7), Vector3(side * wing_span * 0.47, wing_height, 0.98), paint, 0.35, 0.26)
+			endplate.rotation.z = -side * 0.08
+			_box(
+				body, Vector3(side * (wing_span * 0.47 + 0.02), wing_height + 0.065, 1.002),
+				Vector3(0.009, 0.027, 0.11), WHITE, 0.35
+			)
 	# A compact diffuser meets the lower hull; its vanes extend to the rear edge.
 	_box(body, Vector3(0, 0.338, 0.952), Vector3(0.49, 0.065, 0.21), INK, 0.35)
 	for fin in range(5):
@@ -547,18 +610,28 @@ func _make_body_details(body: Node3D, paint: Color, wing_height: float, wing_spa
 	if kart_style == "comet":
 		# Compact armoured rear power unit, cyan lenses and restrained gold edges.
 		var unit := _mesh(body, _loft([
-			Vector4(0.38, 0.15, 0.10, 1.015), Vector4(0.49, 0.24, 0.12, 1.015),
-			Vector4(0.69, 0.22, 0.11, 0.99), Vector4(0.79, 0.12, 0.06, 0.95)
-		], true, 24, 3, 0.55), Vector3.ZERO, INK, 0.35, 0.56)
+			Vector4(0.83, 0.20, 0.15, 0.59), Vector4(0.96, 0.27, 0.205, 0.59),
+			Vector4(1.11, 0.265, 0.20, 0.59), Vector4(1.145, 0.24, 0.18, 0.59),
+			Vector4(1.15, 0.01, 0.01, 0.59)
+		], false, 8, 2, 0.72), Vector3.ZERO, INK, 0.35, 0.56)
 		unit.name = "RearPowerUnit"
 		for side in [-1.0, 1.0]:
-			_ribbon(body, [Vector3(side * 0.20, 0.43, 1.12), Vector3(side * 0.25, 0.55, 1.13), Vector3(side * 0.23, 0.68, 1.09), Vector3(side * 0.12, 0.78, 1.00)], 0.012, Color("c79145"), 0.35)
+			_ribbon(
+				body,
+				[Vector3(side * 0.18, 0.40, 1.145), Vector3(side * 0.25, 0.49, 1.14),
+				Vector3(side * 0.25, 0.69, 1.14), Vector3(side * 0.16, 0.77, 1.11)],
+				0.012, Color("c79145"), 0.35
+			)
 			_ribbon(body, [Vector3(side * 0.50, 0.38, -0.63), Vector3(side * 0.64, 0.39, -0.24), Vector3(side * 0.65, 0.40, 0.35), Vector3(side * 0.51, 0.42, 0.76)], 0.008, Color("b78640"), 0.35)
-			var lamp := _box(body, Vector3(side * 0.43, 0.64, 0.94), Vector3(0.21, 0.032, 0.035), ICE)
+			_box(body, Vector3(side * 0.45, 0.67, 1.02), Vector3(0.29, 0.105, 0.13), paint, 0.35)
+			var lamp := _box(body, Vector3(side * 0.45, 0.69, 1.089), Vector3(0.23, 0.032, 0.008), ICE)
 			lamp.material_override = _mat(ICE, 0.18, 0.26, 0.75)
 		for vane in range(4):
-			_box(body, Vector3(0, 0.45 + vane * 0.048, 1.137), Vector3(0.31, 0.018, 0.018), Color("495367"), 0.35)
-		var strip := _box(body, Vector3(0, 0.67, 1.11), Vector3(0.22, 0.025, 0.022), ICE)
+			_box(
+				body, Vector3(0, 0.49 + vane * 0.041, 1.159), Vector3(0.31, 0.015, 0.018),
+				Color("495367"), 0.35
+			)
+		var strip := _box(body, Vector3(0, 0.705, 1.157), Vector3(0.22, 0.025, 0.016), ICE)
 		strip.material_override = _mat(ICE, 0.18, 0.26, 0.8)
 
 
@@ -641,12 +714,17 @@ func _make_wheel(side: float, axle: float, stance: float) -> void:
 	brake.radial_segments = 24
 	_mesh(rotor, brake, Vector3(0, outside, 0), Color("233247"), 0.6, 0.3)
 	_ring(rotor, Vector3(0, outside - side * 0.018, 0), 0.199, 0.232, CHROME, 0.78)
-	_ring(rotor, Vector3(0, outside - side * 0.027, 0), 0.224, 0.231, ICE, 0.3, 0.4)
+	_ring(
+		rotor, Vector3(0, outside - side * 0.027, 0),
+		0.218 if kart_style == "comet" else 0.224,
+		0.233 if kart_style == "comet" else 0.231,
+		ICE, 0.3, 0.8 if kart_style == "comet" else 0.4
+	)
 	for spoke in range(5):
 		var angle: float = float(spoke) * TAU / 5.0
 		var start := Vector3(cos(angle) * 0.047, outside - side * 0.034, sin(angle) * 0.047)
 		var end := Vector3(cos(angle + 0.18) * 0.207, outside - side * 0.023, sin(angle + 0.18) * 0.207)
-		_rod(rotor, start, end, 0.022, WHITE, 0.64, 0.22)
+		_rod(rotor, start, end, 0.022, Color("354d69") if kart_style == "comet" else WHITE, 0.64, 0.22)
 		# Five wheel nuts sit on the hub flange; the brake disc remains visible behind the spokes.
 		var bolt := Vector3(cos(angle) * 0.076, outside - side * 0.043, sin(angle) * 0.076)
 		_ellipsoid(rotor, bolt, Vector3(0.013, 0.011, 0.013), CHROME, 0.7, 0.24)
@@ -851,7 +929,10 @@ func _make_driver() -> void:
 	driver.add_child(head)
 	var head_width: float = 0.43 if animal != "rabbit" else 0.36
 	var head_profile: Array[Vector4] = [Vector4(-0.32, 0.055, 0.060, -0.025), Vector4(-0.26, 0.27, 0.225, -0.003), Vector4(-0.13, head_width, 0.30, 0.006), Vector4(0.055, head_width * 0.98, 0.326, 0.015), Vector4(0.23, 0.31, 0.277, 0.025), Vector4(0.33, 0.17, 0.17, 0.038), Vector4(0.375, 0.008, 0.012, 0.038)]
-	_fur(head, _loft(head_profile, true, 48, 5), Vector3.ZERO, fur, 2900, 0.016, 715)
+	var head_mesh: Mesh = _loft(head_profile, true, 48, 5)
+	if is_lumo:
+		head_mesh = CHARACTER_FINISH.coat(head_mesh, fur, cream, "head")
+	_fur(head, head_mesh, Vector3.ZERO, Color.WHITE if is_lumo else fur, 2900, 0.016, 715)
 	# The cheek mask is sculpted as two swept, tapered volumes, with a joined muzzle.
 	for side in [-1.0, 1.0]:
 		var cheek := _fur(head, _loft([Vector4(-0.15, 0.045, 0.035, -0.012), Vector4(-0.045, 0.145, 0.130, -0.010), Vector4(0.095, 0.16, 0.135, 0.005), Vector4(0.245, 0.11, 0.077, 0.023), Vector4(0.335, 0.010, 0.013, 0.050)], false, 32, 4), Vector3(side * 0.12, -0.16, -0.21), cream, 700, 0.028, 821 + int(side))
@@ -870,7 +951,7 @@ func _make_driver() -> void:
 		for p in range(6):
 			var t: float = float(p) / 5.0
 			brow.append(Vector3(side * (0.075 + t * 0.195), 0.205 + sin(t * PI) * 0.047 - t * 0.014, -0.277 + t * 0.018))
-		_ribbon(head, brow, 0.018, fur.darkened(0.5))
+		_ribbon(head, brow, 0.012, fur.darkened(0.45))
 	var muzzle: Array[Vector4] = [Vector4(-0.455, 0.038, 0.028, -0.101), Vector4(-0.418, 0.113, 0.060, -0.122), Vector4(-0.351, 0.168, 0.090, -0.135), Vector4(-0.264, 0.15, 0.08, -0.15), Vector4(-0.21, 0.01, 0.012, -0.15)]
 	_fur(head, _loft(muzzle, false, 32, 4), Vector3.ZERO, cream, 350, 0.009, 228)
 	# A small triangular, polished nose and a real mouth cavity underneath.
@@ -998,7 +1079,17 @@ func _make_ear(side: float, fur: Color, cream: Color) -> void:
 		_mesh(ear, _loft([Vector4(-0.055, 0.025, 0.032, 0), Vector4(0.035, 0.11, 0.079, 0), Vector4(0.12, 0.075, 0.055, 0), Vector4(0.16, 0.005, 0.005, 0)], true, 24, 4), Vector3.ZERO, fur.darkened(0.16))
 		_ellipsoid(ear, Vector3(0, 0.05, -0.073), Vector3(0.06, 0.060, 0.012), cream)
 	else:
-		_fur(ear, _loft([Vector4(-0.075, 0.085, 0.078, 0), Vector4(0.0, 0.135, 0.092, 0), Vector4(0.14, 0.112, 0.080, 0.006), Vector4(0.32, 0.046, 0.048, 0.017), Vector4(0.40, 0.003, 0.004, 0.024)], true, 32, 4), Vector3.ZERO, fur.darkened(0.06), 300, 0.021, 440 + int(side))
+		var outer_ear: Mesh = _loft([
+			Vector4(-0.075, 0.085, 0.078, 0), Vector4(0.0, 0.135, 0.092, 0),
+			Vector4(0.14, 0.112, 0.080, 0.006), Vector4(0.32, 0.046, 0.048, 0.017),
+			Vector4(0.40, 0.003, 0.004, 0.024)
+		], true, 32, 4)
+		if animal == "fox":
+			outer_ear = CHARACTER_FINISH.coat(outer_ear, fur, cream, "ear")
+		_fur(
+			ear, outer_ear, Vector3.ZERO, Color.WHITE if animal == "fox" else fur.darkened(0.06),
+			300, 0.021, 440 + int(side)
+		)
 		_fur(ear, _loft([Vector4(-0.033, 0.063, 0.026, -0.072), Vector4(0.055, 0.088, 0.035, -0.065), Vector4(0.17, 0.063, 0.028, -0.058), Vector4(0.31, 0.007, 0.005, -0.029)], true, 28, 4), Vector3.ZERO, cream, 200, 0.016, 555 + int(side))
 		for fluff in range(3):
 			var tuft := _mesh(ear, _loft([Vector4(0, 0.022, 0.012, 0), Vector4(0.05, 0.029, 0.018, 0), Vector4(0.105, 0.002, 0.002, 0)], true, 12, 3), Vector3(-0.030 + fluff * 0.031, 0.012 + (fluff % 2) * 0.034, -0.10), cream)
@@ -1014,9 +1105,15 @@ func _make_eye(side: float, fur_shadow: Color) -> void:
 	eyes.append(eye)
 	_ellipsoid(eye, Vector3(0, 0.005, 0.006), Vector3(0.134, 0.155, 0.064), fur_shadow)
 	_ellipsoid(eye, Vector3(0, 0, -0.009), Vector3(0.119, 0.141, 0.065), WHITE, 0, 0.3)
-	var iris_size := Vector3(0.099, 0.117, 0.018) if animal == "fox" else Vector3(0.075, 0.093, 0.018)
-	var pupil_size := Vector3(0.065, 0.078, 0.013) if animal == "fox" else Vector3(0.049, 0.062, 0.013)
-	_ellipsoid(eye, Vector3(-side * 0.008, -0.009, -0.066), iris_size, Color("965123") if animal == "fox" else Color("287788"), 0.08, 0.22)
+	var iris_size := Vector3(0.102, 0.107, 0.018) if animal == "fox" else Vector3(0.075, 0.093, 0.018)
+	var pupil_size := Vector3(0.068, 0.071, 0.013) if animal == "fox" else Vector3(0.049, 0.062, 0.013)
+	if animal == "fox":
+		_mesh(
+			eye, CHARACTER_FINISH.iris(iris_size), Vector3(-side * 0.008, -0.009, -0.066),
+			Color.WHITE, 0.08, 0.22
+		)
+	else:
+		_ellipsoid(eye, Vector3(-side * 0.008, -0.009, -0.066), iris_size, Color("287788"), 0.08, 0.22)
 	_ellipsoid(eye, Vector3(-side * 0.008, -0.004, -0.081), pupil_size, Color("080c12"), 0.10, 0.15)
 	_ellipsoid(eye, Vector3(-0.026, 0.032, -0.093), Vector3(0.019, 0.025, 0.008), Color.WHITE, 0, 0.1)
 	_ellipsoid(eye, Vector3(0.020, -0.038, -0.093), Vector3(0.007, 0.010, 0.004), Color.WHITE, 0, 0.1)
@@ -1035,9 +1132,15 @@ func _make_tail(fur: Color, cream: Color) -> void:
 		return
 	var scale_factor: float = 0.8 if animal in ["otter", "badger"] else 1.0
 	var tail_shape: Array[Vector4] = [Vector4(0.00, 0.055, 0.075, 0), Vector4(0.17, 0.115, 0.13, 0.00), Vector4(0.38, 0.195, 0.22, 0.07), Vector4(0.61, 0.22, 0.24, 0.21), Vector4(0.77, 0.165, 0.21, 0.37), Vector4(0.84, 0.072, 0.13, 0.56), Vector4(0.83, 0.004, 0.008, 0.73)]
-	var mesh := _fur(tail, _loft(tail_shape, false, 32, 4), Vector3.ZERO, fur, 950, 0.033, 7138)
+	var tail_mesh: Mesh = _loft(tail_shape, false, 32, 4)
+	if animal == "fox":
+		tail_mesh = CHARACTER_FINISH.coat(tail_mesh, fur, cream, "tail")
+	var mesh := _fur(
+		tail, tail_mesh, Vector3.ZERO, Color.WHITE if animal == "fox" else fur,
+		1550 if animal == "fox" else 950, 0.033, 7138
+	)
 	mesh.scale *= scale_factor
-	if animal in ["fox", "cat"]:
+	if animal == "cat":
 		_fur(tail, _loft([Vector4(0.60, 0.207, 0.205, 0.24), Vector4(0.73, 0.181, 0.225, 0.345), Vector4(0.83, 0.092, 0.145, 0.52), Vector4(0.85, 0.039, 0.075, 0.655), Vector4(0.83, 0.004, 0.008, 0.745)], false, 32, 4), Vector3.ZERO, cream, 600, 0.032, 8226)
 
 
