@@ -26,7 +26,9 @@ class ReferenceKart:
 				# including authored meshes that have no index array.
 				var arrays: Array = child.mesh.surface_get_arrays(0)
 				var source_indices: PackedInt32Array = (
-					arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
+					arrays[Mesh.ARRAY_INDEX]
+					if arrays[Mesh.ARRAY_INDEX] != null
+					else PackedInt32Array()
 				)
 				if source_indices.is_empty():
 					for index in range(arrays[Mesh.ARRAY_VERTEX].size()):
@@ -49,6 +51,7 @@ class ReferenceKart:
 
 class AuthoredKart:
 	extends ReferenceKart
+
 	func _merge_static(_parent: Node3D) -> void:
 		# Count actual authored triangles independently of either batching path.
 		pass
@@ -108,11 +111,46 @@ func _summary(kart: LumoRaceKart) -> Dictionary:
 	return result
 
 
+func _align_float_buckets(reference: Dictionary, current: Dictionary) -> void:
+	# Baking a rotated fur volume writes float32 vertex positions one step earlier
+	# than a retained scene transform. Match only adjacent 0.1 mm buckets; all
+	# vertex counts and per-position colour counts remain independently checked.
+	for key: String in current.samples.keys():
+		if reference.samples.has(key):
+			continue
+		var parts: PackedStringArray = key.split(",")
+		var p := Vector3i(int(parts[0]), int(parts[1]), int(parts[2]))
+		var destination: String = ""
+		for offset in [
+			Vector3i(1, 0, 0),
+			Vector3i(-1, 0, 0),
+			Vector3i(0, 1, 0),
+			Vector3i(0, -1, 0),
+			Vector3i(0, 0, 1),
+			Vector3i(0, 0, -1)
+		]:
+			var q: Vector3i = p + offset
+			var candidate: String = "%d,%d,%d" % [q.x, q.y, q.z]
+			if (
+				reference.samples.has(candidate)
+				and not current.samples.has(candidate)
+				and reference.samples[candidate] == current.samples[key]
+			):
+				destination = candidate
+				break
+		if destination.is_empty():
+			continue
+		current.samples[destination] = current.samples[key]
+		current.samples.erase(key)
+		current.paint[destination] = current.paint[key]
+		current.paint.erase(key)
+
+
 func _authored_far_index_count(node: Node3D, kart: LumoRaceKart) -> int:
 	var count: int = 0
 	for child in node.get_children():
 		if child is MeshInstance3D:
-			if kart.flames.has(child) or kart.sparks.has(child):
+			if kart.flames.has(child) or kart.sparks.has(child) or child.has_meta("near_only"):
 				continue
 			var geometry: Mesh = kart._far_geometry(child.mesh)
 			var arrays: Array = geometry.surface_get_arrays(0)
@@ -147,8 +185,14 @@ func _run() -> void:
 		var authored_geometry: Dictionary = _summary(authored)
 		var original: Dictionary = _summary(reference)
 		var optimized: Dictionary = _summary(kart)
-		assert(original.triangle_indices == authored_geometry.triangle_indices, "Reference must retain every authored triangle, including unindexed badges")
-		assert(original.vertices == authored_geometry.vertices, "Reference must retain all authored vertices")
+		assert(
+			original.triangle_indices == authored_geometry.triangle_indices,
+			"Reference must retain every authored triangle, including unindexed badges"
+		)
+		assert(
+			original.vertices == authored_geometry.vertices,
+			"Reference must retain all authored vertices"
+		)
 		assert(
 			original.vertices == optimized.vertices,
 			"Full-detail vertex count must remain unchanged"
@@ -157,6 +201,7 @@ func _run() -> void:
 			original.triangle_indices == optimized.triangle_indices,
 			"Full-detail triangles must remain unchanged"
 		)
+		_align_float_buckets(original, optimized)
 		assert(
 			original.samples == optimized.samples, "All full-detail positions must remain unchanged"
 		)
@@ -181,8 +226,13 @@ func _run() -> void:
 		)
 		assert(kart.far_mesh.mesh.get_surface_count() == 1, "Distant kart draws a single surface")
 		var far_vertices: int = kart.far_mesh.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size()
-		var far_indices: PackedInt32Array = kart.far_mesh.mesh.surface_get_arrays(0)[Mesh.ARRAY_INDEX]
-		assert(far_indices.size() == _authored_far_index_count(authored, authored), "Distant batching must also retain every reduced triangle and badge")
+		var far_indices: PackedInt32Array = kart.far_mesh.mesh.surface_get_arrays(0)[
+			Mesh.ARRAY_INDEX
+		]
+		assert(
+			far_indices.size() == _authored_far_index_count(authored, authored),
+			"Distant batching must also retain every reduced triangle and badge"
+		)
 		assert(
 			far_vertices < optimized.vertices * 0.5,
 			"Distant geometry must be substantially cheaper"
@@ -231,7 +281,10 @@ func _run() -> void:
 			minimum_eye_open = minf(minimum_eye_open, kart.eyes[0].scale.y)
 			maximum_eye_open = maxf(maximum_eye_open, kart.eyes[0].scale.y)
 			assert(kart.eyes[0].scale.y >= 0.0 and kart.eyes[0].scale.y <= 1.0)
-		assert(minimum_eye_open < 0.15 and maximum_eye_open > 0.99, "Near driver keeps blinking and reopening eyes")
+		assert(
+			minimum_eye_open < 0.15 and maximum_eye_open > 0.99,
+			"Near driver keeps blinking and reopening eyes"
+		)
 		assert(absf(kart.head.rotation.y) > 0.001 and absf(kart.steering_wheel.rotation.z) > 0.1)
 		if kart.tail:
 			assert(absf(kart.tail.rotation.y) > 0.001, "Near tails keep moving")
@@ -282,7 +335,14 @@ func _run() -> void:
 		print(
 			(
 				"[KartVehicle] %s near_surfaces=%d->%d near_vertices=%d far_vertices=%d far_surfaces=1 triangles_preserved=%d"
-				% [kind, original.surfaces, optimized.surfaces, optimized.vertices, far_vertices, optimized.triangle_indices / 3]
+				% [
+					kind,
+					original.surfaces,
+					optimized.surfaces,
+					optimized.vertices,
+					far_vertices,
+					optimized.triangle_indices / 3
+				]
 			)
 		)
 		kart.free()

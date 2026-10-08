@@ -111,7 +111,7 @@ static func decorate(kart, body: Node3D, paint: Color, id: String) -> void:
 	for side in [-1.0, 1.0]:
 		match id:
 			"gecko_velo":
-				_fin(kart, body, Vector3(side * 0.36, 0.85, 0.48), side, paint, 0.38)
+				_fin(kart, body, Vector3(side * 0.47, 0.61, 0.48), side, paint, 0.38)
 				kart._ellipsoid(
 					body,
 					Vector3(side * 0.29, 0.64, -0.93),
@@ -130,12 +130,12 @@ static func decorate(kart, body: Node3D, paint: Color, id: String) -> void:
 				)
 			"boru_rally":
 				var lamp: MeshInstance3D = kart._ring(
-					body, Vector3(side * 0.28, 0.78, -0.94), 0.070, 0.095, kart.CHROME, 0.75
+					body, Vector3(side * 0.28, 0.67, -0.90), 0.070, 0.095, kart.CHROME, 0.75
 				)
 				lamp.rotation.x = PI / 2.0
 				kart._ellipsoid(
 					body,
-					Vector3(side * 0.28, 0.78, -0.945),
+					Vector3(side * 0.28, 0.67, -0.925),
 					Vector3(0.071, 0.071, 0.024),
 					kart.WHITE,
 					0.18,
@@ -154,12 +154,16 @@ static func decorate(kart, body: Node3D, paint: Color, id: String) -> void:
 					0.75
 				)
 			"nala_comet":
-				_fin(kart, body, Vector3(side * 0.40, 0.78, 0.48), side, paint, 0.32)
+				_fin(kart, body, Vector3(side * 0.49, 0.62, 0.48), side, paint, 0.32)
 				for stripe in range(3):
 					kart._box(
 						body,
-						Vector3(side * 0.406, 0.86 + stripe * 0.06, 0.485),
-						Vector3(0.034, 0.025, 0.16),
+						Vector3(
+							side * (0.537 + stripe * 0.011),
+							0.693 + stripe * 0.059,
+							0.50 + stripe * 0.024
+						),
+						Vector3(0.034, 0.025, 0.15 - stripe * 0.02),
 						kart.WHITE,
 						0.18
 					)
@@ -168,9 +172,9 @@ static func decorate(kart, body: Node3D, paint: Color, id: String) -> void:
 					kart,
 					body,
 					[
-						Vector3(side * 0.20, 0.75, -0.94),
-						Vector3(side * 0.33, 0.73, -0.78),
-						Vector3(side * 0.40, 0.70, -0.55)
+						Vector3(side * 0.20, 0.65, -0.94),
+						Vector3(side * 0.33, 0.68, -0.78),
+						Vector3(side * 0.40, 0.69, -0.55)
 					],
 					0.036,
 					kart.WHITE,
@@ -203,7 +207,7 @@ static func decorate(kart, body: Node3D, paint: Color, id: String) -> void:
 					kart,
 					body,
 					[
-						Vector3(side * 0.12, 0.79, -0.75),
+						Vector3(side * 0.12, 0.752, -0.75),
 						Vector3(side * 0.27, 0.77, -0.65),
 						Vector3(side * 0.38, 0.70, -0.53)
 					],
@@ -245,13 +249,15 @@ static func decorate(kart, body: Node3D, paint: Color, id: String) -> void:
 			0.75
 		)
 	if id == "zuri_volt":
+		# The grille is mounted in a real fascia instead of hanging ahead of the narrow nose.
+		kart._box(body, Vector3(0, 0.57, -1.012), Vector3(0.55, 0.205, 0.13), kart.INK, 0.35)
 		for cell in range(7):
 			var x: float = (float(cell % 4) - 1.5) * 0.12
-			var y: float = 0.56 + floorf(float(cell) / 4.0) * 0.10
+			var y: float = 0.51 + floorf(float(cell) / 4.0) * 0.10
 			var points: Array[Vector3] = []
 			for corner in range(7):
 				var a: float = float(corner) * TAU / 6.0
-				points.append(Vector3(x + cos(a) * 0.061, y + sin(a) * 0.061, -1.085))
+				points.append(Vector3(x + cos(a) * 0.055, y + sin(a) * 0.055, -1.078))
 			_ribbon(kart, body, points, 0.009, kart.CHROME, 0.75)
 
 

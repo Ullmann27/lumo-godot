@@ -29,7 +29,7 @@ jobs:
     - name: Fleet and actual compact-screen menu regression
       run: |
         set -euo pipefail
-        for probe in kart_fleet_regression kart_menu_flow_regression kart_fold_controls_regression kart_modes_regression kart_intro_regression kart_preview_regression kart_audio_regression; do
+        for probe in kart_fleet_regression kart_vehicle_detail_regression kart_harbor_regression kart_track_detail_regression kart_menu_flow_regression kart_fold_controls_regression kart_modes_regression kart_intro_regression kart_preview_regression kart_audio_regression; do
           limit=240
           if [ "$probe" = kart_fold_controls_regression ]; then limit=420; fi
           python3 tools/run_godot_probe.py --timeout "$limit" --log "exports/fleet-logs/${probe}.log" -- xvfb-run -a -s '-screen 0 1920x2560x24' godot --audio-driver Dummy --rendering-method gl_compatibility --script "scripts/tests/${probe}.gd"
@@ -93,6 +93,11 @@ jobs:
         if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' exports/fleet-logs/movie.log; then exit 1; fi
         ffmpeg -y -i exports/fleet-video/native-fleet.avi -an -c:v libx264 -crf 20 -pix_fmt yuv420p -movflags +faststart exports/fleet-video/Lumo_Kart_3D_Flotte.mp4
         rm exports/fleet-video/native-fleet.avi
+    - name: Capture the marina from real geometry and its exact garage portraits
+      run: |
+        set -euo pipefail
+        python3 tools/run_godot_probe.py --timeout 120 --log exports/fleet-logs/harbor-capture.log -- xvfb-run -a -s '-screen 0 1280x720x24' godot --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_harbor_regression.gd -- --capture
+        python3 tools/run_godot_probe.py --timeout 120 --log exports/fleet-logs/garage-art.log -- xvfb-run -a -s '-screen 0 512x512x24' godot --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_garage_art_capture.gd
     - name: Make playable web build
       run: |
         set -euo pipefail
@@ -110,6 +115,8 @@ jobs:
           exports/fleet-models/
           exports/fleet-props/
           exports/fleet-video/
+          exports/harbor-proof/
+          exports/garage-art/
         retention-days: 30
         if-no-files-found: warn
     - name: Upload playable build
@@ -123,6 +130,8 @@ jobs:
   push:
     branches:
     - codex/lumo-kart-fleet-2026-10-08
+    - codex/lumo-kart-stage2-2026-10-08
+    - codex/lumo-reference-design-2026-10-08
     paths:
     - scripts/games/kart_*.gd
     - scripts/tests/kart_*.gd

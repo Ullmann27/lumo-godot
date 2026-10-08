@@ -601,6 +601,9 @@ func _refresh() -> void:
 			card.artwork = load("res://assets/kart/menu/" + icon_name + ".svg")
 			if step == 1:
 				card.artwork = preload("res://assets/kart/controls/steering.svg")
+			elif step == 2:
+				# Portraits are rendered from these exact selectable game models.
+				card.artwork = load("res://assets/kart/menu/fleet/" + str(item.id) + ".webp")
 			card.add_theme_stylebox_override("normal", _glass(selected))
 			card.add_theme_stylebox_override("hover", _glass(true))
 			card.add_theme_stylebox_override("pressed", _glass(true))

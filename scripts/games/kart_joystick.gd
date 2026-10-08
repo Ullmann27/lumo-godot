@@ -1,7 +1,12 @@
 extends Control
 ## Analogue touch stick: owns one finger, leaving the other free for actions.
 
-const FOX_EMBLEM = preload("res://assets/kart/controls/steering.svg")
+const BASE = preload("res://assets/kart/controls/reference/stick_basis.png")
+const KNOB = preload("res://assets/kart/controls/reference/stick_knopf_normal.png")
+const KNOB_PRESSED = preload("res://assets/kart/controls/reference/stick_knopf_pressed.png")
+## Source: 1024 px base, 512 px knob; physical diameter ratio = 0.4.
+const KNOB_CANVAS_RATIO: float = 0.5
+const KNOB_TRAVEL_RATIO: float = 128.0 / 1024.0
 
 signal axis_changed(value: Vector2)
 var axis := Vector2.ZERO
@@ -58,6 +63,7 @@ func _move(at: Vector2) -> void:
 	if target.length() < 0.08:
 		target = Vector2.ZERO
 	axis_changed.emit(target)
+	queue_redraw()
 
 
 func _reset() -> void:
@@ -65,12 +71,14 @@ func _reset() -> void:
 	mouse_active = false
 	target = Vector2.ZERO
 	axis_changed.emit(target)
+	queue_redraw()
 
 
 func set_enabled(value: bool) -> void:
 	enabled = value
 	if not value:
 		_reset()
+	queue_redraw()
 
 
 func _process(delta: float) -> void:
@@ -85,24 +93,10 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var center: Vector2 = size * 0.5
-	var radius: float = minf(size.x, size.y) * 0.43
-	var cyan := Color("5ef8ed")
-	var violet := Color("bb8bff")
-	draw_circle(center + Vector2(0, 6), radius + 5, Color(0.015, 0.03, 0.07, 0.3))
-	draw_circle(center, radius, Color(0.035, 0.08, 0.16, 0.88))
-	for i in range(4):
-		draw_arc(center, radius + i * 2, 0, TAU, 72, Color(cyan, 0.12 - i * 0.025), 3, true)
-	draw_arc(center, radius, 0, TAU, 72, Color(cyan, 0.8), 2, true)
-	draw_arc(center, radius - 12, PI * 1.08, PI * 1.92, 32, violet, 3, true)
-	for direction in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
-		var marker: Vector2 = center + direction * (radius - 10)
-		draw_line(marker - direction * 5, marker + direction * 1, Color(cyan, 0.7), 3, true)
-	var knob_radius: float = radius * 0.40
-	var knob: Vector2 = center + axis * radius * 0.56
-	draw_line(center, knob, Color(cyan, 0.17), radius * 0.30, true)
-	draw_circle(knob + Vector2(0, knob_radius * 0.12), knob_radius * 1.08, Color(0.005, 0.02, 0.07, 0.65))
-	draw_circle(knob, knob_radius, Color("264b76"))
-	draw_arc(knob, knob_radius, 0, TAU, 64, cyan, maxf(2.0, radius * 0.035), true)
-	draw_arc(knob, knob_radius * 0.86, PI * 1.1, PI * 1.9, 30, violet, maxf(2.0, radius * 0.035), true)
-	var emblem_size: float = knob_radius * 1.72
-	draw_texture_rect(FOX_EMBLEM, Rect2(knob - Vector2.ONE * emblem_size * 0.5, Vector2.ONE * emblem_size), false)
+	var side: float = minf(size.x, size.y)
+	var tint: Color = Color.WHITE if enabled else Color(0.68, 0.74, 0.84, 0.82)
+	draw_texture_rect(BASE, Rect2(center - Vector2.ONE * side * 0.5, Vector2.ONE * side), false, tint)
+	var knob_size: float = side * KNOB_CANVAS_RATIO
+	var knob_center: Vector2 = center + axis * side * KNOB_TRAVEL_RATIO
+	var texture: Texture2D = KNOB_PRESSED if touch_id >= 0 or mouse_active else KNOB
+	draw_texture_rect(texture, Rect2(knob_center - Vector2.ONE * knob_size * 0.5, Vector2.ONE * knob_size), false, tint)

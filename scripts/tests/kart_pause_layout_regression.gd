@@ -130,12 +130,11 @@ func _run() -> void:
 	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "gemuetlich"})
 	assert(is_equal_approx(game._resize_compensated_fov(68.0, 16.0 / 9.0), 68.0))
 	var wide_fov: float = game._resize_compensated_fov(68.0, 2.4)
-	assert(wide_fov < 68.0 and wide_fov > 40.0)
+	assert(wide_fov >= 68.0, "Wide displays must retain the full vertical kart view")
 	assert(
-		is_equal_approx(
-			tan(deg_to_rad(wide_fov) * 0.5) * 2.4,
-			tan(deg_to_rad(68.0) * 0.5) * (16.0 / 9.0)
-		)
+		tan(deg_to_rad(wide_fov) * 0.5) * 2.4
+		> tan(deg_to_rad(68.0) * 0.5) * (16.0 / 9.0),
+		"A cover display should reveal more road on both sides instead of cropping the kart"
 	)
 	assert(game.camera.keep_aspect == Camera3D.KEEP_HEIGHT)
 	game.set_physics_process(false)
