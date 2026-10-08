@@ -1,4 +1,18 @@
-# Direkte Übergabe an Claude Opus 5.5 · 8. Oktober 2026
+# Aktuelle Fortsetzung: Kart-Modal-Touch · 8. Oktober 2026
+
+Zuerst [das neue geprüfte Modal-Touch-Paket](docs/MODAL_TOUCH_2026-10-08.md)
+lesen. Aktiver Integrationsbranch/PR29 baut auf Godot18238d48 auf; App-PR216
+bereitet den exakten neuen Pin und APK1904 vor. Die tatsächlich gebaute1903
+ist byteweise geprüft, aber beide vollständigen Android-Kartläufe bleiben FAIL.
+Die neue native Touch-Regressionsprobe besteht 35 Prüfungen/sechs Drags/14 PNGs;
+derselbe Test reproduziert auf unverändertem BASE den echten Scrollfehler.
+Neue Android-/APK-Abnahme separat am aktuellen Lauf belegen.
+**VISUAL_GAP / NOT FINISHED**; keine Referenzgleichheit oder Geräte-FPS behaupten.
+
+Die folgende ältere Übergabe bleibt Kontext; ihre SHAs und Integrationsschritte
+sind keine aktuellen Heads.
+
+## Direkte Übergabe an Claude Opus 5.5 · 8. Oktober 2026
 
 Lies zuerst [die vollständige aktuelle Übergabe](docs/HANDOFF_CODEX_TO_OPUS_2026-10-08.md).
 Sie enthält Änderungen an App, Lumo, Karts, Steuerung, Kamera und allen zwölf

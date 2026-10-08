@@ -856,6 +856,13 @@ func _build_ui() -> void:
 	modal.visibility_changed.connect(func(): modal_backdrop.visible = modal.visible and not menu_active)
 	modal_column = VBoxContainer.new()
 	modal_column.add_theme_constant_override("separation", 10)
+	# Settings and result buttons pass touch drags to their ScrollContainer.
+	# Its scroll-begin notification cancels the Button's pending click.
+	modal_column.child_entered_tree.connect(
+		func(child: Node):
+			if child is Button:
+				child.mouse_filter = Control.MOUSE_FILTER_PASS
+	)
 	var modal_body := VBoxContainer.new()
 	modal_body.add_theme_constant_override("separation", 10)
 	modal.add_child(modal_body)
