@@ -58,6 +58,7 @@ var graphics_profile: String = "high"
 var progress_label: Label
 var body_column: VBoxContainer
 var header_row: HBoxContainer
+var kart_head_row: HBoxContainer
 var preview_container: SubViewportContainer
 var step_strip: HBoxContainer
 var step_buttons: Array[Button] = []
@@ -194,6 +195,7 @@ func _ready() -> void:
 	kart_panel.visible = false
 	right.add_child(kart_panel)
 	var kart_head := HBoxContainer.new()
+	kart_head_row = kart_head
 	kart_head.add_theme_constant_override("separation", 10)
 	kart_panel.add_child(kart_head)
 	kart_summary = _label("", 16, Color("dceaff"))
@@ -354,19 +356,31 @@ func _apply_responsive_layout() -> void:
 	_set_physical_font(subtitle, 14 if small else 18, ui_scale)
 	subtitle.visible = not short_landscape
 	detail.visible = not short_landscape and not small and step != 2
-	kart_panel.visible = step == 2
+	# Kleine Querformate: Der Werkstatt-Knopf rückt in die Kopfzeile, damit die Kartseite samt
+	# Vorschau und Weiter-Knopf auf eine Bildschirmhöhe passt.
+	var workshop_in_header: bool = short_landscape and step == 2
+	var workshop_parent: HBoxContainer = header_row if workshop_in_header else kart_head_row
+	if workshop_button.get_parent() != workshop_parent:
+		workshop_button.reparent(workshop_parent, false)
+		if workshop_in_header:
+			header_row.move_child(workshop_button, learn_button.get_index())
+	workshop_button.visible = step == 2
+	kart_panel.visible = step == 2 and not short_landscape
 	kart_summary.visible = not short_landscape
 	# Hochformat und Fold-Innendisplay: Die Karten brauchen den Platz, die Werte stehen schon auf ihnen.
 	var stacked: bool = window_size.x < window_size.y
 	kart_bars.visible = not short_landscape and not (stacked and step == 2)
 	if stacked and step == 2:
 		_set_physical_minimum(preview_container, Vector2(150, 110), ui_scale)
-	kart_bars.row_height = (16.0 if small else 21.0) * ui_scale
+	# Auf niedrigen Querformaten (z. B. 1280×720 mit Systemleisten) braucht die Kartseite den Platz
+	# für Vorschau, Werte und Werkstatt-Knopf; Überschrift und Hinweis entfallen dort.
+	var tight_kart_page: bool = step == 2 and window_size.x >= window_size.y and window_size.y < 800
+	kart_bars.row_height = (16.0 if small or tight_kart_page else 21.0) * ui_scale
 	kart_bars.font_scale = ui_scale
-	_set_physical_minimum(workshop_button, Vector2(120 if small else 190, 44 if short_landscape else 52), ui_scale)
+	_set_physical_minimum(workshop_button, Vector2(160 if short_landscape else (120 if small else 190), 44 if short_landscape else 52), ui_scale)
 	_set_physical_font(workshop_button, 15 if short_landscape else 18, ui_scale)
-	preview_caption.visible = not short_landscape and not small
-	preview_title.visible = not short_landscape and not small
+	preview_caption.visible = not short_landscape and not small and not tight_kart_page
+	preview_title.visible = not short_landscape and not small and not tight_kart_page
 	_set_physical_minimum(view_choice, Vector2(0, 44), ui_scale)
 	_set_physical_font(view_choice, 14 if short_landscape else 16, ui_scale)
 	view_choice.set_item_text(0, "Rundum" if short_landscape else "Rundum ansehen")
@@ -435,6 +449,10 @@ func _set_physical_font(control: Control, physical: int, ui_scale: float) -> voi
 
 
 func _apply_ui_scale(control: Node, ui_scale: float) -> void:
+	# Wertebalken und Kartkarten skalieren sich selbst (row_height, apply_size); ein zweites
+	# Skalieren hier würde kurz alte Mindestgrößen setzen und die Seite dauerhaft strecken.
+	if control.has_meta("kart_self_sized"):
+		return
 	if control is Control:
 		var ui_control: Control = control
 		if not ui_control.has_meta("kart_base_minimum_size"):

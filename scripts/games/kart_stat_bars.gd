@@ -26,6 +26,11 @@ var _shown_base: Dictionary = {}
 var _shown_bonus: Dictionary = {}
 
 
+func _init() -> void:
+	# Skaliert sich selbst; die Garage soll Mindestgrößen hier nicht ein zweites Mal setzen.
+	set_meta("kart_self_sized", true)
+
+
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_update_minimum()
