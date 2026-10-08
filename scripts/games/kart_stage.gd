@@ -8,21 +8,14 @@ const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 static func build(stage: Node3D, ring_color: Color = Color("45d9ef"), with_podium: bool = true) -> Dictionary:
 	var environment := WorldEnvironment.new()
 	var settings := Environment.new()
-	var sky := Sky.new()
-	var sky_material := ProceduralSkyMaterial.new()
-	sky_material.sky_top_color = Color("0b1c3d")
-	sky_material.sky_horizon_color = Color("5aa7d8")
-	sky_material.ground_horizon_color = Color("23446e")
-	sky_material.ground_bottom_color = Color("060d1c")
-	sky_material.sky_curve = 0.22
-	sky.sky_material = sky_material
-	sky.radiance_size = Sky.RADIANCE_SIZE_128
-	settings.sky = sky
+	# Keine Sky-Ressource: Deren Spiegelungstexturen gibt der Kompatibilitäts-Renderer beim Freigeben
+	# nicht zurück (GL-Leck beim Beenden). Umgebungslicht und Glanz kommen aus Farbe und Lichtern.
 	settings.background_mode = Environment.BG_CANVAS
 	settings.background_color = Color("0c1d36")
-	settings.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	settings.ambient_light_energy = 0.62
-	settings.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
+	settings.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	settings.ambient_light_color = Color("3d6a9c")
+	settings.ambient_light_energy = 0.55
+	settings.reflected_light_source = Environment.REFLECTION_SOURCE_DISABLED
 	settings.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	settings.glow_enabled = true
 	settings.glow_intensity = 0.75
