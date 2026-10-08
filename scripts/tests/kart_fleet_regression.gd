@@ -120,5 +120,6 @@ func _run() -> void:
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
+	await create_timer(0.2).timeout
 	print("[KartFleet] PASS: 9 designs, animated chassis, LOD, budgets, garage views, scenery")
 	quit()
