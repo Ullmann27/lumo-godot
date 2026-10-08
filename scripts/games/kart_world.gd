@@ -466,6 +466,9 @@ func _terrain() -> void:
 		stylized.set_shader_parameter("bottom_tint",Color("657b68"))
 		stylized.set_shader_parameter("overall_tint",Color("e6efcf"))
 		stylized.set_shader_parameter("roughness_value",0.90)
+		if not low_detail:
+			stylized.set_shader_parameter("ground_grain",preload("res://assets/materials/kart_terrain_grain.tres"))
+			stylized.set_shader_parameter("grain_strength",0.22)
 		land.material_override=stylized
 	else:
 		var material := _material(Color.WHITE).duplicate() as StandardMaterial3D

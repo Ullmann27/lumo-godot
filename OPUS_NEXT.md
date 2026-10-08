@@ -1,3 +1,9 @@
+# Aktueller Stand:  visuelle Iteration 1904 · 8. Oktober 2026
+
+Zuerst [die aktuelle Änderungs- und Prüfübersicht](docs/track_expansion/LUMO_VISUAL_FIDELITY_1904_2026-10-08.md) lesen. Basis ist jetzt der integrierte Stand 18238d4; die nachfolgende frühere Übergabe ist historisch. Android 1904 und vollständige Referenztreue sind noch nicht abgenommen.
+
+---
+
 # Direkte Übergabe an Claude Opus 5.5 · 8. Oktober 2026
 
 Lies zuerst [die vollständige aktuelle Übergabe](docs/HANDOFF_CODEX_TO_OPUS_2026-10-08.md).

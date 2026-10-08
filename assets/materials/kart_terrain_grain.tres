@@ -1,0 +1,13 @@
+[gd_resource type="NoiseTexture2D" load_steps=2 format=3]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_coastal_ground"]
+seed = 1801
+frequency = 0.065
+fractal_octaves = 2
+
+[resource]
+width = 256
+height = 256
+seamless = true
+generate_mipmaps = true
+noise = SubResource("FastNoiseLite_coastal_ground")
