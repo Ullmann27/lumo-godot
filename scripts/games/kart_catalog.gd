@@ -2,6 +2,7 @@ extends RefCounted
 ## Original Lumo race rules and shared menu data. Unlocks are earned, never charged.
 ## Kart is a reward game: learning happens in the app, never inside a race.
 const EXPANSION = preload("res://scripts/games/kart_expansion_tracks.gd")
+const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const BASE_TRACKS: Array[Dictionary] = [
 	{"id": "sonnenhafen", "name": "Sonnenhafen", "tag": "MEER · BRÜCKEN · WEITE KURVEN", "color": Color("64dfeb"), "description": "Über die Hafenbrücke, am Leuchtturm vorbei und direkt ans Meer."},
 	{"id": "zauberwald", "name": "Zauberwald", "tag": "WALD · LEUCHTEN · GEHEIMNISSE", "color": Color("87eac1"), "description": "Leuchtende Pilze und große Baumwipfel begleiten deine Fahrt."},
@@ -28,7 +29,7 @@ const DRIVERS: Array[Dictionary] = [
 	{"id": "rabbit", "name": "Nova", "tag": "NEUGIERIG UND FLINK", "color": Color("c0abff"), "unlock": 6},
 	{"id": "otter", "name": "Milo", "tag": "ENTSPANNT INS ABENTEUER", "color": Color("75e6ce"), "unlock": 12}
 ]
-const KARTS: Array[Dictionary] = [
+const BASE_KARTS: Array[Dictionary] = [
 	{"id": "comet", "name": "Comet", "tag": "AUSGEWOGEN", "description": "Tempo ●●●  Lenkung ●●●  Schub ●●●", "speed": 1.0, "turn": 1.0, "accel": 1.0, "unlock": 0},
 	{"id": "glider", "name": "Glider", "tag": "LEICHT ZU LENKEN", "description": "Tempo ●●  Lenkung ●●●●  Schub ●●●", "speed": 0.93, "turn": 1.13, "accel": 1.12, "unlock": 8},
 	{"id": "turbo", "name": "Aurora GT", "tag": "SCHNELL AUF GERADEN", "description": "Tempo ●●●●  Lenkung ●●  Schub ●●", "speed": 1.1, "turn": 0.94, "accel": 0.88, "unlock": 18}
@@ -39,6 +40,14 @@ const DIFFICULTIES: Array[Dictionary] = [
 	{"id": "pro", "name": "Sternen-Profi", "tag": "DRIFT MACHT DEN UNTERSCHIED", "description": "Volles Tempo. Gewinne mit sauberen Kurven und cleverem Boost.", "speed": 1.17, "rival": 0.99}
 ]
 const CUP_POINTS: Array[int] = [12, 9, 7, 5, 3, 1]
+static var KARTS: Array[Dictionary] = _all_karts()
+
+
+static func _all_karts() -> Array[Dictionary]:
+	var result: Array[Dictionary] = BASE_KARTS.duplicate(true)
+	result.append_array(FLEET.CATALOG)
+	result.make_read_only()
+	return result
 
 static func entry(items: Array[Dictionary], id: String) -> Dictionary:
 	for item in items:
@@ -48,3 +57,4 @@ static func entry(items: Array[Dictionary], id: String) -> Dictionary:
 
 static func unlocked(item: Dictionary, stars: int, unlocked_ids: Array) -> bool:
 	return stars >= int(item.get("unlock", 0)) or unlocked_ids.has(str(item.id))
+

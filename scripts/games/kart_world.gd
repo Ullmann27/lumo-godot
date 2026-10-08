@@ -7,6 +7,7 @@ const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
+const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
 const RAIL_LATERAL: float = 6.05
@@ -58,6 +59,7 @@ func build(
 		SKY_ISLANDS.build(self)
 		SKY_ISLANDS.jump_dressing(self)
 		SKY_ISLANDS.chevrons(self)
+		FLEET_DRESSING.build(self)
 		_flush_instances()
 		return
 	if not geometry_only:
@@ -70,6 +72,7 @@ func build(
 		EXPANSION.build(self)
 		LANDMARKS.build(self)
 		_navigation()
+		FLEET_DRESSING.build(self)
 		_flush_instances()
 		return
 	_terrain()
@@ -84,6 +87,7 @@ func build(
 	if track_id=="sonnenhafen":
 		_grand_prix_dressing()
 	LANDMARKS.build(self)
+	FLEET_DRESSING.build(self)
 	_flush_instances()
 
 func _make_curve() -> void:
@@ -1533,3 +1537,4 @@ func _holo_gate(distance: float) -> void:
 		_prop("box",at+basis.x*side*6.7+Vector3.UP*4.2,Vector3(0.32,8.4,0.42),Color("78deef"),basis,true)
 		_prop("box",at+basis.x*side*5.6+Vector3.UP*8.2,Vector3(2.7,0.32,0.42),Color("78deef"),basis.rotated(basis.z,side*0.5),true)
 	_prop("box",at+Vector3.UP*8.8,Vector3(9.0,0.32,0.42),Color("91dce9"),basis,true)
+

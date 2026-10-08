@@ -13,6 +13,9 @@ func _start(mode: String, track: String) -> void:
 	game._start_selected_race(
 		{"mode": mode, "driver": "fox", "kart": "comet", "track": track, "difficulty": "flott"}
 	)
+	# Finish the new grid-roll preview before a probe sets its own heading.
+	# Otherwise the first manual physics tick restores the forward start pose.
+	game._end_preview()
 	game.countdown = 0
 	game.racing = true
 	await process_frame

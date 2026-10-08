@@ -12,6 +12,7 @@ const WHITE := Color("edf9ff")
 const CHROME := Color("b7cddd")
 const ORANGE := Color("f08a2c")
 const GLOVE := Color("1d2230")
+const FLEET = preload("res://scripts/games/kart_fleet.gd")
 
 var vehicle_color: Color = Color("357cba")
 var animal: String = "fox"
@@ -139,7 +140,7 @@ func _animal_id(value: String) -> String:
 
 
 func _style_id(value: String) -> String:
-	return value if value in ["comet", "glider", "turbo"] else "comet"
+	return value if value in ["comet", "glider", "turbo"] or FLEET.IDS.has(value) else "comet"
 
 
 func configure_variant(value: String) -> void:
@@ -355,14 +356,20 @@ func _build() -> void:
 	body.name = "AuroraCoachwork"
 	add_child(body)
 	var width: float = 1.1 if kart_style == "turbo" else (0.91 if kart_style == "glider" else 1.0)
+	var fleet_profile: Dictionary = FLEET.profile(kart_style)
+	width = float(fleet_profile.get("width", width))
 	body.scale.x = width
 	var paint: Color = vehicle_color.lerp(Color("297cc0"), 0.25)
+	if not fleet_profile.is_empty():
+		paint = Color(str(fleet_profile.paint))
 	var shell: Array[Vector4] = [
 		Vector4(-1.16, 0.015, 0.018, 0.50), Vector4(-1.07, 0.24, 0.065, 0.51),
 		Vector4(-0.81, 0.45, 0.17, 0.52), Vector4(-0.48, 0.58, 0.20, 0.50),
 		Vector4(0.06, 0.61, 0.14, 0.45), Vector4(0.55, 0.61, 0.15, 0.46),
 		Vector4(0.91, 0.48, 0.15, 0.49), Vector4(1.05, 0.20, 0.065, 0.50),
 		Vector4(1.08, 0.01, 0.015, 0.50)]
+	if not fleet_profile.is_empty():
+		shell = FLEET.shell(kart_style)
 	_mesh(body, _loft(shell, false, 32, 5, 0.75), Vector3.ZERO, paint, 0.42, 0.24)
 	var hull := _mesh(body, _loft([
 		Vector4(-1.09, 0.015, 0.01, 0.34), Vector4(-0.75, 0.51, 0.08, 0.33),
@@ -409,6 +416,8 @@ func _build() -> void:
 	# Wing is a shaped aerofoil, with style-specific stance and endplates.
 	var wing_height: float = 1.04 if kart_style == "glider" else (0.95 if kart_style == "turbo" else 0.89)
 	var wing_span: float = 1.65 if kart_style == "glider" else 1.35
+	wing_height = float(fleet_profile.get("wing_y", wing_height))
+	wing_span = float(fleet_profile.get("wing", wing_span))
 	for side in [-1.0, 1.0]:
 		_rod(body, Vector3(side * 0.40, 0.57, 0.77), Vector3(side * 0.45, wing_height, 0.95), 0.035, INK, 0.45)
 	var wing := _mesh(body, _loft([
@@ -420,6 +429,7 @@ func _build() -> void:
 	if kart_style == "turbo":
 		for side in [-1.0, 1.0]:
 			_mesh(body, _loft([Vector4(-0.48, 0.01, 0.01, 0), Vector4(-0.36, 0.11, 0.12, 0), Vector4(0.39, 0.13, 0.12, 0), Vector4(0.60, 0.01, 0.01, 0)], false, 20, 3), Vector3(side * 0.70, 0.54, 0), WHITE, 0.38, 0.3)
+	FLEET.decorate(self, body, paint, kart_style)
 	for side in [-1.0, 1.0]:
 		for axle in [-0.66, 0.66]:
 			_make_wheel(side, axle, width)
@@ -990,3 +1000,4 @@ func _apply_celebration(delta: float) -> void:
 	if jaw and happy:
 		# Fröhlich offener Mund, solange Lumo nicht spricht.
 		jaw.rotation.x = maxf(jaw.rotation.x, 0.22 + absf(beat) * 0.12)
+

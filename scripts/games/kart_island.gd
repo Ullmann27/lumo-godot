@@ -387,7 +387,8 @@ func _build_world() -> void:
 	var rival_count: int = 0 if mode in ["time_trial", "training"] else 5
 	for i in range(rival_count):
 		var opponent: LumoRaceKart = VEHICLE.new()
-		opponent.configure(animals[i], colors[i], ["comet", "glider", "turbo"][i % 3])
+		var rival_karts: Array[String] = ["noa_tide", "iva_aurora", "boru_rally", "nala_comet", "zuri_volt"]
+		opponent.configure(animals[i], colors[i], rival_karts[i])
 		opponent.reduced_motion = reduced_motion
 		opponent.set_graphics_quality(graphics_profile)
 		race_root.add_child(opponent)
@@ -2998,3 +2999,4 @@ func _apply_volumes() -> void:
 func _sound_effect(kind: String) -> void:
 	if is_instance_valid(kart_audio):
 		kart_audio.effect(kind)
+

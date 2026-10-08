@@ -51,6 +51,8 @@ var step_buttons: Array[Button] = []
 var preview_world: Node3D
 var preview_title: Label
 var preview_camera: Camera3D
+var view_choice: OptionButton
+var inspection_view: int = 0
 
 
 func _ready() -> void:
@@ -237,6 +239,14 @@ func _ready() -> void:
 	preview_caption = _label("Ziehen zum Drehen", 14, Color("8faac8"))
 	preview_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	right.add_child(preview_caption)
+	view_choice = OptionButton.new()
+	view_choice.name = "KartInspectionView"
+	view_choice.tooltip_text = "Dein Kart von allen Seiten ansehen"
+	view_choice.custom_minimum_size.y = 44
+	for title in ["Rundum ansehen", "Vorne", "Links", "Hinten", "Rechts", "Von oben"]:
+		view_choice.add_item(title)
+	view_choice.item_selected.connect(_choose_preview_view)
+	right.add_child(view_choice)
 	detail = _label("", 20, Color("dceaff"))
 	detail.custom_minimum_size.y = 74
 	right.add_child(detail)
@@ -368,6 +378,8 @@ func _apply_responsive_layout() -> void:
 	detail.visible = not short_landscape and not small
 	preview_caption.visible = not short_landscape and not small
 	preview_title.visible = not short_landscape and not small
+	_set_physical_minimum(view_choice, Vector2(0, 44), ui_scale)
+	_set_physical_font(view_choice, 14 if short_landscape else 16, ui_scale)
 	if short_landscape:
 		footer.columns = 3 if has_saved_race else 2
 		footer_spacer.hide()
@@ -642,6 +654,11 @@ func _refresh_preview() -> void:
 	preview_kart.visible = step != 3
 	preview_camera.position = Vector3(3.2, 3.2, -4.5) if step == 3 else Vector3(3.2, 2.2, -4.5)
 	preview_camera.look_at(Vector3(0, 0.15 if step == 3 else 0.85, 0))
+	view_choice.disabled = step == 3
+	if step == 3:
+		preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+	if step != 3:
+		_choose_preview_view(inspection_view)
 	if step == 3:
 		preview_world = WORLD.new()
 		# The garage owns lighting. Never allocate and immediately discard a Sky
@@ -661,6 +678,10 @@ func _refresh_preview() -> void:
 
 
 func _preview_input(event: InputEvent) -> void:
+	if inspection_view != 0 and event is InputEventScreenDrag:
+		_choose_preview_view(0)
+	elif inspection_view != 0 and event is InputEventMouseButton and event.pressed:
+		_choose_preview_view(0)
 	if event is InputEventMouseButton:
 		rotate_drag = event.pressed
 	elif event is InputEventMouseMotion and rotate_drag:
@@ -672,6 +693,26 @@ func _preview_input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	if not visible or not is_instance_valid(preview_pivot):
 		return
-	if not rotate_drag and not reduced_motion:
+	if not rotate_drag and not reduced_motion and inspection_view == 0:
 		preview_angle += delta * 0.14
 	preview_pivot.rotation.y = preview_angle
+
+
+func _choose_preview_view(index: int) -> void:
+	inspection_view = clampi(index, 0, 5)
+	view_choice.select(inspection_view)
+	if step == 3:
+		return
+	var views: Array[Vector3] = [
+		Vector3(3.2, 2.2, -4.5), Vector3(0, 1.2, -5.6),
+		Vector3(-5.6, 1.2, 0), Vector3(0, 1.2, 5.6),
+		Vector3(5.6, 1.2, 0), Vector3(0, 6.0, 0)
+	]
+	preview_camera.position = views[inspection_view]
+	preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE if inspection_view == 0 else Camera3D.PROJECTION_ORTHOGONAL
+	preview_camera.size = 3.9 if inspection_view == 5 else 3.5
+	preview_camera.look_at(Vector3(0, 0.85, 0), Vector3.FORWARD if inspection_view == 5 else Vector3.UP)
+	if inspection_view != 0:
+		preview_angle = 0.0
+		preview_pivot.rotation.y = 0.0
+
