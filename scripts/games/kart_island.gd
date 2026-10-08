@@ -2206,12 +2206,6 @@ func _pause() -> void:
 	)
 	sound.disabled = not host_sound_enabled
 	modal_column.add_child(sound)
-	modal_column.add_child(_volume_row("Musik", music_volume, func(value: float):
-		music_volume = value
-		_apply_volumes()))
-	modal_column.add_child(_volume_row("Effekte", effects_volume, func(value: float):
-		effects_volume = value
-		_apply_volumes()))
 	var detail := _button("Grafik: " + {"high": "Hoch", "medium": "Ausgewogen", "low": "Leicht"}.get(graphics_profile, "Hoch"), func(): pass)
 	detail.pressed.connect(
 		func():
@@ -2242,6 +2236,12 @@ func _pause() -> void:
 			_save_preferences()
 	)
 	modal_column.add_child(gas_mode)
+	modal_column.add_child(_volume_row("Musik", music_volume, func(value: float):
+		music_volume = value
+		_apply_volumes()))
+	modal_column.add_child(_volume_row("Effekte", effects_volume, func(value: float):
+		effects_volume = value
+		_apply_volumes()))
 	modal_column.add_child(_button("Neue Fahrt auswählen", _leave_race_for_menu))
 	modal_column.add_child(_button("Rennen abbrechen", _abandon, Color("3a4577")))
 	modal.show()
@@ -2968,12 +2968,11 @@ func _update_audio() -> void:
 
 ## Lautstärkezeile im Pausenmenü: große Schieberegler (10 %-Schritte), sofort hörbar.
 func _volume_row(title: String, value: float, on_change: Callable) -> Control:
-	var row := HBoxContainer.new()
+	# Untereinander statt nebeneinander: bleibt auch im schmalen Hochformat innerhalb der Pause.
+	var row := VBoxContainer.new()
 	row.name = "Volume" + title
-	row.add_theme_constant_override("separation", 14)
+	row.add_theme_constant_override("separation", 2)
 	var label := _label(title, 20)
-	label.size_flags_horizontal = Control.SIZE_FILL
-	label.custom_minimum_size.x = 120
 	row.add_child(label)
 	var slider := HSlider.new()
 	slider.name = "Slider"
@@ -2981,7 +2980,7 @@ func _volume_row(title: String, value: float, on_change: Callable) -> Control:
 	slider.max_value = 100
 	slider.step = 10
 	slider.value = roundf(value * 100.0)
-	slider.custom_minimum_size = Vector2(220, 48)
+	slider.custom_minimum_size = Vector2(0, 48)
 	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	slider.tooltip_text = title + "-Lautstärke"
 	slider.value_changed.connect(func(v: float):
