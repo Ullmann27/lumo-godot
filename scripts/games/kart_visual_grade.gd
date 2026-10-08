@@ -6,8 +6,9 @@ extends RefCounted
 const CAMERA_DISTANCE_NEAR: float = 4.35
 const CAMERA_DISTANCE_FAST: float = 4.8
 const CAMERA_HEIGHT: float = 2.6
-const CAMERA_LOOK_AHEAD: float = 7.6
-const CAMERA_TARGET_HEIGHT: float = 1.12
+# Keep the stopped kart's rear tyres and bumper in frame as well as the horizon.
+const CAMERA_LOOK_AHEAD: float = 4.0
+const CAMERA_TARGET_HEIGHT: float = 0.75
 const CAMERA_LERP: float = 7.4
 const CAMERA_ROLL_MAX: float = 0.052
 const BASE_FOV: float = 55.0

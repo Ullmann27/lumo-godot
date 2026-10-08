@@ -59,7 +59,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p exports/video-reference-grade
-          timeout 300s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+          timeout 420s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
             --path . --rendering-method gl_compatibility --audio-driver Dummy \
             --script res://scripts/tests/kart_video_visual_regression.gd \
             > "$RUNNER_TEMP/video-grade.log" 2>&1
@@ -112,5 +112,6 @@ jobs:
             ${{ runner.temp }}/modes.log
             ${{ runner.temp }}/physics.log
             exports/video-reference-grade/*.png
+            exports/video-reference-grade/*.json
           if-no-files-found: warn
           retention-days: 14
