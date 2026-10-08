@@ -7,6 +7,7 @@ const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const KART_AUDIO = preload("res://scripts/games/kart_audio.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const GARAGE = preload("res://scripts/games/kart_garage_menu.gd")
+const INTRO = preload("res://scripts/games/kart_intro.gd")
 const RECORDS = preload("res://scripts/games/kart_records.gd")
 const ARENA = preload("res://scripts/games/kart_arena.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
@@ -57,6 +58,28 @@ var speed: float = 0.0
 var countdown: float = 3.5
 var preview_left: float = 0.0
 var preview_total: float = 0.0
+## Kart-Einstieg: "auto" zeigt das Intro beim ersten Menü (nicht bei reduzierter
+## Bewegung und nicht in automatisierten --script-Prüfungen), "force"/"off" für Tests.
+var intro_mode: String = "auto"
+var intro_done: bool = false
+var intro: Control
+## Startaufstellung: Die Karts rollen in den letzten Sekunden der Vorschau aus
+## GRID_ROLL_DISTANCE Metern auf ihre Startplätze.
+const GRID_ROLL_SECONDS: float = 2.0
+const GRID_ROLL_DISTANCE: float = 9.0
+var grid_from: Array[Transform3D] = []
+var grid_to: Array[Transform3D] = []
+## Startampel: drei rote Lampen im Takt des Countdowns, dann alle grün.
+const START_GREEN_SECONDS: float = 0.9
+var start_lights: PanelContainer
+var start_lamps: Array[Panel] = []
+var start_green_left: float = 0.0
+var countdown_label: Label
+## Titelkarte der Streckenvorschau (Name, Weltmotto, Überspringen-Hinweis).
+var preview_card: PanelContainer
+var preview_name: Label
+var preview_tag: Label
+var preview_skip: Label
 ## Zieleinlauf-Kamerafahrt: läuft nach dem Ziel, bevor das Ergebnis erscheint.
 const FINISH_CINE_SECONDS: float = 3.2
 const FINISH_CINE_REDUCED_SECONDS: float = 0.35
@@ -405,6 +428,7 @@ func _build_world() -> void:
 		for i in range(opponents.size()):
 			opponents[i].transform = world.reset_transform(opponent_distances[i], opponent_lanes[i])
 			opponent_headings[i] = _heading(opponent_distances[i])
+		_prepare_grid_roll()
 		if mode == "time_trial":
 			records.begin(track_id, selected_kart, difficulty)
 			if not records.replay.is_empty():
@@ -462,6 +486,23 @@ func _show_garage() -> void:
 	garage.resume_requested.connect(_resume_saved_race)
 	garage.exit_requested.connect(_return_to_app)
 	safe_ui.add_child(garage)
+	if not intro_done:
+		intro_done = true
+		if _intro_wanted():
+			intro = INTRO.new()
+			intro.audio = kart_audio
+			intro.reduced_motion = reduced_motion
+			intro.finished.connect(func(): intro = null)
+			safe_ui.add_child(intro)
+
+
+func _intro_wanted() -> bool:
+	if intro_mode == "off" or reduced_motion:
+		return false
+	if intro_mode == "force":
+		return true
+	# Automatisierte Szenenprüfungen starten mit --script und erwarten das Menü sofort.
+	return not OS.get_cmdline_args().has("--script")
 
 
 func _start_selected_race(setup: Dictionary) -> void:
@@ -515,6 +556,9 @@ func _begin_race() -> void:
 		finish_confetti.queue_free()
 	if is_instance_valid(controls_row):
 		controls_row.show()
+	start_green_left = 0.0
+	if is_instance_valid(start_lights):
+		start_lights.hide()
 	speed = 0
 	boost_time = 0
 	boosts = 1
@@ -747,6 +791,7 @@ func _build_ui() -> void:
 	message.add_theme_constant_override("shadow_offset_y", 2)
 	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(message)
+	call_deferred("_build_start_lights")
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -904,7 +949,12 @@ func _apply_responsive_layout() -> void:
 	hud_content.get_child(0).add_theme_constant_override("separation", roundi(2.0 * ui_scale) if short_landscape else 12)
 	message.autowrap_mode = TextServer.AUTOWRAP_OFF if short_landscape else TextServer.AUTOWRAP_WORD_SMART
 	message.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	message.add_theme_font_size_override("font_size", roundi((14.0 if short_landscape else 21.0) * ui_scale))
+	var message_font: int = roundi((14.0 if short_landscape else 21.0) * ui_scale)
+	message.add_theme_font_size_override("font_size", message_font)
+	# Mit Auslassungspunkten meldet ein Label nur 1 px Mindesthöhe; der Spalten-
+	# Abstandshalter nahm ihm dann den ganzen Platz und Countdown, „LOS!“ und
+	# Rennhinweise waren unsichtbar. Eine (schmal) bzw. zwei Zeilen reservieren.
+	message.custom_minimum_size.y = ceilf(message_font * (1.4 if short_landscape else 2.8))
 	for side in ["left", "right", "top", "bottom"]:
 		hud_content.add_theme_constant_override("margin_" + side, roundi(margin_dp * ui_scale))
 	var available_width: float = maxf(1.0, safe_ui.size.x / ui_scale - margin_dp * 2.0)
@@ -1089,8 +1139,11 @@ func _physics_process(delta: float) -> void:
 		if tick != last_countdown_tick:
 			last_countdown_tick = tick
 			_sound_effect("start" if tick == 0 else "countdown")
-		message.text = str(ceili(countdown)) if countdown > 0 else "LOS! Finde deinen Weg."
+		# Die große Zahl steht an der Startampel; darunter bleibt der Steuerungshinweis.
 		if countdown == 0:
+			message.text = "LOS! Finde deinen Weg."
+		if countdown == 0:
+			start_green_left = START_GREEN_SECONDS
 			racing = true
 			_update_audio()
 	if racing and not paused and not finished:
@@ -1153,6 +1206,7 @@ func _physics_process(delta: float) -> void:
 	_update_vehicles(delta)
 	_update_camera(delta)
 	_update_hud()
+	_update_start_lights(delta)
 	if engine_playback and not muted and host_sound_enabled and racing and not paused and not finished:
 		for i in range(engine_playback.get_frames_available()):
 			var phase: float = (float(Time.get_ticks_usec()) / 1000000.0 + float(i) / 22050) * (70 + speed * 5)
@@ -1875,8 +1929,9 @@ func _track_entry(id: String) -> Dictionary:
 func _update_preview(delta: float) -> void:
 	preview_left = maxf(0.0, preview_left - delta)
 	var t: float = 1.0 - preview_left / maxf(preview_total, 0.001)
-	var entry := _track_entry(track_id)
-	message.text = "%s\n%s · Tippen zum Überspringen" % [str(entry.get("name", "")), str(entry.get("tag", ""))]
+	_show_preview_card(t)
+	# Die Titelkarte ersetzt während der Kamerafahrt die Hinweiszeile.
+	message.visible = false
 	# Flug über den Großteil der Runde bis kurz hinter die Startlinie.
 	var fly: float = clampf(t / (1.0 - PREVIEW_BLEND_SECONDS / PREVIEW_SECONDS), 0.0, 1.0)
 	var eased: float = fly * fly * (3.0 - 2.0 * fly)
@@ -1894,6 +1949,7 @@ func _update_preview(delta: float) -> void:
 		camera.global_transform = flight.interpolate_with(chase, blend * blend * (3.0 - 2.0 * blend))
 	else:
 		camera.global_transform = flight
+	_roll_grid(1.0 - preview_left / GRID_ROLL_SECONDS)
 	_update_vehicles(0)
 	if preview_left <= 0.0:
 		_end_preview()
@@ -1901,8 +1957,169 @@ func _update_preview(delta: float) -> void:
 
 func _end_preview() -> void:
 	preview_left = 0.0
-	message.text = ""
+	message.visible = true
+	if is_instance_valid(preview_card):
+		preview_card.hide()
+	_roll_grid(1.0)
+	grid_from.clear()
 	_update_camera(1.0, true)
+
+
+## Merkt sich die echten Startplätze und setzt die Karts dahinter, sofern eine
+## Vorschau läuft; sonst stehen sie sofort richtig.
+func _prepare_grid_roll() -> void:
+	grid_from.clear()
+	grid_to.clear()
+	if mode == "arena" or not is_instance_valid(player):
+		return
+	var karts: Array = [player] + opponents
+	for kart in karts:
+		grid_to.append(kart.transform)
+	# Nur während einer laufenden Vorschau rollen; Fortsetzen und Grafikwechsel
+	# behalten die gespeicherten Positionen.
+	if preview_left <= 0.0:
+		return
+	var lanes: Array = [lane]
+	lanes.append_array(opponent_lanes)
+	var distances: Array = [distance]
+	distances.append_array(opponent_distances)
+	for i in range(karts.size()):
+		var back: Transform3D = world.reset_transform(float(distances[i]) - GRID_ROLL_DISTANCE, float(lanes[i]))
+		back.origin.y = grid_to[i].origin.y
+		grid_from.append(back)
+	_roll_grid(0.0)
+
+
+## 0 = alle Karts hinter der Linie, 1 = auf ihren Startplätzen (exakt).
+func _roll_grid(progress: float) -> void:
+	if grid_from.is_empty() or grid_to.is_empty():
+		return
+	var p: float = clampf(progress, 0.0, 1.0)
+	var eased: float = 1.0 - pow(1.0 - p, 3.0)
+	var karts: Array = [player] + opponents
+	for i in range(mini(karts.size(), grid_to.size())):
+		if not is_instance_valid(karts[i]):
+			continue
+		karts[i].transform = grid_to[i] if p >= 1.0 else grid_from[i].interpolate_with(grid_to[i], eased)
+		# Räder drehen sich passend zum Ausrollen; danach stehen sie still.
+		var rolling: float = 0.0 if p >= 1.0 else 3.0 * GRID_ROLL_DISTANCE / GRID_ROLL_SECONDS * pow(1.0 - p, 2.0)
+		karts[i].set_motion(rolling, 0.0, false, false)
+	if p >= 1.0:
+		player_heading = _heading(distance)
+
+
+func _build_start_lights() -> void:
+	start_lights = PanelContainer.new()
+	start_lights.name = "StartLights"
+	start_lights.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	start_lights.add_theme_stylebox_override("panel", _style(Color(0.02, 0.05, 0.11, 0.88), 30))
+	var row := HBoxContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_theme_constant_override("separation", 14)
+	start_lights.add_child(row)
+	for i in range(3):
+		var lamp := Panel.new()
+		lamp.name = "StartLamp%d" % (i + 1)
+		lamp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lamp.custom_minimum_size = Vector2(46, 46)
+		row.add_child(lamp)
+		start_lamps.append(lamp)
+	countdown_label = Label.new()
+	countdown_label.name = "CountdownNumber"
+	countdown_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	countdown_label.add_theme_font_override("font", UI.HEADING)
+	countdown_label.add_theme_color_override("font_color", Color("f7fbff"))
+	countdown_label.add_theme_color_override("font_outline_color", Color("0a2a55"))
+	countdown_label.add_theme_constant_override("outline_size", 8)
+	countdown_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	countdown_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row.add_child(countdown_label)
+	start_lights.hide()
+	safe_ui.add_child(start_lights)
+	preview_card = PanelContainer.new()
+	preview_card.name = "PreviewTitleCard"
+	preview_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	preview_card.add_theme_stylebox_override("panel", _style(Color(0.02, 0.06, 0.13, 0.82), 26))
+	var card := VBoxContainer.new()
+	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_theme_constant_override("separation", 2)
+	preview_card.add_child(card)
+	preview_name = Label.new()
+	preview_name.add_theme_font_override("font", UI.HEADING)
+	preview_name.add_theme_color_override("font_color", Color("f7fbff"))
+	preview_tag = Label.new()
+	preview_tag.add_theme_font_override("font", UI.BODY)
+	preview_tag.add_theme_color_override("font_color", Color("8fe8ff"))
+	preview_skip = Label.new()
+	preview_skip.add_theme_font_override("font", UI.BODY)
+	preview_skip.add_theme_color_override("font_color", Color(0.78, 0.86, 0.98, 0.8))
+	preview_skip.text = "Tippen zum Überspringen"
+	for label in [preview_name, preview_tag, preview_skip]:
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		card.add_child(label)
+	preview_card.hide()
+	safe_ui.add_child(preview_card)
+
+
+## Titelkarte blendet zu Beginn der Kamerafahrt ein und vor der Startaufstellung aus.
+func _show_preview_card(t: float) -> void:
+	if not is_instance_valid(preview_card):
+		return
+	var entry := _track_entry(track_id)
+	preview_name.text = str(entry.get("name", world.track_name if is_instance_valid(world) else ""))
+	preview_tag.text = str(entry.get("tag", ""))
+	var area: Vector2 = safe_ui.size
+	var unit: float = minf(area.y, area.x * 0.56)
+	preview_name.add_theme_font_size_override("font_size", int(clampf(unit * 0.085, 26.0, 72.0)))
+	preview_tag.add_theme_font_size_override("font_size", int(clampf(unit * 0.034, 14.0, 30.0)))
+	preview_skip.add_theme_font_size_override("font_size", int(clampf(unit * 0.026, 12.0, 24.0)))
+	var fade_in: float = clampf(t / 0.08, 0.0, 1.0)
+	var fade_out: float = clampf((0.72 - t) / 0.08, 0.0, 1.0)
+	preview_card.modulate.a = minf(fade_in, fade_out)
+	preview_card.visible = preview_card.modulate.a > 0.01
+	preview_card.reset_size()
+	preview_card.position = Vector2((area.x - preview_card.size.x) * 0.5, area.y * 0.16)
+
+
+func _lamp_style(color: Color, lit: bool, diameter: float) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = color if lit else Color(0.10, 0.13, 0.20, 0.95)
+	style.set_corner_radius_all(int(diameter * 0.5))
+	style.set_border_width_all(3)
+	style.border_color = color.lightened(0.35) if lit else Color(0.25, 0.32, 0.44, 0.9)
+	if lit:
+		style.shadow_color = Color(color, 0.65)
+		style.shadow_size = int(diameter * 0.35)
+	return style
+
+
+## Rot leuchten nacheinander auf (3, 2, 1), bei LOS alle grün – zeitgleich mit
+## den Countdown-Tönen.
+func _update_start_lights(delta: float) -> void:
+	if not is_instance_valid(start_lights):
+		return
+	start_green_left = maxf(0.0, start_green_left - delta)
+	var counting: bool = countdown > 0.0 and preview_left <= 0.0
+	var visible_now: bool = (
+		not menu_active and not finished and mode != "arena" and (counting or start_green_left > 0.0)
+	)
+	start_lights.visible = visible_now
+	if not visible_now:
+		return
+	var area: Vector2 = safe_ui.size
+	var diameter: float = clampf(minf(area.x, area.y) * 0.085, 30.0, 70.0)
+	var red_lit: int = 3 if countdown <= 0.0 else clampi(4 - ceili(countdown), 0, 3)
+	countdown_label.text = "LOS!" if countdown <= 0.0 else str(ceili(countdown))
+	countdown_label.add_theme_font_size_override("font_size", int(diameter * 0.95))
+	countdown_label.custom_minimum_size = Vector2(diameter * (2.3 if countdown <= 0.0 else 1.1), diameter)
+	for i in range(start_lamps.size()):
+		start_lamps[i].custom_minimum_size = Vector2(diameter, diameter)
+		var green: bool = countdown <= 0.0
+		var color: Color = Color("44f08a") if green else Color("ff4b55")
+		start_lamps[i].add_theme_stylebox_override("panel", _lamp_style(color, green or i < red_lit, diameter))
+	start_lights.reset_size()
+	start_lights.position = Vector2((area.x - start_lights.size.x) * 0.5, area.y * 0.2)
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -1944,6 +2161,9 @@ func _clear_column(column: VBoxContainer) -> void:
 func _pause() -> void:
 	if finished or paused or menu_active:
 		return
+	if preview_left > 0.0:
+		# Pause während der Vorschau: Karts sofort auf ihre Plätze, nichts halb Gerolltes speichern.
+		_end_preview()
 	paused = true
 	_update_audio()
 	if is_instance_valid(kart_audio):
@@ -2519,6 +2739,10 @@ func _restore_session() -> bool:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		if not is_instance_valid(modal):
+			return
+		if is_instance_valid(intro) and not intro.leaving:
+			# Zurück während des Intros überspringt nur das Intro.
+			intro.leave()
 			return
 		if menu_active:
 			_return_to_world()
