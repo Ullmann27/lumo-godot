@@ -1,16 +1,26 @@
-# Opus 5.5: aktuelle Lumo-Übergabe
+# Direkte Übergabe an Claude Opus 5.5 · 8. Oktober 2026
 
-Heinz' vollständiger aktueller Auftrag liegt im Schwesterprojekt `lumo-lernen`
-auf `chatgpt/repair-opus-handoff-2026-10-07`:
+Lies zuerst [die vollständige aktuelle Übergabe](docs/HANDOFF_CODEX_TO_OPUS_2026-10-08.md).
+Sie enthält Änderungen an App, Lumo, Karts, Steuerung, Kamera und allen zwölf
+Rennwelten, echte Prüfbelege, laufende Builds und konkrete nächste Arbeitsschritte.
 
-- `OPUS_NEXT.md`: exakter Stand, Prüfungen und nächste Schritte.
-- `docs/OPUS_ENTWICKLUNGSAUFTRAG.md`: vollständiger Auftrag zu Grafik, Lumo-Figur,
-  Spielgefühl, Intro/Einfahrt, Musik und menschlich klingender Cartoon-Stimme.
+## Aktuelle Koordination
 
-Lies diese Dateien vor der Weiterentwicklung. Ausgangsbasis dieses Reparaturzweigs
-ist `b79ec387da593f97d078bd02c7629b1316f3ebd0` aus PR 25. Die aktuelle Lern-App nutzt
-Godot als eingebettetes Spiel; die historische Beschreibung als separate App
-in `CLAUDE.md` beschreibt nicht den aktuellen gemeinsamen APK-Vertrieb.
+- App: Referenz-/Kamerastand PR 214 auf `codex/lumo-reference-app-2026-10-08`
+  und zusätzliche Runtimearbeit PR 215 auf `codex/lumo-runtime-apk-2026-10-08`.
+- Godot: Referenz-/Kamerastand PR 27 auf `codex/lumo-reference-design-2026-10-08`
+  und zusätzliche Speicher-/Kontaktarbeit PR 28 auf `codex/lumo-race-continuity-2026-10-08`.
+- Die Paare sind noch nicht vollständig integriert. Frische Heads, Claims und
+  deren Übergaben lesen. Meine letzte Kamerakorrektur in `30dc99b` / App `84ce0e3`
+  mit der zusätzlichen Runtimearbeit verbinden; keinen fremden Pin überschreiben.
+- APK `0.12.0+1900` hat alle sieben Jobs in Actions 37784807913 bestanden.
+  Sie enthält die letzte Kamerakorrektur noch nicht. Neue 1901-Kandidaten sind
+  separat zu prüfen; ein späterer kombinierter Build sollte mindestens 1902 sein.
+- Referenzgleiche Produktionsmodelle, Tonabnahme, physisches Fold und belastbare
+  60 FPS bleiben offen. Echte Screenshots und Clips statt Konzeptbilder als
+  Runtime-Beleg liefern. Rennen enthalten keine Lernfragen/Antwort-Turbos.
 
-Prüfe den jeweiligen Godot-Pin der Lern-App. Im laufenden Kart-Rennen sind keine
-Lernfragen oder Antwort-Turbo vorgesehen. Physische Fold-FPS sind bisher offen.
+Der vollständige Produktauftrag `docs/OPUS_ENTWICKLUNGSAUFTRAG.md` liegt in der
+Lern-App; seine historischen Basis-SHAs nicht als heutige Heads übernehmen.
+Die [alte Startanweisung](docs/OPUS_NEXT_ARCHIV_2026-10-07.md) bleibt als Archiv.
+Diese Übergabe startet keine weitere KI-Sitzung automatisch.
