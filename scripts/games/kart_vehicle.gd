@@ -10,6 +10,8 @@ const NAVY := Color("15355e")
 const ICE := Color("72e6ff")
 const WHITE := Color("edf9ff")
 const CHROME := Color("b7cddd")
+const ORANGE := Color("f08a2c")
+const GLOVE := Color("1d2230")
 
 var vehicle_color: Color = Color("357cba")
 var animal: String = "fox"
@@ -489,27 +491,49 @@ func _make_driver() -> void:
 	add_child(driver)
 	# Fitted racing suit with shoulder yoke, collar, sleeves and a distinct white back panel.
 	_mesh(driver, _loft([Vector4(0.77, 0.19, 0.19, 0.13), Vector4(0.90, 0.25, 0.20, 0.13), Vector4(1.12, 0.26, 0.195, 0.10), Vector4(1.27, 0.28, 0.16, 0.11), Vector4(1.32, 0.17, 0.11, 0.11)], true, 28, 4, 0.88), Vector3.ZERO, NAVY, 0, 0.7)
-	_mesh(driver, _loft([Vector4(0.89, 0.10, 0.017, -0.073), Vector4(1.02, 0.155, 0.022, -0.093), Vector4(1.21, 0.17, 0.020, -0.070), Vector4(1.29, 0.11, 0.012, -0.035)], true, 22, 4), Vector3.ZERO, WHITE, 0.04, 0.57)
-	_mesh(driver, _loft([Vector4(0.91, 0.11, 0.015, 0.332), Vector4(1.12, 0.17, 0.015, 0.302), Vector4(1.28, 0.17, 0.014, 0.244), Vector4(1.31, 0.09, 0.012, 0.223)], true, 22, 4), Vector3.ZERO, WHITE, 0.03, 0.65)
-	var collar := _ring(driver, Vector3(0, 1.32, 0.10), 0.112, 0.163, ICE, 0.18)
+	var is_lumo: bool = animal == "fox"
+	# Lumo-Vorlage: offene Rennjacke, cremefarbenes Brustfell im V-Ausschnitt.
+	var chest_fill: Color = cream if is_lumo else WHITE
+	if is_lumo:
+		_mesh(driver, _loft([Vector4(1.00, 0.006, 0.006, -0.090), Vector4(1.10, 0.040, 0.016, -0.096), Vector4(1.22, 0.088, 0.020, -0.078), Vector4(1.31, 0.105, 0.016, -0.045)], true, 22, 4), Vector3.ZERO, chest_fill, 0, 0.82)
+	else:
+		_mesh(driver, _loft([Vector4(0.89, 0.10, 0.017, -0.073), Vector4(1.02, 0.155, 0.022, -0.093), Vector4(1.21, 0.17, 0.020, -0.070), Vector4(1.29, 0.11, 0.012, -0.035)], true, 22, 4), Vector3.ZERO, WHITE, 0.04, 0.57)
+	_mesh(driver, _loft([Vector4(0.91, 0.11, 0.015, 0.332), Vector4(1.12, 0.17, 0.015, 0.302), Vector4(1.28, 0.17, 0.014, 0.244), Vector4(1.31, 0.09, 0.012, 0.223)], true, 22, 4), Vector3.ZERO, Color("0f2a52") if is_lumo else WHITE, 0.03, 0.65)
+	var collar := _ring(driver, Vector3(0, 1.32, 0.10), 0.112, 0.163, NAVY if is_lumo else ICE, 0.18)
 	collar.scale.z = 0.8
-	_ribbon(driver, [Vector3(0, 0.92, -0.112), Vector3(0, 1.12, -0.112), Vector3(0, 1.28, -0.071)], 0.008, CHROME, 0.45)
-	_star(driver, Vector3(0, 1.15, -0.124), 0.060, ICE)
-	var back_star := _star(driver, Vector3(0, 1.16, 0.326), 0.074, NAVY)
-	back_star.rotation.y = PI
+	if is_lumo:
+		_ring(driver, Vector3(0, 1.335, 0.10), 0.158, 0.170, ICE, 0.18).scale.z = 0.8
+		# Reißverschluss, der unten am Brustfell endet.
+		_ribbon(driver, [Vector3(0, 0.86, -0.118), Vector3(0, 0.98, -0.120), Vector3(0, 1.04, -0.112)], 0.007, CHROME, 0.45)
+		# Leuchtendes L links auf der Brust (vom Fahrer aus) und groß auf dem Rücken.
+		_glow_letter_l(driver, Vector3(-0.115, 1.17, -0.118), 0.10, false)
+		_glow_letter_l(driver, Vector3(0, 1.10, 0.345), 0.17, true)
+	else:
+		_ribbon(driver, [Vector3(0, 0.92, -0.112), Vector3(0, 1.12, -0.112), Vector3(0, 1.28, -0.071)], 0.008, CHROME, 0.45)
+		_star(driver, Vector3(0, 1.15, -0.124), 0.060, ICE)
+		var back_star := _star(driver, Vector3(0, 1.16, 0.326), 0.074, NAVY)
+		back_star.rotation.y = PI
 	if companion_mode:
 		_make_companion_limbs(fur)
 	else:
 		for side in [-1.0, 1.0]:
 			var sleeve := _mesh(driver, _loft([Vector4(0.0, 0.07, 0.065, 0), Vector4(0.13, 0.11, 0.10, 0), Vector4(0.29, 0.081, 0.08, 0), Vector4(0.42, 0.065, 0.060, 0)], true, 20, 4), Vector3(side * 0.24, 1.20, 0.10), NAVY, 0.03, 0.72)
 			sleeve.quaternion = Quaternion(Vector3.UP, Vector3(side * 0.13, -0.22, -0.37).normalized())
-			_ellipsoid(driver, Vector3(side * 0.29, 1.215, 0.015), Vector3(0.092, 0.056, 0.096), WHITE, 0.07, 0.6)
+			_ellipsoid(driver, Vector3(side * 0.29, 1.215, 0.015), Vector3(0.092, 0.056, 0.096), NAVY if is_lumo else WHITE, 0.07, 0.6)
 			_ribbon(driver, [Vector3(side * 0.318, 1.225, 0.07), Vector3(side * 0.344, 1.11, -0.12), Vector3(side * 0.31, 1.03, -0.27)], 0.012, ICE, 0.12)
+			if is_lumo:
+				# Orange-weiße Ärmelstreifen wie auf der Jacke der Vorlage.
+				for band in range(2):
+					var at := Vector3(side * (0.315 - band * 0.012), 1.135 - band * 0.05, -0.085 - band * 0.06)
+					var stripe := _ring(driver, at, 0.070, 0.100, ORANGE if band == 0 else WHITE, 0.18)
+					stripe.scale.y = 1.8
+					stripe.quaternion = Quaternion(Vector3.UP, Vector3(side * 0.13, -0.22, -0.37).normalized())
 			_ellipsoid(driver, Vector3(side * 0.16, 0.81, -0.24), Vector3(0.105, 0.105, 0.20), NAVY, 0, 0.72)
-			var glove := _ellipsoid(driver, Vector3(side * 0.16, 1.055, -0.34), Vector3(0.079, 0.070, 0.083), WHITE, 0, 0.68)
+			var glove_color: Color = GLOVE if is_lumo else WHITE
+			var glove := _ellipsoid(driver, Vector3(side * 0.16, 1.055, -0.34), Vector3(0.079, 0.070, 0.083), glove_color, 0, 0.68)
 			glove.rotation.z = side * -0.2
 			for digit in range(3):
-				_ellipsoid(driver, Vector3(side * (0.126 + digit * 0.027), 1.036, -0.393), Vector3(0.016, 0.036, 0.022), WHITE, 0, 0.68)
+				_ellipsoid(driver, Vector3(side * (0.126 + digit * 0.027), 1.036, -0.393), Vector3(0.016, 0.036, 0.022), glove_color, 0, 0.68)
 			_ellipsoid(driver, Vector3(side * 0.18, 0.80, -0.39), Vector3(0.12, 0.09, 0.14), WHITE, 0.08, 0.6)
 	head = Node3D.new()
 	head.name = "LumoHead"
@@ -552,15 +576,59 @@ func _make_driver() -> void:
 	for tuft in range(3):
 		var quiff := _mesh(head, _loft([Vector4(0, 0.034, 0.03, 0), Vector4(0.09, 0.048, 0.047, 0), Vector4(0.18, 0.003, 0.005, 0.058)], true, 18, 4), Vector3(-0.10 + tuft * 0.068, 0.30, -0.06 + tuft * 0.018), fur)
 		quiff.rotation.z = 0.15 + tuft * 0.14
-	# A small earpiece integrates the racing identity without obscuring the face.
-	for side in [-1.0, 1.0]:
-		_ellipsoid(head, Vector3(side * 0.372, 0.01, 0.085), Vector3(0.030, 0.085, 0.075), NAVY, 0.35, 0.3)
-		_ellipsoid(head, Vector3(side * 0.395, 0.01, 0.080), Vector3(0.012, 0.047, 0.043), ICE, 0.45, 0.22)
+	if animal == "fox":
+		_make_goggles()
+	else:
+		# A small earpiece integrates the racing identity without obscuring the face.
+		for side in [-1.0, 1.0]:
+			_ellipsoid(head, Vector3(side * 0.372, 0.01, 0.085), Vector3(0.030, 0.085, 0.075), NAVY, 0.35, 0.3)
+			_ellipsoid(head, Vector3(side * 0.395, 0.01, 0.080), Vector3(0.012, 0.047, 0.043), ICE, 0.45, 0.22)
 	if animal == "badger":
 		for side in [-1.0, 1.0]:
 			var stripe := _mesh(head, _loft([Vector4(-0.15, 0.028, 0.014, -0.28), Vector4(0.06, 0.059, 0.013, -0.310), Vector4(0.29, 0.039, 0.01, -0.172)], true, 16, 4), Vector3(side * 0.17, 0, 0), Color("e8f2fa"))
 			stripe.rotation.z = side * -0.16
 	_make_tail(fur, cream)
+
+
+## Lumos Fliegerbrille: dunkelblaues Band rund um den Kopf, zwei Chromringe
+## mit blau leuchtenden Gläsern, hochgeschoben auf die Stirn. Alle Teile
+## hängen direkt am Kopf, damit sie mit ihm zu wenigen Render-Durchgängen
+## verschmelzen.
+func _make_goggles() -> void:
+	var base := Transform3D(Basis(), Vector3(0, 0.285, 0.03))
+	# Band liegt knapp außerhalb der Kopfform (Profil bei y≈0.29: ~0.24 × 0.21).
+	var strap := _ring(head, Vector3.ZERO, 0.245, 0.282, NAVY, 0.18)
+	strap.transform = base * Transform3D(Basis.from_scale(Vector3(1.04, 1.5, 0.98)), Vector3.ZERO)
+	for side in [-1.0, 1.0]:
+		# Gläser schauen nach vorn-oben: hochgeschobene Fliegerbrille.
+		var lens := base * Transform3D(Basis.from_euler(Vector3(PI / 2 - 0.62, side * -0.34, 0)), Vector3(side * 0.112, 0.035, -0.245))
+		_attach(_ring(head, Vector3.ZERO, 0.066, 0.096, CHROME, 0.18), lens)
+		_attach(_ring(head, Vector3.ZERO, 0.090, 0.106, NAVY, 0.18), lens * Transform3D(Basis.from_scale(Vector3(1, 1.8, 1)), Vector3(0, -0.014, 0)))
+		var glass := _ellipsoid(head, Vector3.ZERO, Vector3(0.078, 0.024, 0.078), Color("2f8fe0"), 0.3, 0.08)
+		# Teilt das Leuchtmaterial des L-Logos: kein zusätzlicher Render-Durchgang.
+		glass.material_override = _mat(ICE, 0.0, 0.3, 0.85)
+		_attach(glass, lens * Transform3D(Basis(), Vector3(0, 0.004, 0)))
+		_attach(_ellipsoid(head, Vector3.ZERO, Vector3(0.022, 0.006, 0.016), Color.WHITE, 0, 0.1), lens * Transform3D(Basis(), Vector3(-0.024, 0.022, -0.024)))
+	_ellipsoid(head, base * Vector3(0, 0.02, -0.27), Vector3(0.042, 0.026, 0.028), CHROME, 0.08, 0.22)
+
+
+## Setzt ein Teil relativ zu einem lokalen Bezugsrahmen, behält aber seine
+## eigene Form-Skalierung (z. B. von _ellipsoid).
+func _attach(node: Node3D, frame: Transform3D) -> void:
+	node.transform = frame * node.transform
+
+
+## Leuchtendes „L“ aus zwei Balken (Lumo-Logo). facing_back: auf dem Rücken
+## lesbar von hinten, sonst von vorn.
+func _glow_letter_l(parent: Node3D, at: Vector3, size: float, facing_back: bool) -> void:
+	var bar := size * 0.24
+	# Von vorn betrachtet liegt +x links im Bild; der Stamm gehört nach links.
+	var stem_x := size * 0.25 if not facing_back else -size * 0.25
+	var foot_x := -size * 0.02 if not facing_back else size * 0.02
+	var stem := _box(parent, at + Vector3(stem_x, 0, 0), Vector3(bar, size, 0.012), ICE)
+	var foot := _box(parent, at + Vector3(foot_x, -size * 0.5 + bar * 0.5, 0), Vector3(size * 0.78, bar, 0.012), ICE)
+	for piece in [stem, foot]:
+		piece.material_override = _mat(ICE, 0.0, 0.3, 0.85)
 
 
 func _make_companion_limbs(fur: Color) -> void:
