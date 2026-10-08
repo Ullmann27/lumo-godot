@@ -73,6 +73,23 @@ func _run() -> void:
 		assert(absf(contact.z) < 0.04, "Glove touches the wheel plane")
 		var rim_radius: float = Vector2(contact.x, contact.y).length()
 		assert(rim_radius >= 0.135 and rim_radius <= 0.175, "Both gloves meet the grip rim")
+	var bonnet: MeshInstance3D = authored.get_node("AuroraCoachwork/BonnetShell")
+	var bonnet_bounds: AABB = bonnet.global_transform * bonnet.get_aabb()
+	for side in ["Left", "Right"]:
+		var leg: MeshInstance3D = authored.driver.get_node("SeatedLeg" + side)
+		var boot: MeshInstance3D = authored.driver.get_node("RacingBoot" + side)
+		var sole: MeshInstance3D = authored.driver.get_node("BootSole" + side)
+		for part in [leg, boot, sole]:
+			var bounds: AABB = part.global_transform * part.get_aabb()
+			assert(
+				bonnet_bounds.end.z + 0.015 < bounds.position.z,
+				"Seated legs and boots clear the solid bonnet"
+			)
+		var pedal: MeshInstance3D = authored.get_node("AuroraCoachwork/FootPedal" + side)
+		var sole_bounds: AABB = sole.global_transform * sole.get_aabb()
+		var pedal_bounds: AABB = pedal.global_transform * pedal.get_aabb()
+		var gap: float = sole_bounds.position.y - pedal_bounds.end.y
+		assert(gap >= -0.005 and gap <= 0.012, "Both boot soles rest on a pedal inside the cockpit")
 	for index in range(4):
 		var pivot: Node3D = authored.wheel_pivots[index]
 		var rotor: Node3D = authored.wheel_rotors[index]

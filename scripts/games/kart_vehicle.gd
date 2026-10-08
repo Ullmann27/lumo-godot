@@ -412,14 +412,15 @@ func _build() -> void:
 		Vector4(1.03, 0.01, 0.01, 0.36)], false, 24, 3, 0.6), Vector3.ZERO, INK, 0.2, 0.35)
 	hull.name = "CarbonLowerHull"
 	# Long bonnet, raised shoulder pods, smooth white nose stripe.
-	_mesh(body, _loft([
+	var bonnet := _mesh(body, _loft([
 		Vector4(-1.10, 0.01, 0.01, 0.54), Vector4(-0.9, 0.28, 0.06, 0.60),
-		Vector4(-0.65, 0.37, 0.12, 0.67), Vector4(-0.43, 0.32, 0.115, 0.70),
-		Vector4(-0.32, 0.25, 0.04, 0.65), Vector4(-0.29, 0.01, 0.01, 0.60)], false), Vector3.ZERO, paint.lightened(0.1), 0.48, 0.22)
+		Vector4(-0.65, 0.37, 0.12, 0.67), Vector4(-0.52, 0.32, 0.105, 0.70),
+		Vector4(-0.46, 0.25, 0.03, 0.65), Vector4(-0.43, 0.01, 0.01, 0.60)], false), Vector3.ZERO, paint.lightened(0.1), 0.48, 0.22)
+	bonnet.name = "BonnetShell"
 	_mesh(body, _loft([
 		Vector4(-1.055, 0.015, 0.004, 0.584), Vector4(-0.85, 0.075, 0.01, 0.682),
-		Vector4(-0.60, 0.085, 0.012, 0.795), Vector4(-0.43, 0.075, 0.01, 0.810),
-		Vector4(-0.36, 0.01, 0.003, 0.78)], false, 20, 3), Vector3.ZERO, INK if kart_style == "comet" else WHITE, 0.18, 0.27)
+		Vector4(-0.60, 0.085, 0.012, 0.795), Vector4(-0.52, 0.075, 0.01, 0.810),
+		Vector4(-0.46, 0.01, 0.003, 0.685)], false, 20, 3), Vector3.ZERO, INK if kart_style == "comet" else WHITE, 0.18, 0.27)
 	for side in [-1.0, 1.0]:
 		var sidepod := _mesh(body, _loft([
 			Vector4(-0.52, 0.008, 0.015, 0.54), Vector4(-0.30, 0.12, 0.145, 0.54),
@@ -477,6 +478,11 @@ func _build() -> void:
 
 func _make_cockpit(body: Node3D, paint: Color) -> void:
 	body.set_meta("seat_design", "contoured_bucket")
+	# The boots rest inside a clear footwell behind the bonnet, on physical pedals.
+	for side in [-1.0, 1.0]:
+		var pedal := _box(body, Vector3(side * 0.18, 0.689, -0.24), Vector3(0.18, 0.045, 0.24), INK, 0.35)
+		pedal.name = "FootPedalLeft" if side < 0 else "FootPedalRight"
+		_rod(body, Vector3(side * 0.18, 0.59, -0.18), Vector3(side * 0.18, 0.675, -0.24), 0.024, CHROME, 0.7, 0.24)
 	# The lower shell enters the chassis; its narrow centre clears the moving tail.
 	var seat_shell := _mesh(body, _loft([
 		Vector4(0.63, 0.21, 0.11, 0.10), Vector4(0.74, 0.32, 0.12, 0.18),
@@ -741,15 +747,18 @@ func _make_driver() -> void:
 					var stripe := _ring(limb, at - origin, 0.070, 0.100, ORANGE if band == 0 else WHITE, 0.18)
 					stripe.scale.y = 1.8
 					stripe.quaternion = Quaternion(Vector3.UP, Vector3(side * 0.13, -0.22, -0.37).normalized())
-			_ellipsoid(driver, Vector3(side * 0.16, 0.81, -0.24), Vector3(0.105, 0.105, 0.20), NAVY, 0, 0.72)
+			var leg := _ellipsoid(driver, Vector3(side * 0.16, 0.81, -0.18), Vector3(0.105, 0.105, 0.16), NAVY, 0, 0.72)
+			leg.name = "SeatedLegLeft" if side < 0 else "SeatedLegRight"
 			var glove_color: Color = GLOVE if is_lumo else WHITE
 			var glove := _ellipsoid(limb, Vector3(side * 0.16, 1.055, -0.34) - origin, Vector3(0.079, 0.070, 0.083), glove_color, 0, 0.68)
 			glove.name = "GripGlove"
 			glove.rotation.z = side * -0.2
 			for digit in range(3):
 				_ellipsoid(limb, Vector3(side * (0.126 + digit * 0.027), 1.036, -0.393) - origin, Vector3(0.016, 0.036, 0.022), glove_color, 0, 0.68)
-			_ellipsoid(driver, Vector3(side * 0.18, 0.80, -0.39), Vector3(0.12, 0.09, 0.14), NAVY, 0.08, 0.6)
-			_ellipsoid(driver, Vector3(side * 0.18, 0.742, -0.405), Vector3(0.119, 0.026, 0.15), WHITE, 0.08, 0.6)
+			var boot := _ellipsoid(driver, Vector3(side * 0.18, 0.80, -0.24), Vector3(0.12, 0.09, 0.14), NAVY, 0.08, 0.6)
+			boot.name = "RacingBootLeft" if side < 0 else "RacingBootRight"
+			var sole := _ellipsoid(driver, Vector3(side * 0.18, 0.742, -0.24), Vector3(0.119, 0.026, 0.15), WHITE, 0.08, 0.6)
+			sole.name = "BootSoleLeft" if side < 0 else "BootSoleRight"
 	head = Node3D.new()
 	head.name = "LumoHead"
 	head.position = Vector3(0, 1.68, 0.07)

@@ -971,19 +971,21 @@ func _apply_responsive_layout() -> void:
 		# Leave the chase camera's central driver visible on inner Fold displays.
 		# The right actions form a narrower two-column deck; touch targets still
 		# grow with the short edge rather than filling the entire lower screen.
-		var deck_scale: float = minf(shortest / 760.0, available_width / 588.0)
+		var deck_scale: float = minf(shortest / 760.0, available_width / 596.0)
 		deck_scale = clampf(deck_scale, 0.70, 2.65)
 		joystick.custom_minimum_size = Vector2.ONE * 248.0 * deck_scale * ui_scale
-		pedal_pad.custom_minimum_size = Vector2(320, 344) * deck_scale * ui_scale
+		# Keep a real inset around every target, including scaled floating-point
+		# bounds when a Fold display resizes and the safe area is reapplied.
+		pedal_pad.custom_minimum_size = Vector2(328, 352) * deck_scale * ui_scale
 		controls_row.add_theme_constant_override("separation", roundi(20.0 * deck_scale * ui_scale))
 		controls_gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		controls_gap.custom_minimum_size = Vector2.ZERO
 		var fold_actions: Dictionary = {
-			"DriftAction": [Vector2(58, 58), 116.0],
-			"BoostAction": [Vector2(232, 66), 124.0],
-			"ItemAction": [Vector2(58, 176), 100.0],
-			"BrakePedal": [Vector2(58, 290), 108.0],
-			"GasPedal": [Vector2(232, 250), 176.0]
+			"DriftAction": [Vector2(62, 62), 116.0],
+			"BoostAction": [Vector2(236, 70), 124.0],
+			"ItemAction": [Vector2(62, 180), 100.0],
+			"BrakePedal": [Vector2(62, 294), 108.0],
+			"GasPedal": [Vector2(236, 254), 176.0]
 		}
 		for child in pedal_pad.get_children():
 			if child is Control:
