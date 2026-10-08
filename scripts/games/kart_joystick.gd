@@ -1,7 +1,14 @@
 extends Control
 ## Analogue touch stick: owns one finger, leaving the other free for actions.
 
-const FOX_EMBLEM = preload("res://assets/kart/controls/steering.svg")
+## Heinz' Bedienelemente-Blatt: Lenkring mit Pfeilen und runder Lenkknopf. Kern = heller Teil ohne Leuchten.
+const RING: Texture2D = preload("res://assets/kart/hud/joystick_ring.png")
+const KNOB: Texture2D = preload("res://assets/kart/hud/joystick_knob.png")
+const RING_CORE_RATIO: float = 0.8353
+const KNOB_CORE_RATIO: float = 0.7381
+## Knopf-Kern im Verhältnis zum Ring-Kern und wie weit der Knopf auslenkt (Anteil des Ring-Kernradius).
+const KNOB_TO_RING: float = 0.5458
+const KNOB_TRAVEL: float = 0.42
 
 signal axis_changed(value: Vector2)
 var axis := Vector2.ZERO
@@ -85,24 +92,12 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var center: Vector2 = size * 0.5
-	var radius: float = minf(size.x, size.y) * 0.43
-	var cyan := Color("5ef8ed")
-	var violet := Color("bb8bff")
-	draw_circle(center + Vector2(0, 6), radius + 5, Color(0.015, 0.03, 0.07, 0.3))
-	draw_circle(center, radius, Color(0.035, 0.08, 0.16, 0.88))
-	for i in range(4):
-		draw_arc(center, radius + i * 2, 0, TAU, 72, Color(cyan, 0.12 - i * 0.025), 3, true)
-	draw_arc(center, radius, 0, TAU, 72, Color(cyan, 0.8), 2, true)
-	draw_arc(center, radius - 12, PI * 1.08, PI * 1.92, 32, violet, 3, true)
-	for direction in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
-		var marker: Vector2 = center + direction * (radius - 10)
-		draw_line(marker - direction * 5, marker + direction * 1, Color(cyan, 0.7), 3, true)
-	var knob_radius: float = radius * 0.40
-	var knob: Vector2 = center + axis * radius * 0.56
-	draw_line(center, knob, Color(cyan, 0.17), radius * 0.30, true)
-	draw_circle(knob + Vector2(0, knob_radius * 0.12), knob_radius * 1.08, Color(0.005, 0.02, 0.07, 0.65))
-	draw_circle(knob, knob_radius, Color("264b76"))
-	draw_arc(knob, knob_radius, 0, TAU, 64, cyan, maxf(2.0, radius * 0.035), true)
-	draw_arc(knob, knob_radius * 0.86, PI * 1.1, PI * 1.9, 30, violet, maxf(2.0, radius * 0.035), true)
-	var emblem_size: float = knob_radius * 1.72
-	draw_texture_rect(FOX_EMBLEM, Rect2(knob - Vector2.ONE * emblem_size * 0.5, Vector2.ONE * emblem_size), false)
+	var ring_core: float = minf(size.x, size.y) * 0.88
+	var ring_extent: float = ring_core / RING_CORE_RATIO
+	var fade: Color = Color(1, 1, 1, 1.0) if enabled else Color(0.62, 0.7, 0.82, 0.55)
+	draw_texture_rect(RING, Rect2(center - Vector2.ONE * ring_extent * 0.5, Vector2.ONE * ring_extent), false, fade)
+	var knob_core: float = ring_core * KNOB_TO_RING
+	var knob_extent: float = knob_core / KNOB_CORE_RATIO
+	var knob: Vector2 = center + axis * ring_core * 0.5 * KNOB_TRAVEL
+	draw_circle(knob + Vector2(0, knob_core * 0.07), knob_core * 0.52, Color(0.0, 0.03, 0.09, 0.38 if enabled else 0.2))
+	draw_texture_rect(KNOB, Rect2(knob - Vector2.ONE * knob_extent * 0.5, Vector2.ONE * knob_extent), false, fade)

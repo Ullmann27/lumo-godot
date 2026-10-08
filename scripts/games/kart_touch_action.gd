@@ -1,14 +1,36 @@
 extends Control
 ## Independent right-thumb action, including simultaneous multi-touch.
 
+## Heinz' Bedienelemente-Blatt: gemeinsamer Glasrahmen plus ein Symbol je Aktion. Drift, Schild,
+## Impuls und Wind fehlen auf dem Blatt und sind im selben Stil gezeichnet (tools/art/make_hud_icons.py).
+const FRAME: Texture2D = preload("res://assets/kart/hud/frame.png")
 const ICONS: Dictionary = {
-	"gas": preload("res://assets/kart/controls/gas.svg"),
-	"boost": preload("res://assets/kart/controls/boost.svg"),
-	"drift": preload("res://assets/kart/controls/drift.svg"),
-	"brake": preload("res://assets/kart/controls/brake.svg"),
-	"item": preload("res://assets/kart/controls/item.svg"),
+	"gas": preload("res://assets/kart/hud/icon_gas.png"),
+	"boost": preload("res://assets/kart/hud/icon_boost.png"),
+	"drift": preload("res://assets/kart/hud/icon_drift.png"),
+	"brake": preload("res://assets/kart/hud/icon_brake.png"),
+	"item": preload("res://assets/kart/hud/icon_item.png"),
+	"shield": preload("res://assets/kart/hud/icon_shield.png"),
+	"pulse": preload("res://assets/kart/hud/icon_pulse.png"),
+	"wind": preload("res://assets/kart/hud/icon_wind.png"),
 }
-var icon_id: String = "boost"
+## Symbolmitte und -größe im Rahmen (Anteile der Rahmenbreite), aus dem Blatt vermessen.
+const ICON_FIT: Dictionary = {
+	"gas": [Vector2(0.489, 0.459), 0.711],
+	"brake": [Vector2(0.492, 0.459), 0.720],
+	"boost": [Vector2(0.468, 0.462), 0.668],
+	"item": [Vector2(0.486, 0.459), 0.705],
+	"drift": [Vector2(0.50, 0.46), 0.70],
+	"shield": [Vector2(0.50, 0.46), 0.66],
+	"pulse": [Vector2(0.50, 0.46), 0.70],
+	"wind": [Vector2(0.50, 0.46), 0.68],
+}
+var icon_id: String = "boost":
+	set(value):
+		if icon_id == value:
+			return
+		icon_id = value
+		queue_redraw()
 var press_depth: float = 0.0:
 	set(value):
 		press_depth = value
@@ -146,29 +168,25 @@ func _release() -> void:
 	queue_redraw()
 
 
-func _draw_panel(rectangle: Rect2, fill: Color, border: Color, width: float) -> void:
-	var style := StyleBoxFlat.new()
-	style.bg_color = fill
-	style.border_color = border
-	style.set_border_width_all(maxi(1, roundi(width)))
-	style.set_corner_radius_all(roundi(rectangle.size.x * 0.30))
-	draw_style_box(style, rectangle)
-
-
 func _draw() -> void:
 	var side: float = minf(size.x, size.y)
-	var inset: float = side * 0.045
-	var shift: float = press_depth * side * 0.045
-	var face := Rect2(Vector2(inset, inset + shift), Vector2.ONE * (side - inset * 2.0))
+	var shift: float = press_depth * side * 0.03
+	var fade: float = 0.55 if disabled else 1.0
+	var frame_height: float = side * float(FRAME.get_height()) / float(FRAME.get_width())
+	var frame := Rect2(Vector2((size.x - side) * 0.5, (size.y - frame_height) * 0.5 + shift), Vector2(side, frame_height))
 	var tint: Color = Color("67809b") if disabled else accent
-	_draw_panel(face.grow(side * 0.035), Color(tint, 0.10), Color(tint, 0.15), side * 0.02)
-	_draw_panel(Rect2(face.position + Vector2(0, side * 0.045 - shift), face.size), Color("061326"), Color("08152d"), 2)
-	_draw_panel(face, Color("1a385b").lerp(tint, 0.34 if held else 0.15), tint, side * 0.027)
-	var highlight := Rect2(face.position + Vector2(side * 0.06, side * 0.035), Vector2(side * 0.70, side * 0.22))
-	_draw_panel(highlight, Color(tint, 0.10), Color(tint, 0.0), 0)
+	if held:
+		draw_circle(frame.get_center(), side * 0.50, Color(tint, 0.20))
+	var base := Color(0.62, 0.70, 0.82, fade) if disabled else Color.WHITE
+	if held:
+		base = Color(1.12, 1.12, 1.12)
+	draw_texture_rect(FRAME, frame, false, base)
+	var fit: Array = ICON_FIT.get(icon_id, ICON_FIT["boost"])
 	var icon: Texture2D = ICONS.get(icon_id, ICONS["boost"])
-	var artwork := Rect2(Vector2(side * 0.18, side * 0.04 + shift), Vector2.ONE * side * 0.64)
-	draw_texture_rect(icon, artwork, false, Color(0.60, 0.67, 0.78, 0.82) if disabled else Color.WHITE)
+	var extent: float = float(fit[1]) * side
+	var middle: Vector2 = frame.position + Vector2(float(fit[0].x) * frame.size.x, float(fit[0].y) * frame.size.y)
+	var icon_tint := Color(0.66, 0.72, 0.82, 0.72) if disabled else Color(1.08, 1.08, 1.08) if held else Color.WHITE
+	draw_texture_rect(icon, Rect2(middle - Vector2.ONE * extent * 0.5, Vector2.ONE * extent), false, icon_tint)
 	if is_instance_valid(badge) and badge.visible:
 		draw_circle(Vector2(side * 0.865, side * 0.145), side * 0.125, Color("113657"))
 		draw_arc(Vector2(side * 0.865, side * 0.145), side * 0.125, 0, TAU, 32, tint, side * 0.015, true)

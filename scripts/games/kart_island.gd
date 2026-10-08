@@ -1716,6 +1716,7 @@ func _update_hud() -> void:
 	drift_button.text = "DRIFT\n" + drift_state
 	drift_button.disabled = not enabled
 	item_button.text = {"": "ITEM\n◇", "shield": "SCHILD\n◎", "pulse": "IMPULS\n✧", "boost": "WIND\n➜"}.get(item, "ITEM")
+	item_button.icon_id = {"shield": "shield", "pulse": "pulse", "boost": "wind"}.get(item, "item")
 	item_button.disabled = item.is_empty() or not enabled
 	joystick.set_enabled(enabled)
 	gas_button.disabled = not enabled
