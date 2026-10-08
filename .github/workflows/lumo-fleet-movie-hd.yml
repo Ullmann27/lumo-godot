@@ -1,0 +1,77 @@
+name: Lumo Kart native model film in landscape
+
+on:
+  push:
+    branches: ['codex/lumo-kart-fleet-2026-10-08']
+    paths: ['.github/workflows/lumo-fleet-movie-hd.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  GODOT_TAG: 4.6.3-stable
+  LIBGL_ALWAYS_SOFTWARE: '1'
+
+jobs:
+  movie:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/lumo-native-setup
+      - name: Keep runtime geometry identical to the verified fleet source
+        run: |
+          git diff --exit-code 95b4ebeb04f05c021259228bf7464f89ccfcee40 -- scripts/games scripts/tests project.godot
+          git rev-parse HEAD > exports/fleet-video/MOVIE-SOURCE.txt
+      - name: Prepare a landscape viewport before Movie Maker initializes
+        run: |
+          cp project.godot "$RUNNER_TEMP/lumo-movie-project.godot"
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('project.godot')
+          source = p.read_text()
+          assert 'window/size/viewport_width=720' in source
+          assert 'window/size/viewport_height=1280' in source
+          source = source.replace('window/size/viewport_width=720', 'window/size/viewport_width=960')
+          source = source.replace('window/size/viewport_height=1280', 'window/size/viewport_height=540')
+          p.write_text(source)
+          PY
+          timeout 120s godot --headless --editor --import --quit 2>&1 | tee exports/fleet-logs/movie-import.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' exports/fleet-logs/movie-import.log; then exit 1; fi
+      - name: Record real model orbits and verify the actual frame dimensions
+        run: |
+          set -euo pipefail
+          trap 'cp "$RUNNER_TEMP/lumo-movie-project.godot" project.godot' EXIT
+          timeout 240s xvfb-run -a -s '-screen 0 960x540x24' godot --audio-driver Dummy --rendering-method gl_compatibility --resolution 960x540 --fixed-fps 24 --write-movie exports/fleet-video/native-fleet.avi --script scripts/tests/kart_fleet_movie.gd 2>&1 | tee exports/fleet-logs/movie-hd.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' exports/fleet-logs/movie-hd.log; then exit 1; fi
+          ffmpeg -y -i exports/fleet-video/native-fleet.avi -an -c:v libx264 -crf 20 -pix_fmt yuv420p -movflags +faststart exports/fleet-video/Lumo_Kart_3D_Flotte.mp4
+          ffprobe -v error -show_entries format=duration:stream=width,height,nb_frames,r_frame_rate -of json exports/fleet-video/Lumo_Kart_3D_Flotte.mp4 > exports/fleet-video/Movie_Pruefung.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          info = json.loads(Path('exports/fleet-video/Movie_Pruefung.json').read_text())
+          stream = info['streams'][0]
+          assert (stream['width'], stream['height']) == (960, 540)
+          assert int(stream['nb_frames']) == 216
+          assert abs(float(info['format']['duration']) - 9.0) < 0.02
+          info['geometry_source'] = '95b4ebeb04f05c021259228bf7464f89ccfcee40'
+          info['viewport_override'] = 'Temporary landscape project setting for Movie Maker; game geometry unchanged'
+          Path('exports/fleet-video/Movie_Pruefung.json').write_text(json.dumps(info, indent=2) + '\n')
+          print('[FleetMovie] PASS: 960x540, 216 native frames, 9 seconds')
+          PY
+          rm exports/fleet-video/native-fleet.avi
+      - name: Upload verified landscape film
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-kart-movie-hd-${{ github.sha }}
+          path: exports/fleet-video/
+          retention-days: 30
+      - name: Upload renderer log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-kart-movie-hd-log-${{ github.sha }}
+          path: exports/fleet-logs/
+          retention-days: 30
