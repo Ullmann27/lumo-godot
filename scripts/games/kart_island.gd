@@ -2136,10 +2136,11 @@ func _lamp_style(color: Color, lit: bool, diameter: float) -> StyleBoxFlat:
 func _update_start_lights(delta: float) -> void:
 	if not is_instance_valid(start_lights):
 		return
-	start_green_left = maxf(0.0, start_green_left - delta)
+	if not paused:
+		start_green_left = maxf(0.0, start_green_left - delta)
 	var counting: bool = countdown > 0.0 and preview_left <= 0.0
 	var visible_now: bool = (
-		not menu_active and not finished and mode != "arena" and (counting or start_green_left > 0.0)
+		not paused and not menu_active and not finished and mode != "arena" and (counting or start_green_left > 0.0)
 	)
 	start_lights.visible = visible_now
 	if not visible_now:
