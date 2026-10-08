@@ -69,5 +69,8 @@ func _run() -> void:
 	FileAccess.open(output.path_join("touch-scroll.json"), FileAccess.WRITE).store_string(JSON.stringify(proof, "  "))
 	game.queue_free()
 	await process_frame
+	# The audio mixer releases Ogg playback on its own thread, after the
+	# scene exits. Keep the strict leak check and let that shutdown complete.
+	await create_timer(0.6).timeout
 	print("[PauseTouchScroll] PASS: actual swipe scrolls settings without changing a setting; normal tap works")
 	quit()

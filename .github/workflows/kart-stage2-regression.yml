@@ -224,5 +224,6 @@ jobs:
             exports/zauberwald/*.png
             exports/holo-city/*.png
             exports/sky-halo-authoring/*.png
+            exports/touch-scroll/**
           if-no-files-found: warn
           retention-days: 14
