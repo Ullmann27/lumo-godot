@@ -17,7 +17,7 @@ func _settle() -> void:
 		await RenderingServer.frame_post_draw
 
 
-func _new_race(track: String) -> void:
+func _new_race(track: String, reduce_motion: bool = false) -> void:
 	if is_instance_valid(game):
 		game.abandoned = true
 		game.queue_free()
@@ -26,6 +26,7 @@ func _new_race(track: String) -> void:
 	root.add_child(game)
 	game.set_physics_process(false)
 	await _settle()
+	game.reduced_motion = reduce_motion
 	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": track, "difficulty": "flott"})
 	await _settle()
 
@@ -132,9 +133,7 @@ func _run() -> void:
 	assert(game.countdown < 3.5, "Countdown beginnt sofort nach dem Überspringen")
 
 	# Reduzierte Bewegung: keine Kamerafahrt.
-	await _new_race("bergwelt")
-	game.reduced_motion = true
-	game._begin_race()
+	await _new_race("bergwelt", true)
 	assert(game.preview_left == 0.0, "Reduzierte Bewegung startet ohne Kamerafahrt")
 
 	# Von außen beendeter Countdown (Fortsetzen) beendet auch die Vorschau.
