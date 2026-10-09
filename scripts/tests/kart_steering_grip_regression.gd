@@ -138,7 +138,7 @@ func _run() -> void:
 		print(
 			(
 				"[KartSteeringGrip] PASS: both authored gloves follow idle/steer/drift/boost, "
-				+ "9 Lumo karts, 5 drivers, 2 detail levels, reduced motion, "
+				+ "%d Lumo karts, 5 drivers, 2 detail levels, reduced motion, " % CATALOG.KARTS.size()
 				+ "victory release/return and rebuilt mobile LOD"
 			)
 		)

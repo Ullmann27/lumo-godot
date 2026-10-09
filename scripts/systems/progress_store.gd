@@ -8,6 +8,8 @@
 ##   ProgressStore.mark_letter_learned(c) -> Buchstabe in Set aufnehmen
 ##   ProgressStore.report_streak(n)       -> evtl. best_streak updaten
 ##   ProgressStore.total_stars()
+##   ProgressStore.lifetime_stars()       -> alle je verdienten Sterne (steigt nur, auch wenn
+##                                           die App Sterne gegen Belohnungen eintauscht)
 ##   ProgressStore.best_streak()
 ##   ProgressStore.learned_letters()      -> Array[String]
 ##   ProgressStore.is_letter_learned(c)
@@ -26,6 +28,7 @@ const FILE_PATH: String = "user://progress.cfg"
 const SECTION: String = "progress"
 
 var _stars: int = 0
+var _lifetime: int = 0
 var _best_streak: int = 0
 var _learned: Dictionary = {}  # letter -> true
 var _current_streak: int = 0
@@ -39,9 +42,12 @@ func _ready() -> void:
 func synchronize_host_wallet() -> void:
 	if HostBridge.is_embedded():
 		# Flutter owns spendable stars; refresh the local snapshot at every launch.
-		_stars = maxi(0, int(HostBridge.launch_options().get("stars", 0)))
+		var options: Dictionary = HostBridge.launch_options()
+		_stars = maxi(0, int(options.get("stars", 0)))
+		# Die App meldet zusätzlich alle je verdienten Sterne (ältere Apps nicht): nie weniger als bisher.
+		_lifetime = maxi(maxi(_lifetime, _stars), int(options.get("lifetimeStars", 0)))
 		_save()
-		print("[Progress] host wallet synchronized: %d" % _stars)
+		print("[Progress] host wallet synchronized: %d (lifetime %d)" % [_stars, _lifetime])
 
 
 func _load() -> void:
@@ -51,6 +57,7 @@ func _load() -> void:
 		print("[Progress] no save file (first run) - starting fresh")
 		return
 	_stars = int(cfg.get_value(SECTION, "stars", 0))
+	_lifetime = maxi(_stars, int(cfg.get_value(SECTION, "lifetime", 0)))
 	_best_streak = int(cfg.get_value(SECTION, "best_streak", 0))
 	var arr: Array = cfg.get_value(SECTION, "learned", [])
 	for x in arr:
@@ -63,6 +70,7 @@ func _load() -> void:
 func _save() -> void:
 	var cfg: ConfigFile = ConfigFile.new()
 	cfg.set_value(SECTION, "stars", _stars)
+	cfg.set_value(SECTION, "lifetime", maxi(_lifetime, _stars))
 	cfg.set_value(SECTION, "best_streak", _best_streak)
 	cfg.set_value(SECTION, "learned", _learned.keys())
 	cfg.save(FILE_PATH)
@@ -72,12 +80,18 @@ func add_stars(n: int) -> void:
 	if n <= 0:
 		return
 	_stars += n
+	_lifetime = maxi(_lifetime, _stars - n) + n
 	stars_changed.emit(_stars)
 	_save()
 
 
 func total_stars() -> int:
 	return _stars
+
+
+## Alle je verdienten Sterne; sinkt nie, wenn die App Sterne gegen Belohnungen eintauscht.
+func lifetime_stars() -> int:
+	return maxi(_lifetime, _stars)
 
 
 func best_streak() -> int:

@@ -17,6 +17,18 @@ const ART: Dictionary = {
 	"item": [preload("res://assets/kart/controls/reference/item_normal.png"), preload("res://assets/kart/controls/reference/item_pressed.png"), preload("res://assets/kart/controls/reference/item_disabled.png")],
 }
 const LABEL_FONT = preload("res://assets/fonts/Nunito-Black.ttf")
+## Was im Item-Knopf liegt, zeigt ein kleines Abzeichen (Schild, Impuls oder Wind).
+const ITEM_BADGES: Dictionary = {
+	"shield": preload("res://assets/kart/hud/icon_shield.png"),
+	"pulse": preload("res://assets/kart/hud/icon_pulse.png"),
+	"boost": preload("res://assets/kart/hud/icon_wind.png"),
+}
+var item_kind: String = "":
+	set(value):
+		if item_kind == value:
+			return
+		item_kind = value
+		queue_redraw()
 var press_depth: float = 0.0:
 	set(value):
 		press_depth = value
@@ -176,6 +188,12 @@ func _draw() -> void:
 			draw_circle(Vector2(side * 0.865, side * 0.145), side * 0.125, Color("113657"))
 			var tint: Color = Color("9bb6d6") if disabled else Color("72e6ff")
 			draw_arc(Vector2(side * 0.865, side * 0.145), side * 0.125, 0, TAU, 32, tint, side * 0.015, true)
+		if ITEM_BADGES.has(item_kind):
+			var middle := Vector2(side * 0.84, side * 0.17)
+			var radius: float = side * 0.17
+			draw_circle(middle, radius, Color("0d2440"))
+			draw_arc(middle, radius, 0, TAU, 40, Color("9bb6d6") if disabled else Color("72e6ff"), side * 0.018, true)
+			draw_texture_rect(ITEM_BADGES[item_kind], Rect2(middle - Vector2.ONE * radius * 0.95, Vector2.ONE * radius * 1.9), false)
 		return
 	var inset: float = side * 0.045
 	var shift: float = press_depth * side * 0.045

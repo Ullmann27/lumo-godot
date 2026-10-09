@@ -93,7 +93,7 @@ func _run() -> void:
 	print(
 		(
 			"[KartArmContact] PASS: connected physical cuff/palm in steer/drift and victory, "
-			+ "normal/low geometry, nine Lumo karts, five drivers and reduced motion"
+			+ "normal/low geometry, %d Lumo karts, five drivers and reduced motion" % CATALOG.KARTS.size()
 		)
 	)
 	quit()

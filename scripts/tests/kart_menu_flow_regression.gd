@@ -90,8 +90,9 @@ func _run() -> void:
 		for step in range(5):
 			assert(game.garage.step == step)
 			if step == 2:
-				assert(game.garage.choices.get_child_count() == 9)
-				var new_kart: Control = game.garage.choices.get_child(3)
+				var kart_grid: GridContainer = game.garage.choices.get_child(0)
+				assert(kart_grid.get_child_count() == 14, "All fourteen karts are offered as cards")
+				var new_kart: Control = kart_grid.get_node("KartCard_gecko_velo")
 				game.garage.choices.get_parent().ensure_control_visible(new_kart)
 				await _settle()
 				await _tap(new_kart)
