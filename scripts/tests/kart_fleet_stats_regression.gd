@@ -309,5 +309,9 @@ func _run() -> void:
 	_check_fleet()
 	_check_tuning()
 	await _check_physics()
+	# Freigegebene Rennszenen, Viewports und Audio-Wiedergaben vor dem Beenden ganz abbauen lassen.
+	for frame in range(6):
+		await process_frame
+	await create_timer(0.25).timeout
 	print("[KartFleetStats] PASS: vierzehn Karts mit unterscheidbaren Werten, Comet neutral, Werkstatt (Kauf, Rückgabe, Speichern, Schutz vor kaputten Dateien) und Wirkung bei Tempo, Beschleunigung, Bremsen, Lenken und Turbo")
 	quit(0)

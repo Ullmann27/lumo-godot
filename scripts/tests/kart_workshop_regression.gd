@@ -163,6 +163,13 @@ func _check_layouts() -> void:
 		await _settle()
 
 
+func _drain() -> void:
+	for frame in range(6):
+		await process_frame
+	await RenderingServer.frame_post_draw
+	await create_timer(0.25).timeout
+
+
 func _run() -> void:
 	assert(DisplayServer.get_name() != "headless")
 	DirAccess.remove_absolute("user://kart_preferences.cfg")
@@ -180,5 +187,8 @@ func _run() -> void:
 	game.queue_free()
 	await _settle()
 	DirAccess.remove_absolute("user://kart_preferences.cfg")
+	# Freigegebene Szenen, Vorschau-Viewports und Audio-Wiedergaben erst ganz abbauen lassen, damit
+	# beim Beenden keine Ressourcen mehr gehalten werden (strenger Probe-Runner).
+	await _drain()
 	print("[KartWorkshop] PASS: vierzehn Kart-Karten mit gesperrten Karts, Wertebalken, Werkstatt öffnen/verbessern/kaufen/zurückholen, Zurück-Taste und Layout auf 1280×720, 800×480, 640×320, 412×915, 690×829")
 	quit(0)
