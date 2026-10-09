@@ -184,16 +184,26 @@ static func jump_dressing(world) -> void:
 	)
 
 
+## Einmal angelegt und wiederverwendet: Ein schon gezeichneter Himmel, der freigegeben wird, lässt im
+## Kompatibilitäts-Renderer (Godot 4.6.3) zwei Spiegelungstexturen bis zum Beenden liegen.
+static var _sky: Sky
+
+
+static func _night_sky() -> Sky:
+	if _sky == null:
+		_sky = Sky.new()
+		var sky_material := ShaderMaterial.new()
+		sky_material.shader = NIGHT_SKY
+		sky_material.set_shader_parameter("moon_direction", MOON_DIRECTION)
+		_sky.sky_material = sky_material
+	return _sky
+
+
 static func environment(world) -> void:
 	var visual: Dictionary = VISUAL_GRADE.environment_profile("bergwelt", world.low_detail)
 	var environment := Environment.new()
 	environment.background_mode = Environment.BG_SKY
-	var sky := Sky.new()
-	var sky_material := ShaderMaterial.new()
-	sky_material.shader = NIGHT_SKY
-	sky_material.set_shader_parameter("moon_direction", MOON_DIRECTION)
-	sky.sky_material = sky_material
-	environment.sky = sky
+	environment.sky = _night_sky()
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color("8597dd")
 	environment.ambient_light_energy = 0.48 if not world.low_detail else 0.36

@@ -34,8 +34,10 @@ var checkpoint_positions := PackedVector3Array()
 var jump: Dictionary = {}
 ## Action-Parcours dieser Runde (Turbo-Felder, Slalom, Schanze, Tauchstrecke, offene Kanten).
 var action: Dictionary = {}
-## Himmel, die gerade erst gerendert wurden, nicht sofort freigeben (siehe _retire_skies).
-static var _retired_skies: Array[Sky] = []
+## Streckenhimmel werden einmal je Strecke angelegt und wiederverwendet (siehe _sky_for): Wird ein
+## schon gezeichneter Himmel im Kompatibilitäts-Renderer von Godot 4.6.3 freigegeben, bleiben seine
+## zwei 256er-Spiegelungstexturen bis zum Beenden liegen („Texture … leaked“).
+static var _skies: Dictionary = {}
 var loop_layout: Dictionary = {}
 var _road_samples := PackedVector3Array()
 var _road_distances := PackedFloat32Array()
@@ -44,8 +46,6 @@ var _rng := RandomNumberGenerator.new()
 func build(
 	lightweight: bool, selected_track: String = "sonnenhafen", geometry_only: bool = false
 ) -> void:
-	# Ein Neubau (z. B. Grafikwechsel) wirft den alten Himmel weg: ebenfalls kurz zurückhalten.
-	_retire_skies(self)
 	for child in get_children():
 		remove_child(child)
 		child.queue_free()
@@ -376,10 +376,9 @@ func _flush_instances() -> void:
 		add_child(node)
 	groups.clear()
 
-func _lighting() -> void:
-	var visual: Dictionary=VISUAL_GRADE.environment_profile(track_id,low_detail)
-	var environment := Environment.new()
-	environment.background_mode=Environment.BG_SKY
+func _sky_for(id: String) -> Sky:
+	if _skies.has(id):
+		return _skies[id]
 	var sky := Sky.new()
 	var atmosphere := ProceduralSkyMaterial.new()
 	atmosphere.sky_top_color=definition.sky
@@ -389,7 +388,14 @@ func _lighting() -> void:
 	atmosphere.sky_curve=0.44
 	atmosphere.sun_angle_max=5.0
 	sky.sky_material=atmosphere
-	environment.sky=sky
+	_skies[id]=sky
+	return sky
+
+func _lighting() -> void:
+	var visual: Dictionary=VISUAL_GRADE.environment_profile(track_id,low_detail)
+	var environment := Environment.new()
+	environment.background_mode=Environment.BG_SKY
+	environment.sky=_sky_for(track_id)
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color=Color("c8e0f4") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
 	environment.ambient_light_energy=0.28 if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
@@ -1574,24 +1580,3 @@ func _holo_gate(distance: float) -> void:
 		_prop("box",at+basis.x*side*5.6+Vector3.UP*8.2,Vector3(2.7,0.32,0.42),Color("78deef"),basis.rotated(basis.z,side*0.5),true)
 	_prop("box",at+Vector3.UP*8.8,Vector3(9.0,0.32,0.42),Color("91dce9"),basis,true)
 
-
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_EXIT_TREE:
-		_retire_skies(self)
-
-
-## Beobachtet mit Godot 4.6.3 gl_compatibility: Wird ein Streckenhimmel kurz nach dem Rennstart oder
-## bei einem Neubau freigegeben, bleiben seine zwei 256er-Spiegelungstexturen bis zum Beenden liegen
-## („Texture … leaked“). Deshalb hält die Welt ihre Himmel nach dem Abbau noch 1 s fest; mit 0,2 s
-## blieben in Rennbrücke und Rundenspeicherung noch 2 bzw. 4 Texturen liegen.
-static func _retire_skies(root_node: Node) -> void:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return
-	for node in root_node.find_children("*", "WorldEnvironment", true, false):
-		var settings: Environment = (node as WorldEnvironment).environment
-		if settings == null or settings.sky == null:
-			continue
-		var sky: Sky = settings.sky
-		_retired_skies.append(sky)
-		tree.create_timer(1.0, true, false, true).timeout.connect(func() -> void: _retired_skies.erase(sky))
