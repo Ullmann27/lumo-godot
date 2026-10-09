@@ -10,6 +10,7 @@ const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
 const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
+const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
 const RAIL_LATERAL: float = 6.05
@@ -31,6 +32,8 @@ var definition: Dictionary = {}
 var checkpoint_positions := PackedVector3Array()
 ## Jump layout (ramp, take-off, gap end) on courses that have one; empty elsewhere.
 var jump: Dictionary = {}
+## Action-Parcours dieser Runde (Turbo-Felder, Slalom, Schanze, Tauchstrecke, offene Kanten).
+var action: Dictionary = {}
 ## Himmel, die gerade erst gerendert wurden, nicht sofort freigeben (siehe _retire_skies).
 static var _retired_skies: Array[Sky] = []
 var loop_layout: Dictionary = {}
@@ -185,10 +188,28 @@ func in_gap(distance: float) -> bool:
 
 ## Height of the ramp surface above the road at this distance (0 without a ramp).
 func ramp_height(distance: float) -> float:
-	if jump.is_empty(): return 0.0
 	var d: float=fposmod(distance,length)
+	var kicker: float=ACTION.kicker_height(action,d)
+	if kicker>0.0: return kicker
+	if jump.is_empty(): return 0.0
 	if d<jump.ramp_start or d>=jump.take_off: return 0.0
 	return (d-jump.ramp_start)/(jump.take_off-jump.ramp_start)*jump.height
+
+## Neigung der Rampe unter dem Kart (Sprungrampe oder Schanze), 0 auf ebener Fahrbahn.
+func ramp_pitch(distance: float) -> float:
+	var d: float=fposmod(distance,length)
+	var kicker: float=ACTION.kicker_pitch(action,d)
+	if kicker!=0.0: return kicker
+	if jump.is_empty() or d<jump.ramp_start or d>=jump.take_off: return 0.0
+	return float(jump.angle)
+
+## +1/-1: An dieser Stelle fehlt rechts/links die Leitplanke (offene Kante).
+func open_edge_side(distance: float) -> float:
+	return ACTION.open_side(action,fposmod(distance,length))
+
+## Höchsttempo-Faktor (Unterwasser-Tunnel bremst leicht).
+func dive_factor(distance: float) -> float:
+	return ACTION.DIVE_SPEED if ACTION.dive_at(action,fposmod(distance,length)) else 1.0
 
 ## Raised optional lane on Himmelsinseln. Other tracks stay unchanged.
 func alternate_route_height(distance: float, lateral: float) -> float:
@@ -206,6 +227,8 @@ func alternate_route_pitch(distance: float, lateral: float) -> float:
 ## Visual jump arc for computer rivals: they follow the ramp and fly a fixed arc over the gap.
 func rival_arc(distance: float) -> float:
 	var d: float=fposmod(distance,length)
+	var kicker: float=ACTION.kicker_height(action,d)
+	if kicker>0.0: return kicker
 	if jump.is_empty() or d<jump.ramp_start or d>=jump.gap_end: return 0.0
 	if d<jump.take_off: return ramp_height(d)
 	var u: float=(d-jump.take_off)/(jump.gap_end-jump.take_off)
@@ -530,6 +553,7 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 	return node
 
 func _road() -> void:
+	action = ACTION.plan(self)
 	var asphalt := ShaderMaterial.new()
 	asphalt.shader=preload("res://assets/shaders/kart_asphalt.gdshader")
 	asphalt.set_shader_parameter("road_tint",definition.asphalt)
@@ -569,7 +593,9 @@ func _road() -> void:
 		var p: Vector3=position_at(d)
 		var basis: Basis=frame(d)
 		var bridge: bool=_is_bridge(d)
+		var open_side: float=ACTION.open_side(action,d)
 		for side in [-1.0,1.0]:
+			if side==open_side: continue
 			var curb: Color=Color("eff3e5") if i%4<2 else edge_color.darkened(0.16)
 			if track_id in ["sonnenhafen", "candy_cloud"]:
 				curb=Color("f7f4ea") if i%4<2 else Color("e84f45")
@@ -606,6 +632,7 @@ func _road() -> void:
 	for row in range(2):
 		for column in range(16):
 			_prop("box",position_at(row*0.64+1.0,(column-7.5)*0.65)+frame(0).y*0.035,Vector3(0.65,0.035,0.64),Color("f6fbfa") if (row+column)%2==0 else Color("162940"),frame(0))
+	ACTION.build(self)
 	if track_id=="bergwelt":
 		SKY_ISLANDS.start_gate(self)
 		SKY_ISLANDS.road_lights(self)
