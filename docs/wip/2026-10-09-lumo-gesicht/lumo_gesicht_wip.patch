@@ -1,0 +1,815 @@
+diff --git a/scripts/games/kart_character_finish.gd b/scripts/games/kart_character_finish.gd
+index f989c2a..c453d47 100644
+--- a/scripts/games/kart_character_finish.gd
++++ b/scripts/games/kart_character_finish.gd
+@@ -15,12 +15,23 @@ static func coat(source: Mesh, orange: Color, cream: Color, region: String) -> A
+ 			var boundary: float = 0.605 + sin(angle * 5.0) * 0.023
+ 			color = orange.lerp(cream, smoothstep(boundary, boundary + 0.052, point.z))
+ 		elif region == "ear":
+-			color = orange.lerp(Color("67351f"), smoothstep(0.23, 0.40, point.y) * 0.83)
++			# Dunkle Spitzen und Ränder wie in den Referenzblättern.
++			color = orange.lerp(Color("3a1d10"), smoothstep(0.16, 0.33, point.y) * 0.92)
++		elif region == "muzzle":
++			# Oranger Nasenrücken von der Stirn bis kurz vor die Nase, Seiten und Unterseite weiß.
++			var bridge: float = smoothstep(-0.105, -0.07, point.y) * (1.0 - smoothstep(0.045, 0.10, absf(point.x)))
++			color = cream.lerp(orange, bridge * smoothstep(-0.43, -0.36, point.z))
+ 		elif region == "head":
+ 			# Warm centre, darker crown and temples keep the rounded head readable.
+ 			var temple: float = smoothstep(0.22, 0.43, absf(point.x))
+ 			var crown: float = smoothstep(0.12, 0.38, point.y)
+-			color = orange.lerp(Color("ca5725"), temple * 0.15 + crown * 0.12)
++			color = orange.lerp(orange.darkened(0.2), temple * 0.15 + crown * 0.12)
++			# Weiße Gesichtsmaske wie in den Referenzblättern: unter den Augen, Wangen und Kinn,
++			# vorn und seitlich, am Hinterkopf orange. Die Grenze steigt zu den Wangen leicht an.
++			var boundary: float = -0.098 + 0.05 * smoothstep(0.20, 0.40, absf(point.x))
++			var below: float = 1.0 - smoothstep(boundary - 0.018, boundary + 0.018, point.y)
++			var front: float = 1.0 - smoothstep(0.0, 0.16, point.z)
++			color = color.lerp(cream, below * front)
+ 		colors.append(color)
+ 	arrays[Mesh.ARRAY_COLOR] = colors
+ 	var result := ArrayMesh.new()
+@@ -81,3 +92,54 @@ static func iris(size: Vector3) -> ArrayMesh:
+ 	var result := ArrayMesh.new()
+ 	result.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+ 	return result
++
++
++## Iris und Pupille als eine Kappe, die genau auf dem Augapfel (Ellipsoid `eye_radius`) liegt,
++## statt als flache Scheibe davor: von der Seite steht nichts heraus. `center` ist der Versatz
++## der Iris auf dem Auge (x, y), Farben von innen nach außen: Pupille, warme Iris, dunkler Ring.
++static func iris_cap(
++	eye_radius: Vector3, center: Vector2, iris_radius: float, pupil_radius: float,
++	inner: Color = Color("c47a30"), outer: Color = Color("7a3a14")
++) -> ArrayMesh:
++	const SECTIONS: int = 48
++	const RINGS: int = 9
++	var vertices := PackedVector3Array()
++	var normals := PackedVector3Array()
++	var colors := PackedColorArray()
++	var indices := PackedInt32Array()
++	for row in range(RINGS + 1):
++		var radius: float = float(row) / RINGS
++		for segment in range(SECTIONS + 1):
++			var angle: float = TAU * float(segment) / SECTIONS
++			var x: float = center.x + cos(angle) * radius * iris_radius
++			var y: float = center.y + sin(angle) * radius * iris_radius * 1.04
++			var inside: float = 1.0 - pow(x / eye_radius.x, 2.0) - pow(y / eye_radius.y, 2.0)
++			var z: float = -eye_radius.z * sqrt(maxf(0.0, inside)) - 0.0018
++			vertices.append(Vector3(x, y, z))
++			normals.append(
++				Vector3(x / pow(eye_radius.x, 2.0), y / pow(eye_radius.y, 2.0), z / pow(eye_radius.z, 2.0)).normalized()
++			)
++			var distance: float = radius * iris_radius
++			var fibre: float = sin(angle * 27.0 + radius * 8.0) * 0.5 + sin(angle * 41.0 - radius * 5.0) * 0.25
++			# Unten heller (Licht fällt in die Iris), oben dunkler unter dem Lid.
++			var warm: Color = outer.lerp(inner, clampf(0.55 + fibre * 0.22 - sin(angle) * 0.25, 0.0, 1.0))
++			var color: Color = warm.lerp(Color("2a140a"), smoothstep(0.80, 1.0, radius))
++			if distance <= pupil_radius:
++				color = Color("07090d")
++			elif distance <= pupil_radius * 1.18:
++				color = Color("07090d").lerp(warm, (distance - pupil_radius) / (pupil_radius * 0.18))
++			colors.append(color)
++	for row in range(RINGS):
++		for segment in range(SECTIONS):
++			var a: int = row * (SECTIONS + 1) + segment
++			var b: int = a + SECTIONS + 1
++			indices.append_array(PackedInt32Array([a, b, b + 1, a, b + 1, a + 1]))
++	var arrays: Array = []
++	arrays.resize(Mesh.ARRAY_MAX)
++	arrays[Mesh.ARRAY_VERTEX] = vertices
++	arrays[Mesh.ARRAY_NORMAL] = normals
++	arrays[Mesh.ARRAY_COLOR] = colors
++	arrays[Mesh.ARRAY_INDEX] = indices
++	var result := ArrayMesh.new()
++	result.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
++	return result
+diff --git a/scripts/games/kart_stage.gd b/scripts/games/kart_stage.gd
+index 414d8f8..b4f7c21 100644
+--- a/scripts/games/kart_stage.gd
++++ b/scripts/games/kart_stage.gd
+@@ -24,7 +24,9 @@ static func build(stage: Node3D, ring_color: Color = Color("45d9ef"), with_podiu
+ 	environment.environment = settings
+ 	stage.add_child(environment)
+ 	var key := DirectionalLight3D.new()
+-	key.rotation_degrees = Vector3(-40, -32, 0)
++	# Von vorn links oben, wie bei den Referenzbildern: Gesicht und Front des Karts liegen im
++	# Hauptlicht (vorher kam es von hinten, Lumos Gesicht blieb im blauen Umgebungslicht).
++	key.rotation_degrees = Vector3(-40, -155, 0)
+ 	key.light_color = Color("fff4e4")
+ 	key.light_energy = 1.05
+ 	key.shadow_enabled = true
+diff --git a/scripts/games/kart_vehicle.gd b/scripts/games/kart_vehicle.gd
+index ff8a31b..828b5e2 100644
+--- a/scripts/games/kart_vehicle.gd
++++ b/scripts/games/kart_vehicle.gd
+@@ -19,6 +19,13 @@ const CARBON := Color("0b1019")
+ const GUNMETAL := Color("2a3342")
+ ## Leuchtstärke aller Neonteile: stark genug fürs Glühen, aber noch farbig (kein weißes Ausbrennen).
+ const NEON_GLOW: float = 1.15
++## Gesichtsmaße im Kopfraum (-z = vorn), abgeglichen mit den Referenzblättern 03 und 06:
++## Augenbreite 0,234 der Kopfbreite, Augenabstand 0,44, Iris 0,65 des Auges, Pupille 0,55 der Iris.
++const EYE_CENTER := Vector2(0.172, 0.0)
++const EYE_RADIUS := Vector3(0.096, 0.094, 0.046)
++const IRIS_RADIUS: float = 0.063
++const PUPIL_RADIUS: float = 0.035
++const JAW_REST_Y: float = -0.212
+ 
+ ## Aussehen aus Tuning und Flotte (siehe _resolved_look); leer = Werksvorgabe des Karts.
+ var look: Dictionary = {}
+@@ -62,6 +69,11 @@ var ear_joints: Array[Node3D] = []
+ ## Platz beim Zieleinlauf (0 = keine Feier): 1 jubelt am stärksten, 2–3 freuen
+ ## sich, ab 4 nickt Lumo aufmunternd. Nutzt nur vorhandene Gelenke, keine
+ ## zusätzliche Geometrie.
++## Messpunkte des Gesichts im Kopfraum (Augen, Iris, Pupille, Nase) für Proportionsmessungen
++## am gerenderten Rig (kart_lumo_views_capture.gd). Reine Daten, keine Darstellung.
++var face_metrics: Dictionary = {}
++## Kopfprofil des aktuellen Fahrers (für Brille, Ohren und Gesichtsteile auf der Oberfläche).
++var head_rings: Array[Vector4] = []
+ var celebration_place: int = 0
+ var celebration_time: float = 0.0
+ ## Lumos rechter Arm hängt an einem Schultergelenk: Lenken, Winken, Jubeln.
+@@ -140,12 +152,12 @@ func set_companion_pose(time_seconds: float, mood: String = "idle", voice_open:
+ 			elbow_joints[i].rotation.x = 0.4
+ 	for i in range(ear_joints.size()):
+ 		var side: float = -1.0 if i == 0 else 1.0
+-		ear_joints[i].rotation.z = -side * 0.23 + sin(time_seconds * cycle + i * 0.7) * 0.018
++		ear_joints[i].rotation.z = -side * 0.36 + sin(time_seconds * cycle + i * 0.7) * 0.018
+ 	if tail:
+ 		tail.rotation.y = 0.7 + sin(time_seconds * cycle) * (0.18 if mood == "cheer" else 0.08)
+ 	if jaw:
+ 		jaw.rotation.x = clampf(voice_open, 0.0, 1.0) * 0.6
+-		jaw.position.y = -0.257 - clampf(voice_open, 0.0, 1.0) * 0.044
++		jaw.position.y = JAW_REST_Y - clampf(voice_open, 0.0, 1.0) * 0.044
+ 
+ 
+ func _animal_id(value: String) -> String:
+@@ -206,6 +218,7 @@ func _rebuild() -> void:
+ 	head = null
+ 	tail = null
+ 	jaw = null
++	face_metrics = {}
+ 	arm_right = null
+ 	far_mesh = null
+ 	far_detail = false
+@@ -1550,14 +1563,14 @@ func _make_racing_sleeve(limb: Node3D, side: float, is_lumo: bool) -> void:
+ 
+ 
+ func _make_driver() -> void:
+-	var fur: Color = {"fox": Color("ed762d"), "otter": Color("ad8064"), "rabbit": Color("cedbe8"), "badger": Color("64718a"), "cat": Color("d4b396")}.get(animal, Color("ed762d"))
++	var fur: Color = {"fox": Color("e3661e"), "otter": Color("ad8064"), "rabbit": Color("cedbe8"), "badger": Color("64718a"), "cat": Color("d4b396")}.get(animal, Color("ed762d"))
+ 	var cream := Color("f4f2ea") if animal == "fox" else Color("eaf4f9")
+-	var fur_shadow: Color = fur.darkened(0.18)
+ 	driver = Node3D.new()
+ 	driver.name = "RacerRig"
+ 	add_child(driver)
+ 	# Fitted racing suit with shoulder yoke, collar, sleeves and a distinct white back panel.
+-	_mesh(driver, _loft([Vector4(0.77, 0.19, 0.19, 0.13), Vector4(0.90, 0.25, 0.20, 0.13), Vector4(1.12, 0.26, 0.195, 0.10), Vector4(1.27, 0.28, 0.16, 0.11), Vector4(1.32, 0.17, 0.11, 0.11)], true, 28, 4, 0.88), Vector3.ZERO, NAVY, 0, 0.7)
++	var torso: Array[Vector4] = [Vector4(0.77, 0.19, 0.19, 0.13), Vector4(0.90, 0.25, 0.20, 0.13), Vector4(1.12, 0.26, 0.195, 0.10), Vector4(1.27, 0.28, 0.16, 0.11), Vector4(1.32, 0.17, 0.11, 0.11)]
++	_mesh(driver, _loft(torso, true, 28, 4, 0.88), Vector3.ZERO, NAVY, 0, 0.7)
+ 	# The neck bridges the collar and the head base, keeping the silhouette connected in side view.
+ 	var neck := _mesh(driver, _loft([Vector4(1.285, 0.11, 0.10, 0.10), Vector4(1.36, 0.115, 0.105, 0.09), Vector4(1.43, 0.10, 0.09, 0.075)], true, 20, 3), Vector3.ZERO, fur, 0.0, 0.82)
+ 	neck.name = "NeckBridge"
+@@ -1575,6 +1588,24 @@ func _make_driver() -> void:
+ 	collar.scale.z = 0.8
+ 	if is_lumo:
+ 		_ring(driver, Vector3(0, 1.335, 0.10), 0.158, 0.170, ICE, 0.18).scale.z = 0.8
++		# Anzug wie Referenz 06: weiße Seitenteile mit orangem Vorstoß, Gürtel mit leuchtender
++		# Schnalle. Die Teile liegen als Flächen genau auf dem Rumpf (keine aufgesetzten Kugeln).
++		for side in [-1.0, 1.0]:
++			var front: float = -PI * 0.5 + side * 0.62
++			var back: float = side * 0.55 if side > 0 else PI + 0.55
++			var near_front: float = front + side * 0.09
++			if side < 0:
++				front = -PI * 0.5 - 0.62
++				near_front = front - 0.09
++				back = -PI - 0.55
++			_mesh(driver, _loft_patch(torso, minf(near_front, back), maxf(near_front, back), 0.93, 1.25, 0.004, 0.88), Vector3.ZERO, WHITE, 0.0, 0.62)
++			_mesh(driver, _loft_patch(torso, minf(front, near_front), maxf(front, near_front), 0.93, 1.25, 0.005, 0.88), Vector3.ZERO, ORANGE, 0.0, 0.62)
++		var belt := _ring(driver, Vector3(0, 0.915, 0.13), 0.245, 0.27, Color("9fb2c4"), 0.4)
++		belt.scale = Vector3(1.0, 1.6, 0.81)
++		belt.name = "SuitBelt"
++		var buckle := _box(driver, Vector3(0, 0.915, -0.088), Vector3(0.11, 0.05, 0.02), Color("15355e"), 0.35)
++		buckle.name = "BeltBuckle"
++		_box(driver, Vector3(0, 0.915, -0.099), Vector3(0.074, 0.022, 0.006), Color("25bfff")).material_override = _mat(Color("25bfff"), 0.0, 0.3, 0.4)
+ 		# Reißverschluss, der unten am Brustfell endet.
+ 		_ribbon(driver, [Vector3(0, 0.86, -0.118), Vector3(0, 0.98, -0.120), Vector3(0, 1.04, -0.112)], 0.007, CHROME, 0.45)
+ 		# Leuchtendes L links auf der Brust (vom Fahrer aus) und groß auf dem Rücken.
+@@ -1634,49 +1665,69 @@ func _make_driver() -> void:
+ 	head.name = "LumoHead"
+ 	head.position = Vector3(0, 1.68, 0.07)
+ 	driver.add_child(head)
+-	var head_width: float = 0.43 if animal != "rabbit" else 0.36
+-	var head_profile: Array[Vector4] = [Vector4(-0.32, 0.055, 0.060, -0.025), Vector4(-0.26, 0.27, 0.225, -0.003), Vector4(-0.13, head_width, 0.30, 0.006), Vector4(0.055, head_width * 0.98, 0.326, 0.015), Vector4(0.23, 0.31, 0.277, 0.025), Vector4(0.33, 0.17, 0.17, 0.038), Vector4(0.375, 0.008, 0.012, 0.038)]
+-	var head_mesh: Mesh = _loft(head_profile, true, 48, 5)
+-	if is_lumo:
+-		head_mesh = CHARACTER_FINISH.coat(head_mesh, fur, cream, "head")
+-	_fur(head, head_mesh, Vector3.ZERO, Color.WHITE if is_lumo else fur, 2900, 0.016, 715)
+-	# The cheek mask is sculpted as two swept, tapered volumes, with a joined muzzle.
++	# Kopfform nach den Referenzblättern 03/06: oben schmaler, an den Wangen am breitesten,
++	# Augenlinie bei 60 % der Höhe. Die weiße Maske (unter den Augen, Wangen, Kinn) ist in den
++	# Kopf selbst eingefärbt statt aufgesetzter Wangenkissen.
++	var head_width: float = 0.405 if animal != "rabbit" else 0.34
++	head_rings = []
++	var head_profile: Array[Vector4] = [
++		Vector4(-0.30, 0.05, 0.05, -0.02), Vector4(-0.255, head_width * 0.55, 0.205, -0.015),
++		Vector4(-0.15, head_width * 0.95, 0.28, 0.0), Vector4(-0.02, head_width, 0.305, 0.01),
++		Vector4(0.13, head_width * 0.95, 0.305, 0.02), Vector4(0.26, head_width * 0.83, 0.275, 0.03),
++		Vector4(0.36, head_width * 0.58, 0.20, 0.04), Vector4(0.42, head_width * 0.22, 0.09, 0.045),
++		Vector4(0.435, 0.008, 0.01, 0.045),
++	]
++	head_rings = head_profile
++	var head_mesh: Mesh = CHARACTER_FINISH.coat(_loft(head_profile, true, 48, 5), fur, cream, "head")
++	_fur(head, head_mesh, Vector3.ZERO, Color.WHITE, 2900, 0.016, 715)
+ 	for side in [-1.0, 1.0]:
+-		var cheek := _fur(head, _loft([Vector4(-0.15, 0.045, 0.035, -0.012), Vector4(-0.045, 0.145, 0.130, -0.010), Vector4(0.095, 0.16, 0.135, 0.005), Vector4(0.245, 0.11, 0.077, 0.023), Vector4(0.335, 0.010, 0.013, 0.050)], false, 32, 4), Vector3(side * 0.12, -0.16, -0.21), cream, 700, 0.028, 821 + int(side))
+-		cheek.rotation.y = side * PI / 2
+-		# The white cheek fringe wraps around the lower sides of the head and
+-		# remains recognizable in the player's binding rear-camera reference.
+-		_fur(head, _loft([Vector4(-0.285, 0.012, 0.018, 0), Vector4(-0.22, 0.10, 0.125, 0.018), Vector4(-0.16, 0.137, 0.153, 0.008), Vector4(-0.10, 0.067, 0.102, 0), Vector4(-0.075, 0.005, 0.010, 0)], true, 28, 4), Vector3(side * 0.315, 0, 0.044), cream, 330, 0.025, 531 + int(side))
+-		# Purposeful tufts on cheeks and brow establish a fox silhouette at race distance.
+-		for tuft in range(2):
+-			var leaf := _mesh(head, _loft([Vector4(0, 0.05, 0.022, 0), Vector4(0.055, 0.055, 0.035, 0), Vector4(0.115, 0.002, 0.002, 0.018)], true, 16, 3), Vector3(side * (0.28 + tuft * 0.025), -0.11 - tuft * 0.06, -0.15), cream)
+-			leaf.rotation.z = -side * 1.20
++		# Wangenbüschel: drei weiße Spitzen je Seite, nach außen und leicht nach unten gekämmt.
++		for tuft in range(3):
++			var height: float = -0.105 - tuft * 0.052
++			var root := Vector3(side * (_profile_at(head_profile, height).y - 0.045), height, -0.07 + tuft * 0.03)
++			var spike := _mesh(head, _loft([Vector4(0, 0.050, 0.024, 0), Vector4(0.055, 0.040, 0.019, 0), Vector4(0.125 - tuft * 0.02, 0.002, 0.002, 0.01)], true, 14, 3), root, cream, 0.0, 0.82)
++			spike.rotation = Vector3(0.0, side * 0.28, -side * (2.05 + tuft * 0.25))
+ 		_make_ear(side, fur, cream)
+-		_make_eye(side, fur_shadow)
+-		# Soft brow arc gives the neutral expression a curious, friendly shape.
++		_make_eye(side, head_profile)
++		# Kräftige, freundlich geschwungene Brauen über den Augen, auf der Kopfoberfläche.
+ 		var brow: Array[Vector3] = []
++		for p in range(7):
++			var t: float = float(p) / 6.0
++			var x: float = side * (EYE_CENTER.x - EYE_RADIUS.x * 0.95 + t * EYE_RADIUS.x * 2.0)
++			var y: float = EYE_CENTER.y + EYE_RADIUS.y + 0.062 + sin(t * PI) * 0.024 + t * 0.012
++			brow.append(Vector3(x, y, _head_front_z(head_profile, x, y) - 0.006))
++		_ribbon(head, brow, 0.017, fur.darkened(0.62))
++	# Kurze, breite Schnauze; die Nase sitzt oben auf der Spitze zwischen den unteren Augenrändern.
++	var muzzle: Array[Vector4] = [Vector4(-0.455, 0.040, 0.030, -0.125), Vector4(-0.42, 0.108, 0.064, -0.133), Vector4(-0.36, 0.150, 0.092, -0.135), Vector4(-0.29, 0.165, 0.108, -0.128), Vector4(-0.22, 0.165, 0.115, -0.118), Vector4(-0.16, 0.01, 0.012, -0.11)]
++	_fur(head, CHARACTER_FINISH.coat(_loft(muzzle, false, 32, 4), fur, cream, "muzzle"), Vector3.ZERO, Color.WHITE, 350, 0.009, 228)
++	# Runde, glänzende Nase (umgedrehtes Dreieck mit weichen Kanten) mit kleinem Glanzlicht.
++	var nose := _mesh(head, _loft([Vector4(-0.150, 0.011, 0.015, -0.452), Vector4(-0.128, 0.044, 0.038, -0.467), Vector4(-0.099, 0.058, 0.044, -0.469), Vector4(-0.076, 0.044, 0.034, -0.460), Vector4(-0.066, 0.005, 0.008, -0.452)], true, 24, 4), Vector3.ZERO, Color("1b1416"), 0.08, 0.22)
++	nose.name = "SculptedNose"
++	_ellipsoid(head, Vector3(-0.022, -0.082, -0.507), Vector3(0.018, 0.008, 0.005), Color("9a8580"), 0, 0.25)
++	face_metrics["nose_center"] = Vector3(0, -0.108, -0.468)
++	face_metrics["nose_half_width"] = 0.058
++	# Lächeln auf der Schnauzenoberfläche: kurzer Nasensteg, dann ein weicher Bogen mit
++	# hochgezogenen Mundwinkeln (Referenz 06).
++	_ribbon(head, [Vector3(0, -0.150, _snout_front_z(muzzle, 0.0, -0.150) - 0.004), Vector3(0, -0.178, _snout_front_z(muzzle, 0.0, -0.178) - 0.004)], 0.007, Color("4a2a22"))
++	for side in [-1.0, 1.0]:
++		var smile: Array[Vector3] = []
+ 		for p in range(6):
+ 			var t: float = float(p) / 5.0
+-			brow.append(Vector3(side * (0.075 + t * 0.195), 0.205 + sin(t * PI) * 0.047 - t * 0.014, -0.277 + t * 0.018))
+-		_ribbon(head, brow, 0.012, fur.darkened(0.45))
+-	var muzzle: Array[Vector4] = [Vector4(-0.455, 0.038, 0.028, -0.101), Vector4(-0.418, 0.113, 0.060, -0.122), Vector4(-0.351, 0.168, 0.090, -0.135), Vector4(-0.264, 0.15, 0.08, -0.15), Vector4(-0.21, 0.01, 0.012, -0.15)]
+-	_fur(head, _loft(muzzle, false, 32, 4), Vector3.ZERO, cream, 350, 0.009, 228)
+-	# A small triangular, polished nose and a real mouth cavity underneath.
+-	var nose := _mesh(head, _loft([Vector4(-0.16, 0.004, 0.016, -0.453), Vector4(-0.112, 0.075, 0.044, -0.463), Vector4(-0.079, 0.060, 0.032, -0.449), Vector4(-0.068, 0.004, 0.005, -0.435)], true, 24, 4), Vector3.ZERO, Color("2a1d22"), 0.08, 0.22)
+-	nose.name = "SculptedNose"
+-	_ellipsoid(head, Vector3(-0.020, -0.09, -0.493), Vector3(0.020, 0.009, 0.005), Color("ae8f85"), 0, 0.25)
+-	_ellipsoid(head, Vector3(0, -0.231, -0.285), Vector3(0.098, 0.027, 0.046), Color("472e39"), 0, 0.7)
+-	_fur(head, _loft([Vector4(-0.31, 0.025, 0.025, -0.18), Vector4(-0.265, 0.16, 0.11, -0.17), Vector4(-0.22, 0.19, 0.12, -0.17)], true, 28, 3), Vector3.ZERO, cream, 220, 0.011, 4431)
++			var x: float = side * t * 0.118
++			var y: float = -0.180 - sin(t * PI * 0.82) * 0.020 + t * t * 0.034
++			smile.append(Vector3(x, y, _snout_front_z(muzzle, x, y) - 0.004))
++		_ribbon(head, smile, 0.0075, Color("4a2a22"))
++	# Mundhöhle und Kinn hinter den Lippen; der Unterkiefer öffnet beim Sprechen.
++	_ellipsoid(head, Vector3(0, JAW_REST_Y + 0.020, -0.300), Vector3(0.090, 0.024, 0.040), Color("472e39"), 0, 0.7)
++	_fur(head, _loft([Vector4(-0.295, 0.025, 0.025, -0.17), Vector4(-0.26, 0.13, 0.085, -0.165), Vector4(-0.215, 0.15, 0.09, -0.16)], true, 28, 3), Vector3.ZERO, cream, 220, 0.011, 4431)
+ 	jaw = Node3D.new()
+ 	jaw.name = "MouthViseme"
+-	jaw.position = Vector3(0, -0.257, -0.263)
++	jaw.position = Vector3(0, JAW_REST_Y, -0.300)
+ 	head.add_child(jaw)
+-	_ellipsoid(jaw, Vector3(0, 0, -0.018), Vector3(0.123, 0.033, 0.054), cream, 0, 0.82)
+-	_ellipsoid(jaw, Vector3(0, 0.021, -0.041), Vector3(0.049, 0.014, 0.019), Color("df8890"), 0, 0.58)
+-	_ribbon(head, [Vector3(-0.127, -0.192, -0.32), Vector3(-0.101, -0.216, -0.342), Vector3(-0.057, -0.221, -0.352)], 0.008, Color("714333"))
+-	_ribbon(head, [Vector3(0.127, -0.192, -0.32), Vector3(0.101, -0.216, -0.342), Vector3(0.057, -0.221, -0.352)], 0.008, Color("714333"))
++	_ellipsoid(jaw, Vector3(0, 0, -0.012), Vector3(0.105, 0.028, 0.048), cream, 0, 0.82)
++	_ellipsoid(jaw, Vector3(0, 0.018, -0.034), Vector3(0.044, 0.012, 0.017), Color("df8890"), 0, 0.58)
+ 	for tuft in range(3):
+-		var quiff := _fur(head, _loft([Vector4(0, 0.034, 0.03, 0), Vector4(0.055, 0.038, 0.034, 0), Vector4(0.11, 0.003, 0.005, 0.030)], true, 18, 4), Vector3(-0.10 + tuft * 0.068, 0.30, -0.06 + tuft * 0.018), fur, 90, 0.019, 175 + tuft)
++		var quiff := _fur(head, _loft([Vector4(0, 0.034, 0.03, 0), Vector4(0.055, 0.038, 0.034, 0), Vector4(0.11, 0.003, 0.005, 0.030)], true, 18, 4), Vector3(-0.10 + tuft * 0.068, 0.40, -0.03 + tuft * 0.018), fur, 90, 0.019, 175 + tuft)
+ 		quiff.rotation.z = 0.15 + tuft * 0.14
+ 	if animal == "fox":
+ 		_make_goggles()
+@@ -1689,6 +1740,7 @@ func _make_driver() -> void:
+ 		for side in [-1.0, 1.0]:
+ 			var stripe := _mesh(head, _loft([Vector4(-0.15, 0.028, 0.014, -0.28), Vector4(0.06, 0.059, 0.013, -0.310), Vector4(0.29, 0.039, 0.01, -0.172)], true, 16, 4), Vector3(side * 0.17, 0, 0), Color("e8f2fa"))
+ 			stripe.rotation.z = side * -0.16
++	head.set_meta("face_metrics", face_metrics)
+ 	_make_tail(fur, cream)
+ 
+ 
+@@ -1697,24 +1749,31 @@ func _make_driver() -> void:
+ ## hängen direkt am Kopf, damit sie mit ihm zu wenigen Render-Durchgängen
+ ## verschmelzen.
+ func _make_goggles() -> void:
+-	var base := Transform3D(Basis(), Vector3(0, 0.285, 0.03))
+-	# Band liegt knapp außerhalb der Kopfform (Profil bei y≈0.29: ~0.24 × 0.21).
+-	var strap := _ring(head, Vector3.ZERO, 0.245, 0.282, NAVY, 0.18)
+-	strap.transform = base * Transform3D(Basis.from_scale(Vector3(1.04, 1.5, 0.98)), Vector3.ZERO)
++	var fit: Vector4 = _profile_at(head_rings, 0.27) if not head_rings.is_empty() else Vector4(0.27, 0.24, 0.21, 0.03)
++	var base := Transform3D(Basis(), Vector3(0, 0.27, fit.w))
++	# Das Band liegt direkt auf der Kopfform (Profil in Bandhöhe), es schwebt nicht.
++	var strap := _ring(head, Vector3.ZERO, 0.245, 0.262, NAVY, 0.18)
++	strap.transform = base * Transform3D(Basis.from_scale(Vector3((fit.y + 0.003) / 0.245, 2.3, (fit.z + 0.003) / 0.245)), Vector3.ZERO)
+ 	for side in [-1.0, 1.0]:
+-		# Gläser schauen nach vorn-oben: hochgeschobene Fliegerbrille.
+-		var lens := base * Transform3D(Basis.from_euler(Vector3(PI / 2 - 0.62, side * -0.34, 0)), Vector3(side * 0.112, 0.035, -0.245))
+-		_attach(_ring(head, Vector3.ZERO, 0.066, 0.096, CHROME, 0.18), lens)
+-		_attach(_ring(head, Vector3.ZERO, 0.090, 0.106, NAVY, 0.18), lens * Transform3D(Basis.from_scale(Vector3(1, 1.8, 1)), Vector3(0, -0.014, 0)))
+-		var glass := _ellipsoid(head, Vector3.ZERO, Vector3(0.078, 0.024, 0.078), Color("2f8fe0"), 0.3, 0.08)
++		# Große Fliegerbrille wie in den Referenzblättern: Chromring, dunkler Rahmen, blaues Glas,
++		# hochgeschoben auf die Stirn, Gläser schauen nach vorn-oben. Rückseite liegt auf der Stirn.
++		var lens_x: float = side * 0.142
++		var lens_z: float = _head_front_z(head_rings, lens_x, 0.29) - fit.w - 0.030 if not head_rings.is_empty() else -0.245
++		var lens := base * Transform3D(Basis.from_euler(Vector3(PI / 2 - 0.30, side * -0.42, 0)), Vector3(lens_x, 0.020, lens_z))
++		_attach(_ring(head, Vector3.ZERO, 0.084, 0.122, CHROME, 0.18), lens)
++		_attach(_ring(head, Vector3.ZERO, 0.114, 0.132, NAVY, 0.18), lens * Transform3D(Basis.from_scale(Vector3(1, 1.8, 1)), Vector3(0, -0.016, 0)))
++		var glass := _ellipsoid(head, Vector3.ZERO, Vector3(0.096, 0.030, 0.096), Color("2f8fe0"), 0.3, 0.08)
+ 		# Teilt das Leuchtmaterial des L-Logos: kein zusätzlicher Render-Durchgang.
+ 		glass.material_override = _mat(Color("0876b8"), 0.35, 0.26)
+-		_attach(glass, lens * Transform3D(Basis(), Vector3(0, 0.004, 0)))
+-		_attach(_ellipsoid(head, Vector3.ZERO, Vector3(0.022, 0.006, 0.016), Color.WHITE, 0, 0.1), lens * Transform3D(Basis(), Vector3(-0.024, 0.022, -0.024)))
+-	_ellipsoid(head, base * Vector3(0, 0.02, -0.27), Vector3(0.042, 0.026, 0.028), CHROME, 0.08, 0.22)
+-	var buckle := _box(head, Vector3(0, 0.292, 0.269), Vector3(0.081, 0.060, 0.021), CHROME, 0.35)
++		_attach(glass, lens * Transform3D(Basis(), Vector3(0, 0.006, 0)))
++		_attach(_ellipsoid(head, Vector3.ZERO, Vector3(0.028, 0.007, 0.019), Color.WHITE, 0, 0.1), lens * Transform3D(Basis(), Vector3(-0.030, 0.030, -0.030)))
++	# Steg zwischen den Gläsern.
++	var bridge_z: float = _head_front_z(head_rings, 0.0, 0.29) - fit.w - 0.02 if not head_rings.is_empty() else -0.27
++	_ellipsoid(head, base * Vector3(0, 0.022, bridge_z), Vector3(0.036, 0.022, 0.024), CHROME, 0.08, 0.22)
++	var back_z: float = fit.w + fit.z + 0.012
++	var buckle := _box(head, Vector3(0, 0.27, back_z), Vector3(0.081, 0.060, 0.021), CHROME, 0.35)
+ 	buckle.material_override = _mat(CHROME, 0.35, 0.26)
+-	var insert := _box(head, Vector3(0, 0.292, 0.281), Vector3(0.053, 0.033, 0.006), NAVY, 0.35)
++	var insert := _box(head, Vector3(0, 0.27, back_z + 0.012), Vector3(0.053, 0.033, 0.006), NAVY, 0.35)
+ 	insert.material_override = _mat(NAVY, 0.35, 0.26)
+ 
+ 
+@@ -1738,6 +1797,10 @@ func _glow_letter_l(parent: Node3D, at: Vector3, size: float, facing_back: bool)
+ 
+ 
+ func _make_companion_limbs(fur: Color) -> void:
++	# Stehender Lumo im Rennanzug (Referenz 06): Schulterpolster mit Leuchtkante, weiße Oberarme,
++	# blaue Handschuhe mit Leuchtband, Knieschoner, Stiefel mit weißer Sohle und orangem Rand.
++	var is_lumo: bool = animal == "fox"
++	var glove: Color = GLOVE if is_lumo else fur
+ 	for side in [-1.0, 1.0]:
+ 		var shoulder := Node3D.new()
+ 		shoulder.name = "ShoulderLeft" if side < 0 else "ShoulderRight"
+@@ -1745,38 +1808,61 @@ func _make_companion_limbs(fur: Color) -> void:
+ 		driver.add_child(shoulder)
+ 		arm_joints.append(shoulder)
+ 		_mesh(shoulder, _loft([Vector4(-0.31, 0.071, 0.071, 0), Vector4(-0.22, 0.087, 0.087, 0), Vector4(-0.04, 0.102, 0.094, 0), Vector4(0.025, 0.055, 0.050, 0)], true, 22, 4), Vector3.ZERO, NAVY, 0.02, 0.75)
+-		_ellipsoid(shoulder, Vector3(side * 0.01, -0.018, -0.030), Vector3(0.09, 0.065, 0.09), WHITE, 0.02, 0.62)
+-		_ribbon(shoulder, [Vector3(side * 0.087, -0.06, -0.023), Vector3(side * 0.082, -0.18, -0.026), Vector3(side * 0.070, -0.28, -0.023)], 0.011, ICE, 0.15)
++		if is_lumo:
++			# Weißer Oberarm mit orangem Abschlussstreifen.
++			_mesh(shoulder, _loft([Vector4(-0.20, 0.090, 0.090, 0), Vector4(-0.10, 0.098, 0.093, 0), Vector4(-0.035, 0.103, 0.096, 0)], true, 22, 3), Vector3.ZERO, WHITE, 0.0, 0.62)
++			var band := _ring(shoulder, Vector3(0, -0.205, 0), 0.084, 0.096, ORANGE)
++			band.scale.y = 1.4
++		var pad := _ellipsoid(shoulder, Vector3(side * 0.012, -0.012, -0.005), Vector3(0.112, 0.07, 0.108), NAVY, 0.18, 0.5)
++		pad.name = "ShoulderPad"
++		_ribbon(shoulder, [Vector3(side * 0.03, 0.05, -0.095), Vector3(side * 0.10, 0.02, -0.06), Vector3(side * 0.118, -0.03, 0.0)], 0.008, ICE, 0.15, 0.4)
+ 		var elbow := Node3D.new()
+ 		elbow.name = "ElbowJoint"
+ 		elbow.position = Vector3(0, -0.29, 0)
+ 		shoulder.add_child(elbow)
+ 		elbow_joints.append(elbow)
+ 		_mesh(elbow, _loft([Vector4(-0.27, 0.055, 0.052, 0), Vector4(-0.21, 0.061, 0.062, 0), Vector4(-0.02, 0.073, 0.073, 0), Vector4(0.025, 0.050, 0.051, 0)], true, 20, 4), Vector3.ZERO, NAVY, 0.02, 0.73)
+-		var cuff := _ring(elbow, Vector3(0, -0.23, 0), 0.055, 0.070, WHITE)
+-		cuff.scale.y = 0.6
+-		_ellipsoid(elbow, Vector3(0, -0.315, -0.006), Vector3(0.076, 0.096, 0.048), fur, 0, 0.8)
++		var cuff := _ring(elbow, Vector3(0, -0.23, 0), 0.055, 0.070, ICE if is_lumo else WHITE, 0.0, 0.4 if is_lumo else 0.0)
++		cuff.scale.y = 0.8
++		# Handschuh mit Fingern und Daumen.
++		var hand := _ellipsoid(elbow, Vector3(0, -0.315, -0.006), Vector3(0.076, 0.096, 0.048), glove, 0, 0.68)
++		hand.name = "Glove"
+ 		for digit in range(3):
+-			_ellipsoid(elbow, Vector3(-0.047 + digit * 0.043, -0.366, -0.009), Vector3(0.024, 0.057, 0.034), fur, 0, 0.8)
+-		_ellipsoid(elbow, Vector3(-side * 0.067, -0.294, -0.018), Vector3(0.031, 0.045, 0.035), fur, 0, 0.8)
++			_ellipsoid(elbow, Vector3(-0.047 + digit * 0.043, -0.366, -0.009), Vector3(0.024, 0.057, 0.034), glove, 0, 0.68)
++		_ellipsoid(elbow, Vector3(-side * 0.067, -0.294, -0.018), Vector3(0.031, 0.045, 0.035), glove, 0, 0.68)
++		if is_lumo:
++			_ellipsoid(elbow, Vector3(0, -0.30, -0.05), Vector3(0.05, 0.03, 0.006), Color("8696a8"), 0, 0.6)
+ 		var hip := Node3D.new()
+ 		hip.name = "HipLeft" if side < 0 else "HipRight"
+ 		hip.position = Vector3(side * 0.14, 0.85, 0.12)
+ 		driver.add_child(hip)
+ 		leg_joints.append(hip)
+ 		_mesh(hip, _loft([Vector4(-0.49, 0.079, 0.083, 0), Vector4(-0.32, 0.097, 0.095, 0.015), Vector4(-0.09, 0.125, 0.120, 0), Vector4(0.028, 0.091, 0.10, 0)], true, 22, 4), Vector3.ZERO, NAVY, 0.02, 0.74)
+-		_ribbon(hip, [Vector3(side * 0.115, -0.05, 0), Vector3(side * 0.105, -0.24, 0.01), Vector3(side * 0.08, -0.45, 0)], 0.012, ICE, 0.1)
+-		_mesh(hip, _loft([Vector4(-0.72, 0.075, 0.082, -0.006), Vector4(-0.62, 0.09, 0.09, 0), Vector4(-0.47, 0.078, 0.081, 0)], true, 20, 4), Vector3.ZERO, fur, 0, 0.8)
+-		_ellipsoid(hip, Vector3(0, -0.748, -0.072), Vector3(0.12, 0.090, 0.175), WHITE, 0.06, 0.56)
+-		_ellipsoid(hip, Vector3(0, -0.811, -0.069), Vector3(0.119, 0.027, 0.17), NAVY, 0.1, 0.7)
++		_ribbon(hip, [Vector3(side * 0.115, -0.05, 0), Vector3(side * 0.105, -0.24, 0.01), Vector3(side * 0.08, -0.45, 0)], 0.012, ICE if not is_lumo else WHITE, 0.1)
++		# Unterschenkel im Anzug (nicht mehr Fell), Knieschoner mit Leuchtkante.
++		_mesh(hip, _loft([Vector4(-0.72, 0.075, 0.082, -0.006), Vector4(-0.62, 0.09, 0.09, 0), Vector4(-0.47, 0.078, 0.081, 0)], true, 20, 4), Vector3.ZERO, NAVY if is_lumo else fur, 0, 0.74 if is_lumo else 0.8)
++		if is_lumo:
++			var knee := _ellipsoid(hip, Vector3(0, -0.47, -0.078), Vector3(0.068, 0.078, 0.03), Color("13305a"), 0.18, 0.5)
++			knee.name = "KneePad"
++			var knee_line := _ring(hip, Vector3(0, -0.47, -0.092), 0.060, 0.068, ICE, 0.0, 0.4)
++			knee_line.rotation.x = PI / 2
++			knee_line.scale = Vector3(1.0, 1.0, 1.15)
++			_ribbon(hip, [Vector3(side * 0.05, -0.53, -0.085), Vector3(side * 0.055, -0.62, -0.087), Vector3(side * 0.05, -0.68, -0.075)], 0.007, ICE, 0.1, 0.4)
++		# Stiefel: blau mit weißer Sohle, orangem Schaftrand und Leuchtstreifen.
++		var boot := _ellipsoid(hip, Vector3(0, -0.748, -0.072), Vector3(0.12, 0.090, 0.175), NAVY if is_lumo else WHITE, 0.06, 0.56)
++		boot.name = "Boot"
++		_ellipsoid(hip, Vector3(0, -0.811, -0.069), Vector3(0.124, 0.03, 0.178), WHITE if is_lumo else NAVY, 0.1, 0.7)
++		if is_lumo:
++			var rim := _ring(hip, Vector3(0, -0.69, -0.02), 0.078, 0.092, ORANGE)
++			rim.scale = Vector3(1.0, 1.4, 1.1)
+ 		_ribbon(hip, [Vector3(-0.105, -0.76, -0.11), Vector3(0, -0.756, -0.229), Vector3(0.105, -0.76, -0.11)], 0.012, ICE, 0.25)
+ 
+ 
+ func _make_ear(side: float, fur: Color, cream: Color) -> void:
+ 	var ear := Node3D.new()
+ 	ear.name = "Ear"
+-	ear.position = Vector3(side * 0.273, 0.255, 0.035)
+-	ear.rotation.z = -side * 0.23
++	ear.position = Vector3(side * 0.29, 0.30, 0.035)
++	ear.rotation.z = -side * 0.36
+ 	head.add_child(ear)
+ 	ear_joints.append(ear)
+ 	if animal == "rabbit":
+@@ -1803,27 +1889,112 @@ func _make_ear(side: float, fur: Color, cream: Color) -> void:
+ 			tuft.rotation.z = (fluff - 1) * -0.30
+ 
+ 
+-func _make_eye(side: float, fur_shadow: Color) -> void:
++func _make_eye(side: float, rings: Array[Vector4]) -> void:
++	# Eingesetztes Auge: rund, Weiß nur knapp vor der Kopfoberfläche, dunkler Lidrand (oben
++	# kräftiger), braune Iris zur Nase und leicht nach unten versetzt, zwei Glanzpunkte.
++	var x: float = side * EYE_CENTER.x
+ 	var eye := Node3D.new()
+ 	eye.name = "Eye"
+-	eye.position = Vector3(side * 0.169, 0.052, -0.282)
+-	eye.rotation.y = -side * 0.12
++	eye.position = Vector3(x, EYE_CENTER.y, _head_front_z(rings, x, EYE_CENTER.y) + EYE_RADIUS.z - 0.016)
++	eye.rotation = Vector3(0.05, -side * 0.24, 0)
+ 	head.add_child(eye)
+ 	eyes.append(eye)
+-	_ellipsoid(eye, Vector3(0, 0.005, 0.006), Vector3(0.134, 0.155, 0.064), fur_shadow)
+-	_ellipsoid(eye, Vector3(0, 0, -0.009), Vector3(0.119, 0.141, 0.065), WHITE, 0, 0.3)
+-	var iris_size := Vector3(0.102, 0.107, 0.018) if animal == "fox" else Vector3(0.075, 0.093, 0.018)
+-	var pupil_size := Vector3(0.068, 0.071, 0.013) if animal == "fox" else Vector3(0.049, 0.062, 0.013)
+-	if animal == "fox":
+-		_mesh(
+-			eye, CHARACTER_FINISH.iris(iris_size), Vector3(-side * 0.008, -0.009, -0.066),
+-			Color.WHITE, 0.08, 0.22
+-		)
+-	else:
+-		_ellipsoid(eye, Vector3(-side * 0.008, -0.009, -0.066), iris_size, Color("287788"), 0.08, 0.22)
+-	_ellipsoid(eye, Vector3(-side * 0.008, -0.004, -0.081), pupil_size, Color("080c12"), 0.10, 0.15)
+-	_ellipsoid(eye, Vector3(-0.026, 0.032, -0.093), Vector3(0.019, 0.025, 0.008), Color.WHITE, 0, 0.1)
+-	_ellipsoid(eye, Vector3(0.020, -0.038, -0.093), Vector3(0.007, 0.010, 0.004), Color.WHITE, 0, 0.1)
++	var lid: Color = Color("2a160e") if animal != "rabbit" else Color("3a3a48")
++	_ellipsoid(eye, Vector3(0, 0.006, 0.006), Vector3(EYE_RADIUS.x + 0.011, EYE_RADIUS.y + 0.015, EYE_RADIUS.z * 0.85), lid, 0, 0.6)
++	_ellipsoid(eye, Vector3.ZERO, EYE_RADIUS, Color("f7fbff"), 0, 0.3)
++	var iris_offset := Vector2(-side * 0.027, -0.017)
++	var iris_mesh: ArrayMesh = (
++		CHARACTER_FINISH.iris_cap(EYE_RADIUS, iris_offset, IRIS_RADIUS, PUPIL_RADIUS)
++		if animal == "fox"
++		else CHARACTER_FINISH.iris_cap(EYE_RADIUS, iris_offset, IRIS_RADIUS, PUPIL_RADIUS, Color("3aa0b0"), Color("1d5a68"))
++	)
++	_mesh(eye, iris_mesh, Vector3.ZERO, Color.WHITE, 0.08, 0.22)
++	# Zwei Glanzpunkte auf der Oberfläche: groß oben außen, klein unten innen.
++	for glint in [[Vector2(side * 0.018 - 0.004, 0.022), Vector3(0.016, 0.018, 0.004)], [Vector2(-side * 0.015, -0.034), Vector3(0.0065, 0.0075, 0.003)]]:
++		var at: Vector2 = iris_offset + glint[0]
++		var surface_z: float = -EYE_RADIUS.z * sqrt(maxf(0.0, 1.0 - pow(at.x / EYE_RADIUS.x, 2.0) - pow(at.y / EYE_RADIUS.y, 2.0)))
++		_ellipsoid(eye, Vector3(at.x, at.y, surface_z - 0.003), glint[1], Color.WHITE, 0, 0.1)
++	var key: String = "left" if side < 0 else "right"
++	face_metrics["eye_center_" + key] = eye.position
++	face_metrics["eye_basis_" + key] = eye.basis
++	face_metrics["eye_radius"] = Vector2(EYE_RADIUS.x, EYE_RADIUS.y)
++	face_metrics["iris_center_" + key] = eye.position + eye.basis * Vector3(iris_offset.x, iris_offset.y, -EYE_RADIUS.z)
++	face_metrics["iris_radius"] = IRIS_RADIUS
++	face_metrics["pupil_radius"] = PUPIL_RADIUS
++
++
++## Abtastung eines Lofts an der Längsposition `at`, genau wie _loft die Ringe verbindet
++## (Catmull-Rom-Stützstellen, dazwischen gerade Flächen).
++func _profile_at(rings: Array[Vector4], at: float, steps: int = 5) -> Vector4:
++	var samples: Array[Vector4] = []
++	for index in range(rings.size() - 1):
++		for j in range(steps):
++			samples.append(_catmull(rings[maxi(0, index - 1)], rings[index], rings[index + 1], rings[mini(rings.size() - 1, index + 2)], float(j) / steps))
++	samples.append(rings[-1])
++	for index in range(samples.size() - 1):
++		var a: Vector4 = samples[index]
++		var b: Vector4 = samples[index + 1]
++		if (at - a.x) * (at - b.x) <= 0.0 and not is_equal_approx(a.x, b.x):
++			return a.lerp(b, (at - a.x) / (b.x - a.x))
++	return samples[0] if absf(at - samples[0].x) < absf(at - samples[-1].x) else samples[-1]
++
++
++## Vorderste Oberfläche (kleinstes z) eines senkrechten Lofts (Kopf) bei (x, y).
++func _head_front_z(rings: Array[Vector4], x: float, y: float) -> float:
++	var ring: Vector4 = _profile_at(rings, y)
++	var t: float = clampf(x / maxf(0.002, ring.y), -1.0, 1.0)
++	return ring.w - ring.z * sqrt(1.0 - t * t)
++
++
++## Fläche, die genau auf einem senkrechten Loft liegt (Anzugteile, Streifen, Leuchtlinien):
++## Winkelbereich wie in _loft (−π/2 = vorn), Höhenbereich in Ringkoordinaten, kleiner Abstand nach außen.
++func _loft_patch(rings: Array[Vector4], angle_a: float, angle_b: float, at_a: float, at_b: float, offset: float, power: float = 1.0, rows: int = 10, columns: int = 8) -> ArrayMesh:
++	var vertices := PackedVector3Array()
++	var normals := PackedVector3Array()
++	var indices := PackedInt32Array()
++	for row in range(rows + 1):
++		var ring: Vector4 = _profile_at(rings, lerpf(at_a, at_b, float(row) / rows), 4)
++		for column in range(columns + 1):
++			var angle: float = lerpf(angle_a, angle_b, float(column) / columns)
++			var cs: float = signf(cos(angle)) * pow(absf(cos(angle)), power)
++			var sn: float = signf(sin(angle)) * pow(absf(sin(angle)), power)
++			var normal := Vector3(cs / maxf(0.002, ring.y), 0, sn / maxf(0.002, ring.z)).normalized()
++			vertices.append(Vector3(cs * ring.y, ring.x, ring.w + sn * ring.z) + normal * offset)
++			normals.append(normal)
++	for row in range(rows):
++		for column in range(columns):
++			var a: int = row * (columns + 1) + column
++			var b: int = a + columns + 1
++			indices.append_array(PackedInt32Array([a, a + 1, b, a + 1, b + 1, b]))
++	var arrays: Array = []
++	arrays.resize(Mesh.ARRAY_MAX)
++	arrays[Mesh.ARRAY_VERTEX] = vertices
++	arrays[Mesh.ARRAY_NORMAL] = normals
++	arrays[Mesh.ARRAY_INDEX] = indices
++	var patch := ArrayMesh.new()
++	patch.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
++	return patch
++
++
++## Vorderste Oberfläche eines liegenden Lofts entlang z (Schnauze) für einen Punkt (x, y).
++func _snout_front_z(rings: Array[Vector4], x: float, y: float, steps: int = 4) -> float:
++	var samples: Array[Vector4] = []
++	for index in range(rings.size() - 1):
++		for j in range(steps):
++			samples.append(_catmull(rings[maxi(0, index - 1)], rings[index], rings[index + 1], rings[mini(rings.size() - 1, index + 2)], float(j) / steps))
++	samples.append(rings[-1])
++	var previous: float = -1.0
++	for index in range(samples.size()):
++		var ring: Vector4 = samples[index]
++		var dx: float = x / maxf(0.002, ring.y)
++		var dy: float = (y - ring.w) / maxf(0.002, ring.z)
++		var inside: float = 1.0 - (dx * dx + dy * dy)
++		if inside >= 0.0:
++			if index == 0:
++				return ring.x
++			return lerpf(samples[index - 1].x, ring.x, previous / (previous - inside))
++		previous = inside
++	return samples[-1].x
+ 
+ 
+ func _make_tail(fur: Color, cream: Color) -> void:
+@@ -2061,7 +2232,7 @@ func _process(delta: float) -> void:
+ 		eye.scale.y = blink
+ 	if jaw:
+ 		jaw.rotation.x = speaking_amount * 0.45
+-		jaw.position.y = -0.257 - speaking_amount * 0.035
++		jaw.position.y = JAW_REST_Y - speaking_amount * 0.035
+ 	if tail and not reduced_motion:
+ 		tail.rotation.y = 0.63 + sin(animation_time * 2.6) * 0.055 - motion_steer * 0.07
+ 	if steering_wheel:
+diff --git a/scripts/tests/kart_lumo_views_capture.gd b/scripts/tests/kart_lumo_views_capture.gd
+new file mode 100644
+index 0000000..259ff61
+--- /dev/null
++++ b/scripts/tests/kart_lumo_views_capture.gd
+@@ -0,0 +1,230 @@
++extends SceneTree
++## Lumo-Prüfansichten aus der echten Engine: die acht Ansichten des Auftrags und eine Messung der
++## Gesichtsproportionen am gerenderten Rig (keine Bildbearbeitung, kein Übermalen).
++## Aufruf:
++## godot --rendering-method gl_compatibility --script res://scripts/tests/kart_lumo_views_capture.gd -- <ordner>
++## Ergebnis: 01-gesicht-front.png … 08-verfolger-fahrt.png und face-metrics.json.
++## Gemessen wird in der Frontansicht: Kopfbreite = Silhouette (Alphakanal) in der Augenzeile,
++## Augen, Iris, Pupille, Nase aus den projizierten Punkten des Rigs (Metadaten des Kopfes).
++
++const CATALOG = preload("res://scripts/games/kart_catalog.gd")
++const STAGE = preload("res://scripts/games/kart_stage.gd")
++const CELL := Vector2i(960, 960)
++const STEP: float = 1.0 / 60.0
++
++var out_dir: String = "res://exports/lumo-views"
++var viewport: SubViewport
++var camera: Camera3D
++var kart: Node3D
++var companion: Node3D
++var metrics: Dictionary = {}
++
++
++func _initialize() -> void:
++	var args := OS.get_cmdline_user_args()
++	if args.size() > 0:
++		out_dir = args[0]
++	call_deferred("_run")
++
++
++func _frames(count: int) -> void:
++	for frame in range(count):
++		await process_frame
++	await RenderingServer.frame_post_draw
++
++
++func _stage() -> void:
++	viewport = SubViewport.new()
++	viewport.size = CELL
++	viewport.own_world_3d = true
++	viewport.msaa_3d = Viewport.MSAA_4X
++	viewport.transparent_bg = true
++	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
++	root.add_child(viewport)
++	var world := Node3D.new()
++	viewport.add_child(world)
++	var built: Dictionary = STAGE.build(world, Color("45d9ef"), false)
++	(built.camera as Camera3D).queue_free()
++	camera = Camera3D.new()
++	world.add_child(camera)
++	camera.current = true
++	kart = Node3D.new()
++	kart.set_script(load("res://scripts/games/kart_vehicle.gd"))
++	world.add_child(kart)
++	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, "fox")
++	kart.call("configure", "fox", driver.color, "comet")
++	kart.call("set_motion", 0.0, 0.0, false, false)
++	companion = Node3D.new()
++	companion.set_script(load("res://scripts/games/kart_vehicle.gd"))
++	world.add_child(companion)
++	companion.call("configure_companion", "fox")
++	companion.position = Vector3(40, 0, 0)
++	# Ruhige, offene Augen in allen Standbildern: Animation anhalten, Begleiter in Ruhepose.
++	kart.set_process(false)
++	companion.set_process(false)
++	companion.call("set_companion_pose", 0.5, "idle", 0.0)
++
++
++## Bild mit Verlauf hinterlegen; der Alphakanal bleibt für die Silhouettenmessung erhalten.
++func _shot(file: String) -> Image:
++	await _frames(12)
++	var shot: Image = viewport.get_texture().get_image()
++	shot.convert(Image.FORMAT_RGBA8)
++	var backdrop := Image.create(CELL.x, CELL.y, false, Image.FORMAT_RGBA8)
++	for row in range(CELL.y):
++		backdrop.fill_rect(Rect2i(0, row, CELL.x, 1), Color("2f4a74").lerp(Color("14243f"), float(row) / CELL.y))
++	backdrop.blend_rect(shot, Rect2i(Vector2i.ZERO, shot.get_size()), Vector2i.ZERO)
++	assert(backdrop.save_png(out_dir.path_join(file)) == OK)
++	print("[LumoViews] ", file)
++	return shot
++
++
++func _look(from: Vector3, at: Vector3, fov: float) -> void:
++	camera.fov = fov
++	camera.look_at_from_position(from, at, Vector3.UP)
++
++
++func _screen(point: Vector3) -> Vector2:
++	return camera.unproject_position(point)
++
++
++## Breite der Silhouette in einer Bildzeile um eine Mittelspalte (nur zusammenhängende Pixel).
++func _silhouette(shot: Image, row: int, center: int) -> Vector2i:
++	var left: int = center
++	while left > 0 and shot.get_pixel(left - 1, row).a > 0.5:
++		left -= 1
++	var right: int = center
++	while right < shot.get_width() - 1 and shot.get_pixel(right + 1, row).a > 0.5:
++		right += 1
++	return Vector2i(left, right)
++
++
++func _face_metrics(shot: Image, rig: Node3D) -> Dictionary:
++	var head: Node3D = rig.get("head")
++	var face: Dictionary = head.get_meta("face_metrics", {})
++	assert(not face.is_empty(), "Kopf liefert Messpunkte")
++	var to_world: Transform3D = head.global_transform
++	var result: Dictionary = {}
++	var eyes: Array = []
++	for side in [-1.0, 1.0]:
++		var key: String = "left" if side < 0 else "right"
++		var center: Vector3 = face["eye_center_" + key]
++		var radius: Vector2 = face.eye_radius
++		var basis: Basis = face["eye_basis_" + key]
++		var c: Vector2 = _screen(to_world * center)
++		var x0: Vector2 = _screen(to_world * (center - basis.x * radius.x))
++		var x1: Vector2 = _screen(to_world * (center + basis.x * radius.x))
++		var y0: Vector2 = _screen(to_world * (center - basis.y * radius.y))
++		var y1: Vector2 = _screen(to_world * (center + basis.y * radius.y))
++		var iris_center: Vector3 = face["iris_center_" + key]
++		var i0: Vector2 = _screen(to_world * (iris_center - basis.x * float(face.iris_radius)))
++		var i1: Vector2 = _screen(to_world * (iris_center + basis.x * float(face.iris_radius)))
++		var p0: Vector2 = _screen(to_world * (iris_center - basis.x * float(face.pupil_radius)))
++		var p1: Vector2 = _screen(to_world * (iris_center + basis.x * float(face.pupil_radius)))
++		eyes.append({"center": c, "width": x0.distance_to(x1), "height": y0.distance_to(y1),
++			"iris": i0.distance_to(i1), "pupil": p0.distance_to(p1), "iris_center": _screen(to_world * iris_center)})
++	var row: int = roundi((eyes[0].center.y + eyes[1].center.y) * 0.5)
++	var middle: int = roundi((eyes[0].center.x + eyes[1].center.x) * 0.5)
++	var span: Vector2i = _silhouette(shot, row, middle)
++	var head_width: float = float(span.y - span.x)
++	var nose_l: Vector2 = _screen(to_world * (face.nose_center - Vector3(float(face.nose_half_width), 0, 0)))
++	var nose_r: Vector2 = _screen(to_world * (face.nose_center + Vector3(float(face.nose_half_width), 0, 0)))
++	var eye_width: float = (eyes[0].width + eyes[1].width) * 0.5
++	result = {
++		"head_width_px": head_width,
++		"eye_width_px": eye_width,
++		"eye_height_px": (eyes[0].height + eyes[1].height) * 0.5,
++		"eye_spacing_px": eyes[0].center.distance_to(eyes[1].center),
++		"inner_gap_px": eyes[0].center.distance_to(eyes[1].center) - (eyes[0].width + eyes[1].width) * 0.5,
++		"iris_px": (eyes[0].iris + eyes[1].iris) * 0.5,
++		"pupil_px": (eyes[0].pupil + eyes[1].pupil) * 0.5,
++		"nose_width_px": nose_l.distance_to(nose_r),
++	}
++	result["eye_to_head"] = eye_width / head_width
++	result["spacing_to_head"] = float(result.eye_spacing_px) / head_width
++	result["gap_to_head"] = float(result.inner_gap_px) / head_width
++	result["iris_to_eye"] = float(result.iris_px) / eye_width
++	result["pupil_to_iris"] = float(result.pupil_px) / float(result.iris_px)
++	result["eye_aspect"] = float(result.eye_height_px) / eye_width
++	result["nose_to_head"] = float(result.nose_width_px) / head_width
++	var inward: float = 0.0
++	var down: float = 0.0
++	for eye in eyes:
++		var towards_nose: float = signf(float(middle) - eye.center.x)
++		inward += (eye.iris_center.x - eye.center.x) * towards_nose
++		down += eye.iris_center.y - eye.center.y
++	result["iris_inward_to_eye"] = inward * 0.5 / eye_width
++	result["iris_down_to_eye"] = down * 0.5 / eye_width
++	return result
++
++
++func _race_shot(file: String) -> void:
++	root.size = Vector2i(1280, 720)
++	var game = load("res://scenes/games/kart_island.tscn").instantiate()
++	root.add_child(game)
++	game.set_physics_process(false)
++	await _frames(4)
++	game._start_selected_race({"mode": "training", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "flott"})
++	game._end_preview()
++	await _frames(3)
++	game.countdown = 0
++	game.racing = true
++	game.auto_gas = true
++	for frame in range(150):
++		var target: Vector3 = game.world.position_at(game.previous_road_distance + 8.0, 0.0)
++		var direction: Vector3 = target - game.player.position
++		game.steering = clampf(-angle_difference(game.player_heading, atan2(-direction.x, -direction.z)) * 2.3, -1, 1)
++		game._physics_process(STEP)
++		if frame % 10 == 0:
++			await process_frame
++	await _frames(3)
++	var image: Image = root.get_texture().get_image()
++	assert(image.save_png(out_dir.path_join(file)) == OK)
++	print("[LumoViews] ", file)
++	game.abandoned = true
++	game.queue_free()
++	await _frames(6)
++
++
++func _run() -> void:
++	DirAccess.make_dir_recursive_absolute(out_dir)
++	_stage()
++	await _frames(4)
++	var head: Node3D = kart.get("head")
++	var face: Vector3 = head.global_position
++	var forward: Vector3 = -head.global_transform.basis.z
++	# 1–3: Gesicht frontal, seitlich (links), Kopf Dreiviertel.
++	# Lange Brennweite (fast orthografisch) wie bei den Referenzblättern, damit die Messung
++	# nicht von der Perspektive verzerrt wird.
++	var aim: Vector3 = face + Vector3(0, 0.08, 0)
++	_look(aim + forward * 6.0, aim, 11.5)
++	var front: Image = await _shot("01-gesicht-front.png")
++	metrics["face_front"] = _face_metrics(front, kart)
++	_look(aim + Vector3(-6.0, 0, 0), aim, 11.5)
++	await _shot("02-gesicht-seite.png")
++	_look(aim + forward * 4.4 + Vector3(-4.0, 0.6, 0), aim, 11.5)
++	await _shot("03-kopf-dreiviertel.png")
++	# 4: ganze Figur im Anzug (Begleiter-Rig, stehend).
++	var body_top: Vector3 = companion.global_position + Vector3(0, 1.05, 0)
++	_look(body_top + Vector3(0, 0.15, -4.9), body_top, 30.0)
++	await _shot("04-ganzkoerper.png")
++	# 5–7: im Kart frontal, Kart mit Fahrer seitlich und von hinten.
++	_look(Vector3(0, 1.45, -4.4), Vector3(0, 0.95, 0), 30.0)
++	await _shot("05-im-kart-front.png")
++	_look(Vector3(-5.2, 1.0, 0.05), Vector3(0, 0.75, 0.05), 30.0)
++	await _shot("06-kart-seite.png")
++	_look(Vector3(0, 1.45, 5.0), Vector3(0, 0.8, 0), 30.0)
++	await _shot("07-kart-heck.png")
++	kart.queue_free()
++	companion.queue_free()
++	viewport.queue_free()
++	await _frames(4)
++	# 8: Verfolgerkamera während einer echten Fahrt (Sonnenhafen, Fahrphysik).
++	await _race_shot("08-verfolger-fahrt.png")
++	var file := FileAccess.open(out_dir.path_join("face-metrics.json"), FileAccess.WRITE)
++	file.store_string(JSON.stringify(metrics, "  "))
++	file.close()
++	print("[LumoViews] metrics ", JSON.stringify(metrics))
++	await create_timer(1.3).timeout
++	print("[LumoViews] PASS: ", out_dir)
++	quit(0)
