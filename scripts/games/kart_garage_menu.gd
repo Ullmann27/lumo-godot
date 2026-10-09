@@ -415,7 +415,9 @@ func _apply_responsive_layout() -> void:
 	_set_physical_font(view_choice, 14 if short_landscape else 16, ui_scale)
 	view_choice.set_item_text(0, "Rundum" if short_landscape else "Rundum ansehen")
 	view_choice.set_item_text(5, "Oben" if short_landscape else "Von oben")
-	view_choice.offset_left = -(100 if short_landscape else 176) * ui_scale
+	# Do not cover Lumos ears in a compact portrait preview.
+	view_choice.set_item_text(6, "Gesicht" if small else "Lumos Gesicht")
+	view_choice.offset_left = -(100 if short_landscape else (96 if small else 176)) * ui_scale
 	view_choice.offset_right = -4 * ui_scale
 	view_choice.offset_top = 4 * ui_scale
 	view_choice.offset_bottom = 48 * ui_scale
