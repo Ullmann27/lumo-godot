@@ -204,6 +204,17 @@ jobs:
           test -s exports/sky-halo-authoring/01_side.png
           test -s exports/sky-halo-authoring/02_three_quarter.png
 
+      - name: Natural Lumo fox eye geometry and unchanged other drivers
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script res://scripts/tests/kart_fox_eye_proportions_regression.gd \
+            > "$RUNNER_TEMP/fox-eyes.log" 2>&1
+          cat "$RUNNER_TEMP/fox-eyes.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/fox-eyes.log"; then exit 1; fi
+          grep -F '[LumoEyeProportions] PASS:' "$RUNNER_TEMP/fox-eyes.log"
+
       - name: Bound Lumo face studio light, shadows, and saturation
         shell: bash
         run: |
@@ -265,6 +276,7 @@ jobs:
             exports/holo-city/*.png
             exports/sky-halo-authoring/*.png
             exports/face-showroom/*.png
+            ${{ runner.temp }}/fox-eyes.log
             ${{ runner.temp }}/face-studio.log
             ${{ runner.temp }}/lumo-face-capture.log
             ${{ runner.temp }}/lumo-driver-4views.log
