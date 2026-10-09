@@ -32,7 +32,7 @@ func _geometry(node: Node3D, kart, result: Dictionary) -> void:
 
 
 func _run() -> void:
-	assert(CATALOG.KARTS.size() == 9)
+	assert(CATALOG.KARTS.size() == 14)
 	var seen: Dictionary = {}
 	var signatures: Dictionary = {}
 	for entry in CATALOG.KARTS:
@@ -79,7 +79,7 @@ func _run() -> void:
 	garage.setup.kart = "boru_rally"
 	garage._refresh()
 	await process_frame
-	assert(garage._entries().size() == 9)
+	assert(garage._entries().size() == 14)
 	for view in range(1, 6):
 		garage._choose_preview_view(view)
 		assert(garage.preview_camera.projection == Camera3D.PROJECTION_ORTHOGONAL)
@@ -132,5 +132,5 @@ func _run() -> void:
 	game.queue_free()
 	await _settle()
 	await create_timer(0.2).timeout
-	print("[KartFleet] PASS: 9 designs, animated chassis, LOD, budgets, garage views, scenery")
+	print("[KartFleet] PASS: 14 designs, animated chassis, LOD, budgets, garage views, scenery")
 	quit()

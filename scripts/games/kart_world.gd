@@ -31,6 +31,8 @@ var definition: Dictionary = {}
 var checkpoint_positions := PackedVector3Array()
 ## Jump layout (ramp, take-off, gap end) on courses that have one; empty elsewhere.
 var jump: Dictionary = {}
+## Himmel, die gerade erst gerendert wurden, nicht sofort freigeben (siehe _retire_skies).
+static var _retired_skies: Array[Sky] = []
 var loop_layout: Dictionary = {}
 var _road_samples := PackedVector3Array()
 var _road_distances := PackedFloat32Array()
@@ -39,6 +41,8 @@ var _rng := RandomNumberGenerator.new()
 func build(
 	lightweight: bool, selected_track: String = "sonnenhafen", geometry_only: bool = false
 ) -> void:
+	# Ein Neubau (z. B. Grafikwechsel) wirft den alten Himmel weg: ebenfalls kurz zurückhalten.
+	_retire_skies(self)
 	for child in get_children():
 		remove_child(child)
 		child.queue_free()
@@ -365,7 +369,7 @@ func _lighting() -> void:
 	environment.sky=sky
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color=Color("c8e0f4") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
-	environment.ambient_light_energy=0.28 if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
+	environment.ambient_light_energy=(0.28 if low_detail else 0.20) if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
 	environment.tonemap_mode=Environment.TONE_MAPPER_ACES if track_id in ["candy_cloud", "volcano_night"] else Environment.TONE_MAPPER_FILMIC
 	environment.tonemap_exposure=float(visual.exposure)
 	environment.glow_enabled=bool(visual.glow)
@@ -386,7 +390,7 @@ func _lighting() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees=Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0)
 	sun.light_color=definition.sun
-	sun.light_energy=0.56 if track_id=="candy_cloud" else (0.84 if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
+	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.84 if low_detail else 0.68) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -466,6 +470,11 @@ func _terrain() -> void:
 		stylized.set_shader_parameter("bottom_tint",Color("657b68"))
 		stylized.set_shader_parameter("overall_tint",Color("e6efcf"))
 		stylized.set_shader_parameter("roughness_value",0.90)
+		if not low_detail:
+			stylized.set_shader_parameter(
+				"ground_grain", preload("res://assets/materials/kart_terrain_grain.tres")
+			)
+			stylized.set_shader_parameter("grain_strength",0.22)
 		land.material_override=stylized
 	else:
 		var material := _material(Color.WHITE).duplicate() as StandardMaterial3D
@@ -1538,3 +1547,24 @@ func _holo_gate(distance: float) -> void:
 		_prop("box",at+basis.x*side*5.6+Vector3.UP*8.2,Vector3(2.7,0.32,0.42),Color("78deef"),basis.rotated(basis.z,side*0.5),true)
 	_prop("box",at+Vector3.UP*8.8,Vector3(9.0,0.32,0.42),Color("91dce9"),basis,true)
 
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EXIT_TREE:
+		_retire_skies(self)
+
+
+## Beobachtet mit Godot 4.6.3 gl_compatibility: Wird ein Streckenhimmel kurz nach dem Rennstart oder
+## bei einem Neubau freigegeben, bleiben seine zwei 256er-Spiegelungstexturen bis zum Beenden liegen
+## („Texture … leaked“). Deshalb hält die Welt ihre Himmel nach dem Abbau noch 1 s fest; mit 0,2 s
+## blieben in Rennbrücke und Rundenspeicherung noch 2 bzw. 4 Texturen liegen.
+static func _retire_skies(root_node: Node) -> void:
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree == null:
+		return
+	for node in root_node.find_children("*", "WorldEnvironment", true, false):
+		var settings: Environment = (node as WorldEnvironment).environment
+		if settings == null or settings.sky == null:
+			continue
+		var sky: Sky = settings.sky
+		_retired_skies.append(sky)
+		tree.create_timer(1.0, true, false, true).timeout.connect(func() -> void: _retired_skies.erase(sky))

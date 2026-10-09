@@ -6,6 +6,8 @@ extends Node3D
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const KART_AUDIO = preload("res://scripts/games/kart_audio.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
+const FLEET = preload("res://scripts/games/kart_fleet.gd")
+const TUNING = preload("res://scripts/games/kart_tuning.gd")
 const GARAGE = preload("res://scripts/games/kart_garage_menu.gd")
 const INTRO = preload("res://scripts/games/kart_intro.gd")
 const RECORDS = preload("res://scripts/games/kart_records.gd")
@@ -98,6 +100,10 @@ const FINISH_CINE_SECONDS: float = 3.2
 const FINISH_CINE_REDUCED_SECONDS: float = 0.35
 var finish_cine_left: float = 0.0
 var finish_coast_speed: float = 0.0
+var finish_coast_reverse: bool = false
+var finish_road_distance: float = -1.0
+var finish_camera_world: int = 0
+var finish_camera_boxes: Array[Dictionary] = []
 var finish_place: int = 0
 var finish_confetti: Node3D
 var lap_times: Array[float] = []
@@ -183,6 +189,10 @@ var mode: String = "race"
 var track_id: String = "sonnenhafen"
 var selected_driver: String = "fox"
 var selected_kart: String = "comet"
+## Tuning-Werkstatt des aktuellen Kindes (Stufen, Aussehen, Sternebudget) und die daraus
+## berechneten Fahrfaktoren des gewählten Karts. Leer = Werte direkt aus der Flotte.
+var workshop
+var kart_factors: Dictionary = {}
 var loop_state = PHYSICAL_LOOP.new()
 var loop_count: int = 0
 var player_heading: float = 0.0
@@ -237,6 +247,7 @@ var previous_size := Vector2i(720, 1280)
 var previous_orientation: int = DisplayServer.SCREEN_PORTRAIT
 var previous_auto_accept_quit: bool = true
 var previous_quit_on_go_back: bool = true
+var _session_handed_off: bool = false
 
 
 func _ready() -> void:
@@ -358,6 +369,7 @@ func _build_world() -> void:
 			_item_box(float(entry[0]) * track_length, float(entry[1]))
 	player = VEHICLE.new()
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, selected_driver)
+	player.set_look(_ensure_workshop().look(selected_kart))
 	player.configure(selected_driver, driver.color, selected_kart)
 	player.reduced_motion = reduced_motion
 	player.set_graphics_quality(graphics_profile)
@@ -396,10 +408,10 @@ func _build_world() -> void:
 	var animals: Array[String] = ["otter", "rabbit", "badger", "cat", "fox"]
 	var colors: Array[Color] = [Color("75d7f1"), Color("a696ee"), Color("83dab9"), Color("c8d8ef"), Color("6987db")]
 	var rival_count: int = 0 if mode in ["time_trial", "training"] else 5
+	var rival_karts: Array[String] = _rival_karts()
 	for i in range(rival_count):
 		var opponent: LumoRaceKart = VEHICLE.new()
-		var rival_karts: Array[String] = ["noa_tide", "iva_aurora", "boru_rally", "nala_comet", "zuri_volt"]
-		opponent.configure(animals[i], colors[i], rival_karts[i])
+		opponent.configure(animals[i], colors[i], rival_karts[i % rival_karts.size()])
 		opponent.reduced_motion = reduced_motion
 		opponent.set_graphics_quality(graphics_profile)
 		race_root.add_child(opponent)
@@ -489,6 +501,7 @@ func _show_garage() -> void:
 	garage = GARAGE.new()
 	garage.stars = ProgressStore.total_stars()
 	garage.unlocked_ids = records.earned_unlocks
+	garage.workshop = _ensure_workshop()
 	garage.has_saved_race = saved_session_available
 	garage.reduced_motion = reduced_motion
 	garage.graphics_profile = graphics_profile
@@ -542,6 +555,8 @@ static func _known_mode(requested: String) -> String:
 
 
 func _begin_race() -> void:
+	_session_handed_off = false
+	_refresh_kart_factors()
 	loop_state = PHYSICAL_LOOP.new()
 	loop_count = 0
 	if is_instance_valid(garage):
@@ -629,6 +644,7 @@ func _resume_saved_race() -> void:
 	track_id = str(session_config.get_value("race", "track_id", "sonnenhafen"))
 	selected_driver = str(session_config.get_value("race", "selected_driver", "fox"))
 	selected_kart = str(session_config.get_value("race", "selected_kart", "comet"))
+	_refresh_kart_factors()
 	if is_instance_valid(garage):
 		garage.queue_free()
 	menu_active = false
@@ -645,7 +661,8 @@ func _resume_saved_race() -> void:
 		if is_instance_valid(kart_audio):
 			kart_audio.play_track("arena" if mode == "arena" else track_id)
 		_pause()
-		message.text = "Deine Fahrt ist gespeichert. Fahre weiter, wenn du bereit bist."
+		if not finished:
+			message.text = "Deine Fahrt ist gespeichert. Fahre weiter, wenn du bereit bist."
 	else:
 		_begin_race()
 
@@ -856,6 +873,13 @@ func _build_ui() -> void:
 	modal.visibility_changed.connect(func(): modal_backdrop.visible = modal.visible and not menu_active)
 	modal_column = VBoxContainer.new()
 	modal_column.add_theme_constant_override("separation", 10)
+	# Settings and result buttons pass touch drags to their ScrollContainer.
+	# Its scroll-begin notification cancels the Button's pending click.
+	modal_column.child_entered_tree.connect(
+		func(child: Node):
+			if child is Button:
+				child.mouse_filter = Control.MOUSE_FILTER_PASS
+	)
 	var modal_body := VBoxContainer.new()
 	modal_body.add_theme_constant_override("separation", 10)
 	modal.add_child(modal_body)
@@ -1232,12 +1256,49 @@ func _physics_process(delta: float) -> void:
 			engine_playback.push_frame(Vector2(sample, sample))
 
 
+## Werkstatt des aktuellen Kindes (einmal anlegen; die Sterne kommen aus dem Fortschritt).
+func _ensure_workshop():
+	if workshop == null:
+		var child: String = str(HostBridge.launch_options().get("childKey", "standalone"))
+		workshop = TUNING.new(child, ProgressStore.lifetime_stars())
+	workshop.report_lifetime(ProgressStore.lifetime_stars())
+	return workshop
+
+
+## Fünf verschiedene Karts für die Gegner: nie das eigene, je Strecke eine andere Mischung.
+func _rival_karts() -> Array[String]:
+	var pool: Array[String] = []
+	for id in FLEET.ids():
+		if id != selected_kart:
+			pool.append(id)
+	var result: Array[String] = []
+	var offset: int = absi(hash(track_id)) % pool.size()
+	for index in range(5):
+		result.append(pool[(offset + index) % pool.size()])
+	return result
+
+
+## Fahrfaktoren des gewählten Karts samt Tuning (Comet ohne Tuning ist überall 1,0).
+func _refresh_kart_factors() -> void:
+	kart_factors = _ensure_workshop().multipliers(selected_kart)
+
+
+func _factor(name: String, fallback: float = 1.0) -> float:
+	if kart_factors.is_empty():
+		_refresh_kart_factors()
+	return float(kart_factors.get(name, fallback))
+
+
+## Boost-Dauer des Karts: ein starker Turbo hält länger.
+func _boost_for(seconds: float) -> float:
+	return seconds * _factor("boost_time")
+
+
 func _drive_player(delta: float, axis: float, braking: float) -> void:
 	if mode != "arena" and _drive_loop(delta, axis, braking):
 		return
-	var kart: Dictionary = CATALOG.entry(CATALOG.KARTS, selected_kart)
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
-	var target: float = 20.5 * float(kart.speed) * float(rules.speed)
+	var target: float = 20.5 * _factor("speed") * float(rules.speed)
 	var throttle: float = 1.0 if _gas_active() else 0.0
 	if mode == "arena":
 		target *= 0.68
@@ -1245,38 +1306,38 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 			target *= 1.0 - absf(axis) * 0.24
 	var boost_active: bool = boost_time > 0
 	if boost_active:
-		target *= 1.42
+		target *= 1.0 + 0.42 * _factor("boost_power")
 	target *= throttle
 	target *= 1.0 - braking * 0.94
 	# Holding BREMSE while (almost) stopped and without gas reverses slowly, to get unstuck.
 	if braking > 0.5 and throttle == 0.0 and speed < 1.0:
 		target = -5.0
 	if hit_timer > 0:
-		target *= 0.45
+		target *= _factor("stability", 0.45)
 	var road: Dictionary = {}
 	if mode != "arena":
 		road = world.sample_road(player.position, previous_road_distance)
 		lane = float(road.lateral)
 		if absf(lane) > ROAD_WIDTH * 0.48:
-			target *= 0.54
+			target *= _factor("offroad", 0.54)
 		# Beginner assistance nudges the steering at the shoulder; movement stays physical.
 		if difficulty == "gemuetlich" and absf(lane) > ROAD_WIDTH * 0.31:
 			var correction: float = angle_difference(player_heading, _heading(float(road.distance)))
 			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
-	var acceleration: float = (20.0 if braking > 0.1 else 10.0) * float(kart.accel)
+	var acceleration: float = 20.0 * _factor("brake") if braking > 0.1 else 10.0 * _factor("accel")
 	if boost_active and target > speed:
 		acceleration *= BOOST_ACCELERATION_MULTIPLIER
 	if not airborne or boost_active:
 		speed = move_toward(speed, target, delta * acceleration)
 	var grip_turn: float = clampf(absf(speed) / 8.0, 0, 1)
-	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * float(kart.turn) * grip_turn
+	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * _factor("turn") * grip_turn
 	if speed < 0.0:
 		turn_rate = -turn_rate
 	if airborne:
 		turn_rate *= 0.35
 	player_heading -= axis * turn_rate * delta
 	var forward := Vector3(-sin(player_heading), 0, -cos(player_heading))
-	var grip: float = 3.1 if drifting else 9.0
+	var grip: float = 3.1 if drifting else 9.0 * _factor("grip")
 	physical_velocity = physical_velocity.lerp(forward * speed, minf(1, delta * grip))
 	player.position += physical_velocity * delta
 	if drifting and speed > 6:
@@ -1367,7 +1428,7 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 		message.text = "Wieder sicher auf der Straße. Mit mehr Schwung klappt der Loop!"
 	else:
 		loop_count += 1
-		boost_time = maxf(boost_time, 1.5)
+		boost_time = maxf(boost_time, _boost_for(1.5))
 		message.text = "Loop geschafft! Sternenturbo!"
 	physical_velocity = Vector3(-sin(player_heading), 0, -cos(player_heading)) * speed
 	return true
@@ -1411,7 +1472,7 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 		airborne = false
 		landing_count += 1
 		if air_time > 0.35:
-			boost_time = maxf(boost_time, 1.2)
+			boost_time = maxf(boost_time, _boost_for(1.2))
 			message.text = "Super gelandet! Turbo!"
 			_sound_effect("drift")
 		air_time = 0.0
@@ -1665,14 +1726,15 @@ func _update_ghost() -> void:
 
 func _update_hud() -> void:
 	var place: int = _place()
+	var display_speed: int = 0 if finished else int(speed * 3.6)
 	if mode == "arena":
 		hud.text = "KRISTALL-ARENA    %02d:%02d    ◆ %d    PLATZ %d / 6" % [int(maxf(0, 90 - elapsed)) / 60, int(maxf(0, 90 - elapsed)) % 60, arena_scores, place]
 	elif mode == "training":
-		hud.text = "FREIES TRAINING    %d km/h    ★ %d    PAUSE → BEENDEN" % [int(speed * 3.6), collected.size()]
+		hud.text = "FREIES TRAINING    %d km/h    ★ %d    PAUSE → BEENDEN" % [display_speed, collected.size()]
 	elif mode == "time_trial":
-		hud.text = "ZEITFAHREN    RUNDE %d / %d    %.2f s    %d km/h" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, elapsed, int(speed * 3.6)]
+		hud.text = "ZEITFAHREN    RUNDE %d / %d    %.2f s    %d km/h" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, elapsed, display_speed]
 	else:
-		hud.text = "RUNDE %d / %d    PLATZ %d / 6    %d km/h    ★ %d" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, place, int(speed * 3.6), collected.size()]
+		hud.text = "RUNDE %d / %d    PLATZ %d / 6    %d km/h    ★ %d" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, place, display_speed, collected.size()]
 	var enabled: bool = racing and not paused and not finished
 	boost_button.text = "SPEED\n◆ %d" % boosts
 	boost_button.disabled = boosts == 0 or not enabled
@@ -1684,6 +1746,7 @@ func _update_hud() -> void:
 	drift_button.text = "DRIFT\n" + drift_state
 	drift_button.disabled = not enabled
 	item_button.text = {"": "ITEM\n◇", "shield": "SCHILD\n◎", "pulse": "IMPULS\n✧", "boost": "WIND\n➜"}.get(item, "ITEM")
+	item_button.item_kind = item
 	item_button.disabled = item.is_empty() or not enabled
 	joystick.set_enabled(enabled)
 	gas_button.disabled = not enabled
@@ -1736,7 +1799,7 @@ func _track_events() -> void:
 				_sound_effect("item")
 	for fraction in [0.12, 0.42, 0.74]:
 		if absf(fposmod(distance, track_length) - fraction * track_length - 1.1) < 1.2 and absf(lane) < 2.1:
-			boost_time = maxf(boost_time, 1.0)
+			boost_time = maxf(boost_time, _boost_for(1.0))
 
 
 func _use_item() -> void:
@@ -1745,7 +1808,7 @@ func _use_item() -> void:
 	_sound_effect("item")
 	match item:
 		"boost":
-			boost_time = maxf(boost_time, 3.0)
+			boost_time = maxf(boost_time, _boost_for(3.0))
 			message.text = "Rückenwind!"
 		"shield":
 			shield_time = 6.0
@@ -1827,7 +1890,8 @@ func _update_checkpoints() -> void:
 	if distance >= target and distance < target + maxf(4.0, speed * 0.3):
 		checkpoint_index += 1
 		if checkpoint_index % 8 == 0:
-			lap_times.append(elapsed - lap_started_at)
+			if lap_started_at >= 0.0:
+				lap_times.append(elapsed - lap_started_at)
 			lap_started_at = elapsed
 			message.text = "Runde geschafft! Weiter so." if mode == "training" else "Letzte Runde!"
 
@@ -1876,6 +1940,9 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 		if snap
 		else camera.position.lerp(desired, minf(1.0, delta * VISUAL_GRADE.CAMERA_LERP))
 	)
+	if finished:
+		target = player.position + Vector3.UP * 1.25
+		camera.position = _clear_finish_camera(camera.position, target)
 	camera.look_at(target)
 	if not reduced_motion:
 		var roll: float = (
@@ -1902,13 +1969,16 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 static func _resize_compensated_fov(vertical_fov: float, aspect: float) -> float:
 	var reference_aspect: float = 16.0 / 9.0
 	var horizontal_span: float = tan(deg_to_rad(vertical_fov) * 0.5) * reference_aspect
-	return clampf(rad_to_deg(2.0 * atan(horizontal_span / maxf(aspect, 0.1))), 40.0, 110.0)
+	# Wide cover displays gain horizontal visibility instead of cropping the
+	# driver's kart by shrinking the vertical field of view below its baseline.
+	var compensated: float = rad_to_deg(2.0 * atan(horizontal_span / maxf(aspect, 0.1)))
+	return clampf(maxf(vertical_fov, compensated), 40.0, 110.0)
 
 
 func _boost() -> void:
 	if boosts > 0 and racing and not paused and not finished:
 		boosts -= 1
-		boost_time = 3.2
+		boost_time = _boost_for(3.2)
 		message.text = "Lumo-Boost!"
 		_sound_effect("boost")
 
@@ -1918,7 +1988,7 @@ func _release_drift() -> void:
 	if racing and not paused and not finished and drift_charge >= DRIFT_TIERS[0]:
 		var tier: int = 1 if drift_charge >= DRIFT_TIERS[1] else 0
 		drift_tier_count[tier] += 1
-		boost_time = maxf(boost_time, DRIFT_BOOST_SECONDS[tier])
+		boost_time = maxf(boost_time, _boost_for(DRIFT_BOOST_SECONDS[tier]))
 		message.text = "Oranger Drift-Turbo!" if tier == 1 else "Blauer Drift-Turbo!"
 		_sound_effect("drift")
 	drift_charge = 0
@@ -2133,10 +2203,11 @@ func _lamp_style(color: Color, lit: bool, diameter: float) -> StyleBoxFlat:
 func _update_start_lights(delta: float) -> void:
 	if not is_instance_valid(start_lights):
 		return
-	start_green_left = maxf(0.0, start_green_left - delta)
+	if not paused:
+		start_green_left = maxf(0.0, start_green_left - delta)
 	var counting: bool = countdown > 0.0 and preview_left <= 0.0
 	var visible_now: bool = (
-		not menu_active and not finished and mode != "arena" and (counting or start_green_left > 0.0)
+		not paused and not menu_active and not finished and mode != "arena" and (counting or start_green_left > 0.0)
 	)
 	start_lights.visible = visible_now
 	if not visible_now:
@@ -2314,11 +2385,16 @@ func _return_to_app(destination: String) -> void:
 	if HostBridge.is_embedded():
 		if not HostBridge.return_to_app(destination, payload):
 			_show_host_save_failure()
+		elif finished and mode != "cup" and HostBridge.reward_is_recoverable(result_id):
+			# A durable completed handoff must survive the host freeing this scene.
+			_session_handed_off = true
 		elif abandoned:
 			DirAccess.remove_absolute(SESSION)
 		return
 	if abandoned:
 		DirAccess.remove_absolute(SESSION)
+	if finished and mode != "cup" and HostBridge.reward_is_recoverable(result_id):
+		_session_handed_off = true
 	SceneRouter.goto("learn" if destination == "learn" else "games")
 
 
@@ -2361,7 +2437,7 @@ func _finish(cinematic: bool = true) -> void:
 		"game": "kart", "sessionId": str(SceneRouter.launch_options.get("sessionId", "")),
 		# The Flutter host requires an integer "solved"; Kart has no learning tasks.
 		"resultId": result_id, "status": "completed", "stars": earned,
-		"solved": 0, "elapsedSeconds": snappedf(elapsed, 0.1), "place": place,
+		"solved": 0, "elapsedSeconds": snappedf(elapsed, 0.001), "place": place,
 		"mode": mode, "track": track_id, "driver": selected_driver, "kart": selected_kart,
 		"checkpoints": checkpoint_index, "resets": reset_count
 	}
@@ -2380,7 +2456,7 @@ func _finish(cinematic: bool = true) -> void:
 		pending_cup_next = cup_index < CATALOG.TRACKS.size() - 1
 		result_payload["cupRound"] = cup_index + 1
 		result_payload["cupPoints"] = cup_points[0]
-	if lap_times.is_empty() or elapsed - lap_started_at > 1.0:
+	if lap_started_at >= 0.0 and (lap_times.is_empty() or elapsed - lap_started_at > 1.0):
 		lap_times.append(elapsed - lap_started_at)
 	result_payload["bestLapSeconds"] = snappedf(_best_lap(), 0.001)
 	result_payload["starTokens"] = collected.size()
@@ -2401,6 +2477,10 @@ func _finish(cinematic: bool = true) -> void:
 
 
 func _show_result() -> void:
+	if is_instance_valid(controls_row):
+		controls_row.hide()
+	_update_hud()
+	message.text = _place_title(int(result_payload.get("place", 1))) if _ranked() else "Ziel!"
 	_clear_column(modal_column)
 	modal_scroll.scroll_vertical = 0
 	pause_navigation.hide()
@@ -2477,13 +2557,22 @@ func _best_lap() -> float:
 
 
 func _format_time(seconds: float) -> String:
-	var whole: int = int(seconds)
-	return "%02d:%02d.%03d" % [whole / 60, whole % 60, int(round((seconds - whole) * 1000.0)) % 1000]
+	var total_milliseconds: int = roundi(seconds * 1000.0)
+	var whole: int = total_milliseconds / 1000
+	return "%02d:%02d.%03d" % [whole / 60, whole % 60, total_milliseconds % 1000]
 
 
 func _result_stats_text() -> String:
 	var lines: PackedStringArray = ["Gesamtzeit   " + _format_time(elapsed)]
 	var best: float = _best_lap()
+	# Older completed saves retain their acknowledged best in the result payload,
+	# even though they never stored individual lap intervals. Display that known
+	# value without inventing history for an unfinished, partially measured lap.
+	if best == 0.0 and finished:
+		var saved_best = result_payload.get("bestLapSeconds", 0.0)
+		if typeof(saved_best) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(saved_best)):
+			if 0.0 < float(saved_best) and float(saved_best) <= elapsed + 0.001:
+				best = float(saved_best)
 	if best > 0.0 and mode not in ["arena", "training"]:
 		lines.append("Beste Runde   " + _format_time(best))
 	lines.append("Sterne gesammelt   %d" % collected.size())
@@ -2529,7 +2618,9 @@ func _place_color(place: int) -> Color:
 ## das Ergebnis über der weiterlaufenden 3D-Szene.
 func _start_finish_cine(place: int) -> void:
 	finish_place = place
-	finish_coast_speed = maxf(speed, 6.0)
+	finish_coast_reverse = speed < 0.0
+	finish_coast_speed = physical_velocity.length() * (-1.0 if finish_coast_reverse else 1.0)
+	finish_road_distance = previous_road_distance
 	modal.hide()
 	if is_instance_valid(controls_row):
 		controls_row.hide()
@@ -2545,24 +2636,142 @@ func _update_finish_cine(delta: float) -> void:
 	finish_cine_left = maxf(0.0, finish_cine_left - delta)
 	var total: float = FINISH_CINE_REDUCED_SECONDS if reduced_motion else FINISH_CINE_SECONDS
 	var t: float = clampf(1.0 - finish_cine_left / total, 0.0, 1.0)
+	_coast_finished_kart(delta)
 	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
-	# Ausrollen mit sanfter Bremsung, nicht abrupt stehen bleiben.
-	finish_coast_speed = move_toward(finish_coast_speed, 0.0, delta * maxf(6.0, finish_coast_speed * 0.55))
-	player.position += ahead * finish_coast_speed * delta
-	player.set_motion(finish_coast_speed, 0.0, false, false)
-	speed = finish_coast_speed
 	if is_instance_valid(camera):
-		var blend: float = smoothstep(0.0, 1.0, t)
-		var side := Vector3(-ahead.z, 0, ahead.x)
-		var angle: float = lerpf(0.0, PI * 0.78, blend)
-		var radius: float = lerpf(6.6, 4.6, blend)
-		var offset: Vector3 = (-ahead * cos(angle) + side * sin(angle)) * radius
-		var desired: Vector3 = player.position + offset + Vector3.UP * lerpf(3.5, 1.7, blend)
-		camera.position = camera.position.lerp(desired, minf(1.0, delta * 6.0))
-		camera.look_at(player.position + Vector3.UP * 1.25)
+		if reduced_motion:
+			_update_camera(delta)
+		else:
+			var blend: float = smoothstep(0.0, 1.0, t)
+			var side := Vector3(-ahead.z, 0, ahead.x)
+			var angle: float = lerpf(0.0, PI * 0.78, blend)
+			var radius: float = lerpf(6.6, 4.6, blend)
+			var offset: Vector3 = (-ahead * cos(angle) + side * sin(angle)) * radius
+			var target: Vector3 = player.position + Vector3.UP * 1.25
+			var desired: Vector3 = player.position + offset + Vector3.UP * lerpf(3.5, 1.7, blend)
+			desired = camera.position.lerp(desired, minf(1.0, delta * 6.0))
+			camera.position = _clear_finish_camera(desired, target)
+			camera.look_at(target)
 	_update_hud()
 	if finish_cine_left <= 0.0:
 		_show_result()
+
+
+## Keep the actual momentum and the same contact surface after the result is fixed.
+func _coast_finished_kart(delta: float) -> void:
+	var magnitude: float = physical_velocity.length()
+	var damped: float = move_toward(magnitude, 0.0, delta * maxf(6.0, magnitude * 0.55))
+	physical_velocity *= damped / magnitude if magnitude > 0.0 else 0.0
+	player.position += physical_velocity * delta
+	if mode != "arena" and is_instance_valid(world):
+		var road: Dictionary = world.sample_road(player.position, finish_road_distance)
+		lane = float(road.lateral)
+		# Settle the existing contact projection and nearest-surface estimate.
+		# This does not steer or move the kart toward the centre of the lane.
+		for contact_step in range(4):
+			finish_road_distance = float(road.distance)
+			if not airborne and not world.in_gap(finish_road_distance):
+				# Banked road normals couple vertical contact to lateral contact.
+				# Resolve the ground before the rail so neither undoes the other.
+				player.position.y = (
+					float(road.height) + 0.035
+					+ world.ramp_height(finish_road_distance)
+					+ world.alternate_route_height(finish_road_distance, lane)
+				)
+				road = world.sample_road(player.position, finish_road_distance)
+				lane = float(road.lateral)
+			if absf(lane) > WORLD.WALL_LATERAL:
+				_collide_with_rail(road)
+			road = world.sample_road(player.position, finish_road_distance)
+			lane = float(road.lateral)
+		finish_road_distance = float(road.distance)
+		var ground: float = (
+			float(road.height) + 0.035
+			+ world.ramp_height(finish_road_distance)
+			+ world.alternate_route_height(finish_road_distance, lane)
+		)
+		if airborne or world.in_gap(finish_road_distance):
+			airborne = true
+			vertical_speed -= JUMP_GRAVITY * delta
+			player.position.y += vertical_speed * delta
+			if not world.in_gap(finish_road_distance) and player.position.y <= ground:
+				player.position.y = ground
+				airborne = false
+				vertical_speed = 0.0
+		# Grounded contact was already solved together with the rail above.
+		var normal: Vector3 = (road.basis as Basis).y
+		var forward := Vector3(-sin(player_heading), 0, -cos(player_heading))
+		var right: Vector3 = forward.cross(normal).normalized()
+		player.basis = Basis(right, normal, -normal.cross(right).normalized()).orthonormalized()
+	elif mode == "arena":
+		player.position.y = 0.035
+	finish_coast_speed = physical_velocity.length() * (-1.0 if finish_coast_reverse else 1.0)
+	speed = finish_coast_speed
+	player.set_motion(finish_coast_speed, 0.0, false, false)
+
+
+## Box props are GPU instances, not physics bodies. Use their drawn transforms.
+func _cache_finish_camera_boxes() -> void:
+	if not is_instance_valid(world) or finish_camera_world == world.get_instance_id():
+		return
+	finish_camera_world = world.get_instance_id()
+	finish_camera_boxes.clear()
+	for child in world.get_children():
+		if not child is MultiMeshInstance3D:
+			continue
+		var instances: MultiMesh = child.multimesh
+		if instances == null or not instances.mesh is BoxMesh:
+			continue
+		var bounds: AABB = instances.mesh.get_aabb()
+		for index in range(instances.instance_count):
+			var pose: Transform3D = child.global_transform * instances.get_instance_transform(index)
+			if pose.origin.distance_to(player.global_position) > 45.0 + pose.basis.get_scale().length():
+				continue
+			var scale_size: Vector3 = pose.basis.get_scale().abs()
+			var margin := Vector3(
+				0.15 / maxf(scale_size.x, 0.001),
+				0.15 / maxf(scale_size.y, 0.001),
+				0.15 / maxf(scale_size.z, 0.001)
+			)
+			finish_camera_boxes.append({
+				"inverse": pose.affine_inverse(),
+				"bounds": AABB(bounds.position - margin, bounds.size + margin * 2.0)
+			})
+
+
+func _finish_camera_segment_fraction(target: Vector3, desired: Vector3) -> float:
+	var nearest: float = 1.0
+	for box in finish_camera_boxes:
+		var inverse: Transform3D = box.inverse
+		var local_start: Vector3 = inverse * target
+		var local_end: Vector3 = inverse * desired
+		var ray: Vector3 = local_end - local_start
+		var bounds: AABB = box.bounds
+		var enter: float = 0.0
+		var leave: float = 1.0
+		for axis in range(3):
+			if absf(ray[axis]) < 0.000001:
+				if local_start[axis] < bounds.position[axis] or local_start[axis] > bounds.end[axis]:
+					enter = 2.0
+					break
+			else:
+				var first: float = (bounds.position[axis] - local_start[axis]) / ray[axis]
+				var last: float = (bounds.end[axis] - local_start[axis]) / ray[axis]
+				enter = maxf(enter, minf(first, last))
+				leave = minf(leave, maxf(first, last))
+		if enter <= leave and leave >= 0.0 and enter < nearest:
+			nearest = maxf(0.0, enter - 0.02)
+	return nearest
+
+
+func _clear_finish_camera(desired: Vector3, target: Vector3) -> Vector3:
+	_cache_finish_camera_boxes()
+	var result: Vector3 = target.lerp(desired, _finish_camera_segment_fraction(target, desired))
+	if result.distance_to(target) < 2.2 and is_instance_valid(world):
+		var road: Dictionary = world.sample_road(player.position, finish_road_distance)
+		var fallback: Vector3 = player.position - road.forward * 4.6 + (road.basis as Basis).y * 3.5
+		result = target.lerp(fallback, _finish_camera_segment_fraction(target, fallback))
+	return result
 
 
 func _skip_finish_cine() -> void:
@@ -2707,12 +2916,13 @@ func _save_preferences() -> void:
 
 
 func _save_session() -> void:
-	if abandoned or menu_active or not is_instance_valid(player):
+	if abandoned or _session_handed_off or menu_active or not is_instance_valid(player):
 		return
 	var config := ConfigFile.new()
 	config.set_value("race", "version", SESSION_VERSION)
 	for key in [
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed",
+		"lap_times", "lap_started_at",
 		"boost_time", "boosts", "opponent_distances", "opponent_lanes", "collected", "difficulty",
 		"mode", "track_id", "selected_driver", "selected_kart", "player_heading", "previous_road_distance",
 		"cup_index", "cup_points", "cup_results", "pending_cup_next", "finished", "completed_race", "result_payload",
@@ -2749,6 +2959,7 @@ func _restore_session() -> bool:
 	var saved_distance: float = float(config.get_value("race", "distance", -1))
 	if saved_distance < 0 or not is_finite(saved_distance):
 		return false
+	_session_handed_off = false
 	var keys: Array[String] = [
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed", "boost_time", "boosts",
 		"collected", "difficulty", "mode", "track_id", "selected_driver", "selected_kart",
@@ -2775,6 +2986,7 @@ func _restore_session() -> bool:
 		var positions: Array = config.get_value("race", "opponent_positions", [])
 		for i in range(mini(positions.size(), opponents.size())):
 			opponents[i].position = positions[i]
+	_restore_lap_timing(config)
 	player.rotation.y = player_heading
 	ghost_valid = false
 	mode = _known_mode(mode)
@@ -2784,6 +2996,65 @@ func _restore_session() -> bool:
 	if finished:
 		_show_result()
 	return true
+
+
+func _restore_lap_timing(config: ConfigFile) -> void:
+	# -1 is an explicitly unmeasured current lap. It survives another save and
+	# becomes known only at the next legitimate lap boundary. First-lap legacy
+	# saves still have the known race start at zero.
+	lap_times.clear()
+	lap_started_at = 0.0 if checkpoint_index < 8 and not finished else -1.0
+	if (
+		not config.has_section_key("race", "lap_times")
+		or not config.has_section_key("race", "lap_started_at")
+	):
+		return
+	var saved_laps = config.get_value("race", "lap_times")
+	var saved_start = config.get_value("race", "lap_started_at")
+	if not saved_laps is Array or typeof(saved_start) not in [TYPE_INT, TYPE_FLOAT]:
+		return
+	var start: float = float(saved_start)
+	if (
+		not is_finite(elapsed)
+		or elapsed < 0.0
+		or not is_finite(start)
+		or (start < 0.0 and start != -1.0)
+		or start > elapsed
+	):
+		return
+	var completed_laps: int = checkpoint_index / 8
+	var partial_finish: bool = finished and mode in ["training", "arena"]
+	if saved_laps.size() > completed_laps + int(partial_finish):
+		return
+	var restored: Array[float] = []
+	var total: float = 0.0
+	for interval in saved_laps:
+		if (
+			typeof(interval) not in [TYPE_INT, TYPE_FLOAT]
+			or not is_finite(float(interval))
+			or float(interval) <= 0.0
+		):
+			return
+		var seconds: float = float(interval)
+		total += seconds
+		restored.append(seconds)
+	var valid: bool = total <= elapsed + 0.001
+	if start >= 0.0:
+		valid = valid and (completed_laps == 0 or start > 0.0)
+		if partial_finish and restored.size() == completed_laps + 1:
+			valid = (
+				valid
+				and absf(total - elapsed) <= 0.001
+				and absf(total - restored[-1] - start) <= 0.001
+			)
+		else:
+			valid = valid and total <= start + 0.001
+			if restored.size() == completed_laps:
+				valid = valid and absf(total - start) <= 0.001
+	if not valid:
+		return
+	lap_times.assign(restored)
+	lap_started_at = start
 
 
 func _sync_item_box_visibility() -> void:
@@ -2832,6 +3103,9 @@ func _notification(what: int) -> void:
 			intro.leave()
 			return
 		if menu_active:
+			# Die Werkstatt schließt sich zuerst; erst danach verlässt Zurück den Kart.
+			if is_instance_valid(garage) and garage.has_method("handle_back") and garage.handle_back():
+				return
 			_return_to_world()
 		elif finished or paused:
 			_return_to_world()

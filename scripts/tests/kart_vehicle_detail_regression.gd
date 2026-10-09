@@ -3,6 +3,7 @@ extends SceneTree
 
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
+const FLEET = preload("res://scripts/games/kart_fleet.gd")
 
 
 class AuthoredKart:
@@ -115,7 +116,9 @@ func _run() -> void:
 		assert(kart.far_mesh.mesh.get_surface_count() == 1)
 		var body: Node3D = kart.get_node("AuroraCoachwork")
 		assert(body.get_meta("seat_design") == "contoured_bucket")
-		assert(body.get_meta("body_detail_revision") == 2)
+		# Die Detail-Revision gehört zur gelofteten Karosserie; Baukasten-Karts haben eigene Teile.
+		if str(FLEET.entry(str(entry.id)).look.body) == "loft":
+			assert(body.get_meta("body_detail_revision") == 2)
 		kart.set_motion(14.0, 0.65, true, true)
 		kart._process(0.04)
 		assert(kart.flames[0].visible and kart.sparks[0].visible)
@@ -127,5 +130,8 @@ func _run() -> void:
 			)
 		)
 		kart.free()
-	print("[KartDetails] PASS: tyre topology/normals/LOD, seat/head/grip contact, 9 mobile designs")
+	print(
+		"[KartDetails] PASS: tyre topology/normals/LOD, seat/head/grip contact, %d mobile designs"
+		% CATALOG.KARTS.size()
+	)
 	quit()
