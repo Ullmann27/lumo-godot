@@ -191,7 +191,8 @@ func _ready() -> void:
 	viewport.own_world_3d = true
 	viewport.transparent_bg = true
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
-	viewport.msaa_3d = Viewport.MSAA_2X
+	# Keep the real 3D face/kart preview crisp on the high-quality profile.
+	viewport.msaa_3d = Viewport.MSAA_4X if graphics_profile == "high" else Viewport.MSAA_2X
 	viewport_box.add_child(viewport)
 	preview_viewport = viewport
 	preview = Node3D.new()
@@ -229,7 +230,7 @@ func _ready() -> void:
 	view_choice.name = "KartInspectionView"
 	view_choice.tooltip_text = "Dein Kart von allen Seiten ansehen"
 	view_choice.custom_minimum_size.y = 44
-	for title in ["Rundum ansehen", "Vorne", "Links", "Hinten", "Rechts", "Von oben"]:
+	for title in ["Rundum ansehen", "Vorne", "Links", "Hinten", "Rechts", "Von oben", "Lumos Gesicht"]:
 		view_choice.add_item(title)
 	view_choice.item_selected.connect(_choose_preview_view)
 	# Overlay the existing preview instead of adding height to the setup column.
@@ -708,6 +709,12 @@ func _refresh_preview() -> void:
 	preview_kart.configure(str(setup.driver), driver.color, str(setup.kart))
 	preview_kart.reduced_motion = reduced_motion
 	preview_kart.set_graphics_quality(graphics_profile)
+	# Quality is applied only to the small independent 3D menu viewport, not to gameplay.
+	preview_viewport.msaa_3d = (
+		Viewport.MSAA_4X
+		if graphics_profile == "high"
+		else (Viewport.MSAA_2X if graphics_profile == "medium" else Viewport.MSAA_DISABLED)
+	)
 	preview_pivot.add_child(preview_kart)
 	preview_kart.visible = step != 3
 	preview_camera.position = Vector3(3.2, 3.2, -4.5) if step == 3 else Vector3(3.2, 2.2, -4.5)
@@ -818,19 +825,29 @@ func handle_back() -> bool:
 
 
 func _choose_preview_view(index: int) -> void:
-	inspection_view = clampi(index, 0, 5)
+	inspection_view = clampi(index, 0, 6)
 	view_choice.select(inspection_view)
 	if step == 3:
 		return
 	var views: Array[Vector3] = [
 		Vector3(3.2, 2.2, -4.5), Vector3(0, 1.2, -5.6),
 		Vector3(-5.6, 1.2, 0), Vector3(0, 1.2, 5.6),
-		Vector3(5.6, 1.2, 0), Vector3(0, 6.0, 0)
+		Vector3(5.6, 1.2, 0), Vector3(0, 6.0, 0),
+		# Close-up: actual 3D face, never a 2D artwork in place of the racing driver.
+		Vector3(0.0, 1.86, -2.35)
 	]
 	preview_camera.position = views[inspection_view]
-	preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE if inspection_view == 0 else Camera3D.PROJECTION_ORTHOGONAL
+	preview_camera.projection = (
+		Camera3D.PROJECTION_PERSPECTIVE
+		if inspection_view in [0, 6]
+		else Camera3D.PROJECTION_ORTHOGONAL
+	)
+	preview_camera.fov = 34.0 if inspection_view == 6 else 37.0
 	preview_camera.size = 3.9 if inspection_view == 5 else 2.8
-	preview_camera.look_at(Vector3(0, 1.0, 0), Vector3.FORWARD if inspection_view == 5 else Vector3.UP)
+	preview_camera.look_at(
+		Vector3(0, 1.68, 0.07) if inspection_view == 6 else Vector3(0, 1.0, 0),
+		Vector3.FORWARD if inspection_view == 5 else Vector3.UP
+	)
 	if inspection_view != 0:
 		preview_angle = 0.0
 		preview_pivot.rotation.y = 0.0
