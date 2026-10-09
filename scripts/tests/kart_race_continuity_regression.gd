@@ -21,6 +21,7 @@ class LapHost:
 		return return_ack
 
 
+const HANDOFF_FIXTURES = preload("res://scripts/tests/kart_handoff_lifecycle_fixtures.gd")
 const LAP_FIXTURES = preload("res://scripts/tests/kart_lap_session_fixtures.gd")
 const STEP: float = 1.0 / 60.0
 var game
@@ -343,6 +344,9 @@ func _run() -> void:
 		lap_ok = await _lap_suite()
 	await _drop_game()
 	scene = null
+	if probe in ["", "laps"]:
+		var handoff_report: Dictionary = await HANDOFF_FIXTURES.new().run(self)
+		lap_ok = lap_ok and handoff_report.status == "PASS"
 	for frame in range(8):
 		await process_frame
 	if DisplayServer.get_name() != "headless":
@@ -398,9 +402,9 @@ func _lap_pair_close(actual: Dictionary, expected: Dictionary) -> bool:
 	if actual.lap_times.size() != expected.lap_times.size():
 		return false
 	for i in range(actual.lap_times.size()):
-		if absf(float(actual.lap_times[i]) - float(expected.lap_times[i])) > 0.00001:
+		if absf(float(actual.lap_times[i]) - float(expected.lap_times[i])) > 0.000000001:
 			return false
-	return absf(float(actual.lap_started_at) - float(expected.lap_started_at)) <= 0.00001
+	return absf(float(actual.lap_started_at) - float(expected.lap_started_at)) <= 0.000000001
 
 
 func _lap_reopen() -> void:
@@ -591,8 +595,8 @@ func _test_lap_driven_reopen() -> void:
 			game.paused
 			and game.result_id == expected_id
 			and game.checkpoint_index == 10
-			and absf(game.elapsed - float(before.elapsed)) <= 0.00001
-			and absf(game.distance - float(before.distance)) <= 0.00001
+			and absf(game.elapsed - float(before.elapsed)) <= 0.000000001
+			and absf(game.distance - float(before.distance)) <= 0.000000001
 		),
 		"new-instance resume restores frozen progress and identity",
 		before,
@@ -644,7 +648,7 @@ func _test_lap_driven_reopen() -> void:
 	var laps_match: bool = game.lap_times.size() == 2
 	if laps_match:
 		for i in range(2):
-			laps_match = laps_match and absf(game.lap_times[i] - expected_laps[i]) <= 0.00001
+			laps_match = laps_match and absf(game.lap_times[i] - expected_laps[i]) <= 0.000000001
 	_lap_check(
 		laps_match,
 		"two completed laps equal independently measured gate intervals",
@@ -928,6 +932,7 @@ func _lap_suite() -> bool:
 	await _test_lap_driven_reopen()
 	await LAP_FIXTURES.legacy_pairs(self)
 	await LAP_FIXTURES.unknown_durability(self)
+	await LAP_FIXTURES.unknown_finish(self)
 	await LAP_FIXTURES.versions(self)
 	await _test_lap_payload_best()
 	await _test_lap_positive_edges()
@@ -959,7 +964,7 @@ func _lap_suite() -> bool:
 				FileAccess.get_sha256("res://scripts/tests/kart_race_continuity_regression.gd"),
 				"fixture_scope":
 				(
-					"20 malformed pairs and legacy/UI state fixtures are assigned; "
+					"20 ConfigFile pair fixtures and legacy/UI state fixtures are assigned; "
 					+ "ordered_gates alone records actual driven progress"
 				),
 				"physical_device_performance": "NOT EXECUTED",
@@ -972,8 +977,8 @@ func _lap_suite() -> bool:
 		. open(lap_output.path_join("lap-session-evidence.json"), FileAccess.WRITE)
 		. store_string(JSON.stringify(lap_evidence, "  "))
 	)
-	if lap_checks.size() != 103:
-		push_error("New lap continuity contract requires 103 checks, got %d" % lap_checks.size())
+	if lap_checks.size() != 104:
+		push_error("New lap continuity contract requires 104 checks, got %d" % lap_checks.size())
 		return false
 	print(
 		(

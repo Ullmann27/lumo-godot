@@ -161,3 +161,26 @@ static func versions(probe) -> void:
 		)
 
 
+static func unknown_finish(probe) -> void:
+	await probe._fresh()
+	probe.game._pause()
+	var config: ConfigFile = probe._lap_seed_config(10, 55.0)
+	probe._lap_erase(config, "lap_times")
+	probe._lap_erase(config, "lap_started_at")
+	assert(config.save(probe.game.SESSION) == OK)
+	probe.game._restore_session()
+	probe.game.elapsed = 58.0
+	probe.game._finish(false)
+	probe._lap_check(
+		(
+			probe.game.lap_times.is_empty()
+			and probe.game._best_lap() == 0.0
+			and float(probe.game.result_payload.bestLapSeconds) == 0.0
+		),
+		"finishing an unknown partial legacy lap never invents a best time",
+		{"lap_times": [], "bestLapSeconds": 0.0},
+		{
+			"lap_times": probe.game.lap_times.duplicate(),
+			"bestLapSeconds": probe.game.result_payload.bestLapSeconds
+		}
+	)

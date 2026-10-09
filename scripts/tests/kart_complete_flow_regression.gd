@@ -206,7 +206,8 @@ func _run() -> void:
 					game.paused
 					and game.result_id == expected_id
 					and game.checkpoint_index == 12
-					and absf(game.elapsed - float(lap2_before.elapsed)) <= 0.00001
+					and absf(game.elapsed - float(lap2_before.elapsed)) <= 0.000000001
+					and absf(game.distance - float(lap2_before.distance)) <= 0.000000001
 				),
 				"second-lap touch reopen keeps paused progress and identity",
 				lap2_before,
@@ -259,7 +260,7 @@ func _run() -> void:
 	if completed_laps_match:
 		for i in range(2):
 			completed_laps_match = (
-				completed_laps_match and absf(game.lap_times[i] - expected_laps[i]) <= 0.00001
+				completed_laps_match and absf(game.lap_times[i] - expected_laps[i]) <= 0.000000001
 			)
 	_flow_check(
 		lap2_resumed and completed_laps_match,
@@ -445,9 +446,9 @@ func _flow_lap_pair_equal(before: Dictionary, after: Dictionary) -> bool:
 	if before.lap_times.size() != after.lap_times.size():
 		return false
 	for i in range(before.lap_times.size()):
-		if absf(float(before.lap_times[i]) - float(after.lap_times[i])) > 0.00001:
+		if absf(float(before.lap_times[i]) - float(after.lap_times[i])) > 0.000000001:
 			return false
-	return absf(float(before.lap_started_at) - float(after.lap_started_at)) <= 0.00001
+	return absf(float(before.lap_started_at) - float(after.lap_started_at)) <= 0.000000001
 
 
 func _flow_result_ui() -> Dictionary:

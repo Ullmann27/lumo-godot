@@ -237,6 +237,7 @@ var previous_size := Vector2i(720, 1280)
 var previous_orientation: int = DisplayServer.SCREEN_PORTRAIT
 var previous_auto_accept_quit: bool = true
 var previous_quit_on_go_back: bool = true
+var _session_handed_off: bool = false
 
 
 func _ready() -> void:
@@ -542,6 +543,7 @@ static func _known_mode(requested: String) -> String:
 
 
 func _begin_race() -> void:
+	_session_handed_off = false
 	loop_state = PHYSICAL_LOOP.new()
 	loop_count = 0
 	if is_instance_valid(garage):
@@ -2328,11 +2330,16 @@ func _return_to_app(destination: String) -> void:
 	if HostBridge.is_embedded():
 		if not HostBridge.return_to_app(destination, payload):
 			_show_host_save_failure()
+		elif finished and mode != "cup" and HostBridge.reward_is_recoverable(result_id):
+			# A durable completed handoff must survive the host freeing this scene.
+			_session_handed_off = true
 		elif abandoned:
 			DirAccess.remove_absolute(SESSION)
 		return
 	if abandoned:
 		DirAccess.remove_absolute(SESSION)
+	if finished and mode != "cup" and HostBridge.reward_is_recoverable(result_id):
+		_session_handed_off = true
 	SceneRouter.goto("learn" if destination == "learn" else "games")
 
 
@@ -2734,7 +2741,7 @@ func _save_preferences() -> void:
 
 
 func _save_session() -> void:
-	if abandoned or menu_active or not is_instance_valid(player):
+	if abandoned or _session_handed_off or menu_active or not is_instance_valid(player):
 		return
 	var config := ConfigFile.new()
 	config.set_value("race", "version", SESSION_VERSION)
@@ -2777,6 +2784,7 @@ func _restore_session() -> bool:
 	var saved_distance: float = float(config.get_value("race", "distance", -1))
 	if saved_distance < 0 or not is_finite(saved_distance):
 		return false
+	_session_handed_off = false
 	var keys: Array[String] = [
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed", "boost_time", "boosts",
 		"collected", "difficulty", "mode", "track_id", "selected_driver", "selected_kart",
