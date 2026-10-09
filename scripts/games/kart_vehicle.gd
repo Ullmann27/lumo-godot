@@ -34,6 +34,9 @@ var tail: Node3D
 var steering_wheel: Node3D
 var driver: Node3D
 var jaw: Node3D
+## Animation deltas are relative to the sculpted rest pose, also after a rebuild.
+var jaw_rest_position := Vector3.ZERO
+var ear_rest_angles: Array[float] = []
 var flames: Array[MeshInstance3D] = []
 var sparks: Array[MeshInstance3D] = []
 var motion_speed: float = 0.0
@@ -139,13 +142,12 @@ func set_companion_pose(time_seconds: float, mood: String = "idle", voice_open: 
 			arm_joints[i].rotation.x = 0.18 + sin(time_seconds * TAU + i) * 0.10
 			elbow_joints[i].rotation.x = 0.4
 	for i in range(ear_joints.size()):
-		var side: float = -1.0 if i == 0 else 1.0
-		ear_joints[i].rotation.z = -side * 0.23 + sin(time_seconds * cycle + i * 0.7) * 0.018
+		ear_joints[i].rotation.z = ear_rest_angles[i] + sin(time_seconds * cycle + i * 0.7) * 0.018
 	if tail:
 		tail.rotation.y = 0.7 + sin(time_seconds * cycle) * (0.18 if mood == "cheer" else 0.08)
 	if jaw:
 		jaw.rotation.x = clampf(voice_open, 0.0, 1.0) * 0.6
-		jaw.position.y = -0.257 - clampf(voice_open, 0.0, 1.0) * 0.044
+		jaw.position = jaw_rest_position + Vector3(0, -clampf(voice_open, 0.0, 1.0) * 0.044, 0)
 
 
 func _animal_id(value: String) -> String:
@@ -200,6 +202,8 @@ func _rebuild() -> void:
 	elbow_joints.clear()
 	leg_joints.clear()
 	ear_joints.clear()
+	ear_rest_angles.clear()
+	jaw_rest_position = Vector3.ZERO
 	racing_arm_joints.clear()
 	racing_rest_grips.clear()
 	wheel_rest_grips.clear()
@@ -1658,21 +1662,67 @@ func _make_driver() -> void:
 		for p in range(6):
 			var t: float = float(p) / 5.0
 			brow.append(Vector3(side * (0.075 + t * 0.195), 0.205 + sin(t * PI) * 0.047 - t * 0.014, -0.277 + t * 0.018))
-		_ribbon(head, brow, 0.012, fur.darkened(0.45))
+		if is_lumo:
+			var brow_root := Node3D.new()
+			head.add_child(brow_root)
+			_ribbon(brow_root, brow, 0.013, fur.darkened(0.68))
+			for part in brow_root.get_children():
+				if part is MeshInstance3D:
+					part.material_override = _mat(fur.darkened(0.68), 0.0, 0.82)
+		else:
+			_ribbon(head, brow, 0.012, fur.darkened(0.45))
 	var muzzle: Array[Vector4] = [Vector4(-0.455, 0.038, 0.028, -0.101), Vector4(-0.418, 0.113, 0.060, -0.122), Vector4(-0.351, 0.168, 0.090, -0.135), Vector4(-0.264, 0.15, 0.08, -0.15), Vector4(-0.21, 0.01, 0.012, -0.15)]
 	_fur(head, _loft(muzzle, false, 32, 4), Vector3.ZERO, cream, 350, 0.009, 228)
 	# A small triangular, polished nose and a real mouth cavity underneath.
 	var nose := _mesh(head, _loft([Vector4(-0.16, 0.004, 0.016, -0.453), Vector4(-0.112, 0.075, 0.044, -0.463), Vector4(-0.079, 0.060, 0.032, -0.449), Vector4(-0.068, 0.004, 0.005, -0.435)], true, 24, 4), Vector3.ZERO, Color("2a1d22"), 0.08, 0.22)
 	nose.name = "SculptedNose"
 	_ellipsoid(head, Vector3(-0.020, -0.09, -0.493), Vector3(0.020, 0.009, 0.005), Color("ae8f85"), 0, 0.25)
-	_ellipsoid(head, Vector3(0, -0.231, -0.285), Vector3(0.098, 0.027, 0.046), Color("472e39"), 0, 0.7)
-	_fur(head, _loft([Vector4(-0.31, 0.025, 0.025, -0.18), Vector4(-0.265, 0.16, 0.11, -0.17), Vector4(-0.22, 0.19, 0.12, -0.17)], true, 28, 3), Vector3.ZERO, cream, 220, 0.011, 4431)
+	# The original Lumo mascot smiles with an open, friendly mouth, visible
+	# even when the kart camera is pulled back. Keep his real 3D jaw viseme;
+	# only fox gets the extra sculpted cavity, teeth and tongue. Other
+	# selectable drivers retain their existing closed-mouth geometry.
+	if is_lumo:
+		var smile := _mesh(
+			head, CHARACTER_FINISH.smile_shell(), Vector3.ZERO,
+			Color("382029"), 0.0, 0.82
+		)
+		smile.name = "LumoSmileCavity"
+		var teeth := _ellipsoid(
+			head, Vector3(0, -0.207, -0.389),
+			Vector3(0.086, 0.010, 0.006), Color("fff6ec"), 0.0, 0.55
+		)
+		teeth.name = "LumoSmileTeeth"
+		var tongue := _ellipsoid(
+			head, Vector3(0, -0.274, -0.381),
+			Vector3(0.057, 0.016, 0.006), Color("d87280"), 0.0, 0.68
+		)
+		tongue.name = "LumoSmileTongue"
+	else:
+		_ellipsoid(head, Vector3(0, -0.231, -0.285), Vector3(0.098, 0.027, 0.046), Color("472e39"), 0, 0.7)
+	var chin_profile: Array[Vector4] = [Vector4(-0.31, 0.025, 0.025, -0.18), Vector4(-0.265, 0.16, 0.11, -0.17), Vector4(-0.22, 0.19, 0.12, -0.17)]
+	if is_lumo:
+		# A continuous cream chin supports the mouth in front AND side view.
+		chin_profile = [Vector4(-0.337, 0.025, 0.035, -0.23), Vector4(-0.302, 0.145, 0.112, -0.240), Vector4(-0.255, 0.225, 0.120, -0.245), Vector4(-0.20, 0.235, 0.112, -0.250), Vector4(-0.165, 0.17, 0.080, -0.240)]
+	_fur(head, _loft(chin_profile, true, 32 if is_lumo else 28, 4 if is_lumo else 3), Vector3.ZERO, cream, 220, 0.011, 4431)
 	jaw = Node3D.new()
 	jaw.name = "MouthViseme"
-	jaw.position = Vector3(0, -0.257, -0.263)
+	jaw.position = Vector3(0, -0.305, -0.287) if is_lumo else Vector3(0, -0.257, -0.263)
+	jaw_rest_position = jaw.position
 	head.add_child(jaw)
-	_ellipsoid(jaw, Vector3(0, 0, -0.018), Vector3(0.123, 0.033, 0.054), cream, 0, 0.82)
-	_ellipsoid(jaw, Vector3(0, 0.021, -0.041), Vector3(0.049, 0.014, 0.019), Color("df8890"), 0, 0.58)
+	if is_lumo:
+		# The lower lip includes a hidden upper root inside the cream chin.
+		# It stays connected when the speech viseme lowers the jaw.
+		_mesh(jaw, _loft([
+			Vector4(-0.043, 0.018, 0.018, 0.005),
+			Vector4(-0.028, 0.085, 0.042, -0.010),
+			Vector4(0.0, 0.124, 0.051, -0.012),
+			Vector4(0.04, 0.124, 0.067, 0.032),
+			Vector4(0.09, 0.075, 0.045, 0.075)
+		], true, 24, 3), Vector3.ZERO, cream, 0.0, 0.82)
+	else:
+		_ellipsoid(jaw, Vector3(0, 0, -0.018), Vector3(0.123, 0.033, 0.054), cream, 0, 0.82)
+	if not is_lumo:
+		_ellipsoid(jaw, Vector3(0, 0.021, -0.041), Vector3(0.049, 0.014, 0.019), Color("df8890"), 0, 0.58)
 	_ribbon(head, [Vector3(-0.127, -0.192, -0.32), Vector3(-0.101, -0.216, -0.342), Vector3(-0.057, -0.221, -0.352)], 0.008, Color("714333"))
 	_ribbon(head, [Vector3(0.127, -0.192, -0.32), Vector3(0.101, -0.216, -0.342), Vector3(0.057, -0.221, -0.352)], 0.008, Color("714333"))
 	for tuft in range(3):
@@ -1776,9 +1826,14 @@ func _make_ear(side: float, fur: Color, cream: Color) -> void:
 	var ear := Node3D.new()
 	ear.name = "Ear"
 	ear.position = Vector3(side * 0.273, 0.255, 0.035)
-	ear.rotation.z = -side * 0.23
+	# Lumos ears fan out like the original rounded-triangle silhouette;
+	# the older, upright geometry made him look like a different fox.
+	ear.rotation.z = -side * (0.41 if animal == "fox" else 0.23)
+	if animal == "fox":
+		ear.scale = Vector3(1.12, 0.96, 1.0)
 	head.add_child(ear)
 	ear_joints.append(ear)
+	ear_rest_angles.append(ear.rotation.z)
 	if animal == "rabbit":
 		_mesh(ear, _loft([Vector4(0, 0.073, 0.061, 0), Vector4(0.18, 0.093, 0.071, 0), Vector4(0.44, 0.076, 0.053, 0.025), Vector4(0.57, 0.008, 0.008, 0.034)], true, 24, 4), Vector3.ZERO, fur)
 		_mesh(ear, _loft([Vector4(0.07, 0.023, 0.008, -0.057), Vector4(0.22, 0.051, 0.012, -0.071), Vector4(0.42, 0.039, 0.01, -0.029), Vector4(0.51, 0.004, 0.004, -0.01)], true, 20, 4), Vector3.ZERO, Color("d9a8b7"))
@@ -1797,7 +1852,8 @@ func _make_ear(side: float, fur: Color, cream: Color) -> void:
 			ear, outer_ear, Vector3.ZERO, Color.WHITE if animal == "fox" else fur.darkened(0.06),
 			300, 0.021, 440 + int(side)
 		)
-		_fur(ear, _loft([Vector4(-0.033, 0.063, 0.026, -0.072), Vector4(0.055, 0.088, 0.035, -0.065), Vector4(0.17, 0.063, 0.028, -0.058), Vector4(0.31, 0.007, 0.005, -0.029)], true, 28, 4), Vector3.ZERO, cream, 200, 0.016, 555 + int(side))
+		var ear_lining := Color("f0d6bc") if animal == "fox" else cream
+		_fur(ear, _loft([Vector4(-0.033, 0.063, 0.026, -0.072), Vector4(0.055, 0.088, 0.035, -0.065), Vector4(0.17, 0.063, 0.028, -0.058), Vector4(0.31, 0.007, 0.005, -0.029)], true, 28, 4), Vector3.ZERO, ear_lining, 200, 0.016, 555 + int(side))
 		for fluff in range(3):
 			var tuft := _mesh(ear, _loft([Vector4(0, 0.022, 0.012, 0), Vector4(0.05, 0.029, 0.018, 0), Vector4(0.105, 0.002, 0.002, 0)], true, 12, 3), Vector3(-0.030 + fluff * 0.031, 0.012 + (fluff % 2) * 0.034, -0.10), cream)
 			tuft.rotation.z = (fluff - 1) * -0.30
@@ -1806,24 +1862,44 @@ func _make_ear(side: float, fur: Color, cream: Color) -> void:
 func _make_eye(side: float, fur_shadow: Color) -> void:
 	var eye := Node3D.new()
 	eye.name = "Eye"
-	eye.position = Vector3(side * 0.169, 0.052, -0.282)
-	eye.rotation.y = -side * 0.12
+	# Compared with the previous full spherical eyeball, this sculpt keeps
+	# the brown iris but recesses the flatter white surface into the cheek.
+	# Do not alter the existing joint, blink, brow or non-fox animal anatomy.
+	eye.position = (
+		Vector3(side * 0.173, 0.065, -0.274)
+		if animal == "fox" else Vector3(side * 0.169, 0.052, -0.282)
+	)
+	eye.rotation.y = -side * (0.33 if animal == "fox" else 0.12)
 	head.add_child(eye)
 	eyes.append(eye)
-	_ellipsoid(eye, Vector3(0, 0.005, 0.006), Vector3(0.134, 0.155, 0.064), fur_shadow)
-	_ellipsoid(eye, Vector3(0, 0, -0.009), Vector3(0.119, 0.141, 0.065), WHITE, 0, 0.3)
-	var iris_size := Vector3(0.102, 0.107, 0.018) if animal == "fox" else Vector3(0.075, 0.093, 0.018)
-	var pupil_size := Vector3(0.068, 0.071, 0.013) if animal == "fox" else Vector3(0.049, 0.062, 0.013)
+	if animal == "fox":
+		# Vertical almond-like shell, not a 6 cm protruding sphere.
+		_ellipsoid(eye, Vector3(0, 0.005, 0.008), Vector3(0.113, 0.128, 0.025), fur_shadow)
+		_ellipsoid(eye, Vector3(0, 0, -0.004), Vector3(0.100, 0.114, 0.024), WHITE, 0.0, 0.42)
+	else:
+		_ellipsoid(eye, Vector3(0, 0.005, 0.006), Vector3(0.134, 0.155, 0.064), fur_shadow)
+		_ellipsoid(eye, Vector3(0, 0, -0.009), Vector3(0.119, 0.141, 0.065), WHITE, 0, 0.3)
+	var iris_size := Vector3(0.076, 0.082, 0.008) if animal == "fox" else Vector3(0.075, 0.093, 0.018)
+	var pupil_size := Vector3(0.047, 0.051, 0.006) if animal == "fox" else Vector3(0.049, 0.062, 0.013)
 	if animal == "fox":
 		_mesh(
-			eye, CHARACTER_FINISH.iris(iris_size), Vector3(-side * 0.008, -0.009, -0.066),
-			Color.WHITE, 0.08, 0.22
+			eye, CHARACTER_FINISH.eye_overlay(iris_size, Vector3(0.100, 0.114, 0.024), Vector2(-side * 0.006, -0.009), 0.0015, true), Vector3(-side * 0.006, -0.009, -0.004),
+			Color.WHITE, 0.08, 0.27
 		)
 	else:
 		_ellipsoid(eye, Vector3(-side * 0.008, -0.009, -0.066), iris_size, Color("287788"), 0.08, 0.22)
-	_ellipsoid(eye, Vector3(-side * 0.008, -0.004, -0.081), pupil_size, Color("080c12"), 0.10, 0.15)
-	_ellipsoid(eye, Vector3(-0.026, 0.032, -0.093), Vector3(0.019, 0.025, 0.008), Color.WHITE, 0, 0.1)
-	_ellipsoid(eye, Vector3(0.020, -0.038, -0.093), Vector3(0.007, 0.010, 0.004), Color.WHITE, 0, 0.1)
+	if animal == "fox":
+		_mesh(eye, CHARACTER_FINISH.eye_overlay(pupil_size, Vector3(0.100, 0.114, 0.024), Vector2(-side * 0.006, -0.004), 0.003, false), Vector3(-side * 0.006, -0.004, -0.004), Color("080c12"), 0.10, 0.18)
+	else:
+		_ellipsoid(eye, Vector3(-side * 0.008, -0.004, -0.081), pupil_size, Color("080c12"), 0.10, 0.15)
+	_ellipsoid(
+		eye, Vector3(-0.022, 0.027, -0.031) if animal == "fox" else Vector3(-0.026, 0.032, -0.093),
+		Vector3(0.014, 0.017, 0.003) if animal == "fox" else Vector3(0.019, 0.025, 0.008), Color.WHITE, 0, 0.1
+	)
+	_ellipsoid(
+		eye, Vector3(0.019, -0.033, -0.030) if animal == "fox" else Vector3(0.020, -0.038, -0.093),
+		Vector3(0.005, 0.007, 0.002) if animal == "fox" else Vector3(0.007, 0.010, 0.004), Color.WHITE, 0, 0.1
+	)
 
 
 func _make_tail(fur: Color, cream: Color) -> void:
@@ -2061,7 +2137,7 @@ func _process(delta: float) -> void:
 		eye.scale.y = blink
 	if jaw:
 		jaw.rotation.x = speaking_amount * 0.45
-		jaw.position.y = -0.257 - speaking_amount * 0.035
+		jaw.position = jaw_rest_position + Vector3(0, -speaking_amount * 0.035, 0)
 	if tail and not reduced_motion:
 		tail.rotation.y = 0.63 + sin(animation_time * 2.6) * 0.055 - motion_steer * 0.07
 	if steering_wheel:

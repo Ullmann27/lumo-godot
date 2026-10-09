@@ -18,6 +18,7 @@ var sheet: Image
 var out_path: String = "res://exports/screenshots/lumo-driver-views.png"
 ## --cheer: Lumo jubelt (Platz 1) – Arm oben, winkt.
 var cheer: bool = false
+var speaking: bool = false
 
 
 func _initialize() -> void:
@@ -25,6 +26,7 @@ func _initialize() -> void:
 	if args.size() > 0:
 		out_path = args[0]
 	cheer = args.has("--cheer")
+	speaking = args.has("--speak")
 	root.size = Vector2i(640, 640)
 	var world := Node3D.new()
 	root.add_child(world)
@@ -53,6 +55,8 @@ func _initialize() -> void:
 	kart.call("set_motion", 0.0, 0.0, false, false)
 	if cheer:
 		kart.call("celebrate", 1)
+	if speaking:
+		kart.call("set_speaking", 0.75)
 	camera = Camera3D.new()
 	camera.fov = 34
 	world.add_child(camera)
