@@ -1,3 +1,21 @@
+# Current owning handoff: combined pause and first-active session save (2026-10-09)
+
+SCOPED SOURCE / LINUX GL268 PASS; ANDROID PENDING; VISUAL_GAP / NOT FINISHED. Read docs/handoffs/LUMO_FIRST_ACTIVE_SNAPSHOT_INTEGRATION_2026-10-09.md first. Owning PR33 branch codex/lumo-modal-viewport-repair-2026-10-09, parentabbc5cbb74b9222cb0479383f4a1f87b72efc8e1. Resolve its current ref for RESULT. Four accepted first-save Core hunks are grafted onto the existing full-viewport pause fix; Core SHA256238818f2b4d999be976904a86e7adaafa6c7b1ade9275e9732f74ec047715a6e. Corrected source packet7ec45e787997a99be3ab8fa68385acc64ec3fbc5a14461a33722a322cc1eede6. New first-save60 and unchanged GL104+Life10/Flow9/Countdown8/Modal37 plus Modal40 all strictPASS. FullFlow is manual fixed physics/sparse GL, distinct from normal-time Android acceptance. Source921 exact before/after and all owned processes reaped. No discarded Action/ball overlays.
+
+OwnAPK1908 Android35/36 fullraces hit original1200s alarms alive in lap2; repairedAPK is not built/accepted. Preserve Native24/GL17/Profile24/Finish16 and1200/45. Root solepublisher; App exactpin/sourcebindings/version follow after remoteRESULT verification. ActiveGodot3f9/App2b remain preserved. Historical notes below remain verbatim; superseded first-save packet5af467 embeds old fault journal and must not be used.
+
+---
+
+# Gepruefter Modal-Viewport-Entwurf · 9. Oktober 2026
+
+Zuerst [die aktuelle kleine Pause-Korrektur](docs/handoffs/LUMO_MODAL_VIEWPORT_REPAIR_2026-10-09.md)
+lesen. BASE3f9 bleibt aktiver Stand; dieser freie Entwurf kompensiert nur die
+vier Hintergrundkanten um Safe Insets. Identische40er-Probe30/10 RED ->40/0 GREEN;
+urspruenglicheModal37 unveraendert37PASS, echte Linux-GL-Bilder und Touchs.
+Keine neue APK-/Android-Abnahme oder Loesung des eigenen1200s-Timeouts.
+SCOPED SOURCE PASS / ANDROID NOT EXECUTED / VISUAL_GAP / NOT FINISHED.
+Die folgenden1908-Quellabschlussangaben sind historischer Kontext vor dem Build.
+
 # Aktueller Einstieg: Integration1908 – VISUAL_GAP / NOT FINISHED
 
 BASE99cdb plus Recovery4bdb werden mit erhaltenen14Karts integriert.
@@ -99,3 +117,4 @@ Der vollständige Produktauftrag `docs/OPUS_ENTWICKLUNGSAUFTRAG.md` liegt in der
 Lern-App; seine historischen Basis-SHAs nicht als heutige Heads übernehmen.
 Die [alte Startanweisung](docs/OPUS_NEXT_ARCHIV_2026-10-07.md) bleibt als Archiv.
 Diese Übergabe startet keine weitere KI-Sitzung automatisch.
+

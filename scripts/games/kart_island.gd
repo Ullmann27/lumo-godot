@@ -171,6 +171,8 @@ var reduced_motion: bool = false
 var lightweight: bool = false
 var difficulty: String = "gemuetlich"
 var save_timer: float = 0.0
+## Persist the first real racing second, then keep the normal five-second cadence.
+var first_active_snapshot_pending: bool = false
 var hit_timer: float = 0.0
 var obstacle_distances: Array[float] = []
 var kart_audio: Node
@@ -573,6 +575,8 @@ func _begin_race() -> void:
 	distance = 0
 	lane = 0
 	elapsed = 0
+	save_timer = 0.0
+	first_active_snapshot_pending = true
 	countdown = 3.5
 	last_countdown_tick = 4
 	preview_total = PREVIEW_SECONDS if mode != "arena" and not reduced_motion else 0.0
@@ -932,6 +936,11 @@ func _apply_safe_area(insets: Rect2, physical_size: Vector2) -> void:
 	safe_ui.offset_top = scaled.position.y
 	safe_ui.offset_right = -scaled.size.x
 	safe_ui.offset_bottom = -scaled.size.y
+	# Dim the complete viewport while the dialog keeps its safe-area parent.
+	modal_backdrop.offset_left = -scaled.position.x
+	modal_backdrop.offset_top = -scaled.position.y
+	modal_backdrop.offset_right = scaled.size.x
+	modal_backdrop.offset_bottom = scaled.size.y
 	safe_ui.set_meta("kart_safe_insets_applied", true)
 	call_deferred("_apply_responsive_layout")
 
@@ -1223,8 +1232,9 @@ func _physics_process(delta: float) -> void:
 			if mode != "training" and distance >= track_length * TOTAL_LAPS and checkpoint_index >= TOTAL_LAPS * 8:
 				_finish()
 		save_timer += delta
-		if save_timer >= 5:
+		if save_timer >= 5 or (first_active_snapshot_pending and elapsed >= 1.0):
 			save_timer = 0
+			first_active_snapshot_pending = false
 			_save_session()
 	for i in range(gems.size()):
 		if mode != "arena":
@@ -2991,6 +3001,9 @@ func _restore_session() -> bool:
 	ghost_valid = false
 	mode = _known_mode(mode)
 	racing = countdown <= 0 and not completed_race
+	# A resumed sub-second save still needs its first active snapshot; later saves do not.
+	save_timer = 0.0
+	first_active_snapshot_pending = elapsed < 1.0 and not completed_race
 	_update_vehicles(0)
 	_update_camera(1, true)
 	if finished:
