@@ -86,10 +86,15 @@ func _finish_fixture() -> void:
 
 
 func _natural_free() -> void:
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+	root.world_3d.fallback_environment = null
 	game.queue_free()
-	await tree.process_frame
-	await tree.process_frame
 	game = null
+	await tree.process_frame
+	await tree.process_frame
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
 
 
 func _run() -> Dictionary:
@@ -178,6 +183,8 @@ func _run() -> Dictionary:
 	_finish_fixture()
 	game._return_to_app("games")
 	var completed_id: String = game.result_id
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
 	game._start_selected_race(
 		{
 			"mode": "race",
@@ -199,6 +206,9 @@ func _run() -> Dictionary:
 	root.get_node("HostBridge")._host = null
 	root.get_node("SceneRouter").current_scene_id = "kart"
 	tree.current_scene = game
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+	root.world_3d.fallback_environment = null
 	game._return_to_app("games")
 	for frame in range(8):
 		await tree.process_frame
@@ -218,9 +228,14 @@ func _run() -> Dictionary:
 		FileAccess.file_exists(SESSION)
 	)
 	if is_instance_valid(tree.current_scene):
+		if DisplayServer.get_name() != "headless":
+			await RenderingServer.frame_post_draw
+		root.world_3d.fallback_environment = null
 		tree.current_scene.queue_free()
 		await tree.process_frame
 		await tree.process_frame
+		if DisplayServer.get_name() != "headless":
+			await RenderingServer.frame_post_draw
 	game = null
 	var failures := 0
 	for check in checks:

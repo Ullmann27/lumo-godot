@@ -30,9 +30,12 @@ var lap_checks: Array[Dictionary] = []
 var lap_evidence: Dictionary = {}
 var lap_host: LapHost
 var lap_output := "res://exports/race-continuity"
+# Hold the actual startup resource until all draws and natural fixture frees finish.
+var startup_environment: Environment = null
 
 
 func _initialize() -> void:
+	startup_environment = root.world_3d.fallback_environment
 	call_deferred("_run")
 
 
@@ -351,6 +354,16 @@ func _run() -> void:
 		await process_frame
 	if DisplayServer.get_name() != "headless":
 		await RenderingServer.frame_post_draw
+	# Only tear down the original unused fallback after all captures and fixtures.
+	# Reloading this path would allocate a different resource, not release this one.
+	root.world_3d.environment = null
+	root.world_3d.fallback_environment = null
+	if startup_environment != null:
+		startup_environment.sky = null
+	await process_frame
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+	startup_environment = null
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	await create_timer(0.5).timeout
 	if not lap_ok:
