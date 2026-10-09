@@ -113,6 +113,64 @@ jobs:
           fi
           grep -F '[KartPhysics]' "$RUNNER_TEMP/kart-physics.log"
 
+      - name: Active race autosave and I/O recovery regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          for case in \
+            'kart_first_active_snapshot_regression:first-active-snapshot-evidence.json:41' \
+            'kart_first_active_snapshot_engine_probe:natural-engine-public-touch-evidence.json:11' \
+            'kart_first_active_snapshot_write_failure_probe:actual-write-failure-evidence.json:8'; do
+            IFS=: read -r name evidence expected <<< "$case"
+            dir="$RUNNER_TEMP/lumo-first-active/$name"
+            mkdir -p "$dir"
+            LUMO_QA_DIR="$dir" timeout 240s Godot_v4.6.3-stable_linux.x86_64 \
+              --headless --audio-driver Dummy --path . \
+              --script "res://scripts/tests/$name.gd" > "$dir/run.log" 2>&1
+            cat "$dir/run.log"
+            if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$dir/run.log"; then exit 1; fi
+            python3 - "$dir/$evidence" "$expected" <<'PY'
+          import json, sys
+          from pathlib import Path
+          path = Path(sys.argv[1])
+          assert path.is_file(), path
+          report = json.loads(path.read_text())
+          count = int(sys.argv[2])
+          assert report["status"] == "PASS"
+          assert report["check_count"] == count
+          assert report["failures"] == 0
+          assert len(report["checks"]) == count
+          assert all(row["passed"] for row in report["checks"])
+          print(f"PASS {path.name}: {count} required checks")
+          PY
+          done
+
+      - name: Full-viewport Fold pause shading and touch evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/lumo-modal-backdrop"
+          mkdir -p "$dir"
+          LUMO_QA_DIR="$dir" timeout 300s \
+            xvfb-run -a -s '-screen 0 2500x2500x24' Godot_v4.6.3-stable_linux.x86_64 \
+              --path . --rendering-method gl_compatibility --audio-driver Dummy \
+              --script res://scripts/tests/kart_modal_backdrop_regression.gd > "$dir/run.log" 2>&1
+          cat "$dir/run.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$dir/run.log"; then exit 1; fi
+          grep -F '[LumoBackdrop] PASS:40' "$dir/run.log"
+          python3 - "$dir" <<'PY'
+          import json, sys
+          from pathlib import Path
+          root = Path(sys.argv[1])
+          data = json.loads((root / "modal-backdrop-evidence.json").read_text())
+          assert data["check_count"] == data["pass_count"] == 40
+          assert len(data["cases"]) == 5
+          assert len(data["checks"]) == 40
+          assert all(check["passed"] for check in data["checks"])
+          assert len(list(root.glob("*-actual-pause.png"))) == 5
+          print("PASS: forty pause cover/touch/color checks and five actual Fold/phone PNGs")
+          PY
+
       - name: Kart mode and dynamic cup regression
         shell: bash
         run: |
@@ -222,6 +280,8 @@ jobs:
             ${{ runner.temp }}/kart-holo-city-capture.log
             ${{ runner.temp }}/sky-halo-contract.log
             ${{ runner.temp }}/sky-halo-capture.log
+            ${{ runner.temp }}/lumo-first-active/**
+            ${{ runner.temp }}/lumo-modal-backdrop/**
             exports/sonnenhafen/*.png
             exports/sky-islands/*.png
             exports/zauberwald/*.png

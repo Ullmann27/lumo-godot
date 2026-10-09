@@ -1,9 +1,47 @@
+# Integration Claude · 9. Oktober 2026 (AAA-Produktionsauftrag)
+
+Arbeitsbericht mit Integrationsmatrix, SHAs, Prüfungen und offenen Bildabweichungen:
+[docs/LUMO_VISUAL_EXECUTION_2026-10-09.md](docs/LUMO_VISUAL_EXECUTION_2026-10-09.md).
+Branch `claude/continue-previous-chat-KtY7p` vereint jetzt den Claude-Strang (Action-Parcours auf
+11 Strecken, Prüfstand-Formeln, Himmel-Wiederverwendung), Godot-PR #37 (Spielstart-Branding) und
+den Codex-1909/1910-Strang (PR #32/#35/#36: Sonnenhafen-Aquarium mit Hütchen, gemeinsamer
+Antrieb `kart_powertrain.gd`, profilbezogenes Werkstattbudget, erste aktive Rennspeicherung,
+Fold-Pausenhintergrund). Das Aquarium liegt in `kart_harbor_aquarium.gd`, der Parcours in
+`kart_action_course.gd`. **VISUAL_GAP – NOT ACCEPTED**; Main und Releases unverändert.
+
+---
+
 # Übergabe an ChatGPT Sol 6.1 · 9. Oktober 2026 (Claude-Strang)
 
 Zuerst [die Godot-Übergabe](docs/HANDOFF_CLAUDE_TO_SOL_2026-10-09.md) und die ausführliche
 Übergabe in der App (`docs/handoffs/CLAUDE_TO_SOL_2026-10-09.md`, `Ullmann27/lumo-lernen`) lesen.
 Branch `claude/continue-previous-chat-KtY7p` enthält die Codex-Stände (PR 27/28/29/31) und den
 Claude-Strang. **VISUAL_GAP / NOT FINISHED**; Main und Releases unverändert.
+
+---
+
+# Aktueller Stand: Spiel in APK 0.12.6+1909 · 9. Oktober 2026
+
+Spielstand `a377b9e2db3337ae46f9439200ef0af17af06cb5` wurde in der signierten APK 1909 aus App `aa6519226fded77d5d5022dc6fe8c223e9dc82b8` verbaut. [Spiel-PR #32](https://github.com/Ullmann27/lumo-godot/pull/32), [vollständiger App-PR #223](https://github.com/Ullmann27/lumo-lernen/pull/223).
+
+[Aquarium, Hütchen und Prüfstand](docs/ACTION_WORKSHOP_2026-10-09.md) sind fertig integriert; alle 14 Karts und das profilbezogene Tuning bleiben erhalten. Die 25 strengen nativen Proben, 104 Sitzungs-/Rundenchecks, 10 ACK-/Rückkehrchecks, 29 Zeitformat- und 24 Profilbudgetchecks wurden im APK-Lauf erfolgreich ausgeführt. Auch die fünf eigenen Godot-Workflows waren grün.
+
+APK SHA256: `b58e055340595ac882fed47d0c11660f2420e41c1528ed2841c5100f13304fb7`. [Erfolgreicher APK-Bau und Nachweise](https://github.com/Ullmann27/lumo-lernen/actions/runs/37888592898). Vier Android-Spielwelten grün; die ersten beiden Kart-Läufe stoppten an einem anhand realer Bilder reparierten DRIFT-Bildlesefehler. **Android 16 / API 36: vollständiges Kart-Rennen PASS** in [Job 113699324621](https://github.com/Ullmann27/lumo-lernen/actions/runs/37893374564/job/113699324621), mit 16 Checkpoints, Pause, Größenwechsel/Rotation, Ergebnis, Offline-Wiederaufnahme und Belohnungs-Deduplizierung gegen diese identische APK. **Android 15 / API 35: vollständiges Kart-Rennen ebenfalls PASS** in [Job 113710020612](https://github.com/Ullmann27/lumo-lernen/actions/runs/37896765244/job/113710020612). 585 Werkzeugtests grün. Ein zusätzlicher API-36-Versuch scheiterte vor dem Rennen am OCR-Zeitlimit; die Workflows insgesamt sind nicht vollständig grün.
+
+[Abschluss mit APK-Identität, Prüfungen und Grenzen](https://github.com/Ullmann27/lumo-lernen/blob/codex/lumo-action-android-qa-2026-10-09/docs/APK_1909_ABSCHLUSS.md).
+
+Kein physischer Fold-/60-FPS-Nachweis oder vollständiger Referenzvideo-Gleichheitsnachweis. Kein Main-Merge/Release. Die folgenden älteren Übergaben sind historisch; aktuelle Quell-/APK-Angaben stehen oben.
+
+---
+
+# Aktueller Einstieg: Integration1908 – VISUAL_GAP / NOT FINISHED
+
+BASE99cdb plus Recovery4bdb werden mit erhaltenen14Karts integriert.
+Aktuelle Quellen/Builds/Nachweise und offene Abweichungen: [LUMO_INTEGRATION_1908_2026-10-09.md](docs/handoffs/LUMO_INTEGRATION_1908_2026-10-09.md).
+[Claim](docs/claims/LUMO_INTEGRATION_1908_2026-10-09.md): Profilbudget, echte Ressourcen-/Rückkehrprüfung, gemessene HIGH-Lichtkorrektur; Zieleinlaufversuch separat.
+Keine1908APK gebaut/freigegeben. Fremder1907Build existiert; dessen Android-Kart-Auswertung läuft. Ältere Einträge unten sind historisch.
+
+---
 
 # Aktuelle Runden-Speicherung für1906 · 9. Oktober2026
 

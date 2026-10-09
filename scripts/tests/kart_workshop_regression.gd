@@ -84,9 +84,11 @@ func _check_workshop() -> void:
 	assert(view.tuning.level("comet", "motor") == 1 and view.budget_label.text == "★ 8 frei" and changes[0] == 1)
 	assert(is_equal_approx(float(view.bars.bonus.speed), 0.4) and is_equal_approx(float(view.bars.base.speed), 6.0), "Tuning-Anteil erscheint als Bonus am Balken")
 	assert("Motor" in view.toast_label.text and "Stufe 1" in view.toast_label.text and "km/h" in view.toast_label.text, "Rückmeldung nennt das Teil und das neue Tempo")
-	assert(view.bench_label.visible and "PRÜFSTAND" in view.bench_label.text and "(+" in view.bench_label.text, "Prüfstand zeigt den Gewinn gegenüber dem Werkszustand (%s)" % view.bench_label.text)
 	var stock: Dictionary = view.tuning.performance("comet", false)
 	var tuned: Dictionary = view.tuning.performance("comet", true)
+	var dyno: String = view.dyno_label.text
+	var shown: String = ("%.1f → %.1f km/h" % [float(stock.top_kmh), float(tuned.top_kmh)]).replace(".", ",")
+	assert(view.dyno_label.is_visible_in_tree() and shown in dyno, "Prüfstand zeigt Werkszustand → getuntes Kart (%s statt %s)" % [dyno, shown])
 	assert(float(tuned.top_kmh) > float(stock.top_kmh) and float(tuned.zero_to_54_s) < float(stock.zero_to_54_s), "Motor macht schneller und zieht besser an")
 	_find(_find(view, "Part_bremsen"), "Upgrade").pressed.emit()
 	assert(view.tuning.level("comet", "bremsen") == 1 and view.tuning.available() == 4)

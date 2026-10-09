@@ -29,6 +29,7 @@ const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
 const PREFERENCES: String = "user://kart_preferences.cfg"
 const BOOST_ACCELERATION_MULTIPLIER: float = 2.0
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const DESIGN_VIEWPORT := Vector2(1280.0, 720.0)
 const PEDAL_PAD_BASE_SIZE := Vector2(440.0, 300.0)
 ## Version 4 drops the removed learning-question state; older saves still resume as plain races.
@@ -178,6 +179,8 @@ var reduced_motion: bool = false
 var lightweight: bool = false
 var difficulty: String = "gemuetlich"
 var save_timer: float = 0.0
+## Persist the first real racing second, then keep the normal five-second cadence.
+var first_active_snapshot_pending: bool = false
 var hit_timer: float = 0.0
 var obstacle_distances: Array[float] = []
 var kart_audio: Node
@@ -581,6 +584,8 @@ func _begin_race() -> void:
 	distance = 0
 	lane = 0
 	elapsed = 0
+	save_timer = 0.0
+	first_active_snapshot_pending = true
 	countdown = 3.5
 	last_countdown_tick = 4
 	preview_total = PREVIEW_SECONDS if mode != "arena" and not reduced_motion else 0.0
@@ -940,6 +945,11 @@ func _apply_safe_area(insets: Rect2, physical_size: Vector2) -> void:
 	safe_ui.offset_top = scaled.position.y
 	safe_ui.offset_right = -scaled.size.x
 	safe_ui.offset_bottom = -scaled.size.y
+	# Dim the entire viewport; preserve safe insets for dialog and controls.
+	modal_backdrop.offset_left = -scaled.position.x
+	modal_backdrop.offset_top = -scaled.position.y
+	modal_backdrop.offset_right = scaled.size.x
+	modal_backdrop.offset_bottom = scaled.size.y
 	safe_ui.set_meta("kart_safe_insets_applied", true)
 	call_deferred("_apply_responsive_layout")
 
@@ -1231,8 +1241,9 @@ func _physics_process(delta: float) -> void:
 			if mode != "training" and distance >= track_length * TOTAL_LAPS and checkpoint_index >= TOTAL_LAPS * 8:
 				_finish()
 		save_timer += delta
-		if save_timer >= 5:
+		if save_timer >= 5 or (first_active_snapshot_pending and elapsed >= 1.0):
 			save_timer = 0
+			first_active_snapshot_pending = false
 			_save_session()
 	for i in range(gems.size()):
 		if mode != "arena":
@@ -1306,7 +1317,9 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	if mode != "arena" and _drive_loop(delta, axis, braking):
 		return
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
-	var target: float = 20.5 * _factor("speed") * float(rules.speed)
+	if kart_factors.is_empty():
+		_refresh_kart_factors()
+	var target: float = POWERTRAIN.top_speed(kart_factors, float(rules.speed))
 	if mode != "arena":
 		target *= world.dive_factor(previous_road_distance)
 	var throttle: float = 1.0 if _gas_active() else 0.0
@@ -1334,7 +1347,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		if difficulty == "gemuetlich" and absf(lane) > ROAD_WIDTH * 0.31:
 			var correction: float = angle_difference(player_heading, _heading(float(road.distance)))
 			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
-	var acceleration: float = 20.0 * _factor("brake") if braking > 0.1 else 10.0 * _factor("accel")
+	var acceleration: float = POWERTRAIN.acceleration(kart_factors, braking > 0.1)
 	if boost_active and target > speed:
 		acceleration *= BOOST_ACCELERATION_MULTIPLIER
 	if not airborne or boost_active:
@@ -1881,6 +1894,14 @@ func _place() -> int:
 
 
 func _track_events() -> void:
+	for obstacle in world.action_obstacles:
+		var separation: Vector3 = player.position - obstacle
+		separation.y = 0.0
+		if separation.length() < 0.9 and hit_timer <= 0.0 and shield_time <= 0.0:
+			hit_timer = 0.15
+			speed *= 0.88
+			message.text = "Hütchen! Lenke durch die freie Mitte."
+			_sound_effect("collision")
 	for i in range(opponents.size()):
 		var away: Vector3 = player.position - opponents[i].position
 		away.y = 0
@@ -2981,6 +3002,9 @@ func _restore_session() -> bool:
 	ghost_valid = false
 	mode = _known_mode(mode)
 	racing = countdown <= 0 and not completed_race
+	# Sub-second restores still need their first active snapshot; later saves do not.
+	save_timer = 0.0
+	first_active_snapshot_pending = elapsed < 1.0 and not completed_race
 	_update_vehicles(0)
 	_update_camera(1, true)
 	if finished:

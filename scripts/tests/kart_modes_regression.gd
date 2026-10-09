@@ -41,9 +41,23 @@ func _run() -> void:
 		game.elapsed = 80 + round_index
 		game._finish()
 		assert(game.finished and not game.racing, "A cup race ends directly with its result, no task")
-		var position: Vector3 = game.player.position
+		# A finished kart may coast and settle onto the road during the finish cinematic.
+		# Freeze race progress and the reward/standings instead of freezing its 3D pose.
+		var finish_elapsed: float = game.elapsed
+		var finish_distance: float = game.distance
+		var finish_gate: int = game.checkpoint_index
+		var finish_points: Array = game.cup_points.duplicate()
+		var finish_payload: Dictionary = game.result_payload.duplicate(true)
+		var finish_cine: float = game.finish_cine_left
 		game._physics_process(1)
-		assert(game.player.position == position)
+		assert(game.finished and not game.racing and not game.menu_active)
+		assert(game.elapsed == finish_elapsed and game.distance == finish_distance
+			and game.checkpoint_index == finish_gate,
+			"Finish cinematic must not progress time, distance or ordered gates")
+		assert(game.cup_points == finish_points and game.result_payload == finish_payload,
+			"Finish cinematic must not pay or modify an already completed result")
+		assert(game.player.position.is_finite(), "Finish road contact must remain finite")
+		assert(game.finish_cine_left <= finish_cine, "Finish cinematic time cannot grow")
 		assert(game.cup_results.size() == round_index + 1)
 		assert(game.cup_points[0] == (round_index + 1) * 12)
 		assert(game.result_payload.stars == 3 and game.result_payload.solved == 0)

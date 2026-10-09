@@ -11,6 +11,8 @@ const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
 const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
+const HARBOR_AQUARIUM = preload("res://scripts/games/kart_harbor_aquarium.gd")
+var action_obstacles: Array[Vector3] = []
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
 const RAIL_LATERAL: float = 6.05
@@ -50,6 +52,7 @@ func build(
 		remove_child(child)
 		child.queue_free()
 	groups.clear()
+	action_obstacles.clear()
 	decoration_count = 0
 	low_detail = lightweight
 	definition = TRACKS.definition(selected_track)
@@ -97,6 +100,7 @@ func build(
 	_navigation()
 	if track_id=="sonnenhafen":
 		_grand_prix_dressing()
+		HARBOR_AQUARIUM.build(self)
 	LANDMARKS.build(self)
 	FLEET_DRESSING.build(self)
 	TRACK_DETAIL.build(self)
@@ -398,7 +402,7 @@ func _lighting() -> void:
 	environment.sky=_sky_for(track_id)
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color=Color("c8e0f4") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
-	environment.ambient_light_energy=0.28 if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
+	environment.ambient_light_energy=(0.28 if low_detail else 0.20) if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
 	environment.tonemap_mode=Environment.TONE_MAPPER_ACES if track_id in ["candy_cloud", "volcano_night"] else Environment.TONE_MAPPER_FILMIC
 	environment.tonemap_exposure=float(visual.exposure)
 	environment.glow_enabled=bool(visual.glow)
@@ -419,7 +423,7 @@ func _lighting() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees=Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0)
 	sun.light_color=definition.sun
-	sun.light_energy=0.56 if track_id=="candy_cloud" else (0.84 if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
+	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.84 if low_detail else 0.68) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
