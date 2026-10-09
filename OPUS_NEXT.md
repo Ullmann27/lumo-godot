@@ -1,3 +1,15 @@
+# Aktueller Stand: Spiel in APK 0.12.6+1909 · 9. Oktober 2026
+
+Spielstand `a377b9e2db3337ae46f9439200ef0af17af06cb5` wurde in der signierten APK 1909 aus App `aa6519226fded77d5d5022dc6fe8c223e9dc82b8` verbaut. [Spiel-PR #32](https://github.com/Ullmann27/lumo-godot/pull/32), [vollständiger App-PR #223](https://github.com/Ullmann27/lumo-lernen/pull/223).
+
+[Aquarium, Hütchen und Prüfstand](docs/ACTION_WORKSHOP_2026-10-09.md) sind fertig integriert; alle 14 Karts und das profilbezogene Tuning bleiben erhalten. Die 25 strengen nativen Proben, 104 Sitzungs-/Rundenchecks, 10 ACK-/Rückkehrchecks, 29 Zeitformat- und 24 Profilbudgetchecks wurden im APK-Lauf erfolgreich ausgeführt. Auch die fünf eigenen Godot-Workflows waren grün.
+
+APK SHA256: `b58e055340595ac882fed47d0c11660f2420e41c1528ed2841c5100f13304fb7`. [Erfolgreicher APK-Bau und Nachweise](https://github.com/Ullmann27/lumo-lernen/actions/runs/37888592898). Vier Android-Spielwelten grün; die ersten beiden Kart-Läufe stoppten an einem anhand realer Bilder reparierten DRIFT-Bildlesefehler. **Der vollständige Android-Kart-Nachlauf läuft noch** in [Actions 37893374564](https://github.com/Ullmann27/lumo-lernen/actions/runs/37893374564) gegen diese identische APK.
+
+Kein physischer Fold-/60-FPS-Nachweis oder vollständiger Referenzvideo-Gleichheitsnachweis. Kein Main-Merge/Release. Die folgenden älteren Übergaben sind historisch; aktuelle Quell-/APK-Angaben stehen oben.
+
+---
+
 # Aktueller Einstieg: Integration1908 – VISUAL_GAP / NOT FINISHED
 
 BASE99cdb plus Recovery4bdb werden mit erhaltenen14Karts integriert.
