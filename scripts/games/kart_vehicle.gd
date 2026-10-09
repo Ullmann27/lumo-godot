@@ -1671,18 +1671,18 @@ func _make_driver() -> void:
 	# selectable drivers retain their existing closed-mouth geometry.
 	if is_lumo:
 		var smile := _ellipsoid(
-			head, Vector3(0, -0.231, -0.367),
-			Vector3(0.150, 0.062, 0.018), Color("4b2430"), 0.0, 0.61
+			head, Vector3(0, -0.235, -0.422),
+			Vector3(0.146, 0.079, 0.014), Color("4b2430"), 0.0, 0.61
 		)
 		smile.name = "LumoSmileCavity"
 		var teeth := _ellipsoid(
-			head, Vector3(0, -0.204, -0.387),
-			Vector3(0.112, 0.011, 0.007), Color("fff6ec"), 0.0, 0.55
+			head, Vector3(0, -0.187, -0.442),
+			Vector3(0.108, 0.012, 0.009), Color("fff6ec"), 0.0, 0.55
 		)
 		teeth.name = "LumoSmileTeeth"
 		var tongue := _ellipsoid(
-			head, Vector3(0, -0.261, -0.391),
-			Vector3(0.074, 0.022, 0.008), Color("e78896"), 0.0, 0.68
+			head, Vector3(0, -0.282, -0.443),
+			Vector3(0.071, 0.022, 0.009), Color("e78896"), 0.0, 0.68
 		)
 		tongue.name = "LumoSmileTongue"
 	else:
@@ -1822,7 +1822,7 @@ func _make_ear(side: float, fur: Color, cream: Color) -> void:
 			ear, outer_ear, Vector3.ZERO, Color.WHITE if animal == "fox" else fur.darkened(0.06),
 			300, 0.021, 440 + int(side)
 		)
-		var ear_lining := Color("f6dcd5") if animal == "fox" else cream
+		var ear_lining := Color("eeb1a4") if animal == "fox" else cream
 		_fur(ear, _loft([Vector4(-0.033, 0.063, 0.026, -0.072), Vector4(0.055, 0.088, 0.035, -0.065), Vector4(0.17, 0.063, 0.028, -0.058), Vector4(0.31, 0.007, 0.005, -0.029)], true, 28, 4), Vector3.ZERO, ear_lining, 200, 0.016, 555 + int(side))
 		for fluff in range(3):
 			var tuft := _mesh(ear, _loft([Vector4(0, 0.022, 0.012, 0), Vector4(0.05, 0.029, 0.018, 0), Vector4(0.105, 0.002, 0.002, 0)], true, 12, 3), Vector3(-0.030 + fluff * 0.031, 0.012 + (fluff % 2) * 0.034, -0.10), cream)
