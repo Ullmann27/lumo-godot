@@ -15,6 +15,10 @@ static func build(stage: Node3D, ring_color: Color = Color("45d9ef"), with_podiu
 	settings.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	settings.ambient_light_color = Color("3d6a9c")
 	settings.ambient_light_energy = 0.55
+	# Restrained grade keeps orange fur and the brown irises readable without clipping cyan.
+	settings.adjustment_enabled = true
+	settings.adjustment_contrast = 1.035
+	settings.adjustment_saturation = 1.045
 	settings.reflected_light_source = Environment.REFLECTION_SOURCE_DISABLED
 	settings.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	settings.glow_enabled = true
@@ -29,6 +33,18 @@ static func build(stage: Node3D, ring_color: Color = Color("45d9ef"), with_podiu
 	key.light_energy = 1.05
 	key.shadow_enabled = true
 	stage.add_child(key)
+	# Soft front fill is confined to the menu studio: it reveals Lumo\'s brow, iris,
+	# cream muzzle and goggles from the new face inspection angle. No extra shadow map.
+	var face_fill := OmniLight3D.new()
+	face_fill.name = "LumoFaceFill"
+	face_fill.position = Vector3(0.0, 2.30, -2.45)
+	face_fill.light_color = Color("eaf4ff")
+	face_fill.light_energy = 0.34
+	face_fill.light_specular = 0.25
+	face_fill.omni_range = 4.6
+	face_fill.omni_attenuation = 1.5
+	face_fill.shadow_enabled = false
+	stage.add_child(face_fill)
 	var rim := OmniLight3D.new()
 	rim.position = Vector3(-2.6, 2.4, 2.2)
 	rim.light_color = Color("63dfff")
@@ -91,4 +107,4 @@ static func build(stage: Node3D, ring_color: Color = Color("45d9ef"), with_podiu
 	camera.look_at_from_position(Vector3(3.2, 2.2, -4.5), Vector3(0, 0.85, 0))
 	var pivot := Node3D.new()
 	stage.add_child(pivot)
-	return {"pivot": pivot, "camera": camera, "podium": podium, "key": key, "rim": rim}
+	return {"pivot": pivot, "camera": camera, "podium": podium, "key": key, "rim": rim, "face_fill": face_fill}
