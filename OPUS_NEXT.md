@@ -1,3 +1,27 @@
+# Aktuelle Runden-Speicherung für1906 · 9. Oktober2026
+
+Zuerst [das geprüfte Lap-Session-Paket](docs/LAP_SESSION_2026-10-09.md) lesen.
+BASE ist exaktc95fc489219223e3d66e8ed1a7a4dbe933b05f08; RESULT/PIN am
+frischen tatsächlichenBranch-HEAD prüfen. Tatsächlich gefahreneLap2-Reopen
+verlor zuvorMesshistorie/Startzeit, finishedReopen die sichtbare besteRunde;
+öffentlicheGesamtzeit und UI hatten unterschiedlichePräzision.
+Identische103er-Probe BASE51PASS/52FAIL → Kandidat103PASS/0FAIL, strictX11/GL;
+alle97Timingbedingungen bleiben, sechsneueResultUI-Bedingungen bestätigen
+sofortversteckte/deaktivierteFahrcontrols, konsistenteResultatüberschrift und
+beobachtete0km/h fürfertigeResultate sofort/nächsterTick. DieHUDkorrektur
+ändert ausschließlichdreiTextanzeigen; roheGeschwindigkeit/Physikbleiben.
+CompleteFlow erhält allealtenGates/Assertions/fünfPNGs und ergänzt echteLap2-
+und finishedReopen mit sechstemPNG. Ergebnis-ID/ACK/eineBelohnung bleiben.
+UnveränderteZeitprobe29PASS;22 App-Proben bleiben22. NeueAPK-/Android-
+Abnahme noch ausstehend; **VISUAL_GAP / NOT FINISHED**. Main/Releases unverändert.
+Die frühere97GREEN-Evidenz vor tiefem Snapshot ist EVIDENCE_BLOCKED;
+ausschließlich finale Snapshot-RED/GREEN-Belege verwenden. Identischefinale
+Probea6f171 aufechtemc95 liegt `base-speed-full/`, finaler7e600-GREEN unter
+`speed-gl-final/`; CompleteFlow `speed-gl-complete-flow/` zeigt tatsächlich
+01:22.983/00:41.183 und0km/h. Finale5Dateien vorIntegrationexaktprüfen.
+
+Die folgendeZeitformat-/1905-Übergabe bleibt historischerNachweis.
+
 # Aktuelle Ergebniszeit-Korrektur für1906 · 8. Oktober2026
 
 Zuerst [die geprüfte kleine Zeitformat-Korrektur](docs/TIME_FORMAT_2026-10-08.md)

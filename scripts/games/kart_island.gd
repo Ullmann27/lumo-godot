@@ -645,7 +645,8 @@ func _resume_saved_race() -> void:
 		if is_instance_valid(kart_audio):
 			kart_audio.play_track("arena" if mode == "arena" else track_id)
 		_pause()
-		message.text = "Deine Fahrt ist gespeichert. Fahre weiter, wenn du bereit bist."
+		if not finished:
+			message.text = "Deine Fahrt ist gespeichert. Fahre weiter, wenn du bereit bist."
 	else:
 		_begin_race()
 
@@ -1672,14 +1673,15 @@ func _update_ghost() -> void:
 
 func _update_hud() -> void:
 	var place: int = _place()
+	var display_speed: int = 0 if finished else int(speed * 3.6)
 	if mode == "arena":
 		hud.text = "KRISTALL-ARENA    %02d:%02d    ◆ %d    PLATZ %d / 6" % [int(maxf(0, 90 - elapsed)) / 60, int(maxf(0, 90 - elapsed)) % 60, arena_scores, place]
 	elif mode == "training":
-		hud.text = "FREIES TRAINING    %d km/h    ★ %d    PAUSE → BEENDEN" % [int(speed * 3.6), collected.size()]
+		hud.text = "FREIES TRAINING    %d km/h    ★ %d    PAUSE → BEENDEN" % [display_speed, collected.size()]
 	elif mode == "time_trial":
-		hud.text = "ZEITFAHREN    RUNDE %d / %d    %.2f s    %d km/h" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, elapsed, int(speed * 3.6)]
+		hud.text = "ZEITFAHREN    RUNDE %d / %d    %.2f s    %d km/h" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, elapsed, display_speed]
 	else:
-		hud.text = "RUNDE %d / %d    PLATZ %d / 6    %d km/h    ★ %d" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, place, int(speed * 3.6), collected.size()]
+		hud.text = "RUNDE %d / %d    PLATZ %d / 6    %d km/h    ★ %d" % [mini(TOTAL_LAPS, int(distance / track_length) + 1), TOTAL_LAPS, place, display_speed, collected.size()]
 	var enabled: bool = racing and not paused and not finished
 	boost_button.text = "SPEED\n◆ %d" % boosts
 	boost_button.disabled = boosts == 0 or not enabled
@@ -1834,7 +1836,8 @@ func _update_checkpoints() -> void:
 	if distance >= target and distance < target + maxf(4.0, speed * 0.3):
 		checkpoint_index += 1
 		if checkpoint_index % 8 == 0:
-			lap_times.append(elapsed - lap_started_at)
+			if lap_started_at >= 0.0:
+				lap_times.append(elapsed - lap_started_at)
 			lap_started_at = elapsed
 			message.text = "Runde geschafft! Weiter so." if mode == "training" else "Letzte Runde!"
 
@@ -2372,7 +2375,7 @@ func _finish(cinematic: bool = true) -> void:
 		"game": "kart", "sessionId": str(SceneRouter.launch_options.get("sessionId", "")),
 		# The Flutter host requires an integer "solved"; Kart has no learning tasks.
 		"resultId": result_id, "status": "completed", "stars": earned,
-		"solved": 0, "elapsedSeconds": snappedf(elapsed, 0.1), "place": place,
+		"solved": 0, "elapsedSeconds": snappedf(elapsed, 0.001), "place": place,
 		"mode": mode, "track": track_id, "driver": selected_driver, "kart": selected_kart,
 		"checkpoints": checkpoint_index, "resets": reset_count
 	}
@@ -2391,7 +2394,7 @@ func _finish(cinematic: bool = true) -> void:
 		pending_cup_next = cup_index < CATALOG.TRACKS.size() - 1
 		result_payload["cupRound"] = cup_index + 1
 		result_payload["cupPoints"] = cup_points[0]
-	if lap_times.is_empty() or elapsed - lap_started_at > 1.0:
+	if lap_started_at >= 0.0 and (lap_times.is_empty() or elapsed - lap_started_at > 1.0):
 		lap_times.append(elapsed - lap_started_at)
 	result_payload["bestLapSeconds"] = snappedf(_best_lap(), 0.001)
 	result_payload["starTokens"] = collected.size()
@@ -2412,6 +2415,10 @@ func _finish(cinematic: bool = true) -> void:
 
 
 func _show_result() -> void:
+	if is_instance_valid(controls_row):
+		controls_row.hide()
+	_update_hud()
+	message.text = _place_title(int(result_payload.get("place", 1))) if _ranked() else "Ziel!"
 	_clear_column(modal_column)
 	modal_scroll.scroll_vertical = 0
 	pause_navigation.hide()
@@ -2496,6 +2503,14 @@ func _format_time(seconds: float) -> String:
 func _result_stats_text() -> String:
 	var lines: PackedStringArray = ["Gesamtzeit   " + _format_time(elapsed)]
 	var best: float = _best_lap()
+	# Older completed saves retain their acknowledged best in the result payload,
+	# even though they never stored individual lap intervals. Display that known
+	# value without inventing history for an unfinished, partially measured lap.
+	if best == 0.0 and finished:
+		var saved_best = result_payload.get("bestLapSeconds", 0.0)
+		if typeof(saved_best) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(saved_best)):
+			if 0.0 < float(saved_best) and float(saved_best) <= elapsed + 0.001:
+				best = float(saved_best)
 	if best > 0.0 and mode not in ["arena", "training"]:
 		lines.append("Beste Runde   " + _format_time(best))
 	lines.append("Sterne gesammelt   %d" % collected.size())
@@ -2725,6 +2740,7 @@ func _save_session() -> void:
 	config.set_value("race", "version", SESSION_VERSION)
 	for key in [
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed",
+		"lap_times", "lap_started_at",
 		"boost_time", "boosts", "opponent_distances", "opponent_lanes", "collected", "difficulty",
 		"mode", "track_id", "selected_driver", "selected_kart", "player_heading", "previous_road_distance",
 		"cup_index", "cup_points", "cup_results", "pending_cup_next", "finished", "completed_race", "result_payload",
@@ -2787,6 +2803,7 @@ func _restore_session() -> bool:
 		var positions: Array = config.get_value("race", "opponent_positions", [])
 		for i in range(mini(positions.size(), opponents.size())):
 			opponents[i].position = positions[i]
+	_restore_lap_timing(config)
 	player.rotation.y = player_heading
 	ghost_valid = false
 	mode = _known_mode(mode)
@@ -2796,6 +2813,65 @@ func _restore_session() -> bool:
 	if finished:
 		_show_result()
 	return true
+
+
+func _restore_lap_timing(config: ConfigFile) -> void:
+	# -1 is an explicitly unmeasured current lap. It survives another save and
+	# becomes known only at the next legitimate lap boundary. First-lap legacy
+	# saves still have the known race start at zero.
+	lap_times.clear()
+	lap_started_at = 0.0 if checkpoint_index < 8 and not finished else -1.0
+	if (
+		not config.has_section_key("race", "lap_times")
+		or not config.has_section_key("race", "lap_started_at")
+	):
+		return
+	var saved_laps = config.get_value("race", "lap_times")
+	var saved_start = config.get_value("race", "lap_started_at")
+	if not saved_laps is Array or typeof(saved_start) not in [TYPE_INT, TYPE_FLOAT]:
+		return
+	var start: float = float(saved_start)
+	if (
+		not is_finite(elapsed)
+		or elapsed < 0.0
+		or not is_finite(start)
+		or (start < 0.0 and start != -1.0)
+		or start > elapsed
+	):
+		return
+	var completed_laps: int = checkpoint_index / 8
+	var partial_finish: bool = finished and mode in ["training", "arena"]
+	if saved_laps.size() > completed_laps + int(partial_finish):
+		return
+	var restored: Array[float] = []
+	var total: float = 0.0
+	for interval in saved_laps:
+		if (
+			typeof(interval) not in [TYPE_INT, TYPE_FLOAT]
+			or not is_finite(float(interval))
+			or float(interval) <= 0.0
+		):
+			return
+		var seconds: float = float(interval)
+		total += seconds
+		restored.append(seconds)
+	var valid: bool = total <= elapsed + 0.001
+	if start >= 0.0:
+		valid = valid and (completed_laps == 0 or start > 0.0)
+		if partial_finish and restored.size() == completed_laps + 1:
+			valid = (
+				valid
+				and absf(total - elapsed) <= 0.001
+				and absf(total - restored[-1] - start) <= 0.001
+			)
+		else:
+			valid = valid and total <= start + 0.001
+			if restored.size() == completed_laps:
+				valid = valid and absf(total - start) <= 0.001
+	if not valid:
+		return
+	lap_times.assign(restored)
+	lap_started_at = start
 
 
 func _sync_item_box_visibility() -> void:
