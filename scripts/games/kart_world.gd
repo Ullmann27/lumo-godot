@@ -31,6 +31,8 @@ var definition: Dictionary = {}
 var checkpoint_positions := PackedVector3Array()
 ## Jump layout (ramp, take-off, gap end) on courses that have one; empty elsewhere.
 var jump: Dictionary = {}
+## Himmel, die gerade erst gerendert wurden, nicht sofort freigeben (siehe _retire_skies).
+static var _retired_skies: Array[Sky] = []
 var loop_layout: Dictionary = {}
 var _road_samples := PackedVector3Array()
 var _road_distances := PackedFloat32Array()
@@ -39,6 +41,8 @@ var _rng := RandomNumberGenerator.new()
 func build(
 	lightweight: bool, selected_track: String = "sonnenhafen", geometry_only: bool = false
 ) -> void:
+	# Ein Neubau (z. B. Grafikwechsel) wirft den alten Himmel weg: ebenfalls kurz zurückhalten.
+	_retire_skies(self)
 	for child in get_children():
 		remove_child(child)
 		child.queue_free()
@@ -1543,3 +1547,24 @@ func _holo_gate(distance: float) -> void:
 		_prop("box",at+basis.x*side*5.6+Vector3.UP*8.2,Vector3(2.7,0.32,0.42),Color("78deef"),basis.rotated(basis.z,side*0.5),true)
 	_prop("box",at+Vector3.UP*8.8,Vector3(9.0,0.32,0.42),Color("91dce9"),basis,true)
 
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EXIT_TREE:
+		_retire_skies(self)
+
+
+## Beobachtet mit Godot 4.6.3 gl_compatibility: Wird ein Streckenhimmel kurz nach dem Rennstart oder
+## bei einem Neubau freigegeben, bleiben seine zwei 256er-Spiegelungstexturen bis zum Beenden liegen
+## („Texture … leaked“). Deshalb hält die Welt ihre Himmel nach dem Abbau noch 1 s fest; mit 0,2 s
+## blieben in Rennbrücke und Rundenspeicherung noch 2 bzw. 4 Texturen liegen.
+static func _retire_skies(root_node: Node) -> void:
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree == null:
+		return
+	for node in root_node.find_children("*", "WorldEnvironment", true, false):
+		var settings: Environment = (node as WorldEnvironment).environment
+		if settings == null or settings.sky == null:
+			continue
+		var sky: Sky = settings.sky
+		_retired_skies.append(sky)
+		tree.create_timer(1.0, true, false, true).timeout.connect(func() -> void: _retired_skies.erase(sky))
