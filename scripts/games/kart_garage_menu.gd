@@ -478,6 +478,28 @@ func _apply_responsive_layout() -> void:
 				_set_physical_font(card, (14 if tiny else 16) if short_landscape else 19, ui_scale)
 				if card.has_method("apply_size"):
 					card.apply_size(ui_scale, short_landscape)
+	# A saved race adds a second footer row on a small portrait phone.
+	# Reserve usable space for the scrolling mode choices, not just the hero.
+	if portrait and window_size.y < 680 and step == 0:
+		_set_physical_minimum(preview_container, Vector2(150, 80), ui_scale)
+		_set_physical_minimum(header_row, Vector2(0, 44), ui_scale)
+		_set_physical_font(title_label, 22, ui_scale)
+		subtitle.hide()
+		body_column.add_theme_constant_override("separation", roundi(6 * ui_scale))
+		_set_physical_minimum(learn_button, Vector2(96, 44), ui_scale)
+		_set_physical_font(learn_button, 16, ui_scale)
+		for button in footer.get_children():
+			if button is Button:
+				_set_physical_minimum(button, Vector2(112, 44), ui_scale)
+				_set_physical_font(button, 16, ui_scale)
+	# Font/minimum-size changes above can temporarily force the margin wider
+	# than the window. Reapply its safe-area edges after queued size updates.
+	var inset_scale: Vector2 = viewport_size / physical_size
+	page_margin.set_deferred("offset_left", safe_insets.position.x * inset_scale.x)
+	page_margin.set_deferred("offset_top", safe_insets.position.y * inset_scale.y)
+	page_margin.set_deferred("offset_right", -safe_insets.size.x * inset_scale.x)
+	page_margin.set_deferred("offset_bottom", -safe_insets.size.y * inset_scale.y)
+	page_margin.set_deferred("size", size - (safe_insets.position + safe_insets.size) * inset_scale)
 
 
 func _set_physical_minimum(control: Control, physical: Vector2, ui_scale: float) -> void:

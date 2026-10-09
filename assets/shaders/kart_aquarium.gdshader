@@ -1,14 +1,11 @@
 shader_type spatial;
 render_mode unshaded, cull_disabled;
-varying vec3 water_position;
-
-void vertex() { water_position = VERTEX; }
-
 void fragment() {
-	float ripple = sin(water_position.x * 0.55 + TIME * 0.32)
-		* sin(water_position.z * 0.73 - TIME * 0.24);
+	// UV.x follows metres along the curved passage; UV.y runs around its arch.
+	float ripple = sin(UV.x * 0.85 + sin(UV.y * 19.0) + TIME * 0.32)
+		* sin(UV.y * 29.0 - TIME * 0.24);
 	float caustic = pow(max(0.0, ripple), 5.0);
-	ALBEDO = mix(vec3(0.015, 0.16, 0.24), vec3(0.035, 0.40, 0.49),
-		clamp(water_position.y * 0.07 + 0.35, 0.0, 1.0));
-	ALBEDO += vec3(0.035, 0.19, 0.17) * caustic;
+	float depth_light = pow(max(0.0, sin(UV.y * 3.14159265)), 0.8);
+	ALBEDO = mix(vec3(0.012, 0.09, 0.17), vec3(0.045, 0.34, 0.43), depth_light);
+	ALBEDO += vec3(0.055, 0.19, 0.16) * caustic;
 }

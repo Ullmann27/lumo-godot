@@ -19,22 +19,22 @@
 - [x] Read model, lighting, menu, physics, world, persistence, input and tests before changes.
 - [x] Port vehicle/stage/garage and their three existing tests, preserving newer tested runtime files.
 - [x] Create scripts/tests/kart_character_pose_regression.gd; actualPR41 fails365of1095checks (idle/speech/companion ear rest overwritten).
-- [ ] Store authored jaw/ear rest positions and apply animation offsets to them.
+- [x] Store authored jaw/ear rest positions and apply animation offsets to them.
 - [ ] Run pose, geometry, contact, vehicle, intro, menu, saved-race and profile-budget regressions.
 - [ ] Capture real front/three-quarter/side/back, face closeup, intro, menu and race frames; inspect against current app avatar.
 
 ## Task2: Start/menu polish
-- [ ] Improve existing step0 stage presentation and compact portrait hero placement; keep five-step routing and original mode IDs.
+- [x] Improve existing step0 stage presentation and compact portrait hero placement; keep five-step routing and original mode IDs.
 - [ ] Verify touch navigation, reduced motion, all five modes, and phone/Fold/tablet layouts with fixed input and source-pinned screenshots.
 
 ## Task3: Profile event race
 - [ ] Pause persistence, switch studentAtoB; reproduce incorrect attempt owner using the real ProgressRepository.
-- [ ] Capture original student ID before the first await; log exactly that identity after completion.
+- [x] Capture original student ID before the first await; log exactly that identity after completion.
 - [ ] Verify same tests green and existing school/progress/module suites; retain legacy storage unchanged.
 
 ## Task4: Android integration and evidence
 - [ ] Pin final reviewed Godot commit into appconfig/godot-source.json; version0.12.12+1919.
-- [ ] Preserve full existing Flutter/native/API35/API36/creative-game workflow; add character capture and final artifact after all required jobs pass.
+- [x] Preserve full existing Flutter/native/API35/API36/creative-game workflow; add character capture and final artifact after all required jobs pass (implemented; candidate execution pending).
 - [ ] Record APK filename, bytes, SHA256, certificate, ABIs and embedded source pin; fetch exact candidate.
 - [ ] Independently inspect code/screenshots; document actual successes and remaining hardware, art, multiplayer and profile-isolation gaps.
 
