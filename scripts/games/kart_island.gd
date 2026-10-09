@@ -932,6 +932,11 @@ func _apply_safe_area(insets: Rect2, physical_size: Vector2) -> void:
 	safe_ui.offset_top = scaled.position.y
 	safe_ui.offset_right = -scaled.size.x
 	safe_ui.offset_bottom = -scaled.size.y
+	# Dim the complete viewport while the dialog keeps its safe-area parent.
+	modal_backdrop.offset_left = -scaled.position.x
+	modal_backdrop.offset_top = -scaled.position.y
+	modal_backdrop.offset_right = scaled.size.x
+	modal_backdrop.offset_bottom = scaled.size.y
 	safe_ui.set_meta("kart_safe_insets_applied", true)
 	call_deferred("_apply_responsive_layout")
 

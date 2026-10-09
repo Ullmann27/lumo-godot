@@ -1,3 +1,13 @@
+# Gepruefter Modal-Viewport-Entwurf · 9. Oktober 2026
+
+Zuerst [die aktuelle kleine Pause-Korrektur](docs/handoffs/LUMO_MODAL_VIEWPORT_REPAIR_2026-10-09.md)
+lesen. BASE3f9 bleibt aktiver Stand; dieser freie Entwurf kompensiert nur die
+vier Hintergrundkanten um Safe Insets. Identische40er-Probe30/10 RED ->40/0 GREEN;
+urspruenglicheModal37 unveraendert37PASS, echte Linux-GL-Bilder und Touchs.
+Keine neue APK-/Android-Abnahme oder Loesung des eigenen1200s-Timeouts.
+SCOPED SOURCE PASS / ANDROID NOT EXECUTED / VISUAL_GAP / NOT FINISHED.
+Die folgenden1908-Quellabschlussangaben sind historischer Kontext vor dem Build.
+
 # Aktueller Einstieg: Integration1908 – VISUAL_GAP / NOT FINISHED
 
 BASE99cdb plus Recovery4bdb werden mit erhaltenen14Karts integriert.
