@@ -42,6 +42,22 @@ func _run() -> void:
 		garage._apply_responsive_layout()
 		garage._choose_preview_view(6)
 		await _settle(14)
+		if pixels.x < pixels.y:
+			assert(
+				garage.setup_row.get_child(0) == garage.setup_right,
+				"Mobile driver/kart hero must precede scrollable cards"
+			)
+			var actual_preview: Rect2 = garage.preview_container.get_global_rect()
+			var actual_fleet: Rect2 = garage.choices.get_global_rect()
+			assert(
+				actual_preview.position.y < actual_fleet.position.y,
+				"Mobile 3D driver must be above the fleet, not below the fold"
+			)
+			assert(
+				actual_preview.position.y >= -1.0
+				and actual_preview.position.y < float(pixels.y) * 0.55,
+				"Mobile Lumo preview must be visible in the first half of the screen"
+			)
 		var center: Vector2 = garage.preview_camera.unproject_position(
 			garage.preview_kart.head.global_position
 		)
