@@ -27,12 +27,28 @@ func _run() -> void:
 		assert(eye.get_child_count() >= 6)
 		var white: MeshInstance3D = eye.get_child(1)
 		var pupil: MeshInstance3D = eye.get_child(3)
-		assert(absf(white.scale.x - 0.105) < 0.0001)
-		assert(absf(white.scale.y - 0.125) < 0.0001)
+		assert(absf(white.scale.x - 0.100) < 0.0001)
+		assert(absf(white.scale.y - 0.114) < 0.0001)
 		assert(pupil.scale.x < white.scale.x * 0.55)
 		assert(pupil.scale.y < white.scale.y * 0.50)
-		assert(eye.position.z <= -0.290 and eye.position.z >= -0.310)
+		assert(eye.position.z <= -0.280 and eye.position.z >= -0.290)
+		assert(white.scale.z < 0.040, "Eye socket must remain shallow")
 		assert(eye.position.x >= -0.180 and eye.position.x <= 0.180)
+	# The character reference also needs wide, swept ears and a genuinely
+	# modelled open smile, without a flat sprite or extra touch/collision nodes.
+	assert(fox.ear_joints.size() == 2)
+	for ear: Node3D in fox.ear_joints:
+		assert(absf(ear.rotation.z) >= 0.40)
+		assert(ear.scale.x >= 1.10 and ear.scale.y >= 0.95)
+	var smile: MeshInstance3D = fox.head.get_node_or_null("LumoSmileCavity")
+	var teeth: MeshInstance3D = fox.head.get_node_or_null("LumoSmileTeeth")
+	var tongue: MeshInstance3D = fox.head.get_node_or_null("LumoSmileTongue")
+	assert(smile != null and teeth != null and tongue != null)
+	var smile_volume: AABB = smile.mesh.get_aabb()
+	assert(smile_volume.size.x >= 0.30 and smile_volume.size.y >= 0.09)
+	assert(smile_volume.position.z < -0.42)
+	assert(teeth.position.z < smile_volume.position.z + 0.010)
+	assert(tongue.position.z < smile_volume.position.z + 0.010)
 	fox.free()
 	# Other animal drivers retain their existing face system.
 	var rabbit := AuthoredDriver.new()
@@ -42,6 +58,10 @@ func _run() -> void:
 	for eye: Node3D in rabbit.eyes:
 		var white: MeshInstance3D = eye.get_child(1)
 		assert(absf(white.scale.x - 0.119) < 0.0001)
+	assert(rabbit.head.get_node_or_null("LumoSmileCavity") == null)
+	assert(rabbit.ear_joints.size() == 2)
+	for ear: Node3D in rabbit.ear_joints:
+		assert(absf(ear.rotation.z) < 0.24)
 	rabbit.free()
-	print("[LumoEyeProportions] PASS: smaller fox eye, brown iris, other animals unchanged")
+	print("[LumoEyeProportions] PASS: fox eyes, swept ears, open smile; other drivers unchanged")
 	quit(0)
