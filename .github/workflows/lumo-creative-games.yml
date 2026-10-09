@@ -1,0 +1,84 @@
+name: Lumo creative games runtime
+on:
+  push:
+    branches: [chatgpt/lumo-complete-games-2026-10-07]
+  workflow_dispatch:
+concurrency:
+  group: lumo-creative-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install matching engine and software graphics
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ripgrep xvfb libgl1-mesa-dri mesa-vulkan-drivers
+          curl -fsSL --retry 2 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o /tmp/godot.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot-engine
+          echo /tmp/godot-engine >> "$GITHUB_PATH"
+      - name: Import exact source
+        run: |
+          mkdir -p exports/creative-build
+          git rev-parse HEAD > exports/creative-build/source-sha.txt
+          Godot_v4.6.3-stable_linux.x86_64 --headless --editor --import > exports/creative-build/import.log 2>&1
+          if rg 'SCRIPT ERROR|Parse Error|Failed to load script' exports/creative-build/import.log; then exit 1; fi
+      - name: Instantiate every creative game in headless mode
+        run: |
+          timeout 60s Godot_v4.6.3-stable_linux.x86_64 --headless --script res://scripts/tests/creative_scene_smoke.gd > exports/creative-build/parse.log 2>&1
+          if rg 'SCRIPT ERROR|Parse Error|Failed to load script|ERROR:' exports/creative-build/parse.log; then exit 1; fi
+      - name: Actual Bauwelt play and screenshot checks
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -o pipefail
+          timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --resolution 1280x720 --script res://scripts/tests/creative_build_capture.gd 2>&1 | tee exports/creative-build/runtime.log
+          if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' exports/creative-build/runtime.log; then exit 1; fi
+          test -s exports/creative-build/01_bauwelt_house.png
+          test -s exports/creative-build/02_bauwelt_bridge_test.png
+      - name: Rhythm and adventure gameplay captures
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -o pipefail
+          timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --resolution 1280x720 --script res://scripts/tests/creative_adventure_capture.gd 2>&1 | tee exports/creative-build/adventure-runtime.log
+          if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' exports/creative-build/adventure-runtime.log; then exit 1; fi
+          test -s exports/creative-build/06_rhythm_play.png
+          test -s exports/creative-build/09_treasure_inventory.png
+      - name: Native puzzle picking, dragging, snapping and saved progress
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -o pipefail
+          timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --resolution 1280x720 --script res://scripts/tests/creative_puzzle_capture.gd 2>&1 | tee exports/creative-build/puzzle-runtime.log
+          if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' exports/creative-build/puzzle-runtime.log; then exit 1; fi
+          test -s exports/creative-build/10_puzzle_12_parts.png
+          test -s exports/creative-build/11_puzzle_96_parts.png
+      - name: Real five-step kart selection on desktop and short landscape
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -o pipefail
+          timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_menu_flow_regression.gd 2>&1 | tee exports/creative-build/menu-runtime.log
+          if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' exports/creative-build/menu-runtime.log; then exit 1; fi
+          rg -F '[KartMenuFlow] PASS:' exports/creative-build/menu-runtime.log
+          cp exports/holographic-proof/menu-flow-*.png exports/holographic-proof/race-flow-*.png exports/creative-build/
+      - name: Eight new circuits, jump physics and driveable loop checks
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -o pipefail
+          timeout 360s xvfb-run -a -s '-screen 0 1280x720x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --resolution 1280x720 --script res://scripts/tests/kart_expansion_capture.gd 2>&1 | tee exports/creative-build/expansion-runtime.log
+          if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' exports/creative-build/expansion-runtime.log; then exit 1; fi
+          test -s exports/creative-build/track_candy_cloud.png
+          test -s exports/creative-build/track_volcano_night.png
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-creative-runtime-${{ github.run_id }}
+          path: exports/creative-build/
+          if-no-files-found: error

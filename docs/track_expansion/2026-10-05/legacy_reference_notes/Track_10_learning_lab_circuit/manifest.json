@@ -1,0 +1,32 @@
+{
+  "track_number": 10,
+  "title": "Learning Lab Circuit",
+  "variant": "Learning campus variant",
+  "theme": "futuristic learning campus with science, math, creativity, reading and quiz zones",
+  "environment": "subject towers, branching lanes, puzzle gates, holograms, waterfalls",
+  "hazards": "branch decisions, busy signage, split path timing, modular subject events",
+  "signature_features": "quiz zone gate, puzzle path split, learning icon loop, subject districts",
+  "learning_integration": "main progression showcase track connecting racing to school progress",
+  "files": {
+    "hero_2560": "track_10_hero_2560.png",
+    "hero_original": "track_10_hero_original.png",
+    "shared_core_assets": [
+      "boost_pad_1536.png",
+      "mystery_box_1536.png",
+      "iq_fox_1536.png",
+      "slime_hazard_1536.png",
+      "loop_module_1536.png",
+      "energy_bolt_1536.png",
+      "turbo_crystal_1536.png",
+      "jump_ramp_1536.png",
+      "magnet_powerup_1536.png",
+      "shield_bubble_1536.png"
+    ],
+    "docs": [
+      "DESIGN_BRIEF.md",
+      "DETAIL_CHECKLIST_120.md",
+      "COPILOT_PROMPT.md",
+      "OPUS_HANDOFF.md"
+    ]
+  }
+}

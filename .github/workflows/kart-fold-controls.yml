@@ -1,0 +1,53 @@
+name: Kart Fold controls and real render
+on:
+  push:
+    branches: [chatgpt/fold-kart-controls-2026-10-07]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: kart-fold-controls-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install matching engine and renderer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri ripgrep
+          curl -fsSL --retry 2 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o /tmp/godot.zip
+          mkdir /tmp/godot-fold
+          unzip -q /tmp/godot.zip -d /tmp/godot-fold
+          echo /tmp/godot-fold >> "$GITHUB_PATH"
+      - name: Import exact source
+        run: |
+          mkdir -p exports/fold-controls
+          git rev-parse HEAD > exports/fold-controls/source-sha.txt
+          Godot_v4.6.3-stable_linux.x86_64 --headless --editor --import > exports/fold-controls/import.log 2>&1
+          if rg 'SCRIPT ERROR|Parse Error|Failed to load' exports/fold-controls/import.log; then exit 1; fi
+      - name: Fold sizes, artwork and actual multi-touch
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -o pipefail
+          timeout 240s xvfb-run -a -s '-screen 0 2400x2400x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_fold_controls_regression.gd 2>&1 | tee exports/fold-controls/controls.log
+          if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' exports/fold-controls/controls.log; then exit 1; fi
+          rg -F '[KartFoldControls] PASS:' exports/fold-controls/controls.log
+      - name: Existing actual driving and pause regressions
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -o pipefail
+          for test in kart_touch_regression kart_pause_layout_regression kart_physics_regression; do
+            timeout 240s xvfb-run -a -s '-screen 0 2400x2400x24' Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --script "res://scripts/tests/$test.gd" 2>&1 | tee "exports/fold-controls/$test.log"
+            if rg 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' "exports/fold-controls/$test.log"; then exit 1; fi
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kart-fold-controls-${{ github.run_id }}
+          path: exports/fold-controls/
+          if-no-files-found: error

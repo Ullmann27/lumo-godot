@@ -1,5 +1,9 @@
 # CLAUDE.md - Lumo 3D Mobile App Shell (Godot 4.6.3)
 
+**Aktueller Einstieg:** Zuerst `OPUS_NEXT.md` und den dort verlinkten vollständigen
+Auftrag von Heinz lesen. Die historische Standalone-Beschreibung weiter unten
+wird durch die aktuelle Flutter/Godot-Integration ergänzt.
+
 > **Tech-Leitlinie**: Nutze moderne Mobile-3D-Techniken: Godot Mobile
 > Renderer, Quality Profiles, GLB/glTF Asset Pipeline, KTX2/BasisU
 > Texturkompression, PBR Materials, Mobile Shader Fallbacks, Touch

@@ -32,6 +32,11 @@ const FLUTTER_PACKAGE: String = "dev.ullmann.lumo.lumo_lernen"
 ##   section: "learn" | "cards" | "reading" | "" (offen am Home)
 ## Rückgabe: true wenn der Open-Intent abgesetzt werden konnte, sonst false.
 static func launch_learning_app(section: String = "") -> bool:
+	var tree = Engine.get_main_loop()
+	if tree is SceneTree:
+		var host = tree.root.get_node_or_null("HostBridge")
+		if host and host.return_to_app("learn"):
+			return true
 	# Nur auf Android sinnvoll - Deep-Link zwischen Apps.
 	if OS.get_name() != "Android":
 		print("[FlutterBridge] not Android (%s) - cannot deep-link" % OS.get_name())

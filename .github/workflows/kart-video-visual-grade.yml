@@ -1,0 +1,117 @@
+name: Lumo Kart Video Reference Grade
+
+on:
+  push:
+    branches:
+      - chatgpt/kart-video-visual-grade-2026-10-07
+    paths:
+      - "scripts/games/kart_visual_grade.gd"
+      - "scripts/games/kart_island.gd"
+      - "scripts/games/kart_world.gd"
+      - "scripts/games/kart_sky_islands.gd"
+      - "assets/shaders/kart_asphalt.gdshader"
+      - "scripts/tests/kart_video_visual_regression.gd"
+      - ".github/workflows/kart-video-visual-grade.yml"
+  pull_request:
+    paths:
+      - "scripts/games/kart_visual_grade.gd"
+      - "scripts/games/kart_island.gd"
+      - "scripts/games/kart_world.gd"
+      - "scripts/games/kart_sky_islands.gd"
+      - "assets/shaders/kart_asphalt.gdshader"
+      - "scripts/tests/kart_video_visual_regression.gd"
+      - ".github/workflows/kart-video-visual-grade.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  video-grade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import project and reject script or shader errors
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --editor --import --quit \
+            > "$RUNNER_TEMP/import.log" 2>&1
+          cat "$RUNNER_TEMP/import.log"
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import.log"; then
+            exit 1
+          fi
+      - name: Capture and validate reference-grade runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/video-reference-grade
+          timeout 420s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://scripts/tests/kart_video_visual_regression.gd \
+            > "$RUNNER_TEMP/video-grade.log" 2>&1
+          cat "$RUNNER_TEMP/video-grade.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/video-grade.log"; then
+            exit 1
+          fi
+          grep -F '[KartVideoGrade] PASS:' "$RUNNER_TEMP/video-grade.log"
+          test -s exports/video-reference-grade/01_holo_city_chase.png
+          test -s exports/video-reference-grade/02_holo_city_boost.png
+          test -s exports/video-reference-grade/03_himmelsinseln_chase.png
+          test -s exports/video-reference-grade/04_sonnenhafen_chase.png
+          test -s exports/video-reference-grade/05_zauberwald_chase.png
+          test -s exports/video-reference-grade/06_reduced_motion.png
+      - name: Existing rival fairness
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --script res://scripts/tests/kart_rival_item_feedback_regression.gd \
+            > "$RUNNER_TEMP/rival.log" 2>&1
+          cat "$RUNNER_TEMP/rival.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/rival.log"; then exit 1; fi
+          grep -F '[KartRivalFeedback] PASS:' "$RUNNER_TEMP/rival.log"
+      - name: Existing mode and physics regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 300s Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --script res://scripts/tests/kart_modes_regression.gd \
+            > "$RUNNER_TEMP/modes.log" 2>&1
+          cat "$RUNNER_TEMP/modes.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/modes.log"; then exit 1; fi
+          grep -F '[KartModesTests] PASS:' "$RUNNER_TEMP/modes.log"
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --script res://scripts/tests/kart_physics_regression.gd \
+            > "$RUNNER_TEMP/physics.log" 2>&1
+          cat "$RUNNER_TEMP/physics.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/physics.log"; then exit 1; fi
+          grep -F '[KartPhysics]' "$RUNNER_TEMP/physics.log"
+      - name: Upload real captures and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kart-video-grade-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/import.log
+            ${{ runner.temp }}/video-grade.log
+            ${{ runner.temp }}/rival.log
+            ${{ runner.temp }}/modes.log
+            ${{ runner.temp }}/physics.log
+            exports/video-reference-grade/*.png
+            exports/video-reference-grade/*.json
+          if-no-files-found: warn
+          retention-days: 14

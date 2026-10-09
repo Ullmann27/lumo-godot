@@ -1,0 +1,218 @@
+name: Verify Lumo Kart Stage 2
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/kart-stage2-regression.yml
+      - assets/shaders/kart_*.gdshader
+      - scripts/games/kart_*.gd
+      - scripts/games/authoring/**
+      - scenes/games/track_authoring/**
+      - tools/validate_track_packs.py
+      - scripts/tests/kart_*.gd
+      - docs/track_expansion/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kart-stage2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Static project validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/validate_project.py
+
+      - name: Validate structured track developer packs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/validate_track_packs.py
+
+      - name: Import project and parse GDScript/shaders
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --editor --import --quit \
+            > "$RUNNER_TEMP/godot-import.log" 2>&1
+          cat "$RUNNER_TEMP/godot-import.log"
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/godot-import.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/godot-import.log"
+            exit 1
+          fi
+
+      - name: Track geometry contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script res://scripts/tests/kart_track_contract.gd \
+            > "$RUNNER_TEMP/track-contract.log" 2>&1
+          cat "$RUNNER_TEMP/track-contract.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/track-contract.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/track-contract.log"
+            exit 1
+          fi
+          grep -F '[TrackContract]' "$RUNNER_TEMP/track-contract.log"
+          grep -F 'bergwelt' "$RUNNER_TEMP/track-contract.log"
+
+      - name: Sky Halo authoring safety contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script res://scripts/tests/kart_sky_halo_authoring_contract.gd \
+            > "$RUNNER_TEMP/sky-halo-contract.log" 2>&1
+          cat "$RUNNER_TEMP/sky-halo-contract.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/sky-halo-contract.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/sky-halo-contract.log"
+            exit 1
+          fi
+          grep -F '[SkyHaloContract]' "$RUNNER_TEMP/sky-halo-contract.log"
+
+      - name: Kart physics regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script res://scripts/tests/kart_physics_regression.gd \
+            > "$RUNNER_TEMP/kart-physics.log" 2>&1
+          cat "$RUNNER_TEMP/kart-physics.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-physics.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/kart-physics.log"
+            exit 1
+          fi
+          grep -F '[KartPhysics]' "$RUNNER_TEMP/kart-physics.log"
+
+      - name: Kart mode and dynamic cup regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 300s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script res://scripts/tests/kart_modes_regression.gd \
+            > "$RUNNER_TEMP/kart-modes.log" 2>&1
+          cat "$RUNNER_TEMP/kart-modes.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-modes.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/kart-modes.log"
+            exit 1
+          fi
+          grep -F '[KartModesTests] PASS:' "$RUNNER_TEMP/kart-modes.log"
+
+      - name: Fold and pause layout regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          # This regression intentionally asserts a real desktop/window backend because it
+          # captures rendered frames and injects physical-pixel touch coordinates.
+          # Run it under Xvfb instead of Godot --headless.
+          timeout 300s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . \
+            --rendering-method gl_compatibility \
+            --audio-driver Dummy \
+            --script res://scripts/tests/kart_pause_layout_regression.gd \
+            > "$RUNNER_TEMP/kart-fold.log" 2>&1
+          cat "$RUNNER_TEMP/kart-fold.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/kart-fold.log"; then
+            echo "Rejected Godot error output in $RUNNER_TEMP/kart-fold.log"
+            exit 1
+          fi
+          grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/kart-fold.log"
+
+      - name: Capture actual runtime frames for four track worlds
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/sonnenhafen exports/sky-islands exports/zauberwald exports/holo-city
+          timeout 220s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . \
+            --rendering-method gl_compatibility \
+            --audio-driver Dummy \
+            --script res://scripts/tests/kart_sonnenhafen_showcase.gd \
+            > "$RUNNER_TEMP/kart-sonnenhafen-capture.log" 2>&1
+          cat "$RUNNER_TEMP/kart-sonnenhafen-capture.log"
+          test -s exports/sonnenhafen/01_start_grid.png
+          test -s exports/sonnenhafen/06_overview.png
+
+          timeout 220s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . \
+            --rendering-method gl_compatibility \
+            --audio-driver Dummy \
+            --script res://scripts/tests/kart_sky_islands_showcase.gd \
+            > "$RUNNER_TEMP/kart-sky-capture.log" 2>&1
+          cat "$RUNNER_TEMP/kart-sky-capture.log"
+          test -s exports/sky-islands/07_overview.png
+          test -s exports/sky-islands/08_mystery_prisms.png
+          grep -F '[SkyShots] runtime Mystery Prisms=5' "$RUNNER_TEMP/kart-sky-capture.log"
+
+          timeout 220s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . \
+            --rendering-method gl_compatibility \
+            --audio-driver Dummy \
+            --script res://scripts/tests/kart_zauberwald_showcase.gd \
+            > "$RUNNER_TEMP/kart-zauberwald-capture.log" 2>&1
+          cat "$RUNNER_TEMP/kart-zauberwald-capture.log"
+          test -s exports/zauberwald/01_glow_arch.png
+          test -s exports/zauberwald/06_overview.png
+
+          timeout 220s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . \
+            --rendering-method gl_compatibility \
+            --audio-driver Dummy \
+            --script res://scripts/tests/kart_holo_city_showcase.gd \
+            > "$RUNNER_TEMP/kart-holo-city-capture.log" 2>&1
+          cat "$RUNNER_TEMP/kart-holo-city-capture.log"
+          test -s exports/holo-city/01_nova_link.png
+          test -s exports/holo-city/06_overview.png
+
+          mkdir -p exports/sky-halo-authoring
+          timeout 180s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . \
+            --rendering-method gl_compatibility \
+            --audio-driver Dummy \
+            --script res://scripts/tests/kart_sky_halo_authoring_showcase.gd \
+            > "$RUNNER_TEMP/sky-halo-capture.log" 2>&1
+          cat "$RUNNER_TEMP/sky-halo-capture.log"
+          test -s exports/sky-halo-authoring/01_side.png
+          test -s exports/sky-halo-authoring/02_three_quarter.png
+
+      - name: Upload regression logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kart-stage2-regression-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/godot-import.log
+            ${{ runner.temp }}/track-contract.log
+            ${{ runner.temp }}/kart-physics.log
+            ${{ runner.temp }}/kart-modes.log
+            ${{ runner.temp }}/kart-fold.log
+            ${{ runner.temp }}/kart-sonnenhafen-capture.log
+            ${{ runner.temp }}/kart-sky-capture.log
+            ${{ runner.temp }}/kart-zauberwald-capture.log
+            ${{ runner.temp }}/kart-holo-city-capture.log
+            ${{ runner.temp }}/sky-halo-contract.log
+            ${{ runner.temp }}/sky-halo-capture.log
+            exports/sonnenhafen/*.png
+            exports/sky-islands/*.png
+            exports/zauberwald/*.png
+            exports/holo-city/*.png
+            exports/sky-halo-authoring/*.png
+          if-no-files-found: warn
+          retention-days: 14
