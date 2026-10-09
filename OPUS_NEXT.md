@@ -1,3 +1,12 @@
+# Aktueller Einstieg: Integration1908 – VISUAL_GAP / NOT FINISHED
+
+BASE99cdb plus Recovery4bdb werden mit erhaltenen14Karts integriert.
+Aktuelle Quellen/Builds/Nachweise und offene Abweichungen: [LUMO_INTEGRATION_1908_2026-10-09.md](docs/handoffs/LUMO_INTEGRATION_1908_2026-10-09.md).
+[Claim](docs/claims/LUMO_INTEGRATION_1908_2026-10-09.md): Profilbudget, echte Ressourcen-/Rückkehrprüfung, gemessene HIGH-Lichtkorrektur; Zieleinlaufversuch separat.
+Keine1908APK gebaut/freigegeben. Fremder1907Build existiert; dessen Android-Kart-Auswertung läuft. Ältere Einträge unten sind historisch.
+
+---
+
 # Aktuelle Runden-Speicherung für1906 · 9. Oktober2026
 
 Zuerst [das geprüfte Lap-Session-Paket](docs/LAP_SESSION_2026-10-09.md) lesen.

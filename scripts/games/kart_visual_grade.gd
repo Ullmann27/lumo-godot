@@ -47,7 +47,7 @@ static func environment_profile(track_id: String, low_detail: bool) -> Dictionar
 		"sonnenhafen":
 			profile.contrast = 1.08
 			profile.saturation = 1.12
-			profile.exposure = 1.03
+			profile.exposure = 1.03 if low_detail else 0.94
 			profile.glow_intensity = 0.62
 		"zauberwald":
 			profile.contrast = 1.10
