@@ -1,3 +1,49 @@
+# Wiederherstellung 2 · aktueller Stand 2026-10-09 · NOT FINISHED
+
+Aktueller dauerhafter Recovery-Checkpoint ist Godot
+`4b63ec27cb423e600c3ded182f57a795dc357579`, Tree
+`6d9369acf169e22a9dae69a398ffd0ce5ad00e64` (frisch lokal geprüft).
+Produktdatei `kart_island.gd` ist SHA256
+`7247dd551b900194936d60d31e4436d0e2a9dc74fb4c91e2306d94f6d8689c8c`.
+Die neu implementierte Continuity-Probe umfasst **104** zusätzliche Bedingungen;
+der aufgerufene Lifecycle-Helper umfasst **10** getrennte Zustandsbedingungen.
+48 Continuity- und26 CompleteFlow-assert-Callsites des frischen c95-Originals
+sind statisch unverändert erhalten; diese Zahlen sind keine instrumentierten
+Einzeltest-Ausführungszahlen. Die App-Inventur bleibt bei22 Probeentrypoints.
+
+Der zweite Scratchverlust hat die dortigen aktuellen7247-Outputs erneut
+entfernt. Der beobachtete104+10-GL-Lauf hatte sämtliche funktionalen Bedingungen
+GREEN, scheiterte jedoch strikt an14 Texture-Leaks beim Engine-Ende: **GPU FAIL**.
+Diese verlorenen Dateien dürfen nicht als aktuell vorhanden oder erneut gehasht
+behauptet werden. Neuaufnahme und Userdaten liegen jetzt ausschließlich unter
+`/tmp/lumo1906-recovery2`; Code wurde aus dem aktuellen GitHub-Checkpoint
+wiederhergestellt, nicht aus alten Berichten neu erfunden.
+
+Frische neue Teilnachweise nach dem zweiten Verlust: regulärer Headless-Coldimport
+EngineExit0 ohne ERROR; unveränderter fb78-Lifecycle-Helper funktional10/0, aber
+erneut14 Texture-Leaks und striktesFAIL. Vier isolierte Texture-Kontrollen
+(Konstruktion, tatsächliche Regeneration,3D-Normalmap, bytegleiche ImageTexture)
+schließen ohne Enginefehler. Das belegt bislang keinen allgemeinen NoiseTexture-
+oder Materialbindungsfehler. Helper-Cleanup bleibt ein kleiner reversibler
+Versuch; Produkt-Texture-/Physics-/Kamera-Code wurde dafür nicht verändert.
+Der nur lokal rekonstruierte Helper23688 ist **DRAFT / NOT ACCEPTED**.
+
+Frühere sporadische ACK-Save-Fehler im Workspace sind unverklärt; der vor dem
+zweiten Verlust beobachtete einzelne isolierte/tmp-FullFlow-PASS ist kein
+verfügbarer neuer Dateinachweis. Vollständiger neuer104+10-GL-Abschluss, zwei
+unveränderte/tmp-FullFlow-Abschlüsse, aktueller Time29-Nachweis und unabhängige
+Native22-CI bleiben Integrationsgates. Keine Assertions, ACK-Gates oder
+strict-Engineerrorprüfungen abschwächen. APK/SDK-Integration, Android/API35/36,
+physische Fold-Prüfung und Geräteperformance bleiben **NOT FINISHED / NOT EXECUTED**.
+Keine Android-Wallet- oder60-FPS-Zusage aus den nativen Testhost-Fixtures ableiten.
+
+## HISTORICAL / LOST ORIGINAL · frühere103/a6f171-Übergabe
+
+Der folgende vorherige Text bleibt unverändert als historische Übergabe.
+Die ursprünglichen a6f171-/a2605686-Testbytes wurden nach dem ersten Verlust
+nicht wiederhergestellt; die damaligen Dateipfade und Screenshots sind kein
+neuer Nachweis aktuell vorhandener Originaldateien.
+
 # Aktuelle Runden-Speicherung für1906 · 9. Oktober2026
 
 Zuerst [das geprüfte Lap-Session-Paket](docs/LAP_SESSION_2026-10-09.md) lesen.
