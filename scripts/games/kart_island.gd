@@ -100,6 +100,10 @@ const FINISH_CINE_SECONDS: float = 3.2
 const FINISH_CINE_REDUCED_SECONDS: float = 0.35
 var finish_cine_left: float = 0.0
 var finish_coast_speed: float = 0.0
+var finish_coast_reverse: bool = false
+var finish_road_distance: float = -1.0
+var finish_camera_world: int = 0
+var finish_camera_boxes: Array[Dictionary] = []
 var finish_place: int = 0
 var finish_confetti: Node3D
 var lap_times: Array[float] = []
@@ -1936,6 +1940,9 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 		if snap
 		else camera.position.lerp(desired, minf(1.0, delta * VISUAL_GRADE.CAMERA_LERP))
 	)
+	if finished:
+		target = player.position + Vector3.UP * 1.25
+		camera.position = _clear_finish_camera(camera.position, target)
 	camera.look_at(target)
 	if not reduced_motion:
 		var roll: float = (
@@ -2611,7 +2618,9 @@ func _place_color(place: int) -> Color:
 ## das Ergebnis über der weiterlaufenden 3D-Szene.
 func _start_finish_cine(place: int) -> void:
 	finish_place = place
-	finish_coast_speed = maxf(speed, 6.0)
+	finish_coast_reverse = speed < 0.0
+	finish_coast_speed = physical_velocity.length() * (-1.0 if finish_coast_reverse else 1.0)
+	finish_road_distance = previous_road_distance
 	modal.hide()
 	if is_instance_valid(controls_row):
 		controls_row.hide()
@@ -2627,24 +2636,142 @@ func _update_finish_cine(delta: float) -> void:
 	finish_cine_left = maxf(0.0, finish_cine_left - delta)
 	var total: float = FINISH_CINE_REDUCED_SECONDS if reduced_motion else FINISH_CINE_SECONDS
 	var t: float = clampf(1.0 - finish_cine_left / total, 0.0, 1.0)
+	_coast_finished_kart(delta)
 	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
-	# Ausrollen mit sanfter Bremsung, nicht abrupt stehen bleiben.
-	finish_coast_speed = move_toward(finish_coast_speed, 0.0, delta * maxf(6.0, finish_coast_speed * 0.55))
-	player.position += ahead * finish_coast_speed * delta
-	player.set_motion(finish_coast_speed, 0.0, false, false)
-	speed = finish_coast_speed
 	if is_instance_valid(camera):
-		var blend: float = smoothstep(0.0, 1.0, t)
-		var side := Vector3(-ahead.z, 0, ahead.x)
-		var angle: float = lerpf(0.0, PI * 0.78, blend)
-		var radius: float = lerpf(6.6, 4.6, blend)
-		var offset: Vector3 = (-ahead * cos(angle) + side * sin(angle)) * radius
-		var desired: Vector3 = player.position + offset + Vector3.UP * lerpf(3.5, 1.7, blend)
-		camera.position = camera.position.lerp(desired, minf(1.0, delta * 6.0))
-		camera.look_at(player.position + Vector3.UP * 1.25)
+		if reduced_motion:
+			_update_camera(delta)
+		else:
+			var blend: float = smoothstep(0.0, 1.0, t)
+			var side := Vector3(-ahead.z, 0, ahead.x)
+			var angle: float = lerpf(0.0, PI * 0.78, blend)
+			var radius: float = lerpf(6.6, 4.6, blend)
+			var offset: Vector3 = (-ahead * cos(angle) + side * sin(angle)) * radius
+			var target: Vector3 = player.position + Vector3.UP * 1.25
+			var desired: Vector3 = player.position + offset + Vector3.UP * lerpf(3.5, 1.7, blend)
+			desired = camera.position.lerp(desired, minf(1.0, delta * 6.0))
+			camera.position = _clear_finish_camera(desired, target)
+			camera.look_at(target)
 	_update_hud()
 	if finish_cine_left <= 0.0:
 		_show_result()
+
+
+## Keep the actual momentum and the same contact surface after the result is fixed.
+func _coast_finished_kart(delta: float) -> void:
+	var magnitude: float = physical_velocity.length()
+	var damped: float = move_toward(magnitude, 0.0, delta * maxf(6.0, magnitude * 0.55))
+	physical_velocity *= damped / magnitude if magnitude > 0.0 else 0.0
+	player.position += physical_velocity * delta
+	if mode != "arena" and is_instance_valid(world):
+		var road: Dictionary = world.sample_road(player.position, finish_road_distance)
+		lane = float(road.lateral)
+		# Settle the existing contact projection and nearest-surface estimate.
+		# This does not steer or move the kart toward the centre of the lane.
+		for contact_step in range(4):
+			finish_road_distance = float(road.distance)
+			if not airborne and not world.in_gap(finish_road_distance):
+				# Banked road normals couple vertical contact to lateral contact.
+				# Resolve the ground before the rail so neither undoes the other.
+				player.position.y = (
+					float(road.height) + 0.035
+					+ world.ramp_height(finish_road_distance)
+					+ world.alternate_route_height(finish_road_distance, lane)
+				)
+				road = world.sample_road(player.position, finish_road_distance)
+				lane = float(road.lateral)
+			if absf(lane) > WORLD.WALL_LATERAL:
+				_collide_with_rail(road)
+			road = world.sample_road(player.position, finish_road_distance)
+			lane = float(road.lateral)
+		finish_road_distance = float(road.distance)
+		var ground: float = (
+			float(road.height) + 0.035
+			+ world.ramp_height(finish_road_distance)
+			+ world.alternate_route_height(finish_road_distance, lane)
+		)
+		if airborne or world.in_gap(finish_road_distance):
+			airborne = true
+			vertical_speed -= JUMP_GRAVITY * delta
+			player.position.y += vertical_speed * delta
+			if not world.in_gap(finish_road_distance) and player.position.y <= ground:
+				player.position.y = ground
+				airborne = false
+				vertical_speed = 0.0
+		# Grounded contact was already solved together with the rail above.
+		var normal: Vector3 = (road.basis as Basis).y
+		var forward := Vector3(-sin(player_heading), 0, -cos(player_heading))
+		var right: Vector3 = forward.cross(normal).normalized()
+		player.basis = Basis(right, normal, -normal.cross(right).normalized()).orthonormalized()
+	elif mode == "arena":
+		player.position.y = 0.035
+	finish_coast_speed = physical_velocity.length() * (-1.0 if finish_coast_reverse else 1.0)
+	speed = finish_coast_speed
+	player.set_motion(finish_coast_speed, 0.0, false, false)
+
+
+## Box props are GPU instances, not physics bodies. Use their drawn transforms.
+func _cache_finish_camera_boxes() -> void:
+	if not is_instance_valid(world) or finish_camera_world == world.get_instance_id():
+		return
+	finish_camera_world = world.get_instance_id()
+	finish_camera_boxes.clear()
+	for child in world.get_children():
+		if not child is MultiMeshInstance3D:
+			continue
+		var instances: MultiMesh = child.multimesh
+		if instances == null or not instances.mesh is BoxMesh:
+			continue
+		var bounds: AABB = instances.mesh.get_aabb()
+		for index in range(instances.instance_count):
+			var pose: Transform3D = child.global_transform * instances.get_instance_transform(index)
+			if pose.origin.distance_to(player.global_position) > 45.0 + pose.basis.get_scale().length():
+				continue
+			var scale_size: Vector3 = pose.basis.get_scale().abs()
+			var margin := Vector3(
+				0.15 / maxf(scale_size.x, 0.001),
+				0.15 / maxf(scale_size.y, 0.001),
+				0.15 / maxf(scale_size.z, 0.001)
+			)
+			finish_camera_boxes.append({
+				"inverse": pose.affine_inverse(),
+				"bounds": AABB(bounds.position - margin, bounds.size + margin * 2.0)
+			})
+
+
+func _finish_camera_segment_fraction(target: Vector3, desired: Vector3) -> float:
+	var nearest: float = 1.0
+	for box in finish_camera_boxes:
+		var inverse: Transform3D = box.inverse
+		var local_start: Vector3 = inverse * target
+		var local_end: Vector3 = inverse * desired
+		var ray: Vector3 = local_end - local_start
+		var bounds: AABB = box.bounds
+		var enter: float = 0.0
+		var leave: float = 1.0
+		for axis in range(3):
+			if absf(ray[axis]) < 0.000001:
+				if local_start[axis] < bounds.position[axis] or local_start[axis] > bounds.end[axis]:
+					enter = 2.0
+					break
+			else:
+				var first: float = (bounds.position[axis] - local_start[axis]) / ray[axis]
+				var last: float = (bounds.end[axis] - local_start[axis]) / ray[axis]
+				enter = maxf(enter, minf(first, last))
+				leave = minf(leave, maxf(first, last))
+		if enter <= leave and leave >= 0.0 and enter < nearest:
+			nearest = maxf(0.0, enter - 0.02)
+	return nearest
+
+
+func _clear_finish_camera(desired: Vector3, target: Vector3) -> Vector3:
+	_cache_finish_camera_boxes()
+	var result: Vector3 = target.lerp(desired, _finish_camera_segment_fraction(target, desired))
+	if result.distance_to(target) < 2.2 and is_instance_valid(world):
+		var road: Dictionary = world.sample_road(player.position, finish_road_distance)
+		var fallback: Vector3 = player.position - road.forward * 4.6 + (road.basis as Basis).y * 3.5
+		result = target.lerp(fallback, _finish_camera_segment_fraction(target, fallback))
+	return result
 
 
 func _skip_finish_cine() -> void:

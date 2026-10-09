@@ -9,8 +9,10 @@ Scope dieses Pakets: ProgressStore-Profilbudget und neue24er-Regressionsprobe,
 zwei exakt erhaltene Runtime-Test-Cleanups, gemessene Sonnenhafen-HIGH-Lichtkorrektur,
 aktuelle Übergabe. Fremde14-Kart/Werkstatt/IQ-Arbeit wird erhalten.
 
-Separat reversibel: belegter Zieleinlauf-/Kamerafehler. Erst nach unveränderten
-Flow-Assertions, physikalischen Kriterien und echten Renderbildern übernehmen.
+Separat reversibel angenommen: belegter Zieleinlauf-/Kamerafehler nach festen
+16er-Bewegungsfällen und unveränderter Original-Flowprobe mit echten PNGs.
+Zwei frühere Versuche bleiben verworfen. Dauerhafte16er-Probe erhält Grenzwerte;
+vollständige Abnahme der zusammengeführten Quellen und Android1908 stehen aus.
 Keine Main-/Release-/Renderer-/Lernfragen-Architekturänderung, kein Force-Push.
 Root publiziert allein; Quellprüfung, App-Integration, Lichtversuch, unabhängige
 Runtime- und Android-Auswertung haben getrennte Arbeitsbäume/Nachweispfade.

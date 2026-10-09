@@ -2,8 +2,8 @@
 
 BASE99cdb plus Recovery4bdb werden mit erhaltenen14Karts integriert.
 Aktuelle Quellen/Builds/Nachweise und offene Abweichungen: [LUMO_INTEGRATION_1908_2026-10-09.md](docs/handoffs/LUMO_INTEGRATION_1908_2026-10-09.md).
-[Claim](docs/claims/LUMO_INTEGRATION_1908_2026-10-09.md): Profilbudget, echte Ressourcen-/Rückkehrprüfung, gemessene HIGH-Lichtkorrektur; Zieleinlaufversuch separat.
-Keine1908APK gebaut/freigegeben. Fremder1907Build existiert; dessen Android-Kart-Auswertung läuft. Ältere Einträge unten sind historisch.
+[Claim](docs/claims/LUMO_INTEGRATION_1908_2026-10-09.md): Profilbudget, echte Ressourcen-/Rückkehrprüfung, gemessene HIGH-Lichtkorrektur; nach festen16er-Kriterien angenommene Zieleinlaufkorrektur.
+Keine1908APK gebaut/freigegeben. Fremder1907Build existiert: Android35PASS, Android36ZeitlimitFAIL; keine1908-Abnahme. Ältere Einträge unten sind historisch.
 
 ---
 
