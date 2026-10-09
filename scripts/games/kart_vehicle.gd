@@ -1686,12 +1686,12 @@ func _make_driver() -> void:
 		)
 		smile.name = "LumoSmileCavity"
 		var teeth := _ellipsoid(
-			head, Vector3(0, -0.187, -0.442),
+			head, Vector3(0, -0.198, -0.457),
 			Vector3(0.108, 0.012, 0.009), Color("fff6ec"), 0.0, 0.55
 		)
 		teeth.name = "LumoSmileTeeth"
 		var tongue := _ellipsoid(
-			head, Vector3(0, -0.282, -0.443),
+			head, Vector3(0, -0.286, -0.459),
 			Vector3(0.071, 0.022, 0.009), Color("e78896"), 0.0, 0.68
 		)
 		tongue.name = "LumoSmileTongue"
