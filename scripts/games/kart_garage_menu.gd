@@ -290,6 +290,7 @@ func _apply_responsive_layout() -> void:
 	var compact: bool = window_size.x < 760 or window_size.x < window_size.y
 	var small: bool = window_size.x < 520
 	var short_landscape: bool = window_size.x >= window_size.y and window_size.y < 600
+	var welcome_in_header: bool = step == 0 and short_landscape and window_size.y < 440
 	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.03, 10.0, 28.0)
 	_apply_ui_scale(self, ui_scale)
 	for side in ["left", "right", "top", "bottom"]:
@@ -332,7 +333,7 @@ func _apply_responsive_layout() -> void:
 		"h_separation", roundi((14 if compact else 28) * ui_scale)
 	)
 	setup_row.add_theme_constant_override("v_separation", roundi((14 if compact else 0) * ui_scale))
-	brand_label.custom_minimum_size.x = (150 if small else 260) * ui_scale
+	brand_label.custom_minimum_size.x = (150 if small or welcome_in_header else 260) * ui_scale
 	brand_label.add_theme_font_size_override(
 		"font_size", roundi((22 if small or short_landscape else 36) * ui_scale)
 	)
@@ -385,7 +386,15 @@ func _apply_responsive_layout() -> void:
 	_set_physical_font(steps_label, 12 if short_landscape else 15, ui_scale)
 	_set_physical_font(subtitle, 14 if small else 18, ui_scale)
 	subtitle.visible = not short_landscape
-	detail.visible = not short_landscape and not small and step != 2
+	# The welcome's direct Play action adds a row. On an inset Android surface
+	# reserve the existing footer before showing the extra mode description.
+	# The selected mode title/tag and the five-step setup remain available.
+	detail.visible = (
+		not short_landscape
+		and not small
+		and step != 2
+		and (step != 0 or size.y / ui_scale >= 700.0)
+	)
 	# Kleine Querformate: Der Werkstatt-Knopf rückt in die Kopfzeile, damit die Kartseite samt
 	# Vorschau und Weiter-Knopf auf eine Bildschirmhöhe passt.
 	var workshop_in_header: bool = short_landscape and step == 2
@@ -429,8 +438,22 @@ func _apply_responsive_layout() -> void:
 	view_choice.offset_top = 4 * ui_scale
 	view_choice.offset_bottom = 48 * ui_scale
 	view_choice.visible = step in [1, 2]
+	# On very short Android surfaces the direct Play action shares the existing
+	# header row, leaving the live preview and the full setup footer reachable.
+	var quick_parent: Container = header_row if welcome_in_header else setup_right
+	if quick_start_button.get_parent() != quick_parent:
+		quick_start_button.reparent(quick_parent, false)
+		if welcome_in_header:
+			header_row.move_child(quick_start_button, learn_button.get_index())
+		else:
+			setup_right.move_child(quick_start_button, preview_caption.get_index() + 1)
+	quick_start_button.text = (
+		"Spielen"
+		if welcome_in_header
+		else "Spielen · " + str(CATALOG.entry(CATALOG.MODES, str(setup.mode)).get("name", "Einzelrennen"))
+	)
 	quick_start_button.visible = step == 0
-	_set_physical_minimum(quick_start_button, Vector2(0, 44 if short_landscape or small else 56), ui_scale)
+	_set_physical_minimum(quick_start_button, Vector2(104 if welcome_in_header else 0, 44 if short_landscape or small else 56), ui_scale)
 	_set_physical_font(quick_start_button, 17 if short_landscape or small else 20, ui_scale)
 	if short_landscape:
 		footer.columns = 3 if has_saved_race else 2

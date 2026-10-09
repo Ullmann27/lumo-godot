@@ -37,6 +37,12 @@ The start regression uses real input events at 1280×720, 800×480, 412×915, 32
 
 No unimplemented online mode is exposed as playable. The existing menu still lists only the actual modes.
 
+### Android safe-area correction found by full app CI
+
+The first app candidate `f3677fff127d0348418f27c785bb774bacdc066f` failed in [full run 37972626153](https://github.com/Ullmann27/lumo-lernen/actions/runs/37972626153), before APK build. Its Flutter tests and exact profile RED/GREEN passed, and the separate Godot Stage2 passed, but the existing five-step menu probe found a real layout regression. On a 1280×720 window with 80 px of vertical system insets the new welcome required 685 px inside a 640 px safe area; the Next button extended 23 px beyond that area. This failure was reproduced locally without changing the assertion.
+
+The welcome now hides its extra mode-description paragraph when the actual available height is below 700 physical pixels, preserving the large character, selected mode card and both start paths. At very short landscape sizes the direct Play action moves into the existing header row so it does not consume a second vertical row. The existing three-size five-step touch probe passes again. It also now exercises direct selected-Cup start inside the 640×320 safe area and emits precise bounds on a future failure. Stage2 runs this same test before accepting its character evidence. The full app workflow remains unchanged and must rerun on the updated exact pin; no failed native gate was removed.
+
 ## Verification status before CI
 
 Actual local engine: official Godot **4.6.3.stable.official.7d41c59c4**, with release archive SHA512 checked. Desktop captures use X11/OpenGL compatibility on Mesa llvmpipe. These are **Godot desktop runtime captures**, not Android screenshots or Fold7 performance measurements.

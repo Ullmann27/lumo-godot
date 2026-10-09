@@ -173,6 +173,20 @@ jobs:
           print("PASS: forty pause cover/touch/color checks and five actual Fold/phone PNGs")
           PY
 
+      - name: Actual five-step and direct menu entry inside Android safe insets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/menu-safe-area
+          python3 tools/run_godot_probe.py --log exports/menu-safe-area/menu-flow.log \
+            --timeout 300 --required '[KartMenuFlow] PASS: five touch steps;' -- \
+            xvfb-run -a -s '-screen 0 2500x2500x24' Godot_v4.6.3-stable_linux.x86_64 \
+            --path . --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://scripts/tests/kart_menu_flow_regression.gd
+          grep -F '[KartMenuFlow] PASS: direct selected Cup start inside compact Android safe insets' exports/menu-safe-area/menu-flow.log
+          cp exports/holographic-proof/menu-flow-*.png exports/menu-safe-area/
+          cp exports/holographic-proof/menu-direct-640x320.png exports/menu-safe-area/
+
       - name: Kart mode and dynamic cup regression
         shell: bash
         run: |
@@ -431,5 +445,6 @@ jobs:
             exports/holo-city/*.png
             exports/sky-halo-authoring/*.png
             exports/character-review/**
+            exports/menu-safe-area/**
           if-no-files-found: warn
           retention-days: 14
