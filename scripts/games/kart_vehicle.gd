@@ -1670,9 +1670,19 @@ func _make_driver() -> void:
 	# only fox gets the extra sculpted cavity, teeth and tongue. Other
 	# selectable drivers retain their existing closed-mouth geometry.
 	if is_lumo:
-		var smile := _ellipsoid(
-			head, Vector3(0, -0.235, -0.422),
-			Vector3(0.146, 0.079, 0.014), Color("4b2430"), 0.0, 0.61
+		# Real rounded 3D loft: wide at the smiling cheeks and tapered
+		# towards the chin, avoiding the surprised circular mouth of pass 1.
+		var smile := _mesh(
+			head,
+			_loft([
+				Vector4(-0.320, 0.012, 0.007, -0.425),
+				Vector4(-0.303, 0.080, 0.014, -0.429),
+				Vector4(-0.267, 0.137, 0.018, -0.433),
+				Vector4(-0.233, 0.152, 0.019, -0.435),
+				Vector4(-0.194, 0.123, 0.013, -0.430),
+				Vector4(-0.173, 0.032, 0.006, -0.420)
+			], true, 32, 4),
+			Vector3.ZERO, Color("4b2430"), 0.0, 0.61
 		)
 		smile.name = "LumoSmileCavity"
 		var teeth := _ellipsoid(
