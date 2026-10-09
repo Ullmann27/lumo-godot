@@ -19,7 +19,7 @@ permissions:
 jobs:
   kart-stage2:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -204,6 +204,43 @@ jobs:
           test -s exports/sky-halo-authoring/01_side.png
           test -s exports/sky-halo-authoring/02_three_quarter.png
 
+      - name: Bound Lumo face studio light, shadows, and saturation
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 120s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script res://scripts/tests/kart_stage_visual_regression.gd \
+            > "$RUNNER_TEMP/face-studio.log" 2>&1
+          cat "$RUNNER_TEMP/face-studio.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$RUNNER_TEMP/face-studio.log"; then exit 1; fi
+          grep -F '[LumoFaceStudio] PASS:' "$RUNNER_TEMP/face-studio.log"
+
+      - name: Capture authentic 3D Lumo face and driver views
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/face-showroom
+          timeout 200s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://scripts/tests/kart_garage_face_capture.gd \
+            > "$RUNNER_TEMP/lumo-face-capture.log" 2>&1
+          cat "$RUNNER_TEMP/lumo-face-capture.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:|ERROR: Failed to load' "$RUNNER_TEMP/lumo-face-capture.log"; then exit 1; fi
+          grep -F '[LumoFaceCapture] PASS:' "$RUNNER_TEMP/lumo-face-capture.log"
+          test -s exports/face-showroom/lumo-face-1280x720.png
+          test -s exports/face-showroom/lumo-face-800x480.png
+          test -s exports/face-showroom/lumo-face-412x915.png
+
+          timeout 180s xvfb-run -a Godot_v4.6.3-stable_linux.x86_64 \
+            --path . --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://scripts/tests/kart_driver_portrait.gd \
+            -- res://exports/face-showroom/lumo-driver-4views.png \
+            > "$RUNNER_TEMP/lumo-driver-4views.log" 2>&1
+          cat "$RUNNER_TEMP/lumo-driver-4views.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:|ERROR: Failed to load' "$RUNNER_TEMP/lumo-driver-4views.log"; then exit 1; fi
+          grep -F '[DriverPortrait] PASS:' "$RUNNER_TEMP/lumo-driver-4views.log"
+          test -s exports/face-showroom/lumo-driver-4views.png
+
       - name: Upload regression logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -227,5 +264,9 @@ jobs:
             exports/zauberwald/*.png
             exports/holo-city/*.png
             exports/sky-halo-authoring/*.png
+            exports/face-showroom/*.png
+            ${{ runner.temp }}/face-studio.log
+            ${{ runner.temp }}/lumo-face-capture.log
+            ${{ runner.temp }}/lumo-driver-4views.log
           if-no-files-found: warn
           retention-days: 14
