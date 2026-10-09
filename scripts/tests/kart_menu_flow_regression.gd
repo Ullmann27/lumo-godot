@@ -14,6 +14,21 @@ func _settle() -> void:
 
 
 func _tap(control: Control) -> void:
+	if not game.safe_ui.get_global_rect().encloses(control.get_global_rect()):
+		print(
+			(
+				"[KartMenuFlow] unsafe tap: window=%s step=%s action=%s rect=%s safe=%s margin=%s minimum=%s"
+				% [
+					root.size,
+					game.garage.step,
+					control.name,
+					control.get_global_rect(),
+					game.safe_ui.get_global_rect(),
+					game.garage.page_margin.get_global_rect(),
+					game.garage.page_margin.get_combined_minimum_size()
+				]
+			)
+		)
 	assert(control.is_visible_in_tree())
 	assert(
 		root.get_visible_rect().encloses(control.get_global_rect()),
@@ -37,8 +52,9 @@ func _tap(control: Control) -> void:
 
 func _run() -> void:
 	assert(DisplayServer.get_name() != "headless")
+	var kart_scene: PackedScene = load("res://scenes/games/kart_island.tscn")
 	for pixels in [Vector2i(1280, 720), Vector2i(800, 480), Vector2i(640, 320)]:
-		game = load("res://scenes/games/kart_island.tscn").instantiate()
+		game = kart_scene.instantiate()
 		root.add_child(game)
 		game.set_physics_process(false)
 		game.lightweight = true
@@ -165,6 +181,34 @@ func _run() -> void:
 		game.queue_free()
 		await _settle()
 		print("[KartMenuFlow] %s: five modes, five actual touch steps, started cup race" % pixels)
+	# The compact welcome also offers the direct start path. Exercise it with
+	# the same parent insets, not only in an unconstrained standalone garage.
+	game = kart_scene.instantiate()
+	root.add_child(game)
+	game.set_physics_process(false)
+	game.lightweight = true
+	await _settle()
+	root.size = Vector2i(640, 320)
+	await _settle()
+	assert(root.size == Vector2i(640, 320), "Direct start must run at the compact physical size")
+	game._apply_safe_area(Rect2(16, 32, 16, 48), Vector2(640, 320))
+	game.garage._apply_responsive_layout()
+	await _settle()
+	await _tap(game.garage.choices.get_child(0).get_child(1))
+	await _settle()
+	var quick: Button = game.garage.quick_start_button
+	assert(quick.size.y * root.size.y / root.get_visible_rect().size.y >= 43.99)
+	root.get_texture().get_image().save_png(
+		"res://exports/holographic-proof/menu-direct-640x320.png"
+	)
+	await _tap(quick)
+	await _settle()
+	assert(not game.menu_active and game.mode == "cup" and game.track_id == "sonnenhafen")
+	assert(is_instance_valid(game.player) and game.opponents.size() == 5)
+	game.abandoned = true
+	game.queue_free()
+	await _settle()
+	print("[KartMenuFlow] PASS: direct selected Cup start inside compact Android safe insets")
 	print("[KartMenuFlow] PASS: five touch steps; 1280x720,800x480,640x320; safe controls >=44px")
 	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
 	await create_timer(0.12).timeout
