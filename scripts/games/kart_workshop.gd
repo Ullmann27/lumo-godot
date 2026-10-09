@@ -12,6 +12,7 @@ const STAGE = preload("res://scripts/games/kart_stage.gd")
 const BARS = preload("res://scripts/games/kart_stat_bars.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const GOLD := Color("ffd06a")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 
 ## Wird vor dem Einhängen gesetzt.
 var tuning
@@ -45,6 +46,10 @@ var refund_button: Button
 var refund_armed: float = 0.0
 var layout_columns: int = 2
 var compact: bool = false
+var dyno_label: Label
+var dyno_button: Button
+var dyno_time: float = 0.0
+var dyno_speed: float = 0.0
 
 
 func _ready() -> void:
@@ -168,6 +173,11 @@ func _build_left() -> void:
 	var stage := Node3D.new()
 	viewport.add_child(stage)
 	var built: Dictionary = STAGE.build(stage)
+	var fill := DirectionalLight3D.new()
+	fill.rotation_degrees = Vector3(-25, 145, 0)
+	fill.light_color = Color("ceeaff")
+	fill.light_energy = 0.65
+	stage.add_child(fill)
 	preview_pivot = built.pivot
 	toast_label = _label("", 18, Color("9ff3ff"), true)
 	toast_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -199,6 +209,19 @@ func _build_right() -> void:
 	column.add_theme_constant_override("separation", 10)
 	right_scroll.add_child(column)
 	column.add_child(_label("LEISTUNG", 14, Color("74e5f5"), true))
+	var dyno_panel := PanelContainer.new()
+	dyno_panel.add_theme_stylebox_override("panel", _glass(true))
+	column.add_child(dyno_panel)
+	var dyno_column := VBoxContainer.new()
+	dyno_panel.add_child(dyno_column)
+	dyno_column.add_child(_label("PRÜFSTAND · SERIE → DEIN KART", 16, Color("74e5f5"), true))
+	dyno_label = _label("", 16, Color("f4f8ff"))
+	dyno_label.name = "WorkshopDynoReport"
+	dyno_column.add_child(dyno_label)
+	dyno_column.add_child(_label("Simulation auf ebener Straße · Abenteuer · ohne Boost", 12, Color("b5c9df")))
+	dyno_button = _button("Prüflauf starten", _start_dyno, true)
+	dyno_button.name = "WorkshopDynoStart"
+	dyno_column.add_child(dyno_button)
 	for part in TUNING.PARTS:
 		column.add_child(_build_part_row(part))
 	column.add_child(_label("AUSSEHEN", 14, Color("74e5f5"), true))
@@ -355,6 +378,27 @@ func _refresh_all() -> void:
 	refund_button.disabled = not any_levels
 	refund_button.text = "Alle Teile zurücksetzen und ★ %d zurückholen" % _refund_value() if any_levels else "Noch nichts verbessert"
 	_refresh_preview()
+	_refresh_dyno()
+
+
+func _refresh_dyno() -> void:
+	var original: Dictionary = POWERTRAIN.report(FLEET.multipliers(FLEET.base_stats(kart_id)))
+	var tuned: Dictionary = POWERTRAIN.report(tuning.multipliers(kart_id))
+	dyno_label.text = (
+		"Tempo  %.1f → %.1f km/h\n0–50  %.2f → %.2f s\n50–0  %.1f → %.1f m\nTurbo  %.2f → %.2f s"
+		% [original.top_kmh, tuned.top_kmh, original.zero_fifty, tuned.zero_fifty,
+		original.brake_metres, tuned.brake_metres, original.boost_seconds, tuned.boost_seconds]
+	).replace(".", ",")
+	# Upgrading or refunding invalidates a running simulation immediately.
+	dyno_time = 0.0
+	dyno_speed = 0.0
+	dyno_button.text = "Prüflauf starten"
+
+
+func _start_dyno() -> void:
+	dyno_time = 0.001
+	dyno_speed = 0.0
+	preview_angle = 0.65
 
 
 func _refund_value() -> int:
@@ -512,9 +556,21 @@ func _process(delta: float) -> void:
 	if not visible:
 		return
 	if is_instance_valid(preview_pivot):
-		if not rotate_drag and not reduced_motion:
+		if not rotate_drag and not reduced_motion and dyno_time <= 0.0:
 			preview_angle += delta * 0.18
 		preview_pivot.rotation.y = preview_angle
+	if dyno_time > 0.0:
+		dyno_time += delta
+		var factors: Dictionary = tuning.multipliers(kart_id)
+		var braking: bool = dyno_time > 3.5
+		var target: float = 0.0 if braking else POWERTRAIN.top_speed(factors)
+		dyno_speed = move_toward(dyno_speed, target, delta * POWERTRAIN.acceleration(factors, braking))
+		dyno_button.text = "%s · %d km/h" % ["Bremsen" if braking else "Beschleunigen", roundi(dyno_speed * 3.6)]
+		if braking and dyno_speed <= 0.0:
+			dyno_time = 0.0
+			dyno_button.text = "Prüflauf wiederholen"
+	if is_instance_valid(preview_kart):
+		preview_kart.set_motion(dyno_speed if not reduced_motion else 0.0, 0.0, false, false)
 	if toast_time > 0.0:
 		toast_time -= delta
 		if toast_time <= 0.0:
@@ -574,3 +630,4 @@ func _apply_layout() -> void:
 			swatch_row.buttons[id].custom_minimum_size = Vector2((52 if compact else 64) * ui_scale, (48 if compact else 60) * ui_scale)
 		swatch_row.buy.custom_minimum_size = Vector2((120 if compact else 150) * ui_scale, 44 * ui_scale)
 	refund_button.custom_minimum_size.y = button_height
+	dyno_button.custom_minimum_size.y = button_height

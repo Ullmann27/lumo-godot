@@ -10,6 +10,8 @@ const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
 const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
+const ACTION_COURSE = preload("res://scripts/games/kart_action_course.gd")
+var action_obstacles: Array[Vector3] = []
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
 const RAIL_LATERAL: float = 6.05
@@ -47,6 +49,7 @@ func build(
 		remove_child(child)
 		child.queue_free()
 	groups.clear()
+	action_obstacles.clear()
 	decoration_count = 0
 	low_detail = lightweight
 	definition = TRACKS.definition(selected_track)
@@ -94,6 +97,7 @@ func build(
 	_navigation()
 	if track_id=="sonnenhafen":
 		_grand_prix_dressing()
+		ACTION_COURSE.build(self)
 	LANDMARKS.build(self)
 	FLEET_DRESSING.build(self)
 	TRACK_DETAIL.build(self)

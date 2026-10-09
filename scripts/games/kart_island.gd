@@ -28,6 +28,7 @@ const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
 const PREFERENCES: String = "user://kart_preferences.cfg"
 const BOOST_ACCELERATION_MULTIPLIER: float = 2.0
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const DESIGN_VIEWPORT := Vector2(1280.0, 720.0)
 const PEDAL_PAD_BASE_SIZE := Vector2(440.0, 300.0)
 ## Version 4 drops the removed learning-question state; older saves still resume as plain races.
@@ -1294,7 +1295,9 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	if mode != "arena" and _drive_loop(delta, axis, braking):
 		return
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
-	var target: float = 20.5 * _factor("speed") * float(rules.speed)
+	if kart_factors.is_empty():
+		_refresh_kart_factors()
+	var target: float = POWERTRAIN.top_speed(kart_factors, float(rules.speed))
 	var throttle: float = 1.0 if _gas_active() else 0.0
 	if mode == "arena":
 		target *= 0.68
@@ -1320,7 +1323,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		if difficulty == "gemuetlich" and absf(lane) > ROAD_WIDTH * 0.31:
 			var correction: float = angle_difference(player_heading, _heading(float(road.distance)))
 			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
-	var acceleration: float = 20.0 * _factor("brake") if braking > 0.1 else 10.0 * _factor("accel")
+	var acceleration: float = POWERTRAIN.acceleration(kart_factors, braking > 0.1)
 	if boost_active and target > speed:
 		acceleration *= BOOST_ACCELERATION_MULTIPLIER
 	if not airborne or boost_active:
@@ -1764,6 +1767,14 @@ func _place() -> int:
 
 
 func _track_events() -> void:
+	for obstacle in world.action_obstacles:
+		var separation: Vector3 = player.position - obstacle
+		separation.y = 0.0
+		if separation.length() < 0.9 and hit_timer <= 0.0 and shield_time <= 0.0:
+			hit_timer = 0.15
+			speed *= 0.88
+			message.text = "Hütchen! Lenke durch die freie Mitte."
+			_sound_effect("collision")
 	for i in range(opponents.size()):
 		var away: Vector3 = player.position - opponents[i].position
 		away.y = 0
