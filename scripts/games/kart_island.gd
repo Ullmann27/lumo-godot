@@ -15,6 +15,7 @@ const ARENA = preload("res://scripts/games/kart_arena.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const PHYSICAL_LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
+const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
 const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
@@ -116,6 +117,16 @@ var air_time: float = 0.0
 var jump_count: int = 0
 var landing_count: int = 0
 var gap_falls: int = 0
+## Action-Parcours: genutzte Turbo-Felder (je Runde einmal), Slalom-Fortschritt, Schanzen, Stürze.
+var action_pads_used: Dictionary = {}
+var action_gates_hit: int = 0
+var action_gates_passed: int = 0
+var action_slaloms_cleared: int = 0
+var action_pads_triggered: int = 0
+var action_kicker_jumps: int = 0
+var action_edge_falls: int = 0
+var action_in_dive: bool = false
+var dive_tint: ColorRect
 var wall_sound_timer: float = 0.0
 var wrong_way: bool = false
 var wrong_way_seconds: float = 0.0
@@ -553,6 +564,7 @@ static func _known_mode(requested: String) -> String:
 func _begin_race() -> void:
 	_session_handed_off = false
 	_refresh_kart_factors()
+	_reset_action_course()
 	loop_state = PHYSICAL_LOOP.new()
 	loop_count = 0
 	if is_instance_valid(garage):
@@ -1295,6 +1307,8 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		return
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
 	var target: float = 20.5 * _factor("speed") * float(rules.speed)
+	if mode != "arena":
+		target *= world.dive_factor(previous_road_distance)
 	var throttle: float = 1.0 if _gas_active() else 0.0
 	if mode == "arena":
 		target *= 0.68
@@ -1357,14 +1371,17 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		return
 	road = world.sample_road(player.position, previous_road_distance)
 	lane = float(road.lateral)
-	if absf(lane) > WORLD.WALL_LATERAL:
+	if absf(lane) > WORLD.WALL_LATERAL and world.open_edge_side(float(road.distance)) != signf(lane):
 		_collide_with_rail(road)
 		road = world.sample_road(player.position, previous_road_distance)
 		lane = float(road.lateral)
 	_update_wrong_way(road, delta)
+	_update_action_course(road)
 	var road_distance: float = float(road.distance)
 	var travel: float = fposmod(road_distance - previous_road_distance + track_length * 0.5, track_length) - track_length * 0.5
-	if absf(lane) < ROAD_WIDTH * 0.5 + 2.0:
+	# An einer offenen Kante gibt es neben der Fahrbahn keinen Boden: dort beginnt der Sturz sofort.
+	var edge_margin: float = 0.3 if mode != "arena" and world.open_edge_side(road_distance) == signf(lane) else 2.0
+	if absf(lane) < ROAD_WIDTH * 0.5 + edge_margin:
 		if not _move_vertically(road, road_distance, delta):
 			return
 		offroad_seconds = 0
@@ -1385,7 +1402,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	if airborne:
 		pitch = clampf(vertical_speed * 0.05, -0.32, 0.32)
 	elif world.ramp_height(road_distance) > 0.0:
-		pitch = float(world.jump.angle)
+		pitch = world.ramp_pitch(road_distance)
 	else:
 		pitch = world.alternate_route_pitch(road_distance, lane)
 	if pitch != 0.0:
@@ -1454,6 +1471,19 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			vertical_speed = 0.0
 			air_time = 0.0
 	if not airborne:
+		var kicker: Dictionary = ACTION.kicker_crossed(
+			world.action, fposmod(previous_road_distance, track_length), fposmod(road_distance, track_length)
+		)
+		if not kicker.is_empty() and speed > 6.0:
+			# Sprungschanze: abheben, kurz fliegen und mit Turbo landen.
+			airborne = true
+			action_kicker_jumps += 1
+			air_time = 0.0
+			player.position.y = ground + float(kicker.height)
+			vertical_speed = minf(speed * sin(float(kicker.angle)) + 1.6, JUMP_MAX_LIFT)
+			message.text = "Schanze!"
+			return true
+	if not airborne:
 		player.position.y = ground
 		return true
 	vertical_speed -= JUMP_GRAVITY * delta
@@ -1474,6 +1504,82 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 		air_time = 0.0
 		vertical_speed = 0.0
 	return true
+
+
+func _reset_action_course() -> void:
+	action_pads_used.clear()
+	action_gates_hit = 0
+	action_gates_passed = 0
+	action_slaloms_cleared = 0
+	action_pads_triggered = 0
+	action_kicker_jumps = 0
+	action_edge_falls = 0
+	action_in_dive = false
+	_update_dive_tint()
+
+
+## Turbo-Felder, Slalom-Tore und Tauchstrecke des Action-Parcours (Schanze: _move_vertically).
+func _update_action_course(road: Dictionary) -> void:
+	var course: Dictionary = world.action
+	if course.is_empty():
+		return
+	var current: float = float(road.distance)
+	var lap: int = int(distance / maxf(track_length, 1.0))
+	var pad: int = ACTION.pad_at(course, current, lane)
+	if pad >= 0 and not airborne:
+		var key: String = "%d:%d" % [lap, pad]
+		if not action_pads_used.has(key):
+			action_pads_used[key] = true
+			action_pads_triggered += 1
+			boost_time = maxf(boost_time, _boost_for(ACTION.PAD_BOOST_SECONDS))
+			message.text = "Turbo-Feld!"
+			_sound_effect("boost")
+	for gate in ACTION.gates_crossed(course, previous_road_distance, current):
+		if int(gate.index) == 0:
+			action_gates_passed = 0
+		var hit: bool = false
+		for pylon in ACTION.pylon_laterals(gate):
+			if absf(lane - pylon) < ACTION.PYLON_RADIUS + 0.35:
+				hit = true
+		if hit:
+			action_gates_hit += 1
+			speed *= 0.86
+			message.text = "Hütchen erwischt!"
+			_sound_effect("collision")
+		elif absf(lane - float(gate.lateral)) < ACTION.GATE_HALF_WIDTH:
+			action_gates_passed += 1
+		if int(gate.index) == ACTION.GATE_COUNT - 1:
+			if action_gates_passed == ACTION.GATE_COUNT:
+				action_slaloms_cleared += 1
+				boost_time = maxf(boost_time, _boost_for(ACTION.SLALOM_BOOST_SECONDS))
+				message.text = "Slalom perfekt! Turbo!"
+				_sound_effect("boost")
+			else:
+				message.text = "Slalom: %d von %d Toren" % [action_gates_passed, ACTION.GATE_COUNT]
+	var diving: bool = ACTION.dive_at(course, current)
+	if diving != action_in_dive:
+		action_in_dive = diving
+		if diving:
+			message.text = "Abgetaucht! Durch den Unterwasser-Tunnel."
+		_update_dive_tint()
+
+
+## Leicht blaues Bild, solange das Kart durch den Unterwasser-Tunnel fährt.
+func _update_dive_tint() -> void:
+	if not is_instance_valid(safe_ui):
+		return
+	if not is_instance_valid(dive_tint):
+		if not action_in_dive:
+			return
+		dive_tint = ColorRect.new()
+		dive_tint.name = "DiveTint"
+		dive_tint.color = Color(0.06, 0.38, 0.72, 0.16)
+		dive_tint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		dive_tint.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		var layer: Node = safe_ui.get_parent()
+		layer.add_child(dive_tint)
+		layer.move_child(dive_tint, 0)
+	dive_tint.visible = action_in_dive
 
 
 func _rescue_from_gap() -> void:
@@ -1686,6 +1792,10 @@ func _reset_kart() -> void:
 	loop_state.active = false
 	if menu_active or not is_instance_valid(player) or finished:
 		return
+	var fell_from_edge: bool = (
+		mode != "arena" and world.open_edge_side(previous_road_distance) != 0.0
+		and absf(lane) > ROAD_WIDTH * 0.5
+	)
 	if mode == "arena":
 		player.position = Vector3(0, 0.035, 28)
 		player_heading = 0
@@ -1707,6 +1817,13 @@ func _reset_kart() -> void:
 	reset_count += 1
 	ghost_valid = false
 	message.text = "Wieder sicher auf der Strecke. Du schaffst das!"
+	if fell_from_edge:
+		# Faire Rettung nach einem Sturz von der offenen Kante: etwas Schwung und kurzer Schutz.
+		action_edge_falls += 1
+		speed = 6.0
+		physical_velocity = Vector3(-sin(player_heading), 0, -cos(player_heading)) * speed
+		shield_time = maxf(shield_time, 2.0)
+		message.text = "Die Lumo-Wolke hat dich aufgefangen. Weiter geht’s!"
 
 
 func _update_ghost() -> void:
