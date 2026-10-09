@@ -2,14 +2,15 @@ extends SceneTree
 ## Verifies the actual boot-scene hierarchy and per-game scene art without
 ## requiring a new login route or touching the ongoing kart session.
 
-const ENTRY = preload("res://scenes/app/boot.tscn")
+# Resolve the scene after autoload initialization. --script compiles this
+# harness before autoload names such as EventBus are available to scene scripts.
 
 func _initialize() -> void:
 	call_deferred("_run")
 
 
 func _run() -> void:
-	var boot: Node = ENTRY.instantiate()
+	var boot: Node = load("res://scenes/app/boot.tscn").instantiate()
 	var art: TextureRect = boot.get_node("Layer/Background")
 	var title: Label = boot.get_node("Layer/Title")
 	var loading: ProgressBar = boot.get_node("Layer/LoadBar")
