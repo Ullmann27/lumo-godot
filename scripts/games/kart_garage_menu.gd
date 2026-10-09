@@ -94,6 +94,18 @@ func _ready() -> void:
 	body_column = body
 	body.add_theme_constant_override("separation", 16)
 	page_margin.add_child(body)
+	# Blue Lumo brand ribbon, using the same Nunito/cyan language as Lumo Lernen.
+	# No new menu route or change to the five-step setup.
+	var header_shell := PanelContainer.new()
+	header_shell.name = "LumoBlueHeader"
+	var header_style := StyleBoxFlat.new()
+	header_style.bg_color = Color(0.018, 0.14, 0.33, 0.94)
+	header_style.border_color = Color("53ddfd")
+	header_style.set_border_width_all(2)
+	header_style.set_corner_radius_all(16)
+	header_style.set_content_margin_all(2)
+	header_shell.add_theme_stylebox_override("panel", header_style)
+	body.add_child(header_shell)
 	var header := HBoxContainer.new()
 	header_row = header
 	header.custom_minimum_size.y = 60
@@ -110,7 +122,7 @@ func _ready() -> void:
 	header.add_child(progress_label)
 	learn_button = _button("Zum Lernen", func(): exit_requested.emit("learn"), false)
 	header.add_child(learn_button)
-	body.add_child(header)
+	header_shell.add_child(header)
 	steps_label = _label("", 15, Color("9cb3ce"))
 	steps_label.hide()
 	body.add_child(steps_label)

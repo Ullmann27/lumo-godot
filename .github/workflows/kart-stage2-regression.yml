@@ -87,6 +87,18 @@ jobs:
           fi
           grep -F '[SkyHaloContract]' "$RUNNER_TEMP/sky-halo-contract.log"
 
+      - name: Verify branded boot scene and real artwork for six games
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 150s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_entry_artwork_regression.gd \
+            > "$RUNNER_TEMP/game-entry.log" 2>&1
+          cat "$RUNNER_TEMP/game-entry.log"
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:|ERROR: Failed to load' "$RUNNER_TEMP/game-entry.log"; then exit 1; fi
+          grep -F '[KartEntry] PASS:' "$RUNNER_TEMP/game-entry.log"
+
       - name: Kart physics regression
         shell: bash
         run: |
@@ -259,6 +271,7 @@ jobs:
             ${{ runner.temp }}/godot-import.log
             ${{ runner.temp }}/track-contract.log
             ${{ runner.temp }}/kart-physics.log
+            ${{ runner.temp }}/game-entry.log
             ${{ runner.temp }}/kart-modes.log
             ${{ runner.temp }}/kart-fold.log
             ${{ runner.temp }}/kart-sonnenhafen-capture.log
