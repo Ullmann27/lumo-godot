@@ -1806,24 +1806,41 @@ func _make_ear(side: float, fur: Color, cream: Color) -> void:
 func _make_eye(side: float, fur_shadow: Color) -> void:
 	var eye := Node3D.new()
 	eye.name = "Eye"
-	eye.position = Vector3(side * 0.169, 0.052, -0.282)
+	# A softer embedded eye shape: the previous fox iris dominated nearly
+	# the entire white, with a large projecting dome. Keep the original
+	# brown identity and blink joints while making the eye more fox-like.
+	eye.position = Vector3(side * 0.173, 0.059, -0.294) if animal == "fox" else Vector3(side * 0.169, 0.052, -0.282)
 	eye.rotation.y = -side * 0.12
 	head.add_child(eye)
 	eyes.append(eye)
-	_ellipsoid(eye, Vector3(0, 0.005, 0.006), Vector3(0.134, 0.155, 0.064), fur_shadow)
-	_ellipsoid(eye, Vector3(0, 0, -0.009), Vector3(0.119, 0.141, 0.065), WHITE, 0, 0.3)
-	var iris_size := Vector3(0.102, 0.107, 0.018) if animal == "fox" else Vector3(0.075, 0.093, 0.018)
-	var pupil_size := Vector3(0.068, 0.071, 0.013) if animal == "fox" else Vector3(0.049, 0.062, 0.013)
+	if animal == "fox":
+		_ellipsoid(eye, Vector3(0, 0.005, 0.008), Vector3(0.121, 0.138, 0.055), fur_shadow)
+		_ellipsoid(eye, Vector3(0, 0, -0.008), Vector3(0.105, 0.125, 0.052), WHITE, 0, 0.3)
+	else:
+		_ellipsoid(eye, Vector3(0, 0.005, 0.006), Vector3(0.134, 0.155, 0.064), fur_shadow)
+		_ellipsoid(eye, Vector3(0, 0, -0.009), Vector3(0.119, 0.141, 0.065), WHITE, 0, 0.3)
+	var iris_size := Vector3(0.083, 0.088, 0.018) if animal == "fox" else Vector3(0.075, 0.093, 0.018)
+	var pupil_size := Vector3(0.052, 0.055, 0.013) if animal == "fox" else Vector3(0.049, 0.062, 0.013)
 	if animal == "fox":
 		_mesh(
-			eye, CHARACTER_FINISH.iris(iris_size), Vector3(-side * 0.008, -0.009, -0.066),
+			eye, CHARACTER_FINISH.iris(iris_size), Vector3(-side * 0.006, -0.009, -0.059),
 			Color.WHITE, 0.08, 0.22
 		)
 	else:
 		_ellipsoid(eye, Vector3(-side * 0.008, -0.009, -0.066), iris_size, Color("287788"), 0.08, 0.22)
-	_ellipsoid(eye, Vector3(-side * 0.008, -0.004, -0.081), pupil_size, Color("080c12"), 0.10, 0.15)
-	_ellipsoid(eye, Vector3(-0.026, 0.032, -0.093), Vector3(0.019, 0.025, 0.008), Color.WHITE, 0, 0.1)
-	_ellipsoid(eye, Vector3(0.020, -0.038, -0.093), Vector3(0.007, 0.010, 0.004), Color.WHITE, 0, 0.1)
+	_ellipsoid(
+		eye,
+		Vector3(-side * 0.006, -0.004, -0.072 if animal == "fox" else -0.081),
+		pupil_size, Color("080c12"), 0.10, 0.15
+	)
+	_ellipsoid(
+		eye, Vector3(-0.022, 0.027, -0.082 if animal == "fox" else -0.093),
+		Vector3(0.016, 0.019, 0.007), Color.WHITE, 0, 0.1
+	)
+	_ellipsoid(
+		eye, Vector3(0.019, -0.033, -0.082 if animal == "fox" else -0.093),
+		Vector3(0.006, 0.008, 0.004), Color.WHITE, 0, 0.1
+	)
 
 
 func _make_tail(fur: Color, cream: Color) -> void:
