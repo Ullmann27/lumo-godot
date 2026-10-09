@@ -210,6 +210,27 @@ func multipliers(kart_id: String) -> Dictionary:
 	return FLEET.multipliers(stats(kart_id), FLEET.entry(kart_id).traits)
 
 
+## Prüfstand: Messwerte aus denselben Faktoren wie die Fahrphysik (kart_island._drive_player).
+## Höchsttempo = 20,5 m/s × Tempo-Faktor; Beschleunigung 10 m/s² × Faktor (0 → 54 km/h = 15 m/s);
+## Bremsen 20 m/s² × Faktor (Bremsweg aus 72 km/h = 20 m/s ohne Gas) plus 1,5 m, weil die
+## tatsächliche Bewegung der Geschwindigkeit leicht nachläuft (in kart_fleet_stats_regression gemessen).
+const BRAKE_LAG_M: float = 1.5
+
+
+static func performance_for(factors: Dictionary) -> Dictionary:
+	return {
+		"top_kmh": 20.5 * float(factors.speed) * 3.6,
+		"zero_to_54_s": 15.0 / (10.0 * float(factors.accel)),
+		"brake_m": 400.0 / (2.0 * 20.0 * float(factors.brake)) + BRAKE_LAG_M,
+	}
+
+
+func performance(kart_id: String, with_tuning: bool = true) -> Dictionary:
+	if with_tuning:
+		return performance_for(multipliers(kart_id))
+	return performance_for(FLEET.multipliers(FLEET.base_stats(kart_id), FLEET.entry(kart_id).traits))
+
+
 # ------------------------------------------------------------------ Aussehen
 
 func has_option(kind: String, id: String) -> bool:

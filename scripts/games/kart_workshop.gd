@@ -35,6 +35,7 @@ var rotate_drag: bool = false
 var stats_panel: PanelContainer
 var bars
 var level_label: Label
+var bench_label: Label
 var toast_label: Label
 var toast_time: float = 0.0
 var part_rows: Dictionary = {}
@@ -181,6 +182,9 @@ func _build_left() -> void:
 	stats_panel.add_child(stats_column)
 	level_label = _label("", 15, Color("b5c9df"))
 	stats_column.add_child(level_label)
+	bench_label = _label("", 15, Color("9ff3ff"))
+	bench_label.name = "TestBench"
+	stats_column.add_child(bench_label)
 	bars = BARS.new()
 	bars.reduced_motion = reduced_motion
 	bars.name = "WorkshopStats"
@@ -334,6 +338,7 @@ func _refresh_all() -> void:
 		extra[key] = minf(float(extra[key]), maxf(0.0, FLEET.MAX_STAT - float(stats[key])))
 	bars.set_values(stats, extra)
 	level_label.text = "%s · %s · Tuning %d von %d" % [item.name, item.role, tuning.total_level(kart_id), TUNING.MAX_LEVEL * TUNING.PARTS.size()]
+	bench_label.text = _bench_text()
 	for part in TUNING.PARTS:
 		var id: String = str(part.id)
 		var level: int = tuning.level(kart_id, id)
@@ -425,6 +430,24 @@ func _refresh_preview() -> void:
 		preview_kart.set_look(look)
 
 
+## Prüfstand mit Vorher/Nachher gegenüber dem Werkszustand.
+func _bench_text() -> String:
+	var stock: Dictionary = tuning.performance(kart_id, false)
+	var now: Dictionary = tuning.performance(kart_id, true)
+	return "PRÜFSTAND  Höchsttempo %d km/h%s  ·  0–54 km/h in %.2f s%s  ·  Bremsweg aus 72 km/h %.1f m%s" % [
+		roundi(float(now.top_kmh)), _delta(float(now.top_kmh) - float(stock.top_kmh), "%+d", 1.0),
+		float(now.zero_to_54_s), _delta(float(now.zero_to_54_s) - float(stock.zero_to_54_s), "%+.2f", 100.0),
+		float(now.brake_m), _delta(float(now.brake_m) - float(stock.brake_m), "%+.1f", 10.0),
+	]
+
+
+func _delta(change: float, format: String, scale: float) -> String:
+	if absf(change * scale) < 0.5:
+		return ""
+	var value: Variant = roundi(change) if format.contains("d") else change
+	return " (" + (format % value) + ")"
+
+
 func _show_toast(text: String) -> void:
 	toast_label.text = text
 	toast_time = 2.4
@@ -434,7 +457,8 @@ func _show_toast(text: String) -> void:
 
 func _on_upgrade(part_id: String) -> void:
 	if tuning.upgrade(kart_id, part_id):
-		_show_toast("%s auf Stufe %d!" % [TUNING.part(part_id).name, tuning.level(kart_id, part_id)])
+		var gain: Dictionary = tuning.performance(kart_id, true)
+		_show_toast("%s auf Stufe %d! Tempo %d km/h · Bremsweg %.1f m" % [TUNING.part(part_id).name, tuning.level(kart_id, part_id), roundi(float(gain.top_kmh)), float(gain.brake_m)])
 		_pop_preview()
 		refund_armed = 0.0
 		_refresh_all()

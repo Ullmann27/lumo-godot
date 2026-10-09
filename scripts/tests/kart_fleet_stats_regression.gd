@@ -285,6 +285,15 @@ func _check_physics() -> void:
 	for kart in ["comet", "glider", "turbo"]:
 		turns[kart] = await _run_turn(kart)
 	print("[KartFleetStats] gemessen: Endtempo ", _round(speeds, "speed"), " · Zeit bis 15 m/s ", _round(speeds, "t15"), " · Bremsweg ", stops, " · Lenken ", turns)
+	# Prüfstand der Werkstatt = gemessene Fahrphysik (gleiche Faktoren, gleiche Formeln).
+	for kart in ["comet", "blitz", "koloss"]:
+		var bench: Dictionary = TUNING.performance_for(FLEET.multipliers(FLEET.base_stats(kart), FLEET.entry(kart).traits))
+		print("[KartFleetStats] Prüfstand %s: %.1f km/h · 0–54 in %.2f s · Bremsweg %.1f m" % [kart, bench.top_kmh, bench.zero_to_54_s, bench.brake_m])
+		assert(absf(float(bench.top_kmh) - float(speeds[kart].speed) * 3.6) <= float(bench.top_kmh) * 0.02, "%s: Prüfstand-Höchsttempo entspricht der Fahrt (%.1f gegen %.1f km/h)" % [kart, bench.top_kmh, float(speeds[kart].speed) * 3.6])
+		assert(absf(float(bench.zero_to_54_s) - float(speeds[kart].t15)) <= 0.25, "%s: Prüfstand-Beschleunigung entspricht der Fahrt (%.2f gegen %.2f s)" % [kart, bench.zero_to_54_s, speeds[kart].t15])
+	for kart in ["comet", "turbo", "koloss"]:
+		var bench_brake: float = float(TUNING.performance_for(FLEET.multipliers(FLEET.base_stats(kart), FLEET.entry(kart).traits)).brake_m)
+		assert(absf(bench_brake - float(stops[kart])) <= 0.4, "%s: Prüfstand-Bremsweg entspricht der Fahrt (%.1f gegen %.1f m)" % [kart, bench_brake, stops[kart]])
 	assert(float(turns.glider) > float(turns.comet) * 1.08, "Glider lenkt enger (%.2f gegen %.2f rad)" % [turns.glider, turns.comet])
 	assert(float(turns.turbo) < float(turns.comet) * 0.99, "Aurora GT lenkt weiter")
 	# Turbo-Dauer wächst mit dem Turbo-Wert.
