@@ -1675,24 +1675,24 @@ func _make_driver() -> void:
 		var smile := _mesh(
 			head,
 			_loft([
-				Vector4(-0.320, 0.012, 0.007, -0.425),
-				Vector4(-0.303, 0.080, 0.014, -0.429),
-				Vector4(-0.267, 0.137, 0.018, -0.433),
-				Vector4(-0.233, 0.152, 0.019, -0.435),
-				Vector4(-0.194, 0.123, 0.013, -0.430),
-				Vector4(-0.173, 0.032, 0.006, -0.420)
+				Vector4(-0.285, 0.010, 0.005, -0.408),
+				Vector4(-0.274, 0.095, 0.010, -0.413),
+				Vector4(-0.254, 0.151, 0.013, -0.417),
+				Vector4(-0.225, 0.164, 0.014, -0.422),
+				Vector4(-0.203, 0.153, 0.010, -0.415),
+				Vector4(-0.189, 0.036, 0.005, -0.409)
 			], true, 32, 4),
 			Vector3.ZERO, Color("4b2430"), 0.0, 0.61
 		)
 		smile.name = "LumoSmileCavity"
 		var teeth := _ellipsoid(
-			head, Vector3(0, -0.198, -0.457),
-			Vector3(0.108, 0.012, 0.009), Color("fff6ec"), 0.0, 0.55
+			head, Vector3(0, -0.207, -0.438),
+			Vector3(0.089, 0.009, 0.006), Color("fff6ec"), 0.0, 0.55
 		)
 		teeth.name = "LumoSmileTeeth"
 		var tongue := _ellipsoid(
-			head, Vector3(0, -0.286, -0.459),
-			Vector3(0.071, 0.022, 0.009), Color("e78896"), 0.0, 0.68
+			head, Vector3(0, -0.266, -0.440),
+			Vector3(0.058, 0.010, 0.006), Color("e78896"), 0.0, 0.68
 		)
 		tongue.name = "LumoSmileTongue"
 	else:
@@ -1842,40 +1842,44 @@ func _make_ear(side: float, fur: Color, cream: Color) -> void:
 func _make_eye(side: float, fur_shadow: Color) -> void:
 	var eye := Node3D.new()
 	eye.name = "Eye"
-	# A softer embedded eye shape: the previous fox iris dominated nearly
-	# the entire white, with a large projecting dome. Keep the original
-	# brown identity and blink joints while making the eye more fox-like.
-	eye.position = Vector3(side * 0.173, 0.059, -0.294) if animal == "fox" else Vector3(side * 0.169, 0.052, -0.282)
+	# Compared with the previous full spherical eyeball, this sculpt keeps
+	# the brown iris but recesses the flatter white surface into the cheek.
+	# Do not alter the existing joint, blink, brow or non-fox animal anatomy.
+	eye.position = (
+		Vector3(side * 0.173, 0.065, -0.285)
+		if animal == "fox" else Vector3(side * 0.169, 0.052, -0.282)
+	)
 	eye.rotation.y = -side * 0.12
 	head.add_child(eye)
 	eyes.append(eye)
 	if animal == "fox":
-		_ellipsoid(eye, Vector3(0, 0.005, 0.008), Vector3(0.121, 0.138, 0.055), fur_shadow)
-		_ellipsoid(eye, Vector3(0, 0, -0.008), Vector3(0.105, 0.125, 0.052), WHITE, 0, 0.3)
+		# Vertical almond-like shell, not a 6 cm protruding sphere.
+		_ellipsoid(eye, Vector3(0, 0.005, 0.008), Vector3(0.113, 0.128, 0.042), fur_shadow)
+		_ellipsoid(eye, Vector3(0, 0, -0.004), Vector3(0.100, 0.114, 0.037), WHITE, 0.0, 0.42)
 	else:
 		_ellipsoid(eye, Vector3(0, 0.005, 0.006), Vector3(0.134, 0.155, 0.064), fur_shadow)
 		_ellipsoid(eye, Vector3(0, 0, -0.009), Vector3(0.119, 0.141, 0.065), WHITE, 0, 0.3)
-	var iris_size := Vector3(0.083, 0.088, 0.018) if animal == "fox" else Vector3(0.075, 0.093, 0.018)
-	var pupil_size := Vector3(0.052, 0.055, 0.013) if animal == "fox" else Vector3(0.049, 0.062, 0.013)
+	var iris_size := Vector3(0.076, 0.082, 0.011) if animal == "fox" else Vector3(0.075, 0.093, 0.018)
+	var pupil_size := Vector3(0.047, 0.051, 0.009) if animal == "fox" else Vector3(0.049, 0.062, 0.013)
 	if animal == "fox":
 		_mesh(
-			eye, CHARACTER_FINISH.iris(iris_size), Vector3(-side * 0.006, -0.009, -0.059),
-			Color.WHITE, 0.08, 0.22
+			eye, CHARACTER_FINISH.iris(iris_size), Vector3(-side * 0.006, -0.009, -0.047),
+			Color.WHITE, 0.08, 0.27
 		)
 	else:
 		_ellipsoid(eye, Vector3(-side * 0.008, -0.009, -0.066), iris_size, Color("287788"), 0.08, 0.22)
 	_ellipsoid(
 		eye,
-		Vector3(-side * 0.006, -0.004, -0.072 if animal == "fox" else -0.081),
-		pupil_size, Color("080c12"), 0.10, 0.15
+		Vector3(-side * 0.006, -0.004, -0.058 if animal == "fox" else -0.081),
+		pupil_size, Color("080c12"), 0.10, 0.18
 	)
 	_ellipsoid(
-		eye, Vector3(-0.022, 0.027, -0.082 if animal == "fox" else -0.093),
-		Vector3(0.016, 0.019, 0.007), Color.WHITE, 0, 0.1
+		eye, Vector3(-0.022, 0.027, -0.068 if animal == "fox" else -0.093),
+		Vector3(0.014, 0.017, 0.005), Color.WHITE, 0, 0.1
 	)
 	_ellipsoid(
-		eye, Vector3(0.019, -0.033, -0.082 if animal == "fox" else -0.093),
-		Vector3(0.006, 0.008, 0.004), Color.WHITE, 0, 0.1
+		eye, Vector3(0.019, -0.033, -0.069 if animal == "fox" else -0.093),
+		Vector3(0.005, 0.007, 0.003), Color.WHITE, 0, 0.1
 	)
 
 
