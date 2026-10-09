@@ -35,6 +35,8 @@ var kart_summary: Label
 var has_saved_race: bool = false
 var choices: VBoxContainer
 var setup_row: GridContainer
+var setup_left: VBoxContainer
+var setup_right: VBoxContainer
 var page_margin: MarginContainer
 var brand_label: Label
 var learn_button: Button
@@ -153,6 +155,7 @@ func _ready() -> void:
 	setup_row.add_theme_constant_override("v_separation", 14)
 	body.add_child(setup_row)
 	var left := VBoxContainer.new()
+	setup_left = left
 	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	left.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	left.add_theme_constant_override("separation", 10)
@@ -170,6 +173,7 @@ func _ready() -> void:
 	choices.add_theme_constant_override("separation", 9)
 	scroll.add_child(choices)
 	var right := VBoxContainer.new()
+	setup_right = right
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	right.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	setup_row.add_child(right)
@@ -307,9 +311,17 @@ func _apply_responsive_layout() -> void:
 		page_margin.offset_bottom = -safe_insets.size.y * scale.y
 	# Short landscape screens retain two columns. Stacking the 3D preview below
 	# the choices previously pushed the footer outside the Android surface.
-	setup_row.columns = 1 if window_size.x < window_size.y else 2
-	setup_row.get_child(1).size_flags_vertical = (
-		Control.SIZE_FILL if small else Control.SIZE_EXPAND_FILL
+	# In portrait, the driver/kart preview must be a hero ABOVE the scrolling
+	# fleet. Otherwise fourteen cards push the character below the fold.
+	# Keep the original ordering for modes, tracks and landscape controls.
+	var portrait: bool = window_size.x < window_size.y
+	setup_row.columns = 1 if portrait else 2
+	var driver_hero: bool = portrait and step in [1, 2]
+	var first: Control = setup_right if driver_hero else setup_left
+	if setup_row.get_child(0) != first:
+		setup_row.move_child(first, 0)
+	setup_right.size_flags_vertical = (
+		Control.SIZE_FILL if portrait else Control.SIZE_EXPAND_FILL
 	)
 	setup_row.add_theme_constant_override(
 		"h_separation", roundi((14 if compact else 28) * ui_scale)
@@ -383,8 +395,13 @@ func _apply_responsive_layout() -> void:
 	# Hochformat und Fold-Innendisplay: Die Karten brauchen den Platz, die Werte stehen schon auf ihnen.
 	var stacked: bool = window_size.x < window_size.y
 	kart_bars.visible = not short_landscape and not (stacked and step == 2)
-	if stacked and step == 2:
-		_set_physical_minimum(preview_container, Vector2(150, 110), ui_scale)
+	if stacked and step in [1, 2]:
+		# Bounded height: legible face on Cover/phone but the action footer
+		# and at least one selectable card remain in the actual safe area.
+		var hero_height: float = clampf(
+			window_size.y * (0.235 if step == 2 else 0.20), 120.0, 215.0
+		)
+		_set_physical_minimum(preview_container, Vector2(150, hero_height), ui_scale)
 	# Auf niedrigen Querformaten (z. B. 1280×720 mit Systemleisten) braucht die Kartseite den Platz
 	# für Vorschau, Werte und Werkstatt-Knopf; Überschrift und Hinweis entfallen dort.
 	var tight_kart_page: bool = step == 2 and window_size.x >= window_size.y and window_size.y < 800
