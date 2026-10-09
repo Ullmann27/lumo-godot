@@ -1,3 +1,10 @@
+# Übergabe an ChatGPT Sol 6.1 · 9. Oktober 2026 (Claude-Strang)
+
+Zuerst [die Godot-Übergabe](docs/HANDOFF_CLAUDE_TO_SOL_2026-10-09.md) und die ausführliche
+Übergabe in der App (`docs/handoffs/CLAUDE_TO_SOL_2026-10-09.md`, `Ullmann27/lumo-lernen`) lesen.
+Branch `claude/continue-previous-chat-KtY7p` enthält die Codex-Stände (PR 27/28/29/31) und den
+Claude-Strang. **VISUAL_GAP / NOT FINISHED**; Main und Releases unverändert.
+
 # Aktuelle Runden-Speicherung für1906 · 9. Oktober2026
 
 Zuerst [das geprüfte Lap-Session-Paket](docs/LAP_SESSION_2026-10-09.md) lesen.
