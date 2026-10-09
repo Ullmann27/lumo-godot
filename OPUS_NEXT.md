@@ -1,3 +1,28 @@
+# Wiederherstellung 3 · aktueller Stand 2026-10-09 · VISUAL_GAP / NOT FINISHED
+
+Aktueller Godot-Codecheckpoint ist `8bf9e2a8a3fef1bcdc902af169db4c7caeefe353`.
+Die vollständige104+10-GL-Prüfung wurde vor dem nächsten Infrastrukturabbruch
+sauber geschlossen: Engine0, keineERRORs und keineTexturleaks. Headless104+10,
+TimeFormat29 und ein unveränderter vollständiger Rennablauf mit neun Bedingungen,
+16 Toren, ACK und einer Belohnung waren ebenfalls geschlossen. Die zweite
+Flow-Ausführung wurde wegen `409 environment_offline` gar nicht gestartet.
+
+Die danach neu gestartete Umgebung hat auch die lokalen/tmp-Arbeitsdateien
+verloren. Git-Quellen und die gespeicherten185-/23-Mitglieder-Nachweispakete
+bleiben gesichert und werden tatsächlich wiederhergestellt. Die neuesten
+114-/Time29-/Flow1-Originaldateien waren noch nicht im gespeicherten Paket:
+fehlendeBelege werden neu aufgenommen, keine verloreneDatei als vorhandenbehauptet.
+App-Recovery ist `4458590063b9e59fc7f36fe9dea4e798b95a192a`; Pin weiterhinad3,
+die finale Fixture-/Quellbindung ist noch offen. Keine neueAPK und keine
+Native22-/Android35/36-Freigabe.
+
+Verbindlicher aktueller Status und nächster Schritt:
+[Runtime-Status1906](docs/handoffs/STATUS_RUNTIME_1906_2026-10-09.md).
+Die nachfolgenden Übergaben sind historisch und werden durch diesen Kopf und
+den aktuellen Status ergänzt.
+
+---
+
 # Wiederherstellung 2 · aktueller Stand 2026-10-09 · NOT FINISHED
 
 Aktueller dauerhafter Recovery-Checkpoint ist Godot
