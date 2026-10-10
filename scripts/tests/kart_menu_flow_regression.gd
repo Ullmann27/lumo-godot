@@ -99,6 +99,13 @@ func _run() -> void:
 				root.get_visible_rect().encloses(game.garage.preview_container.get_global_rect()),
 				"Short landscape keeps the real preview on screen"
 			)
+			print("[KartMenuFlow][CompactModeGeometry] pixels=", pixels,
+				" safe=", game.safe_ui.get_global_rect(),
+				" list=", game.garage.choices.get_parent().get_global_rect(),
+				" first=", mode_grid.get_child(0).get_global_rect(),
+				" second=", mode_grid.get_child(1).get_global_rect(),
+				" preview=", game.garage.preview_container.get_global_rect(),
+				" header=", game.garage.header_row.get_global_rect())
 			assert(
 				game.garage.choices.get_parent().get_global_rect().encloses(
 					mode_grid.get_child(1).get_global_rect()
