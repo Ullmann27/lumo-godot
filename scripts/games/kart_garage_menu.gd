@@ -406,6 +406,10 @@ func _apply_responsive_layout() -> void:
 	var ultra_short: bool = short_landscape and window_size.y < 360
 	brand_label.text = "LUMO KART" if ultra_short else "Lumo ★"
 	brand_kart.visible = not ultra_short
+	# The 320px-high safe-area case has only 240px of content height after
+	# Android system bars. Preserve the *real* selectable modes and 3D kart:
+	# the learn shortcut and status are available through Spieleauswahl.
+	progress_panel.visible = not ultra_short
 	_set_physical_font(brand_motto, 8 if small or short_landscape else 11, ui_scale)
 	brand_motto.visible = not small and not short_landscape
 	brand_stack.add_theme_constant_override("separation", roundi((-5 if short_landscape or small else -12) * ui_scale))
