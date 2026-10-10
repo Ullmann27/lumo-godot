@@ -1,0 +1,36 @@
+{
+	"checks": 75,
+	"failures": 0,
+	"orphan_nodes_after": 0,
+	"orphan_nodes_before": 0,
+	"physical_android_device": false,
+	"surfaces": [
+		{
+			"android_inset_fixture": false,
+			"density": 2.25,
+			"image": "menu-2176x1812-density-2.25.png",
+			"logical_dp": [
+				967.111111111111,
+				805.333333333333
+			],
+			"mode_button_dp": [
+				338.488891601562,
+				72.0596618652344
+			],
+			"next_button_dp": [
+				240.0,
+				72.0596618652344
+			],
+			"physical_android_device": false,
+			"scroll_content": 487.0,
+			"scroll_page": 487.0,
+			"seed": 1923,
+			"surface_px": [
+				2176,
+				1812
+			],
+			"test_stars": 48
+		}
+	],
+	"wave_sample_seconds": 0.8
+}

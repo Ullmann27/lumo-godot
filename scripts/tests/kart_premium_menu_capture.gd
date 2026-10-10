@@ -49,7 +49,15 @@ func _run() -> void:
 		var viewport_rect: Rect2 = root.get_visible_rect()
 		var next_rect: Rect2 = garage.next_button.get_global_rect()
 		var last_mode: Rect2 = cards.get_child(4).get_global_rect()
-		var clip_rect: Rect2 = garage.choices.get_parent().get_global_rect()
+		var scroll: ScrollContainer = garage.choices.get_parent()
+		var clip_rect: Rect2 = scroll.get_global_rect()
+		if dimensions.y < 600 or dimensions.x < dimensions.y:
+			for card in cards.get_children():
+				scroll.ensure_control_visible(card)
+				await _settle(2)
+				assert(clip_rect.grow(1).encloses(card.get_global_rect()), "Full-size mode is reachable by scrolling")
+			scroll.scroll_vertical = 0
+			await _settle(2)
 		print("[KartPremiumMenu] LAYOUT ", dimensions, " left=", garage.setup_left.size.x,
 			" continue_visible=", viewport_rect.encloses(next_rect),
 			" last_mode_visible=", clip_rect.encloses(last_mode),
@@ -60,7 +68,7 @@ func _run() -> void:
 		var path := "%s/start-%dx%d.png" % [output, dimensions.x, dimensions.y]
 		assert(image.save_png(path) == OK)
 		print("[KartPremiumMenu] SCREENSHOT ", path, "  ", image.get_size())
-		if dimensions.x > dimensions.y and not clip_rect.encloses(last_mode):
+		if dimensions.x > dimensions.y and dimensions.y >= 600 and not clip_rect.encloses(last_mode):
 			push_error("[KartPremiumMenu] Mode five clipped on %s: mode=%s clip=%s" % [dimensions, last_mode, clip_rect])
 			quit(3)
 			return

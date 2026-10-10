@@ -1,0 +1,9 @@
+{
+	"animation_clip": "greeting_wave",
+	"frame_count": 28,
+	"physical_android_device": false,
+	"real_godot_frames": true,
+	"sample_step_seconds": 0.1,
+	"source_glb_unchanged": true,
+	"wall_clock_fps_benchmark": false
+}

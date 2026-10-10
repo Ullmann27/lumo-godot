@@ -8,8 +8,10 @@ func _initialize() -> void:
 
 
 func _settle() -> void:
-	await process_frame
-	await process_frame
+	# Fonts, nested container minimums and deferred safe-area bounds each
+	# propagate after a resize. Two frames were renderer-timing dependent.
+	for frame in range(5):
+		await process_frame
 	await RenderingServer.frame_post_draw
 
 
@@ -86,7 +88,11 @@ func _run() -> void:
 			if str(mode_button.title) == "Sternen-Cup":
 				cup_button = mode_button
 		assert(is_instance_valid(cup_button), "Cup is discoverable independent of visual list order")
-		if pixels.y >= 440:
+		if pixels.y >= 600:
+			print("[KartMenuFlow][ReferenceGeometry] pixels=", pixels,
+				" safe=", game.safe_ui.get_global_rect(),
+				" list=", game.garage.choices.get_parent().get_global_rect(),
+				" modes=", mode_grid.get_global_rect())
 			for mode_button in mode_grid.get_children():
 				assert(
 					game.garage.choices.get_parent().get_global_rect().encloses(
@@ -108,9 +114,9 @@ func _run() -> void:
 				" header=", game.garage.header_row.get_global_rect())
 			assert(
 				game.garage.choices.get_parent().get_global_rect().encloses(
-					mode_grid.get_child(1).get_global_rect()
+					mode_grid.get_child(0).get_global_rect()
 				),
-				"Visible time-trial choice is touchable; further modes scroll"
+				"First full-size choice is touchable; further modes scroll"
 			)
 		game.garage.choices.get_parent().ensure_control_visible(cup_button)
 		await _settle()

@@ -18,6 +18,7 @@ var elapsed := 0.0
 var maximum_contact_error := 0.0
 var _tick := 0.0
 var _seated_leg_rotations: Dictionary = {}
+var _menu_gesture := false
 
 
 func bind_visual(review_kart: Node3D) -> bool:
@@ -79,12 +80,27 @@ func celebrate_finished_race(place: int = 1) -> void:
 	if actor == null or victory:
 		return
 	victory = true
+	_menu_gesture = false
 	celebration_clip = "celebrate" if place <= 3 else "agree_nod"
 	actor.play_behavior(celebration_clip)
 
 
+## Reuses existing clips and the same seated-leg/wheel constraints in menus.
+## Triggered only by actual entry or selection, not a repeating greeting timer.
+func play_menu_behavior(behavior: String) -> bool:
+	if actor == null or suspended or reduced_motion:
+		return false
+	if behavior not in ["greeting_wave", "agree_nod", "celebrate", "point_portal"]:
+		return false
+	_menu_gesture = true
+	victory = true
+	celebration_clip = behavior
+	return actor.play_behavior(behavior)
+
+
 func clear_celebration() -> void:
 	victory = false
+	_menu_gesture = false
 	if actor != null and not suspended:
 		actor.play_behavior("kart_seated")
 
@@ -121,7 +137,7 @@ func advance_tick(delta: float) -> void:
 			maximum_contact_error = 0.0
 			_follow_wheel_hand(0)
 			_follow_wheel_hand(1)
-		elif speed > 0.5:
+		elif speed > 0.5 or _menu_gesture:
 			maximum_contact_error = 0.0
 			_follow_wheel_hand(0)
 		return
@@ -153,7 +169,7 @@ func advance_visual(delta: float) -> void:
 		# frame we must already restore BOTH contacts, not return with raised
 		# hands and a seated state label.
 		if victory:
-			if speed > 0.5 or celebration_clip == "agree_nod":
+			if speed > 0.5 or celebration_clip == "agree_nod" or _menu_gesture:
 				_follow_wheel_hand(0)
 			if celebration_clip == "agree_nod":
 				_follow_wheel_hand(1)
