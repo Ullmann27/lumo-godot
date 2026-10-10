@@ -70,6 +70,26 @@ func play_sfx(name: String) -> void:
 func play_voice(path: String) -> void:
 	if _muted:
 		return
+	# Legacy voice files are eSpeak voices and must never be audible.
+	# Only explicitly approved Gemini Sulafat recordings can play.
+	var manifest_path := "res://assets/audio/voice/sulafat_manifest.json"
+	if not FileAccess.file_exists(manifest_path):
+		push_warning("[Lumo] Legacy voice blocked; Sulafat recordings not installed.")
+		return
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(manifest_path))
+	if not (parsed is Dictionary) or parsed.get("voice", "") != "Sulafat":
+		return
+	var approved: Variant = parsed.get("files", {})
+	var asset_key := "%s.wav" % path
+	var voice_path := "res://assets/audio/voice/%s" % asset_key
+	if not (approved is Dictionary) or not approved.has(asset_key):
+		return
+	var expected := String(approved[asset_key])
+	if expected.length() != 64 or not FileAccess.file_exists(voice_path):
+		return
+	if FileAccess.get_sha256(voice_path) != expected:
+		push_warning("[Lumo] Refused unverified voice file: %s" % asset_key)
+		return
 	var full: String = "res://assets/audio/voice/%s.wav" % path
 	if _cache.has(full):
 		_player.stream = _cache[full]
