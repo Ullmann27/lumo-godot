@@ -512,7 +512,9 @@ func _apply_responsive_layout() -> void:
 	# Do not cover Lumos ears in a compact portrait preview.
 	view_choice.set_item_text(6, "Gesicht" if small else "Lumos Gesicht")
 	view_choice.offset_left = -(100 if short_landscape else (96 if small else 176)) * ui_scale
-	view_choice.offset_right = -4 * ui_scale
+	# Keep the real OptionButton minimum width inside Fold/Android safe-area.
+	# At 800x480 its 182 logical pixels previously exceeded the safe right edge by 3.2.
+	view_choice.offset_right = -20 * ui_scale
 	view_choice.offset_top = 4 * ui_scale
 	view_choice.offset_bottom = 48 * ui_scale
 	view_choice.visible = step in [1, 2]
