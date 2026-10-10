@@ -295,6 +295,10 @@ func _ready() -> void:
 	var inspection_overlay := Control.new()
 	inspection_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	viewport_panel.add_child(inspection_overlay)
+	# A default Control has zero size. Its TOP_RIGHT-anchored child then
+	# escapes the entire panel at 800x480 once Android safe insets apply.
+	# Fill the preview panel, but keep both the overlay and its child clickable.
+	inspection_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	inspection_overlay.add_child(view_choice)
 	view_choice.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	detail = _label("", 20, Color("dceaff"))
