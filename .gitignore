@@ -1,5 +1,6 @@
 # Godot 4+ specific ignores
 .godot/
+.lumo-voice-staging/
 .import/
 
 # Imported resources (Godot regeneriert beim Editor-Start)
