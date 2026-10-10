@@ -1,0 +1,66 @@
+name: Produce Sulafat voice for Godot learning worlds
+on:
+  push:
+    branches:
+      - chatgpt/sulafat-godot-audio-2026-10-10
+    paths:
+      - .github/workflows/sulafat-voice-generation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sulafat:
+    if: github.ref_name == 'chatgpt/sulafat-godot-audio-2026-10-10'
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - name: Checkout exact source branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Verify server-side Google API secret
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo "Gemini key required. No old voice file will be overwritten." >&2
+            exit 1
+          fi
+      - name: Generate all 52 approved Sulafat WAV files
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_TTS_MODEL: gemini-3.1-flash-tts-preview
+        run: python3 tools/generate_sulafat_voices.py
+      - name: Verify full replacement manifest, samples, and no leftovers
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, pathlib, wave
+          root = pathlib.Path('assets/audio/voice')
+          manifest = json.loads((root / 'sulafat_manifest.json').read_text())
+          assert manifest['voice'] == 'Sulafat'
+          assert len(manifest['files']) == 52
+          for path, sha in manifest['files'].items():
+              file = root / path
+              assert file.is_file() and hashlib.sha256(file.read_bytes()).hexdigest() == sha
+              with wave.open(str(file)) as audio:
+                  assert audio.getnchannels() == 1
+                  assert audio.getframerate() == 24000
+                  assert audio.getsampwidth() == 2
+          PY
+          git diff --check
+      - name: Commit generated Sulafat voices to this review branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/audio/voice/letters/ assets/audio/voice/words/ assets/audio/voice/sulafat_manifest.json
+          git commit -m "assets(voice): replace all 52 legacy Godot voices with Sulafat"
+          git push origin HEAD:chatgpt/sulafat-godot-audio-2026-10-10
+      - name: Upload voice QA package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lumo-Godot-Sulafat-52-Voice-QA
+          path: assets/audio/voice/
+          retention-days: 30
+          compression-level: 0
