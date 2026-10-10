@@ -214,15 +214,27 @@ func _run() -> void:
 	game._apply_safe_area(Rect2(16, 32, 16, 48), Vector2(640, 320))
 	game.garage._apply_responsive_layout()
 	await _settle()
-	await _tap(game.garage.choices.get_child(0).get_child(1))
+	# One gold "Weiter" button is the design contract. The legacy
+	# cyan quick-start button is deliberately hidden and MUST NOT be tapped.
+	assert(not game.garage.quick_start_button.visible)
+	var cup_mode: Button = null
+	for entry in game.garage.choices.get_child(0).get_children():
+		if str(entry.title) == "Sternen-Cup":
+			cup_mode = entry
+	assert(is_instance_valid(cup_mode))
+	game.garage.choices.get_parent().ensure_control_visible(cup_mode)
 	await _settle()
-	var quick: Button = game.garage.quick_start_button
-	assert(quick.size.y * root.size.y / root.get_visible_rect().size.y >= 43.99)
+	await _tap(cup_mode)
+	assert(game.garage.setup.mode == "cup")
+	await _settle()
 	root.get_texture().get_image().save_png(
 		"res://exports/holographic-proof/menu-direct-640x320.png"
 	)
-	await _tap(quick)
-	await _settle()
+	for index in range(5):
+		assert(game.garage.step == index)
+		assert(game.garage.next_button.visible)
+		await _tap(game.garage.next_button)
+		await _settle()
 	assert(not game.menu_active and game.mode == "cup" and game.track_id == "sonnenhafen")
 	assert(is_instance_valid(game.player) and game.opponents.size() == 5)
 	game.abandoned = true
