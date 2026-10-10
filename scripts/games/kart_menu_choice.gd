@@ -89,7 +89,7 @@ func apply_size(scale_factor: float, compact: bool, dense: bool = false) -> void
 	var icon_size: float = (28.0 if compact else (38.0 if dense else 54.0)) * scale_factor
 	var icon_style: StyleBoxFlat = icon_plate.get_theme_stylebox("panel").duplicate()
 	icon_style.set_content_margin_all(5 if compact or dense else 8)
-	icon_plate.add_theme_stylebox_override("panel", icon_style
+	icon_plate.add_theme_stylebox_override("panel", icon_style)
 	icon_view.custom_minimum_size = Vector2.ONE * icon_size
 	for side in ["left", "right"]:
 		margin.add_theme_constant_override("margin_" + side, roundi(12 * scale_factor))
