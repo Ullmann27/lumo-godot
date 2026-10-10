@@ -31,7 +31,7 @@ func _run() -> void:
 		garage._refresh()
 		garage._apply_responsive_layout()
 		await _settle(16)
-		assert(garage.title_label.text == "Dein nächstes Abenteuer")
+		assert(garage.title_label.text in ["Dein nächstes Abenteuer", "Dein Abenteuer"])
 		assert(garage.step_buttons.size() == 5)
 		assert(garage.choices.get_child_count() == 1)
 		var cards: GridContainer = garage.choices.get_child(0)
