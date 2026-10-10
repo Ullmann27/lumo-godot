@@ -21,6 +21,7 @@ const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
 const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
 const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
+const OPPONENT_ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
 const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
@@ -417,10 +418,17 @@ func _build_world() -> void:
 	race_root.add_child(pulse_visual)
 	var animals: Array[String] = ["otter", "rabbit", "badger", "cat", "fox"]
 	var colors: Array[Color] = [Color("75d7f1"), Color("a696ee"), Color("83dab9"), Color("c8d8ef"), Color("6987db")]
+	var reference_rivals: bool = OPPONENT_ROSTER.ready_for_race()
+	if reference_rivals:
+		var roster := OPPONENT_ROSTER.for_game("kart")
+		for index in range(animals.size()):
+			animals[index] = str(roster[index].id)
+			colors[index] = Color(str(roster[index].color))
 	var rival_count: int = 0 if mode in ["time_trial", "training"] else 5
 	var rival_karts: Array[String] = _rival_karts()
 	for i in range(rival_count):
 		var opponent: LumoRaceKart = VEHICLE.new()
+		opponent.set_meta("reference_rival", reference_rivals)
 		opponent.configure(animals[i], colors[i], rival_karts[i % rival_karts.size()])
 		opponent.reduced_motion = reduced_motion
 		opponent.set_graphics_quality(graphics_profile)
@@ -3349,4 +3357,3 @@ func _apply_volumes() -> void:
 func _sound_effect(kind: String) -> void:
 	if is_instance_valid(kart_audio):
 		kart_audio.effect(kind)
-

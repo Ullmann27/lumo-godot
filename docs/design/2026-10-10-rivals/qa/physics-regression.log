@@ -1,0 +1,38 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:high
+[KartPhysics] sonnenhafen side +1: widest 5.00 m, 225 wall contacts, 72 m along the rail
+[KartPhysics] sonnenhafen side -1: widest 5.00 m, 227 wall contacts, 78 m along the rail
+[KartPhysics] zauberwald side +1: widest 5.00 m, 200 wall contacts, 73 m along the rail
+[KartPhysics] zauberwald side -1: widest 5.00 m, 208 wall contacts, 87 m along the rail
+[KartPhysics] bergwelt side +1: widest 5.00 m, 200 wall contacts, 73 m along the rail
+[KartPhysics] bergwelt side -1: widest 5.00 m, 214 wall contacts, 83 m along the rail
+[KartPhysics] holo_city side +1: widest 5.00 m, 200 wall contacts, 73 m along the rail
+[KartPhysics] holo_city side -1: widest 5.00 m, 213 wall contacts, 82 m along the rail
+[KartPhysics] crystal_canyon side +1: widest 5.00 m, 226 wall contacts, 73 m along the rail
+[KartPhysics] crystal_canyon side -1: widest 5.00 m, 226 wall contacts, 78 m along the rail
+[KartPhysics] jungle_temple side +1: widest 5.00 m, 226 wall contacts, 73 m along the rail
+[KartPhysics] jungle_temple side -1: widest 5.00 m, 227 wall contacts, 77 m along the rail
+[KartPhysics] candy_cloud side +1: widest 5.00 m, 226 wall contacts, 73 m along the rail
+[KartPhysics] candy_cloud side -1: widest 5.00 m, 227 wall contacts, 76 m along the rail
+[KartPhysics] volcano_night side +1: widest 5.00 m, 226 wall contacts, 73 m along the rail
+[KartPhysics] volcano_night side -1: widest 5.00 m, 227 wall contacts, 77 m along the rail
+[KartPhysics] winter_sprint side +1: widest 5.00 m, 226 wall contacts, 74 m along the rail
+[KartPhysics] winter_sprint side -1: widest 5.00 m, 227 wall contacts, 76 m along the rail
+[KartPhysics] galaxy_ringway side +1: widest 5.00 m, 225 wall contacts, 73 m along the rail
+[KartPhysics] galaxy_ringway side -1: widest 5.00 m, 227 wall contacts, 77 m along the rail
+[KartPhysics] desert_drift side +1: widest 5.00 m, 226 wall contacts, 73 m along the rail
+[KartPhysics] desert_drift side -1: widest 5.00 m, 227 wall contacts, 77 m along the rail
+[KartPhysics] learning_lab side +1: widest 5.00 m, 226 wall contacts, 73 m along the rail
+[KartPhysics] learning_lab side -1: widest 5.00 m, 227 wall contacts, 77 m along the rail
+[KartBoost] input→accepted 1284 µs, accepted→physics 498 µs, speed +0.333 m/s (normal +0.167), VFX/audio active
+[KartSplit] PASS: Wolkenweg raised 2.20 m while main lane stayed at 0.00 m
+[KartPhysics] PASS: rail walls on four courses at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route
