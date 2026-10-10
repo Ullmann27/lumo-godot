@@ -34,7 +34,7 @@ jobs:
         run: |
           set -euo pipefail
           set +e
-          timeout 300s xvfb-run -a -s '-screen 0 2500x2500x24' Godot_v4.6.3-stable_linux.x86_64 --path . --rendering-method gl_compatibility --audio-driver Dummy --script res://scripts/tests/kart_premium_menu_capture.gd > premium-menu.log 2>&1
+          timeout 120s xvfb-run -a -s '-screen 0 2500x2500x24' Godot_v4.6.3-stable_linux.x86_64 --path . --rendering-method gl_compatibility --audio-driver Dummy --script res://scripts/tests/kart_premium_menu_capture.gd > premium-menu.log 2>&1
           probe_result=$?
           set -e
           cat premium-menu.log
