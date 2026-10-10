@@ -1,0 +1,17 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:high
+[LumoKartAnimation] sample=seated contact_mm=0.44190621702
+[LumoKartAnimation] sample=steer-left contact_mm=1.14140345249325
+[LumoKartAnimation] sample=steer-right contact_mm=1.14788883365691
+[LumoKartAnimation] sample=jump-reaction contact_mm=0.61069789808244
+[LumoKartAnimation] sample=hit-reaction contact_mm=1.06605188921094
+[LumoKartAnimation] checks=379 worst_hand_contact_mm=1.14788883365691 failures=0
+[LumoKartAnimation] PASS isolated real Kart visual and Lumo; not a playable APK update

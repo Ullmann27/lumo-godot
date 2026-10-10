@@ -1,0 +1,62 @@
+{
+  "blender": "5.0.1",
+  "file": "Lumo-Meshy-Mobile-30k.glb",
+  "sha256": "0a588eb0c96a2baae830c256655e95407afe3a0a0eaa0d5902e5e24467cf79e3",
+  "bytes": 4410236,
+  "triangles": 29999,
+  "vertices": 21658,
+  "bounds_min": [
+    -0.5643291473388672,
+    -0.5149219036102295,
+    -0.95135098695755
+  ],
+  "bounds_max": [
+    0.5604642629623413,
+    0.5165737867355347,
+    0.9477893710136414
+  ],
+  "mesh_objects": [
+    {
+      "name": "Mesh_0",
+      "vertices": 21658,
+      "triangles": 29999,
+      "uv_layers": 1,
+      "groups": {},
+      "shape_keys": [],
+      "modifiers": []
+    }
+  ],
+  "materials": [
+    "Material_0"
+  ],
+  "textures": [
+    {
+      "name": "Image_0",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Image_1",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Image_2",
+      "size": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "rigs": [],
+  "unweighted_vertices": 21658,
+  "weight_sum_errors": 0,
+  "max_skin_influences": 0,
+  "animations": [],
+  "source_unchanged": true,
+  "android_runtime_measured": false
+}

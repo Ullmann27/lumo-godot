@@ -1,0 +1,46 @@
+{
+  "source_sha256": "983f0d17ecaabfcd50d1b6244c04d54771dbdc45cfd1c37926acf437637f48dd",
+  "source_unchanged": true,
+  "output_sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+  "output_bytes": 5156596,
+  "triangles": 30000,
+  "vertices": 21658,
+  "bones": 65,
+  "max_weights": 4,
+  "textures": [
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ]
+  ],
+  "excluded_blender_display_helpers": [
+    "Icosphere"
+  ],
+  "head_vertices_pinned_before_lod": 22971,
+  "clips": {
+    "idle": 3.0,
+    "greeting_wave": 2.0,
+    "celebrate": 2.0,
+    "point_portal": 1.6,
+    "agree_nod": 1.6,
+    "kart_seated": 1.0,
+    "kart_steer_left": 1.0,
+    "kart_steer_right": 1.0,
+    "kart_jump": 1.0
+  },
+  "frame_rate": 30,
+  "key_interval_frames": 3,
+  "animation_author": "Local Blender keyframes; not Meshy motion presets",
+  "facial_morphs": false,
+  "lip_sync": false,
+  "android_device_test": false,
+  "production_driver_replaced": false
+}
