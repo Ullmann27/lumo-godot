@@ -41,6 +41,30 @@ func _wait_ready(boot) -> void:
 	_check(is_equal_approx(boot.actual_progress, 1.0), "Ready corresponds to both engine resources loaded")
 
 
+func _check_model_textures(scene: PackedScene) -> void:
+	var model := scene.instantiate()
+	var materials := 0
+	var identities := {}
+	for mesh in model.find_children("*", "MeshInstance3D", true, false):
+		for surface in range(mesh.mesh.get_surface_count()):
+			var material = mesh.mesh.surface_get_material(surface)
+			if not material is StandardMaterial3D:
+				continue
+			materials += 1
+			for texture in [material.albedo_texture, material.normal_texture,
+					material.roughness_texture, material.metallic_texture]:
+				_check(texture is Texture2D, "Imported Lumo retains each original material texture")
+				if texture is Texture2D:
+					_check(texture.get_width() > 0 and texture.get_height() > 0,
+						"Real embedded texture has actual dimensions")
+					_check(not texture.resource_path.ends_with(".png"),
+						"Native model never depends on newly extracted PNG sidecars")
+					identities[texture.get_instance_id()] = true
+	_check(materials > 0 and identities.size() >= 3,
+		"Native packed Lumo retains distinct albedo, normal and PBR images")
+	model.free()
+
+
 func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(output)
 	var host = root.get_node("HostBridge")
@@ -58,6 +82,7 @@ func _run() -> void:
 	await _wait_ready(boot)
 	_check(boot._resources.size() == 2, "Scene and native imported GLB, not a fictitious timer")
 	_check(boot._resources[boot.LUMO_MODEL] is PackedScene, "Imported character is genuinely loaded")
+	_check_model_textures(boot._resources[boot.LUMO_MODEL])
 	_check(is_instance_valid(boot._hero.lumo_animation), "Actual loading screen attaches the existing rig")
 	_check(boot._hero.lumo_animation.actor.skeleton.get_bone_count() == 65, "Same 65-bone Lumo")
 	_check(not boot._hero.driver.visible, "No competing static Lumo in loading screen")

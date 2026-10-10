@@ -39,3 +39,11 @@ Ein PCK-Lauf verwendet denselben Test als externes Skript mit `--main-pack`, ohn
 ## Noch offen
 
 Eigene GitHub-Abnahme dieser Ladeetappe, kompatibler neuer Flutter/Godot-Pin, neue eindeutig versionierte Test-APK, Signatur- und Updateprüfung sowie echte Android-Runtime-Abnahme. Hier ist kein physisches Samsung Galaxy Z Fold angeschlossen. Das vorhandene Modell hat keine nachgewiesenen Gesichtsmorphs; keine echte Lippensynchronisation wird behauptet. Looping und 50-Sekunden-Zielrunde gehören zur späteren Streckenphase.
+
+## Exportnachtrag: native Modelltexturen
+
+Der ursprüngliche Ladecommit `b7c4114` ist in [Stage 2](https://github.com/Ullmann27/lumo-godot/actions/runs/38092021550), Rivalenfeedback und Video Grade vollständig erfolgreich. Die getrennte Android-Integration aus [PR #259](https://github.com/Ullmann27/lumo-lernen/pull/259) deckte danach eine nicht versionierte GLB-Importregel auf: Der Standardimport extrahiert drei PNGs neben dem Modell. Der geschützte APK-Exporter lehnt diesen nachträglich veränderten Source-Checkout zu Recht ab.
+
+Eine rein nachträgliche Dateibereinigung ist keine Lösung: Bei einem erneuten Export können dann externe Texturreferenzen fehlen. Dieser experimentelle Weg wurde durch den tatsächlichen PCK-Test verworfen und nicht veröffentlicht. Die Schutzprüfung bleibt bestehen.
+
+Die native `Lumo-Animated-Mobile.glb.import` wird deshalb ausdrücklich versioniert und verwendet `gltf/embedded_image_handling=2`, die Basis-Universal-Einbettung des verwendeten Godot-Importers. Das ursprüngliche GLB, alle Knochen, Materialien und Clips bleiben unverändert. Der Lade-Regressionslauf prüft zusätzlich tatsächlich vorhandene Albedo-/Normal-/PBR-Texturen mit gültigen Größen und ohne externe PNG-Abhängigkeit. Der erste erweiterte Headless-Lauf bestand 90 Prüfungen / 0 Fehler. Ein frischer und ein wiederholter exportierter Lauf sind zusätzlich erforderlich, bevor ein neuer APK-Kandidat gebaut wird.
