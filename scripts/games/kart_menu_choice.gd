@@ -8,6 +8,8 @@ var artwork: Texture2D
 var title_label: Label
 var caption_label: Label
 var icon_view: TextureRect
+var icon_plate: PanelContainer
+var selected: bool = false
 var margin: MarginContainer
 
 
@@ -27,7 +29,7 @@ func _ready() -> void:
 	icon_view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon_view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var icon_plate := PanelContainer.new()
+	icon_plate = PanelContainer.new()
 	icon_plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var icon_style := StyleBoxFlat.new()
 	var mode_hues := {
@@ -62,25 +64,41 @@ func _ready() -> void:
 	caption_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	caption_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(caption_label)
+	if selected:
+		var check := Label.new()
+		check.name = "SelectedCheck"
+		check.text = "✓"
+		check.add_theme_font_override("font", UI.HEADING)
+		check.add_theme_font_size_override("font_size", 18)
+		check.add_theme_color_override("font_color", Color("faffff"))
+		check.add_theme_color_override("font_outline_color", Color("124d69"))
+		check.add_theme_constant_override("outline_size", 4)
+		check.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(check)
+		check.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+		check.position = Vector2(-28, 4)
 	if disabled:
 		icon_view.modulate = Color(0.55, 0.65, 0.78)
 		title_label.modulate = Color("96acc5")
 	apply_size(1.0, false)
 
 
-func apply_size(scale_factor: float, compact: bool) -> void:
+func apply_size(scale_factor: float, compact: bool, dense: bool = false) -> void:
 	if not is_instance_valid(title_label):
 		return
-	var icon_size: float = (28.0 if compact else 54.0) * scale_factor
+	var icon_size: float = (28.0 if compact else (38.0 if dense else 54.0)) * scale_factor
+	var icon_style: StyleBoxFlat = icon_plate.get_theme_stylebox("panel").duplicate()
+	icon_style.set_content_margin_all(5 if compact or dense else 8)
+	icon_plate.add_theme_stylebox_override("panel", icon_style
 	icon_view.custom_minimum_size = Vector2.ONE * icon_size
 	for side in ["left", "right"]:
 		margin.add_theme_constant_override("margin_" + side, roundi(12 * scale_factor))
 	for side in ["top", "bottom"]:
 		margin.add_theme_constant_override(
-			"margin_" + side, roundi((5 if compact else 9) * scale_factor)
+			"margin_" + side, roundi((4 if compact or dense else 9) * scale_factor)
 		)
 	title_label.add_theme_font_size_override(
-		"font_size", roundi((14 if compact else 21) * scale_factor)
+		"font_size", roundi((14 if compact else (18 if dense else 21)) * scale_factor)
 	)
-	caption_label.add_theme_font_size_override("font_size", roundi(13 * scale_factor))
+	caption_label.add_theme_font_size_override("font_size", roundi((11 if dense else 13) * scale_factor))
 	caption_label.visible = not compact

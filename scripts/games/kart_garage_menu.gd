@@ -343,7 +343,7 @@ func _apply_responsive_layout() -> void:
 	var small: bool = window_size.x < 520
 	var short_landscape: bool = window_size.x >= window_size.y and window_size.y < 600
 	var panoramic: bool = window_size.x >= 1000 and window_size.x > window_size.y
-	var welcome_in_header: bool = step == 0 and short_landscape and window_size.y < 440
+	var welcome_in_header: bool = false  # compact header belongs to the brand, not an oversized Play button
 	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.03, 10.0, 28.0)
 	_apply_ui_scale(self, ui_scale)
 	for side in ["left", "right", "top", "bottom"]:
@@ -574,6 +574,7 @@ func _apply_responsive_layout() -> void:
 	for child in choices.get_children():
 		if child is GridContainer:
 			child.columns = 1 if step == 0 or small else 2
+			child.add_theme_constant_override("v_separation", roundi((5 if step == 0 and window_size.y < 800 else 10) * ui_scale))
 		var cards: Array = child.get_children() if child is GridContainer else [child]
 		for card in cards:
 			if card is Button:
@@ -587,7 +588,7 @@ func _apply_responsive_layout() -> void:
 				_set_physical_minimum(card, Vector2(0, height), ui_scale)
 				_set_physical_font(card, (14 if tiny else 16) if short_landscape else 19, ui_scale)
 				if card.has_method("apply_size"):
-					card.apply_size(ui_scale, short_landscape)
+					card.apply_size(ui_scale, short_landscape, step == 0 and window_size.y < 800)
 	# A saved race adds a second footer row on a small portrait phone.
 	# Reserve usable space for the scrolling mode choices, not just the hero.
 	if portrait and window_size.y < 680 and step == 0:
@@ -875,8 +876,15 @@ func _refresh() -> void:
 				continue
 			var card := CHOICE.new()
 			card.title = str(item.name)
+			card.selected = selected
 			card.caption = (
-				str(item.tag).to_lower().capitalize()
+				({
+					"race": "Dein schneller Start",
+					"time_trial": "Du gegen deinen Geist",
+					"arena": "90 Sekunden Abenteuer",
+					"cup": "Zwölf Welten – ein Pokal",
+					"training": "Entdecken. Ohne Druck.",
+				}.get(str(item.id), str(item.tag).to_lower().capitalize()) if step == 0 else str(item.tag).to_lower().capitalize())
 				if unlocked
 				else "Ab %d Sternen" % int(item.unlock)
 			)
