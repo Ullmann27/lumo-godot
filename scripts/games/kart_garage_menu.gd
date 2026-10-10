@@ -588,7 +588,7 @@ func _apply_responsive_layout() -> void:
 			if card is Button:
 				var tiny: bool = window_size.y < 440
 				var height: float = (
-					(31 if window_size.y < 400 else 40) if short_landscape and step == 0
+					(28 if window_size.y < 400 else 40) if short_landscape and step == 0
 					else (42 if window_size.y < 520 else 58) if short_landscape
 					else ((50 if window_size.y < 800 else 76) if step == 0 else 74)
 				)
@@ -848,7 +848,7 @@ func _refresh() -> void:
 		grid.columns = 1 if step == 0 else 2
 		grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		grid.add_theme_constant_override("h_separation", 10)
-		grid.add_theme_constant_override("v_separation", 5)
+		grid.add_theme_constant_override("v_separation", 3)
 		choices.add_child(grid)
 		card_parent = grid
 	if step == 3 and setup.mode in ["cup", "arena"]:
