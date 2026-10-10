@@ -11,9 +11,9 @@ static func create_overlay(size: Vector2, low_detail: bool = false) -> ColorRect
     overlay.focus_mode = Control.FOCUS_NONE
     overlay.custom_minimum_size = size
     overlay.color = Color.WHITE
-    var renderer: String = RenderingServer.get_rendering_method()
+    var rd_available: bool = RenderingServer.get_rendering_device() != null
     var shader := ShaderMaterial.new()
-    shader.shader = LITE if low_detail or renderer == "gl_compatibility" else GLASS
+    shader.shader = LITE if low_detail or not rd_available else GLASS
     overlay.material = shader
     overlay.set_meta("decorative_only", true)
     return overlay

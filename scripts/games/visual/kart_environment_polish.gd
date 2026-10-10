@@ -5,8 +5,10 @@ extends RefCounted
 
 
 static func configure(environment: Environment, low_detail: bool) -> Dictionary:
-	var method: String = RenderingServer.get_rendering_method()
-	var forward_plus: bool = method == "forward_plus"
+	var has_rendering_device: bool = RenderingServer.get_rendering_device() != null
+	var requested: String = str(ProjectSettings.get_setting("rendering/renderer/rendering_method", "gl_compatibility"))
+	var method: String = requested if has_rendering_device else "gl_compatibility"
+	var forward_plus: bool = has_rendering_device and method == "forward_plus" and not OS.has_feature("mobile")
 	if low_detail:
 		return {"renderer": method, "quality": "low", "ssao": false, "ssr": false}
 	# Keep original atmospheric colors; raise the HDR-only emission threshold.
