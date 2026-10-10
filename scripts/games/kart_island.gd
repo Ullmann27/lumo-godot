@@ -994,7 +994,7 @@ func _apply_responsive_layout() -> void:
 	):
 		return
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
-	var window_size: Vector2 = Vector2(get_window().size)
+	var window_size: Vector2 = Vector2(get_window().size) / MobileRuntime.get_ui_density()
 	if (
 		viewport_size.x <= 0.0
 		or viewport_size.y <= 0.0
@@ -1063,7 +1063,7 @@ func _apply_responsive_layout() -> void:
 		controls_row.add_theme_constant_override("separation", roundi(gap * ui_scale))
 		controls_gap.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		controls_gap.custom_minimum_size = Vector2(gap * ui_scale, 1.0)
-		var diameter: float = maxf(44.0, minf(68.0, minf(pad_width * 0.28, pad_height * 0.26)))
+		var diameter: float = maxf(48.0, minf(68.0, minf(pad_width * 0.28, pad_height * 0.26)))
 		var compact_positions: Dictionary = {
 			"DriftAction": Vector2(pad_width * 0.28, pad_height * 0.2),
 			"BoostAction": Vector2(pad_width * 0.72, pad_height * 0.2),
@@ -1081,7 +1081,7 @@ func _apply_responsive_layout() -> void:
 			button.position = compact_positions[button.name] * ui_scale - button.size * 0.5
 	elif short_landscape:
 		# A short landscape needs two rows of thumb actions, not a scaled-down
-		# 300px-tall cluster. Every action remains at least 44 physical pixels.
+		# 300dp-tall cluster. Every action remains at least 48 dp.
 		joystick.custom_minimum_size = Vector2.ONE * 96.0 * ui_scale
 		pedal_pad.custom_minimum_size = Vector2(180, 100) * ui_scale
 		controls_row.add_theme_constant_override("separation", roundi(8.0 * ui_scale))
@@ -1090,7 +1090,7 @@ func _apply_responsive_layout() -> void:
 		var short_actions: Dictionary = {
 			"DriftAction": [Vector2(84, 24), 48.0],
 			"BoostAction": [Vector2(148, 24), 48.0],
-			"ItemAction": [Vector2(24, 74), 44.0],
+			"ItemAction": [Vector2(24, 74), 48.0],
 			"BrakePedal": [Vector2(84, 74), 48.0],
 			"GasPedal": [Vector2(148, 74), 52.0]
 		}
@@ -1126,7 +1126,7 @@ func _apply_responsive_layout() -> void:
 	top_pause_button.visible = true
 	var top_button_size: Vector2 = Vector2(112, 56) if compact else Vector2(80, 58)
 	if short_landscape:
-		top_button_size = Vector2(92, 44)
+		top_button_size = Vector2(92, 48)
 	hud.add_theme_font_size_override(
 		"font_size", roundi((15.0 if compact_portrait or short_landscape else (18.0 if compact else 23.0)) * ui_scale)
 	)

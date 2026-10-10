@@ -1,0 +1,244 @@
+{
+	"checks": 336,
+	"failures": 0,
+	"orphan_nodes_after": 0,
+	"orphan_nodes_before": 0,
+	"physical_android_device": false,
+	"surfaces": [
+		{
+			"android_inset_fixture": false,
+			"density": 1.0,
+			"image": "menu-360x800-density-1.00.png",
+			"logical_dp": [
+				360.0,
+				800.0
+			],
+			"mode_button_dp": [
+				340.3125,
+				88.0137481689453
+			],
+			"next_button_dp": [
+				148.0,
+				56.0087509155273
+			],
+			"physical_android_device": false,
+			"scroll_content": 1572.0,
+			"scroll_page": 1079.0,
+			"seed": 1923,
+			"surface_px": [
+				360,
+				800
+			],
+			"test_stars": 48
+		},
+		{
+			"android_inset_fixture": false,
+			"density": 1.0,
+			"image": "menu-640x360-density-1.00.png",
+			"logical_dp": [
+				640.0,
+				360.0
+			],
+			"mode_button_dp": [
+				171.0,
+				52.0
+			],
+			"next_button_dp": [
+				148.0,
+				48.0
+			],
+			"physical_android_device": false,
+			"scroll_content": 532.0,
+			"scroll_page": 255.0,
+			"seed": 1923,
+			"surface_px": [
+				640,
+				360
+			],
+			"test_stars": 48
+		},
+		{
+			"android_inset_fixture": false,
+			"density": 1.0,
+			"image": "menu-1280x720-density-1.00.png",
+			"logical_dp": [
+				1280.0,
+				720.0
+			],
+			"mode_button_dp": [
+				420.0,
+				72.0
+			],
+			"next_button_dp": [
+				240.0,
+				72.0
+			],
+			"physical_android_device": false,
+			"scroll_content": 372.0,
+			"scroll_page": 372.0,
+			"seed": 1923,
+			"surface_px": [
+				1280,
+				720
+			],
+			"test_stars": 48
+		},
+		{
+			"android_inset_fixture": false,
+			"density": 1.0,
+			"image": "menu-1200x896-density-1.00.png",
+			"logical_dp": [
+				1200.0,
+				896.0
+			],
+			"mode_button_dp": [
+				420.0,
+				88.0675735473633
+			],
+			"next_button_dp": [
+				240.0,
+				72.055290222168
+			],
+			"physical_android_device": false,
+			"scroll_content": 477.0,
+			"scroll_page": 477.0,
+			"seed": 1923,
+			"surface_px": [
+				1200,
+				896
+			],
+			"test_stars": 48
+		},
+		{
+			"android_inset_fixture": false,
+			"density": 2.25,
+			"image": "menu-2176x1812-density-2.25.png",
+			"logical_dp": [
+				967.111111111111,
+				805.333333333333
+			],
+			"mode_button_dp": [
+				338.488891601562,
+				72.0596618652344
+			],
+			"next_button_dp": [
+				240.0,
+				72.0596618652344
+			],
+			"physical_android_device": false,
+			"scroll_content": 487.0,
+			"scroll_page": 487.0,
+			"seed": 1923,
+			"surface_px": [
+				2176,
+				1812
+			],
+			"test_stars": 48
+		},
+		{
+			"android_inset_fixture": false,
+			"density": 2.5,
+			"image": "menu-2316x904-density-2.50.png",
+			"logical_dp": [
+				926.4,
+				361.6
+			],
+			"mode_button_dp": [
+				170.811279296875,
+				51.9999923706055
+			],
+			"next_button_dp": [
+				148.048294067383,
+				48.0
+			],
+			"physical_android_device": false,
+			"scroll_content": 527.0,
+			"scroll_page": 257.0,
+			"seed": 1923,
+			"surface_px": [
+				2316,
+				904
+			],
+			"test_stars": 48
+		},
+		{
+			"android_inset_fixture": false,
+			"density": 1.0,
+			"image": "menu-640x320-density-1.00.png",
+			"logical_dp": [
+				640.0,
+				320.0
+			],
+			"mode_button_dp": [
+				171.111114501953,
+				52.0
+			],
+			"next_button_dp": [
+				148.0,
+				48.0
+			],
+			"physical_android_device": false,
+			"scroll_content": 597.0,
+			"scroll_page": 277.0,
+			"seed": 1923,
+			"surface_px": [
+				640,
+				320
+			],
+			"test_stars": 48
+		},
+		{
+			"android_inset_fixture": true,
+			"density": 1.0,
+			"image": "menu-1280x720-density-1.00-safe-area.png",
+			"logical_dp": [
+				1280.0,
+				720.0
+			],
+			"mode_button_dp": [
+				420.0,
+				62.0
+			],
+			"next_button_dp": [
+				240.0,
+				72.0
+			],
+			"physical_android_device": false,
+			"scroll_content": 322.0,
+			"scroll_page": 322.0,
+			"seed": 1923,
+			"surface_px": [
+				1280,
+				720
+			],
+			"test_stars": 48
+		},
+		{
+			"android_inset_fixture": true,
+			"density": 1.0,
+			"image": "menu-640x320-density-1.00-safe-area.png",
+			"logical_dp": [
+				640.0,
+				320.0
+			],
+			"mode_button_dp": [
+				171.111114501953,
+				52.0
+			],
+			"next_button_dp": [
+				148.0,
+				48.0
+			],
+			"physical_android_device": false,
+			"scroll_content": 597.0,
+			"scroll_page": 164.0,
+			"seed": 1923,
+			"surface_px": [
+				640,
+				320
+			],
+			"test_stars": 48
+		}
+	],
+	"wave_sample_seconds": 0.1
+}

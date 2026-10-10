@@ -5,6 +5,7 @@ signal resume_requested
 signal exit_requested(destination: String)
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const CHOICE = preload("res://scripts/games/kart_menu_choice.gd")
+const WORDMARK = preload("res://scripts/games/kart_wordmark.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
@@ -38,10 +39,7 @@ var setup_row: GridContainer
 var setup_left: VBoxContainer
 var setup_right: VBoxContainer
 var page_margin: MarginContainer
-var brand_label: Label
-var brand_kart: Label
-var brand_motto: Label
-var brand_stack: VBoxContainer
+var brand_wordmark: Control
 var learn_button: Button
 var footer: GridContainer
 var footer_spacer: Control
@@ -76,6 +74,7 @@ var inspection_view: int = 0
 var quick_start_button: Button
 var _page_target_size := Vector2.ZERO
 var preview_idle_time: float = 0.0
+var _welcomed := false
 
 
 func _ready() -> void:
@@ -123,31 +122,9 @@ func _ready() -> void:
 	var header := HBoxContainer.new()
 	header_row = header
 	header.custom_minimum_size.y = 104
-	brand_stack = VBoxContainer.new()
-	brand_stack.name = "LumoKartWordmark"
-	brand_stack.add_theme_constant_override("separation", -12)
-	header.add_child(brand_stack)
-	brand_label = _label("Lumo ★", 52, Color("ffca40"))
-	brand_label.add_theme_color_override("font_outline_color", Color("7134b4"))
-	brand_label.add_theme_constant_override("outline_size", 5)
-	brand_label.add_theme_color_override("font_shadow_color", Color(0.02, 0.08, 0.24, 0.76))
-	brand_label.add_theme_constant_override("shadow_offset_x", 3)
-	brand_label.add_theme_constant_override("shadow_offset_y", 5)
-	brand_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-	brand_label.custom_minimum_size.x = 245
-	brand_stack.add_child(brand_label)
-	brand_kart = _label("KART 🏁", 39, Color("66f6ff"))
-	brand_kart.add_theme_color_override("font_outline_color", Color("134fba"))
-	brand_kart.add_theme_constant_override("outline_size", 5)
-	brand_kart.add_theme_color_override("font_shadow_color", Color(0.01, 0.06, 0.22, 0.8))
-	brand_kart.add_theme_constant_override("shadow_offset_y", 4)
-	brand_kart.autowrap_mode = TextServer.AUTOWRAP_OFF
-	brand_stack.add_child(brand_kart)
-	brand_motto = _label("KLEINE SCHRITTE · GROSSE ZIELE ★", 11, Color("ecf6ff"))
-	brand_motto.add_theme_color_override("font_outline_color", Color("1a325e"))
-	brand_motto.add_theme_constant_override("outline_size", 3)
-	brand_motto.autowrap_mode = TextServer.AUTOWRAP_OFF
-	brand_stack.add_child(brand_motto)
+	brand_wordmark = WORDMARK.new()
+	brand_wordmark.custom_minimum_size = Vector2(176, 100)
+	header.add_child(brand_wordmark)
 	var grow := Control.new()
 	grow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(grow)
@@ -256,7 +233,7 @@ func _ready() -> void:
 	preview.add_child(hero_fill)
 	preview_camera = built.camera
 	preview_pivot = built.pivot
-	preview_caption = _label("☞ Dein Fahrer · Dein Kart · Ziehen zum Drehen ↺", 14, Color("e2f6ff"))
+	preview_caption = _label("Dein Fahrer · Dein Kart · Ziehen zum Drehen", 14, Color("e2f6ff"))
 	preview_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	right.add_child(preview_caption)
 	quick_start_button = _button("Spielen", func(): start_requested.emit(setup.duplicate(true)), true)
@@ -337,7 +314,7 @@ func _apply_responsive_layout() -> void:
 	if not is_inside_tree() or not is_instance_valid(setup_row):
 		return
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
-	var window_size: Vector2 = Vector2(get_window().size)
+	var window_size: Vector2 = Vector2(get_window().size) / MobileRuntime.get_ui_density()
 	if (
 		viewport_size.x <= 0.0
 		or viewport_size.y <= 0.0
@@ -349,8 +326,10 @@ func _apply_responsive_layout() -> void:
 	var compact: bool = window_size.x < 760 or window_size.x < window_size.y
 	var small: bool = window_size.x < 520
 	var short_landscape: bool = window_size.x >= window_size.y and window_size.y < 600
+	var balanced_landscape: bool = window_size.x >= window_size.y and window_size.y >= 600 and window_size.y < 840
+	var inset_landscape: bool = balanced_landscape and size.y / ui_scale < 680.0
 	var tiny_portrait: bool = window_size.x < window_size.y and window_size.y < 680
-	var panoramic: bool = window_size.x >= 1000 and window_size.x > window_size.y
+	var panoramic: bool = window_size.x >= 760 and window_size.x > window_size.y and not short_landscape
 	var welcome_in_header: bool = step == 0 and short_landscape and window_size.y < 440
 	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.024, 8.0, 24.0)
 	# The reward pill was forcing a 76 px toolbar on a 360 px Fold surface:
@@ -387,8 +366,14 @@ func _apply_responsive_layout() -> void:
 	# Keep the original ordering for modes, tracks and landscape controls.
 	var portrait: bool = window_size.x < window_size.y
 	setup_row.columns = 1 if portrait else 2
-	setup_left.custom_minimum_size.x = (398.0 if panoramic else (175.0 if short_landscape else 0.0)) * ui_scale
-	setup_right.custom_minimum_size.x = (455.0 if panoramic else (255.0 if short_landscape else 0.0)) * ui_scale
+	setup_left.custom_minimum_size.x = (
+		clampf(window_size.x * 0.35, 266.0, 420.0) if panoramic
+		else (175.0 if short_landscape else 0.0)
+	) * ui_scale
+	setup_right.custom_minimum_size.x = (
+		clampf(window_size.x * 0.45, 280.0, 455.0) if panoramic
+		else (255.0 if short_landscape else 0.0)
+	) * ui_scale
 	var driver_hero: bool = portrait and step in [0, 1, 2]
 	var first: Control = setup_right if driver_hero else setup_left
 	if setup_row.get_child(0) != first:
@@ -400,24 +385,19 @@ func _apply_responsive_layout() -> void:
 		"h_separation", roundi((14 if compact else 28) * ui_scale)
 	)
 	setup_row.add_theme_constant_override("v_separation", roundi((14 if compact else 0) * ui_scale))
-	brand_label.custom_minimum_size.x = (120 if small or welcome_in_header else 245) * ui_scale
-	_set_physical_font(brand_label, 21 if short_landscape else (25 if small else 47), ui_scale)
-	_set_physical_font(brand_kart, 18 if short_landscape else (23 if small else 38), ui_scale)
-	# At the 640x320 cover size, the TWO stacked wordmark lines force a 175
-	# logical pixel header, leaving only 84 for 2x63 pixel mode buttons.
-	# Keep the same wordmark in one line on short surfaces, including small
-	# portrait phones where a saved race adds a second footer row.
+	# A bounded vector wordmark retains both lines and the original flags,
+	# without letting font minimums expand the Android safe-area header.
+	_set_physical_minimum(brand_wordmark,
+		Vector2(82, 44) if short_landscape or tiny_portrait
+		else (Vector2(116, 66) if small else (Vector2(120, 64) if inset_landscape else (Vector2(148, 80) if balanced_landscape else Vector2(176, 100)))),
+		ui_scale)
 	var ultra_short: bool = short_landscape and window_size.y < 360
 	var compact_welcome: bool = short_landscape and step == 0 and window_size.y < 440
-	brand_label.text = "LUMO KART" if ultra_short or compact_welcome or tiny_portrait else "Lumo ★"
-	brand_kart.visible = not (ultra_short or compact_welcome or tiny_portrait)
+	title_label.visible = not (ultra_short and size.y / ui_scale < 300.0)
 	# The 320px-high safe-area case has only 240px of content height after
 	# Android system bars. Preserve the *real* selectable modes and 3D kart:
 	# the learn shortcut and status are available through Spieleauswahl.
 	progress_panel.visible = not ultra_short
-	_set_physical_font(brand_motto, 8 if small or short_landscape else 11, ui_scale)
-	brand_motto.visible = not small and not short_landscape
-	brand_stack.add_theme_constant_override("separation", roundi((-5 if short_landscape or small else -12) * ui_scale))
 	for index in range(step_buttons.size()):
 		var tab: Button = step_buttons[index]
 		tab.text = (
@@ -425,8 +405,8 @@ func _apply_responsive_layout() -> void:
 			if small
 			else "%d  %s" % [index + 1, ["Modus", "Fahrer", "Kart", "Welt", "Tempo"][index]]
 		)
-		_set_physical_minimum(tab, Vector2(0, 24 if short_landscape else 38), ui_scale)
-		_set_physical_font(tab, 12 if short_landscape else 15, ui_scale)
+		_set_physical_minimum(tab, Vector2(0, 48), ui_scale)
+		_set_physical_font(tab, 14 if short_landscape else 17, ui_scale)
 	progress_label.visible = not small and (not short_landscape or compact_welcome)
 	# Keep actual earned stars, but avoid a tall duplicate learning shortcut in
 	# the compact welcome. Spieleauswahl retains the existing return route.
@@ -453,7 +433,7 @@ func _apply_responsive_layout() -> void:
 			child.custom_minimum_size = (
 				Vector2(112 if small else 148, 56 if compact else 72) * ui_scale
 			)
-	_set_physical_minimum(header_row, Vector2(0, (35 if window_size.y < 360 else 44) if short_landscape else (60 if small else 100)), ui_scale)
+	_set_physical_minimum(header_row, Vector2(0, (35 if window_size.y < 360 else 44) if short_landscape else (60 if small else (64 if inset_landscape else (80 if balanced_landscape else 100)))), ui_scale)
 	_set_physical_minimum(
 		preview_container,
 		(
@@ -464,21 +444,23 @@ func _apply_responsive_layout() -> void:
 		ui_scale
 	)
 	body_column.add_theme_constant_override(
-		"separation", roundi((3 if short_landscape else (8 if small else 12)) * ui_scale)
+		"separation", roundi((3 if short_landscape else (8 if small or balanced_landscape else 12)) * ui_scale)
 	)
 	_set_physical_font(
 		title_label,
-		(18 if short_landscape else (28 if small or panoramic else 36)),
+		(18 if short_landscape else (24 if inset_landscape else (28 if small or panoramic else 36))),
 		ui_scale
 	)
 	# Compact Fold cover: never squeeze a long heading into a vertical letter column.
 	if step == 0:
 		title_label.text = "Dein Abenteuer" if short_landscape else "Dein nächstes Abenteuer"
+		if balanced_landscape and window_size.x < 1100:
+			title_label.text = "Dein Abenteuer"
 		if panoramic:
 			subtitle.text = "Wähle, wie du heute fahren möchtest."
 	_set_physical_font(steps_label, 12 if short_landscape else 15, ui_scale)
 	_set_physical_font(subtitle, 14 if small else 18, ui_scale)
-	subtitle.visible = not short_landscape
+	subtitle.visible = not short_landscape and not (balanced_landscape and step == 0)
 	# The welcome's direct Play action adds a row. On an inset Android surface
 	# reserve the existing footer before showing the extra mode description.
 	# The selected mode title/tag and the five-step setup remain available.
@@ -513,7 +495,7 @@ func _apply_responsive_layout() -> void:
 		)
 		_set_physical_minimum(preview_container, Vector2(150, hero_height), ui_scale)
 		if step == 0:
-			_set_physical_minimum(preview_container, Vector2(150, clampf(window_size.y * 0.175, 90, 160)), ui_scale)
+			_set_physical_minimum(preview_container, Vector2(150, clampf(window_size.y * 0.24, 120, 220)), ui_scale)
 	# Auf niedrigen Querformaten (z. B. 1280×720 mit Systemleisten) braucht die Kartseite den Platz
 	# für Vorschau, Werte und Werkstatt-Knopf; Überschrift und Hinweis entfallen dort.
 	var tight_kart_page: bool = step == 2 and window_size.x >= window_size.y and window_size.y < 800
@@ -579,14 +561,14 @@ func _apply_responsive_layout() -> void:
 	if short_landscape:
 		footer.columns = 4 if has_saved_race else 3
 		footer_spacer.show()
-		_set_physical_minimum(learn_button, Vector2(100, 34), ui_scale)
+		_set_physical_minimum(learn_button, Vector2(100, 48), ui_scale)
 		_set_physical_font(learn_button, 14, ui_scale)
 		for button in [back_button, next_button]:
-			_set_physical_minimum(button, Vector2(148, 44), ui_scale)
+			_set_physical_minimum(button, Vector2(148, 48), ui_scale)
 			_set_physical_font(button, 16, ui_scale)
 		for button in footer.get_children():
 			if button is Button and button.name == "ResumeRace":
-				_set_physical_minimum(button, Vector2(148, 44), ui_scale)
+				_set_physical_minimum(button, Vector2(148, 48), ui_scale)
 				_set_physical_font(button, 16, ui_scale)
 	else:
 		_set_physical_minimum(
@@ -610,23 +592,25 @@ func _apply_responsive_layout() -> void:
 	# footer usable at320px, while all five modes fit the800x480 layout.
 	for child in choices.get_children():
 		if child is GridContainer:
+			# Retain the reference's full-size single column. On short cover
+			# displays scroll real 48dp choices, never shrink them to 28px.
 			child.columns = 1 if step == 0 or small else 2
 		var cards: Array = child.get_children() if child is GridContainer else [child]
 		for card in cards:
 			if card is Button:
 				var tiny: bool = window_size.y < 440
 				var height: float = (
-					(28 if window_size.y < 400 else (30 if window_size.y < 520 else 40)) if short_landscape and step == 0
-					else (42 if window_size.y < 520 else 58) if short_landscape
-					else ((50 if window_size.y < 800 else 76) if step == 0 else 74)
+					52 if short_landscape and step == 0
+					else (52 if window_size.y < 520 else 64) if short_landscape
+					else ((62 if inset_landscape else (72 if balanced_landscape else (68 if window_size.y < 800 else 88))) if step == 0 else 80)
 				)
 				if step == 2:
 					height = 74 if short_landscape else 118
 				_set_physical_minimum(card, Vector2(0, height), ui_scale)
-				_set_physical_font(card, (14 if tiny else 16) if short_landscape else 19, ui_scale)
+				_set_physical_font(card, 16 if short_landscape else 23, ui_scale)
 				if card.has_method("apply_size"):
 					if step == 0:
-						card.apply_size(ui_scale, short_landscape, window_size.y < 800 and not short_landscape)
+						card.apply_size(ui_scale, short_landscape, window_size.y < 840 and not short_landscape)
 					else:
 						card.apply_size(ui_scale, short_landscape)
 	# A saved race adds a second footer row on a small portrait phone.
@@ -639,12 +623,17 @@ func _apply_responsive_layout() -> void:
 		_set_physical_font(title_label, 22, ui_scale)
 		subtitle.hide()
 		body_column.add_theme_constant_override("separation", roundi(6 * ui_scale))
-		_set_physical_minimum(learn_button, Vector2(96, 44), ui_scale)
+		_set_physical_minimum(learn_button, Vector2(96, 48), ui_scale)
 		_set_physical_font(learn_button, 16, ui_scale)
 		for button in footer.get_children():
 			if button is Button:
-				_set_physical_minimum(button, Vector2(112, 44), ui_scale)
+				_set_physical_minimum(button, Vector2(112, 48), ui_scale)
 				_set_physical_font(button, 16, ui_scale)
+	if balanced_landscape:
+		_set_physical_minimum(learn_button, Vector2(148, 48 if inset_landscape else 56), ui_scale)
+		if inset_landscape:
+			for button in [back_button, next_button]:
+				_set_physical_minimum(button, Vector2(148 if button == back_button else 240, 56), ui_scale)
 	# Font/minimum-size changes above can temporarily force the margin wider
 	# than the window. Reapply its safe-area edges after queued size updates.
 	var inset_scale: Vector2 = viewport_size / physical_size
@@ -766,17 +755,17 @@ func _mode_glass(mode_id: String, selected: bool) -> StyleBoxFlat:
 		"cup": Color("12294f"),
 		"training": Color("102846")
 	}.get(mode_id, Color("183857"))
-	style.bg_color = base.lightened(0.12) if selected else base
-	style.bg_color.a = 0.94
-	style.border_color = Color("8dfbff") if selected else base.lightened(0.32)
-	style.set_border_width_all(3 if selected else 2)
-	style.set_corner_radius_all(23)
+	style.bg_color = base.lightened(0.10) if selected else base
+	style.bg_color.a = 0.86 if selected else 0.78
+	style.border_color = Color("aaffff") if selected else base.lightened(0.42)
+	style.set_border_width_all(2 if selected else 1)
+	style.set_corner_radius_all(16)
 	# The card itself already has custom inner margins. An extra 8 px on ALL
 	# edges increased five compact buttons by 12–16 px each and clipped #5.
 	style.set_content_margin_all(2)
-	style.shadow_color = Color(0.05, 0.85, 1.0, 0.42) if selected else Color(0, 0.02, 0.1, 0.48)
-	style.shadow_size = 11 if selected else 6
-	style.shadow_offset = Vector2(0, 3)
+	style.shadow_color = Color(0.05, 0.85, 1.0, 0.29) if selected else Color(0, 0.02, 0.1, 0.38)
+	style.shadow_size = 6 if selected else 4
+	style.shadow_offset = Vector2(0, 2)
 	return style
 
 
@@ -877,7 +866,7 @@ func _refresh() -> void:
 		preview_title.text = "LUMO IST STARTKLAR"
 	preview_caption.text = (
 		"Deine Rennwelt · ziehen zum Drehen" if step == 3
-		else "☞ Dein Fahrer · Dein Kart · Ziehen zum Drehen ↺"
+		else "Dein Fahrer · Dein Kart · Ziehen zum Drehen"
 	)
 	for child in choices.get_children():
 		choices.remove_child(child)
@@ -931,8 +920,17 @@ func _refresh() -> void:
 				continue
 			var card := CHOICE.new()
 			card.title = str(item.name)
+			card.selected = selected
+			var tag: String = str(item.tag).to_lower()
+			var mode_captions := {
+				"race": "Dein schneller Start",
+				"time_trial": "Du gegen deinen Geist",
+				"arena": "90 Sekunden Abenteuer",
+				"cup": "Zwölf Welten · ein Pokal",
+				"training": "Entdecken ohne Druck",
+			}
 			card.caption = (
-				str(item.tag).to_lower().capitalize()
+				str(mode_captions.get(str(item.id), tag.left(1).to_upper() + tag.substr(1)))
 				if unlocked
 				else "Ab %d Sternen" % int(item.unlock)
 			)
@@ -985,6 +983,8 @@ func _select(key: String, value: String) -> void:
 	if str(entry.get("id", "")) == value and not CATALOG.unlocked(entry, stars, unlocked_ids):
 		return
 	setup[key] = value
+	if is_instance_valid(preview_kart) and is_instance_valid(preview_kart.lumo_animation):
+		preview_kart.lumo_animation.play_menu_behavior("agree_nod")
 	_refresh.call_deferred()
 
 
@@ -1022,6 +1022,7 @@ func _refresh_preview() -> void:
 	if workshop != null:
 		preview_kart.set_look(workshop.look(str(setup.kart)))
 	preview_kart.configure(str(setup.driver), driver.color, str(setup.kart))
+	preview_kart.set_animated_lumo_enabled(true)
 	preview_kart.reduced_motion = reduced_motion
 	preview_kart.set_graphics_quality(graphics_profile)
 	# Quality is applied only to the small independent 3D menu viewport, not to gameplay.
@@ -1031,6 +1032,9 @@ func _refresh_preview() -> void:
 		else (Viewport.MSAA_2X if graphics_profile == "medium" else Viewport.MSAA_DISABLED)
 	)
 	preview_pivot.add_child(preview_kart)
+	if not _welcomed and step == 0 and is_instance_valid(preview_kart.lumo_animation):
+		preview_kart.lumo_animation.play_menu_behavior("greeting_wave")
+		_welcomed = true
 	preview_kart.visible = step != 3
 	preview_camera.position = Vector3(3.2, 3.2, -4.5) if step == 3 else Vector3(2.4, 2.05, -4.4)
 	preview_camera.look_at(Vector3(0, 0.15 if step == 3 else 0.85, 0))

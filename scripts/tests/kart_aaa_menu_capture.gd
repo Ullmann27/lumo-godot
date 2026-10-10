@@ -44,10 +44,22 @@ func _run() -> void:
 		garage.preview_kart.set_process(false)
 		await _settle(16)
 		var cards: GridContainer = garage.choices.get_child(0)
-		var clip: Rect2 = garage.choices.get_parent().get_global_rect()
+		var scroll: ScrollContainer = garage.choices.get_parent()
+		scroll.scroll_vertical = 0
+		await _settle(2)
+		var clip: Rect2 = scroll.get_global_rect()
 		assert(cards.get_child_count() == 5)
 		for card in cards.get_children():
-			assert(clip.encloses(card.get_global_rect()), "All five modes must be visible")
+			assert(card.size.y * dimensions.y / root.get_visible_rect().size.y >= 48.0,
+				"Modes retain real 48dp targets in this density-1 fixture")
+			if dimensions.y >= 600:
+				assert(clip.encloses(card.get_global_rect()), "Large surfaces show all five modes")
+			else:
+				scroll.ensure_control_visible(card)
+				await _settle(2)
+				assert(clip.grow(1).encloses(card.get_global_rect()), "Compact surface reaches every full-size mode")
+		scroll.scroll_vertical = 0
+		await _settle(2)
 		assert(root.get_visible_rect().encloses(garage.next_button.get_global_rect()))
 		assert(not garage.quick_start_button.visible)
 		var image := root.get_texture().get_image()
@@ -80,5 +92,5 @@ func _run() -> void:
 	# This fixture quits the entire engine, unlike normal scene navigation.
 	await create_timer(0.25).timeout
 	await _settle(2)
-	print("[AAAMenuCapture] PASS: three fixed-state real menu captures, five visible modes")
+	print("[AAAMenuCapture] PASS: three fixed-state real menu captures, five accessible 48dp modes")
 	quit(0)

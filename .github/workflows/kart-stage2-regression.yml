@@ -6,6 +6,8 @@ on:
       - .github/workflows/kart-stage2-regression.yml
       - assets/shaders/kart_*.gdshader
       - assets/characters/lumo_animated/**
+      - assets/kart/menu/**
+      - scripts/app/mobile_runtime.gd
       - scripts/characters/lumo/**
       - scripts/games/kart_*.gd
       - scripts/games/visual/**
@@ -110,6 +112,24 @@ jobs:
           fi
           grep -F '[TrackContract]' "$RUNNER_TEMP/track-contract.log"
           grep -F 'bergwelt' "$RUNNER_TEMP/track-contract.log"
+
+      - name: Actual reference menu at nine density and safe-area configurations
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/production-menu
+          export XDG_DATA_HOME="$RUNNER_TEMP/lumo-production-menu-user"
+          python3 tools/run_godot_probe.py \
+            --log exports/production-menu/menu.log \
+            --timeout 120 --required '[KartProductionMenu] PASS' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy \
+            --path . --script res://scripts/tests/kart_production_menu_regression.gd \
+            -- exports/production-menu
+          python3 tools/run_godot_probe.py \
+            --log exports/production-menu/touch-journey.log \
+            --timeout 120 --required '[StartHero] PASS' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy \
+            --path . --script res://scripts/tests/kart_start_hero_regression.gd
 
       - name: Optional stage ownership and renderer capability regressions
         shell: bash
