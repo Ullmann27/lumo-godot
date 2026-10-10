@@ -344,7 +344,7 @@ func _apply_responsive_layout() -> void:
 	var short_landscape: bool = window_size.x >= window_size.y and window_size.y < 600
 	var panoramic: bool = window_size.x >= 1000 and window_size.x > window_size.y
 	var welcome_in_header: bool = step == 0 and short_landscape and window_size.y < 440
-	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.03, 10.0, 28.0)
+	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.024, 8.0, 24.0)
 	_apply_ui_scale(self, ui_scale)
 	for side in ["left", "right", "top", "bottom"]:
 		page_margin.add_theme_constant_override("margin_" + side, roundi(margin * ui_scale))
@@ -401,7 +401,7 @@ func _apply_responsive_layout() -> void:
 			if small
 			else "%d  %s" % [index + 1, ["Modus", "Fahrer", "Kart", "Welt", "Tempo"][index]]
 		)
-		_set_physical_minimum(tab, Vector2(0, 28 if short_landscape else 38), ui_scale)
+		_set_physical_minimum(tab, Vector2(0, 24 if short_landscape else 38), ui_scale)
 		_set_physical_font(tab, 12 if short_landscape else 15, ui_scale)
 	progress_label.visible = not small and not short_landscape
 	learn_button.text = "Lernen" if small else "Zum Lernen"
@@ -426,7 +426,7 @@ func _apply_responsive_layout() -> void:
 			child.custom_minimum_size = (
 				Vector2(112 if small else 148, 56 if compact else 72) * ui_scale
 			)
-	_set_physical_minimum(header_row, Vector2(0, 36 if short_landscape else (60 if small else 100)), ui_scale)
+	_set_physical_minimum(header_row, Vector2(0, 44 if short_landscape else (60 if small else 100)), ui_scale)
 	_set_physical_minimum(
 		preview_container,
 		(
@@ -437,11 +437,11 @@ func _apply_responsive_layout() -> void:
 		ui_scale
 	)
 	body_column.add_theme_constant_override(
-		"separation", roundi((6 if short_landscape else (8 if small else 16)) * ui_scale)
+		"separation", roundi((3 if short_landscape else (8 if small else 12)) * ui_scale)
 	)
 	_set_physical_font(
 		title_label,
-		(21 if short_landscape else (28 if small or panoramic else 36)),
+		(18 if short_landscape else (28 if small or panoramic else 36)),
 		ui_scale
 	)
 	# Compact Fold cover: never squeeze a long heading into a vertical letter column.
@@ -476,8 +476,8 @@ func _apply_responsive_layout() -> void:
 	var stacked: bool = window_size.x < window_size.y
 	kart_bars.visible = not short_landscape and not (stacked and step == 2)
 	if panoramic and step == 0:
-		# Live character should dominate the right half without swallowing the footer.
-		_set_physical_minimum(preview_container, Vector2(430, clampf(window_size.y * 0.46, 294.0, 412.0)), ui_scale)
+		# Fill the hero half while retaining both footer controls in the safe area.
+		_set_physical_minimum(preview_container, Vector2(430, clampf(window_size.y * 0.47, 298.0, 420.0)), ui_scale)
 	if stacked and step in [0, 1, 2]:
 		# Bounded height: legible face on Cover/phone but the action footer
 		# and at least one selectable card remain in the actual safe area.
@@ -525,7 +525,9 @@ func _apply_responsive_layout() -> void:
 		if welcome_in_header
 		else "Spielen · " + str(CATALOG.entry(CATALOG.MODES, str(setup.mode)).get("name", "Einzelrennen"))
 	)
-	quick_start_button.visible = step == 0
+	# The reference has a single yellow Weiter action. Keep the shortcut
+	# connected for future flows, but hide its competing cyan/full-screen bar.
+	quick_start_button.visible = false
 	if quick_in_footer:
 		quick_start_button.size = Vector2(260, 44) * ui_scale
 		quick_start_button.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
@@ -537,10 +539,10 @@ func _apply_responsive_layout() -> void:
 	_set_physical_minimum(quick_start_button, Vector2(235 if quick_in_footer else (104 if welcome_in_header else 0), 44 if step == 0 or small or short_landscape else 56), ui_scale)
 	_set_physical_font(quick_start_button, 17 if short_landscape or small else 20, ui_scale)
 	if short_landscape and step == 0:
-		# Wide and shallow camera: never crop Lumos ears over the entire menu.
-		preview_camera.position = Vector3(3.4, 2.3, -5.3)
-		preview_camera.fov = 48.0
-		preview_camera.look_at(Vector3(0, 0.9, 0))
+		# Larger real character; maintain enough distance to keep both ears visible.
+		preview_camera.position = Vector3(2.85, 2.08, -4.36)
+		preview_camera.fov = 43.0
+		preview_camera.look_at(Vector3(0, 0.96, 0))
 	if short_landscape:
 		footer.columns = 3 if has_saved_race else 2
 		footer_spacer.hide()
@@ -579,8 +581,9 @@ func _apply_responsive_layout() -> void:
 			if card is Button:
 				var tiny: bool = window_size.y < 440
 				var height: float = (
-					(42 if window_size.y < 520 else 58) if short_landscape
-					else ((60 if window_size.y < 850 else 76) if step == 0 else 74)
+					(31 if window_size.y < 400 else 40) if short_landscape and step == 0
+					else (42 if window_size.y < 520 else 58) if short_landscape
+					else ((50 if window_size.y < 800 else 76) if step == 0 else 74)
 				)
 				if step == 2:
 					height = 74 if short_landscape else 118
@@ -810,7 +813,7 @@ func _refresh() -> void:
 	title_label.text = titles[step]
 	subtitle.text = descriptions[step]
 	steps_label.text = "%d / 5     MODUS  ·  FAHRER  ·  KART  ·  WELT  ·  TEMPO" % (step + 1)
-	progress_label.text = "%d Sterne · Dein Lernkonto" % stars
+	progress_label.text = "%d Sterne" % stars
 	for index in range(step_buttons.size()):
 		var tab_style := _step_glass(index == step)
 		tab_style.content_margin_top = 6
@@ -833,7 +836,7 @@ func _refresh() -> void:
 		grid.columns = 1 if step == 0 else 2
 		grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		grid.add_theme_constant_override("h_separation", 10)
-		grid.add_theme_constant_override("v_separation", 10)
+		grid.add_theme_constant_override("v_separation", 5)
 		choices.add_child(grid)
 		card_parent = grid
 	if step == 3 and setup.mode in ["cup", "arena"]:
@@ -1106,7 +1109,7 @@ func _choose_preview_view(index: int) -> void:
 	]
 	preview_camera.position = views[inspection_view]
 	if step == 0 and inspection_view == 0:
-		preview_camera.position = Vector3(2.70, 2.16, -4.32)
+		preview_camera.position = Vector3(2.37, 1.96, -3.80)
 	preview_camera.projection = (
 		Camera3D.PROJECTION_PERSPECTIVE
 		if inspection_view in [0, 6]
@@ -1114,7 +1117,7 @@ func _choose_preview_view(index: int) -> void:
 	)
 	preview_camera.fov = 34.0 if inspection_view == 6 else 37.0
 	if step == 0 and inspection_view == 0:
-		preview_camera.fov = 37.0
+		preview_camera.fov = 38.0
 	preview_camera.size = 3.9 if inspection_view == 5 else 2.8
 	preview_camera.look_at(
 		Vector3(0, 1.68, 0.07) if inspection_view == 6 else Vector3(0, 1.0, 0),
