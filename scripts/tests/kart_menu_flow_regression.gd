@@ -242,6 +242,12 @@ func _run() -> void:
 	await _settle()
 	print("[KartMenuFlow] PASS: direct selected Cup start inside compact Android safe insets")
 	print("[KartMenuFlow] PASS: five touch steps; 1280x720,800x480,640x320; safe controls >=44px")
-	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
-	await create_timer(0.12).timeout
+	# Destroy all camera/world references and allow Godot's GL renderer to
+	# consume the deferred free queue before exiting this 4-scene integration run.
+	# A 120 ms timeout previously logged four outstanding SceneCull RIDs.
+	root.world_3d.fallback_environment = null
+	await create_timer(1.5).timeout
+	for frame in range(12):
+		await process_frame
+	await RenderingServer.frame_post_draw
 	quit(0)
