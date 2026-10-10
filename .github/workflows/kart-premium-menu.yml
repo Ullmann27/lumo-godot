@@ -33,8 +33,12 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: |
           set -euo pipefail
+          set +e
           timeout 300s xvfb-run -a -s '-screen 0 2500x2500x24' Godot_v4.6.3-stable_linux.x86_64 --path . --rendering-method gl_compatibility --audio-driver Dummy --script res://scripts/tests/kart_premium_menu_capture.gd > premium-menu.log 2>&1
+          probe_result=$?
+          set -e
           cat premium-menu.log
+          test "$probe_result" -eq 0
           if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:|ERROR: Failed to load' premium-menu.log; then exit 1; fi
           grep -F '[KartPremiumMenu] PASS:' premium-menu.log
           test "$(find exports/premium-menu -name 'start-*.png' | wc -l)" -eq 4
