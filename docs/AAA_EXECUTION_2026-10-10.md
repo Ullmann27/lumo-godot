@@ -16,7 +16,7 @@ Kein Main-Merge oder Release. Originalreferenzen bleiben verbindlich.
 | Android SDK / ADB | ADB 37.0.1, Buildtools36 | Paketprüfung, CI-Gerätetests |
 | Xvfb / Mesa | reale GL-Ausführung erfolgreich | Software-Rendering, kein physischer Geräte-FPS-Nachweis |
 | ffmpeg | 8.0.1 | ausschließlich echte Aufnahmen / Schnitt |
-| Blender | noch nicht installiert, offizielles Ubuntu-Paket verfügbar | offene Alternative statt bezahlter Lizenzen; nicht als bereits benutztes Tool behauptet |
+| Blender | 5.0.1, offizielles Ubuntu-Paket; Background-CLI-Test erfolgreich | offene Werkzeugkette statt bezahlter Lizenzen |
 | GitHub | Lesen/Push/Actions verfügbar | separate Branches, keine Secrets ändern |
 | Claude Opus 5.5 | realer read-only Teilagent gestartet | Renderer-Lifetime-Gegenprüfung |
 | Claude Sonnet 5.5 | realer read-only Teilagent gestartet | vorhandenen Android-/Gameplay-QA-Pfad prüfen |
@@ -55,3 +55,41 @@ Sichtbare Befunde:
 VISUAL_GAP / IN_ARBEIT. Keine finale APK- oder Referenztreue-Freigabe.
 Jeder sichtbare Patch erhält einzelne echte Vorher-/Nachher-Bilder und
 zusätzlich einen Vergleich, mit direkten GitHub-URLs im Chat.
+
+## M1: kompakte Vorschau und Renderer-Lifetime
+
+Die Bühne erzeugte selbst bei `with_podium=false` ein unparented
+`MeshInstance3D`. Jedes ausgelassene Podest hinterließ genau einen
+RendererSceneCull-RID. Hauptagent und unabhängiger Claude-Opus-5.5-Audit
+bestätigten die Ursache getrennt; der Fehler entstand nicht durch den
+Neonbogen-Adapter oder zu kurze Wartezeit.
+
+Minimaler Produktfix in `kart_stage.gd`: das optionale Podest nur bei
+tatsächlichem Bedarf anlegen. Der bekannte manuelle Workaround im
+Wangen-Capture prüft nun `null`, statt eine nicht mehr angelegte Instanz
+freizugeben. Regression `kart_aaa_stage_lifetime.gd`: vorher 2 FAIL,
+nachher 0 FAIL in vier Lebenszyklen. Vorhandener Studio-Lichttest PASS.
+
+Kompaktes Menü:
+- gleiche bestehende 3D-Geometrie und Materialien, keine neue Lumo-Identität;
+- Welcome-Kamera näher wie in der vorhandenen großen Vorschau, FOV 34°
+  statt43° im kompakten Modus;
+- Weiter am rechten Rand mit elastischem Zwischenraum statt links neben Zurück;
+- echte Sterne sichtbar, doppelter Lernshortcut auf der kurzen Einstiegsseite
+  ausgeblendet, bestehender Rückweg über Spieleauswahl bleibt.
+
+Reproduzierbares Capture `kart_aaa_menu_capture.gd`: Seed1923, 48 Teststerne,
+Schritt0/Race, stehender Kart, Pose -0.25, reduzierte Bewegung, 1280×720,
+640×360, 1200×896. Vorher und Nachher benutzen denselben Harness und
+unveränderte Geometrie. Die absichtlich korrigierte Kameraposition/FOV
+ist je Aufnahme in `capture.json` dokumentiert.
+
+Nachher-Capture: alle fünf Modi sichtbar, nur ein Weiter, kein RID-Leak.
+Es bleiben aktuell eine ObjectDB-Warnung und zwei Ressourcen beim
+Prozessende des neuen Capture-Harness; Ursache wird separat untersucht.
+Keine Gesamtfreigabe aus dem Screenshot-Test allein.
+
+Sichtbare Restabweichungen: Gesicht und Karosserie sind noch nicht
+referenzidentisch, die Kopfzeile nimmt im kurzen Format zu viel Raum ein,
+echte Reflexionen/Materialtiefe fehlen gegenüber der Illustration.
+Der erste Patch ist eine überprüfbare Verbesserung, keine AAA-Abnahme.

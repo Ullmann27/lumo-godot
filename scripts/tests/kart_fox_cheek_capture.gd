@@ -60,7 +60,7 @@ func _run() -> void:
 	root.add_child(world)
 	var built: Dictionary = STAGE.build(world, Color("45d9ef"), false)
 	# The shared stage returns an unparented podium when it is hidden. This fixture owns it.
-	built.podium.free()
+	assert(built.podium == null)
 	camera = built.camera
 	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
 	camera.size = 1.30

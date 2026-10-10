@@ -1,0 +1,68 @@
+[
+  {
+    "adapter": "llvmpipe (LLVM 21.1.8, 256 bits)",
+    "camera_fov": 38.0,
+    "camera_position": "(2.37, 1.96, -3.8)",
+    "engine": "4.6.3-stable (official)",
+    "idle_time": 0,
+    "image": "menu-1280x720.png",
+    "menu_step": 0,
+    "mode": "race",
+    "next_rect": "[P: (1023.0, 631.0), S: (240.0, 72.0)]",
+    "physical_android_device": false,
+    "pose_yaw": -0.25,
+    "preview_rect": "[P: (443.0, 193.0), S: (820.0, 402.0)]",
+    "render_capture": true,
+    "renderer": "gl_compatibility",
+    "seed": 1923,
+    "size": [
+      1280,
+      720
+    ],
+    "stars": 48
+  },
+  {
+    "adapter": "llvmpipe (LLVM 21.1.8, 256 bits)",
+    "camera_fov": 43.0,
+    "camera_position": "(2.85, 2.08, -4.36)",
+    "engine": "4.6.3-stable (official)",
+    "idle_time": 0,
+    "image": "menu-640x360.png",
+    "menu_step": 0,
+    "mode": "race",
+    "next_rect": "[P: (327.0, 615.0), S: (296.0, 88.0)]",
+    "physical_android_device": false,
+    "pose_yaw": -0.25,
+    "preview_rect": "[P: (395.0, 238.0), S: (868.0, 371.0)]",
+    "render_capture": true,
+    "renderer": "gl_compatibility",
+    "seed": 1923,
+    "size": [
+      640,
+      360
+    ],
+    "stars": 48
+  },
+  {
+    "adapter": "llvmpipe (LLVM 21.1.8, 256 bits)",
+    "camera_fov": 43.0,
+    "camera_position": "(2.85, 2.08, -4.36)",
+    "engine": "4.6.3-stable (official)",
+    "idle_time": 0,
+    "image": "menu-1200x896.png",
+    "menu_step": 0,
+    "mode": "race",
+    "next_rect": "[P: (1001.0, 856.0), S: (256.0, 76.8)]",
+    "physical_android_device": false,
+    "pose_yaw": -0.25,
+    "preview_rect": "[P: (477.0, 211.0), S: (780.0, 606.0)]",
+    "render_capture": true,
+    "renderer": "gl_compatibility",
+    "seed": 1923,
+    "size": [
+      1200,
+      896
+    ],
+    "stars": 48
+  }
+]

@@ -404,8 +404,9 @@ func _apply_responsive_layout() -> void:
 	# logical pixel header, leaving only 84 for 2x63 pixel mode buttons.
 	# Use the SAME name and trademark in a single line on that surface only.
 	var ultra_short: bool = short_landscape and window_size.y < 360
-	brand_label.text = "LUMO KART" if ultra_short else "Lumo ★"
-	brand_kart.visible = not ultra_short
+	var compact_welcome: bool = short_landscape and step == 0 and window_size.y < 440
+	brand_label.text = "LUMO KART" if ultra_short or compact_welcome else "Lumo ★"
+	brand_kart.visible = not (ultra_short or compact_welcome)
 	# The 320px-high safe-area case has only 240px of content height after
 	# Android system bars. Preserve the *real* selectable modes and 3D kart:
 	# the learn shortcut and status are available through Spieleauswahl.
@@ -422,7 +423,10 @@ func _apply_responsive_layout() -> void:
 		)
 		_set_physical_minimum(tab, Vector2(0, 24 if short_landscape else 38), ui_scale)
 		_set_physical_font(tab, 12 if short_landscape else 15, ui_scale)
-	progress_label.visible = not small and not short_landscape
+	progress_label.visible = not small and (not short_landscape or compact_welcome)
+	# Keep actual earned stars, but avoid a tall duplicate learning shortcut in
+	# the compact welcome. Spieleauswahl retains the existing return route.
+	learn_button.visible = not compact_welcome
 	learn_button.text = "Lernen" if small else "Zum Lernen"
 	back_button.text = ("Spiele" if small else "Spieleauswahl") if step == 0 else "← Zurück"
 	next_button.text = ("Losfahren →" if small else "Rennen starten →") if step == 4 else "Weiter →"
@@ -563,13 +567,14 @@ func _apply_responsive_layout() -> void:
 	_set_physical_minimum(quick_start_button, Vector2(235 if quick_in_footer else (104 if welcome_in_header else 0), 44 if step == 0 or small or short_landscape else 56), ui_scale)
 	_set_physical_font(quick_start_button, 17 if short_landscape or small else 20, ui_scale)
 	if short_landscape and step == 0:
-		# Larger real character; maintain enough distance to keep both ears visible.
-		preview_camera.position = Vector3(2.85, 2.08, -4.36)
-		preview_camera.fov = 43.0
+		# Match the established welcome perspective instead of pulling the hero
+		# away on the very viewport that needs a readable face. Geometry unchanged.
+		preview_camera.position = Vector3(2.37, 1.96, -3.80)
+		preview_camera.fov = 34.0
 		preview_camera.look_at(Vector3(0, 0.96, 0))
 	if short_landscape:
-		footer.columns = 3 if has_saved_race else 2
-		footer_spacer.hide()
+		footer.columns = 4 if has_saved_race else 3
+		footer_spacer.show()
 		_set_physical_minimum(learn_button, Vector2(100, 34), ui_scale)
 		_set_physical_font(learn_button, 14, ui_scale)
 		for button in [back_button, next_button]:
