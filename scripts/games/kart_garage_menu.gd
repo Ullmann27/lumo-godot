@@ -435,11 +435,11 @@ func _apply_responsive_layout() -> void:
 			child.custom_minimum_size = (
 				Vector2(112 if small else 148, 56 if compact else 72) * ui_scale
 			)
-	_set_physical_minimum(header_row, Vector2(0, 44 if short_landscape else (60 if small else 100)), ui_scale)
+	_set_physical_minimum(header_row, Vector2(0, (35 if window_size.y < 360 else 44) if short_landscape else (60 if small else 100)), ui_scale)
 	_set_physical_minimum(
 		preview_container,
 		(
-			Vector2(150, 64 if window_size.y < 440 else 96)
+			Vector2(150, (50 if window_size.y < 360 else 64) if window_size.y < 440 else 96)
 			if short_landscape
 			else (Vector2(150, 112) if small else Vector2(250, 185))
 		),
