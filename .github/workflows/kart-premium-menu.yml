@@ -2,7 +2,7 @@ name: Lumo Kart premium menu screenshots
 
 on:
   push:
-    branches: [codex/lumo-kart-premium-menu-2026-10-10]
+    branches: [codex/lumo-kart-premium-menu-2026-10-10, codex/lumo-kart-reference-final-2026-10-10]
   workflow_dispatch:
 
 permissions:
