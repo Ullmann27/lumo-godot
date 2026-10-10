@@ -39,6 +39,9 @@ var setup_left: VBoxContainer
 var setup_right: VBoxContainer
 var page_margin: MarginContainer
 var brand_label: Label
+var brand_kart: Label
+var brand_motto: Label
+var brand_stack: VBoxContainer
 var learn_button: Button
 var footer: GridContainer
 var footer_spacer: Control
@@ -85,7 +88,7 @@ func _ready() -> void:
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(background)
 	var veil := ColorRect.new()
-	veil.color = Color(0.012, 0.035, 0.10, 0.79)
+	veil.color = Color(0.008, 0.024, 0.08, 0.28)
 	veil.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(veil)
@@ -96,36 +99,54 @@ func _ready() -> void:
 	add_child(page_margin)
 	var body := VBoxContainer.new()
 	body_column = body
-	body.add_theme_constant_override("separation", 16)
+	body.add_theme_constant_override("separation", 10)
 	page_margin.add_child(body)
-	# Blue Lumo brand ribbon, using the same Nunito/cyan language as Lumo Lernen.
-	# No new menu route or change to the five-step setup.
+	# Full-bleed fantasy-world landing page: the five real steps and live 3D kart remain intact.
 	var header_shell := PanelContainer.new()
-	header_shell.name = "LumoBlueHeader"
+	header_shell.name = "LumoPremiumHeader"
 	var header_style := StyleBoxFlat.new()
-	header_style.bg_color = Color(0.018, 0.14, 0.33, 0.94)
+	header_style.bg_color = Color(0.018, 0.14, 0.33, 0.0)
 	header_style.border_color = Color("53ddfd")
-	header_style.set_border_width_all(2)
+	header_style.set_border_width_all(0)
 	header_style.set_corner_radius_all(16)
 	header_style.set_content_margin_all(2)
 	header_shell.add_theme_stylebox_override("panel", header_style)
 	body.add_child(header_shell)
 	var header := HBoxContainer.new()
 	header_row = header
-	header.custom_minimum_size.y = 60
-	brand_label = _label("LUMO KART", 36, Color("f4f8ff"))
+	header.custom_minimum_size.y = 104
+	brand_stack = VBoxContainer.new()
+	brand_stack.name = "LumoKartWordmark"
+	brand_stack.add_theme_constant_override("separation", -12)
+	header.add_child(brand_stack)
+	brand_label = _label("Lumo ★", 47, Color("ffcc53"))
 	brand_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-	brand_label.custom_minimum_size.x = 260
-	header.add_child(brand_label)
+	brand_label.custom_minimum_size.x = 245
+	brand_stack.add_child(brand_label)
+	brand_kart = _label("KART", 38, Color("69e8ff"))
+	brand_kart.autowrap_mode = TextServer.AUTOWRAP_OFF
+	brand_stack.add_child(brand_kart)
+	brand_motto = _label("KLEINE SCHRITTE · GROSSE ZIELE", 11, Color("ecf6ff"))
+	brand_motto.autowrap_mode = TextServer.AUTOWRAP_OFF
+	brand_stack.add_child(brand_motto)
 	var grow := Control.new()
 	grow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(grow)
-	progress_label = _label("", 18, Color("ffd06a"))
+	var progress_panel := PanelContainer.new()
+	progress_panel.name = "ActualLearningRewards"
+	progress_panel.add_theme_stylebox_override("panel", _status_glass())
+	header.add_child(progress_panel)
+	var reward_row := HBoxContainer.new()
+	reward_row.add_theme_constant_override("separation", 10)
+	progress_panel.add_child(reward_row)
+	var reward_icon := _label("★", 27, Color("ffe16b"))
+	reward_row.add_child(reward_icon)
+	progress_label = _label("", 17, Color("f6f9ff"))
 	progress_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-	progress_label.custom_minimum_size.x = 150
-	header.add_child(progress_label)
+	reward_row.add_child(progress_label)
 	learn_button = _button("Zum Lernen", func(): exit_requested.emit("learn"), false)
-	header.add_child(learn_button)
+	learn_button.add_theme_stylebox_override("normal", _status_glass())
+	reward_row.add_child(learn_button)
 	header_shell.add_child(header)
 	steps_label = _label("", 15, Color("9cb3ce"))
 	steps_label.hide()
@@ -143,7 +164,7 @@ func _ready() -> void:
 		)
 		tab.custom_minimum_size = Vector2(0, 40)
 		for state in ["normal", "hover", "pressed", "focus"]:
-			var tab_style := _glass(index == step)
+			var tab_style := _step_glass(index == step)
 			tab_style.content_margin_top = 6
 			tab_style.content_margin_bottom = 6
 			tab.add_theme_stylebox_override(state, tab_style)
@@ -158,7 +179,7 @@ func _ready() -> void:
 	body.add_child(setup_row)
 	var left := VBoxContainer.new()
 	setup_left = left
-	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	left.size_flags_horizontal = Control.SIZE_FILL
 	left.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	left.add_theme_constant_override("separation", 10)
 	setup_row.add_child(left)
@@ -182,7 +203,7 @@ func _ready() -> void:
 	preview_title = _label("DEINE GARAGE", 16, Color("74e5f5"))
 	right.add_child(preview_title)
 	var viewport_panel := PanelContainer.new()
-	viewport_panel.add_theme_stylebox_override("panel", _glass(false))
+	viewport_panel.add_theme_stylebox_override("panel", _clear_panel())
 	viewport_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	right.add_child(viewport_panel)
 	var viewport_box := SubViewportContainer.new()
@@ -268,6 +289,11 @@ func _ready() -> void:
 	footer.add_child(footer_spacer)
 	next_button = _button("Weiter →", _next, true)
 	next_button.custom_minimum_size.x = 240
+	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+		next_button.add_theme_stylebox_override(state, _gold_glass(state in ["hover", "pressed", "focus"]))
+	for state in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		next_button.add_theme_color_override(state, Color("2c2c51"))
+	next_button.name = "PremiumNextStep"
 	footer.add_child(next_button)
 	get_viewport().size_changed.connect(_apply_responsive_layout)
 	call_deferred("_apply_responsive_layout")
@@ -290,6 +316,7 @@ func _apply_responsive_layout() -> void:
 	var compact: bool = window_size.x < 760 or window_size.x < window_size.y
 	var small: bool = window_size.x < 520
 	var short_landscape: bool = window_size.x >= window_size.y and window_size.y < 600
+	var panoramic: bool = window_size.x >= 1000 and window_size.x > window_size.y
 	var welcome_in_header: bool = step == 0 and short_landscape and window_size.y < 440
 	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.03, 10.0, 28.0)
 	_apply_ui_scale(self, ui_scale)
@@ -322,6 +349,8 @@ func _apply_responsive_layout() -> void:
 	# Keep the original ordering for modes, tracks and landscape controls.
 	var portrait: bool = window_size.x < window_size.y
 	setup_row.columns = 1 if portrait else 2
+	setup_left.custom_minimum_size.x = (400.0 if panoramic else 0.0) * ui_scale
+	setup_right.custom_minimum_size.x = (490.0 if panoramic else 0.0) * ui_scale
 	var driver_hero: bool = portrait and step in [0, 1, 2]
 	var first: Control = setup_right if driver_hero else setup_left
 	if setup_row.get_child(0) != first:
@@ -333,10 +362,12 @@ func _apply_responsive_layout() -> void:
 		"h_separation", roundi((14 if compact else 28) * ui_scale)
 	)
 	setup_row.add_theme_constant_override("v_separation", roundi((14 if compact else 0) * ui_scale))
-	brand_label.custom_minimum_size.x = (150 if small or welcome_in_header else 260) * ui_scale
-	brand_label.add_theme_font_size_override(
-		"font_size", roundi((22 if small or short_landscape else 36) * ui_scale)
-	)
+	brand_label.custom_minimum_size.x = (120 if small or welcome_in_header else 245) * ui_scale
+	_set_physical_font(brand_label, 21 if short_landscape else (25 if small else 47), ui_scale)
+	_set_physical_font(brand_kart, 18 if short_landscape else (23 if small else 38), ui_scale)
+	_set_physical_font(brand_motto, 8 if small or short_landscape else 11, ui_scale)
+	brand_motto.visible = not small and not short_landscape
+	brand_stack.add_theme_constant_override("separation", roundi((-5 if short_landscape or small else -12) * ui_scale))
 	for index in range(step_buttons.size()):
 		var tab: Button = step_buttons[index]
 		tab.text = (
@@ -369,7 +400,7 @@ func _apply_responsive_layout() -> void:
 			child.custom_minimum_size = (
 				Vector2(112 if small else 148, 56 if compact else 72) * ui_scale
 			)
-	_set_physical_minimum(header_row, Vector2(0, 36 if short_landscape else 60), ui_scale)
+	_set_physical_minimum(header_row, Vector2(0, 36 if short_landscape else (60 if small else 104)), ui_scale)
 	_set_physical_minimum(
 		preview_container,
 		(
@@ -409,6 +440,9 @@ func _apply_responsive_layout() -> void:
 	# Hochformat und Fold-Innendisplay: Die Karten brauchen den Platz, die Werte stehen schon auf ihnen.
 	var stacked: bool = window_size.x < window_size.y
 	kart_bars.visible = not short_landscape and not (stacked and step == 2)
+	if panoramic and step == 0:
+		# Big transparent hero, as on the reference: the ACTUAL selectable 3D model.
+		_set_physical_minimum(preview_container, Vector2(430, 340), ui_scale)
 	if stacked and step in [0, 1, 2]:
 		# Bounded height: legible face on Cover/phone but the action footer
 		# and at least one selectable card remain in the actual safe area.
@@ -426,7 +460,7 @@ func _apply_responsive_layout() -> void:
 	_set_physical_minimum(workshop_button, Vector2(160 if short_landscape else (120 if small else 190), 44 if short_landscape else 52), ui_scale)
 	_set_physical_font(workshop_button, 15 if short_landscape else 18, ui_scale)
 	preview_caption.visible = not short_landscape and not small and not tight_kart_page
-	preview_title.visible = not short_landscape and not small and not tight_kart_page
+	preview_title.visible = step != 0 and not short_landscape and not small and not tight_kart_page
 	_set_physical_minimum(view_choice, Vector2(0, 44), ui_scale)
 	_set_physical_font(view_choice, 14 if short_landscape else 16, ui_scale)
 	view_choice.set_item_text(0, "Rundum" if short_landscape else "Rundum ansehen")
@@ -487,13 +521,13 @@ func _apply_responsive_layout() -> void:
 	# footer usable at320px, while all five modes fit the800x480 layout.
 	for child in choices.get_children():
 		if child is GridContainer:
-			child.columns = 1 if small else 2
+			child.columns = 1 if step == 0 or small else 2
 		var cards: Array = child.get_children() if child is GridContainer else [child]
 		for card in cards:
 			if card is Button:
 				var tiny: bool = window_size.y < 440
 				var height: float = (
-					(44 if tiny else 60) if short_landscape else (80 if step == 0 else 74)
+					(44 if tiny else 58) if short_landscape else ((68 if window_size.y < 850 else 82) if step == 0 else 74)
 				)
 				if step == 2:
 					height = 74 if short_landscape else 118
@@ -557,6 +591,69 @@ func _apply_ui_scale(control: Node, ui_scale: float) -> void:
 		_apply_ui_scale(child, ui_scale)
 
 
+func _clear_panel() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0, 0, 0, 0)
+	style.set_content_margin_all(0)
+	return style
+
+
+func _status_glass() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.025, 0.11, 0.28, 0.89)
+	style.border_color = Color(0.35, 0.83, 1.0, 0.66)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(24)
+	style.set_content_margin_all(10)
+	return style
+
+
+func _step_glass(active: bool) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.05, 0.66, 0.82, 0.96) if active else Color(0.018, 0.11, 0.27, 0.82)
+	style.border_color = Color("a4fcff") if active else Color(0.33, 0.75, 0.94, 0.40)
+	style.set_border_width_all(2 if active else 1)
+	style.set_corner_radius_all(26)
+	style.set_content_margin_all(8)
+	style.shadow_color = Color(0.04, 0.85, 0.99, 0.24) if active else Color(0, 0, 0, 0.14)
+	style.shadow_size = 7
+	return style
+
+
+func _mode_glass(mode_id: String, selected: bool) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	var base: Color = {
+		"race": Color("117d9e"),
+		"time_trial": Color("17499d"),
+		"arena": Color("633096"),
+		"cup": Color("12294f"),
+		"training": Color("102846")
+	}.get(mode_id, Color("183857"))
+	style.bg_color = base.lightened(0.12) if selected else base
+	style.bg_color.a = 0.94
+	style.border_color = Color("8dfbff") if selected else base.lightened(0.32)
+	style.set_border_width_all(3 if selected else 2)
+	style.set_corner_radius_all(23)
+	style.set_content_margin_all(8)
+	style.shadow_color = Color(0.05, 0.85, 1.0, 0.42) if selected else Color(0, 0.02, 0.1, 0.48)
+	style.shadow_size = 11 if selected else 6
+	style.shadow_offset = Vector2(0, 3)
+	return style
+
+
+func _gold_glass(hovered: bool) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("fff072") if hovered else Color("ffd645")
+	style.border_color = Color("fff8ba")
+	style.set_border_width_all(3)
+	style.set_corner_radius_all(32)
+	style.set_content_margin_all(10)
+	style.shadow_color = Color(1.0, 0.65, 0.08, 0.55)
+	style.shadow_size = 15 if hovered else 10
+	style.shadow_offset = Vector2(0, 3)
+	return style
+
+
 func _glass(selected: bool) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.055, 0.30, 0.42, 0.96) if selected else Color(0.025, 0.085, 0.18, 0.89)
@@ -600,7 +697,8 @@ func _button(value: String, callback: Callable, primary: bool) -> Button:
 func _entries() -> Array[Dictionary]:
 	match step:
 		0:
-			return CATALOG.MODES
+			# Reference order: race, time, arena, cup, free play. Gameplay IDs stay untouched.
+			return [CATALOG.MODES[0], CATALOG.MODES[2], CATALOG.MODES[4], CATALOG.MODES[1], CATALOG.MODES[3]]
 		1:
 			return CATALOG.DRIVERS
 		2:
@@ -629,7 +727,7 @@ func _refresh() -> void:
 	title_label.text = titles[step]
 	subtitle.text = descriptions[step]
 	steps_label.text = "%d / 5     MODUS  ·  FAHRER  ·  KART  ·  WELT  ·  TEMPO" % (step + 1)
-	progress_label.text = "★ %d Sterne" % stars
+	progress_label.text = "%d Sterne · Dein Lernkonto" % stars
 	for index in range(step_buttons.size()):
 		var tab_style := _glass(index == step)
 		tab_style.content_margin_top = 6
@@ -650,7 +748,7 @@ func _refresh() -> void:
 	var card_parent: Container = choices
 	if step == 0 or step == 2:
 		var grid := GridContainer.new()
-		grid.columns = 2
+		grid.columns = 1 if step == 0 else 2
 		grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		grid.add_theme_constant_override("h_separation", 10)
 		grid.add_theme_constant_override("v_separation", 10)
@@ -716,13 +814,13 @@ func _refresh() -> void:
 			elif step == 2:
 				# Portraits are rendered from these exact selectable game models.
 				card.artwork = load("res://assets/kart/menu/fleet/" + str(item.id) + ".webp")
-			card.add_theme_stylebox_override("normal", _glass(selected))
-			card.add_theme_stylebox_override("hover", _glass(true))
-			card.add_theme_stylebox_override("pressed", _glass(true))
-			card.add_theme_stylebox_override("focus", _glass(true))
-			card.add_theme_stylebox_override("disabled", _glass(false))
+			card.add_theme_stylebox_override("normal", _mode_glass(str(item.id), selected) if step == 0 else _glass(selected))
+			card.add_theme_stylebox_override("hover", _mode_glass(str(item.id), true) if step == 0 else _glass(true))
+			card.add_theme_stylebox_override("pressed", _mode_glass(str(item.id), true) if step == 0 else _glass(true))
+			card.add_theme_stylebox_override("focus", _mode_glass(str(item.id), true) if step == 0 else _glass(true))
+			card.add_theme_stylebox_override("disabled", _mode_glass(str(item.id), false) if step == 0 else _glass(false))
 			card.pressed.connect(func(): _select(key, str(item.id)))
-			card.custom_minimum_size = Vector2(0, 94 if step == 0 else 74)
+			card.custom_minimum_size = Vector2(0, 80 if step == 0 else 74)
 			card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			card.disabled = not unlocked
 			card_parent.add_child(card)
@@ -926,7 +1024,7 @@ func _choose_preview_view(index: int) -> void:
 	]
 	preview_camera.position = views[inspection_view]
 	if step == 0 and inspection_view == 0:
-		preview_camera.position = Vector3(2.4, 2.1, -3.6)
+		preview_camera.position = Vector3(2.25, 2.03, -3.54)
 	preview_camera.projection = (
 		Camera3D.PROJECTION_PERSPECTIVE
 		if inspection_view in [0, 6]
@@ -934,7 +1032,7 @@ func _choose_preview_view(index: int) -> void:
 	)
 	preview_camera.fov = 34.0 if inspection_view == 6 else 37.0
 	if step == 0 and inspection_view == 0:
-		preview_camera.fov = 33.0
+		preview_camera.fov = 32.0
 	preview_camera.size = 3.9 if inspection_view == 5 else 2.8
 	preview_camera.look_at(
 		Vector3(0, 1.68, 0.07) if inspection_view == 6 else Vector3(0, 1.0, 0),
