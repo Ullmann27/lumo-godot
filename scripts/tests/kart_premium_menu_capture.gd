@@ -53,6 +53,11 @@ func _run() -> void:
 			" last_mode_visible=", clip_rect.encloses(last_mode),
 			" footer=", next_rect, " fifth=", last_mode, " clip=", clip_rect)
 		assert(garage.preview_kart != null)
+		# Real layout guarantee on standard and high-resolution landscape.
+		if dimensions.y >= 720 and dimensions.x > dimensions.y:
+			assert(clip_rect.encloses(last_mode), "All five visible without scrolling at >=720p")
+		assert(viewport_rect.encloses(next_rect), "Continue button cannot leave the viewport")
+		assert(cards.get_child(0).get_global_rect().intersects(clip_rect), "First mode stays tappable")
 		var image := root.get_texture().get_image()
 		assert(not image.is_empty())
 		var path := "%s/start-%dx%d.png" % [output, dimensions.x, dimensions.y]

@@ -574,7 +574,7 @@ func _apply_responsive_layout() -> void:
 	for child in choices.get_children():
 		if child is GridContainer:
 			child.columns = 1 if step == 0 or small else 2
-			child.add_theme_constant_override("v_separation", roundi((5 if step == 0 and window_size.y < 800 else 10) * ui_scale))
+			child.add_theme_constant_override("v_separation", roundi((2 if step == 0 and window_size.y < 800 else 10) * ui_scale))
 		var cards: Array = child.get_children() if child is GridContainer else [child]
 		for card in cards:
 			if card is Button:
