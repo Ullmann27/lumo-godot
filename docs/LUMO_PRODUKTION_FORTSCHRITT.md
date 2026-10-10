@@ -99,3 +99,9 @@ Die Zahlen der Assertions können zwischen Läufen variieren, weil der Test echt
 ## Dauerhafte kreative Arbeitsgrenze
 
 Der Nutzer hat eigenständige kreative und technische Verbesserungen im vorhandenen Produkt erlaubt. Diese dürfen Originaldesign, Lernprofile, Lernstände und Sulafat nicht ersetzen oder gefährden; große Ideen bleiben isoliert und rückgängig machbar. Zuerst Menü, Fold, Animation, Laden und tatsächliche Rennübergänge abschließen. Eine größere lokale Lern-KI beginnt nicht während dieser offenen Integrationsphase. Keine zusätzlichen kostenpflichtigen Aufträge ohne konkrete Freigabe.
+
+## Native Textur-Exportkorrektur
+
+Der ursprüngliche Ladecommit `b7c4114` bestand alle drei einschlägigen GitHub-Checks. Die nachfolgende Android-Paketierung deckte jedoch die fehlende Versionierung der GLB-Importregel auf: Drei extrahierte PNGs erzeugten einen unsauberen Checkout. Ein bereinigtes PCK kann außerdem Texturreferenzen verlieren. Diese experimentelle Bereinigung wurde verworfen, nicht veröffentlicht und nicht als funktionierender APK-Bau ausgegeben.
+
+Die ausdrücklich versionierte native Importregel bettet die unveränderten Originaltexturen verlustfrei ein (`gltf/embedded_image_handling=3`). Der vorherige Basis-Universal-Versuch bestand Headless/PCK, aber nicht den echten GL-Weiterwechsel; er wird nicht ausgeliefert. Der endgültige verlustfreie GL-Menütest bestand 46 Prüfungen / 0 Fehler einschließlich echter Auswahl, Weiter und Ressourcenfreigabe. Der neue Lade-Test prüft die tatsächlich vorhandenen Original-Materialtexturen und fehlende externe PNG-Abhängigkeiten. Keine Änderung des GLB, Rigs, der Clips oder der Stimme.
