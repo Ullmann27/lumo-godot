@@ -2,6 +2,7 @@ extends SceneTree
 ## Same actual runtime, fixed state/seed/pose/camera input for before and after.
 var output := "res://exports/aaa-menu"
 var evidence: Array[Dictionary] = []
+const METADATA = preload("res://tools/aaa_capture_metadata.gd")
 
 
 func _initialize() -> void:
@@ -53,7 +54,8 @@ func _run() -> void:
 		assert(image.get_size() == dimensions)
 		var file := "menu-%dx%d.png" % [dimensions.x, dimensions.y]
 		assert(image.save_png(output.path_join(file)) == OK)
-		evidence.append({
+		var shot: Dictionary = METADATA.source()
+		shot.merge({
 			"image": file, "size": [dimensions.x, dimensions.y], "seed": 1923,
 			"engine": Engine.get_version_info().string,
 			"renderer": RenderingServer.get_current_rendering_method(),
@@ -66,6 +68,7 @@ func _run() -> void:
 			"next_rect": str(garage.next_button.get_global_rect()),
 			"render_capture": true, "physical_android_device": false,
 		})
+		evidence.append(shot)
 		print("[AAAMenuCapture] SCREENSHOT ", output.path_join(file))
 	var report := FileAccess.open(output.path_join("capture.json"), FileAccess.WRITE)
 	report.store_string(JSON.stringify(evidence, "  "))

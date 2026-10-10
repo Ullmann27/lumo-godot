@@ -1,13 +1,20 @@
 extends SceneTree
 ## Real model renders for comparison with the supplied front/rear references.
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
+const METADATA = preload("res://tools/aaa_capture_metadata.gd")
+var output := "res://exports/reference-design"
 
 
 func _initialize() -> void:
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--output="):
+			output = arg.trim_prefix("--output=")
 	call_deferred("_capture")
 
 
 func _capture() -> void:
+	assert(DisplayServer.get_name() != "headless")
+	seed(1923)
 	root.size = Vector2i(900, 900)
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	var scene := Node3D.new()
@@ -40,7 +47,8 @@ func _capture() -> void:
 	var camera := Camera3D.new()
 	camera.fov = 34
 	scene.add_child(camera)
-	DirAccess.make_dir_recursive_absolute("res://exports/reference-design")
+	assert(DirAccess.make_dir_recursive_absolute(output) == OK)
+	var evidence: Array[Dictionary] = []
 	for view in [
 		{"name": "lumo_front", "at": Vector3(0, 1.95, -5.6)},
 		{"name": "lumo_rear", "at": Vector3(0, 2.65, 5.7)},
@@ -52,7 +60,21 @@ func _capture() -> void:
 		await process_frame
 		await process_frame
 		await RenderingServer.frame_post_draw
-		root.get_texture().get_image().save_png("res://exports/reference-design/%s.png" % view.name)
+		var file: String = "%s.png" % view.name
+		assert(root.get_texture().get_image().save_png(output.path_join(file)) == OK)
+		var shot: Dictionary = METADATA.source()
+		shot.merge({
+			"image": file, "size": [900, 900], "seed": 1923,
+			"camera_position": str(view.at), "camera_target": "(0, 1.11, 0)",
+			"camera_fov": camera.fov, "driver": "fox", "kart": "comet",
+			"lighting": "Independent inspection studio, not garage production lighting",
+			"pose": "Static runtime model, no new geometry or skeletal animation",
+		})
+		evidence.append(shot)
+	var report := FileAccess.open(output.path_join("capture.json"), FileAccess.WRITE)
+	assert(report != null)
+	report.store_string(JSON.stringify(evidence, "  "))
+	report.close()
 	print("[ReferenceCapture] PASS: four actual 3D model views")
 	scene.free()
 	await process_frame
