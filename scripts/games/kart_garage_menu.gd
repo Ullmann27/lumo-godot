@@ -88,7 +88,12 @@ func _ready() -> void:
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(background)
 	var veil := ColorRect.new()
-	veil.color = Color(0.008, 0.024, 0.08, 0.28)
+	veil.color = Color(1, 1, 1, 1)
+	var shade := Shader.new()
+	shade.code = "shader_type canvas_item; void fragment() { float left = smoothstep(0.82, 0.0, UV.x); float top = 1.0 - smoothstep(0.0, 0.24, UV.y); COLOR = vec4(0.008, 0.020, 0.095, max(left * 0.27, top * 0.07)); }"
+	var shade_material := ShaderMaterial.new()
+	shade_material.shader = shade
+	veil.material = shade_material
 	veil.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(veil)
@@ -119,14 +124,25 @@ func _ready() -> void:
 	brand_stack.name = "LumoKartWordmark"
 	brand_stack.add_theme_constant_override("separation", -12)
 	header.add_child(brand_stack)
-	brand_label = _label("Lumo ★", 47, Color("ffcc53"))
+	brand_label = _label("Lumo ★", 52, Color("ffca40"))
+	brand_label.add_theme_color_override("font_outline_color", Color("7134b4"))
+	brand_label.add_theme_constant_override("outline_size", 5)
+	brand_label.add_theme_color_override("font_shadow_color", Color(0.02, 0.08, 0.24, 0.76))
+	brand_label.add_theme_constant_override("shadow_offset_x", 3)
+	brand_label.add_theme_constant_override("shadow_offset_y", 5)
 	brand_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	brand_label.custom_minimum_size.x = 245
 	brand_stack.add_child(brand_label)
-	brand_kart = _label("KART", 38, Color("69e8ff"))
+	brand_kart = _label("KART 🏁", 39, Color("66f6ff"))
+	brand_kart.add_theme_color_override("font_outline_color", Color("134fba"))
+	brand_kart.add_theme_constant_override("outline_size", 5)
+	brand_kart.add_theme_color_override("font_shadow_color", Color(0.01, 0.06, 0.22, 0.8))
+	brand_kart.add_theme_constant_override("shadow_offset_y", 4)
 	brand_kart.autowrap_mode = TextServer.AUTOWRAP_OFF
 	brand_stack.add_child(brand_kart)
-	brand_motto = _label("KLEINE SCHRITTE · GROSSE ZIELE", 11, Color("ecf6ff"))
+	brand_motto = _label("KLEINE SCHRITTE · GROSSE ZIELE ★", 11, Color("ecf6ff"))
+	brand_motto.add_theme_color_override("font_outline_color", Color("1a325e"))
+	brand_motto.add_theme_constant_override("outline_size", 3)
 	brand_motto.autowrap_mode = TextServer.AUTOWRAP_OFF
 	brand_stack.add_child(brand_motto)
 	var grow := Control.new()
@@ -224,10 +240,20 @@ func _ready() -> void:
 	preview_viewport = viewport
 	preview = Node3D.new()
 	viewport.add_child(preview)
-	var built: Dictionary = STAGE.build(preview)
+	# The reference floats the real kart on transparent neon rings, not an opaque studio slab.
+	var built: Dictionary = STAGE.build(preview, Color("56e7ff"), false)
+	_install_hologram_rings(preview)
+	var hero_fill := OmniLight3D.new()
+	hero_fill.name = "PremiumLumoSoftLight"
+	hero_fill.position = Vector3(1.2, 2.7, -2.4)
+	hero_fill.light_color = Color("fff6e7")
+	hero_fill.light_energy = 1.45
+	hero_fill.omni_range = 6.0
+	hero_fill.shadow_enabled = false
+	preview.add_child(hero_fill)
 	preview_camera = built.camera
 	preview_pivot = built.pivot
-	preview_caption = _label("Ziehen zum Drehen", 14, Color("8faac8"))
+	preview_caption = _label("☞ Dein Fahrer · Dein Kart · Ziehen zum Drehen ↺", 14, Color("e2f6ff"))
 	preview_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	right.add_child(preview_caption)
 	quick_start_button = _button("Spielen", func(): start_requested.emit(setup.duplicate(true)), true)
@@ -450,8 +476,8 @@ func _apply_responsive_layout() -> void:
 	var stacked: bool = window_size.x < window_size.y
 	kart_bars.visible = not short_landscape and not (stacked and step == 2)
 	if panoramic and step == 0:
-		# Big transparent hero, as on the reference: the ACTUAL selectable 3D model.
-		_set_physical_minimum(preview_container, Vector2(430, clampf(window_size.y * 0.42, 285.0, 380.0)), ui_scale)
+		# Live character should dominate the right half without swallowing the footer.
+		_set_physical_minimum(preview_container, Vector2(430, clampf(window_size.y * 0.46, 294.0, 412.0)), ui_scale)
 	if stacked and step in [0, 1, 2]:
 		# Bounded height: legible face on Cover/phone but the action footer
 		# and at least one selectable card remain in the actual safe area.
@@ -468,7 +494,7 @@ func _apply_responsive_layout() -> void:
 	kart_bars.font_scale = ui_scale
 	_set_physical_minimum(workshop_button, Vector2(160 if short_landscape else (120 if small else 190), 44 if short_landscape else 52), ui_scale)
 	_set_physical_font(workshop_button, 15 if short_landscape else 18, ui_scale)
-	preview_caption.visible = step != 0 and not short_landscape and not small and not tight_kart_page
+	preview_caption.visible = (step == 0 and panoramic) or (step != 0 and not short_landscape and not small and not tight_kart_page)
 	preview_title.visible = step != 0 and not short_landscape and not small and not tight_kart_page
 	_set_physical_minimum(view_choice, Vector2(0, 44), ui_scale)
 	_set_physical_font(view_choice, 14 if short_landscape else 16, ui_scale)
@@ -483,12 +509,16 @@ func _apply_responsive_layout() -> void:
 	view_choice.visible = step in [1, 2]
 	# On very short Android surfaces the direct Play action shares the existing
 	# header row, leaving the live preview and the full setup footer reachable.
-	var quick_parent: Container = header_row if welcome_in_header else setup_right
+	var quick_in_footer: bool = panoramic and step == 0
+	var quick_parent: Control = (
+		footer_spacer if quick_in_footer
+		else (header_row if welcome_in_header else setup_right)
+	)
 	if quick_start_button.get_parent() != quick_parent:
 		quick_start_button.reparent(quick_parent, false)
 		if welcome_in_header:
 			header_row.move_child(quick_start_button, learn_button.get_index())
-		else:
+		elif not quick_in_footer:
 			setup_right.move_child(quick_start_button, preview_caption.get_index() + 1)
 	quick_start_button.text = (
 		"Spielen"
@@ -496,7 +526,15 @@ func _apply_responsive_layout() -> void:
 		else "Spielen · " + str(CATALOG.entry(CATALOG.MODES, str(setup.mode)).get("name", "Einzelrennen"))
 	)
 	quick_start_button.visible = step == 0
-	_set_physical_minimum(quick_start_button, Vector2(104 if welcome_in_header else 0, 44 if step == 0 or small or short_landscape else 56), ui_scale)
+	if quick_in_footer:
+		quick_start_button.size = Vector2(260, 44) * ui_scale
+		quick_start_button.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+		for state in ["normal", "hover", "pressed", "focus"]:
+			quick_start_button.add_theme_stylebox_override(state, _text_only_glass(state != "normal"))
+	else:
+		for state in ["normal", "hover", "pressed", "focus"]:
+			quick_start_button.add_theme_stylebox_override(state, _glass(state != "normal"))
+	_set_physical_minimum(quick_start_button, Vector2(235 if quick_in_footer else (104 if welcome_in_header else 0), 44 if step == 0 or small or short_landscape else 56), ui_scale)
 	_set_physical_font(quick_start_button, 17 if short_landscape or small else 20, ui_scale)
 	if short_landscape and step == 0:
 		# Wide and shallow camera: never crop Lumos ears over the entire menu.
@@ -604,6 +642,36 @@ func _apply_ui_scale(control: Node, ui_scale: float) -> void:
 			)
 	for child in control.get_children():
 		_apply_ui_scale(child, ui_scale)
+
+
+func _install_hologram_rings(stage: Node3D) -> void:
+	# All rings are actual lit 3D meshes. There is deliberately NO opaque podium.
+	for radius in [1.80, 2.15, 2.54]:
+		var ring := MeshInstance3D.new()
+		var torus := TorusMesh.new()
+		torus.inner_radius = radius
+		torus.outer_radius = radius + 0.033
+		torus.rings = 64
+		ring.mesh = torus
+		ring.position.y = -0.12
+		var material := StandardMaterial3D.new()
+		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		material.albedo_color = Color("79fbff")
+		material.emission_enabled = true
+		material.emission = Color("39dfff")
+		material.emission_energy_multiplier = 3.1
+		ring.material_override = material
+		stage.add_child(ring)
+
+
+func _text_only_glass(hovered: bool) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.01, 0.1, 0.24, 0.38) if hovered else Color(0, 0, 0, 0)
+	style.border_color = Color(0.16, 0.85, 1.0, 0.6) if hovered else Color(0, 0, 0, 0)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(16)
+	style.set_content_margin_all(5)
+	return style
 
 
 func _clear_panel() -> StyleBoxFlat:
@@ -744,7 +812,7 @@ func _refresh() -> void:
 	steps_label.text = "%d / 5     MODUS  ·  FAHRER  ·  KART  ·  WELT  ·  TEMPO" % (step + 1)
 	progress_label.text = "%d Sterne · Dein Lernkonto" % stars
 	for index in range(step_buttons.size()):
-		var tab_style := _glass(index == step)
+		var tab_style := _step_glass(index == step)
 		tab_style.content_margin_top = 6
 		tab_style.content_margin_bottom = 6
 		step_buttons[index].add_theme_stylebox_override("normal", tab_style)
@@ -752,9 +820,8 @@ func _refresh() -> void:
 	if step == 0:
 		preview_title.text = "LUMO IST STARTKLAR"
 	preview_caption.text = (
-		"Deine Rennwelt · ziehen zum Drehen"
-		if step == 3
-		else "Dein Fahrer. Dein Kart. · Ziehen zum Drehen"
+		"Deine Rennwelt · ziehen zum Drehen" if step == 3
+		else "☞ Dein Fahrer · Dein Kart · Ziehen zum Drehen ↺"
 	)
 	for child in choices.get_children():
 		choices.remove_child(child)
@@ -909,7 +976,7 @@ func _refresh_preview() -> void:
 	)
 	preview_pivot.add_child(preview_kart)
 	preview_kart.visible = step != 3
-	preview_camera.position = Vector3(3.2, 3.2, -4.5) if step == 3 else Vector3(3.2, 2.2, -4.5)
+	preview_camera.position = Vector3(3.2, 3.2, -4.5) if step == 3 else Vector3(2.4, 2.05, -4.4)
 	preview_camera.look_at(Vector3(0, 0.15 if step == 3 else 0.85, 0))
 	view_choice.disabled = step == 3
 	if step == 3:

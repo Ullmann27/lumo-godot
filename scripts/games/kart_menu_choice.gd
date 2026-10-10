@@ -27,7 +27,23 @@ func _ready() -> void:
 	icon_view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon_view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(icon_view)
+	var icon_plate := PanelContainer.new()
+	icon_plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var icon_style := StyleBoxFlat.new()
+	var mode_hues := {
+		"Einzelrennen": Color("25d9ec"),
+		"Zeitfahren": Color("2d91f2"),
+		"Kristall-Arena": Color("b760ed"),
+		"Sternen-Cup": Color("d2a643"),
+		"Freies Training": Color("425b8a"),
+	}
+	icon_style.bg_color = mode_hues.get(title, Color("234d72"))
+	icon_style.bg_color.a = 0.79
+	icon_style.set_corner_radius_all(18)
+	icon_style.set_content_margin_all(8)
+	icon_plate.add_theme_stylebox_override("panel", icon_style)
+	row.add_child(icon_plate)
+	icon_plate.add_child(icon_view)
 	var column := VBoxContainer.new()
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -42,7 +58,7 @@ func _ready() -> void:
 	column.add_child(title_label)
 	caption_label = Label.new()
 	caption_label.text = caption
-	caption_label.add_theme_color_override("font_color", Color("b9d1e5"))
+	caption_label.add_theme_color_override("font_color", Color("e7f2ff"))
 	caption_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	caption_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(caption_label)
