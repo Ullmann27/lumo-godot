@@ -1667,10 +1667,12 @@ func _make_driver() -> void:
 			# Other drivers retain their existing cheek anatomy. Lumo's continuous
 			# cream head and wrapped cheek now provide the side/rear fringe.
 			_fur(head, _loft([Vector4(-0.285, 0.012, 0.018, 0), Vector4(-0.22, 0.10, 0.125, 0.018), Vector4(-0.16, 0.137, 0.153, 0.008), Vector4(-0.10, 0.067, 0.102, 0), Vector4(-0.075, 0.005, 0.010, 0)], true, 28, 4), Vector3(side * 0.315, 0, 0.044), cream, 330, 0.025, 531 + int(side))
-		# Purposeful tufts on cheeks and brow establish a fox silhouette at race distance.
-		for tuft in range(2):
-			var leaf := _mesh(head, _loft([Vector4(0, 0.05, 0.022, 0), Vector4(0.055, 0.055, 0.035, 0), Vector4(0.115, 0.002, 0.002, 0.018)], true, 16, 3), Vector3(side * (0.28 + tuft * 0.025), -0.11 - tuft * 0.06, -0.15), cream)
-			leaf.rotation.z = -side * 1.20
+		if not is_lumo:
+			# Lumo's wrapped cheek and its fur now carry the continuous silhouette.
+			# Keep the other drivers' original separate cheek tufts.
+			for tuft in range(2):
+				var leaf := _mesh(head, _loft([Vector4(0, 0.05, 0.022, 0), Vector4(0.055, 0.055, 0.035, 0), Vector4(0.115, 0.002, 0.002, 0.018)], true, 16, 3), Vector3(side * (0.28 + tuft * 0.025), -0.11 - tuft * 0.06, -0.15), cream)
+				leaf.rotation.z = -side * 1.20
 		_make_ear(side, fur, cream)
 		_make_eye(side, fur_shadow)
 		# Soft brow arc gives the neutral expression a curious, friendly shape.
