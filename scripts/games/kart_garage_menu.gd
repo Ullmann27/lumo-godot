@@ -349,8 +349,8 @@ func _apply_responsive_layout() -> void:
 	# Keep the original ordering for modes, tracks and landscape controls.
 	var portrait: bool = window_size.x < window_size.y
 	setup_row.columns = 1 if portrait else 2
-	setup_left.custom_minimum_size.x = (400.0 if panoramic else 0.0) * ui_scale
-	setup_right.custom_minimum_size.x = (490.0 if panoramic else 0.0) * ui_scale
+	setup_left.custom_minimum_size.x = (398.0 if panoramic else (175.0 if short_landscape else 0.0)) * ui_scale
+	setup_right.custom_minimum_size.x = (455.0 if panoramic else (255.0 if short_landscape else 0.0)) * ui_scale
 	var driver_hero: bool = portrait and step in [0, 1, 2]
 	var first: Control = setup_right if driver_hero else setup_left
 	if setup_row.get_child(0) != first:
@@ -400,7 +400,7 @@ func _apply_responsive_layout() -> void:
 			child.custom_minimum_size = (
 				Vector2(112 if small else 148, 56 if compact else 72) * ui_scale
 			)
-	_set_physical_minimum(header_row, Vector2(0, 36 if short_landscape else (60 if small else 104)), ui_scale)
+	_set_physical_minimum(header_row, Vector2(0, 36 if short_landscape else (60 if small else 100)), ui_scale)
 	_set_physical_minimum(
 		preview_container,
 		(
@@ -413,7 +413,16 @@ func _apply_responsive_layout() -> void:
 	body_column.add_theme_constant_override(
 		"separation", roundi((6 if short_landscape else (8 if small else 16)) * ui_scale)
 	)
-	_set_physical_font(title_label, 22 if short_landscape else (28 if small else 36), ui_scale)
+	_set_physical_font(
+		title_label,
+		(21 if short_landscape else (28 if small or panoramic else 36)),
+		ui_scale
+	)
+	# Compact Fold cover: never squeeze a long heading into a vertical letter column.
+	if step == 0:
+		title_label.text = "Dein Abenteuer" if short_landscape else "Dein nächstes Abenteuer"
+		if panoramic:
+			subtitle.text = "Wähle, wie du heute fahren möchtest."
 	_set_physical_font(steps_label, 12 if short_landscape else 15, ui_scale)
 	_set_physical_font(subtitle, 14 if small else 18, ui_scale)
 	subtitle.visible = not short_landscape
@@ -424,7 +433,7 @@ func _apply_responsive_layout() -> void:
 		not short_landscape
 		and not small
 		and step != 2
-		and (step != 0 or size.y / ui_scale >= 700.0)
+		and step != 0
 	)
 	# Kleine Querformate: Der Werkstatt-Knopf rückt in die Kopfzeile, damit die Kartseite samt
 	# Vorschau und Weiter-Knopf auf eine Bildschirmhöhe passt.
@@ -442,7 +451,7 @@ func _apply_responsive_layout() -> void:
 	kart_bars.visible = not short_landscape and not (stacked and step == 2)
 	if panoramic and step == 0:
 		# Big transparent hero, as on the reference: the ACTUAL selectable 3D model.
-		_set_physical_minimum(preview_container, Vector2(430, 340), ui_scale)
+		_set_physical_minimum(preview_container, Vector2(430, clampf(window_size.y * 0.42, 285.0, 380.0)), ui_scale)
 	if stacked and step in [0, 1, 2]:
 		# Bounded height: legible face on Cover/phone but the action footer
 		# and at least one selectable card remain in the actual safe area.
@@ -451,7 +460,7 @@ func _apply_responsive_layout() -> void:
 		)
 		_set_physical_minimum(preview_container, Vector2(150, hero_height), ui_scale)
 		if step == 0:
-			_set_physical_minimum(preview_container, Vector2(150, clampf(window_size.y * 0.20, 100, 190)), ui_scale)
+			_set_physical_minimum(preview_container, Vector2(150, clampf(window_size.y * 0.175, 90, 160)), ui_scale)
 	# Auf niedrigen Querformaten (z. B. 1280×720 mit Systemleisten) braucht die Kartseite den Platz
 	# für Vorschau, Werte und Werkstatt-Knopf; Überschrift und Hinweis entfallen dort.
 	var tight_kart_page: bool = step == 2 and window_size.x >= window_size.y and window_size.y < 800
@@ -459,7 +468,7 @@ func _apply_responsive_layout() -> void:
 	kart_bars.font_scale = ui_scale
 	_set_physical_minimum(workshop_button, Vector2(160 if short_landscape else (120 if small else 190), 44 if short_landscape else 52), ui_scale)
 	_set_physical_font(workshop_button, 15 if short_landscape else 18, ui_scale)
-	preview_caption.visible = not short_landscape and not small and not tight_kart_page
+	preview_caption.visible = step != 0 and not short_landscape and not small and not tight_kart_page
 	preview_title.visible = step != 0 and not short_landscape and not small and not tight_kart_page
 	_set_physical_minimum(view_choice, Vector2(0, 44), ui_scale)
 	_set_physical_font(view_choice, 14 if short_landscape else 16, ui_scale)
@@ -487,8 +496,13 @@ func _apply_responsive_layout() -> void:
 		else "Spielen · " + str(CATALOG.entry(CATALOG.MODES, str(setup.mode)).get("name", "Einzelrennen"))
 	)
 	quick_start_button.visible = step == 0
-	_set_physical_minimum(quick_start_button, Vector2(104 if welcome_in_header else 0, 44 if short_landscape or small else 56), ui_scale)
+	_set_physical_minimum(quick_start_button, Vector2(104 if welcome_in_header else 0, 44 if step == 0 or small or short_landscape else 56), ui_scale)
 	_set_physical_font(quick_start_button, 17 if short_landscape or small else 20, ui_scale)
+	if short_landscape and step == 0:
+		# Wide and shallow camera: never crop Lumos ears over the entire menu.
+		preview_camera.position = Vector3(3.4, 2.3, -5.3)
+		preview_camera.fov = 48.0
+		preview_camera.look_at(Vector3(0, 0.9, 0))
 	if short_landscape:
 		footer.columns = 3 if has_saved_race else 2
 		footer_spacer.hide()
@@ -527,7 +541,8 @@ func _apply_responsive_layout() -> void:
 			if card is Button:
 				var tiny: bool = window_size.y < 440
 				var height: float = (
-					(44 if window_size.y < 520 else 58) if short_landscape else ((68 if window_size.y < 850 else 82) if step == 0 else 74)
+					(42 if window_size.y < 520 else 58) if short_landscape
+					else ((60 if window_size.y < 850 else 76) if step == 0 else 74)
 				)
 				if step == 2:
 					height = 74 if short_landscape else 118
@@ -1024,7 +1039,7 @@ func _choose_preview_view(index: int) -> void:
 	]
 	preview_camera.position = views[inspection_view]
 	if step == 0 and inspection_view == 0:
-		preview_camera.position = Vector3(2.25, 2.03, -3.54)
+		preview_camera.position = Vector3(2.70, 2.16, -4.32)
 	preview_camera.projection = (
 		Camera3D.PROJECTION_PERSPECTIVE
 		if inspection_view in [0, 6]
@@ -1032,7 +1047,7 @@ func _choose_preview_view(index: int) -> void:
 	)
 	preview_camera.fov = 34.0 if inspection_view == 6 else 37.0
 	if step == 0 and inspection_view == 0:
-		preview_camera.fov = 32.0
+		preview_camera.fov = 37.0
 	preview_camera.size = 3.9 if inspection_view == 5 else 2.8
 	preview_camera.look_at(
 		Vector3(0, 1.68, 0.07) if inspection_view == 6 else Vector3(0, 1.0, 0),
