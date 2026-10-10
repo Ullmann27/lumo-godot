@@ -123,6 +123,12 @@ func _run() -> void:
 				assert(game.garage.setup.kart == "gecko_velo")
 				var inspect: OptionButton = game.garage.view_choice
 				assert(inspect.is_visible_in_tree())
+				print("[KartMenuFlow][InspectorGeometry] pixels=", pixels,
+					" safe=", game.safe_ui.get_global_rect(),
+					" inspector=", inspect.get_global_rect(),
+					" overlay=", inspect.get_parent().get_global_rect(),
+					" preview=", game.garage.preview_container.get_global_rect(),
+					" menu=", game.garage.get_global_rect())
 				assert(game.safe_ui.get_global_rect().encloses(inspect.get_global_rect()))
 				assert(inspect.size.y * root.size.y / root.get_visible_rect().size.y >= 43.99)
 				game.garage._choose_preview_view(2)
