@@ -64,6 +64,13 @@ class ReferencePacketTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.check()
 
+    def test_documentation_only_asset_commit_reuses_existing_export(self):
+        self.assertTrue(packet.asset_source_is_current(self.folder, self.row))
+
+    def test_changed_asset_export_pipeline_requires_new_export(self):
+        with patch.object(packet, "git", side_effect=["", "tools/aaa_export_runtime_asset.gd"]):
+            self.assertFalse(packet.asset_source_is_current(self.folder, self.row))
+
 
 if __name__ == "__main__":
     unittest.main()

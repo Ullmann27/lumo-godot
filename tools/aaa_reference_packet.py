@@ -13,6 +13,8 @@ import subprocess
 
 REFERENCE_DIR = Path("docs/design/2026-10-10-lumo-games/references")
 RUNTIME_PATHS = ("scripts/games", "scenes/games", "assets", "project.godot")
+ASSET_PATHS = (*RUNTIME_PATHS, "tools/aaa_export_runtime_asset.gd",
+               "tools/aaa_blender_archive.py", "tools/aaa_verify_glb.gd")
 
 
 def git(repo, *args):
@@ -102,6 +104,14 @@ def validate_pin(app, godot):
     return pin
 
 
+def asset_source_is_current(godot, inventory):
+    sha = inventory.get("source_commit")
+    if not isinstance(sha, str) or len(sha) != 40:
+        return False
+    git(godot, "cat-file", "-e", f"{sha}^{{commit}}")
+    return not git(godot, "diff", "--name-only", sha, "HEAD", "--", *ASSET_PATHS)
+
+
 def build(args):
     app, godot = Path(args.app_repo).resolve(), Path(__file__).resolve().parents[1]
     for repo in (app, godot):
@@ -123,7 +133,7 @@ def build(args):
     roundtrip = json.loads((assets / "roundtrip-verification.json").read_text())
     if (
         not inventory.get("clean_tracked_source")
-        or inventory["source_commit"] != git(godot, "rev-parse", "HEAD")
+        or not asset_source_is_current(godot, inventory)
         or inventory["sha256"] != digest(assets / inventory["asset"])
         or roundtrip.get("status") != "PASS"
         or roundtrip.get("original_glb_sha256") != inventory["sha256"]
