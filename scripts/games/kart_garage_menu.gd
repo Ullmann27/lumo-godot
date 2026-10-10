@@ -587,8 +587,11 @@ func _apply_responsive_layout() -> void:
 					height = 74 if short_landscape else 118
 				_set_physical_minimum(card, Vector2(0, height), ui_scale)
 				_set_physical_font(card, (14 if tiny else 16) if short_landscape else 19, ui_scale)
-				if card.has_method("apply_size"):
+				if card is CHOICE:
 					card.apply_size(ui_scale, short_landscape, step == 0 and window_size.y < 800)
+				elif card.has_method("apply_size"):
+					# Vehicle cards keep their original, tested two-argument sizing API.
+					card.apply_size(ui_scale, short_landscape)
 	# A saved race adds a second footer row on a small portrait phone.
 	# Reserve usable space for the scrolling mode choices, not just the hero.
 	if portrait and window_size.y < 680 and step == 0:
