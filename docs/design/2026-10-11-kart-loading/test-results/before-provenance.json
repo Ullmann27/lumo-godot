@@ -1,0 +1,14 @@
+{
+	"controller_replayed_from_git": true,
+	"historical_ready_route_executed": false,
+	"normal_startup_recording": false,
+	"original_controller_sha256": "3e692415ac9f5e6f3c1da185eed011dce9abbae2b665ca20f32c477fa966eeaa",
+	"original_visual_methods": [
+		"_show_cover",
+		"_layout"
+	],
+	"physical_android_device": false,
+	"real_godot_frame": true,
+	"same_existing_artwork": true,
+	"visual_fixture_held": true
+}

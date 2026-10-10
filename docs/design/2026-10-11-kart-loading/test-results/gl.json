@@ -1,0 +1,60 @@
+{
+	"actual_router_transition": true,
+	"actual_threaded_loader": true,
+	"cases": [
+		{
+			"density": 1.0,
+			"engine_progress": 1.0,
+			"image": "loading-ready-360x800.png",
+			"phase": "ready",
+			"physical_android_device": false,
+			"ready_state_held_by_test_only": true,
+			"surface_px": [
+				360,
+				800
+			]
+		},
+		{
+			"density": 1.0,
+			"engine_progress": 1.0,
+			"image": "loading-ready-640x360.png",
+			"phase": "ready",
+			"physical_android_device": false,
+			"ready_state_held_by_test_only": true,
+			"surface_px": [
+				640,
+				360
+			]
+		},
+		{
+			"density": 1.0,
+			"engine_progress": 1.0,
+			"image": "loading-ready-1200x896.png",
+			"phase": "ready",
+			"physical_android_device": false,
+			"ready_state_held_by_test_only": true,
+			"surface_px": [
+				1200,
+				896
+			]
+		},
+		{
+			"density": 2.25,
+			"engine_progress": 1.0,
+			"image": "loading-ready-2176x1812.png",
+			"phase": "ready",
+			"physical_android_device": false,
+			"ready_state_held_by_test_only": true,
+			"surface_px": [
+				2176,
+				1812
+			]
+		}
+	],
+	"checks": 84,
+	"failures": 0,
+	"orphan_nodes_after": 0,
+	"orphan_nodes_before": 0,
+	"physical_android_device": false,
+	"timeout_uses_test_clock_expiry": true
+}
