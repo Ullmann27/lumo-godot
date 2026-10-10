@@ -295,6 +295,10 @@ func _ready() -> void:
 	var inspection_overlay := Control.new()
 	inspection_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	viewport_panel.add_child(inspection_overlay)
+	# A default Control has zero size. Its TOP_RIGHT-anchored child then
+	# escapes the entire panel at 800x480 once Android safe insets apply.
+	# Fill the preview panel, but keep both the overlay and its child clickable.
+	inspection_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	inspection_overlay.add_child(view_choice)
 	view_choice.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	detail = _label("", 20, Color("dceaff"))
@@ -396,6 +400,16 @@ func _apply_responsive_layout() -> void:
 	brand_label.custom_minimum_size.x = (120 if small or welcome_in_header else 245) * ui_scale
 	_set_physical_font(brand_label, 21 if short_landscape else (25 if small else 47), ui_scale)
 	_set_physical_font(brand_kart, 18 if short_landscape else (23 if small else 38), ui_scale)
+	# At the 640x320 cover size, the TWO stacked wordmark lines force a 175
+	# logical pixel header, leaving only 84 for 2x63 pixel mode buttons.
+	# Use the SAME name and trademark in a single line on that surface only.
+	var ultra_short: bool = short_landscape and window_size.y < 360
+	brand_label.text = "LUMO KART" if ultra_short else "Lumo ★"
+	brand_kart.visible = not ultra_short
+	# The 320px-high safe-area case has only 240px of content height after
+	# Android system bars. Preserve the *real* selectable modes and 3D kart:
+	# the learn shortcut and status are available through Spieleauswahl.
+	progress_panel.visible = not ultra_short
 	_set_physical_font(brand_motto, 8 if small or short_landscape else 11, ui_scale)
 	brand_motto.visible = not small and not short_landscape
 	brand_stack.add_theme_constant_override("separation", roundi((-5 if short_landscape or small else -12) * ui_scale))
@@ -431,11 +445,11 @@ func _apply_responsive_layout() -> void:
 			child.custom_minimum_size = (
 				Vector2(112 if small else 148, 56 if compact else 72) * ui_scale
 			)
-	_set_physical_minimum(header_row, Vector2(0, 44 if short_landscape else (60 if small else 100)), ui_scale)
+	_set_physical_minimum(header_row, Vector2(0, (35 if window_size.y < 360 else 44) if short_landscape else (60 if small else 100)), ui_scale)
 	_set_physical_minimum(
 		preview_container,
 		(
-			Vector2(150, 64 if window_size.y < 440 else 96)
+			Vector2(150, (50 if window_size.y < 360 else 64) if window_size.y < 440 else 96)
 			if short_landscape
 			else (Vector2(150, 112) if small else Vector2(250, 185))
 		),
@@ -507,8 +521,13 @@ func _apply_responsive_layout() -> void:
 	view_choice.set_item_text(5, "Oben" if short_landscape else "Von oben")
 	# Do not cover Lumos ears in a compact portrait preview.
 	view_choice.set_item_text(6, "Gesicht" if small else "Lumos Gesicht")
-	view_choice.offset_left = -(100 if short_landscape else (96 if small else 176)) * ui_scale
-	view_choice.offset_right = -4 * ui_scale
+	# Godot honours the left anchor first and expands the OptionButton to its
+	# true text minimum width (182 px at 800x480). Reserve additional room
+	# from the right edge rather than relying only on offset_right.
+	view_choice.offset_left = -(124 if short_landscape else (96 if small else 176)) * ui_scale
+	# Keep the real OptionButton minimum width inside Fold/Android safe-area.
+	# At 800x480 its 182 logical pixels previously exceeded the safe right edge by 3.2.
+	view_choice.offset_right = -20 * ui_scale
 	view_choice.offset_top = 4 * ui_scale
 	view_choice.offset_bottom = 48 * ui_scale
 	view_choice.visible = step in [1, 2]
@@ -588,7 +607,7 @@ func _apply_responsive_layout() -> void:
 			if card is Button:
 				var tiny: bool = window_size.y < 440
 				var height: float = (
-					(28 if window_size.y < 400 else 40) if short_landscape and step == 0
+					(28 if window_size.y < 400 else (30 if window_size.y < 520 else 40)) if short_landscape and step == 0
 					else (42 if window_size.y < 520 else 58) if short_landscape
 					else ((50 if window_size.y < 800 else 76) if step == 0 else 74)
 				)

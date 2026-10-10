@@ -99,6 +99,13 @@ func _run() -> void:
 				root.get_visible_rect().encloses(game.garage.preview_container.get_global_rect()),
 				"Short landscape keeps the real preview on screen"
 			)
+			print("[KartMenuFlow][CompactModeGeometry] pixels=", pixels,
+				" safe=", game.safe_ui.get_global_rect(),
+				" list=", game.garage.choices.get_parent().get_global_rect(),
+				" first=", mode_grid.get_child(0).get_global_rect(),
+				" second=", mode_grid.get_child(1).get_global_rect(),
+				" preview=", game.garage.preview_container.get_global_rect(),
+				" header=", game.garage.header_row.get_global_rect())
 			assert(
 				game.garage.choices.get_parent().get_global_rect().encloses(
 					mode_grid.get_child(1).get_global_rect()
@@ -123,6 +130,12 @@ func _run() -> void:
 				assert(game.garage.setup.kart == "gecko_velo")
 				var inspect: OptionButton = game.garage.view_choice
 				assert(inspect.is_visible_in_tree())
+				print("[KartMenuFlow][InspectorGeometry] pixels=", pixels,
+					" safe=", game.safe_ui.get_global_rect(),
+					" inspector=", inspect.get_global_rect(),
+					" overlay=", inspect.get_parent().get_global_rect(),
+					" preview=", game.garage.preview_container.get_global_rect(),
+					" menu=", game.garage.get_global_rect())
 				assert(game.safe_ui.get_global_rect().encloses(inspect.get_global_rect()))
 				assert(inspect.size.y * root.size.y / root.get_visible_rect().size.y >= 43.99)
 				game.garage._choose_preview_view(2)
@@ -201,15 +214,27 @@ func _run() -> void:
 	game._apply_safe_area(Rect2(16, 32, 16, 48), Vector2(640, 320))
 	game.garage._apply_responsive_layout()
 	await _settle()
-	await _tap(game.garage.choices.get_child(0).get_child(1))
+	# One gold "Weiter" button is the design contract. The legacy
+	# cyan quick-start button is deliberately hidden and MUST NOT be tapped.
+	assert(not game.garage.quick_start_button.visible)
+	var cup_mode: Button = null
+	for entry in game.garage.choices.get_child(0).get_children():
+		if str(entry.title) == "Sternen-Cup":
+			cup_mode = entry
+	assert(is_instance_valid(cup_mode))
+	game.garage.choices.get_parent().ensure_control_visible(cup_mode)
 	await _settle()
-	var quick: Button = game.garage.quick_start_button
-	assert(quick.size.y * root.size.y / root.get_visible_rect().size.y >= 43.99)
+	await _tap(cup_mode)
+	assert(game.garage.setup.mode == "cup")
+	await _settle()
 	root.get_texture().get_image().save_png(
 		"res://exports/holographic-proof/menu-direct-640x320.png"
 	)
-	await _tap(quick)
-	await _settle()
+	for index in range(5):
+		assert(game.garage.step == index)
+		assert(game.garage.next_button.visible)
+		await _tap(game.garage.next_button)
+		await _settle()
 	assert(not game.menu_active and game.mode == "cup" and game.track_id == "sonnenhafen")
 	assert(is_instance_valid(game.player) and game.opponents.size() == 5)
 	game.abandoned = true
@@ -217,6 +242,12 @@ func _run() -> void:
 	await _settle()
 	print("[KartMenuFlow] PASS: direct selected Cup start inside compact Android safe insets")
 	print("[KartMenuFlow] PASS: five touch steps; 1280x720,800x480,640x320; safe controls >=44px")
-	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
-	await create_timer(0.12).timeout
+	# Destroy all camera/world references and allow Godot's GL renderer to
+	# consume the deferred free queue before exiting this 4-scene integration run.
+	# A 120 ms timeout previously logged four outstanding SceneCull RIDs.
+	root.world_3d.fallback_environment = null
+	await create_timer(1.5).timeout
+	for frame in range(12):
+		await process_frame
+	await RenderingServer.frame_post_draw
 	quit(0)

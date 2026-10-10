@@ -7,6 +7,8 @@ const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
+const AAA_ENV = preload("res://scripts/games/visual/kart_environment_polish.gd")
+const AAA_GATES = preload("res://scripts/games/visual/kart_neon_gates.gd")
 const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
 const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
@@ -74,6 +76,8 @@ func build(
 		FLEET_DRESSING.build(self)
 		TRACK_DETAIL.build(self)
 		_flush_instances()
+		if not geometry_only:
+			AAA_GATES.decorate(self)
 		return
 	if not geometry_only:
 		_lighting()
@@ -88,6 +92,8 @@ func build(
 		FLEET_DRESSING.build(self)
 		TRACK_DETAIL.build(self)
 		_flush_instances()
+		if not geometry_only:
+			AAA_GATES.decorate(self)
 		return
 	_terrain()
 	_road()
@@ -105,6 +111,8 @@ func build(
 	FLEET_DRESSING.build(self)
 	TRACK_DETAIL.build(self)
 	_flush_instances()
+	if not geometry_only:
+		AAA_GATES.decorate(self)
 
 func _make_curve() -> void:
 	var original_points: PackedVector3Array = definition.points
@@ -417,6 +425,8 @@ func _lighting() -> void:
 	environment.fog_light_color=definition.fog
 	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.003)
 	environment.fog_aerial_perspective=0.22
+	# Additive desktop polish with a strict Mobile/GL fallback; no new environment node.
+	set_meta("aaa_visual_profile", AAA_ENV.configure(environment, low_detail))
 	var world_environment := WorldEnvironment.new()
 	world_environment.environment=environment
 	add_child(world_environment)
