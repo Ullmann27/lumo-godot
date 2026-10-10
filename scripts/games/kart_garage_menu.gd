@@ -400,6 +400,12 @@ func _apply_responsive_layout() -> void:
 	brand_label.custom_minimum_size.x = (120 if small or welcome_in_header else 245) * ui_scale
 	_set_physical_font(brand_label, 21 if short_landscape else (25 if small else 47), ui_scale)
 	_set_physical_font(brand_kart, 18 if short_landscape else (23 if small else 38), ui_scale)
+	# At the 640x320 cover size, the TWO stacked wordmark lines force a 175
+	# logical pixel header, leaving only 84 for 2x63 pixel mode buttons.
+	# Use the SAME name and trademark in a single line on that surface only.
+	var ultra_short: bool = short_landscape and window_size.y < 360
+	brand_label.text = "LUMO KART" if ultra_short else "Lumo ★"
+	brand_kart.visible = not ultra_short
 	_set_physical_font(brand_motto, 8 if small or short_landscape else 11, ui_scale)
 	brand_motto.visible = not small and not short_landscape
 	brand_stack.add_theme_constant_override("separation", roundi((-5 if short_landscape or small else -12) * ui_scale))
