@@ -109,7 +109,14 @@ func _run() -> void:
 	for side in ["L", "R"]:
 		var hand_height: float = adapter.actor.skeleton.get_bone_global_pose(
 			adapter.actor.skeleton.find_bone("Hand." + side)).origin.y
-		_check(hand_height > head_height, "Victory really raises a hand: " + side)
+		if side == "R":
+			_check(hand_height > head_height, "Victory really raises the right hand")
+		else:
+			var hand: Vector3 = adapter.actor.skeleton.to_global(
+				adapter.actor.skeleton.get_bone_global_pose(
+					adapter.actor.skeleton.find_bone("Hand.L")).origin)
+			var anchor: Vector3 = kart.steering_wheel.to_global(kart.wheel_rest_grips[0])
+			_check(hand.distance_to(anchor) < 0.006, "Coasting victory keeps the left hand on the wheel")
 		var foot: Vector3 = adapter.actor.skeleton.get_bone_global_pose(
 			adapter.actor.skeleton.find_bone("Foot." + side)).origin
 		_check(foot.distance_to(seated_feet[side]) < 0.07,

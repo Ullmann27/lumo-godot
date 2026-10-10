@@ -5,12 +5,17 @@ on:
     paths:
       - .github/workflows/kart-stage2-regression.yml
       - assets/shaders/kart_*.gdshader
+      - assets/characters/lumo_animated/**
+      - scripts/characters/lumo/**
       - scripts/games/kart_*.gd
       - scripts/games/visual/**
       - scripts/games/authoring/**
       - scenes/games/track_authoring/**
       - tools/validate_track_packs.py
       - scripts/tests/kart_*.gd
+      - scripts/tests/lumo_*animation*.gd
+      - scripts/tests/lumo_kart_production_regression.gd
+      - tools/lumo_animation/**
       - docs/track_expansion/**
   workflow_dispatch:
 
@@ -60,6 +65,36 @@ jobs:
             echo "Rejected Godot error output in $RUNNER_TEMP/godot-import.log"
             exit 1
           fi
+
+      - name: Animated Lumo in the actual Kart player factory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/lumo-kart-production
+          export XDG_DATA_HOME="$RUNNER_TEMP/lumo-kart-production-user"
+          python3 tools/run_godot_probe.py \
+            --log exports/lumo-kart-production/production.log \
+            --timeout 120 --required '[LumoKartProduction] PASS' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy \
+            --path . --script res://scripts/tests/lumo_kart_production_regression.gd \
+            -- exports/lumo-kart-production
+          python3 tools/run_godot_probe.py \
+            --log exports/lumo-kart-production/export.log \
+            --timeout 240 --required savepack -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy \
+            --path . --export-pack Linux "$RUNNER_TEMP/lumo-kart-production.pck"
+          mkdir -p "$RUNNER_TEMP/lumo-kart-packed-runtime"
+          cp scripts/tests/lumo_kart_production_regression.gd \
+            "$RUNNER_TEMP/lumo-kart-packed-runtime/production_probe.gd"
+          export XDG_DATA_HOME="$RUNNER_TEMP/lumo-kart-packed-user"
+          python3 tools/run_godot_probe.py \
+            --log exports/lumo-kart-production/packed-runtime.log \
+            --timeout 120 --required '[LumoKartProduction] PASS' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy \
+            --path "$RUNNER_TEMP/lumo-kart-packed-runtime" \
+            --main-pack "$RUNNER_TEMP/lumo-kart-production.pck" \
+            --script "$RUNNER_TEMP/lumo-kart-packed-runtime/production_probe.gd" \
+            -- exports/lumo-kart-production/packed
 
       - name: Track geometry contract
         shell: bash
@@ -461,5 +496,6 @@ jobs:
             exports/sky-halo-authoring/*.png
             exports/character-review/**
             exports/menu-safe-area/**
+            exports/lumo-kart-production/**
           if-no-files-found: warn
           retention-days: 14

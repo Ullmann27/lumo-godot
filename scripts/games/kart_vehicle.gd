@@ -15,6 +15,7 @@ const GLOVE := Color("1d2230")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const FUR = preload("res://scripts/games/kart_fur_geometry.gd")
 const CHARACTER_FINISH = preload("res://scripts/games/kart_character_finish.gd")
+const LUMO_ANIMATION = preload("res://scripts/characters/lumo/lumo_kart_animation_adapter.gd")
 const CARBON := Color("0b1019")
 const GUNMETAL := Color("2a3342")
 ## Leuchtstärke aller Neonteile: stark genug fürs Glühen, aber noch farbig (kein weißes Ausbrennen).
@@ -77,6 +78,78 @@ var arm_blend: float = 0.0
 var racing_arm_joints: Array[Node3D] = []
 var racing_rest_grips: Array[Vector3] = []
 var wheel_rest_grips: Array[Vector3] = []
+## Only the actual player race enables the new Lumo. Garage, ghosts and rivals
+## retain their existing visuals until their own integration is approved.
+var animated_lumo_enabled := false
+var lumo_animation
+var driver_airborne := false
+var driver_hit_active := false
+var driver_hit_pending := false
+var driver_animation_paused := false
+var _far_with_driver: Mesh
+var _far_without_driver: Mesh
+var _far_chassis_only := false
+
+
+func _ready() -> void:
+	_ensure_lumo_animation()
+
+
+func set_animated_lumo_enabled(enabled: bool) -> void:
+	animated_lumo_enabled = enabled
+	if not enabled and is_instance_valid(lumo_animation):
+		lumo_animation.free()
+		lumo_animation = null
+		if is_instance_valid(driver):
+			driver.show()
+		_refresh_far_proxy()
+	else:
+		_ensure_lumo_animation()
+
+
+func set_driver_runtime_state(in_air: bool, hit_active: bool, suspended: bool) -> void:
+	driver_airborne = in_air
+	driver_hit_pending = driver_hit_pending or (hit_active and not driver_hit_active)
+	driver_hit_active = hit_active
+	driver_animation_paused = suspended
+	if is_instance_valid(lumo_animation):
+		lumo_animation.set_suspended(suspended)
+		lumo_animation.set_reduced_motion(reduced_motion)
+
+
+func _ensure_lumo_animation() -> void:
+	if not is_inside_tree() or companion_mode or animal != "fox" or not animated_lumo_enabled:
+		return
+	if is_instance_valid(lumo_animation) or not is_instance_valid(steering_wheel):
+		return
+	var candidate = LUMO_ANIMATION.new()
+	candidate.name = "AnimatedLumoDriver"
+	add_child(candidate)
+	if not candidate.bind_visual(self):
+		candidate.free()
+		return
+	lumo_animation = candidate
+	# Vehicle._process owns the only visual clock. No child timer can run
+	# through a pause or evaluate the same animation a second time.
+	lumo_animation.set_process(false)
+	lumo_animation.set_reduced_motion(reduced_motion)
+	lumo_animation.set_suspended(driver_animation_paused)
+	driver.hide()
+	_refresh_far_proxy()
+	if celebration_place > 0:
+		lumo_animation.celebrate_finished_race(celebration_place)
+
+
+func _refresh_far_proxy() -> void:
+	if companion_mode or not _built:
+		return
+	if is_instance_valid(far_mesh):
+		# Both proxies are authored before static batching. Rebuilding from
+		# batched multi-material surfaces would lose their source materials.
+		far_mesh.mesh = (
+			_far_without_driver if is_instance_valid(lumo_animation) else _far_with_driver
+		)
+		_set_far_detail(far_detail)
 
 
 func configure(kind: String, color: Color, variant: String = "") -> void:
@@ -178,6 +251,11 @@ func set_driver_character(value: String) -> void:
 func celebrate(place: int) -> void:
 	celebration_place = maxi(0, place)
 	celebration_time = 0.0
+	if is_instance_valid(lumo_animation):
+		if place > 0:
+			lumo_animation.celebrate_finished_race(place)
+		else:
+			lumo_animation.clear_celebration()
 
 
 func set_speaking(amount: float) -> void:
@@ -192,6 +270,7 @@ func set_graphics_quality(profile: String) -> void:
 func _rebuild() -> void:
 	for child in get_children():
 		child.free()
+	lumo_animation = null
 	wheel_pivots.clear()
 	wheel_rotors.clear()
 	eyes.clear()
@@ -212,6 +291,8 @@ func _rebuild() -> void:
 	jaw = null
 	arm_right = null
 	far_mesh = null
+	_far_with_driver = null
+	_far_without_driver = null
 	far_detail = false
 	if companion_mode:
 		_make_driver()
@@ -219,6 +300,7 @@ func _rebuild() -> void:
 	else:
 		_build()
 	_built = true
+	_ensure_lumo_animation()
 
 
 func _mat(color: Color, metal: float = 0.0, rough: float = 0.5, glow: float = 0.0) -> StandardMaterial3D:
@@ -2066,6 +2148,10 @@ func _far_geometry(mesh: Mesh) -> Mesh:
 
 func _append_far(parent: Node3D, transform_from_kart: Transform3D, tool: SurfaceTool) -> void:
 	for child in parent.get_children():
+		# Keep one visible character, including at LOD distance. The rigged
+		# skin must never be baked into a rigid proxy or drawn over old Lumo.
+		if child == lumo_animation or (child == driver and _far_chassis_only):
+			continue
 		if child is MeshInstance3D:
 			if flames.has(child) or sparks.has(child) or child.has_meta("near_only") or child.mesh.has_meta("far_skip"):
 				continue
@@ -2080,9 +2166,21 @@ func _make_far_mesh() -> void:
 	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 	tool.set_material(_vertex_material(_mat(Color.WHITE, 0.16, 0.58)))
 	_append_far(self, Transform3D.IDENTITY, tool)
+	_far_with_driver = tool.commit()
+	# Keep a chassis-only alternative for the same fox vehicle. This small
+	# proxy avoids rebuilding the Kart (and deleting shield/host attachments)
+	# when the visual is enabled or disabled after it entered the scene tree.
+	if animal == "fox":
+		var chassis := SurfaceTool.new()
+		chassis.begin(Mesh.PRIMITIVE_TRIANGLES)
+		chassis.set_material(_vertex_material(_mat(Color.WHITE, 0.16, 0.58)))
+		_far_chassis_only = true
+		_append_far(self, Transform3D.IDENTITY, chassis)
+		_far_chassis_only = false
+		_far_without_driver = chassis.commit()
 	far_mesh = MeshInstance3D.new()
 	far_mesh.name = "DistantKart"
-	far_mesh.mesh = tool.commit()
+	far_mesh.mesh = _far_with_driver
 	far_mesh.hide()
 	add_child(far_mesh)
 
@@ -2113,7 +2211,20 @@ func update_motion(speed: float, steer: float, drift: bool, boost: bool) -> void
 	set_motion(speed, steer, boost, drift)
 
 
+func _update_lumo_visual(delta: float) -> void:
+	if steering_wheel:
+		steering_wheel.rotation.z = -motion_steer * 0.40
+	lumo_animation.set_reduced_motion(reduced_motion)
+	lumo_animation.apply_vehicle_sample(
+		motion_speed, motion_steer, driver_airborne, driver_hit_pending, motion_boost, motion_drift
+	)
+	driver_hit_pending = false
+	lumo_animation.advance_tick(delta)
+
+
 func _process(delta: float) -> void:
+	if driver_animation_paused:
+		return
 	if companion_mode:
 		set_companion_pose(animation_time + delta, "speaking" if speaking_amount > 0 else "idle", speaking_amount)
 		return
@@ -2130,6 +2241,10 @@ func _process(delta: float) -> void:
 	if camera and detail_check_time <= 0:
 		_update_detail(camera)
 		detail_check_time = 0.2
+	if is_instance_valid(lumo_animation):
+		# The animated player stays the same character in both LODs. Keep
+		# its wheel anchors current even while the chassis uses a far proxy.
+		_update_lumo_visual(delta)
 	if far_detail:
 		return
 	if camera and camera.global_position.distance_squared_to(global_position) > 225.0:
@@ -2140,6 +2255,8 @@ func _process(delta: float) -> void:
 		wheel_pivots[i].rotation.y = -motion_steer * 0.34 if wheel_pivots[i].get_meta("front") else 0.0
 		var hub_height: float = float(wheel_pivots[i].get_meta("height", 0.35))
 		wheel_pivots[i].position.y = hub_height if reduced_motion else hub_height + sin(animation_time * 11.0 + i * 1.7) * minf(0.010, absf(motion_speed) * 0.0005)
+	if is_instance_valid(lumo_animation):
+		return
 	if driver:
 		driver.rotation.z = lerpf(driver.rotation.z, -motion_steer * 0.06, minf(1, delta * 7.0))
 		driver.position.y = 0.0 if reduced_motion else sin(animation_time * 7.0) * minf(0.009, absf(motion_speed) * 0.0006)
@@ -2228,4 +2345,3 @@ func _apply_celebration(delta: float) -> void:
 	if jaw and happy:
 		# Fröhlich offener Mund, solange Lumo nicht spricht.
 		jaw.rotation.x = maxf(jaw.rotation.x, 0.22 + absf(beat) * 0.12)
-

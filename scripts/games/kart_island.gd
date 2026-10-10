@@ -382,6 +382,7 @@ func _build_world() -> void:
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, selected_driver)
 	player.set_look(_ensure_workshop().look(selected_kart))
 	player.configure(selected_driver, driver.color, selected_kart)
+	player.set_animated_lumo_enabled(true)
 	player.reduced_motion = reduced_motion
 	player.set_graphics_quality(graphics_profile)
 	race_root.add_child(player)
@@ -2043,9 +2044,12 @@ func _update_vehicles(_delta: float) -> void:
 		return
 	var enabled: bool = racing and not paused and not finished
 	player.set_motion(speed if enabled else 0, steering, boost_time > 0 and enabled, drifting and enabled)
+	player.set_driver_runtime_state(airborne, hit_timer > 0.0, paused)
 	if not enabled:
 		for kart in opponents:
 			kart.set_motion(0, 0, false, false)
+	for kart in opponents:
+		kart.set_driver_runtime_state(false, false, paused)
 
 
 func _update_camera(delta: float, snap: bool = false) -> void:
@@ -2417,6 +2421,7 @@ func _pause() -> void:
 	brake = 0
 	drifting = false
 	drift_charge = 0
+	_update_vehicles(0.0)
 	_save_session()
 	_clear_column(modal_column)
 	modal_scroll.scroll_vertical = 0
@@ -2495,6 +2500,7 @@ func _resume() -> void:
 	if menu_active:
 		return
 	paused = false
+	_update_vehicles(0.0)
 	_update_audio()
 	if is_instance_valid(kart_audio):
 		kart_audio.set_paused(false)
