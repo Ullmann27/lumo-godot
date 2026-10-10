@@ -61,6 +61,7 @@ var preview_caption: Label
 var reduced_motion: bool = false
 var graphics_profile: String = "high"
 var progress_label: Label
+var progress_panel: PanelContainer
 var body_column: VBoxContainer
 var header_row: HBoxContainer
 var kart_head_row: HBoxContainer
@@ -148,7 +149,7 @@ func _ready() -> void:
 	var grow := Control.new()
 	grow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(grow)
-	var progress_panel := PanelContainer.new()
+	progress_panel = PanelContainer.new()
 	progress_panel.name = "ActualLearningRewards"
 	progress_panel.add_theme_stylebox_override("panel", _status_glass())
 	header.add_child(progress_panel)
@@ -345,6 +346,10 @@ func _apply_responsive_layout() -> void:
 	var panoramic: bool = window_size.x >= 1000 and window_size.x > window_size.y
 	var welcome_in_header: bool = step == 0 and short_landscape and window_size.y < 440
 	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.024, 8.0, 24.0)
+	# The reward pill was forcing a 76 px toolbar on a 360 px Fold surface:
+	# its 10 px panel margins sat OUTSIDE the minimum height of the child.
+	var reward_style: StyleBoxFlat = progress_panel.get_theme_stylebox("panel") as StyleBoxFlat
+	reward_style.set_content_margin_all(2 if short_landscape else 10)
 	_apply_ui_scale(self, ui_scale)
 	for side in ["left", "right", "top", "bottom"]:
 		page_margin.add_theme_constant_override("margin_" + side, roundi(margin * ui_scale))
@@ -546,7 +551,9 @@ func _apply_responsive_layout() -> void:
 	if short_landscape:
 		footer.columns = 3 if has_saved_race else 2
 		footer_spacer.hide()
-		for button in [learn_button, back_button, next_button]:
+		_set_physical_minimum(learn_button, Vector2(100, 34), ui_scale)
+		_set_physical_font(learn_button, 14, ui_scale)
+		for button in [back_button, next_button]:
 			_set_physical_minimum(button, Vector2(148, 44), ui_scale)
 			_set_physical_font(button, 16, ui_scale)
 		for button in footer.get_children():
