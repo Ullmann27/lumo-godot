@@ -46,7 +46,7 @@ Der tatsächlich sichtbare Kart-Einstieg gehört Godot: Flutter startet die nati
 - **Schriftzug:** Skalierbarer zweizeiliger Lumo/Kart-Schriftzug, Gold/Cyan, Stern im o, gezeichnete Zielflaggen und der bestehende Motto-Text. Die Projekt-Schrift wird weiterverwendet; keine Emoji-Flagge und keine neue erfundene Marke.
 - **Karten:** Dezente gerundete Glas-Lichtkante, geringere Deckkraft, saubere ursprüngliche Symbole ohne doppelte dunkle Rahmen, eindeutiger Auswahlhaken und korrekt geschriebene kurze deutsche Beschreibungen.
 - **Menü-Lumo:** Derselbe vorhandene 65-Knochen-Charakter; echtes `greeting_wave` bei Eintritt und `agree_nod` bei Auswahl. Keine wiederkehrende Begrüßungsschleife; der Ruhemodus lehnt die Geste ab. Keine Änderungen am GLB, Sprachprovider, Profil- oder Belohnungsschema.
-- **Safe-Area-Reparatur:** Der zusätzliche Android-Randtest deckte einen echten Platzengpass auf. Die große Queransicht verwendet dort einen kompakteren Header/Footer und 62-dp-Karten. Auf einer 640 × 320-Surface mit Systemrändern entfällt nur die redundante Überschrift, nicht die Moduswahl oder die echte Figur.
+- **Safe-Area-Reparatur:** Der zusätzliche Android-Randtest deckte einen echten Platzengpass auf. Die große Queransicht verwendet dort einen kompakteren Header/Footer und 60-dp-Karten. Auf einer 640 × 320-Surface mit Systemrändern entfällt nur die redundante Überschrift, nicht die Moduswahl oder die echte Figur.
 
 ### Tatsächliche Tests dieser Menüetappe
 
@@ -60,6 +60,8 @@ Der tatsächlich sichtbare Kart-Einstieg gehört Godot: Flutter startet die nati
 Alle neuen Laufzeitnachweise stammen aus Linux/Godot 4.6.3/Mesa-llvmpipe. Die Dichte und Android-Systemränder sind explizite Desktop-Testkonfigurationen. `adb devices -l` zeigte kein angeschlossenes Gerät; eine physische Samsung-Galaxy-Z-Fold-Abnahme wird nicht behauptet.
 
 Die neue CI-Konfiguration prüft das Menü und den vorhandenen StartHero-Touchpfad zusätzlich. Der grüne Status von PR #52 gilt nur für die vorangehende Rennintegration, nicht automatisch für diese neue Menüetappe.
+
+**CI-Nachtrag:** Die erste neue Stage-2-Prüfung aus [PR #53](https://github.com/Ullmann27/lumo-godot/pull/53) bestand Import, PCK-Rennanimation, neue Menü-Fixtures, Physik, Save-/I/O-Tests und Pause-Abdeckung. Der echte GL-Menüfluss hatte auf dem GitHub-Renderer eine 318-Pixel-Scrollfläche statt lokal 330 Pixeln; die 322 Pixel hohe Liste passte dort nicht vollständig. Die Produktkarten der systemrandbelegten Queransicht erhalten deshalb 60 statt 62 dp Höhe, weiterhin deutlich über 48 dp. Der Test wartet außerdem fünf statt zwei Frames auf verschachtelte Container-/Font-/Safe-Area-Updates. Keine Assertion wurde abgeschaltet. Die drei anderen CI-Prüfungen des ersten Laufs waren grün.
 
 ## Offene Produktionsabnahme
 

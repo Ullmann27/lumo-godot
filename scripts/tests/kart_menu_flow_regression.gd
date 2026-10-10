@@ -8,8 +8,10 @@ func _initialize() -> void:
 
 
 func _settle() -> void:
-	await process_frame
-	await process_frame
+	# Fonts, nested container minimums and deferred safe-area bounds each
+	# propagate after a resize. Two frames were renderer-timing dependent.
+	for frame in range(5):
+		await process_frame
 	await RenderingServer.frame_post_draw
 
 
