@@ -730,7 +730,9 @@ func _mode_glass(mode_id: String, selected: bool) -> StyleBoxFlat:
 	style.border_color = Color("8dfbff") if selected else base.lightened(0.32)
 	style.set_border_width_all(3 if selected else 2)
 	style.set_corner_radius_all(23)
-	style.set_content_margin_all(8)
+	# The card itself already has custom inner margins. An extra 8 px on ALL
+	# edges increased five compact buttons by 12–16 px each and clipped #5.
+	style.set_content_margin_all(2)
 	style.shadow_color = Color(0.05, 0.85, 1.0, 0.42) if selected else Color(0, 0.02, 0.1, 0.48)
 	style.shadow_size = 11 if selected else 6
 	style.shadow_offset = Vector2(0, 3)
