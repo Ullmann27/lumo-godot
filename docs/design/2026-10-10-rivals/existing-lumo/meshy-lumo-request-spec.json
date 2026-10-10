@@ -1,0 +1,120 @@
+{
+  "status": "GENERATED_DOWNLOADED_AND_ISOLATED_IMPORT_VERIFIED",
+  "reference_revision": "USER_ATTACHMENTS_c72c2b55179f4c9eb6cff794724ecc8c",
+  "supersedes": "Repository-selected PNG references from the first preparation; not active for this request",
+  "scope": "One reference-led standalone Lumo character prototype; not a runtime replacement",
+  "execution": "Meshy Free web application; no paid API, no subscription",
+  "workspace_url": "https://www.meshy.ai/workspace?sidebar=model",
+  "authentication": {
+    "type": "User-approved email-code web sign-in",
+    "secret_included": false,
+    "source": "Authorized Gmail verification code, used transiently; no API key or browser cookies saved"
+  },
+  "approval": {
+    "paid_generation_approved": false,
+    "existing_free_credit_generation_approved": true,
+    "maximum_meshy_credits": 40,
+    "public_cc_by_4_model_approved": true,
+    "reference_upload_completed": true,
+    "create_request_sent": true,
+    "separate_texture_request_sent": true,
+    "download_completed": true
+  },
+  "input": {
+    "local_image": "references/user-uploads/50137.jpeg",
+    "sha256": "8c95ace85ea586a06857b83affd630717e945929b020e0dab6e49e252eb145ba",
+    "width": 512,
+    "height": 768,
+    "role": "User-selected primary subject identity, full body, suit, proportions and pose",
+    "upload_method": "Verified JPEG bytes transferred as a browser File to the normal web-app file input. The browser_upload_file tool supplied a zero-byte File; this workaround preserved the reference bytes.",
+    "original_bytes": 101905
+  },
+  "review_reference": {
+    "local_image": "references/user-uploads/50133.jpeg",
+    "sha256": "03a8ad0ea9d147e66e608eee13b777df095e83c87ba6f7d6dcc6da7044cd24d8",
+    "role": "User-selected local review of eyes, muzzle, goggles, driver contact and material separation",
+    "submit_whole_collage": false
+  },
+  "reference_manifest": "user-reference-manifest.json",
+  "reference_precedence": [
+    "50137.jpeg: standalone character identity and A-pose for the first single-character request",
+    "50131.jpeg, 50132.jpeg, 50133.jpeg: character face, goggles and seated contact review",
+    "50136.jpeg: kart-only silhouette and separately moving parts for a later approved kart task",
+    "50199.jpeg, 50198.jpeg: rear-camera silhouette and local UI control style, not character generation input",
+    "50135.jpeg: props, track modules and effects, not one combined 3D asset",
+    "50057.mp4: camera distance, environment, colour and speed-effect references; do not override still-reference identity"
+  ],
+  "actual_browser_configuration": {
+    "ai_model": "Meshy 6 Lite",
+    "mode": "High Detail / Image to 3D",
+    "premium_pose_transformation": false,
+    "license": "CC BY 4.0",
+    "texture_mode": "Image Input using the same 50137 reference",
+    "generate_pbr_maps": true,
+    "geometry_credits": 10,
+    "texture_credits": 10,
+    "total_credits_used": 20,
+    "credits_before": 275,
+    "credits_after": 255,
+    "free_glb_downloads_used": 1,
+    "download_resize": false,
+    "download_format": "glb",
+    "provider_filename": "Meshy_AI_Rocket_Fox_1010190731_texture.glb",
+    "provider_task_ids": null,
+    "provider_task_id_note": "No task ID was exposed in the inspected UI; none has been invented."
+  },
+  "actual_outputs": {
+    "source": "candidate/source/Lumo-Meshy-Original.glb",
+    "source_sha256": "62700aee1f4ea1d7b53ee8058be05493fc68e8d61465c0ca23315e21d71d240a",
+    "source_bytes": 9230652,
+    "source_triangles": 107386,
+    "source_texture_dimensions": [2048, 2048],
+    "mobile": "candidate/mobile/Lumo-Meshy-Mobile-30k.glb",
+    "mobile_sha256": "0a588eb0c96a2baae830c256655e95407afe3a0a0eaa0d5902e5e24467cf79e3",
+    "mobile_bytes": 4410236,
+    "mobile_triangles": 29999,
+    "mobile_texture_dimensions": [1024, 1024],
+    "materials_each": 1,
+    "embedded_textures_each": 3,
+    "skeletons_each": 0,
+    "animation_clips_each": 0,
+    "godot_import_and_render_passed": true,
+    "physical_android_test": false,
+    "runtime_replaced": false
+  },
+  "job_limits": {
+    "maximum_creation_calls": 1,
+    "automatic_creation_retries": 0,
+    "automatic_variants": 0,
+    "automatic_image_generation": 0,
+    "maximum_texture_calls": 1,
+    "automatic_retexture_tasks": 0,
+    "automatic_rigging_tasks": 0,
+    "automatic_animation_tasks": 0,
+    "automatic_upgrades_or_purchases": false,
+    "provider_price": "Observed 10 geometry credits plus 10 texture credits; no purchases"
+  },
+  "integration": {
+    "output_directory": "candidate/",
+    "replace_existing_runtime": false,
+    "modify_learning_or_progress_data": false,
+    "build_new_apk": false,
+    "required_before_runtime_use": [
+      "Download and hash the actual GLB plus returned textures and task receipt",
+      "Inspect full body, eyes, muzzle, goggles, ears, tail and chest emblem",
+      "Inspect back and side geometry not fully constrained by the front reference",
+      "Measure actual triangles, materials, texture memory and transforms",
+      "Check import in Blender and isolated Godot scene",
+      "Design an explicit adapter for the existing head, jaw, eyes, tail and steering grip animation",
+      "Check mobile rendering and visual comparison before any runtime replacement"
+    ]
+  },
+  "submission_exclusions": [
+    "No superseded repository-selected PNG inputs",
+    "No whole contact sheets as single-object generation input",
+    "No duplicate 50134 submission; it is byte-identical to 50133",
+    "No MP4 audio submitted to Meshy",
+    "No interpretation of the JPEG contact-sheet labels as existing separate alpha PNG assets"
+  ],
+  "api_reference": "https://docs.meshy.ai/en/api/image-to-3d"
+}

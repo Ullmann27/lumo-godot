@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "originalsUnmodified": true,
+  "newMeshyJobsStarted": 0,
+  "newMeshyCreditsUsed": 0,
+  "providerCreditCeiling": 100,
+  "modelCount": 5,
+  "excludedFromCharacterGeneration": [
+    "49717.jpeg"
+  ],
+  "inputs": [
+    {
+      "id": "lion",
+      "original": {
+        "file": "reference/originals/50835.jpeg",
+        "sha256": "0862cd0b8c4ff60900d171b1e15a74f13022d2172718cf591be96352dc655556",
+        "width": 561,
+        "height": 701,
+        "bytes": 132561
+      },
+      "geometry": {
+        "file": "reference/inputs/lion-front.jpg",
+        "sha256": "b30e1bb0d2cf21855582712ba1b969e54a79894f626301828295aae967e91a2c",
+        "width": 178,
+        "height": 240,
+        "bytes": 19747
+      },
+      "material": {
+        "file": "reference/inputs/lion-material.jpg",
+        "sha256": "e2eb779ab95c9b28b3b6740f2b9ebd4225b8be9d47336dee657b9ae700368ffd",
+        "width": 377,
+        "height": 701,
+        "bytes": 72815
+      }
+    },
+    {
+      "id": "owl",
+      "original": {
+        "file": "reference/originals/50839.jpeg",
+        "sha256": "ba55f00790caf22abfe04ab94854966274d55bece870fd9f2d9d66d11ab9c1e5",
+        "width": 561,
+        "height": 701,
+        "bytes": 147345
+      },
+      "geometry": {
+        "file": "reference/inputs/owl-front.jpg",
+        "sha256": "31fd3ff63abe21f3179198cdd811b5fd93a06c71267a1a39032ed8bf1af4961a",
+        "width": 184,
+        "height": 236,
+        "bytes": 20393
+      },
+      "material": {
+        "file": "reference/inputs/owl-material.jpg",
+        "sha256": "9b1b0c1d07b80e0124a8a61c6aa6e27c46ef9d4b6cd88821d15ac43e00fda9de",
+        "width": 374,
+        "height": 701,
+        "bytes": 81822
+      }
+    },
+    {
+      "id": "rabbit",
+      "original": {
+        "file": "reference/originals/50838.jpeg",
+        "sha256": "a36edb6a76bebfb7ffd0a6c52587208d6f7c89598b97332654d3bfaee0a89014",
+        "width": 561,
+        "height": 701,
+        "bytes": 115682
+      },
+      "geometry": {
+        "file": "reference/inputs/rabbit-front.jpg",
+        "sha256": "d3762002a34492d2c5d37b51ab11c2c84df0b547b950ef18151ae79cb60c46dc",
+        "width": 184,
+        "height": 241,
+        "bytes": 17353
+      },
+      "material": {
+        "file": "reference/inputs/rabbit-material.jpg",
+        "sha256": "b005d854dc85ee157bfa4071910773e35083be735222ea2480f96dbec68118a2",
+        "width": 375,
+        "height": 701,
+        "bytes": 64361
+      }
+    },
+    {
+      "id": "squirrel",
+      "original": {
+        "file": "reference/originals/50837.jpeg",
+        "sha256": "f88bcf383d1e48744730188d10d8c9abce18d0c864d861ee1c2f6ce2d6ba5524",
+        "width": 561,
+        "height": 701,
+        "bytes": 118163
+      },
+      "geometry": {
+        "file": "reference/inputs/squirrel-material.jpg",
+        "sha256": "e9b1b987d919708071e0331d0a3b831360d8d709ff978157e4d6ae71d68fe2dc",
+        "width": 561,
+        "height": 454,
+        "bytes": 60831
+      },
+      "material": {
+        "file": "reference/inputs/squirrel-material.jpg",
+        "sha256": "e9b1b987d919708071e0331d0a3b831360d8d709ff978157e4d6ae71d68fe2dc",
+        "width": 561,
+        "height": 454,
+        "bytes": 60831
+      }
+    },
+    {
+      "id": "turtle",
+      "original": {
+        "file": "reference/originals/50836.jpeg",
+        "sha256": "99b1ea9293c088df9c367e428765be2bef3a828cdccd6094f171d824b0723d45",
+        "width": 561,
+        "height": 701,
+        "bytes": 106034
+      },
+      "geometry": {
+        "file": "reference/inputs/turtle-material.jpg",
+        "sha256": "ad6e631bb0adcc65e45f34ca47031f8a8704b9df62b8757b1f8e914937f60f45",
+        "width": 561,
+        "height": 444,
+        "bytes": 48349
+      },
+      "material": {
+        "file": "reference/inputs/turtle-material.jpg",
+        "sha256": "ad6e631bb0adcc65e45f34ca47031f8a8704b9df62b8757b1f8e914937f60f45",
+        "width": 561,
+        "height": 444,
+        "bytes": 48349
+      }
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "blender": "5.0.1",
+  "original": {
+    "mesh_objects": 1,
+    "triangles": 107386,
+    "vertices": 60629,
+    "uv_layers": {
+      "Mesh_0": 1
+    },
+    "materials": [
+      "Material_0"
+    ],
+    "bounds_min": [
+      -0.5642319917678833,
+      -0.5147749781608582,
+      -0.95135098695755
+    ],
+    "bounds_max": [
+      0.5602329969406128,
+      0.5163829922676086,
+      0.9475520253181458
+    ],
+    "dimensions": [
+      1.124464988708496,
+      1.0311579704284668,
+      1.8989030122756958
+    ],
+    "armatures": 0,
+    "shape_keys": {},
+    "animation_actions": 0,
+    "textures": [
+      {
+        "name": "Image_0",
+        "width": 2048,
+        "height": 2048
+      },
+      {
+        "name": "Image_1",
+        "width": 2048,
+        "height": 2048
+      },
+      {
+        "name": "Image_2",
+        "width": 2048,
+        "height": 2048
+      }
+    ],
+    "sha256": "62700aee1f4ea1d7b53ee8058be05493fc68e8d61465c0ca23315e21d71d240a",
+    "bytes": 9230652
+  },
+  "mobile_candidate": {
+    "mesh_objects": 1,
+    "triangles": 29999,
+    "vertices": 21657,
+    "uv_layers": {
+      "Mesh_0": 1
+    },
+    "materials": [
+      "Material_0"
+    ],
+    "bounds_min": [
+      -0.5643291473388672,
+      -0.5149219036102295,
+      -0.95135098695755
+    ],
+    "bounds_max": [
+      0.5604642629623413,
+      0.5165737867355347,
+      0.9477893710136414
+    ],
+    "dimensions": [
+      1.1247934103012085,
+      1.0314956903457642,
+      1.8991403579711914
+    ],
+    "armatures": 0,
+    "shape_keys": {},
+    "animation_actions": 0,
+    "textures": [
+      {
+        "name": "Image_0",
+        "width": 1024,
+        "height": 1024
+      },
+      {
+        "name": "Image_1",
+        "width": 1024,
+        "height": 1024
+      },
+      {
+        "name": "Image_2",
+        "width": 1024,
+        "height": 1024
+      }
+    ],
+    "sha256": "0a588eb0c96a2baae830c256655e95407afe3a0a0eaa0d5902e5e24467cf79e3",
+    "bytes": 4410236
+  },
+  "source_unchanged": true,
+  "runtime_replaced": false,
+  "rig_ready": false,
+  "physical_android_test": false,
+  "review": "Real model renders. Mobile derivative requires visual approval and a separate animation adapter."
+}

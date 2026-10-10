@@ -1,0 +1,40 @@
+00:00 +0: loading /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart
+00:00 +0: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: isPlayable gleiche Farbe -> spielbar
+00:00 +1: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: isPlayable gleiche Zahl andere Farbe -> spielbar
+00:00 +2: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: isPlayable falsche Farbe und Zahl -> NICHT spielbar
+00:00 +3: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: isPlayable colorMagic (Wild) -> immer spielbar
+00:00 +4: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: isPlayable Spezialkarte auf gleichen Spezialtyp andere Farbe -> spielbar
+00:00 +5: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: isPlayable selectedColor nach Farbzauber zaehlt, nicht topCard.color
+00:00 +6: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: applyPlay - normale Zahlenkarte legt Karte ab und wechselt Zug ueber passDevice
+00:00 +7: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: applyPlay - normale Zahlenkarte unspielbare Karte wird abgelehnt - State bleibt
+00:00 +8: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: applyPlay - Spezialkarten Lumo-Sprung -> aktueller Spieler bleibt dran
+00:00 +9: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: applyPlay - Spezialkarten Sternenregen -> Gegner zieht 2 Karten und Zug wechselt
+00:00 +10: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: applyPlay - Spezialkarten Farbzauber -> phase = chooseColor, Zug nicht gewechselt
+00:00 +11: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: applyPlay - Spezialkarten applyColorChoice -> selectedColor uebernommen und Zug wechselt
+00:00 +12: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: applyPlay - Spezialkarten Wirbelwind -> Gegner zieht 1, Zug wechselt
+00:00 +13: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: applyPlay - Spezialkarten Super-Sternenregen -> Gegner zieht 4 + Farbwahl
+00:00 +14: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: applyPlay - Spezialkarten Super-Sternenregen ist immer spielbar (wie Wild)
+00:00 +15: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: applyPlay - Spezialkarten Denkpause -> phase = learningQuestion mit Frage
+00:00 +16: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: applyPlay - Spezialkarten Lernfrage richtig -> +1 Stern, Spieler darf weiter
+00:00 +17: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: applyPlay - Spezialkarten Lernfrage falsch -> kein Stern, Zug wechselt
+00:00 +18: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: Sieg Letzte Karte abgelegt -> gameOver mit winner
+00:00 +19: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: Draw applyDraw fuegt Karte zur Hand und wechselt Zug
+00:00 +20: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: Handover confirmHandover -> phase = playing
+00:00 +21: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: 3-Spieler-Regeln Skip ueberspringt naechsten Spieler (0 -> 2)
+00:00 +22: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: 3-Spieler-Regeln Reverse flippt Richtung (0 -> 2, direction wird -1)
+00:00 +23: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: 3-Spieler-Regeln Reverse zweimal -> Richtung wieder 1
+00:00 +24: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: 3-Spieler-Regeln +2 Opfer zieht 2 UND ueberspringt seinen Zug
+00:00 +25: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: 3-Spieler-Regeln +4 Opfer zieht 4 + chooseColor + steps=2 nach Farbwahl
+00:00 +26: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: 3-Spieler-Regeln Wild (colorMagic) ohne Skip nach Farbwahl
+00:00 +27: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: 4-Spieler-Regeln Skip ueberspringt naechsten Spieler (0 -> 2)
+00:00 +28: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: 4-Spieler-Regeln Reverse flippt Richtung (0 -> 3, direction=-1)
+00:00 +29: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: 4-Spieler-Regeln +2 in 4P: Opfer (idx 1) zieht 2, idx 2 ist dran
+00:00 +30: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: 4-Spieler-Regeln +4 in 4P: Opfer (idx 1) zieht 4, idx 2 nach Farbwahl
+00:00 +31: /home/user/workspace/lumo-lernen-rivals/test/lumo_cards_rules_test.dart: 4-Spieler-Regeln Skip mit direction=-1 ab idx 0: -> idx 2 (mod 4 backwards)
+00:00 +32: loading /home/user/workspace/lumo-lernen-rivals/test/games/connect_four_engine_test.dart
+00:00 +32: /home/user/workspace/lumo-lernen-rivals/test/games/connect_four_engine_test.dart: all 69 winning lines, both players; empty board is not a win
+00:00 +33: /home/user/workspace/lumo-lernen-rivals/test/games/connect_four_engine_test.dart: gravity, full column and invalid input do not consume a turn
+00:00 +34: /home/user/workspace/lumo-lernen-rivals/test/games/connect_four_engine_test.dart: completed game blocks further moves and retains winner
+00:00 +35: /home/user/workspace/lumo-lernen-rivals/test/games/connect_four_engine_test.dart: bot blocks immediate wins without changing real state
+00:00 +36: /home/user/workspace/lumo-lernen-rivals/test/games/connect_four_engine_test.dart: reachable 42-move draw has no earlier win
+00:00 +37: All tests passed!
