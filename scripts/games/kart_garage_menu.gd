@@ -511,7 +511,10 @@ func _apply_responsive_layout() -> void:
 	view_choice.set_item_text(5, "Oben" if short_landscape else "Von oben")
 	# Do not cover Lumos ears in a compact portrait preview.
 	view_choice.set_item_text(6, "Gesicht" if small else "Lumos Gesicht")
-	view_choice.offset_left = -(100 if short_landscape else (96 if small else 176)) * ui_scale
+	# Godot honours the left anchor first and expands the OptionButton to its
+	# true text minimum width (182 px at 800x480). Reserve additional room
+	# from the right edge rather than relying only on offset_right.
+	view_choice.offset_left = -(124 if short_landscape else (96 if small else 176)) * ui_scale
 	# Keep the real OptionButton minimum width inside Fold/Android safe-area.
 	# At 800x480 its 182 logical pixels previously exceeded the safe right edge by 3.2.
 	view_choice.offset_right = -20 * ui_scale
