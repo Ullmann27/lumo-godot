@@ -1,5 +1,10 @@
 name: Produce Sulafat voice for Godot learning worlds
 on:
+  push:
+    branches:
+      - chatgpt/sulafat-godot-audio-2026-10-10
+    paths:
+      - .github/workflows/sulafat-voice-generation.yml
   workflow_dispatch:
 
 permissions:
