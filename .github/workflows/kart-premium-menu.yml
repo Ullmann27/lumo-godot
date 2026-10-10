@@ -1,0 +1,54 @@
+name: Lumo Kart premium menu screenshots
+
+on:
+  push:
+    branches: [codex/lumo-kart-premium-menu-2026-10-10]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  premium-menu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install exact Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import exact Godot sources
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit > premium-import.log 2>&1
+          cat premium-import.log
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' premium-import.log; then exit 1; fi
+      - name: Verify functional entry and render the four actual layouts
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          set +e
+          timeout 120s xvfb-run -a -s '-screen 0 2500x2500x24' Godot_v4.6.3-stable_linux.x86_64 --path . --rendering-method gl_compatibility --audio-driver Dummy --script res://scripts/tests/kart_premium_menu_capture.gd > premium-menu.log 2>&1
+          probe_result=$?
+          set -e
+          cat premium-menu.log
+          test "$probe_result" -eq 0
+          if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:|ERROR: Failed to load' premium-menu.log; then exit 1; fi
+          grep -F '[KartPremiumMenu] PASS:' premium-menu.log
+          test "$(find exports/premium-menu -name 'start-*.png' | wc -l)" -eq 4
+      - name: Publish genuine rendered screenshots and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-kart-premium-menu-real-screenshots
+          path: |
+            exports/premium-menu/
+            premium-import.log
+            premium-menu.log
+          retention-days: 30

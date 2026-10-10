@@ -81,13 +81,18 @@ func _run() -> void:
 		)
 		var mode_grid: GridContainer = game.garage.choices.get_child(0)
 		assert(mode_grid.get_child_count() == 5, "Five race modes; the learning cup is gone")
-		if pixels.y >= 440:
+		var cup_button: Button = null
+		for mode_button in mode_grid.get_children():
+			if str(mode_button.title) == "Sternen-Cup":
+				cup_button = mode_button
+		assert(is_instance_valid(cup_button), "Cup is discoverable independent of visual list order")
+		if pixels.y >= 720:
 			for mode_button in mode_grid.get_children():
 				assert(
 					game.garage.choices.get_parent().get_global_rect().encloses(
 						mode_button.get_global_rect()
 					),
-					"Every mode must fit the actual scroll viewport"
+					"All five modes fit at standard >=720p; compact formats intentionally scroll"
 				)
 		else:
 			assert(
@@ -98,9 +103,11 @@ func _run() -> void:
 				game.garage.choices.get_parent().get_global_rect().encloses(
 					mode_grid.get_child(1).get_global_rect()
 				),
-				"Visible cup choice must be touchable; further modes scroll"
+				"Visible time-trial choice is touchable; further modes scroll"
 			)
-		await _tap(mode_grid.get_child(1))
+		game.garage.choices.get_parent().ensure_control_visible(cup_button)
+		await _settle()
+		await _tap(cup_button)
 		assert(game.garage.setup.mode == "cup")
 		await _settle()
 		for step in range(5):

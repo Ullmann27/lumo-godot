@@ -111,9 +111,10 @@ func _check_saved_start_at_320() -> void:
 		{"id": "training", "name": "Freies Training"}, {"id": "cup", "name": "Sternen-Cup"}
 	]:
 		var card: Button = null
-		for index in range(CATALOG.MODES.size()):
-			if str(CATALOG.MODES[index].id) == str(requested.id):
-				card = garage.choices.get_child(0).get_child(index)
+		for candidate in garage.choices.get_child(0).get_children():
+			if str(candidate.title) == str(requested.name):
+				card = candidate
+				break
 		_check(is_instance_valid(card), "mode card exists for " + str(requested.id))
 		if not is_instance_valid(card):
 			continue

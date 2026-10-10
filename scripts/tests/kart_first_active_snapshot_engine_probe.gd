@@ -61,6 +61,7 @@ func _preserve(name: String) -> void:
 
 func _run() -> void:
 	started = Time.get_ticks_usec()
+	print("[FirstActiveTrace] scenario started")
 	output = OS.get_environment("LUMO_QA_DIR")
 	assert(not output.is_empty())
 	DirAccess.make_dir_recursive_absolute(output)
@@ -70,18 +71,25 @@ func _run() -> void:
 	root.get_node("HostBridge")._options = {"soundEnabled": false, "reduceAnimations": true}
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
+	print("[FirstActiveTrace] game node attached")
 	await _settle()
+	print("[FirstActiveTrace] garage created; next visible=", game.garage.next_button.is_visible_in_tree())
 	_check(game.menu_active and not game.racing, "normal engine starts in the actual garage", [true, false], [game.menu_active, game.racing])
 	for step in range(5):
+		print("[FirstActiveTrace] entering setup step=", step)
 		_check(game.garage.step == step, "public garage step%d" % step, step, game.garage.step)
 		await _touch(game.garage.next_button)
+		print("[FirstActiveTrace] completed tap step=",step," new=",game.garage.step)
+	print("[FirstActiveTrace] race transition complete; active=",game.racing)
 	_check(not game.menu_active and not game.paused, "public start enters the actual unpaused race", [false, false], [game.menu_active, game.paused])
+	print("[FirstActiveTrace] reading first race snapshot")
 	var initial: Dictionary = _read()
 	observations.append(initial)
 	_preserve("01-public-start")
 	var id: String = initial.result_id
 	var first: Dictionary = {}
 	var second: Dictionary = {}
+	print("[FirstActiveTrace] waiting for gameplay autosave")
 	while float(Time.get_ticks_usec() - started) / 1000000.0 < 30.0:
 		await physics_frame
 		var row: Dictionary = _read()
