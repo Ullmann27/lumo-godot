@@ -44,10 +44,14 @@ func _run() -> void:
 		assert(cards.get_child(3).title == "Sternen-Cup")
 		assert(cards.get_child(4).title == "Freies Training")
 		assert(garage.next_button.visible)
+		assert(not garage.quick_start_button.visible)
+		assert(garage.preview_kart != null)
 		var viewport_rect: Rect2 = root.get_visible_rect()
 		var next_rect: Rect2 = garage.next_button.get_global_rect()
 		var last_mode: Rect2 = cards.get_child(4).get_global_rect()
 		var clip_rect: Rect2 = garage.choices.get_parent().get_global_rect()
+		if dimensions.x > dimensions.y:
+			assert(clip_rect.encloses(last_mode), "Mode five must be visible without scrolling in landscape: %s" % dimensions)
 		print("[KartPremiumMenu] LAYOUT ", dimensions, " left=", garage.setup_left.size.x,
 			" continue_visible=", viewport_rect.encloses(next_rect),
 			" last_mode_visible=", clip_rect.encloses(last_mode),
