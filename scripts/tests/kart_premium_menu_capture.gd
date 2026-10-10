@@ -44,6 +44,12 @@ func _run() -> void:
 		assert(cards.get_child(3).title == "Sternen-Cup")
 		assert(cards.get_child(4).title == "Freies Training")
 		assert(garage.next_button.visible)
+		var viewport_rect: Rect2 = root.get_visible_rect()
+		assert(viewport_rect.encloses(garage.next_button.get_global_rect()), "Continue is actually on-screen")
+		if dimensions.y >= 720 and dimensions.x > dimensions.y:
+			assert(garage.choices.get_parent().get_global_rect().encloses(cards.get_child(4).get_global_rect()), "All five modes fit without a hidden last card")
+		if dimensions.x == 640:
+			assert(garage.setup_left.size.x >= 140.0, "Compact left column never collapses into one-letter text")
 		assert(garage.preview_kart != null)
 		var image := root.get_texture().get_image()
 		assert(not image.is_empty())
