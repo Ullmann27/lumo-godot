@@ -1,11 +1,11 @@
 extends SceneTree
 ## Real start-menu layout, touch-to-race and bounded camera motion.
 const GARAGE := "res://scripts/games/kart_garage_menu.gd"
-const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 var checks: int = 0
 var failures: Array[String] = []
 var starts: Array[Dictionary] = []
 var resume_calls: int = 0
+var review_output: String = ""
 
 
 func _initialize() -> void:
@@ -55,6 +55,67 @@ func _tap_visible(control: Button, clip: Rect2) -> bool:
 	return true
 
 
+func _save_review(garage, pixels: Vector2i, file: String) -> void:
+	if review_output.is_empty() or DisplayServer.get_name() == "headless":
+		return
+	DirAccess.make_dir_recursive_absolute(review_output)
+	var image: Image = root.get_texture().get_image()
+	assert(image.get_size() == pixels, "review must use the actual requested viewport")
+	var path: String = review_output.path_join(file + ".png")
+	assert(image.save_png(path) == OK)
+	var report := FileAccess.open(review_output.path_join(file + ".json"), FileAccess.WRITE)
+	report.store_string(JSON.stringify({
+		"image": file + ".png", "sha256": FileAccess.get_sha256(path),
+		"size": [pixels.x, pixels.y], "engine": Engine.get_version_info().string,
+		"renderer": RenderingServer.get_current_rendering_method(),
+		"menu_step": garage.step, "setup": garage.setup,
+		"has_saved_race": garage.has_saved_race, "reduced_motion": garage.reduced_motion,
+		"pose_yaw": garage.preview_pivot.rotation.y,
+		"camera_position": str(garage.preview_camera.position),
+		"camera_fov": garage.preview_camera.fov,
+		"next_rect": str(garage.next_button.get_global_rect()),
+		"page_rect": str(garage.page_margin.get_global_rect()),
+		"render_capture": true, "physical_android_device": false,
+	}, "  "))
+	report.close()
+	print("[StartHero] review ", path, " next=", garage.next_button.get_global_rect())
+
+
+func _complete_setup(garage, pixels: Vector2i) -> void:
+	var before := starts.size()
+	var expected: Dictionary = garage.setup.duplicate(true)
+	for step in range(5):
+		print("[StartHero] touch journey ", pixels, " step=", step)
+		_check(garage.step == step, "touch navigation reaches setup step %d" % step)
+		_check(not garage.quick_start_button.is_visible_in_tree(), "no duplicate quick-start")
+		_check(_inside(garage.next_button, pixels), "single primary action remains in viewport")
+		if pixels == Vector2i(1280, 720) and step == 1:
+			_save_review(garage, pixels, "driver-1280x720")
+		if garage.has_saved_race and garage.setup.mode == "cup" and step == 2:
+			_save_review(garage, pixels, "kart-saved-320x568")
+		if not _inside(garage.next_button, pixels):
+			print("[StartHero] viewport=", root.get_visible_rect(), " root=", root.size)
+			for control in [garage, garage.page_margin, garage.body_column, garage.header_row,
+				garage.setup_row, garage.setup_left, garage.setup_right, garage.preview_container,
+				garage.choices, garage.detail, garage.kart_panel, garage.footer]:
+				print("[StartHero] control=", control.name, " rect=", control.get_global_rect(),
+					" min=", control.get_combined_minimum_size(), " visible=", control.visible)
+			if DisplayServer.get_name() != "headless":
+				DirAccess.make_dir_recursive_absolute("res://exports/start-review")
+				assert(root.get_texture().get_image().save_png(
+					"res://exports/start-review/failing-step-%d.png" % step) == OK)
+			return
+		_check(
+			await _tap_visible(garage.next_button, Rect2(Vector2.ZERO, Vector2(pixels))),
+			"real touch reaches the single primary action at step %d" % step
+		)
+		await _settle()
+		_check(starts.size() == before + (1 if step == 4 else 0),
+			"only final setup touch emits one race start")
+	if starts.size() > before:
+		_check(starts[-1] == expected, "race starts with the selected real setup")
+
+
 func _check_saved_start_at_320() -> void:
 	var pixels := Vector2i(320, 568)
 	var screen_rect := Rect2(Vector2.ZERO, Vector2(pixels))
@@ -63,7 +124,7 @@ func _check_saved_start_at_320() -> void:
 	garage.has_saved_race = true
 	garage.reduced_motion = true
 	# A different initial mode makes selecting the first card observable.
-	# The remaining restored choices must survive both quick-start actions.
+	# The remaining restored choices must survive both full setup journeys.
 	var restored_setup: Dictionary = {
 		"mode": "arena",
 		"driver": "fox",
@@ -110,10 +171,14 @@ func _check_saved_start_at_320() -> void:
 	for requested in [
 		{"id": "training", "name": "Freies Training"}, {"id": "cup", "name": "Sternen-Cup"}
 	]:
+		garage.step = 0
+		garage._refresh()
+		await _settle()
 		var card: Button = null
-		for index in range(CATALOG.MODES.size()):
-			if str(CATALOG.MODES[index].id) == str(requested.id):
-				card = garage.choices.get_child(0).get_child(index)
+		# Rendered order intentionally follows the user's reference, not CATALOG order.
+		for candidate in garage.choices.get_child(0).get_children():
+			if candidate.title == requested.name:
+				card = candidate
 		_check(is_instance_valid(card), "mode card exists for " + str(requested.id))
 		if not is_instance_valid(card):
 			continue
@@ -123,20 +188,15 @@ func _check_saved_start_at_320() -> void:
 		_check(await _tap_visible(card, clip), "real touch reaches " + str(requested.name))
 		await _settle()
 		_check(garage.setup.mode == requested.id, "touch selects " + str(requested.id))
-		var play: Button = garage.quick_start_button
-		_check(
-			play.text == "Spielen · " + str(requested.name), "quick-start names the selected mode"
-		)
-		_check(_inside(play, pixels), str(requested.name) + " quick-start stays inside 320x568")
 		var before_start := starts.size()
-		_check(await _tap_visible(play, screen_rect), "real touch reaches the selected quick-start")
-		_check(starts.size() == before_start + 1, "selected quick-start emits exactly one start")
+		await _complete_setup(garage, pixels)
+		_check(starts.size() == before_start + 1, "selected setup emits exactly one start")
 		if starts.size() > before_start:
 			var expected: Dictionary = restored_setup.duplicate(true)
 			expected.mode = requested.id
 			_check(
 				starts[-1] == expected,
-				"quick-start emits " + str(requested.id) + " with the restored track and tempo"
+				"setup emits " + str(requested.id) + " with the restored track and tempo"
 			)
 	garage.queue_free()
 	await _settle()
@@ -149,14 +209,26 @@ func _run() -> void:
 	garage.reduced_motion = true
 	garage.start_requested.connect(func(setup: Dictionary): starts.append(setup))
 	root.add_child(garage)
-	for pixels in [
+	var sizes: Array[Vector2i] = [
 		Vector2i(1280, 720),
 		Vector2i(800, 480),
 		Vector2i(412, 915),
 		Vector2i(320, 568),
 		Vector2i(900, 1360)
-	]:
+	]
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--review-output="):
+			review_output = arg.trim_prefix("--review-output=")
+		if arg == "--saved-only":
+			sizes = []
+		if arg.begins_with("--only-viewport="):
+			var pieces := arg.trim_prefix("--only-viewport=").split("x")
+			assert(pieces.size() == 2)
+			sizes = [Vector2i(int(pieces[0]), int(pieces[1]))]
+	for pixels in sizes:
 		root.size = pixels
+		garage.step = 0
+		garage._refresh()
 		await _settle()
 		garage._apply_responsive_layout()
 		await _settle()
@@ -175,30 +247,8 @@ func _run() -> void:
 				),
 				"mode cards remain below the hero"
 			)
-		var play: Button = garage.get("quick_start_button")
-		_check(is_instance_valid(play), "start screen exposes a playable race entry")
-		if is_instance_valid(play):
-			_check(
-				_inside(play, pixels) and play.size.y >= 44,
-				"play has a visible touch target " + str(pixels)
-			)
-			var before := starts.size()
-			var touch := InputEventScreenTouch.new()
-			touch.index = 0
-			touch.position = play.get_global_rect().get_center()
-			touch.pressed = true
-			Input.parse_input_event(touch)
-			await process_frame
-			touch = touch.duplicate()
-			touch.pressed = false
-			Input.parse_input_event(touch)
-			await process_frame
-			_check(starts.size() == before + 1, "real touch emits exactly one race start")
-			if starts.size() > before:
-				_check(starts[-1] == garage.setup, "race starts with the selected real setup")
 		if DisplayServer.get_name() != "headless" and pixels.x in [1280, 800, 412]:
 			DirAccess.make_dir_recursive_absolute("res://exports/start-review")
-			await _settle()
 			_check(
 				(
 					root.get_texture().get_image().save_png(
@@ -208,6 +258,15 @@ func _run() -> void:
 				),
 				"save actual menu frame"
 			)
+		await _complete_setup(garage, pixels)
+		if not failures.is_empty():
+			garage.queue_free()
+			await _settle()
+			quit(1)
+			return
+	garage.step = 0
+	garage._refresh()
+	await _settle()
 	garage.set_process(false)
 	garage.reduced_motion = false
 	var lowest := INF

@@ -1,0 +1,65 @@
+{
+  "review": "M2: reachable five-step footer after live layout changes",
+  "source_base_commit": "4577e26f1b917f963c947964b7e54c2c2d6f2b53",
+  "after_source": "The containing Git commit records the exact product and regression code.",
+  "engine": "Godot 4.6.3 stable",
+  "renderer": "gl_compatibility",
+  "adapter": "Mesa llvmpipe under Xvfb",
+  "physical_android_device": false,
+  "new_art": false,
+  "composite_order": ["before", "after"],
+  "composite_processing": "Original PNGs joined horizontally, without resizing or retouching.",
+  "captures": [
+    {
+      "scene": "Production kart_garage_menu.gd, driver selection, step0 -> step1",
+      "size": [1280, 720],
+      "before": "before/driver-1280x720.png",
+      "before_sha256": "05144d7d9e399e644439c7fed73fd1a1cf60dfcb544b948139a18e0c1a9235fe",
+      "before_provenance": "Inherited Main capture of the actual missing-footer failure before page-bound restoration.",
+      "after": "after/driver-1280x720.png",
+      "after_sha256": "b1d2350e39d2c87213ebe435fd63c666a4daf5d75222680044dcb12f377239e6",
+      "after_metadata": "after/driver-1280x720.json",
+      "compare": "compare/driver-1280x720-before-after.png",
+      "compare_sha256": "3465bd8bd332de8548c7c3b0b28b0a50be3d8c39ac15fd4ad8f897b03300c40c",
+      "after_page_size": [1280, 720],
+      "after_next_rect": [1023, 631, 240, 72]
+    },
+    {
+      "scene": "Production kart_garage_menu.gd, saved Sternen-Cup setup, kart selection step2",
+      "size": [320, 568],
+      "setup": {
+        "mode": "cup",
+        "driver": "fox",
+        "kart": "comet",
+        "track": "zauberwald",
+        "difficulty": "flott"
+      },
+      "before": "before/kart-saved-320x568.png",
+      "before_sha256": "59babb66ac12c3b8fdf9e54948af91a5685511075fdd06dad7da0a7a0054f557",
+      "before_provenance": "Unmodified final failing-step-2.png from Main's saved-only real GL repro, last Cup journey.",
+      "before_page_size": [320, 611],
+      "before_next_rect": [8, 547, 148, 56],
+      "after": "after/kart-saved-320x568.png",
+      "after_sha256": "eb7d5973df7ebf1bdf5aeac89070796e2e51e91bedeb93a790e09e6605f5d300",
+      "after_metadata": "after/kart-saved-320x568.json",
+      "compare": "compare/kart-saved-320x568-before-after.png",
+      "compare_sha256": "696c7f59a3cd0c4eb10b906ee57a6eb7405eb5eea266252c67a2fe243b40be33",
+      "after_page_size": [320, 568],
+      "after_next_rect": [8, 516, 112, 44]
+    }
+  ],
+  "regression": {
+    "script": "scripts/tests/kart_start_hero_regression.gd",
+    "viewports": [[1280, 720], [800, 480], [412, 915], [320, 568], [900, 1360]],
+    "saved_journeys": ["training at320x568", "cup at320x568"],
+    "real_touch_setup_steps": 35,
+    "headless_checks": 222,
+    "rendered_checks": 225,
+    "failures": 0,
+    "renderer_profile_combinations": 12,
+    "rendered_log_errors": 0,
+    "rendered_log_rid_or_resource_leaks": 0,
+    "local_command": "XDG_DATA_HOME=/tmp/lumo-stage2-start-after-gl LIBGL_ALWAYS_SOFTWARE=1 python3 tools/run_godot_probe.py --log /tmp/lumo-aaa-start-after-gl.log --timeout 600 --required '[StartHero] checks=225 failures=0' -- xvfb-run -a -s '-screen 0 2400x2400x24' /tmp/lumo-godot-engine-4.6.3/Godot_v4.6.3-stable_linux.x86_64 --path . --rendering-method gl_compatibility --audio-driver Dummy --script res://scripts/tests/kart_start_hero_regression.gd -- --review-output=res://docs/qa/visual/kart-aaa/2026-10-10/m2-layout/after"
+  },
+  "visual_acceptance": "Main review pending; functional PASS is not an art or AAA visual acceptance."
+}

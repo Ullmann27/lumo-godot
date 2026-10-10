@@ -74,6 +74,7 @@ var preview_camera: Camera3D
 var view_choice: OptionButton
 var inspection_view: int = 0
 var quick_start_button: Button
+var _page_target_size := Vector2.ZERO
 var preview_idle_time: float = 0.0
 
 
@@ -99,6 +100,7 @@ func _ready() -> void:
 	veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(veil)
 	page_margin = MarginContainer.new()
+	page_margin.minimum_size_changed.connect(_restore_page_bounds)
 	page_margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right", "top", "bottom"]:
 		page_margin.add_theme_constant_override("margin_" + side, 28)
@@ -347,13 +349,14 @@ func _apply_responsive_layout() -> void:
 	var compact: bool = window_size.x < 760 or window_size.x < window_size.y
 	var small: bool = window_size.x < 520
 	var short_landscape: bool = window_size.x >= window_size.y and window_size.y < 600
+	var tiny_portrait: bool = window_size.x < window_size.y and window_size.y < 680
 	var panoramic: bool = window_size.x >= 1000 and window_size.x > window_size.y
 	var welcome_in_header: bool = step == 0 and short_landscape and window_size.y < 440
 	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.024, 8.0, 24.0)
 	# The reward pill was forcing a 76 px toolbar on a 360 px Fold surface:
 	# its 10 px panel margins sat OUTSIDE the minimum height of the child.
 	var reward_style: StyleBoxFlat = progress_panel.get_theme_stylebox("panel") as StyleBoxFlat
-	reward_style.set_content_margin_all(2 if short_landscape else 10)
+	reward_style.set_content_margin_all(2 if short_landscape or tiny_portrait else 10)
 	_apply_ui_scale(self, ui_scale)
 	for side in ["left", "right", "top", "bottom"]:
 		page_margin.add_theme_constant_override("margin_" + side, roundi(margin * ui_scale))
@@ -402,10 +405,12 @@ func _apply_responsive_layout() -> void:
 	_set_physical_font(brand_kart, 18 if short_landscape else (23 if small else 38), ui_scale)
 	# At the 640x320 cover size, the TWO stacked wordmark lines force a 175
 	# logical pixel header, leaving only 84 for 2x63 pixel mode buttons.
-	# Use the SAME name and trademark in a single line on that surface only.
+	# Keep the same wordmark in one line on short surfaces, including small
+	# portrait phones where a saved race adds a second footer row.
 	var ultra_short: bool = short_landscape and window_size.y < 360
-	brand_label.text = "LUMO KART" if ultra_short else "Lumo ★"
-	brand_kart.visible = not ultra_short
+	var compact_welcome: bool = short_landscape and step == 0 and window_size.y < 440
+	brand_label.text = "LUMO KART" if ultra_short or compact_welcome or tiny_portrait else "Lumo ★"
+	brand_kart.visible = not (ultra_short or compact_welcome or tiny_portrait)
 	# The 320px-high safe-area case has only 240px of content height after
 	# Android system bars. Preserve the *real* selectable modes and 3D kart:
 	# the learn shortcut and status are available through Spieleauswahl.
@@ -422,7 +427,10 @@ func _apply_responsive_layout() -> void:
 		)
 		_set_physical_minimum(tab, Vector2(0, 24 if short_landscape else 38), ui_scale)
 		_set_physical_font(tab, 12 if short_landscape else 15, ui_scale)
-	progress_label.visible = not small and not short_landscape
+	progress_label.visible = not small and (not short_landscape or compact_welcome)
+	# Keep actual earned stars, but avoid a tall duplicate learning shortcut in
+	# the compact welcome. Spieleauswahl retains the existing return route.
+	learn_button.visible = not compact_welcome
 	learn_button.text = "Lernen" if small else "Zum Lernen"
 	back_button.text = ("Spiele" if small else "Spieleauswahl") if step == 0 else "← Zurück"
 	next_button.text = ("Losfahren →" if small else "Rennen starten →") if step == 4 else "Weiter →"
@@ -563,13 +571,14 @@ func _apply_responsive_layout() -> void:
 	_set_physical_minimum(quick_start_button, Vector2(235 if quick_in_footer else (104 if welcome_in_header else 0), 44 if step == 0 or small or short_landscape else 56), ui_scale)
 	_set_physical_font(quick_start_button, 17 if short_landscape or small else 20, ui_scale)
 	if short_landscape and step == 0:
-		# Larger real character; maintain enough distance to keep both ears visible.
-		preview_camera.position = Vector3(2.85, 2.08, -4.36)
-		preview_camera.fov = 43.0
+		# Match the established welcome perspective instead of pulling the hero
+		# away on the very viewport that needs a readable face. Geometry unchanged.
+		preview_camera.position = Vector3(2.37, 1.96, -3.80)
+		preview_camera.fov = 34.0
 		preview_camera.look_at(Vector3(0, 0.96, 0))
 	if short_landscape:
-		footer.columns = 3 if has_saved_race else 2
-		footer_spacer.hide()
+		footer.columns = 4 if has_saved_race else 3
+		footer_spacer.show()
 		_set_physical_minimum(learn_button, Vector2(100, 34), ui_scale)
 		_set_physical_font(learn_button, 14, ui_scale)
 		for button in [back_button, next_button]:
@@ -621,9 +630,11 @@ func _apply_responsive_layout() -> void:
 					else:
 						card.apply_size(ui_scale, short_landscape)
 	# A saved race adds a second footer row on a small portrait phone.
-	# Reserve usable space for the scrolling mode choices, not just the hero.
-	if portrait and window_size.y < 680 and step == 0:
-		_set_physical_minimum(preview_container, Vector2(150, 80), ui_scale)
+	# Reserve usable space on EVERY setup step; the kart page also needs its
+	# summary row. Only the welcome hero uses the smaller 80px preview.
+	if tiny_portrait:
+		if step == 0:
+			_set_physical_minimum(preview_container, Vector2(150, 80), ui_scale)
 		_set_physical_minimum(header_row, Vector2(0, 44), ui_scale)
 		_set_physical_font(title_label, 22, ui_scale)
 		subtitle.hide()
@@ -641,7 +652,18 @@ func _apply_responsive_layout() -> void:
 	page_margin.set_deferred("offset_top", safe_insets.position.y * inset_scale.y)
 	page_margin.set_deferred("offset_right", -safe_insets.size.x * inset_scale.x)
 	page_margin.set_deferred("offset_bottom", -safe_insets.size.y * inset_scale.y)
-	page_margin.set_deferred("size", size - (safe_insets.position + safe_insets.size) * inset_scale)
+	_page_target_size = size - (safe_insets.position + safe_insets.size) * inset_scale
+	page_margin.set_deferred("size", _page_target_size)
+
+
+func _restore_page_bounds() -> void:
+	# Container minimums settle after a menu step changes fonts/visible children.
+	# A size assignment while the OLD minimum is still tall gets clamped, then
+	# never shrinks again. Reapply the safe target when that minimum invalidates.
+	if _page_target_size.x > 0 and _page_target_size.y > 0:
+		var achievable: Vector2 = _page_target_size.max(page_margin.get_combined_minimum_size())
+		if not page_margin.size.is_equal_approx(achievable):
+			page_margin.set_deferred("size", achievable)
 
 
 func _set_physical_minimum(control: Control, physical: Vector2, ui_scale: float) -> void:

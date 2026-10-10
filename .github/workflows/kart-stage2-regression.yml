@@ -6,6 +6,7 @@ on:
       - .github/workflows/kart-stage2-regression.yml
       - assets/shaders/kart_*.gdshader
       - scripts/games/kart_*.gd
+      - scripts/games/visual/**
       - scripts/games/authoring/**
       - scenes/games/track_authoring/**
       - tools/validate_track_packs.py
@@ -74,6 +75,20 @@ jobs:
           fi
           grep -F '[TrackContract]' "$RUNNER_TEMP/track-contract.log"
           grep -F 'bergwelt' "$RUNNER_TEMP/track-contract.log"
+
+      - name: Optional stage ownership and renderer capability regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/aaa-regressions
+          python3 tools/run_godot_probe.py --log exports/aaa-regressions/stage-lifetime.log \
+            --timeout 45 --required '[AAAStageLifetime] PASS:' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --script res://scripts/tests/kart_aaa_stage_lifetime.gd
+          python3 tools/run_godot_probe.py --log exports/aaa-regressions/renderer-profile.log \
+            --timeout 45 --required '[RendererProfiles] PASS:' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --script res://scripts/tests/kart_renderer_profile_regression.gd
 
       - name: Sky Halo authoring safety contract
         shell: bash
@@ -311,7 +326,7 @@ jobs:
             --script res://scripts/tests/kart_driver_portrait.gd \
             -- res://exports/face-showroom/lumo-driver-4views.png
           python3 tools/run_godot_probe.py --log exports/character-review/start-hero.log \
-            --timeout 300 --required '[StartHero] checks=69 failures=0' -- \
+            --timeout 600 --required '[StartHero] checks=225 failures=0' -- \
             xvfb-run -a -s '-screen 0 2400x2400x24' Godot_v4.6.3-stable_linux.x86_64 \
             --path . --rendering-method gl_compatibility --audio-driver Dummy \
             --script res://scripts/tests/kart_start_hero_regression.gd
@@ -339,7 +354,7 @@ jobs:
           for name, tag, expected in (
               ('character-pose', 'CharacterPose', 2325),
               ('face-depth', 'FaceDepth', 23),
-              ('start-hero', 'StartHero', 69),
+              ('start-hero', 'StartHero', 225),
           ):
               results = re.findall(rf'^\[{re.escape(tag)}\] checks=(\d+) failures=(\d+)$',
                   (output / (name + '.log')).read_text(), re.MULTILINE)

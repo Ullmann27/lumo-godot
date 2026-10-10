@@ -57,8 +57,11 @@ static func build(stage: Node3D, ring_color: Color = Color("45d9ef"), with_podiu
 	back.light_energy = 0.55
 	back.omni_range = 8.0
 	stage.add_child(back)
-	var podium := MeshInstance3D.new()
+	# MeshInstance3D allocates a renderer RID even without a mesh. Never create
+	# an unparented placeholder when the transparent garage requests no podium.
+	var podium: MeshInstance3D = null
 	if with_podium:
+		podium = MeshInstance3D.new()
 		var podium_mesh := CylinderMesh.new()
 		podium_mesh.top_radius = 2.05
 		podium_mesh.bottom_radius = 2.12
