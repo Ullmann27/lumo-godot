@@ -25,6 +25,22 @@ const SAMPLE_RATE: float = 22050.0
 var _muted: bool = false
 var _player: AudioStreamPlayer
 var _cache: Dictionary = {}
+const SULAFAT_MANIFEST := "res://assets/audio/voice/sulafat_manifest.json"
+var _approved_voice_hashes: Dictionary = {}
+
+func _load_voice_manifest() -> void:
+	_approved_voice_hashes.clear()
+	if not FileAccess.file_exists(SULAFAT_MANIFEST):
+		push_warning("[Audio] Sulafat recordings not deployed: legacy voice playback disabled.")
+		return
+	var raw: Variant = JSON.parse_string(FileAccess.get_file_as_string(SULAFAT_MANIFEST))
+	if not (raw is Dictionary) or raw.get("voice", "") != "Sulafat":
+		push_error("[Audio] Refusing unverified non-Sulafat voice manifest.")
+		return
+	var files: Variant = raw.get("files", {})
+	if files is Dictionary:
+		_approved_voice_hashes = files
+
 
 
 func _ready() -> void:
@@ -36,6 +52,7 @@ func _ready() -> void:
 		var store: Node = Engine.get_singleton("SettingsStore")
 		if store.has_method("is_audio_muted"):
 			_muted = store.call("is_audio_muted")
+	_load_voice_manifest()
 	print("[Audio] manager ready (muted:%s)" % _muted)
 
 
@@ -70,7 +87,12 @@ func play_sfx(name: String) -> void:
 func play_voice(path: String) -> void:
 	if _muted:
 		return
-	var full: String = "res://assets/audio/voice/%s.wav" % path
+	var rel: String = "%s.wav" % path
+	var full: String = "res://assets/audio/voice/%s" % rel
+	var expected: String = String(_approved_voice_hashes.get(rel, ""))
+	if expected.length() != 64 or FileAccess.get_sha256(full) != expected:
+		push_warning("[Audio] Voice not approved Sulafat: %s" % rel)
+		return
 	if _cache.has(full):
 		_player.stream = _cache[full]
 		_player.play()
