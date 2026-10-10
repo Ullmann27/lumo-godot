@@ -1,0 +1,47 @@
+name: Lumo Kart Fold menu safety quick probe
+on:
+  push:
+    branches: [codex/lumo-aaa-safe-visuals-2026-10-10]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import before real renderer test
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit > "$RUNNER_TEMP/import.log" 2>&1
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' "$RUNNER_TEMP/import.log"; then exit 1; fi
+      - name: Verify all five direct menu steps and Fold inspector bounds
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/menu-safe-area
+          python3 tools/run_godot_probe.py --log exports/menu-safe-area/menu-flow.log \
+            --timeout 300 --required '[KartMenuFlow] PASS: five touch steps;' -- \
+            xvfb-run -a -s '-screen 0 2500x2500x24' Godot_v4.6.3-stable_linux.x86_64 \
+            --path . --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://scripts/tests/kart_menu_flow_regression.gd
+          grep -F '[KartMenuFlow] PASS: direct selected Cup start inside compact Android safe insets' exports/menu-safe-area/menu-flow.log
+      - name: Save real UI proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-fold-menu-real-ui-proof
+          path: |
+            exports/menu-safe-area/
+            exports/holographic-proof/
+          retention-days: 21
