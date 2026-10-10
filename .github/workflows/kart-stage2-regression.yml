@@ -126,10 +126,17 @@ jobs:
             IFS=: read -r name evidence expected <<< "$case"
             dir="$RUNNER_TEMP/lumo-first-active/$name"
             mkdir -p "$dir"
+            set +e
             LUMO_QA_DIR="$dir" timeout 240s Godot_v4.6.3-stable_linux.x86_64 \
               --headless --audio-driver Dummy --path . \
               --script "res://scripts/tests/$name.gd" > "$dir/run.log" 2>&1
+            probe_exit=$?
+            set -e
             cat "$dir/run.log"
+            if [ "$probe_exit" -ne 0 ]; then
+              echo "First-active probe failure $name: exit=$probe_exit"
+              exit "$probe_exit"
+            fi
             if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:' "$dir/run.log"; then exit 1; fi
             python3 - "$dir/$evidence" "$expected" <<'PY'
           import json, sys
