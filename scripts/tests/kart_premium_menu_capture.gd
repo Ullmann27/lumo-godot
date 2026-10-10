@@ -1,6 +1,6 @@
 extends SceneTree
 ## Real renderer captures for the premium entry, no mocked text or 2D kart.
-const GAME_SCENE = preload("res://scenes/games/kart_island.tscn")
+## Do not preload the scene before the app autoload singletons exist.
 
 
 func _initialize() -> void:
@@ -16,7 +16,7 @@ func _settle(frames: int = 5) -> void:
 func _run() -> void:
 	var output := "res://exports/premium-menu"
 	DirAccess.make_dir_recursive_absolute(output)
-	var game = GAME_SCENE.instantiate()
+	var game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
 	game.lightweight = true
@@ -34,7 +34,7 @@ func _run() -> void:
 		assert(garage.title_label.text == "Dein nächstes Abenteuer")
 		assert(garage.step_buttons.size() == 5)
 		assert(garage.choices.get_child_count() == 1)
-		var cards := garage.choices.get_child(0)
+		var cards: GridContainer = garage.choices.get_child(0)
 		assert(cards is GridContainer)
 		assert(cards.columns == 1)
 		assert(cards.get_child_count() == 5)

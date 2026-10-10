@@ -527,7 +527,7 @@ func _apply_responsive_layout() -> void:
 			if card is Button:
 				var tiny: bool = window_size.y < 440
 				var height: float = (
-					(44 if tiny else 58) if short_landscape else ((68 if window_size.y < 850 else 82) if step == 0 else 74)
+					(44 if window_size.y < 520 else 58) if short_landscape else ((68 if window_size.y < 850 else 82) if step == 0 else 74)
 				)
 				if step == 2:
 					height = 74 if short_landscape else 118
