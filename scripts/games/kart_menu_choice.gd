@@ -8,6 +8,9 @@ var artwork: Texture2D
 var title_label: Label
 var caption_label: Label
 var icon_view: TextureRect
+var icon_plate: PanelContainer
+var icon_style: StyleBoxFlat
+var row: HBoxContainer
 var margin: MarginContainer
 
 
@@ -18,7 +21,7 @@ func _ready() -> void:
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(margin)
-	var row := HBoxContainer.new()
+	row = HBoxContainer.new()
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_theme_constant_override("separation", 14)
 	margin.add_child(row)
@@ -27,9 +30,9 @@ func _ready() -> void:
 	icon_view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon_view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var icon_plate := PanelContainer.new()
+	icon_plate = PanelContainer.new()
 	icon_plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var icon_style := StyleBoxFlat.new()
+	icon_style = StyleBoxFlat.new()
 	var mode_hues := {
 		"Einzelrennen": Color("25d9ec"),
 		"Zeitfahren": Color("2d91f2"),
@@ -68,19 +71,24 @@ func _ready() -> void:
 	apply_size(1.0, false)
 
 
-func apply_size(scale_factor: float, compact: bool) -> void:
+func apply_size(scale_factor: float, compact: bool, tight: bool = false) -> void:
 	if not is_instance_valid(title_label):
 		return
-	var icon_size: float = (28.0 if compact else 54.0) * scale_factor
+	# The icon+badge previously forced a ~90 px row even when the button was
+	# 31–50 px high. Children then painted over the next mode. Size the
+	# actual child controls rather than reducing only button.minimum_size.
+	var icon_size: float = (20.0 if compact else (31.0 if tight else 47.0)) * scale_factor
 	icon_view.custom_minimum_size = Vector2.ONE * icon_size
+	icon_style.set_content_margin_all(roundi((2 if compact else (3 if tight else 6)) * scale_factor))
+	row.add_theme_constant_override("separation", roundi((6 if compact else (8 if tight else 14)) * scale_factor))
 	for side in ["left", "right"]:
-		margin.add_theme_constant_override("margin_" + side, roundi(12 * scale_factor))
+		margin.add_theme_constant_override("margin_" + side, roundi((6 if compact else (8 if tight else 12)) * scale_factor))
 	for side in ["top", "bottom"]:
 		margin.add_theme_constant_override(
-			"margin_" + side, roundi((5 if compact else 9) * scale_factor)
+			"margin_" + side, roundi((0 if compact else (2 if tight else 7)) * scale_factor)
 		)
 	title_label.add_theme_font_size_override(
-		"font_size", roundi((14 if compact else 21) * scale_factor)
+		"font_size", roundi((12 if compact else (17 if tight else 21)) * scale_factor)
 	)
-	caption_label.add_theme_font_size_override("font_size", roundi(13 * scale_factor))
+	caption_label.add_theme_font_size_override("font_size", roundi((10 if tight else 13) * scale_factor))
 	caption_label.visible = not compact
