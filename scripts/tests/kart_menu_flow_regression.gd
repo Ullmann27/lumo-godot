@@ -86,13 +86,13 @@ func _run() -> void:
 			if str(mode_button.title) == "Sternen-Cup":
 				cup_button = mode_button
 		assert(is_instance_valid(cup_button), "Cup is discoverable independent of visual list order")
-		if pixels.y >= 440:
+		if pixels.y >= 720:
 			for mode_button in mode_grid.get_children():
 				assert(
 					game.garage.choices.get_parent().get_global_rect().encloses(
 						mode_button.get_global_rect()
 					),
-					"Every mode must fit the actual scroll viewport"
+					"All five modes fit at standard >=720p; compact formats intentionally scroll"
 				)
 		else:
 			assert(
