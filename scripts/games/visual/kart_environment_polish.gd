@@ -4,22 +4,37 @@ extends RefCounted
 ## SSR and SDFGI remain disabled pending a verified GPU performance budget.
 
 
+static func profile_for(method: String, low_detail: bool, mobile_platform: bool) -> Dictionary:
+	return {
+		"renderer": method,
+		"quality": "low" if low_detail else "full",
+		"ssao": method == "forward_plus" and not low_detail and not mobile_platform,
+		"ssr": false,
+		"sdfgi": false,
+		"ssil": false,
+		"glow": not low_detail,
+	}
+
+
 static func configure(environment: Environment, low_detail: bool) -> Dictionary:
-	var has_rendering_device: bool = RenderingServer.get_rendering_device() != null
-	var requested: String = str(ProjectSettings.get_setting("rendering/renderer/rendering_method", "gl_compatibility"))
-	var method: String = requested if has_rendering_device else "gl_compatibility"
-	var forward_plus: bool = has_rendering_device and method == "forward_plus" and not OS.has_feature("mobile")
+	# Project defaults can differ from --rendering-method or an Android override.
+	var profile := profile_for(
+		RenderingServer.get_current_rendering_method(), low_detail, OS.has_feature("mobile")
+	)
+	# Reset all unsupported/inherited effects when switching profiles, not only
+	# when enabling desktop effects. Reusing an Environment must be safe.
+	environment.ssao_enabled = profile.ssao
+	environment.ssr_enabled = false
+	environment.sdfgi_enabled = false
+	environment.ssil_enabled = false
+	environment.glow_enabled = profile.glow
 	if low_detail:
-		return {"renderer": method, "quality": "low", "ssao": false, "ssr": false}
+		return profile
 	# Keep original atmospheric colors; raise the HDR-only emission threshold.
-	environment.glow_enabled = true
 	environment.glow_hdr_threshold = 1.06
 	environment.glow_bloom = minf(environment.glow_bloom, 0.08)
-	if forward_plus:
+	if profile.ssao:
 		# SSAO is Forward+ only. Mobile and GL Compatibility use built-in shadows.
-		environment.ssao_enabled = true
 		environment.ssao_intensity = 0.62
 		environment.ssao_radius = 0.85
-		environment.ssr_enabled = false
-		environment.sdfgi_enabled = false
-	return {"renderer": method, "quality": "full", "ssao": forward_plus, "ssr": false}
+	return profile

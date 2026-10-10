@@ -1,0 +1,27 @@
+{
+  "camera_fov": 37.0,
+  "camera_position": "(3.2, 2.2, -4.5)",
+  "engine": "4.6.3-stable (official)",
+  "has_saved_race": false,
+  "image": "driver-1280x720.png",
+  "menu_step": 1,
+  "next_rect": "[P: (1023.0, 631.0), S: (240.0, 72.0)]",
+  "page_rect": "[P: (0.0, 0.0), S: (1280.0, 720.0)]",
+  "physical_android_device": false,
+  "pose_yaw": -0.25,
+  "reduced_motion": true,
+  "render_capture": true,
+  "renderer": "gl_compatibility",
+  "setup": {
+    "difficulty": "gemuetlich",
+    "driver": "fox",
+    "kart": "comet",
+    "mode": "race",
+    "track": "sonnenhafen"
+  },
+  "sha256": "b1d2350e39d2c87213ebe435fd63c666a4daf5d75222680044dcb12f377239e6",
+  "size": [
+    1280,
+    720
+  ]
+}

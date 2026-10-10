@@ -59,7 +59,7 @@ func _run() -> void:
 	var world := Node3D.new()
 	root.add_child(world)
 	var built: Dictionary = STAGE.build(world, Color("45d9ef"), false)
-	# The shared stage returns an unparented podium when it is hidden. This fixture owns it.
+	# A hidden podium is not allocated; the shared stage owns only visible props.
 	assert(built.podium == null)
 	camera = built.camera
 	camera.projection = Camera3D.PROJECTION_ORTHOGONAL

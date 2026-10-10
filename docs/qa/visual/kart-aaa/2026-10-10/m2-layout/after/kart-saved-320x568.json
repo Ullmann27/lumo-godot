@@ -1,0 +1,27 @@
+{
+  "camera_fov": 37.0,
+  "camera_position": "(3.2, 2.2, -4.5)",
+  "engine": "4.6.3-stable (official)",
+  "has_saved_race": true,
+  "image": "kart-saved-320x568.png",
+  "menu_step": 2,
+  "next_rect": "[P: (8.0, 516.0), S: (112.0, 44.0)]",
+  "page_rect": "[P: (0.0, 0.0), S: (320.0, 568.0)]",
+  "physical_android_device": false,
+  "pose_yaw": -0.25,
+  "reduced_motion": true,
+  "render_capture": true,
+  "renderer": "gl_compatibility",
+  "setup": {
+    "difficulty": "flott",
+    "driver": "fox",
+    "kart": "comet",
+    "mode": "cup",
+    "track": "zauberwald"
+  },
+  "sha256": "eb7d5973df7ebf1bdf5aeac89070796e2e51e91bedeb93a790e09e6605f5d300",
+  "size": [
+    320,
+    568
+  ]
+}

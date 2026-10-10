@@ -93,3 +93,53 @@ Sichtbare Restabweichungen: Gesicht und Karosserie sind noch nicht
 referenzidentisch, die Kopfzeile nimmt im kurzen Format zu viel Raum ein,
 echte Reflexionen/Materialtiefe fehlen gegenüber der Illustration.
 Der erste Patch ist eine überprüfbare Verbesserung, keine AAA-Abnahme.
+
+## M2: Fold-/Stage2-Restfehler gezielt schließen
+
+Der StartHero-Test klickte einen absichtlich ausgeblendeten Schnellstart und
+leitete Kartenindizes aus einer anderen Katalogreihenfolge ab. Er folgt jetzt
+dem einzigen goldenen Weiter-Knopf durch alle fünf echten Touch-Schritte;
+Moduskarten werden über ihren sichtbaren Titel gewählt. Ein Startsignal ist
+nur nach Schritt5 erlaubt. Gespeicherte Training-/Cup-Setups müssen Fahrer,
+Kart, Strecke und Tempo unverändert weitergeben.
+
+Zwei echte Layoutfehler wurden behoben:
+- Beim normalen Wechsel Schritt0→1 blieb `page_margin` auf einer alten,
+  überhöhten Containergröße. Ein Minimum-Size-Signal stellt die erreichbaren
+  Safe-Area-Grenzen wieder her; der Guard vermeidet eine Resize-Schleife.
+- Bei320×568 mit gespeichertem Rennen lag Weiter auf der Kartseite bei
+  `(8,547,148,56)`, unterhalb des Bildschirms; das Seitenminimum war611px.
+  Die bestehende44px-Kompaktregel gilt nun für alle Schritte, mit einzeiligem
+  bestehendem LUMO-KART-Schriftzug und2px-Sternenpanel-Rändern. Nur die
+  Einstiegsseite nutzt weiterhin den kleineren80px-Hero. Danach liegt Weiter
+  bei `(8,516,112,44)` und die Seite bleibt320×568.
+
+Echte Vorher-/Nachher-PNGs, unveränderte horizontale Vergleiche und
+SHA256/Viewport-/Setup-Metadaten:
+`docs/qa/visual/kart-aaa/2026-10-10/m2-layout/manifest.json`.
+Die Bilder zeigen dieselben Produktionsmenüseiten bei1280×720 und320×568;
+keine neuen Assets, keine Retusche, keine Geometrie-/Materialänderung.
+
+Lokale fokussierte Prüfung: gespeichert320×568 mit71 Checks grün;
+voller StartHero headless mit222 Checks grün; einmaliger echter GL-Lauf mit
+225 Checks,35 realen Weiter-Touches, fünf Viewports und beiden gespeicherten
+Journeys grün. Kein GDScript-/Engine-Fehler und keine RID-/Ressourcenmeldung
+im GL-Log. Beide strikten Workflow-Zähler wurden69→225 angeglichen; die
+StartHero-Zeitgrenze beträgt600s. Ein redundantes Screenshot-Warten entfällt,
+Touch-Prüfungen und `run_godot_probe.py`-Fehlerablehnung bleiben unverändert.
+
+Der übernommene Renderer-Profilfix liest den tatsächlichen RenderingServer
+statt des Projektdefaults und setzt nicht unterstützte/vererbte SSAO-/SSR-/
+SSIL-/SDFGI-Effekte beim LOW-/Mobilwechsel zurück. Zwölf Kombinationen plus
+Full→LOW→Full sind grün und werden zusammen mit Stage-Lifetime in Stage2
+abgesichert. Der veraltete Podium-Kommentar im Wangen-Capture ist korrigiert.
+
+Die zwei Ogg-Ressourcen beim abrupten Capture-Prozessende sind ein
+AudioServer-Abbau-Race, kein weiterer Produkt-RID-Leak. Die übernommenen
+beiden Menü-Capture-Fixes geben das Spiel frei und warten anschließend sechs
+Frames,0.25s und zwei Frames; die Fehlerprüfung wird nicht abgeschwächt.
+Die abgeschlossene Auditdiagnose wird nicht erneut ausgeführt.
+
+Abnahmegrenze: Funktionale Gates werden auf demselben Featurebranch-Commit
+verifiziert; Main übernimmt Bildprüfung. Keine APK-/Flutter-/neue Art-Arbeit,
+kein Main-Merge, Release oder Force-Push.

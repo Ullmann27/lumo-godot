@@ -72,5 +72,10 @@ func _run() -> void:
 	report.close()
 	game.queue_free()
 	await _settle(6)
+	# AudioServer retires a stopped Ogg playback on the mix thread and only
+	# releases it on a subsequent main-loop update (Godot issue 76745).
+	# This fixture quits the entire engine, unlike normal scene navigation.
+	await create_timer(0.25).timeout
+	await _settle(2)
 	print("[AAAMenuCapture] PASS: three fixed-state real menu captures, five visible modes")
 	quit(0)

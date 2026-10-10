@@ -64,5 +64,10 @@ func _run() -> void:
 			push_error("[KartPremiumMenu] Mode five clipped on %s: mode=%s clip=%s" % [dimensions, last_mode, clip_rect])
 			quit(3)
 			return
+	game.queue_free()
+	await _settle(6)
+	# Retire the garage music through both the audio mix and main-loop updates.
+	await create_timer(0.25).timeout
+	await _settle(2)
 	print("[KartPremiumMenu] PASS: four actual visual sizes; 5 modes; live kart; five steps; gold navigation")
 	quit(0)
