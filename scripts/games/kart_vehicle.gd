@@ -1646,15 +1646,33 @@ func _make_driver() -> void:
 	_fur(head, head_mesh, Vector3.ZERO, Color.WHITE if is_lumo else fur, 2900, 0.016, 715)
 	# The cheek mask is sculpted as two swept, tapered volumes, with a joined muzzle.
 	for side in [-1.0, 1.0]:
-		var cheek := _fur(head, _loft([Vector4(-0.15, 0.045, 0.035, -0.012), Vector4(-0.045, 0.145, 0.130, -0.010), Vector4(0.095, 0.16, 0.135, 0.005), Vector4(0.245, 0.11, 0.077, 0.023), Vector4(0.335, 0.010, 0.013, 0.050)], false, 32, 4), Vector3(side * 0.12, -0.16, -0.21), cream, 700, 0.028, 821 + int(side))
+		var cheek_mesh: Mesh = _loft(
+			[
+				Vector4(-0.15, 0.045, 0.035, -0.012),
+				Vector4(-0.045, 0.145, 0.130, -0.010),
+				Vector4(0.095, 0.16, 0.135, 0.005),
+				Vector4(0.245, 0.11, 0.077, 0.023),
+				Vector4(0.335, 0.010, 0.013, 0.050),
+			],
+			false, 32, 4
+		)
+		if is_lumo:
+			cheek_mesh = CHARACTER_FINISH.wrap_cheek(cheek_mesh, side)
+		var cheek := _fur(
+			head, cheek_mesh, Vector3(side * 0.12, -0.16, -0.21),
+			cream, 700, 0.028, 821 + int(side)
+		)
 		cheek.rotation.y = side * PI / 2
-		# The white cheek fringe wraps around the lower sides of the head and
-		# remains recognizable in the player's binding rear-camera reference.
-		_fur(head, _loft([Vector4(-0.285, 0.012, 0.018, 0), Vector4(-0.22, 0.10, 0.125, 0.018), Vector4(-0.16, 0.137, 0.153, 0.008), Vector4(-0.10, 0.067, 0.102, 0), Vector4(-0.075, 0.005, 0.010, 0)], true, 28, 4), Vector3(side * 0.315, 0, 0.044), cream, 330, 0.025, 531 + int(side))
-		# Purposeful tufts on cheeks and brow establish a fox silhouette at race distance.
-		for tuft in range(2):
-			var leaf := _mesh(head, _loft([Vector4(0, 0.05, 0.022, 0), Vector4(0.055, 0.055, 0.035, 0), Vector4(0.115, 0.002, 0.002, 0.018)], true, 16, 3), Vector3(side * (0.28 + tuft * 0.025), -0.11 - tuft * 0.06, -0.15), cream)
-			leaf.rotation.z = -side * 1.20
+		if not is_lumo:
+			# Other drivers retain their existing cheek anatomy. Lumo's continuous
+			# cream head and wrapped cheek now provide the side/rear fringe.
+			_fur(head, _loft([Vector4(-0.285, 0.012, 0.018, 0), Vector4(-0.22, 0.10, 0.125, 0.018), Vector4(-0.16, 0.137, 0.153, 0.008), Vector4(-0.10, 0.067, 0.102, 0), Vector4(-0.075, 0.005, 0.010, 0)], true, 28, 4), Vector3(side * 0.315, 0, 0.044), cream, 330, 0.025, 531 + int(side))
+		if not is_lumo:
+			# Lumo's wrapped cheek and its fur now carry the continuous silhouette.
+			# Keep the other drivers' original separate cheek tufts.
+			for tuft in range(2):
+				var leaf := _mesh(head, _loft([Vector4(0, 0.05, 0.022, 0), Vector4(0.055, 0.055, 0.035, 0), Vector4(0.115, 0.002, 0.002, 0.018)], true, 16, 3), Vector3(side * (0.28 + tuft * 0.025), -0.11 - tuft * 0.06, -0.15), cream)
+				leaf.rotation.z = -side * 1.20
 		_make_ear(side, fur, cream)
 		_make_eye(side, fur_shadow)
 		# Soft brow arc gives the neutral expression a curious, friendly shape.

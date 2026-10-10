@@ -108,6 +108,13 @@ static func coat(source: Mesh, orange: Color, cream: Color, region: String) -> A
 			var temple: float = smoothstep(0.22, 0.43, absf(point.x))
 			var crown: float = smoothstep(0.12, 0.38, point.y)
 			color = orange.lerp(Color("ca5725"), temple * 0.15 + crown * 0.12)
+			# The cream lower face belongs to the head surface itself. Separate
+			# front/rear cheek pads previously exposed an orange strip between them.
+			# Keep the forehead and back orange, matching the existing App Lumo.
+			var boundary: float = -0.098 + 0.05 * smoothstep(0.20, 0.40, absf(point.x))
+			var below: float = 1.0 - smoothstep(boundary - 0.018, boundary + 0.018, point.y)
+			var front: float = 1.0 - smoothstep(0.04, 0.18, point.z)
+			color = color.lerp(cream, below * front)
 		colors.append(color)
 	arrays[Mesh.ARRAY_COLOR] = colors
 	var result := ArrayMesh.new()
@@ -116,6 +123,38 @@ static func coat(source: Mesh, orange: Color, cream: Color, region: String) -> A
 		result.set_meta(
 			"far_geometry", coat(source.get_meta("far_geometry"), orange, cream, region)
 		)
+	return result
+
+
+static func wrap_cheek(source: Mesh, side: float) -> ArrayMesh:
+	# Retain the authored cheek width and height; sweep its outer half around
+	# the head instead of leaving a front-facing pad and a detached rear pad.
+	# The input loft runs along local Z and is mirrored by its existing joint.
+	var arrays: Array = source.surface_get_arrays(0)
+	var positions: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	for index in range(positions.size()):
+		var turn: float = smoothstep(0.015, 0.335, positions[index].z)
+		positions[index].x -= side * 0.20 * turn
+	var normals := PackedVector3Array()
+	normals.resize(positions.size())
+	normals.fill(Vector3.ZERO)
+	for triangle in range(0, indices.size(), 3):
+		var a: int = indices[triangle]
+		var b: int = indices[triangle + 1]
+		var c: int = indices[triangle + 2]
+		var normal: Vector3 = (positions[c] - positions[a]).cross(positions[b] - positions[a])
+		normals[a] += normal
+		normals[b] += normal
+		normals[c] += normal
+	for index in range(normals.size()):
+		normals[index] = normals[index].normalized()
+	arrays[Mesh.ARRAY_VERTEX] = positions
+	arrays[Mesh.ARRAY_NORMAL] = normals
+	var result := ArrayMesh.new()
+	result.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	if source.has_meta("far_geometry"):
+		result.set_meta("far_geometry", wrap_cheek(source.get_meta("far_geometry"), side))
 	return result
 
 

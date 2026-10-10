@@ -1,0 +1,75 @@
+name: Lumo face continuation and actual GL views
+
+on:
+  push:
+    branches: [codex/lumo-face-continuation-2026-10-10]
+    paths:
+      - scripts/games/kart_*.gd
+      - scripts/tests/kart_fox_cheek_*.gd
+      - .github/workflows/lumo-face-continuation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lumo-face-continuation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  real-face-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install exact Godot engine and virtual display
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri
+          mkdir -p "$RUNNER_TEMP/lumo-face-engine"
+          cd "$RUNNER_TEMP/lumo-face-engine"
+          curl -fL --retry 2 -o Godot_v4.6.3-stable_linux.x86_64.zip \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' \
+            a035258da32b77f966a5376f9fa29c30a6adde826a85ba918e1605bd1fc9823eba7d85f1dd5e748956bd2ba72827c0025ffa11bb82aec91128c407a2e723c99c \
+            Godot_v4.6.3-stable_linux.x86_64.zip | sha512sum -c -
+          unzip -q Godot_v4.6.3-stable_linux.x86_64.zip
+          chmod +x Godot_v4.6.3-stable_linux.x86_64
+          echo "$RUNNER_TEMP/lumo-face-engine" >> "$GITHUB_PATH"
+      - name: Import exact project source
+        run: |
+          set -euo pipefail
+          mkdir -p exports/fox-cheek-review
+          git rev-parse HEAD > exports/fox-cheek-review/source-sha.txt
+          python3 tools/run_godot_probe.py --timeout 240 --required 'Godot Engine v4.6.3' \
+            --log exports/fox-cheek-review/import.log -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit
+      - name: Capture unchanged viewport pixels in six authored poses
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 180 \
+            --log exports/fox-cheek-review/capture.log \
+            --required '[FoxCheekCapture] PASS: six fixed-pose native face views' -- \
+            xvfb-run -a -s '-screen 0 1200x1200x24' \
+            Godot_v4.6.3-stable_linux.x86_64 --path . \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://scripts/tests/kart_fox_cheek_capture.gd
+      - name: Verify first visible cream surface in high and low detail
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 180 \
+            --log exports/fox-cheek-review/cheek-surface.log \
+            --required '[FoxCheek] PASS:' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --audio-driver Dummy --script res://scripts/tests/kart_fox_cheek_regression.gd
+      - name: Preserve original renders and failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-face-native-${{ github.sha }}
+          path: exports/fox-cheek-review/
+          if-no-files-found: error
+          retention-days: 30
