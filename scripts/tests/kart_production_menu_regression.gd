@@ -96,6 +96,43 @@ func _run() -> void:
 		await _settle(12)
 		_check(is_equal_approx(root.get_node("MobileRuntime").get_ui_density(), density), "Density uses actual supplied scale")
 		var viewport: Rect2 = game.safe_ui.get_global_rect()
+		_check(not menu.preview_caption_panel.visible
+			or _dp(menu.preview_caption_panel, density).y < 48.0,
+			"Hero hint is a bounded single-line pill, never a column of letters")
+		var world_rect: Rect2 = menu.world_backdrop.get_global_rect()
+		_check(world_rect.position.distance_to(root.get_visible_rect().position) < 0.5
+			and world_rect.size.distance_to(root.get_visible_rect().size) < 0.5,
+			"Original world fills the viewport, not only SafeUI: " + str(pixels))
+		_check(menu.world_veil.get_global_rect().is_equal_approx(world_rect),
+			"Readability gradient covers exactly the same full-bleed area")
+		var art: AtlasTexture = menu.world_backdrop.texture as AtlasTexture
+		_check(art != null and art.filter_clip and art.region == Rect2(0, 0, 1066, 1904)
+			and art.atlas.resource_path == "res://assets/kart/menu/lumo-world.webp",
+			"Baked white edges excluded by sampling, original asset retained")
+		_check(menu.world_backdrop.mouse_filter == Control.MOUSE_FILTER_IGNORE,
+			"Full-bleed artwork never intercepts safe-area buttons")
+		_check(menu.stage_rings.size() == 3, "Three actual lightweight 3D light rings")
+		for ring in menu.stage_rings:
+			_check(ring.mesh.ring_segments == 6 and ring.mesh.outer_radius < 1.72,
+				"Stage geometry is bounded and mobile-conscious")
+		var hero_frame := Rect2(Vector2.ZERO, Vector2(menu.preview_viewport.size))
+		var stage_inside := true
+		for ring in menu.stage_rings:
+			for sample_index in range(32):
+				var angle := TAU * sample_index / 32.0
+				var radius: float = ring.mesh.outer_radius
+				var point: Vector3 = ring.to_global(Vector3(cos(angle) * radius, 0, sin(angle) * radius))
+				stage_inside = stage_inside and hero_frame.has_point(menu.preview_camera.unproject_position(point))
+		_check(stage_inside, "Complete actual 3D light stage inside camera " + str(pixels))
+		for rotor in menu.preview_kart.wheel_rotors:
+			var tyre: MeshInstance3D = rotor.get_child(0)
+			var tyre_inside := true
+			for surface in range(tyre.mesh.get_surface_count()):
+				var vertices: PackedVector3Array = tyre.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX]
+				for vertex in vertices:
+					tyre_inside = tyre_inside and hero_frame.has_point(
+						menu.preview_camera.unproject_position(tyre.to_global(vertex)))
+			_check(tyre_inside, "Actual tyre vertices remain in frame " + str(pixels))
 		for action in [menu.back_button, menu.next_button] + menu.step_buttons:
 			_check(viewport.encloses(action.get_global_rect()),
 				"Main action inside " + str(pixels) + " " + action.name + " " + str(action.get_global_rect()))
@@ -167,6 +204,7 @@ func _run() -> void:
 			"test_stars": 48, "seed": 1923,
 			"android_inset_fixture": sample.size() > 2,
 			"physical_android_device": false,
+			"preview_camera_fov": menu.preview_camera.fov,
 		})
 		print("[KartProductionMenu] CASE ", pixels, " density=", density, " checks=", checks, " failures=", failures)
 		FileAccess.open(output.path_join("menu-progress.json"), FileAccess.WRITE).store_string(
@@ -188,6 +226,13 @@ func _run() -> void:
 		for frame in range(28):
 			menu.preview_kart._process(0.10)
 			await _settle(1)
+			var actor = menu.preview_kart.lumo_animation.actor
+			for bone_name in ["Head", "Hand.L", "Hand.R"]:
+				var index: int = actor.skeleton.find_bone(bone_name)
+				var bone_point: Vector3 = actor.skeleton.to_global(actor.skeleton.get_bone_global_pose(index).origin)
+				_check(Rect2(Vector2.ZERO, Vector2(menu.preview_viewport.size)).has_point(
+					menu.preview_camera.unproject_position(bone_point)),
+					"Actual greeting joint stays in camera: " + bone_name)
 			_check(root.get_texture().get_image().save_png(
 				motion_output.path_join("wave-%03d.png" % frame)) == OK, "Actual animated menu frame")
 		_check(menu.preview_kart.lumo_animation.actor.current_behavior == "kart_seated",

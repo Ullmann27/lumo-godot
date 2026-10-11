@@ -28,7 +28,14 @@ func _run() -> void:
 	for id in expected:
 		boot._show_cover(id)
 		assert(title.text == expected[id])
-		assert(art.texture != null and art.texture.resource_path.begins_with("res://assets/"))
+		assert(art.texture != null)
+		var source_texture: Texture2D = art.texture.atlas if art.texture is AtlasTexture else art.texture
+		assert(source_texture.resource_path == boot.COVER_BY_SCENE[id],
+			"Every game retains its actual original illustration")
+		if id in ["kart", "jump"]:
+			assert(art.texture is AtlasTexture and art.texture.filter_clip
+				and art.texture.region == Rect2(0, 0, 1066, 1904),
+				"White source border is excluded without replacing the original")
 		assert(loading.indeterminate and not loading.show_percentage)
 		assert((top.get_theme_stylebox("panel") as StyleBoxFlat).border_color == Color("53ddfd"))
 	boot.free()

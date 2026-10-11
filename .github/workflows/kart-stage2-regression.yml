@@ -115,7 +115,7 @@ jobs:
           grep -F '[TrackContract]' "$RUNNER_TEMP/track-contract.log"
           grep -F 'bergwelt' "$RUNNER_TEMP/track-contract.log"
 
-      - name: Actual reference menu at nine density and safe-area configurations
+      - name: Actual reference menu at eleven density and safe-area configurations
         shell: bash
         run: |
           set -euo pipefail
@@ -132,6 +132,24 @@ jobs:
             --timeout 120 --required '[StartHero] PASS' -- \
             Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy \
             --path . --script res://scripts/tests/kart_start_hero_regression.gd
+
+      - name: Actual Next Level Fold menu and the existing greeting clip
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p exports/production-menu/gl exports/production-menu/motion
+          export XDG_DATA_HOME="$RUNNER_TEMP/lumo-next-level-gl-user"
+          python3 tools/run_godot_probe.py \
+            --log exports/production-menu/gl-menu.log \
+            --timeout 240 --required '[KartProductionMenu] PASS' -- \
+            xvfb-run -a -s '-screen 0 2400x1920x24' \
+            Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --path . \
+            --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_production_menu_regression.gd \
+            -- exports/production-menu/gl --only-case=4 \
+            --motion-output=exports/production-menu/motion
 
       - name: Optional stage ownership and renderer capability regressions
         shell: bash
@@ -546,5 +564,7 @@ jobs:
             exports/character-review/**
             exports/menu-safe-area/**
             exports/lumo-kart-production/**
+            exports/production-menu/**
+            exports/kart-loading/**
           if-no-files-found: warn
           retention-days: 14

@@ -16,6 +16,8 @@ var selected := false
 var selection_mark: Label
 var sheen: ColorRect
 var sheen_material: ShaderMaterial
+var reduced_motion := false
+var hover_tween: Tween
 
 
 func _ready() -> void:
@@ -29,18 +31,27 @@ func _ready() -> void:
 shader_type canvas_item;
 uniform vec2 card_size = vec2(300.0, 72.0);
 uniform float corner = 16.0;
+uniform float highlight = 0.0;
 void fragment() {
 	vec2 q = abs((UV - 0.5) * card_size) - card_size * 0.5 + vec2(corner);
 	float distance_to_edge = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - corner;
 	float rounded_mask = 1.0 - smoothstep(-0.5, 0.5, distance_to_edge);
-	float light = 0.15 * pow(1.0 - UV.y, 2.0) + 0.03 * (1.0 - UV.x);
+	float edge_light = 1.0 - smoothstep(0.0, 1.8, abs(distance_to_edge + 1.0));
+	float diagonal = 1.0 - smoothstep(0.0, 0.25, abs(UV.x * 0.5 + UV.y - 0.2));
+	float light = 0.16 * pow(1.0 - UV.y, 2.0) + 0.025 * (1.0 - UV.x)
+		+ highlight * (edge_light * 0.18 + diagonal * 0.11);
 	COLOR = vec4(0.78, 0.94, 1.0, light * rounded_mask);
 }
 """
 	sheen_material = ShaderMaterial.new()
 	sheen_material.shader = glass
 	sheen.material = sheen_material
+	sheen_material.set_shader_parameter("highlight", 0.8 if selected else 0.0)
 	add_child(sheen)
+	mouse_entered.connect(func(): _highlight(true))
+	mouse_exited.connect(func(): _highlight(false))
+	focus_entered.connect(func(): _highlight(true))
+	focus_exited.connect(func(): _highlight(false))
 	resized.connect(func(): sheen_material.set_shader_parameter("card_size", size))
 	margin = MarginContainer.new()
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -147,3 +158,14 @@ func apply_size(scale_factor: float, compact: bool, tight: bool = false) -> void
 	selection_mark.offset_top = 4 * scale_factor
 	selection_mark.offset_bottom = 23 * scale_factor
 	sheen_material.set_shader_parameter("corner", 16 * scale_factor)
+
+
+func _highlight(hovered: bool) -> void:
+	if is_instance_valid(hover_tween):
+		hover_tween.kill()
+	var target := 1.0 if hovered and not disabled else (0.8 if selected else 0.0)
+	if reduced_motion:
+		sheen_material.set_shader_parameter("highlight", target)
+	else:
+		hover_tween = create_tween()
+		hover_tween.tween_property(sheen_material, "shader_parameter/highlight", target, 0.16)
