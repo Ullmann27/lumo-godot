@@ -45,6 +45,7 @@ var footer: GridContainer
 var footer_spacer: Control
 var title_label: Label
 var subtitle: Label
+var progress_icon: Label
 var detail: Label
 var steps_label: Label
 var next_button: Button
@@ -136,6 +137,7 @@ func _ready() -> void:
 	reward_row.add_theme_constant_override("separation", 10)
 	progress_panel.add_child(reward_row)
 	var reward_icon := _label("★", 27, Color("ffe16b"))
+	progress_icon = reward_icon
 	reward_row.add_child(reward_icon)
 	progress_label = _label("", 17, Color("f6f9ff"))
 	progress_label.autowrap_mode = TextServer.AUTOWRAP_OFF
@@ -368,7 +370,9 @@ func _apply_responsive_layout() -> void:
 	setup_row.columns = 1 if portrait else 2
 	setup_left.custom_minimum_size.x = (
 		clampf(window_size.x * 0.35, 266.0, 420.0) if panoramic
-		else (175.0 if short_landscape else 0.0)
+		# Real Android density made the fixed 175dp column truncate mode
+		# names. Give readable cards room without hiding the live 3D hero.
+		else (clampf(window_size.x * 0.38, 175.0, 240.0) if short_landscape else 0.0)
 	) * ui_scale
 	setup_right.custom_minimum_size.x = (
 		clampf(window_size.x * 0.45, 280.0, 455.0) if panoramic
@@ -408,6 +412,7 @@ func _apply_responsive_layout() -> void:
 		_set_physical_minimum(tab, Vector2(0, 48), ui_scale)
 		_set_physical_font(tab, 14 if short_landscape else 17, ui_scale)
 	progress_label.visible = not small and (not short_landscape or compact_welcome)
+	progress_icon.visible = progress_label.visible
 	# Keep actual earned stars, but avoid a tall duplicate learning shortcut in
 	# the compact welcome. Spieleauswahl retains the existing return route.
 	learn_button.visible = not compact_welcome

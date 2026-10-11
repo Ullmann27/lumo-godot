@@ -73,6 +73,8 @@ func _run() -> void:
 		[Vector2i(640, 320), 1.0],
 		[Vector2i(1280, 720), 1.0, Rect2(16, 32, 16, 48)],
 		[Vector2i(640, 320), 1.0, Rect2(16, 32, 16, 48)],
+		[Vector2i(1920, 1080), 1.875, Rect2(0, 63, 72, 0)],
+		[Vector2i(1920, 1080), 2.75, Rect2(0, 63, 72, 0)],
 	]
 	for case in range(first_case, matrix.size()):
 		if only_case >= 0 and case != only_case:
@@ -100,6 +102,8 @@ func _run() -> void:
 			_check(_dp(action, density).x >= 47.8 and _dp(action, density).y >= 47.8,
 				"Main action at least 48dp: " + action.name + " " + str(pixels))
 		_check(not menu.quick_start_button.visible, "Exactly one main gold action")
+		_check(menu.progress_icon.visible == menu.progress_label.visible,
+			"Reward icon never appears as a clipped unlabelled star")
 		_check(viewport.encloses(menu.brand_wordmark.get_global_rect()), "Whole two-line wordmark stays inside")
 		_check(menu.brand_wordmark.get_script().resource_path == "res://scripts/games/kart_wordmark.gd",
 			"Reference wordmark uses native sharp lettering and flags, not emoji text")
@@ -118,6 +122,14 @@ func _run() -> void:
 			_check(_dp(card, density).y >= 47.8, "Selectable mode is never a 28px substitute")
 			_check(float(card.title_label.get_theme_font_size("font_size")) / ui_scale >= 15.5,
 				"Readable mode type at actual density")
+			var title_size: int = card.title_label.get_theme_font_size("font_size")
+			var title_font: Font = card.title_label.get_theme_font("font")
+			var full_width: float = title_font.get_string_size(
+				card.title_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, title_size).x
+			_check(card.title_label.size.x + 0.75 >= full_width,
+				"Complete mode name, not an ellipsis: " + card.title + " " + str(pixels)
+				+ " density=" + str(density) + " available=" + str(card.title_label.size.x)
+				+ " required=" + str(full_width))
 			scroll.ensure_control_visible(card)
 			await _settle(2)
 			# ScrollContainer uses integer offsets; at a stretched viewport the
