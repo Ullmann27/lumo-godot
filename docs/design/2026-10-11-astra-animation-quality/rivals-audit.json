@@ -1,0 +1,52 @@
+[
+  {
+    "id": "lion",
+    "name": "Löwe",
+    "runtimeReady": false,
+    "modelExists": false,
+    "model": "assets/characters/rivals/lion/driver.glb",
+    "referenceExists": true,
+    "rigStatus": "no imported model in repository",
+    "integrationStatus": "reference-only; existing procedural opponents remain"
+  },
+  {
+    "id": "owl",
+    "name": "Eule",
+    "runtimeReady": false,
+    "modelExists": false,
+    "model": "assets/characters/rivals/owl/driver.glb",
+    "referenceExists": true,
+    "rigStatus": "no imported model in repository",
+    "integrationStatus": "reference-only; existing procedural opponents remain"
+  },
+  {
+    "id": "rabbit",
+    "name": "Nova",
+    "runtimeReady": false,
+    "modelExists": false,
+    "model": "assets/characters/rivals/rabbit/driver.glb",
+    "referenceExists": true,
+    "rigStatus": "no imported model in repository",
+    "integrationStatus": "reference-only; existing procedural opponents remain"
+  },
+  {
+    "id": "squirrel",
+    "name": "Eichhörnchen",
+    "runtimeReady": false,
+    "modelExists": false,
+    "model": "assets/characters/rivals/squirrel/driver.glb",
+    "referenceExists": true,
+    "rigStatus": "no imported model in repository",
+    "integrationStatus": "reference-only; existing procedural opponents remain"
+  },
+  {
+    "id": "turtle",
+    "name": "Schildkröte",
+    "runtimeReady": false,
+    "modelExists": false,
+    "model": "assets/characters/rivals/turtle/driver.glb",
+    "referenceExists": true,
+    "rigStatus": "no imported model in repository",
+    "integrationStatus": "reference-only; existing procedural opponents remain"
+  }
+]

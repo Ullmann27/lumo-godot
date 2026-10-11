@@ -1,0 +1,48 @@
+{
+	"actor_batches": [
+		{
+			"bones": 65,
+			"instances": 1,
+			"max_ms": 0.778,
+			"mean_ms": 0.00954999999999999,
+			"p95_ms": 0.007,
+			"samples": 240,
+			"triangles_if_all_drawn": 30000
+		},
+		{
+			"bones": 390,
+			"instances": 6,
+			"max_ms": 30.583,
+			"mean_ms": 0.165766666666667,
+			"p95_ms": 0.075,
+			"samples": 240,
+			"triangles_if_all_drawn": 180000
+		}
+	],
+	"android_test": false,
+	"checks": 165,
+	"display": "headless",
+	"failures": 0,
+	"frames_per_sample": 1,
+	"godot": "4.6.3-stable (official)",
+	"gpu_fps_measured": false,
+	"load_ms": [
+		28.322,
+		0.346,
+		0.247,
+		0.171,
+		0.157,
+		0.18
+	],
+	"one_kart_visual_ik": {
+		"max_ms": 0.23,
+		"mean_ms": 0.0659416666666667,
+		"p95_ms": 0.083,
+		"samples": 120
+	},
+	"platform": "Linux",
+	"pose_step_seconds": 0.0333333333333333,
+	"scope": "CPU AnimationPlayer plus bone update; excludes GPU skinning, draw and full app",
+	"static_memory_bytes_at_peak_sample": 44988163,
+	"worst_contact_mm": 1.14981480874121
+}

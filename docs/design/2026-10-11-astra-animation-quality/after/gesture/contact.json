@@ -1,0 +1,27 @@
+{
+	"checks": 200,
+	"failures": 0,
+	"samples": [
+		{
+			"case": "finish-nod-60",
+			"left_mm": 1.03187409695238,
+			"right_mm": 1.09685899224132
+		},
+		{
+			"case": "menu-nod-60",
+			"left_mm": 1.06220273301005,
+			"right_mm": 1.09685899224132
+		},
+		{
+			"case": "finish-nod-120",
+			"left_mm": 1.10916246194392,
+			"right_mm": 1.14605738781393
+		},
+		{
+			"case": "menu-nod-120",
+			"left_mm": 1.04252283927053,
+			"right_mm": 1.14605738781393
+		}
+	],
+	"scope": "Desktop Godot fixture, 60/120 Hz input steps; not measured FPS"
+}

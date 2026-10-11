@@ -133,7 +133,10 @@ func advance_tick(delta: float) -> void:
 	if _tick < 1.0 / 30.0:
 		# Bone clips update at 30 Hz, but wheel contact follows every visual
 		# frame. Otherwise a 60 Hz steering change separates hand and rim.
-		if not victory:
+		# Nodding keeps both hands on the wheel. It uses the same two-hand
+		# constraint between bone ticks as in advance_visual(); otherwise the
+		# right hand remains at the previous steering angle for a whole frame.
+		if not victory or celebration_clip == "agree_nod":
 			maximum_contact_error = 0.0
 			_follow_wheel_hand(0)
 			_follow_wheel_hand(1)

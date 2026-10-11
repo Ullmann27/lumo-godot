@@ -19,6 +19,7 @@ on:
       - scripts/tests/kart_*.gd
       - scripts/tests/lumo_*animation*.gd
       - scripts/tests/lumo_kart_production_regression.gd
+      - scripts/tests/lumo_gesture_contact_regression.gd
       - tools/lumo_animation/**
       - docs/track_expansion/**
   workflow_dispatch:
@@ -76,6 +77,12 @@ jobs:
           set -euo pipefail
           mkdir -p exports/lumo-kart-production
           export XDG_DATA_HOME="$RUNNER_TEMP/lumo-kart-production-user"
+          python3 tools/run_godot_probe.py \
+            --log exports/lumo-kart-production/gesture-contact.log \
+            --timeout 90 --required '[LumoGestureContact] PASS' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy \
+            --path . --script res://scripts/tests/lumo_gesture_contact_regression.gd \
+            -- exports/lumo-kart-production/gesture-contact
           python3 tools/run_godot_probe.py \
             --log exports/lumo-kart-production/production.log \
             --timeout 120 --required '[LumoKartProduction] PASS' -- \
