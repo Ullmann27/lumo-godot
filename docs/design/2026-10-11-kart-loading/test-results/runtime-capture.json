@@ -1,0 +1,320 @@
+{
+	"actual_engine_progress": true,
+	"actual_state_events": [
+		{
+			"phase": "loading",
+			"time_ms": 539
+		},
+		{
+			"phase": "ready",
+			"time_ms": 2771
+		},
+		{
+			"phase": "transitioning",
+			"time_ms": 2771
+		}
+	],
+	"frame_count": 48,
+	"normal_auto_begin": true,
+	"observations": [
+		{
+			"engine_progress": 0.0,
+			"frame": 0,
+			"phase": "loading",
+			"scene": "res://scenes/app/boot.tscn",
+			"time_ms": 696
+		},
+		{
+			"engine_progress": 0.5,
+			"frame": 1,
+			"phase": "loading",
+			"scene": "res://scenes/app/boot.tscn",
+			"time_ms": 2301
+		},
+		{
+			"engine_progress": 1.0,
+			"frame": 2,
+			"phase": "transitioning",
+			"scene": "res://scenes/app/boot.tscn",
+			"time_ms": 4629
+		},
+		{
+			"engine_progress": 1.0,
+			"frame": 3,
+			"phase": "transitioning",
+			"scene": "res://scenes/app/boot.tscn",
+			"time_ms": 6275
+		},
+		{
+			"engine_progress": 1.0,
+			"frame": 4,
+			"phase": "transitioning",
+			"scene": "scene_tree_handoff",
+			"time_ms": 6857
+		},
+		{
+			"frame": 5,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 9637
+		},
+		{
+			"frame": 6,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 11203
+		},
+		{
+			"frame": 7,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 12831
+		},
+		{
+			"frame": 8,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 14227
+		},
+		{
+			"frame": 9,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 15715
+		},
+		{
+			"frame": 10,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 16995
+		},
+		{
+			"frame": 11,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 18267
+		},
+		{
+			"frame": 12,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 19579
+		},
+		{
+			"frame": 13,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 20639
+		},
+		{
+			"frame": 14,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 21639
+		},
+		{
+			"frame": 15,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 22667
+		},
+		{
+			"frame": 16,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 23670
+		},
+		{
+			"frame": 17,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 24693
+		},
+		{
+			"frame": 18,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 25689
+		},
+		{
+			"frame": 19,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 26707
+		},
+		{
+			"frame": 20,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 27713
+		},
+		{
+			"frame": 21,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 28759
+		},
+		{
+			"frame": 22,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 29767
+		},
+		{
+			"frame": 23,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 30792
+		},
+		{
+			"frame": 24,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 31793
+		},
+		{
+			"frame": 25,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 32822
+		},
+		{
+			"frame": 26,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 33834
+		},
+		{
+			"frame": 27,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 34840
+		},
+		{
+			"frame": 28,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 35850
+		},
+		{
+			"frame": 29,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 36848
+		},
+		{
+			"frame": 30,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 37874
+		},
+		{
+			"frame": 31,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 38870
+		},
+		{
+			"frame": 32,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 39885
+		},
+		{
+			"frame": 33,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 40881
+		},
+		{
+			"frame": 34,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 41891
+		},
+		{
+			"frame": 35,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 42891
+		},
+		{
+			"frame": 36,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 43907
+		},
+		{
+			"frame": 37,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 44903
+		},
+		{
+			"frame": 38,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 45924
+		},
+		{
+			"frame": 39,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 46919
+		},
+		{
+			"frame": 40,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 47917
+		},
+		{
+			"frame": 41,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 48937
+		},
+		{
+			"frame": 42,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 49951
+		},
+		{
+			"frame": 43,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 50964
+		},
+		{
+			"frame": 44,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 51959
+		},
+		{
+			"frame": 45,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 52985
+		},
+		{
+			"frame": 46,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 53983
+		},
+		{
+			"frame": 47,
+			"menu_active": true,
+			"scene": "res://scenes/games/kart_island.tscn",
+			"time_ms": 55000
+		}
+	],
+	"physical_android_device": false,
+	"ready_state_held": false,
+	"real_godot_frames": true,
+	"saw_loading": true,
+	"saw_menu": true,
+	"saw_second_intro": false
+}

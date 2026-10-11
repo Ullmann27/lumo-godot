@@ -547,6 +547,8 @@ func _intro_wanted() -> bool:
 		return false
 	if intro_mode == "force":
 		return true
+	if bool(SceneRouter.launch_options.get("kartEntryPrepared", false)):
+		return false
 	# Automatisierte Szenenprüfungen starten mit --script und erwarten das Menü sofort.
 	return not OS.get_cmdline_args().has("--script")
 

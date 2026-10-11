@@ -8,6 +8,8 @@ on:
       - assets/characters/lumo_animated/**
       - assets/kart/menu/**
       - scripts/app/mobile_runtime.gd
+      - scripts/app/app_boot.gd
+      - scripts/app/scene_router.gd
       - scripts/characters/lumo/**
       - scripts/games/kart_*.gd
       - scripts/games/visual/**
@@ -170,6 +172,30 @@ jobs:
           cat "$RUNNER_TEMP/game-entry.log"
           if grep -E 'SCRIPT ERROR:|Assertion failed|Parse Error:|ERROR: Failed to load' "$RUNNER_TEMP/game-entry.log"; then exit 1; fi
           grep -F '[KartEntry] PASS:' "$RUNNER_TEMP/game-entry.log"
+
+      - name: Actual threaded Kart loading, timeout, Retry and loaded-scene navigation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/kart-loading
+          export XDG_DATA_HOME="$RUNNER_TEMP/lumo-kart-loading-user"
+          python3 tools/run_godot_probe.py \
+            --log exports/kart-loading/loading.log \
+            --timeout 120 --required '[KartLoading] PASS' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy \
+            --path . --script res://scripts/tests/kart_loading_regression.gd \
+            -- exports/kart-loading
+          cp scripts/tests/kart_loading_regression.gd \
+            "$RUNNER_TEMP/lumo-kart-packed-runtime/loading_probe.gd"
+          export XDG_DATA_HOME="$RUNNER_TEMP/lumo-kart-loading-packed-user"
+          python3 tools/run_godot_probe.py \
+            --log exports/kart-loading/packed-loading.log \
+            --timeout 120 --required '[KartLoading] PASS' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy \
+            --path "$RUNNER_TEMP/lumo-kart-packed-runtime" \
+            --main-pack "$RUNNER_TEMP/lumo-kart-production.pck" \
+            --script "$RUNNER_TEMP/lumo-kart-packed-runtime/loading_probe.gd" \
+            -- exports/kart-loading/packed
 
       - name: Kart physics regression
         shell: bash
