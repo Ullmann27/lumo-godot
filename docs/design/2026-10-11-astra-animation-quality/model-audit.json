@@ -1,0 +1,81 @@
+{
+  "sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+  "bytes": 5156596,
+  "meshes": 1,
+  "triangles": 30000,
+  "vertices": 21659,
+  "skins": 1,
+  "bones": 65,
+  "animations": [
+    {
+      "name": "agree_nod",
+      "channels": 195,
+      "unique_accessors": 170
+    },
+    {
+      "name": "celebrate",
+      "channels": 195,
+      "unique_accessors": 174
+    },
+    {
+      "name": "greeting_wave",
+      "channels": 195,
+      "unique_accessors": 170
+    },
+    {
+      "name": "idle",
+      "channels": 195,
+      "unique_accessors": 170
+    },
+    {
+      "name": "kart_jump",
+      "channels": 195,
+      "unique_accessors": 172
+    },
+    {
+      "name": "kart_seated",
+      "channels": 195,
+      "unique_accessors": 171
+    },
+    {
+      "name": "kart_steer_left",
+      "channels": 195,
+      "unique_accessors": 175
+    },
+    {
+      "name": "kart_steer_right",
+      "channels": 195,
+      "unique_accessors": 173
+    },
+    {
+      "name": "point_portal",
+      "channels": 195,
+      "unique_accessors": 172
+    }
+  ],
+  "images": [
+    {
+      "mime": "image/png",
+      "bytes": 1137366,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "mime": "image/png",
+      "bytes": 1475490,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "mime": "image/png",
+      "bytes": 922619,
+      "width": 1024,
+      "height": 1024
+    }
+  ],
+  "animation_accessor_buffer_bytes": 40776,
+  "animation_accessor_buffer_scope": "Exported binary tracks only, not total runtime object memory",
+  "max_skin_influences": 4,
+  "facial_morphs": false,
+  "android_measured": false
+}
