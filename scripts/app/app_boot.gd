@@ -4,6 +4,7 @@ extends Node
 
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const WORDMARK = preload("res://scripts/games/kart_wordmark.gd")
+const MENU_ART = preload("res://scripts/games/kart_menu_art.gd")
 const LUMO_MODEL := "res://assets/characters/lumo_animated/Lumo-Animated-Mobile.glb"
 const LOAD_TIMEOUT_SECONDS := 30.0
 const COVER_BY_SCENE: Dictionary = {
@@ -312,7 +313,7 @@ func _notification(what: int) -> void:
 func _show_cover(scene_id: String) -> void:
 	var cover: TextureRect = $Layer/Background
 	var path: String = str(COVER_BY_SCENE.get(scene_id, "res://assets/kart/menu/lumo-world.webp"))
-	cover.texture = load(path) as Texture2D
+	cover.texture = MENU_ART.world_texture() if path == MENU_ART.WORLD.resource_path else load(path) as Texture2D
 	var title: Label = $Layer/Title
 	title.text = str(TITLE_BY_SCENE.get(scene_id, "LUMO SPIELEWELT"))
 	title.add_theme_font_override("font", UI.HEADING)

@@ -1,0 +1,79 @@
+{
+  "branch": "computer/lumo-next-level-menu-2026-10-11",
+  "base_commit": "7cb03702d98578faa77f13ab02daf392af051dad",
+  "source_sha256": {
+    "scripts/games/kart_garage_menu.gd": "9048362740a42c218ac5d49895a19bab244faab7135208ef45f3d66c4eedcfff",
+    "scripts/games/kart_menu_choice.gd": "aa6011854be1588a4e206c9bf6c55b52344f96beeca455679311d8f506dff0ca",
+    "scripts/games/kart_menu_art.gd": "6d80186b511708224da8f861fac88c6319cdabf920001956a540cb86f053a3ee",
+    "assets/shaders/kart_menu_platform.gdshader": "9aa0257be5da6d6269e791e1e9f2677cce35e8dbd0849a28245ae0afd4f97edf",
+    "scripts/app/app_boot.gd": "7dbf584fae7271da748841602d175c1287361f855ac2e56f8769dfed049e00ab",
+    "scripts/tests/kart_production_menu_regression.gd": "7a10e17f17717ea89f5696bffbd7fa00b3e848518b2c4ac2231495fd175e6675",
+    "scripts/tests/kart_entry_artwork_regression.gd": "f9bb6005005a10a978da76f376313be185a28833758929d01152259dd1ebdb2f"
+  },
+  "actual_runtime": true,
+  "physical_android": false,
+  "renderer": "Godot 4.6.3 gl_compatibility, Mesa llvmpipe",
+  "test_stars": 48,
+  "original_reference_is_not_runtime": true,
+  "video_frame_count": 28,
+  "video_sample_step_seconds": 0.1,
+  "video_fps_is_not_hardware_benchmark": true,
+  "files": {
+    "after/menu-2316x904-density-2.50.png": {
+      "bytes": 2008663,
+      "sha256": "73b5232559b4c6149c4c0d2c2e02dba3ca51b5a9f35b2e53c6d5efcfd81d424c"
+    },
+    "after/menu-640x320-density-1.00-safe-area.png": {
+      "bytes": 348854,
+      "sha256": "4e6a2c521312ba20931cfedac1ac93cd9a82bf8d61c72214986e06cb5c04205b"
+    },
+    "after/menu-360x800-density-1.00.png": {
+      "bytes": 415424,
+      "sha256": "8b850de62241330f8e3738c9babbaf1dc26e3a276b00bd92eeb0ec54b7c928f7"
+    },
+    "after/menu-1280x720-density-1.00-safe-area.png": {
+      "bytes": 1248777,
+      "sha256": "c4fbef450939a491ded1871a95adfc3f1db3777d15d285683b909d41ea3197ac"
+    },
+    "after/menu-1920x1080-density-2.75-safe-area.png": {
+      "bytes": 2205216,
+      "sha256": "d6ceb8b2554918125f2643069f282e76823f695e3a636ad31047cf46439202a8"
+    },
+    "after/menu-2176x1812-density-2.25.png": {
+      "bytes": 3823285,
+      "sha256": "875436beef5b9aac5ce1493ec465393a6eac71c756d4e642a9ffcae8776d3598"
+    },
+    "after/menu-640x360-density-1.00.png": {
+      "bytes": 394632,
+      "sha256": "752b125ffe3af0ea154dac34de9d88d89bd23318e204b1d227c24acf2a56a666"
+    },
+    "after/menu-1920x1080-density-1.88-safe-area.png": {
+      "bytes": 2356608,
+      "sha256": "334e2311cfd1d4e97bc0b0930b4e6e73dff47a909ad712db23a8a7ff666eb85c"
+    },
+    "after/menu-1200x896-density-1.00.png": {
+      "bytes": 1475030,
+      "sha256": "d34938441a74237c419df3c0a798515060732e55e2e3491cc56a731c1c301c8a"
+    },
+    "after/menu-640x320-density-1.00.png": {
+      "bytes": 344720,
+      "sha256": "e34497481c039f6df925805dd2095a7e1babf45d75896a4b3f55c2b79f3c2408"
+    },
+    "after/menu-1280x720-density-1.00.png": {
+      "bytes": 1234038,
+      "sha256": "da6c34f2f902fb0ec5c97f118015c62043f3497c38820009572ce4af4a0ddcf1"
+    },
+    "before/menu-2176x1812-density-2.25.png": {
+      "bytes": 3918964,
+      "sha256": "2c9aa92c4a95c6d52398ca78d7677f15bc2b53b16e90b66f1710b12d25edaf04"
+    },
+    "deliverables/Lumo-Kart-Vorher-Originalreferenz-Nachher.png": {
+      "bytes": 2283451,
+      "sha256": "327438d47aa85a34ce3c3479d1076171a43aabd372528e7858222005c1069a60"
+    },
+    "deliverables/Lumo-Kart-Menue-echtes-Winken-Next-Level.mp4": {
+      "bytes": 269511,
+      "sha256": "92dd3e1b92977311348ac34f3c972b7b96df2ca7dadba361047205c1837c78e1"
+    }
+  }
+}

@@ -1,5 +1,42 @@
 # Lumo Produktion: Fortschritt und sichere Fortsetzung
 
+## Aktuell: Operation Next Level, Menükorrektur
+
+Fortsetzungsbranch `computer/lumo-next-level-menu-2026-10-11` auf
+`7cb03702d98578faa77f13ab02daf392af051dad`, ohne Main-Merge.
+Der aktuelle Repository-/PR-Abgleich ist erfolgt; die vorhandene 1928-APK
+und ihr Godot-Produktpin `6063f56` werden nicht mit einem neuen Build verwechselt.
+Echte Fold-Ausgangsaufnahme: 2176 × 1812 / Dichte 2,25,
+Linux/Godot 4.6.3 GL, 52 Prüfungen / 0 Fehler vor den neuen Änderungen.
+
+Der helle rechte/untere Rand liegt nachgewiesen bereits in der originalen
+Welttextur. Die begrenzte Reparatur schneidet ihn ausschließlich beim Sampling
+ab und füllt den Hintergrund außerhalb der sicheren Bedienränder weiter.
+Originaldatei, Rig, Sprachprovider, Profile und Fahrphysik bleiben unverändert.
+Neue transparente 3D-Bühne, begrenzte Leuchtringe, weichere Vorschau-Reflexe,
+lesbarer Hinweis und native Karten-Lichtkante sind in Bearbeitung.
+Details und offene Abnahme:
+`docs/design/2026-10-11-next-level-menu/README.md`.
+
+Neue Nutzerwünsche sind ausdrücklich nach dieser laufenden Kart-Etappe
+eingeordnet: Formen, Zahlen bis 10 und Lumo Cards. `50723.png` ist die
+Cards-Zielreferenz, `51012.jpg` der aktuelle Altstand. Noch keine Umsetzung
+dieser Flutter-Nacharbeiten und noch kein neuer Android-Build.
+
+**Lokaler Menü-Meilenstein:** 11 echte GL-Größen-/Dichte-/Randfälle inklusive
+Begrüßungssequenz: 752 Prüfungen / 0 Fehler, Orphan-Baseline 0 → 0.
+Die 2D-Originalwelt, echte 3D-Figur, transparente Bühne, Sampling-Grenze,
+ruhiger Kartenfokus, goldene Button-Oberfläche und Bildrahmung sind geprüft.
+Echter Touch-Menüweg in drei Formaten startet Cup mit fünf Gegnern.
+Die physische Fold-Abnahme, weitergehende AAA-Grafik und neue APK bleiben offen.
+
+**Neueste Ergänzung:** Auch die übrigen Aufgaben sollen im vorhandenen
+Plus-bis-10-Mathe-Abenteuer-Stil modernisiert werden. Die neue Aufnahme
+`51024.jpg` ist die tatsächlich sichtbare Zielgrundlage, nicht eine neu
+erfundene Konzeptgrafik. Minus, Zahlen und Formen zuerst, anschließend die
+übrigen vorhandenen Module und Lumo Cards. Aufgabenbewertung und Daten bleiben
+unverändert; keine parallele Designbibliothek.
+
 ## Aktueller separater QA-Nachtrag
 
 Der Produktpin `6063f56fd4ff13afef61509f52d1d4fdab012654` aus [PR #54](https://github.com/Ullmann27/lumo-godot/pull/54) hat den [Stage-2-Lauf 38097533036](https://github.com/Ullmann27/lumo-godot/actions/runs/38097533036) erfolgreich abgeschlossen. Beim anschließenden vollständigen Log-Audit wurde dennoch ein echtes Fixture-Leck im Sky-Capture gefunden: ein unowned temporärer Kart-Controller hielt vier Skriptressourcen bis Exit. Dieses Ergebnis wird nicht als warnungsfrei bezeichnet.
