@@ -1,5 +1,13 @@
 # Lumo Produktion: Fortschritt und sichere Fortsetzung
 
+## Aktueller separater QA-Nachtrag
+
+Der Produktpin `6063f56fd4ff13afef61509f52d1d4fdab012654` aus [PR #54](https://github.com/Ullmann27/lumo-godot/pull/54) hat den [Stage-2-Lauf 38097533036](https://github.com/Ullmann27/lumo-godot/actions/runs/38097533036) erfolgreich abgeschlossen. Beim anschließenden vollständigen Log-Audit wurde dennoch ein echtes Fixture-Leck im Sky-Capture gefunden: ein unowned temporärer Kart-Controller hielt vier Skriptressourcen bis Exit. Dieses Ergebnis wird nicht als warnungsfrei bezeichnet.
+
+Der eigene Branch `computer/lumo-kart-stage2-fixture-cleanup-2026-10-11` repariert ausschließlich diese Testobjekt-Lebensdauer und schließt die CI-Fehlerausgabe-Lücke. Ein tatsächlicher GL-Vorher-/Nachherlauf bestätigt acht erhaltene Ansichten, fünf tatsächliche Prismen, Orphan-Baseline `0 → 0` und sauberen Exit nach der Reparatur. Details stehen in `docs/design/2026-10-11-kart-loading/SKY_CAPTURE_LIFETIME_FIX.md`.
+
+Die tatsächlich gebaute und unabhängig lokal verifizierte ARM64-APK aus [Flutter-Lauf 38097768063](https://github.com/Ullmann27/lumo-lernen/actions/runs/38097768063) verwendet weiterhin den unveränderten Produktpin `6063f56` und Flutter-Quelle `8ba6b1fc9791ede5977d7b624fe692405fd44277`: Version `0.12.21+1928`, 167.153.075 Bytes, SHA-256 `1eae04ebaba428f70c1bc35651658edd049ace96538a982e6a44075eda3cf16a`, unveränderte Signatur/Paketkennung und tatsächliche ABI-/16-KiB-/PCK-Prüfung. Die komplette Flutter-Suite bestand erneut mit 921 erfolgreichen und 27 übersprungenen Tests; 20 bestehende Analysehinweise bleiben. Android-Kart-/Fold-Laufzeitabnahme zum Zeitpunkt dieses Nachtrags noch aktiv, nicht als fertig bezeichnet.
+
 Stand: 11. Oktober 2026. Der neue Masterauftrag wird in der vorgegebenen Reihenfolge bearbeitet. Die neu bestätigte Originalreferenz `50665.jpg` ergänzt die Moduswahl `50666.gif`. Fertige Modellimporte werden nicht mit einer ausgelieferten App oder einer akzeptierten visuellen Oberfläche gleichgesetzt.
 
 ## Ausgangsstand und Arbeitsgrenzen
