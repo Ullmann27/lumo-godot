@@ -59,7 +59,8 @@ func _run() -> void:
 	actor.player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 	_check(actor.skeleton.get_bone_count() == 65, "Real skeleton required")
 	var head_id: int = actor.skeleton.find_bone("Head")
-	_check(head_id >= 0 and actor.skeleton.find_bone("Hand.R") >= 0, "Semantic bones must survive export")
+	_check(head_id >= 0 and actor.skeleton.find_bone("Hand.R") >= 0,
+		"Semantic bones must survive export")
 	for clip in ACTOR.CLIPS:
 		var hand_id: int = actor.skeleton.find_bone("Hand.L" if clip == "point_portal" else "Hand.R")
 		actor.player.play(clip, 0)
@@ -75,8 +76,25 @@ func _run() -> void:
 		if clip in ["greeting_wave", "celebrate", "point_portal"]:
 			_check(start.origin.distance_to(end.origin) > 0.06, "A real hand moves: " + clip)
 		if DisplayServer.get_name() != "headless":
-			_check(root.get_texture().get_image().save_png(output.path_join(clip + ".png")) == OK, "Capture write")
+			_check(root.get_texture().get_image().save_png(output.path_join(clip + ".png")) == OK,
+				"Capture write")
 		print("[LumoRig] actual animation=", clip, " duration=", animation.length)
+	# Inspect the same existing mesh in four directions, at one fixed idle pose.
+	if DisplayServer.get_name() != "headless":
+		actor.player.play("idle", 0)
+		actor.player.seek(0.5, true)
+		actor.skeleton.force_update_all_bone_transforms()
+		for view in [
+			["front", Vector3(0, 1.0, 4)],
+			["side", Vector3(4, 1.0, 0)],
+			["back", Vector3(0, 1.0, -4)],
+			["three-quarter", Vector3(3, 1.0, 3)],
+		]:
+			camera.look_at_from_position(view[1], Vector3(0, 0.88, 0))
+			await _settle()
+			_check(root.get_texture().get_image().save_png(
+				output.path_join("view-" + view[0] + ".png")) == OK, "Turnaround capture")
+		camera.look_at_from_position(Vector3(0, 1.0, 4), Vector3(0, 0.88, 0))
 	if args.has("--video") and DisplayServer.get_name() != "headless":
 		var sequence := 0
 		for clip in ["idle", "greeting_wave", "celebrate"]:
@@ -109,5 +127,6 @@ func _run() -> void:
 		Node.print_orphan_nodes()
 	_check(orphans == baseline, "No orphan renderer nodes")
 	if failures == 0:
-		print("[LumoRig] PASS checks=", checks, " real exported rig and clips; physical Android not tested")
+		print("[LumoRig] PASS checks=", checks,
+			" real exported rig and clips; physical Android not tested")
 	quit(0 if failures == 0 else 1)
