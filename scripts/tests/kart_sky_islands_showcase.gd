@@ -9,6 +9,7 @@ var shots: Array = []
 var index: int = 0
 var frame_index: int = 0
 var out_dir: String = "res://exports/sky-islands"
+var factory_orphan_baseline: int = 0
 
 
 func _initialize() -> void:
@@ -38,6 +39,7 @@ func _setup() -> void:
 	world.add_child(kart)
 	kart.configure("fox", Color("3586bc"), "comet")
 	kart.set_process(false)
+	factory_orphan_baseline = int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))
 	var item_preview: Node = load("res://scripts/games/kart_island.gd").new()
 	item_preview.set("world", world)
 	var item_root := Node3D.new()
@@ -55,6 +57,20 @@ func _setup() -> void:
 		item_preview.call("_item_box", float(entry[0]) * world.length, float(entry[1]))
 	assert(item_preview.get("item_boxes").size() == item_layout.size())
 	print("[SkyShots] runtime Mystery Prisms=", item_layout.size())
+	# Only borrow the real item factory. Entering this controller into the
+	# tree would initialize an unwanted second game; leaving it unowned
+	# would leak the controller and its script resources at engine exit.
+	# The actual prism nodes already belong to item_root, not this factory.
+	item_preview.free()
+	assert(not is_instance_valid(item_preview))
+	assert(item_root.get_child_count() == item_layout.size())
+	assert(
+		int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)) == factory_orphan_baseline
+	)
+	print(
+		"[SkyShots] isolated factory freed; orphan nodes=",
+		factory_orphan_baseline, " -> ", factory_orphan_baseline
+	)
 	# name, track fraction, lateral kart, camera offset (local), look-ahead distance
 	shots = [
 		["01_start_gate", -0.035, 0.0, Vector3(0.0, 3.8, 9.5), 22.0],
@@ -94,6 +110,10 @@ func _process(_delta: float) -> bool:
 		print("[SkyShots] captured ", name)
 		index += 1
 		if index >= shots.size():
+			assert(
+				int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)) == factory_orphan_baseline
+			)
+			print("[SkyShots] PASS: eight views, five prisms and clean factory lifetime")
 			quit(0)
 		else:
 			_place()
