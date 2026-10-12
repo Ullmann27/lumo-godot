@@ -1,0 +1,1730 @@
+[
+	{
+		"choices": "[P: (31.0, 1468.306), S: (1218.0, 1519.0)]",
+		"content": 867.0,
+		"label": "Live resize: driver tab responds",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 867.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 1,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1468.306), S: (1218.0, 1519.0)]",
+		"content": 867.0,
+		"label": "Unlocked Nova button is visible and reachable",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 867.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 1,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1468.306), S: (1218.0, 1519.0)]",
+		"content": 867.0,
+		"label": "Real tap changes the unlocked driver",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 867.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 1,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 763.3057), S: (1218.0, 1778.0)]",
+		"content": 3495.0,
+		"label": "Drag on world buttons scrolls without selecting",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1778.0,
+		"passed": true,
+		"scroll": 1296,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 3,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 763.3057), S: (1218.0, 1778.0)]",
+		"content": 3495.0,
+		"label": "Scrolled world has a complete tappable button",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1778.0,
+		"passed": true,
+		"scroll": 1296,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 3,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 763.3057), S: (1218.0, 1778.0)]",
+		"content": 3495.0,
+		"label": "Real tap selects the scrolled world exactly",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1778.0,
+		"passed": true,
+		"scroll": 1296,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 3,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Drag over kart grid scrolls without changing the vehicle",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 881,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "A fully visible unlocked scrolled kart is tappable",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 881,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Extra revealing drags never select a kart",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 881,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (31.0, 1762.306), S: (1218.0, 1225.0)]",
+		"content": 5877.0,
+		"label": "Actual scrolled kart tap selects that exact vehicle",
+		"menu": "[P: (0.0, 45.3057), S: (1280.0, 3199.715)]",
+		"page": 1225.0,
+		"passed": true,
+		"scroll": 881,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "galaxy_ringway"
+		},
+		"step": 2,
+		"window": "(904, 2316)"
+	},
+	{
+		"choices": "[P: (26.0, 362.808), S: (448.0, 556.0)]",
+		"content": 333.0,
+		"label": "Live resize: driver tab responds",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 333.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 1,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 362.808), S: (448.0, 556.0)]",
+		"content": 333.0,
+		"label": "Unlocked Nova button is visible and reachable",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 333.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 1,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 362.808), S: (448.0, 556.0)]",
+		"content": 333.0,
+		"label": "Real tap changes the unlocked driver",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 333.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 1,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 362.808), S: (448.0, 556.0)]",
+		"content": 1359.0,
+		"label": "Drag on world buttons scrolls without selecting",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 556.0,
+		"passed": true,
+		"scroll": 372,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 3,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 362.808), S: (448.0, 556.0)]",
+		"content": 1359.0,
+		"label": "Scrolled world has a complete tappable button",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 556.0,
+		"passed": true,
+		"scroll": 372,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 3,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 362.808), S: (448.0, 556.0)]",
+		"content": 1359.0,
+		"label": "Real tap selects the scrolled world exactly",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 556.0,
+		"passed": true,
+		"scroll": 372,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 3,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Drag over kart grid scrolls without changing the vehicle",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 348,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "A fully visible unlocked scrolled kart is tappable",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 348,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Extra revealing drags never select a kart",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 348,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (26.0, 399.808), S: (448.0, 519.0)]",
+		"content": 2223.0,
+		"label": "Actual scrolled kart tap selects that exact vehicle",
+		"menu": "[P: (0.0, 18.80795), S: (1280.0, 1032.086)]",
+		"page": 519.0,
+		"passed": true,
+		"scroll": 348,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "volcano_night"
+		},
+		"step": 2,
+		"window": "(2176, 1812)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 327.0,
+		"label": "Live resize: driver tab responds",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 1,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 327.0,
+		"label": "Unlocked Nova button is visible and reachable",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 1,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 327.0,
+		"label": "Real tap changes the unlocked driver",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 1,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 1335.0,
+		"label": "Drag on world buttons scrolls without selecting",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 175,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 3,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 1335.0,
+		"label": "Scrolled world has a complete tappable button",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 175,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 3,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 1335.0,
+		"label": "Real tap selects the scrolled world exactly",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 175,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 3,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 57,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Drag over kart grid scrolls without changing the vehicle",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 175,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "A fully visible unlocked scrolled kart is tappable",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 200,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Extra revealing drags never select a kart",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 200,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "nala_comet",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (17.0, 312.4867), S: (477.0, 270.0)]",
+		"content": 2097.0,
+		"label": "Actual scrolled kart tap selects that exact vehicle",
+		"menu": "[P: (0.0, 25.48672), S: (1844.0, 675.3982)]",
+		"page": 270.0,
+		"passed": true,
+		"scroll": 200,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(2316, 904)"
+	},
+	{
+		"choices": "[P: (31.0, 1003.603), S: (1218.0, 377.0)]",
+		"content": 399.0,
+		"label": "Live resize: driver tab responds",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 377.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 1,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1003.603), S: (1218.0, 377.0)]",
+		"content": 399.0,
+		"label": "Unlocked Nova button is visible and reachable",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 377.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "rabbit",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 1,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1003.603), S: (1218.0, 377.0)]",
+		"content": 399.0,
+		"label": "Real tap changes the unlocked driver",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 377.0,
+		"passed": true,
+		"scroll": 0,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 1,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 469.6029), S: (1218.0, 390.0)]",
+		"content": 1623.0,
+		"label": "Drag on world buttons scrolls without selecting",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 390.0,
+		"passed": true,
+		"scroll": 252,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 3,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 469.6029), S: (1218.0, 390.0)]",
+		"content": 1623.0,
+		"label": "Scrolled world has a complete tappable button",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 390.0,
+		"passed": true,
+		"scroll": 252,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "sonnenhafen"
+		},
+		"step": 3,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 469.6029), S: (1218.0, 390.0)]",
+		"content": 1623.0,
+		"label": "Real tap selects the scrolled world exactly",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 390.0,
+		"passed": true,
+		"scroll": 252,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 3,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Every kart card fits the horizontal selection area",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 9,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Drag over kart grid scrolls without changing the vehicle",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 248,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "A fully visible unlocked scrolled kart is tappable",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 248,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Extra revealing drags never select a kart",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 248,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "boru_rally",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	},
+	{
+		"choices": "[P: (31.0, 1002.603), S: (1218.0, 378.0)]",
+		"content": 1327.0,
+		"label": "Actual scrolled kart tap selects that exact vehicle",
+		"menu": "[P: (0.0, 22.60294), S: (1280.0, 1497.445)]",
+		"page": 378.0,
+		"passed": true,
+		"scroll": 248,
+		"selection": {
+			"difficulty": "gemuetlich",
+			"driver": "fox",
+			"kart": "noa_tide",
+			"mode": "race",
+			"track": "holo_city"
+		},
+		"step": 2,
+		"window": "(1812, 2176)"
+	}
+]

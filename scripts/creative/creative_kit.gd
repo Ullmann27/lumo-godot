@@ -7,6 +7,7 @@ const GRASS = preload("res://assets/generated/lumo3d_assets/textures/albedo/gras
 const WOOD = preload(
 	"res://assets/generated/lumo3d_assets/textures/albedo/wood_warm_soft_albedo.png"
 )
+const LANTERN_MODEL = preload("res://assets/creative/models/lumo_lantern.glb")
 
 
 func material(color: Color, glow: bool = false, glass: bool = false) -> StandardMaterial3D:
@@ -164,9 +165,10 @@ func part_node(item: Dictionary) -> StaticBody3D:
 				sphere(body, at, Vector3(1.2, 1.3, 1.2), color)
 			collision(body, Vector3(1, 1, 1), Vector3(0.4, 2, 0.4))
 		"lantern":
-			cylinder(body, Vector3(0.5, 0.75, 0.5), 0.06, 1.5, Color("40577b"))
-			box(body, Vector3(0.5, 1.7, 0.5), Vector3(0.42, 0.5, 0.42), color, true)
-			cylinder(body, Vector3(0.5, 1.99, 0.5), 0.35, 0.16, Color("5e6784"), 0.08)
+			var lamp: Node3D = LANTERN_MODEL.instantiate()
+			lamp.position = Vector3(0.5, 0, 0.5)
+			body.add_child(lamp)
+			# Same public part ID, grid footprint and collision as existing saves.
 			collision(body, mid, Vector3(0.5, 2, 0.5))
 		"crystal", "star":
 			var node: MeshInstance3D = mesh(

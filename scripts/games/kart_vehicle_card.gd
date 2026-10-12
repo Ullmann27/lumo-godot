@@ -22,6 +22,8 @@ var badge: Label
 
 
 func _init() -> void:
+	# Forward touch drags to the garage scroll, which cancels accidental selection.
+	mouse_filter = Control.MOUSE_FILTER_PASS
 	# Skaliert sich selbst; die Garage soll Mindestgrößen hier nicht ein zweites Mal setzen.
 	set_meta("kart_self_sized", true)
 
@@ -53,6 +55,7 @@ func _ready() -> void:
 	row.add_child(column)
 	title_label = Label.new()
 	title_label.text = str(item.name)
+	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	title_label.add_theme_font_override("font", UI.HEADING)
 	title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(title_label)
@@ -70,6 +73,7 @@ func _ready() -> void:
 	column.add_child(bars)
 	bars.set_values(stats, bonus, true)
 	lock_label = Label.new()
+	lock_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lock_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lock_label.add_theme_color_override("font_color", Color("ffd06a"))
 	lock_label.text = "Gesperrt · ab %d ★" % int(item.unlock) if missing_stars <= 0 else "Gesperrt · noch %d ★" % missing_stars

@@ -20,6 +20,12 @@ var reduced_motion := false
 var hover_tween: Tween
 
 
+func _init() -> void:
+	# ScrollContainer must receive the drag and cancel the native button press.
+	# Decorative children ignore input; taps still use Button.pressed normally.
+	mouse_filter = Control.MOUSE_FILTER_PASS
+
+
 func _ready() -> void:
 	text = ""
 	tooltip_text = title + ". " + caption

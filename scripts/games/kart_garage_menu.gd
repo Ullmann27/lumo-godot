@@ -359,6 +359,9 @@ func _apply_responsive_layout() -> void:
 	var balanced_landscape: bool = window_size.x >= window_size.y and window_size.y >= 600 and window_size.y < 840
 	var inset_landscape: bool = balanced_landscape and size.y / ui_scale < 680.0
 	var tiny_portrait: bool = window_size.x < window_size.y and window_size.y < 680
+	# Screen width alone is insufficient: two kart columns previously overflowed
+	# the narrow left pane, clipping names, stat bars and native tap targets.
+	var choices_width_dp: float = window_size.x - 36.0 if window_size.x < window_size.y else window_size.x * (0.38 if short_landscape else 0.35)
 	var panoramic: bool = window_size.x >= 760 and window_size.x > window_size.y and not short_landscape
 	var welcome_in_header: bool = step == 0 and short_landscape and window_size.y < 440
 	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.024, 8.0, 24.0)
@@ -628,7 +631,7 @@ func _apply_responsive_layout() -> void:
 		if child is GridContainer:
 			# Retain the reference's full-size single column. On short cover
 			# displays scroll real 48dp choices, never shrink them to 28px.
-			child.columns = 1 if step == 0 or small else 2
+			child.columns = 1 if step == 0 or choices_width_dp < 700.0 else 2
 		var cards: Array = child.get_children() if child is GridContainer else [child]
 		for card in cards:
 			if card is Button:
