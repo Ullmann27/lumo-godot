@@ -10,3 +10,7 @@ Basis: `82b53fc02b9f2ad7e025433499c4c23f256fe734` (1936 verwendet weiterhin dies
 Nachweise lokal: Bremsregression scheitert vor der Reparatur an Rückwärtsfahren mit Auto-Gas; nachher PASS. Originale 16 Zieleinlaufkontrollen: vorher 12 Fehler, nachher 0. Geometrie-/Farb-/Animations-/LOD-Vertrag und echte gleichzeitige Lenk-/Bremstaps bestehen. Fold-Garage muss mit echtem GL-Fenster geprüft werden; ein Headless-Lauf ohne Rendering ist kein Screenshot-/Scrollnachweis.
 
 Diese lokalen Prüfungen sind kein APK- oder physischer Fold-Nachweis. Neue Android-1937-Abnahme und commitgebundene APK-/Screenshot-Provenienz folgen separat. Keine öffentliche Veröffentlichung.
+
+## Aktueller Rig-/Zieleinlauf-Prüfaufbau
+
+Stage2 zeigte mit der neuen Impuls-erhaltenden Zieleinlaufphysik einen inkonsistenten bisherigen Fixture: `speed=12` bei weiterhin `physical_velocity=0`. Das entspricht keiner laufenden Fahrt. Der Fixture setzt nun beide Größen konsistent. Keine Assertion oder Handabstandsgrenze wurde gelockert, kein Animationscode geändert. Echte Player-Factory-Prüfung nachher2069 Kontrollen/0 Fehler, maximaler Handabstand1,137mm. Der ursprüngliche Fehlbericht bleibt erhalten; der abgebrochene erste Flutter-Build hat keine fertige APK geliefert.

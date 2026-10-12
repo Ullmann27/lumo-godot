@@ -247,6 +247,9 @@ func _run() -> void:
 	game.checkpoint_index = game.TOTAL_LAPS * 8
 	var stars_before: int = root.get_node("ProgressStore").total_stars()
 	game.speed = 12.0
+	# Match the real physical finish precondition: speed is the signed magnitude
+	# of this velocity, not an independent injected zero-momentum scalar.
+	game.physical_velocity = Vector3(-sin(game.player_heading), 0, -cos(game.player_heading)) * game.speed
 	game._finish()
 	_check(game.player.lumo_animation.victory, "Real race finish requests the animation")
 	var stars_after: int = root.get_node("ProgressStore").total_stars()
