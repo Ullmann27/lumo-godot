@@ -14,7 +14,7 @@ class ReferenceKart:
 		# The previous implementation batched rigid pieces only by identical paint.
 		var surfaces: Dictionary = {}
 		for child in parent.get_children():
-			if child is MeshInstance3D and not flames.has(child) and not sparks.has(child):
+			if child is MeshInstance3D and not flames.has(child) and not sparks.has(child) and not brake_lights.has(child):
 				var material: Material = child.material_override
 				var key: int = material.get_instance_id()
 				if not surfaces.has(key):
@@ -66,7 +66,7 @@ func _geometry(
 ) -> void:
 	for child in node.get_children():
 		if child is MeshInstance3D:
-			if child == kart.far_mesh or kart.flames.has(child) or kart.sparks.has(child):
+			if child == kart.far_mesh or kart.flames.has(child) or kart.sparks.has(child) or kart.brake_lights.has(child):
 				continue
 			var transform_to_kart: Transform3D = transform_from_kart * child.transform
 			for surface in range(child.mesh.get_surface_count()):
@@ -150,7 +150,7 @@ func _authored_far_index_count(node: Node3D, kart: LumoRaceKart) -> int:
 	var count: int = 0
 	for child in node.get_children():
 		if child is MeshInstance3D:
-			if kart.flames.has(child) or kart.sparks.has(child) or child.has_meta("near_only") or child.mesh.has_meta("far_skip"):
+			if kart.flames.has(child) or kart.sparks.has(child) or kart.brake_lights.has(child) or child.has_meta("near_only") or child.mesh.has_meta("far_skip"):
 				continue
 			var geometry: Mesh = kart._far_geometry(child.mesh)
 			var arrays: Array = geometry.surface_get_arrays(0)

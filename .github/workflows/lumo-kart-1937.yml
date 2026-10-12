@@ -1,0 +1,66 @@
+name: Lumo Kart 1937 recovered brake and physical finish repairs
+on:
+  push:
+    branches: [sol/lumo-1937-kart-quality-2026-10-12]
+    paths: ['scripts/**', 'assets/**', 'tools/**', '.github/workflows/lumo-kart-1937.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      XDG_DATA_HOME: ${{ github.workspace }}/exports/isolated-user-data
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Existing exact Godot engine
+        run: |
+          set -euo pipefail
+          curl -fL --retry 2 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+          mkdir -p exports/fold-games
+      - name: Native import, original saves and model compatibility
+        run: |
+          set -euo pipefail
+          Godot_v4.6.3-stable_linux.x86_64 --headless --editor --import --quit > exports/fold-games/import.log 2>&1
+          if grep -E 'SCRIPT ERROR|Parse Error|ERROR:' exports/fold-games/import.log; then exit 1; fi
+          python3 tools/run_godot_probe.py --log exports/fold-games/assets.log --timeout 90 --required '[CreativeAssets] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy --script scripts/tests/creative_asset_regression.gd
+          python3 tools/run_godot_probe.py --log exports/fold-games/scenes.log --timeout 90 --required '[CreativeSmoke] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy --script scripts/tests/creative_scene_smoke.gd
+      - name: Recovered Auto-Gas brake, real multitouch and physical finish fixtures
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --log exports/fold-games/brake.log --timeout 90 --required '[KartBrakeReverse] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy --script scripts/tests/kart_brake_reverse_feedback_regression.gd
+          python3 tools/run_godot_probe.py --log exports/fold-games/finish.log --timeout 90 --required '[PhysicalFinishCoast] PASS: 16 numerical controls, 0 failures' -- Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy --script scripts/tests/kart_finish_coast_regression.gd
+          python3 tools/run_godot_probe.py --log exports/fold-games/vehicle.log --timeout 120 --required '[KartVehicle] Geometry/colours' -- Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy --script scripts/tests/kart_vehicle_regression.gd
+          python3 tools/run_godot_probe.py --log exports/fold-games/multitouch.log --timeout 90 --required '[KartTouchTests] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy --script scripts/tests/kart_touch_regression.gd
+      - name: Real garage screen touches across live cover and inner display resizes
+        env:
+          LUMO_QA_DIR: ${{ github.workspace }}/exports/fold-games/garage
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --log exports/fold-games/touch.log --timeout 600 --required '[GarageTouch] PASS' -- xvfb-run -a -s '-screen 0 2400x2400x24' Godot_v4.6.3-stable_linux.x86_64 --rendering-method gl_compatibility --audio-driver Dummy --script scripts/tests/kart_garage_touch_regression.gd
+          python3 tools/run_godot_probe.py --log exports/fold-games/menu.log --timeout 300 --required '[KartMenuFlow] PASS' -- xvfb-run -a -s '-screen 0 2400x2400x24' Godot_v4.6.3-stable_linux.x86_64 --rendering-method gl_compatibility --audio-driver Dummy --script scripts/tests/kart_menu_flow_regression.gd
+      - name: Real creative scene visuals, play state and save round trip
+        env:
+          LUMO_QA_DIR: ${{ github.workspace }}/exports/fold-games/creative
+        run: |
+          set -euo pipefail
+          mkdir -p exports/creative-build
+          python3 tools/run_godot_probe.py --log exports/fold-games/capture.log --timeout 120 --required '[CreativeObjects] PASS' -- xvfb-run -a -s '-screen 0 1400x900x24' Godot_v4.6.3-stable_linux.x86_64 --rendering-method gl_compatibility --audio-driver Dummy --script scripts/tests/creative_objects_capture.gd
+          python3 tools/run_godot_probe.py --log exports/fold-games/adventure.log --timeout 180 --required '[CreativeAdventure] PASS actual 3D' -- xvfb-run -a -s '-screen 0 1400x900x24' Godot_v4.6.3-stable_linux.x86_64 --rendering-method gl_compatibility --audio-driver Dummy --script scripts/tests/creative_adventure_capture.gd
+          python3 tools/run_godot_probe.py --log exports/fold-games/build.log --timeout 180 --required '[CreativeBuild] PASS: actual world' -- xvfb-run -a -s '-screen 0 1400x900x24' Godot_v4.6.3-stable_linux.x86_64 --rendering-method gl_compatibility --audio-driver Dummy --script scripts/tests/creative_build_capture.gd
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-kart-1937-${{ github.run_id }}
+          path: |
+            exports/fold-games/
+            exports/creative-build/
+          if-no-files-found: error
+          retention-days: 30
