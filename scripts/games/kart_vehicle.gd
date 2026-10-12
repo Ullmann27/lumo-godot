@@ -40,6 +40,8 @@ var jaw_rest_position := Vector3.ZERO
 var ear_rest_angles: Array[float] = []
 var flames: Array[MeshInstance3D] = []
 var sparks: Array[MeshInstance3D] = []
+var brake_lights: Array[MeshInstance3D] = []
+var motion_brake: float = 0.0
 var motion_speed: float = 0.0
 var motion_steer: float = 0.0
 var motion_boost: bool = false
@@ -276,6 +278,7 @@ func _rebuild() -> void:
 	eyes.clear()
 	flames.clear()
 	sparks.clear()
+	brake_lights.clear()
 	near_meshes.clear()
 	arm_joints.clear()
 	elbow_joints.clear()
@@ -502,6 +505,15 @@ func _build() -> void:
 	else:
 		_build_aero(spec)
 	_make_steering_wheel()
+	# Two independent emissive lamp meshes; keep them out of static and LOD batches.
+	# Shared geometry/material, no light nodes or per-frame material allocations.
+	for side in [-1.0, 1.0]:
+		var lamp := _ellipsoid(self, Vector3(side * 0.47, 0.61, 1.265), Vector3(0.105, 0.06, 0.038), Color("ff4054"))
+		lamp.name = "BrakeLampLeft" if side < 0 else "BrakeLampRight"
+		lamp.material_override = _mat(Color("ff4054"), 0.0, 0.26, 2.6)
+		lamp.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		lamp.hide()
+		brake_lights.append(lamp)
 	_make_driver()
 	_make_far_mesh()
 	_merge_static(self)
@@ -2056,7 +2068,7 @@ func _merge_static(parent: Node3D) -> void:
 			child.free()
 	var surfaces: Dictionary = {}
 	for child in parent.get_children():
-		if child is MeshInstance3D and child != far_mesh and not flames.has(child) and not sparks.has(child):
+		if child is MeshInstance3D and child != far_mesh and not flames.has(child) and not sparks.has(child) and not brake_lights.has(child):
 			var material: StandardMaterial3D = child.material_override
 			var key: String = str(material.metallic) + ":" + str(material.roughness) + ":" + str(material.emission_enabled) + ":" + str(material.emission_energy_multiplier)
 			if material.normal_enabled:
@@ -2153,7 +2165,7 @@ func _append_far(parent: Node3D, transform_from_kart: Transform3D, tool: Surface
 		if child == lumo_animation or (child == driver and _far_chassis_only):
 			continue
 		if child is MeshInstance3D:
-			if flames.has(child) or sparks.has(child) or child.has_meta("near_only") or child.mesh.has_meta("far_skip"):
+			if flames.has(child) or sparks.has(child) or brake_lights.has(child) or child.has_meta("near_only") or child.mesh.has_meta("far_skip"):
 				continue
 			var material: StandardMaterial3D = child.material_override
 			tool.append_from(_paint_mesh(_far_geometry(child.mesh), material.albedo_color), 0, transform_from_kart * child.transform)
@@ -2207,6 +2219,10 @@ func set_motion(speed: float, steer: float, boost: bool, drift: bool) -> void:
 	motion_drift = drift
 
 
+func set_braking(amount: float) -> void:
+	motion_brake = clampf(amount, 0.0, 1.0)
+
+
 func update_motion(speed: float, steer: float, drift: bool, boost: bool) -> void:
 	set_motion(speed, steer, boost, drift)
 
@@ -2236,6 +2252,8 @@ func _process(delta: float) -> void:
 	for spark in sparks:
 		spark.visible = motion_drift and absf(motion_steer) > 0.2 and motion_speed > 1.0
 		spark.scale.z = 0.9 + sin(animation_time * 23.0) * 0.3
+	for lamp in brake_lights:
+		lamp.visible = motion_brake > 0.05 and not far_detail
 	detail_check_time -= delta
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	if camera and detail_check_time <= 0:
