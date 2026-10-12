@@ -6,6 +6,7 @@ const RUNTIME = preload("res://scripts/creative/creative_runtime.gd")
 const FOX = preload("res://scripts/games/kart_vehicle.gd")
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const ACTION = preload("res://scripts/games/kart_touch_action.gd")
+const CHEST_MODEL = preload("res://assets/creative/models/lumo_treasure_chest.glb")
 var model = STATE.new()
 var kit = KIT.new()
 var previous: Dictionary
@@ -142,11 +143,10 @@ func _landscape() -> void:
 		flowers.position = Vector3(13.0 + i % 4 * 1.4, 0, -50.5 + i / 4 * 1.3)
 		add_child(flowers)
 	kit.castle(self, Vector3(0, 0, -60), 1.7)
-	var chest := kit.box(self, Vector3(0, 0.7, -65), Vector3(2.5, 1.4, 1.4), Color("775986"))
-	chest.material_override = kit.textured("wood", Color("bab3d8"))
-	for x in [-0.9, 0.9]:
-		kit.box(self, Vector3(x, 0.76, -65), Vector3(0.16, 1.55, 1.5), Color("ffc985"), true)
-	kit.box(self, Vector3(0, 0.75, -64.27), Vector3(0.45, 0.45, 0.1), Color("ffc985"), true)
+	var chest: Node3D = CHEST_MODEL.instantiate()
+	chest.name = "OriginalBlenderTreasureChest"
+	chest.position = Vector3(0, 0, -65)
+	add_child(chest)
 	for i in range(7):
 		var mountain := kit.mesh(
 			self, kit.SHAPES.mountain(), Vector3(-48 + i * 16, 0, -91), Color("354d78")

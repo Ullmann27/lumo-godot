@@ -1,0 +1,22 @@
+{
+  "author": "Lumo project / Ullmann27",
+  "source": "Original local Blender meshes, UVs and wood texture",
+  "license": "Project-owned; no third-party assets",
+  "models": [
+    {
+      "file": "lumo_lantern.glb",
+      "vertices": 496,
+      "triangles": 952,
+      "materials": 3,
+      "uv_layers": 1
+    },
+    {
+      "file": "lumo_treasure_chest.glb",
+      "vertices": 1232,
+      "triangles": 2376,
+      "materials": 3,
+      "uv_layers": 1
+    }
+  ],
+  "runtime": "Actual Godot GLB geometry, existing game rules/colliders preserved"
+}
