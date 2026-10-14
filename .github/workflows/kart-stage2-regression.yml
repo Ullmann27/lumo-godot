@@ -46,6 +46,9 @@ jobs:
           chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
           echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
 
+      - name: Authoring sources stay outside runtime import
+        run: test -f docs/design/1939-harbor/.gdignore
+
       - name: Static project validator
         shell: bash
         run: |
@@ -70,6 +73,10 @@ jobs:
             echo "Rejected Godot error output in $RUNNER_TEMP/godot-import.log"
             exit 1
           fi
+
+      - name: Verify actual harbor prefab placement and mobile LODs
+        run: |
+          python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/harbor-pavilion.log" --timeout 120 --required '[HarborPavilion] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_harbor_pavilion_regression.gd
 
       - name: Animated Lumo in the actual Kart player factory
         shell: bash
