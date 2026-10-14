@@ -1,0 +1,26 @@
+{
+  "authoring": "Original Lumo geometry authored in Blender; existing project palette/reference, no imported third-party meshes",
+  "reference": "docs/design_targets/2026-10-05-tracks/Track_04_aqua_harbor_rush/track_04_hero_2560.png",
+  "units": "metres",
+  "materials": "5 PBR materials, UV0, no image textures",
+  "lods": [
+    {
+      "lod": 0,
+      "triangles": 2764,
+      "bytes": 135164,
+      "sha256": "cc45ba2f6bc891922a44c89eb996e0207b2dd5251048c73b80e39e7deca4eccb"
+    },
+    {
+      "lod": 1,
+      "triangles": 1260,
+      "bytes": 59548,
+      "sha256": "8da0d4f47f5352b18833d9b33362cf770cfae6f573a0416928888cdb698d8863"
+    },
+    {
+      "lod": 2,
+      "triangles": 412,
+      "bytes": 26224,
+      "sha256": "3b12d1cbf0d1c4a794a8c16883cf2ba2e8f45c32c570572742bac98d4c238049"
+    }
+  ]
+}
