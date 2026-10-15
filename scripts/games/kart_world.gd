@@ -547,6 +547,10 @@ func _terrain() -> void:
 	if track_id=="holo_city":
 		water_material.set_shader_parameter("deep_water",Color("0d1934"))
 		water_material.set_shader_parameter("shallow_water",Color("174970"))
+	# Follow Sonnenhafen's authored shoreline, never light up other seas.
+	# Disabled on low-detail/mobile-saving mode without affecting physics.
+	if track_id=="sonnenhafen" and not low_detail:
+		water_material.set_shader_parameter("coastal_foam",0.78)
 	water.material_override=water_material
 	water.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(water)
