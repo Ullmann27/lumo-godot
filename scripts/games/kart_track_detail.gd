@@ -1,10 +1,10 @@
 extends RefCounted
 ## Authored roadside assemblies, spatially batched by the world renderer.
 ## Every footprint clears all nearby lanes, including parallel course sections.
-const NAVY := Color("18314d")
-const WHITE := Color("dce9e8")
-const CYAN := Color("66ddef")
-const GOLD := Color("dfa45b")
+const NAVY := Color("253243")
+const WHITE := Color("edf2ee")
+const CYAN := Color("6ddde2")
+const GOLD := Color("e9b363")
 
 
 static func build(world) -> void:
@@ -84,7 +84,7 @@ static func _service_deck(world, at: Vector3, basis: Basis, accent: Color) -> vo
 		_put(
 			world, "box", at, basis, Vector3(side * 2.8, 0.85, 1.7), Vector3(0.25, 1.5, 0.65), NAVY
 		)
-	_put(world, "roof", at, basis, Vector3(0, 3.9, 0), Vector3(6.7, 0.6, 4.8), NAVY)
+	_put(world, "roof", at, basis, Vector3(0, 3.9, 0), Vector3(6.7, 0.6, 4.8), Color("ae6449") if world.track_id == "sonnenhafen" else NAVY)
 	_put(world, "box", at, basis, Vector3(0, 3.65, -2.35), Vector3(6.2, 0.09, 0.08), accent, true)
 	for i in range(6):
 		_put(
@@ -113,7 +113,7 @@ static func _service_deck(world, at: Vector3, basis: Basis, accent: Color) -> vo
 			basis,
 			Vector3(-1.9 + i * 1.8, 0.8, 1.0),
 			Vector3(1.35, 1.25, 0.75),
-			WHITE
+			Color("e6cdb1") if world.track_id == "sonnenhafen" else WHITE
 		)
 		for row in range(4):
 			_put(
