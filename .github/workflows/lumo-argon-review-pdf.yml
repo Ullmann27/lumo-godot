@@ -1,0 +1,85 @@
+name: Lumo Argon complete source PDF review
+on:
+  push:
+    branches:
+      - chatgpt/argon-lumo-review-pdf-2026-10-15
+    paths:
+      - "tools/argon_review/**"
+      - ".github/workflows/lumo-argon-review-pdf.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - name: Checkout PDF generator
+        uses: actions/checkout@v4
+        with:
+          path: generator
+          persist-credentials: false
+      - name: Checkout exact Godot branch snapshot
+        uses: actions/checkout@v4
+        with:
+          repository: Ullmann27/lumo-godot
+          ref: 86b98c865b2d2cbc11aa2269a391b31f10d7fbff
+          path: generator/source_godot
+          persist-credentials: false
+      - name: Checkout exact Flutter learning-app snapshot
+        uses: actions/checkout@v4
+        with:
+          repository: Ullmann27/lumo-lernen
+          ref: 90c239898c2f5fe7230dda05cb9e499069162208
+          path: generator/source_lernen
+          persist-credentials: false
+      - name: Python / PDF tooling
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned PDF renderer dependencies
+        run: python -m pip install --no-input 'reportlab==4.4.4' 'Pillow==11.3.0'
+      - name: Produce original-code volumes and illustrated master PDF
+        working-directory: generator
+        run: |
+          set -euo pipefail
+          python tools/argon_review/build_review.py | tee argon-output.log
+          test -s argon-review/Lumo_Argon_Gemini_Masterauftrag_20261015.pdf
+          test -s argon-review/Lumo_Argon_Dateiindex_SHA256.json
+          for repo in Godot Flutter; do
+            test "$(find argon-review -name "Lumo_Argon_Originalcode_${repo}_Band_*.pdf" | wc -l)" -gt 0
+          done
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          data=json.loads(Path('argon-review/Lumo_Argon_Dateiindex_SHA256.json').read_text())
+          for repo in ('godot','lernen'):
+              assert len(data['exported_source'][repo]) >= 50, ('unexpected missing code',repo)
+          print('Source integrity: file manifest and PDFs present')
+          PY
+      - name: Publish separate directly downloadable PDF files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: Ullmann27/lumo-godot
+        run: |
+          set -euo pipefail
+          TAG="argon-lumo-originalcode-20261015"
+          if ! gh release view "$TAG" --repo "$GH_REPO" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$GH_REPO" \
+              --target "${{ github.sha }}" --title "Lumo fuer Argon: Originalcode, Bildbelege, Audit" \
+              --notes "Reine PDF-Review-Ausgabe; keine APK, keine Code-Integration. Quellstand Godot 86b98c8 / Flutter 90c2398. Enthält mehrere direkte PDF-Bände und maschinenlesbaren Dateiindex." \
+              --prerelease
+          fi
+          gh release upload "$TAG" generator/argon-review/*.pdf generator/argon-review/Lumo_Argon_Dateiindex_SHA256.json \
+            --repo "$GH_REPO" --clobber
+          gh release view "$TAG" --repo "$GH_REPO"
+      - name: Archive generation logs and PDFs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lumo-Argon-PDF-Quelle
+          path: |
+            generator/argon-review/*.pdf
+            generator/argon-review/Lumo_Argon_Dateiindex_SHA256.json
+            generator/argon-output.log
+          retention-days: 14
