@@ -38,7 +38,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install pinned PDF renderer dependencies
-        run: python -m pip install --no-input 'reportlab==4.4.4' 'Pillow==11.3.0'
+        run: python -m pip install --no-input 'reportlab==4.4.4' 'Pillow==11.3.0' 'pypdf==5.9.0'
       - name: Produce original-code volumes and illustrated master PDF
         working-directory: generator
         run: |
