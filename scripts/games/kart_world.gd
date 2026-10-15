@@ -420,7 +420,7 @@ func _lighting() -> void:
 	environment.background_mode=Environment.BG_SKY
 	environment.sky=_sky_for(track_id)
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color=Color("c8e0f4") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
+	environment.ambient_light_color=Color("f0d7bb") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
 	environment.ambient_light_energy=(0.28 if low_detail else 0.20) if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
 	environment.tonemap_mode=Environment.TONE_MAPPER_ACES if track_id in ["candy_cloud", "volcano_night"] else Environment.TONE_MAPPER_FILMIC
 	environment.tonemap_exposure=float(visual.exposure)
@@ -442,9 +442,9 @@ func _lighting() -> void:
 	world_environment.environment=environment
 	add_child(world_environment)
 	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees=Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0)
+	sun.rotation_degrees=Vector3(-25,-36,0) if track_id=="sonnenhafen" else (Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0))
 	sun.light_color=definition.sun
-	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.84 if low_detail else 0.68) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
+	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.86 if low_detail else 0.94) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -453,8 +453,8 @@ func _lighting() -> void:
 	add_child(sun)
 	var fill := DirectionalLight3D.new()
 	fill.rotation_degrees=Vector3(-28,145,0)
-	fill.light_color=Color("e0a18b") if track_id=="volcano_night" else Color("9bccea")
-	fill.light_energy=0.18 if track_id=="volcano_night" else 0.10
+	fill.light_color=Color("e0a18b") if track_id=="volcano_night" else (Color("e8b28c") if track_id=="sonnenhafen" else Color("9bccea"))
+	fill.light_energy=0.18 if track_id=="volcano_night" else (0.14 if track_id=="sonnenhafen" else 0.10)
 	fill.shadow_enabled=false
 	add_child(fill)
 
@@ -983,8 +983,9 @@ func _roadside_chevrons() -> void:
 
 
 func _roadside_streetlights() -> void:
-	for i in range(14):
-		var d: float=(float(i)+0.5)*length/14.0
+	var lamp_count: int = clampi(roundi(length / 45.0), 14, 90)
+	for i in range(lamp_count):
+		var d: float=(float(i)+0.5)*length/float(lamp_count)
 		var side: float=-1.0 if i%2==0 else 1.0
 		var basis: Basis=frame(d)
 		var at: Vector3=position_at(d,side*7.4)
