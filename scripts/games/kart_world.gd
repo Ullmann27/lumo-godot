@@ -12,6 +12,7 @@ const AAA_GATES = preload("res://scripts/games/visual/kart_neon_gates.gd")
 const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
 const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
+const PREMIUM_RAIL_KIT = preload("res://scripts/games/kart_premium_rail_kit.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const HARBOR_PAVILIONS = preload("res://scripts/games/kart_harbor_pavilions.gd")
 const HARBOR_AQUARIUM = preload("res://scripts/games/kart_harbor_aquarium.gd")
@@ -297,6 +298,7 @@ func _shape(kind: String) -> Mesh:
 		"fir": mesh = SHAPES.fir()
 		"volcano_mountain": mesh = preload("res://scripts/games/kart_volcano_mesh.gd").create()
 		"rock": mesh = SHAPES.rock()
+		"premium_rail": mesh = SHAPES.premium_rail()
 		"mountain": mesh = SHAPES.mountain()
 		"hull": mesh = SHAPES.boat_hull()
 		"sail": mesh = SHAPES.sail()
@@ -379,6 +381,13 @@ func _flush_instances() -> void:
 			var basalt := ShaderMaterial.new()
 			basalt.shader = preload("res://assets/shaders/kart_basalt.gdshader")
 			node.material_override = basalt
+		if group.kind=="premium_rail":
+			# Unique PBR metal material so cached generic primitives stay unchanged.
+			material = material.duplicate()
+			material.metallic = 0.36
+			material.roughness = 0.31
+			material.specular_mode = BaseMaterial3D.SPECULAR_SCHLICK_GGX
+			node.material_override = material
 		if group.kind=="glass_tower":
 			var glass:=ShaderMaterial.new()
 			glass.shader=preload("res://assets/shaders/kart_city_glass.gdshader")
@@ -623,25 +632,9 @@ func _road() -> void:
 				curb=Color("f7f4ea") if i%4<2 else Color("e84f45")
 			if track_id!="bergwelt":
 				_prop("box",position_at(d,side*5.5)+basis.y*0.02,Vector3(0.48,0.12,step+0.03),curb,basis)
-			# The rail is continuous because it is also the wall the kart collides with.
-			var rail_at: Vector3=position_at(d,side*RAIL_LATERAL)
-			var rail_color: Color=Color("edf3df") if track_id!="holo_city" else Color("6bc9e5")
-			var lower_color: Color=Color("7d9aa4")
-			if track_id=="volcano_night":
-				rail_color=Color("685161")
-				lower_color=Color("302d40")
-				_prop("box",rail_at+Vector3.UP*0.25,Vector3(0.45,0.5,step+0.08),Color("3c3344"),basis)
-				_prop("box",rail_at+Vector3.UP*1.12,Vector3(0.09,0.07,step+0.02),Color("f09848"),basis,true)
-			if track_id=="bergwelt":
-				# Reference guardrail: blue and white bands with gold caps.
-				rail_color=SKY_ISLANDS.RAIL_BLUE if i%6<3 else Color("f1f4ff")
-				lower_color=Color("1d3a9a")
-			_prop("box",rail_at+Vector3.UP*0.97,Vector3(0.16,0.2,step+0.05),rail_color,basis)
-			_prop("box",rail_at+Vector3.UP*0.54,Vector3(0.11,0.14,step+0.05),lower_color,basis)
-			if i%3==0:
-				_prop("box",rail_at+Vector3.UP*0.52,Vector3(0.14,1.10,0.17),Color("647e91"),basis)
-				if track_id=="bergwelt":
-					_prop("ball",rail_at+Vector3.UP*1.12,Vector3.ONE*0.13,SKY_ISLANDS.GOLD,basis,true)
+			# Premium section follows exactly the existing path sample and the
+			# same RAIL_LATERAL. Kart collision is deliberately unchanged.
+			PREMIUM_RAIL_KIT.build_segment(self, i, d, step, side, basis)
 		if i%8<3: _prop("box",p+basis.y*0.02,Vector3(0.13,0.018,step+0.02),Color("e6ead9"),basis)
 		if bridge and i%13==0 and track_id!="bergwelt":
 			var base_y: float=maxf(-2.3,_ground_height(p.x,p.z))
