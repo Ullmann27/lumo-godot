@@ -151,13 +151,19 @@ jobs:
 
       - name: Boot exported Android project data
         run: |
+          set -euo pipefail
           APK_PACK="$GITHUB_WORKSPACE/android/build/src/main/assets/lumo3d.pck"
+          test -s "$APK_PACK"
           BOOT_DIR=$(mktemp -d)
+          trap 'rm -rf "$BOOT_DIR"' EXIT
           (cd "$BOOT_DIR" && godot --headless --audio-driver Dummy --main-pack "$APK_PACK" --quit-after 360) 2>&1 | tee /tmp/android-pack-boot.log
           if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/android-pack-boot.log; then exit 1; fi
-          grep -q '\[Boot\] starting' /tmp/android-pack-boot.log
-          grep -q '\[Router\] goto:' /tmp/android-pack-boot.log
-          rm -rf "$BOOT_DIR"
+          # Current engine boot routes directly into the games scene, not
+          # the removed [Boot] starting / [Router] goto logging interface.
+          # Match actual initialized systems + scene, not stale log text.
+          grep -qF '[EventBus] online - signals registered' /tmp/android-pack-boot.log
+          grep -qF '[Lumo] character_ready' /tmp/android-pack-boot.log
+          grep -qF '[Router] loaded:games' /tmp/android-pack-boot.log
 
       - name: Gradle assembleDebug
         run: |
