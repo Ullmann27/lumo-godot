@@ -17,6 +17,7 @@ func _run() -> void:
 	legacy._make_curve()
 	assert(legacy.world_extent.is_equal_approx(Vector2(101.0, 91.0)))
 	assert(original.points.size() == 17, "Existing coastal control points must remain intact")
+	var original_length: float = legacy.length
 	legacy.free()
 
 	# Deliberately move points beyond the original terrain: this is not a
@@ -31,7 +32,7 @@ func _run() -> void:
 	extended.definition = scaled
 	extended.low_detail = true
 	extended._make_curve()
-	assert(extended.length > legacy.length * 2.0)
+	assert(extended.length > original_length * 2.0)
 	assert(extended.world_extent.x > 200.0)
 	assert(extended.world_extent.y > 200.0)
 	assert(extended._ground_height(200.0, 0.0) > -3.8)
