@@ -2246,9 +2246,12 @@ func _process(delta: float) -> void:
 		return
 	animation_time += delta
 	wheel_spin_phase = fposmod(wheel_spin_phase + motion_speed * delta / 0.35, TAU)
+	# A restrained exhaust pilot light gives cruising karts a sense of speed.
+	# Full plasma remains boost-only; reduced-motion keeps the original policy.
+	var cruising_exhaust: bool = motion_speed > 7.0 and not reduced_motion and not far_detail
 	for flame in flames:
-		flame.visible = motion_boost and motion_speed > 0.5
-		flame.scale.z = 0.7 if reduced_motion else 0.85 + sin(animation_time * 30) * 0.18
+		flame.visible = (motion_boost and motion_speed > 0.5) or cruising_exhaust
+		flame.scale.z = (0.34 if cruising_exhaust and not motion_boost else (0.7 if reduced_motion else 0.85 + sin(animation_time * 30) * 0.18))
 	for spark in sparks:
 		spark.visible = motion_drift and absf(motion_steer) > 0.2 and motion_speed > 1.0
 		spark.scale.z = 0.9 + sin(animation_time * 23.0) * 0.3
