@@ -125,6 +125,9 @@ func _run() -> void:
 		await _settle()
 		for step in range(5):
 			assert(game.garage.step == step)
+			if step == 3:
+				assert(is_instance_valid(game.garage.preview_world), "Track preview is an actual 3D world")
+				assert(game.garage.preview_world.scale.x >= 0.018, "Track-world preview must fill more of the 3D presentation panel")
 			if step == 2:
 				var kart_grid: GridContainer = game.garage.choices.get_child(0)
 				assert(kart_grid.get_child_count() == 14, "All fourteen karts are offered as cards")

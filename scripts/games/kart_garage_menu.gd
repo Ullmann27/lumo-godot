@@ -1213,7 +1213,10 @@ func _refresh_preview() -> void:
 			):
 				preview_world.remove_child(child)
 				child.queue_free()
-		preview_world.scale = Vector3.ONE * 0.010
+		# The mini-map used 1% world scale and occupied only a small patch of
+		# the tall Fold preview panel. Enlarge the actual geometry without
+		# touching race-world scale, road width, collision or driving speed.
+		preview_world.scale = Vector3.ONE * 0.020
 		preview_world.position.y = 0.12
 		preview_pivot.add_child(preview_world)
 
