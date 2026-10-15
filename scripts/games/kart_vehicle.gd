@@ -2251,7 +2251,18 @@ func _process(delta: float) -> void:
 	var cruising_exhaust: bool = motion_speed > 7.0 and not reduced_motion and not far_detail
 	for flame in flames:
 		flame.visible = (motion_boost and motion_speed > 0.5) or cruising_exhaust
-		flame.scale.z = (0.34 if cruising_exhaust and not motion_boost else (0.7 if reduced_motion else 0.85 + sin(animation_time * 30) * 0.18))
+		if not flame.has_meta("boost_finish"):
+			flame.set_meta("boost_finish", flame.material_override)
+		# GL Compatibility can clip bright plasma to white. Normal cruising
+		# uses a dim blue finish; boosting restores the original full emission.
+		flame.material_override = (
+			_mat(Color("287eaa"), 0.0, 0.56, 0.20)
+			if cruising_exhaust and not motion_boost else flame.get_meta("boost_finish")
+		)
+		flame.scale.z = (
+			0.24 if cruising_exhaust and not motion_boost
+			else (0.7 if reduced_motion else 0.85 + sin(animation_time * 30) * 0.18)
+		)
 	for spark in sparks:
 		spark.visible = motion_drift and absf(motion_steer) > 0.2 and motion_speed > 1.0
 		spark.scale.z = 0.9 + sin(animation_time * 23.0) * 0.3
