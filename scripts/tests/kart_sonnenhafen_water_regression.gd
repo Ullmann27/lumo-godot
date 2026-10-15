@@ -5,6 +5,16 @@ extends SceneTree
 const WORLD = preload("res://scripts/games/kart_world.gd")
 
 
+func _foam_value(material: ShaderMaterial) -> float:
+	var raw: Variant = material.get_shader_parameter("coastal_foam")
+	# An unset shader uniform returns null on some renderers. This test requires
+	# the runtime to set the exact value, not silently rely on a shader default.
+	assert(raw is float, "Coastal foam must be explicitly initialized on every track")
+	if not raw is float:
+		return -1.0
+	return raw
+
+
 func _initialize() -> void:
 	call_deferred("_run")
 
@@ -18,7 +28,7 @@ func _check_sonnenhafen(low_detail: bool) -> void:
 	assert(water.material_override is ShaderMaterial, "Coastal water must use a shader")
 	var material: ShaderMaterial = water.material_override
 	assert(material.shader != null and material.shader.code.contains("coastal_foam"))
-	var foam: float = float(material.get_shader_parameter("coastal_foam"))
+	var foam: float = _foam_value(material)
 	assert(is_equal_approx(foam, 0.0 if low_detail else 0.78), "Full/low water profile")
 	assert(is_equal_approx(water.position.y, -2.35), "Harbor and ocean sea level")
 	assert(world.has_node("LumoCoastalWaterfall"), "Waterfall is part of the actual world")
@@ -43,7 +53,7 @@ func _run() -> void:
 	forest.build(true, "zauberwald", true)
 	var sea: MeshInstance3D = forest.get_node("AnimatedCoastalWater")
 	var mat: ShaderMaterial = sea.material_override
-	assert(is_equal_approx(float(mat.get_shader_parameter("coastal_foam")), 0.0))
+	assert(is_equal_approx(_foam_value(mat), 0.0))
 	forest.queue_free()
 	await process_frame
 	print("[SonnenhafenWater] PASS: full/low foam, other-track isolation, real waterfall, shared sea height")
