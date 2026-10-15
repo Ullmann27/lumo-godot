@@ -10,9 +10,10 @@ on:
       - "scripts/tests/kart_sonnenhafen_water_regression.gd"
       - "scripts/tests/kart_sonnenhafen_showcase.gd"
       - ".github/workflows/lumo-sonnenhafen-water-visual.yml"
+      - "tools/qa/sonnenhafen_visual_gate.py"
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   godot-runtime-and-screenshots:
     runs-on: ubuntu-latest
@@ -56,6 +57,24 @@ jobs:
           for name in 01_start_grid 02_grandstand 03_terraced_curve 04_waterfall 05_harbour_run 06_overview; do
             test -s "exports/sonnenhafen/${name}.png"
           done
+      - name: Validate real screenshots and produce six-view montage
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user --quiet 'Pillow==11.3.0'
+          python3 tools/qa/sonnenhafen_visual_gate.py exports/sonnenhafen | tee logs/sonnenhafen-water/image-qa.log
+          test -s exports/sonnenhafen/00_sonnenhafen_runtime_montage.png
+          test -s exports/sonnenhafen/visual_quality_report.json
+      - name: Publish individual unretouched PNG screenshots for direct viewing
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG=lumo-sonnenhafen-runtime-shots-20261015
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --target "$GITHUB_SHA"               --title "Sonnenhafen: Original-Godot-Screenshots (noch keine APK)"               --notes "Sechs unretuschierte PNG-Aufnahmen aus Godot 4.6.3 GL Compatibility/Mesa; ein Kontaktbogen und technische Bildmetriken. Dies ist KEIN nachgewiesener Android-/Fold-Qualitätsbericht."               --prerelease
+          fi
+          gh release upload "$TAG" exports/sonnenhafen/*.png             exports/sonnenhafen/visual_quality_report.json --clobber
       - name: Upload real captures and runtime logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -63,5 +82,6 @@ jobs:
           name: lumo-sonnenhafen-water-visual-${{ github.run_id }}
           path: |
             exports/sonnenhafen/*.png
+            exports/sonnenhafen/visual_quality_report.json
             logs/sonnenhafen-water/*.log
           if-no-files-found: warn
