@@ -19,9 +19,9 @@ static func definition(id: String) -> Dictionary:
 		"zauberwald":
 			return {
 				"id": id, "name": "Zauberwald", "subtitle": "Lichter zwischen den Baumkronen",
-				"accent": Color("a6e9d0"), "asphalt": Color("374b5c"),
-				"sky": Color("243c73"), "horizon": Color("a3c7d1"), "fog": Color("90b9c3"),
-				"sun": Color("e2e9ff"), "ground": Color("244b48"), "seed": 24019,
+				"accent": Color("7debd8"), "asphalt": Color("202937"),
+				"sky": Color("172a48"), "horizon": Color("538b95"), "fog": Color("315c68"),
+				"sun": Color("ffe0b0"), "ground": Color("244b48"), "seed": 24019,
 				"points": PackedVector3Array([
 					Vector3(0, 1.4, 60), Vector3(35, 2.0, 48), Vector3(64, 5.0, 24),
 					Vector3(46, 8.5, -8), Vector3(60, 6.2, -42), Vector3(26, 2.0, -66),
@@ -33,7 +33,7 @@ static func definition(id: String) -> Dictionary:
 			return {
 				# Himmelsinseln Sprint (reference k07): road carried by floating islands at night.
 				"id": id, "name": "Himmelsinseln", "subtitle": "Hoch hinaus. Gemeinsam weiter!",
-				"accent": Color("4fe6ff"), "asphalt": Color("2b3550"),
+				"accent": Color("4fe6ff"), "asphalt": Color("20283d"),
 				"sky": Color("0b1a4a"), "horizon": Color("3b3f9a"), "fog": Color("3a4c98"),
 				"sun": Color("c3d0ff"), "ground": Color("4f9a44"), "seed": 63181,
 				"points": PackedVector3Array([
@@ -46,7 +46,7 @@ static func definition(id: String) -> Dictionary:
 		"holo_city":
 			return {
 				"id": id, "name": "Hologramm-City", "subtitle": "Über den Dächern der Zukunft",
-				"accent": Color("6ee4f4"), "asphalt": Color("152d49"),
+				"accent": Color("6ee4f4"), "asphalt": Color("172235"),
 				"sky": Color("080f30"), "horizon": Color("334f82"), "fog": Color("253f70"),
 				"sun": Color("b5d8ff"), "ground": Color("11263b"), "seed": 8073,
 				"points": PackedVector3Array([
@@ -62,8 +62,8 @@ static func definition(id: String) -> Dictionary:
 				"id": "sonnenhafen",
 				"name": "Sonnenhafen",
 				"subtitle": "Grand Prix zwischen Klippen, Hafen und Wasserfall",
-				"accent": Color("77dbe0"), "asphalt": Color("3d556b"),
-				"sky": Color("197acb"), "horizon": Color("83c8ee"), "fog": Color("afd8e7"),
+				"accent": Color("63dce9"), "asphalt": Color("242d38"),
+				"sky": Color("276ba0"), "horizon": Color("e7a976"), "fog": Color("d9b18b"),
 				"sun": Color("ffe5bc"), "ground": Color("7caa69"), "seed": 109021,
 				# Long-form coastal circuit: stadium straight -> uphill cliff S -> high hairpin ->
 				# harbour descent -> bridge approach -> waterfront sweep -> final technical bends.

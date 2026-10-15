@@ -25,6 +25,8 @@ const WALL_LATERAL: float = 5.0
 const DECORATION_CELL: float = 48.0
 var curve: Curve3D
 var length: float = 0.0
+## Adaptive coastal terrain bounds; legacy 101x91m islands keep identical geometry.
+var world_extent: Vector2 = Vector2(101.0, 91.0)
 var road: MeshInstance3D
 var low_detail: bool = false
 var groups: Dictionary = {}
@@ -146,6 +148,15 @@ func _make_curve() -> void:
 		var d: float = float(i) * length / count
 		_road_samples.append(curve.sample_baked(d, true))
 		_road_distances.append(d)
+	# Only primary coastal maps use _terrain(). Leave expansion-only terrain
+	# untouched and preserve the exact legacy bounds for current-sized routes.
+	world_extent = Vector2(101.0, 91.0)
+	if track_id in ["sonnenhafen", "zauberwald", "holo_city"]:
+		for sample in _road_samples:
+			if absf(sample.x) > 101.0:
+				world_extent.x = maxf(world_extent.x, absf(sample.x) + 18.0)
+			if absf(sample.z) > 91.0:
+				world_extent.y = maxf(world_extent.y, absf(sample.z) + 18.0)
 	checkpoint_positions.clear()
 	for i in range(8):
 		checkpoint_positions.append(position_at(float(i) * length / 8.0))
@@ -420,7 +431,7 @@ func _lighting() -> void:
 	environment.background_mode=Environment.BG_SKY
 	environment.sky=_sky_for(track_id)
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color=Color("c8e0f4") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
+	environment.ambient_light_color=Color("f0d7bb") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
 	environment.ambient_light_energy=(0.28 if low_detail else 0.20) if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
 	environment.tonemap_mode=Environment.TONE_MAPPER_ACES if track_id in ["candy_cloud", "volcano_night"] else Environment.TONE_MAPPER_FILMIC
 	environment.tonemap_exposure=float(visual.exposure)
@@ -442,9 +453,9 @@ func _lighting() -> void:
 	world_environment.environment=environment
 	add_child(world_environment)
 	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees=Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0)
+	sun.rotation_degrees=Vector3(-25,-36,0) if track_id=="sonnenhafen" else (Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0))
 	sun.light_color=definition.sun
-	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.84 if low_detail else 0.68) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
+	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.86 if low_detail else 0.94) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -453,8 +464,8 @@ func _lighting() -> void:
 	add_child(sun)
 	var fill := DirectionalLight3D.new()
 	fill.rotation_degrees=Vector3(-28,145,0)
-	fill.light_color=Color("e0a18b") if track_id=="volcano_night" else Color("9bccea")
-	fill.light_energy=0.18 if track_id=="volcano_night" else 0.10
+	fill.light_color=Color("e0a18b") if track_id=="volcano_night" else (Color("e8b28c") if track_id=="sonnenhafen" else Color("9bccea"))
+	fill.light_energy=0.18 if track_id=="volcano_night" else (0.14 if track_id=="sonnenhafen" else 0.10)
 	fill.shadow_enabled=false
 	add_child(fill)
 
@@ -479,7 +490,7 @@ func _nearest_horizontal(at: Vector3) -> Vector2:
 
 func _ground_height(x: float, z: float) -> float:
 	var angle: float=atan2(z,x)
-	var radius: float=Vector2(x/101.0,z/91.0).length()
+	var radius: float=Vector2(x/world_extent.x,z/world_extent.y).length()
 	var shore: float=1.0+sin(angle*5.0+0.6)*0.035+sin(angle*9.0)*0.018
 	if radius>shore: return -3.8-(radius-shore)*8.0
 	if track_id=="holo_city": return -1.2
@@ -494,13 +505,19 @@ func _ground_height(x: float, z: float) -> float:
 func _terrain() -> void:
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var count: int=72 if not low_detail else 48
+	var baseline: int = 72 if not low_detail else 48
+	# Scale only the terrain sampling grid when a genuinely longer course is
+	# authored. Keep mobile mesh growth bounded until chunk streaming lands.
+	var span_ratio: float = maxf(world_extent.x / 101.0, world_extent.y / 91.0)
+	var count: int = clampi(ceili(float(baseline) * span_ratio), baseline, 224 if not low_detail else 144)
+	var terrain_half_x: float = world_extent.x + 13.0
+	var terrain_half_z: float = world_extent.y + 13.0
 	var grid: Array[PackedVector3Array]=[]
 	for z in range(count+1):
 		var row := PackedVector3Array()
 		for x in range(count+1):
-			var px: float=-114.0+float(x)*228.0/count
-			var pz: float=-104.0+float(z)*208.0/count
+			var px: float=-terrain_half_x+float(x)*(terrain_half_x*2.0)/float(count)
+			var pz: float=-terrain_half_z+float(z)*(terrain_half_z*2.0)/float(count)
 			row.append(Vector3(px,_ground_height(px,pz),pz))
 		grid.append(row)
 	for z in range(count):
@@ -983,8 +1000,9 @@ func _roadside_chevrons() -> void:
 
 
 func _roadside_streetlights() -> void:
-	for i in range(14):
-		var d: float=(float(i)+0.5)*length/14.0
+	var lamp_count: int = clampi(roundi(length / 45.0), 14, 90)
+	for i in range(lamp_count):
+		var d: float=(float(i)+0.5)*length/float(lamp_count)
 		var side: float=-1.0 if i%2==0 else 1.0
 		var basis: Basis=frame(d)
 		var at: Vector3=position_at(d,side*7.4)
