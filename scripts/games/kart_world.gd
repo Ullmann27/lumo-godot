@@ -544,9 +544,17 @@ func _terrain() -> void:
 	water.position.y= -2.35
 	var water_material := ShaderMaterial.new()
 	water_material.shader=preload("res://assets/shaders/kart_water.gdshader")
+	# Make the material profile explicit across native, GL Compatibility and
+	# headless backends. Unset ShaderMaterial uniforms can return null rather
+	# than the default declared in the shader.
+	water_material.set_shader_parameter("coastal_foam", 0.0)
 	if track_id=="holo_city":
 		water_material.set_shader_parameter("deep_water",Color("0d1934"))
 		water_material.set_shader_parameter("shallow_water",Color("174970"))
+	# Follow Sonnenhafen's authored shoreline, never light up other seas.
+	# Disabled on low-detail/mobile-saving mode without affecting physics.
+	if track_id=="sonnenhafen" and not low_detail:
+		water_material.set_shader_parameter("coastal_foam",0.78)
 	water.material_override=water_material
 	water.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(water)
