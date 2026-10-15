@@ -25,6 +25,8 @@ const WALL_LATERAL: float = 5.0
 const DECORATION_CELL: float = 48.0
 var curve: Curve3D
 var length: float = 0.0
+## Adaptive coastal terrain bounds; legacy 101x91m islands keep identical geometry.
+var world_extent: Vector2 = Vector2(101.0, 91.0)
 var road: MeshInstance3D
 var low_detail: bool = false
 var groups: Dictionary = {}
@@ -146,6 +148,15 @@ func _make_curve() -> void:
 		var d: float = float(i) * length / count
 		_road_samples.append(curve.sample_baked(d, true))
 		_road_distances.append(d)
+	# Only primary coastal maps use _terrain(). Leave expansion-only terrain
+	# untouched and preserve the exact legacy bounds for current-sized routes.
+	world_extent = Vector2(101.0, 91.0)
+	if track_id in ["sonnenhafen", "zauberwald", "holo_city"]:
+		for sample in _road_samples:
+			if absf(sample.x) > 101.0:
+				world_extent.x = maxf(world_extent.x, absf(sample.x) + 18.0)
+			if absf(sample.z) > 91.0:
+				world_extent.y = maxf(world_extent.y, absf(sample.z) + 18.0)
 	checkpoint_positions.clear()
 	for i in range(8):
 		checkpoint_positions.append(position_at(float(i) * length / 8.0))
@@ -479,7 +490,7 @@ func _nearest_horizontal(at: Vector3) -> Vector2:
 
 func _ground_height(x: float, z: float) -> float:
 	var angle: float=atan2(z,x)
-	var radius: float=Vector2(x/101.0,z/91.0).length()
+	var radius: float=Vector2(x/world_extent.x,z/world_extent.y).length()
 	var shore: float=1.0+sin(angle*5.0+0.6)*0.035+sin(angle*9.0)*0.018
 	if radius>shore: return -3.8-(radius-shore)*8.0
 	if track_id=="holo_city": return -1.2
@@ -494,13 +505,19 @@ func _ground_height(x: float, z: float) -> float:
 func _terrain() -> void:
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var count: int=72 if not low_detail else 48
+	var baseline: int = 72 if not low_detail else 48
+	# Scale only the terrain sampling grid when a genuinely longer course is
+	# authored. Keep mobile mesh growth bounded until chunk streaming lands.
+	var span_ratio: float = maxf(world_extent.x / 101.0, world_extent.y / 91.0)
+	var count: int = clampi(ceili(float(baseline) * span_ratio), baseline, 224 if not low_detail else 144)
+	var terrain_half_x: float = world_extent.x + 13.0
+	var terrain_half_z: float = world_extent.y + 13.0
 	var grid: Array[PackedVector3Array]=[]
 	for z in range(count+1):
 		var row := PackedVector3Array()
 		for x in range(count+1):
-			var px: float=-114.0+float(x)*228.0/count
-			var pz: float=-104.0+float(z)*208.0/count
+			var px: float=-terrain_half_x+float(x)*(terrain_half_x*2.0)/float(count)
+			var pz: float=-terrain_half_z+float(z)*(terrain_half_z*2.0)/float(count)
 			row.append(Vector3(px,_ground_height(px,pz),pz))
 		grid.append(row)
 	for z in range(count):
