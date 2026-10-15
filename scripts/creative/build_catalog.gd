@@ -230,6 +230,66 @@ const PARTS: Array[Dictionary] = [
 		"shape": "bench",
 		"color": Color("bc9563")
 	},
+	{
+		"id": "cottage", "name": "Häuschen", "category": "Bauen",
+		"size": Vector3i(3, 3, 3), "shape": "cottage",
+		"color": Color("e7d2ac"), "premium": true
+	},
+	{
+		"id": "windmill", "name": "Windmühle", "category": "Bauen",
+		"size": Vector3i(3, 5, 3), "shape": "windmill",
+		"color": Color("dccab0"), "premium": true
+	},
+	{
+		"id": "fountain", "name": "Brunnen", "category": "Deko",
+		"size": Vector3i(3, 2, 3), "shape": "fountain",
+		"color": Color("8dc5ea"), "premium": true
+	},
+	{
+		"id": "swing", "name": "Schaukel", "category": "Deko",
+		"size": Vector3i(3, 3, 2), "shape": "swing",
+		"color": Color("a98a6d"), "premium": true
+	},
+	{
+		"id": "treehouse", "name": "Baumhaus", "category": "Natur",
+		"size": Vector3i(3, 5, 3), "shape": "treehouse",
+		"color": Color("8bbd71"), "premium": true
+	},
+	{
+		"id": "gazebo", "name": "Pavillon", "category": "Bauen",
+		"size": Vector3i(3, 3, 3), "shape": "gazebo",
+		"color": Color("e4c69b"), "premium": true
+	},
+	{
+		"id": "mailbox", "name": "Briefkasten", "category": "Deko",
+		"size": Vector3i(1, 2, 1), "shape": "mailbox",
+		"color": Color("f19b53"), "premium": true
+	},
+	{
+		"id": "vegetable_garden", "name": "Gemüsebeet", "category": "Natur",
+		"size": Vector3i(2, 1, 2), "shape": "vegetable_garden",
+		"color": Color("6bae65"), "premium": true
+	},
+	{
+		"id": "slide", "name": "Rutsche", "category": "Deko",
+		"size": Vector3i(2, 3, 3), "shape": "slide",
+		"color": Color("f7b94d"), "premium": true
+	},
+	{
+		"id": "campfire", "name": "Lagerfeuer", "category": "Deko",
+		"size": Vector3i(2, 1, 2), "shape": "campfire",
+		"color": Color("ef9957"), "premium": true
+	},
+	{
+		"id": "fox_statue", "name": "Lumo-Statue", "category": "Deko",
+		"size": Vector3i(2, 3, 2), "shape": "fox_statue",
+		"color": Color("e4a56e"), "premium": true
+	},
+	{
+		"id": "garden_gate", "name": "Gartentor", "category": "Bauen",
+		"size": Vector3i(3, 2, 1), "shape": "garden_gate",
+		"color": Color("cba37a"), "premium": true
+	},
 ]
 
 
