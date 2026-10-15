@@ -20,6 +20,35 @@ static func profile(points: Array[Vector2], sides: int = 20, irregularity: float
 	return surface.commit()
 
 
+
+## Octagonal metal guardrail section, 1 metre long along local Z.
+## One cached mesh is re-used by all curve-following MultiMesh transforms.
+static func premium_rail() -> ArrayMesh:
+	var cross_section: Array[Vector2] = [
+		Vector2(-0.42, -0.50), Vector2(0.42, -0.50),
+		Vector2(0.50, -0.30), Vector2(0.50, 0.30),
+		Vector2(0.42, 0.50), Vector2(-0.42, 0.50),
+		Vector2(-0.50, 0.30), Vector2(-0.50, -0.30),
+	]
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for i in range(cross_section.size()):
+		var a: Vector2 = cross_section[i]
+		var b: Vector2 = cross_section[(i + 1) % cross_section.size()]
+		var a0 := Vector3(a.x, a.y, -0.5)
+		var b0 := Vector3(b.x, b.y, -0.5)
+		var a1 := Vector3(a.x, a.y, 0.5)
+		var b1 := Vector3(b.x, b.y, 0.5)
+		for v in [a0, b0, a1, b0, b1, a1]:
+			surface.add_vertex(v)
+		for v in [Vector3.ZERO + Vector3.FORWARD * 0.5, a0, b0]:
+			surface.add_vertex(v)
+		for v in [Vector3.ZERO + Vector3.BACK * 0.5, a1, b1]:
+			surface.add_vertex(v)
+	surface.generate_normals()
+	return surface.commit()
+
+
 static func crown() -> ArrayMesh:
 	# Broad, asymmetric, clustered canopy rather than a spherical tree primitive.
 	return profile([
