@@ -41,9 +41,9 @@ static func premium_rail() -> ArrayMesh:
 		var b1 := Vector3(b.x, b.y, 0.5)
 		for v in [a0, b0, a1, b0, b1, a1]:
 			surface.add_vertex(v)
-		for v in [Vector3.ZERO + Vector3.FORWARD * 0.5, a0, b0]:
+		for v in [Vector3.FORWARD * 0.5, b0, a0]:
 			surface.add_vertex(v)
-		for v in [Vector3.ZERO + Vector3.BACK * 0.5, a1, b1]:
+		for v in [Vector3.BACK * 0.5, a1, b1]:
 			surface.add_vertex(v)
 	surface.generate_normals()
 	return surface.commit()
