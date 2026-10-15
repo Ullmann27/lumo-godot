@@ -1,6 +1,7 @@
 extends RefCounted
 ## Shared real geometry, material cache and glass UI for the three new 3D games.
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
+const PREMIUM = preload("res://scripts/creative/build_premium_props.gd")
 var materials: Dictionary = {}
 const STONE = preload("res://assets/creative/sandstone.webp")
 const GRASS = preload("res://assets/generated/lumo3d_assets/textures/albedo/grass_deep_albedo.png")
@@ -126,6 +127,9 @@ func part_node(item: Dictionary) -> StaticBody3D:
 	var color: Color = item.color
 	var glow: bool = bool(item.get("glow", false))
 	var mid := Vector3(size.x * 0.5, size.y * 0.5, size.z * 0.5)
+	if bool(item.get("premium", false)):
+		PREMIUM.build(self, body, item)
+		return body
 	match str(item.shape):
 		"door":
 			box(body, mid, size * 0.98, color)
