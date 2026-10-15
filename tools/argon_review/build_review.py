@@ -328,5 +328,22 @@ def main():
     produced=[master(all_man["godot"],all_man["lernen"],all_codes["godot"],all_codes["lernen"])]
     for project in ("godot","lernen"):
         produced.extend(write_code_volume(project,SOURCES[project],all_codes[project],all_man[project]))
+    # One-file first-contact packet: actual screenshots, task, complete first
+    # source volume from each repository. All remaining volumes remain available.
+    from pypdf import PdfReader, PdfWriter
+    combo = OUT / "Lumo_Argon_Gesamtpaket_Bilder_Originalcode_20261015.pdf"
+    writer = PdfWriter()
+    selected = [produced[0],
+        OUT / "Lumo_Argon_Originalcode_Godot_Band_01.pdf",
+        OUT / "Lumo_Argon_Originalcode_Flutter_Band_01.pdf"]
+    counts = []
+    for src in selected:
+        reader = PdfReader(str(src))
+        counts.append((src.name,len(reader.pages)))
+        writer.append(reader)
+    with combo.open("wb") as stream: writer.write(stream)
+    produced.append(combo)
+    print("Combined Argon packet:", json.dumps(counts,ensure_ascii=False),
+          "total_pages",sum(n for _,n in counts))
     print(json.dumps({"files":[{"name":x.name,"bytes":x.stat().st_size} for x in produced]},ensure_ascii=False))
 if __name__=="__main__": main()
