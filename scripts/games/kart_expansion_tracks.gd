@@ -239,7 +239,7 @@ static func definition(id: String) -> Dictionary:
 		"name": entry.name,
 		"subtitle": entry.tag,
 		"accent": entry.color,
-		"asphalt": Color("283b59") if id != "volcano_night" else Color("1e2536"),
+		"asphalt": Color("242d40") if id != "volcano_night" else Color("1b202c"),
 		"sky": sky,
 		"horizon": sky.lightened(0.24),
 		"fog": sky.lightened(0.18),
