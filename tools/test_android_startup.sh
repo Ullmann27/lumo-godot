@@ -112,8 +112,8 @@ lumo_deadline=$((SECONDS + 60))
 lumo_started=0
 while (( SECONDS < lumo_deadline )); do
     capture_logcat
-    if grep -Fq '[Boot] starting' "$lumo_capture" \
-        && grep -Eq '\[Router\] goto:(games|home|kart|jump)[[:space:]]' "$lumo_capture" \
+    if grep -Fq '[EventBus] online - signals registered' "$lumo_capture" \
+        && grep -Eq '\[Router\] loaded:(games|home|kart|jump)[[:space:]]' "$lumo_capture" \
         && grep -Eq '\[Lumo\] (character|companion)_ready' "$lumo_capture"; then
         adb_cmd shell pidof "$lumo_package" >> "$lumo_log" 2>&1 || fail "App exited after boot markers"
         lumo_started=1
@@ -121,7 +121,7 @@ while (( SECONDS < lumo_deadline )); do
     fi
     sleep 2
 done
-(( lumo_started == 1 )) || fail "Boot, route and loaded-character markers were not all observed within 60 seconds"
+(( lumo_started == 1 )) || fail "Initialized engine, loaded scene and ready Lumo were not all observed within 60 seconds"
 sleep 2
 capture_logcat
 lumo_pid=$(adb_cmd shell pidof "$lumo_package" | tr -d '\r') || fail "App crashed or exited after startup"
@@ -141,7 +141,7 @@ lumo_started=0
 while (( SECONDS < lumo_deadline )); do
     capture_logcat
     if grep -Fq '[Kart] Holographic garage ready: five modes, twelve worlds, free steering' "$lumo_capture" \
-        && grep -Eq '\[Router\] goto:kart[[:space:]]' "$lumo_capture"; then
+        && grep -Eq '\[Router\] loaded:kart[[:space:]]' "$lumo_capture"; then
         lumo_started=1
         break
     fi
