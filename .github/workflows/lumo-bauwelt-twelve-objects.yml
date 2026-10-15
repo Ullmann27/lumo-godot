@@ -48,5 +48,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: lumo-bauwelt-12-\${{ github.run_id }}
+          name: lumo-bauwelt-12-${{ github.run_id }}
           path: exports/creative-build/
