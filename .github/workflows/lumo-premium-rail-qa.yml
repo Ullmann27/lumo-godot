@@ -57,3 +57,27 @@ jobs:
           timeout 180 "$GODOT_BIN" --headless --audio-driver Dummy --script scripts/tests/kart_physics_regression.gd 2>&1 | tee /tmp/rail-physics.log
           if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/rail-physics.log; then exit 1; fi
           grep -q '\[KartPhysics\] PASS' /tmp/rail-physics.log
+
+      - name: Install software OpenGL framebuffer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri
+      - name: Capture actual rail in Sonnenhafen world
+        run: |
+          set -euo pipefail
+          export LIBGL_ALWAYS_SOFTWARE=1
+          timeout 180 xvfb-run -a -s '-screen 0 1280x720x24' \
+            "$HOME/godot-bin/godot" --audio-driver Dummy \
+            --rendering-method gl_compatibility \
+            --script scripts/tests/kart_premium_rail_screenshot.gd \
+            2>&1 | tee /tmp/rail-actual-render.log
+          grep -q '\[RailScreenshot\] PASS' /tmp/rail-actual-render.log
+          test -s artifacts/rail_sonnenhafen_actual.png
+      - name: Upload real Godot screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-rail-sunharbor-real-render
+          path: artifacts/rail_sonnenhafen_actual.png
+          if-no-files-found: warn
+          retention-days: 14
