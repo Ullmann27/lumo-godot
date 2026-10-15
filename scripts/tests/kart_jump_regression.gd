@@ -80,8 +80,17 @@ func _test_too_slow() -> void:
 	var jump: Dictionary = game.world.jump
 	_place(jump.ramp_start - 4.0, 4.0)
 	var distance_before: float = game.distance
-	_drive(600, 0.85, true)
-	assert(game.gap_falls == 1 and game.reset_count == 1, "A crawl falls into the gap once")
+	# A brake input > 0.5 now intentionally engages reversing after a stop;
+	# the former 0.85 test drove backwards instead of testing a slow jump.
+	# 0.50 limits the forward target to 53% of normal speed without
+	# entering reverse, so the kart reaches the gap at a genuine crawl.
+	game.auto_gas = true
+	_drive(600, 0.50, true)
+	assert(
+		game.gap_falls == 1 and game.reset_count == 1,
+		"A crawl falls once (falls=%d resets=%d speed=%.2f distance=%.2f)" %
+		[game.gap_falls, game.reset_count, game.speed, game.previous_road_distance]
+	)
 	assert(not game.airborne)
 	var landing: float = fposmod(game.previous_road_distance, game.track_length)
 	assert(landing >= jump.gap_end and landing < jump.gap_end + 12.0, "Carried just past the gap")
