@@ -48,3 +48,14 @@ jobs:
           name: sonnenhafen-3d-real-views
           path: exports/sonnenhafen/*.png
           if-no-files-found: error
+
+      - name: Targeted original 3D tower views
+        run: |
+          set -euo pipefail
+          timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' /tmp/godot --path . --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_sonnenhafen_lookout_capture.gd
+          for i in 01 02 03; do test -s "exports/sonnenhafen-lookouts/${i}_tower.png"; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sonnenhafen-new-towers-3d
+          path: exports/sonnenhafen-lookouts/*.png
+          if-no-files-found: error
