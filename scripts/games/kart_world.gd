@@ -621,6 +621,9 @@ func _road() -> void:
 	asphalt.set_shader_parameter("cinematic_grade",float(visual.road_grade))
 	asphalt.set_shader_parameter("road_gloss",float(visual.road_gloss))
 	asphalt.set_shader_parameter("edge_energy",float(visual.edge_energy))
+	# Fine aggregate is GPU-fragment work: disabled for low-detail profiles.
+	if track_id != "candy_cloud":
+		asphalt.set_shader_parameter("surface_grit",0.0 if low_detail else 0.86)
 	if track_id == "candy_cloud":
 		asphalt.shader = preload("res://assets/shaders/kart_candy_road.gdshader")
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
