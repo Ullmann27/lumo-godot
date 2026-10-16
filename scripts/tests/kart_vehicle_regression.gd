@@ -360,6 +360,13 @@ func _run() -> void:
 			not kart.wheel_rotors[0].quaternion.is_equal_approx(wheel_before),
 			"Returning near restores animated wheel phase"
 		)
+		# Cruising shows subtle plasma without fake permanent drifting sparks.
+		kart.set_motion(9.0, 0.0, false, false)
+		kart._process(0.02)
+		for flame in kart.flames:
+			assert(flame.visible, "Cruising exhaust must be visible near the driver")
+		for spark in kart.sparks:
+			assert(not spark.visible, "Cruising alone must not create drift sparks")
 		kart.set_motion(0, 0, false, false)
 		kart._process(0.02)
 		for effect in kart.flames + kart.sparks:

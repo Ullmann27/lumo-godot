@@ -1,8 +1,9 @@
 shader_type spatial;
 render_mode cull_disabled;
 
-uniform vec4 deep_water : source_color = vec4(0.035, 0.29, 0.48, 1.0);
-uniform vec4 shallow_water : source_color = vec4(0.12, 0.63, 0.67, 1.0);
+// Farben aus #71 (Gemini-Analyse: tieferes Wasser), Uferschaum aus #72.
+uniform vec4 deep_water : source_color = vec4(0.026, 0.23, 0.42, 1.0);
+uniform vec4 shallow_water : source_color = vec4(0.10, 0.57, 0.66, 1.0);
 // Optional beach foam is enabled only for full-detail Sonnenhafen.
 // Uses the same authored shoreline profile as LumoRaceWorld._ground_height().
 uniform float coastal_foam : hint_range(0.0, 1.0) = 0.0;
@@ -17,9 +18,9 @@ void fragment() {
 	float swell = sin(p.x * 0.12 + p.y * 0.17 + TIME * 0.5);
 	float small_wave = sin(p.x * 1.3 + p.y * 0.4 + TIME * 1.15)
 		* sin(p.y * 1.65 - TIME * 0.75);
-	float crest = pow(max(0.0, small_wave * 0.5 + swell * 0.5), 8.0);
+	float crest = pow(max(0.0, small_wave * 0.5 + swell * 0.5), 7.0);
 	float light = smoothstep(-0.6, 1.0, swell * 0.4 + small_wave * 0.15);
-	vec3 ocean_color = mix(deep_water.rgb, shallow_water.rgb, light * 0.65) + crest * 0.13;
+	vec3 ocean_color = mix(deep_water.rgb, shallow_water.rgb, light * 0.65) + crest * 0.18;
 	if (coastal_foam > 0.0) {
 		// World-space foam ring. Matching shore harmonics retain the irregular
 		// island contour without a texture lookup or additional geometry.
@@ -34,7 +35,7 @@ void fragment() {
 	ALBEDO = ocean_color;
 	NORMAL_MAP = vec3(0.5 + small_wave * 0.025, 0.5 + swell * 0.022, 1.0);
 	NORMAL_MAP_DEPTH = 0.2;
-	ROUGHNESS = 0.24;
+	ROUGHNESS = 0.22;
 	METALLIC = 0.22;
-	SPECULAR = 0.5;
+	SPECULAR = 0.54;
 }

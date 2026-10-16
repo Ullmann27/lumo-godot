@@ -7,8 +7,8 @@ extends RefCounted
 
 const ICE_CYAN := Color("5ee8ff")
 const SUNSET_GOLD := Color("ffda77")
-const DEEP_BLUE := Color("0b294d")
-const TITANIUM := Color("9ac1db")
+const DEEP_BLUE := Color("172839")
+const TITANIUM := Color("536d7b")
 
 
 static func build_segment(world, index: int, distance: float, step: float, side: float, basis: Basis) -> void:
@@ -18,23 +18,23 @@ static func build_segment(world, index: int, distance: float, step: float, side:
 	var accent := ICE_CYAN
 	match world.track_id:
 		"sonnenhafen":
-			upper = Color("e8f4ff") if index % 6 < 3 else Color("268ec7")
-			lower = Color("16355b")
+			upper = Color("526575")
+			lower = Color("1b2939")
 		"zauberwald":
-			upper = Color("d9f2e7")
-			lower = Color("366b78")
+			upper = Color("49645f")
+			lower = Color("203b39")
 			accent = Color("93ffc4")
 		"bergwelt":
-			upper = Color("f1f4ff") if index % 6 >= 3 else Color("3573ef")
-			lower = Color("1d3a9a")
+			upper = Color("455678")
+			lower = Color("1e2d4c")
 			accent = SUNSET_GOLD
 		"volcano_night":
 			upper = Color("b6a0ae")
 			lower = Color("493d55")
 			accent = Color("ff9346")
 		"holo_city":
-			upper = Color("90edff")
-			lower = Color("224f7c")
+			upper = Color("3c5668")
+			lower = Color("1a3248")
 		"candy_cloud":
 			upper = Color("fff2fb")
 			lower = Color("b078ad")
@@ -64,7 +64,7 @@ static func build_segment(world, index: int, distance: float, step: float, side:
 	# kart_island.gd / world.WALL_LATERAL. Fewer posts in low detail.
 	if index % (4 if world.low_detail else 3) == 0:
 		world._prop("box", at + basis.y * 0.52,
-			Vector3(0.16, 1.06, 0.18), Color("607f99"), basis)
+			Vector3(0.16, 1.06, 0.18), Color("344452"), basis)
 		if not world.low_detail and index % 6 == 0:
 			world._prop("ball", at + basis.y * 1.14,
 				Vector3.ONE * 0.105, SUNSET_GOLD, basis, true)

@@ -37,6 +37,12 @@ jobs:
           timeout 120 /tmp/godot --headless --script res://scripts/tests/kart_premium_rail_regression.gd 2>&1 | tee /tmp/rail.log
           grep -F '[PremiumRailKit] PASS' /tmp/rail.log
           if grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' /tmp/rail.log; then exit 1; fi
+      - name: Verify adaptive coastal terrain for future long routes
+        run: |
+          set -euo pipefail
+          timeout 180 /tmp/godot --headless --script res://scripts/tests/kart_coastal_terrain_extent_regression.gd 2>&1 | tee /tmp/terrain.log
+          grep -F '[KartTerrainExtent] PASS' /tmp/terrain.log
+          if grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' /tmp/terrain.log; then exit 1; fi
       - name: Verify Bauwelt meshes and saved placement states
         run: |
           set -euo pipefail
@@ -51,5 +57,6 @@ jobs:
           path: |
             /tmp/import.log
             /tmp/rail.log
+            /tmp/terrain.log
             /tmp/bauwelt.log
           if-no-files-found: ignore
