@@ -27,7 +27,7 @@ def rgb_png(width=96, height=48, *, race=False, tiny_change=False):
     body = zlib.compress(b"".join(rows))
     def chunk(tag, data):
         return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data))
-    return (b"\\x89PNG\\r\\n\\x1a\\n"
+    return (b"\x89PNG\r\n\x1a\n"
             + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
             + chunk(b"IDAT", body) + chunk(b"IEND", b""))
 
