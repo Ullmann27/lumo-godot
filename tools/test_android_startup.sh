@@ -116,8 +116,8 @@ capture_logcat() {
             result=$?
         fi
         rm -f "$pending"
-        printf '[AndroidStartup] logcat attempt %s/3 failed (exit %s): %s\\n' \
-            "$attempt" "$result" "$(head -c 240 "$errors" | tr '\\n' ' ')" >> "$lumo_log"
+        printf '[AndroidStartup] logcat attempt %s/3 failed (exit %s): %s\n' \
+            "$attempt" "$result" "$(head -c 240 "$errors" | tr '\n' ' ')" >> "$lumo_log"
         if (( result != 124 )) && ! grep -Eiq 'offline|transport|closed|broken pipe|device not found|timed out|timeout|read failed' "$errors"; then
             fail "Non-transient adb logcat failure (exit $result)"
         fi
