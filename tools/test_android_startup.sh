@@ -191,12 +191,18 @@ while (( SECONDS < lumo_deadline )); do
     adb_cmd shell pidof "$lumo_package" >> "$lumo_log" 2>&1 || fail "Kart exited after orientation change"
     adb_cmd exec-out screencap -p > "$lumo_root/exports/android/sonnenhafen-android-start.png" \
         || fail "Could not capture running Android race"
-    if python3 tools/check_android_frame.py "$lumo_root/exports/android/sonnenhafen-android-start.png" >> "$lumo_log" 2>&1; then
+    # A colourful garage is NOT proof that the race started. The native
+    # scene prints this marker only after the playable world has been built.
+    # Keep checking until both the engine-state marker and the actual Android
+    # framebuffer are present. Missing markers must fail rather than passing
+    # a visually nonblank selection screen.
+    if grep -Fq "[Kart] race_world_ready:" "$lumo_capture" \
+        && python3 tools/check_android_frame.py "$lumo_root/exports/android/sonnenhafen-android-start.png" "$lumo_root/exports/android/kart-garage-step-5.png" >> "$lumo_log" 2>&1; then
         lumo_frame_ready=1
         break
     fi
     sleep 2
 done
-(( lumo_frame_ready == 1 )) || fail "Android race remained black or clipped after actual five-step selection"
+(( lumo_frame_ready == 1 )) || fail "Android race frame never visibly replaced the garage after five selection steps"
 printf '[AndroidStartup] PASS: direct kart route, five actual selection steps and rendered race after orientation change\n' \
     | tee -a "$lumo_log"
