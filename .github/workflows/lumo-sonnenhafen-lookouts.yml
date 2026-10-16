@@ -35,3 +35,16 @@ jobs:
           timeout 180s /tmp/godot --headless --path . --script res://scripts/tests/kart_sonnenhafen_lookouts_regression.gd 2>&1 | tee /tmp/landmarks.log
           grep -F '[SonnenhafenLookouts] PASS:' /tmp/landmarks.log
           if grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' /tmp/landmarks.log; then exit 1; fi
+
+      - name: Capture unmodified Godot 3D overview images
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get install -y xvfb libgl1-mesa-dri mesa-vulkan-drivers
+          timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' /tmp/godot --path . --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_sonnenhafen_showcase.gd
+          test -s exports/sonnenhafen/06_overview.png
+      - name: Archive screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonnenhafen-3d-real-views
+          path: exports/sonnenhafen/*.png
+          if-no-files-found: error
