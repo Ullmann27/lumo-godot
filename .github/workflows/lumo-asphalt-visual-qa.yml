@@ -55,7 +55,11 @@ jobs:
           ROOT="$(pwd)"
           BASELINE="$RUNNER_TEMP/lumo-asphalt-before"
           git clone -q --no-hardlinks . "$BASELINE"
-          git -C "$BASELINE" checkout --detach ea69d122c7c36d0b4b5ffaab388321ddb0931967
+          # actions/checkout uses shallow depth=1; explicitly fetch the
+          # immutable before commit instead of assuming local git history.
+          git -C "$BASELINE" remote set-url origin https://github.com/Ullmann27/lumo-godot.git
+          git -C "$BASELINE" fetch --depth 1 origin ea69d122c7c36d0b4b5ffaab388321ddb0931967
+          git -C "$BASELINE" checkout --detach FETCH_HEAD
           test "$(git -C "$BASELINE" rev-parse HEAD)" = "ea69d122c7c36d0b4b5ffaab388321ddb0931967"
           (cd "$BASELINE" && /tmp/godot --headless --editor --path . --import --quit) 2>&1 | tee exports/asphalt/logs/before-import.log
           ! grep -E 'SCRIPT ERROR|Parse Error|ERROR:' exports/asphalt/logs/before-import.log
