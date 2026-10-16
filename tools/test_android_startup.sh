@@ -118,7 +118,14 @@ capture_logcat() {
         rm -f "$pending"
         printf '[AndroidStartup] logcat attempt %s/3 failed (exit %s): %s\n' \
             "$attempt" "$result" "$(head -c 240 "$errors" | tr '\n' ' ')" >> "$lumo_log"
-        if (( result != 124 )) && ! grep -Eiq 'offline|transport|closed|broken pipe|device not found|timed out|timeout|read failed' "$errors"; then
+        # Android emulator logcat can exit 255 with no stderr immediately
+        # after a landscape/deep-link restart (observed in CI 38884036326).
+        # Retry only this otherwise unclassifiable transport case, bounded
+        # exactly like timeout/offline. Any complete capture still undergoes
+        # the unchanged native/Java/Godot crash checks below.
+        if (( result == 255 )) && [[ ! -s "$errors" ]]; then
+            printf '[AndroidStartup] Empty-stderr adb 255 after route change; bounded retry\n' >> "$lumo_log"
+        elif (( result != 124 )) && ! grep -Eiq 'offline|transport|closed|broken pipe|device not found|timed out|timeout|read failed' "$errors"; then
             fail "Non-transient adb logcat failure (exit $result)"
         fi
         if (( attempt < 3 )); then sleep 2; fi
