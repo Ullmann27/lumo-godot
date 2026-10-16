@@ -15,6 +15,7 @@ const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
 const PREMIUM_RAIL_KIT = preload("res://scripts/games/kart_premium_rail_kit.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const HARBOR_PAVILIONS = preload("res://scripts/games/kart_harbor_pavilions.gd")
+const HARBOR_LOOKOUTS = preload("res://scripts/games/kart_harbor_lookout_towers.gd")
 const HARBOR_AQUARIUM = preload("res://scripts/games/kart_harbor_aquarium.gd")
 var action_obstacles: Array[Vector3] = []
 const WIDTH: float = 10.8
@@ -112,6 +113,7 @@ func build(
 		_grand_prix_dressing()
 		HARBOR_AQUARIUM.build(self)
 		HARBOR_PAVILIONS.build(self)
+		HARBOR_LOOKOUTS.build(self)
 	LANDMARKS.build(self)
 	FLEET_DRESSING.build(self)
 	TRACK_DETAIL.build(self)
