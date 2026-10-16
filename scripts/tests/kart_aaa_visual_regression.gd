@@ -46,6 +46,12 @@ func _check() -> void:
 			assert(marker.get_child(0) is PathFollow3D)
 			assert(marker.get_child(0).get_child(0) is MeshInstance3D)
 	world.queue_free()
+	# Free the detached probes too: a real renderer reports their shader
+	# materials and canvas items as leaks at exit otherwise.
+	glass.free()
+	full_glass.free()
+	tail.free()
+	pivot.free()
 	await process_frame
 	print("[AAA_VISUAL] PASS: real glass shader, fallback, environment, original-world neon arches, no collisions")
 	quit(0)
