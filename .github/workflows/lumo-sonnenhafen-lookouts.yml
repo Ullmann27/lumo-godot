@@ -1,0 +1,37 @@
+name: Lumo Sonnenhafen 3D observation towers
+on:
+  push:
+    branches: [chatgpt/sonnenhafen-lookout-3d-landmarks-2026-10-16]
+  pull_request:
+    paths:
+      - 'scripts/games/kart_harbor_lookout_towers.gd'
+      - 'scripts/games/kart_world.gd'
+      - 'scripts/tests/kart_sonnenhafen_lookouts_regression.gd'
+      - '.github/workflows/lumo-sonnenhafen-lookouts.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verified-3d-geometry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o /tmp/godot.zip
+          unzip -q /tmp/godot.zip -d /tmp
+          mv /tmp/Godot_v4.6.3-stable_linux.x86_64 /tmp/godot
+          chmod +x /tmp/godot
+      - name: Import and syntax check
+        run: |
+          set -euo pipefail
+          /tmp/godot --headless --path . --editor --import --quit 2>&1 | tee /tmp/parse.log
+          if grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' /tmp/parse.log; then exit 1; fi
+      - name: Real Sonnenhafen landmarks and other-track isolation
+        run: |
+          set -euo pipefail
+          timeout 180s /tmp/godot --headless --path . --script res://scripts/tests/kart_sonnenhafen_lookouts_regression.gd 2>&1 | tee /tmp/landmarks.log
+          grep -F '[SonnenhafenLookouts] PASS:' /tmp/landmarks.log
+          if grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' /tmp/landmarks.log; then exit 1; fi
