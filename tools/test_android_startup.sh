@@ -100,7 +100,30 @@ if grep -Eiq 'Error:|Permission Denial|SecurityException|unable to resolve|does 
 fi
 
 capture_logcat() {
-    adb_cmd logcat -d -v threadtime > "$lumo_capture" 2>&1 || fail "Could not capture logcat"
+    # On a software-rendered Android emulator the full logcat can exceed the
+    # default 15-second adb timeout while the Godot scene initializes.
+    # Retry ONLY bounded adb transport/timeouts; retain the full, unfiltered
+    # logcat so real native/script crashes still fail the original assertions.
+    local attempt result
+    local pending="${lumo_capture}.pending"
+    local errors="${lumo_capture}.adb-errors"
+    for attempt in 1 2 3; do
+        if timeout 35s "$lumo_adb" "${lumo_adb_args[@]}" logcat -d -v threadtime > "$pending" 2> "$errors"; then
+            mv "$pending" "$lumo_capture"
+            rm -f "$errors"
+            break
+        else
+            result=$?
+        fi
+        rm -f "$pending"
+        printf '[AndroidStartup] logcat attempt %s/3 failed (exit %s): %s\n' \
+            "$attempt" "$result" "$(head -c 240 "$errors" | tr '\n' ' ')" >> "$lumo_log"
+        if (( result != 124 )) && ! grep -Eiq 'offline|transport|closed|broken pipe|device not found|timed out|timeout|read failed' "$errors"; then
+            fail "Non-transient adb logcat failure (exit $result)"
+        fi
+        if (( attempt < 3 )); then sleep 2; fi
+    done
+    [[ -f "$lumo_capture" && -s "$lumo_capture" ]] || fail "Could not capture logcat after 3 bounded attempts"
     local error_pattern="Couldn.t load project|Could not load.*(project|main pack)|Failed.*(main pack|project\.binary|\.pck)|FATAL EXCEPTION|Fatal signal|SIGSEGV|SIGABRT|SCRIPT ERROR|Parse Error|godot[[:space:]]*:.*ERROR:"
     if grep -Eiq "$error_pattern" "$lumo_capture"; then
         grep -Ein "$error_pattern" "$lumo_capture" | head -12 >&2 || true
