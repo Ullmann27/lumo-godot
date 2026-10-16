@@ -2,7 +2,7 @@ name: Lumo 3D Build
 
 on:
   push:
-    branches: [main, codex/lumo-island-cup-2026-10-02, codex/lumo-kart-sunharbor-2026-10-02, chatgpt/sonnenhafen-water-visual-qa-2026-10-15, claude/kart-integration-2026-10-16]
+    branches: [main, codex/lumo-island-cup-2026-10-02, codex/lumo-kart-sunharbor-2026-10-02, chatgpt/sonnenhafen-water-visual-qa-2026-10-15, claude/kart-integration-2026-10-16, chatgpt/kart-android-adb-resilience-2026-10-16]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -275,7 +275,7 @@ jobs:
       - name: Publish tested packages
         # Integration candidates are verified here but never published as a
         # release or Pages trial without the owner's approval.
-        if: github.event_name != 'pull_request' && !startsWith(github.ref_name, 'claude/')
+        if: github.event_name != 'pull_request' && github.ref_name == 'main'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: school-3d-${{ github.run_number }}
@@ -308,7 +308,7 @@ jobs:
       - name: Publish trial on existing GitHub Pages
         # Integration candidates are verified here but never published as a
         # release or Pages trial without the owner's approval.
-        if: github.event_name != 'pull_request' && !startsWith(github.ref_name, 'claude/')
+        if: github.event_name != 'pull_request' && github.ref_name == 'main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
