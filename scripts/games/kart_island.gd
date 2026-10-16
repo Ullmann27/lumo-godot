@@ -669,6 +669,13 @@ func _begin_race() -> void:
 	# world also changes minimap visibility; resolve both for the actual surface.
 	_apply_responsive_layout()
 	_apply_responsive_layout.call_deferred()
+	# The real Android acceptance test must distinguish the actual 3D race
+	# from the visually rich five-step garage. Only emit this marker after
+	# _build_world() has completed and the race HUD has been shown.
+	if not is_instance_valid(race_root) or not is_instance_valid(player) or not is_instance_valid(camera):
+		push_error("[Kart] Failed to assemble the playable 3D race")
+	else:
+		print("[Kart] race_world_ready: ", track_id, " mode=", mode)
 
 
 func _resume_saved_race() -> void:
