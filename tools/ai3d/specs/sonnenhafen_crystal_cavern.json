@@ -1,0 +1,9 @@
+{
+  "asset_id": "sonnenhafen_biolum_cavern_crystals",
+  "recipe": "crystal_cluster",
+  "seed": 1975,
+  "height_m": 4.2,
+  "radius_m": 0.72,
+  "count": 9,
+  "max_triangles": 520
+}
