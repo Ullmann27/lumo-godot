@@ -36,7 +36,7 @@ jobs:
           faces=sum(manifest['accessors'][p['indices']]['count']//3 for m in manifest['meshes'] for p in m['primitives'])
           import hashlib
           expected='51424a888722495daa8a0496774d724ff64b9399693c0348e9749c6745234e2b'
-          git_blob_sha=hashlib.sha1(('blob '+str(len(raw))+' ').encode()+bytes([0])+raw).hexdigest()
+          git_blob_sha=hashlib.sha1(('blob '+str(len(raw))).encode()+bytes([0])+raw).hexdigest()
           broken_blob='08d1aad4009469bcd5af5e68d06d6bf31e3f3044'
           known_clean=hashlib.sha256(raw).hexdigest()==expected
           known_original=git_blob_sha==broken_blob
