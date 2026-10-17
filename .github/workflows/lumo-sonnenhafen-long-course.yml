@@ -1,0 +1,93 @@
+name: Lumo Sonnenhafen 1.85km course experimental QA
+on:
+  push:
+    branches:
+      - chatgpt/lumo-b2-sonnenhafen-long-course-2026-10-17
+  pull_request:
+    paths:
+      - scripts/games/kart_sonnenhafen_long_course.gd
+      - scripts/games/kart_tracks.gd
+      - scripts/tests/kart_sonnenhafen_long_course_regression.gd
+      - .github/workflows/lumo-sonnenhafen-long-course.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  genuine-long-course:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Godot 4.6.3 and software GL renderer
+        run: |
+          set -euo pipefail
+          sudo apt-get -qq update
+          sudo apt-get -y install xvfb libgl1-mesa-dri
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Verify real Godot script import
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit \
+            2>&1 | tee "$RUNNER_TEMP/import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import.log"
+      - name: Verify measured 1.85km geometry and both actual full 3D LODs
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 240 \
+            --log "$RUNNER_TEMP/long-course.log" \
+            --required '[SonnenhafenLong] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_sonnenhafen_long_course_regression.gd
+      - name: Preserve existing 12-track curve and checkpoint contract
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 180 \
+            --log "$RUNNER_TEMP/track-contract.log" \
+            --required '[TrackContract]' -- \
+            godot --headless --path . --script res://scripts/tests/kart_track_contract.gd
+      - name: Drive two complete physical laps on all four original race worlds
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 480 \
+            --log "$RUNNER_TEMP/course-driving.log" \
+            --required '[KartCourseDriving] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_courses_driving_regression.gd
+      - name: Existing original harbor scenery and piers may not regress
+        run: |
+          set -euo pipefail
+          for item in 'kart_sonnenhafen_lookouts_regression:[SonnenhafenLookouts] PASS' 'kart_sonnenhafen_viaduct_regression:[CoastalViaduct] PASS'; do
+            IFS=: read -r script marker <<< "$item"
+            python3 tools/run_godot_probe.py --timeout 180 \
+              --log "$RUNNER_TEMP/$script.log" --required "$marker" -- \
+              godot --headless --audio-driver Dummy --path . \
+              --script "res://scripts/tests/$script.gd"
+          done
+      - name: Capture actual extended Sonnenhafen in Godot OpenGL
+        env:
+          LUMO_CAPTURE_DIR: ${{ github.workspace }}/exports/sonnenhafen-1850
+        run: |
+          set -euo pipefail
+          mkdir -p "$LUMO_CAPTURE_DIR"
+          timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' \
+            godot --path . --audio-driver Dummy --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_sonnenhafen_viaduct_capture.gd
+          test -s "$LUMO_CAPTURE_DIR/01_chase_viaduct.png"
+          test -s "$LUMO_CAPTURE_DIR/02_coast_observation.png"
+          test -s "$LUMO_CAPTURE_DIR/03_second_viaduct.png"
+      - name: Save new long course screenshots and exact output logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sonnenhafen-1850-prototype-${{ github.run_id }}
+          path: |
+            exports/sonnenhafen-1850/
+          if-no-files-found: warn
