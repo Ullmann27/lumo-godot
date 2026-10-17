@@ -41,18 +41,21 @@ static func _repair_geometry(node: Node) -> int:
 				var points: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
 				var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
 				if points.is_empty():
+					printerr('[MeshyGate] Empty vertices on surface ', surface)
 					return -1
 				if indices.is_empty():
 					for k in range(points.size()):
 						indices.append(k)
 				var n: int = indices.size()
 				if n < 3 or n % 3 != 0:
+					printerr('[MeshyGate] Invalid triangle index count: ', n)
 					return -1
 				for offset in range(0, n, 3):
 					var a: int = indices[offset]
 					var b: int = indices[offset + 1]
 					var c: int = indices[offset + 2]
 					if mini(a, mini(b, c)) < 0 or maxi(a, maxi(b, c)) >= points.size():
+						printerr('[MeshyGate] Invalid triangle vertex index')
 						return -1
 					var va: Vector3 = points[a]
 					var vb: Vector3 = points[b]
@@ -69,6 +72,7 @@ static func _repair_geometry(node: Node) -> int:
 			clean_mesh.surface_set_material(surface, old_mesh.surface_get_material(surface))
 		if altered:
 			mi.mesh = clean_mesh
+	print('[MeshyGate] geometry diagnosis surfaces=', found, ' total_triangles=', total, ' spike_triangles=', discarded, ' ratio=', float(discarded) / float(maxi(total, 1)))
 	if found == 0 or total == 0 or float(discarded) / float(total) > 0.05:
 		return -1
 	return discarded
