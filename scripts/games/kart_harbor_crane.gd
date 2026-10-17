@@ -6,6 +6,7 @@ extends RefCounted
 ## affects collision, lap timing, steering, checkpoints, AI or the race camera.
 ## Only the trolley travels slowly along the boom (one small node, high detail).
 const HARBOR = preload("res://scripts/games/kart_harbor_dressing.gd")
+const VISUAL_FINISH = preload("res://scripts/games/kart_harbor_visual_finish.gd")
 # Authored candidates north of the marina; the first one that passes the
 # water and road checks below is used. Each faces away from the island.
 const SITES: Array[Vector3] = [Vector3(114, 0, 54), Vector3(108, 0, 54), Vector3(114, 0, 48)]
@@ -105,6 +106,8 @@ static func _build_site(world, frame: Transform3D) -> void:
 	_machinery(world, frame, detail)
 	_ship(world, frame, detail)
 	_stacks(world, frame, detail)
+	# Optional presentation-only geometry; leaves physics and hoist untouched.
+	VISUAL_FINISH.decorate(world, frame, detail, CONTAINERS, HARBOR.WATER_Y - HARBOR.DECK_Y)
 	if detail:
 		_stairs(world, frame)
 		_trolley_node(world, frame)
