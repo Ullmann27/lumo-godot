@@ -108,6 +108,15 @@ static func _cliff_amphitheater(world, at: Vector3, basis: Basis) -> void:
 		if not world.low_detail:
 			world._prop("torus", crown + Vector3.UP * (y + 2.25),
 				Vector3(radius * 1.6, 0.12, radius * 1.6), CREAM)
+	# Four large sculpted buttresses remain present on Mobile Low:
+	# structural silhouettes, not high-frequency decorative fragments.
+	for side in [-1.0, 1.0]:
+		for depth in [-1.0, 1.0]:
+			var buttress: Vector3 = crown + basis * Vector3(
+				side * 6.1, 6.0, depth * 6.1
+			)
+			world._prop("rock", buttress,
+				Vector3(2.0, 11.8, 2.3), CORAL, basis)
 	var monument: Vector3 = crown + Vector3.UP * 17.0
 	world._prop("crystal", monument, Vector3(4.0, 8.4, 4.0),
 		GLASS, basis, true)
