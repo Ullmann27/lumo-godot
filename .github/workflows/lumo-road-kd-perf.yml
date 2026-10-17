@@ -1,0 +1,60 @@
+name: Lumo B4 exact road index and coastal terrain performance
+on:
+  push:
+    branches:
+      - chatgpt/lumo-b4-road-nearest-kd-2026-10-17
+  pull_request:
+    paths:
+      - scripts/games/kart_world.gd
+      - scripts/tests/kart_road_kd_index_regression.gd
+      - .github/workflows/lumo-road-kd-perf.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-road-index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install real Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import all scripts and original assets
+        run: |
+          set -euo pipefail
+          timeout 220s godot --headless --path . --editor --import --quit \
+            2>&1 | tee "$RUNNER_TEMP/import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import.log"
+      - name: Compare all KD matches with 7500+ exact original linear distances
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 180 \
+            --log "$RUNNER_TEMP/road-kd.log" \
+            --required '[RoadKD] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_road_kd_index_regression.gd
+      - name: Preserve full 1.85km world terrain, harbor and road surface
+        run: |
+          set -euo pipefail
+          for case in 'kart_sonnenhafen_long_course_regression:[SonnenhafenLong] PASS:' 'kart_coastal_terrain_extent_regression:[KartTerrainExtent] PASS:' 'kart_sonnenhafen_hero_coast_regression:[SonnenhafenHeroCoast] PASS:'; do
+            IFS=: read -r script marker <<< "$case"
+            python3 tools/run_godot_probe.py --timeout 220 \
+              --log "$RUNNER_TEMP/$script.log" --required "$marker" -- \
+              godot --headless --audio-driver Dummy --path . \
+              --script "res://scripts/tests/$script.gd"
+          done
+      - name: Archive exact-match benchmark outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-b4-road-kd-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/*.log
+          if-no-files-found: warn
