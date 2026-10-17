@@ -7,19 +7,24 @@ signal darkride_phase_changed(phase: int)
 enum Phase { OUTSIDE, ENTERING, CRUISING, WARNING, SURGE, EXITING }
 
 const RIDE_PATH := "SonnenhafenBioluminescentDarkride"
+const CARTOON_BURST = preload("res://scripts/games/kart_darkride_cartoon_burst.gd")
 const BASE_SHADER_ENERGY: float = 1.10
 const BASE_ARCH_ENERGY: float = 1.60
 const NEON_SURGE_SECONDS: float = 2.4
 
 var phase: int = Phase.OUTSIDE
 var _tunnel: Node3D
+var _burst
 var _surface_materials: Array[ShaderMaterial] = []
 var _rib_material: StandardMaterial3D
 var _active_surge_seconds: float = -1.0
 var _triggered_lap: int = -1
 var _last_energy: float = -1.0
 
-func bind_world(world: Node3D) -> void:
+func bind_world(world) -> void:
+	if is_instance_valid(_burst):
+		_burst.queue_free()
+	_burst = null
 	_tunnel = null
 	_surface_materials.clear()
 	_rib_material = null
@@ -33,6 +38,10 @@ func bind_world(world: Node3D) -> void:
 	if not found is Node3D:
 		return
 	_tunnel = found
+	_burst = CARTOON_BURST.new()
+	_burst.name = "LumoArcadeCrystalShockwave"
+	_tunnel.add_child(_burst)
+	_burst.setup(world, world.low_detail)
 	for name in ["DarkrideRockAndCanopy", "DarkrideIlluminatedRoad"]:
 		var mesh: MeshInstance3D = _tunnel.get_node_or_null(name)
 		if mesh != null and mesh.material_override is ShaderMaterial:
@@ -59,6 +68,8 @@ func tick(absolute_distance: float, track_length: float,
 	elif lap >= 1 and _triggered_lap != lap:
 		_triggered_lap = lap
 		_active_surge_seconds = 0.0
+		if is_instance_valid(_burst):
+			_burst.fire(reduced_motion)
 		_set_phase(Phase.SURGE)
 	elif _active_surge_seconds >= 0.0:
 		_set_phase(Phase.SURGE)
@@ -81,6 +92,8 @@ func tick(absolute_distance: float, track_length: float,
 	if phase != Phase.OUTSIDE:
 		atmosphere = 0.08 if phase == Phase.ENTERING or phase == Phase.EXITING else 0.22
 	_apply_energy(BASE_SHADER_ENERGY + atmosphere + surge * 0.95)
+	if is_instance_valid(_burst):
+		_burst.advance(delta)
 
 func _set_phase(next: int) -> void:
 	if phase != next:

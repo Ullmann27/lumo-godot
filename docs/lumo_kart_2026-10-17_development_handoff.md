@@ -28,6 +28,13 @@
 - **Neon-Event-Regression plus echter rundenabhängiger GPU-Bildvergleich PASS:** [CI #39061641996](https://github.com/Ullmann27/lumo-godot/actions/runs/39061641996). [2 Originalscreenshots](https://github.com/Ullmann27/lumo-godot/actions/runs/39061641996/artifacts/12111561722).
 - Stage-2-Gesamt-CI des finalen #97 HEAD kontrollieren, bevor APK-Pinning oder PR-Merge erwogen wird.
 
+### PR #98 – kinderfreundliche 3D-Kristall-Energieexplosion
+- Branch `chatgpt/lumo-darkride-cartoon-burst-vfx-2026-10-17`, folgt isoliert auf #97.
+- `kart_darkride_cartoon_burst.gd`: drei opake Neon-Torus-Ringe (im Mobile-Low-Detail zwei), mit deterministischer Expansion, reduzierter Bewegung und automatischer Deaktivierung nach 1,5 Sekunden. Die schon existierende Lap-2-Eventsteuerung löst den Effekt genau einmal aus.
+- Keine physischen Kollisionen, keine transparenten GPUParticles, keine Savegame-/Checkpointveränderung.
+- **Tatsächliche Godot-4.6.3-Regression + echter Renderbild-Pixeldifferenztest: PASS** [CI #39062165270](https://github.com/Ullmann27/lumo-godot/actions/runs/39062165270); [vorher/nachher Bildartefakt](https://github.com/Ullmann27/lumo-godot/actions/runs/39062165270/artifacts/12112021594). Keine reale Fold7-FPS-Prüfung oder neue APK.
+- Stage-2-Gesamt-Test auf PR #98 muss vor Android-Pinning abschließend überprüft werden.
+
 ## Priorisierte Folgeaufgaben
 1. **CI-Freeze:** Für #97 alle einschlägigen Laufresultate prüfen. Fehler anhand Logs reparieren, ohne Tests auszuschalten. Nachweis für alte B3-/B6-Baseline-Workflows separat behandeln; diese konnten vor diesem Auftrag an historischen Checkout-Imports abbrechen.
 2. **Art-Pass:** Aus den drei Darkride-Ansichten reale Defizite ableiten, Tunnel-/Felsoberflächen strukturieren, Kristallcluster mehrfach maßstäblich am Streckenrand integrieren; Shader/Farbe vorher/nachher als echte Godot-Bilder vergleichen. Sichtfreiheit, Bodenhaftung, Streckenlänge und 8 Checkpoints müssen unverändert bleiben.
