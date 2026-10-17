@@ -1,0 +1,86 @@
+name: Lumo KI-spezifizierte 3D Asset Factory - real GLB and Godot evidence
+on:
+  pull_request:
+    paths:
+      - 'tools/ai3d/**'
+      - 'tools/ai3d_factory.py'
+      - 'tools/tests/test_ai3d_factory.py'
+      - 'scripts/tests/kart_ai3d_factory_capture.gd'
+      - '.github/workflows/lumo-ai3d-factory.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verified-asset-factory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Security, deterministic geometry, GLB format, budgets
+        run: |
+          python3 -m unittest discover -s tools/tests -p 'test_ai3d_factory.py' -v
+      - name: Generate actual asset from strict JSON contract
+        run: |
+          set -euo pipefail
+          python3 tools/ai3d_factory.py --spec tools/ai3d/specs/sonnenhafen_crystal_cavern.json --output-dir build/ai3d
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          folder=Path("build/ai3d")
+          report=json.loads((folder/"sonnenhafen_biolum_cavern_crystals.json").read_text())
+          blob=(folder/"sonnenhafen_biolum_cavern_crystals.glb").read_bytes()
+          assert hashlib.sha256(blob).hexdigest()==report["sha256"]
+          assert report["triangles"] <= 520
+          assert report["ground_pivot_m"] == 0.0
+          assert blob[:4]==b"glTF"
+          print("LUMO_AI3D_GENERATION_PASS",report)
+          PY
+      - name: Install exact Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Compile Godot and import real generated geometry
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/ai3d-import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/ai3d-import.log"
+      - name: Install software GL renderer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri
+      - name: Render three real Godot turntable camera views
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          timeout 270s xvfb-run -a -s '-screen 0 1280x720x24' \
+            godot --audio-driver Dummy --path . --rendering-method gl_compatibility \
+              --script res://scripts/tests/kart_ai3d_factory_capture.gd 2>&1 | tee "$RUNNER_TEMP/ai3d-render.log"
+          grep -F '[AI3DFactory] PASS:' "$RUNNER_TEMP/ai3d-render.log"
+          for index in 0 1 2; do
+            test -s "artifacts/ai3d-factory/view_$index.png"
+          done
+      - name: Save generated GLB, verification and actual screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-ai3d-factory-experimental-${{ github.run_id }}
+          path: |
+            build/ai3d/*.glb
+            build/ai3d/*.json
+            artifacts/ai3d-factory/*.png
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Save reproducible engine logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-ai3d-factory-qa-${{ github.run_id }}
+          path: ${{ runner.temp }}/ai3d-*.log
+          if-no-files-found: warn
