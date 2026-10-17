@@ -10,6 +10,7 @@ uniform vec4 road_color : source_color = vec4(0.11, 0.15, 0.21, 1.0);
 uniform vec4 cold_light : source_color = vec4(0.11, 0.87, 0.96, 1.0);
 uniform vec4 violet_light : source_color = vec4(0.62, 0.28, 0.94, 1.0);
 uniform float light_intensity : hint_range(0.0, 2.0) = 1.10;
+uniform float rock_detail_strength : hint_range(0.0, 1.0) = 1.0;
 
 varying float inner_fade;
 varying vec3 at_world;
@@ -41,6 +42,10 @@ void fragment() {
         0.2 + 0.75 * rock_iridescence);
     vec3 base_rock = rock_color.rgb * (0.80 + 0.45 * rock_strata)
         + cave_bounce * (0.08 + 0.14 * rock_iridescence);
+    float mineral_strata = 0.5 + 0.5 * sin(UV.y * 19.0 + UV.x * 29.0 + sin(UV.x * 19.0 + UV.y * 2.2));
+    float mineral_seam = smoothstep(0.91, 0.99, sin(UV.y * 11.0 + UV.x * 32.0));
+    base_rock *= mix(1.0, 0.70 + 0.60 * mineral_strata, rock_detail_strength);
+    glow_rock += (cold_light.rgb * 0.17 + violet_light.rgb * 0.10) * mineral_seam * rock_detail_strength;
     vec3 base_road = road_color.rgb * (0.88 + 0.10 * sin(UV.y * 29.0))
         + cold_light.rgb * lane_edge * 0.12;
     vec3 base = mix(base_rock, base_road, road_factor);
