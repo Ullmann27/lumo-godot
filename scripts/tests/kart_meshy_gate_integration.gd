@@ -14,14 +14,14 @@ func _run() -> void:
 		var before: float = world.length
 		var checkpoints: int = world.checkpoint_positions.size()
 		var result: bool = GATE.install(world)
-		assert(result == GATE.is_available(), "GLB availability and gate installation differ")
+		assert(result, "Only the validated spike-free Lumo GLB may be installed")
 		assert(is_equal_approx(world.length, before), "Gate must not alter route length")
 		assert(world.checkpoint_positions.size() == checkpoints, "Gate must not alter checkpoints")
 		if result:
 			var arch: Node3D = world.get_node("LumoKartMeshyStartFinishGate")
 			assert(arch.get_child_count() == 3, "GLB mesh plus two colliders required")
 			var visual: Node3D = arch.get_node("MeshyOriginalGeometry")
-			assert(is_equal_approx(visual.rotation.y, PI), "LUMO KART text must face incoming racers")
+			assert(is_equal_approx(visual.rotation.y, 0.0), "LUMO KART text must face incoming racers")
 			assert(GATE.install(world), "Repeated installation must be safe")
 			var arch_count: int = 0
 			for child in world.get_children():
@@ -32,8 +32,8 @@ func _run() -> void:
 			var right: StaticBody3D = arch.get_node("RightColumn")
 			assert(left.position.x < -WORLD.RAIL_LATERAL)
 			assert(right.position.x > WORLD.RAIL_LATERAL)
-			assert(left.position.x + 1.55 < -WORLD.RAIL_LATERAL)
-			assert(right.position.x - 1.55 > WORLD.RAIL_LATERAL)
+			assert(left.position.x + 3.7 < -WORLD.RAIL_LATERAL)
+			assert(right.position.x - 3.7 > WORLD.RAIL_LATERAL)
 			assert(arch.transform.origin.distance_to(world.position_at(0.0)) < 0.01)
 			print("[MeshyGate] imported model at exact start line: ", arch.get_meta("meshy_gate_asset"))
 		else:
