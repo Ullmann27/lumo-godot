@@ -35,6 +35,7 @@ var length: float = 0.0
 var world_extent: Vector2 = Vector2(101.0, 91.0)
 var road: MeshInstance3D
 var low_detail: bool = false
+var _only_geometry: bool = false
 var groups: Dictionary = {}
 var meshes: Dictionary = {}
 var materials: Dictionary = {}
@@ -72,6 +73,7 @@ func build(
 	action_obstacles.clear()
 	decoration_count = 0
 	low_detail = lightweight
+	_only_geometry = geometry_only
 	definition = TRACKS.definition(selected_track)
 	track_id = definition.id
 	track_name = definition.name
@@ -812,7 +814,7 @@ func _road() -> void:
 		SKY_ISLANDS.road_lights(self)
 		SKY_ISLANDS.road_surface_details(self)
 	elif track_id=="sonnenhafen":
-		if not MESHY_START_GATE.install(self):
+		if _only_geometry or not MESHY_START_GATE.install(self):
 			_arch(0.0,"LUMO GRAND PRIX",Color("65dff5"))
 	else:
 		_arch(0.0,track_name.to_upper(),definition.accent)
