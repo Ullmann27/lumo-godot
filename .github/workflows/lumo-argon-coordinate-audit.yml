@@ -1,0 +1,61 @@
+name: Lumo Argon coordinate invariant audit
+on:
+  push:
+    branches:
+      - chatgpt/lumo-argon-coordinate-audit-2026-10-17
+  pull_request:
+    paths:
+      - scripts/tests/kart_argon_coordinate_audit.gd
+      - scripts/games/kart_world.gd
+      - scripts/games/kart_physical_loop.gd
+      - scripts/games/kart_tracks.gd
+      - scripts/games/kart_expansion_tracks.gd
+      - .github/workflows/lumo-argon-coordinate-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  geometry-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install pinned Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Parse/import original Lumo Kart project
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit \
+            2>&1 | tee "$RUNNER_TEMP/import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import.log"
+      - name: Run actual track and loop coordinate invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log "$RUNNER_TEMP/argon-coordinate-audit.log" \
+            --timeout 120 --required '[ArgonCoordinateAudit] PASS:' -- \
+            godot --headless --path . \
+            --script res://scripts/tests/kart_argon_coordinate_audit.gd
+      - name: Preserve coordinate audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: argon-coordinate-audit-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/import.log
+            ${{ runner.temp }}/argon-coordinate-audit.log
+          if-no-files-found: warn
