@@ -110,6 +110,40 @@ func _test_live_rival_and_wall() -> void:
 		assert(float(game.opponents[0].position.y) < 5.0, "Lower AI rival snapped up")
 		assert(float(game.opponents[1].position.y) > 13.0, "Upper AI rival dropped down")
 
+	# Physics, not just projected positions: player drives across each deck
+	# for multiple simulation ticks without changing to the crossing below.
+	for d in [lower_d, upper_d]:
+		var start: float = d - 3.0
+		game.player.position = world.position_at(start) + Vector3.UP * 0.035
+		game.player_heading = game._heading(start)
+		game.previous_road_distance = start
+		game.distance = start
+		game.lane = 0.0
+		game.speed = 16.0
+		game.physical_velocity = Vector3(
+			-sin(game.player_heading), 0.0, -cos(game.player_heading)
+		) * game.speed
+		game.airborne = false
+		game.offroad_seconds = 0.0
+		var resets_before: int = game.reset_count
+		for _frame in range(32):
+			game._drive_player(STEP, 0.0, 0.0)
+			var contact: Dictionary = world.sample_road(
+				game.player.position, game.previous_road_distance
+			)
+			assert(absf(float(contact.lateral)) < 1.2,
+				"Physical driving drifted off the road while crossing levels")
+			assert(absf(float(contact.height) - game.player.position.y) < 0.2,
+				"Physical driving snapped away from its own road surface")
+			if d == upper_d:
+				assert(game.player.position.y > 13.0, "Player lost the upper road")
+			else:
+				assert(game.player.position.y < 5.0, "Player jumped onto the bridge")
+		assert(game.reset_count == resets_before,
+			"An ordinary stacked-road pass must not trigger rescue")
+		assert(game.distance > start + 2.0,
+			"Actual horizontal physics failed to progress on the 3D road")
+
 	# Actual game respawn stays behind current progress, in its checkpoint
 	# interval, and restores the correct deck without resetting race rewards.
 	for d in [lower_d, upper_d]:
