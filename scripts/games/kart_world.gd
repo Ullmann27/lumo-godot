@@ -1014,7 +1014,11 @@ func _terraced_cliffs() -> void:
 			var d: float=centre_d-span*0.5+float(slice)*span/6.0
 			var basis: Basis=frame(d)
 			var road_y: float=position_at(d).y
-			var outward: float=10.3+sin(float(slice)*0.8)*1.1
+			# The old tight cliff shelf could project rock silhouettes into
+			# the 6.05m race rail on the expanded 1.85km circuit. Move the
+			# entire multi-tier formation outward; keep original short course.
+			var cliff_offset: float = 14.8 if length > 1500.0 else 10.3
+			var outward: float=cliff_offset+sin(float(slice)*0.8)*1.1
 			for tier in range(3):
 				var lateral: float=outward+float(tier)*2.8
 				var at: Vector3=position_at(d,side*lateral)
