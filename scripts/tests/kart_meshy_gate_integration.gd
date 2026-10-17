@@ -19,9 +19,27 @@ func _run() -> void:
 		assert(world.checkpoint_positions.size() == checkpoints, "Gate must not alter checkpoints")
 		if result:
 			var arch: Node3D = world.get_node("LumoKartMeshyStartFinishGate")
-			assert(arch.get_child_count() == 3, "GLB mesh plus two colliders required")
+			assert(arch.get_child_count() == 5, "GLB, two contact surfaces and two colliders required")
 			var visual: Node3D = arch.get_node("MeshyOriginalGeometry")
 			assert(is_equal_approx(visual.rotation.y, 0.0), "LUMO KART text must face incoming racers")
+			assert(arch.has_meta("foot_ground_drop_m"), "Terrain seating must record its drop")
+			assert(float(arch.get_meta("foot_ground_drop_m")) < -0.05, "Floating feet must be lowered onto ground")
+			assert(int(arch.get_meta("crisp_material_surfaces")) > 0, "Sharp PBR material sampling missing")
+			assert(int(arch.get_meta("terrain_contact_shadow_count")) == 2)
+			for side in [-1.0, 1.0]:
+				var contact_name: String = "FootContactRight" if side > 0.0 else "FootContactLeft"
+				var contact: MeshInstance3D = arch.get_node(contact_name)
+				assert(contact.mesh != null and contact.mesh.get_surface_count() == 1, "Terrain contact not generated")
+				var local_base: Vector3 = Vector3(
+					side * GATE.FOOT_OFFSET_X,
+					GATE.SOURCE_BOTTOM * GATE.ARCH_HEIGHT + visual.position.y,
+					0.0
+				)
+				var foot: Vector3 = arch.to_global(local_base)
+				var soil: float = world._ground_height(foot.x, foot.z)
+				assert(foot.y <= soil - 0.05, "Foot base floats above real coast terrain")
+				assert(foot.y >= soil - 3.0, "Foot must not sink meters into the terrain")
+				print("[MeshyGate] foot contact ", contact_name, " soil=", soil, " base=", foot.y)
 			assert(GATE.install(world), "Repeated installation must be safe")
 			var arch_count: int = 0
 			for child in world.get_children():
