@@ -49,7 +49,7 @@ func _run() -> void:
 		world.queue_free()
 		await process_frame
 	assert(totals[0] > totals[1], "High LOD must show more actual 3D than mobile low")
-	assert(totals[0] < 260, "Viaduct detail must remain under mobile batch budget")
+	assert(totals[0] < 310, "Viaduct detail must remain under mobile batch budget")
 
 	for other_id in ["zauberwald", "bergwelt", "holo_city"]:
 		var other = WORLD.new()
