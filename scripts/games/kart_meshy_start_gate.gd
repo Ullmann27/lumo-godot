@@ -39,6 +39,9 @@ static func install(world) -> bool:
 	var visual: Node3D = instanced as Node3D
 	visual.name = "MeshyOriginalGeometry"
 	visual.scale = Vector3(ARCH_WIDTH, ARCH_HEIGHT, ARCH_DEPTH)
+	# Meshy has the readable LUMO KART face on local -Z. Incoming karts
+	# approach from road-frame +Z: rotate the imported mesh towards them.
+	visual.rotation.y = PI
 	visual.position.y = -SOURCE_BOTTOM * ARCH_HEIGHT + 0.025
 	arch.add_child(visual)
 	# The two columns are outside both the playable lane (5.4 m from centre)
