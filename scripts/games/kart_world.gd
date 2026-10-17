@@ -20,6 +20,7 @@ const HARBOR_LOOKOUTS = preload("res://scripts/games/kart_harbor_lookout_towers.
 const COASTAL_VIADUCT = preload("res://scripts/games/kart_sonnenhafen_coastal_viaduct.gd")
 const LONG_BRIDGE = preload("res://scripts/games/kart_sonnenhafen_long_bridge.gd")
 const HERO_COAST = preload("res://scripts/games/kart_sonnenhafen_hero_coast.gd")
+const DARK_RIDE = preload("res://scripts/games/kart_sonnenhafen_darkride.gd")
 const HARBOR_CRANE = preload("res://scripts/games/kart_harbor_crane.gd")
 const HARBOR_AQUARIUM = preload("res://scripts/games/kart_harbor_aquarium.gd")
 var action_obstacles: Array[Vector3] = []
@@ -130,6 +131,8 @@ func build(
 		LONG_BRIDGE.build(self)
 		HERO_COAST.build(self)
 		HARBOR_CRANE.build(self)
+		if not geometry_only:
+			DARK_RIDE.build(self)
 	LANDMARKS.build(self)
 	FLEET_DRESSING.build(self)
 	TRACK_DETAIL.build(self)
