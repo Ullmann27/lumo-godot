@@ -60,6 +60,7 @@ func _run() -> void:
 
 	# The actual production world must import geometry, coastal dressing,
 	# harbor crane/boats and both level-of-detail tiers on this full-length track.
+	var bridge_parts: Array[int] = []
 	for low in [true, false]:
 		var scene = WORLD.new()
 		root.add_child(scene)
@@ -69,10 +70,24 @@ func _run() -> void:
 		assert(scene.has_meta("sonnenhafen_viaduct_sites"))
 		assert(scene.has_meta("harbor_boats"))
 		assert(scene.has_meta("sonnenhafen_lookouts"))
+		assert(scene.has_meta("sonnenhafen_long_bridge_supports"),
+			"Long water-crossing road needs actual maritime columns")
+		var piers: Array = scene.get_meta("sonnenhafen_long_bridge_supports")
+		assert(piers.size() >= 3, "Race viaduct must have at least three real support pairs")
+		for pier in piers:
+			var foot_pair: Array = pier["feet"]
+			assert(foot_pair.size() == 2)
+			for foot in foot_pair:
+				assert(not scene._near_road(foot, 7.0),
+					"Road-support pier must remain beyond rail and collision wall")
+				assert(float(pier["road_height"]) - foot.y >= 10.0,
+					"East channel must actually pass beneath an elevated road")
+		bridge_parts.append(int(scene.get_meta("sonnenhafen_long_bridge_parts")))
 		print("[SonnenhafenLong] full 3D world LOD low=%s decorations=%d" % [
 			str(low), scene.decoration_count
 		])
 		scene.queue_free()
 		await process_frame
-	print("[SonnenhafenLong] PASS: real 1.85km curve and both full 3D scene LODs")
+	assert(bridge_parts[1] > bridge_parts[0], "High LOD must contain more physical bridge geometry")
+	print("[SonnenhafenLong] PASS: real 1.85km curve, bridged tidal inlet and both LODs")
 	quit(0)
