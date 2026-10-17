@@ -4,10 +4,12 @@ on:
     branches:
       - chatgpt/lumo-argon-coordinate-audit-2026-10-17
       - chatgpt/lumo-multilevel-road-projection-2026-10-17
+      - chatgpt/lumo-milestone-a-drive-guards-2026-10-17
   pull_request:
     paths:
       - scripts/tests/kart_argon_coordinate_audit.gd
       - scripts/tests/kart_multilevel_projection_regression.gd
+      - scripts/tests/kart_milestone_a_driving_regression.gd
       - scripts/games/kart_world.gd
       - scripts/games/kart_physical_loop.gd
       - scripts/games/kart_tracks.gd
@@ -61,6 +63,15 @@ jobs:
             --timeout 90 --required '[MultilevelProjection] PASS:' -- \
             godot --headless --path . \
             --script res://scripts/tests/kart_multilevel_projection_regression.gd
+      - name: Verify actual rival steering rail wall and safe respawn on stacked roads
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log "$RUNNER_TEMP/milestone-a-driving.log" \
+            --timeout 150 --required '[MilestoneADriving] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_milestone_a_driving_regression.gd
       - name: Preserve coordinate audit evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -70,4 +81,5 @@ jobs:
             ${{ runner.temp }}/import.log
             ${{ runner.temp }}/argon-coordinate-audit.log
             ${{ runner.temp }}/multilevel-projection.log
+            ${{ runner.temp }}/milestone-a-driving.log
           if-no-files-found: warn

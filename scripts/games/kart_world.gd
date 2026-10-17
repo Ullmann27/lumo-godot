@@ -170,7 +170,12 @@ func forward(distance: float) -> Vector3:
 
 func frame(distance: float) -> Basis:
 	var ahead: Vector3 = forward(distance)
-	var right: Vector3 = ahead.cross(Vector3.UP).normalized()
+	var raw_right: Vector3 = ahead.cross(Vector3.UP)
+	# A truly vertical centreline has no horizontal cross-product with UP.
+	# Keep the existing road-frame convention everywhere else unchanged.
+	if raw_right.length_squared() < 0.000001:
+		raw_right = ahead.cross(Vector3.FORWARD)
+	var right: Vector3 = raw_right.normalized()
 	var up: Vector3 = right.cross(ahead).normalized()
 	var bend: float = right.dot(forward(distance + 5.0) - ahead)
 	return Basis(right, up, -ahead).rotated(ahead, clampf(-bend * 0.68, -0.14, 0.14))
