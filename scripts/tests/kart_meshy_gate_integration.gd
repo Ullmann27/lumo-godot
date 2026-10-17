@@ -20,6 +20,14 @@ func _run() -> void:
 		if result:
 			var arch: Node3D = world.get_node("LumoKartMeshyStartFinishGate")
 			assert(arch.get_child_count() == 3, "GLB mesh plus two colliders required")
+			var visual: Node3D = arch.get_node("MeshyOriginalGeometry")
+			assert(is_equal_approx(visual.rotation.y, PI), "LUMO KART text must face incoming racers")
+			assert(GATE.install(world), "Repeated installation must be safe")
+			var arch_count: int = 0
+			for child in world.get_children():
+				if child.name.begins_with("LumoKartMeshyStartFinishGate"):
+					arch_count += 1
+			assert(arch_count == 1, "Never duplicate the start/finish arch")
 			var left: StaticBody3D = arch.get_node("LeftColumn")
 			var right: StaticBody3D = arch.get_node("RightColumn")
 			assert(left.position.x < -WORLD.RAIL_LATERAL)
