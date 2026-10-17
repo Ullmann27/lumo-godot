@@ -4,7 +4,7 @@ extends SceneTree
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 
-const ORIGINAL_1972_POINTS := PackedVector3Array([
+var _original_1972_points := PackedVector3Array([
 	Vector3(0, 1.8, 72), Vector3(42, 2.2, 69), Vector3(77, 3.8, 49),
 	Vector3(94, 7.0, 19), Vector3(78, 12.5, -8), Vector3(94, 15.5, -43),
 	Vector3(67, 13.0, -78), Vector3(31, 8.0, -91), Vector3(2, 5.5, -70),
@@ -18,14 +18,14 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 func _run() -> void:
-	assert(ORIGINAL_1972_POINTS.size() == 17)
+	assert(_original_1972_points.size() == 17)
 	# The old playable track remains a first-class reproducible geometry
 	# fixture even though the new 23-point layout is the experimental catalog.
 	var original: Dictionary = TRACKS.definition("sonnenhafen")
 	assert(original.points.size() == 23,
 		"The current experimental catalog must reference the new route")
 	var legacy_definition: Dictionary = original.duplicate(true)
-	legacy_definition["points"] = ORIGINAL_1972_POINTS
+	legacy_definition["points"] = _original_1972_points
 	var legacy = WORLD.new()
 	legacy.track_id = "sonnenhafen"
 	legacy.definition = legacy_definition
@@ -55,7 +55,7 @@ func _run() -> void:
 	# still proves the historic adaptive mesh works for future long routes.
 	var scaled: Dictionary = legacy_definition.duplicate(true)
 	var points := PackedVector3Array()
-	for point: Vector3 in ORIGINAL_1972_POINTS:
+	for point: Vector3 in _original_1972_points:
 		points.append(Vector3(point.x * 2.7, point.y, point.z * 2.7))
 	scaled["points"] = points
 	var extended = WORLD.new()
