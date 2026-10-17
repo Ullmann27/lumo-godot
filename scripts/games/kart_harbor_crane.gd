@@ -284,7 +284,8 @@ static func _trolley_props(world, frame: Transform3D, f: float) -> void:
 
 
 static func _trolley_node(world, frame: Transform3D) -> void:
-	# The only moving part: the trolley with cab, hoist ropes, spreader and box.
+	# Two independent movements: trolley travel and a vertically lowering load.
+	# Four ropes stay attached to the trolley rail as their length changes.
 	var rail: float = PORTAL_HEIGHT + 1.2
 	var trolley := Node3D.new()
 	trolley.name = "SonnenhafenCraneTrolley"
@@ -294,14 +295,24 @@ static func _trolley_node(world, frame: Transform3D) -> void:
 	_part(trolley, Vector3(-1.9, rail - 1.4, 0), Vector3(2.2, 1.8, 2.2), WHITE, false)
 	_part(trolley, Vector3(-1.9, rail - 1.25, 1.12), Vector3(2.0, 0.8, 0.05), GLASS, false)
 	var spreader_y: float = 10.5
+	var top_y: float = rail + 0.3
+	var cables: Array[MeshInstance3D] = []
 	for x in [-2.6, 2.6]:
 		for z in [-0.9, 0.9]:
-			var top_y: float = rail + 0.3
-			_part(trolley, Vector3(x, (top_y + spreader_y) * 0.5, z), Vector3(0.07, top_y - spreader_y, 0.07), STEEL, false)
-	_part(trolley, Vector3(0, spreader_y, 0), Vector3(6.4, 0.5, 2.6), SUN, false)
-	_part(trolley, Vector3(0, spreader_y - 1.55, 0), Vector3(6.05, 2.55, 2.45), CORAL, false)
+			var rope: MeshInstance3D = _part(
+				trolley, Vector3(x, (top_y + spreader_y) * 0.5, z),
+				Vector3(0.07, top_y - spreader_y, 0.07), STEEL, false
+			)
+			rope.name = "SonnenhafenCraneCable%d" % cables.size()
+			cables.append(rope)
+	var hoist := Node3D.new()
+	hoist.name = "SonnenhafenCraneHoist"
+	trolley.add_child(hoist)
+	_part(hoist, Vector3(0, spreader_y, 0), Vector3(6.4, 0.5, 2.6), SUN, false)
+	_part(hoist, Vector3(0, spreader_y - 1.55, 0), Vector3(6.05, 2.55, 2.45), CORAL, false)
 	_part(trolley, Vector3(0, rail - 0.2, 0), Vector3(0.6, 0.25, 0.6), FLOOD, true)
 	world.set_meta("sonnenhafen_crane_trolley", trolley.name)
+	world.set_meta("sonnenhafen_crane_hoist", hoist.name)
 	var start: Vector3 = trolley.position
 	var end: Vector3 = _p(frame, TROLLEY_TO, 0.0, 0.0)
 	var tween: Tween = trolley.create_tween().set_loops()
@@ -310,8 +321,21 @@ static func _trolley_node(world, frame: Transform3D) -> void:
 	tween.tween_property(trolley, "position", start, 9.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_interval(2.5)
 
+	# One shared parameter animates the load and four tensioned ropes.
+	# No rigid bodies, lights or per-frame mesh allocations are introduced.
+	var move_hoist: Callable = func(offset: float) -> void:
+		hoist.position.y = offset
+		for cable in cables:
+			cable.position.y = (top_y + spreader_y + offset) * 0.5
+			cable.scale.y = (top_y - spreader_y - offset) / (top_y - spreader_y)
+	var lift: Tween = trolley.create_tween().set_loops()
+	lift.tween_method(move_hoist, 0.0, -2.4, 3.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	lift.tween_interval(1.0)
+	lift.tween_method(move_hoist, -2.4, 0.0, 3.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	lift.tween_interval(2.0)
 
-static func _part(parent: Node3D, at: Vector3, size: Vector3, color: Color, glow: bool) -> void:
+
+static func _part(parent: Node3D, at: Vector3, size: Vector3, color: Color, glow: bool) -> MeshInstance3D:
 	var mesh := BoxMesh.new()
 	mesh.size = size
 	var material := StandardMaterial3D.new()
@@ -328,3 +352,4 @@ static func _part(parent: Node3D, at: Vector3, size: Vector3, color: Color, glow
 	part.position = at
 	part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(part)
+	return part
