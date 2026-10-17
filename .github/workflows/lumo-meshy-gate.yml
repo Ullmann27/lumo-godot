@@ -1,0 +1,63 @@
+name: Lumo Meshy start-finish gate real GLB regression
+on:
+  pull_request:
+    paths:
+      - assets/kart/gates/**
+      - scripts/games/kart_meshy_start_gate.gd
+      - scripts/games/kart_world.gd
+      - scripts/tests/kart_meshy_gate_integration.gd
+      - .github/workflows/lumo-meshy-gate.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  imported-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify actual optimized GLB was committed
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, struct
+          p=Path('assets/kart/gates/lumo_kart_start_finish_gate_mobile.glb')
+          raw=p.read_bytes()
+          assert raw[:4] == b'glTF' and len(raw)>1000000, 'Missing Meshy GLB asset'
+          magic,version,total=struct.unpack_from('<III',raw,0)
+          assert version == 2 and total == len(raw)
+          size,kind=struct.unpack_from('<II',raw,12)
+          assert kind == 0x4e4f534a
+          manifest=json.loads(raw[20:20+size])
+          assert len(manifest.get('meshes',[]))>0 and len(manifest.get('materials',[]))>0
+          faces=sum(manifest['accessors'][p['indices']]['count']//3 for m in manifest['meshes'] for p in m['primitives'])
+          assert 20000<=faces<=85000, f'Unexpected mobile poly count: {faces}'
+          print('[MeshyGateGLB] PASS:',faces,'triangles,',len(raw),'bytes')
+          PY
+      - name: Install real Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import actual GLB and compile GDScript
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/meshy-import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/meshy-import.log"
+      - name: Validate actual start-line gate, both LODs, collision clearance and checkpoint invariants
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 240 --log "$RUNNER_TEMP/meshy-gate.log" --required '[MeshyGate] PASS:' --             godot --headless --audio-driver Dummy --path .             --script res://scripts/tests/kart_meshy_gate_integration.gd
+          grep -F '[MeshyGate] imported model at exact start line:' "$RUNNER_TEMP/meshy-gate.log"
+      - name: Save real import and regression logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-meshy-gate-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/meshy-*.log
+          if-no-files-found: warn
