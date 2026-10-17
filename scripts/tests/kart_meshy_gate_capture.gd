@@ -1,6 +1,6 @@
 extends SceneTree
 ## Actual Godot renderer evidence of the shipped Lumo Meshy GLB at Sonnenhafen's start.
-## Three separate camera angles, captured without overlays or synthetic compositing.
+## Five in-engine views, including both foot/ground contacts. No image compositing.
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const OUTPUT_DIR := "res://artifacts/meshy-start-gate"
 
@@ -29,6 +29,8 @@ func _capture() -> void:
 		{"id": "front", "eye": Vector3(0.0, 6.0, 23.0), "focus": Vector3(0.0, 5.7, 0.0)},
 		{"id": "front_three_quarter", "eye": Vector3(11.0, 8.0, 22.0), "focus": Vector3(0.0, 5.7, 0.0)},
 		{"id": "back", "eye": Vector3(0.0, 6.0, -20.0), "focus": Vector3(0.0, 5.5, 0.0)},
+		{"id": "left_foot", "eye": Vector3(-19.0, 2.7, 10.0), "focus": Vector3(-11.0, 0.1, 0.0)},
+		{"id": "right_foot", "eye": Vector3(19.0, 2.7, 10.0), "focus": Vector3(11.0, 0.1, 0.0)},
 	]
 	var output_directory: String = ProjectSettings.globalize_path(OUTPUT_DIR)
 	DirAccess.make_dir_recursive_absolute(output_directory)
@@ -53,5 +55,5 @@ func _capture() -> void:
 			quit(1)
 			return
 		print("[MeshyGateRender] captured actual 1280x720 ", view.id, ": ", path)
-	print("[MeshyGateRender] PASS: actual GLB rendered from 3 camera positions")
+	print("[MeshyGateRender] PASS: actual GLB rendered from 5 camera positions including grounded feet")
 	quit(0)
