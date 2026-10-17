@@ -53,6 +53,14 @@ jobs:
             --log "$RUNNER_TEMP/track-contract.log" \
             --required '[TrackContract]' -- \
             godot --headless --path . --script res://scripts/tests/kart_track_contract.gd
+      - name: Drive two complete physical laps on all four original race worlds
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 480 \
+            --log "$RUNNER_TEMP/course-driving.log" \
+            --required '[KartCourseDriving] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_courses_driving_regression.gd
       - name: Existing original harbor scenery and piers may not regress
         run: |
           set -euo pipefail
