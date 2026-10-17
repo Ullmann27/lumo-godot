@@ -179,20 +179,22 @@ func position_at(distance: float, lateral: float = 0.0) -> Vector3:
 	return curve.sample_baked(fposmod(distance, length), true) + frame(distance).x * lateral
 
 func sample_road(world_position: Vector3, hint_distance: float = -1.0) -> Dictionary:
+	# 3D metric, including Y: selects the correct road deck at stacked crossings.
+	# Preserve search windows, hint behavior, public return keys and race physics.
 	var best_distance: float = 0.0
 	var best_square: float = INF
 	if hint_distance >= 0.0:
 		for i in range(-9, 10):
 			var d: float = fposmod(hint_distance + float(i)*5.0, length)
 			var p: Vector3 = curve.sample_baked(d, true)
-			var square: float = Vector2(p.x-world_position.x,p.z-world_position.z).length_squared()
+			var square: float = p.distance_squared_to(world_position)
 			if square < best_square:
 				best_square = square
 				best_distance = d
 	if hint_distance < 0.0 or best_square > 625.0:
 		for i in range(_road_samples.size()):
 			var p: Vector3 = _road_samples[i]
-			var square: float = Vector2(p.x-world_position.x,p.z-world_position.z).length_squared()
+			var square: float = p.distance_squared_to(world_position)
 			if square < best_square:
 				best_square = square
 				best_distance = _road_distances[i]
@@ -200,7 +202,7 @@ func sample_road(world_position: Vector3, hint_distance: float = -1.0) -> Dictio
 	for i in range(-10, 11):
 		var d: float = fposmod(estimate + float(i)*0.5, length)
 		var p: Vector3 = curve.sample_baked(d, true)
-		var square: float = Vector2(p.x-world_position.x,p.z-world_position.z).length_squared()
+		var square: float = p.distance_squared_to(world_position)
 		if square < best_square:
 			best_square = square
 			best_distance = d
