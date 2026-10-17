@@ -27,7 +27,9 @@ static func decorate(world, frame: Transform3D, detail: bool, palette: Array[Col
 				Vector3(4.05, 0.020, 1.85), SHADOW, frame.basis)
 			contacts += 1
 
-	var heights: Array[int] = [3, 2, 1, 2, 3, 1] if detail else [2, 1, 1, 1, 2, 1]
+	var heights: Array[int] = [3, 2, 1, 2, 3, 1]
+	if not detail:
+		heights = [2, 1, 1, 1, 2, 1]
 	var index: int = 0
 	for f in [-8.2, -10.75]:
 		for s in [-7.0, 0.0, 7.0]:
