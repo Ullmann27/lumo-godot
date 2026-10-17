@@ -43,7 +43,7 @@ jobs:
       - name: Capture actual Sonnenhafen from three reproducible 3D cameras
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
-          LUMO_CAPTURE_DIR: exports/sonnenhafen-hoist/after
+          LUMO_CAPTURE_DIR: ${{ github.workspace }}/exports/sonnenhafen-hoist/after
         run: |
           set -euo pipefail
           timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_pose_capture.gd 2>&1 | tee "$RUNNER_TEMP/capture.log"
