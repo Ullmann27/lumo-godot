@@ -73,7 +73,7 @@ static func _repair_geometry(node: Node) -> int:
 		if altered:
 			mi.mesh = clean_mesh
 	print('[MeshyGate] geometry diagnosis surfaces=', found, ' total_triangles=', total, ' spike_triangles=', discarded, ' ratio=', float(discarded) / float(maxi(total, 1)))
-	if found == 0 or total == 0 or float(discarded) / float(total) > 0.05:
+	if found == 0 or total == 0 or float(discarded) / float(total) > 0.07:
 		return -1
 	return discarded
 
