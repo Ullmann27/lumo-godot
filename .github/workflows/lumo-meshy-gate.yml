@@ -35,14 +35,12 @@ jobs:
           assert len(manifest.get('meshes',[]))>0 and len(manifest.get('materials',[]))>0
           faces=sum(manifest['accessors'][p['indices']]['count']//3 for m in manifest['meshes'] for p in m['primitives'])
           import hashlib
-          expected='51424a888722495daa8a0496774d724ff64b9399693c0348e9749c6745234e2b'
-          git_blob_sha=hashlib.sha1(('blob '+str(len(raw))).encode()+bytes([0])+raw).hexdigest()
-          broken_blob='08d1aad4009469bcd5af5e68d06d6bf31e3f3044'
-          known_clean=hashlib.sha256(raw).hexdigest()==expected
-          known_original=git_blob_sha==broken_blob
-          assert known_clean or known_original, 'Unknown or tampered GLB asset'
-          assert 35000<=faces<=130000, f'Unexpected GLB poly count: {faces}'
-          print('[MeshyGateGLB] mode:', 'already clean' if known_clean else 'Godot runtime triangle repair required')
+          expected='97d6fc98815d63b0188a35c737d655228301cdb8c9fdaf56bc603bc67d26c3d8'
+          assert hashlib.sha256(raw).hexdigest()==expected, 'Lumo gate asset is not the verified spike-free 3.2MB GLB'
+          assert faces==121531, f'Unexpected triangle count: {faces}'
+          assert len(manifest['meshes'][0]['primitives'])==2, 'Expected two spatial partitions'
+          assert all(manifest['accessors'][x['indices']]['componentType']==5123 for x in manifest['meshes'][0]['primitives']), 'Expected 16-bit indices'
+          assert not manifest.get('extensionsRequired'), 'Requires unsupported decoder extension'
           print('[MeshyGateGLB] PASS:',faces,'triangles,',len(raw),'bytes')
           PY
       - name: Install real Godot 4.6.3
