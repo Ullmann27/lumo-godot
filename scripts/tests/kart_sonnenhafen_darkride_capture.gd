@@ -13,6 +13,8 @@ func _run() -> void:
 	root.add_child(world)
 	world.build(false, "sonnenhafen", false)
 	assert(world.has_node("SonnenhafenBioluminescentDarkride"))
+	var cave: MeshInstance3D = world.get_node("SonnenhafenBioluminescentDarkride/DarkrideRockAndCanopy")
+	var cave_material: ShaderMaterial = cave.material_override
 	var info: Dictionary = world.get_meta("sonnenhafen_darkride")
 	var start_m: float = float(info["start_m"])
 	var end_m: float = float(info["end_m"])
@@ -34,6 +36,17 @@ func _run() -> void:
 		var ahead: float = float(view["look"])
 		camera.global_position = world.position_at(d) + world.frame(d).y * float(view["height"])
 		camera.look_at(world.position_at(ahead) + world.frame(ahead).y * 2.7)
+		var flat_reference: Image = null
+		if str(view.name) == "deep_neon":
+			cave_material.set_shader_parameter("rock_detail_strength", 0.0)
+			for _baseline_frame in range(26):
+				await process_frame
+			await RenderingServer.frame_post_draw
+			flat_reference = root.get_texture().get_image()
+			assert(flat_reference != null and not flat_reference.is_empty())
+			var baseline_path: String = ProjectSettings.globalize_path(OUTPUT).path_join("deep_neon_flat_baseline.png")
+			assert(flat_reference.save_png(baseline_path) == OK)
+			cave_material.set_shader_parameter("rock_detail_strength", 1.0)
 		for _frame in range(26):
 			await process_frame
 		await RenderingServer.frame_post_draw
@@ -48,5 +61,16 @@ func _run() -> void:
 			quit(1)
 			return
 		print("[DarkrideRender] real 1280x720: ", file)
+		if flat_reference != null:
+			var altered_pixels: int = 0
+			for py in range(64, 400, 8):
+				for px in range(64, 1216, 8):
+					var before: Color = flat_reference.get_pixel(px, py)
+					var after: Color = img.get_pixel(px, py)
+					var difference: float = absf(before.r - after.r) + absf(before.g - after.g) + absf(before.b - after.b)
+					if difference > 0.025:
+						altered_pixels += 1
+			assert(altered_pixels > 120, "Mineral strata must visibly affect the real cave camera")
+			print("[DarkrideArtPass] PASS: same-camera real GPU baseline/detail pixels=", altered_pixels)
 	print("[DarkrideRender] PASS: entrance, deep_neon, exit photographed in Godot")
 	quit(0)
