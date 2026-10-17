@@ -32,7 +32,7 @@ def fail(message: str) -> None:
 
 def read_authoritative_points() -> dict[str, list[list[float]]]:
     source = CATALOG.read_text(encoding="utf-8")
-    arrays = re.findall(r'"points":\\s*PackedVector3Array\\(\\[(.*?)\\]\\)', source, re.S)
+    arrays = re.findall(r'"points":\s*PackedVector3Array\(\[(.*?)\]\)', source, re.S)
     if len(arrays) == 3:
         # Only Sonnenhafen may use an external authoring module. Verify that
         # Godot imports exactly this reviewed path, and reparse its true points.
@@ -44,7 +44,7 @@ def read_authoritative_points() -> dict[str, list[list[float]]]:
         long_source = (
             ROOT / "scripts/games/kart_sonnenhafen_long_course.gd"
         ).read_text(encoding="utf-8")
-        match = re.search(r"return\\s+PackedVector3Array\\(\\[(.*?)\\]\\)", long_source, re.S)
+        match = re.search(r"return\s+PackedVector3Array\(\[(.*?)\]\)", long_source, re.S)
         if match is None:
             fail("External Sonnenhafen module has no literal PackedVector3Array")
         arrays.append(match.group(1))
