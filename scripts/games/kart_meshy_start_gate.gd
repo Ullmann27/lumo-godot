@@ -13,7 +13,7 @@ const COLLIDER_INNER_X: float = 8.3
 static func is_available() -> bool:
 	return ResourceLoader.exists(ASSET_MOBILE) or ResourceLoader.exists(ASSET_HIGH)
 
-static func install(world: LumoRaceWorld) -> bool:
+static func install(world) -> bool:
 	if world == null or world.track_id != "sonnenhafen":
 		return false
 	var file: String = ASSET_MOBILE if world.low_detail else ASSET_HIGH
