@@ -54,6 +54,11 @@ static var _skies: Dictionary = {}
 var loop_layout: Dictionary = {}
 var _road_samples := PackedVector3Array()
 var _road_distances := PackedFloat32Array()
+## 2D k-d search over the SAME baked road samples used by the original scan.
+## Only accelerates terrain/decoration proximity lookups, never road physics.
+var _road_kd_nodes: Array[Dictionary] = []
+var _road_kd_root: int = -1
+var _road_kd_count: int = 0
 var _rng := RandomNumberGenerator.new()
 
 func build(
@@ -158,6 +163,7 @@ func _make_curve() -> void:
 		var d: float = float(i) * length / count
 		_road_samples.append(curve.sample_baked(d, true))
 		_road_distances.append(d)
+	_build_road_spatial_index()
 	# Only primary coastal maps use _terrain(). Leave expansion-only terrain
 	# untouched and preserve the exact legacy bounds for current-sized routes.
 	world_extent = Vector2(101.0, 91.0)
@@ -494,16 +500,86 @@ func _is_bridge(distance: float) -> bool:
 		"zauberwald": return t>0.15 and t<0.33
 		_: return t>0.20 and t<0.45
 
-func _nearest_horizontal(at: Vector3) -> Vector2:
-	var best_square: float=INF
-	var best_index: int=0
+func _build_road_spatial_index() -> void:
+	_road_kd_nodes.clear()
+	_road_kd_root = -1
+	_road_kd_count = 0
+	if _road_samples.is_empty():
+		return
+	var indices: Array[int] = []
 	for i in range(_road_samples.size()):
-		var delta := Vector2(_road_samples[i].x-at.x,_road_samples[i].z-at.z)
-		var square: float=delta.length_squared()
-		if square<best_square:
-			best_square=square
-			best_index=i
-	return Vector2(sqrt(best_square),best_index)
+		indices.append(i)
+	_road_kd_root = _build_road_kd_node(indices, 0)
+	_road_kd_count = _road_samples.size()
+
+func _build_road_kd_node(indices: Array[int], depth: int) -> int:
+	if indices.is_empty():
+		return -1
+	var axis: int = depth % 2
+	indices.sort_custom(func(a: int, b: int) -> bool:
+		var p_a: Vector3 = _road_samples[a]
+		var p_b: Vector3 = _road_samples[b]
+		var v_a: float = p_a.x if axis == 0 else p_a.z
+		var v_b: float = p_b.x if axis == 0 else p_b.z
+		return a < b if v_a == v_b else v_a < v_b
+	)
+	var median: int = indices.size() / 2
+	var node_id: int = _road_kd_nodes.size()
+	_road_kd_nodes.append({})
+	var left_indices: Array[int] = []
+	var right_indices: Array[int] = []
+	for i in range(median):
+		left_indices.append(indices[i])
+	for i in range(median + 1, indices.size()):
+		right_indices.append(indices[i])
+	var left_id: int = _build_road_kd_node(left_indices, depth + 1)
+	var right_id: int = _build_road_kd_node(right_indices, depth + 1)
+	_road_kd_nodes[node_id] = {
+		"index": indices[median], "axis": axis,
+		"left": left_id, "right": right_id
+	}
+	return node_id
+
+func _nearest_road_kd(at: Vector3, node_id: int, best: Vector2) -> Vector2:
+	if node_id < 0:
+		return best
+	var node: Dictionary = _road_kd_nodes[node_id]
+	var sample_index: int = int(node["index"])
+	var sample: Vector3 = _road_samples[sample_index]
+	var dx: float = sample.x - at.x
+	var dz: float = sample.z - at.z
+	var square: float = dx * dx + dz * dz
+	# Stable legacy tie rule: the earliest baked sample wins.
+	if square < best.x or (square == best.x and sample_index < int(best.y)):
+		best = Vector2(square, float(sample_index))
+	var axis: int = int(node["axis"])
+	var split: float = at.x - sample.x if axis == 0 else at.z - sample.z
+	var near_id: int = int(node["left"]) if split <= 0.0 else int(node["right"])
+	var far_id: int = int(node["right"]) if split <= 0.0 else int(node["left"])
+	best = _nearest_road_kd(at, near_id, best)
+	# True squared lower bound for the entire opposite subtree.
+	# Unlike a fixed-radius grid, this remains exact for distant terrain.
+	if split * split <= best.x:
+		best = _nearest_road_kd(at, far_id, best)
+	return best
+
+func _nearest_horizontal(at: Vector3) -> Vector2:
+	# Test fixtures may replace the original sample arrays directly; retain
+	# the proven scan until their spatial index is explicitly regenerated.
+	if _road_kd_root >= 0 and _road_kd_count == _road_samples.size():
+		var hit: Vector2 = _nearest_road_kd(at, _road_kd_root, Vector2(INF, 0.0))
+		return Vector2(sqrt(hit.x), hit.y)
+	var best_square: float = INF
+	var best_index: int = 0
+	for i in range(_road_samples.size()):
+		var sample: Vector3 = _road_samples[i]
+		var dx: float = sample.x - at.x
+		var dz: float = sample.z - at.z
+		var square: float = dx * dx + dz * dz
+		if square < best_square:
+			best_square = square
+			best_index = i
+	return Vector2(sqrt(best_square), float(best_index))
 
 func _ground_height(x: float, z: float) -> float:
 	var angle: float=atan2(z,x)
