@@ -3,6 +3,7 @@ extends RefCounted
 ## Original course designs. Distances and heights are metres in the shared world.
 
 const EXPANSION = preload("res://scripts/games/kart_expansion_tracks.gd")
+const HARBOR_LONG = preload("res://scripts/games/kart_sonnenhafen_long_course.gd")
 static var IDS: Array[String] = _all_ids()
 
 static func _all_ids() -> Array[String]:
@@ -65,25 +66,7 @@ static func definition(id: String) -> Dictionary:
 				"accent": Color("63dce9"), "asphalt": Color("242d38"),
 				"sky": Color("276ba0"), "horizon": Color("e7a976"), "fog": Color("d9b18b"),
 				"sun": Color("ffe5bc"), "ground": Color("7caa69"), "seed": 109021,
-				# Long-form coastal circuit: stadium straight -> uphill cliff S -> high hairpin ->
-				# harbour descent -> bridge approach -> waterfront sweep -> final technical bends.
-				"points": PackedVector3Array([
-					Vector3(0, 1.8, 72),
-					Vector3(42, 2.2, 69),
-					Vector3(77, 3.8, 49),
-					Vector3(94, 7.0, 19),
-					Vector3(78, 12.5, -8),
-					Vector3(94, 15.5, -43),
-					Vector3(67, 13.0, -78),
-					Vector3(31, 8.0, -91),
-					Vector3(2, 5.5, -70),
-					Vector3(-24, 7.0, -86),
-					Vector3(-61, 10.0, -77),
-					Vector3(-89, 14.5, -48),
-					Vector3(-84, 18.0, -13),
-					Vector3(-55, 19.0, 12),
-					Vector3(-78, 13.0, 43),
-					Vector3(-50, 7.5, 70),
-					Vector3(-18, 3.2, 80)
-				])
+				# Experimental B2 circuit: 23 independently authored coastal control points.
+				# Keep the prior 1972 route immutable on its pinned SHA.
+				"points": HARBOR_LONG.points()
 			}
