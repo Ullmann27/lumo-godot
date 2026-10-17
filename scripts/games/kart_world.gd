@@ -682,13 +682,36 @@ func _terrain() -> void:
 	water.material_override=water_material
 	water.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(water)
+	var relocated_mountains: int = 0
 	for i in range(12):
 		var angle: float=float(i)*TAU/12.0+_rng.randf_range(-0.08,0.08)
 		var at := Vector3(cos(angle)*245.0,-5.0,sin(angle)*220.0)
 		var h: float=_rng.randf_range(28,56) if track_id!="bergwelt" else _rng.randf_range(62,105)
 		if track_id!="holo_city":
-			_prop("mountain",at,Vector3(_rng.randf_range(45,85),h,_rng.randf_range(34,65)),Color("72a3ad") if track_id!="bergwelt" else Color("7d99ae"))
+			var mountain_size := Vector3(_rng.randf_range(45,85),h,_rng.randf_range(34,65))
+			if track_id == "sonnenhafen" and length > 1500.0:
+				# These fixed 245x220m background mountains belonged to the old
+				# 17-point island. The 1.85km course now runs THROUGH that ring.
+				# Preserve all mountains, but move each complete footprint
+				# beyond the new coastal race corridor (not merely its centre).
+				var radius: float = maxf(mountain_size.x,mountain_size.z) * 1.32
+				var clearance: float = radius + RAIL_LATERAL + 5.0
+				var ring_x: float = world_extent.x + radius + 40.0
+				var ring_z: float = world_extent.y + radius + 40.0
+				at = Vector3(cos(angle) * ring_x,-5.0,sin(angle) * ring_z)
+				for attempt in range(9):
+					if not _near_road(at,clearance):
+						break
+					ring_x += 28.0
+					ring_z += 28.0
+					at = Vector3(cos(angle) * ring_x,-5.0,sin(angle) * ring_z)
+				assert(not _near_road(at,clearance),
+					"Large Sonnenhafen backdrop must never overlap the actual 1.85km racing lane")
+				relocated_mountains += 1
+			_prop("mountain",at,mountain_size,Color("72a3ad") if track_id!="bergwelt" else Color("7d99ae"))
 			if track_id=="bergwelt": _prop("mountain",at+Vector3.UP*h*0.58,Vector3(16,h*0.43,15),Color("eaf4f4"))
+	if track_id == "sonnenhafen":
+		set_meta("sonnenhafen_mountains_relocated",relocated_mountains)
 	if track_id!="holo_city":
 		for i in range(13):
 			var angle: float=float(i)*TAU/13.0
@@ -991,7 +1014,11 @@ func _terraced_cliffs() -> void:
 			var d: float=centre_d-span*0.5+float(slice)*span/6.0
 			var basis: Basis=frame(d)
 			var road_y: float=position_at(d).y
-			var outward: float=10.3+sin(float(slice)*0.8)*1.1
+			# The old tight cliff shelf could project rock silhouettes into
+			# the 6.05m race rail on the expanded 1.85km circuit. Move the
+			# entire multi-tier formation outward; keep original short course.
+			var cliff_offset: float = 14.8 if length > 1500.0 else 10.3
+			var outward: float=cliff_offset+sin(float(slice)*0.8)*1.1
 			for tier in range(3):
 				var lateral: float=outward+float(tier)*2.8
 				var at: Vector3=position_at(d,side*lateral)
@@ -1212,9 +1239,19 @@ func _harbour() -> void:
 		if i%3==0: _flower_patch(p+Vector3(2,0,1),Color("eef0b1"),5)
 	HARBOR_DRESSING.build(self)
 	_windmill(Vector3(-17,_ground_height(-17,12),12))
+	var skipped_old_shore_rocks: int = 0
 	for i in range(30):
 		var angle: float=float(i)*TAU/30.0
-		_prop("rock",Vector3(cos(angle)*98,-1.5,sin(angle)*88),Vector3(_rng.randf_range(2,4),_rng.randf_range(1.2,3.6),_rng.randf_range(2,4)),Color("b8b6a0"),Basis(Vector3.UP,angle))
+		var at := Vector3(cos(angle)*98,-1.5,sin(angle)*88)
+		var size := Vector3(_rng.randf_range(2,4),_rng.randf_range(1.2,3.6),_rng.randf_range(2,4))
+		if length > 1500.0 and _near_road(at,maxf(size.x,size.z)*1.35 + RAIL_LATERAL + 2.0):
+			# The old 98x88m shoreline ring is now *inside* the expanded
+			# circuit. Remove only rocks with an actual road-footprint overlap.
+			skipped_old_shore_rocks += 1
+			continue
+		_prop("rock",at,size,Color("b8b6a0"),Basis(Vector3.UP,angle))
+	if length > 1500.0:
+		set_meta("sonnenhafen_legacy_shore_rocks_skipped",skipped_old_shore_rocks)
 
 func _house(at: Vector3, basis: Basis, color: Color, index: int) -> void:
 	var height: float=5.1+float(index%3)*1.3
