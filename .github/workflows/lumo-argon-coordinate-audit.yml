@@ -3,9 +3,11 @@ on:
   push:
     branches:
       - chatgpt/lumo-argon-coordinate-audit-2026-10-17
+      - chatgpt/lumo-multilevel-road-projection-2026-10-17
   pull_request:
     paths:
       - scripts/tests/kart_argon_coordinate_audit.gd
+      - scripts/tests/kart_multilevel_projection_regression.gd
       - scripts/games/kart_world.gd
       - scripts/games/kart_physical_loop.gd
       - scripts/games/kart_tracks.gd
@@ -50,6 +52,15 @@ jobs:
             --timeout 120 --required '[ArgonCoordinateAudit] PASS:' -- \
             godot --headless --path . \
             --script res://scripts/tests/kart_argon_coordinate_audit.gd
+      - name: Verify two truly stacked road decks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log "$RUNNER_TEMP/multilevel-projection.log" \
+            --timeout 90 --required '[MultilevelProjection] PASS:' -- \
+            godot --headless --path . \
+            --script res://scripts/tests/kart_multilevel_projection_regression.gd
       - name: Preserve coordinate audit evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -58,4 +69,5 @@ jobs:
           path: |
             ${{ runner.temp }}/import.log
             ${{ runner.temp }}/argon-coordinate-audit.log
+            ${{ runner.temp }}/multilevel-projection.log
           if-no-files-found: warn
