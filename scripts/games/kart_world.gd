@@ -669,6 +669,9 @@ func _terrain() -> void:
 	# headless backends. Unset ShaderMaterial uniforms can return null rather
 	# than the default declared in the shader.
 	water_material.set_shader_parameter("coastal_foam", 0.0)
+	# The actual 1.85km coastal island extends far past the old 101x91m
+	# ring: keep shader shoreline harmonics aligned with ground generation.
+	water_material.set_shader_parameter("coastal_extent", world_extent)
 	if track_id=="holo_city":
 		water_material.set_shader_parameter("deep_water",Color("0d1934"))
 		water_material.set_shader_parameter("shallow_water",Color("174970"))
