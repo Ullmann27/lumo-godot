@@ -106,7 +106,7 @@ static func install(world) -> bool:
 		return false
 	if spike_count > 0:
 		print("[MeshyGate] repaired damaged triangles: ", spike_count)
-		var arch := Node3D.new()
+	var arch := Node3D.new()
 	arch.name = "LumoKartMeshyStartFinishGate"
 	arch.transform = Transform3D(world.frame(0.0), world.position_at(0.0))
 	world.add_child(arch)
