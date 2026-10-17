@@ -11,6 +11,7 @@ uniform vec4 cold_light : source_color = vec4(0.11, 0.87, 0.96, 1.0);
 uniform vec4 violet_light : source_color = vec4(0.62, 0.28, 0.94, 1.0);
 uniform float light_intensity : hint_range(0.0, 2.0) = 1.10;
 uniform float rock_detail_strength : hint_range(0.0, 1.0) = 1.0;
+uniform float wayfinding_strength : hint_range(0.0, 1.0) = 1.0;
 
 varying float inner_fade;
 varying vec3 at_world;
@@ -31,7 +32,12 @@ void fragment() {
         * step(0.60, fract(UV.y * 1.6));
     vec3 glow_rock = mix(violet_light.rgb, cold_light.rgb,
         0.5 + 0.5 * wave) * (bio * 0.60 + cave_bands * 0.035);
-    vec3 glow_road = cold_light.rgb * (lane_edge * 0.68 + road_dash * 0.21);
+    float guide_lateral = smoothstep(0.69, 0.77, abs(UV.x)) * (1.0 - smoothstep(0.90, 0.98, abs(UV.x)));
+    float guide_phase = fract(UV.y * 4.2);
+    float guide_segment = smoothstep(0.05, 0.13, guide_phase) * (1.0 - smoothstep(0.60, 0.68, guide_phase));
+    vec3 guide_color = mix(cold_light.rgb, vec3(1.0, 0.66, 0.25), step(0.0, UV.x));
+    vec3 guide_mark = guide_color * guide_lateral * guide_segment * wayfinding_strength;
+    vec3 glow_road = cold_light.rgb * (lane_edge * 0.68 + road_dash * 0.21) + guide_mark * 1.25;
     float edge_fade = max(inner_fade, 0.12);
     // Soft luminous stone: visible indigo-blue surfaces behind the neon ribs,
     // not a black polygon silhouette. Analytical light, not new Light3D nodes.
@@ -47,7 +53,7 @@ void fragment() {
     base_rock *= mix(1.0, 0.70 + 0.60 * mineral_strata, rock_detail_strength);
     glow_rock += (cold_light.rgb * 0.17 + violet_light.rgb * 0.10) * mineral_seam * rock_detail_strength;
     vec3 base_road = road_color.rgb * (0.88 + 0.10 * sin(UV.y * 29.0))
-        + cold_light.rgb * lane_edge * 0.12;
+        + cold_light.rgb * lane_edge * 0.12 + guide_mark * 0.15;
     vec3 base = mix(base_rock, base_road, road_factor);
     vec3 local_glow = mix(glow_rock, glow_road, road_factor);
     ALBEDO = base * (0.65 + 0.35 * edge_fade);

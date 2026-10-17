@@ -15,6 +15,8 @@ func _run() -> void:
 	assert(world.has_node("SonnenhafenBioluminescentDarkride"))
 	var cave: MeshInstance3D = world.get_node("SonnenhafenBioluminescentDarkride/DarkrideRockAndCanopy")
 	var cave_material: ShaderMaterial = cave.material_override
+	var road: MeshInstance3D = world.get_node("SonnenhafenBioluminescentDarkride/DarkrideIlluminatedRoad")
+	var road_material: ShaderMaterial = road.material_override
 	var info: Dictionary = world.get_meta("sonnenhafen_darkride")
 	var start_m: float = float(info["start_m"])
 	var end_m: float = float(info["end_m"])
@@ -72,5 +74,30 @@ func _run() -> void:
 						altered_pixels += 1
 			assert(altered_pixels > 120, "Mineral strata must visibly affect the real cave camera")
 			print("[DarkrideArtPass] PASS: same-camera real GPU baseline/detail pixels=", altered_pixels)
+			# Static shoulder guides: independently photograph off/on on the real road.
+			road_material.set_shader_parameter("wayfinding_strength", 0.0)
+			for _guide_before_frame in range(12):
+				await process_frame
+			await RenderingServer.frame_post_draw
+			var guide_off: Image = root.get_texture().get_image()
+			assert(guide_off != null and not guide_off.is_empty())
+			assert(guide_off.save_png(ProjectSettings.globalize_path(OUTPUT).path_join("deep_neon_guide_off.png")) == OK)
+			road_material.set_shader_parameter("wayfinding_strength", 1.0)
+			for _guide_after_frame in range(12):
+				await process_frame
+			await RenderingServer.frame_post_draw
+			var guide_on: Image = root.get_texture().get_image()
+			assert(guide_on != null and not guide_on.is_empty())
+			assert(guide_on.save_png(ProjectSettings.globalize_path(OUTPUT).path_join("deep_neon_guide_on.png")) == OK)
+			var guide_pixels: int = 0
+			for py in range(370, 694, 6):
+				for px in range(100, 1180, 6):
+					var before: Color = guide_off.get_pixel(px, py)
+					var after: Color = guide_on.get_pixel(px, py)
+					var difference: float = absf(before.r - after.r) + absf(before.g - after.g) + absf(before.b - after.b)
+					if difference > 0.025:
+						guide_pixels += 1
+			assert(guide_pixels > 70, "Static shoulder guides must visibly change the actual road frame")
+			print("[DarkrideWayfinding] PASS: same-camera real GPU shoulder-guide pixels=", guide_pixels)
 	print("[DarkrideRender] PASS: entrance, deep_neon, exit photographed in Godot")
 	quit(0)

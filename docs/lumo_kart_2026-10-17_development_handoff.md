@@ -47,3 +47,9 @@
 - Jeden PR auf isoliertem Branch belassen und mit echter Godot-Engine, Screenshot und Regression belegen.
 - Keine erfundenen Render-Ergebnisse oder behauptete Android-Geräte-Messungen.
 - Bei einem Fehler ausführlichen Original-Log filtern, Ursache minimal beheben, exakt denselben geänderten HEAD testen.
+
+## QA-Freeze und visuelle Weiterentwicklung, 17.10.2026
+- GitHub-Live-Heads #95: `605f5b5a784f0af41ab80d6a37997475d0c5acac`; #96: `59b1154e4c9ffa30c4b6c2938e963ddbdd201320`; #97: `b70c623d7dfed57e0ff3fbeb7b5812f8f228292d`; #98: `aff8dd367f271b654d24db28a2a686b9e5acb626`. Workflow-Runs auf den exakten Heads: 16/2/4/2 erfolgreich. #98 Event `39062332478`, Stage-2 `39062332562` jeweils grün.
+- #99, Commit `25f5453ffc3b6ba03360345c4b0f561cb57c40e4`: Darkride-QA `39066957827` und Stage-2 `39066957824` grün. Original-Joblogs: Godot 4.6.3, acht unveränderte Checkpoints, null zusätzliche Kollisionen, 5.505 geänderte Rasterproben im Mineral-A/B-Vergleich. Bildartefakt: `12114065879`. Stage-2: 225 StartHero-Checks ohne Fehler.
+- Nächster gestapelter Branch: `chatgpt/lumo-darkride-road-guidance-2026-10-17`, auf #99. Visuelles Upgrade: statische cyan-/bernsteinfarbene Schulter-Markierungen auf bestehendem Straßen-Shader, keine zusätzlichen Meshes, keine zeitabhängige Animation, keine Kollisions- oder Physikänderung. Der Godot-Capture soll die echten 1280×720-Bilder `deep_neon_guide_off.png` und `deep_neon_guide_on.png` am selben Kamerastandpunkt erzeugen und die Straßenpixel quantitativ vergleichen. **Dieser neue Head gilt erst nach seinen eigenen grünen CI-Läufen als verifiziert.**
+- Releaseanker Flutter `0.12.63+1975`, Lern-App, Kinderprofile, Voice, Savegames, Checkpoints und Rennphysik bleiben unverändert. Kein Fold7-FPS-Nachweis und keine neue APK.

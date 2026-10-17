@@ -26,6 +26,9 @@ func _run() -> void:
 		assert(int(metrics["crystal_instances"]) >= 16, "Glowing lanterns missing")
 		assert(int(metrics["shell_sections"]) >= 30, "Tunnel shell cannot be a flat billboard")
 		assert(ride.get_child_count() == 4, "Expected shell, road, ribs, crystal batches")
+		var road_mesh: MeshInstance3D = ride.get_node("DarkrideIlluminatedRoad")
+		assert(road_mesh.material_override is ShaderMaterial, "Wayfinding must be shader-only")
+		assert(road_mesh.mesh.get_surface_count() == 1, "No new road geometry for shoulder guides")
 		for name in ["DarkrideRockAndCanopy", "DarkrideIlluminatedRoad"]:
 			var node: MeshInstance3D = ride.get_node(name)
 			assert(node.mesh.get_surface_count() == 1, "Missing procedural triangle surface")
