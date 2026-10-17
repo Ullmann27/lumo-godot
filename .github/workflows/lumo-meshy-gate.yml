@@ -67,7 +67,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y xvfb libgl1-mesa-dri
-      - name: Render the actual Meshy gate from three camera angles
+      - name: Render the seated gate from five in-engine angles including both feet
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: |
@@ -76,10 +76,10 @@ jobs:
             godot --audio-driver Dummy --path . --rendering-method gl_compatibility \
             --script res://scripts/tests/kart_meshy_gate_capture.gd 2>&1 | tee "$RUNNER_TEMP/meshy-render.log"
           grep -F '[MeshyGateRender] PASS:' "$RUNNER_TEMP/meshy-render.log"
-          for view in front front_three_quarter back; do
+          for view in front front_three_quarter back left_foot right_foot; do
             test -s "artifacts/meshy-start-gate/$view.png"
           done
-      - name: Upload actual three-angle Godot screenshots
+      - name: Upload actual five-angle Godot screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
