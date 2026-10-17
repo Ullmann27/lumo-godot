@@ -1,0 +1,67 @@
+name: Lumo Kart dynamic neon surge event inside real race
+on:
+  pull_request:
+    paths:
+      - 'scripts/games/kart_darkride_event_director.gd'
+      - 'scripts/games/kart_island.gd'
+      - 'scripts/tests/kart_darkride_lap_event_*.gd'
+      - '.github/workflows/lumo-darkride-lap-event.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validated-race-event:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Godot 4.6.3 engine
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Compile real race and shader
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/darkride-event-import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/darkride-event-import.log"
+      - name: Prove lap warning, surge, reduced motion and unchanged checkpoint geometry
+        run: |
+          python3 tools/run_godot_probe.py --timeout 240 --log "$RUNNER_TEMP/darkride-event-regression.log" --required '[DarkrideEvent] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_darkride_lap_event_regression.gd
+      - name: Install GL framebuffer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri
+      - name: Render and quantitatively compare both in-game neon phases
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' \
+            godot --audio-driver Dummy --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_darkride_lap_event_capture.gd 2>&1 | tee "$RUNNER_TEMP/darkride-event-render.log"
+          grep -F '[DarkrideEventRender] PASS:' "$RUNNER_TEMP/darkride-event-render.log"
+          test -s artifacts/darkride-event/lap_one.png
+          test -s artifacts/darkride-event/lap_two_neon_surge.png
+      - name: Preserve actual two-phase Godot screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-lap-reactive-neon-screenshots-${{ github.run_id }}
+          path: artifacts/darkride-event/*.png
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Preserve source, engine and test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-darkride-event-probe-${{ github.run_id }}
+          path: ${{ runner.temp }}/darkride-event-*.log
+          if-no-files-found: warn

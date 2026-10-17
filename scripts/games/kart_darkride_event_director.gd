@@ -1,0 +1,98 @@
+extends RefCounted
+## Lap-aware neon surge for Sonnenhafen's playable cave, non-destructive.
+## Works from race progress; no extra physics, savegame state, new particles
+## or frame-dependent randomness. Surges on the second lap only.
+signal darkride_phase_changed(phase: int)
+
+enum Phase { OUTSIDE, ENTERING, CRUISING, WARNING, SURGE, EXITING }
+
+const RIDE_PATH := "SonnenhafenBioluminescentDarkride"
+const BASE_SHADER_ENERGY: float = 1.10
+const BASE_ARCH_ENERGY: float = 1.60
+const NEON_SURGE_SECONDS: float = 2.4
+
+var phase: int = Phase.OUTSIDE
+var _tunnel: Node3D
+var _surface_materials: Array[ShaderMaterial] = []
+var _rib_material: StandardMaterial3D
+var _active_surge_seconds: float = -1.0
+var _triggered_lap: int = -1
+var _last_energy: float = -1.0
+
+func bind_world(world: Node3D) -> void:
+	_tunnel = null
+	_surface_materials.clear()
+	_rib_material = null
+	_active_surge_seconds = -1.0
+	_triggered_lap = -1
+	_last_energy = -1.0
+	_set_phase(Phase.OUTSIDE)
+	if not is_instance_valid(world):
+		return
+	var found: Node = world.get_node_or_null(RIDE_PATH)
+	if not found is Node3D:
+		return
+	_tunnel = found
+	for name in ["DarkrideRockAndCanopy", "DarkrideIlluminatedRoad"]:
+		var mesh: MeshInstance3D = _tunnel.get_node_or_null(name)
+		if mesh != null and mesh.material_override is ShaderMaterial:
+			_surface_materials.append(mesh.material_override)
+	var ribs: MultiMeshInstance3D = _tunnel.get_node_or_null("DarkrideNeonArchRibs")
+	if ribs != null and ribs.material_override is StandardMaterial3D:
+		_rib_material = ribs.material_override
+	_apply_energy(BASE_SHADER_ENERGY, true)
+
+func tick(absolute_distance: float, track_length: float,
+		delta: float, reduced_motion: bool) -> void:
+	if not is_instance_valid(_tunnel) or track_length <= 1.0 or delta <= 0.0:
+		return
+	var lap: int = floori(maxf(0.0, absolute_distance) / track_length)
+	var fraction: float = fposmod(maxf(0.0, absolute_distance), track_length) / track_length
+	if fraction < 0.681 or fraction > 0.809:
+		_set_phase(Phase.OUTSIDE)
+	elif fraction < 0.700:
+		_set_phase(Phase.ENTERING)
+	elif fraction > 0.794:
+		_set_phase(Phase.EXITING)
+	elif fraction < 0.739:
+		_set_phase(Phase.WARNING if lap >= 1 else Phase.CRUISING)
+	elif lap >= 1 and _triggered_lap != lap:
+		_triggered_lap = lap
+		_active_surge_seconds = 0.0
+		_set_phase(Phase.SURGE)
+	elif _active_surge_seconds >= 0.0:
+		_set_phase(Phase.SURGE)
+	else:
+		_set_phase(Phase.WARNING if lap >= 1 else Phase.CRUISING)
+
+	var surge: float = 0.0
+	if _active_surge_seconds >= 0.0:
+		_active_surge_seconds += delta
+		var t: float = _active_surge_seconds
+		if t >= NEON_SURGE_SECONDS:
+			_active_surge_seconds = -1.0
+			_set_phase(Phase.CRUISING)
+		else:
+			var onset: float = smoothstep(0.0, 0.34, t)
+			var decay: float = 1.0 - smoothstep(0.72, NEON_SURGE_SECONDS, t)
+			surge = onset * decay * (0.32 if reduced_motion else 1.0)
+
+	var atmosphere: float = 0.0
+	if phase != Phase.OUTSIDE:
+		atmosphere = 0.08 if phase == Phase.ENTERING or phase == Phase.EXITING else 0.22
+	_apply_energy(BASE_SHADER_ENERGY + atmosphere + surge * 0.95)
+
+func _set_phase(next: int) -> void:
+	if phase != next:
+		phase = next
+		darkride_phase_changed.emit(phase)
+
+func _apply_energy(energy: float, force: bool = false) -> void:
+	if not force and absf(energy - _last_energy) < 0.018:
+		return
+	_last_energy = energy
+	for mat in _surface_materials:
+		if is_instance_valid(mat):
+			mat.set_shader_parameter("light_intensity", energy)
+	if is_instance_valid(_rib_material):
+		_rib_material.emission_energy_multiplier = BASE_ARCH_ENERGY + maxf(energy - BASE_SHADER_ENERGY, 0.0) * 1.25
