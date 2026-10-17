@@ -1,0 +1,126 @@
+name: Lumo Sonnenhafen B3 five 3D hero landmarks and visual proof
+on:
+  push:
+    branches:
+      - chatgpt/lumo-b3-long-coast-hero-scenes-2026-10-17
+  pull_request:
+    paths:
+      - scripts/games/kart_sonnenhafen_hero_coast.gd
+      - scripts/games/kart_world.gd
+      - scripts/tests/kart_sonnenhafen_hero_coast_*.gd
+      - .github/workflows/lumo-sonnenhafen-hero-coast.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  genuine-3d-hero-scenes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install real Godot 4.6.3 and Mesa GL rasterizer
+        run: |
+          set -euo pipefail
+          sudo apt-get -qq update
+          sudo apt-get -y install xvfb libgl1-mesa-dri
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Reject syntax and shader errors on real full Godot import
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import.log"
+      - name: Verify five nonrepeating 3D models and real 1.85km road clearance
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 240 \
+            --log "$RUNNER_TEMP/hero-scenes.log" \
+            --required '[SonnenhafenHeroCoast] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_sonnenhafen_hero_coast_regression.gd
+      - name: Keep existing long course, shoreline and 2-lap driving functional
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 240 \
+            --log "$RUNNER_TEMP/long-course.log" \
+            --required '[SonnenhafenLong] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_sonnenhafen_long_course_regression.gd
+          python3 tools/run_godot_probe.py --timeout 480 \
+            --log "$RUNNER_TEMP/two-lap-drive.log" \
+            --required '[KartCourseDriving] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_courses_driving_regression.gd
+      - name: Render all five real B3 Godot OpenGL camera poses
+        env:
+          LUMO_CAPTURE_DIR: ${{ github.workspace }}/exports/sonnenhafen-b3/after
+        run: |
+          set -euo pipefail
+          mkdir -p "$LUMO_CAPTURE_DIR"
+          timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' \
+            godot --path . --audio-driver Dummy --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_sonnenhafen_hero_coast_capture.gd \
+            2>&1 | tee "$RUNNER_TEMP/after.log"
+          test "$(find "$LUMO_CAPTURE_DIR" -name '*.png' | wc -l)" -eq 5
+      - name: Render the same five camera poses on the frozen B2 source
+        run: |
+          set -euo pipefail
+          baseline="$RUNNER_TEMP/lumo-b2-baseline"
+          git clone --quiet --no-hardlinks . "$baseline"
+          git -C "$baseline" remote set-url origin https://github.com/Ullmann27/lumo-godot.git
+          git -C "$baseline" fetch --depth 1 origin 5c657c2780d3497f412f22a54e9559b332c2cbba
+          git -C "$baseline" checkout --detach FETCH_HEAD
+          test "$(git -C "$baseline" rev-parse HEAD)" = 5c657c2780d3497f412f22a54e9559b332c2cbba
+          cp scripts/tests/kart_sonnenhafen_hero_coast_capture.gd \
+            "$baseline/scripts/tests/kart_sonnenhafen_hero_coast_capture.gd"
+          (cd "$baseline" && timeout 240s godot --headless --path . --editor --import --quit)
+          mkdir -p "$GITHUB_WORKSPACE/exports/sonnenhafen-b3/before"
+          (cd "$baseline" && LUMO_CAPTURE_DIR="$GITHUB_WORKSPACE/exports/sonnenhafen-b3/before" \
+            timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' \
+            godot --path . --audio-driver Dummy --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_sonnenhafen_hero_coast_capture.gd)
+          test "$(find exports/sonnenhafen-b3/before -name '*.png' | wc -l)" -eq 5
+      - name: Quantify actual visual gain without inventing screenshots
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --break-system-packages Pillow==12.3.0
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageChops, ImageStat
+          import json, hashlib
+          out = Path("exports/sonnenhafen-b3")
+          report = {"source":"actual Godot 4.6.3 gl_compatibility 1280x720, 5 fixed poses"}
+          visible_count = 0
+          names = [
+              "01_sun_observatory", "02_cliff_amphitheater", "03_harbor_sails",
+              "04_celestial_wheel", "05_wind_garden"
+          ]
+          for name in names:
+              prior, updated = [out / phase / f"{name}.png" for phase in ("before","after")]
+              a, b = (Image.open(prior).convert("RGB"), Image.open(updated).convert("RGB"))
+              assert a.size == b.size == (1280,720)
+              assert ImageStat.Stat(b).mean[0] > 5, f"Empty/black capture: {name}"
+              diff = ImageChops.difference(a,b).convert("L")
+              fraction = sum(diff.histogram()[30:])/(1280*720)
+              visible_count += (fraction > 0.003)
+              report[name] = {"changed_pixel_ratio":round(fraction,5),
+                  "before_sha256":hashlib.sha256(prior.read_bytes()).hexdigest(),
+                  "after_sha256":hashlib.sha256(updated.read_bytes()).hexdigest()}
+          (out/"visual-proof.json").write_text(json.dumps(report,indent=2)+"\n")
+          print(json.dumps(report,indent=2))
+          assert visible_count >= 3, "At least three viewpoints must visibly improve"
+          PY
+      - name: Preserve genuine GL images, proof and regression logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sonnenhafen-b3-3d-before-after-${{ github.run_id }}
+          path: exports/sonnenhafen-b3/
+          if-no-files-found: warn
