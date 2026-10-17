@@ -31,7 +31,8 @@ func _run() -> void:
 			assert(node.mesh.get_surface_count() == 1, "Missing procedural triangle surface")
 			assert(node.material_override is ShaderMaterial, "Missing Android-safe cave material")
 			var verts: PackedVector3Array = node.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
-			assert(verts.size() > 300, "No sufficient geometric detail")
+			var minimum_vertices: int = 140 if is_low else 300
+			assert(verts.size() > minimum_vertices, "Insufficient geometric detail for selected LOD")
 		var ribs: MultiMeshInstance3D = ride.get_node("DarkrideNeonArchRibs")
 		var crystals: MultiMeshInstance3D = ride.get_node("DarkrideCrystalLanterns")
 		assert(ribs.multimesh.instance_count == int(metrics["arch_rib_instances"]))
