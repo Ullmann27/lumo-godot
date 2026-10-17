@@ -13,42 +13,66 @@ const COLLIDER_INNER_X: float = 8.3
 # Original GLB has triangle edges under 0.10 local units.
 # Broken aggressive decimation produced many spikes > 0.30 units.
 const MAX_EDGE_SQUARED: float = 0.09
-static var _verified_files: Dictionary = {}
 
-static func _geometry_is_clean(node: Node) -> bool:
+
+static func _repair_geometry(node: Node) -> int:
+	# Discard impossibly long triangles without touching UVs or materials.
+	# The corrupted decimation created edges over 0.30 local units.
 	var stack: Array[Node] = [node]
-	var checked_meshes: int = 0
+	var found: int = 0
+	var discarded: int = 0
+	var total: int = 0
 	while not stack.is_empty():
 		var current: Node = stack.pop_back()
 		for child in current.get_children():
 			stack.append(child)
 		if not current is MeshInstance3D:
 			continue
-		var instance: MeshInstance3D = current as MeshInstance3D
-		if instance.mesh == null:
+		var mi: MeshInstance3D = current as MeshInstance3D
+		if mi.mesh == null:
 			continue
-		for surface in range(instance.mesh.get_surface_count()):
-			if instance.mesh.surface_get_primitive_type(surface) != Mesh.PRIMITIVE_TRIANGLES:
-				continue
-			var arrays: Array = instance.mesh.surface_get_arrays(surface)
-			var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-			var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
-			var count: int = indices.size() if not indices.is_empty() else vertices.size()
-			if count < 3 or count % 3 != 0:
-				return false
-			for offset in range(0, count, 3):
-				var a: int = indices[offset] if not indices.is_empty() else offset
-				var b: int = indices[offset + 1] if not indices.is_empty() else offset + 1
-				var c: int = indices[offset + 2] if not indices.is_empty() else offset + 2
-				if mini(a, mini(b, c)) < 0 or maxi(a, maxi(b, c)) >= vertices.size():
-					return false
-				var va: Vector3 = vertices[a]
-				var vb: Vector3 = vertices[b]
-				var vc: Vector3 = vertices[c]
-				if va.distance_squared_to(vb) > MAX_EDGE_SQUARED or vb.distance_squared_to(vc) > MAX_EDGE_SQUARED or vc.distance_squared_to(va) > MAX_EDGE_SQUARED:
-					return false
-			checked_meshes += 1
-	return checked_meshes > 0
+		var old_mesh: Mesh = mi.mesh
+		var clean_mesh := ArrayMesh.new()
+		var altered: bool = false
+		for surface in range(old_mesh.get_surface_count()):
+			var mode: int = old_mesh.surface_get_primitive_type(surface)
+			var arrays: Array = old_mesh.surface_get_arrays(surface)
+			if mode == Mesh.PRIMITIVE_TRIANGLES:
+				var points: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+				var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+				if points.is_empty():
+					return -1
+				if indices.is_empty():
+					for k in range(points.size()):
+						indices.append(k)
+				var n: int = indices.size()
+				if n < 3 or n % 3 != 0:
+					return -1
+				for offset in range(0, n, 3):
+					var a: int = indices[offset]
+					var b: int = indices[offset + 1]
+					var c: int = indices[offset + 2]
+					if mini(a, mini(b, c)) < 0 or maxi(a, maxi(b, c)) >= points.size():
+						return -1
+					var va: Vector3 = points[a]
+					var vb: Vector3 = points[b]
+					var vc: Vector3 = points[c]
+					if va.distance_squared_to(vb) > MAX_EDGE_SQUARED or vb.distance_squared_to(vc) > MAX_EDGE_SQUARED or vc.distance_squared_to(va) > MAX_EDGE_SQUARED:
+						indices[offset + 1] = a
+						indices[offset + 2] = a
+						discarded += 1
+						altered = true
+				total += n / 3
+				arrays[Mesh.ARRAY_INDEX] = indices
+				found += 1
+			clean_mesh.add_surface_from_arrays(mode, arrays)
+			clean_mesh.surface_set_material(surface, old_mesh.surface_get_material(surface))
+		if altered:
+			mi.mesh = clean_mesh
+	if found == 0 or total == 0 or float(discarded) / float(total) > 0.05:
+		return -1
+	return discarded
+
 
 static func is_available() -> bool:
 	return ResourceLoader.exists(ASSET_MOBILE) or ResourceLoader.exists(ASSET_HIGH)
@@ -75,16 +99,14 @@ static func install(world) -> bool:
 		push_warning("Lumo Meshy gate: GLB root is not Node3D: " + file)
 		return false
 
-	var clean: bool = bool(_verified_files.get(file, false))
-	if not clean:
-		clean = _geometry_is_clean(instanced)
-		if clean:
-			_verified_files[file] = true
-	if not clean:
+	var spike_count: int = _repair_geometry(instanced)
+	if spike_count < 0:
 		instanced.free()
-		push_warning("Lumo Meshy gate: rejected broken spike geometry, keeping original arch: " + file)
+		push_warning("Lumo Meshy gate: irreparable geometry, keeping original arch: " + file)
 		return false
-	var arch := Node3D.new()
+	if spike_count > 0:
+		print("[MeshyGate] repaired damaged triangles: ", spike_count)
+		var arch := Node3D.new()
 	arch.name = "LumoKartMeshyStartFinishGate"
 	arch.transform = Transform3D(world.frame(0.0), world.position_at(0.0))
 	world.add_child(arch)
