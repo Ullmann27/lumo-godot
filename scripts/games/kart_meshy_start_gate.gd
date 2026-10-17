@@ -16,6 +16,8 @@ static func is_available() -> bool:
 static func install(world) -> bool:
 	if world == null or world.track_id != "sonnenhafen":
 		return false
+	if world.has_node("LumoKartMeshyStartFinishGate"):
+		return true
 	var file: String = ASSET_MOBILE if world.low_detail else ASSET_HIGH
 	if not ResourceLoader.exists(file):
 		file = ASSET_HIGH if file == ASSET_MOBILE else ASSET_MOBILE
