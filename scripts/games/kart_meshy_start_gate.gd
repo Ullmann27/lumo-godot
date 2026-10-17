@@ -10,6 +10,46 @@ const SOURCE_BOTTOM: float = -0.7031
 const ROAD_HALF_WIDTH: float = 5.4
 const COLLIDER_INNER_X: float = 8.3
 
+# Original GLB has triangle edges under 0.10 local units.
+# Broken aggressive decimation produced many spikes > 0.30 units.
+const MAX_EDGE_SQUARED: float = 0.09
+static var _verified_files: Dictionary = {}
+
+static func _geometry_is_clean(node: Node) -> bool:
+	var stack: Array[Node] = [node]
+	var checked_meshes: int = 0
+	while not stack.is_empty():
+		var current: Node = stack.pop_back()
+		for child in current.get_children():
+			stack.append(child)
+		if not current is MeshInstance3D:
+			continue
+		var instance: MeshInstance3D = current as MeshInstance3D
+		if instance.mesh == null:
+			continue
+		for surface in range(instance.mesh.get_surface_count()):
+			if instance.mesh.surface_get_primitive_type(surface) != Mesh.PRIMITIVE_TRIANGLES:
+				continue
+			var arrays: Array = instance.mesh.surface_get_arrays(surface)
+			var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+			var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+			var count: int = indices.size() if not indices.is_empty() else vertices.size()
+			if count < 3 or count % 3 != 0:
+				return false
+			for offset in range(0, count, 3):
+				var a: int = indices[offset] if not indices.is_empty() else offset
+				var b: int = indices[offset + 1] if not indices.is_empty() else offset + 1
+				var c: int = indices[offset + 2] if not indices.is_empty() else offset + 2
+				if mini(a, mini(b, c)) < 0 or maxi(a, maxi(b, c)) >= vertices.size():
+					return false
+				var va: Vector3 = vertices[a]
+				var vb: Vector3 = vertices[b]
+				var vc: Vector3 = vertices[c]
+				if va.distance_squared_to(vb) > MAX_EDGE_SQUARED or vb.distance_squared_to(vc) > MAX_EDGE_SQUARED or vc.distance_squared_to(va) > MAX_EDGE_SQUARED:
+					return false
+			checked_meshes += 1
+	return checked_meshes > 0
+
 static func is_available() -> bool:
 	return ResourceLoader.exists(ASSET_MOBILE) or ResourceLoader.exists(ASSET_HIGH)
 
@@ -33,6 +73,16 @@ static func install(world) -> bool:
 	if not instanced is Node3D:
 		instanced.free()
 		push_warning("Lumo Meshy gate: GLB root is not Node3D: " + file)
+		return false
+
+	var clean: bool = bool(_verified_files.get(file, false))
+	if not clean:
+		clean = _geometry_is_clean(instanced)
+		if clean:
+			_verified_files[file] = true
+	if not clean:
+		instanced.free()
+		push_warning("Lumo Meshy gate: rejected broken spike geometry, keeping original arch: " + file)
 		return false
 	var arch := Node3D.new()
 	arch.name = "LumoKartMeshyStartFinishGate"
