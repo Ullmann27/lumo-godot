@@ -47,6 +47,43 @@ func _run() -> void:
 					[item.name,distance,clearance])
 				found += 1
 		assert(found == 12, "Expected all 12 mountain silhouettes in each LOD")
+		# Also inspect the actual rock geometry (legacy shoreline boulders,
+		# terraced cliffs, waterfall ledges and five original hero foundations).
+		# Use 8 transformed AABB corners, including orientation and size, to
+		# reject rock volumes that could visually intrude into the racing lane.
+		var rocks_checked: int = 0
+		for item in world.get_children():
+			if not item is MultiMeshInstance3D:
+				continue
+			if not item.name.begins_with("Decor_rock_"):
+				continue
+			var rocks: MultiMesh = item.multimesh
+			if rocks == null or rocks.mesh == null:
+				continue
+			var local_box: AABB = rocks.mesh.get_aabb()
+			for index in range(rocks.instance_count):
+				var pose: Transform3D = item.transform * rocks.get_instance_transform(index)
+				var full_radius: float = 0.0
+				var min_y: float = INF
+				var max_y: float = -INF
+				for x in [local_box.position.x, local_box.end.x]:
+					for y in [local_box.position.y, local_box.end.y]:
+						for z in [local_box.position.z, local_box.end.z]:
+							var vertex: Vector3 = pose * Vector3(x,y,z)
+							full_radius = maxf(full_radius,
+								Vector2(vertex.x-pose.origin.x,vertex.z-pose.origin.z).length())
+							min_y = minf(min_y,vertex.y)
+							max_y = maxf(max_y,vertex.y)
+				var nearest: Vector2 = world._nearest_horizontal(pose.origin)
+				var sample_index: int = int(nearest.y)
+				var road_y: float = world._road_samples[sample_index].y
+				var kart_level: bool = min_y < road_y + 2.6 and max_y > road_y - 1.0
+				assert(not kart_level or nearest.x > world.WALL_LATERAL + full_radius,
+					"Decorative rock overlaps playable Sonnenhafen kart lane: %s instance=%d centre_dist=%.2f radius=%.2f" %
+					[item.name,index,nearest.x,full_radius])
+				rocks_checked += 1
+		assert(rocks_checked > 100, "Full 1.85km world should retain real rock formations")
+		print("[RoadObstruction] inspected_solid_rocks=%d" % rocks_checked)
 		var removed_rocks: int = int(world.get_meta(
 			"sonnenhafen_legacy_shore_rocks_skipped", 0
 		))
