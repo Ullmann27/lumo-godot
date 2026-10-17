@@ -1,0 +1,82 @@
+name: Lumo Bauwelt original premium props real-scene evidence
+on:
+  push:
+    branches:
+      - chatgpt/lumo-1971-bauwelt-originals-runtime-evidence-2026-10-17
+  pull_request:
+    paths:
+      - scripts/tests/creative_1971_premium_runtime_capture.gd
+      - .github/workflows/lumo-bauwelt-1971-actual-premium-scene.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-premium-world:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Reproducible Godot 4.6.3 GL environment
+        run: |
+          set -euo pipefail
+          sudo apt-get -qq update
+          sudo apt-get install -y xvfb libgl1-mesa-dri
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Verify identical product blobs against pinned release revision
+        run: |
+          set -euo pipefail
+          git fetch --depth 1 origin 3453a43a8bbdcb0495718e1eced2a40837d6e3ab
+          for file in scripts/creative/build_world.gd scripts/creative/build_catalog.gd scripts/creative/build_state.gd scripts/creative/creative_kit.gd scripts/creative/build_premium_props.gd scenes/creative/build_world.tscn; do
+            current="$(git hash-object "$file")"
+            baseline="$(git rev-parse "FETCH_HEAD:$file")"
+            test "$current" = "$baseline" || { echo "PRODUCT DRIFT: $file"; exit 1; }
+          done
+      - name: Import unchanged actual native scenes
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/import.log"
+          ! grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' "$RUNNER_TEMP/import.log"
+      - name: Run original twelve-mesh/rotation/save regressions
+        run: |
+          set -euo pipefail
+          timeout 180s godot --headless --path . --script res://scripts/tests/build_premium_props_regression.gd -- --logic-only 2>&1 | tee "$RUNNER_TEMP/premium.log"
+          grep -F "[Bauwelt12] PASS:" "$RUNNER_TEMP/premium.log"
+          ! grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' "$RUNNER_TEMP/premium.log"
+      - name: Render true Bauwelt game before, after five props and after disk reload
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          LUMO_BAUWELT_QA_DIR: ${{ github.workspace }}/exports/qa-bauwelt-1971
+        run: |
+          set -euo pipefail
+          mkdir -p "$LUMO_BAUWELT_QA_DIR"
+          timeout 200s xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/creative_1971_premium_runtime_capture.gd 2>&1 | tee "$RUNNER_TEMP/capture.log"
+          grep -F "[Bauwelt1971] PASS:" "$RUNNER_TEMP/capture.log"
+          ! grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' "$RUNNER_TEMP/capture.log"
+          python3 - <<'PY'
+          import pathlib, struct, hashlib
+          root = pathlib.Path('exports/qa-bauwelt-1971')
+          files = [root / f'{i}.png' for i in ['01_original_bauwelt_empty','02_premium_props_placed','03_premium_props_reloaded']]
+          hashes=[]
+          for path in files:
+            data=path.read_bytes()
+            assert len(data)>25000 and data[:8]==b'\x89PNG\r\n\x1a\n', (path,len(data))
+            assert struct.unpack('>II',data[16:24])==(1280,720),path
+            hashes.append(hashlib.sha256(data).hexdigest())
+          assert hashes[0]!=hashes[1], 'Placing five premium objects made no image difference'
+          assert (root/'evidence.json').exists()
+          print('Bauwelt approved native world: three real nonempty frames')
+          PY
+      - name: Upload unedited native images and engine evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-bauwelt-1971-real-premium-before-after-${{ github.run_id }}
+          path: exports/qa-bauwelt-1971/
+          if-no-files-found: warn
+          retention-days: 21
