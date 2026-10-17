@@ -12,7 +12,7 @@ static func _p(frame: Transform3D, f: float, y: float, s: float) -> Vector3:
 	return frame.origin + frame.basis.z * f + Vector3.UP * y + frame.basis.x * s
 
 
-static func decorate(world, frame: Transform3D, detail: bool, palette: Array[Color]) -> Dictionary:
+static func decorate(world, frame: Transform3D, detail: bool, palette: Array[Color], water_delta: float) -> Dictionary:
 	var contacts: int = 0
 	var seams: int = 0
 	var ribs: int = 0
@@ -45,14 +45,12 @@ static func decorate(world, frame: Transform3D, detail: bool, palette: Array[Col
 	# Mirrors the existing bay order; does not touch ship or hoist kinematics.
 	if detail:
 		var bay: int = 0
-		var water: float = -2.9 # overwritten below from the actual waterline
-		water = float(world.get_meta("harbor_water_height", -2.9)) - frame.origin.y
 		for s in [-3.4, 2.75, 8.9]:
 			for f_offset in [-1.3, 1.3]:
 				for tier in range(2):
 					var tint: Color = palette[(bay + tier * 2) % palette.size()]
 					var at: Vector3 = _p(frame, 15.0 + f_offset,
-						water + 4.1 + float(tier) * 2.62, s)
+						water_delta + 4.1 + float(tier) * 2.62, s)
 					ribs += _container_ribs(world, frame, at, tint)
 				bay += 1
 
