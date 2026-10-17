@@ -14,14 +14,14 @@ const NEON_SURGE_SECONDS: float = 2.4
 
 var phase: int = Phase.OUTSIDE
 var _tunnel: Node3D
-var _burst: Node3D
+var _burst
 var _surface_materials: Array[ShaderMaterial] = []
 var _rib_material: StandardMaterial3D
 var _active_surge_seconds: float = -1.0
 var _triggered_lap: int = -1
 var _last_energy: float = -1.0
 
-func bind_world(world: Node3D) -> void:
+func bind_world(world) -> void:
 	if is_instance_valid(_burst):
 		_burst.queue_free()
 	_burst = null
