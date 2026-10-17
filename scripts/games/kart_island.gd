@@ -15,6 +15,7 @@ const ARENA = preload("res://scripts/games/kart_arena.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const PHYSICAL_LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
+const DARKRIDE_EVENT = preload("res://scripts/games/kart_darkride_event_director.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
@@ -62,6 +63,7 @@ const PREVIEW_SECONDS: float = 5.0
 const PREVIEW_BLEND_SECONDS: float = 1.1
 var curve: Curve3D
 var world: LumoRaceWorld
+var darkride_event = DARKRIDE_EVENT.new()
 var track_length: float
 var distance: float = 0.0
 var lane: float = 0.0
@@ -348,6 +350,7 @@ func _build_world() -> void:
 	opponent_targets.clear()
 	arena_pickup_timers.clear()
 	ghost = null
+	darkride_event.bind_world(null)
 	world = null
 	arena = null
 	crystal_mesh = _gem_mesh()
@@ -364,6 +367,7 @@ func _build_world() -> void:
 		world = WORLD.new()
 		race_root.add_child(world)
 		world.build(lightweight, track_id)
+		darkride_event.bind_world(world)
 		curve = world.curve
 		track_length = world.length
 		for i in range(24):
@@ -1263,6 +1267,7 @@ func _physics_process(delta: float) -> void:
 		else:
 			_drive_opponents(delta)
 			_track_events()
+			darkride_event.tick(distance, track_length, delta, reduced_motion)
 			_update_checkpoints()
 			if mode == "time_trial":
 				records.capture(delta, elapsed, player.position, player.rotation, axis, speed)
