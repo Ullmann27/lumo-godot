@@ -26,11 +26,11 @@ func _run() -> void:
 	assert(director.phase == DIRECTOR.Phase.WARNING, "Lap 2 needs a pre-event warning")
 	director.tick(race_length * 1.74, race_length, 0.35, false)
 	assert(director.phase == DIRECTOR.Phase.SURGE)
-\tvar vfx: Node3D = world.get_node(
+	var vfx: Node3D = world.get_node(
 		"SonnenhafenBioluminescentDarkride/LumoArcadeCrystalShockwave")
 	assert(vfx != null and vfx.visible, "Arcade shockwave was not activated")
 	assert(vfx.get_child_count() == 2, "Low detail shockwave must use only two rings")
-	assert(int(vfx.burst_count) == 1, "A single lap crossing must produce one burst")
+	assert(int(vfx.get("burst_count")) == 1, "A single lap crossing must produce one burst")
 	var full_intensity: float = float(material.get_shader_parameter("light_intensity"))
 	assert(full_intensity > DIRECTOR.BASE_SHADER_ENERGY + 0.25,
 		"Second-lap tunnel energy surge not visible")
@@ -38,7 +38,7 @@ func _run() -> void:
 		director.tick(race_length * 1.75, race_length, 0.1, false)
 	assert(director._triggered_lap == 1, "Visual event must occur once per lap only")
 	assert(director._active_surge_seconds < 0.0, "Visual surge never settled")
-	assert(not vfx.visible and int(vfx.burst_count) == 1, "VFX must expire, without retriggering")
+	assert(not vfx.visible and int(vfx.get("burst_count")) == 1, "VFX must expire, without retriggering")
 	assert(world.length == race_length and world.checkpoint_positions == checkpoints,
 		"Neon-only event must not change road physics or checkpoint positions")
 	assert(world.get_node("SonnenhafenBioluminescentDarkride").get_child_count() == 5)
