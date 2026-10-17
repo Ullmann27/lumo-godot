@@ -48,7 +48,6 @@ func tick(absolute_distance: float, track_length: float,
 		return
 	var lap: int = floori(maxf(0.0, absolute_distance) / track_length)
 	var fraction: float = fposmod(maxf(0.0, absolute_distance), track_length) / track_length
-	var previous: int = phase
 	if fraction < 0.681 or fraction > 0.809:
 		_set_phase(Phase.OUTSIDE)
 	elif fraction < 0.700:
@@ -56,7 +55,7 @@ func tick(absolute_distance: float, track_length: float,
 	elif fraction > 0.794:
 		_set_phase(Phase.EXITING)
 	elif fraction < 0.739:
-		_set_phase(Phase.CRUISING)
+		_set_phase(Phase.WARNING if lap >= 1 else Phase.CRUISING)
 	elif lap >= 1 and _triggered_lap != lap:
 		_triggered_lap = lap
 		_active_surge_seconds = 0.0
