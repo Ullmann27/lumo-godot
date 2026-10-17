@@ -9,6 +9,7 @@ const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const AAA_ENV = preload("res://scripts/games/visual/kart_environment_polish.gd")
 const AAA_GATES = preload("res://scripts/games/visual/kart_neon_gates.gd")
+const MESHY_START_GATE = preload("res://scripts/games/kart_meshy_start_gate.gd")
 const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
 const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
@@ -34,6 +35,7 @@ var length: float = 0.0
 var world_extent: Vector2 = Vector2(101.0, 91.0)
 var road: MeshInstance3D
 var low_detail: bool = false
+var _only_geometry: bool = false
 var groups: Dictionary = {}
 var meshes: Dictionary = {}
 var materials: Dictionary = {}
@@ -71,6 +73,7 @@ func build(
 	action_obstacles.clear()
 	decoration_count = 0
 	low_detail = lightweight
+	_only_geometry = geometry_only
 	definition = TRACKS.definition(selected_track)
 	track_id = definition.id
 	track_name = definition.name
@@ -811,7 +814,8 @@ func _road() -> void:
 		SKY_ISLANDS.road_lights(self)
 		SKY_ISLANDS.road_surface_details(self)
 	elif track_id=="sonnenhafen":
-		_arch(0.0,"LUMO GRAND PRIX",Color("65dff5"))
+		if _only_geometry or not MESHY_START_GATE.install(self):
+			_arch(0.0,"LUMO GRAND PRIX",Color("65dff5"))
 	else:
 		_arch(0.0,track_name.to_upper(),definition.accent)
 	match track_id:
