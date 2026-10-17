@@ -18,6 +18,8 @@ static func install(world) -> bool:
 		return false
 	if world.has_node("LumoKartMeshyStartFinishGate"):
 		return true
+	if world.has_node("LumoKartMeshyStartFinishGate"):
+		return true
 	var file: String = ASSET_MOBILE if world.low_detail else ASSET_HIGH
 	if not ResourceLoader.exists(file):
 		file = ASSET_HIGH if file == ASSET_MOBILE else ASSET_MOBILE
