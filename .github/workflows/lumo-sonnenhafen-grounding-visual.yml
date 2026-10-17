@@ -1,0 +1,81 @@
+name: Lumo Sonnenhafen grounded containers visual proof
+on:
+  push:
+    branches:
+      - chatgpt/sonnenhafen-grounding-corrugation-2026-10-17
+  pull_request:
+    paths:
+      - scripts/games/kart_harbor_crane.gd
+      - scripts/games/kart_harbor_visual_finish.gd
+      - scripts/tests/kart_sonnenhafen_visual_finish_regression.gd
+      - .github/workflows/lumo-sonnenhafen-grounding-visual.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  grounded-harbor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Godot 4.6.3 and GL compatibility render dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get -qq update
+          sudo apt-get install -y xvfb libgl1-mesa-dri
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import exact real Godot code and shaders
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/import.log"
+          ! grep -E 'SCRIPT ERROR|Parse Error|Failed to load script|Shader compilation failed' "$RUNNER_TEMP/import.log"
+      - name: Verify low-detail, genuine crane kinematics, collision isolation, finish counts
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --script res://scripts/tests/kart_sonnenhafen_visual_finish_regression.gd 2>&1 | tee "$RUNNER_TEMP/finish.log"
+          grep -F '[HarborVisualFinish] PASS:' "$RUNNER_TEMP/finish.log"
+          timeout 240s godot --headless --path . --script res://scripts/tests/kart_sonnenhafen_crane_regression.gd 2>&1 | tee "$RUNNER_TEMP/crane.log"
+          grep -F '[SonnenhafenCrane] PASS:' "$RUNNER_TEMP/crane.log"
+          ! grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' "$RUNNER_TEMP/finish.log" "$RUNNER_TEMP/crane.log"
+      - name: Render three real after scenes in Android-compatible GL renderer
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          LUMO_CAPTURE_DIR: ${{ github.workspace }}/exports/sonnenhafen-finish/after
+        run: |
+          set -euo pipefail
+          timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_pose_capture.gd 2>&1 | tee "$RUNNER_TEMP/after.log"
+          for camera in 01_trackside_view 02_harbor_overview 03_seaside_boom; do
+            test -s "exports/sonnenhafen-finish/after/${camera}.png"
+          done
+          test -s exports/sonnenhafen-finish/after/poses.json
+      - name: Render exact unchanged 1969 baseline with identical camera poses
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          original="$GITHUB_WORKSPACE"
+          baseline="$RUNNER_TEMP/lumo-1969-visual-before"
+          git clone --quiet --no-hardlinks . "$baseline"
+          git -C "$baseline" remote set-url origin https://github.com/Ullmann27/lumo-godot.git
+          git -C "$baseline" fetch --depth 1 origin 6b3945583a361c4ea974e4b6846ae0d616b1727a
+          git -C "$baseline" checkout --detach FETCH_HEAD
+          test "$(git -C "$baseline" rev-parse HEAD)" = 6b3945583a361c4ea974e4b6846ae0d616b1727a
+          (cd "$baseline" && timeout 240s godot --headless --path . --editor --import --quit)
+          mkdir -p "$original/exports/sonnenhafen-finish/before"
+          (cd "$baseline" && LUMO_POSES="$original/exports/sonnenhafen-finish/after/poses.json" LUMO_CAPTURE_DIR="$original/exports/sonnenhafen-finish/before" timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_pose_capture.gd)
+          for camera in 01_trackside_view 02_harbor_overview 03_seaside_boom; do
+            test -s "$original/exports/sonnenhafen-finish/before/${camera}.png"
+          done
+      - name: Upload unaltered real before/after renderer evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sonnenhafen-grounding-before-after-${{ github.run_id }}
+          path: exports/sonnenhafen-finish/
+          if-no-files-found: warn
