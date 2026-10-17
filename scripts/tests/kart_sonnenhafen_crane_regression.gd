@@ -29,10 +29,23 @@ func _run() -> void:
 		var trolley = world.get_node_or_null("SonnenhafenCraneTrolley")
 		if low:
 			assert(trolley == null)
+			assert(not world.has_meta("sonnenhafen_crane_hoist"))
 		else:
 			assert(trolley != null)
+			var hoist: Node3D = trolley.get_node_or_null("SonnenhafenCraneHoist")
+			assert(hoist != null)
+			assert(world.get_meta("sonnenhafen_crane_hoist") == hoist.name)
+			var ropes: Array[MeshInstance3D] = []
+			for i in range(4):
+				var rope: MeshInstance3D = trolley.get_node("SonnenhafenCraneCable%d" % i)
+				assert(rope != null)
+				assert(rope.mesh is BoxMesh)
+				ropes.append(rope)
 			for node in trolley.find_children("*", "CollisionObject3D", true, false):
-				assert(false, "crane trolley must not add collision")
+				assert(false, "crane trolley and hoist must not add collision")
+			var original_rope: MeshInstance3D = ropes[0]
+			var original_mesh: BoxMesh = original_rope.mesh
+			var rope_anchor: float = original_rope.position.y + original_mesh.size.y * original_rope.scale.y * 0.5
 			var start: Vector3 = trolley.position
 			for _i in range(90):
 				await physics_frame
@@ -40,6 +53,12 @@ func _run() -> void:
 			assert(travelled > 0.05)
 			var along: float = (trolley.position - frame.origin).dot(frame.basis.z)
 			assert(along >= CRANE.TROLLEY_FROM - 0.01 and along <= CRANE.TROLLEY_TO + 0.01)
+			assert(hoist.position.y < -0.1, "high-detail container must move vertically")
+			for rope in ropes:
+				assert(rope.scale.y > 1.0, "ropes must lengthen with the lowering container")
+				var cable_mesh: BoxMesh = rope.mesh
+				var anchor: float = rope.position.y + cable_mesh.size.y * rope.scale.y * 0.5
+				assert(absf(anchor - rope_anchor) < 0.01, "rope upper attachments must not drift")
 		totals.append(parts)
 		world.queue_free()
 		await process_frame
@@ -51,5 +70,5 @@ func _run() -> void:
 	assert(other.get_node_or_null("SonnenhafenCraneTrolley") == null)
 	other.queue_free()
 	await process_frame
-	print("[SonnenhafenCrane] PASS: crane parts high=%d low=%d, open water, no collision, moving trolley, track isolation" % [totals[0], totals[1]])
+	print("[SonnenhafenCrane] PASS: crane parts high=%d low=%d, open water, no collision, moving trolley and hoist, anchored ropes, track isolation" % [totals[0], totals[1]])
 	quit(0)
