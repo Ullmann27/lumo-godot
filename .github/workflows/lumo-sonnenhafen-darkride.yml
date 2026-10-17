@@ -1,0 +1,69 @@
+name: Lumo Kart Sonnenhafen darkride real Godot 3D QA
+on:
+  pull_request:
+    paths:
+      - 'scripts/games/kart_sonnenhafen_darkride.gd'
+      - 'scripts/games/kart_world.gd'
+      - 'scripts/tests/kart_sonnenhafen_darkride_*.gd'
+      - 'assets/shaders/kart_sonnenhafen_darkride.gdshader'
+      - '.github/workflows/lumo-sonnenhafen-darkride.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  darkride-real-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Godot 4.6.3 (pinned)
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Compile full project and new darkride shader
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/darkride-import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/darkride-import.log"
+      - name: Regression with real high and low detail Sonnenhafen worlds
+        run: |
+          python3 tools/run_godot_probe.py --timeout 240 --log "$RUNNER_TEMP/darkride-regression.log" --required '[Darkride] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_sonnenhafen_darkride_regression.gd
+      - name: Install real software OpenGL framebuffer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri
+      - name: Photograph generated tunnel inside running Godot
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          timeout 300s xvfb-run -a -s '-screen 0 1280x720x24' \
+            godot --audio-driver Dummy --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_sonnenhafen_darkride_capture.gd 2>&1 | tee "$RUNNER_TEMP/darkride-render.log"
+          grep -F '[DarkrideRender] PASS:' "$RUNNER_TEMP/darkride-render.log"
+          for view in entrance deep_neon exit; do
+            test -s "artifacts/sonnenhafen-darkride/$view.png"
+          done
+      - name: Upload three real Godot camera screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sonnenhafen-darkride-actual-3d-${{ github.run_id }}
+          path: artifacts/sonnenhafen-darkride/*.png
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Upload import and safety evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sonnenhafen-darkride-probe-${{ github.run_id }}
+          path: ${{ runner.temp }}/darkride-*.log
+          if-no-files-found: warn
