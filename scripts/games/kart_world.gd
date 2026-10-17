@@ -513,7 +513,18 @@ func _ground_height(x: float, z: float) -> float:
 	var index: int=int(nearest.y)
 	if not _is_bridge(_road_distances[index]):
 		base=lerpf(base,_road_samples[index].y-0.85,1.0-smoothstep(5.0,23.0,nearest.x))
-	return lerpf(-2.4,base,smoothstep(0.0,0.075,shore-radius))
+	var terrain_height: float = lerpf(-2.4, base, smoothstep(0.0, 0.075, shore - radius))
+	if track_id == "sonnenhafen" and world_extent.x > 160.0:
+		# Extended coast: retain the original marina as a navigable eastern
+		# tidal inlet. Without this carve the larger terrain turns its piers
+		# into inland structures, breaking the existing water-footprint gate.
+		# The channel reaches the offshore sea; the elevated east Grand Prix
+		# section crosses it as an actual open-water viaduct.
+		var inlet: float = smoothstep(98.0, 108.0, x) * (
+			1.0 - smoothstep(64.0, 90.0, absf(z))
+		)
+		terrain_height = lerpf(terrain_height, -4.2, inlet)
+	return terrain_height
 
 func _terrain() -> void:
 	var surface := SurfaceTool.new()
