@@ -1,25 +1,31 @@
 extends SceneTree
 ## Independent Godot-4.6.3 import and real GPU turntable QA for Python-generated GLB.
 ## Does NOT overwrite game assets or auto-approve art for shipping.
-const SOURCE := "res://build/ai3d/sonnenhafen_biolum_cavern_crystals.glb"
-const REPORT := "res://build/ai3d/sonnenhafen_biolum_cavern_crystals.json"
-const OUTPUT := "res://artifacts/ai3d-factory"
+var source := "res://build/ai3d/sonnenhafen_biolum_cavern_crystals.glb"
+var output := "res://artifacts/ai3d-factory"
 
 func _initialize() -> void:
 	call_deferred("_run")
 
 func _run() -> void:
-	var report: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(REPORT))
+	for argument in OS.get_cmdline_user_args():
+		if argument.begins_with("--source="):
+			source = argument.trim_prefix("--source=")
+		if argument.begins_with("--output="):
+			output = argument.trim_prefix("--output=")
+	var report: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(source.get_basename() + ".json"))
 	assert(report is Dictionary and not report.is_empty(), "Missing generator manifest")
-	assert(FileAccess.get_sha256(SOURCE) == report.sha256, "Unverified generated GLB")
+	assert(FileAccess.get_sha256(source) == report.sha256, "Unverified generated GLB")
 	var doc := GLTFDocument.new()
 	var state := GLTFState.new()
-	assert(doc.append_from_file(SOURCE, state) == OK, "Godot cannot import GLB")
+	assert(doc.append_from_file(source, state) == OK, "Godot cannot import GLB")
 	var model: Node = doc.generate_scene(state)
 	assert(model != null, "No imported 3D scene")
 	var nodes: Array[Node] = [model]
 	var triangles: int = 0
 	var mesh_nodes: int = 0
+	var mesh_bounds := AABB()
+	var has_bounds := false
 	while not nodes.is_empty():
 		var current: Node = nodes.pop_back()
 		for child in current.get_children():
@@ -27,6 +33,9 @@ func _run() -> void:
 		if current is MeshInstance3D:
 			mesh_nodes += 1
 			var visual: MeshInstance3D = current
+			var bounds := visual.mesh.get_aabb()
+			mesh_bounds = mesh_bounds.merge(bounds) if has_bounds else bounds
+			has_bounds = true
 			for i in range(visual.mesh.get_surface_count()):
 				var arrays: Array = visual.mesh.surface_get_arrays(i)
 				var indices = arrays[Mesh.ARRAY_INDEX]
@@ -35,7 +44,15 @@ func _run() -> void:
 				assert(visual.get_active_material(i) != null, "Material lost on import")
 	assert(mesh_nodes > 0 and triangles == int(report.triangles),
 		"Actual Godot mesh differs from signed geometry manifest")
+	var expected_min := Vector3(report.bbox_min_m[0], report.bbox_min_m[1], report.bbox_min_m[2])
+	var expected_max := Vector3(report.bbox_max_m[0], report.bbox_max_m[1], report.bbox_max_m[2])
+	assert(mesh_bounds.position.is_equal_approx(expected_min), "Imported mesh minimum differs")
+	assert(mesh_bounds.end.is_equal_approx(expected_max), "Imported mesh maximum differs")
 	print("[AI3DFactory] import PASS: nodes=", mesh_nodes, " triangles=", triangles)
+	if "--validate-only" in OS.get_cmdline_user_args():
+		model.free()
+		quit(0)
+		return
 
 	root.size = Vector2i(1280, 720)
 	var scene := Node3D.new()
@@ -58,7 +75,7 @@ func _run() -> void:
 	camera.fov = 53.0
 	scene.add_child(camera)
 	camera.current = true
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUTPUT))
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(output))
 	var target := Vector3(0.0, float(report.bbox_max_m[1]) * 0.48, 0.0)
 	var positions := [Vector3(8.0, 4.5, 9.0), Vector3(-9.0, 5.5, 7.0),
 		Vector3(1.0, 10.0, -10.0)]
@@ -70,7 +87,7 @@ func _run() -> void:
 		var frame: Image = root.get_texture().get_image()
 		assert(frame != null and not frame.is_empty())
 		assert(frame.get_width() == 1280 and frame.get_height() == 720)
-		var output_file: String = ProjectSettings.globalize_path(OUTPUT).path_join("view_" + str(i) + ".png")
+		var output_file: String = ProjectSettings.globalize_path(output).path_join("view_" + str(i) + ".png")
 		assert(frame.save_png(output_file) == OK)
 		print("[AI3DFactory] actual Godot camera: ", output_file)
 	print("[AI3DFactory] PASS: GLB v2 geometry, PBR materials, real engine and three rendered views")

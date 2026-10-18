@@ -20,6 +20,10 @@ import sys
 
 IDENTIFIER = re.compile(r"^[a-z][a-z0-9_]{2,47}$")
 MAX_ASSET_BYTES = 6_000_000
+PROFILES = {
+    "high": (6, ((0.0, 0.66), (0.20, 1.0), (0.78, 0.43))),
+    "mobile": (4, ((0.0, 0.66), (0.20, 1.0))),
+}
 
 
 def validate_spec(value: object) -> dict:
@@ -89,8 +93,11 @@ class Surface:
         self.triangle(a, b, c)
 
 
-def generate_geometry(spec: dict) -> list[Surface]:
+def generate_geometry(spec: dict, profile: str = "high") -> list[Surface]:
     spec = validate_spec(spec)
+    if profile not in PROFILES:
+        raise ValueError("Unknown geometry profile")
+    sides, ring_profile = PROFILES[profile]
     rng = random.Random(spec["seed"])
     materials = [Surface(), Surface()]
     target_h = float(spec["height_m"])
@@ -102,11 +109,10 @@ def generate_geometry(spec: dict) -> list[Surface]:
         centre = (math.cos(angle) * distance, 0.0, math.sin(angle) * distance)
         height = target_h * (1.0 if shard == 0 else rng.uniform(0.42, 0.86))
         width = radius * (0.82 if shard == 0 else rng.uniform(0.36, 0.73))
-        sides = 6
         start = rng.uniform(0.0, math.pi / 3.0)
         surface = materials[shard % 2]
         rings = []
-        for y_fraction, width_fraction in ((0.0, 0.66), (0.20, 1.0), (0.78, 0.43)):
+        for y_fraction, width_fraction in ring_profile:
             ring = [
                 (centre[0] + math.cos(start + i * math.tau / sides) * width * width_fraction,
                  y_fraction * height,
@@ -154,9 +160,9 @@ class BufferBuilder:
         return len(self.accessors) - 1
 
 
-def glb_bytes(spec: dict) -> tuple[bytes, dict]:
+def glb_bytes(spec: dict, profile: str = "high") -> tuple[bytes, dict]:
     spec = validate_spec(spec)
-    surfaces = generate_geometry(spec)
+    surfaces = generate_geometry(spec, profile)
     builder = BufferBuilder()
     primitives = []
     positions_all = []
@@ -221,6 +227,7 @@ def glb_bytes(spec: dict) -> tuple[bytes, dict]:
     report = {
         "asset_id": spec["asset_id"],
         "recipe": spec["recipe"],
+        "profile": profile,
         "seed": spec["seed"],
         "triangles": sum(len(x.indices) // 3 for x in surfaces),
         "materials": len(materials),
@@ -234,7 +241,133 @@ def glb_bytes(spec: dict) -> tuple[bytes, dict]:
         "ai_provided_spec": False,
         "physical_device_fps_verified": False,
     }
+    # Audit the packed float32 geometry, not only the generator's Python arrays.
+    report.update(validate_glb(data))
     return data, report
+
+
+def validate_glb(data: bytes) -> dict:
+    """Audit the factory's restricted GLB profile; this is not a general glTF validator.
+
+    Embedded buffers, indexed triangles, float32 positions/normals/UVs and uint16
+    indices are mandatory. Bounds and counts are derived from real binary data.
+    """
+    def require(condition, message):
+        if not condition:
+            raise ValueError("Invalid factory GLB: " + message)
+
+    try:
+        require(28 <= len(data) <= MAX_ASSET_BYTES, "file size")
+        magic, version, size = struct.unpack_from("<4sII", data)
+        require(magic == b"glTF" and version == 2 and size == len(data), "header")
+        json_size, tag = struct.unpack_from("<I4s", data, 12)
+        require(tag == b"JSON" and json_size % 4 == 0, "JSON chunk")
+        doc = json.loads(data[20:20 + json_size])
+        binary_header = 20 + json_size
+        binary_size, tag = struct.unpack_from("<I4s", data, binary_header)
+        require(tag == b"BIN\0" and binary_size % 4 == 0, "binary chunk")
+        require(binary_header + 8 + binary_size == len(data), "binary length")
+        binary = data[binary_header + 8:]
+        require(doc["asset"]["version"] == "2.0", "asset version")
+        require(len(doc["buffers"]) == 1 and "uri" not in doc["buffers"][0], "embedded buffer")
+        buffer_size = doc["buffers"][0]["byteLength"]
+        require(type(buffer_size) is int and 0 <= binary_size - buffer_size <= 3, "buffer length")
+        require(doc["scenes"] == [{"nodes": [0]}] and doc["scene"] == 0, "scene")
+        require(len(doc["nodes"]) == 1 and doc["nodes"][0]["mesh"] == 0, "mesh node")
+        require(set(doc["nodes"][0]) <= {"name", "mesh"}, "unaccounted node transform")
+        require(len(doc["meshes"]) == 1 and len(doc["materials"]) == 2, "mesh/material count")
+
+        def accessor(index, kind, component, target):
+            require(type(index) is int and 0 <= index < len(doc["accessors"]), "accessor reference")
+            access = doc["accessors"][index]
+            require(access["type"] == kind and access["componentType"] == component, "accessor format")
+            require(not access.get("sparse") and not access.get("normalized"), "accessor encoding")
+            view_id = access["bufferView"]
+            require(type(view_id) is int and 0 <= view_id < len(doc["bufferViews"]), "buffer view reference")
+            view = doc["bufferViews"][view_id]
+            require(view["buffer"] == 0 and view["target"] == target, "buffer view")
+            require("byteStride" not in view, "interleaved attributes unsupported")
+            count = access["count"]
+            width = {"VEC3": 3, "VEC2": 2, "SCALAR": 1}[kind]
+            element_size = (4 if component == 5126 else 2) * width
+            offset, relative, length = view.get("byteOffset", 0), access.get("byteOffset", 0), view["byteLength"]
+            require(all(type(v) is int and v >= 0 for v in (offset, relative, length)), "negative/invalid offset")
+            require(type(count) is int and 0 < count <= 65535, "accessor count")
+            require(offset % 4 == 0 and relative % (element_size // width) == 0, "alignment")
+            require(relative + count * element_size <= length and offset + length <= buffer_size, "accessor range")
+            fmt = "<" + ("f" if component == 5126 else "H") * width
+            values = list(struct.iter_unpack(fmt, binary[offset + relative:offset + relative + count * element_size]))
+            require(all(math.isfinite(v) for row in values for v in row), "non-finite geometry")
+            if kind == "VEC3" and "min" in access:
+                for axis in range(3):
+                    require(math.isclose(min(p[axis] for p in values), access["min"][axis], abs_tol=1e-6, rel_tol=1e-6)
+                            and math.isclose(max(p[axis] for p in values), access["max"][axis], abs_tol=1e-6, rel_tol=1e-6), "position bounds")
+            return values
+
+        positions_all = []
+        triangles = vertices = 0
+        primitives = doc["meshes"][0]["primitives"]
+        require(len(primitives) == 2, "primitive count")
+        for primitive in primitives:
+            require(primitive.get("mode", 4) == 4, "triangle mode")
+            require(type(primitive["material"]) is int and 0 <= primitive["material"] < 2, "material reference")
+            attributes = primitive["attributes"]
+            positions = accessor(attributes["POSITION"], "VEC3", 5126, 34962)
+            normals = accessor(attributes["NORMAL"], "VEC3", 5126, 34962)
+            uvs = accessor(attributes["TEXCOORD_0"], "VEC2", 5126, 34962)
+            indices = [row[0] for row in accessor(primitive["indices"], "SCALAR", 5123, 34963)]
+            require(len(positions) == len(normals) == len(uvs), "attribute counts")
+            require(all(abs(sum(v*v for v in n) - 1) < 1e-4 for n in normals), "unit normals")
+            require(len(indices) % 3 == 0 and max(indices) < len(positions), "triangle indices")
+            for i in range(0, len(indices), 3):
+                a, b, c = (positions[k] for k in indices[i:i + 3])
+                face = unit(cross(vec_sub(b, a), vec_sub(c, a)))
+                require(all(sum(face[j] * normals[k][j] for j in range(3)) > 0.99
+                            for k in indices[i:i + 3]), "normal/winding mismatch")
+            positions_all.extend(positions)
+            vertices += len(positions)
+            triangles += len(indices) // 3
+        lower = [min(p[i] for p in positions_all) for i in range(3)]
+        upper = [max(p[i] for p in positions_all) for i in range(3)]
+        require(lower[1] == 0.0 and all(upper[i] > lower[i] for i in range(3)), "ground pivot/extent")
+        return {"triangles": triangles, "vertices": vertices, "materials": len(doc["materials"]),
+                "mesh_primitives": len(primitives), "bbox_min_m": lower, "bbox_max_m": upper,
+                "ground_pivot_m": lower[1], "bytes": len(data),
+                "sha256": hashlib.sha256(data).hexdigest()}
+    except (KeyError, IndexError, TypeError, struct.error, UnicodeDecodeError, OverflowError) as exc:
+        raise ValueError("Invalid factory GLB structure") from exc
+
+
+def verify_manifest(data: bytes, report: dict) -> dict:
+    actual = validate_glb(data)
+    for key, value in actual.items():
+        if report.get(key) != value:
+            raise ValueError(f"GLB manifest mismatch: {key}")
+    return actual
+
+
+def build_variants(spec_path: Path, output_dir: Path) -> dict:
+    """Produce both geometry levels and a deterministic manifest from one spec."""
+    spec = validate_spec(json.loads(spec_path.read_text(encoding="utf-8")))
+    pending = {}
+    variants = {}
+    for profile in PROFILES:
+        data, report = glb_bytes(spec, profile)
+        report["file_name"] = f"{spec['asset_id']}_{profile}.glb"
+        verify_manifest(data, report)
+        pending[report["file_name"]] = data
+        pending[f"{spec['asset_id']}_{profile}.json"] = (json.dumps(report, indent=2, sort_keys=True) + "\n").encode()
+        variants[profile] = report
+    manifest = {"schema_version": 1, "asset_id": spec["asset_id"], "source_spec": spec,
+                "provenance": "Lumo deterministic procedural crystal_cluster; no neural model or external assets",
+                "variants": variants, "physical_device_fps_verified": False}
+    pending[f"{spec['asset_id']}_variants.json"] = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    if any((output_dir / name).is_symlink() for name in pending):
+        raise ValueError("Refusing to overwrite a symlink")
+    for name, data in pending.items():
+        (output_dir / name).write_bytes(data)
+    return manifest
 
 
 def build(spec_path: Path, output_dir: Path) -> dict:
@@ -256,9 +389,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--spec", required=True, type=Path)
     parser.add_argument("--output-dir", type=Path, default=Path("build/ai3d"))
+    parser.add_argument("--variants", action="store_true", help="Build high and mobile GLBs and paired manifests")
     params = parser.parse_args()
     try:
-        print(json.dumps(build(params.spec, params.output_dir), sort_keys=True))
+        builder = build_variants if params.variants else build
+        print(json.dumps(builder(params.spec, params.output_dir), sort_keys=True))
     except (ValueError, OSError, json.JSONDecodeError) as exc:
         print("LUMO_3D_FACTORY_FAILED:", exc, file=sys.stderr)
         raise SystemExit(1) from exc

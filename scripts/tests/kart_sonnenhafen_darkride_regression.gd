@@ -25,7 +25,7 @@ func _run() -> void:
 		assert(int(metrics["arch_rib_instances"]) >= 90, "Neon cave ribs missing")
 		assert(int(metrics["crystal_instances"]) >= 16, "Glowing lanterns missing")
 		assert(int(metrics["shell_sections"]) >= 30, "Tunnel shell cannot be a flat billboard")
-		assert(ride.get_child_count() == 4, "Expected shell, road, ribs, crystal batches")
+		assert(ride.get_child_count() == 5, "Expected shell, road, ribs, crystal batches")
 		for name in ["DarkrideRockAndCanopy", "DarkrideIlluminatedRoad"]:
 			var node: MeshInstance3D = ride.get_node(name)
 			assert(node.mesh.get_surface_count() == 1, "Missing procedural triangle surface")

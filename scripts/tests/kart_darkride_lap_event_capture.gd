@@ -7,7 +7,7 @@ const OUTPUT := "res://artifacts/darkride-event"
 func _initialize() -> void:
 	call_deferred("_run")
 
-func _photo(camera: Camera3D, name: String) -> Image:
+func _photo(name: String) -> Image:
 	for frame in range(24):
 		await process_frame
 	await RenderingServer.frame_post_draw
@@ -35,9 +35,16 @@ func _run() -> void:
 	var director = DIRECTOR.new()
 	director.bind_world(world)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUTPUT))
-	var normal_frame: Image = await _photo(camera, "lap_one")
+	var surfaces: Array[ShaderMaterial] = []
+	for node_name in ["DarkrideRockAndCanopy", "DarkrideIlluminatedRoad"]:
+		var mesh: MeshInstance3D = world.get_node(DIRECTOR.RIDE_PATH).get_node(node_name)
+		surfaces.append(mesh.material_override)
+	var normal_frame: Image = await _photo("lap_one")
 	director.tick(world.length * 1.74, world.length, 0.35, false)
-	var surge_frame: Image = await _photo(camera, "lap_two_neon_surge")
+	# Freeze wall animation: only the surge and ring geometry may alter these pixels.
+	for material in surfaces:
+		material.set_shader_parameter("animation_time", 0.0)
+	var surge_frame: Image = await _photo("lap_two_neon_surge")
 	var changed: int = 0
 	var delta_sum: float = 0.0
 	for y in range(0, 720, 12):

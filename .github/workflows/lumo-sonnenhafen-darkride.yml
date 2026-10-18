@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - 'scripts/games/kart_sonnenhafen_darkride.gd'
+      - 'scripts/games/kart_cavern_geology.gd'
+      - 'scripts/tests/kart_cavern_detail_regression.gd'
+      - 'assets/kart/cavern/**'
+      - 'assets/shaders/kart_cavern_*.gdshader'
       - 'scripts/games/kart_world.gd'
       - 'scripts/tests/kart_sonnenhafen_darkride_*.gd'
       - 'assets/shaders/kart_sonnenhafen_darkride.gdshader'
@@ -36,6 +40,11 @@ jobs:
           python3 tools/run_godot_probe.py --timeout 240 --log "$RUNNER_TEMP/darkride-regression.log" --required '[Darkride] PASS:' -- \
             godot --headless --audio-driver Dummy --path . \
             --script res://scripts/tests/kart_sonnenhafen_darkride_regression.gd
+      - name: Check actual cavern meshes and mobile lane clearance
+        run: |
+          python3 tools/run_godot_probe.py --timeout 240 --log "$RUNNER_TEMP/cavern-production.log" --required '[CavernProduction] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_cavern_detail_regression.gd
       - name: Install real software OpenGL framebuffer
         run: |
           sudo apt-get update -qq

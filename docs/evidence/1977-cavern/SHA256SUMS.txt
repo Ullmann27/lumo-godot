@@ -1,0 +1,4 @@
+c3754235b62c38a93b5974e42ab956e3622c02f42e2fcd03f6b64ade8cca515f  docs/evidence/1977-cavern/before.png
+23f822b05071703e6335bf248bd4c7de62f7966c02fc556b6984175de6186723  docs/evidence/1977-cavern/deep_neon.png
+fb3fae9139c0f24de064a0ca40ee7cb42293d83ec768ab1dcc9c8b6e9d720c22  docs/evidence/1977-cavern/entrance.png
+60bb019c5a74fe990ee93449c7b2bc7696fe52df566e2a33054aa70baeafe1f0  docs/evidence/1977-cavern/exit.png
