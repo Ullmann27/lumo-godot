@@ -59,7 +59,7 @@ func _run() -> void:
 	assert(not vfx.visible and int(vfx.get("burst_count")) == 1, "VFX must expire, without retriggering")
 	assert(world.length == race_length and world.checkpoint_positions == checkpoints,
 		"Neon-only event must not change road physics or checkpoint positions")
-	assert(world.get_node("SonnenhafenBioluminescentDarkride").get_child_count() == 5)
+	assert(world.get_node("SonnenhafenBioluminescentDarkride").get_child_count() == 6)
 	director.bind_world(null)
 	await process_frame
 	var calm_director = DIRECTOR.new()

@@ -56,6 +56,9 @@ func bind_world(world) -> void:
 	var ribs: MultiMeshInstance3D = _tunnel.get_node_or_null("DarkrideNeonArchRibs")
 	if ribs != null and ribs.material_override is StandardMaterial3D:
 		_rib_material = ribs.material_override
+	var pools: MultiMeshInstance3D = _tunnel.get_node_or_null("CavernGeology/MineralWaterChannels")
+	if pools != null and pools.material_override is ShaderMaterial:
+		_surface_materials.append(pools.material_override)
 	_apply_energy(BASE_SHADER_ENERGY, true)
 
 
@@ -72,8 +75,9 @@ func tick(
 	var fraction: float = fposmod(maxf(0.0, absolute_distance), track_length) / track_length
 	# A respawn, lap jump or tunnel exit must not leave a running effect behind.
 	# Do not clear _triggered_lap: revisiting the same lap must not duplicate VFX.
-	if _active_surge_seconds >= 0.0 and (
-		lap != _triggered_lap or fraction < 0.700 or fraction > 0.794
+	if (
+		_active_surge_seconds >= 0.0
+		and (lap != _triggered_lap or fraction < 0.700 or fraction > 0.794)
 	):
 		_active_surge_seconds = -1.0
 		if is_instance_valid(_burst):
@@ -91,7 +95,6 @@ func tick(
 				_active_surge_seconds = 0.0
 				if is_instance_valid(_burst):
 					_burst.fire(reduced_motion)
-
 
 	var surge: float = 0.0
 	if _active_surge_seconds >= 0.0:

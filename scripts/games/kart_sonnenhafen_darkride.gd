@@ -2,6 +2,7 @@ extends RefCounted
 ## Lumo Kart Sonnenhafen: playable, deterministic dark-ride geometry.
 ## Visual only: no physics body, no changed checkpoints, road or saved progress.
 ## One shell + one road overlay + two MultiMeshes; scales down on low-detail.
+const GEOLOGY = preload("res://scripts/games/kart_cavern_geology.gd")
 const SHADER = preload("res://assets/shaders/kart_sonnenhafen_darkride.gdshader")
 const START_FRACTION: float = 0.690
 const END_FRACTION: float = 0.800
@@ -82,6 +83,7 @@ static func build(world) -> void:
 	var arch_count: int = maxi(4, floori((to_m - from_m) / RIB_INTERVAL))
 	var arc_ribs: int = _make_ribs(root, world, from_m, to_m, ring_segments, arch_count)
 	var light_count: int = _make_crystals(root, world, from_m, to_m, arch_count, low)
+	GEOLOGY.build(root, world, from_m, to_m)
 	metrics["shell_sections"] = sections
 	metrics["ring_segments"] = ring_segments
 	metrics["arch_rib_instances"] = arc_ribs
@@ -107,7 +109,13 @@ static func _ring(world, distance: float, segments: int) -> Array[Vector3]:
 		))
 	cross_section.append(Vector2(HALF_TUNNEL_WIDTH, -FOOT_DROP))
 	var result: Array[Vector3] = []
-	for point in cross_section:
+	for index in range(cross_section.size()):
+		var point: Vector2 = cross_section[index]
+		# Outward-only rock folds keep the complete original driving envelope.
+		if index > 0 and index < cross_section.size() - 1:
+			var fold: float = 0.35 + 0.6 * (0.5 + 0.5 * sin(distance * 0.19 + float(index) * 2.1))
+			point.x *= 1.0 + fold * 0.07
+			point.y += fold * (0.4 + 0.6 * sin(PI * float(index) / float(cross_section.size() - 1)))
 		result.append(at + basis.x * point.x + basis.y * point.y)
 	return result
 
