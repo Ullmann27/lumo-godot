@@ -666,9 +666,9 @@ func _begin_race() -> void:
 		kart_audio.set_paused(false)
 		kart_audio.play_track("arena" if mode == "arena" else track_id)
 	message.text = (
-		"Stick links lenkt · rechts GAS halten, BREMSE, DRIFT, SPEED, ITEM"
+		"Stick links lenkt · rechts GAS halten, BREMSE, DRIFT, SPEED, TAKTIK"
 		if OS.has_feature("android") or OS.has_feature("ios")
-		else "W: Gas · S: Bremse · A/D: lenken · Umschalt: Drift · Leertaste: Boost · E: Item"
+		else "W: Gas · S: Bremse · A/D: lenken · Umschalt: Drift · Leertaste: Boost · E: Taktik"
 	)
 	_save_preferences()
 	_save_session()
@@ -805,7 +805,7 @@ func _build_pedal_pad() -> Control:
 	boost_button = _action("SPEED\n◆ 1", _boost, Color("66f7e8"), 112)
 	boost_button.name = "BoostAction"
 	boost_button.icon_id = "boost"
-	item_button = _action("ITEM\n◇", _use_item, Color("a7c5ff"), 94)
+	item_button = _action("TAKTIK\n◇", _use_item, Color("a7c5ff"), 94)
 	item_button.name = "ItemAction"
 	item_button.icon_id = "item"
 	var layout: Array = [
@@ -1928,7 +1928,7 @@ func _update_hud() -> void:
 		drift_state = "BLAU!"
 	drift_button.text = "DRIFT\n" + drift_state
 	drift_button.disabled = not enabled
-	item_button.text = {"": "ITEM\n◇", "shield": "SCHILD\n◎", "pulse": "IMPULS\n✧", "boost": "WIND\n➜"}.get(item, "ITEM")
+	item_button.text = {"": "TAKTIK\n◇", "shield": "SCHILD\n◎", "pulse": "IMPULS\n✧", "boost": "SCHUB\n➜"}.get(item, "TAKTIK")
 	item_button.item_kind = item
 	item_button.disabled = item.is_empty() or not enabled
 	joystick.set_enabled(enabled)
