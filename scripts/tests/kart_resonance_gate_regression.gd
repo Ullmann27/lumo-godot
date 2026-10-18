@@ -83,6 +83,12 @@ func _run() -> void:
 	assert(game.item_boxes[0].visible)
 	game.abandoned = true
 	game.queue_free()
-	await process_frame
+	# Let queued scenes, GPU handles and their scoped resources release before
+	# the strict engine-probe's no-leaks exit check, as in KartActionCourse.
+	for frame in range(6):
+		await process_frame
+	await create_timer(1.3).timeout
+	scene = null
+	game = null
 	print("[KartResonance] PASS: skill not RNG, five real ring meshes, one pickup/lap, pulse use, save-key continuity")
 	quit(0)
