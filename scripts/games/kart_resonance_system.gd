@@ -8,7 +8,7 @@ const GRAVITY_PULSE: String = "pulse"
 
 const BRONZE_THRESHOLD: float = 0.0
 const SILVER_THRESHOLD: float = 0.55
-const GOLD_THRESHOLD: float = 0.79
+const GOLD_THRESHOLD: float = 0.9
 const MIN_PICKUP_SPEED: float = 6.5
 
 
