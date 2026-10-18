@@ -417,6 +417,18 @@ func _flush_instances() -> void:
 			material.roughness = 0.90 if group.kind == "ball" else 0.42
 			material.metallic = 0.03
 		node.material_override=material
+		if group.kind == "rock" and track_id == "sonnenhafen" and not low_detail:
+			# One shared shader/material for all close rock MultiMesh batches.
+			# Far/background rocks, other tracks and mobile low-detail retain
+			# their existing low-cost vertex-color material and lighting.
+			var cinema_key: String = "cinema_rock_sonnenhafen_v1"
+			if not materials.has(cinema_key):
+				var cinema := ShaderMaterial.new()
+				cinema.shader = preload("res://assets/shaders/kart_cinema_stylized.gdshader")
+				cinema.set_shader_parameter("tactility", 0.095)
+				cinema.set_shader_parameter("rim_strength", 0.15)
+				materials[cinema_key] = cinema
+			node.material_override = materials[cinema_key]
 		if group.kind == "volcano_mountain":
 			var basalt := ShaderMaterial.new()
 			basalt.shader = preload("res://assets/shaders/kart_basalt.gdshader")
