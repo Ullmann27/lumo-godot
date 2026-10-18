@@ -16,6 +16,7 @@ const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const FUR = preload("res://scripts/games/kart_fur_geometry.gd")
 const CHARACTER_FINISH = preload("res://scripts/games/kart_character_finish.gd")
 const LUMO_ANIMATION = preload("res://scripts/characters/lumo/lumo_kart_animation_adapter.gd")
+const CINEMA_FINISH = preload("res://scripts/games/visual/kart_cinema_materials.gd")
 const CARBON := Color("0b1019")
 const GUNMETAL := Color("2a3342")
 ## Leuchtstärke aller Neonteile: stark genug fürs Glühen, aber noch farbig (kein weißes Ausbrennen).
@@ -91,6 +92,7 @@ var driver_animation_paused := false
 var _far_with_driver: Mesh
 var _far_without_driver: Mesh
 var _far_chassis_only := false
+var _cinema_profile: String = ""
 
 
 func _ready() -> void:
@@ -267,6 +269,29 @@ func set_speaking(amount: float) -> void:
 func set_graphics_quality(profile: String) -> void:
 	detail_distance = 14.0 if profile in ["light", "low"] else (22.0 if profile == "medium" else FAR_DETAIL_DISTANCE)
 	detail_check_time = 0.0
+	_cinema_profile = profile
+	_apply_cinema_coachwork()
+
+
+func _apply_cinema_coachwork() -> void:
+	if companion_mode or _cinema_profile.is_empty():
+		return
+	var body: Node3D = get_node_or_null("AuroraCoachwork")
+	if body == null:
+		return
+	var low: bool = _cinema_profile in ["light", "low", "medium"]
+	# Surface overrides preserve the original batching/vertex pigments and keep
+	# original PBR resources available to the LOD proxy and geometry validators.
+	# Driver fur, goggles, lamps, tyres and all animated joints stay independent.
+	for node in body.find_children("*", "MeshInstance3D", true, false):
+		var part := node as MeshInstance3D
+		for surface in range(part.mesh.get_surface_count()):
+			var source := part.mesh.surface_get_material(surface) as StandardMaterial3D
+			if source == null or source.emission_enabled or source.normal_enabled:
+				continue
+			if source.metallic > 0.2:
+				part.set_surface_override_material(surface,
+					CINEMA_FINISH.material(Color.WHITE, "metal" if source.metallic >= 0.6 else "paint", low, true))
 
 
 func _rebuild() -> void:
@@ -304,6 +329,7 @@ func _rebuild() -> void:
 		_build()
 	_built = true
 	_ensure_lumo_animation()
+	_apply_cinema_coachwork()
 
 
 func _mat(color: Color, metal: float = 0.0, rough: float = 0.5, glow: float = 0.0) -> StandardMaterial3D:

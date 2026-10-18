@@ -54,19 +54,24 @@ jobs:
             test -s "exports/sonnenhafen-finish/after/${camera}.png"
           done
           test -s exports/sonnenhafen-finish/after/poses.json
-      - name: Render exact unchanged 1969 baseline with identical camera poses
+      - name: Render exact unchanged Cinema-Rock parent with identical camera poses
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: |
           set -euo pipefail
           original="$GITHUB_WORKSPACE"
-          baseline="$RUNNER_TEMP/lumo-1969-visual-before"
+          baseline="$RUNNER_TEMP/lumo-cinema-parent-before"
           git clone --quiet --no-hardlinks . "$baseline"
           git -C "$baseline" remote set-url origin https://github.com/Ullmann27/lumo-godot.git
-          git -C "$baseline" fetch --depth 1 origin 6b3945583a361c4ea974e4b6846ae0d616b1727a
+          git -C "$baseline" fetch --depth 1 origin 5b25223163cbb0dee5af3fe503e5e75bd11a9673
           git -C "$baseline" checkout --detach FETCH_HEAD
-          test "$(git -C "$baseline" rev-parse HEAD)" = 6b3945583a361c4ea974e4b6846ae0d616b1727a
-          (cd "$baseline" && timeout 240s godot --headless --path . --editor --import --quit)
+          test "$(git -C "$baseline" rev-parse HEAD)" = 5b25223163cbb0dee5af3fe503e5e75bd11a9673
+          # Import the pinned direct parent under the same software GL
+          # context used by the actual comparison captures. Headless importer
+          # crashed on the 1969 legacy importer; keep the
+          # import mandatory and fail on any error, without bypassing images.
+          (cd "$baseline" && timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' godot --audio-driver Dummy --rendering-method gl_compatibility --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/historical-import.log")
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|Failed to load script' "$RUNNER_TEMP/historical-import.log"
           mkdir -p "$original/exports/sonnenhafen-finish/before"
           (cd "$baseline" && LUMO_POSES="$original/exports/sonnenhafen-finish/after/poses.json" LUMO_CAPTURE_DIR="$original/exports/sonnenhafen-finish/before" timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_pose_capture.gd)
           for camera in 01_trackside_view 02_harbor_overview 03_seaside_boom; do

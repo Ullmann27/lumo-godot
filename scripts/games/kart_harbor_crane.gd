@@ -9,7 +9,13 @@ const HARBOR = preload("res://scripts/games/kart_harbor_dressing.gd")
 const VISUAL_FINISH = preload("res://scripts/games/kart_harbor_visual_finish.gd")
 # Authored candidates north of the marina; the first one that passes the
 # water and road checks below is used. Each faces away from the island.
-const SITES: Array[Vector3] = [Vector3(114, 0, 54), Vector3(108, 0, 54), Vector3(114, 0, 48)]
+const SITES: Array[Vector3] = [
+	Vector3(114, 0, 54), Vector3(108, 0, 54), Vector3(114, 0, 48),
+	# The extended coast enlarged the island around the old three sites.
+	# This berth fits entirely within the existing eastern tidal inlet.
+	# x=146 also clears the existing x=130 buoy line and x<=123 marina.
+	Vector3(146, 0, 38),
+]
 const ROAD_CLEARANCE: float = 14.0
 const PORTAL_HEIGHT: float = 19.0
 const BOOM_BACK: float = -14.0
@@ -132,6 +138,7 @@ static func _pier(world, frame: Transform3D, detail: bool) -> void:
 	world._prop("box", _p(frame, 7.75, 0.12, 0.0), Vector3(26.0, 0.18, 0.5), CONCRETE.darkened(0.18), b)
 	# Short causeway onto the north end of the marina quay (authored at x=110, z<=35).
 	world._prop("box", _p(frame, -10.0, -0.2, 14.4), Vector3(3.0, 0.5, 3.0), CONCRETE, b)
+	_connect_marina(world, frame, detail)
 	# Crane rails along the quay with buffer stops.
 	for f in [LAND_LEGS, SEA_LEGS]:
 		world._prop("box", _p(frame, f, 0.1, 0.0), Vector3(25.0, 0.18, 0.35), STEEL, b)
@@ -146,6 +153,31 @@ static func _pier(world, frame: Transform3D, detail: bool) -> void:
 	# Yellow safety lane markings under the portal.
 	for s in [-8.6, 8.6]:
 		world._prop("box", _p(frame, 1.0, 0.07, s), Vector3(0.25, 0.04, 9.0), SUN, b)
+
+
+static func _connect_marina(world, frame: Transform3D, detail: bool) -> void:
+	var terminal: Vector3 = _p(frame, -10.0, -0.2, 14.4)
+	var marina := Vector3(110.0, terminal.y, clampf(terminal.z, -29.0, 34.0))
+	var span: Vector3 = terminal - marina
+	if span.length() < 1.0:
+		return
+	# Visual causeway to the actual original quay. Submerged piers and opaque
+	# shared box batches keep it coherent without changing race collision.
+	var axis: Basis = Basis.looking_at(span.normalized(), Vector3.UP)
+	world._prop("box", (terminal + marina) * 0.5, Vector3(3.0, 0.5, span.length() + 0.5), CONCRETE, axis)
+	for side in [-1.0, 1.0]:
+		var offset: Vector3 = axis.x * side * 1.36 + Vector3.UP * 1.0
+		world._beam(marina + offset, terminal + offset, 0.075, STEEL)
+	var supports: int = 5 if detail else 3
+	for i in range(supports):
+		var at: Vector3 = marina.lerp(terminal, float(i) / float(supports - 1))
+		var bottom: float = world._ground_height(at.x, at.z) - 0.15
+		var height: float = at.y - 0.2 - bottom
+		world._prop("box", Vector3(at.x, bottom + height * 0.5, at.z), Vector3(0.65, height, 2.6), CONCRETE.darkened(0.2), axis)
+		for side in [-1.0, 1.0]:
+			world._prop("box", at + axis.x * side * 1.36 + Vector3.UP * 0.55,
+				Vector3(0.09, 1.1, 0.09), STEEL, axis)
+	world.set_meta("sonnenhafen_crane_causeway", {"marina": marina, "terminal": terminal, "width": 3.0})
 
 
 static func _boom(world, frame: Transform3D, detail: bool) -> void:
