@@ -1,0 +1,84 @@
+name: Lumo Kart deterministic resonance racing gameplay
+on:
+  push:
+    branches:
+      - chatgpt/lumo-racing-skill-resonance-gates-2026-10-18
+  pull_request:
+    paths:
+      - 'scripts/games/kart_resonance_system.gd'
+      - 'scripts/games/kart_island.gd'
+      - 'scripts/tests/kart_resonance_gate_regression.gd'
+      - 'scripts/tests/kart_resonance_capture.gd'
+      - '.github/workflows/lumo-resonance-racing.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-resonance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download pinned original Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip \
+            --output "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import actual race scenes and reject GDScript/shader errors
+        run: |
+          set -euo pipefail
+          mkdir -p exports/resonance-ci
+          timeout -k 5s 240s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --editor --import --quit \
+            > exports/resonance-ci/import.log 2>&1
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' exports/resonance-ci/import.log; then
+            cat exports/resonance-ci/import.log
+            exit 1
+          fi
+      - name: Verify deterministic resonance reward and actual race scene pickup
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log exports/resonance-ci/skill.log --timeout 150 \
+            --required '[KartResonance] PASS' -- \
+            Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_resonance_gate_regression.gd
+      - name: Keep rival item telegraph and collision safety guarantees
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log exports/resonance-ci/rival.log --timeout 150 \
+            --required '[KartRivalFeedback] PASS' -- \
+            Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_rival_item_feedback_regression.gd
+      - name: Render the actual neon ring on the Sonnenhafen course
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri
+          python3 tools/run_godot_probe.py \
+            --log exports/resonance-ci/render.log --timeout 150 \
+            --required '[KartResonanceCapture] PASS' -- \
+            xvfb-run -a -s '-screen 0 1280x720x24' \
+            Godot_v4.6.3-stable_linux.x86_64 \
+            --audio-driver Dummy --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_resonance_capture.gd
+          test -s exports/resonance/sonnenhafen-real-ring.png
+      - name: Archive actual engine evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-resonance-native-engine-${{ github.run_id }}
+          path: |
+            exports/resonance-ci/
+            exports/resonance/*.png
+          if-no-files-found: warn
+          retention-days: 14
