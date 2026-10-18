@@ -57,6 +57,14 @@ func tick(absolute_distance: float, track_length: float,
 		return
 	var lap: int = floori(maxf(0.0, absolute_distance) / track_length)
 	var fraction: float = fposmod(maxf(0.0, absolute_distance), track_length) / track_length
+	# A respawn, lap jump or tunnel exit must not leave a running effect behind.
+	# Do not clear _triggered_lap: revisiting the same lap must not duplicate VFX.
+	if _active_surge_seconds >= 0.0 and (
+		lap != _triggered_lap or fraction < 0.700 or fraction > 0.794
+	):
+		_active_surge_seconds = -1.0
+		if is_instance_valid(_burst):
+			_burst.cancel()
 	if fraction < 0.681 or fraction > 0.809:
 		_set_phase(Phase.OUTSIDE)
 	elif fraction < 0.700:
@@ -93,6 +101,8 @@ func tick(absolute_distance: float, track_length: float,
 		atmosphere = 0.08 if phase == Phase.ENTERING or phase == Phase.EXITING else 0.22
 	_apply_energy(BASE_SHADER_ENERGY + atmosphere + surge * 0.95)
 	if is_instance_valid(_burst):
+		# Users may turn on reduced motion while the shockwave is in flight.
+		_burst.set_reduced_motion(reduced_motion)
 		_burst.advance(delta)
 
 func _set_phase(next: int) -> void:
