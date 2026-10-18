@@ -71,7 +71,7 @@ func get_profile_name() -> String:
 	return _PROFILE_NAMES.get(current_profile, "medium")
 
 
-func _on_scene_changed(_scene: Node) -> void:
+func _on_scene_changed() -> void:
 	# The previous WorldEnvironment was freed with the old scene.
 	_apply_environment(current_profile)
 
