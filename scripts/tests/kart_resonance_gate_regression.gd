@@ -2,7 +2,7 @@ extends SceneTree
 ## Real Godot 4.6.3 regression: racing skill gates, no lucky cubes, no school
 ## prompts, deterministic item scoring and protected persisted pickup keys.
 const RACE = preload("res://scripts/games/kart_resonance_system.gd")
-const SCENE = preload("res://scenes/games/kart_island.tscn")
+## Load the live scene only after SceneTree autoloads (HostBridge etc.) are ready.
 
 func _initialize() -> void:
 	call_deferred("_run")
@@ -28,7 +28,8 @@ func _award_test() -> void:
 
 func _run() -> void:
 	_award_test()
-	var game = SCENE.instantiate()
+	var scene: PackedScene = load("res://scenes/games/kart_island.tscn")
+	var game = scene.instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
 	game.lightweight = true
