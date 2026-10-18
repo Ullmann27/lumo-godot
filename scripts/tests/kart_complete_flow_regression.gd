@@ -231,6 +231,29 @@ func _run() -> void:
 			lap2_resumed = true
 		if frames % 120 == 0:
 			await process_frame
+	if not game.finished:
+		# Diagnostic evidence only; never inject distance, checkpoints or results.
+		var position_on_road: Dictionary = game.world.sample_road(
+			game.player.position, game.previous_road_distance
+		)
+		print("[KartCompleteFlowDiagnostic] ", JSON.stringify({
+			"frames": frames,
+			"checkpoint_index": game.checkpoint_index,
+			"last_gate": last_gate,
+			"resumed": resumed,
+			"lap2_resumed": lap2_resumed,
+			"race_distance": game.distance,
+			"track_length": game.track_length,
+			"speed": game.speed,
+			"gas_held": game.gas_held,
+			"auto_gas": game.auto_gas,
+			"steering": game.steering,
+			"paused": game.paused,
+			"racing": game.racing,
+			"road_distance": position_on_road.get("distance", -1),
+			"lateral": position_on_road.get("lateral", -1),
+			"reset_count": game.reset_count
+		}))
 	assert(game.finished and resumed, "Real driving must finish after a saved continuation")
 	await _touch(2, Vector2(420, 250), false)
 	await _touch(1, Vector2(420, 250), false)
