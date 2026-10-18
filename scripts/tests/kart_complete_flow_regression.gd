@@ -140,7 +140,11 @@ func _run() -> void:
 	var lap2_restored: Dictionary = {}
 	var frames := 0
 	var last_gate := 0
-	while not game.finished and frames < 12000:
+	# A 1.85 km x 2 real race with player-held throttle needs more than
+	# 12,000 simulated 60-Hz physics steps on the measured second-lap route:
+	# at the old cap, the player had safely reached gate 10 / 2,432 m.
+	# Extend the test's bounded simulation only; no positions or physics change.
+	while not game.finished and frames < 30000:
 		var road: Dictionary = game.world.sample_road(
 			game.player.position, game.previous_road_distance
 		)
@@ -171,7 +175,18 @@ func _run() -> void:
 			game = await _fresh()
 			assert(game.saved_session_available)
 			await _tap(game.garage.find_child("ResumeRace", true, false))
-			assert(game.paused and game.result_id == expected_id and game.distance == progress)
+			# ConfigFile serializes float values as text. On reload the last bit of
+			# the numeric distance may differ (~1.1e-13 m measured), without any
+			# actual loss of checkpoint, identity, paused state or position.
+			# Use the same strict 1e-9 m ABSOLUTE tolerance as the separately
+			# passing kart_race_continuity_regression.gd. Never alter game physics.
+			assert(
+				game.paused
+				and game.result_id == expected_id
+				and is_finite(game.distance)
+				and absf(game.distance - progress) <= 0.000000001,
+				"Paused resume must preserve distance within a nanometer, result ID and pause"
+			)
 			game.auto_gas = false
 			game._update_hud()
 			await _tap(_button("Weiterfahren"))
@@ -220,6 +235,29 @@ func _run() -> void:
 			lap2_resumed = true
 		if frames % 120 == 0:
 			await process_frame
+	if not game.finished:
+		# Diagnostic evidence only; never inject distance, checkpoints or results.
+		var position_on_road: Dictionary = game.world.sample_road(
+			game.player.position, game.previous_road_distance
+		)
+		print("[KartCompleteFlowDiagnostic] ", JSON.stringify({
+			"frames": frames,
+			"checkpoint_index": game.checkpoint_index,
+			"last_gate": last_gate,
+			"resumed": resumed,
+			"lap2_resumed": lap2_resumed,
+			"race_distance": game.distance,
+			"track_length": game.track_length,
+			"speed": game.speed,
+			"gas_held": game.gas_held,
+			"auto_gas": game.auto_gas,
+			"steering": game.steering,
+			"paused": game.paused,
+			"racing": game.racing,
+			"road_distance": position_on_road.get("distance", -1),
+			"lateral": position_on_road.get("lateral", -1),
+			"reset_count": game.reset_count
+		}))
 	assert(game.finished and resumed, "Real driving must finish after a saved continuation")
 	await _touch(2, Vector2(420, 250), false)
 	await _touch(1, Vector2(420, 250), false)

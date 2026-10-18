@@ -1,0 +1,87 @@
+name: Lumo Kart complete two-lap real touchscreen save/resume regression
+on:
+  push:
+    branches:
+      - chatgpt/lumo-1977-full-race-resume-precision-2026-10-18
+  pull_request:
+    paths:
+      - 'scripts/tests/kart_complete_flow_regression.gd'
+      - 'tools/run_godot_probe.py'
+      - '.github/workflows/lumo-kart-complete-race-1977.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-two-lap-race:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      LP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install the pinned Godot 4.6.3 and real OpenGL software display
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri
+          curl --fail --location --retry 3 \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip \
+            --output "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Parse and import complete Godot project without suppressing failures
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports/complete-flow
+          timeout -k 5 240 Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --editor --import --quit \
+            > exports/complete-flow/import.log 2>&1
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' exports/complete-flow/import.log; then
+            cat exports/complete-flow/import.log
+            exit 1
+          fi
+      - name: Drive actual two complete laps through touch, pause, saved resume, finish, reward and return
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Keep both a hard shell deadline and the engine-aware stream watchdog.
+          # This must terminate even if an engine assertion leaves Xvfb hanging.
+          timeout -k 10s 650s python3 tools/run_godot_probe.py \
+            --timeout 620 --log exports/complete-flow/full-race.log \
+            --required '[KartCompleteFlow] PASS: actual menu/touch, 16 gates, saved resume, result, ACK, one reward' -- \
+            xvfb-run -a -s '-screen 0 1280x720x24' \
+            Godot_v4.6.3-stable_linux.x86_64 \
+            --audio-driver Dummy --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_complete_flow_regression.gd
+          test -s exports/complete-flow/evidence.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          evidence=json.loads(Path('exports/complete-flow/evidence.json').read_text())
+          assert evidence['status']=='PASS', evidence.get('checks',[])
+          assert evidence['failed_checks']==0
+          assert evidence['save_reopen_resume'] is True
+          assert evidence['lap2_save_reopen_resume'] is True
+          assert evidence['reward_calls']==1
+          assert len(evidence['ordered_gates'])==16
+          for path in evidence['screenshot_sha256']:
+              assert Path('exports/complete-flow', path).stat().st_size>0, path
+          print('LUMO_COMPLETE_RACE_PASS: 16 real checkpoints, 2 real laps, 6 actual renders')
+          PY
+      - name: Preserve the complete real-render output and failure logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-1977-full-two-lap-race-${{ github.run_id }}
+          path: |
+            exports/complete-flow/*.png
+            exports/complete-flow/evidence.json
+            exports/complete-flow/*.log
+          if-no-files-found: warn
+          retention-days: 14
