@@ -224,45 +224,36 @@ func _test_boost_response() -> void:
 	game.boost_button._release()
 
 
-func _test_mystery_item_boxes() -> void:
+func _test_skill_resonance_rings() -> void:
 	await _start("training", "bergwelt")
-	assert(game.item_boxes.size() == 5, "Race course exposes five mystery item boxes")
-	for box in game.item_boxes:
-		assert(box.get_meta("mystery_visual") == "lumo_prism")
-		var core: MeshInstance3D = box.get_node("MysteryPrismCore")
-		var edges: MeshInstance3D = box.get_node("MysteryPrismEdges")
-		assert(
-			core.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size() == 24,
-			"Mystery pickup has eight true triangular facets"
-		)
-		assert(box.get_child_count() == 2, "Readable pickup keeps only two opaque draw surfaces")
-		var finish: StandardMaterial3D = core.material_override
-		assert(
-			finish.albedo_color.b > 0.5 and finish.albedo_color.g < 0.4,
-			"Prism retains its violet colour"
-		)
-		assert(
-			finish.emission_energy_multiplier <= 0.25,
-			"Core emission cannot bleach the faceted pickup"
-		)
-		assert(edges.material_override.albedo_color.r > 0.9)
-		assert(
-			(
-				is_equal_approx(box.scale.x, 1.18)
-				and is_equal_approx(box.scale.y, 1.18)
-				and is_equal_approx(box.scale.z, 1.18)
-			),
-			"Himmelsinseln mystery prisms keep the readability scale from the visual pass"
-		)
-	var leader_pool: Array[String] = game._item_pool_for_place(1)
-	var comeback_pool: Array[String] = game._item_pool_for_place(6)
-	assert(leader_pool.count("boost") < comeback_pool.count("boost"))
-	assert(comeback_pool.count("boost") >= 3, "Back positions receive stronger catch-up odds")
+	assert(game.item_boxes.size() == 5, "All five racing pickups must be real resonance rings")
+	assert(game.item_box_laterals.size() == 5, "The skill policy needs the actual ideal crossing lane")
+	for ring in game.item_boxes:
+		assert(str(ring.get_meta("lumo_racing_pickup", "")) == "skill_resonance",
+			"Random violet mystery prisms must not masquerade as racing resonance rings")
+		assert(ring.get_child_count() == 1, "A ring uses only one opaque draw surface")
+		var halo: MeshInstance3D = ring.get_node("ResonanceHalo")
+		assert(halo.mesh is TorusMesh, "Real luminous ring geometry replaces box facets")
+		assert(halo.material_override is StandardMaterial3D)
+		var finish: StandardMaterial3D = halo.material_override
+		assert(finish.emission_enabled and finish.emission_energy_multiplier <= 2.0,
+			"Visible low-poly racing arch without extreme mobile bloom")
+		assert(halo.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+	# Deprecated callers cannot receive random / rank-biased loot.
+	assert(game._item_pool_for_place(1) == ["boost"])
+	assert(game._item_pool_for_place(6) == ["boost"])
 	game.item = ""
+	game.racing = true
+	game.countdown = 0.0
+	game.speed = 20.0
+	game.drift_charge = 1.5
+	game.lane = game.item_box_laterals[0]
 	game.player.position = game.item_boxes[0].position
 	game._track_events()
-	assert(not game.item.is_empty(), "Touching a mystery box grants an item immediately")
-	assert(game.item_box_collected.has(0), "Collected mystery box stays hidden for the current lap")
+	assert(not game.item.is_empty(), "Crossing a ring awards an actual tier by driving skill")
+	assert(game.item_box_collected.has(0), "Used resonance ring remains hidden this lap")
+	game._sync_item_box_visibility()
+	assert(not game.item_boxes[0].visible, "No repeat farming on the same lap")
 
 
 func _test_rival_item_tactics() -> void:
@@ -458,7 +449,7 @@ func _run() -> void:
 	await _test_boost_gates_and_restart()
 	await _test_boost_pad_and_airborne()
 	await _test_boost_chevrons_follow_travel()
-	await _test_mystery_item_boxes()
+	await _test_skill_resonance_rings()
 	await _test_rival_item_tactics()
 	await _test_wolkenweg_split_route()
 	await _test_pedals()
