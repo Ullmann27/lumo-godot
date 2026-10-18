@@ -8,6 +8,7 @@ on:
       - 'scripts/games/kart_resonance_system.gd'
       - 'scripts/games/kart_island.gd'
       - 'scripts/tests/kart_resonance_gate_regression.gd'
+      - 'scripts/tests/kart_resonance_capture.gd'
       - '.github/workflows/lumo-resonance-racing.yml'
   workflow_dispatch:
 permissions:
@@ -58,11 +59,26 @@ jobs:
             Godot_v4.6.3-stable_linux.x86_64 \
             --headless --audio-driver Dummy --path . \
             --script res://scripts/tests/kart_rival_item_feedback_regression.gd
+      - name: Render the actual neon ring on the Sonnenhafen course
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri
+          python3 tools/run_godot_probe.py \
+            --log exports/resonance-ci/render.log --timeout 150 \
+            --required '[KartResonanceCapture] PASS' -- \
+            xvfb-run -a -s '-screen 0 1280x720x24' \
+            Godot_v4.6.3-stable_linux.x86_64 \
+            --audio-driver Dummy --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_resonance_capture.gd
+          test -s exports/resonance/sonnenhafen-real-ring.png
       - name: Archive actual engine evidence even on failure
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lumo-resonance-native-engine-${{ github.run_id }}
-          path: exports/resonance-ci/
+          path: |
+            exports/resonance-ci/
+            exports/resonance/*.png
           if-no-files-found: warn
           retention-days: 14
