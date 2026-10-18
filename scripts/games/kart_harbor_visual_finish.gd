@@ -1,8 +1,9 @@
 extends RefCounted
-## Strictly visual Sonnenhafen berth finish. Reuses the original MultiMesh
-## prop batches: no CollisionObject3D, translucent decals, custom shaders,
-## lights, per-frame updates or changes to crane/trolley node hierarchy.
+## Strictly visual Sonnenhafen berth finish. Original opaque contacts and ribs
+## reuse the prop batches; original bevelled hardware uses four dedicated
+## batches. No collision, lights, updates or crane/trolley hierarchy changes.
 ## Coordinates are the same local berth frame used by kart_harbor_crane.gd.
+const CINEMA = preload("res://scripts/games/visual/kart_harbor_cinema.gd")
 const SHADOW := Color("53616c")
 const JOINT := Color("8f9290")
 const RIBS_PER_FACE: int = 6
@@ -65,6 +66,7 @@ static func decorate(world, frame: Transform3D, detail: bool, palette: Array[Col
 
 	var evidence := {"contacts": contacts, "seams": seams, "ribs": ribs, "high_detail": detail}
 	world.set_meta("sonnenhafen_visual_finish", evidence)
+	CINEMA.build(world, frame, detail, palette, water_delta)
 	return evidence
 
 

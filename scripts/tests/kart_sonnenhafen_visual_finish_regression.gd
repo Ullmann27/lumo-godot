@@ -1,6 +1,6 @@
 extends SceneTree
-## Presentation-only Sonnenhafen pass: geometry reused as original box MultiMesh,
-## no materials/shaders/collision bodies or crane animation changes.
+## Original contacts/ribs retain their box batches and metadata contracts.
+## Dedicated cinema batches are checked by kart_harbor_cinema_regression.gd.
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const CRANE = preload("res://scripts/games/kart_harbor_crane.gd")
 const FINISH = preload("res://scripts/games/kart_harbor_visual_finish.gd")

@@ -1,0 +1,211 @@
+{
+  "assets": {
+    "crystal_fan": {
+      "high": {
+        "bbox_max_m": [
+          1.3879344463348389,
+          2.680000066757202,
+          0.7317209839820862
+        ],
+        "bbox_min_m": [
+          -1.41543710231781,
+          0.0,
+          -0.3409581482410431
+        ],
+        "material_surfaces": 1,
+        "mesh_nodes": 1,
+        "sha256": "c37c9b6ea7a2f833514cbac00d1507552f21272f3255fabc50722cc046974ba3",
+        "triangles": 322
+      },
+      "mobile": {
+        "bbox_max_m": [
+          1.3879344463348389,
+          2.680000066757202,
+          0.32809415459632874
+        ],
+        "bbox_min_m": [
+          -1.41543710231781,
+          0.0,
+          -0.3409581482410431
+        ],
+        "material_surfaces": 1,
+        "mesh_nodes": 1,
+        "sha256": "747cfe4a9613e6e9f0fdb0cacfb324ab4c55b383590f573ddb251b6cf85d43ac",
+        "triangles": 110
+      }
+    },
+    "crystal_rosette": {
+      "high": {
+        "bbox_max_m": [
+          0.9996851682662964,
+          1.8200000524520874,
+          0.9977474212646484
+        ],
+        "bbox_min_m": [
+          -0.974848210811615,
+          0.0,
+          -0.9651343822479248
+        ],
+        "material_surfaces": 1,
+        "mesh_nodes": 1,
+        "sha256": "02116501a978afb9392b5ee850e2e64cdc18c58623986130cfd95f2b1ec425a9",
+        "triangles": 414
+      },
+      "mobile": {
+        "bbox_max_m": [
+          0.9316676259040833,
+          1.8200000524520874,
+          0.9538432359695435
+        ],
+        "bbox_min_m": [
+          -0.9546865820884705,
+          0.0,
+          -0.971217930316925
+        ],
+        "material_surfaces": 1,
+        "mesh_nodes": 1,
+        "sha256": "930a6eb2d80df15e195f47c03eebf770a9e9e212bcbd5ee990aabcc86ded9742",
+        "triangles": 110
+      }
+    },
+    "crystal_spire": {
+      "high": {
+        "bbox_max_m": [
+          0.9500272870063782,
+          3.3399999141693115,
+          0.7200254201889038
+        ],
+        "bbox_min_m": [
+          -1.0404932498931885,
+          0.0,
+          -0.7416495680809021
+        ],
+        "material_surfaces": 1,
+        "mesh_nodes": 1,
+        "sha256": "bb7af11c32f7157e6660d4062f3c3e79ce37262addd724b57924687d787aceab",
+        "triangles": 230
+      },
+      "mobile": {
+        "bbox_max_m": [
+          0.9500272870063782,
+          3.3399999141693115,
+          0.4181198477745056
+        ],
+        "bbox_min_m": [
+          -0.9646275043487549,
+          0.0,
+          -0.5567933917045593
+        ],
+        "material_surfaces": 1,
+        "mesh_nodes": 1,
+        "sha256": "588da95a533cb6d1bf2c9577197ce92578616cb7be4cf680f4b500b6e299227c",
+        "triangles": 66
+      }
+    },
+    "hanging_canopy": {
+      "high": {
+        "bbox_max_m": [
+          1.0493745803833008,
+          2.5,
+          1.9401109218597412
+        ],
+        "bbox_min_m": [
+          -1.0944468975067139,
+          0.0,
+          -1.7568750381469727
+        ],
+        "material_surfaces": 1,
+        "mesh_nodes": 1,
+        "sha256": "42b367f00022f92d7fbbf66be2647ae6eef634dfb51633d3aa814eca3f3cc3cb",
+        "triangles": 800
+      },
+      "mobile": {
+        "bbox_max_m": [
+          1.0260188579559326,
+          2.5,
+          1.6953409910202026
+        ],
+        "bbox_min_m": [
+          -1.0652198791503906,
+          0.0,
+          -1.6947169303894043
+        ],
+        "material_surfaces": 1,
+        "mesh_nodes": 1,
+        "sha256": "504cb9b923740d761bdcc3ca113bb952489920c566c944213b5ceb6f7dd79fc7",
+        "triangles": 260
+      }
+    },
+    "split_ledge": {
+      "high": {
+        "bbox_max_m": [
+          1.073146939277649,
+          2.0,
+          1.7567896842956543
+        ],
+        "bbox_min_m": [
+          -0.9530501961708069,
+          0.0,
+          -1.5081231594085693
+        ],
+        "material_surfaces": 1,
+        "mesh_nodes": 1,
+        "sha256": "535c57172b2dc3753fd5cda2daa39793d6c86514149770bfedab10d98ac1c482",
+        "triangles": 604
+      },
+      "mobile": {
+        "bbox_max_m": [
+          1.0731316804885864,
+          2.0,
+          1.6795858144760132
+        ],
+        "bbox_min_m": [
+          -0.9275526404380798,
+          0.0,
+          -1.4474647045135498
+        ],
+        "material_surfaces": 1,
+        "mesh_nodes": 1,
+        "sha256": "5b2ab7ba67bec21a023cc8486ccaeb5099d37acde08ab7074c73d696fa952821",
+        "triangles": 192
+      }
+    },
+    "strata_shelf": {
+      "high": {
+        "bbox_max_m": [
+          0.8919135332107544,
+          2.299999952316284,
+          2.41984486579895
+        ],
+        "bbox_min_m": [
+          -0.9405851364135742,
+          0.0,
+          -2.258608341217041
+        ],
+        "material_surfaces": 1,
+        "mesh_nodes": 1,
+        "sha256": "692bbbe6c3300fc6c8cb66c314d5cc554afd04a18ea61796bece13a34a1293e6",
+        "triangles": 768
+      },
+      "mobile": {
+        "bbox_max_m": [
+          0.8610882759094238,
+          2.299999952316284,
+          2.126417875289917
+        ],
+        "bbox_min_m": [
+          -0.9403613805770874,
+          0.0,
+          -2.1289315223693848
+        ],
+        "material_surfaces": 1,
+        "mesh_nodes": 1,
+        "sha256": "978449a8b5170eb64e8f114cf029b08994222cdde22a298ee9b326cb86abd5e3",
+        "triangles": 252
+      }
+    }
+  },
+  "blender": "4.3.2",
+  "physical_device_fps_verified": false,
+  "status": "PASS"
+}

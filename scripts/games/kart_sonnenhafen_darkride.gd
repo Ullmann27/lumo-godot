@@ -78,8 +78,12 @@ static func build(world) -> void:
 			Vector2(-1.0, d0 * 0.04), Vector2(1.0, d1 * 0.04),
 			Vector2(-1.0, d1 * 0.04), alpha0, alpha1, alpha1)
 
-	_shell_instance(root, "DarkrideRockAndCanopy", shell.commit(), 0.0)
-	_shell_instance(root, "DarkrideIlluminatedRoad", overlay.commit(), 1.0)
+	# Solid-looking carved lips close the exposed paper-thin ends of the shell.
+	# Their entire inner edge is the original clear tunnel cross-section.
+	_portal_lip(shell, world, from_m, ring_segments, false)
+	_portal_lip(shell, world, to_m, ring_segments, true)
+	_shell_instance(root, "DarkrideRockAndCanopy", shell.commit(), 0.0, low)
+	_shell_instance(root, "DarkrideIlluminatedRoad", overlay.commit(), 1.0, low)
 	var arch_count: int = maxi(4, floori((to_m - from_m) / RIB_INTERVAL))
 	var arc_ribs: int = _make_ribs(root, world, from_m, to_m, ring_segments, arch_count)
 	var light_count: int = _make_crystals(root, world, from_m, to_m, arch_count, low)
@@ -122,6 +126,10 @@ static func _ring(world, distance: float, segments: int) -> Array[Vector3]:
 static func _tri(surface: SurfaceTool, a: Vector3, b: Vector3, c: Vector3,
 		uv_a: Vector2, uv_b: Vector2, uv_c: Vector2,
 		alpha_a: float, alpha_b: float, alpha_c: float) -> void:
+	# Actual inward-facing geometry normals support cinematic relief without
+	# evaluating screen derivatives on every cave fragment (including mobile).
+	var normal: Vector3 = (b - a).cross(c - a).normalized()
+	surface.set_normal(normal)
 	for vertex in [
 		{"position": a, "uv": uv_a, "alpha": alpha_a},
 		{"position": b, "uv": uv_b, "alpha": alpha_b},
@@ -131,13 +139,43 @@ static func _tri(surface: SurfaceTool, a: Vector3, b: Vector3, c: Vector3,
 		surface.set_uv(vertex.uv)
 		surface.add_vertex(vertex.position)
 
-static func _shell_instance(parent: Node3D, name: String, mesh: ArrayMesh, road_factor: float) -> void:
+
+static func _portal_lip(surface: SurfaceTool, world, distance: float,
+		segments: int, exit_portal: bool) -> void:
+	var inner: Array[Vector3] = _ring(world, distance, segments)
+	var frame: Basis = world.frame(distance)
+	var center: Vector3 = world.position_at(distance)
+	var outer: Array[Vector3] = []
+	for i in range(inner.size()):
+		var local: Vector3 = frame.inverse() * (inner[i] - center)
+		local.x *= 1.17 + sin(float(i) * 1.9) * 0.025
+		local.y += 1.0 + 0.25 * sin(float(i) * 2.3)
+		if i == 0 or i == inner.size() - 1:
+			local.y = -0.8
+		outer.append(center + frame * local)
+	for i in range(inner.size() - 1):
+		var u: float = float(i) / float(inner.size() - 1)
+		var v: float = distance * 0.042
+		if exit_portal:
+			_tri(surface, inner[i], outer[i + 1], outer[i],
+				Vector2(u, v), Vector2(u + 0.08, v + 0.6), Vector2(u, v + 0.6), 1.0, 1.0, 1.0)
+			_tri(surface, inner[i], inner[i + 1], outer[i + 1],
+				Vector2(u, v), Vector2(u + 0.08, v), Vector2(u + 0.08, v + 0.6), 1.0, 1.0, 1.0)
+		else:
+			_tri(surface, inner[i], outer[i], outer[i + 1],
+				Vector2(u, v), Vector2(u, v + 0.6), Vector2(u + 0.08, v + 0.6), 1.0, 1.0, 1.0)
+			_tri(surface, inner[i], outer[i + 1], inner[i + 1],
+				Vector2(u, v), Vector2(u + 0.08, v + 0.6), Vector2(u + 0.08, v), 1.0, 1.0, 1.0)
+
+static func _shell_instance(parent: Node3D, name: String, mesh: ArrayMesh,
+		road_factor: float, low_detail: bool) -> void:
 	var instance := MeshInstance3D.new()
 	instance.name = name
 	instance.mesh = mesh
 	var material := ShaderMaterial.new()
 	material.shader = SHADER
 	material.set_shader_parameter("road_factor", road_factor)
+	material.set_shader_parameter("mobile_detail", low_detail)
 	instance.material_override = material
 	instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(instance)

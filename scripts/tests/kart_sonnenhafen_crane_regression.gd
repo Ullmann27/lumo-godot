@@ -19,6 +19,15 @@ func _run() -> void:
 		assert(world.has_meta("sonnenhafen_crane_site"))
 		var frame: Transform3D = world.get_meta("sonnenhafen_crane_frame")
 		var parts: int = int(world.get_meta("sonnenhafen_crane_parts"))
+		var causeway: Dictionary = world.get_meta("sonnenhafen_crane_causeway")
+		assert(is_equal_approx(causeway.marina.x, 110.0), "Terminal must connect to actual marina quay")
+		assert(causeway.marina.z >= -29.0 and causeway.marina.z <= 34.0)
+		# The long-course replacement pier must clear original boats and buoys,
+		# not merely satisfy terrain/road checks. Entire slab lies east of them.
+		if frame.origin.x > 140.0:
+			for f in [-12.0, 8.0]:
+				for side in [-13.0, 13.0]:
+					assert(CRANE._p(frame, f, 0.0, side).x > 130.8)
 		assert(parts > (150 if not low else 90))
 		# Pier, ship and boom stand in open water, well clear of the race.
 		for f in [-12.0, 0.0, 15.0, CRANE.BOOM_TIP]:
