@@ -140,7 +140,11 @@ func _run() -> void:
 	var lap2_restored: Dictionary = {}
 	var frames := 0
 	var last_gate := 0
-	while not game.finished and frames < 12000:
+	# A 1.85 km x 2 real race with player-held throttle needs more than
+	# 12,000 simulated 60-Hz physics steps on the measured second-lap route:
+	# at the old cap, the player had safely reached gate 10 / 2,432 m.
+	# Extend the test's bounded simulation only; no positions or physics change.
+	while not game.finished and frames < 30000:
 		var road: Dictionary = game.world.sample_road(
 			game.player.position, game.previous_road_distance
 		)
