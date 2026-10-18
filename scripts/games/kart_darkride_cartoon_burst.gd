@@ -52,6 +52,25 @@ func fire(reduced_motion: bool) -> void:
 	visible = true
 	_update_rings()
 
+## Accessibility changes must affect an explosion that is already running.
+## Never restart the timer or allocate new geometries when the setting changes.
+func set_reduced_motion(enabled: bool) -> void:
+	if _reduce_motion == enabled:
+		return
+	_reduce_motion = enabled
+	if _age >= 0.0:
+		_update_rings()
+
+
+## Teleport, race exit or track rebuild must not leave glowing rings behind.
+func cancel() -> void:
+	_age = -1.0
+	visible = false
+	for ring in _rings:
+		if is_instance_valid(ring):
+			ring.visible = false
+
+
 func advance(delta: float) -> void:
 	if _age < 0.0:
 		return

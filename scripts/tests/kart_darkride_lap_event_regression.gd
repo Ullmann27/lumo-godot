@@ -34,6 +34,24 @@ func _run() -> void:
 	var full_intensity: float = float(material.get_shader_parameter("light_intensity"))
 	assert(full_intensity > DIRECTOR.BASE_SHADER_ENERGY + 0.25,
 		"Second-lap tunnel energy surge not visible")
+	var moving_ring: MeshInstance3D = vfx.get_node("CartoonBurstRing0")
+	var before_accessibility: float = moving_ring.scale.x
+	var age_before_pause: float = float(vfx.get("_age"))
+	director.tick(race_length * 1.745, race_length, 0.0, false)
+	assert(is_equal_approx(float(vfx.get("_age")), age_before_pause),
+		"Paused racing must not advance the shockwave")
+	# A child may enable calm motion in the menu while the effect is visible.
+	director.tick(race_length * 1.745, race_length, 0.04, true)
+	var reduced_ring_scale: float = moving_ring.scale.x
+	assert(reduced_ring_scale < before_accessibility,
+		"Already-running shockwave must immediately shrink when calm motion is enabled")
+	assert(is_zero_approx(moving_ring.rotation.z),
+		"Calm motion must stop ongoing ring rotation")
+	director.tick(race_length * 1.745, race_length, 0.04, false)
+	assert(moving_ring.scale.x > reduced_ring_scale,
+		"Normal motion must be restored without restarting the effect")
+	assert(int(vfx.get("burst_count")) == 1,
+		"Changing accessibility while racing must not duplicate a burst")
 	for i in range(35):
 		director.tick(race_length * 1.75, race_length, 0.1, false)
 	assert(director._triggered_lap == 1, "Visual event must occur once per lap only")
@@ -50,6 +68,18 @@ func _run() -> void:
 	var low_motion_intensity: float = float(material.get_shader_parameter("light_intensity"))
 	assert(low_motion_intensity < full_intensity,
 		"Reduced motion must reduce the visual event amplitude")
+	var calm_burst: Node3D = world.get_node(
+		"SonnenhafenBioluminescentDarkride/LumoArcadeCrystalShockwave")
+	assert(calm_burst.visible, "Low-motion crystal effect should initially appear")
+	# Simulate a warp beyond the tunnel before the two-second animation ends.
+	calm_director.tick(race_length * 1.82, race_length, 0.08, true)
+	assert(not calm_burst.visible and float(calm_burst.get("_age")) < 0.0,
+		"Tunnel exit must stop remaining explosion geometry immediately")
+	assert(calm_director._active_surge_seconds < 0.0,
+		"Tunnel exit must clear the previously active neon effect")
+	calm_director.tick(race_length * 1.74, race_length, 0.08, true)
+	assert(int(calm_burst.get("burst_count")) == 1,
+		"Reentering the same lap must not trigger the explosion again")
 	calm_director.bind_world(null)
 	calm_director.tick(race_length * 1.74, race_length, 0.1, false)
 	print("[DarkrideEvent] PASS: lap-two neon + cartoon burst, reduced motion, no physics changes")
