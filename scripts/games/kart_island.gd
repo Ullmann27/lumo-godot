@@ -25,6 +25,7 @@ const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
 const OPPONENT_ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
+const RESONANCE = preload("res://scripts/games/kart_resonance_system.gd")
 const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
@@ -159,6 +160,7 @@ var gem_distances: Array[float] = []
 var collected: Dictionary = {}
 var item_boxes: Array[Node3D] = []
 var item_box_distances: Array[float] = []
+var item_box_laterals: Array[float] = []
 var item_box_collected: Dictionary = {}
 var hud: Label
 var message: Label
@@ -335,6 +337,7 @@ func _build_world() -> void:
 	gem_distances.clear()
 	item_boxes.clear()
 	item_box_distances.clear()
+	item_box_laterals.clear()
 	item_box_collected.clear()
 	obstacle_distances.clear()
 	opponents.clear()
@@ -1756,7 +1759,15 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 				- track_length * 0.5
 			)
 			if absf(offset) < 1.4:
-				opponent_items[index] = _roll_item_for_place(_opponent_place(index))
+				var rival_road: Dictionary = world.sample_road(
+					opponents[index].position, local_distance
+				)
+				var rival_score: Dictionary = RESONANCE.award(
+					absf(opponents[index].motion_speed), 20.5,
+					float(rival_road.lateral) - item_box_laterals[item_box_distances.find(box_distance)],
+					0.0, opponent_stuns[index] > 0.0
+				)
+				opponent_items[index] = str(rival_score.item)
 				opponent_item_cooldowns[index] = 1.8
 				break
 
@@ -1964,19 +1975,31 @@ func _track_events() -> void:
 			collected[key] = true
 			if collected.size() % 3 == 0:
 				boosts = mini(3, boosts + 1)
-			if collected.size() % 2 == 0 and item.is_empty():
-				item = ["shield", "pulse", "boost"][rng.randi_range(0, 2)]
+			# Gem collection rewards the existing boost charges, never random weapons.
+			# All tactical items come from a measured resonance-ring crossing.
 	for i in range(item_boxes.size()):
 		var item_key: int = lap * item_boxes.size() + i
 		if (
 			not item_box_collected.has(item_key)
-			and player.position.distance_to(item_boxes[i].position) < 2.0
+			and item.is_empty() and speed >= RESONANCE.MIN_PICKUP_SPEED
+			and not airborne
+			and player.position.distance_to(item_boxes[i].position) < 2.65
 		):
+			# Every lap offers the same rings. No ranking, RNG or unknown loot.
+			var reference_speed: float = POWERTRAIN.top_speed(
+				kart_factors, float(CATALOG.entry(CATALOG.DIFFICULTIES, difficulty).speed)
+			)
+			var reward: Dictionary = RESONANCE.award(
+				speed, reference_speed, lane - item_box_laterals[i],
+				drift_charge, hit_timer > 0.0
+			)
 			item_box_collected[item_key] = true
-			if item.is_empty():
-				item = _roll_item_for_place(_place())
-				message.text = "Überraschungs-Item!"
-				_sound_effect("item")
+			item = str(reward.item)
+			message.text = "Resonanz %d%%: %s!" % [
+				roundi(float(reward.score) * 100.0),
+				"Impuls" if item == "pulse" else "Schild" if item == "shield" else "Schub"
+			]
+			_sound_effect("item")
 	for fraction in [0.12, 0.42, 0.74]:
 		if absf(fposmod(distance, track_length) - fraction * track_length - 1.1) < 1.2 and absf(lane) < 2.1:
 			boost_time = maxf(boost_time, _boost_for(1.0))
@@ -2016,7 +2039,8 @@ func _update_arena(delta: float) -> void:
 			if arena_scores % 3 == 0:
 				boosts = mini(3, boosts + 1)
 			if arena_scores % 2 == 0 and item.is_empty():
-				item = ["shield", "pulse", "boost"][rng.randi_range(0, 2)]
+				# Arena rewards now follow actual gems secured, not a roulette.
+				item = ["boost", "shield", "pulse"][(arena_scores / 2 - 1) % 3]
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
 	for i in range(opponents.size()):
 		var rival: LumoRaceKart = opponents[i]
@@ -3417,21 +3441,20 @@ static func _item_pool_for_place(place: int) -> Array[String]:
 
 
 func _roll_item_for_place(place: int) -> String:
-	var pool: Array[String] = _item_pool_for_place(place)
-	return pool[rng.randi_range(0, pool.size() - 1)]
+	# Legacy API retained for saved sessions / callers; no RNG or unfair
+	# catch-up weapon favouring last place. New rings call RESONANCE.award.
+	return "shield" if place <= 3 else "boost"
 
 
 func _item_box(distance_on_track: float, lateral: float) -> void:
 	var basis: Basis = world.frame(distance_on_track)
-	var node := Node3D.new()
-	node.name = "MysteryItemBox"
-	node.position = _track_position(distance_on_track, lateral) + basis.y * 0.85
-	node.basis = basis
-	node.scale = Vector3.ONE * (1.18 if world.track_id == "bergwelt" else 1.0)
-	race_root.add_child(node)
-	MYSTERY_PRISM.build(node)
+	var transform := Transform3D(
+		basis, _track_position(distance_on_track, lateral) + basis.y * 1.9
+	)
+	var node: Node3D = RESONANCE.build_ring(race_root, transform)
 	item_boxes.append(node)
 	item_box_distances.append(distance_on_track)
+	item_box_laterals.append(lateral)
 
 
 func _mesh(parent: Node3D, mesh: Mesh, position: Vector3, color: Color) -> MeshInstance3D:
