@@ -43,7 +43,8 @@ func _run() -> void:
 	assert(game.item_boxes.size() == 5 and game.item_box_distances.size() == 5)
 	assert(game.item_box_laterals.size() == 5)
 	for ring in game.item_boxes:
-		assert(ring.name == "SkillResonanceRing")
+		assert(ring.name.begins_with("SkillResonanceRing"),
+			"Godot uniquifies the five sibling ring node names.")
 		assert(str(ring.get_meta("lumo_racing_pickup", "")) == "skill_resonance")
 		assert(ring.get_child_count() == 1)
 		assert(ring.get_child(0) is MeshInstance3D)
