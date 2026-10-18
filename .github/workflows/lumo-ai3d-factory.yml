@@ -37,6 +37,9 @@ jobs:
           assert blob[:4]==b"glTF"
           print("LUMO_AI3D_GENERATION_PASS",report)
           PY
+      - name: Generate independently validated high and mobile geometry
+        run: |
+          python3 tools/ai3d_factory.py --spec tools/ai3d/specs/sonnenhafen_crystal_cavern.json --output-dir build/ai3d --variants
       - name: Install exact Godot 4.6.3
         run: |
           set -euo pipefail
@@ -50,6 +53,13 @@ jobs:
           set -euo pipefail
           timeout 240s godot --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/ai3d-import.log"
           ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/ai3d-import.log"
+      - name: Verify actual high and mobile GLB import
+        run: |
+          for detail in high mobile; do
+            python3 tools/run_godot_probe.py --timeout 90 --log "$RUNNER_TEMP/ai3d-$detail.log" --required '[AI3DFactory] import PASS:' -- \
+              godot --headless --audio-driver Dummy --path . --script res://scripts/tests/kart_ai3d_factory_capture.gd -- \
+              --source=res://build/ai3d/sonnenhafen_biolum_cavern_crystals_$detail.glb --validate-only
+          done
       - name: Install software GL renderer
         run: |
           sudo apt-get update -qq

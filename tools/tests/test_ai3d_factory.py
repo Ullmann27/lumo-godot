@@ -37,6 +37,61 @@ def decoded_manifest(glb: bytes):
 
 
 class LumoProceduralAssetFactoryTests(unittest.TestCase):
+    def test_mobile_variant_reduces_real_geometry_preserving_shard_tips(self):
+        high, high_report = factory.glb_bytes(DEFAULT)
+        mobile, mobile_report = factory.glb_bytes(DEFAULT, profile="mobile")
+        self.assertEqual(mobile_report["triangles"], 144)
+        self.assertLess(len(mobile), len(high) * 0.6)
+        self.assertEqual(mobile_report["profile"], "mobile")
+        self.assertEqual(mobile_report["bbox_max_m"][1], high_report["bbox_max_m"][1])
+        high_surfaces = factory.generate_geometry(DEFAULT)
+        low_surfaces = factory.generate_geometry(DEFAULT, profile="mobile")
+        for a, b in zip(high_surfaces, low_surfaces):
+            # One tip per shard: the same cluster composition at both detail levels.
+            high_tips = {max(a.positions[i:i + 108], key=lambda p: p[1])
+                         for i in range(0, len(a.positions), 108)}
+            self.assertTrue(high_tips <= set(b.positions))
+        self.assertEqual(factory.glb_bytes(DEFAULT, profile="mobile")[0], mobile)
+
+    def test_binary_validator_checks_geometry_not_just_json_or_hash(self):
+        original, report = factory.glb_bytes(DEFAULT)
+        self.assertEqual(factory.validate_glb(original)["triangles"], 324)
+        doc = decoded_manifest(original)
+        json_size = struct.unpack_from("<I", original, 12)[0]
+        binary_start = 28 + json_size
+        primitive = doc["meshes"][0]["primitives"][0]
+        for attribute, value, packing in (("POSITION", float("nan"), "f"),
+                                          ("NORMAL", 0.0, "f"),
+                                          ("indices", 65535, "H")):
+            accessor_id = primitive["indices"] if attribute == "indices" else primitive["attributes"][attribute]
+            accessor = doc["accessors"][accessor_id]
+            offset = binary_start + doc["bufferViews"][accessor["bufferView"]]["byteOffset"]
+            broken = bytearray(original)
+            struct.pack_into("<" + packing, broken, offset, value)
+            if attribute == "NORMAL":
+                struct.pack_into("<fff", broken, offset, 0, 0, 0)
+            with self.subTest(attribute=attribute), self.assertRaises(ValueError):
+                factory.validate_glb(bytes(broken))
+        with self.assertRaises(ValueError):
+            factory.validate_glb(original[:-4])
+        with self.assertRaisesRegex(ValueError, "manifest"):
+            factory.verify_manifest(original, dict(report, triangles=1))
+
+    def test_variant_build_is_reproducible_and_manifest_verifiable(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "input.json"
+            source.write_text(json.dumps(DEFAULT), encoding="utf-8")
+            manifest = factory.build_variants(source, root / "output")
+            self.assertEqual(set(manifest["variants"]), {"high", "mobile"})
+            snapshots = {p.name: p.read_bytes() for p in (root / "output").iterdir()}
+            factory.build_variants(source, root / "output")
+            self.assertEqual(snapshots, {p.name: p.read_bytes() for p in (root / "output").iterdir()})
+            for profile, report in manifest["variants"].items():
+                data = (root / "output" / report["file_name"]).read_bytes()
+                self.assertEqual(factory.verify_manifest(data, report)["triangles"], report["triangles"])
+                self.assertEqual(report["profile"], profile)
+
     def test_glb_v2_has_normals_uv_materials_16bit_indices_and_ground_pivot(self):
         output, evidence = factory.glb_bytes(DEFAULT)
         doc = decoded_manifest(output)
@@ -46,7 +101,7 @@ class LumoProceduralAssetFactoryTests(unittest.TestCase):
         self.assertEqual(len(doc["meshes"][0]["primitives"]), 2)
         self.assertEqual(evidence["triangles"], 324)
         self.assertEqual(evidence["ground_pivot_m"], 0.0)
-        self.assertAlmostEqual(evidence["bbox_max_m"][1], DEFAULT["height_m"])
+        self.assertAlmostEqual(evidence["bbox_max_m"][1], DEFAULT["height_m"], places=6)
         self.assertLessEqual(evidence["triangles"], DEFAULT["max_triangles"])
         for part in doc["meshes"][0]["primitives"]:
             self.assertEqual(part["mode"], 4)

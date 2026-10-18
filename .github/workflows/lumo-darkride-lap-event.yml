@@ -4,7 +4,9 @@ on:
     paths:
       - 'scripts/games/kart_darkride_event_director.gd'
       - 'scripts/games/kart_island.gd'
-      - 'scripts/tests/kart_darkride_lap_event_*.gd'
+      - 'scripts/tests/kart_darkride_*.gd'
+      - 'scripts/games/kart_darkride_cartoon_burst.gd'
+      - 'assets/shaders/kart_sonnenhafen_darkride.gdshader'
       - '.github/workflows/lumo-darkride-lap-event.yml'
   workflow_dispatch:
 permissions:
@@ -35,6 +37,11 @@ jobs:
           python3 tools/run_godot_probe.py --timeout 240 --log "$RUNNER_TEMP/darkride-event-regression.log" --required '[DarkrideEvent] PASS:' -- \
             godot --headless --audio-driver Dummy --path . \
             --script res://scripts/tests/kart_darkride_lap_event_regression.gd
+      - name: Prove phase expiry, clock freeze and material restoration
+        run: |
+          python3 tools/run_godot_probe.py --timeout 240 --log "$RUNNER_TEMP/darkride-event-lifecycle.log" --required '[DarkrideLifecycle] failures=0' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_darkride_lifecycle_regression.gd
       - name: Install GL framebuffer
         run: |
           sudo apt-get update -qq
