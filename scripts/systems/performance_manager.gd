@@ -36,16 +36,17 @@ func _ready() -> void:
 			auto_profile = Profile.MEDIUM
 		_:
 			auto_profile = Profile.MEDIUM
-	if Engine.has_singleton("SettingsStore"):
-		var store: Node = Engine.get_singleton("SettingsStore")
-		if store.has_method("get_profile"):
-			match store.call("get_profile"):
-				"low":
-					auto_profile = Profile.LOW
-				"medium":
-					auto_profile = Profile.MEDIUM
-				"high":
-					auto_profile = Profile.HIGH
+	var store: Node = get_node_or_null("/root/SettingsStore")
+	if store != null and store.has_method("get_profile"):
+		match store.call("get_profile"):
+			"low":
+				auto_profile = Profile.LOW
+			"medium":
+				auto_profile = Profile.MEDIUM
+			"high":
+				auto_profile = Profile.HIGH
+	# Apply the quality settings again when a different race/learning scene loads.
+	get_tree().scene_changed.connect(_on_scene_changed)
 	# Warte einen Frame damit der erste WorldEnvironment im Tree ist.
 	await get_tree().process_frame
 	set_profile(auto_profile, false)
@@ -60,14 +61,19 @@ func set_profile(profile: Profile, persist: bool = true) -> void:
 	_apply_environment(profile)
 	_apply_viewport(profile)
 	EventBus.quality_profile_changed.emit(name)
-	if persist and Engine.has_singleton("SettingsStore"):
-		var store: Node = Engine.get_singleton("SettingsStore")
-		if store.has_method("set_profile"):
+	if persist:
+		var store: Node = get_node_or_null("/root/SettingsStore")
+		if store != null and store.has_method("set_profile"):
 			store.call("set_profile", name)
 
 
 func get_profile_name() -> String:
 	return _PROFILE_NAMES.get(current_profile, "medium")
+
+
+func _on_scene_changed(_scene: Node) -> void:
+	# The previous WorldEnvironment was freed with the old scene.
+	_apply_environment(current_profile)
 
 
 ## Sucht das erste WorldEnvironment im aktuellen Tree und mutiert dessen
