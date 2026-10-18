@@ -171,7 +171,18 @@ func _run() -> void:
 			game = await _fresh()
 			assert(game.saved_session_available)
 			await _tap(game.garage.find_child("ResumeRace", true, false))
-			assert(game.paused and game.result_id == expected_id and game.distance == progress)
+			# ConfigFile serializes float values as text. On reload the last bit of
+			# the numeric distance may differ (~1.1e-13 m measured), without any
+			# actual loss of checkpoint, identity, paused state or position.
+			# Use the same strict 1e-9 m ABSOLUTE tolerance as the separately
+			# passing kart_race_continuity_regression.gd. Never alter game physics.
+			assert(
+				game.paused
+				and game.result_id == expected_id
+				and is_finite(game.distance)
+				and absf(game.distance - progress) <= 0.000000001,
+				"Paused resume must preserve distance within a nanometer, result ID and pause"
+			)
 			game.auto_gas = false
 			game._update_hud()
 			await _tap(_button("Weiterfahren"))
