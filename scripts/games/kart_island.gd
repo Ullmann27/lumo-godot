@@ -3432,18 +3432,16 @@ func _turbo_pad(distance_on_track: float) -> void:
 			piece.material_override = cyan
 
 
-static func _item_pool_for_place(place: int) -> Array[String]:
-	if place >= 5:
-		return ["boost", "boost", "boost", "shield", "shield", "pulse"]
-	if place >= 3:
-		return ["boost", "boost", "shield", "shield", "pulse", "pulse"]
-	return ["boost", "shield", "shield", "pulse", "pulse", "pulse"]
+static func _item_pool_for_place(_place: int) -> Array[String]:
+	# Historical API retained for save and test compatibility. Former rank-
+	# dependent lottery cannot be invoked in the new skill-only race system.
+	return ["boost"]
 
 
-func _roll_item_for_place(place: int) -> String:
-	# Legacy API retained for saved sessions / callers; no RNG or unfair
-	# catch-up weapon favouring last place. New rings call RESONANCE.award.
-	return "shield" if place <= 3 else "boost"
+func _roll_item_for_place(_place: int) -> String:
+	# Never infer an item from the race position. Real ring items are awarded
+	# only by RESONANCE.award from line, speed and drift.
+	return "boost"
 
 
 func _item_box(distance_on_track: float, lateral: float) -> void:
