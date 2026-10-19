@@ -15,7 +15,9 @@ func _run() -> void:
 	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "flott"})
 	game.preview_left = 0.0
 	game.set_process(false)
-	game._update_camera(0.1)
+	game.set_physics_process(false)
+	game._update_camera(0.1, true)
+	print("[StartLightsCapture] race frozen")
 	DirAccess.make_dir_recursive_absolute("res://exports/start-lights")
 	for count in [2.8, 0.0]:
 		game.countdown = count
@@ -23,6 +25,8 @@ func _run() -> void:
 		game._update_start_lights(0.0)
 		for i in range(5):
 			await process_frame
+		game._update_start_lights(0.0)
+		print("[StartLightsCapture] frames settled")
 		await RenderingServer.frame_post_draw
 		var name: String = "go" if count == 0.0 else "countdown"
 		assert(root.get_texture().get_image().save_png("res://exports/start-lights/" + name + ".png") == OK)

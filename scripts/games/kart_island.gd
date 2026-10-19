@@ -2336,6 +2336,7 @@ func _build_start_lights() -> void:
 		lamp.name = "StartLamp%d" % (i + 1)
 		lamp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		lamp.custom_minimum_size = Vector2(46, 46)
+		lamp.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		row.add_child(lamp)
 		start_lamps.append(lamp)
 	countdown_label = Label.new()
