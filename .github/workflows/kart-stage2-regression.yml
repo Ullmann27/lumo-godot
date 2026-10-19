@@ -74,6 +74,11 @@ jobs:
             exit 1
           fi
 
+      - name: Start lights reuse resources and respect motion preferences
+        run: |
+          python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/start-lights.log" --timeout 30 --required '[StartLights] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_start_lights_regression.gd
+          python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/quality-persistence.log" --timeout 30 --required '[KartQualityPersist] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_quality_persistence_regression.gd
+
       - name: Verify actual harbor prefab placement and mobile LODs
         run: |
           python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/harbor-pavilion.log" --timeout 120 --required '[HarborPavilion] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_harbor_pavilion_regression.gd
