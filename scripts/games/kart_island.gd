@@ -95,6 +95,8 @@ const START_GREEN_SECONDS: float = 0.9
 var start_lights: PanelContainer
 var start_lamps: Array[Panel] = []
 var start_green_left: float = 0.0
+var start_light_state: int = -1
+var start_light_diameter: float = -1.0
 var countdown_label: Label
 ## Titelkarte der Streckenvorschau (Name, Weltmotto, Überspringen-Hinweis).
 var preview_card: PanelContainer
@@ -2399,6 +2401,8 @@ func _lamp_style(color: Color, lit: bool, diameter: float) -> StyleBoxFlat:
 	style.bg_color = color if lit else Color(0.10, 0.13, 0.20, 0.95)
 	style.set_corner_radius_all(int(diameter * 0.5))
 	style.set_border_width_all(3)
+	style.border_width_top = 5
+	style.border_width_bottom = 2
 	style.border_color = color.lightened(0.35) if lit else Color(0.25, 0.32, 0.44, 0.9)
 	if lit:
 		style.shadow_color = Color(color, 0.65)
@@ -2423,6 +2427,12 @@ func _update_start_lights(delta: float) -> void:
 	var area: Vector2 = safe_ui.size
 	var diameter: float = clampf(minf(area.x, area.y) * 0.085, 30.0, 70.0)
 	var red_lit: int = 3 if countdown <= 0.0 else clampi(4 - ceili(countdown), 0, 3)
+	var state: int = 4 if countdown <= 0.0 else red_lit
+	# Materials change only on a countdown beat or viewport resize.
+	# No per-frame StyleBox allocation on the Android render loop.
+	var refresh: bool = state != start_light_state or not is_equal_approx(diameter, start_light_diameter)
+	start_light_state = state
+	start_light_diameter = diameter
 	countdown_label.text = "LOS!" if countdown <= 0.0 else str(ceili(countdown))
 	countdown_label.add_theme_font_size_override("font_size", int(diameter * 0.95))
 	countdown_label.custom_minimum_size = Vector2(diameter * (2.3 if countdown <= 0.0 else 1.1), diameter)
@@ -2430,9 +2440,15 @@ func _update_start_lights(delta: float) -> void:
 		start_lamps[i].custom_minimum_size = Vector2(diameter, diameter)
 		var green: bool = countdown <= 0.0
 		var color: Color = Color("44f08a") if green else Color("ff4b55")
-		start_lamps[i].add_theme_stylebox_override("panel", _lamp_style(color, green or i < red_lit, diameter))
+		if refresh:
+			start_lamps[i].add_theme_stylebox_override("panel", _lamp_style(color, green or i < red_lit, diameter))
 	start_lights.reset_size()
 	start_lights.position = Vector2((area.x - start_lights.size.x) * 0.5, area.y * 0.2)
+	start_lights.pivot_offset = start_lights.size * 0.5
+	# One small settling motion per beat, never a repeating ambient animation.
+	var beat_age: float = ceili(countdown) - countdown if counting else START_GREEN_SECONDS - start_green_left
+	var pulse: float = 0.0 if reduced_motion else maxf(0.0, 1.0 - beat_age / 0.22)
+	start_lights.scale = Vector2.ONE * (1.0 + 0.045 * pulse * pulse)
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
