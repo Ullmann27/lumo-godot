@@ -78,6 +78,7 @@ jobs:
         run: |
           python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/start-lights.log" --timeout 30 --required '[StartLights] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_start_lights_regression.gd
           python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/quality-persistence.log" --timeout 30 --required '[KartQualityPersist] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_quality_persistence_regression.gd
+          python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/quality-scene-switch.log" --timeout 45 --required '[KartQualitySceneSwitch] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_quality_scene_switch_regression.gd
 
       - name: Verify actual harbor prefab placement and mobile LODs
         run: |
