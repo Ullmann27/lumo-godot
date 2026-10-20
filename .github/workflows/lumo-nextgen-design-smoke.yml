@@ -8,6 +8,7 @@ on:
       - scripts/games/kart_ui_theme.gd
       - scripts/games/kart_garage_menu.gd
       - scripts/tests/kart_nextgen_ui_smoke.gd
+      - scripts/tests/kart_nextgen_ui_capture.gd
 
 permissions:
   contents: read
@@ -58,6 +59,19 @@ jobs:
             --script res://scripts/tests/kart_aaa_menu_capture.gd \
             -- --output=res://exports/nextgen-ui
           test "$(find exports/nextgen-ui -name 'menu-*.png' | wc -l)" -eq 3
+      - name: Render actual Lumo games hub in landscape and Fold
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log nextgen-hub-capture.log --timeout 120 --required '[NextGenHub] PASS:' -- \
+            xvfb-run -a -s '-screen 0 2500x2500x24' \
+            Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy \
+            --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_nextgen_ui_capture.gd
+          test "$(find exports/nextgen-ui -name 'spielewelt-*.png' | wc -l)" -eq 2
       - name: Preserve honest screenshot evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -68,4 +82,5 @@ jobs:
             nextgen-import.log
             nextgen-smoke.log
             nextgen-capture.log
+            nextgen-hub-capture.log
           retention-days: 20
