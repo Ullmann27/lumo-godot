@@ -481,17 +481,19 @@ func _apply_responsive_layout() -> void:
 		clampf(window_size.x * 0.45, 280.0, 455.0) if panoramic
 		else (255.0 if short_landscape else 0.0)
 	) * ui_scale
+	# The portrait reference requires the complete 3D kart/fox hero above its choices.
+	# Keep its VBox intrinsically sized, rather than stretching over the next row.
 	var driver_hero: bool = portrait and step in [0, 1, 2]
 	var first: Control = setup_right if driver_hero else setup_left
 	if setup_row.get_child(0) != first:
 		setup_row.move_child(first, 0)
 	setup_right.size_flags_vertical = (
-		Control.SIZE_FILL if portrait else Control.SIZE_EXPAND_FILL
+		Control.SIZE_SHRINK_BEGIN if portrait else Control.SIZE_EXPAND_FILL
 	)
 	setup_row.add_theme_constant_override(
 		"h_separation", roundi((14 if compact else 28) * ui_scale)
 	)
-	setup_row.add_theme_constant_override("v_separation", roundi((14 if compact else 0) * ui_scale))
+	setup_row.add_theme_constant_override("v_separation", roundi((28 if driver_hero else (14 if compact else 0)) * ui_scale))
 	# A bounded vector wordmark retains both lines and the original flags,
 	# without letting font minimums expand the Android safe-area header.
 	_set_physical_minimum(brand_wordmark,
