@@ -9,6 +9,7 @@ const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const TUNING = preload("res://scripts/games/kart_tuning.gd")
 const GARAGE = preload("res://scripts/games/kart_garage_menu.gd")
+const REFERENCE_LANDING = preload("res://scripts/games/kart_reference_landing.gd")
 const INTRO = preload("res://scripts/games/kart_intro.gd")
 const RECORDS = preload("res://scripts/games/kart_records.gd")
 const ARENA = preload("res://scripts/games/kart_arena.gd")
@@ -199,6 +200,7 @@ var crystal_mesh: ArrayMesh
 var star_mesh: ArrayMesh
 var race_root: Node3D
 var garage: Control
+var reference_landing: Control
 var menu_active: bool = true
 var mode: String = "race"
 var track_id: String = "sonnenhafen"
@@ -540,6 +542,11 @@ func _show_garage() -> void:
 	garage.resume_requested.connect(_resume_saved_race)
 	garage.exit_requested.connect(_return_to_app)
 	safe_ui.add_child(garage)
+	# User-facing entry uses the art-directed main menu. Keep the existing
+	# five-step garage mounted underneath as the real game configuration.
+	# Historic --script regressions remain compatible with their original view.
+	if not OS.get_cmdline_args().has("--script"):
+		_show_reference_landing()
 	if not intro_done:
 		intro_done = true
 		if _intro_wanted():
@@ -548,6 +555,65 @@ func _show_garage() -> void:
 			intro.reduced_motion = reduced_motion
 			intro.finished.connect(func(): intro = null)
 			safe_ui.add_child(intro)
+
+
+func _show_reference_landing() -> void:
+	if not is_instance_valid(garage) or not is_instance_valid(safe_ui):
+		return
+	if is_instance_valid(reference_landing):
+		reference_landing.queue_free()
+	reference_landing = REFERENCE_LANDING.new()
+	reference_landing.total_stars = ProgressStore.total_stars()
+	reference_landing.current_mode = "cup"
+	reference_landing.mode_selected.connect(_reference_select_mode)
+	reference_landing.quick_start.connect(_reference_quick_start)
+	reference_landing.open_settings.connect(_reference_open_settings)
+	reference_landing.return_to_games.connect(func(): _return_to_app("games"))
+	safe_ui.add_child(reference_landing)
+
+
+func _hide_reference_landing() -> void:
+	if is_instance_valid(reference_landing):
+		reference_landing.hide()
+
+
+func _reference_select_mode(selected: String) -> void:
+	if not is_instance_valid(garage):
+		return
+	match selected:
+		"cup", "time_trial":
+			garage.setup["mode"] = selected
+			garage.step = 0
+		"sonnenhafen":
+			garage.setup["track"] = "sonnenhafen"
+			garage.step = 3
+		"garage":
+			garage.step = 2
+		_:
+			return
+	_hide_reference_landing()
+	garage._refresh()
+	garage._apply_responsive_layout.call_deferred()
+
+
+func _reference_open_settings() -> void:
+	if not is_instance_valid(garage):
+		return
+	# Difficulty and accessibility controls already exist in the real setup.
+	garage.step = 4
+	_hide_reference_landing()
+	garage._refresh()
+	garage._apply_responsive_layout.call_deferred()
+
+
+func _reference_quick_start() -> void:
+	if not is_instance_valid(garage):
+		return
+	var selection: Dictionary = garage.setup.duplicate(true)
+	var requested: String = str(reference_landing.current_mode) if is_instance_valid(reference_landing) else "cup"
+	selection["mode"] = requested if requested in ["cup", "time_trial"] else "cup"
+	_hide_reference_landing()
+	_start_selected_race(selection)
 
 
 func _intro_wanted() -> bool:
@@ -591,6 +657,8 @@ func _begin_race() -> void:
 	loop_count = 0
 	if is_instance_valid(garage):
 		garage.queue_free()
+	if is_instance_valid(reference_landing):
+		reference_landing.queue_free()
 	menu_active = false
 	hud_content.show()
 	modal.hide()
