@@ -2,7 +2,7 @@ extends SceneTree
 ## Non-destructive smoke test for the REAL Godot game hub and reusable 3D UI.
 ## Execute with Godot 4.6.3: godot --headless --path . --script res://scripts/tests/kart_nextgen_ui_smoke.gd
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
-const HUB = preload("res://scenes/games/game_hub.tscn")
+# Scenes with autoload-backed scripts must be loaded after project initialization.
 
 
 func _initialize() -> void:
@@ -15,7 +15,7 @@ func _run() -> void:
 	assert(pane is StyleBoxFlat and pane.border_width_left >= 2, "Premium card border missing")
 	var preview := UI.premium_panel(UI.GOLD)
 	assert(preview.bg_color.r < 0.20, "Premium UI unexpectedly became a light card")
-	var hub := HUB.instantiate()
+	var hub := load("res://scenes/games/game_hub.tscn").instantiate()
 	root.add_child(hub)
 	await process_frame
 	assert(hub.find_child("OriginalAnimatedLumo", true, false) != null,
