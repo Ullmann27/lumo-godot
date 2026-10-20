@@ -121,9 +121,9 @@ func _ready() -> void:
 	var header_shell := PanelContainer.new()
 	header_shell.name = "LumoPremiumHeader"
 	var header_style := StyleBoxFlat.new()
-	header_style.bg_color = Color(0.018, 0.14, 0.33, 0.0)
+	header_style.bg_color = Color(0.018, 0.10, 0.24, 0.79)
 	header_style.border_color = Color("53ddfd")
-	header_style.set_border_width_all(0)
+	header_style.set_border_width_all(1)
 	header_style.set_corner_radius_all(16)
 	header_style.set_content_margin_all(2)
 	header_shell.add_theme_stylebox_override("panel", header_style)
@@ -872,7 +872,12 @@ func _text_only_glass(hovered: bool) -> StyleBoxFlat:
 
 func _clear_panel() -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0, 0, 0, 0)
+	style.bg_color = Color(0.008, 0.027, 0.085, 0.22)
+	style.border_color = Color(0.30, 0.88, 1.0, 0.76)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(25)
+	style.shadow_color = Color(0.03, 0.75, 1.0, 0.16)
+	style.shadow_size = 8
 	style.set_content_margin_all(0)
 	return style
 
@@ -905,12 +910,12 @@ func _mode_glass(mode_id: String, selected: bool) -> StyleBoxFlat:
 		"race": Color("117d9e"),
 		"time_trial": Color("17499d"),
 		"arena": Color("633096"),
-		"cup": Color("12294f"),
+		"cup": Color("755215"),
 		"training": Color("102846")
 	}.get(mode_id, Color("183857"))
 	style.bg_color = base.lightened(0.10) if selected else base
 	style.bg_color.a = 0.94 if selected else 0.88
-	style.border_color = Color("aaffff") if selected else base.lightened(0.42)
+	style.border_color = Color("ffe69a") if selected and mode_id == "cup" else (Color("aaffff") if selected else base.lightened(0.42))
 	style.set_border_width_all(2 if selected else 1)
 	style.set_corner_radius_all(16)
 	# The card itself already has custom inner margins. An extra 8 px on ALL
