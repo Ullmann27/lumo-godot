@@ -267,6 +267,12 @@ func _layout() -> void:
 	# occupied only its intrinsic ~370px height on a 720px screen.
 	content.custom_minimum_size.y = maxf(0.0, size_now.y - 16.0) if landscape else 0.0
 	_split.columns = 2 if landscape else 1
+	# A three-column card row has a native minimum width > portrait phones.
+	# Its oversized minimum was centering the fox outside the visible viewport.
+	var main_modes := _control_column.get_node("RealRaceModeChoices") as GridContainer
+	var extra_modes := _control_column.get_node("RealGameOptions") as GridContainer
+	main_modes.columns = 2 if landscape or size_now.x >= 480 else 1
+	extra_modes.columns = 3 if landscape else (2 if size_now.x >= 480 else 1)
 	# Preserve a large cinematic fox on landscape, but avoid giant cropped
 	# hero imagery and invisible controls on a portrait Android surface.
 	_split.size_flags_vertical = Control.SIZE_EXPAND_FILL if landscape else Control.SIZE_FILL
@@ -277,12 +283,9 @@ func _layout() -> void:
 	_hero.custom_minimum_size.x = clampf(size_now.x * 0.42, 300.0, 585.0) if landscape else 0.0
 	_hero.custom_minimum_size.y = (
 		clampf(size_now.y * 0.76, 320, 620) if landscape
-		else clampf(size_now.y * 0.32, 205, 440)
+		else clampf(size_now.y * 0.34, 220, 390)
 	)
-	_hero.stretch_mode = (
-		TextureRect.STRETCH_KEEP_ASPECT_COVERED if landscape
-		else TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	)
+	_hero.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	for id in _menu_buttons.keys():
 		var button := _menu_buttons[id] as Button
 		button.custom_minimum_size.y = (91 if size_now.y < 520 else 132) if landscape else (112 if phone else 132)
