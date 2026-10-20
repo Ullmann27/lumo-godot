@@ -7,6 +7,7 @@ const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const CHOICE = preload("res://scripts/games/kart_menu_choice.gd")
 const WORDMARK = preload("res://scripts/games/kart_wordmark.gd")
 const MENU_ART = preload("res://scripts/games/kart_menu_art.gd")
+const REFERENCE_LANDING = preload("res://scripts/games/kart_reference_landing.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
@@ -83,6 +84,7 @@ var quick_start_button: Button
 var _page_target_size := Vector2.ZERO
 var preview_idle_time: float = 0.0
 var _welcomed := false
+var reference_landing: Control
 
 
 func _ready() -> void:
@@ -353,6 +355,60 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_apply_responsive_layout)
 	call_deferred("_apply_responsive_layout")
 	_refresh()
+	# Avoid covering deterministic --script regression tests; the real game opens
+	# on the cinematic front page and preserves the existing garage underneath.
+	if not OS.get_cmdline_args().has("--script") and not has_saved_race:
+		call_deferred("_show_reference_landing")
+
+
+func _show_reference_landing() -> void:
+	if is_instance_valid(reference_landing):
+		return
+	reference_landing = REFERENCE_LANDING.new()
+	reference_landing.total_stars = stars
+	reference_landing.mode_selected.connect(_choose_reference_mode)
+	reference_landing.quick_start.connect(_start_reference_race)
+	reference_landing.open_settings.connect(func(): SceneRouter.goto("parent"))
+	reference_landing.return_to_games.connect(func(): exit_requested.emit("games"))
+	add_child(reference_landing)
+	move_child(reference_landing, get_child_count() - 1)
+
+
+func _close_reference_landing() -> void:
+	if is_instance_valid(reference_landing):
+		reference_landing.queue_free()
+		reference_landing = null
+
+
+func _choose_reference_mode(mode_id: String) -> void:
+	match mode_id:
+		"cup":
+			setup["mode"] = "cup"
+			step = 1
+		"time_trial":
+			setup["mode"] = "time_trial"
+			step = 1
+		"sonnenhafen":
+			setup["track"] = "sonnenhafen"
+			step = 3
+		"garage":
+			step = 2
+		_:
+			return
+	_close_reference_landing()
+	_refresh()
+	_apply_responsive_layout()
+
+
+func _start_reference_race() -> void:
+	if is_instance_valid(reference_landing):
+		var selected_mode: String = str(reference_landing.current_mode)
+		if selected_mode in ["cup", "time_trial"]:
+			setup["mode"] = selected_mode
+		elif selected_mode == "sonnenhafen":
+			setup["track"] = "sonnenhafen"
+	_close_reference_landing()
+	start_requested.emit(setup.duplicate(true))
 
 
 func _apply_responsive_layout() -> void:
