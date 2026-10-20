@@ -20,6 +20,8 @@ var _menu_buttons: Dictionary = {}
 var _layout_root: Control
 var _hero: TextureRect
 var _scroll: ScrollContainer
+var _split: GridContainer
+var _control_column: VBoxContainer
 
 func _ready() -> void:
 	name = "LumoKartReferenceLanding"
@@ -100,6 +102,17 @@ func _build() -> void:
 	stars.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	stars.tooltip_text = "Echte gesammelte Sterne aus dem Lernfortschritt"
 	header.add_child(stars)
+	_split = GridContainer.new()
+	_split.name = "AdaptiveReferenceSplit"
+	_split.columns = 2
+	_split.add_theme_constant_override("h_separation", 15)
+	_split.add_theme_constant_override("v_separation", 10)
+	content.add_child(_split)
+	_control_column = VBoxContainer.new()
+	_control_column.name = "FunctionalNativeControls"
+	_control_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_control_column.add_theme_constant_override("separation", 10)
+	_split.add_child(_control_column)
 	_hero = TextureRect.new()
 	_hero.name = "FoxAndKartReferenceLayer"
 	_hero.texture = _picture("cinematic_hero.webp", ART.world_texture())
@@ -107,19 +120,21 @@ func _build() -> void:
 	_hero.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	_hero.mouse_filter = MOUSE_FILTER_IGNORE
 	_hero.custom_minimum_size = Vector2(120, 200)
-	content.add_child(_hero)
+	_hero.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_hero.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_split.add_child(_hero)
 	var eyebrow := _caption("DEIN SONNENHAFEN-RENNABENTEUER", 18, CYAN)
 	eyebrow.name = "BrandEyebrow"
-	content.add_child(eyebrow)
+	_control_column.add_child(eyebrow)
 	var title := _caption("Mit Lumo an den Start!", 31, Color.WHITE)
 	title.name = "KartLandingHeading"
-	content.add_child(title)
+	_control_column.add_child(title)
 	var primary := GridContainer.new()
 	primary.name = "RealRaceModeChoices"
 	primary.columns = 2
 	primary.add_theme_constant_override("h_separation", 9)
 	primary.add_theme_constant_override("v_separation", 9)
-	content.add_child(primary)
+	_control_column.add_child(primary)
 	_add_choice(primary, "cup", "Grand Prix", "Sternenpokal", "grand_prix_art.webp", GOLD)
 	_add_choice(primary, "time_trial", "Zeitrennen", "Deine Bestzeit", "time_trial_art.webp", CYAN)
 	var secondary := GridContainer.new()
@@ -127,7 +142,7 @@ func _build() -> void:
 	secondary.columns = 3
 	secondary.add_theme_constant_override("h_separation", 8)
 	secondary.add_theme_constant_override("v_separation", 8)
-	content.add_child(secondary)
+	_control_column.add_child(secondary)
 	_add_choice(secondary, "sonnenhafen", "Sonnenhafen", "Rennstrecke", "sonnenhafen_art.webp", CYAN)
 	_add_choice(secondary, "garage", "Garage", "Dein Kart", "garage_art.webp", CYAN)
 	_add_choice(secondary, "settings", "Einstellungen", "Elternbereich", "settings_art.webp", CYAN)
@@ -138,14 +153,14 @@ func _build() -> void:
 	begin.custom_minimum_size.y = 78
 	THEME.premium_button(begin, GOLD, true)
 	begin.pressed.connect(func(): quick_start.emit())
-	content.add_child(begin)
+	_control_column.add_child(begin)
 	var footer := Button.new()
 	footer.name = "ReturnToGames"
 	footer.text = "‹  Zurück zur Spielewelt"
 	footer.custom_minimum_size.y = 54
 	THEME.premium_button(footer, CYAN)
 	footer.pressed.connect(func(): return_to_games.emit())
-	content.add_child(footer)
+	_control_column.add_child(footer)
 
 
 func _caption(message: String, fontsize: int, ink: Color) -> Label:
@@ -231,9 +246,13 @@ func _layout() -> void:
 	_scroll.offset_top = 8
 	_scroll.offset_bottom = -8
 	var content := _scroll.get_child(0) as VBoxContainer
-	var desired := minf(size_now.x - 24, 970.0 if landscape else 580.0)
+	var desired := minf(size_now.x - 24, 1240.0 if landscape else 580.0)
 	content.custom_minimum_size.x = desired
-	_hero.custom_minimum_size.y = clampf(size_now.y * (0.28 if landscape else 0.34), 155, 355)
+	_split.columns = 2 if landscape else 1
+	_split.move_child(_control_column if landscape else _hero, 0)
+	_control_column.custom_minimum_size.x = clampf(size_now.x * 0.46, 345.0, 570.0) if landscape else 0.0
+	_hero.custom_minimum_size.x = clampf(size_now.x * 0.42, 300.0, 585.0) if landscape else 0.0
+	_hero.custom_minimum_size.y = clampf(size_now.y * (0.58 if landscape else 0.34), 185, 520)
 	_hero.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	for id in _menu_buttons.keys():
 		var button := _menu_buttons[id] as Button
