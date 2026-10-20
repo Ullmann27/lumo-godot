@@ -71,6 +71,7 @@ var body_column: VBoxContainer
 var header_row: HBoxContainer
 var kart_head_row: HBoxContainer
 var preview_container: SubViewportContainer
+var premium_hero_shell: PanelContainer
 var step_strip: HBoxContainer
 var step_buttons: Array[Button] = []
 var preview_world: Node3D
@@ -103,6 +104,20 @@ func _ready() -> void:
 	var shade_material := ShaderMaterial.new()
 	shade_material.shader = shade
 	world_veil.material = shade_material
+	# Reference-inspired warm sunset glow over the original Sonnenhafen scenery.
+	# The real menu controls and 3D fox remain separate, interactive layers.
+	var sunset_shader := Shader.new()
+	sunset_shader.code = "shader_type canvas_item; void fragment() { vec2 p = UV; float halo = exp(-length((p - vec2(0.84, 0.30)) * vec2(1.45, 1.9)) * 3.1); float glow = exp(-length((p - vec2(0.48, 0.78)) * vec2(2.0, 2.2)) * 4.0); vec3 amber = vec3(1.0, 0.51, 0.20); vec3 cyan = vec3(0.07, 0.68, 0.92); COLOR = vec4(amber * halo * 0.39 + cyan * glow * 0.14, halo * 0.27 + glow * 0.06); }"
+	var sunset_material := ShaderMaterial.new()
+	sunset_material.shader = sunset_shader
+	var sunset := ColorRect.new()
+	sunset.name = "SonnenhafenGoldenHour"
+	sunset.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	sunset.material = sunset_material
+	add_child(sunset)
+	resized.connect(func(): _fit_sunset_layer(sunset))
+	item_rect_changed.connect(func(): _fit_sunset_layer(sunset))
+	call_deferred("_fit_sunset_layer", sunset)
 	world_veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(world_veil)
 	resized.connect(_layout_world_backdrop)
@@ -209,6 +224,7 @@ func _ready() -> void:
 	preview_title = _label("DEINE GARAGE", 16, Color("74e5f5"))
 	right.add_child(preview_title)
 	var viewport_panel := PanelContainer.new()
+	premium_hero_shell = viewport_panel
 	viewport_panel.add_theme_stylebox_override("panel", _clear_panel())
 	viewport_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	right.add_child(viewport_panel)
@@ -424,7 +440,7 @@ func _apply_responsive_layout() -> void:
 	# without letting font minimums expand the Android safe-area header.
 	_set_physical_minimum(brand_wordmark,
 		Vector2(82, 44) if short_landscape or tiny_portrait
-		else (Vector2(116, 66) if small else (Vector2(120, 64) if inset_landscape else (Vector2(148, 80) if balanced_landscape else Vector2(176, 100)))),
+		else (Vector2(116, 66) if small else (Vector2(120, 64) if inset_landscape else (Vector2(148, 80) if balanced_landscape else Vector2(256, 104)))),
 		ui_scale)
 	var ultra_short: bool = short_landscape and window_size.y < 360
 	var compact_welcome: bool = short_landscape and step == 0 and window_size.y < 440
@@ -542,6 +558,13 @@ func _apply_responsive_layout() -> void:
 	preview_caption.visible = (step == 0 and panoramic) or (step != 0 and not short_landscape and not small and not tight_kart_page)
 	preview_caption_panel.visible = preview_caption.visible
 	preview_title.visible = step != 0 and not short_landscape and not small and not tight_kart_page
+	if is_instance_valid(premium_hero_shell):
+		var hero_panel := _clear_panel()
+		# The welcome is a scenic stage, not a blue-bordered configuration window.
+		if step == 0:
+			hero_panel.set_border_width_all(0)
+			hero_panel.shadow_size = 0
+		premium_hero_shell.add_theme_stylebox_override("panel", hero_panel)
 	_set_physical_minimum(view_choice, Vector2(0, 44), ui_scale)
 	_set_physical_font(view_choice, 14 if short_landscape else 16, ui_scale)
 	view_choice.set_item_text(0, "Rundum" if short_landscape else "Rundum ansehen")
@@ -686,6 +709,13 @@ func _apply_responsive_layout() -> void:
 	call_deferred("_fit_welcome_camera")
 
 
+func _fit_sunset_layer(layer: ColorRect) -> void:
+	if not is_instance_valid(layer) or not is_instance_valid(world_backdrop):
+		return
+	layer.position = world_backdrop.position
+	layer.size = world_backdrop.size
+
+
 func _layout_world_backdrop() -> void:
 	if not is_inside_tree() or not is_instance_valid(world_backdrop):
 		return
@@ -738,7 +768,9 @@ func _fit_welcome_camera() -> void:
 		var point: Vector3 = local_from_world * world_point
 		var depth := maxf(0.1, -point.z)
 		required_tangent = maxf(required_tangent, maxf(absf(point.y) / depth, absf(point.x) / depth / aspect))
-	for ring in stage_rings:
+	# Rings are decoration and must not make Lumo / the Kart look tiny.
+	# Preserve precise world-space fitting for the actual kart/fox silhouette.
+	for ring in ([] if step == 0 else stage_rings):
 		for sample in range(32):
 			var angle := TAU * sample / 32.0
 			var radius: float = ring.mesh.outer_radius
@@ -747,7 +779,7 @@ func _fit_welcome_camera() -> void:
 			var depth := maxf(0.1, -point.z)
 			required_tangent = maxf(required_tangent, maxf(absf(point.y) / depth, absf(point.x) / depth / aspect))
 	preview_camera.keep_aspect = Camera3D.KEEP_HEIGHT
-	preview_camera.fov = maxf(34.0, rad_to_deg(atan(required_tangent * 1.06)) * 2.0)
+	preview_camera.fov = maxf(31.0, rad_to_deg(atan(required_tangent * 1.035)) * 2.0)
 
 
 func _install_action_sheen(button: Button) -> void:
