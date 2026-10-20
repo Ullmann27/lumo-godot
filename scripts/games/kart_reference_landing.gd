@@ -72,6 +72,7 @@ func _build() -> void:
 	var content := VBoxContainer.new()
 	content.name = "ReferenceContent"
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_theme_constant_override("separation", 12)
 	_scroll.add_child(content)
 	var header := HBoxContainer.new()
@@ -105,12 +106,14 @@ func _build() -> void:
 	_split = GridContainer.new()
 	_split.name = "AdaptiveReferenceSplit"
 	_split.columns = 2
+	_split.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_split.add_theme_constant_override("h_separation", 15)
 	_split.add_theme_constant_override("v_separation", 10)
 	content.add_child(_split)
 	_control_column = VBoxContainer.new()
 	_control_column.name = "FunctionalNativeControls"
 	_control_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_control_column.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_control_column.add_theme_constant_override("separation", 10)
 	_split.add_child(_control_column)
 	_hero = TextureRect.new()
@@ -126,12 +129,13 @@ func _build() -> void:
 	var eyebrow := _caption("DEIN SONNENHAFEN-RENNABENTEUER", 18, CYAN)
 	eyebrow.name = "BrandEyebrow"
 	_control_column.add_child(eyebrow)
-	var title := _caption("Mit Lumo an den Start!", 31, Color.WHITE)
+	var title := _caption("Mit Lumo an den Start!", 34, Color.WHITE)
 	title.name = "KartLandingHeading"
 	_control_column.add_child(title)
 	var primary := GridContainer.new()
 	primary.name = "RealRaceModeChoices"
 	primary.columns = 2
+	primary.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	primary.add_theme_constant_override("h_separation", 9)
 	primary.add_theme_constant_override("v_separation", 9)
 	_control_column.add_child(primary)
@@ -140,12 +144,13 @@ func _build() -> void:
 	var secondary := GridContainer.new()
 	secondary.name = "RealGameOptions"
 	secondary.columns = 3
+	secondary.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	secondary.add_theme_constant_override("h_separation", 8)
 	secondary.add_theme_constant_override("v_separation", 8)
 	_control_column.add_child(secondary)
 	_add_choice(secondary, "sonnenhafen", "Sonnenhafen", "Rennstrecke", "sonnenhafen_art.webp", CYAN)
 	_add_choice(secondary, "garage", "Garage", "Dein Kart", "garage_art.webp", CYAN)
-	_add_choice(secondary, "settings", "Einstellungen", "Elternbereich", "settings_art.webp", CYAN)
+	_add_choice(secondary, "settings", "Einstellungen", "Spieloptionen", "settings_art.webp", CYAN)
 	var begin := Button.new()
 	begin.name = "LiveQuickStart"
 	begin.text = "▶  START"
@@ -180,6 +185,7 @@ func _add_choice(container: GridContainer, id: String, heading: String,
 	var tile := Button.new()
 	tile.name = "Landing_" + id
 	tile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	tile.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	tile.custom_minimum_size.y = 136
 	tile.tooltip_text = heading + ". " + detail
 	tile.clip_contents = true
@@ -214,10 +220,10 @@ func _add_choice(container: GridContainer, id: String, heading: String,
 	label_group.alignment = BoxContainer.ALIGNMENT_END
 	label_group.add_theme_constant_override("separation", 2)
 	tile.add_child(label_group)
-	var head := _caption(heading, 20, Color.WHITE)
+	var head := _caption(heading, 23, Color.WHITE)
 	head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label_group.add_child(head)
-	var sub := _caption(detail, 13, Color("d6efff"))
+	var sub := _caption(detail, 15, Color("d6efff"))
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label_group.add_child(sub)
 	tile.pressed.connect(func(): _choose(id))
@@ -248,12 +254,15 @@ func _layout() -> void:
 	var content := _scroll.get_child(0) as VBoxContainer
 	var desired := minf(size_now.x - 24, 1240.0 if landscape else 580.0)
 	content.custom_minimum_size.x = desired
+	# Fill the actual physical viewport in landscape. The previous VBox
+	# occupied only its intrinsic ~370px height on a 720px screen.
+	content.custom_minimum_size.y = maxf(0.0, size_now.y - 16.0) if landscape else 0.0
 	_split.columns = 2 if landscape else 1
 	_split.move_child(_control_column if landscape else _hero, 0)
 	_control_column.custom_minimum_size.x = clampf(size_now.x * 0.46, 345.0, 570.0) if landscape else 0.0
 	_hero.custom_minimum_size.x = clampf(size_now.x * 0.42, 300.0, 585.0) if landscape else 0.0
-	_hero.custom_minimum_size.y = clampf(size_now.y * (0.58 if landscape else 0.34), 185, 520)
+	_hero.custom_minimum_size.y = clampf(size_now.y * (0.76 if landscape else 0.42), 260, 620)
 	_hero.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	for id in _menu_buttons.keys():
 		var button := _menu_buttons[id] as Button
-		button.custom_minimum_size.y = 92 if landscape and size_now.y < 680 else (118 if phone else 144)
+		button.custom_minimum_size.y = (91 if size_now.y < 520 else 132) if landscape else (112 if phone else 132)
