@@ -7,6 +7,9 @@ on:
       - scripts/games/game_hub.gd
       - scripts/games/kart_ui_theme.gd
       - scripts/games/kart_garage_menu.gd
+      - scripts/games/kart_reference_landing.gd
+      - scripts/tests/kart_reference_landing_visual.gd
+      - assets/kart/landing/**
       - scripts/tests/kart_nextgen_ui_smoke.gd
       - scripts/tests/kart_nextgen_ui_capture.gd
 
@@ -72,6 +75,19 @@ jobs:
             --path . --rendering-method gl_compatibility \
             --script res://scripts/tests/kart_nextgen_ui_capture.gd
           test "$(find exports/nextgen-ui -name 'spielewelt-*.png' | wc -l)" -eq 2
+      - name: Render reference-layer menu and test real buttons
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log reference-landing.log --timeout 120 --required '[ReferenceLanding] PASS:' -- \
+            xvfb-run -a -s '-screen 0 2500x2500x24' \
+            Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy \
+            --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_reference_landing_visual.gd
+          test "$(find exports/nextgen-ui -name 'referenz-landing-*.png' | wc -l)" -eq 2
       - name: Preserve honest screenshot evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -83,4 +99,5 @@ jobs:
             nextgen-smoke.log
             nextgen-capture.log
             nextgen-hub-capture.log
+            reference-landing.log
           retention-days: 20
