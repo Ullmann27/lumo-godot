@@ -199,6 +199,16 @@ func _add_choice(container: GridContainer, id: String, heading: String,
 	var art := TextureRect.new()
 	art.name = "Illustration_" + id
 	art.texture = _picture(filename)
+	if art.texture != null:
+		# Use only the illustrative TOP of the reference card. The artwork
+		# contains baked screenshot captions further down; actual interactive
+		# names and descriptions come from Godot Labels below.
+		var top_illustration := AtlasTexture.new()
+		top_illustration.atlas = art.texture
+		top_illustration.region = Rect2(
+			0, 0, art.texture.get_width(), art.texture.get_height() * 0.67)
+		top_illustration.filter_clip = true
+		art.texture = top_illustration
 	if art.texture == null:
 		# Fallback is the authorized EXISTING illustration, never an empty card.
 		art.texture = ART.world_texture()
@@ -265,11 +275,22 @@ func _layout() -> void:
 	# occupied only its intrinsic ~370px height on a 720px screen.
 	content.custom_minimum_size.y = maxf(0.0, size_now.y - 16.0) if landscape else 0.0
 	_split.columns = 2 if landscape else 1
+	# Preserve a large cinematic fox on landscape, but avoid giant cropped
+	# hero imagery and invisible controls on a portrait Android surface.
+	_split.size_flags_vertical = Control.SIZE_EXPAND_FILL if landscape else Control.SIZE_FILL
+	_control_column.size_flags_vertical = Control.SIZE_EXPAND_FILL if landscape else Control.SIZE_FILL
+	_hero.size_flags_vertical = Control.SIZE_EXPAND_FILL if landscape else Control.SIZE_FILL
 	_split.move_child(_control_column if landscape else _hero, 0)
 	_control_column.custom_minimum_size.x = clampf(size_now.x * 0.46, 345.0, 570.0) if landscape else 0.0
 	_hero.custom_minimum_size.x = clampf(size_now.x * 0.42, 300.0, 585.0) if landscape else 0.0
-	_hero.custom_minimum_size.y = clampf(size_now.y * (0.76 if landscape else 0.42), 260, 620)
-	_hero.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	_hero.custom_minimum_size.y = (
+		clampf(size_now.y * 0.76, 320, 620) if landscape
+		else clampf(size_now.y * 0.32, 205, 440)
+	)
+	_hero.stretch_mode = (
+		TextureRect.STRETCH_KEEP_ASPECT_COVERED if landscape
+		else TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	)
 	for id in _menu_buttons.keys():
 		var button := _menu_buttons[id] as Button
 		button.custom_minimum_size.y = (91 if size_now.y < 520 else 132) if landscape else (112 if phone else 132)
