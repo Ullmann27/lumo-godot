@@ -826,7 +826,7 @@ func _fit_welcome_camera() -> void:
 		required_tangent = maxf(required_tangent, maxf(absf(point.y) / depth, absf(point.x) / depth / aspect))
 	# Rings are decoration and must not make Lumo / the Kart look tiny.
 	# Preserve precise world-space fitting for the actual kart/fox silhouette.
-	for ring in ([] if step == 0 else stage_rings):
+	for ring in stage_rings:
 		for sample in range(32):
 			var angle := TAU * sample / 32.0
 			var radius: float = ring.mesh.outer_radius
@@ -835,7 +835,7 @@ func _fit_welcome_camera() -> void:
 			var depth := maxf(0.1, -point.z)
 			required_tangent = maxf(required_tangent, maxf(absf(point.y) / depth, absf(point.x) / depth / aspect))
 	preview_camera.keep_aspect = Camera3D.KEEP_HEIGHT
-	preview_camera.fov = maxf(31.0, rad_to_deg(atan(required_tangent * 1.035)) * 2.0)
+	preview_camera.fov = maxf(34.0, rad_to_deg(atan(required_tangent * 1.06)) * 2.0)
 
 
 func _install_action_sheen(button: Button) -> void:
