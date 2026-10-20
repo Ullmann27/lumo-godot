@@ -199,16 +199,8 @@ func _add_choice(container: GridContainer, id: String, heading: String,
 	var art := TextureRect.new()
 	art.name = "Illustration_" + id
 	art.texture = _picture(filename)
-	if art.texture != null:
-		# Use only the illustrative TOP of the reference card. The artwork
-		# contains baked screenshot captions further down; actual interactive
-		# names and descriptions come from Godot Labels below.
-		var top_illustration := AtlasTexture.new()
-		top_illustration.atlas = art.texture
-		top_illustration.region = Rect2(
-			0, 0, art.texture.get_width(), art.texture.get_height() * 0.67)
-		top_illustration.filter_clip = true
-		art.texture = top_illustration
+	# Card artwork is now cut precisely above baked captions. Keep its full
+	# scenic image; user-visible wording remains only in the native Labels.
 	if art.texture == null:
 		# Fallback is the authorized EXISTING illustration, never an empty card.
 		art.texture = ART.world_texture()
