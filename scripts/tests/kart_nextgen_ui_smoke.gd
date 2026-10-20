@@ -15,7 +15,7 @@ func _run() -> void:
 	assert(pane is StyleBoxFlat and pane.border_width_left >= 2, "Premium card border missing")
 	var preview := UI.premium_panel(UI.GOLD)
 	assert(preview.bg_color.r < 0.20, "Premium UI unexpectedly became a light card")
-	var hub := load("res://scenes/games/game_hub.tscn").instantiate()
+	var hub: Node3D = (load("res://scenes/games/game_hub.tscn") as PackedScene).instantiate() as Node3D
 	root.add_child(hub)
 	await process_frame
 	assert(hub.find_child("OriginalAnimatedLumo", true, false) != null,
