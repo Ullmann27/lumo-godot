@@ -17,7 +17,7 @@ func _run() -> void:
 	assert(DisplayServer.get_name() != "headless")
 	var output := "res://exports/nextgen-ui"
 	DirAccess.make_dir_recursive_absolute(output)
-	var hub := load("res://scenes/games/game_hub.tscn").instantiate()
+	var hub: Node3D = (load("res://scenes/games/game_hub.tscn") as PackedScene).instantiate() as Node3D
 	root.add_child(hub)
 	for dimensions in [Vector2i(1280, 720), Vector2i(690, 829)]:
 		root.size = dimensions
