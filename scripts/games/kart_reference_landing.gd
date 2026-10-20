@@ -209,7 +209,14 @@ func _add_choice(container: GridContainer, id: String, heading: String,
 	art.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
 	tile.add_child(art)
 	var dim := ColorRect.new()
-	dim.color = Color(0.005, 0.04, 0.14, 0.63)
+	# Keep the actual source painting vivid: darken only the caption region,
+	# rather than covering the user's beautiful illustrated cards with 63% navy.
+	dim.color = Color.WHITE
+	var readability_shader := Shader.new()
+	readability_shader.code = "shader_type canvas_item; void fragment() { float bottom = smoothstep(0.26, 0.96, UV.y); COLOR = vec4(0.005, 0.025, 0.09, mix(0.10, 0.82, bottom)); }"
+	var readability_material := ShaderMaterial.new()
+	readability_material.shader = readability_shader
+	dim.material = readability_material
 	dim.mouse_filter = MOUSE_FILTER_IGNORE
 	dim.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
 	tile.add_child(dim)
