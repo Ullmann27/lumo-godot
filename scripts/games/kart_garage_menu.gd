@@ -355,10 +355,10 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_apply_responsive_layout)
 	call_deferred("_apply_responsive_layout")
 	_refresh()
-	# Avoid covering deterministic --script regression tests; the real game opens
-	# on the cinematic front page and preserves the existing garage underneath.
-	if not OS.get_cmdline_args().has("--script") and not has_saved_race:
-		call_deferred("_show_reference_landing")
+	# The live Kart owner mounts the cinematic landing once above this
+	# five-step setup. Do not create a second overlay here: otherwise users
+	# could select a race but stay trapped behind the duplicate menu.
+	# The standalone _show_reference_landing helper remains for visual tests.
 
 
 func _show_reference_landing() -> void:
