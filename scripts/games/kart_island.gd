@@ -582,12 +582,17 @@ func _show_reference_landing(preserve_setup: bool = false) -> void:
 	reference_landing.quick_start.connect(_reference_quick_start)
 	reference_landing.open_settings.connect(_reference_open_settings)
 	reference_landing.return_to_games.connect(func(): _return_to_app("games"))
+	garage.hide()
+	garage.preview_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	safe_ui.add_child(reference_landing)
 
 
 func _hide_reference_landing() -> void:
 	if is_instance_valid(reference_landing):
 		reference_landing.hide()
+	if is_instance_valid(garage):
+		garage.show()
+		garage.preview_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 
 
 func _reference_select_mode(selected: String) -> void:

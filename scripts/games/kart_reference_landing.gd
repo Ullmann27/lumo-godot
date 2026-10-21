@@ -22,6 +22,8 @@ var _hero: TextureRect
 var _scroll: ScrollContainer
 var _split: GridContainer
 var _control_column: VBoxContainer
+var _shell: VBoxContainer
+var _action_bar: GridContainer
 
 func _ready() -> void:
 	name = "LumoKartReferenceLanding"
@@ -30,6 +32,7 @@ func _ready() -> void:
 	theme = THEME.create()
 	_build()
 	get_viewport().size_changed.connect(_layout)
+	resized.connect(_layout)
 	call_deferred("_layout")
 
 
@@ -64,11 +67,15 @@ func _build() -> void:
 	_layout_root.name = "ResponsiveLandingLayout"
 	_layout_root.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
 	add_child(_layout_root)
+	_shell = VBoxContainer.new()
+	_shell.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
+	_shell.add_theme_constant_override("separation", 8)
+	_layout_root.add_child(_shell)
 	_scroll = ScrollContainer.new()
 	_scroll.name = "ReachableReferenceButtons"
-	_scroll.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
+	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_layout_root.add_child(_scroll)
+	_shell.add_child(_scroll)
 	var content := VBoxContainer.new()
 	content.name = "ReferenceContent"
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -151,6 +158,11 @@ func _build() -> void:
 	_add_choice(secondary, "sonnenhafen", "Sonnenhafen", "Rennstrecke", "sonnenhafen_art.webp", CYAN)
 	_add_choice(secondary, "garage", "Garage", "Dein Kart", "garage_art.webp", CYAN)
 	_add_choice(secondary, "settings", "Einstellungen", "Spieloptionen", "settings_art.webp", CYAN)
+	_action_bar = GridContainer.new()
+	_action_bar.name = "PersistentStartAndReturn"
+	_action_bar.add_theme_constant_override("h_separation", 8)
+	_action_bar.add_theme_constant_override("v_separation", 8)
+	_shell.add_child(_action_bar)
 	var begin := Button.new()
 	begin.name = "LiveQuickStart"
 	begin.text = "▶  START"
@@ -158,14 +170,16 @@ func _build() -> void:
 	begin.custom_minimum_size.y = 78
 	THEME.premium_button(begin, GOLD, true)
 	begin.pressed.connect(func(): quick_start.emit())
-	_control_column.add_child(begin)
+	begin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_action_bar.add_child(begin)
 	var footer := Button.new()
 	footer.name = "ReturnToGames"
 	footer.text = "‹  Zurück zur Spielewelt"
 	footer.custom_minimum_size.y = 54
 	THEME.premium_button(footer, CYAN)
 	footer.pressed.connect(func(): return_to_games.emit())
-	_control_column.add_child(footer)
+	footer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_action_bar.add_child(footer)
 
 
 func _caption(message: String, fontsize: int, ink: Color) -> Label:
@@ -257,13 +271,25 @@ func _choose(id: String) -> void:
 func _layout() -> void:
 	if not is_inside_tree() or not is_instance_valid(_scroll):
 		return
-	var size_now := get_viewport_rect().size
+	var viewport_size := get_viewport_rect().size
+	var window_dp: Vector2 = Vector2(get_window().size) / MobileRuntime.get_ui_density()
+	if window_dp.x <= 0 or window_dp.y <= 0 or size.x <= 0 or size.y <= 0:
+		return
+	var ui_scale := maxf(viewport_size.x / window_dp.x, viewport_size.y / window_dp.y)
+	var size_now: Vector2 = size / ui_scale
+	# Lay out in device-dp, then transform the complete native subtree into
+	# the project's stretched canvas. Fonts, corners and touch areas agree.
+	_layout_root.set_anchors_and_offsets_preset(PRESET_TOP_LEFT)
+	_layout_root.scale = Vector2.ONE * ui_scale
+	_layout_root.size = size_now
 	var landscape := size_now.x > size_now.y
 	var phone := size_now.x < 730
-	_scroll.offset_left = 12
-	_scroll.offset_right = -12
-	_scroll.offset_top = 8
-	_scroll.offset_bottom = -8
+	_shell.offset_left = 12
+	_shell.offset_right = -12
+	_shell.offset_top = 8
+	_shell.offset_bottom = -8
+	_action_bar.columns = 2 if landscape else 1
+	_action_bar.get_node("LiveQuickStart").custom_minimum_size.y = 56 if landscape else 64
 	var content := _scroll.get_child(0) as VBoxContainer
 	var desired := minf(size_now.x - 24, 1240.0 if landscape else 580.0)
 	content.custom_minimum_size.x = desired

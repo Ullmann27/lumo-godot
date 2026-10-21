@@ -55,12 +55,12 @@ func _capture(label: String) -> void:
 func _run() -> void:
 	assert(DisplayServer.get_name() != "headless")
 	DirAccess.make_dir_recursive_absolute(output)
+	game = load("res://scenes/games/kart_island.tscn").instantiate()
+	game.lightweight = true
+	root.add_child(game)
+	game.set_physics_process(false)
+	await _settle(6)
 	for dimensions in [Vector2i(640, 360), Vector2i(320, 740), Vector2i(840, 960), Vector2i(1280, 720)]:
-		game = load("res://scenes/games/kart_island.tscn").instantiate()
-		game.lightweight = true
-		root.add_child(game)
-		game.set_physics_process(false)
-		await _settle(6)
 		root.size = dimensions
 		await _settle(6)
 		print("[CompleteMenuJourney] SIZE requested=", dimensions, " actual=", root.size)
@@ -70,6 +70,10 @@ func _run() -> void:
 		game.garage._refresh()
 		game._show_reference_landing()
 		await _settle(6)
+		assert(not game.garage.visible)
+		assert(game.garage.preview_viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED)
+		assert(root.get_visible_rect().grow(1).encloses(
+			game.reference_landing.find_child("LiveQuickStart", true, false).get_global_rect()))
 		await _tap(game.reference_landing.find_child("Landing_time_trial", true, false))
 		assert(game.garage.setup.mode == "time_trial")
 		await _tap(game.reference_landing.find_child("Landing_settings", true, false))
@@ -105,8 +109,8 @@ func _run() -> void:
 						break
 				assert(game.garage.setup.mode == "race")
 			elif step == 1:
-				await _tap(game.garage.choices.get_child(0))
-				assert(game.garage.setup.driver == "fox")
+				await _tap(game.garage.choices.get_child(1))
+				assert(game.garage.setup.driver == "rabbit")
 			elif step == 2:
 				await _tap(game.garage.choices.get_child(0).get_node("KartCard_gecko_velo"))
 				assert(game.garage.setup.kart == "gecko_velo")
@@ -130,8 +134,8 @@ func _run() -> void:
 			assert(not game.menu_active and game.mode == "race", "START must preserve the configured mode")
 			assert(game.selected_kart == selected.kart and is_instance_valid(game.player))
 			assert(game.opponents.size() == 5)
-		game.queue_free()
-		await _settle()
+	game.queue_free()
+	await _settle()
 	var report := FileAccess.open(output.path_join("journey.json"), FileAccess.WRITE)
 	report.store_string(JSON.stringify(captures, "  "))
 	report.close()
