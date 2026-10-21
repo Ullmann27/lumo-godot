@@ -67,16 +67,16 @@ func _run() -> void:
 		root.size = dimensions
 		await _settle(6)
 		print("[CompleteMenuJourney] SIZE requested=", dimensions, " actual=", root.size)
-		print("[CompleteMenuJourney] LANDING inherited_scale=",
-			game.reference_landing.get_global_transform().get_scale(),
-			" physical_window=", game.reference_landing.get_window().size,
-			" canvas=", root.get_visible_rect().size)
 		game.reduced_motion = true
 		game.garage.reduced_motion = true
 		game.garage.stars = 60 # Explicit render/unlock fixture, no child progress write.
 		game.garage._refresh()
 		game._show_reference_landing()
 		await _settle(6)
+		print("[CompleteMenuJourney] LANDING inherited_scale=",
+			game.reference_landing.get_global_transform().get_scale(),
+			" physical_window=", game.reference_landing.get_window().size,
+			" canvas=", root.get_visible_rect().size)
 		assert(not game.garage.visible)
 		assert(game.garage.preview_viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED)
 		assert(root.get_visible_rect().grow(1).encloses(
