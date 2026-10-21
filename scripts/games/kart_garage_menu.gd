@@ -93,9 +93,8 @@ func _ready() -> void:
 	theme = UI.create()
 	world_backdrop = TextureRect.new()
 	world_backdrop.name = "OriginalWorldFullBleed"
-	# Continue the same original Sonnenhafen painting after opening the
-	# explicit 3D Garage. Keep the animated kart and existing settings intact.
-	world_backdrop.texture = load("res://assets/kart/landing/sunset_world.webp") if ResourceLoader.exists("res://assets/kart/landing/sunset_world.webp") else MENU_ART.world_texture()
+	# Preserve the exact edge-cropped, production-tested original world atlas.
+	world_backdrop.texture = MENU_ART.world_texture()
 	world_backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	world_backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	world_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
