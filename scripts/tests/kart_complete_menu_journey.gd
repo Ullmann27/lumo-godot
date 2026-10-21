@@ -13,10 +13,11 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 
-func _settle(frames := 3) -> void:
+func _settle(frames := 2) -> void:
+	# Input and layout need processed engine frames. Expensive synchronized
+	# llvmpipe readbacks are reserved for actual screenshots, not each tap.
 	for index in range(frames):
 		await process_frame
-	await RenderingServer.frame_post_draw
 
 
 func _tap(control: Control) -> void:
@@ -45,6 +46,7 @@ func _tap(control: Control) -> void:
 
 
 func _capture(label: String) -> void:
+	await RenderingServer.frame_post_draw
 	var name := "%s-%dx%d.png" % [label, root.size.x, root.size.y]
 	assert(root.get_texture().get_image().save_png(output.path_join(name)) == OK)
 	captures.append({"image": name, "size": [root.size.x, root.size.y],
@@ -71,6 +73,10 @@ func _run() -> void:
 		game.garage._refresh()
 		game._show_reference_landing()
 		await _settle(6)
+		print("[CompleteMenuJourney] LANDING inherited_scale=",
+			game.reference_landing.get_global_transform().get_scale(),
+			" physical_window=", game.reference_landing.get_window().size,
+			" canvas=", root.get_visible_rect().size)
 		assert(not game.garage.visible)
 		assert(game.garage.preview_viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED)
 		assert(root.get_visible_rect().grow(1).encloses(
@@ -94,7 +100,7 @@ func _run() -> void:
 		assert(preferences.load(game.PREFERENCES) == OK)
 		assert(preferences.get_value("race", "auto_gas") == game.auto_gas)
 		assert(preferences.get_value("race", "muted") == game.muted)
-		_capture("settings")
+		await _capture("settings")
 		await _tap(game.menu_settings_navigation.get_node("CloseKartSettings"))
 		assert(not game.modal.visible and not game.menu_settings_open)
 		assert(game.reference_landing.current_mode == "time_trial", "Settings must retain the chosen mode")
@@ -122,7 +128,7 @@ func _run() -> void:
 			else:
 				await _tap(game.garage.choices.get_child(0))
 				assert(game.garage.setup.difficulty == "gemuetlich")
-			_capture("setup-%d" % (step + 1))
+			await _capture("setup-%d" % (step + 1))
 			assert(root.get_visible_rect().grow(1).encloses(game.garage.next_button.get_global_rect()))
 		var selected: Dictionary = game.garage.setup.duplicate(true)
 		for step in range(4, -1, -1):
