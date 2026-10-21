@@ -16,3 +16,40 @@ WARNING: Volumetric fog is only available when using the Forward+ renderer.
 [Progress] no save file (first run) - starting fresh
 [Kart] Holographic garage ready: five modes, twelve worlds, free steering
 [Perf] quality_profile:medium
+[CompleteMenuJourney] SIZE requested=(640, 360) actual=(640, 360)
+[CompleteMenuJourney] TAP Landing_time_trial window=(640, 360)
+[CompleteMenuJourney] TAP Landing_settings window=(640, 360)
+[CompleteMenuJourney] TAP AudioToggle window=(640, 360)
+[CompleteMenuJourney] TAP GraphicsProfileToggle window=(640, 360)
+[CompleteMenuJourney] TAP GasModeToggle window=(640, 360)
+[CompleteMenuJourney] TAP CloseKartSettings window=(640, 360)
+[CompleteMenuJourney] TAP Landing_garage window=(640, 360)
+[CompleteMenuJourney] TAP @Button@51 window=(640, 360)
+[CompleteMenuJourney] TAP @Button@1645 window=(640, 360)
+[CompleteMenuJourney] TAP @Button@52 window=(640, 360)
+[CompleteMenuJourney] TAP @Button@2170 window=(640, 360)
+[CompleteMenuJourney] TAP @Button@53 window=(640, 360)
+[CompleteMenuJourney] TAP KartCard_gecko_velo window=(640, 360)
+[CompleteMenuJourney] TAP @Button@54 window=(640, 360)
+[CompleteMenuJourney] TAP @Button@3330 window=(640, 360)
+[CompleteMenuJourney] TAP @Button@55 window=(640, 360)
+[CompleteMenuJourney] TAP @Button@3979 window=(640, 360)
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[CompleteMenuJourney] SIZE requested=(320, 740) actual=(320, 740)
+[CompleteMenuJourney] TAP Landing_time_trial window=(320, 740)
+SCRIPT ERROR: Assertion failed: Touch target is smaller than 48dp: Landing_time_trial
+          at: _tap (res://scripts/tests/kart_complete_menu_journey.gd:34)
+          GDScript backtrace (most recent call first):
+              [0] _tap (res://scripts/tests/kart_complete_menu_journey.gd:34)
+              [1] _settle (res://scripts/tests/kart_complete_menu_journey.gd:19)
+SCRIPT ERROR: Assertion failed.
+          at: _run (res://scripts/tests/kart_complete_menu_journey.gd:74)
+          GDScript backtrace (most recent call first):
+              [0] _run (res://scripts/tests/kart_complete_menu_journey.gd:74)
+              [1] _tap (res://scripts/tests/kart_complete_menu_journey.gd:34)
+              [2] _settle (res://scripts/tests/kart_complete_menu_journey.gd:19)

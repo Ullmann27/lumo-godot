@@ -13,7 +13,7 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 
-func _settle(frames := 10) -> void:
+func _settle(frames := 3) -> void:
 	for index in range(frames):
 		await process_frame
 	await RenderingServer.frame_post_draw
@@ -26,6 +26,7 @@ func _tap(control: Control) -> void:
 			ancestor.ensure_control_visible(control)
 		ancestor = ancestor.get_parent()
 	await _settle()
+	print("[CompleteMenuJourney] TAP ", control.name, " window=", root.size)
 	var rect := control.get_global_rect()
 	assert(control.is_visible_in_tree(), "Journey tried an invisible control")
 	assert(root.get_visible_rect().grow(1).encloses(rect), "Control must fit before a real tap: " + str(control.name))
@@ -55,17 +56,20 @@ func _run() -> void:
 	assert(DisplayServer.get_name() != "headless")
 	DirAccess.make_dir_recursive_absolute(output)
 	for dimensions in [Vector2i(640, 360), Vector2i(320, 740), Vector2i(840, 960), Vector2i(1280, 720)]:
-		root.size = dimensions
 		game = load("res://scenes/games/kart_island.tscn").instantiate()
 		game.lightweight = true
 		root.add_child(game)
 		game.set_physics_process(false)
+		await _settle(6)
+		root.size = dimensions
+		await _settle(6)
+		print("[CompleteMenuJourney] SIZE requested=", dimensions, " actual=", root.size)
 		game.reduced_motion = true
 		game.garage.reduced_motion = true
 		game.garage.stars = 60 # Explicit render/unlock fixture, no child progress write.
 		game.garage._refresh()
 		game._show_reference_landing()
-		await _settle(20)
+		await _settle(6)
 		await _tap(game.reference_landing.find_child("Landing_time_trial", true, false))
 		assert(game.garage.setup.mode == "time_trial")
 		await _tap(game.reference_landing.find_child("Landing_settings", true, false))
