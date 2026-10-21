@@ -241,11 +241,13 @@ func _add_choice(container: GridContainer, id: String, heading: String,
 
 
 func _choose(id: String) -> void:
-	current_mode = id
+	# Navigation and track cards must not overwrite the chosen race mode.
+	if id in ["cup", "time_trial"]:
+		current_mode = id
 	for key in _menu_buttons.keys():
 		var button := _menu_buttons[key] as Button
 		button.add_theme_stylebox_override("normal",
-			THEME.premium_panel(GOLD if key == id else CYAN, key == id))
+			THEME.premium_panel(GOLD if key == current_mode else CYAN, key == current_mode))
 	if id == "settings":
 		open_settings.emit()
 	else:

@@ -270,6 +270,7 @@ var saved_session_available: bool = false
 var session_config := ConfigFile.new()
 var graphics_profile: String = "high"
 var menu_settings_open: bool = false
+var menu_settings_navigation: HBoxContainer
 var previous_scale := Vector2i(720, 1280)
 var previous_size := Vector2i(720, 1280)
 var previous_orientation: int = DisplayServer.SCREEN_PORTRAIT
@@ -556,7 +557,7 @@ func _show_garage() -> void:
 	# Art-directed landing is the first screen in an actual Android launch.
 	# Keep CLI headless gameplay tests deterministic and unchanged.
 	if not OS.get_cmdline_args().has("--script"):
-		_show_reference_landing()
+		_show_reference_landing(not setup_snapshot.is_empty())
 	if not intro_done:
 		intro_done = true
 		if _intro_wanted():
@@ -574,7 +575,9 @@ func _show_reference_landing(preserve_setup: bool = false) -> void:
 		reference_landing.queue_free()
 	reference_landing = REFERENCE_LANDING.new()
 	reference_landing.total_stars = ProgressStore.total_stars()
-	reference_landing.current_mode = _known_mode(str(garage.setup.mode)) if preserve_setup else "cup"
+	if not preserve_setup:
+		garage.setup.mode = "cup"
+	reference_landing.current_mode = _known_mode(str(garage.setup.mode))
 	reference_landing.mode_selected.connect(_reference_select_mode)
 	reference_landing.quick_start.connect(_reference_quick_start)
 	reference_landing.open_settings.connect(_reference_open_settings)
@@ -622,10 +625,9 @@ func _reference_open_settings() -> void:
 	modal_column.add_child(_label("Deine Kart-Einstellungen", 28))
 	modal_column.add_child(_label("Ton, Steuerung und Darstellung für deine nächste Fahrt.", 18))
 	_append_preferences()
-	var close := _button("Zurück zum Kart-Menü", _close_menu_settings, Color("166580"))
-	close.name = "CloseKartSettings"
-	modal_column.add_child(close)
+	menu_settings_navigation.show()
 	modal.show()
+	modal_backdrop.move_to_front()
 	modal.move_to_front()
 	_apply_responsive_layout()
 	_apply_responsive_layout.call_deferred()
@@ -633,6 +635,7 @@ func _reference_open_settings() -> void:
 
 func _close_menu_settings() -> void:
 	menu_settings_open = false
+	menu_settings_navigation.hide()
 	modal.hide()
 
 
@@ -1060,6 +1063,14 @@ func _build_ui() -> void:
 		button.custom_minimum_size.y = 76
 		pause_navigation.add_child(button)
 	pause_navigation.hide()
+	menu_settings_navigation = HBoxContainer.new()
+	menu_settings_navigation.name = "MenuSettingsNavigation"
+	var settings_close := _button("Zurück zum Kart-Menü", _close_menu_settings, Color("166580"))
+	settings_close.name = "CloseKartSettings"
+	settings_close.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	menu_settings_navigation.add_child(settings_close)
+	modal_body.add_child(menu_settings_navigation)
+	menu_settings_navigation.hide()
 	modal.hide()
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	_update_safe_area()
@@ -2609,6 +2620,7 @@ func _pause() -> void:
 	_save_session()
 	_clear_column(modal_column)
 	modal_scroll.scroll_vertical = 0
+	menu_settings_navigation.hide()
 	pause_navigation.show()
 	modal_column.add_child(_label("Eine kleine Pause", 28))
 	modal_column.add_child(_label("Dein Rennen wartet. Du kannst später hier weiterfahren.", 19))
@@ -2635,7 +2647,8 @@ func _append_preferences() -> void:
 				player.reduced_motion = reduced_motion
 			if is_instance_valid(garage):
 				garage.reduced_motion = reduced_motion
-				garage.preview_kart.reduced_motion = reduced_motion
+				if is_instance_valid(garage.preview_kart):
+					garage.preview_kart.reduced_motion = reduced_motion
 			motion.text = "Ruhige Bewegung: an" if reduced_motion else "Ruhige Bewegung: aus"
 			_save_preferences()
 	)
