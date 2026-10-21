@@ -16,3 +16,46 @@ WARNING: Volumetric fog is only available when using the Forward+ renderer.
 [Progress] no save file (first run) - starting fresh
 [Kart] Holographic garage ready: five modes, twelve worlds, free steering
 [Perf] quality_profile:medium
+[CompleteMenuJourney] SIZE requested=(640, 360) actual=(640, 360)
+[CompleteMenuJourney] TAP Landing_time_trial window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (334.0, 424.0), S: (292.0, 152.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP Landing_settings window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (24.0, 424.0), S: (294.0, 152.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP AudioToggle window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (50.0, 323.0), S: (1172.0, 116.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP GraphicsProfileToggle window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (50.0, 444.0), S: (1172.0, 116.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP GasModeToggle window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (50.0, 444.0), S: (1172.0, 116.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP CloseKartSettings window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (34.0, 570.0), S: (1212.0, 116.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP Landing_garage window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (642.0, 160.0), S: (600.0, 304.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@51 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 127.0), S: (242.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@1646 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 346.0), S: (472.0, 104.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@52 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (267.0, 184.0), S: (243.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@2180 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 402.0), S: (472.0, 104.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@53 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (518.0, 127.0), S: (243.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP KartCard_gecko_velo window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 440.0), S: (472.0, 148.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@54 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (769.0, 127.0), S: (243.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@3683 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 289.0), S: (472.0, 104.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@55 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (1020.0, 127.0), S: (243.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@4291 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 289.0), S: (472.0, 104.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 607.0), S: (296.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 607.0), S: (296.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 607.0), S: (296.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 607.0), S: (296.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
