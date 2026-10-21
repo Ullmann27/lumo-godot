@@ -29,6 +29,7 @@ func _tap(control: Control) -> void:
 	print("[CompleteMenuJourney] TAP ", control.name, " window=", root.size)
 	var rect := control.get_global_rect()
 	assert(control.is_visible_in_tree(), "Journey tried an invisible control")
+	print("[CompleteMenuJourney] BOUNDS ", rect, " viewport=", root.get_visible_rect())
 	assert(root.get_visible_rect().grow(1).encloses(rect), "Control must fit before a real tap: " + str(control.name))
 	var scale: Vector2 = Vector2(root.size) / root.get_visible_rect().size
 	assert(rect.size.y * scale.y >= 47.9, "Touch target is smaller than 48dp: " + str(control.name))

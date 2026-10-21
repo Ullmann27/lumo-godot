@@ -302,15 +302,15 @@ func _layout() -> void:
 	var main_modes := _control_column.get_node("RealRaceModeChoices") as GridContainer
 	var extra_modes := _control_column.get_node("RealGameOptions") as GridContainer
 	main_modes.columns = 2 if landscape or size_now.x >= 480 else 1
-	extra_modes.columns = 3 if landscape else (2 if size_now.x >= 480 else 1)
+	extra_modes.columns = 3 if landscape and size_now.x >= 900 else (2 if landscape or size_now.x >= 480 else 1)
 	# Preserve a large cinematic fox on landscape, but avoid giant cropped
 	# hero imagery and invisible controls on a portrait Android surface.
 	_split.size_flags_vertical = Control.SIZE_EXPAND_FILL if landscape else Control.SIZE_FILL
 	_control_column.size_flags_vertical = Control.SIZE_EXPAND_FILL if landscape else Control.SIZE_FILL
 	_hero.size_flags_vertical = Control.SIZE_EXPAND_FILL if landscape else Control.SIZE_FILL
 	_split.move_child(_control_column if landscape else _hero, 0)
-	_control_column.custom_minimum_size.x = clampf(size_now.x * 0.46, 345.0, 570.0) if landscape else 0.0
-	_hero.custom_minimum_size.x = clampf(size_now.x * 0.42, 300.0, 585.0) if landscape else 0.0
+	_control_column.custom_minimum_size.x = clampf(size_now.x * 0.46, 240.0, 570.0) if landscape else 0.0
+	_hero.custom_minimum_size.x = clampf(size_now.x * 0.42, 220.0, 585.0) if landscape else 0.0
 	_hero.custom_minimum_size.y = (
 		clampf(size_now.y * 0.76, 320, 620) if landscape
 		else clampf(size_now.y * 0.34, 220, 390)
