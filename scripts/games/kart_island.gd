@@ -1315,8 +1315,11 @@ func _apply_responsive_layout() -> void:
 
 
 func _apply_ui_scale(control: Node, ui_scale: float) -> void:
-	# The garage owns its responsive typography and preview sizing.
-	if control == garage:
+	# Both live Garage and the reference landing have their own dedicated
+	# device-dp responsive layout. Recursing over their children would multiply
+	# the same minimum sizes a second time whenever settings are opened.
+	# The 320x740 journey caught a 296dp tile expanding to 1184dp.
+	if control == garage or control == reference_landing:
 		return
 	if control is Control:
 		var ui_control: Control = control
