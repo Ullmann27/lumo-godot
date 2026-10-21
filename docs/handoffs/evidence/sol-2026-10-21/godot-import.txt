@@ -1583,3 +1583,333 @@ Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
 [  61% ] [90m[1mreimport[22m | mask_12.png[39m[0m
 [  61% ] [90m[1mreimport[22m | mask_12.png[39m[0m
 [  61% ] [90m[1mreimport[22m | mask_11.png[39m[0m
+[  61% ] [90m[1mreimport[22m | mask_11.png[39m[0m
+[  61% ] [90m[1mreimport[22m | mask_10.png[39m[0m
+[  61% ] [90m[1mreimport[22m | mask_10.png[39m[0m
+[  61% ] [90m[1mreimport[22m | mask_10.png[39m[0m
+[  62% ] [90m[1mreimport[22m | mask_09.png[39m[0m
+[  62% ] [90m[1mreimport[22m | mask_09.png[39m[0m
+[  62% ] [90m[1mreimport[22m | 50835.jpeg[39m[0m
+[  62% ] [90m[1mreimport[22m | 49717.jpeg[39m[0m
+[  62% ] [90m[1mreimport[22m | 49717.jpeg[39m[0m
+[  62% ] [90m[1mreimport[22m | turtle-material.jpg[39m[0m
+[  62% ] [90m[1mreimport[22m | turtle-material.jpg[39m[0m
+[  62% ] [90m[1mreimport[22m | turtle-material.jpg[39m[0m
+[  62% ] [90m[1mreimport[22m | turtle-front.jpg[39m[0m
+[  63% ] [90m[1mreimport[22m | squirrel-material.jpg[39m[0m
+[  63% ] [90m[1mreimport[22m | squirrel-material.jpg[39m[0m
+[  63% ] [90m[1mreimport[22m | squirrel-material.jpg[39m[0m
+[  63% ] [90m[1mreimport[22m | squirrel-front.jpg[39m[0m
+[  63% ] [90m[1mreimport[22m | rabbit-material.jpg[39m[0m
+[  63% ] [90m[1mreimport[22m | rabbit-front.jpg[39m[0m
+[  64% ] [90m[1mreimport[22m | owl-material.jpg[39m[0m
+[  64% ] [90m[1mreimport[22m | owl-front.jpg[39m[0m
+[  64% ] [90m[1mreimport[22m | lion-material.jpg[39m[0m
+[  64% ] [90m[1mreimport[22m | lion-front.jpg[39m[0m
+[  64% ] [90m[1mreimport[22m | 10_interaction_app_behavior_sheet.png[39m[0m
+[  65% ] [90m[1mreimport[22m | 09_turnaround_rotation_sheet.png[39m[0m
+[  65% ] [90m[1mreimport[22m | 08_jump_hop_keyposes.png[39m[0m
+[  65% ] [90m[1mreimport[22m | 07_walk_cycle_keyposes.png[39m[0m
+[  65% ] [90m[1mreimport[22m | 06_gesture_arm_pose_sheet.png[39m[0m
+[  65% ] [90m[1mreimport[22m | 05_eye_blink_sheet.png[39m[0m
+[  66% ] [90m[1mreimport[22m | 04_mouth_viseme_sheet.png[39m[0m
+[  66% ] [90m[1mreimport[22m | 03_facial_expression_sheet.png[39m[0m
+[  66% ] [90m[1mreimport[22m | 02_orthographic_model_sheet.png[39m[0m
+[  66% ] [90m[1mreimport[22m | 02_orthographic_model_sheet.png[39m[0m
+[  66% ] [90m[1mreimport[22m | 01_master_character_sheet.png[39m[0m
+[  66% ] [90m[1mreimport[22m | 01_master_character_sheet.png[39m[0m
+[  66% ] [90m[1mreimport[22m | number_billboard_15.png[39m[0m
+[  67% ] [90m[1mreimport[22m | number_billboard_10.png[39m[0m
+[  67% ] [90m[1mreimport[22m | number_billboard_05.png[39m[0m
+[  67% ] [90m[1mreimport[22m | crystal_billboard_26.png[39m[0m
+[  67% ] [90m[1mreimport[22m | crystal_billboard_21.png[39m[0m
+[  67% ] [90m[1mreimport[22m | crystal_billboard_16.png[39m[0m
+[  68% ] [90m[1mreimport[22m | crystal_billboard_11.png[39m[0m
+[  68% ] [90m[1mreimport[22m | crystal_billboard_06.png[39m[0m
+[  68% ] [90m[1mreimport[22m | crystal_billboard_01.png[39m[0m
+[  68% ] [90m[1mreimport[22m | book_billboard_24.png[39m[0m
+[  69% ] [90m[1mreimport[22m | book_billboard_19.png[39m[0m
+[  69% ] [90m[1mreimport[22m | book_billboard_14.png[39m[0m
+[  69% ] [90m[1mreimport[22m | book_billboard_09.png[39m[0m
+[  69% ] [90m[1mreimport[22m | book_billboard_04.png[39m[0m
+[  69% ] [90m[1mreimport[22m | sandstone.webp[39m[0m
+[  70% ] [90m[1mreimport[22m | volcano.webp[39m[0m
+[  70% ] [90m[1mreimport[22m | moonlight.webp[39m[0m
+[  70% ] [90m[1mreimport[22m | candy.webp[39m[0m
+[  70% ] [90m[1mreimport[22m | lumo_treasure_chest_wood_grain.png[39m[0m
+[  70% ] [90m[1mreimport[22m | 50839.jpeg[39m[0m
+[  71% ] [90m[1mreimport[22m | 50838.jpeg[39m[0m
+[  71% ] [90m[1mreimport[22m | 50837.jpeg[39m[0m
+[  71% ] [90m[1mreimport[22m | 50836.jpeg[39m[0m
+[  71% ] [90m[1mreimport[22m | grass_magic_albedo.png[39m[0m
+[  71% ] [90m[1mreimport[22m | grass_deep_albedo.png[39m[0m
+[  72% ] [90m[1mreimport[22m | crystal_floor_albedo.png[39m[0m
+[  72% ] [90m[1mreimport[22m | cloud_soft_albedo.png[39m[0m
+[  72% ] [90m[1mreimport[22m | warm_safe.png[39m[0m
+[  72% ] [90m[1mreimport[22m | twilight_violet.png[39m[0m
+[  73% ] [90m[1mreimport[22m | sunrise_magic.png[39m[0m
+[  73% ] [90m[1mreimport[22m | soft_day.png[39m[0m
+[  73% ] [90m[1mreimport[22m | royal_night.png[39m[0m
+[  73% ] [90m[1mreimport[22m | portal_space.png[39m[0m
+[  73% ] [90m[1mreimport[22m | golden_clouds.png[39m[0m
+[  74% ] [90m[1mreimport[22m | forest_morning.png[39m[0m
+[  74% ] [90m[1mreimport[22m | dream_blue.png[39m[0m
+[  74% ] [90m[1mreimport[22m | cosmic_kids.png[39m[0m
+[  74% ] [90m[1mreimport[22m | candy_sky.png[39m[0m
+[  74% ] [90m[1mreimport[22m | aurora_green.png[39m[0m
+[  75% ] [90m[1mreimport[22m | portal_parent_05.png[39m[0m
+[  75% ] [90m[1mreimport[22m | portal_parent_04.png[39m[0m
+[  75% ] [90m[1mreimport[22m | portal_parent_03.png[39m[0m
+[  75% ] [90m[1mreimport[22m | portal_parent_02.png[39m[0m
+[  75% ] [90m[1mreimport[22m | portal_learn_04_emission.png[39m[0m
+[  76% ] [90m[1mreimport[22m | portal_learn_03_emission.png[39m[0m
+[  76% ] [90m[1mreimport[22m | portal_learn_02_emission.png[39m[0m
+[  76% ] [90m[1mreimport[22m | portal_learn_01_emission.png[39m[0m
+[  76% ] [90m[1mreimport[22m | portal_games_05_emission.png[39m[0m
+[  76% ] [90m[1mreimport[22m | portal_games_04_emission.png[39m[0m
+[  77% ] [90m[1mreimport[22m | portal_games_03_emission.png[39m[0m
+[  77% ] [90m[1mreimport[22m | portal_games_02_emission.png[39m[0m
+[  77% ] [90m[1mreimport[22m | portal_games_01_emission.png[39m[0m
+[  77% ] [90m[1mreimport[22m | hologrid_violet_emission.png[39m[0m
+[  78% ] [90m[1mreimport[22m | hologrid_cyan_emission.png[39m[0m
+[  78% ] [90m[1mreimport[22m | crystal_floor_emission.png[39m[0m
+[  78% ] [90m[1mreimport[22m | wood_warm_soft_albedo.png[39m[0m
+[  78% ] [90m[1mreimport[22m | wood_pastel_albedo.png[39m[0m
+[  78% ] [90m[1mreimport[22m | velvet_purple_3d_albedo.png[39m[0m
+[  79% ] [90m[1mreimport[22m | velvet_blue_3d_albedo.png[39m[0m
+[  79% ] [90m[1mreimport[22m | stone_warm_albedo.png[39m[0m
+[  79% ] [90m[1mreimport[22m | stone_blue_magic_albedo.png[39m[0m
+[  79% ] [90m[1mreimport[22m | hologrid_violet_albedo.png[39m[0m
+[  79% ] [90m[1mreimport[22m | hologrid_cyan_albedo.png[39m[0m
+[  80% ] [90m[1mreimport[22m | portal_games_04.png[39m[0m
+[  80% ] [90m[1mreimport[22m | portal_games_03.png[39m[0m
+[  80% ] [90m[1mreimport[22m | portal_games_02.png[39m[0m
+[  80% ] [90m[1mreimport[22m | portal_games_01.png[39m[0m
+[  80% ] [90m[1mreimport[22m | violet_particle_08.png[39m[0m
+[  81% ] [90m[1mreimport[22m | violet_particle_07.png[39m[0m
+[  81% ] [90m[1mreimport[22m | violet_particle_06.png[39m[0m
+[  81% ] [90m[1mreimport[22m | violet_particle_05.png[39m[0m
+[  81% ] [90m[1mreimport[22m | violet_particle_04.png[39m[0m
+[  82% ] [90m[1mreimport[22m | violet_particle_03.png[39m[0m
+[  82% ] [90m[1mreimport[22m | violet_particle_02.png[39m[0m
+[  82% ] [90m[1mreimport[22m | violet_particle_01.png[39m[0m
+[  82% ] [90m[1mreimport[22m | green_particle_08.png[39m[0m
+[  82% ] [90m[1mreimport[22m | green_particle_07.png[39m[0m
+[  83% ] [90m[1mreimport[22m | green_particle_06.png[39m[0m
+[  83% ] [90m[1mreimport[22m | green_particle_05.png[39m[0m
+[  83% ] [90m[1mreimport[22m | green_particle_04.png[39m[0m
+[  83% ] [90m[1mreimport[22m | green_particle_03.png[39m[0m
+[  83% ] [90m[1mreimport[22m | green_particle_02.png[39m[0m
+[  84% ] [90m[1mreimport[22m | green_particle_01.png[39m[0m
+[  84% ] [90m[1mreimport[22m | gold_particle_08.png[39m[0m
+[  84% ] [90m[1mreimport[22m | lumo_reference_manifest.csv[39m[0m
+[  84% ] [90m[1mreimport[22m | Nunito-Variable.ttf[39m[0m
+[  84% ] [90m[1mreimport[22m | Nunito-Bold.ttf[39m[0m
+[  85% ] [90m[1mreimport[22m | Nunito-Black.ttf[39m[0m
+[  85% ] [90m[1mreimport[22m | zauberwald.ogg[39m[0m
+[  85% ] [90m[1mreimport[22m | start.ogg[39m[0m
+[  85% ] [90m[1mreimport[22m | sonnenhafen.ogg[39m[0m
+[  85% ] [90m[1mreimport[22m | item.ogg[39m[0m
+[  86% ] [90m[1mreimport[22m | holo_city.ogg[39m[0m
+[  86% ] [90m[1mreimport[22m | garage.ogg[39m[0m
+[  86% ] [90m[1mreimport[22m | finish.ogg[39m[0m
+[  86% ] [90m[1mreimport[22m | drift.ogg[39m[0m
+[  87% ] [90m[1mreimport[22m | countdown.ogg[39m[0m
+[  87% ] [90m[1mreimport[22m | collision.ogg[39m[0m
+[  87% ] [90m[1mreimport[22m | boost.ogg[39m[0m
+[  87% ] [90m[1mreimport[22m | bergwelt.ogg[39m[0m
+[  87% ] [90m[1mreimport[22m | phantom.png[39m[0m
+[  88% ] [90m[1mreimport[22m | stella.png[39m[0m
+[  88% ] [90m[1mreimport[22m | terra.png[39m[0m
+[  88% ] [90m[1mreimport[22m | turbo.png[39m[0m
+[  88% ] [90m[1mreimport[22m | zuri_volt.png[39m[0m
+[  88% ] [90m[1mreimport[22m | icon_pulse.png[39m[0m
+[  89% ] [90m[1mreimport[22m | icon_shield.png[39m[0m
+[  89% ] [90m[1mreimport[22m | icon_wind.png[39m[0m
+[  89% ] [90m[1mreimport[22m | cinematic_hero.webp[39m[0m
+[  89% ] [90m[1mreimport[22m | garage_art.webp[39m[0m
+[  89% ] [90m[1mreimport[22m | grand_prix_art.webp[39m[0m
+[  90% ] [90m[1mreimport[22m | noa_tide.png[39m[0m
+[  90% ] [90m[1mreimport[22m | nala_comet.png[39m[0m
+[  90% ] [90m[1mreimport[22m | koloss.png[39m[0m
+[  90% ] [90m[1mreimport[22m | iva_aurora.png[39m[0m
+[  91% ] [90m[1mreimport[22m | glider.png[39m[0m
+[  91% ] [90m[1mreimport[22m | gecko_velo.png[39m[0m
+[  91% ] [90m[1mreimport[22m | comet.png[39m[0m
+[  91% ] [90m[1mreimport[22m | boru_rally.png[39m[0m
+[  91% ] [90m[1mreimport[22m | blitz.png[39m[0m
+[  92% ] [90m[1mreimport[22m | steering.svg[39m[0m
+[  92% ] [90m[1mreimport[22m | item.svg[39m[0m
+[  92% ] [90m[1mreimport[22m | gas.svg[39m[0m
+[  92% ] [90m[1mreimport[22m | drift.svg[39m[0m
+[  92% ] [90m[1mreimport[22m | brake.svg[39m[0m
+[  93% ] [90m[1mreimport[22m | boost.svg[39m[0m
+[  93% ] [90m[1mreimport[22m | celebrate.png[39m[0m
+[  93% ] [90m[1mreimport[22m | agree_nod.png[39m[0m
+[  93% ] [90m[1mreimport[22m | Lumo-Rivalen-Vorher.png[39m[0m
+[  93% ] [90m[1mreimport[22m | Lumo-Rivalen-Einzelreferenzen.png[39m[0m
+[  94% ] [90m[1mreimport[22m | world.svg[39m[0m
+[  94% ] [90m[1mreimport[22m | race.svg[39m[0m
+[  94% ] [90m[1mreimport[22m | practice.svg[39m[0m
+[  94% ] [90m[1mreimport[22m | lumo-world.webp[39m[0m
+[  94% ] [90m[1mreimport[22m | kart.svg[39m[0m
+[  95% ] [90m[1mreimport[22m | cup.svg[39m[0m
+[  95% ] [90m[1mreimport[22m | crystal_spire_high.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  95% ] [90m[1mreimport[22m | crystal_spire_mobile.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  95% ] [90m[1mreimport[22m | hanging_canopy_high.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  96% ] [90m[1mreimport[22m | hanging_canopy_mobile.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  96% ] [90m[1mreimport[22m | split_ledge_high.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  96% ] [90m[1mreimport[22m | split_ledge_mobile.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  96% ] [90m[1mreimport[22m | strata_shelf_high.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  96% ] [90m[1mreimport[22m | strata_shelf_mobile.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  97% ] [90m[1mreimport[22m | sonnenhafen_biolum_cavern_crystals_high.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  97% ] [90m[1mreimport[22m | sonnenhafen_biolum_cavern_crystals_mobile.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  97% ] [90m[1mreimport[22m | crystal_rosette_mobile.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  97% ] [90m[1mreimport[22m | crystal_rosette_high.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  97% ] [90m[1mreimport[22m | crystal_fan_mobile.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  98% ] [90m[1mreimport[22m | crystal_fan_high.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  98% ] [90m[1mreimport[22m | lumo_treasure_chest.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  98% ] [90m[1mreimport[22m | lumo_lantern.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  98% ] [90m[1mreimport[22m | Lumo-Animated-Mobile.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  98% ] [90m[1mreimport[22m | wave_pavilion_lod2.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  99% ] [90m[1mreimport[22m | wave_pavilion_lod1.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  99% ] [90m[1mreimport[22m | wave_pavilion_lod0.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  99% ] [90m[1mreimport[22m | lumo_kart_start_finish_gate_mobile.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  99% ] [90m[1mreimport[22m | Finalizing Asset Import...[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started (Re)Importing Assets (477 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Executing post-reimport operations...[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started Loading editor (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Loading editor layout...[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | Loading docks...[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m
