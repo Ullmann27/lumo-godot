@@ -84,13 +84,13 @@ func _build() -> void:
 		var logo := TextureRect.new()
 		logo.name = "OriginalLumoKartLogoArt"
 		logo.texture = logo_art
-		logo.custom_minimum_size = Vector2(175, 96)
+		logo.custom_minimum_size = Vector2(150, 72)
 		logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		header.add_child(logo)
 	else:
 		var logo_vector := WORDMARK.new()
-		logo_vector.custom_minimum_size = Vector2(175, 96)
+		logo_vector.custom_minimum_size = Vector2(150, 72)
 		header.add_child(logo_vector)
 	var gap := Control.new()
 	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -126,10 +126,10 @@ func _build() -> void:
 	_hero.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_hero.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_split.add_child(_hero)
-	var eyebrow := _caption("DEIN SONNENHAFEN-RENNABENTEUER", 18, CYAN)
+	var eyebrow := _caption("DEIN SONNENHAFEN-RENNABENTEUER", 15, CYAN)
 	eyebrow.name = "BrandEyebrow"
 	_control_column.add_child(eyebrow)
-	var title := _caption("Mit Lumo an den Start!", 34, Color.WHITE)
+	var title := _caption("Mit Lumo an den Start!", 29, Color.WHITE)
 	title.name = "KartLandingHeading"
 	_control_column.add_child(title)
 	var primary := GridContainer.new()
@@ -229,8 +229,10 @@ func _add_choice(container: GridContainer, id: String, heading: String,
 	label_group.alignment = BoxContainer.ALIGNMENT_END
 	label_group.add_theme_constant_override("separation", 2)
 	tile.add_child(label_group)
-	var head := _caption(heading, 23, Color.WHITE)
+	var head := _caption(heading, 16 if container.name == "RealGameOptions" else 21, Color.WHITE)
 	head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	head.autowrap_mode = TextServer.AUTOWRAP_OFF
+	head.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	label_group.add_child(head)
 	var sub := _caption(detail, 15, Color("d6efff"))
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -288,4 +290,4 @@ func _layout() -> void:
 	_hero.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	for id in _menu_buttons.keys():
 		var button := _menu_buttons[id] as Button
-		button.custom_minimum_size.y = (91 if size_now.y < 520 else 132) if landscape else (112 if phone else 132)
+		button.custom_minimum_size.y = (76 if size_now.y < 520 else (96 if size_now.y < 800 else 132)) if landscape else (112 if phone else 132)
