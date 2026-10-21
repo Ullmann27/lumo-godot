@@ -275,15 +275,7 @@ func _layout() -> void:
 	var window_dp: Vector2 = Vector2(get_window().size) / MobileRuntime.get_ui_density()
 	if window_dp.x <= 0 or window_dp.y <= 0 or size.x <= 0 or size.y <= 0:
 		return
-	# The real Kart host already scales safe_ui from dp into the Godot
-	# stretched canvas. This landing is nested beneath that transformed node.
-	# Scaling again by the full canvas/dp ratio breaks portrait/Fold layouts:
-	# at 320x740 it produces buttons wider than the entire 1280px canvas.
-	# Remove only the scale inherited from the parent, not the device density.
-	var canvas_per_dp := maxf(viewport_size.x / window_dp.x, viewport_size.y / window_dp.y)
-	var inherited := get_global_transform().get_scale()
-	var parent_scale := maxf(maxf(absf(inherited.x), absf(inherited.y)), 0.01)
-	var ui_scale := canvas_per_dp / parent_scale
+	var ui_scale := maxf(viewport_size.x / window_dp.x, viewport_size.y / window_dp.y)
 	var size_now: Vector2 = size / ui_scale
 	# Lay out in device-dp, then transform the complete native subtree into
 	# the project's stretched canvas. Fonts, corners and touch areas agree.
