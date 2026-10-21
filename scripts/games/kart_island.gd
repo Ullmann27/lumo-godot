@@ -269,6 +269,7 @@ var top_pause_button: Button
 var saved_session_available: bool = false
 var session_config := ConfigFile.new()
 var graphics_profile: String = "high"
+var menu_settings_open: bool = false
 var previous_scale := Vector2i(720, 1280)
 var previous_size := Vector2i(720, 1280)
 var previous_orientation: int = DisplayServer.SCREEN_PORTRAIT
@@ -549,6 +550,7 @@ func _show_garage() -> void:
 		garage.setup = restored
 	garage.start_requested.connect(_start_selected_race)
 	garage.resume_requested.connect(_resume_saved_race)
+	garage.main_menu_requested.connect(func(): _show_reference_landing(true))
 	garage.exit_requested.connect(_return_to_app)
 	safe_ui.add_child(garage)
 	# Art-directed landing is the first screen in an actual Android launch.
@@ -565,14 +567,14 @@ func _show_garage() -> void:
 			safe_ui.add_child(intro)
 
 
-func _show_reference_landing() -> void:
+func _show_reference_landing(preserve_setup: bool = false) -> void:
 	if not is_instance_valid(garage) or not is_instance_valid(safe_ui):
 		return
 	if is_instance_valid(reference_landing):
 		reference_landing.queue_free()
 	reference_landing = REFERENCE_LANDING.new()
 	reference_landing.total_stars = ProgressStore.total_stars()
-	reference_landing.current_mode = "cup"
+	reference_landing.current_mode = _known_mode(str(garage.setup.mode)) if preserve_setup else "cup"
 	reference_landing.mode_selected.connect(_reference_select_mode)
 	reference_landing.quick_start.connect(_reference_quick_start)
 	reference_landing.open_settings.connect(_reference_open_settings)
@@ -610,13 +612,41 @@ func _reference_select_mode(selected: String) -> void:
 
 
 func _reference_open_settings() -> void:
-	if not is_instance_valid(garage):
+	if not menu_active or not is_instance_valid(garage):
 		return
-	# Difficulty and accessibility controls already exist in the real setup.
-	garage.step = 4
-	_hide_reference_landing()
-	garage._refresh()
-	garage._apply_responsive_layout.call_deferred()
+	menu_settings_open = true
+	difficulty = str(garage.setup.difficulty)
+	_clear_column(modal_column)
+	modal_scroll.scroll_vertical = 0
+	pause_navigation.hide()
+	modal_column.add_child(_label("Deine Kart-Einstellungen", 28))
+	modal_column.add_child(_label("Ton, Steuerung und Darstellung für deine nächste Fahrt.", 18))
+	_append_preferences()
+	var close := _button("Zurück zum Kart-Menü", _close_menu_settings, Color("166580"))
+	close.name = "CloseKartSettings"
+	modal_column.add_child(close)
+	modal.show()
+	modal.move_to_front()
+	_apply_responsive_layout()
+	_apply_responsive_layout.call_deferred()
+
+
+func _close_menu_settings() -> void:
+	menu_settings_open = false
+	modal.hide()
+
+
+func _menu_back() -> void:
+	if menu_settings_open:
+		_close_menu_settings()
+	elif is_instance_valid(garage) and garage.handle_back():
+		return
+	elif is_instance_valid(reference_landing) and reference_landing.visible:
+		_return_to_world()
+	elif is_instance_valid(garage):
+		garage._back()
+	else:
+		_return_to_world()
 
 
 func _reference_quick_start() -> void:
@@ -624,7 +654,7 @@ func _reference_quick_start() -> void:
 		return
 	var selection: Dictionary = garage.setup.duplicate(true)
 	var requested: String = str(reference_landing.current_mode) if is_instance_valid(reference_landing) else "cup"
-	selection["mode"] = requested if requested in ["cup", "time_trial"] else "cup"
+	selection["mode"] = _known_mode(requested) if requested in MODE_IDS else _known_mode(str(garage.setup.mode))
 	_hide_reference_landing()
 	_start_selected_race(selection)
 
@@ -992,7 +1022,7 @@ func _build_ui() -> void:
 	modal.offset_bottom = 260
 	modal.add_theme_stylebox_override("panel", _style(Color("0b1b32"), 24))
 	safe_ui.add_child(modal)
-	modal.visibility_changed.connect(func(): modal_backdrop.visible = modal.visible and not menu_active)
+	modal.visibility_changed.connect(func(): modal_backdrop.visible = modal.visible)
 	modal_column = VBoxContainer.new()
 	modal_column.add_theme_constant_override("separation", 10)
 	# Settings and result buttons pass touch drags to their ScrollContainer.
@@ -2585,6 +2615,15 @@ func _pause() -> void:
 	modal_column.add_child(_button("Weiterfahren", _resume))
 	if mode == "training":
 		modal_column.add_child(_button("Training abschließen", _finish))
+	_append_preferences()
+	modal_column.add_child(_button("Neue Fahrt auswählen", _leave_race_for_menu))
+	modal_column.add_child(_button("Rennen abbrechen", _abandon, Color("3a4577")))
+	modal.show()
+	_apply_responsive_layout()
+	call_deferred("_apply_responsive_layout")
+
+
+func _append_preferences() -> void:
 	var motion := _button(
 		"Ruhige Bewegung: an (App)" if host_reduce_motion else ("Ruhige Bewegung: an" if reduced_motion else "Ruhige Bewegung: aus"), func(): pass
 	)
@@ -2592,10 +2631,15 @@ func _pause() -> void:
 		func():
 			preferred_reduced_motion = not preferred_reduced_motion
 			reduced_motion = preferred_reduced_motion or host_reduce_motion
-			player.reduced_motion = reduced_motion
+			if is_instance_valid(player):
+				player.reduced_motion = reduced_motion
+			if is_instance_valid(garage):
+				garage.reduced_motion = reduced_motion
+				garage.preview_kart.reduced_motion = reduced_motion
 			motion.text = "Ruhige Bewegung: an" if reduced_motion else "Ruhige Bewegung: aus"
 			_save_preferences()
 	)
+	motion.name = "MotionToggle"
 	motion.disabled = host_reduce_motion
 	modal_column.add_child(motion)
 	var sound := _button("Ton: aus (App)" if not host_sound_enabled else ("Ton: aus" if muted else "Ton: an"), func(): pass)
@@ -2605,6 +2649,7 @@ func _pause() -> void:
 			sound.text = "Ton: aus" if muted else "Ton: an"
 			_save_preferences()
 	)
+	sound.name = "AudioToggle"
 	sound.disabled = not host_sound_enabled
 	modal_column.add_child(sound)
 	var detail := _button("Grafik: " + {"high": "Hoch", "medium": "Ausgewogen", "low": "Leicht"}.get(graphics_profile, "Hoch"), func(): pass)
@@ -2613,9 +2658,16 @@ func _pause() -> void:
 			graphics_profile = {"high": "medium", "medium": "low", "low": "high"}.get(graphics_profile, "high")
 			lightweight = graphics_profile == "low"
 			_save_preferences()
-			_save_session()
-			_rebuild_graphics()
+			detail.text = "Grafik: " + {"high": "Hoch", "medium": "Ausgewogen", "low": "Leicht"}[graphics_profile]
+			if menu_active:
+				garage.graphics_profile = graphics_profile
+				garage.preview_signature = ""
+				garage._refresh_preview()
+			else:
+				_save_session()
+				_rebuild_graphics()
 	)
+	detail.name = "GraphicsProfileToggle"
 	modal_column.add_child(detail)
 	var challenge := _button(
 		"Tempo: gemütlich" if difficulty == "gemuetlich" else "Tempo: flott", func(): pass
@@ -2623,9 +2675,12 @@ func _pause() -> void:
 	challenge.pressed.connect(
 		func():
 			difficulty = "flott" if difficulty == "gemuetlich" else "gemuetlich"
+			if menu_active:
+				garage.setup.difficulty = difficulty
 			challenge.text = "Tempo: gemütlich" if difficulty == "gemuetlich" else "Tempo: flott"
 			_save_preferences()
 	)
+	challenge.name = "DifficultyToggle"
 	modal_column.add_child(challenge)
 	var gas_mode := _button("Gas: automatisch" if auto_gas else "Gas: GAS-Taste halten", func(): pass)
 	gas_mode.name = "GasModeToggle"
@@ -2643,12 +2698,6 @@ func _pause() -> void:
 	modal_column.add_child(_volume_row("Effekte", effects_volume, func(value: float):
 		effects_volume = value
 		_apply_volumes()))
-	modal_column.add_child(_button("Neue Fahrt auswählen", _leave_race_for_menu))
-	modal_column.add_child(_button("Rennen abbrechen", _abandon, Color("3a4577")))
-	modal.show()
-	_apply_responsive_layout()
-	call_deferred("_apply_responsive_layout")
-
 
 func _resume() -> void:
 	if menu_active:
@@ -3405,10 +3454,7 @@ func _notification(what: int) -> void:
 			intro.leave()
 			return
 		if menu_active:
-			# Die Werkstatt schließt sich zuerst; erst danach verlässt Zurück den Kart.
-			if is_instance_valid(garage) and garage.has_method("handle_back") and garage.handle_back():
-				return
-			_return_to_world()
+			_menu_back()
 		elif finished or paused:
 			_return_to_world()
 		else:

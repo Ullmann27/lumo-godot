@@ -1,6 +1,7 @@
 extends Control
 ## Accessible five-step setup with a live, lit 3D driver and kart preview.
 signal start_requested(setup: Dictionary)
+signal main_menu_requested
 signal resume_requested
 signal exit_requested(destination: String)
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
@@ -312,7 +313,7 @@ func _ready() -> void:
 	view_choice = OptionButton.new()
 	view_choice.name = "KartInspectionView"
 	view_choice.tooltip_text = "Dein Kart von allen Seiten ansehen"
-	view_choice.custom_minimum_size.y = 44
+	view_choice.custom_minimum_size.y = 48
 	for title in ["Rundum ansehen", "Vorne", "Links", "Hinten", "Rechts", "Von oben", "Lumos Gesicht"]:
 		view_choice.add_item(title)
 	view_choice.item_selected.connect(_choose_preview_view)
@@ -523,7 +524,7 @@ func _apply_responsive_layout() -> void:
 	# the compact welcome. Spieleauswahl retains the existing return route.
 	learn_button.visible = not compact_welcome
 	learn_button.text = "Lernen" if small else "Zum Lernen"
-	back_button.text = ("Spiele" if small else "Spieleauswahl") if step == 0 else "← Zurück"
+	back_button.text = ("Menü" if small else "Kart-Hauptmenü") if step == 0 else "← Zurück"
 	next_button.text = ("Losfahren →" if small else "Rennen starten →") if step == 4 else "Weiter →"
 	for child in footer.get_children():
 		if child is Button and child.name == "ResumeRace":
@@ -1221,7 +1222,7 @@ func _refresh() -> void:
 		)
 	elif step == 3 and setup.mode == "arena":
 		detail.text = "Frei fahren und Kristalle sammeln. Nach 90 Sekunden gewinnt die höchste Punktzahl."
-	back_button.text = "Spieleauswahl" if step == 0 else "← Zurück"
+	back_button.text = "Kart-Hauptmenü" if step == 0 else "← Zurück"
 	next_button.text = "Rennen starten →" if step == 4 else "Weiter →"
 	_refresh_preview()
 	_apply_responsive_layout.call_deferred()
@@ -1248,7 +1249,7 @@ func _next() -> void:
 
 func _back() -> void:
 	if step == 0:
-		exit_requested.emit("games")
+		main_menu_requested.emit()
 	else:
 		step -= 1
 		_refresh()
