@@ -7,6 +7,7 @@ const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const CHOICE = preload("res://scripts/games/kart_menu_choice.gd")
 const WORDMARK = preload("res://scripts/games/kart_wordmark.gd")
 const MENU_ART = preload("res://scripts/games/kart_menu_art.gd")
+const REFERENCE_LANDING = preload("res://scripts/games/kart_reference_landing.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
@@ -71,6 +72,7 @@ var body_column: VBoxContainer
 var header_row: HBoxContainer
 var kart_head_row: HBoxContainer
 var preview_container: SubViewportContainer
+var premium_hero_shell: PanelContainer
 var step_strip: HBoxContainer
 var step_buttons: Array[Button] = []
 var preview_world: Node3D
@@ -82,6 +84,7 @@ var quick_start_button: Button
 var _page_target_size := Vector2.ZERO
 var preview_idle_time: float = 0.0
 var _welcomed := false
+var reference_landing: Control
 
 
 func _ready() -> void:
@@ -90,6 +93,7 @@ func _ready() -> void:
 	theme = UI.create()
 	world_backdrop = TextureRect.new()
 	world_backdrop.name = "OriginalWorldFullBleed"
+	# Preserve the exact edge-cropped, production-tested original world atlas.
 	world_backdrop.texture = MENU_ART.world_texture()
 	world_backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	world_backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
@@ -103,6 +107,20 @@ func _ready() -> void:
 	var shade_material := ShaderMaterial.new()
 	shade_material.shader = shade
 	world_veil.material = shade_material
+	# Reference-inspired warm sunset glow over the original Sonnenhafen scenery.
+	# The real menu controls and 3D fox remain separate, interactive layers.
+	var sunset_shader := Shader.new()
+	sunset_shader.code = "shader_type canvas_item; void fragment() { vec2 p = UV; float halo = exp(-length((p - vec2(0.84, 0.30)) * vec2(1.45, 1.9)) * 3.1); float glow = exp(-length((p - vec2(0.48, 0.78)) * vec2(2.0, 2.2)) * 4.0); vec3 amber = vec3(1.0, 0.51, 0.20); vec3 cyan = vec3(0.07, 0.68, 0.92); COLOR = vec4(amber * halo * 0.39 + cyan * glow * 0.14, halo * 0.27 + glow * 0.06); }"
+	var sunset_material := ShaderMaterial.new()
+	sunset_material.shader = sunset_shader
+	var sunset := ColorRect.new()
+	sunset.name = "SonnenhafenGoldenHour"
+	sunset.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	sunset.material = sunset_material
+	add_child(sunset)
+	resized.connect(func(): _fit_sunset_layer(sunset))
+	item_rect_changed.connect(func(): _fit_sunset_layer(sunset))
+	call_deferred("_fit_sunset_layer", sunset)
 	world_veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(world_veil)
 	resized.connect(_layout_world_backdrop)
@@ -121,9 +139,9 @@ func _ready() -> void:
 	var header_shell := PanelContainer.new()
 	header_shell.name = "LumoPremiumHeader"
 	var header_style := StyleBoxFlat.new()
-	header_style.bg_color = Color(0.018, 0.14, 0.33, 0.0)
+	header_style.bg_color = Color(0.018, 0.10, 0.24, 0.79)
 	header_style.border_color = Color("53ddfd")
-	header_style.set_border_width_all(0)
+	header_style.set_border_width_all(1)
 	header_style.set_corner_radius_all(16)
 	header_style.set_content_margin_all(2)
 	header_shell.add_theme_stylebox_override("panel", header_style)
@@ -209,6 +227,7 @@ func _ready() -> void:
 	preview_title = _label("DEINE GARAGE", 16, Color("74e5f5"))
 	right.add_child(preview_title)
 	var viewport_panel := PanelContainer.new()
+	premium_hero_shell = viewport_panel
 	viewport_panel.add_theme_stylebox_override("panel", _clear_panel())
 	viewport_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	right.add_child(viewport_panel)
@@ -337,6 +356,60 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_apply_responsive_layout)
 	call_deferred("_apply_responsive_layout")
 	_refresh()
+	# The live Kart owner mounts the cinematic landing once above this
+	# five-step setup. Do not create a second overlay here: otherwise users
+	# could select a race but stay trapped behind the duplicate menu.
+	# The standalone _show_reference_landing helper remains for visual tests.
+
+
+func _show_reference_landing() -> void:
+	if is_instance_valid(reference_landing):
+		return
+	reference_landing = REFERENCE_LANDING.new()
+	reference_landing.total_stars = stars
+	reference_landing.mode_selected.connect(_choose_reference_mode)
+	reference_landing.quick_start.connect(_start_reference_race)
+	reference_landing.open_settings.connect(func(): SceneRouter.goto("parent"))
+	reference_landing.return_to_games.connect(func(): exit_requested.emit("games"))
+	add_child(reference_landing)
+	move_child(reference_landing, get_child_count() - 1)
+
+
+func _close_reference_landing() -> void:
+	if is_instance_valid(reference_landing):
+		reference_landing.queue_free()
+		reference_landing = null
+
+
+func _choose_reference_mode(mode_id: String) -> void:
+	match mode_id:
+		"cup":
+			setup["mode"] = "cup"
+			step = 1
+		"time_trial":
+			setup["mode"] = "time_trial"
+			step = 1
+		"sonnenhafen":
+			setup["track"] = "sonnenhafen"
+			step = 3
+		"garage":
+			step = 2
+		_:
+			return
+	_close_reference_landing()
+	_refresh()
+	_apply_responsive_layout()
+
+
+func _start_reference_race() -> void:
+	if is_instance_valid(reference_landing):
+		var selected_mode: String = str(reference_landing.current_mode)
+		if selected_mode in ["cup", "time_trial"]:
+			setup["mode"] = selected_mode
+		elif selected_mode == "sonnenhafen":
+			setup["track"] = "sonnenhafen"
+	_close_reference_landing()
+	start_requested.emit(setup.duplicate(true))
 
 
 func _apply_responsive_layout() -> void:
@@ -409,22 +482,24 @@ func _apply_responsive_layout() -> void:
 		clampf(window_size.x * 0.45, 280.0, 455.0) if panoramic
 		else (255.0 if short_landscape else 0.0)
 	) * ui_scale
+	# The portrait reference requires the complete 3D kart/fox hero above its choices.
+	# Keep its VBox intrinsically sized, rather than stretching over the next row.
 	var driver_hero: bool = portrait and step in [0, 1, 2]
 	var first: Control = setup_right if driver_hero else setup_left
 	if setup_row.get_child(0) != first:
 		setup_row.move_child(first, 0)
 	setup_right.size_flags_vertical = (
-		Control.SIZE_FILL if portrait else Control.SIZE_EXPAND_FILL
+		Control.SIZE_SHRINK_BEGIN if portrait else Control.SIZE_EXPAND_FILL
 	)
 	setup_row.add_theme_constant_override(
 		"h_separation", roundi((14 if compact else 28) * ui_scale)
 	)
-	setup_row.add_theme_constant_override("v_separation", roundi((14 if compact else 0) * ui_scale))
+	setup_row.add_theme_constant_override("v_separation", roundi((28 if driver_hero else (14 if compact else 0)) * ui_scale))
 	# A bounded vector wordmark retains both lines and the original flags,
 	# without letting font minimums expand the Android safe-area header.
 	_set_physical_minimum(brand_wordmark,
 		Vector2(82, 44) if short_landscape or tiny_portrait
-		else (Vector2(116, 66) if small else (Vector2(120, 64) if inset_landscape else (Vector2(148, 80) if balanced_landscape else Vector2(176, 100)))),
+		else (Vector2(116, 66) if small else (Vector2(120, 64) if inset_landscape else (Vector2(148, 80) if balanced_landscape else Vector2(256, 104)))),
 		ui_scale)
 	var ultra_short: bool = short_landscape and window_size.y < 360
 	var compact_welcome: bool = short_landscape and step == 0 and window_size.y < 440
@@ -542,6 +617,13 @@ func _apply_responsive_layout() -> void:
 	preview_caption.visible = (step == 0 and panoramic) or (step != 0 and not short_landscape and not small and not tight_kart_page)
 	preview_caption_panel.visible = preview_caption.visible
 	preview_title.visible = step != 0 and not short_landscape and not small and not tight_kart_page
+	if is_instance_valid(premium_hero_shell):
+		var hero_panel := _clear_panel()
+		# The welcome is a scenic stage, not a blue-bordered configuration window.
+		if step == 0:
+			hero_panel.set_border_width_all(0)
+			hero_panel.shadow_size = 0
+		premium_hero_shell.add_theme_stylebox_override("panel", hero_panel)
 	_set_physical_minimum(view_choice, Vector2(0, 44), ui_scale)
 	_set_physical_font(view_choice, 14 if short_landscape else 16, ui_scale)
 	view_choice.set_item_text(0, "Rundum" if short_landscape else "Rundum ansehen")
@@ -686,6 +768,13 @@ func _apply_responsive_layout() -> void:
 	call_deferred("_fit_welcome_camera")
 
 
+func _fit_sunset_layer(layer: ColorRect) -> void:
+	if not is_instance_valid(layer) or not is_instance_valid(world_backdrop):
+		return
+	layer.position = world_backdrop.position
+	layer.size = world_backdrop.size
+
+
 func _layout_world_backdrop() -> void:
 	if not is_inside_tree() or not is_instance_valid(world_backdrop):
 		return
@@ -738,6 +827,8 @@ func _fit_welcome_camera() -> void:
 		var point: Vector3 = local_from_world * world_point
 		var depth := maxf(0.1, -point.z)
 		required_tangent = maxf(required_tangent, maxf(absf(point.y) / depth, absf(point.x) / depth / aspect))
+	# Rings are decoration and must not make Lumo / the Kart look tiny.
+	# Preserve precise world-space fitting for the actual kart/fox silhouette.
 	for ring in stage_rings:
 		for sample in range(32):
 			var angle := TAU * sample / 32.0
@@ -872,7 +963,12 @@ func _text_only_glass(hovered: bool) -> StyleBoxFlat:
 
 func _clear_panel() -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0, 0, 0, 0)
+	style.bg_color = Color(0.008, 0.027, 0.085, 0.22)
+	style.border_color = Color(0.30, 0.88, 1.0, 0.76)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(25)
+	style.shadow_color = Color(0.03, 0.75, 1.0, 0.16)
+	style.shadow_size = 8
 	style.set_content_margin_all(0)
 	return style
 
@@ -905,12 +1001,12 @@ func _mode_glass(mode_id: String, selected: bool) -> StyleBoxFlat:
 		"race": Color("117d9e"),
 		"time_trial": Color("17499d"),
 		"arena": Color("633096"),
-		"cup": Color("12294f"),
+		"cup": Color("755215"),
 		"training": Color("102846")
 	}.get(mode_id, Color("183857"))
 	style.bg_color = base.lightened(0.10) if selected else base
 	style.bg_color.a = 0.94 if selected else 0.88
-	style.border_color = Color("aaffff") if selected else base.lightened(0.42)
+	style.border_color = Color("ffe69a") if selected and mode_id == "cup" else (Color("aaffff") if selected else base.lightened(0.42))
 	style.set_border_width_all(2 if selected else 1)
 	style.set_corner_radius_all(16)
 	# The card itself already has custom inner margins. An extra 8 px on ALL

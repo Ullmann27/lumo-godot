@@ -1,0 +1,119 @@
+name: Lumo Next Gen visual smoke and real Kart screenshots
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/lumo-nextgen-design-smoke.yml
+      - scripts/games/game_hub.gd
+      - scripts/games/kart_ui_theme.gd
+      - scripts/games/kart_garage_menu.gd
+      - scripts/games/kart_reference_landing.gd
+      - scripts/tests/kart_reference_landing_visual.gd
+      - scripts/tests/kart_reference_host_visual.gd
+      - scripts/games/kart_island.gd
+      - assets/kart/landing/**
+      - scripts/tests/kart_nextgen_ui_smoke.gd
+      - scripts/tests/kart_nextgen_ui_capture.gd
+
+permissions:
+  contents: read
+
+jobs:
+  nextgen-visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import project and reject GDScript errors
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --editor --import --quit > nextgen-import.log 2>&1
+          cat nextgen-import.log
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' nextgen-import.log; then exit 1; fi
+      - name: Check original Lumo and interactive premium routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log nextgen-smoke.log --timeout 90 --required '[KartNextGenUI] PASS:' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy \
+            --path . --script res://scripts/tests/kart_nextgen_ui_smoke.gd
+      - name: Render real Kart main menu across three display sizes
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p exports/nextgen-ui
+          python3 tools/run_godot_probe.py \
+            --log nextgen-capture.log --timeout 180 --required '[AAAMenuCapture] PASS:' -- \
+            xvfb-run -a -s '-screen 0 2500x2500x24' \
+            Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy \
+            --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_aaa_menu_capture.gd \
+            -- --output=res://exports/nextgen-ui
+          test "$(find exports/nextgen-ui -name 'menu-*.png' | wc -l)" -eq 3
+      - name: Render actual Lumo games hub in landscape and Fold
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log nextgen-hub-capture.log --timeout 120 --required '[NextGenHub] PASS:' -- \
+            xvfb-run -a -s '-screen 0 2500x2500x24' \
+            Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy \
+            --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_nextgen_ui_capture.gd
+          test "$(find exports/nextgen-ui -name 'spielewelt-*.png' | wc -l)" -eq 2
+      - name: Render reference-layer menu and test real buttons
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log reference-landing.log --timeout 120 --required '[ReferenceLanding] PASS:' -- \
+            xvfb-run -a -s '-screen 0 2500x2500x24' \
+            Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy \
+            --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_reference_landing_visual.gd
+          test "$(find exports/nextgen-ui -name 'referenz-landing-*.png' | wc -l)" -eq 2
+      - name: Exercise reference UI inside the real playable Kart scene
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log reference-host.log --timeout 120 --required '[ReferenceHost] PASS:' -- \
+            xvfb-run -a -s '-screen 0 2500x2500x24' \
+            Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy \
+            --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_reference_host_visual.gd
+          test "$(find exports/nextgen-ui -name 'host-landing-*.png' | wc -l)" -eq 2
+      - name: Preserve honest screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-nextgen-kart-real-render-and-tests
+          path: |
+            exports/nextgen-ui/
+            nextgen-import.log
+            nextgen-smoke.log
+            nextgen-capture.log
+            nextgen-hub-capture.log
+            reference-landing.log
+            reference-host.log
+          retention-days: 20
