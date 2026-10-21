@@ -24,32 +24,14 @@ WARNING: Volumetric fog is only available when using the Forward+ renderer.
 [CompleteMenuJourney] TAP GasModeToggle window=(640, 360)
 [CompleteMenuJourney] TAP CloseKartSettings window=(640, 360)
 [CompleteMenuJourney] TAP Landing_garage window=(640, 360)
-[CompleteMenuJourney] TAP @Button@51 window=(640, 360)
-[CompleteMenuJourney] TAP @Button@1645 window=(640, 360)
-[CompleteMenuJourney] TAP @Button@52 window=(640, 360)
-[CompleteMenuJourney] TAP @Button@2170 window=(640, 360)
-[CompleteMenuJourney] TAP @Button@53 window=(640, 360)
-[CompleteMenuJourney] TAP KartCard_gecko_velo window=(640, 360)
-[CompleteMenuJourney] TAP @Button@54 window=(640, 360)
-[CompleteMenuJourney] TAP @Button@3330 window=(640, 360)
-[CompleteMenuJourney] TAP @Button@55 window=(640, 360)
-[CompleteMenuJourney] TAP @Button@3979 window=(640, 360)
-[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
-[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
-[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
-[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
-[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
-[Kart] Holographic garage ready: five modes, twelve worlds, free steering
-[CompleteMenuJourney] SIZE requested=(320, 740) actual=(320, 740)
-[CompleteMenuJourney] TAP Landing_time_trial window=(320, 740)
-SCRIPT ERROR: Assertion failed: Touch target is smaller than 48dp: Landing_time_trial
-          at: _tap (res://scripts/tests/kart_complete_menu_journey.gd:34)
+SCRIPT ERROR: Assertion failed: Control must fit before a real tap: Landing_garage
+          at: _tap (res://scripts/tests/kart_complete_menu_journey.gd:32)
           GDScript backtrace (most recent call first):
-              [0] _tap (res://scripts/tests/kart_complete_menu_journey.gd:34)
+              [0] _tap (res://scripts/tests/kart_complete_menu_journey.gd:32)
               [1] _settle (res://scripts/tests/kart_complete_menu_journey.gd:19)
 SCRIPT ERROR: Assertion failed.
-          at: _run (res://scripts/tests/kart_complete_menu_journey.gd:74)
+          at: _run (res://scripts/tests/kart_complete_menu_journey.gd:101)
           GDScript backtrace (most recent call first):
-              [0] _run (res://scripts/tests/kart_complete_menu_journey.gd:74)
-              [1] _tap (res://scripts/tests/kart_complete_menu_journey.gd:34)
+              [0] _run (res://scripts/tests/kart_complete_menu_journey.gd:101)
+              [1] _tap (res://scripts/tests/kart_complete_menu_journey.gd:32)
               [2] _settle (res://scripts/tests/kart_complete_menu_journey.gd:19)
