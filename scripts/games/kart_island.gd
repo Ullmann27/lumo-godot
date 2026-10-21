@@ -590,12 +590,17 @@ func _reference_select_mode(selected: String) -> void:
 		return
 	match selected:
 		"cup", "time_trial":
+			# Selecting the race mode must NOT throw the child back into the
+			# old five-step wizard. The new illustrated menu owns this route;
+			# its big START button starts the real selected race.
 			garage.setup["mode"] = selected
-			garage.step = 0
+			return
 		"sonnenhafen":
 			garage.setup["track"] = "sonnenhafen"
-			garage.step = 3
+			return
 		"garage":
+			# Only an explicit Garage choice opens the existing live 3D
+			# vehicle/driver customizer. No functionality is discarded.
 			garage.step = 2
 		_:
 			return
