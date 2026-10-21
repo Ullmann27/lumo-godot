@@ -282,7 +282,7 @@ func _layout() -> void:
 	# Remove only the scale inherited from the parent, not the device density.
 	var canvas_per_dp := maxf(viewport_size.x / window_dp.x, viewport_size.y / window_dp.y)
 	var inherited := get_global_transform().get_scale()
-	var parent_scale := maxf(absf(inherited.x), absf(inherited.y), 0.01)
+	var parent_scale := maxf(maxf(absf(inherited.x), absf(inherited.y)), 0.01)
 	var ui_scale := canvas_per_dp / parent_scale
 	var size_now: Vector2 = size / ui_scale
 	# Lay out in device-dp, then transform the complete native subtree into
