@@ -36,13 +36,13 @@ func _run() -> void:
 	assert(card != null)
 	card.pressed.emit()
 	assert(game.garage.setup.mode == "time_trial", "Time trial failed to enter real game setup")
-	assert(not landing.visible, "Selected real mode must reveal original setup")
+	assert(landing.visible, "Selecting a mode must stay in the premium menu until START")
 	game._show_reference_landing()
 	await _settle()
 	landing = game.reference_landing
 	(landing.find_child("Landing_sonnenhafen", true, false) as Button).pressed.emit()
-	assert(game.garage.step == 3 and game.garage.setup.track == "sonnenhafen",
-		"Original real Sonnenhafen track route lost")
+	assert(game.garage.setup.track == "sonnenhafen" and landing.visible,
+		"Selecting Sonnenhafen must not throw the player back into the old wizard")
 	game._show_reference_landing()
 	await _settle()
 	landing = game.reference_landing
@@ -60,7 +60,13 @@ func _run() -> void:
 			var file := "host-landing-%dx%d.png" % [dimensions.x, dimensions.y]
 			assert(image.save_png(destination + file) == OK)
 			print("[ReferenceHost] SCREENSHOT ", destination + file)
+	(landing.find_child("LiveQuickStart", true, false) as Button).pressed.emit()
+	await _settle()
+	assert(not game.menu_active and game.mode == "cup",
+		"The selected premium START must directly launch the real Kart race")
+	assert(is_instance_valid(game.player) and game.opponents.size() == 5,
+		"Premium START must initialize a real kart and competitors")
 	game.queue_free()
 	await _settle()
-	print("[ReferenceHost] PASS: production game mounts real art; Cup/Time/Sonnenhafen setup and buttons connected")
+	print("[ReferenceHost] PASS: brand-consistent modes, live premium START, 3D Kart race and navigation")
 	quit(0)
