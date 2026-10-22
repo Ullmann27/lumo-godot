@@ -293,16 +293,32 @@ func _layout() -> void:
 	var content := _scroll.get_child(0) as VBoxContainer
 	var desired := minf(size_now.x - 24, 1240.0 if landscape else 580.0)
 	content.custom_minimum_size.x = desired
-	# Fill the actual physical viewport in landscape. The previous VBox
-	# occupied only its intrinsic ~370px height on a 720px screen.
-	content.custom_minimum_size.y = maxf(0.0, size_now.y - 16.0) if landscape else 0.0
+	# The persistent START/return bar takes its own row below the scroll area.
+	# Landscape content may only fill what remains above it; filling the full
+	# screen height pushed the lower choice row and its captions under START
+	# (Android CI, 2400x1080 at 420 dpi).
+	var available := maxf(
+		0.0,
+		size_now.y - 16.0 - _action_bar.get_combined_minimum_size().y
+		- float(_shell.get_theme_constant("separation"))
+	)
+	var compact := landscape and available < 330.0
+	var logo := content.get_node("LogoAndLiveProgress").get_child(0) as Control
+	logo.custom_minimum_size = Vector2(118, 48) if compact else Vector2(150, 72)
+	var eyebrow := _control_column.get_node("BrandEyebrow") as Label
+	eyebrow.visible = not compact
+	var heading := _control_column.get_node("KartLandingHeading") as Label
+	heading.add_theme_font_size_override("font_size", 23 if compact else 29)
+	content.custom_minimum_size.y = available if landscape else 0.0
 	_split.columns = 2 if landscape else 1
 	# A three-column card row has a native minimum width > portrait phones.
 	# Its oversized minimum was centering the fox outside the visible viewport.
 	var main_modes := _control_column.get_node("RealRaceModeChoices") as GridContainer
 	var extra_modes := _control_column.get_node("RealGameOptions") as GridContainer
 	main_modes.columns = 2 if landscape or size_now.x >= 480 else 1
-	extra_modes.columns = 3 if landscape and size_now.x >= 900 else (2 if landscape or size_now.x >= 480 else 1)
+	# Landscape keeps all three secondary cards in one row: a third row would
+	# drop "Einstellungen" below START on 800-900 dp wide phones.
+	extra_modes.columns = 3 if landscape else (2 if size_now.x >= 480 else 1)
 	# Preserve a large cinematic fox on landscape, but avoid giant cropped
 	# hero imagery and invisible controls on a portrait Android surface.
 	_split.size_flags_vertical = Control.SIZE_EXPAND_FILL if landscape else Control.SIZE_FILL
@@ -311,11 +327,24 @@ func _layout() -> void:
 	_split.move_child(_control_column if landscape else _hero, 0)
 	_control_column.custom_minimum_size.x = clampf(size_now.x * 0.46, 240.0, 570.0) if landscape else 0.0
 	_hero.custom_minimum_size.x = clampf(size_now.x * 0.42, 220.0, 585.0) if landscape else 0.0
+	# In landscape the hero must also leave room for the logo row above it.
+	var hero_room := available - logo.custom_minimum_size.y - 12.0
 	_hero.custom_minimum_size.y = (
-		clampf(size_now.y * 0.76, 320, 620) if landscape
+		minf(clampf(size_now.y * 0.76, 320, 620), hero_room) if landscape
 		else clampf(size_now.y * 0.34, 220, 390)
 	)
 	_hero.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	var tile_height: float = (
+		(76.0 if size_now.y < 520 else (96.0 if size_now.y < 800 else 132.0)) if landscape
+		else (112.0 if phone else 132.0)
+	)
+	if landscape:
+		# Both choice rows must fit above START without scrolling; never
+		# below 56 dp, so every card remains a comfortable touch target.
+		var overhead := logo.custom_minimum_size.y + 12.0 + heading.get_combined_minimum_size().y + 30.0
+		if eyebrow.visible:
+			overhead += eyebrow.get_combined_minimum_size().y + 10.0
+		tile_height = clampf(floorf((available - overhead) / 2.0), 56.0, tile_height)
 	for id in _menu_buttons.keys():
 		var button := _menu_buttons[id] as Button
-		button.custom_minimum_size.y = (76 if size_now.y < 520 else (96 if size_now.y < 800 else 132)) if landscape else (112 if phone else 132)
+		button.custom_minimum_size.y = tile_height

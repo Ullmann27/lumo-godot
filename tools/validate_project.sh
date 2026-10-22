@@ -29,6 +29,10 @@ timeout 120s "$GODOT" --headless --script scripts/tests/kart_touch_regression.gd
 if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-touch-tests.log; then exit 1; fi
 grep -qE '\[KartTouchTests\] PASS' /tmp/lumo-kart-touch-tests.log
 
+timeout 120s "$GODOT" --headless --script scripts/tests/kart_reference_landing_fit_regression.gd 2>&1 | tee /tmp/lumo-landing-fit-tests.log
+if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-landing-fit-tests.log; then exit 1; fi
+grep -qE '\[KartLandingFit\] PASS' /tmp/lumo-landing-fit-tests.log
+
 timeout 120s "$GODOT" --headless --script scripts/tests/lumo_character_regression.gd 2>&1 | tee /tmp/lumo-character-tests.log
 if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-character-tests.log; then exit 1; fi
 grep -qE '\[LumoCharacterTests\] PASS' /tmp/lumo-character-tests.log
