@@ -116,7 +116,7 @@ func _build_controls() -> void:
 	var body_scroll := ScrollContainer.new()
 	body_scroll.name = "ScrollableRealGameActions"
 	body_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	body_scroll.size_flags_vertical = Control.SIZE_SHRINK_END
+	body_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	main.add_child(body_scroll)
 	var bottom := VBoxContainer.new()
 	bottom.name = "RealGameActions"
