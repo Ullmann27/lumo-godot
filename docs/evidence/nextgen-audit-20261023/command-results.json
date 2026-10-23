@@ -1,0 +1,26 @@
+{
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "base": "3a3142608f6b150ee251373ba81e6face2eed4b3",
+  "full_race_probe": {
+    "script": "kart_complete_flow_regression.gd",
+    "result": "TIMEOUT",
+    "timeout_seconds": 420,
+    "exit_code": 1,
+    "completed": false,
+    "available_captures": [
+      "01-start-grid.png",
+      "02-paused-mid-race.png",
+      "03-restored-race.png"
+    ]
+  },
+  "menu_journey": {
+    "result": "PASS",
+    "exit_code": 0,
+    "images": 24,
+    "physical_android": false
+  },
+  "changed_test_static_checks": {
+    "gdlint": "PASS",
+    "gdformat_check": "PASS"
+  }
+}

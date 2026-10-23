@@ -1,0 +1,434 @@
+[
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "settings-640x360.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "fox",
+      "kart": "comet",
+      "mode": "time_trial",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      640,
+      360
+    ],
+    "step": 0
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-1-640x360.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "fox",
+      "kart": "comet",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      640,
+      360
+    ],
+    "step": 0
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-2-640x360.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "comet",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      640,
+      360
+    ],
+    "step": 1
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-3-640x360.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      640,
+      360
+    ],
+    "step": 2
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-4-640x360.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      640,
+      360
+    ],
+    "step": 3
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-5-640x360.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      640,
+      360
+    ],
+    "step": 4
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "settings-320x740.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "time_trial",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      320,
+      740
+    ],
+    "step": 0
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-1-320x740.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      320,
+      740
+    ],
+    "step": 0
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-2-320x740.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      320,
+      740
+    ],
+    "step": 1
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-3-320x740.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      320,
+      740
+    ],
+    "step": 2
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-4-320x740.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      320,
+      740
+    ],
+    "step": 3
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-5-320x740.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      320,
+      740
+    ],
+    "step": 4
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "settings-840x960.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "time_trial",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      840,
+      960
+    ],
+    "step": 0
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-1-840x960.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      840,
+      960
+    ],
+    "step": 0
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-2-840x960.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      840,
+      960
+    ],
+    "step": 1
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-3-840x960.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      840,
+      960
+    ],
+    "step": 2
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-4-840x960.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      840,
+      960
+    ],
+    "step": 3
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-5-840x960.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      840,
+      960
+    ],
+    "step": 4
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "settings-1280x720.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "time_trial",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      1280,
+      720
+    ],
+    "step": 0
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-1-1280x720.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      1280,
+      720
+    ],
+    "step": 0
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-2-1280x720.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      1280,
+      720
+    ],
+    "step": 1
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-3-1280x720.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      1280,
+      720
+    ],
+    "step": 2
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-4-1280x720.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      1280,
+      720
+    ],
+    "step": 3
+  },
+  {
+    "engine": "4.6.3-stable (official)",
+    "image": "setup-5-1280x720.png",
+    "physical_android": false,
+    "renderer": "gl_compatibility",
+    "setup": {
+      "difficulty": "gemuetlich",
+      "driver": "rabbit",
+      "kart": "gecko_velo",
+      "mode": "race",
+      "track": "sonnenhafen"
+    },
+    "size": [
+      1280,
+      720
+    ],
+    "step": 4
+  }
+]

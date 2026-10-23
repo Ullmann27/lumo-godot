@@ -1,0 +1,206 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+     at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+WARNING: Volumetric fog is only available when using the Forward+ renderer.
+     at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[CompleteMenuJourney] SIZE requested=(640, 360) actual=(640, 360)
+[CompleteMenuJourney] LANDING inherited_scale=(1.0, 1.0) physical_window=(640, 360) canvas=(1280.0, 720.0)
+[CompleteMenuJourney] TAP Landing_time_trial window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (334.0, 222.0), S: (292.0, 166.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP Landing_settings window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (436.0, 408.0), S: (190.0, 168.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP AudioToggle window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (50.0, 323.0), S: (1172.0, 116.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP GraphicsProfileToggle window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (50.0, 444.0), S: (1172.0, 116.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP GasModeToggle window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (50.0, 444.0), S: (1172.0, 116.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP CloseKartSettings window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (34.0, 570.0), S: (1212.0, 116.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP Landing_garage window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (230.0, 408.0), S: (190.0, 168.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@51 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 127.0), S: (242.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@1646 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 346.0), S: (472.0, 104.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@52 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (267.0, 184.0), S: (243.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@2180 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 402.0), S: (472.0, 104.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@53 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (518.0, 127.0), S: (243.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP KartCard_gecko_velo window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 440.0), S: (472.0, 148.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@54 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (769.0, 127.0), S: (243.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@3683 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 289.0), S: (472.0, 104.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@55 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (1020.0, 127.0), S: (243.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@4291 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 289.0), S: (472.0, 104.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 607.0), S: (296.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 607.0), S: (296.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 607.0), S: (296.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 607.0), S: (296.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(640, 360)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 607.0), S: (296.0, 96.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] SIZE requested=(320, 740) actual=(320, 740)
+[CompleteMenuJourney] LANDING inherited_scale=(1.0, 1.0) physical_window=(320, 740) canvas=(1280.0, 2960.0)
+[CompleteMenuJourney] TAP Landing_time_trial window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (48.0, 1936.0), S: (1184.0, 448.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP Landing_settings window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (48.0, 1936.0), S: (1184.0, 448.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP AudioToggle window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (86.0, 1362.0), S: (1100.0, 232.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP GraphicsProfileToggle window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (86.0, 1604.0), S: (1100.0, 232.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP GasModeToggle window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (86.0, 2032.0), S: (1100.0, 232.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP CloseKartSettings window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (54.0, 2274.0), S: (1172.0, 232.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP Landing_garage window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (48.0, 1456.0), S: (1184.0, 448.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@51 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (32.0, 332.0), S: (236.0, 192.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@7148 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (32.0, 1866.0), S: (1208.0, 272.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@52 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (276.0, 332.0), S: (237.0, 192.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@7625 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (32.0, 1840.0), S: (1216.0, 320.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@53 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (521.0, 332.0), S: (237.0, 192.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP KartCard_gecko_velo window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (32.0, 2200.0), S: (1208.0, 472.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@54 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (766.0, 332.0), S: (237.0, 192.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@8301 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (32.0, 807.0), S: (1208.0, 320.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@55 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (1011.0, 332.0), S: (237.0, 192.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@8909 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (32.0, 887.0), S: (1216.0, 320.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (32.0, 2704.0), S: (448.0, 224.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (32.0, 2704.0), S: (448.0, 224.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (32.0, 2704.0), S: (448.0, 224.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (32.0, 2704.0), S: (448.0, 224.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(320, 740)
+[CompleteMenuJourney] BOUNDS [P: (32.0, 2704.0), S: (448.0, 224.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 2960.0)]
+[CompleteMenuJourney] SIZE requested=(840, 960) actual=(840, 960)
+[CompleteMenuJourney] LANDING inherited_scale=(1.0, 1.0) physical_window=(840, 960) canvas=(1280.0, 1462.0)
+[CompleteMenuJourney] TAP Landing_time_trial window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (641.5238, 778.6667), S: (608.0, 201.1429)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP Landing_settings window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (18.28572, 1040.762), S: (609.5238, 201.1429)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP AudioToggle window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (193.619, 576.8095), S: (884.0, 88.38095)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP GraphicsProfileToggle window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (193.619, 674.8095), S: (884.0, 88.38095)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP GasModeToggle window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (193.619, 870.8095), S: (884.0, 88.38095)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP CloseKartSettings window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (181.619, 1024.81), S: (916.0, 88.38095)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP Landing_garage window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (640.0, 827.4286), S: (609.5238, 201.1429)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@51 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (31.0, 211.0), S: (237.0, 73.14286)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@11766 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (31.0, 814.0), S: (1210.0, 134.0952)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@52 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (276.0, 211.0), S: (237.0, 73.14286)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@12243 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (31.0, 1099.0), S: (1210.0, 121.9048)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@53 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (521.0, 211.0), S: (237.0, 73.14286)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP KartCard_gecko_velo window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (641.0, 971.0), S: (600.0, 179.8095)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@54 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (766.0, 211.0), S: (237.0, 73.14286)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@12919 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (31.0, 436.0), S: (1210.0, 121.9048)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@55 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (1011.0, 211.0), S: (238.0, 73.14286)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@13527 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (31.0, 436.0), S: (1218.0, 121.9048)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (31.0, 1346.0), S: (225.5238, 85.33334)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (31.0, 1346.0), S: (225.5238, 85.33334)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (31.0, 1346.0), S: (225.5238, 85.33334)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (31.0, 1346.0), S: (225.5238, 85.33334)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(840, 960)
+[CompleteMenuJourney] BOUNDS [P: (31.0, 1346.0), S: (259.0, 85.33334)] viewport=[P: (0.0, 0.0), S: (1280.0, 1462.0)]
+[CompleteMenuJourney] SIZE requested=(1280, 720) actual=(1280, 720)
+[CompleteMenuJourney] LANDING inherited_scale=(1.0, 1.0) physical_window=(1280, 720) canvas=(1280.0, 720.0)
+[CompleteMenuJourney] TAP Landing_time_trial window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (327.0, 175.0), S: (306.0, 231.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP Landing_settings window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (432.0, 416.0), S: (201.0, 232.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP AudioToggle window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (352.0, 275.0), S: (568.0, 58.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP GraphicsProfileToggle window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (352.0, 343.0), S: (568.0, 58.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP GasModeToggle window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (352.0, 479.0), S: (568.0, 58.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP CloseKartSettings window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (344.0, 548.0), S: (592.0, 58.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP Landing_garage window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (222.0, 416.0), S: (202.0, 232.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@51 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 128.0), S: (242.0, 48.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@16384 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 233.0), S: (420.0, 72.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@52 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (267.0, 128.0), S: (243.0, 48.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@16861 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 358.0), S: (420.0, 80.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@53 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (518.0, 128.0), S: (243.0, 48.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP KartCard_gecko_velo window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 419.0), S: (412.0, 118.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@54 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (769.0, 128.0), S: (243.0, 48.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@17537 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 269.0), S: (412.0, 80.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@55 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (1020.0, 128.0), S: (243.0, 48.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@18145 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 269.0), S: (420.0, 80.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 631.0), S: (148.0, 72.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 631.0), S: (148.0, 72.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 631.0), S: (148.0, 72.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 631.0), S: (148.0, 72.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP @Button@93 window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (17.0, 631.0), S: (181.0, 72.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[CompleteMenuJourney] TAP LiveQuickStart window=(1280, 720)
+[CompleteMenuJourney] BOUNDS [P: (12.0, 656.0), S: (624.0, 56.0)] viewport=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+[Kart] race_world_ready: sonnenhafen mode=race
+[CompleteMenuJourney] PASS: five real setup pages, preferences, 48dp touches, main-menu return and configured race

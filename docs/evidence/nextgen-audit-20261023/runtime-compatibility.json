@@ -1,0 +1,12 @@
+{
+  "base": "3a3142608f6b150ee251373ba81e6face2eed4b3",
+  "candidate": "4d0fd40fdf188be6ca86057596c7b51f41701fa3",
+  "changed_runtime_files": {
+    "scripts/games/game_hub.gd": {
+      "base_sha256": "5ff1cbf00c00a7a624eba02d0665e6b6933ecfb8cb84faa5cd535416513b12b8",
+      "candidate_sha256": "7d1cffc8e282204ebbde63e822cfe6a693cfafd64ebf9b776a260b4a10df2492"
+    }
+  },
+  "kart_gameplay_saves_bridge_scenes": "byte-identical to base",
+  "test_script": "scripts/tests/kart_nextgen_ui_smoke.gd"
+}

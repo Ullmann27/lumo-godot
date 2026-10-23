@@ -1,0 +1,51 @@
+[
+  {
+    "source": "/workspace/scratch/lumo-godot-audit-20261023/production-entry.png",
+    "source_sha256": "8d1f1f9a3ba260f6a6c50c390f4936ca06d492a8349542e765138ad3ec31105b",
+    "archive": "production-entry.jpg",
+    "archive_sha256": "35d94006e7eed1993a6b160d32991c6670bbcd4caa8867c49a1e1c5203cacf2a",
+    "conversion": "JPEG quality 88; original pixel dimensions; no retouching"
+  },
+  {
+    "source": "/workspace/scratch/lumo-godot-audit-20261023/landing-render/kart-landing-emulator_landscape.png",
+    "source_sha256": "5fa9baa8a292d00280da11d0cc5ef16dec4ce9d6bf776057ac9a50a4f4c67864",
+    "archive": "kart-landing-emulator_landscape.jpg",
+    "archive_sha256": "dd69e22e67cb80c0794b2e126e5123ab142c132a35e1f11dc55d2c1b770df03e",
+    "conversion": "JPEG quality 88; original pixel dimensions; no retouching"
+  },
+  {
+    "source": "/workspace/scratch/lumo-godot-audit-20261023/landing-render/kart-landing-fold_open.png",
+    "source_sha256": "cc6b267629f9073bd1a0b19d860d9c0abbb2f0db7f9d883d56b70c7b653e3295",
+    "archive": "kart-landing-fold_open.jpg",
+    "archive_sha256": "b0da346bbb1eecc3d5b9c1daead535157957e8c1fa22572bfb9b9b835673667e",
+    "conversion": "JPEG quality 88; original pixel dimensions; no retouching"
+  },
+  {
+    "source": "exports/nextgen-ui/spielewelt-1280x720.png",
+    "source_sha256": "e2bce1ecdbcf111bdba3319053d9a9231daaf3e02f8c7203e8f751689998aab0",
+    "archive": "spielewelt-before-1280x720.jpg",
+    "archive_sha256": "c05edd2690db567a6b4440bc0aedf5ab36342f0c9197070f2fb6bb93e4f4ed5a",
+    "conversion": "JPEG quality 88; original pixel dimensions; no retouching"
+  },
+  {
+    "source": "exports/nextgen-ui/spielewelt-1280x720.png",
+    "source_sha256": "1697937cbfb1e36e84faefc3592a8fc23fd1c71c9d76b26567f2a13a92891a41",
+    "archive": "spielewelt-after-1280x720.jpg",
+    "archive_sha256": "37cc5b994b8bf8909247b76b60f97b62654a7f12e0f4b803438d5b8d03e364aa",
+    "conversion": "JPEG quality 88; original pixel dimensions; no retouching"
+  },
+  {
+    "source": "exports/nextgen-ui/spielewelt-690x829.png",
+    "source_sha256": "e34e0712ef250d951b6e7e29eeb8111ae1c7241e9a17b4540cc56f6e4f89b5df",
+    "archive": "spielewelt-after-690x829.jpg",
+    "archive_sha256": "e64bf6c18e0bbbeeebc5153140225e78b0758271a2968ab60530e3acea4cf24f",
+    "conversion": "JPEG quality 88; original pixel dimensions; no retouching"
+  },
+  {
+    "source": "/workspace/scratch/lumo-godot-audit-20261023/production-hub-entry.png",
+    "source_sha256": "8d1f1f9a3ba260f6a6c50c390f4936ca06d492a8349542e765138ad3ec31105b",
+    "archive": "production-hub-entry.jpg",
+    "archive_sha256": "35d94006e7eed1993a6b160d32991c6670bbcd4caa8867c49a1e1c5203cacf2a",
+    "conversion": "JPEG quality 88; original pixel dimensions; no retouching"
+  }
+]
