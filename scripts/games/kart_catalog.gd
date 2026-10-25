@@ -32,9 +32,9 @@ const DRIVERS: Array[Dictionary] = [
 ## Die Flotte mit Werten, Preisen und Aussehen steht in kart_fleet.gd.
 static var KARTS: Array[Dictionary] = FLEET.KARTS
 const DIFFICULTIES: Array[Dictionary] = [
-	{"id": "gemuetlich", "name": "Entdecken", "tag": "MIT LENKHILFE", "description": "Gemütliches Tempo. Lumo hilft sanft am Fahrbahnrand.", "speed": 0.83, "rival": 0.71},
-	{"id": "flott", "name": "Abenteuer", "tag": "DEIN EIGENES TEMPO", "description": "Mehr Tempo, freie Lenkung und ausgeglichene Rivalen.", "speed": 1.0, "rival": 0.87},
-	{"id": "pro", "name": "Sternen-Profi", "tag": "DRIFT MACHT DEN UNTERSCHIED", "description": "Volles Tempo. Gewinne mit sauberen Kurven und cleverem Boost.", "speed": 1.17, "rival": 0.99}
+	{"id": "gemuetlich", "name": "Entdecken", "tag": "MIT LENKHILFE", "description": "Gemütliches Tempo. Lumo hilft sanft am Fahrbahnrand.", "speed": 0.83, "rival": 0.92, "pack": 0.2},
+	{"id": "flott", "name": "Abenteuer", "tag": "DEIN EIGENES TEMPO", "description": "Mehr Tempo, freie Lenkung und ausgeglichene Rivalen.", "speed": 1.0, "rival": 1.02, "pack": 0.12},
+	{"id": "pro", "name": "Sternen-Profi", "tag": "DRIFT MACHT DEN UNTERSCHIED", "description": "Volles Tempo. Gewinne mit sauberen Kurven und cleverem Boost.", "speed": 1.17, "rival": 1.04}
 ]
 const CUP_POINTS: Array[int] = [12, 9, 7, 5, 3, 1]
 

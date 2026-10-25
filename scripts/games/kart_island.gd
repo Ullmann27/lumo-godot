@@ -48,6 +48,10 @@ const DRIFT_BOOST_SECONDS: Array[float] = [1.0, 1.8]
 ## turbo speed lands before the crystal cave.
 const JUMP_GRAVITY: float = 30.0
 const JUMP_MAX_LIFT: float = 4.0
+# Five distinct rival drivers: cornering skill and appetite for overtaking.
+const RIVAL_CORNERING: Array[float] = [1.04, 0.96, 1.0, 1.07, 0.93]
+const RIVAL_AMBITION: Array[float] = [0.85, 0.55, 1.0, 0.7, 0.9]
+const RIVAL_SLIPSTREAM := 0.04
 ## AI pulse is deliberately telegraphed: children get a readable dodge/shield window.
 const RIVAL_PULSE_WARNING_SECONDS: float = 0.65
 const RIVAL_PULSE_RADIUS: float = 9.5
@@ -1917,14 +1921,47 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 	_sync_rival_item_fx(index)
 
 
+## Kart ahead of rival [index] on the road (another rival or the child):
+## progress gap in metres (INF if none) and that kart's lateral position.
+func _kart_ahead_of_rival(index: int) -> Vector2:
+	var gap := INF
+	var lateral := 0.0
+	for other in range(opponents.size()):
+		var ahead: float = opponent_distances[other] - opponent_distances[index]
+		if other != index and ahead > 0.0 and ahead < gap:
+			gap = ahead
+			lateral = opponent_lanes[other]
+	var child_ahead: float = distance - opponent_distances[index]
+	if child_ahead > 0.0 and child_ahead < gap:
+		gap = child_ahead
+		lateral = lane
+	return Vector2(gap, lateral)
+
+
 func _drive_opponents(delta: float) -> void:
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
+	# Never faster than the child's own kart can drive in this race.
+	var child_top_speed: float = POWERTRAIN.top_speed(kart_factors, float(rules.speed))
+	var pack: float = float(rules.get("pack", 0.0))
 	for i in range(opponents.size()):
 		var rival: LumoRaceKart = opponents[i]
 		var sampled: Dictionary = world.sample_road(rival.position, fposmod(opponent_distances[i], track_length))
 		var target_lane: float = clampf(-2.8 + i * 1.35 + sin(elapsed * 0.35 + i) * 0.3, -3.4, 3.4)
 		var local_gap: Vector3 = player.position - rival.position
 		_update_rival_item_tactics(i, local_gap, delta)
+		var cornering: float = RIVAL_CORNERING[i % RIVAL_CORNERING.size()]
+		var ambition: float = RIVAL_AMBITION[i % RIVAL_AMBITION.size()]
+		var ahead: Vector2 = _kart_ahead_of_rival(i)
+		var rival_lateral_now: float = float(sampled.lateral)
+		var in_line: bool = absf(rival_lateral_now - ahead.y) < 1.6
+		if ahead.x < 4.0 + 6.0 * ambition and in_line:
+			# Everyone wants to win: pull out on the roomier side and attack.
+			var side: float = signf(rival_lateral_now - ahead.y)
+			if side == 0.0:
+				side = 1.0 if i % 2 == 0 else -1.0
+			if absf(ahead.y + side * 2.2) > 3.4:
+				side = -side
+			target_lane = clampf(ahead.y + side * 2.2, -3.4, 3.4)
 		if local_gap.length() < 7 and absf(float(sampled.lateral) - lane) < 1.3:
 			target_lane = clampf(lane + (1.8 if i % 2 == 0 else -1.8), -3.8, 3.8)
 		var aim: Vector3 = world.position_at(float(sampled.distance) + 10.0, target_lane)
@@ -1932,6 +1969,24 @@ func _drive_opponents(delta: float) -> void:
 		var angle: float = angle_difference(opponent_headings[i], desired_heading)
 		opponent_headings[i] += clampf(angle, -1.55 * delta, 1.55 * delta)
 		var target_speed: float = 20.5 * float(rules.speed) * float(rules.rival) * (0.97 + i * 0.014)
+		# Brake for the actual bend ahead; better cornering drivers carry more speed.
+		var bend: float = absf(
+			angle_difference(
+				_heading(float(sampled.distance) + 6.0), _heading(float(sampled.distance) + 30.0)
+			)
+		)
+		target_speed *= clampf(1.0 - bend * 0.06 / cornering, 0.88, 1.0)
+		if ahead.x > 1.5 and ahead.x < 10.0 and in_line:
+			target_speed *= 1.0 + RIVAL_SLIPSTREAM * ambition
+		if pack > 0.0:
+			# Keep the field in reach without touching the child's controls:
+			# far-behind rivals push, far-ahead rivals ease off (bounded).
+			var behind_child: float = distance - opponent_distances[i]
+			if behind_child > 25.0:
+				target_speed *= 1.0 + pack * minf((behind_child - 25.0) / 150.0, 1.0)
+			elif behind_child < -25.0:
+				target_speed *= 1.0 - pack * 0.6 * minf((-behind_child - 25.0) / 150.0, 1.0)
+		target_speed = minf(target_speed, child_top_speed)
 		if opponent_boost_times[i] > 0.0:
 			target_speed *= 1.32
 		target_speed *= clampf(1.0 - absf(angle) * 0.33, 0.58, 1.0)
