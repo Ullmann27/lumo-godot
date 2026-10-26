@@ -52,7 +52,57 @@ Qualitätsfreigabe. Gerätelauf, Fold, Ton und gemessene 60 FPS bleiben offen.
 5. Ergebnisse/Begrenzungen ergänzen, kleine Commits pushen, Draft-PR und
    genaue SHA-Übergabe liefern. Kein Merge, Release oder Flutter-Pinwechsel.
 
-## Prüfstand
+## Abschluss und Übergabe
 
-Wird mit tatsächlichen Befunden ergänzt. Erstimport auf Godot 4.6.3: Exit 0,
-keine `ERROR:`-/`SCRIPT ERROR`-Meldungen im Importlog.
+Runtime-/Regressionscommit: `b5ef1d2a65bb93965cd24786b80a377371341a40`,
+bereits auf dem Arbeitsbranch gepusht. Geändert sind ausschließlich die drei
+Kamerainterpolationen und das bisher ignorierte Loop-`snap`; neuer Enginetest
+und Aufnahme in `tools/validate_project.sh`. Der Folgecommit enthält nur
+diese Übergabe und Prüflogs.
+
+Tatsächlich ausgeführt:
+
+| Prüfung | Ergebnis |
+| --- | --- |
+| Godot-4.6.3-Erstimport | Exit 0, keine ERROR-/SCRIPT-ERROR-Meldungen |
+| Neue Kamera-Regression auf unveränderter Basis | RED: 22 Checks, 10 Failures |
+| Dieselbe Regression nach Reparatur, Headless | GREEN: 22 Checks, 0 Failures, Exit 0 |
+| Dieselbe Regression mit Xvfb/OpenGL/Mesa llvmpipe | GREEN: 22 Checks, 0 Failures, Exit 0 |
+| Tunnel-Lap-Event-Regression, Headless | PASS, Exit 0 |
+| Strukturvalidator `validate_project.py` | 117 PASS / 7 WARN / 0 FAIL, Exit 0 |
+| Neuer Test: gdlint / gdformat | PASS / PASS |
+| `kart_island.gd`: gdlint / gdformat | 61 Befunde / Formatabweichung, auch auf Basis `494416b` |
+| `git diff --check`, `bash -n tools/validate_project.sh` | PASS |
+| Gesamtsuite `tools/validate_project.sh` | **FAIL** nach erstem Karttest: 4 Ressourcen beim Exit noch in Benutzung |
+
+Der erste Test der Gesamtsuite meldete ein tatsächlich simuliertes vollständiges
+Rennen (178,9 Spielsekunden, 10 666 Physikschritte, ein Reset), einen Award und
+seine PASS-Zeile. Anschließend meldete Godot `ObjectDB instances leaked` und
+`4 resources still in use at exit`; der strenge Validator stoppt deshalb.
+Die nachfolgenden Suiteprüfungen (u. a. Physik-/Bridge-/Touchmatrix) wurden
+in diesem Lauf nicht erreicht. Der Ursprung des Cleanupfehlers wurde wegen
+des ausdrücklichen Abschlussauftrags nicht weiter untersucht und wird hier
+nicht als bereits bestehend behauptet. Keine Gesamtsuite-Freigabe.
+
+Der Kamera-Vergleich nach 200 ms ergab vor Reparatur 23,1 cm Unterschied
+zwischen 30/60 Hz und 10,9 cm zwischen 120/60 Hz. Danach jeweils unter
+0,01 mm; Loop unter 0,02 mm. 250-ms-Schritte nähern sich nun gedämpft an;
+explizites `snap` bleibt sofortig. Dies sind synthetische Zeitschrittproben
+auf tatsächlichen Enginekameras, keine gemessenen Geräteframeraten.
+
+Die sieben Strukturwarnungen betreffen sechs Manifest-Modelle und die
+fehlende Ausführungsberechtigung von `tools/build_web_bundle.sh`.
+GL-Kompatibilität meldet die erwarteten V-Sync-/Forward+-Featurewarnungen.
+Es wurden keine neuen Bilder, APKs oder Android-Abnahmen erstellt.
+
+**Integrationsentscheidung:** kleiner, abgegrenzter Reparaturkandidat als Draft;
+aktuellen Flutter-Pin beibehalten. Vor Übernahme den Ressourcen-Cleanupfehler
+einordnen und die vollständige Suite sowie den passenden Androidlauf beenden.
+Keine Rival-Änderung, kein Main-Merge, Force-Push, Release oder Pinwechsel.
+193 bei Import erzeugte `.uid`-Dateien bleiben lokal und sind vom
+Autosave-Sicherheitsfilter ausgeschlossen; keine fremden Dateien gelöscht.
+
+Belege: [evidence/kart-quality-20261026](evidence/kart-quality-20261026/).
+Die ursprüngliche fehlerhafte Testprototyp-Ausführung mit ungültiger
+Teststrecken-ID wurde verworfen; die archivierte RED-Probe verwendet die
+gültige Loop-Strecke `candy_cloud` und endet regulär mit Exit 1.
