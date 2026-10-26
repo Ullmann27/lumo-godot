@@ -2246,7 +2246,11 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 		var origin: Vector3 = world.position_at(float(world.loop_layout.start), float(world.loop_layout.lane))
 		var entry_basis: Basis = world.frame(float(world.loop_layout.start))
 		var desired_loop: Vector3 = origin + entry_basis.x * 12 + entry_basis.z * 15 + Vector3.UP * 11
-		camera.position = camera.position.lerp(desired_loop, minf(1, delta * 4))
+		camera.position = (
+			desired_loop
+			if snap
+			else camera.position.lerp(desired_loop, 1.0 - exp(-delta * 4.0))
+		)
 		camera.look_at(player.position + Vector3.UP * 0.6)
 		return
 	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
@@ -2269,7 +2273,9 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 	camera.position = (
 		desired
 		if snap
-		else camera.position.lerp(desired, minf(1.0, delta * VISUAL_GRADE.CAMERA_LERP))
+		# Exponential damping keeps the response consistent across tick rates and
+		# avoids a complete jump to the target after a short frame hitch.
+		else camera.position.lerp(desired, 1.0 - exp(-delta * VISUAL_GRADE.CAMERA_LERP))
 	)
 	if finished:
 		target = player.position + Vector3.UP * 1.25
@@ -2291,7 +2297,7 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 	camera.fov = (
 		target_fov
 		if snap
-		else lerpf(camera.fov, target_fov, minf(1.0, delta * VISUAL_GRADE.FOV_LERP))
+		else lerpf(camera.fov, target_fov, 1.0 - exp(-delta * VISUAL_GRADE.FOV_LERP))
 	)
 	if is_instance_valid(speed_fx):
 		speed_fx.set_motion(speed_ratio, boost_time > 0.0 and not paused, reduced_motion)

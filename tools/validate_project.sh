@@ -21,6 +21,10 @@ timeout 120s "$GODOT" --headless --script scripts/tests/kart_physics_regression.
 if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-physics-tests.log; then exit 1; fi
 grep -qE '\[KartPhysics\] PASS' /tmp/lumo-kart-physics-tests.log
 
+timeout 120s "$GODOT" --headless --script scripts/tests/kart_camera_damping_regression.gd 2>&1 | tee /tmp/lumo-kart-camera-tests.log
+if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-camera-tests.log; then exit 1; fi
+grep -qE '\[KartCamera\] PASS: [0-9]+ checks, 0 failures' /tmp/lumo-kart-camera-tests.log
+
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_jump_regression.gd 2>&1 | tee /tmp/lumo-kart-jump-tests.log
 if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-jump-tests.log; then exit 1; fi
 grep -qE '\[KartJump\] PASS' /tmp/lumo-kart-jump-tests.log

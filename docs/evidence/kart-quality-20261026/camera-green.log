@@ -1,0 +1,36 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: sonnenhafen mode=training
+[KartCamera] PASS: chase 30 Hz position error 0.000000 m
+[KartCamera] PASS: chase 30 Hz FOV error 0.000008
+[KartCamera] PASS: chase 120 Hz position error 0.000008 m
+[KartCamera] PASS: chase 120 Hz FOV error 0.000008
+[KartCamera] PASS: chase 250-ms hitch keeps damping (1.5566 m left)
+[KartCamera] PASS: chase hitch still approaches its target
+[KartCamera] PASS: 250-ms hitch does not snap boost FOV
+[KartCamera] PASS: chase zero step holds position
+[KartCamera] PASS: chase zero step holds FOV
+[KartCamera] PASS: chase explicit snap is immediate
+[KartCamera] PASS: chase explicit snap includes FOV
+[KartCamera] PASS: camera does not modify driving state
+[KartCamera] PASS: reduced motion keeps boost FOV steady
+[KartCamera] PASS: reduced motion hides speed streaks
+[Kart] race_world_ready: candy_cloud mode=training
+[KartCamera] PASS: loop probe uses an actual loop course
+[KartCamera] PASS: loop 30 Hz position error 0.000000 m
+[KartCamera] PASS: loop 120 Hz position error 0.000015 m
+[KartCamera] PASS: loop 250-ms hitch keeps damping (3.6418 m left)
+[KartCamera] PASS: loop hitch still approaches its target
+[KartCamera] PASS: loop zero step holds position
+[KartCamera] PASS: loop zero step holds FOV
+[KartCamera] PASS: loop explicit snap is immediate
+[KartCamera] PASS: 22 checks, 0 failures
