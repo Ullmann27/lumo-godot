@@ -1,6 +1,5 @@
 extends SceneTree
 ## Real Godot 4.6.3 captures along the live, physically driven Sonnenhafen jump.
-const GAME = preload("res://scenes/games/kart_island.tscn")
 const STEP: float = 1.0 / 60.0
 
 
@@ -22,7 +21,7 @@ func _run() -> void:
 	assert(not output.is_empty(), "Capture path must be provided")
 	assert(DirAccess.make_dir_recursive_absolute(output) == OK)
 	root.size = Vector2i(1280, 720)
-	var game = GAME.instantiate()
+	var game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
 	game.lightweight = false
