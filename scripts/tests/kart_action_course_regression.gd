@@ -58,7 +58,7 @@ func _check_plans() -> void:
 	var plain = WORLD.new()
 	root.add_child(plain)
 	plain.build(true, "sonnenhafen", true)
-	assert(plain.action.pads.is_empty() and plain.action.gates.is_empty(), "Sonnenhafen bleibt als Prüfstrecke unverändert")
+	assert(plain.action.pads.is_empty() and plain.action.gates.is_empty(), "Sonnenhafen erhält nur seine eigene Panorama-Schanze; andere Parcours-Elemente bleiben aus")
 	plain.free()
 
 
@@ -171,6 +171,47 @@ func _check_kicker_and_dive() -> void:
 	assert(not game.action_in_dive and not game.dive_tint.visible, "Nach dem Tunnel wieder klare Sicht")
 
 
+## Sonnenhafen: full road-driving input, genuine launch, flight and safe landing.
+## This is the exact user-facing long jump rather than the old 1.1m short kicker.
+func _check_sonnenhafen_long_flight() -> void:
+	await _start("sonnenhafen")
+	var course: Dictionary = game.world.action
+	assert(course.kickers.size() == 1, "Sonnenhafen panorama jump must exist")
+	var kicker: Dictionary = course.kickers[0]
+	assert(bool(kicker.hero_flight) and float(kicker.length) > ACTION.KICKER_LENGTH)
+	assert(float(kicker.flight_gravity) < game.JUMP_GRAVITY)
+	_place(float(kicker.start) - 12.0, 0.0, 18.0)
+	var previous_landings: int = game.landing_count
+	var previous_jumps: int = game.action_kicker_jumps
+	var entered_air: bool = false
+	var max_height: float = 0.0
+	var max_time: float = 0.0
+	var flight_start: float = -1.0
+	var flight_end: float = -1.0
+	for frame in range(270):
+		var ahead: Vector3 = game.world.position_at(game.previous_road_distance + 8.0)
+		var direction: Vector3 = ahead - game.player.position
+		game.steering = clampf(-angle_difference(game.player_heading, atan2(-direction.x, -direction.z)) * 2.3, -1, 1)
+		game._physics_process(STEP)
+		if game.airborne:
+			if not entered_air:
+				flight_start = game.distance
+			entered_air = true
+			max_time = maxf(max_time, game.air_time)
+			var road: Dictionary = game.world.sample_road(game.player.position, game.previous_road_distance)
+			max_height = maxf(max_height, game.player.position.y - float(road.height))
+		elif entered_air:
+			flight_end = game.distance
+			break
+	assert(entered_air and game.action_kicker_jumps == previous_jumps + 1, "Real player crossed the panoramic launch")
+	assert(max_height > 3.5 and max_time > 0.85, "Long arc must exceed baseline short jump")
+	assert(flight_end - flight_start > 13.0, "Long flight must travel meaningful metres")
+	assert(game.landing_count == previous_landings + 1 and not game.airborne, "Safe physics-based landing")
+	assert(game.reset_count == 0, "Panorama section does not reset the kart")
+	assert(is_equal_approx(game.current_jump_gravity, game.JUMP_GRAVITY), "Other tracks keep the standard jump gravity")
+	print("[KartSonnenhafenFlight] %.1fm flown, %.1fm high, %.2fs airborne, no reset" % [flight_end - flight_start, max_height, max_time])
+
+
 func _check_open_edge() -> void:
 	await _start("candy_cloud")
 	var edge: Dictionary = game.world.action.edges[0]
@@ -208,11 +249,12 @@ func _run() -> void:
 	await _settle()
 	await _check_pad_and_slalom()
 	await _check_kicker_and_dive()
+	await _check_sonnenhafen_long_flight()
 	await _check_open_edge()
 	game.abandoned = true
 	game.queue_free()
 	for frame in range(6):
 		await process_frame
 	await create_timer(1.3).timeout
-	print("[KartActionCourse] PASS: 11 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung")
+	print("[KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung")
 	quit(0)
