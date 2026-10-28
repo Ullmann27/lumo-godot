@@ -6,6 +6,7 @@ on:
       - 'scripts/games/kart_action_course.gd'
       - 'scripts/games/kart_island.gd'
       - 'scripts/tests/kart_action_course_regression.gd'
+      - 'scripts/tests/kart_sonnenhafen_hero_flight_capture.gd'
   workflow_dispatch:
 permissions:
   contents: read
@@ -46,6 +47,21 @@ jobs:
               --rendering-method gl_compatibility --path . \
               --script res://scripts/tests/kart_action_course_regression.gd
           grep -F '[KartActionCourse] PASS:' flight.log
+      - name: Capture real take-off, midair and landing frames (1280x720)
+        env:
+          LUMO_CAPTURE_DIR: ${{ github.workspace }}/artifacts/sonnenhafen-flight
+        run: |
+          set -euo pipefail
+          mkdir -p "$LUMO_CAPTURE_DIR"
+          xvfb-run -a -s '-screen 0 1280x720x24' \
+            python3 tools/run_godot_probe.py --timeout 180 \
+              --log capture.log --required '[SonnenhafenFlightCapture] PASS:' \
+              -- Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy \
+              --rendering-method gl_compatibility --path . \
+              --script res://scripts/tests/kart_sonnenhafen_hero_flight_capture.gd
+          test -s "$LUMO_CAPTURE_DIR/01_sonnenhafen_ramp_approach.png"
+          test -s "$LUMO_CAPTURE_DIR/02_sonnenhafen_actual_flight.png"
+          test -s "$LUMO_CAPTURE_DIR/03_sonnenhafen_landing.png"
       - name: Preserve proof, including failure diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -54,4 +70,6 @@ jobs:
           path: |
             import.log
             flight.log
+            capture.log
+            artifacts/sonnenhafen-flight/
           retention-days: 30
