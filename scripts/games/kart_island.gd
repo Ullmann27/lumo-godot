@@ -48,6 +48,8 @@ const DRIFT_BOOST_SECONDS: Array[float] = [1.0, 1.8]
 ## turbo speed lands before the crystal cave.
 const JUMP_GRAVITY: float = 30.0
 const JUMP_MAX_LIFT: float = 4.0
+## The hero ramp has a longer arc; all other launches retain their baseline gravity.
+var current_jump_gravity: float = JUMP_GRAVITY
 ## AI pulse is deliberately telegraphed: children get a readable dodge/shield window.
 const RIVAL_PULSE_WARNING_SECONDS: float = 0.65
 const RIVAL_PULSE_RADIUS: float = 9.5
@@ -1646,11 +1648,13 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			airborne = true
 			jump_count += 1
 			air_time = 0.0
+			current_jump_gravity = JUMP_GRAVITY
 			vertical_speed = minf(speed * sin(float(jump.angle)), JUMP_MAX_LIFT)
 			message.text = "Sprung!"
 		elif world.in_gap(road_distance):
 			# Rolled or reversed into the gap without take-off: there is no road here.
 			airborne = true
+			current_jump_gravity = JUMP_GRAVITY
 			vertical_speed = 0.0
 			air_time = 0.0
 	if not airborne:
@@ -1663,13 +1667,15 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			action_kicker_jumps += 1
 			air_time = 0.0
 			player.position.y = ground + float(kicker.height)
-			vertical_speed = minf(speed * sin(float(kicker.angle)) + 1.6, JUMP_MAX_LIFT)
-			message.text = "Schanze!"
+			current_jump_gravity = float(kicker.get("flight_gravity", JUMP_GRAVITY))
+			var lift: float = speed * sin(float(kicker.angle)) + float(kicker.get("lift_bonus", 1.6))
+			vertical_speed = minf(lift, float(kicker.get("max_lift", JUMP_MAX_LIFT)))
+			message.text = "Panorama-Flug!" if bool(kicker.get("hero_flight", false)) else "Schanze!"
 			return true
 	if not airborne:
 		player.position.y = ground
 		return true
-	vertical_speed -= JUMP_GRAVITY * delta
+	vertical_speed -= current_jump_gravity * delta
 	player.position.y += vertical_speed * delta
 	air_time += delta
 	if world.in_gap(road_distance):
@@ -1679,6 +1685,7 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 	elif player.position.y <= ground:
 		player.position.y = ground
 		airborne = false
+		current_jump_gravity = JUMP_GRAVITY
 		landing_count += 1
 		if air_time > 0.35:
 			boost_time = maxf(boost_time, _boost_for(1.2))
