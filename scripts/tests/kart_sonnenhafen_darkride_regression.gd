@@ -33,6 +33,20 @@ func _run() -> void:
 			var verts: PackedVector3Array = node.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
 			var minimum_vertices: int = 140 if is_low else 300
 			assert(verts.size() > minimum_vertices, "Insufficient geometric detail for selected LOD")
+		var flow: MeshInstance3D = ride.get_node(
+			"DarkrideIlluminatedRoad/DarkrideWaterAndLavaFlow"
+		)
+		assert(flow != null and flow.mesh != null, "Water and lava ribbons are actual 3D mesh")
+		assert(flow.mesh.get_surface_count() == 1, "Side streams share one material batch")
+		var flow_vertices: PackedVector3Array = flow.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+		var flow_colors: PackedColorArray = flow.mesh.surface_get_arrays(0)[Mesh.ARRAY_COLOR]
+		assert(flow_vertices.size() >= 100, "Mobile flow strips cannot disappear")
+		assert(flow_colors.has(Color(0.0, 1.0, 1.0, 1.0)), "Blue water strip is absent")
+		assert(flow_colors.has(Color(1.0, 1.0, 0.0, 1.0)), "Amber fantasy lava strip is absent")
+		assert(float(metrics.flow_inner_edge_m) >= 5.8, "Streams may not overlap the driving line")
+		assert(int(metrics.flow_sections) >= 35, "Full-length river geometry required")
+		assert(flow.material_override == ride.get_node("DarkrideIlluminatedRoad").material_override,
+			"All flowing strips must share the pause-aware emission material")
 		var ribs: MultiMeshInstance3D = ride.get_node("DarkrideNeonArchRibs")
 		var crystals: MultiMeshInstance3D = ride.get_node("DarkrideCrystalLanterns")
 		assert(ribs.multimesh.instance_count == int(metrics["arch_rib_instances"]))

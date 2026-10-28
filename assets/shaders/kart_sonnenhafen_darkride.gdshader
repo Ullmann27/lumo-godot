@@ -14,6 +14,7 @@ uniform float rock_detail_strength : hint_range(0.0, 1.0) = 1.0;
 uniform bool mobile_detail = false;
 varying float inner_fade;
 varying vec3 rock_normal;
+varying vec3 material_tag;
 
 float mineral_hash(vec2 p) {
     vec3 q = fract(vec3(p.xyx) * 0.1031);
@@ -29,6 +30,7 @@ float mineral_noise(vec2 p) {
 }
 void vertex() {
     inner_fade = COLOR.a;
+    material_tag = COLOR.rgb;
     rock_normal = normalize(MODEL_NORMAL_MATRIX * NORMAL);
 }
 void fragment() {
@@ -71,4 +73,21 @@ void fragment() {
     ALBEDO = mix(base_rock, base_road, road_factor) * (0.80 + 0.20 * edge_fade);
     EMISSION = mix(glow_rock, glow_road, road_factor) * light_intensity * edge_fade;
     ROUGHNESS = mix(0.89, 0.72, road_factor);
+
+    // Batched water/lava ribbon geometry marks its material in vertex RGB.
+    // Legacy tunnel and roadway stay white (1,1,1), so their look is unchanged.
+    // The controlled director clock respects pause and reduced-motion mode.
+    float water = clamp(1.0 - material_tag.r, 0.0, 1.0) * road_factor;
+    float lava = clamp(1.0 - material_tag.b, 0.0, 1.0) * road_factor;
+    float stream_mask = max(water, lava);
+    float ripple = 0.74 + 0.26 * sin(UV.y * 2.8 + UV.x * 7.0 +
+        animation_time * (mobile_detail ? 0.9 : 2.1));
+    vec3 stream_color = mix(vec3(0.035, 0.27, 0.39),
+        vec3(0.85, 0.26, 0.045), lava);
+    vec3 stream_glow = mix(vec3(0.04, 0.48, 0.72),
+        vec3(1.0, 0.27, 0.045), lava);
+    ALBEDO = mix(ALBEDO, stream_color * (0.83 + ripple * 0.24), stream_mask);
+    EMISSION = mix(EMISSION, stream_glow * ripple * light_intensity * edge_fade * 0.7,
+        stream_mask);
+    ROUGHNESS = mix(ROUGHNESS, 0.26, stream_mask);
 }
