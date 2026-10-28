@@ -84,6 +84,8 @@ static func build(world) -> void:
 	_portal_lip(shell, world, to_m, ring_segments, true)
 	_shell_instance(root, "DarkrideRockAndCanopy", shell.commit(), 0.0, low)
 	_shell_instance(root, "DarkrideIlluminatedRoad", overlay.commit(), 1.0, low)
+	var road_mesh: MeshInstance3D = root.get_node("DarkrideIlluminatedRoad")
+	var flow_sections: int = _flow_channels(road_mesh, world, from_m, to_m, low)
 	var arch_count: int = maxi(4, floori((to_m - from_m) / RIB_INTERVAL))
 	var arc_ribs: int = _make_ribs(root, world, from_m, to_m, ring_segments, arch_count)
 	var light_count: int = _make_crystals(root, world, from_m, to_m, arch_count, low)
@@ -92,10 +94,57 @@ static func build(world) -> void:
 	metrics["ring_segments"] = ring_segments
 	metrics["arch_rib_instances"] = arc_ribs
 	metrics["crystal_instances"] = light_count
+	metrics["flow_sections"] = flow_sections
+	metrics["flow_inner_edge_m"] = 5.85
 	metrics["collision_bodies_added"] = 0
 	metrics["surface_count"] = 4
 	root.set_meta("darkride_metrics", metrics)
 	world.set_meta("sonnenhafen_darkride", metrics)
+
+## Wasser und Fantasie-Lava links/rechts der Fahrbahn, nicht in der Fahrspur.
+## Ein einziges echtes 3D-Mesh, dasselbe kontrollierte ShaderMaterial und keine
+## zusätzlichen Lichtquellen oder Kollisionskörper. TIME wird nicht benutzt.
+static func _flow_channels(parent: MeshInstance3D, world, from_m: float,
+		to_m: float, low: bool) -> int:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var step: float = 5.0 if low else 2.5
+	var sections: int = ceili((to_m - from_m) / step)
+	for section in range(sections):
+		var d0: float = lerpf(from_m, to_m, float(section) / float(sections))
+		var d1: float = lerpf(from_m, to_m, float(section + 1) / float(sections))
+		for side in [-1.0, 1.0]:
+			var b0: Basis = world.frame(d0)
+			var b1: Basis = world.frame(d1)
+			var inner: float = 5.85 * side
+			var outer: float = 7.55 * side
+			var p00: Vector3 = world.position_at(d0) + b0.x * inner + b0.y * 0.08
+			var p01: Vector3 = world.position_at(d0) + b0.x * outer + b0.y * 0.08
+			var p10: Vector3 = world.position_at(d1) + b1.x * inner + b1.y * 0.08
+			var p11: Vector3 = world.position_at(d1) + b1.x * outer + b1.y * 0.08
+			var tag: Color = Color(0.0, 1.0, 1.0, 1.0) if side < 0.0 else Color(1.0, 1.0, 0.0, 1.0)
+			var uv0: float = d0 * 0.16
+			var uv1: float = d1 * 0.16
+			_flow_tri(surface, [p00, p01, p11], [Vector2(0, uv0), Vector2(1, uv0), Vector2(1, uv1)], tag)
+			_flow_tri(surface, [p00, p11, p10], [Vector2(0, uv0), Vector2(1, uv1), Vector2(0, uv1)], tag)
+	var instance := MeshInstance3D.new()
+	instance.name = "DarkrideWaterAndLavaFlow"
+	instance.mesh = surface.commit()
+	instance.material_override = parent.material_override
+	instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(instance)
+	return sections
+
+
+static func _flow_tri(surface: SurfaceTool, points: Array[Vector3],
+		uvs: Array[Vector2], tag: Color) -> void:
+	var normal: Vector3 = (points[1] - points[0]).cross(points[2] - points[0]).normalized()
+	surface.set_normal(normal)
+	surface.set_color(tag)
+	for i in range(3):
+		surface.set_uv(uvs[i])
+		surface.add_vertex(points[i])
+
 
 static func _fade(d: float, from_m: float, to_m: float) -> float:
 	return minf(smoothstep(from_m, from_m + 16.0, d),
