@@ -2,8 +2,8 @@ extends RefCounted
 ## Action-Parcours je Runde: Turbo-Felder, Slalom-Tore, Sprungschanze, Unterwasser-Tunnel und
 ## offene Kanten, von denen man fallen kann (die Lumo-Wolke setzt das Kart fair zurück).
 ## Alle Elemente liegen in lokaler Rundendistanz (0 … Länge) und meiden Start/Ziel, Sprunglücke
-## und Looping. Sonnenhafen bleibt vorerst unverändert: Er ist Referenz- und Prüfstrecke des
-## vollständigen Android-Rennablaufs.
+## und Looping. Sonnenhafen erhält eine eigene Panorama-Schanze mit längerer,
+## fahrphysikalisch berechneter Flugphase; die übrigen Strecken bleiben unverändert.
 
 const PAD_LENGTH: float = 6.0
 const PAD_HALF_WIDTH: float = 1.4
@@ -23,6 +23,7 @@ const CLEARANCE: float = 14.0
 
 ## Lage der Elemente als Anteil der Runde. Die Fahrt prüft jede Lage noch gegen Sprung und Looping.
 const COURSES: Dictionary = {
+	"sonnenhafen": {"kicker": 0.55, "hero_flight": true},
 	"zauberwald": {"pads": [0.16, 0.66], "slalom": 0.28, "kicker": 0.84, "dive": [0.38, 0.46]},
 	"bergwelt": {"pads": [0.21, 0.93], "slalom": 0.45},
 	"holo_city": {"pads": [0.12, 0.57], "slalom": 0.31, "kicker": 0.80},
@@ -70,13 +71,22 @@ static func plan(world) -> Dictionary:
 				})
 			taken.append(Vector2(start, start + span))
 	if course.has("kicker"):
-		var start: float = _free_start(float(course.kicker) * length, KICKER_LENGTH + 10.0, length, blocked, taken)
+		var panorama: bool = bool(course.get("hero_flight", false))
+		var ramp_length: float = 12.0 if panorama else KICKER_LENGTH
+		var ramp_height: float = 2.2 if panorama else KICKER_HEIGHT
+		var reserved_span: float = ramp_length + (34.0 if panorama else 10.0)
+		var start: float = _free_start(float(course.kicker) * length, reserved_span, length, blocked, taken)
 		if start >= 0.0:
 			result.kickers.append({
-				"start": start, "take_off": start + KICKER_LENGTH, "height": KICKER_HEIGHT,
-				"angle": atan2(KICKER_HEIGHT, KICKER_LENGTH)
+				"start": start, "take_off": start + ramp_length,
+				"length": ramp_length, "height": ramp_height,
+				"angle": atan2(ramp_height, ramp_length),
+				"flight_gravity": 14.0 if panorama else 30.0,
+				"lift_bonus": 5.0 if panorama else 1.6,
+				"max_lift": 11.0 if panorama else 4.0,
+				"hero_flight": panorama
 			})
-			taken.append(Vector2(start, start + KICKER_LENGTH + 10.0))
+			taken.append(Vector2(start, start + reserved_span))
 	if course.has("dive"):
 		var range_fractions: Array = course.dive
 		var dive_start: float = float(range_fractions[0]) * length
@@ -133,7 +143,7 @@ static func _free_start(wish: float, span: float, length: float, blocked: Array,
 static func kicker_height(course: Dictionary, distance: float) -> float:
 	for kicker in course.get("kickers", []):
 		if distance >= float(kicker.start) and distance < float(kicker.take_off):
-			return (distance - float(kicker.start)) / KICKER_LENGTH * float(kicker.height)
+			return (distance - float(kicker.start)) / float(kicker.length) * float(kicker.height)
 	return 0.0
 
 
@@ -250,18 +260,31 @@ static func _build_gate(world, gate: Dictionary, accent: Color) -> void:
 
 
 static func _build_kicker(world, kicker: Dictionary, accent: Color) -> void:
-	var steps: int = 7
+	var ramp_length: float = float(kicker.length)
+	var steps: int = ceili(ramp_length)
 	for step in range(steps):
-		var along: float = float(kicker.start) + (float(step) + 0.5) * KICKER_LENGTH / float(steps)
+		var along: float = float(kicker.start) + (float(step) + 0.5) * ramp_length / float(steps)
 		var basis: Basis = world.frame(along)
 		var rise: float = (float(step) + 0.5) / float(steps) * float(kicker.height)
 		var slab: Basis = basis.rotated(basis.x, float(kicker.angle))
 		var at: Vector3 = world.position_at(along) + basis.y * (rise * 0.5)
 		var color: Color = Color("f7c84a") if step % 2 == 0 else Color("23324a")
-		world._prop("box", at, Vector3(9.2, maxf(0.08, rise), KICKER_LENGTH / float(steps) + 0.05), color, slab)
+		world._prop("box", at, Vector3(9.2, maxf(0.08, rise), ramp_length / float(steps) + 0.05), color, slab)
 	var lip: float = float(kicker.take_off) - 0.2
 	var lip_basis: Basis = world.frame(lip)
 	world._prop("box", world.position_at(lip) + lip_basis.y * float(kicker.height), Vector3(9.4, 0.08, 0.3), accent, lip_basis, true)
+	if bool(kicker.get("hero_flight", false)):
+		# Cyan landing markers sit outside the driving corridor.
+		for marker in range(3):
+			var d: float = float(kicker.take_off) + 5.0 + float(marker) * 8.0
+			var frame: Basis = world.frame(d)
+			for side in [-1.0, 1.0]:
+				var p: Vector3 = world.position_at(d, side * 6.4)
+				world._prop("box", p + frame.y * (1.2 + marker * 0.25),
+					Vector3(0.24, 2.4 + marker * 0.5, 0.28), Color("43e4ff"), frame, true)
+			var arch: Vector3 = world.position_at(d) + frame.y * (2.5 + marker * 0.5)
+			world._prop("box", arch, Vector3(12.8, 0.24, 0.28),
+				Color("a6f6ff"), frame, true)
 
 
 static func _build_dive(world, dive: Dictionary) -> void:
