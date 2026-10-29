@@ -148,11 +148,26 @@ func _stunt_views() -> void:
 				shot += 1
 		elif shot > 0:
 			break
-	for _i in range(40):
+	for _i in range(20):
 		game._physics_process(1.0 / 60.0)
 	await _save("stunt-06-exit")
+	# Onward over the Position B jump: grab the frame near the top of the arc.
+	var air_frames: int = 0
+	for _i in range(300):
+		var ahead: Vector3 = game.world.position_at(game.previous_road_distance + 8.0, 0.0)
+		var heading: Vector3 = ahead - game.player.position
+		game.steering = clampf(
+			-angle_difference(game.player_heading, atan2(-heading.x, -heading.z)) * 2.3, -1, 1
+		)
+		game._physics_process(1.0 / 60.0)
+		if game.airborne:
+			air_frames += 1
+			if air_frames == 34:
+				await _save("stunt-07-jump-flight")
+		elif air_frames > 0:
+			break
 	_place_at(tunnel - 30.0, 0.0, 60)
-	await _save("stunt-07-tunnel-mouth")
+	await _save("stunt-08-tunnel-mouth")
 
 
 func _place_at(distance_m: float, lane: float, drive_steps: int) -> void:
