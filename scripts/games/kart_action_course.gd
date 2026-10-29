@@ -93,6 +93,11 @@ static func plan(world) -> Dictionary:
 				"hero_flight": panorama
 			})
 			taken.append(Vector2(start, start + reserved_span))
+	# The stunt sequence adds its own panorama kicker after the loop exit.
+	if bool(course.get("stunt", false)):
+		for kicker in STUNT.kickers(world):
+			result.kickers.append(kicker)
+			taken.append(Vector2(float(kicker.start), float(kicker.take_off) + 34.0))
 	if course.has("dive"):
 		var range_fractions: Array = course.dive
 		var dive_start: float = float(range_fractions[0]) * length

@@ -57,7 +57,8 @@ func _check_layout() -> void:
 	assert(longest < 0.4, "Riding line has no gaps (%.2f m)" % longest)
 	var peak: float = LOOP.point(world, layout, 0.5).y - world.position_at(float(layout.start)).y
 	assert(peak > 2.0 * STUNT.LOOP_RADIUS - 0.5, "Loop height %.1f m" % peak)
-	assert(STUNT.star_positions(world).size() == STUNT.STAR_FRACTIONS.size() + 4)
+	var star_count: int = STUNT.STAR_FRACTIONS.size() + 4 + STUNT.ARC_STARS.size()
+	assert(STUNT.star_positions(world).size() == star_count)
 	assert(world.get_node_or_null("StuntLoopDeck") is MeshInstance3D, "Deck mesh is built")
 	# Other tracks keep their loops and rules.
 	for track in ["zauberwald", "candy_cloud", "holo_city"]:
@@ -233,6 +234,67 @@ func _check_too_slow() -> void:
 	print("[SonnenhafenStunt] too slow: safe set-back to the main lane")
 
 
+func _check_stunt_jump() -> void:
+	await _start()
+	var kickers: Array = game.world.action.kickers
+	var jump: Dictionary = {}
+	for kicker in kickers:
+		if bool(kicker.get("stunt", false)):
+			jump = kicker
+	assert(not jump.is_empty(), "Stunt jump exists")
+	var tunnel: float = STUNT.tunnel_start(game.world)
+	assert(is_equal_approx(float(jump.take_off), tunnel - STUNT.JUMP_LEAD_M), "Jump at Position B")
+	assert(
+		float(jump.start) > float(game.world.loop_layout.start) + LOOP.ADVANCE,
+		"Ramp after the loop exit"
+	)
+	_place(float(jump.start) - 14.0, 0.0, 20.0)
+	var jumps_before: int = game.action_kicker_jumps
+	var landings_before: int = game.landing_count
+	var resets_before: int = game.reset_count
+	var stars_before: int = _stunt_stars()
+	var entered_air: bool = false
+	var max_height: float = 0.0
+	var air: float = 0.0
+	var flight_start: float = 0.0
+	var flight_end: float = 0.0
+	for frame in range(300):
+		_steer_to(0.0)
+		game._physics_process(STEP)
+		if game.airborne:
+			if not entered_air:
+				flight_start = game.distance
+			entered_air = true
+			air = maxf(air, game.air_time)
+			var road: Dictionary = game.world.sample_road(
+				game.player.position, game.previous_road_distance
+			)
+			max_height = maxf(max_height, game.player.position.y - float(road.height))
+		elif entered_air:
+			flight_end = game.distance
+			break
+	assert(
+		entered_air and game.action_kicker_jumps == jumps_before + 1,
+		"Kart launched from the stunt jump"
+	)
+	assert(game.landing_count == landings_before + 1 and not game.airborne, "Safe landing")
+	assert(game.reset_count == resets_before, "No rescue on the stunt jump")
+	assert(max_height > 3.0 and flight_end - flight_start > 15.0, "Real flight")
+	var road_after: Dictionary = game.world.sample_road(
+		game.player.position, game.previous_road_distance
+	)
+	assert(absf(float(road_after.lateral)) < 4.5, "Landed on the road")
+	var arc_stars: int = _stunt_stars() - stars_before
+	assert(fposmod(flight_end, game.track_length) < tunnel - 5.0, "Landing before the tunnel mouth")
+	completed_checks += 1
+	print(
+		(
+			"[SonnenhafenStunt] jump: %.1f m flight, %.1f m high, %.2f s air, %d arc stars"
+			% [flight_end - flight_start, max_height, air, arc_stars]
+		)
+	)
+
+
 func _run() -> void:
 	assert(DisplayServer.get_name() != "headless")
 	await _check_layout()
@@ -243,8 +305,9 @@ func _run() -> void:
 	await _settle()
 	await _check_full_loop()
 	await _check_too_slow()
-	if completed_checks != 3:
-		print("[SonnenhafenStunt] FAIL: %d of 3 checks completed" % completed_checks)
+	await _check_stunt_jump()
+	if completed_checks != 4:
+		print("[SonnenhafenStunt] FAIL: %d of 4 checks completed" % completed_checks)
 		quit(1)
 		return
 	print("[SonnenhafenStunt] PASS: real loop, boost pad, stars, safe exit and safe failure")

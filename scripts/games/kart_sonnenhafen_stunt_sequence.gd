@@ -25,6 +25,14 @@ const PAD_GAP_M: float = 16.0
 const PAD_LENGTH: float = 6.0
 const STAR_FRACTIONS: Array[float] = [0.14, 0.27, 0.40, 0.5, 0.60, 0.73, 0.86]
 
+## Position B, 80 m before the tunnel: a full-width panorama kicker right after
+## the loop exit. Same flight model as the 55 % panorama jump.
+const JUMP_LEAD_M: float = 80.0
+const JUMP_RAMP_LENGTH: float = 12.0
+const JUMP_RAMP_HEIGHT: float = 2.2
+## Stars along the measured flight arc (metres after take-off, height above road).
+const ARC_STARS: Array = [[5.0, 2.6], [10.0, 3.7], [15.0, 4.1], [20.0, 3.6]]
+
 const NAVY: Color = Color("12233f")
 const CYAN: Color = Color("41dcff")
 const ORANGE: Color = Color("ff9a2e")
@@ -69,6 +77,30 @@ static func pads(world) -> Array:
 	return [{"start": end - PAD_LENGTH, "end": end, "lateral": LOOP_LANE}]
 
 
+static func jump_take_off(world) -> float:
+	return tunnel_start(world) - JUMP_LEAD_M
+
+
+static func kickers(world) -> Array:
+	if not applies(world):
+		return []
+	var take_off: float = jump_take_off(world)
+	return [
+		{
+			"start": take_off - JUMP_RAMP_LENGTH,
+			"take_off": take_off,
+			"length": JUMP_RAMP_LENGTH,
+			"height": JUMP_RAMP_HEIGHT,
+			"angle": atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH),
+			"flight_gravity": 14.0,
+			"lift_bonus": 5.0,
+			"max_lift": 11.0,
+			"hero_flight": true,
+			"stunt": true,
+		}
+	]
+
+
 ## Collectible stars on the riding line through the loop and over the pad.
 static func star_positions(world) -> Array[Vector3]:
 	var result: Array[Vector3] = []
@@ -82,6 +114,10 @@ static func star_positions(world) -> Array[Vector3]:
 	for i in range(4):
 		var d: float = start - PAD_GAP_M - PAD_LENGTH - 2.0 + float(i) * 4.5
 		result.append(world.position_at(d, LOOP_LANE) + world.frame(d).y * 0.95)
+	var take_off: float = jump_take_off(world)
+	for entry in ARC_STARS:
+		var d: float = take_off + float(entry[0])
+		result.append(world.position_at(d, 0.0) + Vector3.UP * (float(entry[1]) + 0.95))
 	return result
 
 

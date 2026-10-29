@@ -4,6 +4,7 @@ extends SceneTree
 ## mit fairer Rettung. Gefahren wird mit Gas und Lenkung über _physics_process, ohne Teleport im Flug.
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
+const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const STEP: float = 1.0 / 60.0
 var game
 
@@ -27,7 +28,8 @@ func _check_plans() -> void:
 		var stunt_pads: int = ACTION.STUNT.pads(world).size() if config.get("stunt", false) else 0
 		assert(course.pads.size() == config.get("pads", []).size() + stunt_pads, "%s: alle Turbo-Felder haben Platz" % track)
 		assert(course.gates.size() == (ACTION.GATE_COUNT if config.has("slalom") else 0), "%s: Slalom-Tore" % track)
-		assert(course.kickers.size() == (1 if config.has("kicker") else 0), "%s: Sprungschanze" % track)
+		var stunt_kickers: int = ACTION.STUNT.kickers(world).size() if config.get("stunt", false) else 0
+		assert(course.kickers.size() == (1 if config.has("kicker") else 0) + stunt_kickers, "%s: Sprungschanze" % track)
 		assert(course.dives.size() == (1 if config.has("dive") else 0), "%s: Tauchstrecke" % track)
 		assert(course.edges.size() == config.get("edges", []).size(), "%s: offene Kanten" % track)
 		var spans: Array = []
@@ -48,7 +50,12 @@ func _check_plans() -> void:
 				assert(span.y < float(world.jump.ramp_start) or span.x > float(world.jump.gap_end), "%s: nicht im Sprung" % track)
 			if not world.loop_layout.is_empty():
 				var loop_start: float = float(world.loop_layout.start)
-				assert(span.y < loop_start or span.x > loop_start + 60.0, "%s: nicht im Looping" % track)
+				# The stunt loop is designed as a combo: its own jump may follow the
+				# loop exit closely, but nothing may touch the ring itself.
+				var clearance: float = 60.0
+				if bool(world.loop_layout.get("stunt", false)):
+					clearance = LOOP.ADVANCE + LOOP.radius_of(world.loop_layout)
+				assert(span.y < loop_start or span.x > loop_start + clearance, "%s: nicht im Looping" % track)
 		for a in range(spans.size()):
 			for b in range(a + 1, spans.size()):
 				assert(spans[a].y <= spans[b].x or spans[b].y <= spans[a].x, "%s: Elemente überlappen nicht" % track)
@@ -181,7 +188,7 @@ func _check_kicker_and_dive() -> void:
 func _check_sonnenhafen_long_flight() -> void:
 	await _start("sonnenhafen")
 	var course: Dictionary = game.world.action
-	assert(course.kickers.size() == 1, "Sonnenhafen panorama jump must exist")
+	assert(course.kickers.size() == 2, "Sonnenhafen: panorama jump plus stunt jump")
 	var kicker: Dictionary = course.kickers[0]
 	assert(bool(kicker.hero_flight) and float(kicker.length) > ACTION.KICKER_LENGTH)
 	assert(float(kicker.flight_gravity) < game.JUMP_GRAVITY)
