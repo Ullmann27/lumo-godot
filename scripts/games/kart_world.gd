@@ -465,6 +465,12 @@ func _sky_for(id: String) -> Sky:
 	atmosphere.ground_horizon_color=definition.horizon
 	atmosphere.sky_curve=0.44
 	atmosphere.sun_angle_max=5.0
+	if id=="sonnenhafen":
+		# Bright reference sky: stronger blue toward the zenith, golden sun disc.
+		atmosphere.sky_curve=0.18
+		atmosphere.sky_energy_multiplier=1.08
+		atmosphere.sun_angle_max=12.0
+		atmosphere.sun_curve=0.08
 	sky.sky_material=atmosphere
 	_skies[id]=sky
 	return sky

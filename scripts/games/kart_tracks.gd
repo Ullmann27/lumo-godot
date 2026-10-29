@@ -64,7 +64,9 @@ static func definition(id: String) -> Dictionary:
 				"name": "Sonnenhafen",
 				"subtitle": "Grand Prix zwischen Klippen, Hafen und Wasserfall",
 				"accent": Color("63dce9"), "asphalt": Color("242d38"),
-				"sky": Color("276ba0"), "horizon": Color("e7a976"), "fog": Color("d9b18b"),
+				# 2027 reference look: clear summer blue over the coast, warm light only
+				# at the horizon edge (docs/design_targets/2026-10-29-kart-reference).
+				"sky": Color("2f86d4"), "horizon": Color("bfe0f2"), "fog": Color("cfe6f2"),
 				"sun": Color("ffe5bc"), "ground": Color("7caa69"), "seed": 109021,
 				# Experimental B2 circuit: 23 independently authored coastal control points.
 				# Keep the prior 1972 route immutable on its pinned SHA.
