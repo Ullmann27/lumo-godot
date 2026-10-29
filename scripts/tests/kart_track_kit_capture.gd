@@ -8,6 +8,8 @@ extends SceneTree
 ## Frame times measured here are xvfb/llvmpipe wall-clock numbers: relative only, not device FPS.
 
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
+const TUNNEL_FRACTION: float = 0.690
+const LOOP_LEAD_M: float = 108.0
 ## Representative chase-camera position per track (fraction of the lap, lane).
 ## Chosen just before a boost pad / setpiece so each world's signature reads.
 const CHASE_VIEWS: Dictionary = {
@@ -116,6 +118,47 @@ func _save(name: String) -> String:
 	return path
 
 
+## Stunt sequence 108 m before the crystal tunnel (Position A). Works on the
+## base too: there the same road positions simply have no loop yet.
+func _stunt_views() -> void:
+	var length: float = game.track_length
+	var tunnel: float = length * TUNNEL_FRACTION
+	var loop_start: float = tunnel - LOOP_LEAD_M
+	var lane: float = 2.6
+	_place_at(loop_start - 150.0, 0.0, 70)
+	await _save("stunt-01-distant")
+	_place_at(loop_start - 40.0, lane, 50)
+	await _save("stunt-02-approach")
+	# Drive for real from the pad into the loop and grab the riding frames.
+	_place_at(loop_start - 30.0, lane, 0)
+	game.speed = 18.0
+	var shots: Array = [[0.12, "stunt-03-entry"], [0.5, "stunt-04-top"], [0.82, "stunt-05-descent"]]
+	var shot: int = 0
+	for _i in range(400):
+		var target: Vector3 = game.world.position_at(game.previous_road_distance + 8.0, lane)
+		var direction: Vector3 = target - game.player.position
+		game.steering = clampf(
+			-angle_difference(game.player_heading, atan2(-direction.x, -direction.z)) * 2.3, -1, 1
+		)
+		game._physics_process(1.0 / 60.0)
+		if not game.world.loop_layout.is_empty() and game.loop_state.active:
+			game.steering = 0.0
+			if shot < shots.size() and game.loop_state.progress >= float(shots[shot][0]):
+				await _save(str(shots[shot][1]))
+				shot += 1
+		elif shot > 0:
+			break
+	for _i in range(40):
+		game._physics_process(1.0 / 60.0)
+	await _save("stunt-06-exit")
+	_place_at(tunnel - 30.0, 0.0, 60)
+	await _save("stunt-07-tunnel-mouth")
+
+
+func _place_at(distance_m: float, lane: float, drive_steps: int) -> void:
+	_place(distance_m / game.track_length, lane, drive_steps)
+
+
 func _metrics(track: String) -> Dictionary:
 	var meshes: int = 0
 	var multimeshes: int = 0
@@ -187,6 +230,8 @@ func _run() -> void:
 			for extra in SONNENHAFEN_EXTRA:
 				_place(float(extra[1]), float(extra[2]), 75)
 				await _save("sonnenhafen-" + str(extra[0]))
+		if track == "sonnenhafen" and views in ["stunt", "all"]:
+			await _stunt_views()
 		if track == "sonnenhafen" and views in ["reference", "all"]:
 			_place(0.385, 0.0, 70)
 			game._boost()
@@ -198,7 +243,12 @@ func _run() -> void:
 			entry["build_ms"] = build_ms
 			metrics.append(entry)
 			print("[TrackKitMetrics] ", JSON.stringify(entry))
-	report = {"tag": tag, "size": [size.x, size.y], "renderer": RenderingServer.get_current_rendering_method(), "tracks": metrics}
+	report = {
+		"tag": tag,
+		"size": [size.x, size.y],
+		"renderer": RenderingServer.get_current_rendering_method(),
+		"tracks": metrics
+	}
 	var file := FileAccess.open(out_dir.path_join(tag + "-metrics.json"), FileAccess.WRITE)
 	if file != null:
 		file.store_string(JSON.stringify(report, "  "))

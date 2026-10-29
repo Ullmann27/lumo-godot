@@ -15,9 +15,9 @@ const DECK_SHADER = preload("res://assets/shaders/kart_stunt_loop.gdshader")
 const TUNNEL_FRACTION: float = 0.690
 ## Loop entry this many metres before the tunnel mouth (Position A).
 const LOOP_LEAD_M: float = 108.0
-const LOOP_LANE: float = 2.6
+const LOOP_LANE: float = 2.9
 const LOOP_RADIUS: float = 8.0
-const DECK_HALF_WIDTH: float = 1.9
+const DECK_HALF_WIDTH: float = 2.4
 const WALL_HEIGHT: float = 0.55
 const DECK_SEGMENTS: int = 160
 ## Boost pad on the loop lane, ending this far before the loop entry.
@@ -203,6 +203,18 @@ static func _deck(world, layout: Dictionary) -> void:
 	spine_material.roughness = 0.38
 	spine_material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	_add_mesh(world, "StuntLoopSpine", spine, spine_material)
+	# Running lights on the outside of the ring, like the reference loops.
+	for i in range(0, DECK_SEGMENTS, 4):
+		var u: float = float(i) / float(DECK_SEGMENTS)
+		var basis: Basis = LOOP.frame_at(world, layout, u)
+		world._prop(
+			"ball",
+			LOOP.point(world, layout, u) - basis.y * 0.48,
+			Vector3.ONE * 0.22,
+			GOLD if (i / 4) % 2 == 0 else CYAN,
+			Basis.IDENTITY,
+			true
+		)
 	# Cyan light strip on top of both walls, visible from far away.
 	for i in range(0, DECK_SEGMENTS, 2):
 		var u: float = (float(i) + 1.0) / float(DECK_SEGMENTS)
@@ -265,9 +277,14 @@ static func _supports(world, layout: Dictionary) -> void:
 		var d: float = start + u * LOOP.ADVANCE + (LOOP_RADIUS if u < 0.5 else -LOOP_RADIUS)
 		var foot: Vector3 = world.position_at(d, right)
 		foot.y -= 2.0
-		world._beam(foot, flank, 0.55, Color("8fa3b5"))
-		world._beam(foot + world.frame(d).z * 2.2, flank, 0.38, Color("8fa3b5"))
-		world._prop("box", foot, Vector3(2.0, 0.8, 2.0), Color("5d7286"), world.frame(d))
+		var cap: Vector3 = flank + (flank - foot).normalized() * 0.2
+		world._beam(foot, flank, 0.42, Color("e9eef2"))
+		world._beam(foot + world.frame(d).z * 2.4, flank, 0.3, Color("e9eef2"))
+		world._prop("ball", cap, Vector3.ONE * 0.38, ORANGE, Basis.IDENTITY, true)
+		world._prop("box", foot, Vector3(2.0, 0.8, 2.0), NAVY, world.frame(d))
+		world._prop(
+			"box", foot + Vector3.UP * 0.42, Vector3(2.1, 0.08, 2.1), CYAN, world.frame(d), true
+		)
 	# Plinth along the loop lane under the entry and exit plates.
 	for d in [start - 0.5, start + LOOP.ADVANCE + 0.5]:
 		var basis: Basis = world.frame(d)

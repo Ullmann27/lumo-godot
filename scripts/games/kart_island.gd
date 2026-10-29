@@ -2275,13 +2275,26 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 	if loop_state.active:
 		var origin: Vector3 = world.position_at(float(world.loop_layout.start), float(world.loop_layout.lane))
 		var entry_basis: Basis = world.frame(float(world.loop_layout.start))
-		# Side view scaled to the loop size: the whole ring stays in frame.
-		var size: float = PHYSICAL_LOOP.radius_of(world.loop_layout) / PHYSICAL_LOOP.RADIUS
-		var desired_loop: Vector3 = (
-			origin + entry_basis.x * 12 * size + entry_basis.z * 15 * size + Vector3.UP * 11 * size
-		)
+		var radius: float = PHYSICAL_LOOP.radius_of(world.loop_layout)
+		var desired_loop: Vector3 = origin + entry_basis.x * 12 + entry_basis.z * 15 + Vector3.UP * 11
+		var focus: Vector3 = player.position + Vector3.UP * 0.6
+		if bool(world.loop_layout.get("stunt", false)):
+			# Cinematic side view through the open ring: the kart stays visible
+			# on the inner deck all the way round, also upside down at the top.
+			var hub: Vector3 = (
+				world.position_at(
+					float(world.loop_layout.start) + PHYSICAL_LOOP.ADVANCE * 0.5,
+					float(world.loop_layout.lane)
+				)
+				+ entry_basis.y * radius
+			)
+			desired_loop = (
+				hub - entry_basis.x * radius * 2.7 + entry_basis.z * radius * 0.45
+				- entry_basis.y * radius * 0.15
+			)
+			focus = focus.lerp(hub, 0.35)
 		camera.position = camera.position.lerp(desired_loop, minf(1, delta * 4))
-		camera.look_at(player.position + Vector3.UP * 0.6)
+		camera.look_at(focus)
 		return
 	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
 	var right := Vector3(-ahead.z, 0, ahead.x)
