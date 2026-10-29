@@ -33,6 +33,10 @@ const JUMP_RAMP_HEIGHT: float = 2.2
 ## Stars along the measured flight arc (metres after take-off, height above road).
 const ARC_STARS: Array = [[5.0, 2.6], [10.0, 3.7], [15.0, 4.1], [20.0, 3.6]]
 
+## Tunnel portal at the dark-ride mouth (lateral legs outside the rails).
+const PORTAL_SETBACK_M: float = 1.5
+const PORTAL_RADIUS: float = 9.2
+const PORTAL_BASE_HEIGHT: float = 0.9
 const NAVY: Color = Color("12233f")
 const CYAN: Color = Color("41dcff")
 const ORANGE: Color = Color("ff9a2e")
@@ -130,6 +134,7 @@ static func build(world) -> void:
 	_inner_stars(world, layout)
 	_entry_guidance(world, layout)
 	_beacons(world, layout)
+	_tunnel_portal(world)
 
 
 ## Deck, side walls and the chunky outer spine as three real meshes that use
@@ -400,3 +405,46 @@ static func _beacons(world, layout: Dictionary) -> void:
 		)
 		world._prop("ball", foot + Vector3.UP * 18.6, Vector3.ONE * 0.9, CYAN, Basis.IDENTITY, true)
 		world._prop("box", foot + Vector3.UP * 14.0, Vector3(1.4, 2.6, 0.12), ORANGE, basis, true)
+
+
+## Glowing portal around the crystal-tunnel mouth: chevron arch, bulb ring and a
+## LUMO KART sign, all outside the rail corridor and above the tunnel shell.
+static func _tunnel_portal(world) -> void:
+	var d: float = tunnel_start(world) - PORTAL_SETBACK_M
+	var basis: Basis = world.frame(d)
+	var center: Vector3 = world.position_at(d) + basis.y * PORTAL_BASE_HEIGHT
+	var steps: int = 26
+	for i in range(steps + 1):
+		var angle: float = PI * float(i) / float(steps)
+		var dir: Vector3 = basis.x * cos(angle) + basis.y * sin(angle)
+		var tangent: Vector3 = (-basis.x * sin(angle) + basis.y * cos(angle)).normalized()
+		var segment := (
+			Basis(tangent, basis.z.cross(tangent).normalized(), basis.z).orthonormalized()
+		)
+		var at: Vector3 = center + dir * PORTAL_RADIUS
+		world._prop("box", at, Vector3(1.25, 1.1, 1.6), NAVY, segment)
+		# Cyan light bar on the front face, facing the approaching driver.
+		world._prop(
+			"box", at - dir * 0.2 + basis.z * 0.82, Vector3(0.72, 0.16, 0.08), CYAN, segment, true
+		)
+		# Bulbs on the outer rim.
+		world._prop(
+			"ball", at + dir * 0.62 + basis.z * 0.6, Vector3.ONE * 0.32, GOLD, Basis.IDENTITY, true
+		)
+	for side in [-1.0, 1.0]:
+		var foot: Vector3 = center + basis.x * side * PORTAL_RADIUS
+		var ground: Vector3 = world.position_at(d, side * PORTAL_RADIUS)
+		world._prop(
+			"box",
+			(foot + ground) * 0.5 - basis.y * 0.3,
+			Vector3(1.4, foot.distance_to(ground) + 0.8, 1.8),
+			NAVY,
+			basis
+		)
+	# Sign hangs in front of the arch crown, low enough to read under the HUD.
+	var top: Vector3 = center + basis.y * (PORTAL_RADIUS - 1.3) + basis.z * 1.1
+	world._prop("box", top, Vector3(8.6, 2.2, 0.5), Color("173a63"), basis)
+	world._prop("box", top + basis.y * 1.18, Vector3(8.9, 0.16, 0.6), ORANGE, basis, true)
+	world._prop("box", top - basis.y * 1.18, Vector3(8.9, 0.16, 0.6), CYAN, basis, true)
+	world._sign(top + basis.z * 0.28, basis, "LUMO KART", 0.05)
+	world._sign(top + basis.z * 0.28 - basis.y * 0.75, basis, "Kristalltunnel", 0.02)
