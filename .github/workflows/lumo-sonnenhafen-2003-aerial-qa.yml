@@ -1,0 +1,76 @@
+name: Lumo Sonnenhafen 2003 real bird eye and jump QA
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/lumo-sonnenhafen-2003-aerial-qa.yml'
+      - 'scripts/games/kart_action_course.gd'
+      - 'scripts/games/kart_island.gd'
+      - 'scripts/tests/kart_action_course_regression.gd'
+      - 'scripts/tests/kart_sonnenhafen_aerial_flight_capture.gd'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  hero-flight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install real Godot 4.6.3 and virtual OpenGL display
+        run: |
+          set -euo pipefail
+          sudo apt-get -qq update
+          sudo apt-get -y install xvfb libgl1-mesa-dri
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Parse complete original Godot project
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit > import.log 2>&1
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' import.log; then
+            cat import.log
+            exit 1
+          fi
+      - name: Real accelerated steering, long flight, landing, and old action course
+        run: |
+          set -euo pipefail
+          xvfb-run -a -s '-screen 0 1280x720x24' \
+            python3 tools/run_godot_probe.py --timeout 180 \
+              --log flight.log --required '[KartSonnenhafenFlight]' \
+              -- Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy \
+              --rendering-method gl_compatibility --path . \
+              --script res://scripts/tests/kart_action_course_regression.gd
+          grep -F '[KartActionCourse] PASS:' flight.log
+      - name: Real bird's-eye route, ramp, flight and landing frames (1280x720)
+        env:
+          LUMO_CAPTURE_DIR: ${{ github.workspace }}/artifacts/sonnenhafen-flight
+        run: |
+          set -euo pipefail
+          mkdir -p "$LUMO_CAPTURE_DIR"
+          xvfb-run -a -s '-screen 0 1280x720x24' \
+            python3 tools/run_godot_probe.py --timeout 180 \
+              --log capture.log --required '[SonnenhafenAerial] PASS:' \
+              -- Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy \
+              --rendering-method gl_compatibility --path . \
+              --script res://scripts/tests/kart_sonnenhafen_aerial_flight_capture.gd
+          test -s "$LUMO_CAPTURE_DIR/01_sonnenhafen_full_track_bird_eye.png"
+          test -s "$LUMO_CAPTURE_DIR/02_sonnenhafen_ramp_bird_eye.png"
+          test -s "$LUMO_CAPTURE_DIR/03_sonnenhafen_actual_flight_bird_eye.png"
+          test -s "$LUMO_CAPTURE_DIR/04_sonnenhafen_landing_bird_eye.png"
+      - name: Preserve proof, including failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sonnenhafen-aerial-${{ github.run_id }}
+          path: |
+            import.log
+            flight.log
+            capture.log
+            artifacts/sonnenhafen-flight/
+          retention-days: 30
