@@ -24,7 +24,8 @@ func _check_plans() -> void:
 		world.build(true, str(track), true)
 		var course: Dictionary = world.action
 		var config: Dictionary = ACTION.COURSES[track]
-		assert(course.pads.size() == config.get("pads", []).size(), "%s: alle Turbo-Felder haben Platz" % track)
+		var stunt_pads: int = ACTION.STUNT.pads(world).size() if config.get("stunt", false) else 0
+		assert(course.pads.size() == config.get("pads", []).size() + stunt_pads, "%s: alle Turbo-Felder haben Platz" % track)
 		assert(course.gates.size() == (ACTION.GATE_COUNT if config.has("slalom") else 0), "%s: Slalom-Tore" % track)
 		assert(course.kickers.size() == (1 if config.has("kicker") else 0), "%s: Sprungschanze" % track)
 		assert(course.dives.size() == (1 if config.has("dive") else 0), "%s: Tauchstrecke" % track)
@@ -58,7 +59,11 @@ func _check_plans() -> void:
 	var plain = WORLD.new()
 	root.add_child(plain)
 	plain.build(true, "sonnenhafen", true)
-	assert(plain.action.pads.is_empty() and plain.action.gates.is_empty(), "Sonnenhafen erhält nur seine eigene Panorama-Schanze; andere Parcours-Elemente bleiben aus")
+	# Sonnenhafen: Panorama-Schanze plus genau das Turbo-Feld der Stunt-Looping-Spur vor dem Tunnel.
+	var stunt_pads: Array = ACTION.STUNT.pads(plain)
+	assert(plain.action.gates.is_empty(), "Sonnenhafen hat keine Slalom-Tore")
+	assert(plain.action.pads.size() == 1 and stunt_pads.size() == 1, "Nur das Stunt-Turbo-Feld")
+	assert(is_equal_approx(float(plain.action.pads[0].lateral), float(plain.loop_layout.lane)), "Turbo-Feld liegt auf der Looping-Spur")
 	plain.free()
 
 
