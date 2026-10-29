@@ -5,6 +5,7 @@ extends RefCounted
 ## und Looping. Sonnenhafen erhält eine eigene Panorama-Schanze mit längerer,
 ## fahrphysikalisch berechneter Flugphase; die übrigen Strecken bleiben unverändert.
 
+const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const PAD_LENGTH: float = 6.0
 const PAD_HALF_WIDTH: float = 1.4
 const PAD_BOOST_SECONDS: float = 1.0
@@ -23,7 +24,7 @@ const CLEARANCE: float = 14.0
 
 ## Lage der Elemente als Anteil der Runde. Die Fahrt prüft jede Lage noch gegen Sprung und Looping.
 const COURSES: Dictionary = {
-	"sonnenhafen": {"kicker": 0.55, "hero_flight": true},
+	"sonnenhafen": {"kicker": 0.55, "hero_flight": true, "stunt": true},
 	"zauberwald": {"pads": [0.16, 0.66], "slalom": 0.28, "kicker": 0.84, "dive": [0.38, 0.46]},
 	"bergwelt": {"pads": [0.21, 0.93], "slalom": 0.45},
 	"holo_city": {"pads": [0.12, 0.57], "slalom": 0.31, "kicker": 0.80},
@@ -60,6 +61,11 @@ static func plan(world) -> Dictionary:
 			result.pads.append({"start": start, "end": start + PAD_LENGTH, "lateral": pad_lane})
 			taken.append(Vector2(start, start + PAD_LENGTH))
 			pad_lane = -pad_lane
+	# Stunt pads feed the loop lane; they sit just outside the loop's own zone.
+	if bool(course.get("stunt", false)):
+		for pad in STUNT.pads(world):
+			result.pads.append(pad)
+			taken.append(Vector2(float(pad.start), float(pad.end)))
 	if course.has("slalom"):
 		var span: float = GATE_SPACING * float(GATE_COUNT)
 		var start: float = _free_start(float(course.slalom) * length, span, length, blocked, taken)

@@ -23,6 +23,7 @@ const HERO_COAST = preload("res://scripts/games/kart_sonnenhafen_hero_coast.gd")
 const DARK_RIDE = preload("res://scripts/games/kart_sonnenhafen_darkride.gd")
 const HARBOR_CRANE = preload("res://scripts/games/kart_harbor_crane.gd")
 const HARBOR_AQUARIUM = preload("res://scripts/games/kart_harbor_aquarium.gd")
+const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 var action_obstacles: Array[Vector3] = []
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
@@ -113,6 +114,7 @@ func build(
 		if not geometry_only:
 			AAA_GATES.decorate(self)
 		return
+	STUNT.prepare(self)
 	_terrain()
 	_road()
 	match track_id:
@@ -131,6 +133,7 @@ func build(
 		LONG_BRIDGE.build(self)
 		HERO_COAST.build(self)
 		HARBOR_CRANE.build(self)
+		STUNT.build(self)
 		if not geometry_only:
 			DARK_RIDE.build(self)
 	LANDMARKS.build(self)
