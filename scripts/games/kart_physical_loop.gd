@@ -1,10 +1,13 @@
 extends RefCounted
 ## Optional arcade loop. Rendering and contact use the same continuous 3D path.
 ## Gravity slows the ascent; low momentum or heavy braking returns to the entry road.
+## A layout may set "radius", "lateral_limit", "fail_lane" (see Sonnenhafen stunt
+## sequence); without them every track keeps the original 6.5 m side loop.
 const RADIUS: float = 6.5
 const ADVANCE: float = 7.0
 const LENGTH: float = TAU * RADIUS + ADVANCE * 0.2
 const GRAVITY: float = 6.0
+const LATERAL_LIMIT: float = 0.7
 var active: bool = false
 var progress: float = 0.0
 var speed: float = 0.0
@@ -14,12 +17,22 @@ var layout: Dictionary = {}
 var failed: bool = false
 
 
+static func radius_of(data: Dictionary) -> float:
+	return float(data.get("radius", RADIUS))
+
+
+## Length of the riding line through the loop for this layout.
+static func path_length(data: Dictionary) -> float:
+	return TAU * radius_of(data) + ADVANCE * 0.2
+
+
 static func point(world, data: Dictionary, u: float, offset: float = 0.0) -> Vector3:
 	var basis: Basis = world.frame(float(data.start))
 	var advance: float = u * ADVANCE
 	var base: Vector3 = world.position_at(float(data.start) + advance, float(data.lane) + offset)
 	var theta: float = clampf(u, 0, 1) * TAU
-	return base + basis.y * RADIUS * (1.0 - cos(theta)) - basis.z * RADIUS * sin(theta)
+	var radius: float = radius_of(data)
+	return base + basis.y * radius * (1.0 - cos(theta)) - basis.z * radius * sin(theta)
 
 
 static func frame_at(world, data: Dictionary, u: float) -> Basis:
@@ -46,12 +59,15 @@ func advance(world, delta: float, steering: float, braking: float, throttle: boo
 	var basis := frame_at(world, layout, progress)
 	var slope: float = (-basis.z).y
 	speed += (-GRAVITY * slope - braking * 13.0 + (0.9 if throttle else -0.2)) * delta
-	lateral = clampf(lateral + steering * delta * 1.5, -0.7, 0.7)
+	var limit: float = float(layout.get("lateral_limit", LATERAL_LIMIT))
+	lateral = clampf(lateral + steering * delta * 1.5, -limit, limit)
 	if speed < 4:
 		failed = true
 		active = false
-		return world.reset_transform(float(layout.start), float(layout.lane))
-	progress = minf(1, progress + speed * delta / LENGTH)
+		return world.reset_transform(
+			float(layout.start), float(layout.get("fail_lane", layout.lane))
+		)
+	progress = minf(1, progress + speed * delta / path_length(layout))
 	basis = frame_at(world, layout, progress)
 	if progress >= 1:
 		active = false

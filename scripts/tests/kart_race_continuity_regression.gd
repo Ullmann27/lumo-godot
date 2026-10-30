@@ -78,6 +78,10 @@ func _collect_first_box() -> void:
 	game.previous_road_distance = game.distance
 	game.checkpoint_index = int(game.distance / (game.track_length / 8.0))
 	game.player.position = game.item_boxes[0].position
+	# Resonance rings require a moving, grounded kart. A stationary fixture
+	# cannot collect one; keep the production minimum-speed rule unchanged.
+	game.speed = game.RESONANCE.MIN_PICKUP_SPEED + 1.0
+	game.lane = game.item_box_laterals[0]
 	game._track_events()
 	game._physics_process(0.0)
 	assert(game.item_box_collected.has(0), "The actual pickup is consumed in lap one")
@@ -519,7 +523,9 @@ func _test_lap_driven_reopen() -> void:
 	var gates: Array[Dictionary] = []
 	var last_gate := 0
 	var frames := 0
-	while game.checkpoint_index < 10 and not game.finished and frames < 6000:
+	# The 1.85 km circuit plus both ramps needs more than 100 simulated
+	# seconds to reach gate ten. Keep the actual driven-gate assertions.
+	while game.checkpoint_index < 10 and not game.finished and frames < 9000:
 		_lap_drive_step()
 		frames += 1
 		if game.checkpoint_index != last_gate:

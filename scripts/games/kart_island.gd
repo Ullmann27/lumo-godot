@@ -27,6 +27,7 @@ const OPPONENT_ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
 const RESONANCE = preload("res://scripts/games/kart_resonance_system.gd")
+const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
@@ -390,6 +391,13 @@ func _build_world() -> void:
 			token.material_override = _glow_material(Color("ffc94a"), 0.6)
 			gems.append(token)
 			gem_distances.append(d)
+		# Stunt stars on the loop's riding line and over its boost pad (Sonnenhafen).
+		for at in STUNT.star_positions(world):
+			var stunt_star: MeshInstance3D = _mesh(race_root, star_mesh, at, Color("ffc94a"))
+			stunt_star.scale = Vector3.ONE * 0.55
+			stunt_star.material_override = _glow_material(Color("ffc94a"), 0.6)
+			gems.append(stunt_star)
+			gem_distances.append(STUNT.loop_start(world))
 		for fraction in [0.12, 0.42, 0.74]:
 			_turbo_pad(fraction * track_length)
 		var item_layout: Array = [
@@ -1409,7 +1417,7 @@ func _physics_process(delta: float) -> void:
 			_save_session()
 	for i in range(gems.size()):
 		if mode != "arena":
-			var key: int = int(distance / track_length) * 24 + i
+			var key: int = _gem_key(int(distance / track_length), i)
 			gems[i].visible = not collected.has(key)
 		if gems[i].visible and not paused and not reduced_motion:
 			gems[i].rotation.y += delta * 1.7
@@ -1594,6 +1602,14 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		player.basis = player.basis.rotated(right, pitch).orthonormalized()
 
 
+## Collection key of a course star. The 24 classic stars keep their saved keys;
+## extra stunt stars use their own range so laps never collide.
+static func _gem_key(lap: int, index: int) -> int:
+	if index < 24:
+		return lap * 24 + index
+	return 1000000 + lap * 256 + index
+
+
 func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 	if not is_instance_valid(world) or world.loop_layout.is_empty():
 		loop_state.active = false
@@ -1602,7 +1618,12 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 	if not loop_state.active:
 		var road: Dictionary = world.sample_road(player.position, previous_road_distance)
 		var entry_offset: float = float(road.distance) - float(layout.start)
-		if absf(entry_offset) > 1.0 or absf(float(road.lateral) - float(layout.lane)) > 0.9 or speed < 16.0 or physical_velocity.dot(road.forward) < 8:
+		var window: float = float(layout.get("entry_window", 1.0))
+		var lane_tolerance: float = float(layout.get("lane_tolerance", 0.9))
+		var min_speed: float = float(layout.get("min_entry_speed", 16.0))
+		var off_lane: bool = absf(float(road.lateral) - float(layout.lane)) > lane_tolerance
+		var too_slow: bool = speed < min_speed or physical_velocity.dot(road.forward) < 8
+		if absf(entry_offset) > window or off_lane or too_slow:
 			return false
 		loop_state.enter(layout, speed, distance - entry_offset)
 		airborne = false
@@ -1619,7 +1640,9 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 	distance = loop_state.entry_progress + (0 if loop_state.failed else PHYSICAL_LOOP.ADVANCE)
 	previous_road_distance = exit_distance
 	player_heading = _heading(exit_distance)
-	player.transform = world.reset_transform(exit_distance, float(layout.lane))
+	var exit_lane: float = float(layout.get("fail_lane", layout.lane)) if loop_state.failed else float(layout.lane)
+	player.transform = world.reset_transform(exit_distance, exit_lane)
+	lane = exit_lane
 	if loop_state.failed:
 		speed = 8
 		ghost_valid = false
@@ -2100,7 +2123,7 @@ func _track_events() -> void:
 				player.position += away.normalized() * 0.18
 	var lap: int = int(distance / track_length)
 	for i in range(gems.size()):
-		var key: int = lap * 24 + i
+		var key: int = _gem_key(lap, i)
 		if not collected.has(key) and player.position.distance_to(gems[i].position) < 1.75:
 			collected[key] = true
 			if collected.size() % 3 == 0:
@@ -2252,9 +2275,26 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 	if loop_state.active:
 		var origin: Vector3 = world.position_at(float(world.loop_layout.start), float(world.loop_layout.lane))
 		var entry_basis: Basis = world.frame(float(world.loop_layout.start))
+		var radius: float = PHYSICAL_LOOP.radius_of(world.loop_layout)
 		var desired_loop: Vector3 = origin + entry_basis.x * 12 + entry_basis.z * 15 + Vector3.UP * 11
+		var focus: Vector3 = player.position + Vector3.UP * 0.6
+		if bool(world.loop_layout.get("stunt", false)):
+			# Cinematic side view through the open ring: the kart stays visible
+			# on the inner deck all the way round, also upside down at the top.
+			var hub: Vector3 = (
+				world.position_at(
+					float(world.loop_layout.start) + PHYSICAL_LOOP.ADVANCE * 0.5,
+					float(world.loop_layout.lane)
+				)
+				+ entry_basis.y * radius
+			)
+			desired_loop = (
+				hub - entry_basis.x * radius * 2.7 + entry_basis.z * radius * 0.45
+				- entry_basis.y * radius * 0.15
+			)
+			focus = focus.lerp(hub, 0.35)
 		camera.position = camera.position.lerp(desired_loop, minf(1, delta * 4))
-		camera.look_at(player.position + Vector3.UP * 0.6)
+		camera.look_at(focus)
 		return
 	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
 	var right := Vector3(-ahead.z, 0, ahead.x)
