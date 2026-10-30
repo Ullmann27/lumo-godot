@@ -82,7 +82,15 @@ func _collect_first_box() -> void:
 	# cannot collect one; keep the production minimum-speed rule unchanged.
 	game.speed = game.RESONANCE.MIN_PICKUP_SPEED + 1.0
 	game.lane = game.item_box_laterals[0]
+	# Diagnose the genuine resonance trigger before rebuilding or altering its
+	# production rules. A teleport fixture must still satisfy every gate.
+	print("[KartContinuityDiag] before: ringCount=%d item=%s airborne=%s speed=%.2f lap=%d distance=%.4f" % [
+		game.item_boxes.size(), game.item, str(game.airborne), game.speed,
+		int(game.distance / game.track_length),
+		game.player.position.distance_to(game.item_boxes[0].position)
+	])
 	game._track_events()
+	print("[KartContinuityDiag] after events: keys=%s item=%s" % [str(game.item_box_collected), game.item])
 	game._physics_process(0.0)
 	assert(game.item_box_collected.has(0), "The actual pickup is consumed in lap one")
 	assert(not game.item_boxes[0].visible, "Consumed pickup is hidden by the race runtime")
