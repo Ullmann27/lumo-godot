@@ -1,0 +1,59 @@
+name: Sonnenhafen 2027 stunt integration
+on:
+  pull_request:
+    paths:
+      - 'scripts/games/**'
+      - 'scripts/tests/**'
+      - 'assets/shaders/kart_stunt_loop.gdshader'
+      - '.github/workflows/lumo-sonnenhafen-stunt-integration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-godot-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install Godot 4.6.3 and software display
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import and validate unchanged full project
+        run: |
+          set -euo pipefail
+          mkdir -p exports/stunt-integration
+          git rev-parse HEAD | tee exports/stunt-integration/source-sha.txt
+          python3 tools/validate_project.py > exports/stunt-integration/validation.log
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit > exports/stunt-integration/import.log 2>&1
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' exports/stunt-integration/import.log; then exit 1; fi
+      - name: Real driving and preservation regressions
+        run: |
+          set -euo pipefail
+          while IFS='|' read -r script marker; do
+            xvfb-run -a -s '-screen 0 1280x720x24' python3 tools/run_godot_probe.py --timeout 180 --log "exports/stunt-integration/$script.log" --required "$marker" -- Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --path . --script "res://scripts/tests/$script.gd"
+          done <<'CASES'
+          kart_sonnenhafen_stunt_regression|[SonnenhafenStunt] PASS:
+          kart_action_course_regression|[KartActionCourse] PASS:
+          kart_sonnenhafen_water_regression|[SonnenhafenWater] PASS:
+          kart_sonnenhafen_darkride_regression|[Darkride] PASS:
+          kart_sonnenhafen_long_course_regression|[SonnenhafenLong] PASS:
+          kart_sonnenhafen_visual_finish_regression|[HarborVisualFinish] PASS:
+          kart_sonnenhafen_hero_coast_regression|[SonnenhafenHeroCoast] PASS:
+          kart_regression|[KartTests] PASS:
+          kart_race_continuity_regression|[KartContinuity] PASS:
+          CASES
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sonnenhafen-stunt-integration-${{ github.run_id }}
+          path: exports/stunt-integration/
+          retention-days: 90
