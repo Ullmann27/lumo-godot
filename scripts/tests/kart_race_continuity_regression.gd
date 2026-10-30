@@ -523,7 +523,9 @@ func _test_lap_driven_reopen() -> void:
 	var gates: Array[Dictionary] = []
 	var last_gate := 0
 	var frames := 0
-	while game.checkpoint_index < 10 and not game.finished and frames < 6000:
+	# The 1.85 km circuit plus both ramps needs more than 100 simulated
+	# seconds to reach gate ten. Keep the actual driven-gate assertions.
+	while game.checkpoint_index < 10 and not game.finished and frames < 9000:
 		_lap_drive_step()
 		frames += 1
 		if game.checkpoint_index != last_gate:
