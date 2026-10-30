@@ -50,6 +50,7 @@ jobs:
           kart_sonnenhafen_hero_coast_regression|[SonnenhafenHeroCoast] PASS:
           kart_regression|[KartTests] PASS:
           kart_race_continuity_regression|[KartContinuity] PASS:
+          progress_profile_lifetime_regression|[ProgressProfileLifetime] checks=
           CASES
       - uses: actions/upload-artifact@v4
         if: always()
