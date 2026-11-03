@@ -109,8 +109,7 @@ static func kickers(world) -> Array:
 	var rise: float = (
 		world.position_at(take_off + PRECISION_LANDING_START_M).y - world.position_at(take_off).y
 	)
-	return [
-		{
+	var kicker: Dictionary = {
 			"start": take_off - JUMP_RAMP_LENGTH,
 			"take_off": take_off,
 			"length": JUMP_RAMP_LENGTH,
@@ -128,7 +127,11 @@ static func kickers(world) -> Array:
 			"hero_flight": true,
 			"stunt": true,
 		}
-	]
+	# Computer rivals fly the arc of a clean landing in the middle of the zone.
+	kicker["rival_speed"] = PRECISION.speed_for_distance(
+		(PRECISION_LANDING_START_M + PRECISION_LANDING_END_M) * 0.5, kicker
+	)
+	return [kicker]
 
 
 ## Collectible stars on the riding line through the loop and over the pad.
