@@ -493,7 +493,7 @@ func _build_world() -> void:
 	camera.fov = VISUAL_GRADE.BASE_FOV
 	camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	camera.current = true
-	camera.far = 450 if graphics_profile == "high" else (340 if graphics_profile == "medium" else 260)
+	camera.far = float(LumoQuality.budget(graphics_profile).camera_far)
 	race_root.add_child(camera)
 	speed_fx = SPEED_FX.new()
 	speed_fx.name = "CameraSpeedFx"
@@ -2802,6 +2802,8 @@ func _append_preferences() -> void:
 		func():
 			graphics_profile = {"high": "medium", "medium": "low", "low": "high"}.get(graphics_profile, "high")
 			lightweight = graphics_profile == "low"
+			# Apply the user-selected visual tier across all Godot game worlds.
+			LumoQuality.set_tier(graphics_profile)
 			_save_preferences()
 			detail.text = "Grafik: " + {"high": "Hoch", "medium": "Ausgewogen", "low": "Leicht"}[graphics_profile]
 			if menu_active:
