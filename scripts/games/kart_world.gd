@@ -242,7 +242,8 @@ func sample_road(world_position: Vector3, hint_distance: float = -1.0) -> Dictio
 	return {"distance":best_distance,"lateral":lateral,"height":surface_position.y,"position":surface_position,"basis":basis,"on_road":absf(lateral)<=WIDTH*0.5,"width":WIDTH,"forward":-basis.z}
 
 func in_gap(distance: float) -> bool:
-	return SKY_ISLANDS.in_gap(jump,fposmod(distance,length))
+	var d: float = fposmod(distance, length)
+	return SKY_ISLANDS.in_gap(jump, d) or not ACTION.precision_gap_at(action, d).is_empty()
 
 ## Height of the ramp surface above the road at this distance (0 without a ramp).
 func ramp_height(distance: float) -> float:
@@ -297,7 +298,15 @@ func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_dist
 	var upper: float = maxf(lower + 0.5, ceiling_distance)
 	var safe: float = clampf(candidate, lower, upper)
 	if jump.is_empty():
-		return safe
+		var stunt_gap: Dictionary = ACTION.precision_gap_at(action, fposmod(safe, length))
+		if stunt_gap.is_empty():
+			return safe
+		var local_stunt: float = fposmod(safe, length)
+		var origin: float = safe - local_stunt
+		var before_stunt: float = origin + float(stunt_gap.start) - 4.0
+		if before_stunt >= lower:
+			return minf(before_stunt, upper)
+		return clampf(origin + float(stunt_gap.gap_end) + 3.0, lower, upper)
 	var local_distance: float = fposmod(safe, length)
 	var danger_start: float = float(jump.ramp_start) - 1.5
 	var danger_end: float = float(jump.gap_end) + 2.5
