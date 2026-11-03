@@ -22,7 +22,7 @@ var mouth_supported := false
 var last_audio_position := 0.0
 var last_audio_envelope := 0.0
 var audio_active := false
-var locomotion: RefCounted
+var locomotion
 var walking := false
 var walk_speed_mps: float = 0.0
 
