@@ -5,6 +5,7 @@ const LUMO = preload("res://scenes/characters/lumo/lumo_character.tscn")
 const ISLAND_COUNT: int = 12
 const SESSION: String = "user://jump_session.cfg"
 var actor: CharacterBody3D
+var gait: LumoGait
 var camera: Camera3D
 var islands: Array[Vector3] = []
 var crystals: Array[Node3D] = []
@@ -29,7 +30,6 @@ var hud: Label
 var message: Label
 var modal: PanelContainer
 var modal_column: VBoxContainer
-var material_cache: Dictionary = {}
 var result_id: String = ""
 var result_payload: Dictionary = {}
 var abandoned: bool = false
@@ -58,62 +58,9 @@ func _ready() -> void:
 	print("[Jump] ready: true 3D, grade=%d, subject=%s" % [grade, subject])
 
 
-func _material(color: Color) -> StandardMaterial3D:
-	if material_cache.has(color):
-		return material_cache[color]
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = color
-	mat.roughness = 0.8
-	material_cache[color] = mat
-	return mat
-
-
-func _box(parent: Node3D, position: Vector3, size: Vector3, color: Color) -> MeshInstance3D:
-	var mesh := BoxMesh.new()
-	mesh.size = size
-	var node := MeshInstance3D.new()
-	node.mesh = mesh
-	node.material_override = _material(color)
-	node.position = position
-	parent.add_child(node)
-	return node
-
-
-func _sphere(parent: Node3D, position: Vector3, size: Vector3, color: Color) -> MeshInstance3D:
-	var mesh := SphereMesh.new()
-	mesh.radius = 1
-	mesh.height = 2
-	mesh.radial_segments = 20
-	mesh.rings = 10
-	var node := MeshInstance3D.new()
-	node.mesh = mesh
-	node.material_override = _material(color)
-	node.scale = size
-	node.position = position
-	parent.add_child(node)
-	return node
-
-
 func _build_world() -> void:
-	var world := WorldEnvironment.new()
-	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color("a7d7ee")
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("e0e8ff")
-	env.ambient_light_energy = 0.3
-	env.tonemap_exposure = 0.75
-	env.fog_enabled = true
-	env.fog_light_color = Color("b5c9ed")
-	env.fog_density = 0.007
-	world.environment = env
-	add_child(world)
-	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees = Vector3(-55, -30, 0)
-	sun.light_energy = 0.6
-	sun.shadow_enabled = true
-	sun.directional_shadow_max_distance = 45
-	add_child(sun)
+	LumoEnvironment.apply(self, "wolkeninseln")
+	var art := JumpSkyIslandsArt.new()
 	for i in range(ISLAND_COUNT):
 		var point := Vector3(
 			sin(float(i) * 0.75) * 3.0, sin(float(i) * 0.55) * 0.9, -float(i) * 8.0
@@ -122,38 +69,37 @@ func _build_world() -> void:
 		var ground := StaticBody3D.new()
 		ground.position = point
 		add_child(ground)
-		_box(ground, Vector3.ZERO, Vector3(7, 0.5, 6), Color("64b58d"))
+		art.island(ground, i)
 		var shape := BoxShape3D.new()
 		shape.size = Vector3(7, 0.5, 6)
 		var collision := CollisionShape3D.new()
 		collision.shape = shape
 		ground.add_child(collision)
-		_sphere(ground, Vector3(0, -1.2, 0), Vector3(3.6, 1.7, 3.1), Color("9e8bb1"))
-		_sphere(ground, Vector3(0.7, -2.7, 0.5), Vector3(1.9, 1.5, 1.7), Color("7d6d99"))
 		var number := Label3D.new()
 		number.text = "ZIEL" if i == ISLAND_COUNT - 1 else "INSEL %d" % (i + 1)
 		number.position = Vector3(0, 0.4, -2.3)
 		number.rotation_degrees.x = -90
 		number.font_size = 40
 		number.pixel_size = 0.02
+		number.modulate = Color("fffdf2")
+		number.outline_size = 10
+		number.outline_modulate = Color("3d6b2a")
 		ground.add_child(number)
 		if i > 0:
 			var crystal := Node3D.new()
 			crystal.position = point + Vector3(0, 1.2, 0)
 			add_child(crystal)
-			var gem := _box(crystal, Vector3.ZERO, Vector3(0.55, 0.55, 0.55), Color("f7bf4f"))
-			gem.rotation_degrees = Vector3(45, 0, 45)
+			art.gem(crystal)
 			crystals.append(crystal)
 		if i % 2 == 0:
-			_box(ground, Vector3(-2.7, 1.1, -1.7), Vector3(0.3, 1.7, 0.3), Color("b18b68"))
-			_sphere(ground, Vector3(-2.7, 2.2, -1.7), Vector3(0.9, 1.1, 0.9), Color("73c87f"))
-	for i in range(14):
-		_sphere(
-			self,
-			Vector3(-22 + float(i % 3) * 20, -4 - float(i % 2) * 2, -float(i) * 7),
-			Vector3(8, 1.5, 4),
-			Color("e8efff")
-		)
+			art.tree(ground, Vector3(-2.7, 0, -1.7))
+		if i == ISLAND_COUNT - 1:
+			art.goal_flag(ground)
+	var course_length: float = float(ISLAND_COUNT) * 8.0
+	art.ground_cover(self, islands)
+	art.clouds(self, course_length)
+	art.backdrop(self, course_length)
+	art.sparkles(self, course_length)
 	actor = CharacterBody3D.new()
 	actor.floor_snap_length = 0.3
 	add_child(actor)
@@ -167,7 +113,13 @@ func _build_world() -> void:
 	var visual: Node3D = LUMO.instantiate()
 	visual.scale = Vector3.ONE * 0.7
 	visual.rotation.y = PI
+	# Collider bottom sits 0.05 m above the actor origin; stand the feet on it
+	# (previously the legs were buried and Lumo glided on its belly).
+	visual.position.y = 0.05 + LumoGait.rest_foot_depth() * visual.scale.y
 	actor.add_child(visual)
+	gait = LumoGait.new()
+	gait.name = "Gait"
+	visual.add_child(gait)
 	actor.position = islands[0] + Vector3(0, 0.4, 1.5)
 	camera = Camera3D.new()
 	camera.current = true
@@ -320,6 +272,7 @@ func _physics_process(delta: float) -> void:
 		if save_timer >= 5.0:
 			save_timer = 0
 			_save_session()
+	gait.step(actor.is_on_floor(), delta)
 	var desired: Vector3 = actor.position + Vector3(0, 5.5, 9)
 	camera.position = camera.position.lerp(desired, minf(1, delta * 5))
 	camera.look_at(actor.position + Vector3(0, 1, -4))
