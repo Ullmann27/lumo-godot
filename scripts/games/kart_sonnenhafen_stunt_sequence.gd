@@ -5,6 +5,7 @@ extends RefCounted
 ## - the kart follows the same 3D path that is rendered (kart_physical_loop),
 ##   gravity slows the climb and a too-slow kart is set back to the main lane;
 ## - a boost pad on the loop lane gives the needed speed;
+## - the loop now stands 100 m before the precision launch (not 28 m);
 ## - gold stars on the riding line are collected while looping.
 ## Everything else (main lane, rails, checkpoints, lap length) stays unchanged.
 
@@ -14,7 +15,7 @@ const DECK_SHADER = preload("res://assets/shaders/kart_stunt_loop.gdshader")
 
 const TUNNEL_FRACTION: float = 0.690
 ## Loop entry this many metres before the tunnel mouth (Position A).
-const LOOP_LEAD_M: float = 108.0
+const LOOP_LEAD_M: float = 180.0
 const LOOP_LANE: float = 2.9
 const LOOP_RADIUS: float = 8.0
 const DECK_HALF_WIDTH: float = 2.4
@@ -30,6 +31,9 @@ const STAR_FRACTIONS: Array[float] = [0.14, 0.27, 0.40, 0.5, 0.60, 0.73, 0.86]
 const JUMP_LEAD_M: float = 80.0
 const JUMP_RAMP_LENGTH: float = 12.0
 const JUMP_RAMP_HEIGHT: float = 2.2
+## Precision landing zone begins after a genuine open-air gap; no hidden assist.
+const PRECISION_LANDING_START_M: float = 20.0
+const PRECISION_LANDING_END_M: float = 31.0
 ## Stars along the measured flight arc (metres after take-off, height above road).
 const ARC_STARS: Array = [[5.0, 2.6], [10.0, 3.7], [15.0, 4.1], [20.0, 3.6]]
 
@@ -97,8 +101,12 @@ static func kickers(world) -> Array:
 			"height": JUMP_RAMP_HEIGHT,
 			"angle": atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH),
 			"flight_gravity": 14.0,
-			"lift_bonus": 5.0,
-			"max_lift": 11.0,
+			"lift_bonus": 0.0,
+			"precision_jump": true,
+			"landing_min": PRECISION_LANDING_START_M,
+			"landing_max": PRECISION_LANDING_END_M,
+			"gap_start": take_off + 0.5,
+			"gap_end": take_off + PRECISION_LANDING_START_M,
 			"hero_flight": true,
 			"stunt": true,
 		}
