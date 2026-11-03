@@ -28,6 +28,7 @@ const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
 const RESONANCE = preload("res://scripts/games/kart_resonance_system.gd")
 const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
+const STUNT_BALLISTICS = preload("res://scripts/games/kart_stunt_ballistics.gd")
 const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
@@ -170,6 +171,7 @@ var item_box_laterals: Array[float] = []
 var item_box_collected: Dictionary = {}
 var hud: Label
 var message: Label
+var jump_advisory: Label
 var boost_button: Control
 var drift_button: Control
 var joystick: Control
@@ -992,6 +994,12 @@ func _build_ui() -> void:
 	message.add_theme_constant_override("shadow_offset_y", 2)
 	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(message)
+	jump_advisory = _label("", 16)
+	jump_advisory.name = "SonnenhafenJumpAdvisory"
+	jump_advisory.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	jump_advisory.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	jump_advisory.visible = false
+	column.add_child(jump_advisory)
 	call_deferred("_build_start_lights")
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -1685,16 +1693,29 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			world.action, fposmod(previous_road_distance, track_length), fposmod(road_distance, track_length)
 		)
 		if not kicker.is_empty() and speed > 6.0:
-			# Sprungschanze: abheben, kurz fliegen und mit Turbo landen.
 			airborne = true
 			action_kicker_jumps += 1
 			air_time = 0.0
-			player.position.y = ground + float(kicker.height)
 			current_jump_gravity = float(kicker.get("flight_gravity", JUMP_GRAVITY))
-			var lift: float = speed * sin(float(kicker.angle)) + float(kicker.get("lift_bonus", 1.6))
-			vertical_speed = minf(lift, float(kicker.get("max_lift", JUMP_MAX_LIFT)))
-			message.text = "Panorama-Flug!" if bool(kicker.get("hero_flight", false)) else "Schanze!"
+			if bool(kicker.get("stunt", false)):
+				# Take-off position and vertical impulse come only from the ramp
+				# and the actual player's speed. Never add hidden lift or clamp.
+				player.position.y = float(road.height) + 0.035 + float(kicker.height)
+				vertical_speed = speed * tan(float(kicker.angle))
+				message.text = "Freier Sprung! Lenke und halte deine Fluglinie."
+			else:
+				# Earlier tracks preserve their existing accessible arcade lift.
+				player.position.y = ground + float(kicker.height)
+				var lift: float = speed * sin(float(kicker.angle)) + float(kicker.get("lift_bonus", 1.6))
+				vertical_speed = minf(lift, float(kicker.get("max_lift", JUMP_MAX_LIFT)))
+				message.text = "Panorama-Flug!" if bool(kicker.get("hero_flight", false)) else "Schanze!"
 			return true
+		if world.in_gap(road_distance):
+			# The cart missed the stunt take-off: never invent an impulse.
+			airborne = true
+			current_jump_gravity = JUMP_GRAVITY
+			vertical_speed = 0.0
+			air_time = 0.0
 	if not airborne:
 		player.position.y = ground
 		return true
@@ -1796,9 +1817,17 @@ func _update_dive_tint() -> void:
 
 
 func _rescue_from_gap() -> void:
-	# A cloud carries the kart just past the gap: no repeated falls, no shortcut.
-	var target: float = float(world.jump.gap_end) + 3.0
-	distance += fposmod(target - previous_road_distance, track_length)
+	var stunt_gap: Dictionary = world.stunt_gap_at(previous_road_distance)
+	var target: float
+	if not stunt_gap.is_empty():
+		# No shortcut: a missed stunt jump costs progress and must be retried.
+		target = float(stunt_gap.start) - 10.0
+		var lap_origin: float = distance - fposmod(distance, track_length)
+		distance = maxf(0.0, lap_origin + target)
+	else:
+		# Keep the original Himmelsinseln recovery and save semantics.
+		target = float(world.jump.gap_end) + 3.0
+		distance += fposmod(target - previous_road_distance, track_length)
 	previous_road_distance = target
 	player.transform = world.reset_transform(target)
 	player_heading = _heading(target)
@@ -1810,7 +1839,7 @@ func _rescue_from_gap() -> void:
 	gap_falls += 1
 	reset_count += 1
 	ghost_valid = false
-	message.text = "Eine Wolke trägt dich weiter. Mehr Schwung beim nächsten Sprung!"
+	message.text = "Zu langsam: zurück vor die Rampe! Tempo selbst wählen." if not stunt_gap.is_empty() else "Eine Wolke trägt dich weiter. Mehr Schwung beim nächsten Sprung!"
 
 
 func _manual_gas_active() -> bool:
@@ -2060,7 +2089,43 @@ func _update_ghost() -> void:
 		ghost.set_motion(float(frame.speed), float(frame.steer), false, false)
 
 
+func _update_jump_advisory() -> void:
+	if not is_instance_valid(jump_advisory):
+		return
+	jump_advisory.visible = false
+	if not racing or paused or finished or mode == "arena" or not is_instance_valid(world):
+		return
+	if world.track_id != "sonnenhafen" or airborne:
+		return
+	var local_distance: float = fposmod(previous_road_distance, track_length)
+	for kicker in world.action.get("kickers", []):
+		if not bool(kicker.get("stunt", false)):
+			continue
+		var remaining: float = float(kicker.take_off) - local_distance
+		if remaining < 0.0 or remaining > 62.0:
+			continue
+		var prediction: Dictionary = STUNT_BALLISTICS.forecast(speed, kicker)
+		var state: String = str(prediction.state)
+		var suggestion: String = "PASSEND · HALTE DAS TEMPO!"
+		var hue := Color("7df6aa")
+		if state == "slow":
+			suggestion = "ZU LANGSAM · GIB GAS!"
+			hue = Color("ff696f")
+		elif state == "fast":
+			suggestion = "ZU SCHNELL · BREMSE ETWAS!"
+			hue = Color("ffbd66")
+		jump_advisory.text = "⚠ SPRUNG IN %d m · %d km/h · %s" % [
+			int(ceil(remaining)), int(prediction.speed_kmh), suggestion
+		]
+		jump_advisory.add_theme_color_override("font_color", hue)
+		jump_advisory.add_theme_color_override("font_shadow_color", Color("071d38"))
+		jump_advisory.add_theme_constant_override("shadow_offset_y", 2)
+		jump_advisory.visible = true
+		return
+
+
 func _update_hud() -> void:
+	_update_jump_advisory()
 	var place: int = _place()
 	var display_speed: int = 0 if finished else int(speed * 3.6)
 	if mode == "arena":

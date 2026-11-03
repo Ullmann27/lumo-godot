@@ -241,8 +241,20 @@ func sample_road(world_position: Vector3, hint_distance: float = -1.0) -> Dictio
 	var surface_position: Vector3 = centre+basis.x*lateral
 	return {"distance":best_distance,"lateral":lateral,"height":surface_position.y,"position":surface_position,"basis":basis,"on_road":absf(lateral)<=WIDTH*0.5,"width":WIDTH,"forward":-basis.z}
 
+## Real break in the Sonnenhafen launch deck; unlike a painted ramp, an
+## insufficient-speed jump now falls into the open space and must be retried.
+func stunt_gap_at(distance: float) -> Dictionary:
+	if track_id != "sonnenhafen" or action.is_empty():
+		return {}
+	var local: float = fposmod(distance, length)
+	for kicker in action.get("kickers", []):
+		if bool(kicker.get("stunt", false)) and local >= float(kicker.take_off) and local < float(kicker.gap_end):
+			return kicker
+	return {}
+
+
 func in_gap(distance: float) -> bool:
-	return SKY_ISLANDS.in_gap(jump,fposmod(distance,length))
+	return SKY_ISLANDS.in_gap(jump, fposmod(distance, length)) or not stunt_gap_at(distance).is_empty()
 
 ## Height of the ramp surface above the road at this distance (0 without a ramp).
 func ramp_height(distance: float) -> float:
@@ -296,6 +308,12 @@ func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_dist
 	var lower: float = maxf(0.0, floor_distance)
 	var upper: float = maxf(lower + 0.5, ceiling_distance)
 	var safe: float = clampf(candidate, lower, upper)
+	var stunt: Dictionary = stunt_gap_at(safe)
+	if not stunt.is_empty():
+		# Put the child before the jump, never inside the unsupported gap.
+		var local: float = fposmod(safe, length)
+		var previous: float = safe - local + float(stunt.start) - 6.0
+		return clampf(previous, lower, upper)
 	if jump.is_empty():
 		return safe
 	var local_distance: float = fposmod(safe, length)
@@ -781,6 +799,9 @@ func _road() -> void:
 	# Fine aggregate is GPU-fragment work: disabled for low-detail profiles.
 	if track_id != "candy_cloud":
 		asphalt.set_shader_parameter("surface_grit",0.0 if low_detail else 0.86)
+		# Shared loop-inspired direction markings; no extra road meshes or draw calls.
+		var arrow_strength: float = 0.0 if low_detail else (0.85 if track_id == "sonnenhafen" else 0.58)
+		asphalt.set_shader_parameter("futuristic_surface", arrow_strength)
 	if track_id == "candy_cloud":
 		asphalt.shader = preload("res://assets/shaders/kart_candy_road.gdshader")
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
