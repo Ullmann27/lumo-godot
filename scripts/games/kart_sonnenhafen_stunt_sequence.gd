@@ -606,3 +606,72 @@ static func build_precision_ramp(world, kicker: Dictionary) -> void:
 			world._prop("box", world.position_at(along, side * (half - 0.25)) + basis.y * 0.025,
 				Vector3(0.22, 0.02, 1.6), green, basis, true)
 		along += 2.5
+	_build_crystal_gorge(world, kicker)
+
+
+## A stylised chasm below the true, physically empty road gap.
+## All features are batched non-collidable meshes; the existing ramp,
+## landing plane, checkpoints and child-friendly failure rescue are untouched.
+## Low profile produces the same silhouette with fewer glowing props.
+static func _build_crystal_gorge(world, kicker: Dictionary) -> void:
+	var start: float = float(kicker.gap_start)
+	var end: float = float(kicker.gap_end)
+	if end <= start:
+		return
+	var length: float = end - start
+	var sections: int = 5 if world.low_detail else 11
+	var dark_stone := Color("13243a")
+	var cliff_stone := Color("345271")
+	var deep_water := Color("103b69")
+	var crystal := Color("79ecff")
+	var violet := Color("a985f8")
+	var slice_length: float = length / float(sections)
+	for i in range(sections):
+		var d: float = start + (float(i) + 0.5) * slice_length
+		var basis: Basis = world.frame(d)
+		# The dark riverbed and its thin glowing stream are far below the
+		# road; a missed jump remains a real fall, never an invisible bridge.
+		var floor: Vector3 = world.position_at(d) - basis.y * 10.4
+		world._prop("box", floor, Vector3(14.8, 0.50, slice_length + 0.24),
+			dark_stone, basis)
+		world._prop("box", floor + basis.y * 0.31,
+			Vector3(6.3, 0.08, slice_length + 0.15), deep_water, basis, true)
+		# Sculpted staggered walls frame the vertical drop. The glowing
+		# crevices are on the walls, not on the invisible racing surface.
+		for side in [-1.0, 1.0]:
+			var left_or_right: float = side * (RAMP_HALF_WIDTH + 4.9)
+			var rock_pos: Vector3 = (
+				world.position_at(d, left_or_right) - basis.y * 5.4
+			)
+			var shoulder: float = 1.0 + float((i * 3) % 4) * 0.10
+			world._prop("rock", rock_pos,
+				Vector3(5.0 * shoulder, 9.0, slice_length + 2.0),
+				cliff_stone if (i + int(side)) % 2 == 0 else dark_stone,
+				basis)
+			# A pair of distinct crystal veins creates readable depth.
+			if not world.low_detail or i % 2 == 0:
+				var face: Vector3 = (
+					world.position_at(d, side * (RAMP_HALF_WIDTH + 1.8))
+					- basis.y * (5.0 + float(i % 3) * 0.7)
+				)
+				world._prop("box", face,
+					Vector3(0.16, 2.4, maxf(0.8, slice_length * 0.58)),
+					crystal if i % 3 != 0 else violet, basis, true)
+		if not world.low_detail:
+			# Repeating low-cost glimmers read as flowing water at speed.
+			for lane in [-2.0, 0.0, 2.0]:
+				var ripple: Vector3 = (
+					world.position_at(d, lane) - basis.y * 9.95
+				)
+				world._prop("box", ripple, Vector3(0.18, 0.08, 0.95),
+					crystal if i % 2 == 0 else violet, basis, true)
+	# Bright anchor crystals at each canyon mouth help a child read the
+	# near and far edges during approach, but never block driving.
+	for d in [start + 1.5, end - 1.5]:
+		var basis: Basis = world.frame(d)
+		for side in [-1.0, 1.0]:
+			var p: Vector3 = (
+				world.position_at(d, side * (RAMP_HALF_WIDTH + 4.0))
+				- basis.y * 2.4
+			)
+			world._prop("rock", p, Vector3(1.5, 3.3, 1.5), violet, basis, true)
