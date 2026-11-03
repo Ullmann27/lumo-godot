@@ -5,13 +5,15 @@ extends RefCounted
 ## - the kart follows the same 3D path that is rendered (kart_physical_loop),
 ##   gravity slows the climb and a too-slow kart is set back to the main lane;
 ## - a boost pad on the loop lane gives the needed speed;
-## - the loop now stands 100 m before the precision launch (not 28 m);
+## - the loop entry stands 100 m before the precision ramp (was 28 m), so the
+##   kart leaves the loop, settles and has a straight run-up to the ramp;
 ## - gold stars on the riding line are collected while looping.
 ## Everything else (main lane, rails, checkpoints, lap length) stays unchanged.
 
 const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const DECK_SHADER = preload("res://assets/shaders/kart_stunt_loop.gdshader")
+const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 
 const TUNNEL_FRACTION: float = 0.690
 ## Loop entry this many metres before the tunnel mouth (Position A).
@@ -26,16 +28,26 @@ const PAD_GAP_M: float = 16.0
 const PAD_LENGTH: float = 6.0
 const STAR_FRACTIONS: Array[float] = [0.14, 0.27, 0.40, 0.5, 0.60, 0.73, 0.86]
 
-## Position B, 80 m before the tunnel: a full-width panorama kicker right after
-## the loop exit. Same flight model as the 55 % panorama jump.
+## Position B, 80 m before the tunnel: a full-width precision stunt ramp about
+## 80 m after the loop exit. Unlike the 55 % panorama kicker it has no lift
+## bonus and no lift cap: flight distance follows from speed alone
+## (kart_precision_jump.gd), over a genuine open gap in the road.
 const JUMP_LEAD_M: float = 80.0
 const JUMP_RAMP_LENGTH: float = 12.0
-const JUMP_RAMP_HEIGHT: float = 2.2
-## Precision landing zone begins after a genuine open-air gap; no hidden assist.
-const PRECISION_LANDING_START_M: float = 20.0
+## 14 degrees: steep enough for a visible arc, gentle enough to read for kids.
+const JUMP_RAMP_HEIGHT: float = 3.0
+const PRECISION_GRAVITY: float = 14.0
+## Open air starts just behind the lip; the road (and the landing zone) begins
+## PRECISION_LANDING_START_M after take-off. Undershooting falls into the gap.
+const PRECISION_GAP_START_M: float = 0.5
+## Landing zone after take-off. Calibrated with the real model: every kart at
+## top speed without turbo lands inside on every difficulty (about 56-96 km/h);
+## a turbo at the lip overshoots, a braking kart falls short.
+const PRECISION_LANDING_START_M: float = 14.5
 const PRECISION_LANDING_END_M: float = 31.0
-## Stars along the measured flight arc (metres after take-off, height above road).
-const ARC_STARS: Array = [[5.0, 2.6], [10.0, 3.7], [15.0, 4.1], [20.0, 3.6]]
+## Stars follow the computed arc of the reference speed (Abenteuer top speed).
+const ARC_REFERENCE_SPEED: float = 20.5
+const ARC_STARS: Array[float] = [4.0, 8.0, 12.0, 16.0]
 
 ## Tunnel portal at the dark-ride mouth (lateral legs outside the rails).
 const PORTAL_SETBACK_M: float = 1.5
@@ -93,6 +105,10 @@ static func kickers(world) -> Array:
 	if not applies(world):
 		return []
 	var take_off: float = jump_take_off(world)
+	# The landing road climbs a little; the model needs that rise to be exact.
+	var rise: float = (
+		world.position_at(take_off + PRECISION_LANDING_START_M).y - world.position_at(take_off).y
+	)
 	return [
 		{
 			"start": take_off - JUMP_RAMP_LENGTH,
@@ -100,12 +116,14 @@ static func kickers(world) -> Array:
 			"length": JUMP_RAMP_LENGTH,
 			"height": JUMP_RAMP_HEIGHT,
 			"angle": atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH),
-			"flight_gravity": 14.0,
+			"flight_gravity": PRECISION_GRAVITY,
 			"lift_bonus": 0.0,
+			"max_lift": 1000.0,  # effectively uncapped; JSON-safe
 			"precision_jump": true,
 			"landing_min": PRECISION_LANDING_START_M,
 			"landing_max": PRECISION_LANDING_END_M,
-			"gap_start": take_off + 0.5,
+			"landing_slope": rise / PRECISION_LANDING_START_M,
+			"gap_start": take_off + PRECISION_GAP_START_M,
 			"gap_end": take_off + PRECISION_LANDING_START_M,
 			"hero_flight": true,
 			"stunt": true,
@@ -127,9 +145,13 @@ static func star_positions(world) -> Array[Vector3]:
 		var d: float = start - PAD_GAP_M - PAD_LENGTH - 2.0 + float(i) * 4.5
 		result.append(world.position_at(d, LOOP_LANE) + world.frame(d).y * 0.95)
 	var take_off: float = jump_take_off(world)
-	for entry in ARC_STARS:
-		var d: float = take_off + float(entry[0])
-		result.append(world.position_at(d, 0.0) + Vector3.UP * (float(entry[1]) + 0.95))
+	var kicker: Dictionary = kickers(world)[0]
+	for along in ARC_STARS:
+		var height: float = PRECISION.height_at(ARC_REFERENCE_SPEED, kicker, along)
+		var base: Vector3 = world.position_at(take_off, 0.0)
+		var d: float = take_off + along
+		var ground: Vector3 = world.position_at(d, 0.0)
+		result.append(Vector3(ground.x, base.y + height + 0.95, ground.z))
 	return result
 
 
