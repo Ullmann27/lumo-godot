@@ -174,6 +174,18 @@ static func kicker_crossed(course: Dictionary, previous: float, current: float) 
 	return {}
 
 
+## A physical opening in the road after the Sonnenhafen stunt ramp.
+## It is not a visual illusion: world._ribbon skips it and the race physics
+## tests in_gap before allowing landing. Other courses remain unchanged.
+static func precision_gap_at(course: Dictionary, distance: float) -> Dictionary:
+	for kicker in course.get("kickers", []):
+		if not bool(kicker.get("precision_jump", false)):
+			continue
+		if distance >= float(kicker.gap_start) and distance < float(kicker.gap_end):
+			return kicker
+	return {}
+
+
 static func pad_at(course: Dictionary, distance: float, lateral: float) -> int:
 	var pads: Array = course.get("pads", [])
 	for index in range(pads.size()):
