@@ -241,33 +241,7 @@ func part_node(item: Dictionary) -> StaticBody3D:
 
 
 func environment(root: Node3D) -> void:
-	var world := WorldEnvironment.new()
-	var env := Environment.new()
-	env.background_mode = Environment.BG_SKY
-	var sky := Sky.new()
-	var sky_mat := ProceduralSkyMaterial.new()
-	sky_mat.sky_top_color = Color("081537")
-	sky_mat.sky_horizon_color = Color("1a3264")
-	sky_mat.ground_horizon_color = Color("1a3264")
-	sky_mat.ground_bottom_color = Color("07152d")
-	sky.sky_material = sky_mat
-	env.sky = sky
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("a8c7fa")
-	env.ambient_light_energy = 0.36
-	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.glow_enabled = true
-	env.glow_intensity = 0.75
-	env.glow_bloom = 0.04
-	world.environment = env
-	root.add_child(world)
-	var light := DirectionalLight3D.new()
-	light.rotation_degrees = Vector3(-48, -30, 0)
-	light.light_color = Color("d9e8ff")
-	light.light_energy = 0.80
-	light.shadow_enabled = true
-	light.directional_shadow_max_distance = 70.0
-	root.add_child(light)
+	LumoEnvironment.apply(root, "creative_night")
 	sphere(root, Vector3(-35, 36, -48), Vector3.ONE * 5.5, Color("c1d9ff"), true)
 	var stars := MultiMeshInstance3D.new()
 	var multi := MultiMesh.new()
