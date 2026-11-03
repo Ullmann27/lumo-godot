@@ -134,11 +134,11 @@ static func build_launch_ramp(world, kicker: Dictionary) -> void:
 			world.position_at(d1, -4.7) + f1.y * (height * u1 + 0.045),
 			f0.y, f1.y, u0 * span, u1 * span
 		)
-	var material := StandardMaterial3D.new()
-	material.albedo_color = Color("193653")
-	material.metallic = 0.42
-	material.roughness = 0.32
-	material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	# Exactly the same premium metal-and-chevron shader as the proven loop.
+	var material := ShaderMaterial.new()
+	material.shader = DECK_SHADER
+	material.set_shader_parameter("chevron_spacing", 2.1)
+	material.set_shader_parameter("glow", 2.0)
 	_add_mesh(world, "SonnenhafenAeroRunway", surface, material)
 	for side in [-1.0, 1.0]:
 		for i in range(12):
