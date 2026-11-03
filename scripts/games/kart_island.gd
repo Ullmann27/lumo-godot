@@ -1562,16 +1562,21 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var forward := Vector3(-sin(player_heading), 0, -cos(player_heading))
 	var grip: float = 3.1 if drifting else 9.0 * _factor("grip")
 	physical_velocity = physical_velocity.lerp(forward * speed, minf(1, delta * grip))
-	# Child-friendly air steering: preserve the physical forward flight, but
-	# bleed off only outward lateral velocity after 2 m from take-off.
-	# No teleport or magnetic landing; other jumps retain their own handling.
+	# Child-friendly precision flight: velocity-only boundary, measured from
+	# the SAME curving road frame as the game's lane value. The lip frame alone
+	# cannot constrain a long curved flight (it drifted 2.98 m in CI).
+	# Clip the next *velocity* before integration, never teleport the player
+	# or alter vertical ballistics / the landing rescue.
 	if airborne and not precision_kicker.is_empty():
-		var lateral_delta: float = lane - precision_launch_lateral
-		if absf(lateral_delta) >= PRECISION_AIR_LATERAL_M:
-			var side: Vector3 = world.frame(float(precision_kicker.take_off)).x
-			var outwards: float = physical_velocity.dot(side) * signf(lateral_delta)
-			if outwards > 0.0:
-				physical_velocity -= side * (outwards * signf(lateral_delta))
+		var next_position: Vector3 = player.position + physical_velocity * delta
+		var next_road: Dictionary = world.sample_road(next_position, previous_road_distance)
+		var moved_sideways: float = float(next_road.lateral) - precision_launch_lateral
+		var excess: float = moved_sideways - clampf(
+			moved_sideways, -PRECISION_AIR_LATERAL_M, PRECISION_AIR_LATERAL_M
+		)
+		if absf(excess) > 0.0001:
+			var side: Vector3 = (next_road.basis as Basis).x
+			physical_velocity -= side * (excess / maxf(delta, 0.0001))
 	player.position += physical_velocity * delta
 	if drifting and speed > 6:
 		drift_charge = minf(3, drift_charge + delta * absf(axis))
