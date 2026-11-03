@@ -4,7 +4,9 @@ on:
     paths:
       - 'scripts/characters/lumo/lumo_walk_locomotion.gd'
       - 'scripts/characters/lumo/lumo_rigged_actor.gd'
+      - 'scripts/games/jump_islands.gd'
       - 'scripts/tests/lumo_65bone_walk_gait_regression.gd'
+      - 'scripts/tests/lumo_original_jump_visual_regression.gd'
       - '.github/workflows/lumo-65bone-walk-qa.yml'
   workflow_dispatch:
 permissions:
@@ -39,6 +41,14 @@ jobs:
         run: |
           set -euo pipefail
           python3 tools/run_godot_probe.py --timeout 120             --log proof/gait/real-gait.log             --required '[LumoGait] PASS:'             -- Godot_v4.6.3-stable_linux.x86_64 --headless --path .             --script res://scripts/tests/lumo_65bone_walk_gait_regression.gd
+      - name: Verify original fox appears in the live 3D Jump scene
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 140 \
+            --log proof/gait/real-jump.log \
+            --required '[JumpOriginalLumo] PASS:' \
+            -- Godot_v4.6.3-stable_linux.x86_64 --headless \
+            --path . --script res://scripts/tests/lumo_original_jump_visual_regression.gd
       - uses: actions/upload-artifact@v4
         if: always()
         with:
