@@ -120,6 +120,18 @@ func _ground() -> void:
 		for x in [-0.30, 4.32]:
 			var rock := kit.mesh(self, kit.SHAPES.rock(), Vector3(x, -0.1, z), Color("74839e"))
 			rock.scale = Vector3(0.5, 0.4, 0.7)
+			rock.material_override = kit.textured("stone", Color("93a8c8"))
+			# Genuine faceted 3D crystals mark the riverbank in Bauwelt.
+			# They never receive collision shapes and cannot obstruct a child's
+			# bridge. Low tier keeps a sparse silhouette for mobile rendering.
+			if z % 6 == 0 and (LumoQuality.tier() != "low" or z % 12 == 0):
+				var gem := kit.mesh(
+					self, kit.SHAPES.crystal(), Vector3(x, 0.24, float(z)),
+					Color("6de5ff") if x < 0 else Color("a89cf7"), true
+				)
+				gem.name = "RiverCrystal"
+				gem.scale = Vector3(0.28, 0.73, 0.30)
+				gem.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	for x in range(-16, 17, 2):
 		if x in [0, 2]:
 			continue
