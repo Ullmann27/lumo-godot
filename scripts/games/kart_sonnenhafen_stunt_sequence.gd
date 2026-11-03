@@ -25,11 +25,12 @@ const PAD_GAP_M: float = 16.0
 const PAD_LENGTH: float = 6.0
 const STAR_FRACTIONS: Array[float] = [0.14, 0.27, 0.40, 0.5, 0.60, 0.73, 0.86]
 
-## Position B, 80 m before the tunnel: a full-width panorama kicker right after
-## the loop exit. Same flight model as the 55 % panorama jump.
+## Position B, 80 m before the tunnel: a modern chevron launch deck.
+## The driver's real speed sets the trajectory. The target indicator is
+## advisory only; actual landing geometry is a separate integration task.
 const JUMP_LEAD_M: float = 80.0
 const JUMP_RAMP_LENGTH: float = 12.0
-const JUMP_RAMP_HEIGHT: float = 2.2
+const JUMP_RAMP_HEIGHT: float = 2.9
 ## Stars along the measured flight arc (metres after take-off, height above road).
 const ARC_STARS: Array = [[5.0, 2.6], [10.0, 3.7], [15.0, 4.1], [20.0, 3.6]]
 
@@ -96,9 +97,11 @@ static func kickers(world) -> Array:
 			"length": JUMP_RAMP_LENGTH,
 			"height": JUMP_RAMP_HEIGHT,
 			"angle": atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH),
-			"flight_gravity": 14.0,
-			"lift_bonus": 5.0,
-			"max_lift": 11.0,
+			"flight_gravity": 9.8,
+			"lift_bonus": 0.0,
+			"skill_flight": true,
+			"landing_min_m": 28.0,
+			"landing_max_m": 36.0,
 			"hero_flight": true,
 			"stunt": true,
 		}
