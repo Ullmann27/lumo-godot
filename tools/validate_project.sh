@@ -15,6 +15,9 @@ grep -qE '\[JumpTests\] PASS' /tmp/lumo-jump-tests.log
 timeout 120s "$GODOT" --headless --script scripts/tests/lumo_gait_regression.gd 2>&1 | tee /tmp/lumo-gait-tests.log
 if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-gait-tests.log; then exit 1; fi
 grep -qE '\[LumoGait\] PASS' /tmp/lumo-gait-tests.log
+timeout 120s "$GODOT" --headless --script scripts/tests/lumo_renderkit_regression.gd 2>&1 | tee /tmp/lumo-renderkit-tests.log
+if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-renderkit-tests.log; then exit 1; fi
+grep -qE '\[LumoRenderKit\] PASS' /tmp/lumo-renderkit-tests.log
 
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_race_bridge_regression.gd 2>&1 | tee /tmp/lumo-kart-race-bridge-tests.log
 if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-race-bridge-tests.log; then exit 1; fi
