@@ -671,6 +671,20 @@ func _ground_height(x: float, z: float) -> float:
 			1.0 - smoothstep(64.0, 90.0, absf(z))
 		)
 		terrain_height = lerpf(terrain_height, -4.2, inlet)
+	# The real precision-jump road gap must also be a visible geological cut,
+	# not a ribbon of empty asphalt over unchanged green grass.
+	# Sampling uses the existing nearest-road index (no new O(N) scan), and
+	# changes terrain geometry only; no kart collision or landing logic.
+	if track_id == "sonnenhafen" and index >= 0:
+		var gap_start: float = STUNT.jump_take_off(self) + STUNT.PRECISION_GAP_START_M
+		var gap_end: float = STUNT.jump_take_off(self) + STUNT.PRECISION_LANDING_START_M
+		var road_d: float = float(_road_distances[index])
+		var across: float = 1.0 - smoothstep(6.0, 14.0, nearest.x)
+		var along: float = (
+			smoothstep(gap_start - 3.0, gap_start + 2.0, road_d)
+			* (1.0 - smoothstep(gap_end - 2.0, gap_end + 3.0, road_d))
+		)
+		terrain_height = lerpf(terrain_height, -13.0, across * along)
 	return terrain_height
 
 func _terrain() -> void:
