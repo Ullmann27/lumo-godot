@@ -1,0 +1,90 @@
+name: Lumo native lifecycle and Bauwelt play proof
+on:
+  pull_request:
+    paths:
+      - 'scripts/creative/**'
+      - 'scenes/creative/build_world.tscn'
+      - 'scripts/games/kart_island.gd'
+      - 'scripts/games/kart_audio.gd'
+      - 'scripts/tests/kart_sonnenhafen_precision_capture.gd'
+      - 'scripts/tests/creative_build_capture.gd'
+      - '.github/workflows/lumo-native-lifecycle-bauwelt-proof.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-native-proof:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        probe: [precision, bauwelt]
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install matching engine and real software display
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import the exact source revision
+        run: |
+          set -euo pipefail
+          mkdir -p exports/native-proof exports/creative-build
+          git rev-parse HEAD | tee exports/native-proof/source-sha.txt
+          cp exports/native-proof/source-sha.txt exports/creative-build/source-sha.txt
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit > exports/native-proof/import.log 2>&1
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' exports/native-proof/import.log; then exit 1; fi
+      - name: Precision capture and complete resource diagnostics
+        if: matrix.probe == 'precision'
+        run: |
+          set -euo pipefail
+          LUMO_CAPTURE_DIR="$PWD/exports/native-proof/precision" xvfb-run -a -s '-screen 0 1280x720x24' \
+            python3 tools/run_godot_probe.py --timeout 240 \
+              --log exports/native-proof/precision-capture.log \
+              --required '[PrecisionCapture] PASS: 10 frames' -- \
+              Godot_v4.6.3-stable_linux.x86_64 --verbose --audio-driver Dummy \
+              --rendering-method gl_compatibility --path . \
+              --script res://scripts/tests/kart_sonnenhafen_precision_capture.gd
+      - name: Bauwelt interaction, disk save, reload and real rendered states
+        if: matrix.probe == 'bauwelt'
+        run: |
+          set -euo pipefail
+          xvfb-run -a -s '-screen 0 1280x720x24' \
+            python3 tools/run_godot_probe.py --timeout 180 \
+              --log exports/creative-build/runtime.log \
+              --required '[CreativeBuild] PASS: actual world, successful JSON reload, pause, 4 rendered screenshots' -- \
+              Godot_v4.6.3-stable_linux.x86_64 --verbose --audio-driver Dummy \
+              --rendering-method gl_compatibility --resolution 1280x720 --path . \
+              --script res://scripts/tests/creative_build_capture.gd
+          python3 - <<'PY'
+          from pathlib import Path
+          import struct
+          root = Path('exports/creative-build')
+          names = ('01_bauwelt_house', '02_bauwelt_bridge_test', '03_bauwelt_tower', '04_bauwelt_pause')
+          for name in names:
+              data = (root / (name + '.png')).read_bytes()
+              assert data[:8] == b'\x89PNG\r\n\x1a\n', name
+              assert data[12:16] == b'IHDR', name
+              assert struct.unpack('>II', data[16:24]) == (1280, 720), name
+          print('[BauweltArtifact] PASS: all four real frames are 1280x720 PNGs')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-native-${{ matrix.probe }}-${{ github.run_id }}
+          path: |
+            exports/native-proof/
+            exports/creative-build/
+          retention-days: 60
+          if-no-files-found: error

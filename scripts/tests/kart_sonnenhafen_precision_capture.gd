@@ -143,8 +143,25 @@ func _run() -> void:
 			_look(kart + world.frame(game.previous_road_distance).x * 15.0 + Vector3.UP * 4.0, kart, 58.0)
 			await _capture("10_too_slow_falls_into_gap")
 			break
-	print("[PrecisionCapture] PASS: %d frames" % shots.size())
+	assert(shots.size() == 10, "Every precision-jump state must be captured")
+	# AudioStreamPlayer.stop() hands playback release to the audio thread.
+	# Quitting after one scene-tree frame can strand the Ogg stream and packet
+	# sequence even though the game is freed. Keep only weak references and
+	# require the actual streams to disappear before the strict exit check.
+	var audio_streams: Array[WeakRef] = []
+	for audio_player in game.find_children("*", "AudioStreamPlayer", true, false):
+		if audio_player.stream != null:
+			audio_streams.append(weakref(audio_player.stream))
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
+	game = null
+	var release_deadline: int = Time.get_ticks_msec() + 2000
+	for stream in audio_streams:
+		while stream.get_ref() != null and Time.get_ticks_msec() < release_deadline:
+			await process_frame
+		assert(stream.get_ref() == null, "AudioServer must release the captured game's audio streams")
+	await process_frame
+	print("[PrecisionCapture] released %d audio streams" % audio_streams.size())
+	print("[PrecisionCapture] PASS: %d frames" % shots.size())
 	quit(0)

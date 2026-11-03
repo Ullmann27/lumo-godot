@@ -61,7 +61,7 @@ jobs:
       - name: Real OpenGL frames of the precision stunt sequence
         run: |
           set -euo pipefail
-          LUMO_CAPTURE_DIR="$PWD/exports/stunt-integration/precision-frames" xvfb-run -a -s '-screen 0 1280x720x24' python3 tools/run_godot_probe.py --timeout 240 --log exports/stunt-integration/precision-capture.log --required "[PrecisionCapture] PASS:" -- Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --path . --script res://scripts/tests/kart_sonnenhafen_precision_capture.gd
+          LUMO_CAPTURE_DIR="$PWD/exports/stunt-integration/precision-frames" xvfb-run -a -s '-screen 0 1280x720x24' python3 tools/run_godot_probe.py --timeout 240 --log exports/stunt-integration/precision-capture.log --required "[PrecisionCapture] PASS:" -- Godot_v4.6.3-stable_linux.x86_64 --verbose --audio-driver Dummy --rendering-method gl_compatibility --path . --script res://scripts/tests/kart_sonnenhafen_precision_capture.gd
       - uses: actions/upload-artifact@v4
         if: always()
         with:
