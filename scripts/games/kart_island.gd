@@ -30,6 +30,9 @@ const RESONANCE = preload("res://scripts/games/kart_resonance_system.gd")
 const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
+const JUMP_HINT = preload("res://scripts/games/visual/kart_jump_speed_hint.gd")
+## The jump speed hint appears this many metres before the ramp starts.
+const JUMP_HINT_LEAD_M: float = 70.0
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
@@ -138,6 +141,7 @@ var precision_kicker: Dictionary = {}
 var last_precision_landing: String = ""
 var last_precision_flown: float = 0.0
 var precision_results: Dictionary = {}
+var jump_hint: Control
 ## Action-Parcours: genutzte Turbo-Felder (je Runde einmal), Slalom-Fortschritt, Schanzen, Stürze.
 var action_pads_used: Dictionary = {}
 var action_gates_hit: int = 0
@@ -1002,6 +1006,8 @@ func _build_ui() -> void:
 	message.add_theme_constant_override("shadow_offset_y", 2)
 	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(message)
+	jump_hint = JUMP_HINT.new()
+	column.add_child(jump_hint)
 	call_deferred("_build_start_lights")
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -2140,6 +2146,25 @@ func _update_hud() -> void:
 	gas_button.disabled = not enabled
 	brake_button.disabled = not enabled
 	gas_button.visible = not auto_gas
+	_update_jump_hint(enabled)
+
+
+## Speed hint on the run-up to a precision jump (prediction only, no assist).
+func _update_jump_hint(enabled: bool) -> void:
+	if not is_instance_valid(jump_hint):
+		return
+	var kicker: Dictionary = {}
+	if enabled and mode != "arena" and is_instance_valid(world) and not airborne and not loop_state.active:
+		var d: float = fposmod(previous_road_distance, track_length)
+		for candidate in world.action.get("kickers", []):
+			if not bool(candidate.get("precision_jump", false)):
+				continue
+			if d >= float(candidate.start) - JUMP_HINT_LEAD_M and d < float(candidate.take_off):
+				kicker = candidate
+	if kicker.is_empty():
+		jump_hint.hide_hint()
+	else:
+		jump_hint.show_for(speed, kicker)
 
 
 func _place() -> int:

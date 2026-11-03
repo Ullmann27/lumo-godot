@@ -351,7 +351,24 @@ func _precision_run(launch_speed: float, steer_in_air: float) -> Dictionary:
 	}
 
 
+func _hint_at(at: float, speed: float) -> String:
+	_place(at, 0.0, speed)
+	game._update_hud()
+	return str(game.jump_hint.text) if game.jump_hint.visible else ""
+
+
 func _check_precision_speeds() -> void:
+	await _start()
+	var kicker: Dictionary = {}
+	for candidate in game.world.action.kickers:
+		if bool(candidate.get("precision_jump", false)):
+			kicker = candidate
+	var run_up: float = float(kicker.start) - 30.0
+	assert(_hint_at(float(kicker.start) - 200.0, 20.0) == "", "No hint far from the jump")
+	assert(_hint_at(run_up, 12.0) == "Gib Gas!", "Red hint when too slow")
+	assert(_hint_at(run_up, float(kicker.rival_speed)) == "Tempo passt!", "Green hint at good speed")
+	assert(_hint_at(run_up, 30.0) == "Etwas bremsen!", "Orange hint when too fast")
+	assert(_hint_at(float(kicker.take_off) + 40.0, 20.0) == "", "Hint gone after the jump")
 	var slow: Dictionary = await _precision_run(12.0, 0.0)
 	var jump: Dictionary = slow.jump
 	assert(slow.launched, "Slow kart still leaves the lip")
