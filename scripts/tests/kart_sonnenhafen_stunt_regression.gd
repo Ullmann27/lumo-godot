@@ -394,6 +394,8 @@ func _check_precision_speeds() -> void:
 	var steered: Dictionary = await _precision_run(good_speed, 1.0)
 	assert(absf(float(steered.lane_shift)) > absf(float(good.lane_shift)) + 0.3,
 		"Kart can be steered in the air (%.2f vs %.2f m)" % [steered.lane_shift, good.lane_shift])
+	assert(absf(float(steered.lane_shift)) <= game.PRECISION_AIR_LATERAL_M + 0.5,
+		"Child-friendly air steering stays within 2 m (%.2f m)" % steered.lane_shift)
 	completed_checks += 1
 	print(
 		(

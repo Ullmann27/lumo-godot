@@ -33,6 +33,8 @@ const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const JUMP_HINT = preload("res://scripts/games/visual/kart_jump_speed_hint.gd")
 ## The jump speed hint appears this many metres before the ramp starts.
 const JUMP_HINT_LEAD_M: float = 70.0
+## Maximum intentional lateral displacement during a precision flight.
+const PRECISION_AIR_LATERAL_M: float = 2.0
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
@@ -138,6 +140,7 @@ var landing_count: int = 0
 var gap_falls: int = 0
 ## Sonnenhafen precision jump: the kicker in flight, and the measured results.
 var precision_kicker: Dictionary = {}
+var precision_launch_lateral: float = 0.0
 var last_precision_landing: String = ""
 var last_precision_flown: float = 0.0
 var precision_results: Dictionary = {}
@@ -777,6 +780,7 @@ func _begin_race() -> void:
 	landing_count = 0
 	gap_falls = 0
 	precision_kicker = {}
+	precision_launch_lateral = 0.0
 	last_precision_landing = ""
 	last_precision_flown = 0.0
 	precision_results = {}
@@ -1558,6 +1562,16 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var forward := Vector3(-sin(player_heading), 0, -cos(player_heading))
 	var grip: float = 3.1 if drifting else 9.0 * _factor("grip")
 	physical_velocity = physical_velocity.lerp(forward * speed, minf(1, delta * grip))
+	# Child-friendly air steering: preserve the physical forward flight, but
+	# bleed off only outward lateral velocity after 2 m from take-off.
+	# No teleport or magnetic landing; other jumps retain their own handling.
+	if airborne and not precision_kicker.is_empty():
+		var lateral_delta: float = lane - precision_launch_lateral
+		if absf(lateral_delta) >= PRECISION_AIR_LATERAL_M:
+			var side: Vector3 = world.frame(float(precision_kicker.take_off)).x
+			var outwards: float = physical_velocity.dot(side) * signf(lateral_delta)
+			if outwards > 0.0:
+				physical_velocity -= side * (outwards * signf(lateral_delta))
 	player.position += physical_velocity * delta
 	if drifting and speed > 6:
 		drift_charge = minf(3, drift_charge + delta * absf(axis))
@@ -1710,6 +1724,7 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			if bool(kicker.get("precision_jump", false)):
 				# Same numbers as the speed hint; nothing is corrected in flight.
 				precision_kicker = kicker
+				precision_launch_lateral = lane
 				vertical_speed = PRECISION.launch_vertical(speed, kicker)
 				message.text = "Sprung! Ziel: die grüne Landezone."
 				return true
