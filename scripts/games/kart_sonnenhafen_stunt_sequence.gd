@@ -21,6 +21,8 @@ const LOOP_LEAD_M: float = 180.0
 const LOOP_LANE: float = 2.9
 const LOOP_RADIUS: float = 8.0
 const DECK_HALF_WIDTH: float = 2.4
+## Half width of the precision ramp deck (old kicker slabs were 9.2 m wide).
+const RAMP_HALF_WIDTH: float = 4.6
 const WALL_HEIGHT: float = 0.55
 const DECK_SEGMENTS: int = 160
 ## Boost pad on the loop lane, ending this far before the loop entry.
@@ -481,3 +483,126 @@ static func _tunnel_portal(world) -> void:
 	world._prop("box", top - basis.y * 1.18, Vector3(8.9, 0.16, 0.6), CYAN, basis, true)
 	world._sign(top + basis.z * 0.28, basis, "LUMO KART", 0.05)
 	world._sign(top + basis.z * 0.28 - basis.y * 0.75, basis, "Kristalltunnel", 0.02)
+
+
+## Precision stunt ramp in the loop's design language instead of the yellow /
+## navy construction stripes: a real deck mesh with the loop's glowing cyan
+## chevrons and orange edge lines, white side walls with an orange glow, a
+## cyan lip, arrows on the run-up, and a clearly marked landing zone behind
+## the open gap (green start bar, orange end bar, matching gates).
+## Geometry follows exactly kicker_height(), so what you see is what you ride.
+static func build_precision_ramp(world, kicker: Dictionary) -> void:
+	var start: float = float(kicker.start)
+	var take_off: float = float(kicker.take_off)
+	var height: float = float(kicker.height)
+	var deck := SurfaceTool.new()
+	deck.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var body := SurfaceTool.new()
+	body.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var walls := SurfaceTool.new()
+	walls.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var half: float = RAMP_HALF_WIDTH
+	var steps: int = 24
+	var rows: Array = []
+	for i in range(steps + 1):
+		var d: float = start + (take_off - start) * float(i) / float(steps)
+		var basis: Basis = world.frame(d)
+		var rise: float = float(i) / float(steps) * height
+		var lift: Vector3 = basis.y * (rise + 0.02)
+		rows.append({
+			"left": world.position_at(d, -half) + lift,
+			"right": world.position_at(d, half) + lift,
+			"left_foot": world.position_at(d, -half) - basis.y * 0.05,
+			"right_foot": world.position_at(d, half) - basis.y * 0.05,
+			# The deck shader draws chevron tips towards decreasing v; running v
+			# backwards makes the arrows point up the ramp, in driving direction.
+			"up": basis.y, "side": basis.x, "v": take_off - d,
+		})
+	for i in range(steps):
+		var a: Dictionary = rows[i]
+		var b: Dictionary = rows[i + 1]
+		_quad(deck, a.left, a.right, b.right, b.left, a.up, b.up, a.v, b.v)
+		# Closed wedge sides so the ramp reads as a solid, built object.
+		_quad(body, a.left_foot, a.left, b.left, b.left_foot, -a.side, -b.side, 0, 1)
+		_quad(body, a.right, a.right_foot, b.right_foot, b.right, a.side, b.side, 0, 1)
+		for side in ["left", "right"]:
+			var out: Vector3 = (a.side if side == "right" else -a.side) * 0.24
+			var top_a: Vector3 = a[side] + a.up * WALL_HEIGHT
+			var top_b: Vector3 = b[side] + b.up * WALL_HEIGHT
+			_quad(walls, a[side], top_a, top_b, b[side], -out, -out, 0, 1)
+			_quad(walls, top_a, top_a + out, top_b + out, top_b, a.up, b.up, 0, 1)
+	# Back face of the wedge under the lip.
+	var last: Dictionary = rows[steps]
+	_quad(body, last.left_foot, last.right_foot, last.right, last.left, -world.forward(take_off),
+		-world.forward(take_off), 0, 1)
+	var deck_material := ShaderMaterial.new()
+	deck_material.shader = DECK_SHADER
+	deck_material.set_shader_parameter("chevron_spacing", 2.0)
+	_add_mesh(world, "PrecisionRampDeck", deck, deck_material)
+	var body_material := StandardMaterial3D.new()
+	body_material.albedo_color = Color("2b3c5c")
+	body_material.metallic = 0.55
+	body_material.roughness = 0.38
+	body_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_add_mesh(world, "PrecisionRampBody", body, body_material)
+	var wall_material := StandardMaterial3D.new()
+	wall_material.albedo_color = WHITE
+	wall_material.roughness = 0.35
+	wall_material.emission_enabled = true
+	wall_material.emission = ORANGE
+	wall_material.emission_energy_multiplier = 0.35
+	wall_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_add_mesh(world, "PrecisionRampWalls", walls, wall_material)
+	# Glowing lip and a cyan edge where the open gap begins.
+	var lip_basis: Basis = world.frame(take_off - 0.15)
+	world._prop("box", world.position_at(take_off - 0.15) + lip_basis.y * (height + 0.06),
+		Vector3(half * 2.0 + 0.3, 0.1, 0.3), CYAN, lip_basis, true)
+	# Run-up arrows (same V arrows as the loop lane), centre and both lanes.
+	for i in range(6):
+		var d: float = start - 30.0 + float(i) * 4.5
+		var arrow_basis: Basis = world.frame(d)
+		for lane in [-2.6, 0.0, 2.6]:
+			for side in [-1.0, 1.0]:
+				var tilted: Basis = arrow_basis.rotated(arrow_basis.y, side * 0.70)
+				var at: Vector3 = world.position_at(d, lane + side * 0.48) + arrow_basis.y * 0.03
+				world._prop("box", at, Vector3(0.3, 0.03, 1.3), ORANGE if i % 2 == 0 else CYAN, tilted, true)
+	# Sign gantry: tells the child what this ramp is about.
+	var sign_distance: float = start - 34.0
+	var sign_basis: Basis = world.frame(sign_distance)
+	var beam: Vector3 = world.position_at(sign_distance, 0.0) + sign_basis.y * 6.2
+	for side in [-1.0, 1.0]:
+		var post: Vector3 = world.position_at(sign_distance, side * (float(world.RAIL_LATERAL) + 0.9))
+		world._prop("box", post + sign_basis.y * 3.2, Vector3(0.45, 6.4, 0.45), NAVY, sign_basis)
+	world._prop("box", beam, Vector3(float(world.RAIL_LATERAL) * 2.0 + 2.2, 1.5, 0.35), NAVY, sign_basis)
+	world._prop("box", beam + sign_basis.y * 0.82, Vector3(float(world.RAIL_LATERAL) * 2.0 + 2.4, 0.12, 0.42), ORANGE, sign_basis, true)
+	world._prop("box", beam - sign_basis.y * 0.82, Vector3(float(world.RAIL_LATERAL) * 2.0 + 2.4, 0.12, 0.42), CYAN, sign_basis, true)
+	world._sign(beam + sign_basis.z * 0.2, sign_basis, "STUNT-SPRUNG\nAuf das Tempo achten!", 0.016)
+	# Solid abutments on both sides of the open gap, so it reads as a built
+	# chasm in the road and not as a missing texture.
+	for edge in [float(kicker.gap_start), float(kicker.gap_end)]:
+		var edge_basis: Basis = world.frame(edge)
+		var toward_gap: float = 0.25 if edge == float(kicker.gap_start) else -0.25
+		var face: Vector3 = world.position_at(edge - toward_gap) - edge_basis.y * 0.9
+		world._prop("box", face, Vector3(half * 2.0 + 1.6, 1.8, 0.5), NAVY, edge_basis)
+		world._prop("box", world.position_at(edge - toward_gap) + edge_basis.y * 0.04,
+			Vector3(half * 2.0 + 1.6, 0.08, 0.5), CYAN, edge_basis, true)
+	# Landing zone: green bar where the road begins again, orange bar at its end,
+	# side gates at both ends and soft green strips along the zone edges.
+	var zone_start: float = take_off + float(kicker.landing_min)
+	var zone_end: float = take_off + float(kicker.landing_max)
+	var green := Color("45e07a")
+	for entry in [[zone_start + 0.2, green], [zone_end, ORANGE]]:
+		var d: float = float(entry[0])
+		var basis: Basis = world.frame(d)
+		world._prop("box", world.position_at(d) + basis.y * 0.03, Vector3(half * 2.0, 0.03, 0.5), entry[1], basis, true)
+		for side in [-1.0, 1.0]:
+			var post: Vector3 = world.position_at(d, side * 6.4)
+			world._prop("box", post + basis.y * 1.5, Vector3(0.28, 3.0, 0.28), entry[1], basis, true)
+		world._prop("box", world.position_at(d) + basis.y * 3.05, Vector3(13.1, 0.24, 0.28), entry[1], basis, true)
+	var along: float = zone_start + 1.0
+	while along < zone_end - 0.5:
+		var basis: Basis = world.frame(along)
+		for side in [-1.0, 1.0]:
+			world._prop("box", world.position_at(along, side * (half - 0.25)) + basis.y * 0.025,
+				Vector3(0.22, 0.02, 1.6), green, basis, true)
+		along += 2.5
