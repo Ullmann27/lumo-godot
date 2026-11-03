@@ -4,6 +4,7 @@ extends Node3D
 signal behavior_started(behavior: String)
 signal behavior_finished(behavior: String)
 const MODEL := "res://assets/characters/lumo_animated/Lumo-Animated-Mobile.glb"
+const WALK = preload("res://scripts/characters/lumo/lumo_walk_locomotion.gd")
 static var _cached_model: PackedScene
 static var _cached_load_kind := ""
 var model_load_kind := ""
@@ -21,6 +22,9 @@ var mouth_supported := false
 var last_audio_position := 0.0
 var last_audio_envelope := 0.0
 var audio_active := false
+var locomotion: RefCounted
+var walking := false
+var walk_speed_mps: float = 0.0
 
 
 func _ready() -> void:
@@ -72,6 +76,7 @@ func _ready() -> void:
 	for clip in ["idle", "kart_seated", "kart_steer_left", "kart_steer_right"]:
 		player.get_animation(clip).loop_mode = Animation.LOOP_LINEAR
 	player.animation_finished.connect(_finished)
+	locomotion = WALK.new()
 	play_behavior("idle")
 
 
@@ -79,9 +84,48 @@ func is_usable() -> bool:
 	return is_instance_valid(skeleton) and is_instance_valid(player) and not model_load_kind.is_empty()
 
 
-func play_behavior(behavior: String) -> bool:
-	if not CLIPS.has(behavior) or suspended or player == null:
+func _process(delta: float) -> void:
+	if walking and not suspended and not reduced_motion and locomotion != null:
+		locomotion.advance(delta, walk_speed_mps)
+
+
+## The owner supplies actual horizontal velocity from navigation/physics.
+## This API affects bones only; it cannot teleport or slide the root node.
+func set_locomotion_speed(speed_mps: float) -> bool:
+	if not is_usable():
 		return false
+	if not is_finite(speed_mps) or speed_mps <= 0.045:
+		if walking:
+			play_behavior("idle")
+		return true
+	walk_speed_mps = clampf(speed_mps, 0.05, 3.2)
+	if not walking:
+		return play_behavior("walk_loop")
+	return true
+
+
+func play_behavior(behavior: String) -> bool:
+	if suspended or player == null:
+		return false
+	if behavior == "walk_loop":
+		if not is_usable():
+			return false
+		if not walking:
+			player.play("idle", 0.0)
+			player.advance(0.0)
+			player.pause()
+			if locomotion == null or not locomotion.bind(skeleton):
+				return false
+		walking = true
+		walk_speed_mps = maxf(walk_speed_mps, 0.9)
+		current_behavior = behavior
+		behavior_started.emit(behavior)
+		return true
+	if not CLIPS.has(behavior):
+		return false
+	if walking:
+		walking = false
+		locomotion.stop()
 	current_behavior = behavior
 	player.play(behavior, 0.12)
 	player.advance(0.0)
@@ -107,9 +151,12 @@ func set_suspended(value: bool) -> void:
 	if value:
 		player.pause()
 	else:
-		player.play()
-		if reduced_motion:
+		if walking:
 			player.pause()
+		else:
+			player.play()
+			if reduced_motion:
+				player.pause()
 
 
 func set_reduced_motion(value: bool) -> void:
