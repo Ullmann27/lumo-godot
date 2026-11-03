@@ -5,6 +5,7 @@ const LUMO = preload("res://scenes/characters/lumo/lumo_character.tscn")
 const ISLAND_COUNT: int = 12
 const SESSION: String = "user://jump_session.cfg"
 var actor: CharacterBody3D
+var gait: LumoGait
 var camera: Camera3D
 var islands: Array[Vector3] = []
 var crystals: Array[Node3D] = []
@@ -167,7 +168,13 @@ func _build_world() -> void:
 	var visual: Node3D = LUMO.instantiate()
 	visual.scale = Vector3.ONE * 0.7
 	visual.rotation.y = PI
+	# Collider bottom sits 0.05 m above the actor origin; stand the feet on it
+	# (previously the legs were buried and Lumo glided on its belly).
+	visual.position.y = 0.05 + LumoGait.rest_foot_depth() * visual.scale.y
 	actor.add_child(visual)
+	gait = LumoGait.new()
+	gait.name = "Gait"
+	visual.add_child(gait)
 	actor.position = islands[0] + Vector3(0, 0.4, 1.5)
 	camera = Camera3D.new()
 	camera.current = true
@@ -320,6 +327,7 @@ func _physics_process(delta: float) -> void:
 		if save_timer >= 5.0:
 			save_timer = 0
 			_save_session()
+	gait.step(actor.is_on_floor(), delta)
 	var desired: Vector3 = actor.position + Vector3(0, 5.5, 9)
 	camera.position = camera.position.lerp(desired, minf(1, delta * 5))
 	camera.look_at(actor.position + Vector3(0, 1, -4))
