@@ -15,7 +15,7 @@ const DECK_SHADER = preload("res://assets/shaders/kart_stunt_loop.gdshader")
 const TUNNEL_FRACTION: float = 0.690
 ## Loop entry this many metres before the tunnel mouth (Position A).
 const LOOP_LEAD_M: float = 108.0
-const LOOP_LANE: float = 2.9
+const LOOP_LANE: float = 0.0
 const LOOP_RADIUS: float = 8.0
 const DECK_HALF_WIDTH: float = 2.4
 const WALL_HEIGHT: float = 0.55
@@ -29,7 +29,9 @@ const STAR_FRACTIONS: Array[float] = [0.14, 0.27, 0.40, 0.5, 0.60, 0.73, 0.86]
 ## the loop exit. Same flight model as the 55 % panorama jump.
 const JUMP_LEAD_M: float = 80.0
 const JUMP_RAMP_LENGTH: float = 12.0
-const JUMP_RAMP_HEIGHT: float = 2.2
+const JUMP_RAMP_HEIGHT: float = 3.0
+const JUMP_GAP_M: float = 20.0
+const JUMP_LANDING_BAND_M: float = 9.0
 ## Stars along the measured flight arc (metres after take-off, height above road).
 const ARC_STARS: Array = [[5.0, 2.6], [10.0, 3.7], [15.0, 4.1], [20.0, 3.6]]
 
@@ -97,12 +99,83 @@ static func kickers(world) -> Array:
 			"height": JUMP_RAMP_HEIGHT,
 			"angle": atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH),
 			"flight_gravity": 14.0,
-			"lift_bonus": 5.0,
-			"max_lift": 11.0,
+			"lift_bonus": 0.0,
+			"max_lift": 100.0,
+			"gap_end": take_off + JUMP_GAP_M,
+			"landing_band": JUMP_LANDING_BAND_M,
 			"hero_flight": true,
 			"stunt": true,
 		}
 	]
+
+
+## The dark runway is a single curved mesh, not alternating construction
+## blocks. Both the riding surface and the arrow markers use the same sampled
+## curve and height function as player physics.
+static func build_launch_ramp(world, kicker: Dictionary) -> void:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var steps: int = 48
+	var span: float = float(kicker.length)
+	var start: float = float(kicker.start)
+	var height: float = float(kicker.height)
+	for i in range(steps):
+		var u0: float = float(i) / float(steps)
+		var u1: float = float(i + 1) / float(steps)
+		var d0: float = start + u0 * span
+		var d1: float = start + u1 * span
+		var f0: Basis = world.frame(d0)
+		var f1: Basis = world.frame(d1)
+		_quad(
+			surface,
+			world.position_at(d0, -4.7) + f0.y * (height * u0 + 0.045),
+			world.position_at(d0, 4.7) + f0.y * (height * u0 + 0.045),
+			world.position_at(d1, 4.7) + f1.y * (height * u1 + 0.045),
+			world.position_at(d1, -4.7) + f1.y * (height * u1 + 0.045),
+			f0.y, f1.y, u0 * span, u1 * span
+		)
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color("193653")
+	material.metallic = 0.42
+	material.roughness = 0.32
+	material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_add_mesh(world, "SonnenhafenAeroRunway", surface, material)
+	for side in [-1.0, 1.0]:
+		for i in range(12):
+			var u: float = (float(i) + 0.5) / 12.0
+			var d: float = start + u * span
+			var basis: Basis = world.frame(d)
+			var raised: Vector3 = world.position_at(d, side * 4.85) + basis.y * (height * u + 0.14)
+			world._prop("box", raised, Vector3(0.20, 0.15, span / 12.0 + 0.02), CYAN, basis, true)
+	for i in range(6):
+		var u: float = (float(i) + 0.5) / 6.0
+		var d: float = start + u * span
+		var basis: Basis = world.frame(d)
+		for side in [-1.0, 1.0]:
+			var chevron: Basis = basis.rotated(basis.y, 0.72 * side)
+			var position: Vector3 = world.position_at(d, side * 0.74) + basis.y * (height * u + 0.085)
+			world._prop("box", position, Vector3(0.35, 0.045, 1.9), CYAN if i < 4 else GOLD, chevron, true)
+	var end: float = float(kicker.gap_end)
+	for i in range(8):
+		var d: float = end + float(i) * 1.1
+		var basis: Basis = world.frame(d)
+		for side in [-1.0, 1.0]:
+			var at: Vector3 = world.position_at(d, side * 1.9) + basis.y * 0.05
+			var chevron: Basis = basis.rotated(basis.y, 0.72 * side)
+			world._prop("box", at, Vector3(0.26, 0.045, 1.2), CYAN, chevron, true)
+	for side in [-1.0, 1.0]:
+		var d: float = float(kicker.take_off) + 2.5
+		var basis: Basis = world.frame(d)
+		world._prop("box", world.position_at(d, side * 5.65) + basis.y * 0.8,
+			Vector3(0.28, 1.7, 0.28), ORANGE, basis, true)
+		var landing_d: float = end + 0.4
+		var landing_basis: Basis = world.frame(landing_d)
+		world._prop("box", world.position_at(landing_d, side * 5.6) + landing_basis.y * 1.0,
+			Vector3(0.30, 2.0, 0.30), CYAN, landing_basis, true)
+	var sign_d: float = start - 28.0
+	var sign_basis: Basis = world.frame(sign_d)
+	var sign_at: Vector3 = world.position_at(sign_d, 0.0) + sign_basis.y * 7.3
+	world._sign(sign_at, sign_basis, "SPRUNG VORAUS!\nTEMPO PRÜFEN", 0.019)
 
 
 ## Collectible stars on the riding line through the loop and over the pad.
@@ -373,17 +446,19 @@ static func _entry_guidance(world, layout: Dictionary) -> void:
 			var tilted: Basis = arrow_basis.rotated(arrow_basis.y, side * 0.70)
 			var at: Vector3 = world.position_at(d, LOOP_LANE + side * 0.48) + arrow_basis.y * 0.03
 			world._prop("box", at, Vector3(0.3, 0.03, 1.3), CYAN, tilted, true)
-	# Dashed divider between main lane and loop lane.
-	for i in range(14):
-		var d: float = pad_start - 26.0 + float(i) * 3.0
-		var divider_basis: Basis = world.frame(d)
-		world._prop(
-			"box",
-			world.position_at(d, LOOP_LANE - DECK_HALF_WIDTH - 0.2) + divider_basis.y * 0.025,
-			Vector3(0.14, 0.02, 1.6),
-			WHITE,
-			divider_basis
-		)
+	# A divider is useful only for an optional side lane, never on the
+	# central racing line where the stunt now naturally belongs.
+	if absf(LOOP_LANE) > 0.2:
+		for i in range(14):
+			var d: float = pad_start - 26.0 + float(i) * 3.0
+			var divider_basis: Basis = world.frame(d)
+			world._prop(
+				"box",
+				world.position_at(d, LOOP_LANE - DECK_HALF_WIDTH - 0.2) + divider_basis.y * 0.025,
+				Vector3(0.14, 0.02, 1.6),
+				WHITE,
+				divider_basis
+			)
 
 
 ## Tall light beacons beside the loop: the setpiece reads from far away.
