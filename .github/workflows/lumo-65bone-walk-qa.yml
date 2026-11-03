@@ -21,9 +21,11 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Install Godot 4.6.3
+      - name: Install Godot 4.6.3 and real software display
         run: |
           set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri
           curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
           unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
           chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
@@ -32,6 +34,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p proof/gait
+          git rev-parse HEAD > proof/gait/source-sha.txt
           timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit > proof/gait/import.log 2>&1
           if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' proof/gait/import.log; then
             cat proof/gait/import.log
@@ -49,6 +52,18 @@ jobs:
             --required '[JumpOriginalLumo] PASS:' \
             -- Godot_v4.6.3-stable_linux.x86_64 --headless \
             --path . --script res://scripts/tests/lumo_original_jump_visual_regression.gd
+      - name: Capture original fox in actual Jump gameplay and pause
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          LUMO_CAPTURE_DIR="$PWD/proof/gait/jump-frames" xvfb-run -a -s '-screen 0 720x1280x24' \
+            python3 tools/run_godot_probe.py --timeout 180 \
+              --log proof/gait/real-jump-capture.log \
+              --required '[JumpOriginalLumoCapture] PASS: 4 actual 720x1280 gameplay frames' -- \
+              Godot_v4.6.3-stable_linux.x86_64 --verbose --audio-driver Dummy \
+              --rendering-method gl_compatibility --resolution 720x1280 \
+              --path . --script res://scripts/tests/lumo_original_jump_visual_regression.gd -- --capture
       - uses: actions/upload-artifact@v4
         if: always()
         with:
