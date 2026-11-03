@@ -2,10 +2,12 @@ extends Node3D
 
 const QUESTIONS = preload("res://scripts/games/kart_questions.gd")
 const LUMO = preload("res://scenes/characters/lumo/lumo_character.tscn")
+const ORIGINAL_LUMO = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const ISLAND_COUNT: int = 12
 const SESSION: String = "user://jump_session.cfg"
 var actor: CharacterBody3D
 var gait: LumoGait
+var original_lumo
 var camera: Camera3D
 var islands: Array[Vector3] = []
 var crystals: Array[Node3D] = []
@@ -120,6 +122,18 @@ func _build_world() -> void:
 	gait = LumoGait.new()
 	gait.name = "Gait"
 	visual.add_child(gait)
+	# Render the existing original 65-bone fox, never a different substitute,
+	# when the imported GLB and all nine original animations are usable.
+	# Procedural Lumo remains a safe visual fallback. His old gait still
+	# receives events so pre-existing locomotion tests stay meaningful.
+	var candidate = ORIGINAL_LUMO.new()
+	candidate.name = "OriginalLumo"
+	actor.add_child(candidate)
+	if candidate.is_usable() and _fit_original_lumo(candidate):
+		original_lumo = candidate
+		visual.hide()
+	else:
+		candidate.queue_free()
 	actor.position = islands[0] + Vector3(0, 0.4, 1.5)
 	camera = Camera3D.new()
 	camera.current = true
@@ -127,6 +141,31 @@ func _build_world() -> void:
 	add_child(camera)
 	camera.position = actor.position + Vector3(0, 5.5, 9)
 	camera.look_at(actor.position + Vector3(0, 1, -4))
+
+
+## Rescale the original rig from its actual imported skeleton: this preserves
+## consistent screen size across Blender import settings and avoids guessing.
+## Animation and physics stay separate; only visuals are positioned.
+func _fit_original_lumo(candidate: Node3D) -> bool:
+	var skeleton: Skeleton3D = candidate.skeleton
+	if skeleton == null or skeleton.get_bone_count() != 65:
+		return false
+	var lowest: float = INF
+	var highest: float = -INF
+	for bone in range(skeleton.get_bone_count()):
+		var rest: Vector3 = skeleton.get_bone_global_rest(bone).origin
+		if not rest.is_finite():
+			return false
+		lowest = minf(lowest, rest.y)
+		highest = maxf(highest, rest.y)
+	var span: float = highest - lowest
+	if span <= 0.2 or span > 15.0:
+		return false
+	var scaled: float = clampf(1.32 / span, 0.08, 3.0)
+	candidate.scale = Vector3.ONE * scaled
+	candidate.rotation.y = PI
+	candidate.position.y = 0.05 - lowest * scaled
+	return true
 
 
 func _build_ui() -> void:
@@ -273,6 +312,13 @@ func _physics_process(delta: float) -> void:
 			save_timer = 0
 			_save_session()
 	gait.step(actor.is_on_floor(), delta)
+	if is_instance_valid(original_lumo):
+		original_lumo.set_suspended(paused or question_open or finished)
+		if not paused and not question_open and not finished:
+			var horizontal_speed: float = Vector2(actor.velocity.x, actor.velocity.z).length()
+			original_lumo.set_locomotion_speed(
+				horizontal_speed if actor.is_on_floor() else 0.0
+			)
 	var desired: Vector3 = actor.position + Vector3(0, 5.5, 9)
 	camera.position = camera.position.lerp(desired, minf(1, delta * 5))
 	camera.look_at(actor.position + Vector3(0, 1, -4))
