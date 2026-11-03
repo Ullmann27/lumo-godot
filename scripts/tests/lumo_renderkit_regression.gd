@@ -68,6 +68,10 @@ func _run() -> void:
 	assert(night.sun.light_color.is_equal_approx(Color("d9e8ff")))
 	var low_night: Dictionary = LumoEnvironment.apply(holder, "creative_night", "low")
 	assert(low_night.sun.shadow_enabled, "creative_night must stay identical on every tier")
+	assert(night.fill == null and night.rim == null)
+	assert(env.fog_density < 0.005 and is_equal_approx(env.fog_sky_affect, 0.0), "creative_night fog explicit and thin")
+	var day: Dictionary = LumoEnvironment.apply(holder, "bauwelt_day", "high")
+	assert(day.fill is DirectionalLight3D and day.rim == null, "bauwelt_day fill light under key fill")
 	holder.queue_free()
 	# 3. Wolkeninseln: same colliders, sky + fog, detail scales with tier.
 	var scatter: Dictionary = {}

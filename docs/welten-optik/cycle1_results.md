@@ -44,3 +44,11 @@ Der Zyklus wurde auf Anweisung pausiert; die Bauwelt-Szene selbst ist **noch unv
 - `rim` wird für `bauwelt_day` als Fülllicht `SkyFill` genutzt; ggf. Rückgabe-Schlüssel `fill` ergänzen.
 - PerformanceManager schaltet auf MEDIUM/HIGH `fog_enabled` ein: Presets ohne eigene Fog-Werte bekommen Godots
   Default-Dichte 0.01 (grauer Himmel bei `creative_night`, siehe Vorher-Bilder). Vorschlag: Fog-Werte pro Preset setzen.
+
+## Nachtrag 2026-11-03 – Rebase auf Lumo RenderKit (3af44ad)
+- Rebase auf origin/grok/lumo-renderkit-cycle3 (3af44ad) sauber, ohne Konflikte; WIP-Kopie cc4e76c entfällt.
+- LumoEnvironment.apply() liefert jetzt zusätzlich `fill` (Fülllicht, bauwelt_day "SkyFill"); `rim` bleibt Gegenlicht (wolkeninseln). Kein Aufrufer las `["rim"]`.
+- Nebel explizit je Preset: creative_night Farbe 0c1c3f, Dichte 0.0012, sky_affect 0.0 (aerial 0.0); wolkeninseln unverändert bfeaf6 / 0.0042 / 0.15; bauwelt_day d6eef8 / 0.0025 / 0.0.
+- Tests: lumo_renderkit_regression PASS (inkl. neuer fill/Nebel-Asserts), creative_scene_smoke PASS (Bau/Rhythmus/Schatz), creative_asset_regression PASS.
+  validate_project.sh: 1. Lauf brach nach kart_regression ab (KartTests PASS, aber Exit-Meldung "ERROR: 4 resources still in use"; auf der Basis 3af44ad nicht reproduziert, Einzel-Wiederholung ohne Fehler → vermutlich flaky). Vollständiger 2. Lauf wegen Limit abgebrochen – offen.
+- Performance: Bauwelt hat auf jeder Stufe 3051 Draw Calls – fürs Fold7 zu viel. Nächster Schritt: Instancing bzw. MultiMesh prüfen.

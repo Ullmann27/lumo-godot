@@ -2,8 +2,11 @@ class_name LumoEnvironment
 extends RefCounted
 ## LumoRenderKit · sky, atmosphere and light presets per world.
 ##
-## apply() adds a WorldEnvironment plus sun (and optional rim light) to a scene
-## root; shadow settings come from LumoQuality (except creative_night).
+## apply() adds a WorldEnvironment plus sun, optional rim (back) light and
+## optional fill light to a scene root; returned keys: world, environment,
+## sun, rim, fill (rim/fill may be null). Every preset sets fog density,
+## colour and fog_sky_affect explicitly (Godot default 0.01 never applies);
+## shadow settings come from LumoQuality (except creative_night). shadow settings come from LumoQuality (except creative_night).
 ## PerformanceManager still owns the glow/fog/SSAO switches per tier and
 ## re-applies them on scene change.
 ## Presets:
@@ -24,6 +27,7 @@ static func apply(root: Node3D, preset: String, tier: String = "") -> Dictionary
 	var sun := DirectionalLight3D.new()
 	sun.name = "Sun"
 	var rim: DirectionalLight3D = null
+	var fill: DirectionalLight3D = null
 	match preset:
 		"creative_night":
 			_creative_night(env, sun)
@@ -37,13 +41,13 @@ static func apply(root: Node3D, preset: String, tier: String = "") -> Dictionary
 			rim.shadow_enabled = false
 		"bauwelt_day":
 			_bauwelt_day(env, sun, budget)
-			rim = DirectionalLight3D.new()
-			rim.name = "SkyFill"
-			rim.rotation_degrees = Vector3(-35, 140, 0)
-			rim.light_color = Color("bfe3ff")
-			rim.light_energy = 0.28
-			rim.light_specular = 0.1
-			rim.shadow_enabled = false
+			fill = DirectionalLight3D.new()
+			fill.name = "SkyFill"
+			fill.rotation_degrees = Vector3(-35, 140, 0)
+			fill.light_color = Color("bfe3ff")
+			fill.light_energy = 0.28
+			fill.light_specular = 0.1
+			fill.shadow_enabled = false
 		_:
 			push_warning("[LumoEnvironment] unknown preset %s" % preset)
 	world.environment = env
@@ -54,7 +58,9 @@ static func apply(root: Node3D, preset: String, tier: String = "") -> Dictionary
 	root.add_child(sun)
 	if rim != null:
 		root.add_child(rim)
-	return {"world": world, "environment": env, "sun": sun, "rim": rim}
+	if fill != null:
+		root.add_child(fill)
+	return {"world": world, "environment": env, "sun": sun, "rim": rim, "fill": fill}
 
 
 static func _creative_night(env: Environment, sun: DirectionalLight3D) -> void:
@@ -74,6 +80,12 @@ static func _creative_night(env: Environment, sun: DirectionalLight3D) -> void:
 	env.glow_enabled = true
 	env.glow_intensity = 0.75
 	env.glow_bloom = 0.04
+	# Explicit fog values: PerformanceManager may switch fog on per tier; keep
+	# it night-dark and very thin and off the sky so the sky never greys out.
+	env.fog_light_color = Color("0c1c3f")
+	env.fog_density = 0.0012
+	env.fog_aerial_perspective = 0.0
+	env.fog_sky_affect = 0.0
 	sun.rotation_degrees = Vector3(-48, -30, 0)
 	sun.light_color = Color("d9e8ff")
 	sun.light_energy = 0.80
