@@ -5,6 +5,7 @@ on:
       - 'scripts/games/**'
       - 'scripts/tests/**'
       - 'assets/shaders/kart_stunt_loop.gdshader'
+      - 'assets/shaders/kart_asphalt.gdshader'
       - '.github/workflows/lumo-sonnenhafen-stunt-integration.yml'
   workflow_dispatch:
 permissions:
@@ -41,6 +42,7 @@ jobs:
           while IFS='|' read -r script marker; do
             xvfb-run -a -s '-screen 0 1280x720x24' python3 tools/run_godot_probe.py --timeout 180 --log "exports/stunt-integration/$script.log" --required "$marker" -- Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --path . --script "res://scripts/tests/$script.gd"
           done <<'CASES'
+          kart_sonnenhafen_flight_contract|[SonnenhafenFlight] PASS:
           kart_sonnenhafen_stunt_regression|[SonnenhafenStunt] PASS:
           kart_action_course_regression|[KartActionCourse] PASS:
           kart_sonnenhafen_water_regression|[SonnenhafenWater] PASS:
