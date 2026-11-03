@@ -49,7 +49,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/kart-check/scripts/games" "$RUNNER_TEMP/kart-check/scripts/tests" "$RUNNER_TEMP/kart-check/scripts/characters/lumo"
           mkdir -p "$RUNNER_TEMP/kart-check/scripts/games/visual" "$RUNNER_TEMP/kart-check/assets/shaders"
           cp scripts/games/kart_vehicle.gd scripts/games/kart_fleet.gd scripts/games/kart_fur_geometry.gd scripts/games/kart_character_finish.gd "$RUNNER_TEMP/kart-check/scripts/games/"
-          cp scripts/characters/lumo/lumo_kart_animation_adapter.gd scripts/characters/lumo/lumo_rigged_actor.gd "$RUNNER_TEMP/kart-check/scripts/characters/lumo/"
+          cp scripts/characters/lumo/lumo_kart_animation_adapter.gd scripts/characters/lumo/lumo_rigged_actor.gd scripts/characters/lumo/lumo_walk_locomotion.gd "$RUNNER_TEMP/kart-check/scripts/characters/lumo/"
           cp scripts/games/visual/kart_cinema_materials.gd "$RUNNER_TEMP/kart-check/scripts/games/visual/"
           cp assets/shaders/kart_lumo_cinema_high.gdshader assets/shaders/kart_lumo_cinema_mobile.gdshader "$RUNNER_TEMP/kart-check/assets/shaders/"
           cp scripts/tests/kart_vehicle_regression.gd "$RUNNER_TEMP/kart-check/scripts/tests/"
