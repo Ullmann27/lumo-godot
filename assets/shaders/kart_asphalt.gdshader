@@ -10,6 +10,9 @@ uniform float road_gloss : hint_range(0.0, 1.0) = 0.90;
 uniform float edge_energy : hint_range(0.0, 1.0) = 0.50;
 // Zero on low-detail devices; adds a mobile-friendly aggregate and worn tread.
 uniform float surface_grit : hint_range(0.0, 1.0) = 0.0;
+// Subtle central cyan chevrons extend the loop's original visual language
+// to the rest of the road; zero cost when low-detail mode disables it.
+uniform float futuristic_surface : hint_range(0.0, 1.0) = 0.0;
 
 float hash21(vec2 p) {
 	p = fract(p * vec2(123.34, 456.21));
@@ -43,10 +46,19 @@ void fragment() {
 	// legible on the chase camera without increasing vertex or draw-call count.
 	float grit_color = pebbles * pebble_lod * 0.21 + repairs * 0.18 - driven_lane * 0.045;
 	base *= 1.0 + surface_grit * grit_color;
+	// A non-repeating-box road graphic: world-space antialiased directional
+	// chevrons, integrated into the asphalt material without geometry overhead.
+	float road_arrow_phase = fract(UV.y / 12.0 - abs(UV.x) * 0.12);
+	float road_arrow = smoothstep(0.03, 0.10, road_arrow_phase)
+		* (1.0 - smoothstep(0.28, 0.36, road_arrow_phase));
+	float road_arrow_fade = 1.0 - smoothstep(2.65, 3.55, abs(UV.x));
+	float road_arrow_aa = 1.0 - smoothstep(0.025, 0.10, fwidth(UV.y / 12.0));
+	float luminous_arrow = futuristic_surface * road_arrow * road_arrow_fade * road_arrow_aa;
+	base = mix(base, edge_glow_color.rgb * 0.55, luminous_arrow * 0.32);
 	ALBEDO = base;
 	float original_roughness = mix(mix(0.90, 0.43, night_course), 0.22, cinematic_grade * road_gloss * 0.76);
 	ROUGHNESS = clamp(original_roughness + surface_grit * (pebbles * pebble_lod * 0.11 + repairs * 0.09 - driven_lane * 0.035), 0.18, 0.94);
 	METALLIC = mix(night_course * 0.18, 0.26, cinematic_grade * road_gloss * 0.30);
 	SPECULAR = mix(0.42, 0.82, cinematic_grade * road_gloss);
-	EMISSION = edge_glow_color.rgb * edge_band * edge_energy * cinematic_grade;
+	EMISSION = edge_glow_color.rgb * (edge_band * edge_energy * cinematic_grade + luminous_arrow * 0.36);
 }
