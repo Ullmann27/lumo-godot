@@ -271,6 +271,52 @@ static func _build_gate(world, gate: Dictionary, accent: Color) -> void:
 
 
 static func _build_kicker(world, kicker: Dictionary, accent: Color) -> void:
+	# Keep every existing classic ramp intact. The new physical stunt gets a
+	# continuous dark launch deck and cyan/orange chevrons instead of the old
+	# alternating yellow construction-like blocks.
+	if bool(kicker.get("skill_flight", false)):
+		var span: float = float(kicker.length)
+		var step_count: int = ceili(span)
+		var base_color := Color("122845")
+		var deck_color := Color("224b76")
+		var cyan := Color("61eaff")
+		var gold := Color("ffb75e")
+		for step in range(step_count):
+			var along: float = float(kicker.start) + (float(step) + 0.5) * span / float(step_count)
+			var frame: Basis = world.frame(along)
+			var rise: float = (float(step) + 0.5) / float(step_count) * float(kicker.height)
+			var slope: Basis = frame.rotated(frame.x, float(kicker.angle))
+			var length_step: float = span / float(step_count) + 0.08
+			# The dark underlying shell carries the load visually. A narrow
+			# luminous skin follows the SAME rising profile used by physics.
+			var base: Vector3 = world.position_at(along)
+			world._prop("box", base + frame.y * (rise * 0.43),
+				Vector3(9.4, maxf(0.08, rise * 0.86), length_step), base_color, slope)
+			world._prop("box", base + frame.y * (rise + 0.04),
+				Vector3(9.1, 0.09, length_step), deck_color, slope, true)
+			for side in [-1.0, 1.0]:
+				world._prop("box", base + frame.x * side * 4.35 + frame.y * (rise + 0.15),
+					Vector3(0.13, 0.10, length_step), gold, slope, true)
+			if step % 3 == 1:
+				for side in [-1.0, 1.0]:
+					var chevron: Basis = slope.rotated(frame.y, side * 0.66)
+					world._prop("box", base + frame.x * side * 0.55 + frame.y * (rise + 0.17),
+						Vector3(0.25, 0.055, 2.0), cyan, chevron, true)
+		var launch: float = float(kicker.take_off) - 0.12
+		var launch_frame: Basis = world.frame(launch)
+		var launch_at: Vector3 = world.position_at(launch) + launch_frame.y * float(kicker.height)
+		world._prop("box", launch_at, Vector3(9.3, 0.16, 0.50), gold, launch_frame, true)
+		# A grounded visual target band, not an automatic landing or speed boost.
+		# Neither the player physics nor the competitor AI uses these cosmetics.
+		for mark in [float(kicker.landing_min_m), float(kicker.landing_max_m)]:
+			var at_distance: float = float(kicker.take_off) + mark
+			var target_frame: Basis = world.frame(at_distance)
+			var target: Vector3 = world.position_at(at_distance) + target_frame.y * 0.045
+			world._prop("box", target, Vector3(9.2, 0.055, 0.55), cyan, target_frame, true)
+			for side in [-1.0, 1.0]:
+				world._prop("box", target + target_frame.x * side * 5.6 + target_frame.y * 1.1,
+					Vector3(0.35, 2.2, 0.40), gold, target_frame, true)
+		return
 	var ramp_length: float = float(kicker.length)
 	var steps: int = ceili(ramp_length)
 	for step in range(steps):
