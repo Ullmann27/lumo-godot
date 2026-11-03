@@ -11,6 +11,9 @@ extends RefCounted
 ##                    to the former creative_kit.environment()).
 ##   wolkeninseln   – 3D-Jump, target portal_jump_run.png: turquoise sky,
 ##                    warm sun, aerial depth fog over a cloud sea, soft bloom.
+##   bauwelt_day    – Bauwelt only, target portal_bauwelt.png: friendly bright
+##                    day, warm low sun with soft shadows, sky ambient, light
+##                    haze, gentle bloom, cool sky fill light (no shadow).
 
 
 static func apply(root: Node3D, preset: String, tier: String = "") -> Dictionary:
@@ -31,6 +34,15 @@ static func apply(root: Node3D, preset: String, tier: String = "") -> Dictionary
 			rim.rotation_degrees = Vector3(-20, 150, 0)
 			rim.light_color = Color("a8e4ff")
 			rim.light_energy = 0.35
+			rim.shadow_enabled = false
+		"bauwelt_day":
+			_bauwelt_day(env, sun, budget)
+			rim = DirectionalLight3D.new()
+			rim.name = "SkyFill"
+			rim.rotation_degrees = Vector3(-35, 140, 0)
+			rim.light_color = Color("bfe3ff")
+			rim.light_energy = 0.28
+			rim.light_specular = 0.1
 			rim.shadow_enabled = false
 		_:
 			push_warning("[LumoEnvironment] unknown preset %s" % preset)
@@ -106,4 +118,57 @@ static func _wolkeninseln(env: Environment, sun: DirectionalLight3D, budget: Dic
 	sun.light_color = Color("fff0d2")
 	sun.light_energy = 1.15
 	sun.shadow_blur = 1.5
+	sun.directional_shadow_max_distance = float(budget.shadow_distance)
+
+
+## Bauwelt day (Welten-Optik cycle 1). Glow/fog/SSAO on-off stays with
+## PerformanceManager; the values here only shape them when a tier enables
+## them (e.g. HIGH turns on volumetric fog, kept very thin).
+static func _bauwelt_day(env: Environment, sun: DirectionalLight3D, budget: Dictionary) -> void:
+	env.background_mode = Environment.BG_SKY
+	var sky := Sky.new()
+	var sky_mat := ProceduralSkyMaterial.new()
+	sky_mat.sky_top_color = Color("3d8fe0")
+	sky_mat.sky_horizon_color = Color("bfe6fa")
+	sky_mat.sky_curve = 0.12
+	sky_mat.ground_horizon_color = Color("cdeaf2")
+	sky_mat.ground_bottom_color = Color("6fa6c2")
+	sky_mat.ground_curve = 0.06
+	sky_mat.sun_angle_max = 22.0
+	sky_mat.sun_curve = 0.08
+	sky.sky_material = sky_mat
+	sky.radiance_size = Sky.RADIANCE_SIZE_64
+	env.sky = sky
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
+	env.ambient_light_sky_contribution = 0.7
+	env.ambient_light_color = Color("dceeff")
+	env.ambient_light_energy = 0.75
+	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
+	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	env.tonemap_exposure = 1.0
+	env.tonemap_white = 4.0
+	env.fog_light_color = Color("d6eef8")
+	env.fog_density = 0.0025
+	env.fog_aerial_perspective = 0.25
+	env.fog_sky_affect = 0.0
+	env.volumetric_fog_density = 0.004
+	env.volumetric_fog_albedo = Color("eaf6ff")
+	env.ssao_radius = 0.9
+	env.ssao_intensity = 1.6
+	env.ssao_power = 1.4
+	env.ssao_light_affect = 0.15
+	env.glow_intensity = 0.45
+	env.glow_bloom = 0.03
+	env.glow_hdr_threshold = 1.1
+	env.adjustment_enabled = true
+	env.adjustment_saturation = 1.1
+	env.adjustment_contrast = 1.03
+	sun.rotation_degrees = Vector3(-42, -38, 0)
+	sun.light_color = Color("ffe9c7")
+	sun.light_energy = 1.25
+	sun.shadow_blur = 1.6
+	sun.shadow_bias = 0.04
+	sun.shadow_normal_bias = 1.2
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
+	sun.directional_shadow_blend_splits = true
 	sun.directional_shadow_max_distance = float(budget.shadow_distance)
