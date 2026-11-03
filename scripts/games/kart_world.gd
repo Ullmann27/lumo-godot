@@ -799,6 +799,9 @@ func _road() -> void:
 	# Fine aggregate is GPU-fragment work: disabled for low-detail profiles.
 	if track_id != "candy_cloud":
 		asphalt.set_shader_parameter("surface_grit",0.0 if low_detail else 0.86)
+		# Shared loop-inspired direction markings; no extra road meshes or draw calls.
+		var arrow_strength: float = 0.0 if low_detail else (0.85 if track_id == "sonnenhafen" else 0.58)
+		asphalt.set_shader_parameter("futuristic_surface", arrow_strength)
 	if track_id == "candy_cloud":
 		asphalt.shader = preload("res://assets/shaders/kart_candy_road.gdshader")
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
