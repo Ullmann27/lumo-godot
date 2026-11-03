@@ -1,0 +1,48 @@
+name: Lumo original 65-bone grounded walk gait QA
+on:
+  pull_request:
+    paths:
+      - 'scripts/characters/lumo/lumo_walk_locomotion.gd'
+      - 'scripts/characters/lumo/lumo_rigged_actor.gd'
+      - 'scripts/tests/lumo_65bone_walk_gait_regression.gd'
+      - '.github/workflows/lumo-65bone-walk-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-original-rig-walk:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import the real original skinned GLB and fail on parse errors
+        run: |
+          set -euo pipefail
+          mkdir -p proof/gait
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit > proof/gait/import.log 2>&1
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' proof/gait/import.log; then
+            cat proof/gait/import.log
+            exit 1
+          fi
+      - name: Validate real 65-bone alternating footfalls and preserved clips
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 120             --log proof/gait/real-gait.log             --required '[LumoGait] PASS:'             -- Godot_v4.6.3-stable_linux.x86_64 --headless --path .             --script res://scripts/tests/lumo_65bone_walk_gait_regression.gd
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-original-65bone-walk-evidence
+          path: proof/gait/
+          retention-days: 60
+          if-no-files-found: warn
