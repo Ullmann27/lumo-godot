@@ -15,6 +15,7 @@ const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
 const PREMIUM_RAIL_KIT = preload("res://scripts/games/kart_premium_rail_kit.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
+const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const HARBOR_PAVILIONS = preload("res://scripts/games/kart_harbor_pavilions.gd")
 const HARBOR_LOOKOUTS = preload("res://scripts/games/kart_harbor_lookout_towers.gd")
 const COASTAL_VIADUCT = preload("res://scripts/games/kart_sonnenhafen_coastal_viaduct.gd")
@@ -288,10 +289,40 @@ func rival_arc(distance: float) -> float:
 	var d: float=fposmod(distance,length)
 	var kicker: float=ACTION.kicker_height(action,d)
 	if kicker>0.0: return kicker
+	var stunt: float=_precision_rival_arc(d)
+	if stunt>0.0: return stunt
 	if jump.is_empty() or d<jump.ramp_start or d>=jump.gap_end: return 0.0
 	if d<jump.take_off: return ramp_height(d)
 	var u: float=(d-jump.take_off)/(jump.gap_end-jump.take_off)
 	return jump.height*(1.0-u)+6.0*u*(1.0-u)
+
+## Rivals over the Sonnenhafen precision gap: the real ballistic arc of a
+## clean landing in the middle of the zone (height above the local road).
+func _precision_rival_arc(d: float) -> float:
+	for kicker in action.get("kickers", []):
+		if not bool(kicker.get("precision_jump", false)):
+			continue
+		var along: float=d-float(kicker.take_off)
+		var speed: float=float(kicker.get("rival_speed",0.0))
+		if along<0.0 or speed<=0.0:
+			continue
+		var flight: float=PRECISION.landing_distance(speed,kicker)
+		if along>=flight:
+			continue
+		var above_lip: float=PRECISION.height_at(speed,kicker,along)
+		return maxf(0.0,above_lip-float(kicker.get("landing_slope",0.0))*along)
+	return 0.0
+
+## Where a kart that fell into a gap is set down again (just past the gap).
+## Also covers a kart that hit the far edge just behind the gap.
+func gap_exit_distance(distance: float) -> float:
+	var d: float=fposmod(distance,length)
+	for kicker in action.get("kickers", []):
+		if bool(kicker.get("precision_jump", false)) and d>=float(kicker.take_off) and d<float(kicker.gap_end)+6.0:
+			return distance-d+float(kicker.gap_end)+3.0
+	if not jump.is_empty():
+		return distance-d+float(jump.gap_end)+3.0
+	return distance
 
 func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_distance: float) -> float:
 	var lower: float = maxf(0.0, floor_distance)

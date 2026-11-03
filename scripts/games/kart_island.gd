@@ -29,6 +29,10 @@ const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
 const RESONANCE = preload("res://scripts/games/kart_resonance_system.gd")
 const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
+const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
+const JUMP_HINT = preload("res://scripts/games/visual/kart_jump_speed_hint.gd")
+## The jump speed hint appears this many metres before the ramp starts.
+const JUMP_HINT_LEAD_M: float = 70.0
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
@@ -132,6 +136,12 @@ var air_time: float = 0.0
 var jump_count: int = 0
 var landing_count: int = 0
 var gap_falls: int = 0
+## Sonnenhafen precision jump: the kicker in flight, and the measured results.
+var precision_kicker: Dictionary = {}
+var last_precision_landing: String = ""
+var last_precision_flown: float = 0.0
+var precision_results: Dictionary = {}
+var jump_hint: Control
 ## Action-Parcours: genutzte Turbo-Felder (je Runde einmal), Slalom-Fortschritt, Schanzen, Stürze.
 var action_pads_used: Dictionary = {}
 var action_gates_hit: int = 0
@@ -766,6 +776,10 @@ func _begin_race() -> void:
 	jump_count = 0
 	landing_count = 0
 	gap_falls = 0
+	precision_kicker = {}
+	last_precision_landing = ""
+	last_precision_flown = 0.0
+	precision_results = {}
 	wrong_way = false
 	wrong_way_seconds = 0
 	drifting = false
@@ -992,6 +1006,8 @@ func _build_ui() -> void:
 	message.add_theme_constant_override("shadow_offset_y", 2)
 	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(message)
+	jump_hint = JUMP_HINT.new()
+	column.add_child(jump_hint)
 	call_deferred("_build_start_lights")
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -1674,12 +1690,12 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			current_jump_gravity = JUMP_GRAVITY
 			vertical_speed = minf(speed * sin(float(jump.angle)), JUMP_MAX_LIFT)
 			message.text = "Sprung!"
-		elif world.in_gap(road_distance):
-			# Rolled or reversed into the gap without take-off: there is no road here.
-			airborne = true
-			current_jump_gravity = JUMP_GRAVITY
-			vertical_speed = 0.0
-			air_time = 0.0
+	if not airborne and world.in_gap(road_distance):
+		# Rolled or reversed into a gap without take-off: there is no road here.
+		airborne = true
+		current_jump_gravity = JUMP_GRAVITY
+		vertical_speed = 0.0
+		air_time = 0.0
 	if not airborne:
 		var kicker: Dictionary = ACTION.kicker_crossed(
 			world.action, fposmod(previous_road_distance, track_length), fposmod(road_distance, track_length)
@@ -1691,6 +1707,12 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			air_time = 0.0
 			player.position.y = ground + float(kicker.height)
 			current_jump_gravity = float(kicker.get("flight_gravity", JUMP_GRAVITY))
+			if bool(kicker.get("precision_jump", false)):
+				# Same numbers as the speed hint; nothing is corrected in flight.
+				precision_kicker = kicker
+				vertical_speed = PRECISION.launch_vertical(speed, kicker)
+				message.text = "Sprung! Ziel: die grüne Landezone."
+				return true
 			var lift: float = speed * sin(float(kicker.angle)) + float(kicker.get("lift_bonus", 1.6))
 			vertical_speed = minf(lift, float(kicker.get("max_lift", JUMP_MAX_LIFT)))
 			message.text = "Panorama-Flug!" if bool(kicker.get("hero_flight", false)) else "Schanze!"
@@ -1703,20 +1725,51 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 	air_time += delta
 	if world.in_gap(road_distance):
 		if player.position.y < float(road.height) - 2.5:
+			_record_precision_landing(PRECISION.LANDING_SHORT, road_distance)
 			_rescue_from_gap()
 			return false
+	elif not precision_kicker.is_empty() and player.position.y < ground - 0.5:
+		# Too short: the kart meets the far edge of the gap below the road.
+		# It is not lifted onto the road; it falls and the cloud takes over.
+		_record_precision_landing(PRECISION.LANDING_SHORT, road_distance)
+		_rescue_from_gap()
+		return false
 	elif player.position.y <= ground:
 		player.position.y = ground
 		airborne = false
 		current_jump_gravity = JUMP_GRAVITY
 		landing_count += 1
-		if air_time > 0.35:
+		var precision_result: String = ""
+		if not precision_kicker.is_empty():
+			var flown: float = fposmod(road_distance - float(precision_kicker.take_off), track_length)
+			precision_result = PRECISION.classify_landing(flown, precision_kicker)
+			_record_precision_landing(precision_result, road_distance)
+		if precision_result == PRECISION.LANDING_LONG:
+			# Overshot the zone: a hard landing costs speed and gives no turbo.
+			speed *= 0.6
+			physical_velocity *= 0.6
+			message.text = "Zu weit geflogen! Nächstes Mal etwas bremsen."
+			_sound_effect("collision")
+		elif precision_result == PRECISION.LANDING_ZONE:
+			boost_time = maxf(boost_time, _boost_for(1.2))
+			message.text = "Perfekt in der Landezone! Turbo!"
+			_sound_effect("drift")
+		elif air_time > 0.35:
 			boost_time = maxf(boost_time, _boost_for(1.2))
 			message.text = "Super gelandet! Turbo!"
 			_sound_effect("drift")
 		air_time = 0.0
 		vertical_speed = 0.0
 	return true
+
+
+func _record_precision_landing(result: String, road_distance: float) -> void:
+	if precision_kicker.is_empty():
+		return
+	last_precision_landing = result
+	last_precision_flown = fposmod(road_distance - float(precision_kicker.take_off), track_length)
+	precision_results[result] = int(precision_results.get(result, 0)) + 1
+	precision_kicker = {}
 
 
 func _reset_action_course() -> void:
@@ -1797,7 +1850,8 @@ func _update_dive_tint() -> void:
 
 func _rescue_from_gap() -> void:
 	# A cloud carries the kart just past the gap: no repeated falls, no shortcut.
-	var target: float = float(world.jump.gap_end) + 3.0
+	var precision: bool = world.jump.is_empty() and last_precision_landing == PRECISION.LANDING_SHORT
+	var target: float = world.gap_exit_distance(previous_road_distance)
 	distance += fposmod(target - previous_road_distance, track_length)
 	previous_road_distance = target
 	player.transform = world.reset_transform(target)
@@ -1810,7 +1864,10 @@ func _rescue_from_gap() -> void:
 	gap_falls += 1
 	reset_count += 1
 	ghost_valid = false
-	message.text = "Eine Wolke trägt dich weiter. Mehr Schwung beim nächsten Sprung!"
+	message.text = (
+		"Zu kurz! Eine Wolke trägt dich rüber. Nächstes Mal mehr Gas!" if precision
+		else "Eine Wolke trägt dich weiter. Mehr Schwung beim nächsten Sprung!"
+	)
 
 
 func _manual_gas_active() -> bool:
@@ -2013,6 +2070,7 @@ func _drive_opponents(delta: float) -> void:
 
 func _reset_kart() -> void:
 	loop_state.active = false
+	precision_kicker = {}
 	if menu_active or not is_instance_valid(player) or finished:
 		return
 	var fell_from_edge: bool = (
@@ -2088,6 +2146,25 @@ func _update_hud() -> void:
 	gas_button.disabled = not enabled
 	brake_button.disabled = not enabled
 	gas_button.visible = not auto_gas
+	_update_jump_hint(enabled)
+
+
+## Speed hint on the run-up to a precision jump (prediction only, no assist).
+func _update_jump_hint(enabled: bool) -> void:
+	if not is_instance_valid(jump_hint):
+		return
+	var kicker: Dictionary = {}
+	if enabled and mode != "arena" and is_instance_valid(world) and not airborne and not loop_state.active:
+		var d: float = fposmod(previous_road_distance, track_length)
+		for candidate in world.action.get("kickers", []):
+			if not bool(candidate.get("precision_jump", false)):
+				continue
+			if d >= float(candidate.start) - JUMP_HINT_LEAD_M and d < float(candidate.take_off):
+				kicker = candidate
+	if kicker.is_empty():
+		jump_hint.hide_hint()
+	else:
+		jump_hint.show_for(speed, kicker)
 
 
 func _place() -> int:

@@ -35,6 +35,10 @@ jobs:
           python3 tools/validate_project.py > exports/stunt-integration/validation.log
           timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit > exports/stunt-integration/import.log 2>&1
           if grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' exports/stunt-integration/import.log; then exit 1; fi
+      - name: Precision jump model (headless math and layout)
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 120 --log exports/stunt-integration/kart_precision_jump_regression.log --required "[PrecisionJump] PASS:" -- Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy --path . --script res://scripts/tests/kart_precision_jump_regression.gd
       - name: Real driving and preservation regressions
         run: |
           set -euo pipefail
@@ -51,7 +55,12 @@ jobs:
           kart_regression|[KartTests] PASS:
           kart_race_continuity_regression|[KartContinuity] PASS:
           progress_profile_lifetime_regression|[ProgressProfileLifetime] checks=
+          kart_physics_regression|[KartPhysics] PASS:
           CASES
+      - name: Real OpenGL frames of the precision stunt sequence
+        run: |
+          set -euo pipefail
+          LUMO_CAPTURE_DIR="$PWD/exports/stunt-integration/precision-frames" xvfb-run -a -s '-screen 0 1280x720x24' python3 tools/run_godot_probe.py --timeout 240 --log exports/stunt-integration/precision-capture.log --required "[PrecisionCapture] PASS:" -- Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --path . --script res://scripts/tests/kart_sonnenhafen_precision_capture.gd
       - uses: actions/upload-artifact@v4
         if: always()
         with:

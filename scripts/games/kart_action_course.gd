@@ -283,6 +283,9 @@ static func _build_gate(world, gate: Dictionary, accent: Color) -> void:
 
 
 static func _build_kicker(world, kicker: Dictionary, accent: Color) -> void:
+	if bool(kicker.get("precision_jump", false)):
+		STUNT.build_precision_ramp(world, kicker)
+		return
 	var ramp_length: float = float(kicker.length)
 	var steps: int = ceili(ramp_length)
 	for step in range(steps):
