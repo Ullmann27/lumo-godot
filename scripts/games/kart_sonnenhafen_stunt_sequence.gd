@@ -5,19 +5,24 @@ extends RefCounted
 ## - the kart follows the same 3D path that is rendered (kart_physical_loop),
 ##   gravity slows the climb and a too-slow kart is set back to the main lane;
 ## - a boost pad on the loop lane gives the needed speed;
+## - the loop entry stands 100 m before the precision ramp (was 28 m), so the
+##   kart leaves the loop, settles and has a straight run-up to the ramp;
 ## - gold stars on the riding line are collected while looping.
 ## Everything else (main lane, rails, checkpoints, lap length) stays unchanged.
 
 const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const DECK_SHADER = preload("res://assets/shaders/kart_stunt_loop.gdshader")
+const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 
 const TUNNEL_FRACTION: float = 0.690
 ## Loop entry this many metres before the tunnel mouth (Position A).
-const LOOP_LEAD_M: float = 108.0
+const LOOP_LEAD_M: float = 180.0
 const LOOP_LANE: float = 2.9
 const LOOP_RADIUS: float = 8.0
 const DECK_HALF_WIDTH: float = 2.4
+## Half width of the precision ramp deck (old kicker slabs were 9.2 m wide).
+const RAMP_HALF_WIDTH: float = 4.6
 const WALL_HEIGHT: float = 0.55
 const DECK_SEGMENTS: int = 160
 ## Boost pad on the loop lane, ending this far before the loop entry.
@@ -25,13 +30,26 @@ const PAD_GAP_M: float = 16.0
 const PAD_LENGTH: float = 6.0
 const STAR_FRACTIONS: Array[float] = [0.14, 0.27, 0.40, 0.5, 0.60, 0.73, 0.86]
 
-## Position B, 80 m before the tunnel: a full-width panorama kicker right after
-## the loop exit. Same flight model as the 55 % panorama jump.
+## Position B, 80 m before the tunnel: a full-width precision stunt ramp about
+## 80 m after the loop exit. Unlike the 55 % panorama kicker it has no lift
+## bonus and no lift cap: flight distance follows from speed alone
+## (kart_precision_jump.gd), over a genuine open gap in the road.
 const JUMP_LEAD_M: float = 80.0
 const JUMP_RAMP_LENGTH: float = 12.0
-const JUMP_RAMP_HEIGHT: float = 2.2
-## Stars along the measured flight arc (metres after take-off, height above road).
-const ARC_STARS: Array = [[5.0, 2.6], [10.0, 3.7], [15.0, 4.1], [20.0, 3.6]]
+## 14 degrees: steep enough for a visible arc, gentle enough to read for kids.
+const JUMP_RAMP_HEIGHT: float = 3.0
+const PRECISION_GRAVITY: float = 14.0
+## Open air starts just behind the lip; the road (and the landing zone) begins
+## PRECISION_LANDING_START_M after take-off. Undershooting falls into the gap.
+const PRECISION_GAP_START_M: float = 0.5
+## Landing zone after take-off. Calibrated with the real model: every kart at
+## top speed without turbo lands inside on every difficulty (about 56-96 km/h);
+## a turbo at the lip overshoots, a braking kart falls short.
+const PRECISION_LANDING_START_M: float = 14.5
+const PRECISION_LANDING_END_M: float = 31.0
+## Stars follow the computed arc of the reference speed (Abenteuer top speed).
+const ARC_REFERENCE_SPEED: float = 20.5
+const ARC_STARS: Array[float] = [4.0, 8.0, 12.0, 16.0]
 
 ## Tunnel portal at the dark-ride mouth (lateral legs outside the rails).
 const PORTAL_SETBACK_M: float = 1.5
@@ -89,20 +107,33 @@ static func kickers(world) -> Array:
 	if not applies(world):
 		return []
 	var take_off: float = jump_take_off(world)
-	return [
-		{
+	# The landing road climbs a little; the model needs that rise to be exact.
+	var rise: float = (
+		world.position_at(take_off + PRECISION_LANDING_START_M).y - world.position_at(take_off).y
+	)
+	var kicker: Dictionary = {
 			"start": take_off - JUMP_RAMP_LENGTH,
 			"take_off": take_off,
 			"length": JUMP_RAMP_LENGTH,
 			"height": JUMP_RAMP_HEIGHT,
 			"angle": atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH),
-			"flight_gravity": 14.0,
-			"lift_bonus": 5.0,
-			"max_lift": 11.0,
+			"flight_gravity": PRECISION_GRAVITY,
+			"lift_bonus": 0.0,
+			"max_lift": 1000.0,  # effectively uncapped; JSON-safe
+			"precision_jump": true,
+			"landing_min": PRECISION_LANDING_START_M,
+			"landing_max": PRECISION_LANDING_END_M,
+			"landing_slope": rise / PRECISION_LANDING_START_M,
+			"gap_start": take_off + PRECISION_GAP_START_M,
+			"gap_end": take_off + PRECISION_LANDING_START_M,
 			"hero_flight": true,
 			"stunt": true,
 		}
-	]
+	# Computer rivals fly the arc of a clean landing in the middle of the zone.
+	kicker["rival_speed"] = PRECISION.speed_for_distance(
+		(PRECISION_LANDING_START_M + PRECISION_LANDING_END_M) * 0.5, kicker
+	)
+	return [kicker]
 
 
 ## Collectible stars on the riding line through the loop and over the pad.
@@ -119,9 +150,13 @@ static func star_positions(world) -> Array[Vector3]:
 		var d: float = start - PAD_GAP_M - PAD_LENGTH - 2.0 + float(i) * 4.5
 		result.append(world.position_at(d, LOOP_LANE) + world.frame(d).y * 0.95)
 	var take_off: float = jump_take_off(world)
-	for entry in ARC_STARS:
-		var d: float = take_off + float(entry[0])
-		result.append(world.position_at(d, 0.0) + Vector3.UP * (float(entry[1]) + 0.95))
+	var kicker: Dictionary = kickers(world)[0]
+	for along in ARC_STARS:
+		var height: float = PRECISION.height_at(ARC_REFERENCE_SPEED, kicker, along)
+		var base: Vector3 = world.position_at(take_off, 0.0)
+		var d: float = take_off + along
+		var ground: Vector3 = world.position_at(d, 0.0)
+		result.append(Vector3(ground.x, base.y + height + 0.95, ground.z))
 	return result
 
 
@@ -448,3 +483,195 @@ static func _tunnel_portal(world) -> void:
 	world._prop("box", top - basis.y * 1.18, Vector3(8.9, 0.16, 0.6), CYAN, basis, true)
 	world._sign(top + basis.z * 0.28, basis, "LUMO KART", 0.05)
 	world._sign(top + basis.z * 0.28 - basis.y * 0.75, basis, "Kristalltunnel", 0.02)
+
+
+## Precision stunt ramp in the loop's design language instead of the yellow /
+## navy construction stripes: a real deck mesh with the loop's glowing cyan
+## chevrons and orange edge lines, white side walls with an orange glow, a
+## cyan lip, arrows on the run-up, and a clearly marked landing zone behind
+## the open gap (green start bar, orange end bar, matching gates).
+## Geometry follows exactly kicker_height(), so what you see is what you ride.
+static func build_precision_ramp(world, kicker: Dictionary) -> void:
+	var start: float = float(kicker.start)
+	var take_off: float = float(kicker.take_off)
+	var height: float = float(kicker.height)
+	var deck := SurfaceTool.new()
+	deck.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var body := SurfaceTool.new()
+	body.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var walls := SurfaceTool.new()
+	walls.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var half: float = RAMP_HALF_WIDTH
+	var steps: int = 24
+	var rows: Array = []
+	for i in range(steps + 1):
+		var d: float = start + (take_off - start) * float(i) / float(steps)
+		var basis: Basis = world.frame(d)
+		var rise: float = float(i) / float(steps) * height
+		var lift: Vector3 = basis.y * (rise + 0.02)
+		rows.append({
+			"left": world.position_at(d, -half) + lift,
+			"right": world.position_at(d, half) + lift,
+			"left_foot": world.position_at(d, -half) - basis.y * 0.05,
+			"right_foot": world.position_at(d, half) - basis.y * 0.05,
+			# The deck shader draws chevron tips towards decreasing v; running v
+			# backwards makes the arrows point up the ramp, in driving direction.
+			"up": basis.y, "side": basis.x, "v": take_off - d,
+		})
+	for i in range(steps):
+		var a: Dictionary = rows[i]
+		var b: Dictionary = rows[i + 1]
+		_quad(deck, a.left, a.right, b.right, b.left, a.up, b.up, a.v, b.v)
+		# Closed wedge sides so the ramp reads as a solid, built object.
+		_quad(body, a.left_foot, a.left, b.left, b.left_foot, -a.side, -b.side, 0, 1)
+		_quad(body, a.right, a.right_foot, b.right_foot, b.right, a.side, b.side, 0, 1)
+		for side in ["left", "right"]:
+			var out: Vector3 = (a.side if side == "right" else -a.side) * 0.24
+			var top_a: Vector3 = a[side] + a.up * WALL_HEIGHT
+			var top_b: Vector3 = b[side] + b.up * WALL_HEIGHT
+			_quad(walls, a[side], top_a, top_b, b[side], -out, -out, 0, 1)
+			_quad(walls, top_a, top_a + out, top_b + out, top_b, a.up, b.up, 0, 1)
+	# Back face of the wedge under the lip.
+	var last: Dictionary = rows[steps]
+	_quad(body, last.left_foot, last.right_foot, last.right, last.left, -world.forward(take_off),
+		-world.forward(take_off), 0, 1)
+	var deck_material := ShaderMaterial.new()
+	deck_material.shader = DECK_SHADER
+	deck_material.set_shader_parameter("chevron_spacing", 2.0)
+	_add_mesh(world, "PrecisionRampDeck", deck, deck_material)
+	var body_material := StandardMaterial3D.new()
+	body_material.albedo_color = Color("2b3c5c")
+	body_material.metallic = 0.55
+	body_material.roughness = 0.38
+	body_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_add_mesh(world, "PrecisionRampBody", body, body_material)
+	var wall_material := StandardMaterial3D.new()
+	wall_material.albedo_color = WHITE
+	wall_material.roughness = 0.35
+	wall_material.emission_enabled = true
+	wall_material.emission = ORANGE
+	wall_material.emission_energy_multiplier = 0.35
+	wall_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_add_mesh(world, "PrecisionRampWalls", walls, wall_material)
+	# Glowing lip and a cyan edge where the open gap begins.
+	var lip_basis: Basis = world.frame(take_off - 0.15)
+	world._prop("box", world.position_at(take_off - 0.15) + lip_basis.y * (height + 0.06),
+		Vector3(half * 2.0 + 0.3, 0.1, 0.3), CYAN, lip_basis, true)
+	# Run-up arrows (same V arrows as the loop lane), centre and both lanes.
+	for i in range(6):
+		var d: float = start - 30.0 + float(i) * 4.5
+		var arrow_basis: Basis = world.frame(d)
+		for lane in [-2.6, 0.0, 2.6]:
+			for side in [-1.0, 1.0]:
+				var tilted: Basis = arrow_basis.rotated(arrow_basis.y, side * 0.70)
+				var at: Vector3 = world.position_at(d, lane + side * 0.48) + arrow_basis.y * 0.03
+				world._prop("box", at, Vector3(0.3, 0.03, 1.3), ORANGE if i % 2 == 0 else CYAN, tilted, true)
+	# Sign gantry: tells the child what this ramp is about.
+	var sign_distance: float = start - 34.0
+	var sign_basis: Basis = world.frame(sign_distance)
+	var beam: Vector3 = world.position_at(sign_distance, 0.0) + sign_basis.y * 6.2
+	for side in [-1.0, 1.0]:
+		var post: Vector3 = world.position_at(sign_distance, side * (float(world.RAIL_LATERAL) + 0.9))
+		world._prop("box", post + sign_basis.y * 3.2, Vector3(0.45, 6.4, 0.45), NAVY, sign_basis)
+	world._prop("box", beam, Vector3(float(world.RAIL_LATERAL) * 2.0 + 2.2, 1.5, 0.35), NAVY, sign_basis)
+	world._prop("box", beam + sign_basis.y * 0.82, Vector3(float(world.RAIL_LATERAL) * 2.0 + 2.4, 0.12, 0.42), ORANGE, sign_basis, true)
+	world._prop("box", beam - sign_basis.y * 0.82, Vector3(float(world.RAIL_LATERAL) * 2.0 + 2.4, 0.12, 0.42), CYAN, sign_basis, true)
+	world._sign(beam + sign_basis.z * 0.2, sign_basis, "STUNT-SPRUNG\nAuf das Tempo achten!", 0.016)
+	# Solid abutments on both sides of the open gap, so it reads as a built
+	# chasm in the road and not as a missing texture.
+	for edge in [float(kicker.gap_start), float(kicker.gap_end)]:
+		var edge_basis: Basis = world.frame(edge)
+		var toward_gap: float = 0.25 if edge == float(kicker.gap_start) else -0.25
+		var face: Vector3 = world.position_at(edge - toward_gap) - edge_basis.y * 0.9
+		world._prop("box", face, Vector3(half * 2.0 + 1.6, 1.8, 0.5), NAVY, edge_basis)
+		world._prop("box", world.position_at(edge - toward_gap) + edge_basis.y * 0.04,
+			Vector3(half * 2.0 + 1.6, 0.08, 0.5), CYAN, edge_basis, true)
+	# Landing zone: green bar where the road begins again, orange bar at its end,
+	# side gates at both ends and soft green strips along the zone edges.
+	var zone_start: float = take_off + float(kicker.landing_min)
+	var zone_end: float = take_off + float(kicker.landing_max)
+	var green := Color("45e07a")
+	for entry in [[zone_start + 0.2, green], [zone_end, ORANGE]]:
+		var d: float = float(entry[0])
+		var basis: Basis = world.frame(d)
+		world._prop("box", world.position_at(d) + basis.y * 0.03, Vector3(half * 2.0, 0.03, 0.5), entry[1], basis, true)
+		for side in [-1.0, 1.0]:
+			var post: Vector3 = world.position_at(d, side * 6.4)
+			world._prop("box", post + basis.y * 1.5, Vector3(0.28, 3.0, 0.28), entry[1], basis, true)
+		world._prop("box", world.position_at(d) + basis.y * 3.05, Vector3(13.1, 0.24, 0.28), entry[1], basis, true)
+	var along: float = zone_start + 1.0
+	while along < zone_end - 0.5:
+		var basis: Basis = world.frame(along)
+		for side in [-1.0, 1.0]:
+			world._prop("box", world.position_at(along, side * (half - 0.25)) + basis.y * 0.025,
+				Vector3(0.22, 0.02, 1.6), green, basis, true)
+		along += 2.5
+	_build_crystal_gorge(world, kicker)
+
+
+## A stylised chasm below the true, physically empty road gap.
+## All features are batched non-collidable meshes; the existing ramp,
+## landing plane, checkpoints and child-friendly failure rescue are untouched.
+## Low profile produces the same silhouette with fewer glowing props.
+static func _build_crystal_gorge(world, kicker: Dictionary) -> void:
+	var start: float = float(kicker.gap_start)
+	var end: float = float(kicker.gap_end)
+	if end <= start:
+		return
+	var length: float = end - start
+	var sections: int = 5 if world.low_detail else 11
+	var dark_stone := Color("13243a")
+	var cliff_stone := Color("345271")
+	var deep_water := Color("103b69")
+	var crystal := Color("79ecff")
+	var violet := Color("a985f8")
+	var slice_length: float = length / float(sections)
+	for i in range(sections):
+		var d: float = start + (float(i) + 0.5) * slice_length
+		var basis: Basis = world.frame(d)
+		# The dark riverbed and its thin glowing stream are far below the
+		# road; a missed jump remains a real fall, never an invisible bridge.
+		var floor: Vector3 = world.position_at(d) - basis.y * 10.4
+		world._prop("box", floor, Vector3(14.8, 0.50, slice_length + 0.24),
+			dark_stone, basis)
+		world._prop("box", floor + basis.y * 0.31,
+			Vector3(6.3, 0.08, slice_length + 0.15), deep_water, basis, true)
+		# Sculpted staggered walls frame the vertical drop. The glowing
+		# crevices are on the walls, not on the invisible racing surface.
+		for side in [-1.0, 1.0]:
+			var left_or_right: float = side * (RAMP_HALF_WIDTH + 4.9)
+			var rock_pos: Vector3 = (
+				world.position_at(d, left_or_right) - basis.y * 5.4
+			)
+			var shoulder: float = 1.0 + float((i * 3) % 4) * 0.10
+			world._prop("rock", rock_pos,
+				Vector3(5.0 * shoulder, 9.0, slice_length + 2.0),
+				cliff_stone if (i + int(side)) % 2 == 0 else dark_stone,
+				basis)
+			# A pair of distinct crystal veins creates readable depth.
+			if not world.low_detail or i % 2 == 0:
+				var face: Vector3 = (
+					world.position_at(d, side * (RAMP_HALF_WIDTH + 1.8))
+					- basis.y * (5.0 + float(i % 3) * 0.7)
+				)
+				world._prop("box", face,
+					Vector3(0.16, 2.4, maxf(0.8, slice_length * 0.58)),
+					crystal if i % 3 != 0 else violet, basis, true)
+		if not world.low_detail:
+			# Repeating low-cost glimmers read as flowing water at speed.
+			for lane in [-2.0, 0.0, 2.0]:
+				var ripple: Vector3 = (
+					world.position_at(d, lane) - basis.y * 9.95
+				)
+				world._prop("box", ripple, Vector3(0.18, 0.08, 0.95),
+					crystal if i % 2 == 0 else violet, basis, true)
+	# Bright anchor crystals at each canyon mouth help a child read the
+	# near and far edges during approach, but never block driving.
+	for d in [start + 1.5, end - 1.5]:
+		var basis: Basis = world.frame(d)
+		for side in [-1.0, 1.0]:
+			var p: Vector3 = (
+				world.position_at(d, side * (RAMP_HALF_WIDTH + 4.0))
+				- basis.y * 2.4
+			)
+			world._prop("rock", p, Vector3(1.5, 3.3, 1.5), violet, basis, true)

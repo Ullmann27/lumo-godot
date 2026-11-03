@@ -15,6 +15,7 @@ const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
 const PREMIUM_RAIL_KIT = preload("res://scripts/games/kart_premium_rail_kit.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
+const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const HARBOR_PAVILIONS = preload("res://scripts/games/kart_harbor_pavilions.gd")
 const HARBOR_LOOKOUTS = preload("res://scripts/games/kart_harbor_lookout_towers.gd")
 const COASTAL_VIADUCT = preload("res://scripts/games/kart_sonnenhafen_coastal_viaduct.gd")
@@ -242,7 +243,8 @@ func sample_road(world_position: Vector3, hint_distance: float = -1.0) -> Dictio
 	return {"distance":best_distance,"lateral":lateral,"height":surface_position.y,"position":surface_position,"basis":basis,"on_road":absf(lateral)<=WIDTH*0.5,"width":WIDTH,"forward":-basis.z}
 
 func in_gap(distance: float) -> bool:
-	return SKY_ISLANDS.in_gap(jump,fposmod(distance,length))
+	var d: float = fposmod(distance, length)
+	return SKY_ISLANDS.in_gap(jump, d) or not ACTION.precision_gap_at(action, d).is_empty()
 
 ## Height of the ramp surface above the road at this distance (0 without a ramp).
 func ramp_height(distance: float) -> float:
@@ -287,17 +289,55 @@ func rival_arc(distance: float) -> float:
 	var d: float=fposmod(distance,length)
 	var kicker: float=ACTION.kicker_height(action,d)
 	if kicker>0.0: return kicker
+	var stunt: float=_precision_rival_arc(d)
+	if stunt>0.0: return stunt
 	if jump.is_empty() or d<jump.ramp_start or d>=jump.gap_end: return 0.0
 	if d<jump.take_off: return ramp_height(d)
 	var u: float=(d-jump.take_off)/(jump.gap_end-jump.take_off)
 	return jump.height*(1.0-u)+6.0*u*(1.0-u)
+
+## Rivals over the Sonnenhafen precision gap: the real ballistic arc of a
+## clean landing in the middle of the zone (height above the local road).
+func _precision_rival_arc(d: float) -> float:
+	for kicker in action.get("kickers", []):
+		if not bool(kicker.get("precision_jump", false)):
+			continue
+		var along: float=d-float(kicker.take_off)
+		var speed: float=float(kicker.get("rival_speed",0.0))
+		if along<0.0 or speed<=0.0:
+			continue
+		var flight: float=PRECISION.landing_distance(speed,kicker)
+		if along>=flight:
+			continue
+		var above_lip: float=PRECISION.height_at(speed,kicker,along)
+		return maxf(0.0,above_lip-float(kicker.get("landing_slope",0.0))*along)
+	return 0.0
+
+## Where a kart that fell into a gap is set down again (just past the gap).
+## Also covers a kart that hit the far edge just behind the gap.
+func gap_exit_distance(distance: float) -> float:
+	var d: float=fposmod(distance,length)
+	for kicker in action.get("kickers", []):
+		if bool(kicker.get("precision_jump", false)) and d>=float(kicker.take_off) and d<float(kicker.gap_end)+6.0:
+			return distance-d+float(kicker.gap_end)+3.0
+	if not jump.is_empty():
+		return distance-d+float(jump.gap_end)+3.0
+	return distance
 
 func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_distance: float) -> float:
 	var lower: float = maxf(0.0, floor_distance)
 	var upper: float = maxf(lower + 0.5, ceiling_distance)
 	var safe: float = clampf(candidate, lower, upper)
 	if jump.is_empty():
-		return safe
+		var stunt_gap: Dictionary = ACTION.precision_gap_at(action, fposmod(safe, length))
+		if stunt_gap.is_empty():
+			return safe
+		var local_stunt: float = fposmod(safe, length)
+		var origin: float = safe - local_stunt
+		var before_stunt: float = origin + float(stunt_gap.start) - 4.0
+		if before_stunt >= lower:
+			return minf(before_stunt, upper)
+		return clampf(origin + float(stunt_gap.gap_end) + 3.0, lower, upper)
 	var local_distance: float = fposmod(safe, length)
 	var danger_start: float = float(jump.ramp_start) - 1.5
 	var danger_end: float = float(jump.gap_end) + 2.5
@@ -631,6 +671,20 @@ func _ground_height(x: float, z: float) -> float:
 			1.0 - smoothstep(64.0, 90.0, absf(z))
 		)
 		terrain_height = lerpf(terrain_height, -4.2, inlet)
+	# The real precision-jump road gap must also be a visible geological cut,
+	# not a ribbon of empty asphalt over unchanged green grass.
+	# Sampling uses the existing nearest-road index (no new O(N) scan), and
+	# changes terrain geometry only; no kart collision or landing logic.
+	if track_id == "sonnenhafen" and index >= 0:
+		var gap_start: float = STUNT.jump_take_off(self) + STUNT.PRECISION_GAP_START_M
+		var gap_end: float = STUNT.jump_take_off(self) + STUNT.PRECISION_LANDING_START_M
+		var road_d: float = float(_road_distances[index])
+		var across: float = 1.0 - smoothstep(6.0, 14.0, nearest.x)
+		var along: float = (
+			smoothstep(gap_start - 3.0, gap_start + 2.0, road_d)
+			* (1.0 - smoothstep(gap_end - 2.0, gap_end + 3.0, road_d))
+		)
+		terrain_height = lerpf(terrain_height, -13.0, across * along)
 	return terrain_height
 
 func _terrain() -> void:
