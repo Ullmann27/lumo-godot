@@ -1701,7 +1701,7 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 				# Take-off position and vertical impulse come only from the ramp
 				# and the actual player's speed. Never add hidden lift or clamp.
 				player.position.y = float(road.height) + 0.035 + float(kicker.height)
-				vertical_speed = speed * sin(float(kicker.angle))
+				vertical_speed = speed * tan(float(kicker.angle))
 				message.text = "Freier Sprung! Lenke und halte deine Fluglinie."
 			else:
 				# Earlier tracks preserve their existing accessible arcade lift.
