@@ -8,6 +8,7 @@ const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
+const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const STEP: float = 1.0 / 60.0
 var game
 ## A failed assert aborts its check; PASS needs every check to reach its end.
@@ -295,6 +296,100 @@ func _check_stunt_jump() -> void:
 	)
 
 
+## Real driving at fixed lip speeds: too slow falls short into the open gap,
+## the reference speed lands in the zone, too fast overshoots. The measured
+## flight must match the model the speed hint uses; speed stays constant in
+## the air (no hidden correction) and steering still works in the air.
+func _precision_run(launch_speed: float, steer_in_air: float) -> Dictionary:
+	await _start()
+	var jump: Dictionary = {}
+	for kicker in game.world.action.kickers:
+		if bool(kicker.get("precision_jump", false)):
+			jump = kicker
+	game.auto_gas = false
+	game.gas_held = false
+	_place(float(jump.take_off) - 1.0, 0.0, launch_speed)
+	var falls_before: int = game.gap_falls
+	var landings_before: int = game.landing_count
+	var air_speeds: Array[float] = []
+	var lane_at_launch: float = 0.0
+	var launched: bool = false
+	var hint_at_lip: String = PRECISION.prediction(launch_speed, jump).status
+	var lifted_onto_road: bool = false
+	for frame in range(240):
+		game.steering = steer_in_air if game.airborne else 0.0
+		var falls: int = game.gap_falls
+		game._physics_process(STEP)
+		if game.airborne:
+			if not launched:
+				lane_at_launch = game.lane
+			launched = true
+			air_speeds.append(game.speed)
+		if launched and not game.airborne:
+			if game.gap_falls == falls and game.landing_count == landings_before:
+				lifted_onto_road = true
+			break
+	var spread: float = 0.0
+	if not air_speeds.is_empty():
+		spread = air_speeds.max() - air_speeds.min()
+	return {
+		"jump": jump,
+		"launched": launched,
+		"result": game.last_precision_landing,
+		"flown": game.last_precision_flown,
+		"model": PRECISION.landing_distance(air_speeds[0] if not air_speeds.is_empty() else 0.0, jump),
+		"air_speed": air_speeds[0] if not air_speeds.is_empty() else 0.0,
+		"spread": spread,
+		"fell": game.gap_falls - falls_before,
+		"landed": game.landing_count - landings_before,
+		"exit_speed": game.speed,
+		"lane_shift": game.lane - lane_at_launch,
+		"hint": hint_at_lip,
+		"lifted": lifted_onto_road,
+		"message": game.message.text,
+		"boost": game.boost_time,
+	}
+
+
+func _check_precision_speeds() -> void:
+	var slow: Dictionary = await _precision_run(12.0, 0.0)
+	var jump: Dictionary = slow.jump
+	assert(slow.launched, "Slow kart still leaves the lip")
+	assert(slow.hint == PRECISION.STATUS_SLOW, "Hint said 'Gib Gas' for the slow kart")
+	assert(slow.result == PRECISION.LANDING_SHORT, "Slow kart falls short (%s)" % slow.result)
+	assert(slow.fell == 1 and slow.landed == 0, "Short jump ends in the gap, not on the road")
+	assert(not slow.lifted, "Short jump is never lifted onto the road")
+	assert("mehr Gas" in slow.message, "Child gets the 'mehr Gas' advice")
+	var good_speed: float = float(jump.rival_speed)
+	var good: Dictionary = await _precision_run(good_speed, 0.0)
+	assert(good.hint == PRECISION.STATUS_GOOD, "Hint said 'Tempo passt'")
+	assert(good.result == PRECISION.LANDING_ZONE, "Reference speed lands in the zone (%s)" % good.result)
+	assert(absf(float(good.flown) - float(good.model)) < 0.9,
+		"Flight matches model (%.2f vs %.2f m)" % [good.flown, good.model])
+	assert(float(good.spread) < 0.001, "Speed is not changed in the air (%.4f)" % good.spread)
+	assert(float(good.boost) > 0.0, "Zone landing gives a turbo")
+	var fast: Dictionary = await _precision_run(30.0, 0.0)
+	assert(fast.hint == PRECISION.STATUS_FAST, "Hint said 'Etwas bremsen'")
+	assert(fast.result == PRECISION.LANDING_LONG, "Fast kart overshoots (%s)" % fast.result)
+	assert(absf(float(fast.flown) - float(fast.model)) < 0.9,
+		"Fast flight matches model (%.2f vs %.2f m)" % [fast.flown, fast.model])
+	assert(float(fast.exit_speed) < float(fast.air_speed) * 0.65, "Overshoot costs speed")
+	var steered: Dictionary = await _precision_run(good_speed, 1.0)
+	assert(absf(float(steered.lane_shift)) > absf(float(good.lane_shift)) + 0.3,
+		"Kart can be steered in the air (%.2f vs %.2f m)" % [steered.lane_shift, good.lane_shift])
+	completed_checks += 1
+	print(
+		(
+			"[SonnenhafenStunt] precision: slow 12.0 m/s -> %s (fell %d); %.1f m/s -> %s %.2f m"
+			+ " (model %.2f); 30.0 m/s -> %s %.2f m (model %.2f), exit %.1f m/s; air steer %.2f m"
+		)
+		% [
+			slow.result, slow.fell, good.air_speed, good.result, good.flown, good.model,
+			fast.result, fast.flown, fast.model, fast.exit_speed, steered.lane_shift
+		]
+	)
+
+
 func _run() -> void:
 	assert(DisplayServer.get_name() != "headless")
 	await _check_layout()
@@ -306,8 +401,9 @@ func _run() -> void:
 	await _check_full_loop()
 	await _check_too_slow()
 	await _check_stunt_jump()
-	if completed_checks != 4:
-		print("[SonnenhafenStunt] FAIL: %d of 4 checks completed" % completed_checks)
+	await _check_precision_speeds()
+	if completed_checks != 5:
+		print("[SonnenhafenStunt] FAIL: %d of 5 checks completed" % completed_checks)
 		quit(1)
 		return
 	print("[SonnenhafenStunt] PASS: real loop, boost pad, stars, safe exit and safe failure")
