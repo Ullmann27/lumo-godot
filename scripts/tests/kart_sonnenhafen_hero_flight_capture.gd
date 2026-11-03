@@ -71,6 +71,12 @@ func _run() -> void:
 	assert(game.reset_count == 0, "Captures must not hide a kart reset")
 	game.abandoned = true
 	game.queue_free()
+	# Rendering textures and asynchronously stopped audio may survive the
+	# first scene-tree deletion frame. Drain their release queues before the
+	# strict clean-exit probe (do not relax the error detector).
+	await process_frame
+	await process_frame
+	await create_timer(0.15).timeout
 	await process_frame
 	print("[SonnenhafenFlightCapture] PASS: real ramp, airborne and landing screenshots")
 	quit(0)
