@@ -51,7 +51,7 @@ Ersatz für die zusätzliche Grafikarbeit des anderen Teams.
 | 7 | Gegner und Rennablauf | Gegnerzustände und bestehende Rennverträge | abgeschlossen: 103 Rosterprüfungen und Itemfeedback-Regression bestanden |
 | 8 | Ressourcen und Darstellung | Blender-Geometriezählung ohne Rig-Hilfsobjekte | abgeschlossen: 1 tatsächliches Mesh, 30.000 Dreiecke; Original und Rückexport unverändert |
 | 9 | Unabhängige Codeprüfung | reproduzierte Änderungen der Helfer | abgeschlossen: keine blockierenden Befunde; ein konkreter Testhinweis behoben |
-| 10 | Integrationsübergabe | Quellidentität, Belege, offene Prüfschritte | gestartet |
+| 10 | Integrationsübergabe | Quellidentität, Belege, offene Prüfschritte | abgeschlossen: unabhängiger Belegabgleich ohne blockierenden Widerspruch; finaler Remote-Abgleich durch Koordination |
 
 ## Referenz und erstes überprüftes Ergebnis
 
@@ -142,6 +142,33 @@ der Szenenwechsel in allen drei Fällen tatsächlich den Zustand korrigieren.
 Die verstärkte Regression bestand anschließend mit dem strikten Probe-Runner
 unter Compatibility, Mobile und Forward+ (jeweils Exit 0). Die drei
 `renderer-strengthened-*.log`-Dateien belegen diese gezielte Nachprüfung.
+
+## Belegprüfung und Übergabe
+
+Auftrag 10 prüfte die Dokumentation, ausgewählte Rohprotokolle, den verstärkten
+Renderer-Testdiff, die Blender-Nachweise, Größe und Seitenzahl der Referenzmappe
+sowie den damaligen PR-/Quellstand unabhängig und lesend. Es wurde kein
+blockierender Widerspruch gefunden. Der Prüfer führte keine neuen Tests aus
+und nahm keine visuelle oder Android-Abnahme vor.
+
+Sein Hinweis zur früheren PR-Formulierung, der neuere lokale Stand sei
+„verloren“, wurde präzisiert: Er war nach Neuerstellung der Umgebung hier nicht
+mehr verfügbar und über den geprüften GitHub-Zugriff nicht abrufbar; eine
+externe weitere Kopie bleibt ungeklärt. Die überarbeitete PR-Beschreibung
+verwendet diese engere, belegte Aussage.
+
+Die Koordination kontrollierte nach Übernahme aller Implementierungsänderungen
+erneut die Modell-Prüfsumme, die vier geänderten Implementierungsdateien, die
+drei neuen Regressionsskripte und das Fehlen geänderter Assets. Der gespeicherte
+Implementierungs-/Teststand `8c93afb1d0c16015d842c12aaaaccbc112cdee02`
+und der Remote-Commit `f7467c43e6175a19b59e48c670bf9627f2701b7a` besaßen
+nach direkter GitHub-Abfrage denselben Baum
+`4ac1fdc9fca4b1adddea509ac15ef53a48904d3b`. Die nachfolgende Ergänzung dieses
+Abschlussstatus ändert ausschließlich die Dokumentation.
+
+Übergabe: Draft-PR `https://github.com/Ullmann27/lumo-godot/pull/131`, gegen
+`integration/lumo-2006-native-20261103`. Er bleibt ein Entwurf; ein Merge oder
+eine App-Veröffentlichung ist nicht Bestandteil dieser Runde.
 
 ## Nachweisgrenzen
 
