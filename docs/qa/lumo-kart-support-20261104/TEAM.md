@@ -20,8 +20,9 @@ Zunächst wurde im geteilten Arbeitsbereich der lokale Stand
 `7dd22580c4a4b65e2586be66ab4283e5b28c054e` auf
 `assist/lumo-kart-reference-team-20261104` gefunden. Er enthielt zusätzliche
 Sonnenhafen-Grafikarbeit. Nach dem Ausfall und Neuaufbau der Ausführungsumgebung
-waren dieser Checkout und die neuen temporären Helfer-Worktrees nicht mehr
-verfügbar. Die GitHub-Abfrage dieses Commits lieferte 404. Es wird nicht
+waren dieser Checkout und die neuen temporären Helfer-Worktrees in dieser
+Sitzung nicht mehr verfügbar. Die GitHub-Abfrage dieses Commits lieferte 404.
+Ob eine weitere Kopie außerhalb dieser Sitzung besteht, ist nicht geklärt. Es wird nicht
 behauptet, dass er im wiederhergestellten Stand enthalten ist.
 
 Die nachfolgende Umsetzung basiert ausdrücklich auf dem erneut von GitHub
@@ -40,13 +41,13 @@ Ersatz für die zusätzliche Grafikarbeit des anderen Teams.
 | Nr. | Spezialgebiet | Arbeitsgrenze | Status |
 |---|---|---|---|
 | 1 | Grafik und Referenzen | Originalreferenzen wieder verfügbar machen | abgeschlossen: Referenzmappe wiederhergestellt |
-| 2 | Fahrphysik | Fahrcontroller, Antrieb, zugehörige Regressionen | gestartet |
+| 2 | Fahrphysik-Erstprüfung | Fahrcontroller und Antrieb | ohne Patch beendet; Basisprüfung durch Koordination, Vertiefung durch 5 und 7 |
 | 3 | Fahreranimation | Lumo-Animationsadapter, reale Fahrerregression | abgeschlossen: Taktrückstand korrigiert, Tests bestanden |
-| 4 | Android-Renderqualität | Qualitätswechsel und unterstützte Effekte | gestartet |
-| 5 | Sprünge und Landung | Rampen-, Landungs- und Rücksetzverhalten | gestartet |
-| 6 | Touchsteuerung | Fingerbesitz, Freigabe, Fokuswechsel | eingeplant |
-| 7 | Gegner und Rennablauf | Gegnerzustände und bestehende Rennverträge | eingeplant |
-| 8 | Ressourcen und Darstellung | begrenzte technische und visuelle Prüfungen | eingeplant |
+| 4 | Renderqualität für die Android-Integration | Qualitätswechsel und unterstützte Effekte | abgeschlossen: Fähigkeitsprüfung für HIGH korrigiert; Hosttests bestanden |
+| 5 | Sprünge und Landung | Rampen-, Landungs- und Rücksetzverhalten | abgeschlossen: zwei bestehende Regressionen bestanden, kein Produktionspatch |
+| 6 | Touchsteuerung | Fingerbesitz und korrekte Tastenfreigabe | abgeschlossen: fremde Maustastenfreigabe setzt Lenkung nicht mehr zurück |
+| 7 | Gegner und Rennablauf | Gegnerzustände und bestehende Rennverträge | gestartet |
+| 8 | Ressourcen und Darstellung | Blender-Geometriezählung ohne Rig-Hilfsobjekte | gestartet |
 | 9 | Unabhängige Codeprüfung | reproduzierte Änderungen der Helfer | eingeplant |
 | 10 | Integrationsübergabe | Quellidentität, Belege, offene Freigabeschritte | eingeplant |
 
@@ -74,6 +75,37 @@ Frame-Dauern und das Freigeben der Figureninstanzen sind mitgeprüft.
 Der Original-Baseline-Lauf von `kart_physics_regression.gd` bestand ebenfalls.
 Er liefert noch keinen Vorher-Nachher-Nachweis einer Fahrphysikänderung.
 
+## Weitere überprüfte Ergebnisse
+
+Die Qualitätsstufe HIGH überschreibt die vorhandene Renderer-/Plattformpolitik
+nicht mehr. SSAO und volumetrischer Nebel folgen nun derselben Freigabe wie in
+KartEnvironmentPolish. Die neue Regression bestand unter den drei auf dem
+Linux-Host ausgewählten Renderermethoden Compatibility, Mobile und Forward+.
+Die bestehenden Prüfungen für Rendererprofile, Qualitätspersistenz und
+Szenenwechsel bestanden ebenfalls. Die Belege samt bekannten Startwarnungen
+stehen in `evidence/render_quality/README.md`. Mobile als Renderermethode ist
+kein Android-Gerätetest.
+
+Der Joystick gibt einen mit der linken Maustaste gehaltenen Lenkeingriff nur
+bei Freigabe dieser Taste auf. Die neue Regression reproduzierte zuvor genau
+drei Fehler bei einer zwischenzeitlich losgelassenen rechten Taste und bestand
+nach der Ein-Bedingungs-Korrektur. Die bestehenden Touch-Integrationstests
+bestanden ebenfalls. Geprüft wurden synthetische InputEvents im tatsächlichen
+Godot-Control-/Viewport-Pfad, einschließlich zweitem Finger, Freigabe außerhalb
+und Deaktivierung. Physische Touchhardware und Gerätelatenz sind nicht geprüft.
+
+Die Koordination hat die neue Fahrer-, Renderer- und Joystickregression nach
+der jeweiligen Übernahme in ihren gemeinsamen Zweig erneut erfolgreich
+ausgeführt. Dies prüft die übernommenen Änderungen; es ersetzt keinen
+vollständigen App-Build.
+
+Für die Sprungberechnung bestanden 37 Prüfungen der vorhandenen Präzisions-
+Regression sowie die bestehende dynamische Prüfung für normalen Absprung,
+Landung, Landeboost, zu langsamen Anlauf, Rettung und Checkpoint-Reihenfolge.
+Die aktuelle Präzisionsrampe ist 3 m hoch und zielt 14,5–31 m weit. Der in der
+Referenzmappe verlangte Flug in 2–3 km Höhe ist damit weder umgesetzt noch
+abgenommen. Das grafische Präzisions-Stuntszenario wurde hier nicht ausgeführt.
+
 ## Nachweisgrenzen
 
 Godot-Hosttests, native Desktopbilder, Blenderbilder und Android-Gerätetests
@@ -81,3 +113,10 @@ werden getrennt ausgewiesen. Ein erfolgreicher Import oder eine bestandene
 Regression beweist weder 60 FPS auf dem Fold7 noch eine fertig signierte APK.
 Diese Unterstützungsrunde veröffentlicht kein App-Update ohne dessen eigenen
 Build-, Signatur- und Gerätebeleg.
+
+Eine tatsächliche native Startprobe mit X11 scheiterte; auch der automatische
+Wayland-Versuch konnte keinen Displayserver öffnen. DISPLAY und WAYLAND_DISPLAY
+sind nicht gesetzt, ein /dev/dri-Gerät steht in dieser Umgebung nicht bereit.
+Der Fehlerbeleg ist als `native-renderer-availability.log` erhalten. Deshalb
+liegt aus dieser Runde kein gerendertes aktuelles Spielbild vor; die visuell
+geprüften Sonnenhafen-Bilder stammen aus der Referenzmappe.
