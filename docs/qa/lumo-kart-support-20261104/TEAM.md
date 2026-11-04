@@ -5,12 +5,14 @@ Datum: 4. November 2026 (Europe/Vienna).
 ## Auftrag und Arbeitsweise
 
 Heinz hat drei weitere Helfer für Lumo Kart angefordert und insgesamt zehn
-Agenten gewünscht. Diese Runde verwendet drei gleichzeitig aktive Helfer neben
-der Koordination. Weitere Spezialisten werden nacheinander gestartet, sobald
-ein Platz frei wird. Ein geplanter Auftrag zählt nicht als gestarteter Agent.
+Agenten gewünscht. Alle zehn hier aufgeführten Helferaufträge wurden gestartet.
+Die Laufzeit erlaubte bis zu drei gleichzeitig aktive Helfer neben der
+Koordination; die zehn Aufträge wurden deshalb in aufeinanderfolgenden Wellen
+bearbeitet. Auftrag 2 endete ohne eigenen Patch oder verwertbaren Abschluss;
+seine Basisprüfung übernahm die Koordination.
 
-Änderungen entstehen auf getrennten Zweigen und werden einzeln überprüft.
-Der produktive Hauptzweig wird nicht verändert. Die originale Lumo-Figur und
+Änderungen wurden auf getrennten Zweigen bearbeitet und einzeln überprüft.
+Der produktive Hauptzweig wurde nicht verändert. Die originale Lumo-Figur und
 vorhandene Strecken bleiben die Ausgangsbasis. Die Referenzmappe ist ein
 Gestaltungsziel; Quellcodeprüfungen beweisen keine visuelle Gleichheit mit ihr.
 
@@ -46,10 +48,10 @@ Ersatz für die zusätzliche Grafikarbeit des anderen Teams.
 | 4 | Renderqualität für die Android-Integration | Qualitätswechsel und unterstützte Effekte | abgeschlossen: Fähigkeitsprüfung für HIGH korrigiert; Hosttests bestanden |
 | 5 | Sprünge und Landung | Rampen-, Landungs- und Rücksetzverhalten | abgeschlossen: zwei bestehende Regressionen bestanden, kein Produktionspatch |
 | 6 | Touchsteuerung | Fingerbesitz und korrekte Tastenfreigabe | abgeschlossen: fremde Maustastenfreigabe setzt Lenkung nicht mehr zurück |
-| 7 | Gegner und Rennablauf | Gegnerzustände und bestehende Rennverträge | gestartet |
-| 8 | Ressourcen und Darstellung | Blender-Geometriezählung ohne Rig-Hilfsobjekte | gestartet |
-| 9 | Unabhängige Codeprüfung | reproduzierte Änderungen der Helfer | eingeplant |
-| 10 | Integrationsübergabe | Quellidentität, Belege, offene Freigabeschritte | eingeplant |
+| 7 | Gegner und Rennablauf | Gegnerzustände und bestehende Rennverträge | abgeschlossen: 103 Rosterprüfungen und Itemfeedback-Regression bestanden |
+| 8 | Ressourcen und Darstellung | Blender-Geometriezählung ohne Rig-Hilfsobjekte | abgeschlossen: 1 tatsächliches Mesh, 30.000 Dreiecke; Original und Rückexport unverändert |
+| 9 | Unabhängige Codeprüfung | reproduzierte Änderungen der Helfer | abgeschlossen: keine blockierenden Befunde; ein konkreter Testhinweis behoben |
+| 10 | Integrationsübergabe | Quellidentität, Belege, offene Prüfschritte | gestartet |
 
 ## Referenz und erstes überprüftes Ergebnis
 
@@ -105,6 +107,41 @@ Landung, Landeboost, zu langsamen Anlauf, Rettung und Checkpoint-Reihenfolge.
 Die aktuelle Präzisionsrampe ist 3 m hoch und zielt 14,5–31 m weit. Der in der
 Referenzmappe verlangte Flug in 2–3 km Höhe ist damit weder umgesetzt noch
 abgenommen. Das grafische Präzisions-Stuntszenario wurde hier nicht ausgeführt.
+
+Die Gegnerliste bestand 103 Prüfungen zu den fünf Identitäten, Referenzdateien,
+Pfadgrenzen und ausgewählten Rotationen. Die bestehende Itemfeedback-Regression
+bestand ebenfalls: Puls-Vorwarnung ohne Soforttreffer, Ausweichen, Schildblock,
+Gegnerschild und begrenzter Boost. Die Sichtbarkeitsaussagen dieses Tests beruhen
+auf `visual_state()`-Flags, nicht auf gerenderten Pixeln. Positionen und Zustände
+werden im Test gezielt gesetzt; ein vollständiger KI-Rennlauf wurde damit nicht
+abgenommen. Die Rosterprüfung lädt nicht sämtliche Figurenmodelle oder Animationen.
+
+Das Blender-Prüfwerkzeug zählte bislang ein vom glTF-Importer erzeugtes
+Knochenanzeige-Hilfsobjekt mit: 2 Meshes und 30.080 Dreiecke statt 1 Mesh und
+30.000 Dreiecken. Die Korrektur verwendet tatsächliche
+`pose_bone.custom_shape`-Objektreferenzen, keine Namens- oder Sichtbarkeitsfilter.
+Ein Blender-4.3.2-Lauf sowie das direkte Auslesen der GLB-Geometriedaten
+bestätigen die korrigierte Zählung. Der Original-SHA256 bleibt
+`3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5`;
+auch der Rückexport ist bytegleich zum vorigen Rückexport. Es wurde kein neues
+Modell eingebunden. Die vorhandene Meldung zur fehlenden optionalen
+Draco-Bibliothek und die Samplerwarnung sind im Log erhalten. Dieser Lauf
+bestätigt weder Materialtreue noch eine bestimmte Bildrate.
+
+## Unabhängige Codeprüfung
+
+Auftrag 9 prüfte alle vier Implementierungsänderungen einschließlich Blender
+und die drei neuen Godot-Regressionen lesend. Dabei wurden keine blockierenden
+Fehler gefunden. Der Reviewer startete keine zusätzlichen Tests.
+
+Ein nichtblockierender Hinweis betraf die Aussagekraft des Renderer-Szenenwechsels:
+Unter Compatibility und Mobile waren die Anfangswerte der zweiten Umgebung
+bereits passend. Die Koordination ließ diese Umgebung daraufhin bewusst mit den
+entgegengesetzten Werten zur zuvor geprüften HIGH-Umgebung starten. Damit muss
+der Szenenwechsel in allen drei Fällen tatsächlich den Zustand korrigieren.
+Die verstärkte Regression bestand anschließend mit dem strikten Probe-Runner
+unter Compatibility, Mobile und Forward+ (jeweils Exit 0). Die drei
+`renderer-strengthened-*.log`-Dateien belegen diese gezielte Nachprüfung.
 
 ## Nachweisgrenzen
 

@@ -60,6 +60,19 @@ python3 tools/run_godot_probe.py \
 
 Für die anderen Renderer `mobile` beziehungsweise `forward_plus` und jeweils eigene Log-/XDG-Pfade verwenden. Die drei vorhandenen Regressionen wurden mit Compatibility und den PASS-Präfixen `[RendererProfiles] PASS`, `[KartQualityPersist] PASS` und `[KartQualitySceneSwitch] PASS` ausgeführt.
 
+## Ergänzung nach unabhängiger Codeprüfung
+
+Die hier archivierten ersten GREEN-Läufe wurden später gezielt ergänzt. Der
+Reviewer stellte fest, dass die zweite Szene unter Compatibility und Mobile
+bereits passende Anfangswerte besaß. Die Regression setzt deren SSAO- und
+Volumetric-Fog-Werte nun bewusst entgegengesetzt zur zuvor geprüften
+HIGH-Umgebung. Dadurch muss die Profilanwendung beim Szenenwechsel in jedem
+Renderer tatsächlich korrigierend eingreifen. Alle drei erneuten Läufe mit
+dieser stärkeren Vorbedingung bestanden über den strikten Probe-Runner mit
+Exit 0. Die Belege liegen in
+`docs/qa/lumo-kart-support-20261104/renderer-strengthened-gl_compatibility.log`,
+`renderer-strengthened-mobile.log` und `renderer-strengthened-forward_plus.log`.
+
 ## Bestehende Warnungen und Aussagegrenzen
 
 Die Compatibility-Läufe enthalten bereits beim Start Warnungen zur Screen-space-AA-Einstellung und zu volumetrischem Nebel; Mobile meldet beim Start SSAO und volumetrischen Nebel. Diese stammen aus den bestehenden Start-/Default-Environment-Einstellungen und sind im RED sowie weiterhin in GREEN sichtbar. Dieser gezielte Fix bereinigt diese separaten Startup-Einstellungen nicht. Es wird ausdrücklich kein warnungsfreier Start behauptet.

@@ -48,6 +48,9 @@ func _run() -> void:
 	performance.call("set_profile", 2, false)
 	_assert_supported_effects(first.environment, "low-to-high")
 	var second := _make_environment_scene("RendererQualitySecond")
+	# Start opposite to the verified HIGH state so every renderer must reapply it.
+	second.environment.ssao_enabled = not first.environment.ssao_enabled
+	second.environment.volumetric_fog_enabled = not first.environment.volumetric_fog_enabled
 	assert(change_scene_to_node(second.scene) == OK)
 	await scene_changed
 	await process_frame
