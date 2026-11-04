@@ -39,16 +39,40 @@ Ersatz für die zusätzliche Grafikarbeit des anderen Teams.
 
 | Nr. | Spezialgebiet | Arbeitsgrenze | Status |
 |---|---|---|---|
-| 1 | Grafik und Referenzen | Materialien, Shader, Originalreferenzen | gestartet |
+| 1 | Grafik und Referenzen | Originalreferenzen wieder verfügbar machen | abgeschlossen: Referenzmappe wiederhergestellt |
 | 2 | Fahrphysik | Fahrcontroller, Antrieb, zugehörige Regressionen | gestartet |
-| 3 | Fahreranimation | Lumo-Animationsadapter, reale Fahrerregression | gestartet |
-| 4 | Android-Renderqualität | Qualitätswechsel und unterstützte Effekte | eingeplant |
-| 5 | Sprünge und Landung | Rampen-, Landungs- und Rücksetzverhalten | eingeplant |
+| 3 | Fahreranimation | Lumo-Animationsadapter, reale Fahrerregression | abgeschlossen: Taktrückstand korrigiert, Tests bestanden |
+| 4 | Android-Renderqualität | Qualitätswechsel und unterstützte Effekte | gestartet |
+| 5 | Sprünge und Landung | Rampen-, Landungs- und Rücksetzverhalten | gestartet |
 | 6 | Touchsteuerung | Fingerbesitz, Freigabe, Fokuswechsel | eingeplant |
 | 7 | Gegner und Rennablauf | Gegnerzustände und bestehende Rennverträge | eingeplant |
 | 8 | Ressourcen und Darstellung | begrenzte technische und visuelle Prüfungen | eingeplant |
 | 9 | Unabhängige Codeprüfung | reproduzierte Änderungen der Helfer | eingeplant |
 | 10 | Integrationsübergabe | Quellidentität, Belege, offene Freigabeschritte | eingeplant |
+
+## Referenz und erstes überprüftes Ergebnis
+
+Die Originalmappe wurde aus dem bestehenden Projektordner erneut abgerufen:
+`libfile_dca26bf12c6c8191a18643ce74547a26`, 75.905.897 Bytes, 152 Seiten.
+Die Koordination hat die Bildtafeln Sonnenhafen auf den Seiten 16 und 17
+visuell geprüft sowie die Vorgaben auf den Seiten 98 und 112–118 gelesen.
+Insbesondere bleiben die vorhandene Originalfigur, klare Fahrbahnränder und
+die Trennung von technischem Hosttest und Android-Leistungsnachweis verbindlich.
+Die Mappe selbst kennzeichnet ihre Bilder als Designreferenzen.
+
+Der Fahreradapter verlor zuvor den Rest seines 30-Hz-Intervalls. In einem
+zweisekündigen Test ergaben 50-/75-Hz-Eingaben nur 50 Clipauswertungen,
+144-Hz-Eingaben 57. Nach der begrenzten Akkumulatorkorrektur ergeben alle
+geprüften Eingaberaten 30/50/60/75/90/120/144 Hz jeweils 60 Auswertungen.
+Die neue Regression bestand 1.196 Prüfungen, die vorhandene
+Fahrer-Produktintegration 2.069 Prüfungen. Das tatsächliche importierte
+Lumo-Modell wurde verwendet; seine Geometrie blieb unverändert.
+Die maximale gemessene Handankerabweichung in der neuen Regression betrug
+1,1494 mm bei 6 mm Prüftoleranz. Pause, lange Einzel-Frames, wechselnde normale
+Frame-Dauern und das Freigeben der Figureninstanzen sind mitgeprüft.
+
+Der Original-Baseline-Lauf von `kart_physics_regression.gd` bestand ebenfalls.
+Er liefert noch keinen Vorher-Nachher-Nachweis einer Fahrphysikänderung.
 
 ## Nachweisgrenzen
 
