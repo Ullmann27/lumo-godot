@@ -14,7 +14,17 @@ output = Path(args[1]).resolve()
 output.mkdir(parents=True, exist_ok=True)
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=str(source))
-mesh_objects = [obj for obj in bpy.context.scene.objects if obj.type == "MESH"]
+armatures = [obj for obj in bpy.context.scene.objects if obj.type == "ARMATURE"]
+# The glTF importer creates mesh objects for bone display shapes. Identify them
+# through the actual pose-bone references, not names or visibility settings.
+rig_shapes = {
+    bone.custom_shape
+    for armature in armatures
+    for bone in armature.pose.bones
+    if bone.custom_shape is not None
+}
+scene_meshes = [obj for obj in bpy.context.scene.objects if obj.type == "MESH"]
+mesh_objects = [obj for obj in scene_meshes if obj not in rig_shapes]
 assert mesh_objects, "The source must contain actual 3D geometry."
 triangles = 0
 for obj in mesh_objects:
@@ -25,10 +35,11 @@ report = {
     "source_glb": source.name,
     "source_glb_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
     "mesh_objects": len(mesh_objects),
+    "excluded_rig_shape_meshes": len(scene_meshes) - len(mesh_objects),
     "triangles": triangles,
     "materials": len(bpy.data.materials),
     "images": len(bpy.data.images),
-    "armatures": len([obj for obj in bpy.context.scene.objects if obj.type == "ARMATURE"]),
+    "armatures": len(armatures),
     "geometry_modified": False,
     "material_fidelity_approved": False,
     "runtime_replacement": False,
