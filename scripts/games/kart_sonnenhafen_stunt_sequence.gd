@@ -11,6 +11,8 @@ extends RefCounted
 const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const DECK_SHADER = preload("res://assets/shaders/kart_stunt_loop.gdshader")
+const BALLOON_SHADER = preload("res://assets/shaders/kart_balloon.gdshader")
+const EMBLEM = preload("res://assets/kart/stunt/lumo_balloon_emblem.png")
 
 const TUNNEL_FRACTION: float = 0.690
 ## Loop entry this many metres before the tunnel mouth (Position A).
@@ -37,6 +39,12 @@ const ARC_STARS: Array = [[5.0, 2.6], [10.0, 3.7], [15.0, 4.1], [20.0, 3.6]]
 const PORTAL_SETBACK_M: float = 1.5
 const PORTAL_RADIUS: float = 9.2
 const PORTAL_BASE_HEIGHT: float = 0.9
+## Hot-air balloons with the original Lumo emblem over the stunt zone:
+## [metres relative to the loop entry, lateral offset, height above road, size].
+const BALLOONS: Array = [
+	[-60.0, -26.0, 11.0, 0.9], [-5.0, -40.0, 15.0, 1.2], [40.0, -24.0, 9.5, 0.8],
+	[70.0, 30.0, 13.0, 1.0]
+]
 const NAVY: Color = Color("12233f")
 const CYAN: Color = Color("41dcff")
 const ORANGE: Color = Color("ff9a2e")
@@ -135,6 +143,7 @@ static func build(world) -> void:
 	_entry_guidance(world, layout)
 	_beacons(world, layout)
 	_tunnel_portal(world)
+	_balloons(world)
 
 
 ## Deck, side walls and the chunky outer spine as three real meshes that use
@@ -448,3 +457,57 @@ static func _tunnel_portal(world) -> void:
 	world._prop("box", top - basis.y * 1.18, Vector3(8.9, 0.16, 0.6), CYAN, basis, true)
 	world._sign(top + basis.z * 0.28, basis, "LUMO KART", 0.05)
 	world._sign(top + basis.z * 0.28 - basis.y * 0.75, basis, "Kristalltunnel", 0.02)
+
+
+static func _balloons(world) -> void:
+	var start: float = loop_start(world)
+	for entry in BALLOONS:
+		var d: float = start + float(entry[0])
+		var size: float = float(entry[3])
+		var basis: Basis = world.frame(d)
+		var at: Vector3 = world.position_at(d, float(entry[1])) + Vector3.UP * float(entry[2])
+		var envelope := MeshInstance3D.new()
+		envelope.name = "StuntBalloon"
+		var sphere := SphereMesh.new()
+		sphere.radius = 4.0
+		sphere.height = 9.2
+		sphere.radial_segments = 24
+		sphere.rings = 12
+		envelope.mesh = sphere
+		var material := ShaderMaterial.new()
+		material.shader = BALLOON_SHADER
+		envelope.material_override = material
+		envelope.position = at
+		envelope.scale = Vector3.ONE * size
+		world.add_child(envelope)
+		# Emblem faces the road so drivers see Lumo on the balloon.
+		var to_road: Vector3 = world.position_at(d) - at
+		to_road.y = 0.0
+		var facing := Basis.looking_at(-to_road.normalized(), Vector3.UP)
+		var emblem := MeshInstance3D.new()
+		var quad := QuadMesh.new()
+		quad.size = Vector2(4.4, 4.4) * size
+		emblem.mesh = quad
+		var emblem_material := StandardMaterial3D.new()
+		emblem_material.albedo_texture = EMBLEM
+		emblem_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+		emblem_material.alpha_scissor_threshold = 0.5
+		emblem_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		emblem.material_override = emblem_material
+		emblem.basis = facing
+		emblem.position = at + to_road.normalized() * 4.05 * size + Vector3.UP * 0.6 * size
+		world.add_child(emblem)
+		var basket: Vector3 = at - Vector3.UP * 6.4 * size
+		world._prop("box", basket, Vector3(1.6, 1.1, 1.6) * size, Color("8a5a32"), basis)
+		for corner in [
+			Vector3(-0.7, 0, -0.7),
+			Vector3(0.7, 0, -0.7),
+			Vector3(-0.7, 0, 0.7),
+			Vector3(0.7, 0, 0.7)
+		]:
+			world._beam(
+				basket + corner * size + Vector3.UP * 0.5 * size,
+				at + corner * 2.2 * size - Vector3.UP * 3.4 * size,
+				0.06,
+				Color("4a3a2a")
+			)
