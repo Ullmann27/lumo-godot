@@ -726,7 +726,9 @@ static func _build_crystal_gorge(world, kicker: Dictionary) -> void:
 		# crevices are on the walls, not on the invisible racing surface.
 		for side in [-1.0, 1.0]:
 			var left_or_right: float = side * (RAMP_HALF_WIDTH + 4.9)
-			var rock_pos: Vector3 = world.position_at(d, left_or_right) - basis.y * 5.4
+			# Rock mesh top = centre + 0.81 x height (7.3 m), plus up to 0.5 m from
+			# road banking: 9.1 m down keeps every wall top below kart level.
+			var rock_pos: Vector3 = world.position_at(d, left_or_right) - basis.y * 9.1
 			var shoulder: float = 1.0 + float((i * 3) % 4) * 0.10
 			world._prop(
 				"rock",
