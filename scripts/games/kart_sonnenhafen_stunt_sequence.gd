@@ -13,6 +13,8 @@ extends RefCounted
 const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const DECK_SHADER = preload("res://assets/shaders/kart_stunt_loop.gdshader")
+const BALLOON_SHADER = preload("res://assets/shaders/kart_balloon.gdshader")
+const EMBLEM = preload("res://assets/kart/stunt/lumo_balloon_emblem.png")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 
 const TUNNEL_FRACTION: float = 0.690
@@ -55,6 +57,14 @@ const ARC_STARS: Array[float] = [4.0, 8.0, 12.0, 16.0]
 const PORTAL_SETBACK_M: float = 1.5
 const PORTAL_RADIUS: float = 9.2
 const PORTAL_BASE_HEIGHT: float = 0.9
+## Hot-air balloons with the original Lumo emblem over the stunt zone:
+## [metres relative to the loop entry, lateral offset, height above road, size].
+const BALLOONS: Array = [
+	[-60.0, -26.0, 11.0, 0.9],
+	[-5.0, -40.0, 15.0, 1.2],
+	[40.0, -24.0, 9.5, 0.8],
+	[70.0, 30.0, 13.0, 1.0]
+]
 const NAVY: Color = Color("12233f")
 const CYAN: Color = Color("41dcff")
 const ORANGE: Color = Color("ff9a2e")
@@ -112,23 +122,23 @@ static func kickers(world) -> Array:
 		world.position_at(take_off + PRECISION_LANDING_START_M).y - world.position_at(take_off).y
 	)
 	var kicker: Dictionary = {
-			"start": take_off - JUMP_RAMP_LENGTH,
-			"take_off": take_off,
-			"length": JUMP_RAMP_LENGTH,
-			"height": JUMP_RAMP_HEIGHT,
-			"angle": atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH),
-			"flight_gravity": PRECISION_GRAVITY,
-			"lift_bonus": 0.0,
-			"max_lift": 1000.0,  # effectively uncapped; JSON-safe
-			"precision_jump": true,
-			"landing_min": PRECISION_LANDING_START_M,
-			"landing_max": PRECISION_LANDING_END_M,
-			"landing_slope": rise / PRECISION_LANDING_START_M,
-			"gap_start": take_off + PRECISION_GAP_START_M,
-			"gap_end": take_off + PRECISION_LANDING_START_M,
-			"hero_flight": true,
-			"stunt": true,
-		}
+		"start": take_off - JUMP_RAMP_LENGTH,
+		"take_off": take_off,
+		"length": JUMP_RAMP_LENGTH,
+		"height": JUMP_RAMP_HEIGHT,
+		"angle": atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH),
+		"flight_gravity": PRECISION_GRAVITY,
+		"lift_bonus": 0.0,
+		"max_lift": 1000.0,  # effectively uncapped; JSON-safe
+		"precision_jump": true,
+		"landing_min": PRECISION_LANDING_START_M,
+		"landing_max": PRECISION_LANDING_END_M,
+		"landing_slope": rise / PRECISION_LANDING_START_M,
+		"gap_start": take_off + PRECISION_GAP_START_M,
+		"gap_end": take_off + PRECISION_LANDING_START_M,
+		"hero_flight": true,
+		"stunt": true,
+	}
 	# Computer rivals fly the arc of a clean landing in the middle of the zone.
 	kicker["rival_speed"] = PRECISION.speed_for_distance(
 		(PRECISION_LANDING_START_M + PRECISION_LANDING_END_M) * 0.5, kicker
@@ -170,6 +180,7 @@ static func build(world) -> void:
 	_entry_guidance(world, layout)
 	_beacons(world, layout)
 	_tunnel_portal(world)
+	_balloons(world)
 
 
 ## Deck, side walls and the chunky outer spine as three real meshes that use
@@ -509,15 +520,22 @@ static func build_precision_ramp(world, kicker: Dictionary) -> void:
 		var basis: Basis = world.frame(d)
 		var rise: float = float(i) / float(steps) * height
 		var lift: Vector3 = basis.y * (rise + 0.02)
-		rows.append({
-			"left": world.position_at(d, -half) + lift,
-			"right": world.position_at(d, half) + lift,
-			"left_foot": world.position_at(d, -half) - basis.y * 0.05,
-			"right_foot": world.position_at(d, half) - basis.y * 0.05,
-			# The deck shader draws chevron tips towards decreasing v; running v
-			# backwards makes the arrows point up the ramp, in driving direction.
-			"up": basis.y, "side": basis.x, "v": take_off - d,
-		})
+		(
+			rows
+			. append(
+				{
+					"left": world.position_at(d, -half) + lift,
+					"right": world.position_at(d, half) + lift,
+					"left_foot": world.position_at(d, -half) - basis.y * 0.05,
+					"right_foot": world.position_at(d, half) - basis.y * 0.05,
+					# The deck shader draws chevron tips towards decreasing v; running v
+					# backwards makes the arrows point up the ramp, in driving direction.
+					"up": basis.y,
+					"side": basis.x,
+					"v": take_off - d,
+				}
+			)
+		)
 	for i in range(steps):
 		var a: Dictionary = rows[i]
 		var b: Dictionary = rows[i + 1]
@@ -533,8 +551,17 @@ static func build_precision_ramp(world, kicker: Dictionary) -> void:
 			_quad(walls, top_a, top_a + out, top_b + out, top_b, a.up, b.up, 0, 1)
 	# Back face of the wedge under the lip.
 	var last: Dictionary = rows[steps]
-	_quad(body, last.left_foot, last.right_foot, last.right, last.left, -world.forward(take_off),
-		-world.forward(take_off), 0, 1)
+	_quad(
+		body,
+		last.left_foot,
+		last.right_foot,
+		last.right,
+		last.left,
+		-world.forward(take_off),
+		-world.forward(take_off),
+		0,
+		1
+	)
 	var deck_material := ShaderMaterial.new()
 	deck_material.shader = DECK_SHADER
 	deck_material.set_shader_parameter("chevron_spacing", 2.0)
@@ -555,8 +582,14 @@ static func build_precision_ramp(world, kicker: Dictionary) -> void:
 	_add_mesh(world, "PrecisionRampWalls", walls, wall_material)
 	# Glowing lip and a cyan edge where the open gap begins.
 	var lip_basis: Basis = world.frame(take_off - 0.15)
-	world._prop("box", world.position_at(take_off - 0.15) + lip_basis.y * (height + 0.06),
-		Vector3(half * 2.0 + 0.3, 0.1, 0.3), CYAN, lip_basis, true)
+	world._prop(
+		"box",
+		world.position_at(take_off - 0.15) + lip_basis.y * (height + 0.06),
+		Vector3(half * 2.0 + 0.3, 0.1, 0.3),
+		CYAN,
+		lip_basis,
+		true
+	)
 	# Run-up arrows (same V arrows as the loop lane), centre and both lanes.
 	for i in range(6):
 		var d: float = start - 30.0 + float(i) * 4.5
@@ -565,17 +598,37 @@ static func build_precision_ramp(world, kicker: Dictionary) -> void:
 			for side in [-1.0, 1.0]:
 				var tilted: Basis = arrow_basis.rotated(arrow_basis.y, side * 0.70)
 				var at: Vector3 = world.position_at(d, lane + side * 0.48) + arrow_basis.y * 0.03
-				world._prop("box", at, Vector3(0.3, 0.03, 1.3), ORANGE if i % 2 == 0 else CYAN, tilted, true)
+				world._prop(
+					"box", at, Vector3(0.3, 0.03, 1.3), ORANGE if i % 2 == 0 else CYAN, tilted, true
+				)
 	# Sign gantry: tells the child what this ramp is about.
 	var sign_distance: float = start - 34.0
 	var sign_basis: Basis = world.frame(sign_distance)
 	var beam: Vector3 = world.position_at(sign_distance, 0.0) + sign_basis.y * 6.2
 	for side in [-1.0, 1.0]:
-		var post: Vector3 = world.position_at(sign_distance, side * (float(world.RAIL_LATERAL) + 0.9))
+		var post: Vector3 = world.position_at(
+			sign_distance, side * (float(world.RAIL_LATERAL) + 0.9)
+		)
 		world._prop("box", post + sign_basis.y * 3.2, Vector3(0.45, 6.4, 0.45), NAVY, sign_basis)
-	world._prop("box", beam, Vector3(float(world.RAIL_LATERAL) * 2.0 + 2.2, 1.5, 0.35), NAVY, sign_basis)
-	world._prop("box", beam + sign_basis.y * 0.82, Vector3(float(world.RAIL_LATERAL) * 2.0 + 2.4, 0.12, 0.42), ORANGE, sign_basis, true)
-	world._prop("box", beam - sign_basis.y * 0.82, Vector3(float(world.RAIL_LATERAL) * 2.0 + 2.4, 0.12, 0.42), CYAN, sign_basis, true)
+	world._prop(
+		"box", beam, Vector3(float(world.RAIL_LATERAL) * 2.0 + 2.2, 1.5, 0.35), NAVY, sign_basis
+	)
+	world._prop(
+		"box",
+		beam + sign_basis.y * 0.82,
+		Vector3(float(world.RAIL_LATERAL) * 2.0 + 2.4, 0.12, 0.42),
+		ORANGE,
+		sign_basis,
+		true
+	)
+	world._prop(
+		"box",
+		beam - sign_basis.y * 0.82,
+		Vector3(float(world.RAIL_LATERAL) * 2.0 + 2.4, 0.12, 0.42),
+		CYAN,
+		sign_basis,
+		true
+	)
 	world._sign(beam + sign_basis.z * 0.2, sign_basis, "STUNT-SPRUNG\nAuf das Tempo achten!", 0.016)
 	# Solid abutments on both sides of the open gap, so it reads as a built
 	# chasm in the road and not as a missing texture.
@@ -584,8 +637,14 @@ static func build_precision_ramp(world, kicker: Dictionary) -> void:
 		var toward_gap: float = 0.25 if edge == float(kicker.gap_start) else -0.25
 		var face: Vector3 = world.position_at(edge - toward_gap) - edge_basis.y * 0.9
 		world._prop("box", face, Vector3(half * 2.0 + 1.6, 1.8, 0.5), NAVY, edge_basis)
-		world._prop("box", world.position_at(edge - toward_gap) + edge_basis.y * 0.04,
-			Vector3(half * 2.0 + 1.6, 0.08, 0.5), CYAN, edge_basis, true)
+		world._prop(
+			"box",
+			world.position_at(edge - toward_gap) + edge_basis.y * 0.04,
+			Vector3(half * 2.0 + 1.6, 0.08, 0.5),
+			CYAN,
+			edge_basis,
+			true
+		)
 	# Landing zone: green bar where the road begins again, orange bar at its end,
 	# side gates at both ends and soft green strips along the zone edges.
 	var zone_start: float = take_off + float(kicker.landing_min)
@@ -594,17 +653,39 @@ static func build_precision_ramp(world, kicker: Dictionary) -> void:
 	for entry in [[zone_start + 0.2, green], [zone_end, ORANGE]]:
 		var d: float = float(entry[0])
 		var basis: Basis = world.frame(d)
-		world._prop("box", world.position_at(d) + basis.y * 0.03, Vector3(half * 2.0, 0.03, 0.5), entry[1], basis, true)
+		world._prop(
+			"box",
+			world.position_at(d) + basis.y * 0.03,
+			Vector3(half * 2.0, 0.03, 0.5),
+			entry[1],
+			basis,
+			true
+		)
 		for side in [-1.0, 1.0]:
 			var post: Vector3 = world.position_at(d, side * 6.4)
-			world._prop("box", post + basis.y * 1.5, Vector3(0.28, 3.0, 0.28), entry[1], basis, true)
-		world._prop("box", world.position_at(d) + basis.y * 3.05, Vector3(13.1, 0.24, 0.28), entry[1], basis, true)
+			world._prop(
+				"box", post + basis.y * 1.5, Vector3(0.28, 3.0, 0.28), entry[1], basis, true
+			)
+		world._prop(
+			"box",
+			world.position_at(d) + basis.y * 3.05,
+			Vector3(13.1, 0.24, 0.28),
+			entry[1],
+			basis,
+			true
+		)
 	var along: float = zone_start + 1.0
 	while along < zone_end - 0.5:
 		var basis: Basis = world.frame(along)
 		for side in [-1.0, 1.0]:
-			world._prop("box", world.position_at(along, side * (half - 0.25)) + basis.y * 0.025,
-				Vector3(0.22, 0.02, 1.6), green, basis, true)
+			world._prop(
+				"box",
+				world.position_at(along, side * (half - 0.25)) + basis.y * 0.025,
+				Vector3(0.22, 0.02, 1.6),
+				green,
+				basis,
+				true
+			)
 		along += 2.5
 	_build_crystal_gorge(world, kicker)
 
@@ -632,46 +713,112 @@ static func _build_crystal_gorge(world, kicker: Dictionary) -> void:
 		# The dark riverbed and its thin glowing stream are far below the
 		# road; a missed jump remains a real fall, never an invisible bridge.
 		var floor: Vector3 = world.position_at(d) - basis.y * 10.4
-		world._prop("box", floor, Vector3(14.8, 0.50, slice_length + 0.24),
-			dark_stone, basis)
-		world._prop("box", floor + basis.y * 0.31,
-			Vector3(6.3, 0.08, slice_length + 0.15), deep_water, basis, true)
+		world._prop("box", floor, Vector3(14.8, 0.50, slice_length + 0.24), dark_stone, basis)
+		world._prop(
+			"box",
+			floor + basis.y * 0.31,
+			Vector3(6.3, 0.08, slice_length + 0.15),
+			deep_water,
+			basis,
+			true
+		)
 		# Sculpted staggered walls frame the vertical drop. The glowing
 		# crevices are on the walls, not on the invisible racing surface.
 		for side in [-1.0, 1.0]:
 			var left_or_right: float = side * (RAMP_HALF_WIDTH + 4.9)
-			var rock_pos: Vector3 = (
-				world.position_at(d, left_or_right) - basis.y * 5.4
-			)
+			var rock_pos: Vector3 = world.position_at(d, left_or_right) - basis.y * 5.4
 			var shoulder: float = 1.0 + float((i * 3) % 4) * 0.10
-			world._prop("rock", rock_pos,
+			world._prop(
+				"rock",
+				rock_pos,
 				Vector3(5.0 * shoulder, 9.0, slice_length + 2.0),
 				cliff_stone if (i + int(side)) % 2 == 0 else dark_stone,
-				basis)
+				basis
+			)
 			# A pair of distinct crystal veins creates readable depth.
 			if not world.low_detail or i % 2 == 0:
 				var face: Vector3 = (
 					world.position_at(d, side * (RAMP_HALF_WIDTH + 1.8))
 					- basis.y * (5.0 + float(i % 3) * 0.7)
 				)
-				world._prop("box", face,
+				world._prop(
+					"box",
+					face,
 					Vector3(0.16, 2.4, maxf(0.8, slice_length * 0.58)),
-					crystal if i % 3 != 0 else violet, basis, true)
+					crystal if i % 3 != 0 else violet,
+					basis,
+					true
+				)
 		if not world.low_detail:
 			# Repeating low-cost glimmers read as flowing water at speed.
 			for lane in [-2.0, 0.0, 2.0]:
-				var ripple: Vector3 = (
-					world.position_at(d, lane) - basis.y * 9.95
+				var ripple: Vector3 = world.position_at(d, lane) - basis.y * 9.95
+				world._prop(
+					"box",
+					ripple,
+					Vector3(0.18, 0.08, 0.95),
+					crystal if i % 2 == 0 else violet,
+					basis,
+					true
 				)
-				world._prop("box", ripple, Vector3(0.18, 0.08, 0.95),
-					crystal if i % 2 == 0 else violet, basis, true)
 	# Bright anchor crystals at each canyon mouth help a child read the
 	# near and far edges during approach, but never block driving.
 	for d in [start + 1.5, end - 1.5]:
 		var basis: Basis = world.frame(d)
 		for side in [-1.0, 1.0]:
-			var p: Vector3 = (
-				world.position_at(d, side * (RAMP_HALF_WIDTH + 4.0))
-				- basis.y * 2.4
-			)
+			var p: Vector3 = world.position_at(d, side * (RAMP_HALF_WIDTH + 4.0)) - basis.y * 2.4
 			world._prop("rock", p, Vector3(1.5, 3.3, 1.5), violet, basis, true)
+
+
+static func _balloons(world) -> void:
+	var start: float = loop_start(world)
+	for entry in BALLOONS:
+		var d: float = start + float(entry[0])
+		var size: float = float(entry[3])
+		var basis: Basis = world.frame(d)
+		var at: Vector3 = world.position_at(d, float(entry[1])) + Vector3.UP * float(entry[2])
+		var envelope := MeshInstance3D.new()
+		envelope.name = "StuntBalloon"
+		var sphere := SphereMesh.new()
+		sphere.radius = 4.0
+		sphere.height = 9.2
+		sphere.radial_segments = 24
+		sphere.rings = 12
+		envelope.mesh = sphere
+		var material := ShaderMaterial.new()
+		material.shader = BALLOON_SHADER
+		envelope.material_override = material
+		envelope.position = at
+		envelope.scale = Vector3.ONE * size
+		world.add_child(envelope)
+		# Emblem faces the road so drivers see Lumo on the balloon.
+		var to_road: Vector3 = world.position_at(d) - at
+		to_road.y = 0.0
+		var facing := Basis.looking_at(-to_road.normalized(), Vector3.UP)
+		var emblem := MeshInstance3D.new()
+		var quad := QuadMesh.new()
+		quad.size = Vector2(4.4, 4.4) * size
+		emblem.mesh = quad
+		var emblem_material := StandardMaterial3D.new()
+		emblem_material.albedo_texture = EMBLEM
+		emblem_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+		emblem_material.alpha_scissor_threshold = 0.5
+		emblem_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		emblem.material_override = emblem_material
+		emblem.basis = facing
+		emblem.position = at + to_road.normalized() * 4.05 * size + Vector3.UP * 0.6 * size
+		world.add_child(emblem)
+		var basket: Vector3 = at - Vector3.UP * 6.4 * size
+		world._prop("box", basket, Vector3(1.6, 1.1, 1.6) * size, Color("8a5a32"), basis)
+		for corner in [
+			Vector3(-0.7, 0, -0.7),
+			Vector3(0.7, 0, -0.7),
+			Vector3(-0.7, 0, 0.7),
+			Vector3(0.7, 0, 0.7)
+		]:
+			world._beam(
+				basket + corner * size + Vector3.UP * 0.5 * size,
+				at + corner * 2.2 * size - Vector3.UP * 3.4 * size,
+				0.06,
+				Color("4a3a2a")
+			)
