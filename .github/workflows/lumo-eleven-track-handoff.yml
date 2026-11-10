@@ -1,4 +1,4 @@
-name: Lumo verified eleven-track handoff integration
+name: Lumo verify integrated eleven-track themes
 
 on:
   push:
@@ -8,14 +8,10 @@ on:
       - .github/handoffs/lumo-other-tracks-code.ready
 
 permissions:
-  contents: write
-
-concurrency:
-  group: lumo-eleven-track-handoff-${{ github.ref }}
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  apply-test-push:
+  verify-current-integration:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -24,25 +20,34 @@ jobs:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
 
-      - name: Reconstruct verified 2026-11-06 handoff patch
+      - name: Prove all 16 production/test files equal the verified handoff
         shell: bash
         run: |
           set -euo pipefail
-          cp .github/handoffs/lumo-other-tracks-code.patch.gz.b64 "$RUNNER_TEMP/payload.b64"
-          base64 --decode "$RUNNER_TEMP/payload.b64" | gzip -dc > "$RUNNER_TEMP/handoff.patch"
-          echo "6acd54417023e67934f38d6d3239ac6b1fe791a8f190d01885aabbb11a95b0b5  $RUNNER_TEMP/handoff.patch" | sha256sum -c -
-          test -s "$RUNNER_TEMP/handoff.patch"
-
-      - name: Apply handoff without overwriting newer unrelated work
-        shell: bash
-        run: |
-          set -euo pipefail
-          git apply --check --3way "$RUNNER_TEMP/handoff.patch"
-          git apply --3way "$RUNNER_TEMP/handoff.patch"
-          git diff --check
-          git diff HEAD --name-only > "$RUNNER_TEMP/handoff-files.txt"
-          cat "$RUNNER_TEMP/handoff-files.txt"
-          test "$(wc -l < "$RUNNER_TEMP/handoff-files.txt")" -eq 33
+          check() {
+            file="$1"
+            expected="$2"
+            actual="$(git hash-object "$file")"
+            echo "$file $actual"
+            test "$actual" = "$expected"
+          }
+          check scripts/games/kart_expansion_world.gd 21119779a0ac66e20b4d6635c250d6d3488500d9
+          check scripts/games/kart_track_detail.gd 9ae8a4b9a9feac466a7f0a5c406752e5536a161a
+          check scripts/games/track_themes/nature_track_details.gd 7d906d0d5a54f480d233822554d6e5442c6b86a4
+          check scripts/games/track_themes/sky_fantasy_track_details.gd b8d55b6f96b62a6b5219aff78365846ce2f899bd
+          check scripts/games/track_themes/technology_track_details.gd 9d4172d114cc13be39c18bcfe39db051d8c5c8e4
+          check scripts/games/track_themes/track_ground_profile.gd 3e5a62149a16cdf3f19e2cefbf1ad3aba20461c7
+          check scripts/games/track_themes/track_theme_geometry.gd ebff0dfde279a84d094f8826d062b64b29b97a10
+          check scripts/games/track_themes/track_theme_registry.gd 4ce77e6f31461fbcc42b99e4da0b11e7fdc60ca8
+          check scripts/tests/helpers/kart_theme_ground_contact.gd 15f45aef9f74dbad2545472cc7f9deaf24008bea
+          check scripts/tests/kart_theme_ground_contact_contract.gd 6826c573d10c5b52fedce8372a67b682ffedca67
+          check scripts/tests/kart_track_theme_capture.gd e16f32e2e5e3fe52b54a2380eb4e2b26b4725752
+          check scripts/tests/kart_track_theme_contract.gd 6c23a87f4a4f29bddaa808515dbdf0b6d6d3cd86
+          check scripts/tests/kart_track_theme_world_regression.gd 5b7b0a250692db6e780ac9b6ccaa7aa9e338caff
+          check tools/test_track_theme_contract.py 01420e74bd5877c9c12a967cf76504c09d92e2c8
+          check tools/test_track_theme_world.py e539fd2097845e60e6c55d7bad357c8858c1562d
+          check tools/test_track_theme_world_runner.py 4771b4aa2fcf23fc002edfab5b2d3257d8d11ee9
+          echo "[ElevenTrackIdentity] PASS 16/16 exact files"
 
       - name: Install Godot 4.6.3
         shell: bash
@@ -63,23 +68,26 @@ jobs:
             exit 1
           fi
 
-      - name: Verify all eleven themed tracks and real world placement
+      - name: Synthetic theme contract
         shell: bash
         run: |
           set -euo pipefail
           python3 tools/test_track_theme_contract.py
-          python3 tools/test_track_theme_world_runner.py -v
-          python3 tools/test_track_theme_world.py             --track=all --quality=both --timeout-seconds=120             --out="$RUNNER_TEMP/theme-worlds"
-          python3 tools/validate_project.py
 
-      - name: Commit only verified handoff files
+      - name: Runner receipt hardening
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t files < "$RUNNER_TEMP/handoff-files.txt"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- "${files[@]}"
-          git diff --cached --check
-          git commit -m "feat(kart): integrate verified eleven-track theme handoff"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          python3 tools/test_track_theme_world_runner.py -v
+
+      - name: All eleven themes in LOW and HIGH real Godot worlds
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/test_track_theme_world.py             --track=all --quality=both --timeout-seconds=120             --out="$RUNNER_TEMP/theme-worlds"
+
+      - name: Full static project validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/validate_project.py
