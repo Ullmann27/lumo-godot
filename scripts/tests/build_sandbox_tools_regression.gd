@@ -27,10 +27,7 @@ func _run() -> void:
 	state.undo_stack.clear()
 	state.redo_stack.clear()
 	var copied: Dictionary = TOOLS.copy_region(
-		state,
-		Vector3i(-20, 0, 14),
-		Vector3i(-18, 0, 16),
-		Vector3i(6, 0, 0)
+		state, Vector3i(-20, 0, 14), Vector3i(-18, 0, 16), Vector3i(6, 0, 0)
 	)
 	assert(copied.ok and int(copied.count) == 9)
 	assert(state.pieces.size() == 18)
@@ -41,10 +38,7 @@ func _run() -> void:
 	var before: Array = state.pieces.duplicate(true)
 	var next_before: int = state.next_id
 	var failed: Dictionary = TOOLS.copy_region(
-		state,
-		Vector3i(-20, 0, 14),
-		Vector3i(-18, 0, 16),
-		Vector3i(21, 0, 0)
+		state, Vector3i(-20, 0, 14), Vector3i(-18, 0, 16), Vector3i(21, 0, 0)
 	)
 	assert(not failed.ok)
 	assert(state.pieces == before, "Failed batch must restore every piece")
@@ -56,11 +50,7 @@ func _run() -> void:
 	mirror_source.undo_stack.clear()
 	mirror_source.redo_stack.clear()
 	var mirrored: Dictionary = TOOLS.mirror_copy_region(
-		mirror_source,
-		Vector3i(-20, 0, 4),
-		Vector3i(-18, 2, 5),
-		"x",
-		Vector3i(7, 0, 0)
+		mirror_source, Vector3i(-20, 0, 4), Vector3i(-18, 2, 5), "x", Vector3i(7, 0, 0)
 	)
 	assert(mirrored.ok and int(mirrored.count) == 2)
 	assert(mirror_source.pieces.size() == 4)

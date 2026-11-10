@@ -16,28 +16,23 @@ static func fill_rect(
 		return _failure("Füllen arbeitet immer auf genau einer Ebene.")
 	if CATALOG.part(part_id).is_empty():
 		return _failure("Dieses Bauteil gibt es nicht.")
-	var low := Vector3i(
-		mini(corner_a.x, corner_b.x),
-		corner_a.y,
-		mini(corner_a.z, corner_b.z)
-	)
-	var high := Vector3i(
-		maxi(corner_a.x, corner_b.x),
-		corner_a.y,
-		maxi(corner_a.z, corner_b.z)
-	)
+	var low := Vector3i(mini(corner_a.x, corner_b.x), corner_a.y, mini(corner_a.z, corner_b.z))
+	var high := Vector3i(maxi(corner_a.x, corner_b.x), corner_a.y, maxi(corner_a.z, corner_b.z))
 	var size: Vector3i = CATALOG.size_of(part_id, turn)
 	var specs: Array[Dictionary] = []
 	var x := low.x
 	while x + size.x - 1 <= high.x:
 		var z := low.z
 		while z + size.z - 1 <= high.z:
-			specs.append(
-				{
-					"part": part_id,
-					"at": Vector3i(x, low.y, z),
-					"turn": posmod(turn, 4),
-				}
+			(
+				specs
+				. append(
+					{
+						"part": part_id,
+						"at": Vector3i(x, low.y, z),
+						"turn": posmod(turn, 4),
+					}
+				)
 			)
 			z += maxi(1, size.z)
 		x += maxi(1, size.x)
@@ -54,14 +49,15 @@ static func copy_region(
 	for piece in state.pieces:
 		if not _piece_inside(piece, bounds[0], bounds[1]):
 			continue
-		specs.append(
-			{
-				"part": str(piece.part),
-				"at":
-				Vector3i(int(piece.x), int(piece.y), int(piece.z))
-				+ offset,
-				"turn": int(piece.turn),
-			}
+		(
+			specs
+			. append(
+				{
+					"part": str(piece.part),
+					"at": Vector3i(int(piece.x), int(piece.y), int(piece.z)) + offset,
+					"turn": int(piece.turn),
+				}
+			)
 		)
 	if specs.is_empty():
 		return _failure("Im gewählten Bereich steht nichts zum Kopieren.")
@@ -69,11 +65,7 @@ static func copy_region(
 
 
 static func mirror_copy_region(
-	state: RefCounted,
-	corner_a: Vector3i,
-	corner_b: Vector3i,
-	axis: String,
-	offset: Vector3i
+	state: RefCounted, corner_a: Vector3i, corner_b: Vector3i, axis: String, offset: Vector3i
 ) -> Dictionary:
 	if axis not in ["x", "z"]:
 		return _failure("Spiegelachse muss x oder z sein.")
@@ -94,12 +86,15 @@ static func mirror_copy_region(
 		else:
 			at.z = low.z + high.z - (at.z + size.z - 1)
 			mirrored_turn = posmod(2 - turn, 4)
-		specs.append(
-			{
-				"part": str(piece.part),
-				"at": at + offset,
-				"turn": mirrored_turn,
-			}
+		(
+			specs
+			. append(
+				{
+					"part": str(piece.part),
+					"at": at + offset,
+					"turn": mirrored_turn,
+				}
+			)
 		)
 	if specs.is_empty():
 		return _failure("Im gewählten Bereich steht nichts zum Spiegeln.")
@@ -124,15 +119,19 @@ static func _apply_batch(state: RefCounted, specs: Array[Dictionary]) -> Diction
 			state.pieces.assign(before)
 			state.next_id = before_next
 			return _failure(problem)
-		state.pieces.append(
-			{
-				"uid": state.next_id,
-				"part": str(spec.part),
-				"x": at.x,
-				"y": at.y,
-				"z": at.z,
-				"turn": turn,
-			}
+		(
+			state
+			. pieces
+			. append(
+				{
+					"uid": state.next_id,
+					"part": str(spec.part),
+					"x": at.x,
+					"y": at.y,
+					"z": at.z,
+					"turn": turn,
+				}
+			)
 		)
 		state.next_id += 1
 
