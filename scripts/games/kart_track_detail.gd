@@ -5,6 +5,8 @@ const NAVY := Color("253243")
 const WHITE := Color("edf2ee")
 const CYAN := Color("6ddde2")
 const GOLD := Color("e9b363")
+const THEMES = preload("res://scripts/games/track_themes/track_theme_registry.gd")
+const GROUND_PROFILE = preload("res://scripts/games/track_themes/track_ground_profile.gd")
 
 
 static func build(world) -> void:
@@ -28,9 +30,13 @@ static func build(world) -> void:
 			at.y = world._ground_height(at.x, at.z)
 			if at.y < -1.8:
 				continue
+		elif GROUND_PROFILE.supports_grounded_details(world.track_id):
+			at.y = GROUND_PROFILE.surface_height(world.track_id)
 		var basis := Basis(Vector3.UP, world.frame(d).get_euler().y)
 		var accent: Color = _accent(world.track_id)
 		sites.append({"position": at, "radius": radius, "distance": d})
+		if THEMES.build(world, at, basis, large, i % 3 == 1):
+			continue
 		if large:
 			_service_deck(world, at, basis, accent)
 		elif i % 3 == 1:
@@ -39,6 +45,10 @@ static func build(world) -> void:
 			_garden(world, at, basis, accent)
 	world.set_meta("reference_detail_sites", sites)
 	world.set_meta("reference_detail_count", world.decoration_count - before)
+	if THEMES.supports(world.track_id):
+		world.set_meta("reference_detail_theme", world.track_id)
+	elif world.has_meta("reference_detail_theme"):
+		world.remove_meta("reference_detail_theme")
 
 
 static func _accent(track: String) -> Color:
