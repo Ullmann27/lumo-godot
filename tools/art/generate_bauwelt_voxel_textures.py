@@ -138,6 +138,37 @@ def main() -> None:
     furrow = 0.5 + 0.5 * np.sin((xx * 9 + value_noise(5, 3) * 1.5) * np.pi * 2)
     g = 0.62 + 0.16 * furrow + 0.08 * (fine - 0.5)
     save("bark", tint(g, (0.62, 0.45, 0.30)), furrow, 6.0)
+    # Magic cube: aqua glass plate with an original LUMO "L" mark on each face.
+    yy, xx = np.mgrid[0:N, 0:N] / N
+    edge = np.minimum(np.minimum(xx, 1 - xx), np.minimum(yy, 1 - yy))
+    frame = np.clip((edge - 0.07) / 0.05, 0, 1)
+    rad = np.sqrt((xx - 0.5) ** 2 + (yy - 0.48) ** 2 * 0.92)
+    letter = (
+        ((xx > 0.28) & (xx < 0.46) & (yy > 0.22) & (yy < 0.80))
+        | ((xx > 0.28) & (xx < 0.72) & (yy > 0.66) & (yy < 0.80))
+    ).astype(float)
+    # 5-tap box blur without scipy, keeps the letter readable.
+    k = 5
+    pad = k // 2
+    kernel = np.ones(k) / k
+    padded = np.pad(letter, pad, mode="edge")
+    letter = np.apply_along_axis(lambda r: np.convolve(r, kernel, mode="valid"), 1, padded)
+    letter = np.apply_along_axis(lambda r: np.convolve(r, kernel, mode="valid"), 0, letter)
+    letter = np.clip(letter, 0, 1)
+    base = np.dstack(
+        [
+            0.22 + 0.10 * fine + 0.18 * frame,
+            0.48 + 0.10 * fine + 0.20 * frame,
+            0.78 + 0.08 * fine + 0.18 * frame,
+        ]
+    )
+    glow = np.clip(1.0 - rad * 1.6, 0, 1) * 0.25
+    base = base + np.dstack([glow * 0.4, glow * 0.8, glow * 1.0])
+    base = base * (1 - letter[..., None] * 0.85) + np.array([0.72, 0.95, 1.0]) * letter[..., None]
+    bezel = 1 - np.clip((edge - 0.03) / 0.04, 0, 1)
+    base = base * (1 - 0.35 * bezel[..., None]) + np.array([0.15, 0.28, 0.42]) * bezel[..., None]
+    save("magic", np.clip(base, 0, 1), frame * 0.35 + letter * 0.85 + fine * 0.08, 8.0)
+
     print("[BauweltTextures] wrote", sorted(p.name for p in OUT.glob("*.png")))
 
 

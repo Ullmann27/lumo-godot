@@ -135,11 +135,7 @@ func part_node(item: Dictionary) -> StaticBody3D:
 		return body
 	match str(item.shape):
 		"door":
-			box(body, mid, size * 0.98, color)
-			box(body, Vector3(0.5, 0.9, 0.995), Vector3(0.64, 1.72, 0.05), Color("655276"))
-			box(body, Vector3(0.5, 1.42, 1.035), Vector3(0.32, 0.36, 0.03), Color("ffd896"), true)
-			sphere(body, Vector3(0.73, 0.8, 1.05), Vector3.ONE * 0.10, Color("eac785"))
-			collision(body, mid, size * 0.98)
+			BuildLandmarks.add_improved_door(self, body, item)
 		"arch":
 			for x in [0.4, 2.6]:
 				box(body, Vector3(x, 1.1, 0.5), Vector3(0.8, 2.2, 0.92), color)
@@ -166,9 +162,7 @@ func part_node(item: Dictionary) -> StaticBody3D:
 				box(body, at, Vector3(0.96, height, 0.96), color)
 				collision(body, at, Vector3(0.96, height, 0.96))
 		"tree":
-			cylinder(body, Vector3(1, 1.1, 1), 0.20, 2.2, Color("886647"))
-			for at in [Vector3(1, 2.7, 1), Vector3(0.5, 2.4, 0.8), Vector3(1.5, 2.9, 1.2)]:
-				sphere(body, at, Vector3(1.2, 1.3, 1.2), color)
+			BuildLandmarks.add_branched_tree(body)
 			collision(body, Vector3(1, 1, 1), Vector3(0.4, 2, 0.4))
 		"lantern":
 			var lamp: Node3D = LANTERN_MODEL.instantiate()
@@ -201,19 +195,10 @@ func part_node(item: Dictionary) -> StaticBody3D:
 				box(body, Vector3(x, 0.2, 0.5), Vector3(0.15, 0.4, 0.7), Color("4a5d76"))
 			collision(body, mid, size * 0.95)
 		"bridge":
-			box(body, Vector3(1.5, 0.55, 0.5), Vector3(2.98, 0.3, 0.98), color)
-			for z in [0.07, 0.93]:
-				box(body, Vector3(1.5, 0.86, z), Vector3(2.98, 0.18, 0.12), color.darkened(0.15))
-			for x in [0.22, 2.78]:
-				for z in [0.08, 0.92]:
-					box(body, Vector3(x, 1.05, z), Vector3(0.14, 0.72, 0.14), Color("ead6a4"))
-					box(body, Vector3(x, 1.46, z), Vector3(0.22, 0.10, 0.22), Color("dfc56a"), true)
+			BuildLandmarks.add_arch_bridge(body, item)
 			collision(body, Vector3(1.5, 0.55, 0.5), Vector3(2.98, 0.3, 0.98))
 		"waterfall":
-			var water: MeshInstance3D = box(body, mid, Vector3(0.85, 2.95, 0.3), color)
-			var mat := ShaderMaterial.new()
-			mat.shader = preload("res://assets/shaders/kart_waterfall.gdshader")
-			water.material_override = mat
+			BuildLandmarks.add_waterfall(body, item)
 		"grass":
 			box(body, Vector3(0.5, 0.4, 0.5), Vector3(0.98, 0.8, 0.98), Color("8c7359"))
 			box(body, Vector3(0.5, 0.9, 0.5), Vector3(0.99, 0.2, 0.99), color)
@@ -223,7 +208,8 @@ func part_node(item: Dictionary) -> StaticBody3D:
 			shape.size = size * 0.98
 			mesh(body, shape, mid, color, glow, item.shape == "glass")
 			collision(body, mid, size * 0.98)
-	BuildVoxelStyle.style_unique_part(body, item)
+	if str(item.shape) not in ["tree", "door", "bridge", "waterfall"]:
+		BuildVoxelStyle.style_unique_part(body, item)
 	if item.shape == "wall":
 		var pane: MeshInstance3D = box(
 			body, Vector3(0.5, 1.18, 1.02), Vector3(0.40, 0.55, 0.03), Color("c8f4ff"), true
