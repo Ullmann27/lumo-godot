@@ -116,6 +116,10 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: |
           set -euo pipefail
+          mapfile -t gd_files < <(find scripts -name '*.gd' -type f -print | sort)
+          gdlint "${gd_files[@]}" 2>&1 | tee "$RUNNER_TEMP/gdlint-all.log"
+          gdformat --check "${gd_files[@]}" 2>&1 | tee "$RUNNER_TEMP/gdformat-all.log"
+          python3 tools/validate_project.py 2>&1 | tee "$RUNNER_TEMP/validate-project-py.log"
           timeout 1200s bash tools/validate_project.sh 2>&1 | tee "$RUNNER_TEMP/validate-project.log"
           grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/validate-project.log"
 
@@ -148,6 +152,9 @@ jobs:
             ${{ runner.temp }}/creative-high/
             ${{ runner.temp }}/draw-call-report.json
             ${{ runner.temp }}/validate-project.log
+            ${{ runner.temp }}/validate-project-py.log
+            ${{ runner.temp }}/gdlint-all.log
+            ${{ runner.temp }}/gdformat-all.log
             ${{ runner.temp }}/*.log
           if-no-files-found: warn
           retention-days: 30
