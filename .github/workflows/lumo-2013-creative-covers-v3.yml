@@ -4,8 +4,12 @@ on:
   push:
     branches:
       - lumo-next/game-identity-2013-20261110
+      - lumo-2013/guard-ci-20261110
     paths:
       - .github/workflows/lumo-2013-creative-covers-v3.yml
+      - scripts/app/app_boot.gd
+      - assets/creative/covers/**
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -39,7 +43,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          timeout 240s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --editor --import --quit > "$RUNNER_TEMP/import-before.log" 2>&1
+          timeout 480s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --editor --import --quit > "$RUNNER_TEMP/import-before.log" 2>&1
           cat "$RUNNER_TEMP/import-before.log"
           ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import-before.log"
 
@@ -89,6 +93,8 @@ jobs:
               '"treasure": "res://assets/creative/covers/treasure.png",',
           }
           for old, new in replacements.items():
+            if new in s:
+              continue
             if old not in s:
               raise SystemExit(f"expected old cover mapping missing: {old}")
             s = s.replace(old, new)
@@ -109,13 +115,16 @@ jobs:
           assert '"rhythm": "res://assets/creative/puzzle/' not in s
           assert '"treasure": "res://assets/creative/puzzle/' not in s
           PY
-          rm -rf .godot
-          timeout 240s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --editor --import --quit > "$RUNNER_TEMP/import-after.log" 2>&1
+          # Do not wipe .godot: a full reimport from scratch exceeded 240s
+          # (v1/v2 exit 124) or segfaulted Godot 4.6.3 headless (v3 exit 139,
+          # "timeout: the monitored command dumped core").
+          timeout 480s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --editor --import --quit > "$RUNNER_TEMP/import-after.log" 2>&1
           cat "$RUNNER_TEMP/import-after.log"
           ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import-after.log"
           python3 tools/validate_project.py
 
       - name: Commit the verified covers and mapping
+        if: github.event_name == 'push'
         shell: bash
         run: |
           set -euo pipefail
@@ -123,6 +132,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add assets/creative/covers scripts/app/app_boot.gd
           git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "covers and mapping already present"
+            exit 0
+          fi
           git commit -m "fix(spiele): use real scene-specific creative covers"
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
