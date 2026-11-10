@@ -35,11 +35,12 @@ jobs:
           chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
           echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
 
-      - name: GDScript format and lint gate
+      - name: Format and lint the repaired GDScript
         run: |
           set -euo pipefail
-          gdformat --check             scripts/creative/treasure_island_art.gd             scripts/creative/rhythm_stage_art.gd             scripts/creative/rhythm_world.gd
-          gdlint             scripts/creative/treasure_island_art.gd             scripts/creative/rhythm_stage_art.gd             scripts/creative/rhythm_world.gd
+          gdformat scripts/creative/treasure_island_art.gd scripts/creative/rhythm_stage_art.gd scripts/creative/rhythm_world.gd
+          gdformat --check scripts/creative/treasure_island_art.gd scripts/creative/rhythm_stage_art.gd scripts/creative/rhythm_world.gd
+          gdlint scripts/creative/treasure_island_art.gd scripts/creative/rhythm_stage_art.gd scripts/creative/rhythm_world.gd
           git diff --check
 
       - name: Import project
