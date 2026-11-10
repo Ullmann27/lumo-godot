@@ -85,6 +85,15 @@ func _ready() -> void:
 		model.place("tree", Vector3i(-11, 0, 3))
 		model.place("lantern", Vector3i(-4, 0, -4))
 		model.place("flowers", Vector3i(-7, 0, 1))
+		# Visible 2013 landmarks on the free right bank and river (off the castle).
+		model.place("cottage", Vector3i(7, 0, 5))
+		model.place("observatory", Vector3i(9, 0, -2))
+		model.place("tree", Vector3i(11, 0, 4))
+		model.place("tree", Vector3i(5, 0, 8))
+		model.place("bridge", Vector3i(-1, 0, 6))
+		model.place("bridge", Vector3i(2, 0, 6))
+		model.place("magic", Vector3i(5, 0, 5))
+		model.place("lantern", Vector3i(6, 0, 4))
 	_rebuild()
 	_camera_update()
 	get_viewport().size_changed.connect(_resize)
@@ -105,7 +114,7 @@ func _ground() -> void:
 		var lawn := kit.box(
 			bank, center + Vector3.UP * 1.15, Vector3(size.x, 0.16, 33), Color.WHITE
 		)
-		lawn.material_override = BuildVoxelStyle.material("grass_top", Color.WHITE)
+		lawn.material_override = BuildVoxelStyle.lawn_material()
 		kit.collision(bank, center, size)
 	var water := kit.box(self, Vector3(2, -0.38, 0), Vector3(4, 0.14, 33), Color("1b81bd"))
 	var mat := ShaderMaterial.new()
@@ -157,9 +166,9 @@ func _ground() -> void:
 		)
 		rock.material_override = BuildVoxelStyle.material("stone", Color("cbbca6"))
 		var cap := kit.cylinder(self, island_at + Vector3.UP * 4.5, 5.1, 0.35, Color.WHITE)
-		cap.material_override = BuildVoxelStyle.material("grass_top", Color.WHITE)
+		cap.material_override = BuildVoxelStyle.lawn_material()
 		if i in [1, 3, 5]:
-			kit.castle(self, island_at + Vector3.UP * 4.75, 0.7 if i != 3 else 1.0)
+			BuildLandmarks.far_castle_meshes(self, island_at + Vector3.UP * 4.75, 0.7 if i != 3 else 1.0)
 		else:
 			var tree := kit.part_node(CATALOG.part("tree"))
 			tree.position = island_at + Vector3(-1, 4.75, -1)
@@ -169,6 +178,7 @@ func _ground() -> void:
 			fall.position = island_at + Vector3(3.6, -4, 0)
 			fall.scale.y = 3
 			add_child(fall)
+	BuildLandmarks.add_canyon(self, kit)
 
 
 func _resize() -> void:
@@ -199,14 +209,14 @@ func _ui() -> void:
 	margin.add_child(hud)
 	var top := HBoxContainer.new()
 	hud.add_child(top)
-	top.add_child(KIT.button("‹ Spiele", _leave))
-	top.add_child(KIT.label("LUMO BAUWELT", 25))
+	top.add_child(_day_button("‹ Spiele", _leave))
+	top.add_child(_day_label("LUMO BAUWELT", 25))
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(spacer)
-	count_label = KIT.label("", 15)
+	count_label = _day_label("", 15)
 	top.add_child(count_label)
-	top.add_child(KIT.button("Ⅱ", func(): _pause(true), 52))
+	top.add_child(_day_button("Ⅱ", func(): _pause(true), 52))
 	var tools := HBoxContainer.new()
 	hud.add_child(tools)
 	var scroll := ScrollContainer.new()
@@ -227,14 +237,14 @@ func _ui() -> void:
 		["Vorlagen", _templates],
 		["Bauziele", _goals]
 	]:
-		actions.add_child(KIT.button(spec[0], spec[1]))
-	var layer_down: Button = KIT.button(
+		actions.add_child(_day_button(spec[0], spec[1]))
+	var layer_down: Button = _day_button(
 		"Ebene −",
 		func():
 			layer = maxi(0, layer - 1)
 			_update_labels()
 	)
-	var layer_up: Button = KIT.button(
+	var layer_up: Button = _day_button(
 		"Ebene +",
 		func():
 			layer = mini(17, layer + 1)
@@ -243,32 +253,32 @@ func _ui() -> void:
 	actions.add_child(layer_down)
 	actions.add_child(layer_up)
 	var goal_panel := PanelContainer.new()
-	goal_panel.add_theme_stylebox_override("panel", KIT.panel())
+	goal_panel.add_theme_stylebox_override("panel", _day_panel())
 	goal_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
 	goal_panel.position = Vector2(14, 126)
 	goal_panel.custom_minimum_size = Vector2(282, 0)
 	root.add_child(goal_panel)
 	var goal_box := VBoxContainer.new()
 	goal_panel.add_child(goal_box)
-	goal_label = KIT.label("", 17)
+	goal_label = _day_label("", 17)
 	goal_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	goal_label.custom_minimum_size.x = 260
 	goal_box.add_child(goal_label)
-	goal_box.add_child(KIT.button("Mein Bauwerk testen", _test_challenge))
+	goal_box.add_child(_day_button("Mein Bauwerk testen", _test_challenge))
 	var lower := VBoxContainer.new()
 	lower.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	lower.offset_top = -162
 	lower.offset_left = 12
 	lower.offset_right = -12
 	root.add_child(lower)
-	status = KIT.label("Tippe zum Bauen. Ziehe zum Drehen der Kamera. Zwei Finger: zoomen.", 14)
+	status = _day_label("Tippe zum Bauen. Ziehe zum Drehen der Kamera. Zwei Finger: zoomen.", 14)
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lower.add_child(status)
 	var categories := HBoxContainer.new()
 	lower.add_child(categories)
 	for name in ["Bauen", "Dächer", "Wege", "Natur", "Deko"]:
 		categories.add_child(
-			KIT.button(
+			_day_button(
 				name,
 				func():
 					category = name
@@ -288,7 +298,7 @@ func _ui() -> void:
 	camera_tools.position = Vector2(-200, -228)
 	root.add_child(camera_tools)
 	camera_tools.add_child(
-		KIT.button(
+		_day_button(
 			"−",
 			func():
 				radius = clampf(radius + 3, 10, 55)
@@ -297,7 +307,7 @@ func _ui() -> void:
 		)
 	)
 	camera_tools.add_child(
-		KIT.button(
+		_day_button(
 			"+",
 			func():
 				radius = clampf(radius - 3, 10, 55)
@@ -306,7 +316,7 @@ func _ui() -> void:
 		)
 	)
 	camera_tools.add_child(
-		KIT.button(
+		_day_button(
 			"Mitte",
 			func():
 				focus = Vector3(-2, 0, 0)
@@ -317,7 +327,7 @@ func _ui() -> void:
 		)
 	)
 	pause_panel = PanelContainer.new()
-	pause_panel.add_theme_stylebox_override("panel", KIT.panel())
+	pause_panel.add_theme_stylebox_override("panel", _day_panel())
 	pause_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	pause_panel.position = Vector2(-160, -140)
 	pause_panel.custom_minimum_size = Vector2(320, 280)
@@ -325,10 +335,10 @@ func _ui() -> void:
 	root.add_child(pause_panel)
 	var pause_box := VBoxContainer.new()
 	pause_panel.add_child(pause_box)
-	pause_box.add_child(KIT.label("Deine Welt wartet auf dich", 22))
-	pause_box.add_child(KIT.button("Weiterbauen", func(): _pause(false)))
-	pause_box.add_child(KIT.button("Speichern", save_world))
-	pause_box.add_child(KIT.button("Zur Spielewelt", _leave))
+	pause_box.add_child(_day_label("Deine Welt wartet auf dich", 22))
+	pause_box.add_child(_day_button("Weiterbauen", func(): _pause(false)))
+	pause_box.add_child(_day_button("Speichern", save_world))
+	pause_box.add_child(_day_button("Zur Spielewelt", _leave))
 
 
 func _palette() -> void:
@@ -338,7 +348,7 @@ func _palette() -> void:
 	for item in CATALOG.PARTS:
 		if item.category != category:
 			continue
-		var button: Button = KIT.button(
+		var button: Button = _day_button(
 			str(item.name),
 			func():
 				chosen = item.id
@@ -346,7 +356,7 @@ func _palette() -> void:
 				_update_labels(),
 			96
 		)
-		button.add_theme_color_override("font_color", item.color.lightened(0.25))
+		button.add_theme_color_override("font_color", item.color.darkened(0.35))
 		button.tooltip_text = "%s · %d×%d×%d" % [item.name, item.size.x, item.size.y, item.size.z]
 		palette.add_child(button)
 
@@ -412,6 +422,7 @@ func _typed_xforms(raw: Array) -> Array[Transform3D]:
 func _sync_batched_visuals(batches: Dictionary) -> void:
 	var wall_xforms: Array = []
 	var pane_xforms: Array = []
+	var planter_xforms: Array = []
 	var grass_body_xforms: Array = []
 	var grass_cap_xforms: Array = []
 	for ident in BuildVoxelStyle.BATCHABLE:
@@ -421,6 +432,7 @@ func _sync_batched_visuals(batches: Dictionary) -> void:
 				var px: Transform3D = BuildVoxelStyle.piece_transform(entry.piece, entry.item)
 				wall_xforms.append(px)
 				pane_xforms.append(Transform3D(px.basis, px.origin + px.basis * Vector3(0.5, 1.18, 1.02)))
+				planter_xforms.append(Transform3D(px.basis, px.origin + px.basis * Vector3(0.5, 0.82, 1.16)))
 			continue
 		if ident == "grass":
 			for entry in entries:
@@ -456,6 +468,13 @@ func _sync_batched_visuals(batches: Dictionary) -> void:
 		BuildVoxelStyle.window_pane(),
 		BuildVoxelStyle.material("glass", Color("9ae8ff")),
 		_typed_xforms(pane_xforms)
+	)
+	BuildVoxelStyle.multimesh(
+		world,
+		"Batch_wall_planters",
+		BuildLandmarks.planter_mesh(),
+		BuildVoxelStyle.material("leaves", Color("7ec85a")),
+		_typed_xforms(planter_xforms)
 	)
 	BuildVoxelStyle.multimesh(
 		world,
@@ -781,14 +800,14 @@ func _choice_dialog(title: String, items: Array, action: Callable) -> void:
 	add_child(dialog)
 	var panel := PanelContainer.new()
 	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	panel.add_theme_stylebox_override("panel", KIT.panel())
+	panel.add_theme_stylebox_override("panel", _day_panel())
 	dialog.add_child(panel)
 	var box := VBoxContainer.new()
 	panel.add_child(box)
-	box.add_child(KIT.label(title, 23))
+	box.add_child(_day_label(title, 23))
 	for item in items:
-		box.add_child(KIT.button(item[1], _choose.bind(action, item[0], dialog)))
-	box.add_child(KIT.button("Abbrechen", dialog.queue_free))
+		box.add_child(_day_button(item[1], _choose.bind(action, item[0], dialog)))
+	box.add_child(_day_button("Abbrechen", dialog.queue_free))
 	dialog.close_requested.connect(dialog.queue_free)
 	dialog.popup_centered()
 
@@ -909,3 +928,42 @@ func _test_challenge() -> void:
 func _leave() -> void:
 	if save_world(false):
 		SceneRouter.goto("games")
+
+func _day_panel() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.96, 0.93, 0.84, 0.92)
+	style.border_color = Color("2f8a96")
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(14)
+	style.set_content_margin_all(12)
+	style.shadow_color = Color(0.12, 0.18, 0.16, 0.18)
+	style.shadow_size = 4
+	style.shadow_offset = Vector2(0, 1)
+	return style
+
+
+func _day_button(text: String, callback: Callable, min_width: float = 82) -> Button:
+	var control := Button.new()
+	control.text = text
+	control.custom_minimum_size = Vector2(min_width, 48)
+	control.add_theme_stylebox_override("normal", _day_panel())
+	var hover: StyleBoxFlat = _day_panel()
+	hover.bg_color = Color("d7efe8")
+	control.add_theme_stylebox_override("hover", hover)
+	control.add_theme_stylebox_override("pressed", hover)
+	control.add_theme_font_size_override("font_size", 16)
+	control.add_theme_color_override("font_color", Color("243038"))
+	control.add_theme_color_override("font_hover_color", Color("1a3c42"))
+	control.pressed.connect(callback)
+	return control
+
+
+func _day_label(text: String, size: int = 18) -> Label:
+	var control := Label.new()
+	control.text = text
+	control.add_theme_font_size_override("font_size", size)
+	control.add_theme_color_override("font_color", Color("243038"))
+	control.add_theme_color_override("font_shadow_color", Color(1, 1, 1, 0.35))
+	control.add_theme_constant_override("shadow_offset_x", 0)
+	control.add_theme_constant_override("shadow_offset_y", 1)
+	return control

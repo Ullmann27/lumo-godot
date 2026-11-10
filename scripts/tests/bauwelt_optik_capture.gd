@@ -76,6 +76,31 @@ func _run() -> void:
 		for frame in range(8):
 			await process_frame
 		entry["place"] = await _save(dir, "bauwelt_%s_place" % tier_name)
+		# Extra 2013 landmark frames (in addition to the required three views).
+		build.orbit = 0.85
+		build.tilt = 0.38
+		build.radius = 11.0
+		build.focus = Vector3(8.2, 1.4, 6.0)
+		build._camera_update()
+		for frame in range(6):
+			await process_frame
+		entry["workshop"] = await _save(dir, "bauwelt_%s_workshop" % tier_name)
+		build.orbit = 0.55
+		build.tilt = 0.40
+		build.radius = 12.0
+		build.focus = Vector3(10.0, 2.0, -0.5)
+		build._camera_update()
+		for frame in range(6):
+			await process_frame
+		entry["observatory"] = await _save(dir, "bauwelt_%s_observatory" % tier_name)
+		build.orbit = 0.15
+		build.tilt = 0.28
+		build.radius = 14.0
+		build.focus = Vector3(2.0, -1.0, 14.0)
+		build._camera_update()
+		for frame in range(6):
+			await process_frame
+		entry["canyon"] = await _save(dir, "bauwelt_%s_canyon" % tier_name)
 		entry["pieces"] = build.model.pieces.size()
 		build.queue_free()
 		await process_frame

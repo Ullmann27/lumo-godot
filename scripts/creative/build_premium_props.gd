@@ -1293,6 +1293,12 @@ const RECIPES: Dictionary = {
 
 static func build(kit, body: StaticBody3D, item: Dictionary) -> void:
 	var id: String = str(item.shape)
+	if id == "cottage":
+		BuildLandmarks.build_workshop(kit, body, item)
+		return
+	if id == "observatory":
+		BuildLandmarks.build_observatory(kit, body, item)
+		return
 	if not RECIPES.has(id):
 		push_error("Unknown premium Bauwelt asset: " + id)
 		return
