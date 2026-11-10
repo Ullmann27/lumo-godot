@@ -16,6 +16,7 @@ const ARENA = preload("res://scripts/games/kart_arena.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const PHYSICAL_LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const RIVAL_STUNTS = preload("res://scripts/games/kart_rival_stunts.gd")
+const RIVAL_FLIGHT = preload("res://scripts/games/kart_rival_flight.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const DARKRIDE_EVENT = preload("res://scripts/games/kart_darkride_event_director.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
@@ -2115,6 +2116,8 @@ func _drive_opponents(delta: float) -> void:
 		var rival: LumoRaceKart = opponents[i]
 		if RIVAL_STUNTS.update_loop(self, i, delta):
 			continue
+		if RIVAL_FLIGHT.update(self, i, delta):
+			continue
 		var sampled: Dictionary = world.sample_road(rival.position, fposmod(opponent_distances[i], track_length))
 		var target_lane: float = -2.8 + float(i) * 1.35
 		target_lane += sin(elapsed * float(profile.wobble_hz) + float(i)) * float(profile.wobble)
@@ -2155,6 +2158,8 @@ func _drive_opponents(delta: float) -> void:
 		var travel: float = fposmod(float(next.distance) - float(sampled.distance) + track_length * 0.5, track_length) - track_length * 0.5
 		opponent_distances[i] += travel
 		opponent_lanes[i] = float(next.lateral)
+		if RIVAL_FLIGHT.try_launch(self, i, sampled, next, target_speed):
+			continue
 		var rival_lateral: float = float(next.lateral)
 		if absf(rival_lateral) > WORLD.WALL_LATERAL and absf(rival_lateral) <= ROAD_WIDTH * 0.5 + 1:
 			# Rivals respect the same rail wall as the player.
@@ -2165,7 +2170,7 @@ func _drive_opponents(delta: float) -> void:
 		rival.position.y = (
 			float(next.height)
 			+ 0.035
-			+ world.rival_arc(float(next.distance))
+			+ world.ramp_height(float(next.distance))
 			+ world.alternate_route_height(float(next.distance), rival_lateral)
 		)
 		if absf(float(next.lateral)) > ROAD_WIDTH * 0.5 + 1:
@@ -2181,7 +2186,7 @@ func _drive_opponents(delta: float) -> void:
 			rival.position.y = (
 				float(recovered.height)
 				+ 0.035
-				+ world.rival_arc(float(recovered.distance))
+				+ world.ramp_height(float(recovered.distance))
 				+ world.alternate_route_height(float(recovered.distance), float(recovered.lateral))
 			)
 			var rec_forward := Vector3(-sin(opponent_headings[i]), 0, -cos(opponent_headings[i]))
@@ -2193,9 +2198,9 @@ func _drive_opponents(delta: float) -> void:
 			var normal: Vector3 = (next.basis as Basis).y
 			var right: Vector3 = forward.cross(normal).normalized()
 			var rival_basis: Basis = Basis(right, normal, -normal.cross(right)).orthonormalized()
-			var route_pitch: float = world.alternate_route_pitch(
-				float(next.distance), rival_lateral
-			)
+			var route_pitch: float = world.ramp_pitch(float(next.distance))
+			if absf(route_pitch) < 0.001:
+				route_pitch = world.alternate_route_pitch(float(next.distance), rival_lateral)
 			if absf(route_pitch) > 0.001:
 				rival_basis = rival_basis.rotated(right, route_pitch).orthonormalized()
 			rival.basis = rival_basis
@@ -3582,6 +3587,7 @@ func _save_session() -> void:
 	else:
 		config.set_value("race", "player_position", player.position)
 	RIVAL_STUNTS.save_positions(self, config)
+	RIVAL_FLIGHT.save_positions(self, config)
 	var tmp_path: String = SESSION + ".tmp"
 	if config.save(tmp_path) != OK:
 		push_warning("Race checkpoint tmp write failed")
@@ -3607,6 +3613,7 @@ func _restore_session() -> bool:
 	var saved_distance: float = float(config.get_value("race", "distance", -1))
 	if saved_distance < 0 or not is_finite(saved_distance):
 		return false
+	RIVAL_FLIGHT.clear(self)
 	_session_handed_off = false
 	var keys: Array[String] = [
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed", "boost_time", "boosts",
