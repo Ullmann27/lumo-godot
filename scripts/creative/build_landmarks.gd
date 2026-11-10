@@ -437,7 +437,7 @@ static func _in_water(x: float, z: float = 0.0) -> bool:
 	if x <= -0.05 or x >= 4.05:
 		return false
 	# Buildable river islands stay dry.
-	if (z >= -14.05 and z <= -10.95) or (z >= 17.95 and z <= 21.05):
+	if (z >= -14.05 and z <= -9.95) or (z >= 17.95 and z <= 22.05):
 		return false
 	return true
 
@@ -547,7 +547,7 @@ static func add_sculpted_lawn(root: Node3D) -> void:
 				x = x2
 			z = z2
 	# Lawn caps on the two buildable river islands.
-	var island_spans: Array[Vector2] = [Vector2(-14.05, -10.95), Vector2(17.95, 21.05)]
+	var island_spans: Array[Vector2] = [Vector2(-14.05, -9.95), Vector2(17.95, 22.05)]
 	for span in island_spans:
 		var z: float = span.x
 		while z < span.y - 0.001:
