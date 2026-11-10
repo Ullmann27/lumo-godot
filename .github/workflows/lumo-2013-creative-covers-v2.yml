@@ -1,0 +1,137 @@
+name: LUMO 2013 creative game identity covers v2
+
+on:
+  push:
+    branches:
+      - lumo-next/game-identity-2013-20261110
+    paths:
+      - .github/workflows/lumo-2013-creative-covers-v2.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lumo-2013-creative-covers
+  cancel-in-progress: false
+
+jobs:
+  render-and-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Install Godot 4.6.3 and software OpenGL
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip"             https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Import exact project source
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --editor --import --quit > "$RUNNER_TEMP/import-before.log" 2>&1
+          cat "$RUNNER_TEMP/import-before.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import-before.log"
+
+      - name: Render current Bauwelt, Puzzle, Rhythm and Treasure scenes
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          XDG_DATA_HOME: ${{ runner.temp }}/lumo-2013-user
+        run: |
+          set -euo pipefail
+          rm -rf exports/creative-build
+          mkdir -p exports/creative-build
+          for spec in             "creative_build_capture.gd|[CreativeBuild] PASS: actual world"             "creative_puzzle_capture.gd|[Puzzle] PASS actual picking"             "creative_adventure_capture.gd|[CreativeAdventure] PASS actual 3D notes"; do
+            IFS='|' read -r script marker <<< "$spec"
+            log="$RUNNER_TEMP/${script%.gd}.log"
+            timeout 300s xvfb-run -a -s '-screen 0 1600x900x24'               Godot_v4.6.3-stable_linux.x86_64               --path . --rendering-method gl_compatibility --audio-driver Dummy               --script "res://scripts/tests/$script" > "$log" 2>&1
+            cat "$log"
+            grep -F "$marker" "$log"
+            ! grep -E 'SCRIPT ERROR:|Parse Error:' "$log"
+          done
+          test -s exports/creative-build/01_bauwelt_house.png
+          test -s exports/creative-build/10_puzzle_12_parts.png
+          test -s exports/creative-build/06_rhythm_play.png
+          test -s exports/creative-build/07_treasure_exploration.png
+
+      - name: Install only source-bound game-specific covers
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/creative/covers
+          cp exports/creative-build/01_bauwelt_house.png assets/creative/covers/build.png
+          cp exports/creative-build/10_puzzle_12_parts.png assets/creative/covers/puzzle.png
+          cp exports/creative-build/06_rhythm_play.png assets/creative/covers/rhythm.png
+          cp exports/creative-build/07_treasure_exploration.png assets/creative/covers/treasure.png
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("scripts/app/app_boot.gd")
+          s = path.read_text(encoding="utf-8")
+          replacements = {
+            '"build": "res://assets/creative/sandstone.webp",':
+              '"build": "res://assets/creative/covers/build.png",',
+            '"puzzle": "res://assets/creative/puzzle/candy.webp",':
+              '"puzzle": "res://assets/creative/covers/puzzle.png",',
+            '"rhythm": "res://assets/creative/puzzle/volcano.webp",':
+              '"rhythm": "res://assets/creative/covers/rhythm.png",',
+            '"treasure": "res://assets/creative/puzzle/moonlight.webp",':
+              '"treasure": "res://assets/creative/covers/treasure.png",',
+          }
+          for old, new in replacements.items():
+            if old not in s:
+              raise SystemExit(f"expected old cover mapping missing: {old}")
+            s = s.replace(old, new)
+          path.write_text(s, encoding="utf-8")
+          PY
+          git diff --check
+
+      - name: Re-import and verify no creative game reuses a puzzle motif
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path("scripts/app/app_boot.gd").read_text()
+          for scene in ("build", "puzzle", "rhythm", "treasure"):
+            expected = f'"{scene}": "res://assets/creative/covers/{scene}.png"'
+            assert expected in s, expected
+          assert '"rhythm": "res://assets/creative/puzzle/' not in s
+          assert '"treasure": "res://assets/creative/puzzle/' not in s
+          PY
+          rm -rf .godot
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --editor --import --quit > "$RUNNER_TEMP/import-after.log" 2>&1
+          cat "$RUNNER_TEMP/import-after.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import-after.log"
+          python3 tools/validate_project.py
+
+      - name: Commit the verified covers and mapping
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/creative/covers scripts/app/app_boot.gd
+          git diff --cached --check
+          git commit -m "fix(spiele): use real scene-specific creative covers"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-2013-creative-cover-proof-${{ github.run_id }}
+          path: |
+            exports/creative-build/*.png
+            ${{ runner.temp }}/*.log
+          if-no-files-found: warn
+          retention-days: 30
