@@ -43,4 +43,11 @@ run_probe kart_stunt_continuity_regression '[StuntContinuity] PASS' rendered
 run_probe kart_rival_flight_regression '[RivalFlight] PASS' rendered
 run_probe kart_harbor_attraction_regression '[HarborAttraction] PASS' rendered
 run_probe kart_harbor_race_hook_regression '[HarborRaceHook] PASS' rendered
-echo "[Lumo2014] PASS: continuous contact, fair racecraft, earned items and living harbor; logs $LOG_DIR"
+run_probe kart_zauberwald_library_regression '[ZauberwaldLibrary] PASS' rendered
+run_probe jump_extras_regression '[JumpExtras] PASS' headless
+run_probe build_sandbox_tools_regression '[BauweltSandboxTools] PASS' headless
+run_probe build_sandbox_ui_regression '[BauweltSandboxUI] PASS' rendered
+run_probe puzzle_expansion_regression '[PuzzleExpansion] PASS' rendered
+run_probe kart_garage_3d_touch_regression '[Garage3DTouch] PASS' rendered
+run_probe kart_menu_depth_2013_regression '[MenuDepth] PASS' rendered
+echo "[Lumo2014] PASS: continuous kart contact, fair AI, physical ramps and integrated game worlds; logs $LOG_DIR"

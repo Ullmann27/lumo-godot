@@ -9,8 +9,7 @@ const THEMES = preload("res://scripts/games/track_themes/track_theme_registry.gd
 const GROUND_PROFILE = preload("res://scripts/games/track_themes/track_ground_profile.gd")
 
 
-static func build(world) -> void:
-	var before: int = world.decoration_count
+static func accepted_sites(world) -> Array[Dictionary]:
 	var sites: Array[Dictionary] = []
 	var count: int = 8 if world.low_detail else 20
 	for i in range(count):
@@ -33,13 +32,33 @@ static func build(world) -> void:
 		elif GROUND_PROFILE.supports_grounded_details(world.track_id):
 			at.y = GROUND_PROFILE.surface_height(world.track_id)
 		var basis := Basis(Vector3.UP, world.frame(d).get_euler().y)
+		sites.append(
+			{
+				"position": at,
+				"radius": radius,
+				"distance": d,
+				"basis": basis,
+				"large": large,
+				"marker": i % 3 == 1
+			}
+		)
+	return sites
+
+
+static func build(world) -> void:
+	var before: int = world.decoration_count
+	var sites: Array[Dictionary] = []
+	for site: Dictionary in accepted_sites(world):
+		var at: Vector3 = site.position
+		var basis: Basis = site.basis
 		var accent: Color = _accent(world.track_id)
-		sites.append({"position": at, "radius": radius, "distance": d})
-		if THEMES.build(world, at, basis, large, i % 3 == 1):
+		# Preserve the public metadata shape used by existing captures/tests.
+		sites.append({"position": at, "radius": site.radius, "distance": site.distance})
+		if THEMES.build(world, at, basis, site.large, site.marker):
 			continue
-		if large:
+		if site.large:
 			_service_deck(world, at, basis, accent)
-		elif i % 3 == 1:
+		elif site.marker:
 			_marshals(world, at, basis, accent)
 		else:
 			_garden(world, at, basis, accent)
@@ -94,7 +113,15 @@ static func _service_deck(world, at: Vector3, basis: Basis, accent: Color) -> vo
 		_put(
 			world, "box", at, basis, Vector3(side * 2.8, 0.85, 1.7), Vector3(0.25, 1.5, 0.65), NAVY
 		)
-	_put(world, "roof", at, basis, Vector3(0, 3.9, 0), Vector3(6.7, 0.6, 4.8), Color("ae6449") if world.track_id == "sonnenhafen" else NAVY)
+	_put(
+		world,
+		"roof",
+		at,
+		basis,
+		Vector3(0, 3.9, 0),
+		Vector3(6.7, 0.6, 4.8),
+		Color("ae6449") if world.track_id == "sonnenhafen" else NAVY
+	)
 	_put(world, "box", at, basis, Vector3(0, 3.65, -2.35), Vector3(6.2, 0.09, 0.08), accent, true)
 	for i in range(6):
 		_put(

@@ -2,6 +2,7 @@ extends RefCounted
 ## Bounded, static roadside assemblies for the three nature destinations.
 
 const GEO = preload("res://scripts/games/track_themes/track_theme_geometry.gd")
+const LIBRARY_CANOPY = preload("res://scripts/games/track_themes/zauberwald_library_canopy.gd")
 const BARK = Color("#553725")
 const WOOD = Color("#956444")
 const BRASS = Color("#cba75c")
@@ -136,14 +137,7 @@ static func _mushroom(
 static func _tree_library(world, at: Vector3, basis: Basis) -> void:
 	GEO.put(world, "box", at, basis, Vector3(0.0, 0.16, 0.0), Vector3(3.8, 0.32, 2.8), BARK)
 	GEO.put(world, "box", at, basis, Vector3(-0.35, 0.28, -1.46), Vector3(2.6, 0.16, 0.38), WOOD)
-	GEO.put(world, "cylinder", at, basis, Vector3(1.05, 1.97, 0.60), Vector3(0.45, 3.3, 0.42), BARK)
-	GEO.beam(world, at, basis, Vector3(1.05, 2.50, 0.60), Vector3(-0.10, 3.58, 0.55), 0.15, BARK)
-	GEO.beam(world, at, basis, Vector3(1.05, 2.95, 0.60), Vector3(1.75, 3.90, 0.48), 0.13, BARK)
-	GEO.beam(world, at, basis, Vector3(1.05, 0.70, 0.60), Vector3(1.84, 0.36, -0.24), 0.16, BARK)
-	GEO.put(
-		world, "crown", at, basis, Vector3(-0.05, 3.89, 0.58), Vector3(0.95, 0.58, 0.75), FOREST
-	)
-	GEO.put(world, "crown", at, basis, Vector3(1.40, 4.05, 0.55), Vector3(0.83, 0.64, 0.68), LEAF)
+	LIBRARY_CANOPY.build(world, at, basis)
 	GEO.put(world, "box", at, basis, Vector3(-0.45, 1.50, 0.80), Vector3(2.45, 2.05, 0.22), BARK)
 	GEO.put(world, "box", at, basis, Vector3(-0.45, 0.58, 0.40), Vector3(2.55, 0.34, 0.72), WOOD)
 	for x in [-1.70, 0.80]:
@@ -182,7 +176,7 @@ static func _tree_library(world, at: Vector3, basis: Basis) -> void:
 			true
 		)
 		GEO.put(world, "cone", at, basis, Vector3(x, 2.22, -0.55), Vector3(0.18, 0.14, 0.18), BRASS)
-	_mushroom(world, at, basis, Vector3(1.33, 0.32, -0.70), 0.38, 0.25, false)
+	_mushroom(world, at, basis, Vector3(1.33, 0.32, -0.70), 0.38, 0.25, true)
 	if not world.low_detail:
 		for i in range(5):
 			GEO.put(
@@ -194,9 +188,8 @@ static func _tree_library(world, at: Vector3, basis: Basis) -> void:
 				Vector3(0.25, 0.48, 0.32),
 				book_colors[4 - i]
 			)
-		GEO.put(
-			world, "crown", at, basis, Vector3(0.56, 4.40, 0.55), Vector3(0.75, 0.39, 0.58), FOREST
-		)
+		_mushroom(world, at, basis, Vector3(-2.15, 0.32, 0.75), 0.72, 0.44, true)
+		_mushroom(world, at, basis, Vector3(2.10, 0.32, -0.15), 0.48, 0.32, true)
 		GEO.put(
 			world, "box", at, basis, Vector3(-0.45, 0.59, 0.025), Vector3(1.84, 0.12, 0.025), BRASS
 		)

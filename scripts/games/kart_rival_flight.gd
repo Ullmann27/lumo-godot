@@ -3,6 +3,7 @@ extends RefCounted
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const STATE_KEY: StringName = &"lumo_ballistic_flight"
+const CONTACT_KEY: StringName = &"lumo_last_road_contact"
 var active: bool = true
 var kicker: Dictionary = {}
 var speed: float = 0.0
@@ -18,21 +19,31 @@ static func clear(game) -> void:
 			rival.remove_meta(STATE_KEY)
 		if rival.has_meta(&"lumo_physical_loop"):
 			rival.remove_meta(&"lumo_physical_loop")
+		if rival.has_meta(CONTACT_KEY):
+			rival.remove_meta(CONTACT_KEY)
 		rival.set_meta(&"racecraft_drift_charge", 0.0)
 
 
 static func try_launch(
 	game, index: int, before: Dictionary, after: Dictionary, momentum: float
 ) -> bool:
+	var rival = game.opponents[index]
+	var previous_contact: float = float(rival.get_meta(CONTACT_KEY, float(before.distance)))
+	rival.set_meta(CONTACT_KEY, float(after.distance))
 	var ramp: Dictionary = ACTION.kicker_crossed(
 		game.world.action, float(before.distance), float(after.distance)
 	)
+	# Raising the kart onto a sloped ramp changes a fresh 3D nearest-road
+	# projection even without forward travel. Keep the previous actual contact
+	# so that this reprojection cannot skip the lip between two physics ticks.
+	if ramp.is_empty():
+		ramp = ACTION.kicker_crossed(game.world.action, previous_contact, float(after.distance))
 	var jump: Dictionary = game.world.jump
 	if (
 		ramp.is_empty()
 		and not jump.is_empty()
-		and float(before.distance) >= float(jump.ramp_start)
-		and float(before.distance) < float(jump.take_off)
+		and minf(float(before.distance), previous_contact) >= float(jump.ramp_start)
+		and minf(float(before.distance), previous_contact) < float(jump.take_off)
 		and float(after.distance) >= float(jump.take_off)
 		and float(after.distance) < float(jump.gap_end)
 	):
@@ -46,7 +57,6 @@ static func try_launch(
 		}
 	if ramp.is_empty():
 		return false
-	var rival = game.opponents[index]
 	var state = load("res://scripts/games/kart_rival_flight.gd").new()
 	state.kicker = ramp
 	state.speed = momentum
