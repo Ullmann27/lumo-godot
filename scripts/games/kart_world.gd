@@ -25,6 +25,7 @@ const DARK_RIDE = preload("res://scripts/games/kart_sonnenhafen_darkride.gd")
 const HARBOR_CRANE = preload("res://scripts/games/kart_harbor_crane.gd")
 const HARBOR_AQUARIUM = preload("res://scripts/games/kart_harbor_aquarium.gd")
 const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
+const GENERATION = preload("res://scripts/games/kart_sonnenhafen_generation.gd")
 var action_obstacles: Array[Vector3] = []
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
@@ -135,6 +136,7 @@ func build(
 		HERO_COAST.build(self)
 		HARBOR_CRANE.build(self)
 		STUNT.build(self)
+		GENERATION.build(self)
 		if not geometry_only:
 			DARK_RIDE.build(self)
 	LANDMARKS.build(self)
@@ -506,11 +508,14 @@ func _sky_for(id: String) -> Sky:
 	atmosphere.sky_curve=0.44
 	atmosphere.sun_angle_max=5.0
 	if id=="sonnenhafen":
-		# Bright reference sky: stronger blue toward the zenith, golden sun disc.
-		atmosphere.sky_curve=0.18
-		atmosphere.sky_energy_multiplier=1.08
-		atmosphere.sun_angle_max=12.0
-		atmosphere.sun_curve=0.08
+		# Mediterranean noon from the 2026-11-03 reference: deep zenith, warm horizon.
+		atmosphere.sky_top_color=Color("1a64b8")
+		atmosphere.sky_horizon_color=Color("f0c898")
+		atmosphere.ground_horizon_color=Color("e0c090")
+		atmosphere.sky_curve=0.15
+		atmosphere.sky_energy_multiplier=0.98
+		atmosphere.sun_angle_max=16.0
+		atmosphere.sun_curve=0.07
 	sky.sky_material=atmosphere
 	_skies[id]=sky
 	return sky
@@ -536,7 +541,7 @@ func _lighting() -> void:
 	environment.fog_enabled=true
 	environment.fog_light_color=definition.fog
 	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.003)
-	environment.fog_aerial_perspective=0.22
+	environment.fog_aerial_perspective=0.26 if track_id=="sonnenhafen" else 0.22
 	# Additive desktop polish with a strict Mobile/GL fallback; no new environment node.
 	set_meta("aaa_visual_profile", AAA_ENV.configure(environment, low_detail))
 	var world_environment := WorldEnvironment.new()
@@ -545,7 +550,7 @@ func _lighting() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees=Vector3(-25,-36,0) if track_id=="sonnenhafen" else (Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0))
 	sun.light_color=definition.sun
-	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.86 if low_detail else 0.94) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
+	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.90 if low_detail else 1.00) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -721,10 +726,10 @@ func _terrain() -> void:
 	if track_id=="sonnenhafen":
 		var stylized := ShaderMaterial.new()
 		stylized.shader=preload("res://assets/shaders/kart_stylized_vertex_tint.gdshader")
-		stylized.set_shader_parameter("top_tint",Color("e8f4cf"))
-		stylized.set_shader_parameter("side_tint",Color("91bd72"))
+		stylized.set_shader_parameter("top_tint",Color("d8ef9c"))
+		stylized.set_shader_parameter("side_tint",Color("7eae5e"))
 		stylized.set_shader_parameter("bottom_tint",Color("657b68"))
-		stylized.set_shader_parameter("overall_tint",Color("e6efcf"))
+		stylized.set_shader_parameter("overall_tint",Color("e4efc0"))
 		stylized.set_shader_parameter("roughness_value",0.90)
 		if not low_detail:
 			stylized.set_shader_parameter(
@@ -756,6 +761,9 @@ func _terrain() -> void:
 	if track_id=="holo_city":
 		water_material.set_shader_parameter("deep_water",Color("0d1934"))
 		water_material.set_shader_parameter("shallow_water",Color("174970"))
+	if track_id=="sonnenhafen":
+		water_material.set_shader_parameter("deep_water",Color("0c648c"))
+		water_material.set_shader_parameter("shallow_water",Color("2ec4c0"))
 	# Follow Sonnenhafen's authored shoreline, never light up other seas.
 	# Disabled on low-detail/mobile-saving mode without affecting physics.
 	if track_id=="sonnenhafen" and not low_detail:

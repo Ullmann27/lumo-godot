@@ -56,8 +56,8 @@ func _ring(radius: float, thickness: float, color: Color, alpha: float) -> MeshI
 func _build() -> void:
 	item_orb = MeshInstance3D.new()
 	var orb_mesh := SphereMesh.new()
-	orb_mesh.radius = 0.28
-	orb_mesh.height = 0.56
+	orb_mesh.radius = 0.34
+	orb_mesh.height = 0.68
 	orb_mesh.radial_segments = 12
 	orb_mesh.rings = 6
 	item_orb.mesh = orb_mesh
@@ -80,7 +80,7 @@ func _build() -> void:
 	shield_mesh.rings = 9
 	shield_bubble.mesh = shield_mesh
 	shield_bubble.position.y = 0.95
-	shield_bubble.material_override = _material(Color("66e8ff"), 0.20, 0.95)
+	shield_bubble.material_override = _material(Color("66e8ff"), 0.32, 1.55)
 	shield_bubble.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	shield_bubble.visible = false
 	add_child(shield_bubble)
@@ -90,7 +90,7 @@ func _build() -> void:
 	shield_ring.visible = false
 	add_child(shield_ring)
 
-	warning_ring = _ring(1.55, 0.18, Color("e5a0ff"), 0.90)
+	warning_ring = _ring(1.55, 0.26, Color("f0b8ff"), 0.95)
 	warning_ring.position.y = 0.10
 	warning_ring.visible = false
 	add_child(warning_ring)
@@ -122,8 +122,8 @@ func set_item(value: String) -> void:
 	item_ring.visible = visible_item
 	if visible_item:
 		var color: Color = ITEM_COLORS[value]
-		item_orb.material_override = _material(color, 0.95, 1.7)
-		item_ring.material_override = _material(color.lightened(0.16), 0.82, 1.4)
+		item_orb.material_override = _material(color, 0.98, 2.4)
+		item_ring.material_override = _material(color.lightened(0.18), 0.90, 2.0)
 
 
 func set_shield(seconds: float) -> void:
@@ -154,7 +154,7 @@ func fire_pulse() -> void:
 	if is_instance_valid(pulse_ring):
 		pulse_ring.visible = true
 		pulse_ring.scale = Vector3.ONE
-		pulse_ring.material_override = _material(Color("b5efff"), 0.75, 1.8)
+		pulse_ring.material_override = _material(Color("e0b8ff"), 0.88, 2.7)
 
 
 func set_stunned(seconds: float) -> void:
@@ -172,7 +172,7 @@ func _process(delta: float) -> void:
 		pulse_age += delta
 		var progress: float = clampf(pulse_age / 0.72, 0.0, 1.0)
 		pulse_ring.visible = progress < 1.0
-		pulse_ring.scale = Vector3.ONE * (1.0 + progress * 6.0)
+		pulse_ring.scale = Vector3.ONE * (1.0 + progress * 8.5)
 		var material := pulse_ring.material_override as StandardMaterial3D
 		if material:
 			material.albedo_color.a = 0.75 * (1.0 - progress)
