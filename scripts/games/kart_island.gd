@@ -15,6 +15,7 @@ const RECORDS = preload("res://scripts/games/kart_records.gd")
 const ARENA = preload("res://scripts/games/kart_arena.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const PHYSICAL_LOOP = preload("res://scripts/games/kart_physical_loop.gd")
+const RIVAL_STUNTS = preload("res://scripts/games/kart_rival_stunts.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const DARKRIDE_EVENT = preload("res://scripts/games/kart_darkride_event_director.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
@@ -23,6 +24,7 @@ const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
 const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
 const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
+const RIVAL_RACECRAFT = preload("res://scripts/games/kart_rival_racecraft.gd")
 const OPPONENT_ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
@@ -1458,6 +1460,10 @@ func _physics_process(delta: float) -> void:
 			save_timer = 0
 			first_active_snapshot_pending = false
 			_save_session()
+	if is_instance_valid(world):
+		var attraction = world.get_node_or_null("SonnenhafenHarborAttraction")
+		if attraction != null:
+			attraction.advance(delta, player.position, racing and not paused and not finished, reduced_motion)
 	for i in range(gems.size()):
 		if mode != "arena":
 			var key: int = _gem_key(int(distance / track_length), i)
@@ -1687,16 +1693,18 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 		var min_speed: float = float(layout.get("min_entry_speed", 16.0))
 		var off_lane: bool = absf(float(road.lateral) - float(layout.lane)) > lane_tolerance
 		var too_slow: bool = speed < min_speed or physical_velocity.dot(road.forward) < 8
-		if absf(entry_offset) > window or off_lane or too_slow:
+		# Enter only after reaching the lip. The old symmetric window pulled the
+		# kart forward before entry and discarded its lateral position.
+		if entry_offset < 0.0 or entry_offset > maxf(window, speed * delta + 0.2) or off_lane or too_slow or airborne:
 			return false
-		loop_state.enter(layout, speed, distance - entry_offset)
+		loop_state.enter(layout, speed, distance - entry_offset, float(road.lateral) - float(layout.lane), entry_offset)
 		airborne = false
 		message.text = "Loop! Halte deinen Schwung."
 	player.transform = loop_state.advance(world, delta, axis, braking, _gas_active())
 	speed = loop_state.speed
 	if loop_state.active:
 		previous_road_distance = float(layout.start) + loop_state.progress * PHYSICAL_LOOP.ADVANCE
-		distance = loop_state.entry_progress + loop_state.progress * PHYSICAL_LOOP.ADVANCE
+		distance = maxf(distance, loop_state.entry_progress + loop_state.progress * PHYSICAL_LOOP.ADVANCE)
 		lane = float(layout.lane) + loop_state.lateral
 		physical_velocity = -player.basis.z * speed
 		return true
@@ -1704,7 +1712,7 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 	distance = loop_state.entry_progress + (0 if loop_state.failed else PHYSICAL_LOOP.ADVANCE)
 	previous_road_distance = exit_distance
 	player_heading = _heading(exit_distance)
-	var exit_lane: float = float(layout.get("fail_lane", layout.lane)) if loop_state.failed else float(layout.lane)
+	var exit_lane: float = float(layout.get("fail_lane", layout.lane)) if loop_state.failed else float(layout.lane) + loop_state.lateral
 	player.transform = world.reset_transform(exit_distance, exit_lane)
 	lane = exit_lane
 	if loop_state.failed:
@@ -2012,6 +2020,13 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 		if warning_before > 0.0 and opponent_pulse_warning_times[index] <= 0.0:
 			if index < opponent_item_fx.size():
 				opponent_item_fx[index].fire_pulse()
+			# The same telegraphed pulse hits every nearby unshielded racer,
+			# not a coordinated AI-only attack against the child.
+			for other in range(opponents.size()):
+				if other == index or opponent_shield_times[other] > 0.0:
+					continue
+				if opponents[index].position.distance_to(opponents[other].position) <= RIVAL_PULSE_RADIUS:
+					opponent_stuns[other] = maxf(opponent_stuns[other], 0.38)
 			if local_gap.length() <= RIVAL_PULSE_RADIUS:
 				if shield_time > 0.0:
 					message.text = "Sternenschild blockt den Rivalen-Impuls!"
@@ -2030,14 +2045,23 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 				fposmod(local_distance - box_distance + track_length * 0.5, track_length)
 				- track_length * 0.5
 			)
-			if absf(offset) < 1.4:
+			if (
+				absf(offset) < 1.4
+				and absf(opponents[index].motion_speed) >= RESONANCE.MIN_PICKUP_SPEED
+				and opponents[index].position.distance_to(
+					item_boxes[item_box_distances.find(box_distance)].position
+				) < 2.65
+			):
 				var rival_road: Dictionary = world.sample_road(
 					opponents[index].position, local_distance
 				)
 				var rival_score: Dictionary = RESONANCE.award(
-					absf(opponents[index].motion_speed), 20.5,
+					absf(opponents[index].motion_speed), RIVAL_RACECRAFT.cruise_speed(
+						opponents[index].kart_style, CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
+					),
 					float(rival_road.lateral) - item_box_laterals[item_box_distances.find(box_distance)],
-					0.0, opponent_stuns[index] > 0.0
+					float(opponents[index].get_meta("racecraft_drift_charge", 0.0)),
+					opponent_stuns[index] > 0.0
 				)
 				opponent_items[index] = str(rival_score.item)
 				opponent_item_cooldowns[index] = 1.8
@@ -2047,23 +2071,99 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 		_sync_rival_item_fx(index)
 		return
 
-	var progress_gap: float = distance - opponent_distances[index]
 	match opponent_items[index]:
 		"boost":
-			if progress_gap > 1.0 and progress_gap < 28.0:
+			if _rival_can_boost(index):
 				opponent_boost_times[index] = 2.2
 				opponent_items[index] = ""
 		"pulse":
-			if local_gap.length() < RIVAL_PULSE_RADIUS + 1.5:
+			if _rival_target_near(index, RIVAL_PULSE_RADIUS + 1.5):
 				opponent_pulse_warning_times[index] = RIVAL_PULSE_WARNING_SECONDS
 				opponent_items[index] = ""
-				message.text = "Rivale lädt Lichtimpuls – Abstand oder Schild!"
-				_sound_effect("item")
+				if local_gap.length() < 30.0:
+					message.text = "Rivale lädt Lichtimpuls – Abstand oder Schild!"
+					_sound_effect("item")
 		"shield":
-			if local_gap.length() < 7.0:
+			if _rival_target_near(index, 7.0):
 				opponent_shield_times[index] = 5.0
 				opponent_items[index] = ""
 	_sync_rival_item_fx(index)
+
+
+func _rival_target_near(index: int, radius: float) -> bool:
+	var origin: Vector3 = opponents[index].position
+	if origin.distance_to(player.position) < radius:
+		return true
+	for other in range(opponents.size()):
+		if other == index:
+			continue
+		if origin.distance_to(opponents[other].position) < radius:
+			return true
+	return false
+
+
+func _update_rival_drift(index: int, road: Dictionary, pace: float, delta: float) -> bool:
+	var rival: LumoRaceKart = opponents[index]
+	var charge: float = float(rival.get_meta("racecraft_drift_charge", 0.0))
+	var at: float = float(road.distance)
+	var now_forward: Vector3 = world.forward(at)
+	var next_forward: Vector3 = world.forward(at + 3.0)
+	var turn_rate: float = absf(angle_difference(
+		atan2(now_forward.x, now_forward.z), atan2(next_forward.x, next_forward.z)
+	)) * pace / 3.0
+	var aligned: bool = absf(angle_difference(opponent_headings[index], _heading(at))) < 0.30
+	var controlled: bool = aligned and absf(float(road.lateral)) < 4.0 and opponent_stuns[index] <= 0.0
+	var drifting_now: bool = difficulty != "gemuetlich" and controlled and pace >= 10.0 and turn_rate > 0.09
+	if drifting_now:
+		charge = minf(2.2, charge + delta * clampf(turn_rate * 3.2, 0.0, 1.0))
+	else:
+		# Same time tiers as the player's held drift. Charge is earned only by
+		# a sustained controlled turn, and a collision cancels it completely.
+		if controlled and pace >= 8.0 and charge >= DRIFT_TIERS[0] and _rival_can_boost(index):
+			var tier: int = 1 if charge >= DRIFT_TIERS[1] else 0
+			opponent_boost_times[index] = maxf(opponent_boost_times[index], DRIFT_BOOST_SECONDS[tier])
+		charge = 0.0
+	rival.set_meta("racecraft_drift_charge", charge)
+	return drifting_now
+
+
+func _rival_traffic(index: int, road: Dictionary) -> PackedVector3Array:
+	var traffic := PackedVector3Array()
+	var origin: Vector3 = opponents[index].position
+	var basis: Basis = road.basis
+	for other in range(opponents.size()):
+		if other == index:
+			continue
+		var gap: Vector3 = opponents[other].position - origin
+		if gap.length_squared() < 2500.0 and absf(gap.dot(basis.y)) < 3.0:
+			traffic.append(Vector3(gap.dot(-basis.z), float(road.lateral) + gap.dot(basis.x), absf(opponents[other].motion_speed)))
+	var player_gap: Vector3 = player.position - origin
+	if player_gap.length_squared() < 2500.0 and absf(player_gap.dot(basis.y)) < 3.0:
+		traffic.append(Vector3(player_gap.dot(-basis.z), float(road.lateral) + player_gap.dot(basis.x), maxf(0.0, speed)))
+	for obstacle in world.action_obstacles:
+		var gap: Vector3 = obstacle - origin
+		if gap.length_squared() < 2500.0 and absf(gap.dot(basis.y)) < 3.0:
+			traffic.append(Vector3(gap.dot(-basis.z), float(road.lateral) + gap.dot(basis.x), 0.0))
+	return traffic
+
+
+func _rival_can_boost(index: int) -> bool:
+	var road: Dictionary = world.sample_road(opponents[index].position, fposmod(opponent_distances[index], track_length))
+	var road_distance: float = float(road.distance)
+	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
+	var cruise: float = RIVAL_RACECRAFT.cruise_speed(opponents[index].kart_style, rules)
+	var precision_ahead: bool = false
+	for kicker in world.action.get("kickers", []):
+		if bool(kicker.get("precision_jump", false)):
+			var remaining: float = float(kicker.take_off) - road_distance
+			if remaining >= -5.0 and remaining < cruise * 3.2:
+				precision_ahead = true
+	var heading_error: float = angle_difference(opponent_headings[index], _heading(road_distance + 10.0))
+	return RIVAL_RACECRAFT.may_boost(
+		RIVAL_RACECRAFT.curvature(world, road_distance), heading_error,
+		float(road.lateral), _rival_traffic(index, road), cruise,
+		precision_ahead, opponent_stuns[index] > 0.0
+	)
 
 
 func _rival_profile() -> Dictionary:
@@ -2110,40 +2210,52 @@ func _drive_opponents(delta: float) -> void:
 	var profile: Dictionary = _rival_profile()
 	for i in range(opponents.size()):
 		var rival: LumoRaceKart = opponents[i]
+		if RIVAL_STUNTS.update_loop(self, i, delta):
+			continue
 		var sampled: Dictionary = world.sample_road(rival.position, fposmod(opponent_distances[i], track_length))
+		var bend: float = RIVAL_RACECRAFT.curvature(world, float(sampled.distance))
 		var target_lane: float = -2.8 + float(i) * 1.35
 		target_lane += sin(elapsed * float(profile.wobble_hz) + float(i)) * float(profile.wobble)
 		if float(profile.mistake) > 0.0:
 			target_lane += sin(elapsed * float(profile.mistake_hz) + float(i) * 2.3) * float(profile.mistake)
-		target_lane = clampf(target_lane, -3.4, 3.4)
+		# A small measured apex bias improves the line without cutting across
+		# the verge. Every driver keeps an individual risk/clearance preference.
+		if difficulty != "gemuetlich":
+			target_lane -= clampf(bend * 35.0, -1.0, 1.0) * float(RIVAL_RACECRAFT.style(i).line)
+		if difficulty != "gemuetlich" and opponent_items[i].is_empty():
+			# Earn the next resonance gate by actually driving through it. Traffic
+			# safety still wins over a pickup, and stunt lane choice is applied later.
+			for ring in range(item_box_distances.size()):
+				var ahead: float = fposmod(item_box_distances[ring] - float(sampled.distance), track_length)
+				if ahead > 1.0 and ahead < 26.0:
+					target_lane = item_box_laterals[ring]
+					break
+		var traffic: PackedVector3Array = _rival_traffic(i, sampled)
+		target_lane = RIVAL_RACECRAFT.choose_lane(
+			float(sampled.lateral), target_lane, traffic, float(profile.overtake) + 10.0, i
+		)
 		var local_gap: Vector3 = player.position - rival.position
 		_update_rival_item_tactics(i, local_gap, delta)
-		var progress_gap: float = (
-			fposmod(distance - opponent_distances[i] + track_length * 0.5, track_length)
-			- track_length * 0.5
-		)
-		if progress_gap > 0.8 and progress_gap < float(profile.overtake):
-			var side: float = -signf(lane) if absf(lane) > 0.35 else (1.0 if i % 2 == 0 else -1.0)
-			target_lane = clampf(lane + side * float(profile.lane_spread), -3.8, 3.8)
-		elif local_gap.length() < 7 and absf(float(sampled.lateral) - lane) < 1.3:
-			target_lane = clampf(lane + (1.8 if i % 2 == 0 else -1.8), -3.8, 3.8)
+		target_lane = RIVAL_STUNTS.planned_loop_lane(self, i, float(sampled.distance), target_lane)
 		var aim: Vector3 = world.position_at(float(sampled.distance) + float(profile.look_ahead), target_lane)
 		var desired_heading: float = atan2(-(aim.x - rival.position.x), -(aim.z - rival.position.z))
 		var angle: float = angle_difference(opponent_headings[i], desired_heading)
 		var turn_cap: float = float(profile.turn_rate) * delta
 		opponent_headings[i] += clampf(angle, -turn_cap, turn_cap)
-		# Catalog speed only. No catch-up when the player is far ahead.
-		var target_speed: float = 20.5 * float(rules.speed) * float(rules.rival) * (0.97 + i * 0.014)
+		# Same fleet performance figures as the human kart, without tuning or
+		# a player-gap multiplier. Strong drivers brake for actual upcoming bends.
+		var target_speed: float = RIVAL_RACECRAFT.cruise_speed(rival.kart_style, rules)
 		if opponent_boost_times[i] > 0.0:
 			target_speed *= 1.32
+		target_speed = minf(target_speed, RIVAL_RACECRAFT.corner_speed(bend, difficulty, rival.kart_style, i))
 		target_speed *= clampf(1.0 - absf(angle) * 0.33, 0.58, 1.0)
+		target_speed = RIVAL_RACECRAFT.traffic_speed(float(sampled.lateral), traffic, target_speed)
 		opponent_stuns[i] = maxf(0, opponent_stuns[i] - delta)
 		_sync_rival_item_fx(i)
 		if opponent_stuns[i] > 0:
 			target_speed *= 0.3
+		var rival_drifting: bool = _update_rival_drift(i, sampled, target_speed, delta)
 		var forward := Vector3(-sin(opponent_headings[i]), 0, -cos(opponent_headings[i]))
-		if local_gap.length() < 2.6 and forward.dot(local_gap.normalized()) > 0.6:
-			target_speed = minf(target_speed, maxf(4, speed - 1))
 		rival.position += forward * target_speed * delta
 		var next: Dictionary = world.sample_road(rival.position, float(sampled.distance))
 		var travel: float = fposmod(float(next.distance) - float(sampled.distance) + track_length * 0.5, track_length) - track_length * 0.5
@@ -2197,7 +2309,7 @@ func _drive_opponents(delta: float) -> void:
 			target_speed,
 			clampf(-angle, -1, 1),
 			opponent_boost_times[i] > 0.0,
-			false
+			rival_drifting
 		)
 
 
@@ -3575,10 +3687,7 @@ func _save_session() -> void:
 		config.set_value("race", "player_position", world.reset_transform(float(world.loop_layout.start), float(world.loop_layout.lane)).origin)
 	else:
 		config.set_value("race", "player_position", player.position)
-	var positions: Array[Vector3] = []
-	for rival in opponents:
-		positions.append(rival.position)
-	config.set_value("race", "opponent_positions", positions)
+	RIVAL_STUNTS.save_positions(self, config)
 	var tmp_path: String = SESSION + ".tmp"
 	if config.save(tmp_path) != OK:
 		push_warning("Race checkpoint tmp write failed")

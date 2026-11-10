@@ -5,10 +5,14 @@ extends RefCounted
 ## Ferris wheel + lighthouse composition, harbour-front aquarium and
 ## boats with water reflections, start lights and finish-line fireworks.
 ##
-## Everything goes through the world's MultiMesh `_prop` batches except one
-## HIGH-only GPUParticles3D node (no per-frame allocations). The race spline,
+## Static pieces use the world's spatial `_prop` batches. The harbor wheel
+## uses two additional animated MultiMeshes; existing particles stay bounded.
+## The race spline,
 ## checkpoints, physics and other tracks stay untouched.
 ## LOW builds the same world with fewer repeated pieces.
+
+const SHOPFRONT = preload("res://scripts/games/kart_sonnenhafen_shopfront.gd")
+const ATTRACTION = preload("res://scripts/games/kart_sonnenhafen_attraction.gd")
 
 const FACADES: Array[Color] = [
 	Color("f4c7a8"),
@@ -77,7 +81,6 @@ static func _blocked(world, at: Vector3, radius: float, heroes: Array) -> bool:
 	return false
 
 
-
 static func _start_quarter(world, heroes: Array) -> Array[Dictionary]:
 	## Denser first 150 m so the opening race camera actually sees the town.
 	var placed: Array[Dictionary] = []
@@ -101,6 +104,8 @@ static func _start_quarter(world, heroes: Array) -> Array[Dictionary]:
 			var facade: Color = FACADES[(i + (0 if side < 0.0 else 3)) % FACADES.size()]
 			var roof: Color = ROOFS[(i + (0 if side < 0.0 else 1)) % ROOFS.size()]
 			_villa(world, anchor, basis, facade, roof, i + 3)
+			if i < 3:
+				SHOPFRONT.build(world, anchor, basis, 7.4 + float((i + 3) % 2) * 1.6, 5.6)
 			placed.append({"kind": "villa", "position": anchor, "fraction": fraction})
 	return placed
 
@@ -115,9 +120,7 @@ static func _town_terraces(world, heroes: Array) -> Array[Dictionary]:
 		var anchor := Vector3.INF
 		for lateral in [19.0, 24.0, 30.0, 36.0]:
 			var proposed: Vector3 = world.position_at(distance, side * lateral)
-			var at := Vector3(
-				proposed.x, world._ground_height(proposed.x, proposed.z), proposed.z
-			)
+			var at := Vector3(proposed.x, world._ground_height(proposed.x, proposed.z), proposed.z)
 			if not _blocked(world, at, TOWN_RADIUS, heroes):
 				anchor = at
 				break
@@ -131,13 +134,23 @@ static func _town_terraces(world, heroes: Array) -> Array[Dictionary]:
 	return placed
 
 
-static func _villa(world, at: Vector3, basis: Basis, facade: Color, roof: Color, index: int) -> void:
+static func _villa(
+	world, at: Vector3, basis: Basis, facade: Color, roof: Color, index: int
+) -> void:
 	var floors: int = 2 + (index % 3)
 	var height: float = 3.4 * float(floors)
 	var width: float = 7.4 + float(index % 2) * 1.6
 	var depth: float = 5.6
-	world._prop("box", at + Vector3.UP * (height * 0.5), Vector3(width, height, depth), facade, basis)
-	world._prop("box", at + Vector3.UP * 0.22, Vector3(width + 0.35, 0.44, depth + 0.28), Color("cbb89a"), basis)
+	world._prop(
+		"box", at + Vector3.UP * (height * 0.5), Vector3(width, height, depth), facade, basis
+	)
+	world._prop(
+		"box",
+		at + Vector3.UP * 0.22,
+		Vector3(width + 0.35, 0.44, depth + 0.28),
+		Color("cbb89a"),
+		basis
+	)
 	world._prop(
 		"roof",
 		at + Vector3.UP * (height + 1.15),
@@ -154,16 +167,22 @@ static func _villa(world, at: Vector3, basis: Basis, facade: Color, roof: Color,
 	)
 	for floor_index in range(floors):
 		for column in range(3):
-			var local := Vector3((float(column) - 1.0) * 2.05, 1.55 + float(floor_index) * 3.15, depth * 0.5 + 0.06)
+			var local := Vector3(
+				(float(column) - 1.0) * 2.05, 1.55 + float(floor_index) * 3.15, depth * 0.5 + 0.06
+			)
 			var window: Vector3 = at + basis * local
 			world._prop("box", window, Vector3(1.15, 1.45, 0.16), CREAM, basis)
-			world._prop("box", window + basis.z * 0.08, Vector3(0.92, 1.18, 0.06), Color("3d6f88"), basis)
+			world._prop(
+				"box", window + basis.z * 0.08, Vector3(0.92, 1.18, 0.06), Color("3d6f88"), basis
+			)
 	# Street balcony with flowering boxes, readable at racing speed.
 	var balcony: Vector3 = at + basis * Vector3(0.0, 3.35, depth * 0.5 + 0.55)
 	world._prop("box", balcony, Vector3(width * 0.82, 0.16, 1.15), CREAM, basis)
 	for rail in range(7 if not world.low_detail else 4):
 		var x: float = (float(rail) / float(6 if not world.low_detail else 3) - 0.5) * width * 0.75
-		world._prop("box", balcony + basis * Vector3(x, 0.45, 0.48), Vector3(0.07, 0.85, 0.07), NAVY, basis)
+		world._prop(
+			"box", balcony + basis * Vector3(x, 0.45, 0.48), Vector3(0.07, 0.85, 0.07), NAVY, basis
+		)
 	for blossom in range(5 if not world.low_detail else 3):
 		var x: float = (float(blossom) - 2.0) * 0.85
 		world._prop(
@@ -180,19 +199,9 @@ static func _villa(world, at: Vector3, basis: Basis, facade: Color, roof: Color,
 			Vector3(1.55, height + 6.8, 1.55),
 			facade.lightened(0.06)
 		)
+		world._prop("cone", tower + Vector3.UP * (height + 7.6), Vector3(2.4, 2.8, 2.4), roof)
 		world._prop(
-			"cone",
-			tower + Vector3.UP * (height + 7.6),
-			Vector3(2.4, 2.8, 2.4),
-			roof
-		)
-		world._prop(
-			"box",
-			tower + Vector3.UP * (height + 5.6),
-			Vector3(1.1, 1.2, 0.12),
-			GLASS,
-			basis,
-			true
+			"box", tower + Vector3.UP * (height + 5.6), Vector3(1.1, 1.2, 0.12), GLASS, basis, true
 		)
 
 
@@ -211,7 +220,9 @@ static func _promenade_arcade(world, heroes: Array) -> Array[Dictionary]:
 				continue
 		var basis: Basis = world.frame(distance)
 		world._prop("cylinder", at + Vector3.UP * 2.15, Vector3(0.42, 4.3, 0.42), CREAM)
-		world._prop("cylinder", at + basis * Vector3(3.4, 2.15, 0.0), Vector3(0.42, 4.3, 0.42), CREAM)
+		world._prop(
+			"cylinder", at + basis * Vector3(3.4, 2.15, 0.0), Vector3(0.42, 4.3, 0.42), CREAM
+		)
 		world._prop(
 			"box",
 			at + basis * Vector3(1.7, 4.45, 0.0),
@@ -220,19 +231,11 @@ static func _promenade_arcade(world, heroes: Array) -> Array[Dictionary]:
 			basis
 		)
 		world._prop(
-			"box",
-			at + basis * Vector3(1.7, 3.85, 0.0),
-			Vector3(3.4, 0.22, 0.22),
-			TEAL,
-			basis
+			"box", at + basis * Vector3(1.7, 3.85, 0.0), Vector3(3.4, 0.22, 0.22), TEAL, basis
 		)
 		if not world.low_detail:
 			world._prop(
-				"box",
-				at + basis * Vector3(1.7, 2.4, 0.65),
-				Vector3(2.6, 0.16, 0.85),
-				WOOD,
-				basis
+				"box", at + basis * Vector3(1.7, 2.4, 0.65), Vector3(2.6, 0.16, 0.85), WOOD, basis
 			)
 		placed.append({"kind": "arcade", "position": at, "fraction": fraction})
 	return placed
@@ -251,13 +254,17 @@ static func _palms_and_flowers(world, heroes: Array) -> Array[Dictionary]:
 			continue
 		_palm(world, at, 1.0 + float(i % 3) * 0.18)
 		if not world.low_detail:
-			world._flower_patch(at + Vector3(1.6, 0.0, 0.8), FLOWER_A if i % 2 == 0 else FLOWER_B, 5)
+			world._flower_patch(
+				at + Vector3(1.6, 0.0, 0.8), FLOWER_A if i % 2 == 0 else FLOWER_B, 5
+			)
 		placed.append({"kind": "palm", "position": at, "fraction": fraction})
 	return placed
 
 
 static func _palm(world, at: Vector3, scale: float) -> void:
-	world._prop("cylinder", at + Vector3.UP * (3.4 * scale), Vector3(0.28, 6.8, 0.28) * scale, TRUNK)
+	world._prop(
+		"cylinder", at + Vector3.UP * (3.4 * scale), Vector3(0.28, 6.8, 0.28) * scale, TRUNK
+	)
 	for i in range(5 if not world.low_detail else 4):
 		var yaw: float = float(i) * TAU / 5.0
 		var leaf_basis := Basis(Vector3.UP, yaw) * Basis(Vector3.RIGHT, 0.72)
@@ -268,7 +275,9 @@ static func _palm(world, at: Vector3, scale: float) -> void:
 			PALM if i % 2 == 0 else PALM.lightened(0.08),
 			leaf_basis
 		)
-	world._prop("ball", at + Vector3.UP * (6.7 * scale), Vector3(0.55, 0.45, 0.55) * scale, Color("6b3d24"))
+	world._prop(
+		"ball", at + Vector3.UP * (6.7 * scale), Vector3(0.55, 0.45, 0.55) * scale, Color("6b3d24")
+	)
 
 
 static func _ferris_gondolas(world, heroes: Array) -> void:
@@ -296,7 +305,13 @@ static func _ferris_gondolas(world, heroes: Array) -> void:
 			GLASS,
 			basis
 		)
-		world._prop("box", point + Vector3.DOWN * 2.35, Vector3(1.95, 0.16, 1.65), ROOFS[i % ROOFS.size()], basis)
+		world._prop(
+			"box",
+			point + Vector3.DOWN * 2.35,
+			Vector3(1.95, 0.16, 1.65),
+			ROOFS[i % ROOFS.size()],
+			basis
+		)
 
 
 static func _bay_sails(world) -> Array[Dictionary]:
@@ -323,14 +338,32 @@ static func _bay_sails(world) -> Array[Dictionary]:
 		var yaw: float = float(i) * 0.7
 		var basis := Basis(Vector3.UP, yaw)
 		world._prop("hull", at, Vector3(1.25, 0.9, 1.25), NAVY, basis)
-		world._prop("box", at + basis * Vector3(0.0, 0.42, 0.4), Vector3(1.7, 0.16, 2.9), WOOD, basis)
+		world._prop(
+			"box", at + basis * Vector3(0.0, 0.42, 0.4), Vector3(1.7, 0.16, 2.9), WOOD, basis
+		)
 		if sailing:
-			world._prop("cylinder", at + basis * Vector3(0.0, 3.2, -0.45), Vector3(0.07, 5.9, 0.07), WHITE, basis)
+			world._prop(
+				"cylinder",
+				at + basis * Vector3(0.0, 3.2, -0.45),
+				Vector3(0.07, 5.9, 0.07),
+				WHITE,
+				basis
+			)
 			world._prop("sail", at + basis * Vector3(0.0, 0.85, -0.45), Vector3.ONE, WHITE, basis)
-			world._prop("sail", at + basis * Vector3(0.04, 0.95, -0.62), Vector3(1.0, 0.78, -0.62), accent, basis)
+			world._prop(
+				"sail",
+				at + basis * Vector3(0.04, 0.95, -0.62),
+				Vector3(1.0, 0.78, -0.62),
+				accent,
+				basis
+			)
 		else:
-			world._prop("box", at + basis * Vector3(0.0, 1.15, 0.25), Vector3(1.55, 1.2, 1.65), CREAM, basis)
-			world._prop("box", at + basis * Vector3(0.0, 1.85, 0.25), Vector3(1.9, 0.16, 2.0), accent, basis)
+			world._prop(
+				"box", at + basis * Vector3(0.0, 1.15, 0.25), Vector3(1.55, 1.2, 1.65), CREAM, basis
+			)
+			world._prop(
+				"box", at + basis * Vector3(0.0, 1.85, 0.25), Vector3(1.9, 0.16, 2.0), accent, basis
+			)
 		placed.append({"kind": "bay_sail", "position": at, "fraction": -1.0})
 	return placed
 
@@ -386,8 +419,9 @@ static func _wow_composition(world, heroes: Array) -> Array[Dictionary]:
 		if not found:
 			return placed
 	var basis: Basis = world.frame(WOW_DISTANCE)
-	var water_dir: Vector3 = world.position_at(WOW_DISTANCE, WOW_LATERAL + 12.0) - world.position_at(
-		WOW_DISTANCE, WOW_LATERAL
+	var water_dir: Vector3 = (
+		world.position_at(WOW_DISTANCE, WOW_LATERAL + 12.0)
+		- world.position_at(WOW_DISTANCE, WOW_LATERAL)
 	)
 	water_dir.y = 0.0
 	if water_dir.length() > 0.001:
@@ -406,7 +440,9 @@ static func _wow_composition(world, heroes: Array) -> Array[Dictionary]:
 	if not world.low_detail:
 		for i in range(4):
 			var post: Vector3 = at + water_dir * (4.0 + float(i) * 2.4) + basis.z * 2.8
-			world._prop("cylinder", post + Vector3.UP * 1.1, Vector3(0.16, 2.2, 0.16), Color("5b4030"))
+			world._prop(
+				"cylinder", post + Vector3.UP * 1.1, Vector3(0.16, 2.2, 0.16), Color("5b4030")
+			)
 	var radius: float = 16.0
 	var centre: Vector3 = at + Vector3.UP * (radius + 6.0)
 	var upright: Basis = basis * Basis(Vector3.RIGHT, PI * 0.5)
@@ -416,52 +452,21 @@ static func _wow_composition(world, heroes: Array) -> Array[Dictionary]:
 	var previous_rim: Vector3 = centre + basis.x * radius
 	for i in range(1, rim_segments + 1):
 		var phi: float = TAU * float(i) / float(rim_segments)
-		var rim_point: Vector3 = centre + basis.x * (cos(phi) * radius) + Vector3.UP * (
-			sin(phi) * radius
+		var rim_point: Vector3 = (
+			centre + basis.x * (cos(phi) * radius) + Vector3.UP * (sin(phi) * radius)
 		)
 		world._beam(previous_rim, rim_point, 0.24, Color("f2d36b"), true)
 		previous_rim = rim_point
 	world._prop("ball", centre, Vector3(3.4, 3.4, 3.4), Color("60dce2"), Basis.IDENTITY, true)
 	world._prop("cylinder", centre, Vector3(1.1, 3.8, 1.1), Color("5d8796"), upright)
-	var spokes: int = 8 if world.low_detail else 12
-	for i in range(spokes):
-		var phi: float = TAU * float(i) / float(spokes)
-		var rim: Vector3 = centre + basis.x * (cos(phi) * radius) + Vector3.UP * (sin(phi) * radius)
-		world._beam(centre, rim, 0.16, Color("f6edd8"), true)
-	var cabins: int = 8 if world.low_detail else 12
-	for i in range(cabins):
-		var phi: float = TAU * float(i) / float(cabins) + 0.12
-		var point: Vector3 = centre + basis.x * (cos(phi) * radius) + Vector3.UP * (sin(phi) * radius)
-		var cabin: Color = FACADES[i % FACADES.size()]
-		world._beam(point, point + Vector3.DOWN * 0.7, 0.09, Color("5d8796"))
-		world._prop("box", point + Vector3.DOWN * 1.85, Vector3(2.35, 2.2, 1.85), cabin, basis)
-		world._prop(
-			"box",
-			point + Vector3.DOWN * 1.7 + basis.z * 0.88,
-			Vector3(1.7, 1.25, 0.1),
-			GLASS,
-			basis,
-			true
-		)
-		world._prop(
-			"box",
-			point + Vector3.DOWN * 2.95,
-			Vector3(2.5, 0.2, 2.0),
-			ROOFS[i % ROOFS.size()],
-			basis
-		)
+	var attraction = ATTRACTION.new()
+	world.add_child(attraction)
+	attraction.configure(world, centre, basis, radius)
 	for side in [-1.0, 1.0]:
 		var foot: Vector3 = at + basis.x * side * 7.2 + Vector3.UP * 1.4
 		world._beam(foot, centre, 0.55, Color("5d8796"))
 		world._prop("cylinder", foot, Vector3(1.6, 1.1, 1.6), Color("263f56"))
 	world._beam(at + Vector3.UP * 1.6 - water_dir * 4.0, centre, 0.48, Color("5d8796"))
-	if not world.low_detail:
-		for i in range(8):
-			var phi: float = TAU * float(i) / 8.0
-			var lamp: Vector3 = centre + basis.x * (cos(phi) * (radius + 0.6)) + Vector3.UP * (
-				sin(phi) * (radius + 0.6)
-			)
-			world._prop("ball", lamp, Vector3(0.55, 0.55, 0.55), Color("fff1a0"), Basis.IDENTITY, true)
 	placed.append({"kind": "wow_wheel", "position": at, "fraction": WOW_DISTANCE / world.length})
 	world.set_meta("sonnenhafen_wow_landmark", at)
 
@@ -480,7 +485,9 @@ static func _wow_composition(world, heroes: Array) -> Array[Dictionary]:
 		)
 		light_at.y = 1.2
 	_wow_lighthouse(world, light_at)
-	placed.append({"kind": "wow_lighthouse", "position": light_at, "fraction": WOW_DISTANCE / world.length})
+	placed.append(
+		{"kind": "wow_lighthouse", "position": light_at, "fraction": WOW_DISTANCE / world.length}
+	)
 	return placed
 
 
@@ -494,7 +501,14 @@ static func _wow_lighthouse(world, at: Vector3) -> void:
 		world._prop("cylinder", at + Vector3.UP * y, Vector3(width, 2.15, width), stripe)
 	var lantern: Vector3 = at + Vector3.UP * (1.3 + float(bands) * 2.15 + 0.2)
 	world._prop("cylinder", lantern + Vector3.UP * 0.2, Vector3(3.0, 0.4, 3.0), Color("36576c"))
-	world._prop("cylinder", lantern + Vector3.UP * 1.45, Vector3(2.15, 2.1, 2.15), Color("ffe7a0"), Basis.IDENTITY, true)
+	world._prop(
+		"cylinder",
+		lantern + Vector3.UP * 1.45,
+		Vector3(2.15, 2.1, 2.15),
+		Color("ffe7a0"),
+		Basis.IDENTITY,
+		true
+	)
 	world._prop("torus", lantern + Vector3.UP * 0.55, Vector3(5.0, 0.14, 5.0), Color("60dce2"))
 	var posts: int = 6 if world.low_detail else 8
 	for i in range(posts):
@@ -506,7 +520,14 @@ static func _wow_lighthouse(world, at: Vector3) -> void:
 			Color("36576c")
 		)
 	world._prop("roof", lantern + Vector3.UP * 2.85, Vector3(4.4, 1.8, 4.4), Color("466c89"))
-	world._prop("ball", lantern + Vector3.UP * 4.05, Vector3(1.15, 1.15, 1.15), Color("fff4b0"), Basis.IDENTITY, true)
+	world._prop(
+		"ball",
+		lantern + Vector3.UP * 4.05,
+		Vector3(1.15, 1.15, 1.15),
+		Color("fff4b0"),
+		Basis.IDENTITY,
+		true
+	)
 
 
 static func _harbor_front(world, heroes: Array) -> Array[Dictionary]:
@@ -518,11 +539,38 @@ static func _harbor_front(world, heroes: Array) -> Array[Dictionary]:
 		var basis: Basis = world.frame(58.0)
 		world._prop("cylinder", at + Vector3.UP * 1.1, Vector3(11.4, 2.2, 11.4), Color("d9c4a0"))
 		world._prop("cylinder", at + Vector3.UP * 2.35, Vector3(10.2, 0.35, 10.2), TEAL)
-		world._prop("ball", at + Vector3.UP * 6.4, Vector3(10.5, 8.4, 10.5), Color("7fe0ea"), Basis.IDENTITY, true)
+		world._prop(
+			"ball",
+			at + Vector3.UP * 6.4,
+			Vector3(10.5, 8.4, 10.5),
+			Color("7fe0ea"),
+			Basis.IDENTITY,
+			true
+		)
 		if not world.low_detail:
-			world._prop("torus", at + Vector3.UP * 3.4, Vector3(14.0, 0.22, 14.0), Color("60dce2"), Basis.IDENTITY, true)
-			world._prop("box", at + basis * Vector3(0.0, 2.6, 5.6), Vector3(4.2, 3.4, 0.18), GLASS, basis, true)
-		world._prop("box", at + basis * Vector3(0.0, 1.6, 6.2), Vector3(4.8, 3.1, 1.4), Color("f4efe4"), basis)
+			world._prop(
+				"torus",
+				at + Vector3.UP * 3.4,
+				Vector3(14.0, 0.22, 14.0),
+				Color("60dce2"),
+				Basis.IDENTITY,
+				true
+			)
+			world._prop(
+				"box",
+				at + basis * Vector3(0.0, 2.6, 5.6),
+				Vector3(4.2, 3.4, 0.18),
+				GLASS,
+				basis,
+				true
+			)
+		world._prop(
+			"box",
+			at + basis * Vector3(0.0, 1.6, 6.2),
+			Vector3(4.8, 3.1, 1.4),
+			Color("f4efe4"),
+			basis
+		)
 		placed.append({"kind": "harbor_aquarium", "position": at, "fraction": 58.0 / world.length})
 	var slips: Array[Vector2] = [
 		Vector2(70.0, 58.0),
@@ -551,20 +599,36 @@ static func _harbor_front(world, heroes: Array) -> Array[Dictionary]:
 
 static func _harbor_boat(world, at: Vector3, basis: Basis, sailing: bool, accent: Color) -> void:
 	world._prop("hull", at, Vector3(1.35, 0.95, 1.35), NAVY, basis)
-	world._prop("box", at + basis * Vector3(0.0, 0.46, 0.35), Vector3(1.85, 0.18, 3.15), WOOD, basis)
+	world._prop(
+		"box", at + basis * Vector3(0.0, 0.46, 0.35), Vector3(1.85, 0.18, 3.15), WOOD, basis
+	)
 	if sailing:
-		world._prop("cylinder", at + basis * Vector3(0.0, 3.4, -0.4), Vector3(0.08, 6.2, 0.08), WHITE, basis)
+		world._prop(
+			"cylinder", at + basis * Vector3(0.0, 3.4, -0.4), Vector3(0.08, 6.2, 0.08), WHITE, basis
+		)
 		world._prop("sail", at + basis * Vector3(0.0, 0.9, -0.4), Vector3.ONE, WHITE, basis)
-		world._prop("sail", at + basis * Vector3(0.05, 1.0, -0.58), Vector3(1.0, 0.8, -0.6), accent, basis)
+		world._prop(
+			"sail", at + basis * Vector3(0.05, 1.0, -0.58), Vector3(1.0, 0.8, -0.6), accent, basis
+		)
 	else:
-		world._prop("box", at + basis * Vector3(0.0, 1.2, 0.2), Vector3(1.65, 1.25, 1.75), CREAM, basis)
-		world._prop("box", at + basis * Vector3(0.0, 1.9, 0.2), Vector3(2.0, 0.16, 2.15), accent, basis)
+		world._prop(
+			"box", at + basis * Vector3(0.0, 1.2, 0.2), Vector3(1.65, 1.25, 1.75), CREAM, basis
+		)
+		world._prop(
+			"box", at + basis * Vector3(0.0, 1.9, 0.2), Vector3(2.0, 0.16, 2.15), accent, basis
+		)
 	# Mirrored stand-ins so the water reads as reflective under llvmpipe.
 	var water_y: float = -2.35
 	var reflected := Vector3(at.x, 2.0 * water_y - at.y, at.z)
 	var shade: Color = NAVY.darkened(0.22)
 	world._prop("hull", reflected, Vector3(1.3, 0.85, 1.3), shade, basis)
-	world._prop("box", reflected + basis * Vector3(0.0, -0.4, 0.35), Vector3(1.75, 0.14, 3.0), WOOD.darkened(0.3), basis)
+	world._prop(
+		"box",
+		reflected + basis * Vector3(0.0, -0.4, 0.35),
+		Vector3(1.75, 0.14, 3.0),
+		WOOD.darkened(0.3),
+		basis
+	)
 
 
 static func _start_lights(world) -> void:
@@ -586,19 +650,34 @@ static func _start_lights(world) -> void:
 		var x: float = (float(i) - float(count - 1) * 0.5) * 1.35
 		var lamp: Vector3 = mid + basis.x * x + Vector3.UP * 4.55
 		world._prop("cylinder", lamp, Vector3(0.48, 0.58, 0.48), Color("3a1216"), basis)
-		world._prop("ball", lamp + Vector3.DOWN * 0.10, Vector3(0.54, 0.54, 0.54), Color("ff3b3b"), Basis.IDENTITY, true)
+		world._prop(
+			"ball",
+			lamp + Vector3.DOWN * 0.10,
+			Vector3(0.54, 0.54, 0.54),
+			Color("ff3b3b"),
+			Basis.IDENTITY,
+			true
+		)
 
 
 static func _finish_fireworks(world) -> void:
 	var at: Vector3 = world.position_at(0.0, 0.0) + Vector3.UP * 7.5
-	_firework_emitter(world, at, "SonnenhafenFinishFireworks", Color("ffd27a"), 28 if world.low_detail else 64)
+	_firework_emitter(
+		world, at, "SonnenhafenFinishFireworks", Color("ffd27a"), 28 if world.low_detail else 64
+	)
 	if not world.low_detail:
 		_firework_emitter(
-			world, at + Vector3(3.5, 1.0, -2.0), "SonnenhafenFinishFireworksMagenta", Color("ff7ad8"), 40
+			world,
+			at + Vector3(3.5, 1.0, -2.0),
+			"SonnenhafenFinishFireworksMagenta",
+			Color("ff7ad8"),
+			40
 		)
 
 
-static func _firework_emitter(world, at: Vector3, node_name: String, color: Color, amount: int) -> void:
+static func _firework_emitter(
+	world, at: Vector3, node_name: String, color: Color, amount: int
+) -> void:
 	var dust := GPUParticles3D.new()
 	dust.name = node_name
 	dust.position = at
