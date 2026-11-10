@@ -17,6 +17,9 @@ static func apply(root: Node3D) -> void:
 	_paw_path(root, box, density)
 	_compass_rose(root, box)
 	_waterfall_dressing(root, box, sparkles)
+	_sea(root)
+	_foliage(root, box, density)
+	_flowers(root, box, density)
 	_chamber_light(root, sparkles)
 	_light_rays(root, sparkles)
 
@@ -101,6 +104,26 @@ static func _stone_dressing(root: Node3D, mesh: BoxMesh, density: float) -> void
 		var z: float = marker_z[i]
 		for side in [-1.0, 1.0]:
 			xforms.append(_xform(Vector3(side * 6.45, 1.08, z), Vector3(0.44, 2.16, 0.3), side * 0.08))
+	# Steinbogen mit Pfoten-Emblem direkt vor dem Spawn (keine Collision).
+	xforms.append(_xform(Vector3(-2.55, 1.75, 1.35), Vector3(0.78, 3.5, 0.82)))
+	xforms.append(_xform(Vector3(2.55, 1.75, 1.35), Vector3(0.78, 3.5, 0.82)))
+	xforms.append(_xform(Vector3(-2.55, 3.62, 1.35), Vector3(1.02, 0.38, 1.02)))
+	xforms.append(_xform(Vector3(2.55, 3.62, 1.35), Vector3(1.02, 0.38, 1.02)))
+	for i in range(13):
+		var wt: float = float(i) / 12.0
+		var wangle: float = PI * (1.0 - wt)
+		var wx: float = cos(wangle) * 2.55
+		var wy: float = 3.45 + sin(wangle) * 2.05
+		xforms.append(_xform(Vector3(wx, wy, 1.35), Vector3(0.95, 0.48, 0.9), wangle - PI * 0.5))
+	# Kompass-Sockel neben dem Start (rechts vom Pfad).
+	xforms.append(_xform(Vector3(2.45, 0.2, 4.55), Vector3(1.25, 0.4, 1.25)))
+	xforms.append(_xform(Vector3(2.45, 0.72, 4.55), Vector3(0.58, 0.85, 0.58)))
+	xforms.append(_xform(Vector3(2.45, 1.22, 4.55), Vector3(1.35, 0.18, 1.35)))
+	# Felsen für den sichtbaren Start-Wasserfall links vom Pfad.
+	xforms.append(_xform(Vector3(-12.6, 1.35, 2.1), Vector3(3.4, 2.7, 2.2), 0.18))
+	xforms.append(_xform(Vector3(-11.4, 2.55, 1.6), Vector3(2.2, 2.1, 1.6), -0.22))
+	xforms.append(_xform(Vector3(-13.5, 0.7, 3.2), Vector3(1.8, 1.4, 1.5), 0.4))
+	xforms.append(_xform(Vector3(-10.6, 0.55, 3.4), Vector3(1.35, 1.1, 1.2), -0.3))
 	# Offene Schatzkammer hinter der echten GLB-Truhe.
 	xforms.append(_xform(Vector3(0.0, 2.2, -69.45), Vector3(7.6, 4.4, 0.58)))
 	xforms.append(_xform(Vector3(-3.95, 2.05, -67.35), Vector3(0.58, 4.1, 3.7)))
@@ -142,22 +165,31 @@ static func _paw_path(root: Node3D, mesh: BoxMesh, density: float) -> void:
 	while z > -63.6:
 		var x: float = side * 0.46
 		var yaw: float = side * 0.14
-		xforms.append(_xform(Vector3(x, 0.06, z), Vector3(0.3, 0.03, 0.36), yaw))
-		xforms.append(_xform(Vector3(x + side * 0.11, 0.058, z - 0.28), Vector3(0.12, 0.026, 0.12), yaw))
-		xforms.append(_xform(Vector3(x - side * 0.12, 0.058, z - 0.25), Vector3(0.11, 0.026, 0.11), yaw))
+		xforms.append(_xform(Vector3(x, 0.07, z), Vector3(0.38, 0.045, 0.46), yaw))
+		xforms.append(_xform(Vector3(x + side * 0.14, 0.072, z - 0.34), Vector3(0.15, 0.04, 0.15), yaw))
+		xforms.append(_xform(Vector3(x - side * 0.15, 0.072, z - 0.3), Vector3(0.13, 0.04, 0.13), yaw))
+		xforms.append(_xform(Vector3(x + side * 0.02, 0.072, z - 0.38), Vector3(0.12, 0.04, 0.12), yaw))
 		z -= step
 		side *= -1.0
-	BuildVoxelStyle.multimesh(root, "TreasurePawPath", mesh, _mat(Color("5a4030")), xforms)
+	BuildVoxelStyle.multimesh(
+		root, "TreasurePawPath", mesh, _mat(Color("d4a018"), Color("ffcc44"), 1.25), xforms
+	)
 
 
 static func _compass_rose(root: Node3D, mesh: BoxMesh) -> void:
 	var xforms: Array[Transform3D] = []
-	xforms.append(_xform(Vector3(0.0, 0.06, 4.15), Vector3(1.15, 0.03, 1.15), 0.78))
-	xforms.append(_xform(Vector3(0.0, 0.075, 4.15), Vector3(0.16, 0.03, 1.35)))
-	xforms.append(_xform(Vector3(0.0, 0.075, 4.15), Vector3(1.35, 0.03, 0.16)))
-	xforms.append(_xform(Vector3(0.0, 0.08, 3.45), Vector3(0.18, 0.03, 0.28)))
+	# Kompassrose auf dem Sockel neben dem Spawn.
+	xforms.append(_xform(Vector3(2.45, 1.36, 4.55), Vector3(1.05, 0.05, 1.05), 0.78))
+	xforms.append(_xform(Vector3(2.45, 1.4, 4.55), Vector3(0.14, 0.05, 1.15)))
+	xforms.append(_xform(Vector3(2.45, 1.4, 4.55), Vector3(1.15, 0.05, 0.14)))
+	xforms.append(_xform(Vector3(2.45, 1.42, 4.1), Vector3(0.16, 0.05, 0.24)))
+	# Pfoten-Emblem am Scheitel des Startbogens.
+	xforms.append(_xform(Vector3(0.0, 5.38, 0.68), Vector3(0.62, 0.48, 0.14)))
+	xforms.append(_xform(Vector3(-0.32, 5.68, 0.68), Vector3(0.2, 0.2, 0.12)))
+	xforms.append(_xform(Vector3(0.0, 5.78, 0.68), Vector3(0.2, 0.22, 0.12)))
+	xforms.append(_xform(Vector3(0.32, 5.68, 0.68), Vector3(0.2, 0.2, 0.12)))
 	BuildVoxelStyle.multimesh(
-		root, "TreasureCompassRose", mesh, _mat(Color("c9a24a"), Color("e6c56a"), 0.35), xforms
+		root, "TreasureCompassRose", mesh, _mat(Color("d7a02a"), Color("ffe08a"), 1.35), xforms
 	)
 
 
@@ -167,6 +199,12 @@ static func _waterfall_dressing(root: Node3D, mesh: BoxMesh, sparkles: int) -> v
 	water.append(_xform(Vector3(16.0, 0.07, -20.7), Vector3(4.6, 0.14, 3.2)))
 	water.append(_xform(Vector3(19.0, 0.07, -20.7), Vector3(3.4, 0.12, 2.6)))
 	water.append(_xform(Vector3(14.6, 0.16, -20.05), Vector3(6.6, 0.1, 1.15)))
+	# Teich und Fall links vom Start, im Blick der Startkamera.
+	water.append(_xform(Vector3(-12.2, 0.1, 3.8), Vector3(6.2, 0.2, 4.8)))
+	water.append(_xform(Vector3(-12.4, 2.05, 2.15), Vector3(1.45, 3.8, 0.32)))
+	water.append(_xform(Vector3(-11.5, 1.75, 1.95), Vector3(1.15, 3.2, 0.28)))
+	water.append(_xform(Vector3(-13.1, 1.55, 2.25), Vector3(0.95, 2.8, 0.24)))
+	water.append(_xform(Vector3(-12.2, 0.28, 2.85), Vector3(3.0, 0.18, 1.6)))
 	var water_mat := StandardMaterial3D.new()
 	water_mat.albedo_color = Color(0.32, 0.62, 0.78, 0.58)
 	water_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -276,4 +314,93 @@ static func _light_rays(root: Node3D, sparkles: int) -> void:
 	mat.emission = Color("ffe7a1")
 	mat.emission_energy_multiplier = 0.8
 	BuildVoxelStyle.multimesh(root, "TreasureLightRays", mesh, mat, rays)
+
+static func _sea(root: Node3D) -> void:
+	var sea := MeshInstance3D.new()
+	sea.name = "TreasureSea"
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(280, 280)
+	sea.mesh = plane
+	sea.position = Vector3(0.0, -1.65, -22.0)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.16, 0.42, 0.58, 1.0)
+	mat.roughness = 0.2
+	mat.metallic = 0.18
+	mat.emission_enabled = true
+	mat.emission = Color("2a6a88")
+	mat.emission_energy_multiplier = 0.22
+	sea.material_override = mat
+	sea.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(sea)
+
+
+static func _foliage(root: Node3D, mesh: BoxMesh, density: float) -> void:
+	var xforms: Array[Transform3D] = []
+	# Ranken am Startbogen.
+	for i in range(7):
+		var y: float = 0.45 + float(i) * 0.42
+		xforms.append(_xform(Vector3(-2.95, y, 1.35), Vector3(0.16, 0.48, 0.16), 0.35))
+		xforms.append(_xform(Vector3(2.95, y, 1.35), Vector3(0.16, 0.48, 0.16), -0.35))
+		xforms.append(_xform(Vector3(-2.15, y + 0.1, 1.55), Vector3(0.14, 0.4, 0.14), -0.5))
+		xforms.append(_xform(Vector3(2.15, y + 0.1, 1.55), Vector3(0.14, 0.4, 0.14), 0.5))
+	# Farne im Vordergrund und am Wegrand (zwischen Kamera und Spawn).
+	var ferns: Array = [
+		Vector3(-4.4, 0.0, 11.6),
+		Vector3(5.1, 0.0, 10.8),
+		Vector3(-5.6, 0.0, 8.4),
+		Vector3(5.8, 0.0, 7.6),
+		Vector3(-6.4, 0.0, 13.2),
+		Vector3(6.8, 0.0, 12.4),
+		Vector3(-3.9, 0.0, 5.2),
+		Vector3(4.6, 0.0, 4.4),
+		Vector3(-7.2, 0.0, 9.5),
+		Vector3(7.4, 0.0, 9.0),
+		Vector3(-5.0, 0.0, 15.4),
+		Vector3(6.0, 0.0, 14.6),
+		Vector3(-8.1, 0.0, 6.2),
+		Vector3(8.2, 0.0, 5.5),
+		Vector3(-4.8, 0.0, 2.4),
+		Vector3(4.4, 0.0, 1.8),
+	]
+	var count: int = maxi(8, int(round(float(ferns.size()) * density)))
+	for i in range(count):
+		var at: Vector3 = ferns[i]
+		xforms.append(_xform(Vector3(at.x, 0.55, at.z), Vector3(0.22, 1.1, 0.12), float(i) * 0.4))
+		xforms.append(_xform(Vector3(at.x + 0.12, 0.42, at.z + 0.08), Vector3(0.16, 0.82, 0.1), float(i) * 0.4 + 0.5))
+		xforms.append(_xform(Vector3(at.x - 0.1, 0.38, at.z - 0.06), Vector3(0.14, 0.7, 0.1), float(i) * 0.4 - 0.45))
+	BuildVoxelStyle.multimesh(root, "TreasureFoliage", mesh, _mat(Color("3d8f36")), xforms)
+
+
+static func _flowers(root: Node3D, mesh: BoxMesh, density: float) -> void:
+	var purple: Array[Transform3D] = []
+	var blue: Array[Transform3D] = []
+	var spots: Array = [
+		Vector3(-3.6, 0.0, 10.2),
+		Vector3(4.4, 0.0, 9.4),
+		Vector3(-5.2, 0.0, 7.1),
+		Vector3(5.4, 0.0, 6.4),
+		Vector3(-6.0, 0.0, 12.0),
+		Vector3(6.2, 0.0, 11.2),
+		Vector3(-3.4, 0.0, 3.8),
+		Vector3(3.8, 0.0, 3.1),
+		Vector3(-7.0, 0.0, 8.2),
+		Vector3(7.1, 0.0, 7.5),
+		Vector3(-4.6, 0.0, 14.0),
+		Vector3(5.2, 0.0, 13.3),
+		Vector3(-8.4, 0.0, 4.6),
+		Vector3(3.6, 0.0, 1.2),
+		Vector3(-2.9, 0.0, 8.6),
+		Vector3(2.9, 0.0, 8.0),
+	]
+	var count: int = maxi(8, int(round(float(spots.size()) * density)))
+	for i in range(count):
+		var at: Vector3 = spots[i]
+		var dest: Array[Transform3D] = purple if i % 2 == 0 else blue
+		dest.append(_xform(Vector3(at.x, 0.22, at.z), Vector3(0.06, 0.44, 0.06)))
+		dest.append(_xform(Vector3(at.x, 0.5, at.z), Vector3(0.2, 0.16, 0.2)))
+		dest.append(_xform(Vector3(at.x + 0.22, 0.18, at.z + 0.16), Vector3(0.05, 0.36, 0.05)))
+		dest.append(_xform(Vector3(at.x + 0.22, 0.4, at.z + 0.16), Vector3(0.16, 0.13, 0.16)))
+	# Eine Farbe pro MultiMesh, beide im selben Draw-Call-Budget wie zwei Batches.
+	BuildVoxelStyle.multimesh(root, "TreasureFlowersPurple", mesh, _mat(Color("7a4ad6"), Color("b28cff"), 0.45), purple)
+	BuildVoxelStyle.multimesh(root, "TreasureFlowersBlue", mesh, _mat(Color("3a78e0"), Color("7eb6ff"), 0.45), blue)
 

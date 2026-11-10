@@ -70,6 +70,7 @@ func _ready() -> void:
 	camera.fov = 55
 	camera.current = true
 	camera.position = player.position + Vector3(10, 14, 19)
+	camera.look_at(player.position + Vector3.UP)
 	marker = kit.mesh(self, kit.SHAPES.star(), Vector3.ZERO, Color("ffe7a1"), true)
 	marker.scale = Vector3.ONE * 0.65
 	_ui()
@@ -91,6 +92,8 @@ func _landscape() -> void:
 	terrain.name = "TreasureTerrain"
 	terrain.mesh = _terrain_mesh()
 	terrain.material_override = _terrain_material()
+	terrain.extra_cull_margin = 80.0
+	terrain.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 	ground.add_child(terrain)
 	kit.collision(ground, Vector3(0, -0.65, -29), Vector3(74, 1.3, 88))
 	# A continuous promenade lets younger children return to any clue without getting lost.
@@ -108,7 +111,7 @@ func _landscape() -> void:
 	var paver := BoxMesh.new()
 	paver.size = Vector3.ONE
 	BuildVoxelStyle.multimesh(
-		self, "TreasurePath", paver, BuildVoxelStyle.material("paving", Color("d8d2c4")), path_xforms
+		self, "TreasurePath", paver, BuildVoxelStyle.material("paving", Color("c9a06a")), path_xforms
 	)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 71882
@@ -464,15 +467,18 @@ func _terrain_material() -> StandardMaterial3D:
 	mat.normal_enabled = true
 	mat.normal_texture = BuildVoxelStyle.material("grass_top").normal_texture
 	mat.normal_scale = 0.55
-	mat.albedo_color = Color("c4c2a4")
+	mat.albedo_color = Color("c5c08a")
 	mat.vertex_color_use_as_albedo = true
 	mat.roughness = 0.92
 	mat.metallic = 0.0
 	mat.uv1_triplanar = true
 	mat.uv1_world_triplanar = true
 	mat.uv1_triplanar_sharpness = 4.0
-	mat.uv1_scale = Vector3(0.055, 0.055, 0.055)
+	mat.uv1_scale = Vector3(0.08, 0.08, 0.08)
 	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	# Compatibility zeichnet große ArrayMeshes sonst teils unsichtbar,
+	# wenn Tangenten fehlen oder die Fläche zu flach zum Licht steht.
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	return mat
 
 
@@ -481,10 +487,10 @@ func _terrain_mesh() -> ArrayMesh:
 	noise.seed = 71882
 	noise.frequency = 0.045
 	noise.fractal_octaves = 3
-	var cols := 48
-	var rows := 56
-	var origin := Vector3(-40.0, 0.0, -75.0)
-	var step := Vector2(80.0 / float(cols - 1), 94.0 / float(rows - 1))
+	var cols := 52
+	var rows := 68
+	var origin := Vector3(-42.0, 0.0, -78.0)
+	var step := Vector2(84.0 / float(cols - 1), 122.0 / float(rows - 1))
 	var verts: Array[Vector3] = []
 	var colors: PackedColorArray = PackedColorArray()
 	verts.resize(cols * rows)
@@ -494,19 +500,23 @@ func _terrain_mesh() -> ArrayMesh:
 			var x: float = origin.x + float(col) * step.x
 			var z: float = origin.z + float(row) * step.y
 			var nx: float = absf(x) / 37.0
-			var nz: float = absf(z + 29.0) / 44.0
+			# Südufer weiter draußen, damit die Startkamera über Gras/Strand steht.
+			# Collision bleibt 74×1.3×88 bei (0, -0.65, -29).
+			var nz: float = absf(z + 29.0) / (44.0 if z <= -29.0 else 58.0)
 			var radial: float = pow(nx * nx * nx * nx + nz * nz * nz * nz, 0.25)
 			var rim: float = clampf((radial - 0.78) / 0.28, 0.0, 1.0)
 			var path: float = 1.0 - clampf((absf(x) - 2.15) / 1.7, 0.0, 1.0)
-			var wave: float = noise.get_noise_2d(x, z) * 0.11 * (1.0 - path) * (1.0 - rim)
-			var y: float = wave - rim * rim * 2.35
-			var grass := Color("6d7d4c").lerp(Color("5a6d40"), 0.5 + 0.5 * noise.get_noise_2d(x + 40.0, z - 12.0))
-			grass = grass.lerp(Color("7a7a48"), clampf(0.35 + noise.get_noise_2d(x - 18.0, z + 9.0), 0.0, 0.45))
-			var dirt := Color("8a7a55")
+			var wave: float = noise.get_noise_2d(x, z) * 0.34 * (1.0 - path) * (1.0 - rim)
+			var mound: float = absf(noise.get_noise_2d(x * 0.37, z * 0.37)) * 0.22 * (1.0 - path) * (1.0 - rim)
+			var y: float = wave + mound - rim * rim * 2.35
+			var moss_n: float = 0.5 + 0.5 * noise.get_noise_2d(x + 40.0, z - 12.0)
+			var grass := Color("4a6a30").lerp(Color("6a8438"), moss_n)
+			grass = grass.lerp(Color("3a5a34"), clampf(0.2 + noise.get_noise_2d(x - 18.0, z + 9.0), 0.0, 0.5))
+			var dirt := Color("7a6244")
 			var sand := Color("c4b48a")
-			var rock := Color("7a7468")
-			var color: Color = grass.lerp(dirt, path)
-			color = color.lerp(sand, clampf(rim * 1.4, 0.0, 1.0))
+			var rock := Color("6a6560")
+			var color: Color = grass.lerp(dirt, path * 0.85)
+			color = color.lerp(sand, clampf(rim * 1.45, 0.0, 1.0))
 			if rim > 0.72:
 				color = color.lerp(rock, (rim - 0.72) / 0.28)
 			var idx: int = row * cols + col
