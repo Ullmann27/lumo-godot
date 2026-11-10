@@ -4,6 +4,7 @@ const CATALOG = preload("res://scripts/creative/build_catalog.gd")
 const STATE = preload("res://scripts/creative/build_state.gd")
 const RUNTIME = preload("res://scripts/creative/creative_runtime.gd")
 const KIT = preload("res://scripts/creative/creative_kit.gd")
+const SANDBOX = preload("res://scripts/creative/build_sandbox_tools.gd")
 var model = STATE.new()
 var kit = KIT.new()
 var world: Node3D
@@ -45,6 +46,8 @@ var guide_path: Array[Vector3i] = []
 var guide_time: float = 0.0
 var autosave: float = 0.0
 var dirty: bool = false
+var sandbox_mode: String = ""
+var sandbox_points: Array[Vector3i] = []
 var previous_runtime: Dictionary
 var safe_ui: Control
 var placed_nodes: Dictionary = {}
@@ -190,6 +193,10 @@ func _ui() -> void:
 		["Entfernen", _toggle_erase],
 		["Rückgängig", _undo],
 		["Wiederholen", _redo],
+		["Füllen", _set_sandbox_mode.bind("fill")],
+		["Kopieren", _set_sandbox_mode.bind("copy")],
+		["Spiegel X", _set_sandbox_mode.bind("mirror_x")],
+		["Spiegel Z", _set_sandbox_mode.bind("mirror_z")],
 		["Welten (6)", _slots],
 		["Speichern", save_world],
 		["Laden", load_world],
@@ -499,6 +506,9 @@ func _preview_at(at: Vector2) -> Vector3i:
 func _tap(at: Vector2) -> void:
 	if paused:
 		return
+	if not sandbox_mode.is_empty():
+		_sandbox_tap(_preview_at(at))
+		return
 	if erase_mode:
 		var hit: Dictionary = _ray(at)
 		if not hit.is_empty() and hit.collider.has_meta("uid"):
@@ -643,6 +653,76 @@ func _notification(what: int) -> void:
 			_pause(true)
 
 
+func _set_sandbox_mode(mode: String) -> void:
+	sandbox_mode = "" if sandbox_mode == mode else mode
+	sandbox_points.clear()
+	erase_mode = false
+	if sandbox_mode.is_empty():
+		status.text = "Werkzeug beendet. Tippe auf einen freien Platz zum Bauen."
+	elif sandbox_mode == "fill":
+		status.text = "Füllen: Tippe die erste und die gegenüberliegende Ecke."
+	else:
+		status.text = (
+			"Kopieren: Wähle zwei Ecken und danach den Zielpunkt."
+			if sandbox_mode == "copy"
+			else "Spiegeln: Wähle zwei Ecken und danach den Zielpunkt."
+		)
+
+
+func _sandbox_tap(cell: Vector3i) -> void:
+	if STATE.out_of_world(cell):
+		status.text = "Dieser Punkt liegt außerhalb deiner Bauwelt."
+		return
+	sandbox_points.append(cell)
+	if sandbox_mode == "fill" and sandbox_points.size() < 2:
+		status.text = "Füllen: Jetzt die gegenüberliegende Ecke wählen."
+		return
+	if sandbox_mode != "fill" and sandbox_points.size() < 2:
+		status.text = "Bereich gewählt: Jetzt die zweite Ecke wählen."
+		return
+	if sandbox_mode != "fill" and sandbox_points.size() < 3:
+		status.text = "Bereich gewählt: Jetzt den Zielpunkt für die Kopie wählen."
+		return
+
+	var result: Dictionary
+	if sandbox_mode == "fill":
+		result = SANDBOX.fill_rect(model, chosen, sandbox_points[0], sandbox_points[1], turn)
+	else:
+		var source_low := Vector3i(
+			mini(sandbox_points[0].x, sandbox_points[1].x),
+			mini(sandbox_points[0].y, sandbox_points[1].y),
+			mini(sandbox_points[0].z, sandbox_points[1].z)
+		)
+		var offset: Vector3i = sandbox_points[2] - source_low
+		if sandbox_mode == "copy":
+			result = SANDBOX.copy_region(
+				model, sandbox_points[0], sandbox_points[1], offset
+			)
+		else:
+			result = SANDBOX.mirror_copy_region(
+				model,
+				sandbox_points[0],
+				sandbox_points[1],
+				"x" if sandbox_mode == "mirror_x" else "z",
+				offset
+			)
+	sandbox_points.clear()
+	if bool(result.get("ok", false)):
+		dirty = true
+		_rebuild()
+		_update_labels()
+		status.text = "%d Teile mit %s erstellt. Rückgängig macht alles auf einmal." % [
+			int(result.get("count", 0)),
+			(
+				"Füllen"
+				if sandbox_mode == "fill"
+				else ("Kopieren" if sandbox_mode == "copy" else "Spiegeln")
+			),
+		]
+	else:
+		status.text = str(result.get("error", "Die Werkzeugaktion konnte nicht ausgeführt werden."))
+
+
 func _rotate() -> void:
 	turn = posmod(turn + 1, 4)
 	_update_labels()
@@ -650,6 +730,9 @@ func _rotate() -> void:
 
 func _toggle_erase() -> void:
 	erase_mode = not erase_mode
+	if erase_mode:
+		sandbox_mode = ""
+		sandbox_points.clear()
 	status.text = (
 		"Tippe auf das Bauteil, das du entfernen möchtest."
 		if erase_mode
@@ -658,12 +741,14 @@ func _toggle_erase() -> void:
 
 
 func _undo() -> void:
+	sandbox_points.clear()
 	if model.undo():
 		dirty = true
 		_rebuild()
 
 
 func _redo() -> void:
+	sandbox_points.clear()
 	if model.redo():
 		dirty = true
 		_rebuild()
