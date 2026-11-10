@@ -16,10 +16,19 @@ var turn: int = 0
 var layer: int = 0
 var erase_mode: bool = false
 var paused: bool = false
-var orbit: float = 0.62
-var tilt: float = 0.68
-var radius: float = 29.0
-var focus := Vector3(-2, 0, 0)
+# Start overview: pulled back past the expanded rim and canyon so Werkstatt,
+# Sternwarte, castle and waterfall still share one frame (Tafel 03 framing).
+const START_ORBIT: float = 0.48
+const START_TILT: float = 0.48
+const START_RADIUS: float = 44.0
+const START_FOCUS := Vector3(0.6, 0.8, 4.0)
+const RADIUS_MIN: float = 10.0
+const RADIUS_MAX: float = 72.0
+const FOCUS_LIMIT: float = 32.0
+var orbit: float = START_ORBIT
+var tilt: float = START_TILT
+var radius: float = START_RADIUS
+var focus := START_FOCUS
 var tap_start := Vector2.ZERO
 var pointer_id: int = -1
 var dragged: bool = false
@@ -62,7 +71,7 @@ func _ready() -> void:
 	world.name = "Construction"
 	add_child(world)
 	camera = Camera3D.new()
-	camera.fov = 52
+	camera.fov = 54
 	camera.far = 200
 	add_child(camera)
 	camera.current = true
@@ -85,6 +94,19 @@ func _ready() -> void:
 		model.place("tree", Vector3i(-11, 0, 3))
 		model.place("lantern", Vector3i(-4, 0, -4))
 		model.place("flowers", Vector3i(-7, 0, 1))
+		# Visible 2013 landmarks on the free right bank and river (off the castle).
+		model.place("cottage", Vector3i(7, 0, 5))
+		model.place("observatory", Vector3i(9, 0, -2))
+		model.place("tree", Vector3i(11, 0, 4))
+		model.place("tree", Vector3i(5, 0, 8))
+		model.place("bridge", Vector3i(-1, 0, 6))
+		model.place("bridge", Vector3i(2, 0, 6))
+		model.place("magic", Vector3i(5, 0, 5))
+		model.place("lantern", Vector3i(6, 0, 4))
+		# Ready-to-use plots on the new land and river islands (kids can keep building).
+		model.add_starter_plot("garden", false)
+		model.add_starter_plot("harbor", false)
+		model.add_starter_plot("island", false)
 	_rebuild()
 	_camera_update()
 	get_viewport().size_changed.connect(_resize)
@@ -94,81 +116,28 @@ func _ready() -> void:
 
 
 func _ground() -> void:
+	# Collision stays a flat island so placed blocks do not float; visuals are dressed separately.
+	# Footprint matches build_state.HALF (24): banks x=-24.5..0 and 4..24.5, z=-24.5..24.5.
+	var half := float(STATE.HALF) + 0.5
 	for side in [-1, 1]:
 		var bank := StaticBody3D.new()
 		bank.name = "RiverBank"
 		add_child(bank)
-		var center := Vector3(-8.5 if side == -1 else 10.0, -1.2, 0)
-		var size := Vector3(17 if side == -1 else 13, 2.4, 33)
-		var cliff := kit.box(bank, center, size, Color.WHITE)
-		cliff.material_override = BuildVoxelStyle.material("stone", Color("c8bca8"))
-		var lawn := kit.box(
-			bank, center + Vector3.UP * 1.15, Vector3(size.x, 0.16, 33), Color.WHITE
-		)
-		lawn.material_override = BuildVoxelStyle.material("grass_top", Color.WHITE)
+		var width := half if side == -1 else half - 4.0
+		var center := Vector3((-width * 0.5) if side == -1 else (4.0 + width * 0.5), -1.2, 0)
+		var size := Vector3(width, 2.4, half * 2.0)
 		kit.collision(bank, center, size)
-	var water := kit.box(self, Vector3(2, -0.38, 0), Vector3(4, 0.14, 33), Color("1b81bd"))
+	var water := kit.box(self, Vector3(2, -0.38, 0), Vector3(4, 0.14, half * 2.0), Color("1b81bd"))
 	var mat := ShaderMaterial.new()
 	mat.shader = preload("res://assets/shaders/kart_water.gdshader")
 	water.material_override = mat
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 93231
-	var rock_xforms: Array[Transform3D] = []
-	var crystal_xforms: Array[Transform3D] = []
-	for z in range(-16, 17, 2):
-		for x in [-0.30, 4.32]:
-			rock_xforms.append(Transform3D(Basis.from_scale(Vector3(0.5, 0.4, 0.7)), Vector3(x, -0.1, z)))
-			if z % 6 == 0 and (LumoQuality.tier() != "low" or z % 12 == 0):
-				crystal_xforms.append(
-					Transform3D(Basis.from_scale(Vector3(0.28, 0.73, 0.30)), Vector3(x, 0.24, float(z)))
-				)
-	BuildVoxelStyle.multimesh(
-		self,
-		"RiverRocks",
-		kit.SHAPES.rock(),
-		BuildVoxelStyle.material("stone", Color("d2c7b4")),
-		rock_xforms
-	)
-	var gem_mat: StandardMaterial3D = kit.material(Color("6de5ff"), true)
-	BuildVoxelStyle.multimesh(self, "RiverCrystals", kit.SHAPES.crystal(), gem_mat, crystal_xforms)
-	var plant_xforms: Array[Transform3D] = []
-	for i in range(36):
-		var at := Vector3(rng.randf_range(-16.5, 16.5), 0.38, -16.3 if i % 2 == 0 else 16.3)
-		if at.x >= -0.5 and at.x < 4.5:
-			continue
-		var scale := 0.40 + float(i % 3) * 0.09
-		plant_xforms.append(Transform3D(Basis.from_scale(Vector3(scale, scale * 1.15, scale)), at))
-	var bush_mesh := SphereMesh.new()
-	bush_mesh.radius = 1.0
-	bush_mesh.height = 1.55
-	bush_mesh.radial_segments = 12
-	bush_mesh.rings = 8
-	BuildVoxelStyle.multimesh(
-		self,
-		"BorderPlants",
-		bush_mesh,
-		BuildVoxelStyle.material("leaves", Color("8fce5c")),
-		plant_xforms
-	)
-	for i in range(7):
-		var island_at := Vector3(-35 + float(i) * 12, -7 + float(i % 3) * 3, -29 - float(i % 2) * 8)
-		var rock := kit.mesh(
-			self, preload("res://scripts/creative/floating_island.gd").create(), island_at, Color("68719d")
-		)
-		rock.material_override = BuildVoxelStyle.material("stone", Color("cbbca6"))
-		var cap := kit.cylinder(self, island_at + Vector3.UP * 4.5, 5.1, 0.35, Color.WHITE)
-		cap.material_override = BuildVoxelStyle.material("grass_top", Color.WHITE)
-		if i in [1, 3, 5]:
-			kit.castle(self, island_at + Vector3.UP * 4.75, 0.7 if i != 3 else 1.0)
-		else:
-			var tree := kit.part_node(CATALOG.part("tree"))
-			tree.position = island_at + Vector3(-1, 4.75, -1)
-			add_child(tree)
-		if i % 2 == 0:
-			var fall := kit.part_node(CATALOG.part("waterfall"))
-			fall.position = island_at + Vector3(3.6, -4, 0)
-			fall.scale.y = 3
-			add_child(fall)
+	# Buildable river islands (tops at y=0, same support rule as the main banks).
+	for island_z in [-12.5, 19.5]:
+		var isle := StaticBody3D.new()
+		isle.name = "RiverIsland"
+		add_child(isle)
+		kit.collision(isle, Vector3(2.0, -1.2, island_z), Vector3(4.0, 2.4, 4.0))
+	BuildLandmarks.dress_world(self, kit)
 
 
 func _resize() -> void:
@@ -199,14 +168,14 @@ func _ui() -> void:
 	margin.add_child(hud)
 	var top := HBoxContainer.new()
 	hud.add_child(top)
-	top.add_child(KIT.button("‹ Spiele", _leave))
-	top.add_child(KIT.label("LUMO BAUWELT", 25))
+	top.add_child(_day_button("‹ Spiele", _leave))
+	top.add_child(_day_label("LUMO BAUWELT", 25))
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(spacer)
-	count_label = KIT.label("", 15)
+	count_label = _day_label("", 15)
 	top.add_child(count_label)
-	top.add_child(KIT.button("Ⅱ", func(): _pause(true), 52))
+	top.add_child(_day_button("Ⅱ", func(): _pause(true), 52))
 	var tools := HBoxContainer.new()
 	hud.add_child(tools)
 	var scroll := ScrollContainer.new()
@@ -227,14 +196,14 @@ func _ui() -> void:
 		["Vorlagen", _templates],
 		["Bauziele", _goals]
 	]:
-		actions.add_child(KIT.button(spec[0], spec[1]))
-	var layer_down: Button = KIT.button(
+		actions.add_child(_day_button(spec[0], spec[1]))
+	var layer_down: Button = _day_button(
 		"Ebene −",
 		func():
 			layer = maxi(0, layer - 1)
 			_update_labels()
 	)
-	var layer_up: Button = KIT.button(
+	var layer_up: Button = _day_button(
 		"Ebene +",
 		func():
 			layer = mini(17, layer + 1)
@@ -243,32 +212,32 @@ func _ui() -> void:
 	actions.add_child(layer_down)
 	actions.add_child(layer_up)
 	var goal_panel := PanelContainer.new()
-	goal_panel.add_theme_stylebox_override("panel", KIT.panel())
+	goal_panel.add_theme_stylebox_override("panel", _day_panel())
 	goal_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
 	goal_panel.position = Vector2(14, 126)
 	goal_panel.custom_minimum_size = Vector2(282, 0)
 	root.add_child(goal_panel)
 	var goal_box := VBoxContainer.new()
 	goal_panel.add_child(goal_box)
-	goal_label = KIT.label("", 17)
+	goal_label = _day_label("", 17)
 	goal_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	goal_label.custom_minimum_size.x = 260
 	goal_box.add_child(goal_label)
-	goal_box.add_child(KIT.button("Mein Bauwerk testen", _test_challenge))
+	goal_box.add_child(_day_button("Mein Bauwerk testen", _test_challenge))
 	var lower := VBoxContainer.new()
 	lower.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	lower.offset_top = -162
 	lower.offset_left = 12
 	lower.offset_right = -12
 	root.add_child(lower)
-	status = KIT.label("Tippe zum Bauen. Ziehe zum Drehen der Kamera. Zwei Finger: zoomen.", 14)
+	status = _day_label("Tippe zum Bauen. Ziehe zum Drehen der Kamera. Zwei Finger: zoomen.", 14)
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lower.add_child(status)
 	var categories := HBoxContainer.new()
 	lower.add_child(categories)
 	for name in ["Bauen", "Dächer", "Wege", "Natur", "Deko"]:
 		categories.add_child(
-			KIT.button(
+			_day_button(
 				name,
 				func():
 					category = name
@@ -288,36 +257,37 @@ func _ui() -> void:
 	camera_tools.position = Vector2(-200, -228)
 	root.add_child(camera_tools)
 	camera_tools.add_child(
-		KIT.button(
+		_day_button(
 			"−",
 			func():
-				radius = clampf(radius + 3, 10, 55)
+				radius = clampf(radius + 3, RADIUS_MIN, RADIUS_MAX)
 				_camera_update(),
 			48
 		)
 	)
 	camera_tools.add_child(
-		KIT.button(
+		_day_button(
 			"+",
 			func():
-				radius = clampf(radius - 3, 10, 55)
+				radius = clampf(radius - 3, RADIUS_MIN, RADIUS_MAX)
 				_camera_update(),
 			48
 		)
 	)
 	camera_tools.add_child(
-		KIT.button(
+		_day_button(
 			"Mitte",
 			func():
-				focus = Vector3(-2, 0, 0)
-				orbit = 0.62
-				tilt = 0.68
+				focus = START_FOCUS
+				orbit = START_ORBIT
+				tilt = START_TILT
+				radius = START_RADIUS
 				_camera_update(),
 			48
 		)
 	)
 	pause_panel = PanelContainer.new()
-	pause_panel.add_theme_stylebox_override("panel", KIT.panel())
+	pause_panel.add_theme_stylebox_override("panel", _day_panel())
 	pause_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	pause_panel.position = Vector2(-160, -140)
 	pause_panel.custom_minimum_size = Vector2(320, 280)
@@ -325,10 +295,10 @@ func _ui() -> void:
 	root.add_child(pause_panel)
 	var pause_box := VBoxContainer.new()
 	pause_panel.add_child(pause_box)
-	pause_box.add_child(KIT.label("Deine Welt wartet auf dich", 22))
-	pause_box.add_child(KIT.button("Weiterbauen", func(): _pause(false)))
-	pause_box.add_child(KIT.button("Speichern", save_world))
-	pause_box.add_child(KIT.button("Zur Spielewelt", _leave))
+	pause_box.add_child(_day_label("Deine Welt wartet auf dich", 22))
+	pause_box.add_child(_day_button("Weiterbauen", func(): _pause(false)))
+	pause_box.add_child(_day_button("Speichern", save_world))
+	pause_box.add_child(_day_button("Zur Spielewelt", _leave))
 
 
 func _palette() -> void:
@@ -338,7 +308,7 @@ func _palette() -> void:
 	for item in CATALOG.PARTS:
 		if item.category != category:
 			continue
-		var button: Button = KIT.button(
+		var button: Button = _day_button(
 			str(item.name),
 			func():
 				chosen = item.id
@@ -346,7 +316,7 @@ func _palette() -> void:
 				_update_labels(),
 			96
 		)
-		button.add_theme_color_override("font_color", item.color.lightened(0.25))
+		button.add_theme_color_override("font_color", item.color.darkened(0.35))
 		button.tooltip_text = "%s · %d×%d×%d" % [item.name, item.size.x, item.size.y, item.size.z]
 		palette.add_child(button)
 
@@ -412,6 +382,7 @@ func _typed_xforms(raw: Array) -> Array[Transform3D]:
 func _sync_batched_visuals(batches: Dictionary) -> void:
 	var wall_xforms: Array = []
 	var pane_xforms: Array = []
+	var planter_xforms: Array = []
 	var grass_body_xforms: Array = []
 	var grass_cap_xforms: Array = []
 	for ident in BuildVoxelStyle.BATCHABLE:
@@ -421,6 +392,7 @@ func _sync_batched_visuals(batches: Dictionary) -> void:
 				var px: Transform3D = BuildVoxelStyle.piece_transform(entry.piece, entry.item)
 				wall_xforms.append(px)
 				pane_xforms.append(Transform3D(px.basis, px.origin + px.basis * Vector3(0.5, 1.18, 1.02)))
+				planter_xforms.append(Transform3D(px.basis, px.origin + px.basis * Vector3(0.5, 0.82, 1.16)))
 			continue
 		if ident == "grass":
 			for entry in entries:
@@ -456,6 +428,13 @@ func _sync_batched_visuals(batches: Dictionary) -> void:
 		BuildVoxelStyle.window_pane(),
 		BuildVoxelStyle.material("glass", Color("9ae8ff")),
 		_typed_xforms(pane_xforms)
+	)
+	BuildVoxelStyle.multimesh(
+		world,
+		"Batch_wall_planters",
+		BuildLandmarks.planter_mesh(),
+		BuildVoxelStyle.material("leaves", Color("7ec85a")),
+		_typed_xforms(planter_xforms)
 	)
 	BuildVoxelStyle.multimesh(
 		world,
@@ -539,6 +518,7 @@ func _tap(at: Vector2) -> void:
 	if problem.is_empty():
 		dirty = true
 		_rebuild()
+		_place_feedback(cell)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -550,7 +530,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
 			radius = clampf(
-				radius + (-2 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 2), 10, 55
+				radius + (-2 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 2), RADIUS_MIN, RADIUS_MAX
 			)
 			_camera_update()
 		elif event.button_index == MOUSE_BUTTON_LEFT:
@@ -578,6 +558,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				else:
 					orbit -= event.relative.x * 0.007
 					tilt = clampf(tilt + event.relative.y * 0.005, 0.25, 1.2)
+				_clamp_focus()
 				_camera_update()
 		else:
 			_preview_at(event.position)
@@ -608,7 +589,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			touches[event.index] = event.position
 			a = touches[keys[0]]
 			b = touches[keys[1]]
-			radius = clampf(radius * before / maxf(1, a.distance_to(b)), 10, 55)
+			radius = clampf(radius * before / maxf(1, a.distance_to(b)), RADIUS_MIN, RADIUS_MAX)
 			var motion := (a + b) * 0.5 - old_center
 			focus += (
 				camera.basis.x * (-motion.x * radius / 650.0)
@@ -620,17 +601,17 @@ func _unhandled_input(event: InputEvent) -> void:
 			if dragged and not touch_gesture:
 				orbit -= event.relative.x * 0.007
 				tilt = clampf(tilt + event.relative.y * 0.005, 0.25, 1.2)
-		focus.x = clampf(focus.x, -20, 20)
-		focus.z = clampf(focus.z, -20, 20)
+		_clamp_focus()
 		_camera_update()
 	elif event is InputEventMagnifyGesture:
-		radius = clampf(radius / event.factor, 10, 55)
+		radius = clampf(radius / event.factor, RADIUS_MIN, RADIUS_MAX)
 		_camera_update()
 	elif event is InputEventPanGesture:
 		focus += (
 			camera.basis.x * event.delta.x * 0.1
 			+ Vector3(camera.basis.z.x, 0, camera.basis.z.z) * event.delta.y * 0.1
 		)
+		_clamp_focus()
 		_camera_update()
 
 
@@ -757,13 +738,13 @@ func load_world(show_message: bool = true) -> bool:
 	if raw.get("camera") is Dictionary:
 		orbit = float(raw.camera.get("orbit", 0.62))
 		tilt = clampf(float(raw.camera.get("tilt", 0.68)), 0.25, 1.2)
-		radius = clampf(float(raw.camera.get("radius", 29)), 10, 55)
+		radius = clampf(float(raw.camera.get("radius", 29)), RADIUS_MIN, RADIUS_MAX)
 		var saved_focus = raw.camera.get("focus", [])
 		if saved_focus is Array and saved_focus.size() == 3:
 			focus = Vector3(
-				clampf(float(saved_focus[0]), -20, 20),
+				clampf(float(saved_focus[0]), -FOCUS_LIMIT, FOCUS_LIMIT),
 				clampf(float(saved_focus[1]), 0, 19),
-				clampf(float(saved_focus[2]), -20, 20)
+				clampf(float(saved_focus[2]), -FOCUS_LIMIT, FOCUS_LIMIT)
 			)
 	_rebuild()
 	_camera_update()
@@ -781,14 +762,14 @@ func _choice_dialog(title: String, items: Array, action: Callable) -> void:
 	add_child(dialog)
 	var panel := PanelContainer.new()
 	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	panel.add_theme_stylebox_override("panel", KIT.panel())
+	panel.add_theme_stylebox_override("panel", _day_panel())
 	dialog.add_child(panel)
 	var box := VBoxContainer.new()
 	panel.add_child(box)
-	box.add_child(KIT.label(title, 23))
+	box.add_child(_day_label(title, 23))
 	for item in items:
-		box.add_child(KIT.button(item[1], _choose.bind(action, item[0], dialog)))
-	box.add_child(KIT.button("Abbrechen", dialog.queue_free))
+		box.add_child(_day_button(item[1], _choose.bind(action, item[0], dialog)))
+	box.add_child(_day_button("Abbrechen", dialog.queue_free))
 	dialog.close_requested.connect(dialog.queue_free)
 	dialog.popup_centered()
 
@@ -822,7 +803,7 @@ func _open_slot(id: int) -> void:
 	if not load_world(false):
 		model = STATE.new()
 		goal = "bridge"
-		focus = Vector3(-2, 0, 0)
+		focus = START_FOCUS
 		dirty = true
 		_rebuild()
 		_camera_update()
@@ -840,6 +821,9 @@ func _templates() -> void:
 			["bridge", "Brücke"],
 			["tower", "Sternenturm"],
 			["garden", "Garten"],
+			["plot_garden", "Garten-Parzelle"],
+			["plot_harbor", "Hafen-Parzelle"],
+			["plot_island", "Insel-Parzelle"],
 			["empty", "Leere Insel"]
 		],
 		_select_template
@@ -909,3 +893,115 @@ func _test_challenge() -> void:
 func _leave() -> void:
 	if save_world(false):
 		SceneRouter.goto("games")
+
+func _day_panel() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.96, 0.93, 0.84, 0.92)
+	style.border_color = Color("2f8a96")
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(14)
+	style.set_content_margin_all(12)
+	style.shadow_color = Color(0.12, 0.18, 0.16, 0.18)
+	style.shadow_size = 4
+	style.shadow_offset = Vector2(0, 1)
+	return style
+
+
+func _day_button(text: String, callback: Callable, min_width: float = 82) -> Button:
+	var control := Button.new()
+	control.text = text
+	control.custom_minimum_size = Vector2(min_width, 48)
+	control.add_theme_stylebox_override("normal", _day_panel())
+	var hover: StyleBoxFlat = _day_panel()
+	hover.bg_color = Color("d7efe8")
+	control.add_theme_stylebox_override("hover", hover)
+	control.add_theme_stylebox_override("pressed", hover)
+	control.add_theme_font_size_override("font_size", 16)
+	control.add_theme_color_override("font_color", Color("243038"))
+	control.add_theme_color_override("font_hover_color", Color("1a3c42"))
+	control.pressed.connect(callback)
+	return control
+
+
+func _day_label(text: String, size: int = 18) -> Label:
+	var control := Label.new()
+	control.text = text
+	control.add_theme_font_size_override("font_size", size)
+	control.add_theme_color_override("font_color", Color("243038"))
+	control.add_theme_color_override("font_shadow_color", Color(1, 1, 1, 0.35))
+	control.add_theme_constant_override("shadow_offset_x", 0)
+	control.add_theme_constant_override("shadow_offset_y", 1)
+	return control
+
+
+func _clamp_focus() -> void:
+	focus.x = clampf(focus.x, -FOCUS_LIMIT, FOCUS_LIMIT)
+	focus.z = clampf(focus.z, -FOCUS_LIMIT, FOCUS_LIMIT)
+
+
+func _place_feedback(cell: Vector3i) -> void:
+	## Small sparkle + chime after a successful place. Does not change save or grid logic.
+	var item: Dictionary = CATALOG.part(chosen)
+	var size: Vector3 = item.size if not item.is_empty() else Vector3.ONE
+	var at := Vector3(cell) + Vector3(size.x, size.y, size.z) * Vector3(0.5, 0.55, 0.5)
+	var spark := CPUParticles3D.new()
+	spark.name = "PlaceSparkle"
+	spark.one_shot = true
+	spark.explosiveness = 0.9
+	spark.lifetime = 0.45
+	spark.amount = 8 if LumoQuality.tier() == "low" else 16
+	spark.emitting = false
+	spark.direction = Vector3.UP
+	spark.spread = 70.0
+	spark.initial_velocity_min = 1.2
+	spark.initial_velocity_max = 3.0
+	spark.gravity = Vector3(0, -5, 0)
+	spark.scale_amount_min = 0.05
+	spark.scale_amount_max = 0.12
+	var puff := SphereMesh.new()
+	puff.radius = 0.12
+	puff.height = 0.24
+	puff.radial_segments = 6
+	puff.rings = 3
+	spark.mesh = puff
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color("fff3a8")
+	mat.emission_enabled = true
+	mat.emission = Color("7ad8ff")
+	mat.emission_energy_multiplier = 1.4
+	spark.material_override = mat
+	spark.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	spark.position = at
+	add_child(spark)
+	spark.emitting = true
+	var chime := AudioStreamPlayer.new()
+	chime.stream = _place_tone()
+	chime.volume_db = -10.0
+	add_child(chime)
+	chime.play()
+	get_tree().create_timer(0.7).timeout.connect(
+		func():
+			if is_instance_valid(spark):
+				spark.queue_free()
+			if is_instance_valid(chime):
+				chime.queue_free()
+	)
+
+
+func _place_tone() -> AudioStreamWAV:
+	var stream := AudioStreamWAV.new()
+	stream.format = AudioStreamWAV.FORMAT_16_BITS
+	stream.mix_rate = 22050
+	stream.stereo = false
+	var frames := 2205
+	var data := PackedByteArray()
+	data.resize(frames * 2)
+	for i in range(frames):
+		var tm := float(i) / 22050.0
+		var env := 1.0 - tm / 0.1
+		var sample := (sin(TAU * 880.0 * tm) * 0.22 + sin(TAU * 1320.0 * tm) * 0.10) * env
+		var value := int(clampf(sample, -1.0, 1.0) * 32767.0)
+		data[i * 2] = value & 255
+		data[i * 2 + 1] = (value >> 8) & 255
+	stream.data = data
+	return stream
