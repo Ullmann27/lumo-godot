@@ -19,6 +19,8 @@ const STREAK_LAYOUT: Array[Vector3] = [
 	Vector3(4.05, -0.25, -11.2),
 	Vector3(-3.20, 0.78, -13.0),
 	Vector3(3.10, -0.82, -12.6),
+	Vector3(-4.55, 1.05, -14.2),
+	Vector3(4.45, -1.15, -13.8),
 ]
 
 var streaks: Array[MeshInstance3D] = []
@@ -36,10 +38,10 @@ func _material(color: Color) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	material.albedo_color = Color(color.r, color.g, color.b, 0.42)
+	material.albedo_color = Color(color.r, color.g, color.b, 0.52)
 	material.emission_enabled = true
 	material.emission = color
-	material.emission_energy_multiplier = 2.2
+	material.emission_energy_multiplier = 3.15
 	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	return material
 
@@ -49,7 +51,7 @@ func _build() -> void:
 		return
 	for index in range(STREAK_LAYOUT.size()):
 		var mesh := BoxMesh.new()
-		mesh.size = Vector3(0.035, 0.028, 2.6 + float(index % 3) * 0.7)
+		mesh.size = Vector3(0.048, 0.036, 3.1 + float(index % 3) * 0.85)
 		var node := MeshInstance3D.new()
 		node.name = "SpeedStreak%02d" % index
 		node.mesh = mesh
