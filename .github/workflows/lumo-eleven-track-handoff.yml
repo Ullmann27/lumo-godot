@@ -1,0 +1,85 @@
+name: Lumo verified eleven-track handoff integration
+
+on:
+  push:
+    branches:
+      - lumo-next/eleven-tracks-handoff-20261110
+    paths:
+      - .github/handoffs/lumo-other-tracks-code.ready
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lumo-eleven-track-handoff-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-test-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Reconstruct verified 2026-11-06 handoff patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/handoffs/lumo-other-tracks-code.patch.gz.b64.part-* > "$RUNNER_TEMP/payload.b64"
+          base64 --decode "$RUNNER_TEMP/payload.b64" | gzip -dc > "$RUNNER_TEMP/handoff.patch"
+          echo "6acd54417023e67934f38d6d3239ac6b1fe791a8f190d01885aabbb11a95b0b5  $RUNNER_TEMP/handoff.patch" | sha256sum -c -
+          test -s "$RUNNER_TEMP/handoff.patch"
+
+      - name: Apply handoff without overwriting newer unrelated work
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply --check --3way "$RUNNER_TEMP/handoff.patch"
+          git apply --3way "$RUNNER_TEMP/handoff.patch"
+          git diff --check
+          git diff --name-only > "$RUNNER_TEMP/handoff-files.txt"
+          cat "$RUNNER_TEMP/handoff-files.txt"
+          test "$(wc -l < "$RUNNER_TEMP/handoff-files.txt")" -eq 33
+
+      - name: Install Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip"             https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Import project and reject parser or shader errors
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --editor --import --quit             > "$RUNNER_TEMP/godot-import.log" 2>&1
+          cat "$RUNNER_TEMP/godot-import.log"
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/godot-import.log"; then
+            exit 1
+          fi
+
+      - name: Verify all eleven themed tracks and real world placement
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/test_track_theme_contract.py
+          python3 tools/test_track_theme_world_runner.py -v
+          python3 tools/test_track_theme_world.py             --track=all --quality=both --timeout-seconds=120             --out="$RUNNER_TEMP/theme-worlds"
+          python3 tools/validate_project.py
+
+      - name: Commit only verified handoff files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t files < "$RUNNER_TEMP/handoff-files.txt"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "${files[@]}"
+          git diff --cached --check
+          git commit -m "feat(kart): integrate verified eleven-track theme handoff"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
