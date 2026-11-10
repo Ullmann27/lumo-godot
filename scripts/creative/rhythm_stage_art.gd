@@ -68,11 +68,7 @@ static func _backdrop(root: Node3D, mesh: BoxMesh, density: float) -> void:
 		root, "RhythmLeds", mesh, _mat(Color("5a3cff"), Color("7a5cff"), 0.85), tiles
 	)
 	BuildVoxelStyle.multimesh(
-		root,
-		"RhythmLedAccents",
-		mesh,
-		_mat(Color("ff8ad4"), Color("ffa0e0"), 1.05),
-		accents
+		root, "RhythmLedAccents", mesh, _mat(Color("ff8ad4"), Color("ffa0e0"), 1.05), accents
 	)
 	var curtain: Array[Transform3D] = []
 	for side in [-1.0, 1.0]:
@@ -107,9 +103,7 @@ static func _stage_lip(root: Node3D, mesh: BoxMesh) -> void:
 	BuildVoxelStyle.multimesh(
 		root, "RhythmStageLip", mesh, _mat(Color("2a1850"), Color("4a2890"), 0.35), lip
 	)
-	var shine: Array[Transform3D] = [
-		_xform(Vector3(0.0, 0.045, -8.0), Vector3(11.6, 0.02, 26.0))
-	]
+	var shine: Array[Transform3D] = [_xform(Vector3(0.0, 0.045, -8.0), Vector3(11.6, 0.02, 26.0))]
 	BuildVoxelStyle.multimesh(
 		root, "RhythmStageSheen", mesh, _mat(Color("2c1a4c"), Color("3d2470"), 0.2), shine
 	)
@@ -124,9 +118,7 @@ static func _spotlights(root: Node3D, sparkles: int) -> void:
 	cone.rings = 1
 	var xforms: Array[Transform3D] = []
 	var positions: Array[Vector3] = [
-		Vector3(-4.6, 8.4, -6.0),
-		Vector3(0.0, 8.8, -10.5),
-		Vector3(4.6, 8.4, -6.0)
+		Vector3(-4.6, 8.4, -6.0), Vector3(0.0, 8.8, -10.5), Vector3(4.6, 8.4, -6.0)
 	]
 	if sparkles > 0:
 		positions.append(Vector3(-2.2, 8.6, -16.0))
