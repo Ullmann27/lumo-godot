@@ -10,10 +10,10 @@ extends RefCounted
 const ISLAND_SIZE := Vector2(7.0, 6.0)
 const TOP_Y: float = 0.25
 const CORNER: float = 0.75
-const GRASS := Color("7ccf4c")
-const GRASS_EDGE := Color("57a83a")
+const GRASS := Color("6aa34c")
+const GRASS_EDGE := Color("4e7f38")
 const EARTH := Color("8f5c36")
-const ROCK := Color("5d5174")
+const ROCK := Color("6a6174")
 const WATERFALL_SHADER := """
 shader_type spatial;
 render_mode unshaded, cull_disabled, depth_draw_never, blend_mix;
@@ -85,14 +85,37 @@ func _outline(half: Vector2, radius: float) -> Array[Vector2]:
 
 ## Island visual: grass cap, grass lip, earth band and a tapering rock body.
 ## `depth` is the height of the underside below the top surface.
-func island_mesh(size: Vector2, depth: float, seed_offset: float) -> ArrayMesh:
+func _palette(style: int) -> Dictionary:
+	match style:
+		1:
+			return {
+				"inner": Color("d5cfc2").lightened(0.04),
+				"top": Color("c4bdb0"),
+				"edge": Color("8f877c"),
+			}
+		2:
+			return {
+				"inner": Color("d2a46c").lightened(0.05),
+				"top": Color("c99558"),
+				"edge": Color("8a6238"),
+			}
+		_:
+			return {
+				"inner": GRASS.lightened(0.06),
+				"top": GRASS,
+				"edge": GRASS_EDGE,
+			}
+
+
+func island_mesh(size: Vector2, depth: float, seed_offset: float, style: int = 0) -> ArrayMesh:
+	var palette: Dictionary = _palette(style)
 	var outline: Array[Vector2] = _outline(size * 0.5, CORNER)
 	var n: int = outline.size()
 	# ring = [scale, y, color]; jitter grows towards the tip.
 	var rings: Array = [
-		[0.62, TOP_Y + 0.02, GRASS.lightened(0.08)],
-		[1.0, TOP_Y, GRASS],
-		[1.03, TOP_Y - 0.16, GRASS_EDGE],
+		[0.62, TOP_Y + 0.02, palette.inner],
+		[1.0, TOP_Y, palette.top],
+		[1.03, TOP_Y - 0.16, palette.edge],
 		[1.0, TOP_Y - 0.34, EARTH],
 	]
 	var steps: int = 6
@@ -134,7 +157,7 @@ func island_mesh(size: Vector2, depth: float, seed_offset: float) -> ArrayMesh:
 	for i in range(n):
 		var j: int = (i + 1) % n
 		_tri(
-			surface, centre, grid[0][j], grid[0][i], GRASS.lightened(0.12), rings[0][2], rings[0][2]
+			surface, centre, grid[0][j], grid[0][i], palette.inner, rings[0][2], rings[0][2]
 		)
 	for r in range(rings.size() - 1):
 		var top_color: Color = rings[r][2]
@@ -172,12 +195,33 @@ func _tri(
 
 ## Gameplay island visual, matching the 7 x 6 m collider footprint.
 func island(parent: Node3D, index: int) -> MeshInstance3D:
+	var style: int = 1 if index == 11 else index % 3
 	var node := MeshInstance3D.new()
 	node.name = "IslandArt"
-	node.mesh = island_mesh(ISLAND_SIZE, 3.2 + float(index % 3) * 0.6, float(index) * 13.0)
+	node.mesh = island_mesh(ISLAND_SIZE, 3.2 + float(index % 3) * 0.6, float(index) * 13.0, style)
 	node.material_override = _vertex_material()
 	parent.add_child(node)
+	_surface_cap(parent, style)
 	return node
+
+
+func _surface_cap(parent: Node3D, style: int) -> void:
+	var cap := MeshInstance3D.new()
+	cap.name = "IslandCap"
+	var plate := BoxMesh.new()
+	plate.size = Vector3(6.15, 0.045, 5.15)
+	cap.mesh = plate
+	cap.position = Vector3(0, TOP_Y + 0.012, 0)
+	var kind := "grass_top"
+	var tint := Color("b7c48a")
+	if style == 1:
+		kind = "paving"
+		tint = Color("d8d2c4")
+	elif style == 2:
+		kind = "wood"
+		tint = Color("e2b274")
+	cap.material_override = BuildVoxelStyle.material(kind, tint)
+	parent.add_child(cap)
 
 
 func tree(parent: Node3D, at: Vector3) -> void:
@@ -188,14 +232,14 @@ func tree(parent: Node3D, at: Vector3) -> void:
 	cylinder.height = 1.5
 	cylinder.radial_segments = 8
 	trunk.mesh = cylinder
-	trunk.material_override = material(Color("a5754c"))
+	trunk.material_override = BuildVoxelStyle.material("bark", Color("c4a07a"))
 	trunk.position = at + Vector3(0, TOP_Y + 0.75, 0)
 	parent.add_child(trunk)
 	var canopy: Array = [
-		[Vector3(0, 2.05, 0), 0.95, Color("5cbf5a")],
-		[Vector3(0.45, 1.75, 0.25), 0.62, Color("6fd06a")],
-		[Vector3(-0.4, 1.8, -0.2), 0.6, Color("4fae55")],
-		[Vector3(0.05, 2.6, 0.05), 0.55, Color("82db74")],
+		[Vector3(0, 2.05, 0), 0.95, Color.WHITE],
+		[Vector3(0.45, 1.75, 0.25), 0.62, Color("d8f0c8")],
+		[Vector3(-0.4, 1.8, -0.2), 0.6, Color("c8e8b8")],
+		[Vector3(0.05, 2.6, 0.05), 0.55, Color("e8f8d8")],
 	]
 	for blob in canopy:
 		var sphere := SphereMesh.new()
@@ -205,7 +249,7 @@ func tree(parent: Node3D, at: Vector3) -> void:
 		sphere.rings = 7
 		var leaf := MeshInstance3D.new()
 		leaf.mesh = sphere
-		leaf.material_override = material(blob[2], 0.0, 0.8)
+		leaf.material_override = BuildVoxelStyle.material("leaves", blob[2])
 		leaf.position = at + blob[0] + Vector3(0, TOP_Y - 0.25, 0)
 		parent.add_child(leaf)
 
@@ -225,29 +269,39 @@ func gem(parent: Node3D) -> MeshInstance3D:
 
 ## Goal flag (yellow banner with star) on the last island.
 func goal_flag(parent: Node3D) -> void:
-	var pole := MeshInstance3D.new()
-	var cylinder := CylinderMesh.new()
-	cylinder.top_radius = 0.05
-	cylinder.bottom_radius = 0.07
-	cylinder.height = 3.2
-	pole.mesh = cylinder
-	pole.material_override = material(Color("f4efe6"), 0.0, 0.4)
-	pole.position = Vector3(2.5, TOP_Y + 1.6, -1.9)
-	parent.add_child(pole)
-	var flag := MeshInstance3D.new()
-	var box := BoxMesh.new()
-	box.size = Vector3(1.5, 0.95, 0.05)
-	flag.mesh = box
-	flag.material_override = material(Color("ffd447"), 0.25, 0.6)
-	flag.position = pole.position + Vector3(0.78, 1.05, 0)
-	parent.add_child(flag)
-	var emblem := MeshInstance3D.new()
+	var sand := BuildVoxelStyle.material("sand", Color("d9a86c"))
+	for x in [-1.15, 1.15]:
+		var pillar := MeshInstance3D.new()
+		var cylinder := CylinderMesh.new()
+		cylinder.top_radius = 0.28
+		cylinder.bottom_radius = 0.34
+		cylinder.height = 2.6
+		cylinder.radial_segments = 12
+		pillar.mesh = cylinder
+		pillar.material_override = sand
+		pillar.position = Vector3(x, TOP_Y + 1.3, -2.05)
+		parent.add_child(pillar)
+	var lintel := MeshInstance3D.new()
+	var beam := BoxMesh.new()
+	beam.size = Vector3(2.7, 0.42, 0.7)
+	lintel.mesh = beam
+	lintel.material_override = sand
+	lintel.position = Vector3(0, TOP_Y + 2.72, -2.05)
+	parent.add_child(lintel)
+	var key := MeshInstance3D.new()
+	var key_box := BoxMesh.new()
+	key_box.size = Vector3(0.7, 0.38, 0.78)
+	key.mesh = key_box
+	key.material_override = BuildVoxelStyle.material("sand", Color("e2b878"))
+	key.position = Vector3(0, TOP_Y + 3.08, -2.05)
+	parent.add_child(key)
 	if _star_mesh == null:
 		_star_mesh = LumoWorldMeshes.star()
+	var emblem := MeshInstance3D.new()
 	emblem.mesh = _star_mesh
-	emblem.scale = Vector3(0.3, 0.3, 0.2)
-	emblem.material_override = material(Color("ffffff"), 0.6, 0.4)
-	emblem.position = flag.position + Vector3(0, 0, 0.05)
+	emblem.scale = Vector3(0.55, 0.55, 0.28)
+	emblem.material_override = material(Color("ffe27a"), 1.4, 0.28)
+	emblem.position = Vector3(0, TOP_Y + 1.55, -2.05)
 	parent.add_child(emblem)
 
 
@@ -430,3 +484,51 @@ func sparkles(root: Node3D, course_length: float) -> void:
 	quad.material = mat
 	particles.mesh = quad
 	root.add_child(particles)
+
+
+## Visual-only lanterns and stone path ribbons. No extra colliders.
+func props(root: Node3D, islands: Array[Vector3]) -> void:
+	var lamp_posts: Array = []
+	var lamp_glows: Array = []
+	var lamp_colors: Array = []
+	var glow_colors: Array = []
+	var path_x: Array[Transform3D] = []
+	var post := CylinderMesh.new()
+	post.top_radius = 0.045
+	post.bottom_radius = 0.06
+	post.height = 1.15
+	post.radial_segments = 8
+	var glow := SphereMesh.new()
+	glow.radius = 0.14
+	glow.height = 0.22
+	glow.radial_segments = 10
+	glow.rings = 6
+	var paver := BoxMesh.new()
+	paver.size = Vector3.ONE
+	for i in range(islands.size()):
+		var point: Vector3 = islands[i]
+		for side in [-1.0, 1.0]:
+			var at := point + Vector3(side * 2.55, TOP_Y + 0.58, 1.6)
+			lamp_posts.append(Transform3D(Basis.IDENTITY, at))
+			lamp_colors.append(Color("d8c4a0"))
+			lamp_glows.append(Transform3D(Basis.IDENTITY, at + Vector3(0, 0.68, 0)))
+			glow_colors.append(Color("ffe6a0"))
+		if i % 3 == 0:
+			for step in range(5):
+				var local := Vector3(0, TOP_Y + 0.03, -1.6 + float(step) * 0.75)
+				path_x.append(
+					Transform3D(Basis.from_scale(Vector3(1.35, 0.04, 0.62)), point + local)
+				)
+	_scatter(root, post, lamp_posts, lamp_colors, "LanternPosts")
+	var lights := _scatter(root, glow, lamp_glows, glow_colors, "LanternGlows")
+	var glow_mat := StandardMaterial3D.new()
+	glow_mat.vertex_color_use_as_albedo = true
+	glow_mat.emission_enabled = true
+	glow_mat.emission = Color("ffd978")
+	glow_mat.emission_energy_multiplier = 0.85
+	glow_mat.roughness = 0.35
+	lights.material_override = glow_mat
+	if not path_x.is_empty():
+		BuildVoxelStyle.multimesh(
+			root, "IslandPaths", paver, BuildVoxelStyle.material("paving", Color("d8d2c4")), path_x
+		)
