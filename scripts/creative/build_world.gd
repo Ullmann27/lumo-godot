@@ -132,7 +132,7 @@ func _ground() -> void:
 	mat.shader = preload("res://assets/shaders/kart_water.gdshader")
 	water.material_override = mat
 	# Buildable river islands (tops at y=0, same support rule as the main banks).
-	for island_z in [-12.5, 19.5]:
+	for island_z in [-12.0, 20.0]:
 		var isle := StaticBody3D.new()
 		isle.name = "RiverIsland"
 		add_child(isle)
