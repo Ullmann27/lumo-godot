@@ -221,6 +221,11 @@ func _next_difficulty() -> void:
 
 func start() -> void:
 	model.setup(song_index, difficulty)
+	cheer_until = -100.0
+	for burst in [hit_burst, cheer_burst]:
+		if burst != null:
+			burst.visible = false
+			burst.scale = Vector3.ZERO
 	result_id = HostBridge.new_result_id()
 	for node in notes_root.get_children():
 		node.queue_free()
@@ -511,7 +516,9 @@ func _batch_speakers(specs: Array[Dictionary]) -> void:
 	BuildVoxelStyle.multimesh(
 		self, "RhythmCabinets", box, BuildVoxelStyle.material("plain", Color("1a142c")), cabinets
 	)
-	BuildVoxelStyle.multimesh(self, "RhythmTweeters", cyl, kit.material(Color("e6f8ff"), true), tweeters)
+	BuildVoxelStyle.multimesh(
+		self, "RhythmTweeters", cyl, kit.material(Color("e6f8ff"), true), tweeters
+	)
 	for lane in range(4):
 		var woofer_x: Array[Transform3D] = []
 		woofer_x.assign(woofers[lane])
