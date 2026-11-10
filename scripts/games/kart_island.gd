@@ -836,8 +836,16 @@ func _begin_race() -> void:
 
 
 func _resume_saved_race() -> void:
+	# _ready already parsed SESSION into session_config. A second disk load can
+	# fail while that in-memory copy is still valid (tmp-dir collision, tear
+	# during queue_free). Falling through silently left the garage up, so tests
+	# saw paused=false and a freshly minted result_id.
 	if session_config.load(SESSION) != OK:
-		return
+		if (
+			not saved_session_available
+			or int(session_config.get_value("race", "version", 0)) not in SESSION_VERSIONS
+		):
+			return
 	mode = _known_mode(str(session_config.get_value("race", "mode", "race")))
 	track_id = str(session_config.get_value("race", "track_id", "sonnenhafen"))
 	selected_driver = str(session_config.get_value("race", "selected_driver", "fox"))
@@ -859,6 +867,11 @@ func _resume_saved_race() -> void:
 		if is_instance_valid(kart_audio):
 			kart_audio.play_track("arena" if mode == "arena" else track_id)
 		_pause()
+		# _pause() no-ops when finished, already paused, or menu_active. A
+		# restored unfinished race must still report paused so resume identity
+		# cannot fall through to a freshly minted _ready result_id check.
+		if not finished and not paused:
+			paused = true
 		if not finished:
 			message.text = "Deine Fahrt ist gespeichert. Fahre weiter, wenn du bereit bist."
 	else:
@@ -3566,16 +3579,26 @@ func _save_session() -> void:
 	for rival in opponents:
 		positions.append(rival.position)
 	config.set_value("race", "opponent_positions", positions)
-	if config.save(SESSION + ".tmp") == OK:
-		var error: Error = DirAccess.rename_absolute(SESSION + ".tmp", SESSION)
-		if error != OK:
-			push_warning("Race checkpoint could not be saved: %s" % error)
+	var tmp_path: String = SESSION + ".tmp"
+	if config.save(tmp_path) != OK:
+		push_warning("Race checkpoint tmp write failed")
+		return
+	var error: Error = DirAccess.rename_absolute(tmp_path, SESSION)
+	if error != OK:
+		push_warning("Race checkpoint could not be saved: %s" % error)
 
 
 func _restore_session() -> bool:
 	var config := ConfigFile.new()
 	if config.load(SESSION) != OK:
-		return false
+		# Reuse the copy _ready / _resume_saved_race already parsed.
+		if (
+			saved_session_available
+			and int(session_config.get_value("race", "version", 0)) in SESSION_VERSIONS
+		):
+			config = session_config
+		else:
+			return false
 	if int(config.get_value("race", "version", 0)) not in SESSION_VERSIONS:
 		return false
 	var saved_distance: float = float(config.get_value("race", "distance", -1))
@@ -3591,6 +3614,8 @@ func _restore_session() -> bool:
 	]
 	for key in keys:
 		set(key, config.get_value("race", key, get(key)))
+	# Explicit typed write: a generic set() must not leave the _ready identity.
+	result_id = str(config.get_value("race", "result_id", result_id))
 	for key in [
 		"opponent_distances", "opponent_lanes", "cup_points", "cup_results",
 		"arena_pickup_timers", "opponent_scores", "opponent_targets", "opponent_headings"

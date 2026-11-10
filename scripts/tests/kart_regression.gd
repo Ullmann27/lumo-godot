@@ -17,6 +17,8 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
+	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg.tmp")
 	# The question generator is shared with the Jump learning game; Kart itself never asks.
 	var questions = load("res://scripts/games/kart_questions.gd")
 	var rng := RandomNumberGenerator.new()
@@ -141,8 +143,15 @@ func _run() -> void:
 	_check(game.menu_active and game.saved_session_available)
 	game.lightweight = true
 	game._resume_saved_race()
-	_check(game.paused and game.player.position.is_equal_approx(saved_position))
-	_check(game.result_id == saved_result_id)
+	_check(
+		game.paused and game.player.position.is_equal_approx(saved_position),
+		"Save/Resume keeps pause and position (paused=%s pos=%s saved=%s)"
+		% [game.paused, game.player.position if is_instance_valid(game.player) else "?", saved_position]
+	)
+	_check(
+		game.result_id == saved_result_id,
+		"Save/Resume keeps result_id (got=%s saved=%s)" % [game.result_id, saved_result_id]
+	)
 	game._resume()
 	# The test driver only supplies steering, exactly like a thumb. It never moves the kart.
 	if failed:
