@@ -99,6 +99,7 @@ func _build_world() -> void:
 			art.goal_flag(ground)
 	var course_length: float = float(ISLAND_COUNT) * 8.0
 	art.ground_cover(self, islands)
+	art.props(self, islands)
 	art.clouds(self, course_length)
 	art.backdrop(self, course_length)
 	art.sparkles(self, course_length)
