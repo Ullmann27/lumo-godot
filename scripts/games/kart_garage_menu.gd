@@ -18,6 +18,7 @@ const STAGE = preload("res://scripts/games/kart_stage.gd")
 const CARD = preload("res://scripts/games/kart_vehicle_card.gd")
 const BARS = preload("res://scripts/games/kart_stat_bars.gd")
 const WORKSHOP = preload("res://scripts/games/kart_workshop.gd")
+const INTERIOR = preload("res://scripts/games/kart_garage_interior.gd")
 var setup: Dictionary = {
 	"mode": "race",
 	"driver": "fox",
@@ -63,6 +64,14 @@ var preview_caption: Label
 var preview_caption_panel: PanelContainer
 var world_backdrop: TextureRect
 var world_veil: ColorRect
+var sunset_layer: ColorRect
+var preview_vignette: ColorRect
+var backdrop_material: ShaderMaterial
+var garage_interior: Dictionary = {}
+var garage_buttons: Dictionary = {}
+var _hovered_garage_action := ""
+var _pressed_garage_action := ""
+var _backdrop_parallax := Vector2.ZERO
 var stage_material: ShaderMaterial
 var stage_rings: Array[MeshInstance3D] = []
 var reduced_motion: bool = false
@@ -99,6 +108,18 @@ func _ready() -> void:
 	world_backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	world_backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	world_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var backdrop_shader := Shader.new()
+	backdrop_shader.code = """
+shader_type canvas_item;
+uniform vec2 parallax = vec2(0.0);
+void fragment() {
+	vec2 uv = (UV - vec2(0.5)) * 0.97 + vec2(0.5) + parallax;
+	COLOR = texture(TEXTURE, uv);
+}
+"""
+	backdrop_material = ShaderMaterial.new()
+	backdrop_material.shader = backdrop_shader
+	world_backdrop.material = backdrop_material
 	add_child(world_backdrop)
 	world_veil = ColorRect.new()
 	world_veil.name = "WorldReadabilityGradient"
@@ -118,6 +139,7 @@ func _ready() -> void:
 	sunset.name = "SonnenhafenGoldenHour"
 	sunset.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	sunset.material = sunset_material
+	sunset_layer = sunset
 	add_child(sunset)
 	resized.connect(func(): _fit_sunset_layer(sunset))
 	item_rect_changed.connect(func(): _fit_sunset_layer(sunset))
@@ -240,10 +262,27 @@ func _ready() -> void:
 	viewport_box.gui_input.connect(_preview_input)
 	viewport_box.resized.connect(func(): call_deferred("_fit_welcome_camera"))
 	viewport_panel.add_child(viewport_box)
+	preview_vignette = ColorRect.new()
+	preview_vignette.name = "HeroDepthVignette"
+	preview_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	preview_vignette.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var vignette_shader := Shader.new()
+	vignette_shader.code = """
+shader_type canvas_item;
+void fragment() {
+	vec2 p = (UV - vec2(0.5)) * vec2(1.12, 1.28);
+	float ring = smoothstep(0.26, 0.98, length(p));
+	COLOR = vec4(0.012, 0.034, 0.088, ring * 0.46);
+}
+"""
+	var vignette_material := ShaderMaterial.new()
+	vignette_material.shader = vignette_shader
+	preview_vignette.material = vignette_material
+	viewport_panel.add_child(preview_vignette)
 	var viewport := SubViewport.new()
 	viewport.size = Vector2i(600, 500)
 	viewport.own_world_3d = true
-	viewport.transparent_bg = true
+	viewport.transparent_bg = false
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	# Keep the real 3D face/kart preview crisp on the high-quality profile.
 	viewport.msaa_3d = Viewport.MSAA_4X if graphics_profile == "high" else Viewport.MSAA_2X
@@ -254,19 +293,39 @@ func _ready() -> void:
 	# The reference floats the real kart on transparent neon rings, not an opaque studio slab.
 	var built: Dictionary = STAGE.build(preview, Color("56e7ff"), false)
 	_install_hologram_rings(preview)
+	for child in preview.get_children():
+		if child is WorldEnvironment and child.environment:
+			child.environment.background_mode = Environment.BG_COLOR
+			child.environment.background_color = Color("071018")
+			child.environment.ambient_light_color = Color("3d536d")
+			child.environment.ambient_light_energy = 0.46
+	garage_interior = INTERIOR.build(preview, built.pivot, graphics_profile)
+	garage_buttons = garage_interior.get("buttons", {})
 	# These changes belong only to this presentation viewport. Shared race
 	# materials, original textures, driver dimensions and physics stay intact.
-	built.key.light_specular = 0.45
-	built.rim.light_specular = 0.35
+	built.key.light_specular = 0.52
+	built.rim.light_specular = 0.42
+	if built.get("key") != null:
+		built.key.light_energy = 1.12
+		built.key.shadow_enabled = graphics_profile != "low"
 	var hero_fill := OmniLight3D.new()
 	hero_fill.name = "PremiumLumoSoftLight"
 	hero_fill.position = Vector3(1.2, 2.7, -2.4)
 	hero_fill.light_color = Color("fff6e7")
-	hero_fill.light_energy = 1.10
-	hero_fill.light_specular = 0.12
+	hero_fill.light_energy = 1.16
+	hero_fill.light_specular = 0.14
 	hero_fill.omni_range = 6.0
 	hero_fill.shadow_enabled = false
 	preview.add_child(hero_fill)
+	var ground_fill := OmniLight3D.new()
+	ground_fill.name = "PremiumStageGroundFill"
+	ground_fill.position = Vector3(0.15, 0.55, -0.2)
+	ground_fill.light_color = Color("9cecff")
+	ground_fill.light_energy = 0.28
+	ground_fill.light_specular = 0.05
+	ground_fill.omni_range = 3.2
+	ground_fill.shadow_enabled = false
+	preview.add_child(ground_fill)
 	preview_camera = built.camera
 	preview_pivot = built.pivot
 	preview_caption = _label("Dein Fahrer · Dein Kart · Ziehen zum Drehen", 14, Color("e2f6ff"))
@@ -770,10 +829,9 @@ func _apply_responsive_layout() -> void:
 
 
 func _fit_sunset_layer(layer: ColorRect) -> void:
-	if not is_instance_valid(layer) or not is_instance_valid(world_backdrop):
-		return
-	layer.position = world_backdrop.position
-	layer.size = world_backdrop.size
+	if layer != sunset_layer:
+		sunset_layer = layer
+	_layout_world_backdrop()
 
 
 func _layout_world_backdrop() -> void:
@@ -781,11 +839,17 @@ func _layout_world_backdrop() -> void:
 		return
 	# SafeUI deliberately insets controls. Art must bleed underneath those
 	# insets, without reparenting it into a second layer or intercepting input.
+	# The Control rect must stay exactly full-bleed; motion is a shader UV pan.
 	var viewport_rect := get_viewport().get_visible_rect()
 	var local_origin := viewport_rect.position - global_position
-	for layer in [world_backdrop, world_veil]:
-		layer.position = local_origin
-		layer.size = viewport_rect.size
+	world_backdrop.position = local_origin
+	world_backdrop.size = viewport_rect.size
+	if is_instance_valid(world_veil):
+		world_veil.position = local_origin
+		world_veil.size = viewport_rect.size
+	if is_instance_valid(sunset_layer):
+		sunset_layer.position = local_origin
+		sunset_layer.size = viewport_rect.size
 
 
 func _fit_welcome_camera() -> void:
@@ -932,6 +996,23 @@ func _install_hologram_rings(stage: Node3D) -> void:
 	stage_material.shader = preload("res://assets/shaders/kart_menu_platform.gdshader")
 	platform.material_override = stage_material
 	stage.add_child(platform)
+	# A larger, dimmer disc sits just below the glass. It adds depth without
+	# entering the welcome-camera ring fit, collision or race geometry.
+	var under := MeshInstance3D.new()
+	under.name = "HeroStageUnderlayer"
+	var under_plane := PlaneMesh.new()
+	under_plane.size = Vector2(4.55, 4.55)
+	under.mesh = under_plane
+	under.scale.z = 0.58
+	under.position.y = -0.24
+	under.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var under_material := StandardMaterial3D.new()
+	under_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	under_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	under_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	under_material.albedo_color = Color(0.015, 0.05, 0.12, 0.28)
+	under.material_override = under_material
+	stage.add_child(under)
 	# The old 2.54m outer ring was clipped on both sides of the hero viewport.
 	# 6 tube segments instead of the Torus default also avoid 12k needless
 	# stage triangles. The three circles together use 2,304 triangles.
@@ -1330,9 +1411,30 @@ func _preview_input(event: InputEvent) -> void:
 	elif inspection_view != 0 and event is InputEventMouseButton and event.pressed:
 		_choose_preview_view(0)
 	if event is InputEventMouseButton:
+		var action := _pick_garage_action(event.position)
+		if event.pressed and action != "":
+			_pressed_garage_action = action
+			_set_garage_button_state(action, "press")
+			rotate_drag = false
+			return
+		if not event.pressed and _pressed_garage_action != "":
+			if action == _pressed_garage_action:
+				_activate_garage_action(_pressed_garage_action)
+			_set_garage_button_state(_pressed_garage_action, "idle")
+			_pressed_garage_action = ""
+			rotate_drag = false
+			return
 		rotate_drag = event.pressed
 	elif event is InputEventMouseMotion and rotate_drag:
 		preview_angle += event.relative.x * 0.008
+	elif event is InputEventMouseMotion:
+		var hovered := _pick_garage_action(event.position)
+		if hovered != _hovered_garage_action:
+			if _hovered_garage_action != "":
+				_set_garage_button_state(_hovered_garage_action, "idle")
+			_hovered_garage_action = hovered
+			if hovered != "":
+				_set_garage_button_state(hovered, "hover")
 	elif event is InputEventScreenDrag:
 		preview_angle += event.relative.x * 0.008
 
@@ -1349,8 +1451,73 @@ func _process(delta: float) -> void:
 	# Lumos back to the child. Dragging and garage inspection remain unrestricted.
 	var idle_arc: float = sin(preview_idle_time * 0.35) * 0.085 if step == 0 and not reduced_motion and not rotate_drag else 0.0
 	preview_pivot.rotation.y = preview_angle + idle_arc
-	stage_material.set_shader_parameter("illumination",
-		1.0 if reduced_motion else 1.0 + sin(preview_idle_time * 0.7) * 0.035)
+	if is_instance_valid(stage_material):
+		stage_material.set_shader_parameter("illumination",
+			1.0 if reduced_motion else 1.0 + sin(preview_idle_time * 0.7) * 0.035)
+	if reduced_motion:
+		_backdrop_parallax = Vector2.ZERO
+	else:
+		var yaw: float = preview_pivot.rotation.y
+		_backdrop_parallax = Vector2(
+			sin(preview_idle_time * 0.21) * 0.008 + yaw * 0.012,
+			cos(preview_idle_time * 0.17) * 0.004 + sin(yaw) * 0.004
+		)
+	if is_instance_valid(backdrop_material):
+		backdrop_material.set_shader_parameter("parallax", _backdrop_parallax)
+
+
+func _pick_garage_action(local: Vector2) -> String:
+	if not is_instance_valid(preview_camera) or not is_instance_valid(preview_viewport):
+		return ""
+	if preview_viewport.world_3d == null:
+		return ""
+	var space := preview_viewport.world_3d.direct_space_state
+	if space == null:
+		return ""
+	var from: Vector3 = preview_camera.project_ray_origin(local)
+	var toward: Vector3 = preview_camera.project_ray_normal(local)
+	var query := PhysicsRayQueryParameters3D.create(from, from + toward * 40.0)
+	var hit: Dictionary = space.intersect_ray(query)
+	if hit.is_empty():
+		return ""
+	var collider: Object = hit.get("collider")
+	if collider is Node and (collider as Node).has_meta("garage_action"):
+		return str((collider as Node).get_meta("garage_action"))
+	return ""
+
+
+func _set_garage_button_state(action: String, state: String) -> void:
+	if garage_buttons.has(action):
+		INTERIOR.set_button_state(garage_buttons[action], state)
+
+
+func _activate_garage_action(action: String) -> void:
+	match action:
+		"start":
+			if step >= 4:
+				start_requested.emit(setup.duplicate(true))
+			else:
+				_next()
+		"strecke":
+			step = 3
+			_refresh()
+		"kart":
+			if step == 2 and workshop != null:
+				_open_workshop()
+			else:
+				step = 2
+				_refresh()
+		"back":
+			_back()
+
+
+func preview_draw_calls() -> int:
+	if not is_instance_valid(preview_viewport):
+		return 0
+	return preview_viewport.get_render_info(
+		Viewport.RENDER_INFO_TYPE_VISIBLE,
+		Viewport.RENDER_INFO_DRAW_CALLS_IN_FRAME
+	)
 
 
 func _bonus_for(kart_id: String) -> Dictionary:
