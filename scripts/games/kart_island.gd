@@ -137,6 +137,10 @@ var vertical_speed: float = 0.0
 var air_time: float = 0.0
 var jump_count: int = 0
 var landing_count: int = 0
+## Brief post-landing settle so hard touchdowns don't yank the kart sideways.
+var landing_settle: float = 0.0
+## Camera FOV punch for mini-turbo and item bursts (visual only).
+var camera_punch: float = 0.0
 var gap_falls: int = 0
 ## Sonnenhafen precision jump: the kicker in flight, and the measured results.
 var precision_kicker: Dictionary = {}
@@ -440,7 +444,10 @@ func _build_world() -> void:
 	shield_visual.position.y = 1.0
 	var shield_material := StandardMaterial3D.new()
 	shield_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	shield_material.albedo_color = Color(0.45, 0.88, 1.0, 0.15)
+	shield_material.albedo_color = Color(0.45, 0.88, 1.0, 0.24)
+	shield_material.emission_enabled = true
+	shield_material.emission = Color("66e8ff")
+	shield_material.emission_energy_multiplier = 1.25
 	shield_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	shield_material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	shield_visual.material_override = shield_material
@@ -449,14 +456,17 @@ func _build_world() -> void:
 	player.add_child(shield_visual)
 	pulse_visual = MeshInstance3D.new()
 	var pulse_mesh := TorusMesh.new()
-	pulse_mesh.inner_radius = 0.92
-	pulse_mesh.outer_radius = 1.08
+	pulse_mesh.inner_radius = 0.82
+	pulse_mesh.outer_radius = 1.28
 	pulse_mesh.rings = 48
 	pulse_mesh.ring_segments = 8
 	pulse_visual.mesh = pulse_mesh
 	var pulse_material := StandardMaterial3D.new()
 	pulse_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	pulse_material.albedo_color = Color("a8eaff")
+	pulse_material.albedo_color = Color("d4b8ff")
+	pulse_material.emission_enabled = true
+	pulse_material.emission = Color("c58cff")
+	pulse_material.emission_energy_multiplier = 2.6
 	pulse_visual.material_override = pulse_material
 	pulse_visual.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	pulse_visual.visible = false
@@ -1449,11 +1459,14 @@ func _physics_process(delta: float) -> void:
 				item_boxes[i].rotation.x = sin(elapsed * 2.0 + float(i)) * 0.08
 	if is_instance_valid(shield_visual):
 		shield_visual.visible = shield_time > 0
+		if shield_visual.visible and not reduced_motion:
+			var shield_pulse: float = 1.0 + sin(elapsed * 4.2) * 0.045
+			shield_visual.scale = Vector3.ONE * shield_pulse
 	if is_instance_valid(pulse_visual):
 		if not paused:
 			pulse_age += delta
 		pulse_visual.visible = pulse_age < 0.65
-		pulse_visual.scale = Vector3.ONE * (1.0 + pulse_age * 18.0)
+		pulse_visual.scale = Vector3.ONE * (1.0 + pulse_age * 22.0)
 	_update_vehicles(delta)
 	_update_camera(delta)
 	_update_hud()
@@ -1558,6 +1571,9 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		turn_rate = -turn_rate
 	if airborne:
 		turn_rate *= 0.35
+	if landing_settle > 0.0:
+		turn_rate *= lerpf(1.0, 0.62, clampf(landing_settle / 0.32, 0.0, 1.0))
+		landing_settle = maxf(0.0, landing_settle - delta)
 	player_heading -= axis * turn_rate * delta
 	var forward := Vector3(-sin(player_heading), 0, -cos(player_heading))
 	var grip: float = 3.1 if drifting else 9.0 * _factor("grip")
@@ -1755,6 +1771,7 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 		_rescue_from_gap()
 		return false
 	elif player.position.y <= ground:
+		var impact: float = maxf(0.0, -vertical_speed)
 		player.position.y = ground
 		airborne = false
 		current_jump_gravity = JUMP_GRAVITY
@@ -1778,6 +1795,17 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			boost_time = maxf(boost_time, _boost_for(1.2))
 			message.text = "Super gelandet! Turbo!"
 			_sound_effect("drift")
+		# Settle sideways slide after a firm landing. Precision zone/long
+		# outcomes already apply their own speed rules and stay untouched.
+		if (
+			impact > 4.5
+			and precision_result != PRECISION.LANDING_ZONE
+			and precision_result != PRECISION.LANDING_LONG
+		):
+			landing_settle = maxf(landing_settle, clampf((impact - 4.5) * 0.05, 0.10, 0.32))
+			var along := Vector3(-sin(player_heading), 0, -cos(player_heading))
+			var sideways: Vector3 = physical_velocity - along * physical_velocity.dot(along)
+			physical_velocity -= sideways * 0.42
 		air_time = 0.0
 		vertical_speed = 0.0
 	return true
@@ -1907,12 +1935,13 @@ func _collide_with_rail(road: Dictionary) -> void:
 	if into_wall <= 0.0:
 		return
 	wall_contacts += 1
-	physical_velocity -= road_basis.x * side * into_wall * 1.3
-	speed *= clampf(1.0 - into_wall * 0.03, 0.72, 0.98)
+	# Slide along the curb instead of bouncing off it and spinning out.
+	physical_velocity -= road_basis.x * side * into_wall * 1.08
+	speed *= clampf(1.0 - into_wall * 0.022, 0.80, 0.99)
 	var along: float = _heading(float(road.distance))
 	if absf(angle_difference(player_heading, along)) > PI / 2:
 		along += PI
-	player_heading = lerp_angle(player_heading, along, minf(1.0, 0.25 + into_wall * 0.04))
+	player_heading = lerp_angle(player_heading, along, minf(1.0, 0.38 + into_wall * 0.05))
 	if wall_sound_timer <= 0.0 and into_wall > 2.0:
 		wall_sound_timer = 0.4
 		_sound_effect("collision")
@@ -2024,20 +2053,73 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 	_sync_rival_item_fx(index)
 
 
+func _rival_profile() -> Dictionary:
+	# Entdecken / Abenteuer / Sternen-Profi. Speed still comes only from the
+	# catalog multipliers — never from the gap to the player.
+	match difficulty:
+		"gemuetlich":
+			return {
+				"look_ahead": 6.5,
+				"turn_rate": 1.08,
+				"wobble": 1.15,
+				"wobble_hz": 0.55,
+				"mistake": 0.85,
+				"mistake_hz": 0.31,
+				"overtake": 5.5,
+				"lane_spread": 1.15,
+			}
+		"pro":
+			return {
+				"look_ahead": 18.0,
+				"turn_rate": 2.15,
+				"wobble": 0.10,
+				"wobble_hz": 2.1,
+				"mistake": 0.0,
+				"mistake_hz": 1.0,
+				"overtake": 16.0,
+				"lane_spread": 1.55,
+			}
+		_:
+			return {
+				"look_ahead": 10.0,
+				"turn_rate": 1.55,
+				"wobble": 0.32,
+				"wobble_hz": 0.35,
+				"mistake": 0.22,
+				"mistake_hz": 0.62,
+				"overtake": 9.0,
+				"lane_spread": 1.35,
+			}
+
+
 func _drive_opponents(delta: float) -> void:
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
+	var profile: Dictionary = _rival_profile()
 	for i in range(opponents.size()):
 		var rival: LumoRaceKart = opponents[i]
 		var sampled: Dictionary = world.sample_road(rival.position, fposmod(opponent_distances[i], track_length))
-		var target_lane: float = clampf(-2.8 + i * 1.35 + sin(elapsed * 0.35 + i) * 0.3, -3.4, 3.4)
+		var target_lane: float = -2.8 + float(i) * 1.35
+		target_lane += sin(elapsed * float(profile.wobble_hz) + float(i)) * float(profile.wobble)
+		if float(profile.mistake) > 0.0:
+			target_lane += sin(elapsed * float(profile.mistake_hz) + float(i) * 2.3) * float(profile.mistake)
+		target_lane = clampf(target_lane, -3.4, 3.4)
 		var local_gap: Vector3 = player.position - rival.position
 		_update_rival_item_tactics(i, local_gap, delta)
-		if local_gap.length() < 7 and absf(float(sampled.lateral) - lane) < 1.3:
+		var progress_gap: float = (
+			fposmod(distance - opponent_distances[i] + track_length * 0.5, track_length)
+			- track_length * 0.5
+		)
+		if progress_gap > 0.8 and progress_gap < float(profile.overtake):
+			var side: float = -signf(lane) if absf(lane) > 0.35 else (1.0 if i % 2 == 0 else -1.0)
+			target_lane = clampf(lane + side * float(profile.lane_spread), -3.8, 3.8)
+		elif local_gap.length() < 7 and absf(float(sampled.lateral) - lane) < 1.3:
 			target_lane = clampf(lane + (1.8 if i % 2 == 0 else -1.8), -3.8, 3.8)
-		var aim: Vector3 = world.position_at(float(sampled.distance) + 10.0, target_lane)
+		var aim: Vector3 = world.position_at(float(sampled.distance) + float(profile.look_ahead), target_lane)
 		var desired_heading: float = atan2(-(aim.x - rival.position.x), -(aim.z - rival.position.z))
 		var angle: float = angle_difference(opponent_headings[i], desired_heading)
-		opponent_headings[i] += clampf(angle, -1.55 * delta, 1.55 * delta)
+		var turn_cap: float = float(profile.turn_rate) * delta
+		opponent_headings[i] += clampf(angle, -turn_cap, turn_cap)
+		# Catalog speed only. No catch-up when the player is far ahead.
 		var target_speed: float = 20.5 * float(rules.speed) * float(rules.rival) * (0.97 + i * 0.014)
 		if opponent_boost_times[i] > 0.0:
 			target_speed *= 1.32
@@ -2068,8 +2150,26 @@ func _drive_opponents(delta: float) -> void:
 			+ world.alternate_route_height(float(next.distance), rival_lateral)
 		)
 		if absf(float(next.lateral)) > ROAD_WIDTH * 0.5 + 1:
-			rival.transform = world.reset_transform(opponent_distances[i], target_lane)
-			opponent_headings[i] = _heading(opponent_distances[i])
+			# Steer back onto the asphalt. Never teleport with reset_transform.
+			var overflow: float = absf(float(next.lateral)) - (ROAD_WIDTH * 0.5 + 0.85)
+			var recover: float = minf(overflow, maxf(target_speed, 8.0) * delta * 1.15)
+			rival.position -= (next.basis as Basis).x * signf(float(next.lateral)) * recover
+			opponent_lanes[i] = float(next.lateral) - signf(float(next.lateral)) * recover
+			opponent_headings[i] = lerp_angle(
+				opponent_headings[i], _heading(opponent_distances[i]), minf(1.0, 2.6 * delta)
+			)
+			var recovered: Dictionary = world.sample_road(rival.position, float(next.distance))
+			rival.position.y = (
+				float(recovered.height)
+				+ 0.035
+				+ world.rival_arc(float(recovered.distance))
+				+ world.alternate_route_height(float(recovered.distance), float(recovered.lateral))
+			)
+			var rec_forward := Vector3(-sin(opponent_headings[i]), 0, -cos(opponent_headings[i]))
+			var rec_normal: Vector3 = (recovered.basis as Basis).y
+			var rec_right: Vector3 = rec_forward.cross(rec_normal).normalized()
+			if rec_right.length() > 0.001:
+				rival.basis = Basis(rec_right, rec_normal, -rec_normal.cross(rec_right)).orthonormalized()
 		else:
 			var normal: Vector3 = (next.basis as Basis).y
 			var right: Vector3 = forward.cross(normal).normalized()
@@ -2262,12 +2362,15 @@ func _use_item() -> void:
 	match item:
 		"boost":
 			boost_time = maxf(boost_time, _boost_for(3.0))
+			camera_punch = maxf(camera_punch, 0.30)
 			message.text = "Rückenwind!"
 		"shield":
 			shield_time = 6.0
+			camera_punch = maxf(camera_punch, 0.14)
 			message.text = "Sternenschild: sechs Sekunden geschützt."
 		"pulse":
 			pulse_age = 0
+			camera_punch = maxf(camera_punch, 0.36)
 			pulse_visual.position = player.position + Vector3.UP * 0.15
 			for i in range(opponents.size()):
 				if (
@@ -2437,6 +2540,9 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 		if snap
 		else lerpf(camera.fov, target_fov, minf(1.0, delta * VISUAL_GRADE.FOV_LERP))
 	)
+	if camera_punch > 0.0 and not reduced_motion:
+		camera.fov += camera_punch * 9.5
+		camera_punch = maxf(0.0, camera_punch - delta * 2.2)
 	if is_instance_valid(speed_fx):
 		speed_fx.set_motion(speed_ratio, boost_time > 0.0 and not paused, reduced_motion)
 
@@ -2464,6 +2570,7 @@ func _release_drift() -> void:
 		var tier: int = 1 if drift_charge >= DRIFT_TIERS[1] else 0
 		drift_tier_count[tier] += 1
 		boost_time = maxf(boost_time, _boost_for(DRIFT_BOOST_SECONDS[tier]))
+		camera_punch = maxf(camera_punch, 0.20 if tier == 0 else 0.34)
 		message.text = "Oranger Drift-Turbo!" if tier == 1 else "Blauer Drift-Turbo!"
 		_sound_effect("drift")
 	drift_charge = 0

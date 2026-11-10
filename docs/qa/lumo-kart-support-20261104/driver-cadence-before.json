@@ -1,0 +1,74 @@
+{
+	"android_test": false,
+	"checks": 1195,
+	"display": "headless",
+	"failures": 8,
+	"godot": "4.6.3-stable (official)",
+	"gpu_fps_measured": false,
+	"model_load_kind": "imported_packed_scene",
+	"samples": [
+		{
+			"clip_elapsed_seconds": 2.0,
+			"clip_evaluations": 60,
+			"input_frames": 60,
+			"input_hz": 30,
+			"largest_clip_step_seconds": 0.0333333333333334,
+			"sample_seconds": 2,
+			"worst_hand_contact_mm": 1.12142565194517
+		},
+		{
+			"clip_elapsed_seconds": 2.0,
+			"clip_evaluations": 50,
+			"input_frames": 100,
+			"input_hz": 50,
+			"largest_clip_step_seconds": 0.04,
+			"sample_seconds": 2,
+			"worst_hand_contact_mm": 1.14377972204238
+		},
+		{
+			"clip_elapsed_seconds": 2.0,
+			"clip_evaluations": 60,
+			"input_frames": 120,
+			"input_hz": 60,
+			"largest_clip_step_seconds": 0.0333333333333334,
+			"sample_seconds": 2,
+			"worst_hand_contact_mm": 1.13988923840225
+		},
+		{
+			"clip_elapsed_seconds": 2.0,
+			"clip_evaluations": 50,
+			"input_frames": 150,
+			"input_hz": 75,
+			"largest_clip_step_seconds": 0.04,
+			"sample_seconds": 2,
+			"worst_hand_contact_mm": 1.14977022167295
+		},
+		{
+			"clip_elapsed_seconds": 2.0,
+			"clip_evaluations": 60,
+			"input_frames": 180,
+			"input_hz": 90,
+			"largest_clip_step_seconds": 0.0333333333333334,
+			"sample_seconds": 2,
+			"worst_hand_contact_mm": 1.14473374560475
+		},
+		{
+			"clip_elapsed_seconds": 2.0,
+			"clip_evaluations": 60,
+			"input_frames": 240,
+			"input_hz": 120,
+			"largest_clip_step_seconds": 0.0333333333333334,
+			"sample_seconds": 2,
+			"worst_hand_contact_mm": 1.14939804188907
+		},
+		{
+			"clip_elapsed_seconds": 1.97916666666667,
+			"clip_evaluations": 57,
+			"input_frames": 288,
+			"input_hz": 144,
+			"largest_clip_step_seconds": 0.0347222222222223,
+			"sample_seconds": 2,
+			"worst_hand_contact_mm": 1.14734726957977
+		}
+	]
+}

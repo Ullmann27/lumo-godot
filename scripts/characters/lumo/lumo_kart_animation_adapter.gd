@@ -2,6 +2,9 @@ extends Node3D
 ## VISUAL adapter driven by the vehicle's existing motion and race state.
 ## It never writes speed, steering, collision, laps, rewards, saves or physics.
 const ACTOR = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
+const VISUAL_TICK_SECONDS := 1.0 / 30.0
+const MAX_VISUAL_STEP_SECONDS := 0.10
+const TICK_EPSILON_SECONDS := 0.000000001
 var actor
 var kart: Node3D
 var steering := 0.0
@@ -127,10 +130,10 @@ func _process(delta: float) -> void:
 
 
 func advance_tick(delta: float) -> void:
-	if actor == null or suspended:
+	if actor == null or suspended or not is_finite(delta) or delta < 0.0:
 		return
 	_tick += delta
-	if _tick < 1.0 / 30.0:
+	if _tick + TICK_EPSILON_SECONDS < VISUAL_TICK_SECONDS:
 		# Bone clips update at 30 Hz, but wheel contact follows every visual
 		# frame. Otherwise a 60 Hz steering change separates hand and rim.
 		# Nodding keeps both hands on the wheel. It uses the same two-hand
@@ -144,9 +147,14 @@ func advance_tick(delta: float) -> void:
 			maximum_contact_error = 0.0
 			_follow_wheel_hand(0)
 		return
-	var step := minf(_tick, 0.10)
-	_tick = 0.0
-	advance_visual(step)
+	# Keep the fractional interval: resetting it dropped the cadence to 25 Hz
+	# at 50/75 Hz input. Consume whole intervals once, without double-counting
+	# the retained time. After a hitch, discard excess whole intervals while
+	# keeping the existing 100 ms cap and avoiding a catch-up loop.
+	var intervals := floori((_tick + TICK_EPSILON_SECONDS) / VISUAL_TICK_SECONDS)
+	var consumed := float(intervals) * VISUAL_TICK_SECONDS
+	_tick = maxf(0.0, _tick - consumed)
+	advance_visual(minf(consumed, MAX_VISUAL_STEP_SECONDS))
 
 
 func advance_visual(delta: float) -> void:

@@ -104,8 +104,13 @@ func _apply_environment(profile: Profile) -> void:
 		Profile.HIGH:
 			env.glow_enabled = true
 			env.fog_enabled = true
-			env.volumetric_fog_enabled = true
-			env.ssao_enabled = true
+			# Match the renderer/platform gate used by KartEnvironmentPolish.
+			var supports_advanced_effects := (
+				RenderingServer.get_current_rendering_method() == "forward_plus"
+				and not OS.has_feature("mobile")
+			)
+			env.volumetric_fog_enabled = supports_advanced_effects
+			env.ssao_enabled = supports_advanced_effects
 
 
 func _apply_viewport(profile: Profile) -> void:

@@ -56,3 +56,11 @@ fi
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_vehicle_regression.gd 2>&1 | tee /tmp/lumo-vehicle-tests.log
 if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-vehicle-tests.log; then exit 1; fi
 grep -qE '\[KartVehicle\] Geometry/colours' /tmp/lumo-vehicle-tests.log
+
+timeout 180s "$GODOT" --headless --script scripts/tests/kart_ai_behavior_regression.gd 2>&1 | tee /tmp/lumo-kart-ai-tests.log
+if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-ai-tests.log; then exit 1; fi
+grep -qE '\[KartAI\] PASS' /tmp/lumo-kart-ai-tests.log
+
+timeout 120s "$GODOT" --headless --script scripts/tests/kart_garage_touch_targets_regression.gd 2>&1 | tee /tmp/lumo-garage-targets-tests.log
+if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-garage-targets-tests.log; then exit 1; fi
+grep -qE '\[GarageTargets\] PASS' /tmp/lumo-garage-targets-tests.log
