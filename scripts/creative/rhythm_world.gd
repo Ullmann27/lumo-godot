@@ -36,28 +36,39 @@ func _ready() -> void:
 		. validate_filename()
 		. substr(0, 80)
 	)
-	kit.environment(self)
-	kit.box(self, Vector3(0, -0.55, -9), Vector3(23, 1, 49), Color("172946"))
+	kit.environment(self, LumoEnvironmentCreativePresets.PRESET_RHYTHM_PARTY)
+	kit.box(self, Vector3(0, -0.55, -9), Vector3(23, 1, 49), Color("12081f"))
+	var stage: MeshInstance3D = kit.box(
+		self, Vector3(0, 0.005, -11), Vector3(12.4, 0.06, 36), Color("1a0e32")
+	)
+	stage.material_override = BuildVoxelStyle.material("plain", Color("22143c"))
 	for lane in range(4):
 		var x: float = (lane - 1.5) * 2.35
-		kit.box(self, Vector3(x, 0.03, -11), Vector3(2.1, 0.12, 34), Color("20374e"))
+		kit.box(self, Vector3(x, 0.04, -11), Vector3(2.05, 0.1, 34), Color("1c1438"))
 		for side in [-1.0, 1.0]:
 			kit.box(
 				self,
-				Vector3(x + side * 1.10, 0.13, -11),
-				Vector3(0.05, 0.12, 34),
+				Vector3(x + side * 1.08, 0.16, -11),
+				Vector3(0.09, 0.2, 34),
 				COLORS[lane],
 				true
 			)
-		lamps.append(kit.box(self, Vector3(x, 0.2, 3), Vector3(2.1, 0.15, 0.9), COLORS[lane], true))
-		var crystal := kit.mesh(
-			self, kit.SHAPES.crystal(), Vector3(x, 1.5, -27), COLORS[lane], true
-		)
-		crystal.scale = Vector3(1, 2, 1)
+		var pad := CylinderMesh.new()
+		pad.top_radius = 0.95
+		pad.bottom_radius = 0.95
+		pad.height = 0.16
+		pad.radial_segments = 24
+		lamps.append(kit.mesh(self, pad, Vector3(x, 0.2, 3), COLORS[lane], true))
+		_speaker(Vector3(x, 0, -26.5), COLORS[lane], 0.72)
 	kit.castle(self, Vector3(0, 0, -38), 1.5)
+	_eq_wall()
 	for side in [-1.0, 1.0]:
+		_speaker(Vector3(side * 8.6, 0, -18), COLORS[0 if side < 0 else 1], 1.15)
 		for i in range(8):
-			kit.cylinder(self, Vector3(side * 8, 1.8, 3 - i * 5), 0.18, 3.6, Color("53769c"))
+			var column: MeshInstance3D = kit.cylinder(
+				self, Vector3(side * 8, 1.8, 3 - i * 5), 0.2, 3.6, Color("2a1848")
+			)
+			column.material_override = BuildVoxelStyle.material("plain", Color("2a1848"))
 			kit.sphere(
 				self, Vector3(side * 8, 3.8, 3 - i * 5), Vector3.ONE * 0.42, COLORS[i % 4], true
 			)
@@ -201,7 +212,7 @@ func start() -> void:
 			var shape := kit.mesh(root, kit.SHAPES.star(), Vector3.ZERO, Color("ffe1a2"), true)
 			shape.scale = Vector3.ONE * 0.75
 		else:
-			kit.box(root, Vector3.ZERO, Vector3(1.5, 0.34, 0.8), color, true)
+			_note_disc(root, Vector3.ZERO, color, 0.72)
 			if note.kind == "hold":
 				kit.box(
 					root,
@@ -343,3 +354,58 @@ func _notification(what: int) -> void:
 func _leave() -> void:
 	audio.stop()
 	SceneRouter.goto("games")
+
+
+func _note_disc(root: Node3D, at: Vector3, color: Color, radius: float) -> MeshInstance3D:
+	var disc := CylinderMesh.new()
+	disc.top_radius = radius
+	disc.bottom_radius = radius
+	disc.height = 0.18
+	disc.radial_segments = 20
+	return kit.mesh(root, disc, at, color, true)
+
+
+func _speaker(at: Vector3, color: Color, scale_factor: float) -> void:
+	var cabinet: MeshInstance3D = kit.box(
+		self, at + Vector3(0, 1.55 * scale_factor, 0), Vector3(2.1, 3.1, 1.45) * scale_factor, Color("141022")
+	)
+	cabinet.material_override = BuildVoxelStyle.material("plain", Color("1a142c"))
+	var woofer := CylinderMesh.new()
+	woofer.top_radius = 0.72 * scale_factor
+	woofer.bottom_radius = 0.72 * scale_factor
+	woofer.height = 0.18
+	woofer.radial_segments = 20
+	var cone: MeshInstance3D = kit.mesh(
+		self, woofer, at + Vector3(0, 1.15 * scale_factor, 0.72 * scale_factor), color, true
+	)
+	cone.rotation_degrees = Vector3(90, 0, 0)
+	var tweeter := CylinderMesh.new()
+	tweeter.top_radius = 0.32 * scale_factor
+	tweeter.bottom_radius = 0.32 * scale_factor
+	tweeter.height = 0.14
+	tweeter.radial_segments = 16
+	var top: MeshInstance3D = kit.mesh(
+		self, tweeter, at + Vector3(0, 2.35 * scale_factor, 0.7 * scale_factor), Color("e6f8ff"), true
+	)
+	top.rotation_degrees = Vector3(90, 0, 0)
+	kit.box(
+		self,
+		at + Vector3(0, 3.2 * scale_factor, 0),
+		Vector3(1.6, 0.16, 0.9) * scale_factor,
+		color,
+		true
+	)
+
+
+func _eq_wall() -> void:
+	var xforms: Array[Transform3D] = []
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 221409
+	for i in range(22):
+		var height: float = 0.7 + float((i * 7) % 11) * 0.28
+		var at := Vector3(-6.6 + float(i) * 0.62, height * 0.5, -32.4)
+		xforms.append(Transform3D(Basis.from_scale(Vector3(0.4, height, 0.26)), at))
+	var bar := BoxMesh.new()
+	bar.size = Vector3.ONE
+	BuildVoxelStyle.multimesh(self, "EqBars", bar, kit.material(Color("8a6cff"), true), xforms)
+

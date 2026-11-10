@@ -233,9 +233,13 @@ func part_node(item: Dictionary) -> StaticBody3D:
 
 
 func environment(root: Node3D, preset: String = "creative_night") -> void:
-	if preset == LumoEnvironmentCreativePresets.PRESET_BAUWELT_DAY:
+	if not LumoEnvironmentCreativePresets.describe(preset).is_empty():
 		LumoEnvironmentCreativePresets.apply(root, preset)
-		BuildVoxelStyle.add_clouds(root, int(LumoQuality.budget().get("cloud_count", 30)))
+		if preset in [
+			LumoEnvironmentCreativePresets.PRESET_BAUWELT_DAY,
+			LumoEnvironmentCreativePresets.PRESET_TREASURE_DAY
+		]:
+			BuildVoxelStyle.add_clouds(root, int(LumoQuality.budget().get("cloud_count", 30)))
 		return
 	LumoEnvironment.apply(root, "creative_night")
 	sphere(root, Vector3(-35, 36, -48), Vector3.ONE * 5.5, Color("c1d9ff"), true)

@@ -16,8 +16,8 @@ static func create(model, id: int, picture: Texture2D) -> StaticBody3D:
 		surface.add_vertex(Vector3(p.x, 0.16, p.y))
 	var picture_mat := StandardMaterial3D.new()
 	picture_mat.albedo_texture = picture
-	picture_mat.roughness = 0.55
-	picture_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	picture_mat.roughness = 0.48
+	picture_mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
 	picture_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	surface.set_material(picture_mat)
 	surface.commit(mesh)
@@ -38,11 +38,23 @@ static func create(model, id: int, picture: Texture2D) -> StaticBody3D:
 			surface.set_normal(normal)
 			surface.add_vertex(p)
 	var rim := StandardMaterial3D.new()
-	rim.albedo_color = Color("1e4678")
-	rim.metallic = 0.15
-	rim.roughness = 0.5
+	rim.albedo_color = Color("c99558")
+	rim.metallic = 0.08
+	rim.roughness = 0.62
 	rim.cull_mode = BaseMaterial3D.CULL_DISABLED
 	surface.set_material(rim)
+	surface.commit(mesh)
+	surface = SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for index in triangles:
+		var p: Vector2 = outline[index]
+		surface.set_normal(Vector3.DOWN)
+		surface.add_vertex(Vector3(p.x, 0.0, p.y))
+	var back := StandardMaterial3D.new()
+	back.albedo_color = Color("d7a86a")
+	back.roughness = 0.7
+	back.cull_mode = BaseMaterial3D.CULL_DISABLED
+	surface.set_material(back)
 	surface.commit(mesh)
 	var body := StaticBody3D.new()
 	body.set_meta("piece", id)

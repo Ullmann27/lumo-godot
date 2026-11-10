@@ -46,7 +46,7 @@ func _ready() -> void:
 			model.restore(saved)
 	if model.result_id.is_empty():
 		model.result_id = HostBridge.new_result_id()
-	kit.environment(self)
+	kit.environment(self, LumoEnvironmentCreativePresets.PRESET_TREASURE_DAY)
 	_landscape()
 	player = CharacterBody3D.new()
 	player.name = "LumoExplorer"
@@ -87,18 +87,25 @@ func _landscape() -> void:
 	var ground := StaticBody3D.new()
 	add_child(ground)
 	var mesh := kit.box(ground, Vector3(0, -0.65, -29), Vector3(74, 1.3, 88), Color.WHITE)
-	mesh.material_override = kit.textured("grass", Color("81b4ad"))
+	mesh.material_override = BuildVoxelStyle.material("grass_top", Color("9ed56a"))
 	kit.collision(ground, Vector3(0, -0.65, -29), Vector3(74, 1.3, 88))
 	# A continuous promenade lets younger children return to any clue without getting lost.
+	var path_xforms: Array[Transform3D] = []
 	for i in range(39):
 		var z: float = 8 - i * 2
-		var path := kit.box(self, Vector3(0, 0.025, z), Vector3(4.5, 0.05, 1.94), Color.WHITE)
-		path.material_override = kit.textured("stone", Color("89b0ce"))
+		path_xforms.append(
+			Transform3D(Basis.from_scale(Vector3(4.5, 0.05, 1.94)), Vector3(0, 0.025, z))
+		)
 		if i % 4 == 0:
 			for x in [-3.5, 3.5]:
 				var lamp := kit.part_node(CATALOG.part("lantern"))
 				lamp.position = Vector3(x, 0, z)
 				add_child(lamp)
+	var paver := BoxMesh.new()
+	paver.size = Vector3.ONE
+	BuildVoxelStyle.multimesh(
+		self, "TreasurePath", paver, BuildVoxelStyle.material("paving", Color("d8d2c4")), path_xforms
+	)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 71882
 	for i in range(55):
@@ -120,7 +127,8 @@ func _landscape() -> void:
 	tree.scale = Vector3.ONE * 2
 	add_child(tree)
 	for i in range(3):
-		var rock := kit.mesh(self, kit.SHAPES.rock(), Vector3(13 + i * 3, 2, -22), Color("73869d"))
+		var rock := kit.mesh(self, kit.SHAPES.rock(), Vector3(13 + i * 3, 2, -22), Color.WHITE)
+		rock.material_override = BuildVoxelStyle.material("stone", Color("c4bba8"))
 		rock.scale = Vector3(4, 5 + i, 3)
 		var fall := kit.part_node(CATALOG.part("waterfall"))
 		fall.position = Vector3(13 + i * 3, 0, -20.4)
@@ -128,16 +136,26 @@ func _landscape() -> void:
 		add_child(fall)
 	gate = StaticBody3D.new()
 	add_child(gate)
-	kit.box(gate, Vector3(0, 1.6, -31), Vector3(5, 3.2, 0.28), Color("4f6896"))
+	var door: MeshInstance3D = kit.box(gate, Vector3(0, 1.6, -31), Vector3(5, 3.2, 0.28), Color.WHITE)
+	door.material_override = BuildVoxelStyle.material("wood", Color("c99558"))
+	kit.box(gate, Vector3(-1.15, 1.75, -30.84), Vector3(1.7, 2.15, 0.08), Color("b88850"))
+	kit.box(gate, Vector3(1.15, 1.75, -30.84), Vector3(1.7, 2.15, 0.08), Color("b88850"))
+	kit.box(gate, Vector3(0, 3.05, -30.84), Vector3(4.4, 0.2, 0.08), Color("d6b25a"))
 	kit.collision(gate, Vector3(0, 1.6, -31), Vector3(5, 3.2, 0.28))
-	for x in [-3.4, 3.4]:
-		kit.cylinder(self, Vector3(x, 2.1, -31), 0.55, 4.2, Color("adb9d0"))
-		kit.sphere(self, Vector3(x, 4.5, -31), Vector3.ONE * 0.8, Color("7fe8ce"), true)
+	for x in [-3.45, 3.45]:
+		var pillar: MeshInstance3D = kit.cylinder(self, Vector3(x, 2.15, -31), 0.62, 4.3, Color.WHITE)
+		pillar.material_override = BuildVoxelStyle.material("sand", Color("d9a86c"))
+		var cap: MeshInstance3D = kit.sphere(self, Vector3(x, 4.55, -31), Vector3.ONE * 0.85, Color.WHITE)
+		cap.material_override = BuildVoxelStyle.material("sand", Color("e2b878"))
+	var lintel: MeshInstance3D = kit.box(self, Vector3(0, 4.5, -31), Vector3(8.2, 0.75, 1.15), Color.WHITE)
+	lintel.material_override = BuildVoxelStyle.material("sand", Color("d9a86c"))
+	var keystone: MeshInstance3D = kit.box(self, Vector3(0, 5.15, -31), Vector3(1.5, 0.7, 1.25), Color.WHITE)
+	keystone.material_override = BuildVoxelStyle.material("sand", Color("e2b878"))
 	for i in range(4):
-		var node := kit.mesh(
-			self, kit.SHAPES.crystal(), Vector3(-17.5 + i * 1.65, 1.2, -40.2), Color("a9b7ff"), true
+		var crystal := kit.mesh(
+			self, kit.SHAPES.crystal(), Vector3(-17.5 + i * 1.65, 1.2, -40.2), Color("7ee7ff"), true
 		)
-		node.scale = Vector3(1, 2.4, 1)
+		crystal.scale = Vector3(1, 2.4, 1)
 	for i in range(12):
 		var flowers := kit.part_node(CATALOG.part("flowers"))
 		flowers.position = Vector3(13.0 + i % 4 * 1.4, 0, -50.5 + i / 4 * 1.3)
@@ -149,8 +167,9 @@ func _landscape() -> void:
 	add_child(chest)
 	for i in range(7):
 		var mountain := kit.mesh(
-			self, kit.SHAPES.mountain(), Vector3(-48 + i * 16, 0, -91), Color("354d78")
+			self, kit.SHAPES.mountain(), Vector3(-48 + i * 16, 0, -91), Color.WHITE
 		)
+		mountain.material_override = BuildVoxelStyle.material("stone", Color("8fa07a"))
 		mountain.scale = Vector3(18, 25 + (i % 3) * 8, 16)
 
 
