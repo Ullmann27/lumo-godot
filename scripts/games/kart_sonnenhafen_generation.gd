@@ -410,9 +410,17 @@ static func _wow_composition(world, heroes: Array) -> Array[Dictionary]:
 	var radius: float = 16.0
 	var centre: Vector3 = at + Vector3.UP * (radius + 6.0)
 	var upright: Basis = basis * Basis(Vector3.RIGHT, PI * 0.5)
-	world._prop("torus", centre, Vector3(64.0, 0.85, 64.0), Color("f2d36b"), upright, true)
-	if not world.low_detail:
-		world._prop("torus", centre, Vector3(56.0, 0.45, 56.0), Color("ffe9a8"), upright, true)
+	# Build the wheel rim from slender emissive beam segments. A heavily scaled
+	# glowing torus reads as a solid yellow disc in the mobile/GL renderer.
+	var rim_segments: int = 20 if world.low_detail else 32
+	var previous_rim: Vector3 = centre + basis.x * radius
+	for i in range(1, rim_segments + 1):
+		var phi: float = TAU * float(i) / float(rim_segments)
+		var rim_point: Vector3 = centre + basis.x * (cos(phi) * radius) + Vector3.UP * (
+			sin(phi) * radius
+		)
+		world._beam(previous_rim, rim_point, 0.24, Color("f2d36b"), true)
+		previous_rim = rim_point
 	world._prop("ball", centre, Vector3(3.4, 3.4, 3.4), Color("60dce2"), Basis.IDENTITY, true)
 	world._prop("cylinder", centre, Vector3(1.1, 3.8, 1.1), Color("5d8796"), upright)
 	var spokes: int = 8 if world.low_detail else 12
@@ -560,22 +568,25 @@ static func _harbor_boat(world, at: Vector3, basis: Basis, sailing: bool, accent
 
 
 static func _start_lights(world) -> void:
-	var distance: float = 24.0
+	# Keep the start gantry above the kart sightline instead of dominating the
+	# race camera. The crossbar sits just over four metres above the road.
+	var distance: float = 27.0
 	var basis: Basis = world.frame(distance)
 	var mid: Vector3 = world.position_at(distance, 0.0)
+	mid.y = world._ground_height(mid.x, mid.z)
 	for side in [-1.0, 1.0]:
 		var foot: Vector3 = world.position_at(distance, side * 7.3)
 		foot.y = world._ground_height(foot.x, foot.z)
-		world._prop("cylinder", foot + Vector3.UP * 4.4, Vector3(0.38, 8.8, 0.38), Color("2b2d38"))
-		world._prop("cylinder", foot + Vector3.UP * 0.3, Vector3(0.85, 0.6, 0.85), Color("1a1c24"))
-	world._prop("box", mid + Vector3.UP * 8.9, Vector3(15.6, 0.55, 0.7), Color("2b2d38"), basis)
-	world._prop("box", mid + Vector3.UP * 9.55, Vector3(10.4, 1.35, 0.55), Color("1a1c24"), basis)
+		world._prop("cylinder", foot + Vector3.UP * 2.1, Vector3(0.30, 4.2, 0.30), Color("2b2d38"))
+		world._prop("cylinder", foot + Vector3.UP * 0.3, Vector3(0.72, 0.6, 0.72), Color("1a1c24"))
+	world._prop("box", mid + Vector3.UP * 4.25, Vector3(15.4, 0.34, 0.52), Color("2b2d38"), basis)
+	world._prop("box", mid + Vector3.UP * 4.65, Vector3(8.8, 0.72, 0.46), Color("1a1c24"), basis)
 	var count: int = 3 if world.low_detail else 5
 	for i in range(count):
-		var x: float = (float(i) - float(count - 1) * 0.5) * 1.55
-		var lamp: Vector3 = mid + basis.x * x + Vector3.UP * 9.35
-		world._prop("cylinder", lamp, Vector3(0.62, 0.85, 0.62), Color("3a1216"), basis)
-		world._prop("ball", lamp + Vector3.DOWN * 0.15, Vector3(0.72, 0.72, 0.72), Color("ff3b3b"), Basis.IDENTITY, true)
+		var x: float = (float(i) - float(count - 1) * 0.5) * 1.35
+		var lamp: Vector3 = mid + basis.x * x + Vector3.UP * 4.55
+		world._prop("cylinder", lamp, Vector3(0.48, 0.58, 0.48), Color("3a1216"), basis)
+		world._prop("ball", lamp + Vector3.DOWN * 0.10, Vector3(0.54, 0.54, 0.54), Color("ff3b3b"), Basis.IDENTITY, true)
 
 
 static func _finish_fireworks(world) -> void:
