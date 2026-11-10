@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .github/handoffs/lumo-other-tracks-code.patch.gz.b64.part-* > "$RUNNER_TEMP/payload.b64"
+          cp .github/handoffs/lumo-other-tracks-code.patch.gz.b64 "$RUNNER_TEMP/payload.b64"
           base64 --decode "$RUNNER_TEMP/payload.b64" | gzip -dc > "$RUNNER_TEMP/handoff.patch"
           echo "6acd54417023e67934f38d6d3239ac6b1fe791a8f190d01885aabbb11a95b0b5  $RUNNER_TEMP/handoff.patch" | sha256sum -c -
           test -s "$RUNNER_TEMP/handoff.patch"
