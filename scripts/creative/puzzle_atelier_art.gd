@@ -228,11 +228,11 @@ static func _table_props(root: Node3D, density: float) -> void:
 	var badge := Label3D.new()
 	badge.name = "PuzzleBadgeL"
 	badge.text = "L"
-	badge.font_size = 48
+	badge.font_size = 32
 	badge.modulate = Color("fff4d0")
 	badge.position = Vector3(0.0, 0.22, 3.52)
 	badge.rotation_degrees = Vector3(-90, 0, 0)
-	badge.pixel_size = 0.012
+	badge.pixel_size = 0.008
 	root.add_child(badge)
 
 

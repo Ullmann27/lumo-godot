@@ -55,10 +55,11 @@ var matching_hover: bool = false
 var picture_alive: bool = false
 var last_snap_fx: bool = false
 var preview_tier: String = ""
+var compact_tray: bool = false
 
 
 func _ready() -> void:
-	previous = RUNTIME.enter(self)
+	previous = RUNTIME.enter(self, true)
 	SceneRouter.current_scene_id = "puzzle"
 	var child := (
 		str(SceneRouter.launch_options.get("childKey", "standalone"))
@@ -82,6 +83,9 @@ func _ready() -> void:
 	var board_material := board_base.material_override as StandardMaterial3D
 	board_material.roughness = 0.92
 	board_material.metallic_specular = 0.12
+	# Flat dyed felt avoids shadow-map acne on the shallow board in GLES.
+	# Piece edges, the gold frame and the room retain their lit 3D materials.
+	board_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	for side in [-1.0, 1.0]:
 		var tray: MeshInstance3D = kit.box(
 			self, Vector3(side * 7.35, -0.04, 0), Vector3(4.7, 0.18, 6.9), Color.WHITE
@@ -132,8 +136,8 @@ func _ready() -> void:
 	_make_alive_picture()
 	_make_snap_burst()
 	_ui()
-	get_viewport().size_changed.connect(func(): RUNTIME.safe_area(self, safe_ui))
-	RUNTIME.safe_area(self, safe_ui)
+	get_viewport().size_changed.connect(_resize_ui)
+	_resize_ui()
 	_show_selection()
 
 
@@ -148,6 +152,12 @@ func _ui() -> void:
 	safe_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	safe_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(safe_ui)
+	var hud_backdrop := ColorRect.new()
+	hud_backdrop.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	hud_backdrop.offset_bottom = 164
+	hud_backdrop.color = Color(0.025, 0.055, 0.12, 0.90)
+	hud_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	safe_ui.add_child(hud_backdrop)
 	var top := HBoxContainer.new()
 	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	top.offset_left = 14
@@ -155,20 +165,28 @@ func _ui() -> void:
 	top.offset_top = 12
 	safe_ui.add_child(top)
 	top.add_child(KIT.button("‹ Spiele", _leave))
-	top.add_child(KIT.label("LUMOS PUZZLE-ATELIER", 24))
-	var gap := Control.new()
-	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top.add_child(gap)
+	var title := KIT.label("LUMOS PUZZLE-ATELIER", 22)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	title.clip_text = true
+	top.add_child(title)
 	info = KIT.label("", 18)
-	top.add_child(info)
+	info.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	info.position = Vector2(16, 66)
+	info.offset_right = -16
+	safe_ui.add_child(info)
 	top.add_child(KIT.button("Ⅱ", _pause_menu, 52))
+	var tool_scroll := ScrollContainer.new()
+	tool_scroll.name = "PuzzleToolsScroll"
+	tool_scroll.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	tool_scroll.offset_top = -78
+	tool_scroll.offset_bottom = -12
+	tool_scroll.offset_left = 14
+	tool_scroll.offset_right = -14
+	tool_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	safe_ui.add_child(tool_scroll)
 	var tools := HBoxContainer.new()
-	tools.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	tools.offset_top = -68
-	tools.offset_bottom = -12
-	tools.offset_left = 14
-	tools.offset_right = -14
-	safe_ui.add_child(tools)
+	tool_scroll.add_child(tools)
 	tools.add_child(KIT.button("‹ Teile", _page.bind(-1)))
 	tools.add_child(KIT.button("Teile ›", _page.bind(1)))
 	tools.add_child(KIT.button("Randteile", _edges))
@@ -181,11 +199,13 @@ func _ui() -> void:
 	tools.add_child(KIT.button("Neues Puzzle", _show_selection))
 	status = KIT.label("Ziehe ein Teil auf seinen Platz. Es rastet ein, wenn es passt.", 16)
 	status.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	status.position = Vector2(16, 80)
+	status.position = Vector2(16, 92)
+	status.offset_right = -16
+	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	safe_ui.add_child(status)
 	progress = ProgressBar.new()
 	progress.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	progress.position.y = 112
+	progress.position.y = 136
 	progress.offset_left = 14
 	progress.offset_right = -14
 	progress.custom_minimum_size.y = 6
@@ -202,6 +222,37 @@ func _ui() -> void:
 	menu.add_child(menu_box)
 
 
+func _resize_ui() -> void:
+	RUNTIME.safe_area(self, safe_ui)
+	if is_instance_valid(menu):
+		for child in menu_box.get_children():
+			if child is Label:
+				child.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		var width := minf(470.0, maxf(280.0, safe_ui.size.x - 24.0))
+		menu.custom_minimum_size.x = width
+		call_deferred("_fit_menu")
+	if is_instance_valid(camera) and camera.is_inside_tree():
+		var view := get_viewport().get_visible_rect().size
+		var aspect := view.x / maxf(view.y, 1.0)
+		compact_tray = aspect < 1.15
+		for prop_name in ["PuzzleCompass", "PuzzleDeskBooks", "PuzzlePots", "PuzzleHydrangeas"]:
+			var prop := get_node_or_null(NodePath(prop_name)) as Node3D
+			if prop != null:
+				prop.visible = not compact_tray
+		camera.position = Vector3(0, 13.8, 11.6) * maxf(1.0, 0.82 / aspect)
+		camera.look_at(Vector3(0, 0.05, 0.8 if compact_tray else -0.35))
+		if not nodes.is_empty() and dragging < 0:
+			_tray()
+
+
+func _fit_menu() -> void:
+	await get_tree().process_frame
+	if not is_inside_tree() or not is_instance_valid(menu):
+		return
+	menu.size = Vector2(menu.custom_minimum_size.x, menu.get_combined_minimum_size().y)
+	menu.position = (safe_ui.size - menu.size) * 0.5
+
+
 func _clear_menu() -> void:
 	paused = true
 	dragging = -1
@@ -210,6 +261,7 @@ func _clear_menu() -> void:
 		menu_box.remove_child(child)
 		child.queue_free()
 	menu.show()
+	call_deferred("_resize_ui")
 
 
 func _show_selection() -> void:
@@ -310,7 +362,7 @@ func _tray() -> void:
 			if not edges_only or model.is_edge(i):
 				pending.append(i)
 	var per_side: int = STATE.tray_per_side(model.count)
-	var page_size: int = per_side * 2
+	var page_size: int = 3 if compact_tray else per_side * 2
 	var pages: int = maxi(1, ceili(float(pending.size()) / page_size))
 	tray_page = posmod(tray_page, pages)
 	for p in range(tray_page * page_size, mini((tray_page + 1) * page_size, pending.size())):
@@ -318,6 +370,12 @@ func _tray() -> void:
 		var local: int = p % page_size
 		var x: float = -7.0 if local < per_side else 7.0
 		var z: float = -2.2 + (local % per_side) * (4.4 / maxi(1, per_side - 1))
+		if compact_tray:
+			x = float(local - 1) * 3.05
+			z = model.board_size().y * 0.5 + model.cell_size().y * 0.5 + 0.55
+			nodes[i].scale = Vector3.ONE * minf(1.8, 2.7 / model.cell_size().x)
+		else:
+			nodes[i].scale = Vector3.ONE
 		model.pieces[i].x = x
 		model.pieces[i].z = z
 		nodes[i].position = Vector3(x, 0.15, z)

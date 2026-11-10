@@ -56,7 +56,7 @@ var touch_gesture: bool = false
 
 
 func _ready() -> void:
-	previous_runtime = RUNTIME.enter(self)
+	previous_runtime = RUNTIME.enter(self, true)
 	SceneRouter.current_scene_id = "build"
 	child_key = (
 		str(
@@ -147,6 +147,8 @@ func _resize() -> void:
 	_camera_update()
 	if is_instance_valid(safe_ui):
 		RUNTIME.safe_area(self, safe_ui)
+		if is_instance_valid(pause_panel):
+			pause_panel.position = (safe_ui.size - pause_panel.size) * 0.5
 
 
 func _exit_tree() -> void:
@@ -172,13 +174,14 @@ func _ui() -> void:
 	var top := HBoxContainer.new()
 	hud.add_child(top)
 	top.add_child(_day_button("‹ Spiele", _leave))
-	top.add_child(_day_label("LUMO BAUWELT", 25))
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top.add_child(spacer)
+	var title := _day_label("LUMO BAUWELT", 22)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	title.clip_text = true
+	top.add_child(title)
 	count_label = _day_label("", 15)
-	top.add_child(count_label)
 	top.add_child(_day_button("Ⅱ", func(): _pause(true), 52))
+	hud.add_child(count_label)
 	var tools := HBoxContainer.new()
 	hud.add_child(tools)
 	var scroll := ScrollContainer.new()
@@ -221,7 +224,7 @@ func _ui() -> void:
 	var goal_panel := PanelContainer.new()
 	goal_panel.add_theme_stylebox_override("panel", _day_panel())
 	goal_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
-	goal_panel.position = Vector2(14, 126)
+	goal_panel.position = Vector2(14, 156)
 	goal_panel.custom_minimum_size = Vector2(282, 0)
 	root.add_child(goal_panel)
 	var goal_box := VBoxContainer.new()
@@ -240,8 +243,12 @@ func _ui() -> void:
 	status = _day_label("Tippe zum Bauen. Ziehe zum Drehen der Kamera. Zwei Finger: zoomen.", 14)
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lower.add_child(status)
+	var category_scroll := ScrollContainer.new()
+	category_scroll.name = "BuildCategoriesScroll"
+	category_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	lower.add_child(category_scroll)
 	var categories := HBoxContainer.new()
-	lower.add_child(categories)
+	category_scroll.add_child(categories)
 	for name in ["Bauen", "Dächer", "Wege", "Natur", "Deko"]:
 		categories.add_child(
 			_day_button(
@@ -841,7 +848,8 @@ func load_world(show_message: bool = true) -> bool:
 func _choice_dialog(title: String, items: Array, action: Callable) -> void:
 	var dialog := Window.new()
 	dialog.title = title
-	dialog.size = Vector2i(390, 500)
+	var available := get_viewport().get_visible_rect().size - Vector2(24, 24)
+	dialog.size = Vector2i(minf(390, available.x), minf(500, available.y))
 	dialog.transient = true
 	dialog.exclusive = true
 	add_child(dialog)

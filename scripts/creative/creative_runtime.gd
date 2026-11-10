@@ -2,7 +2,7 @@ extends RefCounted
 ## Shared landscape viewport and native safe-area handling for creative games.
 
 
-static func enter(node: Node) -> Dictionary:
+static func enter(node: Node, density_layout: bool = false) -> Dictionary:
 	var window := node.get_window()
 	var tree := node.get_tree()
 	var previous := {
@@ -11,7 +11,11 @@ static func enter(node: Node) -> Dictionary:
 		"quit": tree.quit_on_go_back,
 		"accept": tree.auto_accept_quit
 	}
-	window.content_scale_size = Vector2i(1280, 720)
+	node.set_meta("creative_density_layout", density_layout)
+	if density_layout:
+		_fit_density(node)
+	else:
+		window.content_scale_size = Vector2i(1280, 720)
 	tree.quit_on_go_back = false
 	tree.auto_accept_quit = false
 	if OS.has_feature("mobile"):
@@ -22,6 +26,7 @@ static func enter(node: Node) -> Dictionary:
 static func restore(node: Node, previous: Dictionary) -> void:
 	if previous.is_empty():
 		return
+	node.set_meta("creative_density_layout", false)
 	node.get_window().content_scale_size = previous.scale
 	node.get_tree().quit_on_go_back = previous.quit
 	node.get_tree().auto_accept_quit = previous.accept
@@ -30,6 +35,8 @@ static func restore(node: Node, previous: Dictionary) -> void:
 
 
 static func safe_area(node: Node, control: Control) -> void:
+	if bool(node.get_meta("creative_density_layout", false)):
+		_fit_density(node)
 	var physical := Vector2(node.get_window().size)
 	var logical := node.get_viewport().get_visible_rect().size
 	if physical.x <= 0 or physical.y <= 0:
@@ -49,3 +56,11 @@ static func safe_area(node: Node, control: Control) -> void:
 	control.offset_top = insets.position.y * factor.y
 	control.offset_right = -insets.size.x * factor.x
 	control.offset_bottom = -insets.size.y * factor.y
+
+
+static func _fit_density(node: Node) -> void:
+	var window := node.get_window()
+	var density: float = MobileRuntime.get_ui_density()
+	var logical := Vector2i(Vector2(window.size) / density)
+	if logical.x > 0 and logical.y > 0 and window.content_scale_size != logical:
+		window.content_scale_size = logical

@@ -109,6 +109,29 @@ static func traffic_speed(current: float, traffic: PackedVector3Array, desired: 
 	return limit
 
 
+## Braking behind a stationary racer must not prevent an already chosen safe
+## pass forever. Turn toward the free lane first, then creep through checked
+## physical space; never add progress or displace the kart sideways directly.
+static func manoeuvre_speed(
+	current: float,
+	target: float,
+	traffic: PackedVector3Array,
+	speed: float,
+	direction: Vector2,
+	delta: float
+) -> float:
+	if speed >= 2.0 or absf(target - current) < 0.6:
+		return speed
+	if direction.y * signf(target - current) < 0.75:
+		return speed
+	var step: Vector2 = direction * 2.0 * delta
+	for obstacle in traffic:
+		var separation := Vector2(obstacle.x, obstacle.y - current)
+		if (separation - step).length() < 1.65:
+			return speed
+	return 2.0
+
+
 static func may_boost(
 	bend: float,
 	heading_error: float,

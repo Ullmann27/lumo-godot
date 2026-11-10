@@ -57,3 +57,19 @@ In shared workspace `artifacts/other-games/`: `before/`, `after/`, `reference/`,
 Puzzle overview draw calls: 89 before, 79 after on the tested renderer. Bauwelt high overview: 239 before, 245 after; low: 169 before, 175 after. Jump island 4: 261 before, 251 after. These are draw calls from engine frames, not real-hardware FPS measurements.
 
 Known visual limitation: portrait Puzzle and Bauwelt captures reveal small/crowded toolbars even when logical minimum sizes pass; a separate responsive HUD correction is required. Puzzle light/surface banding remains visible in Compatibility captures. The L badge is a retained atelier prop, not the Lumo character. No APK, signed release, physical Android measurement or global acceptance is asserted by this report.
+
+
+## Follow-up: real portrait/Fold target sizes
+
+The earlier portrait limitation is repaired in a separate follow-up commit. `creative_runtime.enter(..., true)` opts Puzzle/Bauwelt into a logical viewport derived from actual pixels and `MobileRuntime.get_ui_density()`. Other creative games retain their existing viewport contract. Window scaling is restored when leaving the scene.
+
+- Puzzle/Bauwelt header controls remain on-screen and at least 48×48 dp. Puzzle tool actions and Bauwelt categories scroll instead of squeezing text/buttons.
+- Puzzle selection/results and Bauwelt pause panels are centered; narrow puzzle menu text wraps and its width follows the safe area.
+- Compact Puzzle layouts place three selectable pieces in front of the board, rather than leaving side trays off-screen. Camera framing includes the board. Saving uses the existing model format.
+- Dark HUD backing keeps text readable against the atelier windows. The small L plaque is resized to fit its physical plate. Felt uses a flat dyed material to remove Compatibility shadow acne while the frame, piece edges and room retain lighting.
+
+`creative_touch_layout_regression.gd` passes 284 headless checks at 412×915, 690×829, 1280×720 and 1236×2745 with density 3. The test measures actual viewport-to-window transformation divided by Android density, verifies header bounds, reaches the last scrolling puzzle action and completes all six pieces using real camera projection and physics picking in each layout. The real OpenGL run passes 222 checks and additionally saves active trays and complete pictures. Exact final renderer result is in `logs/creative-touch-layout-gl.log`.
+
+After this follow-up, use **`artifacts/other-games/after/touch-layout/`** as current visual evidence. Earlier `after/puzzle/` captures record the first integration commit and do not show the responsive follow-up. Current files include `puzzle_ready_412x915.png`, `puzzle_412x915.png`, `puzzle_690x829.png`, `build_412x915.png`, and `build_690x829.png`.
+
+Post-change regressions: PuzzleExpansion PASS 1103 headless checks; sandbox UI/tools PASS; all four creative scenes instantiate with no script errors. The responsive runtime, puzzle world and new layout test pass gdlint. These are Linux renderer/headless checks, not an Android emulator or device measurement.

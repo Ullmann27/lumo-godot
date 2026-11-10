@@ -38,7 +38,10 @@ static func planned_loop_lane(game, index: int, at: float, fallback: float) -> f
 	if game.difficulty == "gemuetlich" or index % 2 == 0:
 		return fallback
 	var lead: float = float(layout.start) - at
-	return float(layout.lane) if lead >= -2.0 and lead <= 55.0 else fallback
+	# Line up before the preceding panorama ramp. Its airborne controller
+	# preserves the launch lane; waiting until 55m before the loop leaves fast
+	# rivals too little grounded road to cross from the far left after landing.
+	return float(layout.lane) if lead >= -2.0 and lead <= 110.0 else fallback
 
 
 static func update_loop(game, index: int, delta: float) -> bool:

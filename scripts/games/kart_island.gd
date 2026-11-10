@@ -26,6 +26,7 @@ const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
 const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
 const RIVAL_RACECRAFT = preload("res://scripts/games/kart_rival_racecraft.gd")
+const RIVAL_RAMP_PLAN = preload("res://scripts/games/kart_rival_ramp_plan.gd")
 const OPPONENT_ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
@@ -2240,7 +2241,10 @@ func _drive_opponents(delta: float) -> void:
 		var local_gap: Vector3 = player.position - rival.position
 		_update_rival_item_tactics(i, local_gap, delta)
 		target_lane = RIVAL_STUNTS.planned_loop_lane(self, i, float(sampled.distance), target_lane)
-		var aim: Vector3 = world.position_at(float(sampled.distance) + float(profile.look_ahead), target_lane)
+		var look_ahead: float = float(profile.look_ahead)
+		if absf(rival.motion_speed) < 4.0 and absf(target_lane - float(sampled.lateral)) > 0.6:
+			look_ahead = 1.5
+		var aim: Vector3 = world.position_at(float(sampled.distance) + look_ahead, target_lane)
 		var desired_heading: float = atan2(-(aim.x - rival.position.x), -(aim.z - rival.position.z))
 		var angle: float = angle_difference(opponent_headings[i], desired_heading)
 		var turn_cap: float = float(profile.turn_rate) * delta
@@ -2252,6 +2256,10 @@ func _drive_opponents(delta: float) -> void:
 			target_speed *= 1.32
 		target_speed = minf(target_speed, RIVAL_RACECRAFT.corner_speed(bend, difficulty, rival.kart_style, i))
 		target_speed *= clampf(1.0 - absf(angle) * 0.33, 0.58, 1.0)
+		target_speed = RIVAL_RAMP_PLAN.target_speed(
+			world, float(sampled.distance), rival.kart_style, float(rules.speed),
+			absf(rival.motion_speed), target_speed, opponent_boost_times[i] > 0.0, delta
+		)
 		target_speed = RIVAL_RACECRAFT.traffic_speed(float(sampled.lateral), traffic, target_speed)
 		opponent_stuns[i] = maxf(0, opponent_stuns[i] - delta)
 		_sync_rival_item_fx(i)
@@ -2259,6 +2267,11 @@ func _drive_opponents(delta: float) -> void:
 			target_speed *= 0.3
 		var rival_drifting: bool = _update_rival_drift(i, sampled, target_speed, delta)
 		var forward := Vector3(-sin(opponent_headings[i]), 0, -cos(opponent_headings[i]))
+		if opponent_stuns[i] <= 0.0:
+			target_speed = RIVAL_RACECRAFT.manoeuvre_speed(
+				float(sampled.lateral), target_lane, traffic, target_speed,
+				Vector2(forward.dot(-(sampled.basis as Basis).z), forward.dot((sampled.basis as Basis).x)), delta
+			)
 		rival.position += forward * target_speed * delta
 		var next: Dictionary = world.sample_road(rival.position, float(sampled.distance))
 		var travel: float = fposmod(float(next.distance) - float(sampled.distance) + track_length * 0.5, track_length) - track_length * 0.5
