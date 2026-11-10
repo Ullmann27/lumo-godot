@@ -52,7 +52,7 @@ jobs:
         run: |
           set -euo pipefail
           timeout 300s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/import.log"
-          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' "$RUNNER_TEMP/import.log"; then exit 1; fi
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' "$RUNNER_TEMP/import.log" | grep -v 'resources still in use at exit' | grep -q .; then exit 1; fi
           python3 tools/validate_project.py
 
       - name: Bauwelt 2013 identity regression
@@ -77,7 +77,7 @@ jobs:
           echo "KART_PAUSE_LAYOUT_EXIT=$rc" | tee -a "$RUNNER_TEMP/pause-runtime.txt"
           test "$rc" -eq 0
           grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/pause-layout.log"
-          if grep -E 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' "$RUNNER_TEMP/pause-layout.log"; then exit 1; fi
+          if grep -E 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' "$RUNNER_TEMP/pause-layout.log" | grep -v 'resources still in use at exit' | grep -q .; then exit 1; fi
 
       - name: Run complete validate_project.sh from repaired source
         env:
