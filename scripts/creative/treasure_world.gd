@@ -46,7 +46,7 @@ func _ready() -> void:
 			model.restore(saved)
 	if model.result_id.is_empty():
 		model.result_id = HostBridge.new_result_id()
-	kit.environment(self)
+	kit.environment(self, LumoEnvironmentCreativePresets.PRESET_TREASURE_DAY)
 	_landscape()
 	player = CharacterBody3D.new()
 	player.name = "LumoExplorer"
@@ -86,19 +86,29 @@ func _exit_tree() -> void:
 func _landscape() -> void:
 	var ground := StaticBody3D.new()
 	add_child(ground)
-	var mesh := kit.box(ground, Vector3(0, -0.65, -29), Vector3(74, 1.3, 88), Color.WHITE)
-	mesh.material_override = kit.textured("grass", Color("81b4ad"))
+	var terrain := MeshInstance3D.new()
+	terrain.name = "TreasureTerrain"
+	terrain.mesh = _terrain_mesh()
+	terrain.material_override = _terrain_material()
+	ground.add_child(terrain)
 	kit.collision(ground, Vector3(0, -0.65, -29), Vector3(74, 1.3, 88))
 	# A continuous promenade lets younger children return to any clue without getting lost.
+	var path_xforms: Array[Transform3D] = []
 	for i in range(39):
 		var z: float = 8 - i * 2
-		var path := kit.box(self, Vector3(0, 0.025, z), Vector3(4.5, 0.05, 1.94), Color.WHITE)
-		path.material_override = kit.textured("stone", Color("89b0ce"))
+		path_xforms.append(
+			Transform3D(Basis.from_scale(Vector3(4.5, 0.05, 1.94)), Vector3(0, 0.025, z))
+		)
 		if i % 4 == 0:
 			for x in [-3.5, 3.5]:
 				var lamp := kit.part_node(CATALOG.part("lantern"))
 				lamp.position = Vector3(x, 0, z)
 				add_child(lamp)
+	var paver := BoxMesh.new()
+	paver.size = Vector3.ONE
+	BuildVoxelStyle.multimesh(
+		self, "TreasurePath", paver, BuildVoxelStyle.material("paving", Color("d8d2c4")), path_xforms
+	)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 71882
 	for i in range(55):
@@ -120,7 +130,8 @@ func _landscape() -> void:
 	tree.scale = Vector3.ONE * 2
 	add_child(tree)
 	for i in range(3):
-		var rock := kit.mesh(self, kit.SHAPES.rock(), Vector3(13 + i * 3, 2, -22), Color("73869d"))
+		var rock := kit.mesh(self, kit.SHAPES.rock(), Vector3(13 + i * 3, 2, -22), Color.WHITE)
+		rock.material_override = BuildVoxelStyle.material("stone", Color("c4bba8"))
 		rock.scale = Vector3(4, 5 + i, 3)
 		var fall := kit.part_node(CATALOG.part("waterfall"))
 		fall.position = Vector3(13 + i * 3, 0, -20.4)
@@ -128,16 +139,26 @@ func _landscape() -> void:
 		add_child(fall)
 	gate = StaticBody3D.new()
 	add_child(gate)
-	kit.box(gate, Vector3(0, 1.6, -31), Vector3(5, 3.2, 0.28), Color("4f6896"))
+	var door: MeshInstance3D = kit.box(gate, Vector3(0, 1.6, -31), Vector3(5, 3.2, 0.28), Color.WHITE)
+	door.material_override = BuildVoxelStyle.material("wood", Color("c99558"))
+	kit.box(gate, Vector3(-1.15, 1.75, -30.84), Vector3(1.7, 2.15, 0.08), Color("b88850"))
+	kit.box(gate, Vector3(1.15, 1.75, -30.84), Vector3(1.7, 2.15, 0.08), Color("b88850"))
+	kit.box(gate, Vector3(0, 3.05, -30.84), Vector3(4.4, 0.2, 0.08), Color("d6b25a"))
 	kit.collision(gate, Vector3(0, 1.6, -31), Vector3(5, 3.2, 0.28))
-	for x in [-3.4, 3.4]:
-		kit.cylinder(self, Vector3(x, 2.1, -31), 0.55, 4.2, Color("adb9d0"))
-		kit.sphere(self, Vector3(x, 4.5, -31), Vector3.ONE * 0.8, Color("7fe8ce"), true)
+	for x in [-3.45, 3.45]:
+		var pillar: MeshInstance3D = kit.cylinder(self, Vector3(x, 2.15, -31), 0.62, 4.3, Color.WHITE)
+		pillar.material_override = BuildVoxelStyle.material("sand", Color("d9a86c"))
+		var cap: MeshInstance3D = kit.sphere(self, Vector3(x, 4.55, -31), Vector3.ONE * 0.85, Color.WHITE)
+		cap.material_override = BuildVoxelStyle.material("sand", Color("e2b878"))
+	var lintel: MeshInstance3D = kit.box(self, Vector3(0, 4.5, -31), Vector3(8.2, 0.75, 1.15), Color.WHITE)
+	lintel.material_override = BuildVoxelStyle.material("sand", Color("d9a86c"))
+	var keystone: MeshInstance3D = kit.box(self, Vector3(0, 5.15, -31), Vector3(1.5, 0.7, 1.25), Color.WHITE)
+	keystone.material_override = BuildVoxelStyle.material("sand", Color("e2b878"))
 	for i in range(4):
-		var node := kit.mesh(
-			self, kit.SHAPES.crystal(), Vector3(-17.5 + i * 1.65, 1.2, -40.2), Color("a9b7ff"), true
+		var crystal := kit.mesh(
+			self, kit.SHAPES.crystal(), Vector3(-17.5 + i * 1.65, 1.2, -40.2), Color("7ee7ff"), true
 		)
-		node.scale = Vector3(1, 2.4, 1)
+		crystal.scale = Vector3(1, 2.4, 1)
 	for i in range(12):
 		var flowers := kit.part_node(CATALOG.part("flowers"))
 		flowers.position = Vector3(13.0 + i % 4 * 1.4, 0, -50.5 + i / 4 * 1.3)
@@ -149,8 +170,9 @@ func _landscape() -> void:
 	add_child(chest)
 	for i in range(7):
 		var mountain := kit.mesh(
-			self, kit.SHAPES.mountain(), Vector3(-48 + i * 16, 0, -91), Color("354d78")
+			self, kit.SHAPES.mountain(), Vector3(-48 + i * 16, 0, -91), Color.WHITE
 		)
+		mountain.material_override = BuildVoxelStyle.material("stone", Color("8fa07a"))
 		mountain.scale = Vector3(18, 25 + (i % 3) * 8, 16)
 
 
@@ -430,3 +452,74 @@ func _notification(what: int) -> void:
 func _leave() -> void:
 	if _save():
 		SceneRouter.goto("games")
+
+
+func _terrain_material() -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture = BuildVoxelStyle.material("grass_top").albedo_texture
+	mat.normal_enabled = true
+	mat.normal_texture = BuildVoxelStyle.material("grass_top").normal_texture
+	mat.normal_scale = 0.55
+	mat.albedo_color = Color("c4c2a4")
+	mat.vertex_color_use_as_albedo = true
+	mat.roughness = 0.92
+	mat.metallic = 0.0
+	mat.uv1_triplanar = true
+	mat.uv1_world_triplanar = true
+	mat.uv1_triplanar_sharpness = 4.0
+	mat.uv1_scale = Vector3(0.055, 0.055, 0.055)
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	return mat
+
+
+func _terrain_mesh() -> ArrayMesh:
+	var noise := FastNoiseLite.new()
+	noise.seed = 71882
+	noise.frequency = 0.045
+	noise.fractal_octaves = 3
+	var cols := 48
+	var rows := 56
+	var origin := Vector3(-40.0, 0.0, -75.0)
+	var step := Vector2(80.0 / float(cols - 1), 94.0 / float(rows - 1))
+	var verts: Array[Vector3] = []
+	var colors: PackedColorArray = PackedColorArray()
+	verts.resize(cols * rows)
+	colors.resize(cols * rows)
+	for row in range(rows):
+		for col in range(cols):
+			var x: float = origin.x + float(col) * step.x
+			var z: float = origin.z + float(row) * step.y
+			var nx: float = absf(x) / 37.0
+			var nz: float = absf(z + 29.0) / 44.0
+			var radial: float = pow(nx * nx * nx * nx + nz * nz * nz * nz, 0.25)
+			var rim: float = clampf((radial - 0.78) / 0.28, 0.0, 1.0)
+			var path: float = 1.0 - clampf((absf(x) - 2.15) / 1.7, 0.0, 1.0)
+			var wave: float = noise.get_noise_2d(x, z) * 0.11 * (1.0 - path) * (1.0 - rim)
+			var y: float = wave - rim * rim * 2.35
+			var grass := Color("6d7d4c").lerp(Color("5a6d40"), 0.5 + 0.5 * noise.get_noise_2d(x + 40.0, z - 12.0))
+			grass = grass.lerp(Color("7a7a48"), clampf(0.35 + noise.get_noise_2d(x - 18.0, z + 9.0), 0.0, 0.45))
+			var dirt := Color("8a7a55")
+			var sand := Color("c4b48a")
+			var rock := Color("7a7468")
+			var color: Color = grass.lerp(dirt, path)
+			color = color.lerp(sand, clampf(rim * 1.4, 0.0, 1.0))
+			if rim > 0.72:
+				color = color.lerp(rock, (rim - 0.72) / 0.28)
+			var idx: int = row * cols + col
+			verts[idx] = Vector3(x, y, z)
+			colors[idx] = color
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for row in range(rows - 1):
+		for col in range(cols - 1):
+			var a: int = row * cols + col
+			var b: int = a + 1
+			var c: int = a + cols
+			var d: int = c + 1
+			for idx in [a, c, b, b, c, d]:
+				st.set_color(colors[idx])
+				st.set_uv(Vector2(verts[idx].x * 0.08, verts[idx].z * 0.08))
+				st.add_vertex(verts[idx])
+	st.generate_normals()
+	st.generate_tangents()
+	return st.commit()
