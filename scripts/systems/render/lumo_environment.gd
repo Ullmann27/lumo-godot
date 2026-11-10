@@ -2,18 +2,26 @@ class_name LumoEnvironment
 extends RefCounted
 ## LumoRenderKit · sky, atmosphere and light presets per world.
 ##
-## apply() adds a WorldEnvironment plus sun (and optional rim light) to a scene
-## root; shadow settings come from LumoQuality (except creative_night).
+## apply() adds a WorldEnvironment plus sun (and optional rim/fill lights) to a
+## scene root; shadow settings come from LumoQuality (except creative_night).
 ## PerformanceManager still owns the glow/fog/SSAO switches per tier and
 ## re-applies them on scene change.
 ## Presets:
-##   creative_night – Bauwelt, Puzzle, Rhythmus, Schatzsuche (values identical
-##                    to the former creative_kit.environment()).
-##   wolkeninseln   – 3D-Jump, target portal_jump_run.png: turquoise sky,
-##                    warm sun, aerial depth fog over a cloud sea, soft bloom.
+##   creative_night – former creative_kit.environment() values (unchanged).
+##   wolkeninseln   – 3D-Jump, target portal_jump_run.png (unchanged).
+##   bauwelt_day, puzzle_atelier, rhythm_party, treasure_day –
+##                    LumoEnvironmentCreativePresets table; rim only on
+##                    rhythm_party (MagentaRim). This caller sets
+##                    sun.shadow_enabled from LumoQuality.budget().shadows.
 
 
 static func apply(root: Node3D, preset: String, tier: String = "") -> Dictionary:
+	# One entry point for every known preset. Creative-table worlds go through
+	# describe()/configure(); this caller then sets sun.shadow_enabled from
+	# the quality budget. creative_night and wolkeninseln stay below, unchanged.
+	if not LumoEnvironmentCreativePresets.describe(preset).is_empty():
+		return _apply_creative_table(root, preset, LumoQuality.budget(tier))
+
 	var budget: Dictionary = LumoQuality.budget(tier)
 	var world := WorldEnvironment.new()
 	world.name = "WorldEnvironment"
@@ -43,6 +51,37 @@ static func apply(root: Node3D, preset: String, tier: String = "") -> Dictionary
 	if rim != null:
 		root.add_child(rim)
 	return {"world": world, "environment": env, "sun": sun, "rim": rim}
+
+
+static func _apply_creative_table(root: Node3D, preset: String, budget: Dictionary) -> Dictionary:
+	var world := WorldEnvironment.new()
+	world.name = "WorldEnvironment"
+	var env := Environment.new()
+	var sun := DirectionalLight3D.new()
+	sun.name = "Sun"
+	var extras: Dictionary = LumoEnvironmentCreativePresets.configure(env, sun, preset, budget)
+	world.environment = env
+	root.add_child(world)
+	# Caller sets shadows from the quality budget (not from the table).
+	sun.shadow_enabled = bool(budget.get("shadows", true))
+	root.add_child(sun)
+	var rim: DirectionalLight3D = _spawn_preset_light(root, extras.get("rim", {}))
+	var fill: DirectionalLight3D = _spawn_preset_light(root, extras.get("fill", {}))
+	return {"world": world, "environment": env, "sun": sun, "rim": rim, "fill": fill}
+
+
+static func _spawn_preset_light(root: Node3D, spec: Dictionary) -> DirectionalLight3D:
+	if spec.is_empty():
+		return null
+	var light := DirectionalLight3D.new()
+	light.name = str(spec.get("name", "ExtraLight"))
+	light.rotation_degrees = spec.get("rotation_degrees", Vector3.ZERO)
+	light.light_color = spec.get("light_color", Color.WHITE)
+	light.light_energy = float(spec.get("light_energy", 1.0))
+	light.light_specular = float(spec.get("light_specular", 0.5))
+	light.shadow_enabled = bool(spec.get("shadow_enabled", false))
+	root.add_child(light)
+	return light
 
 
 static func _creative_night(env: Environment, sun: DirectionalLight3D) -> void:
