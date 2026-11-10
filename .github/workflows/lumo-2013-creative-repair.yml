@@ -11,7 +11,7 @@ on:
       - .github/workflows/lumo-2013-creative-repair.yml
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: lumo-2013-creative-repair-proof
@@ -108,6 +108,24 @@ jobs:
           grep -F '[CreativeAdventure] PASS actual 3D notes' "$RUNNER_TEMP/creative-adventure.log"
           test -s exports/creative-build/06_rhythm_play.png
           test -s exports/creative-build/07_treasure_exploration.png
+
+      - name: Commit verified formatting and fixes
+        if: success()
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            scripts/creative/treasure_island_art.gd \
+            scripts/creative/rhythm_stage_art.gd \
+            scripts/creative/rhythm_world.gd
+          if git diff --cached --quiet; then
+            echo "No product changes to commit"
+            exit 0
+          fi
+          git diff --cached --check
+          git commit -m "style(creative): gdformat verified Rhythm and Treasure repair"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
 
       - uses: actions/upload-artifact@v4
         if: always()
