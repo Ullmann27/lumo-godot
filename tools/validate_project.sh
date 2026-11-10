@@ -58,10 +58,14 @@ timeout 120s "$GODOT" --headless --script scripts/tests/lumo_character_regressio
 godot_log_ok /tmp/lumo-character-tests.log '\[LumoCharacterTests\] PASS' || exit 1
 
 # Real GPU state (MultiMesh colours and transforms) needs a rendering server.
-if command -v xvfb-run >/dev/null 2>&1; then
-  timeout 120s xvfb-run -a "$GODOT" --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_world_regression.gd 2>&1 | tee /tmp/lumo-world-tests.log
+if [[ -n "${DISPLAY:-}" ]] || command -v xvfb-run >/dev/null 2>&1; then
+  render_command=("$GODOT")
+  if [[ -z "${DISPLAY:-}" ]]; then
+    render_command=(xvfb-run -a -s '-screen 0 1920x2560x24' "$GODOT")
+  fi
+  timeout 120s "${render_command[@]}" --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_world_regression.gd 2>&1 | tee /tmp/lumo-world-tests.log
   godot_log_ok /tmp/lumo-world-tests.log '\[KartWorldTests\] PASS' || exit 1
-  timeout 180s xvfb-run -a -s '-screen 0 1920x2560x24' "$GODOT" --verbose --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_pause_layout_regression.gd 2>&1 | tee /tmp/lumo-pause-layout-tests.log
+  timeout 180s "${render_command[@]}" --verbose --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_pause_layout_regression.gd 2>&1 | tee /tmp/lumo-pause-layout-tests.log
   godot_log_ok /tmp/lumo-pause-layout-tests.log '\[KartPauseLayoutTests\] PASS' || exit 1
 fi
 

@@ -67,3 +67,33 @@ race, screenshots and device verification before acceptance.
 No APK, Android-emulator result, physical Fold7 result or 60 FPS guarantee is supplied
 by this art branch. Global regression and full controller integration remain
 collector gates.
+
+## Local final evidence, 10 November 2026
+
+Actual renderer: Godot 4.6.3, GL Compatibility, Mesa llvmpipe. Identical HIGH
+settings and 1280 x 720 cameras, isolated user data, no device claim.
+
+| Fixed camera | Baseline draw calls | Changed draw calls |
+| --- | ---: | ---: |
+| Race view | 212 | 220 |
+| Storefront | 188 | 194 |
+| Harbor wheel | 224 | 230 |
+
+The animation adds visible life with a small measured draw-call increase, not
+proof of 60 FPS or an across-the-board AAA visual target. The wider scenery still
+has substantial silhouette, materials and density differences from the PDF.
+
+The controller integration test `kart_harbor_race_hook_regression.gd` invokes only
+the real `_physics_process`, never the attraction helper directly. It fails on
+this art branch without the shared-file hook (advance, player response and resume)
+and passes in the collector containing the integration owner's hook commit
+`30ede7b29fe0b17fc39e191dea1e180374a8a5c8`. It covers active racing, real player
+position, pause, resume, reduced motion and race finish. It deliberately places the
+kart at a test fixture on the road; it is not a complete lap or device-drive proof.
+
+Evidence in the producing workspace:
+`artifacts/kart-art/final-v2-before/`, `final-v2-after/`,
+`sonnenhafen-wheel-godot-6s.mp4`, `generation-final.log`,
+`attraction-final.log`, `hook-before.log`, `hook-after.log`.
+Captures were visually inspected. The earlier `verified-*` storefront close-up
+was obstructed by the existing start gantry and is superseded by `final-v2-*`.

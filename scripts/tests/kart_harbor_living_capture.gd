@@ -71,11 +71,11 @@ func _run() -> void:
 	await _shot("01_race_camera")
 	var sites: Array = world.get_meta("sonnenhafen_generation_sites")
 	for site in sites:
-		if site.kind == "villa" and float(site.fraction) < 0.007:
+		if site.kind == "villa" and float(site.fraction) > 0.02 and float(site.fraction) < 0.03:
 			var at: Vector3 = site.position
 			var frame: Basis = world.frame(world.length * float(site.fraction))
 			camera.fov = 53.0
-			camera.position = at + frame * Vector3(10.0, 5.0, 18.0)
+			camera.position = at + frame * Vector3(4.0, 4.5, 12.0)
 			camera.look_at(at + Vector3.UP * 4.5)
 			break
 	await _shot("02_harbor_shopfront")
