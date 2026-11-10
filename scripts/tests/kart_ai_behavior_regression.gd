@@ -29,14 +29,17 @@ func _initialize() -> void:
 
 
 func _start(difficulty: String) -> void:
-	game._start_selected_race(
-		{
-			"mode": "race",
-			"driver": "fox",
-			"kart": "comet",
-			"track": "sonnenhafen",
-			"difficulty": difficulty,
-		}
+	(
+		game
+		. _start_selected_race(
+			{
+				"mode": "race",
+				"driver": "fox",
+				"kart": "comet",
+				"track": "sonnenhafen",
+				"difficulty": difficulty,
+			}
+		)
 	)
 	if game.has_method("_end_preview"):
 		game._end_preview()
@@ -59,6 +62,8 @@ func _restore(snapshot: Dictionary) -> void:
 		game.opponent_boost_times[i] = 0.0
 		game.opponent_shield_times[i] = 0.0
 		game.opponent_pulse_warning_times[i] = 0.0
+		game.opponents[i].set_motion(snapshot.motion_speeds[i], 0.0, false, false)
+		game.opponents[i].set_meta("racecraft_drift_charge", snapshot.drift_charges[i])
 
 
 func _snapshot() -> Dictionary:
@@ -66,16 +71,22 @@ func _snapshot() -> Dictionary:
 	var distances: Array[float] = []
 	var headings: Array[float] = []
 	var lanes: Array[float] = []
+	var motion_speeds: Array[float] = []
+	var drift_charges: Array[float] = []
 	for i in range(game.opponents.size()):
 		transforms.append(game.opponents[i].transform)
 		distances.append(game.opponent_distances[i])
 		headings.append(game.opponent_headings[i])
 		lanes.append(game.opponent_lanes[i])
+		motion_speeds.append(game.opponents[i].motion_speed)
+		drift_charges.append(float(game.opponents[i].get_meta("racecraft_drift_charge", 0.0)))
 	return {
 		"transforms": transforms,
 		"distances": distances,
 		"headings": headings,
 		"lanes": lanes,
+		"motion_speeds": motion_speeds,
+		"drift_charges": drift_charges,
 	}
 
 
@@ -109,8 +120,10 @@ func _run() -> void:
 	var recover_delta: float = _max_frame_delta(180)
 	_check(
 		recover_delta <= MAX_FRAME_DELTA_M,
-		"AI must recover without teleporting (max frame delta %.3f m > %.2f m)"
-		% [recover_delta, MAX_FRAME_DELTA_M]
+		(
+			"AI must recover without teleporting (max frame delta %.3f m > %.2f m)"
+			% [recover_delta, MAX_FRAME_DELTA_M]
+		)
 	)
 	print("[KartAI] off-road recover max frame delta: %.3f m" % recover_delta)
 	if failed:
@@ -120,8 +133,10 @@ func _run() -> void:
 	var cruise_delta: float = _max_frame_delta(180)
 	_check(
 		cruise_delta <= MAX_FRAME_DELTA_M,
-		"AI cruise must not teleport (max frame delta %.3f m > %.2f m)"
-		% [cruise_delta, MAX_FRAME_DELTA_M]
+		(
+			"AI cruise must not teleport (max frame delta %.3f m > %.2f m)"
+			% [cruise_delta, MAX_FRAME_DELTA_M]
+		)
 	)
 	print("[KartAI] cruise max frame delta: %.3f m" % cruise_delta)
 	if failed:
@@ -161,12 +176,16 @@ func _run() -> void:
 	game.item_box_distances = saved_boxes
 	_check(
 		absf(travel_ahead - travel_behind) <= 0.45,
-		"No rubber-banding: ahead travel %.3f m vs behind travel %.3f m"
-		% [travel_ahead, travel_behind]
+		(
+			"No rubber-banding: ahead travel %.3f m vs behind travel %.3f m"
+			% [travel_ahead, travel_behind]
+		)
 	)
 	print(
-		"[KartAI] rubber-band check: ahead %.3f m, behind %.3f m (diff %.3f m)"
-		% [travel_ahead, travel_behind, absf(travel_ahead - travel_behind)]
+		(
+			"[KartAI] rubber-band check: ahead %.3f m, behind %.3f m (diff %.3f m)"
+			% [travel_ahead, travel_behind, absf(travel_ahead - travel_behind)]
+		)
 	)
 	if failed:
 		return
@@ -194,19 +213,25 @@ func _run() -> void:
 		progress[difficulty] = game.opponent_distances[0] - start
 		mean_error[difficulty] = error_sum / float(frames)
 		print(
-			"[KartAI] %s: +%.2f m in %.1f s, mean |lateral-line| %.3f m"
-			% [difficulty, progress[difficulty], SIM_SECONDS, mean_error[difficulty]]
+			(
+				"[KartAI] %s: +%.2f m in %.1f s, mean |lateral-line| %.3f m"
+				% [difficulty, progress[difficulty], SIM_SECONDS, mean_error[difficulty]]
+			)
 		)
 
 	_check(
 		float(progress["gemuetlich"]) < float(progress["flott"]),
-		"Entdecken must cover less ground than Abenteuer (%.2f vs %.2f)"
-		% [progress["gemuetlich"], progress["flott"]]
+		(
+			"Entdecken must cover less ground than Abenteuer (%.2f vs %.2f)"
+			% [progress["gemuetlich"], progress["flott"]]
+		)
 	)
 	_check(
 		float(progress["flott"]) < float(progress["pro"]),
-		"Abenteuer must cover less ground than Sternen-Profi (%.2f vs %.2f)"
-		% [progress["flott"], progress["pro"]]
+		(
+			"Abenteuer must cover less ground than Sternen-Profi (%.2f vs %.2f)"
+			% [progress["flott"], progress["pro"]]
+		)
 	)
 	# Inverse of progress over a fixed window is the projected lap-time order.
 	var estimated_lap: Dictionary = {}
@@ -217,8 +242,10 @@ func _run() -> void:
 	_check(float(estimated_lap["gemuetlich"]) > float(estimated_lap["flott"]))
 	_check(float(estimated_lap["flott"]) > float(estimated_lap["pro"]))
 	print(
-		"[KartAI] estimated lap times: Entdecken %.2f s, Abenteuer %.2f s, Sternen-Profi %.2f s"
-		% [estimated_lap["gemuetlich"], estimated_lap["flott"], estimated_lap["pro"]]
+		(
+			"[KartAI] estimated lap times: Entdecken %.2f s, Abenteuer %.2f s, Sternen-Profi %.2f s"
+			% [estimated_lap["gemuetlich"], estimated_lap["flott"], estimated_lap["pro"]]
+		)
 	)
 	# Entdecken's deliberate line mistakes must be clearly visible against both
 	# faster levels. Abenteuer vs Sternen-Profi is not ordered by this metric:
@@ -227,8 +254,10 @@ func _run() -> void:
 	var faster_worst: float = maxf(float(mean_error["flott"]), float(mean_error["pro"]))
 	_check(
 		float(mean_error["gemuetlich"]) > faster_worst * 1.5,
-		"Entdecken must make clearly larger line errors (%.3f vs worst faster %.3f)"
-		% [mean_error["gemuetlich"], faster_worst]
+		(
+			"Entdecken must make clearly larger line errors (%.3f vs worst faster %.3f)"
+			% [mean_error["gemuetlich"], faster_worst]
+		)
 	)
 
 	if failed:

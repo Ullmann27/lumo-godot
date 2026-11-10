@@ -2013,6 +2013,13 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 		if warning_before > 0.0 and opponent_pulse_warning_times[index] <= 0.0:
 			if index < opponent_item_fx.size():
 				opponent_item_fx[index].fire_pulse()
+			# The same telegraphed pulse hits every nearby unshielded racer,
+			# not a coordinated AI-only attack against the child.
+			for other in range(opponents.size()):
+				if other == index or opponent_shield_times[other] > 0.0:
+					continue
+				if opponents[index].position.distance_to(opponents[other].position) <= RIVAL_PULSE_RADIUS:
+					opponent_stuns[other] = maxf(opponent_stuns[other], 0.38)
 			if local_gap.length() <= RIVAL_PULSE_RADIUS:
 				if shield_time > 0.0:
 					message.text = "Sternenschild blockt den Rivalen-Impuls!"
@@ -2042,9 +2049,12 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 					opponents[index].position, local_distance
 				)
 				var rival_score: Dictionary = RESONANCE.award(
-					absf(opponents[index].motion_speed), 20.5,
+					absf(opponents[index].motion_speed), RIVAL_RACECRAFT.cruise_speed(
+						opponents[index].kart_style, CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
+					),
 					float(rival_road.lateral) - item_box_laterals[item_box_distances.find(box_distance)],
-					0.0, opponent_stuns[index] > 0.0
+					float(opponents[index].get_meta("racecraft_drift_charge", 0.0)),
+					opponent_stuns[index] > 0.0
 				)
 				opponent_items[index] = str(rival_score.item)
 				opponent_item_cooldowns[index] = 1.8
@@ -2060,16 +2070,54 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 				opponent_boost_times[index] = 2.2
 				opponent_items[index] = ""
 		"pulse":
-			if local_gap.length() < RIVAL_PULSE_RADIUS + 1.5:
+			if _rival_target_near(index, RIVAL_PULSE_RADIUS + 1.5):
 				opponent_pulse_warning_times[index] = RIVAL_PULSE_WARNING_SECONDS
 				opponent_items[index] = ""
-				message.text = "Rivale lädt Lichtimpuls – Abstand oder Schild!"
-				_sound_effect("item")
+				if local_gap.length() < 30.0:
+					message.text = "Rivale lädt Lichtimpuls – Abstand oder Schild!"
+					_sound_effect("item")
 		"shield":
-			if local_gap.length() < 7.0:
+			if _rival_target_near(index, 7.0):
 				opponent_shield_times[index] = 5.0
 				opponent_items[index] = ""
 	_sync_rival_item_fx(index)
+
+
+func _rival_target_near(index: int, radius: float) -> bool:
+	var origin: Vector3 = opponents[index].position
+	if origin.distance_to(player.position) < radius:
+		return true
+	for other in range(opponents.size()):
+		if other == index:
+			continue
+		if origin.distance_to(opponents[other].position) < radius:
+			return true
+	return false
+
+
+func _update_rival_drift(index: int, road: Dictionary, pace: float, delta: float) -> bool:
+	var rival: LumoRaceKart = opponents[index]
+	var charge: float = float(rival.get_meta("racecraft_drift_charge", 0.0))
+	var at: float = float(road.distance)
+	var now_forward: Vector3 = world.forward(at)
+	var next_forward: Vector3 = world.forward(at + 3.0)
+	var turn_rate: float = absf(angle_difference(
+		atan2(now_forward.x, now_forward.z), atan2(next_forward.x, next_forward.z)
+	)) * pace / 3.0
+	var aligned: bool = absf(angle_difference(opponent_headings[index], _heading(at))) < 0.30
+	var controlled: bool = aligned and absf(float(road.lateral)) < 4.0 and opponent_stuns[index] <= 0.0
+	var drifting_now: bool = difficulty != "gemuetlich" and controlled and pace >= 10.0 and turn_rate > 0.09
+	if drifting_now:
+		charge = minf(2.2, charge + delta * clampf(turn_rate * 3.2, 0.0, 1.0))
+	else:
+		# Same time tiers as the player's held drift. Charge is earned only by
+		# a sustained controlled turn, and a collision cancels it completely.
+		if controlled and pace >= 8.0 and charge >= DRIFT_TIERS[0] and _rival_can_boost(index):
+			var tier: int = 1 if charge >= DRIFT_TIERS[1] else 0
+			opponent_boost_times[index] = maxf(opponent_boost_times[index], DRIFT_BOOST_SECONDS[tier])
+		charge = 0.0
+	rival.set_meta("racecraft_drift_charge", charge)
+	return drifting_now
 
 
 func _rival_traffic(index: int, road: Dictionary) -> PackedVector3Array:
@@ -2165,6 +2213,14 @@ func _drive_opponents(delta: float) -> void:
 		# the verge. Every driver keeps an individual risk/clearance preference.
 		if difficulty != "gemuetlich":
 			target_lane -= clampf(bend * 35.0, -1.0, 1.0) * float(RIVAL_RACECRAFT.style(i).line)
+		if difficulty != "gemuetlich" and opponent_items[i].is_empty():
+			# Earn the next resonance gate by actually driving through it. Traffic
+			# safety still wins over a pickup, and stunt lane choice is applied later.
+			for ring in range(item_box_distances.size()):
+				var ahead: float = fposmod(item_box_distances[ring] - float(sampled.distance), track_length)
+				if ahead > 1.0 and ahead < 26.0:
+					target_lane = item_box_laterals[ring]
+					break
 		var traffic: PackedVector3Array = _rival_traffic(i, sampled)
 		target_lane = RIVAL_RACECRAFT.choose_lane(
 			float(sampled.lateral), target_lane, traffic, float(profile.overtake) + 10.0, i
@@ -2188,6 +2244,7 @@ func _drive_opponents(delta: float) -> void:
 		_sync_rival_item_fx(i)
 		if opponent_stuns[i] > 0:
 			target_speed *= 0.3
+		var rival_drifting: bool = _update_rival_drift(i, sampled, target_speed, delta)
 		var forward := Vector3(-sin(opponent_headings[i]), 0, -cos(opponent_headings[i]))
 		rival.position += forward * target_speed * delta
 		var next: Dictionary = world.sample_road(rival.position, float(sampled.distance))
@@ -2242,7 +2299,7 @@ func _drive_opponents(delta: float) -> void:
 			target_speed,
 			clampf(-angle, -1, 1),
 			opponent_boost_times[i] > 0.0,
-			false
+			rival_drifting
 		)
 
 
