@@ -105,6 +105,10 @@ static func update(game, index: int, delta: float) -> bool:
 	var precision: bool = bool(state.kicker.get("precision_jump", false))
 	var missed_edge: bool = precision and not in_gap and rival.position.y < ground - 0.5
 	if (in_gap and rival.position.y < ground - 2.5) or missed_edge:
+		rival.set_meta(
+			&"lumo_flight_distance",
+			fposmod(float(road.distance) - float(state.kicker.take_off), game.track_length)
+		)
 		var recovery: float = game.world.gap_exit_distance(float(road.distance))
 		game.opponent_distances[index] += fposmod(
 			recovery - float(road.distance), game.track_length
