@@ -187,7 +187,7 @@ func _ready() -> void:
 				_refresh(),
 			false
 		)
-		tab.custom_minimum_size = Vector2(0, 40)
+		tab.custom_minimum_size = Vector2(48, 52)
 		for state in ["normal", "hover", "pressed", "focus"]:
 			var tab_style := _step_glass(index == step)
 			tab_style.content_margin_top = 6
@@ -516,7 +516,7 @@ func _apply_responsive_layout() -> void:
 			if small
 			else "%d  %s" % [index + 1, ["Modus", "Fahrer", "Kart", "Welt", "Tempo"][index]]
 		)
-		_set_physical_minimum(tab, Vector2(0, 48), ui_scale)
+		_set_physical_minimum(tab, Vector2(48, 52), ui_scale)
 		_set_physical_font(tab, 14 if short_landscape else 17, ui_scale)
 	progress_label.visible = not small and (not short_landscape or compact_welcome)
 	progress_icon.visible = progress_label.visible
@@ -551,7 +551,7 @@ func _apply_responsive_layout() -> void:
 		(
 			Vector2(150, (50 if window_size.y < 360 else 64) if window_size.y < 440 else 96)
 			if short_landscape
-			else (Vector2(150, 112) if small else Vector2(250, 185))
+			else (Vector2(150, 112) if small else Vector2(280, 220))
 		),
 		ui_scale
 	)
@@ -722,10 +722,10 @@ func _apply_responsive_layout() -> void:
 				var height: float = (
 					52 if short_landscape and step == 0
 					else (52 if window_size.y < 520 else 64) if short_landscape
-					else ((60 if inset_landscape else (72 if balanced_landscape else (68 if window_size.y < 800 else 88))) if step == 0 else 80)
+					else ((52 if inset_landscape else (68 if balanced_landscape else (96 if window_size.y < 800 else 96))) if step == 0 else 96)
 				)
 				if step == 2:
-					height = 74 if short_landscape else 118
+					height = 86 if short_landscape else 142
 				_set_physical_minimum(card, Vector2(0, height), ui_scale)
 				_set_physical_font(card, 16 if short_landscape else 23, ui_scale)
 				if card.has_method("apply_size"):
@@ -880,8 +880,14 @@ func _restore_page_bounds() -> void:
 
 
 func _set_physical_minimum(control: Control, physical: Vector2, ui_scale: float) -> void:
-	control.set_meta("kart_base_minimum_size", physical)
-	control.custom_minimum_size = physical * ui_scale
+	var sized: Vector2 = physical
+	if control is BaseButton:
+		if physical.x > 0.0:
+			sized.x = maxf(sized.x, 48.0)
+		if physical.y > 0.0:
+			sized.y = maxf(sized.y, 48.0)
+	control.set_meta("kart_base_minimum_size", sized)
+	control.custom_minimum_size = sized * ui_scale
 
 
 func _set_physical_font(control: Control, physical: int, ui_scale: float) -> void:
@@ -1142,7 +1148,7 @@ func _refresh() -> void:
 		)
 		var card := _button(cup_text, func(): pass, true)
 		card.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		card.custom_minimum_size.y = 110
+		card.custom_minimum_size.y = 128
 		choices.add_child(card)
 	else:
 		for item in _entries():
@@ -1163,7 +1169,7 @@ func _refresh() -> void:
 				kart_card.add_theme_stylebox_override("focus", _glass(true))
 				kart_card.add_theme_stylebox_override("disabled", _glass(false))
 				kart_card.pressed.connect(func(): _select(key, str(item.id)))
-				kart_card.custom_minimum_size = Vector2(0, 118)
+				kart_card.custom_minimum_size = Vector2(0, 142)
 				kart_card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 				kart_card.disabled = not unlocked
 				card_parent.add_child(kart_card)
@@ -1206,7 +1212,7 @@ func _refresh() -> void:
 			card.add_theme_stylebox_override("focus", _mode_glass(str(item.id), true) if step == 0 else _glass(true))
 			card.add_theme_stylebox_override("disabled", _mode_glass(str(item.id), false) if step == 0 else _glass(false))
 			card.pressed.connect(func(): _select(key, str(item.id)))
-			card.custom_minimum_size = Vector2(0, 80 if step == 0 else 74)
+			card.custom_minimum_size = Vector2(0, 96 if step == 0 else 92)
 			card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			card.disabled = not unlocked
 			card.reduced_motion = reduced_motion
@@ -1338,7 +1344,7 @@ func _process(delta: float) -> void:
 		if step == 0:
 			preview_idle_time += delta
 		else:
-			preview_angle += delta * 0.14
+			preview_angle += delta * 0.28
 	# The welcome camera breathes through a small arc instead of turning
 	# Lumos back to the child. Dragging and garage inspection remain unrestricted.
 	var idle_arc: float = sin(preview_idle_time * 0.35) * 0.085 if step == 0 and not reduced_motion and not rotate_drag else 0.0

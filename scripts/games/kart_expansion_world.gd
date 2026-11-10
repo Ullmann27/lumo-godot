@@ -3,6 +3,7 @@ extends RefCounted
 const TRACKS = preload("res://scripts/games/kart_expansion_tracks.gd")
 const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const SKY = preload("res://scripts/games/kart_sky_islands.gd")
+const GROUND_PROFILE = preload("res://scripts/games/track_themes/track_ground_profile.gd")
 
 
 static func prepare(world) -> void:
@@ -23,12 +24,11 @@ static func prepare(world) -> void:
 
 
 static func environment(world) -> void:
-	var floating: bool = world.track_id in ["candy_cloud", "galaxy_ringway"]
 	var plane := PlaneMesh.new()
 	plane.size = Vector2(900, 900)
 	var ground := MeshInstance3D.new()
 	ground.mesh = plane
-	ground.position.y = -12 if floating else -2
+	ground.position.y = GROUND_PROFILE.surface_height(world.track_id)
 	if world.track_id == "volcano_night":
 		var lava := ShaderMaterial.new()
 		lava.shader = preload("res://assets/shaders/kart_lava.gdshader")

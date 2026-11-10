@@ -1,58 +1,75 @@
 #!/usr/bin/env bash
 set -euo pipefail
 GODOT="${GODOT_BIN:-godot}"
+
+# After a PASS line, ignore Godot's known teardown line
+#   ERROR: N resources still in use at exit
+# so a green suite is not flipped to failure. SCRIPT ERROR, Parse Error,
+# and any other ERROR: still fail. Missing PASS still fails.
+godot_log_ok() {
+  local log=$1
+  local pass=$2
+  if ! grep -qE "$pass" "$log"; then
+    echo "missing PASS marker '$pass' in $log" >&2
+    return 1
+  fi
+  if grep -E 'SCRIPT ERROR|Parse Error|ERROR:' "$log" \
+    | grep -v 'resources still in use at exit' \
+    | grep -q .; then
+    echo "errors in $log" >&2
+    return 1
+  fi
+  return 0
+}
+
 timeout 120s "$GODOT" --headless --editor --import --quit 2>&1 | tee /tmp/lumo-import.log
 if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-import.log; then exit 1; fi
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_regression.gd 2>&1 | tee /tmp/lumo-kart-tests.log
-if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-tests.log; then exit 1; fi
-grep -qE '\[KartTests\] PASS' /tmp/lumo-kart-tests.log
+godot_log_ok /tmp/lumo-kart-tests.log '\[KartTests\] PASS' || exit 1
 timeout 120s "$GODOT" --headless --script scripts/tests/host_bridge_regression.gd 2>&1 | tee /tmp/lumo-host-tests.log
-if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-host-tests.log; then exit 1; fi
-grep -qE '\[HostBridgeTests\] PASS' /tmp/lumo-host-tests.log
+godot_log_ok /tmp/lumo-host-tests.log '\[HostBridgeTests\] PASS' || exit 1
 timeout 120s "$GODOT" --headless --script scripts/tests/jump_regression.gd 2>&1 | tee /tmp/lumo-jump-tests.log
-if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-jump-tests.log; then exit 1; fi
-grep -qE '\[JumpTests\] PASS' /tmp/lumo-jump-tests.log
+godot_log_ok /tmp/lumo-jump-tests.log '\[JumpTests\] PASS' || exit 1
 timeout 120s "$GODOT" --headless --script scripts/tests/lumo_gait_regression.gd 2>&1 | tee /tmp/lumo-gait-tests.log
-if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-gait-tests.log; then exit 1; fi
-grep -qE '\[LumoGait\] PASS' /tmp/lumo-gait-tests.log
+godot_log_ok /tmp/lumo-gait-tests.log '\[LumoGait\] PASS' || exit 1
 timeout 120s "$GODOT" --headless --script scripts/tests/lumo_renderkit_regression.gd 2>&1 | tee /tmp/lumo-renderkit-tests.log
-if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-renderkit-tests.log; then exit 1; fi
-grep -qE '\[LumoRenderKit\] PASS' /tmp/lumo-renderkit-tests.log
+godot_log_ok /tmp/lumo-renderkit-tests.log '\[LumoRenderKit\] PASS' || exit 1
+timeout 120s "$GODOT" --headless --script scripts/tests/lumo_environment_apply_presets_regression.gd 2>&1 | tee /tmp/lumo-env-apply-tests.log
+godot_log_ok /tmp/lumo-env-apply-tests.log '\[LumoEnvironmentApply\] PASS' || exit 1
+timeout 180s "$GODOT" --headless --script scripts/tests/lumo_environment_creative_presets_regression.gd 2>&1 | tee /tmp/lumo-creative-presets-tests.log
+godot_log_ok /tmp/lumo-creative-presets-tests.log '\[CreativePresets\] PASS' || exit 1
 
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_race_bridge_regression.gd 2>&1 | tee /tmp/lumo-kart-race-bridge-tests.log
-if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-race-bridge-tests.log; then exit 1; fi
-grep -qE '\[KartRaceBridge\] PASS' /tmp/lumo-kart-race-bridge-tests.log
+godot_log_ok /tmp/lumo-kart-race-bridge-tests.log '\[KartRaceBridge\] PASS' || exit 1
 
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_physics_regression.gd 2>&1 | tee /tmp/lumo-kart-physics-tests.log
-if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-physics-tests.log; then exit 1; fi
-grep -qE '\[KartPhysics\] PASS' /tmp/lumo-kart-physics-tests.log
+godot_log_ok /tmp/lumo-kart-physics-tests.log '\[KartPhysics\] PASS' || exit 1
 
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_jump_regression.gd 2>&1 | tee /tmp/lumo-kart-jump-tests.log
-if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-jump-tests.log; then exit 1; fi
-grep -qE '\[KartJump\] PASS' /tmp/lumo-kart-jump-tests.log
+godot_log_ok /tmp/lumo-kart-jump-tests.log '\[KartJump\] PASS' || exit 1
 
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_touch_regression.gd 2>&1 | tee /tmp/lumo-kart-touch-tests.log
-if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-kart-touch-tests.log; then exit 1; fi
-grep -qE '\[KartTouchTests\] PASS' /tmp/lumo-kart-touch-tests.log
+godot_log_ok /tmp/lumo-kart-touch-tests.log '\[KartTouchTests\] PASS' || exit 1
 
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_reference_landing_fit_regression.gd 2>&1 | tee /tmp/lumo-landing-fit-tests.log
-if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-landing-fit-tests.log; then exit 1; fi
-grep -qE '\[KartLandingFit\] PASS' /tmp/lumo-landing-fit-tests.log
+godot_log_ok /tmp/lumo-landing-fit-tests.log '\[KartLandingFit\] PASS' || exit 1
 
 timeout 120s "$GODOT" --headless --script scripts/tests/lumo_character_regression.gd 2>&1 | tee /tmp/lumo-character-tests.log
-if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-character-tests.log; then exit 1; fi
-grep -qE '\[LumoCharacterTests\] PASS' /tmp/lumo-character-tests.log
+godot_log_ok /tmp/lumo-character-tests.log '\[LumoCharacterTests\] PASS' || exit 1
 
 # Real GPU state (MultiMesh colours and transforms) needs a rendering server.
 if command -v xvfb-run >/dev/null 2>&1; then
   timeout 120s xvfb-run -a "$GODOT" --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_world_regression.gd 2>&1 | tee /tmp/lumo-world-tests.log
-  if grep -qE "SCRIPT ERROR|Parse Error|ERROR:" /tmp/lumo-world-tests.log; then exit 1; fi
-  grep -qE "\[KartWorldTests\] PASS" /tmp/lumo-world-tests.log
+  godot_log_ok /tmp/lumo-world-tests.log '\[KartWorldTests\] PASS' || exit 1
   timeout 180s xvfb-run -a -s '-screen 0 1920x2560x24' "$GODOT" --verbose --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_pause_layout_regression.gd 2>&1 | tee /tmp/lumo-pause-layout-tests.log
-  if grep -qE "SCRIPT ERROR|Parse Error|ERROR:" /tmp/lumo-pause-layout-tests.log; then exit 1; fi
-  grep -qE "\[KartPauseLayoutTests\] PASS" /tmp/lumo-pause-layout-tests.log
+  godot_log_ok /tmp/lumo-pause-layout-tests.log '\[KartPauseLayoutTests\] PASS' || exit 1
 fi
 
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_vehicle_regression.gd 2>&1 | tee /tmp/lumo-vehicle-tests.log
-if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-vehicle-tests.log; then exit 1; fi
-grep -qE '\[KartVehicle\] Geometry/colours' /tmp/lumo-vehicle-tests.log
+godot_log_ok /tmp/lumo-vehicle-tests.log '\[KartVehicle\] Geometry/colours' || exit 1
+
+timeout 180s "$GODOT" --headless --script scripts/tests/kart_ai_behavior_regression.gd 2>&1 | tee /tmp/lumo-kart-ai-tests.log
+godot_log_ok /tmp/lumo-kart-ai-tests.log '\[KartAI\] PASS' || exit 1
+
+timeout 120s "$GODOT" --headless --script scripts/tests/kart_garage_touch_targets_regression.gd 2>&1 | tee /tmp/lumo-garage-targets-tests.log
+godot_log_ok /tmp/lumo-garage-targets-tests.log '\[GarageTargets\] PASS' || exit 1

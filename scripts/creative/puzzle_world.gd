@@ -48,19 +48,28 @@ func _ready() -> void:
 		. substr(0, 80)
 	)
 	save_path = "user://lumo_puzzle_" + child + ".json"
-	kit.environment(self)
-	kit.box(self, Vector3(0, -0.28, 0), Vector3(22, 0.45, 11), Color("142e53"))
-	board_frame = kit.box(self, Vector3(0, -0.015, 0), Vector3.ONE, Color("8ac9e8"), true)
-	board_base = kit.box(self, Vector3(0, 0.07, 0), Vector3.ONE, Color("142942"))
+	kit.environment(self, LumoEnvironmentCreativePresets.PRESET_PUZZLE_ATELIER)
+	var table: MeshInstance3D = kit.box(self, Vector3(0, -0.28, 0.2), Vector3(22, 0.48, 13.2), Color.WHITE)
+	table.material_override = BuildVoxelStyle.material("wood", Color("e6bf88"))
+	board_frame = kit.box(self, Vector3(0, -0.012, 0), Vector3.ONE, Color("d7b056"))
+	board_frame.material_override = _gold()
+	board_base = kit.box(self, Vector3(0, 0.07, 0), Vector3.ONE, Color("1a2748"))
 	for side in [-1.0, 1.0]:
-		kit.box(self, Vector3(side * 7.3, -0.02, 0), Vector3(4.6, 0.16, 6.8), Color("294369"))
-		kit.castle(self, Vector3(side * 12, -0.5, -8), 0.8)
+		var tray: MeshInstance3D = kit.box(
+			self, Vector3(side * 7.35, -0.02, 0), Vector3(4.7, 0.2, 6.9), Color.WHITE
+		)
+		tray.material_override = BuildVoxelStyle.material("wood", Color("e2b67a"))
+		var tray_rim: MeshInstance3D = kit.box(
+			self, Vector3(side * 7.35, 0.09, 0), Vector3(4.85, 0.05, 7.05), Color("d7b056")
+		)
+		tray_rim.material_override = _gold()
+	_atelier_backdrop()
 	camera = Camera3D.new()
-	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-	camera.size = 12.5
-	camera.position = Vector3(0, 17, 8)
+	camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+	camera.fov = 40
+	camera.position = Vector3(0, 13.8, 11.6)
 	add_child(camera)
-	camera.look_at(Vector3.ZERO)
+	camera.look_at(Vector3(0, 0.05, -0.35))
 	camera.current = true
 	piece_root = Node3D.new()
 	add_child(piece_root)
@@ -468,3 +477,57 @@ func _notification(what: int) -> void:
 func _leave() -> void:
 	if _save():
 		SceneRouter.goto("games")
+
+
+func _gold() -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color("d6b25a")
+	mat.metallic = 0.82
+	mat.roughness = 0.28
+	mat.emission_enabled = true
+	mat.emission = Color("a67c28")
+	mat.emission_energy_multiplier = 0.18
+	return mat
+
+
+func _atelier_backdrop() -> void:
+	var wall: MeshInstance3D = kit.box(self, Vector3(0, 3.1, -7.35), Vector3(24, 7.0, 0.38), Color("f0d8b4"))
+	wall.material_override = BuildVoxelStyle.material("plain", Color("f2dcc0"))
+	for x in [-3.15, 0.0, 3.15]:
+		var frame: MeshInstance3D = kit.box(
+			self, Vector3(x, 3.55, -7.14), Vector3(2.85, 3.7, 0.12), Color.WHITE
+		)
+		frame.material_override = BuildVoxelStyle.material("wood", Color("c99558"))
+		var pane: MeshInstance3D = kit.box(
+			self, Vector3(x, 3.55, -7.06), Vector3(2.45, 3.25, 0.06), Color("c5e8ff"), true
+		)
+		var glass := StandardMaterial3D.new()
+		glass.albedo_color = Color(0.62, 0.82, 0.98, 0.72)
+		glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		glass.emission_enabled = true
+		glass.emission = Color("d7eefe")
+		glass.emission_energy_multiplier = 0.55
+		glass.roughness = 0.08
+		pane.material_override = glass
+	for side in [-1.0, 1.0]:
+		var shelf: MeshInstance3D = kit.box(
+			self, Vector3(side * 11.15, 1.7, -4.1), Vector3(1.7, 3.5, 3.4), Color.WHITE
+		)
+		shelf.material_override = BuildVoxelStyle.material("wood", Color("d7a66c"))
+		for i in range(5):
+			var book: MeshInstance3D = kit.box(
+				self,
+				Vector3(side * 11.15, 0.45 + float(i) * 0.62, -3.4 + float(i % 3) * 0.55),
+				Vector3(1.15, 0.38, 0.85),
+				[Color("3e6db5"), Color("b85c4a"), Color("d7a23a"), Color("4f8a5a"), Color("6a4ea0")][i]
+			)
+			book.material_override = BuildVoxelStyle.material(
+				"plain",
+				[Color("4a78c4"), Color("c46a58"), Color("e0b252"), Color("5c9a68"), Color("7a5cb0")][i]
+			)
+	var pot: MeshInstance3D = kit.cylinder(self, Vector3(-5.6, 0.22, -5.6), 0.28, 0.42, Color("b07048"))
+	pot.material_override = BuildVoxelStyle.material("dirt", Color("c48458"))
+	var plant := kit.part_node(preload("res://scripts/creative/build_catalog.gd").part("bush"))
+	plant.position = Vector3(-5.6, 0.42, -5.6)
+	add_child(plant)
+
