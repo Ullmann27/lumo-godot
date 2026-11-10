@@ -23,6 +23,8 @@ jobs:
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for lint baseline worktree at BASE_SHA.
 
       - name: Install verification tools
         run: |
