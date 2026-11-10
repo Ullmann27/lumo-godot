@@ -20,17 +20,21 @@ func _run() -> void:
 		assert(count <= 1400, "Generation scenery must stay inside a mobile-safe MultiMesh budget, got %d" % count)
 		var sites: Array = world.get_meta("sonnenhafen_generation_sites")
 		assert(sites.size() >= 8, "Town, arcade, palms or sails must actually place")
+		var kinds: Array[String] = []
 		for site in sites:
 			var at: Vector3 = site["position"]
 			assert(at.is_finite())
-			if str(site["kind"]) == "bay_sail":
-				continue
 			var kind := str(site["kind"])
-			var radius: float = 6.8 if kind == "villa" else (3.2 if kind == "arcade" else 2.4)
+			kinds.append(kind)
+			if kind in ["bay_sail", "harbor_boat"]:
+				continue
+			var radius: float = 12.0 if kind == "wow_wheel" else (6.8 if kind == "villa" else (4.5 if kind == "wow_lighthouse" else (7.0 if kind == "harbor_aquarium" else (3.2 if kind == "arcade" else 2.4))))
 			assert(
 				not world._near_road(at, radius + 6.9),
 				"Generation mesh must stay off the race road"
 			)
+		assert("wow_wheel" in kinds, "Race-camera Ferris wheel must place")
+		assert("wow_lighthouse" in kinds, "Companion lighthouse must place")
 		parts.append(count)
 		world.queue_free()
 		await process_frame

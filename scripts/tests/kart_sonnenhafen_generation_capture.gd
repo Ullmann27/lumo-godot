@@ -45,14 +45,13 @@ func _aim() -> void:
 			camera.position = Vector3(0.0, 210.0, 268.0)
 			camera.look_at(Vector3(12.0, 2.0, 8.0), Vector3.UP)
 		2:
-			var target := Vector3(110.0, 16.0, -41.0)
-			if world.has_meta("harbor_lighthouse"):
-				target = world.get_meta("harbor_lighthouse") + Vector3.UP * 16.0
-			var sites: Array = world.get_meta("sonnenhafen_hero_landmarks", [])
-			for site in sites:
-				if str(site["kind"]) == "celestial_wheel":
-					target = site["position"] + Vector3.UP * 24.0
-					break
+			# Same stage as KartSonnenhafenGeneration.WOW_* so before/after match.
+			var stage: Vector3 = world.position_at(95.0, 42.0)
+			if world.has_meta("sonnenhafen_wow_landmark"):
+				stage = world.get_meta("sonnenhafen_wow_landmark")
+			var target := Vector3(
+				stage.x, world._ground_height(stage.x, stage.z) + 22.0, stage.z
+			)
 			camera.fov = 50.0
 			camera.position = target + Vector3(38.0, 18.0, 46.0)
 			camera.look_at(target, Vector3.UP)
