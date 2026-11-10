@@ -48,16 +48,21 @@ func _ready() -> void:
 		self, Vector3(0, 0.005, -11), Vector3(12.4, 0.06, 36), Color("1a0e32")
 	)
 	stage.material_override = BuildVoxelStyle.material("plain", Color("22143c"))
+	var speaker_specs: Array[Dictionary] = []
+	var lane_floors: Array[Transform3D] = []
+	var lane_edges: Array = [[], [], [], []]
+	var box := BoxMesh.new()
+	box.size = Vector3.ONE
 	for lane in range(4):
 		var x: float = (lane - 1.5) * 2.35
-		kit.box(self, Vector3(x, 0.04, -11), Vector3(2.05, 0.1, 34), Color("1c1438"))
+		lane_floors.append(
+			Transform3D(Basis.from_scale(Vector3(2.05, 0.1, 34)), Vector3(x, 0.04, -11))
+		)
 		for side in [-1.0, 1.0]:
-			kit.box(
-				self,
-				Vector3(x + side * 1.08, 0.16, -11),
-				Vector3(0.09, 0.2, 34),
-				COLORS[lane],
-				true
+			lane_edges[lane].append(
+				Transform3D(
+					Basis.from_scale(Vector3(0.09, 0.2, 34)), Vector3(x + side * 1.08, 0.16, -11)
+				)
 			)
 		var pad := CylinderMesh.new()
 		pad.top_radius = 0.95
@@ -65,21 +70,26 @@ func _ready() -> void:
 		pad.height = 0.16
 		pad.radial_segments = 24
 		lamps.append(kit.mesh(self, pad, Vector3(x, 0.2, 3), COLORS[lane], true))
-		_speaker(Vector3(x, 0, -26.5), COLORS[lane], 0.72)
-	kit.castle(self, Vector3(0, 0, -38), 1.5)
+		speaker_specs.append({"at": Vector3(x, 0, -26.5), "color": COLORS[lane], "scale": 0.72})
+	BuildVoxelStyle.multimesh(
+		self, "RhythmLanes", box, kit.material(Color("1c1438")), lane_floors
+	)
+	for lane in range(4):
+		var edges: Array[Transform3D] = []
+		edges.assign(lane_edges[lane])
+		BuildVoxelStyle.multimesh(
+			self, "RhythmLaneEdge%d" % lane, box, kit.material(COLORS[lane], true), edges
+		)
+	# Schloss bleibt weg: die LED-Wand verdeckt es in der Startansicht vollständig.
 	_eq_wall()
 	STAGE_ART.apply(self)
 	_performer()
 	for side in [-1.0, 1.0]:
-		_speaker(Vector3(side * 8.6, 0, -18), COLORS[0 if side < 0 else 1], 1.15)
-		for i in range(8):
-			var column: MeshInstance3D = kit.cylinder(
-				self, Vector3(side * 8, 1.8, 3 - i * 5), 0.2, 3.6, Color("2a1848")
-			)
-			column.material_override = BuildVoxelStyle.material("plain", Color("2a1848"))
-			kit.sphere(
-				self, Vector3(side * 8, 3.8, 3 - i * 5), Vector3.ONE * 0.42, COLORS[i % 4], true
-			)
+		speaker_specs.append(
+			{"at": Vector3(side * 8.6, 0, -18), "color": COLORS[0 if side < 0 else 1], "scale": 1.15}
+		)
+	_batch_speakers(speaker_specs)
+	_batch_columns()
 	var camera := Camera3D.new()
 	add_child(camera)
 	camera.position = Vector3(0, 12, 16)
@@ -456,36 +466,95 @@ func _note_disc(root: Node3D, at: Vector3, color: Color, radius: float) -> MeshI
 	return kit.mesh(root, disc, at, color, true)
 
 
-func _speaker(at: Vector3, color: Color, scale_factor: float) -> void:
-	var cabinet: MeshInstance3D = kit.box(
-		self, at + Vector3(0, 1.55 * scale_factor, 0), Vector3(2.1, 3.1, 1.45) * scale_factor, Color("141022")
+func _batch_speakers(specs: Array[Dictionary]) -> void:
+	var box := BoxMesh.new()
+	box.size = Vector3.ONE
+	var cyl := CylinderMesh.new()
+	cyl.top_radius = 1.0
+	cyl.bottom_radius = 1.0
+	cyl.height = 1.0
+	cyl.radial_segments = 20
+	var cabinets: Array[Transform3D] = []
+	var tweeters: Array[Transform3D] = []
+	var woofers: Array = [[], [], [], []]
+	var tops: Array = [[], [], [], []]
+	for spec in specs:
+		var at: Vector3 = spec.at
+		var color: Color = spec.color
+		var scale_factor: float = float(spec.scale)
+		var lane: int = maxi(0, COLORS.find(color))
+		cabinets.append(
+			Transform3D(
+				Basis.from_scale(Vector3(2.1, 3.1, 1.45) * scale_factor),
+				at + Vector3(0, 1.55 * scale_factor, 0)
+			)
+		)
+		var face := Basis.from_euler(Vector3(deg_to_rad(90), 0, 0))
+		var woofer_basis := face * Basis.from_scale(
+			Vector3(0.72 * scale_factor, 0.18, 0.72 * scale_factor)
+		)
+		woofers[lane].append(
+			Transform3D(woofer_basis, at + Vector3(0, 1.15 * scale_factor, 0.72 * scale_factor))
+		)
+		var tweeter_basis := face * Basis.from_scale(
+			Vector3(0.32 * scale_factor, 0.14, 0.32 * scale_factor)
+		)
+		tweeters.append(
+			Transform3D(tweeter_basis, at + Vector3(0, 2.35 * scale_factor, 0.7 * scale_factor))
+		)
+		tops[lane].append(
+			Transform3D(
+				Basis.from_scale(Vector3(1.6, 0.16, 0.9) * scale_factor),
+				at + Vector3(0, 3.2 * scale_factor, 0)
+			)
+		)
+	BuildVoxelStyle.multimesh(
+		self, "RhythmCabinets", box, BuildVoxelStyle.material("plain", Color("1a142c")), cabinets
 	)
-	cabinet.material_override = BuildVoxelStyle.material("plain", Color("1a142c"))
-	var woofer := CylinderMesh.new()
-	woofer.top_radius = 0.72 * scale_factor
-	woofer.bottom_radius = 0.72 * scale_factor
-	woofer.height = 0.18
-	woofer.radial_segments = 20
-	var cone: MeshInstance3D = kit.mesh(
-		self, woofer, at + Vector3(0, 1.15 * scale_factor, 0.72 * scale_factor), color, true
+	BuildVoxelStyle.multimesh(self, "RhythmTweeters", cyl, kit.material(Color("e6f8ff"), true), tweeters)
+	for lane in range(4):
+		var woofer_x: Array[Transform3D] = []
+		woofer_x.assign(woofers[lane])
+		BuildVoxelStyle.multimesh(
+			self, "RhythmWoofers%d" % lane, cyl, kit.material(COLORS[lane], true), woofer_x
+		)
+		var top_x: Array[Transform3D] = []
+		top_x.assign(tops[lane])
+		BuildVoxelStyle.multimesh(
+			self, "RhythmSpeakerTops%d" % lane, box, kit.material(COLORS[lane], true), top_x
+		)
+
+
+func _batch_columns() -> void:
+	var cyl := CylinderMesh.new()
+	cyl.top_radius = 1.0
+	cyl.bottom_radius = 1.0
+	cyl.height = 1.0
+	cyl.radial_segments = 16
+	var sphere := SphereMesh.new()
+	sphere.radius = 1.0
+	sphere.height = 2.0
+	sphere.radial_segments = 16
+	sphere.rings = 8
+	var columns: Array[Transform3D] = []
+	var orbs: Array = [[], [], [], []]
+	for side in [-1.0, 1.0]:
+		for i in range(8):
+			columns.append(
+				Transform3D(Basis.from_scale(Vector3(0.2, 3.6, 0.2)), Vector3(side * 8, 1.8, 3 - i * 5))
+			)
+			orbs[i % 4].append(
+				Transform3D(Basis.from_scale(Vector3.ONE * 0.42), Vector3(side * 8, 3.8, 3 - i * 5))
+			)
+	BuildVoxelStyle.multimesh(
+		self, "RhythmColumns", cyl, BuildVoxelStyle.material("plain", Color("2a1848")), columns
 	)
-	cone.rotation_degrees = Vector3(90, 0, 0)
-	var tweeter := CylinderMesh.new()
-	tweeter.top_radius = 0.32 * scale_factor
-	tweeter.bottom_radius = 0.32 * scale_factor
-	tweeter.height = 0.14
-	tweeter.radial_segments = 16
-	var top: MeshInstance3D = kit.mesh(
-		self, tweeter, at + Vector3(0, 2.35 * scale_factor, 0.7 * scale_factor), Color("e6f8ff"), true
-	)
-	top.rotation_degrees = Vector3(90, 0, 0)
-	kit.box(
-		self,
-		at + Vector3(0, 3.2 * scale_factor, 0),
-		Vector3(1.6, 0.16, 0.9) * scale_factor,
-		color,
-		true
-	)
+	for lane in range(4):
+		var orb_x: Array[Transform3D] = []
+		orb_x.assign(orbs[lane])
+		BuildVoxelStyle.multimesh(
+			self, "RhythmOrbs%d" % lane, sphere, kit.material(COLORS[lane], true), orb_x
+		)
 
 
 func _eq_wall() -> void:
