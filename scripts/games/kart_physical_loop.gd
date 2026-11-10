@@ -8,6 +8,7 @@ const ADVANCE: float = 7.0
 const LENGTH: float = TAU * RADIUS + ADVANCE * 0.2
 const GRAVITY: float = 6.0
 const LATERAL_LIMIT: float = 0.7
+const ARC_SEGMENTS: int = 256
 var active: bool = false
 var progress: float = 0.0
 var speed: float = 0.0
@@ -15,13 +16,15 @@ var lateral: float = 0.0
 var entry_progress: float = 0.0
 var layout: Dictionary = {}
 var failed: bool = false
+var _arc_lengths: PackedFloat32Array = PackedFloat32Array()
+var _distance_along: float = 0.0
 
 
 static func radius_of(data: Dictionary) -> float:
 	return float(data.get("radius", RADIUS))
 
 
-## Length of the riding line through the loop for this layout.
+## Approximate design length only; driving uses the measured distance table.
 static func path_length(data: Dictionary) -> float:
 	return TAU * radius_of(data) + ADVANCE * 0.2
 
@@ -45,17 +48,41 @@ static func frame_at(world, data: Dictionary, u: float) -> Basis:
 	return Basis(right, up, -forward).orthonormalized()
 
 
-func enter(data: Dictionary, momentum: float, cumulative: float) -> void:
+func enter(
+	data: Dictionary,
+	momentum: float,
+	cumulative: float,
+	lane_offset: float = 0.0,
+	entry_offset: float = 0.0
+) -> void:
 	layout = data.duplicate()
 	progress = 0
 	speed = momentum
 	entry_progress = cumulative
-	lateral = 0
+	lateral = clampf(
+		lane_offset,
+		-float(data.get("lateral_limit", LATERAL_LIMIT)),
+		float(data.get("lateral_limit", LATERAL_LIMIT))
+	)
+	_arc_lengths = PackedFloat32Array()
+	_distance_along = maxf(0.0, entry_offset)
 	failed = false
 	active = true
 
 
 func advance(world, delta: float, steering: float, braking: float, throttle: bool) -> Transform3D:
+	# The circle advances along a curved road as well. Uniform angle steps are
+	# therefore not uniform metres (the previous approximation varied by 20%).
+	# Build one distance table at entry and invert it without allocations per tick.
+	if _arc_lengths.is_empty():
+		_arc_lengths.resize(ARC_SEGMENTS + 1)
+		_arc_lengths[0] = 0.0
+		var previous: Vector3 = point(world, layout, 0.0)
+		for index in range(1, ARC_SEGMENTS + 1):
+			var current: Vector3 = point(world, layout, float(index) / ARC_SEGMENTS)
+			_arc_lengths[index] = _arc_lengths[index - 1] + previous.distance_to(current)
+			previous = current
+		progress = _progress_at_distance(_distance_along)
 	var basis := frame_at(world, layout, progress)
 	var slope: float = (-basis.z).y
 	speed += (-GRAVITY * slope - braking * 13.0 + (0.9 if throttle else -0.2)) * delta
@@ -67,11 +94,27 @@ func advance(world, delta: float, steering: float, braking: float, throttle: boo
 		return world.reset_transform(
 			float(layout.start), float(layout.get("fail_lane", layout.lane))
 		)
-	progress = minf(1, progress + speed * delta / path_length(layout))
+	_distance_along = minf(_arc_lengths[ARC_SEGMENTS], _distance_along + speed * delta)
+	progress = _progress_at_distance(_distance_along)
 	basis = frame_at(world, layout, progress)
 	if progress >= 1:
 		active = false
 	return Transform3D(basis, point(world, layout, progress, lateral) + basis.y * 0.045)
+
+
+func _progress_at_distance(metres: float) -> float:
+	if metres >= _arc_lengths[ARC_SEGMENTS]:
+		return 1.0
+	var low: int = 0
+	var high: int = ARC_SEGMENTS
+	while high - low > 1:
+		var middle: int = (low + high) / 2
+		if _arc_lengths[middle] <= metres:
+			low = middle
+		else:
+			high = middle
+	var span: float = _arc_lengths[high] - _arc_lengths[low]
+	return (float(low) + (metres - _arc_lengths[low]) / maxf(span, 0.0001)) / ARC_SEGMENTS
 
 
 static func build(world, data: Dictionary, color: Color) -> void:

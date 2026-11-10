@@ -15,6 +15,7 @@ const RECORDS = preload("res://scripts/games/kart_records.gd")
 const ARENA = preload("res://scripts/games/kart_arena.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const PHYSICAL_LOOP = preload("res://scripts/games/kart_physical_loop.gd")
+const RIVAL_STUNTS = preload("res://scripts/games/kart_rival_stunts.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const DARKRIDE_EVENT = preload("res://scripts/games/kart_darkride_event_director.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
@@ -1687,16 +1688,18 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 		var min_speed: float = float(layout.get("min_entry_speed", 16.0))
 		var off_lane: bool = absf(float(road.lateral) - float(layout.lane)) > lane_tolerance
 		var too_slow: bool = speed < min_speed or physical_velocity.dot(road.forward) < 8
-		if absf(entry_offset) > window or off_lane or too_slow:
+		# Enter only after reaching the lip. The old symmetric window pulled the
+		# kart forward before entry and discarded its lateral position.
+		if entry_offset < 0.0 or entry_offset > maxf(window, speed * delta + 0.2) or off_lane or too_slow or airborne:
 			return false
-		loop_state.enter(layout, speed, distance - entry_offset)
+		loop_state.enter(layout, speed, distance - entry_offset, float(road.lateral) - float(layout.lane), entry_offset)
 		airborne = false
 		message.text = "Loop! Halte deinen Schwung."
 	player.transform = loop_state.advance(world, delta, axis, braking, _gas_active())
 	speed = loop_state.speed
 	if loop_state.active:
 		previous_road_distance = float(layout.start) + loop_state.progress * PHYSICAL_LOOP.ADVANCE
-		distance = loop_state.entry_progress + loop_state.progress * PHYSICAL_LOOP.ADVANCE
+		distance = maxf(distance, loop_state.entry_progress + loop_state.progress * PHYSICAL_LOOP.ADVANCE)
 		lane = float(layout.lane) + loop_state.lateral
 		physical_velocity = -player.basis.z * speed
 		return true
@@ -1704,7 +1707,7 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 	distance = loop_state.entry_progress + (0 if loop_state.failed else PHYSICAL_LOOP.ADVANCE)
 	previous_road_distance = exit_distance
 	player_heading = _heading(exit_distance)
-	var exit_lane: float = float(layout.get("fail_lane", layout.lane)) if loop_state.failed else float(layout.lane)
+	var exit_lane: float = float(layout.get("fail_lane", layout.lane)) if loop_state.failed else float(layout.lane) + loop_state.lateral
 	player.transform = world.reset_transform(exit_distance, exit_lane)
 	lane = exit_lane
 	if loop_state.failed:
@@ -2110,6 +2113,8 @@ func _drive_opponents(delta: float) -> void:
 	var profile: Dictionary = _rival_profile()
 	for i in range(opponents.size()):
 		var rival: LumoRaceKart = opponents[i]
+		if RIVAL_STUNTS.update_loop(self, i, delta):
+			continue
 		var sampled: Dictionary = world.sample_road(rival.position, fposmod(opponent_distances[i], track_length))
 		var target_lane: float = -2.8 + float(i) * 1.35
 		target_lane += sin(elapsed * float(profile.wobble_hz) + float(i)) * float(profile.wobble)
@@ -2127,6 +2132,7 @@ func _drive_opponents(delta: float) -> void:
 			target_lane = clampf(lane + side * float(profile.lane_spread), -3.8, 3.8)
 		elif local_gap.length() < 7 and absf(float(sampled.lateral) - lane) < 1.3:
 			target_lane = clampf(lane + (1.8 if i % 2 == 0 else -1.8), -3.8, 3.8)
+		target_lane = RIVAL_STUNTS.planned_loop_lane(self, i, float(sampled.distance), target_lane)
 		var aim: Vector3 = world.position_at(float(sampled.distance) + float(profile.look_ahead), target_lane)
 		var desired_heading: float = atan2(-(aim.x - rival.position.x), -(aim.z - rival.position.z))
 		var angle: float = angle_difference(opponent_headings[i], desired_heading)
@@ -3575,10 +3581,7 @@ func _save_session() -> void:
 		config.set_value("race", "player_position", world.reset_transform(float(world.loop_layout.start), float(world.loop_layout.lane)).origin)
 	else:
 		config.set_value("race", "player_position", player.position)
-	var positions: Array[Vector3] = []
-	for rival in opponents:
-		positions.append(rival.position)
-	config.set_value("race", "opponent_positions", positions)
+	RIVAL_STUNTS.save_positions(self, config)
 	var tmp_path: String = SESSION + ".tmp"
 	if config.save(tmp_path) != OK:
 		push_warning("Race checkpoint tmp write failed")
