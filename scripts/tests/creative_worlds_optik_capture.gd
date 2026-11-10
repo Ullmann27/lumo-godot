@@ -67,6 +67,8 @@ func _capture_rhythm(dir: String) -> Dictionary:
 	var game: Node = load("res://scenes/creative/rhythm_world.tscn").instantiate()
 	root.add_child(game)
 	await _settle(8)
+	var cam: Camera3D = game.get_viewport().get_camera_3d()
+	var entry: Dictionary = {"songselect": await _save(dir, "rhythm_songselect")}
 	game.start()
 	game.model.time = 0.55
 	if game.has_node("AudioStreamPlayer") or game.get("audio") != null:
@@ -81,13 +83,17 @@ func _capture_rhythm(dir: String) -> Dictionary:
 		)
 	game.running = false
 	await _settle(10)
-	var entry: Dictionary = {"overview": await _save(dir, "rhythm_overview")}
-	var cam: Camera3D = game.get_viewport().get_camera_3d()
+	entry["overview"] = await _save(dir, "rhythm_overview")
 	if cam != null:
 		cam.position = Vector3(0, 7.5, 8.5)
-		cam.look_at(Vector3(0, 0.4, -2))
+		cam.look_at(Vector3(0, 0.4, -2), Vector3.UP)
 	await _settle(8)
 	entry["closeup"] = await _save(dir, "rhythm_closeup")
+	if cam != null:
+		cam.position = Vector3(0, 9.2, 12.0)
+		cam.look_at(Vector3(0, 1.1, -6), Vector3.UP)
+	await _settle(6)
+	entry["cover"] = await _save(dir, "rhythm_cover")
 	entry["notes"] = game.model.notes.size()
 	game.queue_free()
 	await process_frame
@@ -142,6 +148,11 @@ func _run() -> void:
 	if requested.is_empty():
 		requested = "puzzle,rhythm,treasure"
 	var metrics: Dictionary = {}
+	var metrics_path: String = dir.path_join("metrics.json")
+	if FileAccess.file_exists(metrics_path):
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(metrics_path))
+		if parsed is Dictionary:
+			metrics = parsed
 	var tier: String = OS.get_environment("CREATIVE_CAPTURE_TIER").strip_edges()
 	await process_frame
 	if not tier.is_empty():
