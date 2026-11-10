@@ -109,12 +109,12 @@ func _capture_treasure(dir: String) -> Dictionary:
 	if game.has_method("_update"):
 		game._update()
 	var cam: Camera3D = game.camera
-	# Exakte Spielstart-Kamera: player + (10, 14, 19), Blick auf player + UP.
+	# Exakte Spielstart-Kamera: gleiche Offsets wie treasure_world.CAMERA_*.
 	game.set_physics_process(false)
 	cam.current = true
 	var start_at: Vector3 = game.player.position
-	cam.position = start_at + Vector3(10, 14, 19)
-	cam.look_at(start_at + Vector3.UP, Vector3.UP)
+	cam.position = start_at + game.CAMERA_OFFSET
+	cam.look_at(start_at + game.CAMERA_LOOK_OFFSET, Vector3.UP)
 	await _settle(10)
 	var entry: Dictionary = {"overview": await _save(dir, "treasure_overview")}
 	cam.position = Vector3(8, 8, -18)
