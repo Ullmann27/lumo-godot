@@ -722,7 +722,7 @@ func _apply_responsive_layout() -> void:
 				var height: float = (
 					52 if short_landscape and step == 0
 					else (52 if window_size.y < 520 else 64) if short_landscape
-					else ((72 if inset_landscape else (88 if balanced_landscape else (96 if window_size.y < 800 else 112))) if step == 0 else 96)
+					else ((52 if inset_landscape else (68 if balanced_landscape else (96 if window_size.y < 800 else 96))) if step == 0 else 96)
 				)
 				if step == 2:
 					height = 86 if short_landscape else 142
