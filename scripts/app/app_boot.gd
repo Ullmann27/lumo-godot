@@ -10,10 +10,10 @@ const LUMO_MODEL := "res://assets/characters/lumo_animated/Lumo-Animated-Mobile.
 const LOAD_TIMEOUT_SECONDS := 30.0
 const COVER_BY_SCENE: Dictionary = {
 	"kart": "res://assets/kart/menu/lumo-world.webp",
-	"build": "res://assets/creative/sandstone.webp",
-	"puzzle": "res://assets/creative/puzzle/candy.webp",
-	"rhythm": "res://assets/creative/puzzle/volcano.webp",
-	"treasure": "res://assets/creative/puzzle/moonlight.webp",
+	"build": "res://assets/creative/covers/build.png",
+	"puzzle": "res://assets/creative/covers/puzzle.png",
+	"rhythm": "res://assets/creative/covers/rhythm.png",
+	"treasure": "res://assets/creative/covers/treasure.png",
 	"jump": "res://assets/kart/menu/lumo-world.webp",
 }
 const TITLE_BY_SCENE: Dictionary = {

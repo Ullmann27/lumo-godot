@@ -1,6 +1,7 @@
 extends SceneTree
 ## Screenshots + Draw-Call-Messung für Puzzle, Rhythm und Schatzsuche.
-## CREATIVE_CAPTURE_DIR, CREATIVE_CAPTURE_GAMES (Komma-Liste: puzzle,rhythm,treasure).
+## CREATIVE_CAPTURE_DIR, CREATIVE_CAPTURE_GAMES (Komma-Liste: puzzle,rhythm,treasure),
+## CREATIVE_CAPTURE_TIER (low|medium|high, optional).
 
 
 func _initialize() -> void:
@@ -102,17 +103,30 @@ func _capture_treasure(dir: String) -> Dictionary:
 	if game.has_method("_update"):
 		game._update()
 	var cam: Camera3D = game.camera
-	cam.position = Vector3(14, 16, 18)
-	cam.look_at(Vector3(0, 1.2, -26))
-	await _settle(10)
-	var entry: Dictionary = {"overview": await _save(dir, "treasure_overview")}
-	# Follow-Kamera sonst während des Settles zurück auf den Startpfad.
+	# Exakte Spielstart-Kamera: player + (10, 14, 19), Blick auf player + UP.
 	game.set_physics_process(false)
 	cam.current = true
+	var start_at: Vector3 = game.player.position
+	cam.position = start_at + Vector3(10, 14, 19)
+	cam.look_at(start_at + Vector3.UP, Vector3.UP)
+	await _settle(10)
+	var entry: Dictionary = {"overview": await _save(dir, "treasure_overview")}
 	cam.position = Vector3(8, 8, -18)
 	cam.look_at(Vector3(0, 2.2, -38))
 	await _settle(8)
 	entry["closeup"] = await _save(dir, "treasure_closeup")
+	cam.position = Vector3(9.5, 8.4, -10.0)
+	cam.look_at(Vector3(0.0, 2.2, -42.0), Vector3.UP)
+	await _settle(6)
+	entry["cover"] = await _save(dir, "treasure_cover")
+	cam.position = Vector3(24.5, 7.2, -12.5)
+	cam.look_at(Vector3(16.0, 2.2, -21.0), Vector3.UP)
+	await _settle(6)
+	entry["waterfall"] = await _save(dir, "treasure_waterfall")
+	cam.position = Vector3(-7.4, 7.6, -73.4)
+	cam.look_at(Vector3(0.0, 1.05, -66.2), Vector3.UP)
+	await _settle(6)
+	entry["chamber"] = await _save(dir, "treasure_chamber")
 	game.queue_free()
 	await process_frame
 	DirAccess.remove_absolute("user://lumo_treasure_optikcapture.json")
@@ -128,6 +142,11 @@ func _run() -> void:
 	if requested.is_empty():
 		requested = "puzzle,rhythm,treasure"
 	var metrics: Dictionary = {}
+	var tier: String = OS.get_environment("CREATIVE_CAPTURE_TIER").strip_edges()
+	await process_frame
+	if not tier.is_empty():
+		LumoQuality.set_tier(tier)
+		print("[CreativeWorldsCapture] tier=%s" % LumoQuality.tier())
 	await process_frame
 	for name in requested.split(",", false):
 		match str(name).strip_edges():

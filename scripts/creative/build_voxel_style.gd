@@ -30,6 +30,7 @@ const _ALBEDO := {
 	"dirt": preload("res://assets/creative/bauwelt_voxel/dirt_albedo.png"),
 	"leaves": preload("res://assets/creative/bauwelt_voxel/leaves_albedo.png"),
 	"bark": preload("res://assets/creative/bauwelt_voxel/bark_albedo.png"),
+	"magic": preload("res://assets/creative/bauwelt_voxel/magic_albedo.png"),
 }
 const _NORMAL := {
 	"stone": preload("res://assets/creative/bauwelt_voxel/stone_normal.png"),
@@ -43,6 +44,7 @@ const _NORMAL := {
 	"dirt": preload("res://assets/creative/bauwelt_voxel/dirt_normal.png"),
 	"leaves": preload("res://assets/creative/bauwelt_voxel/leaves_normal.png"),
 	"bark": preload("res://assets/creative/bauwelt_voxel/bark_normal.png"),
+	"magic": preload("res://assets/creative/bauwelt_voxel/magic_normal.png"),
 }
 
 static var _materials: Dictionary = {}
@@ -63,12 +65,12 @@ static func material(kind: String, tint: Color = Color.WHITE) -> StandardMateria
 		mat.refraction_enabled = false
 		tint = Color(tint.r, tint.g, tint.b, 0.42) if tint.a >= 0.99 else tint
 	elif kind == "magic":
-		albedo_kind = "plain"
+		albedo_kind = "magic"
 		mat.emission_enabled = true
 		mat.emission = Color("5ad4ff")
-		mat.emission_energy_multiplier = 0.85
+		mat.emission_energy_multiplier = 0.55
 		mat.roughness = 0.22
-		mat.metallic = 0.35
+		mat.metallic = 0.25
 	elif kind == "water":
 		albedo_kind = "plain"
 		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -84,10 +86,14 @@ static func material(kind: String, tint: Color = Color.WHITE) -> StandardMateria
 		mat.normal_scale = 0.85
 	mat.albedo_color = tint
 	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
-	mat.uv1_triplanar = true
-	mat.uv1_world_triplanar = true
-	mat.uv1_triplanar_sharpness = 4.0
-	mat.uv1_scale = Vector3.ONE
+	if kind == "magic":
+		mat.uv1_triplanar = false
+		mat.uv1_scale = Vector3.ONE
+	else:
+		mat.uv1_triplanar = true
+		mat.uv1_world_triplanar = true
+		mat.uv1_triplanar_sharpness = 4.0
+		mat.uv1_scale = Vector3.ONE
 	_materials[key] = mat
 	return mat
 
@@ -184,6 +190,15 @@ static func grass_body() -> BoxMesh:
 	return mesh
 
 
+static func lawn_material() -> StandardMaterial3D:
+	if _materials.has("lawn"):
+		return _materials["lawn"]
+	var mat: StandardMaterial3D = material("grass_top", Color.WHITE).duplicate()
+	mat.uv1_scale = Vector3(0.16, 0.16, 0.16)
+	_materials["lawn"] = mat
+	return mat
+
+
 static func wall_mesh() -> ArrayMesh:
 	if _meshes.has("wall"):
 		return _meshes["wall"]
@@ -204,6 +219,9 @@ static func wall_mesh() -> ArrayMesh:
 	var right := BoxMesh.new()
 	right.size = Vector3(0.12, 0.70, 0.10)
 	st.append_from(right, 0, Transform3D(Basis.IDENTITY, Vector3(0.78, 1.18, 0.98)))
+	var planter := BoxMesh.new()
+	planter.size = Vector3(0.70, 0.12, 0.22)
+	st.append_from(planter, 0, Transform3D(Basis.IDENTITY, Vector3(0.5, 0.68, 1.12)))
 	st.generate_normals()
 	st.generate_tangents()
 	var mesh: ArrayMesh = st.commit()
