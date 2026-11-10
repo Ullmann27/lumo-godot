@@ -13,7 +13,7 @@ static func apply(root: Node3D) -> void:
 	var box := BoxMesh.new()
 	box.size = Vector3.ONE
 	_stone_dressing(root, box, density)
-	_rune_glow(root, box)
+	_rune_glow(root, box, density)
 	_paw_path(root, box, density)
 	_compass_rose(root, box)
 	_waterfall_dressing(root, box, sparkles)
@@ -24,7 +24,9 @@ static func apply(root: Node3D) -> void:
 	_light_rays(root, sparkles)
 
 
-static func _mat(albedo: Color, emission: Color = Color.BLACK, energy: float = 0.0) -> StandardMaterial3D:
+static func _mat(
+	albedo: Color, emission: Color = Color.BLACK, energy: float = 0.0
+) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = albedo
 	mat.roughness = 0.8
@@ -103,7 +105,9 @@ static func _stone_dressing(root: Node3D, mesh: BoxMesh, density: float) -> void
 	for i in range(marker_count):
 		var z: float = marker_z[i]
 		for side in [-1.0, 1.0]:
-			xforms.append(_xform(Vector3(side * 6.45, 1.08, z), Vector3(0.44, 2.16, 0.3), side * 0.08))
+			xforms.append(
+				_xform(Vector3(side * 6.45, 1.08, z), Vector3(0.44, 2.16, 0.3), side * 0.08)
+			)
 	# Steinbogen mit Pfoten-Emblem direkt vor dem Spawn (keine Collision).
 	xforms.append(_xform(Vector3(-2.55, 1.75, 1.35), Vector3(0.78, 3.5, 0.82)))
 	xforms.append(_xform(Vector3(2.55, 1.75, 1.35), Vector3(0.78, 3.5, 0.82)))
@@ -132,10 +136,16 @@ static func _stone_dressing(root: Node3D, mesh: BoxMesh, density: float) -> void
 	xforms.append(_xform(Vector3(3.45, 2.45, -65.35), Vector3(0.74, 4.9, 0.74)))
 	xforms.append(_xform(Vector3(0.0, 4.55, -65.55), Vector3(7.4, 0.58, 0.74)))
 	xforms.append(_xform(Vector3(0.0, 0.045, -67.05), Vector3(7.2, 0.09, 4.4)))
-	BuildVoxelStyle.multimesh(root, "TreasureStoneDressing", mesh, BuildVoxelStyle.material("stone", Color("6a645a")), xforms)
+	BuildVoxelStyle.multimesh(
+		root,
+		"TreasureStoneDressing",
+		mesh,
+		BuildVoxelStyle.material("stone", Color("6a645a")),
+		xforms
+	)
 
 
-static func _rune_glow(root: Node3D, mesh: BoxMesh) -> void:
+static func _rune_glow(root: Node3D, mesh: BoxMesh, density: float) -> void:
 	var xforms: Array[Transform3D] = []
 	for i in range(9):
 		var t: float = float(i) / 8.0
@@ -146,9 +156,12 @@ static func _rune_glow(root: Node3D, mesh: BoxMesh) -> void:
 	xforms.append(_xform(Vector3(-3.45, 1.85, -30.42), Vector3(0.08, 0.7, 0.34)))
 	xforms.append(_xform(Vector3(3.45, 1.85, -30.42), Vector3(0.08, 0.7, 0.34)))
 	var marker_z: Array[float] = [-10.0, -22.0, -38.0, -52.0]
-	for z in marker_z:
+	var marker_count: int = maxi(2, int(round(float(marker_z.size()) * density)))
+	for i in range(marker_count):
 		for side in [-1.0, 1.0]:
-			xforms.append(_xform(Vector3(side * 6.22, 1.28, z), Vector3(0.05, 0.62, 0.16)))
+			xforms.append(
+				_xform(Vector3(side * 6.22, 1.28, marker_z[i]), Vector3(0.05, 0.62, 0.16))
+			)
 	xforms.append(_xform(Vector3(-3.45, 3.7, -65.0), Vector3(0.2, 0.95, 0.2)))
 	xforms.append(_xform(Vector3(3.45, 3.7, -65.0), Vector3(0.2, 0.95, 0.2)))
 	xforms.append(_xform(Vector3(0.0, 3.75, -69.1), Vector3(1.55, 0.24, 0.08)))
@@ -166,9 +179,15 @@ static func _paw_path(root: Node3D, mesh: BoxMesh, density: float) -> void:
 		var x: float = side * 0.46
 		var yaw: float = side * 0.14
 		xforms.append(_xform(Vector3(x, 0.07, z), Vector3(0.38, 0.045, 0.46), yaw))
-		xforms.append(_xform(Vector3(x + side * 0.14, 0.072, z - 0.34), Vector3(0.15, 0.04, 0.15), yaw))
-		xforms.append(_xform(Vector3(x - side * 0.15, 0.072, z - 0.3), Vector3(0.13, 0.04, 0.13), yaw))
-		xforms.append(_xform(Vector3(x + side * 0.02, 0.072, z - 0.38), Vector3(0.12, 0.04, 0.12), yaw))
+		xforms.append(
+			_xform(Vector3(x + side * 0.14, 0.072, z - 0.34), Vector3(0.15, 0.04, 0.15), yaw)
+		)
+		xforms.append(
+			_xform(Vector3(x - side * 0.15, 0.072, z - 0.3), Vector3(0.13, 0.04, 0.13), yaw)
+		)
+		xforms.append(
+			_xform(Vector3(x + side * 0.02, 0.072, z - 0.38), Vector3(0.12, 0.04, 0.12), yaw)
+		)
 		z -= step
 		side *= -1.0
 	BuildVoxelStyle.multimesh(
@@ -304,7 +323,9 @@ static func _light_rays(root: Node3D, sparkles: int) -> void:
 	mesh.rings = 1
 	var rays: Array[Transform3D] = []
 	rays.append(Transform3D(Basis.from_euler(Vector3(0.08, 0.0, 0.05)), Vector3(0.0, 6.45, -66.3)))
-	rays.append(Transform3D(Basis.from_euler(Vector3(0.05, 0.35, -0.04)), Vector3(0.0, 7.15, -31.0)))
+	rays.append(
+		Transform3D(Basis.from_euler(Vector3(0.05, 0.35, -0.04)), Vector3(0.0, 7.15, -31.0))
+	)
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -314,6 +335,7 @@ static func _light_rays(root: Node3D, sparkles: int) -> void:
 	mat.emission = Color("ffe7a1")
 	mat.emission_energy_multiplier = 0.8
 	BuildVoxelStyle.multimesh(root, "TreasureLightRays", mesh, mat, rays)
+
 
 static func _sea(root: Node3D) -> void:
 	var sea := MeshInstance3D.new()
@@ -366,8 +388,20 @@ static func _foliage(root: Node3D, mesh: BoxMesh, density: float) -> void:
 	for i in range(count):
 		var at: Vector3 = ferns[i]
 		xforms.append(_xform(Vector3(at.x, 0.55, at.z), Vector3(0.22, 1.1, 0.12), float(i) * 0.4))
-		xforms.append(_xform(Vector3(at.x + 0.12, 0.42, at.z + 0.08), Vector3(0.16, 0.82, 0.1), float(i) * 0.4 + 0.5))
-		xforms.append(_xform(Vector3(at.x - 0.1, 0.38, at.z - 0.06), Vector3(0.14, 0.7, 0.1), float(i) * 0.4 - 0.45))
+		xforms.append(
+			_xform(
+				Vector3(at.x + 0.12, 0.42, at.z + 0.08),
+				Vector3(0.16, 0.82, 0.1),
+				float(i) * 0.4 + 0.5
+			)
+		)
+		xforms.append(
+			_xform(
+				Vector3(at.x - 0.1, 0.38, at.z - 0.06),
+				Vector3(0.14, 0.7, 0.1),
+				float(i) * 0.4 - 0.45
+			)
+		)
 	BuildVoxelStyle.multimesh(root, "TreasureFoliage", mesh, _mat(Color("3d8f36")), xforms)
 
 
@@ -401,6 +435,9 @@ static func _flowers(root: Node3D, mesh: BoxMesh, density: float) -> void:
 		dest.append(_xform(Vector3(at.x + 0.22, 0.18, at.z + 0.16), Vector3(0.05, 0.36, 0.05)))
 		dest.append(_xform(Vector3(at.x + 0.22, 0.4, at.z + 0.16), Vector3(0.16, 0.13, 0.16)))
 	# Eine Farbe pro MultiMesh, beide im selben Draw-Call-Budget wie zwei Batches.
-	BuildVoxelStyle.multimesh(root, "TreasureFlowersPurple", mesh, _mat(Color("7a4ad6"), Color("b28cff"), 0.45), purple)
-	BuildVoxelStyle.multimesh(root, "TreasureFlowersBlue", mesh, _mat(Color("3a78e0"), Color("7eb6ff"), 0.45), blue)
-
+	BuildVoxelStyle.multimesh(
+		root, "TreasureFlowersPurple", mesh, _mat(Color("7a4ad6"), Color("b28cff"), 0.45), purple
+	)
+	BuildVoxelStyle.multimesh(
+		root, "TreasureFlowersBlue", mesh, _mat(Color("3a78e0"), Color("7eb6ff"), 0.45), blue
+	)
