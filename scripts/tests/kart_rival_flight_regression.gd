@@ -159,6 +159,29 @@ func _check_controller_launch(track: String, use_sky_jump: bool) -> void:
 	print("[RivalFlight] %s: automatic AI approach, take-off and landing PASS" % track)
 
 
+func _check_reprojected_lip() -> void:
+	await _race()
+	var ramp: Dictionary = game.world.action.kickers[0]
+	var edge: float = float(ramp.take_off)
+	var rival = game.opponents[0]
+	rival.set_meta(&"lumo_last_road_contact", edge - 0.12)
+	var before: Dictionary = game.world.sample_road(game.world.position_at(edge + 0.03), edge)
+	var after: Dictionary = game.world.sample_road(game.world.position_at(edge + 0.35), edge)
+	assert(float(before.distance) >= edge, "Fresh projection has crossed the lip")
+	rival.transform = game.world.reset_transform(float(after.distance))
+	game.opponent_distances[0] = float(after.distance)
+	assert(
+		FLIGHT.try_launch(game, 0, before, after, 20.0),
+		"Persisted contact prevents missed ramp launch"
+	)
+	assert(
+		rival.get_meta(FLIGHT.STATE_KEY).active,
+		"The kart starts genuine flight instead of dropping"
+	)
+	completed_checks += 1
+	print("[RivalFlight] ramp reprojection cannot skip the take-off lip PASS")
+
+
 func _run() -> void:
 	assert(DisplayServer.get_name() != "headless")
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
@@ -166,10 +189,13 @@ func _run() -> void:
 	game.set_physics_process(false)
 	game.lightweight = true
 	await _settle()
-	await _check_precision_flight()
-	await _check_controller_launch("sonnenhafen", false)
-	await _check_controller_launch("bergwelt", true)
-	if completed_checks != 3:
+	var reprojection_only: bool = "--reprojection-only" in OS.get_cmdline_user_args()
+	if not reprojection_only:
+		await _check_precision_flight()
+		await _check_controller_launch("sonnenhafen", false)
+		await _check_controller_launch("bergwelt", true)
+	await _check_reprojected_lip()
+	if completed_checks != (1 if reprojection_only else 4):
 		quit(1)
 		return
 	game.queue_free()
