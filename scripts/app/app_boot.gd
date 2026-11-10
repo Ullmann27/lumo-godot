@@ -1,3 +1,4 @@
+## 2013 game-identity covers are generated from real scene captures; never reuse puzzle motifs.
 ## The existing Godot boot route with a themed real-image game entry.
 ## No invented percent, account registration or additional gameplay state.
 extends Node
