@@ -5,7 +5,7 @@ on:
     branches:
       - lumo-next/godot-integration-20261110
     paths:
-      - .github/handoffs/lumo-other-tracks-code.patch
+      - .github/handoffs/lumo-other-tracks-code.patch.gz.b64
 
 permissions:
   contents: write
