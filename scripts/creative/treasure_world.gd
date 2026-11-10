@@ -86,8 +86,11 @@ func _exit_tree() -> void:
 func _landscape() -> void:
 	var ground := StaticBody3D.new()
 	add_child(ground)
-	var mesh := kit.box(ground, Vector3(0, -0.65, -29), Vector3(74, 1.3, 88), Color.WHITE)
-	mesh.material_override = BuildVoxelStyle.material("grass_top", Color("9ed56a"))
+	var terrain := MeshInstance3D.new()
+	terrain.name = "TreasureTerrain"
+	terrain.mesh = _terrain_mesh()
+	terrain.material_override = _terrain_material()
+	ground.add_child(terrain)
 	kit.collision(ground, Vector3(0, -0.65, -29), Vector3(74, 1.3, 88))
 	# A continuous promenade lets younger children return to any clue without getting lost.
 	var path_xforms: Array[Transform3D] = []
@@ -449,3 +452,74 @@ func _notification(what: int) -> void:
 func _leave() -> void:
 	if _save():
 		SceneRouter.goto("games")
+
+
+func _terrain_material() -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture = BuildVoxelStyle.material("grass_top").albedo_texture
+	mat.normal_enabled = true
+	mat.normal_texture = BuildVoxelStyle.material("grass_top").normal_texture
+	mat.normal_scale = 0.55
+	mat.albedo_color = Color("c4c2a4")
+	mat.vertex_color_use_as_albedo = true
+	mat.roughness = 0.92
+	mat.metallic = 0.0
+	mat.uv1_triplanar = true
+	mat.uv1_world_triplanar = true
+	mat.uv1_triplanar_sharpness = 4.0
+	mat.uv1_scale = Vector3(0.055, 0.055, 0.055)
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	return mat
+
+
+func _terrain_mesh() -> ArrayMesh:
+	var noise := FastNoiseLite.new()
+	noise.seed = 71882
+	noise.frequency = 0.045
+	noise.fractal_octaves = 3
+	var cols := 48
+	var rows := 56
+	var origin := Vector3(-40.0, 0.0, -75.0)
+	var step := Vector2(80.0 / float(cols - 1), 94.0 / float(rows - 1))
+	var verts: Array[Vector3] = []
+	var colors: PackedColorArray = PackedColorArray()
+	verts.resize(cols * rows)
+	colors.resize(cols * rows)
+	for row in range(rows):
+		for col in range(cols):
+			var x: float = origin.x + float(col) * step.x
+			var z: float = origin.z + float(row) * step.y
+			var nx: float = absf(x) / 37.0
+			var nz: float = absf(z + 29.0) / 44.0
+			var radial: float = pow(nx * nx * nx * nx + nz * nz * nz * nz, 0.25)
+			var rim: float = clampf((radial - 0.78) / 0.28, 0.0, 1.0)
+			var path: float = 1.0 - clampf((absf(x) - 2.15) / 1.7, 0.0, 1.0)
+			var wave: float = noise.get_noise_2d(x, z) * 0.11 * (1.0 - path) * (1.0 - rim)
+			var y: float = wave - rim * rim * 2.35
+			var grass := Color("6d7d4c").lerp(Color("5a6d40"), 0.5 + 0.5 * noise.get_noise_2d(x + 40.0, z - 12.0))
+			grass = grass.lerp(Color("7a7a48"), clampf(0.35 + noise.get_noise_2d(x - 18.0, z + 9.0), 0.0, 0.45))
+			var dirt := Color("8a7a55")
+			var sand := Color("c4b48a")
+			var rock := Color("7a7468")
+			var color: Color = grass.lerp(dirt, path)
+			color = color.lerp(sand, clampf(rim * 1.4, 0.0, 1.0))
+			if rim > 0.72:
+				color = color.lerp(rock, (rim - 0.72) / 0.28)
+			var idx: int = row * cols + col
+			verts[idx] = Vector3(x, y, z)
+			colors[idx] = color
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for row in range(rows - 1):
+		for col in range(cols - 1):
+			var a: int = row * cols + col
+			var b: int = a + 1
+			var c: int = a + cols
+			var d: int = c + 1
+			for idx in [a, c, b, b, c, d]:
+				st.set_color(colors[idx])
+				st.set_uv(Vector2(verts[idx].x * 0.08, verts[idx].z * 0.08))
+				st.add_vertex(verts[idx])
+	st.generate_normals()
+	st.generate_tangents()
+	return st.commit()
