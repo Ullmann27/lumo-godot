@@ -40,7 +40,7 @@ jobs:
           git apply --check --3way "$RUNNER_TEMP/handoff.patch"
           git apply --3way "$RUNNER_TEMP/handoff.patch"
           git diff --check
-          git diff --name-only > "$RUNNER_TEMP/handoff-files.txt"
+          git diff HEAD --name-only > "$RUNNER_TEMP/handoff-files.txt"
           cat "$RUNNER_TEMP/handoff-files.txt"
           test "$(wc -l < "$RUNNER_TEMP/handoff-files.txt")" -eq 33
 
