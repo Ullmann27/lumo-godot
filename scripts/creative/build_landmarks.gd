@@ -1,7 +1,8 @@
 class_name BuildLandmarks
 extends RefCounted
 ## Combined-mesh landmarks for Bauwelt: Fachwerk-Werkstatt, Sternwarte,
-## verzweigte Baeume, Bogenbruecke, Wasserfall mit Fels und L-Emblem.
+## verzweigte Baeume, Bogenbruecke, Wasserfall mit Fels, L-Emblem,
+## Inselboden, Baukran und Uferschaum.
 ## Footprints, collision and part IDs stay with the catalog / build_state.
 
 
@@ -71,9 +72,14 @@ static func emblem_l(root: Node, at: Vector3, scale: float = 0.22, facing: Vecto
 	mesh_node(root, commit(st), mat, "LEmblem")
 
 
-static func add_branched_tree(body: Node) -> void:
-	## Trunk plus three outward branches (bark) and a clustered crown (leaves).
-	## Collision stays a 0.4 x 2 x 0.4 stem so existing saves keep their footprint.
+static var _tree_bark: ArrayMesh
+static var _tree_leaves: ArrayMesh
+static var _fall_rocks: ArrayMesh
+
+
+static func branched_tree_bark_mesh() -> ArrayMesh:
+	if _tree_bark != null:
+		return _tree_bark
 	var bark := SurfaceTool.new()
 	bark.begin(Mesh.PRIMITIVE_TRIANGLES)
 	append_cyl(bark, 0.20, 2.35, Vector3(1.0, 1.15, 1.0))
@@ -92,7 +98,13 @@ static func add_branched_tree(body: Node) -> void:
 		# Cylinder is Y-up; looking_at points -Z, so tilt 90 deg around X in local space.
 		basis = basis * Basis.from_euler(Vector3(PI * 0.5, 0, 0))
 		append_cyl(bark, 0.075, length + 0.12, mid, basis, 0.045)
-	mesh_node(body, commit(bark), BuildVoxelStyle.material("bark", Color("c4a07a")), "Trunk")
+	_tree_bark = commit(bark)
+	return _tree_bark
+
+
+static func branched_tree_leaves_mesh() -> ArrayMesh:
+	if _tree_leaves != null:
+		return _tree_leaves
 	var leaves := SurfaceTool.new()
 	leaves.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var crowns := [
@@ -104,7 +116,15 @@ static func add_branched_tree(body: Node) -> void:
 	]
 	for crown in crowns:
 		append_sphere(leaves, float(crown[1]), float(crown[2]), crown[0])
-	mesh_node(body, commit(leaves), BuildVoxelStyle.material("leaves", Color("9ed56a")), "Crown")
+	_tree_leaves = commit(leaves)
+	return _tree_leaves
+
+
+static func add_branched_tree(body: Node) -> void:
+	## Trunk plus three outward branches (bark) and a clustered crown (leaves).
+	## Collision stays a 0.4 x 2 x 0.4 stem so existing saves keep their footprint.
+	mesh_node(body, branched_tree_bark_mesh(), BuildVoxelStyle.material("bark", Color("c4a07a")), "Trunk")
+	mesh_node(body, branched_tree_leaves_mesh(), BuildVoxelStyle.material("leaves", Color("9ed56a")), "Crown")
 
 
 static func build_workshop(kit: RefCounted, body: StaticBody3D, item: Dictionary) -> void:
@@ -326,32 +346,7 @@ static func far_castle_meshes(root: Node3D, at: Vector3, scale_factor: float) ->
 
 static func add_canyon(root: Node3D, kit: RefCounted) -> void:
 	## Waterfall gorge just past the near river end (z > 16), off the build grid.
-	var rock_xforms: Array[Transform3D] = []
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 20131110
-	for i in range(28):
-		var side := -1.0 if i % 2 == 0 else 1.0
-		var at := Vector3(
-			2.0 + side * rng.randf_range(2.4, 5.8),
-			rng.randf_range(-6.5, -0.2),
-			16.6 + rng.randf_range(0.2, 6.4)
-		)
-		var scale := Vector3(
-			rng.randf_range(0.7, 1.6), rng.randf_range(0.8, 2.2), rng.randf_range(0.8, 1.7)
-		)
-		rock_xforms.append(Transform3D(Basis.from_scale(scale), at))
-	# cliff shoulders framing the drop
-	for side in [-1.0, 1.0]:
-		for k in range(5):
-			var at := Vector3(2.0 + side * (2.2 + float(k) * 0.55), -2.2, 16.8 + float(k) * 0.7)
-			rock_xforms.append(Transform3D(Basis.from_scale(Vector3(1.4, 4.2 - float(k) * 0.35, 1.2)), at))
-	BuildVoxelStyle.multimesh(
-		root,
-		"CanyonRocks",
-		kit.SHAPES.rock(),
-		BuildVoxelStyle.material("stone", Color("cbbca6")),
-		rock_xforms
-	)
+	## Rocks and rim plants are batched into RiverRocks / BorderPlants by dress_world.
 	# falling sheets
 	var fall_xforms: Array[Transform3D] = []
 	for i in range(3):
@@ -368,21 +363,6 @@ static func add_canyon(root: Node3D, kit: RefCounted) -> void:
 	var pool_mat := ShaderMaterial.new()
 	pool_mat.shader = preload("res://assets/shaders/kart_water.gdshader")
 	pool.material_override = pool_mat
-	# a few ferns on the rim, batched
-	var plant_xforms: Array[Transform3D] = []
-	for i in range(10):
-		var side := -1.0 if i % 2 == 0 else 1.0
-		var at := Vector3(2.0 + side * rng.randf_range(3.2, 5.2), 0.35, 16.2 + rng.randf_range(0.0, 1.4))
-		var s := 0.35 + float(i % 3) * 0.08
-		plant_xforms.append(Transform3D(Basis.from_scale(Vector3(s, s * 1.2, s)), at))
-	var bush := SphereMesh.new()
-	bush.radius = 1.0
-	bush.height = 1.55
-	bush.radial_segments = 10
-	bush.rings = 6
-	BuildVoxelStyle.multimesh(
-		root, "CanyonPlants", bush, BuildVoxelStyle.material("leaves", Color("8fce5c")), plant_xforms
-	)
 
 
 static var _planter: ArrayMesh
@@ -398,3 +378,698 @@ static func planter_mesh() -> ArrayMesh:
 	append_sphere(st, 0.08, 0.13, Vector3(0.00, 0.11, 0.06))
 	_planter = commit(st)
 	return _planter
+
+
+static func waterfall_rock_mesh() -> ArrayMesh:
+	if _fall_rocks != null:
+		return _fall_rocks
+	var rocks := SurfaceTool.new()
+	rocks.begin(Mesh.PRIMITIVE_TRIANGLES)
+	append_box(rocks, Vector3(0.35, 1.1, 0.45), Vector3(0.10, 0.55, 0.55))
+	append_box(rocks, Vector3(0.35, 1.4, 0.40), Vector3(0.90, 0.70, 0.50))
+	append_box(rocks, Vector3(0.55, 0.35, 0.55), Vector3(0.50, 0.12, 0.70))
+	append_sphere(rocks, 0.22, 0.28, Vector3(0.20, 0.22, 0.85))
+	append_sphere(rocks, 0.18, 0.24, Vector3(0.80, 0.20, 0.80))
+	_fall_rocks = commit(rocks)
+	return _fall_rocks
+
+
+static func _is_low() -> bool:
+	return LumoQuality.tier() == "low"
+
+
+static func _no_shadow(node: GeometryInstance3D) -> void:
+	if node != null:
+		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+static func _dist_xz(p: Vector2, a: Vector2, b: Vector2) -> float:
+	var ab := b - a
+	var denom := ab.length_squared()
+	var t := 0.0 if denom < 0.0001 else clampf((p - a).dot(ab) / denom, 0.0, 1.0)
+	return p.distance_to(a + ab * t)
+
+
+static func _path_strength(x: float, z: float) -> float:
+	var p := Vector2(x, z)
+	var best := 99.0
+	var left: Array[Vector2] = [
+		Vector2(-8.0, -4.2), Vector2(-8.0, 1.4), Vector2(-4.4, 4.0), Vector2(-1.15, 6.0)
+	]
+	for i in range(left.size() - 1):
+		best = minf(best, _dist_xz(p, left[i], left[i + 1]))
+	var right: Array[Vector2] = [
+		Vector2(4.15, 6.0), Vector2(7.1, 6.15), Vector2(11.2, 6.8), Vector2(13.2, 8.0)
+	]
+	for i in range(right.size() - 1):
+		best = minf(best, _dist_xz(p, right[i], right[i + 1]))
+	# short spur from the castle gate toward the river bank
+	best = minf(best, _dist_xz(p, Vector2(-5.2, -1.0), Vector2(-1.4, 2.2)))
+	return clampf(1.0 - best / 1.15, 0.0, 1.0)
+
+
+static func _in_water(x: float) -> bool:
+	return x > -0.05 and x < 4.05
+
+
+static func _lawn_y(x: float, z: float) -> float:
+	var h := 0.03
+	h += sin(x * 0.37 + 1.2) * sin(z * 0.29 + 0.4) * 0.13
+	h += sin(x * 0.85 + z * 0.61) * 0.055
+	h += sin(x * 1.65 - z * 0.9) * 0.022
+	# Flatten only under the castle footprint. The front lawn (z > -0.6) stays
+	# rolling so the start overview no longer reads as a flat 2012 field.
+	if x > -14.2 and x < -2.8 and z > -12.4 and z < -0.6:
+		h = lerpf(h, 0.025, 0.9)
+	# flatten default build pads (Werkstatt, Sternwarte, trees, props)
+	var pads := [
+		Vector2(8.5, 6.5),
+		Vector2(10.5, -0.5),
+		Vector2(11.5, 4.5),
+		Vector2(5.5, 8.5),
+		Vector2(5.5, 5.5),
+		Vector2(6.5, 4.5),
+		Vector2(8.8, 10.2)
+	]
+	for pad in pads:
+		var d := Vector2(x - pad.x, z - pad.y).length()
+		if d < 2.5:
+			h = lerpf(h, 0.03, 1.0 - d / 2.5)
+	var path := _path_strength(x, z)
+	if path > 0.0:
+		h = lerpf(h, 0.02, path)
+	# soft shoreline drop toward the river
+	if x < 0.0:
+		var shore := -x
+		if shore < 2.1:
+			h = lerpf(-0.11, h, smoothstep(0.0, 1.0, shore / 2.1))
+	elif x > 4.0:
+		var shore_r := x - 4.0
+		if shore_r < 2.1:
+			h = lerpf(-0.11, h, smoothstep(0.0, 1.0, shore_r / 2.1))
+	# slight rise at the outer rim
+	var edge := minf(16.6 - absf(x) if not _in_water(x) else 16.6, 16.6 - absf(z))
+	if edge < 1.5:
+		h += (1.5 - edge) * 0.07
+	return h
+
+
+static func _lawn_color(x: float, z: float) -> Color:
+	var path := _path_strength(x, z)
+	var dirt := 0.5 + 0.5 * sin(x * 0.53 + 2.1) * sin(z * 0.47 - 0.8)
+	dirt += 0.15 * sin(x * 1.4 + z * 0.9)
+	var c := Color(1.0, 1.0, 1.0)
+	if dirt > 0.78:
+		c = Color(0.70, 0.55, 0.36).lerp(Color(1, 1, 1), 1.0 - (dirt - 0.78) / 0.35)
+	if path > 0.05:
+		c = c.lerp(Color(0.50, 0.34, 0.20), clampf(path * 1.25, 0.0, 1.0))
+	# slightly richer grass away from the path
+	if path < 0.1 and dirt < 0.7:
+		var lush := 0.5 + 0.5 * sin(x * 0.21 + z * 0.18)
+		c = c.lerp(Color(0.90, 1.04, 0.82), lush * 0.18)
+	return c
+
+
+static func add_sculpted_lawn(root: Node3D) -> void:
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var step := 0.8
+	var strips: Array[Vector2] = [Vector2(-17.0, -0.08), Vector2(4.08, 16.55)]
+	for strip in strips:
+		var x0 := strip.x
+		var x1 := strip.y
+		var z := -16.55
+		while z < 16.55 - 0.001:
+			var z2 := minf(z + step, 16.55)
+			var x := x0
+			while x < x1 - 0.001:
+				var x2 := minf(x + step, x1)
+				var p00 := Vector3(x, _lawn_y(x, z), z)
+				var p10 := Vector3(x2, _lawn_y(x2, z), z)
+				var p11 := Vector3(x2, _lawn_y(x2, z2), z2)
+				var p01 := Vector3(x, _lawn_y(x, z2), z2)
+				var c00 := _lawn_color(x, z)
+				var c10 := _lawn_color(x2, z)
+				var c11 := _lawn_color(x2, z2)
+				var c01 := _lawn_color(x, z2)
+				st.set_color(c00)
+				st.set_uv(Vector2(p00.x, p00.z))
+				st.add_vertex(p00)
+				st.set_color(c10)
+				st.set_uv(Vector2(p10.x, p10.z))
+				st.add_vertex(p10)
+				st.set_color(c11)
+				st.set_uv(Vector2(p11.x, p11.z))
+				st.add_vertex(p11)
+				st.set_color(c00)
+				st.set_uv(Vector2(p00.x, p00.z))
+				st.add_vertex(p00)
+				st.set_color(c11)
+				st.set_uv(Vector2(p11.x, p11.z))
+				st.add_vertex(p11)
+				st.set_color(c01)
+				st.set_uv(Vector2(p01.x, p01.z))
+				st.add_vertex(p01)
+				x = x2
+			z = z2
+	var mat: StandardMaterial3D = BuildVoxelStyle.lawn_material().duplicate()
+	mat.vertex_color_use_as_albedo = true
+	mesh_node(root, commit(st), mat, "SculptedLawn")
+
+
+static func add_island_cliffs(root: Node3D) -> void:
+	## Irregular stone skirt around the island edge (replaces the flat box faces).
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 20131114
+	# west and east faces
+	for side in [-1.0, 1.0]:
+		for i in range(15):
+			var z := -15.6 + float(i) * 2.23 + rng.randf_range(-0.25, 0.25)
+			var h := 2.15 + rng.randf_range(-0.2, 0.4)
+			var w := 2.3 + rng.randf_range(-0.25, 0.45)
+			var depth := 0.65 + rng.randf_range(0.0, 0.55)
+			append_box(st, Vector3(depth, h, w), Vector3(side * 16.85, -1.25, z))
+	# south and north faces, split around the river mouth
+	for zside in [-1.0, 1.0]:
+		for bank in [-1.0, 1.0]:
+			var x_mid := (-8.6 if bank < 0.0 else 10.2)
+			for i in range(7):
+				var x := x_mid + (float(i) - 3.0) * 2.15 + rng.randf_range(-0.2, 0.2)
+				if _in_water(x):
+					continue
+				var h := 2.15 + rng.randf_range(-0.2, 0.35)
+				var w := 0.7 + rng.randf_range(0.0, 0.5)
+				var length := 2.2 + rng.randf_range(-0.2, 0.4)
+				append_box(st, Vector3(length, h, w), Vector3(x, -1.25, zside * 16.85))
+	mesh_node(root, commit(st), BuildVoxelStyle.material("stone", Color("c8bca8")), "IslandCliffs")
+
+
+static func _append_canyon_rocks(xforms: Array[Transform3D]) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 20131110
+	var count := 18 if _is_low() else 28
+	for i in range(count):
+		var side := -1.0 if i % 2 == 0 else 1.0
+		var at := Vector3(
+			2.0 + side * rng.randf_range(2.4, 5.8),
+			rng.randf_range(-6.5, -0.2),
+			16.6 + rng.randf_range(0.2, 6.4)
+		)
+		var scale := Vector3(
+			rng.randf_range(0.7, 1.6), rng.randf_range(0.8, 2.2), rng.randf_range(0.8, 1.7)
+		)
+		xforms.append(Transform3D(Basis.from_scale(scale), at))
+	for side in [-1.0, 1.0]:
+		for k in range(5):
+			var at := Vector3(2.0 + side * (2.2 + float(k) * 0.55), -2.2, 16.8 + float(k) * 0.7)
+			xforms.append(Transform3D(Basis.from_scale(Vector3(1.4, 4.2 - float(k) * 0.35, 1.2)), at))
+
+
+static func _append_canyon_plants(xforms: Array[Transform3D]) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 20131110
+	var count := 6 if _is_low() else 10
+	for i in range(count):
+		var side := -1.0 if i % 2 == 0 else 1.0
+		var at := Vector3(2.0 + side * rng.randf_range(3.2, 5.2), 0.35, 16.2 + rng.randf_range(0.0, 1.4))
+		var s := 0.35 + float(i % 3) * 0.08
+		xforms.append(Transform3D(Basis.from_scale(Vector3(s, s * 1.2, s)), at))
+
+
+static func _collect_terrain_rocks() -> Array[Transform3D]:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 20131113
+	var xforms: Array[Transform3D] = []
+	# Irregular shoreline clusters instead of a 2 m crystal-and-stone rhythm.
+	var cluster_z: Array[float] = [
+		-15.2, -12.8, -10.1, -8.4, -5.6, -2.9, -0.4, 2.1, 3.8, 6.7, 8.3, 10.9, 13.4, 15.3
+	]
+	for bank_x in [-0.42, 4.38]:
+		for cz in cluster_z:
+			var n := (1 + rng.randi() % 2) if _is_low() else (2 + rng.randi() % 3)
+			for _k in range(n):
+				var at := Vector3(
+					bank_x + rng.randf_range(-0.5, 0.55),
+					-0.12 + rng.randf_range(-0.05, 0.10),
+					cz + rng.randf_range(-0.75, 0.75)
+				)
+				if at.x > 0.12 and at.x < 3.88:
+					at.x = -0.08 if bank_x < 2.0 else 4.12
+				var sc := Vector3(
+					rng.randf_range(0.28, 0.72), rng.randf_range(0.18, 0.50), rng.randf_range(0.32, 0.88)
+				)
+				var basis := Basis.from_euler(
+					Vector3(rng.randf_range(-0.25, 0.25), rng.randf_range(0.0, TAU), rng.randf_range(-0.2, 0.2))
+				)
+				xforms.append(Transform3D(basis * Basis.from_scale(sc), at))
+	# Outer rim and cliff-face boulders
+	var rim := 12 if _is_low() else 20
+	for side in [-1.0, 1.0]:
+		for i in range(rim):
+			var z := rng.randf_range(-16.3, 16.3)
+			var at := Vector3(side * 16.35 + rng.randf_range(-0.25, 0.25), rng.randf_range(-1.7, 0.12), z)
+			var sc := Vector3(rng.randf_range(0.55, 1.45), rng.randf_range(0.45, 1.7), rng.randf_range(0.55, 1.35))
+			xforms.append(Transform3D(Basis.from_scale(sc), at))
+	var z_rim := 8 if _is_low() else 14
+	for zside in [-1.0, 1.0]:
+		for i in range(z_rim):
+			var x := rng.randf_range(-16.2, 16.2)
+			if _in_water(x):
+				continue
+			var at := Vector3(x, rng.randf_range(-1.6, 0.12), zside * 16.35 + rng.randf_range(-0.2, 0.2))
+			var sc := Vector3(rng.randf_range(0.5, 1.35), rng.randf_range(0.45, 1.5), rng.randf_range(0.5, 1.2))
+			xforms.append(Transform3D(Basis.from_scale(sc), at))
+	_append_canyon_rocks(xforms)
+	return xforms
+
+
+static func _collect_plants() -> Array[Transform3D]:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 93231
+	var xforms: Array[Transform3D] = []
+	var border := 20 if _is_low() else 36
+	for i in range(border):
+		var at := Vector3(rng.randf_range(-16.5, 16.5), 0.38, -16.3 if i % 2 == 0 else 16.3)
+		if _in_water(at.x):
+			continue
+		var scale := 0.40 + float(i % 3) * 0.09
+		xforms.append(Transform3D(Basis.from_scale(Vector3(scale, scale * 1.15, scale)), at))
+	# lawn clumps, kept off courtyards, path and pads
+	var clumps := 16 if _is_low() else 42
+	var guard := 0
+	while xforms.size() < border + clumps and guard < 400:
+		guard += 1
+		var at := Vector3(rng.randf_range(-15.5, 15.5), 0.22, rng.randf_range(-15.2, 15.2))
+		if _in_water(at.x) or absf(at.x) < 1.2 or (at.x > 3.2 and at.x < 5.2):
+			continue
+		if at.x > -14.0 and at.x < -3.2 and at.z > -12.0 and at.z < 3.6:
+			continue
+		if _path_strength(at.x, at.z) > 0.45:
+			continue
+		var near_pad := false
+		for pad in [Vector2(8.5, 6.5), Vector2(10.5, -0.5), Vector2(8.8, 10.2)]:
+			if Vector2(at.x - pad.x, at.z - pad.y).length() < 2.4:
+				near_pad = true
+				break
+		if near_pad:
+			continue
+		var scale := 0.28 + rng.randf() * 0.22
+		at.y = _lawn_y(at.x, at.z) + scale * 0.55
+		xforms.append(Transform3D(Basis.from_scale(Vector3(scale, scale * 1.1, scale)), at))
+	_append_canyon_plants(xforms)
+	return xforms
+
+
+static func add_flowers(root: Node3D) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 20131115
+	var xforms: Array[Transform3D] = []
+	var colors: Array[Color] = []
+	var palette: Array[Color] = [
+		Color("f3c4d8"), Color("f4d76a"), Color("f0f2e8"), Color("c9b4e8"), Color("f0a56a")
+	]
+	var count := 24 if _is_low() else 60
+	var guard := 0
+	while xforms.size() < count and guard < 600:
+		guard += 1
+		# bias later placements onto the visible front lawn (castle → camera)
+		var at: Vector3
+		if xforms.size() < int(count * 0.4):
+			at = Vector3(rng.randf_range(-13.5, -1.2), 0.0, rng.randf_range(0.4, 14.0))
+		else:
+			at = Vector3(rng.randf_range(-15.0, 15.0), 0.0, rng.randf_range(-15.0, 15.0))
+		if _in_water(at.x) or absf(at.x - 2.0) < 2.4:
+			continue
+		if at.x > -14.0 and at.x < -3.2 and at.z > -12.0 and at.z < -0.4:
+			continue
+		if _path_strength(at.x, at.z) > 0.35:
+			continue
+		at.y = _lawn_y(at.x, at.z) + 0.10
+		var s := 0.18 + rng.randf() * 0.12
+		var basis := Basis.from_euler(Vector3(0.0, rng.randf() * TAU, 0.0)) * Basis.from_scale(Vector3(s, s * 1.15, s))
+		xforms.append(Transform3D(basis, at))
+		colors.append(palette[rng.randi() % palette.size()])
+	var bloom := SphereMesh.new()
+	bloom.radius = 1.0
+	bloom.height = 1.25
+	bloom.radial_segments = 8
+	bloom.rings = 5
+	var mat := StandardMaterial3D.new()
+	mat.vertex_color_use_as_albedo = true
+	mat.roughness = 0.55
+	mat.albedo_color = Color.WHITE
+	var multi := MultiMesh.new()
+	multi.transform_format = MultiMesh.TRANSFORM_3D
+	multi.use_colors = true
+	multi.mesh = bloom
+	multi.instance_count = xforms.size()
+	for i in range(xforms.size()):
+		multi.set_instance_transform(i, xforms[i])
+		multi.set_instance_color(i, colors[i])
+	var node := MultiMeshInstance3D.new()
+	node.name = "LawnFlowers"
+	node.multimesh = multi
+	node.material_override = mat
+	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(node)
+
+
+static func add_reeds(root: Node3D) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 20131116
+	var xforms: Array[Transform3D] = []
+	var count := 18 if _is_low() else 40
+	var guard := 0
+	while xforms.size() < count and guard < 300:
+		guard += 1
+		var bank := -0.55 if rng.randf() < 0.5 else 4.55
+		var z := rng.randf_range(-15.5, 16.2)
+		# cluster, not even spacing
+		if int(absf(z) * 3.0) % 5 == 0:
+			continue
+		var at := Vector3(bank + rng.randf_range(-0.35, 0.45), 0.15, z)
+		if at.x > 0.15 and at.x < 3.85:
+			at.x = -0.2 if bank < 2.0 else 4.2
+		var h := 0.75 + rng.randf() * 0.70
+		var tilt := Basis.from_euler(Vector3(rng.randf_range(-0.15, 0.15), rng.randf() * TAU, rng.randf_range(-0.12, 0.12)))
+		xforms.append(Transform3D(tilt * Basis.from_scale(Vector3(1, h, 1)), at))
+	# a few on the canyon rim
+	for i in range(4 if _is_low() else 8):
+		var side := -1.0 if i % 2 == 0 else 1.0
+		var at := Vector3(2.0 + side * rng.randf_range(2.6, 4.4), 0.2, 16.1 + rng.randf_range(0.0, 1.2))
+		xforms.append(Transform3D(Basis.from_scale(Vector3(1, 0.7 + rng.randf() * 0.4, 1)), at))
+	var reed := CylinderMesh.new()
+	reed.top_radius = 0.035
+	reed.bottom_radius = 0.06
+	reed.height = 1.0
+	reed.radial_segments = 6
+	reed.rings = 1
+	var node := BuildVoxelStyle.multimesh(
+		root, "ShoreReeds", reed, BuildVoxelStyle.material("leaves", Color("5b8f46")), xforms
+	)
+	_no_shadow(node)
+
+
+static func add_shore_foam(root: Node3D) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 20131117
+	var xforms: Array[Transform3D] = []
+	var count := 16 if _is_low() else 36
+	for i in range(count):
+		var bank := -0.08 if i % 2 == 0 else 4.08
+		var z := rng.randf_range(-15.8, 16.4)
+		var at := Vector3(bank + rng.randf_range(-0.2, 0.2), -0.26, z)
+		var sc := Vector3(rng.randf_range(0.7, 1.25), 0.12, rng.randf_range(0.9, 1.6))
+		xforms.append(Transform3D(Basis.from_scale(sc), at))
+	# compact foam at the waterfall lip (subtle, not ice sheets)
+	for i in range(3 if _is_low() else 6):
+		var at := Vector3(2.0 + rng.randf_range(-1.1, 1.1), -0.25, 16.2 + rng.randf_range(-0.25, 0.4))
+		var sc := Vector3(rng.randf_range(0.40, 0.70), 0.08, rng.randf_range(0.35, 0.65))
+		xforms.append(Transform3D(Basis.from_scale(sc), at))
+	# plunge-pool foam around the waterfall basin
+	var basin := 6 if _is_low() else 12
+	for i in range(basin):
+		var at := Vector3(
+			2.0 + rng.randf_range(-2.2, 2.2),
+			-6.96,
+			19.6 + rng.randf_range(-1.8, 1.8)
+		)
+		var sc := Vector3(rng.randf_range(0.8, 1.4), 0.14, rng.randf_range(0.8, 1.4))
+		xforms.append(Transform3D(Basis.from_scale(sc), at))
+	var puff := SphereMesh.new()
+	puff.radius = 1.0
+	puff.height = 1.0
+	puff.radial_segments = 8
+	puff.rings = 4
+	var mat := StandardMaterial3D.new()
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.albedo_color = Color(0.94, 0.98, 1.0, 0.48)
+	mat.roughness = 0.72
+	mat.metallic = 0.0
+	mat.emission_enabled = true
+	mat.emission = Color(0.85, 0.93, 0.98)
+	mat.emission_energy_multiplier = 0.22
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var node := BuildVoxelStyle.multimesh(root, "ShoreFoam", puff, mat, xforms)
+	_no_shadow(node)
+
+
+static func add_sky_islands(root: Node3D, kit: RefCounted) -> void:
+	## Same seven backdrop islands, batched so the pulled-back start camera stays in budget.
+	var body_xforms: Array[Transform3D] = []
+	var cap_xforms: Array[Transform3D] = []
+	var tree_xforms: Array[Transform3D] = []
+	var fall_xforms: Array[Transform3D] = []
+	var fall_rock_xforms: Array[Transform3D] = []
+	var castle_xforms: Array[Transform3D] = []
+	for i in range(7):
+		var island_at := Vector3(-35 + float(i) * 12, -7 + float(i % 3) * 3, -29 - float(i % 2) * 8)
+		body_xforms.append(Transform3D(Basis.IDENTITY, island_at))
+		cap_xforms.append(Transform3D(Basis.IDENTITY, island_at + Vector3.UP * 4.5))
+		if i in [1, 3, 5]:
+			var s := 0.7 if i != 3 else 1.0
+			castle_xforms.append(Transform3D(Basis.from_scale(Vector3.ONE * s), island_at + Vector3.UP * 4.75))
+		else:
+			tree_xforms.append(Transform3D(Basis.IDENTITY, island_at + Vector3(-1, 4.75, -1)))
+		if i % 2 == 0:
+			var fall_at := island_at + Vector3(3.6, -4, 0)
+			var fall_basis := Basis.from_scale(Vector3(1, 3, 1))
+			fall_xforms.append(Transform3D(fall_basis, fall_at + fall_basis * Vector3(0.5, 1.5, 0.5)))
+			fall_rock_xforms.append(Transform3D(fall_basis, fall_at))
+	var body := BuildVoxelStyle.multimesh(
+		root,
+		"SkyIslandBody",
+		preload("res://scripts/creative/floating_island.gd").create(),
+		BuildVoxelStyle.material("stone", Color("cbbca6")),
+		body_xforms
+	)
+	_no_shadow(body)
+	var cap_mesh := CylinderMesh.new()
+	cap_mesh.top_radius = 5.1
+	cap_mesh.bottom_radius = 5.1
+	cap_mesh.height = 0.35
+	cap_mesh.radial_segments = 14
+	cap_mesh.rings = 1
+	_no_shadow(
+		BuildVoxelStyle.multimesh(root, "SkyIslandCap", cap_mesh, BuildVoxelStyle.lawn_material(), cap_xforms)
+	)
+	_no_shadow(
+		BuildVoxelStyle.multimesh(
+			root,
+			"SkyIslandCastleStone",
+			_far_castle_sand_mesh(),
+			BuildVoxelStyle.material("sand", Color("d9a86c")),
+			castle_xforms
+		)
+	)
+	_no_shadow(
+		BuildVoxelStyle.multimesh(
+			root,
+			"SkyIslandCastleRoof",
+			_far_castle_roof_mesh(),
+			BuildVoxelStyle.material("roof", Color("355fbc")),
+			castle_xforms
+		)
+	)
+	_no_shadow(
+		BuildVoxelStyle.multimesh(
+			root,
+			"SkyIslandTrees",
+			branched_tree_bark_mesh(),
+			BuildVoxelStyle.material("bark", Color("c4a07a")),
+			tree_xforms
+		)
+	)
+	_no_shadow(
+		BuildVoxelStyle.multimesh(
+			root,
+			"SkyIslandCrowns",
+			branched_tree_leaves_mesh(),
+			BuildVoxelStyle.material("leaves", Color("9ed56a")),
+			tree_xforms
+		)
+	)
+	var sheet := BoxMesh.new()
+	sheet.size = Vector3(0.85, 2.95, 0.28)
+	var fall_mat := ShaderMaterial.new()
+	fall_mat.shader = preload("res://assets/shaders/kart_waterfall.gdshader")
+	_no_shadow(BuildVoxelStyle.multimesh(root, "SkyIslandFalls", sheet, fall_mat, fall_xforms))
+	_no_shadow(
+		BuildVoxelStyle.multimesh(
+			root,
+			"SkyIslandFallRocks",
+			waterfall_rock_mesh(),
+			BuildVoxelStyle.material("stone", Color("d2c7b4")),
+			fall_rock_xforms
+		)
+	)
+	# kit kept in the signature so call sites stay consistent with other dressers
+	if kit == null:
+		pass
+
+
+static var _castle_sand: ArrayMesh
+static var _castle_roof: ArrayMesh
+
+
+static func _far_castle_sand_mesh() -> ArrayMesh:
+	if _castle_sand != null:
+		return _castle_sand
+	var sand := SurfaceTool.new()
+	sand.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for x in [-4.0, 4.0]:
+		append_cyl(sand, 1.25, 5.8, Vector3(x, 2.9, 0), Basis.IDENTITY, 1.25, 10)
+	append_box(sand, Vector3(6.8, 3.8, 2.8), Vector3(0, 1.9, 0))
+	append_box(sand, Vector3(1.3, 2.3, 0.12), Vector3(0, 1.15, 1.42))
+	_castle_sand = commit(sand)
+	return _castle_sand
+
+
+static func _far_castle_roof_mesh() -> ArrayMesh:
+	if _castle_roof != null:
+		return _castle_roof
+	var roof := SurfaceTool.new()
+	roof.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for x in [-4.0, 4.0]:
+		append_cyl(roof, 1.8, 3.0, Vector3(x, 7.25, 0), Basis.IDENTITY, 0.0, 10)
+	var prism := PrismMesh.new()
+	prism.size = Vector3(7.4, 2.0, 3.4)
+	roof.append_from(prism, 0, Transform3D(Basis.IDENTITY, Vector3(0, 4.8, 0)))
+	_castle_roof = commit(roof)
+	return _castle_roof
+
+
+static func add_build_site(root: Node3D, at: Vector3 = Vector3(8.8, 0, 10.2)) -> void:
+	## Tafel-03 timber crane and a small building site next to the Werkstatt.
+	## Decor only: no collision, no catalog id, saves stay unchanged.
+	var site := Node3D.new()
+	site.name = "BuildSiteCrane"
+	site.position = at
+	site.rotation.y = 1.57
+	root.add_child(site)
+	var stone := SurfaceTool.new()
+	stone.begin(Mesh.PRIMITIVE_TRIANGLES)
+	append_box(stone, Vector3(2.5, 0.28, 2.5), Vector3(0, 0.14, 0))
+	append_box(stone, Vector3(0.7, 0.18, 0.7), Vector3(-1.35, 0.22, 1.15))
+	mesh_node(site, commit(stone), BuildVoxelStyle.material("stone", Color("d2c7b4")), "CraneBase")
+	var wood := SurfaceTool.new()
+	wood.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# four legs and mast
+	for x in [-0.55, 0.55]:
+		for z in [-0.55, 0.55]:
+			append_box(wood, Vector3(0.16, 2.15, 0.16), Vector3(x, 1.22, z))
+	append_box(wood, Vector3(1.35, 0.12, 1.35), Vector3(0, 2.32, 0))
+	append_cyl(wood, 0.15, 5.4, Vector3(0, 5.05, 0), Basis.IDENTITY, 0.13, 8)
+	# cabin
+	append_box(wood, Vector3(0.95, 0.72, 0.8), Vector3(0.15, 7.55, 0.1))
+	# boom, slightly raised
+	var boom := Basis.from_euler(Vector3(0.0, 0.0, -0.42))
+	append_box(wood, Vector3(7.2, 0.16, 0.18), boom * Vector3(3.2, 0, 0) + Vector3(0.1, 7.85, 0), boom)
+	append_box(wood, Vector3(1.6, 0.18, 0.18), Vector3(-1.1, 7.7, 0))
+	append_box(wood, Vector3(0.55, 0.7, 0.4), Vector3(-1.7, 7.35, 0))
+	# scaffold and plank pile
+	for sx in [-1.6, -1.05]:
+		for sz in [1.0, 1.55]:
+			append_box(wood, Vector3(0.08, 1.35, 0.08), Vector3(sx, 0.82, sz))
+	append_box(wood, Vector3(0.85, 0.08, 0.7), Vector3(-1.32, 1.52, 1.28))
+	append_box(wood, Vector3(0.9, 0.12, 0.35), Vector3(1.35, 0.34, 0.9))
+	append_box(wood, Vector3(0.7, 0.10, 0.32), Vector3(1.38, 0.44, 0.95))
+	mesh_node(site, commit(wood), BuildVoxelStyle.material("wood", Color("e6b84a")), "CraneWood")
+	var iron := SurfaceTool.new()
+	iron.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# stay cables and hook rope
+	var rope_basis := Basis.from_euler(Vector3(0.55, 0.0, 0.0))
+	append_cyl(iron, 0.025, 3.4, Vector3(3.6, 6.1, 0), Basis.from_euler(Vector3(0, 0, 1.05)), 0.02, 6)
+	append_cyl(iron, 0.02, 2.6, Vector3(5.4, 6.4, 0), Basis.IDENTITY, 0.02, 6)
+	append_cyl(iron, 0.05, 0.16, Vector3(5.4, 5.15, 0), Basis.IDENTITY, 0.05, 6)
+	append_box(iron, Vector3(0.18, 0.08, 0.08), Vector3(5.4, 5.02, 0))
+	mesh_node(site, commit(iron), BuildVoxelStyle.material("plain", Color("4a4a52")), "CraneRig")
+	var glass := SurfaceTool.new()
+	glass.begin(Mesh.PRIMITIVE_TRIANGLES)
+	append_box(glass, Vector3(0.58, 0.58, 0.58), Vector3(5.4, 4.65, 0))
+	append_box(glass, Vector3(0.5, 0.5, 0.5), Vector3(-1.35, 0.55, 1.15))
+	var glass_mat: StandardMaterial3D = BuildVoxelStyle.material("glass", Color("7ae6ff"))
+	var glass_node := mesh_node(site, commit(glass), glass_mat, "CraneLoad")
+	# keep the hanging block readable without an extra material
+	if glass_node:
+		pass
+
+
+
+static func add_dirt_patches(root: Node3D) -> void:
+	## Visible earth path and patches (batched). Complements lawn vertex colors.
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 20131118
+	var xforms: Array[Transform3D] = []
+	var samples: Array[Vector2] = []
+	var polylines: Array = [
+		[Vector2(-8.0, -4.2), Vector2(-8.0, 1.4), Vector2(-4.4, 4.0), Vector2(-1.15, 6.0)],
+		[Vector2(4.15, 6.0), Vector2(7.1, 6.15), Vector2(8.4, 8.4)],
+		[Vector2(-5.2, -1.0), Vector2(-1.4, 2.2)]
+	]
+	for line in polylines:
+		for i in range(line.size() - 1):
+			var a: Vector2 = line[i]
+			var b: Vector2 = line[i + 1]
+			var steps := maxi(2, int(a.distance_to(b) / 0.55))
+			for s in range(steps + 1):
+				var p: Vector2 = a.lerp(b, float(s) / float(steps))
+				samples.append(p)
+	for p in samples:
+		if _in_water(p.x):
+			continue
+		var y := _lawn_y(p.x, p.y) + 0.018
+		var sc := Vector3(0.85 + rng.randf() * 0.35, 0.05, 0.70 + rng.randf() * 0.30)
+		var yaw := rng.randf_range(-0.4, 0.4)
+		xforms.append(Transform3D(Basis.from_euler(Vector3(0, yaw, 0)) * Basis.from_scale(sc), Vector3(p.x, y, p.y)))
+	# loose earth patches on the front lawn
+	var extra := 5 if _is_low() else 10
+	for i in range(extra):
+		var at := Vector3(rng.randf_range(-12.0, -2.0), 0.0, rng.randf_range(1.0, 12.0))
+		if _path_strength(at.x, at.z) > 0.5:
+			continue
+		at.y = _lawn_y(at.x, at.z) + 0.016
+		var sc := Vector3(rng.randf_range(0.7, 1.4), 0.045, rng.randf_range(0.5, 1.1))
+		xforms.append(Transform3D(Basis.from_euler(Vector3(0, rng.randf() * TAU, 0)) * Basis.from_scale(sc), at))
+	var patch := CylinderMesh.new()
+	patch.top_radius = 0.7
+	patch.bottom_radius = 0.7
+	patch.height = 1.0
+	patch.radial_segments = 8
+	patch.rings = 1
+	var node := BuildVoxelStyle.multimesh(
+		root, "DirtPatches", patch, BuildVoxelStyle.material("dirt", Color("c2a074")), xforms
+	)
+	_no_shadow(node)
+
+
+static func dress_world(root: Node3D, kit: RefCounted) -> void:
+	## Visual-only island dressing for the start overview. Collision stays on RiverBank.
+	add_sculpted_lawn(root)
+	add_dirt_patches(root)
+	add_island_cliffs(root)
+	var rock_node := BuildVoxelStyle.multimesh(
+		root,
+		"RiverRocks",
+		kit.SHAPES.rock(),
+		BuildVoxelStyle.material("stone", Color("d2c7b4")),
+		_collect_terrain_rocks()
+	)
+	_no_shadow(rock_node)
+	var bush := SphereMesh.new()
+	bush.radius = 1.0
+	bush.height = 1.55
+	bush.radial_segments = 12
+	bush.rings = 8
+	var plants := BuildVoxelStyle.multimesh(
+		root, "BorderPlants", bush, BuildVoxelStyle.material("leaves", Color("8fce5c")), _collect_plants()
+	)
+	_no_shadow(plants)
+	add_flowers(root)
+	add_reeds(root)
+	add_sky_islands(root, kit)
+	add_canyon(root, kit)
+	add_shore_foam(root)
+	add_build_site(root)

@@ -16,10 +16,16 @@ var turn: int = 0
 var layer: int = 0
 var erase_mode: bool = false
 var paused: bool = false
-var orbit: float = 0.62
-var tilt: float = 0.68
-var radius: float = 29.0
-var focus := Vector3(-2, 0, 0)
+# Start overview: pulled back past the canyon so Werkstatt, Sternwarte,
+# castle and waterfall sit in one frame (Tafel 03 framing).
+const START_ORBIT: float = 0.50
+const START_TILT: float = 0.50
+const START_RADIUS: float = 36.0
+const START_FOCUS := Vector3(0.6, 0.8, 2.0)
+var orbit: float = START_ORBIT
+var tilt: float = START_TILT
+var radius: float = START_RADIUS
+var focus := START_FOCUS
 var tap_start := Vector2.ZERO
 var pointer_id: int = -1
 var dragged: bool = false
@@ -62,7 +68,7 @@ func _ready() -> void:
 	world.name = "Construction"
 	add_child(world)
 	camera = Camera3D.new()
-	camera.fov = 52
+	camera.fov = 54
 	camera.far = 200
 	add_child(camera)
 	camera.current = true
@@ -103,82 +109,19 @@ func _ready() -> void:
 
 
 func _ground() -> void:
+	# Collision stays a flat island so placed blocks do not float; visuals are dressed separately.
 	for side in [-1, 1]:
 		var bank := StaticBody3D.new()
 		bank.name = "RiverBank"
 		add_child(bank)
 		var center := Vector3(-8.5 if side == -1 else 10.0, -1.2, 0)
 		var size := Vector3(17 if side == -1 else 13, 2.4, 33)
-		var cliff := kit.box(bank, center, size, Color.WHITE)
-		cliff.material_override = BuildVoxelStyle.material("stone", Color("c8bca8"))
-		var lawn := kit.box(
-			bank, center + Vector3.UP * 1.15, Vector3(size.x, 0.16, 33), Color.WHITE
-		)
-		lawn.material_override = BuildVoxelStyle.lawn_material()
 		kit.collision(bank, center, size)
 	var water := kit.box(self, Vector3(2, -0.38, 0), Vector3(4, 0.14, 33), Color("1b81bd"))
 	var mat := ShaderMaterial.new()
 	mat.shader = preload("res://assets/shaders/kart_water.gdshader")
 	water.material_override = mat
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 93231
-	var rock_xforms: Array[Transform3D] = []
-	var crystal_xforms: Array[Transform3D] = []
-	for z in range(-16, 17, 2):
-		for x in [-0.30, 4.32]:
-			rock_xforms.append(Transform3D(Basis.from_scale(Vector3(0.5, 0.4, 0.7)), Vector3(x, -0.1, z)))
-			if z % 6 == 0 and (LumoQuality.tier() != "low" or z % 12 == 0):
-				crystal_xforms.append(
-					Transform3D(Basis.from_scale(Vector3(0.28, 0.73, 0.30)), Vector3(x, 0.24, float(z)))
-				)
-	BuildVoxelStyle.multimesh(
-		self,
-		"RiverRocks",
-		kit.SHAPES.rock(),
-		BuildVoxelStyle.material("stone", Color("d2c7b4")),
-		rock_xforms
-	)
-	var gem_mat: StandardMaterial3D = kit.material(Color("6de5ff"), true)
-	BuildVoxelStyle.multimesh(self, "RiverCrystals", kit.SHAPES.crystal(), gem_mat, crystal_xforms)
-	var plant_xforms: Array[Transform3D] = []
-	for i in range(36):
-		var at := Vector3(rng.randf_range(-16.5, 16.5), 0.38, -16.3 if i % 2 == 0 else 16.3)
-		if at.x >= -0.5 and at.x < 4.5:
-			continue
-		var scale := 0.40 + float(i % 3) * 0.09
-		plant_xforms.append(Transform3D(Basis.from_scale(Vector3(scale, scale * 1.15, scale)), at))
-	var bush_mesh := SphereMesh.new()
-	bush_mesh.radius = 1.0
-	bush_mesh.height = 1.55
-	bush_mesh.radial_segments = 12
-	bush_mesh.rings = 8
-	BuildVoxelStyle.multimesh(
-		self,
-		"BorderPlants",
-		bush_mesh,
-		BuildVoxelStyle.material("leaves", Color("8fce5c")),
-		plant_xforms
-	)
-	for i in range(7):
-		var island_at := Vector3(-35 + float(i) * 12, -7 + float(i % 3) * 3, -29 - float(i % 2) * 8)
-		var rock := kit.mesh(
-			self, preload("res://scripts/creative/floating_island.gd").create(), island_at, Color("68719d")
-		)
-		rock.material_override = BuildVoxelStyle.material("stone", Color("cbbca6"))
-		var cap := kit.cylinder(self, island_at + Vector3.UP * 4.5, 5.1, 0.35, Color.WHITE)
-		cap.material_override = BuildVoxelStyle.lawn_material()
-		if i in [1, 3, 5]:
-			BuildLandmarks.far_castle_meshes(self, island_at + Vector3.UP * 4.75, 0.7 if i != 3 else 1.0)
-		else:
-			var tree := kit.part_node(CATALOG.part("tree"))
-			tree.position = island_at + Vector3(-1, 4.75, -1)
-			add_child(tree)
-		if i % 2 == 0:
-			var fall := kit.part_node(CATALOG.part("waterfall"))
-			fall.position = island_at + Vector3(3.6, -4, 0)
-			fall.scale.y = 3
-			add_child(fall)
-	BuildLandmarks.add_canyon(self, kit)
+	BuildLandmarks.dress_world(self, kit)
 
 
 func _resize() -> void:
@@ -319,9 +262,10 @@ func _ui() -> void:
 		_day_button(
 			"Mitte",
 			func():
-				focus = Vector3(-2, 0, 0)
-				orbit = 0.62
-				tilt = 0.68
+				focus = START_FOCUS
+				orbit = START_ORBIT
+				tilt = START_TILT
+				radius = START_RADIUS
 				_camera_update(),
 			48
 		)
@@ -841,7 +785,7 @@ func _open_slot(id: int) -> void:
 	if not load_world(false):
 		model = STATE.new()
 		goal = "bridge"
-		focus = Vector3(-2, 0, 0)
+		focus = START_FOCUS
 		dirty = true
 		_rebuild()
 		_camera_update()
