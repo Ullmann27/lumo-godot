@@ -71,9 +71,7 @@ func _ready() -> void:
 		pad.radial_segments = 24
 		lamps.append(kit.mesh(self, pad, Vector3(x, 0.2, 3), COLORS[lane], true))
 		speaker_specs.append({"at": Vector3(x, 0, -26.5), "color": COLORS[lane], "scale": 0.72})
-	BuildVoxelStyle.multimesh(
-		self, "RhythmLanes", box, kit.material(Color("1c1438")), lane_floors
-	)
+	BuildVoxelStyle.multimesh(self, "RhythmLanes", box, kit.material(Color("1c1438")), lane_floors)
 	for lane in range(4):
 		var edges: Array[Transform3D] = []
 		edges.assign(lane_edges[lane])
@@ -86,7 +84,11 @@ func _ready() -> void:
 	_performer()
 	for side in [-1.0, 1.0]:
 		speaker_specs.append(
-			{"at": Vector3(side * 8.6, 0, -18), "color": COLORS[0 if side < 0 else 1], "scale": 1.15}
+			{
+				"at": Vector3(side * 8.6, 0, -18),
+				"color": COLORS[0 if side < 0 else 1],
+				"scale": 1.15
+			}
 		)
 	_batch_speakers(speaker_specs)
 	_batch_columns()
@@ -221,6 +223,11 @@ func _next_difficulty() -> void:
 
 func start() -> void:
 	model.setup(song_index, difficulty)
+	cheer_until = -100.0
+	for burst in [hit_burst, cheer_burst]:
+		if burst != null:
+			burst.visible = false
+			burst.scale = Vector3.ZERO
 	result_id = HostBridge.new_result_id()
 	for node in notes_root.get_children():
 		node.queue_free()
@@ -254,11 +261,7 @@ func start() -> void:
 					true
 				)
 				var tip: MeshInstance3D = kit.box(
-					root,
-					Vector3(1.45, 0.32, 0),
-					Vector3(0.55, 0.2, 0.55),
-					Color("e6f8ff"),
-					true
+					root, Vector3(1.45, 0.32, 0), Vector3(0.55, 0.2, 0.55), Color("e6f8ff"), true
 				)
 				tip.rotation_degrees = Vector3(0, 45, 0)
 		root.position.x = x
@@ -360,15 +363,12 @@ func _finish() -> void:
 		)
 	)
 	menu_box.add_child(
-		KIT.label(
-			"Längste Combo: %d · Bestwert: %d" % [model.best_combo, maxi(old, points)], 17
-		)
+		KIT.label("Längste Combo: %d · Bestwert: %d" % [model.best_combo, maxi(old, points)], 17)
 	)
 	if model.combo_bonus > 0:
 		menu_box.add_child(
 			KIT.label(
-				"Combo-Bonus: +%d Punkte · +%d XP" % [int(model.combo_bonus), model.combo_xp()],
-				17
+				"Combo-Bonus: +%d Punkte · +%d XP" % [int(model.combo_bonus), model.combo_xp()], 17
 			)
 		)
 	menu_box.add_child(KIT.button("Noch einmal spielen", start))
@@ -490,14 +490,14 @@ func _batch_speakers(specs: Array[Dictionary]) -> void:
 			)
 		)
 		var face := Basis.from_euler(Vector3(deg_to_rad(90), 0, 0))
-		var woofer_basis := face * Basis.from_scale(
-			Vector3(0.72 * scale_factor, 0.18, 0.72 * scale_factor)
+		var woofer_basis := (
+			face * Basis.from_scale(Vector3(0.72 * scale_factor, 0.18, 0.72 * scale_factor))
 		)
 		woofers[lane].append(
 			Transform3D(woofer_basis, at + Vector3(0, 1.15 * scale_factor, 0.72 * scale_factor))
 		)
-		var tweeter_basis := face * Basis.from_scale(
-			Vector3(0.32 * scale_factor, 0.14, 0.32 * scale_factor)
+		var tweeter_basis := (
+			face * Basis.from_scale(Vector3(0.32 * scale_factor, 0.14, 0.32 * scale_factor))
 		)
 		tweeters.append(
 			Transform3D(tweeter_basis, at + Vector3(0, 2.35 * scale_factor, 0.7 * scale_factor))
@@ -511,7 +511,9 @@ func _batch_speakers(specs: Array[Dictionary]) -> void:
 	BuildVoxelStyle.multimesh(
 		self, "RhythmCabinets", box, BuildVoxelStyle.material("plain", Color("1a142c")), cabinets
 	)
-	BuildVoxelStyle.multimesh(self, "RhythmTweeters", cyl, kit.material(Color("e6f8ff"), true), tweeters)
+	BuildVoxelStyle.multimesh(
+		self, "RhythmTweeters", cyl, kit.material(Color("e6f8ff"), true), tweeters
+	)
 	for lane in range(4):
 		var woofer_x: Array[Transform3D] = []
 		woofer_x.assign(woofers[lane])
@@ -541,7 +543,9 @@ func _batch_columns() -> void:
 	for side in [-1.0, 1.0]:
 		for i in range(8):
 			columns.append(
-				Transform3D(Basis.from_scale(Vector3(0.2, 3.6, 0.2)), Vector3(side * 8, 1.8, 3 - i * 5))
+				Transform3D(
+					Basis.from_scale(Vector3(0.2, 3.6, 0.2)), Vector3(side * 8, 1.8, 3 - i * 5)
+				)
 			)
 			orbs[i % 4].append(
 				Transform3D(Basis.from_scale(Vector3.ONE * 0.42), Vector3(side * 8, 3.8, 3 - i * 5))
@@ -568,4 +572,3 @@ func _eq_wall() -> void:
 	var bar := BoxMesh.new()
 	bar.size = Vector3.ONE
 	BuildVoxelStyle.multimesh(self, "EqBars", bar, kit.material(Color("8a6cff"), true), xforms)
-
