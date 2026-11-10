@@ -110,6 +110,15 @@ jobs:
           test -s exports/creative-build/06_rhythm_play.png
           test -s exports/creative-build/07_treasure_exploration.png
 
+      - name: Run complete project validation
+        env:
+          GODOT_BIN: Godot_v4.6.3-stable_linux.x86_64
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          timeout 1200s bash tools/validate_project.sh 2>&1 | tee "$RUNNER_TEMP/validate-project.log"
+          grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/validate-project.log"
+
       - name: Commit verified formatting and fixes
         if: success()
         run: |
@@ -138,6 +147,7 @@ jobs:
             ${{ runner.temp }}/creative-medium/
             ${{ runner.temp }}/creative-high/
             ${{ runner.temp }}/draw-call-report.json
+            ${{ runner.temp }}/validate-project.log
             ${{ runner.temp }}/*.log
           if-no-files-found: warn
           retention-days: 30
