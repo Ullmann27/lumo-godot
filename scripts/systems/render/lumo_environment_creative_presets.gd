@@ -367,12 +367,12 @@ static func _spec_treasure_day() -> Dictionary:
 	spec["id"] = PRESET_TREASURE_DAY
 	spec["worlds"] = ["treasure"]
 	spec["sky"]["sky_top_color"] = Color("2f86d4")
-	spec["sky"]["sky_horizon_color"] = Color("c8eef6")
-	spec["sky"]["ground_horizon_color"] = Color("d8f0c8")
-	spec["sky"]["ground_bottom_color"] = Color("6aaa72")
+	spec["sky"]["sky_horizon_color"] = Color("b7e3f4")
+	spec["sky"]["ground_horizon_color"] = Color("7eb8d0")
+	spec["sky"]["ground_bottom_color"] = Color("1a4e6a")
 	spec["sun"]["light_color"] = Color("ffe0a8")
 	spec["sun"]["light_energy"] = 1.32
 	spec["sun"]["rotation_degrees"] = Vector3(-46, -28, 0)
-	spec["fog"]["light_color"] = Color("d8f0e4")
-	spec["adjustment"]["saturation"] = 1.14
+	spec["fog"]["light_color"] = Color("c8e4f2")
+	spec["adjustment"]["saturation"] = 1.06
 	return spec

@@ -1,6 +1,7 @@
 extends SceneTree
 ## Screenshots + Draw-Call-Messung für Puzzle, Rhythm und Schatzsuche.
-## CREATIVE_CAPTURE_DIR, CREATIVE_CAPTURE_GAMES (Komma-Liste: puzzle,rhythm,treasure).
+## CREATIVE_CAPTURE_DIR, CREATIVE_CAPTURE_GAMES (Komma-Liste: puzzle,rhythm,treasure),
+## CREATIVE_CAPTURE_TIER (low|medium|high, optional).
 
 
 func _initialize() -> void:
@@ -66,6 +67,8 @@ func _capture_rhythm(dir: String) -> Dictionary:
 	var game: Node = load("res://scenes/creative/rhythm_world.tscn").instantiate()
 	root.add_child(game)
 	await _settle(8)
+	var cam: Camera3D = game.get_viewport().get_camera_3d()
+	var entry: Dictionary = {"songselect": await _save(dir, "rhythm_songselect")}
 	game.start()
 	game.model.time = 0.55
 	if game.has_node("AudioStreamPlayer") or game.get("audio") != null:
@@ -80,13 +83,17 @@ func _capture_rhythm(dir: String) -> Dictionary:
 		)
 	game.running = false
 	await _settle(10)
-	var entry: Dictionary = {"overview": await _save(dir, "rhythm_overview")}
-	var cam: Camera3D = game.get_viewport().get_camera_3d()
+	entry["overview"] = await _save(dir, "rhythm_overview")
 	if cam != null:
 		cam.position = Vector3(0, 7.5, 8.5)
-		cam.look_at(Vector3(0, 0.4, -2))
+		cam.look_at(Vector3(0, 0.4, -2), Vector3.UP)
 	await _settle(8)
 	entry["closeup"] = await _save(dir, "rhythm_closeup")
+	if cam != null:
+		cam.position = Vector3(0, 9.2, 12.0)
+		cam.look_at(Vector3(0, 1.1, -6), Vector3.UP)
+	await _settle(6)
+	entry["cover"] = await _save(dir, "rhythm_cover")
 	entry["notes"] = game.model.notes.size()
 	game.queue_free()
 	await process_frame
@@ -102,17 +109,30 @@ func _capture_treasure(dir: String) -> Dictionary:
 	if game.has_method("_update"):
 		game._update()
 	var cam: Camera3D = game.camera
-	cam.position = Vector3(14, 16, 18)
-	cam.look_at(Vector3(0, 1.2, -26))
-	await _settle(10)
-	var entry: Dictionary = {"overview": await _save(dir, "treasure_overview")}
-	# Follow-Kamera sonst während des Settles zurück auf den Startpfad.
+	# Exakte Spielstart-Kamera: gleiche Offsets wie treasure_world.CAMERA_*.
 	game.set_physics_process(false)
 	cam.current = true
+	var start_at: Vector3 = game.player.position
+	cam.position = start_at + game.CAMERA_OFFSET
+	cam.look_at(start_at + game.CAMERA_LOOK_OFFSET, Vector3.UP)
+	await _settle(10)
+	var entry: Dictionary = {"overview": await _save(dir, "treasure_overview")}
 	cam.position = Vector3(8, 8, -18)
 	cam.look_at(Vector3(0, 2.2, -38))
 	await _settle(8)
 	entry["closeup"] = await _save(dir, "treasure_closeup")
+	cam.position = Vector3(9.5, 8.4, -10.0)
+	cam.look_at(Vector3(0.0, 2.2, -42.0), Vector3.UP)
+	await _settle(6)
+	entry["cover"] = await _save(dir, "treasure_cover")
+	cam.position = Vector3(24.5, 7.2, -12.5)
+	cam.look_at(Vector3(16.0, 2.2, -21.0), Vector3.UP)
+	await _settle(6)
+	entry["waterfall"] = await _save(dir, "treasure_waterfall")
+	cam.position = Vector3(-7.4, 7.6, -73.4)
+	cam.look_at(Vector3(0.0, 1.05, -66.2), Vector3.UP)
+	await _settle(6)
+	entry["chamber"] = await _save(dir, "treasure_chamber")
 	game.queue_free()
 	await process_frame
 	DirAccess.remove_absolute("user://lumo_treasure_optikcapture.json")
@@ -128,6 +148,16 @@ func _run() -> void:
 	if requested.is_empty():
 		requested = "puzzle,rhythm,treasure"
 	var metrics: Dictionary = {}
+	var metrics_path: String = dir.path_join("metrics.json")
+	if FileAccess.file_exists(metrics_path):
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(metrics_path))
+		if parsed is Dictionary:
+			metrics = parsed
+	var tier: String = OS.get_environment("CREATIVE_CAPTURE_TIER").strip_edges()
+	await process_frame
+	if not tier.is_empty():
+		LumoQuality.set_tier(tier)
+		print("[CreativeWorldsCapture] tier=%s" % LumoQuality.tier())
 	await process_frame
 	for name in requested.split(",", false):
 		match str(name).strip_edges():

@@ -3,8 +3,16 @@ extends RefCounted
 const SONGS = [
 	{"id": "sternentanz", "name": "Sternentanz", "bpm": 96, "root": 60},
 	{"id": "wolkenwalzer", "name": "Wolkenwalzer", "bpm": 108, "root": 65},
-	{"id": "funkelreise", "name": "Funkelreise", "bpm": 120, "root": 67}
+	{"id": "funkelreise", "name": "Funkelreise", "bpm": 120, "root": 67},
+	{"id": "mondfunkeln", "name": "Mondfunkeln", "bpm": 88, "root": 57}
 ]
+const COMBO_MILESTONES: Array[int] = [5, 10, 20]
+const COMBO_BONUS_POINTS := {5: 10, 10: 25, 20: 50}
+const COMBO_CHEERS := {
+	5: "Combo 5! Super!",
+	10: "Combo 10! Fantastisch!",
+	20: "Combo 20! Sternenparty!"
+}
 var notes: Array[Dictionary] = []
 var time: float = -2.5
 var duration: float = 0
@@ -15,6 +23,8 @@ var hits: int = 0
 var misses: int = 0
 var combo: int = 0
 var best_combo: int = 0
+var combo_bonus: float = 0
+var last_cheer: int = 0
 var judgement: String = "Mach dich bereit!"
 var held: Dictionary = {}
 var song: Dictionary
@@ -30,6 +40,8 @@ func setup(song_index: int, difficulty: int = 0) -> void:
 	misses = 0
 	combo = 0
 	best_combo = 0
+	combo_bonus = 0
+	last_cheer = 0
 	held.clear()
 	window = [0.28, 0.22, 0.17][clampi(difficulty, 0, 2)]
 	var beat: float = 60.0 / float(song.bpm)
@@ -124,13 +136,20 @@ func _complete(note: Dictionary, quality: float) -> void:
 	hits += 1
 	combo += 1
 	best_combo = maxi(best_combo, combo)
-	judgement = "Perfekt!" if quality >= 0.99 else "Gut getroffen!"
+	last_cheer = 0
+	if COMBO_BONUS_POINTS.has(combo):
+		last_cheer = combo
+		combo_bonus += float(COMBO_BONUS_POINTS[combo])
+		judgement = str(COMBO_CHEERS[combo])
+	else:
+		judgement = "Perfekt!" if quality >= 0.99 else "Gut getroffen!"
 
 
 func _miss(note: Dictionary) -> void:
 	note.state = 3
 	misses += 1
 	combo = 0
+	last_cheer = 0
 	judgement = "Beim nächsten Ton klappt es!"
 
 
@@ -142,3 +161,21 @@ func stars() -> int:
 	if hits == 0:
 		return 0
 	return 3 if accuracy() >= 0.82 else (2 if accuracy() >= 0.50 else 1)
+
+
+func total_score() -> int:
+	return int(score + combo_bonus)
+
+
+func combo_xp() -> int:
+	if best_combo >= 20:
+		return 6
+	if best_combo >= 10:
+		return 4
+	if best_combo >= 5:
+		return 2
+	return 0
+
+
+func reward_xp() -> int:
+	return 12 + stars() * 4 + combo_xp()
