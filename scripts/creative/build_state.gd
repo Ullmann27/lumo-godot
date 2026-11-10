@@ -1,8 +1,13 @@
 extends RefCounted
 ## Geometry-independent placement, structural support, undo and goal checks.
 const CATALOG = preload("res://scripts/creative/build_catalog.gd")
-const LIMIT: int = 768
+const LIMIT: int = 1536
 const SAVE_VERSION: int = 1
+# Playable footprint was abs<=16 (33x33 cells). HALF=24 is 49x49, 2.20x the
+# old bounding square. Old saves only contain cells within ±16, so they load
+# unchanged. River islands are also ground; the river channel stays open.
+const HALF: int = 24
+const HEIGHT_MAX: int = 19
 var pieces: Array[Dictionary] = []
 var undo_stack: Array = []
 var redo_stack: Array = []
@@ -11,8 +16,27 @@ var free_build: bool = false
 var next_id: int = 1
 
 
+static func in_world(x: int, z: int) -> bool:
+	return abs(x) <= HALF and abs(z) <= HALF
+
+
+static func river_island_at(x: int, z: int) -> bool:
+	# Two buildable river islands: a garden isle upstream and a lookout toward the canyon.
+	if x < 0 or x > 3:
+		return false
+	return (z >= -14 and z <= -11) or (z >= 18 and z <= 21)
+
+
 static func ground_at(x: int, z: int) -> bool:
-	return abs(x) <= 16 and abs(z) <= 16 and not (x >= 0 and x <= 3)
+	if not in_world(x, z):
+		return false
+	if river_island_at(x, z):
+		return true
+	return not (x >= 0 and x <= 3)
+
+
+static func out_of_world(cell: Vector3i) -> bool:
+	return abs(cell.x) > HALF or abs(cell.z) > HALF or cell.y < 0 or cell.y > HEIGHT_MAX
 
 
 static func cells(piece: Dictionary) -> Array[Vector3i]:
@@ -47,7 +71,7 @@ func placement_error(part_id: String, at: Vector3i, turn: int = 0) -> String:
 	var taken: Dictionary = occupied()
 	var size: Vector3i = CATALOG.size_of(part_id, turn)
 	for cell in cells(piece):
-		if abs(cell.x) > 16 or abs(cell.z) > 16 or cell.y < 0 or cell.y > 19:
+		if out_of_world(cell):
 			return "Baue innerhalb deiner Insel und unter der Höhenmarkierung."
 		if taken.has(cell):
 			return "Hier steht schon ein Bauteil. Wähle einen freien Platz."
@@ -280,7 +304,7 @@ func restore(data: Dictionary) -> bool:
 			"turn": posmod(int(raw.turn), 4)
 		}
 		for cell in cells(piece):
-			if used.has(cell) or abs(cell.x) > 16 or abs(cell.z) > 16 or cell.y < 0 or cell.y > 19:
+			if used.has(cell) or out_of_world(cell):
 				return false
 			used[cell] = true
 		seen[piece.uid] = true
@@ -367,3 +391,46 @@ func template(id: String) -> void:
 		place("flowers", Vector3i(-6, 0, 1))
 		place("bench", Vector3i(-8, 0, 4))
 		place("lantern", Vector3i(-5, 0, 4))
+	elif id == "plot_garden":
+		add_starter_plot("garden")
+	elif id == "plot_harbor":
+		add_starter_plot("harbor")
+	elif id == "plot_island":
+		add_starter_plot("island")
+
+
+func add_starter_plot(kind: String, furnished: bool = true) -> void:
+	## Ready-to-use themed plots on the expanded land / river islands.
+	## Does not clear the world; safe to add beside the default castle.
+	## Pads use batchable path/wood/sand so the start overview stays in budget;
+	## furnished templates also drop tree, bench, lantern and flowers.
+	if kind == "garden":
+		# West lawn, outside the old ±16 rim.
+		for x in range(5):
+			for z in range(5):
+				if x in [0, 4] or z in [0, 4]:
+					place("path", Vector3i(-22 + x, 0, 7 + z))
+		if furnished:
+			place("tree", Vector3i(-21, 0, 8))
+			place("bench", Vector3i(-21, 0, 10))
+			place("flowers", Vector3i(-19, 0, 10))
+			place("lantern", Vector3i(-19, 0, 8))
+	elif kind == "harbor":
+		# East riverbank on the new land, facing the workshop.
+		for x in range(3):
+			for z in range(2):
+				place("wood", Vector3i(18 + x, 0, 8 + z))
+		place("path", Vector3i(17, 0, 8))
+		place("path", Vector3i(16, 0, 8))
+		if furnished:
+			place("lantern", Vector3i(20, 0, 10))
+			place("flowers", Vector3i(18, 0, 10))
+	elif kind == "island":
+		# Upstream river island (buildable ground in the channel).
+		place("sand", Vector3i(1, 0, -13))
+		place("sand", Vector3i(2, 0, -13))
+		place("sand", Vector3i(1, 0, -12))
+		place("path", Vector3i(2, 0, -11))
+		if furnished:
+			place("flowers", Vector3i(2, 0, -12))
+			place("lantern", Vector3i(1, 0, -11))

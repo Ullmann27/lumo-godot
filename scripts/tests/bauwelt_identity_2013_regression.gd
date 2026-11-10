@@ -88,5 +88,41 @@ func _run() -> void:
 	assert(templates.challenge_passes("house"))
 	templates.template("bridge")
 	assert(templates.challenge_passes("bridge"))
-	print("[BauweltIdentity2013] PASS workshop, observatory, branched tree, L emblem, place/undo/save, templates")
+
+	# Expanded footprint: 33x33 (HALF=16) -> 49x49 (HALF=24), 2.20x the old square.
+	# Old cells stay valid; river stays open; river islands are buildable.
+	assert(STATE.HALF == 24)
+	assert(STATE.LIMIT >= 1536)
+	assert(STATE.ground_at(-16, 0) and STATE.ground_at(16, 5))
+	assert(STATE.ground_at(-24, 0) and STATE.ground_at(24, 24) and STATE.ground_at(20, -24))
+	assert(not STATE.ground_at(-25, 0) and not STATE.ground_at(0, 25))
+	assert(not STATE.ground_at(0, 0) and not STATE.ground_at(3, 6), "river channel stays open")
+	assert(STATE.ground_at(1, -12) and STATE.ground_at(2, 19), "river islands are buildable")
+	var bounds = STATE.new()
+	assert(bounds.place("stone", Vector3i(22, 0, 20)).is_empty(), "new land is placeable")
+	assert(bounds.place("sand", Vector3i(1, 0, -12)).is_empty(), "river island is placeable")
+	assert(not bounds.place("stone", Vector3i(25, 0, 0)).is_empty(), "outside the new rim rejected")
+	assert(not bounds.place("stone", Vector3i(0, 0, 0)).is_empty(), "open river rejected")
+	# Old-save compatibility: a snapshot taken on the original castle cells still restores.
+	var legacy = STATE.new()
+	assert(legacy.place("cottage", Vector3i(7, 0, 5)).is_empty())
+	assert(legacy.place("lantern", Vector3i(-4, 0, -4)).is_empty())
+	var saved: Dictionary = legacy.to_data()
+	assert(int(saved.version) == STATE.SAVE_VERSION)
+	var reloaded = STATE.new()
+	assert(reloaded.restore(saved), "legacy save must load on the larger island")
+	assert(reloaded.pieces.size() == 2)
+	assert(int(reloaded.pieces[0].x) == 7 and int(reloaded.pieces[0].z) == 5)
+	assert(int(reloaded.pieces[1].x) == -4 and int(reloaded.pieces[1].z) == -4)
+	# Starter plots place on the new land without touching old IDs.
+	for plot_id in ["plot_garden", "plot_harbor", "plot_island"]:
+		var plot = STATE.new()
+		plot.template(plot_id)
+		assert(plot.pieces.size() >= 6, plot_id)
+		if plot_id == "plot_garden":
+			assert(int(plot.pieces[0].x) <= -18)
+		if plot_id == "plot_island":
+			assert(STATE.river_island_at(int(plot.pieces[0].x), int(plot.pieces[0].z)))
+
+	print("[BauweltIdentity2013] PASS workshop, observatory, branched tree, L emblem, place/undo/save, templates, expanded grid")
 	quit(0)

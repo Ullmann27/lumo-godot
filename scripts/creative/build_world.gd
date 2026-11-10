@@ -16,12 +16,15 @@ var turn: int = 0
 var layer: int = 0
 var erase_mode: bool = false
 var paused: bool = false
-# Start overview: pulled back past the canyon so Werkstatt, Sternwarte,
-# castle and waterfall sit in one frame (Tafel 03 framing).
-const START_ORBIT: float = 0.50
-const START_TILT: float = 0.50
-const START_RADIUS: float = 36.0
-const START_FOCUS := Vector3(0.6, 0.8, 2.0)
+# Start overview: pulled back past the expanded rim and canyon so Werkstatt,
+# Sternwarte, castle and waterfall still share one frame (Tafel 03 framing).
+const START_ORBIT: float = 0.48
+const START_TILT: float = 0.48
+const START_RADIUS: float = 44.0
+const START_FOCUS := Vector3(0.6, 0.8, 4.0)
+const RADIUS_MIN: float = 10.0
+const RADIUS_MAX: float = 72.0
+const FOCUS_LIMIT: float = 32.0
 var orbit: float = START_ORBIT
 var tilt: float = START_TILT
 var radius: float = START_RADIUS
@@ -100,6 +103,10 @@ func _ready() -> void:
 		model.place("bridge", Vector3i(2, 0, 6))
 		model.place("magic", Vector3i(5, 0, 5))
 		model.place("lantern", Vector3i(6, 0, 4))
+		# Ready-to-use plots on the new land and river islands (kids can keep building).
+		model.add_starter_plot("garden", false)
+		model.add_starter_plot("harbor", false)
+		model.add_starter_plot("island", false)
 	_rebuild()
 	_camera_update()
 	get_viewport().size_changed.connect(_resize)
@@ -110,17 +117,26 @@ func _ready() -> void:
 
 func _ground() -> void:
 	# Collision stays a flat island so placed blocks do not float; visuals are dressed separately.
+	# Footprint matches build_state.HALF (24): banks x=-24.5..0 and 4..24.5, z=-24.5..24.5.
+	var half := float(STATE.HALF) + 0.5
 	for side in [-1, 1]:
 		var bank := StaticBody3D.new()
 		bank.name = "RiverBank"
 		add_child(bank)
-		var center := Vector3(-8.5 if side == -1 else 10.0, -1.2, 0)
-		var size := Vector3(17 if side == -1 else 13, 2.4, 33)
+		var width := half if side == -1 else half - 4.0
+		var center := Vector3((-width * 0.5) if side == -1 else (4.0 + width * 0.5), -1.2, 0)
+		var size := Vector3(width, 2.4, half * 2.0)
 		kit.collision(bank, center, size)
-	var water := kit.box(self, Vector3(2, -0.38, 0), Vector3(4, 0.14, 33), Color("1b81bd"))
+	var water := kit.box(self, Vector3(2, -0.38, 0), Vector3(4, 0.14, half * 2.0), Color("1b81bd"))
 	var mat := ShaderMaterial.new()
 	mat.shader = preload("res://assets/shaders/kart_water.gdshader")
 	water.material_override = mat
+	# Buildable river islands (tops at y=0, same support rule as the main banks).
+	for island_z in [-12.5, 19.5]:
+		var isle := StaticBody3D.new()
+		isle.name = "RiverIsland"
+		add_child(isle)
+		kit.collision(isle, Vector3(2.0, -1.2, island_z), Vector3(4.0, 2.4, 4.0))
 	BuildLandmarks.dress_world(self, kit)
 
 
@@ -244,7 +260,7 @@ func _ui() -> void:
 		_day_button(
 			"−",
 			func():
-				radius = clampf(radius + 3, 10, 55)
+				radius = clampf(radius + 3, RADIUS_MIN, RADIUS_MAX)
 				_camera_update(),
 			48
 		)
@@ -253,7 +269,7 @@ func _ui() -> void:
 		_day_button(
 			"+",
 			func():
-				radius = clampf(radius - 3, 10, 55)
+				radius = clampf(radius - 3, RADIUS_MIN, RADIUS_MAX)
 				_camera_update(),
 			48
 		)
@@ -502,6 +518,7 @@ func _tap(at: Vector2) -> void:
 	if problem.is_empty():
 		dirty = true
 		_rebuild()
+		_place_feedback(cell)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -513,7 +530,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
 			radius = clampf(
-				radius + (-2 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 2), 10, 55
+				radius + (-2 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 2), RADIUS_MIN, RADIUS_MAX
 			)
 			_camera_update()
 		elif event.button_index == MOUSE_BUTTON_LEFT:
@@ -541,6 +558,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				else:
 					orbit -= event.relative.x * 0.007
 					tilt = clampf(tilt + event.relative.y * 0.005, 0.25, 1.2)
+				_clamp_focus()
 				_camera_update()
 		else:
 			_preview_at(event.position)
@@ -571,7 +589,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			touches[event.index] = event.position
 			a = touches[keys[0]]
 			b = touches[keys[1]]
-			radius = clampf(radius * before / maxf(1, a.distance_to(b)), 10, 55)
+			radius = clampf(radius * before / maxf(1, a.distance_to(b)), RADIUS_MIN, RADIUS_MAX)
 			var motion := (a + b) * 0.5 - old_center
 			focus += (
 				camera.basis.x * (-motion.x * radius / 650.0)
@@ -583,17 +601,17 @@ func _unhandled_input(event: InputEvent) -> void:
 			if dragged and not touch_gesture:
 				orbit -= event.relative.x * 0.007
 				tilt = clampf(tilt + event.relative.y * 0.005, 0.25, 1.2)
-		focus.x = clampf(focus.x, -20, 20)
-		focus.z = clampf(focus.z, -20, 20)
+		_clamp_focus()
 		_camera_update()
 	elif event is InputEventMagnifyGesture:
-		radius = clampf(radius / event.factor, 10, 55)
+		radius = clampf(radius / event.factor, RADIUS_MIN, RADIUS_MAX)
 		_camera_update()
 	elif event is InputEventPanGesture:
 		focus += (
 			camera.basis.x * event.delta.x * 0.1
 			+ Vector3(camera.basis.z.x, 0, camera.basis.z.z) * event.delta.y * 0.1
 		)
+		_clamp_focus()
 		_camera_update()
 
 
@@ -720,13 +738,13 @@ func load_world(show_message: bool = true) -> bool:
 	if raw.get("camera") is Dictionary:
 		orbit = float(raw.camera.get("orbit", 0.62))
 		tilt = clampf(float(raw.camera.get("tilt", 0.68)), 0.25, 1.2)
-		radius = clampf(float(raw.camera.get("radius", 29)), 10, 55)
+		radius = clampf(float(raw.camera.get("radius", 29)), RADIUS_MIN, RADIUS_MAX)
 		var saved_focus = raw.camera.get("focus", [])
 		if saved_focus is Array and saved_focus.size() == 3:
 			focus = Vector3(
-				clampf(float(saved_focus[0]), -20, 20),
+				clampf(float(saved_focus[0]), -FOCUS_LIMIT, FOCUS_LIMIT),
 				clampf(float(saved_focus[1]), 0, 19),
-				clampf(float(saved_focus[2]), -20, 20)
+				clampf(float(saved_focus[2]), -FOCUS_LIMIT, FOCUS_LIMIT)
 			)
 	_rebuild()
 	_camera_update()
@@ -803,6 +821,9 @@ func _templates() -> void:
 			["bridge", "Brücke"],
 			["tower", "Sternenturm"],
 			["garden", "Garten"],
+			["plot_garden", "Garten-Parzelle"],
+			["plot_harbor", "Hafen-Parzelle"],
+			["plot_island", "Insel-Parzelle"],
 			["empty", "Leere Insel"]
 		],
 		_select_template
@@ -911,3 +932,76 @@ func _day_label(text: String, size: int = 18) -> Label:
 	control.add_theme_constant_override("shadow_offset_x", 0)
 	control.add_theme_constant_override("shadow_offset_y", 1)
 	return control
+
+
+func _clamp_focus() -> void:
+	focus.x = clampf(focus.x, -FOCUS_LIMIT, FOCUS_LIMIT)
+	focus.z = clampf(focus.z, -FOCUS_LIMIT, FOCUS_LIMIT)
+
+
+func _place_feedback(cell: Vector3i) -> void:
+	## Small sparkle + chime after a successful place. Does not change save or grid logic.
+	var item: Dictionary = CATALOG.part(chosen)
+	var size: Vector3 = item.size if not item.is_empty() else Vector3.ONE
+	var at := Vector3(cell) + Vector3(size.x, size.y, size.z) * Vector3(0.5, 0.55, 0.5)
+	var spark := CPUParticles3D.new()
+	spark.name = "PlaceSparkle"
+	spark.one_shot = true
+	spark.explosiveness = 0.9
+	spark.lifetime = 0.45
+	spark.amount = 8 if LumoQuality.tier() == "low" else 16
+	spark.emitting = false
+	spark.direction = Vector3.UP
+	spark.spread = 70.0
+	spark.initial_velocity_min = 1.2
+	spark.initial_velocity_max = 3.0
+	spark.gravity = Vector3(0, -5, 0)
+	spark.scale_amount_min = 0.05
+	spark.scale_amount_max = 0.12
+	var puff := SphereMesh.new()
+	puff.radius = 0.12
+	puff.height = 0.24
+	puff.radial_segments = 6
+	puff.rings = 3
+	spark.mesh = puff
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color("fff3a8")
+	mat.emission_enabled = true
+	mat.emission = Color("7ad8ff")
+	mat.emission_energy_multiplier = 1.4
+	spark.material_override = mat
+	spark.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	spark.position = at
+	add_child(spark)
+	spark.emitting = true
+	var chime := AudioStreamPlayer.new()
+	chime.stream = _place_tone()
+	chime.volume_db = -10.0
+	add_child(chime)
+	chime.play()
+	get_tree().create_timer(0.7).timeout.connect(
+		func():
+			if is_instance_valid(spark):
+				spark.queue_free()
+			if is_instance_valid(chime):
+				chime.queue_free()
+	)
+
+
+func _place_tone() -> AudioStreamWAV:
+	var stream := AudioStreamWAV.new()
+	stream.format = AudioStreamWAV.FORMAT_16_BITS
+	stream.mix_rate = 22050
+	stream.stereo = false
+	var frames := 2205
+	var data := PackedByteArray()
+	data.resize(frames * 2)
+	for i in range(frames):
+		var tm := float(i) / 22050.0
+		var env := 1.0 - tm / 0.1
+		var sample := (sin(TAU * 880.0 * tm) * 0.22 + sin(TAU * 1320.0 * tm) * 0.10) * env
+		var value := int(clampf(sample, -1.0, 1.0) * 32767.0)
+		data[i * 2] = value & 255
+		data[i * 2 + 1] = (value >> 8) & 255
+	stream.data = data
+	return stream

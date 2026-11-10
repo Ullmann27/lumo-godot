@@ -96,7 +96,7 @@ func _run() -> void:
 		build.orbit = 0.15
 		build.tilt = 0.28
 		build.radius = 14.0
-		build.focus = Vector3(2.0, -1.0, 14.0)
+		build.focus = Vector3(2.0, -1.0, 22.5)
 		build._camera_update()
 		for frame in range(6):
 			await process_frame

@@ -5,6 +5,11 @@ extends RefCounted
 ## Inselboden, Baukran und Uferschaum.
 ## Footprints, collision and part IDs stay with the catalog / build_state.
 
+# Keep in sync with build_state.HALF. Visual rim is HALF + 0.5.
+const ISLAND_HALF := 24.0
+const ISLAND_EDGE := 24.5
+const CANYON_Z := 24.6
+
 
 static func mesh_node(root: Node, mesh: Mesh, mat: Material, node_name: String) -> MeshInstance3D:
 	var node := MeshInstance3D.new()
@@ -350,7 +355,7 @@ static func add_canyon(root: Node3D, kit: RefCounted) -> void:
 	# falling sheets
 	var fall_xforms: Array[Transform3D] = []
 	for i in range(3):
-		var at := Vector3(1.2 + float(i) * 0.8, -3.2, 16.7)
+		var at := Vector3(1.2 + float(i) * 0.8, -3.2, CANYON_Z + 0.1)
 		fall_xforms.append(Transform3D(Basis.from_scale(Vector3(0.55, 3.4, 0.18)), at))
 	var fall_mat := ShaderMaterial.new()
 	fall_mat.shader = preload("res://assets/shaders/kart_waterfall.gdshader")
@@ -358,7 +363,7 @@ static func add_canyon(root: Node3D, kit: RefCounted) -> void:
 	fall_mesh.size = Vector3.ONE
 	BuildVoxelStyle.multimesh(root, "CanyonFalls", fall_mesh, fall_mat, fall_xforms)
 	# plunge pool
-	var pool: MeshInstance3D = kit.box(root, Vector3(2.0, -7.15, 19.6), Vector3(6.5, 0.22, 5.5), Color("1b81bd"))
+	var pool: MeshInstance3D = kit.box(root, Vector3(2.0, -7.15, CANYON_Z + 3.0), Vector3(6.5, 0.22, 5.5), Color("1b81bd"))
 	pool.name = "CanyonPool"
 	var pool_mat := ShaderMaterial.new()
 	pool_mat.shader = preload("res://assets/shaders/kart_water.gdshader")
@@ -428,8 +433,13 @@ static func _path_strength(x: float, z: float) -> float:
 	return clampf(1.0 - best / 1.15, 0.0, 1.0)
 
 
-static func _in_water(x: float) -> bool:
-	return x > -0.05 and x < 4.05
+static func _in_water(x: float, z: float = 0.0) -> bool:
+	if x <= -0.05 or x >= 4.05:
+		return false
+	# Buildable river islands stay dry.
+	if (z >= -14.05 and z <= -10.95) or (z >= 17.95 and z <= 21.05):
+		return false
+	return true
 
 
 static func _lawn_y(x: float, z: float) -> float:
@@ -449,7 +459,11 @@ static func _lawn_y(x: float, z: float) -> float:
 		Vector2(5.5, 8.5),
 		Vector2(5.5, 5.5),
 		Vector2(6.5, 4.5),
-		Vector2(8.8, 10.2)
+		Vector2(8.8, 10.2),
+		Vector2(-20.0, 9.0),
+		Vector2(19.0, 8.5),
+		Vector2(2.0, -12.5),
+		Vector2(2.0, 19.5)
 	]
 	for pad in pads:
 		var d := Vector2(x - pad.x, z - pad.y).length()
@@ -468,7 +482,7 @@ static func _lawn_y(x: float, z: float) -> float:
 		if shore_r < 2.1:
 			h = lerpf(-0.11, h, smoothstep(0.0, 1.0, shore_r / 2.1))
 	# slight rise at the outer rim
-	var edge := minf(16.6 - absf(x) if not _in_water(x) else 16.6, 16.6 - absf(z))
+	var edge := minf(ISLAND_EDGE - absf(x) if not _in_water(x, z) else ISLAND_EDGE, ISLAND_EDGE - absf(z))
 	if edge < 1.5:
 		h += (1.5 - edge) * 0.07
 	return h
@@ -494,16 +508,53 @@ static func add_sculpted_lawn(root: Node3D) -> void:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var step := 0.8
-	var strips: Array[Vector2] = [Vector2(-17.0, -0.08), Vector2(4.08, 16.55)]
+	var strips: Array[Vector2] = [Vector2(-ISLAND_EDGE, -0.08), Vector2(4.08, ISLAND_EDGE)]
 	for strip in strips:
 		var x0 := strip.x
 		var x1 := strip.y
-		var z := -16.55
-		while z < 16.55 - 0.001:
-			var z2 := minf(z + step, 16.55)
+		var z := -ISLAND_EDGE
+		while z < ISLAND_EDGE - 0.001:
+			var z2 := minf(z + step, ISLAND_EDGE)
 			var x := x0
 			while x < x1 - 0.001:
 				var x2 := minf(x + step, x1)
+				var p00 := Vector3(x, _lawn_y(x, z), z)
+				var p10 := Vector3(x2, _lawn_y(x2, z), z)
+				var p11 := Vector3(x2, _lawn_y(x2, z2), z2)
+				var p01 := Vector3(x, _lawn_y(x, z2), z2)
+				var c00 := _lawn_color(x, z)
+				var c10 := _lawn_color(x2, z)
+				var c11 := _lawn_color(x2, z2)
+				var c01 := _lawn_color(x, z2)
+				st.set_color(c00)
+				st.set_uv(Vector2(p00.x, p00.z))
+				st.add_vertex(p00)
+				st.set_color(c10)
+				st.set_uv(Vector2(p10.x, p10.z))
+				st.add_vertex(p10)
+				st.set_color(c11)
+				st.set_uv(Vector2(p11.x, p11.z))
+				st.add_vertex(p11)
+				st.set_color(c00)
+				st.set_uv(Vector2(p00.x, p00.z))
+				st.add_vertex(p00)
+				st.set_color(c11)
+				st.set_uv(Vector2(p11.x, p11.z))
+				st.add_vertex(p11)
+				st.set_color(c01)
+				st.set_uv(Vector2(p01.x, p01.z))
+				st.add_vertex(p01)
+				x = x2
+			z = z2
+	# Lawn caps on the two buildable river islands.
+	var island_spans: Array[Vector2] = [Vector2(-14.05, -10.95), Vector2(17.95, 21.05)]
+	for span in island_spans:
+		var z: float = span.x
+		while z < span.y - 0.001:
+			var z2 := minf(z + step, span.y)
+			var x := -0.08
+			while x < 4.08 - 0.001:
+				var x2 := minf(x + step, 4.08)
 				var p00 := Vector3(x, _lawn_y(x, z), z)
 				var p10 := Vector3(x2, _lawn_y(x2, z), z)
 				var p11 := Vector3(x2, _lawn_y(x2, z2), z2)
@@ -545,24 +596,24 @@ static func add_island_cliffs(root: Node3D) -> void:
 	rng.seed = 20131114
 	# west and east faces
 	for side in [-1.0, 1.0]:
-		for i in range(15):
-			var z := -15.6 + float(i) * 2.23 + rng.randf_range(-0.25, 0.25)
+		for i in range(22):
+			var z := -23.8 + float(i) * 2.20 + rng.randf_range(-0.25, 0.25)
 			var h := 2.15 + rng.randf_range(-0.2, 0.4)
 			var w := 2.3 + rng.randf_range(-0.25, 0.45)
 			var depth := 0.65 + rng.randf_range(0.0, 0.55)
-			append_box(st, Vector3(depth, h, w), Vector3(side * 16.85, -1.25, z))
+			append_box(st, Vector3(depth, h, w), Vector3(side * (ISLAND_EDGE + 0.35), -1.25, z))
 	# south and north faces, split around the river mouth
 	for zside in [-1.0, 1.0]:
 		for bank in [-1.0, 1.0]:
-			var x_mid := (-8.6 if bank < 0.0 else 10.2)
-			for i in range(7):
-				var x := x_mid + (float(i) - 3.0) * 2.15 + rng.randf_range(-0.2, 0.2)
-				if _in_water(x):
+			var x_mid := (-12.2 if bank < 0.0 else 14.2)
+			for i in range(11):
+				var x := x_mid + (float(i) - 5.0) * 2.15 + rng.randf_range(-0.2, 0.2)
+				if _in_water(x, zside * ISLAND_EDGE):
 					continue
 				var h := 2.15 + rng.randf_range(-0.2, 0.35)
 				var w := 0.7 + rng.randf_range(0.0, 0.5)
 				var length := 2.2 + rng.randf_range(-0.2, 0.4)
-				append_box(st, Vector3(length, h, w), Vector3(x, -1.25, zside * 16.85))
+				append_box(st, Vector3(length, h, w), Vector3(x, -1.25, zside * (ISLAND_EDGE + 0.35)))
 	mesh_node(root, commit(st), BuildVoxelStyle.material("stone", Color("c8bca8")), "IslandCliffs")
 
 
@@ -575,7 +626,7 @@ static func _append_canyon_rocks(xforms: Array[Transform3D]) -> void:
 		var at := Vector3(
 			2.0 + side * rng.randf_range(2.4, 5.8),
 			rng.randf_range(-6.5, -0.2),
-			16.6 + rng.randf_range(0.2, 6.4)
+			CANYON_Z + rng.randf_range(0.2, 6.4)
 		)
 		var scale := Vector3(
 			rng.randf_range(0.7, 1.6), rng.randf_range(0.8, 2.2), rng.randf_range(0.8, 1.7)
@@ -583,7 +634,7 @@ static func _append_canyon_rocks(xforms: Array[Transform3D]) -> void:
 		xforms.append(Transform3D(Basis.from_scale(scale), at))
 	for side in [-1.0, 1.0]:
 		for k in range(5):
-			var at := Vector3(2.0 + side * (2.2 + float(k) * 0.55), -2.2, 16.8 + float(k) * 0.7)
+			var at := Vector3(2.0 + side * (2.2 + float(k) * 0.55), -2.2, CANYON_Z + 0.2 + float(k) * 0.7)
 			xforms.append(Transform3D(Basis.from_scale(Vector3(1.4, 4.2 - float(k) * 0.35, 1.2)), at))
 
 
@@ -593,7 +644,7 @@ static func _append_canyon_plants(xforms: Array[Transform3D]) -> void:
 	var count := 6 if _is_low() else 10
 	for i in range(count):
 		var side := -1.0 if i % 2 == 0 else 1.0
-		var at := Vector3(2.0 + side * rng.randf_range(3.2, 5.2), 0.35, 16.2 + rng.randf_range(0.0, 1.4))
+		var at := Vector3(2.0 + side * rng.randf_range(3.2, 5.2), 0.35, CANYON_Z - 0.4 + rng.randf_range(0.0, 1.4))
 		var s := 0.35 + float(i % 3) * 0.08
 		xforms.append(Transform3D(Basis.from_scale(Vector3(s, s * 1.2, s)), at))
 
@@ -625,20 +676,20 @@ static func _collect_terrain_rocks() -> Array[Transform3D]:
 				)
 				xforms.append(Transform3D(basis * Basis.from_scale(sc), at))
 	# Outer rim and cliff-face boulders
-	var rim := 12 if _is_low() else 20
+	var rim := 14 if _is_low() else 26
 	for side in [-1.0, 1.0]:
 		for i in range(rim):
-			var z := rng.randf_range(-16.3, 16.3)
-			var at := Vector3(side * 16.35 + rng.randf_range(-0.25, 0.25), rng.randf_range(-1.7, 0.12), z)
+			var z := rng.randf_range(-ISLAND_EDGE + 0.2, ISLAND_EDGE - 0.2)
+			var at := Vector3(side * (ISLAND_EDGE - 0.15) + rng.randf_range(-0.25, 0.25), rng.randf_range(-1.7, 0.12), z)
 			var sc := Vector3(rng.randf_range(0.55, 1.45), rng.randf_range(0.45, 1.7), rng.randf_range(0.55, 1.35))
 			xforms.append(Transform3D(Basis.from_scale(sc), at))
-	var z_rim := 8 if _is_low() else 14
+	var z_rim := 10 if _is_low() else 18
 	for zside in [-1.0, 1.0]:
 		for i in range(z_rim):
-			var x := rng.randf_range(-16.2, 16.2)
-			if _in_water(x):
+			var x := rng.randf_range(-ISLAND_EDGE + 0.3, ISLAND_EDGE - 0.3)
+			if _in_water(x, zside * ISLAND_EDGE):
 				continue
-			var at := Vector3(x, rng.randf_range(-1.6, 0.12), zside * 16.35 + rng.randf_range(-0.2, 0.2))
+			var at := Vector3(x, rng.randf_range(-1.6, 0.12), zside * (ISLAND_EDGE - 0.15) + rng.randf_range(-0.2, 0.2))
 			var sc := Vector3(rng.randf_range(0.5, 1.35), rng.randf_range(0.45, 1.5), rng.randf_range(0.5, 1.2))
 			xforms.append(Transform3D(Basis.from_scale(sc), at))
 	_append_canyon_rocks(xforms)
@@ -649,27 +700,27 @@ static func _collect_plants() -> Array[Transform3D]:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 93231
 	var xforms: Array[Transform3D] = []
-	var border := 20 if _is_low() else 36
+	var border := 22 if _is_low() else 44
 	for i in range(border):
-		var at := Vector3(rng.randf_range(-16.5, 16.5), 0.38, -16.3 if i % 2 == 0 else 16.3)
-		if _in_water(at.x):
+		var at := Vector3(rng.randf_range(-ISLAND_EDGE, ISLAND_EDGE), 0.38, -ISLAND_EDGE + 0.2 if i % 2 == 0 else ISLAND_EDGE - 0.2)
+		if _in_water(at.x, at.z):
 			continue
 		var scale := 0.40 + float(i % 3) * 0.09
 		xforms.append(Transform3D(Basis.from_scale(Vector3(scale, scale * 1.15, scale)), at))
 	# lawn clumps, kept off courtyards, path and pads
-	var clumps := 16 if _is_low() else 42
+	var clumps := 18 if _is_low() else 50
 	var guard := 0
 	while xforms.size() < border + clumps and guard < 400:
 		guard += 1
-		var at := Vector3(rng.randf_range(-15.5, 15.5), 0.22, rng.randf_range(-15.2, 15.2))
-		if _in_water(at.x) or absf(at.x) < 1.2 or (at.x > 3.2 and at.x < 5.2):
+		var at := Vector3(rng.randf_range(-23.0, 23.0), 0.22, rng.randf_range(-23.0, 23.0))
+		if _in_water(at.x, at.z) or (absf(at.x - 2.0) < 2.4 and not ((at.z >= -14.2 and at.z <= -10.8) or (at.z >= 17.8 and at.z <= 21.2))):
 			continue
 		if at.x > -14.0 and at.x < -3.2 and at.z > -12.0 and at.z < 3.6:
 			continue
 		if _path_strength(at.x, at.z) > 0.45:
 			continue
 		var near_pad := false
-		for pad in [Vector2(8.5, 6.5), Vector2(10.5, -0.5), Vector2(8.8, 10.2)]:
+		for pad in [Vector2(8.5, 6.5), Vector2(10.5, -0.5), Vector2(8.8, 10.2), Vector2(-20.0, 9.0), Vector2(19.0, 8.5), Vector2(2.0, -12.5), Vector2(2.0, 19.5)]:
 			if Vector2(at.x - pad.x, at.z - pad.y).length() < 2.4:
 				near_pad = true
 				break
@@ -690,7 +741,7 @@ static func add_flowers(root: Node3D) -> void:
 	var palette: Array[Color] = [
 		Color("f3c4d8"), Color("f4d76a"), Color("f0f2e8"), Color("c9b4e8"), Color("f0a56a")
 	]
-	var count := 24 if _is_low() else 60
+	var count := 26 if _is_low() else 70
 	var guard := 0
 	while xforms.size() < count and guard < 600:
 		guard += 1
@@ -699,8 +750,8 @@ static func add_flowers(root: Node3D) -> void:
 		if xforms.size() < int(count * 0.4):
 			at = Vector3(rng.randf_range(-13.5, -1.2), 0.0, rng.randf_range(0.4, 14.0))
 		else:
-			at = Vector3(rng.randf_range(-15.0, 15.0), 0.0, rng.randf_range(-15.0, 15.0))
-		if _in_water(at.x) or absf(at.x - 2.0) < 2.4:
+			at = Vector3(rng.randf_range(-23.0, 23.0), 0.0, rng.randf_range(-23.0, 23.0))
+		if _in_water(at.x, at.z) or (absf(at.x - 2.0) < 2.4 and not ((at.z >= -14.2 and at.z <= -10.8) or (at.z >= 17.8 and at.z <= 21.2))):
 			continue
 		if at.x > -14.0 and at.x < -3.2 and at.z > -12.0 and at.z < -0.4:
 			continue
@@ -740,12 +791,12 @@ static func add_reeds(root: Node3D) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 20131116
 	var xforms: Array[Transform3D] = []
-	var count := 18 if _is_low() else 40
+	var count := 20 if _is_low() else 48
 	var guard := 0
 	while xforms.size() < count and guard < 300:
 		guard += 1
 		var bank := -0.55 if rng.randf() < 0.5 else 4.55
-		var z := rng.randf_range(-15.5, 16.2)
+		var z := rng.randf_range(-23.5, 24.0)
 		# cluster, not even spacing
 		if int(absf(z) * 3.0) % 5 == 0:
 			continue
@@ -758,7 +809,7 @@ static func add_reeds(root: Node3D) -> void:
 	# a few on the canyon rim
 	for i in range(4 if _is_low() else 8):
 		var side := -1.0 if i % 2 == 0 else 1.0
-		var at := Vector3(2.0 + side * rng.randf_range(2.6, 4.4), 0.2, 16.1 + rng.randf_range(0.0, 1.2))
+		var at := Vector3(2.0 + side * rng.randf_range(2.6, 4.4), 0.2, CANYON_Z - 0.5 + rng.randf_range(0.0, 1.2))
 		xforms.append(Transform3D(Basis.from_scale(Vector3(1, 0.7 + rng.randf() * 0.4, 1)), at))
 	var reed := CylinderMesh.new()
 	reed.top_radius = 0.035
@@ -776,16 +827,16 @@ static func add_shore_foam(root: Node3D) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 20131117
 	var xforms: Array[Transform3D] = []
-	var count := 16 if _is_low() else 36
+	var count := 18 if _is_low() else 42
 	for i in range(count):
 		var bank := -0.08 if i % 2 == 0 else 4.08
-		var z := rng.randf_range(-15.8, 16.4)
+		var z := rng.randf_range(-23.8, 24.2)
 		var at := Vector3(bank + rng.randf_range(-0.2, 0.2), -0.26, z)
 		var sc := Vector3(rng.randf_range(0.7, 1.25), 0.12, rng.randf_range(0.9, 1.6))
 		xforms.append(Transform3D(Basis.from_scale(sc), at))
 	# compact foam at the waterfall lip (subtle, not ice sheets)
 	for i in range(3 if _is_low() else 6):
-		var at := Vector3(2.0 + rng.randf_range(-1.1, 1.1), -0.25, 16.2 + rng.randf_range(-0.25, 0.4))
+		var at := Vector3(2.0 + rng.randf_range(-1.1, 1.1), -0.25, CANYON_Z - 0.4 + rng.randf_range(-0.25, 0.4))
 		var sc := Vector3(rng.randf_range(0.40, 0.70), 0.08, rng.randf_range(0.35, 0.65))
 		xforms.append(Transform3D(Basis.from_scale(sc), at))
 	# plunge-pool foam around the waterfall basin
@@ -794,7 +845,7 @@ static func add_shore_foam(root: Node3D) -> void:
 		var at := Vector3(
 			2.0 + rng.randf_range(-2.2, 2.2),
 			-6.96,
-			19.6 + rng.randf_range(-1.8, 1.8)
+			CANYON_Z + 3.0 + rng.randf_range(-1.8, 1.8)
 		)
 		var sc := Vector3(rng.randf_range(0.8, 1.4), 0.14, rng.randf_range(0.8, 1.4))
 		xforms.append(Transform3D(Basis.from_scale(sc), at))
@@ -825,7 +876,7 @@ static func add_sky_islands(root: Node3D, kit: RefCounted) -> void:
 	var fall_rock_xforms: Array[Transform3D] = []
 	var castle_xforms: Array[Transform3D] = []
 	for i in range(7):
-		var island_at := Vector3(-35 + float(i) * 12, -7 + float(i % 3) * 3, -29 - float(i % 2) * 8)
+		var island_at := Vector3(-35 + float(i) * 12, -7 + float(i % 3) * 3, -42 - float(i % 2) * 8)
 		body_xforms.append(Transform3D(Basis.IDENTITY, island_at))
 		cap_xforms.append(Transform3D(Basis.IDENTITY, island_at + Vector3.UP * 4.5))
 		if i in [1, 3, 5]:
@@ -1018,7 +1069,7 @@ static func add_dirt_patches(root: Node3D) -> void:
 				var p: Vector2 = a.lerp(b, float(s) / float(steps))
 				samples.append(p)
 	for p in samples:
-		if _in_water(p.x):
+		if _in_water(p.x, p.y):
 			continue
 		var y := _lawn_y(p.x, p.y) + 0.018
 		var sc := Vector3(0.85 + rng.randf() * 0.35, 0.05, 0.70 + rng.randf() * 0.30)
