@@ -79,6 +79,16 @@ var completed: bool = false
 var position := Vector3(0, 0.05, 6)
 var result_id: String = ""
 var wrong_attempts: int = 0
+var discoveries: Array[String] = []
+var streak: int = 0
+var best_streak: int = 0
+var last_cheer: int = 0
+const DISCOVERIES = [
+	{"id": "arch", "name": "Willkommensbogen", "at": Vector3(0, 0, 1.35)},
+	{"id": "compass", "name": "Kompass-Sockel", "at": Vector3(2.45, 0, 4.55)},
+	{"id": "falls", "name": "Start-Wasserfall", "at": Vector3(-12.5, 0, 2.2)}
+]
+const STREAK_MILESTONES: Array[int] = [3, 7]
 
 
 func current() -> Dictionary:
@@ -97,6 +107,8 @@ func answer(choice: int, at: Vector3) -> bool:
 		return false
 	if choice != int(current().correct):
 		wrong_attempts += 1
+		streak = 0
+		last_cheer = 0
 		return false
 	if chapter == 2 and not inventory.has("Blattschlüssel"):
 		return false
@@ -108,6 +120,9 @@ func answer(choice: int, at: Vector3) -> bool:
 	inventory.append(current().item)
 	chapter += 1
 	completed = chapter >= CLUES.size()
+	streak += 1
+	best_streak = maxi(best_streak, streak)
+	last_cheer = streak if streak in STREAK_MILESTONES else 0
 	return true
 
 
@@ -117,7 +132,10 @@ func to_data() -> Dictionary:
 		"chapter": chapter,
 		"position": [position.x, position.y, position.z],
 		"result_id": result_id,
-		"wrong_attempts": wrong_attempts
+		"wrong_attempts": wrong_attempts,
+		"discoveries": discoveries.duplicate(),
+		"streak": streak,
+		"best_streak": best_streak
 	}
 
 
@@ -141,4 +159,48 @@ func restore(data: Dictionary) -> bool:
 	position = pos
 	result_id = str(data.get("result_id", ""))
 	wrong_attempts = maxi(0, int(data.get("wrong_attempts", 0)))
+	discoveries.clear()
+	var saved_finds = data.get("discoveries", [])
+	if saved_finds is Array:
+		for item in saved_finds:
+			var sid := str(item)
+			if _known_discovery(sid) and sid not in discoveries:
+				discoveries.append(sid)
+	streak = maxi(0, int(data.get("streak", 0)))
+	best_streak = maxi(streak, int(data.get("best_streak", 0)))
+	last_cheer = 0
 	return true
+
+
+func _known_discovery(sid: String) -> bool:
+	for spot in DISCOVERIES:
+		if str(spot.id) == sid:
+			return true
+	return false
+
+
+func try_discover(at: Vector3) -> String:
+	for spot in DISCOVERIES:
+		var sid := str(spot.id)
+		if sid in discoveries:
+			continue
+		if Vector2(at.x, at.z).distance_to(Vector2(spot.at.x, spot.at.z)) <= 2.6:
+			discoveries.append(sid)
+			return str(spot.name)
+	return ""
+
+
+func streak_xp() -> int:
+	if best_streak >= 7:
+		return 8
+	if best_streak >= 3:
+		return 3
+	return 0
+
+
+func discovery_xp() -> int:
+	return discoveries.size() * 2
+
+
+func reward_xp() -> int:
+	return 40 + streak_xp() + discovery_xp()

@@ -1,11 +1,12 @@
 class_name JumpSkyIslandsArt
 extends RefCounted
-## Visual layer for Lumos Wolkeninseln (3D-Jump), target portal_jump_run.png:
-## grass-topped floating islands with layered earth/rock undersides, grass and
-## flower scatter (MultiMesh), golden star tokens, a goal flag, a cloud sea,
-## distant islands with waterfalls and golden sparkles. Purely visual: the
-## game keeps its 7 x 0.5 x 6 m box colliders, so mechanics are unchanged.
-## Detail scales with LumoQuality budgets. All meshes are procedural originals.
+## Visual layer for Lumos Wolkeninseln (3D-Jump).
+## Grass-topped floating islands, readable stone paths, lanterns, batched trees,
+## hanging waterfalls, checkpoint flags, bounce pads and smaller side islands.
+## Gameplay colliders for the 12 main islands stay 7 x 0.5 x 6 m. Extra pads,
+## movers and the bonus island carry their own colliders in jump_islands.gd.
+## Trees and island caps are MultiMesh so draw calls stay inside the mobile
+## budget. Detail scales with LumoQuality. All meshes are original LUMO art.
 
 const ISLAND_SIZE := Vector2(7.0, 6.0)
 const TOP_Y: float = 0.25
@@ -35,6 +36,11 @@ var noise := FastNoiseLite.new()
 var _materials: Dictionary = {}
 var _island_mesh: ArrayMesh
 var _star_mesh: ArrayMesh
+var _pending_trunks: Array = []
+var _pending_trunk_colors: Array = []
+var _pending_canopies: Array = []
+var _pending_canopy_colors: Array = []
+var _pending_caps: Dictionary = {}
 
 
 func _init(tier: String = "") -> void:
@@ -206,12 +212,6 @@ func island(parent: Node3D, index: int) -> MeshInstance3D:
 
 
 func _surface_cap(parent: Node3D, style: int) -> void:
-	var cap := MeshInstance3D.new()
-	cap.name = "IslandCap"
-	var plate := BoxMesh.new()
-	plate.size = Vector3(6.15, 0.045, 5.15)
-	cap.mesh = plate
-	cap.position = Vector3(0, TOP_Y + 0.012, 0)
 	var kind := "grass_top"
 	var tint := Color("b7c48a")
 	if style == 1:
@@ -220,21 +220,19 @@ func _surface_cap(parent: Node3D, style: int) -> void:
 	elif style == 2:
 		kind = "wood"
 		tint = Color("e2b274")
-	cap.material_override = BuildVoxelStyle.material(kind, tint)
-	parent.add_child(cap)
+	if not _pending_caps.has(kind):
+		_pending_caps[kind] = {"tint": tint, "xforms": []}
+	var local := Vector3(0, TOP_Y + 0.012, 0)
+	var xf := parent.global_transform * Transform3D(
+		Basis.from_scale(Vector3(6.15, 0.045, 5.15)), local
+	)
+	_pending_caps[kind]["xforms"].append(xf)
 
 
 func tree(parent: Node3D, at: Vector3) -> void:
-	var trunk := MeshInstance3D.new()
-	var cylinder := CylinderMesh.new()
-	cylinder.top_radius = 0.12
-	cylinder.bottom_radius = 0.2
-	cylinder.height = 1.5
-	cylinder.radial_segments = 8
-	trunk.mesh = cylinder
-	trunk.material_override = BuildVoxelStyle.material("bark", Color("c4a07a"))
-	trunk.position = at + Vector3(0, TOP_Y + 0.75, 0)
-	parent.add_child(trunk)
+	var trunk_local := at + Vector3(0, TOP_Y + 0.75, 0)
+	_pending_trunks.append(parent.global_transform * Transform3D(Basis.IDENTITY, trunk_local))
+	_pending_trunk_colors.append(Color("c4a07a"))
 	var canopy: Array = [
 		[Vector3(0, 2.05, 0), 0.95, Color.WHITE],
 		[Vector3(0.45, 1.75, 0.25), 0.62, Color("d8f0c8")],
@@ -242,16 +240,10 @@ func tree(parent: Node3D, at: Vector3) -> void:
 		[Vector3(0.05, 2.6, 0.05), 0.55, Color("e8f8d8")],
 	]
 	for blob in canopy:
-		var sphere := SphereMesh.new()
-		sphere.radius = float(blob[1])
-		sphere.height = float(blob[1]) * 1.8
-		sphere.radial_segments = 14
-		sphere.rings = 7
-		var leaf := MeshInstance3D.new()
-		leaf.mesh = sphere
-		leaf.material_override = BuildVoxelStyle.material("leaves", blob[2])
-		leaf.position = at + blob[0] + Vector3(0, TOP_Y - 0.25, 0)
-		parent.add_child(leaf)
+		var local: Vector3 = at + blob[0] + Vector3(0, TOP_Y - 0.25, 0)
+		var basis := Basis.from_scale(Vector3.ONE * float(blob[1]))
+		_pending_canopies.append(parent.global_transform * Transform3D(basis, local))
+		_pending_canopy_colors.append(blob[2])
 
 
 ## Golden star token used for the collectable crystals.
@@ -486,13 +478,16 @@ func sparkles(root: Node3D, course_length: float) -> void:
 	root.add_child(particles)
 
 
-## Visual-only lanterns and stone path ribbons. No extra colliders.
+## Visual-only lanterns, a readable stone path on every island, crates and bushes.
 func props(root: Node3D, islands: Array[Vector3]) -> void:
 	var lamp_posts: Array = []
 	var lamp_glows: Array = []
 	var lamp_colors: Array = []
 	var glow_colors: Array = []
 	var path_x: Array[Transform3D] = []
+	var crate_x: Array[Transform3D] = []
+	var bush_t: Array = []
+	var bush_c: Array = []
 	var post := CylinderMesh.new()
 	post.top_radius = 0.045
 	post.bottom_radius = 0.06
@@ -505,6 +500,13 @@ func props(root: Node3D, islands: Array[Vector3]) -> void:
 	glow.rings = 6
 	var paver := BoxMesh.new()
 	paver.size = Vector3.ONE
+	var crate := BoxMesh.new()
+	crate.size = Vector3.ONE
+	var bush := SphereMesh.new()
+	bush.radius = 1.0
+	bush.height = 1.35
+	bush.radial_segments = 10
+	bush.rings = 6
 	for i in range(islands.size()):
 		var point: Vector3 = islands[i]
 		for side in [-1.0, 1.0]:
@@ -513,12 +515,23 @@ func props(root: Node3D, islands: Array[Vector3]) -> void:
 			lamp_colors.append(Color("d8c4a0"))
 			lamp_glows.append(Transform3D(Basis.IDENTITY, at + Vector3(0, 0.68, 0)))
 			glow_colors.append(Color("ffe6a0"))
-		if i % 3 == 0:
-			for step in range(5):
-				var local := Vector3(0, TOP_Y + 0.03, -1.6 + float(step) * 0.75)
-				path_x.append(
-					Transform3D(Basis.from_scale(Vector3(1.35, 0.04, 0.62)), point + local)
+		for step in range(7):
+			var local := Vector3(0, TOP_Y + 0.035, 2.05 - float(step) * 0.68)
+			path_x.append(
+				Transform3D(Basis.from_scale(Vector3(1.22, 0.045, 0.52)), point + local)
+			)
+		if i % 2 == 1:
+			var crate_at := point + Vector3(-2.35, TOP_Y + 0.22, 0.85)
+			crate_x.append(Transform3D(Basis.from_scale(Vector3(0.46, 0.4, 0.46)), crate_at))
+			crate_x.append(
+				Transform3D(
+					Basis.from_scale(Vector3(0.34, 0.28, 0.34)), crate_at + Vector3(0.38, 0.12, 0.12)
 				)
+			)
+		if i % 3 != 1:
+			var bush_at := point + Vector3(2.2, TOP_Y + 0.22, -1.9)
+			bush_t.append(Transform3D(Basis.from_scale(Vector3(0.42, 0.34, 0.42)), bush_at))
+			bush_c.append(Color("7fbf55").lerp(Color("c8e88a"), rng.randf()))
 	_scatter(root, post, lamp_posts, lamp_colors, "LanternPosts")
 	var lights := _scatter(root, glow, lamp_glows, glow_colors, "LanternGlows")
 	var glow_mat := StandardMaterial3D.new()
@@ -532,3 +545,195 @@ func props(root: Node3D, islands: Array[Vector3]) -> void:
 		BuildVoxelStyle.multimesh(
 			root, "IslandPaths", paver, BuildVoxelStyle.material("paving", Color("d8d2c4")), path_x
 		)
+	if not crate_x.is_empty():
+		BuildVoxelStyle.multimesh(
+			root, "IslandCrates", crate, BuildVoxelStyle.material("wood", Color("d2a06a")), crate_x
+		)
+	if not bush_t.is_empty():
+		var bushes := _scatter(root, bush, bush_t, bush_c, "IslandBushes")
+		var bush_mat: StandardMaterial3D = BuildVoxelStyle.material("leaves", Color("98c45a")).duplicate()
+		bush_mat.vertex_color_use_as_albedo = true
+		bushes.material_override = bush_mat
+
+
+## Flush batched trees and island caps. Call after every tree() and island().
+func finish(root: Node3D) -> void:
+	if not _pending_trunks.is_empty():
+		var cylinder := CylinderMesh.new()
+		cylinder.top_radius = 0.12
+		cylinder.bottom_radius = 0.2
+		cylinder.height = 1.5
+		cylinder.radial_segments = 8
+		var trunks := _scatter(root, cylinder, _pending_trunks, _pending_trunk_colors, "TreeTrunks")
+		trunks.material_override = BuildVoxelStyle.material("bark", Color("c4a07a"))
+		trunks.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	if not _pending_canopies.is_empty():
+		var sphere := SphereMesh.new()
+		sphere.radius = 1.0
+		sphere.height = 1.8
+		sphere.radial_segments = 14
+		sphere.rings = 7
+		var leaves := _scatter(root, sphere, _pending_canopies, _pending_canopy_colors, "TreeCanopies")
+		var leaf_mat: StandardMaterial3D = BuildVoxelStyle.material("leaves", Color.WHITE).duplicate()
+		leaf_mat.vertex_color_use_as_albedo = true
+		leaves.material_override = leaf_mat
+		leaves.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	if not _pending_caps.is_empty():
+		var box := BoxMesh.new()
+		box.size = Vector3.ONE
+		for kind in _pending_caps:
+			var info: Dictionary = _pending_caps[kind]
+			var typed: Array[Transform3D] = []
+			typed.assign(info["xforms"])
+			BuildVoxelStyle.multimesh(
+				root,
+				"IslandCaps_%s" % str(kind),
+				box,
+				BuildVoxelStyle.material(str(kind), info["tint"]),
+				typed
+			)
+	_pending_trunks.clear()
+	_pending_trunk_colors.clear()
+	_pending_canopies.clear()
+	_pending_canopy_colors.clear()
+	_pending_caps.clear()
+
+
+## A hanging island with a waterfall near the start, plus side falls on the course.
+func near_course_scenery(root: Node3D, islands: Array[Vector3]) -> void:
+	if islands.is_empty():
+		return
+	var water := ShaderMaterial.new()
+	var shader := Shader.new()
+	shader.code = WATERFALL_SHADER
+	water.shader = shader
+	var at: Vector3 = islands[0] + Vector3(-8.8, 5.6, -2.8)
+	var hanging := MeshInstance3D.new()
+	hanging.name = "NearFallIsland"
+	hanging.mesh = island_mesh(Vector2(6.4, 5.1), 5.4, 77.0)
+	hanging.material_override = _vertex_material()
+	hanging.position = at
+	hanging.rotation.y = -0.35
+	root.add_child(hanging)
+	tree(hanging, Vector3(-1.15, 0, -0.7))
+	tree(hanging, Vector3(1.35, 0, 0.55))
+	var fall := MeshInstance3D.new()
+	fall.name = "NearWaterfall"
+	var quad := QuadMesh.new()
+	quad.size = Vector2(2.4, 12.5)
+	fall.mesh = quad
+	fall.material_override = water
+	fall.position = at + Vector3(2.15, TOP_Y - 6.1, 1.35)
+	fall.rotation.y = 0.85
+	fall.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(fall)
+	var mist := MeshInstance3D.new()
+	var sphere := SphereMesh.new()
+	sphere.radius = 1.9
+	sphere.height = 1.8
+	mist.mesh = sphere
+	mist.material_override = material(Color("eefaff"), 0.35, 1.0)
+	mist.position = fall.position + Vector3(0, -6.2, 0)
+	mist.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(mist)
+	for i in [2, 5, 8]:
+		if i >= islands.size():
+			continue
+		var side: float = -1.0 if i % 2 == 0 else 1.0
+		var ribbon := MeshInstance3D.new()
+		ribbon.name = "IslandFall%d" % i
+		var sheet := QuadMesh.new()
+		sheet.size = Vector2(1.55, 6.2)
+		ribbon.mesh = sheet
+		ribbon.material_override = water
+		ribbon.position = islands[i] + Vector3(side * 3.35, TOP_Y - 2.9, 0.15)
+		ribbon.rotation.y = -side * 1.15
+		ribbon.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(ribbon)
+
+
+func mini_island(parent: Node3D, size: Vector2 = Vector2(3.2, 2.6), seed_offset: float = 41.0) -> void:
+	var node := MeshInstance3D.new()
+	node.name = "MiniIslandArt"
+	node.mesh = island_mesh(size, 2.15, seed_offset, 0)
+	node.material_override = _vertex_material()
+	parent.add_child(node)
+	var cap := MeshInstance3D.new()
+	var plate := BoxMesh.new()
+	plate.size = Vector3(size.x * 0.88, 0.045, size.y * 0.86)
+	cap.mesh = plate
+	cap.position = Vector3(0, TOP_Y + 0.012, 0)
+	cap.material_override = BuildVoxelStyle.material("grass_top", Color("b7c48a"))
+	parent.add_child(cap)
+
+
+func bounce_pad(parent: Node3D) -> void:
+	var base := MeshInstance3D.new()
+	var plate := CylinderMesh.new()
+	plate.top_radius = 0.55
+	plate.bottom_radius = 0.62
+	plate.height = 0.12
+	plate.radial_segments = 14
+	base.mesh = plate
+	base.material_override = material(Color("5b4fd1"), 0.2, 0.5)
+	base.position = Vector3(0, TOP_Y + 0.08, 0)
+	parent.add_child(base)
+	var cushion := MeshInstance3D.new()
+	var cap := SphereMesh.new()
+	cap.radius = 0.48
+	cap.height = 0.34
+	cap.radial_segments = 14
+	cap.rings = 7
+	cushion.mesh = cap
+	cushion.material_override = material(Color("53ddfd"), 0.75, 0.32)
+	cushion.position = Vector3(0, TOP_Y + 0.28, 0)
+	parent.add_child(cushion)
+	var ring := MeshInstance3D.new()
+	var torus := TorusMesh.new()
+	torus.inner_radius = 0.16
+	torus.outer_radius = 0.36
+	torus.ring_segments = 12
+	torus.rings = 14
+	ring.mesh = torus
+	ring.material_override = material(Color("ffc93a"), 0.6, 0.38)
+	ring.position = Vector3(0, TOP_Y + 0.2, 0)
+	ring.rotation_degrees.x = 90
+	parent.add_child(ring)
+
+
+func checkpoint_flag(parent: Node3D) -> Dictionary:
+	var pole := MeshInstance3D.new()
+	var cyl := CylinderMesh.new()
+	cyl.top_radius = 0.045
+	cyl.bottom_radius = 0.055
+	cyl.height = 1.85
+	cyl.radial_segments = 8
+	pole.mesh = cyl
+	pole.material_override = material(Color("d8c4a0"), 0.0, 0.55)
+	pole.position = Vector3(0, TOP_Y + 0.92, 0)
+	parent.add_child(pole)
+	var banner := MeshInstance3D.new()
+	var cloth := BoxMesh.new()
+	cloth.size = Vector3(0.74, 0.5, 0.06)
+	banner.mesh = cloth
+	banner.position = Vector3(0.4, TOP_Y + 1.56, 0)
+	banner.material_override = material(Color("7ad7f0"), 0.28, 0.42)
+	parent.add_child(banner)
+	if _star_mesh == null:
+		_star_mesh = LumoWorldMeshes.star()
+	var emblem := MeshInstance3D.new()
+	emblem.mesh = _star_mesh
+	emblem.scale = Vector3.ONE * 0.18
+	emblem.position = Vector3(0.4, TOP_Y + 1.56, 0.05)
+	emblem.material_override = material(Color("ffe27a"), 0.85, 0.3)
+	parent.add_child(emblem)
+	return {"banner": banner, "star": emblem}
+
+
+func set_flag_active(flag: Dictionary, active: bool) -> void:
+	if flag.is_empty() or not is_instance_valid(flag.get("banner")):
+		return
+	var banner: MeshInstance3D = flag["banner"]
+	banner.material_override = material(
+		Color("ffe27a") if active else Color("7ad7f0"), 1.15 if active else 0.28, 0.38
+	)

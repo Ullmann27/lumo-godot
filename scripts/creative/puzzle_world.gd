@@ -3,12 +3,23 @@ const STATE = preload("res://scripts/creative/puzzle_state.gd")
 const PIECE = preload("res://scripts/creative/puzzle_piece.gd")
 const KIT = preload("res://scripts/creative/creative_kit.gd")
 const RUNTIME = preload("res://scripts/creative/creative_runtime.gd")
+const ART = preload("res://scripts/creative/puzzle_atelier_art.gd")
+const ALIVE_SHADER = preload("res://assets/creative/puzzle/puzzle_alive.gdshader")
+const TABLE_SHADER = preload("res://assets/creative/puzzle/puzzle_table.gdshader")
 const MOTIFS = [
 	preload("res://assets/creative/puzzle/moonlight.webp"),
 	preload("res://assets/creative/puzzle/candy.webp"),
-	preload("res://assets/creative/puzzle/volcano.webp")
+	preload("res://assets/creative/puzzle/volcano.webp"),
+	preload("res://assets/creative/puzzle/hafen.webp"),
+	preload("res://assets/creative/puzzle/bluetenwiese.webp")
 ]
-const TITLES = ["Lumos Mondschloss", "Candy Cloud Circuit", "Volcano Night Run"]
+const TITLES = [
+	"Lumos Mondschloss",
+	"Candy Cloud Circuit",
+	"Volcano Night Run",
+	"Leuchtturm-Bucht",
+	"Blütenwiese"
+]
 var model = STATE.new()
 var kit = KIT.new()
 var previous: Dictionary
@@ -20,13 +31,16 @@ var guide: MeshInstance3D
 var board_frame: MeshInstance3D
 var board_base: MeshInstance3D
 var hint_marker: MeshInstance3D
+var hover_marker: MeshInstance3D
+var alive_picture: MeshInstance3D
+var snap_burst: GPUParticles3D
 var info: Label
 var status: Label
 var menu: PanelContainer
 var menu_box: VBoxContainer
 var progress: ProgressBar
 var selected_count: int = 12
-var selected_motif: int = 0
+var selected_motif: int = 3
 var tray_page: int = 0
 var edges_only: bool = false
 var paused: bool = true
@@ -37,10 +51,15 @@ var save_path: String
 var dirty: bool = false
 var save_clock: float = 0
 var hint_time: float = 0
+var matching_hover: bool = false
+var picture_alive: bool = false
+var last_snap_fx: bool = false
+var preview_tier: String = ""
+var compact_tray: bool = false
 
 
 func _ready() -> void:
-	previous = RUNTIME.enter(self)
+	previous = RUNTIME.enter(self, true)
 	SceneRouter.current_scene_id = "puzzle"
 	var child := (
 		str(SceneRouter.launch_options.get("childKey", "standalone"))
@@ -49,20 +68,50 @@ func _ready() -> void:
 	)
 	save_path = "user://lumo_puzzle_" + child + ".json"
 	kit.environment(self, LumoEnvironmentCreativePresets.PRESET_PUZZLE_ATELIER)
-	var table: MeshInstance3D = kit.box(self, Vector3(0, -0.28, 0.2), Vector3(22, 0.48, 13.2), Color.WHITE)
-	table.material_override = BuildVoxelStyle.material("wood", Color("e6bf88"))
+	# The tabletop is close to the camera: avoid self-shadow stripes on the
+	# newly lit picture surface while retaining shadows beneath lifted pieces.
+	var sun := get_node_or_null("Sun") as DirectionalLight3D
+	if sun != null:
+		sun.shadow_bias = 0.5
+	var table: MeshInstance3D = kit.box(
+		self, Vector3(0, -0.28, 0.2), Vector3(22, 0.48, 13.2), Color.WHITE
+	)
+	table.material_override = _table_wood(Color("ae8054"))
 	board_frame = kit.box(self, Vector3(0, -0.012, 0), Vector3.ONE, Color("d7b056"))
 	board_frame.material_override = _gold()
 	board_base = kit.box(self, Vector3(0, 0.07, 0), Vector3.ONE, Color("1a2748"))
+	var board_material := board_base.material_override as StandardMaterial3D
+	board_material.roughness = 0.92
+	board_material.metallic_specular = 0.12
+	# Flat dyed felt avoids shadow-map acne on the shallow board in GLES.
+	# Piece edges, the gold frame and the room retain their lit 3D materials.
+	board_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	for side in [-1.0, 1.0]:
 		var tray: MeshInstance3D = kit.box(
-			self, Vector3(side * 7.35, -0.02, 0), Vector3(4.7, 0.2, 6.9), Color.WHITE
+			self, Vector3(side * 7.35, -0.04, 0), Vector3(4.7, 0.18, 6.9), Color.WHITE
 		)
-		tray.material_override = BuildVoxelStyle.material("wood", Color("e2b67a"))
-		var tray_rim: MeshInstance3D = kit.box(
-			self, Vector3(side * 7.35, 0.09, 0), Vector3(4.85, 0.05, 7.05), Color("d7b056")
+		tray.material_override = _table_wood(Color("91603d"))
+		var felt: MeshInstance3D = kit.box(
+			self, Vector3(side * 7.35, 0.07, 0), Vector3(4.35, 0.04, 6.55), Color("1a2748")
 		)
-		tray_rim.material_override = _gold()
+		felt.material_override = kit.material(Color("1a2748"))
+		# Four border rails leave the blue felt exposed. A solid rim box at
+		# this height covered the whole tray and hid its material.
+		for edge in [-1.0, 1.0]:
+			var long_rim: MeshInstance3D = kit.box(
+				self,
+				Vector3(side * 7.35 + edge * 2.37, 0.1, 0),
+				Vector3(0.14, 0.05, 7.08),
+				Color("d7b056")
+			)
+			long_rim.material_override = _gold()
+			var short_rim: MeshInstance3D = kit.box(
+				self,
+				Vector3(side * 7.35, 0.1, edge * 3.47),
+				Vector3(4.6, 0.05, 0.14),
+				Color("d7b056")
+			)
+			short_rim.material_override = _gold()
 	_atelier_backdrop()
 	camera = Camera3D.new()
 	camera.projection = Camera3D.PROJECTION_PERSPECTIVE
@@ -82,9 +131,13 @@ func _ready() -> void:
 	add_child(guide)
 	hint_marker = kit.box(self, Vector3.ZERO, Vector3(1, 0.025, 1), Color("77e8ff"), true)
 	hint_marker.hide()
+	hover_marker = kit.box(self, Vector3.ZERO, Vector3(1, 0.02, 1), Color("7cf0ff"), true)
+	hover_marker.hide()
+	_make_alive_picture()
+	_make_snap_burst()
 	_ui()
-	get_viewport().size_changed.connect(func(): RUNTIME.safe_area(self, safe_ui))
-	RUNTIME.safe_area(self, safe_ui)
+	get_viewport().size_changed.connect(_resize_ui)
+	_resize_ui()
 	_show_selection()
 
 
@@ -99,6 +152,12 @@ func _ui() -> void:
 	safe_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	safe_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(safe_ui)
+	var hud_backdrop := ColorRect.new()
+	hud_backdrop.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	hud_backdrop.offset_bottom = 164
+	hud_backdrop.color = Color(0.025, 0.055, 0.12, 0.90)
+	hud_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	safe_ui.add_child(hud_backdrop)
 	var top := HBoxContainer.new()
 	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	top.offset_left = 14
@@ -106,37 +165,47 @@ func _ui() -> void:
 	top.offset_top = 12
 	safe_ui.add_child(top)
 	top.add_child(KIT.button("‹ Spiele", _leave))
-	top.add_child(KIT.label("LUMOS PUZZLE-ATELIER", 24))
-	var gap := Control.new()
-	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top.add_child(gap)
+	var title := KIT.label("LUMOS PUZZLE-ATELIER", 22)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	title.clip_text = true
+	top.add_child(title)
 	info = KIT.label("", 18)
-	top.add_child(info)
+	info.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	info.position = Vector2(16, 66)
+	info.offset_right = -16
+	safe_ui.add_child(info)
 	top.add_child(KIT.button("Ⅱ", _pause_menu, 52))
+	var tool_scroll := ScrollContainer.new()
+	tool_scroll.name = "PuzzleToolsScroll"
+	tool_scroll.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	tool_scroll.offset_top = -78
+	tool_scroll.offset_bottom = -12
+	tool_scroll.offset_left = 14
+	tool_scroll.offset_right = -14
+	tool_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	safe_ui.add_child(tool_scroll)
 	var tools := HBoxContainer.new()
-	tools.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	tools.offset_top = -68
-	tools.offset_bottom = -12
-	tools.offset_left = 14
-	tools.offset_right = -14
-	safe_ui.add_child(tools)
+	tool_scroll.add_child(tools)
 	tools.add_child(KIT.button("‹ Teile", _page.bind(-1)))
 	tools.add_child(KIT.button("Teile ›", _page.bind(1)))
 	tools.add_child(KIT.button("Randteile", _edges))
 	var show := KIT.button("Bild ansehen", func(): pass)
 	show.button_down.connect(func(): guide.visible = true)
-	show.button_up.connect(func(): guide.visible = false)
+	show.button_up.connect(func(): guide.visible = picture_alive)
 	tools.add_child(show)
 	tools.add_child(KIT.button("Ein Tipp", _hint))
 	tools.add_child(KIT.button("Speichern", _save))
 	tools.add_child(KIT.button("Neues Puzzle", _show_selection))
 	status = KIT.label("Ziehe ein Teil auf seinen Platz. Es rastet ein, wenn es passt.", 16)
 	status.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	status.position = Vector2(16, 80)
+	status.position = Vector2(16, 92)
+	status.offset_right = -16
+	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	safe_ui.add_child(status)
 	progress = ProgressBar.new()
 	progress.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	progress.position.y = 112
+	progress.position.y = 136
 	progress.offset_left = 14
 	progress.offset_right = -14
 	progress.custom_minimum_size.y = 6
@@ -153,6 +222,37 @@ func _ui() -> void:
 	menu.add_child(menu_box)
 
 
+func _resize_ui() -> void:
+	RUNTIME.safe_area(self, safe_ui)
+	if is_instance_valid(menu):
+		for child in menu_box.get_children():
+			if child is Label:
+				child.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		var width := minf(470.0, maxf(280.0, safe_ui.size.x - 24.0))
+		menu.custom_minimum_size.x = width
+		call_deferred("_fit_menu")
+	if is_instance_valid(camera) and camera.is_inside_tree():
+		var view := get_viewport().get_visible_rect().size
+		var aspect := view.x / maxf(view.y, 1.0)
+		compact_tray = aspect < 1.15
+		for prop_name in ["PuzzleCompass", "PuzzleDeskBooks", "PuzzlePots", "PuzzleHydrangeas"]:
+			var prop := get_node_or_null(NodePath(prop_name)) as Node3D
+			if prop != null:
+				prop.visible = not compact_tray
+		camera.position = Vector3(0, 13.8, 11.6) * maxf(1.0, 0.82 / aspect)
+		camera.look_at(Vector3(0, 0.05, 0.8 if compact_tray else -0.35))
+		if not nodes.is_empty() and dragging < 0:
+			_tray()
+
+
+func _fit_menu() -> void:
+	await get_tree().process_frame
+	if not is_inside_tree() or not is_instance_valid(menu):
+		return
+	menu.size = Vector2(menu.custom_minimum_size.x, menu.get_combined_minimum_size().y)
+	menu.position = (safe_ui.size - menu.size) * 0.5
+
+
 func _clear_menu() -> void:
 	paused = true
 	dragging = -1
@@ -161,15 +261,22 @@ func _clear_menu() -> void:
 		menu_box.remove_child(child)
 		child.queue_free()
 	menu.show()
+	call_deferred("_resize_ui")
 
 
 func _show_selection() -> void:
 	if not model.pieces.is_empty():
 		_save()
+	_hide_alive()
 	_clear_menu()
 	menu_box.add_child(KIT.label("Stück für Stück entsteht deine Welt", 23))
-	menu_box.add_child(KIT.button(TITLES[selected_motif], _next_motif))
-	menu_box.add_child(KIT.button("%d echte Puzzleteile" % selected_count, _next_count))
+	menu_box.add_child(KIT.button("Bild: %s" % TITLES[selected_motif], _next_motif))
+	menu_box.add_child(
+		KIT.button(
+			"%s · %d Teile" % [STATE.difficulty_name_for(selected_count), selected_count],
+			_next_count
+		)
+	)
 	menu_box.add_child(KIT.button("Neues Puzzle beginnen", start))
 	if FileAccess.file_exists(save_path):
 		menu_box.add_child(KIT.button("Gespeichertes Puzzle fortsetzen", _resume))
@@ -177,16 +284,17 @@ func _show_selection() -> void:
 
 
 func _next_count() -> void:
-	selected_count = STATE.COUNTS[(STATE.COUNTS.find(selected_count) + 1) % 4]
+	selected_count = STATE.COUNTS[(STATE.COUNTS.find(selected_count) + 1) % STATE.COUNTS.size()]
 	_show_selection()
 
 
 func _next_motif() -> void:
-	selected_motif = (selected_motif + 1) % 3
+	selected_motif = (selected_motif + 1) % MOTIFS.size()
 	_show_selection()
 
 
 func start() -> void:
+	_hide_alive()
 	model.setup(selected_count, selected_motif)
 	model.result_id = HostBridge.new_result_id()
 	tray_page = 0
@@ -201,7 +309,10 @@ func start() -> void:
 func _resume() -> void:
 	var saved = JSON.parse_string(FileAccess.get_file_as_string(save_path))
 	if not saved is Dictionary or not model.restore(saved):
-		status.text = "Dieser Spielstand konnte nicht geöffnet werden. Dein offenes Puzzle bleibt erhalten."
+		status.text = (
+			"Dieser Spielstand konnte nicht geöffnet werden. "
+			+ "Dein offenes Puzzle bleibt erhalten."
+		)
 		return
 	selected_count = model.count
 	selected_motif = model.motif
@@ -215,7 +326,7 @@ func _resume() -> void:
 
 func _build_pieces() -> void:
 	var size: Vector2 = model.board_size()
-	board_frame.scale = Vector3(size.x + 0.4, 0.1, size.y + 0.4)
+	board_frame.scale = Vector3(size.x + 0.72, 0.1, size.y + 0.72)
 	board_base.scale = Vector3(size.x + 0.1, 0.1, size.y + 0.1)
 	guide.mesh.size = size
 	for child in piece_root.get_children():
@@ -242,6 +353,7 @@ func _tray() -> void:
 		if model.pieces[i].locked:
 			node.show()
 			node.position = Vector3(model.target(i).x, 0.14, model.target(i).y)
+			node.scale = Vector3.ONE
 		elif not bool(model.pieces[i].get("tray", true)):
 			node.show()
 			node.position = Vector3(model.pieces[i].x, 0.15, model.pieces[i].z)
@@ -249,8 +361,8 @@ func _tray() -> void:
 			node.hide()
 			if not edges_only or model.is_edge(i):
 				pending.append(i)
-	var per_side: int = [3, 3, 4, 5][STATE.COUNTS.find(model.count)]
-	var page_size: int = per_side * 2
+	var per_side: int = STATE.tray_per_side(model.count)
+	var page_size: int = 3 if compact_tray else per_side * 2
 	var pages: int = maxi(1, ceili(float(pending.size()) / page_size))
 	tray_page = posmod(tray_page, pages)
 	for p in range(tray_page * page_size, mini((tray_page + 1) * page_size, pending.size())):
@@ -258,6 +370,12 @@ func _tray() -> void:
 		var local: int = p % page_size
 		var x: float = -7.0 if local < per_side else 7.0
 		var z: float = -2.2 + (local % per_side) * (4.4 / maxi(1, per_side - 1))
+		if compact_tray:
+			x = float(local - 1) * 3.05
+			z = model.board_size().y * 0.5 + model.cell_size().y * 0.5 + 0.55
+			nodes[i].scale = Vector3.ONE * minf(1.8, 2.7 / model.cell_size().x)
+		else:
+			nodes[i].scale = Vector3.ONE
 		model.pieces[i].x = x
 		model.pieces[i].z = z
 		nodes[i].position = Vector3(x, 0.15, z)
@@ -281,7 +399,10 @@ func _edges() -> void:
 
 
 func _labels() -> void:
-	info.text = "%d / %d Teile · %d Tipps" % [model.placed(), model.count, model.hints]
+	info.text = (
+		"%s · %d / %d Teile · %d Tipps"
+		% [model.difficulty_name(), model.placed(), model.count, model.hints]
+	)
 	progress.value = float(model.placed()) / maxi(1, model.count) * 100
 
 
@@ -290,6 +411,31 @@ func _plane(at: Vector2) -> Vector2:
 	var direction := camera.project_ray_normal(at)
 	var point := origin + direction * ((0.35 - origin.y) / direction.y)
 	return Vector2(point.x, point.z)
+
+
+func _visual(id: int) -> MeshInstance3D:
+	if id < 0 or id >= nodes.size():
+		return null
+	return nodes[id].get_node_or_null("Visual") as MeshInstance3D
+
+
+func _set_overlay(id: int, color: Color) -> void:
+	var visual: MeshInstance3D = _visual(id)
+	if visual == null:
+		return
+	var overlay := StandardMaterial3D.new()
+	overlay.albedo_color = color
+	overlay.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	overlay.emission_enabled = true
+	overlay.emission = Color(color.r, color.g, color.b)
+	overlay.emission_energy_multiplier = 0.55
+	visual.material_overlay = overlay
+
+
+func _clear_overlay(id: int) -> void:
+	var visual: MeshInstance3D = _visual(id)
+	if visual != null:
+		visual.material_overlay = null
 
 
 func _pick(at: Vector2, index: int) -> void:
@@ -307,8 +453,11 @@ func _pick(at: Vector2, index: int) -> void:
 		return
 	dragging = id
 	finger = index
+	matching_hover = false
 	drag_offset = Vector2(nodes[id].position.x, nodes[id].position.z) - _plane(at)
 	nodes[id].position.y = 0.8
+	nodes[id].scale = Vector3(1.08, 1.08, 1.08)
+	_set_overlay(id, Color(1.0, 0.86, 0.35, 0.22))
 
 
 func _drag(at: Vector2) -> void:
@@ -318,6 +467,18 @@ func _drag(at: Vector2) -> void:
 	nodes[dragging].position = Vector3(
 		clampf(position_2d.x, -9, 9), 0.8, clampf(position_2d.y, -5, 5)
 	)
+	var at2 := Vector2(nodes[dragging].position.x, nodes[dragging].position.z)
+	var near: bool = model.is_near_target(dragging, at2)
+	matching_hover = near
+	if near:
+		_set_overlay(dragging, Color(0.45, 0.92, 1.0, 0.32))
+		var slot := model.target(dragging)
+		hover_marker.position = Vector3(slot.x, 0.195, slot.y)
+		hover_marker.scale = Vector3(model.cell_size().x * 0.92, 1, model.cell_size().y * 0.92)
+		hover_marker.show()
+	else:
+		_set_overlay(dragging, Color(1.0, 0.86, 0.35, 0.22))
+		hover_marker.hide()
 
 
 func _drop() -> void:
@@ -328,19 +489,36 @@ func _drop() -> void:
 	var snapped: bool = model.try_snap(id, at)
 	dragging = -1
 	finger = -1
+	matching_hover = false
+	hover_marker.hide()
 	if snapped:
 		var target := model.target(id)
 		create_tween().tween_property(
 			nodes[id], "position", Vector3(target.x, 0.14, target.y), 0.18
 		)
+		_play_snap_fx(id)
 		status.text = "Das passt! Dein Bild wächst."
 	else:
 		nodes[id].position.y = 0.15
+		nodes[id].scale = Vector3.ONE
+		_clear_overlay(id)
 		status.text = "Probiere einen anderen Platz. Schau auf Form und Bild."
 	dirty = true
 	_labels()
 	if model.complete():
 		_win()
+
+
+func _play_snap_fx(id: int) -> void:
+	last_snap_fx = true
+	nodes[id].scale = Vector3(1.14, 1.14, 1.14)
+	_set_overlay(id, Color(1.0, 0.92, 0.45, 0.4))
+	var tw := create_tween()
+	tw.tween_property(nodes[id], "scale", Vector3.ONE, 0.2)
+	tw.tween_callback(_clear_overlay.bind(id))
+	if snap_burst != null:
+		snap_burst.global_position = nodes[id].global_position + Vector3(0, 0.25, 0)
+		snap_burst.restart()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -384,6 +562,9 @@ func _hint() -> void:
 			hint_marker.scale = Vector3(model.cell_size().x * 0.9, 1, model.cell_size().y * 0.9)
 			hint_marker.show()
 			hint_time = 3
+			var tw := create_tween()
+			tw.tween_property(nodes[i], "position:y", 0.62, 0.14)
+			tw.tween_property(nodes[i], "position:y", 0.48, 0.14)
 			status.text = "Das angehobene Teil passt auf den leuchtenden Platz."
 			_labels()
 			dirty = true
@@ -391,6 +572,15 @@ func _hint() -> void:
 
 
 func _process(delta: float) -> void:
+	if hint_time > 0:
+		hint_time -= delta
+		hint_marker.scale = Vector3(
+			hint_marker.scale.x,
+			1.0 + sin(Time.get_ticks_msec() * 0.008) * 0.15,
+			hint_marker.scale.z
+		)
+		if hint_time <= 0:
+			hint_marker.hide()
 	if paused:
 		return
 	model.elapsed += delta
@@ -398,10 +588,6 @@ func _process(delta: float) -> void:
 	if dirty and save_clock >= 2:
 		save_clock = 0
 		_save()
-	if hint_time > 0:
-		hint_time -= delta
-		if hint_time <= 0:
-			hint_marker.hide()
 
 
 func _save() -> bool:
@@ -443,6 +629,7 @@ func _continue() -> void:
 func _win() -> void:
 	if not _save():
 		return
+	_make_alive()
 	var earned: int = 3 if model.hints <= 2 else 2
 	HostBridge.reward(
 		{
@@ -490,44 +677,80 @@ func _gold() -> StandardMaterial3D:
 	return mat
 
 
-func _atelier_backdrop() -> void:
-	var wall: MeshInstance3D = kit.box(self, Vector3(0, 3.1, -7.35), Vector3(24, 7.0, 0.38), Color("f0d8b4"))
-	wall.material_override = BuildVoxelStyle.material("plain", Color("f2dcc0"))
-	for x in [-3.15, 0.0, 3.15]:
-		var frame: MeshInstance3D = kit.box(
-			self, Vector3(x, 3.55, -7.14), Vector3(2.85, 3.7, 0.12), Color.WHITE
-		)
-		frame.material_override = BuildVoxelStyle.material("wood", Color("c99558"))
-		var pane: MeshInstance3D = kit.box(
-			self, Vector3(x, 3.55, -7.06), Vector3(2.45, 3.25, 0.06), Color("c5e8ff"), true
-		)
-		var glass := StandardMaterial3D.new()
-		glass.albedo_color = Color(0.62, 0.82, 0.98, 0.72)
-		glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		glass.emission_enabled = true
-		glass.emission = Color("d7eefe")
-		glass.emission_energy_multiplier = 0.55
-		glass.roughness = 0.08
-		pane.material_override = glass
-	for side in [-1.0, 1.0]:
-		var shelf: MeshInstance3D = kit.box(
-			self, Vector3(side * 11.15, 1.7, -4.1), Vector3(1.7, 3.5, 3.4), Color.WHITE
-		)
-		shelf.material_override = BuildVoxelStyle.material("wood", Color("d7a66c"))
-		for i in range(5):
-			var book: MeshInstance3D = kit.box(
-				self,
-				Vector3(side * 11.15, 0.45 + float(i) * 0.62, -3.4 + float(i % 3) * 0.55),
-				Vector3(1.15, 0.38, 0.85),
-				[Color("3e6db5"), Color("b85c4a"), Color("d7a23a"), Color("4f8a5a"), Color("6a4ea0")][i]
-			)
-			book.material_override = BuildVoxelStyle.material(
-				"plain",
-				[Color("4a78c4"), Color("c46a58"), Color("e0b252"), Color("5c9a68"), Color("7a5cb0")][i]
-			)
-	var pot: MeshInstance3D = kit.cylinder(self, Vector3(-5.6, 0.22, -5.6), 0.28, 0.42, Color("b07048"))
-	pot.material_override = BuildVoxelStyle.material("dirt", Color("c48458"))
-	var plant := kit.part_node(preload("res://scripts/creative/build_catalog.gd").part("bush"))
-	plant.position = Vector3(-5.6, 0.42, -5.6)
-	add_child(plant)
+func _table_wood(tint: Color) -> ShaderMaterial:
+	var mat := ShaderMaterial.new()
+	mat.shader = TABLE_SHADER
+	mat.set_shader_parameter("grain_texture", KIT.WOOD)
+	mat.set_shader_parameter("wood_color", tint)
+	return mat
 
+
+func _atelier_backdrop() -> void:
+	ART.apply(self, kit, preview_tier)
+
+
+func _make_alive_picture() -> void:
+	alive_picture = MeshInstance3D.new()
+	alive_picture.name = "AlivePicture"
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(6, 6)
+	alive_picture.mesh = plane
+	alive_picture.position.y = 0.32
+	alive_picture.hide()
+	add_child(alive_picture)
+
+
+func _make_snap_burst() -> void:
+	snap_burst = GPUParticles3D.new()
+	snap_burst.name = "SnapBurst"
+	snap_burst.amount = 18
+	snap_burst.lifetime = 0.55
+	snap_burst.one_shot = true
+	snap_burst.explosiveness = 1.0
+	snap_burst.emitting = false
+	var process := ParticleProcessMaterial.new()
+	process.direction = Vector3(0, 1, 0)
+	process.spread = 55.0
+	process.initial_velocity_min = 1.2
+	process.initial_velocity_max = 2.6
+	process.gravity = Vector3(0, -2.5, 0)
+	snap_burst.process_material = process
+	var draw := SphereMesh.new()
+	draw.radius = 0.045
+	draw.height = 0.09
+	draw.radial_segments = 8
+	draw.rings = 4
+	var spark := StandardMaterial3D.new()
+	spark.albedo_color = Color("ffe7a0")
+	spark.emission_enabled = true
+	spark.emission = Color("ffd36a")
+	spark.emission_energy_multiplier = 0.8
+	draw.material = spark
+	snap_burst.draw_pass_1 = draw
+	add_child(snap_burst)
+
+
+func _make_alive() -> void:
+	if model.pieces.is_empty():
+		return
+	picture_alive = true
+	var shader := ShaderMaterial.new()
+	shader.shader = ALIVE_SHADER
+	shader.set_shader_parameter("picture", MOTIFS[model.motif])
+	alive_picture.mesh.size = model.board_size()
+	alive_picture.material_override = shader
+	# Locked pieces end at y=0.30. The animated picture must sit above them.
+	alive_picture.position.y = 0.32
+	alive_picture.show()
+	if snap_burst != null:
+		snap_burst.global_position = Vector3(0, 0.4, 0)
+		snap_burst.amount = 28
+		snap_burst.restart()
+	status.text = "Dein Bild ist lebendig geworden!"
+
+
+func _hide_alive() -> void:
+	picture_alive = false
+	if alive_picture != null:
+		alive_picture.hide()
+	guide.hide()

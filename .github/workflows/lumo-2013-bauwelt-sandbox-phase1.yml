@@ -1,0 +1,91 @@
+name: LUMO 2013 Bauwelt sandbox phase 1 tools
+
+on:
+  push:
+    branches:
+      - lumo-2013/bauwelt-sandbox-20261110
+    paths:
+      - scripts/creative/build_sandbox_tools.gd
+      - scripts/creative/build_world.gd
+      - scripts/tests/build_sandbox_tools_regression.gd
+      - scripts/tests/build_sandbox_ui_regression.gd
+      - .github/workflows/lumo-2013-bauwelt-sandbox-phase1.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lumo-2013-bauwelt-sandbox-phase1
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot and GDScript verification
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check gdtoolkit==4.5.0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Format and lint sandbox tools
+        run: |
+          set -euo pipefail
+          gdformat scripts/creative/build_sandbox_tools.gd scripts/tests/build_sandbox_tools_regression.gd scripts/tests/build_sandbox_ui_regression.gd
+          gdformat --check scripts/creative/build_sandbox_tools.gd scripts/tests/build_sandbox_tools_regression.gd scripts/tests/build_sandbox_ui_regression.gd
+          gdlint scripts/creative/build_sandbox_tools.gd scripts/tests/build_sandbox_tools_regression.gd scripts/tests/build_sandbox_ui_regression.gd
+          git diff --check
+
+      - name: Import exact sandbox source
+        run: |
+          set -euo pipefail
+          timeout 300s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/import.log"
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' "$RUNNER_TEMP/import.log" | grep -v 'resources still in use at exit' | grep -q .; then exit 1; fi
+          python3 tools/validate_project.py 2>&1 | tee "$RUNNER_TEMP/validate-project-py.log"
+
+      - name: Atomic sandbox tools regression
+        run: |
+          set -euo pipefail
+          timeout 180s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/build_sandbox_tools_regression.gd 2>&1 | tee "$RUNNER_TEMP/tools.log"
+          grep -F '[BauweltSandboxTools] PASS' "$RUNNER_TEMP/tools.log"
+          if grep -E 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' "$RUNNER_TEMP/tools.log" | grep -v 'resources still in use at exit' | grep -q .; then exit 1; fi
+
+      - name: Visible sandbox UI regression
+        run: |
+          set -euo pipefail
+          timeout 180s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/build_sandbox_ui_regression.gd 2>&1 | tee "$RUNNER_TEMP/ui.log"
+          grep -F '[BauweltSandboxUI] PASS' "$RUNNER_TEMP/ui.log"
+          if grep -E 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' "$RUNNER_TEMP/ui.log" | grep -v 'resources still in use at exit' | grep -q .; then exit 1; fi
+
+      - name: Commit verified formatting
+        if: success()
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/creative/build_sandbox_tools.gd scripts/tests/build_sandbox_tools_regression.gd scripts/tests/build_sandbox_ui_regression.gd
+          if git diff --cached --quiet; then
+            echo "No formatting changes to commit"
+            exit 0
+          fi
+          git diff --cached --check
+          git commit -m "style(bauwelt): gdformat verified sandbox tools"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-2013-bauwelt-sandbox-phase1-proof
+          path: |
+            ${{ runner.temp }}/import.log
+            ${{ runner.temp }}/validate-project-py.log
+            ${{ runner.temp }}/tools.log
+            ${{ runner.temp }}/ui.log
+          if-no-files-found: warn
+          retention-days: 30

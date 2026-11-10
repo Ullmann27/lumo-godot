@@ -18,6 +18,7 @@ const STAGE = preload("res://scripts/games/kart_stage.gd")
 const CARD = preload("res://scripts/games/kart_vehicle_card.gd")
 const BARS = preload("res://scripts/games/kart_stat_bars.gd")
 const WORKSHOP = preload("res://scripts/games/kart_workshop.gd")
+const INTERIOR = preload("res://scripts/games/kart_garage_interior.gd")
 var setup: Dictionary = {
 	"mode": "race",
 	"driver": "fox",
@@ -63,6 +64,16 @@ var preview_caption: Label
 var preview_caption_panel: PanelContainer
 var world_backdrop: TextureRect
 var world_veil: ColorRect
+var sunset_layer: ColorRect
+var preview_vignette: ColorRect
+var backdrop_material: ShaderMaterial
+var garage_interior: Dictionary = {}
+var garage_buttons: Dictionary = {}
+var _hovered_garage_action := ""
+var _pressed_garage_action := ""
+var _preview_touch_index: int = -1
+var _preview_touch_origin := Vector2.ZERO
+var _backdrop_parallax := Vector2.ZERO
 var stage_material: ShaderMaterial
 var stage_rings: Array[MeshInstance3D] = []
 var reduced_motion: bool = false
@@ -99,6 +110,18 @@ func _ready() -> void:
 	world_backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	world_backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	world_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var backdrop_shader := Shader.new()
+	backdrop_shader.code = """
+shader_type canvas_item;
+uniform vec2 parallax = vec2(0.0);
+void fragment() {
+	vec2 uv = (UV - vec2(0.5)) * 0.97 + vec2(0.5) + parallax;
+	COLOR = texture(TEXTURE, uv);
+}
+"""
+	backdrop_material = ShaderMaterial.new()
+	backdrop_material.shader = backdrop_shader
+	world_backdrop.material = backdrop_material
 	add_child(world_backdrop)
 	world_veil = ColorRect.new()
 	world_veil.name = "WorldReadabilityGradient"
@@ -118,6 +141,7 @@ func _ready() -> void:
 	sunset.name = "SonnenhafenGoldenHour"
 	sunset.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	sunset.material = sunset_material
+	sunset_layer = sunset
 	add_child(sunset)
 	resized.connect(func(): _fit_sunset_layer(sunset))
 	item_rect_changed.connect(func(): _fit_sunset_layer(sunset))
@@ -240,10 +264,27 @@ func _ready() -> void:
 	viewport_box.gui_input.connect(_preview_input)
 	viewport_box.resized.connect(func(): call_deferred("_fit_welcome_camera"))
 	viewport_panel.add_child(viewport_box)
+	preview_vignette = ColorRect.new()
+	preview_vignette.name = "HeroDepthVignette"
+	preview_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	preview_vignette.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var vignette_shader := Shader.new()
+	vignette_shader.code = """
+shader_type canvas_item;
+void fragment() {
+	vec2 p = (UV - vec2(0.5)) * vec2(1.12, 1.28);
+	float ring = smoothstep(0.26, 0.98, length(p));
+	COLOR = vec4(0.012, 0.034, 0.088, ring * 0.46);
+}
+"""
+	var vignette_material := ShaderMaterial.new()
+	vignette_material.shader = vignette_shader
+	preview_vignette.material = vignette_material
+	viewport_panel.add_child(preview_vignette)
 	var viewport := SubViewport.new()
 	viewport.size = Vector2i(600, 500)
 	viewport.own_world_3d = true
-	viewport.transparent_bg = true
+	viewport.transparent_bg = false
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	# Keep the real 3D face/kart preview crisp on the high-quality profile.
 	viewport.msaa_3d = Viewport.MSAA_4X if graphics_profile == "high" else Viewport.MSAA_2X
@@ -254,19 +295,39 @@ func _ready() -> void:
 	# The reference floats the real kart on transparent neon rings, not an opaque studio slab.
 	var built: Dictionary = STAGE.build(preview, Color("56e7ff"), false)
 	_install_hologram_rings(preview)
+	for child in preview.get_children():
+		if child is WorldEnvironment and child.environment:
+			child.environment.background_mode = Environment.BG_COLOR
+			child.environment.background_color = Color("071018")
+			child.environment.ambient_light_color = Color("3d536d")
+			child.environment.ambient_light_energy = 0.46
+	garage_interior = INTERIOR.build(preview, built.pivot, graphics_profile)
+	garage_buttons = garage_interior.get("buttons", {})
 	# These changes belong only to this presentation viewport. Shared race
 	# materials, original textures, driver dimensions and physics stay intact.
-	built.key.light_specular = 0.45
-	built.rim.light_specular = 0.35
+	built.key.light_specular = 0.52
+	built.rim.light_specular = 0.42
+	if built.get("key") != null:
+		built.key.light_energy = 1.12
+		built.key.shadow_enabled = graphics_profile != "low"
 	var hero_fill := OmniLight3D.new()
 	hero_fill.name = "PremiumLumoSoftLight"
 	hero_fill.position = Vector3(1.2, 2.7, -2.4)
 	hero_fill.light_color = Color("fff6e7")
-	hero_fill.light_energy = 1.10
-	hero_fill.light_specular = 0.12
+	hero_fill.light_energy = 1.16
+	hero_fill.light_specular = 0.14
 	hero_fill.omni_range = 6.0
 	hero_fill.shadow_enabled = false
 	preview.add_child(hero_fill)
+	var ground_fill := OmniLight3D.new()
+	ground_fill.name = "PremiumStageGroundFill"
+	ground_fill.position = Vector3(0.15, 0.55, -0.2)
+	ground_fill.light_color = Color("9cecff")
+	ground_fill.light_energy = 0.28
+	ground_fill.light_specular = 0.05
+	ground_fill.omni_range = 3.2
+	ground_fill.shadow_enabled = false
+	preview.add_child(ground_fill)
 	preview_camera = built.camera
 	preview_pivot = built.pivot
 	preview_caption = _label("Dein Fahrer · Dein Kart · Ziehen zum Drehen", 14, Color("e2f6ff"))
@@ -284,7 +345,9 @@ func _ready() -> void:
 	preview_caption_panel.add_theme_stylebox_override("panel", hint_style)
 	preview_caption_panel.add_child(preview_caption)
 	right.add_child(preview_caption_panel)
-	quick_start_button = _button("Spielen", func(): start_requested.emit(setup.duplicate(true)), true)
+	quick_start_button = _button(
+		"Spielen", func(): start_requested.emit(setup.duplicate(true)), true
+	)
 	quick_start_button.name = "PlaySelectedRace"
 	right.add_child(quick_start_button)
 	kart_panel = VBoxContainer.new()
@@ -314,7 +377,9 @@ func _ready() -> void:
 	view_choice.name = "KartInspectionView"
 	view_choice.tooltip_text = "Dein Kart von allen Seiten ansehen"
 	view_choice.custom_minimum_size.y = 48
-	for title in ["Rundum ansehen", "Vorne", "Links", "Hinten", "Rechts", "Von oben", "Lumos Gesicht"]:
+	for title in [
+		"Rundum ansehen", "Vorne", "Links", "Hinten", "Rechts", "Von oben", "Lumos Gesicht"
+	]:
 		view_choice.add_item(title)
 	view_choice.item_selected.connect(_choose_preview_view)
 	# Overlay the existing preview instead of adding height to the setup column.
@@ -348,7 +413,9 @@ func _ready() -> void:
 	next_button = _button("Weiter →", _next, true)
 	next_button.custom_minimum_size.x = 240
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
-		next_button.add_theme_stylebox_override(state, _gold_glass(state in ["hover", "pressed", "focus"]))
+		next_button.add_theme_stylebox_override(
+			state, _gold_glass(state in ["hover", "pressed", "focus"])
+		)
 	for state in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
 		next_button.add_theme_color_override(state, Color("2c2c51"))
 	next_button.name = "PremiumNextStep"
@@ -430,13 +497,21 @@ func _apply_responsive_layout() -> void:
 	var compact: bool = window_size.x < 760 or window_size.x < window_size.y
 	var small: bool = window_size.x < 520
 	var short_landscape: bool = window_size.x >= window_size.y and window_size.y < 600
-	var balanced_landscape: bool = window_size.x >= window_size.y and window_size.y >= 600 and window_size.y < 840
+	var balanced_landscape: bool = (
+		window_size.x >= window_size.y and window_size.y >= 600 and window_size.y < 840
+	)
 	var inset_landscape: bool = balanced_landscape and size.y / ui_scale < 680.0
 	var tiny_portrait: bool = window_size.x < window_size.y and window_size.y < 680
 	# Screen width alone is insufficient: two kart columns previously overflowed
 	# the narrow left pane, clipping names, stat bars and native tap targets.
-	var choices_width_dp: float = window_size.x - 36.0 if window_size.x < window_size.y else window_size.x * (0.38 if short_landscape else 0.35)
-	var panoramic: bool = window_size.x >= 760 and window_size.x > window_size.y and not short_landscape
+	var choices_width_dp: float = (
+		window_size.x - 36.0
+		if window_size.x < window_size.y
+		else window_size.x * (0.38 if short_landscape else 0.35)
+	)
+	var panoramic: bool = (
+		window_size.x >= 760 and window_size.x > window_size.y and not short_landscape
+	)
 	var welcome_in_header: bool = step == 0 and short_landscape and window_size.y < 440
 	var margin: float = clampf(minf(window_size.x, window_size.y) * 0.024, 8.0, 24.0)
 	# The reward pill was forcing a 76 px toolbar on a 360 px Fold surface:
@@ -474,15 +549,23 @@ func _apply_responsive_layout() -> void:
 	var portrait: bool = window_size.x < window_size.y
 	setup_row.columns = 1 if portrait else 2
 	setup_left.custom_minimum_size.x = (
-		clampf(window_size.x * 0.35, 266.0, 420.0) if panoramic
-		# Real Android density made the fixed 175dp column truncate mode
-		# names. Give readable cards room without hiding the live 3D hero.
-		else (clampf(window_size.x * 0.38, 175.0, 240.0) if short_landscape else 0.0)
-	) * ui_scale
+		(
+			clampf(window_size.x * 0.35, 266.0, 420.0)
+			if panoramic
+			# Real Android density made the fixed 175dp column truncate mode
+			# names. Give readable cards room without hiding the live 3D hero.
+			else (clampf(window_size.x * 0.38, 175.0, 240.0) if short_landscape else 0.0)
+		)
+		* ui_scale
+	)
 	setup_right.custom_minimum_size.x = (
-		clampf(window_size.x * 0.45, 280.0, 455.0) if panoramic
-		else (255.0 if short_landscape else 0.0)
-	) * ui_scale
+		(
+			clampf(window_size.x * 0.45, 280.0, 455.0)
+			if panoramic
+			else (255.0 if short_landscape else 0.0)
+		)
+		* ui_scale
+	)
 	# The portrait reference requires the complete 3D kart/fox hero above its choices.
 	# Keep its VBox intrinsically sized, rather than stretching over the next row.
 	var driver_hero: bool = portrait and step in [0, 1, 2]
@@ -495,13 +578,28 @@ func _apply_responsive_layout() -> void:
 	setup_row.add_theme_constant_override(
 		"h_separation", roundi((14 if compact else 28) * ui_scale)
 	)
-	setup_row.add_theme_constant_override("v_separation", roundi((28 if driver_hero else (14 if compact else 0)) * ui_scale))
+	setup_row.add_theme_constant_override(
+		"v_separation", roundi((28 if driver_hero else (14 if compact else 0)) * ui_scale)
+	)
 	# A bounded vector wordmark retains both lines and the original flags,
 	# without letting font minimums expand the Android safe-area header.
-	_set_physical_minimum(brand_wordmark,
-		Vector2(82, 44) if short_landscape or tiny_portrait
-		else (Vector2(116, 66) if small else (Vector2(120, 64) if inset_landscape else (Vector2(148, 80) if balanced_landscape else Vector2(256, 104)))),
-		ui_scale)
+	_set_physical_minimum(
+		brand_wordmark,
+		(
+			Vector2(82, 44)
+			if short_landscape or tiny_portrait
+			else (
+				Vector2(116, 66)
+				if small
+				else (
+					Vector2(120, 64)
+					if inset_landscape
+					else (Vector2(148, 80) if balanced_landscape else Vector2(256, 104))
+				)
+			)
+		),
+		ui_scale
+	)
 	var ultra_short: bool = short_landscape and window_size.y < 360
 	var compact_welcome: bool = short_landscape and step == 0 and window_size.y < 440
 	title_label.visible = not (ultra_short and size.y / ui_scale < 300.0)
@@ -545,7 +643,22 @@ func _apply_responsive_layout() -> void:
 			child.custom_minimum_size = (
 				Vector2(112 if small else 148, 56 if compact else 72) * ui_scale
 			)
-	_set_physical_minimum(header_row, Vector2(0, (35 if window_size.y < 360 else 44) if short_landscape else (60 if small else (64 if inset_landscape else (80 if balanced_landscape else 100)))), ui_scale)
+	_set_physical_minimum(
+		header_row,
+		Vector2(
+			0,
+			(
+				(35 if window_size.y < 360 else 44)
+				if short_landscape
+				else (
+					60
+					if small
+					else (64 if inset_landscape else (80 if balanced_landscape else 100))
+				)
+			)
+		),
+		ui_scale
+	)
 	_set_physical_minimum(
 		preview_container,
 		(
@@ -556,11 +669,12 @@ func _apply_responsive_layout() -> void:
 		ui_scale
 	)
 	body_column.add_theme_constant_override(
-		"separation", roundi((3 if short_landscape else (8 if small or balanced_landscape else 12)) * ui_scale)
+		"separation",
+		roundi((3 if short_landscape else (8 if small or balanced_landscape else 12)) * ui_scale)
 	)
 	_set_physical_font(
 		title_label,
-		(18 if short_landscape else (24 if inset_landscape else (28 if small or panoramic else 36))),
+		18 if short_landscape else (24 if inset_landscape else (28 if small or panoramic else 36)),
 		ui_scale
 	)
 	# Compact Fold cover: never squeeze a long heading into a vertical letter column.
@@ -576,12 +690,7 @@ func _apply_responsive_layout() -> void:
 	# The welcome's direct Play action adds a row. On an inset Android surface
 	# reserve the existing footer before showing the extra mode description.
 	# The selected mode title/tag and the five-step setup remain available.
-	detail.visible = (
-		not short_landscape
-		and not small
-		and step != 2
-		and step != 0
-	)
+	detail.visible = (not short_landscape and not small and step != 2 and step != 0)
 	# Kleine Querformate: Der Werkstatt-Knopf rückt in die Kopfzeile, damit die Kartseite samt
 	# Vorschau und Weiter-Knopf auf eine Bildschirmhöhe passt.
 	var workshop_in_header: bool = short_landscape and step == 2
@@ -598,7 +707,9 @@ func _apply_responsive_layout() -> void:
 	kart_bars.visible = not short_landscape and not (stacked and step == 2)
 	if panoramic and step == 0:
 		# Fill the hero half while retaining both footer controls in the safe area.
-		_set_physical_minimum(preview_container, Vector2(430, clampf(window_size.y * 0.47, 298.0, 420.0)), ui_scale)
+		_set_physical_minimum(
+			preview_container, Vector2(430, clampf(window_size.y * 0.47, 298.0, 420.0)), ui_scale
+		)
 	if stacked and step in [0, 1, 2]:
 		# Bounded height: legible face on Cover/phone but the action footer
 		# and at least one selectable card remain in the actual safe area.
@@ -607,15 +718,24 @@ func _apply_responsive_layout() -> void:
 		)
 		_set_physical_minimum(preview_container, Vector2(150, hero_height), ui_scale)
 		if step == 0:
-			_set_physical_minimum(preview_container, Vector2(150, clampf(window_size.y * 0.24, 120, 220)), ui_scale)
+			_set_physical_minimum(
+				preview_container, Vector2(150, clampf(window_size.y * 0.24, 120, 220)), ui_scale
+			)
 	# Auf niedrigen Querformaten (z. B. 1280×720 mit Systemleisten) braucht die Kartseite den Platz
 	# für Vorschau, Werte und Werkstatt-Knopf; Überschrift und Hinweis entfallen dort.
 	var tight_kart_page: bool = step == 2 and window_size.x >= window_size.y and window_size.y < 800
 	kart_bars.row_height = (16.0 if small or tight_kart_page else 21.0) * ui_scale
 	kart_bars.font_scale = ui_scale
-	_set_physical_minimum(workshop_button, Vector2(160 if short_landscape else (120 if small else 190), 44 if short_landscape else 52), ui_scale)
+	_set_physical_minimum(
+		workshop_button,
+		Vector2(160 if short_landscape else (120 if small else 190), 44 if short_landscape else 52),
+		ui_scale
+	)
 	_set_physical_font(workshop_button, 15 if short_landscape else 18, ui_scale)
-	preview_caption.visible = (step == 0 and panoramic) or (step != 0 and not short_landscape and not small and not tight_kart_page)
+	preview_caption.visible = (
+		(step == 0 and panoramic)
+		or (step != 0 and not short_landscape and not small and not tight_kart_page)
+	)
 	preview_caption_panel.visible = preview_caption.visible
 	preview_title.visible = step != 0 and not short_landscape and not small and not tight_kart_page
 	if is_instance_valid(premium_hero_shell):
@@ -645,8 +765,7 @@ func _apply_responsive_layout() -> void:
 	# header row, leaving the live preview and the full setup footer reachable.
 	var quick_in_footer: bool = panoramic and step == 0
 	var quick_parent: Control = (
-		footer_spacer if quick_in_footer
-		else (header_row if welcome_in_header else setup_right)
+		footer_spacer if quick_in_footer else (header_row if welcome_in_header else setup_right)
 	)
 	if quick_start_button.get_parent() != quick_parent:
 		quick_start_button.reparent(quick_parent, false)
@@ -657,7 +776,10 @@ func _apply_responsive_layout() -> void:
 	quick_start_button.text = (
 		"Spielen"
 		if welcome_in_header
-		else "Spielen · " + str(CATALOG.entry(CATALOG.MODES, str(setup.mode)).get("name", "Einzelrennen"))
+		else (
+			"Spielen · "
+			+ str(CATALOG.entry(CATALOG.MODES, str(setup.mode)).get("name", "Einzelrennen"))
+		)
 	)
 	# The reference has a single yellow Weiter action. Keep the shortcut
 	# connected for future flows, but hide its competing cyan/full-screen bar.
@@ -666,11 +788,20 @@ func _apply_responsive_layout() -> void:
 		quick_start_button.size = Vector2(260, 44) * ui_scale
 		quick_start_button.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 		for state in ["normal", "hover", "pressed", "focus"]:
-			quick_start_button.add_theme_stylebox_override(state, _text_only_glass(state != "normal"))
+			quick_start_button.add_theme_stylebox_override(
+				state, _text_only_glass(state != "normal")
+			)
 	else:
 		for state in ["normal", "hover", "pressed", "focus"]:
 			quick_start_button.add_theme_stylebox_override(state, _glass(state != "normal"))
-	_set_physical_minimum(quick_start_button, Vector2(235 if quick_in_footer else (104 if welcome_in_header else 0), 44 if step == 0 or small or short_landscape else 56), ui_scale)
+	_set_physical_minimum(
+		quick_start_button,
+		Vector2(
+			235 if quick_in_footer else (104 if welcome_in_header else 0),
+			44 if step == 0 or small or short_landscape else 56
+		),
+		ui_scale
+	)
 	_set_physical_font(quick_start_button, 17 if short_landscape or small else 20, ui_scale)
 	if short_landscape and step == 0:
 		# Match the established welcome perspective instead of pulling the hero
@@ -720,9 +851,25 @@ func _apply_responsive_layout() -> void:
 			if card is Button:
 				var tiny: bool = window_size.y < 440
 				var height: float = (
-					52 if short_landscape and step == 0
-					else (52 if window_size.y < 520 else 64) if short_landscape
-					else ((52 if inset_landscape else (68 if balanced_landscape else (96 if window_size.y < 800 else 96))) if step == 0 else 96)
+					52
+					if short_landscape and step == 0
+					else (
+						(52 if window_size.y < 520 else 64)
+						if short_landscape
+						else (
+							(
+								52
+								if inset_landscape
+								else (
+									68
+									if balanced_landscape
+									else (96 if window_size.y < 800 else 96)
+								)
+							)
+							if step == 0
+							else 96
+						)
+					)
 				)
 				if step == 2:
 					height = 86 if short_landscape else 142
@@ -732,7 +879,9 @@ func _apply_responsive_layout() -> void:
 					if card.get_script() == CHOICE:
 						card.reduced_motion = reduced_motion
 					if step == 0:
-						card.apply_size(ui_scale, short_landscape, window_size.y < 840 and not short_landscape)
+						card.apply_size(
+							ui_scale, short_landscape, window_size.y < 840 and not short_landscape
+						)
 					else:
 						card.apply_size(ui_scale, short_landscape)
 	# A saved race adds a second footer row on a small portrait phone.
@@ -755,7 +904,9 @@ func _apply_responsive_layout() -> void:
 		_set_physical_minimum(learn_button, Vector2(148, 48 if inset_landscape else 56), ui_scale)
 		if inset_landscape:
 			for button in [back_button, next_button]:
-				_set_physical_minimum(button, Vector2(148 if button == back_button else 240, 56), ui_scale)
+				_set_physical_minimum(
+					button, Vector2(148 if button == back_button else 240, 56), ui_scale
+				)
 	# Font/minimum-size changes above can temporarily force the margin wider
 	# than the window. Reapply its safe-area edges after queued size updates.
 	var inset_scale: Vector2 = viewport_size / physical_size
@@ -770,10 +921,9 @@ func _apply_responsive_layout() -> void:
 
 
 func _fit_sunset_layer(layer: ColorRect) -> void:
-	if not is_instance_valid(layer) or not is_instance_valid(world_backdrop):
-		return
-	layer.position = world_backdrop.position
-	layer.size = world_backdrop.size
+	if layer != sunset_layer:
+		sunset_layer = layer
+	_layout_world_backdrop()
 
 
 func _layout_world_backdrop() -> void:
@@ -781,11 +931,17 @@ func _layout_world_backdrop() -> void:
 		return
 	# SafeUI deliberately insets controls. Art must bleed underneath those
 	# insets, without reparenting it into a second layer or intercepting input.
+	# The Control rect must stay exactly full-bleed; motion is a shader UV pan.
 	var viewport_rect := get_viewport().get_visible_rect()
 	var local_origin := viewport_rect.position - global_position
-	for layer in [world_backdrop, world_veil]:
-		layer.position = local_origin
-		layer.size = viewport_rect.size
+	world_backdrop.position = local_origin
+	world_backdrop.size = viewport_rect.size
+	if is_instance_valid(world_veil):
+		world_veil.position = local_origin
+		world_veil.size = viewport_rect.size
+	if is_instance_valid(sunset_layer):
+		sunset_layer.position = local_origin
+		sunset_layer.size = viewport_rect.size
 
 
 func _fit_welcome_camera() -> void:
@@ -815,7 +971,8 @@ func _fit_welcome_camera() -> void:
 			var actor = preview_kart.lumo_animation.actor
 			var head_index: int = actor.skeleton.find_bone("Head")
 			var head_point: Vector3 = actor.skeleton.to_global(
-				actor.skeleton.get_bone_global_pose(head_index).origin)
+				actor.skeleton.get_bone_global_pose(head_index).origin
+			)
 			# Ears, muzzle and goggles around the genuine animated head.
 			points.append(head_point + Vector3.UP * 0.46)
 			points.append(head_point + Vector3.LEFT * 0.37)
@@ -827,17 +984,23 @@ func _fit_welcome_camera() -> void:
 	for world_point in points:
 		var point: Vector3 = local_from_world * world_point
 		var depth := maxf(0.1, -point.z)
-		required_tangent = maxf(required_tangent, maxf(absf(point.y) / depth, absf(point.x) / depth / aspect))
+		required_tangent = maxf(
+			required_tangent, maxf(absf(point.y) / depth, absf(point.x) / depth / aspect)
+		)
 	# Rings are decoration and must not make Lumo / the Kart look tiny.
 	# Preserve precise world-space fitting for the actual kart/fox silhouette.
 	for ring in stage_rings:
 		for sample in range(32):
 			var angle := TAU * sample / 32.0
 			var radius: float = ring.mesh.outer_radius
-			var point: Vector3 = local_from_world * ring.to_global(
-				Vector3(cos(angle) * radius, 0, sin(angle) * radius))
+			var point: Vector3 = (
+				local_from_world
+				* ring.to_global(Vector3(cos(angle) * radius, 0, sin(angle) * radius))
+			)
 			var depth := maxf(0.1, -point.z)
-			required_tangent = maxf(required_tangent, maxf(absf(point.y) / depth, absf(point.x) / depth / aspect))
+			required_tangent = maxf(
+				required_tangent, maxf(absf(point.y) / depth, absf(point.x) / depth / aspect)
+			)
 	preview_camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	preview_camera.fov = maxf(34.0, rad_to_deg(atan(required_tangent * 1.06)) * 2.0)
 
@@ -932,6 +1095,23 @@ func _install_hologram_rings(stage: Node3D) -> void:
 	stage_material.shader = preload("res://assets/shaders/kart_menu_platform.gdshader")
 	platform.material_override = stage_material
 	stage.add_child(platform)
+	# A larger, dimmer disc sits just below the glass. It adds depth without
+	# entering the welcome-camera ring fit, collision or race geometry.
+	var under := MeshInstance3D.new()
+	under.name = "HeroStageUnderlayer"
+	var under_plane := PlaneMesh.new()
+	under_plane.size = Vector2(4.55, 4.55)
+	under.mesh = under_plane
+	under.scale.z = 0.58
+	under.position.y = -0.24
+	under.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var under_material := StandardMaterial3D.new()
+	under_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	under_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	under_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	under_material.albedo_color = Color(0.015, 0.05, 0.12, 0.28)
+	under.material_override = under_material
+	stage.add_child(under)
 	# The old 2.54m outer ring was clipped on both sides of the hero viewport.
 	# 6 tube segments instead of the Torus default also avoid 12k needless
 	# stage triangles. The three circles together use 2,304 triangles.
@@ -1004,16 +1184,23 @@ func _step_glass(active: bool) -> StyleBoxFlat:
 
 func _mode_glass(mode_id: String, selected: bool) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	var base: Color = {
-		"race": Color("117d9e"),
-		"time_trial": Color("17499d"),
-		"arena": Color("633096"),
-		"cup": Color("755215"),
-		"training": Color("102846")
-	}.get(mode_id, Color("183857"))
+	var base: Color = (
+		{
+			"race": Color("117d9e"),
+			"time_trial": Color("17499d"),
+			"arena": Color("633096"),
+			"cup": Color("755215"),
+			"training": Color("102846")
+		}
+		. get(mode_id, Color("183857"))
+	)
 	style.bg_color = base.lightened(0.10) if selected else base
 	style.bg_color.a = 0.94 if selected else 0.88
-	style.border_color = Color("ffe69a") if selected and mode_id == "cup" else (Color("aaffff") if selected else base.lightened(0.42))
+	style.border_color = (
+		Color("ffe69a")
+		if selected and mode_id == "cup"
+		else (Color("aaffff") if selected else base.lightened(0.42))
+	)
 	style.set_border_width_all(2 if selected else 1)
 	style.set_corner_radius_all(16)
 	# The card itself already has custom inner margins. An extra 8 px on ALL
@@ -1082,7 +1269,13 @@ func _entries() -> Array[Dictionary]:
 	match step:
 		0:
 			# Reference order: race, time, arena, cup, free play. Gameplay IDs stay untouched.
-			return [CATALOG.MODES[0], CATALOG.MODES[2], CATALOG.MODES[4], CATALOG.MODES[1], CATALOG.MODES[3]]
+			return [
+				CATALOG.MODES[0],
+				CATALOG.MODES[2],
+				CATALOG.MODES[4],
+				CATALOG.MODES[1],
+				CATALOG.MODES[3]
+			]
 		1:
 			return CATALOG.DRIVERS
 		2:
@@ -1093,6 +1286,10 @@ func _entries() -> Array[Dictionary]:
 
 
 func _refresh() -> void:
+	_cancel_garage_press()
+	# Welcome shortcuts must not obscure the driver, kart or track being chosen.
+	for button in garage_buttons.values():
+		button.body.visible = step == 0
 	var keys: Array[String] = ["mode", "driver", "kart", "track", "difficulty"]
 	var titles: Array[String] = [
 		"Dein nächstes Abenteuer",
@@ -1121,7 +1318,8 @@ func _refresh() -> void:
 	if step == 0:
 		preview_title.text = "LUMO IST STARTKLAR"
 	preview_caption.text = (
-		"Deine Rennwelt · ziehen zum Drehen" if step == 3
+		"Deine Rennwelt · ziehen zum Drehen"
+		if step == 3
 		else "Dein Fahrer · Dein Kart · Ziehen zum Drehen"
 	)
 	for child in choices.get_children():
@@ -1161,7 +1359,9 @@ func _refresh() -> void:
 				kart_card.missing_stars = maxi(0, int(item.unlock) - stars)
 				kart_card.stats = FLEET.base_stats(str(item.id))
 				kart_card.bonus = _bonus_for(str(item.id))
-				kart_card.tuning_level = workshop.total_level(str(item.id)) if workshop != null else 0
+				kart_card.tuning_level = (
+					workshop.total_level(str(item.id)) if workshop != null else 0
+				)
 				kart_card.name = "KartCard_" + str(item.id)
 				kart_card.add_theme_stylebox_override("normal", _glass(selected))
 				kart_card.add_theme_stylebox_override("hover", _glass(true))
@@ -1206,11 +1406,21 @@ func _refresh() -> void:
 			elif step == 2:
 				# Portraits are rendered from these exact selectable game models.
 				card.artwork = load("res://assets/kart/menu/fleet/" + str(item.id) + ".webp")
-			card.add_theme_stylebox_override("normal", _mode_glass(str(item.id), selected) if step == 0 else _glass(selected))
-			card.add_theme_stylebox_override("hover", _mode_glass(str(item.id), true) if step == 0 else _glass(true))
-			card.add_theme_stylebox_override("pressed", _mode_glass(str(item.id), true) if step == 0 else _glass(true))
-			card.add_theme_stylebox_override("focus", _mode_glass(str(item.id), true) if step == 0 else _glass(true))
-			card.add_theme_stylebox_override("disabled", _mode_glass(str(item.id), false) if step == 0 else _glass(false))
+			card.add_theme_stylebox_override(
+				"normal", _mode_glass(str(item.id), selected) if step == 0 else _glass(selected)
+			)
+			card.add_theme_stylebox_override(
+				"hover", _mode_glass(str(item.id), true) if step == 0 else _glass(true)
+			)
+			card.add_theme_stylebox_override(
+				"pressed", _mode_glass(str(item.id), true) if step == 0 else _glass(true)
+			)
+			card.add_theme_stylebox_override(
+				"focus", _mode_glass(str(item.id), true) if step == 0 else _glass(true)
+			)
+			card.add_theme_stylebox_override(
+				"disabled", _mode_glass(str(item.id), false) if step == 0 else _glass(false)
+			)
 			card.pressed.connect(func(): _select(key, str(item.id)))
 			card.custom_minimum_size = Vector2(0, 96 if step == 0 else 92)
 			card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -1263,7 +1473,13 @@ func _back() -> void:
 
 func _refresh_preview() -> void:
 	var context: String = "welcome" if step == 0 else ("world" if step == 3 else "garage")
-	var signature: String = str(setup.driver) + str(setup.kart) + str(setup.track) + context + (str(workshop.look(str(setup.kart))) if workshop != null else "")
+	var signature: String = (
+		str(setup.driver)
+		+ str(setup.kart)
+		+ str(setup.track)
+		+ context
+		+ (str(workshop.look(str(setup.kart))) if workshop != null else "")
+	)
 	if signature == preview_signature:
 		return
 	preview_signature = signature
@@ -1325,16 +1541,74 @@ func _refresh_preview() -> void:
 
 
 func _preview_input(event: InputEvent) -> void:
-	if inspection_view != 0 and event is InputEventScreenDrag:
-		_choose_preview_view(0)
-	elif inspection_view != 0 and event is InputEventMouseButton and event.pressed:
-		_choose_preview_view(0)
-	if event is InputEventMouseButton:
-		rotate_drag = event.pressed
-	elif event is InputEventMouseMotion and rotate_drag:
-		preview_angle += event.relative.x * 0.008
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			if _preview_touch_index != -1:
+				return
+			_preview_touch_index = event.index
+			_preview_touch_origin = event.position
+			_begin_preview_pointer(event.position)
+		elif event.index == _preview_touch_index:
+			_preview_touch_index = -1
+			_end_preview_pointer(event.position, event.canceled)
 	elif event is InputEventScreenDrag:
-		preview_angle += event.relative.x * 0.008
+		if event.index != _preview_touch_index:
+			return
+		if event.position.distance_to(_preview_touch_origin) > 12.0:
+			_cancel_garage_press()
+			rotate_drag = true
+		if rotate_drag:
+			if inspection_view != 0:
+				_choose_preview_view(0)
+			preview_angle += event.relative.x * 0.008
+	elif event is InputEventMouseButton:
+		if (
+			event.device == InputEvent.DEVICE_ID_EMULATION
+			or event.button_index != MOUSE_BUTTON_LEFT
+		):
+			return
+		if _preview_touch_index != -1:
+			return
+		if event.pressed:
+			_begin_preview_pointer(event.position)
+		else:
+			_end_preview_pointer(event.position)
+	elif event is InputEventMouseMotion:
+		if event.device == InputEvent.DEVICE_ID_EMULATION or _preview_touch_index != -1:
+			return
+		if rotate_drag:
+			preview_angle += event.relative.x * 0.008
+		else:
+			var hovered := _pick_garage_action(event.position)
+			if hovered != _hovered_garage_action:
+				if _hovered_garage_action != "":
+					_set_garage_button_state(_hovered_garage_action, "idle")
+				_hovered_garage_action = hovered
+				if hovered != "":
+					_set_garage_button_state(hovered, "hover")
+
+
+func _begin_preview_pointer(local: Vector2) -> void:
+	if inspection_view != 0:
+		_choose_preview_view(0)
+	_pressed_garage_action = _pick_garage_action(local)
+	rotate_drag = _pressed_garage_action.is_empty()
+	if not rotate_drag:
+		_set_garage_button_state(_pressed_garage_action, "press")
+
+
+func _end_preview_pointer(local: Vector2, canceled: bool = false) -> void:
+	var action := _pressed_garage_action
+	_cancel_garage_press()
+	rotate_drag = false
+	if not canceled and not action.is_empty() and _pick_garage_action(local) == action:
+		_activate_garage_action(action)
+
+
+func _cancel_garage_press() -> void:
+	if not _pressed_garage_action.is_empty():
+		_set_garage_button_state(_pressed_garage_action, "idle")
+		_pressed_garage_action = ""
 
 
 func _process(delta: float) -> void:
@@ -1347,10 +1621,82 @@ func _process(delta: float) -> void:
 			preview_angle += delta * 0.28
 	# The welcome camera breathes through a small arc instead of turning
 	# Lumos back to the child. Dragging and garage inspection remain unrestricted.
-	var idle_arc: float = sin(preview_idle_time * 0.35) * 0.085 if step == 0 and not reduced_motion and not rotate_drag else 0.0
+	var idle_arc: float = (
+		sin(preview_idle_time * 0.35) * 0.085
+		if step == 0 and not reduced_motion and not rotate_drag
+		else 0.0
+	)
 	preview_pivot.rotation.y = preview_angle + idle_arc
-	stage_material.set_shader_parameter("illumination",
-		1.0 if reduced_motion else 1.0 + sin(preview_idle_time * 0.7) * 0.035)
+	if is_instance_valid(stage_material):
+		stage_material.set_shader_parameter(
+			"illumination", 1.0 if reduced_motion else 1.0 + sin(preview_idle_time * 0.7) * 0.035
+		)
+	if reduced_motion:
+		_backdrop_parallax = Vector2.ZERO
+	else:
+		var yaw: float = preview_pivot.rotation.y
+		_backdrop_parallax = Vector2(
+			sin(preview_idle_time * 0.21) * 0.008 + yaw * 0.012,
+			cos(preview_idle_time * 0.17) * 0.004 + sin(yaw) * 0.004
+		)
+	if is_instance_valid(backdrop_material):
+		backdrop_material.set_shader_parameter("parallax", _backdrop_parallax)
+
+
+func _pick_garage_action(local: Vector2) -> String:
+	if not is_instance_valid(preview_camera) or not is_instance_valid(preview_viewport):
+		return ""
+	var world: World3D = preview_camera.get_world_3d()
+	if world == null:
+		return ""
+	# own_world_3d creates an internal world; Viewport.world_3d can remain null.
+	var space := world.direct_space_state
+	if space == null:
+		return ""
+	var from: Vector3 = preview_camera.project_ray_origin(local)
+	var toward: Vector3 = preview_camera.project_ray_normal(local)
+	var query := PhysicsRayQueryParameters3D.create(from, from + toward * 40.0)
+	var hit: Dictionary = space.intersect_ray(query)
+	if hit.is_empty():
+		return ""
+	var collider: Object = hit.get("collider")
+	if collider is Node and (collider as Node).has_meta("garage_action"):
+		if collider is Node3D and (collider as Node3D).is_visible_in_tree():
+			return str((collider as Node).get_meta("garage_action"))
+	return ""
+
+
+func _set_garage_button_state(action: String, state: String) -> void:
+	if garage_buttons.has(action):
+		INTERIOR.set_button_state(garage_buttons[action], state)
+
+
+func _activate_garage_action(action: String) -> void:
+	match action:
+		"start":
+			if step >= 4:
+				start_requested.emit(setup.duplicate(true))
+			else:
+				_next()
+		"strecke":
+			step = 3
+			_refresh()
+		"kart":
+			if step == 2 and workshop != null:
+				_open_workshop()
+			else:
+				step = 2
+				_refresh()
+		"back":
+			_back()
+
+
+func preview_draw_calls() -> int:
+	if not is_instance_valid(preview_viewport):
+		return 0
+	return preview_viewport.get_render_info(
+		Viewport.RENDER_INFO_TYPE_VISIBLE, Viewport.RENDER_INFO_DRAW_CALLS_IN_FRAME
+	)
 
 
 func _bonus_for(kart_id: String) -> Dictionary:
@@ -1369,10 +1715,14 @@ func _refresh_kart_panel() -> void:
 	var id: String = str(setup.kart)
 	var item: Dictionary = FLEET.entry(id)
 	var level: int = workshop.total_level(id) if workshop != null else 0
-	kart_summary.text = "%s · %s%s" % [item.name, item.role, " · Tuning %d" % level if level > 0 else ""]
+	kart_summary.text = (
+		"%s · %s%s" % [item.name, item.role, " · Tuning %d" % level if level > 0 else ""]
+	)
 	kart_bars.set_values(FLEET.base_stats(id), _bonus_for(id))
 	workshop_button.disabled = workshop == null or not CATALOG.unlocked(item, stars, unlocked_ids)
-	workshop_button.text = "Werkstatt · ★ %d" % workshop.available() if workshop != null else "Werkstatt"
+	workshop_button.text = (
+		"Werkstatt · ★ %d" % workshop.available() if workshop != null else "Werkstatt"
+	)
 
 
 func _open_workshop() -> void:
@@ -1420,9 +1770,12 @@ func _choose_preview_view(index: int) -> void:
 	if step == 3:
 		return
 	var views: Array[Vector3] = [
-		Vector3(3.2, 2.2, -4.5), Vector3(0, 1.2, -5.6),
-		Vector3(-5.6, 1.2, 0), Vector3(0, 1.2, 5.6),
-		Vector3(5.6, 1.2, 0), Vector3(0, 6.0, 0),
+		Vector3(3.2, 2.2, -4.5),
+		Vector3(0, 1.2, -5.6),
+		Vector3(-5.6, 1.2, 0),
+		Vector3(0, 1.2, 5.6),
+		Vector3(5.6, 1.2, 0),
+		Vector3(0, 6.0, 0),
 		# Close-up: actual 3D face, never a 2D artwork in place of the racing driver.
 		Vector3(0.0, 1.86, -2.35)
 	]

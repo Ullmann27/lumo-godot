@@ -38,6 +38,14 @@ var abandoned: bool = false
 var save_timer: float = 0.0
 var previous_auto_accept_quit: bool = true
 var previous_quit_on_go_back: bool = true
+var art: JumpSkyIslandsArt
+var bounce_pads: Array[Vector3] = []
+var bounce_cooldown: float = 0.0
+var movers: Array[Dictionary] = []
+var bonus_stars: Array[Node3D] = []
+var stars_gathered: Dictionary = {}
+var extra_island: Vector3 = Vector3.ZERO
+var checkpoint_flags: Dictionary = {}
 
 
 func _ready() -> void:
@@ -62,7 +70,7 @@ func _ready() -> void:
 
 func _build_world() -> void:
 	LumoEnvironment.apply(self, "wolkeninseln")
-	var art := JumpSkyIslandsArt.new()
+	art = JumpSkyIslandsArt.new()
 	for i in range(ISLAND_COUNT):
 		var point := Vector3(
 			sin(float(i) * 0.75) * 3.0, sin(float(i) * 0.55) * 0.9, -float(i) * 8.0
@@ -95,6 +103,8 @@ func _build_world() -> void:
 			crystals.append(crystal)
 		if i % 2 == 0:
 			art.tree(ground, Vector3(-2.7, 0, -1.7))
+		else:
+			art.tree(ground, Vector3(2.4, 0, -1.8))
 		if i == ISLAND_COUNT - 1:
 			art.goal_flag(ground)
 	var course_length: float = float(ISLAND_COUNT) * 8.0
@@ -102,7 +112,14 @@ func _build_world() -> void:
 	art.props(self, islands)
 	art.clouds(self, course_length)
 	art.backdrop(self, course_length)
+	art.near_course_scenery(self, islands)
 	art.sparkles(self, course_length)
+	_build_bounce_pads()
+	_build_movers()
+	_build_side_island()
+	_build_bonus_stars()
+	_build_checkpoint_flags()
+	art.finish(self)
 	actor = CharacterBody3D.new()
 	actor.floor_snap_length = 0.3
 	add_child(actor)
@@ -264,6 +281,10 @@ func _physics_process(delta: float) -> void:
 	if not paused and not finished and not question_open:
 		for crystal in crystals:
 			crystal.rotation.y += delta
+		for star in bonus_stars:
+			if is_instance_valid(star) and star.visible:
+				star.rotation.y += delta * 1.35
+		_step_movers(delta)
 	if not paused and not finished and not question_open:
 		var keyboard := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 		var direction: Vector2 = (keyboard + touch_direction).limit_length()
@@ -279,6 +300,7 @@ func _physics_process(delta: float) -> void:
 			coyote_time = 0
 		else:
 			actor.velocity.y -= 18 * delta
+		_try_bounce(delta)
 		actor.move_and_slide()
 		if direction.length() > 0.1:
 			actor.rotation.y = lerp_angle(
@@ -297,6 +319,7 @@ func _physics_process(delta: float) -> void:
 					var previous_checkpoint: int = checkpoint
 					checkpoint = maxi(checkpoint, i)
 					if checkpoint > previous_checkpoint:
+						_refresh_flags()
 						_save_session()
 					if i in [3, 6, 9] and not completed_questions.has(i):
 						_open_question()
@@ -307,6 +330,14 @@ func _physics_process(delta: float) -> void:
 			if crystals[i].visible and actor.position.distance_to(crystals[i].position) < 1.4:
 				crystals[i].hide()
 				collected[i] = true
+				_save_session()
+		for i in range(bonus_stars.size()):
+			if (
+				bonus_stars[i].visible
+				and actor.global_position.distance_to(bonus_stars[i].global_position) < 1.4
+			):
+				bonus_stars[i].hide()
+				stars_gathered[i] = true
 				_save_session()
 		save_timer += delta
 		if save_timer >= 5.0:
@@ -324,8 +355,14 @@ func _physics_process(delta: float) -> void:
 	camera.position = camera.position.lerp(desired, minf(1, delta * 5))
 	camera.look_at(actor.position + Vector3(0, 1, -4))
 	hud.text = (
-		"Insel %d/%d\n%d Kristalle · %d Lernstopps"
-		% [checkpoint + 1, ISLAND_COUNT, collected.size(), completed_questions.size()]
+		"Insel %d/%d\n%d Kristalle · %d Sterne · %d Lernstopps"
+		% [
+			checkpoint + 1,
+			ISLAND_COUNT,
+			collected.size(),
+			stars_gathered.size(),
+			completed_questions.size()
+		]
 	)
 
 
@@ -491,6 +528,7 @@ func _finish() -> void:
 	var reward_accepted: bool = HostBridge.reward(result_payload)
 	if HostBridge.reward_is_recoverable(result_id):
 		DirAccess.remove_absolute(SESSION)
+	_celebrate_goal()
 	_clear_modal()
 	modal_column.add_child(_label("Wolkeninseln geschafft! ★", 29))
 	modal_column.add_child(
@@ -533,6 +571,7 @@ func _save_session() -> void:
 		"checkpoint",
 		"falls",
 		"collected",
+		"stars_gathered",
 		"completed_questions",
 		"active_question",
 		"recent_questions",
@@ -560,6 +599,7 @@ func _restore_session() -> bool:
 		"checkpoint",
 		"falls",
 		"collected",
+		"stars_gathered",
 		"completed_questions",
 		"active_question",
 		"wrong_count",
@@ -572,8 +612,169 @@ func _restore_session() -> bool:
 	actor.velocity = Vector3.ZERO
 	for i in range(crystals.size()):
 		crystals[i].visible = not collected.has(i)
+	for i in range(bonus_stars.size()):
+		bonus_stars[i].visible = not stars_gathered.has(i)
+	_refresh_flags()
 	return true
 
+
+
+func _build_bounce_pads() -> void:
+	# Side-back corners keep the main forward path (and the auto-traverser) clear.
+	for i in [2, 5, 8]:
+		if i >= islands.size():
+			continue
+		var world: Vector3 = islands[i] + Vector3(2.65, 0.15, 1.85)
+		var node := Node3D.new()
+		node.name = "BouncePad%d" % i
+		node.position = world
+		add_child(node)
+		art.bounce_pad(node)
+		bounce_pads.append(world)
+
+
+func _build_movers() -> void:
+	for spec in [
+		{"index": 1, "side": 1.0, "seed": 21.0},
+		{"index": 4, "side": -1.0, "seed": 33.0},
+		{"index": 7, "side": 1.0, "seed": 47.0}
+	]:
+		var index: int = int(spec["index"])
+		if index + 1 >= islands.size():
+			continue
+		var mid: Vector3 = (islands[index] + islands[index + 1]) * 0.5
+		var origin: Vector3 = mid + Vector3(float(spec["side"]) * 5.8, 0.12, 0)
+		var body := AnimatableBody3D.new()
+		body.name = "MovingIsland%d" % index
+		body.sync_to_physics = true
+		add_child(body)
+		body.position = origin
+		art.mini_island(body, Vector2(3.15, 2.55), float(spec["seed"]))
+		var shape := BoxShape3D.new()
+		shape.size = Vector3(3.15, 0.45, 2.55)
+		var collider := CollisionShape3D.new()
+		collider.shape = shape
+		body.add_child(collider)
+		movers.append(
+			{
+				"body": body,
+				"origin": origin,
+				"axis": Vector3(float(spec["side"]) * 1.75, 0.0, 0.0),
+				"speed": 0.7,
+				"clock": 0.0
+			}
+		)
+
+
+func _build_side_island() -> void:
+	if islands.size() < 5:
+		return
+	extra_island = islands[4] + Vector3(7.15, 0.55, -1.4)
+	var ground := StaticBody3D.new()
+	ground.name = "BonusIsland"
+	ground.position = extra_island
+	add_child(ground)
+	art.mini_island(ground, Vector2(4.0, 3.35), 91.0)
+	art.tree(ground, Vector3(-1.15, 0, -0.9))
+	var shape := BoxShape3D.new()
+	shape.size = Vector3(4.0, 0.5, 3.35)
+	var collider := CollisionShape3D.new()
+	collider.shape = shape
+	ground.add_child(collider)
+
+
+func _build_bonus_stars() -> void:
+	var spots: Array[Vector3] = []
+	for pad in bounce_pads:
+		spots.append(pad + Vector3(0, 2.15, 0))
+	for mover in movers:
+		var rider := Node3D.new()
+		rider.name = "MoverStar"
+		rider.position = Vector3(0, 1.55, 0)
+		mover["body"].add_child(rider)
+		art.gem(rider)
+		bonus_stars.append(rider)
+	if extra_island != Vector3.ZERO:
+		spots.append(extra_island + Vector3(-0.8, 1.25, 0.4))
+		spots.append(extra_island + Vector3(0.9, 1.25, -0.35))
+	for i in range(spots.size()):
+		var star := Node3D.new()
+		star.name = "BonusStar%d" % i
+		star.position = spots[i]
+		add_child(star)
+		art.gem(star)
+		bonus_stars.append(star)
+
+
+func _build_checkpoint_flags() -> void:
+	for i in [0, 3, 6, 9]:
+		if i >= islands.size():
+			continue
+		var holder := Node3D.new()
+		holder.name = "CheckpointFlag%d" % i
+		holder.position = islands[i] + Vector3(-2.45, 0, 1.85)
+		add_child(holder)
+		checkpoint_flags[i] = art.checkpoint_flag(holder)
+	_refresh_flags()
+
+
+func _refresh_flags() -> void:
+	if art == null:
+		return
+	for i in checkpoint_flags:
+		art.set_flag_active(checkpoint_flags[i], int(i) <= checkpoint)
+
+
+func _step_movers(delta: float) -> void:
+	for mover in movers:
+		mover["clock"] = float(mover["clock"]) + delta * float(mover["speed"])
+		var body: AnimatableBody3D = mover["body"]
+		if is_instance_valid(body):
+			body.position = Vector3(mover["origin"]) + Vector3(mover["axis"]) * sin(float(mover["clock"]))
+
+
+func _try_bounce(delta: float) -> void:
+	bounce_cooldown = maxf(0.0, bounce_cooldown - delta)
+	if bounce_cooldown > 0.0 or not actor.is_on_floor():
+		return
+	for pad in bounce_pads:
+		if actor.position.distance_to(pad) < 0.9:
+			actor.velocity.y = 12.0
+			bounce_cooldown = 0.28
+			return
+
+
+func _celebrate_goal() -> void:
+	var burst := CPUParticles3D.new()
+	burst.name = "GoalCelebration"
+	burst.emitting = true
+	burst.one_shot = true
+	burst.explosiveness = 0.92
+	burst.amount = 42
+	burst.lifetime = 1.5
+	burst.preprocess = 0.05
+	burst.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
+	burst.emission_sphere_radius = 0.55
+	burst.direction = Vector3.UP
+	burst.spread = 70.0
+	burst.gravity = Vector3(0, -2.4, 0)
+	burst.initial_velocity_min = 2.4
+	burst.initial_velocity_max = 5.2
+	var quad := QuadMesh.new()
+	quad.size = Vector2(0.18, 0.18)
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	mat.albedo_color = Color("ffe27a")
+	mat.emission_enabled = true
+	mat.emission = Color("ffd75e")
+	mat.emission_energy_multiplier = 2.2
+	quad.material = mat
+	burst.mesh = quad
+	burst.position = islands[ISLAND_COUNT - 1] + Vector3(0, 2.15, -1.6)
+	add_child(burst)
+	if is_instance_valid(original_lumo) and original_lumo.has_method("play_behavior"):
+		original_lumo.play_behavior("celebrate")
 
 func _notification(what: int) -> void:
 	if not is_instance_valid(modal):

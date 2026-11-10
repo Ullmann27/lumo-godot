@@ -34,6 +34,77 @@ func _jump(tier: int) -> Node:
 	return game
 
 
+func _assert_box_collider(body: StaticBody3D, expected_size: Vector3) -> void:
+	var colliders: Array[CollisionShape3D] = []
+	for child in body.get_children():
+		if child is CollisionShape3D:
+			colliders.append(child)
+	assert(colliders.size() == 1, "%s must have exactly one collider" % body.name)
+	var collider: CollisionShape3D = colliders[0]
+	assert(collider.shape is BoxShape3D, "%s must keep its box shape" % body.name)
+	assert(collider.shape.size == expected_size, "%s collider dimensions changed" % body.name)
+	assert(not collider.disabled, "%s collider must remain enabled" % body.name)
+	assert(
+		collider.transform == Transform3D.IDENTITY,
+		"%s collider offset or scale changed" % body.name
+	)
+	assert(body.basis == Basis.IDENTITY, "%s collision body rotation or scale changed" % body.name)
+	assert(
+		body.collision_layer == 1 and body.collision_mask == 1,
+		"%s collision layers changed" % body.name
+	)
+
+
+func _assert_jump_colliders(game: Node) -> void:
+	assert(game.islands.size() == 12, "all twelve original island anchors remain")
+	var checked: Array[Node] = []
+	for index in range(12):
+		var original := Vector3(
+			sin(float(index) * 0.75) * 3.0, sin(float(index) * 0.55) * 0.9, -float(index) * 8.0
+		)
+		assert(game.islands[index] == original, "original island anchor %d moved" % index)
+		var matches: Array[StaticBody3D] = []
+		for child in game.get_children():
+			# AnimatableBody3D inherits StaticBody3D. Added moving platforms
+			# must never satisfy the contract of an original stationary island.
+			if child.get_class() == "StaticBody3D" and child.position == original:
+				matches.append(child)
+		assert(matches.size() == 1, "original island %d needs one stationary body" % index)
+		_assert_box_collider(matches[0], Vector3(7.0, 0.5, 6.0))
+		checked.append(matches[0])
+	assert(game.movers.size() == 3, "three gameplay moving platforms remain")
+	var moving_indices: Array[int] = [1, 4, 7]
+	var moving_sides: Array[float] = [1.0, -1.0, 1.0]
+	for index in range(3):
+		var mover: Dictionary = game.movers[index]
+		var body = mover.body
+		var anchor: int = moving_indices[index]
+		assert(body is AnimatableBody3D, "moving platform needs a real animatable collision body")
+		assert(body.get_parent() == game and body.name == "MovingIsland%d" % anchor)
+		assert(not checked.has(body), "each moving platform needs its own collision body")
+		assert(body.sync_to_physics, "moving platforms must synchronize physical contacts")
+		var origin: Vector3 = (game.islands[anchor] + game.islands[anchor + 1]) * 0.5
+		origin += Vector3(moving_sides[index] * 5.8, 0.12, 0.0)
+		assert(mover.origin == origin, "moving platform origin changed")
+		assert(mover.axis == Vector3(moving_sides[index] * 1.75, 0.0, 0.0))
+		_assert_box_collider(body, Vector3(3.15, 0.45, 2.55))
+		checked.append(body)
+	var bonus = game.get_node_or_null("BonusIsland")
+	assert(
+		bonus != null and bonus.get_class() == "StaticBody3D", "bonus island must stay stationary"
+	)
+	var bonus_position: Vector3 = game.islands[4] + Vector3(7.15, 0.55, -1.4)
+	assert(game.extra_island == bonus_position and bonus.position == bonus_position)
+	_assert_box_collider(bonus, Vector3(4.0, 0.5, 3.35))
+	checked.append(bonus)
+	for child in game.get_children():
+		if child is StaticBody3D:
+			assert(
+				checked.has(child), "unexpected or duplicate island collision body: %s" % child.name
+			)
+	assert(checked.size() == 16, "twelve original, three moving and one bonus body are distinct")
+
+
 func _run() -> void:
 	await process_frame
 	await process_frame
@@ -76,15 +147,7 @@ func _run() -> void:
 		var world := _find(game, "WorldEnvironment") as WorldEnvironment
 		assert(world != null and world.environment.background_mode == Environment.BG_SKY)
 		assert(world.environment.fog_enabled or tier == 0)
-		assert(game.islands.size() == 12)
-		var boxes: int = 0
-		for child in game.get_children():
-			if child is StaticBody3D:
-				for grand in child.get_children():
-					if grand is CollisionShape3D and grand.shape is BoxShape3D:
-						assert(grand.shape.size == Vector3(7, 0.5, 6), "island collider changed")
-						boxes += 1
-		assert(boxes == 12, "every island keeps its box collider")
+		_assert_jump_colliders(game)
 		assert(game.crystals.size() == 11)
 		for crystal in game.crystals:
 			assert(crystal.get_node_or_null("StarGem") != null)

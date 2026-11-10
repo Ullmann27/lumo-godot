@@ -262,17 +262,47 @@ func _test_rival_item_tactics() -> void:
 	assert(game.opponent_boost_times.size() == 5)
 	assert(game.opponent_shield_times.size() == 5)
 
-	game.distance = 20.0
-	game.opponent_distances[0] = 10.0
+	# Keep physical transforms, headings, motion and race progress consistent.
+	# The former fixture changed only progress and passed an invented gap while
+	# the actual cars stayed in the crowded starting grid.
+	var straight: float = -1.0
+	for candidate in range(80, int(game.track_length) - 100, 5):
+		var at: float = float(candidate)
+		var forward: Vector3 = game.world.forward(at)
+		var safe: bool = true
+		for offset in [8.0, 20.0, 36.0]:
+			if forward.angle_to(game.world.forward(at + offset)) > 0.10:
+				safe = false
+		if safe and not game.world.in_gap(at) and game.world.ramp_height(at) == 0.0:
+			straight = at
+			break
+	assert(straight >= 0.0, "Bergwelt must contain a measurable clear straight for boost tactics")
+	for i in range(game.opponents.size()):
+		var at: float = straight if i == 0 else straight - 80.0 - i * 8.0
+		game.opponents[i].transform = game.world.reset_transform(at, 0.0)
+		game.opponent_distances[i] = at
+		game.opponent_lanes[i] = 0.0
+		game.opponent_headings[i] = game._heading(at)
+		game.opponents[i].set_motion(18.0, 0.0, false, false)
 	game.opponent_items[0] = "boost"
 	game.opponent_boost_times[0] = 0.0
-	game._update_rival_item_tactics(0, Vector3(0, 0, 12), STEP)
+	game.distance = straight + 6.0
+	game.speed = 0.0
+	game.player.transform = game.world.reset_transform(game.distance, 0.0)
+	game._update_rival_item_tactics(0, game.player.position - game.opponents[0].position, STEP)
+	assert(game.opponent_items[0] == "boost", "A blocked rival must not boost into the stopped player")
+	assert(game.opponent_boost_times[0] == 0.0)
+	game.distance = straight + 70.0
+	game.player.transform = game.world.reset_transform(game.distance, 0.0)
+	game._update_rival_item_tactics(0, game.player.position - game.opponents[0].position, STEP)
 	assert(game.opponent_items[0].is_empty())
-	assert(game.opponent_boost_times[0] > 0.0, "Trailing rival uses boost to attack the gap")
+	assert(game.opponent_boost_times[0] > 0.0, "Trailing rival boosts through a genuinely clear corridor")
 
+	game.player.transform = game.world.reset_transform(straight + 6.0, 0.0)
+	game.opponents[1].transform = game.world.reset_transform(straight + 4.0, 1.0)
 	game.opponent_items[1] = "shield"
 	game.opponent_shield_times[1] = 0.0
-	game._update_rival_item_tactics(1, Vector3(0, 0, 5), STEP)
+	game._update_rival_item_tactics(1, game.player.position - game.opponents[1].position, STEP)
 	assert(game.opponent_shield_times[1] > 0.0, "Nearby rival can protect itself")
 
 	game.opponent_stuns[1] = 0.0
@@ -283,20 +313,24 @@ func _test_rival_item_tactics() -> void:
 
 	game.hit_timer = 0.0
 	game.shield_time = 0.0
+	game.opponents[2].position = game.player.position + Vector3.RIGHT * 4.0
 	game.opponent_items[2] = "pulse"
-	game._update_rival_item_tactics(2, Vector3(0, 0, 5), STEP)
+	var pulse_gap: Vector3 = game.player.position - game.opponents[2].position
+	game._update_rival_item_tactics(2, pulse_gap, STEP)
 	assert(
 		game.hit_timer == 0.0 and game.opponent_pulse_warning_times[2] > 0.0,
 		"Rival pulse must warn before it can affect the player"
 	)
-	game._update_rival_item_tactics(2, Vector3(0, 0, 5), game.RIVAL_PULSE_WARNING_SECONDS + STEP)
+	game._update_rival_item_tactics(2, pulse_gap, game.RIVAL_PULSE_WARNING_SECONDS + STEP)
 	assert(game.hit_timer > 0.0, "Rival pulse can pressure a player who stays in range")
 
 	game.hit_timer = 0.0
 	game.shield_time = 4.0
+	game.opponents[3].position = game.player.position + Vector3.LEFT * 4.0
 	game.opponent_items[3] = "pulse"
-	game._update_rival_item_tactics(3, Vector3(0, 0, 5), STEP)
-	game._update_rival_item_tactics(3, Vector3(0, 0, 5), game.RIVAL_PULSE_WARNING_SECONDS + STEP)
+	pulse_gap = game.player.position - game.opponents[3].position
+	game._update_rival_item_tactics(3, pulse_gap, STEP)
+	game._update_rival_item_tactics(3, pulse_gap, game.RIVAL_PULSE_WARNING_SECONDS + STEP)
 	assert(game.hit_timer == 0.0, "Player shield blocks a telegraphed rival pulse")
 
 

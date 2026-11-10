@@ -1,7 +1,9 @@
 extends RefCounted
 ## Matching jigsaw pieces, original shared edges and validated per-child snapshots.
-const COUNTS = [12, 24, 48, 96]
-const GRIDS = [Vector2i(4, 3), Vector2i(6, 4), Vector2i(8, 6), Vector2i(12, 8)]
+const COUNTS = [6, 12, 24, 48, 96]
+const GRIDS = [Vector2i(3, 2), Vector2i(4, 3), Vector2i(6, 4), Vector2i(8, 6), Vector2i(12, 8)]
+const DIFFICULTY_NAMES = ["Mini", "Leicht", "Mittel", "Schwer", "Meister"]
+const MOTIF_COUNT := 5
 var count: int = 12
 var columns: int = 4
 var rows: int = 3
@@ -16,11 +18,11 @@ var elapsed: float = 0
 func setup(total: int, image: int) -> void:
 	var choice: int = COUNTS.find(total)
 	if choice < 0:
-		choice = 0
+		choice = 1
 	count = COUNTS[choice]
 	columns = GRIDS[choice].x
 	rows = GRIDS[choice].y
-	motif = clampi(image, 0, 2)
+	motif = clampi(image, 0, MOTIF_COUNT - 1)
 	pieces.clear()
 	hints = 0
 	moves = 0
@@ -35,6 +37,21 @@ func setup(total: int, image: int) -> void:
 				"z": -2.5 + (i % 12) * 0.5
 			}
 		)
+
+
+static func difficulty_name_for(total: int) -> String:
+	var choice: int = COUNTS.find(total)
+	return DIFFICULTY_NAMES[choice] if choice >= 0 else "Leicht"
+
+
+static func tray_per_side(total: int) -> int:
+	var choice: int = COUNTS.find(total)
+	var sides: Array[int] = [3, 3, 3, 4, 5]
+	return sides[choice] if choice >= 0 else 3
+
+
+func difficulty_name() -> String:
+	return difficulty_name_for(count)
 
 
 func board_size() -> Vector2:
@@ -110,6 +127,20 @@ func outline(id: int) -> PackedVector2Array:
 	return shape
 
 
+func snap_limit() -> float:
+	return minf(cell_size().x, cell_size().y) * 0.32
+
+
+func hover_limit() -> float:
+	return minf(cell_size().x, cell_size().y) * 0.48
+
+
+func is_near_target(id: int, at: Vector2) -> bool:
+	if id < 0 or id >= pieces.size() or pieces[id].locked:
+		return false
+	return at.distance_to(target(id)) <= hover_limit()
+
+
 func try_snap(id: int, at: Vector2) -> bool:
 	if id < 0 or id >= pieces.size() or pieces[id].locked:
 		return false
@@ -117,7 +148,7 @@ func try_snap(id: int, at: Vector2) -> bool:
 	pieces[id].x = at.x
 	pieces[id].z = at.y
 	pieces[id]["tray"] = absf(at.x) > board_size().x * 0.5 or absf(at.y) > board_size().y * 0.5
-	if at.distance_to(target(id)) > minf(cell_size().x, cell_size().y) * 0.32:
+	if at.distance_to(target(id)) > snap_limit():
 		return false
 	pieces[id].locked = true
 	pieces[id].x = target(id).x
@@ -151,10 +182,12 @@ func to_data() -> Dictionary:
 
 
 func restore(data: Dictionary) -> bool:
+	var image: int = int(data.get("motif", -1))
 	if (
 		int(data.get("version", 0)) != 1
 		or int(data.get("count", 0)) not in COUNTS
-		or int(data.get("motif", -1)) not in [0, 1, 2]
+		or image < 0
+		or image >= MOTIF_COUNT
 	):
 		return false
 	var total: int = int(data.count)
@@ -184,7 +217,7 @@ func restore(data: Dictionary) -> bool:
 				"z": z
 			}
 		)
-	setup(total, int(data.motif))
+	setup(total, image)
 	restored.sort_custom(func(a, b): return int(a.id) < int(b.id))
 	pieces = restored
 	for piece in pieces:

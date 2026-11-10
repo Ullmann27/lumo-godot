@@ -8,6 +8,8 @@ const STICK = preload("res://scripts/games/kart_joystick.gd")
 const ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const CHEST_MODEL = preload("res://assets/creative/models/lumo_treasure_chest.glb")
 const ISLAND_ART = preload("res://scripts/creative/treasure_island_art.gd")
+const CAMERA_OFFSET := Vector3(8.5, 6.8, 14.0)
+const CAMERA_LOOK_OFFSET := Vector3(0.0, 1.15, -2.0)
 var model = STATE.new()
 var kit = KIT.new()
 var previous: Dictionary
@@ -69,8 +71,8 @@ func _ready() -> void:
 	add_child(camera)
 	camera.fov = 55
 	camera.current = true
-	camera.position = player.position + Vector3(10, 14, 19)
-	camera.look_at(player.position + Vector3.UP)
+	camera.position = player.position + CAMERA_OFFSET
+	camera.look_at(player.position + CAMERA_LOOK_OFFSET, Vector3.UP)
 	marker = kit.mesh(self, kit.SHAPES.star(), Vector3.ZERO, Color("ffe7a1"), true)
 	marker.scale = Vector3.ONE * 0.65
 	_ui()
@@ -279,9 +281,13 @@ func _physics_process(delta: float) -> void:
 		fox.rotation.y = lerp_angle(fox.rotation.y, atan2(-axis.x, -axis.y), delta * 10)
 	fox.set_companion_pose(time, "walk" if axis.length() > 0.12 else "idle")
 	camera.position = camera.position.lerp(
-		player.position + Vector3(10, 14, 19), minf(1, delta * 4)
+		player.position + CAMERA_OFFSET, minf(1, delta * 4)
 	)
-	camera.look_at(player.position + Vector3.UP)
+	camera.look_at(player.position + CAMERA_LOOK_OFFSET, Vector3.UP)
+	var found := model.try_discover(player.position)
+	if not found.is_empty():
+		toast.text = "Entdeckung: %s!" % found
+		_update()
 	marker.position = model.current().at + Vector3.UP * (3.5 + sin(time * 2) * 0.2)
 	marker.rotate_y(delta)
 	action.disabled = not model.can_interact(player.position)
@@ -315,8 +321,14 @@ func _update() -> void:
 			child.set_deferred("disabled", not gate.visible)
 	marker.visible = not model.completed
 	clue_label.text = (
-		"Hinweis %d / %d\n%s"
-		% [mini(model.chapter + 1, STATE.CLUES.size()), STATE.CLUES.size(), model.current().lead]
+		"Hinweis %d / %d · Entdeckungen %d / %d\n%s"
+		% [
+			mini(model.chapter + 1, STATE.CLUES.size()),
+			STATE.CLUES.size(),
+			model.discoveries.size(),
+			STATE.DISCOVERIES.size(),
+			model.current().lead
+		]
 	)
 
 
@@ -362,6 +374,11 @@ func _answer(choice: int) -> void:
 	_update()
 	_close_modal()
 	toast.text = "Gefunden: " + model.inventory[-1] + "! Dein Rucksack wächst."
+	if model.last_cheer == 3:
+		toast.text = "Gefunden: %s! Super-Serie: 3 Hinweise hintereinander!" % model.inventory[-1]
+	elif model.last_cheer == 7:
+		toast.text = "Gefunden: %s! 7er-Serie! Du bist ein Schatz-Profi!" % model.inventory[-1]
+	model.last_cheer = 0
 	if model.completed:
 		_win()
 
@@ -394,6 +411,12 @@ func _inventory() -> void:
 			19
 		)
 	)
+	if not model.discoveries.is_empty():
+		var names: Array[String] = []
+		for spot in STATE.DISCOVERIES:
+			if str(spot.id) in model.discoveries:
+				names.append(str(spot.name))
+		modal_box.add_child(KIT.label("Entdeckungen: " + ", ".join(names), 17))
 	modal_box.add_child(KIT.button("Weiter erkunden", _close_modal))
 
 
@@ -410,13 +433,14 @@ func _pause_menu() -> void:
 func _win() -> void:
 	if not _save():
 		return
+	var xp: int = model.reward_xp()
 	HostBridge.reward(
 		{
 			"resultId": model.result_id,
 			"game": "treasure",
 			"status": "completed",
 			"stars": 3,
-			"xp": 40
+			"xp": xp
 		}
 	)
 	_open_modal("Der Sternenschatz gehört euch!")
@@ -426,7 +450,10 @@ func _win() -> void:
 			(
 				KIT
 				. label(
-					"Sieben Hinweise gelöst und alle Schlüssel gefunden.\n3 Sterne und 40 Erfahrungspunkte!",
+					(
+						"Sieben Hinweise gelöst und alle Schlüssel gefunden.\n3 Sterne und %d Erfahrungspunkte!"
+						% xp
+					),
 					19
 				)
 			)
