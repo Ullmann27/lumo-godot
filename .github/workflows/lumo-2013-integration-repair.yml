@@ -1,0 +1,134 @@
+name: LUMO 2013 integration repair verification
+
+on:
+  push:
+    branches:
+      - lumo-2013/integration-repair-20261110
+    paths:
+      - .github/workflows/lumo-2013-integration-repair.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lumo-2013-integration-repair
+  cancel-in-progress: false
+
+jobs:
+  repair-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Install formatting and Godot test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check gdtoolkit==4.5.0
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip"             https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Repair river-island collision and visual spans
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          world = Path("scripts/creative/build_world.gd")
+          s = world.read_text(encoding="utf-8")
+          old = "for island_z in [-12.5, 19.5]:"
+          new = "for island_z in [-12.0, 20.0]:"
+          if old not in s:
+              raise SystemExit("Expected old RiverIsland collision centres were not found")
+          world.write_text(s.replace(old, new), encoding="utf-8")
+
+          landmarks = Path("scripts/creative/build_landmarks.gd")
+          s = landmarks.read_text(encoding="utf-8")
+          pairs = {
+              "if (z >= -14.05 and z <= -10.95) or (z >= 17.95 and z <= 21.05):":
+                  "if (z >= -14.05 and z <= -9.95) or (z >= 17.95 and z <= 22.05):",
+              "var island_spans: Array[Vector2] = [Vector2(-14.05, -10.95), Vector2(17.95, 21.05)]":
+                  "var island_spans: Array[Vector2] = [Vector2(-14.05, -9.95), Vector2(17.95, 22.05)]",
+          }
+          for old, new in pairs.items():
+              if old not in s:
+                  raise SystemExit(f"Expected island visual span missing: {old}")
+              s = s.replace(old, new)
+          landmarks.write_text(s, encoding="utf-8")
+          PY
+
+      - name: Format and lint the reviewed GDScript changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          gdformat             scripts/creative/treasure_island_art.gd             scripts/creative/build_landmarks.gd             scripts/creative/build_world.gd             scripts/tests/bauwelt_identity_2013_regression.gd
+          gdlint             scripts/creative/treasure_island_art.gd             scripts/creative/build_landmarks.gd             scripts/creative/build_world.gd             scripts/tests/bauwelt_identity_2013_regression.gd
+          gdformat --check             scripts/creative/treasure_island_art.gd             scripts/creative/build_landmarks.gd             scripts/creative/build_world.gd             scripts/tests/bauwelt_identity_2013_regression.gd
+          git diff --check
+
+      - name: Import and static project validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --editor --import --quit             2>&1 | tee "$RUNNER_TEMP/import.log"
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' "$RUNNER_TEMP/import.log"; then
+            exit 1
+          fi
+          python3 tools/validate_project.py
+
+      - name: Reproduce the Kart pause-layout gate with measured runtime
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          start="$(date +%s)"
+          timeout 300s xvfb-run -a -s '-screen 0 1920x2560x24'             Godot_v4.6.3-stable_linux.x86_64             --verbose --audio-driver Dummy --rendering-method gl_compatibility             --script scripts/tests/kart_pause_layout_regression.gd             2>&1 | tee "$RUNNER_TEMP/pause-layout.log"
+          elapsed="$(( $(date +%s) - start ))"
+          echo "KART_PAUSE_LAYOUT_SECONDS=$elapsed" | tee "$RUNNER_TEMP/pause-runtime.txt"
+          grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/pause-layout.log"
+          if grep -E 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' "$RUNNER_TEMP/pause-layout.log"; then
+            exit 1
+          fi
+
+      - name: Run the complete project validation from the repaired source
+        shell: bash
+        env:
+          GODOT_BIN: Godot_v4.6.3-stable_linux.x86_64
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          timeout 1200s bash tools/validate_project.sh 2>&1 | tee "$RUNNER_TEMP/validate-project.log"
+          grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/validate-project.log"
+
+      - name: Commit only after all repair gates pass
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             scripts/creative/treasure_island_art.gd             scripts/creative/build_landmarks.gd             scripts/creative/build_world.gd             scripts/tests/bauwelt_identity_2013_regression.gd
+          git diff --cached --check
+          git commit -m "fix(2013): align Bauwelt river islands and satisfy GDScript gates"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-2013-integration-repair-proof-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/pause-layout.log
+            ${{ runner.temp }}/pause-runtime.txt
+            ${{ runner.temp }}/validate-project.log
+            ${{ runner.temp }}/import.log
+          if-no-files-found: warn
+          retention-days: 30
