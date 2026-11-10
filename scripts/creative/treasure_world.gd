@@ -7,6 +7,7 @@ const FOX = preload("res://scripts/games/kart_vehicle.gd")
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const CHEST_MODEL = preload("res://assets/creative/models/lumo_treasure_chest.glb")
+const ISLAND_ART = preload("res://scripts/creative/treasure_island_art.gd")
 var model = STATE.new()
 var kit = KIT.new()
 var previous: Dictionary
@@ -147,13 +148,15 @@ func _landscape() -> void:
 	kit.collision(gate, Vector3(0, 1.6, -31), Vector3(5, 3.2, 0.28))
 	for x in [-3.45, 3.45]:
 		var pillar: MeshInstance3D = kit.cylinder(self, Vector3(x, 2.15, -31), 0.62, 4.3, Color.WHITE)
-		pillar.material_override = BuildVoxelStyle.material("sand", Color("d9a86c"))
+		pillar.material_override = BuildVoxelStyle.material("stone", Color("6a645a"))
 		var cap: MeshInstance3D = kit.sphere(self, Vector3(x, 4.55, -31), Vector3.ONE * 0.85, Color.WHITE)
-		cap.material_override = BuildVoxelStyle.material("sand", Color("e2b878"))
+		cap.material_override = BuildVoxelStyle.material("stone", Color("7a7468"))
 	var lintel: MeshInstance3D = kit.box(self, Vector3(0, 4.5, -31), Vector3(8.2, 0.75, 1.15), Color.WHITE)
-	lintel.material_override = BuildVoxelStyle.material("sand", Color("d9a86c"))
+	lintel.material_override = BuildVoxelStyle.material("stone", Color("6a645a"))
+	lintel.visible = false
 	var keystone: MeshInstance3D = kit.box(self, Vector3(0, 5.15, -31), Vector3(1.5, 0.7, 1.25), Color.WHITE)
-	keystone.material_override = BuildVoxelStyle.material("sand", Color("e2b878"))
+	keystone.material_override = BuildVoxelStyle.material("stone", Color("7a7468"))
+	keystone.visible = false
 	for i in range(4):
 		var crystal := kit.mesh(
 			self, kit.SHAPES.crystal(), Vector3(-17.5 + i * 1.65, 1.2, -40.2), Color("7ee7ff"), true
@@ -174,6 +177,7 @@ func _landscape() -> void:
 		)
 		mountain.material_override = BuildVoxelStyle.material("stone", Color("8fa07a"))
 		mountain.scale = Vector3(18, 25 + (i % 3) * 8, 16)
+	ISLAND_ART.apply(self)
 
 
 func _ui() -> void:
