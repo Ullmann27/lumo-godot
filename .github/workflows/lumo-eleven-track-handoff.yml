@@ -6,6 +6,7 @@ on:
       - lumo-next/eleven-tracks-20261110
     paths:
       - .github/handoffs/lumo-other-tracks-code.patch.gz.b64
+      - .github/workflows/lumo-eleven-track-handoff.yml
 
 permissions:
   contents: write
@@ -36,8 +37,8 @@ jobs:
           echo "PATCH_SHA256=$(sha256sum "$patch" | awk '{print $1}')"
           git apply --check --3way "$patch"
           git apply --3way "$patch"
-          git diff --check
-          git diff --name-only > "$RUNNER_TEMP/handoff-files.txt"
+          git diff HEAD --check
+          git diff HEAD --name-only > "$RUNNER_TEMP/handoff-files.txt"
           echo "Applied files:"
           cat "$RUNNER_TEMP/handoff-files.txt"
           test "$(wc -l < "$RUNNER_TEMP/handoff-files.txt")" -eq 16
