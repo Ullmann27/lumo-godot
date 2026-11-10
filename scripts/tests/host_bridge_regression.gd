@@ -55,7 +55,7 @@ func _android_back() -> void:
 	root.propagate_notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
 	root.go_back_requested.emit()
 	# A SceneTree quit is applied at the end of the frame; survive that frame.
-	await create_timer(0.05).timeout
+	await create_timer(0.05, true, false, true).timeout
 
 
 func _run() -> void:
@@ -63,6 +63,7 @@ func _run() -> void:
 	var original_back_quit: bool = quit_on_go_back
 	assert(original_back_quit, "Exercise the real default Android Back auto-quit")
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
+	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg.tmp")
 	DirAccess.remove_absolute("user://lumo_host_pending_rewards.cfg")
 	var bridge = root.get_node("HostBridge")
 	assert(not bridge.is_embedded(), "Standalone has no native host")
@@ -143,7 +144,16 @@ func _run() -> void:
 	await process_frame
 	assert(game.menu_active and game.saved_session_available, "The garage offers the saved race")
 	game._resume_saved_race()
-	assert(game.paused and game.result_id == first_id, "Resume preserves reward identity")
+	if not game.paused or game.result_id != first_id:
+		push_error(
+			(
+				"[HostBridgeTests] FAIL: Resume preserves reward identity "
+				+ "(paused=%s result_id=%s expected=%s)"
+				% [game.paused, game.result_id, first_id]
+			)
+		)
+		quit(1)
+		return
 	game._resume()
 	fake.accept_rewards = false
 	game._finish()
