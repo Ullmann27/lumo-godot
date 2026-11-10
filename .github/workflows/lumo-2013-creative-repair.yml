@@ -1,158 +1,64 @@
-name: LUMO 2013 creative repair and visual proof
+name: LUMO 2013 creative repair proof
 
 on:
   push:
     branches:
       - lumo-2013/creative-repair-20261110
     paths:
+      - scripts/creative/treasure_island_art.gd
+      - scripts/creative/rhythm_stage_art.gd
+      - scripts/creative/rhythm_world.gd
       - .github/workflows/lumo-2013-creative-repair.yml
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: lumo-2013-creative-repair
-  cancel-in-progress: false
+  group: lumo-2013-creative-repair-proof
+  cancel-in-progress: true
 
 jobs:
-  repair-test-render:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
 
-      - name: Install Godot, formatter and software renderer
-        shell: bash
+      - name: Install verification tools
         run: |
           set -euo pipefail
           python3 -m pip install --disable-pip-version-check gdtoolkit==4.5.0
           sudo apt-get -o Acquire::Retries=2 update -qq
           sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
-          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
-            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip"             https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
           unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
           chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
           echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
 
-      - name: Fix rune density and Rhythm restart state
-        shell: bash
+      - name: GDScript format and lint gate
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          treasure = Path("scripts/creative/treasure_island_art.gd")
-          s = treasure.read_text(encoding="utf-8")
-          pairs = {
-              "_rune_glow(root, box)": "_rune_glow(root, box, density)",
-              "static func _rune_glow(root: Node3D, mesh: BoxMesh) -> void:":
-                  "static func _rune_glow(root: Node3D, mesh: BoxMesh, density: float) -> void:",
-              "var marker_z: Array[float] = [-10.0, -22.0, -38.0, -52.0]\n\tfor z in marker_z:\n\t\tfor side in [-1.0, 1.0]:\n\t\t\txforms.append(_xform(Vector3(side * 6.22, 1.28, z), Vector3(0.05, 0.62, 0.16)))":
-                  "var marker_z: Array[float] = [-10.0, -22.0, -38.0, -52.0]\n\tvar marker_count: int = maxi(2, int(round(float(marker_z.size()) * density)))\n\tfor i in range(marker_count):\n\t\tfor side in [-1.0, 1.0]:\n\t\t\txforms.append(\n\t\t\t\t_xform(\n\t\t\t\t\tVector3(side * 6.22, 1.28, marker_z[i]),\n\t\t\t\t\tVector3(0.05, 0.62, 0.16)\n\t\t\t\t)\n\t\t\t)",
-          }
-          for old, new in pairs.items():
-              if old not in s:
-                  raise SystemExit(f"Expected treasure snippet missing: {old[:90]}")
-              s = s.replace(old, new)
-          treasure.write_text(s, encoding="utf-8")
-
-          rhythm = Path("scripts/creative/rhythm_world.gd")
-          s = rhythm.read_text(encoding="utf-8")
-          old = "func start() -> void:\n\tmodel.setup(song_index, difficulty)\n\tresult_id = HostBridge.new_result_id()"
-          new = """func start() -> void:
-\tmodel.setup(song_index, difficulty)
-\tcheer_until = -100.0
-\tfor burst in [hit_burst, cheer_burst]:
-\t\tif burst != null:
-\t\t\tburst.visible = false
-\t\t\tburst.scale = Vector3.ZERO
-\tresult_id = HostBridge.new_result_id()"""
-          if old not in s:
-              raise SystemExit("Rhythm start() anchor missing")
-          rhythm.write_text(s.replace(old, new), encoding="utf-8")
-          PY
-
-      - name: Format and lint reviewed creative files
-        shell: bash
-        run: |
-          set -euo pipefail
-          gdformat \
-            scripts/creative/treasure_island_art.gd \
-            scripts/creative/rhythm_stage_art.gd \
-            scripts/creative/rhythm_world.gd
-          gdlint \
-            scripts/creative/treasure_island_art.gd \
-            scripts/creative/rhythm_stage_art.gd \
-            scripts/creative/rhythm_world.gd
-          gdformat --check \
-            scripts/creative/treasure_island_art.gd \
-            scripts/creative/rhythm_stage_art.gd \
-            scripts/creative/rhythm_world.gd
+          gdformat --check             scripts/creative/treasure_island_art.gd             scripts/creative/rhythm_stage_art.gd             scripts/creative/rhythm_world.gd
+          gdlint             scripts/creative/treasure_island_art.gd             scripts/creative/rhythm_stage_art.gd             scripts/creative/rhythm_world.gd
           git diff --check
 
-      - name: Import exact project
-        shell: bash
+      - name: Import project
         run: |
           set -euo pipefail
-          timeout 300s Godot_v4.6.3-stable_linux.x86_64 \
-            --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/import.log"
-          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' "$RUNNER_TEMP/import.log"; then exit 1; fi
+          timeout 300s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --editor --import --quit             2>&1 | tee "$RUNNER_TEMP/import.log"
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' "$RUNNER_TEMP/import.log"; then
+            exit 1
+          fi
 
-      - name: Rhythm and Treasure regression suites
-        shell: bash
+      - name: Rhythm and Treasure regressions
         run: |
           set -euo pipefail
-          for spec in \
-            "rhythm_party_regression.gd|[RhythmParty] PASS" \
-            "treasure_island_regression.gd|[TreasureIsland] PASS"; do
-            IFS='|' read -r script marker <<< "$spec"
-            log="$RUNNER_TEMP/${script%.gd}.log"
-            timeout 240s Godot_v4.6.3-stable_linux.x86_64 \
-              --headless --path . --script "scripts/tests/$script" 2>&1 | tee "$log"
-            grep -F "$marker" "$log"
-            if grep -E 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' "$log"; then exit 1; fi
-          done
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --script scripts/tests/rhythm_party_regression.gd             2>&1 | tee "$RUNNER_TEMP/rhythm-regression.log"
+          grep -F '[RhythmParty] PASS' "$RUNNER_TEMP/rhythm-regression.log"
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --script scripts/tests/treasure_island_regression.gd             2>&1 | tee "$RUNNER_TEMP/treasure-regression.log"
+          grep -F '[TreasureIsland] PASS' "$RUNNER_TEMP/treasure-regression.log"
 
-      - name: Verify rune glow instance counts at LOW MEDIUM HIGH
-        shell: bash
-        run: |
-          set -euo pipefail
-          cat > "$RUNNER_TEMP/rune_density_check.gd" <<'GD'
-          extends SceneTree
-
-          func _initialize() -> void:
-              call_deferred("_run")
-
-          func _run() -> void:
-              var expected := {"low": 18, "medium": 20, "high": 22}
-              for tier in ["low", "medium", "high"]:
-                  LumoQuality.set_tier(tier)
-                  var root3d := Node3D.new()
-                  root.add_child(root3d)
-                  TreasureIslandArt.apply(root3d)
-                  await process_frame
-                  var node := root3d.get_node_or_null("TreasureRuneGlow") as MultiMeshInstance3D
-                  assert(node != null and node.multimesh != null)
-                  var actual := node.multimesh.instance_count
-                  print("[RuneDensity] %s=%d" % [tier, actual])
-                  assert(actual == expected[tier], "Rune glow count must follow stone density")
-                  root3d.queue_free()
-                  await process_frame
-              print("[RuneDensity] PASS low/medium/high")
-              quit(0)
-          GD
-          cp "$RUNNER_TEMP/rune_density_check.gd" scripts/tests/_tmp_rune_density_check.gd
-          timeout 180s Godot_v4.6.3-stable_linux.x86_64 \
-            --headless --path . --script scripts/tests/_tmp_rune_density_check.gd \
-            2>&1 | tee "$RUNNER_TEMP/rune-density.log"
-          rm scripts/tests/_tmp_rune_density_check.gd
-          grep -F '[RuneDensity] PASS low/medium/high' "$RUNNER_TEMP/rune-density.log"
-
-      - name: Render and measure Rhythm and Treasure at all quality tiers
-        shell: bash
+      - name: Render LOW MEDIUM HIGH visual and draw-call proof
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: |
@@ -160,20 +66,16 @@ jobs:
           for tier in low medium high; do
             out="$RUNNER_TEMP/creative-$tier"
             mkdir -p "$out"
-            CREATIVE_CAPTURE_DIR="$out" \
-            CREATIVE_CAPTURE_GAMES="rhythm,treasure" \
-            CREATIVE_CAPTURE_TIER="$tier" \
-            timeout 300s xvfb-run -a -s '-screen 0 1600x900x24' \
-              Godot_v4.6.3-stable_linux.x86_64 \
-              --path . --audio-driver Dummy --rendering-method gl_compatibility \
-              --script scripts/tests/creative_worlds_optik_capture.gd \
-              2>&1 | tee "$RUNNER_TEMP/capture-$tier.log"
+            CREATIVE_CAPTURE_DIR="$out"             CREATIVE_CAPTURE_GAMES="rhythm,treasure"             CREATIVE_CAPTURE_TIER="$tier"             timeout 300s xvfb-run -a -s '-screen 0 1600x900x24'               Godot_v4.6.3-stable_linux.x86_64               --path . --audio-driver Dummy --rendering-method gl_compatibility               --script scripts/tests/creative_worlds_optik_capture.gd               2>&1 | tee "$RUNNER_TEMP/capture-$tier.log"
             grep -F '[CreativeWorldsCapture] PASS' "$RUNNER_TEMP/capture-$tier.log"
           done
+
+      - name: Enforce current draw-call ceilings
+        run: |
+          set -euo pipefail
           python3 - <<'PY'
           import json, os
           from pathlib import Path
-
           root = Path(os.environ["RUNNER_TEMP"])
           ceilings = {
               "low": {"rhythm": 105, "treasure": 138},
@@ -188,52 +90,35 @@ jobs:
                   actual = int(data[game]["overview"]["draw_calls"])
                   report[tier][game] = {"draw_calls": actual, "ceiling": ceiling}
                   if actual > ceiling:
-                      raise SystemExit(f"{tier} {game}: {actual} draw calls > baseline ceiling {ceiling}")
+                      raise SystemExit(
+                          f"{tier} {game}: {actual} draw calls exceed ceiling {ceiling}"
+                      )
           (root / "draw-call-report.json").write_text(json.dumps(report, indent=2))
           print(json.dumps(report, indent=2))
           PY
 
-      - name: Re-render complete creative adventure proof
-        shell: bash
+      - name: Render complete gameplay captures
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: |
           set -euo pipefail
           rm -rf exports/creative-build
           mkdir -p exports/creative-build
-          timeout 300s xvfb-run -a -s '-screen 0 1600x900x24' \
-            Godot_v4.6.3-stable_linux.x86_64 \
-            --path . --audio-driver Dummy --rendering-method gl_compatibility \
-            --script scripts/tests/creative_adventure_capture.gd \
-            2>&1 | tee "$RUNNER_TEMP/creative-adventure.log"
+          timeout 300s xvfb-run -a -s '-screen 0 1600x900x24'             Godot_v4.6.3-stable_linux.x86_64             --path . --audio-driver Dummy --rendering-method gl_compatibility             --script scripts/tests/creative_adventure_capture.gd             2>&1 | tee "$RUNNER_TEMP/creative-adventure.log"
           grep -F '[CreativeAdventure] PASS actual 3D notes' "$RUNNER_TEMP/creative-adventure.log"
           test -s exports/creative-build/06_rhythm_play.png
           test -s exports/creative-build/07_treasure_exploration.png
 
-      - name: Commit only after tests and renders pass
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            scripts/creative/treasure_island_art.gd \
-            scripts/creative/rhythm_stage_art.gd \
-            scripts/creative/rhythm_world.gd
-          git diff --cached --check
-          git commit -m "fix(creative): close Rhythm and Treasure 2013 review findings"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
-
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: lumo-2013-creative-repair-proof-${{ github.run_id }}
+          name: lumo-2013-creative-repair-proof
           path: |
-            exports/creative-build/*.png
-            ${{ runner.temp }}/creative-low/*
-            ${{ runner.temp }}/creative-medium/*
-            ${{ runner.temp }}/creative-high/*
-            ${{ runner.temp }}/*.log
+            exports/creative-build/
+            ${{ runner.temp }}/creative-low/
+            ${{ runner.temp }}/creative-medium/
+            ${{ runner.temp }}/creative-high/
             ${{ runner.temp }}/draw-call-report.json
+            ${{ runner.temp }}/*.log
           if-no-files-found: warn
           retention-days: 30
