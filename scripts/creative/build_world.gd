@@ -56,7 +56,7 @@ func _ready() -> void:
 		. substr(0, 80)
 	)
 	save_path = "user://lumo_build_" + child_key + "_1.json"
-	kit.environment(self)
+	kit.environment(self, "bauwelt_day")
 	_ground()
 	world = Node3D.new()
 	world.name = "Construction"
@@ -100,64 +100,73 @@ func _ground() -> void:
 		add_child(bank)
 		var center := Vector3(-8.5 if side == -1 else 10.0, -1.2, 0)
 		var size := Vector3(17 if side == -1 else 13, 2.4, 33)
-		var cliff := kit.box(bank, center, size, Color("546078"))
-		cliff.material_override = kit.textured("stone", Color("8496b2"))
+		var cliff := kit.box(bank, center, size, Color.WHITE)
+		cliff.material_override = BuildVoxelStyle.material("stone", Color("c8bca8"))
 		var lawn := kit.box(
-			bank, center + Vector3.UP * 1.15, Vector3(size.x, 0.15, 33), Color.WHITE
+			bank, center + Vector3.UP * 1.15, Vector3(size.x, 0.16, 33), Color.WHITE
 		)
-		lawn.material_override = kit.textured("grass", Color("8ebfb4"))
+		lawn.material_override = BuildVoxelStyle.material("grass_top", Color.WHITE)
 		kit.collision(bank, center, size)
-	# A real flowing river separates the two construction islands.
 	var water := kit.box(self, Vector3(2, -0.38, 0), Vector3(4, 0.14, 33), Color("1b81bd"))
 	var mat := ShaderMaterial.new()
 	mat.shader = preload("res://assets/shaders/kart_water.gdshader")
 	water.material_override = mat
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 93231
+	var rock_xforms: Array[Transform3D] = []
+	var crystal_xforms: Array[Transform3D] = []
 	for z in range(-16, 17, 2):
-		for x in [-16.0, -12.0, -8.0, -4.0, 5.0, 9.0, 13.0]:
-			kit.box(self, Vector3(x, 0.015, float(z)), Vector3(0.018, 0.025, 1.98), Color("6ab8ba"))
 		for x in [-0.30, 4.32]:
-			var rock := kit.mesh(self, kit.SHAPES.rock(), Vector3(x, -0.1, z), Color("74839e"))
-			rock.scale = Vector3(0.5, 0.4, 0.7)
-			rock.material_override = kit.textured("stone", Color("93a8c8"))
-			# Genuine faceted 3D crystals mark the riverbank in Bauwelt.
-			# They never receive collision shapes and cannot obstruct a child's
-			# bridge. Low tier keeps a sparse silhouette for mobile rendering.
+			rock_xforms.append(Transform3D(Basis.from_scale(Vector3(0.5, 0.4, 0.7)), Vector3(x, -0.1, z)))
 			if z % 6 == 0 and (LumoQuality.tier() != "low" or z % 12 == 0):
-				var gem := kit.mesh(
-					self, kit.SHAPES.crystal(), Vector3(x, 0.24, float(z)),
-					Color("6de5ff") if x < 0 else Color("a89cf7"), true
+				crystal_xforms.append(
+					Transform3D(Basis.from_scale(Vector3(0.28, 0.73, 0.30)), Vector3(x, 0.24, float(z)))
 				)
-				gem.name = "RiverCrystal"
-				gem.scale = Vector3(0.28, 0.73, 0.30)
-				gem.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	for x in range(-16, 17, 2):
-		if x in [0, 2]:
-			continue
-		kit.box(self, Vector3(float(x), 0.025, 0), Vector3(0.018, 0.012, 33), Color("609694"))
+	BuildVoxelStyle.multimesh(
+		self,
+		"RiverRocks",
+		kit.SHAPES.rock(),
+		BuildVoxelStyle.material("stone", Color("d2c7b4")),
+		rock_xforms
+	)
+	var gem_mat: StandardMaterial3D = kit.material(Color("6de5ff"), true)
+	BuildVoxelStyle.multimesh(self, "RiverCrystals", kit.SHAPES.crystal(), gem_mat, crystal_xforms)
+	var plant_xforms: Array[Transform3D] = []
 	for i in range(36):
-		var at := Vector3(rng.randf_range(-16.5, 16.5), 0, -16.3 if i % 2 == 0 else 16.3)
+		var at := Vector3(rng.randf_range(-16.5, 16.5), 0.38, -16.3 if i % 2 == 0 else 16.3)
 		if at.x >= -0.5 and at.x < 4.5:
 			continue
-		var plant := kit.part_node(CATALOG.part("flowers" if i % 3 else "bush"))
-		plant.position = at
-		add_child(plant)
+		var scale := 0.40 + float(i % 3) * 0.09
+		plant_xforms.append(Transform3D(Basis.from_scale(Vector3(scale, scale * 1.15, scale)), at))
+	var bush_mesh := SphereMesh.new()
+	bush_mesh.radius = 1.0
+	bush_mesh.height = 1.55
+	bush_mesh.radial_segments = 12
+	bush_mesh.rings = 8
+	BuildVoxelStyle.multimesh(
+		self,
+		"BorderPlants",
+		bush_mesh,
+		BuildVoxelStyle.material("leaves", Color("8fce5c")),
+		plant_xforms
+	)
 	for i in range(7):
-		var at := Vector3(-35 + float(i) * 12, -7 + float(i % 3) * 3, -29 - float(i % 2) * 8)
-		var rock := kit.mesh(self, preload("res://scripts/creative/floating_island.gd").create(), at, Color("68719d"))
-		rock.material_override = kit.textured("stone", Color("7e8dac"))
-		var lawn := kit.cylinder(self, at + Vector3.UP * 4.5, 5.1, 0.35, Color("65a99d"))
-		lawn.material_override = kit.textured("grass", Color("80b8a9"))
+		var island_at := Vector3(-35 + float(i) * 12, -7 + float(i % 3) * 3, -29 - float(i % 2) * 8)
+		var rock := kit.mesh(
+			self, preload("res://scripts/creative/floating_island.gd").create(), island_at, Color("68719d")
+		)
+		rock.material_override = BuildVoxelStyle.material("stone", Color("cbbca6"))
+		var cap := kit.cylinder(self, island_at + Vector3.UP * 4.5, 5.1, 0.35, Color.WHITE)
+		cap.material_override = BuildVoxelStyle.material("grass_top", Color.WHITE)
 		if i in [1, 3, 5]:
-			kit.castle(self, at + Vector3.UP * 4.75, 0.7 if i != 3 else 1.0)
+			kit.castle(self, island_at + Vector3.UP * 4.75, 0.7 if i != 3 else 1.0)
 		else:
 			var tree := kit.part_node(CATALOG.part("tree"))
-			tree.position = at + Vector3(-1, 4.75, -1)
+			tree.position = island_at + Vector3(-1, 4.75, -1)
 			add_child(tree)
 		if i % 2 == 0:
 			var fall := kit.part_node(CATALOG.part("waterfall"))
-			fall.position = at + Vector3(3.6, -4, 0)
+			fall.position = island_at + Vector3(3.6, -4, 0)
 			fall.scale.y = 3
 			add_child(fall)
 
@@ -344,33 +353,124 @@ func _palette() -> void:
 
 func _rebuild() -> void:
 	var active: Dictionary = {}
+	var batches: Dictionary = {}
 	for piece in model.pieces:
 		var uid := int(piece.uid)
 		active[uid] = true
+		var item: Dictionary = CATALOG.part(str(piece.part))
+		if BuildVoxelStyle.is_batchable(item):
+			if placed_nodes.has(uid) and placed_nodes[uid].get_meta("piece") != piece:
+				world.remove_child(placed_nodes[uid])
+				placed_nodes[uid].queue_free()
+				placed_nodes.erase(uid)
+			if not placed_nodes.has(uid):
+				var node: StaticBody3D = BuildVoxelStyle.collision_body(kit, item)
+				var piece_xform: Transform3D = BuildVoxelStyle.piece_transform(piece, item)
+				node.position = piece_xform.origin
+				node.rotation.y = int(piece.turn) * PI * 0.5
+				node.set_meta("uid", uid)
+				node.set_meta("piece", piece.duplicate())
+				world.add_child(node)
+				placed_nodes[uid] = node
+			if not batches.has(item.id):
+				batches[item.id] = []
+			batches[item.id].append({"piece": piece, "item": item})
+			continue
 		if placed_nodes.has(uid) and placed_nodes[uid].get_meta("piece") == piece:
 			continue
 		if placed_nodes.has(uid):
 			world.remove_child(placed_nodes[uid])
 			placed_nodes[uid].queue_free()
-		var item: Dictionary = CATALOG.part(str(piece.part))
-		var node: StaticBody3D = kit.part_node(item)
+		var unique: StaticBody3D = kit.part_node(item)
 		var turns := int(piece.turn)
 		var size: Vector3 = item.size
 		var offset: Vector3 = [
 			Vector3.ZERO, Vector3(0, 0, size.x), Vector3(size.x, 0, size.z), Vector3(size.z, 0, 0)
 		][posmod(turns, 4)]
-		node.position = Vector3(piece.x, piece.y, piece.z) + offset
-		node.rotation.y = turns * PI * 0.5
-		node.set_meta("uid", uid)
-		node.set_meta("piece", piece.duplicate())
-		world.add_child(node)
-		placed_nodes[uid] = node
+		unique.position = Vector3(piece.x, piece.y, piece.z) + offset
+		unique.rotation.y = turns * PI * 0.5
+		unique.set_meta("uid", uid)
+		unique.set_meta("piece", piece.duplicate())
+		world.add_child(unique)
+		placed_nodes[uid] = unique
 	for uid in placed_nodes.keys():
 		if not active.has(uid):
 			world.remove_child(placed_nodes[uid])
 			placed_nodes[uid].queue_free()
 			placed_nodes.erase(uid)
+	_sync_batched_visuals(batches)
 	_update_labels()
+
+
+func _typed_xforms(raw: Array) -> Array[Transform3D]:
+	var result: Array[Transform3D] = []
+	for item in raw:
+		result.append(item)
+	return result
+
+
+func _sync_batched_visuals(batches: Dictionary) -> void:
+	var wall_xforms: Array = []
+	var pane_xforms: Array = []
+	var grass_body_xforms: Array = []
+	var grass_cap_xforms: Array = []
+	for ident in BuildVoxelStyle.BATCHABLE:
+		var entries: Array = batches.get(ident, [])
+		if ident == "wall":
+			for entry in entries:
+				var px: Transform3D = BuildVoxelStyle.piece_transform(entry.piece, entry.item)
+				wall_xforms.append(px)
+				pane_xforms.append(Transform3D(px.basis, px.origin + px.basis * Vector3(0.5, 1.18, 1.02)))
+			continue
+		if ident == "grass":
+			for entry in entries:
+				var px: Transform3D = BuildVoxelStyle.piece_transform(entry.piece, entry.item)
+				grass_body_xforms.append(Transform3D(px.basis, px.origin + px.basis * Vector3(0.5, 0.4, 0.5)))
+				grass_cap_xforms.append(Transform3D(px.basis, px.origin + px.basis * Vector3(0.5, 0.91, 0.5)))
+			continue
+		var xforms: Array = []
+		var sample: Dictionary = CATALOG.part(ident)
+		for entry in entries:
+			xforms.append(
+				BuildVoxelStyle.box_instance_transform(
+					BuildVoxelStyle.piece_transform(entry.piece, entry.item), entry.item
+				)
+			)
+		BuildVoxelStyle.multimesh(
+			world,
+			"Batch_%s" % ident,
+			BuildVoxelStyle.unit_box(),
+			BuildVoxelStyle.material(BuildVoxelStyle.kind_for(sample), BuildVoxelStyle.tint_for(sample)),
+			_typed_xforms(xforms)
+		)
+	BuildVoxelStyle.multimesh(
+		world,
+		"Batch_wall",
+		BuildVoxelStyle.wall_mesh(),
+		BuildVoxelStyle.material("sand", Color("d9a86c")),
+		_typed_xforms(wall_xforms)
+	)
+	BuildVoxelStyle.multimesh(
+		world,
+		"Batch_wall_glass",
+		BuildVoxelStyle.window_pane(),
+		BuildVoxelStyle.material("glass", Color("9ae8ff")),
+		_typed_xforms(pane_xforms)
+	)
+	BuildVoxelStyle.multimesh(
+		world,
+		"Batch_grass_body",
+		BuildVoxelStyle.grass_body(),
+		BuildVoxelStyle.material("dirt", Color("c4a078")),
+		_typed_xforms(grass_body_xforms)
+	)
+	BuildVoxelStyle.multimesh(
+		world,
+		"Batch_grass_cap",
+		BuildVoxelStyle.grass_cap(),
+		BuildVoxelStyle.material("grass_top", Color.WHITE),
+		_typed_xforms(grass_cap_xforms)
+	)
 
 
 func _camera_update() -> void:
