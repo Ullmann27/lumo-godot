@@ -1,0 +1,86 @@
+[
+  {
+    "file": "README.md",
+    "bytes": 6606,
+    "sha256": "fd895127b22951a143cad56cb12bf59938207e50c000fedd0c6719419613754e",
+    "git_blob_sha1": "4a9f5f1d142a38486e4f7677137aaa5050ee523e"
+  },
+  {
+    "file": "after/capture.json",
+    "bytes": 2517,
+    "sha256": "0a06bc9bbb9ac4c2840a0dccf1d403c849aad703b42ea717a1c4119655cfbe3c",
+    "git_blob_sha1": "2434328a235c2a58e09d1176d18ac0abeab4544d"
+  },
+  {
+    "file": "after/garage-1280x720.png",
+    "bytes": 943404,
+    "sha256": "f4a03e6fb3d3271ba8070d837ffc132aa3c6b7ab36ee558de59033257bcba394",
+    "git_blob_sha1": "34c2582c180d77c687c06636a59203331b720521"
+  },
+  {
+    "file": "after/garage-412x915.png",
+    "bytes": 464017,
+    "sha256": "ac60af9666fcdaa970ea5494f0b93e721b606293415d82fa5d5483e948514005",
+    "git_blob_sha1": "49fd21b82cdf17ef937e43e1215e27533070ec4d"
+  },
+  {
+    "file": "after/garage-690x829.png",
+    "bytes": 692301,
+    "sha256": "581bd5bef6f55d9cd141b85a4f93b525aafb0e1dc24a4eaf85f5788b2155b0d9",
+    "git_blob_sha1": "8fcf6fdad7fc2ff6a39d787084deca04ea2ae397"
+  },
+  {
+    "file": "before/capture.json",
+    "bytes": 2520,
+    "sha256": "9e602257b5ff674702d5c63cb823e046d863fb9d69a586eb056f04ed8dc03990",
+    "git_blob_sha1": "853fc4e55fd90446e93bc85bec3cdfe62f498cf7"
+  },
+  {
+    "file": "before/garage-1280x720.png",
+    "bytes": 885044,
+    "sha256": "29a345695da650b24026735671cd773d0b5905558106de00857a8d011690627e",
+    "git_blob_sha1": "5ad560eb6adc7cbfddb909b59287b6d29e85f48d"
+  },
+  {
+    "file": "before/garage-412x915.png",
+    "bytes": 444596,
+    "sha256": "73e29f411879f0c7f21b2e84a8398ca4fb745dc98edd225e8e13c01c9ca5cf46",
+    "git_blob_sha1": "998ec89ce48b54e6c4d865e305b7d5e58d0f5458"
+  },
+  {
+    "file": "before/garage-690x829.png",
+    "bytes": 658631,
+    "sha256": "df31af7af2ee9843ea95ff6d3865414f3a69f0f239d9fb0ed8a1e4ff19b7bebd",
+    "git_blob_sha1": "62fd5a731cc55562e7e18801fcbdd2b6a8df6fc1"
+  },
+  {
+    "file": "garage-3d-touch-gl-9.log",
+    "bytes": 1251,
+    "sha256": "c4de3a22d4885777877a1df8a556dab1313f675498dfe1c94159c897380720c8",
+    "git_blob_sha1": "ea2363b90e78eb3edaee950fd1ea22ebb06d7fc2"
+  },
+  {
+    "file": "garage-picker-cause.log",
+    "bytes": 1139,
+    "sha256": "a72f589fca308edd70496f9540ca1eabb84541a34a695a2e7d81f22cef3411ea",
+    "git_blob_sha1": "9769d6b55e267ba67323f9e66e78a5983fb89972"
+  },
+  {
+    "file": "garage-presentation-66.log",
+    "bytes": 845,
+    "sha256": "f08b879fd8e8bc6765b8708036cd5e729e0f9138c3f7162bf68869aa5cee066c",
+    "git_blob_sha1": "40d99b3ed5a01f03d0aab1574ed7bb12e1e10af2"
+  },
+  {
+    "file": "paired-comparison.json",
+    "bytes": 2271,
+    "sha256": "4dd9e23fb6cda53aae62679511f86a5d5720e71ef3bfaf81ffdda8cf86d18250",
+    "git_blob_sha1": "192d9dd67eae326e7f652a6147dc7ddf98a02622"
+  },
+  {
+    "file": "selection-camera.mp4",
+    "bytes": 352179,
+    "sha256": "c3daf85a62eef963a0303ff979f01334cc6cc7e38f7f2781a9ad0b078bcaba27",
+    "git_blob_sha1": "02688b94c028d9ba1d62dffa54816ab672cd9f4c"
+  }
+]
