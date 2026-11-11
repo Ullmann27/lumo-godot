@@ -1,0 +1,146 @@
+{
+  "status": "PASS",
+  "scope": "Profil (1. Klasse) > Lernen > Mathe > Plus bis 10 > Antwort > Rückmeldung > Belohnung > Speichern > App-Neustart > Wiederherstellen",
+  "not_tested": [
+    "physisches Gerät oder Fold-Scharnier",
+    "Bildrate",
+    "Sprachausgabe",
+    "falsche Antworten und Tipps auf Android (nur Flutter-Test)",
+    "andere Fächer und Klassen"
+  ],
+  "captures": [
+    {
+      "file": "02-learning-hub.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "1317b14e60fc4d4589fffe2ea89510d1d2da0eb1260005d0d0facb6bd42b95fa"
+    },
+    {
+      "file": "06-math-task.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "6d077154228b3175b405b25e9cba5e0c1aa1e35bf36b4fd32f9ef14e660c1eed"
+    },
+    {
+      "file": "07-feedback.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "b63b7625f3dcfa262c6e28809c9b0a07d92882c20f7e586afc4c399fd67b349c"
+    },
+    {
+      "file": "09-after-lesson.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "006db3d0099b8b131e4c25cf1b82013539b3b5f4ab7653debe01a2005cc8de45"
+    },
+    {
+      "file": "12-restored-learning-menu.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "75731d411d3ea1b41dd5200e79aa8324f14111e68075286e81c972b32d85c802"
+    },
+    {
+      "file": "t1-deutsch-missing.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "fa7605317ccc5670ac1afc29cd085750c561b9d218e7528b2f84640b4c2fdbaa"
+    },
+    {
+      "file": "t2-englisch-missing.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "fa7605317ccc5670ac1afc29cd085750c561b9d218e7528b2f84640b4c2fdbaa"
+    },
+    {
+      "file": "t3-spiele.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "c67eaf0f5d61093b582f4e79fb0885e01386be2f91a37a2cfcd77982530ecce3"
+    },
+    {
+      "file": "t4-tests.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "ca19b1aed80ed9ea8dd23aa02b01304a95e69fa6c784bb0c5455fa1d3f5fb3be"
+    },
+    {
+      "file": "t5-belohnungen.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "471cf9e89127e7e9e2969c1e5aca33f104d4c2ccc3dda3dd7718568fc22ecaae"
+    },
+    {
+      "file": "t6-lumo-agent.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "a60c5253538ad7c433cb795044d6b147ed3cda71c4b093ba5265875f21dab417"
+    },
+    {
+      "file": "t7-elternbereich.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "4fb7e60a0c9461cf7771871c1d16f79eb744daedf05392fa88d0978e5e155e95"
+    },
+    {
+      "file": "t8-start.png",
+      "width": 1080,
+      "height": 2340,
+      "sha256": "6cdc34684a6e0e14c283fb13d79ee16c3f9a95f0f7e3dbf943abb3c2bfc597f4"
+    },
+    {
+      "file": "t9-fold-cover-start.png",
+      "width": 904,
+      "height": 2316,
+      "sha256": "b78c8e21ea5a165cb7b70c4d9dca6ae44c5c68f77ec879f9f2bc6448aa8280a1"
+    },
+    {
+      "file": "t9-fold-cover-lernen.png",
+      "width": 904,
+      "height": 2316,
+      "sha256": "dc37b83feb95e42a99e3968d52e1c4aaf676222a3cc726de3bb19dedd0623f3d"
+    },
+    {
+      "file": "t9-fold-inner-start.png",
+      "width": 1812,
+      "height": 2176,
+      "sha256": "2acfcdbe56304df8462eb39050cf46ffbdafa609543616f366d03925d1af8699"
+    },
+    {
+      "file": "t9-fold-inner-lernen.png",
+      "width": 1812,
+      "height": 2176,
+      "sha256": "541a9efa4eda425c4bad975ad5a5db18387c8a3554f74d0089c78c9c712389dc"
+    }
+  ],
+  "learning_hub": true,
+  "dedicated_math_task": true,
+  "task": {
+    "prompt": "2 + 2 = ?",
+    "answer": 4
+  },
+  "reward_delta": {
+    "stars": 1,
+    "xp": 5
+  },
+  "saved_correct_answers": 1,
+  "hub": {
+    "visible_after_restart": true,
+    "saved_correct_answers": 1,
+    "wallet_and_progress_after_restart": "UNCHANGED"
+  },
+  "restart_restore": "PASS",
+  "tour": {
+    "t1-deutsch": "FAIL: Kein Bedienelement beginnt mit: Deutsch. ",
+    "t2-englisch": "FAIL: Kein Bedienelement beginnt mit: Englisch. ",
+    "t3-spiele": "PASS",
+    "t4-tests": "PASS",
+    "t5-belohnungen": "PASS",
+    "t6-lumo-agent": "PASS",
+    "t7-elternbereich": "PASS",
+    "t8-start": "PASS",
+    "t9-fold-cover-start": "PASS",
+    "t9-fold-cover-lernen": "PASS",
+    "t9-fold-inner-start": "PASS",
+    "t9-fold-inner-lernen": "PASS"
+  }
+}

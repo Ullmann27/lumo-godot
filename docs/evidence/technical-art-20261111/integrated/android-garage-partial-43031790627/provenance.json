@@ -1,0 +1,69 @@
+{
+  "status": "PARTIAL_RENDERER_PROOF_ONLY",
+  "qa_run": 43031790627,
+  "qa_attempt": 1,
+  "qa_source": "b9ad8e9e740b2779ee69d6a2ce2763d03b57f5b3",
+  "run_conclusion": "cancelled",
+  "qa_job": 130560425472,
+  "artifact_id": 13862195762,
+  "artifact_zip_sha256": "904c3fb0f1c734e744d58308e13b5161978f0cdd48c015799c320c6dd21c9bba",
+  "frame": {
+    "file": "garage-title-1.png",
+    "artifact_member": "runtime/phone-cancel/garage-title-1.png",
+    "sha256": "64faf8f693bed9241b65556503ab4421e4e1ca304304238aaa7ab49f283ec001",
+    "pixels": [
+      2400,
+      1080
+    ]
+  },
+  "actual_apk": {
+    "package": "dev.ullmann.lumo.lumo_lernen.coachpreview",
+    "versionCode": 2015,
+    "versionName": "0.13.3",
+    "minSdk": 24,
+    "targetSdk": 36,
+    "abis": [
+      "x86_64"
+    ],
+    "elf16KiBAligned": true,
+    "resourcesArscAligned": true,
+    "bytes": 321859082,
+    "sha256": "b863bc25bc07a7ca3fb78ad4fd56a6f816d091f821c5b9af27bfb0a7aecbcb4e",
+    "signingCertificateSha256": "a6b1ef61bf59db4e0794c742aeb3b5506d130f4d21175c9975140e6acdb80702",
+    "godot": {
+      "repository": "https://github.com/Ullmann27/lumo-godot.git",
+      "revision": "b357b2f8decb4b11b0cc45e9fde2b8df5ec9cbe1",
+      "engine": "4.6.3",
+      "pck_sha256": "b5a500087a21dbf42f9b0e34deaf5e22b631fbba5831e01155b8f393f6f6b6bc",
+      "bytes": 62876672
+    },
+    "offlineVoice": {
+      "profile": "lumo-free-supertonic-de-v1",
+      "preset": "F2",
+      "speakerId": 1,
+      "sampleRate": 44100,
+      "onnxruntimeVersion": "1.23.1",
+      "clipCount": 155,
+      "modelSha256": {
+        "duration_predictor.int8.onnx": "c3eb91414d5ff8a7a239b7fe9e34e7e2bf8a8140d8375ffb14718b1c639325db",
+        "text_encoder.int8.onnx": "c7befd5ea8c3119769e8a6c1486c4edc6a3bc8365c67621c881bbb774b9902ff",
+        "vector_estimator.int8.onnx": "20cd86fa5c6effedfda0e7cffe5b0569ca401c440a0c3a1d72bf39286c0db3fd",
+        "vocoder.int8.onnx": "e923d60f53f95eb1ce235f1dc33ec56d9c057823c96fa6f8acf98f32b0da6152",
+        "tts.json": "42078d3aef1cd43ab43021f3c54f47d2d75ceb4e75f627f118890128b06a0d09",
+        "voice.bin": "67d5209b0ee8ce6c74105ffbe12fe6a7628aea3b4ba2fcb308a4a67938a93ce8",
+        "unicode_indexer.bin": "8402ca48e5189a8950138580b0fff64db6f072f24ac07cd54ba8b2fbb9883b30"
+      },
+      "modelLicenseSha256": "0d944a9110fed9a9602d60e0423a272903e7bd21ab060490774efc77c2275e9f",
+      "scope": "Actual APK package validation, not audible playback acceptance"
+    }
+  },
+  "original_runtime_status": "RUNNING",
+  "original_passed_steps": [
+    "apk-identity",
+    "onboarding"
+  ],
+  "native_garage_touch": "open-real-garage-surface-readiness.json",
+  "actual_native_garage_opened": true,
+  "complete_android_garage_acceptance": false,
+  "note": "This authentic APK2015 emulator frame was captured after the observed Garage-card touch. The run was superseded by a source-corrected QA probe, so it is not a completed selection/continue/Fold proof."
+}

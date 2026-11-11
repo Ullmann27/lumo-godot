@@ -1,0 +1,53 @@
+{
+  "repository": "Ullmann27/lumo-lernen",
+  "source_commit": "2718f405e69c193d0121c6f6447fe53769d7c803",
+  "native_source": "b357b2f8decb4b11b0cc45e9fde2b8df5ec9cbe1",
+  "run": 43024454590,
+  "job": 130547247521,
+  "conclusion": "success",
+  "artifact_id": 13858743323,
+  "artifact_sha256": "bf8c1977a23ba52864467fc8798659c5866230252a8b3513f2fd6d616350f051",
+  "captured_utc": "2026-11-11T13:33:37.902311+00:00",
+  "files": [
+    {
+      "name": "tour-result.json",
+      "bytes": 8871,
+      "sha256": "321b67739b4a27719738ce40f4f5573899afe4439b6d7198b9491d1a8353c715"
+    },
+    {
+      "name": "rooted-emulator.json",
+      "bytes": 1545,
+      "sha256": "6434b56b1a27142a6dffa2dec66f618dc08eed4f7613a96ce51e5d444878e9eb"
+    },
+    {
+      "name": "21_race_drive_telemetry.json",
+      "bytes": 2019,
+      "sha256": "f28ff8f0e10e9f478bcf9e68480279042c169489e16a8d6c441130b960d159a8"
+    },
+    {
+      "name": "21_kart_real_touches.json",
+      "bytes": 103,
+      "sha256": "4a4ad5992ddea86e0a7debb8a829ff2029e875cbdfb722db6ce6d46bfc604965"
+    },
+    {
+      "name": "21_kart_race_frame_check.json",
+      "bytes": 683,
+      "sha256": "db894ece1eb79f07cb1a1e9bb858eaeb79713d17d3e2522cc137a8a1cf9f6a61"
+    },
+    {
+      "name": "21_race_hud.png",
+      "bytes": 1913817,
+      "sha256": "eaecfc5550df6be07cc3b6ca42ced3967b7491dfac58303d98e576558c2d28ec"
+    },
+    {
+      "name": "21_race_driving_late_2.png",
+      "bytes": 1993705,
+      "sha256": "0c4838986db99d3db5f43f5a7e5624ab31269bcedd3d12356b7b3f23ad410923"
+    },
+    {
+      "name": "21_lumo_kart_pause.png",
+      "bytes": 821149,
+      "sha256": "2c74811399e987190cd56ca0284d3d89ef35941efd9b8b3331775f7049f83efb"
+    }
+  ]
+}

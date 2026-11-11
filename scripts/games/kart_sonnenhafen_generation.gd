@@ -13,6 +13,7 @@ extends RefCounted
 
 const SHOPFRONT = preload("res://scripts/games/kart_sonnenhafen_shopfront.gd")
 const ATTRACTION = preload("res://scripts/games/kart_sonnenhafen_attraction.gd")
+const STREETFRONTS = preload("res://scripts/games/visual/kart_sonnenhafen_streetfronts.gd")
 
 const FACADES: Array[Color] = [
 	Color("f4c7a8"),
@@ -84,6 +85,9 @@ static func _blocked(world, at: Vector3, radius: float, heroes: Array) -> bool:
 static func _start_quarter(world, heroes: Array) -> Array[Dictionary]:
 	## Denser first 150 m so the opening race camera actually sees the town.
 	var placed: Array[Dictionary] = []
+	var streetfronts = STREETFRONTS.new()
+	world.add_child(streetfronts)
+	streetfronts.configure(world.low_detail)
 	var count: int = 5 if world.low_detail else 8
 	for i in range(count):
 		var fraction: float = 0.006 + float(i) * 0.010
@@ -103,10 +107,14 @@ static func _start_quarter(world, heroes: Array) -> Array[Dictionary]:
 			var basis: Basis = world.frame(distance)
 			var facade: Color = FACADES[(i + (0 if side < 0.0 else 3)) % FACADES.size()]
 			var roof: Color = ROOFS[(i + (0 if side < 0.0 else 1)) % ROOFS.size()]
-			_villa(world, anchor, basis, facade, roof, i + 3)
-			if i < 3:
-				SHOPFRONT.build(world, anchor, basis, 7.4 + float((i + 3) % 2) * 1.6, 5.6)
+			_villa(world, anchor, basis, facade, roof, i + 3, true)
+			streetfronts.add_villa(
+				anchor, basis, 7.4 + float((i + 3) % 2) * 1.6,
+				3.4 * float(2 + (i + 3) % 3), 5.6, i + 3, side
+			)
 			placed.append({"kind": "villa", "position": anchor, "fraction": fraction})
+	streetfronts.finish()
+	world.set_meta("sonnenhafen_streetfronts", streetfronts.metrics)
 	return placed
 
 
@@ -135,7 +143,8 @@ static func _town_terraces(world, heroes: Array) -> Array[Dictionary]:
 
 
 static func _villa(
-	world, at: Vector3, basis: Basis, facade: Color, roof: Color, index: int
+	world, at: Vector3, basis: Basis, facade: Color, roof: Color, index: int,
+	streetfront_detail: bool = false
 ) -> void:
 	var floors: int = 2 + (index % 3)
 	var height: float = 3.4 * float(floors)
@@ -165,6 +174,12 @@ static func _villa(
 		CREAM,
 		basis
 	)
+	# The opening quarter uses one combined, spatially culled architectural kit.
+	# Keep its original mass, roof, foundation and placement; avoid overlapping
+	# legacy window panels and missing balcony handrails underneath the new work.
+	if streetfront_detail:
+		_villa_tower(world, at, basis, facade, roof, index, width, height, depth)
+		return
 	for floor_index in range(floors):
 		for column in range(3):
 			var local := Vector3(
@@ -191,6 +206,13 @@ static func _villa(
 			Vector3(0.38, 0.26, 0.34),
 			FLOWER_A if blossom % 2 == 0 else FLOWER_B
 		)
+	_villa_tower(world, at, basis, facade, roof, index, width, height, depth)
+
+
+static func _villa_tower(
+	world, at: Vector3, basis: Basis, facade: Color, roof: Color, index: int,
+	width: float, height: float, depth: float
+) -> void:
 	if index % 4 == 0:
 		var tower: Vector3 = at + basis * Vector3(width * 0.28, 0.0, -depth * 0.12)
 		world._prop(

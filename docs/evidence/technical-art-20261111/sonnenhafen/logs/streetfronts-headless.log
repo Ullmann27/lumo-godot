@@ -1,0 +1,13 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Streetfronts] LOW {"authored_parts":454,"banner_draw_batches":1,"banner_instances":2,"collision_nodes":0,"external_assets":0,"houses":2,"low_detail":true,"material_surfaces":8,"materials":4,"triangles":7680,"windows":25}
+[Perf] quality_profile:medium
+[Streetfronts] HIGH {"authored_parts":710,"banner_draw_batches":1,"banner_instances":2,"collision_nodes":0,"external_assets":0,"houses":2,"low_detail":false,"material_surfaces":8,"materials":4,"triangles":11752,"windows":25}
+[Streetfronts] PASS: opaque materials, actual geometry budgets, spatial cells, optional GL motion

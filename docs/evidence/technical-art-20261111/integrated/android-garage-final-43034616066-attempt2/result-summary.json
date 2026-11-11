@@ -1,0 +1,30 @@
+{
+  "status": "BLOCKED_INFRASTRUCTURE",
+  "qa_source": "a1d581f0b0b392e0bc4ad7d90fd38d14f8d74095",
+  "local_source": "609549fe9293a11128d8e648bbbacf4b743fce6d",
+  "tree": "879f7d169b80e19d31d02f29d1cb78dd94b28a51",
+  "pr": 456,
+  "run_id": 43034616066,
+  "run_attempt": 2,
+  "job_id": 130572125063,
+  "artifact_id": 13861309860,
+  "artifact_sha256": "8a59b7d5538b490ec42bb565866df056b0c15e12633d6d660b0df998ea116514",
+  "app_source": "2718f405e69c193d0121c6f6447fe53769d7c803",
+  "godot_source": "b357b2f8decb4b11b0cc45e9fde2b8df5ec9cbe1",
+  "apk_sha256": "b863bc25bc07a7ca3fb78ad4fd56a6f816d091f821c5b9af27bfb0a7aecbcb4e",
+  "guard_tests_passed": 17,
+  "runtime_executed": false,
+  "full_garage_android_pass": false,
+  "failed_step": "Install the existing OCR and real Android input helpers",
+  "cause": "Both Ubuntu host DNS preflights failed; shell exited 2 before APT/emulator",
+  "retries_authorized_and_executed": 1,
+  "prior_partial_renderer_proof": {
+    "run": 43031790627,
+    "artifact_id": 13862195762,
+    "qa_source": "b9ad8e9e740b2779ee69d6a2ce2763d03b57f5b3",
+    "apk_identity_verified": true,
+    "actual_garage_opened": true,
+    "complete_flow_status": "not completed; superseded run",
+    "image": "../android-garage-partial-43031790627/garage-title-1.png"
+  }
+}

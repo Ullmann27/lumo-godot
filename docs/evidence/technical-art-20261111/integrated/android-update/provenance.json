@@ -1,0 +1,29 @@
+{
+  "repository": "Ullmann27/lumo-lernen",
+  "source_commit": "2718f405e69c193d0121c6f6447fe53769d7c803",
+  "native_source": "b357b2f8decb4b11b0cc45e9fde2b8df5ec9cbe1",
+  "run": 43024454590,
+  "job": 130553327493,
+  "conclusion": "success",
+  "artifact_id": 13859779453,
+  "artifact_sha256": "205582b87806541e44b245f2c37256f0e59c77a207d500f567841f78b7367081",
+  "same_native_pck_as_arm64": true,
+  "captured_utc": "2026-11-11T13:47:05.180427+00:00",
+  "files": [
+    {
+      "name": "update-result.json",
+      "bytes": 28736,
+      "sha256": "58ff83077f405be069890c81a0220ad60e8c374a010fbe90c48050e989595781"
+    },
+    {
+      "name": "learning-journey-result.json",
+      "bytes": 4215,
+      "sha256": "c7c15afbe5ae1c3c335a42b8e04783dbaee10109802e1be85add0901caf69e29"
+    },
+    {
+      "name": "21_race_drive_telemetry.json",
+      "bytes": 2538,
+      "sha256": "6c7fbae59f92808ffa3d1e769747b2a947e2c583faffa613b90ff1b56f4a6894"
+    }
+  ]
+}

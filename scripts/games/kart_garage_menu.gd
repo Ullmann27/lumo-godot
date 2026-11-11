@@ -97,6 +97,24 @@ var _page_target_size := Vector2.ZERO
 var preview_idle_time: float = 0.0
 var _welcomed := false
 var reference_landing: Control
+var _selection_refresh_queued := false
+var _selection_reaction_pending := false
+var _attention_seconds := 0.0
+var _camera_ready := false
+var _camera_progress := 1.0
+var _camera_from := Transform3D.IDENTITY
+var _camera_to := Transform3D.IDENTITY
+var _camera_focus := Vector3(0, 1.0, 0)
+var _camera_from_focus := Vector3(0, 1.0, 0)
+var _camera_to_focus := Vector3(0, 1.0, 0)
+var _camera_from_fov := 37.0
+var _camera_to_fov := 37.0
+var _camera_from_size := 2.8
+var _camera_to_size := 2.8
+var _camera_from_projection: int = Camera3D.PROJECTION_PERSPECTIVE
+var _camera_to_projection: int = Camera3D.PROJECTION_PERSPECTIVE
+var _camera_projection_switched := false
+var _garage_targets: Dictionary = {}
 
 
 func _ready() -> void:
@@ -271,10 +289,11 @@ void fragment() {
 	var vignette_shader := Shader.new()
 	vignette_shader.code = """
 shader_type canvas_item;
+uniform float camera_transition = 0.0;
 void fragment() {
 	vec2 p = (UV - vec2(0.5)) * vec2(1.12, 1.28);
 	float ring = smoothstep(0.26, 0.98, length(p));
-	COLOR = vec4(0.012, 0.034, 0.088, ring * 0.46);
+	COLOR = vec4(0.012, 0.034, 0.088, max(ring * 0.46, camera_transition));
 }
 """
 	var vignette_material := ShaderMaterial.new()
@@ -747,14 +766,17 @@ func _apply_responsive_layout() -> void:
 		premium_hero_shell.add_theme_stylebox_override("panel", hero_panel)
 	_set_physical_minimum(view_choice, Vector2(0, 44), ui_scale)
 	_set_physical_font(view_choice, 14 if short_landscape else 16, ui_scale)
-	view_choice.set_item_text(0, "Rundum" if short_landscape else "Rundum ansehen")
+	view_choice.set_item_text(0, "Rundum" if short_landscape or small else "Rundum ansehen")
 	view_choice.set_item_text(5, "Oben" if short_landscape else "Von oben")
 	# Do not cover Lumos ears in a compact portrait preview.
 	view_choice.set_item_text(6, "Gesicht" if small else "Lumos Gesicht")
 	# Godot honours the left anchor first and expands the OptionButton to its
 	# true text minimum width (182 px at 800x480). Reserve additional room
 	# from the right edge rather than relying only on offset_right.
-	view_choice.offset_left = -(124 if short_landscape else (96 if small else 176)) * ui_scale
+	view_choice.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	var inspection_width: float = maxf(view_choice.get_combined_minimum_size().x,
+		(124 if short_landscape else (104 if small else 176)) * ui_scale)
+	view_choice.offset_left = -inspection_width - 20 * ui_scale
 	# Keep the real OptionButton minimum width inside Fold/Android safe-area.
 	# At 800x480 its 182 logical pixels previously exceeded the safe right edge by 3.2.
 	view_choice.offset_right = -20 * ui_scale
@@ -952,9 +974,9 @@ func _fit_welcome_camera() -> void:
 	# Reframe only the presentation camera. Real chassis bounds and the
 	# head joint avoid a giant empty stand-up AABB shrinking the seated fox.
 	# The independent racing/chase camera and vehicle transforms are untouched.
-	preview_camera.position = Vector3(2.37, 1.96, -3.80)
-	preview_camera.look_at(Vector3(0, 0.83, 0))
-	var local_from_world := preview_camera.global_transform.affine_inverse()
+	var target_focus := Vector3(0, 0.83, 0)
+	var target_pose := Transform3D(Basis.IDENTITY, Vector3(2.37, 1.96, -3.80)).looking_at(target_focus)
+	var local_from_world := (preview_camera.get_parent_node_3d().global_transform * target_pose).affine_inverse()
 	var aspect := float(preview_viewport.size.x) / float(preview_viewport.size.y)
 	var required_tangent := 0.0
 	var points: Array[Vector3] = []
@@ -1002,7 +1024,17 @@ func _fit_welcome_camera() -> void:
 				required_tangent, maxf(absf(point.y) / depth, absf(point.x) / depth / aspect)
 			)
 	preview_camera.keep_aspect = Camera3D.KEEP_HEIGHT
-	preview_camera.fov = maxf(34.0, rad_to_deg(atan(required_tangent * 1.06)) * 2.0)
+	var fitted_fov: float = maxf(34.0, rad_to_deg(atan(required_tangent * 1.06)) * 2.0)
+	if _camera_progress < 1.0:
+		_camera_to = target_pose
+		_camera_to_focus = target_focus
+		_camera_to_fov = fitted_fov
+		_camera_to_projection = Camera3D.PROJECTION_PERSPECTIVE
+	else:
+		preview_camera.transform = target_pose
+		preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+		preview_camera.fov = fitted_fov
+		_camera_focus = target_focus
 
 
 func _install_action_sheen(button: Button) -> void:
@@ -1449,10 +1481,32 @@ func _select(key: String, value: String) -> void:
 	var entry: Dictionary = CATALOG.entry(_entries(), value)
 	if str(entry.get("id", "")) == value and not CATALOG.unlocked(entry, stars, unlocked_ids):
 		return
+	if str(setup.get(key, "")) == value:
+		return
 	setup[key] = value
-	if is_instance_valid(preview_kart) and is_instance_valid(preview_kart.lumo_animation):
-		preview_kart.lumo_animation.play_menu_behavior("agree_nod")
-	_refresh.call_deferred()
+	_selection_reaction_pending = true
+	# Rapid taps replace one pending selection; the response belongs to the
+	# newly installed kart, not the old preview that _refresh queues for deletion.
+	if not _selection_refresh_queued:
+		_selection_refresh_queued = true
+		call_deferred("_apply_selected_preview")
+
+
+func _apply_selected_preview() -> void:
+	_selection_refresh_queued = false
+	if not is_inside_tree():
+		return
+	_refresh()
+	if _selection_reaction_pending:
+		AudioManager.play_sfx("ui_confirm")
+	if _selection_reaction_pending and step != 3 and is_instance_valid(preview_kart):
+		var actor = preview_kart.lumo_animation
+		if is_instance_valid(actor):
+			actor.play_menu_behavior("agree_nod")
+			if actor.has_method("set_attention_target"):
+				actor.set_attention_target(preview_kart.to_global(Vector3(0.55, 0.55, -0.60)))
+				_attention_seconds = 0.7
+	_selection_reaction_pending = false
 
 
 func _next() -> void:
@@ -1509,11 +1563,10 @@ func _refresh_preview() -> void:
 		preview_kart.lumo_animation.play_menu_behavior("greeting_wave")
 		_welcomed = true
 	preview_kart.visible = step != 3
-	preview_camera.position = Vector3(3.2, 3.2, -4.5) if step == 3 else Vector3(2.4, 2.05, -4.4)
-	preview_camera.look_at(Vector3(0, 0.15 if step == 3 else 0.85, 0))
 	view_choice.disabled = step == 3
 	if step == 3:
 		preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+		_move_preview_camera(Vector3(3.2, 3.2, -4.5), Vector3(0, 0.15, 0), Vector3.UP, 37.0, 2.8, false)
 	if step != 3:
 		if step == 0:
 			preview_angle = -0.25
@@ -1554,7 +1607,7 @@ func _preview_input(event: InputEvent) -> void:
 	elif event is InputEventScreenDrag:
 		if event.index != _preview_touch_index:
 			return
-		if event.position.distance_to(_preview_touch_origin) > 12.0:
+		if event.position.distance_to(_preview_touch_origin) > 12.0 * _preview_dp_scale():
 			_cancel_garage_press()
 			rotate_drag = true
 		if rotate_drag:
@@ -1576,6 +1629,9 @@ func _preview_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion:
 		if event.device == InputEvent.DEVICE_ID_EMULATION or _preview_touch_index != -1:
 			return
+		if not _pressed_garage_action.is_empty() and event.position.distance_to(_preview_touch_origin) > 12.0 * _preview_dp_scale():
+			_cancel_garage_press()
+			rotate_drag = true
 		if rotate_drag:
 			preview_angle += event.relative.x * 0.008
 		else:
@@ -1589,8 +1645,16 @@ func _preview_input(event: InputEvent) -> void:
 
 
 func _begin_preview_pointer(local: Vector2) -> void:
+	_preview_touch_origin = local
 	if inspection_view != 0:
-		_choose_preview_view(0)
+		_choose_preview_view(0, false)
+	# The child owns an intentional drag; an inspection transition must not
+	# keep moving the camera under the held pointer.
+	_camera_progress = 1.0
+	_set_camera_veil(0.0)
+	# Camera interruption and hit testing share the same displayed projection.
+	# Do not wait for a process tick to restore the visible action targets.
+	_update_garage_action_targets()
 	_pressed_garage_action = _pick_garage_action(local)
 	rotate_drag = _pressed_garage_action.is_empty()
 	if not rotate_drag:
@@ -1614,6 +1678,14 @@ func _cancel_garage_press() -> void:
 func _process(delta: float) -> void:
 	if not visible or not is_instance_valid(preview_pivot):
 		return
+	_advance_preview_camera(delta)
+	_update_garage_action_targets()
+	if _attention_seconds > 0.0:
+		_attention_seconds = maxf(0.0, _attention_seconds - delta)
+		if _attention_seconds == 0.0 and is_instance_valid(preview_kart):
+			var actor = preview_kart.lumo_animation
+			if is_instance_valid(actor) and actor.has_method("clear_attention_target"):
+				actor.clear_attention_target()
 	if not rotate_drag and not reduced_motion and inspection_view == 0:
 		if step == 0:
 			preview_idle_time += delta
@@ -1627,6 +1699,10 @@ func _process(delta: float) -> void:
 		else 0.0
 	)
 	preview_pivot.rotation.y = preview_angle + idle_arc
+	if _attention_seconds > 0.0 and is_instance_valid(preview_kart):
+		var actor = preview_kart.lumo_animation
+		if is_instance_valid(actor) and actor.has_method("set_attention_target"):
+			actor.set_attention_target(preview_kart.to_global(Vector3(0.55, 0.55, -0.60)))
 	if is_instance_valid(stage_material):
 		stage_material.set_shader_parameter(
 			"illumination", 1.0 if reduced_motion else 1.0 + sin(preview_idle_time * 0.7) * 0.035
@@ -1658,6 +1734,9 @@ func _pick_garage_action(local: Vector2) -> String:
 	var query := PhysicsRayQueryParameters3D.create(from, from + toward * 40.0)
 	var hit: Dictionary = space.intersect_ray(query)
 	if hit.is_empty():
+		for action in _garage_targets:
+			if _garage_targets[action].has_point(local):
+				return str(action)
 		return ""
 	var collider: Object = hit.get("collider")
 	if collider is Node and (collider as Node).has_meta("garage_action"):
@@ -1764,7 +1843,7 @@ func handle_back() -> bool:
 	return false
 
 
-func _choose_preview_view(index: int) -> void:
+func _choose_preview_view(index: int, animate: bool = true) -> void:
 	inspection_view = clampi(index, 0, 6)
 	view_choice.select(inspection_view)
 	if step == 3:
@@ -1779,24 +1858,168 @@ func _choose_preview_view(index: int) -> void:
 		# Close-up: actual 3D face, never a 2D artwork in place of the racing driver.
 		Vector3(0.0, 1.86, -2.35)
 	]
-	preview_camera.position = views[inspection_view]
+	var position_target: Vector3 = views[inspection_view]
 	if step == 0 and inspection_view == 0:
-		preview_camera.position = Vector3(2.37, 1.96, -3.80)
-	preview_camera.projection = (
+		position_target = Vector3(2.37, 1.96, -3.80)
+	var target_projection: int = (
 		Camera3D.PROJECTION_PERSPECTIVE
 		if inspection_view in [0, 6]
 		else Camera3D.PROJECTION_ORTHOGONAL
 	)
-	preview_camera.fov = 34.0 if inspection_view == 6 else 37.0
+	var target_fov: float = 34.0 if inspection_view == 6 else 37.0
 	if step == 0 and inspection_view == 0:
-		preview_camera.fov = 38.0
-	preview_camera.size = 3.9 if inspection_view == 5 else 2.8
-	preview_camera.look_at(
+		target_fov = 38.0
+	_move_preview_camera(position_target,
 		Vector3(0, 1.68, 0.07) if inspection_view == 6 else Vector3(0, 1.0, 0),
-		Vector3.FORWARD if inspection_view == 5 else Vector3.UP
-	)
+		Vector3.FORWARD if inspection_view == 5 else Vector3.UP,
+		target_fov, 3.9 if inspection_view == 5 else 2.8, animate, target_projection)
 	if inspection_view != 0:
 		preview_angle = 0.0
 		preview_pivot.rotation.y = 0.0
 	else:
 		call_deferred("_fit_welcome_camera")
+
+
+func _move_preview_camera(position_target: Vector3, focus_target: Vector3, up: Vector3,
+		fov_target: float, size_target: float, animate: bool, projection_target: int = -1) -> void:
+	_camera_from = preview_camera.transform
+	_camera_to = Transform3D(Basis.IDENTITY, position_target).looking_at(focus_target, up)
+	_camera_from_focus = _camera_focus
+	_camera_to_focus = focus_target
+	_camera_from_fov = preview_camera.fov
+	_camera_to_fov = fov_target
+	_camera_from_size = preview_camera.size
+	_camera_to_size = size_target
+	_camera_from_projection = preview_camera.projection
+	_camera_to_projection = preview_camera.projection if projection_target < 0 else projection_target
+	_camera_projection_switched = false
+	_camera_progress = 0.0 if animate and _camera_ready and not reduced_motion else 1.0
+	_camera_ready = true
+	_set_camera_veil(0.0)
+	if _camera_progress == 1.0:
+		_apply_camera_target()
+
+
+func _advance_preview_camera(delta: float) -> void:
+	if _camera_progress >= 1.0 or not is_instance_valid(preview_camera):
+		return
+	if reduced_motion:
+		_camera_progress = 1.0
+		_apply_camera_target()
+		_set_camera_veil(0.0)
+		return
+	_camera_progress = minf(1.0, _camera_progress + maxf(delta, 0.0) / 0.34)
+	if _camera_from_projection != _camera_to_projection:
+		# Projection matrices cannot be interpolated by moving a camera. Hide
+		# the exact perspective/orthographic switch behind one fully opaque
+		# navy frame, then reveal the settled view. No second 3D render pass.
+		if _camera_progress < 0.5:
+			_set_camera_veil(smoothstep(0.0, 0.5, _camera_progress))
+		elif not _camera_projection_switched:
+			_camera_projection_switched = true
+			_camera_progress = 0.5
+			_apply_camera_target()
+			_set_camera_veil(1.0)
+		else:
+			_set_camera_veil(1.0 - smoothstep(0.5, 1.0, _camera_progress))
+		return
+	var blend: float = _camera_progress * _camera_progress * (3.0 - 2.0 * _camera_progress)
+	_camera_focus = _camera_from_focus.lerp(_camera_to_focus, blend)
+	var offset_from := _camera_from.origin - _camera_from_focus
+	var offset_to := _camera_to.origin - _camera_to_focus
+	var radius: float = lerpf(offset_from.length(), offset_to.length(), blend)
+	var yaw: float = lerp_angle(atan2(offset_from.x, offset_from.z), atan2(offset_to.x, offset_to.z), blend)
+	var pitch_from: float = asin(clampf(offset_from.y / maxf(offset_from.length(), 0.01), -1.0, 1.0))
+	var pitch_to: float = asin(clampf(offset_to.y / maxf(offset_to.length(), 0.01), -1.0, 1.0))
+	var pitch: float = lerpf(pitch_from, pitch_to, blend)
+	# Orbit about the kart instead of crossing through it on a linear front/back
+	# interpolation. Quaternion orientation stays well-defined at the overhead view.
+	preview_camera.position = _camera_focus + Vector3(sin(yaw) * cos(pitch), sin(pitch), cos(yaw) * cos(pitch)) * radius
+	preview_camera.quaternion = _camera_from.basis.get_rotation_quaternion().slerp(_camera_to.basis.get_rotation_quaternion(), blend)
+	preview_camera.fov = lerpf(_camera_from_fov, _camera_to_fov, blend)
+	preview_camera.size = lerpf(_camera_from_size, _camera_to_size, blend)
+	if _camera_progress == 1.0:
+		preview_camera.transform = _camera_to
+
+
+func _apply_camera_target() -> void:
+	preview_camera.transform = _camera_to
+	preview_camera.projection = _camera_to_projection
+	preview_camera.fov = _camera_to_fov
+	preview_camera.size = _camera_to_size
+	_camera_focus = _camera_to_focus
+
+
+func _set_camera_veil(amount: float) -> void:
+	if is_instance_valid(preview_vignette) and preview_vignette.material is ShaderMaterial:
+		preview_vignette.material.set_shader_parameter("camera_transition", amount)
+
+
+func _preview_dp_scale() -> float:
+	var window_dp: Vector2 = Vector2(get_window().size) / MobileRuntime.get_ui_density()
+	var logical_size: Vector2 = get_viewport().get_visible_rect().size
+	if window_dp.x <= 0.0 or window_dp.y <= 0.0:
+		return 1.0
+	return maxf(logical_size.x / window_dp.x, logical_size.y / window_dp.y)
+
+
+func _garage_action_screen_rect(action: String) -> Rect2:
+	if not garage_buttons.has(action) or not is_instance_valid(preview_camera):
+		return Rect2()
+	var panel: MeshInstance3D = garage_buttons[action].panel
+	if preview_camera.is_position_behind(panel.global_position):
+		return Rect2()
+	var bounds := panel.get_aabb()
+	var projected := Rect2(preview_camera.unproject_position(panel.to_global(bounds.position)), Vector2.ZERO)
+	for corner in range(1, 8):
+		projected = projected.expand(preview_camera.unproject_position(panel.to_global(bounds.get_endpoint(corner))))
+	var minimum := Vector2.ONE * 48.0 * _preview_dp_scale()
+	var target_size: Vector2 = projected.size.max(minimum)
+	return Rect2(projected.get_center() - target_size * 0.5, target_size)
+
+
+func _update_garage_action_targets() -> void:
+	_garage_targets.clear()
+	if garage_buttons.is_empty() or not is_instance_valid(preview_viewport):
+		return
+	var available := Rect2(Vector2.ZERO, Vector2(preview_viewport.size))
+	var dp_scale: float = _preview_dp_scale()
+	var minimum: float = 48.0 * dp_scale
+	# The plaques remain at stable screen positions while the welcome camera
+	# settles. Hiding them for the blend makes a valid immediate click vanish.
+	var fits: bool = step == 0
+	fits = fits and available.size.x >= 260.0 * dp_scale and available.size.y >= 128.0 * dp_scale
+	if fits:
+		# Place the existing four physical plaques in two stable side columns.
+		# Matching projection-derived dimensions keep their real hit surfaces
+		# usable after a Fold resize, without relying on a tiny distant ray hit.
+		var fractions := {
+			"kart": Vector2(0.23, 0.32), "back": Vector2(0.23, 0.72),
+			"start": Vector2(0.77, 0.32), "strecke": Vector2(0.77, 0.72),
+		}
+		var width: float = minf(170.0 * dp_scale, available.size.x * 0.35)
+		for action in garage_buttons:
+			var center: Vector2 = available.size * fractions[action]
+			var body: Node3D = garage_buttons[action].body
+			var projected_center: Vector3 = preview_camera.project_position(center, 3.7)
+			var world_width: float = projected_center.distance_to(
+				preview_camera.project_position(center + Vector2(width, 0), 3.7))
+			var world_height: float = projected_center.distance_to(
+				preview_camera.project_position(center + Vector2(0, minimum), 3.7))
+			var basis := preview_camera.global_basis * Basis.from_scale(Vector3(world_width / 2.15, world_height / 0.48, 1.0))
+			body.global_transform = Transform3D(basis, projected_center)
+			body.get_node("Stem").visible = false
+			var target: Rect2 = _garage_action_screen_rect(action)
+			if not target.has_area() or not available.encloses(target):
+				fits = false
+			for existing in _garage_targets.values():
+				if target.intersects(existing):
+					fits = false
+			_garage_targets[action] = target
+	# Very short panes retain the equivalent 2D navigation at >=48dp.
+	# Do not advertise tiny or overlapping optional 3D shortcuts.
+	for button in garage_buttons.values():
+		button.body.visible = fits
+	if not fits:
+		_garage_targets.clear()
+		_cancel_garage_press()

@@ -1,0 +1,59 @@
+{
+	"adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+	"capture_script_sha256": "68898d2b79ec36f0317cb1cce0e4e6faa9a2bb474d214b6a8e8b2f15a1923860",
+	"display": "X11",
+	"engine": "4.6.3-stable (official)",
+	"proof_scope": "Staged real race scene; production chase camera; no driving or hardware FPS claim",
+	"quality": "high",
+	"race_script_sha256": "d59bf6daeb1d41fe1a60d6b9d3c35fe0db87abc7ffaa1f8368c37e0fc524944b",
+	"reduced_motion": true,
+	"renderer": "gl_compatibility",
+	"resolution": [
+		1280,
+		720
+	],
+	"seed": 2014,
+	"source_sha": "207bfbc5377c0f3e8be800854c83ddf2110ac3f6",
+	"views": [
+		{
+			"camera_fov": 55.0,
+			"camera_transform": "[X: (-0.343419, 0.0, 0.939182), Y: (0.18835, 0.979684, 0.068872), Z: (-0.920102, 0.200547, -0.336442), O: (23.54157, 5.106344, 83.36415)]",
+			"distance_m": 18.0,
+			"draw_calls": 350,
+			"file": "race-018m.png",
+			"player_transform": "[X: (-0.343867, 0.042513, 0.938055), Y: (-0.003229, 0.998915, -0.046455), Z: (-0.939013, -0.019003, -0.343357), O: (27.62701, 2.586344, 84.85802)]",
+			"primitives": 1411713,
+			"render_objects": 436
+		},
+		{
+			"camera_fov": 55.0,
+			"camera_transform": "[X: (-0.494548, 0.0, 0.86915), Y: (0.174306, 0.979684, 0.09918), Z: (-0.851493, 0.200547, -0.484501), O: (61.12896, 6.214433, 101.93)]",
+			"distance_m": 60.0,
+			"draw_calls": 278,
+			"file": "race-060m.png",
+			"player_transform": "[X: (-0.494899, 0.016483, 0.868794), Y: (-0.01715, 0.99944, -0.028731), Z: (-0.868782, -0.029119, -0.494339), O: (64.90976, 3.694432, 104.0813)]",
+			"primitives": 914960,
+			"render_objects": 364
+		},
+		{
+			"camera_fov": 55.0,
+			"camera_transform": "[X: (-0.547015, 0.0, 0.837123), Y: (0.167883, 0.979684, 0.109702), Z: (-0.820116, 0.200547, -0.535902), O: (102.6828, 7.825095, 129.6257)]",
+			"distance_m": 110.0,
+			"draw_calls": 269,
+			"file": "race-110m.png",
+			"player_transform": "[X: (-0.546555, -0.013138, 0.83732), Y: (-0.038673, 0.999206, -0.009565), Z: (-0.83653, -0.037609, -0.546629), O: (106.3243, 5.305095, 132.0052)]",
+			"primitives": 821804,
+			"render_objects": 355
+		},
+		{
+			"camera_fov": 55.0,
+			"camera_transform": "[X: (-0.519012, 0.0, 0.854767), Y: (0.171421, 0.979684, 0.104086), Z: (-0.837401, 0.200547, -0.508468), O: (145.427, 9.847893, 155.4665)]",
+			"distance_m": 160.0,
+			"draw_calls": 250,
+			"file": "race-160m.png",
+			"player_transform": "[X: (-0.51849, -0.012913, 0.854986), Y: (-0.043767, 0.998976, -0.011454), Z: (-0.853963, -0.043359, -0.518524), O: (149.1452, 7.327893, 157.7242)]",
+			"primitives": 791680,
+			"render_objects": 336
+		}
+	]
+}

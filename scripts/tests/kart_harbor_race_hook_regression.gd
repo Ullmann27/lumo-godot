@@ -47,6 +47,12 @@ func _run() -> void:
 		quit(1)
 		return
 	var phase: float = attraction.phase
+	var streetfronts = game.world.get_node_or_null("SonnenhafenStreetfronts")
+	if streetfronts == null:
+		printerr("[HarborRaceHook] FAIL real race world has no streetfront kit")
+		quit(1)
+		return
+	var street_phase: float = streetfronts.phase
 	# Only the actual game physics loop is called; no direct attraction.advance.
 	for i in range(60):
 		game._physics_process(1.0 / 60.0)
@@ -54,26 +60,34 @@ func _run() -> void:
 		attraction.phase > phase + 0.04, "Normal racing physics must advance the visible attraction"
 	)
 	_check(attraction.trigger_count == 1, "The real racer position must reach the attraction")
+	_check(streetfronts.phase > street_phase + 0.04, "Normal race physics must advance streetfront pennants")
+	_check(streetfronts.trigger_count > 0, "Actual racer position must trigger nearby welcome pennants")
 	game._pause()
 	phase = attraction.phase
+	street_phase = streetfronts.phase
 	for i in range(12):
 		game._physics_process(1.0 / 60.0)
 	_check(is_equal_approx(phase, attraction.phase), "Race pause must freeze the attraction")
+	_check(is_equal_approx(street_phase, streetfronts.phase), "Race pause must freeze streetfront pennants")
 	game._resume()
 	game._physics_process(1.0 / 60.0)
 	_check(attraction.phase > phase, "Race resume must continue the attraction")
+	_check(streetfronts.phase > street_phase, "Race resume must continue streetfront pennants")
 	game.reduced_motion = true
 	phase = attraction.phase
+	street_phase = streetfronts.phase
 	game._physics_process(1.0 / 60.0)
 	_check(
 		is_equal_approx(phase, attraction.phase),
 		"Reduced-motion preference must reach the attraction"
 	)
 	game.reduced_motion = false
+	_check(is_equal_approx(street_phase, streetfronts.phase), "Reduced motion must reach streetfront pennants")
 	game.finished = true
 	game.finish_cine_left = 0.0
 	game._physics_process(1.0 / 60.0)
 	_check(is_equal_approx(phase, attraction.phase), "Finished race must freeze the attraction")
+	_check(is_equal_approx(street_phase, streetfronts.phase), "Finished race must freeze streetfront pennants")
 	game.abandoned = true
 	game.queue_free()
 	await process_frame

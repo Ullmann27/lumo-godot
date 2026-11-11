@@ -1,0 +1,30 @@
+{
+  "source_sha": "207bfbc5377c0f3e8be800854c83ddf2110ac3f6",
+  "engine": "Godot 4.6.3 stable official",
+  "renderer": "gl_compatibility",
+  "adapter": "Mesa llvmpipe LLVM 19.1.7",
+  "environment": "Linux x86_64, Xorg dummy display, software rendering",
+  "physical_android_tested": false,
+  "android_emulator_tested": false,
+  "capture_scope": {
+    "harbor": "World scenery with fixed camera poses; no driven lap proof",
+    "garage": "Real garage menu with original hero capture script; original UI and turntable active",
+    "lumo": "Original exported skeleton/animation capture; no modified mesh"
+  },
+  "files": {
+    "harbor.log": "6ed7fd3d675a29994d991f317ad7a9cb0cf6b7e3154b7777ad40380c357088bf",
+    "garage.log": "e330551714127196bd7255c80c550d9c3c7463f20d3c63bb4407a50769148765",
+    "lumo.log": "5667f06b17c1cb793f5eb45cc020bfad6ec3f0167268afce88de9934348cf09f",
+    "garage/03_mode_cards.png": "06cef7c192690c8bb9923754b4ab9376d5942c95253da9d9b2e6bf2418e6bac5",
+    "garage/01_kart_select.png": "2d7fbea85e268ba2d60dcb3c224fc5d4974ba59c2c1c177236ab289d795b409d",
+    "garage/04_difficulty_cards.png": "06e24016c5a580640c8e7c7b7ac96c8f4f6239d9b53e4379607da2ddf3d0dd53",
+    "garage/02_kart_rotated.png": "bfd913d97c9d34984d6e1fe81d2546b0187733e0566b9b6b417a55795e63739e",
+    "lumo/view-front.png": "c4837644d2c045f0f8da5fc97b43b80fe85d03eb0ca3134f8ef7c4596926da63",
+    "lumo/kart_seated.png": "36c7ef1fa4f53b25a932d6e5d649d930be418f2b2dcabce31fc1b6f8d431a417",
+    "harbor/01_race_camera.png": "119e48c8b5edf8f4e5ac3114ccd99e3712caeee8326b05d737f4996b53738492",
+    "harbor/04_wheel_after_4s.png": "c8b4428cdc1c16e24afb994d845c14f699bd22c3a8b4450453125432f203eee2",
+    "harbor/03_harbor_wheel.png": "2debaea3139ebc65dddae296e5b73eff9924e4f2555057872d78b84112835f7f",
+    "harbor/02_harbor_shopfront.png": "b9c38d69695d3ac6fb94f7db7ffb5945cc8712535ee73e27d977e8d7f74bfe0a",
+    "harbor/capture.json": "fb4a34882bd1190193d9ede6c83585af05cfedbcfa77428f11d3807e4bc27dae"
+  }
+}
