@@ -34,6 +34,7 @@ const RESONANCE = preload("res://scripts/games/kart_resonance_system.gd")
 const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
+const AIR_TRICK = preload("res://scripts/games/kart_air_trick.gd")
 const JUMP_HINT = preload("res://scripts/games/visual/kart_jump_speed_hint.gd")
 ## The jump speed hint appears this many metres before the ramp starts.
 const JUMP_HINT_LEAD_M: float = 70.0
@@ -137,6 +138,7 @@ var drift_charge: float = 0.0
 var drift_tier_count: Array[int] = [0, 0]
 var wall_contacts: int = 0
 var airborne: bool = false
+var air_trick: Dictionary = {}
 var vertical_speed: float = 0.0
 var air_time: float = 0.0
 var jump_count: int = 0
@@ -788,6 +790,7 @@ func _begin_race() -> void:
 	drift_tier_count = [0, 0]
 	wall_contacts = 0
 	airborne = false
+	air_trick = {}
 	vertical_speed = 0
 	air_time = 0
 	jump_count = 0
@@ -1466,6 +1469,9 @@ func _physics_process(delta: float) -> void:
 		var attraction = world.get_node_or_null("SonnenhafenHarborAttraction")
 		if attraction != null:
 			attraction.advance(delta, player.position, racing and not paused and not finished, reduced_motion)
+		var streetfronts = world.get_node_or_null("SonnenhafenStreetfronts")
+		if streetfronts != null:
+			streetfronts.advance(delta, player.position, racing and not paused and not finished, reduced_motion)
 	for i in range(gems.size()):
 		if mode != "arena":
 			var key: int = _gem_key(int(distance / track_length), i)
@@ -1615,7 +1621,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 			var side: Vector3 = (next_road.basis as Basis).x
 			physical_velocity -= side * (excess / maxf(delta, 0.0001))
 	player.position += physical_velocity * delta
-	if drifting and speed > 6:
+	if drifting and speed > 6 and not airborne:
 		drift_charge = minf(3, drift_charge + delta * absf(axis))
 	if mode == "arena":
 		player.position.y = 0.035
@@ -1672,6 +1678,10 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		pitch = world.alternate_route_pitch(road_distance, lane)
 	if pitch != 0.0:
 		player.basis = player.basis.rotated(right, pitch).orthonormalized()
+	if airborne and not air_trick.is_empty() and not reduced_motion:
+		player.basis = (
+			player.basis * Basis.from_euler(AIR_TRICK.visual_euler(air_trick))
+		).orthonormalized()
 
 
 ## Collection key of a course star. The 24 classic stars keep their saved keys;
@@ -1743,6 +1753,7 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 		)
 		if leaving_ramp:
 			airborne = true
+			air_trick = {}
 			jump_count += 1
 			air_time = 0.0
 			current_jump_gravity = JUMP_GRAVITY
@@ -1751,6 +1762,7 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 	if not airborne and world.in_gap(road_distance):
 		# Rolled or reversed into a gap without take-off: there is no road here.
 		airborne = true
+		air_trick = {}
 		current_jump_gravity = JUMP_GRAVITY
 		vertical_speed = 0.0
 		air_time = 0.0
@@ -1761,6 +1773,7 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 		if not kicker.is_empty() and speed > 6.0:
 			# Sprungschanze: abheben, kurz fliegen und mit Turbo landen.
 			airborne = true
+			air_trick = {}
 			action_kicker_jumps += 1
 			air_time = 0.0
 			player.position.y = ground + float(kicker.height)
@@ -1782,6 +1795,7 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 	vertical_speed -= current_jump_gravity * delta
 	player.position.y += vertical_speed * delta
 	air_time += delta
+	_update_air_trick(delta)
 	if world.in_gap(road_distance):
 		if player.position.y < float(road.height) - 2.5:
 			_record_precision_landing(PRECISION.LANDING_SHORT, road_distance)
@@ -1818,6 +1832,12 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			boost_time = maxf(boost_time, _boost_for(1.2))
 			message.text = "Super gelandet! Turbo!"
 			_sound_effect("drift")
+		var trick_reward: Dictionary = AIR_TRICK.landing_bonus(air_trick, precision_result)
+		if bool(trick_reward.get("rewarded", false)):
+			boost_time += _boost_for(float(trick_reward.boost))
+			message.text = str(trick_reward.label)
+			_sound_effect("boost")
+		air_trick = {}
 		# Settle sideways slide after a firm landing. Precision zone/long
 		# outcomes already apply their own speed rules and stay untouched.
 		if (
@@ -1919,6 +1939,17 @@ func _update_dive_tint() -> void:
 	dive_tint.visible = action_in_dive
 
 
+func _update_air_trick(delta: float) -> void:
+	if not airborne:
+		return
+	if air_trick.is_empty() and drifting and air_time > 0.05:
+		air_trick = AIR_TRICK.start(steering)
+		if not reduced_motion:
+			message.text = "Rolle!" if str(air_trick.get("kind", "")) == AIR_TRICK.KIND_ROLL else "Salto!"
+	if not air_trick.is_empty():
+		air_trick = AIR_TRICK.advance(air_trick, delta)
+
+
 func _rescue_from_gap() -> void:
 	# A cloud carries the kart just past the gap: no repeated falls, no shortcut.
 	var precision: bool = world.jump.is_empty() and last_precision_landing == PRECISION.LANDING_SHORT
@@ -1930,6 +1961,7 @@ func _rescue_from_gap() -> void:
 	speed = 8.0
 	physical_velocity = Vector3(-sin(player_heading), 0, -cos(player_heading)) * speed
 	airborne = false
+	air_trick = {}
 	vertical_speed = 0.0
 	air_time = 0.0
 	gap_falls += 1
@@ -2356,6 +2388,7 @@ func _reset_kart() -> void:
 	physical_velocity = Vector3.ZERO
 	offroad_seconds = 0
 	airborne = false
+	air_trick = {}
 	vertical_speed = 0.0
 	air_time = 0.0
 	reset_count += 1
@@ -2601,6 +2634,13 @@ func _update_vehicles(_delta: float) -> void:
 		return
 	var enabled: bool = racing and not paused and not finished
 	player.set_motion(speed if enabled else 0, steering, boost_time > 0 and enabled, drifting and enabled)
+	var spark_tier := 0
+	if drifting and enabled:
+		if drift_charge >= DRIFT_TIERS[1]:
+			spark_tier = 2
+		elif drift_charge >= DRIFT_TIERS[0]:
+			spark_tier = 1
+	player.set_drift_spark_tier(spark_tier)
 	player.set_braking(brake_visual_amount if enabled else 0.0)
 	player.set_driver_runtime_state(airborne, hit_timer > 0.0, paused)
 	if not enabled:
