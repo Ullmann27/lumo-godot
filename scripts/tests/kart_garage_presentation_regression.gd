@@ -87,9 +87,23 @@ func _run() -> void:
 	_check(garage._camera_progress == 1.0
 		and is_zero_approx(float(garage.preview_vignette.material.get_shader_parameter("camera_transition"))),
 		"the new projection is fully revealed and transition state settles")
-	garage.reduced_motion = true
 	garage.step = 0
 	garage._refresh()
+	await _settle(4)
+	garage._choose_preview_view(0)
+	garage._advance_preview_camera(0.05)
+	garage._update_garage_action_targets()
+	_check(garage._camera_progress < 1.0 and garage._garage_targets.size() == 4
+		and garage.garage_buttons.strecke.body.is_visible_in_tree(),
+		"welcome actions stay visible and hittable during camera settling")
+	var settling_point: Vector2 = garage.preview_camera.unproject_position(
+		garage.garage_buttons.strecke.body.global_position)
+	garage._begin_preview_pointer(settling_point)
+	_check(garage._pressed_garage_action == "strecke"
+		and garage._pick_garage_action(settling_point) == "strecke",
+		"an immediate press interrupts the camera with coherent displayed hit targets")
+	garage._end_preview_pointer(settling_point, true)
+	garage.reduced_motion = true
 	var host = root.get_node("HostBridge")
 	var cases := [[Vector2i(1280, 720), 1.0], [Vector2i(640, 360), 1.0],
 		[Vector2i(904, 2316), 2.5], [Vector2i(2176, 1812), 2.25]]

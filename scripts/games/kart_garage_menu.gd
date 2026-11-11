@@ -1652,6 +1652,9 @@ func _begin_preview_pointer(local: Vector2) -> void:
 	# keep moving the camera under the held pointer.
 	_camera_progress = 1.0
 	_set_camera_veil(0.0)
+	# Camera interruption and hit testing share the same displayed projection.
+	# Do not wait for a process tick to restore the visible action targets.
+	_update_garage_action_targets()
 	_pressed_garage_action = _pick_garage_action(local)
 	rotate_drag = _pressed_garage_action.is_empty()
 	if not rotate_drag:
@@ -1982,7 +1985,9 @@ func _update_garage_action_targets() -> void:
 	var available := Rect2(Vector2.ZERO, Vector2(preview_viewport.size))
 	var dp_scale: float = _preview_dp_scale()
 	var minimum: float = 48.0 * dp_scale
-	var fits: bool = step == 0 and _camera_progress >= 1.0
+	# The plaques remain at stable screen positions while the welcome camera
+	# settles. Hiding them for the blend makes a valid immediate click vanish.
+	var fits: bool = step == 0
 	fits = fits and available.size.x >= 260.0 * dp_scale and available.size.y >= 128.0 * dp_scale
 	if fits:
 		# Place the existing four physical plaques in two stable side columns.
