@@ -1,0 +1,13 @@
+{
+  "verified_commit": "b357b2f8decb4b11b0cc45e9fde2b8df5ec9cbe1",
+  "tracked_source_clean_before_and_after": true,
+  "capture_command_completed": true,
+  "source_value_passed_to_unchanged_fixture": true,
+  "recorded_at_utc": "2026-11-11T13:08:26.377091+00:00",
+  "image_sha256": {
+    "race-018m.png": "58a99f2831d342c026d447fdeef688b3383bc1562a2fd9827a9810fa68fdbe84",
+    "race-060m.png": "3f0ef5506e0373d6df45e3270f1ab1c0a556076a3c3a7a7409a9142c11bc5150",
+    "race-110m.png": "6ff168a5e19d6a857b4d167321089aa418179cdec9f6a40941c2f55d06d3c17c",
+    "race-160m.png": "60f8a50fd4bf36573da21dadee2367c004cb26ea96e93efd286e99eda8099cc8"
+  }
+}

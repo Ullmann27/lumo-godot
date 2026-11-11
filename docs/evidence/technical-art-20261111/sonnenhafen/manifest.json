@@ -1,0 +1,124 @@
+{
+  "baseline_source_sha": "207bfbc5377c0f3e8be800854c83ddf2110ac3f6",
+  "art_runtime_source_sha": "977f120bf586db96250b3f3eb5f2503d2994a8d4",
+  "later_integration_source_sha": "b357b2f8decb4b11b0cc45e9fde2b8df5ec9cbe1",
+  "later_integration_is_not_capture_source": true,
+  "production_camera_baseline_matches": 4,
+  "harbor_camera_baseline_matches": 2,
+  "raw_clip_frames_included": false,
+  "is_device_performance_measurement": false,
+  "files": [
+    {
+      "file": "README.md",
+      "bytes": 5997,
+      "sha256": "8100c64b763728f989a76295baedd61228cbc4f61c2feadf21221e638c222afc",
+      "git_blob_sha1": "b4a2dac7b3c81b162952ecc954b6f5a3b1a9642a",
+      "copied_unchanged_from_existing_evidence": false
+    },
+    {
+      "file": "harbor/01_race_camera.png",
+      "bytes": 787092,
+      "sha256": "7a726796abbea85baf4b2893052bb0f10fa1afca76e9d518c0dd76f48e6d72da",
+      "git_blob_sha1": "34de973052632679243bb044720a4fac3def68bb",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "harbor/02_harbor_shopfront.png",
+      "bytes": 580381,
+      "sha256": "4d9d5243f284d947447b639ef59e9657ffdc79b7a0800f29fb24ea697f98efcc",
+      "git_blob_sha1": "8f45b4b3bd50ecc7ba2616d7ca9f01890052bd51",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "harbor/capture.json",
+      "bytes": 1281,
+      "sha256": "bb6a995e7b5c52e918e9e3c7dd0ebd511a6c298489ced7fbdc446072aa0b1979",
+      "git_blob_sha1": "a26195b155b3c63acfe1497e6e2af45f1f9f00f2",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "logs/sonnenhafen-generation.log",
+      "bytes": 550,
+      "sha256": "9c807752c572e15d411562104cea5ae42470c5381fa122672d7af7015a384aad",
+      "git_blob_sha1": "9d7544cbbc9d92e5ac779bc1a7d4127ad305a593",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "logs/streetfronts-gl.log",
+      "bytes": 1654,
+      "sha256": "4be3c93bb34a6a5d7094f27b1f64a40288abd197203015540b9bd6a7215a83c0",
+      "git_blob_sha1": "89d31b79a670cee945d27f6e800d65e53970a30a",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "logs/streetfronts-headless.log",
+      "bytes": 1012,
+      "sha256": "0b1aa2bddb61fee9b7ceb82625b8e964c3dc4b4dd76ca88e1eee92105fb03784",
+      "git_blob_sha1": "c6e5b651aedd70a1d53c8ee4efb597b0dd5f85e8",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "logs/streetfronts-world.log",
+      "bytes": 1147,
+      "sha256": "50cbfbb16c1e6b786eaf620b0a7121caacf4e66b71fb4c2f2216877008392cc4",
+      "git_blob_sha1": "a5a285798fc4a7eef09ced1412f485873c8f5337",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "pennant-capture.json",
+      "bytes": 1314,
+      "sha256": "e03bdc6e7605a723bb1d1cb79f050a31f5462e0a178e4aef488e607691654b06",
+      "git_blob_sha1": "092eece5a170f755b0dd0335cce550a1d793e57f",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "pennant-video.json",
+      "bytes": 267,
+      "sha256": "4157e088340b8384d495f2a37d6376297060e540e4850be6fe258620b4042f02",
+      "git_blob_sha1": "f99c2170c84b3863bee63239ae1376d1dc617e22",
+      "copied_unchanged_from_existing_evidence": false
+    },
+    {
+      "file": "race/capture.json",
+      "bytes": 2562,
+      "sha256": "77b01338afeb3e71023f02d6074500ed198b7465e74897dc909d369fdeb784f0",
+      "git_blob_sha1": "3b20682c54e1e793fa23a5780f34b512e0245b57",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "race/race-018m.png",
+      "bytes": 990143,
+      "sha256": "58a99f2831d342c026d447fdeef688b3383bc1562a2fd9827a9810fa68fdbe84",
+      "git_blob_sha1": "3563d372d88cb10d64ff5efc1423f67c15a8e399",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "race/race-060m.png",
+      "bytes": 932817,
+      "sha256": "3f0ef5506e0373d6df45e3270f1ab1c0a556076a3c3a7a7409a9142c11bc5150",
+      "git_blob_sha1": "2f448039fbf032973b1937debe56ae117387a8b6",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "race/race-110m.png",
+      "bytes": 988721,
+      "sha256": "6ff168a5e19d6a857b4d167321089aa418179cdec9f6a40941c2f55d06d3c17c",
+      "git_blob_sha1": "d1e3e0d1ef659f62012d73315b235e7a1b74f482",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "race/race-160m.png",
+      "bytes": 970577,
+      "sha256": "60f8a50fd4bf36573da21dadee2367c004cb26ea96e93efd286e99eda8099cc8",
+      "git_blob_sha1": "69d22faa3768d5e2a34366f9922cd4b40b99cfc4",
+      "copied_unchanged_from_existing_evidence": true
+    },
+    {
+      "file": "sonnenhafen-pennants.mp4",
+      "bytes": 115938,
+      "sha256": "7d903248f44ab6e401036072043a999fe2591bd2efcb67401fc6888fb74e08aa",
+      "git_blob_sha1": "e203ab033509d8878b74d58c89edfaeb48047485",
+      "copied_unchanged_from_existing_evidence": true
+    }
+  ]
+}

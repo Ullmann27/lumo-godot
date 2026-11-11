@@ -1,0 +1,50 @@
+{
+  "baseline_commit": "207bfbc5377c0f3e8be800854c83ddf2110ac3f6",
+  "current_remote_implementation_commit": "03d08ce59ce1e207a69a6f4575d4c35c1ecaacd6",
+  "baseline_adapter_sha256": "67dd41b38612effeb34006e691c026319750e37836dbd2240597bdb450bdcdd6",
+  "current_adapter_sha256": "afe2bc4f6b3a1753d64e536878754fcfa52d0c5758cf6adfdccdaa38ea779edc",
+  "model_sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+  "pose": "kart_seated@0.3, reduced motion, speed=steer=0, grounded",
+  "numeric_values_equal": [
+    "model_sha256",
+    "actor_transform",
+    "bones",
+    "all_bones",
+    "skin_meshes"
+  ],
+  "bone_count": 65,
+  "skin_mesh_count": 1,
+  "numeric_comparison_environment": "Godot 4.6.3, headless, identical vehicle/model/fixture",
+  "original_frame_environment": "Godot 4.6.3, GL Compatibility, Mesa llvmpipe (LLVM 19.1.7, 256 bits), X11",
+  "original_frame_resolution": [
+    1000,
+    800
+  ],
+  "camera_position": [
+    4.4,
+    1.05,
+    0
+  ],
+  "camera_target": [
+    0,
+    0.9,
+    0
+  ],
+  "fov_degrees": 37,
+  "diagnosis": "Preexisting seated model/body fit: original adapter frame shows the boot below the Gecko body; all 65 bones, mesh and actor transforms match exactly in the numeric comparison. No leg or mesh edit was made.",
+  "limits": [
+    "One seated pose compared numerically; rendering screenshot uses original adapter only.",
+    "Pedal_centres is empty because production mesh batching removes the named source nodes; no pedal position measurement is claimed.",
+    "No Android device or performance measurement."
+  ],
+  "files_sha256": {
+    "current-pose.json": "186b4a5047e549e46099ff3657071766f8c5122e58624aa0a94330962462a381",
+    "original-gecko-side.png": "78ff118c87071bbf36fee56b3ef67aa9a02c13197beca10bcce54f90896353be",
+    "original-pose.json": "476c929b1f4e9baa01e34b07bb6ab884d441ae5b7fb2759eb0cd35f72c30eea4",
+    "original-renderer-pose.json": "b8fd5eb50bac5d6c3ac442677317273e5cee8af6ffc14f5aae4b7055266a4f4f",
+    "original-renderer.log": "f68318d405340d5d22e2e6c3a3bb4d0907342c3d0d519de77c935101af7d01b2",
+    "probe.gd": "514a913f176df2e1efe465ec358ff781e455ce3c21124485a45a7b10d6a62e08",
+    "integrated-original-adapter.log": "a146787bfe0044d9fd44f4fd643249fa3ef6f6ccc7cf3244f77d66c86ff9ff73"
+  },
+  "integration_source_commit": "fced6857f45f321c59b5dc6285bda23cf84e0fe7"
+}
