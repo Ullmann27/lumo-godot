@@ -46,4 +46,5 @@ run_probe lumo_attention_landing_regression '"failures":0' headless
 run_probe lumo_kart_tick_cadence_regression '[LumoKartTickCadence] PASS' headless
 run_probe lumo_gesture_contact_regression '[LumoGestureContact] PASS' headless
 run_probe kart_garage_presentation_regression '[GaragePresentation] PASS' rendered
+run_probe kart_air_trick_regression '[AirTrick] PASS' headless
 echo "[LumoTechnicalArt] PASS: geometry, live reactions, original rig, camera and touch targets; logs $LOG_DIR"

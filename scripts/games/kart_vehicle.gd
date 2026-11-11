@@ -47,6 +47,7 @@ var motion_speed: float = 0.0
 var motion_steer: float = 0.0
 var motion_boost: bool = false
 var motion_drift: bool = false
+var drift_spark_tier: int = -1
 var reduced_motion: bool = false
 var animation_time: float = 0.0
 var materials: Dictionary = {}
@@ -2245,6 +2246,18 @@ func set_motion(speed: float, steer: float, boost: bool, drift: bool) -> void:
 	motion_drift = drift
 
 
+func set_drift_spark_tier(tier: int) -> void:
+	# Swap sparkle materials only when drift charge changes tier.
+	var next_tier: int = clampi(tier, 0, 2)
+	if next_tier == drift_spark_tier:
+		return
+	drift_spark_tier = next_tier
+	var color: Color = ICE if next_tier < 2 else ORANGE
+	var glow: float = 2.0 if next_tier == 0 else (2.4 if next_tier == 1 else 2.8)
+	for spark in sparks:
+		spark.material_override = _mat(color, 0.0, 0.3, glow)
+
+
 func set_braking(amount: float) -> void:
 	motion_brake = clampf(amount, 0.0, 1.0)
 
@@ -2291,7 +2304,8 @@ func _process(delta: float) -> void:
 		)
 	for spark in sparks:
 		spark.visible = motion_drift and absf(motion_steer) > 0.2 and motion_speed > 1.0
-		spark.scale.z = 0.9 + sin(animation_time * 23.0) * 0.3
+		var spark_boost: float = 1.0 + 0.18 * maxf(0, drift_spark_tier)
+		spark.scale.z = (0.9 + sin(animation_time * 23.0) * 0.3) * spark_boost
 	for lamp in brake_lights:
 		lamp.visible = motion_brake > 0.05 and not far_detail
 	detail_check_time -= delta
