@@ -6,7 +6,13 @@
   "url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43023920936",
   "conclusion": "success",
   "engine": "4.6.3",
-  "environment": "GitHub-hosted Ubuntu 24.04; Mesa llvmpipe GL Compatibility; not Android hardware",
+  "environment": "GitHub-hosted Ubuntu 24.04; mixed headless and Mesa llvmpipe GL Compatibility programs; not Android hardware",
+  "execution_modes": {
+    "player_full_route": "GL Compatibility; complete two-lap route",
+    "ai_fields": "Headless; 30 complete two-lap production-AI routes",
+    "kart_stunt_continuity_regression": "GL Compatibility; individual AI loop approach scenarios",
+    "kart_rival_flight_regression": "GL Compatibility; individual ramp approach, flight and landing scenarios"
+  },
   "gates": {
     "existing_project_and_gameplay": "success",
     "validate_2014": {
