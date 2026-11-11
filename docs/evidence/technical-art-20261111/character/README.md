@@ -120,3 +120,40 @@ Metadaten, Logs und Capture-Skript werden mit diesem Nachweis gesichert.
 Android-Emulator, echte Android-Hardware, Fold7, GPU-FPS, Temperatur und RAM wurden
 für diesen isolierten Beitrag nicht geprüft. Es wurde kein APK gebaut oder
 veröffentlicht und kein Merge nach main vorgenommen.
+
+## Gezielte Klärung eines vorhandenen Sitz-/Karosserie-Clippings
+
+Die unabhängige Prüfung des integrierten Garage-Clips, Seitenansicht Gecko Velo,
+zeigte einen Schuh unterhalb der Karosserie. Dieser Befund wurde ausdrücklich
+nachgeprüft: Der Adapter wurde direkt aus `207bfbc5377c0f3e8be800854c83ddf2110ac3f6`
+extrahiert und mit demselben unveränderten Fahrzeug und Originalmodell geladen.
+Die [echte Original-Seitenaufnahme](seat-diagnosis/original-gecko-side.png) zeigt
+das gleiche sichtbare Sitz-/Karosserieproblem bereits im Ausgangsstand.
+
+Der zusätzliche numerische Vergleich der reduzierten Sitzpose `kart_seated@0.3`
+ergibt für Original und Erweiterung exakt gleiche JSON-Zahlenwerte aller **65
+Knochen-Globaltransformationen**, der einzigen Skin-Mesh-Transformation und der
+Actor-Transformation. Der Modellhash ist ebenfalls gleich. Die Fußknochen liegen
+in beiden Läufen bei etwa `y = 0,194513`; dies ist eine Knochenmessung, keine
+Kontaktmessung an Pedal oder Schuhsohle. Der Probe-Pedalpfad liefert wegen der
+vorhandenen Mesh-Zusammenfassung keine benannten Pedalobjekte und wird nicht als
+erfolgreiche Pedalmessung gewertet.
+
+Das Clipping bleibt als **vorbestehender Fehler der Sitz-/Fahrzeuganpassung**
+offen. Dieser Beitrag ändert weder Beinpose noch Mesh und behebt den ursprünglichen
+Sitzfehler nicht. Die vorhandenen 379 Adapter-Assertions wurden zusätzlich gegen
+den integrierten Stand `fced6857f45f321c59b5dc6285bda23cf84e0fe7` erneut ausgeführt:
+379 bestanden, 0 fehlgeschlagen, reguläres Ende. Der maximale Hand-Ankerabstand
+betrug 1,142929 mm ([Integrationslog](seat-diagnosis/integrated-original-adapter.log)).
+
+[Vergleichsmetadaten und Datei-Hashes](seat-diagnosis/comparison.json),
+[Originalpose](seat-diagnosis/original-pose.json),
+[erweiterte Pose](seat-diagnosis/current-pose.json) und
+[Rendererlog](seat-diagnosis/original-renderer.log) sichern die Abgrenzung.
+Das [Probe-Skript](seat-diagnosis/probe.gd) nimmt zwei Benutzerargumente entgegen:
+Ausgabeordner und zu ladenden Adapterpfad. Die Originaldatei lässt sich mit
+`git show 207bfbc5377c0f3e8be800854c83ddf2110ac3f6:scripts/characters/lumo/lumo_kart_animation_adapter.gd`
+extrahieren; der neue Pfad ist `res://scripts/characters/lumo/lumo_kart_animation_adapter.gd`.
+Die Seitenaufnahme nutzt 1000 × 800 Pixel, Kamera `(4.4, 1.05, 0)` auf
+`(0, 0.90, 0)`, FOV 37. Sie ist ein gezielter Originalbefund und kein zweiter
+kompletter Vorher-/Nachher-Animationsclip.
