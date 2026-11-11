@@ -3,6 +3,8 @@ name: LUMO 2014 actual gameplay acceptance
 on:
   push:
     branches: [lumo-2014/integration-20261110]
+  pull_request:
+    branches: [lumo-2014/integration-20261110]
   workflow_dispatch:
 
 permissions:
@@ -23,6 +25,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Install exact verified Godot engine and software renderer
         run: |
           set -euo pipefail
@@ -42,6 +45,8 @@ jobs:
           bash tools/validate_project.sh 2>&1 | tee "$LUMO_2014_LOG_DIR/existing-gameplay.log"
       - name: Continuous loops, physical ramps, fair AI and living harbor
         run: bash tools/validate_2014.sh
+      - name: Integrated streetfronts, original Lumo and garage presentation
+        run: LUMO_ART_LOG_DIR="$LUMO_2014_LOG_DIR/technical-art" bash tools/validate_technical_art.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:

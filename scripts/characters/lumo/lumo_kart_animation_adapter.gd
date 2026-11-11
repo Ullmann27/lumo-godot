@@ -5,6 +5,10 @@ const ACTOR = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const VISUAL_TICK_SECONDS := 1.0 / 30.0
 const MAX_VISUAL_STEP_SECONDS := 0.10
 const TICK_EPSILON_SECONDS := 0.000000001
+const ATTENTION_YAW_LIMIT := 0.28
+const ATTENTION_PITCH_LIMIT := 0.12
+const LANDING_SETTLE_SECONDS := 0.42
+const BREATH_PERIOD_SECONDS := 3.8
 var actor
 var kart: Node3D
 var steering := 0.0
@@ -22,6 +26,15 @@ var maximum_contact_error := 0.0
 var _tick := 0.0
 var _seated_leg_rotations: Dictionary = {}
 var _menu_gesture := false
+var _attention_enabled := false
+var _attention_target := Vector3.ZERO
+var _attention_angles := Vector2.ZERO
+var _visual_steering := 0.0
+var _chest_roll := 0.0
+var _boost_pitch := 0.0
+var _breath := 0.0
+var _landing_elapsed := -1.0
+var landing_amount := 0.0
 
 
 func bind_visual(review_kart: Node3D) -> bool:
@@ -72,11 +85,31 @@ func apply_vehicle_sample(
 	# Callers supply real state. Do not infer a jump from elapsed time.
 	speed = absf(velocity) if is_finite(velocity) else 0.0
 	steering = clampf(steer, -1.0, 1.0) if is_finite(steer) else 0.0
+	# A landing is the real vehicle's airborne -> grounded edge, never a
+	# repeating timer or a guessed jump. Repeated grounded samples cannot
+	# restart the short settle; pause/reduced motion cannot queue a reaction.
+	if airborne and not in_air and not suspended and not reduced_motion:
+		_landing_elapsed = 0.0
 	airborne = in_air
 	boosting = boost
 	drifting = drift
 	if hit:
 		hit_amount = 1.0
+
+
+## A world-space point supplied by the presentation owner. This turns the
+## existing Head bone, not eyes or invented face morphs. Targets behind Lumo
+## return to neutral rather than turning his neck beyond a comfortable range.
+func set_attention_target(world_position: Vector3) -> bool:
+	if not world_position.is_finite():
+		return false
+	_attention_target = world_position
+	_attention_enabled = true
+	return true
+
+
+func clear_attention_target() -> void:
+	_attention_enabled = false
 
 
 func celebrate_finished_race(place: int = 1) -> void:
@@ -112,6 +145,14 @@ func set_reduced_motion(value: bool) -> void:
 	if reduced_motion == value:
 		return
 	reduced_motion = value
+	if value:
+		_landing_elapsed = -1.0
+		landing_amount = 0.0
+		_attention_angles = Vector2.ZERO
+		_breath = 0.0
+		_visual_steering = 0.0
+		_chest_roll = 0.0
+		_boost_pitch = 0.0
 	if actor != null:
 		actor.set_reduced_motion(value)
 
@@ -163,6 +204,7 @@ func advance_visual(delta: float) -> void:
 	if not reduced_motion:
 		elapsed += delta
 	hit_amount = move_toward(hit_amount, 0.0, delta * 2.5)
+	_advance_secondary_motion(minf(delta, MAX_VISUAL_STEP_SECONDS))
 	var already_advanced := false
 	if victory:
 		maximum_contact_error = 0.0
@@ -180,6 +222,8 @@ func advance_visual(delta: float) -> void:
 		# frame we must already restore BOTH contacts, not return with raised
 		# hands and a seated state label.
 		if victory:
+			_apply_attention()
+			actor.skeleton.force_update_all_bone_transforms()
 			if speed > 0.5 or celebration_clip == "agree_nod" or _menu_gesture:
 				_follow_wheel_hand(0)
 			if celebration_clip == "agree_nod":
@@ -198,16 +242,66 @@ func advance_visual(delta: float) -> void:
 	# These deltas affect only the visual skeleton, not the chassis.
 	if not reduced_motion:
 		skeleton.set_bone_pose_rotation(chest, skeleton.get_bone_pose_rotation(chest) *
-			Quaternion(Vector3.FORWARD, steering * (-0.075 if drifting else -0.055) + hit_amount * 0.07))
+			Quaternion(Vector3.FORWARD, _chest_roll))
 		skeleton.set_bone_pose_rotation(chest, skeleton.get_bone_pose_rotation(chest) *
-			Quaternion(Vector3.RIGHT, -0.025 if boosting else 0.0))
+			Quaternion(Vector3.RIGHT, _boost_pitch + _breath + landing_amount * 0.12))
 		skeleton.set_bone_pose_rotation(head, skeleton.get_bone_pose_rotation(head) *
-			Quaternion(Vector3.UP, steering * 0.07))
+			Quaternion(Vector3.UP, _visual_steering * 0.07))
+		skeleton.set_bone_pose_rotation(head, skeleton.get_bone_pose_rotation(head) *
+			Quaternion(Vector3.RIGHT, -_breath * 0.45 - landing_amount * 0.06))
+	_apply_attention()
 	skeleton.force_update_all_bone_transforms()
 	maximum_contact_error = 0.0
 	for i in range(2):
 		_follow_wheel_hand(i)
 	_curl_fingers()
+
+
+func _advance_secondary_motion(delta: float) -> void:
+	if reduced_motion:
+		return
+	var follow := 1.0 - exp(-delta * 9.0)
+	_visual_steering = lerpf(_visual_steering, steering, follow)
+	_chest_roll = lerpf(_chest_roll,
+		steering * (-0.075 if drifting else -0.055) + hit_amount * 0.07, follow)
+	_boost_pitch = lerpf(_boost_pitch, -0.025 if boosting else 0.0, follow)
+	# The shipped kart_seated clip is a static seated pose. A slow chest
+	# rotation gives it breath without scaling the mesh, moving the seat or
+	# competing with its AnimationPlayer. Strong gestures keep their clip.
+	_breath = sin(elapsed * TAU / BREATH_PERIOD_SECONDS) * 0.012 * (
+		1.0 - 0.6 * clampf(speed / 20.0, 0.0, 1.0))
+	if _landing_elapsed >= 0.0:
+		_landing_elapsed += delta
+		var progress := clampf(_landing_elapsed / LANDING_SETTLE_SECONDS, 0.0, 1.0)
+		landing_amount = sin(progress * PI) * (1.0 - progress)
+		if progress >= 1.0:
+			_landing_elapsed = -1.0
+			landing_amount = 0.0
+	var target_angles := Vector2.ZERO
+	if _attention_enabled:
+		var head: int = actor.skeleton.find_bone("Head")
+		var origin: Vector3 = actor.skeleton.to_global(
+			actor.skeleton.get_bone_global_pose(head).origin)
+		# The unchanged source character faces +Z; its adapter rotates the
+		# actor into the kart. Convert world targets through that actual basis.
+		var direction: Vector3 = actor.global_basis.inverse() * (_attention_target - origin)
+		var horizontal := Vector2(direction.x, direction.z).length()
+		if direction.z > 0.05 and horizontal > 0.05:
+			target_angles.x = clampf(atan2(direction.x, direction.z),
+				-ATTENTION_YAW_LIMIT, ATTENTION_YAW_LIMIT)
+			target_angles.y = clampf(-atan2(direction.y, horizontal),
+				-ATTENTION_PITCH_LIMIT, ATTENTION_PITCH_LIMIT)
+	_attention_angles = _attention_angles.lerp(target_angles, 1.0 - exp(-delta * 7.0))
+
+
+func _apply_attention() -> void:
+	if reduced_motion:
+		return
+	var skeleton: Skeleton3D = actor.skeleton
+	var head := skeleton.find_bone("Head")
+	skeleton.set_bone_pose_rotation(head, skeleton.get_bone_pose_rotation(head) *
+		Quaternion(Vector3.UP, _attention_angles.x) *
+		Quaternion(Vector3.RIGHT, _attention_angles.y))
 
 
 func _follow_wheel_hand(index: int) -> void:

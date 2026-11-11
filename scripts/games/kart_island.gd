@@ -1466,6 +1466,9 @@ func _physics_process(delta: float) -> void:
 		var attraction = world.get_node_or_null("SonnenhafenHarborAttraction")
 		if attraction != null:
 			attraction.advance(delta, player.position, racing and not paused and not finished, reduced_motion)
+		var streetfronts = world.get_node_or_null("SonnenhafenStreetfronts")
+		if streetfronts != null:
+			streetfronts.advance(delta, player.position, racing and not paused and not finished, reduced_motion)
 	for i in range(gems.size()):
 		if mode != "arena":
 			var key: int = _gem_key(int(distance / track_length), i)
