@@ -56,6 +56,8 @@ func _run() -> void:
 		adapter.advance_visual(0.0)
 		adapter.set_process(false)
 		await _settle(2)
+		assert(garage.preview_container.get_global_rect().grow(1.0).encloses(garage.view_choice.get_global_rect()),
+			"The real inspection dropdown must remain inside the preview at every captured size")
 		var name := "garage-%dx%d" % [dimensions.x, dimensions.y]
 		assert(root.get_texture().get_image().save_png(output.path_join(name + ".png")) == OK)
 		assert(garage.preview_viewport.get_texture().get_image().save_png(output.path_join(name + "-preview.png")) == OK)

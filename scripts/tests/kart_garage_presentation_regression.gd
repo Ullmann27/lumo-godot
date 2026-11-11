@@ -75,9 +75,27 @@ func _run() -> void:
 	garage._choose_preview_view(5)
 	_check(garage._camera_progress == 1.0 and garage.preview_camera.position.is_equal_approx(Vector3(0, 6, 0)),
 		"reduced motion applies inspection immediately")
+	garage.reduced_motion = false
+	garage._choose_preview_view(0)
+	_check(garage.preview_camera.projection == Camera3D.PROJECTION_ORTHOGONAL,
+		"projection change does not jump before the transition")
+	garage._advance_preview_camera(0.17)
+	_check(garage.preview_camera.projection == Camera3D.PROJECTION_PERSPECTIVE
+		and is_equal_approx(float(garage.preview_vignette.material.get_shader_parameter("camera_transition")), 1.0),
+		"projection switches only under a fully opaque preview frame")
+	garage._advance_preview_camera(0.17)
+	_check(garage._camera_progress == 1.0
+		and is_zero_approx(float(garage.preview_vignette.material.get_shader_parameter("camera_transition"))),
+		"the new projection is fully revealed and transition state settles")
+	garage.reduced_motion = true
 	garage.step = 0
 	garage._refresh()
-	for dimensions in [Vector2i(1280, 720), Vector2i(640, 360), Vector2i(412, 915), Vector2i(690, 829)]:
+	var host = root.get_node("HostBridge")
+	var cases := [[Vector2i(1280, 720), 1.0], [Vector2i(640, 360), 1.0],
+		[Vector2i(904, 2316), 2.5], [Vector2i(2176, 1812), 2.25]]
+	for sample in cases:
+		var dimensions: Vector2i = sample[0]
+		host._options["displayDensity"] = sample[1]
 		root.size = dimensions
 		garage._apply_responsive_layout()
 		await _settle(4)
@@ -93,6 +111,18 @@ func _run() -> void:
 				"%s %s real preview picker receives target center" % [dimensions, action])
 		_check(garage.next_button.size.y / scale >= 47.99 and garage.back_button.size.y / scale >= 47.99,
 			"%s persistent 2D navigation >=48dp" % dimensions)
+		if targets.has("strecke"):
+			var point: Vector2 = targets.strecke.get_center()
+			garage._begin_preview_pointer(point)
+			var motion := InputEventMouseMotion.new()
+			motion.position = point + Vector2(20.0 * scale, 0)
+			motion.relative = Vector2(20.0 * scale, 0)
+			garage._preview_input(motion)
+			garage._end_preview_pointer(point)
+			_check(garage.step == 0 and garage._pressed_garage_action.is_empty(),
+				"%s out-and-back mouse drag cancels the projected action" % dimensions)
+			garage._end_preview_pointer(point)
+			_check(garage.step == 0, "%s duplicate release cannot activate the old action" % dimensions)
 		print("[GaragePresentation] ", dimensions, " projected_actions=", targets.size(),
 			" preview=", garage.preview_viewport.size, " draw_calls=", garage.preview_draw_calls())
 	garage.queue_free()
