@@ -111,6 +111,9 @@ var _camera_from_fov := 37.0
 var _camera_to_fov := 37.0
 var _camera_from_size := 2.8
 var _camera_to_size := 2.8
+var _camera_from_projection: int = Camera3D.PROJECTION_PERSPECTIVE
+var _camera_to_projection: int = Camera3D.PROJECTION_PERSPECTIVE
+var _camera_projection_switched := false
 var _garage_targets: Dictionary = {}
 
 
@@ -286,10 +289,11 @@ void fragment() {
 	var vignette_shader := Shader.new()
 	vignette_shader.code = """
 shader_type canvas_item;
+uniform float camera_transition = 0.0;
 void fragment() {
 	vec2 p = (UV - vec2(0.5)) * vec2(1.12, 1.28);
 	float ring = smoothstep(0.26, 0.98, length(p));
-	COLOR = vec4(0.012, 0.034, 0.088, ring * 0.46);
+	COLOR = vec4(0.012, 0.034, 0.088, max(ring * 0.46, camera_transition));
 }
 """
 	var vignette_material := ShaderMaterial.new()
@@ -762,14 +766,17 @@ func _apply_responsive_layout() -> void:
 		premium_hero_shell.add_theme_stylebox_override("panel", hero_panel)
 	_set_physical_minimum(view_choice, Vector2(0, 44), ui_scale)
 	_set_physical_font(view_choice, 14 if short_landscape else 16, ui_scale)
-	view_choice.set_item_text(0, "Rundum" if short_landscape else "Rundum ansehen")
+	view_choice.set_item_text(0, "Rundum" if short_landscape or small else "Rundum ansehen")
 	view_choice.set_item_text(5, "Oben" if short_landscape else "Von oben")
 	# Do not cover Lumos ears in a compact portrait preview.
 	view_choice.set_item_text(6, "Gesicht" if small else "Lumos Gesicht")
 	# Godot honours the left anchor first and expands the OptionButton to its
 	# true text minimum width (182 px at 800x480). Reserve additional room
 	# from the right edge rather than relying only on offset_right.
-	view_choice.offset_left = -(124 if short_landscape else (96 if small else 176)) * ui_scale
+	view_choice.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	var inspection_width: float = maxf(view_choice.get_combined_minimum_size().x,
+		(124 if short_landscape else (104 if small else 176)) * ui_scale)
+	view_choice.offset_left = -inspection_width - 20 * ui_scale
 	# Keep the real OptionButton minimum width inside Fold/Android safe-area.
 	# At 800x480 its 182 logical pixels previously exceeded the safe right edge by 3.2.
 	view_choice.offset_right = -20 * ui_scale
@@ -967,11 +974,9 @@ func _fit_welcome_camera() -> void:
 	# Reframe only the presentation camera. Real chassis bounds and the
 	# head joint avoid a giant empty stand-up AABB shrinking the seated fox.
 	# The independent racing/chase camera and vehicle transforms are untouched.
-	_camera_progress = 1.0
-	_camera_focus = Vector3(0, 0.83, 0)
-	preview_camera.position = Vector3(2.37, 1.96, -3.80)
-	preview_camera.look_at(_camera_focus)
-	var local_from_world := preview_camera.global_transform.affine_inverse()
+	var target_focus := Vector3(0, 0.83, 0)
+	var target_pose := Transform3D(Basis.IDENTITY, Vector3(2.37, 1.96, -3.80)).looking_at(target_focus)
+	var local_from_world := (preview_camera.get_parent_node_3d().global_transform * target_pose).affine_inverse()
 	var aspect := float(preview_viewport.size.x) / float(preview_viewport.size.y)
 	var required_tangent := 0.0
 	var points: Array[Vector3] = []
@@ -1019,7 +1024,17 @@ func _fit_welcome_camera() -> void:
 				required_tangent, maxf(absf(point.y) / depth, absf(point.x) / depth / aspect)
 			)
 	preview_camera.keep_aspect = Camera3D.KEEP_HEIGHT
-	preview_camera.fov = maxf(34.0, rad_to_deg(atan(required_tangent * 1.06)) * 2.0)
+	var fitted_fov: float = maxf(34.0, rad_to_deg(atan(required_tangent * 1.06)) * 2.0)
+	if _camera_progress < 1.0:
+		_camera_to = target_pose
+		_camera_to_focus = target_focus
+		_camera_to_fov = fitted_fov
+		_camera_to_projection = Camera3D.PROJECTION_PERSPECTIVE
+	else:
+		preview_camera.transform = target_pose
+		preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+		preview_camera.fov = fitted_fov
+		_camera_focus = target_focus
 
 
 func _install_action_sheen(button: Button) -> void:
@@ -1592,7 +1607,7 @@ func _preview_input(event: InputEvent) -> void:
 	elif event is InputEventScreenDrag:
 		if event.index != _preview_touch_index:
 			return
-		if event.position.distance_to(_preview_touch_origin) > 12.0:
+		if event.position.distance_to(_preview_touch_origin) > 12.0 * _preview_dp_scale():
 			_cancel_garage_press()
 			rotate_drag = true
 		if rotate_drag:
@@ -1614,7 +1629,7 @@ func _preview_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion:
 		if event.device == InputEvent.DEVICE_ID_EMULATION or _preview_touch_index != -1:
 			return
-		if not _pressed_garage_action.is_empty() and event.position.distance_to(_preview_touch_origin) > 12.0:
+		if not _pressed_garage_action.is_empty() and event.position.distance_to(_preview_touch_origin) > 12.0 * _preview_dp_scale():
 			_cancel_garage_press()
 			rotate_drag = true
 		if rotate_drag:
@@ -1636,6 +1651,7 @@ func _begin_preview_pointer(local: Vector2) -> void:
 	# The child owns an intentional drag; an inspection transition must not
 	# keep moving the camera under the held pointer.
 	_camera_progress = 1.0
+	_set_camera_veil(0.0)
 	_pressed_garage_action = _pick_garage_action(local)
 	rotate_drag = _pressed_garage_action.is_empty()
 	if not rotate_drag:
@@ -1680,6 +1696,10 @@ func _process(delta: float) -> void:
 		else 0.0
 	)
 	preview_pivot.rotation.y = preview_angle + idle_arc
+	if _attention_seconds > 0.0 and is_instance_valid(preview_kart):
+		var actor = preview_kart.lumo_animation
+		if is_instance_valid(actor) and actor.has_method("set_attention_target"):
+			actor.set_attention_target(preview_kart.to_global(Vector3(0.55, 0.55, -0.60)))
 	if is_instance_valid(stage_material):
 		stage_material.set_shader_parameter(
 			"illumination", 1.0 if reduced_motion else 1.0 + sin(preview_idle_time * 0.7) * 0.035
@@ -1838,7 +1858,7 @@ func _choose_preview_view(index: int, animate: bool = true) -> void:
 	var position_target: Vector3 = views[inspection_view]
 	if step == 0 and inspection_view == 0:
 		position_target = Vector3(2.37, 1.96, -3.80)
-	preview_camera.projection = (
+	var target_projection: int = (
 		Camera3D.PROJECTION_PERSPECTIVE
 		if inspection_view in [0, 6]
 		else Camera3D.PROJECTION_ORTHOGONAL
@@ -1849,7 +1869,7 @@ func _choose_preview_view(index: int, animate: bool = true) -> void:
 	_move_preview_camera(position_target,
 		Vector3(0, 1.68, 0.07) if inspection_view == 6 else Vector3(0, 1.0, 0),
 		Vector3.FORWARD if inspection_view == 5 else Vector3.UP,
-		target_fov, 3.9 if inspection_view == 5 else 2.8, animate)
+		target_fov, 3.9 if inspection_view == 5 else 2.8, animate, target_projection)
 	if inspection_view != 0:
 		preview_angle = 0.0
 		preview_pivot.rotation.y = 0.0
@@ -1858,7 +1878,7 @@ func _choose_preview_view(index: int, animate: bool = true) -> void:
 
 
 func _move_preview_camera(position_target: Vector3, focus_target: Vector3, up: Vector3,
-		fov_target: float, size_target: float, animate: bool) -> void:
+		fov_target: float, size_target: float, animate: bool, projection_target: int = -1) -> void:
 	_camera_from = preview_camera.transform
 	_camera_to = Transform3D(Basis.IDENTITY, position_target).looking_at(focus_target, up)
 	_camera_from_focus = _camera_focus
@@ -1867,19 +1887,39 @@ func _move_preview_camera(position_target: Vector3, focus_target: Vector3, up: V
 	_camera_to_fov = fov_target
 	_camera_from_size = preview_camera.size
 	_camera_to_size = size_target
+	_camera_from_projection = preview_camera.projection
+	_camera_to_projection = preview_camera.projection if projection_target < 0 else projection_target
+	_camera_projection_switched = false
 	_camera_progress = 0.0 if animate and _camera_ready and not reduced_motion else 1.0
 	_camera_ready = true
+	_set_camera_veil(0.0)
 	if _camera_progress == 1.0:
-		preview_camera.transform = _camera_to
-		preview_camera.fov = fov_target
-		preview_camera.size = size_target
-		_camera_focus = focus_target
+		_apply_camera_target()
 
 
 func _advance_preview_camera(delta: float) -> void:
 	if _camera_progress >= 1.0 or not is_instance_valid(preview_camera):
 		return
-	_camera_progress = 1.0 if reduced_motion else minf(1.0, _camera_progress + maxf(delta, 0.0) / 0.34)
+	if reduced_motion:
+		_camera_progress = 1.0
+		_apply_camera_target()
+		_set_camera_veil(0.0)
+		return
+	_camera_progress = minf(1.0, _camera_progress + maxf(delta, 0.0) / 0.34)
+	if _camera_from_projection != _camera_to_projection:
+		# Projection matrices cannot be interpolated by moving a camera. Hide
+		# the exact perspective/orthographic switch behind one fully opaque
+		# navy frame, then reveal the settled view. No second 3D render pass.
+		if _camera_progress < 0.5:
+			_set_camera_veil(smoothstep(0.0, 0.5, _camera_progress))
+		elif not _camera_projection_switched:
+			_camera_projection_switched = true
+			_camera_progress = 0.5
+			_apply_camera_target()
+			_set_camera_veil(1.0)
+		else:
+			_set_camera_veil(1.0 - smoothstep(0.5, 1.0, _camera_progress))
+		return
 	var blend: float = _camera_progress * _camera_progress * (3.0 - 2.0 * _camera_progress)
 	_camera_focus = _camera_from_focus.lerp(_camera_to_focus, blend)
 	var offset_from := _camera_from.origin - _camera_from_focus
@@ -1897,6 +1937,19 @@ func _advance_preview_camera(delta: float) -> void:
 	preview_camera.size = lerpf(_camera_from_size, _camera_to_size, blend)
 	if _camera_progress == 1.0:
 		preview_camera.transform = _camera_to
+
+
+func _apply_camera_target() -> void:
+	preview_camera.transform = _camera_to
+	preview_camera.projection = _camera_to_projection
+	preview_camera.fov = _camera_to_fov
+	preview_camera.size = _camera_to_size
+	_camera_focus = _camera_to_focus
+
+
+func _set_camera_veil(amount: float) -> void:
+	if is_instance_valid(preview_vignette) and preview_vignette.material is ShaderMaterial:
+		preview_vignette.material.set_shader_parameter("camera_transition", amount)
 
 
 func _preview_dp_scale() -> float:
