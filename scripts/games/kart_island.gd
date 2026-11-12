@@ -250,6 +250,7 @@ var player_heading: float = 0.0
 var physical_velocity := Vector3.ZERO
 var previous_road_distance: float = 0.0
 var offroad_seconds: float = 0.0
+var open_edge_fall: bool = false
 var reset_count: int = 0
 var shield_time: float = 0.0
 var shield_visual: MeshInstance3D
@@ -825,6 +826,7 @@ func _begin_race() -> void:
 	arena_scores = 0
 	reset_count = 0
 	offroad_seconds = 0
+	open_edge_fall = false
 	ghost_valid = true
 	best_record = false
 	collected.clear()
@@ -1560,7 +1562,7 @@ func _boost_for(seconds: float) -> float:
 
 
 func _drive_player(delta: float, axis: float, braking: float) -> void:
-	if mode != "arena" and _drive_loop(delta, axis, braking):
+	if mode != "arena" and not open_edge_fall and _drive_loop(delta, axis, braking):
 		return
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
 	if kart_factors.is_empty():
@@ -1659,7 +1661,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		return
 	road = world.sample_road(player.position, previous_road_distance)
 	lane = float(road.lateral)
-	if absf(lane) > WORLD.WALL_LATERAL and world.open_edge_side(float(road.distance)) != signf(lane):
+	if not open_edge_fall and absf(lane) > WORLD.WALL_LATERAL and world.open_edge_side(float(road.distance)) != signf(lane):
 		_collide_with_rail(road)
 		road = world.sample_road(player.position, previous_road_distance)
 		lane = float(road.lateral)
@@ -1669,13 +1671,17 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var travel: float = fposmod(road_distance - previous_road_distance + track_length * 0.5, track_length) - track_length * 0.5
 	# An einer offenen Kante gibt es neben der Fahrbahn keinen Boden: dort beginnt der Sturz sofort.
 	var edge_margin: float = 0.3 if mode != "arena" and world.open_edge_side(road_distance) == signf(lane) else 2.0
-	if absf(lane) < ROAD_WIDTH * 0.5 + edge_margin:
+	if not open_edge_fall and absf(lane) < ROAD_WIDTH * 0.5 + edge_margin:
 		if not _move_vertically(road, road_distance, delta):
 			return
 		offroad_seconds = 0
 		if absf(travel) <= maxf(3.0, speed * delta * 2.5):
 			distance = maxf(0.0, distance + travel)
 	else:
+		# A fast kart can pass the end of an open section before its fall timer
+		# expires. Once over the void, the next rail must not lift it onto road.
+		if world.open_edge_side(road_distance) != 0.0 and world.open_edge_side(road_distance) == signf(lane):
+			open_edge_fall = true
 		offroad_seconds += delta
 		player.position.y -= offroad_seconds * delta * 10.0
 		if offroad_seconds > 1.15:
@@ -2387,9 +2393,12 @@ func _reset_kart() -> void:
 	if menu_active or not is_instance_valid(player) or finished:
 		return
 	var fell_from_edge: bool = (
-		mode != "arena" and world.open_edge_side(previous_road_distance) != 0.0
-		and absf(lane) > ROAD_WIDTH * 0.5
+		open_edge_fall or (
+			mode != "arena" and world.open_edge_side(previous_road_distance) != 0.0
+			and absf(lane) > ROAD_WIDTH * 0.5
+		)
 	)
+	open_edge_fall = false
 	if mode == "arena":
 		player.position = Vector3(0, 0.035, 28)
 		player_heading = 0

@@ -8,6 +8,7 @@ const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const STEP: float = 1.0 / 60.0
 var game
+var completed_checks: int = 0
 
 
 func _initialize() -> void:
@@ -73,6 +74,7 @@ func _check_plans() -> void:
 	assert(plain.action.pads.size() == 1 and stunt_pads.size() == 1, "Nur das Stunt-Turbo-Feld")
 	assert(is_equal_approx(float(plain.action.pads[0].lateral), float(plain.loop_layout.lane)), "Turbo-Feld liegt auf der Looping-Spur")
 	plain.free()
+	completed_checks += 1
 
 
 func _start(track: String) -> void:
@@ -150,6 +152,7 @@ func _check_pad_and_slalom() -> void:
 	game.previous_road_distance = float(first.distance) + 0.2
 	assert(game.action_gates_hit == 1 and game.speed < before, "Hütchen bremst")
 	game.auto_gas = true
+	completed_checks += 1
 
 
 func _check_kicker_and_dive() -> void:
@@ -182,6 +185,7 @@ func _check_kicker_and_dive() -> void:
 	_place(float(dive.end) + 8.0, 0.0, 16.0)
 	game._physics_process(STEP)
 	assert(not game.action_in_dive and not game.dive_tint.visible, "Nach dem Tunnel wieder klare Sicht")
+	completed_checks += 1
 
 
 ## Sonnenhafen: full road-driving input, genuine launch, flight and safe landing.
@@ -223,6 +227,7 @@ func _check_sonnenhafen_long_flight() -> void:
 	assert(game.reset_count == 0, "Panorama section does not reset the kart")
 	assert(is_equal_approx(game.current_jump_gravity, game.JUMP_GRAVITY), "Other tracks keep the standard jump gravity")
 	print("[KartSonnenhafenFlight] %.1fm flown, %.1fm high, %.2fs airborne, no reset" % [flight_end - flight_start, max_height, max_time])
+	completed_checks += 1
 
 
 func _check_open_edge() -> void:
@@ -237,6 +242,8 @@ func _check_open_edge() -> void:
 	# Offene Seite: hinausfahren, fallen, fair zurückgesetzt werden.
 	_place(middle - 8.0, side * 4.0, 14.0)
 	var fell: bool = false
+	var crossed_end_while_falling: bool = false
+	var worst_height_after_end: float = -INF
 	var frames: int = 0
 	while game.reset_count == 0 and frames < 240:
 		var target: Vector3 = game.world.position_at(game.previous_road_distance + 6.0, side * 9.0)
@@ -244,12 +251,20 @@ func _check_open_edge() -> void:
 		game.steering = clampf(-angle_difference(game.player_heading, atan2(-direction.x, -direction.z)) * 2.3, -1, 1)
 		game._physics_process(STEP)
 		fell = fell or game.player.position.y < float(game.world.sample_road(game.player.position, game.previous_road_distance).height) - 0.5
+		if game.reset_count == 0 and game.previous_road_distance >= float(edge.end) and game.open_edge_fall:
+			crossed_end_while_falling = true
+			var road: Dictionary = game.world.sample_road(game.player.position, game.previous_road_distance)
+			worst_height_after_end = maxf(worst_height_after_end, game.player.position.y - float(road.height))
 		frames += 1
 	assert(fell, "Hinter der offenen Kante fällt das Kart")
+	assert(crossed_end_while_falling and worst_height_after_end < -0.5, "Auch hinter dem Ende der Öffnung hebt die nächste Wand das fallende Kart nicht auf die Straße")
 	assert(game.reset_count == 1 and game.action_edge_falls == 1, "Die Lumo-Wolke setzt das Kart zurück")
 	assert(frames <= 120, "Der Sturz dauert höchstens zwei Sekunden (%d Frames)" % frames)
 	assert(absf(game.lane) < 0.5 and is_equal_approx(game.speed, 6.0) and game.shield_time >= 1.9, "Rettung mittig, mit Schwung und kurzem Schutz")
 	assert("Lumo-Wolke" in game.message.text)
+	assert(not game.open_edge_fall, "Nach der Wolkenrettung ist der Fallzustand beendet")
+	completed_checks += 1
+	print("[KartOpenEdge] %.2f s to cloud rescue; beyond-edge height %.2f m; no rail lift" % [frames * STEP, worst_height_after_end])
 
 
 func _run() -> void:
@@ -269,5 +284,9 @@ func _run() -> void:
 	for frame in range(6):
 		await process_frame
 	await create_timer(1.3).timeout
+	if completed_checks != 5:
+		print("[KartActionCourse] FAIL: %d of 5 checks completed" % completed_checks)
+		quit(1)
+		return
 	print("[KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung")
 	quit(0)

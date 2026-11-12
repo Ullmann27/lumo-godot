@@ -45,6 +45,7 @@ func _tap(control: Control) -> void:
 func _shot(label: String) -> void:
 	if capture:
 		assert(root.get_texture().get_image().save_png(output.path_join(label + ".png")) == OK)
+		print("[SpatialMenu] SCREENSHOT ", label)
 
 
 func _run() -> void:
@@ -54,6 +55,7 @@ func _run() -> void:
 	var scene: PackedScene = load("res://scenes/games/kart_island.tscn")
 	var host = root.get_node("HostBridge")
 	for dimensions in [Vector2i(1280, 720), Vector2i(412, 915), Vector2i(690, 829), Vector2i(640, 320)]:
+		print("[SpatialMenu] CASE ", dimensions)
 		host._options["displayDensity"] = 1.0
 		root.size = dimensions
 		game = scene.instantiate()

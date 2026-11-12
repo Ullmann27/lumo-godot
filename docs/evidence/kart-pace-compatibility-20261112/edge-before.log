@@ -1,0 +1,37 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: candy_cloud mode=training
+[EdgeDiagnostic] edge={ "start": 272.878497314453, "end": 302.878497314453, "side": 1.0 }
+[EdgeDiagnostic] frame=0 distance=280.11 lane=3.50 speed=14.67 height=0.03 falling=0.00 open=1 reset=0 cloud=0
+[EdgeDiagnostic] frame=10 distance=282.63 lane=4.15 speed=21.33 height=0.04 falling=0.00 open=1 reset=0 cloud=0
+[EdgeDiagnostic] frame=20 distance=285.70 lane=5.89 speed=24.00 height=0.07 falling=0.02 open=1 reset=0 cloud=0
+[EdgeDiagnostic] frame=30 distance=288.59 lane=7.53 speed=22.14 height=0.18 falling=0.18 open=1 reset=0 cloud=0
+[EdgeDiagnostic] frame=40 distance=291.44 lane=8.63 speed=22.14 height=-0.05 falling=0.35 open=1 reset=0 cloud=0
+[EdgeDiagnostic] frame=50 distance=294.34 lane=9.23 speed=22.14 height=-0.65 falling=0.52 open=1 reset=0 cloud=0
+[EdgeDiagnostic] frame=60 distance=297.27 lane=9.47 speed=22.14 height=-1.60 falling=0.68 open=1 reset=0 cloud=0
+[EdgeDiagnostic] frame=70 distance=300.26 lane=9.53 speed=22.14 height=-2.86 falling=0.85 open=1 reset=0 cloud=0
+[EdgeDiagnostic] frame=80 distance=303.21 lane=4.70 speed=22.81 height=0.04 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=90 distance=306.87 lane=5.00 speed=23.99 height=0.04 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=100 distance=310.64 lane=5.00 speed=25.38 height=0.04 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=110 distance=314.51 lane=5.00 speed=26.15 height=0.04 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=120 distance=318.44 lane=5.00 speed=26.52 height=0.04 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=130 distance=322.41 lane=5.00 speed=26.66 height=0.04 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=140 distance=326.44 lane=5.00 speed=26.70 height=0.04 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=150 distance=330.55 lane=5.00 speed=26.74 height=0.03 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=160 distance=334.76 lane=5.00 speed=26.90 height=0.03 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=170 distance=339.12 lane=5.00 speed=27.32 height=0.53 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=180 distance=343.63 lane=5.00 speed=27.92 height=1.69 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=190 distance=348.19 lane=5.00 speed=25.73 height=2.06 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=200 distance=352.42 lane=5.00 speed=23.27 height=1.55 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=210 distance=356.31 lane=5.00 speed=21.04 height=0.22 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=220 distance=360.33 lane=5.00 speed=28.95 height=0.03 falling=0.00 open=0 reset=0 cloud=0
+[EdgeDiagnostic] frame=230 distance=365.81 lane=5.00 speed=36.45 height=0.04 falling=0.00 open=0 reset=0 cloud=0

@@ -234,7 +234,7 @@ func _fit_welcome_camera() -> void:
 	preview_camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	preview_camera.fov = 40.0 if aspect < 1.0 else 35.0
-	for attempt in range(24):
+	for attempt in range(64):
 		preview_camera.position = focus + direction * distance
 		preview_camera.look_at(focus)
 		var height := 2.0 * distance * tan(deg_to_rad(preview_camera.fov * 0.5))
@@ -281,6 +281,12 @@ func _process(delta: float) -> void:
 	super._process(delta)
 	if not visible or not _spatial_ready:
 		return
+	if step == 3:
+		if not rotate_drag:
+			preview_angle = previous_angle
+		preview_pivot.rotation.y = preview_angle
+		if rotate_drag:
+			_fit_welcome_camera()
 	if inspection_view == 0 and not rotate_drag and step != 3:
 		preview_angle = previous_angle
 		if step != 0:

@@ -1,0 +1,25 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[SonnenhafenStunt] layout: loop at 1097.7 m, tunnel at 1277.7 m, peak 16.1 m
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: sonnenhafen mode=training
+[SonnenhafenStunt] loop: entry 58.2 m/s, top 16.1 m, alignment 1.000, 11 stars, exit 57.6 m/s, tunnel after 192 frames
+[Kart] race_world_ready: sonnenhafen mode=training
+[SonnenhafenStunt] too slow: entry 13.32 m/s, safe set-back to the main lane
+[Kart] race_world_ready: sonnenhafen mode=training
+[SonnenhafenStunt] jump: 63.3 m flight, 5.7 m high, 1.53 s air, 3 arc stars
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[SonnenhafenStunt] precision: slow 12.0 m/s -> zu_kurz (fell 1); 19.6 m/s -> ziel 19.90 m (model 19.80); 30.0 m/s -> zu_weit 34.92 m (model 34.80), exit 17.2 m/s; air steer 2.00 m
+[KartStuntLogic] PASS: five production-physics checks; native renderer gate remains separate

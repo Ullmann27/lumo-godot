@@ -9,6 +9,7 @@ const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const STEP: float = 1.0 / 60.0
 var game
 ## A failed assert aborts its check; PASS needs every check to reach its end.
@@ -204,15 +205,22 @@ func _check_too_slow() -> void:
 	await _start()
 	var layout: Dictionary = game.world.loop_layout
 	# Barely fast enough to enter, then braking hard: the climb fails safely.
-	_place(float(layout.start) - 0.8, STUNT.LOOP_LANE, 14.0)
+	# Coasting now uses the faster drivetrain's deceleration. Start less than
+	# one physical step before the lip, with enough momentum for that step.
+	var minimum: float = float(layout.min_entry_speed)
+	var coast_loss: float = POWERTRAIN.acceleration(game.kart_factors, false) * STEP
+	_place(float(layout.start) - minimum * STEP * 0.5, STUNT.LOOP_LANE, minimum + coast_loss * 1.5)
 	game.auto_gas = false
 	game.gas_held = false
 	var loops_before: int = game.loop_count
 	var entered: bool = false
 	var fell_below: bool = false
+	var entry_speed: float = 0.0
 	for frame in range(600):
 		game.steering = 0.0
 		if game.loop_state.active:
+			if not entered:
+				entry_speed = game.speed
 			entered = true
 			game.control_brake = 1.0
 		game._physics_process(STEP)
@@ -220,6 +228,7 @@ func _check_too_slow() -> void:
 			break
 	game.control_brake = 0.0
 	assert(entered, "Slow kart entered and failed inside the loop")
+	assert(entry_speed >= minimum and entry_speed < minimum + 2.0, "Failure fixture actually enters close to the minimum momentum")
 	assert(game.loop_count == loops_before, "Failed attempt is not counted")
 	var road: Dictionary = game.world.sample_road(game.player.position, game.previous_road_distance)
 	assert(absf(float(road.lateral)) < 0.6, "Set back onto the main lane")
@@ -232,7 +241,7 @@ func _check_too_slow() -> void:
 		fell_below = fell_below or game.loop_state.active
 	assert(not fell_below, "No re-entry from the main lane")
 	completed_checks += 1
-	print("[SonnenhafenStunt] too slow: safe set-back to the main lane")
+	print("[SonnenhafenStunt] too slow: entry %.2f m/s, safe set-back to the main lane" % entry_speed)
 
 
 func _check_stunt_jump() -> void:

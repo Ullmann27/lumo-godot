@@ -31,13 +31,8 @@ run_probe() {
       command=(xvfb-run -a -s '-screen 0 1920x2560x24' "${command[@]}")
     fi
   fi
-  timeout 420s "${command[@]}" "${args[@]}" "$@" 2>&1 | tee "$log"
-  grep -F "$marker" "$log" >/dev/null
-  if grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' "$log" \
-      | grep -v 'resources still in use at exit' | grep -q .; then
-    echo "Live action acceptance failed: $name" >&2
-    return 1
-  fi
+  python3 tools/run_godot_probe.py --log "$log" --timeout 420 --required "$marker" \
+    -- "${command[@]}" "${args[@]}" "$@"
 }
 
 run_probe kart_lasso_regression '[KartLasso] PASS' headless

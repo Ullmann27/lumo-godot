@@ -1,0 +1,75 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: sonnenhafen mode=training
+[KartPhysics] sonnenhafen side +1: widest 5.00 m, 267 wall contacts, 208 m along the rail
+[Kart] race_world_ready: sonnenhafen mode=training
+[KartPhysics] sonnenhafen side -1: widest 5.00 m, 265 wall contacts, 209 m along the rail
+[Kart] race_world_ready: zauberwald mode=training
+[KartPhysics] zauberwald side +1: widest 5.00 m, 265 wall contacts, 179 m along the rail
+[Kart] race_world_ready: zauberwald mode=training
+[KartPhysics] zauberwald side -1: widest 5.00 m, 208 wall contacts, 273 m along the rail
+[Kart] race_world_ready: bergwelt mode=training
+[KartPhysics] bergwelt side +1: widest 5.00 m, 265 wall contacts, 182 m along the rail
+[Kart] race_world_ready: bergwelt mode=training
+[KartPhysics] bergwelt side -1: widest 5.00 m, 230 wall contacts, 267 m along the rail
+[Kart] race_world_ready: holo_city mode=training
+[KartPhysics] holo_city side +1: widest 5.00 m, 265 wall contacts, 184 m along the rail
+[Kart] race_world_ready: holo_city mode=training
+[KartPhysics] holo_city side -1: widest 5.00 m, 223 wall contacts, 258 m along the rail
+[Kart] race_world_ready: crystal_canyon mode=training
+[KartPhysics] crystal_canyon side +1: widest 5.00 m, 266 wall contacts, 192 m along the rail
+[Kart] race_world_ready: crystal_canyon mode=training
+[KartPhysics] crystal_canyon side -1: widest 5.00 m, 266 wall contacts, 243 m along the rail
+[Kart] race_world_ready: jungle_temple mode=training
+[KartPhysics] jungle_temple side +1: widest 5.00 m, 266 wall contacts, 192 m along the rail
+[Kart] race_world_ready: jungle_temple mode=training
+[KartPhysics] jungle_temple side -1: widest 5.00 m, 262 wall contacts, 238 m along the rail
+[Kart] race_world_ready: candy_cloud mode=training
+[KartPhysics] candy_cloud side +1: widest 5.00 m, 266 wall contacts, 187 m along the rail
+[Kart] race_world_ready: candy_cloud mode=training
+[KartPhysics] candy_cloud side -1: widest 5.00 m, 251 wall contacts, 230 m along the rail
+[Kart] race_world_ready: volcano_night mode=training
+[KartPhysics] volcano_night side +1: widest 5.00 m, 266 wall contacts, 191 m along the rail
+[Kart] race_world_ready: volcano_night mode=training
+[KartPhysics] volcano_night side -1: widest 5.00 m, 264 wall contacts, 240 m along the rail
+[Kart] race_world_ready: winter_sprint mode=training
+[KartPhysics] winter_sprint side +1: widest 5.00 m, 266 wall contacts, 188 m along the rail
+[Kart] race_world_ready: winter_sprint mode=training
+[KartPhysics] winter_sprint side -1: widest 5.00 m, 266 wall contacts, 241 m along the rail
+[Kart] race_world_ready: galaxy_ringway mode=training
+[KartPhysics] galaxy_ringway side +1: widest 5.00 m, 266 wall contacts, 185 m along the rail
+[Kart] race_world_ready: galaxy_ringway mode=training
+[KartPhysics] galaxy_ringway side -1: widest 5.00 m, 258 wall contacts, 244 m along the rail
+[Kart] race_world_ready: desert_drift mode=training
+[KartPhysics] desert_drift side +1: widest 5.00 m, 266 wall contacts, 188 m along the rail
+[Kart] race_world_ready: desert_drift mode=training
+[KartPhysics] desert_drift side -1: widest 5.00 m, 266 wall contacts, 241 m along the rail
+[Kart] race_world_ready: learning_lab mode=training
+[KartPhysics] learning_lab side +1: widest 5.00 m, 266 wall contacts, 186 m along the rail
+[Kart] race_world_ready: learning_lab mode=training
+[KartPhysics] learning_lab side -1: widest 5.00 m, 256 wall contacts, 239 m along the rail
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=time_trial
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[KartBoost] input→accepted 2054 µs, accepted→physics 791 µs, speed +1.333 m/s (normal +0.667), VFX/audio active
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: bergwelt mode=training
+[Kart] race_world_ready: bergwelt mode=race
+[Kart] race_world_ready: bergwelt mode=training
+[KartSplit] PASS: Wolkenweg raised 2.20 m while main lane stayed at 0.00 m
+[Kart] race_world_ready: sonnenhafen mode=training
+[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route
