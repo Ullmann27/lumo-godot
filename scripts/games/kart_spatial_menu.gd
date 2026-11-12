@@ -131,10 +131,11 @@ func _apply_responsive_layout() -> void:
 	var narrow := available.x < 520.0
 	var short_view := available.y < 440.0
 	var ultra_short := available.y < 300.0
-	# A 240dp safe area cannot contain the tabs, footer, a full kart card
-	# AND a separate 48dp workshop row. Share the existing footer instead
-	# of clipping the scroll viewport below the card's touchable area.
-	var workshop_in_footer := ultra_short and step == 2
+	# Short landscapes also need the footer workshop: at 351dp safe height
+	# a separate 48dp workshop leaves only 82dp for a readable 90dp card.
+	var workshop_in_footer := step == 2 and (
+		ultra_short or (not portrait and available.y < 360.0)
+	)
 	var workshop_parent: Node = footer if workshop_in_footer else setup_left
 	if workshop_button.get_parent() != workshop_parent:
 		workshop_button.reparent(workshop_parent, false)
@@ -191,6 +192,10 @@ func _apply_responsive_layout() -> void:
 			if card is Button:
 				var card_height := (72 if ultra_short else 90) if step == 2 else (64 if step == 0 else 68)
 				_set_physical_minimum(card, Vector2(0, card_height), scale_factor)
+				if step == 2:
+					# Scroll offsets are integers; a half-pixel row can remain
+					# clipped after ensure_control_visible at Android density.
+					card.custom_minimum_size.y = ceilf(card.custom_minimum_size.y)
 				_set_physical_font(card, 16, scale_factor)
 				if card.has_method("apply_size"):
 					card.apply_size(scale_factor, true)
