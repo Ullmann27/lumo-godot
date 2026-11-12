@@ -631,6 +631,7 @@ func _show_reference_landing(preserve_setup: bool = false) -> void:
 	reference_landing.quick_start.connect(_reference_quick_start)
 	reference_landing.open_settings.connect(_reference_open_settings)
 	reference_landing.return_to_games.connect(func(): _return_to_app("games"))
+	reference_landing.stage_region_changed.connect(garage.set_landing_stage_region)
 	garage.show()
 	garage.set_landing_active(true)
 	safe_ui.add_child(reference_landing)

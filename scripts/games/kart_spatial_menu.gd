@@ -6,6 +6,7 @@ var _landing_active := false
 var _stage_header: Control
 var _stage_controls: Array[Control] = []
 var _selection_surface: Panel
+var _landing_stage_region := Rect2(0.36, 0.19, 0.61, 0.60)
 
 
 func _init() -> void:
@@ -47,6 +48,11 @@ func _ready() -> void:
 	quick_start_button.hide()
 	brand_wordmark.custom_minimum_size = Vector2(136, 58)
 	header_row.custom_minimum_size = Vector2.ZERO
+	# A wrapping one-glyph label reports a 1px minimum width. At Android
+	# density its wrapped height stretched the entire header behind the tabs.
+	progress_icon.autowrap_mode = TextServer.AUTOWRAP_OFF
+	progress_icon.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_stage_header.minimum_size_changed.connect(func(): _apply_responsive_layout.call_deferred())
 	learn_button.text = "Spielewelt"
 	for connection in learn_button.pressed.get_connections():
 		learn_button.pressed.disconnect(connection.callable)
@@ -70,6 +76,13 @@ func set_landing_active(active: bool) -> void:
 	view_choice.visible = not active and step in [1, 2]
 	preview_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	_fit_welcome_camera()
+
+
+func set_landing_stage_region(region: Rect2) -> void:
+	if region.has_area():
+		_landing_stage_region = region
+		if _landing_active:
+			_fit_welcome_camera()
 
 
 func _refresh() -> void:
@@ -130,13 +143,10 @@ func _apply_responsive_layout() -> void:
 	workshop_button.text = "Werkstatt" if workshop_in_footer else "Lack, Teile & Effekte"
 	var margin := 12.0 if narrow or short_view else 20.0
 	var header_height := 0.0 if ultra_short else (48.0 if short_view else 64.0)
-	var tabs_y := margin + header_height + (0.0 if ultra_short else 8.0)
 	var footer_height := 52.0 if short_view else 60.0
 	var footer_y := available.y - margin - footer_height
 	_apply_ui_scale(self, scale_factor)
-	_stage_rect(_stage_header, Rect2(margin, margin, available.x - margin * 2, header_height), scale_factor)
-	_stage_rect(step_strip, Rect2(margin, tabs_y, available.x - margin * 2, 48), scale_factor)
-	_set_physical_minimum(brand_wordmark, Vector2(112 if short_view else 136, header_height - 4), scale_factor)
+	_set_physical_minimum(brand_wordmark, Vector2(112 if short_view else 136, maxf(0, header_height - 4)), scale_factor)
 	_set_physical_minimum(header_row, Vector2.ZERO, scale_factor)
 	_set_physical_minimum(learn_button, Vector2(104, 48), scale_factor)
 	_set_physical_font(learn_button, 14, scale_factor)
@@ -145,11 +155,19 @@ func _apply_responsive_layout() -> void:
 	progress_label.visible = not narrow
 	progress_icon.visible = not narrow
 	_set_physical_font(progress_label, 16, scale_factor)
+	_set_physical_font(progress_icon, 22, scale_factor)
+	# Measure the actual children and panel margins before positioning the
+	# next row; requested Control.size alone cannot override container minima.
+	if not ultra_short:
+		header_height = maxf(header_height, _stage_header.get_combined_minimum_size().y / scale_factor)
+	_stage_rect(_stage_header, Rect2(margin, margin, available.x - margin * 2, header_height), scale_factor)
+	var tabs_y := margin + header_height + (0.0 if ultra_short else 8.0)
 	for index in range(step_buttons.size()):
 		var tab := step_buttons[index]
 		tab.text = ["Rennen", "Fahrer", "Karts", "Strecken", "Tempo"][index]
 		_set_physical_minimum(tab, Vector2(48, 48), scale_factor)
 		_set_physical_font(tab, 12 if narrow else 15, scale_factor)
+	_stage_rect(step_strip, Rect2(margin, tabs_y, available.x - margin * 2, 48), scale_factor)
 	var top := tabs_y + 60.0
 	var choices_rect: Rect2
 	if portrait:
@@ -248,9 +266,7 @@ func _fit_welcome_camera() -> void:
 	# angle keeps that origin inside the open service bay after the framing
 	# offset, so its right wall cannot occlude an otherwise valid frustum.
 	var direction := Vector3(1.6, 1.05, -4.6).normalized()
-	var region := Rect2(0.36, 0.19, 0.61, 0.60)
-	if aspect < 1.0:
-		region = Rect2(0.04, 0.18, 0.92, 0.38 if _landing_active else 0.35)
+	var region := _visible_stage_region()
 	var pixels := Vector2(preview_viewport.size)
 	var target := Rect2(region.position * pixels, region.size * pixels)
 	var points: Array[Vector3] = []
@@ -289,6 +305,28 @@ func _fit_welcome_camera() -> void:
 	_camera_ready = true
 	_camera_focus = focus
 	_set_camera_veil(0.0)
+
+
+func _visible_stage_region() -> Rect2:
+	if _landing_active:
+		return _landing_stage_region
+	var stage := preview_container.get_global_rect()
+	var inset := 8.0 * _preview_dp_scale()
+	var clear := stage.grow(-inset)
+	clear.position.y = maxf(clear.position.y, step_strip.get_global_rect().end.y + inset)
+	clear.end.y = footer.global_position.y - inset
+	if stage.size.x < stage.size.y:
+		clear.end.y = _selection_surface.global_position.y - inset
+		if view_choice.is_visible_in_tree():
+			clear.position.y = maxf(clear.position.y, view_choice.get_global_rect().end.y + inset)
+	else:
+		clear.position.x = _selection_surface.get_global_rect().end.x + inset
+		clear.end.x = stage.end.x - inset
+		if view_choice.is_visible_in_tree():
+			clear.end.x = view_choice.global_position.x - inset
+	if not clear.has_area():
+		return Rect2(0.36, 0.19, 0.61, 0.60)
+	return Rect2((clear.position - stage.position) / stage.size, clear.size / stage.size)
 
 
 func _stage_subject_points() -> Array[Vector3]:

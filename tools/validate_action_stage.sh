@@ -28,7 +28,7 @@ run_probe() {
         echo 'Live menu acceptance requires DISPLAY or xvfb-run.' >&2
         return 1
       fi
-      command=(xvfb-run -a -s '-screen 0 1920x2560x24' "${command[@]}")
+      command=(xvfb-run -a -s '-screen 0 2560x2560x24' "${command[@]}")
     fi
   fi
   python3 tools/run_godot_probe.py --log "$log" --timeout 420 --required "$marker" \
