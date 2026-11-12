@@ -92,6 +92,13 @@ func _run() -> void:
 		await _tap(garage.step_buttons[3])
 		_check(garage.step == 3 and is_instance_valid(garage.preview_world), "track tab constructs real world geometry")
 		_check(not garage.garage_interior.root.visible, "garage walls do not enclose the track preview")
+		var road_frame := Rect2(Vector2.ZERO, Vector2(garage.preview_viewport.size))
+		var route: Curve3D = garage.preview_world.curve
+		var complete_road := true
+		for sample in range(96):
+			var point: Vector3 = garage.preview_world.to_global(route.sample_baked(route.get_baked_length() * sample / 96.0))
+			complete_road = complete_road and road_frame.has_point(garage.preview_camera.unproject_position(point))
+		_check(complete_road, "complete drivable road remains inside the track camera")
 		await _shot("tracks-%dx%d" % [dimensions.x, dimensions.y])
 		await _tap(garage.step_buttons[4])
 		_check(garage.step == 4, "difficulty section is directly reachable")

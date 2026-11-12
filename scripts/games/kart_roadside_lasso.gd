@@ -18,8 +18,10 @@ var clock: float = 0.0
 var catches: int = 0
 var dodges: int = 0
 var _last_warning: int = -1
+var _player_reset_count: int = -1
 var _materials: Dictionary = {}
 var _meshes: Dictionary = {}
+var _rival_results: Array[Dictionary] = []
 
 
 static func plan(race_world) -> Array[Dictionary]:
@@ -66,6 +68,8 @@ func setup(race_world, geometry_only: bool = false) -> void:
 	catches = 0
 	dodges = 0
 	_last_warning = -1
+	_player_reset_count = -1
+	_rival_results.clear()
 	set_process(false)
 	set_physics_process(false)
 	if not geometry_only:
@@ -78,6 +82,12 @@ func advance(game, delta: float) -> void:
 	if not game.racing or game.paused or game.finished or game.mode == "arena" or delta <= 0.0:
 		return
 	clock += delta
+	# The production rescue can place a kart ahead as well as behind its old
+	# distance. Its explicit counter makes either direction discard the hold.
+	if _player_reset_count >= 0 and _player_reset_count != game.reset_count:
+		rules.reset_racer("player")
+		_last_warning = -1
+	_player_reset_count = game.reset_count
 	var protected: bool = game.shield_time > 0.0 or game.boost_time > 0.0
 	var result: Dictionary = rules.advance(
 		"player", game.distance, game.lane, game.speed, delta,
@@ -100,6 +110,7 @@ func advance(game, delta: float) -> void:
 		var side: String = "rechts" if float(layout[warning].lateral) > 0.0 else "links"
 		game.message.text = "Lasso %s – ausweichen, Schild oder Turbo!" % side
 	_last_warning = warning
+	_rival_results.resize(game.opponents.size())
 	for index in range(game.opponents.size()):
 		var rival = game.opponents[index]
 		var flying: bool = _active_meta(rival, &"lumo_ballistic_flight") or _active_meta(rival, &"lumo_physical_loop")
@@ -110,7 +121,16 @@ func advance(game, delta: float) -> void:
 			flying
 		)
 		rival.set_meta(SPEED_META, float(rival_result.speed_factor))
-	_present(result, game.player, game.reduced_motion)
+		if rival_result.event == "caught":
+			# Ground rivals integrate target_speed directly. The metadata reduces
+			# their next physical step; synchronise their observed momentum now,
+			# exactly once, as for the player's speed and physical_velocity.
+			rival.set_motion(
+				float(rival.motion_speed) * RULES.SPEED_FACTOR,
+				rival.motion_steer, rival.motion_boost, rival.motion_drift
+			)
+		_rival_results[index] = rival_result
+	_present(result, game.player, game.opponents, game.reduced_motion)
 
 
 func _active_meta(racer: Node3D, key: StringName) -> bool:
@@ -120,11 +140,24 @@ func _active_meta(racer: Node3D, key: StringName) -> bool:
 	return state != null and bool(state.active)
 
 
-func _present(result: Dictionary, racer: Node3D, reduced_motion: bool) -> void:
+func _present(result: Dictionary, racer: Node3D, rivals: Array, reduced_motion: bool) -> void:
 	for index in range(views.size()):
 		var view: Dictionary = views[index]
 		var warning: bool = int(result.warning) == index
 		var caught: bool = int(result.index) == index and float(result.remaining) > 0.0
+		var caught_racer: Node3D = racer
+		var nearest_caught: float = INF
+		if not caught:
+			for rival_index in range(_rival_results.size()):
+				var rival_result: Dictionary = _rival_results[rival_index]
+				warning = warning or int(rival_result.warning) == index
+				if int(rival_result.index) != index or float(rival_result.remaining) <= 0.0:
+					continue
+				var separation: float = rivals[rival_index].global_position.distance_squared_to(racer.global_position)
+				if separation < nearest_caught:
+					nearest_caught = separation
+					caught_racer = rivals[rival_index]
+					caught = true
 		var active: bool = warning or caught
 		var marker: MeshInstance3D = view.marker
 		marker.visible = active
@@ -133,7 +166,7 @@ func _present(result: Dictionary, racer: Node3D, reduced_motion: bool) -> void:
 		var anchor: Vector3 = view.anchor
 		var target: Vector3 = Vector3(float(layout[index].lateral), 0.9, 0.0)
 		if caught:
-			target = (view.root as Node3D).to_local(racer.global_position) + Vector3.UP * 0.6
+			target = (view.root as Node3D).to_local(caught_racer.global_position) + Vector3.UP * 0.6
 		rope.position = target if active else anchor
 		rope.rotation.x = 0.0 if active else PI * 0.5
 		rope.rotation.y = 0.0 if reduced_motion else clock * (1.8 if warning else 0.5)

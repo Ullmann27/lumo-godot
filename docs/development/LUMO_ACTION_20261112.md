@@ -22,7 +22,7 @@ The parent integration owns `kart_island.gd` and the speed/AI files. This commit
 4. A fresh start/load should restore the player's and rivals' `roadside_speed_factor` to 1.0 before movement. The new module also resets it on its first update. Do not serialize the temporary hold into a saved race.
 5. The complete two-lap player regression now encounters four action ramps per lap. Its expected take-off/landing count must become eight, while keeping the original two-lap, precision-jump and loop assertions intact.
 
-`kart_roadside_action_regression.gd` uses the integrated `RoadsideLasso` if present; on this isolated base it creates and advances the same production module explicitly for the live encounter probe. It does not run it twice after integration.
+The initial isolated `kart_roadside_action_regression.gd` could create the same module when the controller hook was absent. The subsequent integrated review removed that fallback: the test now requires the production-created node and drives it exclusively through `_physics_process`. See `LUMO_ACTION_REVIEW_20261112.md` for the integrated evidence and follow-up fixes.
 
 ## Verification performed locally
 

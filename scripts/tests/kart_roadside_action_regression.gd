@@ -78,11 +78,9 @@ func _run() -> void:
 
 func _live_encounter() -> void:
 	var encounter = game.world.get_node_or_null("RoadsideLasso")
-	var manual_tick: bool = encounter == null
-	if manual_tick:
-		encounter = LASSO.new()
-		game.world.add_child(encounter)
-		encounter.setup(game.world)
+	_check(encounter != null, "Production race creates and owns the roadside module")
+	if encounter == null:
+		return
 	var target_lane: float = float(encounter.layout[0].lateral)
 	var at: float = float(encounter.layout[0].distance) - 75.0
 	game.distance = at
@@ -98,8 +96,6 @@ func _live_encounter() -> void:
 		var direction: Vector3 = target - game.player.position
 		game.steering = clampf(-angle_difference(game.player_heading, atan2(-direction.x, -direction.z)) * 2.0, -1, 1)
 		game._physics_process(STEP)
-		if manual_tick:
-			encounter.advance(game, STEP)
 		if encounter.catches > 0:
 			break
 		if frame % 30 == 29:
@@ -110,14 +106,12 @@ func _live_encounter() -> void:
 	await _capture("lasso-catch")
 	var stopped_clock: float = encounter.clock
 	game.paused = true
-	encounter.advance(game, 1.0)
+	game._physics_process(1.0)
 	_check(encounter.clock == stopped_clock, "Controller pause freezes encounter animation and rules")
 	game.paused = false
 	game.boost_time = 1.0
-	encounter.advance(game, STEP)
+	game._physics_process(STEP)
 	_check(float(game.player.get_meta(LASSO.SPEED_META, 0.0)) == 1.0, "Actual boost immediately restores the drive target")
-	if manual_tick:
-		encounter.free()
 
 
 func _fly(ramp: Dictionary, pace: float) -> void:

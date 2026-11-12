@@ -6,6 +6,7 @@ const STEP := 1.0 / 60.0
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const RAMP_PLAN = preload("res://scripts/games/kart_rival_ramp_plan.gd")
+const LASSO_RULES = preload("res://scripts/games/kart_lasso_rules.gd")
 var game
 var output := "res://exports/player-full-route"
 var recording := false
@@ -16,6 +17,8 @@ var trace: Array[Dictionary] = []
 var max_step := 0.0
 var inverted_frames := 0
 var recording_frame := 0
+var lasso_hold := 0.0
+var longest_lasso_hold := 0.0
 
 
 func _initialize() -> void:
@@ -69,6 +72,10 @@ func _snapshot() -> Dictionary:
 		"resets": game.reset_count,
 		"precision_results": game.precision_results.duplicate(),
 		"checkpoints": game.checkpoint_index,
+		"lasso_catches": game.roadside_lasso.catches,
+		"lasso_dodges": game.roadside_lasso.dodges,
+		"lasso_factor": float(game.player.get_meta("roadside_speed_factor", 1.0)),
+		"lasso_clock_seconds": game.roadside_lasso.clock,
 	}
 
 
@@ -97,6 +104,13 @@ func _drive_controls() -> void:
 	var target_lane: float = (
 		float(layout.lane) if loop_lead >= -36.0 and loop_lead <= 130.0 else 0.0
 	)
+	# Meet one real, warned roadside encounter through touch steering on lap one.
+	# Every later crew is avoided in the centre lane, with no hazard state edits.
+	if game.distance < game.track_length and not game.roadside_lasso.layout.is_empty():
+		var encounter: Dictionary = game.roadside_lasso.layout[0]
+		var lasso_lead: float = float(encounter.distance) - at
+		if lasso_lead > -8.0 and lasso_lead < 100.0:
+			target_lane = float(encounter.lateral)
 	var target: Vector3 = game.world.position_at(at + 9.0, target_lane)
 	var direction: Vector3 = target - game.player.position
 	var heading: float = atan2(-direction.x, -direction.z)
@@ -183,6 +197,14 @@ func _run() -> void:
 	for frame in range(30000):
 		_drive_controls()
 		game._physics_process(STEP)
+		var lasso_factor: float = float(game.player.get_meta("roadside_speed_factor", 1.0))
+		if lasso_factor < 1.0:
+			if not is_equal_approx(lasso_factor, LASSO_RULES.SPEED_FACTOR):
+				failed = true
+			lasso_hold += STEP
+			longest_lasso_hold = maxf(longest_lasso_hold, lasso_hold)
+		else:
+			lasso_hold = 0.0
 		var displacement: float = previous_position.distance_to(game.player.position)
 		max_step = maxf(max_step, displacement)
 		previous_position = game.player.position
@@ -227,9 +249,13 @@ func _run() -> void:
 		or not game.finished
 		or game.checkpoint_index != 16
 		or game.loop_count != 2
-		or game.action_kicker_jumps != 4
-		or game.landing_count < 4
+		or game.action_kicker_jumps != 8
+		or game.landing_count < 8
 		or inverted_frames == 0
+		or game.roadside_lasso.catches < 1
+		or game.roadside_lasso.dodges < 1
+		or longest_lasso_hold <= 0.0
+		or longest_lasso_hold > LASSO_RULES.HOLD_SECONDS + STEP
 	)
 	await _capture("finish" if game.finished else "failed")
 	var report := _snapshot()
@@ -240,6 +266,7 @@ func _run() -> void:
 				"status": "FAIL" if failed else "PASS",
 				"max_step_m": max_step,
 				"inverted_frames": inverted_frames,
+				"longest_lasso_hold_seconds": longest_lasso_hold,
 				"events": events,
 				"trace": trace,
 				"input":

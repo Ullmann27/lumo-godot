@@ -20,6 +20,10 @@ func configure(track_length: float, layout: Array[Dictionary]) -> void:
 	racers.clear()
 
 
+func reset_racer(racer_id: String) -> void:
+	racers.erase(racer_id)
+
+
 func advance(
 	racer_id: String, distance: float, lane: float, speed: float, delta: float,
 	protected: bool = false, airborne: bool = false

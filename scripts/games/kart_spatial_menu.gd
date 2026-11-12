@@ -161,7 +161,7 @@ func _apply_responsive_layout() -> void:
 		var cards: Array = child.get_children() if child is GridContainer else [child]
 		for card in cards:
 			if card is Button:
-				_set_physical_minimum(card, Vector2(0, 90 if step == 2 else 68), scale_factor)
+				_set_physical_minimum(card, Vector2(0, 90 if step == 2 else (64 if step == 0 else 68)), scale_factor)
 				_set_physical_font(card, 16, scale_factor)
 				if card.has_method("apply_size"):
 					card.apply_size(scale_factor, true)
@@ -203,18 +203,77 @@ func _fit_welcome_camera() -> void:
 	if not _spatial_ready or not is_instance_valid(preview_camera) or preview_viewport.size.y <= 0:
 		return
 	var aspect := float(preview_viewport.size.x) / float(preview_viewport.size.y)
-	if inspection_view == 0 and step != 3:
-		preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
-		preview_camera.position = Vector3(3.15, 2.05, -4.6)
-		preview_camera.look_at(Vector3(0, 0.95, 0))
-		preview_camera.fov = 40.0 if aspect < 1.0 else 35.0
-		_camera_progress = 1.0
-		_camera_ready = true
-		_camera_focus = Vector3(0, 0.95, 0)
-	var depth := preview_camera.position.distance_to(_camera_focus)
-	var height := 2.0 * depth * tan(deg_to_rad(preview_camera.fov * 0.5))
-	preview_camera.h_offset = -height * aspect * 0.15 if aspect >= 1.0 else 0.0
-	preview_camera.v_offset = -height * (0.10 if _landing_active else 0.15) if aspect < 1.0 else 0.0
+	if inspection_view != 0 and step != 3:
+		preview_camera.h_offset = 0.0
+		preview_camera.v_offset = 0.0
+		return
+	# Fit the actual chassis, seated rig and light rings to the unoccluded
+	# part of the live stage. Portrait width cannot reuse a landscape frustum.
+	var focus := Vector3(0, 0.95, 0)
+	var direction := Vector3(3.15, 1.10, -4.6).normalized()
+	var region := Rect2(0.36, 0.19, 0.61, 0.60)
+	if aspect < 1.0:
+		region = Rect2(0.04, 0.18, 0.92, 0.38 if _landing_active else 0.35)
+	var pixels := Vector2(preview_viewport.size)
+	var target := Rect2(region.position * pixels, region.size * pixels)
+	var points: Array[Vector3] = []
+	if step == 3:
+		if not is_instance_valid(preview_world):
+			return
+		var route: Curve3D = preview_world.get("curve")
+		for sample in range(96):
+			points.append(preview_world.to_global(route.sample_baked(route.get_baked_length() * sample / 96.0)))
+		var bounds := AABB(points[0], Vector3.ZERO)
+		for point in points:
+			bounds = bounds.expand(point)
+		focus = bounds.get_center()
+		direction = Vector3(0.65, 0.90, -1.0).normalized()
+	else:
+		points = _stage_subject_points()
+	var distance := 6.0 if step == 3 else 4.8
+	preview_camera.keep_aspect = Camera3D.KEEP_HEIGHT
+	preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+	preview_camera.fov = 40.0 if aspect < 1.0 else 35.0
+	for attempt in range(24):
+		preview_camera.position = focus + direction * distance
+		preview_camera.look_at(focus)
+		var height := 2.0 * distance * tan(deg_to_rad(preview_camera.fov * 0.5))
+		preview_camera.h_offset = -height * aspect * (region.get_center().x - 0.5)
+		preview_camera.v_offset = height * (region.get_center().y - 0.5)
+		var fits := true
+		for point in points:
+			if preview_camera.is_position_behind(point) or not target.has_point(preview_camera.unproject_position(point)):
+				fits = false
+				break
+		if fits:
+			break
+		distance *= 1.08
+	_camera_progress = 1.0
+	_camera_ready = true
+	_camera_focus = focus
+
+
+func _stage_subject_points() -> Array[Vector3]:
+	var points: Array[Vector3] = []
+	for mesh in preview_kart.find_children("*", "MeshInstance3D", true, false):
+		if not mesh.is_visible_in_tree() or mesh.skin != null or mesh == preview_kart.far_mesh:
+			continue
+		var bounds: AABB = mesh.get_aabb()
+		for corner in range(8):
+			points.append(mesh.to_global(bounds.get_endpoint(corner)))
+	if is_instance_valid(preview_kart.lumo_animation):
+		var skeleton: Skeleton3D = preview_kart.lumo_animation.actor.skeleton
+		var head := skeleton.find_bone("Head")
+		var head_point := skeleton.to_global(skeleton.get_bone_global_pose(head).origin)
+		points.append(head_point + Vector3.UP * 0.46)
+		points.append(head_point + Vector3(0.66, 0.37, 0))
+		points.append(head_point + Vector3(-0.66, 0.37, 0))
+	for ring in stage_rings:
+		for sample in range(32):
+			var angle := TAU * sample / 32.0
+			var radius: float = ring.mesh.outer_radius
+			points.append(ring.to_global(Vector3(cos(angle) * radius, 0, sin(angle) * radius)))
+	return points
 
 
 func _process(delta: float) -> void:

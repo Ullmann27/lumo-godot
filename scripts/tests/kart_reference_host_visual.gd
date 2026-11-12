@@ -32,7 +32,7 @@ func _run() -> void:
 	for image_file in required_images:
 		assert(ResourceLoader.exists("res://assets/kart/landing/" + image_file),
 			"Production art is missing: " + image_file)
-	var card: Button = landing.find_child("Landing_time_trial", true, false)
+	var card: Button = landing.find_child("Mode_time_trial", true, false)
 	assert(card != null)
 	card.pressed.emit()
 	assert(game.garage.setup.mode == "time_trial", "Time trial failed to enter real game setup")
@@ -40,9 +40,10 @@ func _run() -> void:
 	game._show_reference_landing()
 	await _settle()
 	landing = game.reference_landing
-	(landing.find_child("Landing_sonnenhafen", true, false) as Button).pressed.emit()
-	assert(game.garage.setup.track == "sonnenhafen" and landing.visible,
-		"Selecting Sonnenhafen must not throw the player back into the old wizard")
+	(landing.find_child("Open_world", true, false) as Button).pressed.emit()
+	assert(game.garage.step == 3 and not landing.visible,
+		"Strecken opens the live world selection directly")
+	assert(is_instance_valid(game.garage.preview_world), "Track choice shows actual 3D geometry")
 	game._show_reference_landing()
 	await _settle()
 	landing = game.reference_landing
@@ -50,6 +51,8 @@ func _run() -> void:
 		"Main Start is not a real button")
 	assert(landing.quick_start.get_connections().size() > 0,
 		"Main Start is not connected to the game owner")
+	assert(game.garage.preview_container.is_visible_in_tree(),
+		"Landing shares the real visible 3D stage")
 	if DisplayServer.get_name() != "headless":
 		var destination := "res://exports/nextgen-ui/"
 		DirAccess.make_dir_recursive_absolute(destination)

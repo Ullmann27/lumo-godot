@@ -41,6 +41,7 @@ run_probe() {
 }
 
 run_probe kart_lasso_regression '[KartLasso] PASS' headless
+run_probe kart_lasso_production_regression '[KartLassoProduction] PASS' headless
 run_probe kart_spatial_menu_regression '[SpatialMenu] PASS' rendered -- --capture
 LUMO_ACTION_CAPTURE_DIR="$LOG_DIR/action-captures" \
   run_probe kart_roadside_action_regression '[RoadsideAction] PASS' rendered

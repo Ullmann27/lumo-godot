@@ -4,6 +4,7 @@ extends SceneTree
 const STEP: float = 1.0 / 60.0
 const MAX_SECONDS: float = 420.0
 const LOOP_KEY: StringName = &"lumo_physical_loop"
+const LASSO_RULES = preload("res://scripts/games/kart_lasso_rules.gd")
 var game
 var failed: bool = false
 var selected_level: String = ""
@@ -67,10 +68,11 @@ func _drive(level: String) -> Dictionary:
 	game.racing = true
 	game.auto_gas = false
 	game.speed = 0.0
-	# Place the human beside the road or stopped in the outside lane once.
+	# The production player physics also runs. Place the clear-course player on
+	# the shoulder inside the rail, or stopped in the outside racing lane once.
 	# Opponents retain their real grid, kart roster, item gates and obstacles.
 	game.player.transform = Transform3D(
-		game.world.frame(0.0), game.world.position_at(0.0, 3.5 if stopped_player else 20.0)
+		game.world.frame(0.0), game.world.position_at(0.0, 3.5 if stopped_player else -5.0)
 	)
 	game.distance = 0.0
 	await process_frame
@@ -85,9 +87,15 @@ func _drive(level: String) -> Dictionary:
 	var last_window_progress: Array[float] = []
 	var stalled_windows: Array[int] = []
 	var failed_loops: Array[int] = []
+	var lasso_catches: Array[int] = []
+	var lasso_hold: Array[float] = []
+	var longest_lasso_hold: Array[float] = []
+	var lasso_crossings: Array[Dictionary] = []
 	var seen_failed_states: Dictionary = {}
 	var seen_flights: Dictionary = {}
 	var invalid_motion: bool = false
+	_check(is_instance_valid(game.roadside_lasso), "Live race must create roadside encounters")
+	_check(game.roadside_lasso.layout.size() == 2, "Sonnenhafen must contain both roadside crews")
 	for i in range(game.opponents.size()):
 		previous_positions.append(game.opponents[i].position)
 		previous_progress.append(game.opponent_distances[i])
@@ -100,10 +108,13 @@ func _drive(level: String) -> Dictionary:
 		minimum_progress_steps.append(0.0)
 		stalled_windows.append(0)
 		failed_loops.append(0)
+		lasso_catches.append(0)
+		lasso_hold.append(0.0)
+		longest_lasso_hold.append(0.0)
+		lasso_crossings.append({})
 	var seconds: float = 0.0
 	for frame in range(int(MAX_SECONDS / STEP)):
-		game.elapsed += STEP
-		game._drive_opponents(STEP)
+		game._physics_process(STEP)
 		seconds = (frame + 1) * STEP
 		var finished_count: int = 0
 		for i in range(game.opponents.size()):
@@ -111,6 +122,20 @@ func _drive(level: String) -> Dictionary:
 				finished_count += 1
 				continue
 			var rival = game.opponents[i]
+			# Rules intentionally prune old laps. Retain observed crossings here
+			# instead of confusing bounded runtime memory with a missed encounter.
+			var live_lasso: Dictionary = game.roadside_lasso.rules.racers.get("rival_%d" % i, {})
+			for key in live_lasso.get("used", {}):
+				lasso_crossings[i][key] = true
+			var factor: float = float(rival.get_meta("roadside_speed_factor", 1.0))
+			if factor < 1.0:
+				_check(is_equal_approx(factor, LASSO_RULES.SPEED_FACTOR), "Lasso must use its bounded drive factor")
+				if lasso_hold[i] == 0.0:
+					lasso_catches[i] += 1
+				lasso_hold[i] += STEP
+				longest_lasso_hold[i] = maxf(longest_lasso_hold[i], lasso_hold[i])
+			else:
+				lasso_hold[i] = 0.0
 			var gap_to_player: Vector3 = rival.position - game.player.position
 			gap_to_player.y = 0.0
 			minimum_player_clearances[i] = minf(
@@ -239,9 +264,16 @@ func _drive(level: String) -> Dictionary:
 			"%s rival%d needed a gap rescue" % [level, i]
 		)
 		_check(
-			int(rival.get_meta(&"lumo_flight_landings", 0)) >= 4,
+			int(rival.get_meta(&"lumo_flight_landings", 0)) >= 8,
 			"%s rival%d missed a mandatory ramp" % [level, i]
 		)
+		_check(
+			longest_lasso_hold[i] <= LASSO_RULES.HOLD_SECONDS + STEP,
+			"%s rival%d remained caught beyond the bounded hold" % [level, i]
+		)
+		var lasso_state: Dictionary = game.roadside_lasso.rules.racers.get("rival_%d" % i, {})
+		_check(not lasso_state.is_empty(), "Rival must pass through the live lasso state machine")
+		_check(lasso_crossings[i].size() == 4, "Each rival must physically cross both crews on both laps")
 		if level != "gemuetlich" and i % 2 == 1:
 			_check(
 				loops >= 2,
@@ -262,7 +294,10 @@ func _drive(level: String) -> Dictionary:
 				"failed_loops": failed_loops[i],
 				"flight_rescues": int(rival.get_meta(&"lumo_flight_rescues", 0)),
 				"flight_landings": int(rival.get_meta(&"lumo_flight_landings", 0)),
-				"stalled_windows": stalled_windows[i]
+				"stalled_windows": stalled_windows[i],
+				"lasso_catches": lasso_catches[i],
+				"longest_lasso_hold_seconds": longest_lasso_hold[i],
+				"lasso_crossings": lasso_crossings[i].size(),
 			}
 		)
 	var report: Dictionary = {
@@ -271,8 +306,11 @@ func _drive(level: String) -> Dictionary:
 		"completed": completed,
 		"track_length_m": game.track_length,
 		"simulated_seconds": seconds,
-		"racers": rows
+		"racers": rows,
+		"production_physics": true,
+		"lasso_clock_seconds": game.roadside_lasso.clock,
 	}
+	_check(absf(game.roadside_lasso.clock - seconds) < STEP, "Lasso clock must run once per production physics tick")
 	print("[KartFullField] REPORT " + JSON.stringify(report))
 	game.abandoned = true
 	game.queue_free()
