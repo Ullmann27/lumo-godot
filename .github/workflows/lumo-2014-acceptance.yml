@@ -1,10 +1,10 @@
-name: LUMO 2014 actual gameplay acceptance
+name: LUMO actual gameplay and live menu acceptance
 
 on:
   push:
-    branches: [lumo-2014/integration-20261110]
+    branches: [lumo-2014/integration-20261110, chatgpt/lumo-action-stage-20261112]
   pull_request:
-    branches: [lumo-2014/integration-20261110]
+    branches: [lumo-2014/integration-20261110, chatgpt/lumo-2016-gameplay-effects-20261111]
   workflow_dispatch:
 
 permissions:
@@ -36,12 +36,19 @@ jobs:
           unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
           ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
           echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
-      - name: Project validation and existing gameplay regression suite
+      - name: Import production project and validate structure
         run: |
           set -euo pipefail
           mkdir -p "$LUMO_2014_LOG_DIR"
           git rev-parse HEAD > "$LUMO_2014_LOG_DIR/source-sha.txt"
           python3 tools/validate_project.py 2>&1 | tee "$LUMO_2014_LOG_DIR/project-validation.log"
+          godot --headless --editor --import --quit 2>&1 | tee "$LUMO_2014_LOG_DIR/import.log"
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$LUMO_2014_LOG_DIR/import.log"; then exit 1; fi
+      - name: Live full-screen menu, action ramps and lasso render evidence
+        run: LUMO_ACTION_LOG_DIR="$LUMO_2014_LOG_DIR/action-stage" bash tools/validate_action_stage.sh
+      - name: Existing gameplay regression suite
+        run: |
+          set -euo pipefail
           bash tools/validate_project.sh 2>&1 | tee "$LUMO_2014_LOG_DIR/existing-gameplay.log"
       - name: Continuous loops, physical ramps, fair AI and living harbor
         run: bash tools/validate_2014.sh
@@ -50,7 +57,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: lumo-2014-actual-gameplay-evidence
-          path: acceptance-evidence/
+          name: lumo-actual-gameplay-evidence
+          path: |
+            acceptance-evidence/
+            exports/spatial-menu/
           if-no-files-found: error
           retention-days: 30

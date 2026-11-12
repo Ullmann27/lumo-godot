@@ -1,7 +1,8 @@
 extends SceneTree
 ## Rivals never teleport, never rubber-band, and the three difficulties stay ordered.
 const STEP: float = 1.0 / 60.0
-## At 60 Hz even Sternen-Profi travels ~0.4 m plus a recover slide of similar size.
+const CRAFT = preload("res://scripts/games/kart_rival_racecraft.gd")
+## At doubled pace even an earned extreme turbo remains below this physical cap.
 ## A reset_transform snap from several metres off the road exceeds this cap.
 const MAX_FRAME_DELTA_M: float = 1.50
 const SIM_SECONDS: float = 8.0
@@ -229,7 +230,7 @@ func _run() -> void:
 	_check(
 		float(progress["flott"]) < float(progress["pro"]),
 		(
-			"Abenteuer must cover less ground than Sternen-Profi (%.2f vs %.2f)"
+			"Abenteuer must cover less ground than Extrem (%.2f vs %.2f)"
 			% [progress["flott"], progress["pro"]]
 		)
 	)
@@ -243,20 +244,20 @@ func _run() -> void:
 	_check(float(estimated_lap["flott"]) > float(estimated_lap["pro"]))
 	print(
 		(
-			"[KartAI] estimated lap times: Entdecken %.2f s, Abenteuer %.2f s, Sternen-Profi %.2f s"
+			"[KartAI] estimated lap times: Entdecken %.2f s, Abenteuer %.2f s, Extrem %.2f s"
 			% [estimated_lap["gemuetlich"], estimated_lap["flott"], estimated_lap["pro"]]
 		)
 	)
-	# Entdecken's deliberate line mistakes must be clearly visible against both
-	# faster levels. Abenteuer vs Sternen-Profi is not ordered by this metric:
-	# the Profi look-ahead cuts corners at higher speed, which also moves it
-	# away from the nominal grid lane without being a mistake.
-	var faster_worst: float = maxf(float(mean_error["flott"]), float(mean_error["pro"]))
+	# Overtakes and ring pickups are deliberate departures from the grid lane,
+	# not driving errors. Compare line keeping over the same actual 50 m road,
+	# without traffic or pickups, rather than different sections covered within 8 s race windows.
+	var line_error: Dictionary = _measure_unobstructed_line()
+	var faster_worst: float = maxf(float(line_error["flott"]), float(line_error["pro"]))
 	_check(
-		float(mean_error["gemuetlich"]) > faster_worst * 1.5,
+		float(line_error["gemuetlich"]) > faster_worst * 1.5,
 		(
-			"Entdecken must make clearly larger line errors (%.3f vs worst faster %.3f)"
-			% [mean_error["gemuetlich"], faster_worst]
+			"Entdecken must have visibly less precise free-road line keeping (%.3f vs worst faster %.3f)"
+			% [line_error["gemuetlich"], faster_worst]
 		)
 	)
 
@@ -265,3 +266,47 @@ func _run() -> void:
 	print("[KartAI] PASS: no teleport, no rubber-band, difficulty order holds")
 	game.queue_free()
 	quit(0)
+
+
+func _measure_unobstructed_line() -> Dictionary:
+	for i in range(game.opponents.size() - 1, 0, -1):
+		game.opponents[i].queue_free()
+	game.opponents.resize(1)
+	game.item_box_distances.clear()
+	game.world.action_obstacles.clear()
+	var start: float = 30.0
+	var best: float = INF
+	# Choose a measured, gentle road corridor before the mandatory stunts.
+	for at in range(30, 800, 10):
+		var curvature: float = 0.0
+		for offset in [0.0, 20.0, 40.0, 60.0]:
+			curvature = maxf(curvature, absf(CRAFT.curvature(game.world, float(at) + offset)))
+		if curvature < best:
+			best = curvature
+			start = float(at)
+	var errors: Dictionary = {}
+	for level in ["gemuetlich", "flott", "pro"]:
+		game.difficulty = level
+		game.elapsed = 0.0
+		game.opponents[0].transform = game.world.reset_transform(start, -2.8)
+		game.opponent_distances[0] = start
+		game.opponent_lanes[0] = -2.8
+		game.opponent_headings[0] = game._heading(start)
+		game.opponents[0].set_motion(0.0, 0.0, false, false)
+		game.opponents[0].set_meta("racecraft_drift_charge", 0.0)
+		game.opponent_items[0] = ""
+		game.opponent_boost_times[0] = 0.0
+		game.opponent_stuns[0] = 0.0
+		game.opponent_pulse_warning_times[0] = 0.0
+		game.player.transform = game.world.reset_transform(start, 20.0)
+		var total: float = 0.0
+		var frames: int = 0
+		while game.opponent_distances[0] < start + 50.0 and frames < 600:
+			game.elapsed += STEP
+			game._drive_opponents(STEP)
+			total += absf(game.opponent_lanes[0] + 2.8)
+			frames += 1
+		_check(frames > 0 and frames < 600, "Free-road 50 m line test must physically finish")
+		errors[level] = total / maxf(1.0, float(frames))
+	print("[KartAI] same unobstructed 50 m road: ", errors)
+	return errors

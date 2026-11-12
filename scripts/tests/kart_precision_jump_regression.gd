@@ -73,15 +73,22 @@ func _run() -> void:
 	_check(PRECISION.hint(PRECISION.STATUS_SLOW).text == "Gib Gas!", "Red hint text")
 	_check(PRECISION.hint(PRECISION.STATUS_GOOD).text == "Tempo passt!", "Green hint text")
 	_check(PRECISION.hint(PRECISION.STATUS_FAST).text == "Etwas bremsen!", "Orange hint text")
-	# Fairness: every kart at plain top speed lands in the zone on every difficulty,
-	# while a turbo at the lip (Abenteuer, neutral kart) overshoots.
+	# The doubled road pace requires an actual braking manoeuvre before this
+	# unchanged precision gap. Every kart can reach its marked landing speed;
+	# full road throttle is accurately reported as too fast, never auto-corrected.
+	var landing_speed: float = PRECISION.speed_for_distance(
+		(float(kicker.landing_min) + float(kicker.landing_max)) * 0.5, kicker
+	)
 	var factors_range: Array[float] = [0.97, 1.0, 1.09 * 1.012]
 	for difficulty in CATALOG.DIFFICULTIES:
 		for factor in factors_range:
 			var top: float = POWERTRAIN.top_speed({"speed": factor}, float(difficulty.speed))
 			var status: String = PRECISION.prediction(top, kicker).status
-			_check(status == PRECISION.STATUS_GOOD,
-				"%s x%.3f: %.1f m/s lands in zone (%.1f m)" % [difficulty.id, factor, top, PRECISION.landing_distance(top, kicker)])
+			_check(top > landing_speed, "%s x%.3f can reach the marked landing speed" % [difficulty.id, factor])
+			_check(PRECISION.prediction(landing_speed, kicker).status == PRECISION.STATUS_GOOD,
+				"%s x%.3f: correct braking lands in the marked zone" % [difficulty.id, factor])
+			_check(status == PRECISION.STATUS_FAST,
+				"%s x%.3f: new full pace %.1f m/s requires braking (%.1f m)" % [difficulty.id, factor, top, PRECISION.landing_distance(top, kicker)])
 	var turbo: float = POWERTRAIN.top_speed({}, 1.0) * 1.42
 	_check(PRECISION.prediction(turbo, kicker).status == PRECISION.STATUS_FAST, "Turbo at the lip overshoots")
 	# Loop placement: run-up, ramp after loop exit, landing before the tunnel.

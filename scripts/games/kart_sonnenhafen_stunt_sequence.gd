@@ -44,12 +44,12 @@ const PRECISION_GRAVITY: float = 14.0
 ## Open air starts just behind the lip; the road (and the landing zone) begins
 ## PRECISION_LANDING_START_M after take-off. Undershooting falls into the gap.
 const PRECISION_GAP_START_M: float = 0.5
-## Landing zone after take-off. Calibrated with the real model: every kart at
-## top speed without turbo lands inside on every difficulty (about 56-96 km/h);
-## a turbo at the lip overshoots, a braking kart falls short.
+## Landing zone after take-off. At the doubled road pace the driver brakes
+## toward the green landing-speed hint. Full throttle overshoots, too little
+## momentum falls short; the airborne controller never fabricates a landing.
 const PRECISION_LANDING_START_M: float = 14.5
 const PRECISION_LANDING_END_M: float = 31.0
-## Stars follow the computed arc of the reference speed (Abenteuer top speed).
+## Stars follow the computed arc of the controlled precision approach speed.
 const ARC_REFERENCE_SPEED: float = 20.5
 const ARC_STARS: Array[float] = [4.0, 8.0, 12.0, 16.0]
 

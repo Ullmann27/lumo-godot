@@ -2,7 +2,10 @@ extends SceneTree
 ## Rails are real walls on every course, drift has two turbo tiers, driving against the course
 ## is announced, and neither reversing over the line nor jumping ahead creates lap progress.
 const STEP: float = 1.0 / 60.0
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 var game
+## An assertion aborts its function. PASS requires every check to finish.
+var completed_checks: int = 0
 
 
 func _initialize() -> void:
@@ -57,16 +60,18 @@ func _test_walls(track: String) -> void:
 				% [track, int(side), widest, game.wall_contacts, game.distance - start_distance]
 			)
 		)
+	completed_checks += 1
 
 
 func _test_drift_tiers() -> void:
 	await _start("training", "sonnenhafen")
 	_face(game._heading(0), 15.0)
 	game.drifting = true
-	for frame in range(60):
+	var blue_frames: int = roundi(1.0 / (STEP * POWERTRAIN.PACE_SCALE))
+	for frame in range(blue_frames):
 		game.steering = 1.0
 		game._physics_process(STEP)
-	assert(game.drift_charge >= 0.8 and game.drift_charge < 1.8, "One second of drift charges blue")
+	assert(game.drift_charge >= 0.8 and game.drift_charge < 1.8, "A controlled drift charges blue at the live pace scale")
 	game.boost_time = 0
 	game._release_drift()
 	assert(is_equal_approx(game.boost_time, 1.0) and game.drift_tier_count == [1, 0])
@@ -81,6 +86,7 @@ func _test_drift_tiers() -> void:
 	game.boost_time = 0
 	game._release_drift()
 	assert(game.boost_time == 0 and game.drift_tier_count == [1, 1], "A short drift gives nothing")
+	completed_checks += 1
 
 
 func _test_wrong_way() -> void:
@@ -100,6 +106,7 @@ func _test_wrong_way() -> void:
 		_steer_towards(game.world.position_at(game.previous_road_distance + 12.0))
 		game._physics_process(STEP)
 	assert(not game.wrong_way, "The warning clears once the kart turns around")
+	completed_checks += 1
 
 
 func _test_lap_validity() -> void:
@@ -116,6 +123,7 @@ func _test_lap_validity() -> void:
 	assert(game.distance - before < 5.0, "Jumping ahead gives no progress")
 	assert(game.checkpoint_index == 0)
 	assert(not game.finished)
+	completed_checks += 1
 
 
 func _test_pedals() -> void:
@@ -153,6 +161,7 @@ func _test_pedals() -> void:
 		rects.append(rect)
 	assert(not game.joystick.get_global_rect().intersects(rects[0]), "Stick and GAS are apart")
 	game.auto_gas = true
+	completed_checks += 1
 
 
 func _test_boost_response() -> void:
@@ -222,6 +231,7 @@ func _test_boost_response() -> void:
 		"A second tap cannot queue an empty boost"
 	)
 	game.boost_button._release()
+	completed_checks += 1
 
 
 func _test_skill_resonance_rings() -> void:
@@ -254,6 +264,7 @@ func _test_skill_resonance_rings() -> void:
 	assert(game.item_box_collected.has(0), "Used resonance ring remains hidden this lap")
 	game._sync_item_box_visibility()
 	assert(not game.item_boxes[0].visible, "No repeat farming on the same lap")
+	completed_checks += 1
 
 
 func _test_rival_item_tactics() -> void:
@@ -332,6 +343,7 @@ func _test_rival_item_tactics() -> void:
 	game._update_rival_item_tactics(3, pulse_gap, STEP)
 	game._update_rival_item_tactics(3, pulse_gap, game.RIVAL_PULSE_WARNING_SECONDS + STEP)
 	assert(game.hit_timer == 0.0, "Player shield blocks a telegraphed rival pulse")
+	completed_checks += 1
 
 
 func _test_wolkenweg_split_route() -> void:
@@ -372,6 +384,7 @@ func _test_wolkenweg_split_route() -> void:
 			% [raised_height, main_height]
 		)
 	)
+	completed_checks += 1
 
 
 func _test_boost_gates_and_restart() -> void:
@@ -403,6 +416,7 @@ func _test_boost_gates_and_restart() -> void:
 	assert(game.boost_time == 0, "An empty boost slot cannot activate later")
 	await _start("training", "sonnenhafen")
 	assert(game.boosts == 1 and game.boost_time == 0, "Restart resets charges and active boost")
+	completed_checks += 1
 
 
 func _track_frame(forward: Vector3, normal: Vector3, mirrored: bool = false) -> Basis:
@@ -441,6 +455,7 @@ func _test_boost_chevrons_follow_travel() -> void:
 			Vector3(left_arm.offset).dot(right) < Vector3(right_arm.offset).dot(right),
 			"%s chevron arms stay mirrored left/right" % sample.name
 		)
+	completed_checks += 1
 
 
 func _test_boost_pad_and_airborne() -> void:
@@ -462,6 +477,7 @@ func _test_boost_pad_and_airborne() -> void:
 	game._physics_process(STEP)
 	assert(game.speed > airborne_speed, "Boost also accelerates during a ramp jump")
 	assert(game.airborne, "Boost does not cancel the jump")
+	completed_checks += 1
 
 
 func _run() -> void:
@@ -487,13 +503,19 @@ func _run() -> void:
 	await _test_rival_item_tactics()
 	await _test_wolkenweg_split_route()
 	await _test_pedals()
+	var expected_checks: int = game.CATALOG.TRACKS.size() + 11
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
+	if completed_checks != expected_checks:
+		print("[KartPhysics] FAIL: %d of %d checks completed" % [completed_checks, expected_checks])
+		await create_timer(0.5).timeout
+		quit(1)
+		return
 	print(
 		(
-			"[KartPhysics] PASS: rail walls on four courses at full turbo, sliding contact, "
+			"[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, "
 			+ "blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, "
 			+ "GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, "
 			+ "and a physical Wolkenweg split route"

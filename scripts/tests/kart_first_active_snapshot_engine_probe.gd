@@ -20,13 +20,18 @@ func _settle() -> void:
 		await process_frame
 
 
-func _check(ok: bool, label: String, expected: Variant, actual: Variant) -> void:
+func _check(ok: bool, label: String, expected: Variant, actual: Variant) -> bool:
 	checks.append({"name": label, "passed": ok, "expected": expected, "actual": actual})
+	return ok
 
 
-func _touch(control: Control) -> void:
-	assert(control.is_visible_in_tree())
-	assert(root.get_visible_rect().encloses(control.get_global_rect()), "Public touch target must fit the current surface")
+func _touch(control: Control) -> bool:
+	if not is_instance_valid(control) or not control.is_visible_in_tree():
+		_check(false, "public touch target exists and is visible", true, false)
+		return false
+	if not root.get_visible_rect().encloses(control.get_global_rect()):
+		_check(false, "public touch target fits the current surface", str(root.get_visible_rect()), str(control.get_global_rect()))
+		return false
 	var position: Vector2 = control.get_global_rect().get_center() * Vector2(root.size) / root.get_visible_rect().size
 	for pressed in [true, false]:
 		var event := InputEventScreenTouch.new()
@@ -36,11 +41,15 @@ func _touch(control: Control) -> void:
 		Input.parse_input_event(event)
 		await process_frame
 	await _settle()
+	return true
 
 
 func _read() -> Dictionary:
 	var config := ConfigFile.new()
-	assert(config.load(SESSION) == OK)
+	var error := config.load(SESSION)
+	if error != OK:
+		_check(false, "actual engine session is readable", OK, error)
+		return {}
 	return {"result_id": config.get_value("race", "result_id"),
 		"elapsed": config.get_value("race", "elapsed"), "countdown": config.get_value("race", "countdown"),
 		"checkpoint_index": config.get_value("race", "checkpoint_index"),
@@ -71,12 +80,27 @@ func _run() -> void:
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
 	await _settle()
-	_check(game.menu_active and not game.racing, "normal engine starts in the actual garage", [true, false], [game.menu_active, game.racing])
+	if not _check(game.menu_active and not game.racing, "normal engine starts in the actual garage", [true, false], [game.menu_active, game.racing]):
+		await _finish({}, {})
+		return
 	for step in range(5):
-		_check(game.garage.step == step, "public garage step%d" % step, step, game.garage.step)
-		await _touch(game.garage.next_button)
-	_check(not game.menu_active and not game.paused, "public start enters the actual unpaused race", [false, false], [game.menu_active, game.paused])
+		var actual_step: int = game.garage.step if is_instance_valid(game.garage) else -1
+		if not _check(game.menu_active and actual_step == step, "public garage section%d" % step, step, actual_step):
+			await _finish({}, {})
+			return
+		# Every section is directly reachable. START launches immediately from
+		# any section, so the four navigation touches must use the actual tabs.
+		var control: Control = game.garage.step_buttons[step + 1] if step < 4 else game.garage.next_button
+		if not await _touch(control):
+			await _finish({}, {})
+			return
+	if not _check(not game.menu_active and not game.paused, "public start enters the actual unpaused race", [false, false], [game.menu_active, game.paused]):
+		await _finish({}, {})
+		return
 	var initial: Dictionary = _read()
+	if initial.is_empty():
+		await _finish({}, {})
+		return
 	observations.append(initial)
 	_preserve("01-public-start")
 	var id: String = initial.result_id
@@ -85,6 +109,9 @@ func _run() -> void:
 	while float(Time.get_ticks_usec() - started) / 1000000.0 < 30.0:
 		await physics_frame
 		var row: Dictionary = _read()
+		if row.is_empty():
+			await _finish(first, second)
+			return
 		if row.elapsed != observations.back().elapsed or row.countdown != observations.back().countdown:
 			observations.append(row)
 		if first.is_empty() and row.countdown == 0.0 and row.elapsed >= 1.0:
@@ -104,6 +131,10 @@ func _run() -> void:
 	_check(not second.is_empty() and not first.is_empty() and second.elapsed - first.elapsed >= 5.0
 		and second.elapsed - first.elapsed <= 5.0 + 1.0 / 60.0 + 0.000001,
 		"next normal snapshot retains five active seconds", "five active seconds plus at most one step", second)
+	await _finish(first, second)
+
+
+func _finish(first: Dictionary, second: Dictionary) -> void:
 	var failed: int = 0
 	for row in checks:
 		if not row.passed:
@@ -113,7 +144,7 @@ func _run() -> void:
 	var report: Dictionary = {"status": "PASS" if failed == 0 else "FAIL", "checks": checks,
 		"check_count": checks.size(), "failures": failed, "observations": observations,
 		"first_active": first, "next_periodic": second, "engine": Engine.get_version_info(),
-		"scope": "Normal headless engine physics and five current public GUI touch pairs; host motion preference skips preview; desktop auto-gas defaults; no manual step/gameplay assignment, no Android/visual/FPS claim"}
+		"scope": "Normal headless engine physics and five current public GUI touch pairs: four direct section tabs and one START; host motion preference skips preview; desktop auto-gas defaults; no manual step/gameplay assignment, no Android/visual/FPS claim"}
 	var file := FileAccess.open(output.path_join("natural-engine-public-touch-evidence.json"), FileAccess.WRITE)
 	file.store_string(JSON.stringify(report, "\t"))
 	file.close()

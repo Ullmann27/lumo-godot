@@ -2,7 +2,10 @@ extends SceneTree
 ## Real Godot 4.6.3 regression: racing skill gates, no lucky cubes, no school
 ## prompts, deterministic item scoring and protected persisted pickup keys.
 const RACE = preload("res://scripts/games/kart_resonance_system.gd")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 ## Load the live scene only after SceneTree autoloads (HostBridge etc.) are ready.
+var award_check_completed: bool = false
 
 func _initialize() -> void:
 	call_deferred("_run")
@@ -25,9 +28,14 @@ func _award_test() -> void:
 		"Leaving the ideal line is not a perfect gate.")
 	assert(str(RACE.award(20.0, 22.0, 0.0, 0.0, false).item) == "shield",
 		"Missing drift should not arbitrarily prevent the fair mid-tier.")
+	award_check_completed = true
 
 func _run() -> void:
 	_award_test()
+	if not award_check_completed:
+		push_error("[KartResonance] FAIL: deterministic award checks did not complete")
+		quit(1)
+		return
 	var scene: PackedScene = load("res://scenes/games/kart_island.tscn")
 	var game = scene.instantiate()
 	root.add_child(game)
@@ -61,7 +69,12 @@ func _run() -> void:
 	game.distance = gate_distance
 	game.previous_road_distance = gate_distance
 	game.lane = gate_lane
-	game.speed = 22.0
+	# A high-tier pickup requires the current kart's actual reference pace.
+	# The historical 22 m/s fixture is below that new reference pace.
+	var reference_speed: float = POWERTRAIN.top_speed(
+		game.kart_factors, float(CATALOG.entry(CATALOG.DIFFICULTIES, game.difficulty).speed)
+	)
+	game.speed = reference_speed
 	game.drift_charge = 1.5
 	game.hit_timer = 0.0
 	game._track_events()

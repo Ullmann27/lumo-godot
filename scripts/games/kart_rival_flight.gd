@@ -2,6 +2,7 @@ extends RefCounted
 ## Real rival take-off/flight/landing using the player's ramp and gravity model.
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const STATE_KEY: StringName = &"lumo_ballistic_flight"
 const CONTACT_KEY: StringName = &"lumo_last_road_contact"
 var active: bool = true
@@ -84,7 +85,9 @@ static func update(game, index: int, delta: float) -> bool:
 	var target: Vector3 = game.world.position_at(local + 12.0, state.launch_lane)
 	var heading: float = atan2(-(target.x - rival.position.x), -(target.z - rival.position.z))
 	game.opponent_headings[index] += clampf(
-		angle_difference(game.opponent_headings[index], heading), -0.65 * delta, 0.65 * delta
+		angle_difference(game.opponent_headings[index], heading),
+		-0.65 * POWERTRAIN.PACE_SCALE * delta,
+		0.65 * POWERTRAIN.PACE_SCALE * delta
 	)
 	var forward := Vector3(
 		-sin(game.opponent_headings[index]), 0.0, -cos(game.opponent_headings[index])

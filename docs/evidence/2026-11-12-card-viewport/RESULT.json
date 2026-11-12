@@ -1,0 +1,143 @@
+{
+  "base_commit": "f04e580ec0d7d8f70e8be269523fabedd15b0766",
+  "base_tree": "54c54c9d652d9908a5bf7d12ee2de0c338553a0c",
+  "godot": "4.6.3.stable.official.7d41c59c4",
+  "renderer": "headless",
+  "source_sha256": {
+    "baseline_menu": "1c5d9b6b3e8910bd1c8b49e6f8333a81725b2e29c83c12ba640fc3b4602cd877",
+    "candidate_menu": "89ee1f60bac5aab2ef5b432652f0eb85d6696a65300e7f648471fa74dee8d201",
+    "identical_final_test": "5da50404d04bdc584ac5174ca8123ad9cdd4b55c895954f97d17f4cb9133b93a"
+  },
+  "final_positive": {
+    "exit": 0,
+    "checks": 355,
+    "completed_cases": 6,
+    "android_complete_cards": [
+      14,
+      14
+    ],
+    "safe_height_dp": 351.2381,
+    "scroll_height_dp": 136.5714,
+    "card_height_dp": 90.28571
+  },
+  "final_negative": {
+    "exit": 1,
+    "checks": 346,
+    "completed_cases": 6,
+    "android_complete_cards": [
+      0,
+      0
+    ],
+    "scroll_height_dp": 82.28571,
+    "card_height_dp": 90
+  },
+  "intermediate_failure": {
+    "exit": 1,
+    "checks": 327,
+    "completed_cases": 6,
+    "android_complete_cards": [
+      1,
+      1
+    ],
+    "remaining_physical_overflow_px": 0.75
+  },
+  "prior_renderer": {
+    "run_id": 43214880684,
+    "job_id": 131171444887,
+    "checks": 594,
+    "completed_cases": 5,
+    "actual_checkout": "f04e580ec0d7d8f70e8be269523fabedd15b0766",
+    "artifact_id": 13943123760,
+    "artifact_bytes": 37832251,
+    "artifact_sha256": "8461ea7e4b54e2b72a48cc1a5fcb1830a8a71c63a2ceef7bd8d2f2d9193dedd3",
+    "subsequent_visual_review_found_card_clipping": true
+  },
+  "checks_not_claimed": [
+    "gdlint unavailable (127)",
+    "gdformat unavailable (127)",
+    "new renderer screenshots",
+    "new Android APK acceptance"
+  ],
+  "files": {
+    "README.md": {
+      "sha256": "c4c70a86092e27bba7b2884cfc5d34ba3a721bbffece960b3a8d2bef54ef0247",
+      "bytes": 6430
+    },
+    "baseline-initial.exit": {
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    "baseline-initial.log": {
+      "sha256": "67bed10f81106fc1fccf9d30e3d6fdc140351e4b871514d637d77400ebd9340c",
+      "bytes": 15603
+    },
+    "card-bounds.gd": {
+      "sha256": "f863f6c5dd338a8b51eb8e0237b2679bc0018ce2c4880380c9e45d5773ab5ef9",
+      "bytes": 2330
+    },
+    "final-baseline.exit": {
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    "final-baseline.log": {
+      "sha256": "8f982be955d822c46dc11976c623af4fe10057506630664ae6284ca20cd06aee",
+      "bytes": 15603
+    },
+    "final-fixed.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    "final-fixed.log": {
+      "sha256": "108e47bd8deb0c3d3c85ab91bbe022eaa8c04c1d10163770bd2db38b3616127d",
+      "bytes": 3127
+    },
+    "footer-only.exit": {
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    "footer-only.log": {
+      "sha256": "a179ed28ee121282cfffd3f6b21b660994c21187110d06e2fb179b0d5d650789",
+      "bytes": 14712
+    },
+    "fractional-card-bounds.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    "fractional-card-bounds.log": {
+      "sha256": "e174c18c5170d24c5c3397c85656f1fa9a764aa6c704f3b2437e6b5d8e973ceb",
+      "bytes": 1767
+    },
+    "gdformat.exit": {
+      "sha256": "743c7850cccfba5e53a9002663ec1ddd1079315a98bdbfdde10e6044f56abefe",
+      "bytes": 4
+    },
+    "gdformat.log": {
+      "sha256": "9e97c8856f2be950f1419bde8432c636c7b7facb3b0658b9f1328e180c086984",
+      "bytes": 47
+    },
+    "gdlint.exit": {
+      "sha256": "743c7850cccfba5e53a9002663ec1ddd1079315a98bdbfdde10e6044f56abefe",
+      "bytes": 4
+    },
+    "gdlint.log": {
+      "sha256": "765ce73ea1743d8e64b2171ae87d536a59c2cc3d199aa972c95b39a377915e88",
+      "bytes": 45
+    },
+    "original-card-bounds.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    "original-card-bounds.log": {
+      "sha256": "0a12a961f47f2976364c2bbc37fb4745c78232239f24e031be5cfafbfd3f399d",
+      "bytes": 1769
+    },
+    "project-validation.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    "project-validation.log": {
+      "sha256": "4fa7c9a472aca36b411411412088e6394aa0ccc1feedaded5a6e1cbbf902294f",
+      "bytes": 6139
+    }
+  }
+}

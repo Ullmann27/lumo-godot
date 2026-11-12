@@ -1,0 +1,423 @@
+{
+  "actual_menu_touch_actions": [
+    "tab:3",
+    "choice:Sonnenhafen",
+    "tab:4",
+    "choice:Abenteuer",
+    "tab:0",
+    "choice:Einzelrennen",
+    "START"
+  ],
+  "actual_menu_touch_steps": 7,
+  "actual_result_stats_text": "Gesamtzeit   01:38.433\nBeste Runde   00:48.833\nSterne gesammelt   46\nBelohnung   +3 Sterne",
+  "best_lap_seconds_unrounded": 48.8333333333306,
+  "check_count": 9,
+  "checks": [
+    {
+      "actual": {
+        "game": "kart",
+        "resultId": "complete-touch-race-1794477635878-3766177",
+        "sessionId": "complete-touch-race",
+        "solved": 0.0,
+        "stars": 0.0,
+        "status": "paused"
+      },
+      "expected": true,
+      "name": "gate-twelve touch pause saves a paused race",
+      "passed": true
+    },
+    {
+      "actual": {
+        "checkpoint_index": 12,
+        "distance": 2777.60714340423,
+        "elapsed": 72.1333333333305,
+        "lap_started_at": 49.5999999999985,
+        "lap_times": [
+          49.5999999999985
+        ],
+        "result_id": "complete-touch-race-1794477635878-3766177"
+      },
+      "expected": {
+        "checkpoint_index": 12,
+        "distance": 2777.60714340423,
+        "elapsed": 72.1333333333305,
+        "lap_started_at": 49.5999999999985,
+        "lap_times": [
+          49.5999999999985
+        ],
+        "result_id": "complete-touch-race-1794477635878-3766177"
+      },
+      "name": "second-lap touch reopen retains completed lap timing",
+      "passed": true
+    },
+    {
+      "actual": {
+        "checkpoint_index": 12,
+        "distance": 2777.60714340423,
+        "elapsed": 72.1333333333305,
+        "lap_started_at": 49.5999999999985,
+        "lap_times": [
+          49.5999999999985
+        ],
+        "result_id": "complete-touch-race-1794477635878-3766177"
+      },
+      "expected": {
+        "checkpoint_index": 12,
+        "distance": 2777.60714340423,
+        "elapsed": 72.1333333333305,
+        "lap_started_at": 49.5999999999985,
+        "lap_times": [
+          49.5999999999985
+        ],
+        "result_id": "complete-touch-race-1794477635878-3766177"
+      },
+      "name": "second-lap touch reopen keeps paused progress and identity",
+      "passed": true
+    },
+    {
+      "actual": [
+        49.5999999999985,
+        48.8333333333306
+      ],
+      "expected": [
+        49.5999999999985,
+        48.8333333333306
+      ],
+      "name": "full touch race retains two independently measured lap intervals",
+      "passed": true
+    },
+    {
+      "actual": {
+        "bestLapSeconds": 48.833,
+        "checkpoints": 16,
+        "driver": "fox",
+        "elapsedSeconds": 98.433,
+        "game": "kart",
+        "kart": "comet",
+        "mode": "race",
+        "place": 6,
+        "resets": 0,
+        "resultId": "complete-touch-race-1794477635878-3766177",
+        "sessionId": "",
+        "solved": 0,
+        "starTokens": 46,
+        "stars": 3,
+        "status": "completed",
+        "track": "sonnenhafen"
+      },
+      "expected": {
+        "bestLapSeconds": 48.833,
+        "elapsedSeconds": 98.433
+      },
+      "name": "public best and total equal measured gate milliseconds",
+      "passed": true
+    },
+    {
+      "actual": {
+        "bestLapSeconds": 48.833,
+        "checkpoints": 16,
+        "driver": "fox",
+        "elapsedSeconds": 98.433,
+        "game": "kart",
+        "kart": "comet",
+        "mode": "race",
+        "place": 6,
+        "resets": 0,
+        "resultId": "complete-touch-race-1794477635878-3766177",
+        "sessionId": "",
+        "solved": 0,
+        "starTokens": 46,
+        "stars": 3,
+        "status": "completed",
+        "track": "sonnenhafen"
+      },
+      "expected": {
+        "bestLapSeconds": 48.833,
+        "checkpoints": 16,
+        "driver": "fox",
+        "elapsedSeconds": 98.433,
+        "game": "kart",
+        "kart": "comet",
+        "mode": "race",
+        "place": 6,
+        "resets": 0,
+        "resultId": "complete-touch-race-1794477635878-3766177",
+        "sessionId": "",
+        "solved": 0,
+        "starTokens": 46,
+        "stars": 3,
+        "status": "completed",
+        "track": "sonnenhafen"
+      },
+      "name": "finished touch reopen keeps the original public payload",
+      "passed": true
+    },
+    {
+      "actual": {
+        "text": "Gesamtzeit   01:38.433\nBeste Runde   00:48.833\nSterne gesammelt   46\nBelohnung   +3 Sterne",
+        "visible": true
+      },
+      "expected": {
+        "text": "Gesamtzeit   01:38.433\nBeste Runde   00:48.833\nSterne gesammelt   46\nBelohnung   +3 Sterne",
+        "visible": true
+      },
+      "name": "finished touch reopen visibly retains original result lines",
+      "passed": true
+    },
+    {
+      "actual": {
+        "after_tick": {
+          "action_disabled": {
+            "boost": true,
+            "brake": true,
+            "drift": true,
+            "gas": true,
+            "item": true
+          },
+          "controls_visible": false,
+          "displayed_speed_kmh": 0,
+          "expected_message_text": "Platz 6",
+          "hud_text": "RUNDE 2 / 2    PLATZ 6 / 6    0 km/h    ★ 46",
+          "message_text": "Platz 6",
+          "raw_speed": 5.5298343
+        },
+        "immediate": {
+          "action_disabled": {
+            "boost": true,
+            "brake": true,
+            "drift": true,
+            "gas": true,
+            "item": true
+          },
+          "controls_visible": false,
+          "displayed_speed_kmh": 0,
+          "expected_message_text": "Platz 6",
+          "hud_text": "RUNDE 2 / 2    PLATZ 6 / 6    0 km/h    ★ 46",
+          "message_text": "Platz 6",
+          "raw_speed": 5.5298343
+        }
+      },
+      "expected": {
+        "all_actions_disabled": true,
+        "controls_visible": false,
+        "displayed_speed_kmh": 0
+      },
+      "name": "finished touch reopen hides controls and immediately displays stopped HUD",
+      "passed": true
+    },
+    {
+      "actual": {
+        "host_rewards": 1,
+        "local_stars": 3
+      },
+      "expected": {
+        "host_rewards": 1,
+        "local_stars": 3
+      },
+      "name": "finished touch reopen cannot award twice",
+      "passed": true
+    }
+  ],
+  "display_server": "headless",
+  "engine": "4.6.3-stable (official)",
+  "expected_laps": [
+    49.5999999999985,
+    48.8333333333306
+  ],
+  "failed_checks": 0,
+  "finished_elapsed_seconds": 98.433333333329,
+  "historical_unrecovered_probe_sha256": "a260568656f2c4b5d6501b71e511cdfde3fb2d03e1f9f14c6dabc1e5dbbfd917",
+  "input": "screen touch/drag; physics stepped at 1/60; no teleport or forced finish",
+  "lap2_before": {
+    "checkpoint_index": 12,
+    "distance": 2777.60714340423,
+    "elapsed": 72.1333333333305,
+    "lap_started_at": 49.5999999999985,
+    "lap_times": [
+      49.5999999999985
+    ],
+    "result_id": "complete-touch-race-1794477635878-3766177"
+  },
+  "lap2_restored": {
+    "checkpoint_index": 12,
+    "distance": 2777.60714340423,
+    "elapsed": 72.1333333333305,
+    "lap_started_at": 49.5999999999985,
+    "lap_times": [
+      49.5999999999985
+    ],
+    "result_id": "complete-touch-race-1794477635878-3766177"
+  },
+  "lap2_save_reopen_resume": true,
+  "lap_times": [
+    49.5999999999985,
+    48.8333333333306
+  ],
+  "ordered_gates": [
+    {
+      "distance": 231.866231963737,
+      "gate": 1,
+      "seconds": 6.29999999999998
+    },
+    {
+      "distance": 463.280300349696,
+      "gate": 2,
+      "seconds": 11.9333333333335
+    },
+    {
+      "distance": 694.594001085265,
+      "gate": 3,
+      "seconds": 17.566666666667
+    },
+    {
+      "distance": 926.264319644077,
+      "gate": 4,
+      "seconds": 23.2
+    },
+    {
+      "distance": 1157.34152942364,
+      "gate": 5,
+      "seconds": 31.2166666666662
+    },
+    {
+      "distance": 1389.38898910796,
+      "gate": 6,
+      "seconds": 38.3166666666658
+    },
+    {
+      "distance": 1620.23581750904,
+      "gate": 7,
+      "seconds": 43.9333333333321
+    },
+    {
+      "distance": 1852.24956374084,
+      "gate": 8,
+      "seconds": 49.5999999999985
+    },
+    {
+      "distance": 2083.24432739829,
+      "gate": 9,
+      "seconds": 55.2333333333315
+    },
+    {
+      "distance": 2314.64481429969,
+      "gate": 10,
+      "seconds": 60.8666666666645
+    },
+    {
+      "distance": 2546.64129397487,
+      "gate": 11,
+      "seconds": 66.5166666666642
+    },
+    {
+      "distance": 2777.60714340423,
+      "gate": 12,
+      "seconds": 72.1333333333305
+    },
+    {
+      "distance": 3009.08944913213,
+      "gate": 13,
+      "seconds": 80.0333333333301
+    },
+    {
+      "distance": 3240.82533575808,
+      "gate": 14,
+      "seconds": 87.1499999999963
+    },
+    {
+      "distance": 3472.39183934246,
+      "gate": 15,
+      "seconds": 92.7833333333294
+    },
+    {
+      "distance": 3703.71822272455,
+      "gate": 16,
+      "seconds": 98.433333333329
+    }
+  ],
+  "physical_device_performance": "NOT EXECUTED",
+  "probe_sha256": "f107eb1ce7dda80535aa12b6db87ceb9bcccd604ebd06048a37472b80a46b0b6",
+  "provenance": "NATIVE_TABS_DIRECT_START_PHYSICAL_RACE",
+  "renderer_setting": "forward_plus",
+  "rendering_method": "forward_plus",
+  "reopened_result_elapsed_seconds": 98.433333333329,
+  "reopened_result_payload": {
+    "bestLapSeconds": 48.833,
+    "checkpoints": 16,
+    "driver": "fox",
+    "elapsedSeconds": 98.433,
+    "game": "kart",
+    "kart": "comet",
+    "mode": "race",
+    "place": 6,
+    "resets": 0,
+    "resultId": "complete-touch-race-1794477635878-3766177",
+    "sessionId": "",
+    "solved": 0,
+    "starTokens": 46,
+    "stars": 3,
+    "status": "completed",
+    "track": "sonnenhafen"
+  },
+  "reopened_result_screenshot": "",
+  "reopened_result_screenshot_sha256": "",
+  "reopened_result_stats_text": "Gesamtzeit   01:38.433\nBeste Runde   00:48.833\nSterne gesammelt   46\nBelohnung   +3 Sterne",
+  "reopened_result_stats_visible": true,
+  "reopened_result_ui": {
+    "action_disabled": {
+      "boost": true,
+      "brake": true,
+      "drift": true,
+      "gas": true,
+      "item": true
+    },
+    "after_tick": {
+      "action_disabled": {
+        "boost": true,
+        "brake": true,
+        "drift": true,
+        "gas": true,
+        "item": true
+      },
+      "controls_visible": false,
+      "displayed_speed_kmh": 0,
+      "expected_message_text": "Platz 6",
+      "hud_text": "RUNDE 2 / 2    PLATZ 6 / 6    0 km/h    ★ 46",
+      "message_text": "Platz 6",
+      "raw_speed": 5.5298343
+    },
+    "controls_visible": false,
+    "displayed_speed_kmh": 0,
+    "expected_message_text": "Platz 6",
+    "hud_text": "RUNDE 2 / 2    PLATZ 6 / 6    0 km/h    ★ 46",
+    "message_text": "Platz 6",
+    "raw_speed": 5.5298343
+  },
+  "result": {
+    "bestLapSeconds": 48.833,
+    "checkpoints": 16,
+    "driver": "fox",
+    "elapsedSeconds": 98.433,
+    "game": "kart",
+    "kart": "comet",
+    "mode": "race",
+    "place": 6,
+    "resets": 0,
+    "resultId": "complete-touch-race-1794477635878-3766177",
+    "sessionId": "",
+    "solved": 0,
+    "starTokens": 46,
+    "stars": 3,
+    "status": "completed",
+    "track": "sonnenhafen"
+  },
+  "result_stats_visible": true,
+  "reward_calls": 1,
+  "save_reopen_resume": true,
+  "screenshot_sha256": {
+
+  },
+  "source_sha256": "d531c10e6cc9fa8ce053e0b0f09d856b7cef961adc3622a0835d24e6eab4f012",
+  "status": "PASS",
+  "visual_capture_status": "NOT_EXECUTED_HEADLESS"
+}

@@ -65,7 +65,7 @@ func _run() -> void:
 	print("[MenuDepth] draw_calls high=", high_calls)
 	_check(high_calls < 220, "high-tier draw calls stay in the mobile preview budget")
 	_check(is_instance_valid(garage.next_button), "Weiter control remains")
-	_check(garage.title_label.text in ["Dein nächstes Abenteuer", "Dein Abenteuer"], "old title")
+	_check(garage.title_label.text == "Rennen", "direct race section title")
 	var catalog = load("res://scripts/games/kart_catalog.gd")
 	var tracks: Array = catalog.TRACKS if catalog.get("TRACKS") != null else []
 	if tracks.is_empty() and catalog.has_method("tracks"):
@@ -86,7 +86,8 @@ func _run() -> void:
 	garage._process(0.16)
 	_check(garage._backdrop_parallax != Vector2.ZERO, "idle parallax offsets the painting")
 	game.queue_free()
-	await _settle(2)
+	# Let deferred child/preview cleanup finish before the standalone probe exits.
+	await _settle(8)
 	if failures.is_empty():
 		print("[MenuDepth] PASS: ", checks, " checks")
 		quit(0)

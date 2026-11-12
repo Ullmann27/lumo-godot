@@ -70,6 +70,8 @@ jobs:
           assert evidence['lap2_save_reopen_resume'] is True
           assert evidence['reward_calls']==1
           assert len(evidence['ordered_gates'])==16
+          assert evidence['visual_capture_status']=='RENDERED'
+          assert len(evidence['screenshot_sha256'])==6
           for path in evidence['screenshot_sha256']:
               assert Path('exports/complete-flow', path).stat().st_size>0, path
           print('LUMO_COMPLETE_RACE_PASS: 16 real checkpoints, 2 real laps, 6 actual renders')

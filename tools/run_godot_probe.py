@@ -25,15 +25,29 @@ def main():
     failed = False
     timed_out = threading.Event()
     passed = False
+    kill_timer = None
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                text=True, bufsize=1, start_new_session=True)
 
     def stop():
+        nonlocal kill_timer
         if process.poll() is None:
             try:
                 os.killpg(process.pid, signal.SIGTERM)
             except ProcessLookupError:
                 pass
+            if kill_timer is None:
+                # An engine/render-driver hang must not keep the CI gate alive
+                # after its deadline or after a failing GDScript assertion.
+                def force_stop():
+                    if process.poll() is None:
+                        try:
+                            os.killpg(process.pid, signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+                kill_timer = threading.Timer(5.0, force_stop)
+                kill_timer.daemon = True
+                kill_timer.start()
 
     def deadline():
         timed_out.set()
@@ -55,6 +69,8 @@ def main():
             result = process.wait()
     finally:
         timer.cancel()
+        if kill_timer is not None:
+            kill_timer.cancel()
     if timed_out.is_set():
         print(f'[ProbeRunner] timeout after {args.timeout:g}s', file=sys.stderr)
     if failed or timed_out.is_set() or result != 0 or not passed:

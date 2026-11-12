@@ -108,7 +108,7 @@ func _run() -> void:
 	assert(game.menu_active)
 	for step in range(5):
 		assert(game.garage.step == step)
-		await _tap(game.garage.next_button)
+		await _tap(game.garage.step_buttons[step + 1] if step < 4 else game.garage.next_button)
 	assert(not game.menu_active and game.preview_left > 0.0 and game.countdown > 0.0)
 	await _capture("01-preview")
 	# Existing policy ends the preview on pause; the untouched countdown resumes.

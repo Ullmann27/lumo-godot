@@ -52,7 +52,8 @@ static func curvature(world, road_distance: float) -> float:
 static func corner_speed(bend: float, difficulty: String, kart_id: String, index: int) -> float:
 	if absf(bend) < 0.0001:
 		return INF
-	var grip: float = 14.5 if difficulty == "pro" else 11.5 if difficulty == "flott" else 8.0
+	var grip: float = 17.0 if difficulty == "pro" else 12.5 if difficulty == "flott" else 8.0
+	grip *= POWERTRAIN.DYNAMICS_SCALE
 	grip *= float(factors(kart_id).grip) * float(style(index).corner)
 	return maxf(7.0, sqrt(grip / absf(bend)))
 

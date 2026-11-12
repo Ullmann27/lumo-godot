@@ -1,0 +1,29 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[KartActionCourse] sonnenhafen: 1 Felder, 0 Tore, 4 Schanze, 0 Tauchstrecke, 0 offene Kante
+[KartActionCourse] zauberwald: 2 Felder, 4 Tore, 1 Schanze, 1 Tauchstrecke, 0 offene Kante
+[KartActionCourse] bergwelt: 2 Felder, 4 Tore, 0 Schanze, 0 Tauchstrecke, 0 offene Kante
+[KartActionCourse] holo_city: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 0 offene Kante
+[KartActionCourse] crystal_canyon: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 1 offene Kante
+[KartActionCourse] jungle_temple: 2 Felder, 4 Tore, 1 Schanze, 1 Tauchstrecke, 0 offene Kante
+[KartActionCourse] candy_cloud: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 1 offene Kante
+[KartActionCourse] volcano_night: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 1 offene Kante
+[KartActionCourse] winter_sprint: 2 Felder, 4 Tore, 1 Schanze, 1 Tauchstrecke, 0 offene Kante
+[KartActionCourse] galaxy_ringway: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 1 offene Kante
+[KartActionCourse] desert_drift: 2 Felder, 4 Tore, 1 Schanze, 1 Tauchstrecke, 0 offene Kante
+[KartActionCourse] learning_lab: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 0 offene Kante
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: zauberwald mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[KartSonnenhafenFlight] 62.7m flown, 5.3m high, 1.52s airborne, no reset
+[Kart] race_world_ready: candy_cloud mode=training
+[KartOpenEdge] 1.48 s to cloud rescue; beyond-edge height -4.25 m; no rail lift
+[KartActionLogic] PASS: five production-physics checks; native renderer gate remains separate

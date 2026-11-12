@@ -1,0 +1,36 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: sonnenhafen mode=race
+[KartCompleteFlowGate] {"distance":231.866231963737,"gate":1,"seconds":6.29999999999998}
+[KartCompleteFlowGate] {"distance":463.280300349696,"gate":2,"seconds":11.9333333333335}
+[KartCompleteFlowGate] {"distance":694.594001085265,"gate":3,"seconds":17.566666666667}
+[KartCompleteFlowGate] {"distance":926.264319644077,"gate":4,"seconds":23.2}
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[KartCompleteFlowGate] {"distance":1157.34152942364,"gate":5,"seconds":31.2166666666662}
+[KartCompleteFlowGate] {"distance":1389.38898910796,"gate":6,"seconds":38.3166666666658}
+[KartCompleteFlowGate] {"distance":1620.23581750904,"gate":7,"seconds":43.9333333333321}
+[KartCompleteFlowGate] {"distance":1852.24956374084,"gate":8,"seconds":49.5999999999985}
+[KartCompleteFlowGate] {"distance":2083.24432739829,"gate":9,"seconds":55.2333333333315}
+[KartCompleteFlowGate] {"distance":2314.64481429969,"gate":10,"seconds":60.8666666666645}
+[KartCompleteFlowGate] {"distance":2546.64129397487,"gate":11,"seconds":66.5166666666642}
+[KartCompleteFlowGate] {"distance":2777.60714340423,"gate":12,"seconds":72.1333333333305}
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[KartCompleteFlowGate] {"distance":3009.08944913213,"gate":13,"seconds":80.0333333333301}
+[KartCompleteFlowGate] {"distance":3240.82533575808,"gate":14,"seconds":87.1499999999963}
+[KartCompleteFlowGate] {"distance":3472.39183934246,"gate":15,"seconds":92.7833333333294}
+[LumoHost] reward reported: complete-touch-race-1794477635878-3766177
+[Kart] completed: mode=race track=sonnenhafen stars=3 place=6
+[KartCompleteFlowGate] {"distance":3703.71822272455,"gate":16,"seconds":98.433333333329}
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[LumoHost] return: games
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[KartCompleteFlow] PASS: actual menu/touch, 16 gates, saved resume, result, ACK, one reward
