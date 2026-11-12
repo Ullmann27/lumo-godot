@@ -20,6 +20,7 @@ const RIVAL_FLIGHT = preload("res://scripts/games/kart_rival_flight.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const DARKRIDE_EVENT = preload("res://scripts/games/kart_darkride_event_director.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
+const ROADSIDE_LASSO = preload("res://scripts/games/kart_roadside_lasso.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
 const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
@@ -79,6 +80,7 @@ const PREVIEW_SECONDS: float = 5.0
 const PREVIEW_BLEND_SECONDS: float = 1.1
 var curve: Curve3D
 var world: LumoRaceWorld
+var roadside_lasso: Node3D
 var darkride_event = DARKRIDE_EVENT.new()
 var track_length: float
 var distance: float = 0.0
@@ -386,6 +388,7 @@ func _build_world() -> void:
 	arena_pickup_timers.clear()
 	ghost = null
 	darkride_event.bind_world(null)
+	roadside_lasso = null
 	world = null
 	arena = null
 	crystal_mesh = _gem_mesh()
@@ -402,6 +405,10 @@ func _build_world() -> void:
 		world = WORLD.new()
 		race_root.add_child(world)
 		world.build(lightweight, track_id)
+		roadside_lasso = ROADSIDE_LASSO.new()
+		roadside_lasso.name = "RoadsideLasso"
+		world.add_child(roadside_lasso)
+		roadside_lasso.setup(world)
 		darkride_event.bind_world(world)
 		curve = world.curve
 		track_length = world.length
@@ -433,6 +440,7 @@ func _build_world() -> void:
 		for entry in item_layout:
 			_item_box(float(entry[0]) * track_length, float(entry[1]))
 	player = VEHICLE.new()
+	player.set_meta("roadside_speed_factor", 1.0)
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, selected_driver)
 	player.set_look(_ensure_workshop().look(selected_kart))
 	player.configure(selected_driver, driver.color, selected_kart)
@@ -489,6 +497,7 @@ func _build_world() -> void:
 	var rival_karts: Array[String] = _rival_karts()
 	for i in range(rival_count):
 		var opponent: LumoRaceKart = VEHICLE.new()
+		opponent.set_meta("roadside_speed_factor", 1.0)
 		opponent.set_meta("reference_rival", reference_rivals)
 		opponent.configure(animals[i], colors[i], rival_karts[i % rival_karts.size()])
 		opponent.reduced_motion = reduced_motion
@@ -1458,6 +1467,8 @@ func _physics_process(delta: float) -> void:
 		else:
 			_drive_opponents(delta)
 			_track_events()
+			if is_instance_valid(roadside_lasso):
+				roadside_lasso.advance(self, delta)
 			darkride_event.tick(distance, track_length, delta, reduced_motion)
 			_update_checkpoints()
 			if mode == "time_trial":
@@ -1555,6 +1566,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	if kart_factors.is_empty():
 		_refresh_kart_factors()
 	var target: float = POWERTRAIN.top_speed(kart_factors, float(rules.speed))
+	target *= clampf(float(player.get_meta("roadside_speed_factor", 1.0)), 0.0, 1.0)
 	if mode != "arena":
 		target *= world.dive_factor(previous_road_distance)
 	var manual_gas: bool = _manual_gas_active()
@@ -1597,8 +1609,8 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		acceleration *= BOOST_ACCELERATION_MULTIPLIER
 	if not airborne or boost_active:
 		speed = move_toward(speed, target, delta * acceleration)
-	var grip_turn: float = clampf(absf(speed) / 8.0, 0, 1)
-	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * _factor("turn") * grip_turn
+	var grip_turn: float = clampf(absf(speed) / (8.0 * POWERTRAIN.PACE_SCALE), 0, 1)
+	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * _factor("turn") * grip_turn * POWERTRAIN.PACE_SCALE
 	if speed < 0.0:
 		turn_rate = -turn_rate
 	if airborne:
@@ -1608,7 +1620,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		landing_settle = maxf(0.0, landing_settle - delta)
 	player_heading -= axis * turn_rate * delta
 	var forward := Vector3(-sin(player_heading), 0, -cos(player_heading))
-	var grip: float = 3.1 if drifting else 9.0 * _factor("grip")
+	var grip: float = (3.1 if drifting else 9.0 * _factor("grip")) * POWERTRAIN.PACE_SCALE
 	physical_velocity = physical_velocity.lerp(forward * speed, minf(1, delta * grip))
 	# Child-friendly precision flight: velocity-only boundary, measured from
 	# the SAME curving road frame as the game's lane value. The lip frame alone
@@ -1627,7 +1639,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 			physical_velocity -= side * (excess / maxf(delta, 0.0001))
 	player.position += physical_velocity * delta
 	if drifting and speed > 6 and not airborne:
-		drift_charge = minf(3, drift_charge + delta * absf(axis))
+		drift_charge = minf(3, drift_charge + delta * absf(axis) * POWERTRAIN.PACE_SCALE)
 	if mode == "arena":
 		player.position.y = 0.035
 		var radius: float = Vector2(player.position.x, player.position.z).length()
@@ -2154,7 +2166,7 @@ func _update_rival_drift(index: int, road: Dictionary, pace: float, delta: float
 	var controlled: bool = aligned and absf(float(road.lateral)) < 4.0 and opponent_stuns[index] <= 0.0
 	var drifting_now: bool = difficulty != "gemuetlich" and controlled and pace >= 10.0 and turn_rate > 0.09
 	if drifting_now:
-		charge = minf(2.2, charge + delta * clampf(turn_rate * 3.2, 0.0, 1.0))
+		charge = minf(2.2, charge + delta * POWERTRAIN.PACE_SCALE * clampf(turn_rate * 3.2, 0.0, 1.0))
 	else:
 		# Same time tiers as the player's held drift. Charge is earned only by
 		# a sustained controlled turn, and a collision cancels it completely.
@@ -2174,14 +2186,14 @@ func _rival_traffic(index: int, road: Dictionary) -> PackedVector3Array:
 		if other == index:
 			continue
 		var gap: Vector3 = opponents[other].position - origin
-		if gap.length_squared() < 2500.0 and absf(gap.dot(basis.y)) < 3.0:
+		if gap.length_squared() < 10000.0 and absf(gap.dot(basis.y)) < 3.0:
 			traffic.append(Vector3(gap.dot(-basis.z), float(road.lateral) + gap.dot(basis.x), absf(opponents[other].motion_speed)))
 	var player_gap: Vector3 = player.position - origin
-	if player_gap.length_squared() < 2500.0 and absf(player_gap.dot(basis.y)) < 3.0:
+	if player_gap.length_squared() < 10000.0 and absf(player_gap.dot(basis.y)) < 3.0:
 		traffic.append(Vector3(player_gap.dot(-basis.z), float(road.lateral) + player_gap.dot(basis.x), maxf(0.0, speed)))
 	for obstacle in world.action_obstacles:
 		var gap: Vector3 = obstacle - origin
-		if gap.length_squared() < 2500.0 and absf(gap.dot(basis.y)) < 3.0:
+		if gap.length_squared() < 10000.0 and absf(gap.dot(basis.y)) < 3.0:
 			traffic.append(Vector3(gap.dot(-basis.z), float(road.lateral) + gap.dot(basis.x), 0.0))
 	return traffic
 
@@ -2206,40 +2218,40 @@ func _rival_can_boost(index: int) -> bool:
 
 
 func _rival_profile() -> Dictionary:
-	# Entdecken / Abenteuer / Sternen-Profi. Speed still comes only from the
+	# Entdecken / Abenteuer / Extrem. Speed still comes only from the
 	# catalog multipliers — never from the gap to the player.
 	match difficulty:
 		"gemuetlich":
 			return {
 				"look_ahead": 6.5,
-				"turn_rate": 1.08,
+				"turn_rate": 1.08 * POWERTRAIN.PACE_SCALE,
 				"wobble": 1.15,
 				"wobble_hz": 0.55,
 				"mistake": 0.85,
 				"mistake_hz": 0.31,
-				"overtake": 5.5,
+				"overtake": 11.0,
 				"lane_spread": 1.15,
 			}
 		"pro":
 			return {
 				"look_ahead": 18.0,
-				"turn_rate": 2.15,
-				"wobble": 0.10,
+				"turn_rate": 2.45 * POWERTRAIN.PACE_SCALE,
+				"wobble": 0.025,
 				"wobble_hz": 2.1,
 				"mistake": 0.0,
 				"mistake_hz": 1.0,
-				"overtake": 16.0,
+				"overtake": 36.0,
 				"lane_spread": 1.55,
 			}
 		_:
 			return {
 				"look_ahead": 10.0,
-				"turn_rate": 1.55,
+				"turn_rate": 1.55 * POWERTRAIN.PACE_SCALE,
 				"wobble": 0.32,
 				"wobble_hz": 0.35,
 				"mistake": 0.22,
 				"mistake_hz": 0.62,
-				"overtake": 9.0,
+				"overtake": 20.0,
 				"lane_spread": 1.35,
 			}
 
@@ -2268,7 +2280,7 @@ func _drive_opponents(delta: float) -> void:
 			# safety still wins over a pickup, and stunt lane choice is applied later.
 			for ring in range(item_box_distances.size()):
 				var ahead: float = fposmod(item_box_distances[ring] - float(sampled.distance), track_length)
-				if ahead > 1.0 and ahead < 26.0:
+				if ahead > 1.0 and ahead < maxf(26.0, absf(rival.motion_speed) * 1.35):
 					target_lane = item_box_laterals[ring]
 					break
 		var traffic: PackedVector3Array = _rival_traffic(i, sampled)
@@ -2302,6 +2314,7 @@ func _drive_opponents(delta: float) -> void:
 		_sync_rival_item_fx(i)
 		if opponent_stuns[i] > 0:
 			target_speed *= 0.3
+		target_speed *= clampf(float(rival.get_meta("roadside_speed_factor", 1.0)), 0.0, 1.0)
 		var rival_drifting: bool = _update_rival_drift(i, sampled, target_speed, delta)
 		var forward := Vector3(-sin(opponent_headings[i]), 0, -cos(opponent_headings[i]))
 		if opponent_stuns[i] <= 0.0:

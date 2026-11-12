@@ -137,6 +137,7 @@ func _layout() -> void:
 	var portrait := available.x < available.y
 	var narrow := available.x < 520
 	var short_view := available.y < 440
+	_header.visible = available.y >= 300
 	var margin := 12.0 if narrow or short_view else 20.0
 	var header_height := 48.0 if short_view else 68.0
 	_rect(_header, Rect2(margin, margin, available.x - margin * 2, header_height))

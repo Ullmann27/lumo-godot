@@ -65,7 +65,7 @@ func _run() -> void:
 	print("[MenuDepth] draw_calls high=", high_calls)
 	_check(high_calls < 220, "high-tier draw calls stay in the mobile preview budget")
 	_check(is_instance_valid(garage.next_button), "Weiter control remains")
-	_check(garage.title_label.text in ["Dein nächstes Abenteuer", "Dein Abenteuer"], "old title")
+	_check(garage.title_label.text == "Rennen", "direct race section title")
 	var catalog = load("res://scripts/games/kart_catalog.gd")
 	var tracks: Array = catalog.TRACKS if catalog.get("TRACKS") != null else []
 	if tracks.is_empty() and catalog.has_method("tracks"):

@@ -4,6 +4,8 @@ extends SceneTree
 ## flight, loop or countdown state is injected into the running game.
 const STEP := 1.0 / 60.0
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const RAMP_PLAN = preload("res://scripts/games/kart_rival_ramp_plan.gd")
 var game
 var output := "res://exports/player-full-route"
 var recording := false
@@ -102,14 +104,14 @@ func _drive_controls() -> void:
 	if game.loop_state.active:
 		turn = 0.0
 	_steer(turn)
-	var target_speed := 22.0
+	# Drive the actual new road pace. Keep the mandatory gap and optional loop
+	# by braking through the real pedal according to the published flight model.
+	var target_speed: float = POWERTRAIN.top_speed(game.kart_factors)
 	for kicker in game.world.action.get("kickers", []):
-		if bool(kicker.get("precision_jump", false)):
-			var lead: float = float(kicker.take_off) - at
-			if lead > 0.0 and lead < 55.0:
-				target_speed = PRECISION.speed_for_distance(
-					(float(kicker.landing_min) + float(kicker.landing_max)) * 0.5, kicker
-				)
+		var lead: float = float(kicker.take_off) - at
+		var launch_speed: float = RAMP_PLAN.launch_speed(game.world, kicker)
+		if launch_speed > 0.0 and lead > 0.0 and lead < 55.0:
+			target_speed = launch_speed
 	var should_brake: bool = (
 		not game.airborne
 		and not game.loop_state.active

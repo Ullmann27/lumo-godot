@@ -117,9 +117,10 @@ func _apply_responsive_layout() -> void:
 	var portrait := available.x < available.y
 	var narrow := available.x < 520.0
 	var short_view := available.y < 440.0
+	var ultra_short := available.y < 300.0
 	var margin := 12.0 if narrow or short_view else 20.0
-	var header_height := 48.0 if short_view else 64.0
-	var tabs_y := margin + header_height + 8.0
+	var header_height := 0.0 if ultra_short else (48.0 if short_view else 64.0)
+	var tabs_y := margin + header_height + (0.0 if ultra_short else 8.0)
 	var footer_height := 52.0 if short_view else 60.0
 	var footer_y := available.y - margin - footer_height
 	_apply_ui_scale(self, scale_factor)
@@ -147,7 +148,7 @@ func _apply_responsive_layout() -> void:
 	else:
 		choices_rect = Rect2(margin, top, clampf(available.x * 0.31, 208, 360), maxf(72, footer_y - top - 12))
 	_stage_rect(_selection_surface, choices_rect, scale_factor)
-	_stage_rect(setup_left, choices_rect.grow(-10.0), scale_factor)
+	_stage_rect(setup_left, choices_rect.grow(-4.0 if short_view else -10.0), scale_factor)
 	setup_left.custom_minimum_size = Vector2.ZERO
 	setup_left.add_theme_constant_override("separation", roundi(6 * scale_factor))
 	_set_physical_font(title_label, 18 if short_view or narrow else 23, scale_factor)
@@ -187,6 +188,7 @@ func _apply_responsive_layout() -> void:
 	view_choice.visible = not _landing_active and step in [1, 2]
 	for control in _stage_controls:
 		control.visible = not _landing_active
+	_stage_header.visible = not _landing_active and not ultra_short
 	_selection_surface.visible = not _landing_active
 	call_deferred("_fit_welcome_camera")
 

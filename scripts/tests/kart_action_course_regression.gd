@@ -5,6 +5,7 @@ extends SceneTree
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const STEP: float = 1.0 / 60.0
 var game
 
@@ -29,7 +30,7 @@ func _check_plans() -> void:
 		assert(course.pads.size() == config.get("pads", []).size() + stunt_pads, "%s: alle Turbo-Felder haben Platz" % track)
 		assert(course.gates.size() == (ACTION.GATE_COUNT if config.has("slalom") else 0), "%s: Slalom-Tore" % track)
 		var stunt_kickers: int = ACTION.STUNT.kickers(world).size() if config.get("stunt", false) else 0
-		assert(course.kickers.size() == (1 if config.has("kicker") else 0) + stunt_kickers, "%s: Sprungschanze" % track)
+		assert(course.kickers.size() == (1 if config.has("kicker") else 0) + stunt_kickers + config.get("extra_kickers", []).size(), "%s: Sprungschanze" % track)
 		assert(course.dives.size() == (1 if config.has("dive") else 0), "%s: Tauchstrecke" % track)
 		assert(course.edges.size() == config.get("edges", []).size(), "%s: offene Kanten" % track)
 		var spans: Array = []
@@ -177,7 +178,7 @@ func _check_kicker_and_dive() -> void:
 		game._physics_process(STEP)
 		if game.action_in_dive:
 			top = maxf(top, game.speed)
-	assert(top <= 20.5 * ACTION.DIVE_SPEED + 0.6, "Unter Wasser fährt man langsamer (%.1f m/s)" % top)
+	assert(top <= POWERTRAIN.top_speed({}) * ACTION.DIVE_SPEED + 0.6, "Unter Wasser fährt man langsamer (%.1f m/s)" % top)
 	_place(float(dive.end) + 8.0, 0.0, 16.0)
 	game._physics_process(STEP)
 	assert(not game.action_in_dive and not game.dive_tint.visible, "Nach dem Tunnel wieder klare Sicht")
@@ -188,7 +189,7 @@ func _check_kicker_and_dive() -> void:
 func _check_sonnenhafen_long_flight() -> void:
 	await _start("sonnenhafen")
 	var course: Dictionary = game.world.action
-	assert(course.kickers.size() == 2, "Sonnenhafen: panorama jump plus stunt jump")
+	assert(course.kickers.size() == 4, "Sonnenhafen: panorama, stunt and two additional road kickers")
 	var kicker: Dictionary = course.kickers[0]
 	assert(bool(kicker.hero_flight) and float(kicker.length) > ACTION.KICKER_LENGTH)
 	assert(float(kicker.flight_gravity) < game.JUMP_GRAVITY)

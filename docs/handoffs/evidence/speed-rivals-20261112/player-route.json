@@ -1,0 +1,2474 @@
+{
+  "airborne": false,
+  "brake": 0.0,
+  "checkpoints": 16,
+  "display_server": "headless",
+  "distance": 3703.5410333541,
+  "events": [
+    {
+      "airborne": false,
+      "brake": 1.0,
+      "checkpoints": 1,
+      "distance": 232.05117666279,
+      "event": "checkpoint",
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.169806092977524,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 232.05117666279,
+      "seconds": 6.21666666666665,
+      "speed": 41.0,
+      "steering": -0.163315922021866
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 2,
+      "distance": 463.499184641289,
+      "event": "checkpoint",
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.233107596635818,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 463.499184641289,
+      "seconds": 11.9166666666668,
+      "speed": 41.0,
+      "steering": -0.0802537277340889
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 3,
+      "distance": 695.009257021593,
+      "event": "checkpoint",
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.250015258789062,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 695.009257021593,
+      "seconds": 17.566666666667,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 4,
+      "distance": 925.997465017485,
+      "event": "checkpoint",
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.136489421129227,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 925.997465017485,
+      "seconds": 23.1833333333333,
+      "speed": 41.0,
+      "steering": -0.0830980092287064
+    },
+    {
+      "airborne": true,
+      "brake": 0.0,
+      "checkpoints": 4,
+      "distance": 1030.77087794547,
+      "event": "takeoff",
+      "jumps": 1,
+      "landings": 0,
+      "lane": 3.00085115432739,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1030.77087794547,
+      "seconds": 26.2333333333331,
+      "speed": 30.3333333333334,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 4,
+      "distance": 1076.18727343087,
+      "event": "landing",
+      "jumps": 1,
+      "landings": 1,
+      "lane": 3.23718547821045,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1076.18727343087,
+      "seconds": 27.7499999999997,
+      "speed": 30.3333333333334,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 4,
+      "distance": 1098.13079516892,
+      "event": "loop-entry",
+      "jumps": 1,
+      "landings": 1,
+      "lane": 3.15937758423388,
+      "loop_active": true,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1097.79378067869,
+      "seconds": 28.333333333333,
+      "speed": 37.005639973432,
+      "steering": -0.0830646604299545
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 4,
+      "distance": 1104.66134716988,
+      "event": "loop-exit",
+      "jumps": 1,
+      "landings": 1,
+      "lane": 3.15937758423388,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1104.66117431641,
+      "seconds": 29.6999999999996,
+      "speed": 38.151054847967,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 5,
+      "distance": 1157.34046562433,
+      "event": "checkpoint",
+      "jumps": 1,
+      "landings": 1,
+      "lane": -0.0311457738280296,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1157.34029277086,
+      "seconds": 31.1666666666662,
+      "speed": 22.151054847967,
+      "steering": 0.0
+    },
+    {
+      "airborne": true,
+      "brake": 0.0,
+      "checkpoints": 5,
+      "distance": 1197.93847333312,
+      "event": "takeoff",
+      "jumps": 2,
+      "landings": 1,
+      "lane": 0.0128245800733566,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1197.93830047965,
+      "seconds": 33.0499999999994,
+      "speed": 22.1510548479672,
+      "steering": -0.0825880691409111
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 5,
+      "distance": 1221.41982920885,
+      "event": "landing",
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.3835828602314,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1221.41965635538,
+      "seconds": 34.116666666666,
+      "speed": 22.1510548479672,
+      "steering": -0.155345305800438
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 6,
+      "distance": 1389.38568400264,
+      "event": "checkpoint",
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.199721589684486,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1389.38551114917,
+      "seconds": 38.2666666666658,
+      "speed": 42.3333333333333,
+      "steering": -0.0811686366796494
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 7,
+      "distance": 1620.51859569967,
+      "event": "checkpoint",
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.314626604318619,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1620.5184228462,
+      "seconds": 43.8999999999988,
+      "speed": 41.0,
+      "steering": -0.0809523090720177
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 8,
+      "distance": 1852.30841850162,
+      "event": "checkpoint",
+      "jumps": 2,
+      "landings": 2,
+      "lane": -0.749109506607056,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 0.625384320020657,
+      "seconds": 49.5666666666651,
+      "speed": 41.0,
+      "steering": 0.123144701123238
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 9,
+      "distance": 2083.30566527367,
+      "event": "checkpoint",
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.167409971356392,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 231.622631092072,
+      "seconds": 55.1999999999981,
+      "speed": 42.3333333333333,
+      "steering": -0.159284770488739
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 10,
+      "distance": 2315.0777608496,
+      "event": "checkpoint",
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.232911303639412,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 463.394726668,
+      "seconds": 60.8499999999978,
+      "speed": 41.0,
+      "steering": -0.0815325081348419
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 11,
+      "distance": 2546.58671603024,
+      "event": "checkpoint",
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.249393820762634,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 694.903681848645,
+      "seconds": 66.4999999999975,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 12,
+      "distance": 2777.55244015574,
+      "event": "checkpoint",
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.143454775214195,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 925.86940597415,
+      "seconds": 72.1166666666639,
+      "speed": 41.0,
+      "steering": -0.0848044082522392
+    },
+    {
+      "airborne": true,
+      "brake": 0.0,
+      "checkpoints": 12,
+      "distance": 2882.32609980226,
+      "event": "takeoff",
+      "jumps": 3,
+      "landings": 2,
+      "lane": 3.00159311294556,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1030.64306562066,
+      "seconds": 75.1666666666637,
+      "speed": 30.3333333333334,
+      "steering": -0.0862587988376617
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 12,
+      "distance": 2927.74194358706,
+      "event": "landing",
+      "jumps": 3,
+      "landings": 3,
+      "lane": 3.24146318435669,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1076.05890940547,
+      "seconds": 76.6833333333303,
+      "speed": 30.3333333333334,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 1.0,
+      "checkpoints": 12,
+      "distance": 2949.43197620595,
+      "event": "loop-entry",
+      "jumps": 3,
+      "landings": 3,
+      "lane": 3.12067800331861,
+      "loop_active": true,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1097.74772251332,
+      "seconds": 77.2499999999969,
+      "speed": 42.1264919482421,
+      "steering": -0.0826432034373283
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 12,
+      "distance": 2956.34542800903,
+      "event": "loop-exit",
+      "jumps": 3,
+      "landings": 3,
+      "lane": 3.12067800331861,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1104.66117431641,
+      "seconds": 78.4499999999968,
+      "speed": 43.1357797523466,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 1.0,
+      "checkpoints": 13,
+      "distance": 3009.275695723,
+      "event": "checkpoint",
+      "jumps": 3,
+      "landings": 3,
+      "lane": -0.040771309286356,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1157.59144203037,
+      "seconds": 79.9333333333301,
+      "speed": 20.4691130856799,
+      "steering": 0.0830823853611946
+    },
+    {
+      "airborne": true,
+      "brake": 0.0,
+      "checkpoints": 13,
+      "distance": 3049.37725944489,
+      "event": "takeoff",
+      "jumps": 4,
+      "landings": 3,
+      "lane": 0.00411538779735565,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1197.69300575227,
+      "seconds": 81.7666666666633,
+      "speed": 22.46911308568,
+      "steering": -0.0830129832029343
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 13,
+      "distance": 3073.56937527329,
+      "event": "landing",
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.404660761356354,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1221.88512158066,
+      "seconds": 82.8499999999966,
+      "speed": 22.46911308568,
+      "steering": -0.158052265644073
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 14,
+      "distance": 3240.59680096477,
+      "event": "checkpoint",
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.201403975486755,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1388.91254727215,
+      "seconds": 86.9833333333297,
+      "speed": 42.3333333333333,
+      "steering": -0.0806006118655205
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 15,
+      "distance": 3472.43474754363,
+      "event": "checkpoint",
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.312487572431564,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1620.75049385101,
+      "seconds": 92.6333333333294,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 16,
+      "distance": 3703.5410333541,
+      "event": "checkpoint",
+      "jumps": 4,
+      "landings": 4,
+      "lane": -0.774535119533539,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 0.173918333351594,
+      "seconds": 98.283333333329,
+      "speed": 41.0,
+      "steering": 0.0
+    }
+  ],
+  "fixture_baseline_sha": "c27d621",
+  "input": "Real screen touch/drag gas, steering and brake; fixed 60 Hz production physics",
+  "inverted_frames": 13,
+  "jumps": 4,
+  "landings": 4,
+  "lane": -0.774535119533539,
+  "loop_active": false,
+  "loops": 2,
+  "max_step_m": 0.715626895427704,
+  "physical_device_performance": "NOT TESTED",
+  "position_or_progress_injection": false,
+  "precision_results": {
+    "ziel": 2
+  },
+  "probe_sha256": "785a6822964b41f03ff2f7e209320fd7f070e4871bed553575670534701874d8",
+  "production_script_sha256": "72944a55059a88f464f58b715e0ac25b34131faa286a3290d6dacba7fb819b01",
+  "resets": 0,
+  "road_distance": 0.173918333351594,
+  "seconds": 98.283333333329,
+  "speed": 41.0,
+  "status": "PASS",
+  "steering": 0.0,
+  "trace": [
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 0,
+      "distance": 0.00302889314480126,
+      "jumps": 0,
+      "landings": 0,
+      "lane": -0.00125343666877598,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 0.00302889314480126,
+      "seconds": 0.0333333333333333,
+      "speed": 0.666666666666667,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 0,
+      "distance": 19.4906585470308,
+      "jumps": 0,
+      "landings": 0,
+      "lane": -0.0841571763157845,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 19.4906585470308,
+      "seconds": 1.03333333333333,
+      "speed": 40.6666666666667,
+      "steering": 0.161334872245789
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 0,
+      "distance": 60.3875282362569,
+      "jumps": 0,
+      "landings": 0,
+      "lane": -0.232521086931229,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 60.3875282362569,
+      "seconds": 2.03333333333333,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 0,
+      "distance": 101.388524453389,
+      "jumps": 0,
+      "landings": 0,
+      "lane": -0.276850342750549,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 101.388524453389,
+      "seconds": 3.03333333333333,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 0,
+      "distance": 142.416006888496,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.228077620267868,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 142.416006888496,
+      "seconds": 4.03333333333332,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 0,
+      "distance": 183.449748168932,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.25762152671814,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 183.449748168932,
+      "seconds": 5.03333333333332,
+      "speed": 41.0,
+      "steering": -0.192197129130363
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 0,
+      "distance": 224.423963095294,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.164672613143921,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 224.423963095294,
+      "seconds": 6.03333333333332,
+      "speed": 42.3333333333333,
+      "steering": -0.102158822119236
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 1,
+      "distance": 263.528259846615,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.393372535705566,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 263.528259846615,
+      "seconds": 7.03333333333331,
+      "speed": 42.3333333333334,
+      "steering": -0.152620002627373
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 1,
+      "distance": 304.48376728897,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.400547176599503,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 304.48376728897,
+      "seconds": 8.03333333333331,
+      "speed": 41.0,
+      "steering": -0.252638041973114
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 1,
+      "distance": 345.354461717652,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.233071312308311,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 345.354461717652,
+      "seconds": 9.03333333333336,
+      "speed": 41.0,
+      "steering": -0.0828864797949791
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 1,
+      "distance": 386.307349774288,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.28186696767807,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 386.307349774288,
+      "seconds": 10.0333333333334,
+      "speed": 41.0,
+      "steering": -0.0918057337403297
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 1,
+      "distance": 427.301750096725,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.267428547143936,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 427.301750096725,
+      "seconds": 11.0333333333335,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 2,
+      "distance": 468.278298753547,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.228347480297089,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 468.278298753547,
+      "seconds": 12.0333333333335,
+      "speed": 41.0,
+      "steering": -0.0825990214943886
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 2,
+      "distance": 509.255609962391,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.287234783172607,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 509.255609962391,
+      "seconds": 13.0333333333336,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 2,
+      "distance": 550.255158710526,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.233407884836197,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 550.255158710526,
+      "seconds": 14.0333333333336,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 2,
+      "distance": 591.223859134363,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.196396425366402,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 591.223859134363,
+      "seconds": 15.0333333333337,
+      "speed": 41.0,
+      "steering": -0.0808053761720657
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 2,
+      "distance": 632.213404554175,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.238676726818085,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 632.213404554175,
+      "seconds": 16.0333333333337,
+      "speed": 41.0,
+      "steering": -0.0805587768554688
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 2,
+      "distance": 673.156785848783,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.268326997756958,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 673.156785848783,
+      "seconds": 17.0333333333336,
+      "speed": 41.0,
+      "steering": -0.10280018299818
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 3,
+      "distance": 714.134998726891,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.195313826203346,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 714.134998726891,
+      "seconds": 18.0333333333336,
+      "speed": 41.0,
+      "steering": -0.0881724208593369
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 3,
+      "distance": 755.100442010211,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.236583396792412,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 755.100442010211,
+      "seconds": 19.0333333333335,
+      "speed": 41.0,
+      "steering": -0.0817717239260674
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 3,
+      "distance": 796.398076328682,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.273628860712051,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 796.398076328682,
+      "seconds": 20.0333333333335,
+      "speed": 42.3333333333333,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 3,
+      "distance": 837.828572797822,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.23559208214283,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 837.828572797822,
+      "seconds": 21.0333333333334,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 3,
+      "distance": 878.837236228632,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.30087685585022,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 878.837236228632,
+      "seconds": 22.0333333333334,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 3,
+      "distance": 919.848153758096,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.0726764872670174,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 919.848153758096,
+      "seconds": 23.0333333333333,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 4,
+      "distance": 960.821052420186,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 0.232036426663399,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 960.821052420186,
+      "seconds": 24.0333333333332,
+      "speed": 41.0,
+      "steering": -0.0842360183596611
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 4,
+      "distance": 995.528678315924,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 3.13738965988159,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 995.528678315924,
+      "seconds": 25.0333333333332,
+      "speed": 30.3333333333334,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 4,
+      "distance": 1024.90280179982,
+      "jumps": 0,
+      "landings": 0,
+      "lane": 3.03841137886047,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1024.90280179982,
+      "seconds": 26.0333333333331,
+      "speed": 30.3333333333334,
+      "steering": -0.0807738751173019
+    },
+    {
+      "airborne": true,
+      "brake": 0.0,
+      "checkpoints": 4,
+      "distance": 1054.77682535653,
+      "jumps": 1,
+      "landings": 0,
+      "lane": 3.3529908657074,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1054.77682535653,
+      "seconds": 27.0333333333331,
+      "speed": 30.3333333333334,
+      "steering": -0.156517401337624
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 4,
+      "distance": 1086.7987597466,
+      "jumps": 1,
+      "landings": 1,
+      "lane": 3.17549133300781,
+      "loop_active": false,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1086.7987597466,
+      "seconds": 28.033333333333,
+      "speed": 42.3333333333335,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 4,
+      "distance": 1101.32063471614,
+      "jumps": 1,
+      "landings": 1,
+      "lane": 3.15937758423388,
+      "loop_active": true,
+      "loops": 0,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1101.32046186267,
+      "seconds": 29.033333333333,
+      "speed": 34.9648988601567,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 1.0,
+      "checkpoints": 4,
+      "distance": 1118.03904439926,
+      "jumps": 1,
+      "landings": 1,
+      "lane": 3.13537454605103,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1118.03887154579,
+      "seconds": 30.0333333333329,
+      "speed": 40.8177215146337,
+      "steering": -0.102499067783356
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 4,
+      "distance": 1154.47212501287,
+      "jumps": 1,
+      "landings": 1,
+      "lane": 0.151846513152122,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1154.4719521594,
+      "seconds": 31.0333333333329,
+      "speed": 22.151054847967,
+      "steering": 0.121543020009995
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 5,
+      "distance": 1175.9724718523,
+      "jumps": 1,
+      "landings": 1,
+      "lane": -0.29972243309021,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1175.97229899883,
+      "seconds": 32.0333333333328,
+      "speed": 21.4843881813004,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 5,
+      "distance": 1197.57492390692,
+      "jumps": 1,
+      "landings": 1,
+      "lane": 0.0120529159903526,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1197.57475105345,
+      "seconds": 33.0333333333327,
+      "speed": 21.4843881813005,
+      "steering": 0.0
+    },
+    {
+      "airborne": true,
+      "brake": 0.0,
+      "checkpoints": 5,
+      "distance": 1219.59772931457,
+      "jumps": 2,
+      "landings": 1,
+      "lane": 0.351694464683533,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+
+      },
+      "resets": 0,
+      "road_distance": 1219.5975564611,
+      "seconds": 34.0333333333327,
+      "speed": 22.1510548479672,
+      "steering": -0.157816484570503
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 5,
+      "distance": 1256.49130529582,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.265263855457306,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1256.49113244236,
+      "seconds": 35.0333333333326,
+      "speed": 42.1510548479672,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 5,
+      "distance": 1297.61699961543,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.206080168485641,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1297.61682676196,
+      "seconds": 36.0333333333326,
+      "speed": 41.0,
+      "steering": -0.0872372016310692
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 5,
+      "distance": 1338.57186969042,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.203800529241562,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1338.57169683695,
+      "seconds": 37.0333333333325,
+      "speed": 41.0,
+      "steering": -0.0861596167087555
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 5,
+      "distance": 1379.67220919251,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.230744540691376,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1379.67203633904,
+      "seconds": 38.0333333333325,
+      "speed": 42.3333333333333,
+      "steering": -0.0841087847948074
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 6,
+      "distance": 1421.19236322165,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.229877144098282,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1421.19219036818,
+      "seconds": 39.0333333333324,
+      "speed": 41.0,
+      "steering": -0.100518383085728
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 6,
+      "distance": 1462.17433686972,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.268731385469437,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1462.17416401625,
+      "seconds": 40.0333333333323,
+      "speed": 41.0,
+      "steering": -0.0813650339841843
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 6,
+      "distance": 1503.14548466027,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.166579365730286,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1503.1453118068,
+      "seconds": 41.0333333333323,
+      "speed": 41.0,
+      "steering": -0.102201029658318
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 6,
+      "distance": 1544.10550933003,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.246652722358704,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1544.10533647656,
+      "seconds": 42.0333333333322,
+      "speed": 41.0,
+      "steering": -0.0812610536813736
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 6,
+      "distance": 1585.08424465775,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.170184090733528,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1585.08407180429,
+      "seconds": 43.0333333333322,
+      "speed": 41.0,
+      "steering": -0.135677456855774
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 7,
+      "distance": 1625.9817215395,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.262824535369873,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1625.98154868603,
+      "seconds": 44.0333333333321,
+      "speed": 41.0,
+      "steering": -0.0801792740821838
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 7,
+      "distance": 1666.85112995327,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.545858263969421,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1666.8509570998,
+      "seconds": 45.0333333333321,
+      "speed": 41.0,
+      "steering": -0.219981163740158
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 7,
+      "distance": 1707.80617028892,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.171229332685471,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1707.80599743545,
+      "seconds": 46.033333333332,
+      "speed": 41.0,
+      "steering": -0.141783073544502
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 7,
+      "distance": 1748.78244290173,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.165996566414833,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1748.78227004826,
+      "seconds": 47.0333333333319,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 7,
+      "distance": 1789.82265808105,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.315969079732895,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1789.82248522758,
+      "seconds": 48.0333333333319,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 7,
+      "distance": 1830.7144027245,
+      "jumps": 2,
+      "landings": 2,
+      "lane": -0.171924144029617,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1830.71422987103,
+      "seconds": 49.0333333333318,
+      "speed": 41.0,
+      "steering": 0.384714692831039
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 8,
+      "distance": 1871.36180024266,
+      "jumps": 2,
+      "landings": 2,
+      "lane": -0.184096828103065,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 19.6787660610676,
+      "seconds": 50.0333333333318,
+      "speed": 41.0,
+      "steering": 0.155303344130516
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 8,
+      "distance": 1912.3314323765,
+      "jumps": 2,
+      "landings": 2,
+      "lane": -0.23054963350296,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 60.6483981949091,
+      "seconds": 51.0333333333317,
+      "speed": 41.0,
+      "steering": 0.0830160602927208
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 8,
+      "distance": 1953.33303708255,
+      "jumps": 2,
+      "landings": 2,
+      "lane": -0.280753016471863,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 101.650002900958,
+      "seconds": 52.0333333333317,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 8,
+      "distance": 1994.36159043431,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.264797657728195,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 142.678556252718,
+      "seconds": 53.0333333333316,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 8,
+      "distance": 2035.39482242286,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.255179613828659,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 183.711788241267,
+      "seconds": 54.0333333333315,
+      "speed": 41.0,
+      "steering": -0.190206468105316
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 8,
+      "distance": 2076.37053944588,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.163960829377174,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 224.687505264282,
+      "seconds": 55.0333333333315,
+      "speed": 42.3333333333333,
+      "steering": -0.104025810956955
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 9,
+      "distance": 2117.85063808084,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.506433606147766,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 266.16760389924,
+      "seconds": 56.0333333333314,
+      "speed": 41.0,
+      "steering": -0.13912495970726
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 9,
+      "distance": 2158.77869111717,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.451832681894302,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 307.095656935573,
+      "seconds": 57.0333333333314,
+      "speed": 41.0,
+      "steering": -0.252167254686356
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 9,
+      "distance": 2199.66495502412,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.214397624135017,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 347.981920842528,
+      "seconds": 58.0333333333313,
+      "speed": 41.0,
+      "steering": -0.0881399363279343
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 9,
+      "distance": 2240.6162588191,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.271013379096985,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 388.933224637508,
+      "seconds": 59.0333333333313,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 9,
+      "distance": 2281.61317006171,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.272046595811844,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 429.930135880113,
+      "seconds": 60.0333333333312,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 10,
+      "distance": 2322.58784939766,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.228248804807663,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 470.904815216064,
+      "seconds": 61.0333333333312,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 10,
+      "distance": 2363.56707184434,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.289646118879318,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 511.884037662745,
+      "seconds": 62.0333333333311,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 10,
+      "distance": 2404.56526315629,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.246763288974762,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 552.8822289747,
+      "seconds": 63.033333333331,
+      "speed": 41.0,
+      "steering": -0.0803215280175209
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 10,
+      "distance": 2445.53310221851,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.205093830823898,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 593.850068036914,
+      "seconds": 64.033333333331,
+      "speed": 41.0,
+      "steering": -0.0809865146875381
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 10,
+      "distance": 2486.51830280244,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.22946497797966,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 634.835268620849,
+      "seconds": 65.0333333333309,
+      "speed": 41.0,
+      "steering": -0.081249974668026
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 10,
+      "distance": 2527.46400374591,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.263901114463806,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 675.780969564319,
+      "seconds": 66.0333333333309,
+      "speed": 41.0,
+      "steering": -0.0925123170018196
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 11,
+      "distance": 2568.44412234843,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.188767492771149,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 716.761088166833,
+      "seconds": 67.0333333333308,
+      "speed": 41.0,
+      "steering": -0.0875543132424355
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 11,
+      "distance": 2609.41095297456,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.244463682174683,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 757.727918792963,
+      "seconds": 68.0333333333308,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 1.0,
+      "checkpoints": 11,
+      "distance": 2650.74054329515,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.274112701416016,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 799.05750911355,
+      "seconds": 69.0333333333307,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 11,
+      "distance": 2692.11706322849,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.239259228110313,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 840.434029046893,
+      "seconds": 70.0333333333306,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 11,
+      "distance": 2733.1266083312,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.29608753323555,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 881.443574149609,
+      "seconds": 71.0333333333306,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 11,
+      "distance": 2774.1364907366,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.102282144129276,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 922.453456555009,
+      "seconds": 72.0333333333305,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 12,
+      "distance": 2815.10727575839,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 0.237983852624893,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 963.424241576791,
+      "seconds": 73.0333333333305,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 1.0,
+      "checkpoints": 12,
+      "distance": 2849.05092932701,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 3.14738273620605,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 997.367895145416,
+      "seconds": 74.0333333333304,
+      "speed": 29.0,
+      "steering": -0.0820044204592705
+    },
+    {
+      "airborne": false,
+      "brake": 1.0,
+      "checkpoints": 12,
+      "distance": 2878.41188465476,
+      "jumps": 2,
+      "landings": 2,
+      "lane": 3.02593731880188,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1026.72885047317,
+      "seconds": 75.0333333333304,
+      "speed": 29.0000000000001,
+      "steering": 0.0
+    },
+    {
+      "airborne": true,
+      "brake": 0.0,
+      "checkpoints": 12,
+      "distance": 2908.32751153827,
+      "jumps": 3,
+      "landings": 2,
+      "lane": 3.3673779964447,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1056.64447735667,
+      "seconds": 76.0333333333303,
+      "speed": 30.3333333333334,
+      "steering": -0.149435967206955
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 12,
+      "distance": 2941.10717140555,
+      "jumps": 3,
+      "landings": 3,
+      "lane": 3.16158008575439,
+      "loop_active": false,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1089.42413722396,
+      "seconds": 77.0333333333302,
+      "speed": 42.3333333333335,
+      "steering": -0.0807794108986855
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 12,
+      "distance": 2954.04544616416,
+      "jumps": 3,
+      "landings": 3,
+      "lane": 3.12067800331861,
+      "loop_active": true,
+      "loops": 1,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1102.36119247153,
+      "seconds": 78.0333333333302,
+      "speed": 41.0992592457187,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 12,
+      "distance": 2979.94307186127,
+      "jumps": 3,
+      "landings": 3,
+      "lane": 3.12084150314331,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1128.25881816864,
+      "seconds": 79.0333333333301,
+      "speed": 41.8024464190132,
+      "steering": -0.0870536044239998
+    },
+    {
+      "airborne": false,
+      "brake": 1.0,
+      "checkpoints": 13,
+      "distance": 3011.45060164899,
+      "jumps": 3,
+      "landings": 3,
+      "lane": -0.115648470818996,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1159.76634795636,
+      "seconds": 80.0333333333301,
+      "speed": 21.1357797523466,
+      "steering": 0.081556998193264
+    },
+    {
+      "airborne": false,
+      "brake": 1.0,
+      "checkpoints": 13,
+      "distance": 3033.2750952509,
+      "jumps": 3,
+      "landings": 3,
+      "lane": -0.279943883419037,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1181.59084155828,
+      "seconds": 81.03333333333,
+      "speed": 21.1357797523466,
+      "steering": 0.0
+    },
+    {
+      "airborne": true,
+      "brake": 0.0,
+      "checkpoints": 13,
+      "distance": 3055.36865350276,
+      "jumps": 4,
+      "landings": 3,
+      "lane": 0.0559075959026814,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 1
+      },
+      "resets": 0,
+      "road_distance": 1203.68439981014,
+      "seconds": 82.03333333333,
+      "speed": 22.46911308568,
+      "steering": -0.118841722607613
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 13,
+      "distance": 3078.69362114787,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.351267635822296,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1227.00936745524,
+      "seconds": 83.0333333333299,
+      "speed": 37.1357797523467,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 13,
+      "distance": 3119.47700898021,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.283128410577774,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1267.79275528759,
+      "seconds": 84.0333333333298,
+      "speed": 42.46911308568,
+      "steering": -0.0817632377147675
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 13,
+      "distance": 3160.43200856119,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.17557193338871,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1308.74775486857,
+      "seconds": 85.0333333333298,
+      "speed": 41.0,
+      "steering": -0.0857392624020576
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 13,
+      "distance": 3201.39156810611,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.229430124163628,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1349.70731441349,
+      "seconds": 86.0333333333297,
+      "speed": 41.0,
+      "steering": -0.0838965103030205
+    },
+    {
+      "airborne": false,
+      "brake": 1.0,
+      "checkpoints": 14,
+      "distance": 3242.67626070648,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.19170768558979,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1390.99200701386,
+      "seconds": 87.0333333333297,
+      "speed": 41.0,
+      "steering": -0.0803130343556404
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 14,
+      "distance": 3284.03136093587,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.221714332699776,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1432.34710724324,
+      "seconds": 88.0333333333296,
+      "speed": 41.0,
+      "steering": -0.082279697060585
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 14,
+      "distance": 3325.0195398894,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.245523005723953,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1473.33528619677,
+      "seconds": 89.0333333333296,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 14,
+      "distance": 3365.98055047959,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.213761836290359,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1514.29629678696,
+      "seconds": 90.0333333333295,
+      "speed": 41.0,
+      "steering": -0.110911093652248
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 14,
+      "distance": 3406.95456644565,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.254622578620911,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1555.27031275302,
+      "seconds": 91.0333333333295,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 14,
+      "distance": 3447.90784239441,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.282365798950195,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1596.22358870178,
+      "seconds": 92.0333333333294,
+      "speed": 41.0,
+      "steering": -0.180743426084518
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 15,
+      "distance": 3488.82609191209,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.16077546775341,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1637.14183821946,
+      "seconds": 93.0333333333293,
+      "speed": 41.0,
+      "steering": -0.111274965107441
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 15,
+      "distance": 3529.65610900193,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.463587313890457,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1677.97185530931,
+      "seconds": 94.0333333333293,
+      "speed": 41.0,
+      "steering": -0.0829312726855278
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 15,
+      "distance": 3570.6366068241,
+      "jumps": 4,
+      "landings": 4,
+      "lane": 0.304215759038925,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1718.95235313147,
+      "seconds": 95.0333333333292,
+      "speed": 41.0,
+      "steering": -0.163105383515358
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 15,
+      "distance": 3611.63389737576,
+      "jumps": 4,
+      "landings": 4,
+      "lane": -0.252756655216217,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1759.94964368314,
+      "seconds": 96.0333333333292,
+      "speed": 41.0,
+      "steering": 0.0
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 15,
+      "distance": 3652.68473773867,
+      "jumps": 4,
+      "landings": 4,
+      "lane": -0.108295701444149,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1801.00048404604,
+      "seconds": 97.0333333333291,
+      "speed": 41.0,
+      "steering": 0.246147155761719
+    },
+    {
+      "airborne": false,
+      "brake": 0.0,
+      "checkpoints": 15,
+      "distance": 3693.37660388321,
+      "jumps": 4,
+      "landings": 4,
+      "lane": -0.867858171463013,
+      "loop_active": false,
+      "loops": 2,
+      "precision_results": {
+        "ziel": 2
+      },
+      "resets": 0,
+      "road_distance": 1841.69235019058,
+      "seconds": 98.0333333333291,
+      "speed": 41.0,
+      "steering": 0.352054715156555
+    }
+  ]
+}

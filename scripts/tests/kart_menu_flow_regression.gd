@@ -1,5 +1,5 @@
 extends SceneTree
-## Actual physical-pixel taps complete all five setup steps on desktop and compact Android sizes.
+## Actual physical-pixel taps reach all five direct sections and start the chosen race.
 var game
 
 
@@ -171,7 +171,9 @@ func _run() -> void:
 				root.get_texture().get_image().save_png(
 					"res://exports/holographic-proof/menu-flow-%dx%d.png" % [pixels.x, pixels.y]
 				)
-			await _tap(game.garage.next_button)
+			# Sections are now directly selectable; the single START action is
+			# available everywhere rather than advancing a mandatory wizard.
+			await _tap(game.garage.step_buttons[step + 1] if step < 4 else game.garage.next_button)
 			await _settle()
 		assert(not game.menu_active and game.mode == "cup" and game.track_id == "sonnenhafen")
 		assert(is_instance_valid(game.player) and game.opponents.size() == 5)

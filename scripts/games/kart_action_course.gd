@@ -21,10 +21,13 @@ const DIVE_SPEED: float = 0.9
 const EDGE_LENGTH: float = 30.0
 ## Abstand zu Start/Ziel, Sprung und Looping, damit sich Elemente nie überlagern.
 const CLEARANCE: float = 14.0
+## A swept 100 ms step at a boosted 70 m/s must not miss a lip or gate.
+## Longer discontinuities are rescue/load jumps, not physical crossings.
+const MAX_CROSSING_STEP: float = 14.0
 
 ## Lage der Elemente als Anteil der Runde. Die Fahrt prüft jede Lage noch gegen Sprung und Looping.
 const COURSES: Dictionary = {
-	"sonnenhafen": {"kicker": 0.55, "hero_flight": true, "stunt": true},
+	"sonnenhafen": {"kicker": 0.55, "hero_flight": true, "stunt": true, "extra_kickers": [0.22, 0.86]},
 	"zauberwald": {"pads": [0.16, 0.66], "slalom": 0.28, "kicker": 0.84, "dive": [0.38, 0.46]},
 	"bergwelt": {"pads": [0.21, 0.93], "slalom": 0.45},
 	"holo_city": {"pads": [0.12, 0.57], "slalom": 0.31, "kicker": 0.80},
@@ -98,6 +101,20 @@ static func plan(world) -> Dictionary:
 		for kicker in STUNT.kickers(world):
 			result.kickers.append(kicker)
 			taken.append(Vector2(float(kicker.start), float(kicker.take_off) + 34.0))
+	# Two additional low, full-width harbour kickers have a continuous road
+	# beneath the entire landing. Their capped lift remains controllable at
+	# doubled cruise/boost speeds; no new mandatory gap or teleported flight.
+	for fraction in course.get("extra_kickers", []):
+		var start: float = _extra_kicker_start(world, float(fraction) * length, blocked, taken)
+		if start < 0.0:
+			continue
+		result.kickers.append({
+			"start": start, "take_off": start + 12.0, "length": 12.0, "height": 1.6,
+			"angle": atan2(1.6, 12.0), "flight_gravity": 30.0,
+			"lift_bonus": 2.0, "max_lift": 6.0, "action_expansion": true,
+			"landing_road_end": start + 76.0,
+		})
+		taken.append(Vector2(start, start + 76.0))
 	if course.has("dive"):
 		var range_fractions: Array = course.dive
 		var dive_start: float = float(range_fractions[0]) * length
@@ -118,6 +135,26 @@ static func plan(world) -> Dictionary:
 			result.edges.append({"start": start, "end": start + EDGE_LENGTH, "side": side})
 			taken.append(Vector2(start, start + EDGE_LENGTH))
 	return result
+
+
+static func _extra_kicker_start(world, wish: float, blocked: Array, taken: Array) -> float:
+	for step in range(61):
+		var offset: float = floorf(float(step + 1) / 2.0) * 4.0 * (1.0 if step % 2 == 0 else -1.0)
+		var start: float = wish + offset
+		if start < 45.0 or start + 76.0 > float(world.length) - 45.0:
+			continue
+		var free: bool = true
+		for zone in blocked + taken:
+			var area: Vector2 = zone
+			if start < area.y + CLEARANCE and start + 76.0 > area.x - CLEARANCE:
+				free = false
+				break
+		# Prefer a broad road arc: the landing is actually driven, not snapped
+		# back to the centre line. All three samples must agree on the corridor.
+		var launch: Vector3 = world.forward(start + 12.0)
+		if free and launch.dot(world.forward(start + 42.0)) > 0.94 and launch.dot(world.forward(start + 65.0)) > 0.90:
+			return start
+	return -1.0
 
 
 static func _blocked_ranges(world, length: float) -> Array:
@@ -167,9 +204,11 @@ static func kicker_pitch(course: Dictionary, distance: float) -> float:
 
 ## Die Schanze, deren Absprungkante zwischen zwei Fahrschritten überquert wurde.
 static func kicker_crossed(course: Dictionary, previous: float, current: float) -> Dictionary:
+	if current <= previous or current - previous > MAX_CROSSING_STEP:
+		return {}
 	for kicker in course.get("kickers", []):
 		var edge: float = float(kicker.take_off)
-		if previous >= float(kicker.start) and previous < edge and current >= edge and current < edge + 6.0:
+		if previous >= float(kicker.start) and previous < edge and current >= edge:
 			return kicker
 	return {}
 
@@ -198,7 +237,7 @@ static func pad_at(course: Dictionary, distance: float, lateral: float) -> int:
 ## Tore, deren Linie zwischen zwei Fahrschritten vorwärts überquert wurde.
 static func gates_crossed(course: Dictionary, previous: float, current: float) -> Array:
 	var crossed: Array = []
-	if current <= previous or current - previous > 6.0:
+	if current <= previous or current - previous > MAX_CROSSING_STEP:
 		return crossed
 	for gate in course.get("gates", []):
 		var line: float = float(gate.distance)
@@ -311,6 +350,14 @@ static func _build_kicker(world, kicker: Dictionary, accent: Color) -> void:
 			var arch: Vector3 = world.position_at(d) + frame.y * (2.5 + marker * 0.5)
 			world._prop("box", arch, Vector3(12.8, 0.24, 0.28),
 				Color("a6f6ff"), frame, true)
+	if bool(kicker.get("action_expansion", false)):
+		for marker in range(5):
+			var d: float = float(kicker.take_off) + 6.0 + float(marker) * 10.0
+			var frame: Basis = world.frame(d)
+			for side in [-1.0, 1.0]:
+				var foot: Vector3 = world.position_at(d, side * 6.4)
+				world._prop("box", foot + frame.y * 1.8, Vector3(0.18, 3.6, 0.18), Color("15375a"), frame)
+				world._prop("box", foot + frame.y * 3.3, Vector3(0.75, 0.5, 0.1), accent, frame, true)
 
 
 static func _build_dive(world, dive: Dictionary) -> void:

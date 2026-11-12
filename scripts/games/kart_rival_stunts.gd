@@ -51,6 +51,10 @@ static func update_loop(game, index: int, delta: float) -> bool:
 	var rival = game.opponents[index]
 	var state = rival.get_meta(STATE_KEY) if rival.has_meta(STATE_KEY) else null
 	if state == null or not state.active:
+		# A fast panorama jump can cross the loop entry while still above it.
+		# Loop contact must never pull an airborne racer down onto the deck.
+		if rival.has_meta(&"lumo_ballistic_flight") and rival.get_meta(&"lumo_ballistic_flight").active:
+			return false
 		var local: float = fposmod(game.opponent_distances[index], game.track_length)
 		var offset: float = local - float(layout.start)
 		if offset < 0.0 or offset > maxf(1.6, float(rival.motion_speed) * delta + 0.2):

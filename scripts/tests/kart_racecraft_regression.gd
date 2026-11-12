@@ -2,6 +2,10 @@ extends SceneTree
 ## Decision invariants plus actual production movement past a real course cone.
 const CRAFT = preload("res://scripts/games/kart_rival_racecraft.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
+const FLIGHT = preload("res://scripts/games/kart_rival_flight.gd")
+const STUNTS = preload("res://scripts/games/kart_rival_stunts.gd")
+const RAMP_PLAN = preload("res://scripts/games/kart_rival_ramp_plan.gd")
+const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const STEP: float = 1.0 / 60.0
 var game
 var failed: bool = false
@@ -82,6 +86,31 @@ func _run() -> void:
 	game.countdown = 0.0
 	game.racing = true
 	await process_frame
+	# A doubled-speed panorama flight used to enter the loop while airborne
+	# and snap down by almost2m. Real contact must not change pose/progress.
+	var layout: Dictionary = game.world.loop_layout
+	game.opponents[0].transform = game.world.reset_transform(float(layout.start) + 0.25, float(layout.lane))
+	game.opponents[0].position.y += 2.0
+	game.opponent_distances[0] = float(layout.start) + 0.25
+	game.opponents[0].set_motion(50.0, 0.0, false, false)
+	var flight := FLIGHT.new()
+	game.opponents[0].set_meta(FLIGHT.STATE_KEY, flight)
+	var in_flight: Transform3D = game.opponents[0].transform
+	_check(not STUNTS.update_loop(game, 0, STEP), "An airborne rival cannot attach to the loop")
+	_check(game.opponents[0].transform == in_flight, "Rejected aerial loop entry preserves the physical transform")
+	_check(game.opponent_distances[0] == float(layout.start) + 0.25, "Rejected aerial loop entry grants no progress")
+	game.opponents[0].remove_meta(FLIGHT.STATE_KEY)
+	var tested_panorama: bool = false
+	for kicker in game.world.action.kickers:
+		if bool(kicker.get("precision_jump", false)):
+			continue
+		var safe_launch: float = RAMP_PLAN.launch_speed(game.world, kicker)
+		if safe_launch <= 0.0:
+			continue
+		tested_panorama = true
+		var available: float = float(layout.start) - float(kicker.take_off)
+		_check(PRECISION.landing_distance(safe_launch, kicker) <= available - 17.9, "Panorama plan lands with real ground before the loop")
+	_check(tested_panorama, "Production Sonnenhafen has a physically planned panorama approach")
 	for i in range(game.opponents.size() - 1, 0, -1):
 		game.opponents[i].queue_free()
 	game.opponents.resize(1)

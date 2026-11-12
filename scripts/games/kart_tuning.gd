@@ -212,17 +212,15 @@ func multipliers(kart_id: String) -> Dictionary:
 
 
 ## Fahrwerte aus demselben Antrieb wie die Fahrphysik (kart_powertrain.gd, kart_island._drive_player).
-## Höchsttempo = 20,5 m/s × Tempo-Faktor; Beschleunigung 10 m/s² × Faktor (0 → 54 km/h = 15 m/s);
-## Bremsen 20 m/s² × Faktor (Bremsweg aus 72 km/h = 20 m/s ohne Gas) plus 1,5 m, weil die
-## tatsächliche Bewegung der Geschwindigkeit leicht nachläuft (in kart_fleet_stats_regression gemessen).
-const BRAKE_LAG_M: float = 1.5
+## Höchsttempo, Beschleunigung und Bremsweg kommen aus dem aktuellen Antrieb.
+## Der Bremsweg aus 72 km/h integriert denselben Geschwindigkeitsnachlauf wie die Fahrt.
 
 
 static func performance_for(factors: Dictionary) -> Dictionary:
 	return {
 		"top_kmh": POWERTRAIN.top_speed(factors) * 3.6,
 		"zero_to_54_s": 15.0 / POWERTRAIN.acceleration(factors, false),
-		"brake_m": 400.0 / (2.0 * POWERTRAIN.acceleration(factors, true)) + BRAKE_LAG_M,
+		"brake_m": POWERTRAIN.stopping_distance(factors),
 	}
 
 
