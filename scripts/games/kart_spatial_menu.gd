@@ -118,6 +118,16 @@ func _apply_responsive_layout() -> void:
 	var narrow := available.x < 520.0
 	var short_view := available.y < 440.0
 	var ultra_short := available.y < 300.0
+	# A 240dp safe area cannot contain the tabs, footer, a full kart card
+	# AND a separate 48dp workshop row. Share the existing footer instead
+	# of clipping the scroll viewport below the card's touchable area.
+	var workshop_in_footer := ultra_short and step == 2
+	var workshop_parent: Node = footer if workshop_in_footer else setup_left
+	if workshop_button.get_parent() != workshop_parent:
+		workshop_button.reparent(workshop_parent, false)
+		if workshop_in_footer:
+			footer.move_child(workshop_button, next_button.get_index())
+	workshop_button.text = "Werkstatt" if workshop_in_footer else "Lack, Teile & Effekte"
 	var margin := 12.0 if narrow or short_view else 20.0
 	var header_height := 0.0 if ultra_short else (48.0 if short_view else 64.0)
 	var tabs_y := margin + header_height + (0.0 if ultra_short else 8.0)
@@ -161,23 +171,24 @@ func _apply_responsive_layout() -> void:
 		var cards: Array = child.get_children() if child is GridContainer else [child]
 		for card in cards:
 			if card is Button:
-				_set_physical_minimum(card, Vector2(0, 90 if step == 2 else (64 if step == 0 else 68)), scale_factor)
+				var card_height := (72 if ultra_short else 90) if step == 2 else (64 if step == 0 else 68)
+				_set_physical_minimum(card, Vector2(0, card_height), scale_factor)
 				_set_physical_font(card, 16, scale_factor)
 				if card.has_method("apply_size"):
 					card.apply_size(scale_factor, true)
 	_stage_rect(footer, Rect2(margin, footer_y, available.x - margin * 2, footer_height), scale_factor)
 	footer_spacer.hide()
-	footer.columns = 3 if has_saved_race else 2
+	footer.columns = (3 if has_saved_race else 2) + (1 if workshop_in_footer else 0)
 	footer.add_theme_constant_override("h_separation", roundi(8 * scale_factor))
 	for child in footer.get_children():
 		if child is Button:
 			child.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			_set_physical_minimum(child, Vector2(48, footer_height), scale_factor)
-			_set_physical_font(child, 14 if narrow else 18, scale_factor)
+			_set_physical_font(child, 14 if narrow or ultra_short else 18, scale_factor)
 			if child.name == "ResumeRace":
 				child.text = "Fortsetzen"
-	back_button.text = "Menü" if narrow else "← Kart-Menü"
-	next_button.text = "START" if narrow else "Rennen starten"
+	back_button.text = "Menü" if narrow or ultra_short else "← Kart-Menü"
+	next_button.text = "START" if narrow or ultra_short else "Rennen starten"
 	_set_physical_minimum(view_choice, Vector2(112, 48), scale_factor)
 	_set_physical_font(view_choice, 14, scale_factor)
 	view_choice.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
@@ -199,6 +210,29 @@ func _stage_rect(control: Control, rect: Rect2, ui_scale: float) -> void:
 	control.size = rect.size * ui_scale
 
 
+func _choose_preview_view(index: int, animate: bool = true) -> void:
+	if is_instance_valid(preview_camera):
+		preview_camera.h_offset = 0.0
+		preview_camera.v_offset = 0.0
+	super._choose_preview_view(index, animate)
+	if step == 3 or inspection_view == 0:
+		return
+	# The live studio is a room. Inspection cameras must stay on the model
+	# side of its walls and ceiling, including while changing projection.
+	var inside_positions := {
+		2: Vector3(-4.6, 1.2, 0),
+		3: Vector3(0, 1.2, 3.6),
+		4: Vector3(4.6, 1.2, 0),
+		5: Vector3(0, 4.8, 0),
+	}
+	if inside_positions.has(inspection_view):
+		_camera_to.origin = inside_positions[inspection_view]
+		_camera_to = _camera_to.looking_at(_camera_to_focus,
+			Vector3.FORWARD if inspection_view == 5 else Vector3.UP)
+		if _camera_progress >= 1.0:
+			_apply_camera_target()
+
+
 func _fit_welcome_camera() -> void:
 	if not _spatial_ready or not is_instance_valid(preview_camera) or preview_viewport.size.y <= 0:
 		return
@@ -210,7 +244,10 @@ func _fit_welcome_camera() -> void:
 	# Fit the actual chassis, seated rig and light rings to the unoccluded
 	# part of the live stage. Portrait width cannot reuse a landscape frustum.
 	var focus := Vector3(0, 0.95, 0)
-	var direction := Vector3(3.15, 1.10, -4.6).normalized()
+	# A camera offset translates the optical origin too. The shallower side
+	# angle keeps that origin inside the open service bay after the framing
+	# offset, so its right wall cannot occlude an otherwise valid frustum.
+	var direction := Vector3(1.6, 1.05, -4.6).normalized()
 	var region := Rect2(0.36, 0.19, 0.61, 0.60)
 	if aspect < 1.0:
 		region = Rect2(0.04, 0.18, 0.92, 0.38 if _landing_active else 0.35)
@@ -251,6 +288,7 @@ func _fit_welcome_camera() -> void:
 	_camera_progress = 1.0
 	_camera_ready = true
 	_camera_focus = focus
+	_set_camera_veil(0.0)
 
 
 func _stage_subject_points() -> Array[Vector3]:

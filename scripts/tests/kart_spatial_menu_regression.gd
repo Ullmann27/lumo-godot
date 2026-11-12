@@ -50,7 +50,35 @@ func _shot(label: String) -> void:
 			"%s raster matches requested pixels: %s == %s" % [label, actual.get_size(), expected_pixels])
 		_check(actual.save_png(output.path_join(label + ".png")) == OK,
 			"%s screenshot is written" % label)
+		if not label.begins_with("tracks-"):
+			var region := Rect2(0.38, 0.24, 0.58, 0.45)
+			if expected_pixels.x < expected_pixels.y:
+				region = Rect2(0.10, 0.20, 0.80, 0.28)
+			var orange_pixels := 0
+			var lit_pixels := 0
+			for y in range(int(region.position.y * expected_pixels.y), int(region.end.y * expected_pixels.y), 3):
+				for x in range(int(region.position.x * expected_pixels.x), int(region.end.x * expected_pixels.x), 3):
+					var pixel := actual.get_pixel(x, y)
+					if maxf(pixel.r, maxf(pixel.g, pixel.b)) > 0.30:
+						lit_pixels += 1
+					if pixel.r > 0.35 and pixel.r > pixel.g * 1.20 and pixel.r > pixel.b * 1.35:
+						orange_pixels += 1
+			_check(lit_pixels >= 30 and orange_pixels >= 2,
+				"%s renders the lit stage and original orange Lumo: lit=%d orange=%d" % [label, lit_pixels, orange_pixels])
 		print("[SpatialMenu] SCREENSHOT ", label, " actual_pixels=", actual.get_size())
+
+
+func _check_camera_clear(menu) -> void:
+	var origin: Vector3 = menu.preview_camera.get_camera_transform().origin
+	var obscured_by: Array[String] = []
+	for mesh in menu.garage_interior.root.find_children("*", "MeshInstance3D", true, false):
+		if not mesh.is_visible_in_tree():
+			continue
+		var bounds: AABB = mesh.global_transform * mesh.get_aabb()
+		for focus in [Vector3(0, 0.75, 0), Vector3(0, 1.5, 0)]:
+			if bounds.intersects_segment(origin, focus) != null:
+				obscured_by.append(str(mesh.name))
+	_check(obscured_by.is_empty(), "physical camera sees the driver through the open studio: " + str(obscured_by))
 
 
 func _run() -> void:
@@ -86,6 +114,7 @@ func _run() -> void:
 			"3D stage fills the safe height")
 		_check(garage.setup.difficulty == "pro", "new setups default to the requested extreme difficulty")
 		_check(not garage.world_backdrop.is_visible_in_tree(), "live scene owns the backdrop")
+		_check_camera_clear(garage)
 		await _shot("landing-%dx%d" % [dimensions.x, dimensions.y])
 		await _tap(landing._mode_buttons.time_trial)
 		_check(garage.setup.mode == "time_trial" and game.menu_active, "mode touch selects without starting")
@@ -100,7 +129,18 @@ func _run() -> void:
 		await _tap(gecko)
 		_check(garage.setup.kart == "gecko_velo" and garage.preview_kart.kart_style == "gecko_velo",
 			"touch replaces the actual 3D kart and the race selection")
+		_check_camera_clear(garage)
 		await _shot("garage-%dx%d" % [dimensions.x, dimensions.y])
+		for inspection in [1, 2, 3, 4, 5, 6]:
+			garage._choose_preview_view(inspection, false)
+			_check(is_zero_approx(garage.preview_camera.h_offset)
+				and is_zero_approx(garage.preview_camera.v_offset), "inspection clears the previous stage camera offsets")
+			_check_camera_clear(garage)
+		garage._choose_preview_view(0, false)
+		garage._set_camera_veil(1.0)
+		garage._fit_welcome_camera()
+		_check(is_zero_approx(float(garage.preview_vignette.material.get_shader_parameter("camera_transition"))),
+			"refitting the stage clears an interrupted projection transition")
 		await _tap(garage.step_buttons[3])
 		_check(garage.step == 3 and is_instance_valid(garage.preview_world), "track tab constructs real world geometry")
 		_check(not garage.garage_interior.root.visible, "garage walls do not enclose the track preview")

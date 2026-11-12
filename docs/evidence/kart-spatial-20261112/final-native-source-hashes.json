@@ -1,0 +1,6 @@
+{
+  "scripts/games/kart_spatial_menu.gd": "6d5d871bfa26f5974b7c42a8e5b6f4078c1b14093fa5f140aa9c9cf0a15d6108",
+  "scripts/games/kart_spatial_landing.gd": "1ab9041f001d7ca81b2480674024f6b5f8746ea3c60857d848a50382f520fcbf",
+  "scripts/tests/kart_spatial_menu_regression.gd": "5eb82d27c3dff814dabd6f1cd526fcbf35ff0f266db6a872344f76fbbe8fb5f9",
+  "scripts/tests/kart_compact_selection_regression.gd": "d640dc7bb7ebad32e3e25bb0a396cda0a67a7f9cf4706770c781e5f9ea43e7ed"
+}

@@ -77,3 +77,6 @@ godot_log_ok /tmp/lumo-kart-ai-tests.log '\[KartAI\] PASS' || exit 1
 
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_garage_touch_targets_regression.gd 2>&1 | tee /tmp/lumo-garage-targets-tests.log
 godot_log_ok /tmp/lumo-garage-targets-tests.log '\[GarageTargets\] PASS' || exit 1
+
+timeout 120s "$GODOT" --headless --script scripts/tests/kart_compact_selection_regression.gd 2>&1 | tee /tmp/lumo-compact-selection-tests.log
+godot_log_ok /tmp/lumo-compact-selection-tests.log '\[CompactKartSelection\] PASS' || exit 1
