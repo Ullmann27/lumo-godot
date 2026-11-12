@@ -81,6 +81,48 @@ func _check_camera_clear(menu) -> void:
 	_check(obscured_by.is_empty(), "physical camera sees the driver through the open studio: " + str(obscured_by))
 
 
+func _check_landing_raster_scale(landing) -> void:
+	var window_dp: Vector2 = Vector2(root.size) / root.get_node("MobileRuntime").get_ui_density()
+	var logical_size: Vector2 = root.get_visible_rect().size
+	var ui_scale: float = maxf(logical_size.x / window_dp.x, logical_size.y / window_dp.y)
+	var available: Vector2 = landing.size / ui_scale
+	var narrow := available.x < 520.0
+	var horizontal_modes := available.x < available.y or available.y < 440.0
+	_check(landing._layout_root.scale.is_equal_approx(Vector2.ONE),
+		"landing text is rasterized at native UI size, without parent magnification")
+	var fonts: Array = [
+		[landing._stars, 16 if narrow else 22],
+		[landing._settings, 16],
+		[landing._back, 16],
+		[landing._start, 21 if narrow else 25],
+	]
+	var buttons: Array = [landing._settings, landing._back, landing._start]
+	for button in landing._navigation.get_children():
+		fonts.append([button, 14 if narrow else 16])
+		buttons.append(button)
+	for card in landing._mode_buttons.values():
+		fonts.append([card.title_label, 13 if horizontal_modes else 20])
+		fonts.append([card.caption_label, 13])
+		fonts.append([card.selection_mark, 14])
+		buttons.append(card)
+	for spec in fonts:
+		var physical_font: float = float(spec[0].get_theme_font_size("font_size")) / ui_scale
+		_check(absf(physical_font - float(spec[1])) <= 0.51 / ui_scale,
+			"landing %s glyphs have %s dp raster size (actual %.3f)" % [spec[0].name, spec[1], physical_font])
+	for button in buttons:
+		if button.is_visible_in_tree():
+			var actual: Rect2 = button.get_global_rect()
+			var touch_size := actual.size / ui_scale
+			_check(touch_size.x >= 47.99 and touch_size.y >= 47.99,
+				"landing %s retains a 48dp touch target: %s" % [button.name, touch_size])
+			_check(game.safe_ui.get_global_rect().grow(1.0).encloses(actual),
+				"landing %s remains inside the safe area" % button.name)
+	print("[SpatialMenu] RASTER ", expected_pixels, " ui_scale=", ui_scale,
+		" title_px=", landing._mode_buttons.time_trial.title_label.get_theme_font_size("font_size"),
+		" navigation_px=", landing._navigation.get_node("Open_garage").get_theme_font_size("font_size"),
+		" back_px=", landing._back.get_theme_font_size("font_size"))
+
+
 func _run() -> void:
 	if capture:
 		assert(DisplayServer.get_name() != "headless", "Captures require a real renderer")
@@ -115,6 +157,7 @@ func _run() -> void:
 		_check(garage.setup.difficulty == "pro", "new setups default to the requested extreme difficulty")
 		_check(not garage.world_backdrop.is_visible_in_tree(), "live scene owns the backdrop")
 		_check_camera_clear(garage)
+		_check_landing_raster_scale(landing)
 		await _shot("landing-%dx%d" % [dimensions.x, dimensions.y])
 		await _tap(landing._mode_buttons.time_trial)
 		_check(garage.setup.mode == "time_trial" and game.menu_active, "mode touch selects without starting")

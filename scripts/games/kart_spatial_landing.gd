@@ -132,52 +132,65 @@ func _layout() -> void:
 		return
 	var scale_factor := maxf(viewport_size.x / window_dp.x, viewport_size.y / window_dp.y)
 	var available := size / scale_factor
-	_layout_root.scale = Vector2.ONE * scale_factor
-	_layout_root.size = available
+	# Rasterize text at the final UI resolution. Scaling a parent Control makes
+	# small glyphs blurry when the portrait viewport is stretched back down.
+	_layout_root.scale = Vector2.ONE
+	_layout_root.size = size
 	var portrait := available.x < available.y
 	var narrow := available.x < 520
 	var short_view := available.y < 440
 	_header.visible = available.y >= 300
 	var margin := 12.0 if narrow or short_view else 20.0
 	var header_height := 48.0 if short_view else 68.0
-	_rect(_header, Rect2(margin, margin, available.x - margin * 2, header_height))
-	_logo.custom_minimum_size = Vector2(126 if narrow or short_view else 176, header_height)
-	_stars.add_theme_font_size_override("font_size", 16 if narrow else 22)
+	_rect(_header, Rect2(margin, margin, available.x - margin * 2, header_height), scale_factor)
+	_header.add_theme_constant_override("separation", roundi(10 * scale_factor))
+	_logo.custom_minimum_size = Vector2(126 if narrow or short_view else 176, header_height) * scale_factor
+	_stars.add_theme_font_size_override("font_size", roundi((16 if narrow else 22) * scale_factor))
 	_settings.text = "⚙" if narrow else "Optionen"
 	_settings.tooltip_text = "Einstellungen"
+	_settings.custom_minimum_size = Vector2(48, 56) * scale_factor
+	_settings.add_theme_font_size_override("font_size", roundi(16 * scale_factor))
 	var footer_height := 52.0 if short_view else 60.0
 	var footer_y := available.y - margin - footer_height
-	_rect(_footer, Rect2(margin, footer_y, available.x - margin * 2, footer_height))
-	_back.custom_minimum_size = Vector2(48, footer_height)
-	_start.custom_minimum_size = Vector2(48, footer_height)
+	_rect(_footer, Rect2(margin, footer_y, available.x - margin * 2, footer_height), scale_factor)
+	_footer.add_theme_constant_override("separation", roundi(10 * scale_factor))
+	_back.custom_minimum_size = Vector2(48, footer_height) * scale_factor
+	_start.custom_minimum_size = Vector2(48, footer_height) * scale_factor
 	_back.text = "← Spiele" if narrow else "← Spielewelt"
-	_start.add_theme_font_size_override("font_size", 21 if narrow else 25)
+	_back.add_theme_font_size_override("font_size", roundi(16 * scale_factor))
+	_start.add_theme_font_size_override("font_size", roundi((21 if narrow else 25) * scale_factor))
 	var nav_height := 104.0 if narrow else 52.0
 	_navigation.columns = 3 if narrow else 5
 	var nav_y := footer_y - nav_height - 10
-	_rect(_navigation, Rect2(margin, nav_y, available.x - margin * 2, nav_height))
+	_rect(_navigation, Rect2(margin, nav_y, available.x - margin * 2, nav_height), scale_factor)
+	for axis in ["h_separation", "v_separation"]:
+		_navigation.add_theme_constant_override(axis, roundi(6 * scale_factor))
 	for button in _navigation.get_children():
-		button.add_theme_font_size_override("font_size", 14 if narrow else 16)
-		button.custom_minimum_size = Vector2(48, 48)
+		button.add_theme_font_size_override("font_size", roundi((14 if narrow else 16) * scale_factor))
+		button.custom_minimum_size = Vector2(48, 48) * scale_factor
 	var horizontal_modes := portrait or short_view
 	_modes.columns = 3 if horizontal_modes else 1
 	var modes_rect := Rect2(margin, margin + header_height + 20, clampf(available.x * 0.27, 210, 320), 248)
 	if horizontal_modes:
 		modes_rect = Rect2(margin, nav_y - (84.0 if portrait else 60.0) - 10, available.x - margin * 2, 84 if portrait else 60)
-	_rect(_modes, modes_rect)
+	_rect(_modes, modes_rect, scale_factor)
+	for axis in ["h_separation", "v_separation"]:
+		_modes.add_theme_constant_override(axis, roundi(8 * scale_factor))
 	for id in _mode_buttons:
 		var card = _mode_buttons[id]
-		card.apply_size(1.0, true)
-		card.custom_minimum_size = Vector2(48, 60 if horizontal_modes else 76)
+		card.apply_size(scale_factor, true)
+		card.custom_minimum_size = Vector2(48, 60 if horizontal_modes else 76) * scale_factor
 		card.title_label.text = {"race": "Solo", "cup": "Grand Prix", "time_trial": "Zeitrennen"}[id] if narrow else card.title
-		card.title_label.add_theme_font_size_override("font_size", 13 if horizontal_modes else 20)
+		card.title_label.add_theme_font_size_override("font_size", roundi((13 if horizontal_modes else 20) * scale_factor))
 		card.caption_label.visible = not horizontal_modes
 		card.icon_plate.visible = not narrow
-		card.row.add_theme_constant_override("separation", 7)
+		card.row.add_theme_constant_override("separation", roundi(7 * scale_factor))
+		card.caption_label.get_parent().add_theme_constant_override("separation", roundi(2 * scale_factor))
+		card.selection_mark.add_theme_constant_override("outline_size", roundi(3 * scale_factor))
 		card.title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		card.title_label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 
 
-func _rect(control: Control, bounds: Rect2) -> void:
-	control.position = bounds.position
-	control.size = bounds.size
+func _rect(control: Control, bounds: Rect2, ui_scale: float) -> void:
+	control.position = bounds.position * ui_scale
+	control.size = bounds.size * ui_scale
