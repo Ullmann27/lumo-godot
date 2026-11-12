@@ -8,8 +8,8 @@ const KART_AUDIO = preload("res://scripts/games/kart_audio.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const TUNING = preload("res://scripts/games/kart_tuning.gd")
-const GARAGE = preload("res://scripts/games/kart_garage_menu.gd")
-const REFERENCE_LANDING = preload("res://scripts/games/kart_reference_landing.gd")
+const GARAGE = preload("res://scripts/games/kart_spatial_menu.gd")
+const REFERENCE_LANDING = preload("res://scripts/games/kart_spatial_landing.gd")
 const INTRO = preload("res://scripts/games/kart_intro.gd")
 const RECORDS = preload("res://scripts/games/kart_records.gd")
 const ARENA = preload("res://scripts/games/kart_arena.gd")
@@ -621,8 +621,8 @@ func _show_reference_landing(preserve_setup: bool = false) -> void:
 	reference_landing.quick_start.connect(_reference_quick_start)
 	reference_landing.open_settings.connect(_reference_open_settings)
 	reference_landing.return_to_games.connect(func(): _return_to_app("games"))
-	garage.hide()
-	garage.preview_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+	garage.show()
+	garage.set_landing_active(true)
 	safe_ui.add_child(reference_landing)
 
 
@@ -631,6 +631,7 @@ func _hide_reference_landing() -> void:
 		reference_landing.hide()
 	if is_instance_valid(garage):
 		garage.show()
+		garage.set_landing_active(false)
 		garage.preview_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 
 
@@ -638,19 +639,23 @@ func _reference_select_mode(selected: String) -> void:
 	if not is_instance_valid(garage):
 		return
 	match selected:
-		"cup", "time_trial":
-			# Selecting the race mode must NOT throw the child back into the
-			# old five-step wizard. The new illustrated menu owns this route;
-			# its big START button starts the real selected race.
+		"race", "cup", "time_trial":
+			# Mode selection updates the actual next race on the same live stage.
 			garage.setup["mode"] = selected
 			return
 		"sonnenhafen":
 			garage.setup["track"] = "sonnenhafen"
 			return
+		"driver":
+			garage.step = 1
 		"garage":
-			# Only an explicit Garage choice opens the existing live 3D
-			# vehicle/driver customizer. No functionality is discarded.
 			garage.step = 2
+		"world":
+			garage.step = 3
+		"difficulty":
+			garage.step = 4
+		"modes":
+			garage.step = 0
 		_:
 			return
 	_hide_reference_landing()
