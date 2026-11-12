@@ -3,7 +3,11 @@ extends SceneTree
 ## carried just past the gap, checkpoints stay ordered, rivals fly the same arc, and courses
 ## without a ramp never leave the ground.
 const STEP: float = 1.0 / 60.0
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 var game
+## Assertions abort their check function; only all four completed checks pass.
+var completed_checks: int = 0
 
 
 func _initialize() -> void:
@@ -18,6 +22,8 @@ func _start(mode: String, track: String) -> void:
 	game._end_preview()
 	game.countdown = 0
 	game.racing = true
+	game.auto_gas = true
+	game.gas_held = false
 	await process_frame
 
 
@@ -32,10 +38,15 @@ func _place(distance: float, speed: float) -> void:
 	game.checkpoint_index = 3
 
 
-func _drive(frames: int, braking: float = 0.0, stop_on_fall: bool = false) -> Dictionary:
+func _drive(
+	frames: int, braking: float = 0.0, stop_on_fall: bool = false,
+	stop_on_landing: bool = false
+) -> Dictionary:
 	var longest_air: float = 0.0
 	var landing_boost: float = 0.0
 	var lowest_gap_height: float = INF
+	var launch_speed: float = -1.0
+	var checkpoints: Array[int] = [game.checkpoint_index]
 	for frame in range(frames):
 		var target: Vector3 = game.world.position_at(game.previous_road_distance + 10.0, 0)
 		var direction: Vector3 = target - game.player.position
@@ -43,16 +54,24 @@ func _drive(frames: int, braking: float = 0.0, stop_on_fall: bool = false) -> Di
 		game.steering = clampf(-angle_difference(game.player_heading, heading) * 2.1, -1, 1)
 		game.brake = braking
 		var landings: int = game.landing_count
+		var was_airborne: bool = game.airborne
 		game._physics_process(STEP)
+		if not was_airborne and game.airborne:
+			launch_speed = game.speed
+		if game.checkpoint_index != checkpoints[-1]:
+			checkpoints.append(game.checkpoint_index)
 		longest_air = maxf(longest_air, game.air_time)
 		if game.landing_count > landings:
 			landing_boost = game.boost_time
+			if stop_on_landing:
+				break
 		if stop_on_fall and game.gap_falls > 0:
 			break
 		if game.world.in_gap(game.previous_road_distance) and game.airborne:
 			var road: Dictionary = game.world.sample_road(game.player.position)
 			lowest_gap_height = minf(lowest_gap_height, game.player.position.y - float(road.height))
-	return {"air": longest_air, "boost": landing_boost, "lowest": lowest_gap_height}
+	return {"air": longest_air, "boost": landing_boost, "lowest": lowest_gap_height,
+		"launch_speed": launch_speed, "checkpoints": checkpoints}
 
 
 func _test_clean_jump() -> void:
@@ -60,17 +79,21 @@ func _test_clean_jump() -> void:
 	var jump: Dictionary = game.world.jump
 	assert(not jump.is_empty(), "Himmelsinseln has a jump")
 	_place(jump.ramp_start - 25.0, 17.0)
-	var flight: Dictionary = _drive(150)
+	# Observe the landing event, before faster post-landing driving reaches the
+	# next unrelated checkpoint. Gate four itself is crossed during the flight.
+	var flight: Dictionary = _drive(150, 0.0, false, true)
 	assert(game.jump_count == 1 and game.landing_count == 1, "One take-off, one landing")
 	assert(game.gap_falls == 0 and game.reset_count == 0, "Race speed clears the gap")
 	assert(flight.air > 0.5, "A real flight (%.2f s)" % flight.air)
 	assert(flight.boost >= 1.0, "A good landing gives a turbo")
 	assert(fposmod(game.previous_road_distance, game.track_length) > jump.gap_end)
 	assert(game.checkpoint_index == 4, "The checkpoint after the landing still counts")
+	assert(flight.checkpoints == [3, 4], "The real flight crosses exactly the next ordered gate")
+	completed_checks += 1
 	print(
 		(
-			"[KartJump] clean jump: %.2f s in the air, landing turbo %.1f s"
-			% [flight.air, flight.boost]
+			"[KartJump] clean jump: %.2f s in the air, landing turbo %.1f s, checkpoints %s, landing at %.2f m"
+			% [flight.air, flight.boost, flight.checkpoints, game.distance]
 		)
 	)
 
@@ -80,12 +103,20 @@ func _test_too_slow() -> void:
 	var jump: Dictionary = game.world.jump
 	_place(jump.ramp_start - 4.0, 4.0)
 	var distance_before: float = game.distance
-	# A brake input > 0.5 now intentionally engages reversing after a stop;
-	# the former 0.85 test drove backwards instead of testing a slow jump.
-	# 0.50 limits the forward target to 53% of normal speed without
-	# entering reverse, so the kart reaches the gap at a genuine crawl.
-	game.auto_gas = true
-	_drive(600, 0.50, true)
+	# Explicit GAS prevents reverse engagement while the real brake input
+	# limits forward pace. Fifty percent brake now targets 21.73 m/s, which
+	# clears the gap and no longer exercises the slow-flight boundary.
+	game.auto_gas = false
+	game.gas_held = true
+	var crawl_speed: float = 8.0
+	var reference: float = POWERTRAIN.top_speed(
+		game.kart_factors, float(CATALOG.entry(CATALOG.DIFFICULTIES, game.difficulty).speed)
+	)
+	var crawl_brake: float = (1.0 - crawl_speed / reference) / 0.94
+	assert(crawl_brake > 0.5 and crawl_brake < 1.0, "Crawl is achieved by valid physical pedal input")
+	var flight: Dictionary = _drive(600, crawl_brake, true)
+	assert(float(flight.launch_speed) > 0.0 and float(flight.launch_speed) <= crawl_speed + 0.1,
+		"The slow case actually leaves the lip at crawl speed (%.2f m/s)" % flight.launch_speed)
 	assert(
 		game.gap_falls == 1 and game.reset_count == 1,
 		"A crawl falls once (falls=%d resets=%d speed=%.2f distance=%.2f)" %
@@ -97,10 +128,11 @@ func _test_too_slow() -> void:
 	assert(game.distance - distance_before < 40.0, "The rescue is no shortcut")
 	var road: Dictionary = game.world.sample_road(game.player.position)
 	assert(absf(game.player.position.y - float(road.height)) < 0.2, "Back on the road surface")
+	completed_checks += 1
 	print(
 		(
-			"[KartJump] too slow: fell once, carried to %.1f m (gap ends %.1f m)"
-			% [landing, jump.gap_end]
+			"[KartJump] too slow: %.2f m/s take-off, fell once, carried to %.1f m (gap ends %.1f m)"
+			% [flight.launch_speed, landing, jump.gap_end]
 		)
 	)
 
@@ -131,6 +163,7 @@ func _test_rival_arc() -> void:
 		"The rival crossed the gap"
 	)
 	assert(lowest > -0.1, "Rivals never sink below the road")
+	completed_checks += 1
 
 
 func _test_no_ramp_elsewhere() -> void:
@@ -138,7 +171,8 @@ func _test_no_ramp_elsewhere() -> void:
 	assert(game.world.jump.is_empty())
 	_place(40.0, 17.0)
 	_drive(120)
-	assert(game.jump_count == 0 and not game.airborne, "Courses without a ramp stay grounded")
+	assert(game.jump_count == 0 and not game.airborne, "A ramp-free starting section stays grounded")
+	completed_checks += 1
 
 
 func _run() -> void:
@@ -157,6 +191,11 @@ func _run() -> void:
 	game.queue_free()
 	await process_frame
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
+	if completed_checks != 4:
+		print("[KartJump] FAIL: %d of 4 checks completed" % completed_checks)
+		await create_timer(0.5).timeout
+		quit(1)
+		return
 	print(
 		(
 			"[KartJump] PASS: take-off, flight, landing turbo, cloud rescue past the gap, "

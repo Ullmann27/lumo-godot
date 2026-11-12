@@ -5,6 +5,7 @@ var checks := 0
 var game
 var capture := false
 var output := "res://exports/spatial-menu"
+var expected_pixels := Vector2i.ZERO
 
 
 func _initialize() -> void:
@@ -44,8 +45,12 @@ func _tap(control: Control) -> void:
 
 func _shot(label: String) -> void:
 	if capture:
-		assert(root.get_texture().get_image().save_png(output.path_join(label + ".png")) == OK)
-		print("[SpatialMenu] SCREENSHOT ", label)
+		var actual := root.get_texture().get_image()
+		_check(actual.get_size() == expected_pixels,
+			"%s raster matches requested pixels: %s == %s" % [label, actual.get_size(), expected_pixels])
+		_check(actual.save_png(output.path_join(label + ".png")) == OK,
+			"%s screenshot is written" % label)
+		print("[SpatialMenu] SCREENSHOT ", label, " actual_pixels=", actual.get_size())
 
 
 func _run() -> void:
@@ -56,13 +61,18 @@ func _run() -> void:
 	var host = root.get_node("HostBridge")
 	for dimensions in [Vector2i(1280, 720), Vector2i(412, 915), Vector2i(690, 829), Vector2i(640, 320)]:
 		print("[SpatialMenu] CASE ", dimensions)
+		expected_pixels = dimensions
 		host._options["displayDensity"] = 1.0
-		root.size = dimensions
 		game = scene.instantiate()
 		root.add_child(game)
 		game.set_physics_process(false)
 		game.lightweight = true
 		await _settle()
+		# Desktop production startup deliberately opens at 1280x720. Apply the
+		# resize after _ready so a portrait filename cannot hide landscape pixels.
+		root.size = dimensions
+		await _settle()
+		_check(root.size == dimensions, "window reaches the requested physical dimensions")
 		game._apply_safe_area(Rect2(12, 16, 12, 20), Vector2(dimensions))
 		game._show_reference_landing(true)
 		await _settle()

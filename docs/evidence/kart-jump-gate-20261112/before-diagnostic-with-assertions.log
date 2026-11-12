@@ -1,0 +1,33 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: bergwelt mode=training
+[JumpDiagnostic] frame=62 checkpoint=3->4 distance=237.283599120845 speed=58.22 airborne=true
+[JumpDiagnostic] frame=124 checkpoint=4->5 distance=295.661552569643 speed=58.22 airborne=false
+[JumpDiagnostic] clean final checkpoint=5 distance=319.198590359465 previous=319.198590359465 length=472.778137207031 speed=58.22 jump={ "ramp_start": 218.0079618481, "take_off": 225.0079618481, "gap_end": 233.0079618481, "height": 1.8, "angle": 0.25168997175819 }
+SCRIPT ERROR: Assertion failed: The checkpoint after the landing still counts
+          at: _test_clean_jump (/tmp/lumo-jump-diagnostic-readonly.gd:73)
+          GDScript backtrace (most recent call first):
+              [0] _test_clean_jump (/tmp/lumo-jump-diagnostic-readonly.gd:73)
+              [1] _start (/tmp/lumo-jump-diagnostic-readonly.gd:21)
+[Kart] race_world_ready: bergwelt mode=training
+[JumpDiagnostic] frame=68 checkpoint=3->4 distance=236.508857921977 speed=21.73 airborne=true
+[JumpDiagnostic] frame=200 checkpoint=4->5 distance=295.640480691382 speed=21.73 airborne=false
+[JumpDiagnostic] frame=360 checkpoint=5->6 distance=354.666385992245 speed=30.8566 airborne=false
+[JumpDiagnostic] frame=498 checkpoint=6->7 distance=413.817315648124 speed=21.73 airborne=false
+SCRIPT ERROR: Assertion failed: A crawl falls once (falls=0 resets=0 speed=21.73 distance=450.61)
+          at: _test_too_slow (/tmp/lumo-jump-diagnostic-readonly.gd:93)
+          GDScript backtrace (most recent call first):
+              [0] _test_too_slow (/tmp/lumo-jump-diagnostic-readonly.gd:93)
+              [1] _start (/tmp/lumo-jump-diagnostic-readonly.gd:21)
+[Kart] race_world_ready: bergwelt mode=race
+[Kart] race_world_ready: sonnenhafen mode=training
+[KartJump] PASS: take-off, flight, landing turbo, cloud rescue past the gap, ordered checkpoints across the jump, rival arc, no ramp elsewhere
