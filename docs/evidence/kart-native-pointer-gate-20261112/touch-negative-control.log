@@ -1,0 +1,24 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+WARNING: [Garage3DTouch] FAIL matching native touch opens the actual track section
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] _check (res://scripts/tests/kart_garage_3d_touch_regression.gd:17)
+         [1] _native_actions (res://scripts/tests/kart_garage_3d_touch_regression.gd:135)
+         [2] _settle (res://scripts/tests/kart_garage_3d_touch_regression.gd:49)
+WARNING: [Garage3DTouch] FAIL real primary mouse opens the actual native track section
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] _check (res://scripts/tests/kart_garage_3d_touch_regression.gd:17)
+         [1] _native_actions (res://scripts/tests/kart_garage_3d_touch_regression.gd:146)
+         [2] _settle (res://scripts/tests/kart_garage_3d_touch_regression.gd:49)
+[Garage3DTouch] FAIL ["matching native touch opens the actual track section", "real primary mouse opens the actual native track section"]

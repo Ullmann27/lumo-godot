@@ -86,7 +86,8 @@ func _run() -> void:
 	garage._process(0.16)
 	_check(garage._backdrop_parallax != Vector2.ZERO, "idle parallax offsets the painting")
 	game.queue_free()
-	await _settle(2)
+	# Let deferred child/preview cleanup finish before the standalone probe exits.
+	await _settle(8)
 	if failures.is_empty():
 		print("[MenuDepth] PASS: ", checks, " checks")
 		quit(0)
