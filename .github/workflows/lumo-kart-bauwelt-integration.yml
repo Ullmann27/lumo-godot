@@ -62,6 +62,7 @@ jobs:
           grep -F '[VillageScene] PASS' /tmp/village-scene.log
           if grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' /tmp/village-scene.log; then exit 1; fi
       - name: Verify original Bauwelt move rotate wall collision and inspect
+        if: always() # Independent gate: still diagnose the four existing bugs if village scene fails.
         run: |
           set -euo pipefail
           timeout 210 /tmp/godot --headless --script res://scripts/tests/build_nextgen_play_regression.gd 2>&1 | tee /tmp/build-nextgen.log
