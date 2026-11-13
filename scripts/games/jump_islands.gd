@@ -3,6 +3,17 @@ extends Node3D
 const QUESTIONS = preload("res://scripts/games/kart_questions.gd")
 const LUMO = preload("res://scenes/characters/lumo/lumo_character.tscn")
 const ORIGINAL_LUMO = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
+const STICK = preload("res://scripts/games/kart_joystick.gd")
+const JUMP_ACTION = preload("res://scripts/games/jump_touch_button.gd")
+const RUN_SPEED: float = 5.5
+const GROUND_ACCELERATION: float = 24.0
+const GROUND_BRAKING: float = 32.0
+const AIR_ACCELERATION: float = 16.0
+const GRAVITY: float = 18.0
+const JUMP_SPEED: float = 8.5
+const SHORT_JUMP_SPEED: float = 4.8
+const JUMP_BUFFER_SECONDS: float = 0.15
+const COYOTE_SECONDS: float = 0.12
 const ISLAND_COUNT: int = 12
 const SESSION: String = "user://jump_session.cfg"
 var actor: CharacterBody3D
@@ -20,6 +31,17 @@ var touch_direction := Vector2.ZERO
 var held_directions: Dictionary = {}
 var jump_buffer: float = 0.0
 var coyote_time: float = 0.0
+var jump_held: bool = false
+var jump_cut_pending: bool = false
+var jump_active: bool = false
+var movement_stick
+var jump_action
+var ui_safe: MarginContainer
+var ui_column: VBoxContainer
+var header_buttons: Array[Button] = []
+var controls_row: HBoxContainer
+var control_hints: Array[Label] = []
+var camera_target: Vector3 = Vector3.ZERO
 var paused: bool = false
 var finished: bool = false
 var question_open: bool = false
@@ -61,7 +83,7 @@ func _ready() -> void:
 	get_tree().quit_on_go_back = false
 	_build_world()
 	_build_ui()
-	message.text = "Lumos Wolkeninseln\nPfeile zum Laufen · Springen über die Lücken"
+	message.text = "Lumos Wolkeninseln\nStick bewegen · Tippen: kurz · Halten: hoch springen"
 	if _restore_session():
 		_pause()
 		message.text = "Dein Abenteuer wartet am letzten Kontrollpunkt."
@@ -122,6 +144,8 @@ func _build_world() -> void:
 	art.finish(self)
 	actor = CharacterBody3D.new()
 	actor.floor_snap_length = 0.3
+	actor.floor_stop_on_slope = true
+	actor.platform_on_leave = CharacterBody3D.PLATFORM_ON_LEAVE_ADD_UPWARD_VELOCITY
 	add_child(actor)
 	var capsule := CapsuleShape3D.new()
 	capsule.radius = 0.32
@@ -158,7 +182,8 @@ func _build_world() -> void:
 	camera.fov = 62
 	add_child(camera)
 	camera.position = actor.position + Vector3(0, 5.5, 9)
-	camera.look_at(actor.position + Vector3(0, 1, -4))
+	camera_target = actor.position + Vector3(0, 1, -3.2)
+	camera.look_at(camera_target)
 
 
 ## Rescale the original rig from its actual imported skeleton: this preserves
@@ -189,42 +214,62 @@ func _fit_original_lumo(candidate: Node3D) -> bool:
 func _build_ui() -> void:
 	var layer := CanvasLayer.new()
 	add_child(layer)
-	var safe := MarginContainer.new()
+	ui_safe = MarginContainer.new()
+	var safe: MarginContainer = ui_safe
 	safe.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right", "top", "bottom"]:
 		safe.add_theme_constant_override("margin_" + side, 18)
 	layer.add_child(safe)
-	var column := VBoxContainer.new()
+	ui_column = VBoxContainer.new()
+	var column: VBoxContainer = ui_column
 	column.add_theme_constant_override("separation", 12)
 	safe.add_child(column)
 	var top := HBoxContainer.new()
 	column.add_child(top)
-	top.add_child(_button("‹ Spiele", _pause))
+	var back := _button("‹ Spiele", _pause)
+	header_buttons.append(back)
+	top.add_child(back)
 	hud = _label("Insel 1/12", 21)
 	hud.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(hud)
-	top.add_child(_button("Pause", _pause))
+	var pause_button := _button("Pause", _pause)
+	header_buttons.append(pause_button)
+	top.add_child(pause_button)
 	message = _label("", 24)
 	column.add_child(message)
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(spacer)
-	var controls := HBoxContainer.new()
-	controls.add_theme_constant_override("separation", 8)
-	column.add_child(controls)
-	for direction in [Vector2.LEFT, Vector2.UP, Vector2.DOWN, Vector2.RIGHT]:
-		var labels: Dictionary = {
-			Vector2.LEFT: "◀", Vector2.UP: "▲", Vector2.DOWN: "▼", Vector2.RIGHT: "▶"
-		}
-		var button := _button(labels[direction], func(): pass)
-		button.custom_minimum_size = Vector2(76, 78)
-		button.button_down.connect(func(): _set_direction(direction, true))
-		button.button_up.connect(func(): _set_direction(direction, false))
-		controls.add_child(button)
-	var jump := _button("Springen", func(): jump_buffer = 0.15)
-	jump.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	controls.add_child(jump)
+	controls_row = HBoxContainer.new()
+	controls_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(controls_row)
+	var left := VBoxContainer.new()
+	controls_row.add_child(left)
+	movement_stick = STICK.new()
+	movement_stick.name = "MovementStick"
+	movement_stick.tooltip_text = "Bewegen: Stick in die gewünschte Richtung ziehen."
+	movement_stick.axis_changed.connect(_set_stick_axis)
+	left.add_child(movement_stick)
+	var move_hint := _label("BEWEGEN", 15)
+	move_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	left.add_child(move_hint)
+	control_hints.append(move_hint)
+	var gap := Control.new()
+	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	controls_row.add_child(gap)
+	var right := VBoxContainer.new()
+	right.alignment = BoxContainer.ALIGNMENT_END
+	controls_row.add_child(right)
+	jump_action = JUMP_ACTION.new()
+	jump_action.name = "JumpAction"
+	jump_action.hold_changed.connect(_set_jump_pressed)
+	right.add_child(jump_action)
+	var jump_hint := _label("HALTEN = HÖHER", 15)
+	jump_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	right.add_child(jump_hint)
+	control_hints.append(jump_hint)
 	modal = PanelContainer.new()
 	modal.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	modal.offset_left = -minf(300, get_viewport().get_visible_rect().size.x * 0.44)
@@ -245,6 +290,39 @@ func _build_ui() -> void:
 	modal_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(modal_column)
 	modal.hide()
+	get_viewport().size_changed.connect(_layout_ui)
+	_layout_ui()
+
+
+func _layout_ui() -> void:
+	if not is_instance_valid(ui_safe) or not is_instance_valid(modal):
+		return
+	var view: Vector2 = get_viewport().get_visible_rect().size
+	var window_pixels: Vector2 = Vector2(get_window().size)
+	var pixels_per_unit: float = maxf(0.1, minf(window_pixels.x / maxf(view.x, 1), window_pixels.y / maxf(view.y, 1)))
+	var unit: float = MobileRuntime.get_ui_density() / pixels_per_unit
+	var insets: Rect2 = MobileRuntime.get_safe_area_insets()
+	ui_safe.add_theme_constant_override("margin_left", roundi(maxf(16.0 * unit, insets.position.x / pixels_per_unit)))
+	ui_safe.add_theme_constant_override("margin_right", roundi(maxf(16.0 * unit, insets.size.x / pixels_per_unit)))
+	ui_safe.add_theme_constant_override("margin_top", roundi(maxf(12.0 * unit, insets.position.y / pixels_per_unit)))
+	ui_safe.add_theme_constant_override("margin_bottom", roundi(maxf(12.0 * unit, insets.size.y / pixels_per_unit)))
+	var stick_side: float = clampf(view.x / unit * 0.32, 112, 152) * unit
+	movement_stick.custom_minimum_size = Vector2.ONE * stick_side
+	jump_action.custom_minimum_size = Vector2.ONE * clampf(view.x / unit * 0.29, 104, 136) * unit
+	for button in header_buttons:
+		button.custom_minimum_size = Vector2(76, 48) * unit
+		button.add_theme_font_size_override("font_size", roundi(17 * unit))
+	for hint in control_hints:
+		hint.add_theme_font_size_override("font_size", roundi(12 * unit))
+	hud.add_theme_font_size_override("font_size", roundi(16 * unit))
+	message.add_theme_font_size_override("font_size", roundi(18 * unit))
+	ui_column.add_theme_constant_override("separation", roundi(8 * unit))
+	var half_width: float = minf(300 * unit, view.x * 0.44)
+	var half_height: float = minf(245 * unit, view.y * 0.38)
+	modal.offset_left = -half_width
+	modal.offset_right = half_width
+	modal.offset_top = -half_height
+	modal.offset_bottom = half_height
 
 
 func _label(text: String, size: int) -> Label:
@@ -288,18 +366,32 @@ func _physics_process(delta: float) -> void:
 	if not paused and not finished and not question_open:
 		var keyboard := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 		var direction: Vector2 = (keyboard + touch_direction).limit_length()
-		actor.velocity.x = move_toward(actor.velocity.x, direction.x * 5.5, delta * 18)
-		actor.velocity.z = move_toward(actor.velocity.z, direction.y * 5.5, delta * 18)
-		coyote_time = 0.12 if actor.is_on_floor() else maxf(0, coyote_time - delta)
+		var horizontal := Vector2(actor.velocity.x, actor.velocity.z)
+		var grounded: bool = actor.is_on_floor()
+		var acceleration: float = AIR_ACCELERATION
+		if grounded:
+			acceleration = GROUND_BRAKING if direction.length_squared() < 0.001 else GROUND_ACCELERATION
+		horizontal = horizontal.move_toward(direction * RUN_SPEED, acceleration * delta)
+		actor.velocity.x = horizontal.x
+		actor.velocity.z = horizontal.y
+		coyote_time = COYOTE_SECONDS if grounded else maxf(0, coyote_time - delta)
 		jump_buffer = maxf(0, jump_buffer - delta)
 		if Input.is_action_just_pressed("ui_accept"):
-			jump_buffer = 0.15
+			_set_jump_pressed(true)
+		if Input.is_action_just_released("ui_accept"):
+			_set_jump_pressed(false)
+		if grounded:
+			jump_active = false
 		if jump_buffer > 0 and coyote_time > 0:
-			actor.velocity.y = 8.5
+			actor.velocity.y = JUMP_SPEED
+			jump_active = true
 			jump_buffer = 0
 			coyote_time = 0
 		else:
-			actor.velocity.y -= 18 * delta
+			actor.velocity.y -= GRAVITY * delta
+		if jump_cut_pending and jump_active:
+			actor.velocity.y = minf(actor.velocity.y, SHORT_JUMP_SPEED)
+			jump_cut_pending = false
 		_try_bounce(delta)
 		actor.move_and_slide()
 		if direction.length() > 0.1:
@@ -347,13 +439,16 @@ func _physics_process(delta: float) -> void:
 	if is_instance_valid(original_lumo):
 		original_lumo.set_suspended(paused or question_open or finished)
 		if not paused and not question_open and not finished:
-			var horizontal_speed: float = Vector2(actor.velocity.x, actor.velocity.z).length()
-			original_lumo.set_locomotion_speed(
-				horizontal_speed if actor.is_on_floor() else 0.0
-			)
-	var desired: Vector3 = actor.position + Vector3(0, 5.5, 9)
-	camera.position = camera.position.lerp(desired, minf(1, delta * 5))
-	camera.look_at(actor.position + Vector3(0, 1, -4))
+			var relative_velocity: Vector3 = actor.get_real_velocity()
+			if actor.is_on_floor():
+				relative_velocity -= actor.get_platform_velocity()
+			original_lumo.set_platform_motion(relative_velocity, actor.is_on_floor(), delta)
+	if not paused and not question_open:
+		var look_ahead := Vector3(actor.velocity.x * 0.16, 0, clampf(actor.velocity.z * 0.13, -0.8, 0.4))
+		var desired: Vector3 = actor.position + Vector3(0, 5.5, 9) + look_ahead * 0.5
+		camera.position = camera.position.lerp(desired, 1.0 - exp(-6.5 * delta))
+		camera_target = camera_target.lerp(actor.position + Vector3(0, 1, -3.2) + look_ahead, 1.0 - exp(-9.0 * delta))
+		camera.look_at(camera_target)
 	hud.text = (
 		"Insel %d/%d\n%d Kristalle · %d Sterne · %d Lernstopps"
 		% [
@@ -364,6 +459,29 @@ func _physics_process(delta: float) -> void:
 			completed_questions.size()
 		]
 	)
+
+
+func _set_stick_axis(value: Vector2) -> void:
+	if not paused and not finished and not question_open:
+		touch_direction = value
+
+
+func _set_jump_pressed(value: bool) -> void:
+	if paused or finished or question_open:
+		return
+	if value and not jump_held:
+		jump_buffer = JUMP_BUFFER_SECONDS
+		jump_cut_pending = false
+	elif not value and jump_held:
+		jump_cut_pending = true
+	jump_held = value
+
+
+func _set_controls_enabled(value: bool) -> void:
+	if is_instance_valid(movement_stick):
+		movement_stick.set_enabled(value)
+	if is_instance_valid(jump_action):
+		jump_action.set_enabled(value)
 
 
 func _set_direction(direction: Vector2, pressed: bool) -> void:
@@ -380,6 +498,14 @@ func _stop_input() -> void:
 	held_directions.clear()
 	touch_direction = Vector2.ZERO
 	jump_buffer = 0
+	jump_held = false
+	jump_cut_pending = false
+	jump_active = false
+	coyote_time = 0
+	if is_instance_valid(movement_stick):
+		movement_stick._reset()
+	if is_instance_valid(jump_action):
+		jump_action.reset()
 
 
 func _respawn() -> void:
@@ -398,6 +524,7 @@ func _clear_modal() -> void:
 
 func _open_question() -> void:
 	question_open = true
+	_set_controls_enabled(false)
 	actor.velocity = Vector3.ZERO
 	_stop_input()
 	wrong_count = 0
@@ -426,6 +553,7 @@ func _answer(answer: String) -> void:
 	if answer == active_question.answer:
 		completed_questions[checkpoint] = true
 		question_open = false
+		_set_controls_enabled(true)
 		modal.hide()
 		message.text = "Richtig! Weiter zur nächsten Wolkeninsel."
 		_save_session()
@@ -443,6 +571,7 @@ func _pause() -> void:
 	if paused or finished:
 		return
 	paused = true
+	_set_controls_enabled(false)
 	_stop_input()
 	actor.velocity = Vector3.ZERO
 	_save_session()
@@ -461,6 +590,7 @@ func _pause() -> void:
 
 func _resume() -> void:
 	paused = false
+	_set_controls_enabled(not question_open and not finished)
 	if question_open:
 		_show_question()
 	else:
@@ -512,6 +642,7 @@ func _finish() -> void:
 	if finished:
 		return
 	finished = true
+	_set_controls_enabled(false)
 	_stop_input()
 	var stars: int = 3 + completed_questions.size() * 2 + collected.size()
 	ProgressStore.add_stars(stars)

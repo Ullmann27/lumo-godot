@@ -5,6 +5,7 @@ signal behavior_started(behavior: String)
 signal behavior_finished(behavior: String)
 const MODEL := "res://assets/characters/lumo_animated/Lumo-Animated-Mobile.glb"
 const WALK = preload("res://scripts/characters/lumo/lumo_walk_locomotion.gd")
+const PLATFORM_POSE = preload("res://scripts/characters/lumo/lumo_platform_pose.gd")
 static var _cached_model: PackedScene
 static var _cached_load_kind := ""
 var model_load_kind := ""
@@ -25,6 +26,8 @@ var audio_active := false
 var locomotion
 var walking := false
 var walk_speed_mps: float = 0.0
+var platform_pose
+var platform_active: bool = false
 
 
 func _ready() -> void:
@@ -85,7 +88,7 @@ func is_usable() -> bool:
 
 
 func _process(delta: float) -> void:
-	if walking and not suspended and not reduced_motion and locomotion != null:
+	if walking and not platform_active and not suspended and not reduced_motion and locomotion != null:
 		locomotion.advance(delta, walk_speed_mps)
 
 
@@ -94,6 +97,7 @@ func _process(delta: float) -> void:
 func set_locomotion_speed(speed_mps: float) -> bool:
 	if not is_usable():
 		return false
+	_stop_platform_pose()
 	if not is_finite(speed_mps) or speed_mps <= 0.045:
 		if walking:
 			play_behavior("idle")
@@ -104,9 +108,57 @@ func set_locomotion_speed(speed_mps: float) -> bool:
 	return true
 
 
+## Feed after move_and_slide(), once per physics tick. This optional mode is
+## shared by Jump and walking worlds. It has sole ownership of animated bones;
+## the original AnimationPlayer is paused until a gesture/legacy mode resumes.
+func set_platform_motion(velocity: Vector3, grounded: bool, delta: float) -> bool:
+	if not is_usable() or suspended or not velocity.is_finite() or delta <= 0.0:
+		return false
+	var speed: float = Vector2(velocity.x, velocity.z).length()
+	# Let the original authored idle breathe again after the landing settles.
+	# Do not repeatedly restart it on every physics tick.
+	if grounded and speed <= 0.06:
+		if platform_active and platform_pose.was_grounded and platform_pose.landing_left <= 0.0:
+			_stop_platform_pose()
+		if not platform_active:
+			if walking:
+				play_behavior("idle")
+			return true
+	if not platform_active:
+		if walking and locomotion != null:
+			locomotion.stop()
+		player.play("idle", 0.0)
+		player.advance(0.0)
+		player.pause()
+		platform_pose = PLATFORM_POSE.new()
+		if not platform_pose.bind(skeleton):
+			player.play("idle")
+			return false
+		platform_active = true
+	walking = grounded and speed > 0.06
+	walk_speed_mps = speed
+	if reduced_motion:
+		platform_pose.stop()
+		return true
+	platform_pose.advance(velocity, grounded, delta)
+	current_behavior = platform_pose.state
+	return true
+
+
+func _stop_platform_pose() -> void:
+	if not platform_active:
+		return
+	platform_pose.stop()
+	platform_active = false
+	walking = false
+	current_behavior = "idle"
+	player.play("idle", 0.12)
+
+
 func play_behavior(behavior: String) -> bool:
 	if suspended or player == null:
 		return false
+	_stop_platform_pose()
 	if behavior == "walk_loop":
 		if not is_usable():
 			return false
@@ -151,7 +203,7 @@ func set_suspended(value: bool) -> void:
 	if value:
 		player.pause()
 	else:
-		if walking:
+		if walking or platform_active:
 			player.pause()
 		else:
 			player.play()
@@ -161,6 +213,10 @@ func set_suspended(value: bool) -> void:
 
 func set_reduced_motion(value: bool) -> void:
 	reduced_motion = value
+	if platform_active:
+		if value:
+			platform_pose.stop()
+		return
 	if not suspended:
 		play_behavior(current_behavior)
 
