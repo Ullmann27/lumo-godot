@@ -4,6 +4,7 @@ extends SceneTree
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const WINTER = preload("res://scripts/games/kart_winter_alpine_world.gd")
 const CANYON = preload("res://scripts/games/kart_crystal_resonance_world.gd")
+const WINTER_CLEARANCE = preload("res://scripts/tests/kart_winter_clearance_geometry.gd")
 const IDS: Array[String] = ["winter_sprint", "crystal_canyon"]
 const ROAD_MARGIN := Vector3(8.5, 6.0, 8.5)
 
@@ -120,6 +121,31 @@ func _check_world(track: String, low: bool) -> void:
 	if track == "winter_sprint":
 		_check(landmark.get_child_count() == 1, label + ": one shared moving-cabin batch")
 		_check_cable_cars(landmark.get_node_or_null("WinterCableCars"), host, road, label)
+		var clearance := WINTER_CLEARANCE.inspect(world, landmark)
+		_check(
+			clearance.static_hits.is_empty(),
+			(
+				label
+				+ ": stations and supports clear existing decoration by 1 m "
+				+ str(clearance.static_hits)
+			)
+		)
+		_check(
+			clearance.cabin_hits.is_empty(),
+			(
+				label
+				+ ": full continuous cabin sweep clears existing decoration "
+				+ str(clearance.cabin_hits)
+			)
+		)
+		if not low:
+			_check(
+				clearance.former_roof_blocked,
+				(
+					label
+					+ ": actual former station position is rejected by the snowbank clearance check"
+				)
+			)
 	else:
 		_check(landmark.get_child_count() == 0, label + ": no per-piece render nodes or lights")
 	var geometry_clear := true
