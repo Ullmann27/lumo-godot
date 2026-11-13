@@ -527,6 +527,10 @@ func _build_hundred_stock(material: Material, ink: Material) -> void:
 		content, "", Vector3(0, 0.72, 2.1), 0.34, _material("hundred_ink", Color("f5e1ad"))
 	)
 	_hundred_summary.name = "CurrentPlaceValue"
+	# Keep the real extruded caption parallel to the viewing plane. An upright
+	# sign and a deeper plate have different screen projections from above;
+	# their lower glyphs otherwise fall onto the similarly colored tray rim.
+	_hundred_summary.global_basis = camera.global_basis
 	var caption_plate := MeshInstance3D.new()
 	caption_plate.name = "CaptionPlate"
 	caption_plate.mesh = BoxMesh.new()
@@ -885,6 +889,7 @@ func _arrange_activity(portrait: bool) -> void:
 		if activity.kind == "bridge_hundred":
 			_hundred_stock.position = Vector3(1.35, 0, -3.85) if portrait else Vector3(-3.4, 0, 1.6)
 			_hundred_summary.position = Vector3(0, 0.6, 2.25)
+			_hundred_summary.global_basis = camera.global_basis
 	elif activity.kind == "subtract_ten":
 		for index in range(targets.size()):
 			targets[index] = (

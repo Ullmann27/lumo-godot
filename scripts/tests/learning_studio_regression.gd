@@ -16,6 +16,18 @@ func _initialize() -> void:
 	_run.call_deferred()
 
 
+func _projected_bounds(mesh: MeshInstance3D, camera: Camera3D) -> Rect2:
+	var bounds := mesh.get_aabb()
+	var projected := Rect2(
+		camera.unproject_position(mesh.to_global(bounds.get_endpoint(0))), Vector2.ZERO
+	)
+	for corner in range(1, 8):
+		projected = projected.expand(
+			camera.unproject_position(mesh.to_global(bounds.get_endpoint(corner)))
+		)
+	return projected
+
+
 func _check_place_value_caption() -> void:
 	var game = load(WORLD).instantiate()
 	game.capture_options = {
@@ -54,6 +66,27 @@ func _check_place_value_caption() -> void:
 			),
 			"lesson lighting cannot reduce caption contrast"
 		)
+		# Local AABBs alone missed the real oblique-camera parallax: the lower
+		# glyphs projected below the navy plate onto the cream tray rim.
+		var bridge := root.get_node("HostBridge")
+		var old_options: Dictionary = bridge._options.duplicate(true)
+		for dimensions in [Vector2i(1280, 720), Vector2i(412, 915), Vector2i(2400, 1080)]:
+			root.size = dimensions
+			bridge._options["displayDensity"] = 2.625 if dimensions.x == 2400 else 1.0
+			game._layout()
+			await process_frame
+			_check(
+				_projected_bounds(plate, game.camera).encloses(
+					_projected_bounds(caption, game.camera).grow(0.5)
+				),
+				(
+					"actual camera retains contrast behind every glyph at step %d in %s"
+					% [step, dimensions]
+				)
+			)
+		bridge._options = old_options
+		root.size = Vector2i(1280, 720)
+		game._layout()
 		if step < 5:
 			_check(game.move_token(step), "caption follows the actual hundred-crossing interaction")
 			await process_frame
