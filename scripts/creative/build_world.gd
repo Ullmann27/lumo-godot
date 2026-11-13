@@ -45,6 +45,7 @@ var slot: int = 1
 var child_key: String = "standalone"
 var save_path: String
 var pause_panel: PanelContainer
+var choice_window: Window
 var guide_path: Array[Vector3i] = []
 var guide_time: float = 0.0
 var autosave: float = 0.0
@@ -69,6 +70,8 @@ var jump_button: Control
 var interaction_button: Button
 var mode_button: Button
 var editor_controls: Array[Control] = []
+var tool_actions: HBoxContainer
+var camera_tools: HBoxContainer
 var editor_camera: Dictionary = {}
 var walk_orbit := 0.48
 var walk_tilt := 0.34
@@ -80,6 +83,8 @@ var walk_notice: Label
 
 func _ready() -> void:
 	previous_runtime = RUNTIME.enter(self, true)
+	previous_runtime["embed_subwindows"] = get_viewport().gui_embed_subwindows
+	get_viewport().gui_embed_subwindows = true
 	SceneRouter.current_scene_id = "build"
 	child_key = (
 		str(
@@ -176,9 +181,12 @@ func _resize() -> void:
 		if is_instance_valid(pause_panel):
 			pause_panel.position = (safe_ui.size - pause_panel.size) * 0.5
 		_layout_explore_controls()
+		_layout_choice_dialog()
+		_layout_camera_tools.call_deferred()
 
 
 func _exit_tree() -> void:
+	get_viewport().gui_embed_subwindows = bool(previous_runtime.get("embed_subwindows", false))
 	RUNTIME.restore(self, previous_runtime)
 
 
@@ -218,6 +226,7 @@ func _ui() -> void:
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	tools.add_child(scroll)
 	var actions := HBoxContainer.new()
+	tool_actions = actions
 	scroll.add_child(actions)
 	for spec in [
 		["Verschieben", _toggle_move],
@@ -237,7 +246,9 @@ func _ui() -> void:
 		["Vorlagen", _templates],
 		["Bauziele", _goals]
 	]:
-		actions.add_child(_day_button(spec[0], spec[1]))
+		var action_button := _day_button(spec[0], spec[1])
+		action_button.mouse_filter = Control.MOUSE_FILTER_PASS
+		actions.add_child(action_button)
 	mode_button = _day_button("Mit Lumo laufen", _toggle_explore)
 	top.add_child(mode_button)
 	var layer_down: Button = _day_button(
@@ -252,6 +263,8 @@ func _ui() -> void:
 			layer = mini(17, layer + 1)
 			_update_labels()
 	)
+	layer_down.mouse_filter = Control.MOUSE_FILTER_PASS
+	layer_up.mouse_filter = Control.MOUSE_FILTER_PASS
 	actions.add_child(layer_down)
 	actions.add_child(layer_up)
 	var goal_panel := PanelContainer.new()
@@ -301,7 +314,7 @@ func _ui() -> void:
 	palette = HBoxContainer.new()
 	parts_scroll.add_child(palette)
 	_palette()
-	var camera_tools := HBoxContainer.new()
+	camera_tools = HBoxContainer.new()
 	camera_tools.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
 	camera_tools.position = Vector2(-200, -228)
 	root.add_child(camera_tools)
@@ -350,6 +363,27 @@ func _ui() -> void:
 	pause_box.add_child(_day_button("Speichern", save_world))
 	pause_box.add_child(_day_button("Zur Spielewelt", _leave))
 	_build_explore_controls(root)
+
+
+func _layout_camera_tools() -> void:
+	if not is_instance_valid(camera_tools) or not is_instance_valid(tool_actions):
+		return
+	var floating_top := safe_ui.get_global_rect().end.y - 228.0
+	var toolbar_bottom := tool_actions.get_global_rect().end.y
+	var compact := floating_top < toolbar_bottom + 8.0
+	for button in camera_tools.get_children():
+		button.mouse_filter = Control.MOUSE_FILTER_PASS if compact else Control.MOUSE_FILTER_STOP
+	# On a short landscape screen the floating camera row would intercept
+	# toolbar touches. Preserve every action in the existing scrolling row.
+	if compact:
+		if camera_tools.get_parent() != tool_actions:
+			camera_tools.reparent(tool_actions, false)
+			camera_tools.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	else:
+		if camera_tools.get_parent() != safe_ui:
+			camera_tools.reparent(safe_ui, false)
+		camera_tools.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+		camera_tools.position = safe_ui.size + Vector2(-200, -228)
 
 
 func _palette() -> void:
@@ -934,10 +968,14 @@ func load_world(show_message: bool = true) -> bool:
 
 
 func _choice_dialog(title: String, items: Array, action: Callable) -> void:
+	if is_instance_valid(choice_window):
+		return
 	var dialog := Window.new()
+	choice_window = dialog
+	dialog.name = "BuildChoiceDialog"
 	dialog.title = title
-	var available := get_viewport().get_visible_rect().size - Vector2(24, 24)
-	dialog.size = Vector2i(minf(390, available.x), minf(500, available.y))
+	dialog.borderless = true
+	dialog.unresizable = true
 	dialog.transient = true
 	dialog.exclusive = true
 	add_child(dialog)
@@ -947,12 +985,41 @@ func _choice_dialog(title: String, items: Array, action: Callable) -> void:
 	dialog.add_child(panel)
 	var box := VBoxContainer.new()
 	panel.add_child(box)
-	box.add_child(_day_label(title, 23))
+	var heading := _day_label(title, 23)
+	heading.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(heading)
+	var scroll := ScrollContainer.new()
+	scroll.name = "BuildChoicesScroll"
+	scroll.custom_minimum_size.y = 48
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	box.add_child(scroll)
+	var choices := VBoxContainer.new()
+	choices.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(choices)
 	for item in items:
-		box.add_child(_day_button(item[1], _choose.bind(action, item[0], dialog)))
+		var button := _day_button(item[1], _choose.bind(action, item[0], dialog))
+		button.mouse_filter = Control.MOUSE_FILTER_PASS
+		choices.add_child(button)
+	# Cancellation stays outside the scroll viewport, including on a short phone.
 	box.add_child(_day_button("Abbrechen", dialog.queue_free))
 	dialog.close_requested.connect(dialog.queue_free)
+	_layout_choice_dialog()
 	dialog.popup_centered()
+	_layout_choice_dialog()
+
+
+func _layout_choice_dialog() -> void:
+	if not is_instance_valid(choice_window) or not is_instance_valid(safe_ui):
+		return
+	var available := safe_ui.size - Vector2(24, 24)
+	var extent := Vector2i(minf(390, available.x), minf(500, available.y))
+	# Keep the real Window viewport at the bounded size; reset the old minimum
+	# first so an already open dialog can shrink when a Fold changes orientation.
+	choice_window.min_size = Vector2i.ZERO
+	choice_window.size = extent
+	choice_window.min_size = extent
+	choice_window.position = Vector2i(safe_ui.position + (safe_ui.size - Vector2(extent)) * 0.5)
 
 
 func _slots() -> void:
