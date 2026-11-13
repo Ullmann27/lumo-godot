@@ -37,9 +37,9 @@ Die 554 Prüfungen sind ausdrücklich der Headless-Zähler ohne die zusätzliche
 
 Die neuen Tests prüfen außerdem Kameraänderung, eingefrorene Animation bei reduzierter Bewegung, Anwendungs-Pause/Fortsetzen und Wiederverwendung desselben 3D-Viewports. Die Originalprotokolle liegen unter `docs/evidence/kart-home-20261113/`.
 
-## Noch ausstehende sichtbare Abnahme
+## Renderer-Abnahme: Stand des ersten Home-Commits
 
-In dieser lokalen Umgebung steht kein funktionierendes Display für den Godot-Renderer bereit. Es liegen für diesen Patch noch keine lokal gesichteten Rendererbilder und kein APK-/Fold7-Nachweis vor. Der neue Capture läuft nur mit echtem Renderer:
+Zum Zeitpunkt des ersten Home-Commits stand in dieser lokalen Umgebung kein funktionierendes Display für den Godot-Renderer bereit. Es lagen daher noch keine gesichteten Rendererbilder und kein APK-/Fold7-Nachweis vor. Der neue Capture läuft nur mit echtem Renderer:
 
 ```sh
 godot --headless --path . --script res://scripts/tests/kart_home_experience_regression.gd
@@ -71,3 +71,18 @@ Bestandsgrenze: Der geerbte Menüprozess `super._process()` und dessen ältere H
 Der echte Renderer-Lauf `43430078141` erzeugte die sechs neuen 1280×720-Ansichten und die entsprechende Baseline, brach aber jeweils nach dem Rennstart an einem Metadatenzugriff auf die bereits korrekt freigegebene Garage ab. Das war ein Fehler des Capture-Skripts. Die Metadaten werden nun aus dem aktiven Rennzustand gelesen; nur während des Menüs wird eine noch gültige Garagenauswahl verwendet. Der tatsächlich ausgewählte Karttyp wird ebenfalls festgehalten.
 
 Zusätzliche Assertions führen denselben Metadatenpfad ohne Renderer aus und überprüfen die Moduswahl, den Kartwechsel, die tatsächliche Garagenfreigabe und den anschließenden Rennzustand. Ergebnis nach Korrektur: **239 Checks, 4/4 Formate, PASS, headless**; Protokoll `docs/evidence/kart-home-20261113/home-metadata-headless.log`. Diese Prüfung ist ausdrücklich kein Bildnachweis. Die Wartezeiten des Capture-Ablaufs wurden nicht verkürzt.
+
+## Artkorrektur anhand echter Rendererbilder
+
+Die tatsächlichen 1280×720-PNGs von Workflow `43430078141`, Quellstand `01cf063a7c11681b0060430cdb72c16d56a0b061`, wurden mit der gleich aufgenommenen Baseline verglichen. Zusätzlich wurden die Rückkehr mit dem ausgewählten Gecko-Kart und die bestehende Garage geöffnet. Die neue Außenwelt, Moduswahl und klare Sicht auf den Originalfahrer waren erkennbar. Der Lauf ist wegen des oben beschriebenen Capture-Fehlers kein vollständiger Abnahmenachweis für alle vier Formate.
+
+Die Bilder zeigten vier konkrete Artprobleme, die der Folgepatch bearbeitet:
+
+- Die Häuser bestanden überwiegend aus Kästen und ungerahmten Fensterflächen. Sie erhalten sichtbare Fensterrahmen, Kreuzteilungen, Simse und Läden, eigene Türen mit Stufen sowie einzelne Balkone und überdachte Eingänge. Diese Teile bleiben in den bestehenden Material-Batches.
+- Die einzelnen Baumkronen wirkten wie einfache Kugeln. Elf Bäume bestehen nun aus 55 gegliederten Kronenteilen mit zwei Blattfarben, zusammengefasst in zwei MultiMeshes.
+- Der ursprüngliche Himmelsverlauf blieb im tatsächlich sichtbaren flachen Blickwinkel beige. Der neue Verlauf zeigt Blau bereits im niedrigen Blickwinkel und beschränkt die Wärme auf den Horizont. Niedrigere, bläuliche Fernberge und vier räumliche Wolkengruppen in einem gemeinsamen MultiMesh staffeln die Ferne.
+- Der Leuchtturm war oben abgeschnitten; der Originalpavillon lag außerhalb der Ansicht. Die Landmarken stehen weiter hinten und werden kleiner eingerahmt. Der Pavillon zeigt seine originale Vorderseite über einem Steg. Auch der große Loop rückt in die Ferne, damit er nicht mehr am oberen Bildrand abgeschnitten wird.
+
+Die neue Prüfung projiziert die tatsächlichen Meshgrenzen von Leuchtturm und Originalpavillon in die unveränderten vier Produktionskameras. Beide passen vollständig in den jeweiligen Bildausschnitt; ihre projizierten Rechtecke überschneiden sich nicht. Diese geometrische Schranke verhindert erneutes Abschneiden und die Verdeckung des Leuchtturms durch den Pavillon, ersetzt aber keine Prüfung der tatsächlichen Farben, Lichtwirkung und übrigen Szenenüberdeckungen.
+
+Nach dem Artpatch: **251 Checks, 4/4 Formate, PASS, headless** für den vollständigen Home-Ablauf und weiterhin **11 Checks, PASS** für Geometrie und ruhende Kulisse. Protokoll: `docs/evidence/kart-home-20261113/home-art-headless.log`. Aktuelle Rendererbilder dieses Artpatches stehen noch aus. UI-Abmessungen, Kamerafit des Fahrers, native Navigation, Physik und externe Assets wurden durch den Artpatch nicht verändert.
