@@ -234,8 +234,9 @@ func _ui() -> void:
 	for spec in [
 		["Verschieben", _toggle_move],
 		["Drehen ↻", _rotate],
-		["Siedlung", _open_settlement.bind("settlement")],
 		["Wettbau", _open_settlement.bind("rival")],
+		["Siedlung", _open_settlement.bind("settlement")],
+		["Dorf & Wirtschaft", _open_settlement.bind("settlement", true)],
 		["Entfernen", _toggle_erase],
 		["Rückgängig", _undo],
 		["Wiederholen", _redo],
@@ -1204,10 +1205,11 @@ func _toggle_move() -> void:
 	)
 
 
-func _open_settlement(mode: String) -> void:
+func _open_settlement(mode: String, living_village := false) -> void:
 	if paused or not save_world(false):
 		return
 	SceneRouter.launch_options["settlementMode"] = mode
+	SceneRouter.launch_options["livingVillage"] = living_village and mode == "settlement"
 	SceneRouter.launch_options["buildSlot"] = slot
 	SceneRouter.goto("settlement")
 

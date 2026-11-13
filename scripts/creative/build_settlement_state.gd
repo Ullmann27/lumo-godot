@@ -189,7 +189,6 @@ func try_demolish(plot: int, allow_relocation: bool = false) -> bool:
 		var building: Dictionary = _player.buildings[index]
 		if int(building.plot) != plot:
 			continue
-		var definition: Dictionary = BUILDINGS[str(building.kind)]
 		var quote := demolition_quote(plot)
 		if int(quote.affected_residents) > 0 and not allow_relocation:
 			last_error = "Deine Bewohner brauchen dieses Zuhause. Baue zuerst ein weiteres Wohnhaus."
