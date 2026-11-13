@@ -49,3 +49,19 @@ LUMO_CAPTURE_DIR=/tmp/lumo-kart-home godot --path . --rendering-method gl_compat
 Erwarteter Marker: `[KartHomeExperienceCapture] PASS`. Der Capture erstellt pro Format Home, laufende Modus-Kamerafahrt, bestätigte Moduswahl, Garage, Home nach Kartwechsel und Rennstart. `home-render.json` enthält tatsächliche Bildgrößen, Renderer und Drawcall-/Primitive-Zähler. Desktopzähler belegen keine Geräte-FPS.
 
 Für den identischen Vergleichspfad auf dem unveränderten `ada5ed81` dürfen die beiden Capture-/Regression-Skripte in diesen Ausgangsstand kopiert und mit `-- --baseline` gestartet werden. Dieser explizite Modus ist im JSON als Baseline gekennzeichnet und liefert keine Bestätigung für die neue Hafenbühne. Die bestehenden Spatial-/Garage-Prüfungen bleiben als zusätzliche Schranken erhalten.
+
+## Folgekorrektur aus dem unabhängigen Review
+
+Die Ränder und Mittelmarkierungen der geschwungenen Küstenstraße skalieren nun entlang ihrer lokalen Basisachsen. Damit bleiben Breite, Höhe und rechtwinklige Querschnitte auch in Kurven erhalten. Die wiederholte Synchronisierung der reduzierten Bewegung schreibt nur noch beim Sichtbarwerden oder beim Wechsel in diesen Modus einen ruhenden Animationszustand. Ausgeblendete Kulissen führen dabei keine Animationsupdates aus.
+
+Die gezielte `kart_home_promenade_regression.gd` wurde zuerst gegen den vorherigen Quellstand ausgeführt und wies beide Fehler nach. Nach der Korrektur besteht sie **11 Checks**: sämtliche statischen Quader ohne Scherung, alle 152 Randsegmente und 26 Mittelmarkierungen mit ihren vorgesehenen Abmessungen sowie sichtbare, ausgeblendete und wechselnde Bewegungszustände. Aufruf:
+
+```sh
+godot --headless --path . --audio-driver Dummy --script res://scripts/tests/kart_home_promenade_regression.gd
+```
+
+Erwarteter Marker: `[KartHomePromenade] PASS checks=11`. Diese Prüfung liest die tatsächlich erzeugten Transformationsdaten; sie ersetzt weiterhin keine Bildabnahme.
+
+Der vollständige Home-Touch-Pfad wurde nach dieser Folgekorrektur erneut ausgeführt: **223 Checks, 4/4 Formate, PASS, headless**. Das Protokoll liegt in `docs/evidence/kart-home-20261113/home-followup-headless.log`.
+
+Bestandsgrenze: Der geerbte Menüprozess `super._process()` und dessen ältere Hintergrundanimationen wurden nicht umgebaut. Die Anwendungs-Pausenprüfung belegt das Stoppen der neuen Hafenbühne und ihrer Kamerafahrt, keine umfassende Ruhestellung aller bestehenden Garagenprozesse.

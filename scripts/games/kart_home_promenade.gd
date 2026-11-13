@@ -70,10 +70,14 @@ func build() -> void:
 
 
 func set_active(value: bool, motion_reduced: bool) -> void:
+	var became_active := value and not active
+	var motion_changed := motion_reduced != reduced_motion
 	active = value
 	visible = value
 	reduced_motion = motion_reduced
-	if reduced_motion:
+	if not active:
+		return
+	if reduced_motion and (became_active or motion_changed):
 		elapsed = 0.0
 		_update_motion()
 
@@ -202,9 +206,9 @@ func _build_route() -> void:
 		var frame := Basis.looking_at(direction, Vector3.UP)
 		for edge in [-1, 1]:
 			_batch_transform("cream" if i % 2 == 0 else "teal",
-				Transform3D(frame.scaled(Vector3(0.18, 0.17, a.distance_to(b) + 0.04)), (a + b) * 0.5 + side * 1.55 * edge))
+				Transform3D(frame * Basis.from_scale(Vector3(0.18, 0.17, a.distance_to(b) + 0.04)), (a + b) * 0.5 + side * 1.55 * edge))
 		if i % 3 == 0:
-			_batch_transform("cream", Transform3D(frame.scaled(Vector3(0.08, 0.015, 0.55)), (a + b) * 0.5 + Vector3.UP * 0.03))
+			_batch_transform("cream", Transform3D(frame * Basis.from_scale(Vector3(0.08, 0.015, 0.55)), (a + b) * 0.5 + Vector3.UP * 0.03))
 		if i % 8 == 0:
 			var height := maxf(0.8, a.y + 1.2)
 			_batch_box("sand", Vector3(0.64, height, 0.72), Vector3(a.x, a.y - height * 0.5 - 0.1, a.z))
