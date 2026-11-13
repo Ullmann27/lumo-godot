@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "scope": "Actual headless production-scene lifecycle; no image captured. Before: four retained Ogg resources. After: exact published19b15 cleanup and two real playbacks released on both tracks.",
+  "world_capture_blob": "0f199edfe0471d9e8578660203bf965b4af56036",
+  "diagnostic_blob": "482d182dbf03e9894ed2bc671ba4c4f657c83152",
+  "logs": [
+    {
+      "original_log": "lifecycle-before-crystal.log",
+      "original_sha256": "1222a0976444533142b4ce10668805d0b0e505ebcfed5a92b3e1a778ad420c49",
+      "archive": "lifecycle-before-crystal.log.gz",
+      "archive_sha256": "39f3208507867992386576f35969d0c0c78bcd1d4ae2e91ee85fd959632df57f"
+    },
+    {
+      "original_log": "integrated-winter_sprint-lifecycle.log",
+      "original_sha256": "8486e4af4cf7a4388a25d435afc4df27ec27dfe8a73e5b13010e63dfbbdb01cd",
+      "archive": "integrated-winter_sprint-lifecycle.log.gz",
+      "archive_sha256": "7584c590db241c4d5ad099aa47c42d1e95c9558f99ec149ac93d7e43bb4776d8"
+    },
+    {
+      "original_log": "integrated-crystal_canyon-lifecycle.log",
+      "original_sha256": "8a755b8b779be8f890cba5f2518c7432fb3aa3f3a3b22b57cc2cfa1cf85aeae3",
+      "archive": "integrated-crystal_canyon-lifecycle.log.gz",
+      "archive_sha256": "3329665381b8782a9810a5d332221bf0dfffafc361646d1c68eece7eca63d838"
+    }
+  ]
+}

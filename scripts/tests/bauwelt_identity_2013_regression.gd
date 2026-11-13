@@ -89,19 +89,21 @@ func _run() -> void:
 	templates.template("bridge")
 	assert(templates.challenge_passes("bridge"))
 
-	# Expanded footprint: 33x33 (HALF=16) -> 49x49 (HALF=24), 2.20x the old square.
+	# Expanded footprint: 49x49 -> 257x257; the original coordinates stay valid.
 	# Old cells stay valid; river stays open; river islands are buildable.
-	assert(STATE.HALF == 24)
+	assert(STATE.HALF == 128)
 	assert(STATE.LIMIT >= 1536)
 	assert(STATE.ground_at(-16, 0) and STATE.ground_at(16, 5))
 	assert(STATE.ground_at(-24, 0) and STATE.ground_at(24, 24) and STATE.ground_at(20, -24))
-	assert(not STATE.ground_at(-25, 0) and not STATE.ground_at(0, 25))
+	assert(STATE.ground_at(-25, 0) and STATE.ground_at(128, 128))
+	assert(not STATE.ground_at(-129, 0) and not STATE.ground_at(0, 129))
 	assert(not STATE.ground_at(0, 0) and not STATE.ground_at(3, 6), "river channel stays open")
 	assert(STATE.ground_at(1, -12) and STATE.ground_at(2, 19), "river islands are buildable")
 	var bounds = STATE.new()
 	assert(bounds.place("stone", Vector3i(22, 0, 20)).is_empty(), "new land is placeable")
 	assert(bounds.place("sand", Vector3i(1, 0, -12)).is_empty(), "river island is placeable")
-	assert(not bounds.place("stone", Vector3i(25, 0, 0)).is_empty(), "outside the new rim rejected")
+	assert(bounds.place("stone", Vector3i(25, 0, 0)).is_empty(), "old rim becomes buildable land")
+	assert(not bounds.place("stone", Vector3i(129, 0, 0)).is_empty(), "outside the new rim rejected")
 	assert(not bounds.place("stone", Vector3i(0, 0, 0)).is_empty(), "open river rejected")
 	# Old-save compatibility: a snapshot taken on the original castle cells still restores.
 	var legacy = STATE.new()

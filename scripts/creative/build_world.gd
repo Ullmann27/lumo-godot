@@ -8,6 +8,7 @@ const SANDBOX = preload("res://scripts/creative/build_sandbox_tools.gd")
 const EXPLORER = preload("res://scripts/creative/build_explorer.gd")
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const JUMP_BUTTON = preload("res://scripts/games/jump_touch_button.gd")
+const FRONTIER = preload("res://scripts/creative/build_frontier_landscape.gd")
 var model = STATE.new()
 var kit = KIT.new()
 var world: Node3D
@@ -27,8 +28,8 @@ const START_TILT: float = 0.48
 const START_RADIUS: float = 44.0
 const START_FOCUS := Vector3(0.6, 0.8, 4.0)
 const RADIUS_MIN: float = 10.0
-const RADIUS_MAX: float = 72.0
-const FOCUS_LIMIT: float = 32.0
+const RADIUS_MAX: float = 240.0
+const FOCUS_LIMIT: float = float(STATE.HALF)
 var orbit: float = START_ORBIT
 var tilt: float = START_TILT
 var radius: float = START_RADIUS
@@ -99,7 +100,7 @@ func _ready() -> void:
 	add_child(world)
 	camera = Camera3D.new()
 	camera.fov = 54
-	camera.far = 200
+	camera.far = 520
 	add_child(camera)
 	camera.current = true
 	preview = kit.box(self, Vector3(-5, 0.5, 0), Vector3.ONE * 1.01, Color("67deff"))
@@ -136,6 +137,7 @@ func _ready() -> void:
 		model.add_starter_plot("island", false)
 	_rebuild()
 	explorer = EXPLORER.new()
+	explorer.horizontal_limit = Vector2.ONE * (float(STATE.HALF) + 0.35)
 	add_child(explorer)
 	_camera_update()
 	get_viewport().size_changed.connect(_resize)
@@ -146,7 +148,7 @@ func _ready() -> void:
 
 func _ground() -> void:
 	# Collision stays a flat island so placed blocks do not float; visuals are dressed separately.
-	# Footprint matches build_state.HALF (24): banks x=-24.5..0 and 4..24.5, z=-24.5..24.5.
+	# One collider per bank covers the full sparse world; the river stays open.
 	var half := float(STATE.HALF) + 0.5
 	for side in [-1, 1]:
 		var bank := StaticBody3D.new()
@@ -167,6 +169,7 @@ func _ground() -> void:
 		add_child(isle)
 		kit.collision(isle, Vector3(2.0, -1.2, island_z), Vector3(4.0, 2.4, 4.0))
 	BuildLandmarks.dress_world(self, kit)
+	FRONTIER.dress(self, kit, float(STATE.HALF) + 0.5)
 
 
 func _resize() -> void:
@@ -519,7 +522,7 @@ func _camera_update() -> void:
 func _ray(at: Vector2) -> Dictionary:
 	var origin: Vector3 = camera.project_ray_origin(at)
 	var query := PhysicsRayQueryParameters3D.create(
-		origin, origin + camera.project_ray_normal(at) * 150
+		origin, origin + camera.project_ray_normal(at) * camera.far
 	)
 	return get_world_3d().direct_space_state.intersect_ray(query)
 
@@ -1361,21 +1364,33 @@ func _toggle_explore() -> void:
 
 func _find_explorer_spawn() -> Vector3:
 	var occupied: Dictionary = model.occupied()
-	var preferred := Vector3i(clampi(roundi(focus.x), -23, 23), 0, clampi(roundi(focus.z + 3), -23, 23))
-	var nearest := Vector3(-24.2, 0.08, -24.2)
-	var best_distance := INF
-	for x in range(-23, 24):
-		for z in range(-23, 24):
-			if not STATE.ground_at(x, z):
-				continue
-			if occupied.has(Vector3i(x, 0, z)) or occupied.has(Vector3i(x, 1, z)):
-				continue
-			var distance := Vector3i(x, 0, z).distance_squared_to(preferred)
-			if distance < best_distance:
-				best_distance = distance
-				nearest = Vector3(x + 0.5, 0.08, z + 0.5)
-	# At the world limit there are always bank cells outside the placed volumes.
-	return nearest
+	var inner := STATE.HALF - 1
+	var preferred := Vector2i(
+		clampi(roundi(focus.x), -inner, inner),
+		clampi(roundi(focus.z + 3), -inner, inner)
+	)
+	# Search outward from the camera, stopping at the first safe ring instead
+	# of scanning all 66,049 cells whenever a child enters walking mode.
+	for distance in range(STATE.HALF * 2):
+		for dx in range(-distance, distance + 1):
+			for dz in [-distance, distance]:
+				var cell := Vector3i(preferred.x + dx, 0, preferred.y + dz)
+				if _spawn_cell_is_clear(cell, occupied):
+					return Vector3(cell.x + 0.5, 0.08, cell.z + 0.5)
+		for dz in range(-distance + 1, distance):
+			for dx in [-distance, distance]:
+				var cell := Vector3i(preferred.x + dx, 0, preferred.y + dz)
+				if _spawn_cell_is_clear(cell, occupied):
+					return Vector3(cell.x + 0.5, 0.08, cell.z + 0.5)
+	return Vector3(-float(STATE.HALF) + 0.15, 0.08, -float(STATE.HALF) + 0.15)
+
+
+func _spawn_cell_is_clear(cell: Vector3i, occupied: Dictionary) -> bool:
+	return (
+		abs(cell.x) < STATE.HALF and abs(cell.z) < STATE.HALF
+		and STATE.ground_at(cell.x, cell.z)
+		and not occupied.has(cell) and not occupied.has(cell + Vector3i.UP)
+	)
 
 
 func _physics_process(delta: float) -> void:

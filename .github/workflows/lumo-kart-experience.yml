@@ -1,0 +1,237 @@
+name: LUMO Kart world, home and driving graphics
+
+on:
+  pull_request:
+    branches: [chatgpt/lumo-nextgen-20261113]
+    paths:
+      - scripts/**
+      - scenes/**
+      - assets/**
+      - project.godot
+      - tools/run_godot_probe.py
+      - .github/workflows/lumo-kart-experience.yml
+  push:
+    branches: [chatgpt/lumo-graphics-expansion-20261113]
+    paths:
+      - scripts/**
+      - scenes/**
+      - assets/**
+      - project.godot
+      - tools/run_godot_probe.py
+      - .github/workflows/lumo-kart-experience.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lumo-kart-experience-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-graphics:
+    name: Actual ${{ matrix.area }} scene and interaction
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - area: home
+            regression_mode: headless
+            regression: kart_home_experience_regression
+            regression_marker: '[KartHomeExperience] PASS'
+            capture: kart_home_experience_capture
+            capture_marker: '[KartHomeExperienceCapture] PASS'
+          - area: worlds
+            regression_mode: rendered
+            regression: kart_world_expansion_regression
+            regression_marker: '[KartWorldExpansion] PASS'
+            capture: kart_world_expansion_capture
+            capture_marker: '[KartWorldExpansionCapture] PASS'
+          - area: feedback
+            regression_mode: rendered
+            regression: kart_drive_feedback_regression
+            regression_marker: '[KartDriveFeedback] PASS'
+            capture: kart_drive_feedback_capture
+            capture_marker: '[KartDriveFeedbackCapture] PASS'
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      EVIDENCE: ${{ github.workspace }}/graphics-evidence/${{ matrix.area }}
+      PROBE: ${{ matrix.regression }}
+      PROBE_MARKER: ${{ matrix.regression_marker }}
+      CAPTURE: ${{ matrix.capture }}
+      CAPTURE_MARKER: ${{ matrix.capture_marker }}
+      AREA: ${{ matrix.area }}
+      REGRESSION_MODE: ${{ matrix.regression_mode }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install the exact existing engine and real X11 renderer
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import and record exact unmodified source
+        run: |
+          set -euo pipefail
+          mkdir -p "$EVIDENCE"
+          git rev-parse HEAD > "$EVIDENCE/source-sha.txt"
+          git rev-parse 'HEAD^{tree}' > "$EVIDENCE/source-tree.txt"
+          godot --version > "$EVIDENCE/engine.txt"
+          python3 tools/validate_project.py 2>&1 | tee "$EVIDENCE/project-validation.log"
+          godot --headless --editor --import --quit 2>&1 | tee "$EVIDENCE/import.log"
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$EVIDENCE/import.log"; then exit 1; fi
+          git diff --exit-code HEAD --
+      - name: Production-state, lifecycle and geometry checks
+        id: regression
+        run: |
+          set -euo pipefail
+          export XDG_DATA_HOME="$EVIDENCE/regression-user-data"
+          export XDG_CONFIG_HOME="$EVIDENCE/user-config"
+          export XDG_CACHE_HOME="$EVIDENCE/user-cache"
+          mkdir -p "$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+          if [[ "$REGRESSION_MODE" == rendered ]]; then
+            python3 tools/run_godot_probe.py --log "$EVIDENCE/regression.log" \
+              --timeout 480 --required "$PROBE_MARKER" -- \
+              xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . \
+              --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 60 \
+              --script "scripts/tests/$PROBE.gd"
+          else
+            python3 tools/run_godot_probe.py --log "$EVIDENCE/regression.log" \
+              --timeout 480 --required "$PROBE_MARKER" -- \
+              godot --headless --audio-driver Dummy --path . \
+              --script "scripts/tests/$PROBE.gd"
+          fi
+      - name: Real production scene captures
+        if: ${{ !cancelled() && steps.regression.outcome != 'skipped' }}
+        run: |
+          set -euo pipefail
+          export XDG_CONFIG_HOME="$EVIDENCE/capture-config"
+          export XDG_CACHE_HOME="$EVIDENCE/capture-cache"
+          mkdir -p "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+          if [[ "$AREA" == worlds ]]; then
+            failures=0
+            for track in winter_sprint crystal_canyon; do
+              export XDG_DATA_HOME="$EVIDENCE/user-data-$track"
+              export LUMO_CAPTURE_DIR="$EVIDENCE/images/$track"
+              mkdir -p "$XDG_DATA_HOME" "$LUMO_CAPTURE_DIR"
+              if ! python3 tools/run_godot_probe.py --log "$EVIDENCE/render-$track.log" \
+                --timeout 600 --required "$CAPTURE_MARKER" -- \
+                xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . \
+                --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 60 \
+                --script "scripts/tests/$CAPTURE.gd" -- "--track=$track"; then
+                failures=$((failures + 1))
+              fi
+            done
+            test "$failures" -eq 0
+          else
+            export XDG_DATA_HOME="$EVIDENCE/capture-user-data"
+            export LUMO_CAPTURE_DIR="$EVIDENCE/images"
+            mkdir -p "$XDG_DATA_HOME" "$LUMO_CAPTURE_DIR"
+            python3 tools/run_godot_probe.py --log "$EVIDENCE/render.log" \
+              --timeout 600 --required "$CAPTURE_MARKER" -- \
+              xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . \
+              --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 60 \
+              --script "scripts/tests/$CAPTURE.gd"
+          fi
+      - name: Preserve existing spatial menu and workshop controls
+        if: ${{ !cancelled() && matrix.area == 'home' && steps.regression.outcome != 'skipped' }}
+        run: |
+          set -euo pipefail
+          export XDG_DATA_HOME="$EVIDENCE/preserved-user-data"
+          mkdir -p "$XDG_DATA_HOME"
+          python3 tools/run_godot_probe.py --log "$EVIDENCE/home-promenade.log" \
+            --timeout 120 --required '[KartHomePromenade] PASS' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script scripts/tests/kart_home_promenade_regression.gd
+          python3 tools/run_godot_probe.py --log "$EVIDENCE/preserved-spatial-menu.log" \
+            --timeout 600 --required '[SpatialMenu] PASS' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script scripts/tests/kart_spatial_menu_regression.gd
+          python3 tools/run_godot_probe.py --log "$EVIDENCE/preserved-garage.log" \
+            --timeout 600 --required '[NextGenGarage] PASS' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script scripts/tests/kart_nextgen_garage_regression.gd
+      - name: Capture the exact prior source with the same comparison harness
+        if: ${{ !cancelled() && matrix.area != 'feedback' && steps.regression.outcome != 'skipped' }}
+        run: |
+          set -euo pipefail
+          baseline="$RUNNER_TEMP/lumo-before-$AREA"
+          git fetch --depth 1 origin ada5ed81ad62339f15289da62670c0a4f9f7f2b9
+          git worktree add --detach "$baseline" ada5ed81ad62339f15289da62670c0a4f9f7f2b9
+          mkdir -p "$EVIDENCE/baseline"
+          git -C "$baseline" rev-parse HEAD > "$EVIDENCE/baseline/source-sha.txt"
+          git -C "$baseline" rev-parse 'HEAD^{tree}' > "$EVIDENCE/baseline/source-tree.txt"
+          cp "scripts/tests/$CAPTURE.gd" "$baseline/scripts/tests/"
+          if [[ "$AREA" == home ]]; then
+            cp scripts/tests/kart_home_experience_regression.gd "$baseline/scripts/tests/"
+          fi
+          sha256sum "scripts/tests/$CAPTURE.gd" > "$EVIDENCE/baseline/harness-sha256.txt"
+          godot --headless --path "$baseline" --editor --import --quit 2>&1 | tee "$EVIDENCE/baseline/import.log"
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$EVIDENCE/baseline/import.log"; then exit 1; fi
+          export XDG_CONFIG_HOME="$EVIDENCE/baseline/config"
+          export XDG_CACHE_HOME="$EVIDENCE/baseline/cache"
+          mkdir -p "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+          if [[ "$AREA" == worlds ]]; then
+            failures=0
+            for track in winter_sprint crystal_canyon; do
+              export XDG_DATA_HOME="$EVIDENCE/baseline/user-data-$track"
+              export LUMO_CAPTURE_DIR="$EVIDENCE/baseline/images/$track"
+              mkdir -p "$XDG_DATA_HOME" "$LUMO_CAPTURE_DIR"
+              if ! python3 tools/run_godot_probe.py --log "$EVIDENCE/baseline/render-$track.log" \
+                --timeout 600 --required "$CAPTURE_MARKER" -- \
+                xvfb-run -a -s '-screen 0 2560x2560x24' godot --path "$baseline" \
+                --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 60 \
+                --script "scripts/tests/$CAPTURE.gd" -- "--track=$track"; then
+                failures=$((failures + 1))
+              fi
+            done
+            test "$failures" -eq 0
+          else
+            export XDG_DATA_HOME="$EVIDENCE/baseline/user-data"
+            export LUMO_CAPTURE_DIR="$EVIDENCE/baseline/images"
+            mkdir -p "$XDG_DATA_HOME" "$LUMO_CAPTURE_DIR"
+            python3 tools/run_godot_probe.py --log "$EVIDENCE/baseline/render.log" \
+              --timeout 600 --required "$CAPTURE_MARKER" -- \
+              xvfb-run -a -s '-screen 0 2560x2560x24' godot --path "$baseline" \
+              --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 60 \
+              --script "scripts/tests/$CAPTURE.gd" -- --baseline
+          fi
+          git -C "$baseline" diff --exit-code HEAD --
+      - name: Record final source integrity and image digests
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$EVIDENCE"
+          git status --porcelain --untracked-files=no > "$EVIDENCE/source-dirty.txt"
+          git diff --exit-code HEAD --
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          root = Path(os.environ['EVIDENCE'])
+          files = sorted(root.glob('**/*.png'))
+          manifest = [
+              {'file': str(p.relative_to(root)), 'bytes': p.stat().st_size,
+               'sha256': hashlib.sha256(p.read_bytes()).hexdigest()}
+              for p in files
+          ]
+          (root / 'image-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+          print(f'{len(files)} actual renderer images recorded')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: lumo-kart-experience-${{ matrix.area }}
+          path: graphics-evidence/${{ matrix.area }}/
+          if-no-files-found: error
+          retention-days: 30

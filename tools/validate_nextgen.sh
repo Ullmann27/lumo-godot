@@ -66,12 +66,15 @@ check_probe() {
 printf 'probe\tmode\tresult\n' > "$LOG_DIR/results.tsv"
 check_probe learning_world_regression '[LearningWorld] PASS' headless
 check_probe learning_sharing_regression '[LearningSharing] PASS' headless
+check_probe learning_host_payload_regression '[LearningHostPayload] PASS' headless
 check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' headless
 check_probe jump_nextgen_regression '[JumpNextgen] PASS' headless
 check_probe jump_expeditions_regression '[JumpExpeditions] PASS' headless
 check_probe lumo_teacher_pose_regression '[LumoTeacherPose] PASS' headless
 check_probe lumo_65bone_walk_gait_regression '[LumoGait] PASS' headless
 check_probe lumo_original_jump_visual_regression '[JumpOriginalLumo] PASS' headless
+check_probe bauwelt_identity_2013_regression '[BauweltIdentity2013] PASS' headless
+check_probe build_frontier_regression '[BuildFrontier] PASS' headless
 check_probe build_transform_regression '[BuildTransform] PASS' headless
 check_probe build_nextgen_play_regression '[BuildNextgen] PASS' headless
 check_probe build_settlement_regression '[Settlement] PASS' headless

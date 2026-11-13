@@ -3,10 +3,10 @@ extends RefCounted
 const CATALOG = preload("res://scripts/creative/build_catalog.gd")
 const LIMIT: int = 1536
 const SAVE_VERSION: int = 1
-# Playable footprint was abs<=16 (33x33 cells). HALF=24 is 49x49, 2.20x the
-# old bounding square. Old saves only contain cells within ±16, so they load
-# unchanged. River islands are also ground; the river channel stays open.
-const HALF: int = 24
+# The free construction world is 257 by 257 cells. Placement remains sparse:
+# empty land allocates no blocks, colliders or save entries. All earlier cells,
+# structural support rules and version-one projects remain valid.
+const HALF: int = 128
 const HEIGHT_MAX: int = 19
 var pieces: Array[Dictionary] = []
 var undo_stack: Array = []

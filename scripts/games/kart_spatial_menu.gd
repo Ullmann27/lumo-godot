@@ -3,7 +3,9 @@ extends "res://scripts/games/kart_garage_menu.gd"
 ## Selection, unlocks, tuning, native gestures and saved setups stay in the base.
 const SERVICE_STATION = preload("res://scripts/games/kart_garage_service_station.gd")
 const STAGE_PINCH = preload("res://scripts/games/kart_stage_pinch.gd")
+const HOME_PROMENADE = preload("res://scripts/games/kart_home_promenade.gd")
 var service_station
+var home_promenade
 var track_pass
 var _pinch = STAGE_PINCH.new()
 var _camera_zoom := 1.0
@@ -15,6 +17,14 @@ var _stage_header: Control
 var _stage_controls: Array[Control] = []
 var _selection_surface: Panel
 var _landing_stage_region := Rect2(0.36, 0.19, 0.61, 0.60)
+var _home_camera_phase := 1.0
+var _home_camera_pose := Transform3D.IDENTITY
+var _home_camera_focus := Vector3.ZERO
+var _home_camera_offsets := Vector2.ZERO
+var _home_mode := ""
+var _home_environment: Environment
+var _studio_ambient := Color.WHITE
+var _studio_ambient_energy := 0.46
 
 
 func _init() -> void:
@@ -72,12 +82,21 @@ func _ready() -> void:
 	service_station = SERVICE_STATION.new()
 	garage_interior.root.add_child(service_station)
 	service_station.build(garage_interior.materials)
+	home_promenade = HOME_PROMENADE.new()
+	preview.add_child(home_promenade)
+	home_promenade.build()
+	for child in preview.get_children():
+		if child is WorldEnvironment and child.environment != null:
+			_home_environment = child.environment
+			_studio_ambient = _home_environment.ambient_light_color
+			_studio_ambient_energy = _home_environment.ambient_light_energy
 	_spatial_ready = true
 	_refresh()
 
 
 func set_landing_active(active: bool) -> void:
 	_landing_active = active
+	_home_camera_phase = 0.0 if active and not reduced_motion else 1.0
 	if active:
 		step = 0
 		_refresh()
@@ -86,6 +105,7 @@ func set_landing_active(active: bool) -> void:
 	_selection_surface.visible = not active
 	view_choice.visible = not active and step in [1, 2]
 	preview_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
+	_sync_home_stage()
 	_fit_welcome_camera()
 
 
@@ -112,7 +132,7 @@ func _refresh() -> void:
 	_sync_workshop_host()
 	for button in garage_buttons.values():
 		button.body.hide()
-	garage_interior.root.visible = step != 3
+	_sync_home_stage()
 	workshop_button.visible = step == 2
 	kart_bars.hide()
 	subtitle.hide()
@@ -168,6 +188,31 @@ func _sync_workshop_host() -> void:
 		seated.set_suspended(not seated.visible)
 
 
+func _sync_home_stage() -> void:
+	if not is_instance_valid(home_promenade):
+		return
+	var home_visible := _landing_active and step == 0
+	home_promenade.set_active(home_visible and visible and _application_active, reduced_motion)
+	garage_interior.root.visible = not home_visible and step != 3
+	if _home_environment != null:
+		_home_environment.ambient_light_color = Color("a7b9b6") if home_visible else _studio_ambient
+		_home_environment.ambient_light_energy = 0.60 if home_visible else _studio_ambient_energy
+
+
+func _advance_home_camera(delta: float) -> void:
+	if not _landing_active or inspection_view != 0 or rotate_drag or not _application_active:
+		return
+	_home_camera_phase = 1.0 if reduced_motion else minf(1.0, _home_camera_phase + maxf(delta, 0.0) / 0.55)
+	var blend := smoothstep(0.0, 1.0, _home_camera_phase)
+	var distance_scale := 1.0 + (1.0 - blend) * 0.065
+	# A true bounded dolly-in: zoom begins wider than the fully fitted subject.
+	# Framing offsets scale with the optical origin, so UI remains clear.
+	preview_camera.transform = _home_camera_pose
+	preview_camera.position = _home_camera_focus + (_home_camera_pose.origin - _home_camera_focus) * distance_scale
+	preview_camera.h_offset = _home_camera_offsets.x * distance_scale
+	preview_camera.v_offset = _home_camera_offsets.y * distance_scale
+
+
 func _preview_input(event: InputEvent) -> void:
 	var gesture: Dictionary = _pinch.consume(event)
 	if gesture.started:
@@ -202,8 +247,10 @@ func _notification(what: int) -> void:
 		_reset_stage_gesture()
 		if is_instance_valid(service_station):
 			service_station.set_active(false, reduced_motion)
+		_sync_home_stage()
 	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN, NOTIFICATION_APPLICATION_RESUMED]:
 		_application_active = true
+		_sync_home_stage()
 
 
 func _next() -> void:
@@ -432,6 +479,11 @@ func _fit_welcome_camera() -> void:
 	_camera_ready = true
 	_camera_focus = focus
 	_set_camera_veil(0.0)
+	if _landing_active:
+		_home_camera_pose = preview_camera.transform
+		_home_camera_focus = focus
+		_home_camera_offsets = Vector2(preview_camera.h_offset, preview_camera.v_offset)
+		_advance_home_camera(0.0)
 
 
 func _visible_stage_region() -> Rect2:
@@ -488,9 +540,19 @@ func _process(delta: float) -> void:
 	if not visible or not _spatial_ready:
 		if is_instance_valid(service_station):
 			service_station.set_active(false, reduced_motion)
+		if is_instance_valid(home_promenade):
+			home_promenade.set_active(false, reduced_motion)
 		return
 	_sync_workshop_host()
+	_sync_home_stage()
 	service_station.advance(delta)
+	home_promenade.advance(delta)
+	if _landing_active and str(setup.mode) != _home_mode:
+		_home_mode = str(setup.mode)
+		_home_camera_phase = 1.0 if reduced_motion else 0.0
+		if is_instance_valid(preview_kart.lumo_animation):
+			preview_kart.lumo_animation.play_menu_behavior("agree_nod")
+	_advance_home_camera(delta)
 	if step == 3:
 		if not rotate_drag:
 			preview_angle = previous_angle
