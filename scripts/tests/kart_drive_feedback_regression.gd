@@ -140,6 +140,8 @@ func _geometry_and_lifetime() -> void:
 		_check(quiet_stars == 3, "quiet pickup uses three fixed stars")
 	fx.advance(0.6, true, false, false, true)
 	_check(fx.visual_state().events == 0, "quiet pickup expires without a retained star")
+	if not logic_only:
+		_exhaust_impulse_geometry(kart, fx)
 	kart.set_motion(18, 0.7, false, true)
 	for _i in range(12):
 		kart.position.z -= 0.3
@@ -164,6 +166,64 @@ func _geometry_and_lifetime() -> void:
 	world.queue_free()
 	await process_frame
 	_check(not is_instance_valid(fx), "scene replacement frees the entire effect pool")
+
+
+func _exhaust_impulse_geometry(kart: Node3D, fx: Node3D) -> void:
+	var original_transform := kart.transform
+	kart.rotation = Vector3(0.14, 0.55, -0.09)
+	fx.reset()
+	fx.advance(0.0, true, false, false, false)
+	var origins: Array[Vector3] = []
+	for source in kart.flames:
+		origins.append(source.global_position)
+	var rearward := kart.global_basis.z.normalized()
+	fx.boost_release(2)
+	var rings: MultiMeshInstance3D = fx.get_node("EventContactRings")
+	var directions_match := true
+	for index in range(2):
+		var pulse: Transform3D = rings.multimesh.get_instance_transform(index)
+		_check(
+			fx.to_global(pulse.origin).distance_to(origins[index]) < 0.001,
+			"boost pulse %d starts at its real exhaust nozzle" % index
+		)
+		var normal := (fx.global_basis * pulse.basis.y).normalized()
+		directions_match = directions_match and normal.dot(rearward) > 0.999
+	_check(directions_match, "both exhaust pulses face the real rearward thrust direction")
+	kart.position += Vector3(0.8, 0.0, -0.6)
+	for _i in range(3):
+		fx.advance(0.1, true, false, false, false)
+	var directed := true
+	var compact := true
+	for index in range(2):
+		var pulse: Transform3D = rings.multimesh.get_instance_transform(index)
+		var travel := fx.to_global(pulse.origin) - origins[index]
+		var along := travel.dot(rearward)
+		directed = directed and along > 0.1 and (travel - rearward * along).length() < 0.001
+		compact = compact and pulse.basis.x.length() > 0.12 and pulse.basis.x.length() < 0.29
+		compact = compact and is_equal_approx(pulse.basis.x.length(), pulse.basis.z.length())
+	_check(directed, "released pulses move aft from their world origins without following the kart")
+	_check(compact, "boost pulses remain nozzle-sized instead of surrounding the kart")
+	fx.reset()
+	fx.advance(0.0, true, false, false, true)
+	fx.boost_release(2)
+	var quiet_a := rings.multimesh.get_instance_transform(0)
+	var quiet_b := rings.multimesh.get_instance_transform(1)
+	var quiet_alpha := rings.multimesh.get_instance_color(0).a
+	fx.advance(0.1, true, false, false, true)
+	_check(
+		(
+			rings.multimesh.get_instance_transform(0).is_equal_approx(quiet_a)
+			and rings.multimesh.get_instance_transform(1).is_equal_approx(quiet_b)
+		),
+		"reduced-motion exhaust pulses retain fixed positions and sizes"
+	)
+	_check(
+		rings.multimesh.get_instance_color(0).a < quiet_alpha,
+		"reduced-motion exhaust pulses fade without motion"
+	)
+	fx.reset()
+	kart.transform = original_transform
+	fx.advance(0.0, true, false, false, false)
 
 
 func _production_events() -> void:

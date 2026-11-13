@@ -30,6 +30,7 @@ var _connected := PackedByteArray()
 var _event_ages := PackedFloat32Array()
 var _event_kinds := PackedInt32Array()
 var _event_origins := PackedVector3Array()
+var _boost_origins := PackedVector3Array()
 var _event_colors := PackedColorArray()
 var _event_power := PackedFloat32Array()
 var _event_bases: Array[Basis] = []
@@ -53,6 +54,7 @@ func _ready() -> void:
 	_event_ages.resize(EVENT_CAPACITY)
 	_event_kinds.resize(EVENT_CAPACITY)
 	_event_origins.resize(EVENT_CAPACITY)
+	_boost_origins.resize(EVENT_CAPACITY * 2)
 	_event_colors.resize(EVENT_CAPACITY)
 	_event_power.resize(EVENT_CAPACITY)
 	_event_bases.resize(EVENT_CAPACITY)
@@ -137,9 +139,9 @@ func advance(
 
 
 func boost_release(tier: int = 0) -> void:
-	if not is_instance_valid(_vehicle):
+	if not is_instance_valid(_vehicle) or _exhausts.size() < 2:
 		return
-	var at := _vehicle.global_position + _vehicle.global_basis * Vector3(0, 0.5, 1.0)
+	var at := _exhausts[0].global_position
 	var color: Color = BLUE if tier == 1 else GOLD
 	var basis := _vehicle.global_basis.orthonormalized()
 	basis = basis * Basis(Quaternion(Vector3.RIGHT, PI * 0.5))
@@ -278,6 +280,9 @@ func _event(kind: Event, at: Vector3, basis: Basis, color: Color, power: float) 
 	_event_bases[slot] = global_basis.inverse() * basis
 	_event_colors[slot] = color
 	_event_power[slot] = power
+	if kind == Event.BOOST:
+		for index in range(2):
+			_boost_origins[slot * 2 + index] = to_local(_exhausts[index].global_position)
 	_draw_event(slot)
 	_update_bounds()
 	_update_visibility()
@@ -300,6 +305,18 @@ func _draw_event(slot: int) -> void:
 	var origin := _event_origins[slot]
 	var color := _event_colors[slot]
 	var basis := _event_bases[slot]
+	if kind == Event.BOOST:
+		# Two compact pulses leave the real nozzles. A kart-sized upright hoop
+		# obscures the separate road contact when landing also awards a boost.
+		var radius := 0.14 if reduced_motion else 0.12 + progress * 0.16
+		var travel := 0.0 if reduced_motion else progress * 0.9
+		var shape := Basis(basis.x * radius, basis.y * 0.36, basis.z * radius)
+		color.a = pow(1.0 - progress, 1.5) * 0.8
+		for index in range(2):
+			var at := _boost_origins[slot * 2 + index] + basis.y * travel
+			_rings.multimesh.set_instance_transform(slot * 2 + index, Transform3D(shape, at))
+			_rings.multimesh.set_instance_color(slot * 2 + index, color)
+		return
 	if kind == Event.PICKUP:
 		if reduced_motion:
 			# A quiet acknowledgement: three fixed stars, only their opacity fades.
@@ -334,7 +351,7 @@ func _draw_event(slot: int) -> void:
 		return
 	for index in range(2):
 		var t := clampf(progress * 1.2 - float(index) * 0.12, 0.0, 1.0)
-		var radius := (0.55 + t * (2.0 if kind == Event.LANDING else 0.95)) * _event_power[slot]
+		var radius := (0.55 + t * 2.0) * _event_power[slot]
 		if reduced_motion:
 			radius = 0.85 * _event_power[slot]
 		color.a = pow(1.0 - t, 1.5) * (0.72 if index == 0 else 0.35)
