@@ -34,6 +34,39 @@ func _initialize() -> void:
 		city.player().plots == 9 and MODEL.PLOTS.back() == 1089,
 		"world expands from nine to 1089 plots"
 	)
+	# Reproduce the zero-coin campaign soft-lock on a fresh village.
+	var broke = MODEL.new("settlement", true)
+	broke._player.resources.coins = 0
+	check(
+		broke.building_cost("market") == {"wood": 6, "stone": 4},
+		"living market has an exact coin-free purchase quote"
+	)
+	check(build(broke, "market"), "a child with zero coins can open the market")
+	check(
+		broke.player().resources.coins == 0
+		and not broke.demolition_quote(0).refund.has("coins"),
+		"zero-coin market neither spends nor refunds imaginary coins"
+	)
+	broke = reload_check(broke, "market cost receipt survives a saved village")
+	var forged: Dictionary = broke.snapshot()
+	forged.player.buildings[0].purchase_cost.wood = 7
+	check(MODEL.restore(forged) == null, "altered market purchase receipt is rejected")
+	check(
+		broke.try_demolish(0) and broke.player().resources.coins == 0,
+		"demolishing the zero-coin market cannot mint coins"
+	)
+	# Marketplaces bought before the version-two upgrade still refund the coins paid.
+	var old_market = MODEL.new("settlement")
+	check(build(old_market, "market"), "historical market uses its original two-coin price")
+	old_market.enable_living_village()
+	check(
+		old_market.demolition_quote(0).refund.get("coins", 0) == 2,
+		"upgraded older market retains its actual historical price"
+	)
+	check(
+		old_market.try_demolish(0) and old_market.player().resources.coins == 8,
+		"upgraded old market refunds the two previously spent coins"
+	)
 	var untouched: Dictionary = city.snapshot()
 	check(
 		not city.try_build("house", 9) and city.snapshot() == untouched,

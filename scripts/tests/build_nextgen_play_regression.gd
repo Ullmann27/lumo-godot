@@ -113,6 +113,16 @@ func _run() -> void:
 		game.model.place("wall", Vector3i(-12, 0, 14)).is_empty(),
 		"Real collision obstacle prepared"
 	)
+	var wall_uid := int(game.model.pieces[-1].uid)
+	# A real contiguous wall prevents a diagonal joystick gesture from
+	# stepping around a single narrow column rather than testing collision.
+	for wall_z in range(11, 21):
+		if wall_z == 14:
+			continue
+		_check(
+			game.model.place("wall", Vector3i(-12, 0, wall_z)).is_empty(),
+			"Grounded contiguous obstacle prepared at z=" + str(wall_z)
+		)
 	game._rebuild()
 	game.focus = Vector3(-14, 0.3, 11)
 	game.radius = 18
@@ -143,6 +153,14 @@ func _run() -> void:
 	await _capture("01_build_selection")
 	var rotate := _button(game, "Drehen ↻")
 	await _tap(rotate.get_global_rect().get_center())
+	if game.turn != 1 or game.model.piece_by_id(uid).turn != 0:
+		print(
+			"[BuildNextgenDiag] rotate tap: preview=", game.turn,
+			" committed=", game.model.piece_by_id(uid).turn,
+			" selected=", game.selected_uid,
+			" viewport=", root.get_visible_rect(),
+			" control=", rotate.get_global_rect()
+		)
 	_check(
 		game.turn == 1 and game.model.piece_by_id(uid).turn == 0,
 		"Rotation remains a preview until committed"
@@ -207,6 +225,15 @@ func _run() -> void:
 	)
 	await _capture("03_build_walking")
 	await _frames(75)
+	if game.explorer.position.x >= -12.20:
+		var wall_body: Node3D = game.placed_nodes.get(wall_uid)
+		print(
+			"[BuildNextgenDiag] wall: start=", start,
+			" current=", game.explorer.position, " velocity=", game.explorer.velocity,
+			" wall=", wall_body.global_position if wall_body != null else "<missing>",
+			" mask=", game.explorer.collision_mask,
+			" body_children=", wall_body.get_child_count() if wall_body != null else -1
+		)
 	_check(
 		game.explorer.position.x < -12.20, "Placed two-cell wall blocks the actual collision body"
 	)

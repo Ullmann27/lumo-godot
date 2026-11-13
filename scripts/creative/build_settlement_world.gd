@@ -2,6 +2,8 @@ extends Node3D
 ## The production city-building variation of Bauwelt. Every purchase, day and
 ## opponent action is owned by the deterministic settlement model.
 const STATE = preload("res://scripts/creative/build_settlement_state.gd")
+const REGION = preload("res://scripts/creative/build_settlement_region.gd")
+const RESIDENTS = preload("res://scripts/creative/build_settlement_residents.gd")
 const VISUAL = preload("res://scripts/creative/build_settlement_visual.gd")
 const KIT = preload("res://scripts/creative/creative_kit.gd")
 const NEXTGEN_ENV = preload("res://scripts/creative/creative_nextgen_environment.gd")
@@ -62,6 +64,9 @@ var rival_host: Node3D
 var rival_destination := Vector3(16, 0.04, 10)
 var rival_last_buildings := 0
 var round_slots_full := false
+var village_region: Node3D
+var village_residents: Node3D
+var village_window: Window
 
 
 func _ready() -> void:
@@ -82,17 +87,31 @@ func _ready() -> void:
 	if child_key.is_empty():
 		child_key = "standalone"
 	slot = clampi(int(SceneRouter.launch_options.get("buildSlot", 1)), 1, 6)
-	save_path = project_path(child_key, slot, mode)
-	model = STATE.new(mode)
+	# An explicit opt-in keeps all existing classic Siedlung/Wettbau files intact.
+	var village_requested: bool = (
+		mode == "settlement"
+		and bool(SceneRouter.launch_options.get(
+			"livingVillage", HostBridge.launch_options().get("livingVillage", false)
+		))
+	)
+	save_path = project_path(child_key, slot, "village" if village_requested else mode)
+	model = STATE.new(mode, village_requested)
+	if village_requested:
+		focus = Vector3(-REGION.TOWN_CENTER, 0, 0)
+		rival_destination.x = REGION.TOWN_CENTER
 	if FileAccess.file_exists(save_path):
 		var parser := JSON.new()
 		var raw: Variant = null
 		if parser.parse(FileAccess.get_file_as_string(save_path)) == OK:
 			raw = parser.data
 		var restored = restore_project(raw, child_key, slot, mode)
-		if restored != null:
+		if restored != null and restored.living_village == village_requested:
+			model = restored
+		elif restored != null and village_requested and not restored.living_village:
+			restored.enable_living_village()
 			model = restored
 		else:
+			# Never silently open a version-two village as a classic game.
 			save_blocked = true
 	kit.environment(self, "bauwelt_day")
 	NEXTGEN_ENV.apply_day(self)
@@ -103,7 +122,7 @@ func _ready() -> void:
 	add_child(camera)
 	camera.current = true
 	explorer = EXPLORER.new()
-	explorer.horizontal_limit = Vector2(31, 18)
+	explorer.horizontal_limit = Vector2(196, 95) if model.living_village else Vector2(31, 18)
 	add_child(explorer)
 	_build_ui()
 	_rebuild()
@@ -158,7 +177,21 @@ static func plot_position(index: int, opponent := false) -> Vector3:
 	return Vector3((16.0 if opponent else -16.0) + coord.x * SPACING, 0.03, coord.y * SPACING)
 
 
+func _plot_world(index: int, opponent := false) -> Vector3:
+	return (
+		REGION.plot_position(index, opponent) if model.living_village else plot_position(index, opponent)
+	)
+
+
 func _build_landscape() -> void:
+	if model.living_village:
+		village_region = REGION.new()
+		add_child(village_region)
+		village_region.build_landscape(mode)
+		village_residents = RESIDENTS.new()
+		add_child(village_residents)
+		village_residents.configure()
+		return
 	for x in [-16.0, 16.0]:
 		var bank := StaticBody3D.new()
 		add_child(bank)
@@ -228,7 +261,9 @@ func _build_ui() -> void:
 	var heading := HBoxContainer.new()
 	top.add_child(heading)
 	heading.add_child(_button("‹ Bauwelt", _leave, 96))
-	var title := _label("LUMO WETTBAU" if mode == "rival" else "LUMO SIEDLUNG", 22)
+	var title := _label(
+		"LUMO WETTBAU" if mode == "rival" else ("LUMO DORFWELT" if model.living_village else "LUMO SIEDLUNG"), 22
+	)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	title.clip_text = true
@@ -264,9 +299,10 @@ func _build_ui() -> void:
 	bottom.add_child(buildings_scroll)
 	var buildings := HBoxContainer.new()
 	buildings_scroll.add_child(buildings)
-	for kind in ["house", "farm", "lumber", "quarry", "market", "school"]:
+	var kinds: Array = STATE.BUILDINGS.keys() if model.living_village else STATE.CLASSIC_KINDS
+	for kind in kinds:
 		var spec: Dictionary = STATE.BUILDINGS[kind]
-		var button := _button(str(spec.title) + "\n" + _cost_text(spec.cost), _buy.bind(kind), 168)
+		var button := _button(str(spec.title) + "\n" + _cost_text(model.building_cost(kind)), _buy.bind(kind), 168)
 		button.custom_minimum_size.y = 66
 		buildings.add_child(button)
 		purchase_buttons[kind] = button
@@ -278,12 +314,25 @@ func _build_ui() -> void:
 	row.add_child(actions_scroll)
 	var actions := HBoxContainer.new()
 	actions_scroll.add_child(actions)
-	for spec in [
+	var actions_data: Array = [
 		["Rückgängig", _undo],
 		["Wiederholen", _redo],
 		["Handeln", _trade_dialog],
 		["Nachbar ansehen" if mode == "rival" else "Überblick", _look_neighbor]
-	]:
+	]
+	if model.living_village:
+		actions_data.append_array([
+			["Kapitel", _chapter_dialog],
+			["Tilda · Lieferung", _tilda_dialog],
+			["Stadtkasse", _public_project_dialog],
+			["←", _pan_village.bind(-1, 0)],
+			["→", _pan_village.bind(1, 0)],
+			["↑", _pan_village.bind(0, -1)],
+			["↓", _pan_village.bind(0, 1)],
+			["Zoom +", _zoom_village.bind(-1)],
+			["Zoom −", _zoom_village.bind(1)]
+		])
+	for spec in actions_data:
 		var button := _button(spec[0], spec[1], 110)
 		actions.add_child(button)
 		transaction_buttons.append(button)
@@ -365,9 +414,9 @@ func _button(text: String, action: Callable, width := 100) -> Button:
 
 
 func _cost_text(cost: Dictionary) -> String:
-	var labels := {"wood": "Holz", "stone": "Stein", "food": "Essen", "coins": "Münzen"}
+	var labels := {"wood": "Holz", "stone": "Stein", "food": "Essen", "coins": "Münzen", "grain": "Korn"}
 	var parts := PackedStringArray()
-	for resource in ["wood", "stone", "food", "coins"]:
+	for resource in ["wood", "stone", "food", "coins", "grain"]:
 		if int(cost.get(resource, 0)) > 0:
 			parts.append("%d %s" % [int(cost[resource]), labels[resource]])
 	return ", ".join(parts)
@@ -408,12 +457,16 @@ func _rebuild() -> void:
 			continue
 		var town: Dictionary = model.rival() if opponent else model.player()
 		for index in range(int(town.plots)):
+			var where := _plot_world(index, opponent)
+			# Only load touch colliders around the view; the 1089-plot model stays persistent.
+			if model.living_village and where.distance_squared_to(focus) > 75.0 * 75.0:
+				continue
 			var key := "%s_%d" % ["r" if opponent else "p", index]
 			active_plots[key] = true
 			if not plot_nodes.has(key):
 				var body := StaticBody3D.new()
 				body.name = "Plot_" + key
-				body.position = plot_position(index, opponent)
+				body.position = where
 				body.set_meta("plot", index)
 				body.set_meta("opponent", opponent)
 				add_child(body)
@@ -432,13 +485,13 @@ func _rebuild() -> void:
 			if facility_nodes.has(key):
 				continue
 			var node: StaticBody3D = VISUAL.create(str(building.kind), opponent)
-			node.position = plot_position(int(building.plot), opponent) + Vector3.UP * 0.06
+			node.position = _plot_world(int(building.plot), opponent) + Vector3.UP * 0.06
 			node.set_meta("plot", int(building.plot))
 			add_child(node)
 			facility_nodes[key] = node
 		if opponent and town.buildings.size() > rival_last_buildings:
 			var latest: Dictionary = town.buildings[-1]
-			rival_destination = plot_position(int(latest.plot), true) + Vector3(0, 0.08, 2.1)
+			rival_destination = _plot_world(int(latest.plot), true) + Vector3(0, 0.08, 2.1)
 			rival_last_buildings = town.buildings.size()
 	for key in plot_nodes.keys():
 		if not active_plots.has(key):
@@ -454,7 +507,10 @@ func _rebuild() -> void:
 		selection_marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	selection_marker.visible = selected_plot >= 0
 	if selected_plot >= 0:
-		selection_marker.position = plot_position(selected_plot) + Vector3.UP * 0.12
+		selection_marker.position = _plot_world(selected_plot) + Vector3.UP * 0.12
+	if is_instance_valid(village_residents):
+		village_residents.sync(model.player())
+		village_residents.set_focus(focus)
 	_refresh_labels()
 
 
@@ -483,6 +539,20 @@ func _refresh_labels() -> void:
 		"%s · Stufe %d: %s"
 		% [str(summary.world), mini(3, int(summary.level) + 1), " · ".join(goals)]
 	)
+	if model.living_village:
+		var chapter: Dictionary = model.campaign_status()
+		var next_steps := PackedStringArray()
+		for goal in chapter.goals:
+			next_steps.append("%s %d/%d" % [str(goal.title), int(goal.current), int(goal.target)])
+		goal_label.text = (
+			"Kapitel %d/%d · %s\n%s"
+			% [int(chapter.chapter), int(chapter.total), str(chapter.title), " · ".join(next_steps)]
+		)
+		var economy: Dictionary = model.economy_status()
+		resource_label.text += (
+			"\nStadtkasse %d · Zufriedenheit %d%% · Wasser für %d"
+			% [int(economy.treasury), int(economy.happiness), int(economy.water_capacity)]
+		)
 	if mode == "rival":
 		var rival: Dictionary = model.rival()
 		rival_label.text = (
@@ -505,6 +575,9 @@ func _refresh_labels() -> void:
 	var blocked := _transactions_blocked()
 	for kind in purchase_buttons:
 		purchase_buttons[kind].disabled = blocked or selected_plot < 0 or occupied
+		purchase_buttons[kind].text = (
+			str(STATE.BUILDINGS[str(kind)].title) + "\n" + _cost_text(model.building_cost(str(kind)))
+		)
 	var completed: bool = mode == "rival" and not model.winner.is_empty()
 	day_button.text = (
 		("Zur Bauwelt" if round_slots_full else "Neue Runde") if completed else "Nächster Tag ☀"
@@ -727,6 +800,151 @@ func _confirm_demolition(plot: int, before: Dictionary, dialog: Window) -> void:
 	dialog.queue_free()
 
 
+
+func _village_dialog(title_text: String) -> Dictionary:
+	if (
+		_transactions_blocked()
+		or not model.living_village
+		or is_instance_valid(village_window)
+		or is_instance_valid(trade_window)
+		or is_instance_valid(demolition_window)
+	):
+		return {}
+	var dialog := Window.new()
+	village_window = dialog
+	dialog.title = title_text
+	dialog.size = Vector2i(
+		maxi(240, mini(520, int(safe_ui.size.x) - 24)),
+		maxi(240, mini(520, int(safe_ui.size.y) - 24))
+	)
+	dialog.min_size = dialog.size
+	dialog.borderless = true
+	dialog.unresizable = true
+	dialog.transient = true
+	dialog.exclusive = true
+	add_child(dialog)
+	var panel := PanelContainer.new()
+	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	panel.add_theme_stylebox_override("panel", _panel())
+	dialog.add_child(panel)
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(scroll)
+	var body := VBoxContainer.new()
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.add_theme_constant_override("separation", 12)
+	scroll.add_child(body)
+	_village_caption(body, title_text, 22)
+	body.add_child(_button("Schließen", dialog.queue_free))
+	dialog.close_requested.connect(dialog.queue_free)
+	dialog.popup_centered()
+	dialog.position = Vector2i(safe_ui.position + (safe_ui.size - Vector2(dialog.size)) * 0.5)
+	return {"dialog": dialog, "body": body}
+
+
+func _village_caption(body: VBoxContainer, caption: String, font_size := 16) -> void:
+	var label := _label(caption, font_size)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	body.add_child(label)
+
+
+func _chapter_dialog() -> void:
+	var view: Dictionary = _village_dialog("Deine Dorfgeschichte")
+	if view.is_empty():
+		return
+	var body: VBoxContainer = view.body
+	var chapter: Dictionary = model.campaign_status()
+	_village_caption(
+		body, "Kapitel %d von %d: %s" % [int(chapter.chapter), int(chapter.total), str(chapter.title)], 19
+	)
+	_village_caption(body, "%s erzählt:" % str(chapter.friend))
+	_village_caption(body, str(chapter.story))
+	_village_caption(body, "Deine Aufgabe: " + str(chapter.task), 18)
+	for goal in chapter.get("goals", []):
+		_village_caption(
+			body, "• %s: %d von %d" % [str(goal.title), int(goal.current), int(goal.target)]
+		)
+	_village_caption(body, "Lumos Tipp: " + str(chapter.hint))
+	if bool(chapter.complete):
+		_village_caption(body, "Du kannst dein Dorf weiterhin frei aufbauen.")
+
+
+func _tilda_dialog() -> void:
+	var view: Dictionary = _village_dialog("Tildas Lieferwagen")
+	if view.is_empty():
+		return
+	var body: VBoxContainer = view.body
+	var dialog: Window = view.dialog
+	var trader: Dictionary = model.trader_offer()
+	if not bool(trader.available):
+		_village_caption(
+			body, "Tilda kommt in %d Dorftagen wieder. Deine Vorräte bleiben erhalten."
+			% int(trader.arrives_in)
+		)
+		return
+	_village_caption(
+		body, "Tilda ist da! Du kannst noch %d Lieferung(en) bestellen." % int(trader.orders_left)
+	)
+	for offer in trader.offers:
+		var button := _button(
+			"%s\n%s → %s"
+			% [str(offer.title), _cost_text(offer.cost), _cost_text(offer.receive)],
+			_order_village_delivery.bind(str(offer.id), dialog),
+			260
+		)
+		button.custom_minimum_size.y = 68
+		button.disabled = int(trader.orders_left) <= 0
+		body.add_child(button)
+
+
+func _order_village_delivery(id: String, dialog: Window) -> void:
+	if _transactions_blocked() or dialog.is_queued_for_deletion():
+		return
+	if model.order_delivery(id):
+		_rebuild()
+		_save()
+		feedback.text = "Tilda bringt deine Lieferung am nächsten Dorftag. Die Münzen wurden abgezogen."
+	else:
+		feedback.text = model.last_error
+	dialog.queue_free()
+
+
+func _public_project_dialog() -> void:
+	var view: Dictionary = _village_dialog("Unsere Stadtkasse")
+	if view.is_empty():
+		return
+	var body: VBoxContainer = view.body
+	var dialog: Window = view.dialog
+	var treasury: int = int(model.economy_status().treasury)
+	_village_caption(body, "In der gemeinsamen Stadtkasse: %d Münzen" % treasury, 19)
+	_village_caption(body, "Von je zehn verdienten Münzen teilen die Familien zwei für das Dorf.")
+	for project in model.public_projects():
+		var name: String = str(project.title)
+		var completed: bool = bool(project.completed)
+		var button := _button(
+			"%s · %s"
+			% [name, "schon gebaut" if completed else "%d Münzen" % int(project.cost)],
+			_fund_village_project.bind(str(project.id), dialog),
+			265
+		)
+		button.custom_minimum_size.y = 52
+		button.disabled = completed or int(project.cost) > treasury
+		body.add_child(button)
+		_village_caption(body, str(project.description))
+
+
+func _fund_village_project(id: String, dialog: Window) -> void:
+	if _transactions_blocked() or dialog.is_queued_for_deletion():
+		return
+	if model.fund_project(id):
+		_rebuild()
+		_save()
+		feedback.text = "Gemeinschaftsprojekt gebaut! Die Stadtkasse wurde richtig abgerechnet."
+	else:
+		feedback.text = model.last_error
+	dialog.queue_free()
+
+
 func _trade_dialog() -> void:
 	if (
 		_transactions_blocked()
@@ -783,7 +1001,30 @@ func _confirm_trade(resource: String, sell: bool, dialog: Window) -> void:
 func _look_neighbor() -> void:
 	if paused or walking or save_blocked:
 		return
-	focus.x = 16.0 if focus.x < 0 else -16.0
+	var center := REGION.TOWN_CENTER if model.living_village else 16.0
+	focus.x = center if focus.x < 0 else -center
+	if model.living_village:
+		_rebuild()
+	_camera_update(true)
+
+
+func _pan_village(dx: int, dz: int) -> void:
+	if _transactions_blocked() or not model.living_village:
+		return
+	var side := 1.0 if focus.x >= 0 else -1.0
+	var home := side * REGION.TOWN_CENTER
+	focus.x = clampf(focus.x + float(dx) * REGION.SPACING * 4.0, home - 85.0, home + 85.0)
+	focus.z = clampf(focus.z + float(dz) * REGION.SPACING * 4.0, -85.0, 85.0)
+	selected_plot = -1
+	_rebuild()
+	_camera_update(true)
+
+
+func _zoom_village(direction: int) -> void:
+	if _transactions_blocked() or not model.living_village:
+		return
+	radius = clampf(radius + float(direction) * 8.0, 15.0, 94.0)
+	_rebuild()
 	_camera_update(true)
 
 
@@ -885,6 +1126,10 @@ func _camera_update(immediate := false) -> void:
 		focus + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * target_radius
 	)
 	camera.look_at(focus)
+	if is_instance_valid(village_region):
+		village_region.update_focus(focus)
+	if is_instance_valid(village_residents):
+		village_residents.set_focus(focus)
 	if immediate:
 		camera.reset_physics_interpolation()
 
@@ -895,11 +1140,11 @@ func _toggle_walk() -> void:
 	walking = not walking
 	if walking:
 		stored_camera = {"focus": focus, "orbit": orbit, "tilt": tilt}
-		explorer.start_at(Vector3(-16, 0.08, 13.8))
+		explorer.start_at(Vector3(-REGION.TOWN_CENTER, 0.08, 13.8) if model.living_village else Vector3(-16, 0.08, 13.8))
 		tilt = 0.34
 	else:
 		explorer.set_active(false)
-		focus = stored_camera.get("focus", Vector3(-16, 0, 0))
+		focus = stored_camera.get("focus", Vector3(-REGION.TOWN_CENTER, 0, 0) if model.living_village else Vector3(-16, 0, 0))
 		orbit = float(stored_camera.get("orbit", 0.28))
 		tilt = float(stored_camera.get("tilt", 0.70))
 		_camera_update(true)
@@ -927,6 +1172,8 @@ func _physics_process(delta: float) -> void:
 		camera.position = camera.position.lerp(target, 1.0 - exp(-10 * delta))
 		if camera.position.distance_squared_to(at) > 0.02:
 			camera.look_at(at)
+	if is_instance_valid(village_residents):
+		village_residents.advance(delta)
 	if is_instance_valid(rival_host):
 		rival_host.position = rival_host.position.move_toward(rival_destination, 1.5 * delta)
 		rival_host.set_companion_pose(Time.get_ticks_msec() / 1000.0, "happy")
@@ -940,6 +1187,9 @@ func _toggle_pause() -> void:
 	if paused and is_instance_valid(demolition_window):
 		demolition_window.hide()
 		demolition_window.queue_free()
+	if paused and is_instance_valid(village_window):
+		village_window.hide()
+		village_window.queue_free()
 	pause_panel.visible = paused
 	pointer = -1
 	walk_stick.set_enabled(walking and not paused)
