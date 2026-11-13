@@ -800,6 +800,151 @@ func _confirm_demolition(plot: int, before: Dictionary, dialog: Window) -> void:
 	dialog.queue_free()
 
 
+
+func _village_dialog(title_text: String) -> Dictionary:
+	if (
+		_transactions_blocked()
+		or not model.living_village
+		or is_instance_valid(village_window)
+		or is_instance_valid(trade_window)
+		or is_instance_valid(demolition_window)
+	):
+		return {}
+	var dialog := Window.new()
+	village_window = dialog
+	dialog.title = title_text
+	dialog.size = Vector2i(
+		maxi(240, mini(520, int(safe_ui.size.x) - 24)),
+		maxi(240, mini(520, int(safe_ui.size.y) - 24))
+	)
+	dialog.min_size = dialog.size
+	dialog.borderless = true
+	dialog.unresizable = true
+	dialog.transient = true
+	dialog.exclusive = true
+	add_child(dialog)
+	var panel := PanelContainer.new()
+	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	panel.add_theme_stylebox_override("panel", _panel())
+	dialog.add_child(panel)
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(scroll)
+	var body := VBoxContainer.new()
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.add_theme_constant_override("separation", 12)
+	scroll.add_child(body)
+	_village_caption(body, title_text, 22)
+	body.add_child(_button("Schließen", dialog.queue_free))
+	dialog.close_requested.connect(dialog.queue_free)
+	dialog.popup_centered()
+	dialog.position = Vector2i(safe_ui.position + (safe_ui.size - Vector2(dialog.size)) * 0.5)
+	return {"dialog": dialog, "body": body}
+
+
+func _village_caption(body: VBoxContainer, caption: String, font_size := 16) -> void:
+	var label := _label(caption, font_size)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	body.add_child(label)
+
+
+func _chapter_dialog() -> void:
+	var view: Dictionary = _village_dialog("Deine Dorfgeschichte")
+	if view.is_empty():
+		return
+	var body: VBoxContainer = view.body
+	var chapter: Dictionary = model.campaign_status()
+	_village_caption(
+		body, "Kapitel %d von %d: %s" % [int(chapter.chapter), int(chapter.total), str(chapter.title)], 19
+	)
+	_village_caption(body, "%s erzählt:" % str(chapter.friend))
+	_village_caption(body, str(chapter.story))
+	_village_caption(body, "Deine Aufgabe: " + str(chapter.task), 18)
+	for goal in chapter.get("goals", []):
+		_village_caption(
+			body, "• %s: %d von %d" % [str(goal.title), int(goal.current), int(goal.target)]
+		)
+	_village_caption(body, "Lumos Tipp: " + str(chapter.hint))
+	if bool(chapter.complete):
+		_village_caption(body, "Du kannst dein Dorf weiterhin frei aufbauen.")
+
+
+func _tilda_dialog() -> void:
+	var view: Dictionary = _village_dialog("Tildas Lieferwagen")
+	if view.is_empty():
+		return
+	var body: VBoxContainer = view.body
+	var dialog: Window = view.dialog
+	var trader: Dictionary = model.trader_offer()
+	if not bool(trader.available):
+		_village_caption(
+			body, "Tilda kommt in %d Dorftagen wieder. Deine Vorräte bleiben erhalten."
+			% int(trader.arrives_in)
+		)
+		return
+	_village_caption(
+		body, "Tilda ist da! Du kannst noch %d Lieferung(en) bestellen." % int(trader.orders_left)
+	)
+	for offer in trader.offers:
+		var button := _button(
+			"%s\n%s → %s"
+			% [str(offer.title), _cost_text(offer.cost), _cost_text(offer.receive)],
+			_order_village_delivery.bind(str(offer.id), dialog),
+			260
+		)
+		button.custom_minimum_size.y = 68
+		button.disabled = int(trader.orders_left) <= 0
+		body.add_child(button)
+
+
+func _order_village_delivery(id: String, dialog: Window) -> void:
+	if _transactions_blocked() or dialog.is_queued_for_deletion():
+		return
+	if model.order_delivery(id):
+		_rebuild()
+		_save()
+		feedback.text = "Tilda bringt deine Lieferung am nächsten Dorftag. Die Münzen wurden abgezogen."
+	else:
+		feedback.text = model.last_error
+	dialog.queue_free()
+
+
+func _public_project_dialog() -> void:
+	var view: Dictionary = _village_dialog("Unsere Stadtkasse")
+	if view.is_empty():
+		return
+	var body: VBoxContainer = view.body
+	var dialog: Window = view.dialog
+	var treasury: int = int(model.economy_status().treasury)
+	_village_caption(body, "In der gemeinsamen Stadtkasse: %d Münzen" % treasury, 19)
+	_village_caption(body, "Von je zehn verdienten Münzen teilen die Familien zwei für das Dorf.")
+	for project in model.public_projects():
+		var name: String = str(project.title)
+		var completed: bool = bool(project.completed)
+		var button := _button(
+			"%s · %s"
+			% [name, "schon gebaut" if completed else "%d Münzen" % int(project.cost)],
+			_fund_village_project.bind(str(project.id), dialog),
+			265
+		)
+		button.custom_minimum_size.y = 52
+		button.disabled = completed or int(project.cost) > treasury
+		body.add_child(button)
+		_village_caption(body, str(project.description))
+
+
+func _fund_village_project(id: String, dialog: Window) -> void:
+	if _transactions_blocked() or dialog.is_queued_for_deletion():
+		return
+	if model.fund_project(id):
+		_rebuild()
+		_save()
+		feedback.text = "Gemeinschaftsprojekt gebaut! Die Stadtkasse wurde richtig abgerechnet."
+	else:
+		feedback.text = model.last_error
+	dialog.queue_free()
+
+
 func _trade_dialog() -> void:
 	if (
 		_transactions_blocked()
