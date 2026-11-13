@@ -4,10 +4,28 @@ extends RefCounted
 ## velocity and floor contact; root transforms and collider dimensions stay put.
 
 const BONES: Array[String] = [
-	"Pelvis", "SpineLower", "SpineUpper", "Neck", "Head",
-	"Thigh.L", "Thigh.R", "Shin.L", "Shin.R", "Foot.L", "Foot.R",
-	"Toe.L", "Toe.R", "UpperArm.L", "UpperArm.R", "Forearm.L", "Forearm.R",
-	"TailBase", "Tail1", "Tail2", "Tail3", "TailTip",
+	"Pelvis",
+	"SpineLower",
+	"SpineUpper",
+	"Neck",
+	"Head",
+	"Thigh.L",
+	"Thigh.R",
+	"Shin.L",
+	"Shin.R",
+	"Foot.L",
+	"Foot.R",
+	"Toe.L",
+	"Toe.R",
+	"UpperArm.L",
+	"UpperArm.R",
+	"Forearm.L",
+	"Forearm.R",
+	"TailBase",
+	"Tail1",
+	"Tail2",
+	"Tail3",
+	"TailTip",
 ]
 var skeleton: Skeleton3D
 var indices: Dictionary = {}
@@ -58,8 +76,15 @@ func advance(velocity: Vector3, grounded: bool, delta: float) -> void:
 	var acceleration: float = clampf((speed - last_speed) / delta / 30.0, -1.0, 1.0)
 	var air_tuck: float = clampf(velocity.y / 8.5, -0.35, 1.0) if not grounded else 0.0
 	var blend: float = 1.0 - exp(-18.0 * delta)
-	state = ("jump_rise" if velocity.y > 0.35 else "jump_fall") if not grounded else (
-		"land" if landing_left > 0.0 else ("run_loop" if speed >= 3.2 else ("walk_loop" if moving else "idle")))
+	state = (
+		("jump_rise" if velocity.y > 0.35 else "jump_fall")
+		if not grounded
+		else (
+			"land"
+			if landing_left > 0.0
+			else ("run_loop" if speed >= 3.2 else ("walk_loop" if moving else "idle"))
+		)
+	)
 	for side in ["L", "R"]:
 		var swing: float = sin(phase + (0.0 if side == "L" else PI)) * effort if moving else 0.0
 		var lift: float = pow(maxf(0.0, swing), 2.0)
@@ -86,8 +111,15 @@ func advance(velocity: Vector3, grounded: bool, delta: float) -> void:
 	_rotate("Head", Vector3.RIGHT, -lean * 0.35 + air_tuck * 0.06, blend)
 	for index in range(5):
 		var bone: String = ["TailBase", "Tail1", "Tail2", "Tail3", "TailTip"][index]
-		_rotate(bone, Vector3.UP, sin(phase - float(index) * 0.48) * effort * 0.07 if grounded else 0.03 * air_tuck, blend)
-	_position("Pelvis", Vector3.UP * ((1.0 - cos(phase * 2.0)) * effort * 0.014 - landing * 0.075), blend)
+		_rotate(
+			bone,
+			Vector3.UP,
+			sin(phase - float(index) * 0.48) * effort * 0.07 if grounded else 0.03 * air_tuck,
+			blend
+		)
+	_position(
+		"Pelvis", Vector3.UP * ((1.0 - cos(phase * 2.0)) * effort * 0.014 - landing * 0.075), blend
+	)
 	skeleton.force_update_all_bone_transforms()
 	last_vertical_speed = velocity.y
 	last_speed = speed
@@ -110,10 +142,14 @@ func stop() -> void:
 func _rotate(bone: String, axis: Vector3, angle: float, blend: float) -> void:
 	var index: int = int(indices[bone])
 	var target: Quaternion = (rotations[bone] as Quaternion) * Quaternion(axis, angle)
-	skeleton.set_bone_pose_rotation(index, skeleton.get_bone_pose_rotation(index).slerp(target, blend))
+	skeleton.set_bone_pose_rotation(
+		index, skeleton.get_bone_pose_rotation(index).slerp(target, blend)
+	)
 
 
 func _position(bone: String, offset: Vector3, blend: float) -> void:
 	var index: int = int(indices[bone])
 	var target: Vector3 = (positions[bone] as Vector3) + offset
-	skeleton.set_bone_pose_position(index, skeleton.get_bone_pose_position(index).lerp(target, blend))
+	skeleton.set_bone_pose_position(
+		index, skeleton.get_bone_pose_position(index).lerp(target, blend)
+	)

@@ -32,7 +32,9 @@ func _settle(frames: int = 5) -> void:
 
 func _tap(button: Control) -> void:
 	_check(button.is_visible_in_tree(), str(button.name) + " is visible before touch")
-	var pixel: Vector2 = button.get_global_rect().get_center() * Vector2(root.size) / root.get_visible_rect().size
+	var pixel: Vector2 = (
+		button.get_global_rect().get_center() * Vector2(root.size) / root.get_visible_rect().size
+	)
 	await _touch(0, pixel, true)
 	await _touch(0, pixel, false)
 	await _settle()
@@ -66,10 +68,18 @@ func _shot(label: String, menu) -> void:
 	if image == null:
 		return
 	_check(image.save_png(output.path_join(label + ".png")) == OK, label + " PNG saved")
-	records.append({"name": label, "width": image.get_width(), "height": image.get_height(),
-		"draw_calls": menu.preview_draw_calls(), "zoom": menu._camera_zoom,
-		"selected_kart": menu.setup.kart, "host_behavior": menu.service_station.host.current_behavior,
-		"renderer": RenderingServer.get_current_rendering_method()})
+	records.append(
+		{
+			"name": label,
+			"width": image.get_width(),
+			"height": image.get_height(),
+			"draw_calls": menu.preview_draw_calls(),
+			"zoom": menu._camera_zoom,
+			"selected_kart": menu.setup.kart,
+			"host_behavior": menu.service_station.host.current_behavior,
+			"renderer": RenderingServer.get_current_rendering_method()
+		}
+	)
 
 
 func _host_visible_in_region(menu) -> void:
@@ -79,15 +89,50 @@ func _host_visible_in_region(menu) -> void:
 	var outside := 0
 	var points: Array[Vector3] = menu.service_station.subject_points()
 	for point in points:
-		if menu.preview_camera.is_position_behind(point) or not safe.has_point(menu.preview_camera.unproject_position(point)):
+		if (
+			menu.preview_camera.is_position_behind(point)
+			or not safe.has_point(menu.preview_camera.unproject_position(point))
+		):
 			outside += 1
-	_check(points.size() == 130 and outside == 0, "original standing body, ears and hands fit clear stage (%d outside)" % outside)
+	_check(
+		points.size() == 130 and outside == 0,
+		"original standing body, ears and hands fit clear stage (%d outside)" % outside
+	)
 	var wheel_points: Array[Vector3] = menu.service_station.workbench_points()
 	var wheel_outside := 0
 	for point in wheel_points:
-		if menu.preview_camera.is_position_behind(point) or not safe.has_point(menu.preview_camera.unproject_position(point)):
+		if (
+			menu.preview_camera.is_position_behind(point)
+			or not safe.has_point(menu.preview_camera.unproject_position(point))
+		):
 			wheel_outside += 1
-	_check(wheel_points.size() == 8 and wheel_outside == 0, "real balancing wheel fits the unoccluded live stage")
+	_check(
+		wheel_points.size() == 8 and wheel_outside == 0,
+		"real balancing wheel fits the unoccluded live stage"
+	)
+	var skeleton: Skeleton3D = menu.service_station.host.skeleton
+	var head_index := skeleton.find_bone("Head")
+	_check(head_index >= 0, "original GLB Head joint identifies the facial silhouette")
+	if head_index >= 0:
+		var head := skeleton.to_global(skeleton.get_bone_global_rest(head_index).origin)
+		var head_bounds := AABB(head - Vector3(0.40, 0.32, 0.32), Vector3(0.80, 0.64, 0.64))
+		var head_rect := Rect2(
+			menu.preview_camera.unproject_position(head_bounds.get_endpoint(0)), Vector2.ZERO
+		)
+		var wheel_rect := Rect2(
+			menu.preview_camera.unproject_position(wheel_points[0]), Vector2.ZERO
+		)
+		for corner in range(8):
+			head_rect = head_rect.expand(
+				menu.preview_camera.unproject_position(head_bounds.get_endpoint(corner))
+			)
+			wheel_rect = wheel_rect.expand(
+				menu.preview_camera.unproject_position(wheel_points[corner])
+			)
+		_check(
+			not head_rect.intersects(wheel_rect),
+			"balanced wheel remains beside the original face, not behind the head"
+		)
 
 
 func _run() -> void:
@@ -112,12 +157,29 @@ func _run() -> void:
 		await _tap(game.reference_landing._navigation.get_node("Open_garage"))
 		var menu = game.garage
 		var station = menu.service_station
-		_check(menu.step == 2 and station.host.is_visible_in_tree(), "production Garage entry reveals original standing host")
-		_check(station.host.is_usable() and station.host.skeleton.get_bone_count() == 65, "original imported 65-bone asset is live")
-		_check(not menu.preview_kart.lumo_animation.visible, "the same fox is not duplicated in his kart")
-		_check(station.find_child("BalancedWheel", true, false) != null and station.find_child("ToolSteel", true, false) is MultiMeshInstance3D,
-			"actual balancing wheel and batched workshop tools are installed")
-		_check(station.find_children("*", "CollisionObject3D", true, false).is_empty(), "workshop decoration adds no gameplay collider")
+		_check(
+			menu.step == 2 and station.host.is_visible_in_tree(),
+			"production Garage entry reveals original standing host"
+		)
+		_check(
+			station.host.is_usable() and station.host.skeleton.get_bone_count() == 65,
+			"original imported 65-bone asset is live"
+		)
+		_check(
+			not menu.preview_kart.lumo_animation.visible,
+			"the same fox is not duplicated in his kart"
+		)
+		_check(
+			(
+				station.find_child("BalancedWheel", true, false) != null
+				and station.find_child("ToolSteel", true, false) is MultiMeshInstance3D
+			),
+			"actual balancing wheel and batched workshop tools are installed"
+		)
+		_check(
+			station.find_children("*", "CollisionObject3D", true, false).is_empty(),
+			"workshop decoration adds no gameplay collider"
+		)
 		_host_visible_in_region(menu)
 		await _shot("garage-%dx%d" % [dimensions.x, dimensions.y], menu)
 		var original_host_id: int = station.host.get_instance_id()
@@ -127,16 +189,34 @@ func _run() -> void:
 		menu.choices.get_parent().ensure_control_visible(selected)
 		await _settle()
 		await _tap(selected)
-		_check(menu.setup.kart == "gecko_velo" and menu.preview_kart.kart_style == "gecko_velo", "native card touch changes actual selected kart")
-		_check(station.host.get_instance_id() == original_host_id, "host survives vehicle replacement")
-		_check(station.selection_count == previous_selection_count + 1 and station.host.current_behavior == "point_portal", "new selection triggers one original explanatory gesture")
+		_check(
+			menu.setup.kart == "gecko_velo" and menu.preview_kart.kart_style == "gecko_velo",
+			"native card touch changes actual selected kart"
+		)
+		_check(
+			station.host.get_instance_id() == original_host_id, "host survives vehicle replacement"
+		)
+		_check(
+			(
+				station.selection_count == previous_selection_count + 1
+				and station.host.current_behavior == "point_portal"
+			),
+			"new selection triggers one original explanatory gesture"
+		)
 		var before_wheel: float = station.balance_wheel.rotation.z
 		station.advance(0.15)
-		_check(not is_equal_approx(before_wheel, station.balance_wheel.rotation.z), "selection drives visible real wheel rotation")
+		_check(
+			not is_equal_approx(before_wheel, station.balance_wheel.rotation.z),
+			"selection drives visible real wheel rotation"
+		)
 		await _shot("selection-%dx%d" % [dimensions.x, dimensions.y], menu)
 		var preview_rect: Rect2 = menu.preview_container.get_global_rect()
 		var region: Rect2 = menu._visible_stage_region()
-		var center: Vector2 = (preview_rect.position + preview_rect.size * region.get_center()) * Vector2(root.size) / root.get_visible_rect().size
+		var center: Vector2 = (
+			(preview_rect.position + preview_rect.size * region.get_center())
+			* Vector2(root.size)
+			/ root.get_visible_rect().size
+		)
 		var spread: float = minf(dimensions.x, dimensions.y) * 0.07
 		var first := center - Vector2(spread, 0)
 		var second := center + Vector2(spread, 0)
@@ -145,44 +225,97 @@ func _run() -> void:
 		await _touch(3, first, true)
 		await _touch(4, second, true)
 		await _drag(4, second + Vector2(spread * 0.5, 0), Vector2(spread * 0.5, 0))
-		_check(menu._pinch.captured and menu._camera_zoom < 1.0, "real two-contact drag zooms production camera")
-		_check(menu.preview_camera.position.distance_to(menu._camera_focus) < initial_distance, "pinch moves the actual camera closer")
+		_check(
+			menu._pinch.captured and menu._camera_zoom < 1.0,
+			"real two-contact drag zooms production camera"
+		)
+		_check(
+			menu.preview_camera.position.distance_to(menu._camera_focus) < initial_distance,
+			"pinch moves the actual camera closer"
+		)
 		await _touch(4, second + Vector2(spread * 0.5, 0), false)
 		await _drag(3, first + Vector2(20, 0), Vector2(20, 0))
 		await _touch(3, first + Vector2(20, 0), false)
-		_check(is_equal_approx(menu.preview_angle, initial_angle) and not menu.rotate_drag and menu._preview_touch_index == -1,
-			"remaining pinch finger cannot become a drag or click")
-		_check(menu.step == 2 and menu.setup.kart == "gecko_velo", "pinch release does not alter selection or navigate")
+		_check(
+			(
+				is_equal_approx(menu.preview_angle, initial_angle)
+				and not menu.rotate_drag
+				and menu._preview_touch_index == -1
+			),
+			"remaining pinch finger cannot become a drag or click"
+		)
+		_check(
+			menu.step == 2 and menu.setup.kart == "gecko_velo",
+			"pinch release does not alter selection or navigate"
+		)
 		await _shot("zoom-%dx%d" % [dimensions.x, dimensions.y], menu)
 		await _touch(5, center, true)
 		await _drag(5, center + Vector2(35, 0), Vector2(35, 0))
 		await _touch(5, center + Vector2(35, 0), false)
-		_check(not is_equal_approx(menu.preview_angle, initial_angle), "fresh single-finger gesture still rotates actual kart")
+		_check(
+			not is_equal_approx(menu.preview_angle, initial_angle),
+			"fresh single-finger gesture still rotates actual kart"
+		)
 		menu.reduced_motion = true
 		menu._sync_workshop_host()
 		station.react_to_selection()
 		var reduced_angle: float = station.balance_wheel.rotation.z
 		station.advance(0.3)
-		_check(is_equal_approx(reduced_angle, station.balance_wheel.rotation.z) and not station.host.player.is_playing(), "reduced motion freezes wheel and authored character clip")
+		_check(
+			(
+				is_equal_approx(reduced_angle, station.balance_wheel.rotation.z)
+				and not station.host.player.is_playing()
+			),
+			"reduced motion freezes wheel and authored character clip"
+		)
 		menu.reduced_motion = false
 		menu._sync_workshop_host()
 		menu._notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
-		_check(station.host.suspended and not station.host.visible and menu._pinch.contacts.is_empty(), "background clears gesture and suspends original host")
+		_check(
+			station.host.suspended and not station.host.visible and menu._pinch.contacts.is_empty(),
+			"background clears gesture and suspends original host"
+		)
 		menu._notification(Node.NOTIFICATION_APPLICATION_FOCUS_IN)
 		menu._sync_workshop_host()
-		_check(station.host.visible and not station.host.suspended, "return restores the active workshop host")
+		_check(
+			station.host.visible and not station.host.suspended,
+			"return restores the active workshop host"
+		)
 		await _tap(menu.step_buttons[1])
-		_check(not station.host.visible and menu.preview_kart.lumo_animation.visible, "driver inspection restores actual seated driver without duplicate fox")
-		_check(is_equal_approx(menu._camera_zoom, 1.0), "new section restores complete default framing")
+		_check(
+			not station.host.visible and menu.preview_kart.lumo_animation.visible,
+			"driver inspection restores actual seated driver without duplicate fox"
+		)
+		_check(
+			is_equal_approx(menu._camera_zoom, 1.0), "new section restores complete default framing"
+		)
 		await _tap(menu.step_buttons[3])
-		_check(menu.choices.get_child_count() == 12, "all twelve production tracks remain selectable")
+		_check(
+			menu.choices.get_child_count() == 12, "all twelve production tracks remain selectable"
+		)
 		var first_world = menu.choices.get_child(0)
-		_check(menu.choices.get_parent().scroll_vertical == 0 and menu.choices.get_parent().get_global_rect().encloses(first_world.title_label.get_global_rect()),
-			"switching from a scrolled garage reveals the complete first track title")
-		_check(first_world.caption_label.is_visible_in_tree() and first_world.caption.contains("/3"),
-			"track goal remains visible in the compact native world card")
-		_check(first_world.caption_label.get_line_count() <= 2 and first_world.get_global_rect().encloses(first_world.caption_label.get_global_rect()),
-			"track goal fits its real native card without overlapping adjacent choices")
+		_check(
+			(
+				menu.choices.get_parent().scroll_vertical == 0
+				and menu.choices.get_parent().get_global_rect().encloses(
+					first_world.title_label.get_global_rect()
+				)
+			),
+			"switching from a scrolled garage reveals the complete first track title"
+		)
+		_check(
+			first_world.caption_label.is_visible_in_tree() and first_world.caption.contains("/3"),
+			"track goal remains visible in the compact native world card"
+		)
+		_check(
+			(
+				first_world.caption_label.get_line_count() <= 2
+				and first_world.get_global_rect().encloses(
+					first_world.caption_label.get_global_rect()
+				)
+			),
+			"track goal fits its real native card without overlapping adjacent choices"
+		)
 		await _shot("track-goals-%dx%d" % [dimensions.x, dimensions.y], menu)
 		game.queue_free()
 		await _settle()
@@ -192,5 +325,12 @@ func _run() -> void:
 		if manifest != null:
 			manifest.store_string(JSON.stringify(records, "\t"))
 			manifest.close()
-	print("[NextGenGarage] ", "PASS" if failures.is_empty() else "FAIL", " ", checks, " checks; captures=", records.size())
+	print(
+		"[NextGenGarage] ",
+		"PASS" if failures.is_empty() else "FAIL",
+		" ",
+		checks,
+		" checks; captures=",
+		records.size()
+	)
 	quit(0 if failures.is_empty() else 1)

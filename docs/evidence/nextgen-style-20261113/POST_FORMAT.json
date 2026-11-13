@@ -1,0 +1,12 @@
+[
+  {
+    "tool": "gdlint",
+    "exit_code": 1,
+    "summary": "Failure: 1449 problems found"
+  },
+  {
+    "tool": "gdformat",
+    "exit_code": 1,
+    "summary": "241 files would be reformatted, 191 files would be left unchanged."
+  }
+]

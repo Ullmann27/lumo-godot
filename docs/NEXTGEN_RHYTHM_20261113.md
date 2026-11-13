@@ -21,7 +21,7 @@ Godot 4.6.3, Linux Headless. Logs unter `docs/evidence/nextgen-rhythm-20261113/`
 | Prüfung | Neuer Nachweis |
 | --- | --- |
 | `rhythm_tour_regression.gd` | 2118 Checks bestanden: zwölf faire Charts, musikalisches Raster, benachbarte Slides, frühe Hold-Freigabe/verspätete Hits, ganze Tour auf jeder Schwierigkeit mit zehn absichtlichen Fehlern und nur „Gut“-Timing, gesperrte/unfinished/duplizierte Runden, additive Datei und getrennte Fortschritte. |
-| `rhythm_tour_play_regression.gd` | 48 Checks bestanden: tatsächlicher Tour-/Start-/Ergebnis-Touch, reale Tap-/Hold-/Slide-/Zweifinger-Ereignisse, Pause während Hold, Wiederaufnahme, absichtlich unperfekte gespielte Runde, Disk-Save/Kind-Wechsel/Scene-Reload und Menüs/Tasten in 412×915, 690×829 und 914×411. Die Notenzeit wird im Test kontrolliert; damit wird keine akustische Gerätelatenz behauptet. |
+| `rhythm_tour_play_regression.gd` | 87 Checks bestanden: tatsächlicher Tour-/Start-/Ergebnis-Touch, reale Tap-/Hold-/Slide-/Zweifinger-Ereignisse, Pause während Hold, Wiederaufnahme, absichtlich unperfekte gespielte Runde, Disk-Save/Kind-Wechsel/Scene-Reload und Menüs/Tasten sowie die tatsächlich projizierten 3D-Zielscheiben in 412×915, 690×829 und 914×411. Die Kamera erhält in schmalen Ansichten genug Abstand, damit keine äußere Spielspur abgeschnitten wird. Die Notenzeit wird im Test kontrolliert; damit wird keine akustische Gerätelatenz behauptet. |
 | `rhythm_party_regression.gd` | Bestehende Song-/Combo-/Save-/Reward-Prüfung erneut ohne Assertion-/Script-Fehler bestanden. Der Test fand zunächst ein echtes Problem: ein während der Runde hinzugekommener Bestwert wurde durch die neue Cache-Instanz überschrieben. Frisches Zusammenführen beim Rundenende behebt dies. |
 
 Der Produktionstest fand außerdem einen tatsächlichen Mehrfingerfehler des Pausenbuttons und ein Entfernen von GUI-Knoten während der Eingabezustellung. Der native Pausentouch und verzögertes Freigeben ausgeblendeter Menüknoten beheben beide Fälle.
@@ -35,3 +35,7 @@ Der Produktionstest fand außerdem einen tatsächlichen Mehrfingerfehler des Pau
 3. `03_rhythm_tour_result.png`
 
 Headless wird für Bilder abgelehnt. Diese neue Rhythm-Etappe benötigt einen eigenen GitHub-/Renderer-Snapshot; frühere Bauwelt-Bilder belegen sie nicht. Die finale visuelle Prüfung, Android-Audio-/Touch-Latenz und Fold7-FPS stehen separat aus. Der bestehende Rhythm-Begleiter wurde in dieser Etappe nicht durch ein neues Charaktermodell ersetzt.
+
+## Nachtrag zum tatsächlichen Rendererbild
+
+Die drei Bilder des CI-Snapshots `096c9d20` wurden geöffnet. Bühne, Begleiter, vier Spuren, Slide-Verbindung und Tourdialog sind sichtbar. Die weiße Punkt-/Trefferanzeige lag jedoch unmittelbar vor hellen LED-Feldern. Die korrigierte produktive Oberfläche besitzt deshalb schmale, ruhige dunkelblaue Flächen hinter Punktzahl, Trefferhinweis und Bühnenziel. Fortschrittsbalken und Touch-Spuren bleiben getrennt. Die neuen Kontrast-/Abstandsprüfungen erhöhen den Produktionstest auf 87 Checks. Die tatsächliche visuelle Bestätigung dieser Korrektur gehört zum folgenden Snapshot, nicht zum bereits vorliegenden Bildstand.

@@ -15,6 +15,7 @@ var notes_root: Node3D
 var note_nodes: Dictionary = {}
 var lamps: Array[MeshInstance3D] = []
 var audio: AudioStreamPlayer
+var camera: Camera3D
 var info: Label
 var feedback: Label
 var progress_bar: ProgressBar
@@ -119,7 +120,7 @@ func _ready() -> void:
 		)
 	_batch_speakers(speaker_specs)
 	_batch_columns()
-	var camera := Camera3D.new()
+	camera = Camera3D.new()
 	add_child(camera)
 	camera.position = Vector3(0, 12, 16)
 	camera.look_at(Vector3(0, 0, -8))
@@ -161,7 +162,8 @@ func _ui() -> void:
 	top.add_child(title)
 	info = KIT.label("", 17)
 	info.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	info.position.y = 66
+	info.position.y = 65
+	info.add_theme_stylebox_override("normal", _hud_label_panel())
 	info.offset_left = 14
 	info.offset_right = -14
 	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -171,7 +173,8 @@ func _ui() -> void:
 	top.add_child(pause_button)
 	feedback = KIT.label("", 22)
 	feedback.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	feedback.position.y = 102
+	feedback.position.y = 109
+	feedback.add_theme_stylebox_override("normal", _hud_label_panel())
 	feedback.offset_left = 14
 	feedback.offset_right = -14
 	feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -179,17 +182,28 @@ func _ui() -> void:
 	safe_ui.add_child(feedback)
 	progress_bar = ProgressBar.new()
 	progress_bar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	progress_bar.position.y = 91
+	progress_bar.position.y = 99
 	progress_bar.offset_left = 14
 	progress_bar.offset_right = -14
-	progress_bar.custom_minimum_size.y = 7
+	progress_bar.custom_minimum_size.y = 5
+	progress_bar.offset_bottom = 104
+	var track := StyleBoxFlat.new()
+	track.bg_color = Color("17243f")
+	track.set_corner_radius_all(2)
+	progress_bar.add_theme_stylebox_override("background", track)
+	var fill := track.duplicate() as StyleBoxFlat
+	fill.bg_color = Color("70dcf6")
+	progress_bar.add_theme_stylebox_override("fill", fill)
 	progress_bar.show_percentage = false
 	safe_ui.add_child(progress_bar)
 	goal_banner = KIT.label("", 16)
 	goal_banner.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	goal_banner.offset_left = 14
 	goal_banner.offset_right = -14
-	goal_banner.offset_top = -158
+	goal_banner.offset_top = -134
+	goal_banner.offset_bottom = -106
+	goal_banner.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	goal_banner.add_theme_stylebox_override("normal", _hud_label_panel())
 	goal_banner.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	goal_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	safe_ui.add_child(goal_banner)
@@ -223,6 +237,19 @@ func _ui() -> void:
 	menu_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	menu_box.add_theme_constant_override("separation", 10)
 	menu_scroll.add_child(menu_box)
+
+
+func _hud_label_panel() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.025, 0.045, 0.105, 0.96)
+	style.border_color = Color(0.28, 0.46, 0.64, 0.75)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(8)
+	style.content_margin_left = 10
+	style.content_margin_right = 10
+	style.content_margin_top = 3
+	style.content_margin_bottom = 3
+	return style
 
 
 func _clear_menu() -> void:
@@ -598,6 +625,14 @@ func _layout() -> void:
 		return
 	RUNTIME.safe_area(self, safe_ui)
 	var available := safe_ui.size
+	for label in [info, feedback, goal_banner]:
+		var width := minf(480 if label == info else 540, available.x - 28)
+		label.offset_left = (available.x - width) * 0.5
+		label.offset_right = -(available.x - width) * 0.5
+	if is_instance_valid(camera) and camera.is_inside_tree():
+		var framing := maxf(1.0, 0.75 / maxf(0.25, available.aspect()))
+		camera.position = Vector3(0, 0, -8) + Vector3(0, 12, 24) * framing
+		camera.look_at(Vector3(0, 0, -8))
 	menu.size = Vector2(minf(580, available.x - 28), maxf(180, minf(590, available.y - 170)))
 	menu.position = (available - menu.size) * 0.5
 	for lane in range(lane_buttons.size()):

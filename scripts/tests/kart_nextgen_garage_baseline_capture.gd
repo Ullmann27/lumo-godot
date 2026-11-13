@@ -19,7 +19,9 @@ func _settle() -> void:
 
 
 func _tap(button: Control) -> void:
-	var pixel: Vector2 = button.get_global_rect().get_center() * Vector2(root.size) / root.get_visible_rect().size
+	var pixel: Vector2 = (
+		button.get_global_rect().get_center() * Vector2(root.size) / root.get_visible_rect().size
+	)
 	for pressed in [true, false]:
 		var event := InputEventScreenTouch.new()
 		event.index = 0
@@ -32,7 +34,11 @@ func _tap(button: Control) -> void:
 
 func _shot(label: String) -> void:
 	var image := root.get_texture().get_image()
-	if image == null or image.get_size() != root.size or image.save_png(output.path_join(label + ".png")) != OK:
+	if (
+		image == null
+		or image.get_size() != root.size
+		or image.save_png(output.path_join(label + ".png")) != OK
+	):
 		failures += 1
 		push_error("[NextGenGarageBefore] invalid raster: " + label)
 

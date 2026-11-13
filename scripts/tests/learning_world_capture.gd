@@ -35,6 +35,21 @@ func _tap(point: Vector2) -> void:
 	await _settle()
 
 
+func _visible_object_bounds(game: Node3D, node: Node3D, body: Rect2, caption: String) -> void:
+	var meshes: Array[Node] = node.find_children("*", "MeshInstance3D", true, false)
+	if node is MeshInstance3D:
+		meshes.append(node)
+	for mesh_node: MeshInstance3D in meshes:
+		if not mesh_node.is_visible_in_tree():
+			continue
+		var bounds := mesh_node.get_aabb()
+		for corner in range(8):
+			var point: Vector2 = game.camera.unproject_position(
+				mesh_node.to_global(bounds.get_endpoint(corner))
+			)
+			_check(body.has_point(point), caption + " is completely outside the header and footer")
+
+
 func _capture(game: Node3D, name_value: String, size_value: Vector2i) -> void:
 	await _settle()
 	var raster := root.get_texture().get_image()
@@ -43,22 +58,96 @@ func _capture(game: Node3D, name_value: String, size_value: Vector2i) -> void:
 		return
 	var orange := 0
 	var lit := 0
+	var clipped := 0
+	var sampled := 0
 	var begin: int = int(game.header.get_global_rect().end.y + 4)
 	var end: int = int(game.footer.get_global_rect().position.y - 4)
+	var body := Rect2(8, begin, size_value.x - 16, end - begin)
+	for index in range(game.tokens.size()):
+		_visible_object_bounds(game, game.tokens[index], body, name_value + " token " + str(index))
+	if is_instance_valid(game._fraction_label):
+		_visible_object_bounds(game, game._fraction_label, body, name_value + " current fraction")
+		_check(
+			(
+				game._fraction_label.mesh.text
+				== (
+					"%d/%d"
+					% [game.activity.initial_count() + game.activity.placed.size(), game.activity.b]
+				)
+			),
+			"visible fraction agrees with actual highlighted pieces " + name_value
+		)
+	if is_instance_valid(game._hundred_stock):
+		_visible_object_bounds(game, game._hundred_stock, body, name_value + " existing hundred")
+		_visible_object_bounds(
+			game, game._hundred_summary, body, name_value + " place-value decomposition"
+		)
 	for y in range(begin, end, 3):
 		for x in range(10, size_value.x - 10, 3):
 			var pixel := raster.get_pixel(x, y)
+			sampled += 1
+			if int(pixel.r > 0.97) + int(pixel.g > 0.97) + int(pixel.b > 0.97) >= 2:
+				clipped += 1
 			if maxf(pixel.r, maxf(pixel.g, pixel.b)) > 0.3:
 				lit += 1
 			if pixel.r > 0.3 and pixel.r > pixel.g * 1.18 and pixel.r > pixel.b * 1.3:
 				orange += 1
 	_check(lit > 100 and orange > 5, "actual lit 3D scene and orange original fox " + name_value)
-	_check(game.header.get_global_rect().end.y < game.footer.get_global_rect().position.y,
-		"controls do not overlap " + name_value)
+	_check(
+		sampled > 0 and float(clipped) / maxf(1, sampled) < 0.18,
+		"learning materials retain color instead of clipped cyan/white masses " + name_value
+	)
+	var skeleton: Skeleton3D = game.fox.skeleton
+	var head_world: Vector3 = skeleton.to_global(
+		skeleton.get_bone_global_pose(skeleton.find_bone("Head")).origin
+	)
+	var head_pixel: Vector2 = game.camera.unproject_position(head_world)
+	var head_radius: float = (
+		game.camera.unproject_position(head_world + Vector3.RIGHT * 0.7).distance_to(head_pixel)
+	)
+	var head_orange := 0
+	for y in range(
+		maxi(0, int(head_pixel.y - head_radius)),
+		mini(size_value.y, int(head_pixel.y + head_radius)),
+		2
+	):
+		for x in range(
+			maxi(0, int(head_pixel.x - head_radius)),
+			mini(size_value.x, int(head_pixel.x + head_radius)),
+			2
+		):
+			var pixel := raster.get_pixel(x, y)
+			if pixel.r > 0.3 and pixel.r > pixel.g * 1.22 and pixel.r > pixel.b * 1.8:
+				head_orange += 1
+	_check(
+		head_orange > 8,
+		(
+			"original fox is actually visible at the projected head, not inferred from gold cubes "
+			+ name_value
+		)
+	)
+	_check(
+		game.header.get_global_rect().end.y < game.footer.get_global_rect().position.y,
+		"controls do not overlap " + name_value
+	)
 	_check(game.footer.get_global_rect().end.y <= size_value.y + 1, "controls fit " + name_value)
-	_check(raster.save_png(output.path_join(name_value + ".png")) == OK, "save screenshot " + name_value)
+	_check(
+		raster.save_png(output.path_join(name_value + ".png")) == OK,
+		"save screenshot " + name_value
+	)
 	captures += 1
-	print("[LearningCapture] SCREENSHOT ", name_value, " lit=", lit, " orange=", orange)
+	print(
+		"[LearningCapture] SCREENSHOT ",
+		name_value,
+		" lit=",
+		lit,
+		" orange=",
+		orange,
+		" fox_head_orange=",
+		head_orange,
+		" clipped_ratio=",
+		float(clipped) / maxf(1, sampled)
+	)
 
 
 func _run() -> void:
@@ -74,7 +163,9 @@ func _run() -> void:
 		root.size = size_value
 		bridge._options["displayDensity"] = 2.625 if size_value.x == 2400 else 1.0
 		var game = world.instantiate()
-		game.capture_options = {"learning": {"kind": "bridge_ten", "a": 8, "b": 5}, "reduceAnimations": true}
+		game.capture_options = {
+			"learning": {"kind": "bridge_ten", "a": 8, "b": 5}, "reduceAnimations": true
+		}
 		root.add_child(game)
 		await _settle()
 		await _capture(game, "math-start-%dx%d" % [size_value.x, size_value.y], size_value)
@@ -117,7 +208,10 @@ func _run() -> void:
 			# press still executes an actual mesh move in the current lesson.
 			for index in range(game.activity.goal_count()):
 				await _tap(game.main_button.get_global_rect().get_center())
-			_check(game.activity.is_complete(), "expanded current lesson completed through actual controls")
+			_check(
+				game.activity.is_complete(),
+				"expanded current lesson completed through actual controls"
+			)
 		await _capture(game, str(descriptor.kind) + "-complete", Vector2i(1280, 720))
 		game.queue_free()
 		await _settle()

@@ -1,0 +1,150 @@
+{
+  "source_sha": "096c9d20a3a1b92605e0a4f648e1afd87f967b9a",
+  "source_dirty": "",
+  "capture_review": "Six representative PNGs reviewed across all three layouts. Track title fix visible; wheel is visible but overlaps host silhouette. Final sideways wheel move and Head-vs-wheel geometry regression postdate this capture.",
+  "reviewed_pngs": [
+    "garage-1280x720.png",
+    "garage-412x915.png",
+    "garage-2400x1080.png",
+    "selection-1280x720.png",
+    "zoom-412x915.png",
+    "track-goals-2400x1080.png"
+  ],
+  "physical_device_fps": "NOT MEASURED",
+  "captures": [
+    {
+      "draw_calls": 194,
+      "height": 720,
+      "host_behavior": "greeting_wave",
+      "name": "garage-1280x720",
+      "renderer": "gl_compatibility",
+      "selected_kart": "comet",
+      "width": 1280,
+      "zoom": 1.0
+    },
+    {
+      "draw_calls": 191,
+      "height": 720,
+      "host_behavior": "point_portal",
+      "name": "selection-1280x720",
+      "renderer": "gl_compatibility",
+      "selected_kart": "gecko_velo",
+      "width": 1280,
+      "zoom": 1.0
+    },
+    {
+      "draw_calls": 184,
+      "height": 720,
+      "host_behavior": "point_portal",
+      "name": "zoom-1280x720",
+      "renderer": "gl_compatibility",
+      "selected_kart": "gecko_velo",
+      "width": 1280,
+      "zoom": 0.8
+    },
+    {
+      "draw_calls": 677,
+      "height": 720,
+      "host_behavior": "greeting_wave",
+      "name": "track-goals-1280x720",
+      "renderer": "gl_compatibility",
+      "selected_kart": "gecko_velo",
+      "width": 1280,
+      "zoom": 1.0
+    },
+    {
+      "draw_calls": 179,
+      "height": 915,
+      "host_behavior": "greeting_wave",
+      "name": "garage-412x915",
+      "renderer": "gl_compatibility",
+      "selected_kart": "comet",
+      "width": 412,
+      "zoom": 1.0
+    },
+    {
+      "draw_calls": 176,
+      "height": 915,
+      "host_behavior": "point_portal",
+      "name": "selection-412x915",
+      "renderer": "gl_compatibility",
+      "selected_kart": "gecko_velo",
+      "width": 412,
+      "zoom": 1.0
+    },
+    {
+      "draw_calls": 198,
+      "height": 915,
+      "host_behavior": "point_portal",
+      "name": "zoom-412x915",
+      "renderer": "gl_compatibility",
+      "selected_kart": "gecko_velo",
+      "width": 412,
+      "zoom": 0.799999782017299
+    },
+    {
+      "draw_calls": 640,
+      "height": 915,
+      "host_behavior": "greeting_wave",
+      "name": "track-goals-412x915",
+      "renderer": "gl_compatibility",
+      "selected_kart": "gecko_velo",
+      "width": 412,
+      "zoom": 1.0
+    },
+    {
+      "draw_calls": 205,
+      "height": 1080,
+      "host_behavior": "greeting_wave",
+      "name": "garage-2400x1080",
+      "renderer": "gl_compatibility",
+      "selected_kart": "comet",
+      "width": 2400,
+      "zoom": 1.0
+    },
+    {
+      "draw_calls": 203,
+      "height": 1080,
+      "host_behavior": "point_portal",
+      "name": "selection-2400x1080",
+      "renderer": "gl_compatibility",
+      "selected_kart": "gecko_velo",
+      "width": 2400,
+      "zoom": 1.0
+    },
+    {
+      "draw_calls": 191,
+      "height": 1080,
+      "host_behavior": "point_portal",
+      "name": "zoom-2400x1080",
+      "renderer": "gl_compatibility",
+      "selected_kart": "gecko_velo",
+      "width": 2400,
+      "zoom": 0.7999999031188
+    },
+    {
+      "draw_calls": 647,
+      "height": 1080,
+      "host_behavior": "greeting_wave",
+      "name": "track-goals-2400x1080",
+      "renderer": "gl_compatibility",
+      "selected_kart": "gecko_velo",
+      "width": 2400,
+      "zoom": 1.0
+    }
+  ],
+  "files_sha256": {
+    "nextgen/captures/kart_nextgen_garage_regression/garage-1280x720.png": "b0b12fe2d7e34085fab20114ef684a5eb8e630059bf8a27de7d0c84f86428c1c",
+    "nextgen/captures/kart_nextgen_garage_regression/garage-2400x1080.png": "5ec3bbf429bf7d286c31efed28988d8691c24a4388a7f48f2dcdf2eff59a9b9e",
+    "nextgen/captures/kart_nextgen_garage_regression/garage-412x915.png": "ec21a0070b3530c2c25781ead31aa4366a49634e48926bb056b7d155fc19583e",
+    "nextgen/captures/kart_nextgen_garage_regression/selection-1280x720.png": "000ee26918ed883ab39160a5bd9b02c621067c860860f409f2950b581ad4f29d",
+    "nextgen/captures/kart_nextgen_garage_regression/selection-2400x1080.png": "e920803860c1af22ea81468d3af7d18f8371dcb1ab1759e3433385a11b2981d5",
+    "nextgen/captures/kart_nextgen_garage_regression/selection-412x915.png": "2c5e0906e81818c3270487c7dd5d514f96790d74fa9b0bb2e4319edf579e0c69",
+    "nextgen/captures/kart_nextgen_garage_regression/track-goals-1280x720.png": "6442cefc5feb3b38f69a5a9025772f178b9ae96a4267e12595992afc54e83ae8",
+    "nextgen/captures/kart_nextgen_garage_regression/track-goals-2400x1080.png": "cf887c1a0be8a3798bf8861aa84b361c65629baf6731a6e73b4391c86953555b",
+    "nextgen/captures/kart_nextgen_garage_regression/track-goals-412x915.png": "0bb012accbffef22dd3cd80a708217a09d0433c880cecf5284906a07547ab059",
+    "nextgen/captures/kart_nextgen_garage_regression/zoom-1280x720.png": "6f0f677cebcc0478a9d13ab9bcbb59007b4f201fc69d91f0237047ef71ec587b",
+    "nextgen/captures/kart_nextgen_garage_regression/zoom-2400x1080.png": "6ccc6342b34bc62b875b61657ec0b084b3ccdd363e5667fecab9a63e520b3978",
+    "nextgen/captures/kart_nextgen_garage_regression/zoom-412x915.png": "84cf18c6cffad0f37cb85a686b1142ae8ad697d5d4360daebb61f089b0db7a3f"
+  }
+}

@@ -51,13 +51,28 @@ func _capture(name: String, game) -> void:
 	if frame == null:
 		return
 	_check(frame.save_png(capture_dir.path_join(name + ".png")) == OK, name + " saved")
-	captures.append({
-		"file": name + ".png", "width": frame.get_width(), "height": frame.get_height(),
-		"actor_position": str(game.actor.position), "velocity": str(game.actor.velocity),
-		"grounded": game.actor.is_on_floor(), "animation": game.original_lumo.get_current_behavior(),
-		"draw_calls": RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME),
-		"primitives": RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME),
-	})
+	(
+		captures
+		. append(
+			{
+				"file": name + ".png",
+				"width": frame.get_width(),
+				"height": frame.get_height(),
+				"actor_position": str(game.actor.position),
+				"velocity": str(game.actor.velocity),
+				"grounded": game.actor.is_on_floor(),
+				"animation": game.original_lumo.get_current_behavior(),
+				"draw_calls":
+				RenderingServer.get_rendering_info(
+					RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME
+				),
+				"primitives":
+				RenderingServer.get_rendering_info(
+					RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME
+				),
+			}
+		)
+	)
 
 
 func _run() -> void:
@@ -70,7 +85,12 @@ func _run() -> void:
 		push_error("[JumpNextgenCapture] LUMO_CAPTURE_DIR must be writable")
 		quit(1)
 		return
-	for sample in [[Vector2i(412, 915), 1.0], [Vector2i(690, 829), 1.0], [Vector2i(1280, 720), 1.0], [Vector2i(2400, 1080), 2.625]]:
+	for sample in [
+		[Vector2i(412, 915), 1.0],
+		[Vector2i(690, 829), 1.0],
+		[Vector2i(1280, 720), 1.0],
+		[Vector2i(2400, 1080), 2.625]
+	]:
 		root.size = sample[0]
 		root.get_node("HostBridge")._options["displayDensity"] = sample[1]
 		root.get_node("SceneRouter").launch_options = {"grade": 2, "subject": "Mathematik"}
@@ -79,7 +99,10 @@ func _run() -> void:
 		root.add_child(game)
 		await _frames(35)
 		var name: String = "%dx%d" % [root.size.x, root.size.y]
-		_check(is_instance_valid(game.original_lumo) and game.original_lumo.is_usable(), name + " original fox loaded")
+		_check(
+			is_instance_valid(game.original_lumo) and game.original_lumo.is_usable(),
+			name + " original fox loaded"
+		)
 		if not is_instance_valid(game.original_lumo):
 			quit(1)
 			return
@@ -87,45 +110,94 @@ func _run() -> void:
 		var stick: Rect2 = game.movement_stick.get_global_rect()
 		var button: Rect2 = game.jump_action.get_global_rect()
 		_check(not stick.intersects(button), name + " independent thumb rectangles")
-		_check(root.get_visible_rect().encloses(stick) and root.get_visible_rect().encloses(button), name + " controls completely visible")
+		_check(
+			root.get_visible_rect().encloses(stick) and root.get_visible_rect().encloses(button),
+			name + " controls completely visible"
+		)
 		var start: Vector3 = game.actor.position
 		await _touch(stick.get_center(), 3, true)
 		await _drag(stick.get_center() + Vector2(0, -stick.size.y * 0.18), 3)
 		await _frames(12)
-		_check(game.movement_stick.touch_id == 3 and game.touch_direction.y < -0.4, name + " native input captures left finger")
+		_check(
+			game.movement_stick.touch_id == 3 and game.touch_direction.y < -0.4,
+			name + " native input captures left finger"
+		)
 		_check(game.actor.position.z < start.z - 0.20, name + " stick actually moves CharacterBody")
 		await _touch(button.get_center(), 4, true)
 		await _frames(7)
-		_check(game.jump_action.touch_id == 4 and game.jump_held, name + " second finger holds jump independently")
-		_check(game.actor.velocity.y > 0.0 and not game.actor.is_on_floor(), name + " touch press creates actual ascent")
+		_check(
+			game.jump_action.touch_id == 4 and game.jump_held,
+			name + " second finger holds jump independently"
+		)
+		_check(
+			game.actor.velocity.y > 0.0 and not game.actor.is_on_floor(),
+			name + " touch press creates actual ascent"
+		)
 		await _capture("jump_" + name + "_touch_ascent", game)
 		await _touch(Vector2(4, 4), 9, false)
-		_check(game.jump_held and game.movement_stick.touch_id == 3, name + " unrelated finger cannot release controls")
+		_check(
+			game.jump_held and game.movement_stick.touch_id == 3,
+			name + " unrelated finger cannot release controls"
+		)
 		await _touch(stick.get_center(), 3, false)
-		_check(game.touch_direction == Vector2.ZERO and game.jump_held, name + " releasing stick preserves held jump")
+		_check(
+			game.touch_direction == Vector2.ZERO and game.jump_held,
+			name + " releasing stick preserves held jump"
+		)
 		await _frames(24)
 		await _capture("jump_" + name + "_airborne", game)
 		await _touch(Vector2(4, 4), 4, false)
-		_check(not game.jump_held and not game.jump_action.held, name + " releasing jump outside cancels held state")
+		_check(
+			not game.jump_held and not game.jump_action.held,
+			name + " releasing jump outside cancels held state"
+		)
 		await _frames(60)
-		_check(game.falls == 0 and game.actor.is_on_floor(), name + " controlled two-finger jump lands safely")
+		_check(
+			game.falls == 0 and game.actor.is_on_floor(),
+			name + " controlled two-finger jump lands safely"
+		)
 		await _capture("jump_" + name + "_landed", game)
 		game._pause()
 		await _frames(3)
-		_check(game.touch_direction == Vector2.ZERO and not game.jump_held and game.original_lumo.suspended, name + " pause clears inputs and suspends rig")
+		_check(
+			(
+				game.touch_direction == Vector2.ZERO
+				and not game.jump_held
+				and game.original_lumo.suspended
+			),
+			name + " pause clears inputs and suspends rig"
+		)
 		game.abandoned = true
 		game.queue_free()
 		await _frames(3)
 	root.get_node("HostBridge")._options.erase("displayDensity")
 	DirAccess.remove_absolute("user://jump_session.cfg")
-	var report := FileAccess.open(capture_dir.path_join("jump-nextgen-evidence.json"), FileAccess.WRITE)
+	var report := FileAccess.open(
+		capture_dir.path_join("jump-nextgen-evidence.json"), FileAccess.WRITE
+	)
 	if report != null:
-		report.store_string(JSON.stringify({"checks": checks, "failures": failures, "display": DisplayServer.get_name(), "captures": captures, "device_fps_measured": false}, "  "))
+		report.store_string(
+			JSON.stringify(
+				{
+					"checks": checks,
+					"failures": failures,
+					"display": DisplayServer.get_name(),
+					"captures": captures,
+					"device_fps_measured": false
+				},
+				"  "
+			)
+		)
 		report.close()
 	else:
 		_check(false, "evidence report writable")
 	if failures.is_empty():
-		print("[JumpNextgenCapture] PASS %d checks, %d actual renderer frames and native two-finger jumps" % [checks, captures.size()])
+		print(
+			(
+				"[JumpNextgenCapture] PASS %d checks, %d actual renderer frames and native two-finger jumps"
+				% [checks, captures.size()]
+			)
+		)
 		quit(0)
 	else:
 		print("[JumpNextgenCapture] FAIL ", failures)

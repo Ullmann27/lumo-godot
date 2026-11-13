@@ -2,9 +2,11 @@ extends RefCounted
 ## Daylight finishing pass for real creative scenes. Reuses the existing sun,
 ## fill, sky and cloud batch; never adds lights, postprocessing or collisions.
 const MAX_CLOUD_PUFFS := 18
-static var _ground: StandardMaterial3D
-static var _plot: StandardMaterial3D
-static var _stone: StandardMaterial3D
+# Weak caches share materials between live meshes without retaining GPU
+# resources until static GDScript teardown after the rendering server exits.
+static var _ground: WeakRef
+static var _plot: WeakRef
+static var _stone: WeakRef
 
 
 static func apply_day(root: Node3D) -> Dictionary:
@@ -14,10 +16,10 @@ static func apply_day(root: Node3D) -> Dictionary:
 	var sun := root.get_node_or_null("Sun") as DirectionalLight3D
 	if world == null or world.environment == null or sun == null:
 		return {"applied": false, "reason": "missing_day_environment"}
-	# Duplicate the resource rather than changing another live scene's shared
-	# preset. Keep its feature switches under the existing quality controller.
-	var environment := world.environment.duplicate(true) as Environment
-	world.environment = environment
+	# creative_kit creates a new Environment and Sky for each scene. Finish
+	# that owned instance; duplicating the GPU-backed Sky creates an unused
+	# radiance allocation and extends its lifetime beyond the visible world.
+	var environment := world.environment
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color("a7c0d4")
 	environment.ambient_light_sky_contribution = 0.35
@@ -69,8 +71,14 @@ static func _finish_clouds(clouds: MultiMeshInstance3D) -> int:
 		# overview camera at 14–26 metres and obscuring the upper HUD.
 		var fraction := float(index) / maxf(1.0, count - 1.0)
 		var angle := -PI + fraction * PI
-		var at := Vector3(cos(angle) * 73.0, 24.0 + sin(index * 0.73) * 3.0, -26.0 + sin(angle) * 53.0)
-		var scale := Vector3(3.2 + fmod(index * 0.7, 2.3), 0.80 + fmod(index * 0.13, 0.55), 2.2 + fmod(index * 0.31, 1.3))
+		var at := Vector3(
+			cos(angle) * 73.0, 24.0 + sin(index * 0.73) * 3.0, -26.0 + sin(angle) * 53.0
+		)
+		var scale := Vector3(
+			3.2 + fmod(index * 0.7, 2.3),
+			0.80 + fmod(index * 0.13, 0.55),
+			2.2 + fmod(index * 0.31, 1.3)
+		)
 		var transform := Transform3D(Basis.from_scale(scale), at)
 		authored.append(transform)
 		multi.set_instance_transform(index, transform)
@@ -86,30 +94,37 @@ static func _finish_clouds(clouds: MultiMeshInstance3D) -> int:
 
 
 static func ground_material() -> StandardMaterial3D:
-	if _ground == null:
-		_ground = BuildVoxelStyle.material("grass_top", Color("b4be8b")).duplicate()
-		_ground.roughness = 0.94
-		_ground.normal_scale = 0.32
-		_ground.metallic_specular = 0.16
-		_ground.uv1_scale = Vector3.ONE * 0.32
-	return _ground
+	var material: StandardMaterial3D = _ground.get_ref() if _ground != null else null
+	if material == null:
+		material = BuildVoxelStyle.material("grass_top").duplicate()
+		material.albedo_color = Color("b4be8b")
+		material.roughness = 0.94
+		material.normal_scale = 0.32
+		material.metallic_specular = 0.16
+		material.uv1_scale = Vector3.ONE * 0.32
+		_ground = weakref(material)
+	return material
 
 
 static func plot_material(_opponent := false) -> StandardMaterial3D:
-	# Soft soil and paving keep the selection readable while grounding the
-	# facilities in a material surface. Both banks retain the same geometry.
-	if _plot == null:
-		_plot = BuildVoxelStyle.material("dirt", Color("c0b68c")).duplicate()
-		_plot.roughness = 0.96
-		_plot.normal_scale = 0.35
-		_plot.metallic_specular = 0.12
-		_plot.uv1_scale = Vector3.ONE * 0.8
-	return _plot
+	var material: StandardMaterial3D = _plot.get_ref() if _plot != null else null
+	if material == null:
+		material = BuildVoxelStyle.material("dirt").duplicate()
+		material.albedo_color = Color("c0b68c")
+		material.roughness = 0.96
+		material.normal_scale = 0.35
+		material.metallic_specular = 0.12
+		material.uv1_scale = Vector3.ONE * 0.8
+		_plot = weakref(material)
+	return material
 
 
 static func bank_material() -> StandardMaterial3D:
-	if _stone == null:
-		_stone = BuildVoxelStyle.material("stone", Color("9b967e")).duplicate()
-		_stone.roughness = 0.90
-		_stone.normal_scale = 0.45
-	return _stone
+	var material: StandardMaterial3D = _stone.get_ref() if _stone != null else null
+	if material == null:
+		material = BuildVoxelStyle.material("stone").duplicate()
+		material.albedo_color = Color("9b967e")
+		material.roughness = 0.90
+		material.normal_scale = 0.45
+		_stone = weakref(material)
+	return material

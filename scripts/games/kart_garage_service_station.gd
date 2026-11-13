@@ -3,7 +3,8 @@ extends Node3D
 ## material families, GLB and clips are reused; no reward or vehicle state lives here.
 const ACTOR = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const INTERIOR = preload("res://scripts/games/kart_garage_interior.gd")
-const BALANCER_X := -2.75
+const BALANCER_X := -3.15
+const BALANCER_Z := 0.35
 var host
 var balance_wheel: Node3D
 var selection_time := 0.0
@@ -18,35 +19,87 @@ func build(materials: Dictionary) -> void:
 	name = "GarageServiceStation"
 	# A dimensional balancing bench with a real wheel, axle, rim and spokes.
 	# Shared instancing batches the repetitive ribs, bolts and pegboard tools.
-	INTERIOR._box(self, "BalancerBase", Vector3(0.78, 0.10, 0.78), Vector3(BALANCER_X, -0.28, 1.95), materials.recess, true)
-	INTERIOR._box(self, "BalancerColumn", Vector3(0.38, 0.78, 0.42), Vector3(BALANCER_X, 0.16, 1.95), materials.wall, true)
-	INTERIOR._box(self, "BalancerHead", Vector3(0.69, 0.28, 0.64), Vector3(BALANCER_X, 0.68, 1.95), materials.ivory, true)
-	var axle := INTERIOR._cylinder(self, "BalancerAxle", 0.065, 0.56, Vector3(BALANCER_X, 0.93, 1.57), materials.steel)
+	INTERIOR._box(
+		self,
+		"BalancerBase",
+		Vector3(0.78, 0.10, 0.78),
+		Vector3(BALANCER_X, -0.28, BALANCER_Z),
+		materials.recess,
+		true
+	)
+	INTERIOR._box(
+		self,
+		"BalancerColumn",
+		Vector3(0.38, 0.78, 0.42),
+		Vector3(BALANCER_X, 0.16, BALANCER_Z),
+		materials.wall,
+		true
+	)
+	INTERIOR._box(
+		self,
+		"BalancerHead",
+		Vector3(0.69, 0.28, 0.64),
+		Vector3(BALANCER_X, 0.68, BALANCER_Z),
+		materials.ivory,
+		true
+	)
+	var axle := INTERIOR._cylinder(
+		self,
+		"BalancerAxle",
+		0.065,
+		0.56,
+		Vector3(BALANCER_X, 0.93, BALANCER_Z - 0.38),
+		materials.steel
+	)
 	axle.rotation.x = PI * 0.5
 	balance_wheel = Node3D.new()
 	balance_wheel.name = "BalancedWheel"
-	balance_wheel.position = Vector3(BALANCER_X, 0.93, 1.35)
+	balance_wheel.position = Vector3(BALANCER_X, 0.93, BALANCER_Z - 0.60)
 	add_child(balance_wheel)
 	_ring(balance_wheel, "Tyre", 0.24, 0.43, materials.rubber)
 	_ring(balance_wheel, "Rim", 0.205, 0.245, materials.steel)
 	var spokes: Array[Transform3D] = []
 	for spoke in range(6):
 		var angle := TAU * spoke / 6.0
-		spokes.append(Transform3D(Basis(Vector3.FORWARD, angle).scaled(Vector3(0.045, 0.20, 0.045)),
-			Vector3(sin(angle) * 0.12, cos(angle) * 0.12, -0.02)))
+		spokes.append(
+			Transform3D(
+				Basis(Vector3.FORWARD, angle).scaled(Vector3(0.045, 0.20, 0.045)),
+				Vector3(sin(angle) * 0.12, cos(angle) * 0.12, -0.02)
+			)
+		)
 	INTERIOR._batch_boxes(balance_wheel, "RimSpokes", spokes, materials.ivory, false)
-	var hub := INTERIOR._cylinder(balance_wheel, "WheelHub", 0.065, 0.08, Vector3(0, 0, -0.015), materials.orange)
+	var hub := INTERIOR._cylinder(
+		balance_wheel, "WheelHub", 0.065, 0.08, Vector3(0, 0, -0.015), materials.orange
+	)
 	hub.rotation.x = PI * 0.5
 	_status_material = materials.cyan.duplicate() as StandardMaterial3D
-	INTERIOR._box(self, "BalancerStatus", Vector3(0.45, 0.065, 0.03), Vector3(BALANCER_X, 0.72, 1.61), _status_material, false)
+	INTERIOR._box(
+		self,
+		"BalancerStatus",
+		Vector3(0.45, 0.065, 0.03),
+		Vector3(BALANCER_X, 0.72, BALANCER_Z - 0.34),
+		_status_material,
+		false
+	)
 	# Pegboard behind the existing cabinet. All handles/shafts share two batches.
-	INTERIOR._box(self, "ToolPegboard", Vector3(1.72, 1.12, 0.07), Vector3(-3.95, 1.85, 3.85), materials.recess, true)
+	INTERIOR._box(
+		self,
+		"ToolPegboard",
+		Vector3(1.72, 1.12, 0.07),
+		Vector3(-3.95, 1.85, 3.85),
+		materials.recess,
+		true
+	)
 	var metal_parts: Array[Transform3D] = []
 	var handles: Array[Transform3D] = []
 	for tool in range(5):
 		var x := -4.55 + tool * 0.30
-		metal_parts.append(INTERIOR._box_transform(Vector3(0.028, 0.35, 0.035), Vector3(x, 1.92, 3.77)))
-		metal_parts.append(INTERIOR._box_transform(Vector3(0.16, 0.055, 0.05), Vector3(x, 2.10, 3.77)))
+		metal_parts.append(
+			INTERIOR._box_transform(Vector3(0.028, 0.35, 0.035), Vector3(x, 1.92, 3.77))
+		)
+		metal_parts.append(
+			INTERIOR._box_transform(Vector3(0.16, 0.055, 0.05), Vector3(x, 2.10, 3.77))
+		)
 		handles.append(INTERIOR._box_transform(Vector3(0.070, 0.16, 0.065), Vector3(x, 1.70, 3.76)))
 	INTERIOR._batch_boxes(self, "ToolSteel", metal_parts, materials.steel, false)
 	INTERIOR._batch_boxes(self, "ToolGrips", handles, materials.orange, false)
@@ -119,7 +172,9 @@ func advance(delta: float) -> void:
 		selection_time = maxf(0.0, selection_time - delta)
 		_wheel_angle = fposmod(_wheel_angle + delta * 5.0 * minf(selection_time, 1.0), TAU)
 		balance_wheel.rotation.z = _wheel_angle
-		_status_material.emission_energy_multiplier = 0.48 + 0.65 * sin(PI * minf(selection_time / 1.6, 1.0))
+		_status_material.emission_energy_multiplier = (
+			0.48 + 0.65 * sin(PI * minf(selection_time / 1.6, 1.0))
+		)
 
 
 func subject_points() -> Array[Vector3]:
@@ -149,7 +204,9 @@ func workbench_points() -> Array[Vector3]:
 	return points
 
 
-func _ring(parent: Node3D, node_name: String, inner: float, outer: float, material: Material) -> void:
+func _ring(
+	parent: Node3D, node_name: String, inner: float, outer: float, material: Material
+) -> void:
 	var ring := MeshInstance3D.new()
 	ring.name = node_name
 	var mesh := TorusMesh.new()

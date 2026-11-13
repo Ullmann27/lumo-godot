@@ -3,14 +3,42 @@ extends RefCounted
 ## Free play and original song/best keys are deliberately untouched.
 const SECTION := "tour_v1"
 const STAGES = [
-	{"id": "wiese", "title": "Wiesenbühne", "song": 0, "hits": 16, "holds": 0, "slides": 0,
-		"story": "Lumo lädt die Waldtiere ein. Bring die ersten Sterne zum Leuchten."},
-	{"id": "wolken", "title": "Wolkenkonzert", "song": 1, "hits": 18, "holds": 1, "slides": 0,
-		"story": "Die Wolken tragen deine Musik weiter. Halte einen langen Ton bis zum Ende."},
-	{"id": "funken", "title": "Funkenfest", "song": 2, "hits": 20, "holds": 0, "slides": 1,
-		"story": "Beim Lichterfest wandern die Töne. Folge einem Pfeil in die Nachbarspur."},
-	{"id": "mond", "title": "Mondfinale", "song": 3, "hits": 22, "holds": 1, "slides": 1,
-		"story": "Alle Freunde sind da. Verbinde Tippen, Halten und Wischen im Finale."}
+	{
+		"id": "wiese",
+		"title": "Wiesenbühne",
+		"song": 0,
+		"hits": 16,
+		"holds": 0,
+		"slides": 0,
+		"story": "Lumo lädt die Waldtiere ein. Bring die ersten Sterne zum Leuchten."
+	},
+	{
+		"id": "wolken",
+		"title": "Wolkenkonzert",
+		"song": 1,
+		"hits": 18,
+		"holds": 1,
+		"slides": 0,
+		"story": "Die Wolken tragen deine Musik weiter. Halte einen langen Ton bis zum Ende."
+	},
+	{
+		"id": "funken",
+		"title": "Funkenfest",
+		"song": 2,
+		"hits": 20,
+		"holds": 0,
+		"slides": 1,
+		"story": "Beim Lichterfest wandern die Töne. Folge einem Pfeil in die Nachbarspur."
+	},
+	{
+		"id": "mond",
+		"title": "Mondfinale",
+		"song": 3,
+		"hits": 22,
+		"holds": 1,
+		"slides": 1,
+		"story": "Alle Freunde sind da. Verbinde Tippen, Halten und Wischen im Finale."
+	}
 ]
 var cleared: Array[int] = [0, 0, 0]
 var best_hits: Dictionary = {}
@@ -86,7 +114,12 @@ func goal_text(index: int, difficulty: int) -> String:
 
 func record(index: int, difficulty: int, notes: Array, result_id: String) -> Dictionary:
 	var goal: Dictionary = stage(index, difficulty)
-	if goal.is_empty() or not bool(goal.unlocked) or result_id.is_empty() or result_id == last_result:
+	if (
+		goal.is_empty()
+		or not bool(goal.unlocked)
+		or result_id.is_empty()
+		or result_id == last_result
+	):
 		return {"accepted": false, "passed": false}
 	# The scene supplies actual judged notes; unfinished rounds cannot unlock
 	# a new stage or be counted repeatedly as practice attempts.
@@ -96,7 +129,11 @@ func record(index: int, difficulty: int, notes: Array, result_id: String) -> Dic
 	var holds := 0
 	var slides := 0
 	for note in notes:
-		if not note is Dictionary or int(note.get("state", -1)) not in [2, 3] or str(note.get("kind", "")) not in ["tap", "hold", "slide", "star"]:
+		if (
+			not note is Dictionary
+			or int(note.get("state", -1)) not in [2, 3]
+			or str(note.get("kind", "")) not in ["tap", "hold", "slide", "star"]
+		):
 			return {"accepted": false, "passed": false}
 		if int(note.state) == 2:
 			hits += 1
@@ -110,5 +147,12 @@ func record(index: int, difficulty: int, notes: Array, result_id: String) -> Dic
 	var newly_completed := passed and index == cleared[difficulty]
 	if newly_completed:
 		cleared[difficulty] += 1
-	return {"accepted": true, "passed": passed, "newly_completed": newly_completed,
-		"hits": hits, "holds": holds, "slides": slides, "complete": cleared[difficulty] == STAGES.size()}
+	return {
+		"accepted": true,
+		"passed": passed,
+		"newly_completed": newly_completed,
+		"hits": hits,
+		"holds": holds,
+		"slides": slides,
+		"complete": cleared[difficulty] == STAGES.size()
+	}

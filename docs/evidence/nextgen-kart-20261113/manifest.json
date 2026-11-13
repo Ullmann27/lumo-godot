@@ -5,27 +5,35 @@
   "engine": "4.6.3.stable.official.7d41c59c4",
   "local_display_server": "headless",
   "physical_device_performance": "NOT TESTED",
-  "new_renderer_images": "PENDING CI; no local pixels",
+  "new_renderer_images": "d66aae: 12 images fully reviewed; 096c9d: 12 generated, 6 representative images reviewed. Final sideways wheel position awaits fresh renderer proof.",
   "sources_sha256": {
     "scripts/games/kart_stage_pinch.gd": "6b638bc037b7fcebef049d07a6a3245304325164e48ec58ca3b05f02fadc0e7b",
-    "scripts/games/kart_garage_service_station.gd": "82e1257ad12ee7968de6bc80146cb57e7e407fa4981d63e296ca796233e38e83",
+    "scripts/games/kart_garage_service_station.gd": "423c24c7c2dcc1c48fad4cbbca82a18edd19795ad7ac09b0de7577ce7c56d2da",
     "scripts/games/kart_track_pass.gd": "54fa97236d3705809ad108e25ee66a963a1c94a3e28a2360bfd0daf165d790f8",
-    "scripts/games/kart_spatial_menu.gd": "4ddaf3f8ea3941ebc77691d6bd167a25c34f8e85d9456fefd7ca55ec2eef4bfd",
+    "scripts/games/kart_spatial_menu.gd": "66e83ee7d82f15d9e3a52f547e9a43f12a508c35e3f0f6740cfdf327157063ea",
     "scripts/games/kart_island.gd": "6bbb84df4c7808b9135bd56ebbd7293df238e4f6308d80f6361072180521f5e4",
-    "scripts/tests/kart_nextgen_garage_regression.gd": "220b74d08a5cf5b59f6f2a77848c49459a3c72e8e0db5af1301090e82a268fd5",
+    "scripts/tests/kart_nextgen_garage_regression.gd": "6cb3260d4ff7e3d4e9eb9ff5a2b505c3fab1681ea8cb35cc37a680924208934b",
     "scripts/tests/kart_nextgen_garage_baseline_capture.gd": "14ea334c8078449333b299d9c042b181d59afe084f46d3724059f5db2690be3e",
     "scripts/tests/kart_track_pass_regression.gd": "114ee7fa30cc5f122ff490e942eb1448a9f9c5114f21b5b2021007fe0f7ac4c1",
     "scripts/tests/kart_player_full_route_regression.gd": "6caa096bd489cccec530c0ab4c3fe98ad2e38333897741f16c12297b43d9b906",
-    "scripts/characters/lumo/lumo_rigged_actor.gd": "ce4158049ace9f45e20d736bc1496b879d095f63cdd2be0a7723f23c4ac5e0f3"
+    "scripts/characters/lumo/lumo_rigged_actor.gd": "16a2cbc7939bf256ad8846e9cd0c9f089029f4e094d5fb85e6891a46df93d8a6",
+    "scripts/games/kart_audio.gd": "a4f4f0a88faa47645c90e7274e3694adbd6634df7212fc72c797e83738191427",
+    "scripts/tests/kart_audio_regression.gd": "8a3c9b7520137e6609a496f513b43c718b50c0eb356c674ea43d4833a3e56353",
+    "scripts/tests/kart_lasso_production_regression.gd": "9f3c81acfa9c5f864e3032d1d7ec66d3e45b25e11df8c21b519785cf7e05fe3c"
   },
   "evidence_sha256": {
-    "garage.log": "26bb7dc8a8623167d5df4552918600c0e652090f051c7c603d0fdcdc968b6c8d",
+    "renderer-096c9d.json": "c1ba94aa1137db364896e158066e59bfa97092835a3a725da8f01d12b8cb44ec",
+    "garage.log": "46a285630f61100232ed1b4a2c8835255a2927cd97e4d5e5fb4209e97fb6f044",
+    "lasso-lifecycle-verbose.log": "6d5dd333d8432cec76308694816bb01c8307bc8ff003c78596689d0e665c99ad",
     "player-route.json": "b5f4f8b0fb3e1fbe06a840d0008c0977e88e928b7d8938c1dd7b0016f154e4a0",
     "race-continuity.log": "c8899dd723af6fa73fc21342110ad95ebc70db6db6025fc7e3f7443bf219dd54",
     "garage-presentation.log": "e9e5ee9c31ffb3113d113e2b527621ed5f7945488e4c67a2f8ffec81e86d84c4",
     "track-pass.log": "e1802172ad25ca6f8f686bd95e732e3e5b5a040e8b441e0792755a2919139690",
     "modes.log": "b0c3b546005501ea93930e873c715e94f93a73a2c790a732152530663969f806",
-    "spatial-menu.log": "bd6676518ccb134ae0aed982a1f1072e397265200faac6928850907a27d14842",
+    "garage-rendered-096c9d.log": "e178f7a2c5da9ca116d6e3d2cf58db75c23994a0d34c8b1bd3d6ab28a4f45e31",
+    "renderer-d66aae.json": "f2bc02a37c002776ba281bf16c00162a15d7a12bfa1e70a8552d4b7be0fd1091",
+    "audio-lifecycle.log": "93e21865aa96022d7729c1bf05ad1ad6c0aa7aa27651df6a62203f98fe12c294",
+    "spatial-menu.log": "b851e433d78cb60f540c38aeec4db3e99ad696b0a0121171ab5cd9ba4703bf4b",
     "baseline-capture-parse.log": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da"
   },
   "commands": [
@@ -35,5 +43,6 @@
     "godot --headless --path . --script res://scripts/tests/kart_modes_regression.gd",
     "godot --headless --path . --script res://scripts/tests/kart_player_full_route_regression.gd -- --out=/tmp/lumo-kart-full-route-owner",
     "godot --headless --path . --script res://scripts/tests/kart_race_continuity_regression.gd"
-  ]
+  ],
+  "updated_utc": "2026-11-13T03:07:54.943116+00:00"
 }

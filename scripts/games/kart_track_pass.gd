@@ -37,17 +37,23 @@ func total(difficulty: String) -> int:
 
 static func goal_text(level: int) -> String:
 	match clampi(level, 0, 3):
-		0: return "Fahre zwei Runden ins Ziel"
-		1: return "Erreiche einen Podiumsplatz"
-		2: return "Siege ohne Zurücksetzen"
-		_: return "Alle drei Ziele geschafft"
+		0:
+			return "Fahre zwei Runden ins Ziel"
+		1:
+			return "Erreiche einen Podiumsplatz"
+		2:
+			return "Siege ohne Zurücksetzen"
+		_:
+			return "Alle drei Ziele geschafft"
 
 
 func complete(result: Dictionary, race_distance: float, track_length: float) -> Dictionary:
 	var track := str(result.get("track", ""))
 	var difficulty := str(result.get("difficulty", ""))
 	var before := stage(track, difficulty)
-	var answer := {"stage": before, "previous": before, "advanced": false, "saved": true, "eligible": false}
+	var answer := {
+		"stage": before, "previous": before, "advanced": false, "saved": true, "eligible": false
+	}
 	var id := str(result.get("resultId", ""))
 	if not _known(track, difficulty) or str(result.get("mode", "")) not in ["race", "cup"]:
 		return answer
@@ -59,11 +65,20 @@ func complete(result: Dictionary, race_distance: float, track_length: float) -> 
 	var place := int(result.place)
 	var resets := int(result.resets)
 	var elapsed: Variant = result.get("elapsedSeconds")
-	if typeof(elapsed) not in [TYPE_INT, TYPE_FLOAT] or not is_finite(float(elapsed)) or float(elapsed) <= 0.0:
+	if (
+		typeof(elapsed) not in [TYPE_INT, TYPE_FLOAT]
+		or not is_finite(float(elapsed))
+		or float(elapsed) <= 0.0
+	):
 		return answer
 	if int(result.checkpoints) < 16 or place < 1 or place > 6 or resets < 0:
 		return answer
-	if not is_finite(race_distance) or not is_finite(track_length) or track_length <= 10.0 or race_distance < track_length * 2.0:
+	if (
+		not is_finite(race_distance)
+		or not is_finite(track_length)
+		or track_length <= 10.0
+		or race_distance < track_length * 2.0
+	):
 		return answer
 	answer.eligible = true
 	if accepted_results.has(id):

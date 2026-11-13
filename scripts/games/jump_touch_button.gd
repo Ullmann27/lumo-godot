@@ -44,7 +44,11 @@ func _gui_input(event: InputEvent) -> void:
 		elif event.index == touch_id and (not event.pressed or event.canceled):
 			reset()
 		accept_event()
-	elif event is InputEventMouseButton and event.device != -1 and event.button_index == MOUSE_BUTTON_LEFT:
+	elif (
+		event is InputEventMouseButton
+		and event.device != -1
+		and event.button_index == MOUSE_BUTTON_LEFT
+	):
 		if event.pressed and touch_id == -1:
 			mouse_active = true
 			_set_held(true)
@@ -54,9 +58,15 @@ func _gui_input(event: InputEvent) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventScreenTouch and event.index == touch_id and (not event.pressed or event.canceled):
+	if (
+		event is InputEventScreenTouch
+		and event.index == touch_id
+		and (not event.pressed or event.canceled)
+	):
 		reset()
-	elif event is InputEventMouseButton and event.device != -1 and not event.pressed and mouse_active:
+	elif (
+		event is InputEventMouseButton and event.device != -1 and not event.pressed and mouse_active
+	):
 		reset()
 
 
@@ -96,4 +106,15 @@ func _draw() -> void:
 	var top: Vector2 = center + Vector2(0, -radius * 0.60)
 	var base: Vector2 = center + Vector2(0, radius * 0.08)
 	draw_line(base, top, Color("172447"), radius * 0.14, true)
-	draw_polyline(PackedVector2Array([top + Vector2(-radius * 0.28, radius * 0.28), top, top + Vector2(radius * 0.28, radius * 0.28)]), Color("172447"), radius * 0.14, true)
+	draw_polyline(
+		PackedVector2Array(
+			[
+				top + Vector2(-radius * 0.28, radius * 0.28),
+				top,
+				top + Vector2(radius * 0.28, radius * 0.28)
+			]
+		),
+		Color("172447"),
+		radius * 0.14,
+		true
+	)

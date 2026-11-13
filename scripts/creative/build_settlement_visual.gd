@@ -4,22 +4,42 @@ extends RefCounted
 const KIT = preload("res://scripts/creative/creative_kit.gd")
 const CATALOG = preload("res://scripts/creative/build_catalog.gd")
 const PARTS := {
-	"house": "cottage", "farm": "vegetable_garden", "lumber": "cottage",
-	"quarry": "platform", "market": "gazebo", "school": "observatory"
+	"house": "cottage",
+	"farm": "vegetable_garden",
+	"lumber": "cottage",
+	"quarry": "platform",
+	"market": "gazebo",
+	"school": "observatory"
 }
 const TITLES := {
-	"house": "Wohnhaus", "farm": "Bauernhof", "lumber": "Holzwerkstatt",
-	"quarry": "Steinbruch", "market": "Markt", "school": "Sternenschule"
+	"house": "Wohnhaus",
+	"farm": "Bauernhof",
+	"lumber": "Holzwerkstatt",
+	"quarry": "Steinbruch",
+	"market": "Markt",
+	"school": "Sternenschule"
 }
+
+
+class BakedFacility:
+	extends RefCounted
+	var surfaces: Array[Dictionary] = []
+	var size := Vector3.ONE
+
+
+# Entries are weak. Each live building owns its shared geometry through
+# metadata, so the final building frees the material/mesh bundle naturally.
 static var cache: Dictionary = {}
 
 
 static func create(kind: String, opponent := false) -> StaticBody3D:
-	if not cache.has(kind):
-		_bake(kind)
-	var entry: Dictionary = cache[kind]
+	var entry: BakedFacility = cache[kind].get_ref() if cache.has(kind) else null
+	if entry == null:
+		entry = _bake(kind)
+		cache[kind] = weakref(entry)
 	var body := StaticBody3D.new()
 	body.name = "Facility_" + kind
+	body.set_meta("settlement_visual_asset", entry)
 	for surface in entry.surfaces:
 		var mesh := MeshInstance3D.new()
 		mesh.mesh = surface.mesh
@@ -46,7 +66,7 @@ static func create(kind: String, opponent := false) -> StaticBody3D:
 	return body
 
 
-static func _bake(kind: String) -> void:
+static func _bake(kind: String) -> BakedFacility:
 	var kit := KIT.new()
 	var item: Dictionary = CATALOG.part(PARTS.get(kind, "cottage"))
 	var source: StaticBody3D = kit.part_node(item)
@@ -54,11 +74,22 @@ static func _bake(kind: String) -> void:
 	if kind == "lumber":
 		for row in range(2):
 			for col in range(3):
-				var log := kit.cylinder(source, Vector3(0.6 + col * 0.55, 0.3 + row * 0.48, 3.2), 0.22, 0.72, Color("b9854c"))
+				var log := kit.cylinder(
+					source,
+					Vector3(0.6 + col * 0.55, 0.3 + row * 0.48, 3.2),
+					0.22,
+					0.72,
+					Color("b9854c")
+				)
 				log.rotation.x = PI * 0.5
 	if kind == "quarry":
 		for i in range(7):
-			kit.sphere(source, Vector3(0.5 + (i % 3), 1.1 + (i / 3) * 0.20, 0.6 + (i % 2) * 1.2), Vector3(0.85, 0.68, 0.83), Color("a0aeb9"))
+			kit.sphere(
+				source,
+				Vector3(0.5 + (i % 3), 1.1 + (i / 3) * 0.20, 0.6 + (i % 2) * 1.2),
+				Vector3(0.85, 0.68, 0.83),
+				Color("a0aeb9")
+			)
 		size.y = 1.9
 	if kind == "house":
 		for child in source.find_children("WorkshopRoof", "MeshInstance3D", true, false):
@@ -87,8 +118,11 @@ static func _bake(kind: String) -> void:
 		st.generate_normals()
 		st.generate_tangents()
 		surfaces.append({"mesh": st.commit(), "material": bucket.material})
-	cache[kind] = {"surfaces": surfaces, "size": size}
+	var result := BakedFacility.new()
+	result.surfaces = surfaces
+	result.size = size
 	source.free()
+	return result
 
 
 static func _relative_transform(node: Node3D, ancestor: Node3D) -> Transform3D:

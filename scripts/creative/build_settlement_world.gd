@@ -34,6 +34,7 @@ var expand_button: Button
 var demolish_button: Button
 var walk_button: Button
 var trade_window: Window
+var demolition_window: Window
 var plot_label: Label
 var purchase_buttons: Dictionary = {}
 var transaction_buttons: Array[Button] = []
@@ -65,9 +66,19 @@ var round_slots_full := false
 
 func _ready() -> void:
 	previous = RUNTIME.enter(self, true)
+	previous["embed_subwindows"] = get_viewport().gui_embed_subwindows
+	get_viewport().gui_embed_subwindows = true
 	SceneRouter.current_scene_id = "settlement"
-	mode = "rival" if str(SceneRouter.launch_options.get("settlementMode", "settlement")) == "rival" else "settlement"
-	child_key = str(SceneRouter.launch_options.get("childKey", HostBridge.launch_options().get("childKey", "standalone")))
+	mode = (
+		"rival"
+		if str(SceneRouter.launch_options.get("settlementMode", "settlement")) == "rival"
+		else "settlement"
+	)
+	child_key = str(
+		SceneRouter.launch_options.get(
+			"childKey", HostBridge.launch_options().get("childKey", "standalone")
+		)
+	)
 	if child_key.is_empty():
 		child_key = "standalone"
 	slot = clampi(int(SceneRouter.launch_options.get("buildSlot", 1)), 1, 6)
@@ -103,13 +114,20 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	get_viewport().gui_embed_subwindows = bool(previous.get("embed_subwindows", false))
 	RUNTIME.restore(self, previous)
 
 
-static func restore_project(raw: Variant, expected_child: String, expected_slot: int, expected_mode: String):
+static func restore_project(
+	raw: Variant, expected_child: String, expected_slot: int, expected_mode: String
+):
 	if not raw is Dictionary or raw.get("version") != 1:
 		return null
-	if raw.get("child") != expected_child or raw.get("mode") != expected_mode or raw.get("slot") != expected_slot:
+	if (
+		raw.get("child") != expected_child
+		or raw.get("mode") != expected_mode
+		or raw.get("slot") != expected_slot
+	):
 		return null
 	if not raw.get("settlement") is Dictionary:
 		return null
@@ -154,7 +172,9 @@ func _build_landscape() -> void:
 		for tree_index in range(8):
 			var tree := Node3D.new()
 			add_child(tree)
-			tree.position = Vector3(x - 12 + (tree_index % 4) * 8, 0, -15.6 if tree_index < 4 else 15.6)
+			tree.position = Vector3(
+				x - 12 + (tree_index % 4) * 8, 0, -15.6 if tree_index < 4 else 15.6
+			)
 			BuildLandmarks.add_branched_tree(tree)
 	var water := kit.box(self, Vector3(0, -0.32, 0), Vector3(4, 0.18, 40), Color("267fa9"))
 	var water_material := ShaderMaterial.new()
@@ -259,7 +279,9 @@ func _build_ui() -> void:
 	var actions := HBoxContainer.new()
 	actions_scroll.add_child(actions)
 	for spec in [
-		["Rückgängig", _undo], ["Wiederholen", _redo], ["Handeln", _trade_dialog],
+		["Rückgängig", _undo],
+		["Wiederholen", _redo],
+		["Handeln", _trade_dialog],
 		["Nachbar ansehen" if mode == "rival" else "Überblick", _look_neighbor]
 	]:
 		var button := _button(spec[0], spec[1], 110)
@@ -271,7 +293,9 @@ func _build_ui() -> void:
 	actions.add_child(expand_button)
 	day_button = _button("Nächster Tag ☀", _day_action, 148)
 	row.add_child(day_button)
-	feedback = _label("Dein Plan zählt: Nahrung, Material und Wohnraum halten die Siedlung am Leben.", 14)
+	feedback = _label(
+		"Dein Plan zählt: Nahrung, Material und Wohnraum halten die Siedlung am Leben.", 14
+	)
 	feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	bottom.add_child(feedback)
 	pause_panel = PanelContainer.new()
@@ -392,7 +416,12 @@ func _rebuild() -> void:
 				body.set_meta("plot", index)
 				body.set_meta("opponent", opponent)
 				add_child(body)
-				var plot_mesh := kit.box(body, Vector3(0, 0, 0), Vector3(4.65, 0.06, 4.65), Color("b6bc86") if opponent else Color("bad39c"))
+				var plot_mesh := kit.box(
+					body,
+					Vector3(0, 0, 0),
+					Vector3(4.65, 0.06, 4.65),
+					Color("b6bc86") if opponent else Color("bad39c")
+				)
 				plot_mesh.material_override = NEXTGEN_ENV.plot_material(opponent)
 				kit.collision(body, Vector3(0, -0.01, 0), Vector3(4.65, 0.08, 4.65))
 				plot_nodes[key] = body
@@ -432,28 +461,53 @@ func _refresh_labels() -> void:
 	var town: Dictionary = model.player()
 	var resources: Dictionary = town.resources
 	var summary: Dictionary = model.status()
-	resource_label.text = "Holz %d · Stein %d · Essen %d · Münzen %d\nBewohner %d · Grundstücke %d · Tag %d" % [
-		int(resources.wood), int(resources.stone), int(resources.food), int(resources.coins),
-		int(town.population), int(town.plots), int(model.day)
-	]
+	resource_label.text = (
+		"Holz %d · Stein %d · Essen %d · Münzen %d\nBewohner %d · Grundstücke %d · Tag %d"
+		% [
+			int(resources.wood),
+			int(resources.stone),
+			int(resources.food),
+			int(resources.coins),
+			int(town.population),
+			int(town.plots),
+			int(model.day)
+		]
+	)
 	var goals := PackedStringArray()
 	for objective in summary.get("goals", []):
-		goals.append("%s %d/%d" % [str(objective.title), int(objective.current), int(objective.target)])
-	goal_label.text = "%s · Stufe %d: %s" % [str(summary.world), mini(3, int(summary.level) + 1), " · ".join(goals)]
+		goals.append(
+			"%s %d/%d" % [str(objective.title), int(objective.current), int(objective.target)]
+		)
+	goal_label.text = (
+		"%s · Stufe %d: %s"
+		% [str(summary.world), mini(3, int(summary.level) + 1), " · ".join(goals)]
+	)
 	if mode == "rival":
 		var rival: Dictionary = model.rival()
-		rival_label.text = "Mira: %d Bewohner · %d Gebäude. Gleiche Preise und Erträge für euch beide." % [int(rival.population), rival.buildings.size()]
-	plot_label.text = "Grundstück %d gewählt · Gebäude antippen zum Bauen" % (selected_plot + 1) if selected_plot >= 0 else "Wähle ein Grundstück in deiner Siedlung."
+		rival_label.text = (
+			"Mira: %d Bewohner · %d Gebäude. Gleiche Preise und Erträge für euch beide."
+			% [int(rival.population), rival.buildings.size()]
+		)
+	plot_label.text = (
+		"Grundstück %d gewählt · Gebäude antippen zum Bauen" % (selected_plot + 1)
+		if selected_plot >= 0
+		else "Wähle ein Grundstück in deiner Siedlung."
+	)
 	var occupied := false
 	for building in town.buildings:
 		if int(building.plot) == selected_plot:
 			occupied = true
-			plot_label.text = "Grundstück %d · %s. Rückbauen gibt die Baukosten zurück." % [selected_plot + 1, str(STATE.BUILDINGS[str(building.kind)].title)]
+			plot_label.text = (
+				"Grundstück %d · %s. Rückbauen gibt die Baukosten zurück."
+				% [selected_plot + 1, str(STATE.BUILDINGS[str(building.kind)].title)]
+			)
 	var blocked := _transactions_blocked()
 	for kind in purchase_buttons:
 		purchase_buttons[kind].disabled = blocked or selected_plot < 0 or occupied
 	var completed: bool = mode == "rival" and not model.winner.is_empty()
-	day_button.text = ("Zur Bauwelt" if round_slots_full else "Neue Runde") if completed else "Nächster Tag ☀"
+	day_button.text = (
+		("Zur Bauwelt" if round_slots_full else "Neue Runde") if completed else "Nächster Tag ☀"
+	)
 	day_button.disabled = paused or walking or save_blocked
 	demolish_button.disabled = blocked or not occupied
 	expand_button.disabled = blocked or not bool(summary.can_expand)
@@ -473,7 +527,14 @@ func _transactions_blocked() -> bool:
 
 
 func _winner_text(winner: String) -> String:
-	return {"player": "Deine Stadt hat das Ziel zuerst erreicht!", "rival": "Mira hat das Ziel zuerst erreicht. Dein Bauplan ist erhalten.", "tie": "Ihr habt das Ziel gemeinsam erreicht!"}.get(winner, "Wettbau abgeschlossen.")
+	return (
+		{
+			"player": "Deine Stadt hat das Ziel zuerst erreicht!",
+			"rival": "Mira hat das Ziel zuerst erreicht. Dein Bauplan ist erhalten.",
+			"tie": "Ihr habt das Ziel gemeinsam erreicht!"
+		}
+		. get(winner, "Wettbau abgeschlossen.")
+	)
 
 
 func _buy(kind: String) -> void:
@@ -485,7 +546,10 @@ func _buy(kind: String) -> void:
 		return
 	selected_plot = -1
 	_rebuild()
-	feedback.text = str(STATE.BUILDINGS[kind].title) + " gebaut. Am nächsten Tag arbeitet deine Siedlung weiter."
+	feedback.text = (
+		str(STATE.BUILDINGS[kind].title)
+		+ " gebaut. Am nächsten Tag arbeitet deine Siedlung weiter."
+	)
 	_save()
 
 
@@ -496,7 +560,15 @@ func _next_day() -> void:
 	_rebuild()
 	if bool(report.get("advanced", false)):
 		var own: Dictionary = report.player
-		feedback.text = "Tag %d: %s erhalten · %d Essen gebraucht%s" % [int(report.day), _cost_text(own.produced), int(own.food_needed), " · neue Bewohner!" if bool(own.grew) else ""]
+		feedback.text = (
+			"Tag %d: %s erhalten · %d Essen gebraucht%s"
+			% [
+				int(report.day),
+				_cost_text(own.produced),
+				int(own.food_needed),
+				" · neue Bewohner!" if bool(own.grew) else ""
+			]
+		)
 		if int(own.food_shortfall) > 0:
 			feedback.text += " · Es fehlen %d Essen. Baue Bauernhöfe!" % int(own.food_shortfall)
 		if not str(report.get("winner", "")).is_empty():
@@ -571,23 +643,105 @@ func _expand() -> void:
 
 
 func _demolish() -> void:
-	if _transactions_blocked():
+	if _transactions_blocked() or is_instance_valid(demolition_window):
 		return
 	if model.try_demolish(selected_plot):
-		_rebuild()
-		_save()
-		feedback.text = "Gebäude zurückgebaut. Die Baukosten sind wieder im Vorrat. Rückgängig bleibt möglich."
+		_demolition_finished()
 	else:
 		feedback.text = model.last_error
+		var quote: Dictionary = model.demolition_quote(selected_plot)
+		if int(quote.get("affected_residents", 0)) > 0:
+			_demolition_dialog(selected_plot, quote)
+
+
+func _demolition_finished() -> void:
+	_rebuild()
+	_save()
+	feedback.text = "Gebäude zurückgebaut. Die Baukosten sind wieder im Vorrat. Rückgängig stellt Gebäude und Bewohner wieder her."
+
+
+func _demolition_dialog(plot: int, quote: Dictionary) -> void:
+	var before: Dictionary = model.snapshot()
+	var dialog := Window.new()
+	demolition_window = dialog
+	dialog.title = "Platz für Neues?"
+	dialog.size = Vector2i(minf(420, safe_ui.size.x - 24), minf(390, safe_ui.size.y - 24))
+	dialog.min_size = dialog.size
+	dialog.borderless = true
+	dialog.unresizable = true
+	dialog.transient = true
+	dialog.exclusive = true
+	add_child(dialog)
+	var panel := PanelContainer.new()
+	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	panel.add_theme_stylebox_override("panel", _panel())
+	dialog.add_child(panel)
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(scroll)
+	var box := VBoxContainer.new()
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_theme_constant_override("separation", 12)
+	scroll.add_child(box)
+	box.add_child(_label("Platz für Neues?", 20))
+	var explanation := _label("", 16)
+	explanation.name = "RelocationExplanation"
+	explanation.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var leaving := int(model.player().population) - int(quote.population_after)
+	var residents := (
+		(
+			"%d Bewohner ziehen vorübergehend aus. %d bleiben in deiner Siedlung."
+			% [leaving, int(quote.population_after)]
+		)
+		if leaving > 0
+		else "Die zwei Gründer wohnen vorübergehend im Startlager."
+	)
+	if leaving == 1:
+		residents = (
+			"Ein Bewohner zieht vorübergehend aus. %d bleiben in deiner Siedlung."
+			% int(quote.population_after)
+		)
+	explanation.text = (
+		"Dieses Haus wird noch gebraucht.\n%s\n\nDu erhältst %s zurück. Neue Wohnhäuser lassen deine Siedlung wieder wachsen. Mit Rückgängig stellst du Haus und Bewohner wieder her."
+		% [residents, _cost_text(quote.refund)]
+	)
+	box.add_child(explanation)
+	box.add_child(_button("Haus behalten", dialog.queue_free))
+	box.add_child(
+		_button(
+			"Ja, umbauen",
+			func():
+				if _transactions_blocked() or dialog.is_queued_for_deletion():
+					dialog.queue_free()
+					return
+				if model.snapshot() != before:
+					feedback.text = "Dein Bauplan hat sich geändert. Wähle das Haus bitte erneut."
+				elif model.try_demolish(plot, true):
+					_demolition_finished()
+				else:
+					feedback.text = model.last_error
+				dialog.queue_free()
+		)
+	)
+	dialog.close_requested.connect(dialog.queue_free)
+	dialog.popup_centered()
+	dialog.position = Vector2i(safe_ui.position + (safe_ui.size - Vector2(dialog.size)) * 0.5)
 
 
 func _trade_dialog() -> void:
-	if _transactions_blocked() or is_instance_valid(trade_window):
+	if (
+		_transactions_blocked()
+		or is_instance_valid(trade_window)
+		or is_instance_valid(demolition_window)
+	):
 		return
 	var dialog := Window.new()
 	trade_window = dialog
 	dialog.title = "Handeln am Markt"
 	dialog.size = Vector2i(minf(400, safe_ui.size.x - 24), minf(470, safe_ui.size.y - 24))
+	dialog.min_size = dialog.size
+	dialog.borderless = true
+	dialog.unresizable = true
 	dialog.transient = true
 	dialog.exclusive = true
 	add_child(dialog)
@@ -604,22 +758,29 @@ func _trade_dialog() -> void:
 	for resource in ["wood", "stone", "food"]:
 		for sell in [false, true]:
 			var quote: Dictionary = STATE.trade_quote(resource, 5, sell)
-			var caption := _cost_text(quote.cost) + " → " + _cost_text({quote.resource: quote.amount})
-			box.add_child(_button(caption, func():
-				if _transactions_blocked():
-					dialog.queue_free()
-					return
-				if model.try_trade(resource, 5, sell):
-					_rebuild()
-					_save()
-					feedback.text = "Handel abgeschlossen. Dein Vorrat wurde aktualisiert."
-				else:
-					feedback.text = model.last_error
-				dialog.queue_free()
-			))
+			var caption := (
+				_cost_text(quote.cost) + " → " + _cost_text({quote.resource: quote.amount})
+			)
+			box.add_child(
+				_button(
+					caption,
+					func():
+						if _transactions_blocked():
+							dialog.queue_free()
+							return
+						if model.try_trade(resource, 5, sell):
+							_rebuild()
+							_save()
+							feedback.text = "Handel abgeschlossen. Dein Vorrat wurde aktualisiert."
+						else:
+							feedback.text = model.last_error
+						dialog.queue_free()
+				)
+			)
 	box.add_child(_button("Zurück", dialog.queue_free))
 	dialog.close_requested.connect(dialog.queue_free)
 	dialog.popup_centered()
+	dialog.position = Vector2i(safe_ui.position + (safe_ui.size - Vector2(dialog.size)) * 0.5)
 
 
 func _look_neighbor() -> void:
@@ -634,15 +795,27 @@ func _input(event: InputEvent) -> void:
 		return
 	if pointer < 0:
 		return
-	var release: bool = (event is InputEventScreenTouch and event.index == pointer and not event.pressed) or (
-		event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and pointer == 0 and not event.pressed
+	var release: bool = (
+		(event is InputEventScreenTouch and event.index == pointer and not event.pressed)
+		or (
+			event is InputEventMouseButton
+			and event.button_index == MOUSE_BUTTON_LEFT
+			and pointer == 0
+			and not event.pressed
+		)
 	)
 	if not release:
 		return
 	# A world gesture owns its release even over HUD controls. Otherwise GUI
 	# consumption leaves a stale finger ID and blocks the next plot selection.
 	var canceled: bool = event is InputEventScreenTouch and event.canceled
-	var pick: bool = not paused and not walking and not dragged and not canceled and event.position.distance_to(tap_origin) <= 10
+	var pick: bool = (
+		not paused
+		and not walking
+		and not dragged
+		and not canceled
+		and event.position.distance_to(tap_origin) <= 10
+	)
 	pointer = -1
 	if pick:
 		_pick_plot(event.position)
@@ -693,7 +866,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _pick_plot(point: Vector2) -> void:
 	var origin := camera.project_ray_origin(point)
-	var query := PhysicsRayQueryParameters3D.create(origin, origin + camera.project_ray_normal(point) * 180, 1)
+	var query := PhysicsRayQueryParameters3D.create(
+		origin, origin + camera.project_ray_normal(point) * 180, 1
+	)
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	if hit.is_empty() or not hit.collider.has_meta("plot"):
 		return
@@ -709,7 +884,9 @@ func _camera_update(immediate := false) -> void:
 		return
 	var aspect := get_viewport().get_visible_rect().size.aspect()
 	var target_radius := maxf(radius, 20.0 / maxf(0.35, aspect))
-	camera.position = focus + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * target_radius
+	camera.position = (
+		focus + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * target_radius
+	)
 	camera.look_at(focus)
 	if immediate:
 		camera.reset_physics_interpolation()
@@ -763,6 +940,9 @@ func _toggle_pause() -> void:
 	if paused and is_instance_valid(trade_window):
 		trade_window.hide()
 		trade_window.queue_free()
+	if paused and is_instance_valid(demolition_window):
+		demolition_window.hide()
+		demolition_window.queue_free()
 	pause_panel.visible = paused
 	pointer = -1
 	walk_stick.set_enabled(walking and not paused)
@@ -777,7 +957,10 @@ func _toggle_pause() -> void:
 
 
 func _notification(what: int) -> void:
-	if what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_WM_GO_BACK_REQUEST] and is_instance_valid(safe_ui):
+	if (
+		what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_WM_GO_BACK_REQUEST]
+		and is_instance_valid(safe_ui)
+	):
 		if not paused:
 			_toggle_pause()
 
@@ -789,7 +972,17 @@ func _save() -> bool:
 	if file == null:
 		feedback.text = "Deine Siedlung konnte noch nicht gespeichert werden. Bitte erneut versuchen."
 		return false
-	file.store_string(JSON.stringify({"version": 1, "child": child_key, "settlement": model.snapshot(), "mode": mode, "slot": slot}))
+	file.store_string(
+		JSON.stringify(
+			{
+				"version": 1,
+				"child": child_key,
+				"settlement": model.snapshot(),
+				"mode": mode,
+				"slot": slot
+			}
+		)
+	)
 	file.flush()
 	var error := file.get_error()
 	file.close()

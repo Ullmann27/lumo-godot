@@ -6,6 +6,7 @@ var seat := Vector3.ZERO
 var legs: Dictionary = {}
 var pelvis := -1
 
+
 func bind(value: Node3D, anchor: Vector3) -> bool:
 	actor = value
 	seat = anchor
@@ -28,9 +29,11 @@ func bind(value: Node3D, anchor: Vector3) -> bool:
 	advance(0.0)
 	return pelvis >= 0 and legs.size() == 10
 
+
 func _finished(_behavior: String) -> void:
 	if is_instance_valid(actor) and not actor.suspended:
 		actor.play_behavior("kart_seated")
+
 
 func advance(delta: float) -> void:
 	if not is_instance_valid(actor) or pelvis < 0:

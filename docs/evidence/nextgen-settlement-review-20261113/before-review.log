@@ -1,0 +1,17 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+AUDIT DEADLOCK first_day={"day":2,"mode":"settlement","player":{"buildings":[{"id":"b1","kind":"house","plot":0},{"id":"b2","kind":"house","plot":1},{"id":"b3","kind":"house","plot":2},{"id":"b4","kind":"house","plot":3}],"food_shortfall":0,"next_id":5,"plots":9,"population":3,"region":0,"resources":{"coins":4,"food":10,"stone":0,"wood":2}},"rival":{"buildings":[],"food_shortfall":0,"next_id":1,"plots":9,"population":2,"region":0,"resources":{"coins":8,"food":12,"stone":12,"wood":18}},"version":1,"winner":""} available=[] undo=false
+AUDIT DEADLOCK after_100={"buildings":[{"id":"b1","kind":"house","plot":0},{"id":"b2","kind":"house","plot":1},{"id":"b3","kind":"house","plot":2},{"id":"b4","kind":"house","plot":3}],"food_shortfall":4,"next_id":5,"plots":9,"population":4,"region":0,"resources":{"coins":4,"food":0,"stone":0,"wood":2}} available=[]
+AUDIT IDENTITY rawA=child:a rawB=child?a sanitizedA=child_a sanitizedB=child_a cross_restore=true
+[SettlementWorld] ready mode=settlement save=user://lumo_settlement_settlement_readonly_review_6_settlement.json
+[Perf] quality_profile:medium
+AUDIT PAUSED_TRADE paused=true before={ "wood": 12, "stone": 8, "food": 12, "coins": 6 } after={ "wood": 12, "stone": 8, "food": 22, "coins": 1 }
+[SettlementWorld] ready mode=rival save=user://lumo_settlement_settlement_readonly_review_6_rival.json
+AUDIT WIN turns=22 winner=rival feedback=Tag 23:  erhalten · 2 Essen gebraucht · Es fehlen 2 Essen. Baue Bauernhöfe! next_day_disabled=false restart_button=<null>

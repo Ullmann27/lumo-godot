@@ -113,16 +113,26 @@ func advance_motion(delta: float) -> void:
 	move_and_slide()
 	if not grounded and is_on_floor():
 		landing_count += 1
-	if is_on_floor() and absf(position.x) < horizontal_limit.x - 2.0 and absf(position.z) < horizontal_limit.y - 2.0:
+	if (
+		is_on_floor()
+		and absf(position.x) < horizontal_limit.x - 2.0
+		and absf(position.z) < horizontal_limit.y - 2.0
+	):
 		safe_position = position + Vector3.UP * 0.04
-	if position.y < -5.0 or absf(position.x) > horizontal_limit.x or absf(position.z) > horizontal_limit.y:
+	if (
+		position.y < -5.0
+		or absf(position.x) > horizontal_limit.x
+		or absf(position.z) > horizontal_limit.y
+	):
 		position = safe_position
 		velocity = Vector3.ZERO
 		jump_buffer = 0
 		rescue_count += 1
 	var speed := Vector2(velocity.x, velocity.z).length()
 	if speed > 0.08:
-		rotation.y = lerp_angle(rotation.y, atan2(-velocity.x, -velocity.z), 1.0 - exp(-14.0 * delta))
+		rotation.y = lerp_angle(
+			rotation.y, atan2(-velocity.x, -velocity.z), 1.0 - exp(-14.0 * delta)
+		)
 	inspection_left = maxf(0.0, inspection_left - delta)
 	if speed > 0.08 or not is_on_floor():
 		inspection_left = 0.0

@@ -15,7 +15,8 @@ einer interaktiven Godot-Lernszene war noch nicht angeschlossen.
 `NativeLearningActivity` in `lumo-lernen` übersetzt jetzt die tatsächlichen
 Operanden, Silben und Pflanzenteile des aktuellen Schritts. Derselbe Vertrag
 öffnet unterstützte aktuelle Aufgaben aus `LearningContent`: Addition bis 20,
-Subtraktion bis 20 und bekannte Silbenwörter. Unbekannte oder nicht begrenzte
+Subtraktion bis 20, Hunderterübergänge mit ganzen Zehnern und bekannte
+Silbenwörter. Unbekannte oder nicht begrenzte
 Aufgaben behalten ihre vorhandene Darstellung; keine Ersatzaufgabe wird
 erfunden. Die Addition unterstützt im jetzigen Modell Anfangsmengen bis zehn.
 
@@ -32,8 +33,8 @@ verworfen. Die Tagesmission sperrt weiterhin Spiele, nicht diese Lernhilfe.
 | Zehnerübergang / Addition | Zwei räumliche Zehnerfelder; blaue Ausgangsmenge und goldene verschiebbare Würfel. Antippen oder Ziehen füllt zuerst zehn und anschließend das zweite Feld. |
 | Subtraktion | Ausgangswürfel verlassen das Feld und sammeln sich auf einer getrennten Ablage. Beim Zehnerübergang werden zuerst die Würfel oberhalb zehn entfernt. Kein Objekt verschwindet als bloßer Zählerwechsel. |
 | Gleiche Gruppen | Tatsächliche runde Ablagen und einzelne Würfel; jede Gruppe erhält dieselbe Anzahl. Bis zu sechs Gruppen mit je sechs Objekten. |
-| Hunderterübergang | Jeder bewegliche, mit 10 beschriftete Block zählt einen Zehner. Vorhandene Hunderter bleiben als Stapel erhalten. Die aktuelle Menge wird aus bewegten Zehnern berechnet. |
-| Bruchteile | Ein Ganzes mit zwei bis zwölf gleich großen räumlichen Segmenten. Markierte Teile und zusätzliche Teile bleiben bei unverändertem Nenner sichtbar. |
+| Hunderterübergang | Jeder bewegliche, mit 10 beschriftete Block zählt einen Zehner. Vorhandene Hunderter besitzen ein tatsächliches 100-Zellen-Modell und einen Wertaufdruck. Die aktuelle Zerlegung wird nach jedem Schritt aktualisiert; das volle Zehnerfeld erklärt „10 Zehner = 100“. |
+| Bruchteile | Ein Ganzes mit zwei bis zwölf gleich großen räumlichen Segmenten. Markierte Teile und zusätzliche Teile bleiben bei unverändertem Nenner sichtbar. Die räumliche Bruchzahl zählt die tatsächlich bereits gelegten Teile. |
 | Silben | Farbige Körper mit extrudierter TextMesh-Beschriftung. Das Kind setzt die tatsächlichen Silben des aktuellen Worts in ihrer Reihenfolge zusammen; falsche Zuordnung wird nicht akzeptiert. |
 | Pflanzenteile | Eigenständige Meshes für Wurzeln, Stängel, Blätter und Blüte. Wasser und Licht verändern das sichtbare Wachstumsmodell; jeder Teil hat eine konkrete Erklärung. Dies ist ein vereinfachtes Lernexperiment, keine botanische Simulation. |
 
@@ -42,6 +43,7 @@ Produktive Dateien:
 - `scenes/learning/learning_world.tscn`
 - `scripts/learning/learning_world.gd`
 - `scripts/learning/learning_activity.gd`
+- `scripts/learning/learning_atelier.gd`
 - Einträge in `scripts/app/scene_router.gd`, `scripts/app/app_boot.gd` und
   `scripts/systems/host_bridge.gd`
 
@@ -53,6 +55,14 @@ Framebudget ist damit noch nicht belegt. Die HUD-Aktionen sind mindestens
 Hoch-/Querformat sowie reduzierte Bewegung. Ein eigener Finger besitzt seinen
 Drag; zweiter Finger, emulierte Maus und Loslassen über dem HUD können ihn
 nicht falsch übernehmen oder hängen lassen.
+
+Die Produktionsszene besitzt jetzt ein echtes Gartenatelier mit Holzveranda,
+offenen Steinbögen, Bücherregalen, Pflanzen und zwei vorhandenen Original-Lumo-
+Laternen. Wiederverwendete abgeschrägte Geometrie und begrenzte MultiMesh-
+Gruppen halten die statische Architektur zusammen. Die Arbeitsobjekte bleiben
+vor diesem Hintergrund frei. Das Hochformat ordnet Lumo, Lernfelder und
+Ablage vertikal an. TextMesh-Schrift wirft keinen störenden zweiten Textschatten;
+Silbenglyphen liegen vollständig über ihren Körpern.
 
 ## Original-Lumo und Stimme
 
@@ -91,14 +101,20 @@ Fortschrittsspeicherung und Profileigentümerschaft bleiben zuständig.
 ## Ausgeführte Prüfungen
 
 - `godot --headless --path . --script res://scripts/tests/learning_world_regression.gd`:
-  **4123 Prüfungen bestanden**. Exhaustive begrenzte Subtraktion/Gruppen/Brüche,
+  **5310 Prüfungen bestanden**. Exhaustive begrenzte Subtraktion/Gruppen/Brüche,
   Mengeninvarianz, native JSON-Grenzen, Originalfuchs, echte Szenenknoten,
   Touch/Drag, mehrere Layoutgrößen, Lebenszyklus und Sprachstatus-Staleness.
-- Flutter: **63 Tests bestanden** über neuen nativen Lernstart, vorhandenen
+  Die neuen Sichtregressionen prüfen vollständige Objekt-/Schriftgrenzen in
+  drei Formaten einschließlich Android-Dichte, tatsächliche Hundertergeometrie,
+  reaktive Bruchbeschriftung und nicht vom Block verdeckte Silben.
+  Zusätzlich sind die gültigen Vertragsgrenzen bis 20 Würfel, 36 Gruppenobjekte,
+  890 + 90, zwölf Bruchteile und lange Silbenwörter vor/nach der Interaktion
+  in denselben drei Formaten geprüft.
+- Flutter: **64 Tests bestanden** über neuen nativen Lernstart, vorhandenen
   Launcher-Lebenszyklus, geführte Lektionen, Deutsch/Natur sowie bestehende
   adaptive Aufgaben-/Belohnungs-/Prüfungsabläufe. Native MethodChannel-Antworten
   sind dabei Testdoubles, kein Nachweis einer gestarteten Android-Engine.
-- Flutter-Analyse der sechs geänderten Lern-/Launcher-/Testdateien:
+- Flutter-Analyse der sieben geänderten Lern-/Launcher-/AppState-/Testdateien:
   **keine Befunde**.
 - Android-Hostvorbereitung: **4 Tests bestanden**, einschließlich Kopieren der
   echten neuen Kotlin-Datei unter alternativen Paketnamen. Kein Ersatz für
@@ -120,8 +136,21 @@ Reale Logs liegen in den jeweiligen Repositories unter
 verweigert Headless-Erfolg. Es erzeugt 21 aktuelle Aufnahmen: Addition in drei
 Displaygrößen sowie Silben, Pflanze, Subtraktion, Gruppen, Hunderter und Brüche
 vor/nach echten Touch-Aktionen. Der vorhandene CI-Collector führt es aus.
-Lokale X11-Sockets waren in dieser Umgebung blockiert; dieser Bericht enthält
-deshalb keine erfundene visuelle Freigabe.
+Lokale X11-Sockets waren in dieser Umgebung blockiert. Zwei tatsächlich
+ausgeführte CI-Rendererstände wurden manuell geprüft: Der erste Stand
+`d66aae` war stark überbelichtet und zeigte schlecht getrennte Mengen.
+Die Atelier-Vorschau `096c9d20` erzeugte 21 echte Aufnahmen und verbesserte
+Mengenlesbarkeit und Hochformat deutlich. Sie war dennoch nicht abnahmefähig:
+Boden/Fuchs waren zu hell, Silben teilweise verdeckt, die große Bruchzahl blieb
+falsch bei 1/4 und der vorhandene Hunderter war nicht ausreichend erkennbar.
+
+Diese konkreten Befunde wurden anschließend in den Produktionsdateien
+korrigiert. Die 5310 Prüfungen oben beziehen sich auf diese Korrekturen;
+ihre erneute echte Rendererprüfung steht beim Schreiben noch aus. Der
+Capture ergänzt die bisherigen Gates um vollständige Objektgrenzen,
+tatsächliche Originalfuchs-Pixel am projizierten Kopf sowie eine Obergrenze
+für ausgebrannte Farbflächen. Kein bestehender Grenzwert wurde abgeschwächt.
+Das ist weiterhin keine pauschale visuelle oder AAA-Freigabe.
 
 Zusätzlich erforderlich: integrierter Release-APK-Build mit genau dieser
 Godot-PCK und aktuellem Host, native Touch-/Rückkehr-Tour,

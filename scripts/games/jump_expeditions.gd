@@ -3,12 +3,33 @@ extends RefCounted
 ## Optional goals invite exploration; the main route remains completable without
 ## precision side challenges or a timer. Each course saves independently.
 const COURSES: Array[Dictionary] = [
-	{"name": "Wolkenpfad", "description": "Lerne die Inseln kennen und entdecke eine Sprungfeder.",
-		"goals": [{"id": "crystals", "label": "Kristalle", "target": 6}, {"id": "bounce", "label": "Sprungfeder", "target": 1}]},
-	{"name": "Windbrücken", "description": "Kurvigere Wege und Sterne auf wandernden Inseln.",
-		"goals": [{"id": "moving", "label": "Wanderstern", "target": 1}, {"id": "crystals", "label": "Kristalle", "target": 8}]},
-	{"name": "Sternenstieg", "description": "Mehr Höhenwechsel: Erkunde die geheime Seiteninsel.",
-		"goals": [{"id": "side", "label": "Geheimsterne", "target": 2}, {"id": "bonus", "label": "Bonussterne", "target": 5}]},
+	{
+		"name": "Wolkenpfad",
+		"description": "Lerne die Inseln kennen und entdecke eine Sprungfeder.",
+		"goals":
+		[
+			{"id": "crystals", "label": "Kristalle", "target": 6},
+			{"id": "bounce", "label": "Sprungfeder", "target": 1}
+		]
+	},
+	{
+		"name": "Windbrücken",
+		"description": "Kurvigere Wege und Sterne auf wandernden Inseln.",
+		"goals":
+		[
+			{"id": "moving", "label": "Wanderstern", "target": 1},
+			{"id": "crystals", "label": "Kristalle", "target": 8}
+		]
+	},
+	{
+		"name": "Sternenstieg",
+		"description": "Mehr Höhenwechsel: Erkunde die geheime Seiteninsel.",
+		"goals":
+		[
+			{"id": "side", "label": "Geheimsterne", "target": 2},
+			{"id": "bonus", "label": "Bonussterne", "target": 5}
+		]
+	},
 ]
 
 

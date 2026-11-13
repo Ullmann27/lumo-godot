@@ -8,4 +8,4 @@ Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
 [Audio] manager ready (muted:false)
 [Progress] loaded stars:50 streak:0 letters:0
 [Perf] quality_profile:medium
-[CreativeNextgenEnvironment] PASS checks=30: original textures, bounded cloud batch, preserved quality and no added lights
+[CreativeNextgenEnvironment] PASS checks=35: original textures, bounded cloud batch, preserved quality and no added lights

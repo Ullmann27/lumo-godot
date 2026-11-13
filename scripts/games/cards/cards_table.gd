@@ -4,7 +4,12 @@ signal action_requested(request: Dictionary)
 
 const SEATED = preload("res://scripts/games/cards/cards_table_actor.gd")
 const ACTOR = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
-const COLORS := {"orange": Color("e64e48"), "purple": Color("efd34b"), "blue": Color("3297ed"), "green": Color("58b877")}
+const COLORS := {
+	"orange": Color("e64e48"),
+	"purple": Color("efd34b"),
+	"blue": Color("3297ed"),
+	"green": Color("58b877")
+}
 const COLOR_NAMES := {"orange": "Rot", "purple": "Gelb", "blue": "Blau", "green": "Grün"}
 var camera: Camera3D
 var actor: Node3D
@@ -47,6 +52,10 @@ var _textures: Dictionary = {}
 var _closed := false
 var _ui_scale := 1.0
 var _hand_targets: Dictionary = {}
+var room_batches: Array[MultiMeshInstance3D] = []
+var room_source_boxes := 0
+var _wood_detail_mask: GradientTexture1D
+
 
 func _ready() -> void:
 	get_window().content_scale_size = Vector2i.ZERO
@@ -59,15 +68,20 @@ func _ready() -> void:
 	_resize()
 	_poll()
 
-func _material(key: String, color: Color, roughness: float = 0.55, metal: float = 0.0) -> StandardMaterial3D:
+
+func _material(
+	key: String, color: Color, roughness: float = 0.55, metal: float = 0.0
+) -> StandardMaterial3D:
 	if _materials.has(key):
 		return _materials[key]
 	var mat := StandardMaterial3D.new()
+	mat.resource_name = key
 	mat.albedo_color = color
 	mat.roughness = roughness
 	mat.metallic = metal
 	_materials[key] = mat
 	return mat
+
 
 func _box(parent: Node3D, at: Vector3, size: Vector3, mat: Material) -> MeshInstance3D:
 	var instance := MeshInstance3D.new()
@@ -79,7 +93,10 @@ func _box(parent: Node3D, at: Vector3, size: Vector3, mat: Material) -> MeshInst
 	parent.add_child(instance)
 	return instance
 
-func _cylinder(parent: Node3D, at: Vector3, radius: float, height: float, mat: Material) -> MeshInstance3D:
+
+func _cylinder(
+	parent: Node3D, at: Vector3, radius: float, height: float, mat: Material
+) -> MeshInstance3D:
 	var instance := MeshInstance3D.new()
 	var mesh := CylinderMesh.new()
 	mesh.top_radius = radius
@@ -92,17 +109,76 @@ func _cylinder(parent: Node3D, at: Vector3, radius: float, height: float, mat: M
 	parent.add_child(instance)
 	return instance
 
-func _wood(key: String, tint: Color, roughness: float = 0.58) -> StandardMaterial3D:
+
+func _wood(key: String, tint: Color, roughness: float = 0.82) -> StandardMaterial3D:
 	var mat := _material(key, tint, roughness)
-	mat.albedo_texture = preload("res://assets/generated/lumo3d_assets/textures/albedo/wood_warm_soft_albedo.png")
+	# Keep the original grain as a quiet detail over matte walnut. Multiplying
+	# the entire base by this high-contrast source obscured the cards in review.
+	if _wood_detail_mask == null:
+		var mask := Gradient.new()
+		mask.set_color(0, Color(0.16, 0.16, 0.16, 1.0))
+		mask.set_color(1, Color(0.16, 0.16, 0.16, 1.0))
+		_wood_detail_mask = GradientTexture1D.new()
+		_wood_detail_mask.width = 2
+		_wood_detail_mask.gradient = mask
+	mat.detail_enabled = true
+	mat.detail_albedo = preload(
+		"res://assets/generated/lumo3d_assets/textures/albedo/wood_warm_soft_albedo.png"
+	)
+	mat.detail_blend_mode = BaseMaterial3D.BLEND_MODE_MUL
+	mat.detail_mask = _wood_detail_mask
 	mat.normal_enabled = true
-	mat.normal_texture = preload("res://assets/generated/lumo3d_assets/textures/normal/wood_warm_soft_normal.png")
-	mat.normal_scale = 0.28
+	mat.normal_texture = preload(
+		"res://assets/generated/lumo3d_assets/textures/normal/wood_warm_soft_normal.png"
+	)
+	mat.normal_scale = 0.06
 	mat.uv1_triplanar = true
-	mat.uv1_scale = Vector3(1.8, 1.8, 1.8)
+	mat.uv1_scale = Vector3.ONE * (0.65 if key.begins_with("floor") else 2.7)
 	return mat
 
-func _ring(parent: Node3D, at: Vector3, radius: float, width: float, mat: Material) -> MeshInstance3D:
+
+func _batch_room_boxes() -> void:
+	# Only direct, static room boxes at this construction boundary are batched.
+	# The rig and all playable cards retain their separate geometry and shadows.
+	var groups: Dictionary = {}
+	for child in get_children():
+		if child is MeshInstance3D and child.mesh is BoxMesh and child.material_override != null:
+			var key := (
+				"%d/%d/%d"
+				% [child.material_override.get_instance_id(), child.cast_shadow, child.layers]
+			)
+			if not groups.has(key):
+				groups[key] = []
+			groups[key].append(child)
+	var unit_box := BoxMesh.new()
+	unit_box.size = Vector3.ONE
+	for entries: Array in groups.values():
+		var first: MeshInstance3D = entries[0]
+		var multimesh := MultiMesh.new()
+		multimesh.transform_format = MultiMesh.TRANSFORM_3D
+		multimesh.mesh = unit_box
+		multimesh.instance_count = entries.size()
+		var batch := MultiMeshInstance3D.new()
+		batch.name = "RoomBatch_" + first.material_override.resource_name
+		batch.multimesh = multimesh
+		batch.material_override = first.material_override
+		batch.cast_shadow = first.cast_shadow
+		batch.layers = first.layers
+		for i in range(entries.size()):
+			var source: MeshInstance3D = entries[i]
+			var fitted := source.transform
+			fitted.basis = fitted.basis * Basis.from_scale(source.mesh.size)
+			multimesh.set_instance_transform(i, fitted)
+			remove_child(source)
+			source.free()
+		add_child(batch)
+		room_batches.append(batch)
+		room_source_boxes += entries.size()
+
+
+func _ring(
+	parent: Node3D, at: Vector3, radius: float, width: float, mat: Material
+) -> MeshInstance3D:
 	var node := MeshInstance3D.new()
 	var mesh := TorusMesh.new()
 	mesh.inner_radius = radius - width
@@ -115,16 +191,35 @@ func _ring(parent: Node3D, at: Vector3, radius: float, width: float, mat: Materi
 	parent.add_child(node)
 	return node
 
+
 func _beveled_table(mat: Material) -> void:
-	var profile: Array[Vector2] = [Vector2(2.48, 0.87), Vector2(2.64, 0.90), Vector2(2.74, 0.98), Vector2(2.74, 1.04), Vector2(2.65, 1.12), Vector2(2.48, 1.12)]
+	var profile: Array[Vector2] = [
+		Vector2(2.48, 0.87),
+		Vector2(2.64, 0.90),
+		Vector2(2.74, 0.98),
+		Vector2(2.74, 1.04),
+		Vector2(2.65, 1.12),
+		Vector2(2.48, 1.12)
+	]
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for row in range(profile.size() - 1):
 		for segment in range(64):
 			var points: Array[Vector3] = []
-			for corner in [Vector2i(row, segment), Vector2i(row, segment + 1), Vector2i(row + 1, segment + 1), Vector2i(row + 1, segment)]:
+			for corner in [
+				Vector2i(row, segment),
+				Vector2i(row, segment + 1),
+				Vector2i(row + 1, segment + 1),
+				Vector2i(row + 1, segment)
+			]:
 				var angle := float(corner.y) * TAU / 64.0
-				points.append(Vector3(cos(angle) * profile[corner.x].x, profile[corner.x].y, sin(angle) * profile[corner.x].x * 1.04))
+				points.append(
+					Vector3(
+						cos(angle) * profile[corner.x].x,
+						profile[corner.x].y,
+						sin(angle) * profile[corner.x].x * 1.04
+					)
+				)
 			for vertex in [0, 2, 1, 0, 3, 2]:
 				surface.set_uv(Vector2(float(segment) / 8.0, float(row) / profile.size()))
 				surface.add_vertex(points[vertex])
@@ -134,6 +229,7 @@ func _beveled_table(mat: Material) -> void:
 	node.mesh = surface.commit()
 	node.material_override = mat
 	add_child(node)
+
 
 func _window(x: float, frame: Material, trim: Material) -> void:
 	var sky := _material("night_sky", Color("173440"), 1.0)
@@ -173,20 +269,32 @@ func _window(x: float, frame: Material, trim: Material) -> void:
 		tree.position = Vector3(x - 0.65 + 0.42 * i, 1.9, -4.66)
 		add_child(tree)
 
+
 func _build_room() -> void:
-	var walnut := _wood("walnut", Color("825b41"), 0.43)
-	var dark_wood := _wood("dark_wood", Color("513b2e"), 0.62)
+	var walnut := _wood("walnut", Color("6a5646"), 0.8)
+	var dark_wood := _wood("dark_wood", Color("493c32"), 0.86)
 	var brass := _material("aged_brass", Color("b59359"), 0.4, 0.68)
 	var felt := _material("green_felt", Color("164c3c"), 0.98)
 	felt.normal_enabled = true
-	felt.normal_texture = preload("res://assets/generated/lumo3d_assets/textures/normal/velvet_blue_3d_normal.png")
+	felt.normal_texture = preload(
+		"res://assets/generated/lumo3d_assets/textures/normal/velvet_blue_3d_normal.png"
+	)
 	felt.normal_scale = 0.22
 	felt.uv1_scale = Vector3(5, 5, 5)
 	felt.uv1_triplanar = true
 	var plaster := _material("plaster", Color("31423b"), 0.95)
 	_box(self, Vector3(0, -0.12, 0), Vector3(16, 0.2, 18), dark_wood)
 	for plank in range(20):
-		_box(self, Vector3(-6.2 + plank * 0.65, 0.0, 1), Vector3(0.64, 0.035, 12), _wood("floor%d" % (plank % 3), [Color("7a5b43"), Color("6d503a"), Color("89654a")][plank % 3], 0.73))
+		_box(
+			self,
+			Vector3(-6.2 + plank * 0.65, 0.0, 1),
+			Vector3(0.64, 0.035, 12),
+			_wood(
+				"floor%d" % (plank % 3),
+				[Color("766553"), Color("6c5c4c"), Color("7b6957")][plank % 3],
+				0.87
+			)
+		)
 	_box(self, Vector3(0, 2.7, -4.45), Vector3(4.25, 2.4, 0.28), plaster)
 	_box(self, Vector3(0, 4.6, -4.45), Vector3(11, 1.65, 0.28), plaster)
 	for side in [-1, 1]:
@@ -205,10 +313,22 @@ func _build_room() -> void:
 		for shelf in range(3):
 			_box(self, Vector3(x, 0.35 + shelf * 0.7, -3.50), Vector3(1.43, 0.09, 0.82), walnut)
 			for book in range(5):
-				var color: Color = [Color("77443b"), Color("345665"), Color("8c7445"), Color("365c49")][(shelf + book) % 4]
+				var color: Color = [
+					Color("77443b"), Color("345665"), Color("8c7445"), Color("365c49")
+				][(shelf + book) % 4]
 				var height := 0.41 + (book % 3) * 0.04
-				_box(self, Vector3(x - 0.5 + book * 0.24, 0.4 + shelf * 0.7 + height * 0.5, -3.55), Vector3(0.17, height, 0.4), _material("cloth_book%d" % ((shelf + book) % 4), color, 0.86))
-				_box(self, Vector3(x - 0.5 + book * 0.24, 0.49 + shelf * 0.7, -3.342), Vector3(0.15, 0.018, 0.012), brass)
+				_box(
+					self,
+					Vector3(x - 0.5 + book * 0.24, 0.4 + shelf * 0.7 + height * 0.5, -3.55),
+					Vector3(0.17, height, 0.4),
+					_material("cloth_book%d" % ((shelf + book) % 4), color, 0.86)
+				)
+				_box(
+					self,
+					Vector3(x - 0.5 + book * 0.24, 0.49 + shelf * 0.7, -3.342),
+					Vector3(0.15, 0.018, 0.012),
+					brass
+				)
 	var rug := _material("woven_rug", Color("283e45"), 1.0)
 	_cylinder(self, Vector3(0, 0.032, 0), 3.2, 0.018, rug).scale.z = 1.07
 	_ring(self, Vector3(0, 0.045, 0), 3.09, 0.025, _material("rug_stitch", Color("806d50"), 1.0)).scale.z = 1.07
@@ -270,7 +390,13 @@ func _build_room() -> void:
 	add_child(rim)
 	for side in [-1, 1]:
 		_box(self, Vector3(side * 1.7, 2.65, -4.11), Vector3(0.16, 0.52, 0.18), brass)
-		var shade := _cylinder(self, Vector3(side * 1.7, 2.85, -3.94), 0.23, 0.3, _material("linen", Color("cab58c"), 0.94))
+		var shade := _cylinder(
+			self,
+			Vector3(side * 1.7, 2.85, -3.94),
+			0.23,
+			0.3,
+			_material("linen", Color("cab58c"), 0.94)
+		)
 		shade.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		var lamp := OmniLight3D.new()
 		lamp.position = Vector3(side * 1.7, 2.6, -3.7)
@@ -278,6 +404,7 @@ func _build_room() -> void:
 		lamp.light_energy = 0.34
 		lamp.omni_range = 4.2
 		add_child(lamp)
+	_batch_room_boxes()
 	camera = Camera3D.new()
 	camera.fov = 46
 	camera.near = 0.1
@@ -296,6 +423,7 @@ func _build_room() -> void:
 	for i in range(6):
 		_make_card(self, {}, Vector3(-0.62, 1.14 + i * 0.027, -0.23), false)
 
+
 func _button(label: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.text = label
@@ -303,6 +431,7 @@ func _button(label: String, callback: Callable) -> Button:
 	button.set_meta("base_width", 52.0)
 	button.pressed.connect(callback)
 	return button
+
 
 func _build_interface() -> void:
 	var layer := CanvasLayer.new()
@@ -338,7 +467,9 @@ func _build_interface() -> void:
 	heading.clip_text = true
 	heading.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	nav.add_child(heading)
-	pause_button = _button("Pause", func(): _send("resume" if bool(_state.get("paused", false)) else "pause"))
+	pause_button = _button(
+		"Pause", func(): _send("resume" if bool(_state.get("paused", false)) else "pause")
+	)
 	nav.add_child(pause_button)
 	status = Label.new()
 	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -372,9 +503,12 @@ func _build_interface() -> void:
 	actions.name = "Actions"
 	actions.alignment = BoxContainer.ALIGNMENT_CENTER
 	footer.add_child(actions)
-	play_button = _button("Karte legen", func():
-		if not _selected.is_empty():
-			_send("play", {"cardId": _selected}))
+	play_button = _button(
+		"Karte legen",
+		func():
+			if not _selected.is_empty():
+				_send("play", {"cardId": _selected})
+	)
 	actions.add_child(play_button)
 	draw_button = _button("Ziehen", func(): _send("draw"))
 	actions.add_child(draw_button)
@@ -419,6 +553,7 @@ func _build_interface() -> void:
 	theme.set_stylebox("panel", "PanelContainer", panel)
 	ui.theme = theme
 
+
 func _resize() -> void:
 	if not is_instance_valid(camera) or not is_instance_valid(ui):
 		return
@@ -426,7 +561,9 @@ func _resize() -> void:
 	_ui_scale = MobileRuntime.get_ui_density()
 	# UI canvas pixels are native pixels; all touch targets retain at least 48 dp.
 	for button in ui.find_children("*", "Button", true, false):
-		button.custom_minimum_size = Vector2(float(button.get_meta("base_width", 52.0)), 52.0) * _ui_scale
+		button.custom_minimum_size = (
+			Vector2(float(button.get_meta("base_width", 52.0)), 52.0) * _ui_scale
+		)
 		button.add_theme_font_size_override("font_size", int(18 * _ui_scale))
 	for label in [heading, status, message, page_label]:
 		label.add_theme_font_size_override("font_size", int(18 * _ui_scale))
@@ -455,12 +592,14 @@ func _resize() -> void:
 	if not _state.is_empty():
 		_render_hand()
 
+
 func _update_camera() -> void:
 	var size := get_viewport().get_visible_rect().size
 	var aspect := size.x / maxf(1, size.y)
 	var distance_scale := maxf(1.0, 0.72 / aspect)
 	camera.position = Vector3(_focus * 0.12, 5.3 * distance_scale, 7.0 * distance_scale)
 	camera.look_at(Vector3(0, 1.05, -0.25))
+
 
 func _process(delta: float) -> void:
 	_elapsed += delta
@@ -473,6 +612,7 @@ func _process(delta: float) -> void:
 	_focus = move_toward(_focus, 0, delta * 0.9)
 	_update_camera()
 
+
 func _poll() -> void:
 	if not is_instance_valid(_host) or _closed:
 		return
@@ -481,16 +621,27 @@ func _poll() -> void:
 		if int(raw.get("revision", -1)) != int(_state.get("revision", -2)):
 			apply_state(raw)
 	elif is_instance_valid(message):
-		# A closed/profile-invalidated authority never leaves a previous child's hand visible.
-		_state.clear()
-		_cards.clear()
-		for container in [hand_root, opponent_root, discard_root]:
-			for child in container.get_children():
-				child.queue_free()
-		play_button.disabled = true
-		draw_button.disabled = true
-		pause_button.disabled = true
-		message.text = "Die Runde wartet auf die Lern-App. Mit Zurück bleibt dein Spielstand erhalten."
+		_clear_authority_view()
+
+
+func _clear_authority_view() -> void:
+	# Closing/invalidation must also hide the previous question and counters.
+	_state.clear()
+	_cards.clear()
+	_selected = ""
+	for container in [hand_root, opponent_root, discard_root]:
+		for child in container.get_children():
+			child.queue_free()
+	modal.hide()
+	call_button.hide()
+	status.text = ""
+	page_label.text = ""
+	heading.text = "Lumos Kartenstube"
+	play_button.disabled = true
+	draw_button.disabled = true
+	pause_button.disabled = true
+	message.text = "Die Runde wartet auf die Lern-App. Mit Zurück bleibt dein Spielstand erhalten."
+
 
 func apply_state(next: Dictionary) -> void:
 	if int(next.get("protocol", 0)) != 1 or not next.get("hand", []) is Array:
@@ -502,8 +653,12 @@ func apply_state(next: Dictionary) -> void:
 	if int(next.get("ack", 0)) >= _pending:
 		_pending = 0
 	var top: Dictionary = next.get("top", {}) if next.get("top") is Dictionary else {}
-	var previous_top: Dictionary = previous.get("top", {}) if previous.get("top") is Dictionary else {}
-	var top_changed := not top.is_empty() and str(top.get("id", "")) != str(previous_top.get("id", ""))
+	var previous_top: Dictionary = (
+		previous.get("top", {}) if previous.get("top") is Dictionary else {}
+	)
+	var top_changed := (
+		not top.is_empty() and str(top.get("id", "")) != str(previous_top.get("id", ""))
+	)
 	var departure := Vector3(0, 1.2, -2.0)
 	if _cards.has(str(top.get("id", ""))):
 		departure = _cards[str(top.get("id", ""))].position
@@ -513,7 +668,7 @@ func apply_state(next: Dictionary) -> void:
 		var node := _make_card(discard_root, top, Vector3(0.62, 1.17, -0.23), true)
 		if top_changed and not previous.is_empty() and not bool(next.get("reduceMotion", false)):
 			node.position = departure + Vector3(0, 0.35, 0)
-			var tween := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			var tween := node.create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 			tween.tween_property(node, "position", Vector3(0.62, 1.17, -0.23), 0.4)
 			_focus = 1.0
 			actor.call("play_behavior", "agree_nod")
@@ -525,27 +680,51 @@ func apply_state(next: Dictionary) -> void:
 	actor.call("set_suspended", bool(next.get("paused", false)))
 	actor.call("set_reduced_motion", bool(next.get("reduceMotion", false)))
 
+
 func _texture(card: Dictionary, face: bool) -> Texture2D:
 	var path := "res://assets/cards_table/cards/back/card_back_default.png"
 	if face:
-		var folder: String = {"orange": "red", "purple": "yellow", "blue": "blue", "green": "green"}.get(str(card.get("color", "")), "red")
+		var folder: String = (
+			{"orange": "red", "purple": "yellow", "blue": "blue", "green": "green"}
+			. get(str(card.get("color", "")), "red")
+		)
 		var kind := str(card.get("type", "number"))
 		if kind == "colorMagic":
 			path = "res://assets/cards_table/cards/special/color_magic.png"
 		elif kind == "superRain":
 			path = "res://assets/cards_table/cards/special/wild_draw_four.png"
 		else:
-			var suffix := str(card.get("number", 1)) if kind == "number" else str({"lumoJump": "skip", "starRain": "draw_two", "whirlwind": "reverse", "thinkPause": "think_pause"}.get(kind, "1"))
+			var suffix := (
+				str(card.get("number", 1))
+				if kind == "number"
+				else str(
+					(
+						{
+							"lumoJump": "skip",
+							"starRain": "draw_two",
+							"whirlwind": "reverse",
+							"thinkPause": "think_pause"
+						}
+						. get(kind, "1")
+					)
+				)
+			)
 			path = "res://assets/cards_table/cards/%s/%s_%s.png" % [folder, folder, suffix]
 	if not _textures.has(path):
 		_textures[path] = load(path) if ResourceLoader.exists(path) else null
 	return _textures[path]
 
+
 func _make_card(parent: Node3D, card: Dictionary, at: Vector3, face: bool) -> Node3D:
 	var node := Node3D.new()
 	node.position = at
 	parent.add_child(node)
-	_box(node, Vector3.ZERO, Vector3(0.83, 0.032, 1.18), _material("card_edge", Color("e6e3d9"), 0.44))
+	_box(
+		node,
+		Vector3.ZERO,
+		Vector3(0.83, 0.032, 1.18),
+		_material("card_edge", Color("e6e3d9"), 0.44)
+	)
 	var surface := MeshInstance3D.new()
 	var plane := PlaneMesh.new()
 	plane.size = Vector2(0.83, 1.18)
@@ -559,6 +738,7 @@ func _make_card(parent: Node3D, card: Dictionary, at: Vector3, face: bool) -> No
 	surface.material_override = mat
 	node.add_child(surface)
 	return node
+
 
 func _render_hand() -> void:
 	var old: Dictionary = {}
@@ -580,20 +760,34 @@ func _render_hand() -> void:
 		visible_ids.append(id)
 		var offset := float(i) - float(visible.size() - 1) * 0.5
 		var size := get_viewport().get_visible_rect().size
-		var card_height := (96 * _ui_scale) if _compact else clampf(size.y * 0.28, 96 * _ui_scale, 180 * _ui_scale)
+		var card_height := (
+			(96 * _ui_scale) if _compact else clampf(size.y * 0.28, 96 * _ui_scale, 180 * _ui_scale)
+		)
 		var card_width := card_height * 0.83 / 1.18
-		var spacing := minf(card_width * 1.08, (size.x - 32 * _ui_scale - card_width) / maxf(1, visible.size() - 1))
-		var screen := Vector2(size.x * 0.5 + offset * spacing, size.y - (76 if _compact else 140) * _ui_scale - card_height * 0.5)
+		var spacing := minf(
+			card_width * 1.08, (size.x - 32 * _ui_scale - card_width) / maxf(1, visible.size() - 1)
+		)
+		var screen := Vector2(
+			size.x * 0.5 + offset * spacing,
+			size.y - (76 if _compact else 140) * _ui_scale - card_height * 0.5
+		)
 		var at := camera.project_position(screen, 4.0)
 		var node := _make_card(hand_root, card, at, true)
 		node.name = "HandCard%d" % i
-		var scale_factor := (2 * 4.0 * tan(deg_to_rad(camera.fov * 0.5))) * card_height / size.y / 1.18
+		var scale_factor := (
+			(2 * 4.0 * tan(deg_to_rad(camera.fov * 0.5))) * card_height / size.y / 1.18
+		)
 		node.basis = camera.global_basis * Basis(Vector3.RIGHT, PI * 0.5)
 		node.scale = Vector3.ONE * scale_factor
 		_hand_targets[id] = at
 		_cards[id] = node
 		if bool(card.get("playable", false)):
-			_box(node, Vector3(0, -0.02, 0), Vector3(0.88, 0.02, 1.23), _material("legal_gold", Color("f5c259"), 0.32, 0.4))
+			_box(
+				node,
+				Vector3(0, -0.02, 0),
+				Vector3(0.88, 0.02, 1.23),
+				_material("legal_gold", Color("f5c259"), 0.32, 0.4)
+			)
 	if _selected not in visible_ids:
 		_selected = ""
 	_highlight_selection()
@@ -604,13 +798,15 @@ func _render_hand() -> void:
 			var destination := node.position
 			# Newly dealt/drawn cards physically travel from the deck into the hand.
 			node.position = old.get(id, Vector3(-0.62, 1.32, -0.23))
-			var tween := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			var tween := node.create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			node.set_meta("move_tween", tween)
 			if old.is_empty():
 				tween.tween_interval(index * 0.035)
 			tween.tween_property(node, "position", destination, 0.30)
 			index += 1
 	if is_instance_valid(page_label):
 		page_label.text = "%d/%d" % [_page + 1, max_page + 1]
+
 
 func _render_opponent() -> void:
 	for child in opponent_root.get_children():
@@ -621,29 +817,56 @@ func _render_opponent() -> void:
 	var count := int(players[1 - int(_state.get("viewer", 0))].get("count", 0))
 	for i in range(mini(count, 12)):
 		var offset := float(i) - float(mini(count, 12) - 1) * 0.5
-		var node := _make_card(opponent_root, {}, Vector3(offset * 0.20, 1.17 + i * 0.002, -1.7), false)
+		var node := _make_card(
+			opponent_root, {}, Vector3(offset * 0.20, 1.17 + i * 0.002, -1.7), false
+		)
 		node.rotation.y = offset * 0.055 + PI
+
 
 func _highlight_selection() -> void:
 	for id in _cards:
 		var card_node: Node3D = _cards[id]
-		card_node.position = _hand_targets[id] + camera.global_basis.y * (0.08 if id == _selected else 0.0)
+		var moving = card_node.get_meta("move_tween") if card_node.has_meta("move_tween") else null
+		if moving is Tween and moving.is_valid():
+			moving.kill()
+		card_node.position = (
+			_hand_targets[id] + camera.global_basis.y * (0.08 if id == _selected else 0.0)
+		)
 	if is_instance_valid(play_button):
-		play_button.disabled = _selected.is_empty() or _pending > 0 or bool(_state.get("paused", false))
+		play_button.disabled = (
+			_selected.is_empty() or _pending > 0 or bool(_state.get("paused", false))
+		)
+
 
 func _change_page(change: int) -> void:
 	_page += change
 	_selected = ""
 	_render_hand()
 
+
 func _update_interface() -> void:
-	heading.text = "Sternenpokal %d/%d" % [int(_state.get("round", 1)), int(_state.get("totalRounds", 1))] if int(_state.get("totalRounds", 1)) > 1 else "Lumos Kartenstube"
+	heading.text = (
+		"Sternenpokal %d/%d" % [int(_state.get("round", 1)), int(_state.get("totalRounds", 1))]
+		if int(_state.get("totalRounds", 1)) > 1
+		else "Lumos Kartenstube"
+	)
 	var players: Array = _state.get("players", [])
 	if players.size() == 2:
-		status.text = "%s: %d Karten   ·   %s: %d Karten" % [players[0].get("name", "Du"), int(players[0].get("count", 0)), players[1].get("name", "Lumo"), int(players[1].get("count", 0))]
+		status.text = (
+			"%s: %d Karten   ·   %s: %d Karten"
+			% [
+				players[0].get("name", "Du"),
+				int(players[0].get("count", 0)),
+				players[1].get("name", "Lumo"),
+				int(players[1].get("count", 0))
+			]
+		)
 	message.text = str(_state.get("message", ""))
 	if _compact and players.size() == 2:
-		message.text = "Du: %d · Lumo: %d · %s" % [int(players[0].get("count", 0)), int(players[1].get("count", 0)), message.text]
+		message.text = (
+			"Du: %d · Lumo: %d · %s"
+			% [int(players[0].get("count", 0)), int(players[1].get("count", 0)), message.text]
+		)
 	draw_button.disabled = not bool(_state.get("canDraw", false)) or _pending > 0
 	pause_button.text = "Weiter" if bool(_state.get("paused", false)) else "Pause"
 	pause_button.disabled = _pending > 0
@@ -652,7 +875,10 @@ func _update_interface() -> void:
 	for child in modal_content.get_children():
 		child.queue_free()
 	var phase := str(_state.get("phase", "playing"))
-	modal.visible = bool(_state.get("paused", false)) or phase in ["chooseColor", "learningQuestion", "passDevice", "gameOver"]
+	modal.visible = (
+		bool(_state.get("paused", false))
+		or phase in ["chooseColor", "learningQuestion", "passDevice", "gameOver"]
+	)
 	if not modal.visible:
 		return
 	var title := Label.new()
@@ -687,19 +913,25 @@ func _update_interface() -> void:
 		button.disabled = _pending > 0
 	_layout_modal.call_deferred()
 
+
 func _layout_modal() -> void:
 	if not is_instance_valid(modal) or not modal.visible:
 		return
 	var size := get_viewport().get_visible_rect().size
-	var height := minf(modal_content.get_combined_minimum_size().y + 44 * _ui_scale, size.y - 24 * _ui_scale)
+	var height := minf(
+		modal_content.get_combined_minimum_size().y + 44 * _ui_scale, size.y - 24 * _ui_scale
+	)
 	modal.offset_top = -height * 0.5
 	modal.offset_bottom = height * 0.5
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	var point := Vector2.ZERO
 	if event is InputEventScreenTouch and event.pressed:
 		point = event.position
-	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+	elif (
+		event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed
+	):
 		point = event.position
 	else:
 		return
@@ -733,6 +965,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_highlight_selection()
 	get_viewport().set_input_as_handled()
 
+
 func _send(action: String, payload: Dictionary = {}) -> void:
 	if _state.is_empty() or _pending > 0 or _closed:
 		return
@@ -754,6 +987,7 @@ func _send(action: String, payload: Dictionary = {}) -> void:
 		pause_button.disabled = true
 	else:
 		message.text = "Der Zug wurde aktualisiert. Bitte noch einmal wählen."
+
 
 func _leave() -> void:
 	if _closed:

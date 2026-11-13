@@ -28,7 +28,10 @@ func configure(raw: Dictionary) -> bool:
 			if a < 1 or a > 9 or b < 1 or b > 9 or a + b <= 10:
 				kind = "invalid"
 		"addition", "subtract_ten", "equal_groups", "bridge_hundred", "fraction_parts":
-			if not _bounded_integer(raw.get("a"), 0, 900) or not _bounded_integer(raw.get("b"), 1, 90):
+			if (
+				not _bounded_integer(raw.get("a"), 0, 900)
+				or not _bounded_integer(raw.get("b"), 1, 90)
+			):
 				kind = "invalid"
 				return false
 			a = int(raw.a)
@@ -44,7 +47,14 @@ func configure(raw: Dictionary) -> bool:
 					if a < 1 or a > 6 or b > 6:
 						kind = "invalid"
 				"bridge_hundred":
-					if a < 100 or a > 890 or a % 10 != 0 or b < 10 or b % 10 != 0 or a % 100 + b < 100:
+					if (
+						a < 100
+						or a > 890
+						or a % 10 != 0
+						or b < 10
+						or b % 10 != 0
+						or a % 100 + b < 100
+					):
 						kind = "invalid"
 				"fraction_parts":
 					if not _bounded_integer(raw.get("extra", 0), 0, 12):
@@ -79,11 +89,23 @@ func configure(raw: Dictionary) -> bool:
 static func _whole_number(value: Variant) -> bool:
 	# JSON.parse_string uses floating point numbers. Accept exact bounded
 	# integers from the native JSON bridge, never truncating fractional input.
-	return typeof(value) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(value)) and float(value) >= 1.0 and float(value) <= 9.0 and float(value) == floorf(float(value))
+	return (
+		typeof(value) in [TYPE_INT, TYPE_FLOAT]
+		and is_finite(float(value))
+		and float(value) >= 1.0
+		and float(value) <= 9.0
+		and float(value) == floorf(float(value))
+	)
 
 
 static func _bounded_integer(value: Variant, low: int, high: int) -> bool:
-	return typeof(value) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(value)) and float(value) >= low and float(value) <= high and float(value) == floorf(float(value))
+	return (
+		typeof(value) in [TYPE_INT, TYPE_FLOAT]
+		and is_finite(float(value))
+		and float(value) >= low
+		and float(value) <= high
+		and float(value) == floorf(float(value))
+	)
 
 
 func reset() -> void:
@@ -95,11 +117,16 @@ func reset() -> void:
 
 func token_count() -> int:
 	match kind:
-		"bridge_ten", "addition": return b
-		"subtract_ten": return a
-		"equal_groups": return a * b
-		"bridge_hundred": return b / 10
-		"fraction_parts": return extra if extra > 0 else a
+		"bridge_ten", "addition":
+			return b
+		"subtract_ten":
+			return a
+		"equal_groups":
+			return a * b
+		"bridge_hundred":
+			return b / 10
+		"fraction_parts":
+			return extra if extra > 0 else a
 	return syllables.size()
 
 
@@ -151,7 +178,11 @@ func explanation() -> String:
 		"bridge_ten", "addition":
 			var filled: int = a + placed.size()
 			if kind == "addition" and a + b <= 10:
-				return "%d plus %d ist %d." % [a, b, a + b] if is_complete() else "Lege %d Würfel zu den %d dazu. Jetzt sind es %d." % [b, a, filled]
+				return (
+					"%d plus %d ist %d." % [a, b, a + b]
+					if is_complete()
+					else "Lege %d Würfel zu den %d dazu. Jetzt sind es %d." % [b, a, filled]
+				)
 			if placed.is_empty() and a == 10:
 				return "Zehn sind schon voll. Lege die %d neuen Würfel ins zweite Feld." % b
 			if placed.is_empty():
@@ -159,38 +190,71 @@ func explanation() -> String:
 			if filled < 10:
 				return "Jetzt liegen %d im Zehnerfeld. Noch %d bis zehn." % [filled, 10 - filled]
 			if filled == 10:
-				return "Zehn sind voll! Von den %d bleiben %d. Lege sie ins zweite Feld." % [b, a + b - 10]
+				return (
+					"Zehn sind voll! Von den %d bleiben %d. Lege sie ins zweite Feld."
+					% [b, a + b - 10]
+				)
 			if is_complete():
-				return "%d + %d = 10 + %d = %d. Du hast den Zehner selbst gefüllt." % [a, b, a + b - 10, a + b]
+				return (
+					"%d + %d = 10 + %d = %d. Du hast den Zehner selbst gefüllt."
+					% [a, b, a + b - 10, a + b]
+				)
 			return "Zehn und %d sind %d. Lege die übrigen Würfel dazu." % [filled - 10, filled]
 		"subtract_ten":
 			var remaining: int = a - placed.size()
 			if is_complete():
 				return "%d minus %d ist %d. So viele Würfel bleiben im Feld." % [a, b, remaining]
 			if remaining == 10:
-				return "Jetzt bleiben zehn. Nimm noch %d weg, dann hast du insgesamt %d weggenommen." % [b - placed.size(), b]
+				return (
+					"Jetzt bleiben zehn. Nimm noch %d weg, dann hast du insgesamt %d weggenommen."
+					% [b - placed.size(), b]
+				)
 			if remaining > 10 and a - b <= 10:
-				return "Nimm zuerst Würfel aus dem zweiten Feld. %d sind schon weg; %d bleiben noch bis zur Zehn." % [placed.size(), remaining - 10]
-			return "Von %d nehmen wir %d weg. %d sind schon weg; %d liegen noch im Feld." % [a, b, placed.size(), remaining]
+				return (
+					"Nimm zuerst Würfel aus dem zweiten Feld. %d sind schon weg; %d bleiben noch bis zur Zehn."
+					% [placed.size(), remaining - 10]
+				)
+			return (
+				"Von %d nehmen wir %d weg. %d sind schon weg; %d liegen noch im Feld."
+				% [a, b, placed.size(), remaining]
+			)
 		"equal_groups":
 			if is_complete():
 				return "%d Gruppen mit je %d Würfeln: %d mal %d ist %d." % [a, b, a, b, a * b]
-			return "Fülle %d Gruppen mit je %d Würfeln. Schon %d Gruppen sind voll." % [a, b, placed.size() / b]
+			return (
+				"Fülle %d Gruppen mit je %d Würfeln. Schon %d Gruppen sind voll."
+				% [a, b, placed.size() / b]
+			)
 		"bridge_hundred":
 			var current: int = a + placed.size() * 10
 			var boundary: int = (a / 100 + 1) * 100
 			if is_complete():
 				return "%d plus %d ist %d. Zehn Zehner bilden einen Hunderter." % [a, b, current]
 			if current < boundary:
-				return "Jeder Streifen zählt zehn. Jetzt sind es %d. Ergänze zuerst bis %d." % [current, boundary]
-			return "Der Hunderter ist voll. Jetzt sind es %d. Lege noch %d Zehner ins zweite Feld." % [current, token_count() - placed.size()]
+				return (
+					"Jeder Streifen zählt zehn. Jetzt sind es %d. Ergänze zuerst bis %d."
+					% [current, boundary]
+				)
+			return (
+				"Der Hunderter ist voll. Jetzt sind es %d. Lege noch %d Zehner ins zweite Feld."
+				% [current, token_count() - placed.size()]
+			)
 		"fraction_parts":
 			if is_complete():
-				return "%d von %d gleich großen Teilen sind markiert: %d/%d. Die Teilgröße bleibt gleich." % [a + extra, b, a + extra, b]
-			return "Im Feld: %d von %d gleich großen Teilen. Lege noch %d dazu." % [initial_count() + placed.size(), b, token_count() - placed.size()]
+				return (
+					"%d von %d gleich großen Teilen sind markiert: %d/%d. Die Teilgröße bleibt gleich."
+					% [a + extra, b, a + extra, b]
+				)
+			return (
+				"Im Feld: %d von %d gleich großen Teilen. Lege noch %d dazu."
+				% [initial_count() + placed.size(), b, token_count() - placed.size()]
+			)
 		"syllables":
 			if is_complete():
-				return "%s: %s. Das Wort hat %d Silben." % [word, " – ".join(syllables), syllables.size()]
+				return (
+					"%s: %s. Das Wort hat %d Silben."
+					% [word, " – ".join(syllables), syllables.size()]
+				)
 			return "Baue %s. Als Nächstes kommt die Silbe „%s“." % [word, syllables[placed.size()]]
 		"plant_parts":
 			if watered and sunlight:

@@ -1,0 +1,29 @@
+extends SceneTree
+func _initialize() -> void:
+	var state = load("res://scripts/creative/build_settlement_state.gd").new("settlement")
+	assert(state.try_build("lumber", 0))
+	assert(state.try_build("farm", 3))
+	assert(state.next_day().advanced)
+	assert(state.try_build("quarry", 1))
+	for i in range(6): assert(state.next_day().advanced)
+	assert(state.try_build("market", 2))
+	assert(state.try_trade("wood", 5, true))
+	assert(state.try_trade("stone", 5, true))
+	assert(state.try_trade("stone", 5, false))
+	for plot in [0, 1, 2]: assert(state.try_demolish(plot))
+	for i in range(100): assert(state.next_day().advanced)
+	for plot in [0, 1, 2, 4, 5, 6, 7, 8]: assert(state.try_build("house", plot))
+	for i in range(14): assert(state.next_day().advanced)
+	print("HOUSING_AUDIT before=", JSON.stringify(state.snapshot()))
+	var removed_homes := []
+	for plot in [0, 1, 2, 4, 5, 6, 7, 8]:
+		if state.try_demolish(plot): removed_homes.append(plot)
+	assert(state.try_demolish(3))
+	assert(state.next_day().advanced)
+	var available := []
+	for kind in state.BUILDINGS:
+		if state.try_build(kind, 3):
+			available.append(kind)
+			state.undo()
+	print("HOUSING_AUDIT after_farm_refund=", JSON.stringify(state.snapshot()), " demolishable_homes=", removed_homes, " available=", available)
+	quit(0)
