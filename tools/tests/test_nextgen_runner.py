@@ -53,7 +53,7 @@ def fixture_png(width=640, height=360, varied=False):
 
 class NextgenRunnerTests(unittest.TestCase):
     def run_fixture(self, *, failing='', missing='', missing_raster='',
-                    invalid_raster='', runner=RUNNER):
+                    invalid_raster='', post_pass_error='', puzzle_mutation='', runner=RUNNER):
         """The fake engine tests orchestration, never claims rendered/gameplay proof."""
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -118,7 +118,14 @@ class NextgenRunnerTests(unittest.TestCase):
                               f'        if name=={missing_raster!r}: names.pop()\n'
                               '        for image_name in names:\n'
                               '            shutil.copyfile(pathlib.Path("puzzle-menu-fixtures")/image_name,capture/image_name)\n'
-                              f'print({markers!r}[name])\n')
+                              '        selected=capture/"640x360-rotation-menu.png"\n'
+                              f'        mutation={puzzle_mutation!r}\n'
+                              '        if mutation=="renamed": selected.rename(capture/"unexpected.png")\n'
+                              '        if mutation=="truncated": selected.write_bytes(selected.read_bytes()[:40])\n'
+                              '        if mutation=="uniform": shutil.copyfile("fixture-raster.png",selected)\n'
+                              '        if mutation=="pixel-size": shutil.copyfile("puzzle-menu-fixtures/960x540-rotation-menu.png",selected)\n'
+                              f'print({markers!r}[name])\n'
+                              f'if name=={post_pass_error!r}: print("ERROR: native fixture error after PASS with process exit zero")\n')
             engine.chmod(0o755)
             git = root / 'bin/git'
             git.write_text('#!/bin/sh\nif [ "$1" = rev-parse ]; then echo fixture-source; fi\n')
@@ -265,12 +272,85 @@ class NextgenRunnerTests(unittest.TestCase):
         result, rows, cases, _, images = self.run_fixture(
             runner=STUDIO_RUNNER, missing_raster='puzzle_rotation_regression')
         self.assertEqual(result.returncode, 1)
-        self.assertEqual(len(cases), 9)
+        self.assertEqual(len(cases), 11)
         self.assertEqual(len(rows), len(cases))
         self.assertTrue(all(row.endswith('\tPASS') for row in rows))
         self.assertIn('puzzle_rotation_regression: found 6 PNGs, expected 7', result.stderr)
         self.assertNotIn('[LumoStudio] PASS', result.stdout)
         self.assertEqual(images, [])
+
+    def test_studio_success_requires_eleven_pairs_and_separate_original_rosters(self):
+        result, rows, cases, budgets, images = self.run_fixture(runner=STUDIO_RUNNER)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(len(cases), 11)
+        self.assertEqual(len(rows), 11)
+        self.assertTrue(all(row.endswith('\tPASS') for row in rows))
+        previous = [
+            ('learning_sharing_regression', '[LearningSharing] PASS', 'headless'),
+            ('learning_studio_regression', '[LearningStudio] PASS', 'headless'),
+            ('lumo_studio_motion_regression', '[LumoStudioMotion] PASS', 'headless'),
+            ('puzzle_rotation_regression', '[PuzzleRotation] PASS', 'headless'),
+            ('treasure_exploration_regression', '[TreasureExploration] PASS', 'headless'),
+            ('learning_sharing_capture', '[LearningSharingCapture] PASS', 'rendered'),
+            ('lumo_studio_motion_capture', '[LumoStudioCapture] PASS', 'rendered'),
+            ('puzzle_rotation_regression', '[PuzzleRotation] PASS', 'rendered'),
+            ('treasure_exploration_regression', '[TreasureExploration] PASS', 'rendered'),
+        ]
+        self.assertEqual([case for case in cases if case[0] != 'puzzle_menu_lifecycle_regression'], previous)
+        for name, _, mode in previous:
+            expected = '180' if mode == 'headless' else '420' if name == 'lumo_studio_motion_capture' else '600'
+            self.assertEqual(budgets[name + '-' + mode], expected)
+        self.assertEqual(budgets['puzzle_menu_lifecycle_regression-headless'], '180')
+        self.assertEqual(budgets['puzzle_menu_lifecycle_regression-rendered'], '600')
+        self.assertIn('[LumoStudio] PASS', result.stdout)
+        self.assertIn('[StudioRasterRoster] PASS 24 actual PNG files', result.stdout)
+        self.assertEqual(len(images), 24)
+        self.assertIn('[PuzzleMenuRasterRoster] PASS 6 actual PNG files', result.stdout)
+        self.assertEqual({image['path']: (image['width'], image['height']) for image in result.puzzle_menu_images},
+                         {PUZZLE_MENU_DIRECTORY + '/' + name: size for name, size in PUZZLE_MENU_PNGS.items()})
+        for image in result.puzzle_menu_images:
+            data = fixture_png(image['width'], image['height'], varied=True)
+            self.assertEqual(image['bytes'], len(data))
+            self.assertEqual(image['sha256'], hashlib.sha256(data).hexdigest())
+        calls = [call for call in result.invocations if call['name'] == 'puzzle_menu_lifecycle_regression']
+        self.assertEqual(len(calls), 2)
+        for call in calls:
+            headless = '--headless' in call['args']
+            self.assertEqual('--capture' in call['args'], not headless)
+            ending = '/evidence/puzzle_menu_lifecycle_regression-headless' if headless else '/' + PUZZLE_MENU_DIRECTORY
+            self.assertTrue(call['puzzle_menu_dir'].endswith(ending))
+            self.assertEqual(call['puzzle_menu_dir'] == call['capture_dir'], not headless)
+        self.assertNotEqual(calls[0]['puzzle_menu_dir'], calls[1]['puzzle_menu_dir'])
+
+    def test_studio_missing_or_invalid_puzzle_evidence_rejects_all_pass_markers(self):
+        for mutation in ('missing', 'renamed', 'truncated', 'uniform', 'pixel-size'):
+            with self.subTest(mutation=mutation):
+                result, rows, cases, _, images = self.run_fixture(
+                    runner=STUDIO_RUNNER, puzzle_mutation=mutation,
+                    missing_raster='puzzle_menu_lifecycle_regression' if mutation == 'missing' else '')
+                self.assertEqual(result.returncode, 1)
+                self.assertEqual(len(rows), len(cases))
+                self.assertTrue(all(row.endswith('\tPASS') for row in rows))
+                self.assertEqual(len(images), 24)
+                self.assertEqual(result.puzzle_menu_images, [])
+                self.assertIn('puzzle-menu-raster-roster', result.stderr)
+                self.assertNotIn('[LumoStudio] PASS', result.stdout)
+
+    def test_studio_native_puzzle_error_after_pass_rejects_zero_engine_exit(self):
+        result, rows, cases, _, images = self.run_fixture(
+            runner=STUDIO_RUNNER, post_pass_error='puzzle_menu_lifecycle_regression')
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(len(rows), len(cases))
+        self.assertEqual(result.stdout.count('[PuzzleMenuLifecycle] PASS'), 2)
+        self.assertEqual(result.stdout.count('ERROR: native fixture error after PASS with process exit zero'), 2)
+        self.assertIn('puzzle_menu_lifecycle_regression\theadless\tFAIL', rows)
+        self.assertIn('puzzle_menu_lifecycle_regression\trendered\tFAIL', rows)
+        self.assertTrue(all(row.endswith('\tPASS') for row in rows
+                            if not row.startswith('puzzle_menu_lifecycle_regression\t')))
+        self.assertEqual(len(images), 24)
+        self.assertEqual(len(result.puzzle_menu_images), 6)
+        self.assertIn('[ProbeRunner] FAIL', result.stderr)
+        self.assertNotIn('[LumoStudio] PASS', result.stdout)
 
 
 class VillageRasterTests(unittest.TestCase):

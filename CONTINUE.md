@@ -12,12 +12,16 @@ Main, producer dirty worktrees and live Host PR461 remain protected.
 Published Native `ccebbe24b489ba7971c605a2bc5187fcfea26f9e`, tree
 `8409dc27958dc102d7fc84b413f28642782668aa`, combines the published Loop camera
 and full living Village with the integrated actual-touch/live-resize repair.
-Its Graphics run `43474541178` and all thirteen auxiliary workflows succeeded.
-Root directly reviewed all five fresh required Graphics PNGs. Its Nextgen run
-`43474541452` has successful Gameplay, Learning Preview and Treasure jobs;
-the complete Core/Workshop/Build/bundle acceptance is still being collected.
-This source uses the frozen Host4098 verifier:41 Core pairs,24 Studio PNGs,
-four Village PNGs and six Touch pairs/32 Touch PNGs. Do not validate it using
+All fifteen workflows succeeded, including Graphics `43474541178`, all
+thirteen auxiliary workflows and all eight jobs of Nextgen `43474541452`.
+Original bundle `14064293493` has 174,014,246 bytes and SHA256
+`4e2eb984edc779175d85bea77555a42146d9c39a443654fd2d6a5dbc573b780d`.
+The frozen Host4098 verifier accepts exactly 41 Core pairs, 24 Studio PNGs,
+four Village PNGs and six Touch pairs/32 Touch PNGs. All four source trees
+match and dirty stamps are empty; 140 PNGs decode (130 current, ten historical
+comparisons) and all 104 bundle logs are clean. Root directly reviewed all five
+fresh required Graphics PNGs and all four current Village originals.
+Do not validate this completed source using
 the stronger next-source contract or relabel its images as later proof.
 
 The next isolated source cleanly merges published Puzzle PR165
@@ -36,8 +40,13 @@ Touch6/32. The six menu frames are960x540 and640x360, each with rotation menu,
 rotation play and classic play. Every frame is decoded and checked for exact
 name, size, bytes, hash and visible content. Root must review a current menu
 capture in addition to the nine families, Village and three Touch surfaces.
-Native orchestration/raster contracts pass15 tests; affected Host contracts
-pass76. Synthetic contract fixtures are never rendered acceptance or APK proof.
+Native orchestration/raster contracts initially passed 15 tests; affected Host
+contracts passed 76. The published standalone Studio followup796b is now also
+connected: eleven probe pairs, unchanged original nine budgets, a separate
+180-second headless/600-second rendered Puzzle path, and separate 24+6 raster
+lists. The full affected runner suite now passes all 18 tests with no skips.
+The shared Native43 and Host43 contracts remain byte-identical. Synthetic
+contract fixtures are never rendered acceptance or APK proof.
 
 ## Preserve accepted repairs and original evidence
 
@@ -60,8 +69,10 @@ Host PR469 supplies the explicit immutable-Git historical APK expectations fix.
 
 ## Remaining exact-source gates
 
-Finish and preserve the current cce run, then publish the next combined source
-without cancelling these original checks. The next source needs its own full
+The complete cce proof is being retained under native-cce-checkpoint. The next
+combined source also connects the published standalone Studio followup796b,
+using the existing separate 24-image and six-image guards. Publish that tested
+source with an expected-cce lease. The next source needs its own full
 Native/Graphics runs and original-image reviews. Then record current Host
 receipts and bind all three Host identity files to the same final Native SHA.
 Real Android compile, API35/API37 and2017-to-2019 in-place update are separate

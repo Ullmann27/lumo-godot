@@ -1,0 +1,259 @@
+{
+  "schema": 1,
+  "recorded_at_utc": "2026-11-13T18:24:05.788855+00:00",
+  "status": "TARGETED_RUNNER_CONTRACTS_PASS_FULL_COMBINED_SOURCE_CI_PENDING",
+  "local_base_commit": "108dc8969cdd6e0f69a307f755bb2512cb2c6722",
+  "published_base_commit": "8a90fa9fb0db7a8f8fb45a0bd157baf476381ab3",
+  "base_tree": "07591ef728f12a665ab226a74778535f05583d1d",
+  "producer_commit": "796b2818ff729dc5389a92f8bf1f7fd7e6b6d93e",
+  "producer_tree": "ffd943c83079c5957514934ad7077f32e743fe68",
+  "owned_source_paths": [
+    "tools/validate_studio.sh",
+    "tools/tests/test_nextgen_runner.py"
+  ],
+  "source_hashes_final": {
+    "native/tools/validate_studio.sh": {
+      "sha256": "6679684e0546b66392b6c3c02939894a12bf41261ceb956bea19168c34ac4c59",
+      "bytes": 3447
+    },
+    "native/tools/tests/test_nextgen_runner.py": {
+      "sha256": "ff694ff34e237044af09f585da9a24ebab2c11b711f560eda1d786825bc103a5",
+      "bytes": 30460
+    }
+  },
+  "red": {
+    "methods": 3,
+    "assertion_failures": 7,
+    "exit_code": 1,
+    "test_file_sha256": "ff694ff34e237044af09f585da9a24ebab2c11b711f560eda1d786825bc103a5",
+    "log_sha256": "7f577cbab90e337f7423300cccf5e0cc8b20da8c49f12f2c709236c83e0309b8"
+  },
+  "green": {
+    "methods": 18,
+    "skips": 0,
+    "exit_code": 0,
+    "unittest_seconds": 48.871,
+    "measured_wrapper_seconds": 49.01691906599444,
+    "log_sha256": "db821ee1c88e6a40ba1fe0ce559bb49bb40f95802ce15fc0598a41d4e2f9601b"
+  },
+  "test_file_identical_red_to_green": true,
+  "scoped_files_stable_during_each_run": 13,
+  "unchanged_native43_and_host43_contract": true,
+  "unrelated_parallel_scope_changes": [
+    {
+      "path": "host/scripts/tests/test_kart_graphics_delivery.py",
+      "before": {
+        "sha256": "74822d7b25059f22943db202ad2907048044a685db81442e45f557b8019ab1b7",
+        "bytes": 24123
+      },
+      "after": {
+        "sha256": "a254ef1cb5bcf736ba79e5f74337d765ce40c91ea3e1d2b983ec3de19f3d6582",
+        "bytes": 27340
+      }
+    }
+  ],
+  "studio_contract": {
+    "probe_pairs": 11,
+    "original_studio_pngs": 24,
+    "additional_puzzle_pngs": 6,
+    "headless_puzzle_budget_seconds": 180,
+    "rendered_puzzle_budget_seconds": 600,
+    "original_nine_probe_arguments_and_budgets_retained": true
+  },
+  "validation_boundary": {
+    "native_studio24": "counts, PNG signature, IHDR minimum dimensions, hashes",
+    "host_studio24": "complete Pillow verify/load",
+    "native_puzzle6": "fixed exact roster/dimensions, complete Pillow verify/load and visible nonuniform content"
+  },
+  "files": [
+    {
+      "path": "after/tools/tests/test_nextgen_runner.py.gz",
+      "encoding": "gzip-mtime-0",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/after/tools/tests/test_nextgen_runner.py",
+      "original_bytes": 30460,
+      "original_sha256": "ff694ff34e237044af09f585da9a24ebab2c11b711f560eda1d786825bc103a5",
+      "stored_bytes": 6637,
+      "stored_sha256": "54c00c06af6882a698fae38369f0b1d089050278041f9f6be76f3c9526d5db5a"
+    },
+    {
+      "path": "after/tools/validate_studio.sh.gz",
+      "encoding": "gzip-mtime-0",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/after/tools/validate_studio.sh",
+      "original_bytes": 3447,
+      "original_sha256": "6679684e0546b66392b6c3c02939894a12bf41261ceb956bea19168c34ac4c59",
+      "stored_bytes": 1312,
+      "stored_sha256": "94197cc5d9f560fca55a9e10cecad330a509d1766ee3eaab433e6e4aac3ad929"
+    },
+    {
+      "path": "bash-syntax.log.gz",
+      "encoding": "gzip-mtime-0",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/bash-syntax.log",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "path": "before/tools/tests/test_nextgen_runner.py.gz",
+      "encoding": "gzip-mtime-0",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/before/tools/tests/test_nextgen_runner.py",
+      "original_bytes": 24565,
+      "original_sha256": "08a157a743e4a3d37285c4850bc57712cd3d81acead7143577f8ab06211cac21",
+      "stored_bytes": 5868,
+      "stored_sha256": "9cd242e91b1657d8ecee33e4372f41417251fc19edc3a57c426b768a4c4d1caa"
+    },
+    {
+      "path": "before/tools/validate_studio.sh.gz",
+      "encoding": "gzip-mtime-0",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/before/tools/validate_studio.sh",
+      "original_bytes": 2930,
+      "original_sha256": "70b2fc4a4835bd1af0169e6f5115387437b13feb4d0efc2928e0778798455bd7",
+      "stored_bytes": 1209,
+      "stored_sha256": "ebed362e2c810e3606c5864c76c100eada3d737b5aaf02d2baf263e941ef36f8"
+    },
+    {
+      "path": "diff-check.log.gz",
+      "encoding": "gzip-mtime-0",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/diff-check.log",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 20,
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "path": "green-result.json",
+      "encoding": "identity",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/green-result.json",
+      "original_bytes": 1697,
+      "original_sha256": "5b54373e0e45903ed3899ae30ee0f08b8931613d6afc59543cfb19f49c5ca404",
+      "stored_bytes": 1697,
+      "stored_sha256": "5b54373e0e45903ed3899ae30ee0f08b8931613d6afc59543cfb19f49c5ca404"
+    },
+    {
+      "path": "green-runner.log.gz",
+      "encoding": "gzip-mtime-0",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/green-runner.log",
+      "original_bytes": 3522,
+      "original_sha256": "db821ee1c88e6a40ba1fe0ce559bb49bb40f95802ce15fc0598a41d4e2f9601b",
+      "stored_bytes": 775,
+      "stored_sha256": "b4d58c46f94160a4edfdc5de067d0c91eeba30634e4c4d3c7e34dfecf04f08c8"
+    },
+    {
+      "path": "green-source-after.json",
+      "encoding": "identity",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/green-source-after.json",
+      "original_bytes": 1997,
+      "original_sha256": "bfdfb8e9e5d881e3ad66327a19d2b8817d5e91610939714905883174660738ef",
+      "stored_bytes": 1997,
+      "stored_sha256": "bfdfb8e9e5d881e3ad66327a19d2b8817d5e91610939714905883174660738ef"
+    },
+    {
+      "path": "green-source-before.json",
+      "encoding": "identity",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/green-source-before.json",
+      "original_bytes": 1997,
+      "original_sha256": "bfdfb8e9e5d881e3ad66327a19d2b8817d5e91610939714905883174660738ef",
+      "stored_bytes": 1997,
+      "stored_sha256": "bfdfb8e9e5d881e3ad66327a19d2b8817d5e91610939714905883174660738ef"
+    },
+    {
+      "path": "implementation.patch.gz",
+      "encoding": "gzip-mtime-0",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/implementation.patch",
+      "original_bytes": 10593,
+      "original_sha256": "3fb9cb7c24a717d968adf888abf9a77793dcff06839587f162a7b344e3351649",
+      "stored_bytes": 2850,
+      "stored_sha256": "db6b3c4c09dc73197ce6a20623bd641cf8830f838b9b8f395ff9ca47d93819d6"
+    },
+    {
+      "path": "producer/commit-api.json.gz",
+      "encoding": "gzip-mtime-0",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/producer/commit-api.json",
+      "original_bytes": 148020,
+      "original_sha256": "0e3e5ed22b8499e1c56ebdc5fafed91ac405969711c1b9a0f92e610255cd381a",
+      "stored_bytes": 17500,
+      "stored_sha256": "a1cca09013b210e0340394e2c8e96be49d5e1d1768dde3b480fbbeedc8e89f35"
+    },
+    {
+      "path": "producer/provenance.json",
+      "encoding": "identity",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/producer/provenance.json",
+      "original_bytes": 1113,
+      "original_sha256": "0709db0bdab439f063498217321be8f92eec8bee291380769f9758662a72eed2",
+      "stored_bytes": 1113,
+      "stored_sha256": "0709db0bdab439f063498217321be8f92eec8bee291380769f9758662a72eed2"
+    },
+    {
+      "path": "producer/tools/tests/test_nextgen_runner.py.gz",
+      "encoding": "gzip-mtime-0",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/producer/tools/tests/test_nextgen_runner.py",
+      "original_bytes": 10326,
+      "original_sha256": "fe0426c3e895d10ecfb4b931d8883625baeac6d387f211f2d2eb700d6c33872e",
+      "stored_bytes": 2964,
+      "stored_sha256": "952f456c748f3547112032b9db69917527b599107c135e37761776c7cfc14475"
+    },
+    {
+      "path": "producer/tools/validate_studio.sh.gz",
+      "encoding": "gzip-mtime-0",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/producer/tools/validate_studio.sh",
+      "original_bytes": 4866,
+      "original_sha256": "236a4ccb73e19e5a2d8ec6fdfb9f56c223aef283dc0d2cb7a37a5570a19ffb31",
+      "stored_bytes": 1914,
+      "stored_sha256": "50ad21bcd5efdd3ed1179a8c87d6f4d910a0a6ccbf02028f2a44997b76cdde8a"
+    },
+    {
+      "path": "red-result.json",
+      "encoding": "identity",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/red-result.json",
+      "original_bytes": 687,
+      "original_sha256": "1b09b4b4482ecd946f61024146d16a96ee25e1437cebc75c770ec5dea06ba9c5",
+      "stored_bytes": 687,
+      "stored_sha256": "1b09b4b4482ecd946f61024146d16a96ee25e1437cebc75c770ec5dea06ba9c5"
+    },
+    {
+      "path": "red-runner.log.gz",
+      "encoding": "gzip-mtime-0",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/red-runner.log",
+      "original_bytes": 6250,
+      "original_sha256": "7f577cbab90e337f7423300cccf5e0cc8b20da8c49f12f2c709236c83e0309b8",
+      "stored_bytes": 547,
+      "stored_sha256": "2158f96ea6869129a5ae1256c7ba6b4c914d895579d6521b963f091d70a3bfae"
+    },
+    {
+      "path": "red-source-after.json",
+      "encoding": "identity",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/red-source-after.json",
+      "original_bytes": 1744,
+      "original_sha256": "41028aa1f7ca8383f724451458f54c700db64ad733e40f3bc8c1e7a0f2a5310e",
+      "stored_bytes": 1744,
+      "stored_sha256": "41028aa1f7ca8383f724451458f54c700db64ad733e40f3bc8c1e7a0f2a5310e"
+    },
+    {
+      "path": "red-source-before.json",
+      "encoding": "identity",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/red-source-before.json",
+      "original_bytes": 1744,
+      "original_sha256": "41028aa1f7ca8383f724451458f54c700db64ad733e40f3bc8c1e7a0f2a5310e",
+      "stored_bytes": 1744,
+      "stored_sha256": "41028aa1f7ca8383f724451458f54c700db64ad733e40f3bc8c1e7a0f2a5310e"
+    },
+    {
+      "path": "source-before.json",
+      "encoding": "identity",
+      "original_path": "/workspace/scratch/b3485b7bb989/studio-puzzle-runner-followup-evidence/source-before.json",
+      "original_bytes": 1997,
+      "original_sha256": "c0ffd6797a0eb672cfa81fa0890d12e75c64d3106e95987ab273ea1375bf581d",
+      "stored_bytes": 1997,
+      "stored_sha256": "c0ffd6797a0eb672cfa81fa0890d12e75c64d3106e95987ab273ea1375bf581d"
+    }
+  ],
+  "readme_sha256": "be57101468349c08572b15ecad85bb9c0eb364b0b9de08f11321c20d3ed4d5c1",
+  "tests_use_synthetic_engine_and_rasters": true,
+  "godot_or_renderer_or_android_tests_rerun": false,
+  "receipt_created": false,
+  "git_ref_or_index_changes": false,
+  "audit_report": {
+    "path": "/workspace/scratch/b3485b7bb989/native-published-head-audit-20261113-1811/report.json",
+    "sha256": "7679e9d4619103ca3a045c54e0aa4a1154f340673bf2461c1acd1e11e894f992"
+  }
+}

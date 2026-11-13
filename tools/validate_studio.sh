@@ -17,7 +17,11 @@ run_probe() {
   shift 4
   local capture="$LOG_DIR/captures/$script"
   local user="$LOG_DIR/data/$script-$mode"
-  mkdir -p "$capture" "$user"
+  local puzzle_menu_evidence="$capture"
+  if [[ "$mode" == headless ]]; then
+    puzzle_menu_evidence="$LOG_DIR/evidence/$script-$mode"
+  fi
+  mkdir -p "$capture" "$user" "$puzzle_menu_evidence"
   local command=("$GODOT")
   local args=(--path . --audio-driver Dummy --script "scripts/tests/$script.gd")
   if [[ "$mode" == headless ]]; then
@@ -34,7 +38,7 @@ run_probe() {
   fi
   XDG_DATA_HOME="$user" XDG_CONFIG_HOME="$user/config" XDG_CACHE_HOME="$user/cache" \
     LUMO_CAPTURE_DIR="$capture" PUZZLE_ROTATION_CAPTURE_DIR="$capture" \
-    TREASURE_EXPLORATION_CAPTURE_DIR="$capture" \
+    TREASURE_EXPLORATION_CAPTURE_DIR="$capture" LUMO_PUZZLE_MENU_EVIDENCE_DIR="$puzzle_menu_evidence" \
     python3 tools/run_godot_probe.py --log "$LOG_DIR/$script-$mode.log" \
     --timeout "$seconds" --required "$marker" -- "${command[@]}" "${args[@]}" "$@"
 }
@@ -52,16 +56,21 @@ check_probe learning_sharing_regression '[LearningSharing] PASS' headless 180
 check_probe learning_studio_regression '[LearningStudio] PASS' headless 180
 check_probe lumo_studio_motion_regression '[LumoStudioMotion] PASS' headless 180
 check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' headless 180
+check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' headless 180
 check_probe treasure_exploration_regression '[TreasureExploration] PASS' headless 180
 check_probe learning_sharing_capture '[LearningSharingCapture] PASS' rendered 600 \
   -- "--output=$LOG_DIR/captures/learning_sharing_capture"
 check_probe lumo_studio_motion_capture '[LumoStudioCapture] PASS' rendered 420
 check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' rendered 600
+check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' rendered 600 -- --capture
 check_probe treasure_exploration_regression '[TreasureExploration] PASS' rendered 600
 
 # A logic PASS in a display process is insufficient: require the native rasters.
 if ! python3 tools/verify_studio_rasters.py "$LOG_DIR"; then
   failures+=("renderer-roster")
+fi
+if ! python3 tools/verify_puzzle_menu_rasters.py "$LOG_DIR"; then
+  failures+=("puzzle-menu-raster-roster")
 fi
 
 if (( ${#failures[@]} )); then

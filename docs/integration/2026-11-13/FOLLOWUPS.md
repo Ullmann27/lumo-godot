@@ -457,3 +457,48 @@ against four explicitly pinned historical Git blobs, retaining package,
 signature, ABI, voice, PCK and manifest guards. Host468 contributes no new App
 runtime; only the additive2020 migration entry is prepared with2018/2019
 compatibility. No2020 version, native pin or foreign receipt is accepted.
+
+### Final cce result
+
+All fifteen cce workflows completed successfully. Nextgen43474541452 has all
+eight jobs green, with original bundle14064293493 (174,014,246 bytes), SHA256
+`4e2eb984edc779175d85bea77555a42146d9c39a443654fd2d6a5dbc573b780d`.
+Release444569876 / asset744655255 preserves that same ZIP identity and points
+to cce. Frozen Host4098 accepts41 Core pairs /24 Studio /4 Village /6 Touch
+pairs /32 Touch PNGs. Four source trees match8409; all dirty stamps are empty.
+All140 PNGs decode (130 current and ten historical comparisons), with104 clean
+bundle logs. Current Core values include Village223 headless/231 rendered,
+Economy337, Art2259 and Build71/79. Workshop passes4129/4148; PlayerFullRoute
+releases two actual playbacks after69ms before PASS. No physical-device FPS
+claim is derived from software rendering.
+
+Root directly opened the four original Village frames and preserved their
+limited findings under root-current-village-four-viewed.json. The screenshots
+show an ellipsized portrait page title and clipped scrolled background strips;
+they are not described as every menu item being visible simultaneously. These
+observations are separate from the next Puzzle source and from a final native
+review receipt.
+
+### Standalone Studio followup connected
+
+Published796b2818ff729dc5389a92f8bf1f7fd7e6b6d93e adds the same Puzzle-menu
+checks to the standalone Studio path. The bounded integration preserves all
+nine original pairs and their arguments/budgets, adds headless180 and
+rendered600 with mandatory capture/evidence settings, and retains separate
+24-image and six-image manifests. The older producer Heredoc verifier was not
+reintroduced. Native24 retains its existing header/size/hash checks; Host24
+decodes completely. The existing Native6 checker fully decodes visible pixels.
+
+All18 affected runner tests pass without skips. The exact same new tests
+against the prior Studio runner first failed three methods/seven assertions.
+Native43 and the Host43 verifier/recorder remain unchanged. The thirteen bound
+files are stable within each run; an independent concurrent Host test edit
+between overall snapshots is separately documented. No additional Godot or
+Android execution is claimed. Full proof:studio-puzzle-runner-followup/.
+
+The complete cce Graphics/Nextgen documents are transported in
+native-cce-checkpoint/original-checkpoints.tar.gz; all495 original files were
+decompressed and byte-compared, including their original manifests and hash
+lists. The archive index and extraction instructions are committed alongside
+the original readable summaries. No source, original log or image identity is
+changed by that lossless packaging.
