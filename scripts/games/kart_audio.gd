@@ -186,7 +186,16 @@ func _notification(what: int) -> void:
 func _exit_tree() -> void:
 	if is_instance_valid(_fade):
 		_fade.kill()
+	_fade = null
+	# Exit can interrupt a crossfade or an effect. Release both the players'
+	# stream references and our cache, including when this node is detached
+	# and later re-entered instead of immediately destroyed.
 	for player in _music:
 		player.stop()
+		player.stream = null
 	for player in _effects:
 		player.stop()
+		player.stream = null
+	_streams.clear()
+	_last_effect.clear()
+	_current = ""

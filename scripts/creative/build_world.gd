@@ -5,6 +5,9 @@ const STATE = preload("res://scripts/creative/build_state.gd")
 const RUNTIME = preload("res://scripts/creative/creative_runtime.gd")
 const KIT = preload("res://scripts/creative/creative_kit.gd")
 const SANDBOX = preload("res://scripts/creative/build_sandbox_tools.gd")
+const EXPLORER = preload("res://scripts/creative/build_explorer.gd")
+const STICK = preload("res://scripts/games/kart_joystick.gd")
+const JUMP_BUTTON = preload("res://scripts/games/jump_touch_button.gd")
 var model = STATE.new()
 var kit = KIT.new()
 var world: Node3D
@@ -53,6 +56,26 @@ var safe_ui: Control
 var placed_nodes: Dictionary = {}
 var touches: Dictionary = {}
 var touch_gesture: bool = false
+var move_mode := false
+var selected_uid := -1
+var move_cell := Vector3i.ZERO
+var move_problem := ""
+var object_drag := false
+var explorer: CharacterBody3D
+var exploring := false
+var explore_ui: Control
+var walk_stick: Control
+var jump_button: Control
+var interaction_button: Button
+var mode_button: Button
+var editor_controls: Array[Control] = []
+var editor_camera: Dictionary = {}
+var walk_orbit := 0.48
+var walk_tilt := 0.34
+var walk_camera_distance := 7.8
+var selection_ghost: Node3D
+var selection_grid: MeshInstance3D
+var walk_notice: Label
 
 
 func _ready() -> void:
@@ -67,7 +90,8 @@ func _ready() -> void:
 		. validate_filename()
 		. substr(0, 80)
 	)
-	save_path = "user://lumo_build_" + child_key + "_1.json"
+	slot = clampi(int(SceneRouter.launch_options.get("buildSlot", 1)), 1, 6)
+	save_path = "user://lumo_build_" + child_key + "_" + str(slot) + ".json"
 	kit.environment(self, "bauwelt_day")
 	_ground()
 	world = Node3D.new()
@@ -111,6 +135,8 @@ func _ready() -> void:
 		model.add_starter_plot("harbor", false)
 		model.add_starter_plot("island", false)
 	_rebuild()
+	explorer = EXPLORER.new()
+	add_child(explorer)
 	_camera_update()
 	get_viewport().size_changed.connect(_resize)
 	_resize()
@@ -149,6 +175,7 @@ func _resize() -> void:
 		RUNTIME.safe_area(self, safe_ui)
 		if is_instance_valid(pause_panel):
 			pause_panel.position = (safe_ui.size - pause_panel.size) * 0.5
+		_layout_explore_controls()
 
 
 func _exit_tree() -> void:
@@ -184,6 +211,7 @@ func _ui() -> void:
 	hud.add_child(count_label)
 	var tools := HBoxContainer.new()
 	hud.add_child(tools)
+	editor_controls.append(tools)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -192,6 +220,9 @@ func _ui() -> void:
 	var actions := HBoxContainer.new()
 	scroll.add_child(actions)
 	for spec in [
+		["Verschieben", _toggle_move],
+		["Siedlung", _open_settlement.bind("settlement")],
+		["Wettbau", _open_settlement.bind("rival")],
 		["Drehen ↻", _rotate],
 		["Entfernen", _toggle_erase],
 		["Rückgängig", _undo],
@@ -207,6 +238,8 @@ func _ui() -> void:
 		["Bauziele", _goals]
 	]:
 		actions.add_child(_day_button(spec[0], spec[1]))
+	mode_button = _day_button("Mit Lumo laufen", _toggle_explore)
+	top.add_child(mode_button)
 	var layer_down: Button = _day_button(
 		"Ebene −",
 		func():
@@ -227,6 +260,7 @@ func _ui() -> void:
 	goal_panel.position = Vector2(14, 156)
 	goal_panel.custom_minimum_size = Vector2(282, 0)
 	root.add_child(goal_panel)
+	editor_controls.append(goal_panel)
 	var goal_box := VBoxContainer.new()
 	goal_panel.add_child(goal_box)
 	goal_label = _day_label("", 17)
@@ -240,6 +274,7 @@ func _ui() -> void:
 	lower.offset_left = 12
 	lower.offset_right = -12
 	root.add_child(lower)
+	editor_controls.append(lower)
 	status = _day_label("Tippe zum Bauen. Ziehe zum Drehen der Kamera. Zwei Finger: zoomen.", 14)
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lower.add_child(status)
@@ -270,6 +305,7 @@ func _ui() -> void:
 	camera_tools.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
 	camera_tools.position = Vector2(-200, -228)
 	root.add_child(camera_tools)
+	editor_controls.append(camera_tools)
 	camera_tools.add_child(
 		_day_button(
 			"−",
@@ -313,6 +349,7 @@ func _ui() -> void:
 	pause_box.add_child(_day_button("Weiterbauen", func(): _pause(false)))
 	pause_box.add_child(_day_button("Speichern", save_world))
 	pause_box.add_child(_day_button("Zur Spielewelt", _leave))
+	_build_explore_controls(root)
 
 
 func _palette() -> void:
@@ -327,6 +364,8 @@ func _palette() -> void:
 			func():
 				chosen = item.id
 				erase_mode = false
+				_cancel_selection()
+				move_mode = false
 				_update_labels(),
 			96
 		)
@@ -469,6 +508,8 @@ func _sync_batched_visuals(batches: Dictionary) -> void:
 func _camera_update() -> void:
 	if not is_instance_valid(camera) or not camera.is_inside_tree():
 		return
+	if exploring:
+		return
 	camera.position = (
 		focus + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * radius
 	)
@@ -484,6 +525,8 @@ func _ray(at: Vector2) -> Dictionary:
 
 
 func _preview_at(at: Vector2) -> Vector3i:
+	if selected_uid >= 0:
+		return _move_preview_at(at)
 	var hit: Dictionary = _ray(at)
 	var target: Vector3
 	if not hit.is_empty():
@@ -511,7 +554,16 @@ func _preview_at(at: Vector2) -> Vector3i:
 
 
 func _tap(at: Vector2) -> void:
-	if paused:
+	if paused or exploring:
+		return
+	if move_mode:
+		if selected_uid >= 0:
+			_move_preview_at(at)
+			_commit_move()
+		else:
+			var selected: Dictionary = _ray(at)
+			if not selected.is_empty() and selected.collider.has_meta("uid"):
+				_select_piece(int(selected.collider.get_meta("uid")))
 		return
 	if not sandbox_mode.is_empty():
 		_sandbox_tap(_preview_at(at))
@@ -539,10 +591,15 @@ func _tap(at: Vector2) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
+		return
 	if event.is_action_pressed("ui_cancel"):
 		_pause(not paused)
 		return
 	if paused:
+		return
+	if exploring:
+		_explore_input(event)
 		return
 	if event is InputEventMouseButton:
 		if event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
@@ -555,6 +612,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				tap_start = event.position
 				dragged = false
 				pointer_id = 0
+				if _begin_object_drag(event.position):
+					return
 				_preview_at(event.position)
 			else:
 				if pointer_id == 0 and not dragged:
@@ -563,6 +622,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion:
 		if pointer_id == 0:
 			dragged = dragged or event.position.distance_to(tap_start) > 10
+			if object_drag:
+				_move_preview_at(event.position)
+				return
 			if dragged:
 				if event.shift_pressed:
 					focus += (
@@ -586,17 +648,24 @@ func _unhandled_input(event: InputEvent) -> void:
 				pointer_id = event.index
 				tap_start = event.position
 				dragged = false
+				_begin_object_drag(event.position)
 			else:
 				touch_gesture = true
 				dragged = true
+				object_drag = false
 		else:
-			if pointer_id == event.index and not dragged and not touch_gesture:
+			if pointer_id == event.index and not dragged and not touch_gesture and not event.canceled:
 				_tap(event.position)
 			touches.erase(event.index)
 			if touches.is_empty():
 				touch_gesture = false
 				pointer_id = -1
 	elif event is InputEventScreenDrag and touches.has(event.index):
+		if object_drag and event.index == pointer_id and touches.size() == 1:
+			touches[event.index] = event.position
+			dragged = dragged or event.position.distance_to(tap_start) > 10
+			_move_preview_at(event.position)
+			return
 		if touches.size() >= 2:
 			var keys := touches.keys()
 			var a: Vector2 = touches[keys[0]]
@@ -639,6 +708,8 @@ func _process(delta: float) -> void:
 	if dirty and autosave >= 3:
 		autosave = 0
 		save_world(false)
+	if exploring:
+		_update_walk_camera(delta)
 	if not guide_path.is_empty():
 		guide_time += delta * 1.3
 		var index: int = mini(int(guide_time), guide_path.size() - 1)
@@ -661,6 +732,8 @@ func _notification(what: int) -> void:
 
 
 func _set_sandbox_mode(mode: String) -> void:
+	_cancel_selection()
+	move_mode = false
 	sandbox_mode = "" if sandbox_mode == mode else mode
 	sandbox_points.clear()
 	erase_mode = false
@@ -732,10 +805,14 @@ func _sandbox_tap(cell: Vector3i) -> void:
 
 func _rotate() -> void:
 	turn = posmod(turn + 1, 4)
+	if selected_uid >= 0:
+		_refresh_move_preview(move_cell)
 	_update_labels()
 
 
 func _toggle_erase() -> void:
+	_cancel_selection()
+	move_mode = false
 	erase_mode = not erase_mode
 	if erase_mode:
 		sandbox_mode = ""
@@ -748,6 +825,7 @@ func _toggle_erase() -> void:
 
 
 func _undo() -> void:
+	_cancel_selection()
 	sandbox_points.clear()
 	if model.undo():
 		dirty = true
@@ -755,6 +833,7 @@ func _undo() -> void:
 
 
 func _redo() -> void:
+	_cancel_selection()
 	sandbox_points.clear()
 	if model.redo():
 		dirty = true
@@ -787,6 +866,14 @@ func _pause(value: bool) -> void:
 	pointer_id = -1
 	touches.clear()
 	touch_gesture = false
+	object_drag = false
+	if is_instance_valid(explorer):
+		explorer.set_active(exploring and not value)
+		explorer.visible = exploring
+	if is_instance_valid(walk_stick):
+		walk_stick.set_enabled(exploring and not value)
+		jump_button.set_enabled(exploring and not value)
+		interaction_button.disabled = value
 	if value:
 		save_world(false)
 
@@ -824,6 +911,7 @@ func load_world(show_message: bool = true) -> bool:
 		if show_message:
 			status.text = "Dieser Spielstand ist beschädigt. Deine offene Welt bleibt erhalten."
 		return false
+	_cancel_selection()
 	goal = str(raw.get("goal", "bridge"))
 	if goal not in ["house", "bridge", "tower", "garden", "castle", "village"]:
 		goal = "bridge"
@@ -891,6 +979,7 @@ func _choose(action: Callable, id: Variant, dialog: Window) -> void:
 func _open_slot(id: int) -> void:
 	if not save_world(false):
 		return
+	_cancel_selection()
 	slot = id
 	save_path = "user://lumo_build_" + child_key + "_" + str(slot) + ".json"
 	if not load_world(false):
@@ -924,6 +1013,7 @@ func _templates() -> void:
 
 
 func _select_template(id: String) -> void:
+	_cancel_selection()
 	model.template(id)
 	dirty = true
 	_rebuild()
@@ -1030,6 +1120,336 @@ func _day_label(text: String, size: int = 18) -> Label:
 func _clamp_focus() -> void:
 	focus.x = clampf(focus.x, -FOCUS_LIMIT, FOCUS_LIMIT)
 	focus.z = clampf(focus.z, -FOCUS_LIMIT, FOCUS_LIMIT)
+
+
+func _toggle_move() -> void:
+	_cancel_selection()
+	move_mode = not move_mode
+	erase_mode = false
+	sandbox_mode = ""
+	sandbox_points.clear()
+	status.text = (
+		"Bauteil antippen oder greifen. Danach ziehen, drehen und auf einem freien Platz absetzen."
+		if move_mode else "Tippe auf einen freien Platz zum Bauen."
+	)
+
+
+func _open_settlement(mode: String) -> void:
+	if paused or not save_world(false):
+		return
+	SceneRouter.launch_options["settlementMode"] = mode
+	SceneRouter.launch_options["buildSlot"] = slot
+	SceneRouter.goto("settlement")
+
+
+func _cancel_selection() -> void:
+	selected_uid = -1
+	object_drag = false
+	move_problem = ""
+	if is_instance_valid(selection_ghost):
+		selection_ghost.queue_free()
+		selection_ghost = null
+	if is_instance_valid(selection_grid):
+		selection_grid.hide()
+	if is_instance_valid(preview):
+		preview.visible = not exploring
+
+
+func _select_piece(uid: int) -> bool:
+	var piece: Dictionary = model.piece_by_id(uid)
+	if piece.is_empty():
+		return false
+	_cancel_selection()
+	move_mode = true
+	selected_uid = uid
+	chosen = str(piece.part)
+	turn = int(piece.turn)
+	layer = int(piece.y)
+	selection_ghost = kit.part_node(CATALOG.part(chosen))
+	selection_ghost.name = "SelectedBuildGhost"
+	# Preview geometry never receives a physics ray or collides with Lumo.
+	selection_ghost.collision_layer = 0
+	selection_ghost.collision_mask = 0
+	add_child(selection_ghost)
+	for collision in selection_ghost.find_children("*", "CollisionShape3D", true, false):
+		collision.disabled = true
+	_refresh_move_preview(Vector3i(piece.x, piece.y, piece.z))
+	status.text = "%s ausgewählt. Ziehen oder Ziel antippen; Drehen ↻ verändert die Vorschau." % CATALOG.part(chosen).name
+	return true
+
+
+func _begin_object_drag(at: Vector2) -> bool:
+	if not move_mode:
+		return false
+	var hit: Dictionary = _ray(at)
+	if hit.is_empty() or not hit.collider.has_meta("uid"):
+		return false
+	var uid := int(hit.collider.get_meta("uid"))
+	if selected_uid < 0:
+		_select_piece(uid)
+	if uid != selected_uid:
+		return false
+	object_drag = true
+	return true
+
+
+func _move_preview_at(at: Vector2) -> Vector3i:
+	var origin := camera.project_ray_origin(at)
+	var direction := camera.project_ray_normal(at)
+	if absf(direction.y) < 0.001:
+		return move_cell
+	var distance := (float(layer) - origin.y) / direction.y
+	if distance <= 0:
+		return move_cell
+	var target := origin + direction * distance
+	var cell := Vector3i(floori(target.x), layer, floori(target.z))
+	if cell != move_cell:
+		_refresh_move_preview(cell)
+	return cell
+
+
+func _refresh_move_preview(cell: Vector3i) -> void:
+	move_cell = cell
+	move_problem = model.transform_error(selected_uid, cell, turn)
+	var item: Dictionary = CATALOG.part(chosen)
+	var size: Vector3 = CATALOG.size_of(chosen, turn)
+	var original_size: Vector3 = item.size
+	var offset: Vector3 = [
+		Vector3.ZERO, Vector3(0, 0, original_size.x),
+		Vector3(original_size.x, 0, original_size.z), Vector3(original_size.z, 0, 0)
+	][posmod(turn, 4)]
+	var color := Color("53ded0") if move_problem.is_empty() else Color("ed9675")
+	var material := kit.material(color, true, true)
+	if is_instance_valid(selection_ghost):
+		selection_ghost.position = Vector3(cell) + offset
+		selection_ghost.rotation.y = turn * PI * 0.5
+		for mesh in selection_ghost.find_children("*", "MeshInstance3D", true, false):
+			mesh.material_override = material
+			mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	preview.position = Vector3(cell) + size * 0.5
+	preview.mesh.size = size * 1.015
+	preview.material_override = material
+	preview.hide()
+	if not is_instance_valid(selection_grid):
+		selection_grid = MeshInstance3D.new()
+		selection_grid.name = "BuildPlacementGrid"
+		selection_grid.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(selection_grid)
+	var lines := ImmediateMesh.new()
+	lines.surface_begin(Mesh.PRIMITIVE_LINES, kit.material(color, true))
+	for x in range(-2, int(size.x) + 3):
+		lines.surface_add_vertex(Vector3(x, 0.035, -2))
+		lines.surface_add_vertex(Vector3(x, 0.035, size.z + 2))
+	for z in range(-2, int(size.z) + 3):
+		lines.surface_add_vertex(Vector3(-2, 0.035, z))
+		lines.surface_add_vertex(Vector3(size.x + 2, 0.035, z))
+	lines.surface_end()
+	selection_grid.mesh = lines
+	selection_grid.position = Vector3(cell)
+	selection_grid.show()
+	_update_labels()
+
+
+func _commit_move() -> bool:
+	if selected_uid < 0:
+		return false
+	var problem: String = model.transform_piece(selected_uid, move_cell, turn)
+	if not problem.is_empty():
+		status.text = problem
+		return false
+	var part_name := str(CATALOG.part(chosen).name)
+	_cancel_selection()
+	dirty = true
+	_rebuild()
+	status.text = "%s versetzt. Rückgängig stellt den vorherigen Platz wieder her." % part_name
+	return true
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
+		return
+	# The world owns a picked object until its finger releases, including over
+	# the palette. A second finger turns the operation into camera navigation.
+	if paused or not object_drag:
+		return
+	var released: bool = (
+		event is InputEventScreenTouch and event.index == pointer_id and not event.pressed
+	) or (
+		event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT
+		and pointer_id == 0 and not event.pressed
+	)
+	if not released:
+		return
+	var canceled: bool = event is InputEventScreenTouch and event.canceled
+	if dragged and not canceled:
+		_move_preview_at(event.position)
+		_commit_move()
+	object_drag = false
+	pointer_id = -1
+	touches.clear()
+	get_viewport().set_input_as_handled()
+
+
+func _build_explore_controls(root: Control) -> void:
+	explore_ui = Control.new()
+	explore_ui.name = "BuildExploreControls"
+	explore_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	explore_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	explore_ui.hide()
+	root.add_child(explore_ui)
+	walk_stick = STICK.new()
+	walk_stick.name = "BuildWalkStick"
+	explore_ui.add_child(walk_stick)
+	walk_stick.tooltip_text = "Lumo bewegen: Stick in die gewünschte Richtung ziehen."
+	jump_button = JUMP_BUTTON.new()
+	jump_button.name = "BuildJumpButton"
+	jump_button.hold_changed.connect(func(held: bool): explorer.hold_jump(held))
+	explore_ui.add_child(jump_button)
+	interaction_button = _day_button("Ansehen", _explore_interact, 110)
+	interaction_button.name = "BuildInspectButton"
+	explore_ui.add_child(interaction_button)
+	walk_notice = _day_label("Links bewegen · rechts springen · Bauteile aus der Nähe ansehen", 16)
+	walk_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	walk_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	walk_notice.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	explore_ui.add_child(walk_notice)
+	_layout_explore_controls()
+
+
+func _layout_explore_controls() -> void:
+	if not is_instance_valid(explore_ui):
+		return
+	var available := safe_ui.size
+	var stick_side := clampf(minf(available.x * 0.29, available.y * 0.37), 112.0, 168.0)
+	walk_stick.custom_minimum_size = Vector2.ONE * stick_side
+	walk_stick.size = Vector2.ONE * stick_side
+	walk_stick.position = Vector2(16, available.y - stick_side - 20)
+	jump_button.size = Vector2(112, 112)
+	jump_button.position = Vector2(available.x - 128, available.y - 132)
+	interaction_button.size = Vector2(112, 52)
+	interaction_button.position = Vector2(available.x - 128, available.y - 196)
+	walk_notice.position = Vector2(16, 78)
+	walk_notice.size = Vector2(maxf(120, available.x - 32), 48)
+
+
+func _toggle_explore() -> void:
+	if paused or not is_instance_valid(explorer):
+		return
+	_cancel_selection()
+	exploring = not exploring
+	if exploring:
+		editor_camera = {"orbit": orbit, "tilt": tilt, "radius": radius, "focus": focus}
+		walk_orbit = orbit
+		explorer.start_at(_find_explorer_spawn())
+		_update_walk_camera(1.0)
+	else:
+		explorer.set_active(false)
+		orbit = float(editor_camera.get("orbit", START_ORBIT))
+		tilt = float(editor_camera.get("tilt", START_TILT))
+		radius = float(editor_camera.get("radius", START_RADIUS))
+		focus = editor_camera.get("focus", START_FOCUS)
+		_camera_update()
+	for control in editor_controls:
+		control.visible = not exploring
+	preview.visible = not exploring
+	explore_ui.visible = exploring
+	walk_stick.set_enabled(exploring)
+	jump_button.set_enabled(exploring)
+	mode_button.text = "Weiterbauen" if exploring else "Mit Lumo laufen"
+	_layout_explore_controls()
+
+
+func _find_explorer_spawn() -> Vector3:
+	var occupied: Dictionary = model.occupied()
+	var preferred := Vector3i(clampi(roundi(focus.x), -23, 23), 0, clampi(roundi(focus.z + 3), -23, 23))
+	var nearest := Vector3(-24.2, 0.08, -24.2)
+	var best_distance := INF
+	for x in range(-23, 24):
+		for z in range(-23, 24):
+			if not STATE.ground_at(x, z):
+				continue
+			if occupied.has(Vector3i(x, 0, z)) or occupied.has(Vector3i(x, 1, z)):
+				continue
+			var distance := Vector3i(x, 0, z).distance_squared_to(preferred)
+			if distance < best_distance:
+				best_distance = distance
+				nearest = Vector3(x + 0.5, 0.08, z + 0.5)
+	# At the world limit there are always bank cells outside the placed volumes.
+	return nearest
+
+
+func _physics_process(delta: float) -> void:
+	if not exploring or paused or not is_instance_valid(explorer):
+		return
+	var keyboard := Vector2(
+		float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT))
+		- float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)),
+		float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN))
+		- float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP))
+	)
+	explorer.move_axis = (walk_stick.target + keyboard).limit_length(1.0)
+	explorer.camera_yaw = walk_orbit
+	explorer.advance_motion(delta)
+
+
+func _update_walk_camera(delta: float) -> void:
+	var at := explorer.position + Vector3.UP * 1.05
+	var offset := Vector3(sin(walk_orbit) * cos(walk_tilt), sin(walk_tilt), cos(walk_orbit) * cos(walk_tilt)) * walk_camera_distance
+	var target := at + offset
+	var ray := PhysicsRayQueryParameters3D.create(at, target, 1, [explorer.get_rid()])
+	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
+	if not hit.is_empty():
+		target = hit.position + hit.normal * 0.22
+	camera.position = camera.position.lerp(target, 1.0 - exp(-10.0 * delta))
+	if camera.position.distance_squared_to(at) > 0.01:
+		camera.look_at(at)
+
+
+func _explore_input(event: InputEvent) -> void:
+	if event is InputEventKey and not event.echo:
+		if event.physical_keycode == KEY_SPACE or event.keycode == KEY_SPACE:
+			explorer.hold_jump(event.pressed)
+		if event.pressed and event.keycode == KEY_E:
+			_explore_interact()
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		pointer_id = 0 if event.pressed else -1
+	elif event is InputEventMouseMotion and pointer_id == 0:
+		walk_orbit -= event.relative.x * 0.006
+		walk_tilt = clampf(walk_tilt + event.relative.y * 0.004, 0.15, 0.80)
+	elif event is InputEventScreenTouch:
+		if event.pressed and pointer_id < 0:
+			pointer_id = event.index
+		elif not event.pressed and pointer_id == event.index:
+			pointer_id = -1
+	elif event is InputEventScreenDrag and event.index == pointer_id:
+		walk_orbit -= event.relative.x * 0.006
+		walk_tilt = clampf(walk_tilt + event.relative.y * 0.004, 0.15, 0.80)
+
+
+func _explore_interact() -> void:
+	if not exploring or paused:
+		return
+	var nearest: Dictionary = {}
+	var distance := 3.5
+	for piece in model.pieces:
+		var size: Vector3 = CATALOG.size_of(str(piece.part), int(piece.turn))
+		var bounds := AABB(Vector3(piece.x, piece.y, piece.z), size)
+		var point := Vector3(
+			clampf(explorer.position.x, bounds.position.x, bounds.end.x),
+			clampf(explorer.position.y + 0.7, bounds.position.y, bounds.end.y),
+			clampf(explorer.position.z, bounds.position.z, bounds.end.z)
+		)
+		var candidate := point.distance_to(explorer.position + Vector3.UP * 0.7)
+		if candidate < distance:
+			distance = candidate
+			nearest = piece
+	if nearest.is_empty():
+		walk_notice.text = "Gehe zu einem Bauteil und tippe auf Ansehen."
+		return
+	var item: Dictionary = CATALOG.part(str(nearest.part))
+	var size: Vector3i = CATALOG.size_of(str(nearest.part), int(nearest.turn))
+	walk_notice.text = "%s · %d breit, %d hoch, %d tief. Das hast du gebaut!" % [item.name, size.x, size.y, size.z]
+	explorer.point_at_object()
 
 
 func _place_feedback(cell: Vector3i) -> void:

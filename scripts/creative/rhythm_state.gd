@@ -6,6 +6,15 @@ const SONGS = [
 	{"id": "funkelreise", "name": "Funkelreise", "bpm": 120, "root": 67},
 	{"id": "mondfunkeln", "name": "Mondfunkeln", "bpm": 88, "root": 57}
 ]
+# Each original song has an identifiable phrase. Difficulty changes spacing,
+# never the amount of rewards available; every chart contains forty notes.
+const PHRASES = [
+	{"lanes": [0, 1, 2, 3, 1, 0, 2, 2, 1, 3], "gaps": [1, 1, 1, 1, 2, 1, 1, 2, 1, 1]},
+	{"lanes": [0, 1, 2, 1, 2, 3, 2, 1, 0, 1], "gaps": [1, 1, 2, 1, 2, 2, 1, 2, 2, 1]},
+	{"lanes": [3, 1, 2, 0, 2, 3, 1, 0, 2, 1], "gaps": [1, 2, 1, 1, 2, 1, 2, 2, 1, 1]},
+	{"lanes": [1, 1, 2, 2, 3, 2, 0, 3, 2, 0], "gaps": [2, 1, 2, 1, 2, 2, 1, 2, 1, 2]}
+]
+const DIFFICULTY_NAMES := ["Entdecken", "Abenteuer", "Sternen-Profi"]
 const COMBO_MILESTONES: Array[int] = [5, 10, 20]
 const COMBO_BONUS_POINTS := {5: 10, 10: 25, 20: 50}
 const COMBO_CHEERS := {
@@ -31,7 +40,8 @@ var song: Dictionary
 
 
 func setup(song_index: int, difficulty: int = 0) -> void:
-	song = SONGS[posmod(song_index, SONGS.size())]
+	song_index = posmod(song_index, SONGS.size())
+	song = SONGS[song_index]
 	notes.clear()
 	time = -2.5
 	score = 0
@@ -45,6 +55,9 @@ func setup(song_index: int, difficulty: int = 0) -> void:
 	held.clear()
 	window = [0.28, 0.22, 0.17][clampi(difficulty, 0, 2)]
 	var beat: float = 60.0 / float(song.bpm)
+	var phrase: Dictionary = PHRASES[posmod(song_index, SONGS.size())]
+	var spacing: float = [2.0, 1.5, 1.0][clampi(difficulty, 0, 2)]
+	var next_beat := 4.0
 	for i in range(40):
 		var kind := "tap"
 		if i % 10 == 4:
@@ -53,13 +66,18 @@ func setup(song_index: int, difficulty: int = 0) -> void:
 			kind = "slide"
 		if i % 10 == 9:
 			kind = "star"
-		var lane: int = [0, 1, 2, 3, 1, 0, 2, 2, 1, 3][i % 10]
-		var length: float = beat * 0.85 if kind in ["hold", "slide"] else 0
+		var lane: int = int(phrase.lanes[i % 10])
+		# Alternating phrases answer each other without changing the familiar
+		# first phrase or requiring a swipe across all four touch targets.
+		if song_index != 0 and i / 10 % 2 == 1:
+			lane = 3 - lane
+		var gap: float = float(phrase.gaps[i % 10]) * spacing
+		var length: float = beat * minf(1.0, gap * 0.55) if kind in ["hold", "slide"] else 0
 		notes.append(
 			{
-				"time": 1.5 + i * beat * 1.35,
+				"time": next_beat * beat,
 				"lane": lane,
-				"target": posmod(lane + 1, 4),
+				"target": lane + 1 if lane < 3 else lane - 1,
 				"kind": kind,
 				"length": length,
 				"state": 0,
@@ -67,6 +85,7 @@ func setup(song_index: int, difficulty: int = 0) -> void:
 			}
 		)
 		maximum += 200 if kind == "star" else 100
+		next_beat += gap
 	duration = float(notes[-1].time) + 2.5
 
 
@@ -85,6 +104,8 @@ func advance(delta: float) -> void:
 
 
 func press(lane: int) -> bool:
+	if lane < 0 or lane >= 4:
+		return false
 	held[lane] = true
 	# The target of a slide is evaluated before a new note on the same lane.
 	for note in notes:

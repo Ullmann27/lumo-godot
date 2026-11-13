@@ -24,10 +24,13 @@ const SCENES: Dictionary = {
 	"games": "res://scenes/games/game_hub.tscn",
 	"puzzle": "res://scenes/creative/puzzle_world.tscn",
 	"build": "res://scenes/creative/build_world.tscn",
+	"settlement": "res://scenes/creative/build_settlement_world.tscn",
 	"rhythm": "res://scenes/creative/rhythm_world.tscn",
 	"treasure": "res://scenes/creative/treasure_world.tscn",
 	"kart": "res://scenes/games/kart_island.tscn",
 	"jump": "res://scenes/games/jump_islands.tscn",
+	"learning": "res://scenes/learning/learning_world.tscn",
+	"cards": "res://scenes/games/cards_table.tscn",
 	"stars": "res://scenes/games/star_collect.tscn",
 	"parent": "res://scenes/games/parent_settings.tscn",
 }

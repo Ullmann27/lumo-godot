@@ -8,6 +8,7 @@ const STEP: float = 1.0 / 60.0
 var failures: int = 0
 var checks: int = 0
 var game
+var audio_playbacks: Array[WeakRef] = []
 
 
 func _initialize() -> void:
@@ -23,6 +24,7 @@ func _check(condition: bool, label: String) -> void:
 
 func _fresh(mode: String) -> void:
 	if is_instance_valid(game):
+		_observe_playbacks(game)
 		game.abandoned = true
 		game.queue_free()
 		await process_frame
@@ -59,13 +61,37 @@ func _run() -> void:
 	await _player_lifecycle()
 	await _fresh("race")
 	await _rival_physics()
+	_observe_playbacks(game)
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
+	_check(not audio_playbacks.is_empty(), "Teardown observes actual music, effects or engine playbacks")
+	# Godot's audio mixer retires stopped playbacks asynchronously. Observe
+	# their actual lifetime rather than guessing that 0.1 s was sufficient.
+	# A retained playback still fails the gate with its concrete class name.
+	var release_deadline := Time.get_ticks_msec() + 3000
+	while not _remaining_playbacks().is_empty() and Time.get_ticks_msec() < release_deadline:
+		await process_frame
+	_check(_remaining_playbacks().is_empty(), "All production audio playbacks released: " + str(_remaining_playbacks()))
 	if failures == 0:
 		print("[KartLassoProduction] PASS: %d assertions; real warning/catch/rival motion, pause, rescue and saved-race rebuild" % checks)
-	await create_timer(0.1).timeout
 	quit(0 if failures == 0 else 1)
+
+
+func _observe_playbacks(node: Node) -> void:
+	if node is AudioStreamPlayer and node.has_stream_playback():
+		audio_playbacks.append(weakref(node.get_stream_playback()))
+	for child in node.get_children():
+		_observe_playbacks(child)
+
+
+func _remaining_playbacks() -> Array[String]:
+	var remaining: Array[String] = []
+	for reference in audio_playbacks:
+		var playback = reference.get_ref()
+		if playback != null:
+			remaining.append(playback.get_class())
+	return remaining
 
 
 func _player_lifecycle() -> void:

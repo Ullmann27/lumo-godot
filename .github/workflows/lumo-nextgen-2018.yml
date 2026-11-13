@@ -1,0 +1,195 @@
+name: LUMO Next Generation 2018 native acceptance
+
+on:
+  push:
+    branches: [chatgpt/lumo-nextgen-20261113]
+  pull_request:
+    branches: [chatgpt/lumo-action-stage-20261112]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lumo-nextgen-2018-acceptance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Independent, early renderer evidence for the active light/camera review.
+  # The complete new-worlds/gameplay jobs remain required for final acceptance.
+  learning-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      LUMO_PREVIEW_DIR: ${{ github.workspace }}/learning-preview
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install exact verified Godot engine and software renderer
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import exact production source and capture the actual learning world
+        run: |
+          set -euo pipefail
+          mkdir -p "$LUMO_PREVIEW_DIR"
+          git rev-parse HEAD > "$LUMO_PREVIEW_DIR/source-sha.txt"
+          git rev-parse 'HEAD^{tree}' > "$LUMO_PREVIEW_DIR/source-tree.txt"
+          godot --version > "$LUMO_PREVIEW_DIR/engine.txt"
+          export XDG_DATA_HOME="$LUMO_PREVIEW_DIR/user-data"
+          export XDG_CONFIG_HOME="$LUMO_PREVIEW_DIR/user-config"
+          export XDG_CACHE_HOME="$LUMO_PREVIEW_DIR/user-cache"
+          mkdir -p "$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+          godot --headless --editor --import --quit 2>&1 | tee "$LUMO_PREVIEW_DIR/import.log"
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$LUMO_PREVIEW_DIR/import.log"; then exit 1; fi
+          LUMO_CAPTURE_DIR="$LUMO_PREVIEW_DIR/images" python3 tools/run_godot_probe.py \
+            --log "$LUMO_PREVIEW_DIR/render.log" --timeout 900 --required '[LearningCapture] PASS' -- \
+            xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --script scripts/tests/learning_world_capture.gd -- --output="$LUMO_PREVIEW_DIR/images"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-nextgen-2018-learning-preview
+          path: learning-preview/
+          if-no-files-found: error
+          retention-days: 30
+
+  gameplay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      LUMO_2014_LOG_DIR: ${{ github.workspace }}/acceptance-evidence
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install exact verified Godot engine and software renderer
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import production project and validate structure
+        run: |
+          set -euo pipefail
+          mkdir -p "$LUMO_2014_LOG_DIR"
+          git rev-parse HEAD > "$LUMO_2014_LOG_DIR/source-sha.txt"
+          python3 tools/validate_project.py 2>&1 | tee "$LUMO_2014_LOG_DIR/project-validation.log"
+          godot --headless --editor --import --quit 2>&1 | tee "$LUMO_2014_LOG_DIR/import.log"
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$LUMO_2014_LOG_DIR/import.log"; then exit 1; fi
+      - name: Live full-screen menu, action ramps and lasso render evidence
+        run: LUMO_ACTION_LOG_DIR="$LUMO_2014_LOG_DIR/action-stage" bash tools/validate_action_stage.sh
+      - name: Existing gameplay regression suite
+        run: |
+          set -euo pipefail
+          bash tools/validate_project.sh 2>&1 | tee "$LUMO_2014_LOG_DIR/existing-gameplay.log"
+      - name: Continuous loops, physical ramps, fair AI and living harbor
+        run: bash tools/validate_2014.sh
+      - name: Integrated streetfronts, original Lumo and garage presentation
+        run: LUMO_ART_LOG_DIR="$LUMO_2014_LOG_DIR/technical-art" bash tools/validate_technical_art.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-nextgen-2018-legacy-evidence
+          path: |
+            acceptance-evidence/
+            exports/spatial-menu/
+            exports/nextgen/
+            exports/creative-build/
+            exports/jump/
+            exports/learning/
+            exports/nextgen-garage/
+          if-no-files-found: error
+          retention-days: 30
+
+  new-worlds:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      LUMO_2014_LOG_DIR: ${{ github.workspace }}/nextgen-evidence
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install exact verified Godot engine and software renderer
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import production project and validate structure
+        run: |
+          set -euo pipefail
+          mkdir -p "$LUMO_2014_LOG_DIR"
+          git rev-parse HEAD > "$LUMO_2014_LOG_DIR/source-sha.txt"
+          python3 tools/validate_project.py 2>&1 | tee "$LUMO_2014_LOG_DIR/project-validation.log"
+          godot --headless --editor --import --quit 2>&1 | tee "$LUMO_2014_LOG_DIR/import.log"
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$LUMO_2014_LOG_DIR/import.log"; then exit 1; fi
+      - name: Verify fail-closed collection of every independent module
+        run: python3 -m unittest discover -s tools/tests -p test_nextgen_runner.py -v
+      - name: Capture the original 2017 garage using its exact production source
+        run: |
+          set -euo pipefail
+          baseline="$RUNNER_TEMP/lumo-nextgen-original-2017"
+          proof="$LUMO_2014_LOG_DIR/baseline-2017"
+          mkdir -p "$proof" "$baseline"
+          git -C "$baseline" init
+          git -C "$baseline" remote add origin https://github.com/Ullmann27/lumo-godot.git
+          git -C "$baseline" fetch --depth 1 origin 1d5c5cb45a323228f627ec529e6ff1ddd86f1c57
+          git -C "$baseline" checkout --detach FETCH_HEAD
+          test "$(git -C "$baseline" rev-parse HEAD)" = 1d5c5cb45a323228f627ec529e6ff1ddd86f1c57
+          git -C "$baseline" rev-parse HEAD > "$proof/source-sha.txt"
+          git -C "$baseline" rev-parse 'HEAD^{tree}' > "$proof/source-tree.txt"
+          cp scripts/tests/kart_nextgen_garage_baseline_capture.gd "$baseline/scripts/tests/"
+          sha256sum "$baseline/scripts/tests/kart_nextgen_garage_baseline_capture.gd" > "$proof/test-sha256.txt"
+          export XDG_DATA_HOME="$proof/user-data"
+          export XDG_CONFIG_HOME="$proof/user-config"
+          export XDG_CACHE_HOME="$proof/user-cache"
+          mkdir -p "$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+          godot --headless --path "$baseline" --editor --import --quit 2>&1 | tee "$proof/import.log"
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$proof/import.log"; then exit 1; fi
+          LUMO_CAPTURE_DIR="$proof/garage" python3 tools/run_godot_probe.py \
+            --log "$proof/garage-render.log" --timeout 420 --required '[NextGenGarageBefore] PASS' -- \
+            xvfb-run -a -s '-screen 0 2560x2560x24' godot --path "$baseline" \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --script "$baseline/scripts/tests/kart_nextgen_garage_baseline_capture.gd"
+          python3 tools/run_godot_probe.py \
+            --log "$proof/build-render.log" --timeout 420 \
+            --required '[CreativeBuild] PASS: actual world, successful JSON reload, pause, 4 rendered screenshots' -- \
+            xvfb-run -a -s '-screen 0 2560x2560x24' godot --path "$baseline" \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --script "$baseline/scripts/tests/creative_build_capture.gd"
+          cp -R "$baseline/exports/creative-build" "$proof/build"
+      - name: New learning, character and interactive production-scene gates
+        run: LUMO_NEXTGEN_LOG_DIR="$LUMO_2014_LOG_DIR/nextgen" bash tools/validate_nextgen.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-nextgen-2018-native-evidence
+          path: |
+            nextgen-evidence/
+            exports/nextgen-garage/
+          if-no-files-found: error
+          retention-days: 30

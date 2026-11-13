@@ -7,6 +7,7 @@ const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const RAMP_PLAN = preload("res://scripts/games/kart_rival_ramp_plan.gd")
 const LASSO_RULES = preload("res://scripts/games/kart_lasso_rules.gd")
+const TRACK_PASS = preload("res://scripts/games/kart_track_pass.gd")
 var game
 var output := "res://exports/player-full-route"
 var recording := false
@@ -19,6 +20,7 @@ var inverted_frames := 0
 var recording_frame := 0
 var lasso_hold := 0.0
 var longest_lasso_hold := 0.0
+var test_child := ""
 
 
 func _initialize() -> void:
@@ -141,6 +143,10 @@ func _run() -> void:
 		assert(DisplayServer.get_name() != "headless", "Recording requires the actual renderer")
 	root.size = Vector2i(1280, 720)
 	DirAccess.make_dir_recursive_absolute(output)
+	var host = root.get_node("HostBridge")
+	var previous_host_options: Dictionary = host._options.duplicate(true)
+	test_child = "kart_full_route_%d" % Time.get_ticks_usec()
+	host._options["childKey"] = test_child
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
@@ -257,6 +263,19 @@ func _run() -> void:
 		or longest_lasso_hold <= 0.0
 		or longest_lasso_hold > LASSO_RULES.HOLD_SECONDS + STEP
 	)
+	# This is the actual touch-driven finish above. No lap, pose, gate or
+	# progress injection is used to obtain the new permanent objective.
+	var mastery: Dictionary = game.result_payload.get("trackPass", {})
+	var achieved := 1
+	if int(game.result_payload.get("place", 6)) <= 3:
+		achieved = 2
+	if int(game.result_payload.get("place", 6)) == 1 and game.reset_count == 0:
+		achieved = 3
+	var reloaded_pass = TRACK_PASS.new(test_child)
+	var other_child = TRACK_PASS.new(test_child + "_other")
+	failed = failed or not bool(mastery.get("eligible", false)) or not bool(mastery.get("saved", false))
+	failed = failed or reloaded_pass.stage("sonnenhafen", "flott") != achieved
+	failed = failed or reloaded_pass.stage("sonnenhafen", "pro") != 0 or other_child.total("flott") != 0
 	await _capture("finish" if game.finished else "failed")
 	var report := _snapshot()
 	(
@@ -279,6 +298,9 @@ func _run() -> void:
 				"display_server": DisplayServer.get_name(),
 				"physical_device_performance": "NOT TESTED",
 				"position_or_progress_injection": false,
+				"track_pass": mastery,
+				"track_pass_persistent_stage": reloaded_pass.stage("sonnenhafen", "flott"),
+				"track_pass_other_child_total": other_child.total("flott"),
 			}
 		)
 	)
@@ -295,6 +317,8 @@ func _run() -> void:
 	)
 	game.abandoned = true
 	game.queue_free()
+	host._options = previous_host_options
+	DirAccess.remove_absolute(TRACK_PASS.path_for(test_child))
 	root.world_3d.fallback_environment = null
 	await process_frame
 	await create_timer(0.6).timeout

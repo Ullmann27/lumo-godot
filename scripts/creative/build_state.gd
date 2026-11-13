@@ -124,6 +124,110 @@ func remove(uid: int) -> bool:
 	return false
 
 
+func piece_by_id(uid: int) -> Dictionary:
+	for piece in pieces:
+		if int(piece.uid) == uid:
+			return piece
+	return {}
+
+
+## A move/rotation is one undoable transaction. The original remains present
+## until every volume and support constraint has been checked.
+func transform_error(uid: int, at: Vector3i, turn: int) -> String:
+	var original := piece_by_id(uid)
+	if original.is_empty():
+		return "Wähle zuerst ein vorhandenes Bauteil."
+	var candidate := original.duplicate(true)
+	candidate.x = at.x
+	candidate.y = at.y
+	candidate.z = at.z
+	candidate.turn = posmod(turn, 4)
+	var taken := occupied(uid)
+	for cell in cells(candidate):
+		if out_of_world(cell):
+			return "Baue innerhalb deiner Insel und unter der Höhenmarkierung."
+		if taken.has(cell):
+			return "Hier steht schon ein Bauteil. Wähle einen freien Platz."
+	if free_build:
+		return ""
+	var before := _unsupported_ids(pieces)
+	var proposed: Array[Dictionary] = []
+	for piece in pieces:
+		proposed.append(candidate if int(piece.uid) == uid else piece)
+	var after := _unsupported_ids(proposed)
+	for unsupported_uid in after:
+		# Old free-build saves remain editable, but a new transformation may
+		# never create a newly floating part or move the selected part into air.
+		if int(unsupported_uid) == uid or not before.has(unsupported_uid):
+			return "Hier fehlt eine Stütze. Baue zuerst Boden oder ein tragendes Bauteil."
+	return ""
+
+
+func transform_piece(uid: int, at: Vector3i, turn: int) -> String:
+	var problem := transform_error(uid, at, turn)
+	if not problem.is_empty():
+		return problem
+	var original := piece_by_id(uid)
+	if (
+		Vector3i(original.x, original.y, original.z) == at
+		and int(original.turn) == posmod(turn, 4)
+	):
+		return ""
+	_remember()
+	original.x = at.x
+	original.y = at.y
+	original.z = at.z
+	original.turn = posmod(turn, 4)
+	return ""
+
+
+## Support must ultimately lead to ground. Adjacent unsupported bridges cannot
+## support one another, and a piece cannot support itself through its own cells.
+static func _unsupported_ids(source: Array[Dictionary]) -> Dictionary:
+	var owners: Dictionary = {}
+	var dependencies: Dictionary = {}
+	var supported: Dictionary = {}
+	for piece in source:
+		for cell in cells(piece):
+			owners[cell] = int(piece.uid)
+	for piece in source:
+		var uid := int(piece.uid)
+		var at := Vector3i(piece.x, piece.y, piece.z)
+		var size: Vector3i = CATALOG.size_of(str(piece.part), int(piece.turn))
+		var links: Dictionary = {}
+		for x in range(size.x):
+			for z in range(size.z):
+				var foot := at + Vector3i(x, 0, z)
+				if foot.y == 0 and ground_at(foot.x, foot.z):
+					supported[uid] = true
+				var below := int(owners.get(foot + Vector3i.DOWN, -1))
+				if below > 0 and below != uid:
+					links[below] = true
+		if str(piece.part) == "bridge":
+			for cell in cells(piece):
+				for direction in [Vector3i.LEFT, Vector3i.RIGHT, Vector3i.FORWARD, Vector3i.BACK]:
+					var neighbor := int(owners.get(cell + direction, -1))
+					if neighbor > 0 and neighbor != uid:
+						links[neighbor] = true
+		dependencies[uid] = links
+	var changed := true
+	while changed:
+		changed = false
+		for uid in dependencies:
+			if supported.has(uid):
+				continue
+			for other in dependencies[uid]:
+				if supported.has(other):
+					supported[uid] = true
+					changed = true
+					break
+	var unsupported: Dictionary = {}
+	for uid in dependencies:
+		if not supported.has(uid):
+			unsupported[uid] = true
+	return unsupported
+
+
 func _removal_loses_support(uid: int) -> bool:
 	var taken := occupied(uid)
 	for piece in pieces:
