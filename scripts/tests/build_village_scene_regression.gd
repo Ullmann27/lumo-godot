@@ -1,7 +1,6 @@
 extends SceneTree
 ## Real scene integration for the separately launched living village.
 ## Confirms chapter/UI/3D/market/saving without replacing legacy save slots.
-const WORLD = preload("res://scripts/creative/build_settlement_world.gd")
 const CHILD := "village_native_scene_regression"
 const SLOT := 6
 var checks := 0
@@ -26,8 +25,15 @@ func _frames(count := 6) -> void:
 
 func _run() -> void:
 	root.size = Vector2i(1280, 720)
-	var save := WORLD.project_path(CHILD, SLOT, "village")
-	var classic_save := WORLD.project_path(CHILD, SLOT, "settlement")
+	# SceneRouter is registered after the SceneTree script has loaded. Do not
+	# preload production scenes that refer to this autoload at script parse time.
+	var world_script = load("res://scripts/creative/build_settlement_world.gd")
+	if world_script == null:
+		push_error("[VillageScene] Production scene script did not compile")
+		quit(1)
+		return
+	var save := world_script.project_path(CHILD, SLOT, "village")
+	var classic_save := world_script.project_path(CHILD, SLOT, "settlement")
 	DirAccess.remove_absolute(save)
 	var router := root.get_node("SceneRouter")
 	router.launch_options = {
