@@ -314,6 +314,8 @@ func _layout_ui() -> void:
 		return
 	var view: Vector2 = get_viewport().get_visible_rect().size
 	var window_pixels: Vector2 = Vector2(get_window().size)
+	if window_pixels.x <= 0.0 or window_pixels.y <= 0.0:
+		window_pixels = view
 	var pixels_per_unit: float = maxf(0.1, minf(window_pixels.x / maxf(view.x, 1), window_pixels.y / maxf(view.y, 1)))
 	var unit: float = MobileRuntime.get_ui_density() / pixels_per_unit
 	var insets: Rect2 = MobileRuntime.get_safe_area_insets()
@@ -327,6 +329,7 @@ func _layout_ui() -> void:
 	for button in header_buttons:
 		button.custom_minimum_size = Vector2(76, 48) * unit
 		button.add_theme_font_size_override("font_size", roundi(17 * unit))
+		_size_button_margins(button, unit)
 	for hint in control_hints:
 		hint.add_theme_font_size_override("font_size", roundi(12 * unit))
 	hud.add_theme_font_size_override("font_size", roundi(16 * unit))
@@ -336,6 +339,7 @@ func _layout_ui() -> void:
 		if item is Button:
 			item.custom_minimum_size = Vector2(80, 52) * unit
 			item.add_theme_font_size_override("font_size", roundi(20 * unit))
+			_size_button_margins(item, unit)
 	ui_column.add_theme_constant_override("separation", roundi(8 * unit))
 	var half_width: float = minf(300 * unit, view.x * 0.44)
 	var half_height: float = minf(245 * unit, view.y * 0.38)
@@ -359,7 +363,10 @@ func _button(text: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
 	var view: Vector2 = get_viewport().get_visible_rect().size
-	var pixel_scale: float = maxf(0.1, minf(float(get_window().size.x) / maxf(view.x, 1), float(get_window().size.y) / maxf(view.y, 1)))
+	var window_pixels: Vector2 = Vector2(get_window().size)
+	if window_pixels.x <= 0.0 or window_pixels.y <= 0.0:
+		window_pixels = view
+	var pixel_scale: float = maxf(0.1, minf(window_pixels.x / maxf(view.x, 1), window_pixels.y / maxf(view.y, 1)))
 	var unit: float = MobileRuntime.get_ui_density() / pixel_scale
 	button.custom_minimum_size = Vector2(80, 52) * unit
 	button.add_theme_font_size_override("font_size", roundi(20 * unit))
@@ -374,6 +381,13 @@ func _button(text: String, callback: Callable) -> Button:
 	button.add_theme_stylebox_override("hover", pressed)
 	button.pressed.connect(callback)
 	return button
+
+
+func _size_button_margins(button: Button, unit: float) -> void:
+	for state in ["normal", "pressed", "hover"]:
+		var style := button.get_theme_stylebox(state) as StyleBoxFlat
+		if style != null:
+			style.set_content_margin_all(12.0 * unit)
 
 
 func _physics_process(delta: float) -> void:

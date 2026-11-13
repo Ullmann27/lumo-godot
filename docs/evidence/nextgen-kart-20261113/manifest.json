@@ -1,0 +1,39 @@
+{
+  "created_utc": "2026-11-13T02:17:04.304334+00:00",
+  "baseline_sha": "1d5c5cb45a323228f627ec529e6ff1ddd86f1c57",
+  "branch": "chatgpt/lumo-nextgen-20261113",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "local_display_server": "headless",
+  "physical_device_performance": "NOT TESTED",
+  "new_renderer_images": "PENDING CI; no local pixels",
+  "sources_sha256": {
+    "scripts/games/kart_stage_pinch.gd": "6b638bc037b7fcebef049d07a6a3245304325164e48ec58ca3b05f02fadc0e7b",
+    "scripts/games/kart_garage_service_station.gd": "82e1257ad12ee7968de6bc80146cb57e7e407fa4981d63e296ca796233e38e83",
+    "scripts/games/kart_track_pass.gd": "54fa97236d3705809ad108e25ee66a963a1c94a3e28a2360bfd0daf165d790f8",
+    "scripts/games/kart_spatial_menu.gd": "4ddaf3f8ea3941ebc77691d6bd167a25c34f8e85d9456fefd7ca55ec2eef4bfd",
+    "scripts/games/kart_island.gd": "6bbb84df4c7808b9135bd56ebbd7293df238e4f6308d80f6361072180521f5e4",
+    "scripts/tests/kart_nextgen_garage_regression.gd": "220b74d08a5cf5b59f6f2a77848c49459a3c72e8e0db5af1301090e82a268fd5",
+    "scripts/tests/kart_nextgen_garage_baseline_capture.gd": "14ea334c8078449333b299d9c042b181d59afe084f46d3724059f5db2690be3e",
+    "scripts/tests/kart_track_pass_regression.gd": "114ee7fa30cc5f122ff490e942eb1448a9f9c5114f21b5b2021007fe0f7ac4c1",
+    "scripts/tests/kart_player_full_route_regression.gd": "6caa096bd489cccec530c0ab4c3fe98ad2e38333897741f16c12297b43d9b906",
+    "scripts/characters/lumo/lumo_rigged_actor.gd": "ce4158049ace9f45e20d736bc1496b879d095f63cdd2be0a7723f23c4ac5e0f3"
+  },
+  "evidence_sha256": {
+    "garage.log": "26bb7dc8a8623167d5df4552918600c0e652090f051c7c603d0fdcdc968b6c8d",
+    "player-route.json": "b5f4f8b0fb3e1fbe06a840d0008c0977e88e928b7d8938c1dd7b0016f154e4a0",
+    "race-continuity.log": "c8899dd723af6fa73fc21342110ad95ebc70db6db6025fc7e3f7443bf219dd54",
+    "garage-presentation.log": "e9e5ee9c31ffb3113d113e2b527621ed5f7945488e4c67a2f8ffec81e86d84c4",
+    "track-pass.log": "e1802172ad25ca6f8f686bd95e732e3e5b5a040e8b441e0792755a2919139690",
+    "modes.log": "b0c3b546005501ea93930e873c715e94f93a73a2c790a732152530663969f806",
+    "spatial-menu.log": "bd6676518ccb134ae0aed982a1f1072e397265200faac6928850907a27d14842",
+    "baseline-capture-parse.log": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da"
+  },
+  "commands": [
+    "godot --headless --path . --script res://scripts/tests/kart_track_pass_regression.gd",
+    "godot --headless --path . --script res://scripts/tests/kart_nextgen_garage_regression.gd",
+    "godot --headless --path . --script res://scripts/tests/kart_spatial_menu_regression.gd",
+    "godot --headless --path . --script res://scripts/tests/kart_modes_regression.gd",
+    "godot --headless --path . --script res://scripts/tests/kart_player_full_route_regression.gd -- --out=/tmp/lumo-kart-full-route-owner",
+    "godot --headless --path . --script res://scripts/tests/kart_race_continuity_regression.gd"
+  ]
+}

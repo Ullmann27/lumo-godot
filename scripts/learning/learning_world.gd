@@ -49,6 +49,15 @@ var _original_back_quit := true
 var _original_scale_mode: Window.ContentScaleMode
 var _materials: Dictionary = {}
 var _layout_queued := false
+var _speech_host: Object
+var _speech_enabled := false
+var _auto_read := false
+var _speech_id := 0
+var _speech_poll := 0.0
+var _speech_wait := -1.0
+var _speech_state := "idle"
+var _speech_text := ""
+var voice_button: Button
 
 
 func _ready() -> void:
@@ -60,6 +69,10 @@ func _ready() -> void:
 	get_tree().quit_on_go_back = false
 	var options: Dictionary = capture_options if not capture_options.is_empty() else SceneRouter.launch_options
 	reduced_motion = bool(options.get("reduceAnimations", false))
+	_speech_enabled = options.get("learningVoiceEnabled", false) == true and options.get("localVoiceLicenseAccepted", false) == true
+	_auto_read = options.get("learningAutoRead", false) == true
+	if Engine.has_singleton("LumoHost"):
+		_speech_host = Engine.get_singleton("LumoHost")
 	var raw: Variant = options.get("learning", {})
 	if not raw is Dictionary:
 		raw = {}
@@ -70,8 +83,8 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_layout)
 	_layout()
 	_refresh()
-	if fox != null:
-		fox.play_behavior("greeting_wave")
+	_teacher("welcome", Vector3(0, 1, 1.5))
+	_queue_narration()
 
 
 func _material(key: String, color: Color, metallic: float = 0.0) -> StandardMaterial3D:
@@ -271,6 +284,7 @@ func _rebuild_activity() -> void:
 	for button in actions.get_children():
 		button.free()
 	main_button = null
+	voice_button = null
 	match activity.kind:
 		"bridge_ten", "addition", "bridge_hundred":
 			_build_ten_frame()
@@ -294,6 +308,8 @@ func _rebuild_activity() -> void:
 			for part in PART_LABELS:
 				_button(str(PART_LABELS[part]), _inspect.bind(str(part)))
 	_button("Noch einmal", restart)
+	if _speech_enabled and is_instance_valid(_speech_host) and _speech_host.has_method("speakLearning"):
+		voice_button = _button("Schritt anhören", _voice_action)
 	_button("Zur Aufgabe", _return_to_lesson)
 	_layout.call_deferred()
 
@@ -325,7 +341,7 @@ func _build_ten_frame() -> void:
 		var cube := _box(content, at, Vector3(0.58, 0.5, 0.58), added, "MovableCube%d" % i)
 		tokens.append(cube)
 		token_sources.append(at)
-	_text(content, "10", Vector3(-2.6, 0.5, -1.4), 0.7, rim)
+	_text(content, "100" if activity.kind == "bridge_hundred" else "10", Vector3(-2.6, 0.5, -1.4), 0.7, rim)
 	_text(content, "+ %d" % activity.b, Vector3(3.4, 1.1, -2.6), 0.7, added)
 	if activity.kind == "bridge_hundred":
 		title.text = "Zehner bündeln · %d + %d" % [activity.a, activity.b]
@@ -596,6 +612,8 @@ func _begin_drag(point: Vector2, finger: int) -> void:
 	drag_finger = finger
 	drag_start = point
 	drag_moved = false
+	_stop_speech()
+	_teacher("explain", tokens[active_drag].global_position)
 	get_viewport().set_input_as_handled()
 
 
@@ -607,6 +625,8 @@ func _drag_to(point: Vector2) -> void:
 	var hit: Variant = plane.intersects_ray(camera.project_ray_origin(point), camera.project_ray_normal(point))
 	if hit is Vector3:
 		tokens[active_drag].position = Vector3(clampf(hit.x, -2.4, 5.0), 0.55, clampf(hit.z, -3.0, 3.7))
+		if fox != null and fox.is_usable():
+			fox.set_teaching_target(tokens[active_drag].global_position)
 	get_viewport().set_input_as_handled()
 
 
@@ -622,8 +642,11 @@ func _end_drag(point: Vector2, canceled: bool) -> void:
 	drag_finger = -1
 	if canceled or not within_target or not move_token(selected):
 		_animate_token(selected, token_sources[selected])
+		if not canceled:
+			_teacher("encourage", token_sources[selected])
 		if not canceled and activity.kind == "syllables":
 			explanation.text = activity.explanation()
+		_queue_narration()
 	get_viewport().set_input_as_handled()
 
 
@@ -632,13 +655,14 @@ func move_token(index: int) -> bool:
 		return false
 	var destination: int = activity.target_index()
 	if not activity.place(index, destination):
+		_teacher("encourage", Vector3(0, 1, 0))
 		return false
 	print("[LearningWorld] move kind=%s token=%d target=%d placed=%d complete=%s" % [
 		activity.kind, index, destination, activity.placed.size(), activity.is_complete()])
 	_animate_token(index, targets[destination])
-	if fox != null and fox.is_usable():
-		fox.play_behavior("celebrate" if activity.is_complete() else "point_portal")
+	_teacher("celebrate" if activity.is_complete() else "correct", targets[destination])
 	_refresh()
+	_queue_narration()
 	return true
 
 
@@ -678,38 +702,50 @@ func _part_position(part: String) -> Vector3:
 
 
 func _inspect(part: String) -> void:
-	if not activity.inspect_part(part):
+	if suspended or not activity.inspect_part(part):
 		return
 	_refresh()
 	explanation.text = str(PART_HELP[part])
-	if fox != null and fox.is_usable():
-		fox.play_behavior("point_portal")
+	_teacher("explain", _part_position(part))
+	_queue_narration()
 
 
 func _give_water() -> void:
+	if suspended or activity.kind != "plant_parts" or activity.watered:
+		return
 	activity.watered = true
 	_refresh()
 	explanation.text = "Wasser gelangt über die Wurzeln in den Stängel und zu den Blättern."
-	if fox != null and fox.is_usable():
-		fox.play_behavior("point_portal")
+	_teacher("explain", _part_position("root"))
+	_queue_narration()
 
 
 func _give_sun() -> void:
+	if suspended or activity.kind != "plant_parts" or activity.sunlight:
+		return
 	activity.sunlight = true
 	sun.material_override = _material("sun_open", Color("ffcf65"), 0.06)
 	_refresh()
+	_teacher("explain", sun.global_position)
+	_queue_narration()
 
 
 func restart() -> void:
+	if suspended:
+		return
+	_stop_speech()
 	activity.reset()
 	_rebuild_activity()
 	_refresh()
+	_teacher("explain", Vector3(0, 1, 0))
+	_queue_narration()
 
 
 func _process(delta: float) -> void:
 	if suspended:
 		return
 	_clock += delta
+	_tick_speech(delta)
 	if plant != null:
 		var desired := 1.0 if activity.watered and activity.sunlight else 0.62
 		_growth = desired if reduced_motion else move_toward(_growth, desired, delta * 0.12)
@@ -730,6 +766,7 @@ func _cancel_drag() -> void:
 
 
 func _return_to_lesson() -> void:
+	_stop_speech()
 	_cancel_drag()
 	if HostBridge.is_embedded():
 		if not HostBridge.return_to_app("learn", {"status": "illustrated", "game": "learning"}):
@@ -743,6 +780,7 @@ func _notification(what: int) -> void:
 		_return_to_lesson()
 	elif what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT]:
 		suspended = true
+		_stop_speech()
 		_cancel_drag()
 		for tween in _tweens:
 			if tween.is_valid():
@@ -759,6 +797,93 @@ func _notification(what: int) -> void:
 
 
 func _exit_tree() -> void:
+	_stop_speech()
 	get_tree().auto_accept_quit = _original_auto_quit
 	get_tree().quit_on_go_back = _original_back_quit
 	get_window().content_scale_mode = _original_scale_mode
+
+
+func _teacher(reaction: String, at: Vector3) -> void:
+	if fox != null and fox.is_usable():
+		fox.set_teaching_target(at)
+		fox.teacher_react(reaction)
+
+
+func _queue_narration() -> void:
+	_stop_speech()
+	if _speech_enabled and _auto_read and not suspended:
+		_speech_text = explanation.text
+		_speech_wait = 0.55
+
+
+func _voice_action() -> void:
+	if suspended:
+		return
+	if _speech_state in ["preparing", "playing"] or _speech_wait >= 0:
+		_stop_speech()
+	else:
+		_speak(explanation.text)
+
+
+func _speak(words: String) -> void:
+	if not _speech_enabled or suspended or not is_instance_valid(_speech_host):
+		return
+	_stop_speech()
+	# Read the actual displayed quantities. No unrelated prerecorded answer.
+	var spoken := words.replace(" + ", " plus ").replace(" = ", " ist ").replace("/", " von ").replace("×", "mal")
+	if spoken.is_empty() or spoken.length() > 220:
+		return
+	_speech_id += 1
+	var accepted: Variant = _speech_host.call("speakLearning", JSON.stringify({
+		"id": _speech_id, "text": spoken,
+		"style": "celebrate" if activity.is_complete() else "explain"}))
+	_speech_state = "preparing" if HostBridge.durable_ack(accepted) else "unavailable"
+	_update_voice_button()
+
+
+func _stop_speech() -> void:
+	_speech_wait = -1.0
+	_speech_id += 1
+	_speech_state = "idle"
+	if is_instance_valid(_speech_host) and _speech_host.has_method("stopLearningSpeech"):
+		_speech_host.call("stopLearningSpeech")
+	if is_instance_valid(fox) and fox.is_usable():
+		fox.set_teacher_speaking(false)
+	_update_voice_button()
+
+
+func _tick_speech(delta: float) -> void:
+	if _speech_wait >= 0:
+		_speech_wait -= delta
+		if _speech_wait <= 0:
+			if not _moving.is_empty() or active_drag >= 0:
+				_speech_wait = 0.1
+			else:
+				_speak(_speech_text)
+	if not is_instance_valid(_speech_host) or not _speech_enabled:
+		return
+	_speech_poll += delta
+	if _speech_poll < 0.15:
+		return
+	_speech_poll = 0.0
+	if not _speech_host.has_method("getLearningSpeechStatus"):
+		return
+	var received: Variant = JSON.parse_string(str(_speech_host.call("getLearningSpeechStatus")))
+	if not received is Dictionary or int(received.get("id", -1)) != _speech_id:
+		return
+	var received_state := str(received.get("state", "idle"))
+	if received_state not in ["preparing", "playing", "completed", "unavailable", "idle"]:
+		return
+	_speech_state = received_state
+	# Only a confirmed MediaPlayer start animates speech. Synthesis and a timer
+	# cannot masquerade as audible playback. The original rig has no jaw morph.
+	if is_instance_valid(fox) and fox.is_usable():
+		fox.set_teacher_speaking(_speech_state == "playing")
+	_update_voice_button()
+
+
+func _update_voice_button() -> void:
+	if not is_instance_valid(voice_button):
+		return
+	voice_button.text = "Stimme stoppen" if _speech_state in ["preparing", "playing"] else "Schritt anhören"
+	voice_button.tooltip_text = "Die lokale Stimme ist gerade nicht verfügbar. Der Lernschritt bleibt lesbar." if _speech_state == "unavailable" else ""

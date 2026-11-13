@@ -21,8 +21,11 @@ run_probe() {
   local script="scripts/tests/$name.gd"
   local capture_dir="$LOG_DIR/captures/$name"
   local user_dir="$LOG_DIR/user-data/$name-$mode"
-  test -s "$script"
-  mkdir -p "$capture_dir" "$user_dir"
+  if [[ ! -s "$script" ]]; then
+    echo "Missing required nextgen probe: $script" >&2
+    return 1
+  fi
+  mkdir -p "$capture_dir" "$user_dir" || return 1
   local args=(--audio-driver Dummy --path . --script "$script")
   local command=("$GODOT")
   if [[ "$mode" == headless ]]; then
@@ -42,18 +45,44 @@ run_probe() {
     --timeout 420 --required "$marker" -- "${command[@]}" "${args[@]}" "$@"
 }
 
-run_probe learning_world_regression '[LearningWorld] PASS' headless
-run_probe jump_nextgen_regression '[JumpNextgen] PASS' headless
-run_probe lumo_65bone_walk_gait_regression '[LumoGait] PASS' headless
-run_probe lumo_original_jump_visual_regression '[JumpOriginalLumo] PASS' headless
-run_probe build_transform_regression '[BuildTransform] PASS' headless
-run_probe build_nextgen_play_regression '[BuildNextgen] PASS' headless
-run_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' headless
-run_probe cards_table_regression 'CARDS_TABLE_RUNTIME_PASS' headless
-run_probe learning_world_capture '[LearningCapture] PASS' rendered -- "--output=$LOG_DIR/captures/learning_world_capture"
-run_probe jump_nextgen_capture '[JumpNextgenCapture] PASS' rendered
-run_probe build_nextgen_play_regression '[BuildNextgen] PASS' rendered -- --capture
-run_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' rendered -- --capture
-run_probe cards_table_capture 'CARDS_TABLE_RENDER_PASS' rendered -- "--output=$LOG_DIR/captures/cards_table_capture"
+# Every independent module still produces its own evidence when another module
+# fails. A partial collection can never emit PASS or unblock an Android build.
+failures=()
+check_probe() {
+  if run_probe "$@"; then
+    printf '%s\t%s\tPASS\n' "$1" "$3" >> "$LOG_DIR/results.tsv"
+  else
+    failures+=("$1/$3")
+    printf '%s\t%s\tFAIL\n' "$1" "$3" >> "$LOG_DIR/results.tsv"
+  fi
+}
+printf 'probe\tmode\tresult\n' > "$LOG_DIR/results.tsv"
+check_probe learning_world_regression '[LearningWorld] PASS' headless
+check_probe jump_nextgen_regression '[JumpNextgen] PASS' headless
+check_probe jump_expeditions_regression '[JumpExpeditions] PASS' headless
+check_probe lumo_teacher_pose_regression '[LumoTeacherPose] PASS' headless
+check_probe lumo_65bone_walk_gait_regression '[LumoGait] PASS' headless
+check_probe lumo_original_jump_visual_regression '[JumpOriginalLumo] PASS' headless
+check_probe build_transform_regression '[BuildTransform] PASS' headless
+check_probe build_nextgen_play_regression '[BuildNextgen] PASS' headless
+check_probe build_settlement_regression '[Settlement] PASS' headless
+check_probe build_settlement_play_regression '[SettlementPlay] PASS' headless
+check_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' headless
+check_probe kart_track_pass_regression '[KartTrackPass] PASS' headless
+check_probe cards_table_regression 'CARDS_TABLE_RUNTIME_PASS' headless
+check_probe learning_world_capture '[LearningCapture] PASS' rendered -- "--output=$LOG_DIR/captures/learning_world_capture"
+check_probe jump_nextgen_capture '[JumpNextgenCapture] PASS' rendered
+check_probe build_nextgen_play_regression '[BuildNextgen] PASS' rendered -- --capture
+check_probe build_settlement_play_regression '[SettlementPlay] PASS' rendered -- --capture
+# Fixed simulation time prevents a slow software-rendered frame from skipping
+# the short selection gesture. This is never a measured device frame-rate claim.
+check_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' rendered --fixed-fps 60 -- --capture
+check_probe cards_table_capture 'CARDS_TABLE_RENDER_PASS' rendered -- "--output=$LOG_DIR/captures/cards_table_capture"
+check_probe kart_player_full_route_regression '[PlayerFullRoute] PASS' rendered -- "--out=$LOG_DIR/captures/kart_player_full_route_regression"
+
+if (( ${#failures[@]} )); then
+  printf '[LumoNextgen] FAIL: %s\n' "${failures[*]}" >&2
+  exit 1
+fi
 
 echo "[LumoNextgen] PASS: new production learning, platforming, building, cards and garage checks; logs $LOG_DIR"

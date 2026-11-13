@@ -98,6 +98,8 @@ jobs:
           python3 tools/validate_project.py 2>&1 | tee "$LUMO_2014_LOG_DIR/project-validation.log"
           godot --headless --editor --import --quit 2>&1 | tee "$LUMO_2014_LOG_DIR/import.log"
           if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$LUMO_2014_LOG_DIR/import.log"; then exit 1; fi
+      - name: Verify fail-closed collection of every independent module
+        run: python3 -m unittest discover -s tools/tests -p test_nextgen_runner.py -v
       - name: Capture the original 2017 garage using its exact production source
         run: |
           set -euo pipefail
@@ -124,6 +126,13 @@ jobs:
             xvfb-run -a -s '-screen 0 2560x2560x24' godot --path "$baseline" \
             --rendering-method gl_compatibility --audio-driver Dummy \
             --script "$baseline/scripts/tests/kart_nextgen_garage_baseline_capture.gd"
+          python3 tools/run_godot_probe.py \
+            --log "$proof/build-render.log" --timeout 420 \
+            --required '[CreativeBuild] PASS: actual world, successful JSON reload, pause, 4 rendered screenshots' -- \
+            xvfb-run -a -s '-screen 0 2560x2560x24' godot --path "$baseline" \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --script "$baseline/scripts/tests/creative_build_capture.gd"
+          cp -R "$baseline/exports/creative-build" "$proof/build"
       - name: New learning, character and interactive production-scene gates
         run: LUMO_NEXTGEN_LOG_DIR="$LUMO_2014_LOG_DIR/nextgen" bash tools/validate_nextgen.sh
       - uses: actions/upload-artifact@v4

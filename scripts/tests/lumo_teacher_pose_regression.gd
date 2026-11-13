@@ -41,6 +41,18 @@ func _run() -> void:
 	var head_delta: float = actor.skeleton.get_bone_pose_rotation(head).angle_to(reference.skeleton.get_bone_pose_rotation(head))
 	var neck_delta: float = actor.skeleton.get_bone_pose_rotation(neck).angle_to(reference.skeleton.get_bone_pose_rotation(neck))
 	_check(head_delta > 0.20 and neck_delta > 0.10, "real head and neck bones both follow object, not a metadata-only target")
+	var face_in_bone: Vector3 = actor.skeleton.get_bone_global_rest(head).basis.inverse() * Vector3.BACK
+	var face: Vector3 = (actor.skeleton.global_basis * actor.skeleton.get_bone_global_pose(head).basis * face_in_bone).normalized()
+	var reference_face: Vector3 = (reference.skeleton.global_basis * reference.skeleton.get_bone_global_pose(head).basis * face_in_bone).normalized()
+	var desired_face := Vector3(3, 0.8, 4).normalized()
+	_check(face.angle_to(desired_face) < reference_face.angle_to(desired_face) * 0.3, "actual facial facing vector converges towards the selected object despite original bone rest axes")
+	actor.rotation.y = 0.7
+	actor.set_teaching_target(actor.global_transform * (eye_height + Vector3(3, 0.8, 4)))
+	for _frame in range(60):
+		actor._process(DT)
+	face = (actor.skeleton.global_basis * actor.skeleton.get_bone_global_pose(head).basis * face_in_bone).normalized()
+	_check(face.angle_to(actor.global_basis * desired_face) < 0.15, "rotated teaching stage preserves correct world-space attention")
+	actor.rotation.y = 0.0
 	_check(actor.skeleton.get_bone_pose_rotation(thigh).angle_to(reference.skeleton.get_bone_pose_rotation(thigh)) < 0.001, "teacher gaze preserves authored leg pose")
 	_check(actor.position == origin, "teacher gestures never translate physics root")
 	var target: Vector3 = actor.teacher_pose.target
@@ -82,6 +94,12 @@ func _run() -> void:
 	actor.set_platform_motion(Vector3(2, 0, 0), true, DT)
 	_check(not actor.teacher_enabled and actor.platform_active, "walking takes exclusive ownership back from teacher")
 	_check(actor.player.callback_mode_process == AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_IDLE, "leaving teacher restores original callback mode")
+	_check(actor.teacher_react("explain") and not actor.platform_active, "teacher gesture takes sole ownership from platform motion")
+	_check(actor.play_behavior("walk_loop") and actor.walking and not actor.teacher_enabled, "legacy walk behavior also takes sole ownership from teacher")
+	var standing_thigh: Quaternion = actor.skeleton.get_bone_pose_rotation(thigh)
+	for _frame in range(8):
+		actor._process(DT)
+	_check(actor.skeleton.get_bone_pose_rotation(thigh).angle_to(standing_thigh) > 0.03, "legacy walk skeleton advances after leaving teacher mode")
 	_check(not reference.set_teaching_target(eye_height + Vector3(0, 0, 4)), "external manual owner such as kart cannot be overwritten")
 	actor.free()
 	reference.free()

@@ -279,6 +279,7 @@ var pending_cup_next: bool = false
 var completed_race: bool = false
 var records = RECORDS.new()
 var track_pass
+var _track_pass_owner := ""
 var ghost: LumoRaceKart
 var ghost_valid: bool = true
 var best_record: bool = false
@@ -763,6 +764,7 @@ static func _known_mode(requested: String) -> String:
 
 func _begin_race() -> void:
 	_session_handed_off = false
+	_track_pass_owner = track_pass.child_key.sha256_text()
 	_refresh_kart_factors()
 	_reset_action_course()
 	loop_state = PHYSICAL_LOOP.new()
@@ -3301,7 +3303,10 @@ func _finish(cinematic: bool = true) -> void:
 	result_payload["starTokens"] = collected.size()
 	var pass_result := result_payload.duplicate(true)
 	pass_result["difficulty"] = difficulty
-	result_payload["trackPass"] = track_pass.complete(pass_result, distance, track_length)
+	# Legacy race checkpoints had no child owner. Keep those races resumable,
+	# but never attribute their objectives to the next child who opens Kart.
+	if _track_pass_owner == track_pass.child_key.sha256_text():
+		result_payload["trackPass"] = track_pass.complete(pass_result, distance, track_length)
 	# Belohnung und Ergebnis-ID gehen sofort an der Linie raus; die Zielfahrt ist nur Bild.
 	var reward_accepted: bool = HostBridge.reward(result_payload)
 	_save_session()
@@ -3770,6 +3775,7 @@ func _save_session() -> void:
 		return
 	var config := ConfigFile.new()
 	config.set_value("race", "version", SESSION_VERSION)
+	config.set_value("race", "track_pass_owner", _track_pass_owner)
 	for key in [
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed",
 		"lap_times", "lap_started_at",
@@ -3817,6 +3823,7 @@ func _restore_session() -> bool:
 	var saved_distance: float = float(config.get_value("race", "distance", -1))
 	if saved_distance < 0 or not is_finite(saved_distance):
 		return false
+	_track_pass_owner = str(config.get_value("race", "track_pass_owner", ""))
 	RIVAL_FLIGHT.clear(self)
 	_session_handed_off = false
 	var keys: Array[String] = [
@@ -3828,6 +3835,8 @@ func _restore_session() -> bool:
 	]
 	for key in keys:
 		set(key, config.get_value("race", key, get(key)))
+	if _track_pass_owner != track_pass.child_key.sha256_text():
+		result_payload.erase("trackPass")
 	# Explicit typed write: a generic set() must not leave the _ready identity.
 	result_id = str(config.get_value("race", "result_id", result_id))
 	for key in [

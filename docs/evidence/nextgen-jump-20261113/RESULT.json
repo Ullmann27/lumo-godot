@@ -1,0 +1,143 @@
+{
+  "executed_at_utc": "2026-11-13T02:12:18.638848+00:00",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "head_at_execution": "1d5c5cb45a323228f627ec529e6ff1ddd86f1c57",
+  "rendering": "headless",
+  "probes": [
+    {
+      "probe": "jump_regression",
+      "command": [
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/e0abce7d2838/lumo-godot",
+        "--script",
+        "scripts/tests/jump_regression.gd"
+      ],
+      "exit": 0,
+      "pass_marker": true,
+      "errors": [],
+      "sha256": "80bfa73c2464ca564c11bbb5695c5822b3dbcd6734d648e006999ac8ac1c58f0"
+    },
+    {
+      "probe": "jump_extras_regression",
+      "command": [
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/e0abce7d2838/lumo-godot",
+        "--script",
+        "scripts/tests/jump_extras_regression.gd"
+      ],
+      "exit": 0,
+      "pass_marker": true,
+      "errors": [],
+      "sha256": "5811a43cf080e8f86962352a398a7c87242874a567e6c3d8d273006b57801b38"
+    },
+    {
+      "probe": "lumo_original_jump_visual_regression",
+      "command": [
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/e0abce7d2838/lumo-godot",
+        "--script",
+        "scripts/tests/lumo_original_jump_visual_regression.gd"
+      ],
+      "exit": 0,
+      "pass_marker": true,
+      "errors": [],
+      "sha256": "6c2847641ce8702483e9a6d81b36d20fac209567079970bd641e11f0c3489305"
+    },
+    {
+      "probe": "lumo_65bone_walk_gait_regression",
+      "command": [
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/e0abce7d2838/lumo-godot",
+        "--script",
+        "scripts/tests/lumo_65bone_walk_gait_regression.gd"
+      ],
+      "exit": 0,
+      "pass_marker": true,
+      "errors": [],
+      "sha256": "d709a54ac013e3e6e24a6c31a790d8d84b0abe00f4fbccb7fee6229947ff6cda"
+    },
+    {
+      "probe": "jump_nextgen_regression",
+      "command": [
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/e0abce7d2838/lumo-godot",
+        "--script",
+        "scripts/tests/jump_nextgen_regression.gd"
+      ],
+      "exit": 0,
+      "pass_marker": true,
+      "errors": [],
+      "sha256": "d332210b1b20ad0e94fbc58bdd0e12abafb9f15769dabab7bfda1c2666af6ef5"
+    },
+    {
+      "probe": "jump_expeditions_regression",
+      "command": [
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/e0abce7d2838/lumo-godot",
+        "--script",
+        "scripts/tests/jump_expeditions_regression.gd"
+      ],
+      "exit": 0,
+      "pass_marker": true,
+      "errors": [],
+      "sha256": "92b58ab6f6002b1c9989a185e3b26acc44c117d2cfc921652edf4beffaf96753"
+    },
+    {
+      "probe": "lumo_teacher_pose_regression",
+      "command": [
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/e0abce7d2838/lumo-godot",
+        "--script",
+        "scripts/tests/lumo_teacher_pose_regression.gd"
+      ],
+      "exit": 0,
+      "pass_marker": false,
+      "errors": [],
+      "sha256": "1fe6378da5c5c9867177aa48f50d77c4551c014ff880e4fd87f66f20837abc62"
+    }
+  ],
+  "sources": {
+    "scripts/games/jump_islands.gd": "4953e584f125d1269a6e3fce2b5281ed3ec4dc6602936c7d873f9c28bfc2f5d1",
+    "scripts/games/jump_touch_button.gd": "5cba0aad81d84f82bb7f3b91355a98db88996de8a1f154dc27536669fbe294ed",
+    "scripts/games/jump_expeditions.gd": "05cafaa99d44788ade81b33dfc4fa3e44f037f9f9d78fc15899ed2dd8fe10c8b",
+    "scripts/characters/lumo/lumo_rigged_actor.gd": "cac26e36f4d8f5c4d2a231c00bbd4f346b793c4f477e707d669f76a96ef7f563",
+    "scripts/characters/lumo/lumo_platform_pose.gd": "f0a899c6bb99ca1512332f7852ec1a64fd38c0f2fdece2201b68a575ea6228e1",
+    "scripts/characters/lumo/lumo_teacher_pose.gd": "225a67cac90323ca88316e213e58cab34ec062d2450376fbd05ea27e33991bd3",
+    "scripts/tests/jump_nextgen_regression.gd": "2e14b09a323e66dd69d91bee2cee20056cacd1bbd5532feee72880e9cd4e1c7a",
+    "scripts/tests/jump_nextgen_capture.gd": "2b4533ea07b458056d2de21c99489a0109015b9b837b8c5d4b539417c60cf0b8",
+    "scripts/tests/jump_expeditions_regression.gd": "345c320e9bb19e28e0384acf0a04e618db6fa4c7ddcfb8f28fa3c3da32c4bd55",
+    "scripts/tests/lumo_teacher_pose_regression.gd": "e577017c73342640576fc70ac77ee7976f1331072581a289b48c45e767a3ea57"
+  },
+  "hardware_fps_measured": false,
+  "renderer_capture_executed": false,
+  "sources_unchanged_during_execution": true,
+  "all_passed": false
+}

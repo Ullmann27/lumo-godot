@@ -467,6 +467,7 @@ func _change_page(change: int) -> void:
 	_render_hand()
 
 func _update_interface() -> void:
+	heading.text = "Sternenpokal · Runde %d/%d" % [int(_state.get("round", 1)), int(_state.get("totalRounds", 1))] if int(_state.get("totalRounds", 1)) > 1 else "Lumo Cards · 3D-Tisch"
 	var players: Array = _state.get("players", [])
 	if players.size() == 2:
 		status.text = "%s: %d Karten   ·   %s: %d Karten" % [players[0].get("name", "Du"), int(players[0].get("count", 0)), players[1].get("name", "Lumo"), int(players[1].get("count", 0))]

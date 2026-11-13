@@ -39,7 +39,7 @@ func _file_hash(path: String) -> String:
 
 func _run() -> void:
 	var legacy := {}
-	for path in ["user://progress.cfg", "user://kart_holographic_records.cfg", "user://kart_race_session.cfg"]:
+	for path in ["user://progress.cfg", "user://kart_holographic_records.cfg", "user://kart_sonnenhafen_session.cfg"]:
 		legacy[path] = _file_hash(path)
 	var child_a := _child("A")
 	var child_b := _child("B")
@@ -144,6 +144,9 @@ func _run() -> void:
 		_check(_file_hash(path) == legacy[path], "legacy bytes preserved: " + path)
 
 	# Verify production wiring separately from the policy fixtures above.
+	var original_files := {}
+	for path in ["user://progress.cfg", "user://kart_holographic_records.cfg", "user://kart_sonnenhafen_session.cfg", "user://kart_preferences.cfg"]:
+		original_files[path] = FileAccess.get_file_as_bytes(path) if FileAccess.file_exists(path) else null
 	var host = root.get_node("HostBridge")
 	var old_options: Dictionary = host._options.duplicate(true)
 	var production_child := _child("production")
@@ -166,12 +169,95 @@ func _run() -> void:
 	game.garage.setup.mode = "time_trial"
 	game.garage._refresh()
 	_check(not game.garage.title_label.text.contains("/36"), "time trial retains its own ghost goal instead of promising race medals")
+	# Explicit save/restore fixtures; physical traversal is independently covered
+	# by kart_player_full_route_regression.gd with no injected progress.
+	game.lightweight = true
+	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "gemuetlich"})
+	game._end_preview()
+	game.countdown = 0.0
+	game.distance = game.track_length * 0.6
+	game.checkpoint_index = 4
+	game.elapsed = 20.0
+	game._save_session()
+	var session_path: String = game.SESSION
+	var owner_a_checkpoint := FileAccess.get_file_as_bytes(session_path)
+	var owner_config := ConfigFile.new()
+	owner_config.load(session_path)
+	_check(str(owner_config.get_value("race", "track_pass_owner", "")) == production_child.sha256_text(),
+		"new checkpoint stores the original race owner's hash despite changed host options")
+	var saved_id: String = game.result_id
+	game.abandoned = true
+	game.queue_free()
+	await process_frame
+	game = load("res://scenes/games/kart_island.tscn").instantiate()
+	root.add_child(game)
+	game.set_physics_process(false)
+	game.lightweight = true
+	await process_frame
+	game._resume_saved_race()
+	_check(game.paused and game.result_id == saved_id and game.track_pass.child_key == child_b,
+		"another child's launch can still resume the unchanged legacy race flow")
+	_check(game._track_pass_owner == production_child.sha256_text(), "resume preserves the actual checkpoint owner, not the new host")
+	_complete_fixture(game)
+	_check(not game.result_payload.has("trackPass") and game.track_pass.total("gemuetlich") == 0,
+		"finishing somebody else's checkpoint cannot award the current child's goals")
+	_check(TRACK_PASS.new(production_child).total("gemuetlich") == 0, "foreign-child completion does not silently alter the original child's pass either")
+	game.abandoned = true
+	game.queue_free()
+	await process_frame
+	FileAccess.open(session_path, FileAccess.WRITE).store_buffer(owner_a_checkpoint)
+	host._options["childKey"] = production_child
+	game = load("res://scenes/games/kart_island.tscn").instantiate()
+	root.add_child(game)
+	game.set_physics_process(false)
+	game.lightweight = true
+	await process_frame
+	game._resume_saved_race()
+	_check(game.paused and game.result_id == saved_id, "same child resumes the owned checkpoint")
+	_complete_fixture(game)
+	_check(game.result_payload.has("trackPass") and game.result_payload.trackPass.saved and game.track_pass.stage("sonnenhafen", "gemuetlich") == 3,
+		"matching owner can finish a resumed race and persist its correct goals")
+	game.abandoned = true
+	game.queue_free()
+	await process_frame
+	owner_config.erase_section_key("race", "track_pass_owner")
+	owner_config.save(session_path)
+	game = load("res://scenes/games/kart_island.tscn").instantiate()
+	root.add_child(game)
+	game.set_physics_process(false)
+	game.lightweight = true
+	await process_frame
+	game._resume_saved_race()
+	_check(game.paused and game.result_id == saved_id and game._track_pass_owner.is_empty(),
+		"pre-pass save remains resumable without inventing its owner")
+	var known_results: int = game.track_pass.accepted_results.size()
+	_complete_fixture(game)
+	_check(not game.result_payload.has("trackPass") and game.track_pass.accepted_results.size() == known_results,
+		"ownerless legacy completion does not create retroactive objectives")
+	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": "zauberwald", "difficulty": "flott"})
+	_check(game._track_pass_owner == production_child.sha256_text(), "new race after a legacy restore has the current child's legitimate owner")
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
 	host._options = old_options
+	for path in original_files:
+		if original_files[path] == null:
+			DirAccess.remove_absolute(path)
+		else:
+			FileAccess.open(path, FileAccess.WRITE).store_buffer(original_files[path])
 	for child in children:
 		DirAccess.remove_absolute(TRACK_PASS.path_for(child))
 		DirAccess.remove_absolute(TRACK_PASS.path_for(child) + ".tmp")
 	print("[KartTrackPass] ", "PASS" if failures.is_empty() else "FAIL", " ", checks, " checks")
+	# The production scene stops real menu audio. Allow its asynchronous mix
+	# thread to release those playbacks before SceneTree tears the server down.
+	await create_timer(0.6).timeout
 	quit(0 if failures.is_empty() else 1)
+
+
+func _complete_fixture(game) -> void:
+	game.distance = game.track_length * 2.0
+	game.checkpoint_index = 16
+	game.elapsed = 120.0
+	game.reset_count = 0
+	game._finish(false)

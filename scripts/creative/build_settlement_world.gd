@@ -15,6 +15,7 @@ var mode := "settlement"
 var child_key := "standalone"
 var slot := 1
 var save_path := ""
+var save_blocked := false
 var kit := KIT.new()
 var previous: Dictionary
 var camera: Camera3D
@@ -65,11 +66,15 @@ func _ready() -> void:
 	save_path = "user://lumo_settlement_%s_%d_%s.json" % [child_key, slot, mode]
 	model = STATE.new(mode)
 	if FileAccess.file_exists(save_path):
-		var raw = JSON.parse_string(FileAccess.get_file_as_string(save_path))
-		if raw is Dictionary:
-			var restored = STATE.restore(raw.get("settlement", {}))
-			if restored != null and restored.mode == mode:
-				model = restored
+		var parser := JSON.new()
+		var raw: Variant = null
+		if parser.parse(FileAccess.get_file_as_string(save_path)) == OK:
+			raw = parser.data
+		var restored = restore_project(raw, child_key, slot, mode)
+		if restored != null:
+			model = restored
+		else:
+			save_blocked = true
 	kit.environment(self, "bauwelt_day")
 	_build_landscape()
 	camera = Camera3D.new()
@@ -90,6 +95,17 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	RUNTIME.restore(self, previous)
+
+
+static func restore_project(raw: Variant, expected_child: String, expected_slot: int, expected_mode: String):
+	if not raw is Dictionary or raw.get("version") != 1:
+		return null
+	if raw.get("child") != expected_child or raw.get("mode") != expected_mode or raw.get("slot") != expected_slot:
+		return null
+	if not raw.get("settlement") is Dictionary:
+		return null
+	var restored = STATE.restore(raw.settlement)
+	return restored if restored != null and restored.mode == expected_mode else null
 
 
 static func plot_coordinate(index: int) -> Vector2i:
@@ -190,8 +206,11 @@ func _build_ui() -> void:
 	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	bottom.offset_left = 14
 	bottom.offset_right = -14
+	bottom.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	bottom.minimum_size_changed.connect(func(): call_deferred("_layout"))
 	safe_ui.add_child(bottom)
 	plot_label = _label("Wähle ein freies Grundstück und ein Gebäude.", 15)
+	plot_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	bottom.add_child(plot_label)
 	var buildings_scroll := ScrollContainer.new()
 	buildings_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -378,22 +397,27 @@ func _refresh_labels() -> void:
 	var goals := PackedStringArray()
 	for objective in summary.get("goals", []):
 		goals.append("%s %d/%d" % [str(objective.title), int(objective.current), int(objective.target)])
-	goal_label.text = "Dein Ziel: " + " · ".join(goals)
+	goal_label.text = "%s · Stufe %d: %s" % [str(summary.world), mini(3, int(summary.level) + 1), " · ".join(goals)]
 	if mode == "rival":
 		var rival: Dictionary = model.rival()
 		rival_label.text = "Mira: %d Bewohner · %d Gebäude. Gleiche Preise und Erträge für euch beide." % [int(rival.population), rival.buildings.size()]
 	plot_label.text = "Grundstück %d gewählt · Gebäude antippen zum Bauen" % (selected_plot + 1) if selected_plot >= 0 else "Wähle ein freies Grundstück in deiner Siedlung."
 	for kind in purchase_buttons:
-		purchase_buttons[kind].disabled = paused or walking or selected_plot < 0
-	day_button.disabled = paused or walking
-	expand_button.disabled = paused or walking
+		purchase_buttons[kind].disabled = paused or walking or save_blocked or selected_plot < 0
+	day_button.disabled = paused or walking or save_blocked
+	expand_button.disabled = paused or walking or save_blocked or not bool(summary.can_expand)
+	transaction_buttons[0].disabled = paused or walking or save_blocked or not bool(summary.can_undo)
+	transaction_buttons[1].disabled = paused or walking or save_blocked or not bool(summary.can_redo)
+	transaction_buttons[2].disabled = paused or walking or save_blocked
+	if save_blocked:
+		feedback.text = "Dieser Spielstand ist nicht lesbar. Er bleibt unverändert. Wähle in der Bauwelt ein anderes Projekt."
 	var winner := str(summary.get("winner", ""))
 	if not winner.is_empty():
 		feedback.text = {"player": "Deine Stadt hat das Ziel zuerst erreicht!", "rival": "Mira hat das Ziel zuerst erreicht. Dein Bauplan ist erhalten.", "tie": "Ihr habt das Ziel gemeinsam erreicht!"}.get(winner, "Wettbau abgeschlossen.")
 
 
 func _buy(kind: String) -> void:
-	if paused or walking:
+	if paused or walking or save_blocked:
 		return
 	selected_kind = kind
 	if not model.try_build(kind, selected_plot):
@@ -406,7 +430,7 @@ func _buy(kind: String) -> void:
 
 
 func _next_day() -> void:
-	if paused or walking:
+	if paused or walking or save_blocked:
 		return
 	var report: Dictionary = model.next_day()
 	_rebuild()
@@ -421,7 +445,7 @@ func _next_day() -> void:
 
 
 func _undo() -> void:
-	if paused or walking:
+	if paused or walking or save_blocked:
 		return
 	if model.undo():
 		_rebuild()
@@ -432,7 +456,7 @@ func _undo() -> void:
 
 
 func _redo() -> void:
-	if paused or walking:
+	if paused or walking or save_blocked:
 		return
 	if model.redo():
 		_rebuild()
@@ -443,7 +467,7 @@ func _redo() -> void:
 
 
 func _expand() -> void:
-	if paused or walking:
+	if paused or walking or save_blocked:
 		return
 	if model.expand():
 		_rebuild()
@@ -454,7 +478,7 @@ func _expand() -> void:
 
 
 func _trade_dialog() -> void:
-	if paused or walking:
+	if paused or walking or save_blocked:
 		return
 	var dialog := Window.new()
 	dialog.title = "Handeln am Markt"
@@ -473,10 +497,9 @@ func _trade_dialog() -> void:
 	scroll.add_child(box)
 	box.add_child(_label("Rohstoffe sinnvoll tauschen", 18))
 	for resource in ["wood", "stone", "food"]:
-		var title: String = {"wood": "Holz", "stone": "Stein", "food": "Essen"}[resource]
 		for sell in [false, true]:
-			var units := (15 if resource == "food" else 10) if sell else (10 if resource == "food" else 5)
-			var caption := "%d %s → 5 Münzen" % [units, title] if sell else "5 Münzen → %d %s" % [units, title]
+			var quote: Dictionary = STATE.trade_quote(resource, 5, sell)
+			var caption := _cost_text(quote.cost) + " → " + _cost_text({quote.resource: quote.amount})
 			box.add_child(_button(caption, func():
 				if model.try_trade(resource, 5, sell):
 					_rebuild()
@@ -492,10 +515,30 @@ func _trade_dialog() -> void:
 
 
 func _look_neighbor() -> void:
-	if paused or walking:
+	if paused or walking or save_blocked:
 		return
 	focus.x = 16.0 if focus.x < 0 else -16.0
 	_camera_update(true)
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
+		return
+	if pointer < 0:
+		return
+	var release: bool = (event is InputEventScreenTouch and event.index == pointer and not event.pressed) or (
+		event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and pointer == 0 and not event.pressed
+	)
+	if not release:
+		return
+	# A world gesture owns its release even over HUD controls. Otherwise GUI
+	# consumption leaves a stale finger ID and blocks the next plot selection.
+	var canceled: bool = event is InputEventScreenTouch and event.canceled
+	var pick: bool = not paused and not walking and not dragged and not canceled and event.position.distance_to(tap_origin) <= 10
+	pointer = -1
+	if pick:
+		_pick_plot(event.position)
+	get_viewport().set_input_as_handled()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -603,8 +646,7 @@ func _physics_process(delta: float) -> void:
 		if camera.position.distance_squared_to(at) > 0.02:
 			camera.look_at(at)
 	if is_instance_valid(rival_host):
-		var before := rival_host.position
-		rival_host.position = before.move_toward(rival_destination, 1.5 * delta)
+		rival_host.position = rival_host.position.move_toward(rival_destination, 1.5 * delta)
 		rival_host.set_companion_pose(Time.get_ticks_msec() / 1000.0, "happy")
 
 
@@ -630,11 +672,13 @@ func _notification(what: int) -> void:
 
 
 func _save() -> bool:
+	if save_blocked:
+		return false
 	var file := FileAccess.open(save_path + ".tmp", FileAccess.WRITE)
 	if file == null:
 		feedback.text = "Deine Siedlung konnte noch nicht gespeichert werden. Bitte erneut versuchen."
 		return false
-	file.store_string(JSON.stringify({"version": 1, "settlement": model.snapshot(), "mode": mode, "slot": slot}))
+	file.store_string(JSON.stringify({"version": 1, "child": child_key, "settlement": model.snapshot(), "mode": mode, "slot": slot}))
 	file.flush()
 	var error := file.get_error()
 	file.close()
@@ -650,5 +694,5 @@ func _save_message() -> void:
 
 
 func _leave() -> void:
-	if _save():
+	if save_blocked or _save():
 		SceneRouter.goto("build")

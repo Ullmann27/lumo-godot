@@ -90,7 +90,8 @@ func _ready() -> void:
 		. validate_filename()
 		. substr(0, 80)
 	)
-	save_path = "user://lumo_build_" + child_key + "_1.json"
+	slot = clampi(int(SceneRouter.launch_options.get("buildSlot", 1)), 1, 6)
+	save_path = "user://lumo_build_" + child_key + "_" + str(slot) + ".json"
 	kit.environment(self, "bauwelt_day")
 	_ground()
 	world = Node3D.new()

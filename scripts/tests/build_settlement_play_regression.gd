@@ -7,6 +7,7 @@ var failures: Array[String] = []
 var capture_dir := ""
 var city
 const CHILD := "settlement_production_regression"
+const SLOT := 3
 
 
 func _initialize() -> void:
@@ -37,6 +38,28 @@ func _tap(point: Vector2) -> void:
 	await _frames(2)
 
 
+func _world_release_over_hud() -> void:
+	var from: Vector2 = city.camera.unproject_position(city.plot_position(4) + Vector3.UP * 0.08)
+	var to: Vector2 = city.day_button.get_global_rect().get_center()
+	var factor := Vector2(root.size) / root.get_visible_rect().size
+	var press := InputEventScreenTouch.new()
+	press.index = 7
+	press.position = from * factor
+	press.pressed = true
+	Input.parse_input_event(press)
+	Input.flush_buffered_events()
+	await process_frame
+	var release := InputEventScreenTouch.new()
+	release.index = 7
+	release.position = to * factor
+	release.pressed = false
+	Input.parse_input_event(release)
+	Input.flush_buffered_events()
+	await _frames(2)
+	_check(city.pointer == -1, "World touch releases ownership over HUD")
+	_check(city.selected_plot == -1 and city.model.day == 1, "World release cannot buy or advance a day through the HUD")
+
+
 func _button(node: Node, caption: String) -> Button:
 	if node is Button and node.text == caption:
 		return node
@@ -65,6 +88,7 @@ func _buy_plot(index: int, kind: String) -> void:
 	await _tap(point)
 	_check(city.selected_plot == index, "Real terrain ray selects plot " + str(index))
 	var button: Button = city.purchase_buttons[kind]
+	_check(root.get_visible_rect().encloses(button.get_global_rect()), "Purchase control fits visible screen")
 	await _tap(button.get_global_rect().get_center())
 	var found := false
 	for building in city.model.player().buildings:
@@ -81,12 +105,12 @@ func _run() -> void:
 			return
 		DirAccess.make_dir_recursive_absolute(capture_dir)
 	root.size = Vector2i(1280, 720)
-	var free_save := "user://lumo_build_" + CHILD + "_1.json"
-	var city_save := "user://lumo_settlement_" + CHILD + "_1_rival.json"
+	var free_save := "user://lumo_build_" + CHILD + "_3.json"
+	var city_save := "user://lumo_settlement_" + CHILD + "_3_rival.json"
 	DirAccess.remove_absolute(free_save)
 	DirAccess.remove_absolute(city_save)
 	var router = root.get_node("SceneRouter")
-	router.launch_options = {"childKey": CHILD}
+	router.launch_options = {"childKey": CHILD, "buildSlot": SLOT}
 	var build = load("res://scenes/creative/build_world.tscn").instantiate()
 	root.add_child(build)
 	current_scene = build
@@ -106,10 +130,12 @@ func _run() -> void:
 		quit(1)
 		return
 	_check(city.mode == "rival" and city.model.mode == "rival", "Wettbau mode reaches deterministic rules")
+	_check(city.slot == SLOT and city.child_key == CHILD, "Route preserves the selected child and project slot")
 	_check(FileAccess.get_file_as_string(free_save) == preserved, "Entering a city variation preserves original construction bytes")
 	_check(city.model.player().resources == city.model.rival().resources, "Both towns start with identical resources")
 	_check(city.plot_nodes.size() == 18, "Both nine-plot towns exist in live 3D")
 	await _capture("01_settlement_start")
+	await _world_release_over_hud()
 	var initial: Dictionary = city.model.snapshot()
 	await _buy_plot(4, "house")
 	_check(city.model.player().resources.wood == initial.player.resources.wood - 4, "Real purchase debits wood exactly")
@@ -137,8 +163,15 @@ func _run() -> void:
 	var saved: Dictionary = city.model.snapshot()
 	_check(city._save(), "Dedicated city save is written atomically")
 	_check(FileAccess.get_file_as_string(free_save) == preserved, "City purchases and days never alter creative save")
-	var restored = STATE.restore(JSON.parse_string(FileAccess.get_file_as_string(city_save)).settlement)
+	var project: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(city_save))
+	var restored = city.restore_project(project, CHILD, SLOT, "rival")
 	_check(restored != null and restored.snapshot() == saved, "Disk reload retains both towns, exact resources and day")
+	_check(city.restore_project(project, "other_child", SLOT, "rival") == null, "City save cannot cross child profiles")
+	_check(city.restore_project(project, CHILD, 1, "rival") == null, "City save cannot cross project slots")
+	_check(city.restore_project(project, CHILD, SLOT, "settlement") == null, "City save cannot cross game variations")
+	var unsupported: Dictionary = project.duplicate(true)
+	unsupported.version = 2
+	_check(city.restore_project(unsupported, CHILD, SLOT, "rival") == null, "Unknown city project version is rejected")
 	city._toggle_pause()
 	city._next_day()
 	await _frames(12)
@@ -162,6 +195,25 @@ func _run() -> void:
 	await _frames(15)
 	_check(current_scene != null and current_scene.scene_file_path == "res://scenes/creative/build_world.tscn", "Return reaches the original creative world")
 	_check(FileAccess.get_file_as_string(free_save) == preserved, "Returned creative world keeps original bytes")
+	_check(current_scene.slot == SLOT and current_scene.save_path == free_save, "Return restores the same creative project slot")
+	# A malformed city save must stay byte-for-byte recoverable. The player can
+	# return and choose another project; no autosave may overwrite this file.
+	var invalid_bytes := "{corrupted project retained for recovery}"
+	var invalid_file := FileAccess.open(city_save, FileAccess.WRITE)
+	invalid_file.store_string(invalid_bytes)
+	invalid_file.close()
+	current_scene._open_settlement("rival")
+	await _frames(15)
+	city = current_scene
+	_check(city.save_blocked, "Malformed city file blocks replacement")
+	var untouched: Dictionary = city.model.snapshot()
+	city._buy("house")
+	city._next_day()
+	_check(city.model.snapshot() == untouched and not city._save(), "Unreadable file cannot receive a misleading purchase or save")
+	_check(FileAccess.get_file_as_string(city_save) == invalid_bytes, "Malformed city bytes remain intact")
+	city._leave()
+	await _frames(15)
+	_check(current_scene.scene_file_path == "res://scenes/creative/build_world.tscn", "Unreadable city still allows safe return to Bauwelt")
 	current_scene.queue_free()
 	await _frames(3)
 	DirAccess.remove_absolute(free_save)

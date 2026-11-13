@@ -231,6 +231,7 @@ func play_behavior(behavior: String) -> bool:
 	if behavior == "walk_loop":
 		if not is_usable():
 			return false
+		_stop_teacher_mode()
 		if not walking:
 			player.play("idle", 0.0)
 			player.advance(0.0)
