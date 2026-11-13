@@ -101,7 +101,7 @@ Fortschrittsspeicherung und Profileigentümerschaft bleiben zuständig.
 ## Ausgeführte Prüfungen
 
 - `godot --headless --path . --script res://scripts/tests/learning_world_regression.gd`:
-  **5310 Prüfungen bestanden**. Exhaustive begrenzte Subtraktion/Gruppen/Brüche,
+  **5328 Prüfungen bestanden**. Exhaustive begrenzte Subtraktion/Gruppen/Brüche,
   Mengeninvarianz, native JSON-Grenzen, Originalfuchs, echte Szenenknoten,
   Touch/Drag, mehrere Layoutgrößen, Lebenszyklus und Sprachstatus-Staleness.
   Die neuen Sichtregressionen prüfen vollständige Objekt-/Schriftgrenzen in
@@ -150,7 +150,7 @@ Boden/Fuchs waren zu hell, Silben teilweise verdeckt, die große Bruchzahl blieb
 falsch bei 1/4 und der vorhandene Hunderter war nicht ausreichend erkennbar.
 
 Diese konkreten Befunde wurden anschließend in den Produktionsdateien
-korrigiert. Die 5310 Prüfungen oben beziehen sich auf diese Korrekturen.
+korrigiert. Der damalige Lauf mit 5310 Prüfungen belegte diese Korrekturen.
 Der exakte native Commit `c5c71145ffaa9ca90b501c5020967b8d5062c387` erzeugte
 anschließend 21 neue echte Rendererbilder im erfolgreichen fokussierten
 CI-Job `131667187053` (Lauf `43358819881`). Alle 21 PNGs wurden tatsächlich
@@ -166,6 +166,29 @@ Capture ergänzt die bisherigen Gates um vollständige Objektgrenzen,
 tatsächliche Originalfuchs-Pixel am projizierten Kopf sowie eine Obergrenze
 für ausgebrannte Farbflächen. Kein bestehender Grenzwert wurde abgeschwächt.
 Das ist weiterhin keine pauschale visuelle oder AAA-Freigabe.
+
+Eine spätere Prüfung des identischen Pflanzenbilds im Snapshot `cc6e95a9`
+deckte einen zuvor übersehenen Textwiderspruch auf: Die Überschrift blieb
+„Blatt“, obwohl die ausgewählte Blüte erklärt wurde. Die Produktionsszene
+verwendet nun für Einleitung, Wasser, Sonne und Neustart den neutralen Titel
+„Pflanzen entdecken“. Nur die tatsächlich gewählte Teil-Erklärung ergänzt
+dessen Namen. Das ursprüngliche `plant_part`-Lektionsziel bleibt unverändert.
+Die direkte Regression verwendet echte ScreenTouch-Ereignisse auf den
+produktiven Buttons und prüft alle vier Teilüberschriften sowie den Rückweg
+zu allgemeinen Erklärungen.
+
+Dieser echte Neustart-Touch deckte außerdem einen vorhandenen Lebensdauerfehler
+auf: Der Button wurde während seines eigenen `pressed`-Signals freigegeben.
+Nur die Neustart-Verbindung verwendet nun `CONNECT_DEFERRED`; Inhalt und
+Neustartregeln bleiben gleich. Der ursprüngliche Lauf mit den neuen strengen
+Prüfungen meldete sieben fehlerhafte Assertions und Locked-/Freed-Node-Fehler.
+Nach der Korrektur bestehen 5328 Prüfungen ohne diese Laufzeitfehler.
+Beide geänderten Skripte bestehen `gdformat --check`; der Godot-Lauf wurde
+auch nach dem Formatieren wiederholt. Die Rohlogs und Dateihashes stehen
+unter `docs/evidence/nextgen-learning-20261113/plant-heading-*`.
+Die neue sichtbare Überschrift muss noch im Rendererbild des korrigierten
+Commitstands nachgewiesen werden; die früheren Pflanzenbilder sind dafür
+kein Nachweis.
 
 Zusätzlich erforderlich: integrierter Release-APK-Build mit genau dieser
 Godot-PCK und aktuellem Host, native Touch-/Rückkehr-Tour,

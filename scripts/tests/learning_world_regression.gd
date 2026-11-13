@@ -42,6 +42,26 @@ func _settle() -> void:
 		await process_frame
 
 
+func _tap_learning_button(game: Node3D, caption: String) -> void:
+	var target: Button
+	for button: Button in game.actions.get_children():
+		if button.text == caption:
+			target = button
+			break
+	_check(is_instance_valid(target), "actual plant action exists: " + caption)
+	if not is_instance_valid(target):
+		return
+	var point := target.get_global_rect().get_center()
+	for pressed in [true, false]:
+		var event := InputEventScreenTouch.new()
+		event.index = 8
+		event.position = point
+		event.pressed = pressed
+		Input.parse_input_event(event)
+		await process_frame
+	await _settle()
+
+
 func _check_manipulative_layouts(game: Node3D) -> void:
 	var bridge := root.get_node("HostBridge")
 	var original_options: Dictionary = bridge._options.duplicate(true)
@@ -462,19 +482,49 @@ func _run() -> void:
 	root.add_child(game)
 	await _settle()
 	_check(game.part_nodes.size() == 4, "all four plant parts use scene nodes")
-	game._give_water()
+	_check(
+		game.title.text == "Pflanzen entdecken", "general plant introduction has a neutral title"
+	)
+	await _tap_learning_button(game, "Blüte")
+	await _tap_learning_button(game, "Wasser geben")
+	_check(
+		game.title.text == "Pflanzen entdecken" and game.explanation.text.begins_with("Wasser"),
+		"water explanation clears a previously selected plant-part title"
+	)
 	game._process(0.1)
 	_check(
 		is_equal_approx(game._growth, 0.62), "water alone does not complete growth demonstration"
 	)
-	game._give_sun()
+	await _tap_learning_button(game, "Blatt")
+	await _tap_learning_button(game, "Sonne öffnen")
+	_check(
+		game.title.text == "Pflanzen entdecken" and game.explanation.text.begins_with("Licht"),
+		"light explanation clears a previously selected plant-part title"
+	)
 	game._process(0.1)
 	_check(is_equal_approx(game._growth, 1.0), "water plus light changes the living model")
-	for part in ["root", "stem", "leaf", "flower"]:
-		game._inspect(part)
+	for selected in [
+		["Wurzel", "Die Wurzel"],
+		["Stängel", "Der Stängel"],
+		["Blatt", "Die Blätter"],
+		["Blüte", "Die Blüte"],
+	]:
+		await _tap_learning_button(game, selected[0])
 		_check(not game.explanation.text.is_empty(), "selected plant part has actual explanation")
+		_check(
+			(
+				game.title.text == "Pflanzen entdecken · " + selected[0]
+				and game.explanation.text.begins_with(selected[1])
+			),
+			"selected plant title matches its actual explanation: " + selected[0]
+		)
 	_check(game.activity.is_complete(), "plant exploration reaches completion")
-	game.restart()
+	_check(game.activity.plant_part == "leaf", "exploration preserves the original lesson target")
+	await _tap_learning_button(game, "Noch einmal")
+	_check(
+		game.title.text == "Pflanzen entdecken" and game.explanation.text.begins_with("Gib Wasser"),
+		"restart restores the general plant title and introduction"
+	)
 	_check(
 		(
 			not game.activity.watered

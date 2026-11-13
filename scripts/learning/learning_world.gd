@@ -323,7 +323,7 @@ func _panel() -> PanelContainer:
 	return panel
 
 
-func _button(caption: String, action: Callable) -> Button:
+func _button(caption: String, action: Callable, flags: int = 0) -> Button:
 	var button := Button.new()
 	button.text = caption
 	button.custom_minimum_size = Vector2(64, 52)
@@ -354,7 +354,7 @@ func _button(caption: String, action: Callable) -> Button:
 	pressed.bg_color = style.bg_color.darkened(0.12)
 	button.add_theme_stylebox_override("pressed", pressed)
 	button.add_theme_color_override("font_color", Color("1d3540") if primary else Color("f5ead5"))
-	button.pressed.connect(action)
+	button.pressed.connect(action, flags)
 	actions.add_child(button)
 	return button
 
@@ -410,7 +410,8 @@ func _rebuild_activity() -> void:
 			sun_button = _button("Sonne öffnen", _give_sun)
 			for part in PART_LABELS:
 				_button(str(PART_LABELS[part]), _inspect.bind(str(part)))
-	_button("Noch einmal", restart)
+	# Rebuilding frees the old controls after their input signal has returned.
+	_button("Noch einmal", restart, CONNECT_DEFERRED)
 	if (
 		_speech_enabled
 		and is_instance_valid(_speech_host)
@@ -661,7 +662,7 @@ func _branch(
 
 
 func _build_plant() -> void:
-	title.text = "Pflanzen entdecken · " + str(PART_LABELS[activity.plant_part])
+	title.text = "Pflanzen entdecken"
 	_growth = 0.62
 	var soil := _material("soil", Color("785c41"))
 	var green := _material("stem", Color("4c8b48"))
@@ -745,6 +746,7 @@ func _refresh() -> void:
 		title.text = "Lumo Lernwerkstatt"
 		status.text = "Kehre zur Aufgabe zurück und öffne die Lernansicht erneut."
 	elif activity.kind == "plant_parts":
+		title.text = "Pflanzen entdecken"
 		status.text = "%d von 4 Pflanzenteilen entdeckt" % activity.inspected.size()
 		water_button.disabled = activity.watered
 		sun_button.disabled = activity.sunlight
@@ -1063,6 +1065,7 @@ func _inspect(part: String) -> void:
 	if suspended or not activity.inspect_part(part):
 		return
 	_refresh()
+	title.text = "Pflanzen entdecken · " + str(PART_LABELS[part])
 	explanation.text = str(PART_HELP[part])
 	_teacher("explain", _part_position(part))
 	_queue_narration()

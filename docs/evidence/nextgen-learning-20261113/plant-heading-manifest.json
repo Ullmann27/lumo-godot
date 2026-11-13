@@ -1,0 +1,57 @@
+{
+  "scope": "Selected plant heading and actual restart-control lifetime",
+  "original_image_source": "cc6e95a9 (actual inspected plant_parts-complete.png)",
+  "before_world_sha256": "6265da30b6f7fbacc148352cc0760b8ee1509fe0c7fb2106370744060613ef13",
+  "before_assertions": 5328,
+  "before_failed_assertions": 7,
+  "before_runtime_errors": [
+    "Object is locked and cannot be freed",
+    "Previously freed node property access"
+  ],
+  "after_assertions": 5328,
+  "after_result": "PASS; no ERROR or SCRIPT ERROR in raw log",
+  "format_result": "gdformat applied only to the two changed scripts; --check leaves both unchanged; actual Godot regression rerun afterward",
+  "unchanged": [
+    "Geometry and materials",
+    "Lesson descriptor plant_part",
+    "Growth and exploration rules",
+    "Previously required checks and thresholds"
+  ],
+  "new_assertions": [
+    "Neutral title at start",
+    "Every selected part title matches its current explanation",
+    "Water and light clear the previous part title",
+    "Restart resets heading and experiment",
+    "Original lesson target remains leaf"
+  ],
+  "interaction": "Real InputEventScreenTouch press/release on existing production action buttons, including Noch einmal",
+  "files": [
+    {
+      "file": "scripts/learning/learning_world.gd",
+      "sha256": "dd17f0eebf7a6f9df75ddf970ceee198820e3e588995b46382aed3b972c6ef81"
+    },
+    {
+      "file": "scripts/tests/learning_world_regression.gd",
+      "sha256": "c7b2a45da230b0dc736a03fe59cb13ce66a5f8fc791b1d6115935923b15c374c"
+    },
+    {
+      "file": "docs/NEXTGEN_LEARNING_20261113.md",
+      "sha256": "0437d59387100c24c9923ab1389c63c5704d53eddfe28b370332d407f2ad723a"
+    }
+  ],
+  "evidence": [
+    {
+      "file": "plant-heading-after.log",
+      "sha256": "72bb572653fbd4d182380330b8d56fb1ee4ab130aa0603bbccee6e5b117ff77d"
+    },
+    {
+      "file": "plant-heading-before.log",
+      "sha256": "f950549613a22acdca4c994324240c6e4defd2202f5526d6841d64500f8a2550"
+    },
+    {
+      "file": "plant-heading-format.log",
+      "sha256": "4a15bb766c0ff954fce049566fe1a1fed6d04909d56d98d3fcbbffe6ba84ff19"
+    }
+  ],
+  "visual_status": "Corrected-source PNG pending; original cc6 plant screenshot is a failure witness, not acceptance."
+}
