@@ -47,6 +47,7 @@ run_probe() {
     fi
   fi
   XDG_DATA_HOME="$user_dir" LUMO_CAPTURE_DIR="$capture_dir" LUMO_EVIDENCE_DIR="$capture_dir" \
+    PUZZLE_ROTATION_CAPTURE_DIR="$capture_dir" \
     python3 tools/run_godot_probe.py --log "$LOG_DIR/$name-$mode.log" \
     --timeout "$timeout_seconds" --required "$marker" -- "${command[@]}" "${args[@]}" "$@"
 }
@@ -64,6 +65,8 @@ check_probe() {
 }
 printf 'probe\tmode\tresult\n' > "$LOG_DIR/results.tsv"
 check_probe learning_world_regression '[LearningWorld] PASS' headless
+check_probe learning_sharing_regression '[LearningSharing] PASS' headless
+check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' headless
 check_probe jump_nextgen_regression '[JumpNextgen] PASS' headless
 check_probe jump_expeditions_regression '[JumpExpeditions] PASS' headless
 check_probe lumo_teacher_pose_regression '[LumoTeacherPose] PASS' headless
@@ -80,6 +83,8 @@ check_probe cards_table_regression 'CARDS_TABLE_RUNTIME_PASS' headless
 check_probe rhythm_tour_regression '[RhythmTour] PASS' headless
 check_probe rhythm_tour_play_regression '[RhythmTourPlay] PASS' headless
 check_probe learning_world_capture '[LearningCapture] PASS' rendered -- "--output=$LOG_DIR/captures/learning_world_capture"
+check_probe learning_sharing_capture '[LearningSharingCapture] PASS' rendered -- "--output=$LOG_DIR/captures/learning_sharing_capture"
+check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' rendered
 check_probe jump_nextgen_capture '[JumpNextgenCapture] PASS' rendered
 check_probe build_nextgen_play_regression '[BuildNextgen] PASS' rendered -- --capture
 check_probe build_settlement_play_regression '[SettlementPlay] PASS' rendered -- --capture

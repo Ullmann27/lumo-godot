@@ -4,7 +4,7 @@ on:
   push:
     branches: [chatgpt/lumo-nextgen-20261113]
   pull_request:
-    branches: [chatgpt/lumo-action-stage-20261112]
+    branches: [chatgpt/lumo-action-stage-20261112, chatgpt/lumo-nextgen-20261113]
   workflow_dispatch:
 
 permissions:

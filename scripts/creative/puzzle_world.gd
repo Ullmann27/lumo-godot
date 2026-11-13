@@ -38,9 +38,14 @@ var info: Label
 var status: Label
 var menu: PanelContainer
 var menu_box: VBoxContainer
+var menu_scroll: ScrollContainer
 var progress: ProgressBar
 var selected_count: int = 12
 var selected_motif: int = 3
+var selected_rotation: bool = false
+var selected_piece: int = -1
+var rotate_button: Button
+var rotation_tweens: Dictionary = {}
 var tray_page: int = 0
 var edges_only: bool = false
 var paused: bool = true
@@ -187,6 +192,10 @@ func _ui() -> void:
 	safe_ui.add_child(tool_scroll)
 	var tools := HBoxContainer.new()
 	tool_scroll.add_child(tools)
+	rotate_button = KIT.button("↻ Drehen", _rotate_selected, 116)
+	rotate_button.name = "RotatePuzzlePiece"
+	rotate_button.tooltip_text = "Teil antippen, dann um eine Vierteldrehung drehen. Tastatur: R."
+	tools.add_child(rotate_button)
 	tools.add_child(KIT.button("‹ Teile", _page.bind(-1)))
 	tools.add_child(KIT.button("Teile ›", _page.bind(1)))
 	tools.add_child(KIT.button("Randteile", _edges))
@@ -215,11 +224,16 @@ func _ui() -> void:
 	menu.add_theme_stylebox_override("panel", KIT.panel())
 	menu.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	menu.position = Vector2(-235, -180)
-	menu.custom_minimum_size = Vector2(470, 360)
+	menu.custom_minimum_size = Vector2(470, 0)
 	safe_ui.add_child(menu)
+	menu_scroll = ScrollContainer.new()
+	menu_scroll.name = "PuzzleMenuScroll"
+	menu_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	menu.add_child(menu_scroll)
 	menu_box = VBoxContainer.new()
+	menu_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	menu_box.add_theme_constant_override("separation", 12)
-	menu.add_child(menu_box)
+	menu_scroll.add_child(menu_box)
 
 
 func _resize_ui() -> void:
@@ -228,7 +242,10 @@ func _resize_ui() -> void:
 		for child in menu_box.get_children():
 			if child is Label:
 				child.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		var width := minf(470.0, maxf(280.0, safe_ui.size.x - 24.0))
+			elif child is Button:
+				child.clip_text = true
+				child.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		var width := minf(470.0, maxf(180.0, safe_ui.size.x - 24.0))
 		menu.custom_minimum_size.x = width
 		call_deferred("_fit_menu")
 	if is_instance_valid(camera) and camera.is_inside_tree():
@@ -249,17 +266,21 @@ func _fit_menu() -> void:
 	await get_tree().process_frame
 	if not is_inside_tree() or not is_instance_valid(menu):
 		return
-	menu.size = Vector2(menu.custom_minimum_size.x, menu.get_combined_minimum_size().y)
+	var height := minf(menu_box.get_combined_minimum_size().y + 24.0, maxf(96.0, safe_ui.size.y - 24.0))
+	menu_scroll.custom_minimum_size.y = maxf(48.0, height - 24.0)
+	menu.size = Vector2(menu.custom_minimum_size.x, height)
 	menu.position = (safe_ui.size - menu.size) * 0.5
 
 
 func _clear_menu() -> void:
 	paused = true
+	_clear_selection()
 	dragging = -1
 	finger = -1
 	for child in menu_box.get_children():
 		menu_box.remove_child(child)
 		child.queue_free()
+	menu_scroll.scroll_vertical = 0
 	menu.show()
 	call_deferred("_resize_ui")
 
@@ -275,6 +296,12 @@ func _show_selection() -> void:
 		KIT.button(
 			"%s · %d Teile" % [STATE.difficulty_name_for(selected_count), selected_count],
 			_next_count
+		)
+	)
+	menu_box.add_child(
+		KIT.button(
+			"Modus: Drehpuzzle" if selected_rotation else "Modus: Bilderpuzzle",
+			_toggle_rotation_mode
 		)
 	)
 	menu_box.add_child(KIT.button("Neues Puzzle beginnen", start))
@@ -293,15 +320,27 @@ func _next_motif() -> void:
 	_show_selection()
 
 
+func _toggle_rotation_mode() -> void:
+	selected_rotation = not selected_rotation
+	_show_selection()
+
+
 func start() -> void:
 	_hide_alive()
-	model.setup(selected_count, selected_motif)
+	_clear_selection()
+	model.setup(selected_count, selected_motif, selected_rotation)
 	model.result_id = HostBridge.new_result_id()
 	tray_page = 0
 	edges_only = false
 	_build_pieces()
 	paused = false
 	menu.hide()
+	status.text = (
+		"Tippe ein Teil an, drehe es mit ↻ und ziehe es auf seinen Platz."
+		if model.rotation_enabled
+		else "Ziehe ein Teil auf seinen Platz. Es rastet ein, wenn es passt."
+	)
+	_update_rotate_button()
 	dirty = true
 	_save()
 
@@ -316,6 +355,8 @@ func _resume() -> void:
 		return
 	selected_count = model.count
 	selected_motif = model.motif
+	selected_rotation = model.rotation_enabled
+	_clear_selection()
 	tray_page = 0
 	_build_pieces()
 	paused = false
@@ -325,6 +366,10 @@ func _resume() -> void:
 
 
 func _build_pieces() -> void:
+	for tween in rotation_tweens.values():
+		if tween is Tween and tween.is_valid():
+			tween.kill()
+	rotation_tweens.clear()
 	var size: Vector2 = model.board_size()
 	board_frame.scale = Vector3(size.x + 0.72, 0.1, size.y + 0.72)
 	board_base.scale = Vector3(size.x + 0.1, 0.1, size.y + 0.1)
@@ -350,6 +395,8 @@ func _tray() -> void:
 	var pending: Array[int] = []
 	for i in range(model.count):
 		var node: StaticBody3D = nodes[i]
+		if not rotation_tweens.has(i) or not rotation_tweens[i].is_valid() or not rotation_tweens[i].is_running():
+			node.quaternion = Quaternion(Vector3.UP, int(model.pieces[i].get("turn", 0)) * PI * 0.5)
 		if model.pieces[i].locked:
 			node.show()
 			node.position = Vector3(model.target(i).x, 0.14, model.target(i).y)
@@ -385,6 +432,8 @@ func _tray() -> void:
 func _page(direction: int) -> void:
 	if paused:
 		return
+	_drop()
+	_clear_selection()
 	tray_page += direction
 	_tray()
 
@@ -392,6 +441,8 @@ func _page(direction: int) -> void:
 func _edges() -> void:
 	if paused:
 		return
+	_drop()
+	_clear_selection()
 	edges_only = not edges_only
 	tray_page = 0
 	_tray()
@@ -400,10 +451,50 @@ func _edges() -> void:
 
 func _labels() -> void:
 	info.text = (
-		"%s · %d / %d Teile · %d Tipps"
-		% [model.difficulty_name(), model.placed(), model.count, model.hints]
+		"%s%s · %d / %d Teile · %d Tipps"
+		% [model.difficulty_name(), " · Drehpuzzle" if model.rotation_enabled else "", model.placed(), model.count, model.hints]
 	)
 	progress.value = float(model.placed()) / maxi(1, model.count) * 100
+	_update_rotate_button()
+
+
+func _update_rotate_button() -> void:
+	if not is_instance_valid(rotate_button):
+		return
+	rotate_button.visible = model.rotation_enabled
+	rotate_button.disabled = paused or selected_piece < 0 or selected_piece >= model.pieces.size()
+	if not rotate_button.disabled:
+		rotate_button.disabled = model.pieces[selected_piece].locked
+
+
+func _clear_selection() -> void:
+	if selected_piece >= 0 and selected_piece < nodes.size():
+		_clear_overlay(selected_piece)
+	selected_piece = -1
+	_update_rotate_button()
+
+
+func _rotate_selected() -> void:
+	if paused or selected_piece < 0 or not model.rotate_piece(selected_piece):
+		return
+	var id := selected_piece
+	if rotation_tweens.has(id) and rotation_tweens[id].is_valid():
+		rotation_tweens[id].kill()
+	var tween := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(
+		nodes[id], "quaternion", Quaternion(Vector3.UP, int(model.pieces[id].turn) * PI * 0.5), 0.18
+	)
+	rotation_tweens[id] = tween
+	dirty = true
+	status.text = "Eine Vierteldrehung. Vergleiche Bild und Form."
+	var at := Vector2(nodes[id].position.x, nodes[id].position.z)
+	if dragging == id:
+		_update_hover(at)
+	elif model.is_near_target(id, at) and at.distance_to(model.target(id)) <= model.snap_limit():
+		# Turning a piece already at its slot completes the same placement as
+		# a drag. There is no extra hidden tap required to accept the right turn.
+		_apply_drop(id, at)
+	_labels()
 
 
 func _plane(at: Vector2) -> Vector2:
@@ -451,6 +542,8 @@ func _pick(at: Vector2, index: int) -> void:
 	var id: int = int(hit.collider.get_meta("piece"))
 	if model.pieces[id].locked:
 		return
+	_clear_selection()
+	selected_piece = id
 	dragging = id
 	finger = index
 	matching_hover = false
@@ -458,6 +551,7 @@ func _pick(at: Vector2, index: int) -> void:
 	nodes[id].position.y = 0.8
 	nodes[id].scale = Vector3(1.08, 1.08, 1.08)
 	_set_overlay(id, Color(1.0, 0.86, 0.35, 0.22))
+	_update_rotate_button()
 
 
 func _drag(at: Vector2) -> void:
@@ -468,6 +562,12 @@ func _drag(at: Vector2) -> void:
 		clampf(position_2d.x, -9, 9), 0.8, clampf(position_2d.y, -5, 5)
 	)
 	var at2 := Vector2(nodes[dragging].position.x, nodes[dragging].position.z)
+	_update_hover(at2)
+
+
+func _update_hover(at2: Vector2) -> void:
+	if dragging < 0:
+		return
 	var near: bool = model.is_near_target(dragging, at2)
 	matching_hover = near
 	if near:
@@ -479,6 +579,8 @@ func _drag(at: Vector2) -> void:
 	else:
 		_set_overlay(dragging, Color(1.0, 0.86, 0.35, 0.22))
 		hover_marker.hide()
+		if at2.distance_to(model.target(dragging)) <= model.hover_limit() and not model.orientation_matches(dragging):
+			status.text = "Der Platz stimmt. Drehe das Teil noch mit ↻."
 
 
 func _drop() -> void:
@@ -486,12 +588,17 @@ func _drop() -> void:
 		return
 	var id: int = dragging
 	var at := Vector2(nodes[id].position.x, nodes[id].position.z)
-	var snapped: bool = model.try_snap(id, at)
 	dragging = -1
 	finger = -1
 	matching_hover = false
 	hover_marker.hide()
+	_apply_drop(id, at)
+
+
+func _apply_drop(id: int, at: Vector2) -> void:
+	var snapped: bool = model.try_snap(id, at)
 	if snapped:
+		selected_piece = -1
 		var target := model.target(id)
 		create_tween().tween_property(
 			nodes[id], "position", Vector3(target.x, 0.14, target.y), 0.18
@@ -501,8 +608,15 @@ func _drop() -> void:
 	else:
 		nodes[id].position.y = 0.15
 		nodes[id].scale = Vector3.ONE
-		_clear_overlay(id)
-		status.text = "Probiere einen anderen Platz. Schau auf Form und Bild."
+		if model.rotation_enabled:
+			_set_overlay(id, Color(1.0, 0.86, 0.35, 0.15))
+		else:
+			_clear_overlay(id)
+		status.text = (
+			"Der Platz stimmt. Drehe das Teil noch mit ↻."
+			if not model.orientation_matches(id) and at.distance_to(model.target(id)) <= model.hover_limit()
+			else "Probiere einen anderen Platz. Schau auf Form und Bild."
+		)
 	dirty = true
 	_labels()
 	if model.complete():
@@ -525,6 +639,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		_pause_menu()
 	if paused:
+		return
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
+		_rotate_selected()
+		get_viewport().set_input_as_handled()
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
@@ -553,8 +671,12 @@ func _input(event: InputEvent) -> void:
 func _hint() -> void:
 	if paused:
 		return
+	_drop()
 	for i in range(model.count):
 		if not model.pieces[i].locked and nodes[i].visible:
+			_clear_selection()
+			selected_piece = i
+			_set_overlay(i, Color(1.0, 0.86, 0.35, 0.18))
 			nodes[i].position.y = 0.48
 			model.hints += 1
 			var at := model.target(i)
@@ -565,7 +687,12 @@ func _hint() -> void:
 			var tw := create_tween()
 			tw.tween_property(nodes[i], "position:y", 0.62, 0.14)
 			tw.tween_property(nodes[i], "position:y", 0.48, 0.14)
-			status.text = "Das angehobene Teil passt auf den leuchtenden Platz."
+			var turns := posmod(-int(model.pieces[i].get("turn", 0)), 4)
+			status.text = (
+				"Drehe das angehobene Teil noch %d-mal mit ↻, dann passt es zum Licht." % turns
+				if turns > 0
+				else "Das angehobene Teil passt auf den leuchtenden Platz."
+			)
 			_labels()
 			dirty = true
 			return

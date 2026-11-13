@@ -27,7 +27,7 @@ func configure(raw: Dictionary) -> bool:
 			b = int(raw.b)
 			if a < 1 or a > 9 or b < 1 or b > 9 or a + b <= 10:
 				kind = "invalid"
-		"addition", "subtract_ten", "equal_groups", "bridge_hundred", "fraction_parts":
+		"addition", "subtract_ten", "equal_groups", "equal_sharing", "bridge_hundred", "fraction_parts":
 			if (
 				not _bounded_integer(raw.get("a"), 0, 900)
 				or not _bounded_integer(raw.get("b"), 1, 90)
@@ -45,6 +45,9 @@ func configure(raw: Dictionary) -> bool:
 						kind = "invalid"
 				"equal_groups":
 					if a < 1 or a > 6 or b > 6:
+						kind = "invalid"
+				"equal_sharing":
+					if b < 2 or b > 6 or a < b or a > 36 or a % b != 0 or a / b > 6:
 						kind = "invalid"
 				"bridge_hundred":
 					if (
@@ -119,7 +122,7 @@ func token_count() -> int:
 	match kind:
 		"bridge_ten", "addition":
 			return b
-		"subtract_ten":
+		"subtract_ten", "equal_sharing":
 			return a
 		"equal_groups":
 			return a * b
@@ -149,7 +152,31 @@ func is_complete() -> bool:
 
 
 func target_index() -> int:
-	return initial_count() + placed.size()
+	return target_for_step(placed.size())
+
+
+func target_for_step(step: int) -> int:
+	# A sharing round gives each group one object before any receives a second.
+	# Targets are stored by group, while gestures follow this fair round order.
+	if kind == "equal_sharing":
+		return (step % b) * (a / b) + step / b
+	return initial_count() + step
+
+
+func group_count() -> int:
+	return b if kind == "equal_sharing" else a
+
+
+func group_size() -> int:
+	return a / b if kind == "equal_sharing" else b
+
+
+func count_in_group(group: int) -> int:
+	if group < 0 or group >= group_count():
+		return 0
+	if kind == "equal_sharing":
+		return placed.size() / b + (1 if group < placed.size() % b else 0)
+	return clampi(placed.size() - group * b, 0, b)
 
 
 func place(token: int, target: int) -> bool:
@@ -224,6 +251,26 @@ func explanation() -> String:
 			return (
 				"Fülle %d Gruppen mit je %d Würfeln. Schon %d Gruppen sind voll."
 				% [a, b, placed.size() / b]
+			)
+		"equal_sharing":
+			if is_complete():
+				return (
+					"%d Würfel, %d gleiche Gruppen: Jede hat %d. %d geteilt durch %d ist %d."
+					% [a, b, a / b, a, b, a / b]
+				)
+			if placed.is_empty():
+				return (
+					"Verteile %d Würfel gerecht auf %d Gruppen. Gib jeder Gruppe der Reihe nach einen Würfel."
+					% [a, b]
+				)
+			if placed.size() % b == 0:
+				return (
+					"Jede Gruppe hat jetzt %d. Noch %d Würfel bleiben. Beginne die nächste Runde."
+					% [placed.size() / b, a - placed.size()]
+				)
+			return (
+				"Als Nächstes bekommt Gruppe %d einen Würfel. Noch %d liegen auf der Ablage."
+				% [placed.size() % b + 1, a - placed.size()]
 			)
 		"bridge_hundred":
 			var current: int = a + placed.size() * 10
