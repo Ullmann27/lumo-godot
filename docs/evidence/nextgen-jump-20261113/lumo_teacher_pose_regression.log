@@ -8,4 +8,4 @@ Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
 [Audio] manager ready (muted:false)
 [Progress] no save file (first run) - starting fresh
 [Perf] quality_profile:medium
-[LumoTeacherPose] PASS 29 checks: original gestures, bounded split gaze, owner exclusivity, pause and honest voice seam
+[LumoTeacherPose] PASS 34 checks: original gestures, bounded split gaze, owner exclusivity, pause and honest voice seam

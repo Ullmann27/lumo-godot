@@ -67,17 +67,22 @@ check_probe build_transform_regression '[BuildTransform] PASS' headless
 check_probe build_nextgen_play_regression '[BuildNextgen] PASS' headless
 check_probe build_settlement_regression '[Settlement] PASS' headless
 check_probe build_settlement_play_regression '[SettlementPlay] PASS' headless
+check_probe creative_nextgen_environment_regression '[CreativeNextgenEnvironment] PASS' headless
 check_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' headless
 check_probe kart_track_pass_regression '[KartTrackPass] PASS' headless
 check_probe cards_table_regression 'CARDS_TABLE_RUNTIME_PASS' headless
+check_probe rhythm_tour_regression '[RhythmTour] PASS' headless
+check_probe rhythm_tour_play_regression '[RhythmTourPlay] PASS' headless
 check_probe learning_world_capture '[LearningCapture] PASS' rendered -- "--output=$LOG_DIR/captures/learning_world_capture"
 check_probe jump_nextgen_capture '[JumpNextgenCapture] PASS' rendered
 check_probe build_nextgen_play_regression '[BuildNextgen] PASS' rendered -- --capture
 check_probe build_settlement_play_regression '[SettlementPlay] PASS' rendered -- --capture
+check_probe creative_nextgen_environment_regression '[CreativeNextgenEnvironment] PASS' rendered
 # Fixed simulation time prevents a slow software-rendered frame from skipping
 # the short selection gesture. This is never a measured device frame-rate claim.
 check_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' rendered --fixed-fps 60 -- --capture
 check_probe cards_table_capture 'CARDS_TABLE_RENDER_PASS' rendered -- "--output=$LOG_DIR/captures/cards_table_capture"
+check_probe rhythm_tour_play_regression '[RhythmTourPlay] PASS' rendered -- --capture
 check_probe kart_player_full_route_regression '[PlayerFullRoute] PASS' rendered -- "--out=$LOG_DIR/captures/kart_player_full_route_regression"
 
 if (( ${#failures[@]} )); then
@@ -85,4 +90,4 @@ if (( ${#failures[@]} )); then
   exit 1
 fi
 
-echo "[LumoNextgen] PASS: new production learning, platforming, building, cards and garage checks; logs $LOG_DIR"
+echo "[LumoNextgen] PASS: new production learning, platforming, building, cards, rhythm and garage checks; logs $LOG_DIR"

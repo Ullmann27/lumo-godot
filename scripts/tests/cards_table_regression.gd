@@ -41,12 +41,24 @@ func _run() -> void:
 		await process_frame
 		await process_frame
 		check(table.actor.is_usable(), "original 65-bone actor loaded")
+		var hips: Vector3 = table.actor.skeleton.to_global(table.actor.skeleton.get_bone_global_pose(table.seated.pelvis).origin)
+		check(hips.distance_to(table.seated.seat) < 0.015, "authored seated pelvis contacts actual chair")
+		check(table.seated.legs.size() == 10, "seated lower body preserved during reactions")
 		check(table.hand_root.get_child_count() >= 3, "real hand geometry exists")
 		var viewport := Rect2(Vector2.ZERO, Vector2(shape))
 		for button in table.ui.find_children("*", "Button", true, false):
 			if button.is_visible_in_tree():
 				check(button.size.y / table._ui_scale >= 48, "48dp action target")
 				check(viewport.encloses(button.get_global_rect()), "action inside viewport: " + button.text)
+		var discard_node: Node3D = table.discard_root.get_child(table.discard_root.get_child_count() - 1)
+		var discard_bottom := 0.0
+		for corner in [Vector3(-0.415, 0.02, -0.59), Vector3(0.415, 0.02, -0.59), Vector3(-0.415, 0.02, 0.59), Vector3(0.415, 0.02, 0.59)]:
+			discard_bottom = maxf(discard_bottom, table.camera.unproject_position(discard_node.to_global(corner)).y)
+		var first_hand: Node3D = table._cards["r1"]
+		var hand_top := INF
+		for corner in [Vector3(-0.415, 0.02, -0.59), Vector3(0.415, 0.02, -0.59), Vector3(-0.415, 0.02, 0.59), Vector3(0.415, 0.02, 0.59)]:
+			hand_top = minf(hand_top, table.camera.unproject_position(first_hand.to_global(corner)).y)
+		check(discard_bottom < hand_top, "hand never obscures current discard in any density")
 		var legal = table._cards["r1"]
 		var point: Vector2 = table.camera.unproject_position(legal.global_position)
 		check(viewport.has_point(point), "card projects into viewport")
@@ -85,6 +97,22 @@ func _run() -> void:
 		check(answer_buttons.size() == 3, "learning choices use authoritative question")
 		answer_buttons[1].pressed.emit()
 		check(requests.size() == 1 and requests[0].action == "answer" and requests[0].index == 1, "native choice emits answer index")
+		requests.clear()
+		table._pending = 0
+		var long_question := fixture()
+		long_question.phase = "learningQuestion"
+		long_question.round = 2
+		long_question.totalRounds = 3
+		long_question.question = {"prompt": "Lumo hat acht Sterne und bekommt fünf dazu. Wie viele Sterne sind es zusammen?", "options": ["Zwölf Sterne", "Dreizehn Sterne", "Vierzehn Sterne", "Fünfzehn Sterne"]}
+		table.apply_state(long_question)
+		await process_frame
+		await process_frame
+		table._layout_modal()
+		await process_frame
+		check(table.heading.text == "Sternenpokal 2/3", "native table displays authoritative tournament leg")
+		check(viewport.encloses(table.modal.get_global_rect()), "four-option question panel remains inside viewport")
+		for button in table.modal_content.find_children("*", "Button", true, false):
+			check(button.size.y / table._ui_scale >= 48, "question answer retains 48dp")
 		requests.clear()
 		table._pending = 0
 		table._sequence = 0

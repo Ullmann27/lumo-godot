@@ -103,6 +103,11 @@ func _refresh() -> void:
 	if step != _last_section:
 		_reset_stage_gesture()
 		_camera_zoom = 1.0
+		# The shared drawer must not carry a kart's scroll offset into the world
+		# list, clipping its first track name even though its goal is visible.
+		var drawer := choices.get_parent() as ScrollContainer
+		drawer.scroll_vertical = 0
+		drawer.scroll_horizontal = 0
 		_last_section = step
 	_sync_workshop_host()
 	for button in garage_buttons.values():
@@ -473,6 +478,7 @@ func _stage_subject_points() -> Array[Vector3]:
 			points.append(ring.to_global(Vector3(cos(angle) * radius, 0, sin(angle) * radius)))
 	if is_instance_valid(service_station):
 		points.append_array(service_station.subject_points())
+		points.append_array(service_station.workbench_points())
 	return points
 
 

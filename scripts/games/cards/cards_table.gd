@@ -2,6 +2,7 @@ extends Node3D
 ## Native spatial surface of the existing Dart Cards engine. No duplicate rules.
 signal action_requested(request: Dictionary)
 
+const SEATED = preload("res://scripts/games/cards/cards_table_actor.gd")
 const ACTOR = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const COLORS := {"orange": Color("e64e48"), "purple": Color("efd34b"), "blue": Color("3297ed"), "green": Color("58b877")}
 const COLOR_NAMES := {"orange": "Rot", "purple": "Gelb", "blue": "Blau", "green": "Grün"}
@@ -15,9 +16,15 @@ var heading: Label
 var message: Label
 var status: Label
 var footer: VBoxContainer
+var pages: HBoxContainer
+var compact_bar: HBoxContainer
+var header: PanelContainer
+var seated
+var _compact := false
 var actions: HBoxContainer
 var modal: PanelContainer
 var modal_content: VBoxContainer
+var modal_scroll: ScrollContainer
 var page_label: Label
 var play_button: Button
 var draw_button: Button
@@ -85,76 +92,196 @@ func _cylinder(parent: Node3D, at: Vector3, radius: float, height: float, mat: M
 	parent.add_child(instance)
 	return instance
 
-func _build_room() -> void:
-	var wood := _material("wood", Color("382335"), 0.4)
-	var gold := _material("gold", Color("d8aa5c"), 0.3, 0.72)
-	var felt := _material("felt", Color("12415c"), 0.94)
-	var wall := _material("wall", Color("17314e"), 0.9)
-	var floor_mat := _material("floor", Color("28344a"), 0.6)
-	_box(self, Vector3(0, -0.12, 0), Vector3(18, 0.2, 18), floor_mat)
-	_box(self, Vector3(0, 3, -5.5), Vector3(16, 6, 0.24), wall)
-	_box(self, Vector3(-7, 3, 0), Vector3(0.24, 6, 12), wall)
-	_box(self, Vector3(7, 3, 0), Vector3(0.24, 6, 12), wall)
-	for x in [-4.8, 4.8]:
-		_box(self, Vector3(x, 2.6, -5.32), Vector3(2.1, 3.1, 0.22), wood)
-		var window := _material("window", Color("447f9f"), 0.3)
-		window.emission_enabled = true
-		window.emission = Color("3c7493")
-		window.emission_energy_multiplier = 0.45
-		_box(self, Vector3(x, 2.6, -5.16), Vector3(1.87, 2.85, 0.08), window)
-		_box(self, Vector3(x, 2.6, -5.05), Vector3(0.07, 2.9, 0.1), gold)
-		_box(self, Vector3(x, 2.6, -5.05), Vector3(1.9, 0.07, 0.1), gold)
+func _wood(key: String, tint: Color, roughness: float = 0.58) -> StandardMaterial3D:
+	var mat := _material(key, tint, roughness)
+	mat.albedo_texture = preload("res://assets/generated/lumo3d_assets/textures/albedo/wood_warm_soft_albedo.png")
+	mat.normal_enabled = true
+	mat.normal_texture = preload("res://assets/generated/lumo3d_assets/textures/normal/wood_warm_soft_normal.png")
+	mat.normal_scale = 0.28
+	mat.uv1_triplanar = true
+	mat.uv1_scale = Vector3(1.8, 1.8, 1.8)
+	return mat
+
+func _ring(parent: Node3D, at: Vector3, radius: float, width: float, mat: Material) -> MeshInstance3D:
+	var node := MeshInstance3D.new()
+	var mesh := TorusMesh.new()
+	mesh.inner_radius = radius - width
+	mesh.outer_radius = radius + width
+	mesh.rings = 64
+	mesh.ring_segments = 8
+	node.mesh = mesh
+	node.material_override = mat
+	node.position = at
+	parent.add_child(node)
+	return node
+
+func _beveled_table(mat: Material) -> void:
+	var profile: Array[Vector2] = [Vector2(2.48, 0.87), Vector2(2.64, 0.90), Vector2(2.74, 0.98), Vector2(2.74, 1.04), Vector2(2.65, 1.12), Vector2(2.48, 1.12)]
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for row in range(profile.size() - 1):
+		for segment in range(64):
+			var points: Array[Vector3] = []
+			for corner in [Vector2i(row, segment), Vector2i(row, segment + 1), Vector2i(row + 1, segment + 1), Vector2i(row + 1, segment)]:
+				var angle := float(corner.y) * TAU / 64.0
+				points.append(Vector3(cos(angle) * profile[corner.x].x, profile[corner.x].y, sin(angle) * profile[corner.x].x * 1.04))
+			for vertex in [0, 2, 1, 0, 3, 2]:
+				surface.set_uv(Vector2(float(segment) / 8.0, float(row) / profile.size()))
+				surface.add_vertex(points[vertex])
+	surface.generate_normals()
+	var node := MeshInstance3D.new()
+	node.name = "RoundedWalnutTableRim"
+	node.mesh = surface.commit()
+	node.material_override = mat
+	add_child(node)
+
+func _window(x: float, frame: Material, trim: Material) -> void:
+	var sky := _material("night_sky", Color("173440"), 1.0)
+	_box(self, Vector3(x, 2.7, -4.94), Vector3(1.8, 2.25, 0.1), sky)
+	var moon := _material("moon", Color("e1c992"), 0.9)
+	moon.emission_enabled = true
+	moon.emission = Color("8d784b")
+	moon.emission_energy_multiplier = 0.16
+	var sphere := MeshInstance3D.new()
+	var sphere_mesh := SphereMesh.new()
+	sphere_mesh.radius = 0.21
+	sphere_mesh.height = 0.42
+	sphere_mesh.radial_segments = 20
+	sphere_mesh.rings = 10
+	sphere.mesh = sphere_mesh
+	sphere.material_override = moon
+	sphere.position = Vector3(x + 0.37, 3.2, -4.77)
+	add_child(sphere)
 	for side in [-1, 1]:
-		var x := float(side) * 3.55
-		_box(self, Vector3(x, 1.65, -4.45), Vector3(1.6, 3.3, 0.6), wood)
+		_box(self, Vector3(x + side * 0.9, 2.7, -4.38), Vector3(0.16, 2.35, 0.42), frame)
+	for y in [1.56, 3.85]:
+		_box(self, Vector3(x, y, -4.35), Vector3(1.98, 0.14, 0.5), frame)
+	_box(self, Vector3(x, 1.5, -4.20), Vector3(2.15, 0.1, 0.7), trim)
+	for offset in [-0.45, 0.45]:
+		_box(self, Vector3(x + offset, 2.66, -4.18), Vector3(0.035, 2.13, 0.045), frame)
+	_box(self, Vector3(x, 2.58, -4.18), Vector3(1.8, 0.045, 0.045), frame)
+	# Shaped geometry beyond the window gives real depth rather than a picture.
+	for i in range(4):
+		var tree := MeshInstance3D.new()
+		var cone := CylinderMesh.new()
+		cone.top_radius = 0.0
+		cone.bottom_radius = 0.24
+		cone.height = 0.8 + i * 0.1
+		cone.radial_segments = 10
+		tree.mesh = cone
+		tree.material_override = _material("night_trees", Color("172922"), 0.95)
+		tree.position = Vector3(x - 0.65 + 0.42 * i, 1.9, -4.66)
+		add_child(tree)
+
+func _build_room() -> void:
+	var walnut := _wood("walnut", Color("825b41"), 0.43)
+	var dark_wood := _wood("dark_wood", Color("513b2e"), 0.62)
+	var brass := _material("aged_brass", Color("b59359"), 0.4, 0.68)
+	var felt := _material("green_felt", Color("164c3c"), 0.98)
+	felt.normal_enabled = true
+	felt.normal_texture = preload("res://assets/generated/lumo3d_assets/textures/normal/velvet_blue_3d_normal.png")
+	felt.normal_scale = 0.22
+	felt.uv1_scale = Vector3(5, 5, 5)
+	felt.uv1_triplanar = true
+	var plaster := _material("plaster", Color("31423b"), 0.95)
+	_box(self, Vector3(0, -0.12, 0), Vector3(16, 0.2, 18), dark_wood)
+	for plank in range(20):
+		_box(self, Vector3(-6.2 + plank * 0.65, 0.0, 1), Vector3(0.64, 0.035, 12), _wood("floor%d" % (plank % 3), [Color("7a5b43"), Color("6d503a"), Color("89654a")][plank % 3], 0.73))
+	_box(self, Vector3(0, 2.7, -4.45), Vector3(4.25, 2.4, 0.28), plaster)
+	_box(self, Vector3(0, 4.6, -4.45), Vector3(11, 1.65, 0.28), plaster)
+	for side in [-1, 1]:
+		_box(self, Vector3(side * 5.0, 2.7, -4.45), Vector3(1.65, 2.4, 0.28), plaster)
+		_box(self, Vector3(side * 5.65, 2.7, 0), Vector3(0.25, 5.4, 10), plaster)
+		_window(side * 3.15, dark_wood, walnut)
+	_box(self, Vector3(0, 0.73, -4.32), Vector3(11.2, 1.46, 0.3), dark_wood)
+	for panel in range(9):
+		_box(self, Vector3(-4.8 + panel * 1.2, 0.76, -4.13), Vector3(1.02, 1.02, 0.08), walnut)
+		_box(self, Vector3(-4.8 + panel * 1.2, 0.76, -4.075), Vector3(0.86, 0.86, 0.035), dark_wood)
+	for y in [0.12, 1.43]:
+		_box(self, Vector3(0, y, -4.06), Vector3(11.2, 0.09, 0.13), walnut)
+	for side in [-1, 1]:
+		var x := float(side) * 4.35
+		_box(self, Vector3(x, 1.15, -3.85), Vector3(1.35, 2.3, 0.54), dark_wood)
 		for shelf in range(3):
-			_box(self, Vector3(x, 0.5 + shelf * 0.95, -4.06), Vector3(1.65, 0.08, 0.85), gold)
-			for book in range(6):
-				var color: Color = [Color("b96558"), Color("5485a2"), Color("dfbc6e"), Color("578c75")][(shelf + book) % 4]
-				_box(self, Vector3(x - 0.65 + book * 0.25, 0.8 + shelf * 0.95, -4.15), Vector3(0.17, 0.53 + (book % 3) * 0.08, 0.4), _material("book%d" % ((shelf + book) % 4), color))
-	_cylinder(self, Vector3(0, 0.91, 0), 3.72, 0.28, wood).scale.z = 1.07
-	_cylinder(self, Vector3(0, 1.065, 0), 3.57, 0.045, gold).scale.z = 1.07
-	_cylinder(self, Vector3(0, 1.095, 0), 3.48, 0.035, felt).scale.z = 1.07
-	for x in [-2.3, 2.3]:
-		for z in [-2.3, 2.3]:
-			_cylinder(self, Vector3(x, 0.42, z), 0.16, 0.84, wood)
-			_cylinder(self, Vector3(x, 0.1, z), 0.22, 0.12, gold)
-	# A real chair and the unchanged original rig at the far side of the table.
-	_box(self, Vector3(0, 0.7, -3.35), Vector3(1.35, 0.18, 1.2), wood)
-	_box(self, Vector3(0, 1.5, -3.88), Vector3(1.4, 1.7, 0.18), wood)
-	_box(self, Vector3(0, 1.5, -3.75), Vector3(1.1, 1.38, 0.12), felt)
+			_box(self, Vector3(x, 0.35 + shelf * 0.7, -3.50), Vector3(1.43, 0.09, 0.82), walnut)
+			for book in range(5):
+				var color: Color = [Color("77443b"), Color("345665"), Color("8c7445"), Color("365c49")][(shelf + book) % 4]
+				var height := 0.41 + (book % 3) * 0.04
+				_box(self, Vector3(x - 0.5 + book * 0.24, 0.4 + shelf * 0.7 + height * 0.5, -3.55), Vector3(0.17, height, 0.4), _material("cloth_book%d" % ((shelf + book) % 4), color, 0.86))
+				_box(self, Vector3(x - 0.5 + book * 0.24, 0.49 + shelf * 0.7, -3.342), Vector3(0.15, 0.018, 0.012), brass)
+	var rug := _material("woven_rug", Color("283e45"), 1.0)
+	_cylinder(self, Vector3(0, 0.032, 0), 3.2, 0.018, rug).scale.z = 1.07
+	_ring(self, Vector3(0, 0.045, 0), 3.09, 0.025, _material("rug_stitch", Color("806d50"), 1.0)).scale.z = 1.07
+	_beveled_table(walnut)
+	_cylinder(self, Vector3(0, 1.105, 0), 2.49, 0.026, felt).scale.z = 1.04
+	_ring(self, Vector3(0, 1.125, 0), 2.51, 0.017, brass).scale.z = 1.04
+	_cylinder(self, Vector3(0, 0.48, 0), 0.44, 0.86, dark_wood)
+	_cylinder(self, Vector3(0, 0.13, 0), 0.65, 0.16, walnut)
+	for side in [-1, 1]:
+		for z in [-1.65, 1.65]:
+			_box(self, Vector3(side * 1.55, 0.47, z), Vector3(0.20, 0.86, 0.20), dark_wood)
+			_cylinder(self, Vector3(side * 1.55, 0.12, z), 0.14, 0.12, brass)
+	# The authored pelvis is fitted to the chair, not positioned on the tabletop.
+	var chair_z := -2.73
+	_box(self, Vector3(0, 0.63, chair_z), Vector3(1.45, 0.18, 1.1), walnut)
+	_box(self, Vector3(0, 0.75, chair_z), Vector3(1.28, 0.12, 0.98), felt)
+	_box(self, Vector3(0, 1.43, chair_z - 0.53), Vector3(1.52, 1.7, 0.16), walnut)
+	_box(self, Vector3(0, 1.44, chair_z - 0.43), Vector3(1.25, 1.4, 0.12), felt)
+	for side in [-1, 1]:
+		_box(self, Vector3(side * 0.64, 0.34, chair_z), Vector3(0.12, 0.65, 0.12), dark_wood)
 	actor = ACTOR.new()
 	actor.name = "OriginalLumo"
-	actor.position = Vector3(0, 0.85, -3.15)
-	actor.scale = Vector3.ONE * 1.25
+	actor.scale = Vector3.ONE * 1.65
 	add_child(actor)
-	actor.call("play_behavior", "kart_seated")
+	seated = SEATED.new()
+	seated.bind(actor, Vector3(0, 0.85, chair_z))
+	var emblem := MeshInstance3D.new()
+	var text_mesh := TextMesh.new()
+	text_mesh.text = "LUMO"
+	text_mesh.font_size = 48
+	text_mesh.pixel_size = 0.012
+	text_mesh.depth = 0.003
+	emblem.mesh = text_mesh
+	emblem.material_override = _material("inlay", Color("a08c60"), 0.8, 0.2)
+	emblem.position = Vector3(0, 1.125, 1.25)
+	emblem.rotation.x = -PI * 0.5
+	add_child(emblem)
 	var env := WorldEnvironment.new()
 	var resource := Environment.new()
 	resource.background_mode = Environment.BG_COLOR
-	resource.background_color = Color("10233a")
+	resource.background_color = Color("101c23")
 	resource.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	resource.ambient_light_color = Color("9dbedc")
-	resource.ambient_light_energy = 0.65
+	resource.ambient_light_color = Color("b4c4bb")
+	resource.ambient_light_energy = 0.28
 	resource.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.environment = resource
 	add_child(env)
 	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees = Vector3(-52, -28, 0)
-	sun.light_color = Color("fff0d6")
-	sun.light_energy = 1.25
+	sun.rotation_degrees = Vector3(-48, -32, 0)
+	sun.light_color = Color("ffe2b4")
+	sun.light_energy = 0.72
 	sun.shadow_enabled = true
 	add_child(sun)
 	var rim := OmniLight3D.new()
-	rim.position = Vector3(0, 4, -3)
-	rim.light_color = Color("82c9ee")
-	rim.light_energy = 2.0
-	rim.omni_range = 9
+	rim.position = Vector3(0, 3.5, -2.8)
+	rim.light_color = Color("a4bed6")
+	rim.light_energy = 0.45
+	rim.omni_range = 6.5
 	add_child(rim)
+	for side in [-1, 1]:
+		_box(self, Vector3(side * 1.7, 2.65, -4.11), Vector3(0.16, 0.52, 0.18), brass)
+		var shade := _cylinder(self, Vector3(side * 1.7, 2.85, -3.94), 0.23, 0.3, _material("linen", Color("cab58c"), 0.94))
+		shade.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		var lamp := OmniLight3D.new()
+		lamp.position = Vector3(side * 1.7, 2.6, -3.7)
+		lamp.light_color = Color("ffc783")
+		lamp.light_energy = 0.34
+		lamp.omni_range = 4.2
+		add_child(lamp)
 	camera = Camera3D.new()
 	camera.fov = 46
 	camera.near = 0.1
-	camera.far = 40
+	camera.far = 35
 	camera.current = true
 	add_child(camera)
 	hand_root = Node3D.new()
@@ -167,7 +294,7 @@ func _build_room() -> void:
 	discard_root.name = "Discard"
 	add_child(discard_root)
 	for i in range(6):
-		_make_card(self, {}, Vector3(-0.8, 1.14 + i * 0.027, 0), false)
+		_make_card(self, {}, Vector3(-0.62, 1.14 + i * 0.027, -0.23), false)
 
 func _button(label: String, callback: Callable) -> Button:
 	var button := Button.new()
@@ -184,22 +311,32 @@ func _build_interface() -> void:
 	ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(ui)
+	header = PanelContainer.new()
+	header.name = "Header"
+	header.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	ui.add_child(header)
+	var header_style := StyleBoxFlat.new()
+	header_style.bg_color = Color(0.025, 0.065, 0.085, 0.86)
+	header_style.set_corner_radius_all(14)
+	header_style.content_margin_left = 8
+	header_style.content_margin_right = 8
+	header_style.content_margin_top = 5
+	header_style.content_margin_bottom = 7
+	header.add_theme_stylebox_override("panel", header_style)
 	var top := VBoxContainer.new()
 	top.name = "Top"
-	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	top.offset_left = 16
-	top.offset_right = -16
-	top.offset_top = 12
-	ui.add_child(top)
+	header.add_child(top)
 	var nav := HBoxContainer.new()
 	top.add_child(nav)
 	var back := _button("Zurück", _leave)
 	back.name = "Back"
 	nav.add_child(back)
 	heading = Label.new()
-	heading.text = "Lumo Cards · 3D-Tisch"
+	heading.text = "Lumos Kartenstube"
 	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	heading.clip_text = true
+	heading.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	nav.add_child(heading)
 	pause_button = _button("Pause", func(): _send("resume" if bool(_state.get("paused", false)) else "pause"))
 	nav.add_child(pause_button)
@@ -218,7 +355,11 @@ func _build_interface() -> void:
 	footer.offset_top = -128
 	footer.offset_bottom = -12
 	ui.add_child(footer)
-	var pages := HBoxContainer.new()
+	compact_bar = HBoxContainer.new()
+	compact_bar.alignment = BoxContainer.ALIGNMENT_CENTER
+	footer.add_child(compact_bar)
+	compact_bar.hide()
+	pages = HBoxContainer.new()
 	pages.alignment = BoxContainer.ALIGNMENT_CENTER
 	footer.add_child(pages)
 	pages.add_child(_button("‹", func(): _change_page(-1)))
@@ -243,9 +384,13 @@ func _build_interface() -> void:
 	modal = PanelContainer.new()
 	modal.name = "Decision"
 	modal.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	modal_scroll = ScrollContainer.new()
+	modal_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	modal.add_child(modal_scroll)
 	modal_content = VBoxContainer.new()
+	modal_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	modal_content.add_theme_constant_override("separation", 10)
-	modal.add_child(modal_content)
+	modal_scroll.add_child(modal_content)
 	ui.add_child(modal)
 	modal.hide()
 	var theme := Theme.new()
@@ -286,8 +431,21 @@ func _resize() -> void:
 	for label in [heading, status, message, page_label]:
 		label.add_theme_font_size_override("font_size", int(18 * _ui_scale))
 	var width_dp := size.x / _ui_scale
+	_compact = size.y / _ui_scale < 520 and size.x > size.y
+	if _compact and pages.get_parent() != compact_bar:
+		pages.reparent(compact_bar)
+		actions.reparent(compact_bar)
+	elif not _compact and pages.get_parent() != footer:
+		pages.reparent(footer)
+		actions.reparent(footer)
+	compact_bar.visible = _compact
+	status.visible = not _compact
+	header.offset_left = 12 * _ui_scale
+	header.offset_right = -12 * _ui_scale
+	header.offset_top = 8 * _ui_scale
+	message.add_theme_font_size_override("font_size", int((14 if _compact else 16) * _ui_scale))
 	_page_size = 7 if width_dp > 850 else (5 if width_dp > 550 else 3)
-	footer.offset_top = -128 * _ui_scale
+	footer.offset_top = -(64 if _compact else 128) * _ui_scale
 	footer.offset_bottom = -12 * _ui_scale
 	modal.offset_left = -minf(size.x * 0.45, 280 * _ui_scale)
 	modal.offset_right = minf(size.x * 0.45, 280 * _ui_scale)
@@ -300,12 +458,14 @@ func _resize() -> void:
 func _update_camera() -> void:
 	var size := get_viewport().get_visible_rect().size
 	var aspect := size.x / maxf(1, size.y)
-	var distance_scale := maxf(1.0, 1.05 / aspect)
-	camera.position = Vector3(_focus * 0.18, 7.3 * distance_scale, 8.2 * distance_scale)
-	camera.look_at(Vector3(0, 1.05, 0))
+	var distance_scale := maxf(1.0, 0.72 / aspect)
+	camera.position = Vector3(_focus * 0.12, 5.3 * distance_scale, 7.0 * distance_scale)
+	camera.look_at(Vector3(0, 1.05, -0.25))
 
 func _process(delta: float) -> void:
 	_elapsed += delta
+	if seated != null:
+		seated.advance(delta)
 	_poll_time += delta
 	if _poll_time >= 0.20:
 		_poll_time = 0
@@ -350,11 +510,11 @@ func apply_state(next: Dictionary) -> void:
 	for child in discard_root.get_children():
 		child.queue_free()
 	if not top.is_empty():
-		var node := _make_card(discard_root, top, Vector3(0.7, 1.17, 0), true)
+		var node := _make_card(discard_root, top, Vector3(0.62, 1.17, -0.23), true)
 		if top_changed and not previous.is_empty() and not bool(next.get("reduceMotion", false)):
 			node.position = departure + Vector3(0, 0.35, 0)
 			var tween := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-			tween.tween_property(node, "position", Vector3(0.7, 1.17, 0), 0.4)
+			tween.tween_property(node, "position", Vector3(0.62, 1.17, -0.23), 0.4)
 			_focus = 1.0
 			actor.call("play_behavior", "agree_nod")
 	_render_hand()
@@ -393,7 +553,8 @@ func _make_card(parent: Node3D, card: Dictionary, at: Vector3, face: bool) -> No
 	surface.position.y = 0.017
 	var mat := StandardMaterial3D.new()
 	mat.albedo_texture = _texture(card, face)
-	mat.roughness = 0.42
+	mat.roughness = 0.63
+	mat.metallic_specular = 0.24
 	mat.specular_mode = BaseMaterial3D.SPECULAR_SCHLICK_GGX
 	surface.material_override = mat
 	node.add_child(surface)
@@ -419,10 +580,10 @@ func _render_hand() -> void:
 		visible_ids.append(id)
 		var offset := float(i) - float(visible.size() - 1) * 0.5
 		var size := get_viewport().get_visible_rect().size
-		var card_height := clampf(size.y * 0.28, 96 * _ui_scale, 180 * _ui_scale)
+		var card_height := (96 * _ui_scale) if _compact else clampf(size.y * 0.28, 96 * _ui_scale, 180 * _ui_scale)
 		var card_width := card_height * 0.83 / 1.18
 		var spacing := minf(card_width * 1.08, (size.x - 32 * _ui_scale - card_width) / maxf(1, visible.size() - 1))
-		var screen := Vector2(size.x * 0.5 + offset * spacing, size.y - 140 * _ui_scale - card_height * 0.5)
+		var screen := Vector2(size.x * 0.5 + offset * spacing, size.y - (76 if _compact else 140) * _ui_scale - card_height * 0.5)
 		var at := camera.project_position(screen, 4.0)
 		var node := _make_card(hand_root, card, at, true)
 		node.name = "HandCard%d" % i
@@ -433,12 +594,21 @@ func _render_hand() -> void:
 		_cards[id] = node
 		if bool(card.get("playable", false)):
 			_box(node, Vector3(0, -0.02, 0), Vector3(0.88, 0.02, 1.23), _material("legal_gold", Color("f5c259"), 0.32, 0.4))
-		if old.has(id) and not bool(_state.get("reduceMotion", false)):
-			node.position = old[id]
-			create_tween().tween_property(node, "position", at, 0.22)
 	if _selected not in visible_ids:
 		_selected = ""
 	_highlight_selection()
+	if not bool(_state.get("reduceMotion", false)):
+		var index := 0
+		for id in _cards:
+			var node: Node3D = _cards[id]
+			var destination := node.position
+			# Newly dealt/drawn cards physically travel from the deck into the hand.
+			node.position = old.get(id, Vector3(-0.62, 1.32, -0.23))
+			var tween := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			if old.is_empty():
+				tween.tween_interval(index * 0.035)
+			tween.tween_property(node, "position", destination, 0.30)
+			index += 1
 	if is_instance_valid(page_label):
 		page_label.text = "%d/%d" % [_page + 1, max_page + 1]
 
@@ -451,7 +621,7 @@ func _render_opponent() -> void:
 	var count := int(players[1 - int(_state.get("viewer", 0))].get("count", 0))
 	for i in range(mini(count, 12)):
 		var offset := float(i) - float(mini(count, 12) - 1) * 0.5
-		var node := _make_card(opponent_root, {}, Vector3(offset * 0.22, 1.17 + i * 0.002, -1.7), false)
+		var node := _make_card(opponent_root, {}, Vector3(offset * 0.20, 1.17 + i * 0.002, -1.7), false)
 		node.rotation.y = offset * 0.055 + PI
 
 func _highlight_selection() -> void:
@@ -467,11 +637,13 @@ func _change_page(change: int) -> void:
 	_render_hand()
 
 func _update_interface() -> void:
-	heading.text = "Sternenpokal · Runde %d/%d" % [int(_state.get("round", 1)), int(_state.get("totalRounds", 1))] if int(_state.get("totalRounds", 1)) > 1 else "Lumo Cards · 3D-Tisch"
+	heading.text = "Sternenpokal %d/%d" % [int(_state.get("round", 1)), int(_state.get("totalRounds", 1))] if int(_state.get("totalRounds", 1)) > 1 else "Lumos Kartenstube"
 	var players: Array = _state.get("players", [])
 	if players.size() == 2:
 		status.text = "%s: %d Karten   ·   %s: %d Karten" % [players[0].get("name", "Du"), int(players[0].get("count", 0)), players[1].get("name", "Lumo"), int(players[1].get("count", 0))]
 	message.text = str(_state.get("message", ""))
+	if _compact and players.size() == 2:
+		message.text = "Du: %d · Lumo: %d · %s" % [int(players[0].get("count", 0)), int(players[1].get("count", 0)), message.text]
 	draw_button.disabled = not bool(_state.get("canDraw", false)) or _pending > 0
 	pause_button.text = "Weiter" if bool(_state.get("paused", false)) else "Pause"
 	pause_button.disabled = _pending > 0
@@ -513,6 +685,15 @@ func _update_interface() -> void:
 		button.custom_minimum_size.y = 52 * _ui_scale
 		button.add_theme_font_size_override("font_size", int(18 * _ui_scale))
 		button.disabled = _pending > 0
+	_layout_modal.call_deferred()
+
+func _layout_modal() -> void:
+	if not is_instance_valid(modal) or not modal.visible:
+		return
+	var size := get_viewport().get_visible_rect().size
+	var height := minf(modal_content.get_combined_minimum_size().y + 44 * _ui_scale, size.y - 24 * _ui_scale)
+	modal.offset_top = -height * 0.5
+	modal.offset_bottom = height * 0.5
 
 func _unhandled_input(event: InputEvent) -> void:
 	var point := Vector2.ZERO

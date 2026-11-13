@@ -4,6 +4,8 @@ extends Node3D
 
 const ACTIVITY = preload("res://scripts/learning/learning_activity.gd")
 const FOX = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
+const ATELIER = preload("res://scripts/learning/learning_atelier.gd")
+const BEVEL = preload("res://scripts/games/visual/kart_harbor_cinema.gd")
 const PART_LABELS := {"root": "Wurzel", "stem": "Stängel", "leaf": "Blatt", "flower": "Blüte"}
 const PART_HELP := {
 	"root": "Die Wurzel hält die Pflanze fest. Sie nimmt Wasser aus dem Boden auf.",
@@ -48,6 +50,13 @@ var _original_auto_quit := true
 var _original_back_quit := true
 var _original_scale_mode: Window.ContentScaleMode
 var _materials: Dictionary = {}
+var _box_meshes: Dictionary = {}
+var _bevel_mesh: ArrayMesh
+var _arrangement_set := false
+var _portrait := false
+var _source_tray: MeshInstance3D
+var _source_label: MeshInstance3D
+var _fraction_label: MeshInstance3D
 var _layout_queued := false
 var _speech_host: Object
 var _speech_enabled := false
@@ -92,7 +101,7 @@ func _material(key: String, color: Color, metallic: float = 0.0) -> StandardMate
 		return _materials[key]
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
-	material.roughness = 0.38 if metallic > 0.0 else 0.66
+	material.roughness = 0.62 if metallic > 0.0 else 0.82
 	material.metallic = metallic
 	_materials[key] = material
 	return material
@@ -110,9 +119,14 @@ func _mesh(parent: Node3D, mesh: Mesh, at: Vector3, material: Material, label: S
 
 
 func _box(parent: Node3D, at: Vector3, size: Vector3, material: Material, label: String = "") -> MeshInstance3D:
-	var mesh := BoxMesh.new()
-	mesh.size = size
-	return _mesh(parent, mesh, at, material, label)
+	if _bevel_mesh == null:
+		_bevel_mesh = BEVEL._bevel_box(0.055)
+	if not _box_meshes.has(size):
+		var surface := SurfaceTool.new()
+		surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+		surface.append_from(_bevel_mesh, 0, Transform3D(Basis.from_scale(size), Vector3.ZERO))
+		_box_meshes[size] = surface.commit()
+	return _mesh(parent, _box_meshes[size], at, material, label)
 
 
 func _sphere(parent: Node3D, at: Vector3, scale_value: Vector3, material: Material, label: String = "") -> MeshInstance3D:
@@ -142,41 +156,39 @@ func _text(parent: Node3D, words: String, at: Vector3, size_value: float, materi
 	mesh.font_size = 80
 	mesh.pixel_size = size_value / 80.0
 	mesh.depth = 0.045
-	return _mesh(parent, mesh, at, material)
+	var readable := material.duplicate() as StandardMaterial3D
+	readable.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	readable.metallic = 0.0
+	var node := _mesh(parent, mesh, at, readable)
+	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return node
 
 
 func _build_stage() -> void:
 	var environment := WorldEnvironment.new()
 	var settings := Environment.new()
 	settings.background_mode = Environment.BG_COLOR
-	settings.background_color = Color("101e36")
+	settings.background_color = Color("788d8c")
 	settings.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	settings.ambient_light_color = Color("b1d8ee")
-	settings.ambient_light_energy = 0.65
+	settings.ambient_light_color = Color("e7e6d9")
+	settings.ambient_light_energy = 0.28
 	settings.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	environment.environment = settings
 	add_child(environment)
 	var key := DirectionalLight3D.new()
-	key.rotation_degrees = Vector3(-48, -30, 0)
-	key.light_color = Color("fff2d1")
-	key.light_energy = 1.5
+	key.name = "LearningSunlight"
+	key.rotation_degrees = Vector3(-60, -25, 0)
+	key.light_color = Color("fff2db")
+	key.light_energy = 0.7
 	key.shadow_enabled = true
+	key.directional_shadow_max_distance = 30
 	add_child(key)
-	var fill := OmniLight3D.new()
-	fill.position = Vector3(-3, 5, 4)
-	fill.omni_range = 14
-	fill.light_color = Color("65b9f2")
-	fill.light_energy = 2.1
+	var fill := DirectionalLight3D.new()
+	fill.rotation_degrees = Vector3(-30, 150, 0)
+	fill.light_color = Color("c1d5df")
+	fill.light_energy = 0.12
 	add_child(fill)
-	_cylinder(self, Vector3(0, -0.4, 0), 7.8, 0.6,
-		_material("stage", Color("1b4c65"), 0.22), "LearningPodium")
-	_cylinder(self, Vector3(0, -0.13, 0), 7.6, 0.13,
-		_material("stage_top", Color("3e7e88")), "PodiumSurface")
-	for side in [-1, 1]:
-		for i in range(3):
-			var x := float(side) * (5.4 + float(i) * 0.45)
-			_box(self, Vector3(x, 0.18, -3.0 + i * 0.35), Vector3(0.45, 0.4 + i * 0.28, 0.45),
-				_material("edge_blocks", Color("43859a"), 0.1))
+	add_child(ATELIER.new())
 	fox = FOX.new()
 	fox.name = "OriginalLearningLumo"
 	add_child(fox)
@@ -189,7 +201,7 @@ func _build_stage() -> void:
 			var y: float = skeleton.get_bone_global_rest(bone).origin.y
 			low = minf(low, y)
 			high = maxf(high, y)
-		var fitted := 2.55 / maxf(0.2, high - low)
+		var fitted := 3.1 / maxf(0.2, high - low)
 		fox.scale = Vector3.ONE * fitted
 		fox.position.y = -low * fitted + 0.03
 		fox.rotation.y = 0.3
@@ -202,7 +214,7 @@ func _build_stage() -> void:
 	camera.near = 0.1
 	camera.far = 60
 	add_child(camera)
-	camera.position = Vector3(0.0, 10.0, 13.0)
+	camera.position = Vector3(0.0, 14.0, 11.0)
 	camera.look_at(Vector3(0.0, 0.7, 0.0))
 
 
@@ -258,6 +270,21 @@ func _button(caption: String, action: Callable) -> Button:
 	button.text = caption
 	button.custom_minimum_size = Vector2(64, 52)
 	button.add_theme_font_size_override("font_size", 17)
+	var primary := caption in ["Ein Objekt zeigen", "Einen Würfel wegnehmen", "Einen Würfel einordnen", "Ein Teil zeigen", "Nächste Silbe zeigen", "Wasser geben", "Sonne öffnen"]
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("dca847") if primary else Color("294b5a")
+	style.border_color = Color("f1d59c") if primary else Color("648390")
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(12)
+	style.set_content_margin_all(12)
+	button.add_theme_stylebox_override("normal", style)
+	var hover := style.duplicate() as StyleBoxFlat
+	hover.bg_color = style.bg_color.lightened(0.1)
+	button.add_theme_stylebox_override("hover", hover)
+	var pressed := style.duplicate() as StyleBoxFlat
+	pressed.bg_color = style.bg_color.darkened(0.12)
+	button.add_theme_stylebox_override("pressed", pressed)
+	button.add_theme_color_override("font_color", Color("1d3540") if primary else Color("f5ead5"))
 	button.pressed.connect(action)
 	actions.add_child(button)
 	return button
@@ -280,6 +307,10 @@ func _rebuild_activity() -> void:
 	token_sources.clear()
 	part_nodes.clear()
 	water_particles.clear()
+	_arrangement_set = false
+	_source_tray = null
+	_source_label = null
+	_fraction_label = null
 	plant = null
 	for button in actions.get_children():
 		button.free()
@@ -317,32 +348,36 @@ func _rebuild_activity() -> void:
 func _slot(index: int) -> Vector3:
 	var tray := index / 10
 	var cell := index % 10
-	return Vector3(-1.6 + float(cell % 5) * 0.78, 0.3,
-		-1.9 + float(cell / 5) * 0.78 + float(tray) * 2.2)
+	return Vector3(-1.7 + float(cell % 5) * 0.85, 0.4,
+		-2.1 + float(cell / 5) * 1.0 + float(tray) * 2.55)
 
 
 func _build_ten_frame() -> void:
 	title.text = "Zahlen zum Anfassen · %d + %d" % [activity.a, activity.b]
-	var rim := _material("frame", Color("c8af70"), 0.35)
-	var inset := _material("slot", Color("143b4d"))
-	var first := _material("blue", Color("4ac4ea"), 0.12)
-	var added := _material("gold", Color("ffc852"), 0.18)
+	var rim := _material("frame", Color("b1986b"), 0.06)
+	var inset := _material("slot", Color("253f48"))
+	var first := _material("blue", Color("3c91ad"), 0.05)
+	var added := _material("gold", Color("d69b39"), 0.06)
 	for tray in range(2):
-		_box(content, Vector3(-0.04, 0.03, -1.5 + tray * 2.2), Vector3(4.35, 0.18, 1.85), rim)
+		_box(content, Vector3(0, 0.03, -1.6 + tray * 2.55), Vector3(4.65, 0.18, 2.05), rim)
 		for i in range(10):
 			var at := _slot(tray * 10 + i)
 			targets.append(at)
-			_box(content, Vector3(at.x, 0.14, at.z), Vector3(0.68, 0.12, 0.68), inset,
+			_box(content, Vector3(at.x, 0.14, at.z), Vector3(0.7, 0.12, 0.74), inset,
 				"TenFrameSlot%d" % (tray * 10 + i))
 	for i in range(activity.initial_count()):
-		_box(content, _slot(i), Vector3(0.58, 0.5, 0.58), first, "InitialCube%d" % i)
+		_box(content, _slot(i), Vector3(0.58, 0.36, 0.58), first, "InitialCube%d" % i)
 	for i in range(activity.token_count()):
 		var at := Vector3(3.05 + float(i % 2) * 0.78, 0.3, -1.8 + float(i / 2) * 0.78)
-		var cube := _box(content, at, Vector3(0.58, 0.5, 0.58), added, "MovableCube%d" % i)
+		var cube := _box(content, at, Vector3(0.58, 0.36, 0.58), added, "MovableCube%d" % i)
 		tokens.append(cube)
 		token_sources.append(at)
-	_text(content, "100" if activity.kind == "bridge_hundred" else "10", Vector3(-2.6, 0.5, -1.4), 0.7, rim)
-	_text(content, "+ %d" % activity.b, Vector3(3.4, 1.1, -2.6), 0.7, added)
+	_source_tray = _box(content, Vector3(3.5, 0.03, 0), Vector3(1.9, 0.18, 4.1),
+		_material("source_tray", Color("75563a")), "SourceTray")
+	var number := _text(content, "100" if activity.kind == "bridge_hundred" else "10", Vector3(0, 0.23, -2.83), 0.48,
+		_material("cream_ink", Color("f5e1ad")))
+	number.rotation.x = -0.8
+	_source_label = _text(content, "+ %d" % activity.b, Vector3(3.4, 1.1, -2.6), 0.6, added)
 	if activity.kind == "bridge_hundred":
 		title.text = "Zehner bündeln · %d + %d" % [activity.a, activity.b]
 		_text(content, "%d Hunderter bleiben" % (activity.a / 100), Vector3(0, 1.1, -3.2), 0.6, first)
@@ -354,24 +389,24 @@ func _build_ten_frame() -> void:
 
 func _build_subtraction() -> void:
 	title.text = "Wegnehmen · %d − %d" % [activity.a, activity.b]
-	var rim := _material("frame", Color("c8af70"), 0.35)
-	var inset := _material("slot", Color("143b4d"))
-	var cube_material := _material("blue", Color("4ac4ea"), 0.12)
+	var rim := _material("frame", Color("b1986b"), 0.06)
+	var inset := _material("slot", Color("253f48"))
+	var cube_material := _material("blue", Color("3c91ad"), 0.05)
 	for tray in range(2):
-		_box(content, Vector3(-0.04, 0.03, -1.5 + tray * 2.2), Vector3(4.35, 0.18, 1.85), rim)
+		_box(content, Vector3(0, 0.03, -1.6 + tray * 2.55), Vector3(4.65, 0.18, 2.05), rim)
 		for i in range(10):
 			var at := _slot(tray * 10 + i)
 			_box(content, Vector3(at.x, 0.14, at.z), Vector3(0.68, 0.12, 0.68), inset)
 	for index in range(activity.a):
 		var source := _slot(activity.a - 1 - index)
-		var token := _box(content, source, Vector3(0.58, 0.5, 0.58), cube_material, "SubtractCube%d" % index)
+		var token := _box(content, source, Vector3(0.58, 0.36, 0.58), cube_material, "SubtractCube%d" % index)
 		tokens.append(token)
 		token_sources.append(source)
 	for index in range(activity.b):
 		targets.append(Vector3(3.0 + float(index % 3) * 0.62, 0.3 + float(index / 9) * 0.5,
 			-1.5 + float((index / 3) % 3) * 0.62))
-	_box(content, Vector3(3.6, 0.02, -0.9), Vector3(2.3, 0.15, 2.3), inset)
-	_text(content, "weg", Vector3(3.6, 1.0, -2.4), 0.65, rim)
+	_source_tray = _box(content, Vector3(3.6, 0.02, -0.9), Vector3(2.3, 0.15, 2.3), inset)
+	_source_label = _text(content, "weg", Vector3(3.6, 1.0, -2.4), 0.65, rim)
 
 
 func _build_groups() -> void:
@@ -411,7 +446,7 @@ func _build_fractions() -> void:
 			"FractionPiece%d" % index)
 		tokens.append(token)
 		token_sources.append(source)
-	_text(content, "1/%d" % activity.b, Vector3(3.8, 1.1, -1.0), 0.7, adding)
+	_fraction_label = _text(content, "1/%d" % activity.b, Vector3(3.8, 1.1, -1.0), 0.7, adding)
 
 
 func _build_syllables() -> void:
@@ -533,17 +568,74 @@ func _layout() -> void:
 	var scale_value := minf(density, maxf(1.0, dimensions.x / 360.0))
 	ui.scale = Vector2.ONE * scale_value
 	var logical := dimensions / scale_value
-	header.position = Vector2(12, 12)
-	header.size.x = maxf(100, logical.x - 24)
+	var insets := MobileRuntime.get_safe_area_insets() if OS.has_feature("android") else Rect2()
+	var origin := insets.position / scale_value
+	var available := logical - (insets.position + insets.size) / scale_value
+	header.position = origin + Vector2(12, 12)
+	header.size.x = maxf(100, available.x - 24)
 	header.size.y = header.get_combined_minimum_size().y
-	footer.size.x = maxf(100, logical.x - 24)
+	footer.size.x = maxf(100, available.x - 24)
 	footer.size.y = footer.get_combined_minimum_size().y
-	footer.position = Vector2(12, maxf(header.position.y + header.size.y + 20, logical.y - footer.size.y - 12))
+	footer.position = Vector2(origin.x + 12, maxf(header.position.y + header.size.y + 20,
+		origin.y + available.y - footer.size.y - 12))
+	var portrait := dimensions.x / dimensions.y < 0.8
+	if not _arrangement_set or portrait != _portrait:
+		_arrange_activity(portrait)
 	var free_height := maxf(80, (footer.position.y - header.position.y - header.size.y) * scale_value)
-	var needed_height := 7.4 * dimensions.y / free_height
-	camera.size = maxf(12.4 / maxf(0.2, dimensions.x / dimensions.y), needed_height)
+	var focus_height := 8.6 if portrait else 4.9
+	var focus_width := 6.25 if portrait else 10.8
+	if activity.kind == "syllables" and activity.syllables.size() > 3:
+		focus_width = maxf(focus_width, 8.2)
+	var needed_height := focus_height * dimensions.y / free_height
+	camera.size = maxf(focus_width / maxf(0.2, dimensions.x / dimensions.y), needed_height)
+	camera.h_offset = 0.0 if portrait else 0.1
 	var content_mid := (header.position.y + header.size.y + footer.position.y) * 0.5 * scale_value
-	camera.v_offset = (content_mid / dimensions.y - 0.5) * camera.size
+	camera.v_offset = (content_mid / dimensions.y - 0.5) * camera.size + (0.75 if portrait else 0.0)
+
+
+func _arrange_activity(portrait: bool) -> void:
+	_portrait = portrait
+	_arrangement_set = true
+	_cancel_drag()
+	for tween in _tweens:
+		if tween.is_valid():
+			tween.kill()
+	_tweens.clear()
+	_moving.clear()
+	if is_instance_valid(fox):
+		fox.position.x = -1.8 if portrait else -4.1
+		fox.position.z = -3.8 if portrait else -0.1
+		fox.rotation.y = 0.15 if portrait else 0.4
+	if activity.kind in ["bridge_ten", "addition", "bridge_hundred"]:
+		for index in range(tokens.size()):
+			token_sources[index] = Vector3(-1.7 + float(index % 5) * 0.85, 0.3,
+				3.2 + float(index / 5) * 0.85) if portrait else Vector3(
+				3.05 + float(index % 2) * 0.78, 0.3, -1.8 + float(index / 2) * 0.78)
+		_source_tray.position = Vector3(0, 0.03, 3.55) if portrait else Vector3(3.5, 0.03, 0)
+		_source_tray.scale = Vector3(4.65 / 1.9, 1, 1.85 / 4.1) if portrait else Vector3.ONE
+		_source_label.position = Vector3(2.42, 0.7, 3.45) if portrait else Vector3(3.4, 0.9, -2.6)
+	elif activity.kind == "subtract_ten":
+		for index in range(targets.size()):
+			targets[index] = Vector3(-1.7 + float(index % 5) * 0.85,
+				0.3 + float(index / 10) * 0.42, 3.2 + float((index / 5) % 2) * 0.85) if portrait else Vector3(
+				3.0 + float(index % 3) * 0.62, 0.3 + float(index / 9) * 0.5, -1.5 + float((index / 3) % 3) * 0.62)
+		_source_tray.position = Vector3(0, 0.02, 3.55) if portrait else Vector3(3.6, 0.02, -0.9)
+		_source_tray.scale = Vector3(4.65 / 2.3, 1, 1.85 / 2.3) if portrait else Vector3.ONE
+		_source_label.position = Vector3(2.45, 0.7, 3.45) if portrait else Vector3(3.6, 1.0, -2.4)
+	elif activity.kind == "equal_groups":
+		for index in range(tokens.size()):
+			token_sources[index] = Vector3(-1.7 + float(index % 9) * 0.42, 0.28,
+				3.1 + float(index / 9) * 0.43) if portrait else Vector3(
+				3.7 + float(index % 3) * 0.38, 0.28 + float(index / 9) * 0.38, -1.0 + float((index / 3) % 3) * 0.4)
+	elif activity.kind == "fraction_parts":
+		_fraction_label.position = Vector3(0.55, 0.7, -1.85) if portrait else Vector3(3.8, 1.1, -1)
+	elif activity.kind == "plant_parts":
+		sun.position.x = 2.45 if portrait else 3.6
+	for index in range(tokens.size()):
+		var placed_index: int = activity.placed.find(index)
+		tokens[index].position = targets[activity.initial_count() + placed_index] if placed_index >= 0 else token_sources[index]
+	if is_instance_valid(fox) and fox.is_usable():
+		fox.set_teaching_target(Vector3(0, 0.5, 0))
 
 
 func _input(event: InputEvent) -> void:

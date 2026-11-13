@@ -152,6 +152,8 @@ func explanation() -> String:
 			var filled: int = a + placed.size()
 			if kind == "addition" and a + b <= 10:
 				return "%d plus %d ist %d." % [a, b, a + b] if is_complete() else "Lege %d Würfel zu den %d dazu. Jetzt sind es %d." % [b, a, filled]
+			if placed.is_empty() and a == 10:
+				return "Zehn sind schon voll. Lege die %d neuen Würfel ins zweite Feld." % b
 			if placed.is_empty():
 				return "%d + %d: Fülle zuerst die freien Plätze bis zehn." % [a, b]
 			if filled < 10:
@@ -167,6 +169,8 @@ func explanation() -> String:
 				return "%d minus %d ist %d. So viele Würfel bleiben im Feld." % [a, b, remaining]
 			if remaining == 10:
 				return "Jetzt bleiben zehn. Nimm noch %d weg, dann hast du insgesamt %d weggenommen." % [b - placed.size(), b]
+			if remaining > 10 and a - b <= 10:
+				return "Nimm zuerst Würfel aus dem zweiten Feld. %d sind schon weg; %d bleiben noch bis zur Zehn." % [placed.size(), remaining - 10]
 			return "Von %d nehmen wir %d weg. %d sind schon weg; %d liegen noch im Feld." % [a, b, placed.size(), remaining]
 		"equal_groups":
 			if is_complete():
@@ -174,13 +178,16 @@ func explanation() -> String:
 			return "Fülle %d Gruppen mit je %d Würfeln. Schon %d Gruppen sind voll." % [a, b, placed.size() / b]
 		"bridge_hundred":
 			var current: int = a + placed.size() * 10
+			var boundary: int = (a / 100 + 1) * 100
 			if is_complete():
 				return "%d plus %d ist %d. Zehn Zehner bilden einen Hunderter." % [a, b, current]
-			return "Jeder Streifen zählt zehn. Jetzt sind es %d. Ergänze zuerst bis %d." % [current, (a / 100 + 1) * 100]
+			if current < boundary:
+				return "Jeder Streifen zählt zehn. Jetzt sind es %d. Ergänze zuerst bis %d." % [current, boundary]
+			return "Der Hunderter ist voll. Jetzt sind es %d. Lege noch %d Zehner ins zweite Feld." % [current, token_count() - placed.size()]
 		"fraction_parts":
 			if is_complete():
 				return "%d von %d gleich großen Teilen sind markiert: %d/%d. Die Teilgröße bleibt gleich." % [a + extra, b, a + extra, b]
-			return "Das Ganze hat %d gleich große Teile. Lege %d Teile hinein." % [b, a + extra]
+			return "Im Feld: %d von %d gleich großen Teilen. Lege noch %d dazu." % [initial_count() + placed.size(), b, token_count() - placed.size()]
 		"syllables":
 			if is_complete():
 				return "%s: %s. Das Wort hat %d Silben." % [word, " – ".join(syllables), syllables.size()]

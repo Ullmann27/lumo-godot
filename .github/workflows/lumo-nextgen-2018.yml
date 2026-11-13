@@ -15,6 +15,55 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Independent, early renderer evidence for the active light/camera review.
+  # The complete new-worlds/gameplay jobs remain required for final acceptance.
+  learning-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      LUMO_PREVIEW_DIR: ${{ github.workspace }}/learning-preview
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install exact verified Godot engine and software renderer
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import exact production source and capture the actual learning world
+        run: |
+          set -euo pipefail
+          mkdir -p "$LUMO_PREVIEW_DIR"
+          git rev-parse HEAD > "$LUMO_PREVIEW_DIR/source-sha.txt"
+          git rev-parse 'HEAD^{tree}' > "$LUMO_PREVIEW_DIR/source-tree.txt"
+          godot --version > "$LUMO_PREVIEW_DIR/engine.txt"
+          export XDG_DATA_HOME="$LUMO_PREVIEW_DIR/user-data"
+          export XDG_CONFIG_HOME="$LUMO_PREVIEW_DIR/user-config"
+          export XDG_CACHE_HOME="$LUMO_PREVIEW_DIR/user-cache"
+          mkdir -p "$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+          godot --headless --editor --import --quit 2>&1 | tee "$LUMO_PREVIEW_DIR/import.log"
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$LUMO_PREVIEW_DIR/import.log"; then exit 1; fi
+          LUMO_CAPTURE_DIR="$LUMO_PREVIEW_DIR/images" python3 tools/run_godot_probe.py \
+            --log "$LUMO_PREVIEW_DIR/render.log" --timeout 420 --required '[LearningCapture] PASS' -- \
+            xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --script scripts/tests/learning_world_capture.gd -- --output="$LUMO_PREVIEW_DIR/images"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-nextgen-2018-learning-preview
+          path: learning-preview/
+          if-no-files-found: error
+          retention-days: 30
+
   gameplay:
     runs-on: ubuntu-latest
     timeout-minutes: 55

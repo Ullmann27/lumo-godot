@@ -62,3 +62,9 @@ Die folgenden beiden Tests besitzen `--capture` und erfordern einen tatsächlich
 - Siedlung: `01_settlement_start.png`, `02_settlement_purchases.png`, `03_settlement_rival_day.png`, `04_settlement_lumo.png`.
 
 Der lokale X11-Zugriff ist in dieser Sitzung blockiert. Echte Bilder werden über die zentrale Renderer-CI erzeugt und müssen anschließend visuell geprüft werden. Bis dahin ist die visuelle Abnahme offen. Es liegt aus diesem Agenten kein Fold7-/Android17-Gerätetest, keine thermische Messung, keine GPU-Zeit und kein 60-FPS-Nachweis vor. APK, GitHub-Commit, PR und finaler CI-Befund werden zentral im Integrationsbericht ausgewiesen.
+
+## Nachtrag: tatsächlich gerenderter erster Zwischenstand
+
+Die zentrale CI erzeugte für Commit `d66aae` vier Original-Vorherbilder der Bauwelt sowie jeweils vier neue Bauwelt- und Siedlungsbilder. Die neuen Auswahl-, Versetzungs-, Lauf-, Sprung-, Kauf-, KI- und Siedlungslaufansichten wurden tatsächlich geöffnet und visuell geprüft. Die Bauwelt-Funktionsbilder verwenden bewusst zwei kontrollierte Testbauteile; vorhandene Projektinhalte werden dadurch nicht in der App entfernt.
+
+Die Bilder zeigen angeschlossene Originalgeometrie, sichtbare Bewegungszustände und erreichbare Bedienelemente. Sie erfüllen noch keine AAA-Grafikabnahme: Besonders die Siedlung war zu blass beleuchtet, große Wolken belegten den oberen Bildraum, und deaktivierte Kaufkarten verloren Kontrast. Darauf folgt der separate `creative_nextgen_environment.gd` mit ursprünglichen Albedo-/Normaltexturen, begrenztem Wolkenbatch und veränderter Lichtbalance; seine tatsächliche Integration und neue Rendererbilder werden separat geprüft. Gleichzeitig ergänzt die Integration eine im unabhängigen Review entdeckte Rückbaumöglichkeit gegen wirtschaftliche Sackgassen. Der erste Bildstand allein belegt diese nachfolgenden Änderungen nicht.

@@ -24,6 +24,7 @@ func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(out)
 	var table = load(TABLE).instantiate()
 	root.add_child(table)
+	var views: Array[Dictionary] = []
 	for shape in [Vector2i(1280, 720), Vector2i(412, 915), Vector2i(690, 829), Vector2i(2400, 1080)]:
 		root.size = shape
 		root.get_node("HostBridge")._options = {"displayDensity": 2.625 if shape.x == 2400 else 1.0}
@@ -39,6 +40,16 @@ func _run() -> void:
 		if error != OK:
 			quit(4)
 			return
+		views.append({"width": shape.x, "height": shape.y, "density": table._ui_scale,
+			"draw_calls": Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),
+			"primitives": Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME)})
+	var report := FileAccess.open(out.path_join("cards-render.json"), FileAccess.WRITE)
+	if report == null:
+		quit(5)
+		return
+	report.store_string(JSON.stringify({"renderer": DisplayServer.get_name(), "public_fixture": true,
+		"android_device_measurement": false, "views": views}, "  "))
+	report.close()
 	print("CARDS_TABLE_RENDER_PASS renderer=%s images=4" % DisplayServer.get_name())
 	table.queue_free()
 	await process_frame

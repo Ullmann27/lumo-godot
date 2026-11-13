@@ -4,6 +4,7 @@ extends Node3D
 const STATE = preload("res://scripts/creative/build_settlement_state.gd")
 const VISUAL = preload("res://scripts/creative/build_settlement_visual.gd")
 const KIT = preload("res://scripts/creative/creative_kit.gd")
+const NEXTGEN_ENV = preload("res://scripts/creative/creative_nextgen_environment.gd")
 const RUNTIME = preload("res://scripts/creative/creative_runtime.gd")
 const EXPLORER = preload("res://scripts/creative/build_explorer.gd")
 const STICK = preload("res://scripts/games/kart_joystick.gd")
@@ -22,13 +23,17 @@ var camera: Camera3D
 var safe_ui: Control
 var top: VBoxContainer
 var bottom: VBoxContainer
+var top_backdrop: Panel
+var bottom_backdrop: Panel
 var resource_label: Label
 var goal_label: Label
 var feedback: Label
 var rival_label: Label
 var day_button: Button
 var expand_button: Button
+var demolish_button: Button
 var walk_button: Button
+var trade_window: Window
 var plot_label: Label
 var purchase_buttons: Dictionary = {}
 var transaction_buttons: Array[Button] = []
@@ -55,15 +60,18 @@ var stored_camera: Dictionary = {}
 var rival_host: Node3D
 var rival_destination := Vector3(16, 0.04, 10)
 var rival_last_buildings := 0
+var round_slots_full := false
 
 
 func _ready() -> void:
 	previous = RUNTIME.enter(self, true)
 	SceneRouter.current_scene_id = "settlement"
 	mode = "rival" if str(SceneRouter.launch_options.get("settlementMode", "settlement")) == "rival" else "settlement"
-	child_key = str(SceneRouter.launch_options.get("childKey", "standalone")).validate_filename().substr(0, 80)
+	child_key = str(SceneRouter.launch_options.get("childKey", HostBridge.launch_options().get("childKey", "standalone")))
+	if child_key.is_empty():
+		child_key = "standalone"
 	slot = clampi(int(SceneRouter.launch_options.get("buildSlot", 1)), 1, 6)
-	save_path = "user://lumo_settlement_%s_%d_%s.json" % [child_key, slot, mode]
+	save_path = project_path(child_key, slot, mode)
 	model = STATE.new(mode)
 	if FileAccess.file_exists(save_path):
 		var parser := JSON.new()
@@ -76,6 +84,7 @@ func _ready() -> void:
 		else:
 			save_blocked = true
 	kit.environment(self, "bauwelt_day")
+	NEXTGEN_ENV.apply_day(self)
 	_build_landscape()
 	camera = Camera3D.new()
 	camera.fov = 51
@@ -108,6 +117,12 @@ static func restore_project(raw: Variant, expected_child: String, expected_slot:
 	return restored if restored != null and restored.mode == expected_mode else null
 
 
+static func project_path(owner: String, project_slot: int, variation: String) -> String:
+	# Keep the exact owner in the envelope, hash only the filename. Replacing
+	# punctuation or truncating identities can merge two different children.
+	return "user://lumo_settlement_%s_%d_%s.json" % [owner.sha256_text(), project_slot, variation]
+
+
 static func plot_coordinate(index: int) -> Vector2i:
 	if index < 9:
 		return Vector2i(index % 3 - 1, index / 3 - 1)
@@ -129,7 +144,10 @@ func _build_landscape() -> void:
 	for x in [-16.0, 16.0]:
 		var bank := StaticBody3D.new()
 		add_child(bank)
-		kit.box(bank, Vector3(x, -0.55, 0), Vector3(28, 1.1, 34), Color("92b96f"))
+		var bank_mesh := kit.box(bank, Vector3(x, -0.55, 0), Vector3(28, 1.1, 34), Color("92b96f"))
+		bank_mesh.material_override = NEXTGEN_ENV.bank_material()
+		var grass := kit.box(bank, Vector3(x, 0.008, 0), Vector3(28, 0.015, 34), Color("b4be8b"))
+		grass.material_override = NEXTGEN_ENV.ground_material()
 		kit.collision(bank, Vector3(x, -0.55, 0), Vector3(28, 1.1, 34))
 		for z in [-17.2, 17.2]:
 			kit.box(self, Vector3(x, -0.8, z), Vector3(29, 1.9, 0.8), Color("ba9b70"))
@@ -176,11 +194,16 @@ func _build_ui() -> void:
 	safe_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	safe_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(safe_ui)
+	top_backdrop = Panel.new()
+	top_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top_backdrop.add_theme_stylebox_override("panel", _panel())
+	safe_ui.add_child(top_backdrop)
 	top = VBoxContainer.new()
 	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	top.offset_left = 14
 	top.offset_right = -14
 	top.offset_top = 10
+	top.minimum_size_changed.connect(func(): call_deferred("_layout"))
 	safe_ui.add_child(top)
 	var heading := HBoxContainer.new()
 	top.add_child(heading)
@@ -202,6 +225,10 @@ func _build_ui() -> void:
 	rival_label = _label("", 14)
 	rival_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	top.add_child(rival_label)
+	bottom_backdrop = Panel.new()
+	bottom_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bottom_backdrop.add_theme_stylebox_override("panel", _panel())
+	safe_ui.add_child(bottom_backdrop)
 	bottom = VBoxContainer.new()
 	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	bottom.offset_left = 14
@@ -238,9 +265,11 @@ func _build_ui() -> void:
 		var button := _button(spec[0], spec[1], 110)
 		actions.add_child(button)
 		transaction_buttons.append(button)
+	demolish_button = _button("Rückbauen", _demolish, 112)
+	actions.add_child(demolish_button)
 	expand_button = _button("Erweitern", _expand, 112)
 	actions.add_child(expand_button)
-	day_button = _button("Nächster Tag ☀", _next_day, 148)
+	day_button = _button("Nächster Tag ☀", _day_action, 148)
 	row.add_child(day_button)
 	feedback = _label("Dein Plan zählt: Nahrung, Material und Wohnraum halten die Siedlung am Leben.", 14)
 	feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -301,6 +330,11 @@ func _button(text: String, action: Callable, width := 100) -> Button:
 	pressed.bg_color = Color("bddfc7")
 	button.add_theme_stylebox_override("pressed", pressed)
 	button.add_theme_stylebox_override("hover", pressed)
+	var disabled := _panel()
+	disabled.bg_color = Color("dce5dc")
+	disabled.border_color = Color("9cab9f")
+	button.add_theme_stylebox_override("disabled", disabled)
+	button.add_theme_color_override("font_disabled_color", Color("45616a"))
 	button.pressed.connect(action)
 	return button
 
@@ -322,7 +356,14 @@ func _layout() -> void:
 	bottom.offset_top = -maxf(176, bottom.get_combined_minimum_size().y + 10)
 	var short := size.y < 560
 	rival_label.visible = mode == "rival" and not short
-	goal_label.add_theme_font_size_override("font_size", 13 if short else 15)
+	var goal_size := 13 if short else 15
+	if goal_label.get_theme_font_size("font_size") != goal_size:
+		goal_label.add_theme_font_size_override("font_size", goal_size)
+	top_backdrop.position = top.position - Vector2(8, 6)
+	top_backdrop.size = top.size + Vector2(16, 12)
+	bottom_backdrop.position = bottom.position - Vector2(8, 6)
+	bottom_backdrop.size = bottom.size + Vector2(16, 12)
+	bottom_backdrop.visible = bottom.visible
 	pause_panel.position = (size - pause_panel.size) * 0.5
 	var stick_size := clampf(minf(size.x * 0.29, size.y * 0.37), 112, 168)
 	walk_stick.custom_minimum_size = Vector2.ONE * stick_size
@@ -351,7 +392,8 @@ func _rebuild() -> void:
 				body.set_meta("plot", index)
 				body.set_meta("opponent", opponent)
 				add_child(body)
-				kit.box(body, Vector3(0, 0, 0), Vector3(4.65, 0.06, 4.65), Color("b6bc86") if opponent else Color("bad39c"))
+				var plot_mesh := kit.box(body, Vector3(0, 0, 0), Vector3(4.65, 0.06, 4.65), Color("b6bc86") if opponent else Color("bad39c"))
+				plot_mesh.material_override = NEXTGEN_ENV.plot_material(opponent)
 				kit.collision(body, Vector3(0, -0.01, 0), Vector3(4.65, 0.08, 4.65))
 				plot_nodes[key] = body
 		for building in town.buildings:
@@ -401,23 +443,41 @@ func _refresh_labels() -> void:
 	if mode == "rival":
 		var rival: Dictionary = model.rival()
 		rival_label.text = "Mira: %d Bewohner · %d Gebäude. Gleiche Preise und Erträge für euch beide." % [int(rival.population), rival.buildings.size()]
-	plot_label.text = "Grundstück %d gewählt · Gebäude antippen zum Bauen" % (selected_plot + 1) if selected_plot >= 0 else "Wähle ein freies Grundstück in deiner Siedlung."
+	plot_label.text = "Grundstück %d gewählt · Gebäude antippen zum Bauen" % (selected_plot + 1) if selected_plot >= 0 else "Wähle ein Grundstück in deiner Siedlung."
+	var occupied := false
+	for building in town.buildings:
+		if int(building.plot) == selected_plot:
+			occupied = true
+			plot_label.text = "Grundstück %d · %s. Rückbauen gibt die Baukosten zurück." % [selected_plot + 1, str(STATE.BUILDINGS[str(building.kind)].title)]
+	var blocked := _transactions_blocked()
 	for kind in purchase_buttons:
-		purchase_buttons[kind].disabled = paused or walking or save_blocked or selected_plot < 0
+		purchase_buttons[kind].disabled = blocked or selected_plot < 0 or occupied
+	var completed: bool = mode == "rival" and not model.winner.is_empty()
+	day_button.text = ("Zur Bauwelt" if round_slots_full else "Neue Runde") if completed else "Nächster Tag ☀"
 	day_button.disabled = paused or walking or save_blocked
-	expand_button.disabled = paused or walking or save_blocked or not bool(summary.can_expand)
-	transaction_buttons[0].disabled = paused or walking or save_blocked or not bool(summary.can_undo)
-	transaction_buttons[1].disabled = paused or walking or save_blocked or not bool(summary.can_redo)
-	transaction_buttons[2].disabled = paused or walking or save_blocked
+	demolish_button.disabled = blocked or not occupied
+	expand_button.disabled = blocked or not bool(summary.can_expand)
+	transaction_buttons[0].disabled = blocked or not bool(summary.can_undo)
+	transaction_buttons[1].disabled = blocked or not bool(summary.can_redo)
+	transaction_buttons[2].disabled = blocked
 	if save_blocked:
 		feedback.text = "Dieser Spielstand ist nicht lesbar. Er bleibt unverändert. Wähle in der Bauwelt ein anderes Projekt."
 	var winner := str(summary.get("winner", ""))
 	if not winner.is_empty():
-		feedback.text = {"player": "Deine Stadt hat das Ziel zuerst erreicht!", "rival": "Mira hat das Ziel zuerst erreicht. Dein Bauplan ist erhalten.", "tie": "Ihr habt das Ziel gemeinsam erreicht!"}.get(winner, "Wettbau abgeschlossen.")
+		feedback.text = _winner_text(winner)
+	call_deferred("_layout")
+
+
+func _transactions_blocked() -> bool:
+	return paused or walking or save_blocked or (mode == "rival" and not model.winner.is_empty())
+
+
+func _winner_text(winner: String) -> String:
+	return {"player": "Deine Stadt hat das Ziel zuerst erreicht!", "rival": "Mira hat das Ziel zuerst erreicht. Dein Bauplan ist erhalten.", "tie": "Ihr habt das Ziel gemeinsam erreicht!"}.get(winner, "Wettbau abgeschlossen.")
 
 
 func _buy(kind: String) -> void:
-	if paused or walking or save_blocked:
+	if _transactions_blocked():
 		return
 	selected_kind = kind
 	if not model.try_build(kind, selected_plot):
@@ -430,7 +490,7 @@ func _buy(kind: String) -> void:
 
 
 func _next_day() -> void:
-	if paused or walking or save_blocked:
+	if _transactions_blocked():
 		return
 	var report: Dictionary = model.next_day()
 	_rebuild()
@@ -439,13 +499,46 @@ func _next_day() -> void:
 		feedback.text = "Tag %d: %s erhalten · %d Essen gebraucht%s" % [int(report.day), _cost_text(own.produced), int(own.food_needed), " · neue Bewohner!" if bool(own.grew) else ""]
 		if int(own.food_shortfall) > 0:
 			feedback.text += " · Es fehlen %d Essen. Baue Bauernhöfe!" % int(own.food_shortfall)
+		if not str(report.get("winner", "")).is_empty():
+			feedback.text = _winner_text(str(report.winner))
 	else:
 		feedback.text = str(report.get("message", model.last_error))
 	_save()
 
 
+func _day_action() -> void:
+	if mode == "rival" and not model.winner.is_empty():
+		if round_slots_full:
+			_leave()
+		else:
+			_new_round()
+	else:
+		_next_day()
+
+
+func _new_round() -> void:
+	if paused or walking or save_blocked or mode != "rival" or model.winner.is_empty():
+		return
+	if not _save():
+		return
+	# Project slots are the existing 1..6 slots. Preserve every previous round;
+	# selecting a new one may never silently erase a completed town.
+	for offset in range(6):
+		var candidate := (slot + offset) % 6 + 1
+		if FileAccess.file_exists(project_path(child_key, candidate, mode)):
+			continue
+		SceneRouter.launch_options["childKey"] = child_key
+		SceneRouter.launch_options["buildSlot"] = candidate
+		SceneRouter.launch_options["settlementMode"] = mode
+		SceneRouter.goto("settlement")
+		return
+	round_slots_full = true
+	day_button.text = "Zur Bauwelt"
+	feedback.text = "Alle sechs Wettbau-Projekte sind belegt. Deine Runden bleiben erhalten. Zur Bauwelt → Welten (6) öffnet die Projektwahl."
+
+
 func _undo() -> void:
-	if paused or walking or save_blocked:
+	if _transactions_blocked():
 		return
 	if model.undo():
 		_rebuild()
@@ -456,7 +549,7 @@ func _undo() -> void:
 
 
 func _redo() -> void:
-	if paused or walking or save_blocked:
+	if _transactions_blocked():
 		return
 	if model.redo():
 		_rebuild()
@@ -467,7 +560,7 @@ func _redo() -> void:
 
 
 func _expand() -> void:
-	if paused or walking or save_blocked:
+	if _transactions_blocked():
 		return
 	if model.expand():
 		_rebuild()
@@ -477,10 +570,22 @@ func _expand() -> void:
 		feedback.text = model.last_error
 
 
+func _demolish() -> void:
+	if _transactions_blocked():
+		return
+	if model.try_demolish(selected_plot):
+		_rebuild()
+		_save()
+		feedback.text = "Gebäude zurückgebaut. Die Baukosten sind wieder im Vorrat. Rückgängig bleibt möglich."
+	else:
+		feedback.text = model.last_error
+
+
 func _trade_dialog() -> void:
-	if paused or walking or save_blocked:
+	if _transactions_blocked() or is_instance_valid(trade_window):
 		return
 	var dialog := Window.new()
+	trade_window = dialog
 	dialog.title = "Handeln am Markt"
 	dialog.size = Vector2i(minf(400, safe_ui.size.x - 24), minf(470, safe_ui.size.y - 24))
 	dialog.transient = true
@@ -501,6 +606,9 @@ func _trade_dialog() -> void:
 			var quote: Dictionary = STATE.trade_quote(resource, 5, sell)
 			var caption := _cost_text(quote.cost) + " → " + _cost_text({quote.resource: quote.amount})
 			box.add_child(_button(caption, func():
+				if _transactions_blocked():
+					dialog.queue_free()
+					return
 				if model.try_trade(resource, 5, sell):
 					_rebuild()
 					_save()
@@ -652,6 +760,9 @@ func _physics_process(delta: float) -> void:
 
 func _toggle_pause() -> void:
 	paused = not paused
+	if paused and is_instance_valid(trade_window):
+		trade_window.hide()
+		trade_window.queue_free()
 	pause_panel.visible = paused
 	pointer = -1
 	walk_stick.set_enabled(walking and not paused)

@@ -105,10 +105,12 @@ func _run() -> void:
 			return
 		DirAccess.make_dir_recursive_absolute(capture_dir)
 	root.size = Vector2i(1280, 720)
+	var city_script = load("res://scripts/creative/build_settlement_world.gd")
 	var free_save := "user://lumo_build_" + CHILD + "_3.json"
-	var city_save := "user://lumo_settlement_" + CHILD + "_3_rival.json"
+	var city_save: String = city_script.project_path(CHILD, SLOT, "rival")
 	DirAccess.remove_absolute(free_save)
-	DirAccess.remove_absolute(city_save)
+	for project_slot in range(1, 7):
+		DirAccess.remove_absolute(city_script.project_path(CHILD, project_slot, "rival"))
 	var router = root.get_node("SceneRouter")
 	router.launch_options = {"childKey": CHILD, "buildSlot": SLOT}
 	var build = load("res://scenes/creative/build_world.tscn").instantiate()
@@ -148,6 +150,21 @@ func _run() -> void:
 	_check(city.model.player().buildings.size() == 1 and city.facility_nodes.size() == 1, "Undo removes facility and restores its resources")
 	await _tap(_button(city, "Wiederholen").get_global_rect().get_center())
 	_check(city.model.snapshot() == purchased, "Redo restores full paid transaction")
+	await _tap(city.camera.unproject_position(city.plot_position(5) + Vector3.UP * 0.08))
+	_check(city.selected_plot == 5 and not city.demolish_button.disabled, "Actual occupied plot enables reversible demolition")
+	await _tap(city.demolish_button.get_global_rect().get_center())
+	_check(city.model.player().buildings.size() == 1 and city.facility_nodes.size() == 1,
+		"Demolition touch removes the paid farm from real geometry")
+	_check(city.model.player().resources.wood == int(purchased.player.resources.wood) + 4 and city.model.player().resources.stone == int(purchased.player.resources.stone) + 1,
+		"Demolition restores the actual static farm cost exactly once")
+	await _tap(_button(city, "Rückgängig").get_global_rect().get_center())
+	_check(city.model.snapshot() == purchased and city.facility_nodes.size() == 2, "Demolition undo restores building and charges its resources together")
+	await _tap(_button(city, "Wiederholen").get_global_rect().get_center())
+	await _tap(_button(city, "Rückgängig").get_global_rect().get_center())
+	_check(city.model.snapshot() == purchased, "Demolition redo/undo cannot duplicate resources")
+	await _tap(city.camera.unproject_position(city.plot_position(4) + Vector3.UP * 0.08))
+	await _tap(city.demolish_button.get_global_rect().get_center())
+	_check(city.model.snapshot() == purchased and city.feedback.text.contains("Zuhause"), "Occupied final home is protected through the actual demolition action")
 	await _frames(25)
 	_check(city.model.snapshot() == purchased, "Rendering and time alone do not farm resources")
 	await _tap(city.day_button.get_global_rect().get_center())
@@ -160,6 +177,25 @@ func _run() -> void:
 	city._camera_update(true)
 	await _frames(10)
 	await _capture("03_settlement_rival_day")
+	# A pending native trade window may still hold its callback during Android
+	# pause delivery. Both closing it and guarding that callback are required.
+	city.focus = Vector3(-16, 0, 0)
+	city.radius = 34
+	city._camera_update(true)
+	await _frames(6)
+	await _buy_plot(3, "market")
+	city._trade_dialog()
+	await _frames(2)
+	var pending_trade := _button(city, "5 Münzen → 10 Essen")
+	_check(pending_trade != null, "Real market opens a priced native trade action")
+	var before_pause_trade: Dictionary = city.model.snapshot()
+	city._notification(Node.NOTIFICATION_APPLICATION_PAUSED)
+	if pending_trade != null:
+		pending_trade.pressed.emit()
+	await _frames(3)
+	_check(city.paused and city.model.snapshot() == before_pause_trade, "Pending trade callback cannot spend or earn resources after lifecycle pause")
+	_check(not is_instance_valid(city.trade_window), "Lifecycle pause closes the exclusive market window")
+	city._toggle_pause()
 	var saved: Dictionary = city.model.snapshot()
 	_check(city._save(), "Dedicated city save is written atomically")
 	_check(FileAccess.get_file_as_string(free_save) == preserved, "City purchases and days never alter creative save")
@@ -172,6 +208,13 @@ func _run() -> void:
 	var unsupported: Dictionary = project.duplicate(true)
 	unsupported.version = 2
 	_check(city.restore_project(unsupported, CHILD, SLOT, "rival") == null, "Unknown city project version is rejected")
+	_check(city_script.project_path("child:a", SLOT, "rival") != city_script.project_path("child?a", SLOT, "rival"),
+		"Distinct children whose filename sanitizations collide still have distinct saves")
+	_check(city_script.project_path("x".repeat(80) + "A", SLOT, "rival") != city_script.project_path("x".repeat(80) + "B", SLOT, "rival"),
+		"Long child identities are not truncated into a shared save")
+	var exact_owner: Dictionary = project.duplicate(true)
+	exact_owner.child = "child:a"
+	_check(city.restore_project(exact_owner, "child?a", SLOT, "rival") == null, "Exact owner envelope independently rejects a sanitized-name alias")
 	city._toggle_pause()
 	city._next_day()
 	await _frames(12)
@@ -191,6 +234,7 @@ func _run() -> void:
 			_check(root.get_visible_rect().encloses(button.get_global_rect()), "Required city control fits " + str(dimensions))
 			_check(button.size.x >= 48 and button.size.y >= 48, "City touch target stays >=48dp " + str(dimensions))
 		_check(not city.top.get_global_rect().intersects(city.bottom.get_global_rect()), "Top and bottom controls remain separate " + str(dimensions))
+		_check(city.demolish_button.size.x >= 48 and city.demolish_button.size.y >= 48, "Reversible demolition retains a 48dp target " + str(dimensions))
 	await _tap(_button(city, "‹ Bauwelt").get_global_rect().get_center())
 	await _frames(15)
 	_check(current_scene != null and current_scene.scene_file_path == "res://scenes/creative/build_world.tscn", "Return reaches the original creative world")
@@ -214,10 +258,59 @@ func _run() -> void:
 	city._leave()
 	await _frames(15)
 	_check(current_scene.scene_file_path == "res://scenes/creative/build_world.tscn", "Unreadable city still allows safe return to Bauwelt")
+	# Resume the earlier valid checkpoint, then finish through actual day
+	# actions. No winner or population is injected for this victory path.
+	FileAccess.open(city_save, FileAccess.WRITE).store_string(JSON.stringify(project))
+	root.size = Vector2i(1280, 720)
+	current_scene._open_settlement("rival")
+	await _frames(15)
+	city = current_scene
+	var turns := 0
+	while city.model.winner.is_empty() and turns < 70:
+		city._next_day()
+		turns += 1
+		await process_frame
+	_check(city.model.winner == "rival" and city.feedback.text.contains("zuerst erreicht"), "Actual completed rival campaign displays the winner immediately")
+	_check(city.day_button.text == "Neue Runde" and not city.day_button.disabled and city.demolish_button.disabled,
+		"Completed round offers a new-round action and locks its old economy")
+	await _capture("05_settlement_result")
+	var completed_bytes := FileAccess.get_file_as_string(city_save)
+	var completed_project: Dictionary = JSON.parse_string(completed_bytes)
+	await _tap(city.day_button.get_global_rect().get_center())
+	await _frames(15)
+	city = current_scene
+	_check(city.slot == 4 and city.model.day == 1 and city.model.winner.is_empty() and city.model.player().buildings.is_empty(),
+		"Actual New Round opens a fresh unused project slot")
+	_check(FileAccess.get_file_as_string(city_save) == completed_bytes, "New Round preserves the finished town byte-for-byte")
+	# Full-slot boundary fixture: use the valid finished model, not an invented
+	# winner. None of the six existing projects may be replaced by the button.
+	city.model = STATE.restore(completed_project.settlement)
+	city._rebuild()
+	city._save()
+	var occupied_files := {}
+	for project_slot in range(1, 7):
+		var path: String = city_script.project_path(CHILD, project_slot, "rival")
+		if not FileAccess.file_exists(path):
+			var occupied: Dictionary = completed_project.duplicate(true)
+			occupied.slot = project_slot
+			FileAccess.open(path, FileAccess.WRITE).store_string(JSON.stringify(occupied))
+		occupied_files[path] = FileAccess.get_file_as_string(path)
+	await _frames(3)
+	await _tap(city.day_button.get_global_rect().get_center())
+	_check(city.round_slots_full and city.day_button.text == "Zur Bauwelt" and city.feedback.text.contains("sechs Wettbau-Projekte"),
+		"Six occupied projects show a clear preserved-slots explanation and return action")
+	for path in occupied_files:
+		_check(FileAccess.get_file_as_string(path) == occupied_files[path], "Full-slot action never overwrites " + path.get_file())
+	await _tap(city.day_button.get_global_rect().get_center())
+	await _frames(15)
+	_check(current_scene.scene_file_path == "res://scenes/creative/build_world.tscn" and _button(current_scene, "Welten (6)") != null,
+		"Full-slot return reaches the existing explicit project chooser")
 	current_scene.queue_free()
 	await _frames(3)
 	DirAccess.remove_absolute(free_save)
-	DirAccess.remove_absolute(city_save)
+	DirAccess.remove_absolute("user://lumo_build_" + CHILD + "_4.json")
+	for project_slot in range(1, 7):
+		DirAccess.remove_absolute(city_script.project_path(CHILD, project_slot, "rival"))
 	if failures.is_empty():
 		print("[SettlementPlay] PASS checks=", checks, ": actual routes, plot touch, paid builds, fair visible AI, save isolation, pause and layouts")
 		quit(0)

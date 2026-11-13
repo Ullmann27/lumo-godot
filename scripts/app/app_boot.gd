@@ -301,7 +301,7 @@ func _back_to_games() -> void:
 	if load_phase == "transitioning":
 		return
 	if HostBridge.is_embedded():
-		if not HostBridge.return_to_app("games"):
+		if not HostBridge.return_to_app("learn" if target_scene == "learning" else "games"):
 			_show_failure(HostBridge.SAVE_FAILURE)
 	else:
 		_set_phase("idle")
@@ -315,6 +315,9 @@ func _notification(what: int) -> void:
 
 func _show_cover(scene_id: String) -> void:
 	var cover: TextureRect = $Layer/Background
+	# Until a renderer capture of this lesson is shipped, use the neutral
+	# loading surface instead of falsely presenting the Kart world as learning.
+	cover.visible = scene_id != "learning"
 	var path: String = str(COVER_BY_SCENE.get(scene_id, "res://assets/kart/menu/lumo-world.webp"))
 	cover.texture = MENU_ART.world_texture() if path == MENU_ART.WORLD.resource_path else load(path) as Texture2D
 	var title: Label = $Layer/Title
@@ -322,11 +325,13 @@ func _show_cover(scene_id: String) -> void:
 	title.add_theme_font_override("font", UI.HEADING)
 	title.add_theme_color_override("font_color", Color("f7fbff"))
 	var subtitle: Label = $Layer/Subtitle
-	subtitle.text = "DEIN NÄCHSTES ABENTEUER"
+	subtitle.text = "MIT LUMO BEGREIFEN UND AUSPROBIEREN" if scene_id == "learning" else "DEIN NÄCHSTES ABENTEUER"
 	subtitle.add_theme_font_override("font", UI.BODY)
 	subtitle.add_theme_color_override("font_color", Color("53ddfd"))
 	var status: Label = $Layer/LoadingLabel
-	status.text = "Spielwelt wird vorbereitet …"
+	status.text = "Deine Lernansicht wird vorbereitet …" if scene_id == "learning" else "Spielwelt wird vorbereitet …"
+	if is_instance_valid(_back_button):
+		_back_button.text = "Zur Aufgabe" if scene_id == "learning" else "Zur Spielewelt"
 	status.add_theme_font_override("font", UI.BODY)
 	status.add_theme_color_override("font_color", Color("f7fbff"))
 	var bar: ProgressBar = $Layer/LoadBar

@@ -3,6 +3,7 @@ extends Node3D
 ## material families, GLB and clips are reused; no reward or vehicle state lives here.
 const ACTOR = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const INTERIOR = preload("res://scripts/games/kart_garage_interior.gd")
+const BALANCER_X := -2.75
 var host
 var balance_wheel: Node3D
 var selection_time := 0.0
@@ -17,14 +18,14 @@ func build(materials: Dictionary) -> void:
 	name = "GarageServiceStation"
 	# A dimensional balancing bench with a real wheel, axle, rim and spokes.
 	# Shared instancing batches the repetitive ribs, bolts and pegboard tools.
-	INTERIOR._box(self, "BalancerBase", Vector3(0.78, 0.10, 0.78), Vector3(3.35, -0.28, 1.95), materials.recess, true)
-	INTERIOR._box(self, "BalancerColumn", Vector3(0.38, 0.78, 0.42), Vector3(3.35, 0.16, 1.95), materials.wall, true)
-	INTERIOR._box(self, "BalancerHead", Vector3(0.69, 0.28, 0.64), Vector3(3.35, 0.68, 1.95), materials.ivory, true)
-	var axle := INTERIOR._cylinder(self, "BalancerAxle", 0.065, 0.56, Vector3(3.35, 0.93, 1.57), materials.steel)
+	INTERIOR._box(self, "BalancerBase", Vector3(0.78, 0.10, 0.78), Vector3(BALANCER_X, -0.28, 1.95), materials.recess, true)
+	INTERIOR._box(self, "BalancerColumn", Vector3(0.38, 0.78, 0.42), Vector3(BALANCER_X, 0.16, 1.95), materials.wall, true)
+	INTERIOR._box(self, "BalancerHead", Vector3(0.69, 0.28, 0.64), Vector3(BALANCER_X, 0.68, 1.95), materials.ivory, true)
+	var axle := INTERIOR._cylinder(self, "BalancerAxle", 0.065, 0.56, Vector3(BALANCER_X, 0.93, 1.57), materials.steel)
 	axle.rotation.x = PI * 0.5
 	balance_wheel = Node3D.new()
 	balance_wheel.name = "BalancedWheel"
-	balance_wheel.position = Vector3(3.35, 0.93, 1.35)
+	balance_wheel.position = Vector3(BALANCER_X, 0.93, 1.35)
 	add_child(balance_wheel)
 	_ring(balance_wheel, "Tyre", 0.24, 0.43, materials.rubber)
 	_ring(balance_wheel, "Rim", 0.205, 0.245, materials.steel)
@@ -37,7 +38,7 @@ func build(materials: Dictionary) -> void:
 	var hub := INTERIOR._cylinder(balance_wheel, "WheelHub", 0.065, 0.08, Vector3(0, 0, -0.015), materials.orange)
 	hub.rotation.x = PI * 0.5
 	_status_material = materials.cyan.duplicate() as StandardMaterial3D
-	INTERIOR._box(self, "BalancerStatus", Vector3(0.45, 0.065, 0.03), Vector3(3.35, 0.72, 1.61), _status_material, false)
+	INTERIOR._box(self, "BalancerStatus", Vector3(0.45, 0.065, 0.03), Vector3(BALANCER_X, 0.72, 1.61), _status_material, false)
 	# Pegboard behind the existing cabinet. All handles/shafts share two batches.
 	INTERIOR._box(self, "ToolPegboard", Vector3(1.72, 1.12, 0.07), Vector3(-3.95, 1.85, 3.85), materials.recess, true)
 	var metal_parts: Array[Transform3D] = []
@@ -132,6 +133,19 @@ func subject_points() -> Array[Vector3]:
 		var point := skeleton.to_global(skeleton.get_bone_global_rest(bone).origin)
 		points.append(point + Vector3(0.34, 0.27, 0.25))
 		points.append(point - Vector3(0.34, 0.12, 0.25))
+	return points
+
+
+func workbench_points() -> Array[Vector3]:
+	var points: Array[Vector3] = []
+	if not _active or not is_instance_valid(balance_wheel):
+		return points
+	# Renderer review exposed that the original left placement was behind the
+	# choice drawer. The active right-side wheel belongs in the clear stage too.
+	var tyre: MeshInstance3D = balance_wheel.get_node("Tyre")
+	var bounds := tyre.get_aabb()
+	for corner in range(8):
+		points.append(tyre.to_global(bounds.get_endpoint(corner)))
 	return points
 
 

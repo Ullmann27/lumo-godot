@@ -84,6 +84,19 @@ func _run() -> void:
 		for token in range(9):
 			_check(model.place(token, model.target_index()), "one ten moved per action")
 		_check(model.is_complete() and a + model.placed.size() * 10 == a + 90, "hundred crossing conserves tens")
+	model.configure({"kind": "bridge_hundred", "a": 180, "b": 50})
+	for token in range(3):
+		model.place(token, model.target_index())
+	_check(model.explanation().contains("210") and model.explanation().contains("noch 2 Zehner") and not model.explanation().contains("bis 200"), "past the hundred, explanation advances toward actual remaining tens")
+	model.configure({"kind": "fraction_parts", "a": 1, "b": 4, "extra": 2})
+	_check(model.explanation().contains("1 von 4") and model.explanation().contains("noch 2 dazu"), "fraction instruction counts only the two remaining pieces")
+	model.place(0, model.target_index())
+	_check(model.explanation().contains("2 von 4") and model.explanation().contains("noch 1 dazu"), "fraction guidance follows actual placement")
+	model.configure({"kind": "subtract_ten", "a": 13, "b": 2})
+	_check(not model.explanation().contains("Zehn") and model.explanation().contains("nehmen wir 2"), "non-crossing subtraction does not instruct removing three")
+	model.place(0, model.target_index())
+	model.place(1, model.target_index())
+	_check(model.explanation().contains("13 minus 2 ist 11"), "non-crossing subtraction ends at eleven")
 	root.size = Vector2i(1280, 720)
 	var game = load(WORLD).instantiate()
 	game.capture_options = {"learning": {"kind": "bridge_ten", "a": 8, "b": 5}, "reduceAnimations": true}

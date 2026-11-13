@@ -82,6 +82,12 @@ func _host_visible_in_region(menu) -> void:
 		if menu.preview_camera.is_position_behind(point) or not safe.has_point(menu.preview_camera.unproject_position(point)):
 			outside += 1
 	_check(points.size() == 130 and outside == 0, "original standing body, ears and hands fit clear stage (%d outside)" % outside)
+	var wheel_points: Array[Vector3] = menu.service_station.workbench_points()
+	var wheel_outside := 0
+	for point in wheel_points:
+		if menu.preview_camera.is_position_behind(point) or not safe.has_point(menu.preview_camera.unproject_position(point)):
+			wheel_outside += 1
+	_check(wheel_points.size() == 8 and wheel_outside == 0, "real balancing wheel fits the unoccluded live stage")
 
 
 func _run() -> void:
@@ -171,6 +177,8 @@ func _run() -> void:
 		await _tap(menu.step_buttons[3])
 		_check(menu.choices.get_child_count() == 12, "all twelve production tracks remain selectable")
 		var first_world = menu.choices.get_child(0)
+		_check(menu.choices.get_parent().scroll_vertical == 0 and menu.choices.get_parent().get_global_rect().encloses(first_world.title_label.get_global_rect()),
+			"switching from a scrolled garage reveals the complete first track title")
 		_check(first_world.caption_label.is_visible_in_tree() and first_world.caption.contains("/3"),
 			"track goal remains visible in the compact native world card")
 		_check(first_world.caption_label.get_line_count() <= 2 and first_world.get_global_rect().encloses(first_world.caption_label.get_global_rect()),
