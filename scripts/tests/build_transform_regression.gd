@@ -39,7 +39,7 @@ func _run() -> void:
 	_check(state.transform_piece(uid, Vector3i(-9, 0, 7), 1).is_empty(), "No-op transform succeeds")
 	_check(state.undo_stack.size() == history, "No-op does not consume undo history")
 	_check(
-		not state.transform_piece(uid, Vector3i(24, 0, 7), 0).is_empty(),
+		not state.transform_piece(uid, Vector3i(STATE.HALF, 0, 7), 0).is_empty(),
 		"Out-of-bounds rotated volume rejected"
 	)
 	_check(

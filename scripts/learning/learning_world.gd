@@ -61,6 +61,8 @@ var _fraction_label: MeshInstance3D
 var _hundred_stock: Node3D
 var _hundred_summary: MeshInstance3D
 var _frame_label: MeshInstance3D
+var _group_labels: Array[MeshInstance3D] = []
+var _group_plates: Array[MeshInstance3D] = []
 var _layout_queued := false
 var _speech_host: Object
 var _speech_enabled := false
@@ -334,6 +336,7 @@ func _button(caption: String, action: Callable, flags: int = 0) -> Button:
 			"Ein Objekt zeigen",
 			"Einen Würfel wegnehmen",
 			"Einen Würfel einordnen",
+			"Einen Würfel verteilen",
 			"Ein Teil zeigen",
 			"Nächste Silbe zeigen",
 			"Wasser geben",
@@ -383,6 +386,8 @@ func _rebuild_activity() -> void:
 	_hundred_stock = null
 	_hundred_summary = null
 	_frame_label = null
+	_group_labels.clear()
+	_group_plates.clear()
 	plant = null
 	for button in actions.get_children():
 		button.free()
@@ -398,6 +403,9 @@ func _rebuild_activity() -> void:
 		"equal_groups":
 			_build_groups()
 			main_button = _button("Einen Würfel einordnen", _show_one)
+		"equal_sharing":
+			_build_groups()
+			main_button = _button("Einen Würfel verteilen", _show_one)
 		"fraction_parts":
 			_build_fractions()
 			main_button = _button("Ein Teil zeigen", _show_one)
@@ -519,6 +527,19 @@ func _build_hundred_stock(material: Material, ink: Material) -> void:
 		content, "", Vector3(0, 0.72, 2.1), 0.34, _material("hundred_ink", Color("f5e1ad"))
 	)
 	_hundred_summary.name = "CurrentPlaceValue"
+	# Keep the real extruded caption parallel to the viewing plane. An upright
+	# sign and a deeper plate have different screen projections from above;
+	# their lower glyphs otherwise fall onto the similarly colored tray rim.
+	_hundred_summary.global_basis = camera.global_basis
+	var caption_plate := MeshInstance3D.new()
+	caption_plate.name = "CaptionPlate"
+	caption_plate.mesh = BoxMesh.new()
+	var plate_material := StandardMaterial3D.new()
+	plate_material.albedo_color = Color("122f45")
+	plate_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	caption_plate.material_override = plate_material
+	caption_plate.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_hundred_summary.add_child(caption_plate)
 
 
 func _build_subtraction() -> void:
@@ -551,13 +572,19 @@ func _build_subtraction() -> void:
 
 
 func _build_groups() -> void:
-	title.text = "Gleiche Gruppen · %d × %d" % [activity.a, activity.b]
+	title.text = (
+		"Gerecht teilen · %d : %d" % [activity.a, activity.b]
+		if activity.kind == "equal_sharing"
+		else "Gleiche Gruppen · %d × %d" % [activity.a, activity.b]
+	)
 	var plate := _material("group_plate", Color("b6ceb0"))
 	var cube_material := _material("group_cube", Color("f8c25b"), 0.1)
-	for group in range(activity.a):
+	var ink := _material("group_ink", Color("193644"))
+	for group in range(activity.group_count()):
 		var center := Vector3(-1.8 + float(group % 3) * 1.8, 0.06, -1.6 + float(group / 3) * 2.15)
-		_cylinder(content, center, 0.83, 0.15, plate, "GroupPlate%d" % group)
-		for item in range(activity.b):
+		_group_plates.append(_cylinder(content, center, 0.83, 0.15, plate, "GroupPlate%d" % group))
+		_group_labels.append(_top_text(content, "0", center + Vector3(0, 0.15, 0.61), 0.25, ink))
+		for item in range(activity.group_size()):
 			var at := (
 				center
 				+ Vector3(-0.42 + float(item % 3) * 0.42, 0.28, -0.23 + float(item / 3) * 0.46)
@@ -728,6 +755,21 @@ func _build_plant() -> void:
 
 func _refresh() -> void:
 	explanation.text = activity.explanation()
+	for group in range(_group_labels.size()):
+		_group_labels[group].mesh.text = str(activity.count_in_group(group))
+		var next_group: int = (
+			activity.placed.size() % activity.b
+			if activity.kind == "equal_sharing"
+			else activity.placed.size() / activity.b
+		)
+		_group_plates[group].material_override = _material(
+			"group_next" if group == next_group and not activity.is_complete() else "group_plate",
+			(
+				Color("d7ae58")
+				if group == next_group and not activity.is_complete()
+				else Color("b6ceb0")
+			)
+		)
 	if is_instance_valid(_fraction_label):
 		_fraction_label.mesh.text = (
 			"%d/%d" % [activity.initial_count() + activity.placed.size(), activity.b]
@@ -736,6 +778,18 @@ func _refresh() -> void:
 		var value: int = activity.a + activity.placed.size() * 10
 		_hundred_summary.mesh.text = (
 			"%d = %d Hunderter + %d Zehner" % [value, value / 100, (value % 100) / 10]
+		)
+		# The actual extruded text needs its own contrasting surface. Without it
+		# the cream glyphs disappear against the ten-frame's cream lower rim.
+		var caption_bounds: AABB = _hundred_summary.get_aabb()
+		var caption_plate: MeshInstance3D = _hundred_summary.get_node("CaptionPlate")
+		caption_plate.mesh.size = Vector3(
+			caption_bounds.size.x + 0.22, caption_bounds.size.y + 0.14, 0.035
+		)
+		caption_plate.position = Vector3(
+			caption_bounds.get_center().x,
+			caption_bounds.get_center().y,
+			caption_bounds.position.z - 0.045
 		)
 		_frame_label.mesh.text = (
 			"10 Zehner = 100"
@@ -807,6 +861,15 @@ func _layout() -> void:
 	camera.h_offset = 0.0 if portrait else 0.1
 	var content_mid := (header.position.y + header.size.y + footer.position.y) * 0.5 * scale_value
 	camera.v_offset = (content_mid / dimensions.y - 0.5) * camera.size + (0.75 if portrait else 0.0)
+	if (
+		activity.kind == "bridge_hundred"
+		and is_instance_valid(_frame_label)
+		and _frame_label.is_inside_tree()
+		and camera.is_inside_tree()
+	):
+		# Keep the full extruded equation readable: a lying '=' has almost no
+		# projected gap between its bars. Cube-top labels keep their flat basis.
+		_frame_label.global_basis = camera.global_basis
 
 
 func _arrange_activity(portrait: bool) -> void:
@@ -835,6 +898,7 @@ func _arrange_activity(portrait: bool) -> void:
 		if activity.kind == "bridge_hundred":
 			_hundred_stock.position = Vector3(1.35, 0, -3.85) if portrait else Vector3(-3.4, 0, 1.6)
 			_hundred_summary.position = Vector3(0, 0.6, 2.25)
+			_hundred_summary.global_basis = camera.global_basis
 	elif activity.kind == "subtract_ten":
 		for index in range(targets.size()):
 			targets[index] = (
@@ -853,7 +917,7 @@ func _arrange_activity(portrait: bool) -> void:
 		_source_tray.position = Vector3(0, 0.02, 3.55) if portrait else Vector3(3.6, 0.02, -0.9)
 		_source_tray.scale = Vector3(4.65 / 2.3, 1, 1.85 / 2.3) if portrait else Vector3.ONE
 		_source_label.position = Vector3(2.45, 0.7, 3.45) if portrait else Vector3(3.6, 1.0, -2.4)
-	elif activity.kind == "equal_groups":
+	elif activity.kind in ["equal_groups", "equal_sharing"]:
 		for index in range(tokens.size()):
 			token_sources[index] = (
 				Vector3(-1.7 + float(index % 9) * 0.42, 0.28, 2.75 + float(index / 9) * 0.4)
@@ -871,7 +935,7 @@ func _arrange_activity(portrait: bool) -> void:
 	for index in range(tokens.size()):
 		var placed_index: int = activity.placed.find(index)
 		tokens[index].position = (
-			targets[activity.initial_count() + placed_index]
+			targets[activity.target_for_step(placed_index)]
 			if placed_index >= 0
 			else token_sources[index]
 		)

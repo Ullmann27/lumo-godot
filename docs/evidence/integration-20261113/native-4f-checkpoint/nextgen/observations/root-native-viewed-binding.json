@@ -1,0 +1,162 @@
+{
+  "schema": 1,
+  "status": "ALL_12_ROOT_OBSERVATIONS_BOUND_TO_ORIGINAL_4F_PNG_BYTES",
+  "head_sha": "4f3449253fd59023a2544432a178eb9efcafe4f9",
+  "tree": "189b7a66c731067559469e2503e3a190b337031d",
+  "run_id": 43466004918,
+  "artifact_id": 14061435964,
+  "zip_sha256": "dab5b9e929c64adcd1a366f730a721a00d11c6ba0676b3218ed854d27529f565",
+  "audit": {
+    "path": "root-native-viewed-audit.json",
+    "sha256": "0af7e5d81caa492ea12f93a7dcfcac78bcc277da7bc524e03d359420888b08d9"
+  },
+  "selection": {
+    "path": "root-native-selection.json",
+    "sha256": "0d41e909c711500ea58428c3333e6178ea206b3b0ebab85a8b46bdde52291e7a"
+  },
+  "module_count": 9,
+  "touch_groups": [
+    "build",
+    "treasure",
+    "workshop"
+  ],
+  "entries": [
+    {
+      "module": "learning",
+      "artifact_entry": "nextgen-evidence/nextgen/captures/learning_world_capture/bridge_hundred-complete-2400x1080.png",
+      "sha256": "9f596453d96c3a7a35d16a75c3b81a784821656f791067399c46b08daa12c1e8",
+      "bytes": 723952,
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "actual_original_opened_by_root": true
+    },
+    {
+      "module": "jump",
+      "artifact_entry": "nextgen-evidence/nextgen/captures/jump_nextgen_capture/jump_412x915_touch_ascent.png",
+      "sha256": "0400b3761429209f2ef35c7847b2e7795bb26a16b22792022dfd331efe6e0228",
+      "bytes": 458637,
+      "dimensions": [
+        412,
+        915
+      ],
+      "actual_original_opened_by_root": true
+    },
+    {
+      "module": "build",
+      "artifact_entry": "touch-evidence/build/captures/build_dialog_density_regression/build-dialog-640x360-current-goal.png",
+      "sha256": "c542303edeed309551f8cdfdb59f0fdac77414510dbd337f80eeee267502abd2",
+      "bytes": 131109,
+      "dimensions": [
+        640,
+        360
+      ],
+      "actual_original_opened_by_root": true
+    },
+    {
+      "module": "settlement",
+      "artifact_entry": "nextgen-evidence/nextgen/captures/build_settlement_play_regression/04_settlement_lumo.png",
+      "sha256": "0db31f31752149e8c93106d84841fc13e4cc7fe998b4fc734dd45fba72217c73",
+      "bytes": 1097687,
+      "dimensions": [
+        1280,
+        720
+      ],
+      "actual_original_opened_by_root": true
+    },
+    {
+      "module": "garage",
+      "artifact_entry": "touch-evidence/workshop/captures/kart_workshop_density_regression/workshop-1080x2400-performance.png",
+      "sha256": "cef48afdf710990c9d46784b4b3bd8d92ddd6d6e3344844b70e0b14c2c989c9e",
+      "bytes": 976617,
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "actual_original_opened_by_root": true
+    },
+    {
+      "module": "cards",
+      "artifact_entry": "nextgen-evidence/nextgen/captures/cards_table_capture/cards-table-412x915.png",
+      "sha256": "b80e9c8d6999dac7b325f3e5ace591feecc2246625a984a6fdc827095c007d31",
+      "bytes": 289390,
+      "dimensions": [
+        412,
+        915
+      ],
+      "actual_original_opened_by_root": true
+    },
+    {
+      "module": "rhythm",
+      "artifact_entry": "nextgen-evidence/nextgen/captures/rhythm_tour_play_regression/02_rhythm_slide.png",
+      "sha256": "ac0ff44d2823fd17b3a29fe0ac9e10762dc8c8ce3aa1ef935182547f80a3e364",
+      "bytes": 655536,
+      "dimensions": [
+        1280,
+        720
+      ],
+      "actual_original_opened_by_root": true
+    },
+    {
+      "module": "puzzle",
+      "artifact_entry": "nextgen-evidence/nextgen/captures/puzzle_rotation_regression/puzzle_rotation_placed.png",
+      "sha256": "7a8a740af7040e19619b271fb766072dfe7be454368a1beff626f0a1f4727ab9",
+      "bytes": 509560,
+      "dimensions": [
+        1280,
+        720
+      ],
+      "actual_original_opened_by_root": true
+    },
+    {
+      "module": "treasure",
+      "artifact_entry": "touch-evidence/treasure/captures/treasure_density_regression/treasure-640x320-question.png",
+      "sha256": "95922213a3c650bc91eddcf99e39634ac70615f02d6ca9709346702fd9bb801f",
+      "bytes": 141698,
+      "dimensions": [
+        640,
+        320
+      ],
+      "actual_original_opened_by_root": true
+    },
+    {
+      "module": "build",
+      "artifact_entry": "touch-evidence/build/captures/build_dialog_density_regression/build-dialog-1080x2400-current-goal.png",
+      "sha256": "fed52377589a5bbe978f833ea77234afbf87dd3543451c0531465112286a0feb",
+      "bytes": 1240444,
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "actual_original_opened_by_root": true
+    },
+    {
+      "module": "build",
+      "artifact_entry": "nextgen-evidence/nextgen/captures/build_nextgen_play_regression/03_build_walking.png",
+      "sha256": "c3b3e72c593283e5005c298b055b884e60e710502951e8862d730d4a2be3f608",
+      "bytes": 1294737,
+      "dimensions": [
+        1280,
+        720
+      ],
+      "actual_original_opened_by_root": true
+    },
+    {
+      "module": "treasure",
+      "artifact_entry": "nextgen-evidence/nextgen/captures/treasure_exploration_regression/treasure_garden_first.png",
+      "sha256": "981f374912af414cc7f2e90fc426323c29271e21b83dcf55df25a784b98ac619",
+      "bytes": 1325012,
+      "dimensions": [
+        1280,
+        720
+      ],
+      "actual_original_opened_by_root": true
+    }
+  ],
+  "scope": [
+    "Root supplied twelve actually opened original-image observations; this check binds their exact original bytes, dimensions, modules and identical selection findings.",
+    "No original observation text was edited, including scrolling/ellipsis remarks.",
+    "This does not create a visual receipt, Android approval or later Village/Loop approval."
+  ]
+}

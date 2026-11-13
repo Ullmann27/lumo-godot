@@ -1,0 +1,2 @@
+# Preserve Blender authoring sources without importing them into the runtime.
+# The game loads assets/learning/studio/learning_studio.glb.

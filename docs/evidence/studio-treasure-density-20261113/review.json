@@ -1,0 +1,87 @@
+{
+  "kind": "treasure_touch_density_correction_evidence",
+  "base_native_candidate": "b5bc6e7cdb03b190cb46f886301cf7bf3cb02928",
+  "new_native_commit": "pending parent-controlled snapshot; not committed by this agent",
+  "source_sha256": {
+    "scripts/creative/treasure_world.gd": "d0012aad1c1be0959891588b89d84d5e0082427d95b0082686162d16ea9afb9f",
+    "scripts/tests/treasure_density_regression.gd": "b3be76fa9caa6da23490fb2de684397f21afac7c21b02e65a3a137c16d655f70",
+    "scripts/creative/treasure_state.gd": "8a11898f66d1db922158d3169dd9ddcd7985bb7e3639c64fbfc60e3980064288"
+  },
+  "before": {
+    "surface": [
+      2400,
+      1080
+    ],
+    "display_density": 2.625,
+    "expanded_viewport": [
+      1600,
+      720
+    ],
+    "button_height_physical_pixels": 72,
+    "button_height_dp": 27.428571428571427,
+    "pause_width_dp": 29.714285714285715,
+    "evidence": "Host docs/evidence/studio-2019-review-notes/cards-rhythm-treasure-density-b5-review.json"
+  },
+  "changes": [
+    "Enable the existing shared density-aware creative viewport, with unchanged safe-area conversion.",
+    "Fit header title, clue panel, toast and independent stick/jump/action targets to the available dp surface.",
+    "Bound question, inventory, pause and completion dialog frames; wrap long content and keep real48dp controls reachable through ScrollContainer.",
+    "Let answer-button touch drags propagate to the scroll container without answering.",
+    "Schedule final dialog rebuild after the answer-button input dispatch; the completed progress is already saved before scheduling."
+  ],
+  "unchanged_by_this_patch": [
+    "TreasureState quest rules and branching prerequisites",
+    "version1 save schema, atomic save implementation and profile key",
+    "reward calculation, result identity and deduplication",
+    "original scene geometry, models, movement physics and camera"
+  ],
+  "headless_result": {
+    "checks": 1085,
+    "failures": 0,
+    "seconds": 30.955494769994402,
+    "renderer_captures": 0,
+    "target_records": 139,
+    "minimum_measured_dp": 48.0
+  },
+  "regressions": {
+    "treasure_island_regression": "PASS",
+    "treasure_exploration_regression": "PASS87 checks",
+    "creative_scene_smoke": "PASS all four existing creative scenes"
+  },
+  "actual_input_checks": [
+    "48dp button-edge touches at22dp from centre",
+    "original jump and stick input, including outside release",
+    "pause/resume",
+    "wrong answer then correct answer through actual production buttons",
+    "touch drag beginning on an answer button, no unintended progress change",
+    "final answer, exact original reward event, completion continuation",
+    "full inventory with seven items and three discoveries, scroll and return",
+    "portrait/landscape rotation while inventory is open, preserved saved progress"
+  ],
+  "renderer_status": "pending genuine CI renderer run and visual review",
+  "capture_interface": {
+    "script": "scripts/tests/treasure_density_regression.gd",
+    "flag": "-- --capture",
+    "environment": "LUMO_CAPTURE_DIR",
+    "expected_png_count": 14,
+    "pass_marker": "[TreasureDensity] PASS checks=N captures=14;",
+    "headless_capture_explicitly_rejected": true,
+    "profiles": [
+      "2400x1080 density2.625:play/question/complete/inventory",
+      "1080x2400 density2.625:play/question/complete/inventory",
+      "640x320 density1:play/question/complete/inventory",
+      "2176x1812 density2.25:play/complete"
+    ]
+  },
+  "headless_touch_emulation": "The regression temporarily enables Input.emulate_touch_from_mouse, required by the engine for desktop ScrollContainer drag testing; original setting is restored.",
+  "primary_api_documentation": "https://docs.godotengine.org/en/4.6/classes/class_scrollcontainer.html",
+  "physical_android_measurement": false,
+  "evidence_sha256": {
+    "treasure-density-regression.log": "060640c2d2ca42313f65019bd3fb26b39c83e63de72aec445d16b7a22d704f7c",
+    "treasure-island-regression.log": "06a9f695579bc32c2ae1b51b38fa2bac23522cf8be16c95927124581e634e8ef",
+    "treasure-exploration-regression.log": "5f461cb949ebc96db8146c1e90787a233e280637a2ee36c9aa0b5fbf0b4fb277",
+    "creative-scene-smoke.log": "50ecb4115e570a0d576a8a2a6db12d8a473f1fd2c0e4d65885dc21d3dbe849bb",
+    "headless-capture-refusal.log": "983dabeb6bf6a8ad99a08a5d15e92a5e91cc91e2dedc26d02e5b3e87fbc8c5ad",
+    "measurements.json": "73d888694c5a448fd55554dad76b552e045323e8b2df57d20f5e5773f6e05a28"
+  }
+}

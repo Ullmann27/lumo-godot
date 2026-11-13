@@ -1,0 +1,100 @@
+{
+  "status": "IMMUTABLE_SOURCE_HASHES_VERIFIED",
+  "native_remote_head": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a",
+  "native_tree": "049c8a5be914b9babad0e9af8712ada777e5a077",
+  "local_equal_tree_commit": "a76f26b1d19662f6429a9cff063991e994d1e19a",
+  "native_files": {
+    "tools/validate_nextgen.sh": {
+      "git_blob": "3ae4198baa652eb17c1361887ac9397618e1617e",
+      "bytes": 6450,
+      "sha256": "6c509c4ec559abcf9cb11bbd68142a306cabafa08012bdb75f14fea4c767ba23"
+    },
+    "tools/validate_studio_touch.sh": {
+      "git_blob": "bd3e6a052ba51140c81648a393eb826d970a87c2",
+      "bytes": 3542,
+      "sha256": "006adc0ab87a731fb39e5203359d7e25ee399e756b133596d4699492557cde9d"
+    },
+    "tools/verify_studio_rasters.py": {
+      "git_blob": "0278d71030e87e4e46dd04b855e77711b2759252",
+      "bytes": 1872,
+      "sha256": "eefad8134f66404aa4bd3fedee279661e3f243a1a9aa3042c69e3d181fda62dd"
+    },
+    "scripts/tests/learning_sharing_capture.gd": {
+      "git_blob": "71b5331f10f1fb60a8eda1ef762d55c2ad1fccd9",
+      "bytes": 4029,
+      "sha256": "e0af1934e3b40b49dbcc8f14050c80f0c28f0868cfb01719e13d047e9d37a89a"
+    },
+    "scripts/tests/lumo_studio_motion_capture.gd": {
+      "git_blob": "0fa3acec2c46d867bee62fe3fb2040b17be74d57",
+      "bytes": 5415,
+      "sha256": "123a66c89c4be028cb322836e3b81f62658cdd8c64eaa1237f375ec0f9eb8c60"
+    },
+    "scripts/tests/puzzle_rotation_regression.gd": {
+      "git_blob": "0bc372d9fe00c872208d032d4d02b13b5096fc2e",
+      "bytes": 11008,
+      "sha256": "4b02e343cc1bf0faad44b99f03c99c5d4dedfc5b76c8454fd37a17c2754a4e30"
+    },
+    "scripts/tests/treasure_exploration_regression.gd": {
+      "git_blob": "5fae309c47082f4e182492fe0dde6ac1e3e6a7e1",
+      "bytes": 6999,
+      "sha256": "2fff6b5359237626dbb402e46482aac0e15697491f8790ef0e6fb89d0ac00384"
+    },
+    "scripts/tests/kart_workshop_density_regression.gd": {
+      "git_blob": "df50ac4c3df74d3c4937cb0f0ef93d9af317182c",
+      "bytes": 15190,
+      "sha256": "06ec58fa89036a66eb1d15f8e90c8a03b0f947119a2b327a479521adc034c61d"
+    },
+    "scripts/tests/treasure_density_regression.gd": {
+      "git_blob": "22f3cf0b4203edaa98887c4af159f826c56923ed",
+      "bytes": 15173,
+      "sha256": "b3be76fa9caa6da23490fb2de684397f21afac7c21b02e65a3a137c16d655f70"
+    },
+    "scripts/tests/build_dialog_density_regression.gd": {
+      "git_blob": "6dae9eafef0e7ea397aa347fd3b66dbee3979d76",
+      "bytes": 17208,
+      "sha256": "b75bf153da7259d7d561a5f2145338883b283ed90c95b250c03ed3cdc425fd84"
+    },
+    "scripts/tests/build_nextgen_play_regression.gd": {
+      "git_blob": "f7d87b2f103042bd82eeecddf956d8385a70d0a7",
+      "bytes": 10257,
+      "sha256": "dab756a7e255029eec566dd26b16fdd4e3ba624188cd790b5434ea3883fa2dff"
+    },
+    "scripts/creative/build_world.gd": {
+      "git_blob": "a063665df6b3532cec154dbccbf595dc8c895937",
+      "bytes": 53525,
+      "sha256": "418daab8559ec9dbbc7c46d1baf90a45ca3b1e889da27d8c18408f817d811f1b"
+    },
+    ".github/workflows/lumo-nextgen-2018.yml": {
+      "git_blob": "d80b08bc4c79435d951675592578d84f7b9d43b9",
+      "bytes": 18425,
+      "sha256": "2dc506d818f2d6c3f2f11ea56ccfdf8c0e45a3a87d22645d1cfe6753b651c5bc"
+    }
+  },
+  "host_validator": {
+    "source_revision": "f80fe6b3d6a3c58c89f8507853dcbfc15a84525e",
+    "status": "UNCHANGED_EXISTING_VALIDATOR_SNAPSHOT",
+    "modules": {
+      "verify_studio_delivery": {
+        "path": "scripts/verify_studio_delivery.py",
+        "blob": "55f600365a5158e3deca8514a88f952a7608547d",
+        "sha256": "074fa561e078b56476f539827db516e27a815104d51b74ea898644a1cb0bba8a"
+      },
+      "verify_nextgen_delivery": {
+        "path": "scripts/verify_nextgen_delivery.py",
+        "blob": "aa2ddd6c6c868a43927736274f8d6a3086446029",
+        "sha256": "db8810928b482e06b786dc20c4683c7a75ec4da1e5dd16c8d1f128c25a62a196"
+      },
+      "verify_legacy_release_pin": {
+        "path": "scripts/verify_legacy_release_pin.py",
+        "blob": "cb5b14104e261553790178eceb5b0ce1ffe22bc7",
+        "sha256": "d739fea9f9dc7986c0149bc645dca795fa3841ed26b639754b97bbd7947933c6"
+      },
+      "release_pipeline_gates": {
+        "path": "scripts/release_pipeline_gates.py",
+        "blob": "4c8097ce7643e189f37815c38214dd650e022d8c",
+        "sha256": "400e54f2952f0d8aae07fc964e4688c48f16c9213ea022fa8754731004551946"
+      }
+    }
+  },
+  "scope": "Read immutable local Git objects and the unchanged four-module f80 snapshot; no living product tree used for 703 validation."
+}

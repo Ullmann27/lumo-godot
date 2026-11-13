@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "purpose": "Source-bound Build following-scene Desktop touch fixture repair; rendered verification still required",
+  "files": {
+    "README.md": {
+      "bytes": 4079,
+      "sha256": "d5e662bb9e07a04df2a4ab50aa7e8a3eccbe77925756c333a17950a7af66187d"
+    },
+    "engine-sources.json": {
+      "bytes": 1551,
+      "sha256": "5f591f9f3f75f0ef183bd682bcb566d7073ec500b2ebc8019245528b10b19025"
+    },
+    "headless.log": {
+      "bytes": 1423,
+      "sha256": "1cc5915fd5b63a712418498edd66898386415bdbddcf67970ee7e881d864c80b"
+    },
+    "local-renderer-unavailable.log.gz": {
+      "bytes": 434,
+      "sha256": "4222cb56c109ff7fe1f0e6d72967bada2bedc74ca13931052da3487f19d255e6"
+    },
+    "original/artifacts-at-build-failure.json": {
+      "bytes": 1501,
+      "sha256": "a6db1ef737add340fcb61ed69cbd8b3d6e2b235f704beba7a9b0348e53870e70"
+    },
+    "original/failure-manifest.json": {
+      "bytes": 4741,
+      "sha256": "abf380d602761e983ff35cfc357dc7144f2e30249ba61f414312677bb91ea7e5"
+    },
+    "original/job-131950806346.log.gz": {
+      "bytes": 30389,
+      "sha256": "e3c54e995e2ce204865baebc012b0329c9641c73bd040944ad4ed5b6127a23cf"
+    },
+    "original/jobs-at-build-failure.json": {
+      "bytes": 13239,
+      "sha256": "95bba7d1b8c6655e96fc4769f0901d5ca651cdbb61d419e9630ef4ab84f591ce"
+    },
+    "original/rendered-error.log.gz": {
+      "bytes": 979,
+      "sha256": "1f8abc4cd58714ec2c1c5c9804ae53a9f5f2eada296b1574ff460ece6fa95d8a"
+    },
+    "original/run-initial.json": {
+      "bytes": 13393,
+      "sha256": "ec3437f9780cd73359552991c751bfb04c78a4d16d73515526918cb12797ddd4"
+    },
+    "original/source/results.tsv": {
+      "bytes": 110,
+      "sha256": "ccb015de0f05b4c12b4c9fdb5f723e849c639ac5ddafbc6c300140bd3919a8cb"
+    },
+    "original/source/source-dirty-after.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original/source/source-dirty.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original/source/source-sha.txt": {
+      "bytes": 41,
+      "sha256": "ae4d4a47b0f95ee7049b643d5d933e825bcce9a73935943db683ea195fa5c57e"
+    },
+    "original/source/source-tree.txt": {
+      "bytes": 41,
+      "sha256": "f57e121aa60bf10186548dcc38b8f32e9baf5877a5cc536445329c723ae9f110"
+    },
+    "repair.patch": {
+      "bytes": 1672,
+      "sha256": "3392b4723cdf67c55d8bc71280172a41a5a165c2e0f563133d60d6456bef91a9"
+    },
+    "source-after.json.gz": {
+      "bytes": 107408,
+      "sha256": "4d1cfe901ef84b4a3a241698cf3075642463acb39cf125cbbe4115acc9e28268"
+    },
+    "source-before.json.gz": {
+      "bytes": 107327,
+      "sha256": "9e2c04513b6215614976a797cc0391d585c04815b923be47d62b0cfd995b593f"
+    },
+    "validation.json": {
+      "bytes": 1823,
+      "sha256": "b528560aeffaafe57a269fe778a306e8cadd16a778ea1fcbaacc18090a0ef7b7"
+    }
+  },
+  "total_bytes": 290151,
+  "full_zip_included": false,
+  "third_party_source_files_included": false,
+  "headless_assertions": 1637,
+  "production_changed": false
+}

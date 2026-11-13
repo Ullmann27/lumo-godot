@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "scope": "Thirteen auxiliary workflows; excludes Nextgen 43466004918 and Graphics 43466005184",
+  "repository": "Ullmann27/lumo-godot",
+  "source_sha": "4f3449253fd59023a2544432a178eb9efcafe4f9",
+  "source_tree": "189b7a66c731067559469e2503e3a190b337031d",
+  "run_attempt": 1,
+  "started_utc": "2026-11-13 16:47:06 UTC",
+  "checkpoint_utc": "2026-11-13 16:49:08 UTC",
+  "run_ids": [
+    43466005109,
+    43466004983,
+    43466005026,
+    43466005046,
+    43466005236,
+    43466004997,
+    43466004691,
+    43466004867,
+    43466004975,
+    43466004770,
+    43466004712,
+    43466004913,
+    43466004952
+  ],
+  "checked_run_ids": [
+    43466005109,
+    43466005046,
+    43466005236,
+    43466004997,
+    43466004691,
+    43466004867,
+    43466004770,
+    43466004712,
+    43466004913,
+    43466004952
+  ],
+  "raw_api_preservation": "Original structuredContent.content UTF-8 bodies, compressed with mtime=0.",
+  "objects": [
+    {
+      "path": "source-commit.json.gz",
+      "original_bytes": 1711,
+      "original_sha256": "5003d29548b2ecab466f4b66ebc3e2ca91b94983b19339209a3bfb1384c38a5d",
+      "gzip_bytes": 807,
+      "gzip_sha256": "8036d0ffcd8ae2a6cf69cbf1fb09f9f0b9104d793b8c34ec3d73bbe5ab299027"
+    },
+    {
+      "path": "workflow-runs-initial.json.gz",
+      "original_bytes": 201515,
+      "original_sha256": "7b7e6ab59e031c879125657a9a057c692bc12d771a3346d32b339600f4bd3244",
+      "gzip_bytes": 5222,
+      "gzip_sha256": "22924b434313ba609b4deaaf0e9c24d71c0e40f0c0ea661413ea88682847539c"
+    },
+    {
+      "path": "workflow-runs-checkpoint.json.gz",
+      "original_bytes": 201269,
+      "original_sha256": "d44b2afc05cec577d1f9f15b938a5ca813da2e6bd9fecce196443b5374d036aa",
+      "gzip_bytes": 5274,
+      "gzip_sha256": "be81e59c9429f934875cdfea576080020bb13c749441447c1ebd872ac1707ea6"
+    },
+    {
+      "path": "jobs-43466005109.json.gz",
+      "original_bytes": 2684,
+      "original_sha256": "fe08aea41bbae2d67d539d2cd54a6ffe63cb5713632e3c89da574dda06af5805",
+      "gzip_bytes": 760,
+      "gzip_sha256": "f78ef3cb0e92ade189423c6b8d2af48fd3922a10e2dee9ffa57740ea54847dba"
+    },
+    {
+      "path": "jobs-43466005046.json.gz",
+      "original_bytes": 2593,
+      "original_sha256": "22717f1d9b7f970a45a5ffa36875b7b92b384728f82b64c09fa747fc80ff63a5",
+      "gzip_bytes": 781,
+      "gzip_sha256": "f636919fef085699844b633f77e463fcaeecab5eecad2e1956b75e0f4ae6c67d"
+    },
+    {
+      "path": "jobs-43466005236.json.gz",
+      "original_bytes": 3124,
+      "original_sha256": "4388399d648c4ee3a54e243e2bdb8938d11045e257772ceadfdbf3cfcb612805",
+      "gzip_bytes": 877,
+      "gzip_sha256": "dd3f412f58bb185a4b3c2c863274cfce5e14452508c0898271e66c2c98b2e207"
+    },
+    {
+      "path": "jobs-43466004997.json.gz",
+      "original_bytes": 2785,
+      "original_sha256": "10fd5d9f41a979f2a24ae4dd5241f9e202ab8b0edb196030edf1f8b1010ff78d",
+      "gzip_bytes": 814,
+      "gzip_sha256": "766a7c934b21004f1c09916f3f715c4f72d2e59c0af18bb491f825254a4b995b"
+    },
+    {
+      "path": "jobs-43466004691.json.gz",
+      "original_bytes": 1979,
+      "original_sha256": "6e542bf3d9a840a4a8dcb097d02e6015709e0045ef46f5df039019aeff21becc",
+      "gzip_bytes": 630,
+      "gzip_sha256": "7fb48527a6c5683ae3a37a3c86a05f3628dc4d1f7db44a4b3ca3b83817621f7a"
+    },
+    {
+      "path": "jobs-43466004867.json.gz",
+      "original_bytes": 5114,
+      "original_sha256": "99593bd9d39dfcc82d43b0e4bc54042c886cbf8789c87afd8a0d3e7c66613738",
+      "gzip_bytes": 900,
+      "gzip_sha256": "04b9d414bff1a0cd424f8de3b17190f45690bcf4bbac2cb7da0a5d9b9c3305c0"
+    },
+    {
+      "path": "jobs-43466004770.json.gz",
+      "original_bytes": 3113,
+      "original_sha256": "340461b211aff991a75f822d985c172ed65c43b4e30158081413a6a5971e7937",
+      "gzip_bytes": 869,
+      "gzip_sha256": "45a9ba7d61fad73c8c7df0689f7c1d01b872dd001a708d5ab5380d2d7734a16e"
+    },
+    {
+      "path": "jobs-43466004712.json.gz",
+      "original_bytes": 2796,
+      "original_sha256": "893627ad09f6323a9bc6d1270ad54ae8f2faf0f7c783a5c4006b54d72a3a9cbd",
+      "gzip_bytes": 841,
+      "gzip_sha256": "c2b736722f2d322353af6fe7b68ebafa97c63747b4acef3e876a8a5d3ec70e43"
+    },
+    {
+      "path": "jobs-43466004913.json.gz",
+      "original_bytes": 2766,
+      "original_sha256": "612ca4d76e7156d997607e2187c5fdb25cf8ca53286031c03f910a58898c8c91",
+      "gzip_bytes": 743,
+      "gzip_sha256": "4a384bf417aa5f95d2d42760e679b8aac2e70915c8615257f3c60a81d31f2c97"
+    },
+    {
+      "path": "jobs-43466004952.json.gz",
+      "original_bytes": 2599,
+      "original_sha256": "902afabb69060c6dae6af2f3971d4340167e8b67e2a2638fe8f59469db6dca85",
+      "gzip_bytes": 795,
+      "gzip_sha256": "5f54dad08e3f19975486061ef4697f997749a5ce67e7460fbe17e3ffdfedee3b"
+    }
+  ]
+}

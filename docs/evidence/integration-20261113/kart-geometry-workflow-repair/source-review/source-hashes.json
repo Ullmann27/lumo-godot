@@ -1,0 +1,98 @@
+{
+  "repository_worktree": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups",
+  "base_head": "64202e88e979b110cc3fdca511d4644be7f12ea7",
+  "base_tree": "9b407d61633a6421dc47b6858e6a6fb3fa60bea5",
+  "files": {
+    "assets/characters/lumo_animated/lumo_studio_clips.gd": {
+      "sha256": "c0b4be7f094b4f69942d92ad25d54c8c45f01b6cb8471c00e7d5a0513ee8df18",
+      "bytes": 196296,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "assets/shaders/kart_lumo_cinema_high.gdshader": {
+      "sha256": "85881b8a48a4b4f48e772d4518f846b4e3934eeaf418d52a9db33e37104c49f4",
+      "bytes": 3921,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "assets/shaders/kart_lumo_cinema_mobile.gdshader": {
+      "sha256": "928e51083968d94e4361f6aa75f84c60a7c21141f3130a3901fc445c58582536",
+      "bytes": 2254,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "scripts/characters/lumo/lumo_body_space_pose.gd": {
+      "sha256": "043d9eb3cbd1d56f2be4ad62aff71b99753540b524f3d4b69c030fc9217dcd9e",
+      "bytes": 2902,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "scripts/characters/lumo/lumo_kart_animation_adapter.gd": {
+      "sha256": "afe2bc4f6b3a1753d64e536878754fcfa52d0c5758cf6adfdccdaa38ea779edc",
+      "bytes": 13808,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "scripts/characters/lumo/lumo_platform_pose.gd": {
+      "sha256": "2f89ad0660ed3f74ff0cfe50837e18265bcf54fdccd24712de6a8b0d680c0a59",
+      "bytes": 5002,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "scripts/characters/lumo/lumo_rigged_actor.gd": {
+      "sha256": "f262df70dd22937058b698e570eafabc8e05bba539036f89eda059166b68f3d0",
+      "bytes": 10090,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "scripts/characters/lumo/lumo_teacher_pose.gd": {
+      "sha256": "1be589448b18f2c63faebfb72ff81639f4e014b828093d931f9e9c04c4ce2a6d",
+      "bytes": 4228,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "scripts/characters/lumo/lumo_walk_locomotion.gd": {
+      "sha256": "95366a2716a557b27383757771923ec73971a385651749c78da8f2cc14a24ec2",
+      "bytes": 2736,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "scripts/games/kart_character_finish.gd": {
+      "sha256": "42182df326361dcce398f1a8e3210bce53c760db467cb4b64ed59df4b5da16ef",
+      "bytes": 9469,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "scripts/games/kart_fleet.gd": {
+      "sha256": "0aa63caf22f5fd6aaa841b889415e794420518f7ce3f388b9ee4a346e5ef0377",
+      "bytes": 16092,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "scripts/games/kart_fur_geometry.gd": {
+      "sha256": "eaee8cabfe93e5c7f39d16a371f87d2c20fa3bc78bc5b99c955e9e0e20491eba",
+      "bytes": 3477,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "scripts/games/kart_vehicle.gd": {
+      "sha256": "1db5369d8521a94d2118833519d90229d3fb2ff8ff95194d39f5ab74e0ba42de",
+      "bytes": 118712,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "scripts/games/visual/kart_cinema_materials.gd": {
+      "sha256": "69fc8def6197e5173104f015d82daf7a6b7c8574e0e6b158ae3e2a083ba0df15",
+      "bytes": 2016,
+      "scope": "Actual mandatory fixture source, independently compared to committed base blob and recorded real-green copy"
+    },
+    "scripts/tests/kart_vehicle_regression.gd": {
+      "sha256": "0b9b4f0de9f0f66b7f1445736178179434eeb9960393eda0461ab8235713550e",
+      "git_blob": "37834ca60640bc3c035da8944d0a932f80fb22a5",
+      "bytes": 14460
+    },
+    ".github/workflows/kart-vehicle-regression.yml": {
+      "sha256": "da132fa960d01a2192b916dc9a53a7013dc2bd95599fbcf1a4e9b466d476ad2d",
+      "git_blob": "a98af5784e5f51b70cf291dc0d6e5203c2c5a103",
+      "bytes": 4691
+    },
+    "tools/tests/test_kart_vehicle_workflow.py": {
+      "sha256": "ea60729677746dad24a1630f5e282221cdb10fa04ce4dc5ac0e94ca1062c2fba",
+      "git_blob": "243a23c7504d932ca6fffd0f72e0f413d68482e7",
+      "bytes": 6480
+    },
+    "tools/run_godot_probe.py": {
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+      "bytes": 2934
+    }
+  },
+  "scope": "Exactly the 15 mandatory fixture sources, unchanged strict runner and two final repair files; no repository-wide reviewer test run"
+}

@@ -1,0 +1,28 @@
+{
+  "name": "negative-held-playback",
+  "command": [
+    "godot",
+    "--headless",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--fixed-fps",
+    "60",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/kart-regression-teardown-evidence/held-playback-negative.gd"
+  ],
+  "expected_exit_code": 1,
+  "exit_code": 1,
+  "started_at": "2026-11-13T16:25:39.793535+00:00",
+  "finished_at": "2026-11-13T16:25:43.782929+00:00",
+  "seconds": 3.989,
+  "log": "negative-held-playback.log",
+  "log_bytes": 13675,
+  "log_sha256": "e0efb6e29fec22567fc4008f1127ca18ded827b9b25b1fecaa102d9a95295639",
+  "significant_lines": [
+    "[HeldPlayback] teardown retained_scene=false retained_audio=[\"AudioStreamPlaybackOggVorbis\"] elapsed_ms=2000",
+    "[HeldPlayback] observed_result=false held_class=AudioStreamPlaybackOggVorbis elapsed_ms=2000 still_held=true",
+    "[HeldPlayback] EXPECTED_FAILURE: actual retained playback rejected before any PASS"
+  ],
+  "passed": true
+}

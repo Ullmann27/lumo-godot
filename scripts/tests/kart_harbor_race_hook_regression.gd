@@ -2,6 +2,7 @@ extends SceneTree
 ## Controller integration proof. The attraction's actual GPU transforms are
 ## checked separately by kart_harbor_attraction_regression.gd with GL rendering.
 var failures: Array[String] = []
+var game
 
 
 func _initialize() -> void:
@@ -14,7 +15,7 @@ func _check(ok: bool, message: String) -> void:
 
 
 func _run() -> void:
-	var game = load("res://scenes/games/kart_island.tscn").instantiate()
+	game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
 	await process_frame
@@ -43,14 +44,14 @@ func _run() -> void:
 	game.physical_velocity = Vector3.ZERO
 	var attraction = game.world.get_node_or_null("SonnenhafenHarborAttraction")
 	if attraction == null:
-		printerr("[HarborRaceHook] FAIL real race world has no harbor attraction")
-		quit(1)
+		_check(false, "Real race world has no harbor attraction")
+		await _finish()
 		return
 	var phase: float = attraction.phase
 	var streetfronts = game.world.get_node_or_null("SonnenhafenStreetfronts")
 	if streetfronts == null:
-		printerr("[HarborRaceHook] FAIL real race world has no streetfront kit")
-		quit(1)
+		_check(false, "Real race world has no streetfront kit")
+		await _finish()
 		return
 	var street_phase: float = streetfronts.phase
 	# Only the actual game physics loop is called; no direct attraction.advance.
@@ -88,9 +89,20 @@ func _run() -> void:
 	game._physics_process(1.0 / 60.0)
 	_check(is_equal_approx(phase, attraction.phase), "Finished race must freeze the attraction")
 	_check(is_equal_approx(street_phase, streetfronts.phase), "Finished race must freeze streetfront pennants")
-	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	await _finish()
+
+
+func _finish() -> void:
+	if is_instance_valid(game):
+		var playbacks: Array[WeakRef] = []
+		for player: Node in game.find_children("*", "AudioStreamPlayer", true, false):
+			if player.has_stream_playback():
+				playbacks.append(weakref(player.get_stream_playback()))
+		game.abandoned = true
+		game.queue_free()
+		await process_frame
+		game = null
+		_check(await _release_audio(playbacks), "Audio playback retained after scene teardown")
 	for failure in failures:
 		printerr("[HarborRaceHook] FAIL ", failure)
 	if failures.is_empty():
@@ -98,3 +110,26 @@ func _run() -> void:
 			"[HarborRaceHook] PASS: actual race physics, position, pause, resume, reduced motion, finish"
 		)
 	quit(0 if failures.is_empty() else 1)
+
+
+func _release_audio(playbacks: Array[WeakRef]) -> bool:
+	# Scene destruction stops audio, but mixer-side fadeout retires later.
+	# Observe actual playbacks without retaining them or ignoring exit errors.
+	var started := Time.get_ticks_msec()
+	while true:
+		var pending := 0
+		for playback: WeakRef in playbacks:
+			if playback.get_ref() != null:
+				pending += 1
+		if pending == 0:
+			print(
+				"[HarborRaceHook] audio_release tracked=%d elapsed_ms=%d"
+				% [playbacks.size(), Time.get_ticks_msec() - started]
+			)
+			return true
+		if Time.get_ticks_msec() - started >= 2000:
+			printerr("[HarborRaceHook] retained_audio_playbacks=", pending)
+			return false
+		OS.delay_msec(2)
+		await process_frame
+	return false

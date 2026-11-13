@@ -8,6 +8,7 @@ const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const RAMP_PLAN = preload("res://scripts/games/kart_rival_ramp_plan.gd")
 const LASSO_RULES = preload("res://scripts/games/kart_lasso_rules.gd")
 const TRACK_PASS = preload("res://scripts/games/kart_track_pass.gd")
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 var game
 var output := "res://exports/player-full-route"
 var recording := false
@@ -304,6 +305,15 @@ func _run() -> void:
 			}
 		)
 	)
+	var final_snapshot := _snapshot()
+	game.abandoned = true
+	root.world_3d.fallback_environment = null
+	var released := await TEARDOWN.release_scene(self, game, "[PlayerFullRoute]")
+	game = null
+	host._options = previous_host_options
+	DirAccess.remove_absolute(TRACK_PASS.path_for(test_child))
+	failed = failed or not released
+	report.status = "FAIL" if failed else "PASS"
 	FileAccess.open(output.path_join("player-route.json"), FileAccess.WRITE).store_string(
 		JSON.stringify(report, "  ")
 	)
@@ -311,15 +321,10 @@ func _run() -> void:
 		"[PlayerFullRoute] ",
 		report.status,
 		" ",
-		JSON.stringify(_snapshot()),
+		JSON.stringify(final_snapshot),
 		" max_step=",
 		max_step
 	)
-	game.abandoned = true
-	game.queue_free()
-	host._options = previous_host_options
-	DirAccess.remove_absolute(TRACK_PASS.path_for(test_child))
-	root.world_3d.fallback_environment = null
-	await process_frame
-	await create_timer(0.6).timeout
+	if not released:
+		push_error("[PlayerFullRoute] FAIL: scene teardown did not complete")
 	quit(1 if failed else 0)

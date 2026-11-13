@@ -1,0 +1,46 @@
+{
+  "phase": "before",
+  "test": "kart_ai_behavior_regression",
+  "started_utc": "2026-11-13T15:06:14.332479+00:00",
+  "finished_utc": "2026-11-13T15:06:20.964267+00:00",
+  "elapsed_seconds": 6.632,
+  "command": [
+    "python3",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_ai_behavior_regression/engine.log",
+    "--timeout",
+    "240",
+    "--required",
+    "[KartAI] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_ai_behavior_regression.gd"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "xdg": {
+    "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_ai_behavior_regression/xdg-data",
+    "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_ai_behavior_regression/xdg-config",
+    "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_ai_behavior_regression/xdg-cache",
+    "XDG_STATE_HOME": "/home/agent/.local/state",
+    "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+  },
+  "script_sha256": "19b6dcb13d282a10931b30da1dca4966d2f4d0e41383b969f76f9da81881176b",
+  "strict_runner_exit": 1,
+  "required_marker": "[KartAI] PASS",
+  "marker_present": true,
+  "errors": [
+    "WARNING: ObjectDB instances leaked at exit (run with --verbose for details).",
+    "ERROR: 4 resources still in use at exit."
+  ],
+  "cleanup_lines": [],
+  "engine_log_sha256": "a6cde22065c5eed7aa013f7f0627dc1029f929b98dcd90e23fc3ba8487de65dc",
+  "runner_log_sha256": "e01bf2451699a454da3ae04b7e438de5c4910393541564689d55e18d15cb379e"
+}

@@ -1,0 +1,24 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] loaded stars:50 streak:0 letters:0
+IDLE_REBIND mode=platform idle_phase=0.0 foot=(0.17593, 0.090691, -0.021643) error_m=0.0
+IDLE_REBIND mode=platform idle_phase=0.5 foot=(0.17593, 0.09391, -0.021643) error_m=0.00321912765503
+IDLE_REBIND mode=platform idle_phase=1.0 foot=(0.17593, 0.09379, -0.021643) error_m=0.00309896469116
+IDLE_REBIND mode=platform idle_phase=1.5 foot=(0.17593, 0.090905, -0.021643) error_m=0.00021362304688
+IDLE_REBIND mode=platform idle_phase=2.0 foot=(0.17593, 0.087413, -0.021643) error_m=0.00327861309052
+IDLE_REBIND mode=platform idle_phase=2.5 foot=(0.17593, 0.087969, -0.021643) error_m=0.00272208452225
+IDLE_REBIND_MAX_ERROR platform 0.00327861309052
+IDLE_REBIND mode=walk idle_phase=0.0 foot=(0.176061, 0.129881, 0.059623) error_m=0.0
+IDLE_REBIND mode=walk idle_phase=0.5 foot=(0.176061, 0.1331, 0.059623) error_m=0.00321912765503
+IDLE_REBIND mode=walk idle_phase=1.0 foot=(0.176061, 0.13298, 0.059623) error_m=0.00309896469116
+IDLE_REBIND mode=walk idle_phase=1.5 foot=(0.176061, 0.130095, 0.059623) error_m=0.00021362304688
+IDLE_REBIND mode=walk idle_phase=2.0 foot=(0.176061, 0.126602, 0.059623) error_m=0.00327861309052
+IDLE_REBIND mode=walk idle_phase=2.5 foot=(0.176061, 0.127159, 0.059623) error_m=0.00272214412689
+IDLE_REBIND_MAX_ERROR walk 0.00327861309052
+[Perf] quality_profile:medium

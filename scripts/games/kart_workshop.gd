@@ -210,6 +210,9 @@ func _build_right() -> void:
 	right_scroll.add_child(column)
 	column.add_child(_label("LEISTUNG", 14, Color("74e5f5"), true))
 	var dyno_panel := PanelContainer.new()
+	# Scrolling must work when a finger starts on a button. Both the button
+	# and its containing panel must pass the drag to right_scroll.
+	dyno_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	dyno_panel.add_theme_stylebox_override("panel", _glass(true))
 	column.add_child(dyno_panel)
 	var dyno_column := VBoxContainer.new()
@@ -221,6 +224,7 @@ func _build_right() -> void:
 	dyno_column.add_child(_label("Simulation auf ebener Straße · Abenteuer · ohne Boost", 12, Color("b5c9df")))
 	dyno_button = _button("Prüflauf starten", _start_dyno, true)
 	dyno_button.name = "WorkshopDynoStart"
+	dyno_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	dyno_column.add_child(dyno_button)
 	for part in TUNING.PARTS:
 		column.add_child(_build_part_row(part))
@@ -230,6 +234,7 @@ func _build_right() -> void:
 		column.add_child(_build_swatch_row(str(entry[0]), str(entry[1])))
 	refund_button = _button("Alle Teile zurücksetzen und Sterne zurückholen", _on_refund)
 	refund_button.name = "WorkshopRefund"
+	refund_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	refund_button.add_theme_font_size_override("font_size", 16)
 	refund_button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(refund_button)
@@ -237,6 +242,7 @@ func _build_right() -> void:
 
 func _build_part_row(part: Dictionary) -> Control:
 	var panel := PanelContainer.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	panel.name = "Part_" + str(part.id)
 	panel.add_theme_stylebox_override("panel", _glass(false))
 	var row := HBoxContainer.new()
@@ -263,6 +269,7 @@ func _build_part_row(part: Dictionary) -> Control:
 	row.add_child(pips)
 	var button := _button("", func(): _on_upgrade(str(part.id)), true)
 	button.name = "Upgrade"
+	button.mouse_filter = Control.MOUSE_FILTER_PASS
 	button.custom_minimum_size = Vector2(150, 56)
 	row.add_child(button)
 	part_rows[str(part.id)] = {"panel": panel, "pips": pips, "button": button, "hint": hint, "title": title}
@@ -291,6 +298,7 @@ func _draw_pips(canvas: Control, part_id: String) -> void:
 
 func _build_swatch_row(kind: String, title: String) -> Control:
 	var panel := PanelContainer.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	panel.name = "Look_" + kind
 	panel.add_theme_stylebox_override("panel", _glass(false))
 	var column := VBoxContainer.new()
@@ -304,7 +312,8 @@ func _build_swatch_row(kind: String, title: String) -> Control:
 	head.add_child(name_label)
 	var buy: Button = _button("", func(): _on_buy(kind), true)
 	buy.name = "Buy"
-	buy.custom_minimum_size = Vector2(150, 44)
+	buy.mouse_filter = Control.MOUSE_FILTER_PASS
+	buy.custom_minimum_size = Vector2(150, 48)
 	buy.add_theme_font_size_override("font_size", 15)
 	buy.visible = false
 	head.add_child(buy)
@@ -317,6 +326,7 @@ func _build_swatch_row(kind: String, title: String) -> Control:
 	for option in TUNING.options(kind):
 		var swatch := Button.new()
 		swatch.name = "Swatch_" + str(option.id)
+		swatch.mouse_filter = Control.MOUSE_FILTER_PASS
 		swatch.custom_minimum_size = Vector2(64, 60)
 		swatch.tooltip_text = str(option.name)
 		swatch.add_theme_font_size_override("font_size", 14)
@@ -586,10 +596,15 @@ func _apply_layout() -> void:
 	if not is_inside_tree() or not is_instance_valid(body):
 		return
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
-	var window_size: Vector2 = Vector2(get_window().size)
-	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0 or window_size.x <= 0.0 or window_size.y <= 0.0:
+	var window_pixels: Vector2 = Vector2(get_window().size)
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0 or window_pixels.x <= 0.0 or window_pixels.y <= 0.0:
 		return
+	# The parent garage does not scale this Control. Convert Android pixels to
+	# dp before fitting the workshop, then convert its dp dimensions to canvas
+	# units. A 56px button on a 2.625-density surface is only 21.3dp otherwise.
+	var window_size: Vector2 = window_pixels / MobileRuntime.get_ui_density()
 	var ui_scale: float = maxf(viewport_size.x / window_size.x, viewport_size.y / window_size.y)
+	_scale_text(self, ui_scale)
 	var portrait: bool = window_size.x < window_size.y
 	var short_landscape: bool = not portrait and window_size.y < 600
 	compact = window_size.x < 520 or short_landscape
@@ -601,12 +616,13 @@ func _apply_layout() -> void:
 	# Sicherer Bereich (Kamera-Ausschnitt, Gesten-Leiste) wie in der Garage.
 	if (OS.has_feature("android") or OS.has_feature("ios")) and not get_parent().get_meta("kart_safe_insets_applied", false):
 		var insets: Rect2 = MobileRuntime.get_safe_area_insets()
-		var scale: Vector2 = viewport_size / window_size
+		# Safe-area insets are physical pixels, unlike the dp layout above.
+		var scale: Vector2 = viewport_size / window_pixels
 		page_margin.offset_left = insets.position.x * scale.x
 		page_margin.offset_top = insets.position.y * scale.y
 		page_margin.offset_right = -insets.size.x * scale.x
 		page_margin.offset_bottom = -insets.size.y * scale.y
-	var button_height: float = (44.0 if short_landscape else 56.0) * ui_scale
+	var button_height: float = (48.0 if short_landscape else 56.0) * ui_scale
 	back_button.custom_minimum_size = Vector2((96.0 if compact else 130.0) * ui_scale, button_height)
 	back_button.add_theme_font_size_override("font_size", roundi((15 if compact else 18) * ui_scale))
 	title_label.add_theme_font_size_override("font_size", roundi((18 if compact else 30) * ui_scale))
@@ -629,6 +645,20 @@ func _apply_layout() -> void:
 		var swatch_row: Dictionary = swatch_rows[kind]
 		for id in swatch_row.buttons:
 			swatch_row.buttons[id].custom_minimum_size = Vector2((52 if compact else 64) * ui_scale, (48 if compact else 60) * ui_scale)
-		swatch_row.buy.custom_minimum_size = Vector2((120 if compact else 150) * ui_scale, 44 * ui_scale)
+		swatch_row.buy.custom_minimum_size = Vector2((120 if compact else 150) * ui_scale, 48 * ui_scale)
 	refund_button.custom_minimum_size.y = button_height
 	dyno_button.custom_minimum_size.y = button_height
+
+
+func _scale_text(node: Node, ui_scale: float) -> void:
+	# Keep the performance readout, part effects, swatch captions and prices
+	# readable at the same density as their controls. Cache unscaled sizes so
+	# repeated rotations/resizes never multiply the previous scale again.
+	if node is Label or node is Button:
+		if not node.has_meta("workshop_base_font_size"):
+			node.set_meta("workshop_base_font_size", node.get_theme_font_size("font_size"))
+		node.add_theme_font_size_override(
+			"font_size", roundi(float(node.get_meta("workshop_base_font_size")) * ui_scale)
+		)
+	for child in node.get_children():
+		_scale_text(child, ui_scale)

@@ -1,0 +1,68 @@
+{
+  "format": "lumo.published_loop_feedback_check.v1",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1616,
+      "sha256": "51ced7423ca29980c309548fa968612ba12cb695efbb6b1da186825d84f43c29"
+    },
+    {
+      "path": "feedback-logic.log",
+      "bytes": 872,
+      "sha256": "78f6954c892bba84f42583c6feebae97f49bcb00ad0a2e7a0d151aa7eaa0e15d"
+    },
+    {
+      "path": "handoff.json",
+      "bytes": 1346,
+      "sha256": "2de774d51d440da79f30757e4c4da4071fa9eaf7f8c8ac30e599ce5a136b049c"
+    },
+    {
+      "path": "import-result.json",
+      "bytes": 428,
+      "sha256": "ba2e569619516b9083c4f3f9af863d9268f7ae07b7860c4aee44e8824a67c432"
+    },
+    {
+      "path": "published-loop-delta.patch",
+      "bytes": 3026,
+      "sha256": "cacfdec2e3613aacd1cab96e7b4c88147ff18ec6b03573ee1023b3ad3c8256a3"
+    },
+    {
+      "path": "result.json",
+      "bytes": 1856,
+      "sha256": "86ec7cd9c019ef475405880f11b6518f369eae768b4790a69f5813275760277a"
+    },
+    {
+      "path": "runner.log",
+      "bytes": 872,
+      "sha256": "78f6954c892bba84f42583c6feebae97f49bcb00ad0a2e7a0d151aa7eaa0e15d"
+    },
+    {
+      "path": "source-review.json",
+      "bytes": 979,
+      "sha256": "53df304219650dc93d4eb0da4a8752f18ec16eebbbd7108d2b43f86009e6d4e4"
+    },
+    {
+      "path": "sources/scripts/games/kart_island.gd",
+      "bytes": 170414,
+      "sha256": "e994bde6e77fa61e1397afbb86af2f458f4a2ce13a9776345919668070522b35"
+    },
+    {
+      "path": "sources/scripts/tests/kart_drive_feedback_regression.gd",
+      "bytes": 22332,
+      "sha256": "f06c4f956f8d3b657260a9fca9b702133c852e92b7502e004c11609879648807"
+    },
+    {
+      "path": "sources-after.json",
+      "bytes": 108711,
+      "sha256": "eb02d0f71f5a57521ea9a2eaf58ce653f15df7ac930f3903297141b1cbda26f0"
+    },
+    {
+      "path": "sources-before.json",
+      "bytes": 108711,
+      "sha256": "1ae4e004087d3becbf3a349e526f0608d1dc0b7d979c89903f0318c4e7b7ced5"
+    }
+  ],
+  "head": "c88b100f2cf031f504f2a1a4e3f0b90a3d71d523",
+  "source_hashes_unchanged": true,
+  "scope": "One existing headless logic probe only, unchanged sources; renderer pending."
+}

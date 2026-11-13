@@ -1,0 +1,81 @@
+{
+  "format": "lumo-studio-touch-budget-evidence-v1",
+  "base_head": "a76f26b1d19662f6429a9cff063991e994d1e19a",
+  "workflow_git_blob": "9dee37da9994927eb1d34fa8f7c0e6fa7fc9e3d1",
+  "workflow_sha256": "501c295868c41453a74f1b65601bbca904b5bc8220fc83d31f284a50175c8add",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 2979,
+      "sha256": "f574129bca5fcf1a0df09e6475bb1c06c56d4fd0947629a1745200efa5372251"
+    },
+    {
+      "path": "actionlint-version.log",
+      "bytes": 95,
+      "sha256": "9d34cdaec053c6005199c08f2bac628bd8c087303faa26fd8ab58c3e22216ff5"
+    },
+    {
+      "path": "actionlint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "exact-workflow.diff",
+      "bytes": 430,
+      "sha256": "510d4baa7616dea4a395373df076c23d8ff59b5b8afc06fa2d933e92ce78a57b"
+    },
+    {
+      "path": "nextgen-orchestration.log",
+      "bytes": 1659,
+      "sha256": "a04153dc6598e5c87fc31169d861b041738bb7ccbeacc7a40f9060278fae6d7b"
+    },
+    {
+      "path": "only-timeout-change.json",
+      "bytes": 544,
+      "sha256": "594efc53db8033a8b6dc6c671ab9e7139ffe089d270276af3ca83fc78f716644"
+    },
+    {
+      "path": "prior-observed-validation.json",
+      "bytes": 1076,
+      "sha256": "ce099dca9acb6b9f3134b6bc5c31dc91a4cbb9090a7ed4ff7bb2251f997ea6fe"
+    },
+    {
+      "path": "producer-budget.diff.gz",
+      "bytes": 786,
+      "sha256": "24293db8c157a94c0b28c6265473a294ed7a318e2d990f1d4c11e19db4bef003",
+      "encoding": "gzip",
+      "original_bytes": 1726,
+      "original_sha256": "f796acf3396e30b5fb9147a64ce22fd0aed7663f5e6f9b893922d04540b1e222"
+    },
+    {
+      "path": "sources-after.json",
+      "bytes": 1144,
+      "sha256": "e60f2b0ed4333f5bd88c1120bfbea864a18492c9ac2ba6c53588056f2a007e35"
+    },
+    {
+      "path": "sources-before.json",
+      "bytes": 1144,
+      "sha256": "940586d1e8abfad9809a28a202cc2bac71e60d41febebb5fe37916330d34d1fe"
+    },
+    {
+      "path": "validation.json",
+      "bytes": 3728,
+      "sha256": "fe4bd1cfb8c3fba56686a72023f1ede591ab124c3831fc6a7d898c07de0b36ef"
+    },
+    {
+      "path": "workflow-after.yml",
+      "bytes": 18425,
+      "sha256": "501c295868c41453a74f1b65601bbca904b5bc8220fc83d31f284a50175c8add"
+    },
+    {
+      "path": "workflow-before.yml",
+      "bytes": 18425,
+      "sha256": "2dc506d818f2d6c3f2f11ea56ccfdf8c0e45a3a87d22645d1cfe6753b651c5bc"
+    },
+    {
+      "path": "workflow-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

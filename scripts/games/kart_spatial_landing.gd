@@ -8,7 +8,7 @@ signal stage_region_changed(region: Rect2)
 
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const WORDMARK = preload("res://scripts/games/kart_wordmark.gd")
-const CHOICE = preload("res://scripts/games/kart_menu_choice.gd")
+const CHOICE = preload("res://scripts/games/kart_home_mode_choice.gd")
 const GOLD := Color("ffce4c")
 const CYAN := Color("51cdec")
 var total_stars := 0
@@ -67,6 +67,7 @@ func _ready() -> void:
 		card.caption = spec[2]
 		card.artwork = load("res://assets/kart/menu/%s.svg" % spec[3])
 		card.selected = current_mode == spec[0]
+		card.accent = {"race": Color("58d7d8"), "cup": Color("ffb94b"), "time_trial": Color("a7b9ff")}[spec[0]]
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		card.pressed.connect(_choose.bind(spec[0]))
 		_modes.add_child(card)
@@ -86,9 +87,11 @@ func _ready() -> void:
 	_layout_root.add_child(_footer)
 	_back = _button("← Spielewelt", func(): return_to_games.emit())
 	_back.name = "ReturnToGames"
+	_back.size_flags_stretch_ratio = 1.0
 	_footer.add_child(_back)
 	_start = _button("▶  START", func(): quick_start.emit(), true)
 	_start.name = "LiveQuickStart"
+	_start.size_flags_stretch_ratio = 2.5
 	_footer.add_child(_start)
 	_refresh_selection()
 	resized.connect(_layout)
@@ -116,14 +119,7 @@ func _choose(id: String) -> void:
 func _refresh_selection() -> void:
 	for id in _mode_buttons:
 		var card = _mode_buttons[id]
-		card.selected = id == current_mode
-		for state in ["normal", "hover", "focus", "pressed"]:
-			card.add_theme_stylebox_override(state, UI.premium_panel(
-				GOLD if card.selected else CYAN, card.selected or state != "normal"))
-		if is_instance_valid(card.selection_mark):
-			card.selection_mark.visible = card.selected
-		if is_instance_valid(card.sheen_material):
-			card.sheen_material.set_shader_parameter("highlight", 0.8 if card.selected else 0.0)
+		card.update_selected(id == current_mode)
 
 
 func _layout() -> void:
@@ -191,10 +187,12 @@ func _layout() -> void:
 		var card = _mode_buttons[id]
 		card.apply_size(scale_factor, true)
 		card.custom_minimum_size = Vector2(48, 60 if horizontal_modes else mode_height) * scale_factor
-		card.title_label.text = {"race": "Solo", "cup": "Grand Prix", "time_trial": "Zeitrennen"}[id] if narrow else card.title
+		card.title_label.text = {"race": "Solo", "cup": "Pokal", "time_trial": "Zeit"}[id] if narrow else card.title
 		card.title_label.add_theme_font_size_override("font_size", roundi((13 if horizontal_modes else (16 if short_view else 20)) * scale_factor))
 		card.caption_label.visible = not horizontal_modes and not short_view
-		card.icon_plate.visible = not narrow
+		card.icon_plate.show()
+		if narrow:
+			card.icon_view.custom_minimum_size = Vector2.ONE * 23.0 * scale_factor
 		card.row.add_theme_constant_override("separation", roundi(7 * scale_factor))
 		card.caption_label.get_parent().add_theme_constant_override("separation", roundi(2 * scale_factor))
 		card.selection_mark.add_theme_constant_override("outline_size", roundi(3 * scale_factor))

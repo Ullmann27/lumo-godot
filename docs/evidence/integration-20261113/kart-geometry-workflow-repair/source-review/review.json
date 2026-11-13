@@ -1,0 +1,166 @@
+{
+  "schema": "lumo.independent_source_review.v1",
+  "reviewer": "/root/pipeline_repair",
+  "reviewed_at_utc": "2026-11-13T19:06:11.709489+00:00",
+  "verdict": "NO_BLOCKER_FOR_SCOPED_WORKFLOW_INTEGRATION_FRESH_PUBLISHED_CI_REQUIRED",
+  "blockers": [],
+  "repository": "Ullmann27/lumo-godot",
+  "worktree": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups",
+  "published_product_source": "90d34181409c15d1b1ad3a6a9643539453155c1d",
+  "published_product_tree": "9b407d61633a6421dc47b6858e6a6fb3fa60bea5",
+  "observed_local_base": "64202e88e979b110cc3fdca511d4644be7f12ea7",
+  "final_repair_files": {
+    ".github/workflows/kart-vehicle-regression.yml": {
+      "git_blob": "a98af5784e5f51b70cf291dc0d6e5203c2c5a103",
+      "sha256": "da132fa960d01a2192b916dc9a53a7013dc2bd95599fbcf1a4e9b466d476ad2d"
+    },
+    "tools/tests/test_kart_vehicle_workflow.py": {
+      "git_blob": "243a23c7504d932ca6fffd0f72e0f413d68482e7",
+      "sha256": "ea60729677746dad24a1630f5e282221cdb10fa04ce4dc5ac0e94ca1062c2fba"
+    }
+  },
+  "source_hashes_sha256": "d1339d2344c2cd5f0583bef8111cb7e5e0dfd67b39d394a18f7a039ab8be1519",
+  "observations": [
+    {
+      "id": "dependency-closure",
+      "finding": "The literal preload closure is exactly 15 original files. PlatformPose, TeacherPose, BodySpacePose and StudioClips are the four formerly missing files. The final explicit copy list includes all 15; each was independently matched to committed base blobs and the recorded actual-green copied source hashes. No GDScript or shader product source was changed.",
+      "source_files": [
+        ".github/workflows/kart-vehicle-regression.yml",
+        "scripts/characters/lumo/lumo_rigged_actor.gd",
+        "scripts/characters/lumo/lumo_platform_pose.gd",
+        "scripts/characters/lumo/lumo_walk_locomotion.gd",
+        "scripts/characters/lumo/lumo_body_space_pose.gd"
+      ],
+      "evidence": "preload-closure.json and real-green-result.json"
+    },
+    {
+      "id": "actual-old-defect",
+      "finding": "The full original CI log contains 11 actual timestamped engine error lines and the original geometry success marker. The original nonterminal inverted grep checks do not trigger set -e; the final successful positive grep explains shell exit zero. API SUCCESS remains an original fact but is not a valid technical geometry acceptance.",
+      "original_run_id": 43483977367,
+      "original_job_id": 132087436119,
+      "original_decoded_job_log_sha256": "1732e99646acb4cf6b18dcb7e9a1408843425474b36109e3ad3badb60c70192e"
+    },
+    {
+      "id": "strict-propagation",
+      "finding": "Both import and geometry now invoke the unchanged strict run_godot_probe.py directly under set -euo pipefail, without inversion or conditional suppression. The runner combines the full output scan, process exit, deadline and required marker; any SCRIPT ERROR, Parse Error, ERROR or Assertion failed is fatal even after a success marker. Process-group TERM/KILL deadline handling is inherited unchanged.",
+      "runner_sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "deadlines_seconds": {
+        "import": 120,
+        "geometry": 120
+      },
+      "original_geometry_marker_preserved": true
+    },
+    {
+      "id": "counter-contract-scope",
+      "finding": "The five contracts execute the actual extracted workflow Bash block with explicitly synthetic engine transports. They check original copied bytes/complete preload closure, import error plus zero exit stopping before runtime, runtime error after success plus zero exit, missing marker, and archival configuration. The dynamic closure is derived from repository preloads independently of the shell copy list. These contracts are pipeline tests, not gameplay evidence."
+    },
+    {
+      "id": "archive-and-trigger",
+      "finding": "The artifact upload uses if: always() and includes both complete raw log paths; upload success cannot replace an earlier failed job step. All new required source dependencies, strict runner and contract file are included in the trigger scope. The final two extra pull_request filters are the already-existing cinema-material and shader push filters; no engine command, assertion, result gate or budget was changed by that final addition."
+    },
+    {
+      "id": "evidence-binding",
+      "finding": "All 36 stored evidence objects matched stored and decoded original byte lengths/hashes. Final workflow/test/strict-runner snapshots equal the working files. The original workflow equals the committed base. The source snapshots retain the same 1404 pre-bound paths with only the workflow changed, plus the explicitly identified new contract test. The final and actual-green engine shell blocks are byte-identical.",
+      "engine_block_sha256": "6b5b934915eed9f36b1d86d9a49fa44ae943dd61c07089be7717a8f05e4acbd8"
+    }
+  ],
+  "previous_recorded_results_not_executed_by_reviewer": {
+    "actual_old_fixture": {
+      "exit": 0,
+      "engine_error_lines": 11,
+      "required_marker_present": true,
+      "seconds": 10.146959595993394,
+      "scope": "Faithful false-success reproduction"
+    },
+    "actual_repaired_fixture": {
+      "exit": 0,
+      "engine_error_lines": 0,
+      "required_marker_present": true,
+      "copied_original_sources": 15,
+      "seconds": 9.69720657999278
+    },
+    "final_synthetic_contracts": {
+      "tests": 5,
+      "exit": 0,
+      "unittest_seconds": 0.742,
+      "recorded_wrapper_seconds": 0.8723175159975654
+    },
+    "final_actionlint": {
+      "exit": 0
+    },
+    "final_filter_only_delta_engine_rerun_claimed": false
+  },
+  "limits": [
+    "This is independent source/evidence review only; the reviewer ran no engine, renderer, unit tests, actionlint or workflows.",
+    "Approval scope is integration of the two-file workflow/gate repair. The newly published full source must receive its own CI results.",
+    "The mandatory literal-preload closure is not a complete game asset/runtime closure. The optional dynamically loaded Lumo GLB is not copied into this pre-existing geometry fixture; full rigged-asset or rendered/Android coverage is not claimed.",
+    "GitHub checkout retains its pre-existing default pull_request merge checkout semantics. No new exact-head or package receipt is implied.",
+    "No visual approval, overall Native acceptance, APK/AAR acceptance, physical-device or performance proof is created."
+  ],
+  "evidence_manifest_sha256": "5c78d192cd29bdd0f7a77cbf78ee77ee8bc6a208f4ad1748adbee8f8373249cb",
+  "evidence_inputs": [
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/manifest.json",
+      "sha256": "5c78d192cd29bdd0f7a77cbf78ee77ee8bc6a208f4ad1748adbee8f8373249cb"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/preload-closure.json",
+      "sha256": "5063143402b117923d94cb2c5e84d128041db154e7fea0adbb8212ba5ee96f49"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/real-red-result.json",
+      "sha256": "9429111cb4b7047ba194dd11a737e5d94c975c6a7822f4314019b3f69c5ad408"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/real-green-result.json",
+      "sha256": "a6b67ad5b186b3d3b133023489c18084e7c5934289cbe86a6caee38065b21a56"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/real-green-final-binding.json",
+      "sha256": "394b1aa243e95703c87c579d352b70d91d1e08211273bbcfbd3d54dfa6467b8c"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/contract-final-result.json",
+      "sha256": "791cf1da4fee45b192309a5f65738e6305f0ebf0886917eb77b21475930aadd5"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/actionlint-final-result.json",
+      "sha256": "514be2a1a1c36056c7910ea9976786025f76af0891707a148b3c35b6fb8b410a"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/source-final-verification.json",
+      "sha256": "54b563173364ffc9f287015e810381078f1fb15ab4535060707159f462bcc1a5"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/workflow-before.yml",
+      "sha256": "db02f8784f718cad83b8be40592d294ceb3bf624fb431ea94a77a3edc0cdc138"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/workflow-engine-green.yml",
+      "sha256": "8f8976db482d3c543327cdeda268b5d7d1010c097ce3bb5002bd3e16b9eab249"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/workflow-final.yml",
+      "sha256": "da132fa960d01a2192b916dc9a53a7013dc2bd95599fbcf1a4e9b466d476ad2d"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/test-final.py",
+      "sha256": "ea60729677746dad24a1630f5e282221cdb10fa04ce4dc5ac0e94ca1062c2fba"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/original-step.sh",
+      "sha256": "ec881c329f853d58bab96a3f06be2305225f05cfecb773e3c9cde5bef407ad5f"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/repaired-step.sh",
+      "sha256": "6b5b934915eed9f36b1d86d9a49fa44ae943dd61c07089be7717a8f05e4acbd8"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/lumo-native-geometry-followups/docs/evidence/integration-20261113/kart-geometry-workflow-repair/strict-runner-unchanged.py",
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13"
+    }
+  ],
+  "reviewer_executed_tests": false,
+  "product_workflow_test_changes_by_reviewer": false,
+  "index_commit_ref_changes_by_reviewer": false
+}

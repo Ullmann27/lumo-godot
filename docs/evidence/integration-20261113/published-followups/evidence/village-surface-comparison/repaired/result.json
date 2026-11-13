@@ -1,0 +1,32 @@
+{
+  "case": "repaired",
+  "command": [
+    "python",
+    "tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-surface-comparison/repaired/engine.log",
+    "--timeout",
+    "210",
+    "--required",
+    "[VillageScene] PASS",
+    "--",
+    "godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+    "--script",
+    "res://scripts/tests/build_village_scene_regression.gd"
+  ],
+  "exit_code": 0,
+  "seconds": 5.91,
+  "source_files": 1224,
+  "changed_during_run": [],
+  "probe_sha256": "1ac6dcd8ba6c72d637ad575802fb46654d28ea541c865c053eb478fed7b1ffde",
+  "product_sha256": "a8b5b310104281f6fb9c84901c3d83ee5d3382b38ef2bd418a44ff6b83d39ae0",
+  "engine_sha256": "b96bb29f378e15ddbae7347a0a96e2c6166937efd8bd34af30221e4a7ffe4fae",
+  "findings": [
+    "[VillageScene] PASS checks=223 : production village, chapter, economy and resume"
+  ]
+}

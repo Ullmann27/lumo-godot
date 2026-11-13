@@ -1,0 +1,2233 @@
+{
+  "capture_requires_renderer": true,
+  "checks": 1085,
+  "failures": [],
+  "images": [],
+  "physical_android_measurement": false,
+  "targets": [
+    {
+      "density": 1.0,
+      "dp": [
+        82.0,
+        48.0
+      ],
+      "label": "exploration header / ‹ Spiele",
+      "physical_size": [
+        82.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        96.0,
+        48.0
+      ],
+      "label": "exploration header / Rucksack",
+      "physical_size": [
+        96.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        52.0,
+        48.0
+      ],
+      "label": "exploration header / Ⅱ",
+      "physical_size": [
+        52.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        110.0,
+        48.0
+      ],
+      "label": "jump",
+      "physical_size": [
+        110.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        156.559997558594,
+        156.559997558594
+      ],
+      "label": "movement stick",
+      "physical_size": [
+        156.559997558594,
+        156.559997558594
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        131.839996337891,
+        131.840026855469
+      ],
+      "label": "interaction action",
+      "physical_size": [
+        131.839996337891,
+        131.840026855469
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "pause / Weiter erkunden",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "pause / Zur Spielewelt",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "pause resume",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "first clue / Ein Tropfen Wasser",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "first clue / Ein Stein im Ast",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "first clue / Ein leerer Becher",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "first clue / Weiter erkunden",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "wrong answer remains full size",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "correct answer",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "final clue",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "completion / Insel weiter erkunden",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "completion / Neues Abenteuer",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "completion / Zur Spielewelt",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "continue exploring",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "full seven-item inventory and three discoveries / Weiter erkunden",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "inventory after rotation / Weiter erkunden",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        915,
+        412
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        360.0,
+        48.0
+      ],
+      "label": "inventory return",
+      "physical_size": [
+        360.0,
+        48.0
+      ],
+      "surface": [
+        412,
+        915
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        82.0,
+        48.0
+      ],
+      "label": "exploration header / ‹ Spiele",
+      "physical_size": [
+        82.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        96.0,
+        48.0
+      ],
+      "label": "exploration header / Rucksack",
+      "physical_size": [
+        96.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        52.0,
+        48.0
+      ],
+      "label": "exploration header / Ⅱ",
+      "physical_size": [
+        52.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        110.0,
+        48.0
+      ],
+      "label": "jump",
+      "physical_size": [
+        110.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        188.0,
+        188.0
+      ],
+      "label": "movement stick",
+      "physical_size": [
+        188.0,
+        188.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        152.0,
+        152.0
+      ],
+      "label": "interaction action",
+      "physical_size": [
+        152.0,
+        152.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "pause / Weiter erkunden",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "pause / Zur Spielewelt",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "pause resume",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "first clue / Ein Tropfen Wasser",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "first clue / Ein Stein im Ast",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "first clue / Ein leerer Becher",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "first clue / Weiter erkunden",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "wrong answer remains full size",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "correct answer",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "final clue",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "completion / Insel weiter erkunden",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "completion / Neues Abenteuer",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "completion / Zur Spielewelt",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "continue exploring",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "full seven-item inventory and three discoveries / Weiter erkunden",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "inventory after rotation / Weiter erkunden",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        829,
+        690
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "inventory return",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        690,
+        829
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        82.0094223022461,
+        48.0198783874512
+      ],
+      "label": "exploration header / ‹ Spiele",
+      "physical_size": [
+        184.521194458008,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        96.0110244750977,
+        48.0198783874512
+      ],
+      "label": "exploration header / Rucksack",
+      "physical_size": [
+        216.024810791016,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        52.005973815918,
+        48.0198783874512
+      ],
+      "label": "exploration header / Ⅱ",
+      "physical_size": [
+        117.013442993164,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        110.012634277344,
+        48.0198783874512
+      ],
+      "label": "jump",
+      "physical_size": [
+        247.528427124023,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        188.021591186523,
+        188.077850341797
+      ],
+      "label": "movement stick",
+      "physical_size": [
+        423.048583984375,
+        423.175170898438
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        152.017456054688,
+        152.062942504883
+      ],
+      "label": "interaction action",
+      "physical_size": [
+        342.039276123047,
+        342.141632080078
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "pause / Weiter erkunden",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "pause / Zur Spielewelt",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "pause resume",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "first clue / Ein Tropfen Wasser",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "first clue / Ein Stein im Ast",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "first clue / Ein leerer Becher",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "first clue / Weiter erkunden",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "wrong answer remains full size",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "correct answer",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "final clue",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "completion / Insel weiter erkunden",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "completion / Neues Abenteuer",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "completion / Zur Spielewelt",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "continue exploring",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "full seven-item inventory and three discoveries / Weiter erkunden",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.221923828125,
+        48.0055122375488
+      ],
+      "label": "inventory after rotation / Weiter erkunden",
+      "physical_size": [
+        1206.49938964844,
+        108.012405395508
+      ],
+      "surface": [
+        1812,
+        2176
+      ]
+    },
+    {
+      "density": 2.25,
+      "dp": [
+        536.061584472656,
+        48.0198783874512
+      ],
+      "label": "inventory return",
+      "physical_size": [
+        1206.13854980469,
+        108.044723510742
+      ],
+      "surface": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        82.025634765625,
+        48.0500564575195
+      ],
+      "label": "exploration header / ‹ Spiele",
+      "physical_size": [
+        215.317291259766,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        96.0300140380859,
+        48.0500564575195
+      ],
+      "label": "exploration header / Rucksack",
+      "physical_size": [
+        252.07878112793,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        52.0162582397461,
+        48.0500564575195
+      ],
+      "label": "exploration header / Ⅱ",
+      "physical_size": [
+        136.542678833008,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        110.034385681152,
+        48.0500679016113
+      ],
+      "label": "jump",
+      "physical_size": [
+        288.840270996094,
+        126.13143157959
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        156.228820800781,
+        156.342849731445
+      ],
+      "label": "movement stick",
+      "physical_size": [
+        410.100646972656,
+        410.399993896484
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        123.338531494141,
+        123.428558349609
+      ],
+      "label": "interaction action",
+      "physical_size": [
+        323.763641357422,
+        323.999969482422
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "pause / Weiter erkunden",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "pause / Zur Spielewelt",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "pause resume",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "first clue / Ein Tropfen Wasser",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "first clue / Ein Stein im Ast",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "first clue / Ein leerer Becher",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "first clue / Weiter erkunden",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "wrong answer remains full size",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "correct answer",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "final clue",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "completion / Insel weiter erkunden",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "completion / Neues Abenteuer",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "completion / Zur Spielewelt",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        536.167541503906,
+        48.0500564575195
+      ],
+      "label": "continue exploring",
+      "physical_size": [
+        1407.43981933594,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        528.165100097656,
+        48.0500564575195
+      ],
+      "label": "full seven-item inventory and three discoveries / Weiter erkunden",
+      "physical_size": [
+        1386.43334960938,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "inventory after rotation / Weiter erkunden",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        528.165100097656,
+        48.0500564575195
+      ],
+      "label": "inventory return",
+      "physical_size": [
+        1386.43334960938,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        82.0855102539062,
+        48.015007019043
+      ],
+      "label": "exploration header / ‹ Spiele",
+      "physical_size": [
+        215.474456787109,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        96.1001129150391,
+        48.015007019043
+      ],
+      "label": "exploration header / Rucksack",
+      "physical_size": [
+        252.262786865234,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        52.0542221069336,
+        48.015007019043
+      ],
+      "label": "exploration header / Ⅱ",
+      "physical_size": [
+        136.642333984375,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        110.114700317383,
+        48.015007019043
+      ],
+      "label": "jump",
+      "physical_size": [
+        289.051086425781,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        156.342849731445,
+        156.228820800781
+      ],
+      "label": "movement stick",
+      "physical_size": [
+        410.399993896484,
+        410.100646972656
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        131.657135009766,
+        131.561141967773
+      ],
+      "label": "interaction action",
+      "physical_size": [
+        345.599975585938,
+        345.347991943359
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "pause / Weiter erkunden",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "pause / Zur Spielewelt",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "pause resume",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "first clue / Ein Tropfen Wasser",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "first clue / Ein Stein im Ast",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "first clue / Ein leerer Becher",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "first clue / Weiter erkunden",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "wrong answer remains full size",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "correct answer",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "final clue",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "completion / Insel weiter erkunden",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "completion / Neues Abenteuer",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "completion / Zur Spielewelt",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "continue exploring",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "full seven-item inventory and three discoveries / Weiter erkunden",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        528.165100097656,
+        48.0500564575195
+      ],
+      "label": "inventory after rotation / Weiter erkunden",
+      "physical_size": [
+        1386.43334960938,
+        126.131393432617
+      ],
+      "surface": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "density": 2.625,
+      "dp": [
+        359.374359130859,
+        48.015007019043
+      ],
+      "label": "inventory return",
+      "physical_size": [
+        943.357666015625,
+        126.039390563965
+      ],
+      "surface": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        82.0,
+        48.0
+      ],
+      "label": "exploration header / ‹ Spiele",
+      "physical_size": [
+        82.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        96.0,
+        48.0
+      ],
+      "label": "exploration header / Rucksack",
+      "physical_size": [
+        96.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        52.0,
+        48.0
+      ],
+      "label": "exploration header / Ⅱ",
+      "physical_size": [
+        52.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        110.0,
+        48.0
+      ],
+      "label": "jump",
+      "physical_size": [
+        110.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        121.600006103516,
+        121.600006103516
+      ],
+      "label": "movement stick",
+      "physical_size": [
+        121.600006103516,
+        121.600006103516
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        96.0,
+        96.0
+      ],
+      "label": "interaction action",
+      "physical_size": [
+        96.0,
+        96.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "pause / Weiter erkunden",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "pause / Zur Spielewelt",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        536.0,
+        48.0
+      ],
+      "label": "pause resume",
+      "physical_size": [
+        536.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "first clue / Ein Tropfen Wasser",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "first clue / Ein Stein im Ast",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "first clue / Ein leerer Becher",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "first clue / Weiter erkunden",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "scroll gesture begins on a real answer button",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "wrong answer remains full size",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "correct answer",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "final clue",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "completion / Insel weiter erkunden",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "completion / Neues Abenteuer",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "completion / Zur Spielewelt",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "continue exploring",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "full seven-item inventory and three discoveries / Weiter erkunden",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        268.0,
+        48.0
+      ],
+      "label": "inventory after rotation / Weiter erkunden",
+      "physical_size": [
+        268.0,
+        48.0
+      ],
+      "surface": [
+        320,
+        640
+      ]
+    },
+    {
+      "density": 1.0,
+      "dp": [
+        528.0,
+        48.0
+      ],
+      "label": "inventory return",
+      "physical_size": [
+        528.0,
+        48.0
+      ],
+      "surface": [
+        640,
+        320
+      ]
+    }
+  ]
+}

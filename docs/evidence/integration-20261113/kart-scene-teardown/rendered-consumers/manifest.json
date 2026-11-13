@@ -1,0 +1,458 @@
+{
+  "schema": "lumo.kart_scene_teardown.rendered_consumers.v1",
+  "created_at_utc": "2026-11-13T16:39:08.264250+00:00",
+  "base_local_commit": "a59dca033d1ad6afa4afbf0b51b03e04fe8c4ef9",
+  "consumers": [
+    {
+      "path": "scripts/tests/kart_pause_layout_regression.gd",
+      "before_git_blob": "2ded4e20283fe253405d2caf7279b78517cddd8f",
+      "before_sha256": "ea5be6aaf9ea0e641f05c4be5963bccafb046399a56c026a608887d547da8469",
+      "after_git_blob": "96ad4ebc188bc589af70bc5d1010cbc87b614d87",
+      "after_sha256": "9bd0dfbda848b5c36571e5162257bf18d26e709a4db4fedd8f7dd888a1731513"
+    },
+    {
+      "path": "scripts/tests/kart_player_full_route_regression.gd",
+      "before_git_blob": "4c5909e270506a2792652e178342af2d44a01dcf",
+      "before_sha256": "6caa096bd489cccec530c0ab4c3fe98ad2e38333897741f16c12297b43d9b906",
+      "after_git_blob": "e5ef89052132386f0d5914131b9697b4b97fc5ce",
+      "after_sha256": "9fcc646995fa01931d375ed6c0c19404f099e01e9576dcc31f5cd046ecbc0478"
+    },
+    {
+      "path": "scripts/tests/kart_garage_3d_touch_regression.gd",
+      "before_git_blob": "4f28a6107d7e9b50f8b1df674732318b070f569e",
+      "before_sha256": "60dbea9a48d5d3e27e6643f619dae29a0770930f4e67fb9e4babbe782476f7ea",
+      "after_git_blob": "27b6c9b8faf33d587367aa0d70066d941aa17d27",
+      "after_sha256": "a95e40b72fc4114e037182669df36018f0d35a0cb145a989fab5ba0d4d93532a"
+    },
+    {
+      "path": "scripts/tests/kart_menu_depth_2013_regression.gd",
+      "before_git_blob": "2626fc97c0f1dc4536c8f8be2983e5a6325942a6",
+      "before_sha256": "65f4dee24e72096c5f84321a88e2e63e59af6654a0e69b54118cb728d5fd81c6",
+      "after_git_blob": "5df752b5113053842bfa44a33235de52af24489a",
+      "after_sha256": "881515da636ab3bcfb91271947314254eb0f8346a4aac4bfaef88afc298273bc"
+    },
+    {
+      "path": "scripts/tests/kart_rival_flight_regression.gd",
+      "before_git_blob": "6309c48cb61ab5e5f0687be54915989262762cf0",
+      "before_sha256": "b1b1f088bbbfa54cdd4dfd567685b3f818a7ea848caf080ff518951e355040ef",
+      "after_git_blob": "4a6b2c39690c8da6bbde38ccccaa97c0d2f94f6a",
+      "after_sha256": "c7547c7bcd0fd59478cca3d2a37cfe6e8b051d241e9565fd7724c4147ec31456"
+    },
+    {
+      "path": "scripts/tests/kart_stunt_continuity_regression.gd",
+      "before_git_blob": "bdf7ae47ee0f83065a07fd1ccb7073227f78cc9a",
+      "before_sha256": "b78961bcd07cdb27c41be166e76c8cebc72931b5d5cc2e121679b5350fb43465",
+      "after_git_blob": "1111810b09d6d4205eea3152407ebda5c9ee5bf3",
+      "after_sha256": "45178c8d4d064081a5649cd98c87e10770b37e60e6f48f85e108f47d6c7717e1"
+    }
+  ],
+  "helper_git_blob": "03939804a22a0c7792de798676a5ef7d5338aa15",
+  "helper_sha256": "63f4138d64d4bc0d9bd8f5698ad34c1b305062567197f4d28ba01c02995bf885",
+  "source_count": 858,
+  "scoped_source_hashes_unchanged": true,
+  "local_headless_logic_checks": 3,
+  "local_parse_only_checks": 3,
+  "actual_renderer_cases_executed": 0,
+  "negative_fault_injection_proved": true,
+  "negative_consumer_json_status": "FAIL",
+  "negative_exit_code": 1,
+  "negative_pass_marker_present": false,
+  "negative_observed_elapsed_ms": 2004,
+  "runtime_ci_gates_remaining": [
+    "scripts/tests/kart_pause_layout_regression.gd",
+    "scripts/tests/kart_player_full_route_regression.gd",
+    "scripts/tests/kart_garage_3d_touch_regression.gd",
+    "scripts/tests/kart_menu_depth_2013_regression.gd",
+    "scripts/tests/kart_rival_flight_regression.gd",
+    "scripts/tests/kart_stunt_continuity_regression.gd"
+  ],
+  "files": [
+    {
+      "path": "sources/original/kart_pause_layout_regression.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/originals/kart_pause_layout_regression.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 9329,
+      "original_sha256": "ea5be6aaf9ea0e641f05c4be5963bccafb046399a56c026a608887d547da8469",
+      "stored_bytes": 3123,
+      "stored_sha256": "6a43ada2d9ecc6da4cda70930f876c081434eddd40b82450e3aaf7b4a84ac113"
+    },
+    {
+      "path": "sources/patched/kart_pause_layout_regression.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_pause_layout_regression.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 9884,
+      "original_sha256": "9bd0dfbda848b5c36571e5162257bf18d26e709a4db4fedd8f7dd888a1731513",
+      "stored_bytes": 3228,
+      "stored_sha256": "b523aa8ef10995944cee54d83971ab52554b769f01dddbb5ac4fb5c395f99339"
+    },
+    {
+      "path": "sources/original/kart_player_full_route_regression.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/originals/kart_player_full_route_regression.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 11666,
+      "original_sha256": "6caa096bd489cccec530c0ab4c3fe98ad2e38333897741f16c12297b43d9b906",
+      "stored_bytes": 4085,
+      "stored_sha256": "87f811fb7c92c492482edae1e86b7b04f9e9b6d12c5615ee15002b2f2471500a"
+    },
+    {
+      "path": "sources/patched/kart_player_full_route_regression.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_player_full_route_regression.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 11971,
+      "original_sha256": "9fcc646995fa01931d375ed6c0c19404f099e01e9576dcc31f5cd046ecbc0478",
+      "stored_bytes": 4183,
+      "stored_sha256": "5788f2c96770d60de7be02daad3bef6619a9d01f306f962b4d853c9ca43bf538"
+    },
+    {
+      "path": "sources/original/kart_garage_3d_touch_regression.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/originals/kart_garage_3d_touch_regression.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 8821,
+      "original_sha256": "60dbea9a48d5d3e27e6643f619dae29a0770930f4e67fb9e4babbe782476f7ea",
+      "stored_bytes": 2371,
+      "stored_sha256": "d120d7f0fdce670423c628a94b6b584551ba585a70b3bc46870bfffe3fd01740"
+    },
+    {
+      "path": "sources/patched/kart_garage_3d_touch_regression.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_garage_3d_touch_regression.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 9234,
+      "original_sha256": "a95e40b72fc4114e037182669df36018f0d35a0cb145a989fab5ba0d4d93532a",
+      "stored_bytes": 2495,
+      "stored_sha256": "462d5948185dbb9d42d2140f0532fb529e609057d67da23b9dc185e76da3bbe6"
+    },
+    {
+      "path": "sources/original/kart_menu_depth_2013_regression.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/originals/kart_menu_depth_2013_regression.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 4169,
+      "original_sha256": "65f4dee24e72096c5f84321a88e2e63e59af6654a0e69b54118cb728d5fd81c6",
+      "stored_bytes": 1643,
+      "stored_sha256": "b2d7428650d12172ac2e7dd0f0808a209e9df276bcc0aa4f7ce3961f5b362258"
+    },
+    {
+      "path": "sources/patched/kart_menu_depth_2013_regression.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_menu_depth_2013_regression.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 4392,
+      "original_sha256": "881515da636ab3bcfb91271947314254eb0f8346a4aac4bfaef88afc298273bc",
+      "stored_bytes": 1744,
+      "stored_sha256": "21706229c199d06f99ed7812dd021db78d727d22b62a4da77d3a3b918aaeef54"
+    },
+    {
+      "path": "sources/original/kart_rival_flight_regression.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/originals/kart_rival_flight_regression.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 7400,
+      "original_sha256": "b1b1f088bbbfa54cdd4dfd567685b3f818a7ea848caf080ff518951e355040ef",
+      "stored_bytes": 2529,
+      "stored_sha256": "29db20e283c280d6d988139e945bee72b900fa50dd5eb3d2ece455a888900b2d"
+    },
+    {
+      "path": "sources/patched/kart_rival_flight_regression.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_rival_flight_regression.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 7620,
+      "original_sha256": "c7547c7bcd0fd59478cca3d2a37cfe6e8b051d241e9565fd7724c4147ec31456",
+      "stored_bytes": 2611,
+      "stored_sha256": "ae8d44eb3989a2df4e90cac05f00e8738d434d2d88bc18bd5ec853d2d3e0118e"
+    },
+    {
+      "path": "sources/original/kart_stunt_continuity_regression.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/originals/kart_stunt_continuity_regression.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 5552,
+      "original_sha256": "b78961bcd07cdb27c41be166e76c8cebc72931b5d5cc2e121679b5350fb43465",
+      "stored_bytes": 2242,
+      "stored_sha256": "790e72c5adbf966f84520cece315865d2c4ce967a58860b18cac7f319d66a765"
+    },
+    {
+      "path": "sources/patched/kart_stunt_continuity_regression.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_stunt_continuity_regression.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 5806,
+      "original_sha256": "45178c8d4d064081a5649cd98c87e10770b37e60e6f48f85e108f47d6c7717e1",
+      "stored_bytes": 2340,
+      "stored_sha256": "4d177219cddf06906e719235322798fce70ac8c124b30271fbc76125349b6a9b"
+    },
+    {
+      "path": "sources/kart_scene_teardown.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/helpers/kart_scene_teardown.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 1638,
+      "original_sha256": "63f4138d64d4bc0d9bd8f5698ad34c1b305062567197f4d28ba01c02995bf885",
+      "stored_bytes": 747,
+      "stored_sha256": "cc7908b656827986de31f8ebd3c408d2cdb77a84d4fec2a953c123739eb4ffc6"
+    },
+    {
+      "path": "consumer-delta.patch.gz",
+      "origin": "git diff --binary a59dca033d1ad6afa4afbf0b51b03e04fe8c4ef9 -- six assigned consumers",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 8910,
+      "original_sha256": "9f3eb4958c1cb3afa54e15cd43e2e402c0f9a3b058cfa004046744cf75aa51b4",
+      "stored_bytes": 2655,
+      "stored_sha256": "f0bcfb0e25f86a57feb5b7dfc384d2c62a391672cd32385a2f75b88f3535b218"
+    },
+    {
+      "path": "source-fingerprints/sources-before-edits.json.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/sources-before-edits.json",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 2046,
+      "original_sha256": "8b40922946df586fd23d54bb2d5fbe201a4668d11c441c7bed559be56434e0ff",
+      "stored_bytes": 987,
+      "stored_sha256": "8c84f93439671877141831114f38607f900d9613c4cd992fa33a91516587d55e"
+    },
+    {
+      "path": "source-fingerprints/test-sources-before.json.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/test-sources-before.json",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 103782,
+      "original_sha256": "6f785c1a777d7afeba58b03118d20780f4c62bce7d9e20b9bad9a58267520e37",
+      "stored_bytes": 41145,
+      "stored_sha256": "657f821ea8cfaaecee58c537db15ebe2dd6567c71c7c5bb864c48ce6304566d5"
+    },
+    {
+      "path": "source-fingerprints/test-sources-after.json.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/test-sources-after.json",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 103782,
+      "original_sha256": "cf1645d7dfe8215659dfee3fb71560a21a97732d3fa63be74242e1ca8d1cc9fd",
+      "stored_bytes": 41145,
+      "stored_sha256": "428c83dbc58a9e5be30736d2f8a60915d8d18bdbec521b434ee47f5ab48d8143"
+    },
+    {
+      "path": "source-fingerprints/negative-sources-before.json.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/negative-sources-before.json",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 103423,
+      "original_sha256": "1726946915301552c94cb45422c564ef736a73dd6a1554e3fc2ed423e488bd87",
+      "stored_bytes": 40863,
+      "stored_sha256": "f104ef96c8ea73fda23cd57907f306c88112dc312c356732f74c19f935c92f9a"
+    },
+    {
+      "path": "source-fingerprints/negative-sources-after.json.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/negative-sources-after.json",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 103423,
+      "original_sha256": "1726946915301552c94cb45422c564ef736a73dd6a1554e3fc2ed423e488bd87",
+      "stored_bytes": 40863,
+      "stored_sha256": "f104ef96c8ea73fda23cd57907f306c88112dc312c356732f74c19f935c92f9a"
+    },
+    {
+      "path": "local-checks.json",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/local-checks.json",
+      "compression": "none",
+      "original_bytes": 9236,
+      "original_sha256": "3a86e5478bb37d11178ad80dbbefbb6b585aa52dd24a70d29b3cc6ddea4dea65",
+      "stored_bytes": 9236,
+      "stored_sha256": "3a86e5478bb37d11178ad80dbbefbb6b585aa52dd24a70d29b3cc6ddea4dea65"
+    },
+    {
+      "path": "engine.txt",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/engine.txt",
+      "compression": "none",
+      "original_bytes": 32,
+      "original_sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f",
+      "stored_bytes": 32,
+      "stored_sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f"
+    },
+    {
+      "path": "headless-logic/kart_garage_3d_touch_regression/result.json",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_garage_3d_touch_regression/result.json",
+      "compression": "none",
+      "original_bytes": 1581,
+      "original_sha256": "eef2d398fde7fcb4fa46a3fdc3503aee4c534880efd26e8d6c9498f666d74e7d",
+      "stored_bytes": 1581,
+      "stored_sha256": "eef2d398fde7fcb4fa46a3fdc3503aee4c534880efd26e8d6c9498f666d74e7d"
+    },
+    {
+      "path": "headless-logic/kart_garage_3d_touch_regression/engine.log.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_garage_3d_touch_regression/engine.log",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 809,
+      "original_sha256": "9404ae166e56b0e40124e80f4353f27c57ae79a0aa1454e1d5d8f003dd41c489",
+      "stored_bytes": 494,
+      "stored_sha256": "06e7216a088cf645465dbb66a8211e152b7708c042818b845b28e45a6f35952b"
+    },
+    {
+      "path": "headless-logic/kart_garage_3d_touch_regression/runner.log.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_garage_3d_touch_regression/runner.log",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 809,
+      "original_sha256": "9404ae166e56b0e40124e80f4353f27c57ae79a0aa1454e1d5d8f003dd41c489",
+      "stored_bytes": 494,
+      "stored_sha256": "06e7216a088cf645465dbb66a8211e152b7708c042818b845b28e45a6f35952b"
+    },
+    {
+      "path": "headless-logic/kart_menu_depth_2013_regression/result.json",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_menu_depth_2013_regression/result.json",
+      "compression": "none",
+      "original_bytes": 1414,
+      "original_sha256": "1e69bb045ec1db46670ccd691611e48ded008628db6a7cd1d56320d16a3e24fa",
+      "stored_bytes": 1414,
+      "stored_sha256": "1e69bb045ec1db46670ccd691611e48ded008628db6a7cd1d56320d16a3e24fa"
+    },
+    {
+      "path": "headless-logic/kart_menu_depth_2013_regression/engine.log.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_menu_depth_2013_regression/engine.log",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 684,
+      "original_sha256": "8c39f68c014d001185df0f91927f5f7cfb18dd9320b77124c80125b58ef1451c",
+      "stored_bytes": 462,
+      "stored_sha256": "3ed4c90762d57ac46c83d5c0c3e4e9efcf9cb35cd97d3b8661a49fccad3a1114"
+    },
+    {
+      "path": "headless-logic/kart_menu_depth_2013_regression/runner.log.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_menu_depth_2013_regression/runner.log",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 684,
+      "original_sha256": "8c39f68c014d001185df0f91927f5f7cfb18dd9320b77124c80125b58ef1451c",
+      "stored_bytes": 462,
+      "stored_sha256": "3ed4c90762d57ac46c83d5c0c3e4e9efcf9cb35cd97d3b8661a49fccad3a1114"
+    },
+    {
+      "path": "headless-logic/kart_player_full_route_regression/result.json",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_player_full_route_regression/result.json",
+      "compression": "none",
+      "original_bytes": 2031,
+      "original_sha256": "fa142fb23735bd09b23ed9f16dcaf6e3f1953f1d6bd9224e22ad69c81d2504f3",
+      "stored_bytes": 2031,
+      "stored_sha256": "fa142fb23735bd09b23ed9f16dcaf6e3f1953f1d6bd9224e22ad69c81d2504f3"
+    },
+    {
+      "path": "headless-logic/kart_player_full_route_regression/engine.log.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_player_full_route_regression/engine.log",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 21083,
+      "original_sha256": "70d66d6f4610140025357ebb97b135267242863a643ca889e1098b868b854d50",
+      "stored_bytes": 3592,
+      "stored_sha256": "dd9db01c87d6184888cfbd2daef19e694b344e74c57a4af8088c6b4cfb6bc7fd"
+    },
+    {
+      "path": "headless-logic/kart_player_full_route_regression/runner.log.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_player_full_route_regression/runner.log",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 21083,
+      "original_sha256": "70d66d6f4610140025357ebb97b135267242863a643ca889e1098b868b854d50",
+      "stored_bytes": 3592,
+      "stored_sha256": "dd9db01c87d6184888cfbd2daef19e694b344e74c57a4af8088c6b4cfb6bc7fd"
+    },
+    {
+      "path": "headless-logic/kart_player_full_route_regression/player-route.json.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_player_full_route_regression/route-output/player-route.json",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 78220,
+      "original_sha256": "1db2976a0e4004a17b0e330cf76e6b6a57d4ec6cc612bccea342cb18b37439b6",
+      "stored_bytes": 8101,
+      "stored_sha256": "8e9fc73890fd069e832edbebb42e94cce748c288e99685b78e473f820e47be27"
+    },
+    {
+      "path": "parse-only/kart_pause_layout_regression/result.json",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/parse-only/kart_pause_layout_regression/result.json",
+      "compression": "none",
+      "original_bytes": 1002,
+      "original_sha256": "5c8d20441523ca8a199374cabaf75fc065f2dc42771c72d0cd9b52ae4542b522",
+      "stored_bytes": 1002,
+      "stored_sha256": "5c8d20441523ca8a199374cabaf75fc065f2dc42771c72d0cd9b52ae4542b522"
+    },
+    {
+      "path": "parse-only/kart_pause_layout_regression/runner.log.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/parse-only/kart_pause_layout_regression/runner.log",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 73,
+      "original_sha256": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da",
+      "stored_bytes": 88,
+      "stored_sha256": "517801cf8e481102b53a6ac405cc87fd5a6b18a016679d496dbc46e8dee9c939"
+    },
+    {
+      "path": "parse-only/kart_rival_flight_regression/result.json",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/parse-only/kart_rival_flight_regression/result.json",
+      "compression": "none",
+      "original_bytes": 1002,
+      "original_sha256": "0111f200205d8f0b85df2da1df987650f7eda71e1c1880e7cdcdfcd153b07837",
+      "stored_bytes": 1002,
+      "stored_sha256": "0111f200205d8f0b85df2da1df987650f7eda71e1c1880e7cdcdfcd153b07837"
+    },
+    {
+      "path": "parse-only/kart_rival_flight_regression/runner.log.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/parse-only/kart_rival_flight_regression/runner.log",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 73,
+      "original_sha256": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da",
+      "stored_bytes": 88,
+      "stored_sha256": "517801cf8e481102b53a6ac405cc87fd5a6b18a016679d496dbc46e8dee9c939"
+    },
+    {
+      "path": "parse-only/kart_stunt_continuity_regression/result.json",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/parse-only/kart_stunt_continuity_regression/result.json",
+      "compression": "none",
+      "original_bytes": 1010,
+      "original_sha256": "470da75c583d209345b8c7912ca1783f3326514d9d2411e048c8f1c7d7e138b0",
+      "stored_bytes": 1010,
+      "stored_sha256": "470da75c583d209345b8c7912ca1783f3326514d9d2411e048c8f1c7d7e138b0"
+    },
+    {
+      "path": "parse-only/kart_stunt_continuity_regression/runner.log.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/parse-only/kart_stunt_continuity_regression/runner.log",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 73,
+      "original_sha256": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da",
+      "stored_bytes": 88,
+      "stored_sha256": "517801cf8e481102b53a6ac405cc87fd5a6b18a016679d496dbc46e8dee9c939"
+    },
+    {
+      "path": "negative-held-playback/result.json",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/negative-held-playback/result.json",
+      "compression": "none",
+      "original_bytes": 3276,
+      "original_sha256": "51675a27131aca72635afa7ed8d70ba3de3725e666d591b5a6cdbff95b72c1ee",
+      "stored_bytes": 3276,
+      "stored_sha256": "51675a27131aca72635afa7ed8d70ba3de3725e666d591b5a6cdbff95b72c1ee"
+    },
+    {
+      "path": "negative-held-playback/engine.log.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/negative-held-playback/engine.log",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 21244,
+      "original_sha256": "a5a674f2d2921e88fc459892bb0d9a72e9f688a6c11811072d7873f075faed89",
+      "stored_bytes": 3682,
+      "stored_sha256": "bf1a1ee9e6b7f8183c4f5962251fc36ec171ce0b08d739a946a49613bc971bcf"
+    },
+    {
+      "path": "negative-held-playback/runner.log.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/negative-held-playback/runner.log",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 21325,
+      "original_sha256": "b2791b72df03d9532b6a80a9d1edc93ed3d9f496e03692b8d8857ff06e2d9066",
+      "stored_bytes": 3738,
+      "stored_sha256": "3fae74835535e07f07c8bf638a6f4cc6b84d369091f9c0df367c60506269a4aa"
+    },
+    {
+      "path": "negative-held-playback/player-route.json.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/negative-held-playback/route-output/player-route.json",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 78220,
+      "original_sha256": "c9702b4fa97fa55d191b22da6152a73d5b3fa710ddcc96c83e854b5d799fcfdf",
+      "stored_bytes": 8102,
+      "stored_sha256": "e0e9fc9233199af3ef1201ec53df204e81ad24191f2a5b8a9dc86d8b46306928"
+    },
+    {
+      "path": "negative-held-playback/retained_full_route_playback.gd.gz",
+      "origin": "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/retained_full_route_playback.gd",
+      "compression": "gzip level9 mtime0",
+      "original_bytes": 741,
+      "original_sha256": "e57aaac21820500e8c7aed0c22a6409e7db138b338bf5aff50caade45a74604d",
+      "stored_bytes": 415,
+      "stored_sha256": "651012162080bf462b3ede9c63be567e616a6dadd1cc315829c5f997f7043b25"
+    },
+    {
+      "path": "README.md",
+      "origin": "Task evidence summary based on preserved original logs and source bytes",
+      "compression": "none",
+      "original_bytes": 4737,
+      "original_sha256": "cbe53caebabb751cfc7698dad6aedfdf0467445a2bc58aa1dd5b12b5c5c64890",
+      "stored_bytes": 4737,
+      "stored_sha256": "cbe53caebabb751cfc7698dad6aedfdf0467445a2bc58aa1dd5b12b5c5c64890"
+    }
+  ]
+}

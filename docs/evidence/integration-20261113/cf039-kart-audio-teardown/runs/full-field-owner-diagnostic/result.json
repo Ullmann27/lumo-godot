@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--fixed-fps",
+    "60",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/full-field-owner-diagnostic/kart_full_field_regression.gd",
+    "--",
+    "--level=pro",
+    "--clear-player"
+  ],
+  "scope": "diagnostic-only additional WeakRef observation, original full-field test narrowed using its existing pro/clear flags",
+  "fixture_sha256": "2e3934985e006dc6cf00b5333e69aa67b67570401a47345aa7f8e808bb8be555",
+  "engine_exit": 0,
+  "elapsed_seconds": 8.273792877000233,
+  "source_files_unchanged": true,
+  "observations": [
+    "[AudioOwnerDiagnostic] after_existing_frame resource=res://assets/audio/kart/sonnenhafen.ogg type=AudioStreamPlaybackOggVorbis alive=true",
+    "ERROR: 2 resources still in use at exit.",
+    "Leaked instance: AudioStreamOggVorbis:9223372444910230387 - Reference count: 1",
+    "Leaked instance: OggPacketSequence:9223372444893453172 - Reference count: 3",
+    "Leaked instance: OggPacketSequencePlayback:9223372444994116469 - Reference count: 1",
+    "Leaked instance: AudioStreamPlaybackOggVorbis:9223372444977339254 - Reference count: 1",
+    "Resource still in use: res://assets/audio/kart/sonnenhafen.ogg::OggPacketSequence_y7iyb (OggPacketSequence)",
+    "Resource still in use: res://assets/audio/kart/sonnenhafen.ogg (AudioStreamOggVorbis)"
+  ],
+  "log_sha256": "39a2516ae6b4d050e56e5dab59fab26e061e7b941592a6c3b28f82472066b52c"
+}

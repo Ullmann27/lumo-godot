@@ -1,0 +1,25 @@
+{
+  "scope": "Actual renderer rejection and headless camera-space correction; fresh renderer approval remains required.",
+  "superseded_native_revision": "64f75eb7725ebef898d0f259049bddef7021532f",
+  "artifact_id": 14038914275,
+  "artifact_sha256": "a0319343c38df1b5e09a7c33cb201613cf3d91d20394f7d2ab557852681a3ad9",
+  "observed_images": [
+    {
+      "file": "bridge_hundred-start.png",
+      "sha256": "8b12a480ad57b6efe506225880fbbdb0b8d73e7d3afb674ce34a0a47666a3a7e"
+    },
+    {
+      "file": "bridge_hundred-complete.png",
+      "sha256": "770e8715ed0f2737bfcb1a7f77b13275cdcae2a0efa5295c5a80aa28cc62bf0a"
+    }
+  ],
+  "finding": "Both original hundred-transition images show the lower glyphs outside the dark plate against the cream tray rim. Existing local AABB containment and color ratio passed despite the projected defect.",
+  "measured_1280x720_before": {
+    "glyph_y_max": 544.8219,
+    "plate_y_max": 543.6897
+  },
+  "correction": "The existing extruded 3D caption and physical backing now use the actual camera basis, eliminating oblique projection parallax. Neither depth testing nor real scene geometry is disabled.",
+  "regression": "The new camera-projection assertion failed in all 18 before cases (six actual interaction states across three display/density layouts). It must pass with the fix, and the real renderer now also asserts projected coverage and captures four additional hundred-transition phone/density images.",
+  "fresh_renderer_status": "pending; no approval issued",
+  "recorded_at": "2026-11-13T13:29:53.348027+00:00"
+}

@@ -1,0 +1,135 @@
+{
+  "status": "FULL_NATIVE_ACCEPTANCE_REJECTED",
+  "head": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "workflow_totals": {
+    "success": 14,
+    "failure": 1
+  },
+  "native": {
+    "run_id": 43458898046,
+    "conclusion": "failure",
+    "jobs": [
+      {
+        "id": 132000245240,
+        "name": "new-worlds",
+        "conclusion": "success"
+      },
+      {
+        "id": 132000245650,
+        "name": "gameplay",
+        "conclusion": "failure"
+      },
+      {
+        "id": 132000245736,
+        "name": "touch-build",
+        "conclusion": "success"
+      },
+      {
+        "id": 132000245909,
+        "name": "learning-preview",
+        "conclusion": "success"
+      },
+      {
+        "id": 132000246211,
+        "name": "touch-treasure",
+        "conclusion": "success"
+      },
+      {
+        "id": 132000246268,
+        "name": "touch-workshop",
+        "conclusion": "success"
+      },
+      {
+        "id": 132017192239,
+        "name": "bundle-evidence",
+        "conclusion": "success"
+      },
+      {
+        "id": 132017522479,
+        "name": "archive-evidence",
+        "conclusion": "skipped"
+      }
+    ],
+    "executed_raw_job_logs": 7,
+    "archive": "skipped; no executed archive log or release claim",
+    "bundle_artifact_id": 14057710633,
+    "bundle_sha256": "9d289b2073e6504223f2ca615928a42e994a1393bb5847ca003aa76243a560a9",
+    "bundle_bytes": 169806952,
+    "core_probe_count": 37,
+    "studio_png_count": 24,
+    "touch_probe_count": 6,
+    "touch_png_count": 32,
+    "native_png_count": 136,
+    "baseline_png_count": 10,
+    "clean_bundle_logs": 96,
+    "full_verifier_rejection": "Current Studio native workflow did not succeed at the exact pin",
+    "failure_probe": "scripts/tests/kart_regression.gd",
+    "failure_evidence": "native/legacy-failure-artifact-verification.json",
+    "actual_markers": {
+      "new-worlds-job-132000245240.log.gz": [
+        "2026-11-13T16:07:05.3526887Z [LearningStudio] PASS checks=183; runtime asset, materials, reduced motion and preserved learning",
+        "2026-11-13T16:07:47.9300305Z [BuildNextgen] PASS checks=62: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout",
+        "2026-11-13T16:17:33.1210298Z [BuildNextgen] PASS checks=70: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout",
+        "2026-11-13T16:20:21.4479566Z [StudioRasterRoster] PASS 24 actual PNG files"
+      ],
+      "touch-build-job-132000245736.log.gz": [
+        "2026-11-13T16:05:26.7431127Z [BuildDialogDensity] PASS 2016 checks: bounded dialogs, preserved choices, actual scroll/select/cancel, >=48dp and restore",
+        "2026-11-13T16:11:38.9051369Z [BuildDialogDensity] NATIVE_POINTER before=(1280, 1280) window=(920, 640) target=(30.0, 12.5) hovered=false",
+        "2026-11-13T16:11:39.0048310Z [BuildDialogDensity] NATIVE_POINTER after=(950, 652) hovered=true",
+        "2026-11-13T16:16:01.9868783Z [BuildDialogDensity] NATIVE_POINTER before=(950, 652) window=(920, 640) target=(30.0, 12.5) hovered=false",
+        "2026-11-13T16:16:02.0868067Z [BuildDialogDensity] NATIVE_POINTER after=(950, 652) hovered=true",
+        "2026-11-13T16:17:06.6597901Z [BuildDialogDensity] PASS 2043 checks: bounded dialogs, preserved choices, actual scroll/select/cancel, >=48dp and restore",
+        "2026-11-13T16:17:07.0470924Z [StudioTouchRasterRoster] PASS build_dialog_density_regression 12 original renderer PNGs"
+      ],
+      "touch-treasure-job-132000246211.log.gz": [
+        "2026-11-13T16:05:22.9639235Z [TreasureDensity] PASS checks=1085 captures=0; actual dp, edge touches, scroll, rotation, unchanged quests/saves/rewards",
+        "2026-11-13T16:21:01.3693051Z [TreasureDensity] PASS checks=1114 captures=14; actual dp, edge touches, scroll, rotation, unchanged quests/saves/rewards",
+        "2026-11-13T16:21:01.8114664Z [StudioTouchRasterRoster] PASS treasure_density_regression 14 original renderer PNGs"
+      ],
+      "touch-workshop-job-132000246268.log.gz": [
+        "2026-11-13T16:07:37.9642784Z [WorkshopDensity] PASS 4129 checks: eight layouts, actual >=48dp canvas targets, all palette/upgrade/purchase/refund/return touches",
+        "2026-11-13T16:32:27.6086384Z [WorkshopDensity] PASS 4148 checks: eight layouts, actual >=48dp canvas targets, all palette/upgrade/purchase/refund/return touches",
+        "2026-11-13T16:32:28.0982002Z [StudioTouchRasterRoster] PASS kart_workshop_density_regression 6 original renderer PNGs"
+      ]
+    }
+  },
+  "graphics": {
+    "run_id": 43458897683,
+    "conclusion": "success",
+    "jobs": 3,
+    "png_count": 62,
+    "current_png_count": 36,
+    "baseline_png_count": 26,
+    "artifact_logs_checked": 40,
+    "archives": [
+      {
+        "area": "home",
+        "artifact_id": 14056672152,
+        "bytes": 37459708,
+        "sha256": "f699c6cf5a0d61c398afded89ce67ce8eb871f002db5bc48db63c625b7facf4c"
+      },
+      {
+        "area": "worlds",
+        "artifact_id": 14055182823,
+        "bytes": 25146327,
+        "sha256": "55b6cad5e63684d483b1704563015350b47c05c780d1199a5cff21f5b322e196"
+      },
+      {
+        "area": "feedback",
+        "artifact_id": 14054878169,
+        "bytes": 20467766,
+        "sha256": "c099f7f20aec7f94b7c862082bb53cda1d11b4862d8987eefff86d5f12ccebd6"
+      }
+    ],
+    "source_handoff": "graphics/handoff.json"
+  },
+  "root_actual_observations": {
+    "native": 3,
+    "graphics": 5,
+    "index": "viewed-image-index.json"
+  },
+  "frozen_host_parser_revision": "233cdf4029edb30f007ef7be19693388b17145fe",
+  "native_immutable_source_files": 40,
+  "no_apk_pin_receipt_or_ref_change": true
+}

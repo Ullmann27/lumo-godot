@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/tests",
+    "-p",
+    "test_nextgen_runner.py",
+    "-k",
+    "test_studio_",
+    "-v"
+  ],
+  "started_at_utc": "2026-11-13T18:20:15.373565+00:00",
+  "duration_seconds": 7.676004852997721,
+  "exit_code": 1,
+  "expected_exit_code": 1,
+  "sources_unchanged_during_run": true,
+  "scope": "Actual standalone Studio shell and strict Python gate orchestration with explicit synthetic engine/PNG fixtures; no Godot, renderer or Android execution. New three tests run against the original unchanged Studio shell.",
+  "log_sha256": "7f577cbab90e337f7423300cccf5e0cc8b20da8c49f12f2c709236c83e0309b8"
+}

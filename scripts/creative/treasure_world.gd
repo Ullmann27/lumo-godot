@@ -14,10 +14,16 @@ var model = STATE.new()
 var kit = KIT.new()
 var previous: Dictionary
 var safe_ui: Control
+var top: HBoxContainer
+var title_label: Label
+var clue_panel: PanelContainer
+var jump_button: Button
 var player: CharacterBody3D
 var fox: Node3D
 var camera: Camera3D
 var marker: MeshInstance3D
+var alternate_marker: MeshInstance3D
+var available_goals: Array[Dictionary] = []
 var gate: StaticBody3D
 var joystick: Control
 var action: Control
@@ -25,6 +31,7 @@ var inventory_label: Label
 var clue_label: Label
 var toast: Label
 var modal: PanelContainer
+var modal_scroll: ScrollContainer
 var modal_box: VBoxContainer
 var paused: bool = false
 var jumping: bool = false
@@ -35,7 +42,7 @@ var last_saved: Vector3
 
 
 func _ready() -> void:
-	previous = RUNTIME.enter(self)
+	previous = RUNTIME.enter(self, true)
 	SceneRouter.current_scene_id = "treasure"
 	var child: String = (
 		str(SceneRouter.launch_options.get("childKey", "standalone"))
@@ -75,9 +82,13 @@ func _ready() -> void:
 	camera.look_at(player.position + CAMERA_LOOK_OFFSET, Vector3.UP)
 	marker = kit.mesh(self, kit.SHAPES.star(), Vector3.ZERO, Color("ffe7a1"), true)
 	marker.scale = Vector3.ONE * 0.65
+	alternate_marker = kit.mesh(self, kit.SHAPES.star(), Vector3.ZERO, Color("9de9ff"), true)
+	alternate_marker.name = "AlternateExplorationGoal"
+	alternate_marker.scale = Vector3.ONE * 0.65
+	alternate_marker.hide()
 	_ui()
-	get_viewport().size_changed.connect(func(): RUNTIME.safe_area(self, safe_ui))
-	RUNTIME.safe_area(self, safe_ui)
+	get_viewport().size_changed.connect(_layout)
+	_layout()
 	_update()
 	if model.completed:
 		_win()
@@ -183,6 +194,43 @@ func _landscape() -> void:
 		mountain.material_override = BuildVoxelStyle.material("stone", Color("8fa07a"))
 		mountain.scale = Vector3(18, 25 + (i % 3) * 8, 16)
 	ISLAND_ART.apply(self)
+	_branch_trails()
+
+
+func _branch_trails() -> void:
+	# Both paths are part of the playable terrain and lead to independently
+	# answerable locations after the bridge. Shared meshes keep their cost low.
+	var paths := Node3D.new()
+	paths.name = "TreasureBranchPaths"
+	add_child(paths)
+	var pavers := BoxMesh.new()
+	pavers.size = Vector3.ONE
+	for route in [
+		{"index": 3, "start": Vector3(-2, 0, -33), "sign": Vector3(-6.0, 0, -34.0), "text": "← Kristallwächter", "color": Color("85dce5")},
+		{"index": 4, "start": Vector3(2, 0, -33), "sign": Vector3(6.0, 0, -34.0), "text": "Mondgarten →", "color": Color("d7bc80")}
+	]:
+		var target: Vector3 = STATE.CLUES[int(route.index)].at
+		var start: Vector3 = route.start
+		var direction := (target - start).normalized()
+		var distance := start.distance_to(target)
+		var count := ceili(distance / 1.2)
+		var tiles: Array[Transform3D] = []
+		var basis := Basis(Vector3.UP, atan2(direction.x, direction.z)) * Basis.from_scale(Vector3(2.2, 0.055, distance / count * 0.94))
+		for i in range(count):
+			tiles.append(Transform3D(basis, start.lerp(target, (i + 0.5) / count) + Vector3.UP * 0.04))
+		BuildVoxelStyle.multimesh(paths, "Path_" + str(STATE.CLUES[int(route.index)].id), pavers, BuildVoxelStyle.material("paving", route.color), tiles)
+		var sign_at: Vector3 = route.sign
+		kit.box(paths, sign_at + Vector3.UP * 0.9, Vector3(0.18, 1.8, 0.18), Color("775d40"))
+		kit.box(paths, sign_at + Vector3.UP * 1.9, Vector3(4.6, 0.9, 0.16), Color("283b43"))
+		var label := Label3D.new()
+		label.name = "RouteSign_" + str(STATE.CLUES[int(route.index)].id)
+		label.text = route.text
+		label.font = preload("res://assets/fonts/Nunito-Black.ttf")
+		label.font_size = 38
+		label.pixel_size = 0.01
+		label.modulate = route.color
+		label.position = sign_at + Vector3(0, 1.9, 0.10)
+		paths.add_child(label)
 
 
 func _ui() -> void:
@@ -192,32 +240,28 @@ func _ui() -> void:
 	safe_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	safe_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(safe_ui)
-	var top := HBoxContainer.new()
+	top = HBoxContainer.new()
 	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	top.offset_left = 14
 	top.offset_top = 12
 	top.offset_right = -14
 	safe_ui.add_child(top)
 	top.add_child(KIT.button("‹ Spiele", _leave))
-	top.add_child(KIT.label("LUMOS STERNENSCHATZ", 24))
-	var gap := Control.new()
-	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top.add_child(gap)
+	title_label = KIT.label("LUMOS STERNENSCHATZ", 24)
+	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_label.clip_text = true
+	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	top.add_child(title_label)
 	top.add_child(KIT.button("Rucksack", _inventory))
 	top.add_child(KIT.button("Ⅱ", _pause_menu, 52))
-	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", KIT.panel())
-	panel.position = Vector2(14, 82)
-	panel.custom_minimum_size = Vector2(380, 0)
-	safe_ui.add_child(panel)
+	clue_panel = PanelContainer.new()
+	clue_panel.add_theme_stylebox_override("panel", KIT.panel())
+	safe_ui.add_child(clue_panel)
 	clue_label = KIT.label("", 18)
-	clue_label.custom_minimum_size.x = 350
 	clue_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	panel.add_child(clue_label)
+	clue_panel.add_child(clue_label)
 	toast = KIT.label("Erkunde die Insel. Folge dem goldenen Stern!", 17)
-	toast.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
-	toast.position = Vector2(-280, -45)
-	toast.custom_minimum_size.x = 560
+	toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	safe_ui.add_child(toast)
 	joystick = STICK.new()
@@ -233,20 +277,76 @@ func _ui() -> void:
 	action.size = Vector2(152, 152)
 	action.pressed.connect(_interact)
 	safe_ui.add_child(action)
-	var jump := KIT.button("Springen", _jump, 110)
-	jump.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
-	jump.position = Vector2(-165, -250)
-	safe_ui.add_child(jump)
+	jump_button = KIT.button("Springen", _jump, 110)
+	jump_button.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+	safe_ui.add_child(jump_button)
 	modal = PanelContainer.new()
 	modal.add_theme_stylebox_override("panel", KIT.panel())
-	modal.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	modal.position = Vector2(-260, -180)
-	modal.custom_minimum_size = Vector2(520, 360)
 	safe_ui.add_child(modal)
+	modal_scroll = ScrollContainer.new()
+	modal_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	modal.add_child(modal_scroll)
 	modal_box = VBoxContainer.new()
+	modal_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	modal_box.add_theme_constant_override("separation", 12)
-	modal.add_child(modal_box)
+	modal_scroll.add_child(modal_box)
+	modal_box.minimum_size_changed.connect(func(): _layout_modal.call_deferred())
 	modal.hide()
+
+
+func _layout() -> void:
+	if not is_inside_tree() or not is_instance_valid(modal):
+		return
+	RUNTIME.safe_area(self, safe_ui)
+	var available := safe_ui.size
+	if available.x <= 0 or available.y <= 0:
+		return
+	var short_landscape := available.y < 480 and available.x >= 600
+	var stick_side := minf(188, minf(available.x * 0.38, available.y * 0.38))
+	stick_side = maxf(120, stick_side)
+	var action_side := minf(152, minf(available.x * 0.32, available.y * 0.30))
+	action_side = maxf(96, action_side)
+	joystick.custom_minimum_size = Vector2.ONE * stick_side
+	joystick.size = Vector2.ONE * stick_side
+	joystick.position = Vector2(16, available.y - 16 - stick_side)
+	action.size = Vector2.ONE * action_side
+	action.position = Vector2(available.x - 16 - action_side, available.y - 16 - action_side)
+	jump_button.size = Vector2(110, 48)
+	jump_button.position = Vector2(available.x - 126, available.y - 76 - action_side)
+	var clue_width := minf(380, available.x - 28)
+	if short_landscape:
+		clue_width = minf(clue_width, available.x * 0.53)
+	clue_panel.position = Vector2(14, 76)
+	clue_panel.size = Vector2(clue_width, 0)
+	title_label.add_theme_font_size_override("font_size", 19 if available.x < 600 else 24)
+	if short_landscape:
+		toast.position = Vector2(clue_width + 28, 76)
+		toast.size = Vector2(available.x - clue_width - 42, 0)
+	else:
+		var width := minf(560, available.x - 28)
+		toast.position = Vector2((available.x - width) * 0.5, available.y - maxf(stick_side, action_side + 60) - 80)
+		toast.size = Vector2(width, 0)
+	_layout_modal()
+
+
+func _layout_modal() -> void:
+	if not is_instance_valid(modal) or not modal.visible:
+		return
+	# The scroll viewport, not the content minimum, bounds every dialog.
+	# Long inventories, questions and results retain full 48dp touch targets.
+	for child in modal_box.get_children():
+		if child is Label or child is Button:
+			child.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			child.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			child.custom_minimum_size.x = 0 if child is Label else 48
+			if child is Button:
+				# A drag starting on an answer must reach the scroll container.
+				child.mouse_filter = Control.MOUSE_FILTER_PASS
+	var available := safe_ui.size
+	var width := minf(560, available.x - 28)
+	var height := minf(available.y - 28, maxf(120, modal_box.get_combined_minimum_size().y + 24))
+	modal.size = Vector2(width, height)
+	modal.position = (available - modal.size) * 0.5
 
 
 func _physics_process(delta: float) -> void:
@@ -288,8 +388,12 @@ func _physics_process(delta: float) -> void:
 	if not found.is_empty():
 		toast.text = "Entdeckung: %s!" % found
 		_update()
-	marker.position = model.current().at + Vector3.UP * (3.5 + sin(time * 2) * 0.2)
+	if not available_goals.is_empty():
+		marker.position = available_goals[0].at + Vector3.UP * (3.5 + sin(time * 2) * 0.2)
 	marker.rotate_y(delta)
+	if available_goals.size() > 1:
+		alternate_marker.position = available_goals[1].at + Vector3.UP * (3.5 + sin(time * 2 + 1) * 0.2)
+		alternate_marker.rotate_y(-delta)
 	action.disabled = not model.can_interact(player.position)
 	save_clock += delta
 	if save_clock > 3:
@@ -320,16 +424,22 @@ func _update() -> void:
 		if child is CollisionShape3D:
 			child.set_deferred("disabled", not gate.visible)
 	marker.visible = not model.completed
+	available_goals = model.available_clues()
+	alternate_marker.visible = available_goals.size() > 1
+	var lead: String = model.current().lead
+	if available_goals.size() > 1:
+		lead = "Wähle deinen Weg: Kristallwächter oder Mondgarten. Für das Schloss brauchst du beide Funde."
 	clue_label.text = (
-		"Hinweis %d / %d · Entdeckungen %d / %d\n%s"
+		"Hinweise gelöst: %d / %d · Entdeckungen %d / %d\n%s"
 		% [
-			mini(model.chapter + 1, STATE.CLUES.size()),
+			model.found.size(),
 			STATE.CLUES.size(),
 			model.discoveries.size(),
 			STATE.DISCOVERIES.size(),
-			model.current().lead
+			lead
 		]
 	)
+	_layout.call_deferred()
 
 
 func _open_modal(title: String) -> void:
@@ -340,6 +450,8 @@ func _open_modal(title: String) -> void:
 		child.queue_free()
 	modal.show()
 	modal_box.add_child(KIT.label(title, 25))
+	modal_scroll.scroll_vertical = 0
+	_layout_modal.call_deferred()
 
 
 func _close_modal() -> void:
@@ -351,10 +463,9 @@ func _close_modal() -> void:
 func _interact() -> void:
 	if paused or not model.can_interact(player.position):
 		return
-	var clue: Dictionary = model.current()
+	var clue: Dictionary = model.clue_at(player.position)
 	_open_modal(clue.name)
 	var text := KIT.label(clue.question, 19)
-	text.custom_minimum_size.x = 480
 	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	modal_box.add_child(text)
 	for i in range(clue.answers.size()):
@@ -380,7 +491,9 @@ func _answer(choice: int) -> void:
 		toast.text = "Gefunden: %s! 7er-Serie! Du bist ein Schatz-Profi!" % model.inventory[-1]
 	model.last_cheer = 0
 	if model.completed:
-		_win()
+		# Rebuild the dialog after the answer button's input dispatch finishes.
+		# The completed progress was already saved above; reward rules stay intact.
+		_win.call_deferred()
 
 
 func _save() -> bool:

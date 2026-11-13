@@ -1,0 +1,54 @@
+{
+  "native/tools/validate_studio.sh": {
+    "sha256": "70b2fc4a4835bd1af0169e6f5115387437b13feb4d0efc2928e0778798455bd7",
+    "bytes": 2930
+  },
+  "native/tools/tests/test_nextgen_runner.py": {
+    "sha256": "08a157a743e4a3d37285c4850bc57712cd3d81acead7143577f8ab06211cac21",
+    "bytes": 24565
+  },
+  "native/tools/validate_nextgen.sh": {
+    "sha256": "8b1844825b3c6ea6ecd4a186ca7d28b94ed4fd5a218f4e34a102cd739981c4b6",
+    "bytes": 7285
+  },
+  "native/tools/verify_studio_rasters.py": {
+    "sha256": "eefad8134f66404aa4bd3fedee279661e3f243a1a9aa3042c69e3d181fda62dd",
+    "bytes": 1872
+  },
+  "native/tools/verify_village_rasters.py": {
+    "sha256": "0605a556d45ba9a7d6db6f85bdab21f0bc338a9c5fb5b8efb0ff40d04fa472e5",
+    "bytes": 3859
+  },
+  "native/tools/verify_puzzle_menu_rasters.py": {
+    "sha256": "3afe208e8572b683d12a338d73cf261416958ec2306ae87007f9c2c6b35e4994",
+    "bytes": 1191
+  },
+  "native/tools/run_godot_probe.py": {
+    "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+    "bytes": 2934
+  },
+  "native/.github/workflows/lumo-nextgen-2018.yml": {
+    "sha256": "b238b61fab9625da90faebcefcf40cf4b6a4a125d128ccd4ab8e2b55a75e6e90",
+    "bytes": 18437
+  },
+  "native/.github/workflows/lumo-studio-2019.yml": {
+    "sha256": "699d12f9f63e0a595cd1e26735d9202e33c5ff7b378aae62e0fb8b575f606f94",
+    "bytes": 19752
+  },
+  "host/scripts/verify_studio_delivery.py": {
+    "sha256": "f5bfd40078087ec59442be19a400210ba18e4fd713b6f00bfe0853bf2de61ae4",
+    "bytes": 47035
+  },
+  "host/scripts/record_studio_visual_review.py": {
+    "sha256": "dd8d73d72838186a51d494acb4d1b796bd12beebdd923e7bb48369f606bed64d",
+    "bytes": 6960
+  },
+  "host/scripts/tests/test_nextgen_2019_review.py": {
+    "sha256": "ce037aff18a5c9a1552bc5a1ff2caf5a8389f94cc01ec640ddd425a80ebb8165",
+    "bytes": 38537
+  },
+  "host/scripts/tests/test_kart_graphics_delivery.py": {
+    "sha256": "74822d7b25059f22943db202ad2907048044a685db81442e45f557b8019ab1b7",
+    "bytes": 24123
+  }
+}

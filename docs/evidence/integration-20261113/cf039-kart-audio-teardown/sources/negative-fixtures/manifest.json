@@ -1,0 +1,20 @@
+[
+  {
+    "name": "kart_ai_behavior_regression",
+    "source_sha256": "14c1ba4ddceb64cdf46108feac55c486a16a5f763e26b5b4762198f4c5411fe2",
+    "fixture_sha256": "ffcedd5de38e59dc1b36c341cb88c3119a60234e5fbd23c602e895b4993d0178",
+    "only_delta": "Keep the first real existing AudioStreamPlayback in an explicit strong test variable, and print its actual resource/type."
+  },
+  {
+    "name": "kart_garage_touch_targets_regression",
+    "source_sha256": "14452b7f8d424c427a66671a49d2c474bfe5cf2a1d56de8efe9e3c31b036ab88",
+    "fixture_sha256": "2452c060ef632b3ffe5fb85707732bbc7b256856e7560b9027951a392c7cc1b8",
+    "only_delta": "Keep the first real existing AudioStreamPlayback in an explicit strong test variable, and print its actual resource/type."
+  },
+  {
+    "name": "kart_full_field_regression",
+    "source_sha256": "db8c0e55dd4b91f611c5be33ed6036f5df7e5ceacfa437c16b5207280f543106",
+    "fixture_sha256": "2d139cb90a9d7fe37b1ee43697f014a462a8dfa6353594b83f0dd5428b003551",
+    "only_delta": "Keep the first real existing AudioStreamPlayback in an explicit strong test variable, and print its actual resource/type."
+  }
+]

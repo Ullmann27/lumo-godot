@@ -3,6 +3,7 @@ extends SceneTree
 ## is announced, and neither reversing over the line nor jumping ahead creates lap progress.
 const STEP: float = 1.0 / 60.0
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 var game
 ## An assertion aborts its function. PASS requires every check to finish.
 var completed_checks: int = 0
@@ -505,12 +506,13 @@ func _run() -> void:
 	await _test_pedals()
 	var expected_checks: int = game.CATALOG.TRACKS.size() + 11
 	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[KartPhysics]")):
+		push_error("[KartPhysics] FAIL: scene/audio teardown incomplete")
+		quit(1)
+		return
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	if completed_checks != expected_checks:
 		print("[KartPhysics] FAIL: %d of %d checks completed" % [completed_checks, expected_checks])
-		await create_timer(0.5).timeout
 		quit(1)
 		return
 	print(
@@ -521,6 +523,4 @@ func _run() -> void:
 			+ "and a physical Wolkenweg split route"
 		)
 	)
-	# The audio mix thread releases the course music late.
-	await create_timer(0.5).timeout
 	quit(0)

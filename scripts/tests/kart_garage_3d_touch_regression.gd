@@ -1,6 +1,7 @@
 extends SceneTree
 ## Production native navigation and preview gestures, plus the retained legacy
 ## garage's projected actions. Hidden scenery must never navigate the new menu.
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 var failures: Array[String] = []
 var checks := 0
 var completed_sections := 0
@@ -25,7 +26,11 @@ func _run() -> void:
 	for _frame in range(12):
 		await physics_frame
 	await _native_actions(game.garage)
-	game.queue_free()
+	if not await TEARDOWN.release_scene(self, game, "[Garage3DTouch] native"):
+		push_error("[Garage3DTouch] FAIL: native scene teardown did not complete")
+		quit(1)
+		return
+	game = null
 	await _settle()
 	# The old ray/action contract still belongs to the explicitly retained base
 	# garage. Do not require invisible legacy plaques to navigate the native UI.
@@ -33,7 +38,11 @@ func _run() -> void:
 	root.add_child(legacy)
 	await _settle()
 	await _legacy_actions(legacy)
-	legacy.queue_free()
+	if not await TEARDOWN.release_scene(self, legacy, "[Garage3DTouch] legacy"):
+		push_error("[Garage3DTouch] FAIL: legacy scene teardown did not complete")
+		quit(1)
+		return
+	legacy = null
 	await _settle()
 	_check(completed_sections == 2, "both production and legacy pointer suites complete")
 	if failures.is_empty():

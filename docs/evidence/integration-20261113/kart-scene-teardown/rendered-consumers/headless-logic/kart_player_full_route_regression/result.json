@@ -1,0 +1,42 @@
+{
+  "probe": "kart_player_full_route_regression",
+  "kind": "headless-logic",
+  "actual_renderer_tested": false,
+  "command": [
+    "python3",
+    "tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_player_full_route_regression/engine.log",
+    "--timeout",
+    "420",
+    "--required",
+    "[PlayerFullRoute] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "res://scripts/tests/kart_player_full_route_regression.gd",
+    "--",
+    "--out=/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_player_full_route_regression/route-output"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "started_at_utc": "2026-11-13T16:33:32.455224+00:00",
+  "finished_at_utc": "2026-11-13T16:33:42.443219+00:00",
+  "duration_seconds": 9.988,
+  "exit_code": 0,
+  "strict_error_lines": [],
+  "scoped_sources_unchanged": true,
+  "local_head_at_end": "a59dca033d1ad6afa4afbf0b51b03e04fe8c4ef9",
+  "source_count": 858,
+  "runner_log_sha256": "70d66d6f4610140025357ebb97b135267242863a643ca889e1098b868b854d50",
+  "success": true,
+  "runtime_markers": [
+    "[PlayerFullRoute] teardown tracked=3 scene_released=true audio_released=true elapsed_ms=82",
+    "[PlayerFullRoute] PASS {\"airborne\":false,\"brake\":0.0,\"checkpoints\":16,\"distance\":3703.71405977428,\"jumps\":8,\"landings\":8,\"lane\":-0.765062272548676,\"lasso_catches\":1,\"lasso_clock_seconds\":98.5166666666624,\"lasso_dodges\":3,\"lasso_factor\":1.0,\"loop_active\":false,\"loops\":2,\"precision_results\":{\"ziel\":2},\"resets\":0,\"road_distance\":0.346461836695653,\"seconds\":98.5166666666624,\"speed\":41.0,\"steering\":0.0} max_step=0.71434593200684"
+  ],
+  "scope": "Unmodified headless logic/input and real resource cleanup only; the existing CI rendered gate remains required."
+}

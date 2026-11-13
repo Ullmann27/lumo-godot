@@ -1,0 +1,289 @@
+{
+  "created_at": "2026-11-13T16:35:42.764989+00:00",
+  "objects": [
+    {
+      "encoding": "identity",
+      "original_bytes": 3938,
+      "original_sha256": "5c6cefce86dec1079b2c80263a350bdb33961e74612b3bef2f55f8ee812a1e83",
+      "path": "README.md",
+      "stored_bytes": 3938,
+      "stored_sha256": "5c6cefce86dec1079b2c80263a350bdb33961e74612b3bef2f55f8ee812a1e83"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1595,
+      "original_sha256": "48470aa1b3fa3b5004e97425e24576b30508a9f34f1ca340db6b5e5d018f1c63",
+      "path": "assertion-preservation.json",
+      "stored_bytes": 1595,
+      "stored_sha256": "48470aa1b3fa3b5004e97425e24576b30508a9f34f1ca340db6b5e5d018f1c63"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 12296,
+      "original_sha256": "10d1460a5f0033f7c80622f78f9e2b78154771d52d623d5ed58de1b98bc08ba2",
+      "path": "final-sources/host_bridge_regression.gd.gz",
+      "stored_bytes": 3553,
+      "stored_sha256": "ff339407301fc7462f100351739e3299bb2d886a856c0c15102f7f25ff6e6f48"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 7428,
+      "original_sha256": "3b88da88970a26c8e3c99140e1dc6662dece0f8277100d2a17524b7dc4fee138",
+      "path": "final-sources/kart_compact_selection_regression.gd.gz",
+      "stored_bytes": 2651,
+      "stored_sha256": "f2b55f09bec6c46ec4bb580cef96fa42ec9946ecc81bc15def92b7a0794f9270"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 8287,
+      "original_sha256": "e49d318c410f31238c58f7c4b379c9542fbad8071dbb144b1512600160c88192",
+      "path": "final-sources/kart_jump_regression.gd.gz",
+      "stored_bytes": 3001,
+      "stored_sha256": "562ccdba50a7ee7a39eeab488e3afec65ba6c4b24a6234d9eee7ca87249262fc"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 20821,
+      "original_sha256": "0b23b736822b00c175b85cc940c9110d26f7ab415daadea1343e304daa7e89b3",
+      "path": "final-sources/kart_physics_regression.gd.gz",
+      "stored_bytes": 6243,
+      "stored_sha256": "b6246cecc134d695c7af2a57fc7ff5c2d37d11a7b1bf881ca94c2d65ab2227c8"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 8072,
+      "original_sha256": "58e289a4b1f35f16707250848ec534251f03e31ff00fab7e956b57ec58ee5800",
+      "path": "final-sources/kart_race_bridge_regression.gd.gz",
+      "stored_bytes": 2745,
+      "stored_sha256": "1ac2d6aa7cb245cfa1354fdc2f4444359d1505f7ebdf42d6bebf95ba687a110b"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 5340,
+      "original_sha256": "6c6294bc2d392428c2ff00c174653df5af422c31da6e74f68d9cdc99b8fe2ee1",
+      "path": "final-sources/kart_touch_regression.gd.gz",
+      "stored_bytes": 1911,
+      "stored_sha256": "f009b9afb7a46873fc4efdd7a4b916f9e4f5f7c00734b7a880af9bd30e9cccb3"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 16856,
+      "original_sha256": "4c960a914bb5be08c777db9b84782ee98bd08e7b38eb22ebf0da213c89a0d6dc",
+      "path": "initial-status.txt.gz",
+      "stored_bytes": 2642,
+      "stored_sha256": "b1048d8da6b7bd8af4461905152e77a9a3e9c90bb3a306e1d12e1a192444add5"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 10585,
+      "original_sha256": "c4fd1914825df980beda9e17295c9fa69550574072d3368bae03ce25a5b8b73c",
+      "path": "logs/host_bridge_regression.engine.log.gz",
+      "stored_bytes": 1251,
+      "stored_sha256": "4343e51ffb8319c238432b9da1cc8e2a8de5c40e549827eee052b9dc2bc11a1b"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 10585,
+      "original_sha256": "c4fd1914825df980beda9e17295c9fa69550574072d3368bae03ce25a5b8b73c",
+      "path": "logs/host_bridge_regression.runner.log.gz",
+      "stored_bytes": 1251,
+      "stored_sha256": "4343e51ffb8319c238432b9da1cc8e2a8de5c40e549827eee052b9dc2bc11a1b"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 3223,
+      "original_sha256": "79144d92a5abd6de5439b03d25cd7e3e97dd613a57984d35106283e99aa0c7fc",
+      "path": "logs/kart_compact_selection_regression.engine.log.gz",
+      "stored_bytes": 914,
+      "stored_sha256": "9943a0b9890da8aa509c99fd2d7a735707343049ef29b2e7e17ca062c09e2d98"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 3223,
+      "original_sha256": "79144d92a5abd6de5439b03d25cd7e3e97dd613a57984d35106283e99aa0c7fc",
+      "path": "logs/kart_compact_selection_regression.runner.log.gz",
+      "stored_bytes": 914,
+      "stored_sha256": "9943a0b9890da8aa509c99fd2d7a735707343049ef29b2e7e17ca062c09e2d98"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 1151,
+      "original_sha256": "9010121b9428374b7d063497ef5b4c50989fc4f9b0f7edab7c3a3649b186efe5",
+      "path": "logs/kart_jump_regression.engine.log.gz",
+      "stored_bytes": 645,
+      "stored_sha256": "dc2fd601e3c53d6a5973a7975271c39f300ef3f581f631f41a3da6d89942f6c2"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 1151,
+      "original_sha256": "9010121b9428374b7d063497ef5b4c50989fc4f9b0f7edab7c3a3649b186efe5",
+      "path": "logs/kart_jump_regression.runner.log.gz",
+      "stored_bytes": 645,
+      "stored_sha256": "dc2fd601e3c53d6a5973a7975271c39f300ef3f581f631f41a3da6d89942f6c2"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 5169,
+      "original_sha256": "588f5120991d74475886127bce6a0a842c81a5e92da76807d979b91ad0fd0848",
+      "path": "logs/kart_physics_regression.engine.log.gz",
+      "stored_bytes": 1154,
+      "stored_sha256": "3e1111478249e4f865589634a9c43316d13c8d139b8d0f0943777f7f4de54da8"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 5169,
+      "original_sha256": "588f5120991d74475886127bce6a0a842c81a5e92da76807d979b91ad0fd0848",
+      "path": "logs/kart_physics_regression.runner.log.gz",
+      "stored_bytes": 1154,
+      "stored_sha256": "3e1111478249e4f865589634a9c43316d13c8d139b8d0f0943777f7f4de54da8"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 2277,
+      "original_sha256": "d28df7a709f5a4e963ae4b017eee3d65877f4a39ed45fbe1c502ecbf442b8383",
+      "path": "logs/kart_race_bridge_regression.engine.log.gz",
+      "stored_bytes": 760,
+      "stored_sha256": "b83f42e80c96b143cd32f605242b9b7501bcca218aa439451a7f114fb7a247ca"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 2277,
+      "original_sha256": "d28df7a709f5a4e963ae4b017eee3d65877f4a39ed45fbe1c502ecbf442b8383",
+      "path": "logs/kart_race_bridge_regression.runner.log.gz",
+      "stored_bytes": 760,
+      "stored_sha256": "b83f42e80c96b143cd32f605242b9b7501bcca218aa439451a7f114fb7a247ca"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 855,
+      "original_sha256": "0851277b33fd7f071050180586a1b8d428290eacdba9636e29ae8842ab5a6435",
+      "path": "logs/kart_touch_regression.engine.log.gz",
+      "stored_bytes": 552,
+      "stored_sha256": "b4f80fbdd0c81c10896f6ca7736dc116d652c19996683586e01d641f617f25fb"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 855,
+      "original_sha256": "0851277b33fd7f071050180586a1b8d428290eacdba9636e29ae8842ab5a6435",
+      "path": "logs/kart_touch_regression.runner.log.gz",
+      "stored_bytes": 552,
+      "stored_sha256": "b4f80fbdd0c81c10896f6ca7736dc116d652c19996683586e01d641f617f25fb"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 11738,
+      "original_sha256": "032aca81ac9b8e21d3b3a72851ed02ed7d8b09813796793e0c9c2fed5c5d9a1c",
+      "path": "originals/host_bridge_regression.gd.gz",
+      "stored_bytes": 3414,
+      "stored_sha256": "45cf061d8c504a38c68120d968c97159b9666b327817f14beb6545941bea7ba5"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 7199,
+      "original_sha256": "5da50404d04bdc584ac5174ca8123ad9cdd4b55c895954f97d17f4cb9133b93a",
+      "path": "originals/kart_compact_selection_regression.gd.gz",
+      "stored_bytes": 2540,
+      "stored_sha256": "1a90379304f252d326baf66843bbbcb4e8954f3c52458939b8a3e69cb8f9f558"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 8153,
+      "original_sha256": "3d4d8d6c2fc33ff617995128aee6c36765acc4ccd4ed199295dddcfe32a5d4af",
+      "path": "originals/kart_jump_regression.gd.gz",
+      "stored_bytes": 2941,
+      "stored_sha256": "3b7d7b1f7349a627afce76dc547501913f412cae3f1d53dd58f6c912e7c801d2"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 20737,
+      "original_sha256": "06ba3488c62f3623c3cb0e5cdae7722980e6a7628ae6f6f93035df9202eaf1bf",
+      "path": "originals/kart_physics_regression.gd.gz",
+      "stored_bytes": 6206,
+      "stored_sha256": "31c651d98e9ec33570ef16f73752085b328b3c506b42497fe44cc8afbfbec3b3"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 7771,
+      "original_sha256": "efe956ea6b73b9c831d13b291cd17afe85c63691a1c8b48ddb9644ebd441030a",
+      "path": "originals/kart_race_bridge_regression.gd.gz",
+      "stored_bytes": 2646,
+      "stored_sha256": "afde5c24830c428fc3b9c6834b4eb54584976eb4edd87f22d3ad6bf5164d0ffe"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 5161,
+      "original_sha256": "336f166070875686f13e42bcc2f628462e32b61227b63c1f87776d2deb7fd436",
+      "path": "originals/kart_touch_regression.gd.gz",
+      "stored_bytes": 1798,
+      "stored_sha256": "ecaed9c515e6c3eadcd8fe3002baba2f252d803ce9f9d302cf8e362159165c84"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 11304,
+      "original_sha256": "a2b26866f254c560157de1698e9a31b9a5e2062232681cfa481eeeb1c813b98c",
+      "path": "six-consumer.patch.gz",
+      "stored_bytes": 3477,
+      "stored_sha256": "d77fabbcfda3c6d4d8905be804e5d2ba4f3812e36a071f87cc72046b55eb6238"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4155,
+      "original_sha256": "17cc7b055454435a7dcaeaf5dca50ad5dd8df1b0afb7e210d024ee6e2420a4f4",
+      "path": "source-after.json",
+      "stored_bytes": 4155,
+      "stored_sha256": "17cc7b055454435a7dcaeaf5dca50ad5dd8df1b0afb7e210d024ee6e2420a4f4"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 3316,
+      "original_sha256": "245811c4266d7f59361130674a5c4b866c60f9722e4e0c030dbf9fc45a719863",
+      "path": "source-before.json",
+      "stored_bytes": 3316,
+      "stored_sha256": "245811c4266d7f59361130674a5c4b866c60f9722e4e0c030dbf9fc45a719863"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 14129,
+      "original_sha256": "e64635924444adb40ec769610df0fcd1a62beb120a6eab5529b18fadc70e9533",
+      "path": "test-results.json",
+      "stored_bytes": 14129,
+      "stored_sha256": "e64635924444adb40ec769610df0fcd1a62beb120a6eab5529b18fadc70e9533"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 813,
+      "original_sha256": "f6a25f7165896c066cc91df78343a7cffe5ea13960255e667d84063a9a597b64",
+      "path": "test-source-before.json",
+      "stored_bytes": 813,
+      "stored_sha256": "f6a25f7165896c066cc91df78343a7cffe5ea13960255e667d84063a9a597b64"
+    }
+  ],
+  "published_base": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "schema": 1,
+  "scope": "Six existing Kart teardown consumers; only main kart_regression had observed CI failure. No approval receipt.",
+  "source_tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "validation": {
+    "engine_error_or_retained_resource_lines": 0,
+    "passed": 6,
+    "probes": 6,
+    "release_calls": 12,
+    "release_elapsed_ms": [
+      100,
+      15,
+      65,
+      67,
+      189,
+      83,
+      126,
+      52,
+      140,
+      69,
+      83,
+      81
+    ],
+    "source_hashes_unchanged_during_each_probe": true,
+    "static_original_assert_check_calls_preserved": 240,
+    "total_seconds": 96.445,
+    "tracked_playbacks": 22
+  }
+}

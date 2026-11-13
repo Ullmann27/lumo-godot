@@ -1,0 +1,43 @@
+{
+  "phase": "before",
+  "test": "kart_garage_touch_targets_regression",
+  "started_utc": "2026-11-13T15:06:20.965743+00:00",
+  "finished_utc": "2026-11-13T15:06:34.556309+00:00",
+  "elapsed_seconds": 13.591,
+  "command": [
+    "python3",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_garage_touch_targets_regression/engine.log",
+    "--timeout",
+    "240",
+    "--required",
+    "[GarageTargets] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_garage_touch_targets_regression.gd"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "xdg": {
+    "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_garage_touch_targets_regression/xdg-data",
+    "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_garage_touch_targets_regression/xdg-config",
+    "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_garage_touch_targets_regression/xdg-cache",
+    "XDG_STATE_HOME": "/home/agent/.local/state",
+    "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+  },
+  "script_sha256": "9f974cc04c021b5b04aac32b2f1b8229182cf1aa2f82254936d8c4268591c83b",
+  "strict_runner_exit": 0,
+  "required_marker": "[GarageTargets] PASS",
+  "marker_present": true,
+  "errors": [],
+  "cleanup_lines": [],
+  "engine_log_sha256": "b5fba941f74d0ce2e8efeabd3bbae4662281a88021250870625ef15ed0a67029",
+  "runner_log_sha256": "b5fba941f74d0ce2e8efeabd3bbae4662281a88021250870625ef15ed0a67029"
+}
