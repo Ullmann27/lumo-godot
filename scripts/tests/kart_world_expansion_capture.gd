@@ -105,7 +105,6 @@ func _run() -> void:
 		return
 	file.store_string(JSON.stringify(manifest, "\t") + "\n")
 	file.close()
-	print("[KartWorldExpansionCapture] PASS track=%s views=%d" % [selected, manifest.views.size()])
 	await _finish(0)
 
 
@@ -121,8 +120,10 @@ func _capture_views() -> bool:
 			if point.x > east.x:
 				east = point
 		var station := Vector3(east.x + 26.0, -2.0, east.z + 9.0)
-		game.camera.position = station + Vector3(-30, 12, 36)
-		game.camera.look_at(station + Vector3(16, 14, -19))
+		# Stay beyond the complete road's east edge, above its existing deck.
+		# This same layout calculation also works on the unexpanded baseline.
+		game.camera.position = station + Vector3(-14, 25, 50)
+		game.camera.look_at(station + Vector3(20, 22, -36))
 	else:
 		var road: Vector3 = game.world.position_at(center)
 		game.camera.position = game.world.position_at(center - 36.0) + Vector3.UP * 5.5
@@ -189,7 +190,43 @@ func _finish(code: int, problem: String = "") -> void:
 	if not problem.is_empty():
 		push_error("[KartWorldExpansionCapture] " + problem)
 	if is_instance_valid(game):
+		var playbacks: Array[WeakRef] = []
+		for player: Node in game.find_children("*", "AudioStreamPlayer", true, false):
+			if player.has_stream_playback():
+				playbacks.append(weakref(player.get_stream_playback()))
 		game.abandoned = true
 		game.queue_free()
 		await _frames(3)
+		game = null
+		if not await _release_audio(playbacks):
+			push_error("[KartWorldExpansionCapture] Audio playback retained after scene teardown")
+			code = 1
+	if code == 0:
+		print(
+			"[KartWorldExpansionCapture] PASS track=%s views=%d" % [selected, manifest.views.size()]
+		)
 	quit(code)
+
+
+func _release_audio(playbacks: Array[WeakRef]) -> bool:
+	# stop() queues server-side fadeout; fixed-fps frames can outrun the audio
+	# thread. Observe the actual playback lifetime without holding it alive.
+	var started := Time.get_ticks_msec()
+	while true:
+		var pending := 0
+		for playback: WeakRef in playbacks:
+			if playback.get_ref() != null:
+				pending += 1
+		if pending == 0:
+			print(
+				(
+					"[KartWorldExpansionCapture] audio_release tracked=%d elapsed_ms=%d"
+					% [playbacks.size(), Time.get_ticks_msec() - started]
+				)
+			)
+			return true
+		if Time.get_ticks_msec() - started >= 2000:
+			return false
+		OS.delay_msec(2)
+		await _frames(1)
+	return false

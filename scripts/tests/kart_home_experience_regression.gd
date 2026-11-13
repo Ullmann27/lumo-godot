@@ -49,6 +49,21 @@ func _tap(control: Control) -> void:
 	await _settle()
 
 
+func _capture_metadata(label: String, dimensions: Vector2i) -> Dictionary:
+	var selected_mode := str(game.mode)
+	var selected_kart := str(game.selected_kart)
+	if game.menu_active and is_instance_valid(game.garage):
+		selected_mode = str(game.garage.setup.mode)
+		selected_kart = str(game.garage.setup.kart)
+	return {
+		"file": label + ".png", "width": dimensions.x, "height": dimensions.y,
+		"draw_calls": Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),
+		"primitives": Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME),
+		"renderer": DisplayServer.get_name(), "baseline": baseline,
+		"menu_active": game.menu_active, "mode": selected_mode, "kart": selected_kart,
+	}
+
+
 func _shot(label: String, dimensions: Vector2i) -> void:
 	if not capture:
 		return
@@ -60,13 +75,7 @@ func _shot(label: String, dimensions: Vector2i) -> void:
 	_check(image.get_size() == dimensions, label + " has the requested physical dimensions")
 	var destination := output.path_join(label + ".png")
 	_check(image.save_png(destination) == OK, label + " PNG is saved")
-	captures.append({
-		"file": label + ".png", "width": dimensions.x, "height": dimensions.y,
-		"draw_calls": Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),
-		"primitives": Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME),
-		"renderer": DisplayServer.get_name(), "baseline": baseline,
-		"menu_active": game.menu_active, "mode": str(game.garage.setup.mode),
-	})
+	captures.append(_capture_metadata(label, dimensions))
 	print(marker, " CAPTURE ", destination)
 
 
@@ -158,6 +167,8 @@ func _run() -> void:
 		await _shot("home-" + suffix, dimensions)
 		await _tap(landing._mode_buttons.time_trial)
 		_check(garage.setup.mode == "time_trial" and game.menu_active, "real mode touch selects Time Trial without starting")
+		var mode_metadata := _capture_metadata("selected-time-trial-" + suffix, dimensions)
+		_check(mode_metadata.get("menu_active", false) and mode_metadata.get("mode", "") == "time_trial", "capture metadata reads the live menu selection")
 		if not baseline:
 			var moving: Transform3D = garage.preview_camera.transform
 			await _shot("mode-transition-" + suffix, dimensions)
@@ -176,6 +187,8 @@ func _run() -> void:
 		await _settle()
 		await _tap(gecko)
 		_check(garage.setup.kart == "gecko_velo", "actual kart choice is preserved")
+		var kart_metadata := _capture_metadata("garage-selected-" + suffix, dimensions)
+		_check(kart_metadata.get("kart", "") == "gecko_velo", "capture metadata includes the selected real kart")
 		await _shot("garage-selected-" + suffix, dimensions)
 		await _tap(garage.back_button)
 		await _rest_camera()
@@ -187,6 +200,9 @@ func _run() -> void:
 		await _tap(landing._start)
 		_check(not game.menu_active and is_instance_valid(game.player), "START constructs a real playable race")
 		_check(game.mode == "time_trial" and game.selected_kart == "gecko_velo", "START keeps selected mode and kart")
+		_check(not is_instance_valid(game.garage), "race capture occurs after the menu garage is freed")
+		var race_metadata := _capture_metadata("race-start-" + suffix, dimensions)
+		_check(not race_metadata.get("menu_active", true) and race_metadata.get("mode", "") == str(game.mode) and race_metadata.get("kart", "") == str(game.selected_kart), "capture metadata reads the active race after garage disposal")
 		await _shot("race-start-" + suffix, dimensions)
 		game.queue_free()
 		await _settle()

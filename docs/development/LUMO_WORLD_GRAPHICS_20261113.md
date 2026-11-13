@@ -36,7 +36,9 @@ Alle sechs berührten GDScript-Dateien bestanden `gdlint` und `gdformat --check`
 
 `kart_world_expansion_capture.gd` lädt die tatsächliche Kart-Produktionsszene einschließlich Lumo, Kart, HUD und Beleuchtung. Es erstellt drei gestellte Rennansichten und ein Manifest mit Quellstand, Kamera, Bildhash und Renderer. Dieselbe Datei kann auf der Ausgangsbasis ausgeführt werden, da sie keine neuen Modulklassen voraussetzt. Ausgabe: `LUMO_CAPTURE_DIR`; Nutzerverzeichnis: gesondertes `XDG_DATA_HOME`.
 
-**Noch kein frischer Pixelnachweis:** Die lokale Umgebung stellt keinen verwendbaren X11-Renderer bereit. Ein Grafiklauf wird durch die Integration ausgeführt. Keine Android-Bildrate, Gerätewärme oder echte gefahrene Runde wird durch diesen statischen Grafiktest behauptet.
+**Pixelnachweis in der Integration:** Workflow `43430078141` renderte auf Quelle `01cf063a7c11681b0060430cdb72c16d56a0b061` jeweils drei echte X11/Mesa/GLES-Bilder beider Strecken und derselben Kameras auf der Ausgangsbasis. Alle zwölf Bilder wurden geöffnet und verglichen. Die Winter-Fahransicht zeigt die zusammenhängende Eisgalerie und deren Schatten; die Canyon-Anfahrt und Landmarkansicht zeigen das geologische Tor mit seitlichen Gesteinsstaffeln. Die Ausfahrten bleiben lesbar, einschließlich Leitplanken, Sterne, Kurvenpfeile und Booster. Keine Android-Bildrate, Gerätewärme oder echte gefahrene Runde wird durch diesen statischen Grafiktest behauptet.
+
+Die erste Winter-Landmarkaufnahme war unbrauchbar: Die bestehende Rennstrecke verdeckte die obere Bildhälfte und damit die Bergstation. Die Capture-Kamera wurde deshalb von `base + (-30,12,36)` auf `base + (-14,25,50)` und das Blickziel auf `base + (20,22,-36)` geändert. Sie liegt nun östlich der vollständigen Fahrbahnhülle und über deren Deck. Eine gezielte Probe gegen die tatsächlichen Meshdreiecke reproduzierte mit der alten Position die Verdeckung der oberen Station und zweier Kabinen. Mit der neuen Position sind die Sichtlinien zu beiden Stationsdächern und allen vier Kabinen frei; die Zielpunkte liegen im 1280×720-Bild. Die neue Kamera ist auf beiden Quellen identisch berechenbar und benötigt keine neue Modulklasse. **Die neue Ansicht ist bis zum erneuten echten Renderer-Lauf noch nicht visuell abgenommen.** Die Produktionsgeometrie wurde dafür nicht verändert.
 
 
 ## Integrationskorrektur: tatsächlicher Besitzer der Bewegungszustände
@@ -45,4 +47,23 @@ Die Integrationsprüfung fand einen echten Anschlussfehler: Im Rennen liegt die 
 
 Die Regression bildet jetzt `ActiveRace` nach. Mit unverändertem altem Code wurde der Fehler reproduziert: 39 Prüfungen, sechs Fehler. Der Fix sucht die jeweils nächsten Vorfahren mit `paused` beziehungsweise `reduced_motion` unabhängig voneinander. Beim Eintritt in den SceneTree wird neu gebunden, weil die Garage ihre Vorschauwelt vor dem Anhängen an Pivot/SubViewport aufbaut. Eine zusätzliche Fixture bildet genau diese zeitliche Reihenfolge und die Menü-/SubViewport-/Pivot-Hierarchie nach; sie prüft auch spätere Einstellungsänderungen.
 
-Danach bestand die vollständige Probe 65 Prüfungen mit null Fehlern. Beide geänderten GDScript-Dateien bestehen Linter und Formatprüfung. Das vorherige Fehlerprotokoll steht als `pause-owner-red.log` neben dem aktuellen `headless.log`. Ein echter Renderer-Readback bleibt dem Integrationslauf vorbehalten.
+Danach bestand die vollständige Probe 65 Prüfungen mit null Fehlern. Beide geänderten GDScript-Dateien bestehen Linter und Formatprüfung. Das vorherige Fehlerprotokoll steht als `pause-owner-red.log` neben dem aktuellen `headless.log`. Der nachfolgende Integrationslauf `43430078141` bestand auch die Prüfung mit tatsächlichem Renderer-Readback.
+
+## Capture-Abbau: Audiomischer wirklich freigeben
+
+Der echte Canyon-Capture meldete nach drei gespeicherten Bildern vier noch verwendete Ressourcen, sowohl auf der neuen als auch auf der unveränderten Ausgangsbasis. Die gezielte Headless-Lifecycle-Reproduktion mit `--fixed-fps 60 --verbose` identifizierte genau die beiden Ogg-Musikstreams `garage.ogg` und `sonnenhafen.ogg` samt ihren PacketSequences. Ohne feste beschleunigte Framerate trat der Fehler nicht auf. Die Beobachtung entspricht der asynchronen serverseitigen Playback-Freigabe, die im [offiziellen Godot-Issue #76745](https://github.com/godotengine/godot/issues/76745) beschrieben wird.
+
+Der Capture hält jetzt vor dem Szenenabbau nur schwache Referenzen auf die aktiven Audiowiedergaben fest. Nach dem regulären `queue_free()` wartet er, bis diese tatsächlich verschwunden sind. Kleine 2-ms-Pausen lassen auch bei beschleunigten Frames den Audiomischer arbeiten. Spätestens nach zwei Sekunden führt jede verbleibende Wiedergabe zu Fehler und Exitcode 1; keine Warnung wird unterdrückt. Der PASS-Marker folgt erst nach diesem erfolgreichen Abbau.
+
+Die lokale Reproduktion ist nach dem Fix mit beiden Strecken sauber: keine ObjectDB-/Ressourcen-Leaks. Im ersten korrigierten Canyon-Lauf wurden beide Wiedergaben nach 88 ms freigegeben. Eine absichtlich festgehaltene Wiedergabe löste wie vorgesehen nach der Grenze Exitcode 1 aus. Der normale Capture verweigert Headless weiterhin mit Exitcode 2.
+
+Reproduzierbare **bildlose** Lifecycle-Probe, die die echte Produktionsszene und die Capture-Abfolge ausführt, aber weder PNG noch Bildmanifest schreibt:
+
+```sh
+XDG_DATA_HOME=/tmp/lumo-world-capture-lifecycle \
+godot --headless --verbose --fixed-fps 60 --rendering-method gl_compatibility \
+  --path . --script res://scripts/tests/kart_world_capture_lifecycle_probe.gd \
+  -- --track=crystal_canyon
+```
+
+`--track=winter_sprint` prüft dieselbe Abfolge für Winter. `views=0` ist in dieser ausdrücklichen Lifecycle-Probe beabsichtigt; sie liefert keinen Pixelnachweis. Die zugehörigen Logs `capture-lifecycle-red.log`, `capture-lifecycle-green.log` und `capture-lifecycle-winter-green.log` liegen unter `docs/evidence/world-graphics-20261113/`. Der anschließende echte X11-Capture muss die drei Bilder und den fehlerfreien Exit erneut gemeinsam nachweisen.

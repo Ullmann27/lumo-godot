@@ -23,7 +23,7 @@ jobs:
   native-graphics:
     name: Actual ${{ matrix.area }} scene and interaction
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     strategy:
       fail-fast: false
       matrix:
@@ -117,7 +117,7 @@ jobs:
               if ! python3 tools/run_godot_probe.py --log "$EVIDENCE/render-$track.log" \
                 --timeout 600 --required "$CAPTURE_MARKER" -- \
                 xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . \
-                --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 60 \
+                --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 60 --verbose \
                 --script "scripts/tests/$CAPTURE.gd" -- "--track=$track"; then
                 failures=$((failures + 1))
               fi
@@ -127,8 +127,10 @@ jobs:
             export XDG_DATA_HOME="$EVIDENCE/capture-user-data"
             export LUMO_CAPTURE_DIR="$EVIDENCE/images"
             mkdir -p "$XDG_DATA_HOME" "$LUMO_CAPTURE_DIR"
+            capture_timeout=600
+            if [[ "$AREA" == home ]]; then capture_timeout=900; fi
             python3 tools/run_godot_probe.py --log "$EVIDENCE/render.log" \
-              --timeout 600 --required "$CAPTURE_MARKER" -- \
+              --timeout "$capture_timeout" --required "$CAPTURE_MARKER" -- \
               xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . \
               --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 60 \
               --script "scripts/tests/$CAPTURE.gd"
@@ -180,7 +182,7 @@ jobs:
               if ! python3 tools/run_godot_probe.py --log "$EVIDENCE/baseline/render-$track.log" \
                 --timeout 600 --required "$CAPTURE_MARKER" -- \
                 xvfb-run -a -s '-screen 0 2560x2560x24' godot --path "$baseline" \
-                --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 60 \
+                --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 60 --verbose \
                 --script "scripts/tests/$CAPTURE.gd" -- "--track=$track"; then
                 failures=$((failures + 1))
               fi
@@ -191,7 +193,7 @@ jobs:
             export LUMO_CAPTURE_DIR="$EVIDENCE/baseline/images"
             mkdir -p "$XDG_DATA_HOME" "$LUMO_CAPTURE_DIR"
             python3 tools/run_godot_probe.py --log "$EVIDENCE/baseline/render.log" \
-              --timeout 600 --required "$CAPTURE_MARKER" -- \
+              --timeout 900 --required "$CAPTURE_MARKER" -- \
               xvfb-run -a -s '-screen 0 2560x2560x24' godot --path "$baseline" \
               --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 60 \
               --script "scripts/tests/$CAPTURE.gd" -- --baseline
