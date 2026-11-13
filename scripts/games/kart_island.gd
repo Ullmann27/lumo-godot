@@ -32,6 +32,7 @@ const RIVAL_RAMP_PLAN = preload("res://scripts/games/kart_rival_ramp_plan.gd")
 const OPPONENT_ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
+const DRIVE_FEEDBACK = preload("res://scripts/games/kart_drive_feedback.gd")
 const RESONANCE = preload("res://scripts/games/kart_resonance_system.gd")
 const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
@@ -180,6 +181,7 @@ var rng := RandomNumberGenerator.new()
 var player: LumoRaceKart
 var camera: Camera3D
 var speed_fx: Node3D
+var drive_feedback: Node3D
 var opponents: Array[LumoRaceKart] = []
 var opponent_distances: Array[float] = [-4, -7, -10, -13, -16]
 var opponent_lanes: Array[float] = [-3.2, -1.65, -0.1, 1.45, 3.0]
@@ -455,6 +457,10 @@ func _build_world() -> void:
 	player.reduced_motion = reduced_motion
 	player.set_graphics_quality(graphics_profile)
 	race_root.add_child(player)
+	drive_feedback = DRIVE_FEEDBACK.new()
+	drive_feedback.reduced_motion = reduced_motion
+	race_root.add_child(drive_feedback)
+	drive_feedback.bind_vehicle(player)
 	shield_visual = MeshInstance3D.new()
 	var bubble := SphereMesh.new()
 	bubble.radius = 1.7
@@ -1869,6 +1875,12 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			boost_time += _boost_for(float(trick_reward.boost))
 			message.text = str(trick_reward.label)
 			_sound_effect("boost")
+		if is_instance_valid(drive_feedback):
+			drive_feedback.landed(
+				impact,
+				precision_result == PRECISION.LANDING_ZONE
+				or (precision_result != PRECISION.LANDING_LONG and air_time > 0.35)
+			)
 		air_trick = {}
 		# Settle sideways slide after a firm landing. Precision zone/long
 		# outcomes already apply their own speed rules and stay untouched.
@@ -2557,6 +2569,8 @@ func _track_events() -> void:
 			)
 			item_box_collected[item_key] = true
 			item = str(reward.item)
+			if is_instance_valid(drive_feedback):
+				drive_feedback.collect_item(item_boxes[i].global_position, item)
 			message.text = "Resonanz %d%%: %s!" % [
 				roundi(float(reward.score) * 100.0),
 				"Impuls" if item == "pulse" else "Schild" if item == "shield" else "Schub"
@@ -2679,6 +2693,10 @@ func _update_vehicles(_delta: float) -> void:
 	player.set_drift_spark_tier(spark_tier)
 	player.set_braking(brake_visual_amount if enabled else 0.0)
 	player.set_driver_runtime_state(airborne, hit_timer > 0.0, paused)
+	if is_instance_valid(drive_feedback):
+		drive_feedback.advance(
+			_delta, racing and not finished and not menu_active, paused, airborne, reduced_motion
+		)
 	if not enabled:
 		for kart in opponents:
 			kart.set_motion(0, 0, false, false)
@@ -2792,6 +2810,8 @@ func _release_drift() -> void:
 		camera_punch = maxf(camera_punch, 0.20 if tier == 0 else 0.34)
 		message.text = "Oranger Drift-Turbo!" if tier == 1 else "Blauer Drift-Turbo!"
 		_sound_effect("drift")
+		if is_instance_valid(drive_feedback):
+			drive_feedback.boost_release(tier + 1)
 	drift_charge = 0
 
 
