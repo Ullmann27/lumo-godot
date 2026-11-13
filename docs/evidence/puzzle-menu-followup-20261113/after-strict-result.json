@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "native_process_exit_code": 0,
+  "timed_out": false,
+  "behavioral_checks": 732,
+  "behavioral_failures": [],
+  "native_error_count": 0,
+  "native_error_lines": [],
+  "can_process_error_count": 0,
+  "actual_capture_count": 6,
+  "file_sha256": {
+    "puzzle-menu-lifecycle.json": "f0fd4f759aca7be0a5d3f1dbf2d5118fd0dbe9e70d0a813c7b507568020a6c11",
+    "godot.log": "e3b609e4e30e6a1d5d00eda4083cbb569fa06560e3e71d716aab2429f13d2155",
+    "run.json": "bfcb736a13a0febb15ce75b83cb4d77b19a2129accf2e28f9a5f6dfc18cd85eb"
+  },
+  "scope": "Local Godot/X11 input and native-error gate; not Android performance"
+}

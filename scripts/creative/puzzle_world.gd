@@ -354,7 +354,10 @@ func _clear_menu() -> void:
 	dragging = -1
 	finger = -1
 	for child in menu_box.get_children():
-		menu_box.remove_child(child)
+		# Button release still traverses its Control ancestry after pressed.
+		# Hide obsolete actions now; keep them in-tree until queued deletion.
+		if child is Control:
+			child.hide()
 		child.queue_free()
 	menu_scroll.scroll_vertical = 0
 	menu.show()
