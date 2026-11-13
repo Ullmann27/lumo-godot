@@ -707,25 +707,23 @@ func _demolition_dialog(plot: int, quote: Dictionary) -> void:
 	)
 	box.add_child(explanation)
 	box.add_child(_button("Haus behalten", dialog.queue_free))
-	box.add_child(
-		_button(
-			"Ja, umbauen",
-			func():
-				if _transactions_blocked() or dialog.is_queued_for_deletion():
-					dialog.queue_free()
-					return
-				if model.snapshot() != before:
-					feedback.text = "Dein Bauplan hat sich geändert. Wähle das Haus bitte erneut."
-				elif model.try_demolish(plot, true):
-					_demolition_finished()
-				else:
-					feedback.text = model.last_error
-				dialog.queue_free()
-		)
-	)
+	box.add_child(_button("Ja, umbauen", _confirm_demolition.bind(plot, before, dialog)))
 	dialog.close_requested.connect(dialog.queue_free)
 	dialog.popup_centered()
 	dialog.position = Vector2i(safe_ui.position + (safe_ui.size - Vector2(dialog.size)) * 0.5)
+
+
+func _confirm_demolition(plot: int, before: Dictionary, dialog: Window) -> void:
+	if _transactions_blocked() or dialog.is_queued_for_deletion():
+		dialog.queue_free()
+		return
+	if model.snapshot() != before:
+		feedback.text = "Dein Bauplan hat sich geändert. Wähle das Haus bitte erneut."
+	elif model.try_demolish(plot, true):
+		_demolition_finished()
+	else:
+		feedback.text = model.last_error
+	dialog.queue_free()
 
 
 func _trade_dialog() -> void:
@@ -761,26 +759,24 @@ func _trade_dialog() -> void:
 			var caption := (
 				_cost_text(quote.cost) + " → " + _cost_text({quote.resource: quote.amount})
 			)
-			box.add_child(
-				_button(
-					caption,
-					func():
-						if _transactions_blocked():
-							dialog.queue_free()
-							return
-						if model.try_trade(resource, 5, sell):
-							_rebuild()
-							_save()
-							feedback.text = "Handel abgeschlossen. Dein Vorrat wurde aktualisiert."
-						else:
-							feedback.text = model.last_error
-						dialog.queue_free()
-				)
-			)
+			box.add_child(_button(caption, _confirm_trade.bind(resource, sell, dialog)))
 	box.add_child(_button("Zurück", dialog.queue_free))
 	dialog.close_requested.connect(dialog.queue_free)
 	dialog.popup_centered()
 	dialog.position = Vector2i(safe_ui.position + (safe_ui.size - Vector2(dialog.size)) * 0.5)
+
+
+func _confirm_trade(resource: String, sell: bool, dialog: Window) -> void:
+	if _transactions_blocked() or dialog.is_queued_for_deletion():
+		dialog.queue_free()
+		return
+	if model.try_trade(resource, 5, sell):
+		_rebuild()
+		_save()
+		feedback.text = "Handel abgeschlossen. Dein Vorrat wurde aktualisiert."
+	else:
+		feedback.text = model.last_error
+	dialog.queue_free()
 
 
 func _look_neighbor() -> void:

@@ -1,0 +1,6 @@
+scripts/creative/build_settlement_world.gd:518: Error: Max allowed line length (100) exceeded (max-line-length)
+scripts/creative/build_settlement_world.gd:609: Error: Max allowed line length (100) exceeded (max-line-length)
+scripts/creative/build_settlement_world.gd:660: Error: Max allowed line length (100) exceeded (max-line-length)
+scripts/creative/build_settlement_world.gd:705: Error: Max allowed line length (100) exceeded (max-line-length)
+scripts/creative/build_settlement_world.gd:993: Error: Max allowed line length (100) exceeded (max-line-length)
+Failure: 5 problems found
