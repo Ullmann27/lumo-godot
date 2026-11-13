@@ -114,6 +114,15 @@ func _run() -> void:
 		"Real collision obstacle prepared"
 	)
 	var wall_uid := int(game.model.pieces[-1].uid)
+	# A real contiguous wall prevents a diagonal joystick gesture from
+	# stepping around a single narrow column rather than testing collision.
+	for wall_z in range(11, 21):
+		if wall_z == 14:
+			continue
+		_check(
+			game.model.place("wall", Vector3i(-12, 0, wall_z)).is_empty(),
+			"Grounded contiguous obstacle prepared at z=" + str(wall_z)
+		)
 	game._rebuild()
 	game.focus = Vector3(-14, 0.3, 11)
 	game.radius = 18
@@ -144,9 +153,10 @@ func _run() -> void:
 	await _capture("01_build_selection")
 	var rotate := _button(game, "Drehen ↻")
 	await _tap(rotate.get_global_rect().get_center())
-	if game.turn != 1:
+	if game.turn != 1 or game.model.piece_by_id(uid).turn != 0:
 		print(
-			"[BuildNextgenDiag] rotate tap: turn=", game.turn,
+			"[BuildNextgenDiag] rotate tap: preview=", game.turn,
+			" committed=", game.model.piece_by_id(uid).turn,
 			" selected=", game.selected_uid,
 			" viewport=", root.get_visible_rect(),
 			" control=", rotate.get_global_rect()

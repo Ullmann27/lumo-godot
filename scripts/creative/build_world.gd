@@ -230,7 +230,9 @@ func _ui() -> void:
 	tools.add_child(pinned_tools)
 	for pinned_spec in [["Verschieben", _toggle_move], ["Drehen ↻", _rotate]]:
 		var pinned_button := _day_button(pinned_spec[0], pinned_spec[1])
-		pinned_button.mouse_filter = Control.MOUSE_FILTER_PASS
+		# Primary actions are not world gestures; consuming the touch prevents
+		# a rotate tap from also committing the selected piece.
+		pinned_button.mouse_filter = Control.MOUSE_FILTER_STOP
 		pinned_tools.add_child(pinned_button)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
