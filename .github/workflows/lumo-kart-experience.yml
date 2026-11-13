@@ -76,11 +76,17 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$EVIDENCE"
+          export XDG_DATA_HOME="$EVIDENCE/import-user-data"
+          export XDG_CONFIG_HOME="$EVIDENCE/import-config"
+          export XDG_CACHE_HOME="$EVIDENCE/import-cache"
+          mkdir -p "$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
           git rev-parse HEAD > "$EVIDENCE/source-sha.txt"
           git rev-parse 'HEAD^{tree}' > "$EVIDENCE/source-tree.txt"
           godot --version > "$EVIDENCE/engine.txt"
           python3 tools/validate_project.py 2>&1 | tee "$EVIDENCE/project-validation.log"
-          godot --headless --editor --import --quit 2>&1 | tee "$EVIDENCE/import.log"
+          # --import waits for resource completion and exits by itself. Do not
+          # additionally request the first-iteration exit provided by --quit.
+          godot --headless --editor --import 2>&1 | tee "$EVIDENCE/import.log"
           if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$EVIDENCE/import.log"; then exit 1; fi
           git diff --exit-code HEAD --
       - name: Production-state, lifecycle and geometry checks
@@ -189,11 +195,13 @@ jobs:
             cp scripts/tests/kart_home_experience_regression.gd "$baseline/scripts/tests/"
           fi
           sha256sum "scripts/tests/$CAPTURE.gd" > "$EVIDENCE/baseline/harness-sha256.txt"
-          godot --headless --path "$baseline" --editor --import --quit 2>&1 | tee "$EVIDENCE/baseline/import.log"
-          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$EVIDENCE/baseline/import.log"; then exit 1; fi
+          # Isolate the editor before import, not just the later game capture.
+          export XDG_DATA_HOME="$EVIDENCE/baseline/import-user-data"
           export XDG_CONFIG_HOME="$EVIDENCE/baseline/config"
           export XDG_CACHE_HOME="$EVIDENCE/baseline/cache"
-          mkdir -p "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+          mkdir -p "$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+          (cd "$baseline" && godot --headless --path . --editor --import) 2>&1 | tee "$EVIDENCE/baseline/import.log"
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$EVIDENCE/baseline/import.log"; then exit 1; fi
           if [[ "$AREA" == worlds ]]; then
             failures=0
             for track in winter_sprint crystal_canyon; do
