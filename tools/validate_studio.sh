@@ -58,12 +58,17 @@ check_probe lumo_studio_motion_regression '[LumoStudioMotion] PASS' headless 180
 check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' headless 180
 check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' headless 180
 check_probe treasure_exploration_regression '[TreasureExploration] PASS' headless 180
+check_probe cards_safe_area_android_contract 'CARDS_ANDROID_INSETS_PASS' headless 180
+check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' headless 180
+check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' headless 240
 check_probe learning_sharing_capture '[LearningSharingCapture] PASS' rendered 600 \
   -- "--output=$LOG_DIR/captures/learning_sharing_capture"
 check_probe lumo_studio_motion_capture '[LumoStudioCapture] PASS' rendered 420
 check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' rendered 600
 check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' rendered 600 -- --capture
 check_probe treasure_exploration_regression '[TreasureExploration] PASS' rendered 600
+check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' rendered 600 -- --capture
+check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' rendered 900 -- --capture
 
 # A logic PASS in a display process is insufficient: require the native rasters.
 if ! python3 tools/verify_studio_rasters.py "$LOG_DIR"; then
@@ -72,9 +77,12 @@ fi
 if ! python3 tools/verify_puzzle_menu_rasters.py "$LOG_DIR"; then
   failures+=("puzzle-menu-raster-roster")
 fi
+if ! python3 tools/verify_safe_area_rasters.py "$LOG_DIR"; then
+  failures+=("safe-area-raster-roster")
+fi
 
 if (( ${#failures[@]} )); then
   printf '[LumoStudio] FAIL: %s\n' "${failures[*]}" >&2
   exit 1
 fi
-echo '[LumoStudio] PASS: source-bound learning, character, puzzle and exploration evidence'
+echo '[LumoStudio] PASS: source-bound learning, character, puzzle, exploration and Cards safe-area evidence'

@@ -34,6 +34,15 @@ PUZZLE_MENU_PNGS = {
     for width, height in ((960, 540), (640, 360))
     for stage in ('rotation-menu', 'rotation-play', 'classic-play')
 }
+SAFE_AREA_BUDGETS = {
+    'cards_safe_area_android_contract-headless': '180',
+    'cards_safe_area_regression-headless': '180',
+    'cards_safe_area_regression-rendered': '600',
+    'mobile_safe_area_regression-headless': '240',
+    'mobile_safe_area_regression-rendered': '900',
+}
+SAFE_AREA_NAMES = {'cards_safe_area_android_contract', 'cards_safe_area_regression',
+                   'mobile_safe_area_regression'}
 
 
 @lru_cache(maxsize=16)
@@ -69,6 +78,9 @@ class NextgenRunnerTests(unittest.TestCase):
             puzzle_verifier = ROOT / 'tools/verify_puzzle_menu_rasters.py'
             if puzzle_verifier.exists():
                 shutil.copyfile(puzzle_verifier, root / 'tools/verify_puzzle_menu_rasters.py')
+            shutil.copyfile(ROOT / 'tools/verify_safe_area_rasters.py', root / 'tools/verify_safe_area_rasters.py')
+            from test_safe_area_rasters import write_fixture
+            write_fixture(root / 'safe-area-fixtures')
             root.joinpath('fixture-raster.png').write_bytes(fixture_png())
             root.joinpath('village-fixtures').mkdir()
             for name, dimensions in VILLAGE_PNGS.items():
@@ -124,6 +136,12 @@ class NextgenRunnerTests(unittest.TestCase):
                               '        if mutation=="truncated": selected.write_bytes(selected.read_bytes()[:40])\n'
                               '        if mutation=="uniform": shutil.copyfile("fixture-raster.png",selected)\n'
                               '        if mutation=="pixel-size": shutil.copyfile("puzzle-menu-fixtures/960x540-rotation-menu.png",selected)\n'
+                              'if name in ("cards_safe_area_regression", "mobile_safe_area_regression") and "--headless" not in sys.argv:\n'
+                              '    assert "--capture" in sys.argv, "Safe-Area renderer must exercise its capture path"\n'
+                              '    capture=pathlib.Path(os.environ["LUMO_CAPTURE_DIR"])\n'
+                              '    shutil.copytree(pathlib.Path("safe-area-fixtures/captures")/name,capture,dirs_exist_ok=True)\n'
+                              f'    if name=={missing_raster!r}: next(capture.glob("*.png")).unlink()\n'
+                              f'    if name=={invalid_raster!r}: next(capture.glob("*.png")).write_bytes(b"not a PNG")\n'
                               f'print({markers!r}[name])\n'
                               f'if name=={post_pass_error!r}: print("ERROR: native fixture error after PASS with process exit zero")\n')
             engine.chmod(0o755)
@@ -153,21 +171,25 @@ class NextgenRunnerTests(unittest.TestCase):
             result.village_images = json.loads(village_manifest.read_text())['images'] if village_manifest.exists() else []
             puzzle_manifest = root / 'logs/puzzle-menu-images.json'
             result.puzzle_menu_images = json.loads(puzzle_manifest.read_text())['images'] if puzzle_manifest.exists() else []
+            safe_manifest = root / 'logs/safe-area-images.json'
+            result.safe_area_images = json.loads(safe_manifest.read_text())['images'] if safe_manifest.exists() else []
             result.invocations = [json.loads(line) for line in root.joinpath('invocations.jsonl').read_text().splitlines()]
             return result, rows, cases, budgets, images
 
     def test_success_requires_every_logic_and_rendered_probe(self):
         result, rows, cases, budgets, images = self.run_fixture()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(len(cases), 43)
+        self.assertEqual(len(cases), 48)
         self.assertEqual(len(rows), len(cases))
         self.assertTrue(all(row.endswith('\tPASS') for row in rows))
         self.assertIn('[LumoNextgen] PASS', result.stdout)
         self.assertEqual(budgets['learning_world_capture-rendered'], '900')
         self.assertEqual(budgets['treasure_exploration_regression-rendered'], '600')
+        for name, budget in SAFE_AREA_BUDGETS.items():
+            self.assertEqual(budgets[name], budget)
         self.assertTrue(all(value == '420' for key, value in budgets.items()
-                            if key not in ('learning_world_capture-rendered',
-                                           'treasure_exploration_regression-rendered')))
+                            if key not in {'learning_world_capture-rendered',
+                                           'treasure_exploration_regression-rendered', *SAFE_AREA_BUDGETS}))
         self.assertIn('[StudioRasterRoster] PASS 24 actual PNG files', result.stdout)
         self.assertEqual(len(images), 24)
         self.assertTrue(all(image['sha256'] == hashlib.sha256(fixture_png()).hexdigest()
@@ -193,6 +215,35 @@ class NextgenRunnerTests(unittest.TestCase):
         for call in puzzle_calls:
             self.assertEqual('--capture' in call['args'], '--headless' not in call['args'])
             self.assertTrue(call['puzzle_menu_dir'].endswith('/' + PUZZLE_MENU_DIRECTORY))
+        self.assertIn('[SafeAreaRasterRoster] PASS 7 actual PNG files', result.stdout)
+        self.assertEqual(len(result.safe_area_images), 7)
+        self.assertEqual(sum('native_layout' in image for image in result.safe_area_images), 3)
+        safe_calls = [call for call in result.invocations if call['name'] in SAFE_AREA_NAMES]
+        self.assertEqual(len(safe_calls), 5)
+        for call in safe_calls:
+            self.assertEqual('--capture' in call['args'], '--headless' not in call['args'])
+            self.assertTrue(call['capture_dir'].endswith('/captures/' + call['name']))
+
+    def test_safe_area_rosters_are_mandatory_even_with_every_probe_marker(self):
+        for runner in (RUNNER, STUDIO_RUNNER):
+            for name in ('cards_safe_area_regression', 'mobile_safe_area_regression'):
+                with self.subTest(runner=runner.name, missing=name):
+                    result, rows, cases, _, images = self.run_fixture(runner=runner, missing_raster=name)
+                    self.assertEqual(result.returncode, 1)
+                    self.assertEqual(len(rows), len(cases))
+                    self.assertTrue(all(row.endswith('\tPASS') for row in rows))
+                    self.assertEqual(len(images), 24)
+                    self.assertEqual(len(result.puzzle_menu_images), 6)
+                    self.assertEqual(result.safe_area_images, [])
+                    self.assertIn('safe-area-raster-roster', result.stderr)
+
+    def test_safe_area_error_after_pass_remains_fatal_in_both_modes(self):
+        result, rows, _, _, _ = self.run_fixture(post_pass_error='cards_safe_area_regression')
+        self.assertEqual(result.returncode, 1)
+        self.assertIn('cards_safe_area_regression\theadless\tFAIL', rows)
+        self.assertIn('cards_safe_area_regression\trendered\tFAIL', rows)
+        self.assertIn('mobile_safe_area_regression\trendered\tPASS', rows)
+        self.assertNotIn('[LumoNextgen] PASS', result.stdout)
 
     def test_missing_puzzle_menu_png_cannot_pass_with_all_existing_scene_evidence(self):
         result, rows, cases, _, images = self.run_fixture(missing_raster='puzzle_menu_lifecycle_regression')
@@ -272,18 +323,18 @@ class NextgenRunnerTests(unittest.TestCase):
         result, rows, cases, _, images = self.run_fixture(
             runner=STUDIO_RUNNER, missing_raster='puzzle_rotation_regression')
         self.assertEqual(result.returncode, 1)
-        self.assertEqual(len(cases), 11)
+        self.assertEqual(len(cases), 16)
         self.assertEqual(len(rows), len(cases))
         self.assertTrue(all(row.endswith('\tPASS') for row in rows))
         self.assertIn('puzzle_rotation_regression: found 6 PNGs, expected 7', result.stderr)
         self.assertNotIn('[LumoStudio] PASS', result.stdout)
         self.assertEqual(images, [])
 
-    def test_studio_success_requires_eleven_pairs_and_separate_original_rosters(self):
+    def test_studio_success_requires_sixteen_pairs_and_separate_original_rosters(self):
         result, rows, cases, budgets, images = self.run_fixture(runner=STUDIO_RUNNER)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(len(cases), 11)
-        self.assertEqual(len(rows), 11)
+        self.assertEqual(len(cases), 16)
+        self.assertEqual(len(rows), 16)
         self.assertTrue(all(row.endswith('\tPASS') for row in rows))
         previous = [
             ('learning_sharing_regression', '[LearningSharing] PASS', 'headless'),
@@ -296,15 +347,20 @@ class NextgenRunnerTests(unittest.TestCase):
             ('puzzle_rotation_regression', '[PuzzleRotation] PASS', 'rendered'),
             ('treasure_exploration_regression', '[TreasureExploration] PASS', 'rendered'),
         ]
-        self.assertEqual([case for case in cases if case[0] != 'puzzle_menu_lifecycle_regression'], previous)
+        self.assertEqual([case for case in cases
+                          if case[0] != 'puzzle_menu_lifecycle_regression' and case[0] not in SAFE_AREA_NAMES], previous)
         for name, _, mode in previous:
             expected = '180' if mode == 'headless' else '420' if name == 'lumo_studio_motion_capture' else '600'
             self.assertEqual(budgets[name + '-' + mode], expected)
         self.assertEqual(budgets['puzzle_menu_lifecycle_regression-headless'], '180')
         self.assertEqual(budgets['puzzle_menu_lifecycle_regression-rendered'], '600')
+        for name, budget in SAFE_AREA_BUDGETS.items():
+            self.assertEqual(budgets[name], budget)
         self.assertIn('[LumoStudio] PASS', result.stdout)
         self.assertIn('[StudioRasterRoster] PASS 24 actual PNG files', result.stdout)
         self.assertEqual(len(images), 24)
+        self.assertIn('[SafeAreaRasterRoster] PASS 7 actual PNG files', result.stdout)
+        self.assertEqual(len(result.safe_area_images), 7)
         self.assertIn('[PuzzleMenuRasterRoster] PASS 6 actual PNG files', result.stdout)
         self.assertEqual({image['path']: (image['width'], image['height']) for image in result.puzzle_menu_images},
                          {PUZZLE_MENU_DIRECTORY + '/' + name: size for name, size in PUZZLE_MENU_PNGS.items()})

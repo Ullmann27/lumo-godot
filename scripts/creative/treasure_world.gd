@@ -88,6 +88,7 @@ func _ready() -> void:
 	alternate_marker.hide()
 	_ui()
 	get_viewport().size_changed.connect(_layout)
+	RUNTIME.watch_safe_area(self, _layout)
 	_layout()
 	_update()
 	if model.completed:
@@ -95,6 +96,9 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	RUNTIME.unwatch_safe_area(self)
+	if get_viewport().size_changed.is_connected(_layout):
+		get_viewport().size_changed.disconnect(_layout)
 	RUNTIME.restore(self, previous)
 
 

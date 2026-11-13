@@ -102,6 +102,7 @@ func _ready() -> void:
 	_build_left()
 	_build_right()
 	get_viewport().size_changed.connect(_apply_layout)
+	MobileRuntime.safe_area_changed.connect(_apply_layout)
 	_refresh_all()
 	_apply_layout.call_deferred()
 
@@ -614,7 +615,8 @@ func _apply_layout() -> void:
 	for side in ["left", "right", "top", "bottom"]:
 		page_margin.add_theme_constant_override("margin_" + side, roundi(margin * ui_scale))
 	# Sicherer Bereich (Kamera-Ausschnitt, Gesten-Leiste) wie in der Garage.
-	if (OS.has_feature("android") or OS.has_feature("ios")) and not get_parent().get_meta("kart_safe_insets_applied", false):
+	page_margin.visible = MobileRuntime.safe_area_is_ready()
+	if (OS.has_feature("android") or OS.has_feature("ios") or MobileRuntime.requires_safe_area_observation()) and not get_parent().get_meta("kart_safe_insets_applied", false):
 		var insets: Rect2 = MobileRuntime.get_safe_area_insets()
 		# Safe-area insets are physical pixels, unlike the dp layout above.
 		var scale: Vector2 = viewport_size / window_pixels
@@ -662,3 +664,10 @@ func _scale_text(node: Node, ui_scale: float) -> void:
 		)
 	for child in node.get_children():
 		_scale_text(child, ui_scale)
+
+
+func _exit_tree() -> void:
+	if MobileRuntime.safe_area_changed.is_connected(_apply_layout):
+		MobileRuntime.safe_area_changed.disconnect(_apply_layout)
+	if get_viewport().size_changed.is_connected(_apply_layout):
+		get_viewport().size_changed.disconnect(_apply_layout)

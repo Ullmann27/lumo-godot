@@ -128,11 +128,15 @@ func _ready() -> void:
 	_rebuild()
 	_camera_update(true)
 	get_viewport().size_changed.connect(_layout)
+	RUNTIME.watch_safe_area(self, _layout)
 	_layout()
 	print("[SettlementWorld] ready mode=", mode, " save=", save_path)
 
 
 func _exit_tree() -> void:
+	RUNTIME.unwatch_safe_area(self)
+	if get_viewport().size_changed.is_connected(_layout):
+		get_viewport().size_changed.disconnect(_layout)
 	get_viewport().gui_embed_subwindows = bool(previous.get("embed_subwindows", false))
 	RUNTIME.restore(self, previous)
 

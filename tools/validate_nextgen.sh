@@ -29,6 +29,14 @@ run_probe() {
     timeout_seconds=900
   elif [[ "$name" == treasure_exploration_regression && "$mode" == rendered ]]; then
     timeout_seconds=600
+  elif [[ "$name" == cards_safe_area_android_contract ]]; then
+    timeout_seconds=180
+  elif [[ "$name" == cards_safe_area_regression ]]; then
+    timeout_seconds=180
+    [[ "$mode" != rendered ]] || timeout_seconds=600
+  elif [[ "$name" == mobile_safe_area_regression ]]; then
+    timeout_seconds=240
+    [[ "$mode" != rendered ]] || timeout_seconds=900
   fi
   if [[ ! -s "$script" ]]; then
     echo "Missing required nextgen probe: $script" >&2
@@ -94,6 +102,9 @@ check_probe creative_nextgen_environment_regression '[CreativeNextgenEnvironment
 check_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' headless
 check_probe kart_track_pass_regression '[KartTrackPass] PASS' headless
 check_probe cards_table_regression 'CARDS_TABLE_RUNTIME_PASS' headless
+check_probe cards_safe_area_android_contract 'CARDS_ANDROID_INSETS_PASS' headless
+check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' headless
+check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' headless
 check_probe rhythm_tour_regression '[RhythmTour] PASS' headless
 check_probe rhythm_tour_play_regression '[RhythmTourPlay] PASS' headless
 check_probe learning_world_capture '[LearningCapture] PASS' rendered -- "--output=$LOG_DIR/captures/learning_world_capture"
@@ -111,6 +122,8 @@ check_probe creative_nextgen_environment_regression '[CreativeNextgenEnvironment
 # the short selection gesture. This is never a measured device frame-rate claim.
 check_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' rendered --fixed-fps 60 -- --capture
 check_probe cards_table_capture 'CARDS_TABLE_RENDER_PASS' rendered -- "--output=$LOG_DIR/captures/cards_table_capture"
+check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' rendered -- --capture
+check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' rendered -- --capture
 check_probe rhythm_tour_play_regression '[RhythmTourPlay] PASS' rendered -- --capture
 check_probe kart_player_full_route_regression '[PlayerFullRoute] PASS' rendered -- "--out=$LOG_DIR/captures/kart_player_full_route_regression"
 
@@ -124,6 +137,9 @@ if ! python3 tools/verify_village_rasters.py "$LOG_DIR"; then
 fi
 if ! python3 tools/verify_puzzle_menu_rasters.py "$LOG_DIR"; then
   failures+=("puzzle-menu-raster-roster")
+fi
+if ! python3 tools/verify_safe_area_rasters.py "$LOG_DIR"; then
+  failures+=("safe-area-raster-roster")
 fi
 
 if (( ${#failures[@]} )); then

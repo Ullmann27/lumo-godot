@@ -101,6 +101,7 @@ func _ready() -> void:
 	_build_ui()
 	_rebuild_activity()
 	get_viewport().size_changed.connect(_layout)
+	MobileRuntime.safe_area_changed.connect(_layout)
 	_layout()
 	_refresh()
 	_teacher("welcome", Vector3(0, 1, 1.5))
@@ -816,6 +817,8 @@ func _refresh() -> void:
 
 
 func _queue_layout() -> void:
+	if not is_inside_tree():
+		return
 	if not _layout_queued:
 		_layout_queued = true
 		_layout.call_deferred()
@@ -823,7 +826,7 @@ func _queue_layout() -> void:
 
 func _layout() -> void:
 	_layout_queued = false
-	if not is_instance_valid(camera) or not is_instance_valid(header):
+	if not is_inside_tree() or not is_instance_valid(camera) or not is_instance_valid(header):
 		return
 	var dimensions := get_viewport().get_visible_rect().size
 	# Godot receives Android pixels; use the same density hint as the native
@@ -832,7 +835,8 @@ func _layout() -> void:
 	var scale_value := minf(density, maxf(1.0, dimensions.x / 360.0))
 	ui.scale = Vector2.ONE * scale_value
 	var logical := dimensions / scale_value
-	var insets := MobileRuntime.get_safe_area_insets() if OS.has_feature("android") else Rect2()
+	ui.visible = MobileRuntime.safe_area_is_ready()
+	var insets := MobileRuntime.get_safe_area_insets() if OS.has_feature("android") or MobileRuntime.requires_safe_area_observation() else Rect2()
 	var origin := insets.position / scale_value
 	var available := logical - (insets.position + insets.size) / scale_value
 	header.position = origin + Vector2(12, 12)
@@ -1222,6 +1226,10 @@ func _notification(what: int) -> void:
 
 
 func _exit_tree() -> void:
+	if MobileRuntime.safe_area_changed.is_connected(_layout):
+		MobileRuntime.safe_area_changed.disconnect(_layout)
+	if get_viewport().size_changed.is_connected(_layout):
+		get_viewport().size_changed.disconnect(_layout)
 	_stop_speech()
 	get_tree().auto_accept_quit = _original_auto_quit
 	get_tree().quit_on_go_back = _original_back_quit
