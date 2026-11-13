@@ -2,8 +2,8 @@
 
 Diese Arbeit erweitert die vorhandenen Flutter-Lektionen um eine tatsächlich
 angeschlossene Godot-Szene. Sie ersetzt weder Lernprofil noch Bewertung,
-Schreibtrainer, Journal oder Lesetrainer. Dieser Bericht ist keine visuelle,
-Android- oder 60-FPS-Freigabe.
+Schreibtrainer, Journal oder Lesetrainer. Die konkreten neuen Lernbilder sind
+geprüft; dieser Bericht ist keine gesamte Android-, AAA- oder 60-FPS-Freigabe.
 
 ## Ausgangszustand und Anschluss
 
@@ -110,11 +110,16 @@ Fortschrittsspeicherung und Profileigentümerschaft bleiben zuständig.
   Zusätzlich sind die gültigen Vertragsgrenzen bis 20 Würfel, 36 Gruppenobjekte,
   890 + 90, zwölf Bruchteile und lange Silbenwörter vor/nach der Interaktion
   in denselben drei Formaten geprüft.
-- Flutter: **64 Tests bestanden** über neuen nativen Lernstart, vorhandenen
+- Flutter: **71 Tests bestanden** über neuen nativen Lernstart, vorhandenen
   Launcher-Lebenszyklus, geführte Lektionen, Deutsch/Natur sowie bestehende
   adaptive Aufgaben-/Belohnungs-/Prüfungsabläufe. Native MethodChannel-Antworten
   sind dabei Testdoubles, kein Nachweis einer gestarteten Android-Engine.
-- Flutter-Analyse der sieben geänderten Lern-/Launcher-/AppState-/Testdateien:
+- Die sieben neuen Profilgrenzen-Tests prüfen tatsächliche Antworten zweier
+  gleichnamiger Kinder mit unterschiedlichen IDs, verzögerte Diagnosespeicherung,
+  unveränderte alte/unerwartete Datenbytes, Profilreset, verspätete Schreib-/Form-
+  Callbacks und Widerruf der KI-Elternfreigabe. Der Hoststand ist unter
+  `e2980be9c73f86e104af546c38c8c52db6bc922b` gesichert.
+- Flutter-Analyse der neun geänderten Lern-/Launcher-/AppState-/Testdateien:
   **keine Befunde**.
 - Android-Hostvorbereitung: **4 Tests bestanden**, einschließlich Kopieren der
   echten neuen Kotlin-Datei unter alternativen Paketnamen. Kein Ersatz für
@@ -145,8 +150,18 @@ Boden/Fuchs waren zu hell, Silben teilweise verdeckt, die große Bruchzahl blieb
 falsch bei 1/4 und der vorhandene Hunderter war nicht ausreichend erkennbar.
 
 Diese konkreten Befunde wurden anschließend in den Produktionsdateien
-korrigiert. Die 5310 Prüfungen oben beziehen sich auf diese Korrekturen;
-ihre erneute echte Rendererprüfung steht beim Schreiben noch aus. Der
+korrigiert. Die 5310 Prüfungen oben beziehen sich auf diese Korrekturen.
+Der exakte native Commit `c5c71145ffaa9ca90b501c5020967b8d5062c387` erzeugte
+anschließend 21 neue echte Rendererbilder im erfolgreichen fokussierten
+CI-Job `131667187053` (Lauf `43358819881`). Alle 21 PNGs wurden tatsächlich
+geöffnet und manuell geprüft. Silbenglyphen sind vollständig, die große
+Bruchzahl folgt 1/4 bis 3/4, beide freien Bruchstücke liegen über dem Footer,
+Hunderter und Zehner sind geometrisch/beschriftet unterscheidbar und alle
+13 Additionswürfel bleiben auch auf dem Phone sichtbar. Die Belichtung ist
+ruhiger; breite Displayränder zeigen echte Garten-/Ateliergeometrie.
+Ein SHA-256-Verzeichnis mit den Sichtbefunden liegt in
+`docs/evidence/nextgen-learning-20261113/renderer-review.json`.
+Der
 Capture ergänzt die bisherigen Gates um vollständige Objektgrenzen,
 tatsächliche Originalfuchs-Pixel am projizierten Kopf sowie eine Obergrenze
 für ausgebrannte Farbflächen. Kein bestehender Grenzwert wurde abgeschwächt.

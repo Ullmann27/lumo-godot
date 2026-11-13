@@ -21,6 +21,12 @@ run_probe() {
   local script="scripts/tests/$name.gd"
   local capture_dir="$LOG_DIR/captures/$name"
   local user_dir="$LOG_DIR/user-data/$name-$mode"
+  local timeout_seconds=420
+  # All 21 high-resolution software-rendered learning views must finish.
+  # This is a CI collection budget, never a target-device performance claim.
+  if [[ "$name" == learning_world_capture && "$mode" == rendered ]]; then
+    timeout_seconds=900
+  fi
   if [[ ! -s "$script" ]]; then
     echo "Missing required nextgen probe: $script" >&2
     return 1
@@ -42,7 +48,7 @@ run_probe() {
   fi
   XDG_DATA_HOME="$user_dir" LUMO_CAPTURE_DIR="$capture_dir" LUMO_EVIDENCE_DIR="$capture_dir" \
     python3 tools/run_godot_probe.py --log "$LOG_DIR/$name-$mode.log" \
-    --timeout 420 --required "$marker" -- "${command[@]}" "${args[@]}" "$@"
+    --timeout "$timeout_seconds" --required "$marker" -- "${command[@]}" "${args[@]}" "$@"
 }
 
 # Every independent module still produces its own evidence when another module

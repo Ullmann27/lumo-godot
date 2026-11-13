@@ -19,7 +19,7 @@ jobs:
   # The complete new-worlds/gameplay jobs remain required for final acceptance.
   learning-preview:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       LIBGL_ALWAYS_SOFTWARE: '1'
       LUMO_PREVIEW_DIR: ${{ github.workspace }}/learning-preview
@@ -52,7 +52,7 @@ jobs:
           godot --headless --editor --import --quit 2>&1 | tee "$LUMO_PREVIEW_DIR/import.log"
           if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$LUMO_PREVIEW_DIR/import.log"; then exit 1; fi
           LUMO_CAPTURE_DIR="$LUMO_PREVIEW_DIR/images" python3 tools/run_godot_probe.py \
-            --log "$LUMO_PREVIEW_DIR/render.log" --timeout 420 --required '[LearningCapture] PASS' -- \
+            --log "$LUMO_PREVIEW_DIR/render.log" --timeout 900 --required '[LearningCapture] PASS' -- \
             xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . \
             --rendering-method gl_compatibility --audio-driver Dummy \
             --script scripts/tests/learning_world_capture.gd -- --output="$LUMO_PREVIEW_DIR/images"
