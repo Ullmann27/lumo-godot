@@ -22,7 +22,7 @@ run_probe() {
   local capture_dir="$LOG_DIR/captures/$name"
   local user_dir="$LOG_DIR/user-data/$name-$mode"
   local timeout_seconds=420
-  # All 21 high-resolution software-rendered learning views must finish.
+  # All 25 high-resolution software-rendered learning views must finish.
   # This is a CI collection budget, never a target-device performance claim.
   if [[ "$name" == learning_world_capture && "$mode" == rendered ]]; then
     timeout_seconds=900

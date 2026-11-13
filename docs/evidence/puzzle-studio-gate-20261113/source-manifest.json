@@ -1,0 +1,50 @@
+{
+  "base_commit": "ab9237025e5e5a30a168c4d1fbbd0a24a82690b6",
+  "base_tree": "703e37266f30764956411ed297b6c798f88fa2a6",
+  "local_modified_source": true,
+  "final_native_commit_not_yet_assigned": true,
+  "files": {
+    "tools/validate_studio.sh": {
+      "sha256": "236a4ccb73e19e5a2d8ec6fdfb9f56c223aef283dc0d2cb7a37a5570a19ffb31",
+      "bytes": 4866,
+      "git_blob_sha1": "c7a37ed8986ac349b39b63f786fe85b3813b74ba"
+    },
+    "tools/tests/test_nextgen_runner.py": {
+      "sha256": "fe0426c3e895d10ecfb4b931d8883625baeac6d387f211f2d2eb700d6c33872e",
+      "bytes": 10326,
+      "git_blob_sha1": "49164a4b7cde1605ee80cd5ac0140a6ac55aa98d"
+    },
+    "tools/run_godot_probe.py": {
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "bytes": 2934,
+      "git_blob_sha1": "c23859ece2d62101d000d7a89556fda5d3fe4105"
+    },
+    "tools/run_local_renderer.py": {
+      "sha256": "d7169f0353071159e64a74d76e6e35718117402a597dfcc05c8f99ed7f275247",
+      "bytes": 5308,
+      "git_blob_sha1": "7fa41c18b853bd156b5365270132c35887b49c77"
+    },
+    "scripts/creative/puzzle_world.gd": {
+      "sha256": "1726e625cf0135e133fcdb3e0abb2202fd648c16ee72af19f9bfdb2d0c2ee10a",
+      "bytes": 30912,
+      "git_blob_sha1": "035c18b9cb3e05b30e135012995d8a1dddc13a8e"
+    },
+    "scripts/tests/puzzle_menu_lifecycle_regression.gd": {
+      "sha256": "0890454d8134b54b3e59dd75c3481b76ce18568b3e7f7e93a4eafb71f83bcf9c",
+      "bytes": 10390,
+      "git_blob_sha1": "9b5c24e4e35b45c09c79b170d4a47e85e521a789"
+    }
+  },
+  "actual_run_source_stamps": {
+    "headless": {
+      "source-sha.txt": "ab9237025e5e5a30a168c4d1fbbd0a24a82690b6\n",
+      "source-tree.txt": "703e37266f30764956411ed297b6c798f88fa2a6\n",
+      "source-dirty.txt": " M tools/validate_studio.sh\n"
+    },
+    "rendered": {
+      "source-sha.txt": "ab9237025e5e5a30a168c4d1fbbd0a24a82690b6\n",
+      "source-tree.txt": "703e37266f30764956411ed297b6c798f88fa2a6\n",
+      "source-dirty.txt": " M tools/validate_studio.sh\n"
+    }
+  }
+}

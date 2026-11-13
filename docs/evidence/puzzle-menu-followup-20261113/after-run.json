@@ -1,0 +1,17 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 30.028325152001344,
+  "display": 98,
+  "project": "/workspace/scratch/5987865ae883/lumo-godot-puzzle-menu-followup-76980",
+  "godot_arguments": [
+    "--resolution",
+    "960x540",
+    "--disable-vsync",
+    "--script",
+    "res://scripts/tests/puzzle_menu_lifecycle_regression.gd",
+    "--",
+    "--capture"
+  ],
+  "timed_out": false,
+  "scope": "Local software renderer; not physical Android performance"
+}

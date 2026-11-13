@@ -1,0 +1,134 @@
+{
+  "status": "LOCAL_GATE_INTEGRATION_VERIFIED_FULL_NATIVE_CI_PENDING",
+  "base_commit": "ab9237025e5e5a30a168c4d1fbbd0a24a82690b6",
+  "native_product_fix": "Inherited unchanged from ab923; _clear_menu hides old Controls and queues deletion while preserving input-dispatch ancestry.",
+  "new_changes": [
+    "Two mandatory Studio check_probe calls: headless180s and rendered600s with -- --capture.",
+    "Separate headless evidence directory prevents its machine report being overwritten by renderer output.",
+    "Six exact additional production PNG names and dimensions required, increasing the roster from24 to30.",
+    "Three permanent counterchecks added to the existing test_nextgen_runner.py already executed by the native workflow."
+  ],
+  "preserved": {
+    "existing_engine_probe_calls": 9,
+    "existing_rasters": 24,
+    "existing_timeouts_markers_assertions_retained": true,
+    "puzzle_product_and_gdscript_probe_byte_identical_to_base": true,
+    "strict_native_error_runner_unchanged": true
+  },
+  "actual_runs": {
+    "headless": {
+      "exit_code": 0,
+      "checks": 720,
+      "failures": [],
+      "elapsed_seconds": 5.52191495099396,
+      "input_events": {
+        "touch": 124,
+        "drag": 16
+      },
+      "native_errors": 0
+    },
+    "rendered": {
+      "exit_code": 0,
+      "checks": 732,
+      "failures": [],
+      "elapsed_seconds": 30.08354071500071,
+      "input_events": {
+        "touch": 124,
+        "drag": 16
+      },
+      "native_errors": 0,
+      "display": "X11",
+      "renderer": "Godot Compatibility on local software Mesa/llvmpipe",
+      "png_count": 6
+    }
+  },
+  "headless_and_renderer_menu_state_samples_identical": true,
+  "counterchecks": {
+    "test_methods_passed": 6,
+    "new_test_methods": 3,
+    "missing_named_png_rejected": true,
+    "renamed_png_with_unchanged_count_rejected": true,
+    "wrong_named_view_dimensions_rejected": true,
+    "native_error_after_pass_marker_rejected": true,
+    "fixture_images_are_synthetic_and_not_renderer_evidence": true,
+    "bash_syntax_passed": true
+  },
+  "independent_read_only_review": "Agent C checked the actual orchestration diff and the capture/environment contract; no additional concrete blocker found. No extra engine matrix was rerun by C.",
+  "images": [
+    {
+      "path": "captures/640x360-classic-play.png",
+      "sha256": "d97bf0f016cd96e67676c84048430b6bd0ecbc695175333200b8c05730481ef2",
+      "bytes": 109688,
+      "dimensions": [
+        640,
+        360
+      ],
+      "actually_opened_with_view_image": true,
+      "findings": "Real classic drag has placed one matching piece: 1/6, visible board placement and no rotation control. Compact board and progress remain visible; horizontal toolbar scrolling remains necessary for later actions."
+    },
+    {
+      "path": "captures/640x360-rotation-menu.png",
+      "sha256": "28603301581a5c0827d7c99aaecc355fba3d4cfa0194da86c84f6c5f488be1a9",
+      "bytes": 73009,
+      "dimensions": [
+        640,
+        360
+      ],
+      "actually_opened_with_view_image": true,
+      "findings": "One six-piece Leuchtturm-Bucht rotation menu, no duplicate old actions. Short viewport intentionally scrolls: Zur Spielewelt is partially below the initial menu view; the existing vertical scrollbar is visible."
+    },
+    {
+      "path": "captures/640x360-rotation-play.png",
+      "sha256": "fa1a6a0c48f9fb86ef5dd12ac10f499479e0a5e3383e696ba499da59d9587230",
+      "bytes": 109713,
+      "dimensions": [
+        640,
+        360
+      ],
+      "actually_opened_with_view_image": true,
+      "findings": "Production rotation puzzle shows 0/6 with the real Drehen control and separated tray/table geometry. Compact board remains between header and horizontal action toolbar; additional toolbar controls use its existing horizontal scrolling."
+    },
+    {
+      "path": "captures/960x540-classic-play.png",
+      "sha256": "a2a8ae60363597f62aa3364f13d5bbf5e27b185946197314849d301720280acb",
+      "bytes": 302272,
+      "dimensions": [
+        960,
+        540
+      ],
+      "actually_opened_with_view_image": true,
+      "findings": "Real classic drag has placed one matching piece: 1/6, visible board placement and no rotation control. No additional visible blocker."
+    },
+    {
+      "path": "captures/960x540-rotation-menu.png",
+      "sha256": "019829e52fb69907e3929b4a0430b95bf850a34af77258230512aca220199db0",
+      "bytes": 152116,
+      "dimensions": [
+        960,
+        540
+      ],
+      "actually_opened_with_view_image": true,
+      "findings": "One six-piece Leuchtturm-Bucht rotation menu, no duplicate old actions. All menu actions visible."
+    },
+    {
+      "path": "captures/960x540-rotation-play.png",
+      "sha256": "f9f2eb9d5f640962bc0491efb21abe81ec655017cb5eeace1fbb42cc382d2100",
+      "bytes": 301141,
+      "dimensions": [
+        960,
+        540
+      ],
+      "actually_opened_with_view_image": true,
+      "findings": "Production rotation puzzle shows 0/6 with the real Drehen control and separated tray/table geometry. Controls and board readable."
+    }
+  ],
+  "limitations": [
+    "This is local modified-source evidence based on ab923, not a final clean-source Native CI receipt.",
+    "Only the two added engine paths ran locally; all eight mandatory native jobs remain for the forthcoming integrated commit.",
+    "Synthetic gate-fixture PNGs were temporary and are excluded from these six actual renderer captures.",
+    "The 640x360 menu and toolbar require their existing scrolling; the probe uses ensure_control_visible for clipped menu targets and does not claim natural scroll-gesture coverage.",
+    "Local software-renderer wall time is not physical Android or Fold7 FPS evidence."
+  ],
+  "active_native_checkout_mutated": false,
+  "main_merged": false
+}

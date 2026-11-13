@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "recorded_at_utc": "2026-11-13T22:57:34.576592+00:00",
+  "status": "VERWORFENER_NATIVE_GESAMTLAUF",
+  "source": "20fd2880494c10f8f7d3a266956995e97f9011df",
+  "tree": "20050679a3034eb9a03ded02ee3374b5cc54673e",
+  "run_id": 43520242403,
+  "run_attempt": 1,
+  "workflow_status": "completed",
+  "workflow_conclusion": "failure",
+  "workflow_updated_at": "2026-11-13T22:55:42Z",
+  "jobs": [
+    {
+      "id": 132212388301,
+      "name": "learning-preview",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T22:43:17Z"
+    },
+    {
+      "id": 132212388581,
+      "name": "studio",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T22:47:43Z"
+    },
+    {
+      "id": 132212388682,
+      "name": "gameplay",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T22:51:47Z"
+    },
+    {
+      "id": 132212388703,
+      "name": "touch-treasure",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T22:47:14Z"
+    },
+    {
+      "id": 132212388704,
+      "name": "touch-build",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T22:46:24Z"
+    },
+    {
+      "id": 132212388719,
+      "name": "touch-workshop",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T22:55:41Z"
+    },
+    {
+      "id": 132218856095,
+      "name": "new-worlds",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-13T22:48:38Z"
+    },
+    {
+      "id": 132222338606,
+      "name": "bundle-evidence",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "status": "completed",
+      "conclusion": "skipped",
+      "completed_at": "2026-11-13T22:55:41Z"
+    },
+    {
+      "id": 132222339488,
+      "name": "archive-evidence",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "status": "completed",
+      "conclusion": "skipped",
+      "completed_at": "2026-11-13T22:55:41Z"
+    }
+  ],
+  "required_jobs_succeeded": 6,
+  "required_jobs_failed": 1,
+  "required_jobs_skipped": 1,
+  "archive_job": "skipped",
+  "final_native_artifact_present": false,
+  "failure_detail": "failure-review.json",
+  "failure_summary": "Zwei alte Orchestrierungs-Fixtures in tools/tests/test_nextgen_runner.py erwarten11Aufrufe und30Bilder; der produktive neue Harness verlangt16Aufrufe und37Bilder einschließlich neuer Cards-/Mobile-Belege. Keine weitere Fehlerursache in den übrigen abgeschlossenen Jobs.",
+  "partial_studio_archive": {
+    "artifact_id": 14083990513,
+    "path": "/workspace/scratch/5987865ae883/qa/studio-20fd-original.zip",
+    "bytes": 48295636,
+    "sha256": "34f34ec2928729972243be8979712edc35203d6dc5fce7d32a10699afc1a9f87",
+    "crc": "PASS",
+    "png_count": 37,
+    "cards_layouts": 3,
+    "mobile_report_targets": 15,
+    "studio_gates_pass": 16,
+    "inventory": "studio-partial/studio-partial-inventory.json",
+    "images_visually_opened_by_this_agent": []
+  },
+  "limits": [
+    "Technische Identitäts-/Archiv-/Dateiprüfung, keine visuelle Gesamtfreigabe.",
+    "Kein Gesamtarchiv erzeugt oder als bestanden ausgegeben.",
+    "Keine Native-/Hostquellen, Pins, Receipts, Branches oder CI-Läufe durch diesen Prüfschritt geändert.",
+    "Originale Teilbilder dienen nur der technischen20fd-Sichtung. Ein neuer Native-Commit benötigt erneut den vollständigen CI-Nachweis."
+  ]
+}

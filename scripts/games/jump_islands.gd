@@ -306,10 +306,13 @@ func _build_ui() -> void:
 	scroll.add_child(modal_column)
 	modal.hide()
 	get_viewport().size_changed.connect(_layout_ui)
+	MobileRuntime.safe_area_changed.connect(_layout_ui)
 	_layout_ui()
 
 
 func _layout_ui() -> void:
+	if not is_inside_tree():
+		return
 	if not is_instance_valid(ui_safe) or not is_instance_valid(modal):
 		return
 	var view: Vector2 = get_viewport().get_visible_rect().size
@@ -319,10 +322,11 @@ func _layout_ui() -> void:
 	var pixels_per_unit: float = maxf(0.1, minf(window_pixels.x / maxf(view.x, 1), window_pixels.y / maxf(view.y, 1)))
 	var unit: float = MobileRuntime.get_ui_density() / pixels_per_unit
 	var insets: Rect2 = MobileRuntime.get_safe_area_insets()
-	ui_safe.add_theme_constant_override("margin_left", roundi(maxf(16.0 * unit, insets.position.x / pixels_per_unit)))
-	ui_safe.add_theme_constant_override("margin_right", roundi(maxf(16.0 * unit, insets.size.x / pixels_per_unit)))
-	ui_safe.add_theme_constant_override("margin_top", roundi(maxf(12.0 * unit, insets.position.y / pixels_per_unit)))
-	ui_safe.add_theme_constant_override("margin_bottom", roundi(maxf(12.0 * unit, insets.size.y / pixels_per_unit)))
+	ui_safe.visible = MobileRuntime.safe_area_is_ready()
+	ui_safe.add_theme_constant_override("margin_left", ceili(maxf(16.0 * unit, insets.position.x / pixels_per_unit)))
+	ui_safe.add_theme_constant_override("margin_right", ceili(maxf(16.0 * unit, insets.size.x / pixels_per_unit)))
+	ui_safe.add_theme_constant_override("margin_top", ceili(maxf(12.0 * unit, insets.position.y / pixels_per_unit)))
+	ui_safe.add_theme_constant_override("margin_bottom", ceili(maxf(12.0 * unit, insets.size.y / pixels_per_unit)))
 	var stick_side: float = clampf(view.x / unit * 0.32, 112, 152) * unit
 	movement_stick.custom_minimum_size = Vector2.ONE * stick_side
 	jump_action.custom_minimum_size = Vector2.ONE * clampf(view.x / unit * 0.29, 104, 136) * unit
@@ -1048,6 +1052,10 @@ func _notification(what: int) -> void:
 
 
 func _exit_tree() -> void:
+	if MobileRuntime.safe_area_changed.is_connected(_layout_ui):
+		MobileRuntime.safe_area_changed.disconnect(_layout_ui)
+	if get_viewport().size_changed.is_connected(_layout_ui):
+		get_viewport().size_changed.disconnect(_layout_ui)
 	_save_session()
 	get_tree().auto_accept_quit = previous_auto_accept_quit
 	get_tree().quit_on_go_back = previous_quit_on_go_back

@@ -1,0 +1,18 @@
+{
+  "commit": "ab9237025e5e5a30a168c4d1fbbd0a24a82690b6",
+  "clean": true,
+  "files": {
+    "tools/validate_studio.sh": {
+      "sha256": "ee692c4843354f62123e1ce9506dcaca23489beda877227c5836cc65f4de2241",
+      "bytes": 3920
+    },
+    "scripts/creative/puzzle_world.gd": {
+      "sha256": "1726e625cf0135e133fcdb3e0abb2202fd648c16ee72af19f9bfdb2d0c2ee10a",
+      "bytes": 30912
+    },
+    "scripts/tests/puzzle_menu_lifecycle_regression.gd": {
+      "sha256": "0890454d8134b54b3e59dd75c3481b76ce18568b3e7f7e93a4eafb71f83bcf9c",
+      "bytes": 10390
+    }
+  }
+}

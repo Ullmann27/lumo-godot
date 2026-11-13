@@ -1,0 +1,26 @@
+{
+  "collected_at_utc": "2026-11-13T12:47:53.531935+00:00",
+  "baseline": "ada5ed81ad62339f15289da62670c0a4f9f7f2b9",
+  "results": {
+    "sharing_checks": 1811,
+    "existing_learning_checks": 5328,
+    "capture_without_renderer": "Rejected with exit code 1, as required"
+  },
+  "commands": [
+    "godot --headless --path . --script res://scripts/tests/learning_sharing_regression.gd",
+    "godot --headless --path . --script res://scripts/tests/learning_world_regression.gd",
+    "godot --headless --path . --script res://scripts/tests/learning_sharing_capture.gd (expected rejection, exit 1)"
+  ],
+  "source_sha256": {
+    "scripts/learning/learning_activity.gd": "c8071598b341a9ef8d905effe70aafacf98f325e9289903bb12a370d0d29541a",
+    "scripts/learning/learning_world.gd": "12b8e40ffa1b5187598425690bdca5f2e6f8f2a6425e41b40fcf8679efba4a9d",
+    "scripts/tests/learning_sharing_regression.gd": "2d829cf28cd7b9fdd1396d0dda7e9dd20d14c5285d25940943c15bccc55fa9f3",
+    "scripts/tests/learning_sharing_capture.gd": "e0af1934e3b40b49dbcc8f14050c80f0c28f0868cfb01719e13d047e9d37a89a"
+  },
+  "log_sha256": {
+    "sharing-regression.log": "4d2d8c954004551ca2b6572d0e9c93db8d3e6802c8cc5f436682ef747afd1b7e",
+    "existing-learning-regression.log": "72bb572653fbd4d182380330b8d56fb1ee4ab130aa0603bbccee6e5b117ff77d",
+    "headless-capture-rejection.log": "9205e7e3c4d3a92142eecd05a5ded9e36fe44b3f409583cb5c19ea6917c90b71"
+  },
+  "evidence_scope": "Local targeted tests and source hashes. Final integrated CI, real renderer and Android evidence remain a separate integration gate."
+}

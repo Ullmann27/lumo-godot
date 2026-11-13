@@ -50,6 +50,18 @@ func _visible_object_bounds(game: Node3D, node: Node3D, body: Rect2, caption: St
 			_check(body.has_point(point), caption + " is completely outside the header and footer")
 
 
+func _projected_bounds(game: Node3D, mesh: MeshInstance3D) -> Rect2:
+	var bounds := mesh.get_aabb()
+	var projected := Rect2(
+		game.camera.unproject_position(mesh.to_global(bounds.get_endpoint(0))), Vector2.ZERO
+	)
+	for corner in range(1, 8):
+		projected = projected.expand(
+			game.camera.unproject_position(mesh.to_global(bounds.get_endpoint(corner)))
+		)
+	return projected
+
+
 func _capture(game: Node3D, name_value: String, size_value: Vector2i) -> void:
 	await _settle()
 	var raster := root.get_texture().get_image()
@@ -81,6 +93,12 @@ func _capture(game: Node3D, name_value: String, size_value: Vector2i) -> void:
 		_visible_object_bounds(game, game._hundred_stock, body, name_value + " existing hundred")
 		_visible_object_bounds(
 			game, game._hundred_summary, body, name_value + " place-value decomposition"
+		)
+		var caption: MeshInstance3D = game._hundred_summary
+		var plate: MeshInstance3D = caption.get_node("CaptionPlate")
+		_check(
+			_projected_bounds(game, plate).encloses(_projected_bounds(game, caption).grow(0.5)),
+			"contrasting plate covers all projected glyphs " + name_value
 		)
 	for y in range(begin, end, 3):
 		for x in range(10, size_value.x - 10, 3):
@@ -215,8 +233,33 @@ func _run() -> void:
 		await _capture(game, str(descriptor.kind) + "-complete", Vector2i(1280, 720))
 		game.queue_free()
 		await _settle()
-	if failures == 0 and captures == 21:
+	# The renderer exposed a caption parallax defect. Cover the corrected
+	# hundred transition on a portrait phone and the real Android density too.
+	for size_value in [Vector2i(412, 915), Vector2i(2400, 1080)]:
+		root.size = size_value
+		bridge._options["displayDensity"] = 2.625 if size_value.x == 2400 else 1.0
+		var game = world.instantiate()
+		game.capture_options = {
+			"learning": {"kind": "bridge_hundred", "a": 180, "b": 50}, "reduceAnimations": true
+		}
+		root.add_child(game)
+		await _settle()
+		await _capture(
+			game, "bridge_hundred-start-%dx%d" % [size_value.x, size_value.y], size_value
+		)
+		for index in range(game.activity.goal_count()):
+			await _tap(game.main_button.get_global_rect().get_center())
+		_check(
+			game.activity.is_complete(), "hundred transition completes at current display density"
+		)
+		await _capture(
+			game, "bridge_hundred-complete-%dx%d" % [size_value.x, size_value.y], size_value
+		)
+		game.queue_free()
+		await _settle()
+	bridge._options = original_options
+	if failures == 0 and captures == 25:
 		print("[LearningCapture] PASS captures=%d" % captures)
 	else:
 		push_error("[LearningCapture] FAIL captures=%d failures=%d" % [captures, failures])
-	quit(0 if failures == 0 and captures == 21 else 1)
+	quit(0 if failures == 0 and captures == 25 else 1)

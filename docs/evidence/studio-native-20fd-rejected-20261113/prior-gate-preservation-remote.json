@@ -1,0 +1,35 @@
+{
+  "baseline": "796b2818ff729dc5389a92f8bf1f7fd7e6b6d93e",
+  "source": "20fd2880494c10f8f7d3a266956995e97f9011df",
+  "origin": "Exact public GitHub source fetched through the connector; local object lookup was unavailable and is preserved separately.",
+  "files": [
+    {
+      "path": ".github/workflows/lumo-studio-2019.yml",
+      "before_sha256": "ef24a0668a05e92e8865ae0aaed618397d1de096939140df85d6040313825d3b",
+      "after_sha256": "ef24a0668a05e92e8865ae0aaed618397d1de096939140df85d6040313825d3b",
+      "byte_equal": true
+    },
+    {
+      "path": "tools/validate_studio.sh",
+      "before_sha256": "236a4ccb73e19e5a2d8ec6fdfb9f56c223aef283dc0d2cb7a37a5570a19ffb31",
+      "after_sha256": "78d1cd6df60968c9d4d767b0c27c9b240df9968a817e703cec8d77294057b587",
+      "byte_equal": false,
+      "old_calls": 11,
+      "current_calls": 16,
+      "original_calls_unchanged": true,
+      "new_calls": [
+        "check_probe cards_safe_area_android_contract 'CARDS_ANDROID_INSETS_PASS' headless 180",
+        "check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' headless 180",
+        "check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' headless 240",
+        "check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' rendered 600 -- --capture",
+        "check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' rendered 900 -- --capture"
+      ]
+    },
+    {
+      "path": "tools/validate_studio_touch.sh",
+      "before_sha256": "4a517be7f757c16bd724c4fa9aa3b34b4e89cc873d32b4acc60f0c1f3408dc53",
+      "after_sha256": "4a517be7f757c16bd724c4fa9aa3b34b4e89cc873d32b4acc60f0c1f3408dc53",
+      "byte_equal": true
+    }
+  ]
+}

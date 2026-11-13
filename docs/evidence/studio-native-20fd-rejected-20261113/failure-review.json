@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "recorded_at_utc": "2026-11-13T22:53:44.867039+00:00",
+  "status": "REJECTED_FOR_HOST_PIN",
+  "source": "20fd2880494c10f8f7d3a266956995e97f9011df",
+  "tree": "20050679a3034eb9a03ded02ee3374b5cc54673e",
+  "run_id": 43520242403,
+  "attempt": 1,
+  "failure_job": {
+    "id": 132218856095,
+    "name": "new-worlds",
+    "completed_at": "2026-11-13T22:48:38Z",
+    "step": "Verify fail-closed collection of every independent module",
+    "command": "python3 -m unittest discover -s tools/tests -p test_nextgen_runner.py -v",
+    "tests": 6,
+    "failures": 2,
+    "duration_seconds": 7.0
+  },
+  "cause": {
+    "file": "tools/tests/test_nextgen_runner.py",
+    "sha256": "fe0426c3e895d10ecfb4b931d8883625baeac6d387f211f2d2eb700d6c33872e",
+    "findings": [
+      {
+        "test": "StudioPuzzleMenuContractTests.test_all_thirty_required_rasters_and_named_menu_views_are_enforced",
+        "line": 157,
+        "finding": "The historical fixture only creates the previous30 PNGs; the real expanded harness rejects missing current Cards captures."
+      },
+      {
+        "test": "StudioPuzzleMenuContractTests.test_existing_probes_and_budgets_survive_two_required_menu_modes",
+        "line": 111,
+        "finding": "The test expects exactly the former11 invocations and rejects the five additive current checks."
+      }
+    ]
+  },
+  "original_excerpt": [
+    {
+      "line": 2752,
+      "text": "2026-11-13T22:48:36.7063942Z FAIL: test_all_thirty_required_rasters_and_named_menu_views_are_enforced (test_nextgen_runner.StudioPuzzleMenuContractTests.test_all_thirty_required_rasters_and_named_menu_views_are_enforced)"
+    },
+    {
+      "line": 2757,
+      "text": "2026-11-13T22:48:36.7066518Z AssertionError: 1 != 0 : Traceback (most recent call last):"
+    },
+    {
+      "line": 2759,
+      "text": "2026-11-13T22:48:36.7067022Z AssertionError: ('cards_safe_area_regression', 0, 3)"
+    },
+    {
+      "line": 2763,
+      "text": "2026-11-13T22:48:36.7067902Z FAIL: test_existing_probes_and_budgets_survive_two_required_menu_modes (test_nextgen_runner.StudioPuzzleMenuContractTests.test_existing_probes_and_budgets_survive_two_required_menu_modes)"
+    },
+    {
+      "line": 2768,
+      "text": "2026-11-13T22:48:36.7070829Z AssertionError: Lists differ: [('le[390 chars]), ('cards_safe_area_android_contract', 'CARDS[664 chars]00')] != [('le[390 chars]), ('learning_sharing_capture', '[LearningShar[274 chars]00')]"
+    },
+    {
+      "line": 2781,
+      "text": "2026-11-13T22:48:36.7073758Z Ran 6 tests in 7.000s"
+    },
+    {
+      "line": 2783,
+      "text": "2026-11-13T22:48:36.7073937Z FAILED (failures=2)"
+    }
+  ],
+  "original_job_log": {
+    "path": "new-worlds-original-job.log",
+    "bytes": 265198,
+    "sha256": "27174b7846842fb0c4699d638d35bc742889210186be0448b56f5eaac45bf7c0"
+  },
+  "independent_successes_as_of_this_observation": [
+    {
+      "name": "learning-preview",
+      "id": 132212388301,
+      "completed_at": "2026-11-13T22:43:17Z"
+    },
+    {
+      "name": "studio",
+      "id": 132212388581,
+      "completed_at": "2026-11-13T22:47:43Z"
+    },
+    {
+      "name": "gameplay",
+      "id": 132212388682,
+      "completed_at": "2026-11-13T22:51:47Z"
+    },
+    {
+      "name": "touch-treasure",
+      "id": 132212388703,
+      "completed_at": "2026-11-13T22:47:14Z"
+    },
+    {
+      "name": "touch-build",
+      "id": 132212388704,
+      "completed_at": "2026-11-13T22:46:24Z"
+    }
+  ],
+  "remaining_job": "touch-workshop",
+  "studio_partial": {
+    "artifact_id": 14083990513,
+    "zip_path": "/workspace/scratch/5987865ae883/qa/studio-20fd-original.zip",
+    "bytes": 48295636,
+    "sha256": "34f34ec2928729972243be8979712edc35203d6dc5fce7d32a10699afc1a9f87",
+    "inventory": "studio-partial/studio-partial-inventory.json",
+    "crc": "PASS",
+    "studio_gates": 16,
+    "studio_pngs": 37,
+    "cards_sidecars": 3,
+    "shared_sidecars": 1,
+    "images_opened_visually_by_this_agent": []
+  },
+  "scope_limits": [
+    "No final bundle or receipt was approved.",
+    "No CI retry, source modification, branch update or Host pin change by this reviewing agent.",
+    "The native Product/Runtime scenes passed the independent Studio job; this does not replace the failed required new-worlds contract or complete Android acceptance.",
+    "Root and agentB own the narrowly assigned orchestration-test repair."
+  ]
+}

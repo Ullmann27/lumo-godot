@@ -1,0 +1,474 @@
+{
+  "source": "20fd2880494c10f8f7d3a266956995e97f9011df",
+  "tree": "20050679a3034eb9a03ded02ee3374b5cc54673e",
+  "run_id": 43520242403,
+  "archive_scope": "studio",
+  "artifact_id": 14083990513,
+  "zip_bytes": 48295636,
+  "zip_sha256": "34f34ec2928729972243be8979712edc35203d6dc5fce7d32a10699afc1a9f87",
+  "images_opened_visually": [],
+  "limitation": "Archive/source/file integrity only; not Android or visual acceptance.",
+  "source_stamps": {
+    "studio-evidence": {
+      "source": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "dirty": "",
+      "tree": "20050679a3034eb9a03ded02ee3374b5cc54673e"
+    }
+  },
+  "crc": "PASS",
+  "studio_gate_rows": [
+    "learning_sharing_regression\theadless\tPASS",
+    "learning_studio_regression\theadless\tPASS",
+    "lumo_studio_motion_regression\theadless\tPASS",
+    "puzzle_rotation_regression\theadless\tPASS",
+    "puzzle_menu_lifecycle_regression\theadless\tPASS",
+    "treasure_exploration_regression\theadless\tPASS",
+    "cards_safe_area_android_contract\theadless\tPASS",
+    "cards_safe_area_regression\theadless\tPASS",
+    "mobile_safe_area_regression\theadless\tPASS",
+    "learning_sharing_capture\trendered\tPASS",
+    "lumo_studio_motion_capture\trendered\tPASS",
+    "puzzle_rotation_regression\trendered\tPASS",
+    "puzzle_menu_lifecycle_regression\trendered\tPASS",
+    "treasure_exploration_regression\trendered\tPASS",
+    "cards_safe_area_regression\trendered\tPASS",
+    "mobile_safe_area_regression\trendered\tPASS"
+  ],
+  "images": [
+    {
+      "path": "studio-evidence/captures/learning_sharing_capture/sharing-complete-1280x720.png",
+      "artifact_entry": "captures/learning_sharing_capture/sharing-complete-1280x720.png",
+      "bytes": 249525,
+      "sha256": "cb24691851bed6f1f80d725a969f30bca87097510dcf7c4a5d06a0696116051a",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "probe": "learning_sharing_capture"
+    },
+    {
+      "path": "studio-evidence/captures/learning_sharing_capture/sharing-complete-412x915.png",
+      "artifact_entry": "captures/learning_sharing_capture/sharing-complete-412x915.png",
+      "bytes": 110576,
+      "sha256": "02f5f6cb203d87f15b8d5de46557d1e47b16b965072b9d6b1fc365731f6abe71",
+      "dimensions": [
+        412,
+        915
+      ],
+      "probe": "learning_sharing_capture"
+    },
+    {
+      "path": "studio-evidence/captures/learning_sharing_capture/sharing-first-round-1280x720.png",
+      "artifact_entry": "captures/learning_sharing_capture/sharing-first-round-1280x720.png",
+      "bytes": 247071,
+      "sha256": "364b2e326ca79abda3f0894f7d91fbb9e19e1428f2ce5bc69ac176839f45a9b2",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "probe": "learning_sharing_capture"
+    },
+    {
+      "path": "studio-evidence/captures/learning_sharing_capture/sharing-first-round-412x915.png",
+      "artifact_entry": "captures/learning_sharing_capture/sharing-first-round-412x915.png",
+      "bytes": 111652,
+      "sha256": "83b1274cc86d3e3b61d541e8ecdfcfff8de1d51561a87558dd516008ee9b68c8",
+      "dimensions": [
+        412,
+        915
+      ],
+      "probe": "learning_sharing_capture"
+    },
+    {
+      "path": "studio-evidence/captures/learning_sharing_capture/sharing-start-1280x720.png",
+      "artifact_entry": "captures/learning_sharing_capture/sharing-start-1280x720.png",
+      "bytes": 244185,
+      "sha256": "8153286850252d1bf7b365b079673b1da0ecb354ffb22fe8a0f9b4dbe768c605",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "probe": "learning_sharing_capture"
+    },
+    {
+      "path": "studio-evidence/captures/learning_sharing_capture/sharing-start-412x915.png",
+      "artifact_entry": "captures/learning_sharing_capture/sharing-start-412x915.png",
+      "bytes": 110235,
+      "sha256": "59edf83f79a88341b04dd9d3a74bb8bc03aad42385e601d24a739cefc06fe94b",
+      "dimensions": [
+        412,
+        915
+      ],
+      "probe": "learning_sharing_capture"
+    },
+    {
+      "path": "studio-evidence/captures/lumo_studio_motion_capture/after_jump_rise.png",
+      "artifact_entry": "captures/lumo_studio_motion_capture/after_jump_rise.png",
+      "bytes": 229670,
+      "sha256": "80a2f272b3e0b4e7b33186263ccd3d935af219349eb4be5b81e5ef2cf141b8c6",
+      "dimensions": [
+        720,
+        840
+      ],
+      "probe": "lumo_studio_motion_capture"
+    },
+    {
+      "path": "studio-evidence/captures/lumo_studio_motion_capture/after_land.png",
+      "artifact_entry": "captures/lumo_studio_motion_capture/after_land.png",
+      "bytes": 232932,
+      "sha256": "d9442204e757b11d6a325f35df510cea0f02e3ba4cf0b68a0ca08103eabe4b51",
+      "dimensions": [
+        720,
+        840
+      ],
+      "probe": "lumo_studio_motion_capture"
+    },
+    {
+      "path": "studio-evidence/captures/lumo_studio_motion_capture/after_sprint.png",
+      "artifact_entry": "captures/lumo_studio_motion_capture/after_sprint.png",
+      "bytes": 226051,
+      "sha256": "1a0c94b4a770315a9b071bdffa38cbad22df40fc21b9380443daeeb35e1e9999",
+      "dimensions": [
+        720,
+        840
+      ],
+      "probe": "lumo_studio_motion_capture"
+    },
+    {
+      "path": "studio-evidence/captures/lumo_studio_motion_capture/after_walk.png",
+      "artifact_entry": "captures/lumo_studio_motion_capture/after_walk.png",
+      "bytes": 229788,
+      "sha256": "ee838afa26760e013fa9446b1b2732019b9c61b5227ae55b9c6c5ded4fec3b4d",
+      "dimensions": [
+        720,
+        840
+      ],
+      "probe": "lumo_studio_motion_capture"
+    },
+    {
+      "path": "studio-evidence/captures/lumo_studio_motion_capture/before_jump_rise.png",
+      "artifact_entry": "captures/lumo_studio_motion_capture/before_jump_rise.png",
+      "bytes": 233683,
+      "sha256": "dc2a537f56f807ecdc2d93c516aaf31508d8402db34961e18c9b08d13d950533",
+      "dimensions": [
+        720,
+        840
+      ],
+      "probe": "lumo_studio_motion_capture"
+    },
+    {
+      "path": "studio-evidence/captures/lumo_studio_motion_capture/before_land.png",
+      "artifact_entry": "captures/lumo_studio_motion_capture/before_land.png",
+      "bytes": 226559,
+      "sha256": "f4146c517e89bc057be2759415684533efe747267e84ee65b5d3b7810721909c",
+      "dimensions": [
+        720,
+        840
+      ],
+      "probe": "lumo_studio_motion_capture"
+    },
+    {
+      "path": "studio-evidence/captures/lumo_studio_motion_capture/before_sprint.png",
+      "artifact_entry": "captures/lumo_studio_motion_capture/before_sprint.png",
+      "bytes": 236286,
+      "sha256": "a490cdfad662653025e849ae3f66f1ac1479b1054252da23a68841f69dd0ff2b",
+      "dimensions": [
+        720,
+        840
+      ],
+      "probe": "lumo_studio_motion_capture"
+    },
+    {
+      "path": "studio-evidence/captures/lumo_studio_motion_capture/before_walk.png",
+      "artifact_entry": "captures/lumo_studio_motion_capture/before_walk.png",
+      "bytes": 234905,
+      "sha256": "e963e44f8bcb604c6476a47690ebf33b6f7d38a16a5f3554e5edbe48246af276",
+      "dimensions": [
+        720,
+        840
+      ],
+      "probe": "lumo_studio_motion_capture"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_rotation_regression/puzzle_rotation_412x915.png",
+      "artifact_entry": "captures/puzzle_rotation_regression/puzzle_rotation_412x915.png",
+      "bytes": 227973,
+      "sha256": "c84701ff3adfb7687ecccc27b2e77990d99da31d8709ea3edc38cd7db5660849",
+      "dimensions": [
+        412,
+        915
+      ],
+      "probe": "puzzle_rotation_regression"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_rotation_regression/puzzle_rotation_640x360.png",
+      "artifact_entry": "captures/puzzle_rotation_regression/puzzle_rotation_640x360.png",
+      "bytes": 113804,
+      "sha256": "bd47e641d62876e018e54019d16f4895aa98c087e3211b466d22cb0829027211",
+      "dimensions": [
+        640,
+        360
+      ],
+      "probe": "puzzle_rotation_regression"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_rotation_regression/puzzle_rotation_840x760.png",
+      "artifact_entry": "captures/puzzle_rotation_regression/puzzle_rotation_840x760.png",
+      "bytes": 326232,
+      "sha256": "cc2f1c9db1f436cf97c779351365abe6ceb08f3bf7823b57a3a33182ad761da7",
+      "dimensions": [
+        840,
+        760
+      ],
+      "probe": "puzzle_rotation_regression"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_rotation_regression/puzzle_rotation_compact_menu.png",
+      "artifact_entry": "captures/puzzle_rotation_regression/puzzle_rotation_compact_menu.png",
+      "bytes": 58970,
+      "sha256": "7e70d160896fe898525f8e3a9506ff5857aae05f78da2d81e2f2a4436a3c92c9",
+      "dimensions": [
+        640,
+        360
+      ],
+      "probe": "puzzle_rotation_regression"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_rotation_regression/puzzle_rotation_hint.png",
+      "artifact_entry": "captures/puzzle_rotation_regression/puzzle_rotation_hint.png",
+      "bytes": 519079,
+      "sha256": "56a240ab05e93506deb170047b1ef80d677ad4b7cd84853ecb9f275d308396b6",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "probe": "puzzle_rotation_regression"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_rotation_regression/puzzle_rotation_placed.png",
+      "artifact_entry": "captures/puzzle_rotation_regression/puzzle_rotation_placed.png",
+      "bytes": 509560,
+      "sha256": "7a8a740af7040e19619b271fb766072dfe7be454368a1beff626f0a1f4727ab9",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "probe": "puzzle_rotation_regression"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_rotation_regression/puzzle_rotation_table.png",
+      "artifact_entry": "captures/puzzle_rotation_regression/puzzle_rotation_table.png",
+      "bytes": 507207,
+      "sha256": "98549ca0d1293b62311bc9ebad93eef60d1fb4f35bee5e16ed6e614a16232f20",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "probe": "puzzle_rotation_regression"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_menu_lifecycle_regression/640x360-classic-play.png",
+      "artifact_entry": "captures/puzzle_menu_lifecycle_regression/640x360-classic-play.png",
+      "bytes": 109548,
+      "sha256": "1c2523d4aaecefbbad8fd92d2cad7cb34c08f5b7dc52615cec4034662ffa0cdd",
+      "dimensions": [
+        640,
+        360
+      ],
+      "probe": "puzzle_menu_lifecycle_regression"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_menu_lifecycle_regression/640x360-rotation-menu.png",
+      "artifact_entry": "captures/puzzle_menu_lifecycle_regression/640x360-rotation-menu.png",
+      "bytes": 72841,
+      "sha256": "7e927fa5fa6fd0e3375a4e5e3d70cd888c90920b13fdeb26c9368b43bcb66fec",
+      "dimensions": [
+        640,
+        360
+      ],
+      "probe": "puzzle_menu_lifecycle_regression"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_menu_lifecycle_regression/640x360-rotation-play.png",
+      "artifact_entry": "captures/puzzle_menu_lifecycle_regression/640x360-rotation-play.png",
+      "bytes": 109589,
+      "sha256": "d1eb675bc182b34fa7b1b385119ba0e35faa267d6dc0fd87922f12c4d092b07d",
+      "dimensions": [
+        640,
+        360
+      ],
+      "probe": "puzzle_menu_lifecycle_regression"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_menu_lifecycle_regression/960x540-classic-play.png",
+      "artifact_entry": "captures/puzzle_menu_lifecycle_regression/960x540-classic-play.png",
+      "bytes": 302008,
+      "sha256": "d4d81b5a6cc8769f33e0a7aa026edc2393738abb8eab038498b0ec49e6cea1c9",
+      "dimensions": [
+        960,
+        540
+      ],
+      "probe": "puzzle_menu_lifecycle_regression"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_menu_lifecycle_regression/960x540-rotation-menu.png",
+      "artifact_entry": "captures/puzzle_menu_lifecycle_regression/960x540-rotation-menu.png",
+      "bytes": 151982,
+      "sha256": "d75d39cc24109f5692d386e0a484677086a5c5b01f30694b0ac1a8c87585a9eb",
+      "dimensions": [
+        960,
+        540
+      ],
+      "probe": "puzzle_menu_lifecycle_regression"
+    },
+    {
+      "path": "studio-evidence/captures/puzzle_menu_lifecycle_regression/960x540-rotation-play.png",
+      "artifact_entry": "captures/puzzle_menu_lifecycle_regression/960x540-rotation-play.png",
+      "bytes": 300994,
+      "sha256": "91be337390698ba57edff371853d570d5e54cd0b29b3f2aabab89d056705c36f",
+      "dimensions": [
+        960,
+        540
+      ],
+      "probe": "puzzle_menu_lifecycle_regression"
+    },
+    {
+      "path": "studio-evidence/captures/treasure_exploration_regression/treasure_choose_route.png",
+      "artifact_entry": "captures/treasure_exploration_regression/treasure_choose_route.png",
+      "bytes": 1365920,
+      "sha256": "c0d02930bc75a8875c76b868c6265dc16621b737ccfb93e929ad8d31d35893c0",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "probe": "treasure_exploration_regression"
+    },
+    {
+      "path": "studio-evidence/captures/treasure_exploration_regression/treasure_garden_first.png",
+      "artifact_entry": "captures/treasure_exploration_regression/treasure_garden_first.png",
+      "bytes": 1324899,
+      "sha256": "bf2f5555a7bd8cf30614e2beaf75a3612b8b45f1ff2e2fdcc0f4a3063b5f9f98",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "probe": "treasure_exploration_regression"
+    },
+    {
+      "path": "studio-evidence/captures/treasure_exploration_regression/treasure_route_complete.png",
+      "artifact_entry": "captures/treasure_exploration_regression/treasure_route_complete.png",
+      "bytes": 1354277,
+      "sha256": "f25f7dcd102814090d2845463f250e62b7ec14714b98e46c75c6ea96bd6a757b",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "probe": "treasure_exploration_regression"
+    },
+    {
+      "path": "studio-evidence/captures/cards_safe_area_regression/android35_portrait-paused.png",
+      "artifact_entry": "captures/cards_safe_area_regression/android35_portrait-paused.png",
+      "bytes": 1141738,
+      "sha256": "cdc1a62ed087f35d3eb751dcb8fa29dec2862b3d82ebe75c5bd21deb71d49491",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "probe": "cards_safe_area_regression"
+    },
+    {
+      "path": "studio-evidence/captures/cards_safe_area_regression/android35_portrait-playing.png",
+      "artifact_entry": "captures/cards_safe_area_regression/android35_portrait-playing.png",
+      "bytes": 1272873,
+      "sha256": "9754ab497a1b17a04f1170e7cec881f4e4d3c3ef692c45119b145c96510e7fe2",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "probe": "cards_safe_area_regression"
+    },
+    {
+      "path": "studio-evidence/captures/cards_safe_area_regression/landscape_cutout_fixture-playing.png",
+      "artifact_entry": "captures/cards_safe_area_regression/landscape_cutout_fixture-playing.png",
+      "bytes": 1002640,
+      "sha256": "53cc8d0e9a5fed74902802d1194fbaa2970c7b7f298dca26d886115f336acb86",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "probe": "cards_safe_area_regression"
+    },
+    {
+      "path": "studio-evidence/captures/mobile_safe_area_regression/build-landscape-cutout.png",
+      "artifact_entry": "captures/mobile_safe_area_regression/build-landscape-cutout.png",
+      "bytes": 2498099,
+      "sha256": "44b801df3844d2e33e6abce912d9610464a8ec0e52e86d915f473a357eebf961",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "probe": "mobile_safe_area_regression"
+    },
+    {
+      "path": "studio-evidence/captures/mobile_safe_area_regression/jump-landscape-cutout.png",
+      "artifact_entry": "captures/mobile_safe_area_regression/jump-landscape-cutout.png",
+      "bytes": 1854606,
+      "sha256": "f6d57ce51d9f723e18cd0402d32db291911a78b8c9e24b4f2ea30ac3607f9e7c",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "probe": "mobile_safe_area_regression"
+    },
+    {
+      "path": "studio-evidence/captures/mobile_safe_area_regression/puzzle-landscape-cutout.png",
+      "artifact_entry": "captures/mobile_safe_area_regression/puzzle-landscape-cutout.png",
+      "bytes": 479283,
+      "sha256": "6622d8c3ab667f13e83b827f560168b254e768beb0b280f076a3d31c5323d719",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "probe": "mobile_safe_area_regression"
+    },
+    {
+      "path": "studio-evidence/captures/mobile_safe_area_regression/treasure-landscape-cutout.png",
+      "artifact_entry": "captures/mobile_safe_area_regression/treasure-landscape-cutout.png",
+      "bytes": 2816209,
+      "sha256": "a2f478bb289da6272171f79398ee9cc25d5d8950232a16c44eaa857c897599e6",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "probe": "mobile_safe_area_regression"
+    }
+  ],
+  "studio_png_count": 37,
+  "sidecars": [
+    {
+      "path": "studio-evidence/captures/cards_safe_area_regression/android35_portrait-paused.layout.json",
+      "artifact_entry": "captures/cards_safe_area_regression/android35_portrait-paused.layout.json",
+      "bytes": 1277,
+      "sha256": "caf006264fce7cb744ddbb126353c72b48bc59bbfb1ce8abc348747541d34579"
+    },
+    {
+      "path": "studio-evidence/captures/cards_safe_area_regression/android35_portrait-playing.layout.json",
+      "artifact_entry": "captures/cards_safe_area_regression/android35_portrait-playing.layout.json",
+      "bytes": 1278,
+      "sha256": "09ab42be6a938a52300b2f7829300516facd620b8d5bf8b28d1c095a41b95e21"
+    },
+    {
+      "path": "studio-evidence/captures/cards_safe_area_regression/landscape_cutout_fixture-playing.layout.json",
+      "artifact_entry": "captures/cards_safe_area_regression/landscape_cutout_fixture-playing.layout.json",
+      "bytes": 1956,
+      "sha256": "80647bc6c9f3733304db34965e07a52b60ebef152b4716cef253c5d094dd2c02"
+    },
+    {
+      "path": "studio-evidence/captures/mobile_safe_area_regression/mobile-safe-area.json",
+      "artifact_entry": "captures/mobile_safe_area_regression/mobile-safe-area.json",
+      "bytes": 12524,
+      "sha256": "ca01f3683e042dcb4ffd88a3f66185127576466ef31076bb45c5bb53babe9cc4"
+    }
+  ],
+  "archive_member_count": 1833
+}
