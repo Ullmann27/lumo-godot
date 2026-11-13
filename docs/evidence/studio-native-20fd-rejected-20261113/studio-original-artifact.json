@@ -1,0 +1,20 @@
+{
+  "id": 14083990513,
+  "node_id": "MDg6QXJ0aWZhY3QxNDA4Mzk5MDUxMw==",
+  "name": "lumo-studio-2019-new-evidence",
+  "size_in_bytes": 48295636,
+  "url": "https://api.github.com/repos/Ullmann27/lumo-godot/actions/artifacts/14083990513",
+  "archive_download_url": "https://api.github.com/repos/Ullmann27/lumo-godot/actions/artifacts/14083990513/zip",
+  "expired": false,
+  "digest": "sha256:34f34ec2928729972243be8979712edc35203d6dc5fce7d32a10699afc1a9f87",
+  "created_at": "2026-11-13T22:47:40Z",
+  "updated_at": "2026-11-13T22:47:40Z",
+  "expires_at": "2026-12-13T22:47:35Z",
+  "workflow_run": {
+    "id": 43520242403,
+    "repository_id": 1251414584,
+    "head_repository_id": 1251414584,
+    "head_branch": "chatgpt/lumo-studio-20261113",
+    "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df"
+  }
+}

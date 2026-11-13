@@ -1,0 +1,476 @@
+{
+  "baseline_revision": "20fd2880494c10f8f7d3a266956995e97f9011df",
+  "shared_21_file_freeze_sha256": "f19731f1814dab3a6e4dabc5f9cfca0dbfee233db607d6e26ebe707e06417a21",
+  "all_21_frozen_sources_unchanged": true,
+  "source_files": [
+    {
+      "path": "scripts/app/android_safe_area.gd",
+      "expected_sha256": "28077c1eca89e7e915fc346973c6397d2c1b545fca9592f16394b2d9d2b04564",
+      "actual_sha256": "28077c1eca89e7e915fc346973c6397d2c1b545fca9592f16394b2d9d2b04564",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/app/mobile_runtime.gd",
+      "expected_sha256": "eec90f6187525eda2c330718e93c592cabc523ee93406b4c02e739286a8fd517",
+      "actual_sha256": "eec90f6187525eda2c330718e93c592cabc523ee93406b4c02e739286a8fd517",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/creative/creative_runtime.gd",
+      "expected_sha256": "b800c7d77c7a4fcc9a47081c2f25672fb2f2eefbb95c24fdc442f4f2df2185aa",
+      "actual_sha256": "b800c7d77c7a4fcc9a47081c2f25672fb2f2eefbb95c24fdc442f4f2df2185aa",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/creative/build_world.gd",
+      "expected_sha256": "14469b5e2e483219c63aaef3b581b26341db64c6f16f9fff053cc0a1a009c96e",
+      "actual_sha256": "14469b5e2e483219c63aaef3b581b26341db64c6f16f9fff053cc0a1a009c96e",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/creative/puzzle_world.gd",
+      "expected_sha256": "fe07f9113556f7ff11994eb7d99811c25349ff4c12fa27a48ed6e014ca0447bb",
+      "actual_sha256": "fe07f9113556f7ff11994eb7d99811c25349ff4c12fa27a48ed6e014ca0447bb",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "expected_sha256": "c46d260fef1c4f6ee88db1b5e5704707b35771f2fc64522fc5927a25c3bd34cf",
+      "actual_sha256": "c46d260fef1c4f6ee88db1b5e5704707b35771f2fc64522fc5927a25c3bd34cf",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/creative/build_settlement_world.gd",
+      "expected_sha256": "c3ee8df70deaf9a10d2e093f1c618a01a3ee030c3841f75951a98f808d63790f",
+      "actual_sha256": "c3ee8df70deaf9a10d2e093f1c618a01a3ee030c3841f75951a98f808d63790f",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/creative/rhythm_world.gd",
+      "expected_sha256": "2782420445115b1e303ea2e4e46cce114d981882afac0b52fac2d029432708f4",
+      "actual_sha256": "2782420445115b1e303ea2e4e46cce114d981882afac0b52fac2d029432708f4",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/games/jump_islands.gd",
+      "expected_sha256": "1190ef1e717d6fd714ad53a4c5a5120018c6486627e75ebae37be564e119f1db",
+      "actual_sha256": "1190ef1e717d6fd714ad53a4c5a5120018c6486627e75ebae37be564e119f1db",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/games/cards/cards_table.gd",
+      "expected_sha256": "5abea79b066e16f32f3951eda277db5cfdeced51ed3cbd85685be1aac0ae62d1",
+      "actual_sha256": "5abea79b066e16f32f3951eda277db5cfdeced51ed3cbd85685be1aac0ae62d1",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/learning/learning_world.gd",
+      "expected_sha256": "715e0940904ea0e4fda789a7738b89896a9c86a6cecca015834e4abc30716d95",
+      "actual_sha256": "715e0940904ea0e4fda789a7738b89896a9c86a6cecca015834e4abc30716d95",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/app/app_boot.gd",
+      "expected_sha256": "991d189afa1af113a4791883da8c669bc1404ee384c07699c8e1bda87b4340c8",
+      "actual_sha256": "991d189afa1af113a4791883da8c669bc1404ee384c07699c8e1bda87b4340c8",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/games/kart_garage_menu.gd",
+      "expected_sha256": "8fa0b96833c65b1f78f2612cbaf482d88815bd4c900fb830a177d5b517a3723c",
+      "actual_sha256": "8fa0b96833c65b1f78f2612cbaf482d88815bd4c900fb830a177d5b517a3723c",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/games/kart_workshop.gd",
+      "expected_sha256": "944a57897ef6d0cc98075500b71b137efc96b1f75fe34a77423314f88b656ea3",
+      "actual_sha256": "944a57897ef6d0cc98075500b71b137efc96b1f75fe34a77423314f88b656ea3",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/games/kart_island.gd",
+      "expected_sha256": "11cc762f98c7520d31d15bae16fc3dfcd2e6cde82bc2746fd71043dad379c37c",
+      "actual_sha256": "11cc762f98c7520d31d15bae16fc3dfcd2e6cde82bc2746fd71043dad379c37c",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/ui/mobile_safe_area.gd",
+      "expected_sha256": "5a6a7f78075d216de1b799de39b7331ad2ae39f31612ddefc5dc135ae5927c9e",
+      "actual_sha256": "5a6a7f78075d216de1b799de39b7331ad2ae39f31612ddefc5dc135ae5927c9e",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/tests/cards_safe_area_android_contract.gd",
+      "expected_sha256": "734cfcaa308b294c6017f5b040c9ccff49457ae32961c847acb170dca4d6f9e2",
+      "actual_sha256": "734cfcaa308b294c6017f5b040c9ccff49457ae32961c847acb170dca4d6f9e2",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/tests/cards_safe_area_regression.gd",
+      "expected_sha256": "03dee7a9cc15df5be1132491289c79093e9d2a42e771caf54beac3bab5b557f2",
+      "actual_sha256": "03dee7a9cc15df5be1132491289c79093e9d2a42e771caf54beac3bab5b557f2",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/tests/fixtures/cards_safe_area_table.gd",
+      "expected_sha256": "1518dda4fdc09383d36cda8c95c28e68cf9bed34196bd2f0e830a0385d3f5bd2",
+      "actual_sha256": "1518dda4fdc09383d36cda8c95c28e68cf9bed34196bd2f0e830a0385d3f5bd2",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "expected_sha256": "bca22822a2df33a69bcac5071b16827cecef179b077a08d1b2b0372a68e6fa4f",
+      "actual_sha256": "bca22822a2df33a69bcac5071b16827cecef179b077a08d1b2b0372a68e6fa4f",
+      "unchanged": true
+    },
+    {
+      "path": "tools/validate_studio.sh",
+      "expected_sha256": "78d1cd6df60968c9d4d767b0c27c9b240df9968a817e703cec8d77294057b587",
+      "actual_sha256": "78d1cd6df60968c9d4d767b0c27c9b240df9968a817e703cec8d77294057b587",
+      "unchanged": true
+    }
+  ],
+  "unowned_test_and_top_level_tool_files": [
+    {
+      "path": "tools/tests/test_ai3d_factory.py",
+      "expected_git_blob": "bb95169ca19ac1937a2a001061bee10eeb23d6ac",
+      "actual_git_blob": "bb95169ca19ac1937a2a001061bee10eeb23d6ac",
+      "unchanged": true
+    },
+    {
+      "path": "tools/tests/test_android_apk_packaging.py",
+      "expected_git_blob": "7711aef85b6f2d28c6f93f76900e7b0917417124",
+      "actual_git_blob": "7711aef85b6f2d28c6f93f76900e7b0917417124",
+      "unchanged": true
+    },
+    {
+      "path": "tools/tests/test_android_assets.py",
+      "expected_git_blob": "f9901539a46dd81d76099f3633cac1b9d6149958",
+      "actual_git_blob": "f9901539a46dd81d76099f3633cac1b9d6149958",
+      "unchanged": true
+    },
+    {
+      "path": "tools/tests/test_android_bridge.py",
+      "expected_git_blob": "1bb6b77fde66e31f99b42e4de8f757001285713e",
+      "actual_git_blob": "1bb6b77fde66e31f99b42e4de8f757001285713e",
+      "unchanged": true
+    },
+    {
+      "path": "tools/tests/test_android_frame.py",
+      "expected_git_blob": "9d1d6d1cc929afd8573259d153c160668b41868a",
+      "actual_git_blob": "9d1d6d1cc929afd8573259d153c160668b41868a",
+      "unchanged": true
+    },
+    {
+      "path": "tools/tests/test_android_garage_ocr.py",
+      "expected_git_blob": "bb345d9de22e324054e3561c89dbed1f3048c7b8",
+      "actual_git_blob": "bb345d9de22e324054e3561c89dbed1f3048c7b8",
+      "unchanged": true
+    },
+    {
+      "path": "tools/tests/test_android_logcat_transport.py",
+      "expected_git_blob": "05ce7c84247d4c06f5cf015d11f76fb3fe396060",
+      "actual_git_blob": "05ce7c84247d4c06f5cf015d11f76fb3fe396060",
+      "unchanged": true
+    },
+    {
+      "path": "tools/tests/test_android_race_frame.py",
+      "expected_git_blob": "30b303104c41818e3ae0061332002e32a7fad805",
+      "actual_git_blob": "30b303104c41818e3ae0061332002e32a7fad805",
+      "unchanged": true
+    },
+    {
+      "path": "tools/tests/test_kart_mineral_kit.py",
+      "expected_git_blob": "ff66d91f762c903552631f8ece5081150680e2cd",
+      "actual_git_blob": "ff66d91f762c903552631f8ece5081150680e2cd",
+      "unchanged": true
+    },
+    {
+      "path": "tools/tests/test_sulafat_generator.py",
+      "expected_git_blob": "a21b701c27c356aec0b8247f9a812abc4db682c2",
+      "actual_git_blob": "a21b701c27c356aec0b8247f9a812abc4db682c2",
+      "unchanged": true
+    },
+    {
+      "path": "tools/tests/fixtures/android_api35_kart_garage_step1.png",
+      "expected_git_blob": "b9921ba95c923a5b4a205dd2e748bd94cd2b3eca",
+      "actual_git_blob": "b9921ba95c923a5b4a205dd2e748bd94cd2b3eca",
+      "unchanged": true
+    },
+    {
+      "path": "tools/aaa_blender_archive.py",
+      "expected_git_blob": "98f97cde08a9f2fda34628dcc372d81683dec0a5",
+      "actual_git_blob": "98f97cde08a9f2fda34628dcc372d81683dec0a5",
+      "unchanged": true
+    },
+    {
+      "path": "tools/aaa_capture_metadata.gd",
+      "expected_git_blob": "e6d43884d10d8ea6ea5f3327e204802d740e5abf",
+      "actual_git_blob": "e6d43884d10d8ea6ea5f3327e204802d740e5abf",
+      "unchanged": true
+    },
+    {
+      "path": "tools/aaa_export_runtime_asset.gd",
+      "expected_git_blob": "685f7779b281b72dac3eca38826d89a517f471a7",
+      "actual_git_blob": "685f7779b281b72dac3eca38826d89a517f471a7",
+      "unchanged": true
+    },
+    {
+      "path": "tools/aaa_reference_packet.py",
+      "expected_git_blob": "76333504a0999ca071ad9c9445e52a03873f3c1a",
+      "actual_git_blob": "76333504a0999ca071ad9c9445e52a03873f3c1a",
+      "unchanged": true
+    },
+    {
+      "path": "tools/aaa_verify_glb.gd",
+      "expected_git_blob": "9ea7462496ae4a2ccb31de1ce61d0c3943c5255d",
+      "actual_git_blob": "9ea7462496ae4a2ccb31de1ce61d0c3943c5255d",
+      "unchanged": true
+    },
+    {
+      "path": "tools/ai3d_factory.py",
+      "expected_git_blob": "5b2e3755ff09ab920832493764499fcd0216eb37",
+      "actual_git_blob": "5b2e3755ff09ab920832493764499fcd0216eb37",
+      "unchanged": true
+    },
+    {
+      "path": "tools/build_android.sh",
+      "expected_git_blob": "d6b5aaf11c1d4bc827449f28b0fe9030c06ff400",
+      "actual_git_blob": "d6b5aaf11c1d4bc827449f28b0fe9030c06ff400",
+      "unchanged": true
+    },
+    {
+      "path": "tools/build_track_developer_packs.py",
+      "expected_git_blob": "b0bcf44c1b40ed88a723dcaab0fc77b226e1f3f0",
+      "actual_git_blob": "b0bcf44c1b40ed88a723dcaab0fc77b226e1f3f0",
+      "unchanged": true
+    },
+    {
+      "path": "tools/build_web.sh",
+      "expected_git_blob": "1bec3d415eaafc892d44c3160c0a5d25152e0c11",
+      "actual_git_blob": "1bec3d415eaafc892d44c3160c0a5d25152e0c11",
+      "unchanged": true
+    },
+    {
+      "path": "tools/build_web_bundle.sh",
+      "expected_git_blob": "07b2b8d0e7341d57a9567996a7a446ff6536195e",
+      "actual_git_blob": "07b2b8d0e7341d57a9567996a7a446ff6536195e",
+      "unchanged": true
+    },
+    {
+      "path": "tools/check_android_frame.py",
+      "expected_git_blob": "2afaec69d05ac6ed5ff69db354b1b37c33803455",
+      "actual_git_blob": "2afaec69d05ac6ed5ff69db354b1b37c33803455",
+      "unchanged": true
+    },
+    {
+      "path": "tools/create_creative_objects.py",
+      "expected_git_blob": "7edaa8e502e2e4d3c628c475f4a2877dc149a092",
+      "actual_git_blob": "7edaa8e502e2e4d3c628c475f4a2877dc149a092",
+      "unchanged": true
+    },
+    {
+      "path": "tools/fetch_assets.py",
+      "expected_git_blob": "e4acbb3a3c8b1ca0037d7601689de1fe760b6090",
+      "actual_git_blob": "e4acbb3a3c8b1ca0037d7601689de1fe760b6090",
+      "unchanged": true
+    },
+    {
+      "path": "tools/generate_sulafat_voices.py",
+      "expected_git_blob": "9a1b83d9f263c47fa17e05e63eca581363c4aeaf",
+      "actual_git_blob": "9a1b83d9f263c47fa17e05e63eca581363c4aeaf",
+      "unchanged": true
+    },
+    {
+      "path": "tools/import_track_reference_packs.py",
+      "expected_git_blob": "022d4cf2431e2c534ed4c3f16a7af8c44ae3e339",
+      "actual_git_blob": "022d4cf2431e2c534ed4c3f16a7af8c44ae3e339",
+      "unchanged": true
+    },
+    {
+      "path": "tools/install_android.sh",
+      "expected_git_blob": "0ba94332d228370f072b752c21def9cc4bd7a6db",
+      "actual_git_blob": "0ba94332d228370f072b752c21def9cc4bd7a6db",
+      "unchanged": true
+    },
+    {
+      "path": "tools/logcat_lumo.sh",
+      "expected_git_blob": "a3f2c5bf63752a148da82f77b2f7731f64c56302",
+      "actual_git_blob": "a3f2c5bf63752a148da82f77b2f7731f64c56302",
+      "unchanged": true
+    },
+    {
+      "path": "tools/lumo_autosave.py",
+      "expected_git_blob": "3c9dd1ab25c6e315a16ca96adae23c0ec0645982",
+      "actual_git_blob": "3c9dd1ab25c6e315a16ca96adae23c0ec0645982",
+      "unchanged": true
+    },
+    {
+      "path": "tools/meshy_file_input_bridge.mjs",
+      "expected_git_blob": "ab80c5b3736ba667d717356d9b6eb7e839b82043",
+      "actual_git_blob": "ab80c5b3736ba667d717356d9b6eb7e839b82043",
+      "unchanged": true
+    },
+    {
+      "path": "tools/meshy_file_input_bridge.test.mjs",
+      "expected_git_blob": "c206b9a75fc5913ce020b2896e0aec3f9fb19417",
+      "actual_git_blob": "c206b9a75fc5913ce020b2896e0aec3f9fb19417",
+      "unchanged": true
+    },
+    {
+      "path": "tools/package_android_apk.py",
+      "expected_git_blob": "0da6cc39ed963ce5a64f50f86db6ef75fb577002",
+      "actual_git_blob": "0da6cc39ed963ce5a64f50f86db6ef75fb577002",
+      "unchanged": true
+    },
+    {
+      "path": "tools/prepare_android_assets.py",
+      "expected_git_blob": "f51baabba26fba599e37e63dc535aae9568faedf",
+      "actual_git_blob": "f51baabba26fba599e37e63dc535aae9568faedf",
+      "unchanged": true
+    },
+    {
+      "path": "tools/prepare_android_bridge.py",
+      "expected_git_blob": "890babc523fe0ce545f22b5f915e392bd7b0c346",
+      "actual_git_blob": "890babc523fe0ce545f22b5f915e392bd7b0c346",
+      "unchanged": true
+    },
+    {
+      "path": "tools/run_godot_probe.py",
+      "expected_git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+      "actual_git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+      "unchanged": true
+    },
+    {
+      "path": "tools/run_local_renderer.py",
+      "expected_git_blob": "7fa41c18b853bd156b5365270132c35887b49c77",
+      "actual_git_blob": "7fa41c18b853bd156b5365270132c35887b49c77",
+      "unchanged": true
+    },
+    {
+      "path": "tools/serve_web.py",
+      "expected_git_blob": "cd5a006f2f52102d65f8115311cee6aa9ba0e8e5",
+      "actual_git_blob": "cd5a006f2f52102d65f8115311cee6aa9ba0e8e5",
+      "unchanged": true
+    },
+    {
+      "path": "tools/setup_android_keystore.sh",
+      "expected_git_blob": "848c99bc07b569a0f5dbceceb37399a1ac825ed7",
+      "actual_git_blob": "848c99bc07b569a0f5dbceceb37399a1ac825ed7",
+      "unchanged": true
+    },
+    {
+      "path": "tools/tap_android_garage.py",
+      "expected_git_blob": "bc8d345923467eda2723707ae39c00e4c536d28b",
+      "actual_git_blob": "bc8d345923467eda2723707ae39c00e4c536d28b",
+      "unchanged": true
+    },
+    {
+      "path": "tools/test_aaa_reference_packet.py",
+      "expected_git_blob": "9171ee75e13f3089bdae0452bd6075a22d4526be",
+      "actual_git_blob": "9171ee75e13f3089bdae0452bd6075a22d4526be",
+      "unchanged": true
+    },
+    {
+      "path": "tools/test_android_startup.sh",
+      "expected_git_blob": "054b049fc8c0ab78ce8f7f6dabd45028e16b5412",
+      "actual_git_blob": "054b049fc8c0ab78ce8f7f6dabd45028e16b5412",
+      "unchanged": true
+    },
+    {
+      "path": "tools/test_track_reference_import.py",
+      "expected_git_blob": "f5727825dad68c4a3f346d7e810b60325abdc087",
+      "actual_git_blob": "f5727825dad68c4a3f346d7e810b60325abdc087",
+      "unchanged": true
+    },
+    {
+      "path": "tools/test_track_theme_contract.py",
+      "expected_git_blob": "01420e74bd5877c9c12a967cf76504c09d92e2c8",
+      "actual_git_blob": "01420e74bd5877c9c12a967cf76504c09d92e2c8",
+      "unchanged": true
+    },
+    {
+      "path": "tools/test_track_theme_world.py",
+      "expected_git_blob": "e539fd2097845e60e6c55d7bad357c8858c1562d",
+      "actual_git_blob": "e539fd2097845e60e6c55d7bad357c8858c1562d",
+      "unchanged": true
+    },
+    {
+      "path": "tools/test_track_theme_world_runner.py",
+      "expected_git_blob": "4771b4aa2fcf23fc002edfab5b2d3257d8d11ee9",
+      "actual_git_blob": "4771b4aa2fcf23fc002edfab5b2d3257d8d11ee9",
+      "unchanged": true
+    },
+    {
+      "path": "tools/validate_2014.sh",
+      "expected_git_blob": "4fb01fdc83cf91ea09af56365c3ec325ebe999bc",
+      "actual_git_blob": "4fb01fdc83cf91ea09af56365c3ec325ebe999bc",
+      "unchanged": true
+    },
+    {
+      "path": "tools/validate_action_stage.sh",
+      "expected_git_blob": "d5c980624727b3b6b39bdc2c7f51c653dd5899ad",
+      "actual_git_blob": "d5c980624727b3b6b39bdc2c7f51c653dd5899ad",
+      "unchanged": true
+    },
+    {
+      "path": "tools/validate_nextgen.sh",
+      "expected_git_blob": "bf5e8e129fa8c3d7872fb92d21046c1ef7f87e9e",
+      "actual_git_blob": "bf5e8e129fa8c3d7872fb92d21046c1ef7f87e9e",
+      "unchanged": true
+    },
+    {
+      "path": "tools/validate_project.py",
+      "expected_git_blob": "9cfe2db9504c0141061a2388deb6dc73be9513ec",
+      "actual_git_blob": "9cfe2db9504c0141061a2388deb6dc73be9513ec",
+      "unchanged": true
+    },
+    {
+      "path": "tools/validate_project.sh",
+      "expected_git_blob": "c518204f1e64410052a8fb31956f786cceb091a9",
+      "actual_git_blob": "c518204f1e64410052a8fb31956f786cceb091a9",
+      "unchanged": true
+    },
+    {
+      "path": "tools/validate_studio.sh",
+      "expected_git_blob": "97e25c3ebef6f88a65ccee615ba144fe4b64b86a",
+      "actual_git_blob": "97e25c3ebef6f88a65ccee615ba144fe4b64b86a",
+      "unchanged": true
+    },
+    {
+      "path": "tools/validate_studio_touch.sh",
+      "expected_git_blob": "7adda6cc0e8682bb6f9c89507343ea6e998b0ed8",
+      "actual_git_blob": "7adda6cc0e8682bb6f9c89507343ea6e998b0ed8",
+      "unchanged": true
+    },
+    {
+      "path": "tools/validate_technical_art.sh",
+      "expected_git_blob": "f3e102c31215e5b9b9bff973ef2c4129d3c5112d",
+      "actual_git_blob": "f3e102c31215e5b9b9bff973ef2c4129d3c5112d",
+      "unchanged": true
+    },
+    {
+      "path": "tools/validate_track_packs.py",
+      "expected_git_blob": "21fa78462cf221709f2531d0f99dddcf08667d5d",
+      "actual_git_blob": "21fa78462cf221709f2531d0f99dddcf08667d5d",
+      "unchanged": true
+    }
+  ],
+  "workflow": {
+    "path": ".github/workflows/lumo-studio-2019.yml",
+    "expected_sha256": "ef24a0668a05e92e8865ae0aaed618397d1de096939140df85d6040313825d3b",
+    "actual_sha256": "ef24a0668a05e92e8865ae0aaed618397d1de096939140df85d6040313825d3b",
+    "unchanged": true
+  },
+  "diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      "tools/tests/test_nextgen_runner.py"
+    ],
+    "exit_code": 0,
+    "log": "diff-check.log"
+  }
+}

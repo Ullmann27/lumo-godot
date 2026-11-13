@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-11-13T22:57:22.825803+00:00",
+  "reviewer": "root",
+  "source": "20fd2880494c10f8f7d3a266956995e97f9011df",
+  "tree": "20050679a3034eb9a03ded02ee3374b5cc54673e",
+  "run_id": 43520242403,
+  "artifact_id": 14083990513,
+  "zip_sha256": "34f34ec2928729972243be8979712edc35203d6dc5fce7d32a10699afc1a9f87",
+  "images": [
+    {
+      "path": "studio-evidence/captures/learning_sharing_capture/sharing-complete-1280x720.png",
+      "artifact_entry": "captures/learning_sharing_capture/sharing-complete-1280x720.png",
+      "bytes": 249525,
+      "sha256": "cb24691851bed6f1f80d725a969f30bca87097510dcf7c4a5d06a0696116051a",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "probe": "learning_sharing_capture",
+      "actually_opened_by_root": true,
+      "findings": "Twelve real cubes are arranged as three groups of four. Completion wording, reset and return controls are readable; distribution action is disabled."
+    },
+    {
+      "path": "studio-evidence/captures/learning_sharing_capture/sharing-first-round-412x915.png",
+      "artifact_entry": "captures/learning_sharing_capture/sharing-first-round-412x915.png",
+      "bytes": 111652,
+      "sha256": "83b1274cc86d3e3b61d541e8ecdfcfff8de1d51561a87558dd516008ee9b68c8",
+      "dimensions": [
+        412,
+        915
+      ],
+      "probe": "learning_sharing_capture",
+      "actually_opened_by_root": true,
+      "findings": "One cube per group and nine remaining cubes are visible. Status3/12 and task/interaction controls fit the portrait frame."
+    },
+    {
+      "path": "studio-evidence/captures/cards_safe_area_regression/android35_portrait-playing.png",
+      "artifact_entry": "captures/cards_safe_area_regression/android35_portrait-playing.png",
+      "bytes": 1272873,
+      "sha256": "9754ab497a1b17a04f1170e7cec881f4e4d3c3ef692c45119b145c96510e7fe2",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "probe": "cards_safe_area_regression",
+      "actually_opened_by_root": true,
+      "findings": "Original fox, three card fronts, pagination and draw button visible. Header and footer lie within the declared Android-boundary fixture; no new blocking overlap in this frame."
+    },
+    {
+      "path": "studio-evidence/captures/mobile_safe_area_regression/jump-landscape-cutout.png",
+      "artifact_entry": "captures/mobile_safe_area_regression/jump-landscape-cutout.png",
+      "bytes": 1854606,
+      "sha256": "f6d57ce51d9f723e18cd0402d32db291911a78b8c9e24b4f2ea30ac3607f9e7c",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "probe": "mobile_safe_area_regression",
+      "actually_opened_by_root": true,
+      "findings": "Original fox and islands visible; left joystick, right jump button, Back and Pause lie within the declared landscape safe region. Static frame does not prove a jump or physical input latency."
+    }
+  ],
+  "status": "VISUAL_PARTIAL_ONLY_NATIVE_OVERALL_FAILED",
+  "limitations": [
+    "Original Studio job is successful16/16 with37 current PNGs. new-worlds fails two stale test-fixture contracts; no aggregate archive, host pin, receipt or APK approval.",
+    "Desktop native render with declared Android-boundary fixtures; no new Android/physical Fold7/FPS result.",
+    "Only these four current CI frames were individually opened by Root in this review."
+  ]
+}
