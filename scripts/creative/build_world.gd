@@ -233,9 +233,9 @@ func _ui() -> void:
 	scroll.add_child(actions)
 	for spec in [
 		["Verschieben", _toggle_move],
+		["Drehen ↻", _rotate],
 		["Siedlung", _open_settlement.bind("settlement")],
 		["Wettbau", _open_settlement.bind("rival")],
-		["Drehen ↻", _rotate],
 		["Entfernen", _toggle_erase],
 		["Rückgängig", _undo],
 		["Wiederholen", _redo],

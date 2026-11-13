@@ -88,6 +88,17 @@ static func _new_town() -> Dictionary:
 	}
 
 
+# Village markets must be buildable even after the last coin is spent.
+# The same quote is used for payment and the public build button.
+func building_cost(kind: String) -> Dictionary:
+	if not BUILDINGS.has(kind):
+		return {}
+	var price: Dictionary = BUILDINGS[kind].cost.duplicate(true)
+	if living_village and kind == "market":
+		price.erase("coins")
+	return price
+
+
 func player() -> Dictionary:
 	return _player.duplicate(true)
 
@@ -121,11 +132,17 @@ func _buy(town: Dictionary, kind: String, plot: int) -> bool:
 		if int(building.plot) == plot:
 			last_error = "Dieses Grundstück ist bereits bebaut."
 			return false
-	if not _affords(town, BUILDINGS[kind].cost):
+	var cost: Dictionary = building_cost(kind)
+	if not _affords(town, cost):
 		last_error = "Dafür fehlen noch Rohstoffe. Produziere oder handle zuerst."
 		return false
-	_pay(town, BUILDINGS[kind].cost)
-	town.buildings.append({"id": "b%d" % int(town.next_id), "kind": kind, "plot": plot})
+	_pay(town, cost)
+	var new_building := {"id": "b%d" % int(town.next_id), "kind": kind, "plot": plot}
+	# Exact paid prices survive Save/Load and never mint coins on demolition.
+	# Older markets without this receipt retain their historical two-coin refund.
+	if living_village and kind == "market":
+		new_building["purchase_cost"] = cost.duplicate(true)
+	town.buildings.append(new_building)
 	if living_village and kind == "house":
 		VILLAGE.house_built(town, "b%d" % int(town.next_id))
 	town.next_id = int(town.next_id) + 1
@@ -147,8 +164,9 @@ func demolition_quote(plot: int) -> Dictionary:
 				if int(definition.capacity) > 0
 				else 0
 			)
+			var paid_cost: Dictionary = building.get("purchase_cost", definition.cost)
 			return {
-				"refund": definition.cost.duplicate(true),
+				"refund": paid_cost.duplicate(true),
 				"affected_residents": affected,
 				"population_after":
 				(
@@ -180,9 +198,10 @@ func try_demolish(plot: int, allow_relocation: bool = false) -> bool:
 		# Recover the actual building materials, not market resale prices. This
 		# keeps experimenting reversible even after Next Day has cleared Undo.
 		# Existing stock never decreases; a full store simply cannot hold more.
-		for resource: String in definition.cost:
+		var paid_cost: Dictionary = quote.refund
+		for resource: String in paid_cost:
 			_player.resources[resource] = mini(
-				MAX_RESOURCE, int(_player.resources[resource]) + int(definition.cost[resource])
+				MAX_RESOURCE, int(_player.resources[resource]) + int(paid_cost[resource])
 			)
 		# A separate, explicitly confirmed relocation is the escape route from a
 		# fully housed/occupied island. The two founders remain in the starter
@@ -602,9 +621,12 @@ static func _restored_town(town: Dictionary) -> Dictionary:
 	for resource in RESOURCES:
 		result.resources[resource] = int(town.resources[resource])
 	for building: Dictionary in town.buildings:
-		result.buildings.append(
-			{"id": str(building.id), "kind": str(building.kind), "plot": int(building.plot)}
-		)
+		var restored_building := {
+			"id": str(building.id), "kind": str(building.kind), "plot": int(building.plot)
+		}
+		if building.has("purchase_cost"):
+			restored_building["purchase_cost"] = building.purchase_cost.duplicate(true)
+		result.buildings.append(restored_building)
 	if int(town.get("economy_version", 0)) == 2:
 		VILLAGE.restore_fields(town, result)
 	return result
@@ -647,6 +669,14 @@ static func _valid_town(town: Dictionary, is_living: bool = false) -> bool:
 	var identifiers := {}
 	for building: Variant in town.buildings:
 		if not building is Dictionary or not BUILDINGS.has(building.get("kind", "")):
+			return false
+		# The only new paid-price receipt is the coin-free village market.
+		# Validate it to prevent a tampered save from crediting arbitrary resources.
+		if building.has("purchase_cost") and (
+			not is_living
+			or building.kind != "market"
+			or building.purchase_cost != {"wood": 6, "stone": 4}
+		):
 			return false
 		if not _whole(building.get("plot"), 0, int(town.plots) - 1):
 			return false
