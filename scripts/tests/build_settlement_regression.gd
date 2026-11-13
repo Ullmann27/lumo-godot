@@ -49,6 +49,40 @@ func _initialize() -> void:
 	var restored = MODEL.restore(JSON.parse_string(JSON.stringify(stored)))
 	check(restored != null and restored.snapshot() == stored, "JSON save reload preserves entire world")
 	check(not restored.undo(), "save reload cannot rewind already spent old transactions")
+	# A normal child can spend all stone on houses. Waiting used to leave this
+	# world permanently stuck after Undo was cleared. Recover through real rules.
+	var recovery = MODEL.new()
+	for plot in range(4):
+		check(recovery.try_build("house", plot), "ordinary overbuilding is reachable")
+	recovery.next_day()
+	check(not recovery.undo() and recovery.player().resources.stone == 0, "cross-day overbuilding reproduces economic dead end")
+	var stuck: Dictionary = recovery.snapshot()
+	check(not recovery.try_demolish(7) and recovery.snapshot() == stuck, "empty plot cannot mint demolition refunds")
+	check(not recovery.try_demolish(-1) and recovery.snapshot() == stuck, "invalid demolition remains atomic")
+	check(recovery.try_demolish(3), "full-cost recycling recovers from past-day mistake")
+	check(recovery.player().resources.wood == 6 and recovery.player().resources.stone == 3, "recycling returns exact paid wood and stone")
+	var recycled: Dictionary = recovery.snapshot()
+	check(recovery.undo() and recovery.snapshot() == stuck, "undo demolition restores building and removes refund together")
+	check(recovery.redo() and recovery.snapshot() == recycled, "redo demolition cannot double its refund")
+	check(recovery.try_build("lumber", 3), "recovered materials buy real production")
+	for _day in range(2): recovery.next_day()
+	check(recovery.try_build("farm", 4), "stuck project now gains actual food production")
+	check(recovery.try_demolish(2) and recovery.try_build("quarry", 2), "same project restores stone production without reset")
+	var recover_reload = MODEL.restore(JSON.parse_string(JSON.stringify(recovery.snapshot())))
+	check(recover_reload != null and recover_reload.snapshot() == recovery.snapshot(), "recovered project remains a valid version-one save")
+	var housed = MODEL.new()
+	check(housed.try_build("house", 0), "occupied home established")
+	var home: Dictionary = housed.snapshot()
+	check(not housed.try_demolish(0) and housed.snapshot() == home, "recycling never evicts inhabitants")
+	var saturated: Dictionary = home.duplicate(true)
+	saturated.player.resources.wood = MODEL.MAX_RESOURCE
+	saturated.player.resources.stone = MODEL.MAX_RESOURCE
+	saturated.player.resources.coins = MODEL.MAX_RESOURCE
+	saturated.player.buildings.append({"id": "b2", "kind": "lumber", "plot": 1})
+	saturated.player.next_id = 3
+	var full = MODEL.restore(saturated)
+	check(full != null and full.try_demolish(1), "full store does not lock all occupied plots")
+	check(full.player().resources.wood == MODEL.MAX_RESOURCE and MODEL.restore(full.snapshot()) != null, "refund cap preserves valid resource bounds")
 	for mutation in ["negative", "fractional", "overlap", "unknown", "bad_region", "fake_winner", "oversized"]:
 		var bad: Dictionary = stored.duplicate(true)
 		match mutation:
@@ -95,5 +129,6 @@ func _initialize() -> void:
 	var finished: Dictionary = race.snapshot()
 	check(not race.next_day().advanced and race.snapshot() == finished, "completed race does not keep changing")
 	check(not race.try_build("house", 24), "finished race rejects late purchases")
+	check(not race.try_demolish(0) and race.snapshot() == finished, "race result cannot be undone by late recycling")
 	print("[Settlement] %s %d checks; mirrored complete AI campaign %d days" % ["PASS" if failed == 0 else "FAIL", checks, days])
 	quit(0 if failed == 0 else 1)

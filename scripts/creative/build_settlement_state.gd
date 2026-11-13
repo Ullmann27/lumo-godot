@@ -63,6 +63,9 @@ func _buy(town: Dictionary, kind: String, plot: int) -> bool:
 	if plot < 0 or plot >= int(town.plots):
 		last_error = "Dieses Grundstück ist noch nicht erschlossen."
 		return false
+	if int(town.next_id) >= 10000:
+		last_error = "Dieses Projekt hat seine Baugeschichte gefüllt. Öffne ein weiteres Projekt."
+		return false
 	for building: Dictionary in town.buildings:
 		if int(building.plot) == plot:
 			last_error = "Dieses Grundstück ist bereits bebaut."
@@ -74,6 +77,34 @@ func _buy(town: Dictionary, kind: String, plot: int) -> bool:
 	town.buildings.append({"id": "b%d" % int(town.next_id), "kind": kind, "plot": plot})
 	town.next_id = int(town.next_id) + 1
 	return true
+
+
+func try_demolish(plot: int) -> bool:
+	last_error = ""
+	if not _can_act():
+		return false
+	if plot < 0 or plot >= int(_player.plots):
+		last_error = "Wähle ein eigenes bebautes Grundstück."
+		return false
+	for index in range(_player.buildings.size()):
+		var building: Dictionary = _player.buildings[index]
+		if int(building.plot) != plot:
+			continue
+		var definition: Dictionary = BUILDINGS[str(building.kind)]
+		if int(definition.capacity) > 0 and _capacity(_player) - int(definition.capacity) < int(_player.population):
+			last_error = "Deine Bewohner brauchen dieses Zuhause. Baue zuerst ein weiteres Wohnhaus."
+			return false
+		var before := _player.duplicate(true)
+		# Recover the actual building materials, not market resale prices. This
+		# keeps experimenting reversible even after Next Day has cleared Undo.
+		# Existing stock never decreases; a full store simply cannot hold more.
+		for resource: String in definition.cost:
+			_player.resources[resource] = mini(MAX_RESOURCE, int(_player.resources[resource]) + int(definition.cost[resource]))
+		_player.buildings.remove_at(index)
+		_remember(before)
+		return true
+	last_error = "Auf diesem Grundstück steht noch kein Gebäude."
+	return false
 
 
 func try_trade(resource: String, quantity: int, sell: bool) -> bool:
