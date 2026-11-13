@@ -4,6 +4,7 @@ extends "res://scripts/games/kart_garage_menu.gd"
 const SERVICE_STATION = preload("res://scripts/games/kart_garage_service_station.gd")
 const STAGE_PINCH = preload("res://scripts/games/kart_stage_pinch.gd")
 var service_station
+var track_pass
 var _pinch = STAGE_PINCH.new()
 var _camera_zoom := 1.0
 var _last_section := -1
@@ -111,7 +112,34 @@ func _refresh() -> void:
 	kart_bars.hide()
 	subtitle.hide()
 	title_label.text = ["Rennen", "Dein Fahrer", "Deine Garage", "Rennwelten", "Tempo & Gegner"][step]
+	_update_track_goals()
 	_apply_responsive_layout.call_deferred()
+
+
+func _update_track_goals() -> void:
+	if step != 3 or track_pass == null or setup.mode not in ["race", "cup"]:
+		return
+	var difficulty_id: String = str(setup.difficulty)
+	var difficulty_name: String = str(CATALOG.entry(CATALOG.DIFFICULTIES, difficulty_id).name)
+	title_label.text = "Rennwelten · %d/%d" % [track_pass.total(difficulty_id), CATALOG.TRACKS.size() * 3]
+	if setup.mode == "cup":
+		if choices.get_child_count() == 1:
+			var card: Button = choices.get_child(0)
+			card.text += "\nStreckenpass: %d/%d Ziele · %s" % [track_pass.total(difficulty_id), CATALOG.TRACKS.size() * 3, difficulty_name]
+		return
+	for index in range(mini(choices.get_child_count(), CATALOG.TRACKS.size())):
+		var card = choices.get_child(index)
+		if card.get("caption_label") == null:
+			continue
+		var track: Dictionary = CATALOG.TRACKS[index]
+		var achieved: int = track_pass.stage(str(track.id), difficulty_id)
+		var goal: String = track_pass.goal_text(achieved)
+		var short_goal: String = ["2 Runden ins Ziel", "Aufs Podium", "Sieg ohne Rücksetzen", "Geschafft!"][achieved]
+		card.caption = "%d/3 · %s" % [achieved, short_goal]
+		card.caption_label.text = card.caption
+		card.caption_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		card.caption_label.max_lines_visible = 2
+		card.tooltip_text = "%s · %s\n%s\nZiele gelten im Einzelrennen und Sternen-Cup." % [track.name, difficulty_name, goal]
 
 
 func _apply_selected_preview() -> void:
@@ -273,6 +301,10 @@ func _apply_responsive_layout() -> void:
 				_set_physical_font(card, 16, scale_factor)
 				if card.has_method("apply_size"):
 					card.apply_size(scale_factor, true)
+					# Compact mode hides decorative captions. Race objectives are
+					# actionable information and remain visible on every form factor.
+					if step == 3 and setup.mode == "race" and track_pass != null:
+						card.caption_label.show()
 	_stage_rect(footer, Rect2(margin, footer_y, available.x - margin * 2, footer_height), scale_factor)
 	footer_spacer.hide()
 	footer.columns = (3 if has_saved_race else 2) + (1 if workshop_in_footer else 0)

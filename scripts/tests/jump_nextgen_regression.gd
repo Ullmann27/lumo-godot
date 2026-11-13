@@ -242,7 +242,7 @@ func _run() -> void:
 		for control in [game.movement_stick, game.jump_action] + game.header_buttons:
 			var dp: Vector2 = control.size * physical_scale / float(sample[1])
 			_check(dp.x >= 48.0 and dp.y >= 48.0, "all native targets >=48dp at " + str(sample))
-			_check(root.get_visible_rect().encloses(control.get_global_rect()), "control fully reachable at " + str(sample))
+			_check(root.get_visible_rect().encloses(control.get_global_rect()), "control fully reachable at %s (%s %s in %s)" % [str(sample), control.name, control.get_global_rect(), root.get_visible_rect()])
 		_check(not game.movement_stick.get_global_rect().intersects(game.jump_action.get_global_rect()), "thumb controls never overlap at " + str(sample))
 	root.get_node("HostBridge")._options.erase("displayDensity")
 	game.abandoned = true

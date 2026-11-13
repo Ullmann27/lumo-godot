@@ -3,6 +3,7 @@ extends Node3D
 const QUESTIONS = preload("res://scripts/games/kart_questions.gd")
 const LUMO = preload("res://scenes/characters/lumo/lumo_character.tscn")
 const ORIGINAL_LUMO = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
+const EXPEDITIONS = preload("res://scripts/games/jump_expeditions.gd")
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const JUMP_ACTION = preload("res://scripts/games/jump_touch_button.gd")
 const RUN_SPEED: float = 5.5
@@ -29,6 +30,10 @@ var grade: int = 1
 var subject: String = "Mathematik"
 var child_scope: String = ""
 var session_path: String = SESSION
+var course_index: int = 0
+var goals_completed: Dictionary = {}
+var bounce_pads_used: Dictionary = {}
+var objective: Label
 var touch_direction := Vector2.ZERO
 var held_directions: Dictionary = {}
 var jump_buffer: float = 0.0
@@ -82,6 +87,9 @@ func _ready() -> void:
 	if not child_key.is_empty() and child_key != "standalone":
 		child_scope = child_key.sha256_text()
 		session_path = "user://jump_%s_%d_%s.cfg" % [child_scope.substr(0, 24), grade, subject.sha256_text().substr(0, 12)]
+	course_index = clampi(int(SceneRouter.launch_options.get("jumpCourse", 0)), 0, EXPEDITIONS.COURSES.size() - 1)
+	if course_index > 0:
+		session_path = session_path.trim_suffix(".cfg") + "_course%d.cfg" % course_index
 	result_id = HostBridge.new_result_id()
 	previous_auto_accept_quit = get_tree().auto_accept_quit
 	previous_quit_on_go_back = get_tree().quit_on_go_back
@@ -89,7 +97,7 @@ func _ready() -> void:
 	get_tree().quit_on_go_back = false
 	_build_world()
 	_build_ui()
-	message.text = "Lumos Wolkeninseln\nStick bewegen · Tippen: kurz · Halten: hoch springen"
+	message.text = "%s · Halten = höher springen" % EXPEDITIONS.COURSES[course_index].name
 	if _restore_session():
 		_pause()
 		message.text = "Dein Abenteuer wartet am letzten Kontrollpunkt."
@@ -100,9 +108,7 @@ func _build_world() -> void:
 	LumoEnvironment.apply(self, "wolkeninseln")
 	art = JumpSkyIslandsArt.new()
 	for i in range(ISLAND_COUNT):
-		var point := Vector3(
-			sin(float(i) * 0.75) * 3.0, sin(float(i) * 0.55) * 0.9, -float(i) * 8.0
-		)
+		var point: Vector3 = EXPEDITIONS.point(i, course_index)
 		islands.append(point)
 		var ground := StaticBody3D.new()
 		ground.position = point
@@ -243,6 +249,9 @@ func _build_ui() -> void:
 	top.add_child(pause_button)
 	message = _label("", 24)
 	column.add_child(message)
+	objective = _label("", 17)
+	objective.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(objective)
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -322,6 +331,11 @@ func _layout_ui() -> void:
 		hint.add_theme_font_size_override("font_size", roundi(12 * unit))
 	hud.add_theme_font_size_override("font_size", roundi(16 * unit))
 	message.add_theme_font_size_override("font_size", roundi(18 * unit))
+	objective.add_theme_font_size_override("font_size", roundi(14 * unit))
+	for item in modal_column.get_children():
+		if item is Button:
+			item.custom_minimum_size = Vector2(80, 52) * unit
+			item.add_theme_font_size_override("font_size", roundi(20 * unit))
 	ui_column.add_theme_constant_override("separation", roundi(8 * unit))
 	var half_width: float = minf(300 * unit, view.x * 0.44)
 	var half_height: float = minf(245 * unit, view.y * 0.38)
@@ -344,12 +358,15 @@ func _label(text: String, size: int) -> Label:
 func _button(text: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
-	button.custom_minimum_size = Vector2(80, 64)
-	button.add_theme_font_size_override("font_size", 22)
+	var view: Vector2 = get_viewport().get_visible_rect().size
+	var pixel_scale: float = maxf(0.1, minf(float(get_window().size.x) / maxf(view.x, 1), float(get_window().size.y) / maxf(view.y, 1)))
+	var unit: float = MobileRuntime.get_ui_density() / pixel_scale
+	button.custom_minimum_size = Vector2(80, 52) * unit
+	button.add_theme_font_size_override("font_size", roundi(20 * unit))
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color("7264e8")
 	style.set_corner_radius_all(16)
-	style.set_content_margin_all(12)
+	style.set_content_margin_all(12 * unit)
 	button.add_theme_stylebox_override("normal", style)
 	var pressed: StyleBoxFlat = style.duplicate()
 	pressed.bg_color = Color("9184f1")
@@ -428,6 +445,7 @@ func _physics_process(delta: float) -> void:
 			if crystals[i].visible and actor.position.distance_to(crystals[i].position) < 1.4:
 				crystals[i].hide()
 				collected[i] = true
+				_refresh_challenges()
 				_save_session()
 		for i in range(bonus_stars.size()):
 			if (
@@ -436,6 +454,7 @@ func _physics_process(delta: float) -> void:
 			):
 				bonus_stars[i].hide()
 				stars_gathered[i] = true
+				_refresh_challenges()
 				_save_session()
 		save_timer += delta
 		if save_timer >= 5.0:
@@ -465,6 +484,13 @@ func _physics_process(delta: float) -> void:
 			completed_questions.size()
 		]
 	)
+	var target: int = EXPEDITIONS.stage_target(checkpoint)
+	var goals: Array = EXPEDITIONS.COURSES[course_index].goals
+	var progress: Array[String] = []
+	for goal in goals:
+		progress.append("%s %d/%d" % [goal.label, mini(_goal_value(str(goal.id)), int(goal.target)), int(goal.target)])
+	objective.text = "Etappe %d/4 · %s %d\nBonus: %s" % [mini(4, checkpoint / 3 + 1), "Zielinsel" if target == 11 else "Zur Lerninsel", target + 1, " · ".join(progress)]
+
 
 
 func _set_stick_axis(value: Vector2) -> void:
@@ -584,6 +610,7 @@ func _pause() -> void:
 	_clear_modal()
 	modal_column.add_child(_label("Kleine Pause", 28))
 	modal_column.add_child(_button("Weiterspielen", _resume))
+	modal_column.add_child(_button("Kurse & Bonusziele", _show_courses))
 	modal_column.add_child(
 		_button("Zur Spieleauswahl · Abenteuer behalten", func(): _return_to_app("games"))
 	)
@@ -601,6 +628,66 @@ func _resume() -> void:
 		_show_question()
 	else:
 		modal.hide()
+
+
+func _goal_value(kind: String) -> int:
+	if kind == "crystals":
+		return collected.size()
+	if kind == "bounce":
+		return bounce_pads_used.size()
+	if kind == "bonus":
+		return stars_gathered.size()
+	var count: int = 0
+	for star_id in stars_gathered:
+		var index: int = int(star_id)
+		if index >= 0 and index < bonus_stars.size() and str(bonus_stars[index].get_meta("challenge_kind", "")) == kind:
+			count += 1
+	return count
+
+
+func _refresh_challenges() -> void:
+	for goal in EXPEDITIONS.COURSES[course_index].goals:
+		var id: String = str(goal.id)
+		if _goal_value(id) >= int(goal.target) and not goals_completed.has(id):
+			goals_completed[id] = true
+			if is_instance_valid(message) and not question_open:
+				message.text = "Bonusziel geschafft: %s! +2 Sterne am Ziel." % goal.label
+
+
+func _completed_goal_count() -> int:
+	var count: int = 0
+	for goal in EXPEDITIONS.COURSES[course_index].goals:
+		if _goal_value(str(goal.id)) >= int(goal.target):
+			count += 1
+	return count
+
+
+func _show_courses() -> void:
+	_clear_modal()
+	modal_column.add_child(_label("Drei Wolken-Abenteuer", 26))
+	modal_column.add_child(_label("Jeder Kurs hat vier Etappen, drei Lerninseln und eigene Bonusziele. Dein Fortschritt bleibt je Kurs gespeichert.", 18))
+	for index in range(EXPEDITIONS.COURSES.size()):
+		var course: Dictionary = EXPEDITIONS.COURSES[index]
+		var button := _button("%d · %s%s" % [index + 1, course.name, " · aktuell" if index == course_index else ""], func(): _choose_course(index))
+		button.name = "CourseChoice%d" % index
+		modal_column.add_child(button)
+		modal_column.add_child(_label(str(course.description), 18))
+	modal_column.add_child(_button("Weiterspielen", _resume))
+	modal.show()
+
+
+func _choose_course(index: int) -> void:
+	if abandoned:
+		return
+	if index == course_index and not finished:
+		_resume()
+		return
+	_save_session()
+	abandoned = true
+	var options: Dictionary = SceneRouter.launch_options.duplicate(true)
+	options["jumpCourse"] = clampi(index, 0, EXPEDITIONS.COURSES.size() - 1)
+	SceneRouter.launch_options = options
+	SceneRouter.goto("jump")
 
 
 func _restart() -> void:
@@ -650,7 +737,9 @@ func _finish() -> void:
 	finished = true
 	_set_controls_enabled(false)
 	_stop_input()
-	var stars: int = 3 + completed_questions.size() * 2 + collected.size()
+	_refresh_challenges()
+	var extra_stars: int = stars_gathered.size() + _completed_goal_count() * 2
+	var stars: int = 3 + completed_questions.size() * 2 + collected.size() + extra_stars
 	ProgressStore.add_stars(stars)
 	result_payload = {
 		"game": "jump",
@@ -660,7 +749,10 @@ func _finish() -> void:
 		"stars": stars,
 		"solved": completed_questions.size(),
 		"grade": grade,
-		"subject": subject
+		"subject": subject,
+		"course": course_index,
+		"explorationStars": extra_stars,
+		"challenges": goals_completed.keys(),
 	}
 	var reward_accepted: bool = HostBridge.reward(result_payload)
 	if HostBridge.reward_is_recoverable(result_id):
@@ -671,13 +763,14 @@ func _finish() -> void:
 	modal_column.add_child(
 		_label(
 			(
-				"%d Lernstopps · %d Kristalle\n+%d Sterne"
-				% [completed_questions.size(), collected.size(), stars]
+				"%d Lernstopps · %d Kristalle\n%d Bonusziele · %d Entdeckersterne\n+%d Sterne insgesamt"
+				% [completed_questions.size(), collected.size(), _completed_goal_count(), extra_stars, stars]
 			),
 			23
 		)
 	)
-	modal_column.add_child(_button("Noch ein Abenteuer", func(): SceneRouter.goto("jump")))
+	modal_column.add_child(_button("Nächster Kurs: " + str(EXPEDITIONS.COURSES[(course_index + 1) % EXPEDITIONS.COURSES.size()].name), func(): _choose_course((course_index + 1) % EXPEDITIONS.COURSES.size())))
+	modal_column.add_child(_button("Diesen Kurs wiederholen", func(): SceneRouter.goto("jump")))
 	modal_column.add_child(_button("Zur Spieleauswahl", func(): _return_to_app("games")))
 	modal_column.add_child(_button("Zum Lernen", func(): _return_to_app("learn")))
 	modal.show()
@@ -702,6 +795,7 @@ func _save_session() -> void:
 	var config := ConfigFile.new()
 	config.set_value("jump", "version", 1)
 	config.set_value("jump", "child_scope", child_scope)
+	config.set_value("jump", "course", course_index)
 	config.set_value("jump", "grade", grade)
 	config.set_value("jump", "subject", subject)
 	for key in [
@@ -710,6 +804,8 @@ func _save_session() -> void:
 		"falls",
 		"collected",
 		"stars_gathered",
+		"goals_completed",
+		"bounce_pads_used",
 		"completed_questions",
 		"active_question",
 		"recent_questions",
@@ -729,6 +825,8 @@ func _restore_session() -> bool:
 		return false
 	if str(config.get_value("jump", "child_scope", "")) != child_scope:
 		return false
+	if int(config.get_value("jump", "course", 0)) != course_index:
+		return false
 	if (
 		config.get_value("jump", "grade", 0) != grade
 		or config.get_value("jump", "subject", "") != subject
@@ -740,6 +838,8 @@ func _restore_session() -> bool:
 		"falls",
 		"collected",
 		"stars_gathered",
+		"goals_completed",
+		"bounce_pads_used",
 		"completed_questions",
 		"active_question",
 		"wrong_count",
@@ -830,6 +930,7 @@ func _build_bonus_stars() -> void:
 	for mover in movers:
 		var rider := Node3D.new()
 		rider.name = "MoverStar"
+		rider.set_meta("challenge_kind", "moving")
 		rider.position = Vector3(0, 1.55, 0)
 		mover["body"].add_child(rider)
 		art.gem(rider)
@@ -840,6 +941,7 @@ func _build_bonus_stars() -> void:
 	for i in range(spots.size()):
 		var star := Node3D.new()
 		star.name = "BonusStar%d" % i
+		star.set_meta("challenge_kind", "bounce" if i < bounce_pads.size() else "side")
 		star.position = spots[i]
 		add_child(star)
 		art.gem(star)
@@ -877,10 +979,13 @@ func _try_bounce(delta: float) -> void:
 	bounce_cooldown = maxf(0.0, bounce_cooldown - delta)
 	if bounce_cooldown > 0.0 or not actor.is_on_floor():
 		return
-	for pad in bounce_pads:
-		if actor.position.distance_to(pad) < 0.9:
+	for index in range(bounce_pads.size()):
+		if actor.position.distance_to(bounce_pads[index]) < 0.9:
 			actor.velocity.y = 12.0
 			bounce_cooldown = 0.28
+			bounce_pads_used[index] = true
+			_refresh_challenges()
+			_save_session()
 			return
 
 

@@ -12,6 +12,7 @@ const GARAGE = preload("res://scripts/games/kart_spatial_menu.gd")
 const REFERENCE_LANDING = preload("res://scripts/games/kart_spatial_landing.gd")
 const INTRO = preload("res://scripts/games/kart_intro.gd")
 const RECORDS = preload("res://scripts/games/kart_records.gd")
+const TRACK_PASS = preload("res://scripts/games/kart_track_pass.gd")
 const ARENA = preload("res://scripts/games/kart_arena.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const PHYSICAL_LOOP = preload("res://scripts/games/kart_physical_loop.gd")
@@ -277,6 +278,7 @@ var cup_results: Array = []
 var pending_cup_next: bool = false
 var completed_race: bool = false
 var records = RECORDS.new()
+var track_pass
 var ghost: LumoRaceKart
 var ghost_valid: bool = true
 var best_record: bool = false
@@ -312,6 +314,9 @@ func _ready() -> void:
 	set_physics_process(false)
 	rng.randomize()
 	result_id = HostBridge.new_result_id()
+	# Capture the owner at entry; changing host options later cannot attribute
+	# the current child's already-running race to another child.
+	track_pass = TRACK_PASS.new(str(HostBridge.launch_options().get("childKey", "standalone")))
 	previous_auto_accept_quit = get_tree().auto_accept_quit
 	previous_quit_on_go_back = get_tree().quit_on_go_back
 	get_tree().auto_accept_quit = false
@@ -594,6 +599,7 @@ func _show_garage() -> void:
 	garage.has_saved_race = saved_session_available
 	garage.reduced_motion = reduced_motion
 	garage.graphics_profile = graphics_profile
+	garage.track_pass = track_pass
 	if not setup_snapshot.is_empty():
 		var restored: Dictionary = setup_snapshot.duplicate(true)
 		restored["mode"] = _known_mode(str(restored.get("mode", "race")))
@@ -3293,6 +3299,9 @@ func _finish(cinematic: bool = true) -> void:
 		lap_times.append(elapsed - lap_started_at)
 	result_payload["bestLapSeconds"] = snappedf(_best_lap(), 0.001)
 	result_payload["starTokens"] = collected.size()
+	var pass_result := result_payload.duplicate(true)
+	pass_result["difficulty"] = difficulty
+	result_payload["trackPass"] = track_pass.complete(pass_result, distance, track_length)
 	# Belohnung und Ergebnis-ID gehen sofort an der Linie raus; die Zielfahrt ist nur Bild.
 	var reward_accepted: bool = HostBridge.reward(result_payload)
 	_save_session()
@@ -3345,6 +3354,14 @@ func _show_result() -> void:
 	var stats: Label = _label(_result_stats_text(), 21)
 	stats.name = "ResultStats"
 	modal_column.add_child(stats)
+	var mastery: Variant = result_payload.get("trackPass", {})
+	if mastery is Dictionary and bool(mastery.get("eligible", false)):
+		var mastery_text := "Streckenpass · %d/3 Ziele\n%s" % [int(mastery.get("stage", 0)), TRACK_PASS.goal_text(int(mastery.get("stage", 0)))]
+		if not bool(mastery.get("saved", true)):
+			mastery_text = "Der Streckenpass konnte nicht gespeichert werden. Dein Rennergebnis bleibt erhalten."
+		var mastery_label := _label(mastery_text, 20)
+		mastery_label.name = "TrackPassResult"
+		modal_column.add_child(mastery_label)
 	var details: String = ""
 	if ranked:
 		details = "Platz %d von 6" % place_now

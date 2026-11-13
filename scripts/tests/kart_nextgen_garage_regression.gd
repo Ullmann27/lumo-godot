@@ -168,6 +168,14 @@ func _run() -> void:
 		await _tap(menu.step_buttons[1])
 		_check(not station.host.visible and menu.preview_kart.lumo_animation.visible, "driver inspection restores actual seated driver without duplicate fox")
 		_check(is_equal_approx(menu._camera_zoom, 1.0), "new section restores complete default framing")
+		await _tap(menu.step_buttons[3])
+		_check(menu.choices.get_child_count() == 12, "all twelve production tracks remain selectable")
+		var first_world = menu.choices.get_child(0)
+		_check(first_world.caption_label.is_visible_in_tree() and first_world.caption.contains("/3"),
+			"track goal remains visible in the compact native world card")
+		_check(first_world.caption_label.get_line_count() <= 2 and first_world.get_global_rect().encloses(first_world.caption_label.get_global_rect()),
+			"track goal fits its real native card without overlapping adjacent choices")
+		await _shot("track-goals-%dx%d" % [dimensions.x, dimensions.y], menu)
 		game.queue_free()
 		await _settle()
 	if capture:

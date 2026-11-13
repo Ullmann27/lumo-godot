@@ -22,6 +22,7 @@ var rescue_count := 0
 var jump_count := 0
 var landing_count := 0
 var inspection_left := 0.0
+var horizontal_limit := Vector2(26.0, 26.0)
 
 
 func _ready() -> void:
@@ -112,9 +113,9 @@ func advance_motion(delta: float) -> void:
 	move_and_slide()
 	if not grounded and is_on_floor():
 		landing_count += 1
-	if is_on_floor() and absf(position.x) < 24.0 and absf(position.z) < 24.0:
+	if is_on_floor() and absf(position.x) < horizontal_limit.x - 2.0 and absf(position.z) < horizontal_limit.y - 2.0:
 		safe_position = position + Vector3.UP * 0.04
-	if position.y < -5.0 or absf(position.x) > 26.0 or absf(position.z) > 26.0:
+	if position.y < -5.0 or absf(position.x) > horizontal_limit.x or absf(position.z) > horizontal_limit.y:
 		position = safe_position
 		velocity = Vector3.ZERO
 		jump_buffer = 0

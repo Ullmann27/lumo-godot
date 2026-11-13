@@ -1,0 +1,654 @@
+extends Node3D
+## The production city-building variation of Bauwelt. Every purchase, day and
+## opponent action is owned by the deterministic settlement model.
+const STATE = preload("res://scripts/creative/build_settlement_state.gd")
+const VISUAL = preload("res://scripts/creative/build_settlement_visual.gd")
+const KIT = preload("res://scripts/creative/creative_kit.gd")
+const RUNTIME = preload("res://scripts/creative/creative_runtime.gd")
+const EXPLORER = preload("res://scripts/creative/build_explorer.gd")
+const STICK = preload("res://scripts/games/kart_joystick.gd")
+const JUMP = preload("res://scripts/games/jump_touch_button.gd")
+const FONT = preload("res://assets/fonts/Nunito-Black.ttf")
+const SPACING := 5.3
+var model
+var mode := "settlement"
+var child_key := "standalone"
+var slot := 1
+var save_path := ""
+var kit := KIT.new()
+var previous: Dictionary
+var camera: Camera3D
+var safe_ui: Control
+var top: VBoxContainer
+var bottom: VBoxContainer
+var resource_label: Label
+var goal_label: Label
+var feedback: Label
+var rival_label: Label
+var day_button: Button
+var expand_button: Button
+var walk_button: Button
+var plot_label: Label
+var purchase_buttons: Dictionary = {}
+var transaction_buttons: Array[Button] = []
+var plot_nodes: Dictionary = {}
+var facility_nodes: Dictionary = {}
+var selection_marker: MeshInstance3D
+var selected_plot := -1
+var selected_kind := "house"
+var paused := false
+var pause_panel: PanelContainer
+var focus := Vector3(-16, 0, 0)
+var orbit := 0.28
+var tilt := 0.70
+var radius := 34.0
+var pointer := -1
+var tap_origin := Vector2.ZERO
+var dragged := false
+var explorer: CharacterBody3D
+var walking := false
+var walk_controls: Control
+var walk_stick: Control
+var jump_button: Control
+var stored_camera: Dictionary = {}
+var rival_host: Node3D
+var rival_destination := Vector3(16, 0.04, 10)
+var rival_last_buildings := 0
+
+
+func _ready() -> void:
+	previous = RUNTIME.enter(self, true)
+	SceneRouter.current_scene_id = "settlement"
+	mode = "rival" if str(SceneRouter.launch_options.get("settlementMode", "settlement")) == "rival" else "settlement"
+	child_key = str(SceneRouter.launch_options.get("childKey", "standalone")).validate_filename().substr(0, 80)
+	slot = clampi(int(SceneRouter.launch_options.get("buildSlot", 1)), 1, 6)
+	save_path = "user://lumo_settlement_%s_%d_%s.json" % [child_key, slot, mode]
+	model = STATE.new(mode)
+	if FileAccess.file_exists(save_path):
+		var raw = JSON.parse_string(FileAccess.get_file_as_string(save_path))
+		if raw is Dictionary:
+			var restored = STATE.restore(raw.get("settlement", {}))
+			if restored != null and restored.mode == mode:
+				model = restored
+	kit.environment(self, "bauwelt_day")
+	_build_landscape()
+	camera = Camera3D.new()
+	camera.fov = 51
+	camera.far = 180
+	add_child(camera)
+	camera.current = true
+	explorer = EXPLORER.new()
+	explorer.horizontal_limit = Vector2(31, 18)
+	add_child(explorer)
+	_build_ui()
+	_rebuild()
+	_camera_update(true)
+	get_viewport().size_changed.connect(_layout)
+	_layout()
+	print("[SettlementWorld] ready mode=", mode, " save=", save_path)
+
+
+func _exit_tree() -> void:
+	RUNTIME.restore(self, previous)
+
+
+static func plot_coordinate(index: int) -> Vector2i:
+	if index < 9:
+		return Vector2i(index % 3 - 1, index / 3 - 1)
+	if index < 13:
+		return Vector2i(2, index - 10)
+	if index < 16:
+		return Vector2i(index - 14, 2)
+	if index < 21:
+		return Vector2i(-2, index - 18)
+	return Vector2i(index - 22, -2)
+
+
+static func plot_position(index: int, opponent := false) -> Vector3:
+	var coord := plot_coordinate(index)
+	return Vector3((16.0 if opponent else -16.0) + coord.x * SPACING, 0.03, coord.y * SPACING)
+
+
+func _build_landscape() -> void:
+	for x in [-16.0, 16.0]:
+		var bank := StaticBody3D.new()
+		add_child(bank)
+		kit.box(bank, Vector3(x, -0.55, 0), Vector3(28, 1.1, 34), Color("92b96f"))
+		kit.collision(bank, Vector3(x, -0.55, 0), Vector3(28, 1.1, 34))
+		for z in [-17.2, 17.2]:
+			kit.box(self, Vector3(x, -0.8, z), Vector3(29, 1.9, 0.8), Color("ba9b70"))
+		for tree_index in range(8):
+			var tree := Node3D.new()
+			add_child(tree)
+			tree.position = Vector3(x - 12 + (tree_index % 4) * 8, 0, -15.6 if tree_index < 4 else 15.6)
+			BuildLandmarks.add_branched_tree(tree)
+	var water := kit.box(self, Vector3(0, -0.32, 0), Vector3(4, 0.18, 40), Color("267fa9"))
+	var water_material := ShaderMaterial.new()
+	water_material.shader = preload("res://assets/shaders/kart_water.gdshader")
+	water.material_override = water_material
+	var bridge := StaticBody3D.new()
+	add_child(bridge)
+	kit.box(bridge, Vector3(0, 0.12, 13.8), Vector3(5.5, 0.25, 2.0), Color("d6bb8a"))
+	kit.collision(bridge, Vector3(0, 0.12, 13.8), Vector3(5.5, 0.25, 2.0))
+	for z in [12.9, 14.7]:
+		kit.box(bridge, Vector3(0, 0.75, z), Vector3(5.5, 0.12, 0.12), Color("9a6739"))
+	var town_title := Label3D.new()
+	town_title.text = "DEINE SIEDLUNG"
+	town_title.position = Vector3(-16, 1.4, -15.4)
+	town_title.font_size = 64
+	town_title.pixel_size = 0.014
+	town_title.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	town_title.modulate = Color("fff4d9")
+	town_title.outline_modulate = Color("183f46")
+	add_child(town_title)
+	var rival_title := town_title.duplicate() as Label3D
+	rival_title.position.x = 16
+	rival_title.text = "NACHBARIN MIRA" if mode == "rival" else "DEINE NÄCHSTE IDEE"
+	add_child(rival_title)
+	if mode == "rival":
+		rival_host = preload("res://scripts/games/kart_vehicle.gd").new()
+		add_child(rival_host)
+		rival_host.configure_companion("raccoon")
+		rival_host.position = rival_destination
+		rival_host.scale = Vector3.ONE * 1.1
+
+
+func _build_ui() -> void:
+	var layer := CanvasLayer.new()
+	add_child(layer)
+	safe_ui = Control.new()
+	safe_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	safe_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(safe_ui)
+	top = VBoxContainer.new()
+	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	top.offset_left = 14
+	top.offset_right = -14
+	top.offset_top = 10
+	safe_ui.add_child(top)
+	var heading := HBoxContainer.new()
+	top.add_child(heading)
+	heading.add_child(_button("‹ Bauwelt", _leave, 96))
+	var title := _label("LUMO WETTBAU" if mode == "rival" else "LUMO SIEDLUNG", 22)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	title.clip_text = true
+	heading.add_child(title)
+	walk_button = _button("Lumo", _toggle_walk, 70)
+	heading.add_child(walk_button)
+	heading.add_child(_button("Ⅱ", _toggle_pause, 48))
+	resource_label = _label("", 16)
+	resource_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	top.add_child(resource_label)
+	goal_label = _label("", 15)
+	goal_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	top.add_child(goal_label)
+	rival_label = _label("", 14)
+	rival_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	top.add_child(rival_label)
+	bottom = VBoxContainer.new()
+	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	bottom.offset_left = 14
+	bottom.offset_right = -14
+	safe_ui.add_child(bottom)
+	plot_label = _label("Wähle ein freies Grundstück und ein Gebäude.", 15)
+	bottom.add_child(plot_label)
+	var buildings_scroll := ScrollContainer.new()
+	buildings_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	bottom.add_child(buildings_scroll)
+	var buildings := HBoxContainer.new()
+	buildings_scroll.add_child(buildings)
+	for kind in ["house", "farm", "lumber", "quarry", "market", "school"]:
+		var spec: Dictionary = STATE.BUILDINGS[kind]
+		var button := _button(str(spec.title) + "\n" + _cost_text(spec.cost), _buy.bind(kind), 168)
+		button.custom_minimum_size.y = 66
+		buildings.add_child(button)
+		purchase_buttons[kind] = button
+	var row := HBoxContainer.new()
+	bottom.add_child(row)
+	var actions_scroll := ScrollContainer.new()
+	actions_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	actions_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(actions_scroll)
+	var actions := HBoxContainer.new()
+	actions_scroll.add_child(actions)
+	for spec in [
+		["Rückgängig", _undo], ["Wiederholen", _redo], ["Handeln", _trade_dialog],
+		["Nachbar ansehen" if mode == "rival" else "Überblick", _look_neighbor]
+	]:
+		var button := _button(spec[0], spec[1], 110)
+		actions.add_child(button)
+		transaction_buttons.append(button)
+	expand_button = _button("Erweitern", _expand, 112)
+	actions.add_child(expand_button)
+	day_button = _button("Nächster Tag ☀", _next_day, 148)
+	row.add_child(day_button)
+	feedback = _label("Dein Plan zählt: Nahrung, Material und Wohnraum halten die Siedlung am Leben.", 14)
+	feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	bottom.add_child(feedback)
+	pause_panel = PanelContainer.new()
+	pause_panel.add_theme_stylebox_override("panel", _panel())
+	pause_panel.custom_minimum_size = Vector2(300, 0)
+	pause_panel.hide()
+	safe_ui.add_child(pause_panel)
+	var pause_box := VBoxContainer.new()
+	pause_panel.add_child(pause_box)
+	pause_box.add_child(_label("Deine Siedlung wartet", 22))
+	pause_box.add_child(_button("Weiter", _toggle_pause))
+	pause_box.add_child(_button("Speichern", _save_message))
+	pause_box.add_child(_button("Zur Bauwelt", _leave))
+	walk_controls = Control.new()
+	walk_controls.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	walk_controls.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	walk_controls.hide()
+	safe_ui.add_child(walk_controls)
+	walk_stick = STICK.new()
+	walk_controls.add_child(walk_stick)
+	jump_button = JUMP.new()
+	jump_button.hold_changed.connect(func(held: bool): explorer.hold_jump(held))
+	walk_controls.add_child(jump_button)
+
+
+func _label(text: String, size := 17) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_override("font", FONT)
+	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_color_override("font_color", Color("173546"))
+	label.add_theme_color_override("font_shadow_color", Color("fff9e9"))
+	label.add_theme_constant_override("shadow_offset_y", 1)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return label
+
+
+func _panel() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.96, 0.94, 0.85, 0.96)
+	style.border_color = Color("438f96")
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(12)
+	style.set_content_margin_all(10)
+	return style
+
+
+func _button(text: String, action: Callable, width := 100) -> Button:
+	var button := Button.new()
+	button.text = text
+	button.custom_minimum_size = Vector2(width, 48)
+	button.add_theme_font_size_override("font_size", 15)
+	button.add_theme_color_override("font_color", Color("183d4c"))
+	button.add_theme_stylebox_override("normal", _panel())
+	var pressed := _panel()
+	pressed.bg_color = Color("bddfc7")
+	button.add_theme_stylebox_override("pressed", pressed)
+	button.add_theme_stylebox_override("hover", pressed)
+	button.pressed.connect(action)
+	return button
+
+
+func _cost_text(cost: Dictionary) -> String:
+	var labels := {"wood": "Holz", "stone": "Stein", "food": "Essen", "coins": "Münzen"}
+	var parts := PackedStringArray()
+	for resource in ["wood", "stone", "food", "coins"]:
+		if int(cost.get(resource, 0)) > 0:
+			parts.append("%d %s" % [int(cost[resource]), labels[resource]])
+	return ", ".join(parts)
+
+
+func _layout() -> void:
+	if not is_inside_tree():
+		return
+	RUNTIME.safe_area(self, safe_ui)
+	var size := safe_ui.size
+	bottom.offset_top = -maxf(176, bottom.get_combined_minimum_size().y + 10)
+	var short := size.y < 560
+	rival_label.visible = mode == "rival" and not short
+	goal_label.add_theme_font_size_override("font_size", 13 if short else 15)
+	pause_panel.position = (size - pause_panel.size) * 0.5
+	var stick_size := clampf(minf(size.x * 0.29, size.y * 0.37), 112, 168)
+	walk_stick.custom_minimum_size = Vector2.ONE * stick_size
+	walk_stick.size = Vector2.ONE * stick_size
+	walk_stick.position = Vector2(16, size.y - stick_size - 16)
+	jump_button.size = Vector2.ONE * 112
+	jump_button.position = Vector2(size.x - 128, size.y - 128)
+	if not walking:
+		_camera_update(true)
+
+
+func _rebuild() -> void:
+	var active_plots: Dictionary = {}
+	var active_facilities: Dictionary = {}
+	for opponent in [false, true]:
+		if opponent and mode != "rival":
+			continue
+		var town: Dictionary = model.rival() if opponent else model.player()
+		for index in range(int(town.plots)):
+			var key := "%s_%d" % ["r" if opponent else "p", index]
+			active_plots[key] = true
+			if not plot_nodes.has(key):
+				var body := StaticBody3D.new()
+				body.name = "Plot_" + key
+				body.position = plot_position(index, opponent)
+				body.set_meta("plot", index)
+				body.set_meta("opponent", opponent)
+				add_child(body)
+				kit.box(body, Vector3(0, 0, 0), Vector3(4.65, 0.06, 4.65), Color("b6bc86") if opponent else Color("bad39c"))
+				kit.collision(body, Vector3(0, -0.01, 0), Vector3(4.65, 0.08, 4.65))
+				plot_nodes[key] = body
+		for building in town.buildings:
+			var key := "%s_%s" % ["r" if opponent else "p", str(building.id)]
+			active_facilities[key] = true
+			if facility_nodes.has(key):
+				continue
+			var node: StaticBody3D = VISUAL.create(str(building.kind), opponent)
+			node.position = plot_position(int(building.plot), opponent) + Vector3.UP * 0.06
+			node.set_meta("plot", int(building.plot))
+			add_child(node)
+			facility_nodes[key] = node
+		if opponent and town.buildings.size() > rival_last_buildings:
+			var latest: Dictionary = town.buildings[-1]
+			rival_destination = plot_position(int(latest.plot), true) + Vector3(0, 0.08, 2.1)
+			rival_last_buildings = town.buildings.size()
+	for key in plot_nodes.keys():
+		if not active_plots.has(key):
+			plot_nodes[key].queue_free()
+			plot_nodes.erase(key)
+	for key in facility_nodes.keys():
+		if not active_facilities.has(key):
+			facility_nodes[key].queue_free()
+			facility_nodes.erase(key)
+	if not is_instance_valid(selection_marker):
+		selection_marker = kit.box(self, Vector3.ZERO, Vector3(4.7, 0.04, 4.7), Color("e4cc62"))
+		selection_marker.material_override = kit.material(Color("ffe18c"), true, true)
+		selection_marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	selection_marker.visible = selected_plot >= 0
+	if selected_plot >= 0:
+		selection_marker.position = plot_position(selected_plot) + Vector3.UP * 0.12
+	_refresh_labels()
+
+
+func _refresh_labels() -> void:
+	var town: Dictionary = model.player()
+	var resources: Dictionary = town.resources
+	var summary: Dictionary = model.status()
+	resource_label.text = "Holz %d · Stein %d · Essen %d · Münzen %d\nBewohner %d · Grundstücke %d · Tag %d" % [
+		int(resources.wood), int(resources.stone), int(resources.food), int(resources.coins),
+		int(town.population), int(town.plots), int(model.day)
+	]
+	var goals := PackedStringArray()
+	for objective in summary.get("goals", []):
+		goals.append("%s %d/%d" % [str(objective.title), int(objective.current), int(objective.target)])
+	goal_label.text = "Dein Ziel: " + " · ".join(goals)
+	if mode == "rival":
+		var rival: Dictionary = model.rival()
+		rival_label.text = "Mira: %d Bewohner · %d Gebäude. Gleiche Preise und Erträge für euch beide." % [int(rival.population), rival.buildings.size()]
+	plot_label.text = "Grundstück %d gewählt · Gebäude antippen zum Bauen" % (selected_plot + 1) if selected_plot >= 0 else "Wähle ein freies Grundstück in deiner Siedlung."
+	for kind in purchase_buttons:
+		purchase_buttons[kind].disabled = paused or walking or selected_plot < 0
+	day_button.disabled = paused or walking
+	expand_button.disabled = paused or walking
+	var winner := str(summary.get("winner", ""))
+	if not winner.is_empty():
+		feedback.text = {"player": "Deine Stadt hat das Ziel zuerst erreicht!", "rival": "Mira hat das Ziel zuerst erreicht. Dein Bauplan ist erhalten.", "tie": "Ihr habt das Ziel gemeinsam erreicht!"}.get(winner, "Wettbau abgeschlossen.")
+
+
+func _buy(kind: String) -> void:
+	if paused or walking:
+		return
+	selected_kind = kind
+	if not model.try_build(kind, selected_plot):
+		feedback.text = model.last_error
+		return
+	selected_plot = -1
+	_rebuild()
+	feedback.text = str(STATE.BUILDINGS[kind].title) + " gebaut. Am nächsten Tag arbeitet deine Siedlung weiter."
+	_save()
+
+
+func _next_day() -> void:
+	if paused or walking:
+		return
+	var report: Dictionary = model.next_day()
+	_rebuild()
+	if bool(report.get("advanced", false)):
+		var own: Dictionary = report.player
+		feedback.text = "Tag %d: %s erhalten · %d Essen gebraucht%s" % [int(report.day), _cost_text(own.produced), int(own.food_needed), " · neue Bewohner!" if bool(own.grew) else ""]
+		if int(own.food_shortfall) > 0:
+			feedback.text += " · Es fehlen %d Essen. Baue Bauernhöfe!" % int(own.food_shortfall)
+	else:
+		feedback.text = str(report.get("message", model.last_error))
+	_save()
+
+
+func _undo() -> void:
+	if paused or walking:
+		return
+	if model.undo():
+		_rebuild()
+		_save()
+		feedback.text = "Bau und Rohstoffe gemeinsam rückgängig gemacht."
+	else:
+		feedback.text = model.last_error
+
+
+func _redo() -> void:
+	if paused or walking:
+		return
+	if model.redo():
+		_rebuild()
+		_save()
+		feedback.text = "Bau und Rohstoffe gemeinsam wiederhergestellt."
+	else:
+		feedback.text = model.last_error
+
+
+func _expand() -> void:
+	if paused or walking:
+		return
+	if model.expand():
+		_rebuild()
+		_save()
+		feedback.text = "Deine Welt wächst: neue Grundstücke und neue Ziele warten auf dich."
+	else:
+		feedback.text = model.last_error
+
+
+func _trade_dialog() -> void:
+	if paused or walking:
+		return
+	var dialog := Window.new()
+	dialog.title = "Handeln am Markt"
+	dialog.size = Vector2i(minf(400, safe_ui.size.x - 24), minf(470, safe_ui.size.y - 24))
+	dialog.transient = true
+	dialog.exclusive = true
+	add_child(dialog)
+	var panel := PanelContainer.new()
+	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	panel.add_theme_stylebox_override("panel", _panel())
+	dialog.add_child(panel)
+	var scroll := ScrollContainer.new()
+	panel.add_child(scroll)
+	var box := VBoxContainer.new()
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(box)
+	box.add_child(_label("Rohstoffe sinnvoll tauschen", 18))
+	for resource in ["wood", "stone", "food"]:
+		var title: String = {"wood": "Holz", "stone": "Stein", "food": "Essen"}[resource]
+		for sell in [false, true]:
+			var units := (15 if resource == "food" else 10) if sell else (10 if resource == "food" else 5)
+			var caption := "%d %s → 5 Münzen" % [units, title] if sell else "5 Münzen → %d %s" % [units, title]
+			box.add_child(_button(caption, func():
+				if model.try_trade(resource, 5, sell):
+					_rebuild()
+					_save()
+					feedback.text = "Handel abgeschlossen. Dein Vorrat wurde aktualisiert."
+				else:
+					feedback.text = model.last_error
+				dialog.queue_free()
+			))
+	box.add_child(_button("Zurück", dialog.queue_free))
+	dialog.close_requested.connect(dialog.queue_free)
+	dialog.popup_centered()
+
+
+func _look_neighbor() -> void:
+	if paused or walking:
+		return
+	focus.x = 16.0 if focus.x < 0 else -16.0
+	_camera_update(true)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
+		return
+	if event.is_action_pressed("ui_cancel"):
+		_toggle_pause()
+		return
+	if paused:
+		return
+	if walking and event is InputEventKey and not event.echo and event.keycode == KEY_SPACE:
+		explorer.hold_jump(event.pressed)
+	if event is InputEventScreenTouch:
+		if event.pressed and pointer < 0:
+			pointer = event.index
+			tap_origin = event.position
+			dragged = false
+		elif not event.pressed and pointer == event.index:
+			if not dragged and not event.canceled and not walking:
+				_pick_plot(event.position)
+			pointer = -1
+	elif event is InputEventScreenDrag and event.index == pointer:
+		dragged = dragged or event.position.distance_to(tap_origin) > 10
+		if dragged:
+			orbit -= event.relative.x * 0.005
+			tilt = clampf(tilt + event.relative.y * 0.004, 0.25, 1.1)
+			_camera_update()
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			pointer = 0
+			tap_origin = event.position
+			dragged = false
+		else:
+			if pointer == 0 and not dragged and not walking:
+				_pick_plot(event.position)
+			pointer = -1
+	elif event is InputEventMouseMotion and pointer == 0:
+		dragged = dragged or event.position.distance_to(tap_origin) > 10
+		if dragged:
+			orbit -= event.relative.x * 0.005
+			tilt = clampf(tilt + event.relative.y * 0.004, 0.25, 1.1)
+			_camera_update()
+
+
+func _pick_plot(point: Vector2) -> void:
+	var origin := camera.project_ray_origin(point)
+	var query := PhysicsRayQueryParameters3D.create(origin, origin + camera.project_ray_normal(point) * 180, 1)
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if hit.is_empty() or not hit.collider.has_meta("plot"):
+		return
+	if bool(hit.collider.get_meta("opponent", false)):
+		feedback.text = "Miras Grundstück: Sie baut mit denselben Rohstoffregeln wie du."
+		return
+	selected_plot = int(hit.collider.get_meta("plot"))
+	_rebuild()
+
+
+func _camera_update(immediate := false) -> void:
+	if not is_instance_valid(camera) or not camera.is_inside_tree() or walking:
+		return
+	var aspect := get_viewport().get_visible_rect().size.aspect()
+	var target_radius := maxf(radius, 20.0 / maxf(0.35, aspect))
+	camera.position = focus + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * target_radius
+	camera.look_at(focus)
+	if immediate:
+		camera.reset_physics_interpolation()
+
+
+func _toggle_walk() -> void:
+	if paused:
+		return
+	walking = not walking
+	if walking:
+		stored_camera = {"focus": focus, "orbit": orbit, "tilt": tilt}
+		explorer.start_at(Vector3(-16, 0.08, 13.8))
+		tilt = 0.34
+	else:
+		explorer.set_active(false)
+		focus = stored_camera.get("focus", Vector3(-16, 0, 0))
+		orbit = float(stored_camera.get("orbit", 0.28))
+		tilt = float(stored_camera.get("tilt", 0.70))
+		_camera_update(true)
+	bottom.visible = not walking
+	walk_controls.visible = walking
+	walk_button.text = "Planen" if walking else "Lumo"
+	walk_stick.set_enabled(walking)
+	jump_button.set_enabled(walking)
+	_refresh_labels()
+
+
+func _physics_process(delta: float) -> void:
+	if paused:
+		return
+	if walking:
+		explorer.move_axis = walk_stick.target
+		explorer.camera_yaw = orbit
+		explorer.advance_motion(delta)
+		var at := explorer.position + Vector3.UP
+		var target := at + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * 8.2
+		var query := PhysicsRayQueryParameters3D.create(at, target, 1, [explorer.get_rid()])
+		var hit := get_world_3d().direct_space_state.intersect_ray(query)
+		if not hit.is_empty():
+			target = hit.position + hit.normal * 0.2
+		camera.position = camera.position.lerp(target, 1.0 - exp(-10 * delta))
+		if camera.position.distance_squared_to(at) > 0.02:
+			camera.look_at(at)
+	if is_instance_valid(rival_host):
+		var before := rival_host.position
+		rival_host.position = before.move_toward(rival_destination, 1.5 * delta)
+		rival_host.set_companion_pose(Time.get_ticks_msec() / 1000.0, "happy")
+
+
+func _toggle_pause() -> void:
+	paused = not paused
+	pause_panel.visible = paused
+	pointer = -1
+	walk_stick.set_enabled(walking and not paused)
+	jump_button.set_enabled(walking and not paused)
+	if walking:
+		explorer.set_active(not paused)
+		explorer.visible = true
+	_refresh_labels()
+	if paused:
+		_save()
+	_layout()
+
+
+func _notification(what: int) -> void:
+	if what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_WM_GO_BACK_REQUEST] and is_instance_valid(safe_ui):
+		if not paused:
+			_toggle_pause()
+
+
+func _save() -> bool:
+	var file := FileAccess.open(save_path + ".tmp", FileAccess.WRITE)
+	if file == null:
+		feedback.text = "Deine Siedlung konnte noch nicht gespeichert werden. Bitte erneut versuchen."
+		return false
+	file.store_string(JSON.stringify({"version": 1, "settlement": model.snapshot(), "mode": mode, "slot": slot}))
+	file.flush()
+	var error := file.get_error()
+	file.close()
+	if error != OK or DirAccess.rename_absolute(save_path + ".tmp", save_path) != OK:
+		feedback.text = "Speichern fehlgeschlagen. Deine Siedlung bleibt geöffnet."
+		return false
+	return true
+
+
+func _save_message() -> void:
+	if _save():
+		feedback.text = "Deine Siedlung ist gespeichert. Es vergeht kein Tag, solange du nicht weiterspielst."
+
+
+func _leave() -> void:
+	if _save():
+		SceneRouter.goto("build")

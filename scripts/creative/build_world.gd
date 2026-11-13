@@ -220,6 +220,8 @@ func _ui() -> void:
 	scroll.add_child(actions)
 	for spec in [
 		["Verschieben", _toggle_move],
+		["Siedlung", _open_settlement.bind("settlement")],
+		["Wettbau", _open_settlement.bind("rival")],
 		["Drehen ↻", _rotate],
 		["Entfernen", _toggle_erase],
 		["Rückgängig", _undo],
@@ -1129,6 +1131,14 @@ func _toggle_move() -> void:
 		"Bauteil antippen oder greifen. Danach ziehen, drehen und auf einem freien Platz absetzen."
 		if move_mode else "Tippe auf einen freien Platz zum Bauen."
 	)
+
+
+func _open_settlement(mode: String) -> void:
+	if paused or not save_world(false):
+		return
+	SceneRouter.launch_options["settlementMode"] = mode
+	SceneRouter.launch_options["buildSlot"] = slot
+	SceneRouter.goto("settlement")
 
 
 func _cancel_selection() -> void:
