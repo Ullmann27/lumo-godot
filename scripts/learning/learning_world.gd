@@ -861,6 +861,15 @@ func _layout() -> void:
 	camera.h_offset = 0.0 if portrait else 0.1
 	var content_mid := (header.position.y + header.size.y + footer.position.y) * 0.5 * scale_value
 	camera.v_offset = (content_mid / dimensions.y - 0.5) * camera.size + (0.75 if portrait else 0.0)
+	if (
+		activity.kind == "bridge_hundred"
+		and is_instance_valid(_frame_label)
+		and _frame_label.is_inside_tree()
+		and camera.is_inside_tree()
+	):
+		# Keep the full extruded equation readable: a lying '=' has almost no
+		# projected gap between its bars. Cube-top labels keep their flat basis.
+		_frame_label.global_basis = camera.global_basis
 
 
 func _arrange_activity(portrait: bool) -> void:
