@@ -3281,6 +3281,8 @@ func _abandon() -> void:
 func _finish(cinematic: bool = true) -> void:
 	if finished or menu_active:
 		return
+	if is_instance_valid(drive_feedback):
+		drive_feedback.reset()
 	completed_race = true
 	racing = false
 	_update_audio()

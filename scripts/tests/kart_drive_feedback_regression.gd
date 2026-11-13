@@ -114,6 +114,33 @@ func _geometry_and_lifetime() -> void:
 	fx.advance(1.0 / 60.0, true, false, false, true)
 	_check(fx.visual_state().contacts == 2, "reduced motion retains readable readiness color")
 	_check(fx.visual_state().trail_segments == 0, "reduced motion avoids moving ribbon buildup")
+	fx.reset()
+	kart.set_motion(0, 0, false, false)
+	fx.advance(0.0, true, false, false, true)
+	fx.collect_item(kart.global_position + Vector3(1, 0.8, 0), "shield")
+	var quiet_transform: Transform3D = contact.multimesh.get_instance_transform(0)
+	var quiet_color: Color = contact.multimesh.get_instance_color(0)
+	fx.advance(0.1, true, false, false, true)
+	fx.advance(0.1, true, false, false, true)
+	_check(fx.visual_state().pickup_events == 1, "quiet pickup retains a visible acknowledgement")
+	if not logic_only:
+		_check(quiet_transform.basis.determinant() > 0.0, "quiet pickup retains real star geometry")
+		_check(
+			contact.multimesh.get_instance_transform(0).is_equal_approx(quiet_transform),
+			"quiet pickup never translates, rotates or pulses in size"
+		)
+		_check(
+			contact.multimesh.get_instance_color(0).a < quiet_color.a,
+			"quiet pickup only fades its opacity"
+		)
+		var quiet_stars := 0
+		for index in range(FX.STARS_PER_EVENT):
+			if contact.multimesh.get_instance_transform(index).basis.determinant() > 0.0:
+				quiet_stars += 1
+		_check(quiet_stars == 3, "quiet pickup uses three fixed stars")
+	fx.advance(0.6, true, false, false, true)
+	_check(fx.visual_state().events == 0, "quiet pickup expires without a retained star")
+	kart.set_motion(18, 0.7, false, true)
 	for _i in range(12):
 		kart.position.z -= 0.3
 		fx.advance(1.0 / 60.0, true, false, false, false)
@@ -245,6 +272,36 @@ func _production_events() -> void:
 		feedback.visual_state().landing_events == 1,
 		"continuing on the road cannot repeat the landing burst"
 	)
+	game._pause()
+	_check(
+		game.paused and feedback.visual_state().events > 0,
+		"pause preserves the pending contact effect"
+	)
+	var finish_training: Button
+	for child in game.modal_column.get_children():
+		if child is Button and child.text == "Training abschließen":
+			finish_training = child
+	_check(is_instance_valid(finish_training), "training pause menu exposes its real finish action")
+	if is_instance_valid(finish_training):
+		finish_training.pressed.emit()
+		_check(
+			game.finished and game.finish_cine_left > 0.0,
+			"pause-menu action enters the actual finish cinematic"
+		)
+		var finished_state: Dictionary = feedback.visual_state()
+		_check(
+			(
+				finished_state.events == 0
+				and finished_state.trail_segments == 0
+				and finished_state.contacts == 0
+			),
+			"finish entry immediately clears frozen events, trails and contacts"
+		)
+		game._physics_process(0.1)
+		_check(
+			feedback.visual_state().events == 0,
+			"finish cinematic cannot retain a frozen race effect"
+		)
 	game.abandoned = true
 	game.queue_free()
 	await process_frame

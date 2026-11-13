@@ -301,6 +301,21 @@ func _draw_event(slot: int) -> void:
 	var color := _event_colors[slot]
 	var basis := _event_bases[slot]
 	if kind == Event.PICKUP:
+		if reduced_motion:
+			# A quiet acknowledgement: three fixed stars, only their opacity fades.
+			# No orbital travel, spin, scaling pulse or movement toward the kart.
+			for index in range(STARS_PER_EVENT):
+				var instance := slot * STARS_PER_EVENT + index
+				if index >= 3:
+					_stars.multimesh.set_instance_transform(instance, HIDDEN)
+					continue
+				var at := origin + Vector3((index - 1) * 0.18, 0.12, 0.0)
+				color.a = (1.0 - smoothstep(0.15, 1.0, progress)) * 0.9
+				_stars.multimesh.set_instance_transform(
+					instance, Transform3D(Basis.from_scale(Vector3.ONE * 0.075), at)
+				)
+				_stars.multimesh.set_instance_color(instance, color)
+			return
 		var destination := to_local(
 			_vehicle.global_position + _vehicle.global_basis * Vector3(0, 0.8, 0.3)
 		)
@@ -308,7 +323,7 @@ func _draw_event(slot: int) -> void:
 			var t := clampf(progress * 1.3 - float(index) * 0.035, 0.0, 1.0)
 			var angle := float(index) * TAU / float(STARS_PER_EVENT)
 			var arc := Vector3(cos(angle), 0.9, sin(angle)) * sin(t * PI)
-			var at := origin.lerp(destination, t) + arc * (0.12 if reduced_motion else 0.55)
+			var at := origin.lerp(destination, t) + arc * 0.55
 			color.a = (1.0 - smoothstep(0.65, 1.0, t)) * 0.9
 			var size := 0.09 * (0.6 + sin(t * PI) * 0.4)
 			var spin := Basis(Quaternion(Vector3.UP, angle + t * TAU))
