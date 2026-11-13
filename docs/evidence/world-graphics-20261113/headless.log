@@ -14,4 +14,4 @@ Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
 [KartWorldExpansion] winter_sprint/full pieces=242 road_segments=3447
 [KartWorldExpansion] crystal_canyon/low pieces=89 road_segments=3408
 [KartWorldExpansion] crystal_canyon/full pieces=133 road_segments=3408
-[KartWorldExpansion] PASS checks=61 triangles=6072 failures=0
+[KartWorldExpansion] PASS checks=65 triangles=6072 failures=0

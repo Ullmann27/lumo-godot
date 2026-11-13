@@ -15,9 +15,8 @@ var _cross := Vector3.RIGHT
 var _orientation := Basis.IDENTITY
 var _phase := 0.0
 var _span := 1.0
-var _owner_ref: WeakRef
-var _has_pause := false
-var _has_reduced_motion := false
+var _pause_owner_ref: WeakRef
+var _motion_owner_ref: WeakRef
 
 
 func configure(low: Vector3, high: Vector3, world: Node3D) -> void:
@@ -28,12 +27,7 @@ func configure(low: Vector3, high: Vector3, world: Node3D) -> void:
 	var direction := (high - low).normalized()
 	_cross = direction.cross(Vector3.UP).normalized()
 	_orientation = Basis.looking_at(Vector3(direction.x, 0, direction.z).normalized())
-	var host := world.get_parent()
-	if host != null:
-		_owner_ref = weakref(host)
-		for property in host.get_property_list():
-			_has_pause = _has_pause or property.name == "paused"
-			_has_reduced_motion = _has_reduced_motion or property.name == "reduced_motion"
+	_bind_state_owners(world.get_parent())
 	if _shared_mesh == null:
 		_shared_mesh = _create_mesh()
 	var instances := MultiMesh.new()
@@ -53,18 +47,33 @@ func configure(low: Vector3, high: Vector3, world: Node3D) -> void:
 	_update_transforms()
 
 
+func _enter_tree() -> void:
+	# Garage dioramas are built before being attached beneath the SubViewport.
+	_bind_state_owners(get_parent())
+
+
+func _bind_state_owners(ancestor: Node) -> void:
+	_pause_owner_ref = null
+	_motion_owner_ref = null
+	while ancestor != null and (_pause_owner_ref == null or _motion_owner_ref == null):
+		for property in ancestor.get_property_list():
+			if _pause_owner_ref == null and property.name == "paused":
+				_pause_owner_ref = weakref(ancestor)
+			if _motion_owner_ref == null and property.name == "reduced_motion":
+				_motion_owner_ref = weakref(ancestor)
+		ancestor = ancestor.get_parent()
+
+
 func _process(delta: float) -> void:
 	if delta <= 0.0 or not is_finite(delta) or not is_visible_in_tree():
 		return
-	if _owner_ref != null:
-		var host: Object = _owner_ref.get_ref()
-		if (
-			host != null
-			and (
-				(_has_pause and bool(host.get("paused")))
-				or (_has_reduced_motion and bool(host.get("reduced_motion")))
-			)
-		):
+	if _pause_owner_ref != null:
+		var host: Object = _pause_owner_ref.get_ref()
+		if host != null and bool(host.get("paused")):
+			return
+	if _motion_owner_ref != null:
+		var host: Object = _motion_owner_ref.get_ref()
+		if host != null and bool(host.get("reduced_motion")):
 			return
 	_phase = fposmod(_phase + delta * SPEED / _span, 1.0)
 	_update_transforms()

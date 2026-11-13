@@ -30,6 +30,11 @@ class RaceHost:
 	var reduced_motion := false
 
 
+class PreviewHost:
+	extends Control
+	var reduced_motion := true
+
+
 var checks := 0
 var failures := 0
 var triangles_checked := 0
@@ -57,6 +62,8 @@ func _run() -> void:
 			continue
 		for low in [true, false]:
 			await _check_world(track, low)
+	if selected in ["all", "winter_sprint"]:
+		await _check_preview_state_owners()
 	var untouched := WORLD.new()
 	untouched.track_id = "sonnenhafen"
 	WINTER.build(untouched)
@@ -78,8 +85,11 @@ func _run() -> void:
 func _check_world(track: String, low: bool) -> void:
 	var host := RaceHost.new()
 	root.add_child(host)
+	var race_root := Node3D.new()
+	race_root.name = "ActiveRace"
+	host.add_child(race_root)
 	var world := ObservedWorld.new()
-	host.add_child(world)
+	race_root.add_child(world)
 	world.build(low, track)
 	var label := "%s/%s" % [track, "low" if low else "full"]
 	var marker_name := (
@@ -218,6 +228,55 @@ func _check_cable_cars(cars, host: RaceHost, road: PackedVector3Array, label: St
 		_check(uploaded, label + ": real renderer readback matches all 480 animated cabin uploads")
 	else:
 		print("[KartWorldExpansion] CPU cabin-upload state checked; renderer readback requires X11")
+
+
+func _check_preview_state_owners() -> void:
+	var host := RaceHost.new()
+	root.add_child(host)
+	var menu := PreviewHost.new()
+	host.add_child(menu)
+	var container := SubViewportContainer.new()
+	menu.add_child(container)
+	var viewport := SubViewport.new()
+	viewport.own_world_3d = true
+	container.add_child(viewport)
+	var stage := Node3D.new()
+	viewport.add_child(stage)
+	var pivot := Node3D.new()
+	stage.add_child(pivot)
+	var world := WORLD.new()
+	# Mirrors kart_garage_menu: build first, then attach the entire diorama.
+	world.build(true, "winter_sprint", true)
+	pivot.add_child(world)
+	var cars := world.get_node("WinterAlpineLandmark/WinterCableCars")
+	var initial: Transform3D = cars.cabin_transforms[0]
+	cars._process(1.0)
+	_check(
+		cars.cabin_transforms[0].is_equal_approx(initial),
+		"preview: deferred attachment binds the nearest menu reduced-motion owner"
+	)
+	menu.reduced_motion = false
+	host.paused = true
+	cars._process(1.0)
+	_check(
+		cars.cabin_transforms[0].is_equal_approx(initial),
+		"preview: pause is independently bound above the menu and SubViewport"
+	)
+	host.paused = false
+	cars._process(1.0)
+	var moved: Transform3D = cars.cabin_transforms[0]
+	_check(
+		moved.origin.distance_to(initial.origin) > 2.0,
+		"preview: motion resumes when both actual owners allow it"
+	)
+	menu.reduced_motion = true
+	cars._process(1.0)
+	_check(
+		cars.cabin_transforms[0].is_equal_approx(moved),
+		"preview: a later menu preference change freezes the existing cabins"
+	)
+	host.queue_free()
+	await process_frame
 
 
 func _road_candidates(bounds: AABB, road: PackedVector3Array) -> PackedInt32Array:
