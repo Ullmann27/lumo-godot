@@ -122,7 +122,7 @@ func _geometry_and_lifetime() -> void:
 	_check(fx.visual_state().trail_segments == 0, "respawn or teleport cannot connect a long strip")
 	for _i in range(120):
 		fx.collect_item(kart.global_position + Vector3(1, 0.8, 0), "pulse")
-		fx.landed(10.0, true)
+		fx.landed(10.0, true, world.global_basis)
 		fx.boost_release(2)
 	_check(fx.visual_state().events <= FX.EVENT_CAPACITY, "repeated events use a fixed pool")
 	_check(fx.get_child_count() == 3, "repeated events allocate no additional scene nodes")
@@ -215,6 +215,7 @@ func _production_events() -> void:
 	game.player.transform = game.world.reset_transform(10.0, 0.0)
 	var road: Dictionary = game.world.sample_road(game.player.position, 10.0)
 	game.player.position.y = float(road.height) + 0.035
+	game.player.rotate_object_local(Vector3.RIGHT, -0.32)
 	game.airborne = true
 	game.vertical_speed = -8.0
 	game.air_time = 0.5
@@ -229,6 +230,16 @@ func _production_events() -> void:
 		feedback.visual_state().landing_events == 1,
 		"real ground contact produces exactly one landing event"
 	)
+	if not logic_only:
+		var rings: MultiMeshInstance3D = feedback.get_node("EventContactRings")
+		var contact_up: Vector3 = (
+			(feedback.global_basis * rings.multimesh.get_instance_transform(0).basis.y).normalized()
+		)
+		var road_up: Vector3 = (game.race_root.global_basis * (road.basis as Basis).y).normalized()
+		_check(
+			contact_up.dot(road_up) > 0.999,
+			"landing ring follows the road, not the airborne chassis pitch"
+		)
 	game._move_vertically(road, float(road.distance), 1.0 / 60.0)
 	_check(
 		feedback.visual_state().landing_events == 1,

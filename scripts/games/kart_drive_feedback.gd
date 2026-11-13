@@ -111,8 +111,10 @@ func advance(
 		_position_valid
 		and position.distance_to(_last_position) > maxf(4.0, speed * step * 2.0 + 1.0)
 	)
-	if teleported or step > 0.12:
+	if teleported:
 		reset()
+	elif step > 0.12:
+		_clear_trails()
 	_reset_clean = false
 	_last_position = position
 	_position_valid = true
@@ -144,10 +146,12 @@ func boost_release(tier: int = 0) -> void:
 	_event(Event.BOOST, at, basis, color, 1.0)
 
 
-func landed(impact: float, rewarded: bool) -> void:
+func landed(impact: float, rewarded: bool, surface_frame: Basis) -> void:
 	if not is_instance_valid(_vehicle) or impact < 1.0:
 		return
-	var basis := _vehicle.global_basis.orthonormalized()
+	# At this instant the chassis may still carry its flight pitch. The race
+	# supplies the sampled road frame so the contact ring lies on the surface.
+	var basis := surface_frame.orthonormalized()
 	var at := _vehicle.global_position + basis.y * 0.075
 	_event(
 		Event.LANDING,

@@ -1879,7 +1879,8 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			drive_feedback.landed(
 				impact,
 				precision_result == PRECISION.LANDING_ZONE
-				or (precision_result != PRECISION.LANDING_LONG and air_time > 0.35)
+				or (precision_result != PRECISION.LANDING_LONG and air_time > 0.35),
+				race_root.global_basis * (road.basis as Basis)
 			)
 		air_trick = {}
 		# Settle sideways slide after a firm landing. Precision zone/long
