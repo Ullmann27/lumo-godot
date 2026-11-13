@@ -577,9 +577,7 @@ func _resize() -> void:
 		actions.reparent(footer)
 	compact_bar.visible = _compact
 	status.visible = not _compact
-	header.offset_left = 12 * _ui_scale
-	header.offset_right = -12 * _ui_scale
-	header.offset_top = 8 * _ui_scale
+	_update_header_safe_area()
 	message.add_theme_font_size_override("font_size", int((14 if _compact else 16) * _ui_scale))
 	_page_size = 7 if width_dp > 850 else (5 if width_dp > 550 else 3)
 	footer.offset_top = -(64 if _compact else 128) * _ui_scale
@@ -591,6 +589,39 @@ func _resize() -> void:
 	_update_camera()
 	if not _state.is_empty():
 		_render_hand()
+
+
+func _apply_header_safe_area(insets: Rect2, physical_size: Vector2) -> void:
+	if not is_instance_valid(header) or physical_size.x <= 0 or physical_size.y <= 0:
+		return
+	# Match Kart's physical-screen to viewport mapping. Only the header moves;
+	# the existing card projections, hand pages and footer keep their geometry.
+	var scale := get_viewport().get_visible_rect().size / physical_size
+	header.offset_left = 12 * _ui_scale + maxf(0, insets.position.x) * scale.x
+	header.offset_right = -12 * _ui_scale - maxf(0, insets.size.x) * scale.x
+	header.offset_top = 8 * _ui_scale + maxf(0, insets.position.y) * scale.y
+
+
+func _update_header_safe_area() -> void:
+	if not is_inside_tree() or is_queued_for_deletion() or not is_instance_valid(header):
+		return
+	var insets := Rect2()
+	if OS.has_feature("android") or OS.has_feature("ios"):
+		insets = MobileRuntime.get_safe_area_insets()
+		# As in Kart, usable bounds alone can omit Android status bars/cutouts.
+		var screen: Vector2i = DisplayServer.screen_get_size()
+		var unobscured: Rect2i = DisplayServer.get_display_safe_area()
+		if screen.x > 0 and screen.y > 0 and unobscured.has_area():
+			insets.position.x = maxf(insets.position.x, unobscured.position.x)
+			insets.position.y = maxf(insets.position.y, unobscured.position.y)
+			insets.size.x = maxf(insets.size.x, screen.x - unobscured.end.x)
+			insets.size.y = maxf(insets.size.y, screen.y - unobscured.end.y)
+	_apply_header_safe_area(insets, Vector2(get_window().size))
+
+
+func _notification(what: int) -> void:
+	if what in [NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN]:
+		_update_header_safe_area.call_deferred()
 
 
 func _update_camera() -> void:
@@ -608,6 +639,8 @@ func _process(delta: float) -> void:
 	_poll_time += delta
 	if _poll_time >= 0.20:
 		_poll_time = 0
+		# System bars can reappear without a viewport resize or a Cards revision.
+		_update_header_safe_area()
 		_poll()
 	_focus = move_toward(_focus, 0, delta * 0.9)
 	_update_camera()
