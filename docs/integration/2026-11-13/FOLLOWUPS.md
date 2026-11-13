@@ -420,3 +420,40 @@ own original-image reviews. Four 4f source stamps, past receipts and desktop
 geometry tests cannot approve that new source or an Android APK. Exact final
 Native/Host pins, API35/API37, APK/PCK/signing identity and in-place update
 remain subsequent independent gates; the live 2018 release stays unchanged.
+
+## Published Puzzle and historical-APK followups
+
+The next isolated Native merge incorporates PR165 at
+`ab9237025e5e5a30a168c4d1fbbd0a24a82690b6`; local merge
+`a4de0e68a76ab37109cef5fd1bf499ff94464d10` has tree
+`9cfe439e2607e3644aa7705e739fcac41e865885`. Only the production Puzzle menu
+cleanup changes:hide obsolete Controls immediately, keep their ancestry until
+queued deletion finishes. Published behavior, touch/input probe and original
+producer renderer red/green files remain byte-preserved by the merge.
+
+Root locally obtained720 menu lifecycle checks,1103 expansion checks and4558
+rotation checks, with zero engine errors and688 unchanged bound source files.
+The headless capture-negative exits1 and emits noPNG/noPASS. These are actual
+headless results, not a Root renderer comparison. The producer original732
+rendered checks and six original images retain their own source attribution.
+
+The two new common runner modes produce43 Core pairs. A fixed six-image menu
+roster supplements, without replacing, Studio24, Village4 and Touch6/32. Native
+and Host constants agree exactly; full affected suites pass15/76 tests. Both
+sides first demonstrated two failing preimplementation contract tests. The
+contract originals and source snapshots are preserved in `puzzle-menu-contract/`;
+the local engine proof is in `puzzle-menu-followup/local-engine/`.
+
+The published cce checkpoint remains separate:Graphics43474541178 and all13
+auxiliary workflows succeeded; all three Graphics ZIPs and five Root-viewed
+current PNGs are bound to cce/tree8409. Auxiliary14jobs/158steps comprise156
+successes and two expected exclusive-matrix skips. Its Nextgen43474541452
+continues against frozen Host4098 and the41-pair contract until fully collected.
+Future43-pair code cannot retroactively approve or invalidate that older proof.
+
+The new Native collector164 would remove existing build-goal/HUD fixes and is
+not imported wholesale. Host469 contributes only current-code verification
+against four explicitly pinned historical Git blobs, retaining package,
+signature, ABI, voice, PCK and manifest guards. Host468 contributes no new App
+runtime; only the additive2020 migration entry is prepared with2018/2019
+compatibility. No2020 version, native pin or foreign receipt is accepted.

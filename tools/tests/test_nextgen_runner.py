@@ -28,6 +28,12 @@ VILLAGE_PNGS = {
     'village-treasury-640x360.png': (640, 360),
 }
 VILLAGE_DIRECTORY = 'captures/build_village_scene_regression'
+PUZZLE_MENU_DIRECTORY = 'captures/puzzle_menu_lifecycle_regression'
+PUZZLE_MENU_PNGS = {
+    f'{width}x{height}-{stage}.png': (width, height)
+    for width, height in ((960, 540), (640, 360))
+    for stage in ('rotation-menu', 'rotation-play', 'classic-play')
+}
 
 
 @lru_cache(maxsize=16)
@@ -60,10 +66,16 @@ class NextgenRunnerTests(unittest.TestCase):
             village_verifier = ROOT / 'tools/verify_village_rasters.py'
             if village_verifier.exists():
                 shutil.copyfile(village_verifier, root / 'tools/verify_village_rasters.py')
+            puzzle_verifier = ROOT / 'tools/verify_puzzle_menu_rasters.py'
+            if puzzle_verifier.exists():
+                shutil.copyfile(puzzle_verifier, root / 'tools/verify_puzzle_menu_rasters.py')
             root.joinpath('fixture-raster.png').write_bytes(fixture_png())
             root.joinpath('village-fixtures').mkdir()
             for name, dimensions in VILLAGE_PNGS.items():
                 root.joinpath('village-fixtures', name).write_bytes(fixture_png(*dimensions, varied=True))
+            root.joinpath('puzzle-menu-fixtures').mkdir()
+            for name, dimensions in PUZZLE_MENU_PNGS.items():
+                root.joinpath('puzzle-menu-fixtures', name).write_bytes(fixture_png(*dimensions, varied=True))
             cases = re.findall(r"^check_probe (\S+) '([^']+)' (\S+)", runner.read_text(), re.M)
             markers = {name: marker for name, marker, _ in cases}
             for name in markers:
@@ -75,7 +87,7 @@ class NextgenRunnerTests(unittest.TestCase):
                               'if "--version" in sys.argv: print("fixture-engine"); sys.exit(0)\n'
                               'name=pathlib.Path(sys.argv[sys.argv.index("--script")+1]).stem\n'
                               'with open("invocations.jsonl", "a") as log:\n'
-                              '    log.write(json.dumps({"name":name,"args":sys.argv[1:],"capture_dir":os.environ.get("LUMO_CAPTURE_DIR")})+"\\n")\n'
+                              '    log.write(json.dumps({"name":name,"args":sys.argv[1:],"capture_dir":os.environ.get("LUMO_CAPTURE_DIR"),"puzzle_menu_dir":os.environ.get("LUMO_PUZZLE_MENU_EVIDENCE_DIR")})+"\\n")\n'
                               f'if name == {failing!r}: print("ERROR: requested fixture failure"); sys.exit(1)\n'
                               f'rasters={RASTERS!r}\n'
                               'if "--headless" not in sys.argv and name in rasters:\n'
@@ -96,6 +108,16 @@ class NextgenRunnerTests(unittest.TestCase):
                               f'    if name=={missing_raster!r}: names.pop()\n'
                               '    for image_name in names:\n'
                               '        shutil.copyfile(pathlib.Path("village-fixtures")/image_name,capture/image_name)\n'
+                              'if name=="puzzle_menu_lifecycle_regression":\n'
+                              '    assert os.environ.get("LUMO_PUZZLE_MENU_EVIDENCE_DIR"), "Puzzle lifecycle evidence directory is mandatory"\n'
+                              '    if "--headless" not in sys.argv:\n'
+                              '        assert "--capture" in sys.argv, "Puzzle lifecycle renderer must capture actual frames"\n'
+                              '        capture=pathlib.Path(os.environ["LUMO_PUZZLE_MENU_EVIDENCE_DIR"])\n'
+                              '        capture.mkdir(parents=True,exist_ok=True)\n'
+                              f'        names=list({PUZZLE_MENU_PNGS!r})\n'
+                              f'        if name=={missing_raster!r}: names.pop()\n'
+                              '        for image_name in names:\n'
+                              '            shutil.copyfile(pathlib.Path("puzzle-menu-fixtures")/image_name,capture/image_name)\n'
                               f'print({markers!r}[name])\n')
             engine.chmod(0o755)
             git = root / 'bin/git'
@@ -122,13 +144,15 @@ class NextgenRunnerTests(unittest.TestCase):
             images = json.loads(manifest.read_text())['images'] if manifest.exists() else []
             village_manifest = root / 'logs/village-images.json'
             result.village_images = json.loads(village_manifest.read_text())['images'] if village_manifest.exists() else []
+            puzzle_manifest = root / 'logs/puzzle-menu-images.json'
+            result.puzzle_menu_images = json.loads(puzzle_manifest.read_text())['images'] if puzzle_manifest.exists() else []
             result.invocations = [json.loads(line) for line in root.joinpath('invocations.jsonl').read_text().splitlines()]
             return result, rows, cases, budgets, images
 
     def test_success_requires_every_logic_and_rendered_probe(self):
         result, rows, cases, budgets, images = self.run_fixture()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(len(cases), 41)
+        self.assertEqual(len(cases), 43)
         self.assertEqual(len(rows), len(cases))
         self.assertTrue(all(row.endswith('\tPASS') for row in rows))
         self.assertIn('[LumoNextgen] PASS', result.stdout)
@@ -154,6 +178,34 @@ class NextgenRunnerTests(unittest.TestCase):
         for call in village_calls:
             self.assertEqual('--capture' in call['args'], '--headless' not in call['args'])
             self.assertTrue(call['capture_dir'].endswith('/' + VILLAGE_DIRECTORY))
+        self.assertIn('[PuzzleMenuRasterRoster] PASS 6 actual PNG files', result.stdout)
+        self.assertEqual({image['path']: (image['width'], image['height']) for image in result.puzzle_menu_images},
+                         {PUZZLE_MENU_DIRECTORY + '/' + name: size for name, size in PUZZLE_MENU_PNGS.items()})
+        puzzle_calls = [call for call in result.invocations if call['name'] == 'puzzle_menu_lifecycle_regression']
+        self.assertEqual(len(puzzle_calls), 2)
+        for call in puzzle_calls:
+            self.assertEqual('--capture' in call['args'], '--headless' not in call['args'])
+            self.assertTrue(call['puzzle_menu_dir'].endswith('/' + PUZZLE_MENU_DIRECTORY))
+
+    def test_missing_puzzle_menu_png_cannot_pass_with_all_existing_scene_evidence(self):
+        result, rows, cases, _, images = self.run_fixture(missing_raster='puzzle_menu_lifecycle_regression')
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(len(rows), len(cases))
+        self.assertTrue(all(row.endswith('\tPASS') for row in rows))
+        self.assertEqual(len(images), 24)
+        self.assertEqual(len(result.village_images), 4)
+        self.assertEqual(result.puzzle_menu_images, [])
+        self.assertIn('puzzle-menu-raster-roster', result.stderr)
+        self.assertNotIn('[LumoNextgen] PASS', result.stdout)
+
+    def test_native_puzzle_menu_error_fails_both_modes_and_keeps_other_evidence(self):
+        result, rows, cases, _, _ = self.run_fixture(failing='puzzle_menu_lifecycle_regression')
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(len(rows), len(cases))
+        self.assertIn('puzzle_menu_lifecycle_regression\theadless\tFAIL', rows)
+        self.assertIn('puzzle_menu_lifecycle_regression\trendered\tFAIL', rows)
+        self.assertIn('cards_table_capture\trendered\tPASS', rows)
+        self.assertNotIn('[LumoNextgen] PASS', result.stdout)
 
     def test_missing_village_png_fails_even_with_all_core_markers_and_studio_rasters(self):
         result, rows, cases, _, images = self.run_fixture(missing_raster='build_village_scene_regression')

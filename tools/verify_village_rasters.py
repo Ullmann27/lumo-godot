@@ -19,26 +19,28 @@ EXPECTED_PNGS = {
 }
 
 
-def verify(root: Path) -> list[dict]:
-    capture = root / CAPTURE_DIRECTORY
+def verify_fixed_rasters(root: Path, *, directory: str, expected: dict[str, tuple[int, int]],
+                         label: str, manifest: str) -> list[dict]:
+    """Validate an internally fixed set of decoded, visible production frames."""
+    capture = root / directory
     if not capture.is_dir() or capture.is_symlink():
-        raise ValueError('Missing original Village capture directory')
+        raise ValueError(f'Missing original {label} capture directory')
     found = {path.relative_to(root).as_posix() for path in capture.rglob('*')
              if path.suffix.lower() == '.png'}
-    if found != set(EXPECTED_PNGS):
-        raise ValueError('The complete original four-PNG Village directory is required')
+    if found != set(expected):
+        raise ValueError(f'The complete original {len(expected)}-PNG {label} directory is required')
     images = []
-    for relative, dimensions in sorted(EXPECTED_PNGS.items()):
+    for relative, dimensions in sorted(expected.items()):
         path = root / relative
         if not path.is_file() or path.is_symlink():
-            raise ValueError('Village capture must be an original regular PNG file: ' + relative)
+            raise ValueError(f'{label} capture must be an original regular PNG file: ' + relative)
         data = path.read_bytes()
         if len(data) <= 32 or data[:8] != b'\x89PNG\r\n\x1a\n' or data[12:16] != b'IHDR':
-            raise ValueError('Invalid Village PNG: ' + relative)
+            raise ValueError(f'Invalid {label} PNG: ' + relative)
         try:
             with Image.open(BytesIO(data)) as image:
                 if image.format != 'PNG' or image.size != dimensions:
-                    raise ValueError('Village PNG has different physical dimensions: ' + relative)
+                    raise ValueError(f'{label} PNG has different physical dimensions: ' + relative)
                 image.verify()
             with Image.open(BytesIO(data)) as image:
                 image.load()
@@ -48,16 +50,21 @@ def verify(root: Path) -> list[dict]:
                     Image.new('RGBA', image.size, (0, 0, 0, 255)),
                     image.convert('RGBA')).convert('RGB')
                 if not any(low != high for low, high in visible.getextrema()):
-                    raise ValueError('Village PNG is empty or a uniform color: ' + relative)
+                    raise ValueError(f'{label} PNG is empty or a uniform color: ' + relative)
         except (OSError, SyntaxError, ValueError, Image.DecompressionBombError) as error:
-            raise ValueError('Invalid or incomplete original Village raster: ' + relative) from error
+            raise ValueError(f'Invalid or incomplete original {label} raster: ' + relative) from error
         images.append({'path': relative, 'width': dimensions[0], 'height': dimensions[1],
                        'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()})
-    # Publish metadata only after the entire original four-image set passed.
-    temporary = root / '.village-images.json.tmp'
+    # Publish metadata only after the entire original image set passed.
+    temporary = root / ('.' + manifest + '.tmp')
     temporary.write_text(json.dumps({'images': images}, indent=2) + '\n')
-    temporary.replace(root / 'village-images.json')
+    temporary.replace(root / manifest)
     return images
+
+
+def verify(root: Path) -> list[dict]:
+    return verify_fixed_rasters(root, directory=CAPTURE_DIRECTORY, expected=EXPECTED_PNGS,
+                                label='Village', manifest='village-images.json')
 
 
 def main() -> int:

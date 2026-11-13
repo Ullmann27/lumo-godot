@@ -50,6 +50,7 @@ run_probe() {
     fi
   fi
   XDG_DATA_HOME="$user_dir" LUMO_CAPTURE_DIR="$capture_dir" LUMO_EVIDENCE_DIR="$capture_dir" \
+    LUMO_PUZZLE_MENU_EVIDENCE_DIR="$capture_dir" \
     PUZZLE_ROTATION_CAPTURE_DIR="$capture_dir" TREASURE_EXPLORATION_CAPTURE_DIR="$capture_dir" \
     python3 tools/run_godot_probe.py --log "$LOG_DIR/$name-$mode.log" \
     --timeout "$timeout_seconds" --required "$marker" -- "${command[@]}" "${args[@]}" "$@"
@@ -72,6 +73,7 @@ check_probe learning_sharing_regression '[LearningSharing] PASS' headless
 check_probe learning_studio_regression '[LearningStudio] PASS' headless
 check_probe learning_host_payload_regression '[LearningHostPayload] PASS' headless
 check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' headless
+check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' headless
 check_probe treasure_exploration_regression '[TreasureExploration] PASS' headless
 check_probe jump_nextgen_regression '[JumpNextgen] PASS' headless
 check_probe jump_expeditions_regression '[JumpExpeditions] PASS' headless
@@ -98,6 +100,7 @@ check_probe learning_world_capture '[LearningCapture] PASS' rendered -- "--outpu
 check_probe learning_sharing_capture '[LearningSharingCapture] PASS' rendered -- "--output=$LOG_DIR/captures/learning_sharing_capture"
 check_probe lumo_studio_motion_capture '[LumoStudioCapture] PASS' rendered
 check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' rendered
+check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' rendered -- --capture
 check_probe treasure_exploration_regression '[TreasureExploration] PASS' rendered
 check_probe jump_nextgen_capture '[JumpNextgenCapture] PASS' rendered
 check_probe build_nextgen_play_regression '[BuildNextgen] PASS' rendered -- --capture
@@ -118,6 +121,9 @@ fi
 # Village is an additional production capture set, never a Studio replacement.
 if ! python3 tools/verify_village_rasters.py "$LOG_DIR"; then
   failures+=("village-raster-roster")
+fi
+if ! python3 tools/verify_puzzle_menu_rasters.py "$LOG_DIR"; then
+  failures+=("puzzle-menu-raster-roster")
 fi
 
 if (( ${#failures[@]} )); then

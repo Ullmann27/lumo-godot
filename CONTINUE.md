@@ -1,53 +1,72 @@
 # Continue the combined LUMO 2019 integration
 
-The active integration drafts are `Ullmann27/lumo-godot#160` and
-`Ullmann27/lumo-lernen#465`. Root prepares published followups in the isolated
-`integration/lumo-published-followups-20261113` worktree and advances the own
-published `integration/lumo-connections-20261113` branch using an exact
-expected-SHA lease. Producer worktrees, main and live Host PR #461 stay protected.
+The active drafts are `Ullmann27/lumo-godot#160` and `Ullmann27/lumo-lernen#465`.
+Root integrates published snapshots in isolated worktrees, currently
+`integration/lumo-puzzle-followups-20261113` and
+`integration/lumo-host-followups-20261113`. Only root stages, commits and advances
+its own `integration/lumo-connections-20261113` refs with an expected-SHA lease.
+Main, producer dirty worktrees and live Host PR461 remain protected.
 
-The completed native checkpoint is `4f3449253fd59023a2544432a178eb9efcafe4f9`,
-tree `189b7a66c731067559469e2503e3a190b337031d`. All 15 workflows succeeded:
-Nextgen `43466004918` (eight jobs), Graphics `43466005184` (three jobs), and
-13 additional workflows. The original Nextgen archive passed the frozen Host
-9e verifier: 37 Core pairs, 24 Studio images, six Touch pairs and 32 Touch images.
-The repaired Gameplay job has 23 real scene/audio release markers before PASS.
-The earlier 74c failure remains unchanged historical evidence.
+## Current published source and separate next-source work
 
-The next isolated source merges the published Loop-camera branch
-`bd4f59caf767f45dbca288ad5d8b90011e061f2d` and full living-village branch
-`027c2535d2d69fc56fc19d8d96490f7de5be9c37`. The retained Build probes pass
-71 new / 62 exact previous assertions, plus 2,016 density assertions. Village
-model/art/original-scene checks pass 337 / 2,259 / 19. The Loop feedback probe
-passes 56 headless logic checks with real playback cleanup.
+Published Native `ccebbe24b489ba7971c605a2bc5187fcfea26f9e`, tree
+`8409dc27958dc102d7fc84b413f28642782668aa`, combines the published Loop camera
+and full living Village with the integrated actual-touch/live-resize repair.
+Its Graphics run `43474541178` and all thirteen auxiliary workflows succeeded.
+Root directly reviewed all five fresh required Graphics PNGs. Its Nextgen run
+`43474541452` has successful Gameplay, Learning Preview and Treasure jobs;
+the complete Core/Workshop/Build/bundle acceptance is still being collected.
+This source uses the frozen Host4098 verifier:41 Core pairs,24 Studio PNGs,
+four Village PNGs and six Touch pairs/32 Touch PNGs. Do not validate it using
+the stronger next-source contract or relabel its images as later proof.
 
-A genuine touch-capable comparison found unreachable village scroll actions
-and an open dialog that failed to shrink after orientation/density changes.
-The same extended probe fails on the exact published product (125 checks,
-seven failures) and passes on the repaired product (223 checks). It preserves
-all original 19 assertions, checks actual touch events and popup transforms,
-48dp targets, the same resized Window instance and unchanged saved bytes.
-The unchanged classic SettlementPlay probe also passes all 127 assertions.
-A headless capture request fails without producing an image or PASS.
+The next isolated source cleanly merges published Puzzle PR165
+`ab9237025e5e5a30a168c4d1fbbd0a24a82690b6`. Its only product delta hides obsolete
+menu children and queues deletion without synchronously detaching them during
+the button-release event. The exact published probe passes720 local headless
+menu checks; existing Expansion1103 and Rotation4558 checks also pass with zero
+engine errors. All688 bound source files stayed unchanged during these runs.
+A headless capture request intentionally fails without PNG or PASS. Original
+producer renderer red/green evidence remains separately attributed under
+`docs/evidence/puzzle-menu-followup-20261113/`.
 
-The common Native/Host contract now requires 41 Core pairs, unchanged Studio24,
-a separate four-image Village roster and unchanged Touch6/32. A current Village
-image must be explicitly reviewed. Both workflows that run this common gate
-install the PNG decoder. The actual next-source renderer and Android checks
-remain required; headless fixtures are not physical-device or frame-rate proof.
+The next-source Native/Host gate requires43 Core pairs, unchanged Studio24,
+unchanged Village4, six additional original Puzzle-menu PNGs, and unchanged
+Touch6/32. The six menu frames are960x540 and640x360, each with rotation menu,
+rotation play and classic play. Every frame is decoded and checked for exact
+name, size, bytes, hash and visible content. Root must review a current menu
+capture in addition to the nine families, Village and three Touch surfaces.
+Native orchestration/raster contracts pass15 tests; affected Host contracts
+pass76. Synthetic contract fixtures are never rendered acceptance or APK proof.
 
-Original 4f evidence is under
-`docs/evidence/integration-20261113/native-4f-checkpoint/`; the published merge
-and local repair evidence is under
-`docs/evidence/integration-20261113/published-followups/`. Follow the exact
-source identities and limits in `docs/integration/2026-11-13/FOLLOWUPS.md`.
+## Preserve accepted repairs and original evidence
 
-After the new combined source passes every native job, review its own original
-production and graphics images, record both current Host receipts, then bind
-all three Host identity files to that same final Native SHA. Real Android
-compile, API35/API37 and the 2017-to-2019 in-place update are separate gates.
-This integration branch does not publish an APK. Work continues in the active
-session without a background automation.
+The earlier4f checkpoint completed all15 workflows. Its exact37-Core/24-Studio
+and Touch6/32 result remains historical under `native-4f-checkpoint/`.
+The full Village retains eleven building offers, twelve chapters, separate v2
+saves, residents, deliveries and treasury. Its actual-touch comparison remains
+125 checks/seven failures on the published product versus223 passing checks on
+the repaired product; original nineteen checks and ClassicSettlement127 survive.
+The published Loop camera fix has a fresh cce rendered Feedback75 result.
+The separate original local56 headless result is not a cce Nextgen result.
+
+Native collector PR164 contains no missing product feature and would remove
+existing build-goal/HUD gesture fixes. Do not replace complete runtime files
+from that older collector. Host PR468 has identical lib/test/assets but older
+37-Core acceptance without Village and an incompatible migration-helper edit.
+Only its additive2020 update wrapper is prepared, with2018/2019 paths retained;
+version/pins/receipts remain unchanged until the actual candidate is accepted.
+Host PR469 supplies the explicit immutable-Git historical APK expectations fix.
+
+## Remaining exact-source gates
+
+Finish and preserve the current cce run, then publish the next combined source
+without cancelling these original checks. The next source needs its own full
+Native/Graphics runs and original-image reviews. Then record current Host
+receipts and bind all three Host identity files to the same final Native SHA.
+Real Android compile, API35/API37 and2017-to-2019 in-place update are separate
+gates. This integration branch does not publish an APK. No unattended timer or
+background automation is enabled.
 
 ## Historical inherited 2018 handoff
 
