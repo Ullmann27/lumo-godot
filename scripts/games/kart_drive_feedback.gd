@@ -74,9 +74,13 @@ func bind_vehicle(vehicle: Node3D) -> void:
 	_vehicle = vehicle
 	_tyres.clear()
 	_exhausts.clear()
+	if not _anchor_alive(vehicle):
+		reset()
+		return
 	# Existing spark roots are at the actual wheel contact points for each kart.
 	for spark in vehicle.sparks:
-		_tyres.append(spark)
+		if _anchor_alive(spark):
+			_tyres.append(spark)
 	_tyres.sort_custom(
 		func(a: Node3D, b: Node3D) -> bool:
 			return vehicle.to_local(a.global_position).z > vehicle.to_local(b.global_position).z
@@ -84,16 +88,48 @@ func bind_vehicle(vehicle: Node3D) -> void:
 	if _tyres.size() > 2:
 		_tyres.resize(2)
 	for flame in vehicle.flames:
-		if _exhausts.size() < 2:
+		if _exhausts.size() < 2 and _anchor_alive(flame):
 			_exhausts.append(flame)
 	reset()
+
+
+func _anchor_alive(anchor) -> bool:
+	return (
+		is_instance_valid(anchor)
+		and anchor.is_inside_tree()
+		and not anchor.is_queued_for_deletion()
+	)
+
+
+func _synchronize_anchors() -> bool:
+	if not _anchor_alive(_vehicle):
+		reset()
+		_tyres.clear()
+		_exhausts.clear()
+		return false
+	# A variant/driver rebuild retains the vehicle but frees all its children.
+	# Rebind before sampling or a direct event, including while time is paused.
+	var changed := (
+		_tyres.size() != mini(2, _vehicle.sparks.size())
+		or _exhausts.size() != mini(2, _vehicle.flames.size())
+	)
+	for anchor in _tyres:
+		if not _anchor_alive(anchor) or not _vehicle.sparks.has(anchor):
+			changed = true
+			break
+	for anchor in _exhausts:
+		if not _anchor_alive(anchor) or not _vehicle.flames.has(anchor):
+			changed = true
+			break
+	if changed:
+		bind_vehicle(_vehicle)
+	return true
 
 
 func advance(
 	delta: float, enabled: bool, paused: bool, airborne: bool, reduce_motion: bool
 ) -> void:
-	if not is_instance_valid(_vehicle):
-		reset()
+	if not _synchronize_anchors():
 		return
 	if paused:
 		return
@@ -139,7 +175,7 @@ func advance(
 
 
 func boost_release(tier: int = 0) -> void:
-	if not is_instance_valid(_vehicle) or _exhausts.size() < 2:
+	if not _synchronize_anchors() or _exhausts.size() < 2:
 		return
 	var at := _exhausts[0].global_position
 	var color: Color = BLUE if tier == 1 else GOLD
@@ -149,7 +185,7 @@ func boost_release(tier: int = 0) -> void:
 
 
 func landed(impact: float, rewarded: bool, surface_frame: Basis) -> void:
-	if not is_instance_valid(_vehicle) or impact < 1.0:
+	if not _synchronize_anchors() or impact < 1.0:
 		return
 	# At this instant the chassis may still carry its flight pitch. The race
 	# supplies the sampled road frame so the contact ring lies on the surface.
@@ -165,7 +201,7 @@ func landed(impact: float, rewarded: bool, surface_frame: Basis) -> void:
 
 
 func collect_item(world_position: Vector3, item: String) -> void:
-	if not is_instance_valid(_vehicle):
+	if not _synchronize_anchors():
 		return
 	var color: Color = BLUE if item == "shield" else Color("bd96ff") if item == "pulse" else GOLD
 	_event(Event.PICKUP, world_position, Basis.IDENTITY, color, 1.0)
