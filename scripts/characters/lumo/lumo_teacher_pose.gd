@@ -12,6 +12,7 @@ var speaking: bool = false
 var reaction: String = "idle"
 var reaction_left: float = 0.0
 var clock: float = 0.0
+var sampled_rotations: Dictionary = {}
 
 
 func bind(source: Skeleton3D) -> bool:
@@ -37,6 +38,16 @@ func set_target(world_position: Vector3) -> bool:
 func react(event: String) -> void:
 	reaction = event
 	reaction_left = 1.2 if event == "encourage" else 0.8
+
+
+func restore_sampled_pose() -> void:
+	# AnimationMixer can skip unchanged/constant tracks. Undo our last
+	# additive frame explicitly before sampling any authored animation.
+	for index in sampled_rotations:
+		skeleton.set_bone_pose_rotation(int(index), sampled_rotations[index])
+	sampled_rotations.clear()
+	if skeleton != null:
+		skeleton.force_update_all_bone_transforms()
 
 
 func advance(owner: Node3D, delta: float) -> void:
@@ -68,6 +79,7 @@ func advance(owner: Node3D, delta: float) -> void:
 
 func _add_character_rotation(owner: Node3D, bone: String, rotation: Quaternion) -> void:
 	var index: int = int(bones[bone])
+	sampled_rotations[index] = skeleton.get_bone_pose_rotation(index)
 	# Original bones have differing rest axes. Conjugate the body-space
 	# rotation into this bone's current frame so "right/up" means the same
 	# direction for the neck and head, including rotated teaching stages.

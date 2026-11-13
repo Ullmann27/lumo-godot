@@ -94,8 +94,9 @@ func is_usable() -> bool:
 func _process(delta: float) -> void:
 	if teacher_enabled:
 		if not suspended and not reduced_motion:
-			# The same owner samples the original clip then adds gaze. All nine
-			# clips key every bone, so secondary offsets never accumulate.
+			# The same owner restores and samples the authored pose before
+			# adding gaze; constant animation tracks cannot accumulate offsets.
+			teacher_pose.restore_sampled_pose()
 			player.advance(minf(delta, 0.10))
 			teacher_pose.advance(self, delta)
 		return
@@ -192,6 +193,7 @@ func _enable_teacher_mode() -> bool:
 func _stop_teacher_mode() -> void:
 	if not teacher_enabled:
 		return
+	teacher_pose.restore_sampled_pose()
 	teacher_enabled = false
 	player.callback_mode_process = _teacher_previous_process_mode
 	player.advance(0.0)
@@ -227,6 +229,8 @@ func set_teacher_speaking(value: bool) -> bool:
 func play_behavior(behavior: String) -> bool:
 	if suspended or player == null:
 		return false
+	if teacher_enabled:
+		teacher_pose.restore_sampled_pose()
 	_stop_platform_pose()
 	if behavior == "walk_loop":
 		if not is_usable():

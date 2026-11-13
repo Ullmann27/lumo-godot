@@ -91,6 +91,10 @@ func _run() -> void:
 	for descriptor in [
 		{"kind": "syllables", "word": "Banane", "syllables": ["Ba", "na", "ne"]},
 		{"kind": "plant_parts", "plantPart": "leaf"},
+		{"kind": "subtract_ten", "a": 13, "b": 5},
+		{"kind": "equal_groups", "a": 3, "b": 4},
+		{"kind": "bridge_hundred", "a": 180, "b": 50},
+		{"kind": "fraction_parts", "a": 1, "b": 4, "extra": 2},
 	]:
 		var game = world.instantiate()
 		game.capture_options = {"learning": descriptor, "reduceAnimations": true}
@@ -101,18 +105,24 @@ func _run() -> void:
 			for index in range(3):
 				await _tap(game.camera.unproject_position(game.tokens[index].global_position))
 			_check(game.activity.is_complete(), "word completed through actual touch")
-		else:
+		elif descriptor.kind == "plant_parts":
 			await _tap(game.water_button.get_global_rect().get_center())
 			await _tap(game.sun_button.get_global_rect().get_center())
 			for button in game.actions.get_children():
 				if button.text in ["Wurzel", "Stängel", "Blatt", "Blüte"]:
 					await _tap(button.get_global_rect().get_center())
 			_check(game.activity.is_complete(), "plant discovered through actual controls")
+		else:
+			# Use the same accessible child-facing action as Android. Every
+			# press still executes an actual mesh move in the current lesson.
+			for index in range(game.activity.goal_count()):
+				await _tap(game.main_button.get_global_rect().get_center())
+			_check(game.activity.is_complete(), "expanded current lesson completed through actual controls")
 		await _capture(game, str(descriptor.kind) + "-complete", Vector2i(1280, 720))
 		game.queue_free()
 		await _settle()
-	if failures == 0 and captures == 13:
+	if failures == 0 and captures == 21:
 		print("[LearningCapture] PASS captures=%d" % captures)
 	else:
 		push_error("[LearningCapture] FAIL captures=%d failures=%d" % [captures, failures])
-	quit(0 if failures == 0 and captures == 13 else 1)
+	quit(0 if failures == 0 and captures == 21 else 1)
