@@ -1,0 +1,6 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 5.52191495099396,
+  "scope": "Exact run_probe/check_probe implementation and selected new headless call from modified tools/validate_studio.sh; no other engine probes rerun.",
+  "gate_source_sha256": "236a4ccb73e19e5a2d8ec6fdfb9f56c223aef283dc0d2cb7a37a5570a19ffb31"
+}

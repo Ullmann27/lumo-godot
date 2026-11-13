@@ -17,7 +17,11 @@ run_probe() {
   shift 4
   local capture="$LOG_DIR/captures/$script"
   local user="$LOG_DIR/data/$script-$mode"
-  mkdir -p "$capture" "$user"
+  local puzzle_menu_evidence="$capture"
+  if [[ "$mode" == headless ]]; then
+    puzzle_menu_evidence="$LOG_DIR/evidence/$script-$mode"
+  fi
+  mkdir -p "$capture" "$user" "$puzzle_menu_evidence"
   local command=("$GODOT")
   local args=(--path . --audio-driver Dummy --script "scripts/tests/$script.gd")
   if [[ "$mode" == headless ]]; then
@@ -34,7 +38,7 @@ run_probe() {
   fi
   XDG_DATA_HOME="$user" XDG_CONFIG_HOME="$user/config" XDG_CACHE_HOME="$user/cache" \
     LUMO_CAPTURE_DIR="$capture" PUZZLE_ROTATION_CAPTURE_DIR="$capture" \
-    TREASURE_EXPLORATION_CAPTURE_DIR="$capture" \
+    TREASURE_EXPLORATION_CAPTURE_DIR="$capture" LUMO_PUZZLE_MENU_EVIDENCE_DIR="$puzzle_menu_evidence" \
     python3 tools/run_godot_probe.py --log "$LOG_DIR/$script-$mode.log" \
     --timeout "$seconds" --required "$marker" -- "${command[@]}" "${args[@]}" "$@"
 }
@@ -52,11 +56,13 @@ check_probe learning_sharing_regression '[LearningSharing] PASS' headless 180
 check_probe learning_studio_regression '[LearningStudio] PASS' headless 180
 check_probe lumo_studio_motion_regression '[LumoStudioMotion] PASS' headless 180
 check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' headless 180
+check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' headless 180
 check_probe treasure_exploration_regression '[TreasureExploration] PASS' headless 180
 check_probe learning_sharing_capture '[LearningSharingCapture] PASS' rendered 600 \
   -- "--output=$LOG_DIR/captures/learning_sharing_capture"
 check_probe lumo_studio_motion_capture '[LumoStudioCapture] PASS' rendered 420
 check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' rendered 600
+check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' rendered 600 -- --capture
 check_probe treasure_exploration_regression '[TreasureExploration] PASS' rendered 600
 
 # A logic PASS in a display process is insufficient: require the native rasters.
@@ -68,16 +74,24 @@ import struct
 import sys
 root = Path(sys.argv[1])
 required = {'learning_sharing_capture': 6, 'lumo_studio_motion_capture': 8,
-            'puzzle_rotation_regression': 7, 'treasure_exploration_regression': 3}
+            'puzzle_rotation_regression': 7, 'treasure_exploration_regression': 3,
+            'puzzle_menu_lifecycle_regression': 6}
+puzzle_menu_files = {f'{width}x{height}-{phase}.png'
+                    for width, height in ((960, 540), (640, 360))
+                    for phase in ('rotation-menu', 'rotation-play', 'classic-play')}
 images = []
 for probe, count in required.items():
     found = sorted((root / 'captures' / probe).glob('*.png'))
     assert len(found) == count, (probe, len(found), count)
+    if probe == 'puzzle_menu_lifecycle_regression':
+        assert {path.name for path in found} == puzzle_menu_files, probe
     for path in found:
         data = path.read_bytes()
         assert data[:8] == b'\x89PNG\r\n\x1a\n', str(path)
         width, height = struct.unpack('>II', data[16:24])
         assert width >= 360 and height >= 360, str(path)
+        if probe == 'puzzle_menu_lifecycle_regression':
+            assert (width, height) == tuple(map(int, path.name.split('-', 1)[0].split('x'))), str(path)
         images.append({'path': path.relative_to(root).as_posix(), 'width': width, 'height': height,
                        'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()})
 (root / 'renderer-images.json').write_text(json.dumps({'images': images}, indent=2) + '\n')

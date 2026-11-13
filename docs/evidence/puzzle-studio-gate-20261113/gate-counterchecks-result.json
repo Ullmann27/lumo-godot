@@ -1,0 +1,6 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 7.9840727990085725,
+  "bash_n_exit_code": 0,
+  "scope": "Existing three acceptance-shell tests plus three new Studio gate tests with synthetic gate fixtures. No fixture PNG is renderer/gameplay evidence."
+}

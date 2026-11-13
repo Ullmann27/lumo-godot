@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python3",
+    "tools/run_local_renderer.py",
+    "--display",
+    "98",
+    "--output",
+    "/workspace/scratch/5987865ae883/qa/puzzle-studio-gate-ab923/render-xorg",
+    "--timeout",
+    "720",
+    "--project",
+    "/workspace/scratch/5987865ae883/lumo-godot-studio-puzzle-gate-ab923"
+  ],
+  "real_engine": "/usr/local/bin/godot",
+  "gateway_script": "/workspace/scratch/5987865ae883/qa/puzzle-studio-gate-ab923/gate-bin/godot",
+  "selected_gate_script": "/workspace/scratch/5987865ae883/qa/puzzle-studio-gate-ab923/selected-rendered-gate.sh",
+  "explanation": "Portable Xorg runner starts the exact selected Studio shell gate through a local executable gateway. GODOT_BIN remains the absolute real engine. The shell gate then invokes the unchanged strict run_godot_probe.py with production arguments, marker, timeout, capture and data environments.",
+  "device_performance_claim": false
+}
