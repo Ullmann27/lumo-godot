@@ -19,7 +19,25 @@ func build(model, kind: String) -> bool:
 
 func reload_check(model, message: String):
 	var before: Dictionary = model.snapshot()
-	var restored = MODEL.restore(JSON.parse_string(JSON.stringify(before)))
+	var payload = JSON.parse_string(JSON.stringify(before))
+	var restored = MODEL.restore(payload)
+	if restored == null:
+		print(
+			"[VillageEconomyDebug] restore rejected: player=",
+			MODEL._valid_town(payload.player, true),
+			" rival=", MODEL._valid_town(payload.rival, true),
+			" mode=", payload.mode, " day=", payload.day
+		)
+	elif restored.snapshot() != before:
+		var after: Dictionary = restored.snapshot()
+		for town_name in ["player", "rival"]:
+			for key in before[town_name]:
+				if before[town_name][key] != after[town_name][key]:
+					print(
+						"[VillageEconomyDebug] ", town_name, ".", key,
+						" was=", str(before[town_name][key]).substr(0, 420),
+						" now=", str(after[town_name][key]).substr(0, 420)
+					)
 	check(restored != null and restored.snapshot() == before, message)
 	return restored if restored != null else model
 
