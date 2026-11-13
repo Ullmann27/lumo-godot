@@ -797,9 +797,11 @@ static func campaign_status(model, town: Dictionary) -> Dictionary:
 
 static func valid(town: Dictionary, whole: Callable) -> bool:
 	if town.get("economy_version") != 2:
+		print("[LumoGuard] VillageGuard:800")
 		return false
 	for key: String in COUNTERS:
 		if not whole.call(town.get(key), 0, MAX_COUNTER):
+			print("[LumoGuard] VillageGuard:803")
 			return false
 	if (
 		int(town.treasury) > MAX_RESOURCE
@@ -808,11 +810,13 @@ static func valid(town: Dictionary, whole: Callable) -> bool:
 		or int(town.orders_today) > 3
 		or int(town.next_delivery_id) < 1
 	):
+		print("[LumoGuard] VillageGuard:811")
 		return false
 	if (
 		int(town.tax_total) != int(town.income_total) / 5
 		or int(town.tax_remainder) != int(town.income_total) % 5
 	):
+		print("[LumoGuard] VillageGuard:816")
 		return false
 	if (
 		not town.get("city_projects") is Dictionary
@@ -820,67 +824,84 @@ static func valid(town: Dictionary, whole: Callable) -> bool:
 		or not town.get("households") is Array
 		or not town.get("deliveries") is Array
 	):
+		print("[LumoGuard] VillageGuard:823")
 		return false
 	var spent := 0
 	for id: Variant in town.city_projects:
 		if not id is String or not PROJECTS.has(id) or town.city_projects[id] != true:
+			print("[LumoGuard] VillageGuard:827")
 			return false
 		spent += int(PROJECTS[id].cost)
 	if int(town.treasury) != int(town.tax_total) - spent:
+		print("[LumoGuard] VillageGuard:830")
 		return false
 	for crop in ["carrots", "grain", "bread"]:
 		if not whole.call(town.crops.get(crop), 0, MAX_RESOURCE):
+			print("[LumoGuard] VillageGuard:833")
 			return false
 	if int(town.crops.carrots) + int(town.crops.bread) != int(town.resources.food):
+		print("[LumoGuard] VillageGuard:835")
 		return false
 	var houses := {}
 	for building: Dictionary in town.buildings:
 		if building.kind == "house":
 			houses[str(building.id)] = true
 	if town.households.size() != houses.size():
+		print("[LumoGuard] VillageGuard:841")
 		return false
 	var people := 2
 	for family: Variant in town.households:
 		if not family is Dictionary or not houses.has(family.get("building_id")):
+			print("[LumoGuard] VillageGuard:845")
 			return false
 		if (
 			not whole.call(family.get("adults"), 0, 2)
 			or not whole.call(family.get("children"), 0, 2)
 			or not whole.call(family.get("supplied_days"), 0, 9999)
 		):
+			print("[LumoGuard] VillageGuard:851")
 			return false
 		houses.erase(family.building_id)
 		people += int(family.adults) + int(family.children)
 	if people != int(town.population):
+		print("[LumoGuard] VillageGuard:855")
 		return false
 	if town.deliveries.size() > 32:
+		print("[LumoGuard] VillageGuard:857")
 		return false
 	var delivery_ids := {}
 	for delivery: Variant in town.deliveries:
 		if not delivery is Dictionary or not OFFERS.has(delivery.get("offer")):
+			print("[LumoGuard] VillageGuard:861")
 			return false
 		if (
 			not whole.call(delivery.get("id"), 1, int(town.next_delivery_id) - 1)
 			or not whole.call(delivery.get("arrival_day"), 1, 10000)
 		):
+			print("[LumoGuard] VillageGuard:866")
 			return false
 		if delivery_ids.has(int(delivery.id)):
+			print("[LumoGuard] VillageGuard:868")
 			return false
 		delivery_ids[int(delivery.id)] = true
 	if not town.get("pending_income") is Dictionary or not town.get("last_report") is Dictionary:
+		print("[LumoGuard] VillageGuard:871")
 		return false
 	for key in ["gross_income", "city_contribution", "net_income"]:
 		if not whole.call(town.pending_income.get(key), 0, MAX_COUNTER):
+			print("[LumoGuard] VillageGuard:874")
 			return false
 	if (
 		int(town.pending_income.gross_income)
 		!= int(town.pending_income.city_contribution) + int(town.pending_income.net_income)
 	):
+		print("[LumoGuard] VillageGuard:879")
 		return false
 	var report: Dictionary = town.last_report
 	var defaults := empty_report()
 	for key: String in defaults:
 		if not report.has(key):
+			print("[LumoGuard] VillageGuard:884")
 			return false
 	for key in [
 		"day",
@@ -897,6 +918,7 @@ static func valid(town: Dictionary, whole: Callable) -> bool:
 		"water_shortfall"
 	]:
 		if not whole.call(report[key], 0, MAX_COUNTER):
+			print("[LumoGuard] VillageGuard:900")
 			return false
 	if (
 		report.tax_percent != 20
@@ -905,20 +927,25 @@ static func valid(town: Dictionary, whole: Callable) -> bool:
 		or not report.message is String
 		or str(report.message).length() > 1024
 	):
+		print("[LumoGuard] VillageGuard:908")
 		return false
 	if int(report.gross_income) != int(report.city_contribution) + int(report.net_income):
+		print("[LumoGuard] VillageGuard:910")
 		return false
 	if (
 		not report.produced is Dictionary
 		or not report.deliveries_received is Array
 		or report.deliveries_received.size() > 32
 	):
+		print("[LumoGuard] VillageGuard:916")
 		return false
 	for key in ["wood", "stone", "food", "coins"]:
 		if not whole.call(report.produced.get(key), 0, MAX_RESOURCE):
+			print("[LumoGuard] VillageGuard:919")
 			return false
 	for item: Variant in report.deliveries_received:
 		if not item is String or item.length() > 80:
+			print("[LumoGuard] VillageGuard:922")
 			return false
 	return true
 
