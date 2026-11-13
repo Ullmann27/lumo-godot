@@ -348,7 +348,8 @@ func _button(text: String, action: Callable, width := 100) -> Button:
 	button.text = text
 	button.custom_minimum_size = Vector2(width, 48)
 	button.add_theme_font_size_override("font_size", 15)
-	button.add_theme_color_override("font_color", Color("183d4c"))
+	for state in ["", "hover_", "pressed_", "hover_pressed_", "focus_"]:
+		button.add_theme_color_override("font_" + state + "color", Color("183d4c"))
 	button.add_theme_stylebox_override("normal", _panel())
 	var pressed := _panel()
 	pressed.bg_color = Color("bddfc7")
