@@ -1,6 +1,13 @@
 extends "res://scripts/games/kart_garage_menu.gd"
 ## One live stage shared by the landing and every customization section.
 ## Selection, unlocks, tuning, native gestures and saved setups stay in the base.
+const SERVICE_STATION = preload("res://scripts/games/kart_garage_service_station.gd")
+const STAGE_PINCH = preload("res://scripts/games/kart_stage_pinch.gd")
+var service_station
+var _pinch = STAGE_PINCH.new()
+var _camera_zoom := 1.0
+var _last_section := -1
+var _application_active := true
 var _spatial_ready := false
 var _landing_active := false
 var _stage_header: Control
@@ -61,6 +68,9 @@ func _ready() -> void:
 	garage_interior.materials.wall.albedo_color = Color("37536e")
 	garage_interior.materials.floor.albedo_color = Color("415c76")
 	garage_interior.materials.ivory.albedo_color = Color("e2e4dc")
+	service_station = SERVICE_STATION.new()
+	garage_interior.root.add_child(service_station)
+	service_station.build(garage_interior.materials)
 	_spatial_ready = true
 	_refresh()
 
@@ -89,6 +99,11 @@ func _refresh() -> void:
 	super._refresh()
 	if not _spatial_ready:
 		return
+	if step != _last_section:
+		_reset_stage_gesture()
+		_camera_zoom = 1.0
+		_last_section = step
+	_sync_workshop_host()
 	for button in garage_buttons.values():
 		button.body.hide()
 	garage_interior.root.visible = step != 3
@@ -97,6 +112,65 @@ func _refresh() -> void:
 	subtitle.hide()
 	title_label.text = ["Rennen", "Dein Fahrer", "Deine Garage", "Rennwelten", "Tempo & Gegner"][step]
 	_apply_responsive_layout.call_deferred()
+
+
+func _apply_selected_preview() -> void:
+	var changed := _selection_reaction_pending
+	super._apply_selected_preview()
+	_sync_workshop_host()
+	if changed and is_instance_valid(service_station):
+		service_station.react_to_selection()
+
+
+func _sync_workshop_host() -> void:
+	if not is_instance_valid(service_station):
+		return
+	var show_host: bool = _application_active and visible and step == 2 and inspection_view == 0 and not _landing_active
+	service_station.set_active(show_host, reduced_motion)
+	# The same original fox stands beside his kart only in the workshop. The
+	# selected vehicle/driver are untouched for every actual start and inspection.
+	if is_instance_valid(preview_kart) and is_instance_valid(preview_kart.lumo_animation):
+		var seated = preview_kart.lumo_animation
+		seated.visible = not (show_host and is_instance_valid(service_station.host))
+		seated.set_suspended(not seated.visible)
+
+
+func _preview_input(event: InputEvent) -> void:
+	var gesture: Dictionary = _pinch.consume(event)
+	if gesture.started:
+		_cancel_garage_press()
+		_preview_touch_index = -1
+		rotate_drag = false
+		_camera_progress = 1.0
+		_set_camera_veil(0.0)
+	if gesture.consumed:
+		if inspection_view == 0 and step != 3 and not is_equal_approx(float(gesture.scale), 1.0):
+			_camera_zoom = clampf(_camera_zoom * float(gesture.scale), 0.78, 1.25)
+			_fit_welcome_camera()
+		return
+	if event is InputEventMouseButton and event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+		if inspection_view == 0 and step != 3:
+			_camera_zoom = clampf(_camera_zoom * (0.92 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1.08), 0.78, 1.25)
+			_fit_welcome_camera()
+		return
+	super._preview_input(event)
+
+
+func _reset_stage_gesture() -> void:
+	_pinch.reset()
+	_preview_touch_index = -1
+	rotate_drag = false
+	_cancel_garage_press()
+
+
+func _notification(what: int) -> void:
+	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT, NOTIFICATION_APPLICATION_PAUSED]:
+		_application_active = false
+		_reset_stage_gesture()
+		if is_instance_valid(service_station):
+			service_station.set_active(false, reduced_motion)
+	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN, NOTIFICATION_APPLICATION_RESUMED]:
+		_application_active = true
 
 
 func _next() -> void:
@@ -234,10 +308,12 @@ func _stage_rect(control: Control, rect: Rect2, ui_scale: float) -> void:
 
 
 func _choose_preview_view(index: int, animate: bool = true) -> void:
+	_camera_zoom = 1.0
 	if is_instance_valid(preview_camera):
 		preview_camera.h_offset = 0.0
 		preview_camera.v_offset = 0.0
 	super._choose_preview_view(index, animate)
+	_sync_workshop_host()
 	if step == 3 or inspection_view == 0:
 		return
 	# The live studio is a room. Inspection cameras must stay on the model
@@ -306,6 +382,15 @@ func _fit_welcome_camera() -> void:
 		if fits:
 			break
 		distance *= 1.08
+	# User-requested inspection zoom is applied after the default complete-subject
+	# fit. Section changes restore that fit; no UI positions or hitboxes move.
+	if step != 3 and not is_equal_approx(_camera_zoom, 1.0):
+		distance *= _camera_zoom
+		preview_camera.position = focus + direction * distance
+		preview_camera.look_at(focus)
+		var height := 2.0 * distance * tan(deg_to_rad(preview_camera.fov * 0.5))
+		preview_camera.h_offset = -height * aspect * (region.get_center().x - 0.5)
+		preview_camera.v_offset = height * (region.get_center().y - 0.5)
 	_camera_progress = 1.0
 	_camera_ready = true
 	_camera_focus = focus
@@ -354,6 +439,8 @@ func _stage_subject_points() -> Array[Vector3]:
 			var angle := TAU * sample / 32.0
 			var radius: float = ring.mesh.outer_radius
 			points.append(ring.to_global(Vector3(cos(angle) * radius, 0, sin(angle) * radius)))
+	if is_instance_valid(service_station):
+		points.append_array(service_station.subject_points())
 	return points
 
 
@@ -361,7 +448,11 @@ func _process(delta: float) -> void:
 	var previous_angle := preview_angle
 	super._process(delta)
 	if not visible or not _spatial_ready:
+		if is_instance_valid(service_station):
+			service_station.set_active(false, reduced_motion)
 		return
+	_sync_workshop_host()
+	service_station.advance(delta)
 	if step == 3:
 		if not rotate_drag:
 			preview_angle = previous_angle

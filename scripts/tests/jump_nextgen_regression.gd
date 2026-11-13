@@ -63,6 +63,77 @@ func _jump(release_after: int) -> Dictionary:
 	return {"height": peak - start_y, "knee_angle": knee_motion}
 
 
+func _open_session(options: Dictionary) -> void:
+	root.get_node("SceneRouter").launch_options = options
+	game = load("res://scenes/games/jump_islands.tscn").instantiate()
+	root.add_child(game)
+	await _frames(3)
+
+
+func _close_session() -> void:
+	game.abandoned = true
+	game.queue_free()
+	await _frames(3)
+
+
+func _session_isolation() -> void:
+	var child_a: String = "jump_nextgen_%d_A" % Time.get_ticks_usec()
+	var child_b: String = child_a + "_B"
+	var paths: Array[String] = ["user://jump_session.cfg"]
+	await _open_session({"grade": 1, "subject": "Mathematik"})
+	game.checkpoint = 2
+	game._save_session()
+	var old_bytes: String = FileAccess.get_file_as_string(game.session_path)
+	await _close_session()
+	await _open_session({"childKey": child_a, "grade": 1, "subject": "Mathematik"})
+	paths.append(game.session_path)
+	_check(not game.paused and game.checkpoint == 0, "named child never inherits unattributed old standalone save")
+	game.checkpoint = 3
+	game.completed_questions[3] = true
+	var child_a_id: String = game.result_id
+	game._save_session()
+	await _close_session()
+	await _open_session({"childKey": child_b, "grade": 1, "subject": "Mathematik"})
+	paths.append(game.session_path)
+	_check(game.checkpoint == 0 and not game.paused, "child B cannot resume child A progress")
+	game.checkpoint = 6
+	game._save_session()
+	await _close_session()
+	await _open_session({"childKey": child_a, "grade": 2, "subject": "Mathematik"})
+	paths.append(game.session_path)
+	_check(game.checkpoint == 0 and not game.paused, "grade uses independent continuation")
+	game.checkpoint = 4
+	game._save_session()
+	await _close_session()
+	await _open_session({"childKey": child_a, "grade": 1, "subject": "Deutsch"})
+	paths.append(game.session_path)
+	_check(game.checkpoint == 0 and not game.paused, "subject uses independent continuation")
+	game._save_session()
+	await _close_session()
+	await _open_session({"childKey": child_a, "grade": 1, "subject": "Mathematik"})
+	_check(game.checkpoint == 3 and game.paused and game.result_id == child_a_id, "child A resumes its exact result identity and checkpoint")
+	_check(game.completed_questions.has(3), "child A learning stops survive all switches")
+	_check(FileAccess.get_file_as_string("user://jump_session.cfg") == old_bytes, "legacy unscoped save remains byte-for-byte intact")
+	# Exercise the production restart route, including deferred scene replacement.
+	current_scene = game
+	game._restart()
+	await _frames(10)
+	game = current_scene
+	_check(game != null and game.checkpoint == 0 and not game.paused, "real restart creates a fresh adventure only for current scope")
+	await _close_session()
+	await _open_session({"childKey": child_b, "grade": 1, "subject": "Mathematik"})
+	_check(game.checkpoint == 6 and game.paused, "restarting A never deletes B checkpoint")
+	await _close_session()
+	await _open_session({"childKey": child_a, "grade": 2, "subject": "Mathematik"})
+	_check(game.checkpoint == 4 and game.paused, "restarting one grade preserves another grade")
+	await _close_session()
+	await _open_session({"grade": 1, "subject": "Mathematik"})
+	_check(game.checkpoint == 2 and game.paused, "anonymous old scope is still resumable")
+	await _close_session()
+	for path in paths:
+		DirAccess.remove_absolute(path)
+
+
 func _run() -> void:
 	Engine.physics_ticks_per_second = 60
 	DirAccess.remove_absolute("user://jump_session.cfg")
@@ -178,8 +249,9 @@ func _run() -> void:
 	game.queue_free()
 	await _frames(2)
 	DirAccess.remove_absolute("user://jump_session.cfg")
+	await _session_isolation()
 	if failures.is_empty():
-		print("[JumpNextgen] PASS %d checks: actual variable jumps, coyote, buffer, original rig, pause and dp layouts" % checks)
+		print("[JumpNextgen] PASS %d checks: actual variable jumps, coyote, buffer, original rig, pause, dp layouts and isolated saves" % checks)
 		quit(0)
 	else:
 		print("[JumpNextgen] FAIL ", failures)

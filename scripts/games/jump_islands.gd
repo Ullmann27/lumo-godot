@@ -27,6 +27,8 @@ var checkpoint: int = 0
 var falls: int = 0
 var grade: int = 1
 var subject: String = "Mathematik"
+var child_scope: String = ""
+var session_path: String = SESSION
 var touch_direction := Vector2.ZERO
 var held_directions: Dictionary = {}
 var jump_buffer: float = 0.0
@@ -76,6 +78,10 @@ func _ready() -> void:
 	subject = str(SceneRouter.launch_options.get("subject", "Mathematik"))
 	if subject not in ["Mathematik", "Deutsch", "Sachunterricht", "Logik"]:
 		subject = "Mathematik"
+	var child_key: String = str(SceneRouter.launch_options.get("childKey", HostBridge.launch_options().get("childKey", "")))
+	if not child_key.is_empty() and child_key != "standalone":
+		child_scope = child_key.sha256_text()
+		session_path = "user://jump_%s_%d_%s.cfg" % [child_scope.substr(0, 24), grade, subject.sha256_text().substr(0, 12)]
 	result_id = HostBridge.new_result_id()
 	previous_auto_accept_quit = get_tree().auto_accept_quit
 	previous_quit_on_go_back = get_tree().quit_on_go_back
@@ -437,7 +443,7 @@ func _physics_process(delta: float) -> void:
 			_save_session()
 	gait.step(actor.is_on_floor(), delta)
 	if is_instance_valid(original_lumo):
-		original_lumo.set_suspended(paused or question_open or finished)
+		original_lumo.set_suspended(paused or question_open)
 		if not paused and not question_open and not finished:
 			var relative_velocity: Vector3 = actor.get_real_velocity()
 			if actor.is_on_floor():
@@ -599,7 +605,7 @@ func _resume() -> void:
 
 func _restart() -> void:
 	abandoned = true
-	DirAccess.remove_absolute(SESSION)
+	DirAccess.remove_absolute(session_path)
 	SceneRouter.goto("jump")
 
 
@@ -608,7 +614,7 @@ func _return_to_app(destination: String) -> void:
 	if finished:
 		HostBridge.reward(result_payload)
 		if HostBridge.reward_is_recoverable(result_id):
-			DirAccess.remove_absolute(SESSION)
+			DirAccess.remove_absolute(session_path)
 	var payload: Dictionary = (
 		result_payload
 		if finished
@@ -658,7 +664,7 @@ func _finish() -> void:
 	}
 	var reward_accepted: bool = HostBridge.reward(result_payload)
 	if HostBridge.reward_is_recoverable(result_id):
-		DirAccess.remove_absolute(SESSION)
+		DirAccess.remove_absolute(session_path)
 	_celebrate_goal()
 	_clear_modal()
 	modal_column.add_child(_label("Wolkeninseln geschafft! ★", 29))
@@ -695,6 +701,7 @@ func _save_session() -> void:
 		return
 	var config := ConfigFile.new()
 	config.set_value("jump", "version", 1)
+	config.set_value("jump", "child_scope", child_scope)
 	config.set_value("jump", "grade", grade)
 	config.set_value("jump", "subject", subject)
 	for key in [
@@ -710,15 +717,17 @@ func _save_session() -> void:
 		"question_open"
 	]:
 		config.set_value("jump", key, get(key))
-	if config.save(SESSION + ".tmp") == OK:
-		var error: Error = DirAccess.rename_absolute(SESSION + ".tmp", SESSION)
+	if config.save(session_path + ".tmp") == OK:
+		var error: Error = DirAccess.rename_absolute(session_path + ".tmp", session_path)
 		if error != OK:
 			push_warning("Jump checkpoint could not be saved: %s" % error)
 
 
 func _restore_session() -> bool:
 	var config := ConfigFile.new()
-	if config.load(SESSION) != OK or config.get_value("jump", "version", 0) != 1:
+	if config.load(session_path) != OK or config.get_value("jump", "version", 0) != 1:
+		return false
+	if str(config.get_value("jump", "child_scope", "")) != child_scope:
 		return false
 	if (
 		config.get_value("jump", "grade", 0) != grade
