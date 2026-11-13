@@ -223,6 +223,15 @@ func _ui() -> void:
 	var tools := HBoxContainer.new()
 	hud.add_child(tools)
 	editor_controls.append(tools)
+	# Primary build actions must remain physically touchable while auxiliary
+	# modes scroll. Keeping their nodes outside ScrollContainer prevents
+	# clipped coordinates from eating real tap releases.
+	var pinned_tools := HBoxContainer.new()
+	tools.add_child(pinned_tools)
+	for pinned_spec in [["Verschieben", _toggle_move], ["Drehen ↻", _rotate]]:
+		var pinned_button := _day_button(pinned_spec[0], pinned_spec[1])
+		pinned_button.mouse_filter = Control.MOUSE_FILTER_PASS
+		pinned_tools.add_child(pinned_button)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -232,8 +241,6 @@ func _ui() -> void:
 	tool_actions = actions
 	scroll.add_child(actions)
 	for spec in [
-		["Verschieben", _toggle_move],
-		["Drehen ↻", _rotate],
 		["Wettbau", _open_settlement.bind("rival")],
 		["Siedlung", _open_settlement.bind("settlement")],
 		["Dorf & Wirtschaft", _open_settlement.bind("settlement", true)],

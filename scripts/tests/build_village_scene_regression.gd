@@ -32,8 +32,8 @@ func _run() -> void:
 		push_error("[VillageScene] Production scene script did not compile")
 		quit(1)
 		return
-	var save := world_script.project_path(CHILD, SLOT, "village")
-	var classic_save := world_script.project_path(CHILD, SLOT, "settlement")
+	var save: String = world_script.project_path(CHILD, SLOT, "village")
+	var classic_save: String = world_script.project_path(CHILD, SLOT, "settlement")
 	DirAccess.remove_absolute(save)
 	var router := root.get_node("SceneRouter")
 	router.launch_options = {
