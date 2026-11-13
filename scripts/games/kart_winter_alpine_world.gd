@@ -3,6 +3,7 @@ extends RefCounted
 ## Static pieces share the production world's spatial MultiMesh batches.
 
 const GROUND = preload("res://scripts/games/track_themes/track_ground_profile.gd")
+const CABLE_CARS = preload("res://scripts/games/kart_winter_cable_cars.gd")
 const ROCK := Color("657993")
 const ROCK_DARK := Color("455b79")
 const ROCK_FAR := Color("8296b1")
@@ -57,6 +58,9 @@ static func build(world) -> void:
 	landmark.set_meta("first_piece", before)
 	landmark.set_meta("piece_count", world.decoration_count - before)
 	world.add_child(landmark)
+	var cars := CABLE_CARS.new()
+	cars.configure(cable_low, cable_high, world)
+	landmark.add_child(cars)
 
 
 static func _ridgeline(world, arrangement: Dictionary) -> int:
@@ -235,10 +239,6 @@ static func _cableway(world, low: Vector3, high: Vector3) -> void:
 			var a: Vector3 = _cable_point(low, high, float(index) / span) + offset
 			var b: Vector3 = _cable_point(low, high, float(index + 1) / span) + offset
 			world._beam(a, b, 0.07, FRAME)
-		for fraction in [0.31, 0.73]:
-			var t: float = fraction if side < 0.0 else 1.0 - fraction
-			var cable: Vector3 = _cable_point(low, high, t) + offset
-			_gondola(world, cable, Basis.looking_at(direction), RED if side < 0.0 else GLASS)
 	for fraction in [0.14, 0.60, 0.89]:
 		var cable := _cable_point(low, high, fraction)
 		var foot := Vector3(cable.x, GROUND.surface_height("winter_sprint"), cable.z)
@@ -252,27 +252,6 @@ static func _cableway(world, low: Vector3, high: Vector3) -> void:
 
 static func _cable_point(low: Vector3, high: Vector3, t: float) -> Vector3:
 	return low.lerp(high, t) - Vector3.UP * sin(t * PI) * 2.2
-
-
-static func _gondola(world, cable: Vector3, basis: Basis, color: Color) -> void:
-	world._beam(cable, cable - Vector3.UP * 1.4, 0.10, FRAME)
-	var at := cable - Vector3.UP * 2.6
-	_put(world, "box", at, basis, Vector3.ZERO, Vector3(2.0, 2.05, 2.7), FRAME)
-	_put(world, "box", at, basis, Vector3(0, -0.55, 0), Vector3(2.13, 0.95, 2.83), color)
-	_put(world, "box", at, basis, Vector3(0, 1.09, 0), Vector3(2.20, 0.16, 2.95), SNOW)
-	for side in [-1.0, 1.0]:
-		_put(
-			world,
-			"box",
-			at,
-			basis,
-			Vector3(side * 1.015, 0.40, 0),
-			Vector3(0.04, 0.93, 2.30),
-			GLASS
-		)
-		_put(
-			world, "box", at, basis, Vector3(0, 0.40, side * 1.37), Vector3(1.61, 0.93, 0.04), GLASS
-		)
 
 
 static func _put(

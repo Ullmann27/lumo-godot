@@ -1,4 +1,4 @@
-# LUMO: Winterwelt und räumlicher Streckenausbau
+# LUMO: Winterwelt und Kristall-Resonanzschlucht
 
 Ausgangsbasis: Godot `ada5ed81ad62339f15289da62670c0a4f9f7f2b9`.
 
@@ -18,15 +18,21 @@ Daraus leitet dieser Patch eine eigene Winterwelt ab: zusammenhängender Bergrü
 
 - Sechs beziehungsweise neun gestaffelte Berggipfel mit Schneehauben.
 - Zwei eigenständig modellierte Stationen mit Dach, Fenstern, Stützen, Podest, Treppen und warmen Leuchten.
-- Eine doppelte durchhängende Seiltrasse mit Trägern und vier räumlichen Kabinen. In diesem ersten Prüfstand sind diese Kabinen statisch.
+- Eine doppelte durchhängende Seiltrasse mit Trägern und vier bewegten räumlichen Kabinen. Die aufrechten Kabinen verkehren in beide Richtungen in einem einzigen zusätzlichen MultiMesh mit gemeinsamem Mesh. Rennpause, reduzierte Bewegung und ausgeblendete Darstellung halten die Bewegung an.
 - Vier breite Eisrippen mit seitlichen Gesteins-/Schneewänden; die bestehende Strecke führt durch ihre freien Öffnungen.
-- 206 neue instanzierte Teile im niedrigen, 274 im vollen Detailprofil; statische Teile nutzen die bestehenden MultiMesh-Batches. Keine zusätzlichen Spielkollisionen oder dynamischen Lichter.
+- 174 neue statisch instanzierte Teile im niedrigen, 242 im vollen Detailprofil sowie vier Kabinen in einem gemeinsamen bewegten Mesh; statische Teile nutzen die bestehenden MultiMesh-Batches. Keine zusätzlichen Spielkollisionen oder dynamischen Lichter.
+
+## Kristall-Canyon
+
+Das zweite abgegrenzte Modul, `kart_crystal_resonance_world.gd`, ist an derselben Produktionsstelle angeschlossen. Über eine bestehende Rennpassage entwickelt sich eine zusammenhängende Resonanzschlucht: gestaffelte Gesteinswände mit Mineraladern, ein breites geologisches Felsentor mit hoch sitzender Geode und ein offener Ausblick auf große Kristallformationen. Die Fahrbahn verläuft frei durch das Tor; keine flächige Portaltextur blockiert den Blick. Der Ausbau umfasst 89 beziehungsweise 133 statisch instanzierte Teile (low/full).
 
 ## Tatsächliche Prüfung
 
-Godot 4.6.3, echter Headless-Produktionsweltaufbau: `kart_world_expansion_regression.gd` bestand 23 Prüfungen, null Fehler. Je Profil wurden alle 3.447 gebackenen Fahrbahnsegmente berücksichtigt. Die Prüfung kontrolliert transformierte Meshgrenzen und, bei räumlicher Nähe, insgesamt 4.128 Dreieckgrenzen gegen einen 17 Meter breiten und sechs Meter hohen freien Fahrkorridor. Wiederholter Aufbau und Wechsel zur Laborwelt hinterließen keine zusätzliche Alpengeometrie.
+Godot 4.6.3, echter Headless-Produktionsweltaufbau: `kart_world_expansion_regression.gd` bestand **61 Prüfungen, null Fehler**, beide Welten in beiden Detailprofilen. Je Profil wurden alle 3.447 Winter- beziehungsweise 3.408 Canyon-Fahrbahnsegmente berücksichtigt. Die Prüfung kontrolliert transformierte Meshgrenzen und, bei räumlicher Nähe, insgesamt 6.072 Dreieckgrenzen gegen einen 17 Meter breiten und sechs Meter hohen freien Fahrkorridor. Wiederholter Aufbau und Wechsel zur Laborwelt hinterließen keine zusätzliche Geometrie.
 
-Alle vier berührten GDScript-Dateien bestanden `gdlint`. Die neuen Dateien bestanden `gdformat --check`. Das Capture-Skript bestand den echten Godot-Compiler.
+Die Bewegungstests prüfen die tatsächlichen vier CPU-Transformationen, die an das MultiMesh übergeben werden, über 60 Sekunden. Dabei bleiben die Kabinen aufrecht, fahren in Gegenrichtungen und halten bei Rennpause, reduzierter Bewegung und Unsichtbarkeit. Der Headless-Dummy kann MultiMesh-Transformationen nicht aus dem Renderer zurücklesen. Deshalb vergleicht derselbe Test **bei einem echten X11-Lauf zusätzlich alle 480 Transformationen pro Profil mit dem Renderer-Readback**; dieser zusätzliche Nachweis steht bis zum Integrationslauf aus. Der Headless-PASS behauptet ausdrücklich keine grafische Readback-Prüfung.
+
+Alle sechs berührten GDScript-Dateien bestanden `gdlint` und `gdformat --check`. Das Capture-Skript bestand den echten Godot-Compiler. `validate_project.py` ergab 117 PASS, sieben bereits bestehende Warnungen und null Fehler. Der vollständige letzte lokale Funktionslog steht in `docs/evidence/world-graphics-20261113/headless.log`.
 
 `kart_world_expansion_capture.gd` lädt die tatsächliche Kart-Produktionsszene einschließlich Lumo, Kart, HUD und Beleuchtung. Es erstellt drei gestellte Rennansichten und ein Manifest mit Quellstand, Kamera, Bildhash und Renderer. Dieselbe Datei kann auf der Ausgangsbasis ausgeführt werden, da sie keine neuen Modulklassen voraussetzt. Ausgabe: `LUMO_CAPTURE_DIR`; Nutzerverzeichnis: gesondertes `XDG_DATA_HOME`.
 

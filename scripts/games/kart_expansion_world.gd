@@ -5,6 +5,7 @@ const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const SKY = preload("res://scripts/games/kart_sky_islands.gd")
 const GROUND_PROFILE = preload("res://scripts/games/track_themes/track_ground_profile.gd")
 const WINTER_ALPINE = preload("res://scripts/games/kart_winter_alpine_world.gd")
+const CRYSTAL_RESONANCE = preload("res://scripts/games/kart_crystal_resonance_world.gd")
 
 
 static func prepare(world) -> void:
@@ -233,6 +234,7 @@ static func build(world) -> void:
 	if world.track_id in ["jungle_temple", "desert_drift"]:
 		world._suspension_bridge(world.length * 0.30, 45)
 	WINTER_ALPINE.build(world)
+	CRYSTAL_RESONANCE.build(world)
 
 
 static func _palm(world, at: Vector3, height: float, basis: Basis) -> void:
