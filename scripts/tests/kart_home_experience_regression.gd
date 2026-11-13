@@ -93,6 +93,25 @@ func _check_touch_targets(landing) -> void:
 		_check(game.safe_ui.get_global_rect().grow(1).encloses(button.get_global_rect()), "%s fits safe bounds" % button.name)
 
 
+func _landmark_frame(garage, landmark: Node3D) -> Rect2:
+	var points: Array[Vector2] = []
+	var viewport_rect := Rect2(Vector2.ZERO, Vector2(garage.preview_viewport.size))
+	var complete := true
+	for mesh: MeshInstance3D in landmark.find_children("*", "MeshInstance3D", true, false):
+		for corner in range(8):
+			var point := mesh.to_global(mesh.get_aabb().get_endpoint(corner))
+			var pixel: Vector2 = garage.preview_camera.unproject_position(point)
+			points.append(pixel)
+			complete = complete and not garage.preview_camera.is_position_behind(point) and viewport_rect.has_point(pixel)
+	_check(complete and not points.is_empty(), landmark.name + " fits completely in the actual camera frustum")
+	if points.is_empty():
+		return Rect2()
+	var bounds := Rect2(points[0], Vector2.ZERO)
+	for point in points:
+		bounds = bounds.expand(point)
+	return bounds
+
+
 func _check_home_world(garage) -> void:
 	if baseline:
 		return
@@ -102,6 +121,9 @@ func _check_home_world(garage) -> void:
 	_check(home.get_node_or_null("OriginalHarborWavePavilion") != null, "original authored harbor pavilion is reused")
 	_check(home.get_node_or_null("HomeScenicCoastalRoad") != null, "middle-distance coastal road is real geometry")
 	_check(home.get_node_or_null("DistantCoastalLoop") != null, "distant loop creates a layered skyline")
+	var lighthouse_frame := _landmark_frame(garage, home.get_node("HarborLighthouseLandmark"))
+	var pavilion_frame := _landmark_frame(garage, home.get_node("OriginalHarborWavePavilion"))
+	_check(not lighthouse_frame.intersects(pavilion_frame), "original pavilion cannot hide the full lighthouse silhouette")
 	_check(home.find_children("*", "CollisionObject3D", true, false).is_empty(), "Home does not start another racing physics simulation")
 	_check(home.find_children("HomeBatch_*", "MultiMeshInstance3D", true, false).size() <= 12, "repeated scenery uses bounded material batches")
 	_check(is_instance_valid(garage.preview_kart.lumo_animation.actor.skeleton), "original animated Lumo remains on the selected kart")
