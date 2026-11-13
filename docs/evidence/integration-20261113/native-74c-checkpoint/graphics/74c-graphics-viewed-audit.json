@@ -1,0 +1,72 @@
+{
+  "native_revision": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "run_id": 43458897683,
+  "reviewer": "ChatGPT root; current originals actually opened with view_image",
+  "reviewed_at": "2026-11-13T16:30:39.778330+00:00",
+  "scope": "Five required current Graphics image selections actually viewed from the new original artifacts. Graphics run succeeded; separate Native Gameplay failed. No overall Native approval and no current receipt created.",
+  "images": [
+    {
+      "area": "winter_sprint",
+      "artifact_entry": "images/winter_sprint/02_world_landmark.png",
+      "findings": "Die frische Aufnahme zeigt eine klar begrenzte blaue Fahrbahn, Schneeberge, Seilbahnkabinen und die Station auf sichtbaren Stützen. Die Streckenführung bleibt im Landschaftsbild erkennbar. HUD, Karte, Lenkung und Fahraktionen sind vollständig im Bild; gesichtet ist die stehende aktuelle Landmarkansicht.",
+      "path": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/worlds/images/winter_sprint/02_world_landmark.png",
+      "artifact_id": 14055182823,
+      "sha256": "099bbefbfb5532080da8ae5a52a047dfd49f5f4b540eff9006f812154f55a3e2",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "area": "crystal_canyon",
+      "artifact_entry": "images/crystal_canyon/02_world_landmark.png",
+      "findings": "Türkise und violette Kristalle sowie der dunkle Felsbogen rahmen die sichtbare Kurve. Fahrbahnmarkierung und seitliche Begrenzungen bleiben auch im Schatten erkennbar. Alle dargestellten HUD- und Fahrbedienelemente sind lesbar und vollständig im Bild.",
+      "path": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/worlds/images/crystal_canyon/02_world_landmark.png",
+      "artifact_id": 14055182823,
+      "sha256": "e5d2db23751308307d007f1a00dac32461d1cfd72b5063c8fdc102cc89948fbe",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "area": "feedback",
+      "artifact_entry": "images/03_drift_release.png",
+      "findings": "Im neuen tatsächlichen Drift-Release-Bild sind Lumo und Kart vollständig sichtbar. Zwei helle Auslässe mit gelben Schweifen und die farbigen Geschwindigkeitslinien zeigen den aktiven Turbo; die Strecke bleibt zwischen den Effekten sichtbar. Drift-Hinweis, Karte, Pause und Fahraktionen bleiben lesbar. Die Aufnahme zeigt einen konkreten Moment und ist keine Messung der Bildrate.",
+      "path": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/feedback/images/03_drift_release.png",
+      "artifact_id": 14054878169,
+      "sha256": "a636786cde7b087766e05c087a53761f9c40b6dc82ae1da64dc3b7000be1c8a6",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "area": "home_portrait",
+      "artifact_id": 14056672152,
+      "artifact_entry": "images/home-412x915.png",
+      "path": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/home/images/home-412x915.png",
+      "sha256": "cd3b8e20ca4bd26bf3c553202cceeaacf85cba2bd43e879d45d5a34e3e289e51",
+      "dimensions": [
+        412,
+        915
+      ],
+      "findings": "Die aktuelle Hochformat-Aufnahme zeigt Lumo mit Kart vollständig auf dem Podest. Die drei kompakten Modusfelder, fünf Navigationsfelder, Zurück und START sind innerhalb des Bildes angeordnet; ihre Beschriftungen überschneiden sich nicht. Die sichtbaren Bedienelemente werden nicht vom Fahrzeug verdeckt.",
+      "reviewed_at": "2026-11-13T16:30:39.778330+00:00"
+    },
+    {
+      "area": "home_landscape",
+      "artifact_id": 14056672152,
+      "artifact_entry": "images/home-1280x720.png",
+      "path": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/home/images/home-1280x720.png",
+      "sha256": "84bc4e149cac520df7aa704497b63067c7c359d5cff55a2c8b78cc8611aceae6",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "findings": "Die aktuelle Querformat-Aufnahme zeigt die drei Rennmodi links und das vollständige Kart mit Lumo rechts. Die fünf Navigationsfelder stehen über der unteren Reihe mit Spielwelt und START; die sichtbaren Beschriftungen und Optionen bleiben im Bild und überschneiden sich nicht.",
+      "reviewed_at": "2026-11-13T16:30:39.778330+00:00"
+    }
+  ]
+}

@@ -1,4 +1,37 @@
-# Continue LUMO Next Generation / 2018 native acceptance
+# Continue the combined LUMO 2019 integration
+
+The active integration drafts are `Ullmann27/lumo-godot#160` and
+`Ullmann27/lumo-lernen#465`. Root prepares native changes on
+`integration/lumo-followups-20261113` and advances the own published branch
+`integration/lumo-connections-20261113` with an exact expected-SHA lease.
+The producer worktrees, main and the live 2018 release PR #461 remain protected.
+
+Published native `74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef`, tree
+`05f547fd58ccdc1002d98ff1031d4208b992b0ee`, includes the current Studio goal,
+learning-label and HUD gesture fixes. Its Graphics workflow succeeded. Its
+Nextgen workflow failed because the original Kart regression printed PASS
+before the engine reported eight retained resources at exit. The original
+failure remains evidence; successful images and the partial bundle do not
+approve that source.
+
+The next repair connects a shared real scene/playback lifetime check to the
+main Kart regression and twelve audited consumers. Success requires actual
+release within 2,000 ms; product audio, gameplay assertions, source identities
+and strict error filters remain intact. Local headless checks and deliberate
+retention checks are distinct from the still-required fresh renderer run.
+See `docs/integration/2026-11-13/FOLLOWUPS.md` and its original evidence paths.
+
+After the repaired source passes every native job, review its own original
+production and graphics images, record both current Host receipts, then bind
+all three Host identity files to that same final Native SHA. Real Android
+compile, API 35/API 37 and the 2017-to-2019 in-place update remain separate
+gates. This integration branch does not publish an APK. Work continues in the
+active session without a background automation.
+
+## Historical inherited 2018 handoff
+
+The following notes describe the earlier release branch, not the active
+integration source or current acceptance state.
 
 Use the actual current remote head of PR #157 on `chatgpt/lumo-nextgen-20261113`. Its verified base is PR #156 at `1d5c5cb45a323228f627ec529e6ff1ddd86f1c57`. Older main and previous October branches are not the current integration source. Companion host PR: Ullmann27/lumo-lernen#461.
 

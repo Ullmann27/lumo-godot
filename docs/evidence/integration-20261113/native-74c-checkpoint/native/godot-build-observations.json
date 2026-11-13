@@ -1,0 +1,34 @@
+{
+  "native_revision": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "run_id": 43458898046,
+  "artifact_id": 14055797670,
+  "artifact_sha256": "e09315a2bb03735b4d5c49327ee2a6b5f3989231695c88052ddeb67ed16310cb",
+  "reviewer": "ChatGPT /root/godot_integration; actual view_image inspection",
+  "reviewed_at": "2026-11-13T16:21:05.465745+00:00",
+  "scope": "Two current-goal images only; actual full workflow remains failed because of Gameplay. No full visual or Android acceptance.",
+  "images": [
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-1080x2400-current-goal.png",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "bytes": 1241418,
+      "sha256": "b9d0941533151431460983759782eac503c33a8ab1baef9662565587d47fb652",
+      "relative_path": "touch-build-14055797670/build/captures/build_dialog_density_regression/build-dialog-1080x2400-current-goal.png",
+      "findings": "The current-goal modal is entirely inside the original viewport. Title Aktuelles Bauziel, assignment Verbinde die Inseln and the complete two-line description are readable. Both Mein Bauwerk testen and Abbrechen are fully visible within the modal; the underlying palette does not cover these actions. This is a still-image observation, separate from the 2043-assertion rendered input gate."
+    },
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-640x360-current-goal.png",
+      "dimensions": [
+        640,
+        360
+      ],
+      "bytes": 131046,
+      "sha256": "ff988314b99c3967fa9d13e73f2cd58ca6f9bd3ba76107c6df06e171505ed380",
+      "relative_path": "touch-build-14055797670/build/captures/build_dialog_density_regression/build-dialog-640x360-current-goal.png",
+      "findings": "The current-goal modal is entirely inside the original viewport. Title Aktuelles Bauziel, assignment Verbinde die Inseln and the complete two-line description are readable. Both Mein Bauwerk testen and Abbrechen are fully visible within the modal; the underlying palette does not cover these actions. This is a still-image observation, separate from the 2043-assertion rendered input gate."
+    }
+  ]
+}

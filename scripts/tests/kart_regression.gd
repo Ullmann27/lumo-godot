@@ -1,5 +1,6 @@
 extends SceneTree
 
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 
 var failed: bool = false
 
@@ -134,8 +135,11 @@ func _run() -> void:
 	var saved_position: Vector3 = game.player.position
 	var saved_result_id: String = game.result_id
 	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	var resume_released: bool = await TEARDOWN.release_scene(self, game, "[KartTests] before resume")
+	game = null
+	if not resume_released:
+		_check(false, "Scene or audio retained before the saved race resumes")
+		return
 	game = scene.instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
@@ -195,8 +199,11 @@ func _run() -> void:
 	_check(root.get_node("ProgressStore").total_stars() == stars, "A result must award once")
 	print("[KartTests] Full free-steering race: %.1fs, %d frames, %d resets" % [game.elapsed, frames, game.reset_count])
 	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	var final_released: bool = await TEARDOWN.release_scene(self, game, "[KartTests] final race")
+	game = null
+	if not final_released:
+		_check(false, "Scene or audio retained after the complete race")
+		return
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	if failed:
 		return
@@ -206,6 +213,4 @@ func _run() -> void:
 			+ "real full race; brake/drift; pause; save/resume; one award"
 		)
 	)
-	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
-	await create_timer(0.12).timeout
 	quit(0 if not failed else 1)

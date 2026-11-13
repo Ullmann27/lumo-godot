@@ -3,6 +3,8 @@ extends SceneTree
 # gdlint: disable=function-name
 ## Contract/lifecycle regression for Flutter's native LumoHost plugin.
 
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
+
 
 class FakeHost:
 	extends Node
@@ -133,8 +135,10 @@ func _run() -> void:
 	assert(fake.returns.size() == 1 and fake.returns[0].destination == "games")
 	assert(fake.returns[0].payload.status == "paused" and fake.rewards.is_empty())
 	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[HostBridgeTests] paused Kart")):
+		push_error("[HostBridgeTests] FAIL: paused Kart scene/audio teardown incomplete")
+		quit(1)
+		return
 	assert(auto_accept_quit == original_auto_quit and quit_on_go_back == original_back_quit)
 	bridge._return_pending = false
 	game = scene.instantiate()
@@ -196,16 +200,20 @@ func _run() -> void:
 	assert(not FileAccess.file_exists(bridge.PENDING_REWARDS))
 	assert(fake.returns.size() == 2 and fake.returns[1].destination == "learn")
 	assert(fake.returns[1].payload.resultId == first_id and fake.returns[1].payload.stars == 3)
-	game.queue_free()
-	await process_frame
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[HostBridgeTests] returned Kart")):
+		push_error("[HostBridgeTests] FAIL: returned Kart scene/audio teardown incomplete")
+		quit(1)
+		return
 	game = scene.instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
 	await process_frame
 	assert(game.result_id != first_id, "Restart creates a fresh reward identity")
 	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[HostBridgeTests] restarted Kart")):
+		push_error("[HostBridgeTests] FAIL: restarted Kart scene/audio teardown incomplete")
+		quit(1)
+		return
 	print(
 		(
 			"[HostBridgeTests] PASS: native options, lifecycle save/pause, Back, resume identity, "

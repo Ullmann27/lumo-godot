@@ -1,5 +1,6 @@
 extends "res://scripts/tests/kart_sonnenhafen_stunt_regression.gd"
 const FLIGHT = preload("res://scripts/games/kart_rival_flight.gd")
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 
 
 func _race(track: String = "sonnenhafen") -> void:
@@ -156,7 +157,7 @@ func _check_controller_launch(track: String, use_sky_jump: bool) -> void:
 		"%s: automatic approach really lands" % track
 	)
 	completed_checks += 1
-	print("[RivalFlight] %s: automatic AI approach, take-off and landing PASS" % track)
+	print("[RivalFlight] %s: automatic AI approach, take-off and landing checked" % track)
 
 
 func _check_reprojected_lip() -> void:
@@ -179,7 +180,7 @@ func _check_reprojected_lip() -> void:
 		"The kart starts genuine flight instead of dropping"
 	)
 	completed_checks += 1
-	print("[RivalFlight] ramp reprojection cannot skip the take-off lip PASS")
+	print("[RivalFlight] ramp reprojection cannot skip the take-off lip checked")
 
 
 func _run() -> void:
@@ -198,7 +199,10 @@ func _run() -> void:
 	if completed_checks != (1 if reprojection_only else 4):
 		quit(1)
 		return
-	game.queue_free()
+	if not await TEARDOWN.release_scene(self, game, "[RivalFlight]"):
+		push_error("[RivalFlight] FAIL: scene teardown did not complete")
+		quit(1)
+		return
 	game = null
 	await process_frame
 	await process_frame

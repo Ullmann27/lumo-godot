@@ -1,0 +1,17 @@
+{
+  "head_sha": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "head_tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "baseline_sha": "ada5ed81ad62339f15289da62670c0a4f9f7f2b9",
+  "baseline_tree": "2e93cc5587b477ceee2d159c8aa981ff5188171b",
+  "run_id": 43458897683,
+  "run_attempt": 1,
+  "workflow_git_blob": "b59973a9c9437450452fbe1a13dd0c125cba6174",
+  "workflow_sha256": "fbc70c9353a65804f42b3083414e7aff753eb9c48f8e167c121b1bac762b515d",
+  "immutable_source_manifest_sha256": "3ca1ae41911fea2eae52cc4b8af2f23939a8d3fcfb778548638f9d4beaed803c",
+  "original_metadata": {
+    "initial/run.json": "78dd07db6ff1aa525b65f56da0448b5e28c8272773ce77cbf25c32491f308d8e",
+    "initial/commit.json": "82b3db7ae1e4aecea883fa411a25945b57fd8743e65d3ce8516d885ab377d892",
+    "initial/baseline-commit.json": "0e9f4792ae6b2c891fc4301fba47dbf5e2721db1ddc12716b363f510a33debbf"
+  },
+  "scope": "Source identities from fresh original GitHub responses for this run and immutable commits; no reuse of previous-run evidence."
+}

@@ -1,0 +1,10 @@
+{
+  "head": "233cdf4029edb30f007ef7be19693388b17145fe",
+  "tree": "3043bf5cc544e9e06415fbdda14583ed60644a5d",
+  "file": "scripts/verify_studio_delivery.py",
+  "git_blob": "b4a65471f71eabd723cb767ef722491ca1228025",
+  "sha256": "e41de3892c8a3756b90eb208272b686a03ac3e9253664975580d1de9d7c6d2b4",
+  "native_profile": "nextgen-2019",
+  "native_source_contract_matches_frozen_parser": true,
+  "scope": "37 Core / 24 Studio and 6 Touch / 32 PNG, including 12 Build / four current-goal; not a CI result"
+}

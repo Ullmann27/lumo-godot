@@ -1,0 +1,165 @@
+{
+  "status": "ORIGINAL_SUCCESSFUL_TOUCH_BUILD_COMPONENT_ONLY_NOT_FULL_ACCEPTANCE",
+  "head_sha": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "run_id": 43458898046,
+  "job_id": 132000245736,
+  "artifact_id": 14055797670,
+  "zip_sha256": "e09315a2bb03735b4d5c49327ee2a6b5f3989231695c88052ddeb67ed16310cb",
+  "zip_bytes": 23280674,
+  "source_prefix": "build",
+  "original_results": [
+    [
+      "probe",
+      "mode",
+      "result"
+    ],
+    [
+      "build_dialog_density_regression",
+      "headless",
+      "PASS"
+    ],
+    [
+      "build_dialog_density_regression",
+      "rendered",
+      "PASS"
+    ]
+  ],
+  "images": [
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-1080x2400-current-goal.png",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "bytes": 1241418,
+      "sha256": "b9d0941533151431460983759782eac503c33a8ab1baef9662565587d47fb652"
+    },
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-1080x2400-templates-bottom.png",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "bytes": 1282881,
+      "sha256": "9ca0524a480ad2966989e1a3fc0bcec145055a5197be2f3d832b98591a5178ab"
+    },
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-1080x2400-templates-top.png",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "bytes": 1294961,
+      "sha256": "c867ad99874e304db882a729ac7053340750c59df1a4b6735421b0492a864a62"
+    },
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-2176x1812-current-goal.png",
+      "dimensions": [
+        2176,
+        1812
+      ],
+      "bytes": 3593729,
+      "sha256": "66021ce6b44f8ec03ba45a2e0d8bebf88e7c6416b5c5575a7a276de0b8a4672e"
+    },
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-2176x1812-templates-bottom.png",
+      "dimensions": [
+        2176,
+        1812
+      ],
+      "bytes": 3621263,
+      "sha256": "697fcfe3ee1f14a269190ab043b019513e8e5943161cda60cf9125516030e489"
+    },
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-2176x1812-templates-top.png",
+      "dimensions": [
+        2176,
+        1812
+      ],
+      "bytes": 3633358,
+      "sha256": "eb42daa0a9ad3d311dc891168ee1ebbd95aa3711d0f2ed811c959b768a7ff9ea"
+    },
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-2400x1080-current-goal.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 1255322,
+      "sha256": "68e8402a9006dda75aa40bc11b67904ad7c9688f8d1de6fa357a812650b14840"
+    },
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-2400x1080-templates-bottom.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 1269049,
+      "sha256": "0c9ee34e411a56aa5f102fc2f6bb073d0122b73424204c3a9b2262d7773d6f41"
+    },
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-2400x1080-templates-top.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 1281442,
+      "sha256": "142f91446823921d0071bac62364088c3a61965d7a4a4d254c8571dfd3d4ae0a"
+    },
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-640x360-current-goal.png",
+      "dimensions": [
+        640,
+        360
+      ],
+      "bytes": 131046,
+      "sha256": "ff988314b99c3967fa9d13e73f2cd58ca6f9bd3ba76107c6df06e171505ed380"
+    },
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-640x360-templates-bottom.png",
+      "dimensions": [
+        640,
+        360
+      ],
+      "bytes": 134101,
+      "sha256": "a7f608c7327f8120b6c78253675658ebc0e933651b5a53809d8fad47b37d4778"
+    },
+    {
+      "path": "build/captures/build_dialog_density_regression/build-dialog-640x360-templates-top.png",
+      "dimensions": [
+        640,
+        360
+      ],
+      "bytes": 135711,
+      "sha256": "e332137d0f0186c27fcf64dba43f66d3a19231548280581ac5a2625a5d2f8e5a"
+    }
+  ],
+  "logs": {
+    "build/build_dialog_density_regression-headless.log": {
+      "sha256": "140aef5e49d126c6291a5375e71d97012c086c43f185fcabda493d930edede46",
+      "error_lines": []
+    },
+    "build/build_dialog_density_regression-rendered.log": {
+      "sha256": "1a426be3e59df41d9bd9a373669222519cbae48e28ea951f1065eb51a7dea877",
+      "error_lines": []
+    },
+    "build/data/headless/godot/app_userdata/Lumo 3D/logs/godot.log": {
+      "sha256": "140aef5e49d126c6291a5375e71d97012c086c43f185fcabda493d930edede46",
+      "error_lines": []
+    },
+    "build/data/rendered/godot/app_userdata/Lumo 3D/logs/godot.log": {
+      "sha256": "8c86ef5046d71ce17438631440bbcbb4a29034bc3ea94fe25867450b3f0fbb81",
+      "error_lines": []
+    },
+    "build/import.log": {
+      "sha256": "ed80affe21680406f7015c628bb7cfc7879566c1dbb1b4ef52bb60116cfd21ff",
+      "error_lines": []
+    }
+  },
+  "frozen_host_parser_revision": "233cdf4029edb30f007ef7be19693388b17145fe",
+  "parser_sha256": "e41de3892c8a3756b90eb208272b686a03ac3e9253664975580d1de9d7c6d2b4",
+  "current_goal_count": 4,
+  "overall_run_gameplay_failure": true,
+  "no_full_visual_or_android_approval_claim": true
+}

@@ -268,3 +268,70 @@ Host receipts before the three Host identity files can be bound. Android
 compile, API35/API37, exact APK/PCK and in-place update acceptance remain
 separate. Main, the live 2018 release and the ongoing producer worktrees are
 preserved.
+
+## Exact 74c results and the remaining Kart teardown repair
+
+The published combined source `74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef`
+has tree `05f547fd58ccdc1002d98ff1031d4208b992b0ee`. Graphics run
+`43458897683` completed all three jobs successfully. Its three original ZIPs
+contain 62 decoded images and 40 clean artifact logs. Root actually viewed
+the new Home originals in portrait and landscape, both selected Worlds
+landmarks and the drift-release frame. Those observations belong only to 74c.
+
+Nextgen run `43458898046` completed with Gameplay as its only failed required
+job. The independent Core, Preview and three Touch jobs succeeded; the bundle
+was also produced, but the archive job correctly remained skipped. The new
+construction goal passed its headless 2,016 and rendered 2,043 assertions and
+produced all twelve required Build captures. Root viewed the current goal at
+640x360 and 1080x2400, plus the corrected hundred-bridge equality. The upper
+equals sign now visibly has two bars with a gap. These are limited original-
+image findings, not an overall acceptance of the failed run.
+
+The actual Gameplay failure is in `scripts/tests/kart_regression.gd`, after
+its original full-race PASS marker. The engine reports an ObjectDB leak and
+eight retained resources. The original nonverbose CI log does not identify
+their classes. The earlier Lasso production probe passed in this run and is
+unchanged. Both unmodified local repetitions of the main Kart probe were
+clean, so the local records are not presented as a reproduced CI failure.
+
+The new shared `scripts/tests/helpers/kart_scene_teardown.gd` records weak
+references to the actual scene and its active AudioStreamPlaybacks before
+queued destruction. It waits for their real release, with a 2,000 ms wall-clock
+deadline, and never retains a temporary strong playback reference across an
+await. A caller cannot emit its final PASS after a failed release. The main
+probe uses it both before restoring the saved race and after finishing the
+full race. Its actual final run is clean: the two scenes release after 110 ms
+and 88 ms. A separate fixture deliberately holds one real OggVorbis playback;
+the helper rejects it at 2,000 ms before any gameplay PASS and the fixture then
+cleans up and exits with the expected failure code.
+
+A bounded audit found twelve more full-Kart consumers that lacked an actual
+lifetime condition. They now use the same helper while retaining their
+original gameplay assertions, save/abandonment rules and required layout
+frames. The six probes that already had real weak lifetime checks are not
+refactored. Only the main Kart probe is an observed failure of the 74c CI;
+the other twelve changes close concrete source-level verification gaps.
+Six existing headless bridge/physics/input probes pass with twelve actual
+scene releases, 22 observed playbacks and release times of 15–189 ms. Three
+additional renderer-suite consumers also permit headless logic execution and
+pass there; the remaining three require a renderer and have only local parse
+checks. Their real rendered execution remains a mandatory fresh CI gate.
+
+An isolated derived PlayerFullRoute fixture also holds one actual final
+OggVorbis playback while executing the unchanged consumer logic. The helper
+rejects it after 2,004 ms, the real runner exits 1 without PlayerFullRoute PASS,
+and the original JSON writer records `status=FAIL`. The completed route data
+still records sixteen checkpoints, two loops, eight jumps and eight landings,
+with zero resets. All 858 scoped original source hashes stay unchanged. This
+deliberate retention tests the failure path; it is not an additional observed
+failure of the original CI source.
+
+All original failure metadata, partial-bundle identities and component
+observations are retained under
+`docs/evidence/integration-20261113/native-74c-checkpoint/`. The unchanged local
+originals, positive and deliberate-retention records, exact source hashes,
+consumer patches and limitations are under
+`docs/evidence/integration-20261113/kart-scene-teardown/`. No runtime audio,
+resource-error filter, rendering requirement or timeout budget is relaxed.
+The repaired source requires its own complete native and graphics evidence
+before any final Host pin or visual receipt is approved.

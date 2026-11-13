@@ -1,6 +1,7 @@
 extends "res://scripts/tests/kart_sonnenhafen_stunt_regression.gd"
 ## Drive into the loop using only throttle/steering after one scenario setup.
 ## Assert every movement step, then prove two real AI drivers ride the ring.
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 
 
 func _capture(label: String) -> void:
@@ -159,5 +160,10 @@ func _run() -> void:
 	if completed_checks != 2:
 		quit(1)
 		return
+	if not await TEARDOWN.release_scene(self, game, "[StuntContinuity]"):
+		push_error("[StuntContinuity] FAIL: scene teardown did not complete")
+		quit(1)
+		return
+	game = null
 	print("[StuntContinuity] PASS: continuous player contact and real AI loop traversal")
 	quit(0)

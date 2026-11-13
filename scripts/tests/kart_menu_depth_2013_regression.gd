@@ -3,6 +3,7 @@ extends SceneTree
 
 const EXPECTED_SETUP := ["mode", "driver", "kart", "track", "difficulty"]
 const EXPECTED_TRACKS := ["sonnenhafen", "zauberwald", "bergwelt", "holo_city"]
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 var checks := 0
 var failures: Array[String] = []
 
@@ -85,7 +86,11 @@ func _run() -> void:
 	garage.reduced_motion = false
 	garage._process(0.16)
 	_check(garage._backdrop_parallax != Vector2.ZERO, "idle parallax offsets the painting")
-	game.queue_free()
+	if not await TEARDOWN.release_scene(self, game, "[MenuDepth]"):
+		push_error("[MenuDepth] FAIL: scene teardown did not complete")
+		quit(1)
+		return
+	game = null
 	# Let deferred child/preview cleanup finish before the standalone probe exits.
 	await _settle(8)
 	if failures.is_empty():
