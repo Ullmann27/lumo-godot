@@ -32,10 +32,24 @@ const BUILDINGS := {
 		"capacity": 0
 	},
 	"well": {"title": "Brunnen", "cost": {"wood": 2, "stone": 3}, "output": {}, "capacity": 0},
-	"grain": {"title": "Kornfeld", "cost": {"wood": 4, "stone": 1, "coins": 1}, "output": {}, "capacity": 0},
-	"bakery": {"title": "Bäckerei", "cost": {"wood": 6, "stone": 6, "coins": 4}, "output": {}, "capacity": 0},
-	"road": {"title": "Wegeplatz", "cost": {"wood": 2, "stone": 3, "coins": 1}, "output": {}, "capacity": 0},
-	"clinic": {"title": "Fürsorgehaus", "cost": {"wood": 8, "stone": 8, "coins": 6}, "output": {}, "capacity": 0},
+	"grain":
+	{"title": "Kornfeld", "cost": {"wood": 4, "stone": 1, "coins": 1}, "output": {}, "capacity": 0},
+	"bakery":
+	{"title": "Bäckerei", "cost": {"wood": 6, "stone": 6, "coins": 4}, "output": {}, "capacity": 0},
+	"road":
+	{
+		"title": "Wegeplatz",
+		"cost": {"wood": 2, "stone": 3, "coins": 1},
+		"output": {},
+		"capacity": 0
+	},
+	"clinic":
+	{
+		"title": "Fürsorgehaus",
+		"cost": {"wood": 8, "stone": 8, "coins": 6},
+		"output": {},
+		"capacity": 0
+	},
 }
 const RESOURCES := ["wood", "stone", "food", "coins"]
 const REGIONS := VILLAGE.REGIONS
@@ -124,7 +138,9 @@ func demolition_quote(plot: int) -> Dictionary:
 	for building: Dictionary in _player.buildings:
 		if int(building.plot) == plot:
 			var definition: Dictionary = BUILDINGS[str(building.kind)]
-			var removed_capacity: int = 4 if living_village and str(building.kind) == "house" else int(definition.capacity)
+			var removed_capacity: int = (
+				4 if living_village and str(building.kind) == "house" else int(definition.capacity)
+			)
 			var capacity_after: int = _capacity(_player) - removed_capacity
 			var affected: int = (
 				maxi(0, int(_player.population) - capacity_after)
@@ -241,29 +257,34 @@ func expand() -> bool:
 func _expand_town(town: Dictionary) -> bool:
 	if living_village:
 		last_error = VILLAGE.expansion_error(self, town)
-		if not last_error.is_empty():
-			return false
+	else:
+		last_error = _legacy_expansion_error(town)
+	if not last_error.is_empty():
+		return false
+	if living_village:
 		_pay(town, VILLAGE.expansion_cost(int(town.region)))
-		town.region = int(town.region) + 1
-		town.plots = PLOTS[int(town.region)]
-		VILLAGE.update_campaign(self, town)
-		return true
-	if int(town.region) >= 2:
-		last_error = "Alle drei Regionen sind erschlossen."
-		return false
-	if int(town.population) < 4:
-		last_error = "Versorge zuerst vier Bewohner."
-		return false
-	if _count(town, "lumber") == 0 or _count(town, "quarry") == 0:
-		last_error = "Sichere zuerst die Baustoffe: Deine Stadt braucht eine Holzwerkstatt und einen Steinbruch."
-		return false
-	if not _affords(town, EXPANSION_COST):
-		last_error = "Die Erschließung braucht 12 Holz, 10 Stein und 4 Münzen."
-		return false
-	_pay(town, EXPANSION_COST)
+	else:
+		_pay(town, EXPANSION_COST)
 	town.region = int(town.region) + 1
 	town.plots = PLOTS[int(town.region)]
+	if living_village:
+		VILLAGE.update_campaign(self, town)
 	return true
+
+
+func _legacy_expansion_error(town: Dictionary) -> String:
+	if int(town.region) >= 2:
+		return "Alle drei Regionen sind erschlossen."
+	if int(town.population) < 4:
+		return "Versorge zuerst vier Bewohner."
+	if _count(town, "lumber") == 0 or _count(town, "quarry") == 0:
+		return (
+			"Sichere zuerst die Baustoffe: Deine Stadt braucht "
+			+ "eine Holzwerkstatt und einen Steinbruch."
+		)
+	if not _affords(town, EXPANSION_COST):
+		return "Die Erschließung braucht 12 Holz, 10 Stein und 4 Münzen."
+	return ""
 
 
 func next_day() -> Dictionary:
@@ -556,7 +577,9 @@ static func restore(data: Dictionary):
 	for key in ["player", "rival"]:
 		if not data.get(key) is Dictionary or not _valid_town(data[key], data.version == 2):
 			return null
-	var model = load("res://scripts/creative/build_settlement_state.gd").new(str(data.mode), data.version == 2)
+	var model = load("res://scripts/creative/build_settlement_state.gd").new(
+		str(data.mode), data.version == 2
+	)
 	model.day = int(data.day)
 	model.winner = str(data.get("winner", ""))
 	model._player = _restored_town(data.player)
@@ -600,9 +623,15 @@ static func _whole(value: Variant, minimum: int, maximum: int) -> bool:
 static func _valid_town(town: Dictionary, is_living: bool = false) -> bool:
 	if not town.get("resources") is Dictionary or not town.get("buildings") is Array:
 		return false
-	if not _whole(town.get("region"), 0, 11 if is_living else 2) or not _whole(town.get("population"), 2, VILLAGE.MAX_POPULATION if is_living else 50):
+	if (
+		not _whole(town.get("region"), 0, 11 if is_living else 2)
+		or not _whole(town.get("population"), 2, VILLAGE.MAX_POPULATION if is_living else 50)
+	):
 		return false
-	if not _whole(town.get("plots"), 9, 1089 if is_living else 25) or int(town.plots) != PLOTS[int(town.region)]:
+	if (
+		not _whole(town.get("plots"), 9, 1089 if is_living else 25)
+		or int(town.plots) != PLOTS[int(town.region)]
+	):
 		return false
 	if (
 		not _whole(town.get("next_id"), 1, 10000)

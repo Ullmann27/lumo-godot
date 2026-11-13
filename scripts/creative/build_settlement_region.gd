@@ -38,7 +38,11 @@ static func plot_coordinate(index: int) -> Vector2i:
 
 static func plot_position(index: int, opponent := false) -> Vector3:
 	var coordinate := plot_coordinate(index)
-	return Vector3((TOWN_CENTER if opponent else -TOWN_CENTER) + coordinate.x * SPACING, 0.03, coordinate.y * SPACING)
+	return Vector3(
+		(TOWN_CENTER if opponent else -TOWN_CENTER) + coordinate.x * SPACING,
+		0.03,
+		coordinate.y * SPACING
+	)
 
 
 static func extent_for_plots(count: int) -> float:
@@ -63,7 +67,11 @@ func build_landscape(mode := "settlement") -> void:
 	_build_waterfront(false)
 	_build_waterfront(true)
 	_title("LUMOS WIESENSTADT", Vector3(-TOWN_CENTER, 3.3, -91.0), Color("fff3d2"))
-	_title("MIRAS NACHBARDORF" if mode == "rival" else "DAS NACHBARDORF", Vector3(TOWN_CENTER, 3.3, -91.0), Color("ffd5af"))
+	_title(
+		"MIRAS NACHBARDORF" if mode == "rival" else "DAS NACHBARDORF",
+		Vector3(TOWN_CENTER, 3.3, -91.0),
+		Color("ffd5af")
+	)
 	set_meta("max_plots_per_town", MAX_PLOTS)
 	set_meta("land_dimensions", Vector2(HALF_EXTENT * 2.0, HALF_EXTENT * 2.0))
 	set_meta("scenery_chunks", _chunks.size())
@@ -75,23 +83,47 @@ func _build_bank(opponent: bool) -> void:
 	var bank := StaticBody3D.new()
 	bank.name = "NeighborLand" if opponent else "PlayerLand"
 	add_child(bank)
-	var side := _kit.box(bank, Vector3(center, -1.4, 0), Vector3(HALF_EXTENT * 2.0, 2.8, HALF_EXTENT * 2.0), Color("c3ad80"))
+	var side := _kit.box(
+		bank,
+		Vector3(center, -1.4, 0),
+		Vector3(HALF_EXTENT * 2.0, 2.8, HALF_EXTENT * 2.0),
+		Color("c3ad80")
+	)
 	side.material_override = DAY.bank_material()
-	_kit.collision(bank, Vector3(center, -1.4, 0), Vector3(HALF_EXTENT * 2.0, 2.8, HALF_EXTENT * 2.0))
+	_kit.collision(
+		bank, Vector3(center, -1.4, 0), Vector3(HALF_EXTENT * 2.0, 2.8, HALF_EXTENT * 2.0)
+	)
 	var road_shapes: Array[Transform3D] = []
 	for grid in range(-17, 17):
 		var lane := (float(grid) + 0.5) * SPACING
-		road_shapes.append(Transform3D(Basis.from_scale(Vector3(0.73, 0.018, 181.0)), Vector3(center + lane, 0.024, 0)))
-		road_shapes.append(Transform3D(Basis.from_scale(Vector3(181.0, 0.018, 0.73)), Vector3(center, 0.025, lane)))
+		road_shapes.append(
+			Transform3D(
+				Basis.from_scale(Vector3(0.73, 0.018, 181.0)), Vector3(center + lane, 0.024, 0)
+			)
+		)
+		road_shapes.append(
+			Transform3D(Basis.from_scale(Vector3(181.0, 0.018, 0.73)), Vector3(center, 0.025, lane))
+		)
 	_batch(self, "VillageLanes", _box_mesh(), road_shapes, Color("c9c7a3"), 0)
 	for z_index in range(4):
 		for x_index in range(4):
 			var chunk := Node3D.new()
-			chunk.name = "District_%s_%d_%d" % ["neighbor" if opponent else "home", x_index, z_index]
-			chunk.position = Vector3(center - HALF_EXTENT + CHUNK_SIZE * (x_index + 0.5), 0, -HALF_EXTENT + CHUNK_SIZE * (z_index + 0.5))
+			chunk.name = (
+				"District_%s_%d_%d" % ["neighbor" if opponent else "home", x_index, z_index]
+			)
+			chunk.position = Vector3(
+				center - HALF_EXTENT + CHUNK_SIZE * (x_index + 0.5),
+				0,
+				-HALF_EXTENT + CHUNK_SIZE * (z_index + 0.5)
+			)
 			add_child(chunk)
 			_chunks.append(chunk)
-			var grass := _kit.box(self, chunk.position + Vector3(0, 0.006, 0), Vector3(CHUNK_SIZE, 0.012, CHUNK_SIZE), DISTRICT_COLORS[(x_index + z_index) % 4])
+			var grass := _kit.box(
+				self,
+				chunk.position + Vector3(0, 0.006, 0),
+				Vector3(CHUNK_SIZE, 0.012, CHUNK_SIZE),
+				DISTRICT_COLORS[(x_index + z_index) % 4]
+			)
 			var material := DAY.ground_material().duplicate() as StandardMaterial3D
 			material.albedo_color = DISTRICT_COLORS[(x_index + z_index) % 4]
 			grass.material_override = material
@@ -109,18 +141,37 @@ func _decorate_chunk(chunk: Node3D, xi: int, zi: int, opponent: bool) -> void:
 	var flowers: Array[Transform3D] = []
 	var rocks: Array[Transform3D] = []
 	for i in range(12):
-		var local := Vector3(-21.5 + fmod(float(i * 13 + xi * 7), 43.0), 0, -21.5 + fmod(float(i * 19 + zi * 5), 43.0))
+		var local := Vector3(
+			-21.5 + fmod(float(i * 13 + xi * 7), 43.0),
+			0,
+			-21.5 + fmod(float(i * 19 + zi * 5), 43.0)
+		)
 		var world := chunk.position + local
 		var center := TOWN_CENTER if opponent else -TOWN_CENTER
 		var edge := maxf(absf(world.x - center), absf(world.z))
 		if edge < 88.7:
 			continue
 		var height := 2.6 + float(i % 3) * 0.6
-		trunks.append(Transform3D(Basis.from_scale(Vector3(0.32, height, 0.32)), local + Vector3.UP * (height * 0.5)))
-		crowns.append(Transform3D(Basis.from_scale(Vector3(2.0, 2.3, 2.0)), local + Vector3.UP * (height + 0.3)))
-		rocks.append(Transform3D(Basis.from_scale(Vector3(0.75, 0.35, 0.6)), local + Vector3(1.2, 0.20, 0.5)))
+		trunks.append(
+			Transform3D(
+				Basis.from_scale(Vector3(0.32, height, 0.32)), local + Vector3.UP * (height * 0.5)
+			)
+		)
+		crowns.append(
+			Transform3D(
+				Basis.from_scale(Vector3(2.0, 2.3, 2.0)), local + Vector3.UP * (height + 0.3)
+			)
+		)
+		rocks.append(
+			Transform3D(Basis.from_scale(Vector3(0.75, 0.35, 0.6)), local + Vector3(1.2, 0.20, 0.5))
+		)
 		for petal in range(3):
-			flowers.append(Transform3D(Basis.from_scale(Vector3(0.18, 0.22, 0.18)), local + Vector3(0.5 + petal * 0.27, 0.18, -1.1)))
+			flowers.append(
+				Transform3D(
+					Basis.from_scale(Vector3(0.18, 0.22, 0.18)),
+					local + Vector3(0.5 + petal * 0.27, 0.18, -1.1)
+				)
+			)
 	_batch(chunk, "OrchardTrunks", _box_mesh(), trunks, Color("966338"))
 	_batch(chunk, "OrchardCanopies", _sphere_mesh(), crowns, Color("5b974b"))
 	_batch(chunk, "MeadowFlowers", _sphere_mesh(), flowers, Color("f4b957"))
@@ -135,11 +186,20 @@ func _build_river() -> void:
 	for x in [-6.2, 6.2]:
 		var rocks: Array[Transform3D] = []
 		for i in range(45):
-			rocks.append(Transform3D(Basis.from_scale(Vector3(0.9, 0.65, 1.6)), Vector3(x, -0.18, -92.0 + i * 4.2)))
+			rocks.append(
+				Transform3D(
+					Basis.from_scale(Vector3(0.9, 0.65, 1.6)), Vector3(x, -0.18, -92.0 + i * 4.2)
+				)
+			)
 		_batch(self, "RiverbankStones", _sphere_mesh(), rocks, Color("b7b2a2"), 220)
 	var hill_shapes: Array[Transform3D] = []
 	for i in range(12):
-		hill_shapes.append(Transform3D(Basis.from_scale(Vector3(30 + (i % 3) * 9, 10 + (i % 4) * 4, 24)), Vector3(-220 + i * 40, -7, -120 - (i % 2) * 10)))
+		hill_shapes.append(
+			Transform3D(
+				Basis.from_scale(Vector3(30 + (i % 3) * 9, 10 + (i % 4) * 4, 24)),
+				Vector3(-220 + i * 40, -7, -120 - (i % 2) * 10)
+			)
+		)
 	_batch(self, "DistantSoftHills", _sphere_mesh(), hill_shapes, Color("789d83"), 0)
 
 
@@ -151,12 +211,20 @@ func _build_bridge(z: float) -> void:
 	_kit.collision(bridge, Vector3(0, -0.03, z), Vector3(13.5, 0.20, 2.3))
 	var planks: Array[Transform3D] = []
 	for i in range(19):
-		planks.append(Transform3D(Basis.from_scale(Vector3(0.045, 0.02, 2.16)), Vector3(-6.3 + i * 0.7, 0.15, z)))
+		planks.append(
+			Transform3D(
+				Basis.from_scale(Vector3(0.045, 0.02, 2.16)), Vector3(-6.3 + i * 0.7, 0.15, z)
+			)
+		)
 	_batch(bridge, "BridgePlankSeams", _box_mesh(), planks, Color("a78353"))
 	for side in [-1.0, 1.0]:
-		_kit.box(bridge, Vector3(0, 0.78, z + side * 1.12), Vector3(13.4, 0.12, 0.12), Color("a67d4a"))
+		_kit.box(
+			bridge, Vector3(0, 0.78, z + side * 1.12), Vector3(13.4, 0.12, 0.12), Color("a67d4a")
+		)
 		for x in [-6.3, -3.1, 0.0, 3.1, 6.3]:
-			_kit.box(bridge, Vector3(x, 0.45, z + side * 1.12), Vector3(0.12, 0.9, 0.12), Color("a67d4a"))
+			_kit.box(
+				bridge, Vector3(x, 0.45, z + side * 1.12), Vector3(0.12, 0.9, 0.12), Color("a67d4a")
+			)
 
 
 func _build_waterfront(opponent: bool) -> void:
@@ -164,7 +232,12 @@ func _build_waterfront(opponent: bool) -> void:
 	var x := direction * 8.2
 	_kit.box(self, Vector3(x, 0.05, 9), Vector3(3.2, 0.12, 7), Color("c9aa7b"))
 	for i in range(3):
-		_kit.box(self, Vector3(x, 0.32 + float(i % 2) * 0.15, 7 + i * 1.4), Vector3(0.80, 0.60, 0.80), Color("bb8954"))
+		_kit.box(
+			self,
+			Vector3(x, 0.32 + float(i % 2) * 0.15, 7 + i * 1.4),
+			Vector3(0.80, 0.60, 0.80),
+			Color("bb8954")
+		)
 	_title("LIEFERSTEG", Vector3(x, 2.0, 9), Color("f9e6be"))
 
 
@@ -187,7 +260,10 @@ func update_focus(at: Vector3) -> void:
 		return
 	_last_focus = at
 	for chunk in _chunks:
-		chunk.visible = Vector2(chunk.position.x - at.x, chunk.position.z - at.z).length_squared() < 145.0 * 145.0
+		chunk.visible = (
+			Vector2(chunk.position.x - at.x, chunk.position.z - at.z).length_squared()
+			< 145.0 * 145.0
+		)
 
 
 static func _box_mesh() -> BoxMesh:
@@ -205,7 +281,14 @@ static func _sphere_mesh() -> SphereMesh:
 	return shape
 
 
-func _batch(parent: Node3D, label: String, shape: Mesh, transforms: Array[Transform3D], color: Color, range_end := 170.0) -> void:
+func _batch(
+	parent: Node3D,
+	label: String,
+	shape: Mesh,
+	transforms: Array[Transform3D],
+	color: Color,
+	range_end := 170.0
+) -> void:
 	if transforms.is_empty():
 		return
 	var mesh := MultiMesh.new()

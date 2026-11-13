@@ -59,11 +59,25 @@ func _refresh() -> void:
 		if str(value.get("kind", "")) != "house":
 			continue
 		var home := REGION.plot_position(int(value.get("plot", 4)), _opponent)
-		if Vector2(home.x - _focus.x, home.z - _focus.z).length_squared() <= VISIBLE_RADIUS * VISIBLE_RADIUS:
+		if (
+			Vector2(home.x - _focus.x, home.z - _focus.z).length_squared()
+			<= VISIBLE_RADIUS * VISIBLE_RADIUS
+		):
 			houses.append(value)
-	houses.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
-		return REGION.plot_position(int(a.plot), _opponent).distance_squared_to(_focus) < REGION.plot_position(int(b.plot), _opponent).distance_squared_to(_focus))
-	var signature := str(houses) + str(_town.get("households", [])) + str(_town.get("population", 2)) + str(market_plot) + str(_opponent)
+	houses.sort_custom(
+		func(a: Dictionary, b: Dictionary) -> bool:
+			return (
+				REGION.plot_position(int(a.plot), _opponent).distance_squared_to(_focus)
+				< REGION.plot_position(int(b.plot), _opponent).distance_squared_to(_focus)
+			)
+	)
+	var signature := (
+		str(houses)
+		+ str(_town.get("households", []))
+		+ str(_town.get("population", 2))
+		+ str(market_plot)
+		+ str(_opponent)
+	)
 	_cart_moving = not _town.get("deliveries", []).is_empty()
 	if signature == _signature:
 		return
@@ -83,7 +97,10 @@ func _refresh() -> void:
 		var adults := 1
 		var children := 0
 		for household in _town.get("households", []):
-			if household is Dictionary and str(household.get("building_id", "")) == str(house.get("id", "")):
+			if (
+				household is Dictionary
+				and str(household.get("building_id", "")) == str(house.get("id", ""))
+			):
 				adults = clampi(int(household.get("adults", 1)), 1, 2)
 				children = clampi(int(household.get("children", 0)), 0, 3)
 				break
@@ -98,7 +115,9 @@ func _refresh() -> void:
 		for member in range(mini(2, population)):
 			_add_resident(center, member, false, member)
 	if market_plot >= 0:
-		_cart_home = REGION.plot_position(market_plot, _opponent) + Vector3(0, 0.08, REGION.SPACING * 0.5)
+		_cart_home = (
+			REGION.plot_position(market_plot, _opponent) + Vector3(0, 0.08, REGION.SPACING * 0.5)
+		)
 		if _cart_home.distance_squared_to(_focus) <= VISIBLE_RADIUS * VISIBLE_RADIUS:
 			_build_cart()
 	set_meta("visible_residents", _actors.size())
@@ -127,7 +146,15 @@ func _add_resident(home: Vector3, friend_index: int, child: bool, index: int) ->
 	holder.position = base
 	holder.set_meta("village_role", "Nelli · Anbauen" if friend_index == 0 else "Bruno · Bauen")
 	holder.set_meta("is_child", child)
-	_actors.append({"holder": holder, "animation": animation, "base": base, "phase": float(index) * 1.37, "child": child})
+	_actors.append(
+		{
+			"holder": holder,
+			"animation": animation,
+			"base": base,
+			"phase": float(index) * 1.37,
+			"child": child
+		}
+	)
 
 
 func _build_cart() -> void:
@@ -186,4 +213,9 @@ func advance(delta: float, paused := false) -> void:
 
 
 func debug_snapshot() -> Dictionary:
-	return {"visible_residents": _actors.size(), "resident_limit": MAX_VISIBLE_RESIDENTS, "has_delivery_cart": _cart != null, "clock": _time}
+	return {
+		"visible_residents": _actors.size(),
+		"resident_limit": MAX_VISIBLE_RESIDENTS,
+		"has_delivery_cart": _cart != null,
+		"clock": _time
+	}

@@ -162,19 +162,36 @@ static func _add_working_details(kit, root: Node3D, kind: String) -> void:
 				var at := Vector3(0.34 + column * 0.61, 0.60, 0.34 + row * 0.61)
 				kit.sphere(root, at, Vector3(0.18, 0.25, 0.18), Color("ef943f"))
 				for leaf in [-1.0, 1.0]:
-					var stalk = kit.box(root, at + Vector3(leaf * 0.04, 0.21, 0), Vector3(0.06, 0.28, 0.05), Color("508c40"))
+					var stalk = kit.box(
+						root,
+						at + Vector3(leaf * 0.04, 0.21, 0),
+						Vector3(0.06, 0.28, 0.05),
+						Color("508c40")
+					)
 					stalk.rotation.z = leaf * 0.25
 	if kind in ["house", "bakery", "clinic", "school"]:
 		# The cottages share source geometry but have readable roles and warm entrances.
-		var roof_color: Color = {"house": Color("ca785a"), "bakery": Color("d99c4c"), "clinic": Color("58a9aa"), "school": Color("668cbd")}[kind]
+		var roof_color: Color = {
+			"house": Color("ca785a"),
+			"bakery": Color("d99c4c"),
+			"clinic": Color("58a9aa"),
+			"school": Color("668cbd")
+		}[kind]
 		for roof in root.find_children("WorkshopRoof", "MeshInstance3D", true, false):
 			roof.material_override = BuildVoxelStyle.material("roof", roof_color)
 		kit.box(root, Vector3(1.5, 0.10, 3.12), Vector3(1.10, 0.13, 0.35), Color("cda577"))
 		for x in [0.30, 2.70]:
 			kit.box(root, Vector3(x, 0.45, 3.12), Vector3(0.46, 0.32, 0.38), Color("b98a53"))
 			for offset in [-0.10, 0.10]:
-				kit.sphere(root, Vector3(x + offset, 0.76, 3.12), Vector3(0.20, 0.24, 0.20), Color("6d9f54"))
-				kit.sphere(root, Vector3(x + offset, 0.88, 3.12), Vector3.ONE * 0.14, Color("f2b06c"))
+				kit.sphere(
+					root,
+					Vector3(x + offset, 0.76, 3.12),
+					Vector3(0.20, 0.24, 0.20),
+					Color("6d9f54")
+				)
+				kit.sphere(
+					root, Vector3(x + offset, 0.88, 3.12), Vector3.ONE * 0.14, Color("f2b06c")
+				)
 	if kind == "bakery":
 		kit.box(root, Vector3(0.72, 3.15, 1.10), Vector3(0.47, 1.2, 0.47), Color("b58c69"))
 		kit.box(root, Vector3(1.48, 1.14, 3.08), Vector3(1.70, 0.12, 0.58), Color("c38f4c"))
@@ -185,11 +202,15 @@ static func _add_working_details(kit, root: Node3D, kind: String) -> void:
 		kit.box(root, Vector3(2.96, 3.55, 0.60), Vector3(0.63, 0.38, 0.045), Color("67b9b7"))
 		for x in [1.38, 1.62]:
 			kit.sphere(root, Vector3(x, 2.35, 3.05), Vector3(0.31, 0.30, 0.08), Color("fff2d0"))
-		var heart = kit.box(root, Vector3(1.5, 2.20, 3.05), Vector3(0.28, 0.28, 0.08), Color("fff2d0"))
+		var heart = kit.box(
+			root, Vector3(1.5, 2.20, 3.05), Vector3(0.28, 0.28, 0.08), Color("fff2d0")
+		)
 		heart.rotation.z = PI * 0.25
 	if kind == "school":
 		for x in [1.25, 1.75]:
-			var page = kit.box(root, Vector3(x, 2.35, 3.08), Vector3(0.48, 0.49, 0.09), Color("fff0ce"))
+			var page = kit.box(
+				root, Vector3(x, 2.35, 3.08), Vector3(0.48, 0.49, 0.09), Color("fff0ce")
+			)
 			page.rotation.z = -0.09 if x < 1.5 else 0.09
 		kit.box(root, Vector3(1.5, 2.35, 3.12), Vector3(0.04, 0.54, 0.05), Color("516c9d"))
 		for x in [0.56, 2.42]:
@@ -198,7 +219,12 @@ static func _add_working_details(kit, root: Node3D, kind: String) -> void:
 		for x in [0.68, 2.32]:
 			kit.box(root, Vector3(x, 0.54, 2.55), Vector3(0.77, 0.90, 0.63), Color("bd8c50"))
 			for index in range(3):
-				kit.sphere(root, Vector3(x - 0.22 + index * 0.22, 1.05, 2.55), Vector3(0.18, 0.22, 0.18), Color("f0a447") if x < 1.5 else Color("d86c50"))
+				kit.sphere(
+					root,
+					Vector3(x - 0.22 + index * 0.22, 1.05, 2.55),
+					Vector3(0.18, 0.22, 0.18),
+					Color("f0a447") if x < 1.5 else Color("d86c50")
+				)
 
 
 static func _expansion_facility(kit, root: Node3D, kind: String) -> Dictionary:
@@ -207,7 +233,12 @@ static func _expansion_facility(kit, root: Node3D, kind: String) -> Dictionary:
 		kit.box(root, Vector3(1.9, 0.05, 1.9), Vector3(3.8, 0.10, 3.8), Color("c9bc96"))
 		for row in range(5):
 			for col in range(5):
-				kit.box(root, Vector3(0.43 + col * 0.74, 0.12, 0.43 + row * 0.74), Vector3(0.68, 0.12, 0.68), Color("e1cfaa"))
+				kit.box(
+					root,
+					Vector3(0.43 + col * 0.74, 0.12, 0.43 + row * 0.74),
+					Vector3(0.68, 0.12, 0.68),
+					Color("e1cfaa")
+				)
 	elif kind == "grain":
 		size.y = 1.4
 		kit.box(root, Vector3(1.9, 0.12, 1.9), Vector3(3.8, 0.24, 3.8), Color("92744d"))
@@ -216,7 +247,12 @@ static func _expansion_facility(kit, root: Node3D, kind: String) -> Dictionary:
 				var at := Vector3(0.45 + col * 0.72, 0.80, 0.45 + row * 0.72)
 				kit.box(root, at, Vector3(0.045, 1.10, 0.045), Color("b7a65a"))
 				for head in [-1.0, 1.0]:
-					var ear = kit.sphere(root, at + Vector3(head * 0.08, 0.38, 0), Vector3(0.14, 0.34, 0.10), Color("e6bb57"))
+					var ear = kit.sphere(
+						root,
+						at + Vector3(head * 0.08, 0.38, 0),
+						Vector3(0.14, 0.34, 0.10),
+						Color("e6bb57")
+					)
 					ear.rotation.z = head * 0.24
 	elif kind == "well":
 		size = Vector3(3.5, 3.3, 3.5)
@@ -224,7 +260,12 @@ static func _expansion_facility(kit, root: Node3D, kind: String) -> Dictionary:
 		kit.cylinder(root, Vector3(1.75, 0.63, 1.75), 1.18, 0.05, Color("62b7c3"))
 		for index in range(12):
 			var angle := float(index) / 12.0 * TAU
-			var stone = kit.box(root, Vector3(1.75 + cos(angle) * 1.35, 0.63, 1.75 + sin(angle) * 1.35), Vector3(0.56, 0.35, 0.38), Color("e0cda6"))
+			var stone = kit.box(
+				root,
+				Vector3(1.75 + cos(angle) * 1.35, 0.63, 1.75 + sin(angle) * 1.35),
+				Vector3(0.56, 0.35, 0.38),
+				Color("e0cda6")
+			)
 			stone.rotation.y = -angle + PI * 0.5
 		for x in [0.48, 3.02]:
 			kit.box(root, Vector3(x, 1.7, 1.75), Vector3(0.18, 2.4, 0.18), Color("a37a4c"))
