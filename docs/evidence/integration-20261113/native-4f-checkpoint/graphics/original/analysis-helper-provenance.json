@@ -1,0 +1,16 @@
+[
+  {
+    "file": "verify_archive.py",
+    "previous_helper": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/verify_archive.py",
+    "previous_helper_sha256": "8edc169f8e09c1997290db98b005f359691a9d43f692a6c0c85ebda33edc9ce5",
+    "current_helper_sha256": "779f911db6c438c96f95c399bda19f492abe5042eeea9c315b206272c3de63b8",
+    "change": "Only the exact run, commit and tree constants; all original archive, decoder and gate checks preserved."
+  },
+  {
+    "file": "prepare_inputs.py",
+    "previous_helper": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/prepare_inputs.py",
+    "previous_helper_sha256": "3af6810d1345931b7a5c2ea6a770d1f3f74a4b037fabceaf234fca901729f7ef",
+    "current_helper_sha256": "ed0ee94c3491b30e9aff10a874bd2da90ab50cb4304f2edd917035d271bdfd79",
+    "change": "Only the exact run, commit and tree constants; all original archive, decoder and gate checks preserved."
+  }
+]

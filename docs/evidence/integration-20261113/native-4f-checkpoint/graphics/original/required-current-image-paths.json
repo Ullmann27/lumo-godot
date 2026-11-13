@@ -1,0 +1,75 @@
+{
+  "scope": "Requested current original image paths and source bindings only; no visual review or receipt.",
+  "images": [
+    {
+      "path": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-4f34492-graphics/home/images/home-1280x720.png",
+      "artifact_entry": "images/home-1280x720.png",
+      "area": "home",
+      "artifact_id": 14059154186,
+      "archive_sha256": "81f8c235d7b96e3bd6d0b147e8418dea0703f79c33f7fce5caf8873776f8cde0",
+      "source_head": "4f3449253fd59023a2544432a178eb9efcafe4f9",
+      "source_tree": "189b7a66c731067559469e2503e3a190b337031d",
+      "run_id": 43466005184,
+      "sha256": "84bc4e149cac520df7aa704497b63067c7c359d5cff55a2c8b78cc8611aceae6",
+      "bytes": 588189,
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-4f34492-graphics/home/images/home-412x915.png",
+      "artifact_entry": "images/home-412x915.png",
+      "area": "home",
+      "artifact_id": 14059154186,
+      "archive_sha256": "81f8c235d7b96e3bd6d0b147e8418dea0703f79c33f7fce5caf8873776f8cde0",
+      "source_head": "4f3449253fd59023a2544432a178eb9efcafe4f9",
+      "source_tree": "189b7a66c731067559469e2503e3a190b337031d",
+      "run_id": 43466005184,
+      "sha256": "cd3b8e20ca4bd26bf3c553202cceeaacf85cba2bd43e879d45d5a34e3e289e51",
+      "bytes": 314210,
+      "width": 412,
+      "height": 915
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-4f34492-graphics/worlds/images/winter_sprint/02_world_landmark.png",
+      "artifact_entry": "images/winter_sprint/02_world_landmark.png",
+      "area": "worlds",
+      "artifact_id": 14059251203,
+      "archive_sha256": "0197d2796b25aeec3fa0be3a12581ae43e2711845b47864e8c6e99c7695df717",
+      "source_head": "4f3449253fd59023a2544432a178eb9efcafe4f9",
+      "source_tree": "189b7a66c731067559469e2503e3a190b337031d",
+      "run_id": 43466005184,
+      "sha256": "099bbefbfb5532080da8ae5a52a047dfd49f5f4b540eff9006f812154f55a3e2",
+      "bytes": 595985,
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-4f34492-graphics/worlds/images/crystal_canyon/02_world_landmark.png",
+      "artifact_entry": "images/crystal_canyon/02_world_landmark.png",
+      "area": "worlds",
+      "artifact_id": 14059251203,
+      "archive_sha256": "0197d2796b25aeec3fa0be3a12581ae43e2711845b47864e8c6e99c7695df717",
+      "source_head": "4f3449253fd59023a2544432a178eb9efcafe4f9",
+      "source_tree": "189b7a66c731067559469e2503e3a190b337031d",
+      "run_id": 43466005184,
+      "sha256": "e5d2db23751308307d007f1a00dac32461d1cfd72b5063c8fdc102cc89948fbe",
+      "bytes": 688351,
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-4f34492-graphics/feedback/images/03_drift_release.png",
+      "artifact_entry": "images/03_drift_release.png",
+      "area": "feedback",
+      "artifact_id": 14058227051,
+      "archive_sha256": "374bd34e98e360624a5245b3647893ce1dcf5e62a14aac210139d1f6bddebfcb",
+      "source_head": "4f3449253fd59023a2544432a178eb9efcafe4f9",
+      "source_tree": "189b7a66c731067559469e2503e3a190b337031d",
+      "run_id": 43466005184,
+      "sha256": "9137a43b2af151ec70be99c55f9d612f7e95767e75794db60b1bf8a90f623a88",
+      "bytes": 954793,
+      "width": 1280,
+      "height": 720
+    }
+  ]
+}

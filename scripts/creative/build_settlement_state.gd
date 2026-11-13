@@ -1,6 +1,8 @@
 extends RefCounted
 ## Deterministic, offline settlement rules. Both towns use the same prices,
 ## production and needs. Time advances only through the child's Next Day action.
+const VILLAGE = preload("res://scripts/creative/build_settlement_economy.gd")
+const CLASSIC_KINDS := ["house", "farm", "lumber", "quarry", "market", "school"]
 const BUILDINGS := {
 	"house":
 	{"title": "Wohnhaus", "cost": {"wood": 4, "stone": 3, "coins": 1}, "output": {}, "capacity": 2},
@@ -29,13 +31,33 @@ const BUILDINGS := {
 		"output": {},
 		"capacity": 0
 	},
+	"well": {"title": "Brunnen", "cost": {"wood": 2, "stone": 3}, "output": {}, "capacity": 0},
+	"grain":
+	{"title": "Kornfeld", "cost": {"wood": 4, "stone": 1, "coins": 1}, "output": {}, "capacity": 0},
+	"bakery":
+	{"title": "Bäckerei", "cost": {"wood": 6, "stone": 6, "coins": 4}, "output": {}, "capacity": 0},
+	"road":
+	{
+		"title": "Wegeplatz",
+		"cost": {"wood": 2, "stone": 3, "coins": 1},
+		"output": {},
+		"capacity": 0
+	},
+	"clinic":
+	{
+		"title": "Fürsorgehaus",
+		"cost": {"wood": 8, "stone": 8, "coins": 6},
+		"output": {},
+		"capacity": 0
+	},
 }
 const RESOURCES := ["wood", "stone", "food", "coins"]
-const REGIONS := ["Wiesenwinkel", "Flussufer", "Sonnenhöhe"]
-const PLOTS := [9, 16, 25]
+const REGIONS := VILLAGE.REGIONS
+const PLOTS := VILLAGE.PLOTS
 const EXPANSION_COST := {"wood": 12, "stone": 10, "coins": 4}
 const MAX_RESOURCE := 99999
 const MAX_DAY := 9999
+var living_village := false
 var mode := "settlement"
 var day := 1
 var winner := ""
@@ -46,10 +68,12 @@ var _undo: Array[Dictionary] = []
 var _redo: Array[Dictionary] = []
 
 
-func _init(requested_mode: String = "settlement") -> void:
+func _init(requested_mode: String = "settlement", use_living_village: bool = false) -> void:
 	mode = "rival" if requested_mode == "rival" else "settlement"
 	_player = _new_town()
 	_rival = _new_town()
+	if use_living_village:
+		enable_living_village()
 
 
 static func _new_town() -> Dictionary:
@@ -62,6 +86,17 @@ static func _new_town() -> Dictionary:
 		"next_id": 1,
 		"food_shortfall": 0
 	}
+
+
+# Village markets must be buildable even after the last coin is spent.
+# The same quote is used for payment and the public build button.
+func building_cost(kind: String) -> Dictionary:
+	if not BUILDINGS.has(kind):
+		return {}
+	var price: Dictionary = BUILDINGS[kind].cost.duplicate(true)
+	if living_village and kind == "market":
+		price.erase("coins")
+	return price
 
 
 func player() -> Dictionary:
@@ -84,7 +119,7 @@ func try_build(kind: String, plot: int) -> bool:
 
 
 func _buy(town: Dictionary, kind: String, plot: int) -> bool:
-	if not BUILDINGS.has(kind):
+	if not BUILDINGS.has(kind) or (not living_village and kind not in CLASSIC_KINDS):
 		last_error = "Wähle ein vorhandenes Gebäude."
 		return false
 	if plot < 0 or plot >= int(town.plots):
@@ -97,12 +132,22 @@ func _buy(town: Dictionary, kind: String, plot: int) -> bool:
 		if int(building.plot) == plot:
 			last_error = "Dieses Grundstück ist bereits bebaut."
 			return false
-	if not _affords(town, BUILDINGS[kind].cost):
+	var cost: Dictionary = building_cost(kind)
+	if not _affords(town, cost):
 		last_error = "Dafür fehlen noch Rohstoffe. Produziere oder handle zuerst."
 		return false
-	_pay(town, BUILDINGS[kind].cost)
-	town.buildings.append({"id": "b%d" % int(town.next_id), "kind": kind, "plot": plot})
+	_pay(town, cost)
+	var new_building := {"id": "b%d" % int(town.next_id), "kind": kind, "plot": plot}
+	# Exact paid prices survive Save/Load and never mint coins on demolition.
+	# Older markets without this receipt retain their historical two-coin refund.
+	if living_village and kind == "market":
+		new_building["purchase_cost"] = cost.duplicate(true)
+	town.buildings.append(new_building)
+	if living_village and kind == "house":
+		VILLAGE.house_built(town, "b%d" % int(town.next_id))
 	town.next_id = int(town.next_id) + 1
+	if living_village:
+		VILLAGE.update_campaign(self, town)
 	return true
 
 
@@ -110,14 +155,18 @@ func demolition_quote(plot: int) -> Dictionary:
 	for building: Dictionary in _player.buildings:
 		if int(building.plot) == plot:
 			var definition: Dictionary = BUILDINGS[str(building.kind)]
-			var capacity_after: int = _capacity(_player) - int(definition.capacity)
+			var removed_capacity: int = (
+				4 if living_village and str(building.kind) == "house" else int(definition.capacity)
+			)
+			var capacity_after: int = _capacity(_player) - removed_capacity
 			var affected: int = (
 				maxi(0, int(_player.population) - capacity_after)
 				if int(definition.capacity) > 0
 				else 0
 			)
+			var paid_cost: Dictionary = building.get("purchase_cost", definition.cost)
 			return {
-				"refund": definition.cost.duplicate(true),
+				"refund": paid_cost.duplicate(true),
 				"affected_residents": affected,
 				"population_after":
 				(
@@ -140,7 +189,6 @@ func try_demolish(plot: int, allow_relocation: bool = false) -> bool:
 		var building: Dictionary = _player.buildings[index]
 		if int(building.plot) != plot:
 			continue
-		var definition: Dictionary = BUILDINGS[str(building.kind)]
 		var quote := demolition_quote(plot)
 		if int(quote.affected_residents) > 0 and not allow_relocation:
 			last_error = "Deine Bewohner brauchen dieses Zuhause. Baue zuerst ein weiteres Wohnhaus."
@@ -149,15 +197,18 @@ func try_demolish(plot: int, allow_relocation: bool = false) -> bool:
 		# Recover the actual building materials, not market resale prices. This
 		# keeps experimenting reversible even after Next Day has cleared Undo.
 		# Existing stock never decreases; a full store simply cannot hold more.
-		for resource: String in definition.cost:
+		var paid_cost: Dictionary = quote.refund
+		for resource: String in paid_cost:
 			_player.resources[resource] = mini(
-				MAX_RESOURCE, int(_player.resources[resource]) + int(definition.cost[resource])
+				MAX_RESOURCE, int(_player.resources[resource]) + int(paid_cost[resource])
 			)
 		# A separate, explicitly confirmed relocation is the escape route from a
 		# fully housed/occupied island. The two founders remain in the starter
 		# camp (the same legal state as a new town). No resident is killed.
 		_player.population = int(quote.population_after)
 		_player.buildings.remove_at(index)
+		if living_village:
+			VILLAGE.reconcile_households(_player)
 		_remember(before)
 		return true
 	last_error = "Auf diesem Grundstück steht noch kein Gebäude."
@@ -186,7 +237,14 @@ func try_trade(resource: String, quantity: int, sell: bool) -> bool:
 		return false
 	var before := _player.duplicate(true)
 	_pay(_player, cost)
-	_player.resources[received] = int(_player.resources[received]) + amount
+	if living_village and received == "coins":
+		VILLAGE.credit_income(_player, amount)
+	else:
+		_player.resources[received] = int(_player.resources[received]) + amount
+	if living_village:
+		VILLAGE.synchronize_pantry(_player)
+		_player.trade_count = mini(VILLAGE.MAX_COUNTER, int(_player.trade_count) + 1)
+		VILLAGE.update_campaign(self, _player)
 	_remember(before)
 	return true
 
@@ -215,22 +273,36 @@ func expand() -> bool:
 
 
 func _expand_town(town: Dictionary) -> bool:
-	if int(town.region) >= REGIONS.size() - 1:
-		last_error = "Alle drei Regionen sind erschlossen."
+	if living_village:
+		last_error = VILLAGE.expansion_error(self, town)
+	else:
+		last_error = _legacy_expansion_error(town)
+	if not last_error.is_empty():
 		return false
-	if int(town.population) < 4:
-		last_error = "Versorge zuerst vier Bewohner."
-		return false
-	if _count(town, "lumber") == 0 or _count(town, "quarry") == 0:
-		last_error = "Sichere zuerst die Baustoffe: Deine Stadt braucht eine Holzwerkstatt und einen Steinbruch."
-		return false
-	if not _affords(town, EXPANSION_COST):
-		last_error = "Die Erschließung braucht 12 Holz, 10 Stein und 4 Münzen."
-		return false
-	_pay(town, EXPANSION_COST)
+	if living_village:
+		_pay(town, VILLAGE.expansion_cost(int(town.region)))
+	else:
+		_pay(town, EXPANSION_COST)
 	town.region = int(town.region) + 1
 	town.plots = PLOTS[int(town.region)]
+	if living_village:
+		VILLAGE.update_campaign(self, town)
 	return true
+
+
+func _legacy_expansion_error(town: Dictionary) -> String:
+	if int(town.region) >= 2:
+		return "Alle drei Regionen sind erschlossen."
+	if int(town.population) < 4:
+		return "Versorge zuerst vier Bewohner."
+	if _count(town, "lumber") == 0 or _count(town, "quarry") == 0:
+		return (
+			"Sichere zuerst die Baustoffe: Deine Stadt braucht "
+			+ "eine Holzwerkstatt und einen Steinbruch."
+		)
+	if not _affords(town, EXPANSION_COST):
+		return "Die Erschließung braucht 12 Holz, 10 Stein und 4 Münzen."
+	return ""
 
 
 func next_day() -> Dictionary:
@@ -271,6 +343,8 @@ func next_day() -> Dictionary:
 
 
 func _produce(town: Dictionary) -> Dictionary:
+	if living_village:
+		return VILLAGE.produce(self, town, day + 1)
 	var output := {"wood": 0, "stone": 0, "food": 0, "coins": 0}
 	for building: Dictionary in town.buildings:
 		var production: Dictionary = BUILDINGS[str(building.kind)].output
@@ -310,6 +384,8 @@ func _rival_plan() -> Array[String]:
 	# needs. No lookahead into the child's actions, free resources or teleports.
 	for _action in range(3):
 		var priorities: Array[String] = []
+		if living_village and VILLAGE.water_capacity(self, _rival) <= int(_rival.population) + 1:
+			priorities.append("well")
 		if _count(_rival, "house") == 0:
 			priorities.append("house")
 		if _count(_rival, "farm") == 0:
@@ -378,6 +454,8 @@ func _count(town: Dictionary, kind: String) -> int:
 
 
 func _capacity(town: Dictionary) -> int:
+	if living_village:
+		return VILLAGE.capacity(self, town)
 	return _count(town, "house") * 2
 
 
@@ -425,7 +503,7 @@ func status() -> Dictionary:
 			{"title": "Bauernhöfe", "current": _count(_player, "farm"), "target": 2},
 			{"title": "Neue Regionen", "current": int(_player.region), "target": 2}
 		]
-	return {
+	var result := {
 		"day": day,
 		"mode": mode,
 		"level": level,
@@ -455,6 +533,12 @@ func status() -> Dictionary:
 		"can_redo": not _redo.is_empty(),
 		"complete": level == 3
 	}
+	if living_village:
+		result.can_expand = VILLAGE.expansion_error(self, _player).is_empty()
+		result.expansion_cost = VILLAGE.expansion_cost(int(_player.region))
+		result.campaign = campaign_status()
+		result.economy = economy_status()
+	return result
 
 
 func _can_act() -> bool:
@@ -491,7 +575,7 @@ func redo() -> bool:
 
 func snapshot() -> Dictionary:
 	return {
-		"version": 1,
+		"version": 2 if living_village else 1,
 		"mode": mode,
 		"day": day,
 		"winner": winner,
@@ -501,7 +585,7 @@ func snapshot() -> Dictionary:
 
 
 static func restore(data: Dictionary):
-	if data.get("version") != 1 or data.get("mode") not in ["settlement", "rival"]:
+	if not _whole(data.get("version"), 1, 2) or data.get("mode") not in ["settlement", "rival"]:
 		return null
 	if (
 		not _whole(data.get("day"), 1, MAX_DAY)
@@ -509,9 +593,11 @@ static func restore(data: Dictionary):
 	):
 		return null
 	for key in ["player", "rival"]:
-		if not data.get(key) is Dictionary or not _valid_town(data[key]):
+		if not data.get(key) is Dictionary or not _valid_town(data[key], data.version == 2):
 			return null
-	var model = load("res://scripts/creative/build_settlement_state.gd").new(str(data.mode))
+	var model = load("res://scripts/creative/build_settlement_state.gd").new(
+		str(data.mode), data.version == 2
+	)
 	model.day = int(data.day)
 	model.winner = str(data.get("winner", ""))
 	model._player = _restored_town(data.player)
@@ -534,9 +620,19 @@ static func _restored_town(town: Dictionary) -> Dictionary:
 	for resource in RESOURCES:
 		result.resources[resource] = int(town.resources[resource])
 	for building: Dictionary in town.buildings:
-		result.buildings.append(
-			{"id": str(building.id), "kind": str(building.kind), "plot": int(building.plot)}
-		)
+		var restored_building := {
+			"id": str(building.id), "kind": str(building.kind), "plot": int(building.plot)
+		}
+		if building.has("purchase_cost"):
+			# JSON always decodes numbers as floats. Preserve canonical paid
+			# integer receipts after _valid_town has verified the exact values.
+			restored_building["purchase_cost"] = {
+				"wood": int(building.purchase_cost.wood),
+				"stone": int(building.purchase_cost.stone)
+			}
+		result.buildings.append(restored_building)
+	if int(town.get("economy_version", 0)) == 2:
+		VILLAGE.restore_fields(town, result)
 	return result
 
 
@@ -550,16 +646,22 @@ static func _whole(value: Variant, minimum: int, maximum: int) -> bool:
 	)
 
 
-static func _valid_town(town: Dictionary) -> bool:
+static func _valid_town(town: Dictionary, is_living: bool = false) -> bool:
 	if not town.get("resources") is Dictionary or not town.get("buildings") is Array:
 		return false
-	if not _whole(town.get("region"), 0, 2) or not _whole(town.get("population"), 2, 50):
+	if (
+		not _whole(town.get("region"), 0, 11 if is_living else 2)
+		or not _whole(town.get("population"), 2, VILLAGE.MAX_POPULATION if is_living else 50)
+	):
 		return false
-	if not _whole(town.get("plots"), 9, 25) or int(town.plots) != PLOTS[int(town.region)]:
+	if (
+		not _whole(town.get("plots"), 9, 1089 if is_living else 25)
+		or int(town.plots) != PLOTS[int(town.region)]
+	):
 		return false
 	if (
 		not _whole(town.get("next_id"), 1, 10000)
-		or not _whole(town.get("food_shortfall", 0), 0, 50)
+		or not _whole(town.get("food_shortfall", 0), 0, VILLAGE.MAX_POPULATION if is_living else 50)
 	):
 		return false
 	for resource in RESOURCES:
@@ -572,6 +674,24 @@ static func _valid_town(town: Dictionary) -> bool:
 	for building: Variant in town.buildings:
 		if not building is Dictionary or not BUILDINGS.has(building.get("kind", "")):
 			return false
+		# The only new paid-price receipt is the coin-free village market.
+		# Validate it to prevent a tampered save from crediting arbitrary resources.
+		if building.has("purchase_cost"):
+			var receipt: Variant = building.purchase_cost
+			if (
+				not is_living
+				or str(building.kind) != "market"
+				or not receipt is Dictionary
+			):
+				return false
+			var paid: Dictionary = receipt
+			if (
+				paid.size() != 2
+				or not paid.has("wood") or not paid.has("stone")
+				or not _whole(paid["wood"], 6, 6)
+				or not _whole(paid["stone"], 4, 4)
+			):
+				return false
 		if not _whole(building.get("plot"), 0, int(town.plots) - 1):
 			return false
 		var identifier := str(building.get("id", ""))
@@ -584,4 +704,71 @@ static func _valid_town(town: Dictionary) -> bool:
 			return false
 		occupied[int(building.plot)] = true
 		identifiers[identifier] = true
+	if is_living and not VILLAGE.valid(town, _whole):
+		return false
+	return true
+
+
+func enable_living_village() -> void:
+	if living_village:
+		return
+	living_village = true
+	VILLAGE.upgrade(_player)
+	VILLAGE.upgrade(_rival)
+	VILLAGE.update_campaign(self, _player)
+	VILLAGE.update_campaign(self, _rival)
+	_undo.clear()
+	_redo.clear()
+
+
+func campaign_status() -> Dictionary:
+	return VILLAGE.campaign_status(self, _player) if living_village else {}
+
+
+func economy_status() -> Dictionary:
+	return VILLAGE.economy_status(self, _player) if living_village else {}
+
+
+func day_report() -> Dictionary:
+	return _player.last_report.duplicate(true) if living_village else {}
+
+
+func public_projects() -> Array[Dictionary]:
+	return VILLAGE.public_projects(_player) if living_village else []
+
+
+func fund_project(id: String) -> bool:
+	last_error = ""
+	if not _can_act() or not living_village:
+		return false
+	if not VILLAGE.PROJECTS.has(id) or bool(_player.city_projects.get(id, false)):
+		last_error = "Wähle ein neues Gemeinschaftsprojekt."
+		return false
+	var cost: int = int(VILLAGE.PROJECTS[id].cost)
+	if int(_player.treasury) < cost:
+		last_error = "In der Stadtkasse fehlen noch %d Münzen." % (cost - int(_player.treasury))
+		return false
+	var before := _player.duplicate(true)
+	_player.treasury = int(_player.treasury) - cost
+	_player.city_projects[id] = true
+	VILLAGE.update_campaign(self, _player)
+	_remember(before)
+	return true
+
+
+func trader_offer() -> Dictionary:
+	return VILLAGE.trader_offer(_player, day) if living_village else {}
+
+
+func order_delivery(id: String) -> bool:
+	last_error = ""
+	if not _can_act() or not living_village:
+		return false
+	last_error = VILLAGE.order_error(self, _player, id, day)
+	if not last_error.is_empty():
+		return false
+	var before := _player.duplicate(true)
+	VILLAGE.order(self, _player, id, day)
+	VILLAGE.update_campaign(self, _player)
+	_remember(before)
 	return true

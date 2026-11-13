@@ -1,0 +1,108 @@
+{
+	"capture_kind": "stationary production kart_island scene; staged player and cameras",
+	"display_server": "X11",
+	"low": false,
+	"rendering_method": "gl_compatibility",
+	"source": {
+		"clean_tracked_source": true,
+		"engine": "4.6.3-stable (official)",
+		"physical_android_device": false,
+		"renderer": "gl_compatibility",
+		"source_commit": "ada5ed81ad62339f15289da62670c0a4f9f7f2b9",
+		"tracked_differences": "",
+		"visual_acceptance": "Manual reference review required; render success is not art approval"
+	},
+	"status": "captured",
+	"track": "crystal_canyon",
+	"user_data_path": "/home/runner/work/lumo-godot/lumo-godot/graphics-evidence/worlds/baseline/user-data-crystal_canyon/godot/app_userdata/Lumo 3D/",
+	"viewport": [
+		1280,
+		720
+	],
+	"views": [
+		{
+			"basis_x": [
+				-0.324153184890747,
+				0.0,
+				-0.946004629135132
+			],
+			"basis_y": [
+				-0.189718589186668,
+				0.979684054851532,
+				0.0650080144405365
+			],
+			"basis_z": [
+				0.92678564786911,
+				0.200547218322754,
+				-0.317567706108093
+			],
+			"camera_source": "production chase camera",
+			"draw_calls": 268.0,
+			"fov": 55.0,
+			"name": "01_race_approach",
+			"path": "/home/runner/work/lumo-godot/lumo-godot/graphics-evidence/worlds/baseline/images/crystal_canyon/01_race_approach.png",
+			"position": [
+				-45.5525512695312,
+				11.9760665893555,
+				-106.542724609375
+			],
+			"sha256": "af53947ddc7961ff5424907df96ebd6f29ccc0488bb4194cf18ab054750c0c0f"
+		},
+		{
+			"basis_x": [
+				-0.464520812034607,
+				0.0,
+				-0.885562181472778
+			],
+			"basis_y": [
+				0.095013715326786,
+				0.994227588176727,
+				-0.0498393550515175
+			],
+			"basis_z": [
+				0.880450367927551,
+				-0.107291981577873,
+				-0.461839407682419
+			],
+			"camera_source": "manual context camera; unchanged production lighting",
+			"draw_calls": 198.0,
+			"fov": 61.0,
+			"name": "02_world_landmark",
+			"path": "/home/runner/work/lumo-godot/lumo-godot/graphics-evidence/worlds/baseline/images/crystal_canyon/02_world_landmark.png",
+			"position": [
+				-51.5537261962891,
+				14.968695640564,
+				-104.462356567383
+			],
+			"sha256": "05d867e2d12eb47ba47b345f4f6c322a9d1fb831f6dcb9830ca22ce053568428"
+		},
+		{
+			"basis_x": [
+				-0.749912858009338,
+				0.0,
+				-0.661536633968353
+			],
+			"basis_y": [
+				-0.13266921043396,
+				0.979684054851532,
+				0.150392800569534
+			],
+			"basis_z": [
+				0.648096919059753,
+				0.20054703950882,
+				-0.734677672386169
+			],
+			"camera_source": "production chase camera within authored section",
+			"draw_calls": 273.0,
+			"fov": 55.0,
+			"name": "03_route_reveal",
+			"path": "/home/runner/work/lumo-godot/lumo-godot/graphics-evidence/worlds/baseline/images/crystal_canyon/03_route_reveal.png",
+			"position": [
+				-86.1178894042969,
+				13.6273384094238,
+				-85.5047454833984
+			],
+			"sha256": "a56251611a25949b57ce3005f7d89ce57739cf3683bb931f59140ee3b5b52e40"
+		}
+	]
+}

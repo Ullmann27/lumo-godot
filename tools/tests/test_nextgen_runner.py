@@ -1,6 +1,9 @@
 """Test the actual acceptance shell's fail-closed evidence collection."""
 from pathlib import Path
+from functools import lru_cache
 import hashlib
+import importlib.util
+from io import BytesIO
 import json
 import os
 import re
@@ -18,16 +21,26 @@ RUNNER = ROOT / 'tools/validate_nextgen.sh'
 STUDIO_RUNNER = ROOT / 'tools/validate_studio.sh'
 RASTERS = {'learning_sharing_capture': 6, 'lumo_studio_motion_capture': 8,
            'puzzle_rotation_regression': 7, 'treasure_exploration_regression': 3}
+VILLAGE_PNGS = {
+    'village-overview-1280x720.png': (1280, 720),
+    'village-chapters-412x915.png': (412, 915),
+    'village-trader-2176x1812.png': (2176, 1812),
+    'village-treasury-640x360.png': (640, 360),
+}
+VILLAGE_DIRECTORY = 'captures/build_village_scene_regression'
 
 
-def fixture_png():
+@lru_cache(maxsize=16)
+def fixture_png(width=640, height=360, varied=False):
     """A synthetic raster exercises file validation, never visual acceptance."""
     def chunk(kind, data):
         return (struct.pack('>I', len(data)) + kind + data
                 + struct.pack('>I', zlib.crc32(kind + data)))
 
-    header = struct.pack('>IIBBBBB', 640, 360, 8, 2, 0, 0, 0)
-    pixels = (b'\x00' + b'\x20\x40\x60' * 640) * 360
+    header = struct.pack('>IIBBBBB', width, height, 8, 2, 0, 0, 0)
+    row = (b'\x20\x40\x60' * (width // 2) + b'\xb0\x80\x20' * (width - width // 2)
+           if varied else b'\x20\x40\x60' * width)
+    pixels = (b'\x00' + row) * height
     return (b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', header)
             + chunk(b'IDAT', zlib.compress(pixels)) + chunk(b'IEND', b''))
 
@@ -44,7 +57,13 @@ class NextgenRunnerTests(unittest.TestCase):
             shutil.copyfile(runner, root / 'tools' / runner.name)
             shutil.copyfile(ROOT / 'tools/run_godot_probe.py', root / 'tools/run_godot_probe.py')
             shutil.copyfile(ROOT / 'tools/verify_studio_rasters.py', root / 'tools/verify_studio_rasters.py')
+            village_verifier = ROOT / 'tools/verify_village_rasters.py'
+            if village_verifier.exists():
+                shutil.copyfile(village_verifier, root / 'tools/verify_village_rasters.py')
             root.joinpath('fixture-raster.png').write_bytes(fixture_png())
+            root.joinpath('village-fixtures').mkdir()
+            for name, dimensions in VILLAGE_PNGS.items():
+                root.joinpath('village-fixtures', name).write_bytes(fixture_png(*dimensions, varied=True))
             cases = re.findall(r"^check_probe (\S+) '([^']+)' (\S+)", runner.read_text(), re.M)
             markers = {name: marker for name, marker, _ in cases}
             for name in markers:
@@ -52,9 +71,11 @@ class NextgenRunnerTests(unittest.TestCase):
                     root.joinpath('scripts/tests', name + '.gd').write_text('# fixture only\n')
             engine = root / 'bin/fixture-godot'
             engine.write_text('#!/usr/bin/env python3\n'
-                              'import os, pathlib, shutil, sys\n'
+                              'import json, os, pathlib, shutil, sys\n'
                               'if "--version" in sys.argv: print("fixture-engine"); sys.exit(0)\n'
                               'name=pathlib.Path(sys.argv[sys.argv.index("--script")+1]).stem\n'
+                              'with open("invocations.jsonl", "a") as log:\n'
+                              '    log.write(json.dumps({"name":name,"args":sys.argv[1:],"capture_dir":os.environ.get("LUMO_CAPTURE_DIR")})+"\\n")\n'
                               f'if name == {failing!r}: print("ERROR: requested fixture failure"); sys.exit(1)\n'
                               f'rasters={RASTERS!r}\n'
                               'if "--headless" not in sys.argv and name in rasters:\n'
@@ -67,6 +88,14 @@ class NextgenRunnerTests(unittest.TestCase):
                               '        image=capture/f"fixture-{index}.png"\n'
                               f'        if name=={invalid_raster!r} and index==0: image.write_bytes(b"not a PNG")\n'
                               '        else: shutil.copyfile("fixture-raster.png",image)\n'
+                              'if name=="build_village_scene_regression" and "--headless" not in sys.argv:\n'
+                              '    assert "--capture" in sys.argv, "Village renderer must exercise its capture path"\n'
+                              '    capture=pathlib.Path(os.environ["LUMO_CAPTURE_DIR"])\n'
+                              '    capture.mkdir(parents=True,exist_ok=True)\n'
+                              f'    names=list({VILLAGE_PNGS!r})\n'
+                              f'    if name=={missing_raster!r}: names.pop()\n'
+                              '    for image_name in names:\n'
+                              '        shutil.copyfile(pathlib.Path("village-fixtures")/image_name,capture/image_name)\n'
                               f'print({markers!r}[name])\n')
             engine.chmod(0o755)
             git = root / 'bin/git'
@@ -91,12 +120,15 @@ class NextgenRunnerTests(unittest.TestCase):
             budgets = dict(line.split('\t') for line in root.joinpath('budgets.tsv').read_text().splitlines())
             manifest = root / 'logs/renderer-images.json'
             images = json.loads(manifest.read_text())['images'] if manifest.exists() else []
+            village_manifest = root / 'logs/village-images.json'
+            result.village_images = json.loads(village_manifest.read_text())['images'] if village_manifest.exists() else []
+            result.invocations = [json.loads(line) for line in root.joinpath('invocations.jsonl').read_text().splitlines()]
             return result, rows, cases, budgets, images
 
     def test_success_requires_every_logic_and_rendered_probe(self):
         result, rows, cases, budgets, images = self.run_fixture()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(len(cases), 37)
+        self.assertEqual(len(cases), 41)
         self.assertEqual(len(rows), len(cases))
         self.assertTrue(all(row.endswith('\tPASS') for row in rows))
         self.assertIn('[LumoNextgen] PASS', result.stdout)
@@ -109,6 +141,38 @@ class NextgenRunnerTests(unittest.TestCase):
         self.assertEqual(len(images), 24)
         self.assertTrue(all(image['sha256'] == hashlib.sha256(fixture_png()).hexdigest()
                             for image in images))
+        self.assertIn('[VillageRasterRoster] PASS 4 actual PNG files', result.stdout)
+        self.assertEqual({image['path']: (image['width'], image['height']) for image in result.village_images},
+                         {VILLAGE_DIRECTORY + '/' + name: size for name, size in VILLAGE_PNGS.items()})
+        pairs = {(name, mode) for name, _, mode in cases}
+        self.assertTrue({('build_village_economy_regression', 'headless'),
+                         ('build_village_art_regression', 'headless'),
+                         ('build_village_scene_regression', 'headless'),
+                         ('build_village_scene_regression', 'rendered')}.issubset(pairs))
+        village_calls = [call for call in result.invocations if call['name'] == 'build_village_scene_regression']
+        self.assertEqual(len(village_calls), 2)
+        for call in village_calls:
+            self.assertEqual('--capture' in call['args'], '--headless' not in call['args'])
+            self.assertTrue(call['capture_dir'].endswith('/' + VILLAGE_DIRECTORY))
+
+    def test_missing_village_png_fails_even_with_all_core_markers_and_studio_rasters(self):
+        result, rows, cases, _, images = self.run_fixture(missing_raster='build_village_scene_regression')
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(len(rows), len(cases))
+        self.assertTrue(all(row.endswith('\tPASS') for row in rows))
+        self.assertEqual(len(images), 24)
+        self.assertIn('village-raster-roster', result.stderr)
+        self.assertNotIn('[LumoNextgen] PASS', result.stdout)
+        self.assertEqual(result.village_images, [])
+
+    def test_failing_village_scene_still_collects_other_modules_without_final_pass(self):
+        result, rows, cases, _, _ = self.run_fixture(failing='build_village_scene_regression')
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(len(rows), len(cases))
+        self.assertIn('build_village_scene_regression\theadless\tFAIL', rows)
+        self.assertIn('build_village_scene_regression\trendered\tFAIL', rows)
+        self.assertIn('cards_table_capture\trendered\tPASS', rows)
+        self.assertNotIn('[LumoNextgen] PASS', result.stdout)
 
     def test_failure_does_not_suppress_other_module_evidence_or_emit_pass(self):
         result, rows, cases, _, _ = self.run_fixture(failing='jump_nextgen_regression')
@@ -155,6 +219,68 @@ class NextgenRunnerTests(unittest.TestCase):
         self.assertIn('puzzle_rotation_regression: found 6 PNGs, expected 7', result.stderr)
         self.assertNotIn('[LumoStudio] PASS', result.stdout)
         self.assertEqual(images, [])
+
+
+class VillageRasterTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        spec = importlib.util.spec_from_file_location('village_rasters', ROOT / 'tools/verify_village_rasters.py')
+        cls.module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.module)
+
+    def fixture(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = Path(temporary.name)
+        capture = root / VILLAGE_DIRECTORY
+        capture.mkdir(parents=True)
+        for name, dimensions in VILLAGE_PNGS.items():
+            (capture / name).write_bytes(fixture_png(*dimensions, varied=True))
+        return root, capture
+
+    def test_exact_decoded_original_roster_has_physical_dimensions_and_byte_hashes(self):
+        root, capture = self.fixture()
+        images = self.module.verify(root)
+        self.assertEqual({item['path']: (item['width'], item['height']) for item in images},
+                         {VILLAGE_DIRECTORY + '/' + name: size for name, size in VILLAGE_PNGS.items()})
+        for item in images:
+            data = (root / item['path']).read_bytes()
+            self.assertEqual(item['sha256'], hashlib.sha256(data).hexdigest())
+            self.assertEqual(item['bytes'], len(data))
+        self.assertEqual(json.loads((root / 'village-images.json').read_text()), {'images': images})
+
+    def test_missing_or_additional_original_images_cannot_produce_a_complete_roster(self):
+        for name in VILLAGE_PNGS:
+            root, capture = self.fixture()
+            (capture / name).unlink()
+            with self.subTest(missing=name), self.assertRaises(ValueError):
+                self.module.verify(root)
+            self.assertFalse((root / 'village-images.json').exists())
+        root, capture = self.fixture()
+        (capture / 'unexpected.png').write_bytes(fixture_png(varied=True))
+        with self.assertRaises(ValueError):
+            self.module.verify(root)
+
+    def test_renamed_symlinked_corrupt_uniform_transparent_or_wrong_sized_images_fail(self):
+        for mutation in ('renamed', 'symlink', 'truncated', 'uniform', 'transparent', 'pixel-size'):
+            root, capture = self.fixture()
+            path = capture / 'village-overview-1280x720.png'
+            if mutation == 'renamed': path.rename(capture / 'invented.png')
+            if mutation == 'symlink':
+                original = root / 'outside.png'
+                path.rename(original)
+                path.symlink_to(original)
+            if mutation == 'truncated': path.write_bytes(path.read_bytes()[:40])
+            if mutation == 'uniform': path.write_bytes(fixture_png(1280, 720))
+            if mutation == 'transparent':
+                from PIL import Image
+                output = BytesIO()
+                Image.new('RGBA', (1280, 720), (200, 40, 90, 0)).save(output, format='PNG')
+                path.write_bytes(output.getvalue())
+            if mutation == 'pixel-size': path.write_bytes(fixture_png(640, 360, varied=True))
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                self.module.verify(root)
+            self.assertFalse((root / 'village-images.json').exists())
 
 
 class NextgenEvidenceWorkflowTests(unittest.TestCase):

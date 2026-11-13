@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/workspace/scratch/e0abce7d2838/toolchain/actionlint/actionlint",
+    "-shellcheck=",
+    ".github/workflows/lumo-nextgen-2018.yml",
+    ".github/workflows/lumo-studio-2019.yml",
+    ".github/workflows/lumo-kart-bauwelt-integration.yml"
+  ],
+  "exit_code": 0,
+  "output": ""
+}

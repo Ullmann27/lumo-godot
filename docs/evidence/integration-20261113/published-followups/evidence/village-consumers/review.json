@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "outcome": "PASS",
+  "headless_only": true,
+  "checks": {
+    "economy": 337,
+    "art_structure": 2259,
+    "production_scene": 19,
+    "total": 2615
+  },
+  "duration_seconds": 3.273,
+  "strict_errors": [],
+  "sources_unchanged": 756,
+  "published_source": "027c2535d2d69fc56fc19d8d96490f7de5be9c37",
+  "findings": [
+    {
+      "topic": "Zero-coin marketplace and paid-cost refunds",
+      "source": [
+        "scripts/creative/build_settlement_state.gd:93",
+        "scripts/creative/build_settlement_state.gd:121",
+        "scripts/creative/build_settlement_state.gd:154",
+        "scripts/creative/build_settlement_state.gd:649"
+      ],
+      "evidence": "Unchanged economy probe lines 37-69 and real scene lines 66-83 passed. New market charges wood=6, stone=4, zero coins; exact purchase_cost is persisted and used for refund. Historical markets without that receipt retain their original two-coin refund. Forged wood=7 receipt is rejected."
+    },
+    {
+      "topic": "Actual JSON round-trip",
+      "source": [
+        "scripts/creative/build_settlement_state.gd:587",
+        "scripts/creative/build_settlement_state.gd:614",
+        "scripts/creative/build_settlement_economy.gd:798",
+        "scripts/creative/build_settlement_economy.gd:926"
+      ],
+      "evidence": "Existing reload_check uses JSON.stringify then JSON.parse_string and compares the restored complete snapshot. Only validated finite whole values are canonicalized to integers. Existing malformed-state, treasury, tax-remainder, family, crop and delivery checks passed; a legal 55-turn campaign reaches 1089 plots, 98 residents and chapter 12."
+    },
+    {
+      "topic": "Classic-save and child-identity boundary",
+      "source": [
+        "scripts/creative/build_settlement_world.gd:82",
+        "scripts/creative/build_settlement_world.gd:90",
+        "scripts/creative/build_settlement_world.gd:140",
+        "scripts/creative/build_settlement_world.gd:157"
+      ],
+      "evidence": "New scene probe proves a village-specific path distinct from the classic settlement path and resumes the same synthetic child from the real saved file. Source uses the full child SHA256 in filename and exact child/slot/mode checks in the envelope; invalid loaded state blocks saving.",
+      "coverage_limit": "The newly run scene probe does not create two child profiles or seed a pre-existing classic file. Existing build_settlement_play_regression.gd lines 316-357 contain wrong-child/slot/mode and alias/long-identity cases; that separate probe was read, not rerun in this assignment."
+    },
+    {
+      "topic": "Region, resident and facility consumers",
+      "source": [
+        "scripts/creative/build_settlement_region.gd:18",
+        "scripts/creative/build_settlement_residents.gd:35",
+        "scripts/creative/build_settlement_residents.gd:195",
+        "scripts/creative/build_settlement_visual.gd:45"
+      ],
+      "evidence": "Existing art probe passes unique/stable 1089 plot addresses, legacy first 25 coordinates, real collision geometry for all 11 facilities, bounded crowd of 18, no economic-state mutation, paused animation clock, three real imported seven-bone single-mesh assets. Actual scene attaches region/residents and shows 12-chapter UI. This is CPU/headless structural coverage, not image acceptance."
+    }
+  ],
+  "limits": [
+    "No renderer or Android image review was performed.",
+    "No pin, receipt, source, index or reference was edited by this agent.",
+    "This staged Village plus Loop source is separate from the successful published 4f auxiliary workflow evidence."
+  ]
+}

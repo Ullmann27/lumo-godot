@@ -335,3 +335,88 @@ consumer patches and limitations are under
 resource-error filter, rendering requirement or timeout budget is relaxed.
 The repaired source requires its own complete native and graphics evidence
 before any final Host pin or visual receipt is approved.
+
+
+## Completed 4f checkpoint and newly published Loop/Village integration
+
+The exact repaired checkpoint `4f3449253fd59023a2544432a178eb9efcafe4f9`
+(tree `189b7a66c731067559469e2503e3a190b337031d`) completed all 15 workflows.
+Nextgen `43466004918` has eight successful jobs and original bundle
+`14061435964`, 169,825,813 bytes, SHA256
+`dab5b9e929c64adcd1a366f730a721a00d11c6ba0676b3218ed854d27529f565`.
+The frozen Host 9e/3de verifier accepts its full 37/24 plus Touch6/32 contract:
+136 decoded PNGs (126 current, ten historical comparisons) and 96 clean
+artifact logs. The Gameplay original records 23 successful actual scene/audio
+releases across the 13 repaired consumers. The main Kart scenes release five
+playbacks in 65 ms before resume and four in 114 ms before final PASS. This
+confirms the repair on that CI source without identifying the classes of the
+earlier eight leaked resources from 74c.
+
+Graphics `43466005184` has three successful jobs, three digest-bound original
+archives, 36 current and 26 baseline PNGs, and 40 clean artifact logs. Root
+opened its five current required Home/Worlds/Feedback selections and the fresh
+learning equality image. The separate 13 auxiliary runs have 14 successful
+jobs and 155 completed steps: 153 successful and two expected exclusive matrix
+skips. Complete API data, lossless raw logs, image/archive indices and bounded
+observations are retained in `native-4f-checkpoint/`. None is relabelled as
+approval for the later published Loop/Village source.
+
+The 72-hour published-branch audit found two further Native deliveries:
+PR161 `bd4f59caf767f45dbca288ad5d8b90011e061f2d` connects the Loop camera to
+the existing speed/boost/reduced-motion effect path; PR162
+`027c2535d2d69fc56fc19d8d96490f7de5be9c37` adds the complete living village,
+its eleven buildings, twelve chapters, separate v2 save, residents, delivery
+and town-treasury economy. Local Loop merge c88b100f and Village merge 176184c9
+preserve the already-published 4f runtime and test repairs. The two Loop merge
+conflicts retain the exact current workflow budget and handoff; their only
+runtime/probe delta is the published two-file camera change. The Village merge
+is clean. No producer dirty worktree is consumed.
+
+Matching Host PR467 contains no missing runtime delta: lib/test/assets and
+both Pubspecs are identical to the integrated Host. Its three different Native
+pins and producer-specific push route are not imported. Published e3d update
+wrapper tests are already integrated with the stronger separate version opt-ins.
+
+Before UI repairs, the exact published Loop probe passes 56 logic checks;
+Village economy/art/scene probes pass 337/2,259/19. New BuildPlay71 and the
+exact previous 4f BuildPlay62 both pass on this same merge, as does the original
+BuildDialogDensity2016 probe. These are source-bound headless results.
+
+The expanded VillageScene probe then enables the same explicit desktop touch
+capability as the established BuildDialogDensity fixture. It uses genuine root
+ScreenTouch/ScreenDrag events, each popup's actual screen/canvas transform,
+four size/density fixtures, real scroll exposure, content-preserving live
+rotation and close touches. All original nineteen statements are retained.
+On exact published product SHA256
+`cd5e7a41991ac8591408b86094db182be85124a8ef4a48b28bf3717011bf576e`,
+the final probe fails 125 checks with seven actual reachability/resize failures.
+On repaired product SHA256
+`a8b5b310104281f6fb9c84901c3d83ee5d3382b38ef2bd418a44ff6b83d39ae0`,
+the identical probe passes 223 checks. Both runs bind 1,224 unchanged sources;
+probe SHA256 is `1ac6dcd8ba6c72d637ad575802fb46654d28ea541c865c053eb478fed7b1ffde`.
+The original baseline was fully imported before this comparison. Earlier
+prototype failures without desktop touch capability and a separate font-import
+setup failure are diagnostic history, not the causal product comparison.
+
+The product repair passes scroll-child events to their container while regular
+buttons retain their existing ownership. A geometric HUD guard prevents these
+new presses from acquiring a world gesture; the existing world-release method
+is byte-identical. Open village dialogs reset their old minimum before shrinking
+and retain their Window instance, contents and scroll state. The original
+classic SettlementPlay127 still passes, including owner/slot/mode save-isolation
+negatives. Headless --capture is rejected without any PNG or success marker.
+
+The shared acceptance adds four exact Core pairs: economy headless, art
+headless, scene headless and scene rendered. It now requires 41 Core pairs;
+Studio24 and Touch6/32 stay unchanged. `village-images.json` independently binds
+four decoded, nonblank, correctly-sized production PNGs: overview1280x720,
+chapters412x915, trader2176x1812 and treasury640x360. The Host additionally
+requires an actual reviewed Village capture. The Native and Studio new-worlds
+setups explicitly install python3-pil. The original strict error rules, actual
+renderer requirement, source hashes and publication boundaries remain intact.
+
+The next combined commit needs a complete fresh Native/Graphics run and its
+own original-image reviews. Four 4f source stamps, past receipts and desktop
+geometry tests cannot approve that new source or an Android APK. Exact final
+Native/Host pins, API35/API37, APK/PCK/signing identity and in-place update
+remain subsequent independent gates; the live 2018 release stays unchanged.

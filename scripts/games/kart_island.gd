@@ -2731,8 +2731,12 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 				- entry_basis.y * radius * 0.15
 			)
 			focus = focus.lerp(hub, 0.35)
-		camera.position = camera.position.lerp(desired_loop, minf(1, delta * 4))
+		camera.position = (
+			desired_loop if snap else camera.position.lerp(desired_loop, minf(1.0, delta * 4.0))
+		)
 		camera.look_at(focus)
+		# The loop camera must not freeze boost FOV, speed streaks or reduced-motion preferences.
+		_update_camera_speed_effects(delta, snap, clampf(absf(speed) / 25.0, 0.0, 1.0))
 		return
 	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
 	var right := Vector3(-ahead.z, 0, ahead.x)
@@ -2767,6 +2771,10 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 			* (0.35 + speed_ratio * 0.65)
 		)
 		camera.rotate_object_local(Vector3(0, 0, 1), roll)
+	_update_camera_speed_effects(delta, snap, speed_ratio)
+
+
+func _update_camera_speed_effects(delta: float, snap: bool, speed_ratio: float) -> void:
 	var baseline_fov: float = VISUAL_GRADE.camera_fov(
 		speed_ratio, boost_time > 0.0 and not paused, reduced_motion
 	)

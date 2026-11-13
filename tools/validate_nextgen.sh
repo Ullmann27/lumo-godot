@@ -85,6 +85,9 @@ check_probe build_transform_regression '[BuildTransform] PASS' headless
 check_probe build_nextgen_play_regression '[BuildNextgen] PASS' headless
 check_probe build_settlement_regression '[Settlement] PASS' headless
 check_probe build_settlement_play_regression '[SettlementPlay] PASS' headless
+check_probe build_village_economy_regression '[VillageEconomy] PASS' headless
+check_probe build_village_art_regression ' checks / 0 failures' headless
+check_probe build_village_scene_regression '[VillageScene] PASS' headless
 check_probe creative_nextgen_environment_regression '[CreativeNextgenEnvironment] PASS' headless
 check_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' headless
 check_probe kart_track_pass_regression '[KartTrackPass] PASS' headless
@@ -99,6 +102,7 @@ check_probe treasure_exploration_regression '[TreasureExploration] PASS' rendere
 check_probe jump_nextgen_capture '[JumpNextgenCapture] PASS' rendered
 check_probe build_nextgen_play_regression '[BuildNextgen] PASS' rendered -- --capture
 check_probe build_settlement_play_regression '[SettlementPlay] PASS' rendered -- --capture
+check_probe build_village_scene_regression '[VillageScene] PASS' rendered -- --capture
 check_probe creative_nextgen_environment_regression '[CreativeNextgenEnvironment] PASS' rendered
 # Fixed simulation time prevents a slow software-rendered frame from skipping
 # the short selection gesture. This is never a measured device frame-rate claim.
@@ -110,6 +114,10 @@ check_probe kart_player_full_route_regression '[PlayerFullRoute] PASS' rendered 
 # Every required Studio view must exist even when all probe markers say PASS.
 if ! python3 tools/verify_studio_rasters.py "$LOG_DIR"; then
   failures+=("renderer-roster")
+fi
+# Village is an additional production capture set, never a Studio replacement.
+if ! python3 tools/verify_village_rasters.py "$LOG_DIR"; then
+  failures+=("village-raster-roster")
 fi
 
 if (( ${#failures[@]} )); then

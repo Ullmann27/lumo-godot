@@ -1,0 +1,1 @@
+99fb94c992750d543ed0b61e9f4ba48c571b2c8143f16eb2707fd8da1dd7e641  scripts/tests/kart_home_experience_capture.gd

@@ -1,32 +1,53 @@
 # Continue the combined LUMO 2019 integration
 
 The active integration drafts are `Ullmann27/lumo-godot#160` and
-`Ullmann27/lumo-lernen#465`. Root prepares native changes on
-`integration/lumo-followups-20261113` and advances the own published branch
-`integration/lumo-connections-20261113` with an exact expected-SHA lease.
-The producer worktrees, main and the live 2018 release PR #461 remain protected.
+`Ullmann27/lumo-lernen#465`. Root prepares published followups in the isolated
+`integration/lumo-published-followups-20261113` worktree and advances the own
+published `integration/lumo-connections-20261113` branch using an exact
+expected-SHA lease. Producer worktrees, main and live Host PR #461 stay protected.
 
-Published native `74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef`, tree
-`05f547fd58ccdc1002d98ff1031d4208b992b0ee`, includes the current Studio goal,
-learning-label and HUD gesture fixes. Its Graphics workflow succeeded. Its
-Nextgen workflow failed because the original Kart regression printed PASS
-before the engine reported eight retained resources at exit. The original
-failure remains evidence; successful images and the partial bundle do not
-approve that source.
+The completed native checkpoint is `4f3449253fd59023a2544432a178eb9efcafe4f9`,
+tree `189b7a66c731067559469e2503e3a190b337031d`. All 15 workflows succeeded:
+Nextgen `43466004918` (eight jobs), Graphics `43466005184` (three jobs), and
+13 additional workflows. The original Nextgen archive passed the frozen Host
+9e verifier: 37 Core pairs, 24 Studio images, six Touch pairs and 32 Touch images.
+The repaired Gameplay job has 23 real scene/audio release markers before PASS.
+The earlier 74c failure remains unchanged historical evidence.
 
-The next repair connects a shared real scene/playback lifetime check to the
-main Kart regression and twelve audited consumers. Success requires actual
-release within 2,000 ms; product audio, gameplay assertions, source identities
-and strict error filters remain intact. Local headless checks and deliberate
-retention checks are distinct from the still-required fresh renderer run.
-See `docs/integration/2026-11-13/FOLLOWUPS.md` and its original evidence paths.
+The next isolated source merges the published Loop-camera branch
+`bd4f59caf767f45dbca288ad5d8b90011e061f2d` and full living-village branch
+`027c2535d2d69fc56fc19d8d96490f7de5be9c37`. The retained Build probes pass
+71 new / 62 exact previous assertions, plus 2,016 density assertions. Village
+model/art/original-scene checks pass 337 / 2,259 / 19. The Loop feedback probe
+passes 56 headless logic checks with real playback cleanup.
 
-After the repaired source passes every native job, review its own original
+A genuine touch-capable comparison found unreachable village scroll actions
+and an open dialog that failed to shrink after orientation/density changes.
+The same extended probe fails on the exact published product (125 checks,
+seven failures) and passes on the repaired product (223 checks). It preserves
+all original 19 assertions, checks actual touch events and popup transforms,
+48dp targets, the same resized Window instance and unchanged saved bytes.
+The unchanged classic SettlementPlay probe also passes all 127 assertions.
+A headless capture request fails without producing an image or PASS.
+
+The common Native/Host contract now requires 41 Core pairs, unchanged Studio24,
+a separate four-image Village roster and unchanged Touch6/32. A current Village
+image must be explicitly reviewed. Both workflows that run this common gate
+install the PNG decoder. The actual next-source renderer and Android checks
+remain required; headless fixtures are not physical-device or frame-rate proof.
+
+Original 4f evidence is under
+`docs/evidence/integration-20261113/native-4f-checkpoint/`; the published merge
+and local repair evidence is under
+`docs/evidence/integration-20261113/published-followups/`. Follow the exact
+source identities and limits in `docs/integration/2026-11-13/FOLLOWUPS.md`.
+
+After the new combined source passes every native job, review its own original
 production and graphics images, record both current Host receipts, then bind
 all three Host identity files to that same final Native SHA. Real Android
-compile, API 35/API 37 and the 2017-to-2019 in-place update remain separate
-gates. This integration branch does not publish an APK. Work continues in the
-active session without a background automation.
+compile, API35/API37 and the 2017-to-2019 in-place update are separate gates.
+This integration branch does not publish an APK. Work continues in the active
+session without a background automation.
 
 ## Historical inherited 2018 handoff
 
