@@ -229,6 +229,17 @@ func _ui() -> void:
 	var tools := HBoxContainer.new()
 	hud.add_child(tools)
 	editor_controls.append(tools)
+	# Primary build actions must remain physically touchable while auxiliary
+	# modes scroll. Keeping their nodes outside ScrollContainer prevents
+	# clipped coordinates from eating real tap releases.
+	var pinned_tools := HBoxContainer.new()
+	tools.add_child(pinned_tools)
+	for pinned_spec in [["Verschieben", _toggle_move], ["Drehen ↻", _rotate]]:
+		var pinned_button := _day_button(pinned_spec[0], pinned_spec[1])
+		# Primary actions are not world gestures; consuming the touch prevents
+		# a rotate tap from also committing the selected piece.
+		pinned_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		pinned_tools.add_child(pinned_button)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -238,10 +249,9 @@ func _ui() -> void:
 	tool_actions = actions
 	scroll.add_child(actions)
 	for spec in [
-		["Verschieben", _toggle_move],
-		["Siedlung", _open_settlement.bind("settlement")],
 		["Wettbau", _open_settlement.bind("rival")],
-		["Drehen ↻", _rotate],
+		["Siedlung", _open_settlement.bind("settlement")],
+		["Dorf & Wirtschaft", _open_settlement.bind("settlement", true)],
 		["Entfernen", _toggle_erase],
 		["Rückgängig", _undo],
 		["Wiederholen", _redo],
@@ -1254,10 +1264,11 @@ func _toggle_move() -> void:
 	)
 
 
-func _open_settlement(mode: String) -> void:
+func _open_settlement(mode: String, living_village := false) -> void:
 	if paused or not save_world(false):
 		return
 	SceneRouter.launch_options["settlementMode"] = mode
+	SceneRouter.launch_options["livingVillage"] = living_village and mode == "settlement"
 	SceneRouter.launch_options["buildSlot"] = slot
 	SceneRouter.goto("settlement")
 
