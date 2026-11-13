@@ -27,14 +27,16 @@ func _run() -> void:
 	var max_left: float = 0.0
 	var max_right: float = 0.0
 	var max_lift: float = 0.0
+	var neutral_foot_height: float = actor.skeleton.get_bone_global_pose(i_f).origin.y
 	for t in range(55):
 		actor._process(DT)
 		var pose_l: Quaternion = actor.skeleton.get_bone_pose_rotation(i_l)
 		var pose_r: Quaternion = actor.skeleton.get_bone_pose_rotation(i_r)
 		max_left = maxf(max_left, pose_l.angle_to(neutral))
 		max_right = maxf(max_right, pose_r.angle_to(actor.locomotion.neutral_rotation["Thigh.R"]))
-		var lift: float = actor.skeleton.get_bone_pose_position(i_f).y - (
-			actor.locomotion.neutral_position["Foot.L"] as Vector3).y
+		# Real end-effector clearance; translating the ankle joint itself would
+		# stretch the shin and is no longer accepted as a walking animation.
+		var lift: float = actor.skeleton.get_bone_global_pose(i_f).origin.y - neutral_foot_height
 		max_lift = maxf(max_lift, lift)
 		assert(actor.position.is_equal_approx(home),
 			"Gait must not fake translation or modify collision")

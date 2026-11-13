@@ -18,6 +18,8 @@ var player: CharacterBody3D
 var fox: Node3D
 var camera: Camera3D
 var marker: MeshInstance3D
+var alternate_marker: MeshInstance3D
+var available_goals: Array[Dictionary] = []
 var gate: StaticBody3D
 var joystick: Control
 var action: Control
@@ -75,6 +77,10 @@ func _ready() -> void:
 	camera.look_at(player.position + CAMERA_LOOK_OFFSET, Vector3.UP)
 	marker = kit.mesh(self, kit.SHAPES.star(), Vector3.ZERO, Color("ffe7a1"), true)
 	marker.scale = Vector3.ONE * 0.65
+	alternate_marker = kit.mesh(self, kit.SHAPES.star(), Vector3.ZERO, Color("9de9ff"), true)
+	alternate_marker.name = "AlternateExplorationGoal"
+	alternate_marker.scale = Vector3.ONE * 0.65
+	alternate_marker.hide()
 	_ui()
 	get_viewport().size_changed.connect(func(): RUNTIME.safe_area(self, safe_ui))
 	RUNTIME.safe_area(self, safe_ui)
@@ -183,6 +189,43 @@ func _landscape() -> void:
 		mountain.material_override = BuildVoxelStyle.material("stone", Color("8fa07a"))
 		mountain.scale = Vector3(18, 25 + (i % 3) * 8, 16)
 	ISLAND_ART.apply(self)
+	_branch_trails()
+
+
+func _branch_trails() -> void:
+	# Both paths are part of the playable terrain and lead to independently
+	# answerable locations after the bridge. Shared meshes keep their cost low.
+	var paths := Node3D.new()
+	paths.name = "TreasureBranchPaths"
+	add_child(paths)
+	var pavers := BoxMesh.new()
+	pavers.size = Vector3.ONE
+	for route in [
+		{"index": 3, "start": Vector3(-2, 0, -33), "sign": Vector3(-6.0, 0, -34.0), "text": "← Kristallwächter", "color": Color("85dce5")},
+		{"index": 4, "start": Vector3(2, 0, -33), "sign": Vector3(6.0, 0, -34.0), "text": "Mondgarten →", "color": Color("d7bc80")}
+	]:
+		var target: Vector3 = STATE.CLUES[int(route.index)].at
+		var start: Vector3 = route.start
+		var direction := (target - start).normalized()
+		var distance := start.distance_to(target)
+		var count := ceili(distance / 1.2)
+		var tiles: Array[Transform3D] = []
+		var basis := Basis(Vector3.UP, atan2(direction.x, direction.z)) * Basis.from_scale(Vector3(2.2, 0.055, distance / count * 0.94))
+		for i in range(count):
+			tiles.append(Transform3D(basis, start.lerp(target, (i + 0.5) / count) + Vector3.UP * 0.04))
+		BuildVoxelStyle.multimesh(paths, "Path_" + str(STATE.CLUES[int(route.index)].id), pavers, BuildVoxelStyle.material("paving", route.color), tiles)
+		var sign_at: Vector3 = route.sign
+		kit.box(paths, sign_at + Vector3.UP * 0.9, Vector3(0.18, 1.8, 0.18), Color("775d40"))
+		kit.box(paths, sign_at + Vector3.UP * 1.9, Vector3(4.6, 0.9, 0.16), Color("283b43"))
+		var label := Label3D.new()
+		label.name = "RouteSign_" + str(STATE.CLUES[int(route.index)].id)
+		label.text = route.text
+		label.font = preload("res://assets/fonts/Nunito-Black.ttf")
+		label.font_size = 38
+		label.pixel_size = 0.01
+		label.modulate = route.color
+		label.position = sign_at + Vector3(0, 1.9, 0.10)
+		paths.add_child(label)
 
 
 func _ui() -> void:
@@ -288,8 +331,12 @@ func _physics_process(delta: float) -> void:
 	if not found.is_empty():
 		toast.text = "Entdeckung: %s!" % found
 		_update()
-	marker.position = model.current().at + Vector3.UP * (3.5 + sin(time * 2) * 0.2)
+	if not available_goals.is_empty():
+		marker.position = available_goals[0].at + Vector3.UP * (3.5 + sin(time * 2) * 0.2)
 	marker.rotate_y(delta)
+	if available_goals.size() > 1:
+		alternate_marker.position = available_goals[1].at + Vector3.UP * (3.5 + sin(time * 2 + 1) * 0.2)
+		alternate_marker.rotate_y(-delta)
 	action.disabled = not model.can_interact(player.position)
 	save_clock += delta
 	if save_clock > 3:
@@ -320,14 +367,19 @@ func _update() -> void:
 		if child is CollisionShape3D:
 			child.set_deferred("disabled", not gate.visible)
 	marker.visible = not model.completed
+	available_goals = model.available_clues()
+	alternate_marker.visible = available_goals.size() > 1
+	var lead: String = model.current().lead
+	if available_goals.size() > 1:
+		lead = "Wähle deinen Weg: Kristallwächter oder Mondgarten. Für das Schloss brauchst du beide Funde."
 	clue_label.text = (
-		"Hinweis %d / %d · Entdeckungen %d / %d\n%s"
+		"Hinweise gelöst: %d / %d · Entdeckungen %d / %d\n%s"
 		% [
-			mini(model.chapter + 1, STATE.CLUES.size()),
+			model.found.size(),
 			STATE.CLUES.size(),
 			model.discoveries.size(),
 			STATE.DISCOVERIES.size(),
-			model.current().lead
+			lead
 		]
 	)
 
@@ -351,7 +403,7 @@ func _close_modal() -> void:
 func _interact() -> void:
 	if paused or not model.can_interact(player.position):
 		return
-	var clue: Dictionary = model.current()
+	var clue: Dictionary = model.clue_at(player.position)
 	_open_modal(clue.name)
 	var text := KIT.label(clue.question, 19)
 	text.custom_minimum_size.x = 480
