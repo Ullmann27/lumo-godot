@@ -122,6 +122,7 @@ def architecture():
     material("StudioBlue", "4b8191", 0.65)
     material("StudioLeaf", "4b8266", 0.88)
     material("StudioLeafLight", "8ea873", 0.88)
+    material("StudioGlobeLand", "8ea873", 0.88)
     material("StudioSoil", "4e4537", 0.95)
     for x in (-4.4, 0.0, 4.4):
         for side in (-1, 1):
@@ -172,7 +173,7 @@ def architecture():
         angle = index * 1.7
         sphere("Raised continent", (4.85 + math.sin(angle) * 0.24, 1.25 + math.cos(angle) * 0.18,
                                      2.0 + math.cos(angle * 1.3) * 0.20),
-               (0.16, 0.09, 0.16), "StudioLeafLight")
+               (0.16, 0.09, 0.16), "StudioGlobeLand")
     for x in (-5.42, -4.28):
         box("Abacus upright", (x, 1.09, 2), (0.07, 0.86, 0.08), "StudioOak")
     for row in range(4):

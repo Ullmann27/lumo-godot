@@ -120,9 +120,9 @@ class Author:
             sweep = (1.42 if running else 0.78) * duty * 0.5
             bob = 0.018 * (1 - math.cos(phase * 2))
             self.translate("Pelvis", (0, -0.045 + bob, 0))
-            self.rotate("SpineLower", (1, 0, 0), -0.14 if running else -0.035)
+            self.rotate("SpineLower", (1, 0, 0), 0.14 if running else 0.035)
             self.rotate("SpineUpper", (0, 1, 0), math.sin(phase) * (0.06 if running else 0.035))
-            self.rotate("Neck", (1, 0, 0), 0.07 if running else 0.02)
+            self.rotate("Neck", (1, 0, 0), -0.07 if running else -0.02)
             update()
             for side, offset in [("L", 0), ("R", 0.5)]:
                 u = (progress + offset) % 1
@@ -139,8 +139,8 @@ class Author:
         elif clip in ["jump_rise", "jump_fall"]:
             rising = clip == "jump_rise"
             tuck = math.sin(progress * math.pi * 0.65) if rising else 1 - progress
-            self.rotate("SpineLower", (1, 0, 0), -0.08 * tuck)
-            self.rotate("Neck", (1, 0, 0), 0.05 * tuck)
+            self.rotate("SpineLower", (1, 0, 0), 0.08 * tuck)
+            self.rotate("Neck", (1, 0, 0), -0.05 * tuck)
             update()
             for side in ["L", "R"]:
                 goal = self.foot_rest[side] + C @ Vector((0, 0.055 + 0.17 * tuck, -0.035 - 0.06 * tuck))
@@ -151,8 +151,8 @@ class Author:
             strength = math.sin(math.pi * progress)
             crouch = 0.10 if clip == "land" else 0.045
             self.translate("Pelvis", (0, -crouch * strength, 0))
-            self.rotate("SpineLower", (1, 0, 0), (0.16 if clip == "land" else 0.23) * strength)
-            self.rotate("Neck", (1, 0, 0), -0.10 * strength)
+            self.rotate("SpineLower", (1, 0, 0), (0.16 if clip == "land" else -0.23) * strength)
+            self.rotate("Neck", (1, 0, 0), (-0.10 if clip == "land" else 0.14) * strength)
             update()
             for side in ["L", "R"]:
                 self.leg(side, self.foot_rest[side])

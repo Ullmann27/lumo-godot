@@ -1,0 +1,53 @@
+diff --git a/scripts/tests/kart_drive_feedback_regression.gd b/scripts/tests/kart_drive_feedback_regression.gd
+index e57dd09..7db094a 100644
+--- a/scripts/tests/kart_drive_feedback_regression.gd
++++ b/scripts/tests/kart_drive_feedback_regression.gd
+@@ -444,12 +444,15 @@ func _production_events() -> void:
+ 			feedback.visual_state().events == 0,
+ 			"finish cinematic cannot retain a frozen race effect"
+ 		)
++	var playbacks: Array[WeakRef] = []
++	for player: Node in game.find_children("*", "AudioStreamPlayer", true, false):
++		if player.has_stream_playback():
++			playbacks.append(weakref(player.get_stream_playback()))
+ 	game.abandoned = true
+ 	game.queue_free()
+ 	await process_frame
+-	# Rebuilds dispose multiple rigs; use the production regression's deferred
+-	# teardown interval and explicitly require that no orphan nodes survive it.
+-	await create_timer(0.5).timeout
++	game = null
++	_check(await _release_audio(playbacks), "audio playback releases after race teardown")
+ 	await process_frame
+ 	_check(
+ 		int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)) == orphan_baseline,
+@@ -457,6 +460,29 @@ func _production_events() -> void:
+ 	)
+ 
+ 
++func _release_audio(playbacks: Array[WeakRef]) -> bool:
++	# Fixed simulation time can outrun the mixer's real fadeout. Observe the
++	# actual playbacks without retaining them, and fail if teardown stalls.
++	var started := Time.get_ticks_msec()
++	while true:
++		var pending := 0
++		for playback: WeakRef in playbacks:
++			if playback.get_ref() != null:
++				pending += 1
++		if pending == 0:
++			print(
++				"[KartDriveFeedback] audio_release tracked=%d elapsed_ms=%d"
++				% [playbacks.size(), Time.get_ticks_msec() - started]
++			)
++			return true
++		if Time.get_ticks_msec() - started >= 2000:
++			printerr("[KartDriveFeedback] retained_audio_playbacks=", pending)
++			return false
++		OS.delay_msec(2)
++		await process_frame
++	return false
++
++
+ func _production_rebuild_lifetime(race, feedback: Node3D) -> void:
+ 	var original_feedback_id := feedback.get_instance_id()
+ 	var old_flame: WeakRef = weakref(race.player.flames[0])

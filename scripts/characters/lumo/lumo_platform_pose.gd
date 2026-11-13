@@ -65,66 +65,68 @@ func bind(source: Skeleton3D) -> bool:
 
 
 func advance(velocity: Vector3, grounded: bool, delta: float) -> void:
-	if skeleton == null or delta <= 0.0 or not velocity.is_finite():
+	if skeleton == null or not is_finite(delta) or delta <= 0.0 or not velocity.is_finite():
 		return
+	delta = minf(delta, 0.10)
 	var speed: float = Vector2(velocity.x, velocity.z).length()
 	if has_sample and grounded and not was_grounded:
 		landing_left = 0.20
 		landing_strength = clampf(-last_vertical_speed / 11.0, 0.25, 1.0)
 	landing_left = maxf(0.0, landing_left - delta)
-	var landing: float = sin(PI * landing_left / 0.20) * landing_strength
 	var moving: bool = grounded and speed > 0.06
 	var running: float = clampf((speed - 2.0) / 3.5, 0.0, 1.0)
 	if moving:
-		# Advance by distance, with a longer stride at running speed.
-		phase = fposmod(phase + delta * TAU * speed / lerpf(0.82, 1.65, running), TAU)
-	var effort: float = clampf(speed / 2.0, 0.0, 1.0)
-	var acceleration: float = clampf((speed - last_speed) / delta / 30.0, -1.0, 1.0)
-	var air_tuck: float = clampf(velocity.y / 8.5, -0.35, 1.0) if not grounded else 0.0
-	var blend: float = 1.0 - exp(-18.0 * delta)
+		# Blender's foot trajectories and this phase use the same stride length.
+		# Character scaling is included; a small teacher takes shorter steps.
+		phase = fposmod(phase + delta * TAU * speed / maxf(0.05, body_space.stride_metres(running)), TAU)
+	var effort: float = clampf(speed / 0.65, 0.0, 1.0)
+	var braking: float = clampf((last_speed - speed) / delta / 32.0, 0.0, 1.0) if grounded else 0.0
+	var blend: float = 1.0 - exp(-22.0 * delta)
+	var cycle: float = phase / TAU
+	var land_phase: float = 1.0 - landing_left / 0.20
+	var air_phase: float = (
+		clampf(1.0 - velocity.y / 8.5, 0.0, 1.0)
+		if velocity.y > 0.35 else clampf(-velocity.y / 11.0, 0.0, 1.0)
+	)
 	state = (
 		("jump_rise" if velocity.y > 0.35 else "jump_fall")
-		if not grounded
-		else (
-			"land"
-			if landing_left > 0.0
-			else ("run_loop" if speed >= 3.2 else ("walk_loop" if moving else "idle"))
+		if not grounded else (
+			"land" if landing_left > 0.0 else
+			("run_loop" if speed >= 3.2 else ("walk_loop" if moving else "idle"))
 		)
 	)
-	for side in ["L", "R"]:
-		var swing: float = sin(phase + (0.0 if side == "L" else PI)) * effort if moving else 0.0
-		var lift: float = pow(maxf(0.0, swing), 2.0)
-		var thigh: float = -swing * lerpf(0.40, 0.62, running) - landing * 0.30
-		var knee: float = lift * lerpf(0.52, 0.82, running) + landing * 0.54
-		var ankle: float = swing * 0.24 - lift * 0.20 - landing * 0.23
-		var arm: float = swing * lerpf(0.28, 0.55, running)
+	for bone in BONES:
+		var body_delta := Quaternion.IDENTITY
 		if not grounded:
-			thigh = -0.28 - 0.20 * maxf(air_tuck, 0.0)
-			knee = 0.48 + 0.36 * maxf(air_tuck, 0.0)
-			ankle = -0.18
-			arm = -0.52 + air_tuck * 0.18
-		_rotate("Thigh." + side, Vector3.RIGHT, thigh, blend)
-		_rotate("Shin." + side, Vector3.RIGHT, knee, blend)
-		_rotate("Foot." + side, Vector3.RIGHT, ankle, blend)
-		_rotate("Toe." + side, Vector3.RIGHT, maxf(0.0, -swing) * 0.16, blend)
-		_rotate("UpperArm." + side, Vector3.RIGHT, arm, blend)
-		_rotate("Forearm." + side, Vector3.RIGHT, -0.18 * running - landing * 0.10, blend)
-		_position("Foot." + side, Vector3.UP * lift * 0.04, blend)
-	var lean: float = -0.08 * running - acceleration * 0.12 + landing * 0.16
-	_rotate("SpineLower", Vector3.RIGHT, lean, blend)
-	_rotate("SpineUpper", Vector3.UP, sin(phase * 2.0) * effort * 0.045 if grounded else 0.0, blend)
-	_rotate("Neck", Vector3.RIGHT, -lean * 0.65, blend)
-	_rotate("Head", Vector3.RIGHT, -lean * 0.35 + air_tuck * 0.06, blend)
-	for index in range(5):
-		var bone: String = ["TailBase", "Tail1", "Tail2", "Tail3", "TailTip"][index]
-		_rotate(
-			bone,
-			Vector3.UP,
-			sin(phase - float(index) * 0.48) * effort * 0.07 if grounded else 0.03 * air_tuck,
-			blend
-		)
-	_position(
-		"Pelvis", Vector3.UP * ((1.0 - cos(phase * 2.0)) * effort * 0.014 - landing * 0.075), blend
+			body_delta = body_space.clip_rotation(state, bone, air_phase)
+		elif moving:
+			body_delta = Quaternion.IDENTITY.slerp(
+				body_space.clip_rotation("walk", bone, cycle).slerp(
+					body_space.clip_rotation("sprint", bone, cycle), running
+				), effort
+			)
+		if grounded and landing_left > 0.0:
+			body_delta = body_delta.slerp(body_space.clip_rotation("land", bone, land_phase), landing_strength)
+		elif braking > 0.02:
+			body_delta = body_delta.slerp(body_space.clip_rotation("brake", bone, 0.5), braking * 0.65)
+		var index: int = int(indices[bone])
+		var target: Quaternion = body_space.rotation_target(bone, body_delta)
+		skeleton.set_bone_pose_rotation(index, skeleton.get_bone_pose_rotation(index).slerp(target, blend))
+	# Only the pelvis translates. Leg segment lengths and toe offsets remain
+	# exactly those of the original skin; feet lift through joint articulation.
+	var pelvis := Vector3.ZERO
+	if not grounded:
+		pelvis = body_space.clip_pelvis(state, air_phase)
+	elif moving:
+		pelvis = body_space.clip_pelvis("walk", cycle).lerp(body_space.clip_pelvis("sprint", cycle), running) * effort
+	if grounded and landing_left > 0.0:
+		pelvis = pelvis.lerp(body_space.clip_pelvis("land", land_phase), landing_strength)
+	elif braking > 0.02:
+		pelvis = pelvis.lerp(body_space.clip_pelvis("brake", 0.5), braking * 0.65)
+	var pelvis_index: int = int(indices.Pelvis)
+	skeleton.set_bone_pose_position(
+		pelvis_index,
+		skeleton.get_bone_pose_position(pelvis_index).lerp(body_space.position_target("Pelvis", pelvis), blend)
 	)
 	skeleton.force_update_all_bone_transforms()
 	last_vertical_speed = velocity.y
@@ -143,19 +145,3 @@ func stop() -> void:
 	skeleton.force_update_all_bone_transforms()
 	has_sample = false
 	landing_left = 0.0
-
-
-func _rotate(bone: String, axis: Vector3, angle: float, blend: float) -> void:
-	var index: int = int(indices[bone])
-	var target: Quaternion = body_space.rotation_target(bone, Quaternion(axis, angle))
-	skeleton.set_bone_pose_rotation(
-		index, skeleton.get_bone_pose_rotation(index).slerp(target, blend)
-	)
-
-
-func _position(bone: String, offset: Vector3, blend: float) -> void:
-	var index: int = int(indices[bone])
-	var target: Vector3 = body_space.position_target(bone, offset)
-	skeleton.set_bone_pose_position(
-		index, skeleton.get_bone_pose_position(index).lerp(target, blend)
-	)

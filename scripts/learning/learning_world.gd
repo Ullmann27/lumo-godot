@@ -527,6 +527,19 @@ func _build_hundred_stock(material: Material, ink: Material) -> void:
 		content, "", Vector3(0, 0.72, 2.1), 0.34, _material("hundred_ink", Color("f5e1ad"))
 	)
 	_hundred_summary.name = "CurrentPlaceValue"
+	# Keep the real extruded caption parallel to the viewing plane. An upright
+	# sign and a deeper plate have different screen projections from above;
+	# their lower glyphs otherwise fall onto the similarly colored tray rim.
+	_hundred_summary.global_basis = camera.global_basis
+	var caption_plate := MeshInstance3D.new()
+	caption_plate.name = "CaptionPlate"
+	caption_plate.mesh = BoxMesh.new()
+	var plate_material := StandardMaterial3D.new()
+	plate_material.albedo_color = Color("122f45")
+	plate_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	caption_plate.material_override = plate_material
+	caption_plate.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_hundred_summary.add_child(caption_plate)
 
 
 func _build_subtraction() -> void:
@@ -766,6 +779,18 @@ func _refresh() -> void:
 		_hundred_summary.mesh.text = (
 			"%d = %d Hunderter + %d Zehner" % [value, value / 100, (value % 100) / 10]
 		)
+		# The actual extruded text needs its own contrasting surface. Without it
+		# the cream glyphs disappear against the ten-frame's cream lower rim.
+		var caption_bounds: AABB = _hundred_summary.get_aabb()
+		var caption_plate: MeshInstance3D = _hundred_summary.get_node("CaptionPlate")
+		caption_plate.mesh.size = Vector3(
+			caption_bounds.size.x + 0.22, caption_bounds.size.y + 0.14, 0.035
+		)
+		caption_plate.position = Vector3(
+			caption_bounds.get_center().x,
+			caption_bounds.get_center().y,
+			caption_bounds.position.z - 0.045
+		)
 		_frame_label.mesh.text = (
 			"10 Zehner = 100"
 			if activity.initial_count() + activity.placed.size() >= 10
@@ -864,6 +889,7 @@ func _arrange_activity(portrait: bool) -> void:
 		if activity.kind == "bridge_hundred":
 			_hundred_stock.position = Vector3(1.35, 0, -3.85) if portrait else Vector3(-3.4, 0, 1.6)
 			_hundred_summary.position = Vector3(0, 0.6, 2.25)
+			_hundred_summary.global_basis = camera.global_basis
 	elif activity.kind == "subtract_ten":
 		for index in range(targets.size()):
 			targets[index] = (

@@ -3,12 +3,12 @@
   "tool": "Blender 4.3.2",
   "source": "original scripted geometry",
   "units": "metres",
-  "mesh_count": 10,
-  "material_count": 10,
+  "mesh_count": 11,
+  "material_count": 11,
   "triangles": 29424,
   "runtime_asset": "assets/learning/studio/learning_studio.glb",
-  "asset_bytes": 1521196,
-  "sha256": "a23a24fd14a0ac413edcb37d4a59bb144493c55a17b5c61d6aee26046f93e197",
-  "blend_sha256": "f180eafe7ca708a06432936ddaf1e24c429fd4ee5c89eea816666a44ab91c243",
+  "asset_bytes": 1522224,
+  "sha256": "e5b33abceaba8df76b6475efc04454aac3db353a1b40005267d2986be718a034",
+  "blend_sha256": "d620c06c7884609bd306570b09035be28a47365706e5ee4dc2767d7268f8bfa3",
   "runtime_capture_status": "requires actual Godot render; Blender preview is asset evidence only"
 }

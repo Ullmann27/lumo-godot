@@ -1,16 +1,17 @@
 extends RefCounted
 ## 65-bone Lumo locomotion layer. It preserves the imported idle pose and
-## articulates hips/knees/ankles/arms, including alternating swing clearance.
+## samples Blender-authored IK clips on hips/knees/ankles/arms.
 ## This pose generator does NOT translate the character or modify collisions;
 ## the owning world must supply a real velocity / navigation position.
-## Foot planting against non-flat terrain needs a separate ground-contact IK.
+## The original rigid leg lengths are preserved. Uneven-terrain IK is separate.
 
 const BODY_SPACE = preload("res://scripts/characters/lumo/lumo_body_space_pose.gd")
 
 const REQUIRED: Array[String] = [
-	"Thigh.L", "Thigh.R", "Shin.L", "Shin.R",
-	"Foot.L", "Foot.R", "Toe.L", "Toe.R",
-	"UpperArm.L", "UpperArm.R", "SpineLower", "Pelvis",
+	"Pelvis", "SpineLower", "SpineUpper", "Neck", "Head",
+	"Thigh.L", "Thigh.R", "Shin.L", "Shin.R", "Foot.L", "Foot.R",
+	"Toe.L", "Toe.R", "UpperArm.L", "UpperArm.R", "Forearm.L", "Forearm.R",
+	"TailBase", "Tail1", "Tail2", "Tail3", "TailTip",
 ]
 
 var skeleton: Skeleton3D
@@ -18,7 +19,7 @@ var indices: Dictionary = {}
 var neutral_rotation: Dictionary = {}
 var neutral_position: Dictionary = {}
 var phase: float = 0.0
-var stride_metres: float = 0.73
+var stride_metres: float = 0.78
 var body_space
 
 
@@ -45,29 +46,19 @@ func bind(source: Skeleton3D) -> bool:
 
 
 func advance(delta: float, speed_metres_per_second: float) -> void:
-	if skeleton == null or delta <= 0.0 or speed_metres_per_second <= 0.0:
+	if skeleton == null or not is_finite(delta) or delta <= 0.0 or not is_finite(speed_metres_per_second) or speed_metres_per_second <= 0.0:
 		return
-	var pace: float = clampf(speed_metres_per_second / stride_metres, 0.65, 3.5)
-	phase = fposmod(phase + delta * TAU * pace, TAU)
-	var effort: float = clampf(speed_metres_per_second / 1.7, 0.4, 1.2)
-	for side in ["L", "R"]:
-		var offset: float = 0.0 if side == "L" else PI
-		var step: float = phase + offset
-		var swing: float = sin(step)
-		var clearance: float = pow(maxf(0.0, swing), 2.0)
-		# Positive knee bend lifts the advancing foot; opposite leg supports.
-		_rotate("Thigh." + side, Vector3.RIGHT, -0.38 * swing * effort)
-		_rotate("Shin." + side, Vector3.RIGHT, 0.12 + 0.48 * clearance * effort)
-		_rotate("Foot." + side, Vector3.RIGHT,
-			0.28 * swing * effort - 0.22 * clearance * effort)
-		_rotate("Toe." + side, Vector3.RIGHT, 0.18 * maxf(0.0, -swing))
-		_position("Foot." + side,
-			Vector3(0.0, 0.045 * clearance * effort, 0.0))
-		# Natural contralateral arm swing: left leg forwards, right arm forwards.
-		_rotate("UpperArm." + side, Vector3.RIGHT, 0.26 * swing * effort)
-	_rotate("SpineLower", Vector3.UP, 0.046 * sin(phase * 2.0))
-	_position("Pelvis", Vector3(0.0,
-		0.016 * (1.0 - cos(phase * 2.0)) * effort, 0.0))
+	delta = minf(delta, 0.10)
+	stride_metres = body_space.stride_metres()
+	phase = fposmod(phase + delta * TAU * speed_metres_per_second / maxf(0.05, stride_metres), TAU)
+	var cycle: float = phase / TAU
+	var effort: float = clampf(speed_metres_per_second / 0.65, 0.0, 1.0)
+	for name in REQUIRED:
+		var rotation: Quaternion = Quaternion.IDENTITY.slerp(body_space.clip_rotation("walk", name, cycle), effort)
+		skeleton.set_bone_pose_rotation(int(indices[name]), body_space.rotation_target(name, rotation))
+	skeleton.set_bone_pose_position(
+		int(indices.Pelvis), body_space.position_target("Pelvis", body_space.clip_pelvis("walk", cycle) * effort)
+	)
 	skeleton.force_update_all_bone_transforms()
 
 
@@ -79,16 +70,3 @@ func stop() -> void:
 		skeleton.set_bone_pose_rotation(index, neutral_rotation[name])
 		skeleton.set_bone_pose_position(index, neutral_position[name])
 	skeleton.force_update_all_bone_transforms()
-
-
-func _rotate(name: String, axis: Vector3, radians: float) -> void:
-	var index: int = int(indices[name])
-	skeleton.set_bone_pose_rotation(
-		index, body_space.rotation_target(name, Quaternion(axis, radians))
-	)
-
-
-func _position(name: String, shift: Vector3) -> void:
-	var index: int = int(indices[name])
-	skeleton.set_bone_pose_position(index,
-		body_space.position_target(name, shift))

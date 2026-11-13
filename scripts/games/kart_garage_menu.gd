@@ -84,6 +84,7 @@ var body_column: VBoxContainer
 var header_row: HBoxContainer
 var kart_head_row: HBoxContainer
 var preview_container: SubViewportContainer
+var _preview_render_sync_queued := false
 var premium_hero_shell: PanelContainer
 var step_strip: HBoxContainer
 var step_buttons: Array[Button] = []
@@ -281,6 +282,7 @@ void fragment() {
 	viewport_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	viewport_box.gui_input.connect(_preview_input)
 	viewport_box.resized.connect(func(): call_deferred("_fit_welcome_camera"))
+	viewport_box.resized.connect(_queue_preview_render_scale)
 	viewport_panel.add_child(viewport_box)
 	preview_vignette = ColorRect.new()
 	preview_vignette.name = "HeroDepthVignette"
@@ -309,6 +311,9 @@ void fragment() {
 	viewport.msaa_3d = Viewport.MSAA_4X if graphics_profile == "high" else Viewport.MSAA_2X
 	viewport_box.add_child(viewport)
 	preview_viewport = viewport
+	viewport.size_changed.connect(_queue_preview_render_scale)
+	get_window().size_changed.connect(_queue_preview_render_scale)
+	_queue_preview_render_scale()
 	preview = Node3D.new()
 	viewport.add_child(preview)
 	# The reference floats the real kart on transparent neon rings, not an opaque studio slab.
@@ -1523,6 +1528,31 @@ func _back() -> void:
 	else:
 		step -= 1
 		_refresh()
+
+
+func _queue_preview_render_scale() -> void:
+	if _preview_render_sync_queued or not is_inside_tree():
+		return
+	_preview_render_sync_queued = true
+	call_deferred("_sync_preview_render_scale")
+
+
+func _sync_preview_render_scale() -> void:
+	_preview_render_sync_queued = false
+	if not is_inside_tree() or not is_instance_valid(preview_viewport) or not is_instance_valid(preview_container):
+		return
+	var logical_window := get_viewport_rect().size
+	var buffer_size := Vector2(preview_viewport.size)
+	if logical_window.x <= 0.0 or logical_window.y <= 0.0 or buffer_size.x <= 0.0 or buffer_size.y <= 0.0:
+		return
+	# The UI keeps its logical canvas and input coordinates. Only the expensive
+	# 3D buffer follows the physical pixels used by the displayed preview.
+	var physical_scale := Vector2(get_window().size) / logical_window
+	var displayed_pixels := preview_container.get_global_rect().size * physical_scale
+	var native_scale := maxf(displayed_pixels.x / buffer_size.x, displayed_pixels.y / buffer_size.y)
+	var render_scale := clampf(native_scale, 0.1, 1.0)
+	if not is_equal_approx(preview_viewport.scaling_3d_scale, render_scale):
+		preview_viewport.scaling_3d_scale = render_scale
 
 
 func _refresh_preview() -> void:

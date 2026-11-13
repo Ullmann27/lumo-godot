@@ -115,15 +115,9 @@ func _capture_views() -> bool:
 	if not await _capture("01_race_approach", "production chase camera"):
 		return false
 	if selected == "winter_sprint":
-		var east := Vector3(-INF, 0, 0)
-		for point: Vector3 in game.world.curve.get_baked_points():
-			if point.x > east.x:
-				east = point
-		var station := Vector3(east.x + 26.0, -2.0, east.z + 9.0)
-		# Stay beyond the complete road's east edge, above its existing deck.
-		# This same layout calculation also works on the unexpanded baseline.
-		game.camera.position = station + Vector3(-14, 25, 50)
-		game.camera.look_at(station + Vector3(20, 22, -36))
+		var view := winter_landmark_view(game.world.curve)
+		game.camera.position = view.position
+		game.camera.look_at(view.target)
 	else:
 		var road: Vector3 = game.world.position_at(center)
 		game.camera.position = game.world.position_at(center - 36.0) + Vector3.UP * 5.5
@@ -138,6 +132,21 @@ func _capture_views() -> bool:
 	if not await _capture("03_route_reveal", "production chase camera within authored section"):
 		return false
 	return true
+
+
+static func winter_landmark_view(curve: Curve3D) -> Dictionary:
+	var east := Vector3(-INF, 0, 0)
+	for point: Vector3 in curve.get_baked_points():
+		if point.x > east.x:
+			east = point
+	# Match the measured free station placement without depending on the new
+	# module: the exact same capture file still runs on the old source.
+	var station := Vector3(east.x + 43.0, 14.0, east.z + 55.0)
+	return {
+		"station": station,
+		"position": station + Vector3(-35, 18, 55),
+		"target": station + Vector3(2, 6, -64)
+	}
 
 
 func _place_player(distance: float) -> void:

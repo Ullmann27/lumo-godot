@@ -307,6 +307,7 @@ func _variant_rebuild() -> void:
 
 
 func _production_events() -> void:
+	var orphan_baseline := int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))
 	root.get_node("SceneRouter").launch_options = {"childKey": "drive-feedback-regression"}
 	var game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
@@ -356,6 +357,7 @@ func _production_events() -> void:
 		feedback.visual_state().boost_events == 1,
 		"motion sampling does not duplicate the release event"
 	)
+	_production_rebuild_lifetime(game, feedback)
 	feedback.reset()
 	game.item = ""
 	game.boost_time = 0.0
@@ -442,6 +444,120 @@ func _production_events() -> void:
 			feedback.visual_state().events == 0,
 			"finish cinematic cannot retain a frozen race effect"
 		)
+	var playbacks: Array[WeakRef] = []
+	for player: Node in game.find_children("*", "AudioStreamPlayer", true, false):
+		if player.has_stream_playback():
+			playbacks.append(weakref(player.get_stream_playback()))
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
+	game = null
+	_check(await _release_audio(playbacks), "audio playback releases after race teardown")
+	await process_frame
+	_check(
+		int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)) == orphan_baseline,
+		"race replacement and repeated kart rebuilds release every attached node"
+	)
+
+
+func _release_audio(playbacks: Array[WeakRef]) -> bool:
+	# Fixed simulation time can outrun the mixer's real fadeout. Observe the
+	# actual playbacks without retaining them, and fail if teardown stalls.
+	var started := Time.get_ticks_msec()
+	while true:
+		var pending := 0
+		for playback: WeakRef in playbacks:
+			if playback.get_ref() != null:
+				pending += 1
+		if pending == 0:
+			print(
+				"[KartDriveFeedback] audio_release tracked=%d elapsed_ms=%d"
+				% [playbacks.size(), Time.get_ticks_msec() - started]
+			)
+			return true
+		if Time.get_ticks_msec() - started >= 2000:
+			printerr("[KartDriveFeedback] retained_audio_playbacks=", pending)
+			return false
+		OS.delay_msec(2)
+		await process_frame
+	return false
+
+
+func _production_rebuild_lifetime(race, feedback: Node3D) -> void:
+	var original_feedback_id := feedback.get_instance_id()
+	var old_flame: WeakRef = weakref(race.player.flames[0])
+	var old_spark: WeakRef = weakref(race.player.sparks[0])
+	race.player.configure_variant("glider")
+	_check(
+		old_flame.get_ref() == null and old_spark.get_ref() == null,
+		"real variant rebuild frees the previously bound nozzle and tyre nodes"
+	)
+	race.speed = 18.0
+	race.steering = 0.7
+	race.drifting = true
+	race.drift_charge = race.DRIFT_TIERS[1] + 0.1
+	race.boost_time = 0.0
+	race._update_vehicles(1.0 / 60.0)
+	var state: Dictionary = feedback.visual_state()
+	_check(
+		state.contacts == 2 and state.trail_segments == 0 and state.events == 0,
+		"variant rebuild resumes current tyre contacts without bridging old trails or events"
+	)
+	race.player.position -= race.player.basis.z * 0.3
+	race._update_vehicles(1.0 / 60.0)
+	_check(
+		(
+			feedback.visual_state().trail_segments > 0
+			and feedback.get_instance_id() == original_feedback_id
+			and feedback.get_child_count() == 3
+		),
+		"rebuilt kart resumes real trails using the same fixed effect pool"
+	)
+	old_flame = weakref(race.player.flames[0])
+	race.player.configure_variant("comet")
+	# The actual release event may arrive before the next advance() call.
+	race._release_drift()
+	_check(
+		(
+			old_flame.get_ref() == null
+			and feedback.visual_state().boost_events == 1
+			and feedback.visual_state().trail_segments == 0
+		),
+		"direct release after a second rebuild automatically binds the new exhausts"
+	)
+	if not logic_only:
+		var rings: MultiMeshInstance3D = feedback.get_node("EventContactRings")
+		for index in range(2):
+			var pulse := rings.multimesh.get_instance_transform(index)
+			_check(
+				(
+					feedback.to_global(pulse.origin).distance_to(
+						race.player.flames[index].global_position
+					)
+					< 0.001
+				),
+				"rebuilt production nozzle %d owns its real rendered impulse" % index
+			)
+	race._pause()
+	var paused_clock: float = feedback.visual_state().clock
+	race.player.set_driver_character("fox")
+	race._update_vehicles(0.5)
+	state = feedback.visual_state()
+	_check(
+		(
+			state.clock == paused_clock
+			and state.events == 0
+			and state.trail_segments == 0
+			and state.contacts == 0
+		),
+		"driver rebuild during real pause clears stale attachments without advancing time"
+	)
+	race._resume()
+	race.drifting = true
+	race.steering = 0.7
+	race.boost_time = 0.0
+	race._update_vehicles(1.0 / 60.0)
+	_check(
+		feedback.visual_state().contacts == 2,
+		"resuming after the driver rebuild restores the actual rear tyre contacts"
+	)
