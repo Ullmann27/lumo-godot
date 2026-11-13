@@ -1,3 +1,35 @@
+# Combined LUMO integration / geometry CI repair
+
+Updated: 2026-11-13. Active Native draft: PR160; Host draft: PR465.
+The published Native source 90d34181 connects the current Loop, Village, Puzzle
+and Studio followups. Its reported green Kart geometry job contains actual
+GDScript parse/compile failures. The temporary fixture omits four existing
+transitive dependencies; its last positive grep hides the failing negated
+error grep. The exact old workflow block reproduces the false success locally.
+
+The bounded fixture and strict-runner repair passes the actual clean engine
+run in 9.697 seconds with all 15 unchanged product dependencies. Five focused
+counterchecks and actionlint pass. The subsequent trigger-only change retains
+the exact executed engine block. Fresh published CI remains mandatory. An independent final source review
+found no blocker and binds the exact repaired source hashes. Original 90d job logs and a separate correction of the earlier
+cce false-success interpretation are preserved under
+[Auxiliary evidence](docs/evidence/integration-20261113/auxiliary-90d34181/README.md).
+The 15 reported green cce workflows are not a clean complete geometry proof.
+No product source is being rewritten for this CI correction.
+
+The current Host repairs are separately published as 5d44b479, exact Tree 609c710f.
+Its 157 focused methods cover final-scroll observation, SDK37.0 package selection
+and the Native Python environment. Existing historical proofs, version, pins
+and receipts keep their own scopes. See [CONTINUE.md](CONTINUE.md) for source
+identities, original-evidence boundaries and the remaining real Android gates.
+Main and producer worktrees remain protected; this integration branch does not
+publish an APK or claim physical-device frame rate.
+
+## Preserved earlier action-stage history
+
+The following original notes describe their historical development source.
+They do not establish acceptance of the current integration or its CI repair.
+
 # LUMO Kart action and live-stage integration
 
 Updated: 2026-11-12. Development branch: `chatgpt/lumo-action-stage-20261112`.
