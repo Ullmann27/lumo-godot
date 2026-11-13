@@ -27,8 +27,10 @@ static func layout(world) -> Dictionary:
 		north = minf(north, point.z)
 		south = maxf(south, point.z)
 	var ground_y: float = GROUND.surface_height("winter_sprint")
-	var base := Vector3(east.x + 26.0, ground_y, east.z + 9.0)
-	var summit := base + Vector3(49.0, 24.0, -81.0)
+	# The older roadside snowbanks reach east of the road. Keep the complete
+	# station and cabin corridor between them and the distant alpine ridge.
+	var base := Vector3(east.x + 43.0, ground_y + 16.0, east.z + 55.0)
+	var summit := base + Vector3(3.0, 8.0, -156.0)
 	return {"east": east, "north": north, "south": south, "base": base, "summit": summit}
 
 
@@ -41,6 +43,7 @@ static func build(world) -> void:
 	var gallery_count := _ice_gallery(world)
 	var base: Vector3 = arrangement.base
 	var summit: Vector3 = arrangement.summit
+	var structures_begin: int = world.decoration_count
 	# Both stations and every cable segment remain east of the entire road envelope.
 	_station(world, base, false)
 	_station(world, summit, true)
@@ -57,6 +60,8 @@ static func build(world) -> void:
 	landmark.set_meta("gallery_count", gallery_count)
 	landmark.set_meta("first_piece", before)
 	landmark.set_meta("piece_count", world.decoration_count - before)
+	landmark.set_meta("first_structure", structures_begin)
+	landmark.set_meta("structure_count", world.decoration_count - structures_begin)
 	world.add_child(landmark)
 	var cars := CABLE_CARS.new()
 	cars.configure(cable_low, cable_high, world)
@@ -143,8 +148,9 @@ static func _ice_gallery(world) -> int:
 
 static func _station(world, at: Vector3, high: bool) -> void:
 	var basis := Basis(Vector3.UP, -PI * 0.5)
-	if high:
-		# The upper station stands on actual ground-connected piers, not in mid-air.
+	if high or at.y > GROUND.surface_height("winter_sprint"):
+		# Both platforms stand on ground-connected piers. The lower station
+		# sits beside the raised road, above its older roadside snowbanks.
 		var floor_y: float = GROUND.surface_height("winter_sprint")
 		var pier_height: float = at.y - floor_y
 		for x in [-5.7, 5.7]:

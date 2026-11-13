@@ -103,6 +103,21 @@ jobs:
               godot --headless --audio-driver Dummy --path . \
               --script "scripts/tests/$PROBE.gd"
           fi
+          if [[ "$AREA" == home ]]; then
+            python3 tools/run_godot_probe.py --log "$EVIDENCE/preview-resolution.log" \
+              --timeout 240 --required '[KartPreviewResolution] PASS' -- \
+              godot --headless --audio-driver Dummy --path . \
+              --script scripts/tests/kart_preview_resolution_regression.gd
+          elif [[ "$AREA" == worlds ]]; then
+            export XDG_DATA_HOME="$EVIDENCE/visibility-user-data"
+            mkdir -p "$XDG_DATA_HOME"
+            python3 tools/run_godot_probe.py --log "$EVIDENCE/winter-visibility.log" \
+              --timeout 480 --required '[KartWinterVisibility] PASS' -- \
+              godot --headless --verbose --fixed-fps 60 --audio-driver Dummy \
+              --rendering-method gl_compatibility --path . \
+              --script scripts/tests/kart_world_capture_lifecycle_probe.gd -- --track=winter_sprint
+            grep -Fq '[KartWorldExpansionCapture] PASS track=winter_sprint views=0' "$EVIDENCE/winter-visibility.log"
+          fi
       - name: Real production scene captures
         if: ${{ !cancelled() && steps.regression.outcome != 'skipped' }}
         run: |

@@ -85,4 +85,50 @@ Die Bilder zeigten vier konkrete Artprobleme, die der Folgepatch bearbeitet:
 
 Die neue Prüfung projiziert die tatsächlichen Meshgrenzen von Leuchtturm und Originalpavillon in die unveränderten vier Produktionskameras. Beide passen vollständig in den jeweiligen Bildausschnitt; ihre projizierten Rechtecke überschneiden sich nicht. Diese geometrische Schranke verhindert erneutes Abschneiden und die Verdeckung des Leuchtturms durch den Pavillon, ersetzt aber keine Prüfung der tatsächlichen Farben, Lichtwirkung und übrigen Szenenüberdeckungen.
 
-Nach dem Artpatch: **251 Checks, 4/4 Formate, PASS, headless** für den vollständigen Home-Ablauf und weiterhin **11 Checks, PASS** für Geometrie und ruhende Kulisse. Protokoll: `docs/evidence/kart-home-20261113/home-art-headless.log`. Aktuelle Rendererbilder dieses Artpatches stehen noch aus. UI-Abmessungen, Kamerafit des Fahrers, native Navigation, Physik und externe Assets wurden durch den Artpatch nicht verändert.
+Nach dem Artpatch: **251 Checks, 4/4 Formate, PASS, headless** für den vollständigen Home-Ablauf und weiterhin **11 Checks, PASS** für Geometrie und ruhende Kulisse. Protokoll: `docs/evidence/kart-home-20261113/home-art-headless.log`. Zum Zeitpunkt dieses Commits standen die neuen Rendererbilder noch aus. UI-Abmessungen, Kamerafit des Fahrers, native Navigation, Physik und externe Assets wurden durch den Artpatch nicht verändert.
+
+## Bildabnahme des Artpatches
+
+Die echten PNGs aus Renderer-Lauf `43433485068`, Quellstand `b83437ce50b6fc395f56bdcb698aab17e80818f7`, wurden geöffnet: `home`, `mode-transition`, `selected-time-trial`, `garage-selected` und `home-return`, jeweils in 1280×720, 412×915, 690×829 und 640×320. Das sind 20 tatsächlich gesichtete Menübilder. Der blaue Himmel, die gegliederten Häuser und Baumkronen sowie die offene Wasserfläche sind sichtbar. Der Originalfahrer bleibt in den regulären Ansichten groß und frei erkennbar. Modusmarkierung und Rückkehr mit dem tatsächlich ausgewählten grünen Gecko-Kart stimmen in allen vier Größen. Die Zwischenbilder zeigen eine andere Kameraposition ohne Verdeckung des Fahrers durch die UI.
+
+Die sehr kurze 640×320-Ansicht verwendet erwartungsgemäß einen kleinen Bühnenausschnitt zugunsten der bedienbaren Controls. In der Garage ist nach dem Scrollen zur Gecko-Auswahl ein Teil der vorherigen Comet-Karte oben angeschnitten; die ebenso geöffnete exakte Baseline zeigt denselben Zustand. Das ausgewählte Gecko-Kart und seine Beschriftung sind vollständig im Scrollbereich sichtbar.
+
+Grenze der Artabnahme: Fahne und Segel verdecken Teile des Leuchtturms. Auch der Originalpavillon lässt sich in diesen Ausschnitten nicht als vollständig frei sichtbare Landmarke bestätigen. Die erfolgreichen Frustumtests bestätigen nur die geometrische Einpassung. Die Bildprüfung ergab keinen neuen blockierenden Fehler an Figur, Moduswahl oder Navigation. Diese Bilder stammen **vor** der nachfolgenden Renderingkorrektur; deren Darstellung benötigt weiterhin einen eigenen Renderer-Lauf.
+
+## Physische Auflösung der gemeinsamen Home-/Garagenvorschau
+
+Die Prüfung des langsamen Software-GL-Captures zeigte einen produktrelevanten Aufwand: Die bestehende SubViewportContainer-Streckung übernimmt den 1280er logischen UI-Canvas als Vorschaugröße. Vor dieser Korrektur renderte die 412×915-Ansicht dadurch ein 1205×2730 großes 3D-Bild für tatsächlich etwa 388×879 angezeigte Pixel. Das sind rund 9,65-mal so viele Pixel. Dieser Befund stammt aus der unveränderten Produktionsszene, nicht aus einer besonderen Captureauflösung.
+
+Die gemeinsame `kart_garage_menu.gd` passt deshalb ausschließlich `preview_viewport.scaling_3d_scale` an. Sie berechnet die physisch angezeigten Pixel aus Fenstergröße, logischem Viewport und globaler Vorschaufläche. Der größere Faktor beider Achsen erhält die Details bei Rundungsunterschieden; der Faktor ist auf höchstens 1,0 begrenzt. Eine zusammengefasste verzögerte Aktualisierung reagiert sowohl auf Container-/SubViewportänderungen als auch auf Fenstergrößenänderungen. Damit wird auch eine Halbierung des physischen Fensters bei gleichbleibendem logischem Layout erfasst.
+
+Bei identischen synthetischen Safe-Area-Rändern links/rechts 12 und oben/unten 16/20 Pixel ergeben sich für Home und Garage:
+
+| Physisches Fenster | Unveränderte logische Ausgabetextur | 3D-Skalierung | Angeforderte 3D-Zielgröße, gerundet |
+| --- | --- | --- | --- |
+| 1280×720 | 1256×684 | 1,000000 | 1256×684 |
+| 412×915 | 1205×2730 | 0,321992 | 388×879 |
+| 690×829 | 1235×1470 | 0,539456 | 666×793 |
+| 640×320 | 1386×639 | 0,444444 | 616×284 |
+
+Die Zielwerte sind die im laufenden Godot angeforderten Dimensionen aus Viewportgröße und Skalierungsfaktor; interne Ganzzahlrundung des GPU-Backends ist darin nicht separat gemessen. Die Prüfung toleriert weniger als 1,5 Pixel positive beziehungsweise 0,5 Pixel negative Rundungsabweichung.
+
+Die [offizielle Godot-4.6-Dokumentation zur Auflösungsskalierung](https://docs.godotengine.org/en/4.6/tutorials/3d/resolution_scaling.html) beschreibt bilineare Skalierung für sämtliche Renderer und die Laufzeiteinstellung über `Viewport.scaling_3d_scale`. [SubViewportContainer](https://docs.godotengine.org/en/4.6/classes/class_subviewportcontainer.html) dokumentiert dagegen ganzzahliges `stretch_shrink` und die automatische Größenübernahme bei `stretch=true`. Die gewählte Korrektur erhält diese logische Präsentation und die vorhandenen Inputkoordinaten. Originalkamerafit, Figurenmaße und die vorhandene Profilwahl für MSAA bleiben erhalten, einschließlich 4×MSAA im hohen Profil.
+
+Bewusster Umfang: Die logische Ausgabetextur und ihre 2D-Komposition bleiben groß. Reduziert wird die angeforderte 3D-Auflösung samt deren MSAA-Aufwand; es wird keine Reduktion sämtlicher Texturallokationen behauptet. Es liegen keine gemessenen Android-FPS oder thermischen Werte vor. Bilineares Hochskalieren benötigt eine erneute reale Bildprüfung, insbesondere für die kleinen Details in der Handyansicht.
+
+### Regression und Erhaltungsprüfungen
+
+```sh
+godot --headless --path . --audio-driver Dummy --script res://scripts/tests/kart_preview_resolution_regression.gd
+```
+
+Ergebnis: **`[KartPreviewResolution] PASS checks=52`**. Die neue Prüfung verwendet die vollständige Produktionsszene und kontrolliert alle vier Größen jeweils in Home und Garage: physische 3D-Zielgröße, 4×MSAA, bilinearen Modus, unveränderte logische Streckung/Inputkoordinaten und den Verzicht auf zusätzliche Supersampling-Skalierung. Außerdem prüft sie 1280×720 → 640×360 → 1280×720 mit unverändertem 1280×720-Canvas und identischer logischer Vorschautextur. Nur die angeforderte 3D-Zielgröße wechselt dabei 1280×720 → 640×360 → 1280×720.
+
+| Erneut ausgeführte Prüfung nach der Renderingkorrektur | Ergebnis |
+| --- | --- |
+| `kart_preview_resolution_regression.gd` | **52 Checks, PASS, headless** |
+| `kart_home_experience_regression.gd` | **251 Checks, 4/4 Fälle, PASS, headless** |
+| Unveränderte `kart_spatial_menu_regression.gd` | **554 Checks, 5/5 Fälle, PASS, headless** |
+| Unveränderte `kart_nextgen_garage_regression.gd` | **93 Checks, PASS, headless** |
+
+Die Originalprotokolle stehen unter `docs/evidence/kart-home-20261113/preview-resolution-headless.log` und `resolution-{home,spatial,garage}-headless.log`. Die neue Auflösungsprüfung gilt ausschließlich für den aktuellen Produktstand. Die Vergleichsbaseline bleibt exakt `ada5ed81`; weder der Renderingfix noch die neue Auflösungsanforderung werden in sie kopiert. Die bestehenden Capture-/Touch-Abläufe und deren Wartezeiten wurden nicht verändert.
