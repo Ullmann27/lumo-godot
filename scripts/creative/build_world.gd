@@ -73,10 +73,6 @@ var mode_button: Button
 var editor_controls: Array[Control] = []
 var tool_actions: HBoxContainer
 var camera_tools: HBoxContainer
-var goal_panel: PanelContainer
-var goal_access_button: Button
-var lower_hud: VBoxContainer
-var upper_hud: MarginContainer
 var editor_camera: Dictionary = {}
 var walk_orbit := 0.48
 var walk_tilt := 0.34
@@ -190,7 +186,6 @@ func _resize() -> void:
 		_layout_explore_controls()
 		_layout_choice_dialog()
 		_layout_camera_tools.call_deferred()
-		_layout_goal_access.call_deferred()
 
 
 func _exit_tree() -> void:
@@ -207,7 +202,6 @@ func _ui() -> void:
 	canvas.add_child(root)
 	safe_ui = root
 	var margin := MarginContainer.new()
-	upper_hud = margin
 	margin.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	margin.add_theme_constant_override("margin_left", 12)
 	margin.add_theme_constant_override("margin_right", 12)
@@ -229,6 +223,17 @@ func _ui() -> void:
 	var tools := HBoxContainer.new()
 	hud.add_child(tools)
 	editor_controls.append(tools)
+	# Primary build actions must remain physically touchable while auxiliary
+	# modes scroll. Keeping their nodes outside ScrollContainer prevents
+	# clipped coordinates from eating real tap releases.
+	var pinned_tools := HBoxContainer.new()
+	tools.add_child(pinned_tools)
+	for pinned_spec in [["Verschieben", _toggle_move], ["Drehen ↻", _rotate]]:
+		var pinned_button := _day_button(pinned_spec[0], pinned_spec[1])
+		# Primary actions are not world gestures; consuming the touch prevents
+		# a rotate tap from also committing the selected piece.
+		pinned_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		pinned_tools.add_child(pinned_button)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -238,10 +243,9 @@ func _ui() -> void:
 	tool_actions = actions
 	scroll.add_child(actions)
 	for spec in [
-		["Verschieben", _toggle_move],
-		["Siedlung", _open_settlement.bind("settlement")],
 		["Wettbau", _open_settlement.bind("rival")],
-		["Drehen ↻", _rotate],
+		["Siedlung", _open_settlement.bind("settlement")],
+		["Dorf & Wirtschaft", _open_settlement.bind("settlement", true)],
 		["Entfernen", _toggle_erase],
 		["Rückgängig", _undo],
 		["Wiederholen", _redo],
@@ -258,10 +262,6 @@ func _ui() -> void:
 		var action_button := _day_button(spec[0], spec[1])
 		action_button.mouse_filter = Control.MOUSE_FILTER_PASS
 		actions.add_child(action_button)
-	goal_access_button = _day_button("Aktuelles Bauziel", _current_goal)
-	goal_access_button.mouse_filter = Control.MOUSE_FILTER_PASS
-	goal_access_button.visible = false
-	actions.add_child(goal_access_button)
 	mode_button = _day_button("Mit Lumo laufen", _toggle_explore)
 	top.add_child(mode_button)
 	var layer_down: Button = _day_button(
@@ -280,7 +280,7 @@ func _ui() -> void:
 	layer_up.mouse_filter = Control.MOUSE_FILTER_PASS
 	actions.add_child(layer_down)
 	actions.add_child(layer_up)
-	goal_panel = PanelContainer.new()
+	var goal_panel := PanelContainer.new()
 	goal_panel.add_theme_stylebox_override("panel", _day_panel())
 	goal_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
 	goal_panel.position = Vector2(14, 156)
@@ -295,7 +295,6 @@ func _ui() -> void:
 	goal_box.add_child(goal_label)
 	goal_box.add_child(_day_button("Mein Bauwerk testen", _test_challenge))
 	var lower := VBoxContainer.new()
-	lower_hud = lower
 	lower.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	lower.offset_top = -162
 	lower.offset_left = 12
@@ -398,21 +397,6 @@ func _layout_camera_tools() -> void:
 			camera_tools.reparent(safe_ui, false)
 		camera_tools.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
 		camera_tools.position = safe_ui.size + Vector2(-200, -228)
-
-
-func _layout_goal_access() -> void:
-	if not is_instance_valid(goal_panel) or not is_instance_valid(lower_hud):
-		return
-	# Preserve the complete assignment and its original action when the fixed
-	# panel would be covered by the bottom palette on a short display.
-	var compact := goal_panel.get_global_rect().end.y + 8.0 > lower_hud.get_global_rect().position.y
-	goal_panel.visible = not compact and not exploring
-	goal_access_button.visible = compact
-
-
-func _current_goal() -> void:
-	_choice_dialog("Aktuelles Bauziel", [[goal, "Mein Bauwerk testen"]],
-		func(_id): _test_challenge(), goal_label.text)
 
 
 func _palette() -> void:
@@ -653,16 +637,6 @@ func _tap(at: Vector2) -> void:
 		_place_feedback(cell)
 
 
-func _world_gesture_starts_on_ui(point: Vector2) -> bool:
-	for control in [upper_hud, lower_hud, goal_panel, camera_tools]:
-		if not is_instance_valid(control) or not control.is_visible_in_tree():
-			continue
-		var local: Vector2 = control.get_global_transform_with_canvas().affine_inverse() * point
-		if Rect2(Vector2.ZERO, control.size).has_point(local):
-			return true
-	return false
-
-
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
 		return
@@ -670,12 +644,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		_pause(not paused)
 		return
 	if paused:
-		return
-	# Scrolling controls pass touch events to their ancestors. Such a press
-	# belongs to the HUD and must not also start an orbit or object drag below.
-	# Existing world gestures keep their original release/ownership behavior.
-	if ((event is InputEventScreenTouch or event is InputEventMouseButton)
-		and event.pressed and _world_gesture_starts_on_ui(event.position)):
 		return
 	if exploring:
 		_explore_input(event)
@@ -937,7 +905,6 @@ func _update_labels() -> void:
 	goal_label.text = (
 		str(texts[goal]) + ("\n✓ Schon geschafft" if model.completed.has(goal) else "")
 	)
-	_layout_goal_access.call_deferred()
 
 
 func _pause(value: bool) -> void:
@@ -1013,7 +980,7 @@ func load_world(show_message: bool = true) -> bool:
 	return true
 
 
-func _choice_dialog(title: String, items: Array, action: Callable, description: String = "") -> void:
+func _choice_dialog(title: String, items: Array, action: Callable) -> void:
 	if is_instance_valid(choice_window):
 		return
 	var dialog := Window.new()
@@ -1043,13 +1010,6 @@ func _choice_dialog(title: String, items: Array, action: Callable, description: 
 	var choices := VBoxContainer.new()
 	choices.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(choices)
-	if not description.is_empty():
-		var details := _day_label(description, 17)
-		details.name = "BuildGoalDescription"
-		details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		details.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		details.mouse_filter = Control.MOUSE_FILTER_PASS
-		choices.add_child(details)
 	for item in items:
 		var button := _day_button(item[1], _choose.bind(action, item[0], dialog))
 		button.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -1254,10 +1214,11 @@ func _toggle_move() -> void:
 	)
 
 
-func _open_settlement(mode: String) -> void:
+func _open_settlement(mode: String, living_village := false) -> void:
 	if paused or not save_world(false):
 		return
 	SceneRouter.launch_options["settlementMode"] = mode
+	SceneRouter.launch_options["livingVillage"] = living_village and mode == "settlement"
 	SceneRouter.launch_options["buildSlot"] = slot
 	SceneRouter.goto("settlement")
 
@@ -1477,7 +1438,6 @@ func _toggle_explore() -> void:
 	jump_button.set_enabled(exploring)
 	mode_button.text = "Weiterbauen" if exploring else "Mit Lumo laufen"
 	_layout_explore_controls()
-	_layout_goal_access.call_deferred()
 
 
 func _find_explorer_spawn() -> Vector3:

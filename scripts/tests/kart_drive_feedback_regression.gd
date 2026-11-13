@@ -331,6 +331,38 @@ func _production_events() -> void:
 	await process_frame
 	var feedback: Node3D = game.drive_feedback
 	_check(is_instance_valid(feedback), "real race builds and binds the feedback component")
+	# The cinematic loop camera must not suppress live speed cues or motion preferences.
+	_check(not game.world.loop_layout.is_empty(), "Sonnenhafen keeps its production looping section")
+	if not game.world.loop_layout.is_empty():
+		game.loop_state.active = true
+		game.speed = 25.0
+		game.boost_time = 2.0
+		game.reduced_motion = false
+		game._update_camera(1.0, true)
+		var boosted_loop_fov: float = game.camera.fov
+		var loop_speed_fx: Dictionary = game.speed_fx.visual_state()
+		_check(
+			bool(loop_speed_fx.boosting) and int(loop_speed_fx.visible_count) > 0,
+			"loop camera continues rendering live high-speed and boost streaks"
+		)
+		game.speed = 0.0
+		game.boost_time = 0.0
+		game._update_camera(1.0, true)
+		_check(
+			boosted_loop_fov > game.camera.fov + 0.5,
+			"loop camera recomputes FOV when boost and speed end"
+		)
+		game.speed = 25.0
+		game.boost_time = 2.0
+		game.reduced_motion = true
+		game._update_camera(1.0, true)
+		_check(
+			int(game.speed_fx.visual_state().visible_count) == 0,
+			"loop camera disables streaks when reduced motion is requested"
+		)
+		game.loop_state.active = false
+		game.reduced_motion = false
+		game.boost_time = 0.0
 	game.speed = 18.0
 	game.steering = 0.7
 	game.drifting = true
