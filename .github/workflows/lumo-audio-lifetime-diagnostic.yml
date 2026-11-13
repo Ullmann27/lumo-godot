@@ -1,0 +1,91 @@
+name: LUMO audio lifetime diagnostic
+
+on:
+  push:
+    branches: [chatgpt/lumo-audio-diagnostic-76980a94]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PRODUCT_SOURCE: 76980a941fa05d047574d8cc386d3249d93ffca3
+      EVIDENCE: ${{ github.workspace }}/audio-diag-evidence
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Bind the unchanged product and exact diagnostic additions
+        run: |
+          set -euo pipefail
+          mkdir -p "$EVIDENCE"
+          test "$(git rev-parse HEAD^)" = "$PRODUCT_SOURCE"
+          git rev-parse HEAD > "$EVIDENCE/diagnostic-source-sha.txt"
+          git rev-parse "$PRODUCT_SOURCE^{tree}" > "$EVIDENCE/product-source-tree.txt"
+          printf '%s\n' "$PRODUCT_SOURCE" > "$EVIDENCE/product-source-sha.txt"
+          git diff --name-only "$PRODUCT_SOURCE" HEAD > "$EVIDENCE/changed-paths.txt"
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          actual = set((Path(os.environ['EVIDENCE']) / 'changed-paths.txt').read_text().splitlines())
+          expected = {'.github/workflows/lumo-audio-lifetime-diagnostic.yml',
+                      'scripts/tests/diagnostics/kart_lasso_audio_lifetime_diagnostic.gd'}
+          assert actual == expected, actual
+          PY
+          git status --porcelain --untracked-files=no > "$EVIDENCE/dirty-before.txt"
+          uname -a > "$EVIDENCE/system.txt"
+          nproc >> "$EVIDENCE/system.txt"
+          lscpu >> "$EVIDENCE/system.txt"
+      - name: Install the same verified Godot engine
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import the actual project
+        run: |
+          set -euo pipefail
+          godot --version > "$EVIDENCE/engine.txt"
+          godot --headless --audio-driver Dummy --editor --import --quit 2>&1 | tee "$EVIDENCE/import.log"
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$EVIDENCE/import.log"; then exit 1; fi
+      - name: Compare original teardown and instrumented lifetime
+        run: |
+          set -euo pipefail
+          printf 'stage\tprobe\tresult\n' > "$EVIDENCE/results.tsv"
+          failures=0
+          export XDG_DATA_HOME="$RUNNER_TEMP/lumo-audio/user-data"
+          export XDG_CONFIG_HOME="$RUNNER_TEMP/lumo-audio/user-config"
+          export XDG_CACHE_HOME="$RUNNER_TEMP/lumo-audio/user-cache"
+          mkdir -p "$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+          for stage in rules original diagnostic original-after; do
+            case "$stage" in
+              rules) probe=kart_lasso_regression; marker='[KartLasso] PASS' ;;
+              diagnostic) probe=diagnostics/kart_lasso_audio_lifetime_diagnostic; marker='[KartLassoProduction] PASS' ;;
+              *) probe=kart_lasso_production_regression; marker='[KartLassoProduction] PASS' ;;
+            esac
+            if python3 tools/run_godot_probe.py --timeout 120 --required "$marker" \
+              --log "$EVIDENCE/$stage.log" -- godot --headless --audio-driver Dummy \
+              --path . --script "scripts/tests/$probe.gd"; then
+              printf '%s\t%s\tPASS\n' "$stage" "$probe" >> "$EVIDENCE/results.tsv"
+            else
+              printf '%s\t%s\tFAIL\n' "$stage" "$probe" >> "$EVIDENCE/results.tsv"
+              failures=$((failures + 1))
+            fi
+          done
+          git status --porcelain --untracked-files=no > "$EVIDENCE/dirty-after.txt"
+          cmp "$EVIDENCE/dirty-before.txt" "$EVIDENCE/dirty-after.txt"
+          test "$failures" = 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-audio-lifetime-diagnostic
+          path: audio-diag-evidence/
+          if-no-files-found: error
+          retention-days: 30
