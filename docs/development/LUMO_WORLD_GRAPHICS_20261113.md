@@ -56,6 +56,14 @@ Zusätzlich führt `kart_world_capture_lifecycle_probe.gd -- --track=winter_spri
 
 Die Übersichtskamera liegt bei `base + (-35,18,55)` und blickt auf `base + (2,6,-64)`. Ihre Berechnung befindet sich in `winter_landmark_view()` im Capture-Skript und verwendet nur die vorhandene Straßenkurve. Derselbe unveränderte Capture funktioniert daher weiterhin auf der alten Ausgangsbasis. **Die korrigierten Produktionsstrukturen und ihre neue Übersicht benötigen noch die tatsächliche Bildabnahme im folgenden Renderer-Lauf.** Die früheren Bilder werden nicht als Nachweis dieser späteren Änderung ausgegeben.
 
+### Exakte Zugehörigkeit bei der Sichtprüfung
+
+Der unabhängige Review hinterfragte die anfängliche Freigabe eines Treffers anhand eines generischen Meshnamens und seiner Nähe zur Station. In beiden aktuellen Detailprofilen wurde zwar kein entsprechender fremder Prop-Ursprung innerhalb dieses Radius gefunden. Der Abstandsvertrag allein schloss die Prüflücke aber nicht: Eine 10 cm große fremde Box fünf Meter vor dem Fassaden-Zielpunkt liegt 9,307 Meter von der Talstation entfernt, hält den geforderten Abstand zu den Bauteilen ein und verursachte weder Deko- noch Kabinenkollisionen. Die alte Sichtprüfung akzeptierte sie trotzdem als Eigengeometrie. Der gezielte Negativlauf in `station-ownership-red.log` reproduziert dies mit Exitcode 1.
+
+Die Sichtprüfung leitet die erwarteten Teile beider Stationen jetzt aus dem tatsächlichen Produktionsgenerator ab und gleicht ihre Typen und Transformationen mit den konkreten Submission-Indizes der aufgebauten Welt ab. Nur ein Treffer auf Teile der ausdrücklich zum Ziel gehörenden Station darf deren eigene Geometrie sein. Die übrige neue Seilbahn hat einen getrennten Indexbereich; die kurze Toleranz am Seil-Zielpunkt gilt ausschließlich für diese eigenen Seilbauteile. Fremde Geometrie erhält keine Nähe- oder Namensausnahme.
+
+Die beschriebene Fremdbox ist als dauerhafte negative Fixture im Lifecycle-Gate enthalten. Sie muss zunächst den Abstand von einem Meter zu den eigenen Strukturen erfüllen und anschließend als Sichtblocker erkannt werden. Danach besteht der strenge Lauf **50 Prüfungen**: die unveränderten 49 positiven Sichtprüfungen und die neue negative Fixture. Beide bisherigen PASS-Marker bleiben erhalten; der protokollierte Lauf beendet sich mit Exitcode 0, zwei nach 48 ms freigegebenen Audiowiedergaben und ohne Ressourcen-Leaks (`station-ownership-green.log`). Dieser Folgefix verändert ausschließlich Prüfcode und Evidenz.
+
 
 ## Integrationskorrektur: tatsächlicher Besitzer der Bewegungszustände
 

@@ -20,7 +20,11 @@ func _prepare_output() -> String:
 func _capture_views() -> bool:
 	if selected == "winter_sprint":
 		visibility = WINTER_VISIBILITY.new()
-		visibility.prepare(game.world)
+		var setup_problem: String = visibility.prepare(game.world)
+		if not setup_problem.is_empty():
+			visibility = null
+			await _finish(1, "[KartWinterVisibility] " + setup_problem)
+			return false
 		for fraction in [0.0, 0.025, 0.05]:
 			_place_player(game.world.length * fraction)
 			game._update_camera(1.0, true)
@@ -47,6 +51,8 @@ func _capture(view_name: String, _camera_source: String) -> bool:
 	await _frames(4)
 	if visibility != null and view_name == "02_world_landmark":
 		var problem: String = visibility.check_landmark(game.camera, game.world)
+		if problem.is_empty():
+			problem = visibility.check_foreign_obstruction(game.camera)
 		if not problem.is_empty():
 			visibility = null
 			await _finish(1, "[KartWinterVisibility] " + problem)

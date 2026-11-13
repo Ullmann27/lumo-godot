@@ -108,6 +108,10 @@ jobs:
               --timeout 240 --required '[KartPreviewResolution] PASS' -- \
               godot --headless --audio-driver Dummy --path . \
               --script scripts/tests/kart_preview_resolution_regression.gd
+            python3 tools/run_godot_probe.py --log "$EVIDENCE/cards-header.log" \
+              --timeout 240 --required 'CARDS_TABLE_RUNTIME_PASS' -- \
+              godot --headless --audio-driver Dummy --path . \
+              --script scripts/tests/cards_table_regression.gd
           elif [[ "$AREA" == worlds ]]; then
             export XDG_DATA_HOME="$EVIDENCE/visibility-user-data"
             mkdir -p "$XDG_DATA_HOME"

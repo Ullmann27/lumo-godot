@@ -6,6 +6,16 @@ var failures := 0
 var requests: Array[Dictionary] = []
 
 
+class HeaderReturnHost:
+	extends RefCounted
+	var destinations: Array[String] = []
+
+	# gdlint: disable=function-name
+	func returnToApp(destination: String, _payload: String) -> int:
+		destinations.append(destination)
+		return 1
+
+
 static func fixture() -> Dictionary:
 	return {
 		"protocol": 1,
@@ -126,7 +136,9 @@ func _run() -> void:
 	print(
 		"CARDS_ROOM_BATCHES sources=%d batches=%d" % [batched_instances, table.room_batches.size()]
 	)
-	check(typeof(wire_fixture().top.number) == TYPE_FLOAT, "fixture exercises actual JSON number type")
+	check(
+		typeof(wire_fixture().top.number) == TYPE_FLOAT, "fixture exercises actual JSON number type"
+	)
 	var folders := {"orange": "red", "purple": "yellow", "blue": "blue", "green": "green"}
 	for color: String in folders:
 		for number in range(10):
@@ -134,19 +146,24 @@ func _run() -> void:
 				JSON.stringify({"color": color, "type": "number", "number": number})
 			)
 			var texture: Texture2D = table._texture(card, true)
-			var expected := "res://assets/cards_table/cards/%s/%s_%d.png" % [
-				folders[color], folders[color], number
-			]
+			var expected := (
+				"res://assets/cards_table/cards/%s/%s_%d.png"
+				% [folders[color], folders[color], number]
+			)
 			check(
 				texture != null and texture.resource_path == expected,
 				"JSON card resolves original number face: %s %d" % [color, number]
 			)
 	for shape in [
-		Vector2i(1280, 720), Vector2i(412, 915), Vector2i(690, 829), Vector2i(2400, 1080)
+		Vector2i(1280, 720),
+		Vector2i(412, 915),
+		Vector2i(690, 829),
+		Vector2i(2400, 1080),
+		Vector2i(1080, 2400)
 	]:
 		root.size = shape
 		get_root().get_node("HostBridge")._options = {
-			"displayDensity": 2.625 if shape.x == 2400 else 1.0
+			"displayDensity": 2.625 if shape.x == 2400 or shape.y == 2400 else 1.0
 		}
 		await process_frame
 		table._resize()
@@ -154,7 +171,10 @@ func _run() -> void:
 		await process_frame
 		await process_frame
 		var face_errors := face_texture_errors(table)
-		check(face_errors.is_empty(), "JSON hand and discard bind face textures: " + str(face_errors))
+		check(
+			face_errors.is_empty(), "JSON hand and discard bind face textures: " + str(face_errors)
+		)
+		await _header_safe_area(table, shape)
 		check(table.actor.is_usable(), "original 65-bone actor loaded")
 		var hips: Vector3 = table.actor.skeleton.to_global(
 			table.actor.skeleton.get_bone_global_pose(table.seated.pelvis).origin
@@ -281,6 +301,7 @@ func _run() -> void:
 		table._pending = 0
 		table._sequence = 0
 		table._page = 0
+	await _header_back_touch(table)
 	table.queue_free()
 	await process_frame
 	print(
@@ -290,3 +311,102 @@ func _run() -> void:
 		)
 	)
 	quit(0 if failures == 0 else 1)
+
+
+func _tap_header(control: Control) -> void:
+	var point := control.get_global_rect().get_center()
+	for pressed in [true, false]:
+		var touch := InputEventScreenTouch.new()
+		touch.index = 1
+		touch.position = point
+		touch.pressed = pressed
+		Input.parse_input_event(touch)
+		await process_frame
+
+
+func _header_safe_area(table: Node3D, shape: Vector2i) -> void:
+	# Insets are a declared geometry fixture, not an Android measurement.
+	# Two physical pixels per viewport pixel exercise the actual conversion.
+	table.set_process(false)
+	var original: Dictionary = table._state.duplicate(true)
+	var card_position: Vector3 = table._cards["r1"].position
+	var footer_rect: Rect2 = table.footer.get_global_rect()
+	table._apply_header_safe_area(Rect2(32, 180, 56, 80), Vector2(shape) * 2)
+	await process_frame
+	await process_frame
+	var safe := Rect2(16, 90, shape.x - 44, shape.y - 130)
+	for button: Button in table.header.find_children("*", "Button", true, false):
+		check(
+			safe.encloses(button.get_global_rect()),
+			"header avoids status bar/cutout: " + button.text
+		)
+		check(
+			button.size.x / table._ui_scale >= 48 and button.size.y / table._ui_scale >= 48,
+			"safe header retains full 48dp touch target: " + button.text
+		)
+	check(
+		(
+			table._state == original
+			and table._cards["r1"].position == card_position
+			and table.footer.get_global_rect() == footer_rect
+		),
+		"safe header preserves public state and the existing hand/footer projection"
+	)
+	await _tap_header(table.pause_button)
+	check(
+		requests.size() == 1 and requests[0].action == "pause" and requests[0].revision == 4,
+		"real touch reaches inset Pause and retains the authoritative revision"
+	)
+	if requests.size() == 1:
+		var paused := original.duplicate(true)
+		paused.paused = true
+		paused.canDraw = false
+		paused.revision = 5
+		paused.ack = requests[0].sequence
+		table.apply_state(paused)
+		await process_frame
+		# A changed cutout/rotation must replace the former inset, not accumulate it.
+		table._apply_header_safe_area(Rect2(108, 64, 28, 48), Vector2(shape) * 2)
+		await process_frame
+		safe = Rect2(54, 32, shape.x - 68, shape.y - 56)
+		for button: Button in table.header.find_children("*", "Button", true, false):
+			check(
+				safe.encloses(button.get_global_rect()), "changed safe area keeps header reachable"
+			)
+		await _tap_header(table.pause_button)
+		check(
+			requests.size() == 2 and requests[1].action == "resume" and requests[1].revision == 5,
+			"real inset Weiter touch requests resume of the same paused round"
+		)
+	table._pending = 0
+	table._sequence = 0
+	requests.clear()
+	table.apply_state(original)
+	# Resume re-reads platform bounds even when the viewport size did not change.
+	table._notification(Node.NOTIFICATION_APPLICATION_RESUMED)
+	await process_frame
+	var resumed_header: Rect2 = table.header.get_global_rect()
+	table._resize()
+	await process_frame
+	check(
+		resumed_header == table.header.get_global_rect() and table._state == original,
+		"resume and resize agree on current platform bounds without changing the round"
+	)
+	table.set_process(true)
+
+
+func _header_back_touch(table: Node3D) -> void:
+	var bridge = root.get_node("HostBridge")
+	var previous_host: Object = bridge._host
+	var previous_pending: bool = bridge._return_pending
+	var host := HeaderReturnHost.new()
+	bridge._host = host
+	bridge._return_pending = false
+	var back: Button = table.header.get_node("Top").get_child(0).get_node("Back")
+	await _tap_header(back)
+	check(
+		host.destinations == ["games"] and table._closed,
+		"real Zurück touch keeps the existing acknowledged return to the host"
+	)
+	bridge._host = previous_host
+	bridge._return_pending = previous_pending
