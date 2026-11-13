@@ -65,3 +65,9 @@ Erwarteter Marker: `[KartHomePromenade] PASS checks=11`. Diese Prüfung liest di
 Der vollständige Home-Touch-Pfad wurde nach dieser Folgekorrektur erneut ausgeführt: **223 Checks, 4/4 Formate, PASS, headless**. Das Protokoll liegt in `docs/evidence/kart-home-20261113/home-followup-headless.log`.
 
 Bestandsgrenze: Der geerbte Menüprozess `super._process()` und dessen ältere Hintergrundanimationen wurden nicht umgebaut. Die Anwendungs-Pausenprüfung belegt das Stoppen der neuen Hafenbühne und ihrer Kamerafahrt, keine umfassende Ruhestellung aller bestehenden Garagenprozesse.
+
+## Capture-Metadaten nach dem Rennstart
+
+Der echte Renderer-Lauf `43430078141` erzeugte die sechs neuen 1280×720-Ansichten und die entsprechende Baseline, brach aber jeweils nach dem Rennstart an einem Metadatenzugriff auf die bereits korrekt freigegebene Garage ab. Das war ein Fehler des Capture-Skripts. Die Metadaten werden nun aus dem aktiven Rennzustand gelesen; nur während des Menüs wird eine noch gültige Garagenauswahl verwendet. Der tatsächlich ausgewählte Karttyp wird ebenfalls festgehalten.
+
+Zusätzliche Assertions führen denselben Metadatenpfad ohne Renderer aus und überprüfen die Moduswahl, den Kartwechsel, die tatsächliche Garagenfreigabe und den anschließenden Rennzustand. Ergebnis nach Korrektur: **239 Checks, 4/4 Formate, PASS, headless**; Protokoll `docs/evidence/kart-home-20261113/home-metadata-headless.log`. Diese Prüfung ist ausdrücklich kein Bildnachweis. Die Wartezeiten des Capture-Ablaufs wurden nicht verkürzt.
