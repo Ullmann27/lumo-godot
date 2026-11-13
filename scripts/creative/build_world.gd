@@ -148,6 +148,7 @@ func _ready() -> void:
 	add_child(explorer)
 	_camera_update()
 	get_viewport().size_changed.connect(_resize)
+	RUNTIME.watch_safe_area(self, _resize)
 	_resize()
 	_update_labels()
 	print("[Bauwelt] ready: real geometry, ", CATALOG.PARTS.size(), " parts, save=", save_path)
@@ -179,6 +180,8 @@ func _ground() -> void:
 
 
 func _resize() -> void:
+	if not is_inside_tree():
+		return
 	_camera_update()
 	if is_instance_valid(safe_ui):
 		RUNTIME.safe_area(self, safe_ui)
@@ -191,6 +194,9 @@ func _resize() -> void:
 
 
 func _exit_tree() -> void:
+	RUNTIME.unwatch_safe_area(self)
+	if get_viewport().size_changed.is_connected(_resize):
+		get_viewport().size_changed.disconnect(_resize)
 	get_viewport().gui_embed_subwindows = bool(previous_runtime.get("embed_subwindows", false))
 	RUNTIME.restore(self, previous_runtime)
 
@@ -377,6 +383,8 @@ func _ui() -> void:
 
 
 func _layout_camera_tools() -> void:
+	if not is_inside_tree():
+		return
 	if not is_instance_valid(camera_tools) or not is_instance_valid(tool_actions):
 		return
 	var floating_top := safe_ui.get_global_rect().end.y - 228.0
@@ -398,6 +406,8 @@ func _layout_camera_tools() -> void:
 
 
 func _layout_goal_access() -> void:
+	if not is_inside_tree():
+		return
 	if not is_instance_valid(goal_panel) or not is_instance_valid(lower_hud):
 		return
 	# Preserve the complete assignment and its original action when the fixed

@@ -1,0 +1,470 @@
+{
+  "schema": 1,
+  "created_utc": "2026-11-13T22:31:03.490912+00:00",
+  "status": "SOURCE_FROZEN_READY_FOR_NATIVE_CI_WITH_TWO_LOCAL_COMPLETIONS_PENDING",
+  "baseline_commit": "796b2818ff729dc5389a92f8bf1f7fd7e6b6d93e",
+  "source_freeze_sha256": "f19731f1814dab3a6e4dabc5f9cfca0dbfee233db607d6e26ebe707e06417a21",
+  "source_files": 21,
+  "current_source_matches_freeze": true,
+  "shared_headless_checks": 112,
+  "shared_rendered_checks": 124,
+  "shared_actual_pngs": 4,
+  "shared_renderer_exit": 0,
+  "original_controls_checked": 15,
+  "source_counterexample_unsafe_controls": 9,
+  "new_unsafe_controls": 0,
+  "minimum_exposed_dp": 48.000005812872,
+  "completed_results": [
+    {
+      "probe": "cards_safe_area_android_contract",
+      "exit_code": 0,
+      "duration_seconds": 0.3185,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/cards_safe_area_android_contract.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/cards_safe_area_android_contract.gd"
+      ],
+      "source_sha256": "734cfcaa308b294c6017f5b040c9ccff49457ae32961c847acb170dca4d6f9e2",
+      "log": "logs/cards_safe_area_android_contract.log",
+      "log_sha256": "37c5c2a79205c1c00a28388a7ddf4a03b1df30827ce7f6fd258e1d681a408e04",
+      "pass_markers": [
+        "CARDS_ANDROID_INSETS_PASS checks=20 failures=0 scope=public_api_boundary_not_device"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "cards_table_regression",
+      "exit_code": 0,
+      "duration_seconds": 1.253,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/cards_table_regression.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/cards_table_regression.gd"
+      ],
+      "source_sha256": "563e40d948d345cc2a6ddfe40978228453d869da23e17094bbaf3a0d1d0cf1c6",
+      "log": "logs/cards_table_regression.log",
+      "log_sha256": "df7acb4d5f3e723a7c251587cb4203b70a356b4bc1d9b2d445398507142a0370",
+      "pass_markers": [
+        "CARDS_TABLE_RUNTIME_PASS checks=208 failures=0"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "cards_safe_area_regression",
+      "exit_code": 0,
+      "duration_seconds": 8.1081,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/cards_safe_area_regression.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/cards_safe_area_regression.gd"
+      ],
+      "source_sha256": "03dee7a9cc15df5be1132491289c79093e9d2a42e771caf54beac3bab5b557f2",
+      "log": "logs/cards_safe_area_regression.log",
+      "log_sha256": "d51605133e85b5aec07b9e40b396bc7a85d6e23a8b6aa24eccfc3141442e06f0",
+      "pass_markers": [
+        "CARDS_SAFE_AREA_PASS checks=662 failures=0 profiles=5 images=0"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "jump_nextgen_regression",
+      "exit_code": 0,
+      "duration_seconds": 12.5481,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/jump_nextgen_regression.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/jump_nextgen_regression.gd"
+      ],
+      "source_sha256": "e3269ad43683ba893b7bf5179ec31aa889af4ea7c833c1747d51fc803c70732f",
+      "log": "logs/jump_nextgen_regression.log",
+      "log_sha256": "d9b281bc042b4978a0fced1a760668fffc6b892eae044121835ec4978c3d9444",
+      "pass_markers": [
+        "[JumpNextgen] PASS 84 checks: actual variable jumps, coyote, buffer, original rig, pause, dp layouts and isolated saves"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "build_nextgen_play_regression",
+      "exit_code": 0,
+      "duration_seconds": 6.3459,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/build_nextgen_play_regression.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/build_nextgen_play_regression.gd"
+      ],
+      "source_sha256": "dab756a7e255029eec566dd26b16fdd4e3ba624188cd790b5434ea3883fa2dff",
+      "log": "logs/build_nextgen_play_regression.log",
+      "log_sha256": "5d965821ba7508d9a4d83eb5c3a22f7db90aa25f810b22ec348961974bdfd61d",
+      "pass_markers": [
+        "[BuildNextgen] PASS checks=62: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "puzzle_rotation_regression",
+      "exit_code": 0,
+      "duration_seconds": 5.3693,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/puzzle_rotation_regression.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/puzzle_rotation_regression.gd"
+      ],
+      "source_sha256": "4b02e343cc1bf0faad44b99f03c99c5d4dedfc5b76c8454fd37a17c2754a4e30",
+      "log": "logs/puzzle_rotation_regression.log",
+      "log_sha256": "eb6e0efe8ad9f642c5d6cb53e35b175a2679ff50441ddd45859e531d80fd81d9",
+      "pass_markers": [
+        "[PuzzleRotation] PASS 4558 checks: orientation, legacy saves, real picking, touch rotation and resume"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "build_settlement_play_regression",
+      "exit_code": 0,
+      "duration_seconds": 8.5645,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/build_settlement_play_regression.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/build_settlement_play_regression.gd"
+      ],
+      "source_sha256": "69857a76ecc995ccd89e8c4cf791e93baf7729a4957d4f24b322d2349c8a30d1",
+      "log": "logs/build_settlement_play_regression.log",
+      "log_sha256": "bddad00b5183a4e10a69a2b12daefdf519c1f5daeb65a2912fb181d1f561bf9a",
+      "pass_markers": [
+        "[SettlementPlay] PASS checks=127: actual routes, plot touch, paid builds, fair visible AI, save isolation, pause and layouts"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "treasure_exploration_regression",
+      "exit_code": 0,
+      "duration_seconds": 2.1622,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/treasure_exploration_regression.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/treasure_exploration_regression.gd"
+      ],
+      "source_sha256": "2fff6b5359237626dbb402e46482aac0e15697491f8790ef0e6fb89d0ac00384",
+      "log": "logs/treasure_exploration_regression.log",
+      "log_sha256": "02d20b766c253672fea75aa6cc8744460cb1134dd54beeb4d73fa6b743825b76",
+      "pass_markers": [
+        "[TreasureExploration] PASS 87 checks: branching, actual location questions, movement, legacy saves and original rewards"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "puzzle_menu_lifecycle_regression",
+      "exit_code": 0,
+      "duration_seconds": 5.2569,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/puzzle_menu_lifecycle_regression.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/puzzle_menu_lifecycle_regression.gd"
+      ],
+      "source_sha256": "0890454d8134b54b3e59dd75c3481b76ce18568b3e7f7e93a4eafb71f83bcf9c",
+      "log": "logs/puzzle_menu_lifecycle_regression.log",
+      "log_sha256": "661f94c08a44790f949ab961e19f751b58d12bd0673b7b8925da0bac91232a98",
+      "pass_markers": [
+        "[PuzzleMenuLifecycle] PASS 720 behavioral checks; strict native log gate still required"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "rhythm_tour_play_regression",
+      "exit_code": 0,
+      "duration_seconds": 6.8288,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/rhythm_tour_play_regression.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/rhythm_tour_play_regression.gd"
+      ],
+      "source_sha256": "65adcadc421d0683e211a378350ef3cb384fa41999fe0493db5aa43dd122b1f7",
+      "log": "logs/rhythm_tour_play_regression.log",
+      "log_sha256": "d227dd4228251b5e9dd1523af71676e5f4ccd2928188843335c0203ed29fe4e9",
+      "pass_markers": [
+        "[RhythmTourPlay] PASS checks=87: actual tour controls, touch/hold/slide/multitouch/pause, progress, profiles and responsive layout"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "learning_studio_regression",
+      "exit_code": 0,
+      "duration_seconds": 8.8562,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/learning_studio_regression.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/learning_studio_regression.gd"
+      ],
+      "source_sha256": "db69f9b6f2b629b655534f5d11610709a15eee5d76317cc55e8a88e0c1b74c1c",
+      "log": "logs/learning_studio_regression.log",
+      "log_sha256": "b7423794d3eb97f8034cadb641a9d3437e6908817585c029bcbf713ca7290f3b",
+      "pass_markers": [
+        "[LearningStudio] PASS checks=183; runtime asset, materials, reduced motion and preserved learning"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "kart_nextgen_garage_regression",
+      "exit_code": 0,
+      "duration_seconds": 11.4441,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/kart_nextgen_garage_regression.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/kart_nextgen_garage_regression.gd"
+      ],
+      "source_sha256": "2e62efa99c66c686f3edd1eba955acd8897a130e692980d9ff52fb0c5afb0c78",
+      "log": "logs/kart_nextgen_garage_regression.log",
+      "log_sha256": "85548fd5a6e77accad5c6a73357b753849880e7c327e71ceb951dc6073a2f9ab",
+      "pass_markers": [
+        "[NextGenGarage] PASS 93 checks; captures=0"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "kart_loading_regression",
+      "exit_code": 0,
+      "duration_seconds": 3.8989,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/5987865ae883/qa/shared-safe-area-796b/affected-results/kart_loading_regression.log",
+        "--timeout",
+        "240",
+        "--required",
+        "PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "/workspace/scratch/5987865ae883/lumo-godot/scripts/tests/kart_loading_regression.gd"
+      ],
+      "source_sha256": "857cec1d0f11309582659f76bc26571c082189be14204696069cfb80cb4584c1",
+      "log": "logs/kart_loading_regression.log",
+      "log_sha256": "c41200646cb437e382403bb4c06a6769a2dc38720621ef938e1e9b66522f9cba",
+      "pass_markers": [
+        "[KartLoading] PASS:78 real loading, rig, dp, timeout, Retry and existing Kart transition checks"
+      ],
+      "warnings": []
+    },
+    {
+      "probe": "shared-headless.log",
+      "log": "logs/shared-headless.log",
+      "log_sha256": "8476fc767c35d90f0422e8ea7d73c51835c6d76cb67baddf6386fcd93cb07db8",
+      "pass_markers": [
+        "MOBILE_SAFE_AREA_PASS checks=112 failures=0 controls=15 images=0 scope=platform_boundary_fixture"
+      ],
+      "warnings": [],
+      "scope": "shared production cache/scenes with isolated asynchronous platform observations; not Android"
+    },
+    {
+      "probe": "shared-rendered.log",
+      "log": "logs/shared-rendered.log",
+      "log_sha256": "11a1dd5c751822e28fd87c5a2100a859e84fd059011f4a57fb7f47eda31970b7",
+      "pass_markers": [
+        "MOBILE_SAFE_AREA_PASS checks=124 failures=0 controls=15 images=4 scope=platform_boundary_fixture"
+      ],
+      "warnings": [
+        "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+        "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+        "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+      ],
+      "scope": "shared production cache/scenes with isolated asynchronous platform observations; not Android"
+    }
+  ],
+  "pending": [
+    {
+      "probe": "kart_workshop_density_regression",
+      "reason": "Original local session handle lost before completion; partial original log has no PASS. Only this gate is repeated with unchanged source and original 600s headless budget."
+    },
+    {
+      "probe": "cards_safe_area_regression rendered",
+      "reason": "Original local session handle lost; three genuine PNGs exist but no PASS/exit evidence. Only this rendered gate is repeated with unchanged source, same600s budget."
+    }
+  ],
+  "source_limitations": [
+    "Local Git HEAD is not claimed to be796b or a clean checkout. All modified existing product paths have fresh796b original-byte baselines.",
+    "Desktop fixture uses real observed Android system-inset values and documented engine API behavior; no new Android JNI result.",
+    "No device FPS/thermals or full release acceptance.",
+    "No pass is transferred from interrupted local processes."
+  ],
+  "native_ci_contract": {
+    "old_studio_gates_preserved": 11,
+    "current_studio_gates": 16,
+    "old_png_count": 30,
+    "current_png_count": 37,
+    "workflow_source_unchanged": true
+  },
+  "completed_affected_local_gates": 13
+}

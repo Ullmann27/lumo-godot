@@ -144,11 +144,15 @@ func _ready() -> void:
 	_make_snap_burst()
 	_ui()
 	get_viewport().size_changed.connect(_resize_ui)
+	RUNTIME.watch_safe_area(self, _resize_ui)
 	_resize_ui()
 	_show_selection()
 
 
 func _exit_tree() -> void:
+	RUNTIME.unwatch_safe_area(self)
+	if get_viewport().size_changed.is_connected(_resize_ui):
+		get_viewport().size_changed.disconnect(_resize_ui)
 	RUNTIME.restore(self, previous)
 
 
@@ -239,6 +243,8 @@ func _ui() -> void:
 
 
 func _resize_ui() -> void:
+	if not is_inside_tree():
+		return
 	RUNTIME.safe_area(self, safe_ui)
 	if is_instance_valid(menu):
 		for child in menu_box.get_children():
@@ -267,6 +273,8 @@ func _resize_ui() -> void:
 
 
 func _fit_menu() -> void:
+	if not is_inside_tree():
+		return
 	await get_tree().process_frame
 	if not is_inside_tree() or not is_instance_valid(menu):
 		return

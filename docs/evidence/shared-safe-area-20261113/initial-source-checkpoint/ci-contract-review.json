@@ -1,0 +1,48 @@
+{
+  "scope": "No workflow edits; additive shared/cards regression and PNG roster",
+  "baseline_commit": "796b2818ff729dc5389a92f8bf1f7fd7e6b6d93e",
+  "original_gates": [
+    "check_probe learning_sharing_regression '[LearningSharing] PASS' headless 180",
+    "check_probe learning_studio_regression '[LearningStudio] PASS' headless 180",
+    "check_probe lumo_studio_motion_regression '[LumoStudioMotion] PASS' headless 180",
+    "check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' headless 180",
+    "check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' headless 180",
+    "check_probe treasure_exploration_regression '[TreasureExploration] PASS' headless 180",
+    "check_probe learning_sharing_capture '[LearningSharingCapture] PASS' rendered 600 \\",
+    "check_probe lumo_studio_motion_capture '[LumoStudioCapture] PASS' rendered 420",
+    "check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' rendered 600",
+    "check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' rendered 600 -- --capture",
+    "check_probe treasure_exploration_regression '[TreasureExploration] PASS' rendered 600"
+  ],
+  "current_gates": [
+    "check_probe learning_sharing_regression '[LearningSharing] PASS' headless 180",
+    "check_probe learning_studio_regression '[LearningStudio] PASS' headless 180",
+    "check_probe lumo_studio_motion_regression '[LumoStudioMotion] PASS' headless 180",
+    "check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' headless 180",
+    "check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' headless 180",
+    "check_probe treasure_exploration_regression '[TreasureExploration] PASS' headless 180",
+    "check_probe cards_safe_area_android_contract 'CARDS_ANDROID_INSETS_PASS' headless 180",
+    "check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' headless 180",
+    "check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' headless 240",
+    "check_probe learning_sharing_capture '[LearningSharingCapture] PASS' rendered 600 \\",
+    "check_probe lumo_studio_motion_capture '[LumoStudioCapture] PASS' rendered 420",
+    "check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' rendered 600",
+    "check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' rendered 600 -- --capture",
+    "check_probe treasure_exploration_regression '[TreasureExploration] PASS' rendered 600",
+    "check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' rendered 600 -- --capture",
+    "check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' rendered 900 -- --capture"
+  ],
+  "all_original_gates_preserved": true,
+  "original_png_count": 30,
+  "current_png_count": 37,
+  "new_shared_pngs": [
+    "jump-landscape-cutout.png",
+    "build-landscape-cutout.png",
+    "puzzle-landscape-cutout.png",
+    "treasure-landscape-cutout.png"
+  ],
+  "actual_ci_path": "studio-evidence/captures/mobile_safe_area_regression",
+  "workflow_unchanged_sha256": "ef24a0668a05e92e8865ae0aaed618397d1de096939140df85d6040313825d3b",
+  "bash_n": "PASS",
+  "embedded_python_ast": "PASS"
+}
