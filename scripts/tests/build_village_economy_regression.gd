@@ -19,25 +19,7 @@ func build(model, kind: String) -> bool:
 
 func reload_check(model, message: String):
 	var before: Dictionary = model.snapshot()
-	var payload = JSON.parse_string(JSON.stringify(before))
-	var restored = MODEL.restore(payload)
-	if restored == null:
-		print(
-			"[VillageEconomyDebug] restore rejected: player=",
-			MODEL._valid_town(payload.player, true),
-			" rival=", MODEL._valid_town(payload.rival, true),
-			" mode=", payload.mode, " day=", payload.day
-		)
-	elif restored.snapshot() != before:
-		var after: Dictionary = restored.snapshot()
-		for town_name in ["player", "rival"]:
-			for key in before[town_name]:
-				if before[town_name][key] != after[town_name][key]:
-					print(
-						"[VillageEconomyDebug] ", town_name, ".", key,
-						" was=", str(before[town_name][key]).substr(0, 420),
-						" now=", str(after[town_name][key]).substr(0, 420)
-					)
+	var restored = MODEL.restore(JSON.parse_string(JSON.stringify(before)))
 	check(restored != null and restored.snapshot() == before, message)
 	return restored if restored != null else model
 
@@ -66,6 +48,9 @@ func _initialize() -> void:
 		"zero-coin market neither spends nor refunds imaginary coins"
 	)
 	broke = reload_check(broke, "market cost receipt survives a saved village")
+	var forged: Dictionary = broke.snapshot()
+	forged.player.buildings[0].purchase_cost.wood = 7
+	check(MODEL.restore(forged) == null, "altered market purchase receipt is rejected")
 	check(
 		broke.try_demolish(0) and broke.player().resources.coins == 0,
 		"demolishing the zero-coin market cannot mint coins"

@@ -624,7 +624,12 @@ static func _restored_town(town: Dictionary) -> Dictionary:
 			"id": str(building.id), "kind": str(building.kind), "plot": int(building.plot)
 		}
 		if building.has("purchase_cost"):
-			restored_building["purchase_cost"] = building.purchase_cost.duplicate(true)
+			# JSON always decodes numbers as floats. Preserve canonical paid
+			# integer receipts after _valid_town has verified the exact values.
+			restored_building["purchase_cost"] = {
+				"wood": int(building.purchase_cost.wood),
+				"stone": int(building.purchase_cost.stone)
+			}
 		result.buildings.append(restored_building)
 	if int(town.get("economy_version", 0)) == 2:
 		VILLAGE.restore_fields(town, result)
@@ -643,66 +648,63 @@ static func _whole(value: Variant, minimum: int, maximum: int) -> bool:
 
 static func _valid_town(town: Dictionary, is_living: bool = false) -> bool:
 	if not town.get("resources") is Dictionary or not town.get("buildings") is Array:
-		print("[LumoGuard] StateGuard:646")
 		return false
 	if (
 		not _whole(town.get("region"), 0, 11 if is_living else 2)
 		or not _whole(town.get("population"), 2, VILLAGE.MAX_POPULATION if is_living else 50)
 	):
-		print("[LumoGuard] StateGuard:651")
 		return false
 	if (
 		not _whole(town.get("plots"), 9, 1089 if is_living else 25)
 		or int(town.plots) != PLOTS[int(town.region)]
 	):
-		print("[LumoGuard] StateGuard:656")
 		return false
 	if (
 		not _whole(town.get("next_id"), 1, 10000)
 		or not _whole(town.get("food_shortfall", 0), 0, VILLAGE.MAX_POPULATION if is_living else 50)
 	):
-		print("[LumoGuard] StateGuard:661")
 		return false
 	for resource in RESOURCES:
 		if not _whole(town.resources.get(resource), 0, MAX_RESOURCE):
-			print("[LumoGuard] StateGuard:664")
 			return false
 	if town.buildings.size() > int(town.plots):
-		print("[LumoGuard] StateGuard:666")
 		return false
 	var occupied := {}
 	var identifiers := {}
 	for building: Variant in town.buildings:
 		if not building is Dictionary or not BUILDINGS.has(building.get("kind", "")):
-			print("[LumoGuard] StateGuard:671")
 			return false
 		# The only new paid-price receipt is the coin-free village market.
 		# Validate it to prevent a tampered save from crediting arbitrary resources.
-		if building.has("purchase_cost") and (
-			not is_living
-			or building.kind != "market"
-			or building.purchase_cost != {"wood": 6, "stone": 4}
-		):
-			print("[LumoGuard] StateGuard:679")
-			return false
+		if building.has("purchase_cost"):
+			var receipt: Variant = building.purchase_cost
+			if (
+				not is_living
+				or str(building.kind) != "market"
+				or not receipt is Dictionary
+			):
+				return false
+			var paid: Dictionary = receipt
+			if (
+				paid.size() != 2
+				or not paid.has("wood") or not paid.has("stone")
+				or not _whole(paid["wood"], 6, 6)
+				or not _whole(paid["stone"], 4, 4)
+			):
+				return false
 		if not _whole(building.get("plot"), 0, int(town.plots) - 1):
-			print("[LumoGuard] StateGuard:681")
 			return false
 		var identifier := str(building.get("id", ""))
 		if not identifier.begins_with("b") or not identifier.substr(1).is_valid_int():
-			print("[LumoGuard] StateGuard:684")
 			return false
 		var number := identifier.substr(1).to_int()
 		if number < 1 or number >= int(town.next_id) or identifiers.has(identifier):
-			print("[LumoGuard] StateGuard:687")
 			return false
 		if occupied.has(int(building.plot)):
-			print("[LumoGuard] StateGuard:689")
 			return false
 		occupied[int(building.plot)] = true
 		identifiers[identifier] = true
 	if is_living and not VILLAGE.valid(town, _whole):
-		print("[LumoGuard] StateGuard:693")
 		return false
 	return true
 
