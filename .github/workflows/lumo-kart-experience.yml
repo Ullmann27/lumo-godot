@@ -16,7 +16,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: lumo-kart-experience-${{ github.ref }}
+  # Preserve an expensive source-bound comparison while a corrected revision
+  # starts its own independent acceptance; only duplicate runs share a group.
+  group: lumo-kart-experience-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
