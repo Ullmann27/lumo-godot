@@ -1,0 +1,42 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Bauwelt] ready: real geometry, 41 parts, save=user://lumo_build_build-dialog-density-12-0_1.json
+[Perf] quality_profile:medium
+ERROR: [BuildDialogDensity] Actual world touch still orbits the camera
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/build_dialog_density_regression.gd:41)
+       [1] _world_camera_input (res://scripts/tests/build_dialog_density_regression.gd:257)
+       [2] _drag_screen (res://scripts/tests/build_dialog_density_regression.gd:161)
+       [3] _settle (res://scripts/tests/build_dialog_density_regression.gd:46)
+[BuildDialogDensity] CASE [(2400, 1080), 2.625] checks=400 failures=1
+[Bauwelt] ready: real geometry, 41 parts, save=user://lumo_build_build-dialog-density-12-1_1.json
+[BuildDialogDensity] CASE [(1080, 2400), 2.625] checks=797 failures=1
+[Bauwelt] ready: real geometry, 41 parts, save=user://lumo_build_build-dialog-density-12-2_1.json
+[BuildDialogDensity] CASE [(2176, 1812), 2.25] checks=1194 failures=1
+[Bauwelt] ready: real geometry, 41 parts, save=user://lumo_build_build-dialog-density-12-3_1.json
+ERROR: [BuildDialogDensity] Actual world touch still orbits the camera
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/build_dialog_density_regression.gd:41)
+       [1] _world_camera_input (res://scripts/tests/build_dialog_density_regression.gd:257)
+       [2] _drag_screen (res://scripts/tests/build_dialog_density_regression.gd:161)
+       [3] _settle (res://scripts/tests/build_dialog_density_regression.gd:46)
+[BuildDialogDensity] CASE [(640, 360), 1.0] checks=1605 failures=2
+[Bauwelt] ready: real geometry, 41 parts, save=user://lumo_build_build-dialog-density-12-4_1.json
+ERROR: [BuildDialogDensity] Actual world touch still orbits the camera
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/build_dialog_density_regression.gd:41)
+       [1] _world_camera_input (res://scripts/tests/build_dialog_density_regression.gd:257)
+       [2] _drag_screen (res://scripts/tests/build_dialog_density_regression.gd:161)
+       [3] _settle (res://scripts/tests/build_dialog_density_regression.gd:46)
+[BuildDialogDensity] CASE [(640, 320), 1.0] checks=2016 failures=3
+[BuildDialogDensity] FAIL ["Actual world touch still orbits the camera", "Actual world touch still orbits the camera", "Actual world touch still orbits the camera"]

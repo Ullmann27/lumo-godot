@@ -1,0 +1,30 @@
+{
+  "native_revision": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a",
+  "tree": "049c8a5be914b9babad0e9af8712ada777e5a077",
+  "run_id": 43452284466,
+  "reviewer": "ChatGPT root; actual view_image inspection",
+  "reviewed_at": "2026-11-13T15:55:14.639239+00:00",
+  "scope": "Two additional actual observations; partial inspection only, no complete native visual or Android acceptance",
+  "images": [
+    {
+      "relative_path": "native-14054081246/nextgen-evidence/nextgen/captures/build_nextgen_play_regression/03_build_walking.png",
+      "artifact_id": 14054081246,
+      "sha256": "d3cccc75b5f218c5d8138e81706522ecc0d1fb9678248fcd1bb579c276076ae8",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "findings": "BuildPlay actual current walking scene: Lumo is fully visible beside the constructed wall. The walk stick, jump action, inspection action, pause and return-to-build controls remain fully within the image. This still image is consistent with, but does not replace, the separate70-assertion rendered input/collision gate."
+    },
+    {
+      "relative_path": "preview-14053671218/images/bridge_hundred-complete-2400x1080.png",
+      "artifact_id": 14053671218,
+      "sha256": "2839604104d7bfc817ff7c6f12481d1791ef1e77d1f1a2fbf22e8e53bf30c34a",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "findings": "The upper caption for ten tens and one hundred is visible, but its intended equals sign appears as one solid bright horizontal block: the two separate bars are not visibly resolved in this original image. The lower230 equation has a distinct equals sign. This is a limited actual visual defect observation of source703, requiring the published Studio equality-orientation repair and a fresh renderer image; it is not native visual approval."
+    }
+  ]
+}

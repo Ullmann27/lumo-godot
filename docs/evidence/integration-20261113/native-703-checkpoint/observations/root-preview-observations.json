@@ -1,0 +1,29 @@
+{
+  "native_revision": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a",
+  "run_id": 43452284466,
+  "artifact_id": 14053671218,
+  "artifact_sha256": "57d26f8e11e8d72d9f16176d406b736fc3bfb1fd3e7fbe288d7c9fd7685e7f4d",
+  "reviewer": "ChatGPT root; actual view_image inspection",
+  "reviewed_at": "2026-11-13T15:41:01.991309+00:00",
+  "scope": "Additional actual preview observations; not a complete native receipt or physical Android acceptance",
+  "images": [
+    {
+      "artifact_entry": "images/math-start-412x915.png",
+      "sha256": "5f4f430fc7ba90b9223562087d92e73eccd98d5459c414f97cee77f89aad19e0",
+      "dimensions": [
+        412,
+        915
+      ],
+      "findings": "Auf der aktuellen Hochformat-Aufnahme sind die Aufgabe 8 + 5, acht blaue Körper im ersten Zehnerfeld und fünf noch unverschobene gelbe Körper sichtbar. Überschrift und Erklärung bleiben innerhalb des Rahmens; die unteren Aktionen Ein Objekt zeigen, Noch einmal und Zur Aufgabe sind vollständig sichtbar. Dies ist eine Sichtung des Anfangszustands, kein eigenständiger Eingabenachweis."
+    },
+    {
+      "artifact_entry": "images/plant_parts-complete.png",
+      "sha256": "ae81e7c0cd33a0d13a912d7340e5976641ac70fd7c673a0232119c01ea34fca2",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "findings": "Die aktuelle Querformat-Aufnahme zeigt eine Pflanze mit Blüte, Blättern, Stängel und Wurzeln. Die Überschrift benennt die Blüte; der danebenstehende Erklärungstext beschreibt ihre Fortpflanzungsfunktion. Die Abschlusszeile und alle Pflanzen-/Rückkehraktionen sind im Bild. Sichtbarer Titel und erklärter Pflanzenteil stimmen überein."
+    }
+  ]
+}

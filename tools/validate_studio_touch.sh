@@ -5,7 +5,7 @@ scope="${1:?Expected workshop, treasure or build}"
 case "$scope" in
   workshop) probe=kart_workshop_density_regression; marker='[WorkshopDensity] PASS'; expected_pngs=6 ;;
   treasure) probe=treasure_density_regression; marker='[TreasureDensity] PASS'; expected_pngs=14 ;;
-  build) probe=build_dialog_density_regression; marker='[BuildDialogDensity] PASS'; expected_pngs=8 ;;
+  build) probe=build_dialog_density_regression; marker='[BuildDialogDensity] PASS'; expected_pngs=12 ;;
   *) echo "Unknown Studio touch scope: $scope" >&2; exit 2 ;;
 esac
 
@@ -42,6 +42,10 @@ failures=()
 for mode in headless rendered; do
   seconds=600
   [[ "$mode" == rendered ]] && seconds=1200
+  # The first full Mesa workshop run reached the seventh of eight layouts
+  # without a failed assertion before its 1200s process limit. Preserve every
+  # input/layout check and give this software-rendered run enough wall time.
+  [[ "$mode" == rendered && "$scope" == workshop ]] && seconds=2100
   if run_probe "$mode" "$seconds"; then
     printf '%s\t%s\tPASS\n' "$probe" "$mode" >> "$log_dir/results.tsv"
   else

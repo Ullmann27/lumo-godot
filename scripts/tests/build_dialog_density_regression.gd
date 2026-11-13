@@ -169,6 +169,7 @@ func _reveal_toolbar(control: Control) -> void:
 		return
 	var scroll: ScrollContainer = ancestor
 	var before: Dictionary = game.model.to_data()
+	var camera_before: Array = [game.orbit, game.tilt, game.radius, game.focus]
 	for attempt in range(20):
 		var viewport := _pixels(scroll)
 		var target := _pixels(control)
@@ -176,10 +177,16 @@ func _reveal_toolbar(control: Control) -> void:
 			break
 		var left := target.end.x > viewport.end.x
 		var start := viewport.position + viewport.size * Vector2(0.82 if left else 0.18, 0.4)
-		var end := viewport.position + viewport.size * Vector2(0.18 if left else 0.82, 0.4)
+		# Near an edge, a full-width fling can overshoot and oscillate around
+		# the target. Keep genuine drags, adjusting their travel to the gap.
+		var missing := target.end.x - viewport.end.x if left else viewport.position.x - target.position.x
+		var travel := minf(viewport.size.x * 0.64, maxf(24.0 * density, missing + 16.0 * density))
+		var end := start + Vector2(-travel if left else travel, 0.0)
 		await _drag_screen(start, end)
 	_check(_pixels(scroll).grow(0.51).encloses(_pixels(control)), "Actual horizontal drags expose toolbar action " + str(control.text))
 	_check(game.model.to_data() == before, "Toolbar drags never build or modify objects underneath")
+	_check([game.orbit, game.tilt, game.radius, game.focus] == camera_before,
+		"Toolbar drags never orbit, tilt, zoom or pan the 3D world underneath")
 
 
 func _reveal_with_touch(scroll: ScrollContainer, last: Button) -> void:
@@ -212,7 +219,7 @@ func _open(caption: String) -> Window:
 
 func _shot(stage: String) -> void:
 	# The fifth, 320dp case guards the additional toolbar interception finding.
-	# Preserve the agreed eight captures from the original four profiles.
+	# Keep the eight template captures plus four explicit current-goal captures.
 	if not capture or root.size == Vector2i(640, 320):
 		return
 	await _settle()
@@ -225,6 +232,95 @@ func _shot(stage: String) -> void:
 	_check(image.save_png(output.path_join(name)) == OK, "Renderer capture saved: " + name)
 	images.append({"filename": name, "width": image.get_width(), "height": image.get_height(), "density": density,
 		"renderer": RenderingServer.get_current_rendering_method()})
+
+
+func _fixture_surface(size: Vector2i, ui_density: float) -> void:
+	root.size = size
+	density = ui_density
+	root.get_node("HostBridge")._options["displayDensity"] = density
+	game._resize()
+	await _settle(16)
+
+
+func _world_camera_input() -> void:
+	var upper := _pixels(game.upper_hud)
+	var lower := _pixels(game.lower_hud)
+	var strip_y := (upper.end.y + lower.position.y) * 0.5
+	var start := Vector2(root.size.x * 0.42, strip_y)
+	var end := start + Vector2(36.0 * density, 0.0)
+	var inverse := root.get_screen_transform().affine_inverse()
+	_check(not game._world_gesture_starts_on_ui(inverse * start),
+		"The world gesture fixture begins outside the real HUD")
+	var before: Dictionary = game.model.to_data()
+	var old_orbit: float = game.orbit
+	await _drag_screen(start, end)
+	_check(absf(game.orbit - old_orbit) > 0.05, "Actual world touch still orbits the camera")
+	_check(game.model.to_data() == before, "World camera drag never places an accidental object")
+	game.orbit = old_orbit
+	game._camera_update()
+
+
+func _goal_access(profile: Array) -> void:
+	var initially_inline: bool = game.goal_panel.visible
+	_check(initially_inline != game.goal_access_button.visible,
+		"Exactly one current-goal entry presentation is visible")
+	if initially_inline:
+		_check(not _pixels(game.goal_panel).intersects(_pixels(game.lower_hud)),
+			"Inline assignment is not covered by the lower HUD")
+		_target(_button(game.goal_panel, "Mein Bauwerk testen"), "inline goal test before rotation")
+		await _fixture_surface(Vector2i(640, 320), 1.0)
+	_check(not game.goal_panel.visible and game.goal_access_button.visible,
+		"A short display exposes the assignment through the existing toolbar")
+	_check(game.save_world(false), "Pre-assignment project saves normally")
+	var before: Dictionary = game.model.to_data()
+	var before_file := FileAccess.get_file_as_string(game.save_path)
+	var expected_description: String = game.goal_label.text
+	var goal_before: String = game.goal
+	var dialog := await _open("Aktuelles Bauziel")
+	if dialog == null:
+		return
+	var details: Label = dialog.find_child("BuildGoalDescription", true, false)
+	_check(details != null and details.text == expected_description,
+		"Assignment dialog retains the complete current goal explanation")
+	await _tap(_button(dialog, "Abbrechen"), true)
+	_check(not is_instance_valid(dialog) and game.model.to_data() == before
+		and game.goal == goal_before and FileAccess.get_file_as_string(game.save_path) == before_file,
+		"Cancelling the assignment preserves goal, objects and saved bytes")
+	dialog = await _open("Aktuelles Bauziel")
+	if dialog == null:
+		return
+	if initially_inline:
+		# A real toolbar touch opened the dialog before the orientation change.
+		# The screenshot is a reachable open-modal state at the original size.
+		await _fixture_surface(profile[0], float(profile[1]))
+		_check(game.goal_panel.visible and not game.goal_access_button.visible,
+			"Returning to a tall layout restores only its inline assignment entry")
+		_check(not _pixels(game.goal_panel).intersects(_pixels(game.lower_hud)),
+			"Restored inline assignment remains clear of the palette")
+	_target(_button(dialog, "Abbrechen"), "assignment cancel after layout change")
+	var test_button := _button(dialog, "Mein Bauwerk testen")
+	_target(test_button, "assignment actual test action")
+	var scroll := _scroll(dialog)
+	_check(_pixels(scroll).grow(0.51).encloses(_pixels(test_button)),
+		"The full 48dp assignment action is exposed inside the dialog")
+	await _shot("current-goal")
+	var activated := [0]
+	test_button.pressed.connect(func(): activated[0] += 1)
+	var category_before: String = game.category
+	var expected_success: bool = game.model.challenge_passes(game.goal)
+	await _tap(test_button, true)
+	_check(activated[0] == 1 and not is_instance_valid(dialog),
+		"Real edge ScreenTouch activates the original goal test exactly once")
+	_check(game.category == category_before, "Testing a goal never chooses the obscuring roof category")
+	_check(game.status.text.begins_with("Bauziel geschafft!") if expected_success
+		else game.status.text.begins_with("Noch fehlt etwas."),
+		"The unchanged challenge rule produces the expected test result")
+	if initially_inline:
+		var inline_test := _button(game.goal_panel, "Mein Bauwerk testen")
+		_target(inline_test, "restored inline goal action")
+		await _tap(inline_test, true)
+		_check(game.category == category_before,
+			"The restored inline goal action does not hit the palette")
 
 
 func _exercise(caption: String, expected: Array, final_label: String) -> void:
@@ -349,6 +445,8 @@ func _run() -> void:
 		current_scene = game
 		await _settle(16)
 		_check(root.gui_embed_subwindows, "Production entry embeds dialogs without test forcing it")
+		await _goal_access(profile)
+		await _world_camera_input()
 		await _camera_actions()
 		await _exercise("Vorlagen", TEMPLATE_LABELS, "Leere Insel")
 		await _exercise("Welten (6)", [], "")
@@ -402,7 +500,7 @@ func _run() -> void:
 		await _settle()
 		print("[BuildDialogDensity] CASE ", profile, " checks=", checks, " failures=", failures.size())
 	if capture:
-		_check(images.size() == 8, "Exactly eight genuine renderer captures across all four layouts")
+		_check(images.size() == 12, "Exactly twelve genuine captures: eight templates and four current goals")
 		var record := FileAccess.open(output.path_join("measurements.json"), FileAccess.WRITE)
 		record.store_string(JSON.stringify({"images": images, "targets": targets,
 			"scope": "Production scene, own popup transforms, real InputEvents and explicit density fixtures; not a physical Android/Fold7 test"}, "\t"))

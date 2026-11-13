@@ -211,3 +211,60 @@ These local repairs are ready for one fresh combined native and renderer run.
 No cf039 partial artifact is a receipt for the repaired source. The Host's exact
 new source pin, both explicit visual reviews and real Android API 35/API 37
 acceptance still follow the successful final native source.
+
+## Completed 703 checkpoint and the next published Studio update
+
+Native `703a8f3ff7714d079223c7f0a03ab2400ba6a36a`, tree
+`049c8a5be914b9babad0e9af8712ada777e5a077`, subsequently completed all 15
+reported workflows successfully. Nextgen run `43452284466` passed all seven
+required jobs and its original-ZIP archive job. The exact core has 37 passing
+probe/mode pairs and 24 Studio rasters; its three Touch jobs add six passing
+pairs and 28 original rasters. The stricter logs contain no post-PASS resource
+exception. Both construction repairs are now actually rendered: BuildPlay70
+and BuildDialog1656, alongside the headless62/1637 results. Graphics run
+`43452283809` also passed all three jobs, including both old-source imports.
+Original final metadata, complete job logs and archive identities are retained
+under `docs/evidence/integration-20261113/native-703-checkpoint/`.
+
+Root inspected selected current images rather than granting a blanket native
+visual approval. In the old 2400x1080 hundred-bridge preview, the upper extruded
+equals sign appears as a single bright bar. The newly published Studio source
+`76980a941fa05d047574d8cc386d3249d93ffca3` addresses that actual readability
+defect by orienting the full label to the camera. It also makes the complete
+current construction goal reachable on short displays and rejects new world
+gestures beginning within the visible HUD. These finished changes are now
+integrated with the existing Village expansion.
+
+The sole textual merge conflict concerned the desktop pointer prerequisite.
+The exact 703 block, including its real hover check and unchanged ScreenTouch,
+is retained. All new Studio goal and world-camera assertions remain active.
+The combination exposed a second concrete interaction: retaining the former
+toolbar STOP caused the world to receive a valid press but lose all subsequent
+drags and the release in three short formats. An isolated runtime change back
+to the Producer's PASS filter, with its new HUD-start guard unchanged, made all
+2,016 assertions pass. The old two-line STOP addition is therefore superseded
+by the published broader gesture-start ownership guard. The final unmodified
+BuildPlay62 and BuildDialog2016 probes both pass with clean logs; 1,189 scoped
+source files remain unchanged during that run. LearningStudio183 also passes,
+including the actual extruded-glyph projection checks, and its source is
+unchanged by the toolbar-only correction. Full red/diagnostic/counterexperiment
+and final original evidence is in
+`docs/evidence/integration-20261113/studio-76980-merge/`.
+
+The Touch contract now requires six Workshop, fourteen Treasure and twelve
+Build PNGs: the four additional Build captures show the actual current goal
+at the four existing physical sizes. The combined Host explicitly requires
+all 32 Touch images while preserving the 37/24 core, six Touch probe pairs and
+all source/hash/decode/review checks. The published Workshop renderer budget
+is 2,100 seconds; the common Touch job adopts the Producer's 50-minute limit
+to accommodate that plus its existing 600-second headless probe and setup.
+The existing eight orchestration tests and actionlint pass; their evidence is
+under `docs/evidence/integration-20261113/studio-touch-budget/`.
+
+The completed 703 results remain historical evidence for 703. This new combined
+source requires its own complete native/graphics run, all twelve Build images,
+actual review of the corrected equality and current-goal views, and matching
+Host receipts before the three Host identity files can be bound. Android
+compile, API35/API37, exact APK/PCK and in-place update acceptance remain
+separate. Main, the live 2018 release and the ongoing producer worktrees are
+preserved.
