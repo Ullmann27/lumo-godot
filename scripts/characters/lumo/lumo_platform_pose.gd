@@ -3,6 +3,8 @@ extends RefCounted
 ## Physics remains with the CharacterBody3D. Every pose uses the owner's real
 ## velocity and floor contact; root transforms and collider dimensions stay put.
 
+const BODY_SPACE = preload("res://scripts/characters/lumo/lumo_body_space_pose.gd")
+
 const BONES: Array[String] = [
 	"Pelvis",
 	"SpineLower",
@@ -39,6 +41,7 @@ var last_vertical_speed: float = 0.0
 var last_speed: float = 0.0
 var was_grounded: bool = true
 var has_sample: bool = false
+var body_space
 
 
 func bind(source: Skeleton3D) -> bool:
@@ -52,6 +55,9 @@ func bind(source: Skeleton3D) -> bool:
 		rotations[bone] = source.get_bone_pose_rotation(index)
 		positions[bone] = source.get_bone_pose_position(index)
 	skeleton = source
+	body_space = BODY_SPACE.new()
+	if not body_space.bind(source, indices):
+		return false
 	has_sample = false
 	landing_left = 0.0
 	phase = 0.0
@@ -141,7 +147,7 @@ func stop() -> void:
 
 func _rotate(bone: String, axis: Vector3, angle: float, blend: float) -> void:
 	var index: int = int(indices[bone])
-	var target: Quaternion = (rotations[bone] as Quaternion) * Quaternion(axis, angle)
+	var target: Quaternion = body_space.rotation_target(bone, Quaternion(axis, angle))
 	skeleton.set_bone_pose_rotation(
 		index, skeleton.get_bone_pose_rotation(index).slerp(target, blend)
 	)
@@ -149,7 +155,7 @@ func _rotate(bone: String, axis: Vector3, angle: float, blend: float) -> void:
 
 func _position(bone: String, offset: Vector3, blend: float) -> void:
 	var index: int = int(indices[bone])
-	var target: Vector3 = (positions[bone] as Vector3) + offset
+	var target: Vector3 = body_space.position_target(bone, offset)
 	skeleton.set_bone_pose_position(
 		index, skeleton.get_bone_pose_position(index).lerp(target, blend)
 	)

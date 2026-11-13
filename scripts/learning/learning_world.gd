@@ -61,6 +61,8 @@ var _fraction_label: MeshInstance3D
 var _hundred_stock: Node3D
 var _hundred_summary: MeshInstance3D
 var _frame_label: MeshInstance3D
+var _group_labels: Array[MeshInstance3D] = []
+var _group_plates: Array[MeshInstance3D] = []
 var _layout_queued := false
 var _speech_host: Object
 var _speech_enabled := false
@@ -334,6 +336,7 @@ func _button(caption: String, action: Callable, flags: int = 0) -> Button:
 			"Ein Objekt zeigen",
 			"Einen Würfel wegnehmen",
 			"Einen Würfel einordnen",
+			"Einen Würfel verteilen",
 			"Ein Teil zeigen",
 			"Nächste Silbe zeigen",
 			"Wasser geben",
@@ -383,6 +386,8 @@ func _rebuild_activity() -> void:
 	_hundred_stock = null
 	_hundred_summary = null
 	_frame_label = null
+	_group_labels.clear()
+	_group_plates.clear()
 	plant = null
 	for button in actions.get_children():
 		button.free()
@@ -398,6 +403,9 @@ func _rebuild_activity() -> void:
 		"equal_groups":
 			_build_groups()
 			main_button = _button("Einen Würfel einordnen", _show_one)
+		"equal_sharing":
+			_build_groups()
+			main_button = _button("Einen Würfel verteilen", _show_one)
 		"fraction_parts":
 			_build_fractions()
 			main_button = _button("Ein Teil zeigen", _show_one)
@@ -551,13 +559,19 @@ func _build_subtraction() -> void:
 
 
 func _build_groups() -> void:
-	title.text = "Gleiche Gruppen · %d × %d" % [activity.a, activity.b]
+	title.text = (
+		"Gerecht teilen · %d : %d" % [activity.a, activity.b]
+		if activity.kind == "equal_sharing"
+		else "Gleiche Gruppen · %d × %d" % [activity.a, activity.b]
+	)
 	var plate := _material("group_plate", Color("b6ceb0"))
 	var cube_material := _material("group_cube", Color("f8c25b"), 0.1)
-	for group in range(activity.a):
+	var ink := _material("group_ink", Color("193644"))
+	for group in range(activity.group_count()):
 		var center := Vector3(-1.8 + float(group % 3) * 1.8, 0.06, -1.6 + float(group / 3) * 2.15)
-		_cylinder(content, center, 0.83, 0.15, plate, "GroupPlate%d" % group)
-		for item in range(activity.b):
+		_group_plates.append(_cylinder(content, center, 0.83, 0.15, plate, "GroupPlate%d" % group))
+		_group_labels.append(_top_text(content, "0", center + Vector3(0, 0.15, 0.61), 0.25, ink))
+		for item in range(activity.group_size()):
 			var at := (
 				center
 				+ Vector3(-0.42 + float(item % 3) * 0.42, 0.28, -0.23 + float(item / 3) * 0.46)
@@ -728,6 +742,21 @@ func _build_plant() -> void:
 
 func _refresh() -> void:
 	explanation.text = activity.explanation()
+	for group in range(_group_labels.size()):
+		_group_labels[group].mesh.text = str(activity.count_in_group(group))
+		var next_group: int = (
+			activity.placed.size() % activity.b
+			if activity.kind == "equal_sharing"
+			else activity.placed.size() / activity.b
+		)
+		_group_plates[group].material_override = _material(
+			"group_next" if group == next_group and not activity.is_complete() else "group_plate",
+			(
+				Color("d7ae58")
+				if group == next_group and not activity.is_complete()
+				else Color("b6ceb0")
+			)
+		)
 	if is_instance_valid(_fraction_label):
 		_fraction_label.mesh.text = (
 			"%d/%d" % [activity.initial_count() + activity.placed.size(), activity.b]
@@ -853,7 +882,7 @@ func _arrange_activity(portrait: bool) -> void:
 		_source_tray.position = Vector3(0, 0.02, 3.55) if portrait else Vector3(3.6, 0.02, -0.9)
 		_source_tray.scale = Vector3(4.65 / 2.3, 1, 1.85 / 2.3) if portrait else Vector3.ONE
 		_source_label.position = Vector3(2.45, 0.7, 3.45) if portrait else Vector3(3.6, 1.0, -2.4)
-	elif activity.kind == "equal_groups":
+	elif activity.kind in ["equal_groups", "equal_sharing"]:
 		for index in range(tokens.size()):
 			token_sources[index] = (
 				Vector3(-1.7 + float(index % 9) * 0.42, 0.28, 2.75 + float(index / 9) * 0.4)
@@ -871,7 +900,7 @@ func _arrange_activity(portrait: bool) -> void:
 	for index in range(tokens.size()):
 		var placed_index: int = activity.placed.find(index)
 		tokens[index].position = (
-			targets[activity.initial_count() + placed_index]
+			targets[activity.target_for_step(placed_index)]
 			if placed_index >= 0
 			else token_sources[index]
 		)

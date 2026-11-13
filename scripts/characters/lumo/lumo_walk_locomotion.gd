@@ -5,6 +5,8 @@ extends RefCounted
 ## the owning world must supply a real velocity / navigation position.
 ## Foot planting against non-flat terrain needs a separate ground-contact IK.
 
+const BODY_SPACE = preload("res://scripts/characters/lumo/lumo_body_space_pose.gd")
+
 const REQUIRED: Array[String] = [
 	"Thigh.L", "Thigh.R", "Shin.L", "Shin.R",
 	"Foot.L", "Foot.R", "Toe.L", "Toe.R",
@@ -17,6 +19,7 @@ var neutral_rotation: Dictionary = {}
 var neutral_position: Dictionary = {}
 var phase: float = 0.0
 var stride_metres: float = 0.73
+var body_space
 
 
 func bind(source: Skeleton3D) -> bool:
@@ -37,7 +40,8 @@ func bind(source: Skeleton3D) -> bool:
 		neutral_rotation[name] = source.get_bone_pose_rotation(i)
 		neutral_position[name] = source.get_bone_pose_position(i)
 	phase = 0.0
-	return true
+	body_space = BODY_SPACE.new()
+	return body_space.bind(source, indices)
 
 
 func advance(delta: float, speed_metres_per_second: float) -> void:
@@ -79,13 +83,12 @@ func stop() -> void:
 
 func _rotate(name: String, axis: Vector3, radians: float) -> void:
 	var index: int = int(indices[name])
-	var rotation: Quaternion = neutral_rotation[name]
 	skeleton.set_bone_pose_rotation(
-		index, rotation * Quaternion(axis, radians)
+		index, body_space.rotation_target(name, Quaternion(axis, radians))
 	)
 
 
 func _position(name: String, shift: Vector3) -> void:
 	var index: int = int(indices[name])
 	skeleton.set_bone_pose_position(index,
-		neutral_position[name] + shift)
+		body_space.position_target(name, shift))
