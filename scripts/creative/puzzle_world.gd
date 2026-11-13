@@ -25,6 +25,8 @@ var kit = KIT.new()
 var previous: Dictionary
 var camera: Camera3D
 var safe_ui: Control
+var hud_backdrop: ColorRect
+var tool_scroll: ScrollContainer
 var piece_root: Node3D
 var nodes: Array[StaticBody3D] = []
 var guide: MeshInstance3D
@@ -157,7 +159,7 @@ func _ui() -> void:
 	safe_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	safe_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(safe_ui)
-	var hud_backdrop := ColorRect.new()
+	hud_backdrop = ColorRect.new()
 	hud_backdrop.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	hud_backdrop.offset_bottom = 164
 	hud_backdrop.color = Color(0.025, 0.055, 0.12, 0.90)
@@ -181,7 +183,7 @@ func _ui() -> void:
 	info.offset_right = -16
 	safe_ui.add_child(info)
 	top.add_child(KIT.button("Ⅱ", _pause_menu, 52))
-	var tool_scroll := ScrollContainer.new()
+	tool_scroll = ScrollContainer.new()
 	tool_scroll.name = "PuzzleToolsScroll"
 	tool_scroll.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	tool_scroll.offset_top = -78
@@ -260,16 +262,90 @@ func _resize_ui() -> void:
 		camera.look_at(Vector3(0, 0.05, 0.8 if compact_tray else -0.35))
 		if not nodes.is_empty() and dragging < 0:
 			_tray()
+		else:
+			_fit_play_camera()
 
 
 func _fit_menu() -> void:
 	await get_tree().process_frame
 	if not is_inside_tree() or not is_instance_valid(menu):
 		return
-	var height := minf(menu_box.get_combined_minimum_size().y + 24.0, maxf(96.0, safe_ui.size.y - 24.0))
+	var height := minf(
+		menu_box.get_combined_minimum_size().y + 24.0, maxf(96.0, safe_ui.size.y - 24.0)
+	)
 	menu_scroll.custom_minimum_size.y = maxf(48.0, height - 24.0)
 	menu.size = Vector2(menu.custom_minimum_size.x, height)
 	menu.position = (safe_ui.size - menu.size) * 0.5
+
+
+func _play_area() -> Rect2:
+	var safe := safe_ui.get_global_rect()
+	var top := maxf(safe.position.y, hud_backdrop.get_global_rect().end.y)
+	var bottom := minf(safe.end.y, tool_scroll.get_global_rect().position.y)
+	return Rect2(
+		Vector2(safe.position.x + 14.0, top + 10.0),
+		Vector2(maxf(1.0, safe.size.x - 28.0), maxf(1.0, bottom - top - 20.0))
+	)
+
+
+func _camera_mesh_points(points: Array[Vector3], mesh: MeshInstance3D, lifted: bool) -> void:
+	var bounds := mesh.get_aabb()
+	for corner in range(8):
+		var point: Vector3 = mesh.global_transform * bounds.get_endpoint(corner)
+		points.append(point)
+		if lifted:
+			# A picked piece rises from 0.15 to 0.8 and grows slightly. Reserve
+			# that actual interaction envelope before the finger begins moving.
+			var center: Vector3 = mesh.global_position
+			points.append(center + (point - center) * 1.08 + Vector3.UP * 0.65)
+
+
+func _fit_play_camera() -> void:
+	if nodes.is_empty() or not is_instance_valid(camera):
+		return
+	var area := _play_area()
+	var points: Array[Vector3] = []
+	_camera_mesh_points(points, board_frame, false)
+	for node in nodes:
+		if node.visible:
+			_camera_mesh_points(points, node.get_node("Visual") as MeshInstance3D, true)
+	var already_fits := true
+	for point in points:
+		if not area.has_point(camera.unproject_position(point)):
+			already_fits = false
+			break
+	if already_fits:
+		return
+	# Fit the actual table geometry into the asymmetric usable screen rectangle.
+	# The camera's orientation/FOV stay fixed. Perspective constraints determine
+	# the distance and local offset, so short landscape cannot hide slots behind
+	# the 164px header or the bottom touch toolbar.
+	var view := get_viewport().get_visible_rect().size
+	var basis := camera.global_basis.orthonormalized()
+	var inverse := basis.inverse()
+	var local_points: Array[Vector3] = []
+	var low := inverse * points[0]
+	var high := low
+	for point in points:
+		var local := inverse * point
+		local_points.append(local)
+		low = low.min(local)
+		high = high.max(local)
+	var anchor := (low + high) * 0.5
+	var projection := camera.get_camera_projection()
+	var focal := Vector2(projection.x.x * view.x, projection.y.y * view.y) * 0.5
+	var center := area.get_center()
+	var offset := Vector2(center.x - view.x * 0.5, view.y * 0.5 - center.y) / focal
+	var half := area.size * 0.5 / focal
+	var distance := camera.near + 1.0
+	for point in local_points:
+		var relative := point - anchor
+		distance = maxf(distance, relative.z + camera.near + 0.05)
+		distance = maxf(distance, relative.z + absf(relative.x + offset.x * relative.z) / half.x)
+		distance = maxf(distance, relative.z + absf(relative.y + offset.y * relative.z) / half.y)
+	camera.global_position = (
+		basis * (anchor + Vector3(-offset.x * distance, -offset.y * distance, distance))
+	)
 
 
 func _clear_menu() -> void:
@@ -395,7 +471,11 @@ func _tray() -> void:
 	var pending: Array[int] = []
 	for i in range(model.count):
 		var node: StaticBody3D = nodes[i]
-		if not rotation_tweens.has(i) or not rotation_tweens[i].is_valid() or not rotation_tweens[i].is_running():
+		if (
+			not rotation_tweens.has(i)
+			or not rotation_tweens[i].is_valid()
+			or not rotation_tweens[i].is_running()
+		):
 			node.quaternion = Quaternion(Vector3.UP, int(model.pieces[i].get("turn", 0)) * PI * 0.5)
 		if model.pieces[i].locked:
 			node.show()
@@ -427,6 +507,7 @@ func _tray() -> void:
 		model.pieces[i].z = z
 		nodes[i].position = Vector3(x, 0.15, z)
 		nodes[i].show()
+	_fit_play_camera()
 
 
 func _page(direction: int) -> void:
@@ -452,7 +533,13 @@ func _edges() -> void:
 func _labels() -> void:
 	info.text = (
 		"%s%s · %d / %d Teile · %d Tipps"
-		% [model.difficulty_name(), " · Drehpuzzle" if model.rotation_enabled else "", model.placed(), model.count, model.hints]
+		% [
+			model.difficulty_name(),
+			" · Drehpuzzle" if model.rotation_enabled else "",
+			model.placed(),
+			model.count,
+			model.hints
+		]
 	)
 	progress.value = float(model.placed()) / maxi(1, model.count) * 100
 	_update_rotate_button()
@@ -579,7 +666,10 @@ func _update_hover(at2: Vector2) -> void:
 	else:
 		_set_overlay(dragging, Color(1.0, 0.86, 0.35, 0.22))
 		hover_marker.hide()
-		if at2.distance_to(model.target(dragging)) <= model.hover_limit() and not model.orientation_matches(dragging):
+		if (
+			at2.distance_to(model.target(dragging)) <= model.hover_limit()
+			and not model.orientation_matches(dragging)
+		):
 			status.text = "Der Platz stimmt. Drehe das Teil noch mit ↻."
 
 
@@ -614,7 +704,10 @@ func _apply_drop(id: int, at: Vector2) -> void:
 			_clear_overlay(id)
 		status.text = (
 			"Der Platz stimmt. Drehe das Teil noch mit ↻."
-			if not model.orientation_matches(id) and at.distance_to(model.target(id)) <= model.hover_limit()
+			if (
+				not model.orientation_matches(id)
+				and at.distance_to(model.target(id)) <= model.hover_limit()
+			)
 			else "Probiere einen anderen Platz. Schau auf Form und Bild."
 		)
 	dirty = true

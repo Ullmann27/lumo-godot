@@ -1,0 +1,19 @@
+{
+  "scope": "Place-value readability repair after actual GitHub renderer review. Local logic/layout, not renderer or Android performance.",
+  "superseded_native_revision": "9eb25fcb158342639badb0e953a8fe7945fda6ce",
+  "observed_image_sha256": "28b94e716c2367b594a10e7e131a3a9233f73c51c5e0dad3b432c0dbbf5736ab",
+  "change": "Physical unlit navy caption plate behind cream 3D text; full glyph coverage and greater than7:1 material contrast. No task/state change.",
+  "tests": {
+    "LearningStudio": {
+      "checks": 99,
+      "log": "caption-regression.log",
+      "status": "PASS"
+    },
+    "LearningWorld": {
+      "checks": 5340,
+      "log": "caption-learning-layout.log",
+      "status": "PASS"
+    }
+  },
+  "final_render": "pending new exact-source native CI"
+}

@@ -527,6 +527,15 @@ func _build_hundred_stock(material: Material, ink: Material) -> void:
 		content, "", Vector3(0, 0.72, 2.1), 0.34, _material("hundred_ink", Color("f5e1ad"))
 	)
 	_hundred_summary.name = "CurrentPlaceValue"
+	var caption_plate := MeshInstance3D.new()
+	caption_plate.name = "CaptionPlate"
+	caption_plate.mesh = BoxMesh.new()
+	var plate_material := StandardMaterial3D.new()
+	plate_material.albedo_color = Color("122f45")
+	plate_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	caption_plate.material_override = plate_material
+	caption_plate.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_hundred_summary.add_child(caption_plate)
 
 
 func _build_subtraction() -> void:
@@ -765,6 +774,18 @@ func _refresh() -> void:
 		var value: int = activity.a + activity.placed.size() * 10
 		_hundred_summary.mesh.text = (
 			"%d = %d Hunderter + %d Zehner" % [value, value / 100, (value % 100) / 10]
+		)
+		# The actual extruded text needs its own contrasting surface. Without it
+		# the cream glyphs disappear against the ten-frame's cream lower rim.
+		var caption_bounds: AABB = _hundred_summary.get_aabb()
+		var caption_plate: MeshInstance3D = _hundred_summary.get_node("CaptionPlate")
+		caption_plate.mesh.size = Vector3(
+			caption_bounds.size.x + 0.22, caption_bounds.size.y + 0.14, 0.035
+		)
+		caption_plate.position = Vector3(
+			caption_bounds.get_center().x,
+			caption_bounds.get_center().y,
+			caption_bounds.position.z - 0.045
 		)
 		_frame_label.mesh.text = (
 			"10 Zehner = 100"

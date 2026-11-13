@@ -16,12 +16,56 @@ func _initialize() -> void:
 	_run.call_deferred()
 
 
+func _check_place_value_caption() -> void:
+	var game = load(WORLD).instantiate()
+	game.capture_options = {
+		"learning": {"kind": "bridge_hundred", "a": 180, "b": 50}, "reduceAnimations": true
+	}
+	root.add_child(game)
+	await process_frame
+	await physics_frame
+	for step in range(6):
+		var caption: MeshInstance3D = game._hundred_summary
+		var plate: MeshInstance3D = caption.get_node("CaptionPlate")
+		var glyph_bounds: AABB = caption.get_aabb()
+		var plate_bounds: AABB = plate.transform * plate.get_aabb()
+		_check(plate.is_visible_in_tree(), "place-value text has a real contrasting surface")
+		_check(
+			(
+				plate_bounds.position.x < glyph_bounds.position.x
+				and plate_bounds.end.x > glyph_bounds.end.x
+				and plate_bounds.position.y < glyph_bounds.position.y
+				and plate_bounds.end.y > glyph_bounds.end.y
+			),
+			"caption surface contains the full changing place-value text"
+		)
+		_check(plate_bounds.end.z < glyph_bounds.position.z, "surface stays behind every glyph")
+		var ink: StandardMaterial3D = caption.material_override
+		var background: StandardMaterial3D = plate.material_override
+		var light := ink.albedo_color.srgb_to_linear().get_luminance()
+		var dark := background.albedo_color.srgb_to_linear().get_luminance()
+		_check(
+			(light + 0.05) / (dark + 0.05) > 7.0, "unlit place-value colors retain high contrast"
+		)
+		_check(
+			(
+				ink.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED
+				and background.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED
+			),
+			"lesson lighting cannot reduce caption contrast"
+		)
+		if step < 5:
+			_check(game.move_token(step), "caption follows the actual hundred-crossing interaction")
+			await process_frame
+	game.queue_free()
+	await process_frame
+
+
 func _run() -> void:
 	for reduced: bool in [false, true]:
 		var game = load(WORLD).instantiate()
 		game.capture_options = {
-			"learning": {"kind": "bridge_ten", "a": 8, "b": 5},
-			"reduceAnimations": reduced
+			"learning": {"kind": "bridge_ten", "a": 8, "b": 5}, "reduceAnimations": reduced
 		}
 		root.add_child(game)
 		await process_frame
@@ -38,7 +82,9 @@ func _run() -> void:
 		var triangles := 0
 		var moving_materials := 0
 		for mesh: MeshInstance3D in meshes:
-			_check(mesh.mesh != null and mesh.is_visible_in_tree(), "imported mesh is actually visible")
+			_check(
+				mesh.mesh != null and mesh.is_visible_in_tree(), "imported mesh is actually visible"
+			)
 			triangles += mesh.mesh.get_faces().size() / 3
 			for index in range(mesh.mesh.get_surface_count()):
 				var material := mesh.get_active_material(index)
@@ -46,12 +92,19 @@ func _run() -> void:
 				if material is ShaderMaterial:
 					moving_materials += 1
 					_check(
-						is_equal_approx(material.get_shader_parameter("motion_weight"), 0.0 if reduced else 1.0),
+						is_equal_approx(
+							material.get_shader_parameter("motion_weight"), 0.0 if reduced else 1.0
+						),
 						"reduced motion controls the real foliage shader"
 					)
 		_check(triangles > 1000 and triangles < 45000, "actual imported triangle budget")
-		_check(moving_materials == 2, "both original studio foliage groups use bounded vertex motion")
-		_check(game.tokens.size() == 5 and game.targets.size() == 20, "atelier preserves the exact 8+5 manipulatives")
+		_check(
+			moving_materials == 2, "both original studio foliage groups use bounded vertex motion"
+		)
+		_check(
+			game.tokens.size() == 5 and game.targets.size() == 20,
+			"atelier preserves the exact 8+5 manipulatives"
+		)
 		_check(game.fox.is_usable(), "original teaching actor remains connected")
 		_check(
 			atelier.find_children("OriginalLumoLantern*", "Node3D", true, false).size() == 2,
@@ -63,15 +116,23 @@ func _run() -> void:
 		await process_frame
 		game._notification(NOTIFICATION_APPLICATION_RESUMED)
 		_check(
-			game.activity.placed == original_placed
-			and game.activity.explanation() == original_explanation
-			and game.activity.a == 8 and game.activity.b == 5,
+			(
+				game.activity.placed == original_placed
+				and game.activity.explanation() == original_explanation
+				and game.activity.a == 8
+				and game.activity.b == 5
+			),
 			"studio does not change lesson state on lifecycle events"
 		)
 		game.queue_free()
 		await process_frame
+	await _check_place_value_caption()
 	if failures == 0:
-		print("[LearningStudio] PASS checks=", checks, "; runtime asset, materials, reduced motion and preserved learning")
+		print(
+			"[LearningStudio] PASS checks=",
+			checks,
+			"; runtime asset, materials, reduced motion and preserved learning"
+		)
 		quit(0)
 	else:
 		quit(1)

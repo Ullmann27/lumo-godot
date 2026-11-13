@@ -9,7 +9,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: lumo-studio-acceptance-${{ github.ref }}
+  # Keep exact-source evidence from a prior review candidate while the corrected
+  # commit is tested. Duplicate events for one commit still share one runner.
+  group: lumo-studio-acceptance-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -233,3 +235,80 @@ jobs:
           path: studio-evidence/
           if-no-files-found: error
           retention-days: 30
+
+  archive-evidence:
+    needs: [learning-preview, gameplay, new-worlds, studio]
+    if: github.repository == 'Ullmann27/lumo-godot' && github.ref_name == 'chatgpt/lumo-studio-20261113'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SOURCE_SHA: ${{ github.sha }}
+      RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Preserve exact original native ZIP without cross-repository credentials
+        run: |
+          set -euo pipefail
+          gh api "repos/Ullmann27/lumo-godot/actions/runs/$RUN_ID/artifacts?per_page=100" > artifacts.json
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          artifacts = json.loads(Path('artifacts.json').read_text())['artifacts']
+          matches = [item for item in artifacts if item['name'] == 'lumo-studio-2019-native-evidence']
+          assert len(matches) == 1, 'Missing or ambiguous current native artifact'
+          artifact = matches[0]
+          assert artifact['expired'] is False
+          assert artifact['workflow_run']['head_sha'] == os.environ['SOURCE_SHA']
+          assert artifact['workflow_run']['id'] == int(os.environ['RUN_ID'])
+          assert type(artifact['id']) is int and artifact['id'] > 0
+          assert re.fullmatch(r'sha256:[a-f0-9]{64}', artifact['digest'])
+          Path('artifact-id.txt').write_text(str(artifact['id']))
+          Path('native-artifact.json').write_text(json.dumps(artifact, indent=2) + '\n')
+          Path('native-evidence.zip.sha256').write_text(artifact['digest'][7:] + '  native-evidence.zip\n')
+          PY
+          artifact_id="$(cat artifact-id.txt)"
+          gh api "repos/Ullmann27/lumo-godot/actions/artifacts/$artifact_id/zip" > native-evidence.zip
+          sha256sum -c native-evidence.zip.sha256
+          tag="studio-evidence-$SOURCE_SHA-$artifact_id"
+          gh api "repos/Ullmann27/lumo-godot/git/matching-refs/tags/$tag" > refs.json
+          gh api --paginate --slurp 'repos/Ullmann27/lumo-godot/releases?per_page=100' > releases.json
+          python3 - "$tag" <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          tag = sys.argv[1]
+          refs = [item for item in json.loads(Path('refs.json').read_text()) if item['ref'] == 'refs/tags/' + tag]
+          releases = [item for page in json.loads(Path('releases.json').read_text()) for item in page if item['tag_name'] == tag]
+          if refs or releases:
+              assert len(refs) == len(releases) == 1, 'Incomplete archive identity already exists; preserve it'
+              assert refs[0]['object']['type'] == 'commit' and refs[0]['object']['sha'] == os.environ['SOURCE_SHA']
+              assert releases[0]['draft'] is False and releases[0]['prerelease'] is True
+              assets = [item for item in releases[0]['assets'] if item['name'] == 'native-evidence.zip']
+              assert len(assets) == 1 and assets[0]['state'] == 'uploaded'
+              Path('archive-mode.txt').write_text('verify-existing')
+          else:
+              Path('archive-mode.txt').write_text('create')
+          PY
+          if [ "$(cat archive-mode.txt)" = create ]; then
+            python3 - <<'PY'
+          import os
+          from pathlib import Path
+          Path('archive-notes.md').write_text(
+              'Original native CI evidence archive. This contains test logs and renderer captures, not an APK.\n\n'
+              'Source: `' + os.environ['SOURCE_SHA'] + '`\n\n'
+              'Workflow: https://github.com/Ullmann27/lumo-godot/actions/runs/' + os.environ['RUN_ID'] + '\n\n'
+              'The ZIP bytes and SHA-256 are identical to the GitHub Actions artifact. '
+              'Preserving them here allows the separate Flutter repository to verify the original evidence '
+              'without granting its workflow a cross-repository access token. Visual review and Android acceptance remain separate.\n')
+          PY
+            gh release create "$tag" native-evidence.zip native-evidence.zip.sha256 native-artifact.json \
+              --repo Ullmann27/lumo-godot --target "$SOURCE_SHA" \
+              --title "Studio native evidence $SOURCE_SHA" --notes-file archive-notes.md \
+              --prerelease --latest=false
+          fi
+          curl --fail --location --retry 3 \
+            "https://github.com/Ullmann27/lumo-godot/releases/download/$tag/native-evidence.zip" \
+            --output public-native-evidence.zip
+          cmp native-evidence.zip public-native-evidence.zip
