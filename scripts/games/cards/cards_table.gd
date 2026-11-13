@@ -695,7 +695,8 @@ func _texture(card: Dictionary, face: bool) -> Texture2D:
 			path = "res://assets/cards_table/cards/special/wild_draw_four.png"
 		else:
 			var suffix := (
-				str(card.get("number", 1))
+				# JSON mailbox numbers are floats; asset names use integer digits.
+				str(int(card.get("number", 1)))
 				if kind == "number"
 				else str(
 					(

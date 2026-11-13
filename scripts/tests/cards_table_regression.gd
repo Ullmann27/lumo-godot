@@ -39,6 +39,43 @@ static func fixture() -> Dictionary:
 	}
 
 
+static func wire_fixture() -> Dictionary:
+	# The Android mailbox crosses JSON; all its numbers arrive as floats.
+	return JSON.parse_string(JSON.stringify(fixture()))
+
+
+static func face_texture_errors(table: Node3D) -> Array[String]:
+	var expected := {
+		"r1": "red/red_1.png",
+		"b2": "blue/blue_2.png",
+		"wild": "special/color_magic.png",
+		"g4": "green/green_4.png",
+		"y5": "yellow/yellow_5.png",
+		"r6": "red/red_6.png",
+		"pause": "blue/blue_think_pause.png",
+		"r5": "red/red_5.png"
+	}
+	var nodes: Dictionary = table._cards.duplicate()
+	if table.discard_root.get_child_count() > 0:
+		nodes["r5"] = table.discard_root.get_child(table.discard_root.get_child_count() - 1)
+	var errors: Array[String] = []
+	for id: String in nodes:
+		var found := false
+		for child in nodes[id].get_children():
+			if child is MeshInstance3D and child.mesh is PlaneMesh:
+				var material: StandardMaterial3D = child.material_override
+				var texture: Texture2D = material.albedo_texture if material != null else null
+				found = (
+					texture != null
+					and texture.resource_path == "res://assets/cards_table/cards/" + expected[id]
+					and texture.get_width() > 0
+					and texture.get_height() > 0
+				)
+		if not found:
+			errors.append("missing/wrong actual face material: " + id)
+	return errors
+
+
 func _initialize() -> void:
 	call_deferred("_run")
 
@@ -89,6 +126,21 @@ func _run() -> void:
 	print(
 		"CARDS_ROOM_BATCHES sources=%d batches=%d" % [batched_instances, table.room_batches.size()]
 	)
+	check(typeof(wire_fixture().top.number) == TYPE_FLOAT, "fixture exercises actual JSON number type")
+	var folders := {"orange": "red", "purple": "yellow", "blue": "blue", "green": "green"}
+	for color: String in folders:
+		for number in range(10):
+			var card: Dictionary = JSON.parse_string(
+				JSON.stringify({"color": color, "type": "number", "number": number})
+			)
+			var texture: Texture2D = table._texture(card, true)
+			var expected := "res://assets/cards_table/cards/%s/%s_%d.png" % [
+				folders[color], folders[color], number
+			]
+			check(
+				texture != null and texture.resource_path == expected,
+				"JSON card resolves original number face: %s %d" % [color, number]
+			)
 	for shape in [
 		Vector2i(1280, 720), Vector2i(412, 915), Vector2i(690, 829), Vector2i(2400, 1080)
 	]:
@@ -98,9 +150,11 @@ func _run() -> void:
 		}
 		await process_frame
 		table._resize()
-		table.apply_state(fixture())
+		table.apply_state(wire_fixture())
 		await process_frame
 		await process_frame
+		var face_errors := face_texture_errors(table)
+		check(face_errors.is_empty(), "JSON hand and discard bind face textures: " + str(face_errors))
 		check(table.actor.is_usable(), "original 65-bone actor loaded")
 		var hips: Vector3 = table.actor.skeleton.to_global(
 			table.actor.skeleton.get_bone_global_pose(table.seated.pelvis).origin
@@ -163,20 +217,20 @@ func _run() -> void:
 		check(requests[0].revision == 4, "command binds published revision")
 		table._send("draw")
 		check(requests.size() == 1, "pending action prevents second command")
-		var acknowledged := fixture()
+		var acknowledged := wire_fixture()
 		acknowledged.ack = requests[0].sequence
 		acknowledged.revision = 5
 		table.apply_state(acknowledged)
 		check(table._pending == 0, "only acknowledgement releases input")
 		requests.clear()
 		table._selected = ""
-		var hidden := fixture()
+		var hidden := wire_fixture()
 		hidden.phase = "passDevice"
 		hidden.hand = []
 		table.apply_state(hidden)
 		await process_frame
 		check(table._cards.is_empty() and table.modal.visible, "handover hides hand")
-		var question := fixture()
+		var question := wire_fixture()
 		question.phase = "learningQuestion"
 		question.question = {"prompt": "Was ist 8 + 5?", "options": ["11", "13", "15"]}
 		table.apply_state(question)
@@ -190,7 +244,7 @@ func _run() -> void:
 		)
 		requests.clear()
 		table._pending = 0
-		var long_question := fixture()
+		var long_question := wire_fixture()
 		long_question.phase = "learningQuestion"
 		long_question.round = 2
 		long_question.totalRounds = 3

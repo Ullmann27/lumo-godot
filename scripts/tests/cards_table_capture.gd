@@ -47,8 +47,13 @@ func _run() -> void:
 		root.get_node("HostBridge")._options = {"displayDensity": 2.625 if shape.x == 2400 else 1.0}
 		await _settle()
 		table._resize()
-		table.apply_state(FIXTURE.fixture())
+		table.apply_state(FIXTURE.wire_fixture())
 		await _settle()
+		var face_errors := FIXTURE.face_texture_errors(table)
+		if not face_errors.is_empty():
+			push_error("Cards JSON face textures: " + str(face_errors))
+			quit(7)
+			return
 		var image := root.get_texture().get_image()
 		if image.is_empty() or image.get_width() != shape.x or image.get_height() != shape.y:
 			quit(3)
@@ -75,6 +80,8 @@ func _run() -> void:
 			{
 				"renderer": DisplayServer.get_name(),
 				"public_fixture": true,
+				"json_mailbox_roundtrip": true,
+				"visible_face_materials_checked": true,
 				"android_device_measurement": false,
 				"static_room_box_instances": table.room_source_boxes,
 				"static_room_batches": table.room_batches.size(),
