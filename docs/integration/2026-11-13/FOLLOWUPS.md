@@ -116,3 +116,98 @@ this combined source. Its published native geometry repair passed 295 local
 checks; the Host still needs its matching engine window-mode hook and a fresh
 real API 35/API 37 tour. No previous image, workflow success or receipt is
 relabelled as proof for the new combined head.
+
+## Findings from the exact cf039 run
+
+The next combined source was `cf039ad8c834522f355b858e3bee1e201e397da4`,
+tree `4fdbcbfcf069c6790e17101a09d4fb3f2955c2e2`. Graphics run `43444648887`
+completed with Home and Feedback successful, but Worlds failed while importing
+the old `ada5` comparison tree. Current Worlds regression, visibility and both
+current track captures had already passed. The complete run remains failed.
+Its original metadata, full failed job/import logs, all required gate logs and
+ZIP/image hashes are preserved under
+`docs/evidence/integration-20261113/cf039-graphics-import-failure/`.
+
+Published native `25e3a1187234860414fa69822e7b301e75880c82` isolates the data,
+configuration and cache directories before each graphics editor import and
+uses `--import`'s documented completion-and-exit behavior without `--quit`.
+The baseline import also runs from its own directory. The exact two blocks are
+merged; our PR trigger and exact-head checkout remain intact. All product
+files, comparison sources, error checks and capture gates are preserved. This
+is an import correction requiring a fresh successful run, not a proven engine
+crash diagnosis. An unchanged-source Worlds retry was therefore not started.
+
+Nextgen run `43444649016` completed both Workshop and Treasure Touch jobs with
+all six and 14 original PNGs respectively, both probe modes and clean before/
+after source stamps. Build's headless probe passed, but its rendered probe
+failed after closing a modal and entering the subsequent scene in portrait.
+The partial collection cannot produce a valid final native bundle or receipt.
+
+The Build probe now establishes the actual desktop pointer's entry into the
+restored native window when the platform supports native subwindows and mouse
+warping. It requires genuine hover before sending the unchanged ScreenTouch
+and checking the actual Button signal. This addresses the desktop test's input
+precondition after a window resize; this pointer correction itself changes no
+production file.
+The final strict local headless run passes all 1,637 assertions with no errors
+or resource leaks; all 2,242 scoped files were unchanged during that run. The
+local environment could not supply a renderer, so the new rendered result is
+still mandatory. Original failure evidence, exact source hashes, primary engine
+source links and the complete local log are under
+`docs/evidence/integration-20261113/build-following-scene-touch/`.
+
+The cf039 Gameplay job concluded SUCCESS despite three more post-PASS resource
+errors in KartAI, GarageTargets and KartFullField. All three current legacy
+shell runners had a blanket exception for that error. That exception is now
+removed. Their actual Bash gate functions first reproduced the three incorrect
+acceptances; after repair, four test groups covering 12 gate/log combinations
+pass. The fixture replays logs and does not claim engine or renderer evidence.
+The original red/green logs and exact shell changes are preserved under
+`docs/evidence/integration-20261113/legacy-log-policy/`. Historical baseline
+revisions and receipts remain untouched; the actual probe teardown repairs and
+fresh complete CI must pass the stricter current policy.
+
+Those three additional Kart probes now observe the actual scene and audio
+playback lifetimes with weak references and the same 2,000 ms real-time limit.
+Their clean local positives preserve all gameplay checks: KartAI releases both
+playbacks after 68 ms; GarageTargets retains its 255 target checks and releases
+its playback after 50 ms; FullField completes six scenarios with 30 full two-lap
+drives and six successful teardown checks. Each isolated negative fixture holds
+one real playback, fails at the deadline and emits no PASS. All 287 scoped Kart
+source/scene/audio files are unchanged during the final runs. The concurrent
+Build source is explicitly excluded from that scope. Full original, red, green,
+diagnostic and negative records are in
+`docs/evidence/integration-20261113/cf039-kart-audio-teardown/`.
+
+## Actual construction-toolbar integration defect
+
+The completed cf039 Core result is 35 PASS and two FAIL entries: the unchanged
+BuildNextgen play probe fails in both headless and rendered modes. The four
+failed assertions share one cause. Studio's PASS toolbar buttons allowed a raw
+Touch release to reach the 3D world after the Rotate button had already fired.
+Village's larger construction boundary makes the observed accidental target
+`(-31, 0, -20)` valid: it had been outside HALF=24 but is inside HALF=128. The
+selected piece was therefore committed immediately behind the toolbar. The
+later drag missed that moved piece, changed the camera orbit and directed the
+character past the intended collision/inspection target.
+
+The original local probe and an explicitly touch-enabled fixture both reproduce
+the same four failures. The causal experiment changes only the outer toolbar
+ScrollContainer to `MOUSE_FILTER_STOP`: selection remains active until the
+deliberate world touch, the piece moves to the exact intended transform, and
+the character stops against and inspects the real wall. The product repair is
+that single explicit property plus its comment. PASS child buttons, scrolling,
+world-owned gestures, expanded terrain, save model and collision geometry remain
+as published.
+
+The unchanged original BuildPlay probe now passes all 62 assertions. The actual
+Build dialog density/input probe also passes all 1,637 assertions with the
+toolbar repair in place. Both strict local logs are clean. The complete failure,
+touch-enabled countercheck, event sequence, source identities and final local
+logs are preserved under
+`docs/evidence/integration-20261113/build-toolbar-input-boundary/`.
+
+These local repairs are ready for one fresh combined native and renderer run.
+No cf039 partial artifact is a receipt for the repaired source. The Host's exact
+new source pin, both explicit visual reviews and real Android API 35/API 37
+acceptance still follow the successful final native source.

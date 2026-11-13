@@ -1,0 +1,47 @@
+{
+  "phase": "after-typed",
+  "test": "kart_ai_behavior_regression",
+  "started_utc": "2026-11-13T15:11:08.359426+00:00",
+  "finished_utc": "2026-11-13T15:11:14.282273+00:00",
+  "elapsed_seconds": 5.923,
+  "command": [
+    "python3",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_ai_behavior_regression/engine.log",
+    "--timeout",
+    "240",
+    "--required",
+    "[KartAI] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_ai_behavior_regression.gd",
+    "--fixed-fps",
+    "60"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "xdg": {
+    "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_ai_behavior_regression/xdg-data",
+    "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_ai_behavior_regression/xdg-config",
+    "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_ai_behavior_regression/xdg-cache",
+    "XDG_STATE_HOME": "/home/agent/.local/state",
+    "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+  },
+  "script_sha256": "14c1ba4ddceb64cdf46108feac55c486a16a5f763e26b5b4762198f4c5411fe2",
+  "strict_runner_exit": 0,
+  "required_marker": "[KartAI] PASS",
+  "marker_present": true,
+  "errors": [],
+  "cleanup_lines": [
+    "[KartAI] audio_release tracked=2 scene_released=true elapsed_ms=68"
+  ],
+  "engine_log_sha256": "b9d4b8b873d05cf57db0a97dc730c906f2396a2787bfe904d48615f5d3db7f8e",
+  "runner_log_sha256": "b9d4b8b873d05cf57db0a97dc730c906f2396a2787bfe904d48615f5d3db7f8e"
+}

@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "source_head": "97b91e312eb982ab1fe9083b7415d11085385235",
+  "source_tree": "79a9d0c98c4b6cd359cbd1531abfe1eefc663ac8",
+  "base_source_note": "Local97b91 plus recorded toolbar product patch and preceding desktop following-scene probe patch; no commit/ref mutation by this agent.",
+  "source_blobs": {
+    "scripts/creative/build_world.gd": "a063665df6b3532cec154dbccbf595dc8c895937",
+    "scripts/tests/build_nextgen_play_regression.gd": "f7d87b2f103042bd82eeecddf956d8385a70d0a7",
+    "scripts/tests/build_dialog_density_regression.gd": "6dae9eafef0e7ea397aa347fd3b66dbee3979d76",
+    "tools/run_godot_probe.py": "c23859ece2d62101d000d7a89556fda5d3fe4105"
+  },
+  "source_sha256": {
+    "scripts/creative/build_world.gd": "418daab8559ec9dbbc7c46d1baf90a45ca3b1e889da27d8c18408f817d811f1b",
+    "scripts/tests/build_nextgen_play_regression.gd": "dab756a7e255029eec566dd26b16fdd4e3ba624188cd790b5434ea3883fa2dff",
+    "scripts/tests/build_dialog_density_regression.gd": "b75bf153da7259d7d561a5f2145338883b283ed90c95b250c03ed3cdc425fd84",
+    "tools/run_godot_probe.py": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13"
+  },
+  "probes": [
+    {
+      "log": "build-play-green.log",
+      "sha256": "4f02d44a99debb7a5b7a8580c5c7ef215201906963f133e6d10c79d65d27c01c",
+      "exit_code": 0,
+      "assertions": 62,
+      "deadline_seconds": 420,
+      "headless": true,
+      "strict_error_scan": "PASS"
+    },
+    {
+      "log": "build-density-green.log",
+      "sha256": "eff4e5a9f17fd320ccdc7a8047cdd0b157d00441aa47e88a74186ab2117a4a91",
+      "exit_code": 0,
+      "assertions": 1637,
+      "deadline_seconds": 600,
+      "headless": true,
+      "strict_error_scan": "PASS"
+    }
+  ],
+  "unchanged_during_final_probes": 45,
+  "changed_during_final_probes": [],
+  "product_delta": "scripts/creative/build_world.gd: one explanatory comment and scroll.mouse_filter = Control.MOUSE_FILTER_STOP at toolbar creation. PASS children and all scrolling modes retained.",
+  "build_play_probe_changed": false,
+  "geometry_or_bounds_changed": false,
+  "renderer_green": false,
+  "required_next_evidence": "Fresh original CI rendered BuildPlay and BuildDialogDensity captures on the final combined source; no old artifact relabeling."
+}

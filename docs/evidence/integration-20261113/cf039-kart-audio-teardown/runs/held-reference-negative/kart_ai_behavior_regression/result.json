@@ -1,0 +1,49 @@
+{
+  "phase": "held-reference-negative",
+  "test": "kart_ai_behavior_regression",
+  "started_utc": "2026-11-13T15:12:12.919032+00:00",
+  "finished_utc": "2026-11-13T15:12:20.690626+00:00",
+  "elapsed_seconds": 7.772,
+  "command": [
+    "python3",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/engine.log",
+    "--timeout",
+    "240",
+    "--required",
+    "[KartAI] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_ai_behavior_regression.gd",
+    "--fixed-fps",
+    "60"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "xdg": {
+    "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/xdg-data",
+    "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/xdg-config",
+    "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/xdg-cache",
+    "XDG_STATE_HOME": "/home/agent/.local/state",
+    "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+  },
+  "script_sha256": "ffcedd5de38e59dc1b36c341cb88c3119a60234e5fbd23c602e895b4993d0178",
+  "strict_runner_exit": 1,
+  "required_marker": "[KartAI] PASS",
+  "marker_present": false,
+  "errors": [
+    "ERROR: [KartAI] FAIL: Scene or audio playback retained after teardown"
+  ],
+  "cleanup_lines": [
+    "[KartAI] retained_scene=false retained_audio_playbacks=1 elapsed_ms=2001"
+  ],
+  "engine_log_sha256": "2b523a3cf40130db2c4131670463fdf35b4d0c5d76b33fbb47af502170b6390d",
+  "runner_log_sha256": "9b13cff17587ae9e4cef6e71a17c89b6d5df36bbdd87b89b9ea9d0632bc75cd7"
+}

@@ -1,0 +1,20 @@
+--- /workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_ai_behavior_regression.gd
++++ negative-fixture/kart_ai_behavior_regression.gd
+@@ -8,6 +8,7 @@
+ const SIM_SECONDS: float = 8.0
+ 
+ var game
++var intentionally_held_audio: AudioStreamPlayback = null
+ var failed: bool = false
+ 
+ 
+@@ -266,6 +267,9 @@
+ 	var playbacks: Array[WeakRef] = []
+ 	for player: Node in game.find_children("*", "AudioStreamPlayer", true, false):
+ 		if player.has_stream_playback():
++			if intentionally_held_audio == null:
++				intentionally_held_audio = player.get_stream_playback()
++				print("[NegativeHold] retaining real playback resource=%s type=%s" % [player.stream.resource_path, intentionally_held_audio.get_class()])
+ 			playbacks.append(weakref(player.get_stream_playback()))
+ 	var scene: WeakRef = weakref(game)
+ 	game.queue_free()

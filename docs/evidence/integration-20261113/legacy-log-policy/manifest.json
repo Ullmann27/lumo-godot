@@ -1,0 +1,59 @@
+{
+  "scope": "Actual Bash acceptance functions; synthetic log replay, not engine or rendering evidence",
+  "base_commit": "97b91e312eb982ab1fe9083b7415d11085385235",
+  "origin": {
+    "native_sha": "cf039ad8c834522f355b858e3bee1e201e397da4",
+    "workflow_run_id": 43444649016,
+    "gameplay_job_id": 131950806261,
+    "observed_post_pass_errors": [
+      "KartAI: 4 resources",
+      "GarageTargets: 2 resources",
+      "KartFullField: 2 resources"
+    ]
+  },
+  "red": {
+    "test_groups": 4,
+    "gate_case_executions": 12,
+    "failures": 3,
+    "reason": "All three original shell gates incorrectly accepted a PASS followed by a resource ERROR from an exit-zero process"
+  },
+  "green": {
+    "test_groups": 4,
+    "gate_case_executions": 12,
+    "failures": 0,
+    "elapsed_seconds": 0.307,
+    "cases": [
+      "clean PASS accepted",
+      "post-PASS resource ERROR rejected",
+      "missing PASS rejected",
+      "post-PASS SCRIPT ERROR rejected"
+    ]
+  },
+  "historical_baseline_sources_modified": false,
+  "current_engine_acceptance": "Pending fresh complete native CI after the three actual test teardown repairs",
+  "files": {
+    "green.log": {
+      "bytes": 564,
+      "sha256": "03f7ad6d9e5af80269a47a6f43a2f904dfd2f5ec2fbc54d20cfa2eb6cd15ca50"
+    },
+    "source-after.json": {
+      "bytes": 494,
+      "sha256": "4de0a05103965e48a5cbb63e5eae52f02cda4253fd7bc21f45837112e1f029cd"
+    },
+    "source-before.json": {
+      "bytes": 494,
+      "sha256": "d0839b9efc24a7b9c924bf49f3740ef3d50a57a624504ad55442d6ff4ee6d4af"
+    },
+    "strict-error-policy.patch": {
+      "bytes": 2135,
+      "sha256": "6fd0e4e1f91a0e637b26b7bd86d403691fe0994cdf3e10597a2a51a21125b94c"
+    },
+    "red.log.gz": {
+      "bytes": 566,
+      "sha256": "d7a97a82c3b30337d811d5cc55e8475ee3e148ffec75c34173df1ca9b2cf8ba1",
+      "original_bytes": 3398,
+      "original_sha256": "fa7932144ecbab89de8941fe7b882b7df3529fc0b6d91c72cf0d8739d7c317be",
+      "encoding": "gzip; original log bytes preserved"
+    }
+  }
+}

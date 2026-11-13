@@ -1,0 +1,30 @@
+[
+  {
+    "path": "scripts/tests/kart_ai_behavior_regression.gd",
+    "ref": "cf039ad8c834522f355b858e3bee1e201e397da4",
+    "git_blob_sha": "48203354c8a1fcd2aed96cacfacbec191aabf1ae",
+    "url": "https://github.com/Ullmann27/lumo-godot/blob/cf039ad8c834522f355b858e3bee1e201e397da4/scripts/tests/kart_ai_behavior_regression.gd",
+    "final_lf": true
+  },
+  {
+    "path": "scripts/tests/kart_garage_touch_targets_regression.gd",
+    "ref": "cf039ad8c834522f355b858e3bee1e201e397da4",
+    "git_blob_sha": "5afc4d992b6121531a8873d013e995367797a495",
+    "url": "https://github.com/Ullmann27/lumo-godot/blob/cf039ad8c834522f355b858e3bee1e201e397da4/scripts/tests/kart_garage_touch_targets_regression.gd",
+    "final_lf": true
+  },
+  {
+    "path": "scripts/tests/kart_full_field_regression.gd",
+    "ref": "cf039ad8c834522f355b858e3bee1e201e397da4",
+    "git_blob_sha": "33c4c28025092097111ba5c87b70d89bf27b4c0d",
+    "url": "https://github.com/Ullmann27/lumo-godot/blob/cf039ad8c834522f355b858e3bee1e201e397da4/scripts/tests/kart_full_field_regression.gd",
+    "final_lf": true
+  },
+  {
+    "path": "scripts/games/kart_audio.gd",
+    "ref": "cf039ad8c834522f355b858e3bee1e201e397da4",
+    "git_blob_sha": "f8256867f410aafe7602734b3d59615c1c8a896a",
+    "url": "https://github.com/Ullmann27/lumo-godot/blob/cf039ad8c834522f355b858e3bee1e201e397da4/scripts/games/kart_audio.gd",
+    "final_lf": true
+  }
+]

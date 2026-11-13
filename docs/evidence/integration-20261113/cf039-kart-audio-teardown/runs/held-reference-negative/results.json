@@ -1,0 +1,156 @@
+{
+  "phase": "held-reference-negative",
+  "source_files_unchanged": true,
+  "changed_files": [],
+  "head_before": "97b91e312eb982ab1fe9083b7415d11085385235",
+  "head_after": "97b91e312eb982ab1fe9083b7415d11085385235",
+  "results": [
+    {
+      "phase": "held-reference-negative",
+      "test": "kart_ai_behavior_regression",
+      "started_utc": "2026-11-13T15:12:12.919032+00:00",
+      "finished_utc": "2026-11-13T15:12:20.690626+00:00",
+      "elapsed_seconds": 7.772,
+      "command": [
+        "python3",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/engine.log",
+        "--timeout",
+        "240",
+        "--required",
+        "[KartAI] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--verbose",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--script",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_ai_behavior_regression.gd",
+        "--fixed-fps",
+        "60"
+      ],
+      "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+      "xdg": {
+        "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/xdg-data",
+        "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/xdg-config",
+        "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/xdg-cache",
+        "XDG_STATE_HOME": "/home/agent/.local/state",
+        "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+      },
+      "script_sha256": "ffcedd5de38e59dc1b36c341cb88c3119a60234e5fbd23c602e895b4993d0178",
+      "strict_runner_exit": 1,
+      "required_marker": "[KartAI] PASS",
+      "marker_present": false,
+      "errors": [
+        "ERROR: [KartAI] FAIL: Scene or audio playback retained after teardown"
+      ],
+      "cleanup_lines": [
+        "[KartAI] retained_scene=false retained_audio_playbacks=1 elapsed_ms=2001"
+      ],
+      "engine_log_sha256": "2b523a3cf40130db2c4131670463fdf35b4d0c5d76b33fbb47af502170b6390d",
+      "runner_log_sha256": "9b13cff17587ae9e4cef6e71a17c89b6d5df36bbdd87b89b9ea9d0632bc75cd7"
+    },
+    {
+      "phase": "held-reference-negative",
+      "test": "kart_garage_touch_targets_regression",
+      "started_utc": "2026-11-13T15:12:20.693116+00:00",
+      "finished_utc": "2026-11-13T15:12:33.108683+00:00",
+      "elapsed_seconds": 12.416,
+      "command": [
+        "python3",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/engine.log",
+        "--timeout",
+        "240",
+        "--required",
+        "[GarageTargets] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--verbose",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--script",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_garage_touch_targets_regression.gd",
+        "--fixed-fps",
+        "60"
+      ],
+      "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+      "xdg": {
+        "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/xdg-data",
+        "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/xdg-config",
+        "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/xdg-cache",
+        "XDG_STATE_HOME": "/home/agent/.local/state",
+        "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+      },
+      "script_sha256": "2452c060ef632b3ffe5fb85707732bbc7b256856e7560b9027951a392c7cc1b8",
+      "strict_runner_exit": 1,
+      "required_marker": "[GarageTargets] PASS",
+      "marker_present": false,
+      "errors": [
+        "ERROR: [GarageTargets] FAIL: Scene or audio playback retained after teardown"
+      ],
+      "cleanup_lines": [
+        "[GarageTargets] retained_scene=false retained_audio_playbacks=1 elapsed_ms=2001"
+      ],
+      "engine_log_sha256": "1b4a0e866b3e67e4ccd32ee126e571c6078fcec0b39d8e421e52e7a3a9743fac",
+      "runner_log_sha256": "e6c2622c04b1c75168d3ae338790f48f60889d2c924108d875eb7da44891e367"
+    },
+    {
+      "phase": "held-reference-negative",
+      "test": "kart_full_field_regression",
+      "started_utc": "2026-11-13T15:12:33.112848+00:00",
+      "finished_utc": "2026-11-13T15:12:44.913035+00:00",
+      "elapsed_seconds": 11.8,
+      "command": [
+        "python3",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/engine.log",
+        "--timeout",
+        "240",
+        "--required",
+        "[KartFullField] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--verbose",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--script",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_full_field_regression.gd",
+        "--fixed-fps",
+        "60"
+      ],
+      "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+      "xdg": {
+        "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/xdg-data",
+        "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/xdg-config",
+        "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/xdg-cache",
+        "XDG_STATE_HOME": "/home/agent/.local/state",
+        "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+      },
+      "script_sha256": "2d139cb90a9d7fe37b1ee43697f014a462a8dfa6353594b83f0dd5428b003551",
+      "strict_runner_exit": 1,
+      "required_marker": "[KartFullField] PASS",
+      "marker_present": false,
+      "errors": [
+        "ERROR: [KartFullField] Scene or audio playback retained after teardown"
+      ],
+      "cleanup_lines": [
+        "[KartFullField] retained_scene=false retained_audio_playbacks=1 elapsed_ms=2002"
+      ],
+      "engine_log_sha256": "ca3beb1ad5378f1fb425e8f200bcfa32726b9c7a8b69660f25c95673cf09d7bc",
+      "runner_log_sha256": "106f4b4f78d80c7473e3e979b0183208a5783f0267cd0b31370a547285873792"
+    }
+  ]
+}

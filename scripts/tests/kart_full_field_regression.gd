@@ -312,7 +312,39 @@ func _drive(level: String) -> Dictionary:
 	}
 	_check(absf(game.roadside_lasso.clock - seconds) < STEP, "Lasso clock must run once per production physics tick")
 	print("[KartFullField] REPORT " + JSON.stringify(report))
+	var playbacks: Array[WeakRef] = []
+	for player: Node in game.find_children("*", "AudioStreamPlayer", true, false):
+		if player.has_stream_playback():
+			playbacks.append(weakref(player.get_stream_playback()))
+	var scene: WeakRef = weakref(game)
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
+	game = null
+	_check(await _release_audio(scene, playbacks), "Scene or audio playback retained after teardown")
 	return report
+
+
+func _release_audio(scene: WeakRef, playbacks: Array[WeakRef]) -> bool:
+	# A freed scene can leave mixer-side Ogg fadeout alive beyond one frame.
+	# Observe real owners without retaining them; simulation time is not a deadline.
+	var started := Time.get_ticks_msec()
+	while true:
+		var pending := 0
+		for playback: WeakRef in playbacks:
+			if playback.get_ref() != null:
+				pending += 1
+		var scene_retained := scene.get_ref() != null
+		var elapsed := Time.get_ticks_msec() - started
+		if elapsed >= 2000:
+			printerr(
+				"[KartFullField] retained_scene=%s retained_audio_playbacks=%d elapsed_ms=%d"
+				% [scene_retained, pending, elapsed]
+			)
+			return false
+		if not scene_retained and pending == 0:
+			print("[KartFullField] audio_release tracked=%d scene_released=true elapsed_ms=%d" % [playbacks.size(), elapsed])
+			return true
+		OS.delay_msec(2)
+		await process_frame
+	return false

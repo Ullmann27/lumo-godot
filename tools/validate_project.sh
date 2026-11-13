@@ -2,10 +2,7 @@
 set -euo pipefail
 GODOT="${GODOT_BIN:-godot}"
 
-# After a PASS line, ignore Godot's known teardown line
-#   ERROR: N resources still in use at exit
-# so a green suite is not flipped to failure. SCRIPT ERROR, Parse Error,
-# and any other ERROR: still fail. Missing PASS still fails.
+# A PASS marker cannot approve engine errors emitted during teardown.
 godot_log_ok() {
   local log=$1
   local pass=$2
@@ -13,9 +10,7 @@ godot_log_ok() {
     echo "missing PASS marker '$pass' in $log" >&2
     return 1
   fi
-  if grep -E 'SCRIPT ERROR|Parse Error|ERROR:' "$log" \
-    | grep -v 'resources still in use at exit' \
-    | grep -q .; then
+  if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$log"; then
     echo "errors in $log" >&2
     return 1
   fi

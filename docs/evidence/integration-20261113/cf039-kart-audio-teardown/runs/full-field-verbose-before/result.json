@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "scripts/tests/kart_full_field_regression.gd"
+  ],
+  "diagnostic_only": true,
+  "engine_exit": 0,
+  "seconds": 50.431328147002205,
+  "source_files_unchanged": true,
+  "log_sha256": "2c4a739752a745ce1dad955cf77521c02b672a2f91d15554a2a56c5579c8f04d",
+  "errors_and_objects": []
+}

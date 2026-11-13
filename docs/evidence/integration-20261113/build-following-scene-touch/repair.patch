@@ -1,0 +1,27 @@
+diff --git a/scripts/tests/build_dialog_density_regression.gd b/scripts/tests/build_dialog_density_regression.gd
+index e8b5263..6dae9ea 100644
+--- a/scripts/tests/build_dialog_density_regression.gd
++++ b/scripts/tests/build_dialog_density_regression.gd
+@@ -380,6 +380,22 @@ func _run() -> void:
+ 		next_action.pressed.connect(func(): received[0] = true)
+ 		root.add_child(next_action)
+ 		await _settle()
++		if (not original_embed and DisplayServer.has_feature(DisplayServer.FEATURE_SUBWINDOWS)
++			and DisplayServer.has_feature(DisplayServer.FEATURE_MOUSE_WARP)):
++			# Native desktop windows need a real mouse-enter event before Godot
++			# can hover a Button. Synthetic ScreenTouch does not move the OS
++			# pointer, which can remain outside the resized window. Establish
++			# that input precondition without changing the restored policy.
++			var physical_target := _pixels(next_action).get_center()
++			print("[BuildDialogDensity] NATIVE_POINTER before=", DisplayServer.mouse_get_position(),
++				" window=", root.position, " target=", physical_target,
++				" hovered=", root.gui_get_hovered_control() == next_action)
++			root.warp_mouse(root.get_screen_transform().affine_inverse() * physical_target)
++			await _settle()
++			_check(root.gui_get_hovered_control() == next_action,
++				"Real desktop pointer enters the restored native window before emulated touch")
++			print("[BuildDialogDensity] NATIVE_POINTER after=", DisplayServer.mouse_get_position(),
++				" hovered=", root.gui_get_hovered_control() == next_action)
+ 		await _tap(next_action)
+ 		_check(received[0], "A subsequent scene receives routed touch after modal scene exit")
+ 		next_action.queue_free()

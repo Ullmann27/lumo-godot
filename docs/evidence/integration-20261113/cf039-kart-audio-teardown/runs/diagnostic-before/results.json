@@ -1,0 +1,100 @@
+{
+  "results": [
+    {
+      "test": "kart_ai_behavior_regression",
+      "command": [
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--verbose",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--script",
+        "scripts/tests/kart_ai_behavior_regression.gd"
+      ],
+      "started_utc": "2026-11-13T15:07:34.998999+00:00",
+      "elapsed_seconds": 7.621,
+      "engine_exit": 0,
+      "mode": "diagnostic only; complete teardown output, not an acceptance run",
+      "marker_present": true,
+      "errors_and_objects": [
+        "WARNING: ObjectDB instances leaked at exit (run with --verbose for details).",
+        "ERROR: 4 resources still in use at exit.",
+        "Leaked instance: AudioStreamPlaybackOggVorbis:9223372137887172537 - Reference count: 1",
+        "Leaked instance: OggPacketSequencePlayback:9223372137903949754 - Reference count: 1",
+        "Leaked instance: OggPacketSequence:9223372137803286459 - Reference count: 3",
+        "Leaked instance: AudioStreamOggVorbis:9223372137820063676 - Reference count: 1",
+        "Leaked instance: AudioStreamOggVorbis:9223372444910230386 - Reference count: 1",
+        "Leaked instance: OggPacketSequence:9223372444893453171 - Reference count: 3",
+        "Leaked instance: OggPacketSequencePlayback:9223372444994116468 - Reference count: 1",
+        "Leaked instance: AudioStreamPlaybackOggVorbis:9223372444977339253 - Reference count: 1",
+        "Resource still in use: res://assets/audio/kart/garage.ogg::OggPacketSequence_s4fn4 (OggPacketSequence)",
+        "Resource still in use: res://assets/audio/kart/garage.ogg (AudioStreamOggVorbis)",
+        "Resource still in use: res://assets/audio/kart/sonnenhafen.ogg::OggPacketSequence_y7iyb (OggPacketSequence)",
+        "Resource still in use: res://assets/audio/kart/sonnenhafen.ogg (AudioStreamOggVorbis)"
+      ],
+      "log_sha256": "89c6bb6e6e9fbd56e2f0b629703348b24d8f0a432803fe7cd76ef4c852c59569"
+    },
+    {
+      "test": "kart_garage_touch_targets_regression",
+      "command": [
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--verbose",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--script",
+        "scripts/tests/kart_garage_touch_targets_regression.gd",
+        "--fixed-fps",
+        "60"
+      ],
+      "started_utc": "2026-11-13T15:07:42.627580+00:00",
+      "elapsed_seconds": 11.853,
+      "engine_exit": 0,
+      "mode": "diagnostic only; complete teardown output, not an acceptance run",
+      "marker_present": true,
+      "errors_and_objects": [
+        "WARNING: ObjectDB instances leaked at exit (run with --verbose for details).",
+        "ERROR: 2 resources still in use at exit.",
+        "Leaked instance: AudioStreamPlaybackOggVorbis:9223372137719400377 - Reference count: 1",
+        "Leaked instance: OggPacketSequencePlayback:9223372137736177594 - Reference count: 1",
+        "Leaked instance: OggPacketSequence:9223372137635514299 - Reference count: 3",
+        "Leaked instance: AudioStreamOggVorbis:9223372137652291516 - Reference count: 1",
+        "Resource still in use: res://assets/audio/kart/garage.ogg::OggPacketSequence_s4fn4 (OggPacketSequence)",
+        "Resource still in use: res://assets/audio/kart/garage.ogg (AudioStreamOggVorbis)"
+      ],
+      "log_sha256": "8d940cc0d0037246b941b252747369c678d4c0a1b0ae5473e5891829e9f947a6"
+    },
+    {
+      "test": "kart_full_field_regression",
+      "command": [
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--verbose",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--script",
+        "scripts/tests/kart_full_field_regression.gd",
+        "--fixed-fps",
+        "60",
+        "--",
+        "--level=pro",
+        "--clear-player"
+      ],
+      "started_utc": "2026-11-13T15:07:54.481553+00:00",
+      "elapsed_seconds": 8.734,
+      "engine_exit": 0,
+      "mode": "diagnostic only; complete teardown output, not an acceptance run",
+      "marker_present": true,
+      "errors_and_objects": [],
+      "log_sha256": "c1c87e68f6c49fca86673e38a24ebe66eb28ab1fb0386bb7c7cd93d82adb4f22"
+    }
+  ],
+  "source_files_unchanged": true,
+  "changed_files": []
+}
