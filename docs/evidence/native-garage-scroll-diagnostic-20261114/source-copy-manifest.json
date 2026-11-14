@@ -1,0 +1,61 @@
+{
+  "native_commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+  "native_tree": "1c2b5da7a4485cb8b911adcac2b567481cf902b5",
+  "scope": "Exact isolated original card dependencies, geometry reconstructed from unchanged Android image; not full APK or Android emulation.",
+  "files": [
+    {
+      "path": "scripts/games/kart_vehicle_card.gd",
+      "bytes": 4956,
+      "git_blob": "1db0b925f5737bf143187e296c06c938eb0c4d45",
+      "sha256": "dc33ae40c102ebaa68c0026a79a8feb0a576c52c163689ae3c3ae3f2a802c658"
+    },
+    {
+      "path": "scripts/games/kart_stat_bars.gd",
+      "bytes": 4804,
+      "git_blob": "2278e92807fb1581611fb9246f3bf7577ffed22e",
+      "sha256": "dd20404c0bd03ad4d007bd897e15501d0fabf406782cf26fc4a33f611b9583e6"
+    },
+    {
+      "path": "scripts/games/kart_ui_theme.gd",
+      "bytes": 3014,
+      "git_blob": "e3e95240df1a2e4df7a87b6085f98cdd40433285",
+      "sha256": "376cdd77582eece65625787d1b76ab554b64d7759f6829fad1dfc8dc4ce4f21f"
+    },
+    {
+      "path": "scripts/games/kart_fleet.gd",
+      "bytes": 16092,
+      "git_blob": "4fc6ac6baf85159a0c48fb2733de50be440ad52d",
+      "sha256": "0aa63caf22f5fd6aaa841b889415e794420518f7ce3f388b9ee4a346e5ef0377"
+    },
+    {
+      "path": "assets/fonts/Nunito-Bold.ttf",
+      "bytes": 39284,
+      "git_blob": "e289ba049b167e4fd0e5ba5f537fa3f4b94a92fb",
+      "sha256": "5d6ac65faf73856810797d4e6843a57c7444ee6089b764399c3ebfa85d61e448"
+    },
+    {
+      "path": "assets/fonts/Nunito-Black.ttf",
+      "bytes": 39260,
+      "git_blob": "9e7743ebb7efc2bda51e99eda079cb9b2061f566",
+      "sha256": "3a373c4d17cffecdc9f3c351e2ce9ec83edb0622925a59d802be24fd442346f8"
+    },
+    {
+      "path": "assets/kart/fleet/comet.png",
+      "bytes": 134585,
+      "git_blob": "09d31942352e000e3c77cc4ecf3000f58982e092",
+      "sha256": "2778525de824698c686880e2722547df8bf8a9b89a389e3ff6f68c6ef9a3e0ac"
+    },
+    {
+      "path": "assets/kart/fleet/gecko_velo.png",
+      "bytes": 140878,
+      "git_blob": "12fa18e91f70245ec91f498a8d813c920d6cc70e",
+      "sha256": "696b71347f43e56e35df1d92d2d0ed29dfca581181becb327ded3fe2cab54316"
+    },
+    {
+      "path": "assets/kart/fleet/boru_rally.png",
+      "bytes": 146915,
+      "git_blob": "e68f3bf874bf9904a6921cfe81ca328e1c293f69",
+      "sha256": "b67729d26ec5cf6b86ad642b4cda65576458ab51c4894e002fd12fd26cae9631"
+    }
+  ]
+}

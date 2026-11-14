@@ -1,0 +1,14 @@
+config_version=5
+[application]
+config/name="Garage Input Geometry Diagnostic"
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/window_width_override=2400
+window/size/window_height_override=1080
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+[rendering]
+renderer/rendering_method="gl_compatibility"
+[input_devices]
+pointing/emulate_touch_from_mouse=true

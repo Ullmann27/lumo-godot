@@ -1,0 +1,143 @@
+{
+  "native_commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+  "native_tree": "1c2b5da7a4485cb8b911adcac2b567481cf902b5",
+  "scope": "One isolated desktop engine-input diagnostic, no product changes and no Android approval",
+  "files": [
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/README.md",
+      "relative_path": "README.md",
+      "bytes": 8904,
+      "sha256": "fd95626dc85684732f3449385997d852925593271fcc26f4ff0f70892d7c17d1",
+      "git_blob": "9a3173372f3e1f952c45407dc61642b025ff669f",
+      "reuse_base_blob": false
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/source-copy-manifest.json",
+      "relative_path": "source-copy-manifest.json",
+      "bytes": 2341,
+      "sha256": "75ea47f242983fae61858e464c218d47789e09afdbdcbe6c3daa8b375393068b",
+      "git_blob": "c81f06b66d36e7848fe9076107dd3f2ec6db4d79",
+      "reuse_base_blob": false
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/android-original-readiness.json",
+      "relative_path": "android-original-readiness.json",
+      "bytes": 3833,
+      "sha256": "e72b8aab506d8809518d4784a8d4438c7965d55dcb87a3d496792c1ae9573533",
+      "git_blob": "35f223159028b79ec4090a593cd5db2adf50d3dd",
+      "reuse_base_blob": false
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/import.log",
+      "relative_path": "import.log",
+      "bytes": 2119,
+      "sha256": "eca079ccc8c17defb6bba09f0449d3460378809274e21d64370675d841b2687f",
+      "git_blob": "5621b10b7b87595259906d83bb46bb0000694f71",
+      "reuse_base_blob": false
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/input-diagnostic.log",
+      "relative_path": "input-diagnostic.log",
+      "bytes": 7653,
+      "sha256": "6f61f3ce81ed35c94645228dd64a9b0e6de019d0921d9d4e35c48a0badcec00e",
+      "git_blob": "2aaba4e4b3e2a54cf08f47bda2a3ae7cff8e7f90",
+      "reuse_base_blob": false
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/fixture/project.godot",
+      "relative_path": "fixture/project.godot",
+      "bytes": 409,
+      "sha256": "9b3169c1057bb4bdc5aae427a984511a180f3a97b3dfd47c1fd051a867022846",
+      "git_blob": "3aec6196b1ffc06668417d411e78f188d91d2e7d",
+      "reuse_base_blob": false
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/fixture/diagnostic.gd",
+      "relative_path": "fixture/diagnostic.gd",
+      "bytes": 8715,
+      "sha256": "7e82deb5cb17de03b002b556ee36d92c62cda09cea96429a6294ee00b6eee157",
+      "git_blob": "35ef579115076d6d7338dd1e655a876eedc6e570",
+      "reuse_base_blob": false
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/fixture/input-diagnostic-result.json",
+      "relative_path": "fixture/input-diagnostic-result.json",
+      "bytes": 11945,
+      "sha256": "966803a85b803b51d87bdfe288c53db3daa1e54d69fce1d90cfa5d8ea21ef3a3",
+      "git_blob": "1b51e8a1a1fb0fd095949270e9eb50f5b3ef4c43",
+      "reuse_base_blob": false
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/fixture/scripts/games/kart_vehicle_card.gd",
+      "relative_path": "fixture/scripts/games/kart_vehicle_card.gd",
+      "bytes": 4956,
+      "sha256": "dc33ae40c102ebaa68c0026a79a8feb0a576c52c163689ae3c3ae3f2a802c658",
+      "git_blob": "1db0b925f5737bf143187e296c06c938eb0c4d45",
+      "reuse_base_blob": true
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/fixture/scripts/games/kart_stat_bars.gd",
+      "relative_path": "fixture/scripts/games/kart_stat_bars.gd",
+      "bytes": 4804,
+      "sha256": "dd20404c0bd03ad4d007bd897e15501d0fabf406782cf26fc4a33f611b9583e6",
+      "git_blob": "2278e92807fb1581611fb9246f3bf7577ffed22e",
+      "reuse_base_blob": true
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/fixture/scripts/games/kart_ui_theme.gd",
+      "relative_path": "fixture/scripts/games/kart_ui_theme.gd",
+      "bytes": 3014,
+      "sha256": "376cdd77582eece65625787d1b76ab554b64d7759f6829fad1dfc8dc4ce4f21f",
+      "git_blob": "e3e95240df1a2e4df7a87b6085f98cdd40433285",
+      "reuse_base_blob": true
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/fixture/scripts/games/kart_fleet.gd",
+      "relative_path": "fixture/scripts/games/kart_fleet.gd",
+      "bytes": 16092,
+      "sha256": "0aa63caf22f5fd6aaa841b889415e794420518f7ce3f388b9ee4a346e5ef0377",
+      "git_blob": "4fc6ac6baf85159a0c48fb2733de50be440ad52d",
+      "reuse_base_blob": true
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/fixture/assets/fonts/Nunito-Bold.ttf",
+      "relative_path": "fixture/assets/fonts/Nunito-Bold.ttf",
+      "bytes": 39284,
+      "sha256": "5d6ac65faf73856810797d4e6843a57c7444ee6089b764399c3ebfa85d61e448",
+      "git_blob": "e289ba049b167e4fd0e5ba5f537fa3f4b94a92fb",
+      "reuse_base_blob": true
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/fixture/assets/fonts/Nunito-Black.ttf",
+      "relative_path": "fixture/assets/fonts/Nunito-Black.ttf",
+      "bytes": 39260,
+      "sha256": "3a373c4d17cffecdc9f3c351e2ce9ec83edb0622925a59d802be24fd442346f8",
+      "git_blob": "9e7743ebb7efc2bda51e99eda079cb9b2061f566",
+      "reuse_base_blob": true
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/fixture/assets/kart/fleet/comet.png",
+      "relative_path": "fixture/assets/kart/fleet/comet.png",
+      "bytes": 134585,
+      "sha256": "2778525de824698c686880e2722547df8bf8a9b89a389e3ff6f68c6ef9a3e0ac",
+      "git_blob": "09d31942352e000e3c77cc4ecf3000f58982e092",
+      "reuse_base_blob": true
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/fixture/assets/kart/fleet/gecko_velo.png",
+      "relative_path": "fixture/assets/kart/fleet/gecko_velo.png",
+      "bytes": 140878,
+      "sha256": "696b71347f43e56e35df1d92d2d0ed29dfca581181becb327ded3fe2cab54316",
+      "git_blob": "12fa18e91f70245ec91f498a8d813c920d6cc70e",
+      "reuse_base_blob": true
+    },
+    {
+      "path": "docs/evidence/native-garage-scroll-diagnostic-20261114/fixture/assets/kart/fleet/boru_rally.png",
+      "relative_path": "fixture/assets/kart/fleet/boru_rally.png",
+      "bytes": 146915,
+      "sha256": "b67729d26ec5cf6b86ad642b4cda65576458ab51c4894e002fd12fd26cae9631",
+      "git_blob": "e68f3bf874bf9904a6921cfe81ca328e1c293f69",
+      "reuse_base_blob": true
+    }
+  ]
+}
