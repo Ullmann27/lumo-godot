@@ -41,7 +41,8 @@ func _ready() -> void:
 		set_process(false)
 		return
 	_build_geometry()
-	_ambience = AMBIENCE.attach(self, "learning_garden")
+	# The production atelier already owns this effect; reuse that exact owner.
+	_ambience = AMBIENCE.attach(get_parent() as Node3D, "learning_garden")
 	_observe_activity(true)
 	_sync_motion(true)
 

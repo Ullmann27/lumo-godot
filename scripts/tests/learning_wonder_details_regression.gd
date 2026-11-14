@@ -1,5 +1,6 @@
 extends SceneTree
 ## Tests the existing production route and actual lesson model. No mocks.
+const AMBIENCE = preload("res://scripts/systems/render/lumo_dream_ambience.gd")
 var checks := 0
 var failures := 0
 var invalid_scene_checked := false
@@ -38,6 +39,13 @@ func _visual_only(node: Node) -> void:
 		_visual_only(child)
 
 
+func _find_ambience(node: Node, result: Array[Node]) -> void:
+	if node.get_script() == AMBIENCE:
+		result.append(node)
+	for child in node.get_children():
+		_find_ambience(child, result)
+
+
 func _run() -> void:
 	root.size = Vector2i(1280, 720)
 	await _frames(2)
@@ -54,13 +62,24 @@ func _run() -> void:
 		_finish()
 		return
 	_check(garden.has_method("render_state"), "Garden exposes bounded rendering evidence")
+	var atelier: Node = game.get_node("LearningGardenAtelier")
+	var ambience_nodes: Array[Node] = []
+	_find_ambience(atelier, ambience_nodes)
 	_visual_only(garden)
+	for effect in ambience_nodes:
+		if not garden.is_ancestor_of(effect):
+			_visual_only(effect)
 	var start: Dictionary = garden.call("render_state")
 	_check(start.progress == 0.0, "Unattempted explanation starts with closed buds")
 	_check(start.reduced_motion, "Actual host reduced-motion option reaches garden")
 	_check(start.geometry_batches == 7 and start.flowers == 5 and start.petals == 35, "Fixed geometry budget")
-	_check(start.ambience.batches == 2, "Reuse one existing ambience, no duplicate effect system")
-	_check(garden.get_child_count() == 8, "Exactly seven geometry batches and one shared ambience")
+	_check(
+		start.ambience.batches == 2 and ambience_nodes.size() == 1
+		and ambience_nodes[0].get_parent() == atelier
+		and garden.get("_ambience") == ambience_nodes[0],
+		"Exactly one existing atelier ambience is reused; nested duplicates are rejected"
+	)
+	_check(garden.get_child_count() == 7, "Exactly seven geometry batches; ambience remains atelier-owned")
 	var before_state := _snapshot(game)
 	await _frames(10)
 	_check(_snapshot(game) == before_state, "Watching decoration never changes task state")

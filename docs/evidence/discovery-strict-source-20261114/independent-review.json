@@ -1,0 +1,204 @@
+{
+  "schema": 1,
+  "reviewed_at_utc": "2026-11-14T11:48:40.931676+00:00",
+  "reviewer": "pipeline_repair",
+  "scope": "Independent read-only review of four new source files and their unchanged helper contracts. No tests, syntax execution, renderer, device, network downloads or Git changes.",
+  "result": "NO_CONCRETE_SOURCE_BLOCKER_IN_FROZEN_FOUR_FILE_SCOPE",
+  "base": {
+    "commit": "afc0df9a2b1794f39051add9dfce0cf947bb177b",
+    "tree": "3e621dc8230e155e1089deb1a40c22f177e546b3",
+    "parent": "bd0712259bb64908a5649ee1999638826c9eb597"
+  },
+  "freeze": {
+    "path": "/tmp/native173-discovery-strict-gate-20261114/source-freeze.json",
+    "bytes": 3357,
+    "sha256": "f70b86d269d09353505dd94db08a5c24cba2da4eae2e5b8c72afea51f4f4cdf1",
+    "git_blob": "38a97947a40c53e41a94bae114086453506bcf12"
+  },
+  "gate_contract": {
+    "path": "/tmp/native173-discovery-strict-gate-20261114/gate-contract.json",
+    "bytes": 8503,
+    "sha256": "7aea1777bbf1d93f6f0f248df63d6ea7c1b0e7efdb9d5246dd324c7712de5e2c",
+    "git_blob": "076e29b2f9c6d59309f6e8ddc1bf71c15bae099c"
+  },
+  "patch": {
+    "path": "/tmp/native173-discovery-strict-gate-20261114/integration.patch",
+    "bytes": 68241,
+    "sha256": "041b5e2680917e73f85d5db45e503f4a72bb15a74c114de46ef7a118a1eedacf",
+    "git_blob": "60e0eb99b74e5c8ca5307fb3f0fc14ecc7973db3"
+  },
+  "author_manifest": {
+    "path": "/tmp/native173-discovery-strict-gate-20261114/manifest.json",
+    "bytes": 5339,
+    "sha256": "c79ef507dd14f468d2e45185d2b11dcdaa15616b0340e4553027c9055deb1016",
+    "git_blob": "2311b88f43b8f7ffe45ab84a14e9bdbd431d6111"
+  },
+  "original_api": [
+    {
+      "path": "/tmp/native173-discovery-strict-gate-20261114/originals/base-commit.json",
+      "bytes": 1600,
+      "sha256": "061b22c5c88d8e4948c5fcebc68eb44ac5c520791183ac5a0202ca796cbd519f",
+      "git_blob": "a3aad116d8a5de0875e8f8a7f6d5e0f5812ac9ee"
+    },
+    {
+      "path": "/tmp/native173-discovery-strict-gate-20261114/originals/base-tree.json",
+      "bytes": 1293001,
+      "sha256": "3df12ab5f4a5708931fc02f2b31f1c0795c22fdaf50238a7fd56947d9574aa2c",
+      "git_blob": "0c1519b21d62ce53309edaddf17725f375792bea"
+    }
+  ],
+  "sources": [
+    {
+      "path": ".github/workflows/lumo-discovery-connections.yml",
+      "storage_path": "/tmp/native173-discovery-strict-gate-20261114/final-source/.github/workflows/lumo-discovery-connections.yml",
+      "bytes": 15142,
+      "sha256": "44285746c1a93586e38892d7b44ef9d0f7b5d6c4dbf10a7f997524e85077a9be",
+      "git_blob": "619023b005be0f5930ea2944ec15e5df1065164e",
+      "added_to_original_base": true
+    },
+    {
+      "path": "tools/collect_discovery_connections.py",
+      "storage_path": "/tmp/native173-discovery-strict-gate-20261114/final-source/tools/collect_discovery_connections.py",
+      "bytes": 9979,
+      "sha256": "bfc9f32c8287849047e9f7babf400c107d790aecb21a45be16d45fa7302a3f83",
+      "git_blob": "1ebdec66300dfb87bf9287d194525d3c374c8aee",
+      "added_to_original_base": true
+    },
+    {
+      "path": "tools/tests/test_discovery_connections.py",
+      "storage_path": "/tmp/native173-discovery-strict-gate-20261114/final-source/tools/tests/test_discovery_connections.py",
+      "bytes": 17885,
+      "sha256": "d64deeeb5bdfdb3fcdf25cecb9610102e8b8fd031ccca3c2f1e2a87ba2baccfd",
+      "git_blob": "ffe8fdd88cae1abc942e7a3d14f57493bc381478",
+      "added_to_original_base": true
+    },
+    {
+      "path": "tools/verify_discovery_connections.py",
+      "storage_path": "/tmp/native173-discovery-strict-gate-20261114/final-source/tools/verify_discovery_connections.py",
+      "bytes": 23700,
+      "sha256": "5edab9f77acaa4114281b74166eec3dbf306eb5b574f677c03190a379081dfaf",
+      "git_blob": "c00ca9873106c974d66282cddfdcfaf5eb3bbebc",
+      "added_to_original_base": true
+    }
+  ],
+  "unchanged_helpers": [
+    {
+      "path": "tools/verify_discovery_rasters.py",
+      "storage_path": "/tmp/native173-discovery-strict-gate-20261114/originals/source/tools/verify_discovery_rasters.py",
+      "bytes": 11528,
+      "sha256": "55591b4478d2074135ea4950fb00200d68a3f9bede286b39642d7fc17aa586da",
+      "git_blob": "219e691fc8aa119cc80221b3db6c77e63caf8bfe",
+      "original_mode": "100644"
+    },
+    {
+      "path": "tools/verify_dream_rasters.py",
+      "storage_path": "/tmp/native173-discovery-strict-gate-20261114/originals/source/tools/verify_dream_rasters.py",
+      "bytes": 20254,
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5",
+      "original_mode": "100755"
+    },
+    {
+      "path": "tools/run_godot_probe.py",
+      "storage_path": "/tmp/native173-discovery-strict-gate-20261114/originals/source/tools/run_godot_probe.py",
+      "bytes": 2934,
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+      "original_mode": "100644"
+    },
+    {
+      "path": "tools/validate_discovery_connections.sh",
+      "storage_path": "/tmp/native173-discovery-strict-gate-20261114/originals/source/tools/validate_discovery_connections.sh",
+      "bytes": 3315,
+      "sha256": "b508826d07120d5b85a65858971562a941901ee3750c951ab315ff9dbd7cc041",
+      "git_blob": "07975f12c1f9b07d586cbeb85270329955198f04",
+      "original_mode": "100755"
+    },
+    {
+      "path": "tools/validate_dream_connections.sh",
+      "storage_path": "/tmp/native173-discovery-strict-gate-20261114/originals/source/tools/validate_dream_connections.sh",
+      "bytes": 4660,
+      "sha256": "19366398784db00c335800bc26ab3e171e062eb2149316021039bc027706dadc",
+      "git_blob": "834ea912003f5e27a271139646a857601baea905",
+      "original_mode": "100755"
+    }
+  ],
+  "findings": [
+    {
+      "area": "Exact route and independent scope",
+      "conclusion": "The new workflow triggers only on the exact internal push branch integration/lumo-discovery-bd-20261114 and repeats repository/event/ref checks. It checks out github.sha with persist-credentials false and contents:read. The proposed patch adds exactly four absent paths; no existing Native52/17, Wisp, C4, Dream or original Discovery implementation is replaced. The separate120-minute budget leaves Host90 unchanged."
+    },
+    {
+      "area": "Fresh output and source binding",
+      "conclusion": "Collector rejects a pre-existing/symlink output or a path inside the Native checkout, requires an existing external parent, exact Git root/HEAD/tree and a clean tracked status. The complete source snapshot requires every tracked payload materialized. It records raw commit, full ls-tree bytes, actual index bytes, all tracked payload identities and separately classified generated UID/import files. No cleanup conceals generated files."
+    },
+    {
+      "area": "Independent source replay",
+      "conclusion": "Replay hashes the original commit as a Git commit and checks its tree header against the independently expected SHA/tree. It reconstructs the complete directory Git tree from every path/mode/blob, preventing coordinated omission from both inventories. Both full inventories match that tree, actual_blob equals expected blob, index content hashes match, and before/after tracked/index/tree bytes must agree. Dirty status, missing tracked bytes or invalid generated owner classification fail."
+    },
+    {
+      "area": "Trusted helper execution",
+      "conclusion": "The unchanged raster reader, Dream snapshot/PNG reader and original run_godot_probe are bound by SHA256 and Git blob before import/execution; they must also appear in the exact tracked source tree. Collector and replay source copies must match their actual checkout implementations. Pure bound modules execute only their already hash-verified bytes, not a helper trusted merely by artifact filename."
+    },
+    {
+      "area": "Real calls, deadlines and logs",
+      "conclusion": "The ten fixed ordered argv/env contracts require exact modes, capture directories, markers and per-probe budgets. Headless and rendered arguments remain distinct; rendering requires a local display or actual xvfb-run, with no headless substitution. The unchanged runner owns the timeout and five-second TERM/KILL grace. A failed/timed-out/nonzero run cannot complete the collector. Replay requires one real engine banner and one exact marker in each full log, no cross-probe marker, no engine/script/error/leak/timeout text, matching original successful runner/log bytes, ten non-overlapping invocation intervals and bounded elapsed time. Original runner success prints exactly the recorded engine bytes and no additional success footer, so the byte-equality requirement is compatible with the actual helper."
+    },
+    {
+      "area": "Engine identity",
+      "conclusion": "Workflow checks the exact official4.6.3 ZIP SHA before extraction and requires the complete actual engine banner. Collector additionally hashes the resolved executable and records version output, argv and monotonic invocation boundaries. Application Native SHA/tree remain distinct from the7d41c59c4 engine source suffix."
+    },
+    {
+      "area": "Original raster and JSON checks",
+      "conclusion": "The exact capture set is38 PNGs plus two reports and no unexpected files. The unchanged Dream reader independently verifies PNG structure/full decoding, dimensions, nonuniform pixels and nonzero alpha; the original Discovery reader independently decodes the same PNGs and must return identical path/dimension/hash identities. It recomputes actual start/complete pixel differences and validates Hub identity/65-bone rig/clips/visible geometry and non-overlap, plus11 Wonder records/136checks/zero failures/current lesson/progress/geometry budgets. Duplicate keys and nonfinite numbers are rejected. Complete relevant original hashes are compared before/after the read-only replay."
+    },
+    {
+      "area": "Manifest and failure persistence",
+      "conclusion": "Collector emits acceptance only after all10 calls and final source capture succeed. CLI replay requires the existing manifest and compares it with a fresh original-derived result. API write=True is rejected. Raw failure, call state and final-source failure records remain separate. Workflow pipefail/exact marker counts and always source-finalization/upload preserve failures rather than reclassifying them."
+    },
+    {
+      "area": "Preserved gates and budgets",
+      "conclusion": "The new job retains12 Dream reader contracts,11 original Discovery reader contracts, four required headless gates including Return21 and Wisp14, and five Dream modes/seven PNGs/two reports. It adds24 explicit verifier counterexamples and the10/38/2 Discovery collector. The first three existing learning modes retain the established420-second core budgets; new-mode budgets and900-second learning capture are explicit. This separate acceptance never claims the full52/17 suite, Host/APK/Android execution, visual review or device FPS."
+    }
+  ],
+  "new_test_methods_read": [
+    "test_complete_originals_replay_is_read_only",
+    "test_missing_or_unfinished_engine_call",
+    "test_duplicate_or_reordered_engine_call",
+    "test_changed_argv_deadline_or_capture_environment",
+    "test_nonzero_timeout_or_overlapping_interval",
+    "test_wrong_or_multiple_engine_banner",
+    "test_missing_partial_or_duplicate_success_marker",
+    "test_errors_after_pass_are_not_filtered",
+    "test_different_runner_transcript",
+    "test_extra_or_missing_original_log",
+    "test_foreign_expected_source_or_commit",
+    "test_omitting_a_source_in_both_snapshots_cannot_pass",
+    "test_changed_bytes_mode_or_sparse_missing_source",
+    "test_changed_index_or_dirty_status",
+    "test_generated_uid_inventory_preserved_without_cleanup",
+    "test_reader_hash_rejected_before_import",
+    "test_missing_extra_or_symlink_capture",
+    "test_corrupted_uniform_or_transparent_png",
+    "test_nonfinite_or_duplicate_report",
+    "test_wrong_hub_and_wonder_original_state",
+    "test_unchanged_activity_pixels_fail",
+    "test_forged_manifest_and_write_mode_fail",
+    "test_fresh_output_rejects_existing_symlink_and_source_descendant",
+    "test_preserved_budgets_and_no_headless_render_substitution"
+  ],
+  "counterexample_coverage": "Read all24 methods: complete read-only replay; missing/reordered/unfinished calls; changed argv/mode/env/budget; nonzero/boolean exit and timeout/overlap; missing/duplicate/foreign banners/markers; error-after-PASS; differing/extra logs; foreign commit/tree; omitted source, changed bytes/modes/index/dirty state; generated UID owner; helper payload rejected before execution; missing/extra/symlink captures; corrupt/uniform/transparent PNG; duplicate/nonfinite JSON; wrong Hub/Wonder state; identical activity pixels; forged manifest/write=True; existing/symlink/in-checkout output; original budgets and real-render requirement.",
+  "review_limits": [
+    "No new contract, lint, renderer, engine, device or CI run was performed by this reviewer. The24 synthetic methods are not a local PASS until Root runs the checkpointed source.",
+    "External original provenance still comes from the exact CI run/artifact and its digest; a self-contained report alone is not an attestation of execution.",
+    "Source SHA inventories are observations from the hash-bound collector; no new independent checkout of every source payload was performed by this reviewer.",
+    "The120-minute separate workflow and its actual renderer/platform behavior remain to be observed in their own new CI run.",
+    "The strict source scope intentionally excludes full52/17 or Android/FPS acceptance; previously successful or current C4 runs are not transferred to this future source."
+  ],
+  "mutations": {
+    "source": false,
+    "worktree": false,
+    "git_index_ref": false,
+    "new_tests_renderer_ci": false
+  }
+}

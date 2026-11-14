@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "parent_sha": "4d2cbb6ea235c7bf519aa5f3873a16f6b177be2b",
+  "parent_tree": "4d50f5652b43846516f759be300d9b50a960f692",
+  "documentation_prefixes": [
+    {
+      "path": "STATUS.md",
+      "before": {
+        "bytes": 5440,
+        "sha": "4f51a07d6fdaf373bc478e0f06b202629d9c2748",
+        "sha256": "c9ef200468a58e4505a0e912044aec9a411e1a99a8c17b7215578cd1019dc8f5"
+      },
+      "prefix": {
+        "bytes": 1837,
+        "sha": "8e973bf1848e48eaf3355fd13879f238206e22a6",
+        "sha256": "c923257a4444fc8caa4ffa2591585279ae569d787961fd9633bf3a59ec3f4e27"
+      },
+      "final": {
+        "bytes": 7277,
+        "sha": "eb527172ffe30f43db3567fbd1e126f0c8eaf158",
+        "sha256": "8f2af2ca7df99fc470626626de58e2639ba1bd62a7f2fd4f78624169c44012e7"
+      },
+      "historical_suffix_byte_identical": true
+    },
+    {
+      "path": "CONTINUE.md",
+      "before": {
+        "bytes": 10597,
+        "sha": "f3937b94560d65e937647b6d3fc84a6f0167cda2",
+        "sha256": "d333343db74eb426f50b2906f4d368ba654bce35eda044b9bfb5cae58778b24e"
+      },
+      "prefix": {
+        "bytes": 2107,
+        "sha": "4d09d3fcfa208e296065780cd138fc4f8175b782",
+        "sha256": "cbea7ea32e9761baf5357dc4c6f3f01a04f65dee3a4c8d5435b371ce0adaa526"
+      },
+      "final": {
+        "bytes": 12704,
+        "sha": "6c51e37f7f6fcf5732b7023e45e4752ad5ca10f8",
+        "sha256": "9ba06c0f3d7fb9463390a117d5348789e2ef0ff6f404f77e68e04096f85f0745"
+      },
+      "historical_suffix_byte_identical": true
+    }
+  ],
+  "original_evidence_archive": {
+    "published_path": "docs/evidence/native-minimap-v2-headless-20261114/validation-originals.tar.gz",
+    "bytes": 1412444,
+    "sha": "e4c278b7f7ac6df5b52e5ee9c39efb0b0eb69d62",
+    "sha256": "d27046a253846fdc1e4864136542a7fdda44a2b8a6b83674089738c67a4dbb28",
+    "members": 45,
+    "complete_original_roundtrip": true
+  },
+  "source_paths_changed": [],
+  "workflow_changed": false,
+  "pins_changed": false,
+  "remote_mutation_performed": false,
+  "activation_message_has_no_skip_ci": true
+}

@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "status": "FROZEN_SOURCE_ONLY",
+  "frozen_at": "2026-11-14T12:39:11.565Z",
+  "repository": "Ullmann27/lumo-godot",
+  "base": {
+    "commit": "c3008e6bba3909f422da127ba8d711f9bd821a33",
+    "tree": "ef34a6b4972c6bcf693f9556333732e05085d583"
+  },
+  "producer": {
+    "pull_request": 181,
+    "head": "be58fe0afcbbd8bf982592d05d83f0e7742e8934",
+    "tree": "faffacb93be479c3b8d3534cc056370c69e1407e",
+    "exact_delta_base": "71a4c1e2304b52005950b12490d070c286c45438"
+  },
+  "source_only_candidate_tree": "c0c424c35ddb3149d1a8d7ba611d09c9014572cb",
+  "files": [
+    {
+      "path": "scripts/creative/build_settlement_state.gd",
+      "mode": "100644",
+      "before": {
+        "bytes": 23948,
+        "sha256": "50dc7958ee3d1f09e70aa951da1e6a17e4f2fceabac0d336164ace771e24c7ee",
+        "git_blob": "b42d3fdb034034018ee494b96d456ade8edabe64"
+      },
+      "after": {
+        "bytes": 24126,
+        "sha256": "2b3ffcaa451da3cc73f8682a62ecd7d7dfeceea7605bac2ca345f4bb17c398dd",
+        "git_blob": "625a8db46195d034cbe7ae2dd84d6b208abff645"
+      },
+      "producer_blob_reused_exactly": true,
+      "hunks": [
+        {
+          "old_start": 600,
+          "old_lines": 8,
+          "new_lines": 8
+        },
+        {
+          "old_start": 611,
+          "old_lines": 7,
+          "new_lines": 7
+        },
+        {
+          "old_start": 631,
+          "old_lines": 7,
+          "new_lines": 9
+        }
+      ]
+    },
+    {
+      "path": "scripts/creative/build_settlement_world.gd",
+      "mode": "100644",
+      "before": {
+        "bytes": 46954,
+        "sha256": "6bd9dd4380db95962f370aa2703e7f41b51eab2430f33ea4874c60de0b73bcfb",
+        "git_blob": "e6a2a84447757c04a7f07436b162ed698b827a33"
+      },
+      "after": {
+        "bytes": 50514,
+        "sha256": "5849c7afa7a8bc7a42e2158ded98b7ec4ea1d777f8607a9721727ec6cdc9c588",
+        "git_blob": "149a4386225812592917b1bcac0b85294413f1b4"
+      },
+      "producer_blob_reused_exactly": true,
+      "hunks": [
+        {
+          "old_start": 13,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "old_start": 69,
+          "old_lines": 6,
+          "new_lines": 9
+        },
+        {
+          "old_start": 127,
+          "old_lines": 7,
+          "new_lines": 7
+        },
+        {
+          "old_start": 495,
+          "old_lines": 16,
+          "new_lines": 45
+        },
+        {
+          "old_start": 524,
+          "old_lines": 39,
+          "new_lines": 100
+        },
+        {
+          "old_start": 1203,
+          "old_lines": 6,
+          "new_lines": 8
+        },
+        {
+          "old_start": 1245,
+          "old_lines": 6,
+          "new_lines": 8
+        }
+      ]
+    },
+    {
+      "path": "scripts/tests/build_village_economy_regression.gd",
+      "mode": "100644",
+      "before": {
+        "bytes": 17501,
+        "sha256": "2a53c910ba56af76dd85e826a187d64ebd44ebda30be4a392dd12044c1bd832a",
+        "git_blob": "9ff2960ebaa946f9611e0509964dd0f53668e281"
+      },
+      "after": {
+        "bytes": 17867,
+        "sha256": "1fa590e75ebf408c2a0531377acb1079f6bb9c0d83d924e83878d3e06e049fd1",
+        "git_blob": "9dd8ff269e266dd73ad5207febd87aab367a4986"
+      },
+      "producer_blob_reused_exactly": true,
+      "hunks": [
+        {
+          "old_start": 259,
+          "old_lines": 6,
+          "new_lines": 14
+        }
+      ]
+    },
+    {
+      "path": "scripts/tests/build_village_scaling_regression.gd",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 6163,
+        "sha256": "3c91d1001cab476bf171bf8d9517b0f4fa46db976f1c4be6d8ef125d86af5436",
+        "git_blob": "c6abdb5f9576c0b48db7bd59716da52ea5fac036"
+      },
+      "producer_blob_reused_exactly": true,
+      "hunks": [
+        {
+          "old_start": 0,
+          "old_lines": 0,
+          "new_lines": 161
+        }
+      ]
+    }
+  ],
+  "patch": {
+    "bytes": 18372,
+    "sha256": "6f02c3910b0ae4c5b9f76c473b395972fec465e2dbbcbdde42694508b9ff6f12",
+    "git_blob": "26f1db090cf8b94ca37f20a69a71111e481cd144"
+  },
+  "all_other_current_entries_preserved": 3660,
+  "source_mutations_to_active_checkout": false,
+  "git_mutations": false,
+  "ci_mutations": false,
+  "tests_run": false,
+  "engine_runs": false,
+  "renderer_runs": false,
+  "storage": "Complete source strings, original API strings and metadata held in functions.store while executor is unavailable; no local pack materialization claimed yet"
+}

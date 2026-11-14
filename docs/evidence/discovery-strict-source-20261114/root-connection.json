@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "status": "SOURCE_CHECKPOINT_LOCAL_TESTS_AND_LINT_NOT_RUN",
+  "parent": "afc0df9a2b1794f39051add9dfce0cf947bb177b",
+  "base_tree": "3e621dc8230e155e1089deb1a40c22f177e546b3",
+  "new_source_paths": 4,
+  "existing_source_changes": 0,
+  "new_counterexample_methods": 24,
+  "actual_counterexample_tests": "NOT_RUN",
+  "actual_actionlint": "NOT_RUN",
+  "root_review": "Read all four complete final sources and the actual unchanged probe runner. Complete commit/tree and all-source/index binding, exact helper hashes before import, successful raw/runner log equality, fixed ten invocations, full38 PNG decoding and strict two original reports are consistent. No concrete source blocker found.",
+  "independent_review_sha256": "79b41498f6e0413ee28b25e18097e5f42a74fec555a9d4476846922ea077fce7",
+  "previous_actual_targeted_headless_evidence_commit": "8b32b12879dd85e14f6e7e3c26d0c2a6de4051f6",
+  "previous_headless_result_scope": "Exact afc0df9 product source only; this new gate source has not yet run.",
+  "native52_complete_acceptance_claim": false,
+  "host_pin_changed": false,
+  "main_changed": false,
+  "next_required": "Execute exactly24 new counterexamples and one Actionlint on this source checkpoint, then activate the separate full-checkout Native workflow."
+}

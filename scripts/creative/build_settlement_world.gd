@@ -13,6 +13,7 @@ const STICK = preload("res://scripts/games/kart_joystick.gd")
 const JUMP = preload("res://scripts/games/jump_touch_button.gd")
 const FONT = preload("res://assets/fonts/Nunito-Black.ttf")
 const SPACING := 5.3
+const MAX_DETAILED_FACILITIES := 96
 var model
 var mode := "settlement"
 var child_key := "standalone"
@@ -69,6 +70,9 @@ var village_residents: Node3D
 var village_window: Window
 var host_entry := false
 var return_scene := "build"
+var last_view_focus := Vector3.INF
+var last_view_radius := -1.0
+var overview_nodes: Array[MultiMeshInstance3D] = []
 
 
 func _ready() -> void:
@@ -127,7 +131,7 @@ func _ready() -> void:
 	_build_landscape()
 	camera = Camera3D.new()
 	camera.fov = 51
-	camera.far = 180
+	camera.far = 600 if model.living_village else 180
 	add_child(camera)
 	camera.current = true
 	explorer = EXPLORER.new()
@@ -495,8 +499,37 @@ func _layout() -> void:
 
 
 func _rebuild() -> void:
+	_sync_visible_plots(true)
+	if mode == "rival":
+		var rival: Dictionary = model.rival()
+		if rival.buildings.size() > rival_last_buildings:
+			var latest: Dictionary = rival.buildings[-1]
+			rival_destination = _plot_world(int(latest.plot), true) + Vector3(0, 0.08, 2.1)
+			rival_last_buildings = rival.buildings.size()
+	if not is_instance_valid(selection_marker):
+		selection_marker = kit.box(self, Vector3.ZERO, Vector3(4.7, 0.04, 4.7), Color("e4cc62"))
+		selection_marker.material_override = kit.material(Color("ffe18c"), true, true)
+		selection_marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	selection_marker.visible = selected_plot >= 0
+	if selected_plot >= 0:
+		selection_marker.position = _plot_world(selected_plot) + Vector3.UP * 0.12
+	if is_instance_valid(village_residents):
+		village_residents.sync(model.player())
+		village_residents.set_focus(explorer.position if walking else focus)
+	_refresh_labels()
+
+
+func _sync_visible_plots(force := false) -> void:
+	var view_focus: Vector3 = explorer.position if walking else focus
+	if (
+		not force
+		and view_focus.distance_squared_to(last_view_focus) < 64.0
+		and absf(radius - last_view_radius) < 8.0
+	):
+		return
+	last_view_focus = view_focus
+	last_view_radius = radius
 	var active_plots: Dictionary = {}
-	var active_facilities: Dictionary = {}
 	for opponent in [false, true]:
 		if opponent and mode != "rival":
 			continue
@@ -504,7 +537,7 @@ func _rebuild() -> void:
 		for index in range(int(town.plots)):
 			var where := _plot_world(index, opponent)
 			# Only load touch colliders around the view; the 1089-plot model stays persistent.
-			if model.living_village and where.distance_squared_to(focus) > 75.0 * 75.0:
+			if model.living_village and where.distance_squared_to(view_focus) > 75.0 * 75.0:
 				continue
 			var key := "%s_%d" % ["r" if opponent else "p", index]
 			active_plots[key] = true
@@ -524,39 +557,100 @@ func _rebuild() -> void:
 				plot_mesh.material_override = NEXTGEN_ENV.plot_material(opponent)
 				kit.collision(body, Vector3(0, -0.01, 0), Vector3(4.65, 0.08, 4.65))
 				plot_nodes[key] = body
-		for building in town.buildings:
-			var key := "%s_%s" % ["r" if opponent else "p", str(building.id)]
-			active_facilities[key] = true
-			if facility_nodes.has(key):
-				continue
-			var node: StaticBody3D = VISUAL.create(str(building.kind), opponent)
-			node.position = _plot_world(int(building.plot), opponent) + Vector3.UP * 0.06
-			node.set_meta("plot", int(building.plot))
-			add_child(node)
-			facility_nodes[key] = node
-		if opponent and town.buildings.size() > rival_last_buildings:
-			var latest: Dictionary = town.buildings[-1]
-			rival_destination = _plot_world(int(latest.plot), true) + Vector3(0, 0.08, 2.1)
-			rival_last_buildings = town.buildings.size()
 	for key in plot_nodes.keys():
 		if not active_plots.has(key):
 			plot_nodes[key].queue_free()
 			plot_nodes.erase(key)
+	_sync_facilities(view_focus)
+	if is_instance_valid(village_region):
+		village_region.update_focus(view_focus)
+	if is_instance_valid(village_residents):
+		village_residents.set_focus(view_focus)
+
+
+func _sync_facilities(view_focus: Vector3) -> void:
+	# Existing living-village batching: preserve every saved building while
+	# loading detailed meshes and colliders only around the camera or explorer.
+	var active: Dictionary = {}
+	var silhouettes := {"homes": [], "fields": [], "services": [], "roofs": []}
+	for opponent in [false, true]:
+		if opponent and mode != "rival":
+			continue
+		var town: Dictionary = model.rival() if opponent else model.player()
+		var ordered: Array = town.buildings.duplicate()
+		if model.living_village:
+			ordered.sort_custom(
+				func(a: Dictionary, b: Dictionary) -> bool:
+					return (
+						_plot_world(int(a.plot), opponent).distance_squared_to(view_focus)
+						< _plot_world(int(b.plot), opponent).distance_squared_to(view_focus)
+					)
+			)
+		var detailed := 0
+		for building: Dictionary in ordered:
+			var at := _plot_world(int(building.plot), opponent)
+			var key := "%s_%s" % ["r" if opponent else "p", str(building.id)]
+			var near := at.distance_squared_to(view_focus) <= 55.0 * 55.0 or ordered.size() <= 25
+			if not model.living_village or (detailed < MAX_DETAILED_FACILITIES and near):
+				active[key] = true
+				detailed += 1
+				if not facility_nodes.has(key):
+					var facility: StaticBody3D = VISUAL.create(str(building.kind), opponent)
+					facility.position = at + Vector3.UP * 0.06
+					facility.set_meta("plot", int(building.plot))
+					facility.set_meta("opponent", opponent)
+					add_child(facility)
+					facility_nodes[key] = facility
+			else:
+				var field := str(building.kind) in ["farm", "grain", "road"]
+				var group := "fields" if field else ("homes" if str(building.kind) == "house" else "services")
+				var height := 0.22 if field else 2.1
+				silhouettes[group].append(
+					Transform3D(
+						Basis.from_scale(Vector3(3.35, height, 3.35)),
+						at + Vector3.UP * (height * 0.5 + 0.06)
+					)
+				)
+				if not field:
+					silhouettes.roofs.append(
+						Transform3D(
+							Basis.from_scale(Vector3(3.8, 0.44, 3.8)),
+							at + Vector3.UP * (height + 0.25)
+						)
+					)
 	for key in facility_nodes.keys():
-		if not active_facilities.has(key):
+		if not active.has(key):
 			facility_nodes[key].queue_free()
 			facility_nodes.erase(key)
-	if not is_instance_valid(selection_marker):
-		selection_marker = kit.box(self, Vector3.ZERO, Vector3(4.7, 0.04, 4.7), Color("e4cc62"))
-		selection_marker.material_override = kit.material(Color("ffe18c"), true, true)
-		selection_marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	selection_marker.visible = selected_plot >= 0
-	if selected_plot >= 0:
-		selection_marker.position = _plot_world(selected_plot) + Vector3.UP * 0.12
-	if is_instance_valid(village_residents):
-		village_residents.sync(model.player())
-		village_residents.set_focus(focus)
-	_refresh_labels()
+	for previous_node in overview_nodes:
+		remove_child(previous_node)
+		previous_node.queue_free()
+	overview_nodes.clear()
+	var colors := {
+		"homes": Color("eed8a6"), "fields": Color("89ae63"),
+		"services": Color("80b7b1"), "roofs": Color("b96c50")
+	}
+	for group: String in silhouettes:
+		var transforms: Array = silhouettes[group]
+		if transforms.is_empty():
+			continue
+		var batch := MultiMesh.new()
+		batch.transform_format = MultiMesh.TRANSFORM_3D
+		var cube := BoxMesh.new()
+		cube.size = Vector3.ONE
+		batch.mesh = cube
+		batch.instance_count = transforms.size()
+		for index in range(transforms.size()):
+			batch.set_instance_transform(index, transforms[index])
+		var proxy := MultiMeshInstance3D.new()
+		proxy.name = "VillageMap_" + group
+		proxy.multimesh = batch
+		proxy.material_override = kit.material(colors[group])
+		proxy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(proxy)
+		overview_nodes.append(proxy)
+	set_meta("detailed_facilities", facility_nodes.size())
+	set_meta("map_batches", overview_nodes.size())
 
 
 func _refresh_labels() -> void:
@@ -1203,6 +1297,8 @@ func _camera_update(immediate := false) -> void:
 		village_region.update_focus(focus)
 	if is_instance_valid(village_residents):
 		village_residents.set_focus(focus)
+	if model.living_village and is_instance_valid(safe_ui):
+		_sync_visible_plots()
 	if immediate:
 		camera.reset_physics_interpolation()
 
@@ -1245,6 +1341,8 @@ func _physics_process(delta: float) -> void:
 		camera.position = camera.position.lerp(target, 1.0 - exp(-10 * delta))
 		if camera.position.distance_squared_to(at) > 0.02:
 			camera.look_at(at)
+		if model.living_village:
+			_sync_visible_plots()
 	if is_instance_valid(village_residents):
 		village_residents.advance(delta)
 	if is_instance_valid(rival_host):
