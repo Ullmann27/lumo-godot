@@ -1,0 +1,20 @@
+{
+  "archive": "hub-original-rendered-evidence.tar.gz",
+  "bytes": 3711954,
+  "sha256": "db025f01068d0db82379a774246df20fb6cbdd60c58dd5f4a0e0325e7271921b",
+  "git_blob_sha": "82f072c45823c31f88247b432e80c67864adfcf4",
+  "native_source": "71a4c1e2304b52005950b12490d070c286c45438",
+  "native_tree": "8633c0ac611f2ba9f261cc247a60997634d43dd9",
+  "original_pngs": [
+    {
+      "path": "hub_fold_landscape.png",
+      "sha256": "aa22c4818959435cbb4ed24c9470a76be55581e3fd65cd560eb52c0c145f34a9",
+      "bytes": 1878803
+    },
+    {
+      "path": "hub_portrait.png",
+      "sha256": "c479d48648cf933e9ce53f65d8d324ae4cc0dce6de18eaa67dd812848a157b46",
+      "bytes": 1822764
+    }
+  ]
+}
