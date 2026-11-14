@@ -14,6 +14,7 @@ const MESHY_START_GATE = preload("res://scripts/games/kart_meshy_start_gate.gd")
 const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
 const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
+const MODULAR_PARTS = preload("res://scripts/games/kart_modular_route_props.gd")
 const PREMIUM_RAIL_KIT = preload("res://scripts/games/kart_premium_rail_kit.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
@@ -102,6 +103,7 @@ func build(
 		SKY_ISLANDS.chevrons(self)
 		FLEET_DRESSING.build(self)
 		TRACK_DETAIL.build(self)
+		MODULAR_PARTS.build(self)
 		ADVENTURE_TUNNELS.build(self)
 		_flush_instances()
 		if not geometry_only:
@@ -119,6 +121,7 @@ func build(
 		_navigation()
 		FLEET_DRESSING.build(self)
 		TRACK_DETAIL.build(self)
+		MODULAR_PARTS.build(self)
 		ADVENTURE_TUNNELS.build(self)
 		_flush_instances()
 		if not geometry_only:
@@ -150,6 +153,7 @@ func build(
 	LANDMARKS.build(self)
 	FLEET_DRESSING.build(self)
 	TRACK_DETAIL.build(self)
+	MODULAR_PARTS.build(self)
 	ADVENTURE_TUNNELS.build(self)
 	_flush_instances()
 	if not geometry_only:
