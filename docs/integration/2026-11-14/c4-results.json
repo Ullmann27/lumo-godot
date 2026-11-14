@@ -1,0 +1,28 @@
+[
+  {
+    "name": "c4-return-baseline",
+    "exit": 1,
+    "seconds": 0.863,
+    "sha256": "39b858b2883cab143b6616b89edff5d3fe7a6a3b385e16be6b0dca135c04086f",
+    "bytes": 1518,
+    "markers": [
+      "CONNECT_FOUR_RETURN_FAIL checks=20"
+    ],
+    "error_lines": [
+      "ERROR: [ConnectFourReturn] FAIL unchanged acknowledged state retries refused Android return",
+      "ERROR: [ConnectFourReturn] FAIL successful retry closes the native session",
+      "ERROR: [ConnectFourReturn] FAIL successful return is never duplicated"
+    ]
+  },
+  {
+    "name": "c4-return-integrated",
+    "exit": 0,
+    "seconds": 0.448,
+    "sha256": "f52a215077309359c79031c719d5df69b526bcb0d45bd2bb161de28153dc5ae2",
+    "bytes": 504,
+    "markers": [
+      "CONNECT_FOUR_RETURN_PASS checks=21"
+    ],
+    "error_lines": []
+  }
+]
