@@ -3,6 +3,7 @@ extends SceneTree
 const REQUIRED := [
 	"kart", "settlement", "jump", "puzzle", "treasure", "rhythm", "build", "stars"
 ]
+const IDENTITY = preload("res://scripts/tests/helpers/game_hub_original_identity.gd")
 
 
 func _initialize() -> void:
@@ -25,6 +26,33 @@ func _run() -> void:
 	root.add_child(hub)
 	await process_frame
 	await process_frame
+	var identity: Dictionary = IDENTITY.inspect(hub)
+	for reason in identity.failures:
+		failed.append(str(reason))
+	if identity.failures.is_empty():
+		var actor: Node = hub.find_child("OriginalAnimatedLumo", true, false)
+		var player := actor.get("player") as AnimationPlayer
+		if actor.get("reduced_motion") != true or player.is_playing():
+			failed.append("Reduced motion must freeze the original rig animation")
+		var initial_time := player.current_animation_position
+		await create_timer(0.05).timeout
+		if not is_equal_approx(player.current_animation_position, initial_time):
+			failed.append("Reduced motion advanced the original animation clock")
+		actor.call("set_reduced_motion", false)
+		if not player.is_playing():
+			failed.append("The original idle must animate when motion is enabled")
+		hub.notification(Node.NOTIFICATION_APPLICATION_PAUSED)
+		if player.is_playing() or actor.get("suspended") != true:
+			failed.append("Application pause must suspend the real original rig")
+		hub.notification(Node.NOTIFICATION_APPLICATION_RESUMED)
+		if not player.is_playing() or actor.get("suspended") != false:
+			failed.append("Application resume must restore the original idle")
+		actor.call("set_reduced_motion", true)
+		hub.notification(Node.NOTIFICATION_APPLICATION_PAUSED)
+		hub.notification(Node.NOTIFICATION_APPLICATION_RESUMED)
+		if player.is_playing():
+			failed.append("Resume must preserve the child's reduced-motion preference")
+		print("[LumoHubIdentity] ", JSON.stringify(identity))
 	var grid := hub.find_child("LiveGameRoutes", true, false) as GridContainer
 	if grid == null:
 		failed.append("Game portal controls are not a responsive GridContainer")

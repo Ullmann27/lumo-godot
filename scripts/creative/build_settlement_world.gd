@@ -68,6 +68,8 @@ var round_slots_full := false
 var village_region: Node3D
 var village_residents: Node3D
 var village_window: Window
+var host_entry := false
+var return_scene := "build"
 var last_view_focus := Vector3.INF
 var last_view_radius := -1.0
 var overview_nodes: Array[MultiMeshInstance3D] = []
@@ -117,6 +119,13 @@ func _ready() -> void:
 		else:
 			# Never silently open a version-two village as a classic game.
 			save_blocked = true
+	var host_launch: Dictionary = HostBridge.launch_options()
+	host_entry = (
+		HostBridge.is_embedded() and model.living_village
+		and str(host_launch.get("scene", "")) == "settlement"
+		and host_launch.get("livingVillage", false) == true
+	)
+	return_scene = "games" if host_entry else "build"
 	kit.environment(self, "bauwelt_day")
 	NEXTGEN_ENV.apply_day(self)
 	_build_landscape()
@@ -135,6 +144,24 @@ func _ready() -> void:
 	RUNTIME.watch_safe_area(self, _layout)
 	_layout()
 	print("[SettlementWorld] ready mode=", mode, " save=", save_path)
+	if model.living_village and is_instance_valid(village_region) and is_instance_valid(village_residents):
+		# Device acceptance consumes actual initialized state, after UI, plots
+		# and residents exist. Requested launch options alone are not evidence.
+		var town: Dictionary = model.player()
+		print("[VillageHostReady] ", JSON.stringify({
+			"scene": scene_file_path,
+			"mode": mode,
+			"living_village": model.living_village,
+			"save_path": save_path,
+			"slot": slot,
+			"plots": int(town.plots),
+			"population": int(town.population),
+			"visible_residents": int(village_residents.get_meta("visible_residents", 0)),
+			"initialized_plot_nodes": plot_nodes.size(),
+			"save_blocked": save_blocked,
+			"host_entry": host_entry,
+			"return_scene": return_scene,
+		}))
 
 
 func _exit_tree() -> void:
@@ -268,7 +295,9 @@ func _build_ui() -> void:
 	safe_ui.add_child(top)
 	var heading := HBoxContainer.new()
 	top.add_child(heading)
-	heading.add_child(_button("‹ Bauwelt", _leave, 96))
+	var back := _button("‹ Spiele" if host_entry else "‹ Bauwelt", _leave, 96)
+	back.name = "SettlementReturn"
+	heading.add_child(back)
 	var title := _label(
 		"LUMO WETTBAU" if mode == "rival" else ("LUMO DORFWELT" if model.living_village else "LUMO SIEDLUNG"), 22
 	)
@@ -369,7 +398,11 @@ func _build_ui() -> void:
 	pause_box.add_child(_label("Deine Siedlung wartet", 22))
 	pause_box.add_child(_button("Weiter", _toggle_pause))
 	pause_box.add_child(_button("Speichern", _save_message))
-	pause_box.add_child(_button("Zur Bauwelt", _leave))
+	pause_box.add_child(_button("Zur Spielewelt" if host_entry else "Zur Bauwelt", _leave))
+	if host_entry:
+		var build_return := _button("Zur Bauwelt", _leave.bind("build"))
+		build_return.name = "SettlementBuildReturn"
+		pause_box.add_child(build_return)
 	walk_controls = Control.new()
 	walk_controls.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	walk_controls.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1382,6 +1415,6 @@ func _save_message() -> void:
 		feedback.text = "Deine Siedlung ist gespeichert. Es vergeht kein Tag, solange du nicht weiterspielst."
 
 
-func _leave() -> void:
+func _leave(destination: String = "") -> void:
 	if save_blocked or _save():
-		SceneRouter.goto("build")
+		SceneRouter.goto(return_scene if destination.is_empty() else destination)

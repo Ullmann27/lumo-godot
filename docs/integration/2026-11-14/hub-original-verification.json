@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "base_commit": "7d53f29e68269c21d1d5a66bdf3d488f8e886970",
+  "base_tree": "6f835356946d53c665cf235cd0c26071fdf643ee",
+  "source_binding": "Exact Git blob hashes of materialized source; local directory has no Git HEAD",
+  "tests": [
+    {
+      "probe": "game_hub_magic_regression",
+      "exit_code": 0,
+      "elapsed_seconds": 0.967,
+      "scope": "8 existing routes plus actual original GLB/65-bone/skin identity, reduced motion and app pause/resume"
+    },
+    {
+      "probe": "village_host_launch_regression",
+      "exit_code": 0,
+      "elapsed_seconds": 1.168,
+      "scope": "Original entry validation plus direct versus internal return, actual save/restore, failed save blocked, JNI ACK0 retry and ACK1 session preservation"
+    },
+    {
+      "probe": "lumo_rigged_animation_capture (headless)",
+      "exit_code": 0,
+      "checks": 21,
+      "elapsed_seconds": 0.816
+    },
+    {
+      "probe": "host_bridge_regression",
+      "exit_code": 0,
+      "pass_markers": 3,
+      "elapsed_seconds": 5.791
+    },
+    {
+      "probe": "build_village_scene_regression",
+      "exit_code": 0,
+      "checks": 222,
+      "elapsed_seconds": 5.279
+    },
+    {
+      "probe": "build_village_economy_regression",
+      "exit_code": 0,
+      "checks": 337,
+      "elapsed_seconds": 0.365
+    },
+    {
+      "probe": "test_discovery_rasters.py",
+      "exit_code": 0,
+      "test_methods": 11,
+      "negative_cases": 57,
+      "elapsed_seconds": 12.634
+    },
+    {
+      "probe": "game_hub_magic_capture",
+      "exit_code": 0,
+      "original_pngs": 2,
+      "elapsed_seconds": 15.176133911998477,
+      "renderer": "Godot4.6.3 Compatibility / Mesa llvmpipe / private authenticated Xorg145"
+    },
+    {
+      "probe": "verify_discovery_rasters.verify combined original replay",
+      "original_pngs": 38,
+      "elapsed_seconds": 1.159,
+      "scope": "2 freshly rendered Hub PNGs + 36 unchanged original Learning/Wonder PNGs; no claim of rerendering all38"
+    }
+  ],
+  "negative_baseline": {
+    "hub_identity_exit": 1,
+    "hub_identity_seconds": 1.224,
+    "village_direct_return_exit": 1,
+    "village_direct_return_seconds": 1.018
+  },
+  "physical_android_run_completed": false,
+  "full_52_live9_discovery10_on_new_pin_completed": false,
+  "review": {
+    "production_hub_blob": "5a4fd789dcfb3dcd1bc1fcc2f7b0fd7f64ade1f6",
+    "root_and_android_qa": "Both independently opened renderer-2 original PNGs from this identical production hub blob; full original figure and unobstructed controls passed. Final renderer differs only by added actual identity report fields; Native agent also opened both final originals.",
+    "landscape": "All8 portals fully visible",
+    "portrait": "6 portals fully visible; final2 continue in the unchanged scroll area"
+  }
+}

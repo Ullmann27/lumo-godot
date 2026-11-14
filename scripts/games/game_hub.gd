@@ -4,7 +4,7 @@ extends Node3D
 ## No new race modes or modified rewards / game-state persistence.
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const MENU_ART = preload("res://scripts/games/kart_menu_art.gd")
-const COMPANION = preload("res://scenes/characters/lumo/lumo_character.tscn")
+const COMPANION = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const PORTALS = preload("res://scripts/games/game_hub_routes.gd")
 const DREAM_STAGE = preload("res://scripts/games/game_hub_magic_stage.gd")
 
@@ -16,6 +16,9 @@ var _subtitle: Label
 var _grade: OptionButton
 var _subject: OptionButton
 var _choice_buttons: Array[Button] = []
+var _lumo: Node3D
+var _hero_camera: Camera3D
+var _lumo_bounds := AABB()
 
 
 func _ready() -> void:
@@ -79,16 +82,77 @@ func _build_dream_stage() -> void:
 
 
 func _build_live_lumo() -> void:
-	var lumo := COMPANION.instantiate() as Node3D
-	lumo.name = "OriginalAnimatedLumo"
-	lumo.position = Vector3(0, -0.15, 0)
-	add_child(lumo)
-	var camera := Camera3D.new()
-	camera.name = "LumoHeroCamera"
-	camera.position = Vector3(0.1, 1.7, 4.7)
-	add_child(camera)
-	camera.look_at(Vector3(0, 0.8, 0))
-	camera.current = true
+	# The same original GLB/65-bone adapter already used by the learning world.
+	# Profile selections choose routes and lessons, never a replacement mascot.
+	_lumo = COMPANION.new()
+	_lumo.name = "OriginalAnimatedLumo"
+	add_child(_lumo)
+	if not _lumo.is_usable():
+		push_error("[LumoGameHub] Original Lumo rig could not be loaded")
+		_lumo.hide()
+		return
+	var first := true
+	for node in _lumo.find_children("*", "MeshInstance3D", true, false):
+		var mesh := node as MeshInstance3D
+		if mesh.mesh == null:
+			continue
+		var bounds: AABB = _lumo.global_transform.affine_inverse() * mesh.global_transform * mesh.get_aabb()
+		_lumo_bounds = bounds if first else _lumo_bounds.merge(bounds)
+		first = false
+	var fitted := 2.25 / maxf(0.2, _lumo_bounds.size.y)
+	_lumo.scale = Vector3.ONE * fitted
+	_lumo.position.y = -0.32 - _lumo_bounds.position.y * fitted
+	_lumo.set_reduced_motion(bool(SceneRouter.launch_options.get("reduceAnimations", false)))
+	_hero_camera = Camera3D.new()
+	_hero_camera.name = "LumoHeroCamera"
+	_hero_camera.near = 0.05
+	add_child(_hero_camera)
+	_hero_camera.current = true
+
+
+func _frame_original_lumo() -> void:
+	if not is_instance_valid(_hero_camera) or not is_instance_valid(_hero_gap):
+		return
+	var view := get_viewport().get_visible_rect().size
+	var frame := _hero_gap.get_global_rect().grow(-8.0)
+	if frame.size.x <= 0.0 or frame.size.y <= 0.0 or view.y <= 0.0:
+		return
+	# Keep the full authored mesh, plus idle-motion clearance, inside the UI's
+	# existing free hero space. A fixed centre-screen camera overlaps the cards.
+	var bounds: AABB = _lumo.global_transform * _lumo_bounds.grow(0.08)
+	var view_height := maxf(
+		bounds.size.y * view.y / frame.size.y,
+		bounds.size.x * view.y / frame.size.x
+	)
+	var distance := view_height / (2.0 * tan(deg_to_rad(_hero_camera.fov) * 0.5))
+	distance += bounds.size.z * 0.5
+	view_height = distance * 2.0 * tan(deg_to_rad(_hero_camera.fov) * 0.5)
+	var center := bounds.get_center()
+	var target := frame.get_center()
+	_hero_camera.position = Vector3(
+		center.x - (target.x - view.x * 0.5) * view_height / view.y,
+		center.y + (target.y / view.y - 0.5) * view_height,
+		center.z + distance
+	)
+	_hero_camera.rotation = Vector3.ZERO
+	# The hero space is above the screen centre. Perspective depth shifts its
+	# projected centre slightly; correct using all eight real mesh bounds.
+	for adjustment in range(4):
+		var projected := Rect2(_hero_camera.unproject_position(bounds.get_endpoint(0)), Vector2.ZERO)
+		for corner in range(1, 8):
+			projected = projected.expand(_hero_camera.unproject_position(bounds.get_endpoint(corner)))
+		var shift := target - projected.get_center()
+		_hero_camera.position.x -= shift.x * view_height / view.y
+		_hero_camera.position.y += shift.y * view_height / view.y
+
+
+func _notification(what: int) -> void:
+	if not is_instance_valid(_lumo):
+		return
+	if what == NOTIFICATION_APPLICATION_PAUSED:
+		_lumo.set_suspended(true)
+	elif what == NOTIFICATION_APPLICATION_RESUMED:
+		_lumo.set_suspended(false)
 
 
 func _build_controls() -> void:
@@ -124,6 +188,7 @@ func _build_controls() -> void:
 	_hero_gap.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_hero_gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	main.add_child(_hero_gap)
+	_hero_gap.resized.connect(_frame_original_lumo)
 	var body_scroll := ScrollContainer.new()
 	body_scroll.name = "ScrollableRealGameActions"
 	body_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -280,3 +345,4 @@ func _layout() -> void:
 			heading.add_theme_font_size_override("font_size", 16 if compact else 19)
 		if hint != null:
 			hint.add_theme_font_size_override("font_size", 12 if compact else 14)
+	_frame_original_lumo.call_deferred()
