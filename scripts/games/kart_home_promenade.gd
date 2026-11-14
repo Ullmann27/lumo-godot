@@ -3,6 +3,7 @@ extends Node3D
 ## not a second race world: no physics bodies, race state or hidden simulation.
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const PAVILION = preload("res://assets/kart/harbor_pavilion/wave_pavilion_lod2.glb")
+const FESTIVAL_GATE = preload("res://assets/kart/home_festival/sonnenhafen_festival_gate.glb")
 var elapsed := 0.0
 var active := false
 var reduced_motion := false
@@ -52,6 +53,7 @@ func build() -> void:
 	_build_route()
 	_build_lighthouse(Vector3(-32, 0.55, 61))
 	_build_town()
+	_build_festival_quay()
 	var pavilion: Node3D = PAVILION.instantiate()
 	pavilion.name = "OriginalHarborWavePavilion"
 	pavilion.position = Vector3(-20, -0.35, 50)
@@ -70,6 +72,7 @@ func build() -> void:
 	_flush_batches()
 	_flush_canopies()
 	set_meta("original_asset", PAVILION.resource_path)
+	set_meta("festival_asset", FESTIVAL_GATE.resource_path)
 	set_meta("home_material_families", _materials.size())
 	set_meta("home_static_batches", _batches.size() + _canopy_batches.size() + 1)
 	visible = false
@@ -277,6 +280,28 @@ func _build_route() -> void:
 	loop_mesh.scale = Vector3.ONE * 0.8
 	_batch_box("sand", Vector3(0.55, 4.2, 0.65), Vector3(-20.8, 1.3, 83))
 	_batch_box("sand", Vector3(0.55, 4.2, 0.65), Vector3(-15.2, 1.3, 83))
+
+
+func _build_festival_quay() -> void:
+	# The authored wave-and-sun gateway belongs to the harbor scenery. It has
+	# no collision, input or independent light/shader animation to keep alive.
+	var gate: Node3D = FESTIVAL_GATE.instantiate()
+	gate.name = "SonnenhafenFestivalGate"
+	gate.position = Vector3(-10.0, 0.35, 34.0)
+	gate.rotation.y = -0.3
+	gate.scale = Vector3.ONE * 0.8
+	add_child(gate)
+	var frame := Transform3D(Basis(Vector3.UP, -0.3), gate.position)
+	_detail_box("cream", Vector3(7.25, 0.24, 4.2), frame, Vector3(0, -0.12, 0))
+	_detail_box("stone", Vector3(7.0, 0.48, 3.96), frame, Vector3(0, -0.48, 0))
+	for side in [-1, 1]:
+		for depth in [-1, 1]:
+			_detail_box("sand", Vector3(0.42, 1.7, 0.42), frame,
+				Vector3(side * 3.14, -1.1, depth * 1.62))
+	# This middle-distance asset uses the existing harbor light and six
+	# material surfaces; it does not add a shadow-map pass for fine ornament.
+	for mesh: MeshInstance3D in gate.find_children("*", "MeshInstance3D", true, false):
+		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
 func _build_lighthouse(location: Vector3) -> void:

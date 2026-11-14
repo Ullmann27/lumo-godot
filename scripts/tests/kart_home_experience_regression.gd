@@ -34,7 +34,7 @@ func _rest_camera() -> void:
 	await _settle()
 
 
-func _tap(control: Control) -> void:
+func _tap(control: Control, after_release: Callable = Callable()) -> void:
 	_check(control.is_visible_in_tree(), "%s is visible for actual touch" % control.name)
 	var rect := control.get_global_rect()
 	_check(game.safe_ui.get_global_rect().grow(1).encloses(rect), "%s stays in the safe area" % control.name)
@@ -46,6 +46,8 @@ func _tap(control: Control) -> void:
 		event.pressed = down
 		Input.parse_input_event(event)
 		await process_frame
+	if after_release.is_valid():
+		await after_release.call()
 	await _settle()
 
 
@@ -121,6 +123,18 @@ func _check_home_world(garage) -> void:
 	_check(home.get_node_or_null("OriginalHarborWavePavilion") != null, "original authored harbor pavilion is reused")
 	_check(home.get_node_or_null("HomeScenicCoastalRoad") != null, "middle-distance coastal road is real geometry")
 	_check(home.get_node_or_null("DistantCoastalLoop") != null, "distant loop creates a layered skyline")
+	var festival: Node3D = home.get_node_or_null("SonnenhafenFestivalGate")
+	_check(festival != null and festival.is_visible_in_tree(), "authored Blender festival gate is visible in the production Home")
+	if festival != null:
+		var festival_frame := _landmark_frame(garage, festival)
+		_check(minf(festival_frame.size.x, festival_frame.size.y) >= 18.0, "festival silhouette remains legible in the actual camera")
+		var surfaces := 0
+		var triangles := 0
+		for mesh: MeshInstance3D in festival.find_children("*", "MeshInstance3D", true, false):
+			surfaces += mesh.mesh.get_surface_count()
+			for surface in range(mesh.mesh.get_surface_count()):
+				triangles += mesh.mesh.surface_get_array_index_len(surface) / 3
+		_check(surfaces > 0 and surfaces <= 6 and triangles > 0 and triangles <= 15000, "festival geometry stays within its six-surface mobile budget")
 	var lighthouse_frame := _landmark_frame(garage, home.get_node("HarborLighthouseLandmark"))
 	var pavilion_frame := _landmark_frame(garage, home.get_node("OriginalHarborWavePavilion"))
 	_check(not lighthouse_frame.intersects(pavilion_frame), "original pavilion cannot hide the full lighthouse silhouette")
@@ -187,15 +201,33 @@ func _run() -> void:
 		await _check_home_world(garage)
 		var suffix := "%dx%d" % [dimensions.x, dimensions.y]
 		await _shot("home-" + suffix, dimensions)
-		await _tap(landing._mode_buttons.time_trial)
+		var camera_path: Array[Transform3D] = []
+		var observe_camera := func(): camera_path.append(garage.preview_camera.transform)
+		if not baseline:
+			process_frame.connect(observe_camera)
+		var capture_transition := func():
+			if not baseline:
+				await _shot("mode-transition-" + suffix, dimensions)
+		await _tap(landing._mode_buttons.time_trial, capture_transition)
 		_check(garage.setup.mode == "time_trial" and game.menu_active, "real mode touch selects Time Trial without starting")
 		var mode_metadata := _capture_metadata("selected-time-trial-" + suffix, dimensions)
 		_check(mode_metadata.get("menu_active", false) and mode_metadata.get("mode", "") == "time_trial", "capture metadata reads the live menu selection")
 		if not baseline:
-			var moving: Transform3D = garage.preview_camera.transform
-			await _shot("mode-transition-" + suffix, dimensions)
 			await _rest_camera()
-			_check(not moving.is_equal_approx(garage.preview_camera.transform), "mode selection performs an actual bounded camera transition")
+			process_frame.disconnect(observe_camera)
+			# Observe the real process frames from the touch through completion.
+			# Sampling only after _tap's eight-frame settle misses the complete
+			# 0.55-second dolly on a slower renderer without exposing a defect.
+			var moved := false
+			var bounded := true
+			var focus: Vector3 = garage._home_camera_focus
+			var settled: Transform3D = garage.preview_camera.transform
+			var radius := settled.origin.distance_to(focus)
+			for pose in camera_path:
+				moved = moved or not pose.is_equal_approx(settled)
+				var observed_radius := pose.origin.distance_to(focus)
+				bounded = bounded and observed_radius >= radius - 0.001 and observed_radius <= radius * 1.065 + 0.001
+			_check(moved and bounded and is_equal_approx(garage._home_camera_phase, 1.0), "mode selection performs an actual bounded camera transition")
 		await _shot("selected-time-trial-" + suffix, dimensions)
 		await _tap(landing._navigation.get_node("Open_garage"))
 		await _rest_camera()
