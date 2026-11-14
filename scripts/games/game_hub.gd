@@ -5,9 +5,11 @@ extends Node3D
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const MENU_ART = preload("res://scripts/games/kart_menu_art.gd")
 const COMPANION = preload("res://scenes/characters/lumo/lumo_character.tscn")
+const PORTALS = preload("res://scripts/games/game_hub_routes.gd")
+const DREAM_STAGE = preload("res://scripts/games/game_hub_magic_stage.gd")
 
 var _safe: MarginContainer
-var _button_row: VBoxContainer
+var _button_row: GridContainer
 var _hero_gap: Control
 var _section_title: Label
 var _subtitle: Label
@@ -18,6 +20,7 @@ var _choice_buttons: Array[Button] = []
 
 func _ready() -> void:
 	_build_scenery()
+	_build_dream_stage()
 	_build_live_lumo()
 	_build_controls()
 	get_viewport().size_changed.connect(_layout)
@@ -65,6 +68,14 @@ func _build_scenery() -> void:
 	fill.omni_range = 7
 	fill.shadow_enabled = false
 	add_child(fill)
+
+
+func _build_dream_stage() -> void:
+	# Real lightweight 3D meshes. Preserve the original fox and 2D artwork.
+	var stage := DREAM_STAGE.new() as Node3D
+	stage.name = "LumoDreamStage"
+	stage.set_reduced_motion(bool(SceneRouter.launch_options.get("reduceAnimations", false)))
+	add_child(stage)
 
 
 func _build_live_lumo() -> void:
@@ -157,29 +168,62 @@ func _build_controls() -> void:
 	_subject.selected = 1 if SceneRouter.launch_options.get("subject", "") == "Deutsch" else 0
 	_subject.add_theme_stylebox_override("normal", UI.premium_panel(UI.CYAN))
 	options.add_child(_subject)
-	_button_row = VBoxContainer.new()
+	_button_row = GridContainer.new()
 	_button_row.name = "LiveGameRoutes"
-	_button_row.add_theme_constant_override("separation", 9)
+	_button_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_button_row.add_theme_constant_override("h_separation", 12)
+	_button_row.add_theme_constant_override("v_separation", 12)
 	bottom.add_child(_button_row)
-	_make_route("LUMO KART  ·  Sonnenhafen-Cup", Color("ffc94a"), "kart", true)
-	_make_route("Wolkeninseln  ·  Springen", Color("53ddfd"), "jump")
-	_make_route("Sternenjagd  ·  3D-Welt", Color("b99bff"), "stars")
+	for entry in PORTALS.ENTRIES:
+		_make_route(
+			str(entry.title), str(entry.subtitle),
+			Color(str(entry.accent)), str(entry.destination),
+			bool(entry.featured)
+		)
 
 
-func _make_route(text: String, color: Color, destination: String, primary: bool = false) -> void:
-	var button := _action(text, color, func(): _open_game(destination), primary)
+func _make_route(
+	title_text: String, hint_text: String, color: Color,
+	destination: String, primary: bool = false
+) -> void:
+	# The whole card is one focusable button, including its two text lines.
+	var button := _action("", color, func(): _open_game(destination), primary)
 	button.name = "GameRoute_" + destination
+	button.tooltip_text = title_text + " – " + hint_text
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	button.custom_minimum_size.y = 63
+	button.custom_minimum_size = Vector2(240, 96)
 	_button_row.add_child(button)
+	var label_stack := VBoxContainer.new()
+	label_stack.name = "PortalText"
+	label_stack.alignment = BoxContainer.ALIGNMENT_CENTER
+	label_stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label_stack.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	label_stack.offset_left = 16
+	label_stack.offset_right = -12
+	label_stack.offset_top = 8
+	label_stack.offset_bottom = -8
+	button.add_child(label_stack)
+	var heading := _heading(title_text, 19, UI.NAVY if primary else UI.WHITE)
+	heading.name = "PortalTitle"
+	heading.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label_stack.add_child(heading)
+	var hint := _heading(hint_text, 14, UI.NAVY if primary else UI.MUTED)
+	hint.name = "PortalHint"
+	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label_stack.add_child(hint)
 	_choice_buttons.append(button)
 
 
 func _open_game(destination: String) -> void:
-	# Merge, do not destroy host-provided motion, identity, or launch options.
-	var options: Dictionary = SceneRouter.launch_options.duplicate(true)
-	options["grade"] = _grade.selected + 1
-	options["subject"] = "Deutsch" if _subject.selected == 1 else "Mathematik"
+	# Deep-copy existing child, motion and save keys. A direct village card
+	# selects the real economy, not the classic empty settlement.
+	var subject := "Deutsch" if _subject.selected == 1 else "Mathematik"
+	var options: Dictionary = PORTALS.launch_options_for(
+		destination, SceneRouter.launch_options, _grade.selected + 1, subject
+	)
+	if options.is_empty() or not SceneRouter.SCENES.has(destination):
+		push_warning("[LumoGameHub] No registered route for " + destination)
+		return
 	SceneRouter.launch_options = options
 	SceneRouter.goto(destination)
 
@@ -205,12 +249,22 @@ func _action(value: String, accent: Color, callback: Callable, is_gold: bool = f
 	return button
 
 
+func _columns_for_width(width_dp: float) -> int:
+	if width_dp >= 1120:
+		return 3
+	if width_dp >= 650:
+		return 2
+	return 1
+
+
 func _layout() -> void:
 	if not is_inside_tree() or not is_instance_valid(_safe):
 		return
 	var view := get_viewport().get_visible_rect().size
 	var landscape := view.x > view.y
 	var compact := view.y < 640
+	var width_dp := view.x / maxf(1.0, MobileRuntime.get_ui_density())
+	_button_row.columns = _columns_for_width(width_dp)
 	for side in ["left", "right"]:
 		_safe.add_theme_constant_override("margin_" + side, 16 if compact else 24)
 	for side in ["top", "bottom"]:
@@ -219,5 +273,10 @@ func _layout() -> void:
 	_section_title.add_theme_font_size_override("font_size", 22 if compact else 29)
 	_subtitle.visible = not compact
 	for button in _choice_buttons:
-		button.custom_minimum_size.y = 54 if compact else 66
-		button.add_theme_font_size_override("font_size", 18 if compact else 22)
+		button.custom_minimum_size.y = 78 if compact else 96
+		var heading := button.find_child("PortalTitle", true, false) as Label
+		var hint := button.find_child("PortalHint", true, false) as Label
+		if heading != null:
+			heading.add_theme_font_size_override("font_size", 16 if compact else 19)
+		if hint != null:
+			hint.add_theme_font_size_override("font_size", 12 if compact else 14)
