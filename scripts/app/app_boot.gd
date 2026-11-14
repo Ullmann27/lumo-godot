@@ -28,6 +28,8 @@ const TITLE_BY_SCENE: Dictionary = {
 	"learning": "LUMO LERNWERKSTATT",
 	"cards": "LUMO CARDS",
 	"connect_four": "VIER GEWINNT",
+	"memory": "LUMO MEMORY",
+	"quiz": "LUMO QUIZSHOW",
 }
 signal load_state_changed(state: String)
 ## Test harnesses may attach the actual boot scene without starting navigation.
@@ -77,7 +79,7 @@ func _ready() -> void:
 		_reduced_motion = _reduced_motion or bool(session.get_value("race", "reduced_motion", false))
 	var requested: String = str(options.get("scene", ""))
 	var target: String = requested if requested in [
-		"kart", "jump", "puzzle", "build", "settlement", "rhythm", "treasure", "learning", "cards", "connect_four", "home", "games"
+		"kart", "jump", "puzzle", "build", "settlement", "rhythm", "treasure", "learning", "cards", "connect_four", "memory", "quiz", "home", "games"
 	] else "games"
 	_show_cover(target)
 	_build_actions()
@@ -321,7 +323,7 @@ func _show_cover(scene_id: String) -> void:
 	var cover: TextureRect = $Layer/Background
 	# Until a renderer capture of this lesson is shipped, use the neutral
 	# loading surface instead of falsely presenting the Kart world as learning.
-	cover.visible = scene_id != "learning"
+	cover.visible = scene_id not in ["learning", "memory", "quiz"]
 	var path: String = str(COVER_BY_SCENE.get(scene_id, "res://assets/kart/menu/lumo-world.webp"))
 	cover.texture = MENU_ART.world_texture() if path == MENU_ART.WORLD.resource_path else load(path) as Texture2D
 	var title: Label = $Layer/Title

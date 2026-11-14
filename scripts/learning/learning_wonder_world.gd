@@ -16,6 +16,10 @@ func _ready() -> void:
 
 func _layout() -> void:
 	super._layout()
+	# The English gallery fits its actual object bounds in the base layout.
+	# Garden framing must not shrink those interactive meshes afterwards.
+	if activity.kind == "english_objects":
+		return
 	if not is_inside_tree() or not is_instance_valid(camera) or not is_instance_valid(header):
 		return
 	var dimensions := get_viewport().get_visible_rect().size

@@ -48,11 +48,11 @@ static func validated_options(raw: Dictionary) -> Dictionary:
 		else:
 			options["livingVillage"] = true
 			options["settlementMode"] = "settlement"
-	elif options["scene"] not in ["kart", "jump", "puzzle", "build", "rhythm", "treasure", "learning", "cards", "connect_four", "games", "home"]:
+	elif options["scene"] not in ["kart", "jump", "puzzle", "build", "rhythm", "treasure", "learning", "cards", "connect_four", "memory", "quiz", "games", "home"]:
 		options["scene"] = "kart"
 	if (
 		str(raw.get("subject", "Mathematik"))
-		not in ["Mathematik", "Deutsch", "Sachunterricht", "Logik"]
+		not in ["Mathematik", "Deutsch", "Sachunterricht", "Englisch", "Logik"]
 	):
 		options["subject"] = "Mathematik"
 	return options
