@@ -119,15 +119,170 @@ def write_fixture(root: Path) -> None:
         'source_before': source_hashes, 'source_after': source_hashes,
         'input_events': [{'kind': 'ScreenDrag'}, {'kind': 'ScreenTouch', 'pressed': False}],
         'captures': captures})
-    title = root / verifier.TITLE_DIRECTORY
-    title.mkdir(parents=True)
-    report = original('treasure-title')
-    for row in report['observations']:
-        name = 'treasure-title-' + row['profile'] + '.png'
-        data = fixture_png(*verifier.treasure_title_views[row['profile']][0])
-        (title / name).write_bytes(data)
-        row['image_sha256'] = hashlib.sha256(data).hexdigest()
-    store_json(title / 'treasure-title-report.json', report)
+    write_treasure_fixture(root)
+
+
+def write_treasure_fixture(root: Path, mutation: str = '') -> None:
+    """Synthetic report contracts, not an additional renderer execution."""
+    folder = root / 'captures/treasure_title_contrast_regression'
+    folder.mkdir(parents=True)
+    profiles = [
+        ('landscape', 1920, 1080, 1.5, [112, 36, 0, 24]),
+        ('compact', 640, 320, 1.0, [0, 0, 0, 0]),
+        ('portrait', 1080, 2400, 2.625, [0, 136, 0, 63]),
+        ('fold', 2176, 1812, 2.25, [0, 136, 0, 63]),
+        ('landscape-cutout', 2400, 1080, 2.625, [136, 63, 0, 63]),
+    ]
+    observations = []
+    for profile, width, height, density, insets in profiles:
+        path = folder / f'treasure-title-{profile}.png'
+        data = fixture_png(width, height)
+        path.write_bytes(data)
+        left, top, right, bottom = insets
+        safe_width, safe_height = width - left - right, height - top - bottom
+        avatar = [left + safe_width / 2 - 20, top + safe_height / 2 - 20, 40, 40]
+        clue_role = 'hint' if profile in ('compact', 'landscape-cutout') else 'clue'
+        boxes = {
+            'header': [left + 12, top + 12, safe_width - 24, 48 * density],
+            clue_role: [left + 12, top + 72 * density, 48 * density, 48 * density],
+            'toast': [left + safe_width / 2 - 48 * density, height - bottom - 12 - 48 * density, 96 * density, 48 * density],
+            'joystick': [left + 12, height - bottom - 12 - 48 * density, 48 * density, 48 * density],
+            'action': [width - right - 12 - 48 * density, height - bottom - 12 - 48 * density, 48 * density, 48 * density],
+            'jump': [width - right - 12 - 48 * density, height - bottom - 24 - 96 * density, 48 * density, 48 * density],
+        }
+        for restored in (False, True):
+            item = {'profile': profile, 'window_px': [width, height],
+                'density': density, 'insets_fixture': list(insets),
+                'title_rect': [left + 12, top + 12, 360, 42 * density],
+                'worst_white_backdrop_contrast': 14.4422647052388,
+                'initial_state_fixture': 'original86445 first tree save' if restored else 'production fresh start',
+                'gameplay_view': {'avatar_rect_px': list(avatar),
+                    'secondary_white_backdrop_contrast': 14.4422647052388,
+                    'hud_rects': [{'role': role, 'name': f'Fixture-{role}', 'rect_px': list(bounds),
+                                   'overlap_px': [0, 0, 0, 0]} for role, bounds in boxes.items()]}}
+            recorded = not restored if profile == 'landscape-cutout' else restored
+            if recorded:
+                item.update(image=str(path), image_sha256=hashlib.sha256(data).hexdigest(),
+                            image_px=[width, height])
+            observations.append(item)
+    state = {'checks': 3341, 'failures': [], 'observations': observations,
+             'scope': 'Production HUD, real ScreenTouch, declared saved-position and Android-boundary fixture; not device execution'}
+    chosen = observations[3]
+    image = folder / Path(chosen['image']).name
+    view = chosen['gameplay_view']
+    hud = {region['role']: region for region in view['hud_rects']}
+    if mutation == 'title-missing-image':
+        image.unlink()
+    elif mutation == 'title-renamed-image':
+        image.rename(folder / 'wrong.png')
+    elif mutation == 'title-wrong-dimensions':
+        data = fixture_png(640, 321)
+        image.write_bytes(data)
+        chosen['image_sha256'] = hashlib.sha256(data).hexdigest()
+    elif mutation == 'title-reported-failure':
+        state['failures'] = ['bad contrast']
+    elif mutation == 'title-partial-checks':
+        state['checks'] = 129
+    elif mutation == 'title-boolean-checks':
+        state['checks'] = True
+    elif mutation == 'title-old-four-case-checks':
+        state['checks'] = 137
+    elif mutation == 'visibility-pre-spacing-checks':
+        state['checks'] = 3273
+    elif mutation == 'title-missing-profile':
+        observations.pop()
+    elif mutation == 'title-duplicate-profile':
+        observations[-1] = dict(chosen)
+    elif mutation == 'title-wrong-image-hash':
+        chosen['image_sha256'] = '0' * 64
+    elif mutation == 'title-wrong-reported-image':
+        chosen['image'] = str(folder / 'treasure-title-portrait.png')
+    elif mutation == 'title-wrong-window':
+        chosen['window_px'] = [640, 321]
+    elif mutation == 'title-wrong-density':
+        chosen['density'] = 2
+    elif mutation == 'title-wrong-insets':
+        observations[0]['insets_fixture'] = [0, 36, 112, 24]
+    elif mutation == 'title-wrong-fixture':
+        chosen['initial_state_fixture'] = 'invented progress'
+    elif mutation == 'title-low-contrast':
+        chosen['worst_white_backdrop_contrast'] = 6.99
+    elif mutation == 'title-nonfinite-contrast':
+        chosen['worst_white_backdrop_contrast'] = float('nan')
+    elif mutation == 'title-offscreen':
+        chosen['title_rect'] = [630, 12, 360, 42]
+    elif mutation == 'title-zero-area':
+        chosen['title_rect'][2] = 0
+    elif mutation == 'title-device-claim':
+        state['scope'] = 'actual Android'
+    elif mutation == 'visibility-missing-cutout-image':
+        (folder / 'treasure-title-landscape-cutout.png').unlink()
+    elif mutation == 'visibility-cutout-dimensions':
+        data = fixture_png(2399, 1080)
+        (folder / 'treasure-title-landscape-cutout.png').write_bytes(data)
+        observations[8]['image_sha256'] = hashlib.sha256(data).hexdigest()
+    elif mutation == 'visibility-cutout-insets-swapped':
+        observations[8]['insets_fixture'] = [0, 63, 136, 63]
+    elif mutation == 'visibility-cutout-capture-restored':
+        for key in ('image', 'image_px', 'image_sha256'):
+            observations[9][key] = observations[8].pop(key)
+    elif mutation == 'visibility-extra-fresh-capture':
+        for key in ('image', 'image_px', 'image_sha256'):
+            observations[0][key] = observations[1][key]
+    elif mutation == 'visibility-partial-unrecorded-image':
+        observations[0]['image_sha256'] = observations[1]['image_sha256']
+    elif mutation == 'visibility-missing-fresh':
+        observations.pop(8)
+    elif mutation == 'visibility-duplicate-restored':
+        observations[8] = dict(observations[9])
+    elif mutation == 'visibility-unrecorded-fresh-avatar-covered':
+        fresh = observations[0]['gameplay_view']
+        fresh['hud_rects'][0]['rect_px'] = list(fresh['avatar_rect_px'])
+    elif mutation == 'visibility-unrecorded-fresh-low-contrast':
+        observations[0]['gameplay_view']['secondary_white_backdrop_contrast'] = 6.99
+    elif mutation == 'visibility-missing-avatar':
+        view.pop('avatar_rect_px')
+    elif mutation == 'visibility-zero-avatar':
+        view['avatar_rect_px'][2] = 0
+    elif mutation == 'visibility-nonfinite-avatar':
+        view['avatar_rect_px'][0] = float('nan')
+    elif mutation == 'visibility-avatar-offscreen':
+        view['avatar_rect_px'][0] = 639
+    elif mutation == 'visibility-missing-hud':
+        view['hud_rects'].pop()
+    elif mutation == 'visibility-duplicate-role':
+        hud['jump']['role'] = 'action'
+    elif mutation == 'visibility-no-role':
+        hud['jump'].pop('role')
+    elif mutation == 'visibility-compact-clue-instead-of-hint':
+        hud['hint']['role'] = 'clue'
+    elif mutation == 'visibility-tall-hint-instead-of-clue':
+        observations[4]['gameplay_view']['hud_rects'][1]['role'] = 'hint'
+    elif mutation == 'visibility-empty-control-name':
+        hud['jump']['name'] = ''
+    elif mutation == 'visibility-nonfinite-hud':
+        hud['jump']['rect_px'][0] = float('inf')
+    elif mutation == 'visibility-zero-hud':
+        hud['toast']['rect_px'][2] = 0
+    elif mutation == 'visibility-unsafe-hud':
+        observations[8]['gameplay_view']['hud_rects'][0]['rect_px'][0] = 0
+    elif mutation == 'visibility-hud-overlap-despite-zero-report':
+        hud['toast']['rect_px'] = list(view['avatar_rect_px'])
+    elif mutation == 'visibility-false-overlap-report':
+        hud['toast']['overlap_px'] = [0, 0, 1, 1]
+    elif mutation == 'visibility-toast-covers-jump':
+        hud['toast']['rect_px'] = list(hud['jump']['rect_px'])
+    elif mutation == 'visibility-toast-covers-hint':
+        hud['toast']['rect_px'] = list(hud['hint']['rect_px'])
+    elif mutation == 'visibility-small-touch':
+        hud['jump']['rect_px'][3] = 47.98
+    elif mutation == 'visibility-low-secondary-contrast':
+        view['secondary_white_backdrop_contrast'] = 6.99
+    elif mutation == 'visibility-nonfinite-secondary-contrast':
+        view['secondary_white_backdrop_contrast'] = float('nan')
+    if mutation != 'title-missing-report':
+        (folder / 'treasure-title-report.json').write_text(
+            '{' if mutation == 'title-malformed-report' else json.dumps(state))
 
 
 def write_movie_commands(directory: Path, fixture_root: Path) -> None:
@@ -166,9 +321,9 @@ class Studio2020RasterTests(unittest.TestCase):
             verifier.verify(self.root, write=False)
         self.assertFalse((self.root / verifier.MANIFEST).exists())
 
-    def test_original_sidecar_structures_bind_all_sixteen_decoded_synthetic_images(self):
+    def test_original_sidecar_structures_bind_all_seventeen_decoded_synthetic_images(self):
         result = verifier.verify(self.root)
-        self.assertEqual(len(result['images']), 16)
+        self.assertEqual(len(result['images']), 17)
         self.assertEqual(len(result['reports']), 3)
         self.assertEqual(len(result['movies']), 1)
         self.assertEqual(result['source']['commit'], FIXTURE_HEAD)
@@ -251,7 +406,7 @@ class Studio2020RasterTests(unittest.TestCase):
     def test_portrait_movie_dimensions_cannot_pass_square_face_capture(self):
         # Producer acf51d3 documents an actual 720x1280 MovieMaker output.
         # This is a synthetic transport replay of that format, not its movie.
-        self.assertEqual(len(verifier.verify(self.root, write=False)['images']), 16)
+        self.assertEqual(len(verifier.verify(self.root, write=False)['images']), 17)
         folder = self.root / verifier.FACE_DIRECTORY
         media = original('movie-ffprobe')
         media['streams'][0].update(width=720, height=1280)
@@ -262,7 +417,7 @@ class Studio2020RasterTests(unittest.TestCase):
         self.reject()
         store_json(folder / 'movie-ffprobe.json', original('movie-ffprobe'))
         store_json(folder / 'movie.json', movie_proof(folder))
-        self.assertEqual(len(verifier.verify(self.root, write=False)['images']), 16)
+        self.assertEqual(len(verifier.verify(self.root, write=False)['images']), 17)
 
     def test_movie_failed_decode_has_no_success_proof(self):
         prepared = self.root / 'fresh-face'
@@ -332,6 +487,59 @@ class Studio2020RasterTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn('differs from recomputed evidence', result.stderr)
         self.assertEqual(path.read_bytes(), before)
+
+
+    def test_treasure_title_requires_five_hash_bound_contrast_and_safe_layout_reports(self):
+        # Exact producer counterexamples, replayed against the shared helper.
+        for mutation in ["title-missing-image","title-renamed-image","title-wrong-dimensions","title-missing-report","title-malformed-report","title-reported-failure","title-partial-checks","title-boolean-checks","title-missing-profile","title-duplicate-profile","title-wrong-image-hash","title-wrong-reported-image","title-wrong-window","title-wrong-density","title-wrong-insets","title-wrong-fixture","title-low-contrast","title-nonfinite-contrast","title-offscreen","title-zero-area","title-device-claim"]:
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                write_fixture(root)
+                import shutil
+                shutil.rmtree(root / verifier.TITLE_DIRECTORY)
+                write_treasure_fixture(root, mutation)
+                with self.assertRaises((ValueError, KeyError, TypeError, OSError)):
+                    verifier.verify(root, write=False)
+                self.assertFalse((root / verifier.MANIFEST).exists())
+
+    def test_treasure_requires_both_start_states_and_exact_cutout_capture_assignment(self):
+        # Exact producer counterexamples, replayed against the shared helper.
+        for mutation in ["visibility-missing-cutout-image","visibility-cutout-dimensions","visibility-cutout-insets-swapped","visibility-cutout-capture-restored","visibility-extra-fresh-capture","visibility-partial-unrecorded-image","visibility-missing-fresh","visibility-duplicate-restored","visibility-unrecorded-fresh-avatar-covered","visibility-unrecorded-fresh-low-contrast","title-old-four-case-checks","visibility-pre-spacing-checks"]:
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                write_fixture(root)
+                import shutil
+                shutil.rmtree(root / verifier.TITLE_DIRECTORY)
+                write_treasure_fixture(root, mutation)
+                with self.assertRaises((ValueError, KeyError, TypeError, OSError)):
+                    verifier.verify(root, write=False)
+                self.assertFalse((root / verifier.MANIFEST).exists())
+
+    def test_treasure_requires_actual_avatar_and_complete_semantic_hud_bounds(self):
+        # Exact producer counterexamples, replayed against the shared helper.
+        for mutation in ["visibility-missing-avatar","visibility-zero-avatar","visibility-nonfinite-avatar","visibility-avatar-offscreen","visibility-missing-hud","visibility-duplicate-role","visibility-no-role","visibility-compact-clue-instead-of-hint","visibility-tall-hint-instead-of-clue","visibility-empty-control-name","visibility-nonfinite-hud","visibility-zero-hud","visibility-unsafe-hud"]:
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                write_fixture(root)
+                import shutil
+                shutil.rmtree(root / verifier.TITLE_DIRECTORY)
+                write_treasure_fixture(root, mutation)
+                with self.assertRaises((ValueError, KeyError, TypeError, OSError)):
+                    verifier.verify(root, write=False)
+                self.assertFalse((root / verifier.MANIFEST).exists())
+
+    def test_treasure_recomputes_occlusion_and_preserves_accessible_hint_and_message(self):
+        # Exact producer counterexamples, replayed against the shared helper.
+        for mutation in ["visibility-hud-overlap-despite-zero-report","visibility-false-overlap-report","visibility-toast-covers-jump","visibility-toast-covers-hint","visibility-small-touch","visibility-low-secondary-contrast","visibility-nonfinite-secondary-contrast"]:
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                write_fixture(root)
+                import shutil
+                shutil.rmtree(root / verifier.TITLE_DIRECTORY)
+                write_treasure_fixture(root, mutation)
+                with self.assertRaises((ValueError, KeyError, TypeError, OSError)):
+                    verifier.verify(root, write=False)
+                self.assertFalse((root / verifier.MANIFEST).exists())
 
 
 # Four exact original report/state payloads, independently bound by SHA256.
