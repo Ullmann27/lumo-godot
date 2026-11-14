@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "actual_runtime_source": "a7bb5815009ea4ae9b8842026f4f3761ae99c98b",
+  "identical_final_runtime_source": "7d53f29e68269c21d1d5a66bdf3d488f8e886970",
+  "local_directory_is_git_checkout": false,
+  "exact_blobs_verified": 1391,
+  "original_pngs": 38,
+  "archives": [
+    {
+      "file": "discovery-learning-25-originals.tar.gz",
+      "key": "learning-25",
+      "pngs": 25,
+      "bytes": 9075721,
+      "base64_chars": 12100964,
+      "sha256": "19730b9f9c0db4a3a11ad2469432a3506025c6fc99f11e789a452b92a6de0054",
+      "git_blob_sha": "d6ef5588ce2fce4ba4e28adcf40500d5454db4f6"
+    },
+    {
+      "file": "discovery-hub-wonder-13-originals.tar.gz",
+      "key": "hub-wonder-13",
+      "pngs": 13,
+      "bytes": 6444682,
+      "base64_chars": 8592912,
+      "sha256": "0ceaddf363924e16c0839905a4cac0fd76e3ac231285b825c90e4ca5981d05d6",
+      "git_blob_sha": "4bff0a64d47aef8164d8691c39b00ce340c7656f"
+    }
+  ],
+  "extract_both_into_same_empty_directory": true,
+  "physical_android_fps_measured": false
+}
