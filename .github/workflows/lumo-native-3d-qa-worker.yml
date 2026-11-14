@@ -1,0 +1,21 @@
+name: LUMO Credit-Free Native 3D QA Worker
+on:
+  push:
+    branches: [chatgpt/lumo-native-qa-worker-20261114]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-3d-worker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify game routes, 3D learning surfaces and village discoverability
+        run: python3 tools/audit_native_learning_discoverability.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lumo-native-3d-discoverability-20261114
+          path: audit/native/native-discoverability.json
+          if-no-files-found: error
+          retention-days: 30
