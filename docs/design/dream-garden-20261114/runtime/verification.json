@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "engine": "Godot 4.6.3",
+  "scope": "Local imported production learning scene and meshes; Linux Xorg Mesa software rendering",
+  "snapshot_sha256": "c761f7a1b2484fa980c51fd3d2717c45ec3fdff41f3ad4b2002feb0be20586da",
+  "source_file_count": 598,
+  "imports": {
+    "exit_code": 0,
+    "asset_steps": 485,
+    "excluded_copy_directories": [
+      ".git",
+      ".godot",
+      "docs",
+      "exports"
+    ]
+  },
+  "regression": {
+    "checks": 544,
+    "failures": 0,
+    "exit_code": 0,
+    "projection_matrix": "7 existing learning activities x 3 aspect ratios"
+  },
+  "renderer": {
+    "exit_code": 0,
+    "captures": 3,
+    "draw_calls": [
+      249,
+      235,
+      272
+    ],
+    "new_prop_surfaces_medium": 16,
+    "known_warnings": [
+      "V-Sync unsupported by software driver",
+      "Screen-space AA unavailable in Compatibility",
+      "Volumetric fog unavailable in Compatibility"
+    ]
+  },
+  "visual_review": "All three original runtime images opened and inspected; central lesson objects and original Lumo remain clear. Decorative garden objects are outside the narrow portrait crop.",
+  "physical_android_performance_measured": false,
+  "apk_built": false
+}

@@ -4,6 +4,9 @@ extends Node3D
 const BEVEL = preload("res://scripts/games/visual/kart_harbor_cinema.gd")
 const STUDIO_PATH := "res://assets/learning/studio/learning_studio.glb"
 const LEAF_SHADER = preload("res://assets/learning/studio/studio_leaf_motion.gdshader")
+const DREAM_PROPS = preload("res://scripts/learning/lumo_dream_props.gd")
+const QUALITY = preload("res://scripts/systems/render/lumo_quality.gd")
+const AMBIENCE = preload("res://scripts/systems/render/lumo_dream_ambience.gd")
 var _box_mesh: ArrayMesh
 var _batches: Dictionary = {}
 var _materials: Dictionary = {}
@@ -18,6 +21,12 @@ func _ready() -> void:
 	_flush()
 	_original_lantern(Vector3(4.85, 1.75, -4.45), 0.62)
 	_original_lantern(Vector3(-4.85, 1.75, -4.45), 0.62)
+	var dream_garden := DREAM_PROPS.new()
+	dream_garden.reduced_motion = bool(get_parent().get("reduced_motion"))
+	dream_garden.quality = QUALITY.tier()
+	add_child(dream_garden)
+	var ambience := AMBIENCE.attach(self, "learning_garden")
+	ambience.set_reduced_motion(dream_garden.reduced_motion)
 
 
 func _studio_architecture() -> void:
@@ -208,3 +217,4 @@ func _original_lantern(at: Vector3, height_value: float) -> void:
 		)
 	else:
 		model.queue_free()
+

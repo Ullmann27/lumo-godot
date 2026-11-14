@@ -25,6 +25,10 @@ func _run() -> void:
 		hub.find_child("OriginalAnimatedLumo", true, false) != null,
 		"Original 3D Lumo character missing from the new hub"
 	)
+	var fox: Node3D = hub.find_child("OriginalAnimatedLumo", true, false)
+	assert(fox.has_method("is_usable") and fox.is_usable(), "The original imported fox must be usable")
+	assert(fox.skeleton.get_bone_count() == 65, "The original 65-bone rig must be preserved")
+	assert(fox.facial_pose != null, "The existing original facial animation must be connected")
 	for id in ["kart", "jump", "stars"]:
 		var button := hub.find_child("GameRoute_" + id, true, false) as Button
 		assert(button != null, "Missing real game launch for: " + id)
@@ -34,6 +38,13 @@ func _run() -> void:
 		root.size = pixels
 		for frame in range(12):
 			await process_frame
+		var hero: Control = hub.find_child("OriginalFox3DHeroSpace", true, false)
+		var camera: Camera3D = hub.find_child("LumoHeroCamera", true, false)
+		var bounds: AABB = hub.get("_lumo_bounds")
+		for corner in range(8):
+			var point: Vector3 = hub.to_global(bounds.get_endpoint(corner))
+			assert(hero.get_global_rect().grow(1.0).has_point(camera.unproject_position(point)),
+				"The original fox must remain inside its free hero area")
 		var actions := hub.find_child("ScrollableRealGameActions", true, false) as ScrollContainer
 		assert(
 			actions != null and actions.size.y >= 48.0,

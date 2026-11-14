@@ -106,6 +106,21 @@ func _run() -> void:
 	paused = false
 	await create_timer(0.06).timeout
 	_check(layer.animation_time > before, "animation resumes after scene pause")
+	layer.hide()
+	before = layer.animation_time
+	await create_timer(0.06).timeout
+	_check(not layer.is_processing() and is_equal_approx(layer.animation_time, before), "hidden layer stops its clock")
+	layer.notification(Node.NOTIFICATION_APPLICATION_PAUSED)
+	layer.show()
+	await create_timer(0.06).timeout
+	_check(not layer.is_processing() and is_equal_approx(layer.animation_time, before), "show does not resume an application-paused layer")
+	layer.notification(Node.NOTIFICATION_APPLICATION_RESUMED)
+	await create_timer(0.06).timeout
+	_check(layer.animation_time > before, "application resume restores visible animation")
+	layer.set_reduced_motion(true)
+	layer.notification(Node.NOTIFICATION_APPLICATION_PAUSED)
+	layer.notification(Node.NOTIFICATION_APPLICATION_RESUMED)
+	_check(not layer.is_processing(), "application resume preserves reduced motion")
 	holder.queue_free()
 	await process_frame
 
@@ -114,6 +129,22 @@ func _run() -> void:
 	layer = AMBIENCE.attach(holder, "learning_garden", "high")
 	_check(layer.reduced_motion and not layer.is_processing(), "host accessibility reaches the layer")
 	_check(layer.render_state().motes > 0, "reduced motion preserves the static composition")
+	holder.queue_free()
+	await process_frame
+	# An explicit owner preference supplied before tree entry wins over the
+	# host default; this is how the learning atelier provides its capture mode.
+	holder = Node3D.new()
+	layer = AMBIENCE.attach(holder, "learning_garden", "unexpected_tier")
+	layer.set_reduced_motion(false)
+	root.add_child(holder)
+	_check(not layer.reduced_motion and layer.is_processing(), "pre-ready owner override survives host reduced motion")
+	performance.call("set_profile", 0, false)
+	_check(layer.quality_tier == "low", "unknown tier follows the app profile")
+	performance.call("set_profile", 2, false)
+	_check(layer.quality_tier == "high", "unknown tier continues to follow quality changes")
+	layer.configure("learning_garden", "medium")
+	performance.call("set_profile", 0, false)
+	_check(layer.quality_tier == "medium", "explicit quality remains pinned")
 	holder.queue_free()
 	await process_frame
 	router.set("launch_options", saved_options)

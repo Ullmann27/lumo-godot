@@ -1,0 +1,13 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 4.0969738450075965,
+  "command": [
+    "godot",
+    "--headless",
+    "--path",
+    "/tmp/lumo-dream-render-check-de96",
+    "--script",
+    "scripts/tests/dream_garden_props_regression.gd"
+  ],
+  "scope": "Production learning scene regression; local headless Godot"
+}

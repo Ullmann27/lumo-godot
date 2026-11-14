@@ -5,7 +5,7 @@ extends Node3D
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const MENU_ART = preload("res://scripts/games/kart_menu_art.gd")
 const DREAM_AMBIENCE = preload("res://scripts/systems/render/lumo_dream_ambience.gd")
-const COMPANION = preload("res://scenes/characters/lumo/lumo_character.tscn")
+const COMPANION = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 
 var _safe: MarginContainer
 var _button_row: VBoxContainer
@@ -15,6 +15,9 @@ var _subtitle: Label
 var _grade: OptionButton
 var _subject: OptionButton
 var _choice_buttons: Array[Button] = []
+var _lumo: Node3D
+var _hero_camera: Camera3D
+var _lumo_bounds := AABB()
 
 
 func _ready() -> void:
@@ -70,16 +73,63 @@ func _build_scenery() -> void:
 
 
 func _build_live_lumo() -> void:
-	var lumo := COMPANION.instantiate() as Node3D
-	lumo.name = "OriginalAnimatedLumo"
-	lumo.position = Vector3(0, -0.15, 0)
-	add_child(lumo)
-	var camera := Camera3D.new()
-	camera.name = "LumoHeroCamera"
-	camera.position = Vector3(0.1, 1.7, 4.7)
-	add_child(camera)
-	camera.look_at(Vector3(0, 0.8, 0))
-	camera.current = true
+	_lumo = COMPANION.new()
+	_lumo.name = "OriginalAnimatedLumo"
+	add_child(_lumo)
+	if not _lumo.is_usable():
+		push_error("[LumoGameHub] The original animated fox could not be loaded")
+		_lumo.hide()
+		return
+	# Fit the actual original rig, including its authored materials and face.
+	# The hero's screen rectangle is fitted below after the Controls settle.
+	var low := INF
+	var high := -INF
+	var skeleton: Skeleton3D = _lumo.skeleton
+	for bone in range(skeleton.get_bone_count()):
+		var height_value: float = skeleton.get_bone_global_rest(bone).origin.y
+		low = minf(low, height_value)
+		high = maxf(high, height_value)
+	var fitted := 1.7 / maxf(0.2, high - low)
+	_lumo.scale = Vector3.ONE * fitted
+	_lumo.position.y = -low * fitted
+	var has_bounds := false
+	for mesh: MeshInstance3D in _lumo.visual.find_children("*", "MeshInstance3D", true, false):
+		var box: AABB = global_transform.affine_inverse() * mesh.global_transform * mesh.get_aabb()
+		_lumo_bounds = _lumo_bounds.merge(box) if has_bounds else box
+		has_bounds = true
+	_lumo.set_reduced_motion(bool(SceneRouter.launch_options.get("reduceAnimations", false)))
+	_lumo.play_behavior("greeting_wave")
+	_hero_camera = Camera3D.new()
+	_hero_camera.name = "LumoHeroCamera"
+	_hero_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+	_hero_camera.keep_aspect = Camera3D.KEEP_HEIGHT
+	_hero_camera.near = 0.05
+	_hero_camera.far = 60.0
+	_hero_camera.current = true
+	add_child(_hero_camera)
+	visibility_changed.connect(_update_lumo_visibility)
+	_update_lumo_visibility()
+
+
+func _fit_lumo_to_hero() -> void:
+	if not is_inside_tree() or not is_instance_valid(_hero_camera) or not is_instance_valid(_hero_gap):
+		return
+	var area := _hero_gap.get_global_rect()
+	var view := get_viewport().get_visible_rect().size
+	if area.size.x <= 1.0 or area.size.y <= 1.0 or view.y <= 1.0:
+		return
+	# Orthographic world units per pixel fit the entire original mesh in the
+	# actual free hero space. Resizing cannot move the fox over game controls.
+	var units := maxf(_lumo_bounds.size.x / (area.size.x * 0.80), _lumo_bounds.size.y / (area.size.y * 0.80))
+	var middle := _lumo_bounds.get_center()
+	var offset := area.get_center() - view * 0.5
+	_hero_camera.size = maxf(0.1, units * view.y)
+	_hero_camera.position = Vector3(middle.x - offset.x * units, middle.y + offset.y * units, _lumo_bounds.end.z + 8.0)
+
+
+func _update_lumo_visibility() -> void:
+	if is_instance_valid(_lumo):
+		_lumo.set_suspended(not is_visible_in_tree())
 
 
 func _build_controls() -> void:
@@ -114,6 +164,7 @@ func _build_controls() -> void:
 	_hero_gap.custom_minimum_size.y = 70
 	_hero_gap.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_hero_gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hero_gap.resized.connect(_fit_lumo_to_hero)
 	main.add_child(_hero_gap)
 	var body_scroll := ScrollContainer.new()
 	body_scroll.name = "ScrollableRealGameActions"
@@ -223,3 +274,4 @@ func _layout() -> void:
 	for button in _choice_buttons:
 		button.custom_minimum_size.y = 54 if compact else 66
 		button.add_theme_font_size_override("font_size", 18 if compact else 22)
+	call_deferred("_fit_lumo_to_hero")
