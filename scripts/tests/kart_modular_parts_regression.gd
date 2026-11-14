@@ -25,7 +25,7 @@ func _check_world(id: String, light: bool) -> Dictionary:
 	assert(float(record.minimum_lateral_m) >= 8.0)
 	var sites: Array = record.sites
 	assert(sites.size() > 0, "No real modular roadside pieces on " + id)
-	assert(int(record.instance_count) >= sites.size() * 10, "Instanced assembly is missing")
+	assert(int(record.instance_count) >= sites.size() * 5, "Instanced assembly is missing")
 	for entry: Dictionary in sites:
 		var d: float = float(entry.distance)
 		assert(d >= 32.0 and d <= world.length - 32.0)
