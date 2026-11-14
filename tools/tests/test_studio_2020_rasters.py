@@ -542,6 +542,129 @@ class Studio2020RasterTests(unittest.TestCase):
                 self.assertFalse((root / verifier.MANIFEST).exists())
 
 
+    def test_treasure_restored_contrast_profile_safe_bounds_and_original_hash_are_mandatory(self):
+        path = self.root / verifier.TITLE_DIRECTORY / 'treasure-title-report.json'
+        before = path.read_bytes()
+        changes = [lambda value: value['observations'][1].update(worst_white_backdrop_contrast=6.99),
+                   lambda value: value['observations'][1].update(insets_fixture=[0, 0, 0, 0]),
+                   lambda value: value['observations'][1].update(title_rect=[-100, -100, 80, 40]),
+                   lambda value: value['observations'][1].update(image_sha256='0' * 64)]
+        for change in changes:
+            with self.subTest(change=change):
+                path.write_bytes(before)
+                self.mutate(verifier.TITLE_DIRECTORY, path.name, change)
+                self.reject()
+
+    def reject_treasure_mutations(self, cases):
+        path = self.root / verifier.TITLE_DIRECTORY / 'treasure-title-report.json'
+        before = path.read_bytes()
+        for name, change in cases:
+            with self.subTest(mutation=name):
+                value = json.loads(before)
+                change(value)
+                store_json(path, value)
+                self.reject()
+        path.write_bytes(before)
+
+    def test_treasure_five_views_bind_both_states_and_designated_capture_only(self):
+        result = verifier.verify(self.root, write=False)
+        title_images = [row for row in result['images'] if '/treasure_title_contrast_regression/' in row['path']]
+        self.assertEqual(len(title_images), 5)
+        report = json.loads((self.root / verifier.TITLE_DIRECTORY / 'treasure-title-report.json').read_bytes())
+        self.assertEqual(len(report['observations']), 10)
+        self.assertEqual(sum('image' in row for row in report['observations']), 5)
+        self.assertEqual(next(row['initial_state_fixture'] for row in report['observations']
+                              if row.get('image', '').endswith('treasure-title-landscape-cutout.png')),
+                         'production fresh start')
+        def capture_on_wrong_state(value):
+            for key in ('image', 'image_px', 'image_sha256'):
+                value['observations'][9][key] = value['observations'][8].pop(key)
+        def extra_capture(value):
+            for key in ('image', 'image_px', 'image_sha256'):
+                value['observations'][0][key] = value['observations'][1][key]
+        self.reject_treasure_mutations([
+            ('missing-fresh', lambda v: v['observations'].pop(8)),
+            ('duplicate-restored', lambda v: v['observations'].__setitem__(8, copy.deepcopy(v['observations'][9]))),
+            ('cutout-capture-restored', capture_on_wrong_state),
+            ('extra-fresh-capture', extra_capture),
+            ('partial-unrecorded-image', lambda v: v['observations'][0].update(image_sha256='a' * 64)),
+            ('cutout-insets-swapped', lambda v: v['observations'][8].update(insets_fixture=[0, 63, 136, 63])),
+            ('boolean-insets', lambda v: v['observations'][2]['insets_fixture'].__setitem__(0, False)),
+            ('old-check-count', lambda v: v.update(checks=137)),
+            ('pre-spacing-check-count', lambda v: v.update(checks=3273)),
+            ('boolean-check-count', lambda v: v.update(checks=True)),
+        ])
+        # Retain the exact earlier original as a historical input, never relabel
+        # its four observations as the new five-format visibility acceptance.
+        store_json(self.root / verifier.TITLE_DIRECTORY / 'treasure-title-report.json', original('treasure-title'))
+        self.reject()
+
+    def test_treasure_cutout_png_dimensions_hash_and_presence_are_mandatory(self):
+        folder = self.root / verifier.TITLE_DIRECTORY
+        path = folder / 'treasure-title-report.json'
+        before = path.read_bytes()
+        image = folder / 'treasure-title-landscape-cutout.png'
+        raw = image.read_bytes()
+        image.unlink()
+        self.reject()
+        bad = fixture_png(2399, 1080)
+        image.write_bytes(bad)
+        value = json.loads(before)
+        value['observations'][8]['image_sha256'] = hashlib.sha256(bad).hexdigest()
+        store_json(path, value)
+        self.reject()
+        image.write_bytes(raw)
+        path.write_bytes(before)
+        self.reject_treasure_mutations([
+            ('wrong-image-hash', lambda v: v['observations'][8].update(image_sha256='0' * 64)),
+            ('wrong-reported-size', lambda v: v['observations'][8].update(image_px=[2399, 1080])),
+            ('wrong-reported-file', lambda v: v['observations'][8].update(image='treasure-title-fold.png')),
+        ])
+
+    def test_treasure_all_start_states_require_real_finite_avatar_and_semantic_hud_bounds(self):
+        def view(value, index=3):
+            return value['observations'][index]['gameplay_view']
+        def region(value, role, index=3):
+            return next(r for r in view(value, index)['hud_rects'] if r['role'] == role)
+        self.reject_treasure_mutations([
+            ('missing-avatar', lambda v: view(v).pop('avatar_rect_px')),
+            ('zero-avatar', lambda v: view(v)['avatar_rect_px'].__setitem__(2, 0)),
+            ('nonfinite-avatar', lambda v: view(v)['avatar_rect_px'].__setitem__(0, float('nan'))),
+            ('boolean-avatar', lambda v: view(v)['avatar_rect_px'].__setitem__(0, True)),
+            ('offscreen-avatar', lambda v: view(v)['avatar_rect_px'].__setitem__(0, 639)),
+            ('missing-hud', lambda v: view(v)['hud_rects'].pop()),
+            ('duplicate-role', lambda v: region(v, 'jump').update(role='action')),
+            ('missing-role', lambda v: region(v, 'jump').pop('role')),
+            ('compact-clue-not-hint', lambda v: region(v, 'hint').update(role='clue')),
+            ('tall-hint-not-clue', lambda v: region(v, 'clue', 4).update(role='hint')),
+            ('empty-control-name', lambda v: region(v, 'jump').update(name='')),
+            ('nonfinite-hud', lambda v: region(v, 'jump')['rect_px'].__setitem__(0, float('inf'))),
+            ('zero-hud', lambda v: region(v, 'toast')['rect_px'].__setitem__(2, 0)),
+            ('outside-cutout-safe-area', lambda v: region(v, 'header', 8)['rect_px'].__setitem__(0, 0)),
+            ('unrecorded-fresh-avatar-covered', lambda v: region(v, 'header', 0).update(rect_px=list(view(v, 0)['avatar_rect_px']))),
+            ('unrecorded-fresh-low-contrast', lambda v: view(v, 0).update(secondary_white_backdrop_contrast=6.99)),
+        ])
+
+    def test_treasure_recomputes_occlusion_and_input_clearance_instead_of_trusting_zero_overlap(self):
+        def view(value):
+            return value['observations'][3]['gameplay_view']
+        def region(value, role):
+            return next(r for r in view(value)['hud_rects'] if r['role'] == role)
+        self.reject_treasure_mutations([
+            ('hud-overlap-despite-zero-report', lambda v: region(v, 'toast').update(rect_px=list(view(v)['avatar_rect_px']))),
+            ('false-overlap-report', lambda v: region(v, 'toast').update(overlap_px=[0, 0, 1, 1])),
+            ('nonfinite-overlap-report', lambda v: region(v, 'toast').update(overlap_px=[float('nan'), 0, 0, 0])),
+            ('toast-covers-jump', lambda v: region(v, 'toast').update(rect_px=list(region(v, 'jump')['rect_px']))),
+            ('toast-covers-hint', lambda v: region(v, 'toast').update(rect_px=list(region(v, 'hint')['rect_px']))),
+            ('small-touch', lambda v: region(v, 'jump')['rect_px'].__setitem__(3, 47.98)),
+            ('boolean-touch', lambda v: region(v, 'jump')['rect_px'].__setitem__(3, True)),
+            ('low-secondary-contrast', lambda v: view(v).update(secondary_white_backdrop_contrast=6.99)),
+            ('nonfinite-secondary-contrast', lambda v: view(v).update(secondary_white_backdrop_contrast=float('nan'))),
+            ('invalid-secondary-contrast', lambda v: view(v).update(secondary_white_backdrop_contrast=21.01)),
+        ])
+
+
+
 # Four exact original report/state payloads, independently bound by SHA256.
 
 ORIGINAL_REPORTS = {

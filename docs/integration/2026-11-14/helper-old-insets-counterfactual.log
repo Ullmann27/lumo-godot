@@ -1,0 +1,16 @@
+F
+======================================================================
+FAIL: test_treasure_five_views_bind_both_states_and_designated_capture_only (tools.tests.test_studio_2020_rasters.Studio2020RasterTests.test_treasure_five_views_bind_both_states_and_designated_capture_only) (mutation='boolean-insets')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/lumo-integration-909ddb52fe7b/native-recovery/tools/tests/test_studio_2020_rasters.py", line 566, in reject_treasure_mutations
+    self.reject()
+  File "/tmp/lumo-integration-909ddb52fe7b/native-recovery/tools/tests/test_studio_2020_rasters.py", line 320, in reject
+    with self.assertRaises((ValueError, KeyError, TypeError, OSError)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (<class 'ValueError'>, <class 'KeyError'>, <class 'TypeError'>, <class 'OSError'>) not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.530s
+
+FAILED (failures=1)

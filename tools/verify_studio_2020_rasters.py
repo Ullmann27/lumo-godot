@@ -251,19 +251,24 @@ def verify(root: Path, *, write: bool = True) -> dict:
         rows = state['observations']
         starts = {'production fresh start', 'original86445 first tree save'}
         expected = {(profile, start) for profile in treasure_title_views for start in starts}
-        require(len(rows) == 10 and {(row['profile'], row['initial_state_fixture']) for row in rows} == expected, path)
+        require(isinstance(rows, list) and len(rows) == 10
+                and {(row['profile'], row['initial_state_fixture']) for row in rows} == expected,
+                (path, 'exact five profiles and both start states'))
         reported = {}
 
         def rect(value, label):
-            require(len(value) == 4 and all(finite(v) for v in value) and min(value[2:]) > 0, label)
+            require(isinstance(value, list) and len(value) == 4
+                    and all(finite(v) for v in value) and min(value[2:]) > 0, label)
             return value
 
         def inside(value, bounds, label):
             require(value[0] >= bounds[0] - .51 and value[1] >= bounds[1] - .51, label)
-            require(value[0] + value[2] <= bounds[2] + .51 and value[1] + value[3] <= bounds[3] + .51, label)
+            require(value[0] + value[2] <= bounds[2] + .51
+                    and value[1] + value[3] <= bounds[3] + .51, label)
 
         def overlaps(a, b):
-            return a[0] < b[0] + b[2] and b[0] < a[0] + a[2] and a[1] < b[1] + b[3] and b[1] < a[1] + a[3]
+            return (a[0] < b[0] + b[2] and b[0] < a[0] + a[2]
+                    and a[1] < b[1] + b[3] and b[1] < a[1] + a[3])
 
         for item in rows:
             profile = item['profile']
@@ -271,7 +276,8 @@ def verify(root: Path, *, write: bool = True) -> dict:
             name = f'treasure-title-{profile}.png'
             require(item['window_px'] == list(size), name)
             require(finite(item['density']) and item['density'] == density, name)
-            require(item['insets_fixture'] == insets, name)
+            require(item['insets_fixture'] == insets
+                    and all(finite(v) for v in item['insets_fixture']), name)
             contrast = item['worst_white_backdrop_contrast']
             require(finite(contrast) and 7 <= contrast <= 21, name)
             safe = (insets[0], insets[1], size[0] - insets[2], size[1] - insets[3])
@@ -284,7 +290,8 @@ def verify(root: Path, *, write: bool = True) -> dict:
             compact = profile in {'compact', 'landscape-cutout'}
             roles = {'header', 'toast', 'joystick', 'action', 'jump', 'hint' if compact else 'clue'}
             hud = view['hud_rects']
-            require(len(hud) == len(roles) and {region['role'] for region in hud} == roles, (name, 'HUD roles'))
+            require(isinstance(hud, list) and len(hud) == len(roles)
+                    and {region['role'] for region in hud} == roles, (name, 'HUD roles'))
             regions = {}
             for region in hud:
                 role = region['role']
@@ -293,23 +300,26 @@ def verify(root: Path, *, write: bool = True) -> dict:
                 inside(bounds, safe, (name, role))
                 require(not overlaps(bounds, avatar), (name, role, 'avatar occluded'))
                 overlap = region['overlap_px']
-                require(len(overlap) == 4 and all(finite(v) for v in overlap) and overlap[2:] == [0, 0], (name, role))
+                require(isinstance(overlap, list) and len(overlap) == 4
+                        and all(finite(v) for v in overlap) and overlap[2:] == [0, 0], (name, role))
                 if role in {'joystick', 'action', 'jump', 'hint'}:
                     require(min(bounds[2:]) / density >= 47.99, (name, role, 'touch size'))
                 regions[role] = bounds
             for role in {'joystick', 'action', 'jump', 'hint'} & roles:
                 require(not overlaps(regions['toast'], regions[role]), (name, role, 'toast covers input'))
-            # Both start states are mandatory; only the designated five actual
-            # framebuffers may claim an image. The cutout image records fresh spawn.
-            captured_start = 'production fresh start' if profile == 'landscape-cutout' else 'original86445 first tree save'
+            # Both source-declared start states are mandatory. Only the original
+            # four restored views and the fresh cutout view may claim an image.
+            captured_start = ('production fresh start' if profile == 'landscape-cutout'
+                              else 'original86445 first tree save')
             if item['initial_state_fixture'] == captured_start:
-                require(Path(item['image']).name == name and item['image_px'] == list(size), name)
+                require(Path(item['image']).name == name
+                        and item['image_px'] == list(size), name)
                 reported[profile] = item
             else:
-                require(not {'image', 'image_px', 'image_sha256'} & item.keys(), (name, 'unexpected capture state'))
+                require(not {'image', 'image_px', 'image_sha256'} & item.keys(),
+                        (name, 'unexpected capture state'))
         require(set(reported) == set(treasure_title_views), path)
-        return identity(path), reported
-
+        return (identity(path), reported)
 
     # Preserve every published sidecar condition, then bind the source and full
     # decoded rasters using the already active decoder (not header-only PNGs).

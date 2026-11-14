@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "state": "FROZEN",
+  "frozen_at_utc": "2026-11-14 08:02:28 UTC",
+  "scope": "Recovered exact seven-source785 integration. New derived documentation; no test or engine execution.",
+  "source_freeze_sha256": "b816b4cc0d6938115278910acc4370e88a0d2d4dc652e536693d1512ed2cefb5",
+  "patch_sha256": "1730adca81b5891be269132ecf898004b5817921e848f58f6b26dffde3a9d704",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 2244,
+      "sha256": "9db520f6d9f4a17c504c8340d63579622e43627ac699ed8e2e6fc584351efc55"
+    },
+    {
+      "path": "before-source/scripts/creative/build_settlement_world.gd",
+      "bytes": 45379,
+      "sha256": "9a078ae8a236e5eace09e14539c191138952d56659bbc6abcf5f0d11a9224a54"
+    },
+    {
+      "path": "before-source/scripts/creative/treasure_world.gd",
+      "bytes": 25074,
+      "sha256": "ce7c7df90f85604f912ff1afc46077935053e883359db47c3f9e9d7dcc4fe65d"
+    },
+    {
+      "path": "before-source/scripts/tests/treasure_title_contrast_regression.gd",
+      "bytes": 8982,
+      "sha256": "1f0d170fbe05c89a36501463ec9307d3f830e10a4cb63a02f663f98a5e7b600d"
+    },
+    {
+      "path": "before-source/tools/tests/test_nextgen_runner.py",
+      "bytes": 40588,
+      "sha256": "5b75a07da4f2b3a289635def172cf891db5dfd256d3d025d0b563932979abdd0"
+    },
+    {
+      "path": "before-source/tools/tests/test_studio_2020_rasters.py",
+      "bytes": 31297,
+      "sha256": "26ed168572f3a2a03cc185f2936a808c86325060b06f7679dc34574acfa2c2d0"
+    },
+    {
+      "path": "before-source/tools/validate_nextgen.sh",
+      "bytes": 9791,
+      "sha256": "f48fdff8bd0a96b7c81468f4a8b516fd8bcb9f2a4b1ea31b232d931aad2475df"
+    },
+    {
+      "path": "before-source/tools/verify_studio_2020_rasters.py",
+      "bytes": 23524,
+      "sha256": "4deca56cc7f4a6751b16da8e01352044d44e5c7428bcde6594d48576e675e792"
+    },
+    {
+      "path": "final-source/scripts/creative/build_settlement_world.gd",
+      "bytes": 45485,
+      "sha256": "50938300e4d40c7ded1be66af6384359fc4d9d83fefff52c25ca1670be3661ec"
+    },
+    {
+      "path": "final-source/scripts/creative/treasure_world.gd",
+      "bytes": 26887,
+      "sha256": "e68fc85498b76fb7b482417a1bf6b64410a53d2f018fec7771e263ea60fa5447"
+    },
+    {
+      "path": "final-source/scripts/tests/treasure_title_contrast_regression.gd",
+      "bytes": 15261,
+      "sha256": "ea6087ef56a96d585382f4228661d753121152aa249c4a5afdc99d2e946941ea"
+    },
+    {
+      "path": "final-source/tools/tests/test_nextgen_runner.py",
+      "bytes": 40588,
+      "sha256": "b258ce4d1a83b4bd56c6ce4227d7e393e1fa233a1372a2027f45d0b16315902a"
+    },
+    {
+      "path": "final-source/tools/tests/test_studio_2020_rasters.py",
+      "bytes": 41130,
+      "sha256": "a6de009cd8d8c7e55b0a0273125346ee8c0bc715259f10618d70985b23ba6fde"
+    },
+    {
+      "path": "final-source/tools/validate_nextgen.sh",
+      "bytes": 9791,
+      "sha256": "fbb95e0ab5d3f60a915fdd63ff95b6e01ad3776bb67f6227df1c394b5bd64a7f"
+    },
+    {
+      "path": "final-source/tools/verify_studio_2020_rasters.py",
+      "bytes": 26625,
+      "sha256": "8e8f597f8cd41fe203b9a491f14b5927c85601178e6589afe326a94d7c6f80f3"
+    },
+    {
+      "path": "gate-contract.json",
+      "bytes": 16700,
+      "sha256": "662ed336fe5d20babf9393804703b56bc4a60949ebb6528a76a9ee03158e3c79"
+    },
+    {
+      "path": "handoff.json",
+      "bytes": 2646,
+      "sha256": "e2042bd5658b5db6e61bb6c1d985f149365309a9f4be8d3201d56b8604181a2a"
+    },
+    {
+      "path": "integration.patch",
+      "bytes": 41685,
+      "sha256": "1730adca81b5891be269132ecf898004b5817921e848f58f6b26dffde3a9d704"
+    },
+    {
+      "path": "originals/producer-studio-jobs-20261114T0744Z.json",
+      "bytes": 13183,
+      "sha256": "c52f36a2f5032fcb54e1aca4bc580f60387a6180cf10c3a66ffdb63b65d55aa5"
+    },
+    {
+      "path": "originals/producer-workflow-runs-20261114T074402Z.json",
+      "bytes": 92416,
+      "sha256": "e93b3a5358a0252e6daf4bafcd96d6a8b53fcf0fedbaa1e35a20c1f9f627d034"
+    },
+    {
+      "path": "originals/published-785413-head-commit.json",
+      "bytes": 1506,
+      "sha256": "01533b23c2b8a60a4d1eecf1c713aa6e059d1646e2b70baa178516aaf9592fd1"
+    },
+    {
+      "path": "originals/published-acf51-to-785413-delta.json",
+      "bytes": 59178,
+      "sha256": "b47e672d25a83a1fe9ed9d85f62b9bf4a64a798998b455d626067d7b56c83f32"
+    },
+    {
+      "path": "originals/published-visibility-corrections.md",
+      "bytes": 5778,
+      "sha256": "d805bb0cd1b1ec9360672f0446e3747ed88c0b4d9363d1d2c892484c14fbc786"
+    },
+    {
+      "path": "originals/source-review-binding.json",
+      "bytes": 9370,
+      "sha256": "bfd7d27143de28dc44e2e4a94489619020382df58c8545022886ff5252a8b826"
+    },
+    {
+      "path": "producer-ci-snapshot.json",
+      "bytes": 2348,
+      "sha256": "3582ecaf373e492d959fceea41d11803e7b0ed4bc78477d93e51a4da9814273e"
+    },
+    {
+      "path": "recovery.json",
+      "bytes": 1553,
+      "sha256": "5345b45db357bd0ced74036196591c5d450033d6f545da36a0a8501accc2ecfe"
+    },
+    {
+      "path": "runtime-zip-retention-loss.json",
+      "bytes": 1989,
+      "sha256": "40d0e2a8c0205ddbc39876ec2589aef2960138dea7570619716dfa41249dfc49"
+    },
+    {
+      "path": "source-freeze.json",
+      "bytes": 4381,
+      "sha256": "b816b4cc0d6938115278910acc4370e88a0d2d4dc652e536693d1512ed2cefb5"
+    },
+    {
+      "path": "source-preservation-recovered.json",
+      "bytes": 6044,
+      "sha256": "6333c21ab5bac4d2c38e52d76ba2f02beca04939fbeb7646dd3f63ca4f09212a"
+    }
+  ],
+  "external_immutable_source_review": "/workspace/scratch/b3485b7bb989/native-pr167-785413-review-20261114-073227/manifest.json",
+  "external_source_review_manifest_sha256": "aa5e578fd5a479400b15b1ad264aeb008cdebfc8d652b9d3117c7d14350981ac",
+  "retention_loss_document": "runtime-zip-retention-loss.json",
+  "limits": "Source identity restored exactly; original /tmp pack metadata not claimed recovered byte-for-byte. No PNG/ZIP duplication, no worktree or Git action, no tests or downloads."
+}
