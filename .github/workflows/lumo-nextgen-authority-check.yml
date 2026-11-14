@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  HOST_SOURCE: bdd86f289a165ea5140a01607d78fcf4c31c98c6
+  HOST_SOURCE: ddc9d89ef1bb6fc37315fd4aff0da166ce213b67
   LIBGL_ALWAYS_SOFTWARE: '1'
 
 jobs:
