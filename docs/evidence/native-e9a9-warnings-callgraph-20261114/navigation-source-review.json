@@ -1,0 +1,623 @@
+{
+  "native_commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+  "native_tree": "1c2b5da7a4485cb8b911adcac2b567481cf902b5",
+  "host_commit": "1e22d2455937e2640d1e44e153d290746f3afe49",
+  "queries": {
+    "all_primitive_scene_references": {
+      "git_grep_args": [
+        "-n",
+        "-I",
+        "-F",
+        "scenes/characters/lumo/lumo_character.tscn",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+        "--"
+      ],
+      "returncode": 0,
+      "matches": [
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:CLAUDE.md:526:### Charakter-Aufbau (`scenes/characters/lumo/lumo_character.tscn`)",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:assets/characters/lumo/reference/MASTERPROMPT_FOR_CLAUDE.md:218:scenes/characters/lumo/lumo_character.tscn",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:assets/characters/lumo/reference/MASTERPROMPT_FOR_CLAUDE.md:435:- `scenes/characters/lumo/lumo_character.tscn` existiert",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:assets/manifests/assets.json:259:    \"lumo_character\": \"res://scenes/characters/lumo/lumo_character.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:docs/evidence/2026-11-12-android-stage-layout/project-validation.log:103:[PASS] lumo-system: scenes/characters/lumo/lumo_character.tscn",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:docs/evidence/2026-11-12-card-viewport/project-validation.log:103:[PASS] lumo-system: scenes/characters/lumo/lumo_character.tscn",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:docs/evidence/integration-20261113/native-4f-checkpoint/graphics/original/feedback-verified.json:186:        \"[PASS] lumo-system: scenes/characters/lumo/lumo_character.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:docs/evidence/integration-20261113/native-4f-checkpoint/graphics/original/home-verified.json:577:        \"[PASS] lumo-system: scenes/characters/lumo/lumo_character.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:docs/evidence/integration-20261113/native-4f-checkpoint/graphics/original/worlds-verified.json:265:        \"[PASS] lumo-system: scenes/characters/lumo/lumo_character.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:docs/evidence/integration-20261113/native-74c-checkpoint/graphics/feedback-verified.json:186:        \"[PASS] lumo-system: scenes/characters/lumo/lumo_character.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:docs/evidence/integration-20261113/native-74c-checkpoint/graphics/worlds-verified.json:265:        \"[PASS] lumo-system: scenes/characters/lumo/lumo_character.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:docs/evidence/integration-20261113/puzzle-menu-followup/local-engine/local-source-after.json:115:  \"scenes/characters/lumo/lumo_character.tscn\": \"20531a45bf93b61a836c9e88ccfccf1710981eb2db3fa69e9c404bc541c67495\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:docs/evidence/integration-20261113/puzzle-menu-followup/local-engine/local-source-before.json:115:  \"scenes/characters/lumo/lumo_character.tscn\": \"20531a45bf93b61a836c9e88ccfccf1710981eb2db3fa69e9c404bc541c67495\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:docs/integration/2026-11-14/discovery-local-source-files.json:2331:      \"path\": \"scenes/characters/lumo/lumo_character.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scenes/characters/lumo/lumo_showcase.tscn:4:[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scenes/games/alphabet_carousel.tscn:4:[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scenes/games/learn_card.tscn:4:[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scenes/games/reading_hub.tscn:4:[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scenes/games/sound_letter_match.tscn:4:[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scenes/games/star_collect.tscn:4:[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scenes/games/word_build.tscn:4:[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scenes/games/word_picture_match.tscn:4:[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/home_controller.gd:8:const COMPANION_SCENE: PackedScene = preload(\"res://scenes/characters/lumo/lumo_character.tscn\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/jump_islands.gd:4:const LUMO = preload(\"res://scenes/characters/lumo/lumo_character.tscn\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/tests/lumo_character_regression.gd:10:\tvar lumo = load(\"res://scenes/characters/lumo/lumo_character.tscn\").instantiate()",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:tools/tests/test_discovery_rasters.py:81:            (\"model\", \"res://scenes/characters/lumo/lumo_character.tscn\"),",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:tools/validate_project.py:251:        \"scenes/characters/lumo/lumo_character.tscn\","
+      ]
+    },
+    "runtime_scene_navigation": {
+      "git_grep_args": [
+        "-n",
+        "-I",
+        "-E",
+        "SceneRouter\\.goto|change_scene_to|load_scene|call.*goto",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+        "--",
+        "scripts",
+        ":(exclude)scripts/tests"
+      ],
+      "returncode": 0,
+      "matches": [
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/app_boot.gd:277:\tvar error := SceneRouter.goto_loaded(target_scene, _resources.get(str(SceneRouter.SCENES[target_scene])))",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/home_controller.gd:156:\tSceneRouter.goto(portal_type)",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/intro_controller.gd:61:\tSceneRouter.goto(\"home\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/scene_router.gd:4:## Verhindert dass irgendwo im Code direkt `change_scene_to_file()` mit",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/scene_router.gd:8:##   SceneRouter.goto(\"intro\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/scene_router.gd:9:##   SceneRouter.goto(\"home\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/scene_router.gd:72:\tvar error := get_tree().change_scene_to_packed(scene)",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/scene_router.gd:108:\tget_tree().call_deferred(\"change_scene_to_file\", path)",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/creative/build_settlement_world.gd:724:\t\tSceneRouter.goto(\"settlement\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/creative/build_settlement_world.gd:1322:\t\tSceneRouter.goto(return_scene if destination.is_empty() else destination)",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/creative/build_world.gd:1218:\t\tSceneRouter.goto(\"games\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/creative/build_world.gd:1283:\tSceneRouter.goto(\"settlement\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/creative/puzzle_world.gd:897:\t\tSceneRouter.goto(\"games\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/creative/rhythm_world.gd:624:\tSceneRouter.goto(\"games\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/creative/treasure_world.gd:662:\t\tSceneRouter.goto(\"games\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/alphabet_carousel.gd:197:\tSceneRouter.goto(\"reading_hub\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/cards/cards_table.gd:1182:\t\tSceneRouter.goto(\"games\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/game_hub.gd:175:\tvar back := _action(\"‹  Zurück\", Color(\"53ddfd\"), func(): SceneRouter.goto(\"home\"))",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/game_hub.gd:293:\tSceneRouter.goto(destination)",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/jump_islands.gd:708:\tSceneRouter.goto(\"jump\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/jump_islands.gd:714:\tSceneRouter.goto(\"jump\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/jump_islands.gd:739:\tSceneRouter.goto(\"learn\" if destination == \"learn\" else \"games\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/jump_islands.gd:791:\tmodal_column.add_child(_button(\"Diesen Kurs wiederholen\", func(): SceneRouter.goto(\"jump\")))",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/kart_garage_menu.gd:465:\treference_landing.open_settings.connect(func(): SceneRouter.goto(\"parent\"))",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/kart_island.gd:3352:\tSceneRouter.goto(\"learn\" if destination == \"learn\" else \"games\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/learn_card.gd:85:\tSceneRouter.goto(\"home\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/multi_choice_game.gd:269:\tSceneRouter.goto(\"reading_hub\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/parent_settings.gd:73:\tSceneRouter.goto(\"home\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/reading_hub.gd:4:## Tap auf Karte: SceneRouter.goto(...). HUD oben zeigt Sterne, gelernte",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/reading_hub.gd:75:\tSceneRouter.goto(scene_id)",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/reading_hub.gd:80:\tSceneRouter.goto(\"home\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/star_collect_game.gd:131:\tSceneRouter.goto(\"home\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/word_build_game.gd:256:\tSceneRouter.goto(\"reading_hub\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/learning/learning_world.gd:1215:\t\tSceneRouter.goto(\"learn\")"
+      ]
+    },
+    "old_route_references": {
+      "git_grep_args": [
+        "-n",
+        "-I",
+        "-E",
+        "\"reading_hub\"|\"learn_old\"|\"stars\"|\"alphabet\"|\"word_picture_match\"|\"sound_letter_match\"|\"word_build\"",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+        "--",
+        "scripts",
+        ":(exclude)scripts/tests"
+      ],
+      "returncode": 0,
+      "matches": [
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/scene_router.gd:18:\t\"reading_hub\": \"res://scenes/games/reading_hub.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/scene_router.gd:19:\t\"alphabet\": \"res://scenes/games/alphabet_carousel.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/scene_router.gd:20:\t\"word_picture_match\": \"res://scenes/games/word_picture_match.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/scene_router.gd:21:\t\"sound_letter_match\": \"res://scenes/games/sound_letter_match.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/scene_router.gd:22:\t\"word_build\": \"res://scenes/games/word_build.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/scene_router.gd:23:\t\"learn_old\": \"res://scenes/games/learn_card.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/app/scene_router.gd:35:\t\"stars\": \"res://scenes/games/star_collect.tscn\",",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/creative/build_world.gd:1202:\t\t\t\t\"stars\": 3,",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/creative/puzzle_world.gd:870:\t\t\t\"stars\": earned,",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/creative/rhythm_world.gd:557:\t\t\t\t\"stars\": earned,",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/creative/treasure_world.gd:616:\t\t\t\"stars\": 3,",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/alphabet_carousel.gd:197:\tSceneRouter.goto(\"reading_hub\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/game_hub_routes.gd:12:\t{\"destination\": \"stars\", \"title\": \"STERNENJAGD\", \"subtitle\": \"Sterne entdecken\", \"accent\": \"b99bff\", \"featured\": false},",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/jump_islands.gd:730:\t\t\t\"stars\": 0,",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/jump_islands.gd:767:\t\t\"stars\": stars,",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/kart_island.gd:3328:\t\t\"resultId\": result_id, \"stars\": 0, \"solved\": 0",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/kart_island.gd:3395:\t\t\"resultId\": result_id, \"status\": \"completed\", \"stars\": earned,",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/kart_island.gd:3549:\tlines.append(\"Belohnung   +%d Sterne\" % int(result_payload.get(\"stars\", 0)))",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/multi_choice_game.gd:269:\tSceneRouter.goto(\"reading_hub\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/reading_hub.gd:24:\t_connect(card_alphabet_path, func(): _open(\"alphabet\"))",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/reading_hub.gd:25:\t_connect(card_picture_path, func(): _open(\"word_picture_match\"))",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/reading_hub.gd:26:\t_connect(card_sound_path, func(): _open(\"sound_letter_match\"))",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/reading_hub.gd:27:\t_connect(card_build_path, func(): _open(\"word_build\"))",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/games/word_build_game.gd:256:\tSceneRouter.goto(\"reading_hub\")",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/systems/host_bridge.gd:38:\toptions[\"stars\"] = maxi(0, int(raw.get(\"stars\", 0)))",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/systems/progress_store.gd:49:\t\t_stars = maxi(0, int(options.get(\"stars\", 0)))",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/systems/progress_store.gd:70:\t_stars = int(cfg.get_value(SECTION, \"stars\", 0))",
+        "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa:scripts/systems/progress_store.gd:96:\tcfg.set_value(SECTION, \"stars\", _stars)"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": ".github/workflows/build.yml",
+      "archive_path": "original-source/.github/workflows/build.yml",
+      "git_blob": "dc2e1cf0237058761eee295b0a113f417b180a66",
+      "mode": "100644",
+      "bytes": 15399,
+      "sha256": "1e2d27b0ba28caf7dd8c2c31f1cf8af3cf5511d84a30a6f9b65bb3b4fe69c087"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": ".github/workflows/lumo-fleet-quality.yml",
+      "archive_path": "original-source/.github/workflows/lumo-fleet-quality.yml",
+      "git_blob": "650f5b8f8c637962e1e7f970c34aee9edc5cdfe9",
+      "mode": "100644",
+      "bytes": 7451,
+      "sha256": "4771d8659373f6319263dafa7dec7ce9468c2b84ee655dee2286de3feb1c7996"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "assets/manifests/assets.json",
+      "archive_path": "original-source/assets/manifests/assets.json",
+      "git_blob": "d1d8130bf5652aae3d23f651011a4872e19c10c9",
+      "mode": "100644",
+      "bytes": 22295,
+      "sha256": "170c162ccd67158ee12409b3bdca23a1af287438d1093e19490c11c19423e185"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "project.godot",
+      "archive_path": "original-source/project.godot",
+      "git_blob": "296b8b1752ebfd526aedd019907ac88efbfd0c02",
+      "mode": "100644",
+      "bytes": 1944,
+      "sha256": "eac3b969cc475e9b9047d420eb6012a1b98b127c1a8706a9eb88e0e83f33b280"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/app/boot.tscn",
+      "archive_path": "original-source/scenes/app/boot.tscn",
+      "git_blob": "792c0324ae03debe7904517af52fe5473880bb8b",
+      "mode": "100644",
+      "bytes": 1372,
+      "sha256": "678c8b2907c704f9975a2c38936df45c71f04e987f0e1ee6bc36f24216c62823"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/app/home_3d.tscn",
+      "archive_path": "original-source/scenes/app/home_3d.tscn",
+      "git_blob": "4b1c28305de67498e73af2113f4873b67f3dcf21",
+      "mode": "100644",
+      "bytes": 2834,
+      "sha256": "a24efda6428dbe31d2166b835d2fb6d775af4fea1b171cafcc796682ce2808f3"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/characters/lumo/lumo_character.tscn",
+      "archive_path": "original-source/scenes/characters/lumo/lumo_character.tscn",
+      "git_blob": "6244b2a134e1f385bd77f8ec21c1b2d72557bb05",
+      "mode": "100644",
+      "bytes": 9745,
+      "sha256": "20531a45bf93b61a836c9e88ccfccf1710981eb2db3fa69e9c404bc541c67495"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/characters/lumo/lumo_showcase.tscn",
+      "archive_path": "original-source/scenes/characters/lumo/lumo_showcase.tscn",
+      "git_blob": "f7081b760cd54308370cabc6f48c0183de452ffd",
+      "mode": "100644",
+      "bytes": 1411,
+      "sha256": "8efc93a5434d7d8ca98b557a776b2dc773f978417b8169ed01c45ae16d12d12c"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/games/alphabet_carousel.tscn",
+      "archive_path": "original-source/scenes/games/alphabet_carousel.tscn",
+      "git_blob": "31193b8e49b49f86002d1f9e302ad51a36ab99ab",
+      "mode": "100644",
+      "bytes": 3484,
+      "sha256": "9408ce921da7dc7453fa15f70d3e7e1d98d7961cd4726d24e00ffe86d1b9cd3c"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/games/game_hub.tscn",
+      "archive_path": "original-source/scenes/games/game_hub.tscn",
+      "git_blob": "9288feb85c85d6226424f2c720cac355bb664071",
+      "mode": "100644",
+      "bytes": 176,
+      "sha256": "35fc2819ad425bb9fc95f4c08319ad61b163598683953064d189871a3c58dc1f"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/games/learn_card.tscn",
+      "archive_path": "original-source/scenes/games/learn_card.tscn",
+      "git_blob": "8d5534930b8527145c5c6246d406b2261e657c09",
+      "mode": "100644",
+      "bytes": 3015,
+      "sha256": "92f8253bb3db0f3d389ab76d2feeedf3d1397613c9dfe758b6947c7b314210ae"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/games/reading_hub.tscn",
+      "archive_path": "original-source/scenes/games/reading_hub.tscn",
+      "git_blob": "b104254cf4e61752e5ef529278271ca6a6341abe",
+      "mode": "100644",
+      "bytes": 5461,
+      "sha256": "7c2d428183ebac8d38e8ffc860913c12b407bdecfcc8a1e87e413616bd7c1b71"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/games/sound_letter_match.tscn",
+      "archive_path": "original-source/scenes/games/sound_letter_match.tscn",
+      "git_blob": "e4c386a6016b352e04abff5fd1a130f622b9737a",
+      "mode": "100644",
+      "bytes": 7476,
+      "sha256": "13bd317be95f45b3056737d689ea5b5688b6bb27931f7d5eee0a01b23f2d59c1"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/games/star_collect.tscn",
+      "archive_path": "original-source/scenes/games/star_collect.tscn",
+      "git_blob": "4d71abd5acdfa1d2ea228602744e07f2374ac420",
+      "mode": "100644",
+      "bytes": 2225,
+      "sha256": "e49840d560d71e4a9e536f3a5b0a85e05e177563ab7c6548b820639a801e3b69"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/games/word_build.tscn",
+      "archive_path": "original-source/scenes/games/word_build.tscn",
+      "git_blob": "fb4a0a2359ac719adba99883b74ae7ba61329516",
+      "mode": "100644",
+      "bytes": 7727,
+      "sha256": "b081ec5da0cb84d6866bbdccdf42a01d83a7e44aae87b04293becffcde7c2701"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/games/word_picture_match.tscn",
+      "archive_path": "original-source/scenes/games/word_picture_match.tscn",
+      "git_blob": "fcc7c2d0f94bb84a432037ba81c97c776b963efd",
+      "mode": "100644",
+      "bytes": 7707,
+      "sha256": "386d045d2b3794059944b33bb42c03bfa7bde0e7c34a2858ef415cd46fb0abf1"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/hub/hub_portal.tscn",
+      "archive_path": "original-source/scenes/hub/hub_portal.tscn",
+      "git_blob": "e572318012f171ad2b1865205182d675c77fad6f",
+      "mode": "100644",
+      "bytes": 1552,
+      "sha256": "34ee6c04d0afbc32d7a2e8abec17529d8fdc42c3f412ee5f4ddec73b7fbfc752"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scenes/hub/star_field.tscn",
+      "archive_path": "original-source/scenes/hub/star_field.tscn",
+      "git_blob": "97314891c72913566fde315468f0a8fdf14d3872",
+      "mode": "100644",
+      "bytes": 233,
+      "sha256": "0ba47188cd3fa21ba5b7139aa64a1765365902e85157a8785a55300b4c58f505"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/app/app_boot.gd",
+      "archive_path": "original-source/scripts/app/app_boot.gd",
+      "git_blob": "125376b9018d03258a2be41da99efce175bbca6c",
+      "mode": "100644",
+      "bytes": 18819,
+      "sha256": "e01899fb45fe4b0b8a7f0d54c9751d099bc1431b17668017233d5eeac96dab1f"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/app/home_controller.gd",
+      "archive_path": "original-source/scripts/app/home_controller.gd",
+      "git_blob": "8af5e839171814c8d2abd3eeb4e42402cf5be787",
+      "mode": "100644",
+      "bytes": 5951,
+      "sha256": "c8e3700e51f0acdcd9755483fe6afc60699f9c9129a98e59d48f44f3e9aa9ec3"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/app/scene_router.gd",
+      "archive_path": "original-source/scripts/app/scene_router.gd",
+      "git_blob": "0e28e5c797af076d2a2410143e42605982e8d1d5",
+      "mode": "100644",
+      "bytes": 4457,
+      "sha256": "b7b7b5d1c882b10b8e07141b32b0369941bea98b2d8665e7d20d6cb958188e06"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/characters/lumo/lumo_character_controller.gd",
+      "archive_path": "original-source/scripts/characters/lumo/lumo_character_controller.gd",
+      "git_blob": "0e7a6bc3b5c63408ad13c4b35edd62425ccf99b8",
+      "mode": "100644",
+      "bytes": 3472,
+      "sha256": "dc0f19f223cf1e08fcc966c9e5ff5b896200163de14e0810906d579130af8403"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/characters/lumo/lumo_rigged_actor.gd",
+      "archive_path": "original-source/scripts/characters/lumo/lumo_rigged_actor.gd",
+      "git_blob": "e4b6a6081a922a137f68491de66f51e096528510",
+      "mode": "100644",
+      "bytes": 11313,
+      "sha256": "caad03c39ac9098443cda2db937e2a412cecc4365cde238b465bc98e13a6b610"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/characters/lumo_companion.gd",
+      "archive_path": "original-source/scripts/characters/lumo_companion.gd",
+      "git_blob": "78f8e940a16316b5ce7dc90abac51c4fd5fa7572",
+      "mode": "100644",
+      "bytes": 900,
+      "sha256": "4be9bea926210792608c3dd73594ae451339a5aebca3e4d913716fac66b212ed"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/creative/build_settlement_world.gd",
+      "archive_path": "original-source/scripts/creative/build_settlement_world.gd",
+      "git_blob": "e6a2a84447757c04a7f07436b162ed698b827a33",
+      "mode": "100644",
+      "bytes": 46954,
+      "sha256": "6bd9dd4380db95962f370aa2703e7f41b51eab2430f33ea4874c60de0b73bcfb"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/games/game_hub.gd",
+      "archive_path": "original-source/scripts/games/game_hub.gd",
+      "git_blob": "5a4fd789dcfb3dcd1bc1fcc2f7b0fd7f64ade1f6",
+      "mode": "100644",
+      "bytes": 13887,
+      "sha256": "12fb330dbfe2e7d868df1c702a718f0258c74d8224648a0b4fa523d83f1b050c"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/games/game_hub_magic_stage.gd",
+      "archive_path": "original-source/scripts/games/game_hub_magic_stage.gd",
+      "git_blob": "0cfd41ddb991a286af66a132ef0ba0a3b5d3bd51",
+      "mode": "100644",
+      "bytes": 4521,
+      "sha256": "e15bb52280e6a24d2a654d19b471ef7ed3f8955d513576e88d0fa9aec3687fa1"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/games/game_hub_routes.gd",
+      "archive_path": "original-source/scripts/games/game_hub_routes.gd",
+      "git_blob": "c2df5d620a704f000d46e6c76e30f44fc0afe6a8",
+      "mode": "100644",
+      "bytes": 1773,
+      "sha256": "944dd73cdc17b718417c53f4c116e1aa7e02ea97140a607d682a2e001a851df2"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/games/jump_islands.gd",
+      "archive_path": "original-source/scripts/games/jump_islands.gd",
+      "git_blob": "c4bf551b3b679554c8fe2b2d1307b0439870e8fe",
+      "mode": "100644",
+      "bytes": 36310,
+      "sha256": "1190ef1e717d6fd714ad53a4c5a5120018c6486627e75ebae37be564e119f1db"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/games/kart_garage_menu.gd",
+      "archive_path": "original-source/scripts/games/kart_garage_menu.gd",
+      "git_blob": "69181cb383de72a2058d2a1d64d629d825b1d871",
+      "mode": "100644",
+      "bytes": 84428,
+      "sha256": "bb34f1b3d138362a780acc3eefbfd791cc3af286d6c68786cf292d67938d738f"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/games/kart_island.gd",
+      "archive_path": "original-source/scripts/games/kart_island.gd",
+      "git_blob": "83b3b6b548cffa2790c582e061a74e37bbfcf356",
+      "mode": "100644",
+      "bytes": 175088,
+      "sha256": "7f916fcf8ea2d17876500e0063d91809db4a608dbc8bf945287231e6d76231d5"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/games/parent_settings.gd",
+      "archive_path": "original-source/scripts/games/parent_settings.gd",
+      "git_blob": "12b521596e74a29ae423ac9ecd1a9ffd0f6ed7a3",
+      "mode": "100644",
+      "bytes": 2174,
+      "sha256": "93a31ecee8ba2b9c1f915d98ba5d0b2092e9d1433347522e1e6cf03108e93205"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/games/reading_hub.gd",
+      "archive_path": "original-source/scripts/games/reading_hub.gd",
+      "git_blob": "6ee512455153a7f19facddb21c6cc91b5a5a6d4f",
+      "mode": "100644",
+      "bytes": 2470,
+      "sha256": "1414aeaeb11fea2f3db4067b57bc4f8260295e4be066d1e46237022b9cdb13ae"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/games/star_collect_game.gd",
+      "archive_path": "original-source/scripts/games/star_collect_game.gd",
+      "git_blob": "a76c696f84091f4fe9007e844509a79490353e93",
+      "mode": "100644",
+      "bytes": 3882,
+      "sha256": "e206e9fdd48a642e812f84d965d38ccba0eeef8759308c734c8bf0c51bfb6d03"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/hub/portal_interaction.gd",
+      "archive_path": "original-source/scripts/hub/portal_interaction.gd",
+      "git_blob": "3e476f6ee6ba43302c97f05ed0af6149340f6f48",
+      "mode": "100644",
+      "bytes": 3374,
+      "sha256": "d182cd0e7e06fb00f8573bda9670ba514ba8faf3c43b322910d5071765ebdc40"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/hub/star_field.gd",
+      "archive_path": "original-source/scripts/hub/star_field.gd",
+      "git_blob": "f5896f605811240b8d9b82e269ada806ca2fcd7f",
+      "mode": "100644",
+      "bytes": 3165,
+      "sha256": "5d9c8a1be36edb4c932523b64c63cd0bc0ab28a73ad610b40dc87e633a768342"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/learning/learning_world.gd",
+      "archive_path": "original-source/scripts/learning/learning_world.gd",
+      "git_blob": "c3b1bc8c73cd764724464d8d2fe0413bdba62a96",
+      "mode": "100644",
+      "bytes": 45953,
+      "sha256": "1aaad2fdbe53e75e44009e443cda1273d2c3bc85b2eda7446349eba466883a6b"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/systems/asset_loader.gd",
+      "archive_path": "original-source/scripts/systems/asset_loader.gd",
+      "git_blob": "5436978a86ea21c70ee3affed30eec1219d6a571",
+      "mode": "100644",
+      "bytes": 6824,
+      "sha256": "e51ab8ee60a6c86b9f6e610141de74636c987f7f4b40c56642ee0dc58fd9b436"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/systems/host_bridge.gd",
+      "archive_path": "original-source/scripts/systems/host_bridge.gd",
+      "git_blob": "1845617ed2659dd377f433209799b12ddf310deb",
+      "mode": "100644",
+      "bytes": 5604,
+      "sha256": "6b86fda5b38f2b966d0da4d26eb9cae24e2185ef9d067b0dfb99aa86bfe644b4"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "scripts/tests/lumo_original_jump_visual_regression.gd",
+      "archive_path": "original-source/scripts/tests/lumo_original_jump_visual_regression.gd",
+      "git_blob": "6f0f477ccc668660be36060bcdc346fe104e7aa7",
+      "mode": "100644",
+      "bytes": 3633,
+      "sha256": "74c52e8836f3d42065acd6170f288c557462c5ea1038fe0fc90ea6ff089297d0"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "tools/build_web_bundle.sh",
+      "archive_path": "original-source/tools/build_web_bundle.sh",
+      "git_blob": "07b2b8d0e7341d57a9567996a7a446ff6536195e",
+      "mode": "100644",
+      "bytes": 5134,
+      "sha256": "604aa5c53955329b0d373c61819994c11a905bdb4eb3dcaa557550794336cae2"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "tools/validate_nextgen.sh",
+      "archive_path": "original-source/tools/validate_nextgen.sh",
+      "git_blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+      "mode": "100755",
+      "bytes": 9791,
+      "sha256": "fbb95e0ab5d3f60a915fdd63ff95b6e01ad3776bb67f6227df1c394b5bd64a7f"
+    },
+    {
+      "repo": "Ullmann27/lumo-godot",
+      "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "path": "tools/validate_project.py",
+      "archive_path": "original-source/tools/validate_project.py",
+      "git_blob": "9cfe2db9504c0141061a2388deb6dc73be9513ec",
+      "mode": "100755",
+      "bytes": 13288,
+      "sha256": "c2309d85ac895296b426a5b0054d1a4dfb5b99dc93381e3c3430e4682f978615"
+    },
+    {
+      "repo": "Ullmann27/lumo-lernen",
+      "commit": "1e22d2455937e2640d1e44e153d290746f3afe49",
+      "path": "tools/auto_install/LumoGameActivity.kt",
+      "archive_path": "original-host-source/tools/auto_install/LumoGameActivity.kt",
+      "git_blob": "81e96786d30c223e9ba145b4f50cbae737946c08",
+      "bytes": 12726,
+      "sha256": "ac43bed87efbecd7fd7535120b5eff2839cb05b19662eb9ac93c0bf7f9963287"
+    },
+    {
+      "repo": "Ullmann27/lumo-lernen",
+      "commit": "1e22d2455937e2640d1e44e153d290746f3afe49",
+      "path": "tools/auto_install/MainActivity.kt",
+      "archive_path": "original-host-source/tools/auto_install/MainActivity.kt",
+      "git_blob": "dfaa6c4a748ae95aa81cba164dc8bea4c9c04c9b",
+      "bytes": 19093,
+      "sha256": "b1b223b5e39cd4989505f83a9ecef9bd33bc21ee5a17fd377d6e41137fa8a5d7"
+    }
+  ],
+  "missing_catalog_targets": [
+    {
+      "id": "lumo_fox",
+      "path": "assets/models/lumo_fox.glb",
+      "tracked": false
+    },
+    {
+      "id": "hub_island",
+      "path": "assets/models/hub_island.glb",
+      "tracked": false
+    },
+    {
+      "id": "portal_learn",
+      "path": "assets/models/portal_learn.glb",
+      "tracked": false
+    },
+    {
+      "id": "portal_games",
+      "path": "assets/models/portal_games.glb",
+      "tracked": false
+    },
+    {
+      "id": "portal_parent",
+      "path": "assets/models/portal_parent.glb",
+      "tracked": false
+    },
+    {
+      "id": "star_collectible",
+      "path": "assets/models/star_collectible.glb",
+      "tracked": false
+    }
+  ],
+  "new_runtime_test_runs": 0,
+  "checkout_status_after_review": ""
+}

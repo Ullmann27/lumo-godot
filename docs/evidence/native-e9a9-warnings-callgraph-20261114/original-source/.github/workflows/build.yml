@@ -1,0 +1,317 @@
+name: Lumo 3D Build
+
+on:
+  push:
+    branches: [main, codex/lumo-island-cup-2026-10-02, codex/lumo-kart-sunharbor-2026-10-02, chatgpt/sonnenhafen-water-visual-qa-2026-10-15, claude/kart-integration-2026-10-16, chatgpt/kart-android-real-race-gate-1957-2026-10-16]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  GODOT_VERSION: 4.6.3
+  GODOT_STATUS: stable
+  GODOT_TAG: 4.6.3-stable
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Cache Godot binary + templates
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot-bin
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_TAG }}-v2
+
+      - name: Install Godot ${{ env.GODOT_VERSION }}
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot-bin
+          curl -L -o /tmp/godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_TAG}/Godot_v${GODOT_TAG}_linux.x86_64.zip"
+          unzip -q -o /tmp/godot.zip -d ~/godot-bin
+          mv ~/godot-bin/Godot_v${GODOT_TAG}_linux.x86_64 ~/godot-bin/godot
+          chmod +x ~/godot-bin/godot
+
+      - name: Install Godot export templates
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -L -o /tmp/tpl.tpz \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_TAG}/Godot_v${GODOT_TAG}_export_templates.tpz"
+          mkdir -p /tmp/tpl_unpack
+          unzip -q -o /tmp/tpl.tpz -d /tmp/tpl_unpack
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}
+          mv /tmp/tpl_unpack/templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}/
+          rm -rf /tmp/tpl_unpack /tmp/tpl.tpz
+
+      - name: Set PATH
+        run: echo "$HOME/godot-bin" >> $GITHUB_PATH
+
+      - name: Verify Godot
+        run: godot --version
+
+      - name: Project import
+        run: |
+          mkdir -p exports/linux exports/web exports/android exports/packages
+          python3 -m unittest discover -s tools/tests -v
+          bash tools/validate_project.sh
+
+      # ────────────────── LINUX ──────────────────
+      - name: Linux export
+        run: godot --headless --export-release "Linux" exports/linux/lumo-godot-linux.x86_64
+      - name: Linux smoke test
+        run: |
+          chmod +x exports/linux/lumo-godot-linux.x86_64
+          # 360 frames ~ 6s, reicht durch Boot -> Intro -> Home
+          ./exports/linux/lumo-godot-linux.x86_64 --headless --quit-after 360 2>&1 | tee /tmp/linux.log | tail -20
+          grep -qE "scene_loaded|character_ready|\\[Intro\\] start" /tmp/linux.log \
+            && echo "Linux OK" \
+            || (echo "Linux smoke FAILED (no Boot/Intro/Home log line found)"; exit 1)
+      - name: Linux ZIP
+        run: |
+          cd exports/linux && zip -r9 ../packages/lumo-godot-linux.zip . && cd ../..
+
+      # ────────────────── WEB (browser-fertig) ──────────────────
+      - name: Web bundle (template + pck + patched HTML)
+        run: bash tools/build_web_bundle.sh
+      - name: Web ZIP
+        run: |
+          cd exports/web && zip -r9 ../packages/lumo-godot-web.zip . && cd ../..
+
+      # ────────────────── ANDROID (Gradle workaround) ──────────────────
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools build-tools;35.0.0 platforms;android-36"
+
+      - name: Use stable Lumo test signing
+        run: |
+          mkdir -p ~/.android
+          curl -fL https://raw.githubusercontent.com/Ullmann27/lumo-lernen/main/tools/lumo-debug.keystore -o ~/.android/debug.keystore
+          echo "af536f19a882d7de1aed2bb4ae5b6bde9235112e0be1dc8ffacd08f3aecf0cfb  $HOME/.android/debug.keystore" | sha256sum -c -
+
+      - name: Godot editor settings (SDK path for export plugin)
+        run: |
+          mkdir -p ~/.config/godot
+          cat > ~/.config/godot/editor_settings-4.6.tres <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/debug_keystore = "$HOME/.android/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          EOF
+
+      - name: PCK for Android
+        run: godot --headless --export-pack "Android" exports/android/lumo3d.pck
+
+      - name: Source-template unpack
+        run: |
+          mkdir -p android/build
+          unzip -q -o ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}/android_source.zip -d android/build/
+          python3 tools/prepare_android_assets.py exports/android/lumo3d.pck android/build/src/main/assets
+
+      - name: Apply Lumo patches (launcher icons + app_name in all locales)
+        run: |
+          # Launcher Icons (nur PNGs, keine .import-Sidecars)
+          mkdir -p android/build/src/main/res
+          (cd tools/android_patches && find res -type f -name "*.png") | while read f; do
+            mkdir -p "android/build/src/main/$(dirname $f)"
+            cp "tools/android_patches/$f" "android/build/src/main/$f"
+          done
+          # App-Name "Lumo 3D" in alle 42 Locale-Files schreiben
+          for f in $(find android/build/res -name "godot_project_name_string.xml"); do
+            cat > "$f" <<'EOL'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <string name="godot_project_name_string">Lumo 3D</string>
+          </resources>
+          EOL
+          done
+          echo "patched $(find android/build/res -name 'godot_project_name_string.xml' | wc -l) locale files"
+
+      - name: Prepare native route bridge
+        run: python3 tools/prepare_android_bridge.py
+
+      - name: Boot exported Android project data
+        run: |
+          set -euo pipefail
+          APK_PACK="$GITHUB_WORKSPACE/android/build/src/main/assets/lumo3d.pck"
+          test -s "$APK_PACK"
+          BOOT_DIR=$(mktemp -d)
+          trap 'rm -rf "$BOOT_DIR"' EXIT
+          (cd "$BOOT_DIR" && godot --headless --audio-driver Dummy --main-pack "$APK_PACK" --quit-after 360) 2>&1 | tee /tmp/android-pack-boot.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/android-pack-boot.log; then exit 1; fi
+          # Current engine boot routes directly into the games scene, not
+          # the removed [Boot] starting / [Router] goto logging interface.
+          # Match actual initialized systems + scene, not stale log text.
+          grep -qF '[EventBus] online - signals registered' /tmp/android-pack-boot.log
+          grep -qF '[Lumo] character_ready' /tmp/android-pack-boot.log
+          grep -qF '[Router] loaded:games' /tmp/android-pack-boot.log
+
+      - name: Gradle assembleDebug
+        run: |
+          cd android/build
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon \
+            -Pexport_package_name=dev.ullmann.lumo3d \
+            -Pexport_version_name=0.2.0-school-test \
+            -Pexport_version_code=${{ github.run_number }}
+
+      - name: Prepare signed Android emulator package
+        run: |
+          RAW=android/build/build/outputs/apk/standard/debug/android_debug.apk
+          BT=$ANDROID_HOME/build-tools/35.0.0
+          python3 tools/package_android_apk.py prepare "$RAW" /tmp/lumo-emulator-prepared.apk --abi x86_64
+          $BT/zipalign -P 16 -f 4 /tmp/lumo-emulator-prepared.apk /tmp/lumo-emulator-aligned.apk
+          $BT/apksigner sign \
+            --ks ~/.android/debug.keystore \
+            --ks-pass pass:android --key-pass pass:android --ks-key-alias androiddebugkey \
+            --out exports/android/lumo3d-emulator-test.apk /tmp/lumo-emulator-aligned.apk
+          $BT/apksigner verify exports/android/lumo3d-emulator-test.apk
+          python3 tools/package_android_apk.py verify exports/android/lumo3d-emulator-test.apk --abi x86_64
+          rm -f /tmp/lumo-emulator-prepared.apk /tmp/lumo-emulator-aligned.apk
+
+      - name: Enable Android emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Prepare actual Android screenshot touch reader
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y python3-pil tesseract-ocr tesseract-ocr-deu
+          # The touch reader must read the real gold footer button before any tap.
+          LUMO_REQUIRE_ANDROID_OCR=1 python3 -m unittest tools.tests.test_android_garage_ocr -v
+
+      - name: Install and launch Android app
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swangle -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
+          script: bash tools/test_android_startup.sh exports/android/lumo3d-emulator-test.apk
+
+      - name: Preserve Android startup diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-android-startup-diagnostics
+          path: |
+            exports/android/android-startup.log
+            exports/android/kart-garage-android-start.png
+            exports/android/kart-garage-step-*.png
+            exports/android/android-garage-touches.json
+            exports/android/sonnenhafen-android-start.png
+          if-no-files-found: ignore
+
+      - name: Strip arm64-only + sign APK
+        run: |
+          RAW=android/build/build/outputs/apk/standard/debug/android_debug.apk
+          test -f "$RAW" || (echo "no APK produced"; exit 1)
+          python3 tools/package_android_apk.py prepare "$RAW" /tmp/lumo-stripped.apk --abi arm64-v8a
+          BT=$ANDROID_HOME/build-tools/35.0.0
+          $BT/zipalign -P 16 -f 4 /tmp/lumo-stripped.apk /tmp/lumo-aligned.apk
+          $BT/apksigner sign \
+            --ks ~/.android/debug.keystore \
+            --ks-pass pass:android --key-pass pass:android \
+            --ks-key-alias androiddebugkey \
+            --out exports/android/lumo3d-debug.apk \
+            /tmp/lumo-aligned.apk
+          $BT/apksigner verify exports/android/lumo3d-debug.apk
+          $BT/zipalign -c -P 16 4 exports/android/lumo3d-debug.apk
+          python3 tools/package_android_apk.py verify exports/android/lumo3d-debug.apk --abi arm64-v8a
+          ls -lh exports/android/lumo3d-debug.apk
+          rm -f /tmp/lumo-stripped.apk /tmp/lumo-aligned.apk
+
+      - name: Render real engine screenshots
+        run: |
+          xvfb-run -a godot --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_showcase.gd 2>&1 | tee /tmp/lumo-showcase.log
+          xvfb-run -a godot --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/app_showcase.gd 2>&1 | tee /tmp/lumo-app-showcase.log
+          xvfb-run -a godot --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_render.gd -- --game=jump 2>&1 | tee /tmp/lumo-jump-showcase.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' /tmp/lumo-showcase.log /tmp/lumo-app-showcase.log /tmp/lumo-jump-showcase.log; then exit 1; fi
+          test -s exports/screenshots/sonnenhafen-driver.png
+          test -s exports/screenshots/lumo-existing-home.png
+          test -s exports/screenshots/lumo-jump-3d.png
+
+      - name: Record package checksums
+        run: |
+          sha256sum exports/android/lumo3d-debug.apk exports/packages/lumo-godot-web.zip exports/packages/lumo-godot-linux.zip > exports/packages/SHA256SUMS.txt
+
+      - name: Preserve Android package and real screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sonnenhafen-android-and-images
+          path: |
+            exports/android/lumo3d-debug.apk
+            exports/android/android-startup.log
+            exports/android/kart-garage-android-start.png
+            exports/android/kart-garage-step-*.png
+            exports/android/android-garage-touches.json
+            exports/android/sonnenhafen-android-start.png
+            exports/screenshots/*.png
+            exports/packages/SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: Publish tested packages
+        # Integration candidates are verified here but never published as a
+        # release or Pages trial without the owner's approval.
+        if: github.event_name != 'pull_request' && github.ref_name == 'main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: school-3d-${{ github.run_number }}
+          name: Lumo Sonnenhafen 3D Test ${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          make_latest: false
+          body: |
+            Sonnenhafen-Cup für Android: Neon-Analogstick, Drift/Boost mit zweitem Daumen,
+            sechs Tierfahrer, 398m Hafenstrecke, Brücken, Lernfragen während der Fahrt,
+            Pause und gespeicherte Runden. Neu: Display-Cutouts/Fold-Resize, räumliche
+            Farb-Batches und Fahrzeug-LOD. Tests prüfen zwei vollständige Rennen,
+            4000 Aufgabenvarianten, Zweifingerbedienung und GPU-Farbdaten.
+            Die Bilder stammen aus der laufenden Engine. Ziel sind flüssige 60 FPS;
+            echte Android-Leistungsmessung und die endgültige Grafikqualität bleiben offen.
+            Separate Godot-Spiel-App dev.ullmann.lumo3d, arm64. Kein Flutter-App-Update.
+            APK-Verpackung korrigiert: resources.arsc bleibt unkomprimiert und ausgerichtet;
+            Signatur, Ressourcenformat und ZIP-Ausrichtung werden vor der Veröffentlichung geprüft.
+            Android-Start: PCK und binäre Startargumente werden geprüft und die App im Emulator gestartet.
+            Zusätzlich geprüft: direkter Kart-Einstieg mit Wechsel ins Querformat.
+          files: |
+            exports/packages/lumo-godot-linux.zip
+            exports/packages/lumo-godot-web.zip
+            exports/android/lumo3d-debug.apk
+            exports/android/kart-garage-android-start.png
+            exports/android/sonnenhafen-android-start.png
+            exports/screenshots/*.png
+            exports/packages/SHA256SUMS.txt
+
+      - name: Publish trial on existing GitHub Pages
+        # Integration candidates are verified here but never published as a
+        # release or Pages trial without the owner's approval.
+        if: github.event_name != 'pull_request' && github.ref_name == 'main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: exports/web
+          destination_dir: ${{ github.ref_name == 'codex/lumo-kart-sunharbor-2026-10-02' && 'sonnenhafen' || 'island-cup' }}
+          keep_files: true

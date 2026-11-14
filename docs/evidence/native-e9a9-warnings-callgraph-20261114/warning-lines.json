@@ -1,0 +1,45 @@
+{
+  "source_repo": "Ullmann27/lumo-godot",
+  "source_commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+  "run_id": 43595543000,
+  "run_attempt": 1,
+  "job_id": 132449119326,
+  "original_log_git_blob": "22a2d48f0746dbb444c9f2492ef2ff04e0da779a",
+  "original_log_sha256": "693d0ce393aeebdf6bc5e9b81810f9ba86caca028958c53364900bd91f35942f",
+  "original_log_archive_commit": "935a4d8f764d993d384e21a9e2937572415028db",
+  "original_log_archive_path": "docs/evidence/native-e9a9-pr-workflows-20261114/logs/job-132449119326-original.log",
+  "verbatim_original_lines": [
+    {
+      "line_number": 200,
+      "line": "2026-11-14T12:35:15.9945559Z [WARN] asset: lumo_fox fehlt (assets/models/lumo_fox.glb) - AssetLoader nutzt Placeholder"
+    },
+    {
+      "line_number": 201,
+      "line": "2026-11-14T12:35:15.9946871Z [WARN] asset: hub_island fehlt (assets/models/hub_island.glb) - AssetLoader nutzt Placeholder"
+    },
+    {
+      "line_number": 202,
+      "line": "2026-11-14T12:35:15.9948066Z [WARN] asset: portal_learn fehlt (assets/models/portal_learn.glb) - AssetLoader nutzt Placeholder"
+    },
+    {
+      "line_number": 203,
+      "line": "2026-11-14T12:35:15.9949566Z [WARN] asset: portal_games fehlt (assets/models/portal_games.glb) - AssetLoader nutzt Placeholder"
+    },
+    {
+      "line_number": 204,
+      "line": "2026-11-14T12:35:15.9950832Z [WARN] asset: portal_parent fehlt (assets/models/portal_parent.glb) - AssetLoader nutzt Placeholder"
+    },
+    {
+      "line_number": 205,
+      "line": "2026-11-14T12:35:15.9952103Z [WARN] asset: star_collectible fehlt (assets/models/star_collectible.glb) - AssetLoader nutzt Placeholder"
+    },
+    {
+      "line_number": 264,
+      "line": "2026-11-14T12:35:15.9983241Z [WARN] tool: tools/build_web_bundle.sh nicht ausfuehrbar (chmod +x fehlt)"
+    },
+    {
+      "line_number": 277,
+      "line": "2026-11-14T12:35:15.9987599Z SUMMARY: 117 PASS / 7 WARN / 0 FAIL"
+    }
+  ]
+}

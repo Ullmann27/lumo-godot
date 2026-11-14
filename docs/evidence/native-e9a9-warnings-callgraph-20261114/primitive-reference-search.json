@@ -1,0 +1,402 @@
+{
+  "source": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+  "scope": "all tracked text outside docs, git grep over exact commit",
+  "results": [
+    {
+      "term": "lumo_character.tscn",
+      "matches": [
+        {
+          "path": "CLAUDE.md",
+          "git_blob": "7da3f22b3c4b807bc8d255008eb1308a8f496d39",
+          "line": 526,
+          "text": "### Charakter-Aufbau (`scenes/characters/lumo/lumo_character.tscn`)"
+        },
+        {
+          "path": "assets/characters/lumo/reference/MASTERPROMPT_FOR_CLAUDE.md",
+          "git_blob": "85eb3f631064ad2583d938bcad114399964ccd80",
+          "line": 218,
+          "text": "scenes/characters/lumo/lumo_character.tscn"
+        },
+        {
+          "path": "assets/characters/lumo/reference/MASTERPROMPT_FOR_CLAUDE.md",
+          "git_blob": "85eb3f631064ad2583d938bcad114399964ccd80",
+          "line": 435,
+          "text": "- `scenes/characters/lumo/lumo_character.tscn` existiert"
+        },
+        {
+          "path": "assets/manifests/assets.json",
+          "git_blob": "d1d8130bf5652aae3d23f651011a4872e19c10c9",
+          "line": 259,
+          "text": "    \"lumo_character\": \"res://scenes/characters/lumo/lumo_character.tscn\","
+        },
+        {
+          "path": "scenes/characters/lumo/lumo_showcase.tscn",
+          "git_blob": "f7081b760cd54308370cabc6f48c0183de452ffd",
+          "line": 4,
+          "text": "[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]"
+        },
+        {
+          "path": "scenes/games/alphabet_carousel.tscn",
+          "git_blob": "31193b8e49b49f86002d1f9e302ad51a36ab99ab",
+          "line": 4,
+          "text": "[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]"
+        },
+        {
+          "path": "scenes/games/learn_card.tscn",
+          "git_blob": "8d5534930b8527145c5c6246d406b2261e657c09",
+          "line": 4,
+          "text": "[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]"
+        },
+        {
+          "path": "scenes/games/reading_hub.tscn",
+          "git_blob": "b104254cf4e61752e5ef529278271ca6a6341abe",
+          "line": 4,
+          "text": "[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]"
+        },
+        {
+          "path": "scenes/games/sound_letter_match.tscn",
+          "git_blob": "e4c386a6016b352e04abff5fd1a130f622b9737a",
+          "line": 4,
+          "text": "[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]"
+        },
+        {
+          "path": "scenes/games/star_collect.tscn",
+          "git_blob": "4d71abd5acdfa1d2ea228602744e07f2374ac420",
+          "line": 4,
+          "text": "[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]"
+        },
+        {
+          "path": "scenes/games/word_build.tscn",
+          "git_blob": "fb4a0a2359ac719adba99883b74ae7ba61329516",
+          "line": 4,
+          "text": "[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]"
+        },
+        {
+          "path": "scenes/games/word_picture_match.tscn",
+          "git_blob": "fcc7c2d0f94bb84a432037ba81c97c776b963efd",
+          "line": 4,
+          "text": "[ext_resource type=\"PackedScene\" path=\"res://scenes/characters/lumo/lumo_character.tscn\" id=\"2_lumo\"]"
+        },
+        {
+          "path": "scripts/app/home_controller.gd",
+          "git_blob": "8af5e839171814c8d2abd3eeb4e42402cf5be787",
+          "line": 8,
+          "text": "const COMPANION_SCENE: PackedScene = preload(\"res://scenes/characters/lumo/lumo_character.tscn\")"
+        },
+        {
+          "path": "scripts/characters/lumo/lumo_character_controller.gd",
+          "git_blob": "0e7a6bc3b5c63408ad13c4b35edd62425ccf99b8",
+          "line": 3,
+          "text": "## Wurzel-Script auf lumo_character.tscn. Stellt den oeffentlichen"
+        },
+        {
+          "path": "scripts/characters/lumo/lumo_character_controller.gd",
+          "git_blob": "0e7a6bc3b5c63408ad13c4b35edd62425ccf99b8",
+          "line": 12,
+          "text": "## Diese Trennung hat einen Zweck: spaeter kann lumo_character.tscn das"
+        },
+        {
+          "path": "scripts/characters/lumo/lumo_gait.gd",
+          "git_blob": "f9ff787590d8be9590a95eaa8285c0ac804d84f3",
+          "line": 3,
+          "text": "## Distance-driven walk/run cycle for the Lumo character (lumo_character.tscn)."
+        },
+        {
+          "path": "scripts/characters/lumo/lumo_gait.gd",
+          "git_blob": "f9ff787590d8be9590a95eaa8285c0ac804d84f3",
+          "line": 17,
+          "text": "const BODY_REST_Y: float = 0.55  # Body node height in lumo_character.tscn"
+        },
+        {
+          "path": "scripts/games/jump_islands.gd",
+          "git_blob": "c4bf551b3b679554c8fe2b2d1307b0439870e8fe",
+          "line": 4,
+          "text": "const LUMO = preload(\"res://scenes/characters/lumo/lumo_character.tscn\")"
+        },
+        {
+          "path": "scripts/tests/lumo_character_regression.gd",
+          "git_blob": "95984c7898561bdec05e8c853346d1f55ff7fb70",
+          "line": 10,
+          "text": "\tvar lumo = load(\"res://scenes/characters/lumo/lumo_character.tscn\").instantiate()"
+        },
+        {
+          "path": "tools/tests/test_discovery_rasters.py",
+          "git_blob": "d8af97bcd61c5ced583b0be133d504feb978e6a9",
+          "line": 81,
+          "text": "            (\"model\", \"res://scenes/characters/lumo/lumo_character.tscn\"),"
+        },
+        {
+          "path": "tools/validate_project.py",
+          "git_blob": "9cfe2db9504c0141061a2388deb6dc73be9513ec",
+          "line": 251,
+          "text": "        \"scenes/characters/lumo/lumo_character.tscn\","
+        }
+      ]
+    },
+    {
+      "term": "lumo_character_controller.gd",
+      "matches": [
+        {
+          "path": "CLAUDE.md",
+          "git_blob": "7da3f22b3c4b807bc8d255008eb1308a8f496d39",
+          "line": 523,
+          "text": "| `scripts/characters/lumo/lumo_character_controller.gd` | Public API auf Root (austauschbar gegen GLB-Wrapper) |"
+        },
+        {
+          "path": "assets/characters/lumo/reference/MASTERPROMPT_FOR_CLAUDE.md",
+          "git_blob": "85eb3f631064ad2583d938bcad114399964ccd80",
+          "line": 220,
+          "text": "scripts/characters/lumo/lumo_character_controller.gd"
+        },
+        {
+          "path": "scenes/characters/lumo/lumo_character.tscn",
+          "git_blob": "6244b2a134e1f385bd77f8ec21c1b2d72557bb05",
+          "line": 3,
+          "text": "[ext_resource type=\"Script\" path=\"res://scripts/characters/lumo/lumo_character_controller.gd\" id=\"1_root\"]"
+        },
+        {
+          "path": "tools/tests/test_discovery_rasters.py",
+          "git_blob": "d8af97bcd61c5ced583b0be133d504feb978e6a9",
+          "line": 80,
+          "text": "            (\"adapter\", \"res://scripts/characters/lumo/lumo_character_controller.gd\"),"
+        },
+        {
+          "path": "tools/validate_project.py",
+          "git_blob": "9cfe2db9504c0141061a2388deb6dc73be9513ec",
+          "line": 253,
+          "text": "        \"scripts/characters/lumo/lumo_character_controller.gd\","
+        }
+      ]
+    },
+    {
+      "term": "LumoCharacterController",
+      "matches": [
+        {
+          "path": "CLAUDE.md",
+          "git_blob": "7da3f22b3c4b807bc8d255008eb1308a8f496d39",
+          "line": 538,
+          "text": "### Public API (`LumoCharacterController`)"
+        },
+        {
+          "path": "scripts/app/home_controller.gd",
+          "git_blob": "8af5e839171814c8d2abd3eeb4e42402cf5be787",
+          "line": 68,
+          "text": "\t# LumoCharacterController)."
+        },
+        {
+          "path": "scripts/app/home_controller.gd",
+          "git_blob": "8af5e839171814c8d2abd3eeb4e42402cf5be787",
+          "line": 70,
+          "text": "\t\tif node is LumoCharacterController:"
+        },
+        {
+          "path": "scripts/app/home_controller.gd",
+          "git_blob": "8af5e839171814c8d2abd3eeb4e42402cf5be787",
+          "line": 71,
+          "text": "\t\t\t(node as LumoCharacterController).play_behavior(\"greet\")"
+        },
+        {
+          "path": "scripts/app/home_controller.gd",
+          "git_blob": "8af5e839171814c8d2abd3eeb4e42402cf5be787",
+          "line": 135,
+          "text": "\t\tif node is LumoCharacterController:"
+        },
+        {
+          "path": "scripts/app/home_controller.gd",
+          "git_blob": "8af5e839171814c8d2abd3eeb4e42402cf5be787",
+          "line": 136,
+          "text": "\t\t\t(node as LumoCharacterController).play_behavior(\"point_portal\")"
+        },
+        {
+          "path": "scripts/app/showcase_controller.gd",
+          "git_blob": "2bf443e9d7c085ff3f07afe46e3d057c2318aa6d",
+          "line": 18,
+          "text": "var _lumo: LumoCharacterController"
+        },
+        {
+          "path": "scripts/app/showcase_controller.gd",
+          "git_blob": "2bf443e9d7c085ff3f07afe46e3d057c2318aa6d",
+          "line": 23,
+          "text": "\t_lumo = get_node_or_null(lumo_path) as LumoCharacterController"
+        },
+        {
+          "path": "scripts/app/showcase_controller.gd",
+          "git_blob": "2bf443e9d7c085ff3f07afe46e3d057c2318aa6d",
+          "line": 28,
+          "text": "\t\tpush_warning(\"[Showcase] kein LumoCharacterController gefunden\")"
+        },
+        {
+          "path": "scripts/characters/lumo/lumo_character_controller.gd",
+          "git_blob": "0e7a6bc3b5c63408ad13c4b35edd62425ccf99b8",
+          "line": 1,
+          "text": "## LumoCharacterController"
+        },
+        {
+          "path": "scripts/characters/lumo/lumo_character_controller.gd",
+          "git_blob": "0e7a6bc3b5c63408ad13c4b35edd62425ccf99b8",
+          "line": 15,
+          "text": "class_name LumoCharacterController"
+        },
+        {
+          "path": "scripts/games/alphabet_carousel.gd",
+          "git_blob": "8c7dd69f431623bce6494ab7ab859d6deec0e876",
+          "line": 50,
+          "text": "var _lumo: LumoCharacterController"
+        },
+        {
+          "path": "scripts/games/alphabet_carousel.gd",
+          "git_blob": "8c7dd69f431623bce6494ab7ab859d6deec0e876",
+          "line": 57,
+          "text": "\t_lumo = get_node_or_null(lumo_path) as LumoCharacterController"
+        },
+        {
+          "path": "scripts/games/learn_card.gd",
+          "git_blob": "4b982e19dad9c54185984d82536a37e937c81566",
+          "line": 22,
+          "text": "var _lumo: LumoCharacterController"
+        },
+        {
+          "path": "scripts/games/learn_card.gd",
+          "git_blob": "4b982e19dad9c54185984d82536a37e937c81566",
+          "line": 29,
+          "text": "\t_lumo = get_node_or_null(lumo_path) as LumoCharacterController"
+        },
+        {
+          "path": "scripts/games/multi_choice_game.gd",
+          "git_blob": "12fbff7cddfd8de02b5e64a11e947ba7b2c4e45f",
+          "line": 35,
+          "text": "var _lumo: LumoCharacterController"
+        },
+        {
+          "path": "scripts/games/multi_choice_game.gd",
+          "git_blob": "12fbff7cddfd8de02b5e64a11e947ba7b2c4e45f",
+          "line": 45,
+          "text": "\t_lumo = get_node_or_null(lumo_path) as LumoCharacterController"
+        },
+        {
+          "path": "scripts/games/reading_hub.gd",
+          "git_blob": "6ee512455153a7f19facddb21c6cc91b5a5a6d4f",
+          "line": 18,
+          "text": "var _lumo: LumoCharacterController"
+        },
+        {
+          "path": "scripts/games/reading_hub.gd",
+          "git_blob": "6ee512455153a7f19facddb21c6cc91b5a5a6d4f",
+          "line": 22,
+          "text": "\t_lumo = get_node_or_null(lumo_path) as LumoCharacterController"
+        },
+        {
+          "path": "scripts/games/star_collect_game.gd",
+          "git_blob": "a76c696f84091f4fe9007e844509a79490353e93",
+          "line": 17,
+          "text": "var _lumo: LumoCharacterController"
+        },
+        {
+          "path": "scripts/games/star_collect_game.gd",
+          "git_blob": "a76c696f84091f4fe9007e844509a79490353e93",
+          "line": 23,
+          "text": "\t_lumo = get_node_or_null(lumo_path) as LumoCharacterController"
+        },
+        {
+          "path": "scripts/games/word_build_game.gd",
+          "git_blob": "8e66f668dcbc045d4fad7a28d5017efc0e5ae12d",
+          "line": 30,
+          "text": "var _lumo: LumoCharacterController"
+        },
+        {
+          "path": "scripts/games/word_build_game.gd",
+          "git_blob": "8e66f668dcbc045d4fad7a28d5017efc0e5ae12d",
+          "line": 43,
+          "text": "\t_lumo = get_node_or_null(lumo_path) as LumoCharacterController"
+        }
+      ]
+    },
+    {
+      "term": "lumo_companion.gd",
+      "matches": [
+        {
+          "path": "CLAUDE.md",
+          "git_blob": "7da3f22b3c4b807bc8d255008eb1308a8f496d39",
+          "line": 381,
+          "text": "      lumo_companion.gd"
+        },
+        {
+          "path": "scenes/characters/lumo_companion.tscn",
+          "git_blob": "004e4b9aa5e7a15dccf1d6ed3e5ca0160e9d3dd5",
+          "line": 3,
+          "text": "[ext_resource type=\"Script\" path=\"res://scripts/characters/lumo_companion.gd\" id=\"1_script\"]"
+        },
+        {
+          "path": "tools/validate_project.py",
+          "git_blob": "9cfe2db9504c0141061a2388deb6dc73be9513ec",
+          "line": 80,
+          "text": "        \"scripts/characters/lumo_companion.gd\","
+        }
+      ]
+    },
+    {
+      "term": "lumo_showcase.tscn",
+      "matches": [
+        {
+          "path": "CLAUDE.md",
+          "git_blob": "7da3f22b3c4b807bc8d255008eb1308a8f496d39",
+          "line": 555,
+          "text": "### Showcase (`scenes/characters/lumo/lumo_showcase.tscn`)"
+        },
+        {
+          "path": "assets/characters/lumo/reference/MASTERPROMPT_FOR_CLAUDE.md",
+          "git_blob": "85eb3f631064ad2583d938bcad114399964ccd80",
+          "line": 219,
+          "text": "scenes/characters/lumo/lumo_showcase.tscn"
+        },
+        {
+          "path": "assets/characters/lumo/reference/MASTERPROMPT_FOR_CLAUDE.md",
+          "git_blob": "85eb3f631064ad2583d938bcad114399964ccd80",
+          "line": 393,
+          "text": "`scenes/characters/lumo/lumo_showcase.tscn`"
+        },
+        {
+          "path": "assets/characters/lumo/reference/MASTERPROMPT_FOR_CLAUDE.md",
+          "git_blob": "85eb3f631064ad2583d938bcad114399964ccd80",
+          "line": 436,
+          "text": "- `scenes/characters/lumo/lumo_showcase.tscn` existiert"
+        },
+        {
+          "path": "assets/characters/lumo/reference/MASTERPROMPT_FOR_CLAUDE.md",
+          "git_blob": "85eb3f631064ad2583d938bcad114399964ccd80",
+          "line": 454,
+          "text": "godot --headless --quit-after 60 res://scenes/characters/lumo/lumo_showcase.tscn"
+        },
+        {
+          "path": "assets/manifests/assets.json",
+          "git_blob": "d1d8130bf5652aae3d23f651011a4872e19c10c9",
+          "line": 260,
+          "text": "    \"lumo_showcase\": \"res://scenes/characters/lumo/lumo_showcase.tscn\""
+        },
+        {
+          "path": "scripts/characters/lumo/lumo_reference_board.gd",
+          "git_blob": "9bb54e33cf5ff4b1e873f7302d9c9b6201149413",
+          "line": 3,
+          "text": "## Reference-Board fuer scenes/characters/lumo/lumo_showcase.tscn."
+        },
+        {
+          "path": "tools/validate_project.py",
+          "git_blob": "9cfe2db9504c0141061a2388deb6dc73be9513ec",
+          "line": 252,
+          "text": "        \"scenes/characters/lumo/lumo_showcase.tscn\","
+        }
+      ]
+    },
+    {
+      "term": "character_scenes",
+      "matches": [
+        {
+          "path": "assets/manifests/assets.json",
+          "git_blob": "d1d8130bf5652aae3d23f651011a4872e19c10c9",
+          "line": 258,
+          "text": "  \"character_scenes\": {"
+        }
+      ]
+    }
+  ]
+}
