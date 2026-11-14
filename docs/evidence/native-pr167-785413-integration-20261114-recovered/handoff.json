@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "state": "FROZEN",
+  "source_root": "final-source",
+  "source_freeze": "source-freeze.json",
+  "source_freeze_sha256": "b816b4cc0d6938115278910acc4370e88a0d2d4dc652e536693d1512ed2cefb5",
+  "patch": "integration.patch",
+  "patch_sha256": "1730adca81b5891be269132ecf898004b5817921e848f58f6b26dffde3a9d704",
+  "source_paths": [
+    "scripts/creative/build_settlement_world.gd",
+    "scripts/creative/treasure_world.gd",
+    "scripts/tests/treasure_title_contrast_regression.gd",
+    "tools/tests/test_nextgen_runner.py",
+    "tools/tests/test_studio_2020_rasters.py",
+    "tools/validate_nextgen.sh",
+    "tools/verify_studio_2020_rasters.py"
+  ],
+  "base_native": "504c8ba70d02702cbccc370d0d96c36a292c5d27",
+  "base_tree": "05ba53c02321da069007d5c4b045622f06cc9175",
+  "producer_native": "785413d395292a243eaa0a0748671eb15d3f80ff",
+  "producer_tree": "635cf3d68631ed62ba3b3ce6f2c1fc5448768787",
+  "contract": "gate-contract.json",
+  "static_preservation": "source-preservation-recovered.json",
+  "original_review": {
+    "path": "/workspace/scratch/b3485b7bb989/native-pr167-785413-review-20261114-073227/review.json",
+    "bytes": 5967,
+    "sha256": "755320a5337f7f8064e9edfa0fd76ec0f84316c61f4449158f158a937535c89f"
+  },
+  "original_android_observation": {
+    "path": "/workspace/scratch/b3485b7bb989/native-pr167-785413-review-20261114-073227/treasure-17f5-504c-observation.json",
+    "bytes": 6739,
+    "sha256": "d2640e03ec281303a0b4be4753d5e609916a759cdec0810d5c54f35f31e84002"
+  },
+  "producer_snapshot": "producer-ci-snapshot.json",
+  "recovery": "recovery.json",
+  "runtime_retention_update": "runtime-zip-retention-loss.json",
+  "next_action": "Root publishes exact source checkpoint before the requested42 targeted contracts. No tests have run on this integrated source.",
+  "planned_test_count": 42,
+  "planned_test_command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tools.tests.test_nextgen_runner tools.tests.test_studio_2020_rasters",
+  "host_followup": "Update only current delivery marker literals and image count 16 to17. Replay the pinned Native helper verify(root,write=False); do not duplicate the Treasure raster contract. Root owns native pin and publication.",
+  "limits": [
+    "Portrait title ellipsis remains; no claim that785 fixes truncation.",
+    "No complete52-mode, engine, renderer, Android, device FPS, visual, signing or delivery acceptance.",
+    "No Producer workflow replacement; settlement only the published singular hunk, preserving current Village/HUD/grain.",
+    "Read-only peer review was interrupted before the helper was fully examined and is not claimed completed."
+  ]
+}

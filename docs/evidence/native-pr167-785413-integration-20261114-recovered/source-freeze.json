@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "state": "FROZEN",
+  "base_native": "504c8ba70d02702cbccc370d0d96c36a292c5d27",
+  "base_tree": "05ba53c02321da069007d5c4b045622f06cc9175",
+  "producer_native": "785413d395292a243eaa0a0748671eb15d3f80ff",
+  "producer_tree": "635cf3d68631ed62ba3b3ce6f2c1fc5448768787",
+  "files": [
+    {
+      "path": "scripts/creative/build_settlement_world.gd",
+      "mode": "100644",
+      "base": {
+        "git_blob": "3d41bc4ca305101699c0042c24dbd00dd606dc31",
+        "sha256": "9a078ae8a236e5eace09e14539c191138952d56659bbc6abcf5f0d11a9224a54",
+        "bytes": 45379
+      },
+      "final": {
+        "git_blob": "dd1e7b0662f2d4325a6fa562e3a111ecbb31fd50",
+        "sha256": "50938300e4d40c7ded1be66af6384359fc4d9d83fefff52c25ca1670be3661ec",
+        "bytes": 45485
+      },
+      "original_published_blob_exact": false
+    },
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "mode": "100644",
+      "base": {
+        "git_blob": "fdddd40fdf9958b7bc0bff50b75ccd4e8a2458b8",
+        "sha256": "ce7c7df90f85604f912ff1afc46077935053e883359db47c3f9e9d7dcc4fe65d",
+        "bytes": 25074
+      },
+      "final": {
+        "git_blob": "aae80484834823c8cf063df6bfb2607313f39ef7",
+        "sha256": "e68fc85498b76fb7b482417a1bf6b64410a53d2f018fec7771e263ea60fa5447",
+        "bytes": 26887
+      },
+      "original_published_blob_exact": true
+    },
+    {
+      "path": "scripts/tests/treasure_title_contrast_regression.gd",
+      "mode": "100644",
+      "base": {
+        "git_blob": "6e50ace998d896fd88f0006112152e490e7c64e3",
+        "sha256": "1f0d170fbe05c89a36501463ec9307d3f830e10a4cb63a02f663f98a5e7b600d",
+        "bytes": 8982
+      },
+      "final": {
+        "git_blob": "73939c37e38bdbaca77220f79227e3dcde26e59c",
+        "sha256": "ea6087ef56a96d585382f4228661d753121152aa249c4a5afdc99d2e946941ea",
+        "bytes": 15261
+      },
+      "original_published_blob_exact": true
+    },
+    {
+      "path": "tools/tests/test_nextgen_runner.py",
+      "mode": "100644",
+      "base": {
+        "git_blob": "a22821fc87123eaa6e4fb9f68ba80d5ce6385c4c",
+        "sha256": "5b75a07da4f2b3a289635def172cf891db5dfd256d3d025d0b563932979abdd0",
+        "bytes": 40588
+      },
+      "final": {
+        "git_blob": "6abee84f4df65fd2e379d013b7068552a962ce15",
+        "sha256": "b258ce4d1a83b4bd56c6ce4227d7e393e1fa233a1372a2027f45d0b16315902a",
+        "bytes": 40588
+      },
+      "original_published_blob_exact": false
+    },
+    {
+      "path": "tools/tests/test_studio_2020_rasters.py",
+      "mode": "100644",
+      "base": {
+        "git_blob": "6c94f4a71d3c18fd1ee42b3fac080e911abc9d36",
+        "sha256": "26ed168572f3a2a03cc185f2936a808c86325060b06f7679dc34574acfa2c2d0",
+        "bytes": 31297
+      },
+      "final": {
+        "git_blob": "8f8310c66e6477680996a5fabd407e53ec0d9e2b",
+        "sha256": "a6de009cd8d8c7e55b0a0273125346ee8c0bc715259f10618d70985b23ba6fde",
+        "bytes": 41130
+      },
+      "original_published_blob_exact": false
+    },
+    {
+      "path": "tools/validate_nextgen.sh",
+      "mode": "100755",
+      "base": {
+        "git_blob": "e5c02cf83818a4fd1c958db12f56332bb8ec93de",
+        "sha256": "f48fdff8bd0a96b7c81468f4a8b516fd8bcb9f2a4b1ea31b232d931aad2475df",
+        "bytes": 9791
+      },
+      "final": {
+        "git_blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+        "sha256": "fbb95e0ab5d3f60a915fdd63ff95b6e01ad3776bb67f6227df1c394b5bd64a7f",
+        "bytes": 9791
+      },
+      "original_published_blob_exact": false
+    },
+    {
+      "path": "tools/verify_studio_2020_rasters.py",
+      "mode": "100644",
+      "base": {
+        "git_blob": "d410c80d11611676e589875b0f94c392911b06df",
+        "sha256": "4deca56cc7f4a6751b16da8e01352044d44e5c7428bcde6594d48576e675e792",
+        "bytes": 23524
+      },
+      "final": {
+        "git_blob": "b60c3360730f0db73f91324cbaed3a8806fd141e",
+        "sha256": "8e8f597f8cd41fe203b9a491f14b5927c85601178e6589afe326a94d7c6f80f3",
+        "bytes": 26625
+      },
+      "original_published_blob_exact": false
+    }
+  ],
+  "execution_status": "NOT_RUN_AWAITING_ROOT_SOURCE_CHECKPOINT",
+  "source_only_checks": "All Python sources parsed;52 mode-call strings unchanged;Face/C4/movie/write=False AST preserved;published Treasure blobs exact;Settlement singular hunk exact with currentgrain/other functions unchanged. These are static source checks, not test PASS."
+}
