@@ -1,0 +1,55 @@
+name: LUMO native magical learning feedback QA
+
+on:
+  push:
+    branches: [chatgpt/lumo-learning-wonder-feedback-20261114]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lumo-learning-wonder
+  cancel-in-progress: true
+
+jobs:
+  actual-learning-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install checksum-verified Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import current production scene with source identity
+        run: |
+          set -euo pipefail
+          mkdir -p learning-evidence
+          git rev-parse HEAD > learning-evidence/source-sha.txt
+          godot --version > learning-evidence/engine.txt
+          godot --headless --editor --import --quit 2>&1 | tee learning-evidence/import.log
+          if grep -E 'SCRIPT ERROR|Parse Error|ERROR:' learning-evidence/import.log; then exit 1; fi
+      - name: Run real learning manipulation and magical-feedback regression
+        run: |
+          python3 tools/run_godot_probe.py --log learning-evidence/learning-3d.log \
+            --timeout 240 --required '[LearningWorld] PASS' -- \
+            godot --headless --path . --audio-driver Dummy --script scripts/tests/learning_world_regression.gd
+      - name: Verify reused star renderer and Treasure original contract
+        run: |
+          python3 tools/run_godot_probe.py --log learning-evidence/wisp-geometry.log \
+            --timeout 180 --required '[TreasureWisp] PASS' -- \
+            godot --headless --path . --audio-driver Dummy --script scripts/tests/treasure_wisp_regression.gd
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-learning-wonder-native-logs
+          path: learning-evidence/
+          if-no-files-found: error
+          retention-days: 30

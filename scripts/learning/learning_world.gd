@@ -5,6 +5,7 @@ extends Node3D
 const ACTIVITY = preload("res://scripts/learning/learning_activity.gd")
 const FOX = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const ATELIER = preload("res://scripts/learning/learning_atelier.gd")
+const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const BEVEL = preload("res://scripts/games/visual/kart_harbor_cinema.gd")
 const PART_LABELS := {"root": "Wurzel", "stem": "Stängel", "leaf": "Blatt", "flower": "Blüte"}
 const PART_HELP := {
@@ -18,6 +19,7 @@ const PART_HELP := {
 var activity = ACTIVITY.new()
 var camera: Camera3D
 var fox: Node3D
+var wonder: Node3D
 var tokens: Array[Node3D] = []
 var targets: Array[Vector3] = []
 var token_sources: Array[Vector3] = []
@@ -262,6 +264,11 @@ func _build_stage() -> void:
 	add_child(camera)
 	camera.position = Vector3(0.0, 14.0, 11.0)
 	camera.look_at(Vector3(0.0, 0.7, 0.0))
+	wonder = WISPS.new()
+	wonder.name = "LearningWonder"
+	wonder.celebration_only = true
+	wonder.set_reduced_motion(reduced_motion)
+	add_child(wonder)
 
 
 func _soften_teacher_materials() -> void:
@@ -1077,6 +1084,7 @@ func move_token(index: int) -> bool:
 	)
 	_animate_token(index, targets[destination])
 	_teacher("celebrate" if activity.is_complete() else "correct", targets[destination])
+	wonder.celebrate(targets[destination] + Vector3.UP * 0.65)
 	_refresh()
 	_queue_narration()
 	return true
@@ -1136,6 +1144,7 @@ func _inspect(part: String) -> void:
 	title.text = "Pflanzen entdecken · " + str(PART_LABELS[part])
 	explanation.text = str(PART_HELP[part])
 	_teacher("explain", _part_position(part))
+	wonder.celebrate(_part_position(part) + Vector3.UP * 0.38)
 	_queue_narration()
 
 
@@ -1146,6 +1155,7 @@ func _give_water() -> void:
 	_refresh()
 	explanation.text = "Wasser gelangt über die Wurzeln in den Stängel und zu den Blättern."
 	_teacher("explain", _part_position("root"))
+	wonder.celebrate(_part_position("root") + Vector3.UP * 0.38)
 	_queue_narration()
 
 
@@ -1156,6 +1166,7 @@ func _give_sun() -> void:
 	sun.material_override = _material("sun_open", Color("ffcf65"), 0.06)
 	_refresh()
 	_teacher("explain", sun.global_position)
+	wonder.celebrate(sun.global_position)
 	_queue_narration()
 
 
@@ -1209,6 +1220,7 @@ func _notification(what: int) -> void:
 		_return_to_lesson()
 	elif what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT]:
 		suspended = true
+		wonder.set_paused(true)
 		_stop_speech()
 		_cancel_drag()
 		for tween in _tweens:
@@ -1218,6 +1230,7 @@ func _notification(what: int) -> void:
 			fox.set_suspended(true)
 	elif what in [NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN]:
 		suspended = false
+		wonder.set_paused(false)
 		for tween in _tweens:
 			if tween.is_valid():
 				tween.play()

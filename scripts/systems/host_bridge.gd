@@ -37,7 +37,18 @@ static func validated_options(raw: Dictionary) -> Dictionary:
 	options["grade"] = clampi(int(raw.get("grade", 1)), 1, 4)
 	options["stars"] = maxi(0, int(raw.get("stars", 0)))
 	options["scene"] = str(raw.get("game", raw.get("scene", "kart")))
-	if options["scene"] not in ["kart", "jump", "puzzle", "build", "rhythm", "treasure", "learning", "cards", "connect_four", "games", "home"]:
+	if options["scene"] == "settlement":
+		# The village is a separate opt-in; never launch a classic settlement
+		# or the Kart fallback when Flutter requested a children's economy.
+		if (
+			raw.get("livingVillage", false) != true
+			or str(raw.get("settlementMode", "")) != "settlement"
+		):
+			options["scene"] = "games"
+		else:
+			options["livingVillage"] = true
+			options["settlementMode"] = "settlement"
+	elif options["scene"] not in ["kart", "jump", "puzzle", "build", "rhythm", "treasure", "learning", "cards", "connect_four", "games", "home"]:
 		options["scene"] = "kart"
 	if (
 		str(raw.get("subject", "Mathematik"))
