@@ -120,7 +120,10 @@ jobs:
 
   new-worlds:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    # ee97 reached45/48 probes before its35-minute job budget ended. Its
+    # measured34-minute prefix plus unchanged900/420/420-second final probes
+    # and archive cleanup fit within this bounded complete-collection budget.
+    timeout-minutes: 70
     env:
       LIBGL_ALWAYS_SOFTWARE: '1'
       LUMO_2014_LOG_DIR: ${{ github.workspace }}/nextgen-evidence
@@ -267,7 +270,8 @@ jobs:
       github.repository == 'Ullmann27/lumo-godot' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.base.ref == 'chatgpt/lumo-nextgen-20261113' &&
-      github.event.pull_request.head.ref == 'integration/lumo-connections-20261113' &&
+      (github.event.pull_request.head.ref == 'integration/lumo-connections-20261113' ||
+      github.event.pull_request.head.ref == 'integration/lumo-safe-area-20261113') &&
       needs.learning-preview.result == 'success' &&
       needs.gameplay.result == 'success' &&
       needs.new-worlds.result == 'success' &&

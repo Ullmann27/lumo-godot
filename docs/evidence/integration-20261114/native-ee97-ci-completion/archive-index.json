@@ -1,0 +1,149 @@
+{
+  "schema": 1,
+  "archive": "local-connection-evidence.tar.gz",
+  "bytes": 125610,
+  "sha256": "99e72fc87ddf079c6603501a605660023dba95cf2f0c7d8b2db9101784011c80",
+  "members": [
+    {
+      "path": "actual-ee97/cancellation-diagnosis/timing-and-scope.json",
+      "bytes": 28733,
+      "sha256": "fa3a013165c4601ce70e876650d2c3ad3f132dfadada6eb79de0ad70c4e96339"
+    },
+    {
+      "path": "actual-ee97/cancellation-diagnosis/worlds-check-annotations.tool-error.json",
+      "bytes": 401,
+      "sha256": "32f9807a1c18edaabdae37a922a9c94684927f67e0a209d2443f7b2030a895f2"
+    },
+    {
+      "path": "actual-ee97/cancellation-diagnosis/worlds-check-run.tool-error.json",
+      "bytes": 401,
+      "sha256": "32f9807a1c18edaabdae37a922a9c94684927f67e0a209d2443f7b2030a895f2"
+    },
+    {
+      "path": "actual-ee97/jobs/new-worlds-132230901583.log",
+      "bytes": 616602,
+      "sha256": "5688aef9afb5e788abc7fc7ad2fe76484ee0a2dad5b33b2df49d78b095ef529d"
+    },
+    {
+      "path": "actual-ee97/safe-area-seven-candidates.json",
+      "bytes": 4724,
+      "sha256": "386690fb958b7d064e9650dced78e47f690e08fe12e78a0f80c178f884442a01"
+    },
+    {
+      "path": "actual-ee97/worlds-partial-assessment.json",
+      "bytes": 6695,
+      "sha256": "efdd94a979cc5fee256455a210433d282686a447378283a3a81189eb44852694"
+    },
+    {
+      "path": "independent-guard-review/review.json",
+      "bytes": 2371,
+      "sha256": "b080749e058d2c951f4001e967af38a4904198e8402270b7674f67a9b9f5b29b"
+    },
+    {
+      "path": "independent-guard-review/reviewed.patch",
+      "bytes": 3909,
+      "sha256": "2c401cfb7a7365707eca5475d5060e8a7a1cf54cd95606791674903c30ee6d08"
+    },
+    {
+      "path": "repair/actionlint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "repair/after/.github/workflows/lumo-nextgen-2018.yml",
+      "bytes": 18524,
+      "sha256": "c2e57f6138c08596db7c77e0e07db4df786abbdd0d82ccbd040b3b6d99d774f8"
+    },
+    {
+      "path": "repair/after/tools/tests/test_nextgen_runner.py",
+      "bytes": 35151,
+      "sha256": "09fa07c989c0bd0cbdf6ee8c7ebf3b29d680a52cb4ebd8c0c291b139ca90bb54"
+    },
+    {
+      "path": "repair/before/.github/workflows/lumo-nextgen-2018.yml",
+      "bytes": 18437,
+      "sha256": "b238b61fab9625da90faebcefcf40cf4b6a4a125d128ccd4ab8e2b55a75e6e90"
+    },
+    {
+      "path": "repair/before/tools/tests/test_nextgen_runner.py",
+      "bytes": 34399,
+      "sha256": "21d9d4b4b7716af85bacf81203a679d520fcdfdf91dfa8ecdab0e521d146c37f"
+    },
+    {
+      "path": "repair/checks.json",
+      "bytes": 794,
+      "sha256": "80d2b88d93a135b6aed52f3360868d68b34b018763e82d12d0292c2ec39f4060"
+    },
+    {
+      "path": "repair/completion-budget-review.json",
+      "bytes": 1108,
+      "sha256": "c81bfa59a76aa82a714fb5d6843239a2ed3c869c62522e74c9ed88290586e708"
+    },
+    {
+      "path": "repair/diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "repair/final-jobs.json",
+      "bytes": 36457,
+      "sha256": "2ca7660cefac0288ce449768f64cbaa8ba05b3fe6982676ade3031cf6b48312d"
+    },
+    {
+      "path": "repair/final-pr.json",
+      "bytes": 39319,
+      "sha256": "876a52b3bb5a848e5336570fb64c3d9d8f1e5ba55d082c5c9691e31a859aa1eb"
+    },
+    {
+      "path": "repair/final-ref.json",
+      "bytes": 1553,
+      "sha256": "2548c0c7a6afa20328f97c1cd6f8649f7f70a7cb72b1235311dd9b786e01cb21"
+    },
+    {
+      "path": "repair/final-run.json",
+      "bytes": 27958,
+      "sha256": "f59d84a994a48a58cfe24cfd75ea1eb7bafbf4dd121ba3ea4adf56a25b53356f"
+    },
+    {
+      "path": "repair/final-source/.github/workflows/lumo-nextgen-2018.yml",
+      "bytes": 18752,
+      "sha256": "e36fb64b70a20ba144dfe25441dedd7332a1919914ddc9c9fa8a65c3375810a0"
+    },
+    {
+      "path": "repair/final-source/tools/tests/test_nextgen_runner.py",
+      "bytes": 35151,
+      "sha256": "09fa07c989c0bd0cbdf6ee8c7ebf3b29d680a52cb4ebd8c0c291b139ca90bb54"
+    },
+    {
+      "path": "repair/guard-green.log",
+      "bytes": 532,
+      "sha256": "ab034916b9e29d2b02e7ef47e45ad8f2cd4f8df417a23809f93249a7ce973e0b"
+    },
+    {
+      "path": "repair/guard-red.json",
+      "bytes": 332,
+      "sha256": "684e1a1dc00b38eaff1abaacbc4bdadaebdd5761f1949f0dafd89637e55f8b67"
+    },
+    {
+      "path": "repair/guard-red.log",
+      "bytes": 1596,
+      "sha256": "54975a38ff07634ca2be265b38f2a2e1877c87759d8371a88f7e0bbf7bed26f7"
+    },
+    {
+      "path": "repair/integration.patch",
+      "bytes": 3909,
+      "sha256": "2c401cfb7a7365707eca5475d5060e8a7a1cf54cd95606791674903c30ee6d08"
+    },
+    {
+      "path": "repair/run-before-ref-update-1.json",
+      "bytes": 27944,
+      "sha256": "00f2d19945645b7a7db144b85a10ec1af22b905880766310292c46454e8c5d4b"
+    },
+    {
+      "path": "repair/source.json",
+      "bytes": 642,
+      "sha256": "547764a5d7d0b2c433ec83ce61bcb8a0d40f5562ff4e9a0517127fa98e7f210a"
+    }
+  ],
+  "readback": "All members read and byte/hash verified"
+}

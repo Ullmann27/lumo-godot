@@ -501,7 +501,7 @@ class NextgenEvidenceWorkflowTests(unittest.TestCase):
     def test_evidence_archive_rejects_failed_touch_partial_bundle_and_foreign_sources(self):
         archive = self.job('archive-evidence')
         expression = archive.split('    if: >-\n', 1)[1].split('    runs-on:', 1)[0]
-        expression = expression.replace('\n', ' ').replace('&&', 'and').strip()
+        expression = expression.replace('\n', ' ').replace('&&', 'and').replace('||', 'or').strip()
         values = {
             'github.event_name': 'pull_request', 'github.repository': 'Ullmann27/lumo-godot',
             'github.event.pull_request.head.repo.full_name': 'Ullmann27/lumo-godot',
@@ -518,17 +518,26 @@ class NextgenEvidenceWorkflowTests(unittest.TestCase):
                 executable = executable.replace(key, repr(actual[key]))
             return eval(executable, {'__builtins__': {}}, {})
 
-        self.assertTrue(allowed({}))
+        integration_heads = ('integration/lumo-connections-20261113',
+                             'integration/lumo-safe-area-20261113')
+        for head in integration_heads:
+            with self.subTest(accepted_head=head):
+                self.assertTrue(allowed({'github.event.pull_request.head.ref': head}))
         cases = [(key, status) for key in values if key.startswith('needs.')
                  for status in ('failure', 'skipped', 'cancelled')]
         cases.extend([('github.event_name', 'workflow_dispatch'),
                       ('github.repository', 'other/fork'),
                       ('github.event.pull_request.head.repo.full_name', 'other/fork'),
                       ('github.event.pull_request.base.ref', 'main'),
-                      ('github.event.pull_request.head.ref', 'main')])
-        for key, value in cases:
-            with self.subTest(key=key, value=value):
-                self.assertFalse(allowed({key: value}))
+                      ('github.event.pull_request.head.ref', 'main'),
+                      ('github.event.pull_request.head.ref', 'integration/lumo-safe-area-20261113-extra'),
+                      ('github.event.pull_request.head.ref', 'integration/lumo-safe-area-20261114'),
+                      ('github.event.pull_request.head.ref', 'chatgpt/lumo-studio-20261113')])
+        for head in integration_heads:
+            for key, value in cases:
+                with self.subTest(head=head, key=key, value=value):
+                    self.assertFalse(allowed({'github.event.pull_request.head.ref': head,
+                                              key: value}))
         self.assertIn('SOURCE_SHA: ${{ github.event.pull_request.head.sha }}', archive)
         self.assertIn("artifact['workflow_run']['head_sha'] == os.environ['SOURCE_SHA']", archive)
         self.assertIn('sha256sum -c native-evidence.zip.sha256', archive)
