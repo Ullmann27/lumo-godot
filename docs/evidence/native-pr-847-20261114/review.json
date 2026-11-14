@@ -1,0 +1,1599 @@
+{
+  "schema": 1,
+  "scope": "Eleven completed pull-request workflows, twelve once-retrieved job stdout originals. The separate Discovery push run is excluded from this acceptance and archived separately after its terminal outcome.",
+  "source_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "source_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "pr_test_merge": "a77db91cc6e61d4fca8199324b644024bc29b591",
+  "pr_test_merge_parents": [
+    "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+    "84789d0c2c6fb4b6ecd2897ce1951b89f958b604"
+  ],
+  "pr_test_merge_tree_equals_source_tree": true,
+  "runs": 11,
+  "jobs": 12,
+  "job_reviews": [
+    {
+      "run_id": 43613302272,
+      "job_id": 132502834570,
+      "workflow": ".github/workflows/lumo-kart-bauwelt-integration.yml",
+      "name": "combined-godot-runtime",
+      "event": "pull_request",
+      "run_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_sha": "a77db91cc6e61d4fca8199324b644024bc29b591",
+      "checkout_original_line": 122,
+      "verified_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T16:01:26Z",
+      "completed_at": "2026-11-14T16:02:15Z",
+      "duration_seconds": 49,
+      "markers": [
+        {
+          "line": 2703,
+          "text": "[PremiumRailKit] PASS rail triangles, mesh AABB, unchanged collision, LOD rails=5252 glow_batches=93"
+        },
+        {
+          "line": 2704,
+          "text": "[PremiumRailKit] PASS rail triangles, mesh AABB, unchanged collision, LOD rails=5252 glow_batches=93"
+        },
+        {
+          "line": 2721,
+          "text": "[KartTerrainExtent] PASS: immutable 17-point 1972 track, approved 23-point route, tidal inlet, adaptive terrain"
+        },
+        {
+          "line": 2723,
+          "text": "[KartTerrainExtent] PASS: immutable 17-point 1972 track, approved 23-point route, tidal inlet, adaptive terrain"
+        },
+        {
+          "line": 2740,
+          "text": "[Bauwelt12] PASS: 12 real 3D meshes, colliders, placement, rotations, undo/redo, state save/restore"
+        },
+        {
+          "line": 2742,
+          "text": "[Bauwelt12] PASS: 12 real 3D meshes, colliders, placement, rotations, undo/redo, state save/restore"
+        },
+        {
+          "line": 2754,
+          "text": "[VillageEconomy] PASS 339 checks"
+        },
+        {
+          "line": 2763,
+          "text": "[VillageEconomy] PASS 339 checks"
+        },
+        {
+          "line": 2785,
+          "text": "[VillageScene] PASS checks=222 : production village, chapter, economy and resume"
+        },
+        {
+          "line": 2786,
+          "text": "[VillageScene] PASS checks=222 : production village, chapter, economy and resume"
+        },
+        {
+          "line": 2805,
+          "text": "[BuildNextgen] PASS checks=71: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout"
+        },
+        {
+          "line": 2806,
+          "text": "[BuildNextgen] PASS checks=71: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout"
+        }
+      ],
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "run_id": 43613302244,
+      "job_id": 132502834495,
+      "workflow": ".github/workflows/lumo-native-lifecycle-bauwelt-proof.yml",
+      "name": "real-native-proof (precision)",
+      "event": "pull_request",
+      "run_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_sha": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_original_line": 125,
+      "verified_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T16:01:26Z",
+      "completed_at": "2026-11-14T16:02:33Z",
+      "duration_seconds": 67,
+      "markers": [
+        {
+          "line": 416,
+          "text": "[PrecisionCapture] PASS: 10 frames"
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        {
+          "line": 210,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 240,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 243,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        }
+      ]
+    },
+    {
+      "run_id": 43613302244,
+      "job_id": 132502834809,
+      "workflow": ".github/workflows/lumo-native-lifecycle-bauwelt-proof.yml",
+      "name": "real-native-proof (bauwelt)",
+      "event": "pull_request",
+      "run_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_sha": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_original_line": 125,
+      "verified_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T16:01:26Z",
+      "completed_at": "2026-11-14T16:02:47Z",
+      "duration_seconds": 81,
+      "markers": [
+        {
+          "line": 270,
+          "text": "[CreativeBuild] PASS: support, collision, crossing, meaningful goals, undo/redo, rejected corrupt save"
+        },
+        {
+          "line": 348,
+          "text": "[CreativeBuild] PASS: actual world, successful JSON reload, pause, 4 rendered screenshots"
+        },
+        {
+          "line": 353,
+          "text": "[BauweltArtifact] PASS: all four real frames are 1280x720 PNGs"
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        {
+          "line": 223,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 249,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 252,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        }
+      ]
+    },
+    {
+      "run_id": 43613302363,
+      "job_id": 132502835054,
+      "workflow": ".github/workflows/lumo-darkride-lap-event.yml",
+      "name": "validated-race-event",
+      "event": "pull_request",
+      "run_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_sha": "a77db91cc6e61d4fca8199324b644024bc29b591",
+      "checkout_original_line": 122,
+      "verified_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T16:01:26Z",
+      "completed_at": "2026-11-14T16:03:14Z",
+      "duration_seconds": 108,
+      "markers": [
+        {
+          "line": 2713,
+          "text": "[DarkrideEvent] PASS: lap-two neon + cartoon burst, reduced motion, no physics changes"
+        },
+        {
+          "line": 2730,
+          "text": "[DarkrideLifecycle] failures=0"
+        },
+        {
+          "line": 2773,
+          "text": "[DarkrideEventRender] PASS: real lap-one and lap-two neon event images differ"
+        },
+        {
+          "line": 2774,
+          "text": "[DarkrideEventRender] PASS: real lap-one and lap-two neon event images differ"
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        {
+          "line": 2756,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 2760,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 2762,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        }
+      ]
+    },
+    {
+      "run_id": 43613302188,
+      "job_id": 132502834280,
+      "workflow": ".github/workflows/lumo-sonnenhafen-hero-flight.yml",
+      "name": "hero-flight",
+      "event": "pull_request",
+      "run_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_sha": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_original_line": 123,
+      "verified_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T16:01:26Z",
+      "completed_at": "2026-11-14T16:03:09Z",
+      "duration_seconds": 103,
+      "markers": [
+        {
+          "line": 215,
+          "text": "[KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung"
+        },
+        {
+          "line": 216,
+          "text": "[KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung"
+        },
+        {
+          "line": 252,
+          "text": "[SonnenhafenFlightCapture] PASS: real ramp, airborne and landing screenshots"
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        {
+          "line": 181,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 185,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 187,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 234,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 238,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 240,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        }
+      ]
+    },
+    {
+      "run_id": 43613302194,
+      "job_id": 132502834314,
+      "workflow": ".github/workflows/lumo-sonnenhafen-2003-aerial-qa.yml",
+      "name": "hero-flight",
+      "event": "pull_request",
+      "run_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_sha": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_original_line": 123,
+      "verified_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T16:01:26Z",
+      "completed_at": "2026-11-14T16:03:08Z",
+      "duration_seconds": 102,
+      "markers": [
+        {
+          "line": 215,
+          "text": "[KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung"
+        },
+        {
+          "line": 216,
+          "text": "[KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung"
+        },
+        {
+          "line": 253,
+          "text": "[SonnenhafenAerial] PASS: full aerial course + takeoff + real flight + landing; no resets; peak 5.26m"
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        {
+          "line": 181,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 185,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 187,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 235,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 239,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 241,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        }
+      ]
+    },
+    {
+      "run_id": 43613302225,
+      "job_id": 132502834504,
+      "workflow": ".github/workflows/kart-video-visual-grade.yml",
+      "name": "video-grade",
+      "event": "pull_request",
+      "run_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_sha": "a77db91cc6e61d4fca8199324b644024bc29b591",
+      "checkout_original_line": 122,
+      "verified_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T16:01:25Z",
+      "completed_at": "2026-11-14T16:03:56Z",
+      "duration_seconds": 151,
+      "markers": [
+        {
+          "line": 2746,
+          "text": "[KartVideoGrade] PASS: complete rendered kart bounds at rest, speed and reduced motion on phone, cover and inner display"
+        },
+        {
+          "line": 2750,
+          "text": "[KartVideoGrade] PASS: close chase framing, glossy emissive road, filmic glow/contrast, bounded boost FOV"
+        },
+        {
+          "line": 2751,
+          "text": "[KartVideoGrade] PASS: complete rendered kart bounds at rest, speed and reduced motion on phone, cover and inner display"
+        },
+        {
+          "line": 2752,
+          "text": "[KartVideoGrade] PASS: close chase framing, glossy emissive road, filmic glow/contrast, bounded boost FOV"
+        },
+        {
+          "line": 2775,
+          "text": "[KartRivalFeedback] PASS: telegraph, dodge, shield block, visible rival shield, bounded boost"
+        },
+        {
+          "line": 2776,
+          "text": "[KartRivalFeedback] PASS: telegraph, dodge, shield block, visible rival shield, bounded boost"
+        },
+        {
+          "line": 2835,
+          "text": "[KartModesTests] PASS: 12-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks"
+        },
+        {
+          "line": 2836,
+          "text": "[KartModesTests] PASS: 12-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks"
+        },
+        {
+          "line": 2909,
+          "text": "[KartSplit] PASS: Wolkenweg raised 2.20 m while main lane stayed at 0.00 m"
+        },
+        {
+          "line": 2912,
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        },
+        {
+          "line": 2938,
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        {
+          "line": 2722,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 2726,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 2728,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        }
+      ]
+    },
+    {
+      "run_id": 43613302257,
+      "job_id": 132502834537,
+      "workflow": ".github/workflows/lumo-sonnenhafen-stunt-integration.yml",
+      "name": "real-godot-tests",
+      "event": "pull_request",
+      "run_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_sha": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_original_line": 123,
+      "verified_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T16:01:26Z",
+      "completed_at": "2026-11-14T16:06:51Z",
+      "duration_seconds": 325,
+      "markers": [
+        {
+          "line": 182,
+          "text": "[PrecisionJump] PASS: 55 checks"
+        },
+        {
+          "line": 235,
+          "text": "[SonnenhafenStunt] PASS: real loop, boost pad, stars, safe exit and safe failure"
+        },
+        {
+          "line": 253,
+          "text": "[CrystalGorge] PASS: carved depth, open physics gap, tiered batched geology"
+        },
+        {
+          "line": 289,
+          "text": "[KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung"
+        },
+        {
+          "line": 307,
+          "text": "[SonnenhafenWater] PASS: full/low foam, other-track isolation, real waterfall, shared sea height"
+        },
+        {
+          "line": 327,
+          "text": "[Darkride] PASS: deterministic mobile geometry, road width, eight checkpoints and zero collision changes"
+        },
+        {
+          "line": 348,
+          "text": "[SonnenhafenLong] PASS: real 1.85km curve, bridged tidal inlet and both LODs"
+        },
+        {
+          "line": 366,
+          "text": "[HarborVisualFinish] PASS: 10 opaque contacts, 4 joints, 288 high-only corrugation ribs, no gameplay changes"
+        },
+        {
+          "line": 384,
+          "text": "[SonnenhafenHeroCoast] PASS: 5 unique 3D landmarks, actual low/high LOD, safe road and preserved checkpoints"
+        },
+        {
+          "line": 409,
+          "text": "[KartTests] PASS: 8000 shared Jump questions; no Kart learning state; free steering; real full race; brake/drift; pause; save/resume; one award"
+        },
+        {
+          "line": 483,
+          "text": "[KartLapContinuity] PASS: 104 checks, 0 failures"
+        },
+        {
+          "line": 513,
+          "text": "[KartHandoffLifecycle] PASS: 10 checks, 0 failures"
+        },
+        {
+          "line": 514,
+          "text": "[KartContinuity] PASS: quality change, save/reopen, next lap, rival states, legacy saves and flight reset"
+        },
+        {
+          "line": 548,
+          "text": "[ProgressProfileLifetime] checks=24 failures=0"
+        },
+        {
+          "line": 628,
+          "text": "[KartSplit] PASS: Wolkenweg raised 2.20 m while main lane stayed at 0.00 m"
+        },
+        {
+          "line": 631,
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        },
+        {
+          "line": 866,
+          "text": "[PrecisionCapture] PASS: 10 frames"
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        {
+          "line": 205,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 209,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 211,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 237,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 241,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 243,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 255,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 259,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 261,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 291,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 295,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 297,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 309,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 313,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 315,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 329,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 333,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 335,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 350,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 354,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 356,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 368,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 372,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 374,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 386,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 390,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 392,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 411,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 415,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 417,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 516,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 520,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 522,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 550,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 554,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 556,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 660,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 690,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 693,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        }
+      ]
+    },
+    {
+      "run_id": 43613302322,
+      "job_id": 132502834567,
+      "workflow": ".github/workflows/kart-stage2-regression.yml",
+      "name": "kart-stage2",
+      "event": "pull_request",
+      "run_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_sha": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_original_line": 123,
+      "verified_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T16:01:26Z",
+      "completed_at": "2026-11-14T16:16:46Z",
+      "duration_seconds": 920,
+      "markers": [
+        {
+          "line": 276,
+          "text": "SUMMARY: 117 PASS / 7 WARN / 0 FAIL"
+        },
+        {
+          "line": 283,
+          "text": "[TrackPack] sonnenhafen: 130 details, 48 views, 5 Mystery Prisms PASS"
+        },
+        {
+          "line": 284,
+          "text": "[TrackPack] zauberwald: 120 details, 48 views, 5 Mystery Prisms PASS"
+        },
+        {
+          "line": 285,
+          "text": "[TrackPack] bergwelt: 120 details, 48 views, 5 Mystery Prisms PASS"
+        },
+        {
+          "line": 286,
+          "text": "[TrackPack] holo_city: 122 details, 48 views, 5 Mystery Prisms PASS"
+        },
+        {
+          "line": 287,
+          "text": "[SkyHaloAuthoring] 360-degree mesh, no collision, not wired to runtime PASS"
+        },
+        {
+          "line": 2856,
+          "text": "[StartLights] PASS: cached materials, red/green states, reduced motion, pause, resize"
+        },
+        {
+          "line": 2872,
+          "text": "[KartQualityPersist] PASS: Autoload read/write, file persistence, scene signal"
+        },
+        {
+          "line": 2885,
+          "text": "[KartQualitySceneSwitch] PASS: live SceneTree transitions reapply LOW without saving"
+        },
+        {
+          "line": 2900,
+          "text": "[HarborPavilion] PASS: three placed UV/PBR LOD prefabs, six piers outside racing guardrails, both detail tiers"
+        },
+        {
+          "line": 2950,
+          "text": "[LumoGestureContact] PASS checks=200 failures=0"
+        },
+        {
+          "line": 2969,
+          "text": "[LumoKartProduction] PASS actual Kart factory, physics events, pause, rebuild and finish"
+        },
+        {
+          "line": 4435,
+          "text": "[LumoKartProduction] PASS actual Kart factory, physics events, pause, rebuild and finish"
+        },
+        {
+          "line": 4459,
+          "text": "[TrackContract] sonnenhafen length=1851.7 minimum_curve_radius=27.2 PASS"
+        },
+        {
+          "line": 4460,
+          "text": "[TrackContract] zauberwald length=376.5 minimum_curve_radius=19.5 PASS"
+        },
+        {
+          "line": 4461,
+          "text": "[TrackContract] bergwelt length=472.8 minimum_curve_radius=24.4 PASS"
+        },
+        {
+          "line": 4462,
+          "text": "[TrackContract] holo_city length=442.8 minimum_curve_radius=22.5 PASS"
+        },
+        {
+          "line": 4463,
+          "text": "[TrackContract] crystal_canyon length=755.2 minimum_curve_radius=34.2 PASS"
+        },
+        {
+          "line": 4464,
+          "text": "[TrackContract] jungle_temple length=691.5 minimum_curve_radius=25.8 PASS"
+        },
+        {
+          "line": 4465,
+          "text": "[TrackContract] candy_cloud length=802.8 minimum_curve_radius=23.5 PASS"
+        },
+        {
+          "line": 4466,
+          "text": "[TrackContract] volcano_night length=742.3 minimum_curve_radius=27.4 PASS"
+        },
+        {
+          "line": 4467,
+          "text": "[TrackContract] winter_sprint length=800.3 minimum_curve_radius=29.2 PASS"
+        },
+        {
+          "line": 4468,
+          "text": "[TrackContract] galaxy_ringway length=749.6 minimum_curve_radius=33.8 PASS"
+        },
+        {
+          "line": 4469,
+          "text": "[TrackContract] desert_drift length=774.8 minimum_curve_radius=38.4 PASS"
+        },
+        {
+          "line": 4470,
+          "text": "[TrackContract] learning_lab length=765.4 minimum_curve_radius=29.6 PASS"
+        },
+        {
+          "line": 4472,
+          "text": "[TrackContract] sonnenhafen length=1851.7 minimum_curve_radius=27.2 PASS"
+        },
+        {
+          "line": 4473,
+          "text": "[TrackContract] zauberwald length=376.5 minimum_curve_radius=19.5 PASS"
+        },
+        {
+          "line": 4474,
+          "text": "[TrackContract] bergwelt length=472.8 minimum_curve_radius=24.4 PASS"
+        },
+        {
+          "line": 4475,
+          "text": "[TrackContract] holo_city length=442.8 minimum_curve_radius=22.5 PASS"
+        },
+        {
+          "line": 4476,
+          "text": "[TrackContract] crystal_canyon length=755.2 minimum_curve_radius=34.2 PASS"
+        },
+        {
+          "line": 4477,
+          "text": "[TrackContract] jungle_temple length=691.5 minimum_curve_radius=25.8 PASS"
+        },
+        {
+          "line": 4478,
+          "text": "[TrackContract] candy_cloud length=802.8 minimum_curve_radius=23.5 PASS"
+        },
+        {
+          "line": 4479,
+          "text": "[TrackContract] volcano_night length=742.3 minimum_curve_radius=27.4 PASS"
+        },
+        {
+          "line": 4480,
+          "text": "[TrackContract] winter_sprint length=800.3 minimum_curve_radius=29.2 PASS"
+        },
+        {
+          "line": 4481,
+          "text": "[TrackContract] galaxy_ringway length=749.6 minimum_curve_radius=33.8 PASS"
+        },
+        {
+          "line": 4482,
+          "text": "[TrackContract] desert_drift length=774.8 minimum_curve_radius=38.4 PASS"
+        },
+        {
+          "line": 4483,
+          "text": "[TrackContract] learning_lab length=765.4 minimum_curve_radius=29.6 PASS"
+        },
+        {
+          "line": 4484,
+          "text": "[TrackContract] bergwelt length=472.8 minimum_curve_radius=24.4 PASS"
+        },
+        {
+          "line": 4513,
+          "text": "[KartProductionMenu] CASE (360, 800) density=1.0 checks=58 failures=0"
+        },
+        {
+          "line": 4514,
+          "text": "[KartProductionMenu] CASE (640, 360) density=1.0 checks=113 failures=0"
+        },
+        {
+          "line": 4515,
+          "text": "[KartProductionMenu] CASE (1280, 720) density=1.0 checks=169 failures=0"
+        },
+        {
+          "line": 4516,
+          "text": "[KartProductionMenu] CASE (1200, 896) density=1.0 checks=225 failures=0"
+        },
+        {
+          "line": 4517,
+          "text": "[KartProductionMenu] CASE (2176, 1812) density=2.25 checks=281 failures=0"
+        },
+        {
+          "line": 4518,
+          "text": "[KartProductionMenu] CASE (2316, 904) density=2.5 checks=336 failures=0"
+        },
+        {
+          "line": 4519,
+          "text": "[KartProductionMenu] CASE (640, 320) density=1.0 checks=391 failures=0"
+        },
+        {
+          "line": 4520,
+          "text": "[KartProductionMenu] CASE (1280, 720) density=1.0 checks=447 failures=0"
+        },
+        {
+          "line": 4521,
+          "text": "[KartProductionMenu] CASE (640, 320) density=1.0 checks=502 failures=0"
+        },
+        {
+          "line": 4522,
+          "text": "[KartProductionMenu] CASE (1920, 1080) density=1.875 checks=557 failures=0"
+        },
+        {
+          "line": 4523,
+          "text": "[KartProductionMenu] CASE (1920, 1080) density=2.75 checks=612 failures=0"
+        },
+        {
+          "line": 4526,
+          "text": "[KartProductionMenu] PASS real factory, 11 density/layout cases, 48dp and accessible modes"
+        },
+        {
+          "line": 4572,
+          "text": "[StartHero] checks=222 failures=0"
+        },
+        {
+          "line": 4573,
+          "text": "[StartHero] PASS: live hero, touch race entry, saved resume, selected modes and calm camera"
+        },
+        {
+          "line": 4609,
+          "text": "[KartProductionMenu] CASE (2176, 1812) density=2.25 checks=60 failures=0"
+        },
+        {
+          "line": 4612,
+          "text": "[KartProductionMenu] PASS real factory, 1 density/layout cases, 48dp and accessible modes"
+        },
+        {
+          "line": 4636,
+          "text": "[AAAStageLifetime] PASS: four stage lifecycles; 0 failures"
+        },
+        {
+          "line": 4646,
+          "text": "[RendererProfiles] PASS: 12 capability combinations, actual renderer, full-low-full downgrade"
+        },
+        {
+          "line": 4671,
+          "text": "[SkyHaloContract] authoring-only loop bounds=(10.8, 24.0, 24.0) collision=false runtime=false PASS"
+        },
+        {
+          "line": 4672,
+          "text": "[SkyHaloContract] authoring-only loop bounds=(10.8, 24.0, 24.0) collision=false runtime=false PASS"
+        },
+        {
+          "line": 4693,
+          "text": "[KartEntry] PASS: six genuine scene images, Nunito header, no invented loading percentage"
+        },
+        {
+          "line": 4695,
+          "text": "[KartEntry] PASS: six genuine scene images, Nunito header, no invented loading percentage"
+        },
+        {
+          "line": 4733,
+          "text": "[KartLoading] PASS:93 real loading, rig, dp, timeout, Retry and existing Kart transition checks"
+        },
+        {
+          "line": 4748,
+          "text": "[KartLoading] PASS:91 real loading, rig, dp, timeout, Retry and existing Kart transition checks"
+        },
+        {
+          "line": 4834,
+          "text": "[KartSplit] PASS: Wolkenweg raised 2.20 m while main lane stayed at 0.00 m"
+        },
+        {
+          "line": 4837,
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        },
+        {
+          "line": 4863,
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        },
+        {
+          "line": 4922,
+          "text": "[FirstActiveSnapshot] PASS: 41 checks / 0 failures"
+        },
+        {
+          "line": 4936,
+          "text": "[FirstActiveEngine] PASS: 11 checks / 0 failures"
+        },
+        {
+          "line": 4959,
+          "text": "[FirstActiveWriteFailure] PASS: 8 checks / 0 failures"
+        },
+        {
+          "line": 5006,
+          "text": "[LumoBackdrop] PASS:40 viewport/safe/dialog/color/routing/pixel/touch/reduced-motion checks"
+        },
+        {
+          "line": 5007,
+          "text": "[LumoBackdrop] PASS:40 viewport/safe/dialog/color/routing/pixel/touch/reduced-motion checks"
+        },
+        {
+          "line": 5056,
+          "text": "[KartMenuFlow] PASS: direct selected Cup start inside compact Android safe insets"
+        },
+        {
+          "line": 5057,
+          "text": "[KartMenuFlow] PASS: five direct sections; 1280x720,800x480,640x320; safe controls >=44px"
+        },
+        {
+          "line": 5058,
+          "text": "[KartMenuFlow] PASS: direct selected Cup start inside compact Android safe insets"
+        },
+        {
+          "line": 5114,
+          "text": "[KartModesTests] PASS: 12-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks"
+        },
+        {
+          "line": 5115,
+          "text": "[KartModesTests] PASS: 12-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks"
+        },
+        {
+          "line": 5172,
+          "text": "[KartPauseLayoutTests] PASS: actual compact/Fold matrix, safe-area controls, pause/results layout and touch navigation"
+        },
+        {
+          "line": 5173,
+          "text": "[KartPauseLayoutTests] PASS: actual compact/Fold matrix, safe-area controls, pause/results layout and touch navigation"
+        },
+        {
+          "line": 5284,
+          "text": "[SkyShots] PASS: eight views, five prisms and clean factory lifetime"
+        },
+        {
+          "line": 5313,
+          "text": "[SkyShots] PASS: eight views, five prisms and clean factory lifetime"
+        },
+        {
+          "line": 5529,
+          "text": "[CharacterPose] checks=2325 failures=0"
+        },
+        {
+          "line": 5530,
+          "text": "[CharacterPose] PASS: racing, companion, speech, reduced motion and rebuilds preserve authored anatomy"
+        },
+        {
+          "line": 5541,
+          "text": "[FaceDepth] checks=23 failures=0"
+        },
+        {
+          "line": 5542,
+          "text": "[FaceDepth] PASS: inset eyes and attached smiling muzzle"
+        },
+        {
+          "line": 5553,
+          "text": "[LumoEyeProportions] PASS: fox eyes, swept ears, open smile; other drivers unchanged"
+        },
+        {
+          "line": 5565,
+          "text": "[LumoFaceStudio] PASS: real studio fill, bounded light cost, retained key, careful color grade"
+        },
+        {
+          "line": 5566,
+          "text": "[CharacterPose] PASS: racing, companion, speech, reduced motion and rebuilds preserve authored anatomy"
+        },
+        {
+          "line": 5567,
+          "text": "[FaceDepth] PASS: inset eyes and attached smiling muzzle"
+        },
+        {
+          "line": 5589,
+          "text": "[LumoFaceCapture] PASS: three actual face views at tablet/compact/phone sizes"
+        },
+        {
+          "line": 5607,
+          "text": "[DriverPortrait] PASS: res://exports/face-showroom/lumo-driver-4views.png"
+        },
+        {
+          "line": 5660,
+          "text": "[StartHero] checks=225 failures=0"
+        },
+        {
+          "line": 5661,
+          "text": "[StartHero] PASS: live hero, touch race entry, saved resume, selected modes and calm camera"
+        },
+        {
+          "line": 5662,
+          "text": "[StartHero] PASS: live hero, touch race entry, saved resume, selected modes and calm camera"
+        },
+        {
+          "line": 5676,
+          "text": "[KartAquarium] PASS: schools, reefs, clearance, water UVs, budgets and preserved race geometry"
+        },
+        {
+          "line": 5697,
+          "text": "[KartAquarium] PASS: schools, reefs, clearance, water UVs, budgets and preserved race geometry"
+        },
+        {
+          "line": 5724,
+          "text": "[KartAquariumCapture] PASS: six actual chase-camera views, LOW/HIGH"
+        },
+        {
+          "line": 5725,
+          "text": "[Stage2Character] PASS: measured anatomy/start/aquarium checks and fourteen source-bound PNGs"
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        {
+          "line": 199,
+          "text": "[WARN] asset: lumo_fox fehlt (assets/models/lumo_fox.glb) - AssetLoader nutzt Placeholder"
+        },
+        {
+          "line": 200,
+          "text": "[WARN] asset: hub_island fehlt (assets/models/hub_island.glb) - AssetLoader nutzt Placeholder"
+        },
+        {
+          "line": 201,
+          "text": "[WARN] asset: portal_learn fehlt (assets/models/portal_learn.glb) - AssetLoader nutzt Placeholder"
+        },
+        {
+          "line": 202,
+          "text": "[WARN] asset: portal_games fehlt (assets/models/portal_games.glb) - AssetLoader nutzt Placeholder"
+        },
+        {
+          "line": 203,
+          "text": "[WARN] asset: portal_parent fehlt (assets/models/portal_parent.glb) - AssetLoader nutzt Placeholder"
+        },
+        {
+          "line": 204,
+          "text": "[WARN] asset: star_collectible fehlt (assets/models/star_collectible.glb) - AssetLoader nutzt Placeholder"
+        },
+        {
+          "line": 263,
+          "text": "[WARN] tool: tools/build_web_bundle.sh nicht ausfuehrbar (chmod +x fehlt)"
+        },
+        {
+          "line": 4592,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 4596,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 4598,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 4950,
+          "text": "WARNING: Race checkpoint tmp write failed"
+        },
+        {
+          "line": 4987,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 4991,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 4993,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5023,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5027,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5029,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5136,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5140,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5142,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5234,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5238,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5240,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5257,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5261,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5263,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5286,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5290,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5292,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5316,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5320,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5322,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5339,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5343,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5345,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5362,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5366,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5368,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5569,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5573,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5575,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5591,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5595,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5597,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5609,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5613,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5615,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5678,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5682,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5684,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 5699,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 5703,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 5705,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        }
+      ]
+    },
+    {
+      "run_id": 43613302162,
+      "job_id": 132502834040,
+      "workflow": ".github/workflows/lumo-resonance-racing.yml",
+      "name": "native-resonance",
+      "event": "pull_request",
+      "run_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_sha": "a77db91cc6e61d4fca8199324b644024bc29b591",
+      "checkout_original_line": 122,
+      "verified_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T16:01:26Z",
+      "completed_at": "2026-11-14T16:03:04Z",
+      "duration_seconds": 98,
+      "markers": [
+        {
+          "line": 185,
+          "text": "[KartResonance] PASS: skill not RNG, five real ring meshes, one pickup/lap, pulse use, save-key continuity"
+        },
+        {
+          "line": 208,
+          "text": "[KartRivalFeedback] PASS: telegraph, dodge, shield block, visible rival shield, bounded boost"
+        },
+        {
+          "line": 249,
+          "text": "[KartResonanceCapture] PASS: actual Sonnenhafen in-game ring at 1280x720"
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        {
+          "line": 231,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 235,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 237,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        }
+      ]
+    },
+    {
+      "run_id": 43613302179,
+      "job_id": 132502834220,
+      "workflow": ".github/workflows/kart-rival-feedback.yml",
+      "name": "rival-feedback",
+      "event": "pull_request",
+      "run_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_sha": "a77db91cc6e61d4fca8199324b644024bc29b591",
+      "checkout_original_line": 122,
+      "verified_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T16:01:26Z",
+      "completed_at": "2026-11-14T16:04:09Z",
+      "duration_seconds": 163,
+      "markers": [
+        {
+          "line": 2716,
+          "text": "[KartRivalFeedback] PASS: telegraph, dodge, shield block, visible rival shield, bounded boost"
+        },
+        {
+          "line": 2717,
+          "text": "[KartRivalFeedback] PASS: telegraph, dodge, shield block, visible rival shield, bounded boost"
+        },
+        {
+          "line": 2759,
+          "text": "[KartRivalShots] PASS: 4 real runtime frames at 1280x720"
+        },
+        {
+          "line": 2760,
+          "text": "[KartRivalShots] PASS: 4 real runtime frames at 1280x720"
+        },
+        {
+          "line": 2816,
+          "text": "[KartModesTests] PASS: 12-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks"
+        },
+        {
+          "line": 2817,
+          "text": "[KartModesTests] PASS: 12-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks"
+        },
+        {
+          "line": 2903,
+          "text": "[KartSplit] PASS: Wolkenweg raised 2.20 m while main lane stayed at 0.00 m"
+        },
+        {
+          "line": 2906,
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        },
+        {
+          "line": 2932,
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        {
+          "line": 2737,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 2741,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 2743,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        }
+      ]
+    },
+    {
+      "run_id": 43613302165,
+      "job_id": 132502834176,
+      "workflow": ".github/workflows/lumo-nextgen-design-smoke.yml",
+      "name": "nextgen-visual",
+      "event": "pull_request",
+      "run_head": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "checkout_sha": "a77db91cc6e61d4fca8199324b644024bc29b591",
+      "checkout_original_line": 122,
+      "verified_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T16:01:26Z",
+      "completed_at": "2026-11-14T16:04:31Z",
+      "duration_seconds": 185,
+      "markers": [
+        {
+          "line": 2706,
+          "text": "[KartNextGenUI] PASS: live fox, visible scrollable routes, grade/subject and touch targets"
+        },
+        {
+          "line": 2743,
+          "text": "[AAAMenuCapture] PASS: three fixed-state real menu captures, five accessible 48dp modes"
+        },
+        {
+          "line": 2776,
+          "text": "[NextGenHub] PASS: two actual rendered game hub screenshots"
+        },
+        {
+          "line": 2809,
+          "text": "[ReferenceLanding] PASS: native real menu controls, live selected mode, phone and landscape"
+        },
+        {
+          "line": 2844,
+          "text": "[ReferenceHost] PASS: brand-consistent modes, live premium START, 3D Kart race and navigation"
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        {
+          "line": 2723,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 2727,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 2729,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 2758,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 2762,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 2764,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 2791,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 2795,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 2797,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        },
+        {
+          "line": 2824,
+          "text": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver."
+        },
+        {
+          "line": 2828,
+          "text": "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer."
+        },
+        {
+          "line": 2830,
+          "text": "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+        }
+      ]
+    }
+  ],
+  "workflow_source_entries": [
+    {
+      "path": ".github/workflows/lumo-kart-bauwelt-integration.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7d25420ba2774cd80ae777053207f051cfcd5786",
+      "size": 4328,
+      "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/7d25420ba2774cd80ae777053207f051cfcd5786"
+    },
+    {
+      "path": ".github/workflows/lumo-native-lifecycle-bauwelt-proof.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2f299694af716e48553ad769588b7080f06411a7",
+      "size": 4300,
+      "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/2f299694af716e48553ad769588b7080f06411a7"
+    },
+    {
+      "path": ".github/workflows/lumo-darkride-lap-event.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2a13c4546ab6d80c2e9fc42b1f29b25df0341b5e",
+      "size": 3621,
+      "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/2a13c4546ab6d80c2e9fc42b1f29b25df0341b5e"
+    },
+    {
+      "path": ".github/workflows/lumo-sonnenhafen-hero-flight.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "318d268c1f89c625caed2a52887448372771dfc4",
+      "size": 3384,
+      "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/318d268c1f89c625caed2a52887448372771dfc4"
+    },
+    {
+      "path": ".github/workflows/lumo-sonnenhafen-2003-aerial-qa.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "992b0240b1ac97b5e9c6b767e4c1c7880a0c8039",
+      "size": 3480,
+      "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/992b0240b1ac97b5e9c6b767e4c1c7880a0c8039"
+    },
+    {
+      "path": ".github/workflows/kart-video-visual-grade.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1538bd99deadecd93f81ffcff045e5f68f117a4c",
+      "size": 5147,
+      "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/1538bd99deadecd93f81ffcff045e5f68f117a4c"
+    },
+    {
+      "path": ".github/workflows/lumo-sonnenhafen-stunt-integration.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a6d7ce9d57d6e1f1868781f425ddc7d74f4ecd6d",
+      "size": 4132,
+      "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/a6d7ce9d57d6e1f1868781f425ddc7d74f4ecd6d"
+    },
+    {
+      "path": ".github/workflows/kart-stage2-regression.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6f4fbe990c05600e7a5e8b12443f7ecb50a3134",
+      "size": 31842,
+      "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/f6f4fbe990c05600e7a5e8b12443f7ecb50a3134"
+    },
+    {
+      "path": ".github/workflows/lumo-resonance-racing.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ed6c18e6c81ca5e166d4d568d6ea3389be178b30",
+      "size": 3702,
+      "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/ed6c18e6c81ca5e166d4d568d6ea3389be178b30"
+    },
+    {
+      "path": ".github/workflows/kart-rival-feedback.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8ced976ee680915d5ea784041da72aa0a2a1c394",
+      "size": 5226,
+      "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/8ced976ee680915d5ea784041da72aa0a2a1c394"
+    },
+    {
+      "path": ".github/workflows/lumo-nextgen-design-smoke.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d5576a54d1374b0db4efc64adf7e896299bdfdd2",
+      "size": 5163,
+      "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/d5576a54d1374b0db4efc64adf7e896299bdfdd2"
+    }
+  ],
+  "fault_probe_source": {
+    "path": "scripts/tests/kart_first_active_snapshot_write_failure_probe.gd",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "543a787ae96ca4dd50348429c06ca85afcc27fc4",
+    "size": 4217,
+    "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/543a787ae96ca4dd50348429c06ca85afcc27fc4"
+  },
+  "warning_classification": {
+    "compatibility": {
+      "per_kind": 42,
+      "kinds": [
+        "V-Sync change unsupported by graphics driver",
+        "screen-space AA requires Forward+ or Mobile",
+        "volumetric fog requires Forward+"
+      ]
+    },
+    "static_project": {
+      "pass": 117,
+      "warn": 7,
+      "fail": 0,
+      "scope": "Six missing legacy asset-manifest GLBs and non-executable build_web_bundle.sh; retained warnings, not reclassified as physical measurement gaps."
+    },
+    "intentional_io_fault": {
+      "count": 1,
+      "job_id": 132502834567,
+      "line": 4950,
+      "text": "WARNING: Race checkpoint tmp write failed",
+      "source_condition": "Probe creates SESSION + .tmp as a directory, verifies durable old bytes survive, removes the directory and verifies actual periodic save recovery.",
+      "terminal_marker": "[FirstActiveWriteFailure] PASS: 8 checks / 0 failures"
+    }
+  },
+  "limits": [
+    "No claim of warning-free execution.",
+    "Job stdout contains grep replays of some PASS lines; repeated lines are not counted as separate tests.",
+    "Only stdout/log originals and source/CI metadata are independently archived here; auxiliary PNG artifacts are not newly downloaded/decoded in this review.",
+    "No Android, physical touch or device-FPS acceptance inferred from these jobs."
+  ]
+}

@@ -1,0 +1,908 @@
+﻿2026-11-14T16:01:26.6352358Z Current runner version: '2.338.2'
+2026-11-14T16:01:26.6369162Z ##[group]Runner Image Provisioner
+2026-11-14T16:01:26.6370133Z Hosted Compute Agent
+2026-11-14T16:01:26.6370596Z Version: 20261103.629
+2026-11-14T16:01:26.6371157Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-14T16:01:26.6371713Z Build Date: 2026-11-03T17:26:59Z
+2026-11-14T16:01:26.6372241Z Worker ID: {bd6d4934-2fe2-4f1b-8cbd-0595cf2a4922}
+2026-11-14T16:01:26.6372777Z Region: us-east-1
+2026-11-14T16:01:26.6373166Z Cloud: AWS
+2026-11-14T16:01:26.6373582Z ##[endgroup]
+2026-11-14T16:01:26.6374574Z ##[group]Operating System
+2026-11-14T16:01:26.6375008Z Ubuntu
+2026-11-14T16:01:26.6375398Z 24.04.5
+2026-11-14T16:01:26.6375759Z LTS
+2026-11-14T16:01:26.6376127Z ##[endgroup]
+2026-11-14T16:01:26.6376520Z ##[group]Runner Image
+2026-11-14T16:01:26.6376967Z Image: ubuntu-24.04
+2026-11-14T16:01:26.6377388Z Version: 20261111.127.1
+2026-11-14T16:01:26.6378279Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261111.127/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-14T16:01:26.6379402Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261111.127
+2026-11-14T16:01:26.6380306Z ##[endgroup]
+2026-11-14T16:01:26.6381187Z ##[group]GITHUB_TOKEN Permissions
+2026-11-14T16:01:26.6382740Z Contents: read
+2026-11-14T16:01:26.6383184Z Metadata: read
+2026-11-14T16:01:26.6383635Z ##[endgroup]
+2026-11-14T16:01:26.6385082Z Secret source: Actions
+2026-11-14T16:01:26.6385705Z Cache mode: write
+2026-11-14T16:01:26.6386204Z Prepare workflow directory
+2026-11-14T16:01:26.6607664Z Prepare all required actions
+2026-11-14T16:01:26.6644129Z Getting action download info
+2026-11-14T16:01:26.8348322Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-14T16:01:28.5046748Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-14T16:01:28.7660117Z Complete job name: real-godot-tests
+2026-11-14T16:01:28.8463484Z ##[group]Run actions/checkout@v4
+2026-11-14T16:01:28.8464683Z with:
+2026-11-14T16:01:28.8465499Z   ref: 84789d0c2c6fb4b6ecd2897ce1951b89f958b604
+2026-11-14T16:01:28.8466601Z   persist-credentials: false
+2026-11-14T16:01:28.8467526Z   repository: Ullmann27/lumo-godot
+2026-11-14T16:01:28.8474579Z   token: ***
+2026-11-14T16:01:28.8475392Z   ssh-strict: true
+2026-11-14T16:01:28.8476175Z   ssh-user: git
+2026-11-14T16:01:28.8476942Z   clean: true
+2026-11-14T16:01:28.8477754Z   sparse-checkout-cone-mode: true
+2026-11-14T16:01:28.8478676Z   fetch-depth: 1
+2026-11-14T16:01:28.8479589Z   fetch-tags: false
+2026-11-14T16:01:28.8480471Z   show-progress: true
+2026-11-14T16:01:28.8481296Z   lfs: false
+2026-11-14T16:01:28.8482050Z   submodules: false
+2026-11-14T16:01:28.8482836Z   set-safe-directory: true
+2026-11-14T16:01:28.8483784Z   allow-unsafe-pr-checkout: false
+2026-11-14T16:01:28.8484882Z ##[endgroup]
+2026-11-14T16:01:32.7467373Z Syncing repository: Ullmann27/lumo-godot
+2026-11-14T16:01:32.7468926Z ##[group]Getting Git version info
+2026-11-14T16:01:32.7469359Z Working directory is '/home/runner/work/lumo-godot/lumo-godot'
+2026-11-14T16:01:32.7470257Z [command]/usr/bin/git version
+2026-11-14T16:01:32.9001690Z git version 2.56.1
+2026-11-14T16:01:32.9013895Z ##[endgroup]
+2026-11-14T16:01:32.9022151Z Temporarily overriding HOME='/home/runner/work/_temp/c76fec19-1fac-439e-9ce1-2aa28d6379e5' before making global git config changes
+2026-11-14T16:01:32.9023014Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-14T16:01:32.9025454Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/lumo-godot/lumo-godot
+2026-11-14T16:01:32.9083103Z Deleting the contents of '/home/runner/work/lumo-godot/lumo-godot'
+2026-11-14T16:01:32.9085321Z ##[group]Initializing the repository
+2026-11-14T16:01:32.9088256Z [command]/usr/bin/git init /home/runner/work/lumo-godot/lumo-godot
+2026-11-14T16:01:32.9890051Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-14T16:01:32.9891283Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-14T16:01:32.9892003Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-14T16:01:32.9892527Z hint: call:
+2026-11-14T16:01:32.9893637Z hint:
+2026-11-14T16:01:32.9894198Z hint: 	git config --global init.defaultBranch <name>
+2026-11-14T16:01:32.9894549Z hint:
+2026-11-14T16:01:32.9894923Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-14T16:01:32.9895384Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-14T16:01:32.9895794Z hint:
+2026-11-14T16:01:32.9896101Z hint: 	git branch -m <name>
+2026-11-14T16:01:32.9896374Z hint:
+2026-11-14T16:01:32.9896771Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-14T16:01:32.9910056Z Initialized empty Git repository in /home/runner/work/lumo-godot/lumo-godot/.git/
+2026-11-14T16:01:32.9916546Z [command]/usr/bin/git remote add origin https://github.com/Ullmann27/lumo-godot
+2026-11-14T16:01:32.9976579Z ##[endgroup]
+2026-11-14T16:01:32.9977053Z ##[group]Disabling automatic garbage collection
+2026-11-14T16:01:32.9979627Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-14T16:01:32.9999001Z ##[endgroup]
+2026-11-14T16:01:32.9999804Z ##[group]Setting up auth
+2026-11-14T16:01:33.0004155Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-14T16:01:33.0030724Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-14T16:01:33.2626172Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-14T16:01:33.2649138Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-14T16:01:33.2794572Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-14T16:01:33.2815003Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-14T16:01:33.2958488Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-14T16:01:33.2981920Z ##[endgroup]
+2026-11-14T16:01:33.2982586Z ##[group]Fetching the repository
+2026-11-14T16:01:33.2995955Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 84789d0c2c6fb4b6ecd2897ce1951b89f958b604
+2026-11-14T16:01:35.8878232Z From https://github.com/Ullmann27/lumo-godot
+2026-11-14T16:01:35.8878763Z  * branch            84789d0c2c6fb4b6ecd2897ce1951b89f958b604 -> FETCH_HEAD
+2026-11-14T16:01:35.8882127Z ##[endgroup]
+2026-11-14T16:01:35.8882589Z ##[group]Determining the checkout info
+2026-11-14T16:01:35.8884250Z ##[endgroup]
+2026-11-14T16:01:35.8896404Z [command]/usr/bin/git sparse-checkout disable
+2026-11-14T16:01:35.8981220Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-14T16:01:35.8990639Z ##[group]Checking out the ref
+2026-11-14T16:01:35.8993366Z [command]/usr/bin/git checkout --progress --force 84789d0c2c6fb4b6ecd2897ce1951b89f958b604
+2026-11-14T16:01:36.6546758Z Note: switching to '84789d0c2c6fb4b6ecd2897ce1951b89f958b604'.
+2026-11-14T16:01:36.6547129Z 
+2026-11-14T16:01:36.6547624Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-14T16:01:36.6548398Z changes and commit them, and you can discard any commits you make in this
+2026-11-14T16:01:36.6548983Z state without impacting any branches by switching back to a branch.
+2026-11-14T16:01:36.6549350Z 
+2026-11-14T16:01:36.6550024Z If you want to create a new branch to retain commits you create, you may
+2026-11-14T16:01:36.6550698Z do so (now or later) by using -c with the switch command. Example:
+2026-11-14T16:01:36.6551157Z 
+2026-11-14T16:01:36.6551349Z   git switch -c <new-branch-name>
+2026-11-14T16:01:36.6551554Z 
+2026-11-14T16:01:36.6551965Z Or undo this operation with:
+2026-11-14T16:01:36.6552184Z 
+2026-11-14T16:01:36.6552327Z   git switch -
+2026-11-14T16:01:36.6552480Z 
+2026-11-14T16:01:36.6552680Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-14T16:01:36.6553036Z 
+2026-11-14T16:01:36.6553252Z HEAD is now at 84789d0 ci: run native discovery acceptance on the integrated source
+2026-11-14T16:01:36.6593906Z ##[endgroup]
+2026-11-14T16:01:36.6635456Z [command]/usr/bin/git log -1 --format=%H
+2026-11-14T16:01:36.6653460Z 84789d0c2c6fb4b6ecd2897ce1951b89f958b604
+2026-11-14T16:01:36.6661536Z ##[group]Removing auth
+2026-11-14T16:01:36.6663658Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-14T16:01:36.6685400Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-14T16:01:36.6838849Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-14T16:01:36.6860204Z http.https://github.com/.extraheader
+2026-11-14T16:01:36.6864517Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-14T16:01:36.6885505Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-14T16:01:36.7034096Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-14T16:01:36.7053821Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-14T16:01:36.7200796Z ##[endgroup]
+2026-11-14T16:01:36.7398132Z ##[group]Run set -euo pipefail
+2026-11-14T16:01:36.7398529Z [36;1mset -euo pipefail[0m
+2026-11-14T16:01:36.7398809Z [36;1msudo apt-get update -qq[0m
+2026-11-14T16:01:36.7399318Z [36;1msudo apt-get install -y xvfb libgl1-mesa-dri[0m
+2026-11-14T16:01:36.7400235Z [36;1mcurl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip[0m
+2026-11-14T16:01:36.7400837Z [36;1munzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"[0m
+2026-11-14T16:01:36.7401210Z [36;1mchmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"[0m
+2026-11-14T16:01:36.7401534Z [36;1mecho "$RUNNER_TEMP" >> "$GITHUB_PATH"[0m
+2026-11-14T16:01:36.8751924Z shell: /usr/bin/bash -e {0}
+2026-11-14T16:01:36.8752387Z ##[endgroup]
+2026-11-14T16:01:48.9483519Z Reading package lists...
+2026-11-14T16:01:49.1040306Z Building dependency tree...
+2026-11-14T16:01:49.1044517Z Reading state information...
+2026-11-14T16:01:49.2921753Z xvfb is already the newest version (2:21.1.12-1ubuntu1.9).
+2026-11-14T16:01:49.2922352Z libgl1-mesa-dri is already the newest version (25.2.8-0ubuntu0.24.04.4).
+2026-11-14T16:01:49.2922807Z libgl1-mesa-dri set to manually installed.
+2026-11-14T16:01:49.2923217Z 0 upgraded, 0 newly installed, 0 to remove and 23 not upgraded.
+2026-11-14T16:01:49.2968123Z   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+2026-11-14T16:01:49.3174661Z                                  Dload  Upload   Total   Spent    Left  Speed
+2026-11-14T16:01:49.3174904Z 
+2026-11-14T16:01:49.3175147Z   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+2026-11-14T16:01:49.3175572Z   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+2026-11-14T16:01:49.6886055Z 
+2026-11-14T16:01:49.6886550Z 100 68.4M  100 68.4M    0     0   174M      0 --:--:-- --:--:-- --:--:--  174M
+2026-11-14T16:01:50.5642564Z ##[group]Run set -euo pipefail
+2026-11-14T16:01:50.5642867Z [36;1mset -euo pipefail[0m
+2026-11-14T16:01:50.5643184Z [36;1mmkdir -p exports/stunt-integration[0m
+2026-11-14T16:01:50.5643638Z [36;1mgit rev-parse HEAD | tee exports/stunt-integration/source-sha.txt[0m
+2026-11-14T16:01:50.5644076Z [36;1mpython3 tools/validate_project.py > exports/stunt-integration/validation.log[0m
+2026-11-14T16:01:50.5644655Z [36;1mtimeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit > exports/stunt-integration/import.log 2>&1[0m
+2026-11-14T16:01:50.5645342Z [36;1mif grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' exports/stunt-integration/import.log; then exit 1; fi[0m
+2026-11-14T16:01:50.5673150Z shell: /usr/bin/bash -e {0}
+2026-11-14T16:01:50.5673540Z ##[endgroup]
+2026-11-14T16:01:50.5731295Z 84789d0c2c6fb4b6ecd2897ce1951b89f958b604
+2026-11-14T16:02:23.1698174Z ##[group]Run set -euo pipefail
+2026-11-14T16:02:23.1698489Z [36;1mset -euo pipefail[0m
+2026-11-14T16:02:23.1699309Z [36;1mpython3 tools/run_godot_probe.py --timeout 120 --log exports/stunt-integration/kart_precision_jump_regression.log --required "[PrecisionJump] PASS:" -- Godot_v4.6.3-stable_linux.x86_64 --headless --audio-driver Dummy --path . --script res://scripts/tests/kart_precision_jump_regression.gd[0m
+2026-11-14T16:02:23.1725257Z shell: /usr/bin/bash -e {0}
+2026-11-14T16:02:23.1725572Z ##[endgroup]
+2026-11-14T16:02:23.2133146Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:02:23.2320997Z 
+2026-11-14T16:02:23.6393553Z [EventBus] online - signals registered
+2026-11-14T16:02:23.6394016Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:02:23.6394541Z [Perf] platform_detected:Linux
+2026-11-14T16:02:23.6400991Z [Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+2026-11-14T16:02:23.6401809Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:02:23.6402282Z [Audio] manager ready (muted:false)
+2026-11-14T16:02:23.6402632Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:02:24.5698403Z [PrecisionJump] PASS: 55 checks
+2026-11-14T16:02:24.5698985Z [Perf] quality_profile:medium
+2026-11-14T16:02:24.6557623Z ##[group]Run set -euo pipefail
+2026-11-14T16:02:24.6557961Z [36;1mset -euo pipefail[0m
+2026-11-14T16:02:24.6558248Z [36;1mwhile IFS='|' read -r script marker; do[0m
+2026-11-14T16:02:24.6559117Z [36;1m  xvfb-run -a -s '-screen 0 1280x720x24' python3 tools/run_godot_probe.py --timeout 180 --log "exports/stunt-integration/$script.log" --required "$marker" -- Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy --rendering-method gl_compatibility --path . --script "res://scripts/tests/$script.gd"[0m
+2026-11-14T16:02:24.6560447Z [36;1mdone <<'CASES'[0m
+2026-11-14T16:02:24.6560769Z [36;1mkart_sonnenhafen_stunt_regression|[SonnenhafenStunt] PASS:[0m
+2026-11-14T16:02:24.6561149Z [36;1mkart_crystal_gorge_regression|[CrystalGorge] PASS:[0m
+2026-11-14T16:02:24.6561526Z [36;1mkart_action_course_regression|[KartActionCourse] PASS:[0m
+2026-11-14T16:02:24.6561879Z [36;1mkart_sonnenhafen_water_regression|[SonnenhafenWater] PASS:[0m
+2026-11-14T16:02:24.6562332Z [36;1mkart_sonnenhafen_darkride_regression|[Darkride] PASS:[0m
+2026-11-14T16:02:24.6562688Z [36;1mkart_sonnenhafen_long_course_regression|[SonnenhafenLong] PASS:[0m
+2026-11-14T16:02:24.6563076Z [36;1mkart_sonnenhafen_visual_finish_regression|[HarborVisualFinish] PASS:[0m
+2026-11-14T16:02:24.6563513Z [36;1mkart_sonnenhafen_hero_coast_regression|[SonnenhafenHeroCoast] PASS:[0m
+2026-11-14T16:02:24.6563856Z [36;1mkart_regression|[KartTests] PASS:[0m
+2026-11-14T16:02:24.6564437Z [36;1mkart_race_continuity_regression|[KartContinuity] PASS:[0m
+2026-11-14T16:02:24.6564812Z [36;1mprogress_profile_lifetime_regression|[ProgressProfileLifetime] checks=[0m
+2026-11-14T16:02:24.6565185Z [36;1mkart_physics_regression|[KartPhysics] PASS:[0m
+2026-11-14T16:02:24.6565470Z [36;1mCASES[0m
+2026-11-14T16:02:24.6590862Z shell: /usr/bin/bash -e {0}
+2026-11-14T16:02:24.6591125Z ##[endgroup]
+2026-11-14T16:02:25.5312042Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:02:32.1115035Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:02:32.1115646Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:02:32.6306859Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:02:32.6307404Z 
+2026-11-14T16:02:33.1184013Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:02:33.1184553Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:02:33.1193588Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:02:33.1194135Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:02:33.1589898Z [EventBus] online - signals registered
+2026-11-14T16:02:33.1590319Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:02:33.1590705Z [Perf] platform_detected:Linux
+2026-11-14T16:02:33.1593599Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:02:33.1597348Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:02:33.1597963Z [Audio] manager ready (muted:false)
+2026-11-14T16:02:33.1598316Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:02:34.3712030Z [SonnenhafenStunt] layout: loop at 1097.7 m, tunnel at 1277.7 m, peak 16.1 m
+2026-11-14T16:02:35.2671218Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:02:35.3536947Z [Perf] quality_profile:medium
+2026-11-14T16:02:42.1873811Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:02:50.4511936Z [SonnenhafenStunt] loop: entry 58.2 m/s, top 16.1 m, alignment 1.000, 11 stars, exit 57.6 m/s, tunnel after 192 frames
+2026-11-14T16:02:51.6098126Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:02:52.2438712Z [SonnenhafenStunt] too slow: entry 13.32 m/s, safe set-back to the main lane
+2026-11-14T16:02:53.3976277Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:02:54.0145872Z [SonnenhafenStunt] jump: 63.3 m flight, 5.7 m high, 1.53 s air, 3 arc stars
+2026-11-14T16:02:55.1698030Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:02:56.9126754Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:02:58.6626631Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:03:00.4160354Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:03:02.1618916Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:03:02.7639296Z [SonnenhafenStunt] precision: slow 12.0 m/s -> zu_kurz (fell 1); 19.6 m/s -> ziel 19.90 m (model 19.80); 30.0 m/s -> zu_weit 34.92 m (model 34.80), exit 17.2 m/s; air steer 2.00 m
+2026-11-14T16:03:02.7640115Z [SonnenhafenStunt] PASS: real loop, boost pad, stars, safe exit and safe failure
+2026-11-14T16:03:04.1712834Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:03:04.2914488Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:03:04.2914987Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:03:04.3207251Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:03:04.3207726Z 
+2026-11-14T16:03:04.6973957Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:03:04.6974581Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:03:04.6982728Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:03:04.6983327Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:03:04.7364259Z [EventBus] online - signals registered
+2026-11-14T16:03:04.7365012Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:03:04.7365375Z [Perf] platform_detected:Linux
+2026-11-14T16:03:04.7366832Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:03:04.7370958Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:03:04.7371756Z [Audio] manager ready (muted:false)
+2026-11-14T16:03:04.7372241Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:03:05.6726956Z [Perf] quality_profile:medium
+2026-11-14T16:03:07.6544597Z [CrystalGorge] PASS: carved depth, open physics gap, tiered batched geology
+2026-11-14T16:03:07.9039375Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:03:08.0253812Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:03:08.0254426Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:03:08.0542392Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:03:08.0542980Z 
+2026-11-14T16:03:08.4382241Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:03:08.4382750Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:03:08.4391961Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:03:08.4392540Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:03:08.4772402Z [EventBus] online - signals registered
+2026-11-14T16:03:08.4772792Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:03:08.4773120Z [Perf] platform_detected:Linux
+2026-11-14T16:03:08.4776959Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:03:08.4781213Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:03:08.4782506Z [Audio] manager ready (muted:false)
+2026-11-14T16:03:08.4782861Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:03:09.4121467Z [KartActionCourse] sonnenhafen: 1 Felder, 0 Tore, 4 Schanze, 0 Tauchstrecke, 0 offene Kante
+2026-11-14T16:03:09.4925497Z [KartActionCourse] zauberwald: 2 Felder, 4 Tore, 1 Schanze, 1 Tauchstrecke, 0 offene Kante
+2026-11-14T16:03:09.5864690Z [KartActionCourse] bergwelt: 2 Felder, 4 Tore, 0 Schanze, 0 Tauchstrecke, 0 offene Kante
+2026-11-14T16:03:09.6605092Z [KartActionCourse] holo_city: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 0 offene Kante
+2026-11-14T16:03:09.7561462Z [KartActionCourse] crystal_canyon: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 1 offene Kante
+2026-11-14T16:03:09.8355407Z [KartActionCourse] jungle_temple: 2 Felder, 4 Tore, 1 Schanze, 1 Tauchstrecke, 0 offene Kante
+2026-11-14T16:03:09.9463596Z [KartActionCourse] candy_cloud: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 1 offene Kante
+2026-11-14T16:03:10.0369696Z [KartActionCourse] volcano_night: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 1 offene Kante
+2026-11-14T16:03:10.1293553Z [KartActionCourse] winter_sprint: 2 Felder, 4 Tore, 1 Schanze, 1 Tauchstrecke, 0 offene Kante
+2026-11-14T16:03:10.2156427Z [KartActionCourse] galaxy_ringway: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 1 offene Kante
+2026-11-14T16:03:10.3031476Z [KartActionCourse] desert_drift: 2 Felder, 4 Tore, 1 Schanze, 1 Tauchstrecke, 0 offene Kante
+2026-11-14T16:03:10.3894002Z [KartActionCourse] learning_lab: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 0 offene Kante
+2026-11-14T16:03:12.2110944Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:03:12.2980424Z [Perf] quality_profile:medium
+2026-11-14T16:03:13.2762928Z [Kart] race_world_ready: zauberwald mode=training
+2026-11-14T16:03:15.2024424Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:03:15.9565633Z [KartSonnenhafenFlight] 62.7m flown, 5.3m high, 1.52s airborne, no reset
+2026-11-14T16:03:16.2339289Z [Kart] race_world_ready: candy_cloud mode=training
+2026-11-14T16:03:17.5809018Z [KartOpenEdge] 1.48 s to cloud rescue; beyond-edge height -4.25 m; no rail lift
+2026-11-14T16:03:18.9807259Z [KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung
+2026-11-14T16:03:19.2096714Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:03:19.3292243Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:03:19.3292752Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:03:19.3579758Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:03:19.3580226Z 
+2026-11-14T16:03:19.7336937Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:03:19.7337649Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:03:19.7344412Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:03:19.7345019Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:03:19.7723542Z [EventBus] online - signals registered
+2026-11-14T16:03:19.7724049Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:03:19.7724525Z [Perf] platform_detected:Linux
+2026-11-14T16:03:19.7726753Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:03:19.7730632Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:03:19.7732395Z [Audio] manager ready (muted:false)
+2026-11-14T16:03:19.7732733Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:03:21.7378615Z [Perf] quality_profile:medium
+2026-11-14T16:03:22.7517243Z [SonnenhafenWater] PASS: full/low foam, other-track isolation, real waterfall, shared sea height
+2026-11-14T16:03:22.9396978Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:03:23.0575828Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:03:23.0576444Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:03:23.0867206Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:03:23.0867718Z 
+2026-11-14T16:03:23.4653704Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:03:23.4654544Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:03:23.4663992Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:03:23.4664724Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:03:23.5050790Z [EventBus] online - signals registered
+2026-11-14T16:03:23.5051233Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:03:23.5051784Z [Perf] platform_detected:Linux
+2026-11-14T16:03:23.5056517Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:03:23.5061010Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:03:23.5061567Z [Audio] manager ready (muted:false)
+2026-11-14T16:03:23.5061939Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:03:25.5033183Z [Darkride] LOD=high span=203.685114746094 sections=73 neon_instances=160 crystal_instances=20
+2026-11-14T16:03:25.5201555Z [Perf] quality_profile:medium
+2026-11-14T16:03:26.4997828Z [Darkride] LOD=low span=203.685114746094 sections=41 neon_instances=100 crystal_instances=20
+2026-11-14T16:03:26.6131270Z [Darkride] PASS: deterministic mobile geometry, road width, eight checkpoints and zero collision changes
+2026-11-14T16:03:26.8728051Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:03:26.9915831Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:03:26.9916344Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:03:27.0200094Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:03:27.0200634Z 
+2026-11-14T16:03:27.3970156Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:03:27.3970845Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:03:27.3980165Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:03:27.3980730Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:03:27.4357831Z [EventBus] online - signals registered
+2026-11-14T16:03:27.4358228Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:03:27.4358701Z [Perf] platform_detected:Linux
+2026-11-14T16:03:27.4362598Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:03:27.4367168Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:03:27.4367642Z [Audio] manager ready (muted:false)
+2026-11-14T16:03:27.4368008Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:03:27.4903542Z [SonnenhafenLong] checked curve 1851.68m, radius 25.17m, grade 0.057, clearance 28.95m
+2026-11-14T16:03:27.4904372Z [Perf] quality_profile:medium
+2026-11-14T16:03:28.4129690Z [SonnenhafenLong] full 3D world LOD low=true decorations=16443
+2026-11-14T16:03:30.3563887Z [SonnenhafenLong] full 3D world LOD low=false decorations=22547
+2026-11-14T16:03:30.3686757Z [SonnenhafenLong] PASS: real 1.85km curve, bridged tidal inlet and both LODs
+2026-11-14T16:03:30.6165805Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:03:30.7343545Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:03:30.7344356Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:03:30.7630436Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:03:30.7631066Z 
+2026-11-14T16:03:31.1377129Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:03:31.1377908Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:03:31.1386471Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:03:31.1386941Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:03:31.1769878Z [EventBus] online - signals registered
+2026-11-14T16:03:31.1770310Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:03:31.1770714Z [Perf] platform_detected:Linux
+2026-11-14T16:03:31.1775190Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:03:31.1779611Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:03:31.1780132Z [Audio] manager ready (muted:false)
+2026-11-14T16:03:31.1780491Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:03:33.1096120Z [Perf] quality_profile:medium
+2026-11-14T16:03:34.1245641Z [HarborVisualFinish] PASS: 10 opaque contacts, 4 joints, 288 high-only corrugation ribs, no gameplay changes
+2026-11-14T16:03:34.3452568Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:03:34.4634436Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:03:34.4634950Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:03:34.4916078Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:03:34.4920130Z 
+2026-11-14T16:03:34.8666285Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:03:34.8667038Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:03:34.8676870Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:03:34.8677732Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:03:34.9058414Z [EventBus] online - signals registered
+2026-11-14T16:03:34.9058800Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:03:34.9059396Z [Perf] platform_detected:Linux
+2026-11-14T16:03:34.9062564Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:03:34.9066785Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:03:34.9067317Z [Audio] manager ready (muted:false)
+2026-11-14T16:03:34.9067664Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:03:35.8570386Z [Perf] quality_profile:medium
+2026-11-14T16:03:37.9458023Z [SonnenhafenHeroCoast] PASS: 5 unique 3D landmarks, actual low/high LOD, safe road and preserved checkpoints
+2026-11-14T16:03:38.1776599Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:03:38.2976941Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:03:38.2977593Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:03:38.3264676Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:03:38.3265060Z 
+2026-11-14T16:03:38.3894433Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:03:38.3895289Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:03:38.3904049Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:03:38.3904604Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:03:38.4281532Z [EventBus] online - signals registered
+2026-11-14T16:03:38.4281891Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:03:38.4282303Z [Perf] platform_detected:Linux
+2026-11-14T16:03:38.4286752Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:03:38.4291181Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:03:38.4291717Z [Audio] manager ready (muted:false)
+2026-11-14T16:03:38.4292197Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:03:39.6987354Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:03:39.7922758Z [Perf] quality_profile:medium
+2026-11-14T16:03:41.3501225Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:03:42.3623252Z [KartTests] before resume teardown tracked=5 scene_released=true audio_released=true elapsed_ms=114
+2026-11-14T16:03:42.5843799Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:04:06.0409083Z [Kart] completed: mode=race track=sonnenhafen stars=3 place=2
+2026-11-14T16:04:06.1205123Z [KartTests] Full free-steering race: 85.7s, 5078 frames, 1 resets
+2026-11-14T16:04:06.2030391Z [KartTests] final race teardown tracked=3 scene_released=true audio_released=true elapsed_ms=81
+2026-11-14T16:04:06.2037076Z [KartTests] PASS: 8000 shared Jump questions; no Kart learning state; free steering; real full race; brake/drift; pause; save/resume; one award
+2026-11-14T16:04:06.4646977Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:04:06.5845243Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:04:06.5845965Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:04:06.6131086Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:04:06.6131564Z 
+2026-11-14T16:04:06.7002112Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:04:06.7002889Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:04:06.7010953Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:04:06.7011736Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:04:06.7382066Z [EventBus] online - signals registered
+2026-11-14T16:04:06.7382553Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:04:06.7382938Z [Perf] platform_detected:Linux
+2026-11-14T16:04:06.7386164Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:04:06.7389902Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:04:06.7390469Z [Audio] manager ready (muted:false)
+2026-11-14T16:04:06.7391210Z [Progress] loaded stars:3 streak:0 letters:0
+2026-11-14T16:04:07.9472317Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:04:08.0403594Z [Perf] quality_profile:medium
+2026-11-14T16:04:09.5977848Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:04:10.6193167Z [KartContinuityDiag] before: ringCount=5 item= airborne=false speed=7.50 lap=0 distance=0.0000
+2026-11-14T16:04:10.6200337Z [KartContinuityDiag] after events: keys={ 0: true } item=boost
+2026-11-14T16:04:11.1063382Z [Perf] quality_profile:high
+2026-11-14T16:04:13.6444284Z [KartContinuity] rebuild: consumed prism stays hidden; next lap releases it
+2026-11-14T16:04:18.3187360Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:04:19.9761221Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:04:20.4522397Z [KartContinuityDiag] before: ringCount=5 item= airborne=false speed=7.50 lap=0 distance=0.0000
+2026-11-14T16:04:20.4530593Z [KartContinuityDiag] after events: keys={ 0: true } item=boost
+2026-11-14T16:04:20.9601447Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:04:22.6156654Z [KartContinuity] reopen: ConfigFile round-trip preserves prism and result ID
+2026-11-14T16:04:23.1855049Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:04:24.8462521Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:04:25.8917918Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:04:30.8665989Z [KartContinuity] rivals: real item effects remain bounded, visible and paused after reopen
+2026-11-14T16:04:34.4573629Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:04:36.1204575Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:04:37.1752210Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:04:38.8370799Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:04:39.9008967Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:04:41.5752277Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:04:42.6381872Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:04:44.3130023Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:04:44.8072971Z [KartContinuity] compatibility: v1–v4 missing fields and malformed optional values load safely
+2026-11-14T16:04:45.3737711Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:04:45.7353169Z [Kart] race_world_ready: bergwelt mode=training
+2026-11-14T16:04:46.3845185Z [KartContinuity] reset: genuine ramp flight ends safely without landing turbo
+2026-11-14T16:04:46.8828010Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:04:48.5348677Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:04:59.4034485Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:05.2660737Z [LumoHost] reward reported: recovered-lap-continuity-1794672286950-40494398
+2026-11-14T16:05:05.2663752Z [Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+2026-11-14T16:05:05.8532174Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:08.3140778Z [LumoHost] return: games
+2026-11-14T16:05:08.8481967Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:10.5240168Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:05:11.5614583Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:12.8626543Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:05:13.8756197Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:15.9155339Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:17.9576247Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:19.6417011Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:05:20.1231131Z [Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+2026-11-14T16:05:20.6753268Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:22.3446220Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:05:23.3065721Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:24.9739085Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:05:26.0858028Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:27.7572034Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:05:28.7891393Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:30.0779428Z [Kart] race_world_ready: sonnenhafen mode=time_trial
+2026-11-14T16:05:30.5475062Z [Kart] completed: mode=time_trial track=sonnenhafen stars=3 place=1
+2026-11-14T16:05:31.1162255Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:32.4042156Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:05:32.8857967Z [Kart] completed: mode=training track=sonnenhafen stars=0 place=1
+2026-11-14T16:05:32.8908049Z [KartLapContinuity] PASS: 104 checks, 0 failures
+2026-11-14T16:05:33.3896595Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:35.0569439Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:05:35.0575967Z [LumoHost] reward reported: natural-ack-state-fixture-1794672333458-87001318
+2026-11-14T16:05:35.0638192Z [Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+2026-11-14T16:05:35.0642364Z [LumoHost] return: games
+2026-11-14T16:05:35.8130812Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:38.3396269Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:40.0032550Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:05:40.0037506Z [LumoHost] reward reported: natural-ack-state-fixture-1794672338407-91950532
+2026-11-14T16:05:40.0100000Z [Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+2026-11-14T16:05:40.7891909Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:42.4474779Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:05:42.4531180Z [LumoHost] return: games
+2026-11-14T16:05:43.2282251Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:44.8971785Z [Kart] race_world_ready: sonnenhafen mode=cup
+2026-11-14T16:05:44.8977243Z [LumoHost] reward reported: natural-ack-state-fixture-1794672343296-96839581
+2026-11-14T16:05:44.9062156Z [Kart] completed: mode=cup track=sonnenhafen stars=3 place=1
+2026-11-14T16:05:44.9064967Z [LumoHost] return: games
+2026-11-14T16:05:45.6771938Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:47.3390849Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:05:47.3395446Z [LumoHost] reward reported: natural-ack-state-fixture-1794672345745-99288241
+2026-11-14T16:05:47.3458698Z [Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+2026-11-14T16:05:47.3462389Z [LumoHost] return: games
+2026-11-14T16:05:49.3439624Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:05:50.0359070Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:51.7026943Z [Kart] race_world_ready: sonnenhafen mode=race
+2026-11-14T16:05:51.7031639Z [LumoHost] reward reported: natural-ack-state-fixture-1794672350104-103647450
+2026-11-14T16:05:51.7094347Z [Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+2026-11-14T16:05:52.2276960Z [Router] goto:games (res://scenes/games/game_hub.tscn)
+2026-11-14T16:05:54.8808956Z [KartHandoffLifecycle] PASS: 10 checks, 0 failures
+2026-11-14T16:05:55.5476258Z [KartContinuity] PASS: quality change, save/reopen, next lap, rival states, legacy saves and flight reset
+2026-11-14T16:05:55.8472100Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:05:55.9624446Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:05:55.9625082Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:05:55.9926355Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:05:55.9926873Z 
+2026-11-14T16:05:56.0703513Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:05:56.0703997Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:05:56.0713333Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:05:56.0713944Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:05:56.1078239Z [EventBus] online - signals registered
+2026-11-14T16:05:56.1078912Z [Settings] loaded profile:high audio_muted:false
+2026-11-14T16:05:56.1079270Z [Perf] platform_detected:Linux
+2026-11-14T16:05:56.1081409Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:05:56.1085597Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:05:56.1086457Z [Audio] manager ready (muted:false)
+2026-11-14T16:05:56.1086969Z [Progress] loaded stars:27 streak:0 letters:0
+2026-11-14T16:05:56.1093065Z [Perf] quality_profile:high
+2026-11-14T16:05:56.1095551Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:05:56.1096180Z [Progress] host wallet synchronized: 120 (lifetime 120)
+2026-11-14T16:05:56.1098155Z [Progress] host wallet synchronized: 0 (lifetime 0)
+2026-11-14T16:05:56.1099356Z [Progress] loaded stars:0 streak:0 letters:0
+2026-11-14T16:05:56.1101397Z [Progress] host wallet synchronized: 0 (lifetime 0)
+2026-11-14T16:05:56.1102845Z [Progress] host wallet synchronized: 2 (lifetime 120)
+2026-11-14T16:05:56.1103956Z [Progress] host wallet synchronized: 0 (lifetime 0)
+2026-11-14T16:05:56.1104868Z [Progress] host wallet synchronized: 0 (lifetime 123)
+2026-11-14T16:05:56.1105702Z [Progress] loaded stars:0 streak:0 letters:0
+2026-11-14T16:05:56.1106025Z [Progress] host wallet synchronized: 0 (lifetime 123)
+2026-11-14T16:05:56.1106442Z [Progress] host wallet synchronized: 0 (lifetime 123)
+2026-11-14T16:05:56.1107418Z [Progress] loaded stars:0 streak:0 letters:0
+2026-11-14T16:05:56.1107785Z [Progress] host wallet synchronized: 0 (lifetime 12)
+2026-11-14T16:05:56.1108187Z [Progress] host wallet synchronized: 0 (lifetime 0)
+2026-11-14T16:05:56.1108744Z [Progress] host wallet synchronized: 0 (lifetime 0)
+2026-11-14T16:05:56.1109191Z [Progress] host wallet synchronized: 0 (lifetime 77)
+2026-11-14T16:05:56.1111624Z [ProgressProfileLifetime] checks=24 failures=0
+2026-11-14T16:05:56.2960507Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:05:56.4082696Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:05:56.4083416Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:05:56.4378095Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:05:56.4378603Z 
+2026-11-14T16:05:56.5052740Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:05:56.5053732Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:05:56.5062966Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:05:56.5063641Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:05:56.5431634Z [EventBus] online - signals registered
+2026-11-14T16:05:56.5432265Z [Settings] loaded profile:high audio_muted:false
+2026-11-14T16:05:56.5432719Z [Perf] platform_detected:Linux
+2026-11-14T16:05:56.5434847Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:05:56.5438939Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:05:56.5439421Z [Audio] manager ready (muted:false)
+2026-11-14T16:05:56.5439996Z [Progress] loaded stars:27 streak:0 letters:0
+2026-11-14T16:05:57.7450660Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:05:57.8378726Z [Perf] quality_profile:high
+2026-11-14T16:05:59.0382672Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:05:59.8777246Z [KartPhysics] sonnenhafen side +1: widest 5.00 m, 267 wall contacts, 208 m along the rail
+2026-11-14T16:06:01.0028666Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:06:01.3581539Z [KartPhysics] sonnenhafen side -1: widest 5.00 m, 265 wall contacts, 209 m along the rail
+2026-11-14T16:06:01.5844766Z [Kart] race_world_ready: zauberwald mode=training
+2026-11-14T16:06:01.8754610Z [KartPhysics] zauberwald side +1: widest 5.00 m, 265 wall contacts, 179 m along the rail
+2026-11-14T16:06:02.1024266Z [Kart] race_world_ready: zauberwald mode=training
+2026-11-14T16:06:02.3576819Z [KartPhysics] zauberwald side -1: widest 5.00 m, 208 wall contacts, 273 m along the rail
+2026-11-14T16:06:02.6304555Z [Kart] race_world_ready: bergwelt mode=training
+2026-11-14T16:06:02.9492804Z [KartPhysics] bergwelt side +1: widest 5.00 m, 265 wall contacts, 182 m along the rail
+2026-11-14T16:06:03.2113306Z [Kart] race_world_ready: bergwelt mode=training
+2026-11-14T16:06:03.4920110Z [KartPhysics] bergwelt side -1: widest 5.00 m, 230 wall contacts, 267 m along the rail
+2026-11-14T16:06:03.7428943Z [Kart] race_world_ready: holo_city mode=training
+2026-11-14T16:06:04.3380881Z [KartPhysics] holo_city side +1: widest 5.00 m, 265 wall contacts, 184 m along the rail
+2026-11-14T16:06:04.5765697Z [Kart] race_world_ready: holo_city mode=training
+2026-11-14T16:06:04.8325336Z [KartPhysics] holo_city side -1: widest 5.00 m, 223 wall contacts, 258 m along the rail
+2026-11-14T16:06:05.0977866Z [Kart] race_world_ready: crystal_canyon mode=training
+2026-11-14T16:06:05.3508709Z [KartPhysics] crystal_canyon side +1: widest 5.00 m, 266 wall contacts, 192 m along the rail
+2026-11-14T16:06:05.6095608Z [Kart] race_world_ready: crystal_canyon mode=training
+2026-11-14T16:06:05.8286189Z [KartPhysics] crystal_canyon side -1: widest 5.00 m, 266 wall contacts, 243 m along the rail
+2026-11-14T16:06:06.0730537Z [Kart] race_world_ready: jungle_temple mode=training
+2026-11-14T16:06:06.3164472Z [KartPhysics] jungle_temple side +1: widest 5.00 m, 266 wall contacts, 192 m along the rail
+2026-11-14T16:06:06.5695969Z [Kart] race_world_ready: jungle_temple mode=training
+2026-11-14T16:06:06.7882907Z [KartPhysics] jungle_temple side -1: widest 5.00 m, 262 wall contacts, 238 m along the rail
+2026-11-14T16:06:07.0694901Z [Kart] race_world_ready: candy_cloud mode=training
+2026-11-14T16:06:07.4113307Z [KartPhysics] candy_cloud side +1: widest 5.00 m, 266 wall contacts, 187 m along the rail
+2026-11-14T16:06:07.6845846Z [Kart] race_world_ready: candy_cloud mode=training
+2026-11-14T16:06:08.0124009Z [KartPhysics] candy_cloud side -1: widest 5.00 m, 251 wall contacts, 230 m along the rail
+2026-11-14T16:06:08.2455916Z [Kart] race_world_ready: volcano_night mode=training
+2026-11-14T16:06:08.8625385Z [KartPhysics] volcano_night side +1: widest 5.00 m, 266 wall contacts, 191 m along the rail
+2026-11-14T16:06:09.0938530Z [Kart] race_world_ready: volcano_night mode=training
+2026-11-14T16:06:09.3558496Z [KartPhysics] volcano_night side -1: widest 5.00 m, 264 wall contacts, 240 m along the rail
+2026-11-14T16:06:09.6219381Z [Kart] race_world_ready: winter_sprint mode=training
+2026-11-14T16:06:09.9231496Z [KartPhysics] winter_sprint side +1: widest 5.00 m, 266 wall contacts, 188 m along the rail
+2026-11-14T16:06:10.1834423Z [Kart] race_world_ready: winter_sprint mode=training
+2026-11-14T16:06:10.4077665Z [KartPhysics] winter_sprint side -1: widest 5.00 m, 266 wall contacts, 241 m along the rail
+2026-11-14T16:06:10.6642565Z [Kart] race_world_ready: galaxy_ringway mode=training
+2026-11-14T16:06:13.6042822Z [KartPhysics] galaxy_ringway side +1: widest 5.00 m, 266 wall contacts, 185 m along the rail
+2026-11-14T16:06:13.8547533Z [Kart] race_world_ready: galaxy_ringway mode=training
+2026-11-14T16:06:14.0882552Z [KartPhysics] galaxy_ringway side -1: widest 5.00 m, 258 wall contacts, 244 m along the rail
+2026-11-14T16:06:14.3510918Z [Kart] race_world_ready: desert_drift mode=training
+2026-11-14T16:06:14.6029959Z [KartPhysics] desert_drift side +1: widest 5.00 m, 266 wall contacts, 188 m along the rail
+2026-11-14T16:06:14.8583619Z [Kart] race_world_ready: desert_drift mode=training
+2026-11-14T16:06:15.0902187Z [KartPhysics] desert_drift side -1: widest 5.00 m, 266 wall contacts, 241 m along the rail
+2026-11-14T16:06:15.3447717Z [Kart] race_world_ready: learning_lab mode=training
+2026-11-14T16:06:15.5853590Z [KartPhysics] learning_lab side +1: widest 5.00 m, 266 wall contacts, 186 m along the rail
+2026-11-14T16:06:15.8358636Z [Kart] race_world_ready: learning_lab mode=training
+2026-11-14T16:06:16.0584725Z [KartPhysics] learning_lab side -1: widest 5.00 m, 256 wall contacts, 239 m along the rail
+2026-11-14T16:06:17.2418451Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:06:18.7531083Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:06:20.2426740Z [Kart] race_world_ready: sonnenhafen mode=time_trial
+2026-11-14T16:06:21.7076873Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:06:23.1664354Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:06:23.4635739Z [KartBoost] input→accepted 791 µs, accepted→physics 753 µs, speed +1.333 m/s (normal +0.667), VFX/audio active
+2026-11-14T16:06:24.6219333Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:06:26.0897156Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:06:27.5440848Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:06:29.0013288Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:06:29.5779328Z [Kart] race_world_ready: bergwelt mode=training
+2026-11-14T16:06:30.5151545Z [Kart] race_world_ready: bergwelt mode=race
+2026-11-14T16:06:31.0332928Z [Kart] race_world_ready: bergwelt mode=training
+2026-11-14T16:06:31.2812498Z [KartSplit] PASS: Wolkenweg raised 2.20 m while main lane stayed at 0.00 m
+2026-11-14T16:06:32.4930735Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:06:33.1595079Z [KartPhysics] teardown tracked=3 scene_released=true audio_released=true elapsed_ms=51
+2026-11-14T16:06:33.1606613Z [KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route
+2026-11-14T16:06:33.3405454Z ##[group]Run set -euo pipefail
+2026-11-14T16:06:33.3405770Z [36;1mset -euo pipefail[0m
+2026-11-14T16:06:33.3406925Z [36;1mLUMO_CAPTURE_DIR="$PWD/exports/stunt-integration/precision-frames" xvfb-run -a -s '-screen 0 1280x720x24' python3 tools/run_godot_probe.py --timeout 240 --log exports/stunt-integration/precision-capture.log --required "[PrecisionCapture] PASS:" -- Godot_v4.6.3-stable_linux.x86_64 --verbose --audio-driver Dummy --rendering-method gl_compatibility --path . --script res://scripts/tests/kart_sonnenhafen_precision_capture.gd[0m
+2026-11-14T16:06:33.3432870Z shell: /usr/bin/bash -e {0}
+2026-11-14T16:06:33.3433154Z ##[endgroup]
+2026-11-14T16:06:33.4017809Z WorkerThreadPool: 4 threads, 1 max low-priority.
+2026-11-14T16:06:33.4036386Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:06:33.4044305Z TextServer: Added interface "Dummy"
+2026-11-14T16:06:33.4102543Z TextServer: Added interface "ICU / HarfBuzz / Graphite (Built-in)"
+2026-11-14T16:06:33.4114360Z Unrecognized output string "misc2" in mapping:
+2026-11-14T16:06:33.4115353Z 030000008a2e0000dd10000011010000,Hand Held Legend GC Ultimate,a:b0,b:b2,back:b17,dpdown:b5,dpleft:b6,dpright:b7,dpup:b4,guide:b18,leftshoulder:b10,leftstick:b8,lefttrigger:a3,leftx:a0,lefty:a1,misc1:b19,misc2:b24,paddle1:b13,paddle2:b12,rightshoulder:b11,rightstick:b9,righttrigger:a4,rightx:a2,righty:a5,start:b16,x:b1,y:b3,platform:Linux,
+2026-11-14T16:06:33.4116453Z Unrecognized output string "misc2" in mapping:
+2026-11-14T16:06:33.4117368Z 030000000d0f0000ab01000011010000,Horipad Steam,a:b0,b:b1,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b6,leftstick:b13,lefttrigger:a5,leftx:a0,lefty:a1,misc2:b2,paddle1:b19,paddle2:b18,paddle3:b15,paddle4:b5,rightshoulder:b7,rightstick:b14,righttrigger:a4,rightx:a2,righty:a3,start:b11,x:b3,y:b4,platform:Linux,
+2026-11-14T16:06:33.4118287Z Unrecognized output string "misc2" in mapping:
+2026-11-14T16:06:33.4119230Z 050000000d0f00009601000091000000,Horipad Steam,a:b0,b:b1,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b6,leftstick:b13,lefttrigger:a5,leftx:a0,lefty:a1,misc2:b2,paddle1:b19,paddle2:b18,paddle3:b15,paddle4:b5,rightshoulder:b7,rightstick:b14,righttrigger:a4,rightx:a2,righty:a3,start:b11,x:b3,y:b4,platform:Linux,
+2026-11-14T16:06:33.4124956Z Unrecognized output string "misc2" in mapping:
+2026-11-14T16:06:33.4125942Z 030000007e0500006920000011010000,Nintendo Switch 2 Pro Controller,a:b0,b:b1,back:b14,dpdown:b8,dpleft:b10,dpright:b9,dpup:b11,guide:b16,leftshoulder:b12,leftstick:b15,lefttrigger:b13,leftx:a0,lefty:a1~,misc1:b17,misc2:b20,paddle1:b18,paddle2:b19,rightshoulder:b4,rightstick:b7,righttrigger:b5,rightx:a2,righty:a3~,start:b6,x:b2,y:b3,platform:Linux,
+2026-11-14T16:06:33.4220990Z SDL: Init OK!
+2026-11-14T16:06:33.4260446Z Xshape 1.1 detected.
+2026-11-14T16:06:33.4260829Z Xinerama 1.1 detected.
+2026-11-14T16:06:33.4261201Z Xrandr 1.6 detected.
+2026-11-14T16:06:33.4261466Z Xrender 0.11 detected.
+2026-11-14T16:06:33.4261684Z Xinput 2.2 detected.
+2026-11-14T16:06:33.4264786Z XInput: Refreshing devices.
+2026-11-14T16:06:33.4265499Z XInput: No touch devices found.
+2026-11-14T16:06:33.4463051Z Detecting GPUs, set DRI_PRIME in the environment to override GPU detection logic.
+2026-11-14T16:06:33.4976675Z Only one GPU found, using default.
+2026-11-14T16:06:33.5208149Z Accessibility: window 0 adapter created.
+2026-11-14T16:06:33.5226433Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:06:33.5226971Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:06:33.5227647Z XcursorGetTheme could not get cursor theme
+2026-11-14T16:06:33.5236845Z Failed loading custom cursor: crossed_circle
+2026-11-14T16:06:33.5249568Z DBus 1.14.10 detected.
+2026-11-14T16:06:33.5255512Z Using "default" pen tablet driver...
+2026-11-14T16:06:33.5270148Z Shader 'CanvasSdfShaderGLES3' SHA256: bfb4d3f47e7b197828685d0dcaa3ac71d9e1366c1e65b4f460df2262fa91546c
+2026-11-14T16:06:33.5279077Z Shader 'SkeletonShaderGLES3' SHA256: 84035b3cefc09f9557dd6bf4f292f5563f0545ca349eba904f9efc23e561e23f
+2026-11-14T16:06:33.5282082Z Shader 'ParticlesShaderGLES3' SHA256: 73290417c43773bd027c734f085d428579d637dedf854af6900fc76b8b237a99
+2026-11-14T16:06:33.5285653Z Shader 'ParticlesCopyShaderGLES3' SHA256: 694cd939240250f9bdfd140337959adf14cc7cfce3f814fcfc29a6bf634e28a1
+2026-11-14T16:06:33.5288346Z Shader 'CopyShaderGLES3' SHA256: d2a6cb0418a1a9d4daa260504f4bcfe1b8f47c80b93a4b02975c6c8e4cdec734
+2026-11-14T16:06:33.5314774Z Shader 'CubemapFilterShaderGLES3' SHA256: 4fbad670153b6a753948ef0be8e317037ea189b3a5d2ef0c55dcd669473a8af1
+2026-11-14T16:06:33.5315713Z Shader 'GlowShaderGLES3' SHA256: 1a8d454e812a242df093576020d31bebccf9a3e446f78160d33e363f683df8d2
+2026-11-14T16:06:33.5320048Z Shader 'PostShaderGLES3' SHA256: 314401684c9d4037d224f17896fb50fc3cae526688b7f2cd4b73d1ce59d68cc7
+2026-11-14T16:06:33.5346412Z Shader 'FeedShaderGLES3' SHA256: ff8ce52247f567be25a85ee57b249f526c39fe4595e675da7a92cda3482cc47b
+2026-11-14T16:06:33.5378879Z Shader 'CanvasShaderGLES3' SHA256: ec4ada8cee357dc1d60cc059a0f84ad21dee27e29d58fa9a87f46f2aef80c3ea
+2026-11-14T16:06:33.5380252Z Shader 'CanvasOcclusionShaderGLES3' SHA256: 4e16639184f7526ea06a888f215233eefb1de099c0a4d76f784773cff78d4e14
+2026-11-14T16:06:33.5399337Z Shader 'SceneShaderGLES3' SHA256: 379b6d5785209e37ede487eef03d12e75f5428b8c16d50abfe48d224c95211bf
+2026-11-14T16:06:33.5532224Z Shader 'SkyShaderGLES3' SHA256: da3879461c66f8a3095ce85dad4e18da268ac24a28c200e18cc73aa9bcf0dbc0
+2026-11-14T16:06:33.5533071Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:06:33.5533644Z 
+2026-11-14T16:06:33.5665324Z TextServer: Primary interface set to: "ICU / HarfBuzz / Graphite (Built-in)".
+2026-11-14T16:06:33.6176451Z CORE API HASH: 2475187701
+2026-11-14T16:06:33.6182190Z EDITOR API HASH: 3867286884
+2026-11-14T16:06:33.6190797Z Loading resource: res://scripts/tests/kart_sonnenhafen_precision_capture.gd
+2026-11-14T16:06:33.6312884Z Loading resource: res://assets/shaders/kart_stunt_loop.gdshader
+2026-11-14T16:06:33.6313444Z Loading resource: res://assets/shaders/kart_balloon.gdshader
+2026-11-14T16:06:33.6313994Z Loading resource: res://assets/kart/stunt/lumo_balloon_emblem.png
+2026-11-14T16:06:33.6314714Z Loading resource: res://.godot/imported/lumo_balloon_emblem.png-6e2da3d9255fcc6433c61b7a2be44438.ctex
+2026-11-14T16:06:33.6532205Z SceneTreeFTI: traversal method DEFAULT
+2026-11-14T16:06:33.6533162Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:06:33.6533738Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:06:33.6534222Z Loading resource: res://scenes/default_env.tres
+2026-11-14T16:06:33.6543352Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:06:33.6543877Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:06:33.6544418Z Loading resource: res://scripts/systems/event_bus.gd
+2026-11-14T16:06:33.6551781Z Loading resource: res://scripts/systems/settings_store.gd
+2026-11-14T16:06:33.6565488Z Loading resource: res://scripts/systems/performance_manager.gd
+2026-11-14T16:06:33.6598340Z Loading resource: res://scripts/app/mobile_runtime.gd
+2026-11-14T16:06:33.6706578Z Loading resource: res://scripts/app/scene_router.gd
+2026-11-14T16:06:33.6742599Z Loading resource: res://scripts/systems/asset_loader.gd
+2026-11-14T16:06:33.6781662Z Loading resource: res://scripts/systems/audio_manager.gd
+2026-11-14T16:06:33.6814655Z Loading resource: res://scripts/systems/progress_store.gd
+2026-11-14T16:06:33.6883583Z Loaded system CA certificates
+2026-11-14T16:06:33.6916608Z [EventBus] online - signals registered
+2026-11-14T16:06:33.6917085Z [Settings] loaded profile:high audio_muted:false
+2026-11-14T16:06:33.6917421Z [Perf] platform_detected:Linux
+2026-11-14T16:06:33.6919253Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:06:33.6922800Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:06:33.6923269Z [Audio] manager ready (muted:false)
+2026-11-14T16:06:33.6923680Z [Progress] loaded stars:27 streak:0 letters:0
+2026-11-14T16:06:33.6957332Z Loading resource: res://scenes/games/kart_island.tscn
+2026-11-14T16:06:33.6957798Z Loading resource: res://scripts/games/kart_island.gd
+2026-11-14T16:06:33.8029707Z Loading resource: res://assets/fonts/Nunito-Black.ttf
+2026-11-14T16:06:33.8030288Z Loading resource: res://.godot/imported/Nunito-Black.ttf-880f0c283166815ed56080446388b042.fontdata
+2026-11-14T16:06:33.8147616Z Loading resource: res://assets/fonts/Nunito-Bold.ttf
+2026-11-14T16:06:33.8148090Z Loading resource: res://.godot/imported/Nunito-Bold.ttf-e301dd6fbe168d4b494ffe849f591c35.fontdata
+2026-11-14T16:06:33.8703679Z Loading resource: res://assets/shaders/kart_menu_platform.gdshader
+2026-11-14T16:06:33.8714753Z Loading resource: res://assets/kart/controls/steering.svg
+2026-11-14T16:06:33.8715312Z Loading resource: res://.godot/imported/steering.svg-e3b23eb8bc44ee503818025dd24d9a41.ctex
+2026-11-14T16:06:33.9022310Z Loading resource: res://assets/kart/menu/lumo-world.webp
+2026-11-14T16:06:33.9022841Z Loading resource: res://.godot/imported/lumo-world.webp-e25d3f16b9195f237ed8ceb0c556337e.ctex
+2026-11-14T16:06:33.9941431Z Loading resource: res://assets/shaders/kart_cinema_stylized.gdshader
+2026-11-14T16:06:33.9942136Z Loading resource: res://assets/shaders/kart_basalt.gdshader
+2026-11-14T16:06:33.9942739Z Loading resource: res://assets/shaders/kart_city_glass.gdshader
+2026-11-14T16:06:33.9952767Z Loading resource: res://assets/shaders/kart_stylized_vertex_tint.gdshader
+2026-11-14T16:06:33.9953945Z Loading resource: res://assets/materials/kart_terrain_grain.tres
+2026-11-14T16:06:33.9955624Z Loading resource: res://assets/shaders/kart_water.gdshader
+2026-11-14T16:06:33.9959039Z Loading resource: res://assets/shaders/kart_asphalt.gdshader
+2026-11-14T16:06:33.9960830Z Loading resource: res://assets/shaders/kart_candy_road.gdshader
+2026-11-14T16:06:33.9977223Z Loading resource: res://assets/shaders/kart_waterfall.gdshader
+2026-11-14T16:06:34.0167433Z Loading resource: res://assets/shaders/kart_lava.gdshader
+2026-11-14T16:06:34.0167964Z Loading resource: res://assets/shaders/kart_cloud_sea.gdshader
+2026-11-14T16:06:34.0168838Z Loading resource: res://assets/shaders/kart_candy_sky.gdshader
+2026-11-14T16:06:34.0169616Z Loading resource: res://assets/shaders/kart_night_sky.gdshader
+2026-11-14T16:06:34.1187985Z Loading resource: res://scenes/games/props/harbor_wave_pavilion.tscn
+2026-11-14T16:06:34.1189161Z Loading resource: res://assets/kart/harbor_pavilion/wave_pavilion_lod0.glb
+2026-11-14T16:06:34.1190027Z Loading resource: res://.godot/imported/wave_pavilion_lod0.glb-e33d2aa3d076781898e76dd4450bfc96.scn
+2026-11-14T16:06:34.1202835Z Loading resource: res://assets/kart/harbor_pavilion/wave_pavilion_lod1.glb
+2026-11-14T16:06:34.1203903Z Loading resource: res://.godot/imported/wave_pavilion_lod1.glb-d10deda67b7727a99611e30bafd236e9.scn
+2026-11-14T16:06:34.1208683Z Loading resource: res://assets/kart/harbor_pavilion/wave_pavilion_lod2.glb
+2026-11-14T16:06:34.1209296Z Loading resource: res://.godot/imported/wave_pavilion_lod2.glb-7d15bffa5592d0683aa3d3860eec0f26.scn
+2026-11-14T16:06:34.1334770Z Loading resource: res://assets/shaders/kart_sonnenhafen_darkride.gdshader
+2026-11-14T16:06:34.1390313Z Loading resource: res://assets/kart/cavern/mineral_kit/strata_shelf_mobile.glb
+2026-11-14T16:06:34.1391157Z Loading resource: res://.godot/imported/strata_shelf_mobile.glb-1e3532fce27663228609923e11ff0753.scn
+2026-11-14T16:06:34.1396938Z Loading resource: res://assets/kart/cavern/mineral_kit/strata_shelf_high.glb
+2026-11-14T16:06:34.1397825Z Loading resource: res://.godot/imported/strata_shelf_high.glb-2fec30ea9ab851f5a481abf38a995fe6.scn
+2026-11-14T16:06:34.1401053Z Loading resource: res://assets/kart/cavern/mineral_kit/split_ledge_mobile.glb
+2026-11-14T16:06:34.1401932Z Loading resource: res://.godot/imported/split_ledge_mobile.glb-2ea14ac918a9f2c950451a01b68696af.scn
+2026-11-14T16:06:34.1404139Z Loading resource: res://assets/kart/cavern/mineral_kit/split_ledge_high.glb
+2026-11-14T16:06:34.1404854Z Loading resource: res://.godot/imported/split_ledge_high.glb-ec098fdb3b6ef0551b8cf632a3811329.scn
+2026-11-14T16:06:34.1407534Z Loading resource: res://assets/kart/cavern/mineral_kit/hanging_canopy_mobile.glb
+2026-11-14T16:06:34.1408158Z Loading resource: res://.godot/imported/hanging_canopy_mobile.glb-c0e0b916cdcecf1a4200c02265837e9c.scn
+2026-11-14T16:06:34.1410143Z Loading resource: res://assets/kart/cavern/mineral_kit/hanging_canopy_high.glb
+2026-11-14T16:06:34.1410676Z Loading resource: res://.godot/imported/hanging_canopy_high.glb-05fc3f5760619a4e7b08a2c90d1815bf.scn
+2026-11-14T16:06:34.1413411Z Loading resource: res://assets/kart/cavern/mineral_kit/crystal_fan_mobile.glb
+2026-11-14T16:06:34.1414009Z Loading resource: res://.godot/imported/crystal_fan_mobile.glb-86a30bf1a601cda70bcb96d9bde8e298.scn
+2026-11-14T16:06:34.1415567Z Loading resource: res://assets/kart/cavern/mineral_kit/crystal_fan_high.glb
+2026-11-14T16:06:34.1416185Z Loading resource: res://.godot/imported/crystal_fan_high.glb-4bb94fd8925960ddbe51364980b35c36.scn
+2026-11-14T16:06:34.1417974Z Loading resource: res://assets/kart/cavern/mineral_kit/crystal_spire_mobile.glb
+2026-11-14T16:06:34.1418528Z Loading resource: res://.godot/imported/crystal_spire_mobile.glb-6eab6506691d14d60e8fbccc8494dfef.scn
+2026-11-14T16:06:34.1420913Z Loading resource: res://assets/kart/cavern/mineral_kit/crystal_spire_high.glb
+2026-11-14T16:06:34.1421468Z Loading resource: res://.godot/imported/crystal_spire_high.glb-55f08b8c7ea8f429a564bcc1c5cc20c9.scn
+2026-11-14T16:06:34.1423318Z Loading resource: res://assets/kart/cavern/mineral_kit/crystal_rosette_mobile.glb
+2026-11-14T16:06:34.1423911Z Loading resource: res://.godot/imported/crystal_rosette_mobile.glb-8720c760b56b9ea7b3ecff8a084cc72e.scn
+2026-11-14T16:06:34.1425598Z Loading resource: res://assets/kart/cavern/mineral_kit/crystal_rosette_high.glb
+2026-11-14T16:06:34.1426079Z Loading resource: res://.godot/imported/crystal_rosette_high.glb-4b70e0046fd8639475e751a258848afa.scn
+2026-11-14T16:06:34.1441308Z Loading resource: res://assets/shaders/kart_lumo_cinema_high.gdshader
+2026-11-14T16:06:34.1443073Z Loading resource: res://assets/shaders/kart_lumo_cinema_mobile.gdshader
+2026-11-14T16:06:34.1700015Z Loading resource: res://assets/shaders/kart_aquarium.gdshader
+2026-11-14T16:06:34.4544862Z Loading resource: res://assets/kart/controls/gas.svg
+2026-11-14T16:06:34.4545337Z Loading resource: res://.godot/imported/gas.svg-914dfa80dabe318dd57e56052e1053de.ctex
+2026-11-14T16:06:34.4549013Z Loading resource: res://assets/kart/controls/boost.svg
+2026-11-14T16:06:34.4549566Z Loading resource: res://.godot/imported/boost.svg-dcf3fc14a70f817a73df0cacee513580.ctex
+2026-11-14T16:06:34.4552704Z Loading resource: res://assets/kart/controls/drift.svg
+2026-11-14T16:06:34.4553142Z Loading resource: res://.godot/imported/drift.svg-f59a3355d3d2135e53b0b1cf3f9eed55.ctex
+2026-11-14T16:06:34.4556895Z Loading resource: res://assets/kart/controls/brake.svg
+2026-11-14T16:06:34.4557368Z Loading resource: res://.godot/imported/brake.svg-b56fcf26ab1ae99ba005eb2f6b9ef722.ctex
+2026-11-14T16:06:34.4559445Z Loading resource: res://assets/kart/controls/item.svg
+2026-11-14T16:06:34.4560307Z Loading resource: res://.godot/imported/item.svg-39c87303f983f95f10f0f5180f09d306.ctex
+2026-11-14T16:06:34.4563690Z Loading resource: res://assets/kart/controls/reference/drift_normal.png
+2026-11-14T16:06:34.4564137Z Loading resource: res://.godot/imported/drift_normal.png-4b2f3b5ae5829667e0f75e1796929924.ctex
+2026-11-14T16:06:34.4594711Z Loading resource: res://assets/kart/controls/reference/drift_pressed.png
+2026-11-14T16:06:34.4595459Z Loading resource: res://.godot/imported/drift_pressed.png-bfaf92cafbdda6fd78c9ae0a1f6e7d6b.ctex
+2026-11-14T16:06:34.4626177Z Loading resource: res://assets/kart/controls/reference/drift_disabled.png
+2026-11-14T16:06:34.4626739Z Loading resource: res://.godot/imported/drift_disabled.png-d9660acf73eec7f356c001f24f129ab9.ctex
+2026-11-14T16:06:34.4656777Z Loading resource: res://assets/kart/controls/reference/gas_normal.png
+2026-11-14T16:06:34.4657377Z Loading resource: res://.godot/imported/gas_normal.png-b9eeff57c9ff87d6cf577311a39c684b.ctex
+2026-11-14T16:06:34.4690273Z Loading resource: res://assets/kart/controls/reference/gas_pressed.png
+2026-11-14T16:06:34.4690814Z Loading resource: res://.godot/imported/gas_pressed.png-effa69e7749875a11c66e4826b7e6b34.ctex
+2026-11-14T16:06:34.4728115Z Loading resource: res://assets/kart/controls/reference/gas_disabled.png
+2026-11-14T16:06:34.4728771Z Loading resource: res://.godot/imported/gas_disabled.png-c74904825386ef540dabe6b4b4bec66a.ctex
+2026-11-14T16:06:34.4766366Z Loading resource: res://assets/kart/controls/reference/bremse_normal.png
+2026-11-14T16:06:34.4766966Z Loading resource: res://.godot/imported/bremse_normal.png-17d79e585cbb64aa102f07ab36f89c30.ctex
+2026-11-14T16:06:34.4802853Z Loading resource: res://assets/kart/controls/reference/bremse_pressed.png
+2026-11-14T16:06:34.4803353Z Loading resource: res://.godot/imported/bremse_pressed.png-42d61aa24cad4bd30e998c3fa5b34d84.ctex
+2026-11-14T16:06:34.4840287Z Loading resource: res://assets/kart/controls/reference/bremse_disabled.png
+2026-11-14T16:06:34.4840839Z Loading resource: res://.godot/imported/bremse_disabled.png-16d3e95ba3b98c5f6be4b8bd3bf27c53.ctex
+2026-11-14T16:06:34.4875636Z Loading resource: res://assets/kart/controls/reference/speed_normal.png
+2026-11-14T16:06:34.4876433Z Loading resource: res://.godot/imported/speed_normal.png-06762b3753a232b6eafc5b70652830ad.ctex
+2026-11-14T16:06:34.4915657Z Loading resource: res://assets/kart/controls/reference/speed_pressed.png
+2026-11-14T16:06:34.4916199Z Loading resource: res://.godot/imported/speed_pressed.png-2815c6cbc7065304baa945df4ae0f6c7.ctex
+2026-11-14T16:06:34.4956027Z Loading resource: res://assets/kart/controls/reference/speed_disabled.png
+2026-11-14T16:06:34.4956690Z Loading resource: res://.godot/imported/speed_disabled.png-1f3947290f7d8b31552dd6bf8c5d0af9.ctex
+2026-11-14T16:06:34.4994360Z Loading resource: res://assets/kart/controls/reference/item_normal.png
+2026-11-14T16:06:34.4994997Z Loading resource: res://.godot/imported/item_normal.png-362eca5066a4737f521cd9d1c81ee115.ctex
+2026-11-14T16:06:34.5031515Z Loading resource: res://assets/kart/controls/reference/item_pressed.png
+2026-11-14T16:06:34.5032066Z Loading resource: res://.godot/imported/item_pressed.png-db16c4ab6f04234c802b2c5141b15fd1.ctex
+2026-11-14T16:06:34.5068839Z Loading resource: res://assets/kart/controls/reference/item_disabled.png
+2026-11-14T16:06:34.5069552Z Loading resource: res://.godot/imported/item_disabled.png-f2205c97afc933e0d4f8f452a61163b7.ctex
+2026-11-14T16:06:34.5105816Z Loading resource: res://assets/kart/hud/icon_shield.png
+2026-11-14T16:06:34.5106340Z Loading resource: res://.godot/imported/icon_shield.png-502f3c6bc05f0df8c2d13d38faa2c957.ctex
+2026-11-14T16:06:34.5114101Z Loading resource: res://assets/kart/hud/icon_pulse.png
+2026-11-14T16:06:34.5114632Z Loading resource: res://.godot/imported/icon_pulse.png-aeb91fa9be73310a019e02f562fadefa.ctex
+2026-11-14T16:06:34.5125523Z Loading resource: res://assets/kart/hud/icon_wind.png
+2026-11-14T16:06:34.5126480Z Loading resource: res://.godot/imported/icon_wind.png-7e73538f9c5aefaf64cf34ea279506d8.ctex
+2026-11-14T16:06:34.5179859Z Loading resource: res://assets/kart/controls/reference/stick_basis.png
+2026-11-14T16:06:34.5180718Z Loading resource: res://.godot/imported/stick_basis.png-deb9a6762bca020b82922e26b6edc3d2.ctex
+2026-11-14T16:06:34.5337915Z Loading resource: res://assets/kart/controls/reference/stick_knopf_normal.png
+2026-11-14T16:06:34.5338855Z Loading resource: res://.godot/imported/stick_knopf_normal.png-da4db6c3b525b78c03edd2d338c5cf84.ctex
+2026-11-14T16:06:34.5360311Z Loading resource: res://assets/kart/controls/reference/stick_knopf_pressed.png
+2026-11-14T16:06:34.5361442Z Loading resource: res://.godot/imported/stick_knopf_pressed.png-b3fc6786154c89e2052a1e3d30f95b09.ctex
+2026-11-14T16:06:34.6336242Z Loading resource: res://assets/audio/kart/garage.ogg
+2026-11-14T16:06:34.6336873Z Loading resource: res://.godot/imported/garage.ogg-e4680e06f68e5389a72f23266d1621aa.oggvorbisstr
+2026-11-14T16:06:34.6508513Z Loading resource: res://assets/kart/menu/race.svg
+2026-11-14T16:06:34.6509135Z Loading resource: res://.godot/imported/race.svg-aee843503549d595ff1412168c0afa41.ctex
+2026-11-14T16:06:34.6535997Z Loading resource: res://assets/kart/menu/clock.svg
+2026-11-14T16:06:34.6536788Z Loading resource: res://.godot/imported/clock.svg-21627f753afcb3a2da11eb08a79e3005.ctex
+2026-11-14T16:06:34.6557768Z Loading resource: res://assets/kart/menu/arena.svg
+2026-11-14T16:06:34.6558570Z Loading resource: res://.godot/imported/arena.svg-dc0ccb0baedddcefa8f49e6d5875723c.ctex
+2026-11-14T16:06:34.6581664Z Loading resource: res://assets/kart/menu/cup.svg
+2026-11-14T16:06:34.6582311Z Loading resource: res://.godot/imported/cup.svg-ca6000eef9703987fa085ff67392fb2c.ctex
+2026-11-14T16:06:34.6604395Z Loading resource: res://assets/kart/menu/practice.svg
+2026-11-14T16:06:34.6605024Z Loading resource: res://.godot/imported/practice.svg-76ebe0161637b7e4d8f02bba9b85bc02.ctex
+2026-11-14T16:06:34.8169641Z Loading resource: res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb
+2026-11-14T16:06:34.8170400Z Loading resource: res://.godot/imported/Lumo-Facial-Mobile.glb-990aa22f389583ec1c7266cfb13484d8.scn
+2026-11-14T16:06:34.8758718Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:06:34.9690146Z [Perf] quality_profile:high
+2026-11-14T16:06:36.5505102Z Loading resource: res://assets/kart/gates/lumo_kart_start_finish_gate_mobile.glb
+2026-11-14T16:06:36.5506063Z Loading resource: res://.godot/imported/lumo_kart_start_finish_gate_mobile.glb-84a49864a9a151eceeb5cb82b917f010.scn
+2026-11-14T16:06:36.5506922Z Loading resource: res://assets/kart/gates/lumo_kart_start_finish_gate_mobile_LumoBaseColor.jpg
+2026-11-14T16:06:36.5507926Z Loading resource: res://.godot/imported/lumo_kart_start_finish_gate_mobile_LumoBaseColor.jpg-57426a748210127b9386992ef016d3d3.ctex
+2026-11-14T16:06:36.5562906Z Loading resource: res://assets/kart/gates/lumo_kart_start_finish_gate_mobile_LumoMetallicRoughness.jpg
+2026-11-14T16:06:36.5564430Z Loading resource: res://.godot/imported/lumo_kart_start_finish_gate_mobile_LumoMetallicRoughness.jpg-5f3c8cd6f2dec1b19a4920d996fe1bbe.ctex
+2026-11-14T16:06:36.5618673Z Loading resource: res://assets/kart/gates/lumo_kart_start_finish_gate_mobile_LumoNormal.jpg
+2026-11-14T16:06:36.5619828Z Loading resource: res://.godot/imported/lumo_kart_start_finish_gate_mobile_LumoNormal.jpg-7818598fbcc0e653558aeaed89bf198c.ctex
+2026-11-14T16:06:37.2073537Z Loading resource: res://assets/audio/kart/sonnenhafen.ogg
+2026-11-14T16:06:37.2074541Z Loading resource: res://.godot/imported/sonnenhafen.ogg-b2daf4a1be388ef18205be3b13b50a39.oggvorbisstr
+2026-11-14T16:06:37.2143993Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:06:40.8230562Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/stunt-integration/precision-frames/01_loop_runup_overview.png
+2026-11-14T16:06:41.5204355Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/stunt-integration/precision-frames/02_loop_exit_to_ramp.png
+2026-11-14T16:06:42.2108136Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/stunt-integration/precision-frames/03_ramp_gap_landing_side.png
+2026-11-14T16:06:42.2235518Z [PrecisionCapture] 04_hint_red_gib_gas: 12.0 m/s -> Gib Gas! (predicted 10.3 m)
+2026-11-14T16:06:43.0933859Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/stunt-integration/precision-frames/04_hint_red_gib_gas.png
+2026-11-14T16:06:43.1065010Z [PrecisionCapture] 05_hint_green_tempo_passt: 21.6 m/s -> Tempo passt! (predicted 22.8 m)
+2026-11-14T16:06:43.9974914Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/stunt-integration/precision-frames/05_hint_green_tempo_passt.png
+2026-11-14T16:06:44.0101983Z [PrecisionCapture] 06_hint_orange_etwas_bremsen: 30.0 m/s -> Etwas bremsen! (predicted 37.4 m)
+2026-11-14T16:06:44.8848335Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/stunt-integration/precision-frames/06_hint_orange_etwas_bremsen.png
+2026-11-14T16:06:45.6977655Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/stunt-integration/precision-frames/07_midair_over_gap_chase.png
+2026-11-14T16:06:46.5323782Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/stunt-integration/precision-frames/08_midair_over_gap_side.png
+2026-11-14T16:06:46.5386584Z Loading resource: res://assets/audio/kart/drift.ogg
+2026-11-14T16:06:46.5387334Z Loading resource: res://.godot/imported/drift.ogg-b90a535d4ac4aeeed2cb35df5da7f43d.oggvorbisstr
+2026-11-14T16:06:46.5405207Z [PrecisionCapture] landing: ziel after 19.90 m
+2026-11-14T16:06:47.3805954Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/stunt-integration/precision-frames/09_landing_in_zone.png
+2026-11-14T16:06:48.2567488Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/stunt-integration/precision-frames/10_too_slow_falls_into_gap.png
+2026-11-14T16:06:48.3533431Z [PrecisionCapture] released 4 audio streams
+2026-11-14T16:06:48.3533940Z [PrecisionCapture] PASS: 10 frames
+2026-11-14T16:06:48.5964036Z XR: Clearing primary interface
+2026-11-14T16:06:48.5964508Z XR: Removed interface "Native mobile"
+2026-11-14T16:06:48.5964913Z XR: Removed interface "OpenXR"
+2026-11-14T16:06:48.5965193Z Accessibility: window 0 adapter destroyed.
+2026-11-14T16:06:48.6380950Z ##[group]Run actions/upload-artifact@v4
+2026-11-14T16:06:48.6381234Z with:
+2026-11-14T16:06:48.6381494Z   name: sonnenhafen-stunt-integration-43613302257
+2026-11-14T16:06:48.6381839Z   path: exports/stunt-integration/
+2026-11-14T16:06:48.6382091Z   retention-days: 90
+2026-11-14T16:06:48.6382330Z   if-no-files-found: warn
+2026-11-14T16:06:48.6382562Z   compression-level: 6
+2026-11-14T16:06:48.6382814Z   overwrite: false
+2026-11-14T16:06:48.6383065Z   include-hidden-files: false
+2026-11-14T16:06:48.6383303Z ##[endgroup]
+2026-11-14T16:06:48.7630923Z (node:3548) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-14T16:06:48.7631741Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-14T16:06:48.7687351Z With the provided path, there will be 27 files uploaded
+2026-11-14T16:06:48.7690972Z Artifact name is valid!
+2026-11-14T16:06:48.7691278Z Root directory input is valid!
+2026-11-14T16:06:49.2252586Z Beginning upload of artifact content to blob storage
+2026-11-14T16:06:49.5740357Z (node:3548) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-14T16:06:49.7537547Z Uploaded bytes 7187376
+2026-11-14T16:06:49.8079906Z Finished uploading artifact content to blob storage!
+2026-11-14T16:06:49.8081034Z SHA256 digest of uploaded artifact zip is 1f07a017a8b6d9929bdfa3c62b46e17e61a7b4784fa791b322581bb00cb49787
+2026-11-14T16:06:49.8081631Z Finalizing artifact upload
+2026-11-14T16:06:50.1440747Z Artifact sonnenhafen-stunt-integration-43613302257.zip successfully finalized. Artifact ID 14121456851
+2026-11-14T16:06:50.1441680Z Artifact sonnenhafen-stunt-integration-43613302257 has been successfully uploaded! Final size is 7187376 bytes. Artifact ID is 14121456851
+2026-11-14T16:06:50.1446113Z Artifact download URL: https://github.com/Ullmann27/lumo-godot/actions/runs/43613302257/artifacts/14121456851
+2026-11-14T16:06:50.1634567Z Post job cleanup.
+2026-11-14T16:06:50.2265039Z [command]/usr/bin/git version
+2026-11-14T16:06:50.2292357Z git version 2.56.1
+2026-11-14T16:06:50.2316649Z Temporarily overriding HOME='/home/runner/work/_temp/3600fb63-cd48-4f36-93b0-b8d23066d59e' before making global git config changes
+2026-11-14T16:06:50.2317514Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-14T16:06:50.2320806Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/lumo-godot/lumo-godot
+2026-11-14T16:06:50.2347352Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-14T16:06:50.2370070Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-14T16:06:50.2527245Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-14T16:06:50.2552237Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-14T16:06:50.2703532Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-14T16:06:50.2724699Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-14T16:06:50.2969145Z Cleaning up orphan processes
+2026-11-14T16:06:50.3347438Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

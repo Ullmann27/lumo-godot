@@ -1,0 +1,297 @@
+﻿2026-11-14T16:01:26.5344764Z Current runner version: '2.338.2'
+2026-11-14T16:01:26.5381574Z ##[group]Runner Image Provisioner
+2026-11-14T16:01:26.5382252Z Hosted Compute Agent
+2026-11-14T16:01:26.5382709Z Version: 20261103.629
+2026-11-14T16:01:26.5383177Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-14T16:01:26.5383686Z Build Date: 2026-11-03T17:26:59Z
+2026-11-14T16:01:26.5384190Z Worker ID: {017dfd99-79bf-46c4-9aea-20956b47e737}
+2026-11-14T16:01:26.5384706Z Region: us-east-1
+2026-11-14T16:01:26.5385099Z Cloud: AWS
+2026-11-14T16:01:26.5385486Z ##[endgroup]
+2026-11-14T16:01:26.5386418Z ##[group]Operating System
+2026-11-14T16:01:26.5386886Z Ubuntu
+2026-11-14T16:01:26.5387268Z 24.04.5
+2026-11-14T16:01:26.5387680Z LTS
+2026-11-14T16:01:26.5388048Z ##[endgroup]
+2026-11-14T16:01:26.5388435Z ##[group]Runner Image
+2026-11-14T16:01:26.5388871Z Image: ubuntu-24.04
+2026-11-14T16:01:26.5389567Z Version: 20261111.127.1
+2026-11-14T16:01:26.5390534Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261111.127/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-14T16:01:26.5391603Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261111.127
+2026-11-14T16:01:26.5392322Z ##[endgroup]
+2026-11-14T16:01:26.5393105Z ##[group]GITHUB_TOKEN Permissions
+2026-11-14T16:01:26.5394858Z Contents: read
+2026-11-14T16:01:26.5395276Z Metadata: read
+2026-11-14T16:01:26.5395719Z ##[endgroup]
+2026-11-14T16:01:26.5397156Z Secret source: Actions
+2026-11-14T16:01:26.5397800Z Cache mode: write
+2026-11-14T16:01:26.5398323Z Prepare workflow directory
+2026-11-14T16:01:26.5617251Z Prepare all required actions
+2026-11-14T16:01:26.5653259Z Getting action download info
+2026-11-14T16:01:26.7421996Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-14T16:01:28.2432730Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-14T16:01:28.4770767Z Complete job name: hero-flight
+2026-11-14T16:01:28.5504637Z ##[group]Run actions/checkout@v4
+2026-11-14T16:01:28.5505386Z with:
+2026-11-14T16:01:28.5505827Z   persist-credentials: false
+2026-11-14T16:01:28.5506388Z   ref: 84789d0c2c6fb4b6ecd2897ce1951b89f958b604
+2026-11-14T16:01:28.5506977Z   repository: Ullmann27/lumo-godot
+2026-11-14T16:01:28.5510638Z   token: ***
+2026-11-14T16:01:28.5511079Z   ssh-strict: true
+2026-11-14T16:01:28.5511522Z   ssh-user: git
+2026-11-14T16:01:28.5511963Z   clean: true
+2026-11-14T16:01:28.5512407Z   sparse-checkout-cone-mode: true
+2026-11-14T16:01:28.5512900Z   fetch-depth: 1
+2026-11-14T16:01:28.5513324Z   fetch-tags: false
+2026-11-14T16:01:28.5513760Z   show-progress: true
+2026-11-14T16:01:28.5514219Z   lfs: false
+2026-11-14T16:01:28.5514631Z   submodules: false
+2026-11-14T16:01:28.5515053Z   set-safe-directory: true
+2026-11-14T16:01:28.5515574Z   allow-unsafe-pr-checkout: false
+2026-11-14T16:01:28.5516293Z ##[endgroup]
+2026-11-14T16:01:29.8825506Z Syncing repository: Ullmann27/lumo-godot
+2026-11-14T16:01:29.8827842Z ##[group]Getting Git version info
+2026-11-14T16:01:29.8828948Z Working directory is '/home/runner/work/lumo-godot/lumo-godot'
+2026-11-14T16:01:29.8830920Z [command]/usr/bin/git version
+2026-11-14T16:01:30.0986707Z git version 2.56.1
+2026-11-14T16:01:30.1000280Z ##[endgroup]
+2026-11-14T16:01:30.1008735Z Temporarily overriding HOME='/home/runner/work/_temp/d7d754fc-486a-47d7-bb43-25bc25f993fb' before making global git config changes
+2026-11-14T16:01:30.1011926Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-14T16:01:30.1013903Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/lumo-godot/lumo-godot
+2026-11-14T16:01:30.1385517Z Deleting the contents of '/home/runner/work/lumo-godot/lumo-godot'
+2026-11-14T16:01:30.1389092Z ##[group]Initializing the repository
+2026-11-14T16:01:30.1391805Z [command]/usr/bin/git init /home/runner/work/lumo-godot/lumo-godot
+2026-11-14T16:01:30.1882661Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-14T16:01:30.1885003Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-14T16:01:30.1887082Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-14T16:01:30.1888882Z hint: call:
+2026-11-14T16:01:30.1890323Z hint:
+2026-11-14T16:01:30.1891518Z hint: 	git config --global init.defaultBranch <name>
+2026-11-14T16:01:30.1892880Z hint:
+2026-11-14T16:01:30.1894289Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-14T16:01:30.1896598Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-14T16:01:30.1898321Z hint:
+2026-11-14T16:01:30.1899480Z hint: 	git branch -m <name>
+2026-11-14T16:01:30.1900632Z hint:
+2026-11-14T16:01:30.1902113Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-14T16:01:30.1904347Z Initialized empty Git repository in /home/runner/work/lumo-godot/lumo-godot/.git/
+2026-11-14T16:01:30.1908032Z [command]/usr/bin/git remote add origin https://github.com/Ullmann27/lumo-godot
+2026-11-14T16:01:30.1939827Z ##[endgroup]
+2026-11-14T16:01:30.1941737Z ##[group]Disabling automatic garbage collection
+2026-11-14T16:01:30.1943212Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-14T16:01:30.1961579Z ##[endgroup]
+2026-11-14T16:01:30.1963107Z ##[group]Setting up auth
+2026-11-14T16:01:30.1965333Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-14T16:01:30.1991976Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-14T16:01:30.4943746Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-14T16:01:30.4966028Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-14T16:01:30.5109059Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-14T16:01:30.5130093Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-14T16:01:30.5276112Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-14T16:01:30.5300189Z ##[endgroup]
+2026-11-14T16:01:30.5300608Z ##[group]Fetching the repository
+2026-11-14T16:01:30.5310143Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 84789d0c2c6fb4b6ecd2897ce1951b89f958b604
+2026-11-14T16:01:33.0823550Z From https://github.com/Ullmann27/lumo-godot
+2026-11-14T16:01:33.0824257Z  * branch            84789d0c2c6fb4b6ecd2897ce1951b89f958b604 -> FETCH_HEAD
+2026-11-14T16:01:33.0842286Z ##[endgroup]
+2026-11-14T16:01:33.0843008Z ##[group]Determining the checkout info
+2026-11-14T16:01:33.0843890Z ##[endgroup]
+2026-11-14T16:01:33.0844428Z [command]/usr/bin/git sparse-checkout disable
+2026-11-14T16:01:33.0897274Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-14T16:01:33.0916721Z ##[group]Checking out the ref
+2026-11-14T16:01:33.0919465Z [command]/usr/bin/git checkout --progress --force 84789d0c2c6fb4b6ecd2897ce1951b89f958b604
+2026-11-14T16:01:33.8453030Z Note: switching to '84789d0c2c6fb4b6ecd2897ce1951b89f958b604'.
+2026-11-14T16:01:33.8453638Z 
+2026-11-14T16:01:33.8453849Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-14T16:01:33.8454321Z changes and commit them, and you can discard any commits you make in this
+2026-11-14T16:01:33.8454738Z state without impacting any branches by switching back to a branch.
+2026-11-14T16:01:33.8454954Z 
+2026-11-14T16:01:33.8455138Z If you want to create a new branch to retain commits you create, you may
+2026-11-14T16:01:33.8455615Z do so (now or later) by using -c with the switch command. Example:
+2026-11-14T16:01:33.8456071Z 
+2026-11-14T16:01:33.8456177Z   git switch -c <new-branch-name>
+2026-11-14T16:01:33.8456464Z 
+2026-11-14T16:01:33.8456562Z Or undo this operation with:
+2026-11-14T16:01:33.8456758Z 
+2026-11-14T16:01:33.8456909Z   git switch -
+2026-11-14T16:01:33.8457040Z 
+2026-11-14T16:01:33.8457257Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-14T16:01:33.8457492Z 
+2026-11-14T16:01:33.8457677Z HEAD is now at 84789d0 ci: run native discovery acceptance on the integrated source
+2026-11-14T16:01:33.8496089Z ##[endgroup]
+2026-11-14T16:01:33.8536412Z [command]/usr/bin/git log -1 --format=%H
+2026-11-14T16:01:33.8552422Z 84789d0c2c6fb4b6ecd2897ce1951b89f958b604
+2026-11-14T16:01:33.8558158Z ##[group]Removing auth
+2026-11-14T16:01:33.8561200Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-14T16:01:33.8582458Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-14T16:01:33.8735351Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-14T16:01:33.8754268Z http.https://github.com/.extraheader
+2026-11-14T16:01:33.8758859Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-14T16:01:33.8780125Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-14T16:01:33.8923254Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-14T16:01:33.8942372Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-14T16:01:33.9082002Z ##[endgroup]
+2026-11-14T16:01:33.9263263Z ##[group]Run set -euo pipefail
+2026-11-14T16:01:33.9263648Z [36;1mset -euo pipefail[0m
+2026-11-14T16:01:33.9263956Z [36;1msudo apt-get -qq update[0m
+2026-11-14T16:01:33.9264296Z [36;1msudo apt-get -y install xvfb libgl1-mesa-dri[0m
+2026-11-14T16:01:33.9264660Z [36;1mcurl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \[0m
+2026-11-14T16:01:33.9265152Z [36;1m  https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip[0m
+2026-11-14T16:01:33.9265688Z [36;1munzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"[0m
+2026-11-14T16:01:33.9266063Z [36;1mchmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"[0m
+2026-11-14T16:01:33.9266392Z [36;1mecho "$RUNNER_TEMP" >> "$GITHUB_PATH"[0m
+2026-11-14T16:01:34.2124026Z shell: /usr/bin/bash -e {0}
+2026-11-14T16:01:34.2124392Z ##[endgroup]
+2026-11-14T16:01:45.7125590Z Reading package lists...
+2026-11-14T16:01:45.8734601Z Building dependency tree...
+2026-11-14T16:01:45.8739455Z Reading state information...
+2026-11-14T16:01:46.0300728Z xvfb is already the newest version (2:21.1.12-1ubuntu1.9).
+2026-11-14T16:01:46.0301423Z libgl1-mesa-dri is already the newest version (25.2.8-0ubuntu0.24.04.4).
+2026-11-14T16:01:46.0301875Z libgl1-mesa-dri set to manually installed.
+2026-11-14T16:01:46.0302282Z 0 upgraded, 0 newly installed, 0 to remove and 23 not upgraded.
+2026-11-14T16:01:46.0351228Z   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+2026-11-14T16:01:46.0351865Z                                  Dload  Upload   Total   Spent    Left  Speed
+2026-11-14T16:01:46.0352136Z 
+2026-11-14T16:01:46.1206982Z   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+2026-11-14T16:01:46.1207906Z   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+2026-11-14T16:01:46.4218056Z 
+2026-11-14T16:01:46.6290821Z  51 68.4M   51 35.4M    0     0  91.5M      0 --:--:-- --:--:-- --:--:-- 91.5M
+2026-11-14T16:01:46.6291381Z 100 68.4M  100 68.4M    0     0   115M      0 --:--:-- --:--:-- --:--:--  159M
+2026-11-14T16:01:47.4988908Z ##[group]Run set -euo pipefail
+2026-11-14T16:01:47.4989530Z [36;1mset -euo pipefail[0m
+2026-11-14T16:01:47.4989979Z [36;1mtimeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit > import.log 2>&1[0m
+2026-11-14T16:01:47.4990600Z [36;1mif grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' import.log; then[0m
+2026-11-14T16:01:47.4991011Z [36;1m  cat import.log[0m
+2026-11-14T16:01:47.4991265Z [36;1m  exit 1[0m
+2026-11-14T16:01:47.4991475Z [36;1mfi[0m
+2026-11-14T16:01:47.5019043Z shell: /usr/bin/bash -e {0}
+2026-11-14T16:01:47.5019537Z ##[endgroup]
+2026-11-14T16:02:17.8980511Z ##[group]Run set -euo pipefail
+2026-11-14T16:02:17.8980874Z [36;1mset -euo pipefail[0m
+2026-11-14T16:02:17.8981162Z [36;1mxvfb-run -a -s '-screen 0 1280x720x24' \[0m
+2026-11-14T16:02:17.8981514Z [36;1m  python3 tools/run_godot_probe.py --timeout 180 \[0m
+2026-11-14T16:02:17.8981895Z [36;1m    --log flight.log --required '[KartSonnenhafenFlight]' \[0m
+2026-11-14T16:02:17.8982290Z [36;1m    -- Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy \[0m
+2026-11-14T16:02:17.8982636Z [36;1m    --rendering-method gl_compatibility --path . \[0m
+2026-11-14T16:02:17.8983072Z [36;1m    --script res://scripts/tests/kart_action_course_regression.gd[0m
+2026-11-14T16:02:17.8983439Z [36;1mgrep -F '[KartActionCourse] PASS:' flight.log[0m
+2026-11-14T16:02:17.9008712Z shell: /usr/bin/bash -e {0}
+2026-11-14T16:02:17.9009077Z ##[endgroup]
+2026-11-14T16:02:18.5797277Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:02:23.0352145Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:02:23.0352781Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:02:23.6103953Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:02:23.6104669Z 
+2026-11-14T16:02:24.0686569Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:02:24.0687263Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:02:24.0695842Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:02:24.1084725Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:02:24.1085386Z [EventBus] online - signals registered
+2026-11-14T16:02:24.1085823Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:02:24.1086210Z [Perf] platform_detected:Linux
+2026-11-14T16:02:24.1114115Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:02:24.1118191Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:02:24.1119352Z [Audio] manager ready (muted:false)
+2026-11-14T16:02:24.1119994Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:02:25.0424874Z [KartActionCourse] sonnenhafen: 1 Felder, 0 Tore, 4 Schanze, 0 Tauchstrecke, 0 offene Kante
+2026-11-14T16:02:25.1218218Z [KartActionCourse] zauberwald: 2 Felder, 4 Tore, 1 Schanze, 1 Tauchstrecke, 0 offene Kante
+2026-11-14T16:02:25.2162930Z [KartActionCourse] bergwelt: 2 Felder, 4 Tore, 0 Schanze, 0 Tauchstrecke, 0 offene Kante
+2026-11-14T16:02:25.2898427Z [KartActionCourse] holo_city: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 0 offene Kante
+2026-11-14T16:02:25.3844890Z [KartActionCourse] crystal_canyon: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 1 offene Kante
+2026-11-14T16:02:25.4624879Z [KartActionCourse] jungle_temple: 2 Felder, 4 Tore, 1 Schanze, 1 Tauchstrecke, 0 offene Kante
+2026-11-14T16:02:25.5718030Z [KartActionCourse] candy_cloud: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 1 offene Kante
+2026-11-14T16:02:25.6615598Z [KartActionCourse] volcano_night: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 1 offene Kante
+2026-11-14T16:02:25.7524089Z [KartActionCourse] winter_sprint: 2 Felder, 4 Tore, 1 Schanze, 1 Tauchstrecke, 0 offene Kante
+2026-11-14T16:02:25.8367202Z [KartActionCourse] galaxy_ringway: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 1 offene Kante
+2026-11-14T16:02:25.9229934Z [KartActionCourse] desert_drift: 2 Felder, 4 Tore, 1 Schanze, 1 Tauchstrecke, 0 offene Kante
+2026-11-14T16:02:26.0072407Z [KartActionCourse] learning_lab: 2 Felder, 4 Tore, 1 Schanze, 0 Tauchstrecke, 0 offene Kante
+2026-11-14T16:02:27.8319583Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:02:27.9180365Z [Perf] quality_profile:medium
+2026-11-14T16:02:33.7937347Z [Kart] race_world_ready: zauberwald mode=training
+2026-11-14T16:02:39.5185966Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:02:43.8044125Z [KartSonnenhafenFlight] 62.7m flown, 5.3m high, 1.52s airborne, no reset
+2026-11-14T16:02:44.0875413Z [Kart] race_world_ready: candy_cloud mode=training
+2026-11-14T16:02:45.4950238Z [KartOpenEdge] 1.48 s to cloud rescue; beyond-edge height -4.25 m; no rail lift
+2026-11-14T16:02:46.9288445Z [KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung
+2026-11-14T16:02:47.2090627Z [KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung
+2026-11-14T16:02:47.2150371Z ##[group]Run set -euo pipefail
+2026-11-14T16:02:47.2150781Z [36;1mset -euo pipefail[0m
+2026-11-14T16:02:47.2151078Z [36;1mmkdir -p "$LUMO_CAPTURE_DIR"[0m
+2026-11-14T16:02:47.2151367Z [36;1mxvfb-run -a -s '-screen 0 1280x720x24' \[0m
+2026-11-14T16:02:47.2151684Z [36;1m  python3 tools/run_godot_probe.py --timeout 180 \[0m
+2026-11-14T16:02:47.2152075Z [36;1m    --log capture.log --required '[SonnenhafenAerial] PASS:' \[0m
+2026-11-14T16:02:47.2152457Z [36;1m    -- Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy \[0m
+2026-11-14T16:02:47.2152813Z [36;1m    --rendering-method gl_compatibility --path . \[0m
+2026-11-14T16:02:47.2153283Z [36;1m    --script res://scripts/tests/kart_sonnenhafen_aerial_flight_capture.gd[0m
+2026-11-14T16:02:47.2153697Z [36;1mtest -s "$LUMO_CAPTURE_DIR/01_sonnenhafen_full_track_bird_eye.png"[0m
+2026-11-14T16:02:47.2154094Z [36;1mtest -s "$LUMO_CAPTURE_DIR/02_sonnenhafen_ramp_bird_eye.png"[0m
+2026-11-14T16:02:47.2154554Z [36;1mtest -s "$LUMO_CAPTURE_DIR/03_sonnenhafen_actual_flight_bird_eye.png"[0m
+2026-11-14T16:02:47.2154985Z [36;1mtest -s "$LUMO_CAPTURE_DIR/04_sonnenhafen_landing_bird_eye.png"[0m
+2026-11-14T16:02:47.2181680Z shell: /usr/bin/bash -e {0}
+2026-11-14T16:02:47.2181962Z env:
+2026-11-14T16:02:47.2182310Z   LUMO_CAPTURE_DIR: /home/runner/work/lumo-godot/lumo-godot/artifacts/sonnenhafen-flight
+2026-11-14T16:02:47.2182706Z ##[endgroup]
+2026-11-14T16:02:47.2796421Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T16:02:47.3999757Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T16:02:47.4000431Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T16:02:47.4355260Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T16:02:47.4355899Z 
+2026-11-14T16:02:47.4976988Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T16:02:47.4977487Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T16:02:47.4986720Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T16:02:47.4987231Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T16:02:47.5372082Z [EventBus] online - signals registered
+2026-11-14T16:02:47.5372569Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T16:02:47.5373010Z [Perf] platform_detected:Linux
+2026-11-14T16:02:47.5374762Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T16:02:47.5378534Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T16:02:47.5379080Z [Audio] manager ready (muted:false)
+2026-11-14T16:02:47.5379644Z [Progress] no save file (first run) - starting fresh
+2026-11-14T16:02:48.7656868Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T16:02:48.8605656Z [Perf] quality_profile:medium
+2026-11-14T16:02:51.0677849Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T16:03:05.6706681Z [SonnenhafenAerial] PASS: full aerial course + takeoff + real flight + landing; no resets; peak 5.26m
+2026-11-14T16:03:05.9314347Z ##[group]Run actions/upload-artifact@v4
+2026-11-14T16:03:05.9314630Z with:
+2026-11-14T16:03:05.9314893Z   name: lumo-sonnenhafen-aerial-43613302194
+2026-11-14T16:03:05.9315273Z   path: import.log
+flight.log
+capture.log
+artifacts/sonnenhafen-flight/
+
+2026-11-14T16:03:05.9315627Z   retention-days: 30
+2026-11-14T16:03:05.9315880Z   if-no-files-found: warn
+2026-11-14T16:03:05.9316117Z   compression-level: 6
+2026-11-14T16:03:05.9316353Z   overwrite: false
+2026-11-14T16:03:05.9316575Z   include-hidden-files: false
+2026-11-14T16:03:05.9316820Z ##[endgroup]
+2026-11-14T16:03:06.0557219Z (node:2790) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-14T16:03:06.0557924Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-14T16:03:06.0590659Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-14T16:03:06.0592316Z The least common ancestor is /home/runner/work/lumo-godot/lumo-godot. This will be the root directory of the artifact
+2026-11-14T16:03:06.0592862Z With the provided path, there will be 7 files uploaded
+2026-11-14T16:03:06.0595105Z Artifact name is valid!
+2026-11-14T16:03:06.0595461Z Root directory input is valid!
+2026-11-14T16:03:06.3154867Z Beginning upload of artifact content to blob storage
+2026-11-14T16:03:06.5101817Z (node:2790) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-14T16:03:06.6920070Z Uploaded bytes 4143028
+2026-11-14T16:03:06.7086773Z Finished uploading artifact content to blob storage!
+2026-11-14T16:03:06.7087446Z SHA256 digest of uploaded artifact zip is 96df5c6d247ebb3ccaa294eaaf2d2abb75b8ea5d6be9538c41be81a6dfb3b38a
+2026-11-14T16:03:06.7088110Z Finalizing artifact upload
+2026-11-14T16:03:07.0438493Z Artifact lumo-sonnenhafen-aerial-43613302194.zip successfully finalized. Artifact ID 14121231812
+2026-11-14T16:03:07.0439875Z Artifact lumo-sonnenhafen-aerial-43613302194 has been successfully uploaded! Final size is 4143028 bytes. Artifact ID is 14121231812
+2026-11-14T16:03:07.0448176Z Artifact download URL: https://github.com/Ullmann27/lumo-godot/actions/runs/43613302194/artifacts/14121231812
+2026-11-14T16:03:07.0613682Z Post job cleanup.
+2026-11-14T16:03:07.1227622Z [command]/usr/bin/git version
+2026-11-14T16:03:07.1254988Z git version 2.56.1
+2026-11-14T16:03:07.1278289Z Temporarily overriding HOME='/home/runner/work/_temp/1c129c0f-e9ad-4c83-a88c-050235a3a6df' before making global git config changes
+2026-11-14T16:03:07.1281829Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-14T16:03:07.1282410Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/lumo-godot/lumo-godot
+2026-11-14T16:03:07.1308080Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-14T16:03:07.1330470Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-14T16:03:07.1485839Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-14T16:03:07.1507618Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-14T16:03:07.1655536Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-14T16:03:07.1676095Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-14T16:03:07.1923210Z Cleaning up orphan processes
+2026-11-14T16:03:07.2189874Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
