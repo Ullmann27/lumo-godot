@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "status": "SOURCE_CHECKPOINT_NOT_TESTED",
+  "base": {
+    "sha": "bd0712259bb64908a5649ee1999638826c9eb597",
+    "tree": "2eb628d3e3a327ee8985385130c96168db7aa852"
+  },
+  "producer": {
+    "sha": "71a4c1e2304b52005950b12490d070c286c45438",
+    "tree": "8633c0ac611f2ba9f261cc247a60997634d43dd9",
+    "compare_base": "454e81229b0193cba75844e9985a53deb2ce5c91",
+    "compare": {
+      "bytes": 401190,
+      "sha256": "7132eb31857e62f4227ef9ed1d34768f9581b7075142f742153b3123c72d293e",
+      "git_blob": "2158e85f1f9c2e177c5368da6f9aa87c7e22755d"
+    },
+    "original_files": 19
+  },
+  "source_files": 19,
+  "exact_producer_files": 17,
+  "owner_correction_paths": [
+    "scripts/learning/learning_wonder_garden.gd",
+    "scripts/tests/learning_wonder_details_regression.gd"
+  ],
+  "independent_review_scope": "Only the two-file duplicate-ambience correction; no runtime or rendered PASS inferred.",
+  "tests_executed_on_new_checkpoint": 0,
+  "host_pin_changed": false,
+  "main_changed": false,
+  "existing_external_branch": {
+    "branch": "integration/lumo-discovery-connections-20261114",
+    "observed_head": "a7bb5815009ea4ae9b8842026f4f3761ae99c98b",
+    "parent": "454e81229b0193cba75844e9985a53deb2ce5c91",
+    "action": "Preserved. This bd-based connection uses a separate branch."
+  },
+  "next_required": "Bind the additional Discovery collector and verifier to the exact new source; execute narrow local checks and actual source-bound CI before Host promotion."
+}
