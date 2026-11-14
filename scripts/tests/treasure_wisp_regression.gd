@@ -36,6 +36,7 @@ func _run() -> void:
     ])
     await process_frame
     _check(effects.route_count() == 2 and gold.visible and moon.visible, "both available forks glow")
+    print("[TreasureWisp] left=", gold.multimesh.get_instance_transform(0).origin, " right=", moon.multimesh.get_instance_transform(0).origin, " origin=", effects._origin, " goals=", effects._goals)
     _check(gold.multimesh.get_instance_transform(0).origin.x < 0, "left fork is golden")
     _check(moon.multimesh.get_instance_transform(0).origin.x > 0, "right fork is moon blue")
     effects.celebrate(Vector3(0, 1.5, -33))
