@@ -9,6 +9,7 @@ const CELEBRATION_WISPS := 20
 const UPDATE_INTERVAL := 1.0 / 24.0
 const CELEBRATION_SECONDS := 1.25
 
+var celebration_only := false
 var _reduced_motion := false
 var _paused := false
 var _clock := 0.0
@@ -22,8 +23,9 @@ var _celebration_age := -1.0
 
 
 func _ready() -> void:
-    _guides.append(_batch("GuideGold", Color("ffe5a0"), WISPS_PER_ROUTE))
-    _guides.append(_batch("GuideMoon", Color("a6e8ff"), WISPS_PER_ROUTE))
+    if not celebration_only:
+        _guides.append(_batch("GuideGold", Color("ffe5a0"), WISPS_PER_ROUTE))
+        _guides.append(_batch("GuideMoon", Color("a6e8ff"), WISPS_PER_ROUTE))
     _celebration = _batch("DiscoverySparkles", Color("ffe9bd"), CELEBRATION_WISPS)
     _celebration.visible = false
     _draw_routes()
