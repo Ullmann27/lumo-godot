@@ -1,0 +1,29 @@
+{
+  "reviewed_at": "2026-11-14T12:54:17.320601+00:00",
+  "base": {
+    "commit": "c3008e6bba3909f422da127ba8d711f9bd821a33",
+    "tree": "ef34a6b4972c6bcf693f9556333732e05085d583"
+  },
+  "producer": {
+    "pull_request": 181,
+    "head": "be58fe0afcbbd8bf982592d05d83f0e7742e8934",
+    "tree": "faffacb93be479c3b8d3534cc056370c69e1407e",
+    "exact_delta_base": "71a4c1e2304b52005950b12490d070c286c45438"
+  },
+  "scope": "Root independently reviewed the complete source patch and original-source identities; source-only checkpoint before exact combined tests.",
+  "source_only_tree": "c0c424c35ddb3149d1a8d7ba611d09c9014572cb",
+  "decisions": [
+    "Accept validated save-envelope version selection, including both legacy marker regression cases.",
+    "Preserve all 2178 model houses while limiting detail and following camera/explorer focus; require actual scaling run and two rendered original PNGs.",
+    "Keep all 52 existing probes, 17 raster checks, return guards, protected modules and current 600-second Treasure TitleContrast bound."
+  ],
+  "pending": [
+    "Combined-source Economy339 run",
+    "Combined-source Scaling42 and rendered46 runs",
+    "Separate scaling CI connection",
+    "Final Host native pin and full Android candidate"
+  ],
+  "artifact_members": 36,
+  "archive_sha256": "c85b8d3ac453943067c5fbd67092a8829babe543356aad4f51de2b2581dcbd4b",
+  "archive_bytes": 518914
+}

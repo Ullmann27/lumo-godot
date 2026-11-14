@@ -1,0 +1,94 @@
+name: LUMO learning wonder detail proof
+on:
+  push:
+    branches: [chatgpt/lumo-learning-wonder-details-20261114]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lumo-learning-wonder-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  learning-wonder:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      LP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Exact Godot and immutable source capsule
+        run: |
+          set -euo pipefail
+          mkdir -p evidence capsule
+          git rev-parse HEAD > evidence/source-sha.txt
+          git rev-parse 'HEAD^{tree}' > evidence/source-tree.txt
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o capsule/godot.zip https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 capsule/godot.zip | sha256sum -c -
+          unzip -q capsule/godot.zip -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+          git archive --format=zip --output=capsule/source.zip HEAD project.godot icon.svg scripts scenes assets tools
+          cp evidence/source-sha.txt evidence/source-tree.txt capsule/
+          sha256sum capsule/godot.zip capsule/source.zip > capsule/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lumo-learning-wonder-source-runtime
+          path: capsule/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+      - name: Import production assets with strict error gate
+        run: |
+          set -euo pipefail
+          export XDG_DATA_HOME="$PWD/evidence/user-data"
+          timeout 480 godot --headless --editor --import --quit 2>&1 | tee evidence/import.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' evidence/import.log; then exit 1; fi
+      - name: Existing learning, sharing, Studio and ambience regression
+        run: |
+          set -euo pipefail
+          export XDG_DATA_HOME="$PWD/evidence/unit-user-data"
+          for probe in learning_world_regression learning_sharing_regression learning_studio_regression lumo_dream_ambience_regression; do
+            timeout 150 godot --headless --path . --audio-driver Dummy --script "scripts/tests/$probe.gd" 2>&1 | tee "evidence/$probe.log"
+            grep -E 'PASS|0 failures' "evidence/$probe.log"
+            if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "evidence/$probe.log"; then exit 1; fi
+          done
+      - name: New production scene state and accessibility regression
+        run: |
+          set -euo pipefail
+          export XDG_DATA_HOME="$PWD/evidence/state-user-data"
+          timeout 150 godot --headless --path . --audio-driver Dummy --script scripts/tests/learning_wonder_details_regression.gd 2>&1 | tee evidence/wonder-headless.log
+          grep -F 'failures=0' evidence/wonder-headless.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' evidence/wonder-headless.log; then exit 1; fi
+          timeout 420 xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . --rendering-method gl_compatibility --audio-driver Dummy --script scripts/tests/learning_wonder_details_regression.gd 2>&1 | tee evidence/wonder-renderer.log
+          grep -F 'invalid_scene_checked=true' evidence/wonder-renderer.log
+          grep -F 'failures=0' evidence/wonder-renderer.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' evidence/wonder-renderer.log; then exit 1; fi
+      - name: Existing unmodified real-touch learning captures
+        if: always()
+        run: |
+          set -euo pipefail
+          export XDG_DATA_HOME="$PWD/evidence/legacy-capture-user-data"
+          timeout 600 xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . --rendering-method gl_compatibility --audio-driver Dummy --script scripts/tests/learning_world_capture.gd -- --output="$PWD/evidence/learning-images" 2>&1 | tee evidence/learning-render.log
+          grep -F '[LearningCapture] PASS' evidence/learning-render.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' evidence/learning-render.log; then exit 1; fi
+      - name: Exact flower geometry, screen bounds and original after images
+        if: always()
+        run: |
+          set -euo pipefail
+          export XDG_DATA_HOME="$PWD/evidence/wonder-capture-user-data"
+          timeout 420 xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . --rendering-method gl_compatibility --audio-driver Dummy --script scripts/tests/learning_wonder_details_capture.gd -- --output="$PWD/evidence/wonder-images" 2>&1 | tee evidence/wonder-capture.log
+          grep -F 'failures=0 captures=11' evidence/wonder-capture.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' evidence/wonder-capture.log; then exit 1; fi
+          find evidence/learning-images evidence/wonder-images -type f -name '*.png' -print0 | sort -z | xargs -0 sha256sum > evidence/image-sha256.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-learning-wonder-evidence
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 30

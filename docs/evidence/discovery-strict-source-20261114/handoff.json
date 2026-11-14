@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "status": "FROZEN_SOURCE_ONLY",
+  "pack_path": "/tmp/native173-discovery-strict-gate-20261114",
+  "base_commit": "afc0df9a2b1794f39051add9dfce0cf947bb177b",
+  "base_tree": "3e621dc8230e155e1089deb1a40c22f177e546b3",
+  "target_branch": "integration/lumo-discovery-bd-20261114",
+  "files": [
+    {
+      "path": ".github/workflows/lumo-discovery-connections.yml",
+      "storage_path": "final-source/.github/workflows/lumo-discovery-connections.yml",
+      "mode": "100644",
+      "change": "added",
+      "bytes": 15142,
+      "sha256": "44285746c1a93586e38892d7b44ef9d0f7b5d6c4dbf10a7f997524e85077a9be",
+      "git_blob": "619023b005be0f5930ea2944ec15e5df1065164e"
+    },
+    {
+      "path": "tools/collect_discovery_connections.py",
+      "storage_path": "final-source/tools/collect_discovery_connections.py",
+      "mode": "100644",
+      "change": "added",
+      "bytes": 9979,
+      "sha256": "bfc9f32c8287849047e9f7babf400c107d790aecb21a45be16d45fa7302a3f83",
+      "git_blob": "1ebdec66300dfb87bf9287d194525d3c374c8aee"
+    },
+    {
+      "path": "tools/tests/test_discovery_connections.py",
+      "storage_path": "final-source/tools/tests/test_discovery_connections.py",
+      "mode": "100644",
+      "change": "added",
+      "bytes": 17885,
+      "sha256": "d64deeeb5bdfdb3fcdf25cecb9610102e8b8fd031ccca3c2f1e2a87ba2baccfd",
+      "git_blob": "ffe8fdd88cae1abc942e7a3d14f57493bc381478"
+    },
+    {
+      "path": "tools/verify_discovery_connections.py",
+      "storage_path": "final-source/tools/verify_discovery_connections.py",
+      "mode": "100644",
+      "change": "added",
+      "bytes": 23700,
+      "sha256": "5edab9f77acaa4114281b74166eec3dbf306eb5b574f677c03190a379081dfaf",
+      "git_blob": "c00ca9873106c974d66282cddfdcfaf5eb3bbebc"
+    }
+  ],
+  "source_freeze": {
+    "bytes": 3357,
+    "sha256": "f70b86d269d09353505dd94db08a5c24cba2da4eae2e5b8c72afea51f4f4cdf1",
+    "git_blob": "38a97947a40c53e41a94bae114086453506bcf12"
+  },
+  "gate_contract": {
+    "bytes": 8503,
+    "sha256": "7aea1777bbf1d93f6f0f248df63d6ea7c1b0e7efdb9d5246dd324c7712de5e2c",
+    "git_blob": "076e29b2f9c6d59309f6e8ddc1bf71c15bae099c"
+  },
+  "patch": {
+    "bytes": 68241,
+    "sha256": "041b5e2680917e73f85d5db45e503f4a72bb15a74c114de46ef7a118a1eedacf",
+    "git_blob": "60e0eb99b74e5c8ca5307fb3f0fc14ecc7973db3"
+  },
+  "tests_executed": false,
+  "actionlint_executed": false,
+  "engine_executed": false,
+  "new_unit_methods": 24,
+  "existing_dream_methods": 12,
+  "original_reader_methods": 11,
+  "pending": [
+    "Independent read-only source review",
+    "Root source checkpoint",
+    "Explicitly authorized 24-method run and Actionlint",
+    "Real separate current-source Discovery/Dream renderer CI"
+  ],
+  "scope": "No existing52/17, Host90, current pins or production bytes modified; no combined Native/Host/Android/visual/FPS claim."
+}

@@ -293,6 +293,7 @@ var brake_visual_amount: float = 0.0
 var reverse_hold_time: float = 0.0
 var map: Control
 var map_panel: PanelContainer
+var _minimap_layout_pending := false
 var hud_content: MarginContainer
 var controls_row: HBoxContainer
 var controls_gap: Control
@@ -1095,12 +1096,8 @@ func _build_ui() -> void:
 	pedal_pad = _build_pedal_pad()
 	controls_row.add_child(pedal_pad)
 	map_panel = PanelContainer.new()
-	# Top right, below the HUD bar, so it never covers the right-thumb pedal pad.
-	map_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	map_panel.offset_left = -210
-	map_panel.offset_right = -22
-	map_panel.offset_top = 104
-	map_panel.offset_bottom = 260
+	# The settled HUD and pedal rectangles determine the available map space.
+	map_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
 	map_panel.add_theme_stylebox_override("panel", _style(Color(0.025, 0.065, 0.13, 0.78)))
 	map_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	safe_ui.add_child(map_panel)
@@ -1108,6 +1105,13 @@ func _build_ui() -> void:
 	map.custom_minimum_size = Vector2(160, 128)
 	map.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	map_panel.add_child(map)
+	for control in [top, message, jump_hint, joystick, pedal_pad]:
+		control.item_rect_changed.connect(_queue_minimap_layout)
+		control.visibility_changed.connect(_queue_minimap_layout)
+	for action in pedal_pad.get_children():
+		action.item_rect_changed.connect(_queue_minimap_layout)
+		action.visibility_changed.connect(_queue_minimap_layout)
+	hud_content.visibility_changed.connect(_queue_minimap_layout)
 	modal_backdrop = ColorRect.new()
 	modal_backdrop.color = Color(0.015, 0.045, 0.09, 0.46)
 	modal_backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1399,7 +1403,6 @@ func _apply_responsive_layout() -> void:
 					if button.name == "ReturnToGames"
 					else "Zum Lernen"
 				)
-	map_panel.visible = mode != "arena" and not compact and not short_landscape
 	modal.offset_left = -modal_width * 0.5
 	modal.offset_right = modal_width * 0.5
 	modal.offset_top = -modal_height * 0.5
@@ -1407,14 +1410,91 @@ func _apply_responsive_layout() -> void:
 	# A Container can grow its offsets while an old minimum size is being
 	# rescaled. Restore the anchored rectangle after all new minimums are set.
 	hud_content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_queue_minimap_layout()
 
+
+func _queue_minimap_layout() -> void:
+	if _minimap_layout_pending or not is_inside_tree():
+		return
+	_minimap_layout_pending = true
+	_apply_minimap_layout.call_deferred()
+
+
+func _apply_minimap_layout() -> void:
+	_minimap_layout_pending = false
+	if not is_inside_tree() or not is_instance_valid(map_panel):
+		return
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	var display_size: Vector2 = Vector2(get_window().size) / MobileRuntime.get_ui_density()
+	if minf(viewport_size.x, viewport_size.y) <= 0.0 or minf(display_size.x, display_size.y) <= 0.0:
+		map_panel.hide()
+		return
+	var ui_scale: float = maxf(viewport_size.x / display_size.x, viewport_size.y / display_size.y)
+	var compact: bool = display_size.x < 900.0 or display_size.x < display_size.y
+	var short_landscape: bool = display_size.x >= display_size.y and safe_ui.size.y / ui_scale < 360.0
+	if mode == "arena" or compact or short_landscape or not hud_content.is_visible_in_tree():
+		map_panel.hide()
+		return
+	# Container sorting can finish after _apply_responsive_layout. Observe its
+	# final rectangles, including changed instructions and a live jump hint.
+	var safe_rect: Rect2 = safe_ui.get_global_rect()
+	var gap: float = 6.0 * ui_scale
+	var safe_left: float = safe_rect.position.x + maxf(gap, float(hud_content.get_theme_constant("margin_left")))
+	var safe_right: float = safe_rect.end.x - maxf(gap, float(hud_content.get_theme_constant("margin_right")))
+	var safe_bottom: float = safe_rect.end.y - maxf(gap, float(hud_content.get_theme_constant("margin_bottom")))
+	var top_bar: Control = top_pause_button.get_parent()
+	var top: float = maxf(safe_rect.position.y + gap, top_bar.get_global_rect().end.y + gap)
+	for notice in [message, jump_hint]:
+		if notice.is_visible_in_tree():
+			top = maxf(top, notice.get_global_rect().end.y + gap)
+	var padding: Vector2 = map_panel.get_theme_stylebox("panel").get_minimum_size()
+	var preferred_content: Vector2 = Vector2(160.0, 128.0) * ui_scale
+	var occupied_rects: Array[Rect2] = []
+	var candidate_rights: Array[float] = [safe_right]
+	var controls: Array = [top_menu_button, top_reset_button, top_pause_button, joystick]
+	controls.append_array(pedal_pad.get_children())
+	for control in controls:
+		if not control.is_visible_in_tree():
+			continue
+		var occupied: Rect2 = control.get_global_rect()
+		if control.get_parent() == pedal_pad:
+			# The production action artwork is 1.12 times the hit rectangle.
+			occupied = occupied.grow(maxf(occupied.size.x, occupied.size.y) * 0.06)
+		occupied_rects.append(occupied)
+		if occupied.end.y + gap > top:
+			candidate_rights.append(minf(safe_right, occupied.position.x - gap))
+	# Try the right edge first, then only the real control edges. Dense views
+	# can use the free space left of SPEED/DRIFT without covering instructions.
+	candidate_rights.sort()
+	candidate_rights.reverse()
+	for right in candidate_rights:
+		var left: float = maxf(safe_left, right - preferred_content.x - padding.x)
+		var bottom: float = safe_bottom
+		for occupied in occupied_rects:
+			if occupied.end.y + gap <= top:
+				continue
+			if occupied.end.x + gap > left and occupied.position.x - gap < right:
+				bottom = minf(bottom, occupied.position.y - gap)
+		var available: Vector2 = Vector2(right - left, bottom - top) - padding
+		var fit: float = minf(1.0, minf(available.x / preferred_content.x, available.y / preferred_content.y))
+		# Keep a readable passive overview; never shrink a driving control.
+		if fit < 0.5:
+			continue
+		var content_size: Vector2 = preferred_content * fit
+		map.custom_minimum_size = content_size
+		map_panel.custom_minimum_size = Vector2.ZERO
+		map_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+		map_panel.position = Vector2(right - content_size.x - padding.x, top) - safe_rect.position
+		map_panel.size = content_size + padding
+		map_panel.show()
+		return
+	map_panel.hide()
 
 func _apply_ui_scale(control: Node, ui_scale: float) -> void:
-	# Both live Garage and the reference landing have their own dedicated
-	# device-dp responsive layout. Recursing over their children would multiply
-	# the same minimum sizes a second time whenever settings are opened.
-	# The 320x740 journey caught a 296dp tile expanding to 1184dp.
-	if control == garage or control == reference_landing:
+	# These controls own their device-dp layout. In particular, the minimap
+	# fits its child minimum to the actual gap between the HUD and pedals.
+	# Recursing here would restore a larger cached minimum after a resize.
+	if control == garage or control == reference_landing or control == map_panel:
 		return
 	if control is Control:
 		var ui_control: Control = control

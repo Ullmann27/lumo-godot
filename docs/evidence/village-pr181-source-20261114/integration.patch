@@ -1,0 +1,445 @@
+diff --git a/scripts/creative/build_settlement_state.gd b/scripts/creative/build_settlement_state.gd
+index b42d3fdb034034018ee494b96d456ade8edabe64..625a8db46195d034cbe7ae2dd84d6b208abff645 100644
+--- a/scripts/creative/build_settlement_state.gd
++++ b/scripts/creative/build_settlement_state.gd
+@@ -600,8 +600,8 @@ static func restore(data: Dictionary):
+ 	)
+ 	model.day = int(data.day)
+ 	model.winner = str(data.get("winner", ""))
+-	model._player = _restored_town(data.player)
+-	model._rival = _restored_town(data.rival)
++	model._player = _restored_town(data.player, data.version == 2)
++	model._rival = _restored_town(data.rival, data.version == 2)
+ 	if model.mode == "settlement" and not model.winner.is_empty():
+ 		return null
+ 	if model.winner in ["player", "tie"] and model._level(model._player) != 3:
+@@ -611,7 +611,7 @@ static func restore(data: Dictionary):
+ 	return model
+ 
+ 
+-static func _restored_town(town: Dictionary) -> Dictionary:
++static func _restored_town(town: Dictionary, is_living: bool = false) -> Dictionary:
+ 	# JSON numbers arrive as floats. Restore the canonical integer representation
+ 	# before arithmetic and exact snapshot comparisons; never round invalid input.
+ 	var result := _new_town()
+@@ -631,7 +631,9 @@ static func _restored_town(town: Dictionary) -> Dictionary:
+ 				"stone": int(building.purchase_cost.stone)
+ 			}
+ 		result.buildings.append(restored_building)
+-	if int(town.get("economy_version", 0)) == 2:
++	# Only the validated envelope can select the new schema. Old saves may
++	# contain unknown fields without providing any validated village ledger.
++	if is_living:
+ 		VILLAGE.restore_fields(town, result)
+ 	return result
+ 
+diff --git a/scripts/creative/build_settlement_world.gd b/scripts/creative/build_settlement_world.gd
+index e6a2a84447757c04a7f07436b162ed698b827a33..149a4386225812592917b1bcac0b85294413f1b4 100644
+--- a/scripts/creative/build_settlement_world.gd
++++ b/scripts/creative/build_settlement_world.gd
+@@ -13,6 +13,7 @@ const STICK = preload("res://scripts/games/kart_joystick.gd")
+ const JUMP = preload("res://scripts/games/jump_touch_button.gd")
+ const FONT = preload("res://assets/fonts/Nunito-Black.ttf")
+ const SPACING := 5.3
++const MAX_DETAILED_FACILITIES := 96
+ var model
+ var mode := "settlement"
+ var child_key := "standalone"
+@@ -69,6 +70,9 @@ var village_residents: Node3D
+ var village_window: Window
+ var host_entry := false
+ var return_scene := "build"
++var last_view_focus := Vector3.INF
++var last_view_radius := -1.0
++var overview_nodes: Array[MultiMeshInstance3D] = []
+ 
+ 
+ func _ready() -> void:
+@@ -127,7 +131,7 @@ func _ready() -> void:
+ 	_build_landscape()
+ 	camera = Camera3D.new()
+ 	camera.fov = 51
+-	camera.far = 180
++	camera.far = 600 if model.living_village else 180
+ 	add_child(camera)
+ 	camera.current = true
+ 	explorer = EXPLORER.new()
+@@ -495,16 +499,45 @@ func _layout() -> void:
+ 
+ 
+ func _rebuild() -> void:
++	_sync_visible_plots(true)
++	if mode == "rival":
++		var rival: Dictionary = model.rival()
++		if rival.buildings.size() > rival_last_buildings:
++			var latest: Dictionary = rival.buildings[-1]
++			rival_destination = _plot_world(int(latest.plot), true) + Vector3(0, 0.08, 2.1)
++			rival_last_buildings = rival.buildings.size()
++	if not is_instance_valid(selection_marker):
++		selection_marker = kit.box(self, Vector3.ZERO, Vector3(4.7, 0.04, 4.7), Color("e4cc62"))
++		selection_marker.material_override = kit.material(Color("ffe18c"), true, true)
++		selection_marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
++	selection_marker.visible = selected_plot >= 0
++	if selected_plot >= 0:
++		selection_marker.position = _plot_world(selected_plot) + Vector3.UP * 0.12
++	if is_instance_valid(village_residents):
++		village_residents.sync(model.player())
++		village_residents.set_focus(explorer.position if walking else focus)
++	_refresh_labels()
++
++
++func _sync_visible_plots(force := false) -> void:
++	var view_focus: Vector3 = explorer.position if walking else focus
++	if (
++		not force
++		and view_focus.distance_squared_to(last_view_focus) < 64.0
++		and absf(radius - last_view_radius) < 8.0
++	):
++		return
++	last_view_focus = view_focus
++	last_view_radius = radius
+ 	var active_plots: Dictionary = {}
+-	var active_facilities: Dictionary = {}
+ 	for opponent in [false, true]:
+ 		if opponent and mode != "rival":
+ 			continue
+ 		var town: Dictionary = model.rival() if opponent else model.player()
+ 		for index in range(int(town.plots)):
+ 			var where := _plot_world(index, opponent)
+ 			# Only load touch colliders around the view; the 1089-plot model stays persistent.
+-			if model.living_village and where.distance_squared_to(focus) > 75.0 * 75.0:
++			if model.living_village and where.distance_squared_to(view_focus) > 75.0 * 75.0:
+ 				continue
+ 			var key := "%s_%d" % ["r" if opponent else "p", index]
+ 			active_plots[key] = true
+@@ -524,39 +557,100 @@ func _rebuild() -> void:
+ 				plot_mesh.material_override = NEXTGEN_ENV.plot_material(opponent)
+ 				kit.collision(body, Vector3(0, -0.01, 0), Vector3(4.65, 0.08, 4.65))
+ 				plot_nodes[key] = body
+-		for building in town.buildings:
+-			var key := "%s_%s" % ["r" if opponent else "p", str(building.id)]
+-			active_facilities[key] = true
+-			if facility_nodes.has(key):
+-				continue
+-			var node: StaticBody3D = VISUAL.create(str(building.kind), opponent)
+-			node.position = _plot_world(int(building.plot), opponent) + Vector3.UP * 0.06
+-			node.set_meta("plot", int(building.plot))
+-			add_child(node)
+-			facility_nodes[key] = node
+-		if opponent and town.buildings.size() > rival_last_buildings:
+-			var latest: Dictionary = town.buildings[-1]
+-			rival_destination = _plot_world(int(latest.plot), true) + Vector3(0, 0.08, 2.1)
+-			rival_last_buildings = town.buildings.size()
+ 	for key in plot_nodes.keys():
+ 		if not active_plots.has(key):
+ 			plot_nodes[key].queue_free()
+ 			plot_nodes.erase(key)
++	_sync_facilities(view_focus)
++	if is_instance_valid(village_region):
++		village_region.update_focus(view_focus)
++	if is_instance_valid(village_residents):
++		village_residents.set_focus(view_focus)
++
++
++func _sync_facilities(view_focus: Vector3) -> void:
++	# Existing living-village batching: preserve every saved building while
++	# loading detailed meshes and colliders only around the camera or explorer.
++	var active: Dictionary = {}
++	var silhouettes := {"homes": [], "fields": [], "services": [], "roofs": []}
++	for opponent in [false, true]:
++		if opponent and mode != "rival":
++			continue
++		var town: Dictionary = model.rival() if opponent else model.player()
++		var ordered: Array = town.buildings.duplicate()
++		if model.living_village:
++			ordered.sort_custom(
++				func(a: Dictionary, b: Dictionary) -> bool:
++					return (
++						_plot_world(int(a.plot), opponent).distance_squared_to(view_focus)
++						< _plot_world(int(b.plot), opponent).distance_squared_to(view_focus)
++					)
++			)
++		var detailed := 0
++		for building: Dictionary in ordered:
++			var at := _plot_world(int(building.plot), opponent)
++			var key := "%s_%s" % ["r" if opponent else "p", str(building.id)]
++			var near := at.distance_squared_to(view_focus) <= 55.0 * 55.0 or ordered.size() <= 25
++			if not model.living_village or (detailed < MAX_DETAILED_FACILITIES and near):
++				active[key] = true
++				detailed += 1
++				if not facility_nodes.has(key):
++					var facility: StaticBody3D = VISUAL.create(str(building.kind), opponent)
++					facility.position = at + Vector3.UP * 0.06
++					facility.set_meta("plot", int(building.plot))
++					facility.set_meta("opponent", opponent)
++					add_child(facility)
++					facility_nodes[key] = facility
++			else:
++				var field := str(building.kind) in ["farm", "grain", "road"]
++				var group := "fields" if field else ("homes" if str(building.kind) == "house" else "services")
++				var height := 0.22 if field else 2.1
++				silhouettes[group].append(
++					Transform3D(
++						Basis.from_scale(Vector3(3.35, height, 3.35)),
++						at + Vector3.UP * (height * 0.5 + 0.06)
++					)
++				)
++				if not field:
++					silhouettes.roofs.append(
++						Transform3D(
++							Basis.from_scale(Vector3(3.8, 0.44, 3.8)),
++							at + Vector3.UP * (height + 0.25)
++						)
++					)
+ 	for key in facility_nodes.keys():
+-		if not active_facilities.has(key):
++		if not active.has(key):
+ 			facility_nodes[key].queue_free()
+ 			facility_nodes.erase(key)
+-	if not is_instance_valid(selection_marker):
+-		selection_marker = kit.box(self, Vector3.ZERO, Vector3(4.7, 0.04, 4.7), Color("e4cc62"))
+-		selection_marker.material_override = kit.material(Color("ffe18c"), true, true)
+-		selection_marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+-	selection_marker.visible = selected_plot >= 0
+-	if selected_plot >= 0:
+-		selection_marker.position = _plot_world(selected_plot) + Vector3.UP * 0.12
+-	if is_instance_valid(village_residents):
+-		village_residents.sync(model.player())
+-		village_residents.set_focus(focus)
+-	_refresh_labels()
++	for previous_node in overview_nodes:
++		remove_child(previous_node)
++		previous_node.queue_free()
++	overview_nodes.clear()
++	var colors := {
++		"homes": Color("eed8a6"), "fields": Color("89ae63"),
++		"services": Color("80b7b1"), "roofs": Color("b96c50")
++	}
++	for group: String in silhouettes:
++		var transforms: Array = silhouettes[group]
++		if transforms.is_empty():
++			continue
++		var batch := MultiMesh.new()
++		batch.transform_format = MultiMesh.TRANSFORM_3D
++		var cube := BoxMesh.new()
++		cube.size = Vector3.ONE
++		batch.mesh = cube
++		batch.instance_count = transforms.size()
++		for index in range(transforms.size()):
++			batch.set_instance_transform(index, transforms[index])
++		var proxy := MultiMeshInstance3D.new()
++		proxy.name = "VillageMap_" + group
++		proxy.multimesh = batch
++		proxy.material_override = kit.material(colors[group])
++		proxy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
++		add_child(proxy)
++		overview_nodes.append(proxy)
++	set_meta("detailed_facilities", facility_nodes.size())
++	set_meta("map_batches", overview_nodes.size())
+ 
+ 
+ func _refresh_labels() -> void:
+@@ -1203,6 +1297,8 @@ func _camera_update(immediate := false) -> void:
+ 		village_region.update_focus(focus)
+ 	if is_instance_valid(village_residents):
+ 		village_residents.set_focus(focus)
++	if model.living_village and is_instance_valid(safe_ui):
++		_sync_visible_plots()
+ 	if immediate:
+ 		camera.reset_physics_interpolation()
+ 
+@@ -1245,6 +1341,8 @@ func _physics_process(delta: float) -> void:
+ 		camera.position = camera.position.lerp(target, 1.0 - exp(-10 * delta))
+ 		if camera.position.distance_squared_to(at) > 0.02:
+ 			camera.look_at(at)
++		if model.living_village:
++			_sync_visible_plots()
+ 	if is_instance_valid(village_residents):
+ 		village_residents.advance(delta)
+ 	if is_instance_valid(rival_host):
+diff --git a/scripts/tests/build_village_economy_regression.gd b/scripts/tests/build_village_economy_regression.gd
+index 9ff2960ebaa946f9611e0509964dd0f53668e281..9dd8ff269e266dd73ad5207febd87aab367a4986 100644
+--- a/scripts/tests/build_village_economy_regression.gd
++++ b/scripts/tests/build_village_economy_regression.gd
+@@ -259,6 +259,14 @@ func _test_migration() -> void:
+ 	for i in range(8):
+ 		legacy.next_day()
+ 	var old: Dictionary = legacy.snapshot()
++	for town_name in ["player", "rival"]:
++		var misleading: Dictionary = old.duplicate(true)
++		misleading[town_name]["economy_version"] = 2
++		var safely_loaded = MODEL.restore(JSON.parse_string(JSON.stringify(misleading)))
++		check(
++			safely_loaded != null and safely_loaded.snapshot() == old,
++			"legacy envelope ignores unvalidated economy markers: " + town_name
++		)
+ 	var loaded = MODEL.restore(JSON.parse_string(JSON.stringify(old)))
+ 	check(
+ 		loaded != null and not loaded.living_village,
+diff --git a/scripts/tests/build_village_scaling_regression.gd b/scripts/tests/build_village_scaling_regression.gd
+new file mode 100644
+index 0000000000000000000000000000000000000000..c6abdb5f9576c0b48db7bd59716da52ea5fac036
+--- /dev/null
++++ b/scripts/tests/build_village_scaling_regression.gd
+@@ -0,0 +1,161 @@
++extends SceneTree
++## Reuse the published village scale review against the production collector.
++## Counts are engine nodes, never a renderer frame-rate or device measurement.
++const STATE = preload("res://scripts/creative/build_settlement_state.gd")
++const REGION = preload("res://scripts/creative/build_settlement_region.gd")
++var checks := 0
++var failures: Array[String] = []
++var capture_dir := ""
++
++
++func _initialize() -> void:
++	call_deferred("_run")
++
++
++func _check(ok: bool, message: String) -> void:
++	checks += 1
++	if not ok:
++		failures.append(message)
++		push_warning("[VillageScaling] " + message)
++
++
++func _frames(count := 4) -> void:
++	for _frame in range(count):
++		await physics_frame
++
++
++func _counts(city: Node3D) -> Dictionary:
++	var batches: Variant = city.get("overview_nodes")
++	var roofs := 0
++	var distant := 0
++	if batches is Array:
++		for batch: MultiMeshInstance3D in batches:
++			if str(batch.name) == "VillageMap_roofs":
++				roofs += batch.multimesh.instance_count
++			else:
++				distant += batch.multimesh.instance_count
++	return {
++		"nodes": city.find_children("*", "Node", true, false).size(),
++		"meshes": city.find_children("*", "MeshInstance3D", true, false).size(),
++		"bodies": city.find_children("*", "StaticBody3D", true, false).size(),
++		"detailed": city.facility_nodes.size(),
++		"batches": batches.size() if batches is Array else 0,
++		"distant": distant,
++		"roofs": roofs
++	}
++
++
++func _assert_budget(city: Node3D, label: String) -> void:
++	var counts := _counts(city)
++	print("[VillageScaling] ", label, " ", JSON.stringify(counts))
++	_check(int(counts.detailed) <= 192, label + ": at most 96 detailed buildings per town")
++	_check(int(counts.batches) <= 4, label + ": at most four shared overview batches")
++	_check(int(counts.meshes) < 4000, label + ": the full model has bounded mesh nodes")
++	_check(int(counts.bodies) < 900, label + ": only nearby plots and buildings have colliders")
++	_check(
++		int(counts.detailed) + int(counts.distant) == 2178,
++		label + ": every model building remains represented near or far"
++	)
++	_check(int(counts.distant) == int(counts.roofs), label + ": distant houses keep their roofs")
++
++
++func _capture(name: String) -> void:
++	if capture_dir.is_empty():
++		return
++	await process_frame
++	await RenderingServer.frame_post_draw
++	var image := root.get_texture().get_image()
++	_check(image != null and image.get_size() == Vector2i(1280, 720), name + ": actual viewport size")
++	if image != null:
++		_check(image.save_png(capture_dir.path_join(name + ".png")) == OK, name + ": PNG saved")
++
++
++func _run() -> void:
++	if "--capture" in OS.get_cmdline_user_args():
++		capture_dir = OS.get_environment("LUMO_CAPTURE_DIR")
++		if DisplayServer.get_name() == "headless" or capture_dir.is_empty():
++			push_error("[VillageScaling] Capture requires an actual renderer and LUMO_CAPTURE_DIR")
++			quit(1)
++			return
++		DirAccess.make_dir_recursive_absolute(capture_dir)
++	root.size = Vector2i(1280, 720)
++	var router := root.get_node("SceneRouter")
++	router.launch_options = {
++		"childKey": "village_scaling_collector_regression",
++		"buildSlot": 6,
++		"settlementMode": "settlement",
++		"livingVillage": true
++	}
++	var city = load("res://scenes/creative/build_settlement_world.tscn").instantiate()
++	root.add_child(city)
++	await _frames()
++	city.set_physics_process(false)
++	var model = STATE.new("rival", true)
++	for town: Dictionary in [model._player, model._rival]:
++		town.region = 11
++		town.plots = 1089
++		town.population = 2180
++		town.next_id = 1090
++		town.buildings = []
++		town.households = []
++		for index in range(1089):
++			var id := "b%d" % (index + 1)
++			town.buildings.append({"id": id, "kind": "house", "plot": index})
++			town.households.append(
++				{"building_id": id, "adults": 2, "children": 0, "supplied_days": 20}
++			)
++	var saved: Dictionary = model.snapshot()
++	var restored = STATE.restore(JSON.parse_string(JSON.stringify(saved)))
++	_check(restored != null and restored.snapshot() == saved, "The 2178-house fixture is a valid save")
++	city.model = model
++	city.mode = "rival"
++	city.radius = 94
++	city.focus = Vector3(-REGION.TOWN_CENTER, 0, 0)
++	city._rebuild()
++	city._camera_update(true)
++	await _frames()
++	_assert_budget(city, "home")
++	_check(city.facility_nodes.has("p_b5"), "The home center has its actual detailed collider")
++	_check(not city.facility_nodes.has("r_b5"), "The distant neighbor center uses overview geometry")
++	_check(city.model.snapshot() == saved, "Building presentation preserves all saved economy data")
++	await _capture("01-home-region")
++
++	city.focus = Vector3(REGION.TOWN_CENTER, 0, 0)
++	city._camera_update(true)
++	await _frames()
++	_assert_budget(city, "neighbor")
++	_check(city.facility_nodes.has("r_b5"), "Camera movement activates the neighbor's real center")
++	_check(not city.facility_nodes.has("p_b5"), "Camera movement retires distant home detail")
++	_check(city.model.snapshot() == saved, "Camera movement does not mutate the economy")
++
++	city.focus = Vector3.ZERO
++	city._camera_update(true)
++	await _frames()
++	_assert_budget(city, "river")
++	await _capture("02-river-boundary")
++
++	# The ordinary physics callback must follow the explorer, not the planning camera.
++	city._toggle_walk()
++	city.explorer.start_at(Vector3(-REGION.TOWN_CENTER, 0.08, 0))
++	city._physics_process(0.0)
++	await _frames()
++	_check(city.facility_nodes.has("p_b5"), "Walking refreshes the actual home-center collider")
++	city.explorer.start_at(Vector3(REGION.TOWN_CENTER, 0.08, 0))
++	city._physics_process(0.0)
++	await _frames()
++	_assert_budget(city, "walking_neighbor")
++	_check(city.facility_nodes.has("r_b5"), "Explorer movement activates the neighbor collider")
++	_check(not city.facility_nodes.has("p_b5"), "Explorer movement retires distant home detail")
++	_check(city.model.snapshot() == saved, "Exploring preserves the full simulation and save")
++	city._toggle_walk()
++	await _frames()
++	_assert_budget(city, "planning_restored")
++	_check(city.model.snapshot() == saved, "Returning to planning preserves both villages")
++	city.queue_free()
++	await _frames()
++	if failures.is_empty():
++		print("[VillageScaling] PASS ", checks, " checks: full 2178-house model, camera and explorer")
++		quit(0)
++	else:
++		print("[VillageScaling] FAIL ", checks, " checks: ", failures)
++		quit(1)

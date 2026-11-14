@@ -1,3 +1,33 @@
+# Current Native Discovery activation — 2026-11-14
+
+The source checkpoint is `4d2cbb6ea235c7bf519aa5f3873a16f6b177be2b`, tree `4d50f5652b43846516f759be300d9b50a960f692`,
+parent `c04078541fa553094d6868454d19e9fe5f5f871c`, on
+`integration/lumo-discovery-bd-20261114`. This documentary successor activates
+the existing branch-scoped Native workflow; its actual final CI result remains
+pending and must be bound to the new activation commit.
+
+One real Actionlint invocation passed on the published V2 workflow. One real
+MobileSafeArea headless invocation passed on the same source: **380 checks,
+0 failures, 15 controls, 7 minimap layouts and 2 hint transitions**. The run
+produced no images. HEAD, tree, the complete index and all 3,683 materialized
+tracked source entries/modes remained identical before and after. Generated
+UID/import metadata were retained and recorded separately. Complete originals:
+[`docs/evidence/native-minimap-v2-headless-20261114`](docs/evidence/native-minimap-v2-headless-20261114/README.md).
+
+The isolated Native job has a 130-minute budget. Its unchanged earlier gates
+remain mandatory: 47 Python contracts, four existing headless regressions,
+Dream 5/7/2 and Discovery 10/38/2. The additive Village gate requires Economy339,
+Scaling42 and rendered Scaling46 with two original 1280×720 images. The new
+MobileSafeArea render gate keeps its 420-second limit and requires the original
+report, seven layouts, two hint transitions, four preserved SafeArea images
+and nine new minimap images, all source-bound and fully decoded.
+
+The full 52-mode/17-image contract and Host budgets are unchanged. The earlier
+c040 headless proof remains historical; neither it nor this new headless proof
+is Android, renderer, visual-review or physical-device-FPS acceptance.
+
+## Historical status preserved below, byte for byte
+
 # Combined LUMO integration / geometry CI repair
 
 Updated: 2026-11-13. Active Native draft: PR160; Host draft: PR465.

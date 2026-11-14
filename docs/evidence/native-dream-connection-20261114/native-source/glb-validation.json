@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "scope": "Original GLB byte, chunk, geometry and internal-reference validation only",
+  "assets": [
+    {
+      "path": "final-source/assets/dream_garden/dream_storybook.glb",
+      "bytes": 115136,
+      "sha256": "f64698452dc41c10f9659e1641c9386775af891577207ac04a0e5ee82106f102",
+      "git_blob": "d11aac2c5e33d58563ae6707ace16c9c67b59291",
+      "glb_version": 2,
+      "chunks": [
+        {
+          "type": 1313821514,
+          "bytes": 5996
+        },
+        {
+          "type": 5130562,
+          "bytes": 109112
+        }
+      ],
+      "accessors_fully_read": 20,
+      "buffer_views": 20,
+      "nodes": 7,
+      "scenes": 1,
+      "embedded_only": true,
+      "geometry": {
+        "triangles": 5156,
+        "surfaces": 7,
+        "mesh_count": 7,
+        "material_count": 5,
+        "texture_count": 0
+      },
+      "animated_part_names": [
+        "DreamOrbit00",
+        "DreamOrbit01",
+        "DreamOrbit02"
+      ],
+      "engine_imported": false,
+      "rendered": false,
+      "visual_review": false
+    },
+    {
+      "path": "final-source/assets/dream_garden/dream_blossom.glb",
+      "bytes": 115408,
+      "sha256": "7390bce21e80f9404b009d7a21859b6c1adbb6d9c9f945c79469dc7bd6859ec4",
+      "git_blob": "30bcaa17a7a7d86bc2124823cbd30428aedb0760",
+      "glb_version": 2,
+      "chunks": [
+        {
+          "type": 1313821514,
+          "bytes": 6876
+        },
+        {
+          "type": 5130562,
+          "bytes": 108504
+        }
+      ],
+      "accessors_fully_read": 23,
+      "buffer_views": 23,
+      "nodes": 6,
+      "scenes": 1,
+      "embedded_only": true,
+      "geometry": {
+        "triangles": 6884,
+        "surfaces": 9,
+        "mesh_count": 6,
+        "material_count": 5,
+        "texture_count": 0
+      },
+      "animated_part_names": [
+        "DreamFlower00",
+        "DreamFlower01",
+        "DreamFlower02"
+      ],
+      "engine_imported": false,
+      "rendered": false,
+      "visual_review": false
+    }
+  ]
+}

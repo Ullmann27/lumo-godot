@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "date": "2026-11-14",
+  "base_commit": "1f12bc894bfeae1c8595dbd8782964be0a797dd7",
+  "base_tree": "36f385cd5658ac7b180cbdc5465802bfa0446742",
+  "producer_commit": "1b01b08abd4ff2580125d787a6150e10b2fe47b8",
+  "producer_pr": 172,
+  "production_source_blobs": [
+    {
+      "path": ".github/workflows/lumo-magical-wisps.yml",
+      "sha": "9fadca87994b4ec6586eb8a94310a5681a00831f"
+    },
+    {
+      "path": "scripts/tests/treasure_wisp_regression.gd",
+      "sha": "67927a6f2147658d13e60cacdbbd24bf717a0c1d"
+    },
+    {
+      "path": "assets/creative/shaders/treasure_wisp.gdshader",
+      "sha": "63fd420156242d2bea3a5a9d3ec04eac9da4974b"
+    },
+    {
+      "path": "docs/development/LUMO_MAGIC_TREASURE_20261114.md",
+      "sha": "4dcd30bc35df9fc235950de317853201095adc22"
+    },
+    {
+      "path": "scripts/creative/treasure_wisps.gd",
+      "sha": "4c71d6c96fd6c793a685692259a5751f9da35f2f"
+    },
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "sha": "703873a3b0fbe7e589c81bf9695fac5ecf43cd63"
+    },
+    {
+      "path": "scripts/tests/treasure_exploration_regression.gd",
+      "sha": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29"
+    }
+  ],
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "accepted_local_probes": [
+    {
+      "name": "treasure_wisp_regression.gd",
+      "mode": "headless",
+      "exit": 0,
+      "checks": 14,
+      "seconds": 0.472,
+      "log": "headless.log",
+      "sha256": "2addbad1078d83ba3fe151557f3748812201ed8dffe5675ec741557083b51d39"
+    },
+    {
+      "name": "treasure_wisp_regression.gd",
+      "mode": "real Compatibility llvmpipe",
+      "exit": 0,
+      "checks": 18,
+      "seconds": 2.624,
+      "log": "renderer.log",
+      "sha256": "0de754a92156c7cc5a3087e8dfad60906c299bdc9436b751b6a72d97746adcb5"
+    },
+    {
+      "name": "treasure_exploration_regression.gd",
+      "mode": "headless",
+      "exit": 0,
+      "checks": 92,
+      "seconds": 2.061,
+      "log": "exploration.log",
+      "sha256": "6303eda4f9dfbf0eae58630858cdd5ec5cf1dfd19767d484bf72b3001d713b5e"
+    },
+    {
+      "name": "treasure_title_contrast_regression.gd",
+      "mode": "headless, five profiles, fresh/restored",
+      "exit": 0,
+      "checks": 3341,
+      "failures": 0,
+      "seconds": null,
+      "log": "title.log",
+      "sha256": "97e761124ac19f9668b1ce415db837527641549c566f9834303103f16c4a6a8d"
+    }
+  ],
+  "import": {
+    "exit": 0,
+    "log": "import.log",
+    "sha256": "869128fc631b9005ffb3c66fb13514b8b49cce1ac5254196742a456993fdef3e",
+    "error_lines": []
+  },
+  "workflow_validation": {
+    "yaml_parse": "pass",
+    "embedded_shell_syntax": "all pass"
+  },
+  "original_readback_probe": {
+    "blob": "0717d3204cdc779f994b1f2db811a3a7ab1261cf",
+    "exit": 0,
+    "checks": 14,
+    "seconds": 2.369041654004832,
+    "mode": "real Compatibility llvmpipe",
+    "log": "original-readback-render.log"
+  },
+  "producer_evidence": {
+    "run_id": 43574914204,
+    "job_id": 132386964721,
+    "result": "success",
+    "source": "1b01b08abd4ff2580125d787a6150e10b2fe47b8",
+    "headless_wisp_checks": 14,
+    "headless_quest_checks": 92,
+    "render_quest_checks": 95,
+    "artifact_id": 14105782145,
+    "artifact_zip_sha256": "d75d200139dac7fc9f48084abe494202d8cd08a176164043d5de28ebeffd489c",
+    "artifact_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43574914204/artifacts/14105782145",
+    "images": [
+      {
+        "name": "treasure_choose_route.png",
+        "sha256": "616c441469b0760a50c3ddf4decc94c0a7a1a9870d66d4d6587cd150a671cb3e",
+        "bytes": 1291953,
+        "size": [
+          1280,
+          720
+        ]
+      },
+      {
+        "name": "treasure_garden_first.png",
+        "sha256": "c34d17b0ac4594a2d455ecbfdbcda9189a067ac0f38ec5eacf467b3a45620a9d",
+        "bytes": 1260170,
+        "size": [
+          1280,
+          720
+        ]
+      },
+      {
+        "name": "treasure_route_complete.png",
+        "sha256": "3584538b049cdbb2f29744c3d08ad8581fe1dc6e99c4b8dcf2c5d7f9f139f9c0",
+        "bytes": 1282876,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    ],
+    "images_visually_reviewed": true
+  },
+  "local_full_quest_render_attempts": [
+    {
+      "attempt": "wisp-integrated-quest-render",
+      "exit": -9,
+      "seconds": 15.945793720995425,
+      "timed_out": false,
+      "error_lines": [],
+      "log": "quest-render-interrupted.log",
+      "sha256": "34bcd6edecc07d8c18a84306499839875245c66b40cc3cf79781e488f05c4524",
+      "status": "not accepted; external SIGKILL, cause unverified"
+    },
+    {
+      "attempt": "wisp-integrated-quest-render-retry",
+      "exit": -9,
+      "seconds": 13.435375950008165,
+      "timed_out": false,
+      "error_lines": [],
+      "log": "quest-render-interrupted.log",
+      "sha256": "34bcd6edecc07d8c18a84306499839875245c66b40cc3cf79781e488f05c4524",
+      "status": "not accepted; external SIGKILL, cause unverified"
+    }
+  ],
+  "retained_contracts": {
+    "existing_native_probe_modes": 52,
+    "rasters_and_movies": 17,
+    "gate_files_changed": false
+  },
+  "limits": [
+    "No completed local full-quest renderer acceptance on the combined baseline; both attempts were killed externally.",
+    "Producer images are exact-source feature evidence, not combined-baseline images.",
+    "No Android device, physical FPS, full APK release or main merge claimed."
+  ]
+}

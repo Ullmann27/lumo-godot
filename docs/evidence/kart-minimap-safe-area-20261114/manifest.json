@@ -1,0 +1,575 @@
+{
+  "schema": 2,
+  "task": "Native Kart minimap safe layout",
+  "date_utc": "2026-11-14",
+  "repository": "Ullmann27/lumo-godot",
+  "audited_source_base": "f0c19f9eb69ea330ac5d2b8f9948cb029ca218aa",
+  "integration_and_executed_baseline": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "integration_base_tree": "35492eec16cac6774bc546b6e57628900bef61cb",
+  "integration_provenance": {
+    "actual_parent_of_f052": "f0c19f9eb69ea330ac5d2b8f9948cb029ca218aa",
+    "both_owned_source_paths_identical_at_f0_and_f052": true,
+    "verified_via": "Exact-ref GitHub source blobs and GitData parent; fresh isolated checkout HEAD before/after runs",
+    "all_other_f052_files_preserved": true
+  },
+  "status": "Independent source review complete; actual unchanged-test headless baseline/candidate comparison completed. New rendered/Android acceptance remains open.",
+  "source_entries": [
+    {
+      "path": "scripts/games/kart_island.gd",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "83b3b6b548cffa2790c582e061a74e37bbfcf356",
+      "bytes": 175088,
+      "base_blob": "f7473190f51fb5dbda7d0f7ad7292f8ec64c0da2",
+      "base_bytes": 170990,
+      "base_sha256": "c50a7da1387a121e326e8b0b5153075e14c8f93b04ab5196d4c1c1d8d34189c8",
+      "candidate_sha256": "7f916fcf8ea2d17876500e0063d91809db4a608dbc8bf945287231e6d76231d5",
+      "status": "Exact candidate executed in the green headless counterpart; raw identity in green/run.json"
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6c58c08b8c47a7bf7c957c448b88474a984b9509",
+      "bytes": 26254,
+      "base_blob": "61ded805fdbc70c3499814b4e8f74214079fc96c",
+      "base_bytes": 17619,
+      "base_sha256": "bca22822a2df33a69bcac5071b16827cecef179b077a08d1b2b0372a68e6fa4f",
+      "candidate_sha256": "8188911d6f91deaec924fdc7857feec876af075a8d04522b49dd14429d501aa5",
+      "status": "Exact candidate executed in the green headless counterpart; raw identity in green/run.json"
+    }
+  ],
+  "unchanged_gate_sources": [
+    {
+      "path": "tools/validate_nextgen.sh",
+      "blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+      "identicalAtF0AndF052": true
+    },
+    {
+      "path": "tools/verify_safe_area_rasters.py",
+      "blob": "34fb3c4f31e476a5f29f98abc9a2ecc0337e6863",
+      "identicalAtF0AndF052": true
+    },
+    {
+      "path": "scripts/games/kart_minimap.gd",
+      "blob": "50474b51ea22f9070b6cdc6e6052f9f6d0158a95",
+      "identicalAtF0AndF052": true
+    },
+    {
+      "path": "scripts/games/kart_touch_action.gd",
+      "blob": "22064c491ff9aec8515a188a20ed5458b7ae5226",
+      "identicalAtF0AndF052": true
+    }
+  ],
+  "original_android_observations": [
+    {
+      "path": "21_race_driving_late_2.png",
+      "local_path": "/home/agent/lumo-803-upgrade/original/21_race_driving_late_2.png",
+      "bytes": 1972454,
+      "sha256": "d001d59a610941fbd641a33f4312946bc362998f367e3e912fbb20c365338fff",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "observed": "Minimap panel is cut by the right image edge and overlays upper SPEED artwork. Static image only; no input or FPS conclusion.",
+      "permanent_original": {
+        "repository": "Ullmann27/lumo-lernen",
+        "commit": "6a5ae5327570fc60434672074f246c95e1c59283",
+        "path": "docs/evidence/android-803a-original-20261114/upgrade/original/21_race_driving_late_2.png",
+        "blob": "d77817c87f3f2629bc05f1f1b050a13a1d7a0107",
+        "provenance": "Independently fetched, opened and hash-checked by the release-lead reviewer; see independent-review.json"
+      }
+    },
+    {
+      "path": "21_lumo_kart_real_race.png",
+      "local_path": "/home/agent/lumo-803-upgrade/original/21_lumo_kart_real_race.png",
+      "bytes": 1929816,
+      "sha256": "0cb65b511424b83a7354a953518c8578e6e3e37ae3d8c452fe03332ad88815f6",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "observed": "Same visible right-edge minimap clipping and overlap with upper SPEED artwork. Static image only; no input or FPS conclusion."
+    }
+  ],
+  "demonstrated_source_cause": "Fixed top-right offsets placed an unbounded PanelContainer whose child minimum grew with ui_scale; the panel could expand past the true right boundary and draw over the existing Pause/DRIFT/SPEED surfaces. The first candidate also failed to reserve the full instruction row; independent review caught this before any candidate execution.",
+  "implementation": {
+    "production_files": 1,
+    "existing_production_functions": 142,
+    "unchanged_existing_functions": 139,
+    "changed_functions": [
+      "_build_ui",
+      "_apply_responsive_layout",
+      "_apply_ui_scale"
+    ],
+    "new_helpers": [
+      "_queue_minimap_layout",
+      "_apply_minimap_layout"
+    ],
+    "layout": "Use settled true safe bounds, reserve the complete visible header/message/jump-hint rectangles, and try the safe right edge then actual obstacle edges. Include all visible HUD controls, joystick and the existing 1.12x pedal artwork. The passive map can shrink to 80x64 dp content; driving controls are never resized by this helper.",
+    "dynamic_signals": "Actual item_rect_changed/visibility_changed signals queue layout; the tested hint show/hide transition requires no viewport resize or manual layout call.",
+    "excluded_from_generic_scaler": "map_panel",
+    "physics_action_assets_navigation_changed": false
+  },
+  "preserved_tests": {
+    "complete_original_test_reconstructs_byte_for_byte_after_removing_additions": true,
+    "original_targets": 15,
+    "original_required_mobile_rasters": 4,
+    "existing_modes": 52,
+    "mandatory_modes": [
+      "mobile_safe_area_regression headless",
+      "mobile_safe_area_regression rendered -- --capture"
+    ],
+    "runner_changed": false,
+    "raster_verifier_changed": false
+  },
+  "new_test_scope": {
+    "profiles": 7,
+    "profile_labels": [
+      "dense-left-cutout",
+      "dense-right-cutout",
+      "same-pixels-density-one",
+      "expanded-inner-display",
+      "compact-portrait",
+      "short-landscape",
+      "dense-restored"
+    ],
+    "same_viewport_hint_transitions": 2,
+    "actual_scene": "scenes/games/kart_island.tscn with existing training/candy_cloud setup",
+    "boundary_fixture": "Asynchronous Android safe-area observations and supplied displayDensity, as in the existing mandatory test; this is not Android/JNI execution.",
+    "minimum_existing_control_target_dp": 48,
+    "numerical_existing_tolerance_dp": 0.05,
+    "optional_extra_capture_environment": "LUMO_KART_MINIMAP_CAPTURE_DIR",
+    "optional_capture_usage": "Set only for an actual --capture invocation; the original four mandatory raster fields remain separate."
+  },
+  "actual_runs": {
+    "engine": "4.6.3.stable.official.7d41c59c4",
+    "import": {
+      "command": [
+        "godot",
+        "--headless",
+        "--editor",
+        "--path",
+        "/home/agent/lumo-kart-minimap-2708/source",
+        "--import",
+        "--quit"
+      ],
+      "started_utc": "2026-11-14T11:11:57.764551+00:00",
+      "seconds": 8.61,
+      "exit_code": 0,
+      "log_sha256": "062c2f12f64b79bb237bebfa34c51aa566332880fb956027e15be29c70e372a6",
+      "log_bytes": 100495
+    },
+    "baseline": {
+      "record": "red/run.json",
+      "production_blob": "f7473190f51fb5dbda7d0f7ad7292f8ec64c0da2",
+      "test_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509",
+      "started_utc": "2026-11-14T11:12:57.106145+00:00",
+      "seconds": 14.813,
+      "engine_exit_code": 1,
+      "checks": 380,
+      "failures": 26,
+      "source_unchanged": true,
+      "log_sha256": "b89d810ea4c4008acd6ad2cc1d11e51102bc77d6aae03594e3ca788106db2777",
+      "report_sha256": "27916c6efb3e6b2aae410a5887df6abce55e5d9f0465716a047c1841f512ae8b"
+    },
+    "candidate": {
+      "record": "green/run.json",
+      "production_blob": "83b3b6b548cffa2790c582e061a74e37bbfcf356",
+      "test_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509",
+      "started_utc": "2026-11-14T11:13:42.092867+00:00",
+      "seconds": 15.474,
+      "engine_exit_code": 0,
+      "checks": 380,
+      "failures": 0,
+      "source_unchanged": true,
+      "log_sha256": "771244a633a0bd24d577bba99f036812e1ab7d2fcfbfa7d3af95098313ce7ba1",
+      "report_sha256": "cb5f9ca76c50281984d986bb8d68a8cd525892a093e816eaf9c49f2a4d70bb02"
+    },
+    "identical_test_in_both_runs": true,
+    "original_controls_in_both_reports": 15,
+    "shared_nonfatal_renderer_warnings": [
+      "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+      "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+    ],
+    "candidate_script_or_runtime_error_lines": 0,
+    "new_pngs_created": 0
+  },
+  "measured_green_geometry": [
+    {
+      "label": "dense-left-cutout",
+      "visible": true,
+      "map_px": [
+        1495.55908203125,
+        431.25,
+        406.506103515625,
+        333.604797363281
+      ],
+      "content_px": [
+        1516.55908203125,
+        452.25,
+        364.506103515625,
+        291.604797363281
+      ],
+      "safe_px": [
+        136,
+        63,
+        2264,
+        954
+      ],
+      "minimum_visible_target_dp": 58
+    },
+    {
+      "label": "dense-right-cutout",
+      "visible": true,
+      "map_px": [
+        1359.55920410156,
+        431.25,
+        406.505981445312,
+        333.604797363281
+      ],
+      "content_px": [
+        1380.55920410156,
+        452.25,
+        364.505981445312,
+        291.604797363281
+      ],
+      "safe_px": [
+        0,
+        63,
+        2264,
+        954
+      ],
+      "minimum_visible_target_dp": 58
+    },
+    {
+      "label": "same-pixels-density-one",
+      "visible": true,
+      "map_px": [
+        2175.5,
+        244.5,
+        202,
+        170
+      ],
+      "content_px": [
+        2196.5,
+        265.5,
+        160,
+        128
+      ],
+      "safe_px": [
+        136,
+        63,
+        2264,
+        954
+      ],
+      "minimum_visible_target_dp": 75
+    },
+    {
+      "label": "expanded-inner-display",
+      "visible": true,
+      "map_px": [
+        1728.19995117188,
+        359.457794189453,
+        367.60009765625,
+        303.851531982422
+      ],
+      "content_px": [
+        1751.99987792969,
+        383.277526855469,
+        320.000122070312,
+        256.212097167969
+      ],
+      "safe_px": [
+        48,
+        48,
+        2092,
+        1722
+      ],
+      "minimum_visible_target_dp": 58.0480613708496
+    },
+    {
+      "label": "compact-portrait",
+      "visible": false,
+      "map_px": [
+        285.974243164062,
+        75.4933395385742,
+        60.8162231445312,
+        50.2357864379883
+      ],
+      "content_px": [
+        289.911743164062,
+        79.4314575195312,
+        52.9412231445312,
+        42.3595581054688
+      ],
+      "safe_px": [
+        8,
+        24,
+        344,
+        756
+      ],
+      "minimum_visible_target_dp": 49.9199981689453
+    },
+    {
+      "label": "short-landscape",
+      "visible": false,
+      "map_px": [
+        878.535949707031,
+        186.718948364258,
+        192.209167480469,
+        158.745071411133
+      ],
+      "content_px": [
+        890.980346679688,
+        199.163391113281,
+        167.3203125,
+        133.856201171875
+      ],
+      "safe_px": [
+        0,
+        24,
+        1280,
+        592
+      ],
+      "minimum_visible_target_dp": 48
+    },
+    {
+      "label": "dense-restored",
+      "visible": true,
+      "map_px": [
+        1495.55908203125,
+        431.25,
+        406.506103515625,
+        333.604797363281
+      ],
+      "content_px": [
+        1516.55908203125,
+        452.25,
+        364.506103515625,
+        291.604797363281
+      ],
+      "safe_px": [
+        136,
+        63,
+        2264,
+        954
+      ],
+      "minimum_visible_target_dp": 58
+    },
+    {
+      "label": "expanded-hint-visible",
+      "visible": true,
+      "map_px": [
+        1728.19995117188,
+        511.984130859375,
+        367.60009765625,
+        303.851501464844
+      ],
+      "content_px": [
+        1751.99987792969,
+        535.803833007812,
+        320.000122070312,
+        256.212097167969
+      ],
+      "safe_px": [
+        48,
+        48,
+        2092,
+        1722
+      ],
+      "minimum_visible_target_dp": 58.0480613708496
+    },
+    {
+      "label": "expanded-hint-hidden",
+      "visible": true,
+      "map_px": [
+        1728.19995117188,
+        359.457794189453,
+        367.60009765625,
+        303.851531982422
+      ],
+      "content_px": [
+        1751.99987792969,
+        383.277526855469,
+        320.000122070312,
+        256.212097167969
+      ],
+      "safe_px": [
+        48,
+        48,
+        2092,
+        1722
+      ],
+      "minimum_visible_target_dp": 58.0480613708496
+    }
+  ],
+  "rendering_limit": {
+    "xorg_start_exit": 1,
+    "xorg_reason": "Cannot establish any listening sockets",
+    "owned_unix_socket_probe_errno": 1,
+    "owned_unix_socket_probe_error": "Operation not permitted",
+    "new_actual_rendered_run": false,
+    "no_dummy_capture_or_synthetic_image_substitution": true,
+    "no_toolchain_installation_or_permission_bypass": true,
+    "logs": [
+      "display/attempt.json",
+      "display/capability.json",
+      "display/xorg-start.log",
+      "display/xorg.log"
+    ]
+  },
+  "independent_review": {
+    "path": "docs/evidence/kart-minimap-safe-area-20261114/independent-review.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "fb45674454d43a5365d67f45c9eb83cbaad66fa9",
+    "bytes": 5339,
+    "sha256": "7fb2d11b358d8b6248fb332a0898a293bbed81590a8177ebb55f2a59e743105d"
+  },
+  "raw_evidence_files": [
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/preflight.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6cbdb223b6b97abf6405001744eca4e2a76acf60",
+      "bytes": 705,
+      "sha256": "da9544185d191cde70907f66b84972916e5a2ae18a069cddbd729e81e3906bf3"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/source-prepare.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dae78e6f187731383a9c53e1a94355d4b810f310",
+      "bytes": 310,
+      "sha256": "7d8ce3ea03a97b7007045ffb76e4deb55124b2309633f8ecdf0226ec0bca0aac"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/import-run.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8facd02d5a10c357f44690bf8e673a2c7bd24295",
+      "bytes": 359,
+      "sha256": "4e041547522925bab8edb83671b3f3cd89adf8c65544dff3c20d3e240d5ed6e9"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/import.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "01f574ec4276b0733538a74b3629ccb1f8f41cf5",
+      "bytes": 100495,
+      "sha256": "062c2f12f64b79bb237bebfa34c51aa566332880fb956027e15be29c70e372a6"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/red/run.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de2f6da1b5fd5a8b6abe61ace120d611d2520d92",
+      "bytes": 24393,
+      "sha256": "b89d810ea4c4008acd6ad2cc1d11e51102bc77d6aae03594e3ca788106db2777"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/red/run.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c8ee322fdd06057b07b8a8a2be01913ea74aebc",
+      "bytes": 4146,
+      "sha256": "4a78ae6f8bd53bb2c5b0c1f3d6aecd7faae75c6f5c039a4f1e862d94090a9d23"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/red/mobile-safe-area.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5b01f0fdf019f09e819bb10020e8168fea3fa6af",
+      "bytes": 57243,
+      "sha256": "27916c6efb3e6b2aae410a5887df6abce55e5d9f0465716a047c1841f512ae8b"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/green/run.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8c8d0acedfaa337f87250ba3dfe9add54f273538",
+      "bytes": 10570,
+      "sha256": "771244a633a0bd24d577bba99f036812e1ab7d2fcfbfa7d3af95098313ce7ba1"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/green/run.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d60163a04f79387e3352a3a73591a7dd146711c",
+      "bytes": 2054,
+      "sha256": "368a84ae2ddaa3760354997c1970b89370f4cd5151a3d100741da421b60738a8"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/green/mobile-safe-area.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee2b818b2cb2fe1f44f436efd9b02b42d601960c",
+      "bytes": 55440,
+      "sha256": "cb5f9ca76c50281984d986bb8d68a8cd525892a093e816eaf9c49f2a4d70bb02"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/result-summary.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "59e09a4b41cc07c84c2b1fb57193e357759393ae",
+      "bytes": 8578,
+      "sha256": "30fde4414a1c34993e7aa62f4e02576249f461f575093d20f98178423dc17c09"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/attempt.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "befbbd037e0891ed7b7b37baa6bc2df688f6fb9a",
+      "bytes": 595,
+      "sha256": "1c81efb1015c7980ad3bfd668911ab6fe7f5dc7baacaa0140af6fe6555e06648"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/capability.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "78fe143d3533b689caae5fda4ed0c091f386b77e",
+      "bytes": 311,
+      "sha256": "3d9bee1896b729e9c7b7e68139cba5c1e693761d7b67214a8892b06be94834d7"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/xorg-start.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d551e61d9251c43bccc49c9001e9760557117407",
+      "bytes": 799,
+      "sha256": "1662cdeea8c1cdbbcf313819405218f8993fbd694ace7fa3f2aa9a0dc1dbb3b2"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/xorg.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ead5853ab22f12c6ed0960d2453faa0749cc4595",
+      "bytes": 955,
+      "sha256": "b550ae1e8142d0581f5d5ea5ec5afa1203364b6888f036b57ae1c5fe65374443"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/xorg.conf",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "62582a38acc749ec9543ee8115cde480a6119ee3",
+      "bytes": 739,
+      "sha256": "1b6966f3c56be12b6aa72b0b49bb08d66ba2ef88d1fcc5ae0ede1c86d24b8fad"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/run_probe.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2a0ed84f5f29fa002be3f4303ccd3750b74a2bb",
+      "bytes": 3682,
+      "sha256": "5c44fea612503da71257ab6f2d0cff30107872794e1fc9e845f9356ad4095cbb"
+    }
+  ],
+  "source_limits": [
+    "All original 52 invocations remain in the runner; only the existing headless Safe-Area test was run locally for this patch.",
+    "No new render, Android-device, FPS, audio, whole-app or Play Store release claim.",
+    "The two initial picture observations concern older Host803a/Native0e261. Those Kart source bytes are identical at f0/f052; they are not images of the new candidate.",
+    "No host pin, candidate branch, protected main or public release was modified by this worker."
+  ],
+  "next_required_evidence": "Run the ordinary full candidate CI/native gate and inspect genuine candidate Kart render/device images when a real renderer is available."
+}

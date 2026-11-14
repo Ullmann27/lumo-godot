@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "status": "LOCAL_GATE_TESTS_PASS_NATIVE_RENDERER_CI_ACTIVATED",
+  "validated_source": "dd3ec7d1304be3c79b8dc8f3a947276d7c485849",
+  "validated_tree": "65f25f13b3f89df1446550639b7ee93d9e03f54a",
+  "actual_counterexample_cases": 24,
+  "skips": 0,
+  "actual_actionlint_runs": 1,
+  "tracked_source_entries": 3654,
+  "materialized_source_entries": 1471,
+  "explicit_sparse_entries": 2183,
+  "tracked_source_index_generated_inventory_unchanged": true,
+  "activation_changes_product_source": false,
+  "activation_changes_gate_source": false,
+  "expected_ci_scope": "12 Dream cases +24 strict Discovery cases +11 unchanged producer reader cases, four preserved headless gates, five Dream probes/seven original PNGs, ten Discovery probes/38 PNGs/two reports.",
+  "actual_ci_result": "PENDING_FIRST_RUN",
+  "complete_native52_result": "NOT_CLAIMED_BY_THIS_SEPARATE_WORKFLOW",
+  "host_pin_changed": false,
+  "main_changed": false
+}

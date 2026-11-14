@@ -1,0 +1,26 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+CONNECT_FOUR_RETURN_FAIL checks=20
+ERROR: [ConnectFourReturn] FAIL unchanged acknowledged state retries refused Android return
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/connect_four_return_regression.gd:38)
+       [1] _run (res://scripts/tests/connect_four_return_regression.gd:116)
+ERROR: [ConnectFourReturn] FAIL successful retry closes the native session
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/connect_four_return_regression.gd:38)
+       [1] _run (res://scripts/tests/connect_four_return_regression.gd:117)
+ERROR: [ConnectFourReturn] FAIL successful return is never duplicated
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/connect_four_return_regression.gd:38)
+       [1] _run (res://scripts/tests/connect_four_return_regression.gd:123)

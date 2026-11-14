@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "review.json",
+      "bytes": 9512,
+      "sha256": "23f692fb8909b0f501e3f347745a4aceb43b881f0dc04c118d16b9db360143ce",
+      "git_blob": "67dc3d444bf2316e27088bae465fb5da00b0e5cf"
+    }
+  ],
+  "scope": "Independent V2 review only; frozen source packs unchanged"
+}
