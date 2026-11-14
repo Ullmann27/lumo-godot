@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "status": "FROZEN_V2_ACTIONLINT_PASS_ENGINE_NOT_RUN",
+  "apply_only": {
+    "path": ".github/workflows/lumo-dream-connections.yml",
+    "source_file": "/tmp/native-dream-workflow-f052-20261114/v2/final-source/.github/workflows/lumo-dream-connections.yml",
+    "mode": "100644",
+    "bytes": 10176,
+    "sha256": "7320bc547bbf110ca1374d651fd3867f603e2ae996bd37848939574a67e29217",
+    "git_blob": "321aeff8018435789cc57df3af3e3b5fecc4c910"
+  },
+  "v2_source_freeze_sha256": "ad930cd42dfedfd0dea88d8d07aec6f05ea70e5a091f91f2255b46f55a8b76fd",
+  "paired_dream_source_freeze": "c7d8ad62fc9f8325dd79ffc101bcaf1d00753b5ef2b05b820150e1d6e74e487f",
+  "lint": {
+    "v1": "Original exit1 with exactly two job.env runner-context errors; original bytes/freeze/logs retained in pack root.",
+    "v2": "Root-authorized one correction verification, exit0 and no diagnostics; final workflow unchanged.",
+    "total_invocations": 2,
+    "original_v1_sha256": "11fa7257afe2397421696fe2d5d8bce530d7a7e9775c83b2f90eb5b894c3a6d6",
+    "actual_v2_result": "/tmp/native-dream-workflow-f052-20261114/v2/actionlint-result.json"
+  },
+  "mandatory_workflow_gates": {
+    "old_headless": {
+      "connect_four_return_regression": {
+        "checks": 21,
+        "seconds": 60
+      },
+      "treasure_wisp_regression": {
+        "checks": 14,
+        "seconds": 180
+      },
+      "treasure_exploration_regression": {
+        "checks": 92,
+        "seconds": 420
+      },
+      "learning_world_regression": {
+        "checks": 5347,
+        "seconds": 420
+      }
+    },
+    "dream": {
+      "headless": 2,
+      "rendered": 3,
+      "pngs": 7,
+      "seconds": [
+        120,
+        120,
+        180,
+        180,
+        180
+      ]
+    },
+    "python": "tools.tests.test_dream_rasters, currently12 methods in the paired freeze; not run locally",
+    "import": "Real pinned-engine import,420s bound, full log and strict engine/leak guard",
+    "source": "Exact github.sha checkout; before/after SHA,tree,tracked status,index entries/index SHA; runner additionally inventories actual tracked bytes/modes and untracked UID/import/other files"
+  },
+  "events": "Only push integration/lumo-dream-connections-20261114 in Ullmann27/lumo-godot",
+  "permission": "contents:read",
+  "new_artifact": "lumo-dream-connections-native-evidence-<run_id>-<run_attempt>",
+  "preserved_originals": "Return marker taken from actual79c/f052 runtime artifact; other three markers from their actualf052 local headless originals. These are marker-source evidence, not results for the new Dream combination.",
+  "review": "Pipeline has the final V2 freeze for independent read-only review. No reviewer pass is asserted here before receipt.",
+  "limits": [
+    "No engine/import/renderer/device execution in this workflow preparation.",
+    "No CI start, Git/index/ref/worktree/app/host-pin mutation.",
+    "45-minute job limit includes setup/import/tests/upload; no measured completion time exists yet.",
+    "Godot project import uses its normal ignored .godot cache in checkout; installed engine,venv,TMP,XDG and evidence directories remain outside checkout."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "godot",
+    "--headless",
+    "--editor",
+    "--path",
+    "/home/agent/lumo-kart-minimap-2708/source",
+    "--import",
+    "--quit"
+  ],
+  "started_utc": "2026-11-14T11:11:57.764551+00:00",
+  "seconds": 8.61,
+  "exit_code": 0,
+  "log_sha256": "062c2f12f64b79bb237bebfa34c51aa566332880fb956027e15be29c70e372a6",
+  "log_bytes": 100495
+}

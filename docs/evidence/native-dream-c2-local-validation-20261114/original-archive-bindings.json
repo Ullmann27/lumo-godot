@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "complete-local-originals.tar.gz",
+      "bytes": 4580253,
+      "sha256": "449805e96762fd143870dd452bc679434b4e3b4049513b0bc3652e7d5b91ed47",
+      "source": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/compact-originals.tar.gz"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 16140,
+      "sha256": "3c7347122371bd3a1e075d9d558cec2b59abb0642bb0d5c43457f1238ed2432e",
+      "source": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/manifest.json"
+    },
+    {
+      "path": "handoff.json",
+      "bytes": 764,
+      "sha256": "04536f21cf251527d71ae7d4a2bc120ce01dbdff6cf9d4cf222d0f31d3a8f924",
+      "source": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/handoff.json"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 4071,
+      "sha256": "1b7fc2ea82a8561d8fce5c285d0ef3cf804236959d4366e778c0b701b9f28303",
+      "source": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/summary.json"
+    },
+    {
+      "path": "archive-proof.json",
+      "bytes": 731,
+      "sha256": "3a22a2e9704167b1d5b1767acfacc36fba08a368fa0edd419beada48aa59dfa5",
+      "source": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/archive-proof.json"
+    },
+    {
+      "path": "missing-sparse-paths.json",
+      "bytes": 534943,
+      "sha256": "047308c8f27721e1f99ef88db9def443362370583e439d82ae9b0a4fbb0c395a",
+      "source": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/missing-sparse-paths.json"
+    },
+    {
+      "path": "preflight-resolution.json",
+      "bytes": 1390,
+      "sha256": "b3879e4a47e394582921e4c87f7504e9cc1a38ec07b369e5cb9e2fa2accf1be9",
+      "source": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/preflight-resolution.json"
+    }
+  ]
+}
