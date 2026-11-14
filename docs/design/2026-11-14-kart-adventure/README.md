@@ -81,6 +81,13 @@ new animation systems. Standard PBR materials are retained; unsupported road
 shaders receive a declared portable material approximation in the export
 manifest. Gameplay, collision and procedural animation remain in Godot.
 
+The export copies explicitly convert sRGB vertex colors to linear RGB and retain
+alpha. Exported emissive factors are checked against the source materials and
+written in linear RGB, while their strength and binary geometry chunk are
+preserved. This prevents pale suits, tyres and item accents in Blender without
+altering runtime materials. The color convention follows the
+[glTF 2.0 specification](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html).
+
 ```sh
 godot --headless --path . --script res://scripts/tests/kart_adventure_asset_export.gd -- --mode=items --output=/absolute/output/models
 godot --headless --path . --script res://scripts/tests/kart_adventure_asset_export.gd -- --mode=vehicles --output=/absolute/output/models

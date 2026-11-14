@@ -151,14 +151,16 @@ def pack_and_save(path):
             if space.type == "VIEW_3D":
                 space.spaces.active.shading.type = "SOLID"
                 space.spaces.active.shading.color_type = "MATERIAL"
+                space.spaces.active.region_3d.view_perspective = "CAMERA"
     bpy.ops.wm.save_as_mainfile(filepath=str(path), compress=True)
 
 
 def vehicles(args, scene):
     ground()
-    area("LUMO_KeySoftbox", (3.5, 5.2, 7.0), (0, 0, 1), 1750, 4.5)
-    area("LUMO_FillSoftbox", (-4.5, 2.0, 3.6), (0, 0, 1), 1100, 5.0, (0.70, 0.85, 1.0))
-    area("LUMO_RimSoftbox", (1.5, -4.0, 5.5), (0, 0, 1), 1800, 3.3, (0.65, 0.80, 1.0))
+    scene.view_settings.exposure = 0.0
+    area("LUMO_KeySoftbox", (3.5, 5.2, 7.0), (0, 0, 1), 1100, 4.5)
+    area("LUMO_FillSoftbox", (-4.5, 2.0, 3.6), (0, 0, 1), 250, 5.0, (0.70, 0.85, 1.0))
+    area("LUMO_RimSoftbox", (1.5, -4.0, 5.5), (0, 0, 1), 1000, 3.3, (0.65, 0.80, 1.0))
     view = camera((4.1, 6.7, 3.7), (0, 0, 1.1), 56.0)
     models = []
     for filename, title in (
@@ -192,16 +194,24 @@ def vehicles(args, scene):
     aim(view, (0, 0, 1.1))
     view.data.type = "ORTHO"
     view.data.ortho_scale = 15.8
-    area("LUMO_FleetSoftbox", (0.0, 3.0, 9.0), (0, 0, 1), 2800, 10.0)
+    area("LUMO_FleetSoftbox", (0.0, 3.0, 9.0), (0, 0, 1), 1600, 10.0)
     render(scene, args.output / "LUMO_Kart_Flotte.png")
     pack_and_save(args.output / "LUMO_Kart_Werkstatt.blend")
 
 
 def items(args, scene):
     ground()
-    area("LUMO_ItemKey", (-3.5, -4.0, 6.0), (0, 0, 1.4), 1450, 4.0)
-    area("LUMO_ItemFill", (4.0, -1.5, 3.2), (0, 0, 1.4), 950, 3.0, (0.76, 0.87, 1.0))
-    area("LUMO_ItemRim", (0.0, 3.0, 5.0), (0, 0, 1.4), 1800, 4.0, (0.64, 0.79, 1.0))
+    # These graphic emblems need clear hue separation in their review loop.
+    # The source material values are retained; only the studio display changes.
+    scene.view_settings.view_transform = "Standard"
+    scene.view_settings.look = "None"
+    scene.view_settings.exposure = 0.0
+    background = scene.world.node_tree.nodes.get("Background")
+    background.inputs["Color"].default_value = (0.1, 0.1, 0.1, 1.0)
+    background.inputs["Strength"].default_value = 0.15
+    area("LUMO_ItemKey", (-3.5, -4.0, 6.0), (0, 0, 1.4), 725, 4.0)
+    area("LUMO_ItemFill", (4.0, -1.5, 3.2), (0, 0, 1.4), 142.5, 3.0)
+    area("LUMO_ItemRim", (0.0, 3.0, 5.0), (0, 0, 1.4), 360, 4.0)
     camera((0.0, -11.0, 4.6), (0, 0, 1.1), 58.0)
     groups = []
     for index, kind in enumerate(("boost", "shield", "pulse")):

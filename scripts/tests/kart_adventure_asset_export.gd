@@ -12,6 +12,8 @@ var mode := "all"
 var track_id := "crystal_canyon"
 var records: Array[Dictionary] = []
 var translated_materials: Dictionary = {}
+var linear_vertex_materials: Dictionary = {}
+var linear_vertex_meshes: Dictionary = {}
 
 
 func _initialize() -> void:
@@ -69,6 +71,7 @@ func _run() -> void:
 		"res://scripts/games/kart_world.gd",
 		"res://scripts/games/kart_item_symbols.gd",
 		"res://scripts/games/kart_resonance_system.gd",
+		"res://scripts/tests/kart_adventure_asset_export.gd",
 	]:
 		sources[path] = FileAccess.get_sha256(path)
 	var manifest := FileAccess.open(output.path_join("manifest-" + mode + ".json"), FileAccess.WRITE)
@@ -78,6 +81,7 @@ func _run() -> void:
 		"source": "actual LUMO Kart runtime geometry",
 		"source_hashes": sources, "models": records,
 		"material_translations": translated_materials,
+		"vertex_color_export": "sRGB-flagged vertex RGB converted once to linear glTF COLOR_0; alpha preserved",
 		"animation": "static snapshots; gameplay animation is implemented in Godot",
 		"device_performance_test": false,
 	}, "  "))
@@ -210,7 +214,9 @@ func _write_verified(model: Node3D, filename: String, metadata: Dictionary) -> v
 	var document := GLTFDocument.new()
 	var state := GLTFState.new()
 	assert(document.append_from_scene(model, state) == OK, path)
+	var converted_surfaces: int = _linearize_export_vertex_colors(state)
 	assert(document.write_to_filesystem(state, path) == OK, path)
+	var emission_report: Dictionary = _correct_serialized_emission(path, state)
 	var importer := GLTFDocument.new()
 	var imported := GLTFState.new()
 	assert(importer.append_from_file(path, imported) == OK, path)
@@ -219,9 +225,164 @@ func _write_verified(model: Node3D, filename: String, metadata: Dictionary) -> v
 	var meshes := instance.find_children("*", "MeshInstance3D", true, false).size()
 	assert(meshes > 0, "Export must re-import actual geometry")
 	instance.free()
-	metadata.merge({"file": filename + ".glb", "sha256": FileAccess.get_sha256(path), "mesh_nodes": meshes})
+	metadata.merge({"file": filename + ".glb", "sha256": FileAccess.get_sha256(path), "mesh_nodes": meshes,
+		"srgb_vertex_surfaces_converted": converted_surfaces, "emission_export": emission_report})
 	records.append(metadata)
 	print("[KartAdventureExport] ", filename, " meshes=", meshes)
+
+
+func _linearize_export_vertex_colors(state: GLTFState) -> int:
+	# Godot's runtime shader decodes sRGB vertex colours when this flag is set.
+	# glTF COLOR_0 is linear. Convert only the exporter-owned ImporterMesh arrays:
+	# this also avoids quantizing linear colours through an 8-bit ArrayMesh again.
+	# Scene/runtime mesh buffers, material flags, geometry and alpha stay untouched.
+	# GLTFState.materials is populated only during serialization. At this stage
+	# each ImporterMesh surface carries the actual active instance material.
+	var converted_surfaces := 0
+	for entry: GLTFMesh in state.get_meshes():
+		var source: ImporterMesh = entry.get_mesh()
+		if source == null:
+			continue
+		var overrides: Array[Material] = entry.get_instance_materials()
+		var active_materials: Array[Material] = []
+		var key: String = str(source.get_instance_id())
+		for surface in range(source.get_surface_count()):
+			var active: Material = source.get_surface_material(surface)
+			if surface < overrides.size() and overrides[surface] != null:
+				active = overrides[surface]
+			active_materials.append(active)
+			key += ":" + str(active.get_instance_id() if active != null else 0)
+		if linear_vertex_meshes.has(key):
+			var cached: Dictionary = linear_vertex_meshes[key]
+			entry.set_mesh(cached.mesh)
+			entry.set_instance_materials(cached.materials)
+			converted_surfaces += int(cached.surfaces)
+			continue
+		var copy := ImporterMesh.new()
+		copy.set_blend_shape_mode(source.get_blend_shape_mode())
+		for shape in range(source.get_blend_shape_count()):
+			copy.add_blend_shape(source.get_blend_shape_name(shape))
+		var count := 0
+		var portable_materials: Array[Material] = []
+		for surface in range(source.get_surface_count()):
+			var arrays: Array = source.get_surface_arrays(surface)
+			var material: Material = active_materials[surface]
+			if material is StandardMaterial3D and material.vertex_color_use_as_albedo and material.vertex_color_is_srgb:
+				var material_key: int = material.get_instance_id()
+				if not linear_vertex_materials.has(material_key):
+					var portable: StandardMaterial3D = material.duplicate()
+					portable.vertex_color_is_srgb = false
+					linear_vertex_materials[material_key] = portable
+				material = linear_vertex_materials[material_key]
+				if arrays[Mesh.ARRAY_COLOR] != null:
+					var colors: PackedColorArray = arrays[Mesh.ARRAY_COLOR].duplicate()
+					for vertex in range(colors.size()):
+						var original: Color = colors[vertex]
+						colors[vertex] = original.srgb_to_linear()
+						colors[vertex].a = original.a
+					arrays[Mesh.ARRAY_COLOR] = colors
+					count += 1
+			portable_materials.append(material)
+			var shapes: Array[Array] = []
+			for shape in range(source.get_blend_shape_count()):
+				shapes.append(source.get_surface_blend_shape_arrays(surface, shape))
+			var lods: Dictionary = {}
+			for lod in range(source.get_surface_lod_count(surface)):
+				lods[source.get_surface_lod_size(surface, lod)] = source.get_surface_lod_indices(surface, lod)
+			copy.add_surface(source.get_surface_primitive_type(surface), arrays, shapes, lods,
+				material, source.get_surface_name(surface), source.get_surface_format(surface))
+		linear_vertex_meshes[key] = {"mesh": copy, "materials": portable_materials, "surfaces": count}
+		entry.set_mesh(copy)
+		entry.set_instance_materials(portable_materials)
+		converted_surfaces += count
+	return converted_surfaces
+
+
+func _correct_serialized_emission(path: String, state: GLTFState) -> Dictionary:
+	# Godot 4.6.3 serializes emission with linear_to_srgb(), while the authored
+	# palette uses sRGB colours. Write glTF's linear factors from those exact
+	# source colours. Keep emission strength and every binary byte unchanged.
+	var original: PackedByteArray = FileAccess.get_file_as_bytes(path)
+	assert(original.size() >= 20 and original.decode_u32(0) == 0x46546c67)
+	assert(original.decode_u32(4) == 2 and original.decode_u32(8) == original.size())
+	var json_size: int = original.decode_u32(12)
+	assert(original.decode_u32(16) == 0x4e4f534a and json_size % 4 == 0)
+	assert(20 + json_size <= original.size())
+	var parsed: Variant = JSON.parse_string(original.slice(20, 20 + json_size).get_string_from_utf8())
+	assert(parsed is Dictionary)
+	var document: Dictionary = parsed
+	var serialized: Array = document.get("materials", [])
+	var sources: Array[Material] = state.get_materials()
+	assert(serialized.size() == sources.size(), "Export material indices must match GLTFState")
+	var corrected := 0
+	for index in range(sources.size()):
+		var source: Material = sources[index]
+		if not source is StandardMaterial3D or not source.emission_enabled:
+			continue
+		var previous: Array = serialized[index].get("emissiveFactor", [0.0, 0.0, 0.0])
+		var emitted: Color = source.emission.linear_to_srgb()
+		assert(previous.size() == 3 and absf(float(previous[0]) - emitted.r) < 0.00001
+			and absf(float(previous[1]) - emitted.g) < 0.00001 and absf(float(previous[2]) - emitted.b) < 0.00001,
+			"Serialized material index must match the source emission before correction")
+		var color: Color = source.emission.srgb_to_linear()
+		assert(is_finite(color.r) and is_finite(color.g) and is_finite(color.b))
+		assert(minf(color.r, minf(color.g, color.b)) >= 0.0 and maxf(color.r, maxf(color.g, color.b)) <= 1.0,
+			"Authored emission factors must be bounded; brightness uses emission_energy_multiplier")
+		serialized[index]["emissiveFactor"] = [color.r, color.g, color.b]
+		corrected += 1
+	var binary_chunk: PackedByteArray = original.slice(20 + json_size)
+	var binary_hash: String = _bytes_sha256(binary_chunk)
+	if corrected == 0:
+		return {"materials_corrected": 0, "binary_chunk_unchanged": true,
+			"binary_sha256_before": binary_hash, "binary_sha256_after": binary_hash}
+	var json_bytes: PackedByteArray = JSON.stringify(_native_glb_numbers(document), "", false, true).to_utf8_buffer()
+	while json_bytes.size() % 4 != 0:
+		json_bytes.append(0x20)
+	var header := PackedByteArray()
+	header.resize(20)
+	header.encode_u32(0, 0x46546c67)
+	header.encode_u32(4, 2)
+	header.encode_u32(8, 20 + json_bytes.size() + binary_chunk.size())
+	header.encode_u32(12, json_bytes.size())
+	header.encode_u32(16, 0x4e4f534a)
+	var packed: PackedByteArray = header + json_bytes + binary_chunk
+	assert(packed.slice(20 + json_bytes.size()) == binary_chunk)
+	var temporary: String = path + ".color-tmp"
+	var file := FileAccess.open(temporary, FileAccess.WRITE)
+	assert(file != null)
+	file.store_buffer(packed)
+	file.close()
+	assert(DirAccess.rename_absolute(temporary, path) == OK)
+	var verified: PackedByteArray = FileAccess.get_file_as_bytes(path)
+	var after_hash: String = _bytes_sha256(verified.slice(20 + verified.decode_u32(12)))
+	assert(after_hash == binary_hash)
+	return {"materials_corrected": corrected, "binary_chunk_unchanged": true,
+		"binary_sha256_before": binary_hash, "binary_sha256_after": after_hash}
+
+
+func _bytes_sha256(value: PackedByteArray) -> String:
+	var context := HashingContext.new()
+	assert(context.start(HashingContext.HASH_SHA256) == OK)
+	assert(context.update(value) == OK)
+	return context.finish().hex_encode()
+
+
+func _native_glb_numbers(value: Variant) -> Variant:
+	# Godot JSON parsing represents every JSON number as a float. Restore
+	# integral values so indices remain usable by strict glTF importers.
+	if value is Dictionary:
+		var result: Dictionary = {}
+		for key in value:
+			result[key] = _native_glb_numbers(value[key])
+		return result
+	if value is Array:
+		var result: Array = []
+		for item in value:
+			result.append(_native_glb_numbers(item))
+		return result
+	if value is float and is_finite(value) and absf(value) <= 9007199254740991.0 and value == floor(value):
+		return int(value)
+	return value
 
 
 func _vector(value: Vector3) -> Array[float]:
