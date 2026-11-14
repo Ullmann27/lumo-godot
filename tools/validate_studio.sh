@@ -140,7 +140,7 @@ required = {'learning_sharing_capture': 6, 'lumo_studio_motion_capture': 8,
             'puzzle_menu_lifecycle_regression': 6,
             'cards_safe_area_regression': 3, 'mobile_safe_area_regression': 4}
 required.update({'lumo_facial_capture': 8, 'connect_four_visual_capture': 4,
-                 'treasure_title_contrast_regression': 4})
+                 'treasure_title_contrast_regression': 5})
 puzzle_menu_files = {f'{width}x{height}-{phase}.png'
                     for width, height in ((960, 540), (640, 360))
                     for phase in ('rotation-menu', 'rotation-play', 'classic-play')}
@@ -161,6 +161,7 @@ treasure_title_views = {
     'compact': ((640, 320), 1.0, [0, 0, 0, 0]),
     'portrait': ((1080, 2400), 2.625, [0, 136, 0, 63]),
     'fold': ((2176, 1812), 2.25, [0, 136, 0, 63]),
+    'landscape-cutout': ((2400, 1080), 2.625, [136, 63, 0, 63]),
 }
 def finite(value):
     return type(value) in (int, float) and math.isfinite(value)
@@ -272,26 +273,69 @@ def c4_report(folder):
 def treasure_title_report(folder):
     path = folder / 'treasure-title-report.json'
     state = json.loads(path.read_text())
-    assert type(state['checks']) is int and state['checks'] >= 137, path
+    assert type(state['checks']) is int and state['checks'] >= 3341, path
     assert state['failures'] == [], path
     assert state['scope'] == 'Production HUD, real ScreenTouch, declared saved-position and Android-boundary fixture; not device execution', path
     rows = state['observations']
-    assert len(rows) == 4 and {row['profile'] for row in rows} == set(treasure_title_views), path
-    reported = {row['profile']: row for row in rows}
-    for profile, (size, density, insets) in treasure_title_views.items():
-        item = reported[profile]
+    starts = {'production fresh start', 'original86445 first tree save'}
+    expected = {(profile, start) for profile in treasure_title_views for start in starts}
+    assert len(rows) == 10 and {(row['profile'], row['initial_state_fixture']) for row in rows} == expected, path
+    reported = {}
+
+    def rect(value, label):
+        assert len(value) == 4 and all(finite(v) for v in value) and min(value[2:]) > 0, label
+        return value
+
+    def inside(value, bounds, label):
+        assert value[0] >= bounds[0] - .51 and value[1] >= bounds[1] - .51, label
+        assert value[0] + value[2] <= bounds[2] + .51 and value[1] + value[3] <= bounds[3] + .51, label
+
+    def overlaps(a, b):
+        return a[0] < b[0] + b[2] and b[0] < a[0] + a[2] and a[1] < b[1] + b[3] and b[1] < a[1] + a[3]
+
+    for item in rows:
+        profile = item['profile']
+        size, density, insets = treasure_title_views[profile]
         name = f'treasure-title-{profile}.png'
-        assert Path(item['image']).name == name, path
-        assert item['image_px'] == item['window_px'] == list(size), name
+        assert item['window_px'] == list(size), name
         assert finite(item['density']) and item['density'] == density, name
         assert item['insets_fixture'] == insets, name
-        assert item['initial_state_fixture'] == 'original86445 first tree save', name
         contrast = item['worst_white_backdrop_contrast']
         assert finite(contrast) and 7 <= contrast <= 21, name
-        rect = item['title_rect']
-        assert len(rect) == 4 and all(finite(v) for v in rect) and min(rect[2:]) > 0, name
-        assert rect[0] >= insets[0] - .51 and rect[1] >= insets[1] - .51, name
-        assert rect[0] + rect[2] <= size[0] - insets[2] + .51 and rect[1] + rect[3] <= size[1] - insets[3] + .51, name
+        safe = (insets[0], insets[1], size[0] - insets[2], size[1] - insets[3])
+        inside(rect(item['title_rect'], name), safe, name)
+        view = item['gameplay_view']
+        avatar = rect(view['avatar_rect_px'], (name, 'avatar'))
+        inside(avatar, (0, 0, size[0], size[1]), (name, 'avatar'))
+        contrast = view['secondary_white_backdrop_contrast']
+        assert finite(contrast) and 7 <= contrast <= 21, (name, 'secondary contrast')
+        compact = profile in {'compact', 'landscape-cutout'}
+        roles = {'header', 'toast', 'joystick', 'action', 'jump', 'hint' if compact else 'clue'}
+        hud = view['hud_rects']
+        assert len(hud) == len(roles) and {region['role'] for region in hud} == roles, (name, 'HUD roles')
+        regions = {}
+        for region in hud:
+            role = region['role']
+            assert type(region['name']) is str and region['name'], (name, role)
+            bounds = rect(region['rect_px'], (name, role))
+            inside(bounds, safe, (name, role))
+            assert not overlaps(bounds, avatar), (name, role, 'avatar occluded')
+            overlap = region['overlap_px']
+            assert len(overlap) == 4 and all(finite(v) for v in overlap) and overlap[2:] == [0, 0], (name, role)
+            if role in {'joystick', 'action', 'jump', 'hint'}:
+                assert min(bounds[2:]) / density >= 47.99, (name, role, 'touch size')
+            regions[role] = bounds
+        for role in {'joystick', 'action', 'jump', 'hint'} & roles:
+            assert not overlaps(regions['toast'], regions[role]), (name, role, 'toast covers input')
+        # Both start states are mandatory; only the designated five actual
+        # framebuffers may claim an image. The cutout image records fresh spawn.
+        captured_start = 'production fresh start' if profile == 'landscape-cutout' else 'original86445 first tree save'
+        if item['initial_state_fixture'] == captured_start:
+            assert Path(item['image']).name == name and item['image_px'] == list(size), name
+            reported[profile] = item
+        else:
+            assert not {'image', 'image_px', 'image_sha256'} & item.keys(), (name, 'unexpected capture state')
+    assert set(reported) == set(treasure_title_views), path
     return identity(path), reported
 
 images = []

@@ -353,23 +353,46 @@ class StudioPuzzleMenuContractTests(unittest.TestCase):
             ('compact', 640, 320, 1.0, [0, 0, 0, 0]),
             ('portrait', 1080, 2400, 2.625, [0, 136, 0, 63]),
             ('fold', 2176, 1812, 2.25, [0, 136, 0, 63]),
+            ('landscape-cutout', 2400, 1080, 2.625, [136, 63, 0, 63]),
         ]
         observations = []
         for profile, width, height, density, insets in profiles:
             path = folder / f'treasure-title-{profile}.png'
             data = self.fixture_png(width, height)
             path.write_bytes(data)
-            observations.append({'profile': profile, 'image': str(path),
-                'image_sha256': hashlib.sha256(data).hexdigest(),
-                'image_px': [width, height], 'window_px': [width, height],
-                'density': density, 'insets_fixture': insets,
-                'title_rect': [insets[0] + 12, insets[1] + 12, 360, 42 * density],
-                'worst_white_backdrop_contrast': 14.4422647052388,
-                'initial_state_fixture': 'original86445 first tree save'})
-        state = {'checks': 137, 'failures': [], 'observations': observations,
+            left, top, right, bottom = insets
+            safe_width, safe_height = width - left - right, height - top - bottom
+            avatar = [left + safe_width / 2 - 20, top + safe_height / 2 - 20, 40, 40]
+            clue_role = 'hint' if profile in ('compact', 'landscape-cutout') else 'clue'
+            boxes = {
+                'header': [left + 12, top + 12, safe_width - 24, 48 * density],
+                clue_role: [left + 12, top + 72 * density, 48 * density, 48 * density],
+                'toast': [left + safe_width / 2 - 48 * density, height - bottom - 12 - 48 * density, 96 * density, 48 * density],
+                'joystick': [left + 12, height - bottom - 12 - 48 * density, 48 * density, 48 * density],
+                'action': [width - right - 12 - 48 * density, height - bottom - 12 - 48 * density, 48 * density, 48 * density],
+                'jump': [width - right - 12 - 48 * density, height - bottom - 24 - 96 * density, 48 * density, 48 * density],
+            }
+            for restored in (False, True):
+                item = {'profile': profile, 'window_px': [width, height],
+                    'density': density, 'insets_fixture': list(insets),
+                    'title_rect': [left + 12, top + 12, 360, 42 * density],
+                    'worst_white_backdrop_contrast': 14.4422647052388,
+                    'initial_state_fixture': 'original86445 first tree save' if restored else 'production fresh start',
+                    'gameplay_view': {'avatar_rect_px': list(avatar),
+                        'secondary_white_backdrop_contrast': 14.4422647052388,
+                        'hud_rects': [{'role': role, 'name': f'Fixture-{role}', 'rect_px': list(bounds),
+                                       'overlap_px': [0, 0, 0, 0]} for role, bounds in boxes.items()]}}
+                recorded = not restored if profile == 'landscape-cutout' else restored
+                if recorded:
+                    item.update(image=str(path), image_sha256=hashlib.sha256(data).hexdigest(),
+                                image_px=[width, height])
+                observations.append(item)
+        state = {'checks': 3341, 'failures': [], 'observations': observations,
                  'scope': 'Production HUD, real ScreenTouch, declared saved-position and Android-boundary fixture; not device execution'}
-        chosen = observations[1]
+        chosen = observations[3]
         image = folder / Path(chosen['image']).name
+        view = chosen['gameplay_view']
+        hud = {region['role']: region for region in view['hud_rects']}
         if mutation == 'title-missing-image':
             image.unlink()
         elif mutation == 'title-renamed-image':
@@ -384,10 +407,14 @@ class StudioPuzzleMenuContractTests(unittest.TestCase):
             state['checks'] = 129
         elif mutation == 'title-boolean-checks':
             state['checks'] = True
+        elif mutation == 'title-old-four-case-checks':
+            state['checks'] = 137
+        elif mutation == 'visibility-pre-spacing-checks':
+            state['checks'] = 3273
         elif mutation == 'title-missing-profile':
             observations.pop()
         elif mutation == 'title-duplicate-profile':
-            observations[3] = dict(chosen)
+            observations[-1] = dict(chosen)
         elif mutation == 'title-wrong-image-hash':
             chosen['image_sha256'] = '0' * 64
         elif mutation == 'title-wrong-reported-image':
@@ -410,6 +437,71 @@ class StudioPuzzleMenuContractTests(unittest.TestCase):
             chosen['title_rect'][2] = 0
         elif mutation == 'title-device-claim':
             state['scope'] = 'actual Android'
+        elif mutation == 'visibility-missing-cutout-image':
+            (folder / 'treasure-title-landscape-cutout.png').unlink()
+        elif mutation == 'visibility-cutout-dimensions':
+            data = self.fixture_png(2399, 1080)
+            (folder / 'treasure-title-landscape-cutout.png').write_bytes(data)
+            observations[8]['image_sha256'] = hashlib.sha256(data).hexdigest()
+        elif mutation == 'visibility-cutout-insets-swapped':
+            observations[8]['insets_fixture'] = [0, 63, 136, 63]
+        elif mutation == 'visibility-cutout-capture-restored':
+            for key in ('image', 'image_px', 'image_sha256'):
+                observations[9][key] = observations[8].pop(key)
+        elif mutation == 'visibility-extra-fresh-capture':
+            for key in ('image', 'image_px', 'image_sha256'):
+                observations[0][key] = observations[1][key]
+        elif mutation == 'visibility-partial-unrecorded-image':
+            observations[0]['image_sha256'] = observations[1]['image_sha256']
+        elif mutation == 'visibility-missing-fresh':
+            observations.pop(8)
+        elif mutation == 'visibility-duplicate-restored':
+            observations[8] = dict(observations[9])
+        elif mutation == 'visibility-unrecorded-fresh-avatar-covered':
+            fresh = observations[0]['gameplay_view']
+            fresh['hud_rects'][0]['rect_px'] = list(fresh['avatar_rect_px'])
+        elif mutation == 'visibility-unrecorded-fresh-low-contrast':
+            observations[0]['gameplay_view']['secondary_white_backdrop_contrast'] = 6.99
+        elif mutation == 'visibility-missing-avatar':
+            view.pop('avatar_rect_px')
+        elif mutation == 'visibility-zero-avatar':
+            view['avatar_rect_px'][2] = 0
+        elif mutation == 'visibility-nonfinite-avatar':
+            view['avatar_rect_px'][0] = float('nan')
+        elif mutation == 'visibility-avatar-offscreen':
+            view['avatar_rect_px'][0] = 639
+        elif mutation == 'visibility-missing-hud':
+            view['hud_rects'].pop()
+        elif mutation == 'visibility-duplicate-role':
+            hud['jump']['role'] = 'action'
+        elif mutation == 'visibility-no-role':
+            hud['jump'].pop('role')
+        elif mutation == 'visibility-compact-clue-instead-of-hint':
+            hud['hint']['role'] = 'clue'
+        elif mutation == 'visibility-tall-hint-instead-of-clue':
+            observations[4]['gameplay_view']['hud_rects'][1]['role'] = 'hint'
+        elif mutation == 'visibility-empty-control-name':
+            hud['jump']['name'] = ''
+        elif mutation == 'visibility-nonfinite-hud':
+            hud['jump']['rect_px'][0] = float('inf')
+        elif mutation == 'visibility-zero-hud':
+            hud['toast']['rect_px'][2] = 0
+        elif mutation == 'visibility-unsafe-hud':
+            observations[8]['gameplay_view']['hud_rects'][0]['rect_px'][0] = 0
+        elif mutation == 'visibility-hud-overlap-despite-zero-report':
+            hud['toast']['rect_px'] = list(view['avatar_rect_px'])
+        elif mutation == 'visibility-false-overlap-report':
+            hud['toast']['overlap_px'] = [0, 0, 1, 1]
+        elif mutation == 'visibility-toast-covers-jump':
+            hud['toast']['rect_px'] = list(hud['jump']['rect_px'])
+        elif mutation == 'visibility-toast-covers-hint':
+            hud['toast']['rect_px'] = list(hud['hint']['rect_px'])
+        elif mutation == 'visibility-small-touch':
+            hud['jump']['rect_px'][3] = 47.98
+        elif mutation == 'visibility-low-secondary-contrast':
+            view['secondary_white_backdrop_contrast'] = 6.99
+        elif mutation == 'visibility-nonfinite-secondary-contrast':
+            view['secondary_white_backdrop_contrast'] = float('nan')
         if mutation != 'title-missing-report':
             (folder / 'treasure-title-report.json').write_text(
                 '{' if mutation == 'title-malformed-report' else json.dumps(state))
@@ -517,7 +609,7 @@ class StudioPuzzleMenuContractTests(unittest.TestCase):
     def test_all_thirty_seven_required_rasters_and_named_menu_views_are_enforced(self):
         result, report = self.roster_fixture()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(len(report['images']), 53)
+        self.assertEqual(len(report['images']), 54)
         self.assertEqual(sum(1 for image in report['images'] if Path(image['path']).parts[1] not in ('lumo_facial_capture', 'connect_four_visual_capture', 'treasure_title_contrast_regression')), 37)
         counts = {}
         for image in report['images']:
@@ -536,7 +628,7 @@ class StudioPuzzleMenuContractTests(unittest.TestCase):
             'puzzle_menu_lifecycle_regression': 6,
             'cards_safe_area_regression': 3, 'mobile_safe_area_regression': 4,
             'lumo_facial_capture': 8, 'connect_four_visual_capture': 4,
-            'treasure_title_contrast_regression': 4,
+            'treasure_title_contrast_regression': 5,
         })
         for mutation in ('missing', 'renamed', 'dimensions', 'legacy-short-image'):
             with self.subTest(mutation=mutation):
@@ -615,13 +707,13 @@ class StudioPuzzleMenuContractTests(unittest.TestCase):
             self.assertEqual(row['connect_four_visual_state']['path'], 'captures/connect_four_visual_capture/visual-state.json')
             self.assertRegex(row['connect_four_visual_state']['sha256'], r'^[a-f0-9]{64}$')
         treasure = [row for row in report['images'] if '/treasure_title_contrast_regression/' in row['path']]
-        self.assertEqual(len(treasure), 4)
+        self.assertEqual(len(treasure), 5)
         for row in treasure:
             self.assertEqual(row['treasure_title_report']['path'], 'captures/treasure_title_contrast_regression/treasure-title-report.json')
             self.assertGreater(row['treasure_title_report']['bytes'], 0)
             self.assertRegex(row['treasure_title_report']['sha256'], r'^[a-f0-9]{64}$')
 
-    def test_treasure_title_requires_four_hash_bound_contrast_and_safe_layout_reports(self):
+    def test_treasure_title_requires_five_hash_bound_contrast_and_safe_layout_reports(self):
         for mutation in (
                 'title-missing-image', 'title-renamed-image', 'title-wrong-dimensions',
                 'title-missing-report', 'title-malformed-report', 'title-reported-failure',
@@ -630,6 +722,44 @@ class StudioPuzzleMenuContractTests(unittest.TestCase):
                 'title-wrong-window', 'title-wrong-density', 'title-wrong-insets',
                 'title-wrong-fixture', 'title-low-contrast', 'title-nonfinite-contrast',
                 'title-offscreen', 'title-zero-area', 'title-device-claim'):
+            with self.subTest(mutation=mutation):
+                result, report = self.roster_fixture(mutation)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIsNone(report)
+
+    def test_treasure_requires_both_start_states_and_exact_cutout_capture_assignment(self):
+        for mutation in (
+                'visibility-missing-cutout-image', 'visibility-cutout-dimensions',
+                'visibility-cutout-insets-swapped', 'visibility-cutout-capture-restored',
+                'visibility-extra-fresh-capture', 'visibility-partial-unrecorded-image',
+                'visibility-missing-fresh', 'visibility-duplicate-restored',
+                'visibility-unrecorded-fresh-avatar-covered',
+                'visibility-unrecorded-fresh-low-contrast', 'title-old-four-case-checks',
+                'visibility-pre-spacing-checks'):
+            with self.subTest(mutation=mutation):
+                result, report = self.roster_fixture(mutation)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIsNone(report)
+
+    def test_treasure_requires_actual_avatar_and_complete_semantic_hud_bounds(self):
+        for mutation in (
+                'visibility-missing-avatar', 'visibility-zero-avatar',
+                'visibility-nonfinite-avatar', 'visibility-avatar-offscreen',
+                'visibility-missing-hud', 'visibility-duplicate-role', 'visibility-no-role',
+                'visibility-compact-clue-instead-of-hint',
+                'visibility-tall-hint-instead-of-clue', 'visibility-empty-control-name',
+                'visibility-nonfinite-hud', 'visibility-zero-hud', 'visibility-unsafe-hud'):
+            with self.subTest(mutation=mutation):
+                result, report = self.roster_fixture(mutation)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIsNone(report)
+
+    def test_treasure_recomputes_occlusion_and_preserves_accessible_hint_and_message(self):
+        for mutation in (
+                'visibility-hud-overlap-despite-zero-report', 'visibility-false-overlap-report',
+                'visibility-toast-covers-jump', 'visibility-toast-covers-hint',
+                'visibility-small-touch', 'visibility-low-secondary-contrast',
+                'visibility-nonfinite-secondary-contrast'):
             with self.subTest(mutation=mutation):
                 result, report = self.roster_fixture(mutation)
                 self.assertNotEqual(result.returncode, 0)
