@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "engine": "Godot 4.6.3.stable.official.7d41c59c4",
+  "scope": "Local imported production learning scene and original meshes; Linux Xorg Mesa software rendering",
+  "base_commit": "81ea4b830a03e942a97c08dd1818d5cb736adaec",
+  "root_source_equivalence_before_portrait_patch": {
+    "root_commit_prefix": "0119670",
+    "identical_sources": 598,
+    "different_sources": 0,
+    "missing_sources": 0,
+    "additional_sources": 0
+  },
+  "snapshot_sha256": "f30867987e36dfda38f97b1976e4a45da24a8d364875d922bfb3efe5eee14313",
+  "source_file_count": 598,
+  "snapshot_scope": "GDScript, Godot shaders, scenes, resources, GLB meshes and project.godot; excludes docs, exports, .git and .godot",
+  "changed_runtime_sources": [
+    "scripts/learning/lumo_dream_props.gd",
+    "scripts/tests/dream_garden_props_regression.gd",
+    "scripts/tests/dream_garden_capture.gd"
+  ],
+  "layout": {
+    "portrait_aspect_below": 0.95,
+    "portrait_storybook_position": [
+      0.7,
+      0.62,
+      -5.65
+    ],
+    "portrait_storybook_scale": 0.46,
+    "placement": "Existing centre window sill, beside original Lumo and above lesson objects",
+    "landscape_storybook_position": [
+      5.35,
+      0.02,
+      -1.4
+    ],
+    "landscape_storybook_scale": 0.48,
+    "responds_to_viewport_resize": true,
+    "scene_exit_guard": true
+  },
+  "regression": {
+    "checks": 605,
+    "failures": 0,
+    "exit_code": 0,
+    "projection_matrix": "7 existing learning activities x 3 aspect ratios",
+    "extra_checks": [
+      "Full book projected bounds within portrait body between header and footer",
+      "No book or blossom projected overlap with original Lumo, lesson tokens, hundred stock, existing source/frame/fraction/hundred labels and sun where present"
+    ],
+    "existing_checks": "Quality tiers, reduced motion, visibility, pause, bounded transforms and production integration"
+  },
+  "renderer": {
+    "exit_code": 0,
+    "captures": 1,
+    "dimensions": [
+      412,
+      915
+    ],
+    "draw_calls": 242,
+    "new_prop_surfaces_medium": 16,
+    "known_warnings": [
+      "V-Sync unsupported by software driver",
+      "Screen-space AA unavailable in Compatibility",
+      "Volumetric fog unavailable in Compatibility"
+    ]
+  },
+  "visual_review": "Original 412x915 renderer image opened and inspected. Storybook fully visible on existing window sill to the right of original Lumo, below header and above tokens. Original lesson and footer controls remain clear. Landscape placements and original meshes unchanged.",
+  "physical_android_performance_measured": false,
+  "apk_built": false
+}

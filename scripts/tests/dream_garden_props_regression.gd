@@ -55,6 +55,14 @@ func _check_lesson_projection() -> void:
 				await process_frame
 			var props := game.get_node("LearningGardenAtelier/LumoDreamGardenSculptures")
 			var camera := game.get("camera") as Camera3D
+			if dimensions.x < dimensions.y:
+				var header := game.get("header") as Control
+				var footer := game.get("footer") as Control
+				var begin := header.get_global_rect().end.y + 6.0
+				var end := footer.get_global_rect().position.y - 6.0
+				var body := Rect2(8, begin, dimensions.x - 16, end - begin)
+				var book := props.get_node("StorybookGarden") as Node3D
+				_check(body.encloses(_projected_bounds(book, camera)), "portrait book fully visible between HUD panels")
 			for decoration: Node3D in props.get_children():
 				var decoration_bounds := _projected_bounds(decoration, camera)
 				for token: Node3D in game.get("tokens"):
@@ -63,6 +71,15 @@ func _check_lesson_projection() -> void:
 						not decoration_bounds.intersects(token_bounds.grow(3.0)),
 						"%s %s %s clears actual lesson geometry" % [descriptor.kind, dimensions, decoration.name]
 					)
+				for property in ["_hundred_stock", "_source_label", "_frame_label", "_fraction_label", "_hundred_summary", "sun"]:
+					var lesson_node: Variant = game.get(property)
+					if is_instance_valid(lesson_node) and lesson_node is Node3D:
+						var lesson_bounds := _projected_bounds(lesson_node, camera)
+						if lesson_bounds.has_area():
+							_check(
+								not decoration_bounds.intersects(lesson_bounds.grow(3.0)),
+								"%s %s %s clears %s" % [descriptor.kind, dimensions, decoration.name, property]
+							)
 				var fox := game.get("fox") as Node3D
 				_check(
 					not decoration_bounds.intersects(_projected_bounds(fox, camera).grow(3.0)),
@@ -124,7 +141,7 @@ func _run() -> void:
 	if attached != null:
 		_check(not attached.is_processing(), "production reduced-motion preference reaches sculptures")
 		var book := attached.get_node("StorybookGarden") as Node3D
-		_check(book.position.x > 4.0, "book remains outside central lesson carpet")
+		_check(book.position.x > 4.0 or book.position.z < -5.0, "book remains outside central lesson carpet")
 	var ambience := game.get_node_or_null("LearningGardenAtelier/LumoDreamAmbience")
 	_check(ambience != null, "production atelier receives shared 3D ambience")
 	if ambience != null:

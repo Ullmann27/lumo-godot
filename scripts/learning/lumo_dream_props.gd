@@ -11,22 +11,25 @@ var _rests: Array[Transform3D] = []
 var _stars: Array[bool] = []
 var _elapsed := 0.0
 var _application_paused := false
+var _storybook: Node3D
 
 
 func _ready() -> void:
 	name = "LumoDreamGardenSculptures"
 	# Keep every sculpture outside the lesson carpet and the teacher's space.
-	_add_model(STORYBOOK, "StorybookGarden", Vector3(5.35, 0.02, -1.4), 0.48, -0.2)
+	_storybook = _add_model(STORYBOOK, "StorybookGarden", Vector3(5.35, 0.02, -1.4), 0.48, -0.2)
 	_add_model(BLOSSOM, "ReadingBlossomRight", Vector3(7.25, -0.65, 0.4), 1.3, 0.3)
 	if quality == "high":
 		_add_model(BLOSSOM, "ReadingBlossomLeft", Vector3(-7.25, -0.65, 0.4), 1.1, -0.5)
 	visibility_changed.connect(_update_processing)
+	get_viewport().size_changed.connect(_layout_for_viewport)
+	_layout_for_viewport()
 	_update_processing()
 
 
 func _add_model(
 	scene: PackedScene, node_name: String, at: Vector3, size_value: float, yaw: float
-) -> void:
+) -> Node3D:
 	var model := scene.instantiate() as Node3D
 	model.name = node_name
 	model.position = at
@@ -40,6 +43,18 @@ func _add_model(
 			_moving.append(node)
 			_rests.append(node.transform)
 			_stars.append(part_name.begins_with("DreamOrbit"))
+	return model
+
+
+func _layout_for_viewport() -> void:
+	if not is_inside_tree() or not is_instance_valid(_storybook):
+		return
+	var dimensions := get_viewport().get_visible_rect().size
+	var portrait := dimensions.x / maxf(dimensions.y, 1.0) < 0.95
+	# The original centre-window sill is 0.62 m high. In portrait the book
+	# rests there, above the learning objects and beside the original teacher.
+	_storybook.position = Vector3(0.7, 0.62, -5.65) if portrait else Vector3(5.35, 0.02, -1.4)
+	_storybook.scale = Vector3.ONE * (0.46 if portrait else 0.48)
 
 
 func set_reduced_motion(value: bool) -> void:

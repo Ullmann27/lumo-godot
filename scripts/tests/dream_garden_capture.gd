@@ -2,12 +2,15 @@ extends SceneTree
 ## Actual renderer captures of the unchanged lesson camera and new sculptures.
 var output := "res://exports/dream-garden"
 var failures := 0
+var portrait_only := false
 
 
 func _initialize() -> void:
 	for argument in OS.get_cmdline_user_args():
 		if argument.begins_with("--output="):
 			output = argument.trim_prefix("--output=")
+		elif argument == "--portrait":
+			portrait_only = true
 	_run.call_deferred()
 
 
@@ -19,7 +22,8 @@ func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(output)
 	var bridge := root.get_node("HostBridge")
 	var saved: Dictionary = bridge.get("_options").duplicate(true)
-	for dimensions in [Vector2i(1280, 720), Vector2i(412, 915), Vector2i(2400, 1080)]:
+	var profiles := [Vector2i(412, 915)] if portrait_only else [Vector2i(1280, 720), Vector2i(412, 915), Vector2i(2400, 1080)]
+	for dimensions in profiles:
 		root.size = dimensions
 		var options: Dictionary = bridge.get("_options")
 		options["displayDensity"] = 2.625 if dimensions.x == 2400 else 1.0

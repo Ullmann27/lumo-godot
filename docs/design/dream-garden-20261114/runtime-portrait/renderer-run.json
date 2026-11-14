@@ -1,0 +1,15 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 7.845484032004606,
+  "display": 143,
+  "project": "/tmp/lumo-dream-render-check-de96",
+  "godot_arguments": [
+    "--script",
+    "scripts/tests/dream_garden_capture.gd",
+    "--",
+    "--portrait",
+    "--output=/workspace/scratch/de96cd3c3e53/dream-render/docs/design/dream-garden-20261114/runtime-portrait"
+  ],
+  "timed_out": false,
+  "scope": "Local software renderer; not physical Android performance"
+}
