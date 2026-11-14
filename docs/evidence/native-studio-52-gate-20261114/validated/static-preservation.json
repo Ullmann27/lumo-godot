@@ -1,0 +1,23 @@
+{
+  "scope": "Read-only static preservation, not executed renderer/sidecar acceptance",
+  "ported_reports": [
+    {
+      "function": "face_report",
+      "published_conditions": 28,
+      "all_conditions_exactly_preserved": true
+    },
+    {
+      "function": "c4_report",
+      "published_conditions": 29,
+      "all_conditions_exactly_preserved": true
+    },
+    {
+      "function": "treasure_title_report",
+      "published_conditions": 13,
+      "all_conditions_exactly_preserved": true
+    }
+  ],
+  "existing_complete_png_decoder_body_exact_after_unwrapping_optional_write": true,
+  "runtime_python_asserts": 0,
+  "sourcefreeze_sha256": "66893fcc808cb546f777c18149e4801c82426913c5d4763e475fd7c8a651fde8"
+}

@@ -1,0 +1,304 @@
+{
+  "schema": 1,
+  "base_native_commit": "27ae427029a5199699c95a79a84b0027d7571752",
+  "mode_count": 52,
+  "previous48_commands_exact": true,
+  "pairs": [
+    {
+      "probe": "learning_world_regression",
+      "marker": "[LearningWorld] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "learning_sharing_regression",
+      "marker": "[LearningSharing] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "learning_studio_regression",
+      "marker": "[LearningStudio] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "learning_host_payload_regression",
+      "marker": "[LearningHostPayload] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "puzzle_rotation_regression",
+      "marker": "[PuzzleRotation] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "puzzle_menu_lifecycle_regression",
+      "marker": "[PuzzleMenuLifecycle] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "treasure_exploration_regression",
+      "marker": "[TreasureExploration] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "jump_nextgen_regression",
+      "marker": "[JumpNextgen] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "jump_expeditions_regression",
+      "marker": "[JumpExpeditions] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "lumo_teacher_pose_regression",
+      "marker": "[LumoTeacherPose] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "lumo_studio_motion_regression",
+      "marker": "[LumoStudioMotion] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "lumo_65bone_walk_gait_regression",
+      "marker": "[LumoGait] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "lumo_original_jump_visual_regression",
+      "marker": "[JumpOriginalLumo] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "bauwelt_identity_2013_regression",
+      "marker": "[BauweltIdentity2013] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_frontier_regression",
+      "marker": "[BuildFrontier] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_transform_regression",
+      "marker": "[BuildTransform] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_nextgen_play_regression",
+      "marker": "[BuildNextgen] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_settlement_regression",
+      "marker": "[Settlement] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_settlement_play_regression",
+      "marker": "[SettlementPlay] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_village_economy_regression",
+      "marker": "[VillageEconomy] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_village_art_regression",
+      "marker": " checks / 0 failures",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_village_scene_regression",
+      "marker": "[VillageScene] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "creative_nextgen_environment_regression",
+      "marker": "[CreativeNextgenEnvironment] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "kart_nextgen_garage_regression",
+      "marker": "[NextGenGarage] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "kart_track_pass_regression",
+      "marker": "[KartTrackPass] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "cards_table_regression",
+      "marker": "CARDS_TABLE_RUNTIME_PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "cards_safe_area_android_contract",
+      "marker": "CARDS_ANDROID_INSETS_PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "cards_safe_area_regression",
+      "marker": "CARDS_SAFE_AREA_PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "mobile_safe_area_regression",
+      "marker": "MOBILE_SAFE_AREA_PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "rhythm_tour_regression",
+      "marker": "[RhythmTour] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "rhythm_tour_play_regression",
+      "marker": "[RhythmTourPlay] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "learning_world_capture",
+      "marker": "[LearningCapture] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "learning_sharing_capture",
+      "marker": "[LearningSharingCapture] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "lumo_studio_motion_capture",
+      "marker": "[LumoStudioCapture] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "puzzle_rotation_regression",
+      "marker": "[PuzzleRotation] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "puzzle_menu_lifecycle_regression",
+      "marker": "[PuzzleMenuLifecycle] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "treasure_exploration_regression",
+      "marker": "[TreasureExploration] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "jump_nextgen_capture",
+      "marker": "[JumpNextgenCapture] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "build_nextgen_play_regression",
+      "marker": "[BuildNextgen] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "build_settlement_play_regression",
+      "marker": "[SettlementPlay] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "build_village_scene_regression",
+      "marker": "[VillageScene] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "creative_nextgen_environment_regression",
+      "marker": "[CreativeNextgenEnvironment] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "kart_nextgen_garage_regression",
+      "marker": "[NextGenGarage] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "cards_table_capture",
+      "marker": "CARDS_TABLE_RENDER_PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "cards_safe_area_regression",
+      "marker": "CARDS_SAFE_AREA_PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "mobile_safe_area_regression",
+      "marker": "MOBILE_SAFE_AREA_PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "rhythm_tour_play_regression",
+      "marker": "[RhythmTourPlay] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "kart_player_full_route_regression",
+      "marker": "[PlayerFullRoute] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "lumo_facial_regression",
+      "marker": "LUMO_FACIAL_PASS checks=102 actual_meshes=true original_bones=65 original_clips=9 phoneme_lipsync=false",
+      "mode": "headless"
+    },
+    {
+      "probe": "lumo_facial_capture",
+      "marker": "LUMO_FACIAL_CAPTURE_PASS frames=144 original_word=true recording_fps=24 not_device_fps=true",
+      "mode": "rendered"
+    },
+    {
+      "probe": "connect_four_visual_capture",
+      "marker": "CONNECT_FOUR_VISUAL_PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "treasure_title_contrast_regression",
+      "marker": "[TreasureTitleContrast] PASS",
+      "mode": "rendered"
+    }
+  ],
+  "additional_images": 16,
+  "runner_command": "LUMO_NEXTGEN_LOG_DIR=<evidence>/nextgen bash tools/validate_nextgen.sh",
+  "results": "results.tsv",
+  "required_success_markers": [
+    "[Studio2020RasterRoster] PASS 16 actual PNG files, 3 original sidecars and 1 verified facial movie",
+    "[LumoNextgen52] PASS: all 48 previous modes plus four Studio2020 modes and 16 bound rasters/movie/sidecars",
+    "[LumoNextgen] PASS"
+  ],
+  "new_manifest": "studio-2020-images.json",
+  "new_manifest_fields": [
+    "schema=1",
+    "kind=studio_2020_extension",
+    "source.commit/tree/stamps",
+    "images[16]",
+    "reports[3]",
+    "movies[1]"
+  ],
+  "existing_rosters_unchanged": [
+    "renderer-images.json",
+    "village-images.json",
+    "puzzle-menu-images.json",
+    "safe-area-images.json"
+  ],
+  "pure_api": "verify_studio_2020_rasters.verify(root:Path, *, write=False)->dict",
+  "publisher_cli": "python3 tools/verify_studio_2020_rasters.py verify <evidence>/nextgen --read-only",
+  "collection_cli": "python3 tools/verify_studio_2020_rasters.py collect-face-movie <evidence>/nextgen/captures/lumo_facial_capture",
+  "collection_dependencies": [
+    "ffmpeg with libx264 and AAC encode/decode",
+    "ffprobe"
+  ],
+  "verification_dependencies": [
+    "Python standard library",
+    "Pillow via existing verify_village_rasters.verify_fixed_rasters"
+  ],
+  "limits": "Each existing48 deadline unchanged; additions180/420/600/600s. ffmpeg encode/decode and ffprobe each90s, same Producer limits. Recording24fps is not device FPS.",
+  "stage": "Source frozen before local focused tests; no engine, renderer, CI or Android acceptance"
+}

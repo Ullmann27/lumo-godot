@@ -1,0 +1,134 @@
+{
+  "schema": 1,
+  "status": "FROZEN",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4581,
+      "sha256": "ccdb548e26bc679371466da090938c1ca9ae4892bab662b2fb461955797c24aa"
+    },
+    {
+      "path": "active-consumer-check.json",
+      "bytes": 1800,
+      "sha256": "1568616b5fef3860bb124d9e5ecef25bd92bfaa763f1e7a061df2b54e67f93ed"
+    },
+    {
+      "path": "active-consumer-check.stdout",
+      "bytes": 324,
+      "sha256": "fb9b7c144191e48efc1db224ec8c280124466f648839d0f8f33e2bf6b1543818"
+    },
+    {
+      "path": "before/assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import",
+      "bytes": 1162,
+      "sha256": "fb3244345f930d628253b8f687646566273c8adb77aa276b46815e5861304b15"
+    },
+    {
+      "path": "before/scripts/tests/lumo_attention_landing_regression.gd",
+      "bytes": 8486,
+      "sha256": "7c56887fd79b6f18514922104ce97f5239f10f6d5208c73fed99d337839f50ea"
+    },
+    {
+      "path": "before/scripts/tests/lumo_facial_capture.gd",
+      "bytes": 8675,
+      "sha256": "cd223ad265b46626a09350583466d3cbcb70c1d7061170c753f58d24269aba38"
+    },
+    {
+      "path": "before/tools/tests/test_studio_2020_rasters.py",
+      "bytes": 30303,
+      "sha256": "7652684bc21cda590e7d451f312b3545dba49c4d97e3abb596a5e357ca8651bf"
+    },
+    {
+      "path": "final-source/assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import",
+      "bytes": 1341,
+      "sha256": "ea8637187b5af2f1315958c27117d05d594873c61727f6bdf0e2d910581dfb5a"
+    },
+    {
+      "path": "final-source/scripts/tests/lumo_attention_landing_regression.gd",
+      "bytes": 9389,
+      "sha256": "84789b1e8d4404a637481b5df0f099a7fa4d7fe437dc4a48b35c1c1735a81e53"
+    },
+    {
+      "path": "final-source/scripts/tests/lumo_facial_capture.gd",
+      "bytes": 9009,
+      "sha256": "d5c519844281ec83d2965e2cfdf4b0157f8304fb1e9f093d705356315ee924a5"
+    },
+    {
+      "path": "final-source/tools/tests/test_studio_2020_rasters.py",
+      "bytes": 31297,
+      "sha256": "26ed168572f3a2a03cc185f2936a808c86325060b06f7679dc34574acfa2c2d0"
+    },
+    {
+      "path": "focused-validation.json",
+      "bytes": 1103,
+      "sha256": "ff2003fe6f40e8c56ddfec4f3113d0d563d33359b31b5f54a87210826dfe6f30"
+    },
+    {
+      "path": "handoff.json",
+      "bytes": 1690,
+      "sha256": "cc0ab294d8b2821635a003dba8598a4e9357094cdbb519ad3c86bf7ab1db285b"
+    },
+    {
+      "path": "integration.patch",
+      "bytes": 5618,
+      "sha256": "1f5951b5bdec159e0716ca17e163d899be7764402bf583fb8ad1173d1a8df351"
+    },
+    {
+      "path": "local-tests/execution.json",
+      "bytes": 1284,
+      "sha256": "ec627321b4087b96c8b6fb530685c97b7c1d5d0cc7b9ba79bec6affc6e86fd48"
+    },
+    {
+      "path": "local-tests/movie-format-neighbors.log",
+      "bytes": 672,
+      "sha256": "bf05e81aa3624df644730ad03ad3697f1a78673f7909014423180d848c8f3882"
+    },
+    {
+      "path": "originals/producer-compare.json",
+      "bytes": 25008,
+      "sha256": "e67ab234bb5a2ed430ae3bdaa2a9ac04f3d20979ffa3540e392a32cbbc6cae53"
+    },
+    {
+      "path": "originals/producer-runner-negative.patch",
+      "bytes": 1266,
+      "sha256": "2f9bb3b23515c54bb12ad9a9467598c12a25c1880353243318d56be957027339"
+    },
+    {
+      "path": "originals/studio-2020-ci-corrections.md",
+      "bytes": 4411,
+      "sha256": "06c6140237d24e7f66f31a5c1052242acb2999588046421a523e07a3ecfaca81"
+    },
+    {
+      "path": "source-binding.json",
+      "bytes": 5256,
+      "sha256": "9064ce58b728ae40d3067a04e4edb5e8dc48cb59cf99f58bc871e2d09292322c"
+    },
+    {
+      "path": "source-freeze.json",
+      "bytes": 2015,
+      "sha256": "aafa5dd33267061a88e9361836abed622a517c159a4c7644ee34c33e023ac2c2"
+    },
+    {
+      "path": "test-view/tools/tests/test_studio_2020_rasters.py",
+      "bytes": 31297,
+      "sha256": "26ed168572f3a2a03cc185f2936a808c86325060b06f7679dc34574acfa2c2d0"
+    },
+    {
+      "path": "test-view/tools/verify_studio_2020_rasters.py",
+      "bytes": 23524,
+      "sha256": "4deca56cc7f4a6751b16da8e01352044d44e5c7428bcde6594d48576e675e792"
+    },
+    {
+      "path": "test-view/tools/verify_village_rasters.py",
+      "bytes": 3905,
+      "sha256": "23834a1baaaa2f98ffc3df5b0b4e2a4b3bbf23e41f402a7f051adeae9fd230a8"
+    },
+    {
+      "path": "test-view-binding.json",
+      "bytes": 946,
+      "sha256": "919c1ea816b595e32aa4420771428054d09a29d34c030071c569660374ecea7b"
+    }
+  ],
+  "file_count": 25,
+  "total_bytes": 214362,
+  "scope": "Exact published acf51d3 source hunks on 7e03 plus one additive synthetic movie-size regression; no engine/renderer acceptance"
+}

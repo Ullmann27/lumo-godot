@@ -1,0 +1,10 @@
+{
+  "producer_harness_sha256": "ba194e2cdb3b39e95249a347b1e53a2b146ffe2eda1380877743156ebd2fd8b1",
+  "ported_functions": [
+    "face_report",
+    "c4_report",
+    "treasure_title_report"
+  ],
+  "published_assertions_preserved_as_explicit_require": 0,
+  "note": "All published conditions retained; no Python assert optimization bypass. Full decoded-PNG/source/movie-log binding added. No original runner replacement."
+}

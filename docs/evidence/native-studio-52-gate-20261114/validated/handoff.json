@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "status": "FROZEN",
+  "frozen_at": "2026-11-14T06:49:07.418109+00:00",
+  "native_commit": "7e03f1113073e2f941b052028a649aa144eefe64",
+  "native_tree": "a79d41272a55b1bf1ffb82e656ea34556b3a0a83",
+  "source_freeze": {
+    "path": "source-freeze-v2.json",
+    "bytes": 2934,
+    "sha256": "fb8d09a4474b6d130214d98ec5dd38640f763f9bfbcf4df2f7386e594f8bd546"
+  },
+  "source_count": 5,
+  "published_combined_source_count": 21,
+  "focused_validation": {
+    "path": "focused-validation.json",
+    "bytes": 2048,
+    "sha256": "88b5127a6d77cf6487799bca25bfc0a6db44b92cd799176d6db6521a6af49fff"
+  },
+  "gate_contract": {
+    "path": "gate-contract.json",
+    "bytes": 8567,
+    "sha256": "bacf00a979217d3d4394e74e221886d9839cd400c42c55bf32b8fb0ec7ce0018"
+  },
+  "patch": {
+    "path": "integration.patch",
+    "bytes": 71794,
+    "sha256": "46bf49be692728177741608ec66c792104a67df98bdedc51d44511c84e4297bc"
+  },
+  "helper_api": "verify(root: Path, *, write: bool = True) -> dict; publisher uses write=False",
+  "readonly_cli": "python3 tools/verify_studio_2020_rasters.py verify <nextgen-logdir> --read-only",
+  "production_command": "LUMO_NEXTGEN_LOG_DIR=<evidence>/nextgen bash tools/validate_nextgen.sh",
+  "required_pairs": 52,
+  "old_pairs_byte_exact": 48,
+  "new_images": 16,
+  "new_reports": 3,
+  "new_movie": 1,
+  "new_manifest": "studio-2020-images.json",
+  "source_unchanged_before_after": true,
+  "no_engine_renderer_android_execution": true,
+  "later_producer_followup_excluded": "acf51d3bd2997c4b731e9a48e1791e05e756a132"
+}

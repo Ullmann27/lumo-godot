@@ -1,0 +1,217 @@
+{
+  "schema": 1,
+  "status": "FROZEN",
+  "native_commit": "7e03f1113073e2f941b052028a649aa144eefe64",
+  "native_tree": "a79d41272a55b1bf1ffb82e656ea34556b3a0a83",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 8570,
+      "sha256": "1de8dcb0633e45a6860ffa64e93b41f30e500f8974fbe28370b1182e55268da8"
+    },
+    {
+      "path": "base-binding.json",
+      "bytes": 812,
+      "sha256": "b455577de37d4be34cf5423a0d433ff68aab4e8b19c018df87413ff0ecc403fb"
+    },
+    {
+      "path": "before/tools/tests/test_nextgen_runner.py",
+      "bytes": 35151,
+      "sha256": "09fa07c989c0bd0cbdf6ee8c7ebf3b29d680a52cb4ebd8c0c291b139ca90bb54"
+    },
+    {
+      "path": "before/tools/validate_nextgen.sh",
+      "bytes": 8144,
+      "sha256": "2a6f6ef0dcdfc6a40a1c9efa4494157dc81525b492acac7c231a23b7f84d120c"
+    },
+    {
+      "path": "before/tools/verify_village_rasters.py",
+      "bytes": 3859,
+      "sha256": "0605a556d45ba9a7d6db6f85bdab21f0bc338a9c5fb5b8efb0ff40d04fa472e5"
+    },
+    {
+      "path": "build_helper.py",
+      "bytes": 15295,
+      "sha256": "51e20c03da970898d3e8ee6d5508933f7d0544b207a7eebcbec00dd152994f7d"
+    },
+    {
+      "path": "final-source/tools/tests/test_nextgen_runner.py",
+      "bytes": 40588,
+      "sha256": "5b75a07da4f2b3a289635def172cf891db5dfd256d3d025d0b563932979abdd0"
+    },
+    {
+      "path": "final-source/tools/tests/test_studio_2020_rasters.py",
+      "bytes": 30303,
+      "sha256": "7652684bc21cda590e7d451f312b3545dba49c4d97e3abb596a5e357ca8651bf"
+    },
+    {
+      "path": "final-source/tools/validate_nextgen.sh",
+      "bytes": 9791,
+      "sha256": "f48fdff8bd0a96b7c81468f4a8b516fd8bcb9f2a4b1ea31b232d931aad2475df"
+    },
+    {
+      "path": "final-source/tools/verify_studio_2020_rasters.py",
+      "bytes": 23524,
+      "sha256": "4deca56cc7f4a6751b16da8e01352044d44e5c7428bcde6594d48576e675e792"
+    },
+    {
+      "path": "final-source/tools/verify_village_rasters.py",
+      "bytes": 3905,
+      "sha256": "23834a1baaaa2f98ffc3df5b0b4e2a4b3bbf23e41f402a7f051adeae9fd230a8"
+    },
+    {
+      "path": "focused-validation.json",
+      "bytes": 2048,
+      "sha256": "88b5127a6d77cf6487799bca25bfc0a6db44b92cd799176d6db6521a6af49fff"
+    },
+    {
+      "path": "gate-contract.json",
+      "bytes": 8567,
+      "sha256": "bacf00a979217d3d4394e74e221886d9839cd400c42c55bf32b8fb0ec7ce0018"
+    },
+    {
+      "path": "handoff.json",
+      "bytes": 1546,
+      "sha256": "4a5ec0d1df9f704c62b118336be08f747f3bb98d74dd197ba809432a59763349"
+    },
+    {
+      "path": "integration.patch",
+      "bytes": 71794,
+      "sha256": "46bf49be692728177741608ec66c792104a67df98bdedc51d44511c84e4297bc"
+    },
+    {
+      "path": "local-tests/focused-v1-execution.json",
+      "bytes": 910,
+      "sha256": "47946f4e0595366982af5dc43a09471b28724b742aec0572aecdb9a1e82aef20"
+    },
+    {
+      "path": "local-tests/focused-v1.log",
+      "bytes": 7873,
+      "sha256": "4d0ad842aaaedebd154317225d86c8e0884f9bfbefaa4ca3eb66ff91fee76ced"
+    },
+    {
+      "path": "original-base-git-modes.txt",
+      "bytes": 252,
+      "sha256": "1694ff4a10e552eaea6c3d5d41f6474c0af1d9320e03295050c5eca25e343698"
+    },
+    {
+      "path": "patch-check.json",
+      "bytes": 334,
+      "sha256": "92fd854b1bfd3ad99f25d0038cc7ff96ca37d2c3c4c36f347ac8b8bb3ee4368e"
+    },
+    {
+      "path": "ported-checks.json",
+      "bytes": 419,
+      "sha256": "1753fc23deb8068f276b4172fb7f00b3404ce64f99c82b2f4ee95d0298820469"
+    },
+    {
+      "path": "published-7e03f111-after.json",
+      "bytes": 9621,
+      "sha256": "30b2bcfeecae0114ddcdc479586751d70d174ed001c3216fa5536787bbceaeae"
+    },
+    {
+      "path": "published-7e03f111-before.json",
+      "bytes": 9237,
+      "sha256": "fe7189ac50ca5d23f5270c42e237955907016f28ec9c3cf55f7ddfc5ba2dbc7d"
+    },
+    {
+      "path": "run_focused.py",
+      "bytes": 1563,
+      "sha256": "ebd8ade7f1a41fa1dd6edbbc1405a5e903e204dad4f120c20c089e1fe53dc3b7"
+    },
+    {
+      "path": "source-freeze-v1.json",
+      "bytes": 2651,
+      "sha256": "66893fcc808cb546f777c18149e4801c82426913c5d4763e475fd7c8a651fde8"
+    },
+    {
+      "path": "source-freeze-v2.json",
+      "bytes": 2934,
+      "sha256": "fb8d09a4474b6d130214d98ec5dd38640f763f9bfbcf4df2f7386e594f8bd546"
+    },
+    {
+      "path": "static-preservation.json",
+      "bytes": 712,
+      "sha256": "48eb3bfe16cbd8e2c626bec3a55dfe40258476e5414ddd14e3f401c5da46c013"
+    },
+    {
+      "path": "test-original-provenance.json",
+      "bytes": 742,
+      "sha256": "8c598e54ad5202732c2845b694c019b8a4dc68eed5c88bef01a207cdcb9e495b"
+    },
+    {
+      "path": "test-view/.github/workflows/lumo-nextgen-2018.yml",
+      "bytes": 18752,
+      "sha256": "e36fb64b70a20ba144dfe25441dedd7332a1919914ddc9c9fa8a65c3375810a0"
+    },
+    {
+      "path": "test-view/tools/run_godot_probe.py",
+      "bytes": 2934,
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13"
+    },
+    {
+      "path": "test-view/tools/tests/test_nextgen_runner.py",
+      "bytes": 40588,
+      "sha256": "5b75a07da4f2b3a289635def172cf891db5dfd256d3d025d0b563932979abdd0"
+    },
+    {
+      "path": "test-view/tools/tests/test_safe_area_rasters.py",
+      "bytes": 8287,
+      "sha256": "2d85982ee8be47e4e63578b44eaf980b6d96a332841ce26303edf114c9878716"
+    },
+    {
+      "path": "test-view/tools/tests/test_studio_2020_rasters.py",
+      "bytes": 30303,
+      "sha256": "7652684bc21cda590e7d451f312b3545dba49c4d97e3abb596a5e357ca8651bf"
+    },
+    {
+      "path": "test-view/tools/validate_nextgen.sh",
+      "bytes": 9791,
+      "sha256": "f48fdff8bd0a96b7c81468f4a8b516fd8bcb9f2a4b1ea31b232d931aad2475df"
+    },
+    {
+      "path": "test-view/tools/validate_studio.sh",
+      "bytes": 3987,
+      "sha256": "a7c4260b1a684d1f17dacd9da26b3a62c3c988983ee5abffab4456b3ce2bf856"
+    },
+    {
+      "path": "test-view/tools/verify_puzzle_menu_rasters.py",
+      "bytes": 1191,
+      "sha256": "3afe208e8572b683d12a338d73cf261416958ec2306ae87007f9c2c6b35e4994"
+    },
+    {
+      "path": "test-view/tools/verify_safe_area_rasters.py",
+      "bytes": 8079,
+      "sha256": "7894e44fd3bc77e3bcd98489c4d5f391b400198a62d89382a0d6adad3adf4a3b"
+    },
+    {
+      "path": "test-view/tools/verify_studio_2020_rasters.py",
+      "bytes": 23524,
+      "sha256": "4deca56cc7f4a6751b16da8e01352044d44e5c7428bcde6594d48576e675e792"
+    },
+    {
+      "path": "test-view/tools/verify_studio_rasters.py",
+      "bytes": 1872,
+      "sha256": "eefad8134f66404aa4bd3fedee279661e3f243a1a9aa3042c69e3d181fda62dd"
+    },
+    {
+      "path": "test-view/tools/verify_village_rasters.py",
+      "bytes": 3905,
+      "sha256": "23834a1baaaa2f98ffc3df5b0b4e2a4b3bbf23e41f402a7f051adeae9fd230a8"
+    },
+    {
+      "path": "test-view-binding.json",
+      "bytes": 3885,
+      "sha256": "a1e46af61fef80d35d79da382d3fa8b7b2b19a112fce3c886cd5ddef35c5f474"
+    }
+  ],
+  "file_count": 40,
+  "total_bytes": 458243,
+  "scope": "Historical exact 7e03 source + focused synthetic contract execution; no subsequent source or device/render acceptance",
+  "excluded_paths": [
+    {
+      "path": "**/__pycache__/**",
+      "reason": "Reproducible Python cache, not an original/source input"
+    }
+  ]
+}

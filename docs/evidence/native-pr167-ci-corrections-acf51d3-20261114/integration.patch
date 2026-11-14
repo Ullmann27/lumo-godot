@@ -1,0 +1,102 @@
+--- a/assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import
++++ b/assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import
+@@ -40,7 +40,13 @@ materials/extract_path=""
+ _subresources={
+ "meshes": {
+ "Lumo-Facial-Mobile_LumoEyelids": {
+-"generate/lods": 2
++"generate/lightmap_uv": 0,
++"generate/lods": 2,
++"generate/shadow_meshes": 0,
++"lods/normal_merge_angle": 20.0,
++"save_to_file/enabled": false,
++"save_to_file/fallback_path": "",
++"save_to_file/path": ""
+ }
+ }
+ }
+--- a/scripts/tests/lumo_attention_landing_regression.gd
++++ b/scripts/tests/lumo_attention_landing_regression.gd
+@@ -1,9 +1,12 @@
+ extends SceneTree
+-## Existing production vehicle + unchanged original GLB. Real bone and wheel
+-## transforms prove visual behavior; this is not a hardware/FPS benchmark.
++## Production vehicle with the explicit facial derivative and retained original
++## GLB. Real bone and wheel transforms prove behavior, not hardware/FPS.
+ const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
+ const STEP := 1.0 / 30.0
++const ORIGINAL_MODEL_PATH := "res://assets/characters/lumo_animated/Lumo-Animated-Mobile.glb"
+ const ORIGINAL_MODEL_SHA256 := "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5"
++const FACIAL_MODEL_PATH := "res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb"
++const FACIAL_MODEL_SHA256 := "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524"
+ var checks := 0
+ var failures := 0
+ var kart
+@@ -64,8 +67,14 @@ func _run() -> void:
+ 		quit(1)
+ 		return
+ 	_check(adapter.actor.skeleton.get_bone_count() == 65, "Existing 65-bone identity is retained")
++	_check(adapter.actor.ORIGINAL_MODEL == ORIGINAL_MODEL_PATH,
++		"Original shipped GLB remains bound to its original path")
++	var original_model_sha := FileAccess.get_sha256(ORIGINAL_MODEL_PATH)
++	_check(original_model_sha == ORIGINAL_MODEL_SHA256, "Original shipped GLB bytes are unchanged")
++	_check(adapter.actor.MODEL == FACIAL_MODEL_PATH,
++		"Production actor explicitly selects the reviewed facial derivative")
+ 	var model_sha := FileAccess.get_sha256(adapter.actor.MODEL)
+-	_check(model_sha == ORIGINAL_MODEL_SHA256, "Original shipped GLB bytes are unchanged")
++	_check(model_sha == FACIAL_MODEL_SHA256, "Reviewed facial derivative GLB bytes are unchanged")
+ 	_check(not adapter.is_processing(), "Vehicle remains the sole visual clock")
+ 	# Rotation/translation makes accidental world-as-local gaze coordinates fail.
+ 	kart.transform = Transform3D(Basis(Vector3.UP, 0.7), Vector3(2.0, 0.0, -3.0))
+@@ -173,7 +182,10 @@ func _run() -> void:
+ 		"Scene teardown leaves no orphan nodes")
+ 	var report := {"checks": checks, "failures": failures, "worst_hand_contact_mm": worst_contact * 1000.0,
+ 		"landing_peak": peak, "model_load_kind": load_kind,
+-		"model_unchanged": model_sha == ORIGINAL_MODEL_SHA256, "model_sha256": model_sha,
++		"original_model_unchanged": original_model_sha == ORIGINAL_MODEL_SHA256,
++		"original_model_path": ORIGINAL_MODEL_PATH, "original_model_sha256": original_model_sha,
++		"facial_model_verified": model_sha == FACIAL_MODEL_SHA256,
++		"model_path": FACIAL_MODEL_PATH, "model_sha256": model_sha,
+ 		"godot": Engine.get_version_info().string, "display": DisplayServer.get_name(),
+ 		"android_test": false, "fps_measured": false}
+ 	DirAccess.make_dir_recursive_absolute(output.get_base_dir())
+--- a/scripts/tests/lumo_facial_capture.gd
++++ b/scripts/tests/lumo_facial_capture.gd
+@@ -54,6 +54,12 @@ class LocalPlayback:
+ 		var amplitude: float = envelope[index] if audible and index >= 0 and index < envelope.size() else 0.0
+ 		return JSON.stringify({"id": id, "state": state, "positionMs": seconds * 1000.0, "durationMs": player.stream.get_length() * 1000.0, "audible": audible, "envelopeAvailable": true, "envelope": amplitude})
+ 
++func _init() -> void:
++	# MovieMaker chooses its target before SceneTree._initialize/deferred work.
++	# --resolution sets the window but does not replace these project values.
++	ProjectSettings.set_setting("display/window/size/window_width_override", 640)
++	ProjectSettings.set_setting("display/window/size/window_height_override", 640)
++
+ func _initialize() -> void:
+ 	_run.call_deferred()
+ 
+--- a/tools/tests/test_studio_2020_rasters.py
++++ b/tools/tests/test_studio_2020_rasters.py
+@@ -247,6 +247,22 @@
+         self.mutate(verifier.FACE_DIRECTORY, 'movie-ffprobe.json', lambda value: value['streams'][0].update(r_frame_rate='60/1'))
+         store_json(folder / 'movie.json', movie_proof(folder))
+         self.reject()
++
++    def test_portrait_movie_dimensions_cannot_pass_square_face_capture(self):
++        # Producer acf51d3 documents an actual 720x1280 MovieMaker output.
++        # This is a synthetic transport replay of that format, not its movie.
++        self.assertEqual(len(verifier.verify(self.root, write=False)['images']), 16)
++        folder = self.root / verifier.FACE_DIRECTORY
++        media = original('movie-ffprobe')
++        media['streams'][0].update(width=720, height=1280)
++        store_json(folder / 'movie-ffprobe.json', media)
++        # Rebind the transport hash: rejection must be the dimensions, not a
++        # stale proof digest or a corrupt image (the eight PNGs stay 640x640).
++        store_json(folder / 'movie.json', movie_proof(folder))
++        self.reject()
++        store_json(folder / 'movie-ffprobe.json', original('movie-ffprobe'))
++        store_json(folder / 'movie.json', movie_proof(folder))
++        self.assertEqual(len(verifier.verify(self.root, write=False)['images']), 16)
+ 
+     def test_movie_failed_decode_has_no_success_proof(self):
+         prepared = self.root / 'fresh-face'

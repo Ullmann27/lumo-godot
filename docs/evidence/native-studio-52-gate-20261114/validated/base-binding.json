@@ -1,0 +1,24 @@
+{
+  "commit": "27ae427029a5199699c95a79a84b0027d7571752",
+  "tree": "c389c0de01d9a6ca9fd6e9332fafdf2dedbc8153",
+  "files": [
+    {
+      "path": "tools/validate_nextgen.sh",
+      "bytes": 8144,
+      "sha256": "2a6f6ef0dcdfc6a40a1c9efa4494157dc81525b492acac7c231a23b7f84d120c",
+      "git_blob": "cbc19f229d8142bc6c4cc7721460c616d10379e1"
+    },
+    {
+      "path": "tools/verify_village_rasters.py",
+      "bytes": 3859,
+      "sha256": "0605a556d45ba9a7d6db6f85bdab21f0bc338a9c5fb5b8efb0ff40d04fa472e5",
+      "git_blob": "8dc6a7b1df79d74925d5b53758bbe3d553bdcea9"
+    },
+    {
+      "path": "tools/tests/test_nextgen_runner.py",
+      "bytes": 35151,
+      "sha256": "09fa07c989c0bd0cbdf6ee8c7ebf3b29d680a52cb4ebd8c0c291b139ca90bb54",
+      "git_blob": "cbb9e6df3fbb5e022033fdbf384fcec406df8f30"
+    }
+  ]
+}

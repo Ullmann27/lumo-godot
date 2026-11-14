@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "native_commit": "7e03f1113073e2f941b052028a649aa144eefe64",
+  "command": [
+    "git",
+    "-C",
+    "/workspace/scratch/b3485b7bb989/lumo-native-connect-four-integration",
+    "grep",
+    "-n",
+    "-E",
+    "model_unchanged|original_model_unchanged|facial_model_verified|lumo_attention_landing",
+    "7e03f1113073e2f941b052028a649aa144eefe64",
+    "--",
+    "tools",
+    ".github",
+    "scripts"
+  ],
+  "exit_code": 0,
+  "stdout_file": "active-consumer-check.stdout",
+  "stdout_sha256": "fb9b7c144191e48efc1db224ec8c280124466f648839d0f8f33e2bf6b1543818",
+  "scope": "All tracked tools/, .github/ and scripts/ source at exact 7e03; no external consumer claim",
+  "findings": [
+    "Active technical-art runner invokes attention probe and requires failures=0, without depending on removed model_unchanged report key",
+    "No other matching report-key consumer in the scoped tracked source",
+    "Current actor declares ORIGINAL_MODEL and MODEL separately as used by published attention fix",
+    "MovieMaker project defaults are not changed; capture override stays inside the dedicated _init function"
+  ],
+  "unchanged_dependencies": {
+    "tools/validate_technical_art.sh": {
+      "bytes": 2213,
+      "sha256": "77b50ea0d0d32ec6fef5aaa9e334e8e0c80cb9d0a164e767cbf101560eae8654",
+      "git_blob": "82488359d9ae7ef0dbce7f8b4e05e7be83a46606"
+    },
+    "scripts/characters/lumo/lumo_rigged_actor.gd": {
+      "bytes": 11313,
+      "sha256": "caad03c39ac9098443cda2db937e2a412cecc4365cde238b465bc98e13a6b610",
+      "git_blob": "e4b6a6081a922a137f68491de66f51e096528510"
+    },
+    "project.godot": {
+      "bytes": 1944,
+      "sha256": "eac3b969cc475e9b9047d420eb6012a1b98b127c1a8706a9eb88e0e83f33b280",
+      "git_blob": "296b8b1752ebfd526aedd019907ac88efbfd0c02"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "base_native_commit": "7e03f1113073e2f941b052028a649aa144eefe64",
+  "producer_followup": "acf51d3bd2997c4b731e9a48e1791e05e756a132",
+  "candidate_source_freeze_sha256": "aafa5dd33267061a88e9361836abed622a517c159a4c7644ee34c33e023ac2c2",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_studio_2020_rasters.Studio2020RasterTests.test_portrait_movie_dimensions_cannot_pass_square_face_capture",
+    "test_studio_2020_rasters.Studio2020RasterTests.test_original_sidecar_structures_bind_all_sixteen_decoded_synthetic_images",
+    "test_studio_2020_rasters.Studio2020RasterTests.test_read_only_replay_preserves_all_original_files_and_manifests"
+  ],
+  "cwd": "/tmp/native-pr167-ci-corrections-acf51d3-20261114/test-view",
+  "started_at": "2026-11-14T06:51:17.569665+00:00",
+  "ended_at": "2026-11-14T06:51:18.900345+00:00",
+  "seconds": 1.3306883040058892,
+  "exit_code": 0,
+  "log": "local-tests/movie-format-neighbors.log",
+  "log_bytes": 672,
+  "log_sha256": "bf05e81aa3624df644730ad03ad3697f1a78673f7909014423180d848c8f3882",
+  "test_sources_unchanged": true,
+  "scope": "Synthetic format rejection + original report shape + read-only replay, no engine/renderer/Android"
+}

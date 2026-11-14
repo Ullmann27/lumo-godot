@@ -248,6 +248,22 @@ class Studio2020RasterTests(unittest.TestCase):
         store_json(folder / 'movie.json', movie_proof(folder))
         self.reject()
 
+    def test_portrait_movie_dimensions_cannot_pass_square_face_capture(self):
+        # Producer acf51d3 documents an actual 720x1280 MovieMaker output.
+        # This is a synthetic transport replay of that format, not its movie.
+        self.assertEqual(len(verifier.verify(self.root, write=False)['images']), 16)
+        folder = self.root / verifier.FACE_DIRECTORY
+        media = original('movie-ffprobe')
+        media['streams'][0].update(width=720, height=1280)
+        store_json(folder / 'movie-ffprobe.json', media)
+        # Rebind the transport hash: rejection must be the dimensions, not a
+        # stale proof digest or a corrupt image (the eight PNGs stay 640x640).
+        store_json(folder / 'movie.json', movie_proof(folder))
+        self.reject()
+        store_json(folder / 'movie-ffprobe.json', original('movie-ffprobe'))
+        store_json(folder / 'movie.json', movie_proof(folder))
+        self.assertEqual(len(verifier.verify(self.root, write=False)['images']), 16)
+
     def test_movie_failed_decode_has_no_success_proof(self):
         prepared = self.root / 'fresh-face'
         prepared.mkdir()
