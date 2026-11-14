@@ -1,0 +1,238 @@
+{
+  "base_commit": "7d53f29e68269c21d1d5a66bdf3d488f8e886970",
+  "base_tree": "6f835356946d53c665cf235cd0c26071fdf643ee",
+  "local_source_kind": "Byte-verified materialized project; no local Git HEAD claimed",
+  "changed_files": [
+    {
+      "path": "scripts/games/game_hub.gd",
+      "git_blob": "5a4fd789dcfb3dcd1bc1fcc2f7b0fd7f64ade1f6",
+      "sha256": "12fb330dbfe2e7d868df1c702a718f0258c74d8224648a0b4fa523d83f1b050c",
+      "bytes": 13887
+    },
+    {
+      "path": "scripts/creative/build_settlement_world.gd",
+      "git_blob": "e6a2a84447757c04a7f07436b162ed698b827a33",
+      "sha256": "6bd9dd4380db95962f370aa2703e7f41b51eab2430f33ea4874c60de0b73bcfb",
+      "bytes": 46954
+    },
+    {
+      "path": "scripts/tests/game_hub_magic_regression.gd",
+      "git_blob": "ff2a392c1317fddc21c3de49fa6d6453c09ca66d",
+      "sha256": "69285a9c6f672805f9b6e27468bc61d7bc04caa22f4cf8a5fdceb15a9110efd3",
+      "bytes": 4865
+    },
+    {
+      "path": "scripts/tests/game_hub_magic_capture.gd",
+      "git_blob": "4d2a6c61688054ce69b90afa07702f8f56a20cbf",
+      "sha256": "ee0320b36d1e2bd958c005188c873ee576821b353d2a43384c9eda5b46078933",
+      "bytes": 3637
+    },
+    {
+      "path": "scripts/tests/helpers/game_hub_original_identity.gd",
+      "git_blob": "b420ef154c12dda62ee02c28a20f23ad400abc8a",
+      "sha256": "fced1b32b27b7a99190f6374e573f2e5070b2ce058d5b935c97554db75630b63",
+      "bytes": 3955
+    },
+    {
+      "path": "scripts/tests/village_host_launch_regression.gd",
+      "git_blob": "082cecfc4a6542c8372bc592b4729051b105a079",
+      "sha256": "82626bead8f00e83270d298cbebc607d887c83f474dda11ef58fb84792411230",
+      "bytes": 6598
+    },
+    {
+      "path": "tools/verify_discovery_rasters.py",
+      "git_blob": "219e691fc8aa119cc80221b3db6c77e63caf8bfe",
+      "sha256": "55591b4478d2074135ea4950fb00200d68a3f9bede286b39642d7fc17aa586da",
+      "bytes": 11528
+    },
+    {
+      "path": "tools/tests/test_discovery_rasters.py",
+      "git_blob": "d8af97bcd61c5ced583b0be133d504feb978e6a9",
+      "sha256": "ed8a1811722e55407dafd74395414eebc3b7c36bd8238823685e458d563be1ba",
+      "bytes": 10956
+    }
+  ],
+  "original_pngs": [
+    {
+      "path": "hub_fold_landscape.png",
+      "sha256": "aa22c4818959435cbb4ed24c9470a76be55581e3fd65cd560eb52c0c145f34a9",
+      "bytes": 1878803
+    },
+    {
+      "path": "hub_portrait.png",
+      "sha256": "c479d48648cf933e9ce53f65d8d324ae4cc0dce6de18eaa67dd812848a157b46",
+      "bytes": 1822764
+    }
+  ],
+  "hub_identity_json": {
+    "captures": [
+      {
+        "actual_production_scene": "res://scenes/games/game_hub.tscn",
+        "adapter": "res://scripts/characters/lumo/lumo_rigged_actor.gd",
+        "bones": 65,
+        "clips": [
+          "idle",
+          "greeting_wave",
+          "celebrate",
+          "point_portal",
+          "agree_nod",
+          "kart_seated",
+          "kart_steer_left",
+          "kart_steer_right",
+          "kart_jump"
+        ],
+        "control_rects": {
+          "ExistingLearningOptions": [
+            24.0,
+            762.0,
+            664.0,
+            110.0
+          ],
+          "LiveGameRoutes": [
+            24.0,
+            881.0,
+            664.0,
+            420.0
+          ],
+          "ReturnToHome": [
+            24.0,
+            20.0,
+            146.0,
+            56.0
+          ]
+        },
+        "failures": [],
+        "headless": false,
+        "hero_rect": [
+          24.0,
+          85.0,
+          672.0,
+          583.0
+        ],
+        "load_kind": "imported_packed_scene",
+        "mesh_resources": [
+          "res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb::ArrayMesh_e6unq",
+          "res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb::ArrayMesh_4wn44"
+        ],
+        "model": "res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+        "pixels": [
+          1080,
+          1920
+        ],
+        "png": "hub_portrait.png",
+        "projected_mesh_rect": [
+          210.894088745117,
+          132.192611694336,
+          298.211791992188,
+          504.571838378906
+        ],
+        "skinned_meshes": 2,
+        "vertices": 24027,
+        "viewport": [
+          720.0,
+          1280.0
+        ],
+        "visible_vertices": 21659
+      },
+      {
+        "actual_production_scene": "res://scenes/games/game_hub.tscn",
+        "adapter": "res://scripts/characters/lumo/lumo_rigged_actor.gd",
+        "bones": 65,
+        "clips": [
+          "idle",
+          "greeting_wave",
+          "celebrate",
+          "point_portal",
+          "agree_nod",
+          "kart_seated",
+          "kart_steer_left",
+          "kart_steer_right",
+          "kart_jump"
+        ],
+        "control_rects": {
+          "ExistingLearningOptions": [
+            24.0,
+            762.0,
+            2796.0,
+            110.0
+          ],
+          "LiveGameRoutes": [
+            24.0,
+            881.0,
+            2796.0,
+            312.0
+          ],
+          "ReturnToHome": [
+            24.0,
+            20.0,
+            146.0,
+            56.0
+          ]
+        },
+        "failures": [],
+        "headless": false,
+        "hero_rect": [
+          24.0,
+          85.0,
+          2796.0,
+          583.0
+        ],
+        "load_kind": "imported_packed_scene",
+        "mesh_resources": [
+          "res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb::ArrayMesh_e6unq",
+          "res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb::ArrayMesh_4wn44"
+        ],
+        "model": "res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+        "pixels": [
+          2400,
+          1080
+        ],
+        "png": "hub_fold_landscape.png",
+        "projected_mesh_rect": [
+          1272.89404296875,
+          132.192611694336,
+          298.2119140625,
+          504.571838378906
+        ],
+        "skinned_meshes": 2,
+        "vertices": 24027,
+        "viewport": [
+          2844.0,
+          1280.0
+        ],
+        "visible_vertices": 21659
+      }
+    ]
+  },
+  "verified_base_inventory": {
+    "base_verified_file_count": 1391,
+    "missing": [],
+    "changed": [
+      {
+        "path": "scripts/creative/build_settlement_world.gd",
+        "before": "dd1e7b0662f2d4325a6fa562e3a111ecbb31fd50",
+        "after": "e6a2a84447757c04a7f07436b162ed698b827a33"
+      },
+      {
+        "path": "scripts/games/game_hub.gd",
+        "before": "1c65017aa525cd95adf1fbfcf660fb5195b47c77",
+        "after": "5a4fd789dcfb3dcd1bc1fcc2f7b0fd7f64ade1f6"
+      },
+      {
+        "path": "scripts/tests/game_hub_magic_capture.gd",
+        "before": "18daaba19a0bf588ad9b51307a593d3fefbbaca5",
+        "after": "4d2a6c61688054ce69b90afa07702f8f56a20cbf"
+      },
+      {
+        "path": "scripts/tests/game_hub_magic_regression.gd",
+        "before": "a1be54510107a1f6438942744bb7c5b7991407dd",
+        "after": "ff2a392c1317fddc21c3de49fa6d6453c09ca66d"
+      },
+      {
+        "path": "scripts/tests/village_host_launch_regression.gd",
+        "before": "bd3e879b414461f25e990bbc167c6218d2b2bfa2",
+        "after": "082cecfc4a6542c8372bc592b4729051b105a079"
+      }
+    ]
+  }
+}

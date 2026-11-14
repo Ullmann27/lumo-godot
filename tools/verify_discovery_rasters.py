@@ -61,11 +61,76 @@ def read_json(path: Path) -> dict:
     return result
 
 
+def verify_hub_identity(path: Path) -> None:
+    report = read_json(path)
+    entries = report.get("captures")
+    require(type(entries) is list and len(entries) == 2, "Both actual Hub identity records required")
+    require(all(type(entry) is dict and type(entry.get("png")) is str for entry in entries),
+            "Hub identity records need actual PNG names")
+    expected = {"hub_portrait.png", "hub_fold_landscape.png"}
+    require({entry["png"] for entry in entries} == expected, "Hub identity filenames missing or duplicated")
+    model = "res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb"
+    clips = {"idle", "greeting_wave", "celebrate", "point_portal", "agree_nod",
+             "kart_seated", "kart_steer_left", "kart_steer_right", "kart_jump"}
+
+    def numbers(value, count, label):
+        require(type(value) is list and len(value) == count and all(
+            type(n) in (int, float) and math.isfinite(n) for n in value), label)
+        return value
+
+    def rectangle(value, label):
+        x, y, width, height = numbers(value, 4, label)
+        require(width > 0 and height > 0, label)
+        return x, y, x + width, y + height
+
+    for entry in entries:
+        require(entry.get("actual_production_scene") == "res://scenes/games/game_hub.tscn"
+                and entry.get("headless") is False, "Actual rendered production Hub required")
+        require(type(entry.get("failures")) is list and not entry["failures"], "Hub identity or framing failed")
+        require(entry.get("adapter") == "res://scripts/characters/lumo/lumo_rigged_actor.gd",
+                "Hub must use the original shared actor adapter")
+        require(entry.get("model") == model and entry.get("load_kind") == "imported_packed_scene",
+                "Actual original imported facial GLB required")
+        require(type(entry.get("bones")) is int and entry["bones"] == 65, "Original 65-bone rig required")
+        for key in ("vertices", "visible_vertices", "skinned_meshes"):
+            require(type(entry.get(key)) is int, f"Actual integer Hub geometry required: {key}")
+        require(entry["vertices"] >= entry["visible_vertices"] >= 1000 and entry["skinned_meshes"] >= 2,
+                "Visible original body and bound facial skin required")
+        resources = entry.get("mesh_resources")
+        require(type(resources) is list and len(resources) == entry["skinned_meshes"]
+                and all(type(value) is str and value.startswith(model + "::") for value in resources)
+                and len(set(resources)) == len(resources), "Actual original GLB mesh resources required")
+        actual_clips = entry.get("clips")
+        require(type(actual_clips) is list and len(actual_clips) == len(clips)
+                and all(type(value) is str for value in actual_clips) and set(actual_clips) == clips,
+                "All nine original animation clips required")
+        pixels = entry.get("pixels")
+        require(type(pixels) is list and all(type(n) is int for n in pixels)
+                and tuple(pixels) == raster_roster()["hub/" + entry["png"]], "Hub identity dimensions differ")
+        viewport = numbers(entry.get("viewport"), 2, "Actual Hub logical viewport required")
+        require(min(viewport) > 0, "Hub viewport must be positive")
+        hero = rectangle(entry.get("hero_rect"), "Actual free Hub hero rectangle required")
+        mesh = rectangle(entry.get("projected_mesh_rect"), "Actual projected original mesh bounds required")
+        require(0 <= hero[0] < hero[2] <= viewport[0] and 0 <= hero[1] < hero[3] <= viewport[1],
+                "Hub hero rectangle must be inside its viewport")
+        require(hero[0] <= mesh[0] < mesh[2] <= hero[2] and hero[1] <= mesh[1] < mesh[3] <= hero[3],
+                "Original fox is outside the free hero rectangle")
+        controls = entry.get("control_rects")
+        require(type(controls) is dict and set(controls) ==
+                {"ReturnToHome", "ExistingLearningOptions", "LiveGameRoutes"}, "Actual Hub control bounds required")
+        for name, value in controls.items():
+            control = rectangle(value, f"Actual Hub control rectangle required: {name}")
+            overlap = (mesh[0] < control[2] and mesh[2] > control[0]
+                       and mesh[1] < control[3] and mesh[3] > control[1])
+            require(not overlap, f"Original fox overlaps required Hub control: {name}")
+
+
 def verify(directory: Path) -> list[dict]:
     captures = directory / "captures"
     roster = raster_roster()
     found = {str(path.relative_to(captures)) for path in captures.rglob("*.png")}
     require(found == set(roster), f"Original 38-PNG roster differs: missing={set(roster) - found}, extra={found - set(roster)}")
+    verify_hub_identity(captures / "hub" / "hub-original-identity.json")
     images = {}
     records = []
     for relative, dimensions in roster.items():
