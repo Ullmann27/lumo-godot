@@ -1,0 +1,13 @@
+test_complete_archive_waits_for_touch_and_keeps_original_scope_roots (tools.tests.test_nextgen_runner.NextgenEvidenceWorkflowTests.test_complete_archive_waits_for_touch_and_keeps_original_scope_roots) ... ok
+test_evidence_archive_rejects_failed_touch_partial_bundle_and_foreign_sources (tools.tests.test_nextgen_runner.NextgenEvidenceWorkflowTests.test_evidence_archive_rejects_failed_touch_partial_bundle_and_foreign_sources) ... ok
+test_failure_does_not_suppress_other_module_evidence_or_emit_pass (tools.tests.test_nextgen_runner.NextgenRunnerTests.test_failure_does_not_suppress_other_module_evidence_or_emit_pass) ... ok
+test_invalid_png_fails_even_when_file_counts_and_probe_markers_match (tools.tests.test_nextgen_runner.NextgenRunnerTests.test_invalid_png_fails_even_when_file_counts_and_probe_markers_match) ... ok
+test_missing_required_source_is_a_failure_and_other_captures_still_run (tools.tests.test_nextgen_runner.NextgenRunnerTests.test_missing_required_source_is_a_failure_and_other_captures_still_run) ... ok
+test_missing_treasure_image_fails_even_when_every_probe_reports_pass (tools.tests.test_nextgen_runner.NextgenRunnerTests.test_missing_treasure_image_fails_even_when_every_probe_reports_pass) ... ok
+test_producer_studio_runner_uses_the_same_raster_guard (tools.tests.test_nextgen_runner.NextgenRunnerTests.test_producer_studio_runner_uses_the_same_raster_guard) ... ok
+test_success_requires_every_logic_and_rendered_probe (tools.tests.test_nextgen_runner.NextgenRunnerTests.test_success_requires_every_logic_and_rendered_probe) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 21.956s
+
+OK

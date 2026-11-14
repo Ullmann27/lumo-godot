@@ -1,0 +1,9 @@
+{
+  "head": "97b91e312eb982ab1fe9083b7415d11085385235",
+  "sha256": {
+    "tools/validate_project.sh": "89c337c38384639e3f626788835e28f1b7819ec0a683cd5460c24fc620088953",
+    "tools/validate_2014.sh": "1dcb83e7ced02d374e67c23293559cf62f2803e96d598added7a3501ad51f215",
+    "tools/validate_technical_art.sh": "16a6ff18fdc8ea3193753795b103b751d13356553b5d0fca2209ec41c456fdff",
+    "tools/tests/test_legacy_log_policy.py": "0dcb78be6a6c77dc7038187cc4e0b7e4a0f47c5595e28d7f533bee5416f346bc"
+  }
+}

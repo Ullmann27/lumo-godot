@@ -1,0 +1,52 @@
+{
+  "sources": [
+    {
+      "label": "Studio24fb",
+      "commit": "24fb85800dfb58ec11dd409449e276299aa72b06",
+      "tree": "86bdeb667b3bdc512360699fffc0546711fc575d",
+      "HALF": 24,
+      "build_bound_check": "return abs(cell.x) > HALF or abs(cell.z) > HALF or cell.y < 0 or cell.y > HEIGHT_MAX",
+      "action_buttons_explicit_PASS": true,
+      "blobs": {
+        "scripts/tests/build_nextgen_play_regression.gd": "f7d87b2f103042bd82eeecddf956d8385a70d0a7",
+        "scripts/creative/build_catalog.gd": "9a84715c5ef8d4057bb503e3b3b129f0f45024ae",
+        "scripts/creative/build_explorer.gd": "81659bbe25efa6b212c3633ecfa4db5f26015408",
+        "scripts/creative/build_voxel_style.gd": "50237b710e95ab8f2c458fda0936b0c521393e53",
+        "scripts/creative/creative_runtime.gd": "8fc25d98b2c263c57520e2d2a2d8ed51de7f9bba"
+      }
+    },
+    {
+      "label": "Village7c",
+      "commit": "7c088c521fc6a3d6033040956b2f4aa255caf926",
+      "tree": "d270a79752005589602061945e1e2043915f7661",
+      "HALF": 128,
+      "build_bound_check": "return abs(cell.x) > HALF or abs(cell.z) > HALF or cell.y < 0 or cell.y > HEIGHT_MAX",
+      "action_buttons_explicit_PASS": false,
+      "blobs": {
+        "scripts/tests/build_nextgen_play_regression.gd": "f7d87b2f103042bd82eeecddf956d8385a70d0a7",
+        "scripts/creative/build_catalog.gd": "9a84715c5ef8d4057bb503e3b3b129f0f45024ae",
+        "scripts/creative/build_explorer.gd": "81659bbe25efa6b212c3633ecfa4db5f26015408",
+        "scripts/creative/build_voxel_style.gd": "50237b710e95ab8f2c458fda0936b0c521393e53",
+        "scripts/creative/creative_runtime.gd": "8fc25d98b2c263c57520e2d2a2d8ed51de7f9bba"
+      }
+    },
+    {
+      "label": "OriginalCf039EqualTree",
+      "commit": "0aec8f2d2c86d1e17e89d7914b9cb7b2d839a2df",
+      "tree": "4fdbcbfcf069c6790e17101a09d4fb3f2955c2e2",
+      "HALF": 128,
+      "build_bound_check": "return abs(cell.x) > HALF or abs(cell.z) > HALF or cell.y < 0 or cell.y > HEIGHT_MAX",
+      "action_buttons_explicit_PASS": true,
+      "blobs": {
+        "scripts/tests/build_nextgen_play_regression.gd": "f7d87b2f103042bd82eeecddf956d8385a70d0a7",
+        "scripts/creative/build_catalog.gd": "9a84715c5ef8d4057bb503e3b3b129f0f45024ae",
+        "scripts/creative/build_explorer.gd": "81659bbe25efa6b212c3633ecfa4db5f26015408",
+        "scripts/creative/build_voxel_style.gd": "50237b710e95ab8f2c458fda0936b0c521393e53",
+        "scripts/creative/creative_runtime.gd": "8fc25d98b2c263c57520e2d2a2d8ed51de7f9bba"
+      }
+    }
+  ],
+  "published_failure_head": "cf039ad8c834522f355b858e3bee1e201e397da4",
+  "local_equal_tree_commit": "0aec8f2d2c86d1e17e89d7914b9cb7b2d839a2df",
+  "independent_review": "Root/flutter_integration independently verified the immutable producer and integrated blobs, the larger HALF bound, and the minimal two-line patch; no reviewer source edits."
+}

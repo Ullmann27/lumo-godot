@@ -1,0 +1,49 @@
+{
+  "native_revision": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "run_id": 43458898046,
+  "reviewer": "ChatGPT root; original files actually opened with view_image",
+  "recorded_at": "2026-11-13T16:30:39.778330+00:00",
+  "scope": "Three targeted original-image observations; Gameplay failure prevents full Native acceptance. No full Native receipt.",
+  "images": [
+    {
+      "area": "bridge_hundred_landscape",
+      "artifact_id": 14054939339,
+      "artifact_entry": "images/bridge_hundred-complete-2400x1080.png",
+      "path": "/workspace/scratch/b3485b7bb989/godot-pr160-74c246d-nextgen-evidence/preview-14054939339/images/bridge_hundred-complete-2400x1080.png",
+      "sha256": "9f596453d96c3a7a35d16a75c3b81a784821656f791067399c46b08daa12c1e8",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "findings": "Das von root im vorherigen Arbeitsabschnitt tatsächlich geöffnete Original zeigt das obere Gleichheitszeichen zwischen 10 Zehner und 100 mit zwei getrennten Balken und sichtbarem Zwischenraum. Auch das untere Gleichheitszeichen der 230-Gleichung ist erkennbar. Dies ist eine gezielte Sichtprüfung dieser Korrektur, keine vollständige Freigabe aller Lernmodule.",
+      "reviewed_at": "2026-11-13T16:30:39.778330+00:00"
+    },
+    {
+      "area": "build_goal_short",
+      "artifact_id": 14055797670,
+      "artifact_entry": "build/captures/build_dialog_density_regression/build-dialog-640x360-current-goal.png",
+      "path": "/workspace/scratch/b3485b7bb989/godot-pr160-74c246d-nextgen-evidence/touch-build-14055797670/build/captures/build_dialog_density_regression/build-dialog-640x360-current-goal.png",
+      "sha256": "ff988314b99c3967fa9d13e73f2cd58ca6f9bd3ba76107c6df06e171505ed380",
+      "dimensions": [
+        640,
+        360
+      ],
+      "findings": "Der geöffnete Dialog passt vollständig in die Aufnahme mit 640 × 360 Pixeln. Titel, Insel-Aufgabe, Beschreibung sowie Mein Bauwerk testen und Abbrechen sind lesbar und innerhalb des Dialogs. Hinter dem Dialog bleiben Teile der seitlich scrollbaren Werkzeugleisten sichtbar; eine vollständige Bewertung der Hintergrundnavigation ist nicht Gegenstand dieses Bildes.",
+      "reviewed_at": "2026-11-13T16:30:39.778330+00:00"
+    },
+    {
+      "area": "build_goal_portrait",
+      "artifact_id": 14055797670,
+      "artifact_entry": "build/captures/build_dialog_density_regression/build-dialog-1080x2400-current-goal.png",
+      "path": "/workspace/scratch/b3485b7bb989/godot-pr160-74c246d-nextgen-evidence/touch-build-14055797670/build/captures/build_dialog_density_regression/build-dialog-1080x2400-current-goal.png",
+      "sha256": "b9d0941533151431460983759782eac503c33a8ab1baef9662565587d47fb652",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "findings": "Der geöffnete Dialog zeigt Titel, Insel-Aufgabe und vollständige Beschreibung im Hochformat. Beide Aktionsflächen sind vollständig sichtbar; der große freie Bereich trennt die Testaktion von Abbrechen. Die hinter dem modalen Dialog liegenden horizontalen Werkzeugleisten sind teilweise angeschnitten; der Befund betrifft die vollständige Sichtbarkeit und Lesbarkeit des aktuellen Dialogs.",
+      "reviewed_at": "2026-11-13T16:30:39.778330+00:00"
+    }
+  ]
+}

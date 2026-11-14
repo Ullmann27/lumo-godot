@@ -8,9 +8,9 @@ func _initialize() -> void:
 
 
 func _run() -> void:
-	assert(STATE.HALF == 24)
-	assert(STATE.in_world(-24, 24))
-	assert(not STATE.in_world(-25, 24))
+	assert(STATE.HALF == 128)
+	assert(STATE.in_world(-128, 128))
+	assert(not STATE.in_world(-129, 128))
 
 	var state = STATE.new()
 	var fill: Dictionary = TOOLS.fill_rect(

@@ -1,0 +1,20 @@
+--- /workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_garage_touch_targets_regression.gd
++++ negative-fixture/kart_garage_touch_targets_regression.gd
+@@ -3,6 +3,7 @@
+ const MIN_DP: float = 48.0
+ 
+ var game
++var intentionally_held_audio: AudioStreamPlayback = null
+ 
+ 
+ func _initialize() -> void:
+@@ -70,6 +71,9 @@
+ 	var playbacks: Array[WeakRef] = []
+ 	for player: Node in game.find_children("*", "AudioStreamPlayer", true, false):
+ 		if player.has_stream_playback():
++			if intentionally_held_audio == null:
++				intentionally_held_audio = player.get_stream_playback()
++				print("[NegativeHold] retaining real playback resource=%s type=%s" % [player.stream.resource_path, intentionally_held_audio.get_class()])
+ 			playbacks.append(weakref(player.get_stream_playback()))
+ 	var scene: WeakRef = weakref(game)
+ 	game.queue_free()

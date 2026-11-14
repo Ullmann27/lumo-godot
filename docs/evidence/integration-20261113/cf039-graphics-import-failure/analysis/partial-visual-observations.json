@@ -1,0 +1,36 @@
+{
+  "kind": "documented partial manual image inspection",
+  "reviewer": "Root assistant, as reported in the coordinated task",
+  "head_sha": "cf039ad8c834522f355b858e3bee1e201e397da4",
+  "run_conclusion": "failure",
+  "receipt": false,
+  "release_approval": false,
+  "observations": [
+    {
+      "scratch_relative_file": "worlds-attempt1/images/winter_sprint/02_world_landmark.png",
+      "sha256": "099bbefbfb5532080da8ae5a52a047dfd49f5f4b540eff9006f812154f55a3e2",
+      "observation": "Root observed readable HUD/road and current cable-car landmark."
+    },
+    {
+      "scratch_relative_file": "worlds-attempt1/images/crystal_canyon/02_world_landmark.png",
+      "sha256": "e5d2db23751308307d007f1a00dac32461d1cfd72b5063c8fdc102cc89948fbe",
+      "observation": "Root observed readable HUD/road and current bridge/landmark."
+    },
+    {
+      "scratch_relative_file": "feedback/images/03_drift_release.png",
+      "sha256": "74e57c4bdbb02ec19d718a7d32d8b45e5a244d4966e18b830fa45244ddabc527",
+      "observation": "Root observed two distinct exhaust plumes behind the Kart."
+    },
+    {
+      "scratch_relative_file": "home/images/home-412x915.png",
+      "sha256": "cd3b8e20ca4bd26bf3c553202cceeaacf85cba2bd43e879d45d5a34e3e289e51",
+      "observation": "Root observed full Kart and character, readable unobstructed controls, Solo/Pokal/Zeit and visible gear options; no full-landmark visibility claim."
+    },
+    {
+      "scratch_relative_file": "home/images/home-1280x720.png",
+      "sha256": "84bc4e149cac520df7aa704497b63067c7c359d5cff55a2c8b78cc8611aceae6",
+      "observation": "Root observed full Kart and character, readable unobstructed start/mode/driver/garage/track/pace/more-mode and return controls."
+    }
+  ],
+  "scope": "Five original current-source images only. No Android, FPS, complete-image-set or combined-source acceptance."
+}

@@ -167,11 +167,40 @@ func _run() -> void:
 		game.opponent_boost_times[0] > 0.0,
 		"Production leader must use its earned safe-straight boost"
 	)
+	var playbacks: Array[WeakRef] = []
+	for player: Node in game.find_children("*", "AudioStreamPlayer", true, false):
+		if player.has_stream_playback():
+			playbacks.append(weakref(player.get_stream_playback()))
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
+	game = null
+	_check(await _release_audio(playbacks), "Audio playback retained after scene teardown")
 	if not failed:
 		print(
 			"[KartRacecraft] PASS: styles, traffic, curve braking, safe boost and real cone overtake"
 		)
 	quit(1 if failed else 0)
+
+
+func _release_audio(playbacks: Array[WeakRef]) -> bool:
+	# Scene destruction stops audio, but mixer-side fadeout retires later.
+	# Observe actual playbacks without retaining them or ignoring exit errors.
+	var started := Time.get_ticks_msec()
+	while true:
+		var pending := 0
+		for playback: WeakRef in playbacks:
+			if playback.get_ref() != null:
+				pending += 1
+		if pending == 0:
+			print(
+				"[KartRacecraft] audio_release tracked=%d elapsed_ms=%d"
+				% [playbacks.size(), Time.get_ticks_msec() - started]
+			)
+			return true
+		if Time.get_ticks_msec() - started >= 2000:
+			printerr("[KartRacecraft] retained_audio_playbacks=", pending)
+			return false
+		OS.delay_msec(2)
+		await process_frame
+	return false

@@ -1,0 +1,25 @@
+{
+  "published_commit": "796b2818ff729dc5389a92f8bf1f7fd7e6b6d93e",
+  "tree": "ffd943c83079c5957514934ad7077f32e743fe68",
+  "parent": "ab9237025e5e5a30a168c4d1fbbd0a24a82690b6",
+  "commit_date": "2026-11-13T18:09:46Z",
+  "url": "https://api.github.com/repos/Ullmann27/lumo-godot/commits/796b2818ff729dc5389a92f8bf1f7fd7e6b6d93e",
+  "raw_api_sha256": "0e3e5ed22b8499e1c56ebdc5fafed91ac405969711c1b9a0f92e610255cd381a",
+  "source_files": [
+    {
+      "path": "tools/validate_studio.sh",
+      "bytes": 4866,
+      "git_blob_sha1": "c7a37ed8986ac349b39b63f786fe85b3813b74ba",
+      "sha256": "236a4ccb73e19e5a2d8ec6fdfb9f56c223aef283dc0d2cb7a37a5570a19ffb31"
+    },
+    {
+      "path": "tools/tests/test_nextgen_runner.py",
+      "bytes": 10326,
+      "git_blob_sha1": "49164a4b7cde1605ee80cd5ac0140a6ac55aa98d",
+      "sha256": "fe0426c3e895d10ecfb4b931d8883625baeac6d387f211f2d2eb700d6c33872e"
+    }
+  ],
+  "full_file_count": 27,
+  "product_changed_in_this_increment": false,
+  "scope": "Exact immutable published source and raw commit response. No producer tests rerun and no producer screenshots reapproved."
+}

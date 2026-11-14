@@ -1,0 +1,15 @@
+{
+  "command": [
+    "godot",
+    "--headless",
+    "--editor",
+    "--import",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-village-touch-baseline",
+    "--quit"
+  ],
+  "exit_code": 0,
+  "seconds": 16.265,
+  "sha256": "10f54eacec1966847b89aaab02d98431a6d0df125961a534ab2e71407a45a061",
+  "errors": []
+}

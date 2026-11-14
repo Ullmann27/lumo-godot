@@ -142,6 +142,9 @@ func set_platform_motion(velocity: Vector3, grounded: bool, delta: float) -> boo
 		if walking and locomotion != null:
 			locomotion.stop()
 		player.play("idle", 0.0)
+		# play() resumes an already-selected idle at its current position.
+		# The studio curves are relative to frame zero, including Root height.
+		player.seek(0.0, true)
 		player.advance(0.0)
 		player.pause()
 		platform_pose = PLATFORM_POSE.new()
@@ -238,6 +241,7 @@ func play_behavior(behavior: String) -> bool:
 		_stop_teacher_mode()
 		if not walking:
 			player.play("idle", 0.0)
+			player.seek(0.0, true)
 			player.advance(0.0)
 			player.pause()
 			if locomotion == null or not locomotion.bind(skeleton):

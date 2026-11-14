@@ -1,0 +1,154 @@
+[
+  {
+    "probe": "build_village_economy_regression",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/scratch/b3485b7bb989/lumo-native-published-followups/tools/run_godot_probe.py",
+      "--log",
+      "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/build_village_economy_regression.engine.log",
+      "--timeout",
+      "240",
+      "--required",
+      "[VillageEconomy] PASS",
+      "--",
+      "/usr/local/bin/godot",
+      "--headless",
+      "--audio-driver",
+      "Dummy",
+      "--path",
+      "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+      "--script",
+      "res://scripts/tests/build_village_economy_regression.gd"
+    ],
+    "xdg": {
+      "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/xdg/build_village_economy_regression/data",
+      "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/xdg/build_village_economy_regression/config",
+      "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/xdg/build_village_economy_regression/cache",
+      "XDG_RUNTIME_DIR": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/xdg/build_village_economy_regression/runtime"
+    },
+    "started_utc": "2026-11-13T17:01:42.010995+00:00",
+    "finished_utc": "2026-11-13T17:01:42.622826+00:00",
+    "duration_seconds": 0.612,
+    "exit_code": 0,
+    "required_marker": "[VillageEconomy] PASS",
+    "required_present": true,
+    "strict_errors": [],
+    "source_changes": [],
+    "markers": [
+      "[VillageEconomy] mirrored new AI victory turns=17",
+      "[VillageEconomy] legal campaign turns=55 plots=1089 residents=98 chapter=12",
+      "[VillageEconomy] PASS 337 checks"
+    ],
+    "engine_log": {
+      "bytes": 626,
+      "sha256": "b8c1b4ca69cf99d1009beb0c2bb0cf3c6d64be6dc980036e29cdf8f5bb917d16",
+      "git_blob": "a3b5fad61842bb4cc19ccb70fb794b2dd4e1a967"
+    },
+    "runner_log": {
+      "bytes": 626,
+      "sha256": "b8c1b4ca69cf99d1009beb0c2bb0cf3c6d64be6dc980036e29cdf8f5bb917d16",
+      "git_blob": "a3b5fad61842bb4cc19ccb70fb794b2dd4e1a967"
+    },
+    "passed": true
+  },
+  {
+    "probe": "build_village_art_regression",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/scratch/b3485b7bb989/lumo-native-published-followups/tools/run_godot_probe.py",
+      "--log",
+      "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/build_village_art_regression.engine.log",
+      "--timeout",
+      "240",
+      "--required",
+      " checks / 0 failures",
+      "--",
+      "/usr/local/bin/godot",
+      "--headless",
+      "--audio-driver",
+      "Dummy",
+      "--path",
+      "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+      "--script",
+      "res://scripts/tests/build_village_art_regression.gd"
+    ],
+    "xdg": {
+      "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/xdg/build_village_art_regression/data",
+      "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/xdg/build_village_art_regression/config",
+      "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/xdg/build_village_art_regression/cache",
+      "XDG_RUNTIME_DIR": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/xdg/build_village_art_regression/runtime"
+    },
+    "started_utc": "2026-11-13T17:01:42.623547+00:00",
+    "finished_utc": "2026-11-13T17:01:43.472697+00:00",
+    "duration_seconds": 0.849,
+    "exit_code": 0,
+    "required_marker": " checks / 0 failures",
+    "required_present": true,
+    "strict_errors": [],
+    "source_changes": [],
+    "markers": [
+      "[VillageArt] 2259 checks / 0 failures"
+    ],
+    "engine_log": {
+      "bytes": 505,
+      "sha256": "4faebeab516899c3b01a0f8ee58c76f92cb273c50ef3fb3fced0a816d51cdc16",
+      "git_blob": "2bb2a7b5ac26050c40f061b2e47034c1c86beeba"
+    },
+    "runner_log": {
+      "bytes": 505,
+      "sha256": "4faebeab516899c3b01a0f8ee58c76f92cb273c50ef3fb3fced0a816d51cdc16",
+      "git_blob": "2bb2a7b5ac26050c40f061b2e47034c1c86beeba"
+    },
+    "passed": true
+  },
+  {
+    "probe": "build_village_scene_regression",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/scratch/b3485b7bb989/lumo-native-published-followups/tools/run_godot_probe.py",
+      "--log",
+      "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/build_village_scene_regression.engine.log",
+      "--timeout",
+      "240",
+      "--required",
+      "[VillageScene] PASS",
+      "--",
+      "/usr/local/bin/godot",
+      "--headless",
+      "--audio-driver",
+      "Dummy",
+      "--path",
+      "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+      "--script",
+      "res://scripts/tests/build_village_scene_regression.gd"
+    ],
+    "xdg": {
+      "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/xdg/build_village_scene_regression/data",
+      "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/xdg/build_village_scene_regression/config",
+      "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/xdg/build_village_scene_regression/cache",
+      "XDG_RUNTIME_DIR": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-consumers/xdg/build_village_scene_regression/runtime"
+    },
+    "started_utc": "2026-11-13T17:01:43.473929+00:00",
+    "finished_utc": "2026-11-13T17:01:45.285417+00:00",
+    "duration_seconds": 1.812,
+    "exit_code": 0,
+    "required_marker": "[VillageScene] PASS",
+    "required_present": true,
+    "strict_errors": [],
+    "source_changes": [],
+    "markers": [
+      "[VillageScene] PASS checks=19 : production village, chapter, economy and resume"
+    ],
+    "engine_log": {
+      "bytes": 843,
+      "sha256": "af5f4e8f789b27d565ce2cb1ff5982bdab8345928ddb69571b916ab277b0d6c0",
+      "git_blob": "0fd659d71b3f64b992b6eab7262974c95fe665c1"
+    },
+    "runner_log": {
+      "bytes": 843,
+      "sha256": "af5f4e8f789b27d565ce2cb1ff5982bdab8345928ddb69571b916ab277b0d6c0",
+      "git_blob": "0fd659d71b3f64b992b6eab7262974c95fe665c1"
+    },
+    "passed": true
+  }
+]

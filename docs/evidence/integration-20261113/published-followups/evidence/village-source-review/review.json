@@ -1,0 +1,106 @@
+{
+  "schema": "lumo.independent_source_review.v1",
+  "recorded_at": "2026-11-13T17:18:00.156502+00:00",
+  "reviewer": "/root/pipeline_repair",
+  "review_kind": "static source review only",
+  "scope": "Independent read-only review of the Village touch, popup-transform, density and open-dialog resize integration. This file documents the completed review; no additional source inspection, runtime test or renderer test was performed when writing it.",
+  "repository": "Ullmann27/lumo-godot",
+  "reviewed_worktree": "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+  "baseline_commit": "176184c9ccef361266d888dbb023ffdad792f345",
+  "reviewed_sources": [
+    {
+      "path": "scripts/tests/build_village_scene_regression.gd",
+      "sha256": "1ac6dcd8ba6c72d637ad575802fb46654d28ea541c865c053eb478fed7b1ffde"
+    },
+    {
+      "path": "scripts/creative/build_settlement_world.gd",
+      "sha256": "a8b5b310104281f6fb9c84901c3d83ee5d3382b38ef2bd418a44ff6b83d39ae0"
+    }
+  ],
+  "original_product_sha256": "cd5e7a41991ac8591408b86094db182be85124a8ef4a48b28bf3717011bf576e",
+  "review_conclusion": "No further concrete integration regression was identified in the exact reviewed source files. This is a source-review conclusion, not runtime or visual acceptance.",
+  "confirmed_source_properties": [
+    "All original probe lines, including its 19 assertions, remain unchanged relative to the committed Village baseline.",
+    "The existing world-release function _input() is byte-identical to the baseline.",
+    "MOUSE_FILTER_PASS is assigned to children of scrolling toolbars and Village dialogs; ordinary header and next-day buttons retain their existing STOP behavior.",
+    "The geometric HUD guard rejects only new press gestures over visible top, bottom and pause controls, preserving release ownership for already-started world gestures.",
+    "Injected ScreenTouch and ScreenDrag events pass through Input.parse_input_event and Input.flush_buffered_events; the probe does not invoke toolbar or close handlers to claim touch success.",
+    "Target geometry uses the target control own viewport screen transform and its global canvas transform before dividing physical size by the explicit density fixture; it checks minimum 48 dp with the existing numeric tolerance.",
+    "The desktop fixture now enables and verifies the existing touchscreen-routing contract and restores the previous touch-emulation setting.",
+    "Open-dialog layout lowers min_size before resizing and updates the existing Window before and after popup_centered and during parent layout.",
+    "The resize probe preserves the open dialog instance identity, compares its label contents, verifies actual safe-area bounds and performs a subsequent real close touch.",
+    "Capture mode rejects a headless display or missing output directory before any success marker; a source-only or headless result cannot claim captured renderer images."
+  ],
+  "review_findings_resolved_during_root_work": [
+    {
+      "finding": "The first Village probe omitted desktop touchscreen capability, which Godot ScrollContainer requires for its touch-drag path.",
+      "resolution": "Root connected the same Input.emulate_touch_from_mouse capability check and restoration already used by BuildDialogDensity.",
+      "evidence_boundary": "Early failures without this capability are prototype diagnostics and are not the causal product baseline."
+    },
+    {
+      "finding": "The published Village buttons block pointer propagation and the published open dialog retains a one-time minimum size after orientation or density change.",
+      "resolution": "Root implemented scroll-child PASS plus a HUD press guard and a layout helper that resizes the same open Window.",
+      "evidence_boundary": "Runtime red/green evidence was executed by Root and is reported separately below."
+    }
+  ],
+  "engine_source_references": [
+    {
+      "repository": "godotengine/godot",
+      "ref": "4.6.3-stable",
+      "path": "scene/main/viewport.cpp",
+      "git_blob": "996d44455b3a9d1257939d6b0da061dc29d5ab05",
+      "url": "https://github.com/godotengine/godot/blob/4.6.3-stable/scene/main/viewport.cpp",
+      "reviewed_contract": "_gui_call_input treats ScreenTouch and ScreenDrag as pointer events stopped by MOUSE_FILTER_STOP; force_pass_scroll_events is an exception only for wheel events."
+    },
+    {
+      "repository": "godotengine/godot",
+      "ref": "4.6.3-stable",
+      "path": "scene/gui/scroll_container.cpp",
+      "git_blob": "7794443daf6be4ebd837126816c634f343004b4d",
+      "url": "https://github.com/godotengine/godot/blob/4.6.3-stable/scene/gui/scroll_container.cpp",
+      "reviewed_contract": "The mouse-emulated touchscreen drag path returns early when DisplayServer.is_touchscreen_available is false."
+    }
+  ],
+  "root_executed_results": {
+    "attribution": "Reported by /root after its completed execution. These were not executed or re-executed by /root/pipeline_repair.",
+    "same_probe_sha256": "1ac6dcd8ba6c72d637ad575802fb46654d28ea541c865c053eb478fed7b1ffde",
+    "published_product_after_clean_import": {
+      "status": "FAIL",
+      "checks": 125,
+      "reported_failures": 7,
+      "failure_scope": "Reachability and open-dialog resize",
+      "engine_or_script_errors": false,
+      "evidence_directory": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-surface-comparison/published-after-import",
+      "source_hashes_unchanged_during_run": 1224
+    },
+    "repaired_product": {
+      "status": "PASS",
+      "checks": 223,
+      "exit_code": 0,
+      "evidence_directory": "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-surface-comparison/repaired",
+      "source_hashes_unchanged_during_run": 1224
+    },
+    "classic_settlement_preservation": {
+      "status": "PASS",
+      "checks": 127
+    },
+    "headless_capture_rejection": {
+      "exit_code": 1,
+      "png_created": false,
+      "pass_marker_emitted": false
+    }
+  },
+  "actions_by_reviewer_for_this_review": {
+    "source_mutations": false,
+    "runtime_tests": false,
+    "renderer_tests": false,
+    "staging_or_commits": false,
+    "ref_changes": false,
+    "receipt_created": false
+  },
+  "limits": [
+    "Review applies only to the exact two SHA256 values above.",
+    "The Root-executed headless comparison does not substitute for actual renderer or Android pixel acceptance.",
+    "No native overall acceptance or later-source acceptance is asserted."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "source_head": "97b91e312eb982ab1fe9083b7415d11085385235",
+  "source_tree": "79a9d0c98c4b6cd359cbd1531abfe1eefc663ac8",
+  "source_files_unchanged": 44,
+  "strict_exit_code": 1,
+  "assertions": 62,
+  "failures": [
+    "Rotation remains a preview until committed",
+    "Touch commits exact snapped position and rotation",
+    "Placed two-cell wall blocks the actual collision body",
+    "Nearby built wall can actually be inspected"
+  ],
+  "log_sha256": "9cae145af7e8c124477992bf468f8979a373d19ce7348f6cf1beae9b053f09f8"
+}

@@ -1,0 +1,61 @@
+{
+  "base_commit": "a76f26b1d19662f6429a9cff063991e994d1e19a",
+  "merged_studio_source": "76980a941fa05d047574d8cc386d3249d93ffca3",
+  "source_files": 1189,
+  "changed_during_run": [],
+  "renderer": false,
+  "scope": "Unmodified original production probes after replacing prior toolbar STOP with published HUD gesture-start ownership. Actual headless engine evidence only.",
+  "results": [
+    {
+      "probe": "build_nextgen_play_regression",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "res://scripts/tests/build_nextgen_play_regression.gd"
+      ],
+      "started_at": "2026-11-13T15:54:01.438630+00:00",
+      "finished_at": "2026-11-13T15:54:07.849740+00:00",
+      "seconds": 6.411,
+      "exit_code": 0,
+      "pass_lines": [
+        "[BuildNextgen] PASS checks=62: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout"
+      ],
+      "error_lines": [],
+      "log": "build_nextgen_play_regression.log",
+      "log_bytes": 685,
+      "log_sha256": "4f02d44a99debb7a5b7a8580c5c7ef215201906963f133e6d10c79d65d27c01c",
+      "passed": true
+    },
+    {
+      "probe": "build_dialog_density_regression",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "res://scripts/tests/build_dialog_density_regression.gd"
+      ],
+      "started_at": "2026-11-13T15:54:01.437429+00:00",
+      "finished_at": "2026-11-13T15:54:38.257319+00:00",
+      "seconds": 36.82,
+      "exit_code": 0,
+      "pass_lines": [
+        "[BuildDialogDensity] PASS 2016 checks: bounded dialogs, preserved choices, actual scroll/select/cancel, >=48dp and restore"
+      ],
+      "error_lines": [],
+      "log": "build_dialog_density_regression.log",
+      "log_bytes": 1419,
+      "log_sha256": "55064ac791ded9d7c46d854d983ca94fc03597a53f7fdbd6ac891473c01e4a8a",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

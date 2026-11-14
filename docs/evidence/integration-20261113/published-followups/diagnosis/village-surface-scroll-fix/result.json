@@ -1,0 +1,48 @@
+{
+  "command": [
+    "python",
+    "tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-surface-scroll-fix/engine.log",
+    "--timeout",
+    "210",
+    "--required",
+    "[VillageScene] PASS",
+    "--",
+    "godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+    "--script",
+    "res://scripts/tests/build_village_scene_regression.gd"
+  ],
+  "exit_code": 1,
+  "seconds": 41.921,
+  "source_before": {
+    "scripts/creative/build_settlement_world.gd": "f8bac39b98d4cade9ec6cc6fdcb24a8d232a636fb07c57c1351eb29f55bebc79",
+    "scripts/tests/build_village_scene_regression.gd": "e0569851c6f431248f732176a2af891ea38df6202cfec0c8f27cd629ae7991e2"
+  },
+  "source_after": {
+    "scripts/creative/build_settlement_world.gd": "f8bac39b98d4cade9ec6cc6fdcb24a8d232a636fb07c57c1351eb29f55bebc79",
+    "scripts/tests/build_village_scene_regression.gd": "e0569851c6f431248f732176a2af891ea38df6202cfec0c8f27cd629ae7991e2"
+  },
+  "engine_sha256": "36aaef3a92515da45f3551d7a23aa44ab20f540736b27baff0acab3cb0be9132",
+  "findings": [
+    "WARNING: [VillageScene] Real horizontal drags expose F\u00fcrsorgehaus",
+    "[VillageScene] toolbar diagnostic caption=F\u00fcrsorgehaus",
+    "WARNING: [VillageScene] Real horizontal drags expose F\u00fcrsorgehaus",
+    "[VillageScene] toolbar diagnostic caption=F\u00fcrsorgehaus",
+    "WARNING: [VillageScene] Real horizontal drags expose Kapitel",
+    "[VillageScene] toolbar diagnostic caption=Kapitel scroll=0 viewport=[P: (14.0, 802.0), S: (232.0, 56.0)] target=[P: (473.0, 802.0), S: (110.0, 48.0)] density=1.0",
+    "WARNING: [VillageScene] Real horizontal drags expose F\u00fcrsorgehaus",
+    "[VillageScene] toolbar diagnostic caption=F\u00fcrsorgehaus",
+    "WARNING: [VillageScene] An already open village dialog remains bounded after orientation and density change",
+    "WARNING: [VillageScene] Real horizontal drags expose F\u00fcrsorgehaus",
+    "[VillageScene] toolbar diagnostic caption=F\u00fcrsorgehaus",
+    "WARNING: [VillageScene] Real horizontal drags expose Stadtkasse",
+    "[VillageScene] toolbar diagnostic caption=Stadtkasse scroll=0 viewport=[P: (14.0, 270.0), S: (460.0, 56.0)] target=[P: (727.0, 270.0), S: (110.0, 48.0)] density=1.0",
+    "[VillageScene] FAIL checks=122 failures=[\"Real horizontal drags expose F\u00fcrsorgehaus\\n8 Holz, 8 Stein, 6 M\u00fcnzen\", \"Real horizontal drags expose F\u00fcrsorgehaus\\n8 Holz, 8 Stein, 6 M\u00fcnzen\", \"Real horizontal drags expose Kapitel\", \"Real horizontal drags expose F\u00fcrsorgehaus\\n8 Holz, 8 Stein, 6 M\u00fcnzen\", \"An already open village dialog remains bounded after orientation and density change\", \"Real horizontal drags expose F\u00fcrsorgehaus\\n8 Holz, 8 Stein, 6 M\u00fcnzen\", \"Real horizontal drags expose Stadtkasse\"]"
+  ]
+}

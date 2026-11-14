@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/usr/local/bin/godot",
+    "--headless",
+    "--editor",
+    "--import",
+    "--path",
+    ".",
+    "--audio-driver",
+    "Dummy",
+    "--quit"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-puzzle-followups",
+  "started_at_utc": "2026-11-13T17:49:39.799498+00:00",
+  "finished_at_utc": "2026-11-13T17:49:57.659530+00:00",
+  "duration_seconds": 17.860041905005346,
+  "exit_code": 0,
+  "log_sha256": "eaf62806ea89cf53ab51b614af44d964a7030ad13edf743a668e4a078dae695f",
+  "error_lines": []
+}

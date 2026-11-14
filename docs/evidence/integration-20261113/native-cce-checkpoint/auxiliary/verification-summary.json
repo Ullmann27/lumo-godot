@@ -1,0 +1,397 @@
+{
+  "schema_version": 1,
+  "repository": "Ullmann27/lumo-godot",
+  "pull_request": 160,
+  "source_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+  "source_tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+  "run_attempt": 1,
+  "started_utc": "2026-11-13T17:37:56+00:00",
+  "finished_utc": "2026-11-13T17:54:50.848143+00:00",
+  "scope": "Only the13 assigned auxiliary workflows. No result or review of separately owned Native Nextgen43474541452 or Graphics43474541178 is asserted.",
+  "excluded_runs": [
+    43474541452,
+    43474541178
+  ],
+  "outcome": "PASS",
+  "totals": {
+    "workflows": 13,
+    "jobs": 14,
+    "steps": 158,
+    "success_steps": 156,
+    "skipped_steps": 2,
+    "failed_steps": 0
+  },
+  "checks": {
+    "all_expected_runs_present": true,
+    "all_runs_attempt_one": true,
+    "all_run_source_commits_and_trees_exact": true,
+    "all_jobs_final_success": true,
+    "all_job_heads_exact": true,
+    "all_job_collections_complete": true,
+    "all_steps_final": true,
+    "no_failed_steps": true,
+    "expected_matrix_skips_only": true
+  },
+  "execution_binding": {
+    "bauwelt_integration_job": 132054800937,
+    "checkout_merge_sha": "dd021859aece3c79bf2e79cd701e3687863003c6",
+    "checkout_merge_tree_equals_source_tree": true,
+    "direct_bauwelt_lifecycle_job": 132054800134,
+    "direct_checkout_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+    "details_file": "bauwelt-source-observations.json"
+  },
+  "runs": [
+    {
+      "id": 43474541765,
+      "name": "Lumo Kart Video Reference Grade",
+      "path": ".github/workflows/kart-video-visual-grade.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541765",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541765.json.gz",
+      "jobs": [
+        {
+          "id": 132054801846,
+          "name": "video-grade",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:40:15Z",
+          "steps": 10,
+          "skipped_steps": []
+        }
+      ]
+    },
+    {
+      "id": 43474541556,
+      "name": "Lumo Kart and Bauwelt integration QA",
+      "path": ".github/workflows/lumo-kart-bauwelt-integration.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541556",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541556.json.gz",
+      "jobs": [
+        {
+          "id": 132054800937,
+          "name": "combined-godot-runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:37:50Z",
+          "steps": 13,
+          "skipped_steps": []
+        }
+      ]
+    },
+    {
+      "id": 43474541276,
+      "name": "Sonnenhafen 2027 stunt integration",
+      "path": ".github/workflows/lumo-sonnenhafen-stunt-integration.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541276",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541276.json.gz",
+      "jobs": [
+        {
+          "id": 132054800269,
+          "name": "real-godot-tests",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:42:36Z",
+          "steps": 10,
+          "skipped_steps": []
+        }
+      ]
+    },
+    {
+      "id": 43474541368,
+      "name": "Lumo Sonnenhafen 2003 real bird eye and jump QA",
+      "path": ".github/workflows/lumo-sonnenhafen-2003-aerial-qa.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541368",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541368.json.gz",
+      "jobs": [
+        {
+          "id": 132054800409,
+          "name": "hero-flight",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:38:22Z",
+          "steps": 9,
+          "skipped_steps": []
+        }
+      ]
+    },
+    {
+      "id": 43474541406,
+      "name": "Lumo Next Gen visual smoke and real Kart screenshots",
+      "path": ".github/workflows/lumo-nextgen-design-smoke.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541406",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541406.json.gz",
+      "jobs": [
+        {
+          "id": 132054801096,
+          "name": "nextgen-visual",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:39:52Z",
+          "steps": 12,
+          "skipped_steps": []
+        }
+      ]
+    },
+    {
+      "id": 43474541277,
+      "name": "Lumo Kart Rival Feedback",
+      "path": ".github/workflows/kart-rival-feedback.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541277",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541277.json.gz",
+      "jobs": [
+        {
+          "id": 132054799871,
+          "name": "rival-feedback",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:38:46Z",
+          "steps": 11,
+          "skipped_steps": []
+        }
+      ]
+    },
+    {
+      "id": 43474541511,
+      "name": "Lumo Kart dynamic neon surge event inside real race",
+      "path": ".github/workflows/lumo-darkride-lap-event.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541511",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541511.json.gz",
+      "jobs": [
+        {
+          "id": 132054801642,
+          "name": "validated-race-event",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:38:23Z",
+          "steps": 12,
+          "skipped_steps": []
+        }
+      ]
+    },
+    {
+      "id": 43474541263,
+      "name": "Sonnenhafen hero flight actual Godot regression",
+      "path": ".github/workflows/lumo-sonnenhafen-hero-flight.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541263",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541263.json.gz",
+      "jobs": [
+        {
+          "id": 132054800427,
+          "name": "hero-flight",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:39:02Z",
+          "steps": 9,
+          "skipped_steps": []
+        }
+      ]
+    },
+    {
+      "id": 43474541133,
+      "name": "Lumo original 65-bone grounded walk gait QA",
+      "path": ".github/workflows/lumo-65bone-walk-qa.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541133",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541133.json.gz",
+      "jobs": [
+        {
+          "id": 132054799860,
+          "name": "test-original-rig-walk",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:38:14Z",
+          "steps": 10,
+          "skipped_steps": []
+        }
+      ]
+    },
+    {
+      "id": 43474541060,
+      "name": "Lumo native lifecycle and Bauwelt play proof",
+      "path": ".github/workflows/lumo-native-lifecycle-bauwelt-proof.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541060",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541060.json.gz",
+      "jobs": [
+        {
+          "id": 132054800134,
+          "name": "real-native-proof (bauwelt)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:38:14Z",
+          "steps": 9,
+          "skipped_steps": [
+            "Precision capture and complete resource diagnostics"
+          ]
+        },
+        {
+          "id": 132054800633,
+          "name": "real-native-proof (precision)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:38:41Z",
+          "steps": 9,
+          "skipped_steps": [
+            "Bauwelt interaction, disk save, reload and real rendered states"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 43474541400,
+      "name": "Lumo Kart deterministic resonance racing gameplay",
+      "path": ".github/workflows/lumo-resonance-racing.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541400",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541400.json.gz",
+      "jobs": [
+        {
+          "id": 132054801009,
+          "name": "native-resonance",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:38:45Z",
+          "steps": 10,
+          "skipped_steps": []
+        }
+      ]
+    },
+    {
+      "id": 43474541496,
+      "name": "Verify Lumo Kart Stage 2",
+      "path": ".github/workflows/kart-stage2-regression.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541496",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541496.json.gz",
+      "jobs": [
+        {
+          "id": 132054801799,
+          "name": "kart-stage2",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:52:26Z",
+          "steps": 28,
+          "skipped_steps": []
+        }
+      ]
+    },
+    {
+      "id": 43474541227,
+      "name": "Verify committed Kart vehicle geometry",
+      "path": ".github/workflows/kart-vehicle-regression.yml",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43474541227",
+      "event": "pull_request",
+      "head_branch": "integration/lumo-connections-20261113",
+      "head_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+      "tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_file": "jobs-43474541227.json.gz",
+      "jobs": [
+        {
+          "id": 132054800257,
+          "name": "kart-vehicle-regression",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-13T17:36:59Z",
+          "completed_at": "2026-11-13T17:37:21Z",
+          "steps": 6,
+          "skipped_steps": []
+        }
+      ]
+    }
+  ]
+}

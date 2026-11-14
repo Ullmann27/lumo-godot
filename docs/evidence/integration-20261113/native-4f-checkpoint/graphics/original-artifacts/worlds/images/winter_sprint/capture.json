@@ -1,0 +1,108 @@
+{
+	"capture_kind": "stationary production kart_island scene; staged player and cameras",
+	"display_server": "X11",
+	"low": false,
+	"rendering_method": "gl_compatibility",
+	"source": {
+		"clean_tracked_source": true,
+		"engine": "4.6.3-stable (official)",
+		"physical_android_device": false,
+		"renderer": "gl_compatibility",
+		"source_commit": "4f3449253fd59023a2544432a178eb9efcafe4f9",
+		"tracked_differences": "",
+		"visual_acceptance": "Manual reference review required; render success is not art approval"
+	},
+	"status": "captured",
+	"track": "winter_sprint",
+	"user_data_path": "/home/runner/work/lumo-godot/lumo-godot/graphics-evidence/worlds/user-data-winter_sprint/godot/app_userdata/Lumo 3D/",
+	"viewport": [
+		1280,
+		720
+	],
+	"views": [
+		{
+			"basis_x": [
+				0.975487470626831,
+				0.0,
+				-0.22005507349968
+			],
+			"basis_y": [
+				-0.0441314019262791,
+				0.979684054851532,
+				-0.19563116133213
+			],
+			"basis_z": [
+				0.215584442019463,
+				0.200547099113464,
+				0.955669522285461
+			],
+			"camera_source": "production chase camera",
+			"draw_calls": 315.0,
+			"fov": 55.0,
+			"name": "01_race_approach",
+			"path": "/home/runner/work/lumo-godot/lumo-godot/graphics-evidence/worlds/images/winter_sprint/01_race_approach.png",
+			"position": [
+				116.16121673584,
+				20.852611541748,
+				-21.7376937866211
+			],
+			"sha256": "a74fa4ce5027b0e905b50832b4a43bc009c06269b45ddfe58493b3d40a97e44a"
+		},
+		{
+			"basis_x": [
+				0.954907357692719,
+				0.0,
+				0.296903967857361
+			],
+			"basis_y": [
+				0.028458196669817,
+				0.995395839214325,
+				-0.0915277153253555
+			],
+			"basis_z": [
+				-0.29553696513176,
+				0.0958498269319534,
+				0.950510740280151
+			],
+			"camera_source": "manual context camera; unchanged production lighting",
+			"draw_calls": 329.0,
+			"fov": 61.0,
+			"name": "02_world_landmark",
+			"path": "/home/runner/work/lumo-godot/lumo-godot/graphics-evidence/worlds/images/winter_sprint/02_world_landmark.png",
+			"position": [
+				127.808532714844,
+				32.0,
+				120.124572753906
+			],
+			"sha256": "099bbefbfb5532080da8ae5a52a047dfd49f5f4b540eff9006f812154f55a3e2"
+		},
+		{
+			"basis_x": [
+				0.996929407119751,
+				0.0,
+				-0.0783054232597351
+			],
+			"basis_y": [
+				-0.0157039240002632,
+				0.979684114456177,
+				-0.199931263923645
+			],
+			"basis_z": [
+				0.0767145752906799,
+				0.20054703950882,
+				0.976675868034363
+			],
+			"camera_source": "production chase camera within authored section",
+			"draw_calls": 264.0,
+			"fov": 55.0,
+			"name": "03_route_reveal",
+			"path": "/home/runner/work/lumo-godot/lumo-godot/graphics-evidence/worlds/images/winter_sprint/03_route_reveal.png",
+			"position": [
+				108.365829467773,
+				21.6297473907471,
+				-67.0002899169922
+			],
+			"sha256": "3d26f1c85c79e2e92a7c913a5c2ce1102d71bdc57994663f6544ead2609ab8b7"
+		}
+	]
+}

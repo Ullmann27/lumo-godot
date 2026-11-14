@@ -1,0 +1,49 @@
+{
+  "phase": "held-reference-negative",
+  "test": "kart_garage_touch_targets_regression",
+  "started_utc": "2026-11-13T15:12:20.693116+00:00",
+  "finished_utc": "2026-11-13T15:12:33.108683+00:00",
+  "elapsed_seconds": 12.416,
+  "command": [
+    "python3",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/engine.log",
+    "--timeout",
+    "240",
+    "--required",
+    "[GarageTargets] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_garage_touch_targets_regression.gd",
+    "--fixed-fps",
+    "60"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "xdg": {
+    "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/xdg-data",
+    "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/xdg-config",
+    "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/xdg-cache",
+    "XDG_STATE_HOME": "/home/agent/.local/state",
+    "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+  },
+  "script_sha256": "2452c060ef632b3ffe5fb85707732bbc7b256856e7560b9027951a392c7cc1b8",
+  "strict_runner_exit": 1,
+  "required_marker": "[GarageTargets] PASS",
+  "marker_present": false,
+  "errors": [
+    "ERROR: [GarageTargets] FAIL: Scene or audio playback retained after teardown"
+  ],
+  "cleanup_lines": [
+    "[GarageTargets] retained_scene=false retained_audio_playbacks=1 elapsed_ms=2001"
+  ],
+  "engine_log_sha256": "1b4a0e866b3e67e4ccd32ee126e571c6078fcec0b39d8e421e52e7a3a9743fac",
+  "runner_log_sha256": "e6c2622c04b1c75168d3ae338790f48f60889d2c924108d875eb7da44891e367"
+}

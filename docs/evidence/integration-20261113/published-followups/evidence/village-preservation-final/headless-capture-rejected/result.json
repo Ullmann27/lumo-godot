@@ -1,0 +1,31 @@
+{
+  "case": "headless-capture-rejected",
+  "command": [
+    "python",
+    "tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-preservation-final/headless-capture-rejected/engine.log",
+    "--timeout",
+    "210",
+    "--required",
+    "[VillageScene] PASS",
+    "--",
+    "godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+    "--script",
+    "res://scripts/tests/build_village_scene_regression.gd",
+    "--",
+    "--capture"
+  ],
+  "exit_code": 1,
+  "seconds": 0.338,
+  "engine_sha256": "f605fe099bdb57ce316fa85178e365a351d150eab114ae456f6719e6c0be82dc",
+  "png_files": [],
+  "findings": [
+    "ERROR: [VillageScene] Capture requires a real renderer and LUMO_CAPTURE_DIR"
+  ]
+}

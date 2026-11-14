@@ -1,0 +1,32 @@
+[
+  {
+    "file": "images/00_baseline.png",
+    "bytes": 987781,
+    "sha256": "fd218b40af724884ac021c1b4ba4e260ddabbaf2dbd09dc7b393d7bfe761c730"
+  },
+  {
+    "file": "images/01_blue_drift.png",
+    "bytes": 980699,
+    "sha256": "2e72aeff386b2c090044603902b66432aa1d8f38198a072180064b08a3e795fb"
+  },
+  {
+    "file": "images/02_orange_drift.png",
+    "bytes": 961607,
+    "sha256": "f9cd7cd4c3d51dce39fac4e78c818011e5117659615624f152ba1dec6398faed"
+  },
+  {
+    "file": "images/03_drift_release.png",
+    "bytes": 954783,
+    "sha256": "a636786cde7b087766e05c087a53761f9c40b6dc82ae1da64dc3b7000be1c8a6"
+  },
+  {
+    "file": "images/04_landing.png",
+    "bytes": 1026643,
+    "sha256": "027cb6fbfb3fea6241a107b9ef91c2ec7fb6038e6bab24998366a59fb7bda264"
+  },
+  {
+    "file": "images/05_item_pickup.png",
+    "bytes": 891013,
+    "sha256": "c506ea2fee33f3f17b71a6f5d365f830c158ca8096aa0c96409be1fb22647414"
+  }
+]

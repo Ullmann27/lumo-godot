@@ -1,0 +1,114 @@
+{
+  "area": "feedback",
+  "head_sha": "cf039ad8c834522f355b858e3bee1e201e397da4",
+  "source_tree": "4fdbcbfcf069c6790e17101a09d4fb3f2955c2e2",
+  "tracked_source_clean": true,
+  "image_count": 6,
+  "images": [
+    {
+      "file": "images/00_baseline.png",
+      "bytes": 988163,
+      "sha256": "0c640f635c26e9f4f76b89f53775420ca8dbcd77d5a1b03487d5391d71b0c676",
+      "pixels": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "images/01_blue_drift.png",
+      "bytes": 980731,
+      "sha256": "91181c34185c3e7168741a798c560447a180ac0b661e0c4bd7d864771804d515",
+      "pixels": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "images/02_orange_drift.png",
+      "bytes": 961701,
+      "sha256": "a1a5ef6cff265d84584c45a911e919ecc98477b57ec8ca25e65dcea0002dd0e0",
+      "pixels": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "images/03_drift_release.png",
+      "bytes": 954499,
+      "sha256": "74e57c4bdbb02ec19d718a7d32d8b45e5a244d4966e18b830fa45244ddabc527",
+      "pixels": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "images/04_landing.png",
+      "bytes": 1026118,
+      "sha256": "5721e1d2a6db84e1762699fe36b5bb24e904b1cc63e392bd023c4fc8928b4f64",
+      "pixels": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "images/05_item_pickup.png",
+      "bytes": 890648,
+      "sha256": "21894da70df2f91e36509a61c6d4a3ea9fd3f5b8b65a5c968b394a5b41874add",
+      "pixels": [
+        1280,
+        720
+      ]
+    }
+  ],
+  "logs": {
+    "import.log": {
+      "sha256": "18f4e798d69af197ccd15eee2528b2c73148c6f76308416b4e856fc4f7cf27ae",
+      "bytes": 161770,
+      "errors": [],
+      "markers": [],
+      "warnings": []
+    },
+    "project-validation.log": {
+      "sha256": "9ce4cc5c5d80ff2abf463f3328ea7ffa1aa612ad10f867910e7fc370f571da5e",
+      "bytes": 6124,
+      "errors": [],
+      "markers": [],
+      "warnings": [
+        "[WARN] asset: lumo_fox fehlt (assets/models/lumo_fox.glb) - AssetLoader nutzt Placeholder",
+        "[WARN] asset: hub_island fehlt (assets/models/hub_island.glb) - AssetLoader nutzt Placeholder",
+        "[WARN] asset: portal_learn fehlt (assets/models/portal_learn.glb) - AssetLoader nutzt Placeholder",
+        "[WARN] asset: portal_games fehlt (assets/models/portal_games.glb) - AssetLoader nutzt Placeholder",
+        "[WARN] asset: portal_parent fehlt (assets/models/portal_parent.glb) - AssetLoader nutzt Placeholder",
+        "[WARN] asset: star_collectible fehlt (assets/models/star_collectible.glb) - AssetLoader nutzt Placeholder",
+        "[WARN] tool: tools/build_web_bundle.sh nicht ausfuehrbar (chmod +x fehlt)"
+      ]
+    },
+    "regression.log": {
+      "sha256": "bb8ee46711bc397dae3102d268bc02f4015d1baa40dc3c6723aa3dd4fbb1aec3",
+      "bytes": 1444,
+      "errors": [],
+      "markers": [
+        "[KartDriveFeedback] PASS 71 checks: pause, reset, bounded pools and real events"
+      ],
+      "warnings": [
+        "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+        "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+        "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+      ]
+    },
+    "render.log": {
+      "sha256": "362def49c4a99bb2cf7112d2ae3724685da6a7c8eb3cf9e74265b839f24b73ac",
+      "bytes": 2744,
+      "errors": [],
+      "markers": [
+        "[KartDriveFeedbackCapture] PASS six production-scene frames at 1280x720"
+      ],
+      "warnings": [
+        "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+        "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+        "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+      ]
+    }
+  },
+  "engine": "4.6.3.stable.official.7d41c59c4"
+}

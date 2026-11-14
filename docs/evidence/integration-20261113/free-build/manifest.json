@@ -1,0 +1,214 @@
+{
+  "schema": 1,
+  "started_at": "2026-11-13T13:19:16.112544+00:00",
+  "scope": "Focused actual headless tests on the combined integration tree; no renderer or Android evidence.",
+  "root": "/workspace/scratch/b3485b7bb989/lumo-godot",
+  "head_before": "8f9e9560c076261d7a4fa6d845ff6fa0d98a8bdd",
+  "upstream_free_build_source": "7c088c521fc6a3d6033040956b2f4aa255caf926",
+  "host_fixture_source": "a8e09123805b2bf30706c8dd1914b928ae6b24ca",
+  "sources_before": {
+    "scripts/creative/build_frontier_landscape.gd": {
+      "git_blob": "40bf7e4e137e4c25161a5fbebe4f7ff43c18cb31",
+      "sha256": "3f6f8a5ecd60d43f3de6a77dbf4d9d154da8bde46a5800b21bd381d5aa9e819c",
+      "bytes": 4479
+    },
+    "scripts/creative/build_state.gd": {
+      "git_blob": "226e10e6dce77dd29ee70284cdb993e3a795868e",
+      "sha256": "ef633ef23749a97abc45fa0f04a065db58679ae1ba757ea441e3fc3e33a15085",
+      "bytes": 16697
+    },
+    "scripts/creative/build_world.gd": {
+      "git_blob": "93bc6926de47dda1b1a8e9cb2eb77a90030690cd",
+      "sha256": "aedd0b7e1ff02ae60db1f014c6bdcf13f20206ea72a2b46b1d67e5316b015615",
+      "bytes": 50552
+    },
+    "scripts/tests/build_frontier_regression.gd": {
+      "git_blob": "ae5b3da43f2566b1f67d4b185fbaeac625395602",
+      "sha256": "65f2cb0cbb62aa3dd71fd28b1d06718f789da87c99d9b50534c223411be772d5",
+      "bytes": 3115
+    },
+    "scripts/tests/bauwelt_identity_2013_regression.gd": {
+      "git_blob": "204c5e25fc258a7c39da223f35915c2bb1844774",
+      "sha256": "d799323cda367e1f0b04245a2d90b62bb640e46ba2590129eb4e196cac52efce",
+      "bytes": 6104
+    },
+    "scripts/tests/build_sandbox_tools_regression.gd": {
+      "git_blob": "d8250ee38d9a6a8d0d520bf7d47222b1c0dda593",
+      "sha256": "1936813b4c63108a84da641930bd3b7d9b901a13ef7a083bfdc8e5e68f38736f",
+      "bytes": 2348
+    },
+    "scripts/tests/build_transform_regression.gd": {
+      "git_blob": "5e055e7adc210d777d7b400d33dc1f6497b2b660",
+      "sha256": "a91d4f6abbb0a0937fa449ec46063fd8844b46f5cbb5f466bedb931f1f831fbe",
+      "bytes": 4220
+    },
+    "scripts/tests/learning_host_payload_regression.gd": {
+      "git_blob": "c2ab1d716446820414bd8ebf286325b548b5154a",
+      "sha256": "53b39da402746d7998e707e07f2ff7bf4803c0c332be5fd0dbd9dc48ad4b7eea",
+      "bytes": 5685
+    },
+    "scripts/tests/fixtures/learning_host_payloads.json": {
+      "git_blob": "f727299c8ec9194e8815c276a421215e354cf730",
+      "sha256": "df186ff311e5775342793cbfd41911d9d4b5ca25a7b7083c19b8040448788264",
+      "bytes": 4951
+    }
+  },
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "results": [
+    {
+      "probe": "build_frontier_regression",
+      "mode": "headless",
+      "exit_code": 0,
+      "required_marker": "[BuildFrontier] PASS",
+      "marker_present": true,
+      "error_lines": [],
+      "log": "build_frontier_regression.log",
+      "sha256": "94eee442e2a9af4c9920c31f03fe25295476fb64bbc259c0c8f69b9ee1d9cdba",
+      "elapsed_wall_seconds": 1.2,
+      "xdg": {
+        "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-data/build_frontier_regression",
+        "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-config/build_frontier_regression",
+        "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-cache/build_frontier_regression"
+      },
+      "status": "PASS"
+    },
+    {
+      "probe": "bauwelt_identity_2013_regression",
+      "mode": "headless",
+      "exit_code": 0,
+      "required_marker": "[BauweltIdentity2013] PASS",
+      "marker_present": true,
+      "error_lines": [],
+      "log": "bauwelt_identity_2013_regression.log",
+      "sha256": "3822e77fcba64613368961e0595b58f67b456d228ebd68b0c897e4dd428d4f9a",
+      "elapsed_wall_seconds": 0.71,
+      "xdg": {
+        "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-data/bauwelt_identity_2013_regression",
+        "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-config/bauwelt_identity_2013_regression",
+        "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-cache/bauwelt_identity_2013_regression"
+      },
+      "status": "PASS"
+    },
+    {
+      "probe": "build_sandbox_tools_regression",
+      "mode": "headless",
+      "exit_code": 0,
+      "required_marker": "[BauweltSandboxTools] PASS",
+      "marker_present": true,
+      "error_lines": [],
+      "log": "build_sandbox_tools_regression.log",
+      "sha256": "7ff70fda9cce4cd004fa2d64974f9b8b7bd70b7a767e3ed8334cd16104c7f4e3",
+      "elapsed_wall_seconds": 0.36,
+      "xdg": {
+        "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-data/build_sandbox_tools_regression",
+        "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-config/build_sandbox_tools_regression",
+        "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-cache/build_sandbox_tools_regression"
+      },
+      "status": "PASS"
+    },
+    {
+      "probe": "build_transform_regression",
+      "mode": "headless",
+      "exit_code": 0,
+      "required_marker": "[BuildTransform] PASS",
+      "marker_present": true,
+      "error_lines": [],
+      "log": "build_transform_regression.log",
+      "sha256": "908189e909d8d514b48819b7fbf29727b962e2f17d4f0f28dbd43f5d690ccc5a",
+      "elapsed_wall_seconds": 0.404,
+      "xdg": {
+        "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-data/build_transform_regression",
+        "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-config/build_transform_regression",
+        "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-cache/build_transform_regression"
+      },
+      "status": "PASS"
+    },
+    {
+      "probe": "build_nextgen_play_regression",
+      "mode": "headless",
+      "exit_code": 0,
+      "required_marker": "[BuildNextgen] PASS",
+      "marker_present": true,
+      "error_lines": [],
+      "log": "build_nextgen_play_regression.log",
+      "sha256": "4f02d44a99debb7a5b7a8580c5c7ef215201906963f133e6d10c79d65d27c01c",
+      "elapsed_wall_seconds": 6.331,
+      "xdg": {
+        "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-data/build_nextgen_play_regression",
+        "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-config/build_nextgen_play_regression",
+        "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-cache/build_nextgen_play_regression"
+      },
+      "status": "PASS"
+    },
+    {
+      "probe": "learning_host_payload_regression",
+      "mode": "headless",
+      "exit_code": 0,
+      "required_marker": "[LearningHostPayload] PASS cases=5 checks=135",
+      "marker_present": true,
+      "error_lines": [],
+      "log": "learning_host_payload_regression.log",
+      "sha256": "2c10581b2fd5d475f5fdd7dfde61c1dff0c9f8284d4339ff1ebd6e9ca2a65c55",
+      "elapsed_wall_seconds": 0.418,
+      "xdg": {
+        "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-data/learning_host_payload_regression",
+        "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-config/learning_host_payload_regression",
+        "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/godot-combined-free-build-evidence/user-cache/learning_host_payload_regression"
+      },
+      "status": "PASS"
+    }
+  ],
+  "sources_after": {
+    "scripts/creative/build_frontier_landscape.gd": {
+      "git_blob": "40bf7e4e137e4c25161a5fbebe4f7ff43c18cb31",
+      "sha256": "3f6f8a5ecd60d43f3de6a77dbf4d9d154da8bde46a5800b21bd381d5aa9e819c",
+      "bytes": 4479
+    },
+    "scripts/creative/build_state.gd": {
+      "git_blob": "226e10e6dce77dd29ee70284cdb993e3a795868e",
+      "sha256": "ef633ef23749a97abc45fa0f04a065db58679ae1ba757ea441e3fc3e33a15085",
+      "bytes": 16697
+    },
+    "scripts/creative/build_world.gd": {
+      "git_blob": "93bc6926de47dda1b1a8e9cb2eb77a90030690cd",
+      "sha256": "aedd0b7e1ff02ae60db1f014c6bdcf13f20206ea72a2b46b1d67e5316b015615",
+      "bytes": 50552
+    },
+    "scripts/tests/build_frontier_regression.gd": {
+      "git_blob": "ae5b3da43f2566b1f67d4b185fbaeac625395602",
+      "sha256": "65f2cb0cbb62aa3dd71fd28b1d06718f789da87c99d9b50534c223411be772d5",
+      "bytes": 3115
+    },
+    "scripts/tests/bauwelt_identity_2013_regression.gd": {
+      "git_blob": "204c5e25fc258a7c39da223f35915c2bb1844774",
+      "sha256": "d799323cda367e1f0b04245a2d90b62bb640e46ba2590129eb4e196cac52efce",
+      "bytes": 6104
+    },
+    "scripts/tests/build_sandbox_tools_regression.gd": {
+      "git_blob": "d8250ee38d9a6a8d0d520bf7d47222b1c0dda593",
+      "sha256": "1936813b4c63108a84da641930bd3b7d9b901a13ef7a083bfdc8e5e68f38736f",
+      "bytes": 2348
+    },
+    "scripts/tests/build_transform_regression.gd": {
+      "git_blob": "5e055e7adc210d777d7b400d33dc1f6497b2b660",
+      "sha256": "a91d4f6abbb0a0937fa449ec46063fd8844b46f5cbb5f466bedb931f1f831fbe",
+      "bytes": 4220
+    },
+    "scripts/tests/learning_host_payload_regression.gd": {
+      "git_blob": "c2ab1d716446820414bd8ebf286325b548b5154a",
+      "sha256": "53b39da402746d7998e707e07f2ff7bf4803c0c332be5fd0dbd9dc48ad4b7eea",
+      "bytes": 5685
+    },
+    "scripts/tests/fixtures/learning_host_payloads.json": {
+      "git_blob": "f727299c8ec9194e8815c276a421215e354cf730",
+      "sha256": "df186ff311e5775342793cbfd41911d9d4b5ca25a7b7083c19b8040448788264",
+      "bytes": 4951
+    }
+  },
+  "sources_unchanged": true,
+  "head_after": "0687d6125ed26e564a54143372070bfa143f05cb",
+  "runner_sha256_before": "90868f4b5f4308b976585eba525490121c0766cd2c30d92b1d2d5c4b7bc5983f",
+  "runner_sha256_after": "90868f4b5f4308b976585eba525490121c0766cd2c30d92b1d2d5c4b7bc5983f",
+  "completed_at": "2026-11-13T13:19:25.582416+00:00",
+  "status": "PASS"
+}

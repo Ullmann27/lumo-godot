@@ -1,0 +1,337 @@
+{
+  "schema": 1,
+  "status": "SOURCE_CHECKPOINT_ONLY_NOT_FULL_VISUAL_APPROVAL",
+  "created_at": "2026-11-13T15:59:13.651470+00:00",
+  "head": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a",
+  "tree": "049c8a5be914b9babad0e9af8712ada777e5a077",
+  "workflow_count": 15,
+  "successful_workflow_count": 15,
+  "nextgen_run_id": 43452284466,
+  "nextgen_job_count": 8,
+  "original_files_preserved": [
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/workflow-run.json",
+      "original_name": "workflow-run.json",
+      "original_bytes": 13390,
+      "original_sha256": "eec4305bbcb806d842a81563ec1d1643ae150a2d9947ac10a8f5010112a69fc6",
+      "stored_path": "metadata/workflow-run.json",
+      "stored_bytes": 13390,
+      "stored_sha256": "eec4305bbcb806d842a81563ec1d1643ae150a2d9947ac10a8f5010112a69fc6",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/workflow-jobs.json",
+      "original_name": "workflow-jobs.json",
+      "original_bytes": 17670,
+      "original_sha256": "1e28daa1a92ccf54f2b7571a4a52113f61733f1796cc7a39b612f4028b921bbe",
+      "stored_path": "metadata/workflow-jobs.json",
+      "stored_bytes": 17670,
+      "stored_sha256": "1e28daa1a92ccf54f2b7571a4a52113f61733f1796cc7a39b612f4028b921bbe",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/workflow-artifacts.json",
+      "original_name": "workflow-artifacts.json",
+      "original_bytes": 5187,
+      "original_sha256": "0cc361688f62800869b498e716596a5781b9eb4d2aab887db44b8a75d51d2c3e",
+      "stored_path": "metadata/workflow-artifacts.json",
+      "stored_bytes": 5187,
+      "stored_sha256": "0cc361688f62800869b498e716596a5781b9eb4d2aab887db44b8a75d51d2c3e",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/archive-release.json",
+      "original_name": "archive-release.json",
+      "original_bytes": 7932,
+      "original_sha256": "c31fb2294d6297802d74288bd0fe9c012ddb69d078095ad7154819353113791d",
+      "stored_path": "metadata/archive-release.json",
+      "stored_bytes": 7932,
+      "stored_sha256": "c31fb2294d6297802d74288bd0fe9c012ddb69d078095ad7154819353113791d",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/archive-ref.json",
+      "original_name": "archive-ref.json",
+      "original_bytes": 567,
+      "original_sha256": "d0b2fb1d34f4c8a09544c3e775d95b59340784545349670ff1283d576b8ceb0a",
+      "stored_path": "metadata/archive-ref.json",
+      "stored_bytes": 567,
+      "stored_sha256": "d0b2fb1d34f4c8a09544c3e775d95b59340784545349670ff1283d576b8ceb0a",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/native-artifact-verification.json",
+      "original_name": "native-artifact-verification.json",
+      "original_bytes": 63688,
+      "original_sha256": "b24693812048e090697b2081584a18a81883a0c4e5df0278868d984a1cccf2e6",
+      "stored_path": "verification/native-artifact-verification.json.gz",
+      "stored_bytes": 12126,
+      "stored_sha256": "d0435e4f12b89b2ee91f851743ebdf738806ef3671705c991f081743d5633de6",
+      "encoding": "gzip",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/legacy-artifact-verification.json",
+      "original_name": "legacy-artifact-verification.json",
+      "original_bytes": 16285,
+      "original_sha256": "c89edf5e76ae2c5e70f57ab40767f4e9fe77f8f426186bbbb4bb1691173db480",
+      "stored_path": "verification/legacy-artifact-verification.json",
+      "stored_bytes": 16285,
+      "stored_sha256": "c89edf5e76ae2c5e70f57ab40767f4e9fe77f8f426186bbbb4bb1691173db480",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/preview-artifact-verification.json",
+      "original_name": "preview-artifact-verification.json",
+      "original_bytes": 7423,
+      "original_sha256": "029c15cd3bf40460e1771fe4f7e03ed174d28634a52280f358822398887a234b",
+      "stored_path": "verification/preview-artifact-verification.json",
+      "stored_bytes": 7423,
+      "stored_sha256": "029c15cd3bf40460e1771fe4f7e03ed174d28634a52280f358822398887a234b",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/archive-verification.json",
+      "original_name": "archive-verification.json",
+      "original_bytes": 1752,
+      "original_sha256": "690ec6da0abafbfaeddc228980184e37020ecba47134b5e08f4145517fcd910a",
+      "stored_path": "verification/archive-verification.json",
+      "stored_bytes": 1752,
+      "stored_sha256": "690ec6da0abafbfaeddc228980184e37020ecba47134b5e08f4145517fcd910a",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/expected-contract.json",
+      "original_name": "expected-contract.json",
+      "original_bytes": 19220,
+      "original_sha256": "2caaf9abf033067089b11aa3879b3bd1b2e595de7f5db167f7441c9105d13605",
+      "stored_path": "source-hashes/expected-contract.json",
+      "stored_bytes": 19220,
+      "stored_sha256": "2caaf9abf033067089b11aa3879b3bd1b2e595de7f5db167f7441c9105d13605",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/host-verifier-identity.json",
+      "original_name": "host-verifier-identity.json",
+      "original_bytes": 546,
+      "original_sha256": "8aa4a164177ab096bc0635ff1b4a5e6da7e9a0044a814dcf8c54a8786dcb2ba0",
+      "stored_path": "source-hashes/host-verifier-identity.json",
+      "stored_bytes": 546,
+      "stored_sha256": "8aa4a164177ab096bc0635ff1b4a5e6da7e9a0044a814dcf8c54a8786dcb2ba0",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/validator-f80-source-manifest.json",
+      "original_name": "validator-f80-source-manifest.json",
+      "original_bytes": 1072,
+      "original_sha256": "a71bb5de38b79bf21c57bcf57e9654226507af1e052b8bfb60202a0e78f07c15",
+      "stored_path": "source-hashes/validator-f80-source-manifest.json",
+      "stored_bytes": 1072,
+      "stored_sha256": "a71bb5de38b79bf21c57bcf57e9654226507af1e052b8bfb60202a0e78f07c15",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/handoff.md",
+      "original_name": "handoff.md",
+      "original_bytes": 4165,
+      "original_sha256": "6b390a85d0fd6156ed9dae3ce2352ae5ae299402b0d4873f82c15d53409ec760",
+      "stored_path": "original-handoff/handoff.md",
+      "stored_bytes": 4165,
+      "stored_sha256": "6b390a85d0fd6156ed9dae3ce2352ae5ae299402b0d4873f82c15d53409ec760",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/handoff-manifest.json",
+      "original_name": "handoff-manifest.json",
+      "original_bytes": 11545,
+      "original_sha256": "db172d4b3d155c3e51e7580cee9d11c7150069367bae2ddfb5c9156354b45520",
+      "stored_path": "original-handoff/handoff-manifest.json",
+      "stored_bytes": 11545,
+      "stored_sha256": "db172d4b3d155c3e51e7580cee9d11c7150069367bae2ddfb5c9156354b45520",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/review-index.md",
+      "original_name": "review-index.md",
+      "original_bytes": 4642,
+      "original_sha256": "0f2b6666c29edeccd52a5d58e3d1d33a63cd1dc447e66167cdd03aa62bd87a34",
+      "stored_path": "original-handoff/review-index.md",
+      "stored_bytes": 4642,
+      "stored_sha256": "0f2b6666c29edeccd52a5d58e3d1d33a63cd1dc447e66167cdd03aa62bd87a34",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/review-index.json",
+      "original_name": "review-index.json",
+      "original_bytes": 66174,
+      "original_sha256": "400feb20c095507216a47a851daaa2478384e08c192028880b4c98f8d29dd89a",
+      "stored_path": "original-handoff/review-index.json.gz",
+      "stored_bytes": 8751,
+      "stored_sha256": "6b65abd48bccf792c8a3e7ef59a7f67d1f123061a6c8ddb842160a0142e8cf8e",
+      "encoding": "gzip",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/root-preview-observations.json",
+      "original_name": "root-preview-observations.json",
+      "original_bytes": 1656,
+      "original_sha256": "0cdf050c40e49832dfbb05de7acc17cd8d081ecc84284530762461b7e9de4c25",
+      "stored_path": "observations/root-preview-observations.json",
+      "stored_bytes": 1656,
+      "stored_sha256": "0cdf050c40e49832dfbb05de7acc17cd8d081ecc84284530762461b7e9de4c25",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/root-followup-observations.json",
+      "original_name": "root-followup-observations.json",
+      "original_bytes": 1800,
+      "original_sha256": "dd4b5eca1bc46e960dadfe3d42de315780f676207bf48a3862ee91282eafe66e",
+      "stored_path": "observations/root-followup-observations.json",
+      "stored_bytes": 1800,
+      "stored_sha256": "dd4b5eca1bc46e960dadfe3d42de315780f676207bf48a3862ee91282eafe66e",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/verify_original_artifact.py",
+      "original_name": "verify_original_artifact.py",
+      "original_bytes": 7917,
+      "original_sha256": "301d08a47425ee5e06fd423673f62d74ac568af948b7f0e6d5a083294d25d1fc",
+      "stored_path": "verification/verify_original_artifact.py",
+      "stored_bytes": 7917,
+      "stored_sha256": "301d08a47425ee5e06fd423673f62d74ac568af948b7f0e6d5a083294d25d1fc",
+      "encoding": "identity",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/archive-evidence-job-131990514434.log",
+      "original_name": "archive-evidence-job-131990514434.log",
+      "original_bytes": 9553,
+      "original_sha256": "1a3a1f3ed031c2cffa63203902fe6babf6a449170d070bdc7d8fff01d87fc5d1",
+      "stored_path": "job-logs/archive-evidence-job-131990514434.log.gz",
+      "stored_bytes": 2879,
+      "stored_sha256": "4e9597a67161a547a78d61d411801ac4f7c11f86ae841b81ba55837f85d3f910",
+      "encoding": "gzip",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/bundle-evidence-job-131990313427.log",
+      "original_name": "bundle-evidence-job-131990313427.log",
+      "original_bytes": 11271,
+      "original_sha256": "f2d955aff375a3964c15f6dfe64c74f0bf04137ca8baa9839afac93c4332ce97",
+      "stored_path": "job-logs/bundle-evidence-job-131990313427.log.gz",
+      "stored_bytes": 3383,
+      "stored_sha256": "53a8cf1a961754acb1d01f09d56b38612fe43e9794a5905edfc753fe6dd28219",
+      "encoding": "gzip",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/gameplay-job-131977255402.log",
+      "original_name": "gameplay-job-131977255402.log",
+      "original_bytes": 527640,
+      "original_sha256": "21e2048fe99c3d39e7c1b464a02855d87cfcc57bcde174b230989072ed9e2409",
+      "stored_path": "job-logs/gameplay-job-131977255402.log.gz",
+      "stored_bytes": 77150,
+      "stored_sha256": "3fcfa38fe8085a797120b06b390d5a79936fbacb9971b2f041e9510d061205c6",
+      "encoding": "gzip",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/learning-preview-job-131977255114.log",
+      "original_name": "learning-preview-job-131977255114.log",
+      "original_bytes": 262928,
+      "original_sha256": "2c0eeb03b68c764056454ea09b92ef29a50237228275a718ce0d79d3c509bf8e",
+      "stored_path": "job-logs/learning-preview-job-131977255114.log.gz",
+      "stored_bytes": 31023,
+      "stored_sha256": "2ab67f155368cae52eb53ad678d75610f654cec730201c4a5bf28ffe8b805ddf",
+      "encoding": "gzip",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/new-worlds-job-131977254690.log",
+      "original_name": "new-worlds-job-131977254690.log",
+      "original_bytes": 591488,
+      "original_sha256": "f1a5e55adfa60e6b4cca5622e1b625d9456e1ac2b468c5f4eb98a2303b831d0a",
+      "stored_path": "job-logs/new-worlds-job-131977254690.log.gz",
+      "stored_bytes": 71220,
+      "stored_sha256": "ab5f36146e82a401e3ed1c179d46d24041fc8026c72daf3d0da348f9c6a21589",
+      "encoding": "gzip",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/touch-build-job-131977255197.log",
+      "original_name": "touch-build-job-131977255197.log",
+      "original_bytes": 256393,
+      "original_sha256": "778a69f9a8522d6a137687bd313d1b774103c9b88b70ce57b3bca2afb85866f4",
+      "stored_path": "job-logs/touch-build-job-131977255197.log.gz",
+      "stored_bytes": 30398,
+      "stored_sha256": "fbd6347b62922d8ec13b45377d166f72e5b1976fe1869a65e5bf7696dd1a7904",
+      "encoding": "gzip",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/touch-treasure-job-131977255202.log",
+      "original_name": "touch-treasure-job-131977255202.log",
+      "original_bytes": 254705,
+      "original_sha256": "b5ed4dafff6cd2f085abc60d9d1016e1565fbe7517ae2d5bc420827b9cead62e",
+      "stored_path": "job-logs/touch-treasure-job-131977255202.log.gz",
+      "stored_bytes": 30146,
+      "stored_sha256": "8ed76b82fab0a7e2fccaae7bea073a4a76c59d7f74f5a8dabc0a53990ffad208",
+      "encoding": "gzip",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "/workspace/scratch/b3485b7bb989/godot-pr160-703a8f3-nextgen-evidence/touch-workshop-job-131977255334.log",
+      "original_name": "touch-workshop-job-131977255334.log",
+      "original_bytes": 263025,
+      "original_sha256": "fe5ab5fe5caa93015abf65eb63f93e25a36dec2a8035b9c06550c6b91219291f",
+      "stored_path": "job-logs/touch-workshop-job-131977255334.log.gz",
+      "stored_bytes": 31125,
+      "stored_sha256": "f1a06794211ade7b922ab1670bde22946aa002dc12570671d718d68a21fd926b",
+      "encoding": "gzip",
+      "lossless_roundtrip_verified": true
+    },
+    {
+      "original": "https://api.github.com/repos/Ullmann27/lumo-godot/actions/runs?head_sha=703a8f3ff7714d079223c7f0a03ab2400ba6a36a&per_page=100",
+      "retrieved_at": "2026-11-13T15:54:14Z",
+      "original_bytes": 200984,
+      "original_sha256": "970d44ce8e250669bd339ae9d404d99d993040601195575ba3ac93cc5ef8e64c",
+      "stored_path": "metadata/all-workflow-runs.json.gz",
+      "stored_bytes": 5249,
+      "stored_sha256": "a102d44053c4c4c8a2329e1e90d5552d652463f1e9972ca7f80273cb22055c98",
+      "encoding": "gzip",
+      "lossless_roundtrip_verified": true
+    }
+  ],
+  "generated_files": [
+    {
+      "stored_path": "README.md",
+      "stored_bytes": 8123,
+      "stored_sha256": "0f9624bc5125015b54db3e49f5668fab9033723b29cd5aba61949ebb95891b3e"
+    },
+    {
+      "stored_path": "source-hashes/verified-source-hashes.json",
+      "stored_bytes": 4462,
+      "stored_sha256": "ca4bf8a3e7f80e21067cc47d889c14bb1e208253125f7016dabf5b1b7feb004d"
+    }
+  ],
+  "all_existing_original_files_unchanged_after_copy": true,
+  "zip_or_png_payloads_in_git_pack": false,
+  "frozen_host_validator_revision": "f80fe6b3d6a3c58c89f8507853dcbfc15a84525e",
+  "limits": "Applies solely to 703; newer 76980 source and the 12/32 capture contract require a new run."
+}

@@ -8,6 +8,7 @@ const SANDBOX = preload("res://scripts/creative/build_sandbox_tools.gd")
 const EXPLORER = preload("res://scripts/creative/build_explorer.gd")
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const JUMP_BUTTON = preload("res://scripts/games/jump_touch_button.gd")
+const FRONTIER = preload("res://scripts/creative/build_frontier_landscape.gd")
 var model = STATE.new()
 var kit = KIT.new()
 var world: Node3D
@@ -27,8 +28,8 @@ const START_TILT: float = 0.48
 const START_RADIUS: float = 44.0
 const START_FOCUS := Vector3(0.6, 0.8, 4.0)
 const RADIUS_MIN: float = 10.0
-const RADIUS_MAX: float = 72.0
-const FOCUS_LIMIT: float = 32.0
+const RADIUS_MAX: float = 240.0
+const FOCUS_LIMIT: float = float(STATE.HALF)
 var orbit: float = START_ORBIT
 var tilt: float = START_TILT
 var radius: float = START_RADIUS
@@ -45,6 +46,7 @@ var slot: int = 1
 var child_key: String = "standalone"
 var save_path: String
 var pause_panel: PanelContainer
+var choice_window: Window
 var guide_path: Array[Vector3i] = []
 var guide_time: float = 0.0
 var autosave: float = 0.0
@@ -69,6 +71,12 @@ var jump_button: Control
 var interaction_button: Button
 var mode_button: Button
 var editor_controls: Array[Control] = []
+var tool_actions: HBoxContainer
+var camera_tools: HBoxContainer
+var goal_panel: PanelContainer
+var goal_access_button: Button
+var lower_hud: VBoxContainer
+var upper_hud: MarginContainer
 var editor_camera: Dictionary = {}
 var walk_orbit := 0.48
 var walk_tilt := 0.34
@@ -80,6 +88,8 @@ var walk_notice: Label
 
 func _ready() -> void:
 	previous_runtime = RUNTIME.enter(self, true)
+	previous_runtime["embed_subwindows"] = get_viewport().gui_embed_subwindows
+	get_viewport().gui_embed_subwindows = true
 	SceneRouter.current_scene_id = "build"
 	child_key = (
 		str(
@@ -99,7 +109,7 @@ func _ready() -> void:
 	add_child(world)
 	camera = Camera3D.new()
 	camera.fov = 54
-	camera.far = 200
+	camera.far = 520
 	add_child(camera)
 	camera.current = true
 	preview = kit.box(self, Vector3(-5, 0.5, 0), Vector3.ONE * 1.01, Color("67deff"))
@@ -136,9 +146,11 @@ func _ready() -> void:
 		model.add_starter_plot("island", false)
 	_rebuild()
 	explorer = EXPLORER.new()
+	explorer.horizontal_limit = Vector2.ONE * (float(STATE.HALF) + 0.35)
 	add_child(explorer)
 	_camera_update()
 	get_viewport().size_changed.connect(_resize)
+	RUNTIME.watch_safe_area(self, _resize)
 	_resize()
 	_update_labels()
 	print("[Bauwelt] ready: real geometry, ", CATALOG.PARTS.size(), " parts, save=", save_path)
@@ -146,7 +158,7 @@ func _ready() -> void:
 
 func _ground() -> void:
 	# Collision stays a flat island so placed blocks do not float; visuals are dressed separately.
-	# Footprint matches build_state.HALF (24): banks x=-24.5..0 and 4..24.5, z=-24.5..24.5.
+	# One collider per bank covers the full sparse world; the river stays open.
 	var half := float(STATE.HALF) + 0.5
 	for side in [-1, 1]:
 		var bank := StaticBody3D.new()
@@ -167,18 +179,28 @@ func _ground() -> void:
 		add_child(isle)
 		kit.collision(isle, Vector3(2.0, -1.2, island_z), Vector3(4.0, 2.4, 4.0))
 	BuildLandmarks.dress_world(self, kit)
+	FRONTIER.dress(self, kit, float(STATE.HALF) + 0.5)
 
 
 func _resize() -> void:
+	if not is_inside_tree():
+		return
 	_camera_update()
 	if is_instance_valid(safe_ui):
 		RUNTIME.safe_area(self, safe_ui)
 		if is_instance_valid(pause_panel):
 			pause_panel.position = (safe_ui.size - pause_panel.size) * 0.5
 		_layout_explore_controls()
+		_layout_choice_dialog()
+		_layout_camera_tools.call_deferred()
+		_layout_goal_access.call_deferred()
 
 
 func _exit_tree() -> void:
+	RUNTIME.unwatch_safe_area(self)
+	if get_viewport().size_changed.is_connected(_resize):
+		get_viewport().size_changed.disconnect(_resize)
+	get_viewport().gui_embed_subwindows = bool(previous_runtime.get("embed_subwindows", false))
 	RUNTIME.restore(self, previous_runtime)
 
 
@@ -191,6 +213,7 @@ func _ui() -> void:
 	canvas.add_child(root)
 	safe_ui = root
 	var margin := MarginContainer.new()
+	upper_hud = margin
 	margin.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	margin.add_theme_constant_override("margin_left", 12)
 	margin.add_theme_constant_override("margin_right", 12)
@@ -212,18 +235,29 @@ func _ui() -> void:
 	var tools := HBoxContainer.new()
 	hud.add_child(tools)
 	editor_controls.append(tools)
+	# Primary build actions must remain physically touchable while auxiliary
+	# modes scroll. Keeping their nodes outside ScrollContainer prevents
+	# clipped coordinates from eating real tap releases.
+	var pinned_tools := HBoxContainer.new()
+	tools.add_child(pinned_tools)
+	for pinned_spec in [["Verschieben", _toggle_move], ["Drehen ↻", _rotate]]:
+		var pinned_button := _day_button(pinned_spec[0], pinned_spec[1])
+		# Primary actions are not world gestures; consuming the touch prevents
+		# a rotate tap from also committing the selected piece.
+		pinned_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		pinned_tools.add_child(pinned_button)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	tools.add_child(scroll)
 	var actions := HBoxContainer.new()
+	tool_actions = actions
 	scroll.add_child(actions)
 	for spec in [
-		["Verschieben", _toggle_move],
-		["Siedlung", _open_settlement.bind("settlement")],
 		["Wettbau", _open_settlement.bind("rival")],
-		["Drehen ↻", _rotate],
+		["Siedlung", _open_settlement.bind("settlement")],
+		["Dorf & Wirtschaft", _open_settlement.bind("settlement", true)],
 		["Entfernen", _toggle_erase],
 		["Rückgängig", _undo],
 		["Wiederholen", _redo],
@@ -237,7 +271,13 @@ func _ui() -> void:
 		["Vorlagen", _templates],
 		["Bauziele", _goals]
 	]:
-		actions.add_child(_day_button(spec[0], spec[1]))
+		var action_button := _day_button(spec[0], spec[1])
+		action_button.mouse_filter = Control.MOUSE_FILTER_PASS
+		actions.add_child(action_button)
+	goal_access_button = _day_button("Aktuelles Bauziel", _current_goal)
+	goal_access_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	goal_access_button.visible = false
+	actions.add_child(goal_access_button)
 	mode_button = _day_button("Mit Lumo laufen", _toggle_explore)
 	top.add_child(mode_button)
 	var layer_down: Button = _day_button(
@@ -252,9 +292,11 @@ func _ui() -> void:
 			layer = mini(17, layer + 1)
 			_update_labels()
 	)
+	layer_down.mouse_filter = Control.MOUSE_FILTER_PASS
+	layer_up.mouse_filter = Control.MOUSE_FILTER_PASS
 	actions.add_child(layer_down)
 	actions.add_child(layer_up)
-	var goal_panel := PanelContainer.new()
+	goal_panel = PanelContainer.new()
 	goal_panel.add_theme_stylebox_override("panel", _day_panel())
 	goal_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
 	goal_panel.position = Vector2(14, 156)
@@ -269,6 +311,7 @@ func _ui() -> void:
 	goal_box.add_child(goal_label)
 	goal_box.add_child(_day_button("Mein Bauwerk testen", _test_challenge))
 	var lower := VBoxContainer.new()
+	lower_hud = lower
 	lower.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	lower.offset_top = -162
 	lower.offset_left = 12
@@ -301,7 +344,7 @@ func _ui() -> void:
 	palette = HBoxContainer.new()
 	parts_scroll.add_child(palette)
 	_palette()
-	var camera_tools := HBoxContainer.new()
+	camera_tools = HBoxContainer.new()
 	camera_tools.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
 	camera_tools.position = Vector2(-200, -228)
 	root.add_child(camera_tools)
@@ -350,6 +393,46 @@ func _ui() -> void:
 	pause_box.add_child(_day_button("Speichern", save_world))
 	pause_box.add_child(_day_button("Zur Spielewelt", _leave))
 	_build_explore_controls(root)
+
+
+func _layout_camera_tools() -> void:
+	if not is_inside_tree():
+		return
+	if not is_instance_valid(camera_tools) or not is_instance_valid(tool_actions):
+		return
+	var floating_top := safe_ui.get_global_rect().end.y - 228.0
+	var toolbar_bottom := tool_actions.get_global_rect().end.y
+	var compact := floating_top < toolbar_bottom + 8.0
+	for button in camera_tools.get_children():
+		button.mouse_filter = Control.MOUSE_FILTER_PASS if compact else Control.MOUSE_FILTER_STOP
+	# On a short landscape screen the floating camera row would intercept
+	# toolbar touches. Preserve every action in the existing scrolling row.
+	if compact:
+		if camera_tools.get_parent() != tool_actions:
+			camera_tools.reparent(tool_actions, false)
+			camera_tools.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	else:
+		if camera_tools.get_parent() != safe_ui:
+			camera_tools.reparent(safe_ui, false)
+		camera_tools.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+		camera_tools.position = safe_ui.size + Vector2(-200, -228)
+
+
+func _layout_goal_access() -> void:
+	if not is_inside_tree():
+		return
+	if not is_instance_valid(goal_panel) or not is_instance_valid(lower_hud):
+		return
+	# Preserve the complete assignment and its original action when the fixed
+	# panel would be covered by the bottom palette on a short display.
+	var compact := goal_panel.get_global_rect().end.y + 8.0 > lower_hud.get_global_rect().position.y
+	goal_panel.visible = not compact and not exploring
+	goal_access_button.visible = compact
+
+
+func _current_goal() -> void:
+	_choice_dialog("Aktuelles Bauziel", [[goal, "Mein Bauwerk testen"]],
+		func(_id): _test_challenge(), goal_label.text)
 
 
 func _palette() -> void:
@@ -519,7 +602,7 @@ func _camera_update() -> void:
 func _ray(at: Vector2) -> Dictionary:
 	var origin: Vector3 = camera.project_ray_origin(at)
 	var query := PhysicsRayQueryParameters3D.create(
-		origin, origin + camera.project_ray_normal(at) * 150
+		origin, origin + camera.project_ray_normal(at) * camera.far
 	)
 	return get_world_3d().direct_space_state.intersect_ray(query)
 
@@ -590,6 +673,16 @@ func _tap(at: Vector2) -> void:
 		_place_feedback(cell)
 
 
+func _world_gesture_starts_on_ui(point: Vector2) -> bool:
+	for control in [upper_hud, lower_hud, goal_panel, camera_tools]:
+		if not is_instance_valid(control) or not control.is_visible_in_tree():
+			continue
+		var local: Vector2 = control.get_global_transform_with_canvas().affine_inverse() * point
+		if Rect2(Vector2.ZERO, control.size).has_point(local):
+			return true
+	return false
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
 		return
@@ -597,6 +690,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		_pause(not paused)
 		return
 	if paused:
+		return
+	# Scrolling controls pass touch events to their ancestors. Such a press
+	# belongs to the HUD and must not also start an orbit or object drag below.
+	# Existing world gestures keep their original release/ownership behavior.
+	if ((event is InputEventScreenTouch or event is InputEventMouseButton)
+		and event.pressed and _world_gesture_starts_on_ui(event.position)):
 		return
 	if exploring:
 		_explore_input(event)
@@ -858,6 +957,7 @@ func _update_labels() -> void:
 	goal_label.text = (
 		str(texts[goal]) + ("\n✓ Schon geschafft" if model.completed.has(goal) else "")
 	)
+	_layout_goal_access.call_deferred()
 
 
 func _pause(value: bool) -> void:
@@ -933,11 +1033,15 @@ func load_world(show_message: bool = true) -> bool:
 	return true
 
 
-func _choice_dialog(title: String, items: Array, action: Callable) -> void:
+func _choice_dialog(title: String, items: Array, action: Callable, description: String = "") -> void:
+	if is_instance_valid(choice_window):
+		return
 	var dialog := Window.new()
+	choice_window = dialog
+	dialog.name = "BuildChoiceDialog"
 	dialog.title = title
-	var available := get_viewport().get_visible_rect().size - Vector2(24, 24)
-	dialog.size = Vector2i(minf(390, available.x), minf(500, available.y))
+	dialog.borderless = true
+	dialog.unresizable = true
 	dialog.transient = true
 	dialog.exclusive = true
 	add_child(dialog)
@@ -947,12 +1051,48 @@ func _choice_dialog(title: String, items: Array, action: Callable) -> void:
 	dialog.add_child(panel)
 	var box := VBoxContainer.new()
 	panel.add_child(box)
-	box.add_child(_day_label(title, 23))
+	var heading := _day_label(title, 23)
+	heading.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(heading)
+	var scroll := ScrollContainer.new()
+	scroll.name = "BuildChoicesScroll"
+	scroll.custom_minimum_size.y = 48
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	box.add_child(scroll)
+	var choices := VBoxContainer.new()
+	choices.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(choices)
+	if not description.is_empty():
+		var details := _day_label(description, 17)
+		details.name = "BuildGoalDescription"
+		details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		details.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		details.mouse_filter = Control.MOUSE_FILTER_PASS
+		choices.add_child(details)
 	for item in items:
-		box.add_child(_day_button(item[1], _choose.bind(action, item[0], dialog)))
+		var button := _day_button(item[1], _choose.bind(action, item[0], dialog))
+		button.mouse_filter = Control.MOUSE_FILTER_PASS
+		choices.add_child(button)
+	# Cancellation stays outside the scroll viewport, including on a short phone.
 	box.add_child(_day_button("Abbrechen", dialog.queue_free))
 	dialog.close_requested.connect(dialog.queue_free)
+	_layout_choice_dialog()
 	dialog.popup_centered()
+	_layout_choice_dialog()
+
+
+func _layout_choice_dialog() -> void:
+	if not is_instance_valid(choice_window) or not is_instance_valid(safe_ui):
+		return
+	var available := safe_ui.size - Vector2(24, 24)
+	var extent := Vector2i(minf(390, available.x), minf(500, available.y))
+	# Keep the real Window viewport at the bounded size; reset the old minimum
+	# first so an already open dialog can shrink when a Fold changes orientation.
+	choice_window.min_size = Vector2i.ZERO
+	choice_window.size = extent
+	choice_window.min_size = extent
+	choice_window.position = Vector2i(safe_ui.position + (safe_ui.size - Vector2(extent)) * 0.5)
 
 
 func _slots() -> void:
@@ -1134,10 +1274,11 @@ func _toggle_move() -> void:
 	)
 
 
-func _open_settlement(mode: String) -> void:
+func _open_settlement(mode: String, living_village := false) -> void:
 	if paused or not save_world(false):
 		return
 	SceneRouter.launch_options["settlementMode"] = mode
+	SceneRouter.launch_options["livingVillage"] = living_village and mode == "settlement"
 	SceneRouter.launch_options["buildSlot"] = slot
 	SceneRouter.goto("settlement")
 
@@ -1357,25 +1498,38 @@ func _toggle_explore() -> void:
 	jump_button.set_enabled(exploring)
 	mode_button.text = "Weiterbauen" if exploring else "Mit Lumo laufen"
 	_layout_explore_controls()
+	_layout_goal_access.call_deferred()
 
 
 func _find_explorer_spawn() -> Vector3:
 	var occupied: Dictionary = model.occupied()
-	var preferred := Vector3i(clampi(roundi(focus.x), -23, 23), 0, clampi(roundi(focus.z + 3), -23, 23))
-	var nearest := Vector3(-24.2, 0.08, -24.2)
-	var best_distance := INF
-	for x in range(-23, 24):
-		for z in range(-23, 24):
-			if not STATE.ground_at(x, z):
-				continue
-			if occupied.has(Vector3i(x, 0, z)) or occupied.has(Vector3i(x, 1, z)):
-				continue
-			var distance := Vector3i(x, 0, z).distance_squared_to(preferred)
-			if distance < best_distance:
-				best_distance = distance
-				nearest = Vector3(x + 0.5, 0.08, z + 0.5)
-	# At the world limit there are always bank cells outside the placed volumes.
-	return nearest
+	var inner := STATE.HALF - 1
+	var preferred := Vector2i(
+		clampi(roundi(focus.x), -inner, inner),
+		clampi(roundi(focus.z + 3), -inner, inner)
+	)
+	# Search outward from the camera, stopping at the first safe ring instead
+	# of scanning all 66,049 cells whenever a child enters walking mode.
+	for distance in range(STATE.HALF * 2):
+		for dx in range(-distance, distance + 1):
+			for dz in [-distance, distance]:
+				var cell := Vector3i(preferred.x + dx, 0, preferred.y + dz)
+				if _spawn_cell_is_clear(cell, occupied):
+					return Vector3(cell.x + 0.5, 0.08, cell.z + 0.5)
+		for dz in range(-distance + 1, distance):
+			for dx in [-distance, distance]:
+				var cell := Vector3i(preferred.x + dx, 0, preferred.y + dz)
+				if _spawn_cell_is_clear(cell, occupied):
+					return Vector3(cell.x + 0.5, 0.08, cell.z + 0.5)
+	return Vector3(-float(STATE.HALF) + 0.15, 0.08, -float(STATE.HALF) + 0.15)
+
+
+func _spawn_cell_is_clear(cell: Vector3i, occupied: Dictionary) -> bool:
+	return (
+		abs(cell.x) < STATE.HALF and abs(cell.z) < STATE.HALF
+		and STATE.ground_at(cell.x, cell.z)
+		and not occupied.has(cell) and not occupied.has(cell + Vector3i.UP)
+	)
 
 
 func _physics_process(delta: float) -> void:

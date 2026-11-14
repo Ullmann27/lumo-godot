@@ -1,0 +1,130 @@
+{
+  "status": "ALL_SOURCE_BYTES_AND_ORIGINAL_MANIFEST_VERIFIED",
+  "relative_directory": "../auxiliary",
+  "manifest_sha256": "377da7392131672497aff1157ca31c8365af9bb632beb5fb1d9ca8ad5d84193c",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1207,
+      "sha256": "4c359a3484854c0912a148519660d47d8385cf8bfef0850f4e661c4d3438d6f7"
+    },
+    {
+      "path": "checkpoint-manifest.json",
+      "bytes": 4754,
+      "sha256": "e3265814228e74998e7365ad6965958304733287ad503bab4a6ef1e6af835639"
+    },
+    {
+      "path": "jobs-43466004691.json.gz",
+      "bytes": 630,
+      "sha256": "7fb48527a6c5683ae3a37a3c86a05f3628dc4d1f7db44a4b3ca3b83817621f7a"
+    },
+    {
+      "path": "jobs-43466004712.json.gz",
+      "bytes": 841,
+      "sha256": "c2b736722f2d322353af6fe7b68ebafa97c63747b4acef3e876a8a5d3ec70e43"
+    },
+    {
+      "path": "jobs-43466004770.json.gz",
+      "bytes": 869,
+      "sha256": "45a9ba7d61fad73c8c7df0689f7c1d01b872dd001a708d5ab5380d2d7734a16e"
+    },
+    {
+      "path": "jobs-43466004867.json.gz",
+      "bytes": 900,
+      "sha256": "04b9d414bff1a0cd424f8de3b17190f45690bcf4bbac2cb7da0a5d9b9c3305c0"
+    },
+    {
+      "path": "jobs-43466004913.json.gz",
+      "bytes": 743,
+      "sha256": "4a384bf417aa5f95d2d42760e679b8aac2e70915c8615257f3c60a81d31f2c97"
+    },
+    {
+      "path": "jobs-43466004952.json.gz",
+      "bytes": 795,
+      "sha256": "5f54dad08e3f19975486061ef4697f997749a5ce67e7460fbe17e3ffdfedee3b"
+    },
+    {
+      "path": "jobs-43466004975.json.gz",
+      "bytes": 1424,
+      "sha256": "d2f1de97fd32fdd8a7d23f3692e2958504691430fc1e25eee18bc2c67c788b81"
+    },
+    {
+      "path": "jobs-43466004983.json.gz",
+      "bytes": 781,
+      "sha256": "78fb8d1ab4dd72296d2a2e21e2650875f71c9e78024aebdd5f9fcede2855f647"
+    },
+    {
+      "path": "jobs-43466004997.json.gz",
+      "bytes": 814,
+      "sha256": "766a7c934b21004f1c09916f3f715c4f72d2e59c0af18bb491f825254a4b995b"
+    },
+    {
+      "path": "jobs-43466005026.json.gz",
+      "bytes": 760,
+      "sha256": "ea3acb56880c4169b1a4d74d791dab9597a10aab1775bb499eb64c0bed31b637"
+    },
+    {
+      "path": "jobs-43466005046.json.gz",
+      "bytes": 781,
+      "sha256": "f636919fef085699844b633f77e463fcaeecab5eecad2e1956b75e0f4ae6c67d"
+    },
+    {
+      "path": "jobs-43466005109.json.gz",
+      "bytes": 760,
+      "sha256": "f78ef3cb0e92ade189423c6b8d2af48fd3922a10e2dee9ffa57740ea54847dba"
+    },
+    {
+      "path": "jobs-43466005236.json.gz",
+      "bytes": 877,
+      "sha256": "dd3f412f58bb185a4b3c2c863274cfce5e14452508c0898271e66c2c98b2e207"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 6205,
+      "sha256": "377da7392131672497aff1157ca31c8365af9bb632beb5fb1d9ca8ad5d84193c"
+    },
+    {
+      "path": "pull-160.json.gz",
+      "bytes": 4469,
+      "sha256": "c2a2d4c35fe842264c0ac5c8decb8162e59fd08e55dfc53df8a5e18129deb3b1"
+    },
+    {
+      "path": "run-43466004975-final.json.gz",
+      "bytes": 2028,
+      "sha256": "d8f6ea0f3a8a6204eec403ac8a3d95863f47feb667d1066d35378cb71a2975a5"
+    },
+    {
+      "path": "source-commit.json.gz",
+      "bytes": 807,
+      "sha256": "8036d0ffcd8ae2a6cf69cbf1fb09f9f0b9104d793b8c34ec3d73bbe5ab299027"
+    },
+    {
+      "path": "verification-summary.json",
+      "bytes": 13524,
+      "sha256": "db7d128f7c926006ba4cd7cec50907db15dc5a63eaf803f7967500f6b6d12352"
+    },
+    {
+      "path": "workflow-runs-checkpoint.json.gz",
+      "bytes": 5274,
+      "sha256": "be81e59c9429f934875cdfea576080020bb13c749441447c1ebd872ac1707ea6"
+    },
+    {
+      "path": "workflow-runs-final.json.gz",
+      "bytes": 5287,
+      "sha256": "9039039bae424a5f3dc4f63eb772ba4747287eedbd7a2b171efadd5e9b0be222"
+    },
+    {
+      "path": "workflow-runs-initial.json.gz",
+      "bytes": 5222,
+      "sha256": "22924b434313ba609b4deaaf0e9c24d71c0e40f0c0ea661413ea88682847539c"
+    }
+  ],
+  "totals": {
+    "workflows": 13,
+    "jobs": 14,
+    "steps": 155,
+    "success_steps": 153,
+    "skipped_steps": 2,
+    "failed_steps": 0
+  }
+}

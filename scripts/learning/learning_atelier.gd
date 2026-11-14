@@ -2,6 +2,8 @@ extends Node3D
 ## A real, bounded garden atelier around the manipulatives. Shared meshes and
 ## MultiMesh batches keep the architecture independent of the lesson state.
 const BEVEL = preload("res://scripts/games/visual/kart_harbor_cinema.gd")
+const STUDIO_PATH := "res://assets/learning/studio/learning_studio.glb"
+const LEAF_SHADER = preload("res://assets/learning/studio/studio_leaf_motion.gdshader")
 var _box_mesh: ArrayMesh
 var _batches: Dictionary = {}
 var _materials: Dictionary = {}
@@ -11,12 +13,32 @@ func _ready() -> void:
 	name = "LearningGardenAtelier"
 	_box_mesh = BEVEL._bevel_box(0.035)
 	_floor()
-	_backdrop()
-	_furniture()
+	_studio_architecture()
 	_garden()
 	_flush()
 	_original_lantern(Vector3(4.85, 1.75, -4.45), 0.62)
 	_original_lantern(Vector3(-4.85, 1.75, -4.45), 0.62)
+
+
+func _studio_architecture() -> void:
+	var packed := load(STUDIO_PATH) as PackedScene
+	if packed == null:
+		push_error("Learning studio geometry is unavailable: " + STUDIO_PATH)
+		return
+	var studio := packed.instantiate() as Node3D
+	studio.name = "BlenderLearningStudio"
+	add_child(studio)
+	var reduced := bool(get_parent().get("reduced_motion"))
+	for node: MeshInstance3D in studio.find_children("*", "MeshInstance3D", true, false):
+		for index in range(node.mesh.get_surface_count()):
+			var source := node.get_active_material(index) as StandardMaterial3D
+			if source == null or not source.resource_name.begins_with("StudioLeaf"):
+				continue
+			var moving_leaf := ShaderMaterial.new()
+			moving_leaf.shader = LEAF_SHADER
+			moving_leaf.set_shader_parameter("base_color", source.albedo_color)
+			moving_leaf.set_shader_parameter("motion_weight", 0.0 if reduced else 1.0)
+			node.set_surface_override_material(index, moving_leaf)
 
 
 func _material(key: String, color: Color, roughness: float = 0.85) -> StandardMaterial3D:
@@ -79,80 +101,6 @@ func _floor() -> void:
 				"rug_stitch",
 				Color("9da785")
 			)
-
-
-func _backdrop() -> void:
-	var stone := Color("cbc3a8")
-	var timber := Color("725035")
-	# Open arches frame actual trees behind the teaching area.
-	for x in [-4.4, 0.0, 4.4]:
-		for side in [-1.0, 1.0]:
-			_box(
-				Vector3(x + side * 1.48, 1.34, -5.65),
-				Vector3(0.3, 2.8, 0.42),
-				"warm_columns",
-				stone
-			)
-			_box(
-				Vector3(x + side * 1.48, 0.16, -5.65), Vector3(0.5, 0.3, 0.65), "column_feet", stone
-			)
-		for segment in range(14):
-			var angle := (float(segment) + 0.5) / 14.0 * PI
-			_box(
-				Vector3(x + cos(angle) * 1.48, 2.7 + sin(angle) * 1.48, -5.65),
-				Vector3(0.37, 0.34, 0.44),
-				"arch_stones",
-				stone,
-				Vector3(0, 0, angle + PI * 0.5)
-			)
-		_box(Vector3(x, 0.55, -5.68), Vector3(2.65, 0.18, 0.42), "window_rail", timber)
-	_box(Vector3(0, 4.65, -5.65), Vector3(13.0, 0.32, 0.48), "roof_timber", timber)
-	for side in [-1.0, 1.0]:
-		_box(Vector3(side * 6.15, 1.85, -2.1), Vector3(0.3, 3.85, 0.3), "roof_posts", timber)
-		_box(Vector3(side * 6.15, 3.85, -3.9), Vector3(0.3, 0.23, 3.8), "roof_posts", timber)
-		_box(Vector3(side * 6.15, 0.7, 0.25), Vector3(0.25, 0.18, 5.0), "terrace_rail", timber)
-		for z in [-2.0, 0.0, 2.5]:
-			_box(Vector3(side * 6.15, 0.32, z), Vector3(0.18, 0.7, 0.18), "terrace_rail", timber)
-
-
-func _furniture() -> void:
-	var wood := Color("644931")
-	var books: Array[Color] = [Color("356975"), Color("b06942"), Color("4b7160"), Color("786283")]
-	for side in [-1.0, 1.0]:
-		var x: float = side * 4.85
-		for shelf in range(3):
-			_box(Vector3(x, 0.35 + shelf * 0.65, -4.6), Vector3(1.8, 0.12, 0.72), "shelves", wood)
-		for edge in [-0.84, 0.84]:
-			_box(Vector3(x + edge, 0.98, -4.6), Vector3(0.12, 1.85, 0.7), "shelves", wood)
-		for index in range(11):
-			var shelf := index / 6
-			var local_x := float(index % 6) * 0.25 - 0.65
-			var height_value := 0.37 + float(index % 3) * 0.06
-			_box(
-				Vector3(x + local_x, 0.43 + shelf * 0.65 + height_value * 0.5, -4.5),
-				Vector3(0.19, height_value, 0.41),
-				"book_%d" % (index % 4),
-				books[index % 4]
-			)
-			_box(
-				Vector3(x + local_x, 0.48 + shelf * 0.65, -4.28),
-				Vector3(0.13, 0.035, 0.02),
-				"book_detail",
-				Color("ceb785")
-			)
-	# A low side bench and an open book make the atelier inhabited without
-	# placing clutter between the child and the manipulatives.
-	_box(Vector3(4.8, 0.55, 2.0), Vector3(1.5, 0.16, 2.0), "bench", wood)
-	for z in [1.3, 2.7]:
-		_box(Vector3(4.8, 0.24, z), Vector3(1.3, 0.55, 0.14), "bench", wood)
-	for side in [-1.0, 1.0]:
-		_box(
-			Vector3(4.8 + side * 0.22, 0.68, 1.8),
-			Vector3(0.44, 0.06, 0.65),
-			"book_pages",
-			Color("dacdad"),
-			Vector3(0, 0.18, -side * 0.10)
-		)
 
 
 func _garden() -> void:

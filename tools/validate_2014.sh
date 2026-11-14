@@ -28,8 +28,7 @@ run_probe() {
   fi
   timeout 240s "${command[@]}" "${args[@]}" 2>&1 | tee "$log"
   grep -F "$marker" "$log" >/dev/null
-  if grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' "$log" \
-      | grep -v 'resources still in use at exit' | grep -q .; then
+  if grep -qE 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' "$log"; then
     echo "2014 acceptance failed: $name" >&2
     return 1
   fi

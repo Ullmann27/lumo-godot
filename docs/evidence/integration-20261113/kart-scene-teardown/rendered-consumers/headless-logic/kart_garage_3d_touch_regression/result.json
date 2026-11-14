@@ -1,0 +1,41 @@
+{
+  "probe": "kart_garage_3d_touch_regression",
+  "kind": "headless-logic",
+  "actual_renderer_tested": false,
+  "command": [
+    "python3",
+    "tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_garage_3d_touch_regression/engine.log",
+    "--timeout",
+    "420",
+    "--required",
+    "[Garage3DTouch] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "res://scripts/tests/kart_garage_3d_touch_regression.gd"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "started_at_utc": "2026-11-13T16:33:32.459556+00:00",
+  "finished_at_utc": "2026-11-13T16:33:42.667863+00:00",
+  "duration_seconds": 10.208,
+  "exit_code": 0,
+  "strict_error_lines": [],
+  "scoped_sources_unchanged": true,
+  "local_head_at_end": "a59dca033d1ad6afa4afbf0b51b03e04fe8c4ef9",
+  "source_count": 858,
+  "runner_log_sha256": "9404ae166e56b0e40124e80f4353f27c57ae79a0aa1454e1d5d8f003dd41c489",
+  "success": true,
+  "runtime_markers": [
+    "[Garage3DTouch] native teardown tracked=1 scene_released=true audio_released=true elapsed_ms=65",
+    "[Garage3DTouch] legacy teardown tracked=0 scene_released=true audio_released=true elapsed_ms=53",
+    "[Garage3DTouch] PASS 27 checks: native input, legacy ray, pointer ownership"
+  ],
+  "scope": "Unmodified headless logic/input and real resource cleanup only; the existing CI rendered gate remains required."
+}

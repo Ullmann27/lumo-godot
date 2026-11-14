@@ -5,6 +5,7 @@ extends SceneTree
 const STEP: float = 1.0 / 60.0
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 var game
 ## Assertions abort their check function; only all four completed checks pass.
 var completed_checks: int = 0
@@ -188,12 +189,13 @@ func _run() -> void:
 	await _test_rival_arc()
 	await _test_no_ramp_elsewhere()
 	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[KartJump]")):
+		push_error("[KartJump] FAIL: scene/audio teardown incomplete")
+		quit(1)
+		return
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	if completed_checks != 4:
 		print("[KartJump] FAIL: %d of 4 checks completed" % completed_checks)
-		await create_timer(0.5).timeout
 		quit(1)
 		return
 	print(
@@ -202,5 +204,4 @@ func _run() -> void:
 			+ "ordered checkpoints across the jump, rival arc, no ramp elsewhere"
 		)
 	)
-	await create_timer(0.5).timeout
 	quit(0)

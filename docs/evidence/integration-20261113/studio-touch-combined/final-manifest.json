@@ -1,0 +1,158 @@
+{
+  "schema": 1,
+  "status": "PASS_3_HEADLESS_PROBES_ONLY",
+  "tested_head": "5f6c669cd7234a583fda656df0f1b1d224b3d21c",
+  "tested_tree": "85d6ee57b55a1a09f6dc7df59070e060d6596522",
+  "published_producer": "24fb85800dfb58ec11dd409449e276299aa72b06",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "source_before_manifest_sha256": "7a1c81a02a910907614dc1acb42f4b160871d5e550b0dc304b28dba4610fe267",
+  "source_files_verified_before_after": 1191,
+  "source_files_changed": [],
+  "focused_source_blobs": [
+    {
+      "path": "scripts/games/kart_workshop.gd",
+      "git_blob": "8e7f8de46a43aa920d5cbfd59f370e2a849c3d4d",
+      "sha256": "c6c2b6a3b3acda5cfc4bf7e074e4d19c1617536f46165166994eb8cd329a6090"
+    },
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "git_blob": "7421c9c8ae189216b2df2155df313a3c27228b6e",
+      "sha256": "d0012aad1c1be0959891588b89d84d5e0082427d95b0082686162d16ea9afb9f"
+    },
+    {
+      "path": "scripts/creative/build_world.gd",
+      "git_blob": "a775d7d6a6975bdef4dcadd27fd5086ef1b913db",
+      "sha256": "68ae2d1f2b63d1e0f24100da73b8a4b082667cce83696bbc81f50b34570fe778"
+    },
+    {
+      "path": "scripts/tests/kart_workshop_density_regression.gd",
+      "git_blob": "df50ac4c3df74d3c4937cb0f0ef93d9af317182c",
+      "sha256": "06ec58fa89036a66eb1d15f8e90c8a03b0f947119a2b327a479521adc034c61d"
+    },
+    {
+      "path": "scripts/tests/treasure_density_regression.gd",
+      "git_blob": "22f3cf0b4203edaa98887c4af159f826c56923ed",
+      "sha256": "b3be76fa9caa6da23490fb2de684397f21afac7c21b02e65a3a137c16d655f70"
+    },
+    {
+      "path": "scripts/tests/build_dialog_density_regression.gd",
+      "git_blob": "e8b5263b1ace06d22f97ddb7e4c2257804e8584c",
+      "sha256": "7eb920392b1c057652f691030a5c12e85fbc1f1b346f2fd90dd68694a462f846"
+    }
+  ],
+  "head_after": "5f6c669cd7234a583fda656df0f1b1d224b3d21c",
+  "tracked_dirty_after": " M .github/workflows/lumo-nextgen-2018.yml\n M tools/tests/test_nextgen_runner.py\n",
+  "results": [
+    {
+      "scope": "workshop",
+      "probe": "kart_workshop_density_regression",
+      "mode": "headless",
+      "strict_runner_exit_code": 0,
+      "required_marker": "[WorkshopDensity] PASS",
+      "checks": 4129,
+      "profiles": 8,
+      "error_lines": 0,
+      "captures": 0,
+      "log": "workshop/kart_workshop_density_regression-headless.log",
+      "log_sha256": "a3bfb9bab60e0265e9e5aa02357d8f15b3e9ff9e5e6293eb0ddba452d88580a9",
+      "log_bytes": 3861,
+      "xdg_data_home": "/workspace/scratch/b3485b7bb989/godot-studio-touch-combined-evidence/workshop/data",
+      "deadline_seconds": 600,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/godot-studio-touch-combined-evidence/workshop/kart_workshop_density_regression-headless.log",
+        "--timeout",
+        "600",
+        "--required",
+        "[WorkshopDensity] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "scripts/tests/kart_workshop_density_regression.gd"
+      ]
+    },
+    {
+      "scope": "treasure",
+      "probe": "treasure_density_regression",
+      "mode": "headless",
+      "strict_runner_exit_code": 0,
+      "required_marker": "[TreasureDensity] PASS",
+      "checks": 1085,
+      "profiles": 6,
+      "error_lines": 0,
+      "captures": 0,
+      "log": "treasure/treasure_density_regression-headless.log",
+      "log_sha256": "060640c2d2ca42313f65019bd3fb26b39c83e63de72aec445d16b7a22d704f7c",
+      "log_bytes": 893,
+      "xdg_data_home": "/workspace/scratch/b3485b7bb989/godot-studio-touch-combined-evidence/treasure/data",
+      "deadline_seconds": 600,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/godot-studio-touch-combined-evidence/treasure/treasure_density_regression-headless.log",
+        "--timeout",
+        "600",
+        "--required",
+        "[TreasureDensity] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "scripts/tests/treasure_density_regression.gd"
+      ]
+    },
+    {
+      "scope": "build",
+      "probe": "build_dialog_density_regression",
+      "mode": "headless",
+      "strict_runner_exit_code": 0,
+      "required_marker": "[BuildDialogDensity] PASS",
+      "checks": 1637,
+      "profiles": 5,
+      "error_lines": 0,
+      "captures": 0,
+      "log": "build/build_dialog_density_regression-headless.log",
+      "log_sha256": "eff4e5a9f17fd320ccdc7a8047cdd0b157d00441aa47e88a74186ab2117a4a91",
+      "log_bytes": 1418,
+      "xdg_data_home": "/workspace/scratch/b3485b7bb989/godot-studio-touch-combined-evidence/build/data",
+      "deadline_seconds": 600,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/godot-studio-touch-combined-evidence/build/build_dialog_density_regression-headless.log",
+        "--timeout",
+        "600",
+        "--required",
+        "[BuildDialogDensity] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "scripts/tests/build_dialog_density_regression.gd"
+      ]
+    }
+  ],
+  "total_assertions": 6851,
+  "limits": [
+    "Real Godot controls, canvas geometry and synthetic touchscreen input were exercised headlessly; no physical Android event stream or rendered pixels are claimed.",
+    "No PNG was generated by these three invocations. The three original producer renderer paths remain CI work.",
+    "No product/source file was edited by this review."
+  ]
+}

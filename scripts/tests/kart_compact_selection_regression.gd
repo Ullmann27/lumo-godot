@@ -1,6 +1,7 @@
 extends SceneTree
 ## Real input and clipped-control geometry at the Android compact safe area.
 ## This runs headlessly; the separate renderer menu-flow gate remains required.
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 var failures: Array[String] = []
 var checks := 0
 var completed := 0
@@ -159,8 +160,10 @@ func _run() -> void:
 		await _case(Vector2i(2400, 1080), saved, 2.625, Rect2(0, 32, 0, 126))
 	_check(completed == 6, "all six cases completed without an assertion abort")
 	game.abandoned = true
-	game.queue_free()
-	await _settle()
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[CompactKartSelection]")):
+		push_error("[CompactKartSelection] FAIL: scene/audio teardown incomplete")
+		quit(1)
+		return
 	print("[CompactKartSelection] ", "PASS" if failures.is_empty() else "FAIL",
 		" ", checks, " checks; ", completed, "/6 cases; renderer=", DisplayServer.get_name())
 	quit(0 if failures.is_empty() else 1)

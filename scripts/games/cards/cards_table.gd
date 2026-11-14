@@ -4,6 +4,7 @@ signal action_requested(request: Dictionary)
 
 const SEATED = preload("res://scripts/games/cards/cards_table_actor.gd")
 const ACTOR = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
+const LAYOUT_OBSERVATION := "user://cards_layout_v1.json"
 const COLORS := {
 	"orange": Color("e64e48"),
 	"purple": Color("efd34b"),
@@ -51,6 +52,12 @@ var _materials: Dictionary = {}
 var _textures: Dictionary = {}
 var _closed := false
 var _ui_scale := 1.0
+var _android_safe_area_enabled := false
+var _android_safe_area: Dictionary = {}
+var _layout_observation_pending := false
+var _layout_settle_frames := 0
+var _layout_sequence := 0
+var _layout_retry_after := 0
 var _hand_targets: Dictionary = {}
 var room_batches: Array[MultiMeshInstance3D] = []
 var room_source_boxes := 0
@@ -59,12 +66,14 @@ var _wood_detail_mask: GradientTexture1D
 
 func _ready() -> void:
 	get_window().content_scale_size = Vector2i.ZERO
+	_android_safe_area_enabled = MobileRuntime.requires_safe_area_observation()
 	if Engine.has_singleton("LumoHost"):
 		_host = Engine.get_singleton("LumoHost")
 	_token = str(HostBridge.launch_options().get("cardsToken", ""))
 	_build_room()
 	_build_interface()
 	get_viewport().size_changed.connect(_resize)
+	MobileRuntime.safe_area_changed.connect(_resize)
 	_resize()
 	_poll()
 
@@ -555,9 +564,22 @@ func _build_interface() -> void:
 
 
 func _resize() -> void:
-	if not is_instance_valid(camera) or not is_instance_valid(ui):
+	if not is_inside_tree() or not is_instance_valid(camera) or not is_instance_valid(ui):
 		return
-	var size := get_viewport().get_visible_rect().size
+	_mark_layout_changed()
+	_android_safe_area = _get_safe_area_observation()
+	var viewport_size := get_viewport().get_visible_rect().size
+	var pixels := Vector2(get_window().size)
+	var factor := viewport_size / pixels if pixels.x > 0 and pixels.y > 0 else Vector2.ONE
+	var insets := _safe_area_insets()
+	ui.offset_left = insets.position.x * factor.x
+	ui.offset_top = insets.position.y * factor.y
+	ui.offset_right = -insets.size.x * factor.x
+	ui.offset_bottom = -insets.size.y * factor.y
+	# Do not expose system-bar-covered controls while the first Android View
+	# measurement (or a newly rotated View) is still being attached.
+	ui.visible = not _android_safe_area_enabled or _android_safe_area.get("window_size") == get_window().size
+	var size := ui.size
 	_ui_scale = MobileRuntime.get_ui_density()
 	# UI canvas pixels are native pixels; all touch targets retain at least 48 dp.
 	for button in ui.find_children("*", "Button", true, false):
@@ -577,9 +599,7 @@ func _resize() -> void:
 		actions.reparent(footer)
 	compact_bar.visible = _compact
 	status.visible = not _compact
-	header.offset_left = 12 * _ui_scale
-	header.offset_right = -12 * _ui_scale
-	header.offset_top = 8 * _ui_scale
+	_update_header_safe_area()
 	message.add_theme_font_size_override("font_size", int((14 if _compact else 16) * _ui_scale))
 	_page_size = 7 if width_dp > 850 else (5 if width_dp > 550 else 3)
 	footer.offset_top = -(64 if _compact else 128) * _ui_scale
@@ -591,6 +611,57 @@ func _resize() -> void:
 	_update_camera()
 	if not _state.is_empty():
 		_render_hand()
+	_layout_modal()
+
+
+func _safe_area_insets() -> Rect2:
+	if _android_safe_area.get("window_size") == get_window().size:
+		var observed: Rect2 = _android_safe_area.insets
+		var scale: Vector2 = Vector2(get_window().size) / _android_safe_area.view_size
+		return Rect2(observed.position * scale, observed.size * scale)
+	var insets := Rect2()
+	if OS.has_feature("mobile"):
+		insets = MobileRuntime.get_safe_area_insets()
+		var screen := DisplayServer.screen_get_size()
+		var safe := DisplayServer.get_display_safe_area()
+		if not MobileRuntime.requires_safe_area_observation() and screen.x > 0 and screen.y > 0 and safe.has_area():
+			insets.position.x = maxf(insets.position.x, safe.position.x)
+			insets.position.y = maxf(insets.position.y, safe.position.y)
+			insets.size.x = maxf(insets.size.x, screen.x - safe.end.x)
+			insets.size.y = maxf(insets.size.y, screen.y - safe.end.y)
+	return insets
+
+
+func _get_safe_area_observation() -> Dictionary:
+	return MobileRuntime.get_safe_area_observation()
+
+
+func _apply_header_safe_area(insets: Rect2, physical_size: Vector2) -> void:
+	if not is_instance_valid(header) or not is_instance_valid(ui) or physical_size.x <= 0 or physical_size.y <= 0:
+		return
+	# The full UI now consumes measured View insets. Preserve the established
+	# header refresh contract, applying only an edge not already covered by its
+	# parent. A refresh must neither double the inset nor move the hand/footer.
+	var viewport := get_viewport().get_visible_rect()
+	var scale := viewport.size / physical_size
+	var parent_rect := ui.get_global_rect()
+	var covered_left := maxf(0, parent_rect.position.x - viewport.position.x)
+	var covered_top := maxf(0, parent_rect.position.y - viewport.position.y)
+	var covered_right := maxf(0, viewport.end.x - parent_rect.end.x)
+	header.offset_left = 12 * _ui_scale + maxf(0, insets.position.x * scale.x - covered_left)
+	header.offset_right = -12 * _ui_scale - maxf(0, insets.size.x * scale.x - covered_right)
+	header.offset_top = 8 * _ui_scale + maxf(0, insets.position.y * scale.y - covered_top)
+
+
+func _update_header_safe_area() -> void:
+	if not is_inside_tree() or is_queued_for_deletion() or not is_instance_valid(header):
+		return
+	_apply_header_safe_area(_safe_area_insets(), Vector2(get_window().size))
+
+
+func _notification(what: int) -> void:
+	if what in [NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN]:
+		_update_header_safe_area.call_deferred()
 
 
 func _update_camera() -> void:
@@ -608,9 +679,12 @@ func _process(delta: float) -> void:
 	_poll_time += delta
 	if _poll_time >= 0.20:
 		_poll_time = 0
+		# System bars can reappear without a viewport resize or a Cards revision.
+		_update_header_safe_area()
 		_poll()
 	_focus = move_toward(_focus, 0, delta * 0.9)
 	_update_camera()
+	_publish_layout_observation()
 
 
 func _poll() -> void:
@@ -626,6 +700,8 @@ func _poll() -> void:
 
 func _clear_authority_view() -> void:
 	# Closing/invalidation must also hide the previous question and counters.
+	DirAccess.remove_absolute(LAYOUT_OBSERVATION)
+	_layout_observation_pending = false
 	_state.clear()
 	_cards.clear()
 	_selected = ""
@@ -742,6 +818,7 @@ func _make_card(parent: Node3D, card: Dictionary, at: Vector3, face: bool) -> No
 
 
 func _render_hand() -> void:
+	_mark_layout_changed()
 	var old: Dictionary = {}
 	for id in _cards:
 		if is_instance_valid(_cards[id]):
@@ -760,7 +837,8 @@ func _render_hand() -> void:
 		var id := str(card.get("id", ""))
 		visible_ids.append(id)
 		var offset := float(i) - float(visible.size() - 1) * 0.5
-		var size := get_viewport().get_visible_rect().size
+		var size := ui.size
+		var viewport_size := get_viewport().get_visible_rect().size
 		var card_height := (
 			(96 * _ui_scale) if _compact else clampf(size.y * 0.28, 96 * _ui_scale, 180 * _ui_scale)
 		)
@@ -768,7 +846,7 @@ func _render_hand() -> void:
 		var spacing := minf(
 			card_width * 1.08, (size.x - 32 * _ui_scale - card_width) / maxf(1, visible.size() - 1)
 		)
-		var screen := Vector2(
+		var screen := ui.position + Vector2(
 			size.x * 0.5 + offset * spacing,
 			size.y - (76 if _compact else 140) * _ui_scale - card_height * 0.5
 		)
@@ -776,7 +854,7 @@ func _render_hand() -> void:
 		var node := _make_card(hand_root, card, at, true)
 		node.name = "HandCard%d" % i
 		var scale_factor := (
-			(2 * 4.0 * tan(deg_to_rad(camera.fov * 0.5))) * card_height / size.y / 1.18
+			(2 * 4.0 * tan(deg_to_rad(camera.fov * 0.5))) * card_height / viewport_size.y / 1.18
 		)
 		node.basis = camera.global_basis * Basis(Vector3.RIGHT, PI * 0.5)
 		node.scale = Vector3.ONE * scale_factor
@@ -825,6 +903,7 @@ func _render_opponent() -> void:
 
 
 func _highlight_selection() -> void:
+	_mark_layout_changed()
 	for id in _cards:
 		var card_node: Node3D = _cards[id]
 		var moving = card_node.get_meta("move_tween") if card_node.has_meta("move_tween") else null
@@ -916,14 +995,117 @@ func _update_interface() -> void:
 
 
 func _layout_modal() -> void:
-	if not is_instance_valid(modal) or not modal.visible:
+	if not is_inside_tree() or not is_instance_valid(modal) or not modal.visible:
 		return
-	var size := get_viewport().get_visible_rect().size
+	var size := ui.size
 	var height := minf(
 		modal_content.get_combined_minimum_size().y + 44 * _ui_scale, size.y - 24 * _ui_scale
 	)
 	modal.offset_top = -height * 0.5
 	modal.offset_bottom = height * 0.5
+
+
+func _mark_layout_changed() -> void:
+	# This diagnostic is separate from all gameplay saves. A previous settled
+	# snapshot must not survive a page/selection transition with the same revision.
+	if not _layout_observation_pending:
+		DirAccess.remove_absolute(LAYOUT_OBSERVATION)
+	_layout_observation_pending = true
+	_layout_settle_frames = 2
+
+
+func _vector_values(vector: Vector2) -> Array:
+	return [vector.x, vector.y]
+
+
+func _rect_values(rect: Rect2) -> Array:
+	return [rect.position.x, rect.position.y, rect.size.x, rect.size.y]
+
+
+func _observation_source() -> String:
+	return "android_window_insets" if _android_safe_area_enabled and not _android_safe_area.is_empty() else "platform_safe_area"
+
+
+func _face_quad(card: Node3D) -> Array:
+	for child in card.get_children():
+		if child is MeshInstance3D and child.mesh is PlaneMesh:
+			var half: Vector2 = child.mesh.size * 0.5
+			var factor := Vector2(get_window().size) / get_viewport().get_visible_rect().size
+			var quad := []
+			for corner in [Vector3(-half.x, 0, -half.y), Vector3(half.x, 0, -half.y),
+				Vector3(half.x, 0, half.y), Vector3(-half.x, 0, half.y)]:
+				quad.append(_vector_values(camera.unproject_position(child.to_global(corner)) * factor))
+			return quad
+	return []
+
+
+func _publish_layout_observation() -> void:
+	if not _layout_observation_pending or _state.is_empty() or _pending > 0 or not ui.is_visible_in_tree():
+		return
+	if _layout_settle_frames > 0:
+		_layout_settle_frames -= 1
+		return
+	if _focus != 0.0 or Time.get_ticks_msec() < _layout_retry_after:
+		return
+	for card: Node3D in _cards.values():
+		var tween: Variant = card.get_meta("move_tween") if card.has_meta("move_tween") else null
+		if tween is Tween and tween.is_valid() and tween.is_running():
+			return
+	var hand := []
+	# _cards preserves the actual visible public-hand insertion order.
+	for id in _cards:
+		hand.append({"id": id, "quad": _face_quad(_cards[id])})
+	var discard := {}
+	if discard_root.get_child_count() > 0:
+		discard = {"id": str(_state.get("top", {}).get("id", "")),
+			"quad": _face_quad(discard_root.get_child(discard_root.get_child_count() - 1))}
+	var android := {}
+	for key in ["view_size", "decor_size"]:
+		if _android_safe_area.has(key):
+			android[key] = _vector_values(_android_safe_area[key])
+	for key in ["render_rect", "system_insets", "insets"]:
+		if _android_safe_area.has(key):
+			android[key] = _rect_values(_android_safe_area[key])
+	var factor := Vector2(get_window().size) / get_viewport().get_visible_rect().size
+	var ui_pixels := Rect2(ui.get_global_position() * factor, ui.size * factor)
+	_layout_sequence += 1
+	var snapshot := {
+		"schema": 1, "layout_sequence": int(_layout_sequence), "ticks_msec": int(Time.get_ticks_msec()),
+		"settled": true, "ui_visible": ui.is_visible_in_tree(),
+		"observation_source": _observation_source(), "pending": int(_pending),
+		"token": str(_state.get("token", "")), "roundId": str(_state.get("roundId", "")),
+		"revision": int(_state.get("revision", 0)), "ack": int(_state.get("ack", 0)),
+		"viewer": int(_state.get("viewer", 0)), "paused": bool(_state.get("paused", false)),
+		"phase": str(_state.get("phase", "")), "page": int(_page), "page_size": int(_page_size),
+		"selected_card_id": _selected, "density": _ui_scale,
+		"window_px": _vector_values(Vector2(get_window().size)),
+		"viewport_px": _vector_values(get_viewport().get_visible_rect().size),
+		"android_observation": android, "ui_rect": _rect_values(ui_pixels),
+		"hand": hand, "discard": discard,
+	}
+	var file := FileAccess.open(LAYOUT_OBSERVATION + ".tmp", FileAccess.WRITE)
+	if file == null:
+		_layout_retry_after = Time.get_ticks_msec() + 2000
+		return
+	file.store_string(JSON.stringify(snapshot))
+	file.flush()
+	var error := file.get_error()
+	file.close()
+	if error == OK:
+		error = DirAccess.rename_absolute(LAYOUT_OBSERVATION + ".tmp", LAYOUT_OBSERVATION)
+	if error == OK:
+		_layout_observation_pending = false
+	else:
+		_layout_retry_after = Time.get_ticks_msec() + 2000
+
+
+func _exit_tree() -> void:
+	if MobileRuntime.safe_area_changed.is_connected(_resize):
+		MobileRuntime.safe_area_changed.disconnect(_resize)
+	if get_viewport().size_changed.is_connected(_resize):
+		get_viewport().size_changed.disconnect(_resize)
+	DirAccess.remove_absolute(LAYOUT_OBSERVATION)
+	DirAccess.remove_absolute(LAYOUT_OBSERVATION + ".tmp")
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -982,6 +1164,7 @@ func _send(action: String, payload: Dictionary = {}) -> void:
 		accepted = HostBridge.durable_ack(_host.call("submitCardsAction", JSON.stringify(request)))
 	if accepted:
 		_pending = _sequence
+		_mark_layout_changed()
 		message.text = "Dein Zug wird gespeichert …"
 		play_button.disabled = true
 		draw_button.disabled = true

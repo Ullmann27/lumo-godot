@@ -1,0 +1,22 @@
+{
+  "native_revision": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "run_id": 43458898046,
+  "artifact_id": 14054939339,
+  "artifact_sha256": "ea27d3f6528d07694b8e52bac6ce59215a5424f990ad0a3672b0ba4d23906899",
+  "reviewer": "ChatGPT /root/godot_integration; actual view_image inspection",
+  "reviewed_at": "2026-11-13T16:17:39.072396+00:00",
+  "scope": "One actual preview image only. Full native run has a failed Gameplay job; no full visual or Android acceptance. Root must perform its own requested view.",
+  "images": [
+    {
+      "relative_path": "preview-14054939339/images/bridge_hundred-complete-2400x1080.png",
+      "sha256": "9f596453d96c3a7a35d16a75c3b81a784821656f791067399c46b08daa12c1e8",
+      "bytes": 723952,
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "findings": "The upper equation reads 10 Zehner = 100. Its equals sign visibly consists of two separated horizontal bars with a dark gap. The lower equation 230 = 2 Hunderter + 3 Zehner also has a visibly separated equals sign. This observation is restricted to this original landscape completion frame."
+    }
+  ]
+}

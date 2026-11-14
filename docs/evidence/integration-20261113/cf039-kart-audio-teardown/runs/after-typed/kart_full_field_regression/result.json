@@ -1,0 +1,52 @@
+{
+  "phase": "after-typed",
+  "test": "kart_full_field_regression",
+  "started_utc": "2026-11-13T15:11:24.489868+00:00",
+  "finished_utc": "2026-11-13T15:12:10.147166+00:00",
+  "elapsed_seconds": 45.657,
+  "command": [
+    "python3",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_full_field_regression/engine.log",
+    "--timeout",
+    "240",
+    "--required",
+    "[KartFullField] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_full_field_regression.gd",
+    "--fixed-fps",
+    "60"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "xdg": {
+    "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_full_field_regression/xdg-data",
+    "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_full_field_regression/xdg-config",
+    "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_full_field_regression/xdg-cache",
+    "XDG_STATE_HOME": "/home/agent/.local/state",
+    "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+  },
+  "script_sha256": "db8c0e55dd4b91f611c5be33ed6036f5df7e5ceacfa437c16b5207280f543106",
+  "strict_runner_exit": 0,
+  "required_marker": "[KartFullField] PASS",
+  "marker_present": true,
+  "errors": [],
+  "cleanup_lines": [
+    "[KartFullField] audio_release tracked=1 scene_released=true elapsed_ms=72",
+    "[KartFullField] audio_release tracked=3 scene_released=true elapsed_ms=62",
+    "[KartFullField] audio_release tracked=1 scene_released=true elapsed_ms=39",
+    "[KartFullField] audio_release tracked=1 scene_released=true elapsed_ms=73",
+    "[KartFullField] audio_release tracked=4 scene_released=true elapsed_ms=0",
+    "[KartFullField] audio_release tracked=1 scene_released=true elapsed_ms=58"
+  ],
+  "engine_log_sha256": "91f1cb43a9565b0d913447f5c7922e2bfcda8774496c5cb2cd39d3e1c03eb4fc",
+  "runner_log_sha256": "91f1cb43a9565b0d913447f5c7922e2bfcda8774496c5cb2cd39d3e1c03eb4fc"
+}

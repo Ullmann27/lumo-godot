@@ -1,0 +1,23 @@
+{
+  "head": "c88b100f2cf031f504f2a1a4e3f0b90a3d71d523",
+  "loop_assertions": [
+    "Sonnenhafen keeps its production looping section",
+    "loop camera continues rendering live high-speed and boost streaks",
+    "loop camera recomputes FOV when boost and speed end",
+    "loop camera disables streaks when reduced motion is requested"
+  ],
+  "loop_assertion_count": 4,
+  "existing_real_weakref_teardown_byte_identical_to_first_parent": true,
+  "cleanup_sha256": "a63b00ba9024fee8904440ea1edfff2d05d987fcbe3fce9faf5b159cc2f8f77c",
+  "two_files": {
+    "scripts/games/kart_island.gd": {
+      "sha256": "e994bde6e77fa61e1397afbb86af2f458f4a2ce13a9776345919668070522b35",
+      "git_blob": "6ced16884542221528dd9d9f9de96126204d3495"
+    },
+    "scripts/tests/kart_drive_feedback_regression.gd": {
+      "sha256": "f06c4f956f8d3b657260a9fca9b702133c852e92b7502e004c11609879648807",
+      "git_blob": "f74c97719d8c9f558e32f1feed6cdf8e98fcb05d"
+    }
+  },
+  "edits_performed": false
+}

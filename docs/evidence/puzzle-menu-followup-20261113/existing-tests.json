@@ -1,0 +1,20 @@
+[
+  {
+    "test": "puzzle_expansion_regression",
+    "exit_code": 0,
+    "native_errors": [],
+    "pass_lines": [
+      "[PuzzleExpansion] PASS 1103 checks: all motifs/counts, saves and two played rounds"
+    ],
+    "success": true
+  },
+  {
+    "test": "puzzle_rotation_regression",
+    "exit_code": 0,
+    "native_errors": [],
+    "pass_lines": [
+      "[PuzzleRotation] PASS 4558 checks: orientation, legacy saves, real picking, touch rotation and resume"
+    ],
+    "success": true
+  }
+]

@@ -1,0 +1,2366 @@
+{
+  "schema": 1,
+  "status": "COMPLETE_EXACT_4F_SOURCE_CHECKPOINT_NO_FUTURE_RECEIPT",
+  "head_sha": "4f3449253fd59023a2544432a178eb9efcafe4f9",
+  "tree": "189b7a66c731067559469e2503e3a190b337031d",
+  "run_id": 43466004918,
+  "run_attempt": 1,
+  "native_profile": "frozen-9e-nextgen-2019-37-core-24-studio-6-touch-32-touch-png",
+  "archives": [
+    {
+      "kind": "preview",
+      "artifact_id": 14058528261,
+      "zip_bytes": 13138731,
+      "zip_sha256": "d6fb54f046cb0e51e44d3aa8de4689cfd011df6afd8b210c25010b6d97f7fd80",
+      "member_count": 179,
+      "png_count": 25,
+      "complete_log_count": 3
+    },
+    {
+      "kind": "legacy",
+      "artifact_id": 14058908829,
+      "zip_bytes": 39928478,
+      "zip_sha256": "d1b7eb0963aa85c9094f968e7f00206b3cf227acd173bf5ba2bfbec15970c81f",
+      "member_count": 1925,
+      "png_count": 22,
+      "complete_log_count": 49
+    },
+    {
+      "kind": "native",
+      "artifact_id": 14061435964,
+      "zip_bytes": 169825813,
+      "zip_sha256": "dab5b9e929c64adcd1a366f730a721a00d11c6ba0676b3218ed854d27529f565",
+      "member_count": 3057,
+      "png_count": 136,
+      "complete_log_count": 96
+    }
+  ],
+  "auxiliary_manifest_sha256": "377da7392131672497aff1157ca31c8365af9bb632beb5fb1d9ca8ad5d84193c",
+  "entries": [
+    {
+      "path": "README.md",
+      "origin": "current-source-handoff",
+      "category": "derived-handoff",
+      "encoding": "identity",
+      "original_bytes": 5861,
+      "original_sha256": "ff819a86247db860382b7f236150b1913448f93062da20f01becce205c080269",
+      "stored_bytes": 5861,
+      "stored_sha256": "ff819a86247db860382b7f236150b1913448f93062da20f01becce205c080269"
+    },
+    {
+      "path": "api/archive-release.json.gz",
+      "origin": "archive-release.json",
+      "category": "unchanged-original-api",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 7932,
+      "original_sha256": "873dd5ee5cfab4e1d62526f35d1dcb58f3259947ec49c7ceac93863b7e3a781e",
+      "stored_bytes": 1339,
+      "stored_sha256": "0327edd25b81e17bcf7964e92e647fdd25e3bcb9327f618a9204763bf4c7974f"
+    },
+    {
+      "path": "api/archive-tag-ref.json.gz",
+      "origin": "archive-tag-ref.json",
+      "category": "unchanged-original-api",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 567,
+      "original_sha256": "2198d7c4c4028aeaa8a83b5d9f98bd7ec9480e2b0f70becfd51853826395b482",
+      "stored_bytes": 315,
+      "stored_sha256": "c406cf2d12760f10aa3b56ce4ac93e712353e104530a0042da7df12d2e84d2f3"
+    },
+    {
+      "path": "api/host-reference-commit.json.gz",
+      "origin": "host-reference-commit.json",
+      "category": "unchanged-original-api",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1465,
+      "original_sha256": "06bba64f25a5231ca13056825351da2a1f6149a785ea37590b8959328945ee1b",
+      "stored_bytes": 664,
+      "stored_sha256": "a29bb5e78886e2890a47c6eb82bb3aa1857595be79bdc0e49ccf9101ea56a249"
+    },
+    {
+      "path": "api/source-all-workflow-runs.json.gz",
+      "origin": "source-all-workflow-runs.json",
+      "category": "unchanged-original-api",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 201284,
+      "original_sha256": "3192407ae6b8b071faa71a109aab0b159d845a926ee9e099f2421c9c43981ce7",
+      "stored_bytes": 5258,
+      "stored_sha256": "69fed4be13ca36ced916e923b780177a4e0a603cd22cb987d6fb13785811317b"
+    },
+    {
+      "path": "api/source-commit.json.gz",
+      "origin": "source-commit.json",
+      "category": "unchanged-original-api",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1711,
+      "original_sha256": "5003d29548b2ecab466f4b66ebc3e2ca91b94983b19339209a3bfb1384c38a5d",
+      "stored_bytes": 807,
+      "stored_sha256": "8036d0ffcd8ae2a6cf69cbf1fb09f9f0b9104d793b8c34ec3d73bbe5ab299027"
+    },
+    {
+      "path": "api/source-pull-request.json.gz",
+      "origin": "source-pull-request.json",
+      "category": "unchanged-original-api",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 20900,
+      "original_sha256": "832d7e21610c18145c3883adc7ab8ee6990438d85db6cea846fca38301a149ee",
+      "stored_bytes": 4471,
+      "stored_sha256": "1ddbeef2c0efca031f50ed4864420d301894b4ab3734c4b2e0e3a7d43df3b4a2"
+    },
+    {
+      "path": "api/workflow-artifacts-final.json.gz",
+      "origin": "workflow-artifacts-final.json",
+      "category": "unchanged-original-api",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 5187,
+      "original_sha256": "d9eab01f302b2eede2aa1a4aa196aa522cc579278fe04a06acfef2941dbc27ca",
+      "stored_bytes": 1077,
+      "stored_sha256": "7c893f1357338c33343397272b40a30388d287fb6cd3308275ad5338507e9011"
+    },
+    {
+      "path": "api/workflow-jobs-final.json.gz",
+      "origin": "workflow-jobs-final.json",
+      "category": "unchanged-original-api",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 17670,
+      "original_sha256": "d5780ac437fee9425406fa1cad1b793f02ef87068cb9a06fc8afeada783cef37",
+      "stored_bytes": 1782,
+      "stored_sha256": "98fa5e8dc17514fafff9663a67b741c02bb9b4b0088eb8c1adbccd45e26de0d2"
+    },
+    {
+      "path": "api/workflow-run-final.json.gz",
+      "origin": "workflow-run-final.json",
+      "category": "unchanged-original-api",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 13410,
+      "original_sha256": "8b9589ef5b325bf4ec6889cc86f94b8d1f9a567a94380b2fda2d7ea2b84be23e",
+      "stored_bytes": 2030,
+      "stored_sha256": "aecc0dea31a0dbaf0f08cf841fb5da7e4da864d9adbe8b8fd5352fa4ba4a3cc7"
+    },
+    {
+      "path": "artifact-contracts/legacy/acceptance-evidence/action-stage/source-sha.txt",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/action-stage/source-sha.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348",
+      "stored_bytes": 41,
+      "stored_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348"
+    },
+    {
+      "path": "artifact-contracts/legacy/acceptance-evidence/source-sha.txt",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/source-sha.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348",
+      "stored_bytes": 41,
+      "stored_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348"
+    },
+    {
+      "path": "artifact-contracts/legacy/acceptance-evidence/technical-art/source-sha.txt",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/source-sha.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348",
+      "stored_bytes": 41,
+      "stored_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348"
+    },
+    {
+      "path": "artifact-contracts/native/nextgen-evidence/baseline-2017/source-sha.txt",
+      "origin": "native-14061435964.zip!nextgen-evidence/baseline-2017/source-sha.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "f134d1aeba026b8a68cf3d445d7edb6b6104431c1cdde782278cbd076452bccd",
+      "stored_bytes": 41,
+      "stored_sha256": "f134d1aeba026b8a68cf3d445d7edb6b6104431c1cdde782278cbd076452bccd"
+    },
+    {
+      "path": "artifact-contracts/native/nextgen-evidence/baseline-2017/source-tree.txt",
+      "origin": "native-14061435964.zip!nextgen-evidence/baseline-2017/source-tree.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "1b25cea40c24422cf77248647f34b2f37381bca4266eac08d4ec3ff5467b94a5",
+      "stored_bytes": 41,
+      "stored_sha256": "1b25cea40c24422cf77248647f34b2f37381bca4266eac08d4ec3ff5467b94a5"
+    },
+    {
+      "path": "artifact-contracts/native/nextgen-evidence/nextgen/results.tsv",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/results.tsv",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 1610,
+      "original_sha256": "204d9d3209aa9fd025a7869ed6f20b8a6fbc75d0c978f6bdcf366c77749c38bb",
+      "stored_bytes": 1610,
+      "stored_sha256": "204d9d3209aa9fd025a7869ed6f20b8a6fbc75d0c978f6bdcf366c77749c38bb"
+    },
+    {
+      "path": "artifact-contracts/native/nextgen-evidence/nextgen/source-dirty.txt",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/source-dirty.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifact-contracts/native/nextgen-evidence/nextgen/source-sha.txt",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/source-sha.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348",
+      "stored_bytes": 41,
+      "stored_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348"
+    },
+    {
+      "path": "artifact-contracts/native/nextgen-evidence/nextgen/source-tree.txt",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/source-tree.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "3277ecc53dc15bb3d857fed7e1f60ba15e65cf876d3cdd5b0247bcd0e8b4b3a8",
+      "stored_bytes": 41,
+      "stored_sha256": "3277ecc53dc15bb3d857fed7e1f60ba15e65cf876d3cdd5b0247bcd0e8b4b3a8"
+    },
+    {
+      "path": "artifact-contracts/native/nextgen-evidence/source-sha.txt",
+      "origin": "native-14061435964.zip!nextgen-evidence/source-sha.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348",
+      "stored_bytes": 41,
+      "stored_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/build/results.tsv",
+      "origin": "native-14061435964.zip!touch-evidence/build/results.tsv",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 110,
+      "original_sha256": "5b5205d32babc9c7ca3ddb0c8616064dec845bbf32cebb2de2d71fdf34d73f26",
+      "stored_bytes": 110,
+      "stored_sha256": "5b5205d32babc9c7ca3ddb0c8616064dec845bbf32cebb2de2d71fdf34d73f26"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/build/source-dirty-after.txt",
+      "origin": "native-14061435964.zip!touch-evidence/build/source-dirty-after.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/build/source-dirty.txt",
+      "origin": "native-14061435964.zip!touch-evidence/build/source-dirty.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/build/source-sha.txt",
+      "origin": "native-14061435964.zip!touch-evidence/build/source-sha.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348",
+      "stored_bytes": 41,
+      "stored_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/build/source-tree.txt",
+      "origin": "native-14061435964.zip!touch-evidence/build/source-tree.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "3277ecc53dc15bb3d857fed7e1f60ba15e65cf876d3cdd5b0247bcd0e8b4b3a8",
+      "stored_bytes": 41,
+      "stored_sha256": "3277ecc53dc15bb3d857fed7e1f60ba15e65cf876d3cdd5b0247bcd0e8b4b3a8"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/treasure/results.tsv",
+      "origin": "native-14061435964.zip!touch-evidence/treasure/results.tsv",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 102,
+      "original_sha256": "2899998b1e874e13568468e16ba6a7aa5593bb4342abf28f2746a915a2d373c0",
+      "stored_bytes": 102,
+      "stored_sha256": "2899998b1e874e13568468e16ba6a7aa5593bb4342abf28f2746a915a2d373c0"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/treasure/source-dirty-after.txt",
+      "origin": "native-14061435964.zip!touch-evidence/treasure/source-dirty-after.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/treasure/source-dirty.txt",
+      "origin": "native-14061435964.zip!touch-evidence/treasure/source-dirty.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/treasure/source-sha.txt",
+      "origin": "native-14061435964.zip!touch-evidence/treasure/source-sha.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348",
+      "stored_bytes": 41,
+      "stored_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/treasure/source-tree.txt",
+      "origin": "native-14061435964.zip!touch-evidence/treasure/source-tree.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "3277ecc53dc15bb3d857fed7e1f60ba15e65cf876d3cdd5b0247bcd0e8b4b3a8",
+      "stored_bytes": 41,
+      "stored_sha256": "3277ecc53dc15bb3d857fed7e1f60ba15e65cf876d3cdd5b0247bcd0e8b4b3a8"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/workshop/results.tsv",
+      "origin": "native-14061435964.zip!touch-evidence/workshop/results.tsv",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 112,
+      "original_sha256": "c9d8181d388096d44183d9cd5580dd5048efa46db21e83275024c2d41fe062e7",
+      "stored_bytes": 112,
+      "stored_sha256": "c9d8181d388096d44183d9cd5580dd5048efa46db21e83275024c2d41fe062e7"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/workshop/source-dirty-after.txt",
+      "origin": "native-14061435964.zip!touch-evidence/workshop/source-dirty-after.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/workshop/source-dirty.txt",
+      "origin": "native-14061435964.zip!touch-evidence/workshop/source-dirty.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/workshop/source-sha.txt",
+      "origin": "native-14061435964.zip!touch-evidence/workshop/source-sha.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348",
+      "stored_bytes": 41,
+      "stored_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348"
+    },
+    {
+      "path": "artifact-contracts/native/touch-evidence/workshop/source-tree.txt",
+      "origin": "native-14061435964.zip!touch-evidence/workshop/source-tree.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "3277ecc53dc15bb3d857fed7e1f60ba15e65cf876d3cdd5b0247bcd0e8b4b3a8",
+      "stored_bytes": 41,
+      "stored_sha256": "3277ecc53dc15bb3d857fed7e1f60ba15e65cf876d3cdd5b0247bcd0e8b4b3a8"
+    },
+    {
+      "path": "artifact-contracts/preview/source-sha.txt",
+      "origin": "preview-14058528261.zip!source-sha.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348",
+      "stored_bytes": 41,
+      "stored_sha256": "a2999846909eebf565863820b01bea5f0529923b3336c90e44f0e165ef30b348"
+    },
+    {
+      "path": "artifact-contracts/preview/source-tree.txt",
+      "origin": "preview-14058528261.zip!source-tree.txt",
+      "category": "unchanged-artifact-source-or-results",
+      "encoding": "identity",
+      "original_bytes": 41,
+      "original_sha256": "3277ecc53dc15bb3d857fed7e1f60ba15e65cf876d3cdd5b0247bcd0e8b4b3a8",
+      "stored_bytes": 41,
+      "stored_sha256": "3277ecc53dc15bb3d857fed7e1f60ba15e65cf876d3cdd5b0247bcd0e8b4b3a8"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/action-stage/kart_lasso_production_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/action-stage/kart_lasso_production_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1031,
+      "original_sha256": "83aea1051cb10e8fbb46cc3834df42134196e8842a9500919a33c375ef02ef49",
+      "stored_bytes": 531,
+      "stored_sha256": "0170047b8e2b7c1a03afb14ce4cb63245cc34b8346731874d1157da7d0bc09f8"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/action-stage/kart_lasso_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/action-stage/kart_lasso_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 560,
+      "original_sha256": "95d9505e9aa9db3f20d26bc7b9535589aabc2a7309a048ef1bfb12255103560a",
+      "stored_bytes": 399,
+      "stored_sha256": "3e836d95a7b4dae058d4a1565ef2efc10452e29144f14169d926087ff41c3a9b"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/action-stage/kart_menu_flow_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/action-stage/kart_menu_flow_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 3675,
+      "original_sha256": "b2c789a4f2d251a056ece8698005830de32934d0cd4ac9869ed693154dc1c58b",
+      "stored_bytes": 1246,
+      "stored_sha256": "88c94e562257cbf6d8aeae160180413e047f1a5196aad7bd534f11ba81926af2"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/action-stage/kart_roadside_action_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/action-stage/kart_roadside_action_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1798,
+      "original_sha256": "e582b58303683f6228689e133b1306e2d56bd35138051cce6c81e9ff91a9d57f",
+      "stored_bytes": 898,
+      "stored_sha256": "a4eb6ce63abe82fea9ca364f8b7bd3ac0de3fb144aaeb25202af637c42e82b10"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/action-stage/kart_spatial_menu_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/action-stage/kart_spatial_menu_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 5530,
+      "original_sha256": "fc70a1e9a3004a31ab05ae08a43e71288f80ef292c9399e602ef7c023e133e9e",
+      "stored_bytes": 1645,
+      "stored_sha256": "3fe4eae79c91559ec5817d4d545ed9fda169e401b5fdf562cc77de05097151e9"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 3669,
+      "original_sha256": "4b6464e36a96d41269d3fbc6cf491b51fa31d8bb4aee63d6509baf5f630b70da",
+      "stored_bytes": 1244,
+      "stored_sha256": "64caaab4f468618c413f7ed09202c03bccd24632e5c4a6c09cd6b9e9b679b002"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.46.53.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.46.53.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 560,
+      "original_sha256": "95d9505e9aa9db3f20d26bc7b9535589aabc2a7309a048ef1bfb12255103560a",
+      "stored_bytes": 399,
+      "stored_sha256": "3e836d95a7b4dae058d4a1565ef2efc10452e29144f14169d926087ff41c3a9b"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.47.02.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.47.02.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1031,
+      "original_sha256": "83aea1051cb10e8fbb46cc3834df42134196e8842a9500919a33c375ef02ef49",
+      "stored_bytes": 531,
+      "stored_sha256": "0170047b8e2b7c1a03afb14ce4cb63245cc34b8346731874d1157da7d0bc09f8"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.50.25.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.50.25.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 5524,
+      "original_sha256": "ed4316e5d14607704a0182716138587d5a740eb50ae3ebfd977f31c7a6e33180",
+      "stored_bytes": 1643,
+      "stored_sha256": "9f9b73187c5405140f63920b9b3d54777e5976812505976c5ca104e81b62a1de"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.50.36.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.50.36.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1792,
+      "original_sha256": "fb49c369492a9b947bf272f11d80d5f15183a1ea46b47515c5dbd1ea7e6782f6",
+      "stored_bytes": 897,
+      "stored_sha256": "2bd5f2ffca21e17832414222e58d66e761ad5f5fc9563547b17e99379e0feb0e"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/build_sandbox_tools_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/build_sandbox_tools_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 539,
+      "original_sha256": "62b94cf9adcc2b65a0b81c0e5780af8152e2f33d92a9beee28b1658f4caa055e",
+      "stored_bytes": 392,
+      "stored_sha256": "9ff569c589b366449b7fe5f2e7d30a7e4832c0b2afaaaf8ba34ed7c7ca0a510c"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/build_sandbox_ui_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/build_sandbox_ui_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1269,
+      "original_sha256": "df12e6cd24264f30e4b81b215caff309e233d3e0c2cf4c42e70bfe9f65070c82",
+      "stored_bytes": 775,
+      "stored_sha256": "0a57217cbfd891b32518e36f29d9ac40590acd2eef517606f54668bc3b9dee79"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/creative_touch_layout_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/creative_touch_layout_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1574,
+      "original_sha256": "453eb1bb426577852ed112022cd9949220728cc89643a3fa1cafb280993e18e9",
+      "stored_bytes": 796,
+      "stored_sha256": "5cc3778c0a165e2854dc3086f3380f3c67e4879111eca6ed6070002cbb693064"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/existing-gameplay.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/existing-gameplay.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 63231,
+      "original_sha256": "58725fe8fa2e728dfe03eb66f3b2617f8460e7e6209b976726c8f53508dd3b7b",
+      "stored_bytes": 10424,
+      "stored_sha256": "b3c764b119ec982bd7b20b640f6fb2ec463f51902658fda8eff8d3d20fe32991"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/import.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/import.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 162436,
+      "original_sha256": "f61a6493e13d6fead90058a34ee27e5f34c9b3680893e5ca4901565eec1f1115",
+      "stored_bytes": 10092,
+      "stored_sha256": "2a26d900cb85cec8fe43ad7dc78c0f69005081dac461d4dfbcf55f74b5303cc4"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/jump_extras_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/jump_extras_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 724,
+      "original_sha256": "c24e8b88950e144ef708de303cdef87c1097715c8a7e9e38f2838780840055e4",
+      "stored_bytes": 452,
+      "stored_sha256": "a84e27be49ced681b05f875482e47e371f62fcdb0fdd9b58ff0a06ce48abdf82"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_full_field_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_full_field_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 83858,
+      "original_sha256": "3b6a990dd0fe69d327228615901500e0970edb7b0ffa9de0584de2db6feb0975",
+      "stored_bytes": 14056,
+      "stored_sha256": "dc8ec2deaa76d433882a4ab67c2ae5ce2a732b25b3efb81fab86d108ea3fd985"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_garage_3d_touch_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_garage_3d_touch_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1450,
+      "original_sha256": "9b363366df9cf6576bf5782ce985efdfe59784f4d02bf08f62d2816972a441d0",
+      "stored_bytes": 824,
+      "stored_sha256": "ec74183d8f51fd3df27aedf690967d3fe782e6e1ffa9836558f82e53885a113a"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_harbor_attraction_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_harbor_attraction_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1656,
+      "original_sha256": "00a5c14f0534e154c87619cb3ad1c4427dad6ceb531e290f2ef00e70d5dd9bd3",
+      "stored_bytes": 893,
+      "stored_sha256": "b8b4af6e94430a0ed5752e3b25dd7caf19912ea96fb31a7865b3d183128385b3"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_harbor_race_hook_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_harbor_race_hook_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1375,
+      "original_sha256": "698a79a5cd09890b222b963b9203aeb09c1983b2ebeb7e6f23bf84ae8c8afdc0",
+      "stored_bytes": 821,
+      "stored_sha256": "38a023fd0db816da6e11a4fe025e5b6d376b48c8b2cae30d521656a2d053a4a6"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_loop_contact_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_loop_contact_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 672,
+      "original_sha256": "408a8cf775584f33c18813904806183e6565b54d5d931b2f72ff2cd4f46677fd",
+      "stored_bytes": 435,
+      "stored_sha256": "e5e262992b570e43034e79f6baf3541af7a13963ef3879e1f837132b0da450df"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_menu_depth_2013_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_menu_depth_2013_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1327,
+      "original_sha256": "58ed347716de0c76c2bdc15a69c0cad492d3c68ffceb2c949c9eaed1c816aeac",
+      "stored_bytes": 795,
+      "stored_sha256": "5d28570114782d07ce30ecd5dff81215012225a09f2cff34f44a24995b6cbee3"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_player_full_route_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_player_full_route_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 21733,
+      "original_sha256": "4cf4627070a7265dfa84552ee15b777b4c83f6909dce2c8e1aa5fa1b8791b3f7",
+      "stored_bytes": 3957,
+      "stored_sha256": "052662a70e57965dcaa3dd719ba4f8abb8d047e1b97b1c3f797c65fd6f3a8efa"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_racecraft_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_racecraft_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 798,
+      "original_sha256": "96ddc6467bf19bed93888a59f9d789346e42e0db3b1bcad02b878c82013fbbad",
+      "stored_bytes": 521,
+      "stored_sha256": "8b9d3bc9620c444d7c59731354902ecc2bf6981115d604570a492b496198a46e"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_rival_drift_items_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_rival_drift_items_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 798,
+      "original_sha256": "e53e6379116978be4cc78920e3d397ebebf1b5906928247694623bfef669bb26",
+      "stored_bytes": 520,
+      "stored_sha256": "b3f4682df6732c45822f90db34295addb5956230dcdc58f2e4b9bd75fe0020e4"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_rival_flight_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_rival_flight_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1875,
+      "original_sha256": "894a74d59bb5d1ee87164360dcce3e2fd87438ebe64f1575a9e88b038004caad",
+      "stored_bytes": 988,
+      "stored_sha256": "cf6c0c83ac8a5c5a7d75e44e42b62873f4a917eb1395e03ec12f84666493f5ff"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_sonnenhafen_generation_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_sonnenhafen_generation_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 550,
+      "original_sha256": "9c807752c572e15d411562104cea5ae42470c5381fa122672d7af7015a384aad",
+      "stored_bytes": 399,
+      "stored_sha256": "be8a173b62f7e8ea3833797190b4ad6a6eec257ed2b049c16633d77d44149644"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_stunt_continuity_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_stunt_continuity_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1736,
+      "original_sha256": "47e0d6fae7fb5d5f9851ad77324c05cdf8379369539c61e99f31ccd203e2d7ab",
+      "stored_bytes": 918,
+      "stored_sha256": "0ee2ef69d1970c1d93bbc4171db55b5f414bc4ef4754e1202805d0329048314a"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/kart_zauberwald_library_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/kart_zauberwald_library_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1320,
+      "original_sha256": "83bb911a70a054f7cd068868a401a911b2a16308b0cf6915c23e8e2c2e4ad50d",
+      "stored_bytes": 762,
+      "stored_sha256": "dbbd1fb71b5e885d3425d49b8b1cb08a3aabeaffbd041715a895c79032bcf684"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/project-validation.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/project-validation.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 6124,
+      "original_sha256": "9ce4cc5c5d80ff2abf463f3328ea7ffa1aa612ad10f867910e7fc370f571da5e",
+      "stored_bytes": 1423,
+      "stored_sha256": "4abe522ee3c1beaa19e5693ad0f12848e81cb170af1e4f49a53980e4164c996a"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/puzzle_expansion_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/puzzle_expansion_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1191,
+      "original_sha256": "15e66dba4f57135ff127300eff8f6457f9a837ebe383a2528b3d3a32ce5075f4",
+      "stored_bytes": 732,
+      "stored_sha256": "bb33ee94c0f64453b8ffed0ba9209524464a3a3b84e50f0e66409619346d2e5b"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/kart_air_trick_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/kart_air_trick_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 494,
+      "original_sha256": "65af3dd144ebf0e2404429f8c8ab85c17894b293d8eb34abc596c636fc76ebc4",
+      "stored_bytes": 359,
+      "stored_sha256": "52cb57368ca01f18d9710fde4776a70a352a418bceb3a98bd880f9e1b80c0409"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/kart_garage_presentation_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/kart_garage_presentation_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1502,
+      "original_sha256": "ba5e0cdba9674ea37191b8f44d513df91fc5c53f7cf85fd5af6716e68ae36f7a",
+      "stored_bytes": 805,
+      "stored_sha256": "39972f0d36cc521072f25c49af6c8f23364e7d94fb38e3e6f20157f12893b232"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/kart_harbor_race_hook_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/kart_harbor_race_hook_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1383,
+      "original_sha256": "67dc0b1eb329385bf9ec27bf1220b1410f5556b386f695a043461ffc17feedb1",
+      "stored_bytes": 823,
+      "stored_sha256": "d1bce41f93e6efd34133525afab01f2f94113f3bce8d9e73f4fb9ca88ceab645"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/kart_sonnenhafen_streetfronts_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/kart_sonnenhafen_streetfronts_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1661,
+      "original_sha256": "d36e9e933970ad56bb374bfd132e0d0571a0e23e1f302e4c483fbc2abadae749",
+      "stored_bytes": 884,
+      "stored_sha256": "65b434dae9e4b61844c3c03ca600c93ac6ab9c003ef3f83c3cf06d19c07564f1"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/kart_sonnenhafen_streetfronts_world_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/kart_sonnenhafen_streetfronts_world_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1147,
+      "original_sha256": "50cbfbb16c1e6b786eaf620b0a7121caacf4e66b71fb4c2f2216877008392cc4",
+      "stored_bytes": 634,
+      "stored_sha256": "90d94a345b4136a018b33f7b4bfda7ed06e0ebf8af61190eebecd6d70554dd6e"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/lumo_attention_landing_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/lumo_attention_landing_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 837,
+      "original_sha256": "237ed83a00e02270f0176c02a4e0d7df638fc691754a50c0bdceadb84fdf4bc9",
+      "stored_bytes": 575,
+      "stored_sha256": "9b0881d478d3511b56d22089c21859251a6d2e652b6cb929d82293d02d49d200"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/lumo_gesture_contact_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/lumo_gesture_contact_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1223,
+      "original_sha256": "4bde429c242e05b8650d579cc1e369a5f8ffe3c0b0fde3fd2da977adade08854",
+      "stored_bytes": 578,
+      "stored_sha256": "9e957ececddf7bb8c01e72ee1af9d037e5f782500c008e7af9fea4110bc80f5f"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/lumo_kart_tick_cadence_regression.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/lumo_kart_tick_cadence_regression.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2097,
+      "original_sha256": "a6e31559d2e5dbb33f509ec7751f1979272660e4425994c5aaad6dbd9b541e77",
+      "stored_bytes": 646,
+      "stored_sha256": "7590dbf3277c5d505cb566557360ef3977c479d1ed7d7bf8d3b0642dd697de0c"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 494,
+      "original_sha256": "65af3dd144ebf0e2404429f8c8ab85c17894b293d8eb34abc596c636fc76ebc4",
+      "stored_bytes": 359,
+      "stored_sha256": "52cb57368ca01f18d9710fde4776a70a352a418bceb3a98bd880f9e1b80c0409"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.59.40.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.59.40.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 837,
+      "original_sha256": "237ed83a00e02270f0176c02a4e0d7df638fc691754a50c0bdceadb84fdf4bc9",
+      "stored_bytes": 575,
+      "stored_sha256": "9b0881d478d3511b56d22089c21859251a6d2e652b6cb929d82293d02d49d200"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.59.41.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.59.41.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2097,
+      "original_sha256": "a6e31559d2e5dbb33f509ec7751f1979272660e4425994c5aaad6dbd9b541e77",
+      "stored_bytes": 646,
+      "stored_sha256": "7590dbf3277c5d505cb566557360ef3977c479d1ed7d7bf8d3b0642dd697de0c"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.59.42.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.59.42.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1223,
+      "original_sha256": "4bde429c242e05b8650d579cc1e369a5f8ffe3c0b0fde3fd2da977adade08854",
+      "stored_bytes": 578,
+      "stored_sha256": "9e957ececddf7bb8c01e72ee1af9d037e5f782500c008e7af9fea4110bc80f5f"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.59.57.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.59.57.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1496,
+      "original_sha256": "db1f8ef357639724ecad4048edf8e0a1f75f2df16967704d33791655514d462b",
+      "stored_bytes": 804,
+      "stored_sha256": "59e7663c311da0abf3dbf94b30ae2643b83901c3faf54bdbd4592bb97171f4ed"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1321,
+      "original_sha256": "e20bcf40c15834106abd9b135cd3614379021f1551ca1bf2934545edcfb76efc",
+      "stored_bytes": 794,
+      "stored_sha256": "58ce8cc3813d1699b0981cab5731af85da3f3571904f1062c35c87bb14b7995a"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.58.36.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.58.36.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1263,
+      "original_sha256": "e983bac9828f0676c14da31fca90736e35810b181178ad5f194cfdc3bd7fb3f3",
+      "stored_bytes": 775,
+      "stored_sha256": "250df91f76eff286f221391481d1ec6e621ba8d33376e9d4851c99d8eb27b190"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.58.48.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.58.48.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1568,
+      "original_sha256": "611de1d79446166d4729acf5b1ecdbc9d8d5ee1921d5b17e638fe13ccf720b01",
+      "stored_bytes": 796,
+      "stored_sha256": "5b4cb1c022b7beb3ddfc58598ee06009b5565de7a520f1da4d3f1d904b7ab282"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.58.50.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.58.50.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1185,
+      "original_sha256": "47f65c921bbb489cfe694f28d0774cf929d9f10fad196c91471c0f62a981696e",
+      "stored_bytes": 730,
+      "stored_sha256": "5f6f37cbbcf94d48af6a8bd5d2132da13b8655bab2d49d42d9a380e5985f19e2"
+    },
+    {
+      "path": "artifact-logs/legacy/acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.59.26.log.gz",
+      "origin": "legacy-14058908829.zip!acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.59.26.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1444,
+      "original_sha256": "05ae460c8cfcc06bee9409ff741df9268f3823fb94c1d5579c4511e28d00c0f0",
+      "stored_bytes": 823,
+      "stored_sha256": "8019adc2338d174f913a765911177a066cd2ecd690d10fd030b13331eb9219bf"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/baseline-2017/build-render.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/baseline-2017/build-render.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1574,
+      "original_sha256": "a533f4267fd9b8a288dab0bec420b21e48a9afc61ba0aa56196c509921919a2e",
+      "stored_bytes": 876,
+      "stored_sha256": "11bb8f74087b450b1b033a95cffc96f3ec0d82f923f2ba18d9a812c6c2955725"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/baseline-2017/garage-render.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/baseline-2017/garage-render.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1387,
+      "original_sha256": "7fd56ef4ac21a35e0cbc138272ac7374d3d21ef93eed94bd8359771b664f41bf",
+      "stored_bytes": 749,
+      "stored_sha256": "15216cc850f3b9903367ae16f2b306abd4458c99a405ace43357c2d549ddd575"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/baseline-2017/import.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/baseline-2017/import.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 145708,
+      "original_sha256": "1f5b6429cee8cbea1476579e2d6bdfc9bce224091384497d2c30d160ac769972",
+      "stored_bytes": 9478,
+      "stored_sha256": "004d63fabbf3d784ac6120e885ecb5f2e68e25c1c06c7f69a11001203c026351"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/baseline-2017/user-data/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/baseline-2017/user-data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1568,
+      "original_sha256": "9fb1e2476188e7c4ca827a80b3fd776a1b7af93eb60be5c8e68da28312812fa9",
+      "stored_bytes": 875,
+      "stored_sha256": "ece1934e17e0512b0365d0b31eb3dac1fb79379571d0f1a3af7c2e91ac3e1fa9"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/baseline-2017/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.49.00.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/baseline-2017/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.49.00.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1381,
+      "original_sha256": "7141fd0674d31ade3a9052e04dacb6f22bab65b5c138524194d783f10559a718",
+      "stored_bytes": 748,
+      "stored_sha256": "8333218853073d49d833b498593820167ae7a72bbfda27bb6f9b66a3c28f7f4e"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/import.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/import.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 162436,
+      "original_sha256": "f61a6493e13d6fead90058a34ee27e5f34c9b3680893e5ca4901565eec1f1115",
+      "stored_bytes": 10092,
+      "stored_sha256": "2a26d900cb85cec8fe43ad7dc78c0f69005081dac461d4dfbcf55f74b5303cc4"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/bauwelt_identity_2013_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/bauwelt_identity_2013_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 584,
+      "original_sha256": "3822e77fcba64613368961e0595b58f67b456d228ebd68b0c897e4dd428d4f9a",
+      "stored_bytes": 418,
+      "stored_sha256": "d6d2ee875aef2111110c76eea163d9371be7035311715fb9042145d40141cd02"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/build_frontier_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/build_frontier_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 615,
+      "original_sha256": "94eee442e2a9af4c9920c31f03fe25295476fb64bbc259c0c8f69b9ee1d9cdba",
+      "stored_bytes": 433,
+      "stored_sha256": "22c9ed872b51fe1754e2e50c5eae5ffbd8e0ef6f668c6a93bd28165161e9ec83"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/build_nextgen_play_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/build_nextgen_play_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 685,
+      "original_sha256": "4f02d44a99debb7a5b7a8580c5c7ef215201906963f133e6d10c79d65d27c01c",
+      "stored_bytes": 476,
+      "stored_sha256": "ab13c211351a887e7f6473cccda2bf0a950a689d619c2632c2e802fbec5e070f"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/build_nextgen_play_regression-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/build_nextgen_play_regression-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1334,
+      "original_sha256": "4439cc99723397dd2a4ead00eea92141438eb24a56c360d22aa9308b4ba78552",
+      "stored_bytes": 812,
+      "stored_sha256": "7655d2a9bb8c7d05ee0470dc421de177771a8f474f3c6c750a17b9d9e2471cbb"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/build_settlement_play_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/build_settlement_play_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2067,
+      "original_sha256": "430e55f53620b8c2df1d8871f1b9763936f7d14e91ed66e383700f1dce26a8b4",
+      "stored_bytes": 633,
+      "stored_sha256": "404fab1b9ab64e440bb4d3ebd68349ac08c83d6b553628e64a1fdb75f5acb2e7"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/build_settlement_play_regression-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/build_settlement_play_regression-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2716,
+      "original_sha256": "5f9ca1025869eebb8b63d7de734663cdddcac05a5e1541af94dbf566b5264127",
+      "stored_bytes": 970,
+      "stored_sha256": "0c4159293f7c5756a85e4ce8bc0a9bd0c21e6c2eb245ac945bbddec1b33dd46c"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/build_settlement_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/build_settlement_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 535,
+      "original_sha256": "33275feb62e4b45e22b1e5baf628116c26e14ded822012c4d71ba5b72a3cdb5c",
+      "stored_bytes": 386,
+      "stored_sha256": "e442f90a4477b6b1b0da747298ffaab62dcca070a0df421e7381de53597ac834"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/build_transform_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/build_transform_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 563,
+      "original_sha256": "908189e909d8d514b48819b7fbf29727b962e2f17d4f0f28dbd43f5d690ccc5a",
+      "stored_bytes": 406,
+      "stored_sha256": "b7f6710bc01c2b2f8b2aceaebf1248c1a648e908a281065ddc806364a4515342"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/cards_table_capture-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/cards_table_capture-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1162,
+      "original_sha256": "eecb702cd200bcbb695665dc4b060aa33463fdb0023ba4bb6a5321c4fe352ef4",
+      "stored_bytes": 712,
+      "stored_sha256": "3460b82b38bbc5fae2b319201d86c0e17c5eb2c449598e5ba37562ed575e63d4"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/cards_table_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/cards_table_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 581,
+      "original_sha256": "6aaf54424923fd7d7b472e55e52de02d1bd5040845c4982659844db4314121a8",
+      "stored_bytes": 428,
+      "stored_sha256": "9f82ddde3a6f530404150b1ea67d5f6c1a883b300ab9d9002368d5754c265564"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/creative_nextgen_environment_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/creative_nextgen_environment_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 590,
+      "original_sha256": "443e27628d12acd4c02473fc8e5246282c0701eab6aff75a0e39927c275f76de",
+      "stored_bytes": 416,
+      "stored_sha256": "64b4950d035aae4c019d74a12d9df8ac2d0d3645d5aa597ff514ac5b40f94132"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/creative_nextgen_environment_regression-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/creative_nextgen_environment_regression-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1239,
+      "original_sha256": "27a24847d258f729ae3b900606e681e18cf6db1c824df169d455a22d2cd72b4e",
+      "stored_bytes": 748,
+      "stored_sha256": "43d8bd2d80b496731bd84dd96ca495b33330d88375b71d7bd53e8b9818daed61"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/jump_expeditions_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/jump_expeditions_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2758,
+      "original_sha256": "92b58ab6f6002b1c9989a185e3b26acc44c117d2cfc921652edf4beffaf96753",
+      "stored_bytes": 628,
+      "stored_sha256": "7c4017b7d2e31a59e446a168506ac4fc30d2bf5d3ff58ca759a2736f31f3f54d"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/jump_nextgen_capture-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/jump_nextgen_capture-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1727,
+      "original_sha256": "d33f5bdc289d680eb893d7646ff6358ab22285b28a2d0134e58c3763b49c72f3",
+      "stored_bytes": 813,
+      "stored_sha256": "26fba09f76b82e5f72701e5eed6a7ce5f6eace87bca7cb926273d0d2b5333d16"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/jump_nextgen_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/jump_nextgen_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1995,
+      "original_sha256": "52a320159bea3754b29275564ce4915525364e192f7ea53430e7ddfe950bcfc9",
+      "stored_bytes": 660,
+      "stored_sha256": "ccbadf62e6b00b68be211c510fa9b7946deff3a44d61d07fb74fa3f4955d52e4"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/kart_nextgen_garage_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/kart_nextgen_garage_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 732,
+      "original_sha256": "46a285630f61100232ed1b4a2c8835255a2927cd97e4d5e5fb4209e97fb6f044",
+      "stored_bytes": 421,
+      "stored_sha256": "fd744da1032ce8647a323a8d5d473d28700d08e59dfab8732f5917bf54d6a4e5"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/kart_nextgen_garage_regression-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/kart_nextgen_garage_regression-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1383,
+      "original_sha256": "f294d786d1cd2f2885ebcc7d72f46d713fb75df70c72c4e3976e3a8f838135f5",
+      "stored_bytes": 756,
+      "stored_sha256": "71ad3dad9b11f1c9ee9374ad31abbc05ff78b93b9f9c99848f0729e60fd1eb23"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/kart_player_full_route_regression-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/kart_player_full_route_regression-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 21732,
+      "original_sha256": "83bf07146a12afaaed106592e8104daf366100777341737bdb7234c8cce1f072",
+      "stored_bytes": 3957,
+      "stored_sha256": "d66833f4692fb8f3f8d400a2e4e99282180b1b22598ef3fd6d4d85312ed1aab9"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/kart_track_pass_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/kart_track_pass_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1074,
+      "original_sha256": "e1802172ad25ca6f8f686bd95e732e3e5b5a040e8b441e0792755a2919139690",
+      "stored_bytes": 479,
+      "stored_sha256": "c6e9ae6a7c6408be4c9543c97944892a363c25ca2b250bf7d4e8c5b90efe2276"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/learning_host_payload_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/learning_host_payload_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 559,
+      "original_sha256": "2c10581b2fd5d475f5fdd7dfde61c1dff0c9f8284d4339ff1ebd6e9ca2a65c55",
+      "stored_bytes": 409,
+      "stored_sha256": "3757f3e46d287e7927066dccc4833c9e244e3468eaaf03037fa3465e224d2aa9"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/learning_sharing_capture-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/learning_sharing_capture-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 3506,
+      "original_sha256": "017c872ceb1c84497da50b042ab3cd5807e99e78e40078be095ca23e5433c38e",
+      "stored_bytes": 932,
+      "stored_sha256": "a2cfdd3c20e7c7d50f4a041186de3082d37e45070fd6d68913ef624c4b7060e3"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/learning_sharing_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/learning_sharing_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1480,
+      "original_sha256": "729d8e38b8e21b8152e2835d2e82fd6bd24937a943b2d755c8c57ad5e3565a9f",
+      "stored_bytes": 512,
+      "stored_sha256": "ae8d462aa6d7a720e2396af219c89dc0e0e65474f9a4fe8b8c68ec896c78f1fb"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/learning_studio_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/learning_studio_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1799,
+      "original_sha256": "4c3f76fbf9eae0869b4055830f947781d98f5809e22bf7c62066dfb3d0f97766",
+      "stored_bytes": 618,
+      "stored_sha256": "95809a994a4c8e37c2f4dd0a2f7bb1a2715eb9a19c2333ef723f9099debb99a5"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/learning_world_capture-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/learning_world_capture-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 8466,
+      "original_sha256": "40303789bd5aa748900d0224ff1486a3c4a06b0f54fbe690a532f8ea54681ddd",
+      "stored_bytes": 1541,
+      "stored_sha256": "bc879238d3dc1ba47fff1b00b62d1c6f62ce5b8b00e219b12a48f89a51dd9b05"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/learning_world_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/learning_world_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 10597,
+      "original_sha256": "31cfdd02030c31b3d783750ce0f984d4988ee22bd87e5918be5a02ffbbebca9a",
+      "stored_bytes": 1144,
+      "stored_sha256": "7bbdf72ea459cd0e81ef5d97ba03c6d9be67a3d8b321aaf6105f7180b4186004"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/lumo_65bone_walk_gait_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/lumo_65bone_walk_gait_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 570,
+      "original_sha256": "d709a54ac013e3e6e24a6c31a790d8d84b0abe00f4fbccb7fee6229947ff6cda",
+      "stored_bytes": 405,
+      "stored_sha256": "a07d300e1b1ec892e2644d3a30ae4d6e22ef70cff9a36aacabe82deb2d2be459"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/lumo_original_jump_visual_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/lumo_original_jump_visual_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 689,
+      "original_sha256": "6c2847641ce8702483e9a6d81b36d20fac209567079970bd641e11f0c3489305",
+      "stored_bytes": 467,
+      "stored_sha256": "0e98d7834eba59303e80426c10bbbb2f4a790110d91789278195fc4fec43570d"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/lumo_studio_motion_capture-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/lumo_studio_motion_capture-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1202,
+      "original_sha256": "b86485f1f5cee930cada12044d9f425daf403e73e51f2497c7593ee634270669",
+      "stored_bytes": 728,
+      "stored_sha256": "fad0fee08640e77d654ab594dfdb3f082d90a2bd2daeed4cf02b669eda3eed29"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/lumo_studio_motion_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/lumo_studio_motion_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 601,
+      "original_sha256": "0b95982e77eaab37152a0a1f780a96d5ea6242b173a07687cb7f4ee7599896c5",
+      "stored_bytes": 424,
+      "stored_sha256": "2834e3d8544b22c7bdf819f495707bb4f3e32b5d4fc3b6fc39e29b6bd58e4da2"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/lumo_teacher_pose_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/lumo_teacher_pose_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 587,
+      "original_sha256": "9f2874ec9da7d8b8e5621890cbb37e77246965e0a6cd8dc883ade2be129321d7",
+      "stored_bytes": 419,
+      "stored_sha256": "81b48599d16b4df68389080558c718c83a4c1f4f3847a9f8741d5fa92cdbc6a6"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/puzzle_rotation_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/puzzle_rotation_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 569,
+      "original_sha256": "eb86541e102b1706bd36e900c63d46fd5db5fd8989021c9ebd8782435164252b",
+      "stored_bytes": 404,
+      "stored_sha256": "7a18af0464fe4dabf1b9b2e9a1faca3bd2a422d26153469bda500bbf3c0e50d0"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/puzzle_rotation_regression-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/puzzle_rotation_regression-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1218,
+      "original_sha256": "48fce4400a65d1ba6fb1d998ec2d021435bd3242aed3e471b1be74d1dd767871",
+      "stored_bytes": 742,
+      "stored_sha256": "4c2e019df30cde495f4363a97451478b844766319301dd92efef59e24fb79f9a"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/rhythm_tour_play_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/rhythm_tour_play_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 598,
+      "original_sha256": "12c16889bcb427a5b8cc09878a7652e23091e07b6c3f9bb9765f6bd2e00def7b",
+      "stored_bytes": 423,
+      "stored_sha256": "710e65c839aea3cc768ea5412c27de0c720b09b603f8ef7ca64f15bae6052a1a"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/rhythm_tour_play_regression-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/rhythm_tour_play_regression-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1247,
+      "original_sha256": "57329a3591776a16ea496e6e51806bb8044654b3ff5e434c203aa94823ff5ee9",
+      "stored_bytes": 762,
+      "stored_sha256": "2b48071562102aff68d86e3e8ca61e57e15fb7cab190b03d0666f69138e858fc"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/rhythm_tour_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/rhythm_tour_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 580,
+      "original_sha256": "2d7b3c234aed5745baeff022044bd6717611de1bfefa8c787f6fc79acc4998e2",
+      "stored_bytes": 415,
+      "stored_sha256": "2cc74f16bf83f1142413941ee88649f077c647505b64de85de49807d77769f40"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/treasure_exploration_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/treasure_exploration_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 587,
+      "original_sha256": "5f461cb949ebc96db8146c1e90787a233e280637a2ee36c9aa0b5fbf0b4fb277",
+      "stored_bytes": 416,
+      "stored_sha256": "eb77dd8d9b583ee88cf628da51c921b2041faacf159ddb8afb5df8ca7f8ec62f"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/treasure_exploration_regression-rendered.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/treasure_exploration_regression-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1236,
+      "original_sha256": "ce5b27b806edb05a0389a9ce0b30abdc106b90dffd333941f059e6b971b4dd0a",
+      "stored_bytes": 752,
+      "stored_sha256": "020a9ab82b013d45772ed7c5ccd47601c131f37dda69e04d091105e640897fde"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/bauwelt_identity_2013_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/bauwelt_identity_2013_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 584,
+      "original_sha256": "3822e77fcba64613368961e0595b58f67b456d228ebd68b0c897e4dd428d4f9a",
+      "stored_bytes": 418,
+      "stored_sha256": "d6d2ee875aef2111110c76eea163d9371be7035311715fb9042145d40141cd02"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/build_frontier_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/build_frontier_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 615,
+      "original_sha256": "94eee442e2a9af4c9920c31f03fe25295476fb64bbc259c0c8f69b9ee1d9cdba",
+      "stored_bytes": 433,
+      "stored_sha256": "22c9ed872b51fe1754e2e50c5eae5ffbd8e0ef6f668c6a93bd28165161e9ec83"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/build_nextgen_play_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/build_nextgen_play_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 685,
+      "original_sha256": "4f02d44a99debb7a5b7a8580c5c7ef215201906963f133e6d10c79d65d27c01c",
+      "stored_bytes": 476,
+      "stored_sha256": "ab13c211351a887e7f6473cccda2bf0a950a689d619c2632c2e802fbec5e070f"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/build_nextgen_play_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/build_nextgen_play_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1328,
+      "original_sha256": "0d24fd484eb16e60462a2a3ae5cf6755e56df0a4d79d773f1df80c824d6bb860",
+      "stored_bytes": 811,
+      "stored_sha256": "c0abce4b15a34c783e7805fde61532307467f6594dacf2af93063cd07acd0447"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/build_settlement_play_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/build_settlement_play_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2067,
+      "original_sha256": "430e55f53620b8c2df1d8871f1b9763936f7d14e91ed66e383700f1dce26a8b4",
+      "stored_bytes": 633,
+      "stored_sha256": "404fab1b9ab64e440bb4d3ebd68349ac08c83d6b553628e64a1fdb75f5acb2e7"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/build_settlement_play_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/build_settlement_play_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2710,
+      "original_sha256": "92cd913d52a3fa3cfb89e028415035981f6e99bdaba475e2f26a4a4a0e805590",
+      "stored_bytes": 968,
+      "stored_sha256": "466e34befaae3828612161485e92082b3335b2f658c87dd5a1c22d23987f1a73"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/build_settlement_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/build_settlement_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 535,
+      "original_sha256": "33275feb62e4b45e22b1e5baf628116c26e14ded822012c4d71ba5b72a3cdb5c",
+      "stored_bytes": 386,
+      "stored_sha256": "e442f90a4477b6b1b0da747298ffaab62dcca070a0df421e7381de53597ac834"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/build_transform_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/build_transform_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 563,
+      "original_sha256": "908189e909d8d514b48819b7fbf29727b962e2f17d4f0f28dbd43f5d690ccc5a",
+      "stored_bytes": 406,
+      "stored_sha256": "b7f6710bc01c2b2f8b2aceaebf1248c1a648e908a281065ddc806364a4515342"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/cards_table_capture-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/cards_table_capture-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1156,
+      "original_sha256": "d28154e12b864cf9b7d98da980bd86cb648fc0487abe9f8a07b8d9252f6386c2",
+      "stored_bytes": 711,
+      "stored_sha256": "ca4c9926a41726ff083592f0c98ebf927ca9a471ab8bf08a0936bf9d9c4ee133"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/cards_table_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/cards_table_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 581,
+      "original_sha256": "6aaf54424923fd7d7b472e55e52de02d1bd5040845c4982659844db4314121a8",
+      "stored_bytes": 428,
+      "stored_sha256": "9f82ddde3a6f530404150b1ea67d5f6c1a883b300ab9d9002368d5754c265564"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/creative_nextgen_environment_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/creative_nextgen_environment_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 590,
+      "original_sha256": "443e27628d12acd4c02473fc8e5246282c0701eab6aff75a0e39927c275f76de",
+      "stored_bytes": 416,
+      "stored_sha256": "64b4950d035aae4c019d74a12d9df8ac2d0d3645d5aa597ff514ac5b40f94132"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/creative_nextgen_environment_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/creative_nextgen_environment_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1233,
+      "original_sha256": "4ffbe8ce4abd7e8b4612ad3b4552838951864426ca7ba7a410c0385360953fb2",
+      "stored_bytes": 747,
+      "stored_sha256": "a7c3b71ad6c7b6ac187dbc8ba731f251ef8770bfc4b1778158fd73cab2463b65"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/jump_expeditions_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/jump_expeditions_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2758,
+      "original_sha256": "92b58ab6f6002b1c9989a185e3b26acc44c117d2cfc921652edf4beffaf96753",
+      "stored_bytes": 628,
+      "stored_sha256": "7c4017b7d2e31a59e446a168506ac4fc30d2bf5d3ff58ca759a2736f31f3f54d"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/jump_nextgen_capture-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/jump_nextgen_capture-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1721,
+      "original_sha256": "82514bc41e424ce87553424d14aba2727375e9e7704b38bc834718cd3f383ad3",
+      "stored_bytes": 812,
+      "stored_sha256": "6e584215693dc6287467f82a7dd0e89106df2967a17fd7954e0c1525383d0029"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/jump_nextgen_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/jump_nextgen_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1995,
+      "original_sha256": "52a320159bea3754b29275564ce4915525364e192f7ea53430e7ddfe950bcfc9",
+      "stored_bytes": 660,
+      "stored_sha256": "ccbadf62e6b00b68be211c510fa9b7946deff3a44d61d07fb74fa3f4955d52e4"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/kart_nextgen_garage_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/kart_nextgen_garage_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 732,
+      "original_sha256": "46a285630f61100232ed1b4a2c8835255a2927cd97e4d5e5fb4209e97fb6f044",
+      "stored_bytes": 421,
+      "stored_sha256": "fd744da1032ce8647a323a8d5d473d28700d08e59dfab8732f5917bf54d6a4e5"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/kart_nextgen_garage_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/kart_nextgen_garage_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1377,
+      "original_sha256": "d484ceb661ccbefe2256d548f25622bd03ba2fbac1ff59d8b9acc85a16097ea9",
+      "stored_bytes": 755,
+      "stored_sha256": "2f7411f4ce5af69fb67bf910ebe43a30a1bd4d42a7436abf2fc5e228feafb36b"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/kart_player_full_route_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/kart_player_full_route_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 21726,
+      "original_sha256": "0f91cf2fdd39b116ef6369995040d784d83e5e408bf1cd7ff4e53ca49ad15e66",
+      "stored_bytes": 3956,
+      "stored_sha256": "25b4a2e84f0c9c65d6a27988553c90a8000527dbdf8cd319240b2dbf16f2d075"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/kart_track_pass_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/kart_track_pass_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1074,
+      "original_sha256": "e1802172ad25ca6f8f686bd95e732e3e5b5a040e8b441e0792755a2919139690",
+      "stored_bytes": 479,
+      "stored_sha256": "c6e9ae6a7c6408be4c9543c97944892a363c25ca2b250bf7d4e8c5b90efe2276"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/learning_host_payload_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/learning_host_payload_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 559,
+      "original_sha256": "2c10581b2fd5d475f5fdd7dfde61c1dff0c9f8284d4339ff1ebd6e9ca2a65c55",
+      "stored_bytes": 409,
+      "stored_sha256": "3757f3e46d287e7927066dccc4833c9e244e3468eaaf03037fa3465e224d2aa9"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/learning_sharing_capture-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/learning_sharing_capture-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 3500,
+      "original_sha256": "b08934b581136c66c680c39a164d2f2c476d4324b5dbd965a8670189a1f7e3bb",
+      "stored_bytes": 930,
+      "stored_sha256": "164ff38c03d82651ac51b92fe88282dad11f1e5d9adda4afc357cf9758f0edf2"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/learning_sharing_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/learning_sharing_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1480,
+      "original_sha256": "729d8e38b8e21b8152e2835d2e82fd6bd24937a943b2d755c8c57ad5e3565a9f",
+      "stored_bytes": 512,
+      "stored_sha256": "ae8d462aa6d7a720e2396af219c89dc0e0e65474f9a4fe8b8c68ec896c78f1fb"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/learning_studio_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/learning_studio_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1799,
+      "original_sha256": "4c3f76fbf9eae0869b4055830f947781d98f5809e22bf7c62066dfb3d0f97766",
+      "stored_bytes": 618,
+      "stored_sha256": "95809a994a4c8e37c2f4dd0a2f7bb1a2715eb9a19c2333ef723f9099debb99a5"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/learning_world_capture-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/learning_world_capture-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 8460,
+      "original_sha256": "1c1c25a2fc37ff8c179169a6ed68b10c0573ff68d083d690a8f125434d42621e",
+      "stored_bytes": 1540,
+      "stored_sha256": "1ed9a46cb04d7eddaecc2c57600949844fe2cd21db7fa83b32a4597e22a828bc"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/learning_world_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/learning_world_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 10597,
+      "original_sha256": "31cfdd02030c31b3d783750ce0f984d4988ee22bd87e5918be5a02ffbbebca9a",
+      "stored_bytes": 1144,
+      "stored_sha256": "7bbdf72ea459cd0e81ef5d97ba03c6d9be67a3d8b321aaf6105f7180b4186004"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/lumo_65bone_walk_gait_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/lumo_65bone_walk_gait_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 570,
+      "original_sha256": "d709a54ac013e3e6e24a6c31a790d8d84b0abe00f4fbccb7fee6229947ff6cda",
+      "stored_bytes": 405,
+      "stored_sha256": "a07d300e1b1ec892e2644d3a30ae4d6e22ef70cff9a36aacabe82deb2d2be459"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/lumo_original_jump_visual_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/lumo_original_jump_visual_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 689,
+      "original_sha256": "6c2847641ce8702483e9a6d81b36d20fac209567079970bd641e11f0c3489305",
+      "stored_bytes": 467,
+      "stored_sha256": "0e98d7834eba59303e80426c10bbbb2f4a790110d91789278195fc4fec43570d"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/lumo_studio_motion_capture-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/lumo_studio_motion_capture-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1196,
+      "original_sha256": "2bdcd3d18a853ec1befee4e03690cbb7bb01baceadb4d98983fe0a751450ba98",
+      "stored_bytes": 727,
+      "stored_sha256": "946825ce2df7be49d35bf4f2c41991dc89cf647e35cf7110ce55de6a0881e25b"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/lumo_studio_motion_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/lumo_studio_motion_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 601,
+      "original_sha256": "0b95982e77eaab37152a0a1f780a96d5ea6242b173a07687cb7f4ee7599896c5",
+      "stored_bytes": 424,
+      "stored_sha256": "2834e3d8544b22c7bdf819f495707bb4f3e32b5d4fc3b6fc39e29b6bd58e4da2"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/lumo_teacher_pose_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/lumo_teacher_pose_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 587,
+      "original_sha256": "9f2874ec9da7d8b8e5621890cbb37e77246965e0a6cd8dc883ade2be129321d7",
+      "stored_bytes": 419,
+      "stored_sha256": "81b48599d16b4df68389080558c718c83a4c1f4f3847a9f8741d5fa92cdbc6a6"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/puzzle_rotation_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/puzzle_rotation_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 569,
+      "original_sha256": "eb86541e102b1706bd36e900c63d46fd5db5fd8989021c9ebd8782435164252b",
+      "stored_bytes": 404,
+      "stored_sha256": "7a18af0464fe4dabf1b9b2e9a1faca3bd2a422d26153469bda500bbf3c0e50d0"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/puzzle_rotation_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/puzzle_rotation_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1212,
+      "original_sha256": "8a1c3eb6d30f13d7f28cc509a44ca72a04f839d4c752c4bb2353ac66b7f51ecc",
+      "stored_bytes": 742,
+      "stored_sha256": "77861f1331a999971bbbeadb3b00bdb8ae3c1d7490932a2ce3c8f882acf2ebdc"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/rhythm_tour_play_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/rhythm_tour_play_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 598,
+      "original_sha256": "12c16889bcb427a5b8cc09878a7652e23091e07b6c3f9bb9765f6bd2e00def7b",
+      "stored_bytes": 423,
+      "stored_sha256": "710e65c839aea3cc768ea5412c27de0c720b09b603f8ef7ca64f15bae6052a1a"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/rhythm_tour_play_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/rhythm_tour_play_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1241,
+      "original_sha256": "cc3936b5a0d4d79bbdce5cd750c6710d618974a57bc119440a7bfdee9e768155",
+      "stored_bytes": 760,
+      "stored_sha256": "af3083d771c360790942d65e5ead9f7be92977bb5685e8c866de71360a3b644a"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/rhythm_tour_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/rhythm_tour_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 580,
+      "original_sha256": "2d7b3c234aed5745baeff022044bd6717611de1bfefa8c787f6fc79acc4998e2",
+      "stored_bytes": 415,
+      "stored_sha256": "2cc74f16bf83f1142413941ee88649f077c647505b64de85de49807d77769f40"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/treasure_exploration_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/treasure_exploration_regression-headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 587,
+      "original_sha256": "5f461cb949ebc96db8146c1e90787a233e280637a2ee36c9aa0b5fbf0b4fb277",
+      "stored_bytes": 416,
+      "stored_sha256": "eb77dd8d9b583ee88cf628da51c921b2041faacf159ddb8afb5df8ca7f8ec62f"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/nextgen/user-data/treasure_exploration_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/nextgen/user-data/treasure_exploration_regression-rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1230,
+      "original_sha256": "1844c3426ee3699731cb3cc4683ba59f528c4a50e08e71fa6dfc944d860d0af0",
+      "stored_bytes": 751,
+      "stored_sha256": "d6d46d5d7f0880b5887c72bcc622bd1b80fd992490f26a8dccd433c39dd54b0c"
+    },
+    {
+      "path": "artifact-logs/native/nextgen-evidence/project-validation.log.gz",
+      "origin": "native-14061435964.zip!nextgen-evidence/project-validation.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 6124,
+      "original_sha256": "9ce4cc5c5d80ff2abf463f3328ea7ffa1aa612ad10f867910e7fc370f571da5e",
+      "stored_bytes": 1423,
+      "stored_sha256": "4abe522ee3c1beaa19e5693ad0f12848e81cb170af1e4f49a53980e4164c996a"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/build/build_dialog_density_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/build/build_dialog_density_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1434,
+      "original_sha256": "50f6770776f9714f91b070ea654ccbfc0f9321eaee6aec68a044831a25c54c48",
+      "stored_bytes": 594,
+      "stored_sha256": "ab1b9d2edd52c1c7efe436806e5968ba62768fea622c1fc7a7ec9bb7f7a4590b"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/build/build_dialog_density_regression-rendered.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/build/build_dialog_density_regression-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2429,
+      "original_sha256": "f578d67a5e4fea4fb2a9eeddb5341170ab6cf98a12d155c442b36e867b2ccc38",
+      "stored_bytes": 1021,
+      "stored_sha256": "da11524699d3e848f70906b8b7019b57b68d9d012aa40b42772f6eb51b931ca8"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/build/data/headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/build/data/headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1434,
+      "original_sha256": "50f6770776f9714f91b070ea654ccbfc0f9321eaee6aec68a044831a25c54c48",
+      "stored_bytes": 594,
+      "stored_sha256": "ab1b9d2edd52c1c7efe436806e5968ba62768fea622c1fc7a7ec9bb7f7a4590b"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/build/data/rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/build/data/rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2423,
+      "original_sha256": "ad106e4413f42d11fa2f2e55c9101277b6b52d623f8c8e2e83c7752b79d89f8e",
+      "stored_bytes": 1020,
+      "stored_sha256": "bd093d559ea697ec964353296db77d85f1a6a644ef1b8f376d083fa0a65d966f"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/build/import.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/build/import.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 162436,
+      "original_sha256": "f61a6493e13d6fead90058a34ee27e5f34c9b3680893e5ca4901565eec1f1115",
+      "stored_bytes": 10092,
+      "stored_sha256": "2a26d900cb85cec8fe43ad7dc78c0f69005081dac461d4dfbcf55f74b5303cc4"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/treasure/data/headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/treasure/data/headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 893,
+      "original_sha256": "060640c2d2ca42313f65019bd3fb26b39c83e63de72aec445d16b7a22d704f7c",
+      "stored_bytes": 496,
+      "stored_sha256": "21118d5efaf1ba59b8b41c07c8d8260b6624e530a768d343f538f175d4ecbc30"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/treasure/data/rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/treasure/data/rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1537,
+      "original_sha256": "e6c3c2958ec173c0c556505e8b5c31cbe8aedc7a769cd9a90ccce6d5433c945f",
+      "stored_bytes": 831,
+      "stored_sha256": "922e45a3100b51112505d9870567918a680ace876c78d68839d10c0599c743a6"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/treasure/import.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/treasure/import.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 162379,
+      "original_sha256": "4699022b15285281a0d2c29f14d28760b721d57e63b11f4c7d22226590b87067",
+      "stored_bytes": 10049,
+      "stored_sha256": "45d4c2317c6f1fc1d7e9f79c62fbc7921bb6387ed3bcfcc2c8ddb39c3c7a579d"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/treasure/treasure_density_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/treasure/treasure_density_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 893,
+      "original_sha256": "060640c2d2ca42313f65019bd3fb26b39c83e63de72aec445d16b7a22d704f7c",
+      "stored_bytes": 496,
+      "stored_sha256": "21118d5efaf1ba59b8b41c07c8d8260b6624e530a768d343f538f175d4ecbc30"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/treasure/treasure_density_regression-rendered.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/treasure/treasure_density_regression-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1543,
+      "original_sha256": "f80f934417f5e54e5400426cc4b3f8be71226927a7697a3ff0f4c056156b05d0",
+      "stored_bytes": 831,
+      "stored_sha256": "ec8aeef981687a21814fe68bf6b78c565aca6525633b5360d45e802b432f8cad"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/workshop/data/headless/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/workshop/data/headless/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 3861,
+      "original_sha256": "a3bfb9bab60e0265e9e5aa02357d8f15b3e9ff9e5e6293eb0ddba452d88580a9",
+      "stored_bytes": 963,
+      "stored_sha256": "6b24ef33a35e3910aac074fda690d4a3ef8addba35c82d5709b1a94d1fff4853"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/workshop/data/rendered/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/workshop/data/rendered/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 4504,
+      "original_sha256": "ed735b259860e1f8153d4e0e39cdc39e092bebae2b7eb5b855b65fd23a656ab0",
+      "stored_bytes": 1294,
+      "stored_sha256": "ec0fbf0f5761aa7791b39db1ff45d664e5e403af8caff862a330cb3245dfe42d"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/workshop/import.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/workshop/import.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 162436,
+      "original_sha256": "f61a6493e13d6fead90058a34ee27e5f34c9b3680893e5ca4901565eec1f1115",
+      "stored_bytes": 10092,
+      "stored_sha256": "2a26d900cb85cec8fe43ad7dc78c0f69005081dac461d4dfbcf55f74b5303cc4"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/workshop/kart_workshop_density_regression-headless.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/workshop/kart_workshop_density_regression-headless.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 3861,
+      "original_sha256": "a3bfb9bab60e0265e9e5aa02357d8f15b3e9ff9e5e6293eb0ddba452d88580a9",
+      "stored_bytes": 963,
+      "stored_sha256": "6b24ef33a35e3910aac074fda690d4a3ef8addba35c82d5709b1a94d1fff4853"
+    },
+    {
+      "path": "artifact-logs/native/touch-evidence/workshop/kart_workshop_density_regression-rendered.log.gz",
+      "origin": "native-14061435964.zip!touch-evidence/workshop/kart_workshop_density_regression-rendered.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 4510,
+      "original_sha256": "4ab2179a3f74f8cbc91725bfde5516237f5ccb7dc822377e3a384e60cffe188d",
+      "stored_bytes": 1294,
+      "stored_sha256": "e77d39fed84e78792161eb0cbd476e8c339830f1ccd6cf8d365a2a121f0468b8"
+    },
+    {
+      "path": "artifact-logs/preview/import.log.gz",
+      "origin": "preview-14058528261.zip!import.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 162436,
+      "original_sha256": "f61a6493e13d6fead90058a34ee27e5f34c9b3680893e5ca4901565eec1f1115",
+      "stored_bytes": 10092,
+      "stored_sha256": "2a26d900cb85cec8fe43ad7dc78c0f69005081dac461d4dfbcf55f74b5303cc4"
+    },
+    {
+      "path": "artifact-logs/preview/render.log.gz",
+      "origin": "preview-14058528261.zip!render.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 8466,
+      "original_sha256": "40303789bd5aa748900d0224ff1486a3c4a06b0f54fbe690a532f8ea54681ddd",
+      "stored_bytes": 1541,
+      "stored_sha256": "bc879238d3dc1ba47fff1b00b62d1c6f62ce5b8b00e219b12a48f89a51dd9b05"
+    },
+    {
+      "path": "artifact-logs/preview/user-data/godot/app_userdata/Lumo 3D/logs/godot.log.gz",
+      "origin": "preview-14058528261.zip!user-data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "category": "unchanged-complete-artifact-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 8460,
+      "original_sha256": "1c1c25a2fc37ff8c179169a6ed68b10c0573ff68d083d690a8f125434d42621e",
+      "stored_bytes": 1540,
+      "stored_sha256": "1ed9a46cb04d7eddaecc2c57600949844fe2cd21db7fa83b32a4597e22a828bc"
+    },
+    {
+      "path": "auxiliary-copy-verification.json",
+      "origin": "../auxiliary/manifest.json",
+      "category": "derived-byte-exact-copy-verification",
+      "encoding": "identity",
+      "original_bytes": 3988,
+      "original_sha256": "1b2156c62d3614bc1cd62c802023c8c2379ae7d781bbf80ad1b50975a0a41560",
+      "stored_bytes": 3988,
+      "stored_sha256": "1b2156c62d3614bc1cd62c802023c8c2379ae7d781bbf80ad1b50975a0a41560"
+    },
+    {
+      "path": "checks/all-workflows-verification.json.gz",
+      "origin": "all-workflows-verification.json",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2822,
+      "original_sha256": "44176a13878a1b46238c6f34860533566160f006117f06e63a4f32c0030bebc2",
+      "stored_bytes": 873,
+      "stored_sha256": "daa9c6f9b46696d03a449df9e20ea47d98bf96057d6d8b3f2ae2f5f1bdade66a"
+    },
+    {
+      "path": "checks/archive-verification.json.gz",
+      "origin": "archive-verification.json",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2554,
+      "original_sha256": "f75d8c6a9a1d962e46ee3933f9fbb8945b848f0848f403b9f2cd57dffcbe06ad",
+      "stored_bytes": 1172,
+      "stored_sha256": "09c71b9deb2a8cdcf99b94d5da8dc3c938d6cbb615fa37bae7be6e98e363d8ff"
+    },
+    {
+      "path": "checks/core-log-key-evidence.json.gz",
+      "origin": "core-log-key-evidence.json",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 2530,
+      "original_sha256": "8e38547593865266fe42d2b7c518891a928ce4e4040b9c6c10ef774a5782470d",
+      "stored_bytes": 1200,
+      "stored_sha256": "6d1cb5b49ac9702bae8353162da5783471138a37f2923b381a7cb1ad8001173b"
+    },
+    {
+      "path": "checks/expected-contract.json.gz",
+      "origin": "expected-contract.json",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 30607,
+      "original_sha256": "028735f4e036c15632a8aaf7c4564707dc7fcb3a791f7f1f49d58c62784eec55",
+      "stored_bytes": 7382,
+      "stored_sha256": "3251709819156e09fdec7d6df1879234dcdab23a2732e210fa3e283f39d37203"
+    },
+    {
+      "path": "checks/gameplay-lifetime-consumer-coverage.json.gz",
+      "origin": "gameplay-lifetime-consumer-coverage.json",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 18324,
+      "original_sha256": "acd655aab635cf0676fa2acae9fae7bc9f76db2dc0d507aa4cee92a492839448",
+      "stored_bytes": 3033,
+      "stored_sha256": "444eaaba35c7e7786584cea4a9e061bbdcb76977fa8e7b00d402fe13d654f123"
+    },
+    {
+      "path": "checks/gameplay-lifetime-verification.json.gz",
+      "origin": "gameplay-lifetime-verification.json",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 11469,
+      "original_sha256": "ff092ef1fe345c186cc73a11e9686d25246fe26b1ba97823c5465db1181e6ada",
+      "stored_bytes": 2033,
+      "stored_sha256": "4e18bd8c578cc16dc815df61e67f492e6d2f36a2ee06ff128569654713f263cd"
+    },
+    {
+      "path": "checks/host-verifier-identity.json.gz",
+      "origin": "host-verifier-identity.json",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 564,
+      "original_sha256": "31dc089a39c9daba7bfcae7b62f864bea078d7db23aca4923a27512e9de620f2",
+      "stored_bytes": 393,
+      "stored_sha256": "4e78aa985c23cc5374818cd24f3f73cacc4e97d5e1d5347a2a6594459dc627bf"
+    },
+    {
+      "path": "checks/legacy-artifact-verification.json.gz",
+      "origin": "legacy-artifact-verification.json",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 16285,
+      "original_sha256": "6b7a5cfcf7d55237c10e49278c0602624fb51ba4683395d90852b0a28ccacd80",
+      "stored_bytes": 4095,
+      "stored_sha256": "cd91e37c0c813f4da31abaa248e65d534e805e6abee122343cd5f2e8658b53ad"
+    },
+    {
+      "path": "checks/native-artifact-verification.json.gz",
+      "origin": "native-artifact-verification.json",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 64972,
+      "original_sha256": "1ab1c034c88acd95788ce86f51fb665ef6d5b62b22a0139339baac58e0196114",
+      "stored_bytes": 12374,
+      "stored_sha256": "f6507b5e1201a90e067fbad3f2a73d500d46aa35014ca77a9523474e0011ae5b"
+    },
+    {
+      "path": "checks/native-full-verification.log.gz",
+      "origin": "native-full-verification.log",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1991,
+      "original_sha256": "0da8087f4bc01563a9c4c838aad532f587c4fd52995a8fbfe9d9afe16f22cab0",
+      "stored_bytes": 677,
+      "stored_sha256": "39458aead570ae73ca5fd1e8dacac1e5d97ec633d309f9afbc1bff6675bf8edc"
+    },
+    {
+      "path": "checks/preview-artifact-verification.json.gz",
+      "origin": "preview-artifact-verification.json",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 7423,
+      "original_sha256": "6828d11aef93ee847a2cb1ab05fc579239f933dfe215a88588b8dda1177ead0d",
+      "stored_bytes": 2025,
+      "stored_sha256": "f3d0c37330205ec4ce0348a70bc030d57f419dd4c682419b113f9a52818254c9"
+    },
+    {
+      "path": "checks/root-review-candidates.json.gz",
+      "origin": "root-review-candidates.json",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 17046,
+      "original_sha256": "d6b03cf2068ab3ed16fd2462710b6e5e65d2b399834bb161a7a79fe271c41ecb",
+      "stored_bytes": 3452,
+      "stored_sha256": "33b8795e1ffe242c390e98015aded6d9f961b93b05868d1fa1e8316bcc1381e8"
+    },
+    {
+      "path": "checks/validator-9e285e-source-manifest.json.gz",
+      "origin": "validator-9e285e-source-manifest.json",
+      "category": "unchanged-verification-or-contract",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 1448,
+      "original_sha256": "a26ae778ad34c60a03ddb9d7e48eeb59441331c811f241eec9797e97f05dc743",
+      "stored_bytes": 722,
+      "stored_sha256": "3c8f9f6d8cd6727052bbcc4cce4da0c1b6ccbd8c31bf163dd439c095be402fc3"
+    },
+    {
+      "path": "checks/verify_original_artifact.py",
+      "origin": "verify_original_artifact.py",
+      "category": "unchanged-read-only-original-artifact-verifier",
+      "encoding": "identity",
+      "original_bytes": 7923,
+      "original_sha256": "d87547d609f90ff76aedb1aaa7805a9397e007625f411d752a3b31872ebd417a",
+      "stored_bytes": 7923,
+      "stored_sha256": "d87547d609f90ff76aedb1aaa7805a9397e007625f411d752a3b31872ebd417a"
+    },
+    {
+      "path": "indexes/legacy-14058908829-pngs.json.gz",
+      "origin": "legacy-artifact-verification.json",
+      "category": "derived-complete-png-byte-index",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 6034,
+      "original_sha256": "7d17f2cd995c7d845f584b350a04511577719a2c90f0fe2231f6e946c6ae1977",
+      "stored_bytes": 1432,
+      "stored_sha256": "0ae4c2a33049308ae38be657d2d0f924e11ea5e050960cae7ceef70d423cf6de"
+    },
+    {
+      "path": "indexes/legacy-14058908829.zip-entries.json.gz",
+      "origin": "legacy-14058908829.zip",
+      "category": "derived-complete-zip-byte-index",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 579712,
+      "original_sha256": "4bb9974bd577fa1e091ec6644afd366fc297b4ffed0374e5fa515a31c1c49838",
+      "stored_bytes": 152151,
+      "stored_sha256": "f067139d5fa8d344e5ce81f4b18e8839c4f8b3a7f94875af3bda544209c8b51d"
+    },
+    {
+      "path": "indexes/native-14061435964-pngs.json.gz",
+      "origin": "native-artifact-verification.json",
+      "category": "derived-complete-png-byte-index",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 41467,
+      "original_sha256": "cf92fc53e4e7927619722b0756353b348863141c7be1c689b5e61ad5e8915a44",
+      "stored_bytes": 7890,
+      "stored_sha256": "d19b6d522edafa44cbbf30a0fb5f2d4710e48326be3f15168f675c452dcb03af"
+    },
+    {
+      "path": "indexes/native-14061435964.zip-entries.json.gz",
+      "origin": "native-14061435964.zip",
+      "category": "derived-complete-zip-byte-index",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 955353,
+      "original_sha256": "d1315f71a418f7da380e094ab7bd0817211ee49e3e5c4eab4d8ba6e2fb7ad2eb",
+      "stored_bytes": 231334,
+      "stored_sha256": "a6096ef28a72cbbffb9931bab22b1ef95efca3316725ad0059828b6433fd245d"
+    },
+    {
+      "path": "indexes/preview-14058528261-pngs.json.gz",
+      "origin": "preview-artifact-verification.json",
+      "category": "derived-complete-png-byte-index",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 6415,
+      "original_sha256": "349c3d2b7ab35ee89e0fe48accfc8b8c8ce6767bb14ee0bd81d83d7e96a53a0f",
+      "stored_bytes": 1530,
+      "stored_sha256": "ea60d52f1fb1062a00829ed9a64372e29656dbe9b8255b3ef7dc7befe3a7bea8"
+    },
+    {
+      "path": "indexes/preview-14058528261.zip-entries.json.gz",
+      "origin": "preview-14058528261.zip",
+      "category": "derived-complete-zip-byte-index",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 48279,
+      "original_sha256": "3e128fe6d5d1bee9994d5f4172bdd589ba115822dda51c1a17b664e8d218695c",
+      "stored_bytes": 14515,
+      "stored_sha256": "aea49c028a067bc52d609bbf58a3dafdbec8b47137e7b92661663f7d4e3ad2a6"
+    },
+    {
+      "path": "job-logs/archive-evidence-job-132042201178.log.gz",
+      "origin": "archive-evidence-job-132042201178.log",
+      "category": "unchanged-complete-github-job-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 9229,
+      "original_sha256": "3cd1a889dc5667acac9c9f57b4aff65b67ea2a4814109113982d424c502b5bcc",
+      "stored_bytes": 2795,
+      "stored_sha256": "cd08eabf7bbb0606e455b04a6f6efc00c6e258b8caa5e674d584cb86916a51e6"
+    },
+    {
+      "path": "job-logs/bundle-evidence-job-132041989504.log.gz",
+      "origin": "bundle-evidence-job-132041989504.log",
+      "category": "unchanged-complete-github-job-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 11333,
+      "original_sha256": "7c1925f8b72beae2f61dc257364afa7ad8efafcfb7a2024452de6a08dfaee4a3",
+      "stored_bytes": 3378,
+      "stored_sha256": "747fc6ec20cf8d3839f712168bb28856d49bbcb8daf67047f4d4e336eb06c953"
+    },
+    {
+      "path": "job-logs/gameplay-job-132025185321.log.gz",
+      "origin": "gameplay-job-132025185321.log",
+      "category": "unchanged-complete-github-job-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 531344,
+      "original_sha256": "cf48f27244ee49db1e508baf4fe971b837ac490ecd4e65e9721d9c6305979a01",
+      "stored_bytes": 77898,
+      "stored_sha256": "e5b3cd198a29f0651c57398475d833b230b848bb1d1bb0d80c2689db737865d1"
+    },
+    {
+      "path": "job-logs/learning-preview-job-132025184918.log.gz",
+      "origin": "learning-preview-job-132025184918.log",
+      "category": "unchanged-complete-github-job-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 263901,
+      "original_sha256": "f58d26cd8bd15a027d09658420a4a015b1d679e6c818643b4f886993df7597a6",
+      "stored_bytes": 31541,
+      "stored_sha256": "f8468bcbc6c7dac20f366e2c2f20903123b361fff7d0c4da7957bff7a07f1451"
+    },
+    {
+      "path": "job-logs/new-worlds-job-132025185358.log.gz",
+      "origin": "new-worlds-job-132025185358.log",
+      "category": "unchanged-complete-github-job-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 593538,
+      "original_sha256": "feed1b34d41efb8ac4b15ffb687edc800aaf8b61412d1145c3437968a1aebbab",
+      "stored_bytes": 71541,
+      "stored_sha256": "a78fbdb86eafdd6e49bff504a062bf694681130d6c31cfc22c57b90f6cb08dba"
+    },
+    {
+      "path": "job-logs/touch-build-job-132025185520.log.gz",
+      "origin": "touch-build-job-132025185520.log",
+      "category": "unchanged-complete-github-job-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 257161,
+      "original_sha256": "d88b9c840b9b99528f104104d8f5e8b6f53b5dfc909ff5ac1a685ba1a93e55dc",
+      "stored_bytes": 30081,
+      "stored_sha256": "7a4c42f46230c03e0d20d4eb3dd7399e4121e494cad8e365ab82d25bdc11ea78"
+    },
+    {
+      "path": "job-logs/touch-treasure-job-132025185428.log.gz",
+      "origin": "touch-treasure-job-132025185428.log",
+      "category": "unchanged-complete-github-job-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 255482,
+      "original_sha256": "6c36f4afa8594469fd06a0319ca3ddb56c602a4e21cc04a5a4f61a691380fc76",
+      "stored_bytes": 29742,
+      "stored_sha256": "88eeec9cb66716e02de0ffe0ef05e5152d2b54cd0d8e3dd92f5830ebe2764f1d"
+    },
+    {
+      "path": "job-logs/touch-workshop-job-132025185573.log.gz",
+      "origin": "touch-workshop-job-132025185573.log",
+      "category": "unchanged-complete-github-job-log",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 263892,
+      "original_sha256": "9a0305537b5cc84a6f142fe5b5afded968b2f62b279107216e309ecdc6d09004",
+      "stored_bytes": 31487,
+      "stored_sha256": "99286ade6353f32770f4b91208327e3a2069ba2c51ddf788ada5738f0136891a"
+    },
+    {
+      "path": "native-contract/.github/workflows/lumo-nextgen-2018.yml",
+      "origin": "git:edb39e17719df7e05cda6d9cd1bc810a78a038d8:.github/workflows/lumo-nextgen-2018.yml",
+      "category": "unchanged-published-native-contract-source",
+      "encoding": "identity",
+      "original_bytes": 18425,
+      "original_sha256": "501c295868c41453a74f1b65601bbca904b5bc8220fc83d31f284a50175c8add",
+      "stored_bytes": 18425,
+      "stored_sha256": "501c295868c41453a74f1b65601bbca904b5bc8220fc83d31f284a50175c8add"
+    },
+    {
+      "path": "native-contract/source-bindings.json",
+      "origin": "exact-git-objects",
+      "category": "derived-source-bindings",
+      "encoding": "identity",
+      "original_bytes": 1838,
+      "original_sha256": "0491ee05227917940af5a9ac42d0ca6ba0b8cf9f1db415507d9edc6e2bbb5736",
+      "stored_bytes": 1838,
+      "stored_sha256": "0491ee05227917940af5a9ac42d0ca6ba0b8cf9f1db415507d9edc6e2bbb5736"
+    },
+    {
+      "path": "native-contract/tools/run_godot_probe.py",
+      "origin": "git:edb39e17719df7e05cda6d9cd1bc810a78a038d8:tools/run_godot_probe.py",
+      "category": "unchanged-published-native-contract-source",
+      "encoding": "identity",
+      "original_bytes": 2934,
+      "original_sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "stored_bytes": 2934,
+      "stored_sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13"
+    },
+    {
+      "path": "native-contract/tools/validate_2014.sh",
+      "origin": "git:edb39e17719df7e05cda6d9cd1bc810a78a038d8:tools/validate_2014.sh",
+      "category": "unchanged-published-native-contract-source",
+      "encoding": "identity",
+      "original_bytes": 2676,
+      "original_sha256": "d414c8c8f30feefc8c2e004d39c0cade37424865375d2d50afd239abd3ffa855",
+      "stored_bytes": 2676,
+      "stored_sha256": "d414c8c8f30feefc8c2e004d39c0cade37424865375d2d50afd239abd3ffa855"
+    },
+    {
+      "path": "native-contract/tools/validate_action_stage.sh",
+      "origin": "git:edb39e17719df7e05cda6d9cd1bc810a78a038d8:tools/validate_action_stage.sh",
+      "category": "unchanged-published-native-contract-source",
+      "encoding": "identity",
+      "original_bytes": 1890,
+      "original_sha256": "aff17bc1c763cdd8d6a25852d9cf276bc403f5ce1c64e835a772831ed5582be9",
+      "stored_bytes": 1890,
+      "stored_sha256": "aff17bc1c763cdd8d6a25852d9cf276bc403f5ce1c64e835a772831ed5582be9"
+    },
+    {
+      "path": "native-contract/tools/validate_nextgen.sh",
+      "origin": "git:edb39e17719df7e05cda6d9cd1bc810a78a038d8:tools/validate_nextgen.sh",
+      "category": "unchanged-published-native-contract-source",
+      "encoding": "identity",
+      "original_bytes": 6450,
+      "original_sha256": "6c509c4ec559abcf9cb11bbd68142a306cabafa08012bdb75f14fea4c767ba23",
+      "stored_bytes": 6450,
+      "stored_sha256": "6c509c4ec559abcf9cb11bbd68142a306cabafa08012bdb75f14fea4c767ba23"
+    },
+    {
+      "path": "native-contract/tools/validate_project.sh",
+      "origin": "git:edb39e17719df7e05cda6d9cd1bc810a78a038d8:tools/validate_project.sh",
+      "category": "unchanged-published-native-contract-source",
+      "encoding": "identity",
+      "original_bytes": 4965,
+      "original_sha256": "1cbf032a49206be0686e0ceca58160ebcc837cd35ff833848d776753d44c5bba",
+      "stored_bytes": 4965,
+      "stored_sha256": "1cbf032a49206be0686e0ceca58160ebcc837cd35ff833848d776753d44c5bba"
+    },
+    {
+      "path": "native-contract/tools/validate_studio_touch.sh",
+      "origin": "git:edb39e17719df7e05cda6d9cd1bc810a78a038d8:tools/validate_studio_touch.sh",
+      "category": "unchanged-published-native-contract-source",
+      "encoding": "identity",
+      "original_bytes": 3840,
+      "original_sha256": "4a517be7f757c16bd724c4fa9aa3b34b4e89cc873d32b4acc60f0c1f3408dc53",
+      "stored_bytes": 3840,
+      "stored_sha256": "4a517be7f757c16bd724c4fa9aa3b34b4e89cc873d32b4acc60f0c1f3408dc53"
+    },
+    {
+      "path": "native-contract/tools/verify_studio_rasters.py",
+      "origin": "git:edb39e17719df7e05cda6d9cd1bc810a78a038d8:tools/verify_studio_rasters.py",
+      "category": "unchanged-published-native-contract-source",
+      "encoding": "identity",
+      "original_bytes": 1872,
+      "original_sha256": "eefad8134f66404aa4bd3fedee279661e3f243a1a9aa3042c69e3d181fda62dd",
+      "stored_bytes": 1872,
+      "stored_sha256": "eefad8134f66404aa4bd3fedee279661e3f243a1a9aa3042c69e3d181fda62dd"
+    },
+    {
+      "path": "observations/godot-preview-observations.json",
+      "origin": "godot-preview-observations.json",
+      "category": "unchanged-actual-image-observation",
+      "encoding": "identity",
+      "original_bytes": 1230,
+      "original_sha256": "e320a2fd6480cd0bad101e3b087dfa945b2f2c610fc5957cf242c3a12864e52b",
+      "stored_bytes": 1230,
+      "stored_sha256": "e320a2fd6480cd0bad101e3b087dfa945b2f2c610fc5957cf242c3a12864e52b"
+    },
+    {
+      "path": "observations/root-learning-viewed-audit.json",
+      "origin": "root-learning-viewed-audit.json",
+      "category": "unchanged-actual-image-observation",
+      "encoding": "identity",
+      "original_bytes": 1138,
+      "original_sha256": "6c4a743d57d730a23e7a6858b34f8b2e907c1fd615feba43ed38d8ad36943db7",
+      "stored_bytes": 1138,
+      "stored_sha256": "6c4a743d57d730a23e7a6858b34f8b2e907c1fd615feba43ed38d8ad36943db7"
+    },
+    {
+      "path": "observations/root-native-selection.json",
+      "origin": "root-native-selection.json",
+      "category": "unchanged-actual-image-observation",
+      "encoding": "identity",
+      "original_bytes": 4609,
+      "original_sha256": "0d41e909c711500ea58428c3333e6178ea206b3b0ebab85a8b46bdde52291e7a",
+      "stored_bytes": 4609,
+      "stored_sha256": "0d41e909c711500ea58428c3333e6178ea206b3b0ebab85a8b46bdde52291e7a"
+    },
+    {
+      "path": "observations/root-native-viewed-audit.json",
+      "origin": "root-native-viewed-audit.json",
+      "category": "unchanged-actual-image-observation",
+      "encoding": "identity",
+      "original_bytes": 10076,
+      "original_sha256": "0af7e5d81caa492ea12f93a7dcfcac78bcc277da7bc524e03d359420888b08d9",
+      "stored_bytes": 10076,
+      "stored_sha256": "0af7e5d81caa492ea12f93a7dcfcac78bcc277da7bc524e03d359420888b08d9"
+    },
+    {
+      "path": "observations/root-native-viewed-binding.json",
+      "origin": "root-native-viewed-binding.json",
+      "category": "unchanged-root-observation-byte-binding",
+      "encoding": "identity",
+      "original_bytes": 5504,
+      "original_sha256": "327b397ca1ace00892fcb3de129381aa5e1c17806949bfc24750079d1da740ac",
+      "stored_bytes": 5504,
+      "stored_sha256": "327b397ca1ace00892fcb3de129381aa5e1c17806949bfc24750079d1da740ac"
+    },
+    {
+      "path": "validator-9e285e/release_pipeline_gates.py",
+      "origin": "validator-9e285e/release_pipeline_gates.py",
+      "category": "unchanged-frozen-host-parser",
+      "encoding": "identity",
+      "original_bytes": 9853,
+      "original_sha256": "400e54f2952f0d8aae07fc964e4688c48f16c9213ea022fa8754731004551946",
+      "stored_bytes": 9853,
+      "stored_sha256": "400e54f2952f0d8aae07fc964e4688c48f16c9213ea022fa8754731004551946"
+    },
+    {
+      "path": "validator-9e285e/verify_legacy_release_pin.py",
+      "origin": "validator-9e285e/verify_legacy_release_pin.py",
+      "category": "unchanged-frozen-host-parser",
+      "encoding": "identity",
+      "original_bytes": 10418,
+      "original_sha256": "d739fea9f9dc7986c0149bc645dca795fa3841ed26b639754b97bbd7947933c6",
+      "stored_bytes": 10418,
+      "stored_sha256": "d739fea9f9dc7986c0149bc645dca795fa3841ed26b639754b97bbd7947933c6"
+    },
+    {
+      "path": "validator-9e285e/verify_nextgen_delivery.py",
+      "origin": "validator-9e285e/verify_nextgen_delivery.py",
+      "category": "unchanged-frozen-host-parser",
+      "encoding": "identity",
+      "original_bytes": 24332,
+      "original_sha256": "db8810928b482e06b786dc20c4683c7a75ec4da1e5dd16c8d1f128c25a62a196",
+      "stored_bytes": 24332,
+      "stored_sha256": "db8810928b482e06b786dc20c4683c7a75ec4da1e5dd16c8d1f128c25a62a196"
+    },
+    {
+      "path": "validator-9e285e/verify_studio_delivery.py.gz",
+      "origin": "validator-9e285e/verify_studio_delivery.py",
+      "category": "unchanged-frozen-host-parser",
+      "encoding": "gzip-mtime-0",
+      "original_bytes": 41593,
+      "original_sha256": "e41de3892c8a3756b90eb208272b686a03ac3e9253664975580d1de9d7c6d2b4",
+      "stored_bytes": 10764,
+      "stored_sha256": "24262a63ad2f921c7332ff404af46503b4b5127496aec68be1d1d863cced3686"
+    }
+  ],
+  "scope": [
+    "Only this exact source and the frozen parser are accepted by these records.",
+    "No product/probe/workflow, Git ref, approval receipt or native pin was modified.",
+    "No PNG or ZIP payload is included in this checkpoint."
+  ]
+}

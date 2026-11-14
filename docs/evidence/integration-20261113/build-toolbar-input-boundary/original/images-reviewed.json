@@ -1,0 +1,34 @@
+{
+  "images": [
+    {
+      "artifact_id": 14048314783,
+      "path": "nextgen-evidence/nextgen/captures/build_nextgen_play_regression/01_build_selection.png",
+      "sha256": "5b7fe1a8c57186fdb49853440ae75464daa65c1a188395db76d00f0318caa79a",
+      "bytes": 1408631,
+      "dimensions": [
+        1280,
+        720
+      ],
+      "reviewed_by": "/root",
+      "actual_image_open_confirmed_by_parent": true,
+      "source_head": "cf039ad8c834522f355b858e3bee1e201e397da4",
+      "copy_included": false,
+      "observation": "Root confirmed the complete Drehen button is visible at approximately x326..424,y88..136."
+    },
+    {
+      "artifact_id": 14048314783,
+      "path": "nextgen-evidence/nextgen/captures/build_nextgen_play_regression/03_build_walking.png",
+      "sha256": "603c454dccd0a3feb53831625a66438fdabfdf101fc7f5584868cc76781db632",
+      "bytes": 1303211,
+      "dimensions": [
+        1280,
+        720
+      ],
+      "reviewed_by": "/root",
+      "actual_image_open_confirmed_by_parent": true,
+      "source_head": "cf039ad8c834522f355b858e3bee1e201e397da4",
+      "copy_included": false,
+      "observation": "Original failed-source walking image was opened by Root; not evidence of the repaired source."
+    }
+  ]
+}

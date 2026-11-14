@@ -84,6 +84,7 @@ var body_column: VBoxContainer
 var header_row: HBoxContainer
 var kart_head_row: HBoxContainer
 var preview_container: SubViewportContainer
+var _preview_render_sync_queued := false
 var premium_hero_shell: PanelContainer
 var step_strip: HBoxContainer
 var step_buttons: Array[Button] = []
@@ -281,6 +282,7 @@ void fragment() {
 	viewport_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	viewport_box.gui_input.connect(_preview_input)
 	viewport_box.resized.connect(func(): call_deferred("_fit_welcome_camera"))
+	viewport_box.resized.connect(_queue_preview_render_scale)
 	viewport_panel.add_child(viewport_box)
 	preview_vignette = ColorRect.new()
 	preview_vignette.name = "HeroDepthVignette"
@@ -309,6 +311,9 @@ void fragment() {
 	viewport.msaa_3d = Viewport.MSAA_4X if graphics_profile == "high" else Viewport.MSAA_2X
 	viewport_box.add_child(viewport)
 	preview_viewport = viewport
+	viewport.size_changed.connect(_queue_preview_render_scale)
+	get_window().size_changed.connect(_queue_preview_render_scale)
+	_queue_preview_render_scale()
 	preview = Node3D.new()
 	viewport.add_child(preview)
 	# The reference floats the real kart on transparent neon rings, not an opaque studio slab.
@@ -441,6 +446,7 @@ void fragment() {
 	_install_action_sheen(next_button)
 	footer.add_child(next_button)
 	get_viewport().size_changed.connect(_apply_responsive_layout)
+	MobileRuntime.safe_area_changed.connect(_apply_responsive_layout)
 	call_deferred("_apply_responsive_layout")
 	_refresh()
 	# The live Kart owner mounts the cinematic landing once above this
@@ -540,15 +546,16 @@ func _apply_responsive_layout() -> void:
 	_apply_ui_scale(self, ui_scale)
 	for side in ["left", "right", "top", "bottom"]:
 		page_margin.add_theme_constant_override("margin_" + side, roundi(margin * ui_scale))
+	page_margin.visible = MobileRuntime.safe_area_is_ready()
 	var safe_insets := Rect2()
 	if (
-		(OS.has_feature("android") or OS.has_feature("ios"))
+		(OS.has_feature("android") or OS.has_feature("ios") or MobileRuntime.requires_safe_area_observation())
 		and not get_parent().get_meta("kart_safe_insets_applied", false)
 	):
 		safe_insets = MobileRuntime.get_safe_area_insets()
 		var screen: Vector2i = DisplayServer.screen_get_size()
 		var safe_rect: Rect2i = DisplayServer.get_display_safe_area()
-		if screen.x > 0 and screen.y > 0 and safe_rect.has_area():
+		if not MobileRuntime.requires_safe_area_observation() and screen.x > 0 and screen.y > 0 and safe_rect.has_area():
 			safe_insets.position.x = maxf(safe_insets.position.x, safe_rect.position.x)
 			safe_insets.position.y = maxf(safe_insets.position.y, safe_rect.position.y)
 			safe_insets.size.x = maxf(safe_insets.size.x, screen.x - safe_rect.end.x)
@@ -1525,6 +1532,31 @@ func _back() -> void:
 		_refresh()
 
 
+func _queue_preview_render_scale() -> void:
+	if _preview_render_sync_queued or not is_inside_tree():
+		return
+	_preview_render_sync_queued = true
+	call_deferred("_sync_preview_render_scale")
+
+
+func _sync_preview_render_scale() -> void:
+	_preview_render_sync_queued = false
+	if not is_inside_tree() or not is_instance_valid(preview_viewport) or not is_instance_valid(preview_container):
+		return
+	var logical_window := get_viewport_rect().size
+	var buffer_size := Vector2(preview_viewport.size)
+	if logical_window.x <= 0.0 or logical_window.y <= 0.0 or buffer_size.x <= 0.0 or buffer_size.y <= 0.0:
+		return
+	# The UI keeps its logical canvas and input coordinates. Only the expensive
+	# 3D buffer follows the physical pixels used by the displayed preview.
+	var physical_scale := Vector2(get_window().size) / logical_window
+	var displayed_pixels := preview_container.get_global_rect().size * physical_scale
+	var native_scale := maxf(displayed_pixels.x / buffer_size.x, displayed_pixels.y / buffer_size.y)
+	var render_scale := clampf(native_scale, 0.1, 1.0)
+	if not is_equal_approx(preview_viewport.scaling_3d_scale, render_scale):
+		preview_viewport.scaling_3d_scale = render_scale
+
+
 func _refresh_preview() -> void:
 	var context: String = "welcome" if step == 0 else ("world" if step == 3 else "garage")
 	var signature: String = (
@@ -2023,3 +2055,10 @@ func _update_garage_action_targets() -> void:
 	if not fits:
 		_garage_targets.clear()
 		_cancel_garage_press()
+
+
+func _exit_tree() -> void:
+	if MobileRuntime.safe_area_changed.is_connected(_apply_responsive_layout):
+		MobileRuntime.safe_area_changed.disconnect(_apply_responsive_layout)
+	if get_viewport().size_changed.is_connected(_apply_responsive_layout):
+		get_viewport().size_changed.disconnect(_apply_responsive_layout)

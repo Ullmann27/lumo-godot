@@ -1,0 +1,68 @@
+{
+  "published_commit": "ea72b244cd279057255476a1f6103d29520a6ec5",
+  "published_tree": "3b5eaabe2e8488eec646c6b949efee08b8c75252",
+  "compared_local_revision": "9536f4f21a583501e6bdc470f3debae42785e30f",
+  "compared_local_tree": "2e658b10b7741e5c9fd1ccfa55e4a8dce8a85735",
+  "cards_product_and_test_identical": true,
+  "original_test_manifest_sha256": "975d19233892df7335cc920904f5a1e4462e24f31fef78db59fd4bdd062a6316",
+  "tree_differences": [
+    {
+      "path": "docs/development/LUMO_WORLD_GRAPHICS_20261113.md",
+      "before": [
+        "100644",
+        "blob",
+        "003b8f61d88c1274adca1795d566067c45c10f44"
+      ],
+      "after": [
+        "100644",
+        "blob",
+        "e533092b992923b3595ecc6c3d53904144aa6468"
+      ]
+    },
+    {
+      "path": "docs/evidence/world-graphics-20261113/station-ownership-green.log",
+      "before": null,
+      "after": [
+        "100644",
+        "blob",
+        "ec64433e3df98db91d32b390df28928b85e45f82"
+      ]
+    },
+    {
+      "path": "docs/evidence/world-graphics-20261113/station-ownership-red.log",
+      "before": null,
+      "after": [
+        "100644",
+        "blob",
+        "e07c04ee4bfb49635a1e4b487771f057aaccd8e5"
+      ]
+    },
+    {
+      "path": "scripts/tests/kart_winter_visibility_geometry.gd",
+      "before": [
+        "100644",
+        "blob",
+        "d4180a6f9e3cd4da757693153dbcf4860b0dff96"
+      ],
+      "after": [
+        "100644",
+        "blob",
+        "5cbc9e836ed7a819a847c0e7ac68779f076c7103"
+      ]
+    },
+    {
+      "path": "scripts/tests/kart_world_capture_lifecycle_probe.gd",
+      "before": [
+        "100644",
+        "blob",
+        "e23aa6f17dde21ecc212413e24c4db84da2f956a"
+      ],
+      "after": [
+        "100644",
+        "blob",
+        "0a9869d2c88bf221874b07a36f6a868b69985fb1"
+      ]
+    }
+  ],
+  "raw_remote_tree_sha256": "9f25d8b61345febaaf266281f30926f5f359a0acf34bc42c6dd5843a3870fce7"
+}
