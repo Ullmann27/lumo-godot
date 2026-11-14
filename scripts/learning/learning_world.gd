@@ -80,8 +80,19 @@ var english_stage_rect := Rect2()
 var _atelier: Node3D
 var _english_compact := false
 
+# App-private observation only. This file never supplies inputs or persistence.
+const LEARNING_OBSERVATION := "user://learning_layout_v1.json"
+var _learning_launch: Dictionary = {}
+var _observation_pending := false
+var _observation_closed := false
+var _observation_settle_frames := 0
+var _observation_sequence := 0
+var _observation_retry_after := 0
+
 
 func _ready() -> void:
+	DirAccess.remove_absolute(LEARNING_OBSERVATION)
+	DirAccess.remove_absolute(LEARNING_OBSERVATION + ".tmp")
 	_original_auto_quit = get_tree().auto_accept_quit
 	_original_back_quit = get_tree().quit_on_go_back
 	_original_scale_mode = get_window().content_scale_mode
@@ -103,6 +114,8 @@ func _ready() -> void:
 	if not raw is Dictionary:
 		raw = {}
 	activity.configure(raw)
+	_learning_launch = _observed_launch(options)
+	HostBridge.returned.connect(_observation_returned)
 	_build_stage()
 	_build_ui()
 	_rebuild_activity()
@@ -772,6 +785,7 @@ func _build_plant() -> void:
 
 
 func _refresh() -> void:
+	_mark_learning_observation()
 	explanation.text = activity.explanation()
 	for group in range(_group_labels.size()):
 		_group_labels[group].mesh.text = str(activity.count_in_group(group))
@@ -845,6 +859,7 @@ func _refresh() -> void:
 func _queue_layout() -> void:
 	if not is_inside_tree():
 		return
+	_mark_learning_observation()
 	if not _layout_queued:
 		_layout_queued = true
 		_layout.call_deferred()
@@ -854,6 +869,7 @@ func _layout() -> void:
 	_layout_queued = false
 	if not is_inside_tree() or not is_instance_valid(camera) or not is_instance_valid(header):
 		return
+	_mark_learning_observation()
 	var dimensions := get_viewport().get_visible_rect().size
 	# Godot receives Android pixels; use the same density hint as the native
 	# Kart controls. This keeps every action at least 48 device-independent px.
@@ -1211,6 +1227,7 @@ func restart() -> void:
 
 
 func _process(delta: float) -> void:
+	_publish_learning_observation()
 	if suspended:
 		return
 	_clock += delta
@@ -1249,6 +1266,7 @@ func _notification(what: int) -> void:
 		_return_to_lesson()
 	elif what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT]:
 		suspended = true
+		_mark_learning_observation()
 		_stop_speech()
 		_cancel_drag()
 		for tween in _tweens:
@@ -1258,6 +1276,7 @@ func _notification(what: int) -> void:
 			fox.set_suspended(true)
 	elif what in [NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN]:
 		suspended = false
+		_mark_learning_observation()
 		for tween in _tweens:
 			if tween.is_valid():
 				tween.play()
@@ -1266,6 +1285,12 @@ func _notification(what: int) -> void:
 
 
 func _exit_tree() -> void:
+	_observation_closed = true
+	_observation_pending = false
+	if HostBridge.returned.is_connected(_observation_returned):
+		HostBridge.returned.disconnect(_observation_returned)
+	DirAccess.remove_absolute(LEARNING_OBSERVATION)
+	DirAccess.remove_absolute(LEARNING_OBSERVATION + ".tmp")
 	if MobileRuntime.safe_area_changed.is_connected(_layout):
 		MobileRuntime.safe_area_changed.disconnect(_layout)
 	if get_viewport().size_changed.is_connected(_layout):
@@ -1378,6 +1403,7 @@ func _tick_speech(delta: float) -> void:
 func _update_voice_button() -> void:
 	if not is_instance_valid(voice_button):
 		return
+	var previous_caption := voice_button.text
 	if activity.kind == "english_objects" and _english_compact:
 		voice_button.text = "Stopp" if _speech_state in ["preparing", "playing"] else "Anhören"
 	else:
@@ -1389,6 +1415,9 @@ func _update_voice_button() -> void:
 		if _speech_state == "unavailable"
 		else ""
 	)
+
+	if voice_button.text != previous_caption:
+		_mark_learning_observation()
 
 
 func _build_english_objects() -> void:
@@ -1532,3 +1561,154 @@ func _english_hint() -> void:
 	_teacher("explain", english_models[activity.english_objects.find(activity.word)].global_position + Vector3.UP)
 	_refresh()
 	_queue_narration()
+
+
+func _observed_launch(options: Dictionary) -> Dictionary:
+	# Only the closed task catalogue and pseudonymous route identity are copied.
+	# Child names, typed answers, free-form text and audio never enter this file.
+	var session := str(options.get("sessionId", ""))
+	var child := str(options.get("childKey", ""))
+	var uuid := RegEx.create_from_string("^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$")
+	var owner := RegEx.create_from_string("^p_[a-f0-9]{32}$")
+	return {
+		"scene": str(options.get("scene", options.get("game", ""))),
+		"subject": "Englisch" if options.get("subject") == "Englisch" else "",
+		"grade": int(options.get("grade", 0)),
+		"sessionId": session if uuid.search(session) != null else "",
+		"childKey": child if owner.search(child) != null else "",
+		"learningVoiceEnabled": options.get("learningVoiceEnabled", false) == true,
+		"localVoiceLicenseAccepted": options.get("localVoiceLicenseAccepted", false) == true,
+		"learningAutoRead": options.get("learningAutoRead", false) == true,
+		"learning": {
+			"kind": activity.kind, "word": activity.word,
+			"meaning": activity.english_meaning,
+			"objects": activity.english_objects.duplicate(),
+		} if activity.kind == "english_objects" else {},
+	}
+
+
+func _observation_returned(_destination: String, _payload: Dictionary) -> void:
+	_observation_closed = true
+	_observation_pending = false
+	DirAccess.remove_absolute(LEARNING_OBSERVATION)
+	DirAccess.remove_absolute(LEARNING_OBSERVATION + ".tmp")
+
+
+func _mark_learning_observation() -> void:
+	if _observation_closed or activity.kind != "english_objects":
+		return
+	if not _observation_pending:
+		DirAccess.remove_absolute(LEARNING_OBSERVATION)
+	_observation_pending = true
+	_observation_settle_frames = 2
+
+
+func _observation_vector(value: Vector2) -> Array:
+	return [value.x, value.y]
+
+
+func _observation_vector3(value: Vector3) -> Array:
+	return [value.x, value.y, value.z]
+
+
+func _observation_rect(value: Rect2) -> Array:
+	return [value.position.x, value.position.y, value.size.x, value.size.y]
+
+
+func _observation_control(button: Button, identifier: String, factor: Vector2) -> Dictionary:
+	var rect := button.get_global_rect()
+	var hit := rect.intersection(get_viewport().get_visible_rect())
+	var parent := button.get_parent()
+	while parent != null:
+		if parent is Control and parent.clip_contents:
+			hit = hit.intersection(parent.get_global_rect())
+		parent = parent.get_parent()
+	return {
+		"id": identifier, "text": button.text,
+		"visible": button.is_visible_in_tree(), "enabled": not button.disabled and not suspended,
+		"rect_px": _observation_rect(Rect2(rect.position * factor, rect.size * factor)),
+		"hit_rect_px": _observation_rect(Rect2(hit.position * factor, hit.size * factor)),
+	}
+
+
+func _publish_learning_observation() -> void:
+	if not _observation_pending or _observation_closed or not is_inside_tree():
+		return
+	if not is_instance_valid(ui) or not ui.is_visible_in_tree() or not MobileRuntime.safe_area_is_ready():
+		return
+	if _layout_queued or _observation_settle_frames > 0:
+		_observation_settle_frames = maxi(0, _observation_settle_frames - 1)
+		return
+	if Time.get_ticks_msec() < _observation_retry_after:
+		return
+	var viewport := get_viewport().get_visible_rect().size
+	var factor := Vector2(get_window().size) / viewport
+	var measured := MobileRuntime.get_safe_area_observation()
+	var android := {}
+	for key in ["view_size", "decor_size"]:
+		if measured.has(key):
+			android[key] = _observation_vector(measured[key])
+	for key in ["render_rect", "system_insets", "insets"]:
+		if measured.has(key):
+			android[key] = _observation_rect(measured[key])
+	var observation_source := "platform_safe_area"
+	if not measured.is_empty():
+		observation_source = "android_window_insets" if OS.has_feature("android") else "platform_fixture"
+	var controls := []
+	for index in range(english_buttons.size()):
+		controls.append(_observation_control(english_buttons[index], "choice_%d" % index, factor))
+	for button: Button in actions.get_children():
+		if button in english_buttons:
+			continue
+		var identifier := "hint" if button == main_button else "voice" if button == voice_button else "restart" if button.text == "Neu" else "return"
+		controls.append(_observation_control(button, identifier, factor))
+	var objects := []
+	for index in range(english_models.size()):
+		var entry := ENGLISH_GALLERY.observe_geometry(english_models[index], camera, factor)
+		var pick := english_pick_rect(index)
+		entry["pick_rect_px"] = _observation_rect(Rect2(pick.position * factor, pick.size * factor))
+		objects.append(entry)
+	var projection := camera.get_camera_projection()
+	var columns := []
+	for column in range(4):
+		var value: Vector4 = projection[column]
+		columns.append([value.x, value.y, value.z, value.w])
+	var view := camera.get_camera_transform().affine_inverse()
+	var insets := MobileRuntime.get_safe_area_insets() if not measured.is_empty() else Rect2()
+	var safe := Rect2(insets.position, viewport - insets.position - insets.size)
+	_observation_sequence += 1
+	var snapshot := {
+		"schema": 1, "layout_sequence": int(_observation_sequence),
+		"ticks_msec": int(Time.get_ticks_msec()), "pid": int(OS.get_process_id()),
+		"settled": true, "ui_visible": true, "observation_source": observation_source,
+		"launch": _learning_launch.duplicate(true),
+		"selection": int(activity.english_choice), "hint_level": int(activity.english_hint_level),
+		"attempts": int(activity.english_attempts), "complete": activity.is_complete(),
+		"suspended": suspended, "voice_available": is_instance_valid(voice_button),
+		"window_px": _observation_vector(Vector2(get_window().size)),
+		"viewport_px": _observation_vector(viewport), "density": MobileRuntime.get_ui_density(),
+		"android_observation": android,
+		"safe_rect_px": _observation_rect(Rect2(safe.position * factor, safe.size * factor)),
+		"stage_rect_px": _observation_rect(Rect2(english_stage_rect.position * factor, english_stage_rect.size * factor)),
+		"header_rect_px": _observation_rect(Rect2(header.get_global_position() * factor, header.size * ui.scale * factor)),
+		"footer_rect_px": _observation_rect(Rect2(footer.get_global_position() * factor, footer.size * ui.scale * factor)),
+		"title": title.text, "explanation": explanation.text, "status": status.text,
+		"controls": controls, "objects": objects,
+		"camera": {"projection_columns": columns,
+			"view_basis_columns": [_observation_vector3(view.basis.x), _observation_vector3(view.basis.y), _observation_vector3(view.basis.z)],
+			"view_origin": _observation_vector3(view.origin)},
+	}
+	var file := FileAccess.open(LEARNING_OBSERVATION + ".tmp", FileAccess.WRITE)
+	if file == null:
+		_observation_retry_after = Time.get_ticks_msec() + 2000
+		return
+	file.store_string(JSON.stringify(snapshot))
+	file.flush()
+	var error := file.get_error()
+	file.close()
+	if error == OK:
+		error = DirAccess.rename_absolute(LEARNING_OBSERVATION + ".tmp", LEARNING_OBSERVATION)
+	if error == OK:
+		_observation_pending = false
+	else:
+		_observation_retry_after = Time.get_ticks_msec() + 2000

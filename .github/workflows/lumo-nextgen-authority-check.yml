@@ -1,4 +1,4 @@
-name: LUMO nextgen English and Quiz authority checks
+name: LUMO nextgen English Quiz and Memory authorities
 
 on:
   push:
@@ -13,11 +13,16 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  HOST_SOURCE: ddc9d89ef1bb6fc37315fd4aff0da166ce213b67
+  HOST_SOURCE: c0ca5265eb4159e6848317da5f49edabaa75bfa0
   LIBGL_ALWAYS_SOFTWARE: '1'
 
 jobs:
   production-authorities:
+    name: ${{ matrix.activity }} actual authority
+    strategy:
+      fail-fast: false
+      matrix:
+        activity: [english, quiz, memory]
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -69,13 +74,27 @@ jobs:
         id: host_dependencies
         working-directory: host-source
         run: flutter pub get --enforce-lockfile
-      - name: Produce the real existing English exercises and validate Quiz authority
+      - name: Exercise the actual authority for this activity
         working-directory: host-source
+        env:
+          ACTIVITY: ${{ matrix.activity }}
         run: |
           set -euo pipefail
-          dart run tool/check_native_english_activity.dart --out ../authority-evidence/english-activity.json 2>&1 | tee ../authority-evidence/english-authority.log
-          dart run tools/android_qa/quiz_round_contract.dart 2>&1 | tee ../authority-evidence/quiz-authority-contract.log
+          case "$ACTIVITY" in
+            english)
+              dart run tool/check_native_english_activity.dart --out ../authority-evidence/english-activity.json 2>&1 | tee ../authority-evidence/english-authority.log
+              ;;
+            quiz)
+              dart run tools/android_qa/quiz_round_contract.dart 2>&1 | tee ../authority-evidence/quiz-authority-contract.log
+              ;;
+            memory)
+              dart tools/android_qa/memory_round_contract.dart 2>&1 | tee ../authority-evidence/memory-authority-contract.log
+              dart tools/android_qa/memory_turn_scheduler_contract.dart 2>&1 | tee ../authority-evidence/memory-scheduler-contract.log
+              ;;
+            *) exit 1 ;;
+          esac
       - name: Exercise English meshes with actual host producer output
+        if: ${{ matrix.activity == 'english' }}
         run: |
           set -euo pipefail
           export XDG_DATA_HOME="$RUNNER_TEMP/lumo-english-data"
@@ -100,7 +119,7 @@ jobs:
           assert len(list((folder / 'english-native').glob('*.png'))) == 10
           PY
       - name: Play all twenty Quiz questions through the real Dart and Godot processes
-        if: ${{ !cancelled() && steps.import_source.outcome == 'success' && steps.host_dependencies.outcome == 'success' }}
+        if: ${{ !cancelled() && matrix.activity == 'quiz' && steps.import_source.outcome == 'success' && steps.host_dependencies.outcome == 'success' }}
         env:
           EXPECTED_NATIVE: ${{ github.sha }}
         run: |
@@ -109,6 +128,41 @@ jobs:
             --native native-source --host host-source \
             --expected-native "$EXPECTED_NATIVE" --expected-host "$HOST_SOURCE" \
             --output authority-evidence/quiz-pair --capture
+      - name: Reject inconsistent Memory pair evidence
+        if: ${{ matrix.activity == 'memory' }}
+        run: python3 -m unittest discover -s native-source/tools/tests -p test_memory_native_pair_evidence.py -v
+      - name: Render the actual Memory geometry and touch layouts
+        if: ${{ matrix.activity == 'memory' }}
+        run: |
+          set -euo pipefail
+          export XDG_DATA_HOME="$RUNNER_TEMP/lumo-memory-view-data"
+          export XDG_CONFIG_HOME="$RUNNER_TEMP/lumo-memory-view-config"
+          export XDG_CACHE_HOME="$RUNNER_TEMP/lumo-memory-view-cache"
+          export LUMO_MEMORY_CAPTURE_DIR="$GITHUB_WORKSPACE/authority-evidence/memory-view"
+          mkdir -p "$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+          python3 native-source/tools/run_godot_probe.py \
+            --log authority-evidence/memory-view.log --timeout 900 --required MEMORY_VIEW_PASS -- \
+            xvfb-run -a -s '-screen 0 2560x2560x24' godot --path native-source \
+            --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 60 --disable-vsync \
+            --script res://scripts/tests/memory_table_regression.gd -- --capture
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          folder = Path('authority-evidence/memory-view')
+          report = json.loads((folder / 'memory-view-result.json').read_text())
+          assert report['status'] == 'PASS' and report['errors'] == [] and report['capture'] is True
+          assert len(report['captures']) == 8 and len(list(folder.glob('*.png'))) == 8
+          PY
+      - name: Play Memory through the actual Dart and Godot processes
+        if: ${{ !cancelled() && matrix.activity == 'memory' && steps.import_source.outcome == 'success' && steps.host_dependencies.outcome == 'success' }}
+        env:
+          EXPECTED_NATIVE: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          xvfb-run -a -s '-screen 0 2560x2560x24' python3 native-source/tools/run_memory_native_authority.py \
+            --native native-source --host host-source \
+            --expected-native "$EXPECTED_NATIVE" --expected-host "$HOST_SOURCE" \
+            --output authority-evidence/memory-pair --capture
       - name: Verify both tracked source trees remain unchanged
         if: always()
         run: |
@@ -118,7 +172,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: lumo-nextgen-actual-authority-evidence
+          name: lumo-nextgen-actual-authority-evidence-${{ matrix.activity }}
           path: |
             authority-evidence/
             !authority-evidence/**/user/**

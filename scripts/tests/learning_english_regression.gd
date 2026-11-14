@@ -21,6 +21,7 @@ var capture := false
 var fixture_path := ""
 var fixture_kind := "native_catalogue_fixture"
 var examples: Dictionary = {}
+const OBSERVATION := "user://learning_layout_v1.json"
 
 
 class TestHost:
@@ -326,6 +327,12 @@ func _observe(game: Node3D, name: String) -> Dictionary:
 
 func _capture(game: Node3D, name: String) -> void:
 	await _settle()
+	var actual := _observation_contract(game, name)
+	var original := FileAccess.open(output.path_join(name + ".layout.json"), FileAccess.WRITE)
+	_check(original != null and not actual.is_empty(), "preserve actual product observation: " + name)
+	if original != null:
+		original.store_string(FileAccess.get_file_as_string(OBSERVATION))
+		original.close()
 	var report := _observe(game, name)
 	var sidecar := FileAccess.open(output.path_join(name + ".json"), FileAccess.WRITE)
 	_check(sidecar != null, "write original scene observation: " + name)
@@ -368,7 +375,8 @@ func _exercise(word: String, dimensions: Vector2i, density: float, insets: Rect2
 	var bridge := root.get_node("HostBridge")
 	var test_host := TestHost.new()
 	var options := {
-		"sessionId": "english-native-contract-" + word, "childKey": "synthetic-child",
+		"sessionId": "00000000-0000-4000-8000-%012d" % (VOCABULARY.ENTRIES.keys().find(word) + 1),
+		"childKey": "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "scene": "learning", "grade": 1,
 		"subject": "Englisch", "stars": 13, "displayDensity": density,
 	}
 	bridge._host = test_host
@@ -379,8 +387,10 @@ func _exercise(word: String, dimensions: Vector2i, density: float, insets: Rect2
 	await _install_inset_fixture(dimensions, insets)
 	var game = load(WORLD).instantiate()
 	game._speech_host = test_host
-	game.capture_options = {"learning": _payload(word), "reduceAnimations": true,
-		"learningVoiceEnabled": true, "localVoiceLicenseAccepted": true, "learningAutoRead": false}
+	game.capture_options = options.duplicate(true)
+	game.capture_options.merge({"learning": _payload(word), "reduceAnimations": true,
+		"learningVoiceEnabled": true, "localVoiceLicenseAccepted": true, "learningAutoRead": false,
+		"childName": "This fixture field must never appear in the private observation"})
 	var task_before := JSON.stringify(game.capture_options)
 	root.add_child(game)
 	await _settle(14)
@@ -388,14 +398,19 @@ func _exercise(word: String, dimensions: Vector2i, density: float, insets: Rect2
 	_check(game.english_models.size() == 3 and game.english_buttons.size() == 3, "three actual objects and equivalent buttons exist")
 	var stem := "english-%s-%dx%d" % [word, dimensions.x, dimensions.y]
 	await _capture(game, stem + "-start")
+	var unchanged := FileAccess.get_sha256(OBSERVATION)
+	await _settle(8)
+	_check(FileAccess.get_sha256(OBSERVATION) == unchanged, "idle frames do not rewrite a settled observation")
 	var target: int = game.activity.english_objects.find(word)
 	var wrong: int = (target + 1) % 3
 	await _tap(game.english_buttons[wrong], word + ": wrong visible object choice")
 	_check(not game.activity.is_complete() and game.activity.english_attempts == 1, "actual wrong touch cannot complete or award")
+	_observation_contract(game, word + "-wrong")
 	await _tap(game.main_button, word + ": first targeted hint")
 	_check(game.activity.english_hint_level == 1 and game.explanation.text == VOCABULARY.hint_for(word), "actual first hint shows the intended object clue")
 	await _tap(game.main_button, word + ": bounded outline hint")
 	_check(game.activity.english_hint_level == 2 and not game.activity.is_complete(), "actual second hint leaves selection to the child")
+	_observation_contract(game, word + "-hint")
 	_check(game.english_models[target].get_node("HintRing").visible, "correct object has real visible hint geometry")
 	for index in range(3):
 		if index != target:
@@ -418,17 +433,25 @@ func _exercise(word: String, dimensions: Vector2i, density: float, insets: Rect2
 	test_host.speech_state = "playing"
 	game._tick_speech(0.06)
 	game._notification(NOTIFICATION_APPLICATION_PAUSED)
+	_check(not FileAccess.file_exists(OBSERVATION), "pause invalidates old settled file before any next frame")
+	await _settle(5)
+	var paused_observation := _observation_contract(game, word + "-paused")
+	_check(paused_observation.get("suspended") == true, "published pause observation cannot claim active input")
 	var attempts_before: int = game.activity.english_attempts
 	game._choose_english(wrong)
 	game._english_hint()
 	_check(game.suspended and test_host.stops > stops_before and game.activity.english_attempts == attempts_before, "pause stops speech and rejects new learning input")
 	game._notification(NOTIFICATION_APPLICATION_RESUMED)
 	_check(not game.suspended and game.activity.is_complete(), "resume preserves this local illustration")
+	_check(not FileAccess.file_exists(OBSERVATION), "resume invalidates the previous paused observation immediately")
+	await _settle(5)
+	_observation_contract(game, word + "-resumed")
 	await _tap(_button(game, "Neu"), word + ": restart local illustration")
 	_check(not game.activity.is_complete() and game.activity.english_hint_level == 0 and game.activity.english_attempts == 0, "actual restart resets only local interaction state")
 	_check(JSON.stringify(game.capture_options) == task_before, "task launch descriptor remains byte-equivalent")
 	await _tap(_button(game, "Zur Aufgabe"), word + ": return to actual host task")
 	_check(test_host.returns.size() == 1, "actual return acknowledged exactly once")
+	_check(not FileAccess.file_exists(OBSERVATION), "acknowledged return removes observation and prevents republishing")
 	if test_host.returns.size() == 1:
 		var result: Dictionary = test_host.returns[0]
 		_check(result.destination == "learn" and result.payload.get("status") == "illustrated", "return remains bounded help result")
@@ -439,6 +462,7 @@ func _exercise(word: String, dimensions: Vector2i, density: float, insets: Rect2
 	cases.append({"word": word, "dimensions": [dimensions.x, dimensions.y], "input_boundary": "actual Godot ScreenTouch", "host_boundary": "explicit JNI/audio test double", "return_count": test_host.returns.size(), "reward_count": test_host.rewards.size()})
 	game.queue_free()
 	await _settle(3)
+	_check(not FileAccess.file_exists(OBSERVATION) and not FileAccess.file_exists(OBSERVATION + ".tmp"), "scene exit leaves no reusable observation or partial file")
 	bridge._host = null
 	bridge._options = {}
 	bridge._return_pending = false
@@ -510,3 +534,31 @@ func _run() -> void:
 	else:
 		print("LEARNING_ENGLISH_FAIL checks=", checks, " failures=", failures.size())
 		quit(1)
+
+
+func _observation_contract(game: Node3D, label: String) -> Dictionary:
+	_check(FileAccess.file_exists(OBSERVATION), label + ": production observation exists after settling")
+	if not FileAccess.file_exists(OBSERVATION):
+		return {}
+	var text := FileAccess.get_file_as_string(OBSERVATION)
+	var value: Variant = JSON.parse_string(text)
+	_check(value is Dictionary, label + ": atomic original is complete JSON")
+	if not value is Dictionary:
+		return {}
+	_check(value.schema == 1 and value.settled and value.ui_visible, label + ": complete settled schema")
+	_check(value.observation_source == "platform_fixture", label + ": synthetic platform input is never marked Android")
+	_check(int(value.pid) == OS.get_process_id() and int(value.layout_sequence) > 0, label + ": actual live process and sequence")
+	_check(value.launch.sessionId == game.capture_options.sessionId and value.launch.childKey == game.capture_options.childKey, label + ": actual pseudonymous session is retained")
+	_check(value.launch.learning == game.capture_options.learning, label + ": exact real task descriptor is retained")
+	_check(not text.contains("childName") and not text.contains("This fixture field"), label + ": no child text escapes into the observation")
+	_check(int(value.selection) == game.activity.english_choice and int(value.attempts) == game.activity.english_attempts, label + ": actual selection and attempt count")
+	_check(int(value.hint_level) == game.activity.english_hint_level and value.complete == game.activity.is_complete(), label + ": actual hint and completion")
+	_check(value.suspended == game.suspended and value.objects.size() == 3, label + ": current lifecycle and exactly three objects")
+	_check(value.camera.projection_columns.size() == 4 and value.camera.view_basis_columns.size() == 3, label + ": actual complete camera projection")
+	_check(value.controls.size() == game.actions.get_child_count(), label + ": every real control is observed")
+	for item: Dictionary in value.objects:
+		_check(item.word == game.activity.english_objects[int(item.index)] and not item.meshes.is_empty(), label + ": actual object order and meshes")
+		_check(item.collision_world_corners.size() == 8 and item.collision_projected_corners_px.size() == 8, label + ": actual collision volume has eight independent corners")
+		for mesh: Dictionary in item.meshes:
+			_check(mesh.world_corners.size() == 8 and mesh.projected_corners_px.size() == 8, label + ": real mesh AABB has eight observed corners")
+	return value

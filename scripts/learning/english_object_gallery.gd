@@ -162,3 +162,34 @@ static func make(word: String, index: int) -> Node3D:
 	collision.position.y = 0.95
 	body.add_child(collision)
 	return object
+
+
+static func observe_geometry(object: Node3D, camera: Camera3D, factor: Vector2) -> Dictionary:
+	# Read the actual instantiated meshes after layout; no collision or model mutation.
+	var meshes := []
+	for node: Node in object.find_children("*", "MeshInstance3D", true, false):
+		var mesh := node as MeshInstance3D
+		if mesh.mesh == null or not mesh.is_visible_in_tree():
+			continue
+		var world := []
+		var pixels := []
+		var box := mesh.get_aabb()
+		for corner in range(8):
+			var point := mesh.to_global(box.get_endpoint(corner))
+			var pixel := camera.unproject_position(point) * factor
+			world.append([point.x, point.y, point.z])
+			pixels.append([pixel.x, pixel.y])
+		meshes.append({"path": str(object.get_path_to(mesh)), "world_corners": world, "projected_corners_px": pixels})
+	var collision := object.get_node("ObjectTouchBody/CollisionShape3D") as CollisionShape3D
+	var shape := collision.shape as BoxShape3D
+	var collision_world := []
+	var collision_pixels := []
+	var box := AABB(-shape.size * 0.5, shape.size)
+	for corner in range(8):
+		var point := collision.to_global(box.get_endpoint(corner))
+		var pixel := camera.unproject_position(point) * factor
+		collision_world.append([point.x, point.y, point.z])
+		collision_pixels.append([pixel.x, pixel.y])
+	return {"index": int(object.get_meta("choice_index")), "word": str(object.get_meta("word")),
+		"hint_visible": object.get_node("HintRing").is_visible_in_tree(), "meshes": meshes,
+		"collision_world_corners": collision_world, "collision_projected_corners_px": collision_pixels}
