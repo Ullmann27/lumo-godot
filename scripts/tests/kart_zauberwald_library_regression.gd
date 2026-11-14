@@ -1,9 +1,25 @@
 extends SceneTree
-## Actual production batching, road clearance, placement identity and RNG continuity.
+## Frozen original-route batching, road clearance, placement identity and RNG continuity.
+## The authored adventure forest is separately checked by kart_adventure_regression.gd.
 
 const WORLD = preload("res://scripts/games/kart_world.gd")
-const PREVIOUS = preload("res://scripts/tests/helpers/kart_zauberwald_previous_forest.gd")
 const DETAIL = preload("res://scripts/games/kart_track_detail.gd")
+# Compare the two generations on their original route. The longer authored
+# circuit intentionally changes world extent, tree placement and random draws;
+# applying an old-coordinate identity oracle there would test the wrong contract.
+class PreviousBaseline:
+	extends "res://scripts/tests/helpers/kart_zauberwald_previous_forest.gd"
+	func _make_curve() -> void:
+		definition = TRACKS._original_definition("zauberwald")
+		super._make_curve()
+
+class CurrentBaseline:
+	extends "res://scripts/games/kart_world.gd"
+	func _make_curve() -> void:
+		definition = TRACKS._original_definition("zauberwald")
+		super._make_curve()
+
+
 var failures := 0
 var checks := 0
 
@@ -31,10 +47,10 @@ func _records(world) -> Dictionary:
 
 func _run() -> void:
 	for low: bool in [true, false]:
-		var previous = PREVIOUS.new()
+		var previous = PreviousBaseline.new()
 		root.add_child(previous)
 		previous.build(low, "zauberwald", true)
-		var current = WORLD.new()
+		var current = CurrentBaseline.new()
 		root.add_child(current)
 		current.build(low, "zauberwald", true)
 		var before_sites: Array = previous.get_meta("reference_detail_sites")

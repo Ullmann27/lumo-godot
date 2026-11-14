@@ -14,7 +14,7 @@ func _initialize() -> void:
 
 func _run() -> void:
 	track_id = _track_id_from_args()
-	assert(track_id in ["sonnenhafen", "zauberwald", "bergwelt", "holo_city"])
+	assert(track_id in preload("res://scripts/games/kart_tracks.gd").IDS)
 	output_dir = "res://exports/track-pack-geometry/" + track_id
 	DirAccess.make_dir_recursive_absolute(output_dir)
 

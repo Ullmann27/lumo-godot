@@ -14,6 +14,8 @@ static func accepted_sites(world) -> Array[Dictionary]:
 	var count: int = 8 if world.low_detail else 20
 	for i in range(count):
 		var d: float = world.length * (float(i) + 0.7) / count
+		if world.ADVENTURE_TUNNELS.contains(world, d, 12.0):
+			continue
 		if world.in_gap(d) or world.ramp_height(d) > 0.0:
 			continue
 		if world.track_id in ["sonnenhafen", "zauberwald", "bergwelt"] and world._is_bridge(d):

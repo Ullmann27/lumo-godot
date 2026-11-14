@@ -48,14 +48,23 @@ func _run() -> void:
 	})
 	game._end_preview()
 	await process_frame
+	assert(game.opponents.size() == 5 and game.opponent_item_fx.size() == 5,
+		"The complete playable race must assemble before a gate integration test can pass.")
 	assert(game.item_boxes.size() == 5 and game.item_box_distances.size() == 5)
 	assert(game.item_box_laterals.size() == 5)
 	for ring in game.item_boxes:
 		assert(ring is Node3D, "The resonance ring must be a real rendered scene node.")
 		assert(str(ring.get_meta("lumo_racing_pickup", "")) == "skill_resonance")
-		assert(ring.get_child_count() == 1)
-		assert(ring.get_child(0) is MeshInstance3D)
-		assert((ring.get_child(0) as MeshInstance3D).mesh is TorusMesh)
+		assert(str(ring.get_meta("lumo_reward_policy", "")) == "racing_skill")
+		var outcomes: Node3D = ring.get_node("OutcomeSymbols")
+		var shown: Array[String] = []
+		for symbol in outcomes.get_children():
+			shown.append(str(symbol.get_meta("lumo_item_symbol", "")))
+			var body := symbol.get_node("SymbolMotion/SolidEmblem") as MeshInstance3D
+			assert(body != null and body.mesh.get_aabb().size.z > 0.15,
+				"A gate outcome must have solid world-space geometry, not a flat sprite.")
+		assert(shown == ["boost", "shield", "pulse"],
+			"Every skill crossing shows all possible outcomes, not a promised fixed item.")
 		assert(ring.visible)
 	# Use one actual running kart frame at the true race-world gate; no
 	# item / pickup key / score is directly written to simulate success.
@@ -103,5 +112,5 @@ func _run() -> void:
 	await create_timer(1.3).timeout
 	scene = null
 	game = null
-	print("[KartResonance] PASS: skill not RNG, five real ring meshes, one pickup/lap, pulse use, save-key continuity")
+	print("[KartResonance] PASS: deterministic skill, five gates with three solid outcome symbols, one pickup/lap, pulse use, save-key continuity")
 	quit(0)
