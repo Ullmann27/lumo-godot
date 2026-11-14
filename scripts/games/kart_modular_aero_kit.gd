@@ -30,40 +30,40 @@ static func decorate(kart, body: Node3D, spec: Dictionary) -> void:
 		var sill: MeshInstance3D = CRAFT.rounded_box(kart, body,
 			Vector3(side * 0.545, 0.344, 0.01), Vector3(0.11, 0.115, 0.60),
 			DARK, 0.35, 0.56)
-		_detail(kart, kart, sill, "AeroSideSkirt")
+		_detail(kart, sill, "AeroSideSkirt")
 		pieces += 1
 		var edge: MeshInstance3D = CRAFT.rounded_box(kart, body,
 			Vector3(side * 0.612, 0.394, 0.01), Vector3(0.018, 0.030, 0.52),
 			accent, 0.35, 0.26)
-		_detail(kart, kart, edge, "AeroSillLight", true)
+		_detail(kart, edge, "AeroSillLight", true)
 		pieces += 1
 		# A real bevelled aero intake with a dark interior and four pressed vanes.
 		var surround: MeshInstance3D = CRAFT.rounded_box(kart, body,
 			Vector3(side * 0.45, 0.492, -0.79), Vector3(0.16, 0.125, 0.185),
 			paint.darkened(0.17), 0.35, 0.26)
-		_detail(kart, kart, surround, "SculptedNoseIntake")
+		_detail(kart, surround, "SculptedNoseIntake")
 		pieces += 1
 		var well: MeshInstance3D = CRAFT.rounded_box(kart, body,
 			Vector3(side * 0.454, 0.514, -0.793), Vector3(0.108, 0.022, 0.134),
 			RUBBER, 0.0, 0.82)
-		_detail(kart, kart, well, "NoseIntakeWell")
+		_detail(kart, well, "NoseIntakeWell")
 		pieces += 1
 		for fin in range(3):
 			var at: Vector3 = Vector3(side * 0.456, 0.53, -0.842 + fin * 0.049)
 			var vane: MeshInstance3D = CRAFT.rounded_box(kart, body,
 				at, Vector3(0.08, 0.013, 0.014), STEEL, 0.7, 0.26)
-			_detail(kart, kart, vane, "NoseIntakeVane", true)
+			_detail(kart, vane, "NoseIntakeVane", true)
 			pieces += 1
 		# Twin metallic exhaust bezels, properly oriented toward the rear.
 		var nozzle: MeshInstance3D = kart._ring(body,
 			Vector3(side * 0.34, 0.466, 1.162), 0.079, 0.112, STEEL, 0.7)
 		nozzle.rotation.x = PI * 0.5
-		_detail(kart, kart, nozzle, "ExhaustMachinedBezel", true)
+		_detail(kart, nozzle, "ExhaustMachinedBezel", true)
 		pieces += 1
 		var core: MeshInstance3D = kart._ring(body,
 			Vector3(side * 0.34, 0.466, 1.174), 0.046, 0.067, accent, 0.35)
 		core.rotation.x = PI * 0.5
-		_detail(kart, kart, core, "ExhaustEnergyRing", true)
+		_detail(kart, core, "ExhaustEnergyRing", true)
 		pieces += 1
 	# Centerline insignia and low-profile chevrons never enter the driver's footwell.
 	var badge: MeshInstance3D = CRAFT.rounded_box(kart, body,
@@ -76,7 +76,7 @@ static func decorate(kart, body: Node3D, spec: Dictionary) -> void:
 			Vector3(side * 0.085, 0.600, -0.952),
 			Vector3(0.035, 0.010, 0.105), accent, 0.35, 0.26)
 		stripe.rotation.y = side * 0.32
-		_detail(kart, kart, stripe, "AuroraRaisedChevron", true)
+		_detail(kart, stripe, "AuroraRaisedChevron", true)
 		pieces += 1
 	# The physical rear diffuser remains owned by the vehicle; small overlay only.
 	var rear: MeshInstance3D = CRAFT.rounded_box(kart, body,
