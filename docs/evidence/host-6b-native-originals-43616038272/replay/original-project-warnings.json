@@ -1,0 +1,35 @@
+{
+  "original_path": "project.log",
+  "summary": "117 PASS / 7 WARN / 0 FAIL",
+  "warnings": [
+    {
+      "line": 51,
+      "text": "[WARN] asset: lumo_fox fehlt (assets/models/lumo_fox.glb) - AssetLoader nutzt Placeholder"
+    },
+    {
+      "line": 52,
+      "text": "[WARN] asset: hub_island fehlt (assets/models/hub_island.glb) - AssetLoader nutzt Placeholder"
+    },
+    {
+      "line": 53,
+      "text": "[WARN] asset: portal_learn fehlt (assets/models/portal_learn.glb) - AssetLoader nutzt Placeholder"
+    },
+    {
+      "line": 54,
+      "text": "[WARN] asset: portal_games fehlt (assets/models/portal_games.glb) - AssetLoader nutzt Placeholder"
+    },
+    {
+      "line": 55,
+      "text": "[WARN] asset: portal_parent fehlt (assets/models/portal_parent.glb) - AssetLoader nutzt Placeholder"
+    },
+    {
+      "line": 56,
+      "text": "[WARN] asset: star_collectible fehlt (assets/models/star_collectible.glb) - AssetLoader nutzt Placeholder"
+    },
+    {
+      "line": 115,
+      "text": "[WARN] tool: tools/build_web_bundle.sh nicht ausfuehrbar (chmod +x fehlt)"
+    }
+  ],
+  "scope": "Actual original project warnings are retained. This replay does not reclassify them as physical-measurement or environment-only notices."
+}

@@ -1,0 +1,1937 @@
+{
+  "captures": [
+    "960x540-rotation-menu.png",
+    "960x540-rotation-play.png",
+    "960x540-classic-play.png",
+    "640x360-rotation-menu.png",
+    "640x360-rotation-play.png",
+    "640x360-classic-play.png"
+  ],
+  "checks": 732,
+  "device_fps_measured": false,
+  "display": "X11",
+  "events": [
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": true,
+      "process_frame": 14
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": false,
+      "process_frame": 16
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": true,
+      "process_frame": 19
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": false,
+      "process_frame": 21
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": true,
+      "process_frame": 24
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": false,
+      "process_frame": 26
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": true,
+      "process_frame": 29
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": false,
+      "process_frame": 31
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": true,
+      "process_frame": 34
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": false,
+      "process_frame": 34
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": true,
+      "process_frame": 37
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": false,
+      "process_frame": 37
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": true,
+      "process_frame": 40
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": false,
+      "process_frame": 40
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": true,
+      "process_frame": 43
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": false,
+      "process_frame": 43
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": true,
+      "process_frame": 46
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": false,
+      "process_frame": 46
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": true,
+      "process_frame": 49
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": false,
+      "process_frame": 49
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        480.0,
+        172.0
+      ],
+      "pressed": true,
+      "process_frame": 52
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        480.0,
+        172.0
+      ],
+      "pressed": false,
+      "process_frame": 52
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        480.0,
+        172.0
+      ],
+      "pressed": true,
+      "process_frame": 55
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        480.0,
+        172.0
+      ],
+      "pressed": false,
+      "process_frame": 55
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        480.0,
+        172.0
+      ],
+      "pressed": true,
+      "process_frame": 58
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        480.0,
+        172.0
+      ],
+      "pressed": false,
+      "process_frame": 58
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        480.0,
+        172.0
+      ],
+      "pressed": true,
+      "process_frame": 61
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        480.0,
+        172.0
+      ],
+      "pressed": false,
+      "process_frame": 61
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        480.0,
+        172.0
+      ],
+      "pressed": true,
+      "process_frame": 64
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        480.0,
+        172.0
+      ],
+      "pressed": false,
+      "process_frame": 64
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": true,
+      "process_frame": 67
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": false,
+      "process_frame": 67
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": true,
+      "process_frame": 70
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": false,
+      "process_frame": 70
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": true,
+      "process_frame": 73
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": false,
+      "process_frame": 73
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": true,
+      "process_frame": 76
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": false,
+      "process_frame": 76
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": true,
+      "process_frame": 79
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        480.0,
+        232.0
+      ],
+      "pressed": false,
+      "process_frame": 79
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": true,
+      "process_frame": 82
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        292.0
+      ],
+      "pressed": false,
+      "process_frame": 82
+    },
+    {
+      "kind": "touch",
+      "label": "Neues Puzzle beginnen",
+      "physical_position": [
+        480.0,
+        352.0
+      ],
+      "pressed": true,
+      "process_frame": 86
+    },
+    {
+      "kind": "touch",
+      "label": "Neues Puzzle beginnen",
+      "physical_position": [
+        480.0,
+        352.0
+      ],
+      "pressed": false,
+      "process_frame": 86
+    },
+    {
+      "kind": "touch",
+      "label": "select real piece",
+      "physical_position": [
+        195.373596191406,
+        390.547760009766
+      ],
+      "pressed": true,
+      "process_frame": 94
+    },
+    {
+      "kind": "touch",
+      "label": "release selection",
+      "physical_position": [
+        195.373596191406,
+        390.547760009766
+      ],
+      "pressed": false,
+      "process_frame": 95
+    },
+    {
+      "kind": "touch",
+      "label": "↻ Drehen",
+      "physical_position": [
+        72.0,
+        486.0
+      ],
+      "pressed": true,
+      "process_frame": 97
+    },
+    {
+      "kind": "touch",
+      "label": "↻ Drehen",
+      "physical_position": [
+        72.0,
+        486.0
+      ],
+      "pressed": false,
+      "process_frame": 97
+    },
+    {
+      "kind": "touch",
+      "label": "Ⅱ",
+      "physical_position": [
+        920.0,
+        36.0
+      ],
+      "pressed": true,
+      "process_frame": 101
+    },
+    {
+      "kind": "touch",
+      "label": "Ⅱ",
+      "physical_position": [
+        920.0,
+        36.0
+      ],
+      "pressed": false,
+      "process_frame": 101
+    },
+    {
+      "kind": "touch",
+      "label": "Anderes Puzzle",
+      "physical_position": [
+        480.0,
+        294.0
+      ],
+      "pressed": true,
+      "process_frame": 104
+    },
+    {
+      "kind": "touch",
+      "label": "Anderes Puzzle",
+      "physical_position": [
+        480.0,
+        294.0
+      ],
+      "pressed": false,
+      "process_frame": 104
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        262.0
+      ],
+      "pressed": true,
+      "process_frame": 107
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        480.0,
+        262.0
+      ],
+      "pressed": false,
+      "process_frame": 107
+    },
+    {
+      "kind": "touch",
+      "label": "Neues Puzzle beginnen",
+      "physical_position": [
+        480.0,
+        322.0
+      ],
+      "pressed": true,
+      "process_frame": 110
+    },
+    {
+      "kind": "touch",
+      "label": "Neues Puzzle beginnen",
+      "physical_position": [
+        480.0,
+        322.0
+      ],
+      "pressed": false,
+      "process_frame": 110
+    },
+    {
+      "kind": "touch",
+      "label": "classic piece pick",
+      "physical_position": [
+        233.615249633789,
+        259.669525146484
+      ],
+      "pressed": true,
+      "process_frame": 118
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        249.67546081543,
+        262.485443115234
+      ],
+      "process_frame": 119
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        265.735656738281,
+        265.301330566406
+      ],
+      "process_frame": 120
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        281.795867919922,
+        268.117248535156
+      ],
+      "process_frame": 121
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        297.856079101562,
+        270.933166503906
+      ],
+      "process_frame": 122
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        313.916290283203,
+        273.749053955078
+      ],
+      "process_frame": 123
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        329.976501464844,
+        276.564971923828
+      ],
+      "process_frame": 124
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        346.036712646484,
+        279.380859375
+      ],
+      "process_frame": 125
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        362.096923828125,
+        282.19677734375
+      ],
+      "process_frame": 126
+    },
+    {
+      "kind": "touch",
+      "label": "classic matching slot release",
+      "physical_position": [
+        362.096954345703,
+        282.19677734375
+      ],
+      "pressed": false,
+      "process_frame": 127
+    },
+    {
+      "kind": "touch",
+      "label": "Ⅱ",
+      "physical_position": [
+        920.0,
+        36.0
+      ],
+      "pressed": true,
+      "process_frame": 132
+    },
+    {
+      "kind": "touch",
+      "label": "Ⅱ",
+      "physical_position": [
+        920.0,
+        36.0
+      ],
+      "pressed": false,
+      "process_frame": 132
+    },
+    {
+      "kind": "touch",
+      "label": "Weiterpuzzeln",
+      "physical_position": [
+        480.0,
+        234.0
+      ],
+      "pressed": true,
+      "process_frame": 135
+    },
+    {
+      "kind": "touch",
+      "label": "Weiterpuzzeln",
+      "physical_position": [
+        480.0,
+        234.0
+      ],
+      "pressed": false,
+      "process_frame": 135
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": true,
+      "process_frame": 157
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": false,
+      "process_frame": 159
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": true,
+      "process_frame": 162
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": false,
+      "process_frame": 164
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": true,
+      "process_frame": 167
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": false,
+      "process_frame": 169
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": true,
+      "process_frame": 172
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": false,
+      "process_frame": 174
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": true,
+      "process_frame": 177
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": false,
+      "process_frame": 177
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": true,
+      "process_frame": 180
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": false,
+      "process_frame": 180
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": true,
+      "process_frame": 183
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": false,
+      "process_frame": 183
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": true,
+      "process_frame": 186
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": false,
+      "process_frame": 186
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": true,
+      "process_frame": 189
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": false,
+      "process_frame": 189
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": true,
+      "process_frame": 192
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": false,
+      "process_frame": 192
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        316.0,
+        92.0
+      ],
+      "pressed": true,
+      "process_frame": 195
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        316.0,
+        92.0
+      ],
+      "pressed": false,
+      "process_frame": 195
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        316.0,
+        92.0
+      ],
+      "pressed": true,
+      "process_frame": 198
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        316.0,
+        92.0
+      ],
+      "pressed": false,
+      "process_frame": 198
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        316.0,
+        92.0
+      ],
+      "pressed": true,
+      "process_frame": 201
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        316.0,
+        92.0
+      ],
+      "pressed": false,
+      "process_frame": 201
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        316.0,
+        92.0
+      ],
+      "pressed": true,
+      "process_frame": 204
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        316.0,
+        92.0
+      ],
+      "pressed": false,
+      "process_frame": 204
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        316.0,
+        92.0
+      ],
+      "pressed": true,
+      "process_frame": 207
+    },
+    {
+      "kind": "touch",
+      "label": "Bild:",
+      "physical_position": [
+        316.0,
+        92.0
+      ],
+      "pressed": false,
+      "process_frame": 207
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": true,
+      "process_frame": 210
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": false,
+      "process_frame": 210
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": true,
+      "process_frame": 213
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": false,
+      "process_frame": 213
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": true,
+      "process_frame": 216
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": false,
+      "process_frame": 216
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": true,
+      "process_frame": 219
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": false,
+      "process_frame": 219
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": true,
+      "process_frame": 222
+    },
+    {
+      "kind": "touch",
+      "label": "count",
+      "physical_position": [
+        316.0,
+        152.0
+      ],
+      "pressed": false,
+      "process_frame": 222
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": true,
+      "process_frame": 225
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": false,
+      "process_frame": 225
+    },
+    {
+      "kind": "touch",
+      "label": "Neues Puzzle beginnen",
+      "physical_position": [
+        316.0,
+        272.0
+      ],
+      "pressed": true,
+      "process_frame": 229
+    },
+    {
+      "kind": "touch",
+      "label": "Neues Puzzle beginnen",
+      "physical_position": [
+        316.0,
+        272.0
+      ],
+      "pressed": false,
+      "process_frame": 229
+    },
+    {
+      "kind": "touch",
+      "label": "select real piece",
+      "physical_position": [
+        219.085418701172,
+        250.991226196289
+      ],
+      "pressed": true,
+      "process_frame": 237
+    },
+    {
+      "kind": "touch",
+      "label": "release selection",
+      "physical_position": [
+        219.085418701172,
+        250.991226196289
+      ],
+      "pressed": false,
+      "process_frame": 238
+    },
+    {
+      "kind": "touch",
+      "label": "↻ Drehen",
+      "physical_position": [
+        72.0,
+        306.0
+      ],
+      "pressed": true,
+      "process_frame": 240
+    },
+    {
+      "kind": "touch",
+      "label": "↻ Drehen",
+      "physical_position": [
+        72.0,
+        306.0
+      ],
+      "pressed": false,
+      "process_frame": 240
+    },
+    {
+      "kind": "touch",
+      "label": "Ⅱ",
+      "physical_position": [
+        600.0,
+        36.0
+      ],
+      "pressed": true,
+      "process_frame": 244
+    },
+    {
+      "kind": "touch",
+      "label": "Ⅱ",
+      "physical_position": [
+        600.0,
+        36.0
+      ],
+      "pressed": false,
+      "process_frame": 244
+    },
+    {
+      "kind": "touch",
+      "label": "Anderes Puzzle",
+      "physical_position": [
+        320.0,
+        204.0
+      ],
+      "pressed": true,
+      "process_frame": 247
+    },
+    {
+      "kind": "touch",
+      "label": "Anderes Puzzle",
+      "physical_position": [
+        320.0,
+        204.0
+      ],
+      "pressed": false,
+      "process_frame": 247
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": true,
+      "process_frame": 250
+    },
+    {
+      "kind": "touch",
+      "label": "Modus:",
+      "physical_position": [
+        316.0,
+        212.0
+      ],
+      "pressed": false,
+      "process_frame": 250
+    },
+    {
+      "kind": "touch",
+      "label": "Neues Puzzle beginnen",
+      "physical_position": [
+        316.0,
+        272.0
+      ],
+      "pressed": true,
+      "process_frame": 253
+    },
+    {
+      "kind": "touch",
+      "label": "Neues Puzzle beginnen",
+      "physical_position": [
+        316.0,
+        272.0
+      ],
+      "pressed": false,
+      "process_frame": 253
+    },
+    {
+      "kind": "touch",
+      "label": "classic piece pick",
+      "physical_position": [
+        226.780303955078,
+        202.18815612793
+      ],
+      "pressed": true,
+      "process_frame": 261
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        232.913192749023,
+        203.294570922852
+      ],
+      "process_frame": 262
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        239.046081542969,
+        204.400985717773
+      ],
+      "process_frame": 263
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        245.178985595703,
+        205.507400512695
+      ],
+      "process_frame": 264
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        251.311889648438,
+        206.613830566406
+      ],
+      "process_frame": 265
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        257.444793701172,
+        207.720245361328
+      ],
+      "process_frame": 266
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        263.577667236328,
+        208.82666015625
+      ],
+      "process_frame": 267
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        269.710571289062,
+        209.933074951172
+      ],
+      "process_frame": 268
+    },
+    {
+      "kind": "drag",
+      "physical_position": [
+        275.843475341797,
+        211.039489746094
+      ],
+      "process_frame": 269
+    },
+    {
+      "kind": "touch",
+      "label": "classic matching slot release",
+      "physical_position": [
+        275.843475341797,
+        211.039489746094
+      ],
+      "pressed": false,
+      "process_frame": 270
+    },
+    {
+      "kind": "touch",
+      "label": "Ⅱ",
+      "physical_position": [
+        600.0,
+        36.0
+      ],
+      "pressed": true,
+      "process_frame": 275
+    },
+    {
+      "kind": "touch",
+      "label": "Ⅱ",
+      "physical_position": [
+        600.0,
+        36.0
+      ],
+      "pressed": false,
+      "process_frame": 275
+    },
+    {
+      "kind": "touch",
+      "label": "Weiterpuzzeln",
+      "physical_position": [
+        320.0,
+        144.0
+      ],
+      "pressed": true,
+      "process_frame": 278
+    },
+    {
+      "kind": "touch",
+      "label": "Weiterpuzzeln",
+      "physical_position": [
+        320.0,
+        144.0
+      ],
+      "pressed": false,
+      "process_frame": 278
+    }
+  ],
+  "failures": [],
+  "menu_samples": [
+    {
+      "count": 24,
+      "label": "count 24",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mittel · 24 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 48,
+      "label": "count 48",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Schwer · 48 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 96,
+      "label": "count 96",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Meister · 96 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "count 6",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid mode 0",
+      "motif": 3,
+      "rotation": true,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Drehpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid mode 1",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid mode 2",
+      "motif": 3,
+      "rotation": true,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Drehpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid mode 3",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid mode 4",
+      "motif": 3,
+      "rotation": true,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Drehpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid mode 5",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid motif 4",
+      "motif": 4,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Blütenwiese",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid motif 0",
+      "motif": 0,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Lumos Mondschloss",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid motif 1",
+      "motif": 1,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Candy Cloud Circuit",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid motif 2",
+      "motif": 2,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Volcano Night Run",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid motif 3",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 12,
+      "label": "rapid count 12",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Leicht · 12 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 24,
+      "label": "rapid count 24",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mittel · 24 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 48,
+      "label": "rapid count 48",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Schwer · 48 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 96,
+      "label": "rapid count 96",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Meister · 96 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid count 6",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "pause to selection",
+      "motif": 3,
+      "rotation": true,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Drehpuzzle",
+        "Neues Puzzle beginnen",
+        "Gespeichertes Puzzle fortsetzen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 24,
+      "label": "count 24",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mittel · 24 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 48,
+      "label": "count 48",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Schwer · 48 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 96,
+      "label": "count 96",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Meister · 96 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "count 6",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid mode 0",
+      "motif": 3,
+      "rotation": true,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Drehpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid mode 1",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid mode 2",
+      "motif": 3,
+      "rotation": true,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Drehpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid mode 3",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid mode 4",
+      "motif": 3,
+      "rotation": true,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Drehpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid mode 5",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid motif 4",
+      "motif": 4,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Blütenwiese",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid motif 0",
+      "motif": 0,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Lumos Mondschloss",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid motif 1",
+      "motif": 1,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Candy Cloud Circuit",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid motif 2",
+      "motif": 2,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Volcano Night Run",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid motif 3",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 12,
+      "label": "rapid count 12",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Leicht · 12 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 24,
+      "label": "rapid count 24",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mittel · 24 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 48,
+      "label": "rapid count 48",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Schwer · 48 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 96,
+      "label": "rapid count 96",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Meister · 96 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "rapid count 6",
+      "motif": 3,
+      "rotation": false,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Bilderpuzzle",
+        "Neues Puzzle beginnen",
+        "Zur Spielewelt"
+      ]
+    },
+    {
+      "count": 6,
+      "label": "pause to selection",
+      "motif": 3,
+      "rotation": true,
+      "visible_actions": [
+        "Bild: Leuchtturm-Bucht",
+        "Mini · 6 Teile",
+        "Modus: Drehpuzzle",
+        "Neues Puzzle beginnen",
+        "Gespeichertes Puzzle fortsetzen",
+        "Zur Spielewelt"
+      ]
+    }
+  ],
+  "production_scene": "res://scenes/creative/puzzle_world.tscn",
+  "state_or_piece_position_injection_used": false,
+  "strict_native_error_log_gate_required": true
+}

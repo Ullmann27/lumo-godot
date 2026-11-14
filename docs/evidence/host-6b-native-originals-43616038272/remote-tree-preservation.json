@@ -1,0 +1,1511 @@
+{
+  "base_commit": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "base_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "remotely_read_candidate_tree": "f1b67110046ca80e3ad719b6f82b658fa93e3ed2",
+  "base_files": 3770,
+  "unchanged_base_files": 3770,
+  "evidence_files": 249,
+  "total_files": 4019,
+  "full_remote_tree_truncated": false,
+  "source_blob_and_mode_changes": 0,
+  "deletions": 0,
+  "unexpected_additions": 0,
+  "evidence_prefix": "docs/evidence/host-6b-native-originals-43616038272/",
+  "scope": "This remote candidate tree was fully verified before adding this proof file itself; final tree is checked again after that single additive evidence entry.",
+  "evidence_entries": [
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/metadata/native-tree-original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5c0c58e18ed13d21a4786394ac5161560f7308f2"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/metadata/download-verification.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "72b984ebe58a05622681e4f2cf583fcf39ec856b"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/metadata/run-artifacts-original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2a802caad4e46c1de3d40d8573b1d26ecbee50ff"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/metadata/host-run-attempt-original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "572ba31399a671d9153c1ab95c1b75d9e8a85c9d"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/metadata/shared-main-log-proof.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8a0ce9c3f6348d99e9bbe9d4e57de373690b8316"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/metadata/artifact-original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d6cb6a60a1ed1ff2dab976b65a98bbf6d212a3cf"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/metadata/native-commit-original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a0f20de93dc98659a31dc448373f30a1a52856e2"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/reader/original_reader_driver.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3c81457f029952ea4125bdb20da9e89a4f15d3b8"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/reader/verify_connect_four_delivery.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "42d54aa5293750f64f1c0307b5d97aace354471d"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay/supplemental-replay-summary.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bc2d7a6f451cb0bf05aae830105783fef016d050"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay/visual-review.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e33b68f01511cfda773b0571c066072f7e7b0a65"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay/original-project-warnings.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c38a44abfa8a67a5a78461d4d871557fa680b1f"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay/source-after.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de1835a7960b827922234588cde65268f1d533b9"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay/source-before.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de1835a7960b827922234588cde65268f1d533b9"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay/original-files-before.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec19930acd795127bad94c6b27bd6ab85d6c338e"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay/reader-replay.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fe3783f4422f1becf3bf15f35a1a600f3f8323b8"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay/supplemental-replay.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d5b5a5108900ea1db1dd9ff86b2270faf1a6e6ae"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay/original-files-after.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec19930acd795127bad94c6b27bd6ab85d6c338e"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay/checked-native.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "43fdc4d77bba278959e6a6b610e18a2557c56614"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay/replay-summary.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aba4dceda0af4f0155786b23f6f81cab0bdc5879"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay/all-original-png-decodes.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6e3e3af33a896073bd550feefaa16d1b29099238"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/artifact-manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b2b8f2829a7059f6b162fdca3adcb6e76faa2285"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b2f901bb1f489cb5e1920469bc57c94ef0d7c831"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay_native_originals.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4031c89e9c7d623245956d6824d9a200f84cadbd"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/replay_jump_and_png_originals.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5752e5caf38910da132382e80e48e3c2b5601a07"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "98b92a8fc15629634959ca4ee66952f700525346"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/build_sandbox_tools_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b27ea60acdbc5f9abb0d39cfd09ebf485e1b7a73"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/build_sandbox_ui_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d594496761a4316408ef5ac9d79bf5ed674a61af"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/creative_touch_layout_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4ba2a2be2331afe02bc2284a42f7cdf82ec4b2be"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/jump_extras_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7fa1eb401b090b5d787750318310338ed217cee4"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_full_field_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3a35fc9494ec16b38e1d14430adb075688ff80ad"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_garage_3d_touch_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "54ac262f8911b087136439cd7eb61109a82aa1b0"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_harbor_attraction_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "76af4dfa9432e64978941636b76fdfce06b4e9e9"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_harbor_race_hook_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d70f079599b9ce3d6830071b84458a41e5735c35"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_loop_contact_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "23aa034e4c55608a9b0865e5a5308ce80c72b499"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_menu_depth_2013_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "925aed61667ef87cce4c5062cca8fd887aa875d5"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_player_full_route_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5c5e5765f3f9219c9cadcede7148af0196028c41"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_racecraft_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cda028117e0b0b86f9224d04ff784d4947c896d5"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_rival_drift_items_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f9d62f875064df518ca14d9f7b89ef4327cba2b1"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_rival_flight_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e936e1283ded102703309814b360e019e1600b6b"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_sonnenhafen_generation_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "969af661d4414a4178223f335f008aff9ce27a18"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_stunt_continuity_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "62bd059a388231b9be03bca30a47873a0fc3cd94"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/kart_zauberwald_library_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6814ef940b3d2966dcb1a5c534d7e8278715d5e"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/2014/puzzle_expansion_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b0f395b600d31ae84837ece90b1127c9338580a3"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/action-stage/engine.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24277fd09e8cc7154517b66aab4e8bef52babb7e"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/action-stage/kart_lasso_production_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "67209cc162132325a8b0f2cbff0195b747f923b0"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/action-stage/kart_lasso_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e6ba2a413e64c56f2b1d7f265c8b9ff78568bd6d"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/action-stage/kart_menu_flow_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "85f2e02cec72570545b2092a5cba27ca68a800f8"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/action-stage/kart_roadside_action_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "13ac62ee26294c5309ef5bae50bc24a83eea88b1"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/action-stage/kart_spatial_menu_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de3dba3c4ee9329e64307e1db888f6e14aef7e8c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/action-stage/source-sha.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6faed40064a256a14f525c9e3e4be7a30086d36"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/connect-four-return.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "186e8fa528a9138ea17a0a1395010f440192a280"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery-collector.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d25c0224fa7009a4cddbddb3c7fea138387425c2"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/captures/hub/hub-original-identity.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "65dc177dc6a70225390c1d3b629240f9d49f2efd"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/captures/hub/hub_fold_landscape.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4671f677b64ccebc575d9a9da869efb61f6794a0"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/captures/hub/hub_portrait.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "01b5d000bc2dc64c93d7f928240fa7edc51c0711"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/captures/learning/math-complete-412x915.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "efeabdcf9d87f93e9d7569c2ee6a106900f2b4f6"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/captures/wonder/captures.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d34255cdd8a50b2a5a81740f3726c35de71114a3"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/collection-context.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d05ae6e197e58fadbe1bfe4cb3a38a84d08611ff"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/discovery-acceptance.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "275e85c71968bb5ade021e9d26a92d203d53525f"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/engine-binary.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b2d5e252ba24ebafd48655da1cf9fd646b7d1d4b"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/engine.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24277fd09e8cc7154517b66aab4e8bef52babb7e"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/helpers/collect_discovery_connections.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ebdec66300dfb87bf9287d194525d3c374c8aee"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/helpers/run_godot_probe.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c23859ece2d62101d000d7a89556fda5d3fe4105"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/helpers/verify_discovery_connections.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c00ca9873106c974d66282cddfdcfaf5eb3bbebc"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/helpers/verify_discovery_rasters.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "219e691fc8aa119cc80221b3db6c77e63caf8bfe"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/helpers/verify_dream_rasters.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/invocations.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "84ec7cede0743ee1feb8083c4d111802d0df2dc4"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/01-learning_world_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "01f4eeb866daca9984822b21a7135da890d60efb"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/01-learning_world_regression-headless.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "01f4eeb866daca9984822b21a7135da890d60efb"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/02-learning_sharing_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "732d54f13499cd10ebc00935e394aac578658904"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/02-learning_sharing_regression-headless.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "732d54f13499cd10ebc00935e394aac578658904"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/03-learning_studio_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "30c7b738433cfa79bb22bb89dba214e5ca98e654"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/03-learning_studio_regression-headless.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "30c7b738433cfa79bb22bb89dba214e5ca98e654"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/04-game_hub_magic_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "46c336c5528f770216224855309e219cfac4e17c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/04-game_hub_magic_regression-headless.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "46c336c5528f770216224855309e219cfac4e17c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/05-village_host_launch_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "904bb871432b11a43b8b396b563b3765e1aa0bd5"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/05-village_host_launch_regression-headless.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "904bb871432b11a43b8b396b563b3765e1aa0bd5"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/06-learning_wonder_details_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3756c768b8fb5eaf06a32713fa6fe2536bc0bd98"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/06-learning_wonder_details_regression-headless.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3756c768b8fb5eaf06a32713fa6fe2536bc0bd98"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/07-learning_wonder_details_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9dd9605cdabe163b4c15f4c45e7c2820c938642f"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/07-learning_wonder_details_regression-rendered.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9dd9605cdabe163b4c15f4c45e7c2820c938642f"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/08-game_hub_magic_capture-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ffd931f0011a3e18a877a3496975db1b6be362d"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/08-game_hub_magic_capture-rendered.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ffd931f0011a3e18a877a3496975db1b6be362d"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/09-learning_world_capture-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4d69a730591612d7803b4ba697fd34440f6d2323"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/09-learning_world_capture-rendered.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4d69a730591612d7803b4ba697fd34440f6d2323"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/10-learning_wonder_details_capture-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1b57aa17a8bd5099ec783f63dde584015a298d0e"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/logs/10-learning_wonder_details_capture-rendered.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1b57aa17a8bd5099ec783f63dde584015a298d0e"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/results.tsv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "483ed08ab5bb014cc016213afe6a09af3da8e989"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/source-dirty-after.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/source-dirty.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/source-inventory-after.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3ffd4649cf430a1bd0bab55ee4d18d6c6b7ead6c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/source-inventory-before.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3ffd4649cf430a1bd0bab55ee4d18d6c6b7ead6c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/source-sha-after.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6faed40064a256a14f525c9e3e4be7a30086d36"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/source-sha.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6faed40064a256a14f525c9e3e4be7a30086d36"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/source-tree-after.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cf3b4626a3dcb9ebaaee5d934f0dae8490201595"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/source-tree.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cf3b4626a3dcb9ebaaee5d934f0dae8490201595"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/state/01/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "01f4eeb866daca9984822b21a7135da890d60efb"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/state/02/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "732d54f13499cd10ebc00935e394aac578658904"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/state/03/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "30c7b738433cfa79bb22bb89dba214e5ca98e654"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/state/04/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "46c336c5528f770216224855309e219cfac4e17c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/state/05/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "904bb871432b11a43b8b396b563b3765e1aa0bd5"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/state/06/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3756c768b8fb5eaf06a32713fa6fe2536bc0bd98"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/state/07/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e5d388bb034249637d05e199c2b91bef1b68c832"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/state/08/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f81094c065f857c0d7ea1fab5b536f48ca8b2d73"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/state/09/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d0eb05defb3dc1e0b596b2a4cb92ccd29b6e958c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/discovery/state/10/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "15473d0786571165a09e79a9490f41ad951cf650"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream-runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5e9c8e1782a07c0287f97347710fe15d050b03dc"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream-verifier-original.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/capture-root.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "86b908ec2c699222728a20d3d0e8511ce360ab48"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/captures/garden/learning-dream-1280x720.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e07e50053314da3aa031c279b9ff375fbae28477"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/captures/learning/learning.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5f68458ac195a43e6885005e60d6309e71372701"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/captures/treasure/treasure.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9351591c9d15769f4a33e7bf6b616c1c326231b3"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/dream-images.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "14c9a2d08486bdb3a49efdd853d841703e285740"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/dream_garden_capture-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "16af21b4ccce0e9d98c84c53212a76737b34c4c0"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/dream_garden_props_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "df3496e441a6e21488595c33fc2a66510dba7801"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/engine.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24277fd09e8cc7154517b66aab4e8bef52babb7e"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/lumo_dream_ambience_capture-rendered-learning.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7b262fe5ae406a13e4ee086a38dd046d2860e691"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/lumo_dream_ambience_capture-rendered-treasure.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c28444ee86ac2e1f1d2df8d05bdda6c068fc7e2a"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/lumo_dream_ambience_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5a204508af13e9ab0106b3b59931bac4be8b20ed"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/results.tsv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "03d9d027d45a2fc1610e35db1c1186bd8f39c943"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/source-dirty-after.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/source-dirty.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/source-inventory-after.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3ffd4649cf430a1bd0bab55ee4d18d6c6b7ead6c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/source-inventory-before.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3ffd4649cf430a1bd0bab55ee4d18d6c6b7ead6c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/source-sha-after.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6faed40064a256a14f525c9e3e4be7a30086d36"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/source-sha.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6faed40064a256a14f525c9e3e4be7a30086d36"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/source-tree-after.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cf3b4626a3dcb9ebaaee5d934f0dae8490201595"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/dream/source-tree.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cf3b4626a3dcb9ebaaee5d934f0dae8490201595"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/legacy-gameplay.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fd8fc40ea411c31c14a970312ef40bd5d117bbe5"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live-runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9f2da5a0c32a413e81270f63026903418ff7ffed"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live/captures/learning/learning.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "74252bbeb775cd4a1452154314e654ef899a617b"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live/captures/treasure/treasure.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6c2bec68f0bb7bd46fe922042193c8e82033afde"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live/connect_four_return_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1d0b10826b2dafcd64dc7c01e214386668bb8b0d"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live/dream_garden_capture-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "64584cc947b87f391cf7364335c16a3f76b08c88"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live/dream_garden_props_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f5ff70612d2e3c77aa45bdca8ff46473d27cbfc9"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live/live-connections.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c0cc5a213e54cf3330dea6ef1a51a5837d550699"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live/lumo_dream_ambience_capture-rendered-learning.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dc20ab5091706d8337c53651d2960904996c5997"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live/lumo_dream_ambience_capture-rendered-treasure.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ceed0f876b1c3497ca52192923e47da12b54151f"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live/lumo_dream_ambience_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f1376b38e04e94306d0fd2435f9fbbcb2894c690"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live/treasure_exploration_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "481f272749259aca194cc9794f9593ac4f7c7434"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live/treasure_wisp_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "70cc87423904c5002f275bcafa38c461dd86fb18"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/live/treasure_wisp_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "259a66e778204856369eac5c6890b7aba15140f4"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen-runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a31df3138a47675697fe64d68d26b46358afd1fc"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/bauwelt_identity_2013_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de5ae7a33ce27ca13aa7ea5bc2b6a4f0f4b0daf0"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/build_frontier_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "62b304c84cdec71cf36ebe3ff70aa9dd3253a351"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/build_nextgen_play_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c956e3d796ca6dd2810db4de9577c3d4b3c23e6"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/build_nextgen_play_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ecebcfafeda02f7e6b995601aad401182117e513"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/build_settlement_play_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "83fe16fae0f5691b51308a0175fffd0deb966e18"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/build_settlement_play_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c66d375adf85f5171807c73c28140d4639d531e1"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/build_settlement_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f7e7d5d85bdf778f34511d2e3429d9142742fdd7"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/build_transform_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a809519d49f229db2485e4cb3cecc9c027e3d7de"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/build_village_art_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a5320694e1fce243c76f850b306aa0f20c1b8582"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/build_village_economy_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "535e00e4717b2eb4d2519b92b5238e28decf3e9b"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/build_village_scene_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5f7e40418d0a51828319a91053dcfbe6ea516e35"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/build_village_scene_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dcf553ae2c49ec1267ae19cdc7a80870416e8319"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/build_village_scene_regression/village-overview-1280x720.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dca8b0dfc9dddd36fca2fe021c762c0235b13347"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/build_village_scene_regression/village-touch-targets.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d4082e9034d53b5f901a96d4819371c2dd6706a1"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/cards_safe_area_regression/android35_portrait-paused.layout.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35c3bb8d741329ee26ebaa2eee2b19ea61e35ab6"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/cards_safe_area_regression/android35_portrait-playing.layout.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "71bcd31023c5741b963713a43c0901c0ea2994dd"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/cards_safe_area_regression/cards-safe-area.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "06d32b40754ef2b87e3d3dc53bf96e7f5728894b"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/cards_safe_area_regression/landscape_cutout_fixture-playing.layout.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9da8fa096149788bc9f211b1b94fee7035399f95"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/cards_table_capture/cards-render.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ad30a9caf6f61597777b468c869bd85acefa4869"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/connect_four_visual_capture/visual-state.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bc912924235a85109e82ca4f9886723729dd1231"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/jump_nextgen_capture/jump-nextgen-evidence.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b23ce071888e0e0c3e02ca08f1b4c3dfe8f2d796"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/jump_nextgen_capture/jump_412x915_touch_ascent.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7a3449aba11c190c67ce0709bdf90445c2a79629"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/kart_nextgen_garage_regression/capture.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d2b16ab6d41e6535da72d7a6f58d2634fdedb65e"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/kart_player_full_route_regression/player-route.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35e8decbda8befb5a87ea7743a14cc03346a6ae2"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/learning_sharing_capture/manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "665ea6657ccc0dc249b78b25ec5caa730d8a2e66"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/lumo_facial_capture/facial-runtime.avi",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fb70d1cadf856aa0ceeb0eb9583788e023112030"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/lumo_facial_capture/facial-runtime.mp4",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "47798d18245acb55f3d5477d1be9ced68dba5d55"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/lumo_facial_capture/movie-decode.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/lumo_facial_capture/movie-encode.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "768a81bc612fea62a7ef0c57c4da9a00ff363ac3"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/lumo_facial_capture/movie-ffprobe-stderr.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/lumo_facial_capture/movie-ffprobe.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d215319da97e571f66a81b5e5a64cd30c56b8639"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/lumo_facial_capture/movie.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1af05c388aaf9bac9a2bc2a731fc920a26f5521d"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/lumo_facial_capture/runtime-frames.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "471e2e633df635545f99270e1960eb5ba41ced2e"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/lumo_studio_motion_capture/studio-motion-capture.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4b54f41b2c6963dfd9b4bb1a31d67bbfba77d409"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/mobile_safe_area_regression/mobile-safe-area.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d4ee1f7093f0bbdc15ebc77eb44ed9742702f680"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/puzzle_menu_lifecycle_regression/puzzle-menu-lifecycle.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "db75c4e70f020230cf07a8a8b3f349a09b890915"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/treasure_title_contrast_regression/treasure-title-landscape-cutout.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "51b7653586a64333ab61bce1f9e95d21f4b71245"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/captures/treasure_title_contrast_regression/treasure-title-report.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "072912f8a3f201d11cd8f9b72a1c4cb848b3c5c8"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/cards-safe-area-images.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "af538474c9681b33e70952499d5e088ca6a5f613"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/cards_safe_area_android_contract-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "32d492b0d1614577e839f90915104bc3823fd816"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/cards_safe_area_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "89ac7c1f16d898f3d2c3d487eba20dbe3b24f768"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/cards_safe_area_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6817c5af327f85606f855423f6e7c1baec46a3c1"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/cards_table_capture-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4ab838eb569b625c283fc53dd3bdd8a0e6320d11"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/cards_table_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a67596289c9f6e0e9c13246d5aa9769e5e1051b7"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/connect-four-visual-images.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1cbfb947c72c51f4b04f8772d9543c8332059e9c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/connect_four_visual_capture-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1038e9423bfa3591b7b8985869bd3193ba027425"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/creative_nextgen_environment_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "07dca06fcc9fcfad02598082f814dd32dbc277eb"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/creative_nextgen_environment_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3726d656d46389cd1cb095f14c9ea09abe84494a"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/engine.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24277fd09e8cc7154517b66aab4e8bef52babb7e"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/facial-images.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8e55679a4cff0fcca407448a85a017b6d5f74951"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/jump_expeditions_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "93f0f06d6b1b2fc8255fcf8bf76de64dd0407a32"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/jump_nextgen_capture-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "54af114e9f1b69d66d1625f31c3a7e1658e02653"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/jump_nextgen_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fddee704870eeaca1da6744f2e5eea7fe0cb8612"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/kart_nextgen_garage_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bad5c03b84bc7ee62f1a3f895093cbff5f09b12b"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/kart_nextgen_garage_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1fe508554dde6409111b9cbfbd239f53f78141e4"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/kart_player_full_route_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ccd20918cc709e29b690539367b72020e686021c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/kart_track_pass_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7c880b4a83a1fbbd7c5db626f40d94930509e31c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/learning_host_payload_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f383abdb67a69003ff38758e0787f2b953f42ed7"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/learning_sharing_capture-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ef4578c3a25377b077e884eda72b71b462ed8298"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/learning_sharing_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "732d54f13499cd10ebc00935e394aac578658904"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/learning_studio_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "30c7b738433cfa79bb22bb89dba214e5ca98e654"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/learning_world_capture-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4d69a730591612d7803b4ba697fd34440f6d2323"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/learning_world_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "01f4eeb866daca9984822b21a7135da890d60efb"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/lumo_65bone_walk_gait_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b06c80eb963d79653f8afa5eb0586168f7e0f726"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/lumo_facial_capture-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1437abf1cb36dbc9807c589a9796d75f197d34b6"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/lumo_facial_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2374357756a7f9a2320bceb9c0533fa6b58a02b9"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/lumo_original_jump_visual_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4759604de66df40923c8d65041e1dceea0e74c92"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/lumo_studio_motion_capture-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f08daeda90feb45075b2de588ac04099ab0bc39"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/lumo_studio_motion_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d06b4aa8600722e4474cd7584db3ac81f134d1e4"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/lumo_teacher_pose_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9afe1fa0218bcaeb55c301046a7a9507c10fd10f"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/mobile-safe-area-images.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d9daaaed4ed942a7e88827f0b6a691098f9b028"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/mobile_safe_area_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cd5db0ac21e507a6b373344b47334efb885fd119"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/mobile_safe_area_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "31b1f4251c08d701697e484e00e9bf1be26e67ba"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/puzzle-menu-images.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fa6bd51cadd35b467b24d6eb5de1b28cd7e63be9"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/puzzle_menu_lifecycle_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "adb5eca8ae5da6228ce71085a84300c26471351c"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/puzzle_menu_lifecycle_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f32e4347b8fc9ecc5f2e3555977e628e9223ca13"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/puzzle_rotation_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aea567f1bad4a7577043682889e8c450fa5663d0"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/puzzle_rotation_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dc08e72a340d1ac25e166d06eca8e93c5fa0b837"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/renderer-images.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dac2733e6e0b729bd4db340a83b8abc721540cee"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/results.tsv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "db0de72ce9ada78bbe039dc96745928e0b5fd30a"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/rhythm_tour_play_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f384e4bff800f093fdc9d1506937684edf87c4fc"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/rhythm_tour_play_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e0c84933eba2d8ae0c81f0d5a8899c1356fd76c1"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/rhythm_tour_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f8758688f3cccde8c297793e95b7e20078e957c1"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/safe-area-images.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c6f7c5364025cc7dc79e0972ad0ee491402721b"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/source-dirty.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/source-sha.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6faed40064a256a14f525c9e3e4be7a30086d36"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/source-tree.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cf3b4626a3dcb9ebaaee5d934f0dae8490201595"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/studio-2020-images.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5e784f6d75824b62f8c593b13a42f31489286ccd"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/treasure-title-images.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "438671c8051fc4280f74aae682a935b59994aa40"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/treasure_exploration_regression-headless.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c8146adee3e0045b27b144aa8cf07ca70b795f45"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/treasure_exploration_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f29e0e5a8ff25a35bf41749428de181b3a07d06f"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/treasure_title_contrast_regression-rendered.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "831a4bad0e10708fafdb8c278bda8b03ee872df4"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/nextgen/village-images.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "59c956cc58cee58996b125ff2f50ea91300b243b"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/project.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6832ded5fe2577ae0c0a69bcc5d1fa658f727577"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/source-sha.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6faed40064a256a14f525c9e3e4be7a30086d36"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/technical-art/engine.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24277fd09e8cc7154517b66aab4e8bef52babb7e"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/technical-art/kart_air_trick_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "924424a86975e6d00c90a28e8e95a45f994a80a8"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/technical-art/kart_garage_presentation_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0a175d9fa70ce7b90c8141031964707b0db0c08a"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/technical-art/kart_harbor_race_hook_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a450261eff56a74b3f5746ca09212b2be014d3a5"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/technical-art/kart_sonnenhafen_streetfronts_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c8448dfca3bac975a693e37a2a36ed603594d8ac"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/technical-art/kart_sonnenhafen_streetfronts_world_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a7591c587dfb1424e54887705ec7edf20fe254fe"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/technical-art/lumo_attention_landing_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dc9e0bec52792ac63c329df7f9576d69558153b1"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/technical-art/lumo_gesture_contact_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "905ac7c9693a9fd7ad2fac2c2c717c7b41821b3a"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/technical-art/lumo_kart_tick_cadence_regression.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fed36758621adb82581992b68ce6531ccd70cfd0"
+    },
+    {
+      "path": "docs/evidence/host-6b-native-originals-43616038272/originals/technical-art/source-sha.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6faed40064a256a14f525c9e3e4be7a30086d36"
+    }
+  ]
+}

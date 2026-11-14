@@ -1,0 +1,74 @@
+{
+  "source": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "artifact": 14125605621,
+  "run": 43616038272,
+  "attempt": 1,
+  "original_images": [
+    {
+      "path": "discovery/captures/hub/hub_fold_landscape.png",
+      "finding": "Original fox with blue goggles, dark suit, ears, hands, feet and tail fully visible. Back and both profile controls unobstructed; all eight route cards fully visible in this landscape frame.",
+      "limit": "Desktop renderer capture; no Android touch or device FPS claim.",
+      "bytes": 1879194,
+      "sha256": "aabe0cc67c9170784d8a09aaf3ba68ff55009e5eea4e127367dc62752bc00aa5",
+      "git_blob": "4671f677b64ccebc575d9a9da869efb61f6794a0",
+      "actually_opened_with_view_image": true
+    },
+    {
+      "path": "discovery/captures/hub/hub_portrait.png",
+      "finding": "Same identifiable original fox fully framed. Back and profile controls unobstructed. Six complete route cards are visible; Bauwelt and Sternenjagd are only partly visible at the bottom of the existing scroll area.",
+      "limit": "No simultaneous eight-of-eight card visibility is claimed for portrait.",
+      "bytes": 1822286,
+      "sha256": "8ce83f6eb9792e929dc473472c1b00e2ec48e18e4efe7cb73fcb190b9180929f",
+      "git_blob": "01b5d000bc2dc64c93d7f928240fa7edc51c0711",
+      "actually_opened_with_view_image": true
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_412x915_touch_ascent.png",
+      "finding": "Rear-view fox player is fully visible above the starting island during the captured ascent; the route, joystick and jump control are separated and visible. Header, pause and Spiele controls remain readable.",
+      "limit": "This image shows a renderer state. The separate headless original-rig probe establishes 65 bones/imported scene/hidden fallback/movement/pause/resume; a rear view alone does not establish facial identity or Android performance.",
+      "bytes": 458690,
+      "sha256": "b599f7025d1863ccb62cb6c35f49e3734344d4859842b14cd3deed3d900d4ae8",
+      "git_blob": "7a3449aba11c190c67ce0709bdf90445c2a79629",
+      "actually_opened_with_view_image": true
+    },
+    {
+      "path": "dream/captures/garden/learning-dream-1280x720.png",
+      "finding": "Readable 8+5 instruction, eight blue blocks and five gold blocks staged alongside the board. Five pots and the original fox are visible without hiding the task or bottom actions.",
+      "limit": "One desktop start frame; interaction completion is established separately by original probe evidence.",
+      "bytes": 346738,
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "actually_opened_with_view_image": true
+    },
+    {
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-landscape-cutout.png",
+      "finding": "Title, Spiele, Rucksack, pause, instruction and action controls are legible on dark panels. The third-person player and route remain visible between the panels; simulated cutout-safe margin is retained.",
+      "limit": "Simulated desktop cutout fixture, not a photographed Android screen. No new model-identity conclusion is inferred from this rear-view frame.",
+      "bytes": 2623832,
+      "sha256": "5c7306dc91fa230e34f5e087fde5badf16e2be256cd0be8ab0f19eed58152372",
+      "git_blob": "51b7653586a64333ab61bce1f9e95d21f4b71245",
+      "actually_opened_with_view_image": true
+    },
+    {
+      "path": "discovery/captures/learning/math-complete-412x915.png",
+      "finding": "Readable completion equation 8+5=10+3=13. The ten-frame and lower row visibly contain thirteen blocks, including five gold additions; five flowers and the original fox remain visible. Noch einmal and Zur Aufgabe controls are complete.",
+      "limit": "The disabled Ein Objekt zeigen control is visible in the completion state; this is not a claim about every layout or interaction.",
+      "bytes": 144204,
+      "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+      "git_blob": "efeabdcf9d87f93e9d7569c2ee6a106900f2b4f6",
+      "actually_opened_with_view_image": true
+    },
+    {
+      "path": "nextgen/captures/build_village_scene_regression/village-overview-1280x720.png",
+      "finding": "Village header reports two residents and nine plots; the central market and two small residents are visible. Core management and next-day controls are readable. The catalogue has a partially clipped first entry and a visible horizontal scroll range.",
+      "limit": "This standalone/Native-context desktop fixture shows Bauwelt as its return destination; it does not represent or prove the direct Flutter-host Spiele return.",
+      "bytes": 1006179,
+      "sha256": "4f479f68f437804626b73f85a076495a35cfb7c6346817c5d905c97780ef22a9",
+      "git_blob": "dca8b0dfc9dddd36fca2fe021c762c0235b13347",
+      "actually_opened_with_view_image": true
+    }
+  ],
+  "new_images_created": 0,
+  "engine_or_renderer_executions": 0
+}

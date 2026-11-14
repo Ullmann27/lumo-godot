@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "host_source": "6b3047b7979dfb86d837e74a21b0fd890e4f9e66",
+  "native_source": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "native_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "run_id": 43616038272,
+  "run_attempt": 1,
+  "artifact_id": 14125605621,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "pillow": "13.0.0",
+  "ci_pillow": "12.3.0",
+  "engine_invocations": 0,
+  "renderer_invocations": 0,
+  "bound_checked_native_completed_before_supplemental_reporting_error": true,
+  "prior_checked_native_seconds": 10.524,
+  "bound_checked_native_original_result": {
+    "bytes": 92192,
+    "sha256": "b731e65f2ab30dacfaef5686f83a9fe7ff344affb1bdd07f5009417ec7e2c547"
+  },
+  "initial_reporting_error": {
+    "retained_log": "reader-replay.log",
+    "retained_summary": "replay-summary.json",
+    "initial_process_exit": 1,
+    "cause": "Supplemental harness incorrectly expected a bare Jump PASS line; the committed probe appends its explicit rig checks.",
+    "correction": "Expected full marker is extracted from the unchanged committed GDScript; no original reader or gameplay source was changed or rerun."
+  },
+  "actual_jump_marker": "[JumpOriginalLumo] PASS: original 65-bone GLB visible, grounded, moving, paused and resumed",
+  "jump_original_log": {
+    "bytes": 691,
+    "sha256": "73b437ce767d4a0fb73acc9c1db08b351e22b207d4fe68e8c93081948b920f43"
+  },
+  "jump_probe_source": {
+    "bytes": 3633,
+    "sha256": "74c52e8836f3d42065acd6170f288c557462c5ea1038fe0fc90ea6ff089297d0"
+  },
+  "decoded_original_pngs": 188,
+  "core_modes": 52,
+  "all_6106_original_files_unchanged": true,
+  "all_3770_source_files_and_raw_index_unchanged": true,
+  "elapsed_seconds": 11.12,
+  "scope": "Original Desktop Native evidence replay and supplemental PNG decoding; visual review is separately recorded, no Android/FPS/audio claim"
+}

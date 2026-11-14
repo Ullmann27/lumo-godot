@@ -1,0 +1,172 @@
+{
+  "images": [
+    {
+      "path": "captures/learning_sharing_capture/sharing-complete-1280x720.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 336577,
+      "sha256": "76ae1b6b5e80e4ad1bd9dce3a2b180616aba4b0197b1d83294c91d3f832bfd81"
+    },
+    {
+      "path": "captures/learning_sharing_capture/sharing-complete-412x915.png",
+      "width": 412,
+      "height": 915,
+      "bytes": 128451,
+      "sha256": "efcd02e26db87f530de6b1ac3a6f55276b1b5fb22b55cd52e69a6e71acf15661"
+    },
+    {
+      "path": "captures/learning_sharing_capture/sharing-first-round-1280x720.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 327988,
+      "sha256": "f8ee7caaa158ad5a341f3ed79b8ea3a2eeee9eaffc8d31daaf4839a17b590bdb"
+    },
+    {
+      "path": "captures/learning_sharing_capture/sharing-first-round-412x915.png",
+      "width": 412,
+      "height": 915,
+      "bytes": 125294,
+      "sha256": "bbd90b9048f918edcb20b96b5f328e81204fbc2939d0ac82378d0ecc259c0321"
+    },
+    {
+      "path": "captures/learning_sharing_capture/sharing-start-1280x720.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 322132,
+      "sha256": "2de4239be4933e1e81ddd6d50980e3f6aca2a0133e066a40113fab80878065a1"
+    },
+    {
+      "path": "captures/learning_sharing_capture/sharing-start-412x915.png",
+      "width": 412,
+      "height": 915,
+      "bytes": 120703,
+      "sha256": "ac23382822e0a1b277ed1148180b25554e20342a3db84cf84c5f558947015787"
+    },
+    {
+      "path": "captures/lumo_studio_motion_capture/after_jump_rise.png",
+      "width": 720,
+      "height": 840,
+      "bytes": 229662,
+      "sha256": "3a16b54adfda3f134baefed9804d5534b5d401c07adfc9a3d14f52bbafc82238"
+    },
+    {
+      "path": "captures/lumo_studio_motion_capture/after_land.png",
+      "width": 720,
+      "height": 840,
+      "bytes": 232967,
+      "sha256": "e0a3da89d35334abcc1e0eda77c58048c3423529aa02299c27547e3c4ade645b"
+    },
+    {
+      "path": "captures/lumo_studio_motion_capture/after_sprint.png",
+      "width": 720,
+      "height": 840,
+      "bytes": 226024,
+      "sha256": "3d43a78372c622ebac7abac15f5aae49b4ba4ee729aed3207f326a04a2ed0185"
+    },
+    {
+      "path": "captures/lumo_studio_motion_capture/after_walk.png",
+      "width": 720,
+      "height": 840,
+      "bytes": 229796,
+      "sha256": "557393c69f428d8c6cc300fd1f25b49314823c8078982df95fb2678dc9990772"
+    },
+    {
+      "path": "captures/lumo_studio_motion_capture/before_jump_rise.png",
+      "width": 720,
+      "height": 840,
+      "bytes": 233672,
+      "sha256": "2dfe8f9b8dd52b7fa3243a15405d7ba7a0f2e3babc47a2a7a06959ceb8530d98"
+    },
+    {
+      "path": "captures/lumo_studio_motion_capture/before_land.png",
+      "width": 720,
+      "height": 840,
+      "bytes": 226564,
+      "sha256": "9b2040079dabdc3c39c26e1288b69ae727b5d7c363e2441cad1eb91b46c9f61d"
+    },
+    {
+      "path": "captures/lumo_studio_motion_capture/before_sprint.png",
+      "width": 720,
+      "height": 840,
+      "bytes": 236265,
+      "sha256": "3a71643c2fa4fb5ad24714e9faea71c81250f1d855c16fb5066d75a8e0db048e"
+    },
+    {
+      "path": "captures/lumo_studio_motion_capture/before_walk.png",
+      "width": 720,
+      "height": 840,
+      "bytes": 234896,
+      "sha256": "33acdddf1b1af9aeb8b5858f80b470b818450639857a677603afd08ba26b89a1"
+    },
+    {
+      "path": "captures/puzzle_rotation_regression/puzzle_rotation_412x915.png",
+      "width": 412,
+      "height": 915,
+      "bytes": 228045,
+      "sha256": "e7df8c0f46789134b784c9e64e65a5f0641f25e4d433f0b0fe504cdb2ef45cce"
+    },
+    {
+      "path": "captures/puzzle_rotation_regression/puzzle_rotation_640x360.png",
+      "width": 640,
+      "height": 360,
+      "bytes": 113939,
+      "sha256": "04a94e2156004aa1f6192736d00487f14f3c6ecfae703e8a942de335dea65c40"
+    },
+    {
+      "path": "captures/puzzle_rotation_regression/puzzle_rotation_840x760.png",
+      "width": 840,
+      "height": 760,
+      "bytes": 327240,
+      "sha256": "2113cd3e58ada67e35711ec22599be38db970bbda8e2ab9f26ce582f80bcd17a"
+    },
+    {
+      "path": "captures/puzzle_rotation_regression/puzzle_rotation_compact_menu.png",
+      "width": 640,
+      "height": 360,
+      "bytes": 58991,
+      "sha256": "68472a6e74eac5456fba47d0b540b81675f483b2eb60b3ca12b1c7ea6d077d4b"
+    },
+    {
+      "path": "captures/puzzle_rotation_regression/puzzle_rotation_hint.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 519918,
+      "sha256": "38e9030a6e169e85f68d008e73dc45562852e52d5af7da9eeab8a78c214708ca"
+    },
+    {
+      "path": "captures/puzzle_rotation_regression/puzzle_rotation_placed.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 510346,
+      "sha256": "0a7eeb149aaa8fb704aa7ae3998f521ed6031e4cd87c9ec2001ae4dea4d01f72"
+    },
+    {
+      "path": "captures/puzzle_rotation_regression/puzzle_rotation_table.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 508156,
+      "sha256": "1cac4b859469efdc8c2e58cf48ed5786db90d62a19090a19cee7941bf62de70f"
+    },
+    {
+      "path": "captures/treasure_exploration_regression/treasure_choose_route.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 1291941,
+      "sha256": "a76c967c9d3d76058bb70c6888331271c621020236bb9e47e77bc605946d5c42"
+    },
+    {
+      "path": "captures/treasure_exploration_regression/treasure_garden_first.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 1260295,
+      "sha256": "b825273d7d30058b84d492ac5944f9815b9f40d2e1172ee459005b3126d22dc3"
+    },
+    {
+      "path": "captures/treasure_exploration_regression/treasure_route_complete.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 1282876,
+      "sha256": "3584538b049cdbb2f29744c3d08ad8581fe1dc6e99c4b8dcf2c5d7f9f139f9c0"
+    }
+  ]
+}

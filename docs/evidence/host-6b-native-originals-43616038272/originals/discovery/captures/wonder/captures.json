@@ -1,0 +1,391 @@
+{
+  "captures": [
+    {
+      "actual_production_scene": "res://scenes/learning/learning_world.tscn",
+      "complete": false,
+      "file": "current-numbers-start-1280x720.png",
+      "garden": {
+        "ambience": {
+          "animation_time": 0.0,
+          "batches": 2,
+          "butterflies": 5,
+          "motes": 17,
+          "preset": "learning_garden",
+          "reduced_motion": true,
+          "tier": "medium"
+        },
+        "display_progress": 0.0,
+        "family": "numbers",
+        "flowers": 5,
+        "geometry_batches": 7,
+        "kind": "bridge_ten",
+        "layout_changes": 1,
+        "petals": 35,
+        "progress": 0.0,
+        "reduced_motion": true,
+        "suspended": false,
+        "theme_changes": 1,
+        "writes_learning_state": false
+      },
+      "headless": false,
+      "kind": "bridge_ten",
+      "placed": 0,
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "actual_production_scene": "res://scenes/learning/learning_world.tscn",
+      "complete": false,
+      "file": "current-numbers-one-step-1280x720.png",
+      "garden": {
+        "ambience": {
+          "animation_time": 0.0,
+          "batches": 2,
+          "butterflies": 5,
+          "motes": 17,
+          "preset": "learning_garden",
+          "reduced_motion": true,
+          "tier": "medium"
+        },
+        "display_progress": 0.2,
+        "family": "numbers",
+        "flowers": 5,
+        "geometry_batches": 7,
+        "kind": "bridge_ten",
+        "layout_changes": 1,
+        "petals": 35,
+        "progress": 0.2,
+        "reduced_motion": true,
+        "suspended": false,
+        "theme_changes": 1,
+        "writes_learning_state": false
+      },
+      "headless": false,
+      "kind": "bridge_ten",
+      "placed": 1,
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "actual_production_scene": "res://scenes/learning/learning_world.tscn",
+      "complete": true,
+      "file": "current-numbers-complete-1280x720.png",
+      "garden": {
+        "ambience": {
+          "animation_time": 0.0,
+          "batches": 2,
+          "butterflies": 5,
+          "motes": 17,
+          "preset": "learning_garden",
+          "reduced_motion": true,
+          "tier": "medium"
+        },
+        "display_progress": 1.0,
+        "family": "numbers",
+        "flowers": 5,
+        "geometry_batches": 7,
+        "kind": "bridge_ten",
+        "layout_changes": 1,
+        "petals": 35,
+        "progress": 1.0,
+        "reduced_motion": true,
+        "suspended": false,
+        "theme_changes": 1,
+        "writes_learning_state": false
+      },
+      "headless": false,
+      "kind": "bridge_ten",
+      "placed": 5,
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "actual_production_scene": "res://scenes/learning/learning_world.tscn",
+      "complete": false,
+      "file": "current-numbers-start-412x915.png",
+      "garden": {
+        "ambience": {
+          "animation_time": 0.0,
+          "batches": 2,
+          "butterflies": 5,
+          "motes": 17,
+          "preset": "learning_garden",
+          "reduced_motion": true,
+          "tier": "medium"
+        },
+        "display_progress": 0.0,
+        "family": "numbers",
+        "flowers": 5,
+        "geometry_batches": 7,
+        "kind": "bridge_ten",
+        "layout_changes": 1,
+        "petals": 35,
+        "progress": 0.0,
+        "reduced_motion": true,
+        "suspended": false,
+        "theme_changes": 1,
+        "writes_learning_state": false
+      },
+      "headless": false,
+      "kind": "bridge_ten",
+      "placed": 0,
+      "size": [
+        412,
+        915
+      ]
+    },
+    {
+      "actual_production_scene": "res://scenes/learning/learning_world.tscn",
+      "complete": true,
+      "file": "current-numbers-complete-412x915.png",
+      "garden": {
+        "ambience": {
+          "animation_time": 0.0,
+          "batches": 2,
+          "butterflies": 5,
+          "motes": 17,
+          "preset": "learning_garden",
+          "reduced_motion": true,
+          "tier": "medium"
+        },
+        "display_progress": 1.0,
+        "family": "numbers",
+        "flowers": 5,
+        "geometry_batches": 7,
+        "kind": "bridge_ten",
+        "layout_changes": 1,
+        "petals": 35,
+        "progress": 1.0,
+        "reduced_motion": true,
+        "suspended": false,
+        "theme_changes": 1,
+        "writes_learning_state": false
+      },
+      "headless": false,
+      "kind": "bridge_ten",
+      "placed": 5,
+      "size": [
+        412,
+        915
+      ]
+    },
+    {
+      "actual_production_scene": "res://scenes/learning/learning_world.tscn",
+      "complete": false,
+      "file": "current-syllables-start.png",
+      "garden": {
+        "ambience": {
+          "animation_time": 0.0,
+          "batches": 2,
+          "butterflies": 5,
+          "motes": 17,
+          "preset": "learning_garden",
+          "reduced_motion": true,
+          "tier": "medium"
+        },
+        "display_progress": 0.0,
+        "family": "language",
+        "flowers": 5,
+        "geometry_batches": 7,
+        "kind": "syllables",
+        "layout_changes": 1,
+        "petals": 35,
+        "progress": 0.0,
+        "reduced_motion": true,
+        "suspended": false,
+        "theme_changes": 1,
+        "writes_learning_state": false
+      },
+      "headless": false,
+      "kind": "syllables",
+      "placed": 0,
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "actual_production_scene": "res://scenes/learning/learning_world.tscn",
+      "complete": true,
+      "file": "current-syllables-complete.png",
+      "garden": {
+        "ambience": {
+          "animation_time": 0.0,
+          "batches": 2,
+          "butterflies": 5,
+          "motes": 17,
+          "preset": "learning_garden",
+          "reduced_motion": true,
+          "tier": "medium"
+        },
+        "display_progress": 1.0,
+        "family": "language",
+        "flowers": 5,
+        "geometry_batches": 7,
+        "kind": "syllables",
+        "layout_changes": 1,
+        "petals": 35,
+        "progress": 1.0,
+        "reduced_motion": true,
+        "suspended": false,
+        "theme_changes": 1,
+        "writes_learning_state": false
+      },
+      "headless": false,
+      "kind": "syllables",
+      "placed": 3,
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "actual_production_scene": "res://scenes/learning/learning_world.tscn",
+      "complete": false,
+      "file": "current-plant_parts-start.png",
+      "garden": {
+        "ambience": {
+          "animation_time": 0.0,
+          "batches": 2,
+          "butterflies": 5,
+          "motes": 17,
+          "preset": "learning_garden",
+          "reduced_motion": true,
+          "tier": "medium"
+        },
+        "display_progress": 0.0,
+        "family": "nature",
+        "flowers": 5,
+        "geometry_batches": 7,
+        "kind": "plant_parts",
+        "layout_changes": 1,
+        "petals": 35,
+        "progress": 0.0,
+        "reduced_motion": true,
+        "suspended": false,
+        "theme_changes": 1,
+        "writes_learning_state": false
+      },
+      "headless": false,
+      "kind": "plant_parts",
+      "placed": 0,
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "actual_production_scene": "res://scenes/learning/learning_world.tscn",
+      "complete": true,
+      "file": "current-plant_parts-complete.png",
+      "garden": {
+        "ambience": {
+          "animation_time": 0.0,
+          "batches": 2,
+          "butterflies": 5,
+          "motes": 17,
+          "preset": "learning_garden",
+          "reduced_motion": true,
+          "tier": "medium"
+        },
+        "display_progress": 1.0,
+        "family": "nature",
+        "flowers": 5,
+        "geometry_batches": 7,
+        "kind": "plant_parts",
+        "layout_changes": 1,
+        "petals": 35,
+        "progress": 1.0,
+        "reduced_motion": true,
+        "suspended": false,
+        "theme_changes": 1,
+        "writes_learning_state": false
+      },
+      "headless": false,
+      "kind": "plant_parts",
+      "placed": 0,
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "actual_production_scene": "res://scenes/learning/learning_world.tscn",
+      "complete": false,
+      "file": "current-hundreds-phone-start.png",
+      "garden": {
+        "ambience": {
+          "animation_time": 0.0,
+          "batches": 2,
+          "butterflies": 5,
+          "motes": 17,
+          "preset": "learning_garden",
+          "reduced_motion": true,
+          "tier": "medium"
+        },
+        "display_progress": 0.0,
+        "family": "numbers",
+        "flowers": 5,
+        "geometry_batches": 7,
+        "kind": "bridge_hundred",
+        "layout_changes": 1,
+        "petals": 35,
+        "progress": 0.0,
+        "reduced_motion": true,
+        "suspended": false,
+        "theme_changes": 1,
+        "writes_learning_state": false
+      },
+      "headless": false,
+      "kind": "bridge_hundred",
+      "placed": 0,
+      "size": [
+        412,
+        915
+      ]
+    },
+    {
+      "actual_production_scene": "res://scenes/learning/learning_world.tscn",
+      "complete": true,
+      "file": "current-hundreds-phone-complete.png",
+      "garden": {
+        "ambience": {
+          "animation_time": 0.0,
+          "batches": 2,
+          "butterflies": 5,
+          "motes": 17,
+          "preset": "learning_garden",
+          "reduced_motion": true,
+          "tier": "medium"
+        },
+        "display_progress": 1.0,
+        "family": "numbers",
+        "flowers": 5,
+        "geometry_batches": 7,
+        "kind": "bridge_hundred",
+        "layout_changes": 1,
+        "petals": 35,
+        "progress": 1.0,
+        "reduced_motion": true,
+        "suspended": false,
+        "theme_changes": 1,
+        "writes_learning_state": false
+      },
+      "headless": false,
+      "kind": "bridge_hundred",
+      "placed": 5,
+      "size": [
+        412,
+        915
+      ]
+    }
+  ],
+  "checks": 136,
+  "failures": 0
+}

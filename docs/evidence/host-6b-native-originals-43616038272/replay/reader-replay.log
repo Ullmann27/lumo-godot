@@ -1,0 +1,63 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/909ddb52fe7b/native-host-6b-original-review/replay_native_originals.py", line 95, in main
+    driver.require(jump_text.splitlines().count('[JumpOriginalLumo] PASS') == 1,
+  File "/workspace/scratch/909ddb52fe7b/native-host-6b-original-review/reader/original_reader_driver.py", line 48, in require
+    raise ValueError(message)
+ValueError: Original Jump rig regression lacks its exact PASS marker
+{
+  "status": "FAIL",
+  "host_source": "6b3047b7979dfb86d837e74a21b0fd890e4f9e66",
+  "native_source": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "native_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "run_id": 43616038272,
+  "run_attempt": 1,
+  "artifact_id": 14125605621,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "pillow": "13.0.0",
+  "ci_pillow": "12.3.0",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "reader_blobs": {
+    "original_reader_driver.py": "3c81457f029952ea4125bdb20da9e89a4f15d3b8",
+    "verify_connect_four_delivery.py": "42d54aa5293750f64f1c0307b5d97aace354471d"
+  },
+  "engine_invocations": 0,
+  "renderer_invocations": 0,
+  "scope": "Independent read-only replay of original Desktop Native evidence; no Android/FPS/audio claim",
+  "checked_native_seconds": 10.524,
+  "core_modes": 52,
+  "core_logs": 52,
+  "live": {
+    "probe_count": 9,
+    "png_count": 7
+  },
+  "discovery": {
+    "probe_modes": 10,
+    "png_count": 38,
+    "report_count": 2
+  },
+  "extra_return": {
+    "marker": "CONNECT_FOUR_RETURN_PASS checks=21",
+    "bytes": 504,
+    "sha256": "f52a215077309359c79031c719d5df69b526bcb0d45bd2bb161de28153dc5ae2"
+  },
+  "exception_type": "ValueError",
+  "exception": "Original Jump rig regression lacks its exact PASS marker",
+  "unchanged": {
+    "all_3770_tracked_source_bytes_and_modes_unchanged": true,
+    "raw_source_index_unchanged": true,
+    "all_6106_original_paths_bytes_and_modes_unchanged": true,
+    "reader_bytes_and_modes_unchanged": true,
+    "original_zip_bytes_unchanged": true
+  },
+  "elapsed_seconds": 14.492
+}
+Traceback (most recent call last):
+  File "/workspace/scratch/909ddb52fe7b/native-host-6b-original-review/replay_native_originals.py", line 141, in <module>
+    main()
+  File "/workspace/scratch/909ddb52fe7b/native-host-6b-original-review/replay_native_originals.py", line 136, in main
+    raise error
+  File "/workspace/scratch/909ddb52fe7b/native-host-6b-original-review/replay_native_originals.py", line 95, in main
+    driver.require(jump_text.splitlines().count('[JumpOriginalLumo] PASS') == 1,
+  File "/workspace/scratch/909ddb52fe7b/native-host-6b-original-review/reader/original_reader_driver.py", line 48, in require
+    raise ValueError(message)
+ValueError: Original Jump rig regression lacks its exact PASS marker

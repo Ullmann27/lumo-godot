@@ -1,0 +1,1820 @@
+{
+  "schema": 1,
+  "review": "Independent exact Host6b Native originals",
+  "host_source": "6b3047b7979dfb86d837e74a21b0fd890e4f9e66",
+  "host_tree": "8b0c31a26207068c28658e14c6535c39a51cf95b",
+  "native_source": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "native_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "run": 43616038272,
+  "attempt": 1,
+  "job": 132512734271,
+  "artifact": 14125605621,
+  "zip_bytes": 226754945,
+  "zip_sha256": "f85d5adcab871653b641420aa70c9bbfb3f574fb1716ca997d57daf690957af1",
+  "complete_original_files": 6106,
+  "complete_png_files": 188,
+  "original_pngs_fully_decoded": 188,
+  "actually_inspected_original_pngs": 7,
+  "source_tracked_files": 3770,
+  "source_bytes_modes_raw_index_unchanged": true,
+  "original_bytes_names_modes_unchanged": true,
+  "engine_invocations": 0,
+  "renderer_invocations": 0,
+  "originals_saved_individually": [
+    {
+      "bytes": 541,
+      "git_blob": "b27ea60acdbc5f9abb0d39cfd09ebf485e1b7a73",
+      "path": "2014/build_sandbox_tools_regression.log",
+      "sha256": "b27faaf614cae03d325f41790f146c441a5a71ee1c7a025e255dd1a8a2fa810a",
+      "zip_crc32": "b23b8bb8",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1269,
+      "git_blob": "d594496761a4316408ef5ac9d79bf5ed674a61af",
+      "path": "2014/build_sandbox_ui_regression.log",
+      "sha256": "df12e6cd24264f30e4b81b215caff309e233d3e0c2cf4c42e70bfe9f65070c82",
+      "zip_crc32": "4af7d43c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1574,
+      "git_blob": "4ba2a2be2331afe02bc2284a42f7cdf82ec4b2be",
+      "path": "2014/creative_touch_layout_regression.log",
+      "sha256": "943713b7b7afc8cf32c07c362a1046f0c2ee7e8776cbf1ccaf6af2b8352ce172",
+      "zip_crc32": "f12b05c6",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 726,
+      "git_blob": "7fa1eb401b090b5d787750318310338ed217cee4",
+      "path": "2014/jump_extras_regression.log",
+      "sha256": "6d19463f0b3ab9993fe8d855b6f14107ee95998713b559990f568c08ea97083b",
+      "zip_crc32": "ba7b7b3a",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 83862,
+      "git_blob": "3a35fc9494ec16b38e1d14430adb075688ff80ad",
+      "path": "2014/kart_full_field_regression.log",
+      "sha256": "196f15d6701675667747d250d88341364f4ec3a9f1108234e72020e7e679dcc1",
+      "zip_crc32": "c8c46a3d",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1450,
+      "git_blob": "54ac262f8911b087136439cd7eb61109a82aa1b0",
+      "path": "2014/kart_garage_3d_touch_regression.log",
+      "sha256": "39bf1786509c1691ff7ce6fdb6c087cff5e937a4b6b02e8502f7544f3f8b7bbb",
+      "zip_crc32": "d058336c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1656,
+      "git_blob": "76af4dfa9432e64978941636b76fdfce06b4e9e9",
+      "path": "2014/kart_harbor_attraction_regression.log",
+      "sha256": "00a5c14f0534e154c87619cb3ad1c4427dad6ceb531e290f2ef00e70d5dd9bd3",
+      "zip_crc32": "435484e9",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1376,
+      "git_blob": "d70f079599b9ce3d6830071b84458a41e5735c35",
+      "path": "2014/kart_harbor_race_hook_regression.log",
+      "sha256": "7ae9dc25ade37caf19d3deed83cb16e91e8c74928a5f301f4f348ba32c42513e",
+      "zip_crc32": "cebad90c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 674,
+      "git_blob": "23aa034e4c55608a9b0865e5a5308ce80c72b499",
+      "path": "2014/kart_loop_contact_regression.log",
+      "sha256": "e61e28086e56d00d9ad94780105b6de81bd76e3a9e8091afac83e36e0659ff99",
+      "zip_crc32": "bef02408",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1327,
+      "git_blob": "925aed61667ef87cce4c5062cca8fd887aa875d5",
+      "path": "2014/kart_menu_depth_2013_regression.log",
+      "sha256": "8f81adff2155184b2e875505e161f03564dd01195fa81e655a667f3b477fa7da",
+      "zip_crc32": "5c2b8964",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 21732,
+      "git_blob": "5c5e5765f3f9219c9cadcede7148af0196028c41",
+      "path": "2014/kart_player_full_route_regression.log",
+      "sha256": "24bf80b6ccf42c4942bffdd3b8b134e7727a4b28e42965738b514eb785745ad6",
+      "zip_crc32": "0fd0b4a3",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 799,
+      "git_blob": "cda028117e0b0b86f9224d04ff784d4947c896d5",
+      "path": "2014/kart_racecraft_regression.log",
+      "sha256": "b33e0dbace5e835ab8dba0eb856722aeadc612f52921380fd50cfe6cdb08e08e",
+      "zip_crc32": "0b278d71",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 801,
+      "git_blob": "f9d62f875064df518ca14d9f7b89ef4327cba2b1",
+      "path": "2014/kart_rival_drift_items_regression.log",
+      "sha256": "d1e701f6d424e04ef50d25aea6ee8d337428ffd470480d16212ae990fdaece9f",
+      "zip_crc32": "ccb2542e",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1875,
+      "git_blob": "e936e1283ded102703309814b360e019e1600b6b",
+      "path": "2014/kart_rival_flight_regression.log",
+      "sha256": "cd9d2311b5e7754e5be7290c24e6533e0d0941127ce95a4f1f6a8adbebc4bb48",
+      "zip_crc32": "18380465",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 552,
+      "git_blob": "969af661d4414a4178223f335f008aff9ce27a18",
+      "path": "2014/kart_sonnenhafen_generation_regression.log",
+      "sha256": "a25509ce894804614d69e35f9b898757f4b4605ac64db8d2c2a98c79658eee60",
+      "zip_crc32": "da9196a7",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1736,
+      "git_blob": "62bd059a388231b9be03bca30a47873a0fc3cd94",
+      "path": "2014/kart_stunt_continuity_regression.log",
+      "sha256": "b1860c98a8a8a9508984a5f567b6b1b8ebdfce165cdb1918f5a68addfc41c1d6",
+      "zip_crc32": "9f4d2c92",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1320,
+      "git_blob": "f6814ef940b3d2966dcb1a5c534d7e8278715d5e",
+      "path": "2014/kart_zauberwald_library_regression.log",
+      "sha256": "83bb911a70a054f7cd068868a401a911b2a16308b0cf6915c23e8e2c2e4ad50d",
+      "zip_crc32": "fc57786a",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1191,
+      "git_blob": "b0f395b600d31ae84837ece90b1127c9338580a3",
+      "path": "2014/puzzle_expansion_regression.log",
+      "sha256": "15e66dba4f57135ff127300eff8f6457f9a837ebe383a2528b3d3a32ce5075f4",
+      "zip_crc32": "2d40717c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 32,
+      "git_blob": "24277fd09e8cc7154517b66aab4e8bef52babb7e",
+      "path": "action-stage/engine.txt",
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f",
+      "zip_crc32": "12281f13",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1033,
+      "git_blob": "67209cc162132325a8b0f2cbff0195b747f923b0",
+      "path": "action-stage/kart_lasso_production_regression.log",
+      "sha256": "af9d18f16e90a44c8fd2548fffea8dfc0fa2fcc50eeed870e79e131c67ec8ac2",
+      "zip_crc32": "086a2580",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 562,
+      "git_blob": "e6ba2a413e64c56f2b1d7f265c8b9ff78568bd6d",
+      "path": "action-stage/kart_lasso_regression.log",
+      "sha256": "1d727cef9d8c4c8b13a22c5efca13914f33cc39c8513da90b8ca8fae4cecb856",
+      "zip_crc32": "81a7a65d",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 3675,
+      "git_blob": "85f2e02cec72570545b2092a5cba27ca68a800f8",
+      "path": "action-stage/kart_menu_flow_regression.log",
+      "sha256": "b2c789a4f2d251a056ece8698005830de32934d0cd4ac9869ed693154dc1c58b",
+      "zip_crc32": "3fd055cd",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1798,
+      "git_blob": "13ac62ee26294c5309ef5bae50bc24a83eea88b1",
+      "path": "action-stage/kart_roadside_action_regression.log",
+      "sha256": "e582b58303683f6228689e133b1306e2d56bd35138051cce6c81e9ff91a9d57f",
+      "zip_crc32": "00d28780",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 5531,
+      "git_blob": "de3dba3c4ee9329e64307e1db888f6e14aef7e8c",
+      "path": "action-stage/kart_spatial_menu_regression.log",
+      "sha256": "519d50567febabf4b5ea84335b155eb109d0c9aaeb15ee14173e84851cc4a920",
+      "zip_crc32": "172ac23a",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "b6faed40064a256a14f525c9e3e4be7a30086d36",
+      "path": "action-stage/source-sha.txt",
+      "sha256": "32306e96de37175c791b04d458f479ee20851dda736e7ea6ddb577ff81601617",
+      "zip_crc32": "78679b72",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 504,
+      "git_blob": "186e8fa528a9138ea17a0a1395010f440192a280",
+      "path": "connect-four-return.log",
+      "sha256": "f52a215077309359c79031c719d5df69b526bcb0d45bd2bb161de28153dc5ae2",
+      "zip_crc32": "77417d45",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1350,
+      "git_blob": "d25c0224fa7009a4cddbddb3c7fea138387425c2",
+      "path": "discovery-collector.log",
+      "sha256": "568177a131c00a25c9b89a47185bcd224cbee0256bf113fb028faa732745eb07",
+      "zip_crc32": "a6c8be5d",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 2703,
+      "git_blob": "65dc177dc6a70225390c1d3b629240f9d49f2efd",
+      "path": "discovery/captures/hub/hub-original-identity.json",
+      "sha256": "12feeba1ca0437c6dca58a2ad3ca47f93d24919af96d79cce263e6a37f9c7f80",
+      "zip_crc32": "2c9049d9",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1879194,
+      "git_blob": "4671f677b64ccebc575d9a9da869efb61f6794a0",
+      "path": "discovery/captures/hub/hub_fold_landscape.png",
+      "sha256": "aabe0cc67c9170784d8a09aaf3ba68ff55009e5eea4e127367dc62752bc00aa5",
+      "zip_crc32": "97477168",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1822286,
+      "git_blob": "01b5d000bc2dc64c93d7f928240fa7edc51c0711",
+      "path": "discovery/captures/hub/hub_portrait.png",
+      "sha256": "8ce83f6eb9792e929dc473472c1b00e2ec48e18e4efe7cb73fcb190b9180929f",
+      "zip_crc32": "e55632ce",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 144204,
+      "git_blob": "efeabdcf9d87f93e9d7569c2ee6a106900f2b4f6",
+      "path": "discovery/captures/learning/math-complete-412x915.png",
+      "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+      "zip_crc32": "5de0ee23",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 10018,
+      "git_blob": "d34255cdd8a50b2a5a81740f3726c35de71114a3",
+      "path": "discovery/captures/wonder/captures.json",
+      "sha256": "0d50806be4be8f72c691659e253768ae4932cad1aa3096e7f0027efbc153f7cf",
+      "zip_crc32": "75881ea6",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 654,
+      "git_blob": "d05ae6e197e58fadbe1bfe4cb3a38a84d08611ff",
+      "path": "discovery/collection-context.json",
+      "sha256": "924bce1c12fbb5fe8ae4968d59c1cada3bb136438c8d740f55471c11fac30206",
+      "zip_crc32": "2c12159e",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 40370,
+      "git_blob": "275e85c71968bb5ade021e9d26a92d203d53525f",
+      "path": "discovery/discovery-acceptance.json",
+      "sha256": "2cc8c3bab6436f339a26e99c279317c406f72a65fb4fd83625c8c5d89f912656",
+      "zip_crc32": "545789c4",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 199,
+      "git_blob": "b2d5e252ba24ebafd48655da1cf9fd646b7d1d4b",
+      "path": "discovery/engine-binary.json",
+      "sha256": "c8dd9d8f3b9b8a2ea495d50b05ebcb34e993febb25080ab5cbafc0ba93efd39d",
+      "zip_crc32": "d4decfbf",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 32,
+      "git_blob": "24277fd09e8cc7154517b66aab4e8bef52babb7e",
+      "path": "discovery/engine.txt",
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f",
+      "zip_crc32": "12281f13",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 9979,
+      "git_blob": "1ebdec66300dfb87bf9287d194525d3c374c8aee",
+      "path": "discovery/helpers/collect_discovery_connections.py",
+      "sha256": "bfc9f32c8287849047e9f7babf400c107d790aecb21a45be16d45fa7302a3f83",
+      "zip_crc32": "b1c16802",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 2934,
+      "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+      "path": "discovery/helpers/run_godot_probe.py",
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "zip_crc32": "59225853",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 23700,
+      "git_blob": "c00ca9873106c974d66282cddfdcfaf5eb3bbebc",
+      "path": "discovery/helpers/verify_discovery_connections.py",
+      "sha256": "5edab9f77acaa4114281b74166eec3dbf306eb5b574f677c03190a379081dfaf",
+      "zip_crc32": "49cfcc97",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 11528,
+      "git_blob": "219e691fc8aa119cc80221b3db6c77e63caf8bfe",
+      "path": "discovery/helpers/verify_discovery_rasters.py",
+      "sha256": "55591b4478d2074135ea4950fb00200d68a3f9bede286b39642d7fc17aa586da",
+      "zip_crc32": "d1367a97",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 20254,
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5",
+      "path": "discovery/helpers/verify_dream_rasters.py",
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+      "zip_crc32": "173ff0d9",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 22795,
+      "git_blob": "84ec7cede0743ee1feb8083c4d111802d0df2dc4",
+      "path": "discovery/invocations.json",
+      "sha256": "035811f4b2892c1ef04b8d744839adcb6789b6d3b108c7947ae987521b2d31e8",
+      "zip_crc32": "16ad3f6d",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 10599,
+      "git_blob": "01f4eeb866daca9984822b21a7135da890d60efb",
+      "path": "discovery/logs/01-learning_world_regression-headless.log",
+      "sha256": "4e500ed41f1c9bee1b586b2141e4c7646f660b8dcb5da8311db95babab7ca1cb",
+      "zip_crc32": "adb79977",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 10599,
+      "git_blob": "01f4eeb866daca9984822b21a7135da890d60efb",
+      "path": "discovery/logs/01-learning_world_regression-headless.runner.log",
+      "sha256": "4e500ed41f1c9bee1b586b2141e4c7646f660b8dcb5da8311db95babab7ca1cb",
+      "zip_crc32": "adb79977",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1482,
+      "git_blob": "732d54f13499cd10ebc00935e394aac578658904",
+      "path": "discovery/logs/02-learning_sharing_regression-headless.log",
+      "sha256": "c97f5e3de4f7f795e626defb0a18c239c8f06d0e13198e802d1fb5ac8804d340",
+      "zip_crc32": "ffa60be0",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1482,
+      "git_blob": "732d54f13499cd10ebc00935e394aac578658904",
+      "path": "discovery/logs/02-learning_sharing_regression-headless.runner.log",
+      "sha256": "c97f5e3de4f7f795e626defb0a18c239c8f06d0e13198e802d1fb5ac8804d340",
+      "zip_crc32": "ffa60be0",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1805,
+      "git_blob": "30c7b738433cfa79bb22bb89dba214e5ca98e654",
+      "path": "discovery/logs/03-learning_studio_regression-headless.log",
+      "sha256": "bf54a175b9ceb89caf12f2268be19f6766169138d7ae4bfc5b633e377b522343",
+      "zip_crc32": "6755f869",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1805,
+      "git_blob": "30c7b738433cfa79bb22bb89dba214e5ca98e654",
+      "path": "discovery/logs/03-learning_studio_regression-headless.runner.log",
+      "sha256": "bf54a175b9ceb89caf12f2268be19f6766169138d7ae4bfc5b633e377b522343",
+      "zip_crc32": "6755f869",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1331,
+      "git_blob": "46c336c5528f770216224855309e219cfac4e17c",
+      "path": "discovery/logs/04-game_hub_magic_regression-headless.log",
+      "sha256": "6e1dc4e4250650c83ce344bf93e9d3ba2bf227925e837f6aec2ed9eb3fed9427",
+      "zip_crc32": "d9658a1c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1331,
+      "git_blob": "46c336c5528f770216224855309e219cfac4e17c",
+      "path": "discovery/logs/04-game_hub_magic_regression-headless.runner.log",
+      "sha256": "6e1dc4e4250650c83ce344bf93e9d3ba2bf227925e837f6aec2ed9eb3fed9427",
+      "zip_crc32": "d9658a1c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1641,
+      "git_blob": "904bb871432b11a43b8b396b563b3765e1aa0bd5",
+      "path": "discovery/logs/05-village_host_launch_regression-headless.log",
+      "sha256": "440796a5357d7f7e17c1511c3a4f3bc1b0f0e50bddd10f1e07effb708ea9987c",
+      "zip_crc32": "52bd97b1",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1641,
+      "git_blob": "904bb871432b11a43b8b396b563b3765e1aa0bd5",
+      "path": "discovery/logs/05-village_host_launch_regression-headless.runner.log",
+      "sha256": "440796a5357d7f7e17c1511c3a4f3bc1b0f0e50bddd10f1e07effb708ea9987c",
+      "zip_crc32": "52bd97b1",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 3912,
+      "git_blob": "3756c768b8fb5eaf06a32713fa6fe2536bc0bd98",
+      "path": "discovery/logs/06-learning_wonder_details_regression-headless.log",
+      "sha256": "9db3390e61fd064beb771774ff77319daad0ca2880631988ebe1d2878875ae42",
+      "zip_crc32": "9a7daa2f",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 3912,
+      "git_blob": "3756c768b8fb5eaf06a32713fa6fe2536bc0bd98",
+      "path": "discovery/logs/06-learning_wonder_details_regression-headless.runner.log",
+      "sha256": "9db3390e61fd064beb771774ff77319daad0ca2880631988ebe1d2878875ae42",
+      "zip_crc32": "9a7daa2f",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 4553,
+      "git_blob": "9dd9605cdabe163b4c15f4c45e7c2820c938642f",
+      "path": "discovery/logs/07-learning_wonder_details_regression-rendered.log",
+      "sha256": "0e149d618147faaf6db8be2cf656483a306c91d0ecf288a9fafefbc6a4de9b9b",
+      "zip_crc32": "bfa3df90",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 4553,
+      "git_blob": "9dd9605cdabe163b4c15f4c45e7c2820c938642f",
+      "path": "discovery/logs/07-learning_wonder_details_regression-rendered.runner.log",
+      "sha256": "0e149d618147faaf6db8be2cf656483a306c91d0ecf288a9fafefbc6a4de9b9b",
+      "zip_crc32": "bfa3df90",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1300,
+      "git_blob": "1ffd931f0011a3e18a877a3496975db1b6be362d",
+      "path": "discovery/logs/08-game_hub_magic_capture-rendered.log",
+      "sha256": "aed3c1931aee8b507f8f4e262536b35cf2e650f019b13d5512835e9f92d9c990",
+      "zip_crc32": "9016a643",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1300,
+      "git_blob": "1ffd931f0011a3e18a877a3496975db1b6be362d",
+      "path": "discovery/logs/08-game_hub_magic_capture-rendered.runner.log",
+      "sha256": "aed3c1931aee8b507f8f4e262536b35cf2e650f019b13d5512835e9f92d9c990",
+      "zip_crc32": "9016a643",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 8471,
+      "git_blob": "4d69a730591612d7803b4ba697fd34440f6d2323",
+      "path": "discovery/logs/09-learning_world_capture-rendered.log",
+      "sha256": "24d306c3e3e7421db0c23d7dd0bd4c21ecbf6b15734453683dfba6444e631c54",
+      "zip_crc32": "14705025",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 8471,
+      "git_blob": "4d69a730591612d7803b4ba697fd34440f6d2323",
+      "path": "discovery/logs/09-learning_world_capture-rendered.runner.log",
+      "sha256": "24d306c3e3e7421db0c23d7dd0bd4c21ecbf6b15734453683dfba6444e631c54",
+      "zip_crc32": "14705025",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 3163,
+      "git_blob": "1b57aa17a8bd5099ec783f63dde584015a298d0e",
+      "path": "discovery/logs/10-learning_wonder_details_capture-rendered.log",
+      "sha256": "75dbe833a9b9358b2bda4d794aaed06080cd932d957f88ec4166d257589feb9b",
+      "zip_crc32": "c296826b",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 3163,
+      "git_blob": "1b57aa17a8bd5099ec783f63dde584015a298d0e",
+      "path": "discovery/logs/10-learning_wonder_details_capture-rendered.runner.log",
+      "sha256": "75dbe833a9b9358b2bda4d794aaed06080cd932d957f88ec4166d257589feb9b",
+      "zip_crc32": "c296826b",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 444,
+      "git_blob": "483ed08ab5bb014cc016213afe6a09af3da8e989",
+      "path": "discovery/results.tsv",
+      "sha256": "8caf920c92ea08a4080056a89e27e71a5193858633d443bc4978f0a06e438b12",
+      "zip_crc32": "f118820e",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "discovery/source-dirty-after.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "zip_crc32": "00000000",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "discovery/source-dirty.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "zip_crc32": "00000000",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1946983,
+      "git_blob": "3ffd4649cf430a1bd0bab55ee4d18d6c6b7ead6c",
+      "path": "discovery/source-inventory-after.json",
+      "sha256": "5bc1bc2899880c3419df644c65ed0e8cebe57fa047029a5236905f1764f6ca60",
+      "zip_crc32": "2e1a4051",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1946983,
+      "git_blob": "3ffd4649cf430a1bd0bab55ee4d18d6c6b7ead6c",
+      "path": "discovery/source-inventory-before.json",
+      "sha256": "5bc1bc2899880c3419df644c65ed0e8cebe57fa047029a5236905f1764f6ca60",
+      "zip_crc32": "2e1a4051",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "b6faed40064a256a14f525c9e3e4be7a30086d36",
+      "path": "discovery/source-sha-after.txt",
+      "sha256": "32306e96de37175c791b04d458f479ee20851dda736e7ea6ddb577ff81601617",
+      "zip_crc32": "78679b72",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "b6faed40064a256a14f525c9e3e4be7a30086d36",
+      "path": "discovery/source-sha.txt",
+      "sha256": "32306e96de37175c791b04d458f479ee20851dda736e7ea6ddb577ff81601617",
+      "zip_crc32": "78679b72",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "cf3b4626a3dcb9ebaaee5d934f0dae8490201595",
+      "path": "discovery/source-tree-after.txt",
+      "sha256": "c2bc43d6a96204ebdcf16498166a2d6a0d3d64be843128b4e72586bf29f8d2a4",
+      "zip_crc32": "a3050733",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "cf3b4626a3dcb9ebaaee5d934f0dae8490201595",
+      "path": "discovery/source-tree.txt",
+      "sha256": "c2bc43d6a96204ebdcf16498166a2d6a0d3d64be843128b4e72586bf29f8d2a4",
+      "zip_crc32": "a3050733",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 10599,
+      "git_blob": "01f4eeb866daca9984822b21a7135da890d60efb",
+      "path": "discovery/state/01/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "sha256": "4e500ed41f1c9bee1b586b2141e4c7646f660b8dcb5da8311db95babab7ca1cb",
+      "zip_crc32": "adb79977",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1482,
+      "git_blob": "732d54f13499cd10ebc00935e394aac578658904",
+      "path": "discovery/state/02/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "sha256": "c97f5e3de4f7f795e626defb0a18c239c8f06d0e13198e802d1fb5ac8804d340",
+      "zip_crc32": "ffa60be0",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1805,
+      "git_blob": "30c7b738433cfa79bb22bb89dba214e5ca98e654",
+      "path": "discovery/state/03/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "sha256": "bf54a175b9ceb89caf12f2268be19f6766169138d7ae4bfc5b633e377b522343",
+      "zip_crc32": "6755f869",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1331,
+      "git_blob": "46c336c5528f770216224855309e219cfac4e17c",
+      "path": "discovery/state/04/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "sha256": "6e1dc4e4250650c83ce344bf93e9d3ba2bf227925e837f6aec2ed9eb3fed9427",
+      "zip_crc32": "d9658a1c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1641,
+      "git_blob": "904bb871432b11a43b8b396b563b3765e1aa0bd5",
+      "path": "discovery/state/05/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "sha256": "440796a5357d7f7e17c1511c3a4f3bc1b0f0e50bddd10f1e07effb708ea9987c",
+      "zip_crc32": "52bd97b1",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 3912,
+      "git_blob": "3756c768b8fb5eaf06a32713fa6fe2536bc0bd98",
+      "path": "discovery/state/06/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "sha256": "9db3390e61fd064beb771774ff77319daad0ca2880631988ebe1d2878875ae42",
+      "zip_crc32": "9a7daa2f",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 4547,
+      "git_blob": "e5d388bb034249637d05e199c2b91bef1b68c832",
+      "path": "discovery/state/07/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "sha256": "cf42816621792787c8a0cffc3a160a15b051c3c547ef76e5eb0d4c997eaf4b4b",
+      "zip_crc32": "97ddee4e",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1294,
+      "git_blob": "f81094c065f857c0d7ea1fab5b536f48ca8b2d73",
+      "path": "discovery/state/08/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "sha256": "3ffbe5d9d173692f93eda62c903cfae102cca6dc4c02e22967ae9bcfacb39b4c",
+      "zip_crc32": "bd56ed5c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 8465,
+      "git_blob": "d0eb05defb3dc1e0b596b2a4cb92ccd29b6e958c",
+      "path": "discovery/state/09/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "sha256": "dd33a221acb036ef074322676c17f3a2c4b389c85b3aee8351169c313d58396e",
+      "zip_crc32": "677cb4e1",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 3157,
+      "git_blob": "15473d0786571165a09e79a9490f41ad951cf650",
+      "path": "discovery/state/10/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "sha256": "135000484db4f50751554cd88bbb94af53a697c9735e369e27f920e3ba190208",
+      "zip_crc32": "012276d2",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 5511,
+      "git_blob": "5e9c8e1782a07c0287f97347710fe15d050b03dc",
+      "path": "dream-runner.log",
+      "sha256": "626c031b13f56e394dac1733f34b3d3943161fb1a3d4e17e783e3155535d82bd",
+      "zip_crc32": "bfb85ebf",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 20254,
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5",
+      "path": "dream-verifier-original.py",
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+      "zip_crc32": "173ff0d9",
+      "zip_mode": 33261
+    },
+    {
+      "bytes": 66,
+      "git_blob": "86b908ec2c699222728a20d3d0e8511ce360ab48",
+      "path": "dream/capture-root.txt",
+      "sha256": "aa93b3c7464ff425688e15203874000632bf3f50147ea08dedae8e09f886c631",
+      "zip_crc32": "448a3846",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 346738,
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "path": "dream/captures/garden/learning-dream-1280x720.png",
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "zip_crc32": "dbdc5876",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 875,
+      "git_blob": "5f68458ac195a43e6885005e60d6309e71372701",
+      "path": "dream/captures/learning/learning.json",
+      "sha256": "493d25fbf16dafc5d64016eb47e94d8fa98ccd3a674aa1ece784fb8185b89465",
+      "zip_crc32": "410c834c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 871,
+      "git_blob": "9351591c9d15769f4a33e7bf6b616c1c326231b3",
+      "path": "dream/captures/treasure/treasure.json",
+      "sha256": "040e8860d01dc6384d0d23a41e4b8df8f9eca2acaffdee1808f449cfae9b766f",
+      "zip_crc32": "bd57337c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 6468,
+      "git_blob": "14c9a2d08486bdb3a49efdd853d841703e285740",
+      "path": "dream/dream-images.json",
+      "sha256": "e78e2d5b74869c59ee1aa586b8e5259d49c6ee82c38b74fdda358f13318ed19e",
+      "zip_crc32": "e7c53c17",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1628,
+      "git_blob": "16af21b4ccce0e9d98c84c53212a76737b34c4c0",
+      "path": "dream/dream_garden_capture-rendered.log",
+      "sha256": "31c9f73bcab9f0fbc4d1e189ac9ffabd421d7f35ecf3c34e781d5f2db201c8d0",
+      "zip_crc32": "bfd19778",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 505,
+      "git_blob": "df3496e441a6e21488595c33fc2a66510dba7801",
+      "path": "dream/dream_garden_props_regression-headless.log",
+      "sha256": "bbfcbd97e786dad12bb49ebf8a088d2b7e0c6a1a834e413c018c0c8c52c5013f",
+      "zip_crc32": "548fe0e9",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 32,
+      "git_blob": "24277fd09e8cc7154517b66aab4e8bef52babb7e",
+      "path": "dream/engine.txt",
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f",
+      "zip_crc32": "12281f13",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1284,
+      "git_blob": "7b262fe5ae406a13e4ee086a38dd046d2860e691",
+      "path": "dream/lumo_dream_ambience_capture-rendered-learning.log",
+      "sha256": "bb760e4265fbfa978562ad3f11c40e45e935cefd439568c6700b4875d38c11db",
+      "zip_crc32": "d8a2cce7",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1284,
+      "git_blob": "c28444ee86ac2e1f1d2df8d05bdda6c068fc7e2a",
+      "path": "dream/lumo_dream_ambience_capture-rendered-treasure.log",
+      "sha256": "8e1bfaf37e62a9a3f14cad6ad852caa789a93e0067a05278774d44bc73be4c4c",
+      "zip_crc32": "eedc3cc4",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 593,
+      "git_blob": "5a204508af13e9ab0106b3b59931bac4be8b20ed",
+      "path": "dream/lumo_dream_ambience_regression-headless.log",
+      "sha256": "0e06fbe26cc4fab495f303f614749b1164b2ea673a17c70ee7a38f2b18600709",
+      "zip_crc32": "3d52128c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 244,
+      "git_blob": "03d9d027d45a2fc1610e35db1c1186bd8f39c943",
+      "path": "dream/results.tsv",
+      "sha256": "e13332961fe89a044b7b25aff2408199425dbf9935be79ffca222f214442a169",
+      "zip_crc32": "7917e572",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "dream/source-dirty-after.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "zip_crc32": "00000000",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "dream/source-dirty.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "zip_crc32": "00000000",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1946983,
+      "git_blob": "3ffd4649cf430a1bd0bab55ee4d18d6c6b7ead6c",
+      "path": "dream/source-inventory-after.json",
+      "sha256": "5bc1bc2899880c3419df644c65ed0e8cebe57fa047029a5236905f1764f6ca60",
+      "zip_crc32": "2e1a4051",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1946983,
+      "git_blob": "3ffd4649cf430a1bd0bab55ee4d18d6c6b7ead6c",
+      "path": "dream/source-inventory-before.json",
+      "sha256": "5bc1bc2899880c3419df644c65ed0e8cebe57fa047029a5236905f1764f6ca60",
+      "zip_crc32": "2e1a4051",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "b6faed40064a256a14f525c9e3e4be7a30086d36",
+      "path": "dream/source-sha-after.txt",
+      "sha256": "32306e96de37175c791b04d458f479ee20851dda736e7ea6ddb577ff81601617",
+      "zip_crc32": "78679b72",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "b6faed40064a256a14f525c9e3e4be7a30086d36",
+      "path": "dream/source-sha.txt",
+      "sha256": "32306e96de37175c791b04d458f479ee20851dda736e7ea6ddb577ff81601617",
+      "zip_crc32": "78679b72",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "cf3b4626a3dcb9ebaaee5d934f0dae8490201595",
+      "path": "dream/source-tree-after.txt",
+      "sha256": "c2bc43d6a96204ebdcf16498166a2d6a0d3d64be843128b4e72586bf29f8d2a4",
+      "zip_crc32": "a3050733",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "cf3b4626a3dcb9ebaaee5d934f0dae8490201595",
+      "path": "dream/source-tree.txt",
+      "sha256": "c2bc43d6a96204ebdcf16498166a2d6a0d3d64be843128b4e72586bf29f8d2a4",
+      "zip_crc32": "a3050733",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 222614,
+      "git_blob": "fd8fc40ea411c31c14a970312ef40bd5d117bbe5",
+      "path": "legacy-gameplay.log",
+      "sha256": "138dcb50dfa2fd66ced51d3ef1bf5d74bbcfb174b68f214522a6d2c71e0f3c96",
+      "zip_crc32": "974c8abf",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 8683,
+      "git_blob": "9f2da5a0c32a413e81270f63026903418ff7ffed",
+      "path": "live-runner.log",
+      "sha256": "e1637bd2028d07107bae4eabc6211c0daadfbbee8957658a0aedb8414e5534b0",
+      "zip_crc32": "3647dff2",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 873,
+      "git_blob": "74252bbeb775cd4a1452154314e654ef899a617b",
+      "path": "live/captures/learning/learning.json",
+      "sha256": "6374ca3f39ac40ce729c48de563b1a1e3ee9fdc710b145c1c486542abc651c42",
+      "zip_crc32": "a6f6e722",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 869,
+      "git_blob": "6c2bec68f0bb7bd46fe922042193c8e82033afde",
+      "path": "live/captures/treasure/treasure.json",
+      "sha256": "2c3cb60ed8bcfb0f87cac60635097a30363c12c4ccc859ba81fc3507ff89a3f9",
+      "zip_crc32": "5cbe9553",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 502,
+      "git_blob": "1d0b10826b2dafcd64dc7c01e214386668bb8b0d",
+      "path": "live/connect_four_return_regression-headless.log",
+      "sha256": "36628af105d3473a74d5ef10c9944827171bf538d328d421f70c38a75860813b",
+      "zip_crc32": "94a33c3a",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1623,
+      "git_blob": "64584cc947b87f391cf7364335c16a3f76b08c88",
+      "path": "live/dream_garden_capture-rendered.log",
+      "sha256": "193e4b6c4e56dd46aaa3e09cc195b27fe1263e805ce04871185d9e0eb1c78036",
+      "zip_crc32": "3b346a68",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 503,
+      "git_blob": "f5ff70612d2e3c77aa45bdca8ff46473d27cbfc9",
+      "path": "live/dream_garden_props_regression-headless.log",
+      "sha256": "2afd430b1038c7ae65a0619c43434b3bbb5a87ecec05a29adc1f8ba7350fb2c9",
+      "zip_crc32": "94d66e05",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1516,
+      "git_blob": "c0cc5a213e54cf3330dea6ef1a51a5837d550699",
+      "path": "live/live-connections.json",
+      "sha256": "697b1da0ef8476849ba98f099c30e05def63420fddc05c80722f7b757e7b7416",
+      "zip_crc32": "bb2ceae7",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1281,
+      "git_blob": "dc20ab5091706d8337c53651d2960904996c5997",
+      "path": "live/lumo_dream_ambience_capture-rendered-learning.log",
+      "sha256": "2121db8a1b2ecfd82f25c8dc357b141a5093eecc3fb0b473d58df6aab4b118b4",
+      "zip_crc32": "aa07a61f",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1281,
+      "git_blob": "ceed0f876b1c3497ca52192923e47da12b54151f",
+      "path": "live/lumo_dream_ambience_capture-rendered-treasure.log",
+      "sha256": "a9dde424c2d85cae0cae30d8caa614f65b567ff5af1e6bfe273267c53ca800b9",
+      "zip_crc32": "6ca3b2f7",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 591,
+      "git_blob": "f1376b38e04e94306d0fd2435f9fbbcb2894c690",
+      "path": "live/lumo_dream_ambience_regression-headless.log",
+      "sha256": "873423476517f7c38bd00db195128129cc3207a697f21ad85663f58f63c19c7d",
+      "zip_crc32": "275c11a7",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 587,
+      "git_blob": "481f272749259aca194cc9794f9593ac4f7c7434",
+      "path": "live/treasure_exploration_regression-headless.log",
+      "sha256": "f2037b73d817a1228d2e482133ab0aa74e08d0e048086cfa7f188affa6e6cdc1",
+      "zip_crc32": "82cfd738",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 497,
+      "git_blob": "70cc87423904c5002f275bcafa38c461dd86fb18",
+      "path": "live/treasure_wisp_regression-headless.log",
+      "sha256": "7aceacd05a9ac6925be6d73f02d8f797bf798d8c47fb7dc4a1e8894a1f45c41b",
+      "zip_crc32": "f5834139",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1144,
+      "git_blob": "259a66e778204856369eac5c6890b7aba15140f4",
+      "path": "live/treasure_wisp_regression-rendered.log",
+      "sha256": "05be237a8bed8bf75211054753f5cea971781eb9c0e42d521cab9cbe46b647b5",
+      "zip_crc32": "37a3454d",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 123984,
+      "git_blob": "a31df3138a47675697fe64d68d26b46358afd1fc",
+      "path": "nextgen-runner.log",
+      "sha256": "1933ea8cde95dee44ffa9cde675d9d676bbda1eb3fa03f4e123354d9ca397c37",
+      "zip_crc32": "1963c914",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 586,
+      "git_blob": "de5ae7a33ce27ca13aa7ea5bc2b6a4f0f4b0daf0",
+      "path": "nextgen/bauwelt_identity_2013_regression-headless.log",
+      "sha256": "43460fe46162fb0a1f96253f6dd8be84d96f7ba7ed80efc91a16358ee0b7b886",
+      "zip_crc32": "758e6af1",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 617,
+      "git_blob": "62b304c84cdec71cf36ebe3ff70aa9dd3253a351",
+      "path": "nextgen/build_frontier_regression-headless.log",
+      "sha256": "308eaa91651df8283c82cb991ff6e0421a37a5b0f06e8ed4bf6d3c3deede910b",
+      "zip_crc32": "3570cd6d",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 687,
+      "git_blob": "0c956e3d796ca6dd2810db4de9577c3d4b3c23e6",
+      "path": "nextgen/build_nextgen_play_regression-headless.log",
+      "sha256": "2c8f4beab40d012483a875b7471f3a4f10c8306575d2e9afc9349d47dd5cc654",
+      "zip_crc32": "febea551",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1334,
+      "git_blob": "ecebcfafeda02f7e6b995601aad401182117e513",
+      "path": "nextgen/build_nextgen_play_regression-rendered.log",
+      "sha256": "3eda2ac6efeeea1a14bc39ab8cb3492c64a1fd5d9375187811182a4c34c1cff6",
+      "zip_crc32": "64209f67",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 2069,
+      "git_blob": "83fe16fae0f5691b51308a0175fffd0deb966e18",
+      "path": "nextgen/build_settlement_play_regression-headless.log",
+      "sha256": "bddad00b5183a4e10a69a2b12daefdf519c1f5daeb65a2912fb181d1f561bf9a",
+      "zip_crc32": "0bacb639",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 2716,
+      "git_blob": "c66d375adf85f5171807c73c28140d4639d531e1",
+      "path": "nextgen/build_settlement_play_regression-rendered.log",
+      "sha256": "5f9ca1025869eebb8b63d7de734663cdddcac05a5e1541af94dbf566b5264127",
+      "zip_crc32": "5d3181d6",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 537,
+      "git_blob": "f7e7d5d85bdf778f34511d2e3429d9142742fdd7",
+      "path": "nextgen/build_settlement_regression-headless.log",
+      "sha256": "faa89fbcc8f29a9f1ad7e1bfbe13a0f2e12daef573c4502bc6b178c1e8fb5e09",
+      "zip_crc32": "0b89464f",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 565,
+      "git_blob": "a809519d49f229db2485e4cb3cecc9c027e3d7de",
+      "path": "nextgen/build_transform_regression-headless.log",
+      "sha256": "3cab191ff67916f9cc576d136303b98f46ba5079b32c3c4a93fd93c5192ce993",
+      "zip_crc32": "c0b76907",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 507,
+      "git_blob": "a5320694e1fce243c76f850b306aa0f20c1b8582",
+      "path": "nextgen/build_village_art_regression-headless.log",
+      "sha256": "7cd0e559889ced1ae6133b57d3279d5281d1d0dd086f8415338c9ebfedf528f8",
+      "zip_crc32": "48e2ca8e",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 628,
+      "git_blob": "535e00e4717b2eb4d2519b92b5238e28decf3e9b",
+      "path": "nextgen/build_village_economy_regression-headless.log",
+      "sha256": "1381f36239164a4b77f21050c2619cb4dbcba281571419ed6cbe544db824c1bb",
+      "zip_crc32": "c870a50e",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1618,
+      "git_blob": "5f7e40418d0a51828319a91053dcfbe6ea516e35",
+      "path": "nextgen/build_village_scene_regression-headless.log",
+      "sha256": "909f4ac47fbf7dbb8e2db379aed07ea1527d6c1d9d92e3a48078bd1bc27e732d",
+      "zip_crc32": "eb8a550d",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 2265,
+      "git_blob": "dcf553ae2c49ec1267ae19cdc7a80870416e8319",
+      "path": "nextgen/build_village_scene_regression-rendered.log",
+      "sha256": "845b8093e74e08fa0fe052a2cd5fad24f6c62f7dd09c86c3675f02a4f02d3262",
+      "zip_crc32": "28f90f29",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1006179,
+      "git_blob": "dca8b0dfc9dddd36fca2fe021c762c0235b13347",
+      "path": "nextgen/captures/build_village_scene_regression/village-overview-1280x720.png",
+      "sha256": "4f479f68f437804626b73f85a076495a35cfb7c6346817c5d905c97780ef22a9",
+      "zip_crc32": "8d92ac24",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 7161,
+      "git_blob": "d4082e9034d53b5f901a96d4819371c2dd6706a1",
+      "path": "nextgen/captures/build_village_scene_regression/village-touch-targets.json",
+      "sha256": "ce599a7d0f7b8b5f68146b40a7e9af7bd6b3dd647891bdeb340c92cf09e1a219",
+      "zip_crc32": "e852d12b",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1277,
+      "git_blob": "35c3bb8d741329ee26ebaa2eee2b19ea61e35ab6",
+      "path": "nextgen/captures/cards_safe_area_regression/android35_portrait-paused.layout.json",
+      "sha256": "749c0a3611b34dbc0b870d515746a9e18029b5a2b2bbe7b8dc072b7865b457cb",
+      "zip_crc32": "5c4bb1c9",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1277,
+      "git_blob": "71bcd31023c5741b963713a43c0901c0ea2994dd",
+      "path": "nextgen/captures/cards_safe_area_regression/android35_portrait-playing.layout.json",
+      "sha256": "06c2e0cca3db28bdefb7efc28604a4c61445fc2592a21bae16e082f7479cef01",
+      "zip_crc32": "5971337c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 67394,
+      "git_blob": "06d32b40754ef2b87e3d3dc53bf96e7f5728894b",
+      "path": "nextgen/captures/cards_safe_area_regression/cards-safe-area.json",
+      "sha256": "a24bdf55ae406c4a6d66e6bdfbbca5f59bde40d37a8f6c4c8668ef5052b02c24",
+      "zip_crc32": "6b738ef5",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1956,
+      "git_blob": "9da8fa096149788bc9f211b1b94fee7035399f95",
+      "path": "nextgen/captures/cards_safe_area_regression/landscape_cutout_fixture-playing.layout.json",
+      "sha256": "08be47880302d406189a9f1fcbdb702e8975ab3b3a57574a25f00609170fc851",
+      "zip_crc32": "4c6ce9d7",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 822,
+      "git_blob": "ad30a9caf6f61597777b468c869bd85acefa4869",
+      "path": "nextgen/captures/cards_table_capture/cards-render.json",
+      "sha256": "2e589cfb223c58235c7f2fa094d21b32fb1c432e81dec02f117398dafe916fac",
+      "zip_crc32": "02166a65",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 172226,
+      "git_blob": "bc912924235a85109e82ca4f9886723729dd1231",
+      "path": "nextgen/captures/connect_four_visual_capture/visual-state.json",
+      "sha256": "2532c9c4e2bf2abe7ba89ca89d900feb2c09218b7d9c01f4870892ac5e04f20f",
+      "zip_crc32": "ea1e6f9c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 4933,
+      "git_blob": "b23ce071888e0e0c3e02ca08f1b4c3dfe8f2d796",
+      "path": "nextgen/captures/jump_nextgen_capture/jump-nextgen-evidence.json",
+      "sha256": "3110bfe6c09d8c672a56f979372599bb24f01c8c519c77c23638175a2f8a9475",
+      "zip_crc32": "d2afcea0",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 458690,
+      "git_blob": "7a3449aba11c190c67ce0709bdf90445c2a79629",
+      "path": "nextgen/captures/jump_nextgen_capture/jump_412x915_touch_ascent.png",
+      "sha256": "b599f7025d1863ccb62cb6c35f49e3734344d4859842b14cd3deed3d900d4ae8",
+      "zip_crc32": "a425105f",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 2521,
+      "git_blob": "d2b16ab6d41e6535da72d7a6f58d2634fdedb65e",
+      "path": "nextgen/captures/kart_nextgen_garage_regression/capture.json",
+      "sha256": "4b1148672f44bd85775c0c26c88993306cfcd9670b85715bef35e6bcce60fad4",
+      "zip_crc32": "a044d68d",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 78215,
+      "git_blob": "35e8decbda8befb5a87ea7743a14cc03346a6ae2",
+      "path": "nextgen/captures/kart_player_full_route_regression/player-route.json",
+      "sha256": "b020b4ce128f9c3f0b79f1023b4bd05e542dd5529f521b27f888ccc41a5cdb51",
+      "zip_crc32": "4ef4fc6f",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1385,
+      "git_blob": "665ea6657ccc0dc249b78b25ec5caa730d8a2e66",
+      "path": "nextgen/captures/learning_sharing_capture/manifest.json",
+      "sha256": "05b76a8216362650075cd241071a42e98a509905b2dec5a24fd2bd09cf061bbf",
+      "zip_crc32": "c7be45cc",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 7717126,
+      "git_blob": "fb70d1cadf856aa0ceeb0eb9583788e023112030",
+      "path": "nextgen/captures/lumo_facial_capture/facial-runtime.avi",
+      "sha256": "1f0d5bcf11c5b52154e44b74bc5fd1eda50c5574b156be76daae29d0acf7b7c0",
+      "zip_crc32": "407419f7",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1074432,
+      "git_blob": "47798d18245acb55f3d5477d1be9ced68dba5d55",
+      "path": "nextgen/captures/lumo_facial_capture/facial-runtime.mp4",
+      "sha256": "70a09162be85675161bd488346fb6c946e4a72ac78e2f1895f190ca4fa2eb5c9",
+      "zip_crc32": "333c8eb5",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "nextgen/captures/lumo_facial_capture/movie-decode.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "zip_crc32": "00000000",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 6269,
+      "git_blob": "768a81bc612fea62a7ef0c57c4da9a00ff363ac3",
+      "path": "nextgen/captures/lumo_facial_capture/movie-encode.log",
+      "sha256": "ea2559481a3a6836f424e206948b87e8859616e3edc6cd4f6899297e34013462",
+      "zip_crc32": "487248e3",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "nextgen/captures/lumo_facial_capture/movie-ffprobe-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "zip_crc32": "00000000",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 4564,
+      "git_blob": "d215319da97e571f66a81b5e5a64cd30c56b8639",
+      "path": "nextgen/captures/lumo_facial_capture/movie-ffprobe.json",
+      "sha256": "1d8c9c58f4c45e35270b8cd7cfc74fb380a300ce83e78d4e8576fbdb65db3795",
+      "zip_crc32": "b26be165",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1201,
+      "git_blob": "1af05c388aaf9bac9a2bc2a731fc920a26f5521d",
+      "path": "nextgen/captures/lumo_facial_capture/movie.json",
+      "sha256": "105e5bb922de1a120261dd2b9bf26c916b4296d568f6d49066ba105661d6f5c7",
+      "zip_crc32": "c12316c4",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 83168,
+      "git_blob": "471e2e633df635545f99270e1960eb5ba41ced2e",
+      "path": "nextgen/captures/lumo_facial_capture/runtime-frames.json",
+      "sha256": "387e88b82304292e01a2dad27104da394a21d4507f5d245aeecee2563c6c31e3",
+      "zip_crc32": "e3a20976",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 2206,
+      "git_blob": "4b54f41b2c6963dfd9b4bb1a31d67bbfba77d409",
+      "path": "nextgen/captures/lumo_studio_motion_capture/studio-motion-capture.json",
+      "sha256": "126a697b87ba699266a101c1fb33bf0bd2b0aee1d16d913643883700dce2f061",
+      "zip_crc32": "6f8eb36b",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 57026,
+      "git_blob": "d4ee1f7093f0bbdc15ebc77eb44ed9742702f680",
+      "path": "nextgen/captures/mobile_safe_area_regression/mobile-safe-area.json",
+      "sha256": "5122f98f55f38bcbdafd111700dac50f205def46e6fb31d049881556b2da2e89",
+      "zip_crc32": "6a9eaa19",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 37700,
+      "git_blob": "db75c4e70f020230cf07a8a8b3f349a09b890915",
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/puzzle-menu-lifecycle.json",
+      "sha256": "f0fd4f759aca7be0a5d3f1dbf2d5118fd0dbe9e70d0a813c7b507568020a6c11",
+      "zip_crc32": "4cdb3e49",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 2623832,
+      "git_blob": "51b7653586a64333ab61bce1f9e95d21f4b71245",
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-landscape-cutout.png",
+      "sha256": "5c7306dc91fa230e34f5e087fde5badf16e2be256cd0be8ab0f19eed58152372",
+      "zip_crc32": "3747674a",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 30551,
+      "git_blob": "072912f8a3f201d11cd8f9b72a1c4cb848b3c5c8",
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-report.json",
+      "sha256": "079cc4f0a0cab90e83df3704cc794cdd75dbfbd4583fd243193c4e69847f208d",
+      "zip_crc32": "682a028e",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 767,
+      "git_blob": "af538474c9681b33e70952499d5e088ca6a5f613",
+      "path": "nextgen/cards-safe-area-images.json",
+      "sha256": "072ab49b42781baac70fbb72c1e1d75c7d8e3e151109d80fc5839f6bff89e6f8",
+      "zip_crc32": "450f76cb",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 553,
+      "git_blob": "32d492b0d1614577e839f90915104bc3823fd816",
+      "path": "nextgen/cards_safe_area_android_contract-headless.log",
+      "sha256": "37c5c2a79205c1c00a28388a7ddf4a03b1df30827ce7f6fd258e1d681a408e04",
+      "zip_crc32": "2be8fbb7",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 532,
+      "git_blob": "89ac7c1f16d898f3d2c3d487eba20dbe3b24f768",
+      "path": "nextgen/cards_safe_area_regression-headless.log",
+      "sha256": "19957f04f78da618bffec97d55a52efd1874963a011808c113fbd7cf4a8b9177",
+      "zip_crc32": "9345c2aa",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1179,
+      "git_blob": "6817c5af327f85606f855423f6e7c1baec46a3c1",
+      "path": "nextgen/cards_safe_area_regression-rendered.log",
+      "sha256": "e4b86d0d3e105c298176539d00c4ec5e53cc78931acfbae24f0bf1eff5f3eefe",
+      "zip_crc32": "24087754",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1162,
+      "git_blob": "4ab838eb569b625c283fc53dd3bdd8a0e6320d11",
+      "path": "nextgen/cards_table_capture-rendered.log",
+      "sha256": "eecb702cd200bcbb695665dc4b060aa33463fdb0023ba4bb6a5321c4fe352ef4",
+      "zip_crc32": "4ad13969",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 583,
+      "git_blob": "a67596289c9f6e0e9c13246d5aa9769e5e1051b7",
+      "path": "nextgen/cards_table_regression-headless.log",
+      "sha256": "41e0d2c8c51d40fc256c9db46563e4aa7ed3b6e02377714507f53bde680292ab",
+      "zip_crc32": "1ee49473",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 958,
+      "git_blob": "1cbfb947c72c51f4b04f8772d9543c8332059e9c",
+      "path": "nextgen/connect-four-visual-images.json",
+      "sha256": "704015d998df6801f200dda014f65feae64175cc61c7be5b9b6911f3cf8129cf",
+      "zip_crc32": "f32ebb83",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1176,
+      "git_blob": "1038e9423bfa3591b7b8985869bd3193ba027425",
+      "path": "nextgen/connect_four_visual_capture-rendered.log",
+      "sha256": "1cc3d59bbf0a2f7fa7680ad0d70bdcbfb1c6690cb88edf523b344f9d18afaaae",
+      "zip_crc32": "12045637",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 592,
+      "git_blob": "07dca06fcc9fcfad02598082f814dd32dbc277eb",
+      "path": "nextgen/creative_nextgen_environment_regression-headless.log",
+      "sha256": "c9ef21f1da4f1f5f3fd5b2c07eccc18d17663f4eee091014b88755101711587e",
+      "zip_crc32": "8fe2b338",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1239,
+      "git_blob": "3726d656d46389cd1cb095f14c9ea09abe84494a",
+      "path": "nextgen/creative_nextgen_environment_regression-rendered.log",
+      "sha256": "27a24847d258f729ae3b900606e681e18cf6db1c824df169d455a22d2cd72b4e",
+      "zip_crc32": "ba739a41",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 32,
+      "git_blob": "24277fd09e8cc7154517b66aab4e8bef52babb7e",
+      "path": "nextgen/engine.txt",
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f",
+      "zip_crc32": "12281f13",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1782,
+      "git_blob": "8e55679a4cff0fcca407448a85a017b6d5f74951",
+      "path": "nextgen/facial-images.json",
+      "sha256": "1eaa2b594f79daee702b819a379a2c87345b66b627be4354463c6bc349139ef4",
+      "zip_crc32": "dcc985d9",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 2760,
+      "git_blob": "93f0f06d6b1b2fc8255fcf8bf76de64dd0407a32",
+      "path": "nextgen/jump_expeditions_regression-headless.log",
+      "sha256": "f5b49f003ab7a8245417454a5ff22351f71ae3209ea5b1882951805f5ffe92f9",
+      "zip_crc32": "c5705638",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1727,
+      "git_blob": "54af114e9f1b69d66d1625f31c3a7e1658e02653",
+      "path": "nextgen/jump_nextgen_capture-rendered.log",
+      "sha256": "d33f5bdc289d680eb893d7646ff6358ab22285b28a2d0134e58c3763b49c72f3",
+      "zip_crc32": "63467577",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1997,
+      "git_blob": "fddee704870eeaca1da6744f2e5eea7fe0cb8612",
+      "path": "nextgen/jump_nextgen_regression-headless.log",
+      "sha256": "d9b281bc042b4978a0fced1a760668fffc6b892eae044121835ec4978c3d9444",
+      "zip_crc32": "6b0953b3",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 734,
+      "git_blob": "bad5c03b84bc7ee62f1a3f895093cbff5f09b12b",
+      "path": "nextgen/kart_nextgen_garage_regression-headless.log",
+      "sha256": "85548fd5a6e77accad5c6a73357b753849880e7c327e71ceb951dc6073a2f9ab",
+      "zip_crc32": "4d013b7f",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1383,
+      "git_blob": "1fe508554dde6409111b9cbfbd239f53f78141e4",
+      "path": "nextgen/kart_nextgen_garage_regression-rendered.log",
+      "sha256": "f294d786d1cd2f2885ebcc7d72f46d713fb75df70c72c4e3976e3a8f838135f5",
+      "zip_crc32": "32640aec",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 21732,
+      "git_blob": "ccd20918cc709e29b690539367b72020e686021c",
+      "path": "nextgen/kart_player_full_route_regression-rendered.log",
+      "sha256": "87e90307fcffbc3b8efeec24ef52ef0deb1593ed540694bea057dc7c94f38359",
+      "zip_crc32": "4e0f153e",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1076,
+      "git_blob": "7c880b4a83a1fbbd7c5db626f40d94930509e31c",
+      "path": "nextgen/kart_track_pass_regression-headless.log",
+      "sha256": "338f3ad36a3ea657013ebc496ccf30b0a16e8705c3e5f9bd683de7a171a44955",
+      "zip_crc32": "2ba22cd4",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 561,
+      "git_blob": "f383abdb67a69003ff38758e0787f2b953f42ed7",
+      "path": "nextgen/learning_host_payload_regression-headless.log",
+      "sha256": "36c68f542c61752654355a9cc359c81d89d9a7c01f1aa3367a0bcf7fa67b33b6",
+      "zip_crc32": "c4b3c6c7",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 3506,
+      "git_blob": "ef4578c3a25377b077e884eda72b71b462ed8298",
+      "path": "nextgen/learning_sharing_capture-rendered.log",
+      "sha256": "017c872ceb1c84497da50b042ab3cd5807e99e78e40078be095ca23e5433c38e",
+      "zip_crc32": "3c7b246a",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1482,
+      "git_blob": "732d54f13499cd10ebc00935e394aac578658904",
+      "path": "nextgen/learning_sharing_regression-headless.log",
+      "sha256": "c97f5e3de4f7f795e626defb0a18c239c8f06d0e13198e802d1fb5ac8804d340",
+      "zip_crc32": "ffa60be0",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1805,
+      "git_blob": "30c7b738433cfa79bb22bb89dba214e5ca98e654",
+      "path": "nextgen/learning_studio_regression-headless.log",
+      "sha256": "bf54a175b9ceb89caf12f2268be19f6766169138d7ae4bfc5b633e377b522343",
+      "zip_crc32": "6755f869",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 8471,
+      "git_blob": "4d69a730591612d7803b4ba697fd34440f6d2323",
+      "path": "nextgen/learning_world_capture-rendered.log",
+      "sha256": "24d306c3e3e7421db0c23d7dd0bd4c21ecbf6b15734453683dfba6444e631c54",
+      "zip_crc32": "14705025",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 10599,
+      "git_blob": "01f4eeb866daca9984822b21a7135da890d60efb",
+      "path": "nextgen/learning_world_regression-headless.log",
+      "sha256": "4e500ed41f1c9bee1b586b2141e4c7646f660b8dcb5da8311db95babab7ca1cb",
+      "zip_crc32": "adb79977",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 572,
+      "git_blob": "b06c80eb963d79653f8afa5eb0586168f7e0f726",
+      "path": "nextgen/lumo_65bone_walk_gait_regression-headless.log",
+      "sha256": "86bc5e72882422903d6ead6054ef38169ec8126efc8cf46c255353e41d08e78e",
+      "zip_crc32": "f2b6a9cf",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1847,
+      "git_blob": "1437abf1cb36dbc9807c589a9796d75f197d34b6",
+      "path": "nextgen/lumo_facial_capture-rendered.log",
+      "sha256": "09758eaa245f0aa17bbaa5add6207abb64d2d8f9a46184bd27763c4cb6ff59ef",
+      "zip_crc32": "2839ecc1",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 633,
+      "git_blob": "2374357756a7f9a2320bceb9c0533fa6b58a02b9",
+      "path": "nextgen/lumo_facial_regression-headless.log",
+      "sha256": "8a3ba1eef6bead880d8965bbdda6a3277f2be445063aa84d6c6652e11312a22b",
+      "zip_crc32": "df4f12e9",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 691,
+      "git_blob": "4759604de66df40923c8d65041e1dceea0e74c92",
+      "path": "nextgen/lumo_original_jump_visual_regression-headless.log",
+      "sha256": "73b437ce767d4a0fb73acc9c1db08b351e22b207d4fe68e8c93081948b920f43",
+      "zip_crc32": "a6f89275",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1202,
+      "git_blob": "4f08daeda90feb45075b2de588ac04099ab0bc39",
+      "path": "nextgen/lumo_studio_motion_capture-rendered.log",
+      "sha256": "b86485f1f5cee930cada12044d9f425daf403e73e51f2497c7593ee634270669",
+      "zip_crc32": "c8d5efb6",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 603,
+      "git_blob": "d06b4aa8600722e4474cd7584db3ac81f134d1e4",
+      "path": "nextgen/lumo_studio_motion_regression-headless.log",
+      "sha256": "90e7ef7f3e42090afcbd835cea00564edfa18fd49e0153177d65d739da0bfd2b",
+      "zip_crc32": "d832c9ab",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 589,
+      "git_blob": "9afe1fa0218bcaeb55c301046a7a9507c10fd10f",
+      "path": "nextgen/lumo_teacher_pose_regression-headless.log",
+      "sha256": "348ade9cd8a258b3aa3380c94664ec9ed4529e6edf270c3e683981c2bb5da629",
+      "zip_crc32": "f6cf0e0c",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 999,
+      "git_blob": "0d9daaaed4ed942a7e88827f0b6a691098f9b028",
+      "path": "nextgen/mobile-safe-area-images.json",
+      "sha256": "abcded76aee639dede9af6bf14935c9681d62e45298c1f60352629dfe69b72fb",
+      "zip_crc32": "5e4c17f4",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 10230,
+      "git_blob": "cd5db0ac21e507a6b373344b47334efb885fd119",
+      "path": "nextgen/mobile_safe_area_regression-headless.log",
+      "sha256": "d4dd0f57dc9cc4b6bebf6e20625015c04ea1dbc23d707f69c16e8da3ba24c280",
+      "zip_crc32": "21aff1c0",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 11441,
+      "git_blob": "31b1f4251c08d701697e484e00e9bf1be26e67ba",
+      "path": "nextgen/mobile_safe_area_regression-rendered.log",
+      "sha256": "c1dede4353c1a64e6b0dea84451c98eaa086eef0cffa69d3c97cd329bbe377b2",
+      "zip_crc32": "ef9fadea",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1488,
+      "git_blob": "fa6bd51cadd35b467b24d6eb5de1b28cd7e63be9",
+      "path": "nextgen/puzzle-menu-images.json",
+      "sha256": "6710cec2174acfc1b41221cf7029e9c120768726111fb4354ac6256d9f5e1547",
+      "zip_crc32": "e7177682",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 3084,
+      "git_blob": "adb5eca8ae5da6228ce71085a84300c26471351c",
+      "path": "nextgen/puzzle_menu_lifecycle_regression-headless.log",
+      "sha256": "661f94c08a44790f949ab961e19f751b58d12bd0673b7b8925da0bac91232a98",
+      "zip_crc32": "f8bcfc19",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 3733,
+      "git_blob": "f32e4347b8fc9ecc5f2e3555977e628e9223ca13",
+      "path": "nextgen/puzzle_menu_lifecycle_regression-rendered.log",
+      "sha256": "f2102a2c19940958192cc1bd9460d17786717285dcde44eeacd845cd45b9393c",
+      "zip_crc32": "633b4b0a",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 571,
+      "git_blob": "aea567f1bad4a7577043682889e8c450fa5663d0",
+      "path": "nextgen/puzzle_rotation_regression-headless.log",
+      "sha256": "eb6e0efe8ad9f642c5d6cb53e35b175a2679ff50441ddd45859e531d80fd81d9",
+      "zip_crc32": "72005231",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1218,
+      "git_blob": "dc08e72a340d1ac25e166d06eca8e93c5fa0b837",
+      "path": "nextgen/puzzle_rotation_regression-rendered.log",
+      "sha256": "48fce4400a65d1ba6fb1d998ec2d021435bd3242aed3e471b1be74d1dd767871",
+      "zip_crc32": "3e4d6f37",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 5737,
+      "git_blob": "dac2733e6e0b729bd4db340a83b8abc721540cee",
+      "path": "nextgen/renderer-images.json",
+      "sha256": "eac55cf40ddb9c6600ed7f04143450675a6ac773d3ca7cdb0cbc15b019981c29",
+      "zip_crc32": "6f665b42",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 2259,
+      "git_blob": "db0de72ce9ada78bbe039dc96745928e0b5fd30a",
+      "path": "nextgen/results.tsv",
+      "sha256": "e055b2d3ac43199e50b37b824bbcc84c75dc9aa683389478e898637f7c0b16d4",
+      "zip_crc32": "d2b2ade3",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 600,
+      "git_blob": "f384e4bff800f093fdc9d1506937684edf87c4fc",
+      "path": "nextgen/rhythm_tour_play_regression-headless.log",
+      "sha256": "d227dd4228251b5e9dd1523af71676e5f4ccd2928188843335c0203ed29fe4e9",
+      "zip_crc32": "0d31a0d1",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1247,
+      "git_blob": "e0c84933eba2d8ae0c81f0d5a8899c1356fd76c1",
+      "path": "nextgen/rhythm_tour_play_regression-rendered.log",
+      "sha256": "57329a3591776a16ea496e6e51806bb8044654b3ff5e434c203aa94823ff5ee9",
+      "zip_crc32": "1fdf5af7",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 582,
+      "git_blob": "f8758688f3cccde8c297793e95b7e20078e957c1",
+      "path": "nextgen/rhythm_tour_regression-headless.log",
+      "sha256": "36554a86f4e83f79940b77fb886d4b1c96a9dd2481db9540b8697fdabfa4493b",
+      "zip_crc32": "aed58923",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 2878,
+      "git_blob": "0c6f7c5364025cc7dc79e0972ad0ee491402721b",
+      "path": "nextgen/safe-area-images.json",
+      "sha256": "de6dc7ca89b0f86f8969f0abf804421466ce086cd4cd510fe3d856a34b56984e",
+      "zip_crc32": "130136b2",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "nextgen/source-dirty.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "zip_crc32": "00000000",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "b6faed40064a256a14f525c9e3e4be7a30086d36",
+      "path": "nextgen/source-sha.txt",
+      "sha256": "32306e96de37175c791b04d458f479ee20851dda736e7ea6ddb577ff81601617",
+      "zip_crc32": "78679b72",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "cf3b4626a3dcb9ebaaee5d934f0dae8490201595",
+      "path": "nextgen/source-tree.txt",
+      "sha256": "c2bc43d6a96204ebdcf16498166a2d6a0d3d64be843128b4e72586bf29f8d2a4",
+      "zip_crc32": "a3050733",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 13986,
+      "git_blob": "5e784f6d75824b62f8c593b13a42f31489286ccd",
+      "path": "nextgen/studio-2020-images.json",
+      "sha256": "153e26c04b6eb98cbfa503610dee3a19b5adabbf70ee3ac264952c75f11bb054",
+      "zip_crc32": "37ded74a",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1282,
+      "git_blob": "438671c8051fc4280f74aae682a935b59994aa40",
+      "path": "nextgen/treasure-title-images.json",
+      "sha256": "9798b5bd9b832f0f2c58b2d6d945ece4c3b667d7d021b1fc75dc60fcee284536",
+      "zip_crc32": "d54dcb86",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 589,
+      "git_blob": "c8146adee3e0045b27b144aa8cf07ca70b795f45",
+      "path": "nextgen/treasure_exploration_regression-headless.log",
+      "sha256": "6303eda4f9dfbf0eae58630858cdd5ec5cf1dfd19767d484bf72b3001d713b5e",
+      "zip_crc32": "51cf56a7",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1236,
+      "git_blob": "f29e0e5a8ff25a35bf41749428de181b3a07d06f",
+      "path": "nextgen/treasure_exploration_regression-rendered.log",
+      "sha256": "d3ab6703a5a6d829268ef78107f2ae5a7a7c05be21eaf44bceb9c4c04d4adbba",
+      "zip_crc32": "b790fda2",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 3669,
+      "git_blob": "831a4bad0e10708fafdb8c278bda8b03ee872df4",
+      "path": "nextgen/treasure_title_contrast_regression-rendered.log",
+      "sha256": "e715acf96478f26498f6fef6acbb0a04fb41680ef43b154addcdade4003a04f4",
+      "zip_crc32": "11b4219e",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1010,
+      "git_blob": "59c956cc58cee58996b125ff2f50ea91300b243b",
+      "path": "nextgen/village-images.json",
+      "sha256": "2e170d3befdde28ca831b3a0d8fff6851b1c4b7b10d8d400848db763aa231afd",
+      "zip_crc32": "fb50bc3d",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 6131,
+      "git_blob": "6832ded5fe2577ae0c0a69bcc5d1fa658f727577",
+      "path": "project.log",
+      "sha256": "2d6b03148c37199f78d2a55916dfa91b1f73a2362123270cc9e54b23622afe75",
+      "zip_crc32": "f8539618",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "b6faed40064a256a14f525c9e3e4be7a30086d36",
+      "path": "source-sha.txt",
+      "sha256": "32306e96de37175c791b04d458f479ee20851dda736e7ea6ddb577ff81601617",
+      "zip_crc32": "78679b72",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 32,
+      "git_blob": "24277fd09e8cc7154517b66aab4e8bef52babb7e",
+      "path": "technical-art/engine.txt",
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f",
+      "zip_crc32": "12281f13",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 496,
+      "git_blob": "924424a86975e6d00c90a28e8e95a45f994a80a8",
+      "path": "technical-art/kart_air_trick_regression.log",
+      "sha256": "daf7039e71f62ed3fc00ec3f6d8663c42f83f63cb1ed6b27329ee8c0d9b2eff2",
+      "zip_crc32": "18f1a67d",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1502,
+      "git_blob": "0a175d9fa70ce7b90c8141031964707b0db0c08a",
+      "path": "technical-art/kart_garage_presentation_regression.log",
+      "sha256": "ba5e0cdba9674ea37191b8f44d513df91fc5c53f7cf85fd5af6716e68ae36f7a",
+      "zip_crc32": "b9d59a59",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1383,
+      "git_blob": "a450261eff56a74b3f5746ca09212b2be014d3a5",
+      "path": "technical-art/kart_harbor_race_hook_regression.log",
+      "sha256": "67dc0b1eb329385bf9ec27bf1220b1410f5556b386f695a043461ffc17feedb1",
+      "zip_crc32": "c0f4e998",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1661,
+      "git_blob": "c8448dfca3bac975a693e37a2a36ed603594d8ac",
+      "path": "technical-art/kart_sonnenhafen_streetfronts_regression.log",
+      "sha256": "d36e9e933970ad56bb374bfd132e0d0571a0e23e1f302e4c483fbc2abadae749",
+      "zip_crc32": "43444fa1",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1149,
+      "git_blob": "a7591c587dfb1424e54887705ec7edf20fe254fe",
+      "path": "technical-art/kart_sonnenhafen_streetfronts_world_regression.log",
+      "sha256": "bd6d21fd57a6d22d7af0dc64baad93520df68c1b6f05e455c8134ef6c52771e6",
+      "zip_crc32": "3bbae864",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1129,
+      "git_blob": "dc9e0bec52792ac63c329df7f9576d69558153b1",
+      "path": "technical-art/lumo_attention_landing_regression.log",
+      "sha256": "5b3a48c81fa1cfbdf4b9e88d82a48c8d6647e01fe92b573617fc3cddd590fc94",
+      "zip_crc32": "0c7c3af7",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 1223,
+      "git_blob": "905ac7c9693a9fd7ad2fac2c2c717c7b41821b3a",
+      "path": "technical-art/lumo_gesture_contact_regression.log",
+      "sha256": "feadbe91516d225d49e0beb3d4a53c3f6dead0270ab4d16d436f6ce2b4e08c67",
+      "zip_crc32": "451c2ef3",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 2099,
+      "git_blob": "fed36758621adb82581992b68ce6531ccd70cfd0",
+      "path": "technical-art/lumo_kart_tick_cadence_regression.log",
+      "sha256": "999c3f18cb45b3d42739d99ccd38c00cdf51092820fda5c2152334101faca732",
+      "zip_crc32": "5ebb3d53",
+      "zip_mode": 33188
+    },
+    {
+      "bytes": 41,
+      "git_blob": "b6faed40064a256a14f525c9e3e4be7a30086d36",
+      "path": "technical-art/source-sha.txt",
+      "sha256": "32306e96de37175c791b04d458f479ee20851dda736e7ea6ddb577ff81601617",
+      "zip_crc32": "78679b72",
+      "zip_mode": 33188
+    }
+  ],
+  "originals_saved_count": 223,
+  "originals_saved_bytes": 26401762,
+  "archive_scope": "Selected original logs/reports/helpers/movies and seven visually reviewed PNGs; complete hash index covers all 6106 original files. Not the entire original extraction.",
+  "limitations": [
+    "Python3.12.14/Pillow13.0.0 differs from CI Pillow12.3.0",
+    "No fresh ffmpeg movie decode",
+    "No Android/FPS/audio acceptance",
+    "Original seven project warnings remain",
+    "Initial private supplemental marker assertion error retained and corrected against committed source; bound reader completed successfully before it"
+  ],
+  "reader_result_sha256": "b731e65f2ab30dacfaef5686f83a9fe7ff344affb1bdd07f5009417ec7e2c547"
+}

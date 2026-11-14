@@ -1,0 +1,1506 @@
+[
+  {
+    "bytes": 624345,
+    "format": "PNG",
+    "height": 720,
+    "path": "action-stage/action-captures/lasso-catch.png",
+    "sha256": "615976d4a93ae493d2dcfbf348538eaa64ff5db0a692c32e3132049b34e5514f",
+    "width": 1280
+  },
+  {
+    "bytes": 631635,
+    "format": "PNG",
+    "height": 720,
+    "path": "action-stage/action-captures/ramp-1544-speed-20.png",
+    "sha256": "c48ce49f3dcaef5461e262727ea299f1d0ae013fa45cfd71e7fdbf8a93b55317",
+    "width": 1280
+  },
+  {
+    "bytes": 625662,
+    "format": "PNG",
+    "height": 720,
+    "path": "action-stage/action-captures/ramp-1544-speed-48.png",
+    "sha256": "92321f1f1c8c35f7419d8b125330d4e34005a1566689c49399a5b166376e593f",
+    "width": 1280
+  },
+  {
+    "bytes": 624831,
+    "format": "PNG",
+    "height": 720,
+    "path": "action-stage/action-captures/ramp-1544-speed-70.png",
+    "sha256": "9c949e56b81cf9f35222b53e00884c17d9a53b5517d0216ff2ad049dac9939bd",
+    "width": 1280
+  },
+  {
+    "bytes": 641685,
+    "format": "PNG",
+    "height": 720,
+    "path": "action-stage/action-captures/ramp-407-speed-20.png",
+    "sha256": "33e6ba2d8b2176a5e0586c57e61b2d7ddb7b73418c093a7b793b2d9875cd10ef",
+    "width": 1280
+  },
+  {
+    "bytes": 620380,
+    "format": "PNG",
+    "height": 720,
+    "path": "action-stage/action-captures/ramp-407-speed-48.png",
+    "sha256": "4927bccc1ed900465610ef3747a503976a4033fdb9ed196856087b771a7062b2",
+    "width": 1280
+  },
+  {
+    "bytes": 613117,
+    "format": "PNG",
+    "height": 720,
+    "path": "action-stage/action-captures/ramp-407-speed-70.png",
+    "sha256": "a65e8acb4aec247bd0c09bc39cfdfae134b58a496f7311958f6d4df98cea36ea",
+    "width": 1280
+  },
+  {
+    "bytes": 1879194,
+    "format": "PNG",
+    "height": 1080,
+    "path": "discovery/captures/hub/hub_fold_landscape.png",
+    "sha256": "aabe0cc67c9170784d8a09aaf3ba68ff55009e5eea4e127367dc62752bc00aa5",
+    "width": 2400
+  },
+  {
+    "bytes": 1822286,
+    "format": "PNG",
+    "height": 1920,
+    "path": "discovery/captures/hub/hub_portrait.png",
+    "sha256": "8ce83f6eb9792e929dc473472c1b00e2ec48e18e4efe7cb73fcb190b9180929f",
+    "width": 1080
+  },
+  {
+    "bytes": 659859,
+    "format": "PNG",
+    "height": 1080,
+    "path": "discovery/captures/learning/bridge_hundred-complete-2400x1080.png",
+    "sha256": "6a7306d126cf239c2377a5b045fbf9efae043e26761cd9c106f1a09bfc33830f",
+    "width": 2400
+  },
+  {
+    "bytes": 149617,
+    "format": "PNG",
+    "height": 915,
+    "path": "discovery/captures/learning/bridge_hundred-complete-412x915.png",
+    "sha256": "d713a5780fde893a9c3c0c4eaefffa09b69739d63a23eb567cc9bf04765a8286",
+    "width": 412
+  },
+  {
+    "bytes": 363900,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/bridge_hundred-complete.png",
+    "sha256": "335865b34d321ef5f4942a5a85c3be670bbf3e12f4999da16bd6188b914ef2b3",
+    "width": 1280
+  },
+  {
+    "bytes": 642151,
+    "format": "PNG",
+    "height": 1080,
+    "path": "discovery/captures/learning/bridge_hundred-start-2400x1080.png",
+    "sha256": "a3fafad94bc683dd9880d2bbdd6de4bd99b433b9073767984f824f8c437d0519",
+    "width": 2400
+  },
+  {
+    "bytes": 146569,
+    "format": "PNG",
+    "height": 915,
+    "path": "discovery/captures/learning/bridge_hundred-start-412x915.png",
+    "sha256": "081d01c599541be88fee4b5082ec56c3b797369312c9af43797a2fa8d48eddcc",
+    "width": 412
+  },
+  {
+    "bytes": 354258,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/bridge_hundred-start.png",
+    "sha256": "7eb6e728babaa5209b2ec9f8960a52d509c8a100852e46eaa09f780662c5b206",
+    "width": 1280
+  },
+  {
+    "bytes": 335744,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/equal_groups-complete.png",
+    "sha256": "80531c6c9b37a3c9867440a563b05b3e03b26e8252af21d640e3ae0bc2bb7784",
+    "width": 1280
+  },
+  {
+    "bytes": 322084,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/equal_groups-start.png",
+    "sha256": "da6258bc5a17a90f7c85915c6485a65dd717128a0498f309495dcde225c9966a",
+    "width": 1280
+  },
+  {
+    "bytes": 332831,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/fraction_parts-complete.png",
+    "sha256": "defcd507a087d84dc7249cb7757bf1c15d58b9b2217f6666626666b14c0559e9",
+    "width": 1280
+  },
+  {
+    "bytes": 322375,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/fraction_parts-start.png",
+    "sha256": "21f39f28efd623b9c3bb5bc99ac0a8b140b495404192a3b55a039e536100da4a",
+    "width": 1280
+  },
+  {
+    "bytes": 359803,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/math-complete-1280x720.png",
+    "sha256": "7b6c764e769aeef10d5395444871984a59bd228e0c61f7ac38956daaa6a397ab",
+    "width": 1280
+  },
+  {
+    "bytes": 652893,
+    "format": "PNG",
+    "height": 1080,
+    "path": "discovery/captures/learning/math-complete-2400x1080.png",
+    "sha256": "3dcbc484ed57bf999e20fcfe1c4b786db1a33300be0119755196f3b27da25b61",
+    "width": 2400
+  },
+  {
+    "bytes": 144204,
+    "format": "PNG",
+    "height": 915,
+    "path": "discovery/captures/learning/math-complete-412x915.png",
+    "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+    "width": 412
+  },
+  {
+    "bytes": 346738,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/math-start-1280x720.png",
+    "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+    "width": 1280
+  },
+  {
+    "bytes": 614390,
+    "format": "PNG",
+    "height": 1080,
+    "path": "discovery/captures/learning/math-start-2400x1080.png",
+    "sha256": "d61733698a17eff4089c2500b8e6ac8a900837ca55b81f97af27744145926da7",
+    "width": 2400
+  },
+  {
+    "bytes": 139598,
+    "format": "PNG",
+    "height": 915,
+    "path": "discovery/captures/learning/math-start-412x915.png",
+    "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+    "width": 412
+  },
+  {
+    "bytes": 353450,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/math-ten-1280x720.png",
+    "sha256": "c48d94aa57ec3412736754d6c9844ac2857a7f58a8eec2f2ecb779c230a204ec",
+    "width": 1280
+  },
+  {
+    "bytes": 634242,
+    "format": "PNG",
+    "height": 1080,
+    "path": "discovery/captures/learning/math-ten-2400x1080.png",
+    "sha256": "8a6eee43cdd4ebe4d829d233b650d5b305f8afa7b04af7eba40092e594b8ad66",
+    "width": 2400
+  },
+  {
+    "bytes": 144541,
+    "format": "PNG",
+    "height": 915,
+    "path": "discovery/captures/learning/math-ten-412x915.png",
+    "sha256": "f8146ddc462f3163b4754cd76866e1eb8cbb052c880c980b9daee2402a3e7cfb",
+    "width": 412
+  },
+  {
+    "bytes": 373016,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/plant_parts-complete.png",
+    "sha256": "48c1a8f9ff5971937a42f7049fb12fe6364c6cf20369e451aa64bbabf385f4aa",
+    "width": 1280
+  },
+  {
+    "bytes": 350824,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/plant_parts-start.png",
+    "sha256": "c1baef37292fdf9911377833c0de6561214d691d69d55651b31c7a43a6207326",
+    "width": 1280
+  },
+  {
+    "bytes": 357989,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/subtract_ten-complete.png",
+    "sha256": "186a15fd5fe718b2f00b924ac0730820e6e654956c1addfa61a7e9b57b8d00ba",
+    "width": 1280
+  },
+  {
+    "bytes": 348921,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/subtract_ten-start.png",
+    "sha256": "80b7c6dba3603378800c292d804179f7ff1a98d6f5bcbbae3ff995351a96c592",
+    "width": 1280
+  },
+  {
+    "bytes": 331920,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/syllables-complete.png",
+    "sha256": "b8e3f46d48120761edf2fba71cf1f83dc9bba67f7e4e83edbe1f9cf807f11c27",
+    "width": 1280
+  },
+  {
+    "bytes": 322084,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/learning/syllables-start.png",
+    "sha256": "9bd464681be73f59a089375ab95b05dc9203946666ae6e04b4f63741baa5e9ac",
+    "width": 1280
+  },
+  {
+    "bytes": 149617,
+    "format": "PNG",
+    "height": 915,
+    "path": "discovery/captures/wonder/current-hundreds-phone-complete.png",
+    "sha256": "d713a5780fde893a9c3c0c4eaefffa09b69739d63a23eb567cc9bf04765a8286",
+    "width": 412
+  },
+  {
+    "bytes": 146569,
+    "format": "PNG",
+    "height": 915,
+    "path": "discovery/captures/wonder/current-hundreds-phone-start.png",
+    "sha256": "081d01c599541be88fee4b5082ec56c3b797369312c9af43797a2fa8d48eddcc",
+    "width": 412
+  },
+  {
+    "bytes": 359803,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/wonder/current-numbers-complete-1280x720.png",
+    "sha256": "7b6c764e769aeef10d5395444871984a59bd228e0c61f7ac38956daaa6a397ab",
+    "width": 1280
+  },
+  {
+    "bytes": 144204,
+    "format": "PNG",
+    "height": 915,
+    "path": "discovery/captures/wonder/current-numbers-complete-412x915.png",
+    "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+    "width": 412
+  },
+  {
+    "bytes": 349727,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/wonder/current-numbers-one-step-1280x720.png",
+    "sha256": "cd9fe65a73149dc6cabc684b454b99ce2f94e1f70d0af60b9fbfed3806c0960b",
+    "width": 1280
+  },
+  {
+    "bytes": 346738,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/wonder/current-numbers-start-1280x720.png",
+    "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+    "width": 1280
+  },
+  {
+    "bytes": 139598,
+    "format": "PNG",
+    "height": 915,
+    "path": "discovery/captures/wonder/current-numbers-start-412x915.png",
+    "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+    "width": 412
+  },
+  {
+    "bytes": 369395,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/wonder/current-plant_parts-complete.png",
+    "sha256": "4a884534a30245646d04c30ace1f44dd12429ffc56bfe56cb9725c303b34745b",
+    "width": 1280
+  },
+  {
+    "bytes": 350824,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/wonder/current-plant_parts-start.png",
+    "sha256": "c1baef37292fdf9911377833c0de6561214d691d69d55651b31c7a43a6207326",
+    "width": 1280
+  },
+  {
+    "bytes": 331917,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/wonder/current-syllables-complete.png",
+    "sha256": "c0dd74767241c0dac43e09d1e0b07ff049736e0ed7277b92692783126e6090e4",
+    "width": 1280
+  },
+  {
+    "bytes": 322083,
+    "format": "PNG",
+    "height": 720,
+    "path": "discovery/captures/wonder/current-syllables-start.png",
+    "sha256": "29d040d47db0a127405be702fdb2486f88147b36c544c579a18e60fa1065661b",
+    "width": 1280
+  },
+  {
+    "bytes": 346738,
+    "format": "PNG",
+    "height": 720,
+    "path": "dream/captures/garden/learning-dream-1280x720.png",
+    "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+    "width": 1280
+  },
+  {
+    "bytes": 614390,
+    "format": "PNG",
+    "height": 1080,
+    "path": "dream/captures/garden/learning-dream-2400x1080.png",
+    "sha256": "d61733698a17eff4089c2500b8e6ac8a900837ca55b81f97af27744145926da7",
+    "width": 2400
+  },
+  {
+    "bytes": 139598,
+    "format": "PNG",
+    "height": 915,
+    "path": "dream/captures/garden/learning-dream-412x915.png",
+    "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+    "width": 412
+  },
+  {
+    "bytes": 287607,
+    "format": "PNG",
+    "height": 1280,
+    "path": "dream/captures/learning/learning_00.png",
+    "sha256": "cc2bb3e0046a3b9d102baffa31c0d35fa17dd56acf81262e2fda193f8b48476b",
+    "width": 720
+  },
+  {
+    "bytes": 288889,
+    "format": "PNG",
+    "height": 1280,
+    "path": "dream/captures/learning/learning_01.png",
+    "sha256": "64b43fde57546985a9c8f9fabcfc3e096e4a4ef09ad1f68319600e58988b99a7",
+    "width": 720
+  },
+  {
+    "bytes": 1138035,
+    "format": "PNG",
+    "height": 1280,
+    "path": "dream/captures/treasure/treasure_00.png",
+    "sha256": "826ebf8c0543fe789bf6d80c224a7dc927646a66697d91620997e1752d793b17",
+    "width": 720
+  },
+  {
+    "bytes": 1137493,
+    "format": "PNG",
+    "height": 1280,
+    "path": "dream/captures/treasure/treasure_01.png",
+    "sha256": "4ccd5313aee6d0f6740a42276564c094ad69991a627756a95c1b5e7f37c4d01d",
+    "width": 720
+  },
+  {
+    "bytes": 346738,
+    "format": "PNG",
+    "height": 720,
+    "path": "live/captures/garden/learning-dream-1280x720.png",
+    "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+    "width": 1280
+  },
+  {
+    "bytes": 614390,
+    "format": "PNG",
+    "height": 1080,
+    "path": "live/captures/garden/learning-dream-2400x1080.png",
+    "sha256": "d61733698a17eff4089c2500b8e6ac8a900837ca55b81f97af27744145926da7",
+    "width": 2400
+  },
+  {
+    "bytes": 139598,
+    "format": "PNG",
+    "height": 915,
+    "path": "live/captures/garden/learning-dream-412x915.png",
+    "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+    "width": 412
+  },
+  {
+    "bytes": 287538,
+    "format": "PNG",
+    "height": 1280,
+    "path": "live/captures/learning/learning_00.png",
+    "sha256": "35570722d87ad1b78672685eb22d41810bbaff5d6b6fe77f6a6b8353521a77ae",
+    "width": 720
+  },
+  {
+    "bytes": 288718,
+    "format": "PNG",
+    "height": 1280,
+    "path": "live/captures/learning/learning_01.png",
+    "sha256": "f4c196cf3f40b367042268681ff3b2f2b33b69456847b902fb05f8e0fe451e86",
+    "width": 720
+  },
+  {
+    "bytes": 1138701,
+    "format": "PNG",
+    "height": 1280,
+    "path": "live/captures/treasure/treasure_00.png",
+    "sha256": "62862488db781db519aa6244f0c9941649b5e3f464d907043c843516de1c5d73",
+    "width": 720
+  },
+  {
+    "bytes": 1137945,
+    "format": "PNG",
+    "height": 1280,
+    "path": "live/captures/treasure/treasure_01.png",
+    "sha256": "ae74e7036a5649aa4d3f687269ca76fc15b8f4750f6dc428519dfdc036d964a7",
+    "width": 720
+  },
+  {
+    "bytes": 1420983,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/build_nextgen_play_regression/01_build_selection.png",
+    "sha256": "8ba6723911ceab510c6801673da950b68eae752a07833b2f1f928d9859faccb6",
+    "width": 1280
+  },
+  {
+    "bytes": 1419310,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/build_nextgen_play_regression/02_build_moved.png",
+    "sha256": "32d02ba02ca46b7459c7fdadb3dd606f3a1df6c06a46fd397b36038ca9599b8e",
+    "width": 1280
+  },
+  {
+    "bytes": 1349458,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/build_nextgen_play_regression/03_build_walking.png",
+    "sha256": "3e1ab18a4a6ed4badcf2dd9b1cca02b38a83c0350774c4ff1e6a3a3abc12e848",
+    "width": 1280
+  },
+  {
+    "bytes": 1336824,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/build_nextgen_play_regression/04_build_jump.png",
+    "sha256": "8f04636e1d07f8e519b518f3edad94f72b50fffd9daab21823e7fefc8b00bac5",
+    "width": 1280
+  },
+  {
+    "bytes": 743618,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/build_settlement_play_regression/01_settlement_start.png",
+    "sha256": "64880cb3ccef3274c0d1903be77859b5811ef1dce1378c690fc654b26366639a",
+    "width": 1280
+  },
+  {
+    "bytes": 761063,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/build_settlement_play_regression/02_settlement_purchases.png",
+    "sha256": "b64189e693f5405e0553bdf16a011a5ec61d43ffd2b8150470333d7e12ef7bc5",
+    "width": 1280
+  },
+  {
+    "bytes": 634207,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/build_settlement_play_regression/03_settlement_rival_day.png",
+    "sha256": "cc7e5de6a4c2f967134fe2e8fcdaceccc0c1832b8248161a2a75ad30c3352f8b",
+    "width": 1280
+  },
+  {
+    "bytes": 1098583,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/build_settlement_play_regression/04_settlement_lumo.png",
+    "sha256": "38404c51302f631a361a4b594638e51d415600e3c2a442f148ad8e20fcf1d1d5",
+    "width": 1280
+  },
+  {
+    "bytes": 789863,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/build_settlement_play_regression/05_settlement_result.png",
+    "sha256": "e6c2943ea127d9b680ee56e515d8bf974065a2d4a5331ce9644ddb67dffb9f7f",
+    "width": 1280
+  },
+  {
+    "bytes": 57203,
+    "format": "PNG",
+    "height": 390,
+    "path": "nextgen/captures/build_settlement_play_regression/06_settlement_relocation.png",
+    "sha256": "6824c6062589561b0ad965dba32b186ca550a514f789f62ee1198f4f22db30cc",
+    "width": 388
+  },
+  {
+    "bytes": 232333,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/build_village_scene_regression/village-chapters-412x915.png",
+    "sha256": "ab2058d71fbe5b3115a7c247e582bdbd883c134d1f06df0aeab8b14314f65f2a",
+    "width": 412
+  },
+  {
+    "bytes": 1006179,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/build_village_scene_regression/village-overview-1280x720.png",
+    "sha256": "4f479f68f437804626b73f85a076495a35cfb7c6346817c5d905c97780ef22a9",
+    "width": 1280
+  },
+  {
+    "bytes": 2345931,
+    "format": "PNG",
+    "height": 1812,
+    "path": "nextgen/captures/build_village_scene_regression/village-trader-2176x1812.png",
+    "sha256": "5d6f6210a9ff4b2532805c1fbd5695bcf258a7d7a1bd8baff99c85eac0bc78cb",
+    "width": 2176
+  },
+  {
+    "bytes": 97323,
+    "format": "PNG",
+    "height": 360,
+    "path": "nextgen/captures/build_village_scene_regression/village-treasury-640x360.png",
+    "sha256": "6ef55f09b117a27c6257824b5dd42eff46325110d59d23c0aa347308b9bf9813",
+    "width": 640
+  },
+  {
+    "bytes": 1141701,
+    "format": "PNG",
+    "height": 2400,
+    "path": "nextgen/captures/cards_safe_area_regression/android35_portrait-paused.png",
+    "sha256": "bc1a5465f83736f8c0db00a7188075a02503f6d33eecaf58e2ece62d813e1a45",
+    "width": 1080
+  },
+  {
+    "bytes": 1272865,
+    "format": "PNG",
+    "height": 2400,
+    "path": "nextgen/captures/cards_safe_area_regression/android35_portrait-playing.png",
+    "sha256": "ae53121f34679850bd86163c6a1f3245accd8369710cd5815efd7a6c12145a8d",
+    "width": 1080
+  },
+  {
+    "bytes": 1002653,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/cards_safe_area_regression/landscape_cutout_fixture-playing.png",
+    "sha256": "e97b23764222326565d07e46023869467c2333861c4f9e19223a9b6eaf4fb93b",
+    "width": 2400
+  },
+  {
+    "bytes": 568103,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/cards_table_capture/cards-table-1280x720.png",
+    "sha256": "55089d40b1c3f7b7e7ff77066006fbba85df74d367744dae2bd454eb2d5d2377",
+    "width": 1280
+  },
+  {
+    "bytes": 1028876,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/cards_table_capture/cards-table-2400x1080.png",
+    "sha256": "f490777f4013edffb9ea29cfde2a79cac4ec0a8e3424c6c7c3086d1a54e46c0e",
+    "width": 2400
+  },
+  {
+    "bytes": 289390,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/cards_table_capture/cards-table-412x915.png",
+    "sha256": "86a462dbb002106e96dd943c546755e080a720db072944f32c0fb5bba9543e18",
+    "width": 412
+  },
+  {
+    "bytes": 429618,
+    "format": "PNG",
+    "height": 829,
+    "path": "nextgen/captures/cards_table_capture/cards-table-690x829.png",
+    "sha256": "41451199331254949c1456baa0fde059ca52081b40f764fe60d5c49f98eb82f3",
+    "width": 690
+  },
+  {
+    "bytes": 82026,
+    "format": "PNG",
+    "height": 540,
+    "path": "nextgen/captures/connect_four_visual_capture/c4-empty-landscape.png",
+    "sha256": "665e6c38e07b048cf2a9de011a16308efc9f16f2c1df2d61ce505a0117c9a864",
+    "width": 960
+  },
+  {
+    "bytes": 29411,
+    "format": "PNG",
+    "height": 360,
+    "path": "nextgen/captures/connect_four_visual_capture/c4-paused-small.png",
+    "sha256": "502a673e160d5a9f3f95883ddf1e259f568819de67731340681d2666d7282195",
+    "width": 640
+  },
+  {
+    "bytes": 67672,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/connect_four_visual_capture/c4-playing-phone.png",
+    "sha256": "332d15a61e7eb1e93cbc49f9fedaa7b1e67f985b1d0fd9f97334a093678fbe6c",
+    "width": 412
+  },
+  {
+    "bytes": 84087,
+    "format": "PNG",
+    "height": 540,
+    "path": "nextgen/captures/connect_four_visual_capture/c4-win-landscape.png",
+    "sha256": "f52c5b9ec248aa535af2ac2179a02d0d45cd1efce24cb7466411b0d8a06c5f95",
+    "width": 960
+  },
+  {
+    "bytes": 895157,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_1280x720_airborne.png",
+    "sha256": "4aff08b71892ea51e3e39a5a159c456f7977f2a75b2deb74fdea17ab81bd853f",
+    "width": 1280
+  },
+  {
+    "bytes": 855029,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_1280x720_landed.png",
+    "sha256": "0d65a8ab4f6b893741f53151b4c2fc86c919175c8828bf02c1deb579878543b8",
+    "width": 1280
+  },
+  {
+    "bytes": 754050,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_1280x720_ready.png",
+    "sha256": "4805b8ffa2b0ac27715b62bd6188d5e0001aadf2aba81696f99e32e6ef8b3834",
+    "width": 1280
+  },
+  {
+    "bytes": 839967,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_1280x720_touch_ascent.png",
+    "sha256": "ae8cb94689a8bd02bdb56a12a45d4b578c2ec0ad4d97043b26ebcab53d910277",
+    "width": 1280
+  },
+  {
+    "bytes": 2132398,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_2400x1080_airborne.png",
+    "sha256": "98477ce39f833b4627ccd335dcf4f0115f89667740ac78eea251e8d656c80cc0",
+    "width": 2400
+  },
+  {
+    "bytes": 2054010,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_2400x1080_landed.png",
+    "sha256": "93823afc8a8a22035399da75499d7730884a0a3efbe8fa093af57804c1c4a045",
+    "width": 2400
+  },
+  {
+    "bytes": 1846946,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_2400x1080_ready.png",
+    "sha256": "69acee3d50138d6e74f05fa6d420ab970a8311d87ab2a611e6ae42988759c3bf",
+    "width": 2400
+  },
+  {
+    "bytes": 2021271,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_2400x1080_touch_ascent.png",
+    "sha256": "191391e58dd2cb52039ad2f6a7a2d33a31f466fc804defcf1b06b772df33effb",
+    "width": 2400
+  },
+  {
+    "bytes": 491893,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_412x915_airborne.png",
+    "sha256": "c1dd854b3fdb4e6eb4b8a28c5c3ea224c9c9654e7abe2b016ac2cf6040afc135",
+    "width": 412
+  },
+  {
+    "bytes": 473531,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_412x915_landed.png",
+    "sha256": "39a86eb5bb8b045b50b45838a2e0e734bad2e9e053e33ac4e9169f54ef25917a",
+    "width": 412
+  },
+  {
+    "bytes": 414292,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_412x915_ready.png",
+    "sha256": "e8b62f2a6bcbf21c2493551749c58a64a98d7af0fa86b94461efa3496e65c3d8",
+    "width": 412
+  },
+  {
+    "bytes": 458690,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_412x915_touch_ascent.png",
+    "sha256": "b599f7025d1863ccb62cb6c35f49e3734344d4859842b14cd3deed3d900d4ae8",
+    "width": 412
+  },
+  {
+    "bytes": 659762,
+    "format": "PNG",
+    "height": 829,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_690x829_airborne.png",
+    "sha256": "a61b407aa179b7ef0a59ba5dcb4311faf7cc1e46d98687424149e9f7d5ee3ab3",
+    "width": 690
+  },
+  {
+    "bytes": 626003,
+    "format": "PNG",
+    "height": 829,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_690x829_landed.png",
+    "sha256": "af959c55cbca348a1e66eb6870c02d5ea84b901409948a3a3a24852b26bd9ef7",
+    "width": 690
+  },
+  {
+    "bytes": 539836,
+    "format": "PNG",
+    "height": 829,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_690x829_ready.png",
+    "sha256": "76ee9c9d50269396575069cbc9c8813ad7ede6f1804541b266c9868fc5f45209",
+    "width": 690
+  },
+  {
+    "bytes": 605850,
+    "format": "PNG",
+    "height": 829,
+    "path": "nextgen/captures/jump_nextgen_capture/jump_690x829_touch_ascent.png",
+    "sha256": "837c643b8b342e630a987efe90fa3ac747a48617b16abb16e28ac0a2e9ae136f",
+    "width": 690
+  },
+  {
+    "bytes": 436811,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/kart_nextgen_garage_regression/garage-1280x720.png",
+    "sha256": "268d4547ca4864fb280cdee567c23b21e87ff604af3bb8cb4f8dfa3b878634e0",
+    "width": 1280
+  },
+  {
+    "bytes": 875159,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/kart_nextgen_garage_regression/garage-2400x1080.png",
+    "sha256": "cd4978e055a2e2e9c0920184a38fa77a698376053cdab770a7a45200a4b2fffa",
+    "width": 2400
+  },
+  {
+    "bytes": 213552,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/kart_nextgen_garage_regression/garage-412x915.png",
+    "sha256": "2826910fe88615380024b73d9c46c78dd91b41ba4ffd0a822e3c79f43a088177",
+    "width": 412
+  },
+  {
+    "bytes": 439040,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/kart_nextgen_garage_regression/selection-1280x720.png",
+    "sha256": "417762c123033752a354f46306ec94443ba8155070decac67e9541e7ad207357",
+    "width": 1280
+  },
+  {
+    "bytes": 874278,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/kart_nextgen_garage_regression/selection-2400x1080.png",
+    "sha256": "12fb79ba7868d1af35172bd889a0237ba97a875e726f02d4ba8dc51bbcd51725",
+    "width": 2400
+  },
+  {
+    "bytes": 214891,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/kart_nextgen_garage_regression/selection-412x915.png",
+    "sha256": "85c02c5bdbd737eabea8f116ced8c880a23b6ab9a42eca24cf36d58420d33523",
+    "width": 412
+  },
+  {
+    "bytes": 579130,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/kart_nextgen_garage_regression/track-goals-1280x720.png",
+    "sha256": "6442cefc5feb3b38f69a5a9025772f178b9ae96a4267e12595992afc54e83ae8",
+    "width": 1280
+  },
+  {
+    "bytes": 943606,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/kart_nextgen_garage_regression/track-goals-2400x1080.png",
+    "sha256": "5cf02677c291f98d230cc7923fb1c8976e8341828fcf231d961425562864aec5",
+    "width": 2400
+  },
+  {
+    "bytes": 263672,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/kart_nextgen_garage_regression/track-goals-412x915.png",
+    "sha256": "9c94f1b927a0e667262d01f66fabccf6849a625b7f6906c7a43012f1f85bd8e1",
+    "width": 412
+  },
+  {
+    "bytes": 449389,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/kart_nextgen_garage_regression/zoom-1280x720.png",
+    "sha256": "802da807077c58be2744aae3f9c62674e780a55cb09573cf7077ff45d345bc2a",
+    "width": 1280
+  },
+  {
+    "bytes": 884417,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/kart_nextgen_garage_regression/zoom-2400x1080.png",
+    "sha256": "50cf0f722b76bad633174a174c2c9936610779f1c0053ea10a39435d825848ef",
+    "width": 2400
+  },
+  {
+    "bytes": 221070,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/kart_nextgen_garage_regression/zoom-412x915.png",
+    "sha256": "22dff46ce803601ee313e99a5449b7b6c796053b6e6334524359cb4006b8bf3c",
+    "width": 412
+  },
+  {
+    "bytes": 336577,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_sharing_capture/sharing-complete-1280x720.png",
+    "sha256": "76ae1b6b5e80e4ad1bd9dce3a2b180616aba4b0197b1d83294c91d3f832bfd81",
+    "width": 1280
+  },
+  {
+    "bytes": 128451,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/learning_sharing_capture/sharing-complete-412x915.png",
+    "sha256": "efcd02e26db87f530de6b1ac3a6f55276b1b5fb22b55cd52e69a6e71acf15661",
+    "width": 412
+  },
+  {
+    "bytes": 327988,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_sharing_capture/sharing-first-round-1280x720.png",
+    "sha256": "f8ee7caaa158ad5a341f3ed79b8ea3a2eeee9eaffc8d31daaf4839a17b590bdb",
+    "width": 1280
+  },
+  {
+    "bytes": 125294,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/learning_sharing_capture/sharing-first-round-412x915.png",
+    "sha256": "bbd90b9048f918edcb20b96b5f328e81204fbc2939d0ac82378d0ecc259c0321",
+    "width": 412
+  },
+  {
+    "bytes": 322132,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_sharing_capture/sharing-start-1280x720.png",
+    "sha256": "2de4239be4933e1e81ddd6d50980e3f6aca2a0133e066a40113fab80878065a1",
+    "width": 1280
+  },
+  {
+    "bytes": 120703,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/learning_sharing_capture/sharing-start-412x915.png",
+    "sha256": "ac23382822e0a1b277ed1148180b25554e20342a3db84cf84c5f558947015787",
+    "width": 412
+  },
+  {
+    "bytes": 659859,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/learning_world_capture/bridge_hundred-complete-2400x1080.png",
+    "sha256": "6a7306d126cf239c2377a5b045fbf9efae043e26761cd9c106f1a09bfc33830f",
+    "width": 2400
+  },
+  {
+    "bytes": 149617,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/learning_world_capture/bridge_hundred-complete-412x915.png",
+    "sha256": "d713a5780fde893a9c3c0c4eaefffa09b69739d63a23eb567cc9bf04765a8286",
+    "width": 412
+  },
+  {
+    "bytes": 363900,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/bridge_hundred-complete.png",
+    "sha256": "335865b34d321ef5f4942a5a85c3be670bbf3e12f4999da16bd6188b914ef2b3",
+    "width": 1280
+  },
+  {
+    "bytes": 642151,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/learning_world_capture/bridge_hundred-start-2400x1080.png",
+    "sha256": "a3fafad94bc683dd9880d2bbdd6de4bd99b433b9073767984f824f8c437d0519",
+    "width": 2400
+  },
+  {
+    "bytes": 146569,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/learning_world_capture/bridge_hundred-start-412x915.png",
+    "sha256": "081d01c599541be88fee4b5082ec56c3b797369312c9af43797a2fa8d48eddcc",
+    "width": 412
+  },
+  {
+    "bytes": 354258,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/bridge_hundred-start.png",
+    "sha256": "7eb6e728babaa5209b2ec9f8960a52d509c8a100852e46eaa09f780662c5b206",
+    "width": 1280
+  },
+  {
+    "bytes": 335744,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/equal_groups-complete.png",
+    "sha256": "80531c6c9b37a3c9867440a563b05b3e03b26e8252af21d640e3ae0bc2bb7784",
+    "width": 1280
+  },
+  {
+    "bytes": 322084,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/equal_groups-start.png",
+    "sha256": "da6258bc5a17a90f7c85915c6485a65dd717128a0498f309495dcde225c9966a",
+    "width": 1280
+  },
+  {
+    "bytes": 332831,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/fraction_parts-complete.png",
+    "sha256": "defcd507a087d84dc7249cb7757bf1c15d58b9b2217f6666626666b14c0559e9",
+    "width": 1280
+  },
+  {
+    "bytes": 322375,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/fraction_parts-start.png",
+    "sha256": "21f39f28efd623b9c3bb5bc99ac0a8b140b495404192a3b55a039e536100da4a",
+    "width": 1280
+  },
+  {
+    "bytes": 359803,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/math-complete-1280x720.png",
+    "sha256": "7b6c764e769aeef10d5395444871984a59bd228e0c61f7ac38956daaa6a397ab",
+    "width": 1280
+  },
+  {
+    "bytes": 652893,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/learning_world_capture/math-complete-2400x1080.png",
+    "sha256": "3dcbc484ed57bf999e20fcfe1c4b786db1a33300be0119755196f3b27da25b61",
+    "width": 2400
+  },
+  {
+    "bytes": 144204,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/learning_world_capture/math-complete-412x915.png",
+    "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+    "width": 412
+  },
+  {
+    "bytes": 346738,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/math-start-1280x720.png",
+    "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+    "width": 1280
+  },
+  {
+    "bytes": 614390,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/learning_world_capture/math-start-2400x1080.png",
+    "sha256": "d61733698a17eff4089c2500b8e6ac8a900837ca55b81f97af27744145926da7",
+    "width": 2400
+  },
+  {
+    "bytes": 139598,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/learning_world_capture/math-start-412x915.png",
+    "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+    "width": 412
+  },
+  {
+    "bytes": 353450,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/math-ten-1280x720.png",
+    "sha256": "c48d94aa57ec3412736754d6c9844ac2857a7f58a8eec2f2ecb779c230a204ec",
+    "width": 1280
+  },
+  {
+    "bytes": 634242,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/learning_world_capture/math-ten-2400x1080.png",
+    "sha256": "8a6eee43cdd4ebe4d829d233b650d5b305f8afa7b04af7eba40092e594b8ad66",
+    "width": 2400
+  },
+  {
+    "bytes": 144541,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/learning_world_capture/math-ten-412x915.png",
+    "sha256": "f8146ddc462f3163b4754cd76866e1eb8cbb052c880c980b9daee2402a3e7cfb",
+    "width": 412
+  },
+  {
+    "bytes": 373016,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/plant_parts-complete.png",
+    "sha256": "48c1a8f9ff5971937a42f7049fb12fe6364c6cf20369e451aa64bbabf385f4aa",
+    "width": 1280
+  },
+  {
+    "bytes": 350824,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/plant_parts-start.png",
+    "sha256": "c1baef37292fdf9911377833c0de6561214d691d69d55651b31c7a43a6207326",
+    "width": 1280
+  },
+  {
+    "bytes": 357989,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/subtract_ten-complete.png",
+    "sha256": "186a15fd5fe718b2f00b924ac0730820e6e654956c1addfa61a7e9b57b8d00ba",
+    "width": 1280
+  },
+  {
+    "bytes": 348921,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/subtract_ten-start.png",
+    "sha256": "80b7c6dba3603378800c292d804179f7ff1a98d6f5bcbbae3ff995351a96c592",
+    "width": 1280
+  },
+  {
+    "bytes": 331920,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/syllables-complete.png",
+    "sha256": "b8e3f46d48120761edf2fba71cf1f83dc9bba67f7e4e83edbe1f9cf807f11c27",
+    "width": 1280
+  },
+  {
+    "bytes": 322084,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/learning_world_capture/syllables-start.png",
+    "sha256": "9bd464681be73f59a089375ab95b05dc9203946666ae6e04b4f63741baa5e9ac",
+    "width": 1280
+  },
+  {
+    "bytes": 306763,
+    "format": "PNG",
+    "height": 640,
+    "path": "nextgen/captures/lumo_facial_capture/audio_jaw.png",
+    "sha256": "0e4e25d2a434014a78a58e3168a0a2cea1f1eb4ae354860197649cdbd968e399",
+    "width": 640
+  },
+  {
+    "bytes": 301645,
+    "format": "PNG",
+    "height": 640,
+    "path": "nextgen/captures/lumo_facial_capture/blink.png",
+    "sha256": "13cc217a29ae082a33f3fc886b5ff511ca94b9234f084b116e9a3e0b7f49bf64",
+    "width": 640
+  },
+  {
+    "bytes": 302869,
+    "format": "PNG",
+    "height": 640,
+    "path": "nextgen/captures/lumo_facial_capture/blink_intermediate.png",
+    "sha256": "4b77f44d74202d872c3c294c0586917cbb9a430e0c2659565aab3701628f2a05",
+    "width": 640
+  },
+  {
+    "bytes": 295648,
+    "format": "PNG",
+    "height": 640,
+    "path": "nextgen/captures/lumo_facial_capture/gaze_left.png",
+    "sha256": "4dcdfecc01d1d64f8327419b95ee0ace5914a37cc09e8d699dfe22158d7a8d51",
+    "width": 640
+  },
+  {
+    "bytes": 303284,
+    "format": "PNG",
+    "height": 640,
+    "path": "nextgen/captures/lumo_facial_capture/muted.png",
+    "sha256": "d856e49b331a8b42c0a877d6a5d234acfa7240c0d40427be59250fbb5437d27a",
+    "width": 640
+  },
+  {
+    "bytes": 283369,
+    "format": "PNG",
+    "height": 640,
+    "path": "nextgen/captures/lumo_facial_capture/neutral.png",
+    "sha256": "1a567ec18d7e17d136734ada25d49197892ea4300a12b7a4159956db89e7ad8b",
+    "width": 640
+  },
+  {
+    "bytes": 299919,
+    "format": "PNG",
+    "height": 640,
+    "path": "nextgen/captures/lumo_facial_capture/stopped.png",
+    "sha256": "f58fa3e0e9ab84c0fd2f69138a429714b7a77933a08ba991657ef12b73b67c3c",
+    "width": 640
+  },
+  {
+    "bytes": 116521,
+    "format": "PNG",
+    "height": 640,
+    "path": "nextgen/captures/lumo_facial_capture/teacher_scene.png",
+    "sha256": "734e318635eb6e296984ba48ecc09d2b74ec30533196d9baa2f058bc104a3dac",
+    "width": 640
+  },
+  {
+    "bytes": 229662,
+    "format": "PNG",
+    "height": 840,
+    "path": "nextgen/captures/lumo_studio_motion_capture/after_jump_rise.png",
+    "sha256": "3a16b54adfda3f134baefed9804d5534b5d401c07adfc9a3d14f52bbafc82238",
+    "width": 720
+  },
+  {
+    "bytes": 232967,
+    "format": "PNG",
+    "height": 840,
+    "path": "nextgen/captures/lumo_studio_motion_capture/after_land.png",
+    "sha256": "e0a3da89d35334abcc1e0eda77c58048c3423529aa02299c27547e3c4ade645b",
+    "width": 720
+  },
+  {
+    "bytes": 226024,
+    "format": "PNG",
+    "height": 840,
+    "path": "nextgen/captures/lumo_studio_motion_capture/after_sprint.png",
+    "sha256": "3d43a78372c622ebac7abac15f5aae49b4ba4ee729aed3207f326a04a2ed0185",
+    "width": 720
+  },
+  {
+    "bytes": 229796,
+    "format": "PNG",
+    "height": 840,
+    "path": "nextgen/captures/lumo_studio_motion_capture/after_walk.png",
+    "sha256": "557393c69f428d8c6cc300fd1f25b49314823c8078982df95fb2678dc9990772",
+    "width": 720
+  },
+  {
+    "bytes": 233672,
+    "format": "PNG",
+    "height": 840,
+    "path": "nextgen/captures/lumo_studio_motion_capture/before_jump_rise.png",
+    "sha256": "2dfe8f9b8dd52b7fa3243a15405d7ba7a0f2e3babc47a2a7a06959ceb8530d98",
+    "width": 720
+  },
+  {
+    "bytes": 226564,
+    "format": "PNG",
+    "height": 840,
+    "path": "nextgen/captures/lumo_studio_motion_capture/before_land.png",
+    "sha256": "9b2040079dabdc3c39c26e1288b69ae727b5d7c363e2441cad1eb91b46c9f61d",
+    "width": 720
+  },
+  {
+    "bytes": 236265,
+    "format": "PNG",
+    "height": 840,
+    "path": "nextgen/captures/lumo_studio_motion_capture/before_sprint.png",
+    "sha256": "3a71643c2fa4fb5ad24714e9faea71c81250f1d855c16fb5066d75a8e0db048e",
+    "width": 720
+  },
+  {
+    "bytes": 234896,
+    "format": "PNG",
+    "height": 840,
+    "path": "nextgen/captures/lumo_studio_motion_capture/before_walk.png",
+    "sha256": "33acdddf1b1af9aeb8b5858f80b470b818450639857a677603afd08ba26b89a1",
+    "width": 720
+  },
+  {
+    "bytes": 2490783,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/mobile_safe_area_regression/build-landscape-cutout.png",
+    "sha256": "744d30033be9ab957a493db04e653adfa80cb3c9913e08a3452ebc0eb07a613c",
+    "width": 2400
+  },
+  {
+    "bytes": 1859319,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/mobile_safe_area_regression/jump-landscape-cutout.png",
+    "sha256": "df380f0c96861523922cfc7ea97103f85c09248f2fc9d2b04de74a414c3b1b86",
+    "width": 2400
+  },
+  {
+    "bytes": 480217,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/mobile_safe_area_regression/puzzle-landscape-cutout.png",
+    "sha256": "5d1117258b17bab6ecd5b2c97115854520aee92253013ee677da0b2b7b0b794b",
+    "width": 2400
+  },
+  {
+    "bytes": 2624014,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/mobile_safe_area_regression/treasure-landscape-cutout.png",
+    "sha256": "c5f93f2c04e01184f325d39e9f7945c13681097029e4fa5a557526310089a9ac",
+    "width": 2400
+  },
+  {
+    "bytes": 109526,
+    "format": "PNG",
+    "height": 360,
+    "path": "nextgen/captures/puzzle_menu_lifecycle_regression/640x360-classic-play.png",
+    "sha256": "48c19e68bb23cde298c71816fd02fb7dd8821e3ab63cb8fdf1caff5ea34439d4",
+    "width": 640
+  },
+  {
+    "bytes": 72927,
+    "format": "PNG",
+    "height": 360,
+    "path": "nextgen/captures/puzzle_menu_lifecycle_regression/640x360-rotation-menu.png",
+    "sha256": "70de40dce8bbdbb087b86b3f4929d0d3a686dd0569a8b6b6d34c2399579524eb",
+    "width": 640
+  },
+  {
+    "bytes": 110210,
+    "format": "PNG",
+    "height": 360,
+    "path": "nextgen/captures/puzzle_menu_lifecycle_regression/640x360-rotation-play.png",
+    "sha256": "a0315dc41e917c320aaf6046199f0a77dd31e53e14eac19052b1a2eaafd8b44a",
+    "width": 640
+  },
+  {
+    "bytes": 302717,
+    "format": "PNG",
+    "height": 540,
+    "path": "nextgen/captures/puzzle_menu_lifecycle_regression/960x540-classic-play.png",
+    "sha256": "fcbd3f3b1504b8002d629ad16230b64fd4b59acfec2ca049d39f518c317e8b1e",
+    "width": 960
+  },
+  {
+    "bytes": 152998,
+    "format": "PNG",
+    "height": 540,
+    "path": "nextgen/captures/puzzle_menu_lifecycle_regression/960x540-rotation-menu.png",
+    "sha256": "9afe8ea8fb0c784e1bb8873eb916daf9c6b1ba1c88ed01f5fc30e7c264f9dc1d",
+    "width": 960
+  },
+  {
+    "bytes": 301578,
+    "format": "PNG",
+    "height": 540,
+    "path": "nextgen/captures/puzzle_menu_lifecycle_regression/960x540-rotation-play.png",
+    "sha256": "5b09830c89731b1cbb0e383d5c78e59b7cfa1fcfe7c4cc52d0dba3eccba2d4ce",
+    "width": 960
+  },
+  {
+    "bytes": 228045,
+    "format": "PNG",
+    "height": 915,
+    "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_412x915.png",
+    "sha256": "e7df8c0f46789134b784c9e64e65a5f0641f25e4d433f0b0fe504cdb2ef45cce",
+    "width": 412
+  },
+  {
+    "bytes": 113939,
+    "format": "PNG",
+    "height": 360,
+    "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_640x360.png",
+    "sha256": "04a94e2156004aa1f6192736d00487f14f3c6ecfae703e8a942de335dea65c40",
+    "width": 640
+  },
+  {
+    "bytes": 327240,
+    "format": "PNG",
+    "height": 760,
+    "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_840x760.png",
+    "sha256": "2113cd3e58ada67e35711ec22599be38db970bbda8e2ab9f26ce582f80bcd17a",
+    "width": 840
+  },
+  {
+    "bytes": 58991,
+    "format": "PNG",
+    "height": 360,
+    "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_compact_menu.png",
+    "sha256": "68472a6e74eac5456fba47d0b540b81675f483b2eb60b3ca12b1c7ea6d077d4b",
+    "width": 640
+  },
+  {
+    "bytes": 519918,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_hint.png",
+    "sha256": "38e9030a6e169e85f68d008e73dc45562852e52d5af7da9eeab8a78c214708ca",
+    "width": 1280
+  },
+  {
+    "bytes": 510346,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_placed.png",
+    "sha256": "0a7eeb149aaa8fb704aa7ae3998f521ed6031e4cd87c9ec2001ae4dea4d01f72",
+    "width": 1280
+  },
+  {
+    "bytes": 508156,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_table.png",
+    "sha256": "1cac4b859469efdc8c2e58cf48ed5786db90d62a19090a19cee7941bf62de70f",
+    "width": 1280
+  },
+  {
+    "bytes": 391772,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/rhythm_tour_play_regression/01_rhythm_tour_map.png",
+    "sha256": "f3b40c87c1371120d50bde535af440e51decd31acf8b1e83e250331d2a1a6610",
+    "width": 1280
+  },
+  {
+    "bytes": 656528,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/rhythm_tour_play_regression/02_rhythm_slide.png",
+    "sha256": "75db5b2a379a8a7943310b635cec6dfdf92ad5ae56535f0a6beb7f9c70d3a294",
+    "width": 1280
+  },
+  {
+    "bytes": 422768,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/rhythm_tour_play_regression/03_rhythm_tour_result.png",
+    "sha256": "4d83792c3b8f45f6069f6ac850ee451358314b280a9f1ec1a11f69bd88a41725",
+    "width": 1280
+  },
+  {
+    "bytes": 1291941,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/treasure_exploration_regression/treasure_choose_route.png",
+    "sha256": "a76c967c9d3d76058bb70c6888331271c621020236bb9e47e77bc605946d5c42",
+    "width": 1280
+  },
+  {
+    "bytes": 1260295,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/treasure_exploration_regression/treasure_garden_first.png",
+    "sha256": "b825273d7d30058b84d492ac5944f9815b9f40d2e1172ee459005b3126d22dc3",
+    "width": 1280
+  },
+  {
+    "bytes": 1282876,
+    "format": "PNG",
+    "height": 720,
+    "path": "nextgen/captures/treasure_exploration_regression/treasure_route_complete.png",
+    "sha256": "3584538b049cdbb2f29744c3d08ad8581fe1dc6e99c4b8dcf2c5d7f9f139f9c0",
+    "width": 1280
+  },
+  {
+    "bytes": 324374,
+    "format": "PNG",
+    "height": 320,
+    "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-compact.png",
+    "sha256": "c96c8d3f4389aa9a4d13f7657c29da354956d960dcfdc9d6eccf8f2b59d51fed",
+    "width": 640
+  },
+  {
+    "bytes": 4227790,
+    "format": "PNG",
+    "height": 1812,
+    "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-fold.png",
+    "sha256": "6aa7064d35d152a6461aa43e561cba89232495df3ba573107aab8d554bf74704",
+    "width": 2176
+  },
+  {
+    "bytes": 2623832,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-landscape-cutout.png",
+    "sha256": "5c7306dc91fa230e34f5e087fde5badf16e2be256cd0be8ab0f19eed58152372",
+    "width": 2400
+  },
+  {
+    "bytes": 2719857,
+    "format": "PNG",
+    "height": 1080,
+    "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-landscape.png",
+    "sha256": "703ff27056482443579c54a0f9b7698fe4d45582cab75ea6f5d5d52d62139a76",
+    "width": 1920
+  },
+  {
+    "bytes": 2103099,
+    "format": "PNG",
+    "height": 2400,
+    "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-portrait.png",
+    "sha256": "61c13696b92a4714707572c6cb03df82fb4a6775f0d72cef01b51d147ed2c901",
+    "width": 1080
+  },
+  {
+    "bytes": 178011,
+    "format": "PNG",
+    "height": 480,
+    "path": "user-data/godot/app_userdata/Lumo 3D/godot-kart-pause-800x480.png",
+    "sha256": "e4aa2832bf21586f564c0e4cdc3b0ee2964406dfd795b1f5852817f138924112",
+    "width": 800
+  }
+]

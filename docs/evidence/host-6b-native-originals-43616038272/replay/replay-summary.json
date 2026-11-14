@@ -1,0 +1,47 @@
+{
+  "artifact_id": 14125605621,
+  "checked_native_seconds": 10.524,
+  "ci_pillow": "12.3.0",
+  "core_logs": 52,
+  "core_modes": 52,
+  "discovery": {
+    "png_count": 38,
+    "probe_modes": 10,
+    "report_count": 2
+  },
+  "elapsed_seconds": 14.492,
+  "engine_invocations": 0,
+  "exception": "Original Jump rig regression lacks its exact PASS marker",
+  "exception_type": "ValueError",
+  "extra_return": {
+    "bytes": 504,
+    "marker": "CONNECT_FOUR_RETURN_PASS checks=21",
+    "sha256": "f52a215077309359c79031c719d5df69b526bcb0d45bd2bb161de28153dc5ae2"
+  },
+  "host_source": "6b3047b7979dfb86d837e74a21b0fd890e4f9e66",
+  "live": {
+    "png_count": 7,
+    "probe_count": 9
+  },
+  "native_source": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "native_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "pillow": "13.0.0",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "reader_blobs": {
+    "original_reader_driver.py": "3c81457f029952ea4125bdb20da9e89a4f15d3b8",
+    "verify_connect_four_delivery.py": "42d54aa5293750f64f1c0307b5d97aace354471d"
+  },
+  "renderer_invocations": 0,
+  "run_attempt": 1,
+  "run_id": 43616038272,
+  "scope": "Independent read-only replay of original Desktop Native evidence; no Android/FPS/audio claim",
+  "status": "FAIL",
+  "unchanged": {
+    "all_3770_tracked_source_bytes_and_modes_unchanged": true,
+    "all_6106_original_paths_bytes_and_modes_unchanged": true,
+    "original_zip_bytes_unchanged": true,
+    "raw_source_index_unchanged": true,
+    "reader_bytes_and_modes_unchanged": true
+  }
+}
