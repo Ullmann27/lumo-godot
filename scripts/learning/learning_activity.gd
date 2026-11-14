@@ -1,4 +1,5 @@
 extends RefCounted
+const ENGLISH = preload("res://scripts/learning/english_vocabulary.gd")
 ## Deterministic manipulative state, separate from presentation and rewards.
 ## No independent-answer evidence is emitted by an explanatory activity.
 
@@ -13,12 +14,28 @@ var placed: Array[int] = []
 var watered := false
 var sunlight := false
 var inspected: Array[String] = []
+var english_objects: Array[String] = []
+var english_meaning := ""
+var english_choice := -1
+var english_hint_level := 0
+var english_attempts := 0
+var english_complete := false
 
 
 func configure(raw: Dictionary) -> bool:
 	reset()
 	kind = str(raw.get("kind", "invalid"))
 	match kind:
+		"english_objects":
+			var checked := ENGLISH.checked_payload(raw)
+			if checked.is_empty():
+				kind = "invalid"
+				return false
+			word = checked.word
+			english_meaning = checked.meaning
+			english_objects.clear()
+			for item: String in checked.objects:
+				english_objects.append(item)
 		"bridge_ten":
 			if not _whole_number(raw.get("a")) or not _whole_number(raw.get("b")):
 				kind = "invalid"
@@ -116,10 +133,16 @@ func reset() -> void:
 	watered = false
 	sunlight = false
 	inspected.clear()
+	english_choice = -1
+	english_hint_level = 0
+	english_attempts = 0
+	english_complete = false
 
 
 func token_count() -> int:
 	match kind:
+		"english_objects":
+			return english_objects.size()
 		"bridge_ten", "addition":
 			return b
 		"subtract_ten", "equal_sharing":
@@ -134,6 +157,8 @@ func token_count() -> int:
 
 
 func goal_count() -> int:
+	if kind == "english_objects":
+		return 1
 	return b if kind == "subtract_ten" else token_count()
 
 
@@ -146,6 +171,8 @@ func initial_count() -> int:
 
 
 func is_complete() -> bool:
+	if kind == "english_objects":
+		return english_complete
 	if kind == "plant_parts":
 		return watered and sunlight and inspected.size() == 4
 	return kind != "invalid" and placed.size() == goal_count()
@@ -180,7 +207,7 @@ func count_in_group(group: int) -> int:
 
 
 func place(token: int, target: int) -> bool:
-	if kind in ["invalid", "plant_parts"] or is_complete() or token < 0 or token >= token_count():
+	if kind in ["invalid", "plant_parts", "english_objects"] or is_complete() or token < 0 or token >= token_count():
 		return false
 	if placed.has(token) or target != target_index():
 		return false
@@ -200,8 +227,34 @@ func inspect_part(part: String) -> bool:
 	return true
 
 
+func choose_english(index: int) -> bool:
+	if kind != "english_objects" or english_complete or index < 0 or index >= english_objects.size():
+		return false
+	english_choice = index
+	english_attempts += 1
+	english_complete = english_objects[index] == word
+	return english_complete
+
+
+func english_hint() -> bool:
+	if kind != "english_objects" or english_complete or english_hint_level >= 2:
+		return false
+	english_hint_level += 1
+	return true
+
+
 func explanation() -> String:
 	match kind:
+		"english_objects":
+			if english_complete:
+				return "Richtig: „%s“. Wähle jetzt „Zur Aufgabe“." % english_meaning
+			if english_hint_level == 2:
+				return "Tippe selbst auf den hell umrandeten Gegenstand."
+			if english_hint_level == 1:
+				return ENGLISH.hint_for(word)
+			if english_attempts > 0:
+				return "Das passt noch nicht. Ein Hinweis kann dir helfen."
+			return "Tippe auf den Gegenstand zum englischen Wort."
 		"bridge_ten", "addition":
 			var filled: int = a + placed.size()
 			if kind == "addition" and a + b <= 10:

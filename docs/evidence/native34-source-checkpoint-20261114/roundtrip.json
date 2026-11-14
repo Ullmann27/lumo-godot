@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "archive": "native182-29080-source-originals.tar.gz",
+  "bytes": 557258,
+  "sha256": "aff56ff447426b03ced2cc6d01192b5798784d2a1dc68756333b4d212aad8129",
+  "git_blob": "366debefbd36aeb606ff9e6845eef1ccb2607b8f",
+  "members": 71,
+  "all_members_full_bytes_equal_source": true,
+  "large_assets_not_duplicated": 13
+}

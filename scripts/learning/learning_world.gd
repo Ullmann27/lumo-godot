@@ -5,6 +5,7 @@ extends Node3D
 const ACTIVITY = preload("res://scripts/learning/learning_activity.gd")
 const FOX = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const ATELIER = preload("res://scripts/learning/learning_atelier.gd")
+const ENGLISH_GALLERY = preload("res://scripts/learning/english_object_gallery.gd")
 const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const BEVEL = preload("res://scripts/games/visual/kart_harbor_cinema.gd")
 const PART_LABELS := {"root": "Wurzel", "stem": "Stängel", "leaf": "Blatt", "flower": "Blüte"}
@@ -75,9 +76,25 @@ var _speech_wait := -1.0
 var _speech_state := "idle"
 var _speech_text := ""
 var voice_button: Button
+var english_models: Array[Node3D] = []
+var english_buttons: Array[Button] = []
+var english_stage_rect := Rect2()
+var _atelier: Node3D
+var _english_compact := false
+
+# App-private observation only. This file never supplies inputs or persistence.
+const LEARNING_OBSERVATION := "user://learning_layout_v1.json"
+var _learning_launch: Dictionary = {}
+var _observation_pending := false
+var _observation_closed := false
+var _observation_settle_frames := 0
+var _observation_sequence := 0
+var _observation_retry_after := 0
 
 
 func _ready() -> void:
+	DirAccess.remove_absolute(LEARNING_OBSERVATION)
+	DirAccess.remove_absolute(LEARNING_OBSERVATION + ".tmp")
 	_original_auto_quit = get_tree().auto_accept_quit
 	_original_back_quit = get_tree().quit_on_go_back
 	_original_scale_mode = get_window().content_scale_mode
@@ -99,6 +116,8 @@ func _ready() -> void:
 	if not raw is Dictionary:
 		raw = {}
 	activity.configure(raw)
+	_learning_launch = _observed_launch(options)
+	HostBridge.returned.connect(_observation_returned)
 	_build_stage()
 	_build_ui()
 	_rebuild_activity()
@@ -235,7 +254,8 @@ func _build_stage() -> void:
 	fill.light_energy = 0.09
 	fill.light_specular = 0.0
 	add_child(fill)
-	add_child(ATELIER.new())
+	_atelier = ATELIER.new()
+	add_child(_atelier)
 	fox = FOX.new()
 	fox.name = "OriginalLearningLumo"
 	add_child(fox)
@@ -269,6 +289,11 @@ func _build_stage() -> void:
 	wonder.celebration_only = true
 	wonder.set_reduced_motion(reduced_motion)
 	add_child(wonder)
+	if activity.kind == "english_objects":
+		# Keep every existing atelier mesh behind the fitted object gallery.
+		# Orthographic translation along view depth preserves its screen position.
+		_atelier.position = -camera.global_basis.z * 24.0
+		camera.far = 100.0
 
 
 func _soften_teacher_materials() -> void:
@@ -386,6 +411,8 @@ func _rebuild_activity() -> void:
 	targets.clear()
 	token_sources.clear()
 	part_nodes.clear()
+	english_models.clear()
+	english_buttons.clear()
 	water_particles.clear()
 	_arrangement_set = false
 	_source_tray = null
@@ -402,6 +429,9 @@ func _rebuild_activity() -> void:
 	main_button = null
 	voice_button = null
 	match activity.kind:
+		"english_objects":
+			_build_english_objects()
+			main_button = _button("Hinweis", _english_hint)
 		"bridge_ten", "addition", "bridge_hundred":
 			_build_ten_frame()
 			main_button = _button("Ein Objekt zeigen", _show_one)
@@ -427,7 +457,7 @@ func _rebuild_activity() -> void:
 			for part in PART_LABELS:
 				_button(str(PART_LABELS[part]), _inspect.bind(str(part)))
 	# Rebuilding frees the old controls after their input signal has returned.
-	_button("Noch einmal", restart, CONNECT_DEFERRED)
+	_button("Neu" if activity.kind == "english_objects" else "Noch einmal", restart, CONNECT_DEFERRED)
 	if (
 		_speech_enabled
 		and is_instance_valid(_speech_host)
@@ -762,6 +792,7 @@ func _build_plant() -> void:
 
 
 func _refresh() -> void:
+	_mark_learning_observation()
 	explanation.text = activity.explanation()
 	for group in range(_group_labels.size()):
 		_group_labels[group].mesh.text = str(activity.count_in_group(group))
@@ -807,6 +838,15 @@ func _refresh() -> void:
 	if activity.kind == "invalid":
 		title.text = "Lumo Lernwerkstatt"
 		status.text = "Kehre zur Aufgabe zurück und öffne die Lernansicht erneut."
+	elif activity.kind == "english_objects":
+		status.text = ("%s = %s · Passend zugeordnet" % [activity.word, activity.english_meaning]
+			if activity.is_complete() else "Tippe den Gegenstand oder seine Zahl an.")
+		main_button.disabled = activity.is_complete() or activity.english_hint_level >= 2
+		for index in range(english_models.size()):
+			english_buttons[index].disabled = activity.is_complete()
+			english_models[index].get_node("HintRing").visible = (
+				activity.english_objects[index] == activity.word
+				and (activity.english_hint_level >= 2 or activity.is_complete()))
 	elif activity.kind == "plant_parts":
 		title.text = "Pflanzen entdecken"
 		status.text = "%d von 4 Pflanzenteilen entdeckt" % activity.inspected.size()
@@ -818,7 +858,7 @@ func _refresh() -> void:
 			% [activity.placed.size(), activity.goal_count()]
 		)
 		main_button.disabled = activity.is_complete() or not _moving.is_empty()
-	if activity.is_complete():
+	if activity.is_complete() and activity.kind != "english_objects":
 		status.text = "Geschafft! Zurück bei deiner Aufgabe kannst du es selbst versuchen."
 	_layout.call_deferred()
 
@@ -826,6 +866,7 @@ func _refresh() -> void:
 func _queue_layout() -> void:
 	if not is_inside_tree():
 		return
+	_mark_learning_observation()
 	if not _layout_queued:
 		_layout_queued = true
 		_layout.call_deferred()
@@ -835,6 +876,7 @@ func _layout() -> void:
 	_layout_queued = false
 	if not is_inside_tree() or not is_instance_valid(camera) or not is_instance_valid(header):
 		return
+	_mark_learning_observation()
 	var dimensions := get_viewport().get_visible_rect().size
 	# Godot receives Android pixels; use the same density hint as the native
 	# Kart controls. This keeps every action at least 48 device-independent px.
@@ -846,6 +888,22 @@ func _layout() -> void:
 	var insets := MobileRuntime.get_safe_area_insets() if OS.has_feature("android") or MobileRuntime.requires_safe_area_observation() else Rect2()
 	var origin := insets.position / scale_value
 	var available := logical - (insets.position + insets.size) / scale_value
+	if activity.kind == "english_objects":
+		_english_compact = available.x > available.y and available.y < 480.0
+		# Keep the full hint text and its original readable font. On a short
+		# landscape surface, reduce only empty panel padding so the actual
+		# objects retain their readable size while the hint wraps to two lines.
+		var header_style := header.get_theme_stylebox("panel") as StyleBoxFlat
+		var vertical_margin := 8.0 if _english_compact else 14.0
+		if header_style.content_margin_top != vertical_margin:
+			header_style.content_margin_top = vertical_margin
+			header_style.content_margin_bottom = vertical_margin
+		# A short landscape window needs one row of full-sized actions, not a
+		# two-row footer that reduces the real objects to tiny thumbnails.
+		status.visible = not _english_compact
+		for button: Button in actions.get_children():
+			button.custom_minimum_size = Vector2(52, 52)
+		_update_voice_button()
 	header.position = origin + Vector2(12, 12)
 	header.size.x = maxf(100, available.x - 24)
 	header.size.y = header.get_combined_minimum_size().y
@@ -855,6 +913,9 @@ func _layout() -> void:
 		origin.x + 12,
 		maxf(header.position.y + header.size.y + 20, origin.y + available.y - footer.size.y - 12)
 	)
+	if activity.kind == "english_objects":
+		_layout_english(dimensions, scale_value)
+		return
 	var portrait := dimensions.x / dimensions.y < 0.95
 	if not _arrangement_set or portrait != _portrait:
 		_arrange_activity(portrait)
@@ -998,6 +1059,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _begin_drag(point: Vector2, finger: int) -> void:
+	if activity.kind == "english_objects":
+		_pick_english_object(point)
+		return
 	if activity.kind == "plant_parts":
 		var best := ""
 		var distance := 60.0 * ui.scale.x
@@ -1182,6 +1246,7 @@ func restart() -> void:
 
 
 func _process(delta: float) -> void:
+	_publish_learning_observation()
 	if suspended:
 		return
 	_clock += delta
@@ -1221,6 +1286,7 @@ func _notification(what: int) -> void:
 	elif what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT]:
 		suspended = true
 		wonder.set_paused(true)
+		_mark_learning_observation()
 		_stop_speech()
 		_cancel_drag()
 		for tween in _tweens:
@@ -1231,6 +1297,7 @@ func _notification(what: int) -> void:
 	elif what in [NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN]:
 		suspended = false
 		wonder.set_paused(false)
+		_mark_learning_observation()
 		for tween in _tweens:
 			if tween.is_valid():
 				tween.play()
@@ -1239,6 +1306,12 @@ func _notification(what: int) -> void:
 
 
 func _exit_tree() -> void:
+	_observation_closed = true
+	_observation_pending = false
+	if HostBridge.returned.is_connected(_observation_returned):
+		HostBridge.returned.disconnect(_observation_returned)
+	DirAccess.remove_absolute(LEARNING_OBSERVATION)
+	DirAccess.remove_absolute(LEARNING_OBSERVATION + ".tmp")
 	if MobileRuntime.safe_area_changed.is_connected(_layout):
 		MobileRuntime.safe_area_changed.disconnect(_layout)
 	if get_viewport().size_changed.is_connected(_layout):
@@ -1351,11 +1424,312 @@ func _tick_speech(delta: float) -> void:
 func _update_voice_button() -> void:
 	if not is_instance_valid(voice_button):
 		return
-	voice_button.text = (
-		"Stimme stoppen" if _speech_state in ["preparing", "playing"] else "Schritt anhören"
-	)
+	var previous_caption := voice_button.text
+	if activity.kind == "english_objects" and _english_compact:
+		voice_button.text = "Stopp" if _speech_state in ["preparing", "playing"] else "Anhören"
+	else:
+		voice_button.text = (
+			"Stimme stoppen" if _speech_state in ["preparing", "playing"] else "Schritt anhören"
+		)
 	voice_button.tooltip_text = (
 		"Die lokale Stimme ist gerade nicht verfügbar. Der Lernschritt bleibt lesbar."
 		if _speech_state == "unavailable"
 		else ""
 	)
+
+	if voice_button.text != previous_caption:
+		_mark_learning_observation()
+
+
+func _build_english_objects() -> void:
+	title.text = "Englisch · " + activity.word
+	for index in range(activity.english_objects.size()):
+		var model: Node3D = ENGLISH_GALLERY.make(activity.english_objects[index], index)
+		content.add_child(model)
+		english_models.append(model)
+		var button := _button(str(index + 1), _choose_english.bind(index))
+		button.name = "EnglishChoice%d" % (index + 1)
+		button.tooltip_text = "Gegenstand %d auswählen" % (index + 1)
+		english_buttons.append(button)
+
+
+func _english_projected_bounds(node: Node3D) -> Rect2:
+	var result := Rect2()
+	var found := false
+	for item: Node in node.find_children("*", "MeshInstance3D", true, false):
+		var mesh := item as MeshInstance3D
+		if mesh.mesh == null or not mesh.is_visible_in_tree():
+			continue
+		var box := mesh.get_aabb()
+		for corner in range(8):
+			var point := camera.unproject_position(mesh.to_global(box.get_endpoint(corner)))
+			result = result.expand(point) if found else Rect2(point, Vector2.ZERO)
+			found = true
+	return result
+
+
+func _layout_english(dimensions: Vector2, scale_value: float) -> void:
+	if english_models.size() != 3 or dimensions.y <= 0.0:
+		return
+	var portrait := dimensions.x < dimensions.y * 0.95
+	_portrait = portrait
+	_arrangement_set = true
+	camera.size = 12.0
+	camera.h_offset = 0.0
+	camera.v_offset = 0.0
+	fox.position.x = -2.15 if portrait else -4.2
+	fox.position.z = -0.6 if portrait else 0.2
+	fox.rotation.y = 0.10 if portrait else 0.35
+	for index in range(english_models.size()):
+		english_models[index].position = (
+			Vector3(1.25, 0, -2.8 + index * 2.8)
+			if portrait else Vector3(-1.15 + index * 2.55, 0, 0.15))
+		var number := english_models[index].get_node("ChoiceNumber") as MeshInstance3D
+		number.global_basis = camera.global_basis
+	if portrait:
+		# Stack the actual projected geometry, including its number and base.
+		# Different objects have different heights; a fixed depth gap can let
+		# a tall pen cover the ruler or book behind it.
+		var pixels_per_depth := (
+			camera.unproject_position(Vector3.FORWARD * -1.0).y
+			- camera.unproject_position(Vector3.ZERO).y)
+		if pixels_per_depth > 0.001:
+			for index in range(1, english_models.size()):
+				var previous := _english_projected_bounds(english_models[index - 1])
+				var current := _english_projected_bounds(english_models[index])
+				var missing := previous.end.y + pixels_per_depth * 0.35 - current.position.y
+				if missing > 0.0:
+					english_models[index].position.z += missing / pixels_per_depth
+	var top: float = header.get_global_rect().end.y + 8.0 * scale_value
+	var bottom: float = footer.get_global_rect().position.y - 8.0 * scale_value
+	var left: float = header.get_global_rect().position.x + 4.0 * scale_value
+	english_stage_rect = Rect2(left, top, header.get_global_rect().size.x - 8.0 * scale_value, maxf(1.0, bottom - top))
+	var bounds := _english_projected_bounds(content)
+	var fox_bounds := _english_projected_bounds(fox)
+	if fox_bounds.has_area():
+		bounds = bounds.merge(fox_bounds)
+	if bounds.size.x < 1.0 or bounds.size.y < 1.0:
+		return
+	var fitting := minf(english_stage_rect.size.x / bounds.size.x, english_stage_rect.size.y / bounds.size.y) * 0.94
+	camera.size /= maxf(0.001, fitting)
+	bounds = _english_projected_bounds(content)
+	if fox_bounds.has_area():
+		bounds = bounds.merge(_english_projected_bounds(fox))
+	var shift := english_stage_rect.get_center() - bounds.get_center()
+	var pixels_per_unit := dimensions.y / camera.size
+	camera.h_offset = -shift.x / pixels_per_unit
+	camera.v_offset = shift.y / pixels_per_unit
+	if fox.is_usable():
+		fox.set_teaching_target(english_models[activity.english_objects.find(activity.word)].global_position + Vector3.UP)
+
+
+func english_pick_rect(index: int) -> Rect2:
+	# Only offer a spatial target when a real 48dp square fits inside both
+	# its projected collision volume and the unobscured current scene area.
+	# Numbered 52dp buttons remain the equivalent action in tighter layouts.
+	if index < 0 or index >= english_models.size() or not camera.is_inside_tree():
+		return Rect2()
+	var collision := english_models[index].get_node("ObjectTouchBody/CollisionShape3D") as CollisionShape3D
+	var shape := collision.shape as BoxShape3D
+	var box := AABB(-shape.size * 0.5, shape.size)
+	var points := PackedVector2Array()
+	for corner in range(8):
+		points.append(camera.unproject_position(collision.to_global(box.get_endpoint(corner))))
+	var hull := Geometry2D.convex_hull(points)
+	var center := camera.unproject_position(collision.global_position)
+	var edge: float = 48.0 * MobileRuntime.get_ui_density()
+	var target := Rect2(center - Vector2.ONE * edge * 0.5, Vector2.ONE * edge)
+	if not english_stage_rect.encloses(target):
+		return Rect2()
+	for corner in [target.position, Vector2(target.end.x, target.position.y), target.end, Vector2(target.position.x, target.end.y)]:
+		if not Geometry2D.is_point_in_polygon(corner, hull):
+			return Rect2()
+	return target
+
+
+func _pick_english_object(point: Vector2) -> void:
+	if suspended or activity.is_complete():
+		return
+	var origin := camera.project_ray_origin(point)
+	var query := PhysicsRayQueryParameters3D.create(origin, origin + camera.project_ray_normal(point) * 60.0, 8)
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if hit.is_empty() or not hit.collider.has_meta("english_choice"):
+		return
+	var index: int = int(hit.collider.get_meta("english_choice"))
+	if not english_pick_rect(index).has_area():
+		return
+	_choose_english(index)
+	get_viewport().set_input_as_handled()
+
+
+func _choose_english(index: int) -> void:
+	if suspended or activity.kind != "english_objects" or activity.is_complete():
+		return
+	if index < 0 or index >= english_models.size():
+		return
+	_stop_speech()
+	var matched: bool = activity.choose_english(index)
+	_teacher("correct" if matched else "encourage", english_models[index].global_position + Vector3.UP)
+	_refresh()
+	_queue_narration()
+	print("[LearningEnglish] choice=", index, " attempts=", activity.english_attempts, " complete=", activity.is_complete())
+
+
+func _english_hint() -> void:
+	if suspended or not activity.english_hint():
+		return
+	_stop_speech()
+	_teacher("explain", english_models[activity.english_objects.find(activity.word)].global_position + Vector3.UP)
+	_refresh()
+	_queue_narration()
+
+
+func _observed_launch(options: Dictionary) -> Dictionary:
+	# Only the closed task catalogue and pseudonymous route identity are copied.
+	# Child names, typed answers, free-form text and audio never enter this file.
+	var session := str(options.get("sessionId", ""))
+	var child := str(options.get("childKey", ""))
+	var uuid := RegEx.create_from_string("^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$")
+	var owner := RegEx.create_from_string("^p_[a-f0-9]{32}$")
+	return {
+		"scene": str(options.get("scene", options.get("game", ""))),
+		"subject": "Englisch" if options.get("subject") == "Englisch" else "",
+		"grade": int(options.get("grade", 0)),
+		"sessionId": session if uuid.search(session) != null else "",
+		"childKey": child if owner.search(child) != null else "",
+		"learningVoiceEnabled": options.get("learningVoiceEnabled", false) == true,
+		"localVoiceLicenseAccepted": options.get("localVoiceLicenseAccepted", false) == true,
+		"learningAutoRead": options.get("learningAutoRead", false) == true,
+		"learning": {
+			"kind": activity.kind, "word": activity.word,
+			"meaning": activity.english_meaning,
+			"objects": activity.english_objects.duplicate(),
+		} if activity.kind == "english_objects" else {},
+	}
+
+
+func _observation_returned(_destination: String, _payload: Dictionary) -> void:
+	_observation_closed = true
+	_observation_pending = false
+	DirAccess.remove_absolute(LEARNING_OBSERVATION)
+	DirAccess.remove_absolute(LEARNING_OBSERVATION + ".tmp")
+
+
+func _mark_learning_observation() -> void:
+	if _observation_closed or activity.kind != "english_objects":
+		return
+	if not _observation_pending:
+		DirAccess.remove_absolute(LEARNING_OBSERVATION)
+	_observation_pending = true
+	_observation_settle_frames = 2
+
+
+func _observation_vector(value: Vector2) -> Array:
+	return [value.x, value.y]
+
+
+func _observation_vector3(value: Vector3) -> Array:
+	return [value.x, value.y, value.z]
+
+
+func _observation_rect(value: Rect2) -> Array:
+	return [value.position.x, value.position.y, value.size.x, value.size.y]
+
+
+func _observation_control(button: Button, identifier: String, factor: Vector2) -> Dictionary:
+	var rect := button.get_global_rect()
+	var hit := rect.intersection(get_viewport().get_visible_rect())
+	var parent := button.get_parent()
+	while parent != null:
+		if parent is Control and parent.clip_contents:
+			hit = hit.intersection(parent.get_global_rect())
+		parent = parent.get_parent()
+	return {
+		"id": identifier, "text": button.text,
+		"visible": button.is_visible_in_tree(), "enabled": not button.disabled and not suspended,
+		"rect_px": _observation_rect(Rect2(rect.position * factor, rect.size * factor)),
+		"hit_rect_px": _observation_rect(Rect2(hit.position * factor, hit.size * factor)),
+	}
+
+
+func _publish_learning_observation() -> void:
+	if not _observation_pending or _observation_closed or not is_inside_tree():
+		return
+	if not is_instance_valid(ui) or not ui.is_visible_in_tree() or not MobileRuntime.safe_area_is_ready():
+		return
+	if _layout_queued or _observation_settle_frames > 0:
+		_observation_settle_frames = maxi(0, _observation_settle_frames - 1)
+		return
+	if Time.get_ticks_msec() < _observation_retry_after:
+		return
+	var viewport := get_viewport().get_visible_rect().size
+	var factor := Vector2(get_window().size) / viewport
+	var measured := MobileRuntime.get_safe_area_observation()
+	var android := {}
+	for key in ["view_size", "decor_size"]:
+		if measured.has(key):
+			android[key] = _observation_vector(measured[key])
+	for key in ["render_rect", "system_insets", "insets"]:
+		if measured.has(key):
+			android[key] = _observation_rect(measured[key])
+	var observation_source := "platform_safe_area"
+	if not measured.is_empty():
+		observation_source = "android_window_insets" if OS.has_feature("android") else "platform_fixture"
+	var controls := []
+	for index in range(english_buttons.size()):
+		controls.append(_observation_control(english_buttons[index], "choice_%d" % index, factor))
+	for button: Button in actions.get_children():
+		if button in english_buttons:
+			continue
+		var identifier := "hint" if button == main_button else "voice" if button == voice_button else "restart" if button.text == "Neu" else "return"
+		controls.append(_observation_control(button, identifier, factor))
+	var objects := []
+	for index in range(english_models.size()):
+		var entry := ENGLISH_GALLERY.observe_geometry(english_models[index], camera, factor)
+		var pick := english_pick_rect(index)
+		entry["pick_rect_px"] = _observation_rect(Rect2(pick.position * factor, pick.size * factor))
+		objects.append(entry)
+	var projection := camera.get_camera_projection()
+	var columns := []
+	for column in range(4):
+		var value: Vector4 = projection[column]
+		columns.append([value.x, value.y, value.z, value.w])
+	var view := camera.get_camera_transform().affine_inverse()
+	var insets := MobileRuntime.get_safe_area_insets() if not measured.is_empty() else Rect2()
+	var safe := Rect2(insets.position, viewport - insets.position - insets.size)
+	_observation_sequence += 1
+	var snapshot := {
+		"schema": 1, "layout_sequence": int(_observation_sequence),
+		"ticks_msec": int(Time.get_ticks_msec()), "pid": int(OS.get_process_id()),
+		"settled": true, "ui_visible": true, "observation_source": observation_source,
+		"launch": _learning_launch.duplicate(true),
+		"selection": int(activity.english_choice), "hint_level": int(activity.english_hint_level),
+		"attempts": int(activity.english_attempts), "complete": activity.is_complete(),
+		"suspended": suspended, "voice_available": is_instance_valid(voice_button),
+		"window_px": _observation_vector(Vector2(get_window().size)),
+		"viewport_px": _observation_vector(viewport), "density": MobileRuntime.get_ui_density(),
+		"android_observation": android,
+		"safe_rect_px": _observation_rect(Rect2(safe.position * factor, safe.size * factor)),
+		"stage_rect_px": _observation_rect(Rect2(english_stage_rect.position * factor, english_stage_rect.size * factor)),
+		"header_rect_px": _observation_rect(Rect2(header.get_global_position() * factor, header.size * ui.scale * factor)),
+		"footer_rect_px": _observation_rect(Rect2(footer.get_global_position() * factor, footer.size * ui.scale * factor)),
+		"title": title.text, "explanation": explanation.text, "status": status.text,
+		"controls": controls, "objects": objects,
+		"camera": {"projection_columns": columns,
+			"view_basis_columns": [_observation_vector3(view.basis.x), _observation_vector3(view.basis.y), _observation_vector3(view.basis.z)],
+			"view_origin": _observation_vector3(view.origin)},
+	}
+	var file := FileAccess.open(LEARNING_OBSERVATION + ".tmp", FileAccess.WRITE)
+	if file == null:
+		_observation_retry_after = Time.get_ticks_msec() + 2000
+		return
+	file.store_string(JSON.stringify(snapshot))
+	file.flush()
+	var error := file.get_error()
+	file.close()
+	if error == OK:
+		error = DirAccess.rename_absolute(LEARNING_OBSERVATION + ".tmp", LEARNING_OBSERVATION)
+	if error == OK:
+		_observation_pending = false
+	else:
+		_observation_retry_after = Time.get_ticks_msec() + 2000

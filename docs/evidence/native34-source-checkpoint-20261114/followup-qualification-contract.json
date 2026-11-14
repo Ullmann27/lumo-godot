@@ -1,0 +1,104 @@
+{
+  "source_checkpoint_first": true,
+  "active_candidate_unchanged": {
+    "native": "2281d990fb584db6f2cf786da8fec3badc2d9585"
+  },
+  "no_product_tests_in_this_pack": true,
+  "existing_gates_to_preserve": [
+    "52 current Native modes with17-image extension and unchanged24/4/6/7 rosters",
+    "Dream5/7/2",
+    "Discovery10/38/2",
+    "Village Economy339 and Scaling42/46 plus two original PNGs",
+    "Mobile SafeArea/Minimap full original contract",
+    "Wisp14 and acknowledged C4Return21",
+    "All three original2281 notice paths in actual Android PCK"
+  ],
+  "new_published_gate_interfaces": {
+    "memory_fixture": {
+      "script": "scripts/tests/memory_table_regression.gd",
+      "environment": [
+        "LUMO_MEMORY_CAPTURE_DIR"
+      ],
+      "arguments": [
+        "--capture"
+      ],
+      "success_marker_prefix": "MEMORY_VIEW_PASS",
+      "desktop_only": true
+    },
+    "memory_pair": {
+      "python": "tools/run_memory_native_authority.py",
+      "required_options": [
+        "--native",
+        "--host",
+        "--expected-native",
+        "--expected-host",
+        "--output"
+      ],
+      "optional_options": [
+        "--godot",
+        "--dart",
+        "--capture"
+      ],
+      "required_new_pair": "The future actual checkpointed Native and Host, never the old producer pair",
+      "host_dependency": "tools/android_qa/memory_native_authority.dart",
+      "success_marker": "[MemoryNativePair] PASS",
+      "boundary": "Actual production Dart rules/session plus Godot input; disk transport, controlled clock/deck and reward ledger are declared QA adapters, not Android persistence."
+    },
+    "quiz_pair": {
+      "python": "tools/run_quiz_native_authority.py",
+      "required_options": [
+        "--native",
+        "--host",
+        "--expected-native",
+        "--expected-host",
+        "--output"
+      ],
+      "optional_options": [
+        "--godot",
+        "--dart",
+        "--capture"
+      ],
+      "host_dependency": "tools/android_qa/quiz_native_authority.dart",
+      "success_marker": "[QuizNativePair] PASS",
+      "boundary": "Real production bank/controller/session and presenter with declared QA disk transport and award ledger. --fixture is a separate UI/transport fixture, not a rules/persistence proof."
+    },
+    "english": {
+      "script": "scripts/tests/learning_english_regression.gd",
+      "required_arguments": [
+        "--output="
+      ],
+      "capture_argument": "--capture",
+      "actual_host_fixture_argument": "--task-fixtures=",
+      "host_dependency": "tool/check_native_english_activity.dart",
+      "success_marker_prefix": "LEARNING_ENGLISH_PASS",
+      "catalogue_objects": 14,
+      "boundary": "The original source accepts an explicitly supplied actual Dart producer report; no old synthetic output is a new combined-source result."
+    }
+  },
+  "published_observation_not_transferred": {
+    "native": "29080ef8cd1a5b385eeeec97976fbefd31280427",
+    "host": "50503fef8e93700d9a889e33c3d2c37fccb46e42",
+    "authority_run": 43611803404,
+    "authority_jobs_success": true,
+    "quiz": {
+      "checks": 381,
+      "captures": 6,
+      "requests": 67
+    },
+    "memory": {
+      "view_checks": 7020,
+      "view_captures": 8,
+      "pair_checks": 244,
+      "pair_inputs": 57
+    },
+    "english": {
+      "checks": 7633,
+      "captures": 17,
+      "input_events": 196
+    },
+    "full_studio_run": 43611803408,
+    "last_observed_at": "2026-11-14 16:17:18 UTC",
+    "full_studio_state": "All six initial jobs success; new-worlds still in progress. Not a full-workflow PASS."
+  },
+  "png_boundary": "Published pair helpers bind header/dimensions/hash and sidecars; any broader full PNG-decoding acceptance must use the corresponding genuine original payload decoder. This source pack claims no new image acceptance."
+}

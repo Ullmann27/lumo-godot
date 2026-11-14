@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "status": "ROOT_STATIC_REVIEW_BEFORE_SOURCE_CHECKPOINT",
+  "parent": "2281d990fb584db6f2cf786da8fec3badc2d9585",
+  "producer": "29080ef8cd1a5b385eeeec97976fbefd31280427",
+  "source_count": 34,
+  "materialized_sources_rehashed": 21,
+  "original_archive_members_fully_byte_compared": 71,
+  "original_archive_sha256": "aff56ff447426b03ced2cc6d01192b5798784d2a1dc68756333b4d212aad8129",
+  "complete_merged_vs_producer_patch_read": true,
+  "merged_source_paths": [
+    "scripts/learning/learning_world.gd",
+    "scripts/systems/host_bridge.gd"
+  ],
+  "merge_scope": "The published English implementation retains Root Wisp calls/lifecycle; Memory/Quiz allowlist additions retain the complete Village guard. The complete 3906-character merge delta was read.",
+  "negative_fixture": "res://secret.glb is deliberately rejected in the original ACTIVITY.configure-negative fixture, not a missing preload.",
+  "protected_paths": 35,
+  "runtime_tests": "NOT_RUN",
+  "active_host": "5ad005bd080ac8c17f88eefcd3d2833c49be6d48",
+  "active_native": "2281d990fb584db6f2cf786da8fec3badc2d9585",
+  "active_candidate_changed": false
+}

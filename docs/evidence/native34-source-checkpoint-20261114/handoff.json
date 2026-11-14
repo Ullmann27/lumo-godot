@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "status": "FROZEN_SOURCE_ONLY_BEFORE_CHECKPOINT_TESTS",
+  "parent": "2281d990fb584db6f2cf786da8fec3badc2d9585",
+  "base_tree": "d7e0128afbda641cb92e29c41a8839d901ef5b43",
+  "producer": "29080ef8cd1a5b385eeeec97976fbefd31280427",
+  "source_count": 34,
+  "new_merged_blobs": [
+    {
+      "path": "scripts/learning/learning_world.gd",
+      "mode": "100644",
+      "git_blob": "8d2c67ac7e630610093f02a5093d6f06e204d88a",
+      "sha256": "c9238933216622c255b73ceb52d251491cd154c04e64db6d55b23c4e5ac1ad2f",
+      "bytes": 62984
+    },
+    {
+      "path": "scripts/systems/host_bridge.gd",
+      "mode": "100644",
+      "git_blob": "a9876cec58d075b7fc88d326eb6588d44aeaf4db",
+      "sha256": "7155c6bef2655499f72c4f32ce72a0feb0617ebad1b5e239bb5592a228c7cb8c",
+      "bytes": 5634
+    }
+  ],
+  "source_freeze": {
+    "path": "/workspace/scratch/b3485b7bb989/native182-29080-integration-2281-20261114/source-freeze.json",
+    "bytes": 37643,
+    "sha256": "cbc83726bba47e862adbb9d1adab6d3fda4f487b75900b69b54f5978f112374a",
+    "git_blob": "3ebb86a3ce78e11ef2eefd7ddeec187c4b6a6a15"
+  },
+  "publication_map": {
+    "path": "/workspace/scratch/b3485b7bb989/native182-29080-integration-2281-20261114/publication-source-map.json",
+    "bytes": 26973,
+    "sha256": "298be681db8523db74b164369224c6b32754a4b0866fa0ee8790df39ebe8a4cc",
+    "git_blob": "bd0cecbada93ebc4945a401039114ca839dca548"
+  },
+  "manifest": {
+    "path": "/workspace/scratch/b3485b7bb989/native182-29080-integration-2281-20261114/manifest.json",
+    "bytes": 16946,
+    "sha256": "d12024059400a4d1c767ea5c8711aa8d2de2930f5436776bb3908d0705b5f3b9",
+    "git_blob": "2969d6c49389fa42b6b8f142352da2481e01cf7c"
+  },
+  "source_archive": {
+    "path": "/workspace/scratch/b3485b7bb989/native182-29080-integration-2281-20261114/native182-29080-source-originals.tar.gz",
+    "bytes": 557258,
+    "sha256": "aff56ff447426b03ced2cc6d01192b5798784d2a1dc68756333b4d212aad8129",
+    "git_blob": "366debefbd36aeb606ff9e6845eef1ccb2607b8f",
+    "members": 71
+  },
+  "roundtrip": {
+    "path": "/workspace/scratch/b3485b7bb989/native182-29080-integration-2281-20261114/roundtrip.json",
+    "bytes": 337,
+    "sha256": "3114b3ff7df31f55494fd1344ff87e766b7fb4c83d3e659ef2d121ae430b3ffb",
+    "git_blob": "40d2425f8618a4614e44c77a1a62aa6b54d214c9"
+  },
+  "scope": "Exactly34 authorized source entries, two real hunk unions,35 protected paths unchanged. No product tests, engine/import, renderer, Android, refs, pins or workflow changes. Root checkpoint before tests."
+}
