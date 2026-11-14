@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/tests",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/5987865ae883/lumo-godot",
+  "started_at_utc": "2026-11-13T22:56:38.279364+00:00",
+  "elapsed_seconds": 13.939194373990176,
+  "exit_code": 0,
+  "log_sha256": "34537693ca4007dfdbc0f2ad6f76ef35311597f109c6643a57147cca14287cab",
+  "test_source_sha256": "58bc8cf4ddec61355bdd349612d99360b6142a3c3969ce12366e14c91c7e7560",
+  "harness_sha256": "78d1cd6df60968c9d4d767b0c27c9b240df9968a817e703cec8d77294057b587",
+  "baseline_revision": "20fd2880494c10f8f7d3a266956995e97f9011df",
+  "scope": "Full tools/tests discovery; only owned test_nextgen_runner.py differs from verified remote baseline."
+}

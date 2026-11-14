@@ -4,6 +4,7 @@ extends Node3D
 ## No new race modes or modified rewards / game-state persistence.
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const MENU_ART = preload("res://scripts/games/kart_menu_art.gd")
+const DREAM_AMBIENCE = preload("res://scripts/systems/render/lumo_dream_ambience.gd")
 const COMPANION = preload("res://scenes/characters/lumo/lumo_character.tscn")
 
 var _safe: MarginContainer
@@ -19,6 +20,7 @@ var _choice_buttons: Array[Button] = []
 func _ready() -> void:
 	_build_scenery()
 	_build_live_lumo()
+	DREAM_AMBIENCE.attach(self, "game_hub")
 	_build_controls()
 	get_viewport().size_changed.connect(_layout)
 	_layout()

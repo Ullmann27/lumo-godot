@@ -25,6 +25,7 @@ const TITLE_BY_SCENE: Dictionary = {
 	"jump": "LUMO ABENTEUER",
 	"learning": "LUMO LERNWERKSTATT",
 	"cards": "LUMO CARDS",
+	"connect_four": "VIER GEWINNT",
 }
 signal load_state_changed(state: String)
 ## Test harnesses may attach the actual boot scene without starting navigation.
@@ -74,11 +75,12 @@ func _ready() -> void:
 		_reduced_motion = _reduced_motion or bool(session.get_value("race", "reduced_motion", false))
 	var requested: String = str(options.get("scene", ""))
 	var target: String = requested if requested in [
-		"kart", "jump", "puzzle", "build", "rhythm", "treasure", "learning", "cards", "home", "games"
+		"kart", "jump", "puzzle", "build", "rhythm", "treasure", "learning", "cards", "connect_four", "home", "games"
 	] else "games"
 	_show_cover(target)
 	_build_actions()
 	get_viewport().size_changed.connect(_layout)
+	MobileRuntime.safe_area_changed.connect(_layout)
 	_layout()
 	SceneRouter.loaded_navigation_failed.connect(_navigation_failed)
 	# Let the real cover render before requesting the scene and native model.
@@ -362,13 +364,16 @@ func _show_cover(scene_id: String) -> void:
 
 
 func _layout() -> void:
+	if not is_inside_tree():
+		return
+	$Layer.visible = MobileRuntime.safe_area_is_ready()
 	var size: Vector2 = get_viewport().get_visible_rect().size
 	if size.x < 1 or size.y < 1:
 		return
 	var physical := Vector2(get_window().size)
 	var dp := physical / MobileRuntime.get_ui_density()
 	var scale_factor := maxf(size.x / dp.x, size.y / dp.y)
-	var insets := MobileRuntime.get_safe_area_insets() if OS.has_feature("android") else Rect2()
+	var insets := MobileRuntime.get_safe_area_insets() if OS.has_feature("android") or MobileRuntime.requires_safe_area_observation() else Rect2()
 	var safe_origin := insets.position * size / physical
 	var safe_size := size - (insets.position + insets.size) * size / physical
 	var compact: bool = dp.y < 410
@@ -423,3 +428,10 @@ func _layout() -> void:
 			var portrait_stage: bool = _hero_box.size.x < _hero_box.size.y
 			_hero_camera.keep_aspect = Camera3D.KEEP_WIDTH if portrait_stage else Camera3D.KEEP_HEIGHT
 			_hero_camera.fov = 46.0 if portrait_stage else 37.0
+
+
+func _exit_tree() -> void:
+	if MobileRuntime.safe_area_changed.is_connected(_layout):
+		MobileRuntime.safe_area_changed.disconnect(_layout)
+	if get_viewport().size_changed.is_connected(_layout):
+		get_viewport().size_changed.disconnect(_layout)

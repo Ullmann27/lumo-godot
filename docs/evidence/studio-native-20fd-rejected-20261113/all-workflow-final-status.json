@@ -1,0 +1,132 @@
+{
+  "source": "20fd2880494c10f8f7d3a266956995e97f9011df",
+  "runs": [
+    {
+      "id": 43520247945,
+      "name": "Lumo Kart Video Reference Grade",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247945"
+    },
+    {
+      "id": 43520247970,
+      "name": "Lumo Kart Rival Feedback",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247970"
+    },
+    {
+      "id": 43520247920,
+      "name": "Lumo Sonnenhafen 2003 real bird eye and jump QA",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247920"
+    },
+    {
+      "id": 43520247966,
+      "name": "Verify Lumo Kart Stage 2",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247966"
+    },
+    {
+      "id": 43520247870,
+      "name": "Sonnenhafen 2027 stunt integration",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247870"
+    },
+    {
+      "id": 43520247803,
+      "name": "Lumo original 65-bone grounded walk gait QA",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247803"
+    },
+    {
+      "id": 43520247885,
+      "name": "Sonnenhafen hero flight actual Godot regression",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247885"
+    },
+    {
+      "id": 43520247857,
+      "name": "Lumo Kart dynamic neon surge event inside real race",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247857"
+    },
+    {
+      "id": 43520247811,
+      "name": "Lumo Kart deterministic resonance racing gameplay",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247811"
+    },
+    {
+      "id": 43520247819,
+      "name": "Lumo native lifecycle and Bauwelt play proof",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247819"
+    },
+    {
+      "id": 43520247706,
+      "name": "Lumo Next Gen visual smoke and real Kart screenshots",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247706"
+    },
+    {
+      "id": 43520247754,
+      "name": "Lumo Kart and Bauwelt integration QA",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247754"
+    },
+    {
+      "id": 43520247880,
+      "name": "Verify committed Kart vehicle geometry",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520247880"
+    },
+    {
+      "id": 43520242403,
+      "name": "LUMO Studio native acceptance",
+      "status": "completed",
+      "conclusion": "failure",
+      "event": "push",
+      "head_sha": "20fd2880494c10f8f7d3a266956995e97f9011df",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43520242403"
+    }
+  ],
+  "scope": "Actual GitHub workflow conclusions; no hardware performance or aggregate native approval inferred."
+}

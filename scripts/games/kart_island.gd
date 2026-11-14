@@ -1169,6 +1169,7 @@ func _build_ui() -> void:
 	menu_settings_navigation.hide()
 	modal.hide()
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
+	MobileRuntime.safe_area_changed.connect(_on_viewport_size_changed)
 	_update_safe_area()
 
 
@@ -1201,20 +1202,23 @@ func _apply_safe_area(insets: Rect2, physical_size: Vector2) -> void:
 
 
 func _on_viewport_size_changed() -> void:
+	if not is_inside_tree():
+		return
 	_update_safe_area()
 	_apply_responsive_layout()
 
 
 func _update_safe_area() -> void:
-	if not is_instance_valid(safe_ui):
+	if not is_inside_tree() or not is_instance_valid(safe_ui):
 		return
+	safe_ui.visible = MobileRuntime.safe_area_is_ready()
 	var insets := Rect2()
-	if OS.has_feature("android") or OS.has_feature("ios"):
+	if OS.has_feature("android") or OS.has_feature("ios") or MobileRuntime.requires_safe_area_observation():
 		insets = MobileRuntime.get_safe_area_insets()
 		# Usable screen bounds alone can omit camera cutouts in immersive mode.
 		var screen: Vector2i = DisplayServer.screen_get_size()
 		var unobscured: Rect2i = DisplayServer.get_display_safe_area()
-		if screen.x > 0 and screen.y > 0 and unobscured.has_area():
+		if not MobileRuntime.requires_safe_area_observation() and screen.x > 0 and screen.y > 0 and unobscured.has_area():
 			insets.position.x = maxf(insets.position.x, unobscured.position.x)
 			insets.position.y = maxf(insets.position.y, unobscured.position.y)
 			insets.size.x = maxf(insets.size.x, screen.x - unobscured.end.x)
@@ -4021,6 +4025,10 @@ func _notification(what: int) -> void:
 
 
 func _exit_tree() -> void:
+	if MobileRuntime.safe_area_changed.is_connected(_on_viewport_size_changed):
+		MobileRuntime.safe_area_changed.disconnect(_on_viewport_size_changed)
+	if get_viewport().size_changed.is_connected(_on_viewport_size_changed):
+		get_viewport().size_changed.disconnect(_on_viewport_size_changed)
 	get_tree().auto_accept_quit = previous_auto_accept_quit
 	get_tree().quit_on_go_back = previous_quit_on_go_back
 	if is_instance_valid(engine_player):

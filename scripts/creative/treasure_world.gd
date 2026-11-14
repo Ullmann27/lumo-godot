@@ -17,6 +17,7 @@ var safe_ui: Control
 var top: HBoxContainer
 var title_label: Label
 var clue_panel: PanelContainer
+var clue_button: Button
 var jump_button: Button
 var player: CharacterBody3D
 var fox: Node3D
@@ -88,6 +89,7 @@ func _ready() -> void:
 	alternate_marker.hide()
 	_ui()
 	get_viewport().size_changed.connect(_layout)
+	RUNTIME.watch_safe_area(self, _layout)
 	_layout()
 	_update()
 	if model.completed:
@@ -95,6 +97,9 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	RUNTIME.unwatch_safe_area(self)
+	if get_viewport().size_changed.is_connected(_layout):
+		get_viewport().size_changed.disconnect(_layout)
 	RUNTIME.restore(self, previous)
 
 
@@ -248,6 +253,11 @@ func _ui() -> void:
 	safe_ui.add_child(top)
 	top.add_child(KIT.button("‹ Spiele", _leave))
 	title_label = KIT.label("LUMOS STERNENSCHATZ", 24)
+	# Bright clouds can sit directly behind the white title after restoring a
+	# saved position. Keep the original caption legible against every view.
+	var title_backdrop := KIT.panel()
+	title_backdrop.set_content_margin_all(4)
+	title_label.add_theme_stylebox_override("normal", title_backdrop)
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_label.clip_text = true
 	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -260,10 +270,17 @@ func _ui() -> void:
 	clue_label = KIT.label("", 18)
 	clue_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	clue_panel.add_child(clue_label)
+	clue_button = KIT.button("Hinweis", _show_clue, 110)
+	safe_ui.add_child(clue_button)
 	toast = KIT.label("Erkunde die Insel. Folge dem goldenen Stern!", 17)
+	var toast_backdrop := KIT.panel()
+	toast_backdrop.set_content_margin_all(8)
+	toast.add_theme_stylebox_override("normal", toast_backdrop)
 	toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	toast.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	safe_ui.add_child(toast)
+	toast.minimum_size_changed.connect(func(): _layout.call_deferred())
 	joystick = STICK.new()
 	joystick.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	joystick.position = Vector2(20, -208)
@@ -318,15 +335,47 @@ func _layout() -> void:
 		clue_width = minf(clue_width, available.x * 0.53)
 	clue_panel.position = Vector2(14, 76)
 	clue_panel.size = Vector2(clue_width, 0)
+	# A full quest card covers the avatar in a short landscape view. Keep the
+	# same complete text behind a real 48dp control instead of shrinking it.
+	clue_panel.visible = not short_landscape
+	clue_button.visible = short_landscape
 	title_label.add_theme_font_size_override("font_size", 19 if available.x < 600 else 24)
+	var toast_font_size := 15 if short_landscape else 17
+	if toast.get_theme_font_size("font_size") != toast_font_size:
+		toast.add_theme_font_size_override("font_size", toast_font_size)
 	if short_landscape:
-		toast.position = Vector2(clue_width + 28, 76)
-		toast.size = Vector2(available.x - clue_width - 42, 0)
+		var info_top := maxf(68, top.position.y + maxf(48, top.size.y) + 8)
+		clue_button.position = Vector2(14, info_top)
+		clue_button.size = Vector2(110, 48)
+		toast.position = Vector2(136, info_top)
+		toast.size = Vector2(available.x - 150, 48)
 	else:
 		var width := minf(560, available.x - 28)
-		toast.position = Vector2((available.x - width) * 0.5, available.y - maxf(stick_side, action_side + 60) - 80)
-		toast.size = Vector2(width, 0)
+		var gap_left := joystick.position.x + stick_side + 12
+		var gap_right := action.position.x - 12
+		if gap_right - gap_left >= 360:
+			# Wide/tall views have room between the thumb controls. Keep the
+			# message below the companion instead of across its lower body.
+			width = minf(width, gap_right - gap_left)
+			toast.size = Vector2(width, 48)
+			toast.position = Vector2((gap_left + gap_right - width) * 0.5, available.y - 16 - toast.size.y)
+		else:
+			toast.size = Vector2(width, 0)
+			var controls_top := minf(joystick.position.y, jump_button.position.y)
+			var preferred_top := available.y - maxf(stick_side, action_side + 60) - 80
+			toast.position = Vector2((available.x - width) * 0.5,
+				minf(preferred_top, controls_top - toast.size.y - 12))
 	_layout_modal()
+
+
+func _show_clue() -> void:
+	if paused:
+		return
+	_open_modal("Dein nächster Hinweis")
+	var text := KIT.label(clue_label.text, 19)
+	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	modal_box.add_child(text)
+	modal_box.add_child(KIT.button("Weiter erkunden", _close_modal))
 
 
 func _layout_modal() -> void:

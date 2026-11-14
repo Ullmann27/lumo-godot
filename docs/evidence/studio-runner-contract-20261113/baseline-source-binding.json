@@ -1,0 +1,25 @@
+{
+  "source_revision": "20fd2880494c10f8f7d3a266956995e97f9011df",
+  "source_tree": "20050679a3034eb9a03ded02ee3374b5cc54673e",
+  "files": [
+    {
+      "path": "tools/tests/test_nextgen_runner.py",
+      "bytes": 10326,
+      "sha256": "fe0426c3e895d10ecfb4b931d8883625baeac6d387f211f2d2eb700d6c33872e",
+      "git_blob": "49164a4b7cde1605ee80cd5ac0140a6ac55aa98d",
+      "source_revision": "20fd2880494c10f8f7d3a266956995e97f9011df"
+    },
+    {
+      "path": "tools/validate_studio.sh",
+      "bytes": 7230,
+      "sha256": "78d1cd6df60968c9d4d767b0c27c9b240df9968a817e703cec8d77294057b587",
+      "git_blob": "97e25c3ebef6f88a65ccee615ba144fe4b64b86a",
+      "source_revision": "20fd2880494c10f8f7d3a266956995e97f9011df"
+    }
+  ],
+  "preexisting_local_test": {
+    "bytes": 4876,
+    "sha256": "d99e5517f675bb7e9b831b6c847ac6fd899070516f1bab787e8ce39f4ccf5f3b"
+  },
+  "action": "Restored only the explicitly owned test file from exact remote 20fd bytes before the local red run; actual harness already matched."
+}

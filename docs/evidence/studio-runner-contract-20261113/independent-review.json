@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "reviewed_at_utc": "2026-11-13T22:58:27.160029+00:00",
+  "mode": "Unabhängiges ausschließlich lesendes Diffreview; keine eigene Testwiederholung.",
+  "status": "KEIN_ZUSAETZLICHER_KONKRETER_BLOCKER",
+  "baseline_source": "20fd2880494c10f8f7d3a266956995e97f9011df",
+  "file": "tools/tests/test_nextgen_runner.py",
+  "before_sha256": "fe0426c3e895d10ecfb4b931d8883625baeac6d387f211f2d2eb700d6c33872e",
+  "reviewed_sha256": "58bc8cf4ddec61355bdd349612d99360b6142a3c3969ce12366e14c91c7e7560",
+  "unchanged_harness_sha256": "78d1cd6df60968c9d4d767b0c27c9b240df9968a817e703cec8d77294057b587",
+  "findings": [
+    {
+      "area": "Ursprüngliche elf Aufrufe",
+      "result": "Das Filtern der drei ausdrücklich neuen Probennamen erhält den vollständigen bisherigen Vertrag. Alle alten Namen, Marker, Reihenfolgen und Zeitbudgets bleiben exakt geprüft; unbekannte zusätzliche Aufrufe werden weiterhin abgewiesen."
+    },
+    {
+      "area": "Neue fünf Aufrufe",
+      "result": "Alle fünf Aufrufe werden mit exakten Markern, Modi und Budgets geprüft; die Renderaufrufe für Cards und Mobile verlangen weiterhin --capture. Die Gesamtzahl von 16 ist ausdrücklich gebunden."
+    },
+    {
+      "area": "Bisherige 30 Bilder und sieben neue Bilder",
+      "result": "Die positive Fixture erzeugt alle bisher erwarteten Bilder sowie drei Cards- und vier Mobile-Bilder. Rostergröße 37 und genaue Verteilung auf die Proben sind geprüft. Die bisherigen drei Gegenfälle zum Puzzle-Menü bleiben bestehen."
+    },
+    {
+      "area": "Cards-Negativfälle",
+      "result": "Zwölf isolierte Mutationen decken fehlendes Bild oder Sidecar, beschädigtes JSON, boolesches oder falsches Schema, unsettled/hidden/pending, falsche Quelle oder Auflösung sowie leere Hand oder Ablage ab. Der vollständig bestandene positive Ausgangsfall verhindert, dass der frühere allgemeine Fehler wegen fehlender Cards-Dateien die neuen Gegenfälle maskiert."
+    },
+    {
+      "area": "Mobile-Negativfälle",
+      "result": "Zwölf isolierte Mutationen decken fehlende, umbenannte oder falsch große Bilder, fehlenden oder beschädigten Report, gemeldete Fehler, falsche Anzahl von Touchflächen, unsichere oder zu kleine Touchfläche, falschen Bildhash und fehlende oder zusätzliche Rosterzeilen ab. Beim Dimensionsfall steht die tatsächliche Dimensionsassertion vor dem Hashvergleich; die Ablehnung erfolgt somit nicht allein durch einen nebenbei veränderten Hash."
+    },
+    {
+      "area": "Produktiver Harness",
+      "result": "tools/validate_studio.sh ist bytegleich zum tatsächlichen 20fd-GitHub-Stand. Kein Pflichtgate oder Produktpfad wird abgeschwächt."
+    }
+  ],
+  "limits": [
+    "Dieses Review bindet nur den hier gemessenen, von B abschließend eingefrorenen Testdateihash.",
+    "Die vollständige tools/tests-Ausführung wurde von B durchgeführt; dieses unabhängige Review liest deren unverändertes Originalprotokoll.",
+    "Synthetische PNG- und Layout-Fixtures prüfen Orchestrierung; sie ersetzen keine echte Renderer- oder Android-Abnahme."
+  ],
+  "validation_observed": {
+    "mode": "Vorhandenes Originalprotokoll gelesen, nicht erneut ausgeführt.",
+    "absolute_log": "/workspace/scratch/5987865ae883/qa/studio-native-20fd-runner-test-fix/green-full-suite.log",
+    "sha256": "34537693ca4007dfdbc0f2ad6f76ef35311597f109c6643a57147cca14287cab",
+    "tests": 68,
+    "failures": 0,
+    "skips": 0,
+    "duration_seconds": 13.735
+  }
+}

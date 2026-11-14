@@ -160,7 +160,7 @@ func _run() -> void:
 		"actual playback owner can enable gentle speech motion"
 	)
 	actor.apply_speech_sample(2.5, 0.7, true)
-	_check(not actor.mouth_supported, "voice envelope is not misreported as unsupported lip-sync")
+	_check(actor.mouth_supported and not actor.phoneme_lipsync_supported, "voice envelope is not misreported as unsupported lip-sync")
 	actor.set_suspended(true)
 	var paused_angle: Quaternion = actor.skeleton.get_bone_pose_rotation(head)
 	var paused_time: float = actor.player.current_animation_position

@@ -446,6 +446,7 @@ void fragment() {
 	_install_action_sheen(next_button)
 	footer.add_child(next_button)
 	get_viewport().size_changed.connect(_apply_responsive_layout)
+	MobileRuntime.safe_area_changed.connect(_apply_responsive_layout)
 	call_deferred("_apply_responsive_layout")
 	_refresh()
 	# The live Kart owner mounts the cinematic landing once above this
@@ -545,15 +546,16 @@ func _apply_responsive_layout() -> void:
 	_apply_ui_scale(self, ui_scale)
 	for side in ["left", "right", "top", "bottom"]:
 		page_margin.add_theme_constant_override("margin_" + side, roundi(margin * ui_scale))
+	page_margin.visible = MobileRuntime.safe_area_is_ready()
 	var safe_insets := Rect2()
 	if (
-		(OS.has_feature("android") or OS.has_feature("ios"))
+		(OS.has_feature("android") or OS.has_feature("ios") or MobileRuntime.requires_safe_area_observation())
 		and not get_parent().get_meta("kart_safe_insets_applied", false)
 	):
 		safe_insets = MobileRuntime.get_safe_area_insets()
 		var screen: Vector2i = DisplayServer.screen_get_size()
 		var safe_rect: Rect2i = DisplayServer.get_display_safe_area()
-		if screen.x > 0 and screen.y > 0 and safe_rect.has_area():
+		if not MobileRuntime.requires_safe_area_observation() and screen.x > 0 and screen.y > 0 and safe_rect.has_area():
 			safe_insets.position.x = maxf(safe_insets.position.x, safe_rect.position.x)
 			safe_insets.position.y = maxf(safe_insets.position.y, safe_rect.position.y)
 			safe_insets.size.x = maxf(safe_insets.size.x, screen.x - safe_rect.end.x)
@@ -2053,3 +2055,10 @@ func _update_garage_action_targets() -> void:
 	if not fits:
 		_garage_targets.clear()
 		_cancel_garage_press()
+
+
+func _exit_tree() -> void:
+	if MobileRuntime.safe_area_changed.is_connected(_apply_responsive_layout):
+		MobileRuntime.safe_area_changed.disconnect(_apply_responsive_layout)
+	if get_viewport().size_changed.is_connected(_apply_responsive_layout):
+		get_viewport().size_changed.disconnect(_apply_responsive_layout)

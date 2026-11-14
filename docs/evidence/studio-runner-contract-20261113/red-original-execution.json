@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/tests",
+    "-p",
+    "test_nextgen_runner.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/5987865ae883/lumo-godot",
+  "started_at_utc": "2026-11-13T22:53:05.408847+00:00",
+  "elapsed_seconds": 6.609652486004052,
+  "exit_code": 1,
+  "log_sha256": "65bfb30299cc651fff5fad00b408aeae5665b0b91252a0ee3a9a7a48ed0b07fb",
+  "test_source_sha256": "fe0426c3e895d10ecfb4b931d8883625baeac6d387f211f2d2eb700d6c33872e",
+  "harness_sha256": "78d1cd6df60968c9d4d767b0c27c9b240df9968a817e703cec8d77294057b587",
+  "source_revision": "20fd2880494c10f8f7d3a266956995e97f9011df"
+}

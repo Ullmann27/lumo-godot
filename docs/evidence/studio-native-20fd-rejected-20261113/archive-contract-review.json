@@ -1,0 +1,100 @@
+{
+  "native_source": "20fd2880494c10f8f7d3a266956995e97f9011df",
+  "native_tree": "20050679a3034eb9a03ded02ee3374b5cc54673e",
+  "run_id": 43520242403,
+  "mode": "Read-only exact-source structure review, not a completed CI result",
+  "jobs": [
+    "learning-preview",
+    "gameplay",
+    "new-worlds",
+    "studio",
+    "touch-workshop",
+    "touch-treasure",
+    "touch-build",
+    "bundle-evidence",
+    "archive-evidence"
+  ],
+  "job_dependencies": {
+    "learning-preview": [],
+    "gameplay": [],
+    "new-worlds": "studio",
+    "studio": [],
+    "touch-density": [],
+    "bundle-evidence": [
+      "new-worlds",
+      "touch-density"
+    ],
+    "archive-evidence": [
+      "learning-preview",
+      "gameplay",
+      "new-worlds",
+      "studio",
+      "touch-density",
+      "bundle-evidence"
+    ]
+  },
+  "studio_probe_calls": [
+    "check_probe learning_sharing_regression '[LearningSharing] PASS' headless 180",
+    "check_probe learning_studio_regression '[LearningStudio] PASS' headless 180",
+    "check_probe lumo_studio_motion_regression '[LumoStudioMotion] PASS' headless 180",
+    "check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' headless 180",
+    "check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' headless 180",
+    "check_probe treasure_exploration_regression '[TreasureExploration] PASS' headless 180",
+    "check_probe cards_safe_area_android_contract 'CARDS_ANDROID_INSETS_PASS' headless 180",
+    "check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' headless 180",
+    "check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' headless 240",
+    "check_probe learning_sharing_capture '[LearningSharingCapture] PASS' rendered 600 \\",
+    "check_probe lumo_studio_motion_capture '[LumoStudioCapture] PASS' rendered 420",
+    "check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' rendered 600",
+    "check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' rendered 600 -- --capture",
+    "check_probe treasure_exploration_regression '[TreasureExploration] PASS' rendered 600",
+    "check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' rendered 600 -- --capture",
+    "check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' rendered 900 -- --capture"
+  ],
+  "required_studio_pngs": {
+    "learning_sharing_capture": 6,
+    "lumo_studio_motion_capture": 8,
+    "puzzle_rotation_regression": 7,
+    "treasure_exploration_regression": 3,
+    "puzzle_menu_lifecycle_regression": 6,
+    "cards_safe_area_regression": 3,
+    "mobile_safe_area_regression": 4
+  },
+  "total_studio_pngs": 37,
+  "cards_sidecars": {
+    "count": 3,
+    "suffix": ".layout.json",
+    "schema": 1,
+    "observation_source": "fixture"
+  },
+  "shared_sidecar": {
+    "path": "studio-evidence/captures/mobile_safe_area_regression/mobile-safe-area.json",
+    "target_count": 15,
+    "source": "Android geometry fixture, no real Android measurement"
+  },
+  "source_stamps": {
+    "sha_and_empty_dirty_required": 5,
+    "tree_stamps_present_by_contract": 4,
+    "nextgen_tree_absent_by_existing_contract": true
+  },
+  "original_archive_name": "lumo-studio-2019-native-evidence",
+  "archive_path": "/workspace/scratch/5987865ae883/qa/studio-native-20fd-original.zip",
+  "archive_publication": "Source/artifact-specific prerelease of exact original evidence ZIP; no APK",
+  "source_files": [
+    {
+      "path": ".github/workflows/lumo-studio-2019.yml",
+      "bytes": 19740,
+      "sha256": "ef24a0668a05e92e8865ae0aaed618397d1de096939140df85d6040313825d3b"
+    },
+    {
+      "path": "tools/validate_studio.sh",
+      "bytes": 7230,
+      "sha256": "78d1cd6df60968c9d4d767b0c27c9b240df9968a817e703cec8d77294057b587"
+    },
+    {
+      "path": "tools/validate_studio_touch.sh",
+      "bytes": 3840,
+      "sha256": "4a517be7f757c16bd724c4fa9aa3b34b4e89cc873d32b4acc60f0c1f3408dc53"
+    }
+  ]
+}

@@ -128,11 +128,15 @@ func _ready() -> void:
 	_rebuild()
 	_camera_update(true)
 	get_viewport().size_changed.connect(_layout)
+	RUNTIME.watch_safe_area(self, _layout)
 	_layout()
 	print("[SettlementWorld] ready mode=", mode, " save=", save_path)
 
 
 func _exit_tree() -> void:
+	RUNTIME.unwatch_safe_area(self)
+	if get_viewport().size_changed.is_connected(_layout):
+		get_viewport().size_changed.disconnect(_layout)
 	get_viewport().gui_embed_subwindows = bool(previous.get("embed_subwindows", false))
 	RUNTIME.restore(self, previous)
 
@@ -422,7 +426,10 @@ func _cost_text(cost: Dictionary) -> String:
 	var parts := PackedStringArray()
 	for resource in ["wood", "stone", "food", "coins", "grain"]:
 		if int(cost.get(resource, 0)) > 0:
-			parts.append("%d %s" % [int(cost[resource]), labels[resource]])
+			var label: String = labels[resource]
+			if resource == "coins" and int(cost[resource]) == 1:
+				label = "Münze"
+			parts.append("%d %s" % [int(cost[resource]), label])
 	return ", ".join(parts)
 
 

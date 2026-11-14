@@ -132,12 +132,16 @@ func _ready() -> void:
 	add_child(audio)
 	_ui()
 	get_viewport().size_changed.connect(_layout)
+	RUNTIME.watch_safe_area(self, _layout)
 	_layout()
 	model.setup(0)
 	_show_start()
 
 
 func _exit_tree() -> void:
+	RUNTIME.unwatch_safe_area(self)
+	if get_viewport().size_changed.is_connected(_layout):
+		get_viewport().size_changed.disconnect(_layout)
 	RUNTIME.restore(self, previous)
 
 
