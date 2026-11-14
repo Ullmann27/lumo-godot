@@ -75,9 +75,13 @@ func _play_scene() -> void:
 	var game = load("res://scenes/creative/treasure_world.tscn").instantiate()
 	root.add_child(game)
 	await _settle(4)
+	var wonder = game.get_node("MagicalGuidance")
+	_check(wonder.route_count() == 1, "magical trail follows the first real clue")
+	_check(wonder.get_node("GuideGold") is MultiMeshInstance3D, "real instanced 3D wayfinding exists")
 	for index in range(3):
 		await _answer_at(game, index)
 	_check(game.available_goals.size() == 2 and game.alternate_marker.visible, "real scene displays both unlocked goals")
+	_check(wonder.route_count() == 2, "two magic trails guide both unlocked branches")
 	_check(game.has_node("TreasureBranchPaths/Path_crystals") and game.has_node("TreasureBranchPaths/Path_garden"), "both choices have real instanced 3D trail geometry")
 	game.player.position = Vector3(0, 0.05, -33)
 	game.player.velocity = Vector3.ZERO
@@ -98,6 +102,7 @@ func _play_scene() -> void:
 	await _answer_at(game, 4)
 	_check(game.model.inventory.has("Mondblüte") and not game.model.inventory.has("Kristallstern"), "native question UI accepts garden as first route")
 	_check(not game.alternate_marker.visible and game.available_goals[0].id == "crystals", "scene removes completed goal and keeps remaining objective")
+	_check(wonder.route_count() == 1, "solved route no longer shows stars")
 	_check(game._save(), "chosen branch saves through live world")
 	var recovered = STATE.new()
 	_check(recovered.restore(JSON.parse_string(FileAccess.get_file_as_string(game.save_path))) and recovered.found.has("garden"), "live world save resumes chosen branch")
@@ -105,6 +110,7 @@ func _play_scene() -> void:
 	for index in [3, 5, 6]:
 		await _answer_at(game, index)
 	_check(game.model.completed and game.model.inventory.has("Sternenschatz"), "alternative route reaches the original treasure completion")
+	_check(wonder.route_count() == 0, "completed quest clears magic routes")
 	await _capture("treasure_route_complete")
 	game.queue_free()
 	await process_frame

@@ -263,6 +263,10 @@ func _run() -> void:
 	await _settle()
 	_check(game.activity.kind == "bridge_ten", "actual production scene consumes current lesson")
 	_check(game.fox.is_usable(), "original 65-bone fox is actually mounted")
+	_check(game.has_node("LearningWonder"), "real learning scene mounts the magical feedback layer")
+	_check(game.wonder.celebration_only, "learning uses no quest trails or extra 32 guide sprites")
+	_check(game.wonder.get_node("DiscoverySparkles").multimesh.instance_count == 20, "reuses bounded native star geometry")
+	_check(game.wonder._reduced_motion, "native magic respects the current reduced-motion lesson")
 	_check(
 		game.fox.teacher_enabled and game.fox.teacher_pose.has_target,
 		"original fox actually enters teaching mode in production scene"
@@ -310,6 +314,7 @@ func _run() -> void:
 	Input.parse_input_event(touch)
 	await _settle()
 	_check(game.activity.placed.size() == 1, "tap manipulation reaches current next slot")
+	_check(game.wonder.get_node("DiscoverySparkles").visible, "correct spatial move starts visible star feedback")
 	_check(
 		game.tokens[0].position.is_equal_approx(game.targets[8]),
 		"visible object occupies ninth slot"
@@ -455,6 +460,7 @@ func _run() -> void:
 	root.add_child(game)
 	await _settle()
 	_check(not game.move_token(2), "wrong syllable is not accepted as first")
+	_check(not game.wonder.get_node("DiscoverySparkles").visible, "incorrect syllable triggers no success stars")
 	await _check_manipulative_layouts(game)
 	for index in range(3):
 		var letters: MeshInstance3D = game.tokens[index].get_node("SyllableGlyphs")
@@ -486,6 +492,7 @@ func _run() -> void:
 		game.title.text == "Pflanzen entdecken", "general plant introduction has a neutral title"
 	)
 	await _tap_learning_button(game, "Blüte")
+	_check(game.wonder.get_node("DiscoverySparkles").visible, "correct plant observation creates living fairy-light feedback")
 	await _tap_learning_button(game, "Wasser geben")
 	_check(
 		game.title.text == "Pflanzen entdecken" and game.explanation.text.begins_with("Wasser"),
