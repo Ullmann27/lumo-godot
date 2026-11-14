@@ -119,10 +119,32 @@ func _billboard() -> Basis:
     return camera.global_basis if is_instance_valid(camera) else Basis.IDENTITY
 
 
+func route_point(route_index: int, index: int) -> Vector3:
+    # The same coordinates drive the renderer and its headless regression.
+    # Some headless Godot backends do not expose Multimesh GPU buffer readback.
+    if route_index < 0 or route_index >= _goals.size():
+        return Vector3.ZERO
+    if index < 0 or index >= WISPS_PER_ROUTE:
+        return Vector3.ZERO
+    var offset := _goals[route_index] - _origin
+    var flat := Vector3(offset.x, 0.0, offset.z)
+    var distance := flat.length()
+    if distance < 0.65:
+        return _origin
+    var direction := flat / distance
+    var fraction := float(index + 1) / float(WISPS_PER_ROUTE + 1)
+    var reach := minf(distance, 18.0)
+    var travel := 0.65 + fraction * maxf(0.0, reach - 0.65)
+    var phase := float(index) * 0.85 + float(route_index) * 1.37
+    var y_offset := 0.0 if _reduced_motion else sin(_clock * 1.5 + phase) * 0.17
+    var at := _origin + direction * travel
+    at.y = 0.73 + y_offset
+    return at
+
+
 func _draw_routes() -> void:
     if _guides.is_empty():
         return
-    print("[TreasureWisp] draw_routes called goals=", _goals.size(), " inside=", is_inside_tree(), " guide_count=", _guides.size())
     var facing := _billboard()
     for route_index in range(_guides.size()):
         var node := _guides[route_index]
@@ -135,22 +157,13 @@ func _draw_routes() -> void:
         if distance < 0.65:
             node.visible = false
             continue
-        var direction := flat / distance
-        var reach := minf(distance, 18.0)
         var batch: MultiMesh = node.multimesh
         for i in range(WISPS_PER_ROUTE):
-            var fraction := float(i + 1) / float(WISPS_PER_ROUTE + 1)
-            var travel := 0.65 + fraction * maxf(0.0, reach - 0.65)
-            var phase := float(i) * 0.85 + float(route_index) * 1.37
-            var y_offset := 0.0 if _reduced_motion else sin(_clock * 1.5 + phase) * 0.17
-            var at := _origin + direction * travel
-            at.y = 0.73 + y_offset
+            var at := route_point(route_index, i)
             var size := 0.18 + 0.055 * pow(sin(float(i) * 1.31), 2.0)
             batch.set_instance_transform(
                 i, Transform3D(facing.scaled(Vector3.ONE * size), at)
             )
-            if i == 0:
-                print("[TreasureWisp] batch=", route_index, " computed=", at, " observed=", batch.get_instance_transform(0).origin)
 
 
 func _draw_celebration() -> void:
