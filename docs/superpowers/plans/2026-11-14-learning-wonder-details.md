@@ -1,25 +1,23 @@
-# Learning wonder details implementation plan
+# Learning wonder details — execution record
 
-## Goal and accepted direction
-Continue Heinz's existing LUMO, not a separate HTML demo: make the actual native learning scene a magical child-friendly space. Preserve original fox, controls, task answers, learning records, input picking and existing accessibility. The work is scoped to the learning scene so concurrent Kart/Studio/integration work is preserved.
+## Accepted direction
+Continue Heinz's original LUMO in the actual native learning route, not an independent HTML or concept image. Preserve original fox, learning controls, answers, profiles, handwriting, journal and saved rewards. Base is the existing ambience work at 9d7d1e3c1696fa7485e2079f3d14c5e7acf3ef35, not a competing particle system.
 
-## Approach
-Use the published `9d7d1e3c1696fa7485e2079f3d14c5e7acf3ef35` ambience as the base, not a second parallel particle system. `learning_world.gd` has its own `_build_stage`, so the shared environment hook currently does not reach it. Add a presentation-only `LearningWonderGarden` to the existing `learning_atelier.gd`. Observe the production activity; never write its state. Small flowers/lanterns react to actual manipulation, with a quiet, deterministic reduced-motion representation. Keep the existing 3D board and Lumo unobstructed.
+## Implementation
+A small `learning_wonder_world.gd` extends the original learning class, attaches the reactive garden to the existing atelier after its normal initialization, and provides landscape camera headroom. The production `learning_world.tscn` route points to that extension. **Original learning_world.gd, learning_atelier.gd, learning_activity.gd and the original fox are unchanged.**
 
-## Planned files
-- New `scripts/learning/learning_wonder_garden.gd`: bounded real 3D plants/lamps and actual-progress observation, reusing existing ambience.
-- Existing `scripts/learning/learning_atelier.gd`: attach to the production route, no replacement renderer or task generator.
-- Existing `scripts/systems/render/lumo_dream_ambience.gd` only for verified lifecycle/accessibility defects found in tests.
-- New `scripts/tests/learning_wonder_details_regression.gd`: production entry, real manipulation, reset, profile/reduced motion, pause and object/UI protection.
-- New `scripts/tests/learning_wonder_details_capture.gd`: original renderer captures of before/after, phone/wide, quiet and active modes.
-- Own `.github/workflows/lumo-learning-wonder-details.yml`: pinned Godot, strict logs, immutable-source evidence, no APK publication.
+The new garden observes actual activity state. Seven bounded MultiMesh geometry batches form copper planters, leaves and 35 hinged petals. The existing two-batch LumoDreamAmbience supplies the decorative particles/butterflies. Numbers, syllables and plant discovery have separate palettes. Decorative progress does not write answers, mastery, profile data, speech or rewards. An invalid activity does not allocate decorative geometry. Reduced motion retains static task feedback; suspension and SceneTree pause stop the local shader clock.
 
-## Steps
-1. Run the new scene-entry assertion on unchanged source and retain the actual failure.
-2. Import exact production sources with verified Godot 4.6.3; obtain a runtime archive for offline local rendering.
-3. Implement additive garden and hook; rerun same test, then existing learning/ambience probes.
-4. Render actual production scenes on phone and wide formats, inspect every selected original image and fix overlap/contrast.
-5. Push final source, create a draft against the ambience source, and notify the integration PR with exact tested SHA. No main merge, release pin update or APK claim until current full Native/Android gates pass.
+## Test-first evidence and rulings
+- Original missing-route assertion failed before implementation in local exact-capsule source and GitHub run43574150201. Its unchanged existing learning-image job succeeded, preserving the baseline.
+- Actual renderer inspection found flowers behind the landscape header. A projected-bounds assertion reproduced that failure; landscape framing was corrected rather than hiding flowers.
+- Portrait hundred flowers originally fell behind the footer. Exact-geometry projection reproduced this with 10 failures; those flowers moved to the side border, leaving original hundred-stock and source labels intact.
+- Ruling: use a short scene extension, not a rewrite of the large learning class or the concurrent team's atelier. This keeps integration additive and preserves every base learning method.
+- Ruling: validate flower projection using actual mesh vertices plus the petal shader's linear hinge transform. A cube combining mutually impossible extreme deflections caused false positives; actual-geometry checks remain strict.
+- Baseline invalid-scene disposal emits two material-null errors under Godot's dummy headless renderer. The exact baseline was reproduced independently. The invalid production route is therefore tested in the mandatory real-renderer regression, where those errors do not occur; they are not filtered from logs or silently relabelled as fixed.
 
-## Review focus
-Invalid lesson must not look completed; plant discovery is not arithmetic; changing orientation must preserve task state; app pause and reduced motion must stop decorative motion without disabling input; decoration must never intercept touch or obscure counters or the original fox.
+## Verification contract
+Run original learning, sharing, Studio and ambience regressions; new state/accessibility tests headless and with the real renderer; all 25 unmodified real-touch learning captures; and 11 new renderer captures with per-vertex bounds, dimensions, state metadata and hashes. Require zero SCRIPT ERROR, Parse Error or ERROR lines in these gates. Preserve ordinary renderer-compatibility warnings as evidence.
+
+## Scope limits
+No Flutter pin update, production APK/AAB, Play publication, physical Fold7/FPS/thermal claim, all-grade content review or full application visual approval. General Kart/full-project tests remain separate from the learning change; a local full-suite attempt reached the existing Kart pause-layout test but hit its time limit on software rendering. Do not present that attempt as a full-suite PASS. The final native SHA must pass integration/Android acceptance before any APK includes it.
