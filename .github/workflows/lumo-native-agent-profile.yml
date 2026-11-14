@@ -1,0 +1,23 @@
+name: LUMO native agent profile verification
+on:
+  push:
+    branches: [chatgpt/lumo-3d-agent-network-20261114]
+permissions:
+  contents: read
+jobs:
+  validate-native-agent-profile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify agent syntax and scoped native task contract
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('.github/agents/lumo-3d-director.agent.md')
+          text = p.read_text(encoding='utf-8')
+          assert text.startswith('---\nname: lumo-3d-director\n')
+          assert '\ntarget: github-copilot\n---\n' in text
+          assert all(x in text for x in ('Godot', 'Lernwelten', 'Nintendo', '48dp'))
+          print('PASS native agent profile; roles are definitions, not running sessions')
+          PY
