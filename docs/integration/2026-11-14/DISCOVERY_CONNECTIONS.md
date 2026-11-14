@@ -25,3 +25,7 @@ A minimal local test copy was reconstructed without cloning: 1375 original runti
 - The original Producer175/178 artifact ZIP hashes were verified and their combined 38 PNG fixture passed the new evidence checker. This fixture is explicitly not a union runtime result. Two hub images and representative landscape/portrait garden images were visually inspected.
 
 Raw logs for the completed local import/headless/checker/two renderer probes are preserved in [discovery-initial-runtime-tests.log](discovery-initial-runtime-tests.log). At publication, the union's 25 existing learning captures and 11 Wonder captures are still running sequentially; their success is not claimed here. The pinned-host workflow must complete the full new 10/38 gate as well as the existing 52/9/7 and Android gates. This checkpoint is source integration, not an APK release or measured physical-device FPS result.
+
+## Completed follow-up
+
+The original25-image capture and eleven Wonder images subsequently passed with38 verified PNGs in total. See [DISCOVERY_FINAL_VERIFICATION.md](DISCOVERY_FINAL_VERIFICATION.md) for actual durations, complete hash-bound evidence, the actual advanced-base reconciliation and the unchanged runtime boundary. The final runner uses900seconds for the same25-image probe, matching the existing52-mode gate.

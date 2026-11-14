@@ -1,0 +1,161 @@
+{
+  "schema": 1,
+  "previous_head": "a7bb5815009ea4ae9b8842026f4f3761ae99c98b",
+  "actual_base_ref": "integration/lumo-c4-connections-20261114",
+  "actual_base_head": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "pr173_stale_base_field": "0e26153f0e58cc05739e72923b4c563a4cf380b8",
+  "actual_comparison": {
+    "status": "diverged",
+    "ahead": 7,
+    "behind": 2,
+    "merge_base": "0e26153f0e58cc05739e72923b4c563a4cf380b8"
+  },
+  "delta_review": [
+    {
+      "path": "assets/creative/shaders/treasure_wisp.gdshader",
+      "theirs": "63fd420156242d2bea3a5a9d3ec04eac9da4974b",
+      "ours": "63fd420156242d2bea3a5a9d3ec04eac9da4974b",
+      "status": "identical"
+    },
+    {
+      "path": "docs/evidence/native-c4-return-connection-20261114/source-connection.json",
+      "theirs": "4323a3a46e840f0024fd389a136c8c095bbb6540",
+      "status": "new_evidence"
+    },
+    {
+      "path": "docs/evidence/native-magic-connection-20261114/independent-review.json",
+      "theirs": "f69a09d8fc2e49336ee3535e925ea04ea6aa2310",
+      "status": "new_evidence"
+    },
+    {
+      "path": "docs/evidence/native-magic-connection-20261114/magic-README.md",
+      "theirs": "6fe02f7b4e893507ec0f2867fec9c6d4c524d902",
+      "status": "new_evidence"
+    },
+    {
+      "path": "docs/evidence/native-magic-connection-20261114/magic-complete-originals.tar.gz",
+      "theirs": "923b0f35b1aa9a9dcdcc235b8c29a331dd4428aa",
+      "status": "new_evidence"
+    },
+    {
+      "path": "docs/evidence/native-magic-connection-20261114/magic-gate-contract.json",
+      "theirs": "573d54954972b0964bdf4ffa9426ce354695f7b0",
+      "status": "new_evidence"
+    },
+    {
+      "path": "docs/evidence/native-magic-connection-20261114/magic-handoff.json",
+      "theirs": "e1d939de0e59a1059a4ef139985536ee4e9b3479",
+      "status": "new_evidence"
+    },
+    {
+      "path": "docs/evidence/native-magic-connection-20261114/magic-manifest.json",
+      "theirs": "c637db4b32a17ad8007b45d73d38b44cdd7fb46c",
+      "status": "new_evidence"
+    },
+    {
+      "path": "docs/evidence/native-magic-connection-20261114/magic-preservation.json",
+      "theirs": "d8f516177107e44963b38c5cc18d3abb0bf06a1f",
+      "status": "new_evidence"
+    },
+    {
+      "path": "docs/evidence/native-magic-connection-20261114/magic-source-freeze.json",
+      "theirs": "4b2790db9c2cb409eb6a59eae00d2efd110d6e17",
+      "status": "new_evidence"
+    },
+    {
+      "path": "docs/evidence/native-magic-connection-20261114/root-connection.json",
+      "theirs": "7b2d816ff3466ab3c0d1d7e27f196b777fb37d5d",
+      "status": "new_evidence"
+    },
+    {
+      "path": "docs/handoffs/C4_RETURN_RECOVERY_2026-11-14.md",
+      "theirs": "d91d54528b49b4098bdf62ec162800a96c48d9a9",
+      "ours": "d91d54528b49b4098bdf62ec162800a96c48d9a9",
+      "status": "identical"
+    },
+    {
+      "path": "scripts/creative/treasure_wisps.gd",
+      "theirs": "2d854c19869a1959f9bbc76b9aa21c1ca8947a80",
+      "ours": "2d854c19869a1959f9bbc76b9aa21c1ca8947a80",
+      "status": "identical"
+    },
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "theirs": "703873a3b0fbe7e589c81bf9695fac5ecf43cd63",
+      "ours": "703873a3b0fbe7e589c81bf9695fac5ecf43cd63",
+      "status": "identical"
+    },
+    {
+      "path": "scripts/games/connect_four/connect_four_table.gd",
+      "theirs": "f2ae17e7edf8ac1b2d0d72a0d477d7e1459b1458",
+      "ours": "f2ae17e7edf8ac1b2d0d72a0d477d7e1459b1458",
+      "status": "identical"
+    },
+    {
+      "path": "scripts/learning/learning_world.gd",
+      "theirs": "c3b1bc8c73cd764724464d8d2fe0413bdba62a96",
+      "ours": "c3b1bc8c73cd764724464d8d2fe0413bdba62a96",
+      "status": "identical"
+    },
+    {
+      "path": "scripts/tests/connect_four_return_regression.gd",
+      "theirs": "1d7a4cbd0f3b0d5a21ddeaf218bf27eadfe1f0bb",
+      "ours": "1d7a4cbd0f3b0d5a21ddeaf218bf27eadfe1f0bb",
+      "status": "identical"
+    },
+    {
+      "path": "scripts/tests/learning_world_regression.gd",
+      "theirs": "8e534e78509283679889335255f39a4f7d49bb64",
+      "ours": "8e534e78509283679889335255f39a4f7d49bb64",
+      "status": "identical"
+    },
+    {
+      "path": "scripts/tests/treasure_exploration_regression.gd",
+      "theirs": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29",
+      "ours": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29",
+      "status": "identical"
+    },
+    {
+      "path": "scripts/tests/treasure_wisp_regression.gd",
+      "theirs": "7f256c202defeeba47c8c96a577065ee2eda16c1",
+      "ours": "67927a6f2147658d13e60cacdbbd24bf717a0c1d",
+      "status": "different"
+    }
+  ],
+  "wisp_resolution": {
+    "retained_blob": "67927a6f2147658d13e60cacdbbd24bf717a0c1d",
+    "base_check_calls": 14,
+    "union_check_calls": 18,
+    "all_base_checks_retained": true
+  },
+  "unchanged_runtime": [
+    {
+      "path": "assets",
+      "sha": "50d4eb3a1d2f531b6f4733598069403e77602b6f",
+      "type": "tree"
+    },
+    {
+      "path": "project.godot",
+      "sha": "296b8b1752ebfd526aedd019907ac88efbfd0c02",
+      "type": "blob"
+    },
+    {
+      "path": "scenes",
+      "sha": "ccd9823fa80b62fde7b86e9b62c0ee68aeae19f1",
+      "type": "tree"
+    },
+    {
+      "path": "scripts",
+      "sha": "f22ea6165040de936646b3d8f99898bf41755fff",
+      "type": "tree"
+    }
+  ],
+  "tool_change": {
+    "path": "tools/validate_discovery_connections.sh",
+    "before_blob": "eacdfa88b9f837d2eca1cb6c8f0526aef85be6c9",
+    "after_blob": "07975f12c1f9b07d586cbeb85270329955198f04",
+    "only_change": "learning_world_capture rendered timeout: 600 to 900 seconds; original 25 PNGs, strict PASS/error checks and all ten probes unchanged",
+    "reason": "Measured successful combined-source capture took 580.766 seconds. The unchanged existing 52-mode runner already allows900 seconds for this same original test."
+  },
+  "test_reuse": "No rerun of the 25-image probe solely for timeout increase. All actual runtime bytes are unchanged from the verified38-image union."
+}

@@ -51,7 +51,7 @@ probe learning_wonder_details_regression headless 150 '[LearningWonder] checks=1
 probe learning_wonder_details_regression rendered 420 '[LearningWonder] checks=108 failures=0 renderer=X11 invalid_scene_checked=true'
 export LUMO_HUB_CAPTURE_DIR="$LOG_DIR/captures/hub"
 probe game_hub_magic_capture rendered 180 '[LumoHubCapture] PASS 2 original current-source rendered PNGs'
-probe learning_world_capture rendered 600 '[LearningCapture] PASS captures=25' \
+probe learning_world_capture rendered 900 '[LearningCapture] PASS captures=25' \
   -- "--output=$LOG_DIR/captures/learning"
 probe learning_wonder_details_capture rendered 420 '[WonderCapture] checks=136 failures=0 captures=11' \
   -- "--output=$LOG_DIR/captures/wonder"

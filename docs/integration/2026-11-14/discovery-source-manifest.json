@@ -194,7 +194,7 @@
   "additional_acceptance_files": [
     {
       "path": "tools/validate_discovery_connections.sh",
-      "git_blob_sha": "eacdfa88b9f837d2eca1cb6c8f0526aef85be6c9"
+      "git_blob_sha": "07975f12c1f9b07d586cbeb85270329955198f04"
     },
     {
       "path": "tools/verify_discovery_rasters.py",
@@ -284,13 +284,28 @@
         "seconds": 14.353,
         "marker": true,
         "errors": []
+      },
+      {
+        "probe": "learning_world_capture",
+        "exit": 0,
+        "seconds": 580.766,
+        "marker": true,
+        "errors": []
+      },
+      {
+        "probe": "learning_wonder_details_capture",
+        "exit": 0,
+        "seconds": 106.094,
+        "marker": true,
+        "errors": []
       }
     ],
     "pending": [
-      "learning_world_capture: 25 original PNGs",
-      "learning_wonder_details_capture: 136 checks and 11 original PNGs",
-      "complete committed-source Host 52 + Live9 + Discovery10 + Android acceptance"
-    ]
+      "complete final-commit Host52+Live9/7+Discovery10/38 acceptance and Android APK/device gates"
+    ],
+    "verified_original_pngs": 38,
+    "final_evidence": "discovery-final-local.json"
   },
-  "physical_android_fps_measured": false
+  "physical_android_fps_measured": false,
+  "reconciliation_manifest": "native-base-f052-reconciliation.json"
 }
