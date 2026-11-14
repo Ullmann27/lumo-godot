@@ -34,6 +34,13 @@ jobs:
           git archive --format=zip --output=capsule/source.zip HEAD project.godot icon.svg scripts scenes assets tools
           cp evidence/source-sha.txt evidence/source-tree.txt capsule/
           sha256sum capsule/godot.zip capsule/source.zip > capsule/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lumo-learning-wonder-source-runtime
+          path: capsule/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
       - name: Import unmodified production assets
         run: |
           set -euo pipefail
@@ -52,14 +59,6 @@ jobs:
           timeout 600 xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . --rendering-method gl_compatibility --audio-driver Dummy --script scripts/tests/learning_world_capture.gd -- --output="$PWD/evidence/images" 2>&1 | tee evidence/learning-render.log
           grep -F '[LearningCapture] PASS' evidence/learning-render.log
           if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' evidence/learning-render.log; then exit 1; fi
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: lumo-learning-wonder-source-runtime
-          path: capsule/
-          if-no-files-found: error
-          retention-days: 7
-          compression-level: 0
       - uses: actions/upload-artifact@v4
         if: always()
         with:
