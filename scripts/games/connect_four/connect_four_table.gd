@@ -162,6 +162,7 @@ func apply_state(value: Dictionary) -> bool:
 	if not _state.is_empty() and int(value.revision) < int(_state.revision):
 		return false
 	if value == _state:
+		_return_if_confirmed()
 		return true
 	if not _state.is_empty() and value.owner != _state.owner:
 		return false
@@ -177,11 +178,19 @@ func apply_state(value: Dictionary) -> bool:
 		else:
 			_drop_tween.play()
 	_update_ui()
-	if value.exit and _pending == 0:
-		# The Dart controller has durably acknowledged this exact session exit.
-		# Do not route unrelated pending Kart rewards through the C4 authority.
-		_closed = HostBridge.durable_ack(_host.call("returnToApp", "games", "")) if is_instance_valid(_host) else false
+	_return_if_confirmed()
 	return true
+
+
+func _return_if_confirmed() -> void:
+	if _closed or _pending > 0 or not bool(_state.get("exit", false)):
+		return
+	if not is_instance_valid(_host):
+		return
+	# Dart has already durably acknowledged this exact session exit. Android
+	# may temporarily reject returning; an unchanged poll must retry it without
+	# replaying game geometry or forwarding unrelated pending Kart rewards.
+	_closed = HostBridge.durable_ack(_host.call("returnToApp", "games", ""))
 
 
 func _send(action: String, extras: Dictionary = {}) -> bool:
