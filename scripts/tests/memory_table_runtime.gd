@@ -194,7 +194,8 @@ func _finish() -> void:
 		table.queue_free()
 		await _frames(4)
 	Input.emulate_touch_from_mouse=original_touch
-	print("[MemoryTableRuntime] %s checks=%d inputs=%d" % ["PASS" if failures.is_empty() else "FAIL",checks,inputs.size()])
+	# Report the serialized scope; the later atomic-write check still guards PASS and exit.
+	print("[MemoryTableRuntime] %s checks=%d inputs=%d" % ["PASS" if failures.is_empty() else "FAIL",result["checks"],inputs.size()])
 	quit(0 if failures.is_empty() else 1)
 
 

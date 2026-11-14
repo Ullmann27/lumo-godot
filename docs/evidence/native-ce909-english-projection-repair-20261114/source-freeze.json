@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "status": "FROZEN_SOURCE_ONLY_NOT_EXECUTED",
+  "created_at_utc": "2026-11-14T18:11:33.922499+00:00",
+  "base_head": "ce909c4d3bab3a5514b653bf945a0ef46adfa539",
+  "base_tree": "e2a374b2154f7ecb080f693c4bc90def53a20a00",
+  "source": {
+    "path": "scripts/learning/learning_world.gd",
+    "mode": "100644",
+    "before": {
+      "bytes": 62984,
+      "sha256": "c9238933216622c255b73ceb52d251491cd154c04e64db6d55b23c4e5ac1ad2f",
+      "git_blob": "8d2c67ac7e630610093f02a5093d6f06e204d88a"
+    },
+    "after": {
+      "bytes": 65242,
+      "sha256": "73bc9c38124445a5f96bb5fe04a1e8855ef4e9f0edc0bd91f35f5f652f4de5b0",
+      "git_blob": "0e6ae8f3a4900bb1089c291773be2b2ca7442196"
+    }
+  },
+  "changed_existing_functions": [
+    "_layout_english"
+  ],
+  "new_functions": [
+    "_enlarge_english_landscape_objects"
+  ],
+  "protected_function_count": 66,
+  "unchanged_reference_sources": {
+    "scripts/learning/english_object_gallery.gd": {
+      "bytes": 13988,
+      "sha256": "9e18d9139748a5aa40e938e9800dd491b3909d69aa057080a1c2a4022445a093",
+      "git_blob": "1bc459bc88d10f48aa918014eedbb91071cd98a7"
+    },
+    "scripts/learning/english_vocabulary.gd": {
+      "bytes": 2849,
+      "sha256": "86c2bbab28b130ba4ae9f74f265cbb9f95c81e2a4d78fa7dd4716a1d51ef7f20",
+      "git_blob": "fa8debed147eceea108acc98ac318ac1362cf8eb"
+    },
+    "scripts/learning/learning_activity.gd": {
+      "bytes": 10967,
+      "sha256": "b1338716b201457ed71a19963b24c3346d84d1e732e2bd8459503c3273084ede",
+      "git_blob": "245a966e00259c2d0189c932c40374d855a4b0bc"
+    },
+    "scripts/tests/learning_english_regression.gd": {
+      "bytes": 33455,
+      "sha256": "c6ce712d4b8539c6cb08e0accbd94853cc7c53aa87f43c16342055073f5578e9",
+      "git_blob": "0a86b01f2f1de7058f50f185e60746fb7d7564e1"
+    }
+  },
+  "no_test_or_engine_execution": true,
+  "no_git_mutations": true,
+  "required_next_validation": "After Root's source checkpoint: the unchanged actual English renderer with current Host-generated fixtures, all 14 profiles, 17 captures, hint/lifecycle/voice/return checks and unchanged >=48dp threshold. No prior Producer or failed CI result is transferable to the proposed source."
+}

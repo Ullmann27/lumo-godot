@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "status": "FROZEN_SOURCE_PROPOSAL_AWAITING_ROOT_CHECKPOINT_AND_REAL_RENDERER",
+  "source_freeze": {
+    "path": "source-freeze.json",
+    "bytes": 2188,
+    "sha256": "dba9fa61db9ca491bcac808e74271b96825bfca19081352aad2bee87d91f3feb",
+    "git_blob": "43abda11788de43672eccb5bceace646c43d2d32"
+  },
+  "patch": {
+    "path": "integration.patch",
+    "bytes": 3042,
+    "sha256": "f01e49a9e9ab2432cd97da2d4107728afd95db5bdfc2beb9c7f358a85eed0345",
+    "git_blob": "a3432ba5c42bc2590793e9da15a970522f0c15ea"
+  },
+  "source": {
+    "path": "scripts/learning/learning_world.gd",
+    "mode": "100644",
+    "before": {
+      "bytes": 62984,
+      "sha256": "c9238933216622c255b73ceb52d251491cd154c04e64db6d55b23c4e5ac1ad2f",
+      "git_blob": "8d2c67ac7e630610093f02a5093d6f06e204d88a"
+    },
+    "after": {
+      "bytes": 65242,
+      "sha256": "73bc9c38124445a5f96bb5fe04a1e8855ef4e9f0edc0bd91f35f5f652f4de5b0",
+      "git_blob": "0e6ae8f3a4900bb1089c291773be2b2ca7442196"
+    }
+  },
+  "actual_failed_run": {
+    "repository": "Ullmann27/lumo-lernen",
+    "run": 43623178880,
+    "attempt": 1,
+    "host": "bca5333767918398ba2414cc6cf5cd23af079f90",
+    "host_tree": "82112cd6b9d9a705071e164efe9d97424d2a74c8",
+    "native": "ce909c4d3bab3a5514b653bf945a0ef46adfa539",
+    "native_tree": "e2a374b2154f7ecb080f693c4bc90def53a20a00",
+    "workflow_blob": "6a08dfb852cbec128db96aaa84add2bc69a7194b",
+    "jobs": {
+      "memory": 132533159301,
+      "quiz": 132533159317,
+      "english": 132533159373,
+      "android-host-compile": 132533159143,
+      "flutter-contracts": 132533159280
+    }
+  },
+  "actual_job": 132533159373,
+  "actual_artifact": 14125310534,
+  "original_pack": "/workspace/scratch/b3485b7bb989/host-next-authorities-bca533-native-evidence-20261114",
+  "terminal_handoff": "/workspace/scratch/b3485b7bb989/host-next-authorities-bca533-native-evidence-20261114/terminal-handoff.json",
+  "original_geometry_analysis": "projection-analysis.json",
+  "protected": "All 66 other functions, top-level declarations, gallery, original Lumo, Wisp, speech/PCM/consent, lifecycle, returns and unmodified strict regression. Portrait uses reset unit scale; repeated layouts do not multiply prior enlargement.",
+  "changed_file_count": 1,
+  "new_engine_or_test_execution": false,
+  "open": [
+    "Source checkpoint and independent review",
+    "Actual new renderer with the current Host-generated task fixture",
+    "All original 14 profiles/17 captures and hint/orientation/lifecycle checks",
+    "Root binary-index guard correction and Flutter Memory marker correction are separate scopes"
+  ]
+}

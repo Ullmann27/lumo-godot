@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "status": "ROOT_SOURCE_SCOPE_AND_ORIGINAL_BYTES_REVIEWED_NOT_RENDERED",
+  "base": "ce909c4d3bab3a5514b653bf945a0ef46adfa539",
+  "base_tree": "e2a374b2154f7ecb080f693c4bc90def53a20a00",
+  "sources": [
+    {
+      "path": "scripts/learning/learning_world.gd",
+      "before": "8d2c67ac7e630610093f02a5093d6f06e204d88a",
+      "after": "0e6ae8f3a4900bb1089c291773be2b2ca7442196"
+    },
+    {
+      "path": "scripts/tests/memory_table_runtime.gd",
+      "before": "f4fc0d96b5b67e91969dac610bdc5c550f590640",
+      "after": "a00cecfc46dfa309ca3d557c47dcf65c629d8e4f"
+    }
+  ],
+  "english": {
+    "complete_diff_read": true,
+    "original_projection_analysis_read": true,
+    "full_remote_product_bytes_verified": true,
+    "archive_bytes_reconstructed_from_fully_read_remote_envelope": true,
+    "archive_members_fully_equal_to_local_originals": 21,
+    "scope": "Measured landscape-only enlargement of real models/collision bodies; per-layout scale reset; unchanged actual 48dp, containment, separation, teacher, voice and lifecycle gates. No new render result."
+  },
+  "memory": {
+    "full_remote_product_bytes_verified": true,
+    "all_remote_source_pack_members_verified": 27,
+    "exact_original_plus_comment_and_one_serialized_counter_replacement": true,
+    "scope": "The final marker reports the exact shared serialized result scope. The later atomic-write assertion, live failure state and exit remain unchanged; historical 243/244 observations retained."
+  },
+  "unchanged_paths": "Every existing Native path outside the two named source entries remains identical to the full base tree.",
+  "execution": "PENDING fresh combined renderer/authority qualification; no old or synthetic result adopted."
+}

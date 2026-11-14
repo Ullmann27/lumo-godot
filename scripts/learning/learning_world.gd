@@ -1481,6 +1481,7 @@ func _layout_english(dimensions: Vector2, scale_value: float) -> void:
 	fox.position.z = -0.6 if portrait else 0.2
 	fox.rotation.y = 0.10 if portrait else 0.35
 	for index in range(english_models.size()):
+		english_models[index].scale = Vector3.ONE
 		english_models[index].position = (
 			Vector3(1.25, 0, -2.8 + index * 2.8)
 			if portrait else Vector3(-1.15 + index * 2.55, 0, 0.15))
@@ -1519,8 +1520,53 @@ func _layout_english(dimensions: Vector2, scale_value: float) -> void:
 	var pixels_per_unit := dimensions.y / camera.size
 	camera.h_offset = -shift.x / pixels_per_unit
 	camera.v_offset = shift.y / pixels_per_unit
+	if not portrait:
+		_enlarge_english_landscape_objects()
 	if fox.is_usable():
 		fox.set_teaching_target(english_models[activity.english_objects.find(activity.word)].global_position + Vector3.UP)
+
+
+func _enlarge_english_landscape_objects() -> void:
+	# The shared camera fit can leave low objects below 48dp in short windows.
+	# Enlarge the actual meshes and collision bodies together, then lay out
+	# their measured bounds beside Lumo without changing the camera or HUD.
+	var density: float = MobileRuntime.get_ui_density()
+	var minimum_edge := INF
+	var rectangles: Array[Rect2] = []
+	for model: Node3D in english_models:
+		var bounds := _english_projected_bounds(model)
+		if not bounds.has_area():
+			return
+		rectangles.append(bounds)
+		minimum_edge = minf(minimum_edge, minf(bounds.size.x, bounds.size.y))
+	if minimum_edge >= 48.0 * density:
+		return
+	var enlargement := 52.0 * density / minimum_edge
+	var gap := 8.0 * density
+	var teacher_bounds := _english_projected_bounds(fox)
+	var left := maxf(english_stage_rect.position.x, teacher_bounds.end.x + gap)
+	var row_width := gap * (english_models.size() - 1)
+	var row_height := 0.0
+	for bounds: Rect2 in rectangles:
+		row_width += bounds.size.x * enlargement
+		row_height = maxf(row_height, bounds.size.y * enlargement)
+	# Preserve full containment and the original teacher. If a future window
+	# cannot fit this row, the unchanged measured 48dp regression still fails.
+	if row_width > english_stage_rect.end.x - left or row_height > english_stage_rect.size.y:
+		return
+	var pixels_per_x := camera.unproject_position(Vector3.RIGHT).x - camera.unproject_position(Vector3.ZERO).x
+	var pixels_per_depth := camera.unproject_position(Vector3.BACK).y - camera.unproject_position(Vector3.ZERO).y
+	if pixels_per_x <= 0.001 or pixels_per_depth <= 0.001:
+		return
+	var cursor := left + (english_stage_rect.end.x - left - row_width) * 0.5
+	for model: Node3D in english_models:
+		model.scale = Vector3.ONE * enlargement
+		var number := model.get_node("ChoiceNumber") as MeshInstance3D
+		number.global_basis = camera.global_basis.scaled(Vector3.ONE * enlargement)
+		var bounds := _english_projected_bounds(model)
+		model.position.x += (cursor - bounds.position.x) / pixels_per_x
+		model.position.z += (english_stage_rect.get_center().y - bounds.get_center().y) / pixels_per_depth
+		cursor += bounds.size.x + gap
 
 
 func english_pick_rect(index: int) -> Rect2:
