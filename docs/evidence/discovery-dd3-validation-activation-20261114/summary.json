@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "head": "dd3ec7d1304be3c79b8dc8f3a947276d7c485849",
+  "tree": "65f25f13b3f89df1446550639b7ee93d9e03f54a",
+  "status": "PASS",
+  "results": [
+    {
+      "name": "counterexamples",
+      "argv": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "240s",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "tools.tests.test_discovery_connections",
+        "-v"
+      ],
+      "started_at_utc": "2026-11-14T11:53:53.097111+00:00",
+      "finished_at_utc": "2026-11-14T11:54:02.600376+00:00",
+      "elapsed_seconds": 9.503263172984589,
+      "returncode": 0,
+      "pass": true
+    },
+    {
+      "name": "actionlint",
+      "argv": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "60s",
+        "/workspace/scratch/e0abce7d2838/toolchain/actionlint/actionlint",
+        ".github/workflows/lumo-discovery-connections.yml"
+      ],
+      "started_at_utc": "2026-11-14T11:54:02.600774+00:00",
+      "finished_at_utc": "2026-11-14T11:54:02.608047+00:00",
+      "elapsed_seconds": 0.007276691991137341,
+      "returncode": 0,
+      "pass": true
+    }
+  ],
+  "tracked_files": 3654,
+  "materialized_files": 1471,
+  "explicit_sparse_files": 2183,
+  "source_index_and_generated_metadata_unchanged": true,
+  "new_counterexample_cases": 24,
+  "skips": 0,
+  "actual_engine_runs": 0,
+  "actual_renderer_runs": 0,
+  "scope": "Exactly the new24 reader/collector counterexamples and one Actionlint on dd3ec7d; no product/renderer acceptance transfer."
+}
