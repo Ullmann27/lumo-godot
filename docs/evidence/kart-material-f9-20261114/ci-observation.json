@@ -1,0 +1,264 @@
+{
+  "kind": "immutable original snapshot, not a later complete-CI claim",
+  "pr183_exact_head_runs": 0,
+  "pr184_head": "46bf4798d8b8411ef0855faa65180360258103dd",
+  "runs": [
+    {
+      "id": 43638372671,
+      "name": "Lumo Argon coordinate invariant audit",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:37:15Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372671"
+    },
+    {
+      "id": 43638372625,
+      "name": "Lumo Sonnenhafen 1.85km obstacle-clearance regression",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:37:16Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372625"
+    },
+    {
+      "id": 43638372778,
+      "name": "Lumo Kart original cinema rock materials and mobile fallback",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:37:21Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372778"
+    },
+    {
+      "id": 43638372767,
+      "name": "Lumo B5 dynamic real coastline shader QA",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:37:45Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372767"
+    },
+    {
+      "id": 43638372777,
+      "name": "Sonnenhafen 2027 stunt integration",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:37:45Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372777"
+    },
+    {
+      "id": 43638372751,
+      "name": "Lumo B4 exact road index and coastal terrain performance",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:37:39Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372751"
+    },
+    {
+      "id": 43638372772,
+      "name": "Lumo Sonnenhafen B3 five 3D hero landmarks and visual proof",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:42:15Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372772"
+    },
+    {
+      "id": 43638372756,
+      "name": "LUMO Kart – Modular 3D parts real engine acceptance",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:38:21Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372756"
+    },
+    {
+      "id": 43638372790,
+      "name": "Verify committed Kart vehicle geometry",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:38:04Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372790"
+    },
+    {
+      "id": 43638372609,
+      "name": "Lumo Kart and Bauwelt integration QA",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:37:58Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372609"
+    },
+    {
+      "id": 43638372820,
+      "name": "Lumo premium rail first-track validation",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:38:15Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372820"
+    },
+    {
+      "id": 43638372648,
+      "name": "Lumo Sonnenhafen 3D observation towers",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:39:00Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372648"
+    },
+    {
+      "id": 43638372877,
+      "name": "Lumo Kart Sonnenhafen darkride real Godot 3D QA",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:39:03Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372877"
+    },
+    {
+      "id": 43638372752,
+      "name": "Lumo Kart asphalt original-vs-new render QA",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:39:26Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372752"
+    },
+    {
+      "id": 43638372632,
+      "name": "Lumo Kart Video Reference Grade",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:39:22Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372632"
+    },
+    {
+      "id": 43638372787,
+      "name": "Lumo B6 genuine before-after obstruction screenshots",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:39:29Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372787"
+    },
+    {
+      "id": 43638372844,
+      "name": "Lumo Sonnenhafen water and visual QA",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:39:07Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372844"
+    },
+    {
+      "id": 43638372749,
+      "name": "Verify Lumo Kart Stage 2",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:40:07Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372749"
+    },
+    {
+      "id": 43638372882,
+      "name": "Lumo Sonnenhafen coastal viaduct real 3D QA",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:39:59Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372882"
+    },
+    {
+      "id": 43638372850,
+      "name": "Lumo Meshy start-finish gate real GLB regression",
+      "head_sha": "46bf4798d8b8411ef0855faa65180360258103dd",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T20:36:17Z",
+      "updated_at": "2026-11-14T20:39:56Z",
+      "html_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43638372850"
+    }
+  ],
+  "snapshot_totals": {
+    "success": 14,
+    "failure": 5,
+    "in_progress": 1
+  },
+  "authoritative_log_root": "/tmp/native-pr183-184-integration-f9-20261114/originals/jobs",
+  "known_failures": [
+    {
+      "job": 132580113281,
+      "path": "scripts/tests/kart_vehicle_regression.gd",
+      "message": "Vertex colours must meaningfully reduce near material passes",
+      "classification": "real measured failure; exact count and failing conjunct not printed"
+    },
+    {
+      "job": 132580113072,
+      "path": "scripts/tests/kart_dynamic_coastal_foam_regression.gd",
+      "message": "Unrelated tracks should keep their original coast geometry",
+      "classification": "real failure; old <=150m range conflicts with published longer forest/city controls"
+    },
+    {
+      "job": 132580113476,
+      "path": "scripts/tests/kart_physics_regression.gd",
+      "message": "A ring uses only one opaque draw surface",
+      "classification": "real failure; exact one-child TorusMesh contract conflicts with new multi-mesh gate"
+    }
+  ],
+  "modular_success_scope": {
+    "run": 43638372756,
+    "job": 132580113054,
+    "marker": "[KartModularParts] PASS: 12 mobile tracks + 2 high-detail scenes; four live chassis; no racing/LOD authority changed",
+    "does_not_prove": [
+      "surface budget",
+      "old coast bound",
+      "old one-torus gate",
+      "new Android or FPS result"
+    ]
+  }
+}

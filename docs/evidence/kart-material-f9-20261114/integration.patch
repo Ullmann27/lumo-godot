@@ -1,0 +1,1404 @@
+--- a/scripts/games/kart_vehicle.gd
++++ b/scripts/games/kart_vehicle.gd
+@@ -15,6 +15,10 @@
+ const FLEET = preload("res://scripts/games/kart_fleet.gd")
+ const FUR = preload("res://scripts/games/kart_fur_geometry.gd")
+ const CHARACTER_FINISH = preload("res://scripts/games/kart_character_finish.gd")
++const RIVAL_FINISH = preload("res://scripts/games/kart_rival_character_finish.gd")
++const RIVAL_VISUAL = preload("res://scripts/games/kart_rival_visual_adapter.gd")
++const COACHWORK_FINISH = preload("res://scripts/games/kart_coachwork_finish.gd")
++const MODULAR_AERO = preload("res://scripts/games/kart_modular_aero_kit.gd")
+ const LUMO_ANIMATION = preload("res://scripts/characters/lumo/lumo_kart_animation_adapter.gd")
+ const CINEMA_FINISH = preload("res://scripts/games/visual/kart_cinema_materials.gd")
+ const CARBON := Color("0b1019")
+@@ -86,6 +90,8 @@
+ ## retain their existing visuals until their own integration is approved.
+ var animated_lumo_enabled := false
+ var lumo_animation
++var reference_rival_enabled := false
++var rival_visual
+ var driver_airborne := false
+ var driver_hit_active := false
+ var driver_hit_pending := false
+@@ -97,7 +103,9 @@
+ 
+ 
+ func _ready() -> void:
++	reference_rival_enabled = reference_rival_enabled or bool(get_meta("reference_rival", false))
+ 	_ensure_lumo_animation()
++	_ensure_rival_visual()
+ 
+ 
+ func set_animated_lumo_enabled(enabled: bool) -> void:
+@@ -112,6 +120,40 @@
+ 		_ensure_lumo_animation()
+ 
+ 
++func set_reference_rival_enabled(enabled: bool) -> void:
++	reference_rival_enabled = enabled
++	set_meta("reference_rival", enabled)
++	if not enabled and is_instance_valid(rival_visual):
++		rival_visual.free()
++		rival_visual = null
++		if is_instance_valid(driver):
++			driver.show()
++		_refresh_far_proxy()
++	elif enabled:
++		_ensure_rival_visual()
++
++
++func _ensure_rival_visual() -> void:
++	if not is_inside_tree() or companion_mode or animal == "fox" or not reference_rival_enabled:
++		return
++	if is_instance_valid(rival_visual) or not is_instance_valid(driver):
++		return
++	var candidate = RIVAL_VISUAL.new()
++	candidate.name = "ImportedRivalDriver"
++	add_child(candidate)
++	if not candidate.bind_visual(self, animal):
++		candidate.free()
++		return
++	rival_visual = candidate
++	rival_visual.set_process(false)
++	rival_visual.set_reduced_motion(reduced_motion)
++	rival_visual.set_suspended(driver_animation_paused)
++	driver.hide()
++	_refresh_far_proxy()
++	if celebration_place > 0:
++		rival_visual.celebrate_finished_race(celebration_place)
++
++
+ func set_driver_runtime_state(in_air: bool, hit_active: bool, suspended: bool) -> void:
+ 	driver_airborne = in_air
+ 	driver_hit_pending = driver_hit_pending or (hit_active and not driver_hit_active)
+@@ -120,6 +162,9 @@
+ 	if is_instance_valid(lumo_animation):
+ 		lumo_animation.set_suspended(suspended)
+ 		lumo_animation.set_reduced_motion(reduced_motion)
++	if is_instance_valid(rival_visual):
++		rival_visual.set_suspended(suspended)
++		rival_visual.set_reduced_motion(reduced_motion)
+ 
+ 
+ func _ensure_lumo_animation() -> void:
+@@ -152,7 +197,7 @@
+ 		# Both proxies are authored before static batching. Rebuilding from
+ 		# batched multi-material surfaces would lose their source materials.
+ 		far_mesh.mesh = (
+-			_far_without_driver if is_instance_valid(lumo_animation) else _far_with_driver
++			_far_without_driver if is_instance_valid(lumo_animation) or is_instance_valid(rival_visual) else _far_with_driver
+ 		)
+ 		_set_far_detail(far_detail)
+ 
+@@ -261,6 +306,11 @@
+ 			lumo_animation.celebrate_finished_race(place)
+ 		else:
+ 			lumo_animation.clear_celebration()
++	if is_instance_valid(rival_visual):
++		if place > 0:
++			rival_visual.celebrate_finished_race(place)
++		else:
++			rival_visual.clear_celebration()
+ 
+ 
+ func set_speaking(amount: float) -> void:
+@@ -299,6 +349,7 @@
+ 	for child in get_children():
+ 		child.free()
+ 	lumo_animation = null
++	rival_visual = null
+ 	wheel_pivots.clear()
+ 	wheel_rotors.clear()
+ 	eyes.clear()
+@@ -330,6 +381,7 @@
+ 		_build()
+ 	_built = true
+ 	_ensure_lumo_animation()
++	_ensure_rival_visual()
+ 	_apply_cinema_coachwork()
+ 
+ 
+@@ -416,6 +468,11 @@
+ 	if animal == "fox":
+ 		var strands := _mesh(coat, FUR.build(geometry, color, count, strand_length, seed_value), Vector3.ZERO, Color.WHITE, 0.0, 0.82)
+ 		strands.set_meta("near_only", true)
++	elif animal in ["rabbit", "otter", "badger", "cat"]:
++		# Sparse short fibres soften the existing real geometry without a second
++		# material pass. Head pigmentation supplies the coat colour underneath.
++		var fibres := _mesh(coat, FUR.build(geometry, color, clampi(count / 5, 24, 480), strand_length * 0.45, seed_value), Vector3.ZERO, Color.WHITE, 0.0, 0.82)
++		fibres.set_meta("near_only", true)
+ 	return coat
+ 
+ 
+@@ -531,6 +588,8 @@
+ 		_build_loft(spec)
+ 	else:
+ 		_build_aero(spec)
++	COACHWORK_FINISH.decorate(self, get_node("AuroraCoachwork"), spec)
++	MODULAR_AERO.decorate(self, get_node("AuroraCoachwork"), spec)
+ 	_make_steering_wheel()
+ 	# Two independent emissive lamp meshes; keep them out of static and LOD batches.
+ 	# Shared geometry/material, no light nodes or per-frame material allocations.
+@@ -886,7 +945,8 @@
+ 	_ellipsoid(rotor, Vector3(0, outside - side * 0.04, 0), Vector3(0.071, 0.029, 0.071), vehicle_color, 0.65, 0.25)
+ 	_ellipsoid(rotor, Vector3(0, outside - side * 0.065, 0), Vector3(0.026, 0.01, 0.026), ICE, 0.7, 0.2)
+ 	# A fixed caliper follows the steering hub while the disc and spokes rotate inside it.
+-	var caliper := _box(pivot, Vector3(side * 0.165, 0.07, -0.15), Vector3(0.055, 0.13, 0.07), ORANGE, 0.7)
++	COACHWORK_FINISH.wheel_details(self, rotor, side, 0.35, 0.193)
++	var caliper := COACHWORK_FINISH.rounded_box(self, pivot, Vector3(side * 0.165, 0.07, -0.15), Vector3(0.055, 0.13, 0.07), ORANGE, 0.7)
+ 	caliper.name = "BrakeCaliper"
+ 	caliper.rotation.x = -0.26
+ 	caliper.material_override = _mat(ORANGE, 0.7, 0.24)
+@@ -1568,7 +1628,9 @@
+ 	brake.height = 0.012
+ 	brake.radial_segments = 24
+ 	_mesh(rotor, brake, Vector3(0, outside + inward * 0.075, 0), Color("323d4f"), 0.7, 0.3)
+-	var caliper: MeshInstance3D = _box(pivot, Vector3(side * (half - 0.06), radius * 0.46, 0.0), Vector3(0.05, 0.12, 0.09), spec.accent, 0.35)
++	COACHWORK_FINISH.wheel_details(self, rotor, side, radius, half)
++	var caliper: MeshInstance3D = COACHWORK_FINISH.rounded_box(self, pivot, Vector3(side * (half - 0.06), radius * 0.46, 0.0), Vector3(0.05, 0.12, 0.09), spec.accent, 0.35)
++	caliper.name = "BrakeCaliper"
+ 	caliper.material_override = _mat(spec.accent, 0.35, 0.35)
+ 	# Profil: zwei Längsrillen; Geländereifen bekommen grobe Stollen am Rand
+ 	for groove in [-0.30, 0.30]:
+@@ -1652,7 +1714,7 @@
+ 			Vector4(cuff_distance, 0.064, 0.060, 0)
+ 		], true, 20, 4), side
+ 	)
+-	var sleeve := _mesh(limb, sleeve_shape, Vector3.ZERO, NAVY, 0.0, 0.82)
++	var sleeve := _mesh(limb, sleeve_shape, Vector3.ZERO, NAVY if is_lumo else RIVAL_FINISH.palette(animal).suit, 0.0, 0.82)
+ 	sleeve.name = "RacingSleeve"
+ 	sleeve_shape.set_meta("cuff_vertex_start", sleeve_shape.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size() - 20)
+ 	sleeve_shape.set_meta("cuff_vertex_count", 20)
+@@ -1675,18 +1737,20 @@
+ 
+ 
+ func _make_driver() -> void:
+-	var fur: Color = {"fox": Color("ed762d"), "otter": Color("ad8064"), "rabbit": Color("cedbe8"), "badger": Color("64718a"), "cat": Color("d4b396")}.get(animal, Color("ed762d"))
+-	var cream := Color("f4f2ea") if animal == "fox" else Color("eaf4f9")
++	var is_lumo: bool = animal == "fox"
++	var palette: Dictionary = RIVAL_FINISH.palette(animal)
++	var fur: Color = Color("ed762d") if is_lumo else palette.fur
++	var cream: Color = Color("f4f2ea") if is_lumo else palette.cream
++	var suit: Color = NAVY if is_lumo else palette.suit
+ 	var fur_shadow: Color = fur.darkened(0.18)
+ 	driver = Node3D.new()
+ 	driver.name = "RacerRig"
+ 	add_child(driver)
+ 	# Fitted racing suit with shoulder yoke, collar, sleeves and a distinct white back panel.
+-	_mesh(driver, _loft([Vector4(0.77, 0.19, 0.19, 0.13), Vector4(0.90, 0.25, 0.20, 0.13), Vector4(1.12, 0.26, 0.195, 0.10), Vector4(1.27, 0.28, 0.16, 0.11), Vector4(1.32, 0.17, 0.11, 0.11)], true, 28, 4, 0.88), Vector3.ZERO, NAVY, 0, 0.7)
++	_mesh(driver, _loft([Vector4(0.77, 0.19, 0.19, 0.13), Vector4(0.90, 0.25, 0.20, 0.13), Vector4(1.12, 0.26, 0.195, 0.10), Vector4(1.27, 0.28, 0.16, 0.11), Vector4(1.32, 0.17, 0.11, 0.11)], true, 28, 4, 0.88), Vector3.ZERO, suit, 0, 0.7)
+ 	# The neck bridges the collar and the head base, keeping the silhouette connected in side view.
+ 	var neck := _mesh(driver, _loft([Vector4(1.285, 0.11, 0.10, 0.10), Vector4(1.36, 0.115, 0.105, 0.09), Vector4(1.43, 0.10, 0.09, 0.075)], true, 20, 3), Vector3.ZERO, fur, 0.0, 0.82)
+ 	neck.name = "NeckBridge"
+-	var is_lumo: bool = animal == "fox"
+ 	# Closed navy racing armour and large cyan L match the supplied character sheet.
+ 	var chest_fill: Color = cream if is_lumo else WHITE
+ 	if is_lumo:
+@@ -1694,9 +1758,9 @@
+ 		for side in [-1.0, 1.0]:
+ 			_ribbon(driver, [Vector3(side * 0.175, 1.02, -0.12), Vector3(side * 0.20, 1.14, -0.12), Vector3(side * 0.18, 1.25, -0.084)], 0.009, ICE, 0.18, 0.4)
+ 	else:
+-		_mesh(driver, _loft([Vector4(0.89, 0.10, 0.017, -0.073), Vector4(1.02, 0.155, 0.022, -0.093), Vector4(1.21, 0.17, 0.020, -0.070), Vector4(1.29, 0.11, 0.012, -0.035)], true, 22, 4), Vector3.ZERO, WHITE, 0.04, 0.57)
+-	_mesh(driver, _loft([Vector4(0.91, 0.11, 0.015, 0.332), Vector4(1.12, 0.17, 0.015, 0.302), Vector4(1.28, 0.17, 0.014, 0.244), Vector4(1.31, 0.09, 0.012, 0.223)], true, 22, 4), Vector3.ZERO, Color("0f2a52") if is_lumo else WHITE, 0.03, 0.65)
+-	var collar := _ring(driver, Vector3(0, 1.32, 0.10), 0.112, 0.163, NAVY if is_lumo else ICE, 0.18)
++		_mesh(driver, _loft([Vector4(0.89, 0.10, 0.017, -0.073), Vector4(1.02, 0.155, 0.022, -0.093), Vector4(1.21, 0.17, 0.020, -0.070), Vector4(1.29, 0.11, 0.012, -0.035)], true, 22, 4), Vector3.ZERO, cream, 0.0, 0.82)
++	_mesh(driver, _loft([Vector4(0.91, 0.11, 0.015, 0.332), Vector4(1.12, 0.17, 0.015, 0.302), Vector4(1.28, 0.17, 0.014, 0.244), Vector4(1.31, 0.09, 0.012, 0.223)], true, 22, 4), Vector3.ZERO, Color("0f2a52") if is_lumo else cream, 0.03, 0.65)
++	var collar := _ring(driver, Vector3(0, 1.32, 0.10), 0.112, 0.163, NAVY if is_lumo else suit.darkened(0.16), 0.18)
+ 	collar.scale.z = 0.8
+ 	if is_lumo:
+ 		_ring(driver, Vector3(0, 1.335, 0.10), 0.158, 0.170, ICE, 0.18).scale.z = 0.8
+@@ -1727,10 +1791,10 @@
+ 			if is_lumo and side > 0:
+ 				arm_right = limb
+ 			_make_racing_sleeve(limb, side, is_lumo)
+-			_ellipsoid(limb, Vector3(side * 0.29, 1.215, 0.015) - origin, Vector3(0.092, 0.056, 0.096), NAVY if is_lumo else WHITE, 0.07, 0.6)
+-			var leg := _ellipsoid(driver, Vector3(side * 0.16, 0.81, -0.18), Vector3(0.105, 0.105, 0.16), NAVY, 0, 0.72)
++			_ellipsoid(limb, Vector3(side * 0.29, 1.215, 0.015) - origin, Vector3(0.092, 0.056, 0.096), NAVY if is_lumo else cream, 0.07, 0.6)
++			var leg := _ellipsoid(driver, Vector3(side * 0.16, 0.81, -0.18), Vector3(0.105, 0.105, 0.16), suit, 0, 0.72)
+ 			leg.name = "SeatedLegLeft" if side < 0 else "SeatedLegRight"
+-			var glove_color: Color = GLOVE if is_lumo else WHITE
++			var glove_color: Color = GLOVE if is_lumo else cream
+ 			var glove := _ellipsoid(limb, Vector3(side * 0.16, 1.055, -0.34) - origin, Vector3(0.079, 0.070, 0.083), glove_color, 0, 0.68)
+ 			glove.name = "GripGlove"
+ 			glove.rotation.z = side * -0.2
+@@ -1751,7 +1815,7 @@
+ 				if cloth_part is MeshInstance3D:
+ 					var finish: StandardMaterial3D = cloth_part.material_override
+ 					cloth_part.material_override = _mat(finish.albedo_color, 0.0, 0.82)
+-			var boot := _ellipsoid(driver, Vector3(side * 0.18, 0.80, -0.24), Vector3(0.12, 0.09, 0.14), NAVY, 0.08, 0.6)
++			var boot := _ellipsoid(driver, Vector3(side * 0.18, 0.80, -0.24), Vector3(0.12, 0.09, 0.14), suit.darkened(0.12) if not is_lumo else NAVY, 0.08, 0.6)
+ 			boot.name = "RacingBootLeft" if side < 0 else "RacingBootRight"
+ 			var sole := _ellipsoid(driver, Vector3(side * 0.18, 0.742, -0.24), Vector3(0.119, 0.026, 0.15), WHITE, 0.08, 0.6)
+ 			sole.name = "BootSoleLeft" if side < 0 else "BootSoleRight"
+@@ -1761,39 +1825,34 @@
+ 	driver.add_child(head)
+ 	var head_width: float = 0.43 if animal != "rabbit" else 0.36
+ 	var head_profile: Array[Vector4] = [Vector4(-0.32, 0.055, 0.060, -0.025), Vector4(-0.26, 0.27, 0.225, -0.003), Vector4(-0.13, head_width, 0.30, 0.006), Vector4(0.055, head_width * 0.98, 0.326, 0.015), Vector4(0.23, 0.31, 0.277, 0.025), Vector4(0.33, 0.17, 0.17, 0.038), Vector4(0.375, 0.008, 0.012, 0.038)]
++	if not is_lumo:
++		head_profile = RIVAL_FINISH.head_profile(animal, head_profile)
+ 	var head_mesh: Mesh = _loft(head_profile, true, 48, 5)
+ 	if is_lumo:
+ 		head_mesh = CHARACTER_FINISH.coat(head_mesh, fur, cream, "head")
+-	_fur(head, head_mesh, Vector3.ZERO, Color.WHITE if is_lumo else fur, 2900, 0.016, 715)
++	else:
++		head_mesh = RIVAL_FINISH.coat(head_mesh, animal, fur, cream)
++	_fur(head, head_mesh, Vector3.ZERO, Color.WHITE, 2900, 0.016, 715)
+ 	# The cheek mask is sculpted as two swept, tapered volumes, with a joined muzzle.
+ 	for side in [-1.0, 1.0]:
+-		var cheek_mesh: Mesh = _loft(
+-			[
+-				Vector4(-0.15, 0.045, 0.035, -0.012),
+-				Vector4(-0.045, 0.145, 0.130, -0.010),
+-				Vector4(0.095, 0.16, 0.135, 0.005),
+-				Vector4(0.245, 0.11, 0.077, 0.023),
+-				Vector4(0.335, 0.010, 0.013, 0.050),
+-			],
+-			false, 32, 4
+-		)
+ 		if is_lumo:
+-			cheek_mesh = CHARACTER_FINISH.wrap_cheek(cheek_mesh, side)
+-		var cheek := _fur(
+-			head, cheek_mesh, Vector3(side * 0.12, -0.16, -0.21),
+-			cream, 700, 0.028, 821 + int(side)
+-		)
+-		cheek.rotation.y = side * PI / 2
+-		if not is_lumo:
+-			# Other drivers retain their existing cheek anatomy. Lumo's continuous
+-			# cream head and wrapped cheek now provide the side/rear fringe.
+-			_fur(head, _loft([Vector4(-0.285, 0.012, 0.018, 0), Vector4(-0.22, 0.10, 0.125, 0.018), Vector4(-0.16, 0.137, 0.153, 0.008), Vector4(-0.10, 0.067, 0.102, 0), Vector4(-0.075, 0.005, 0.010, 0)], true, 28, 4), Vector3(side * 0.315, 0, 0.044), cream, 330, 0.025, 531 + int(side))
+-		if not is_lumo:
+-			# Lumo's wrapped cheek and its fur now carry the continuous silhouette.
+-			# Keep the other drivers' original separate cheek tufts.
+-			for tuft in range(2):
+-				var leaf := _mesh(head, _loft([Vector4(0, 0.05, 0.022, 0), Vector4(0.055, 0.055, 0.035, 0), Vector4(0.115, 0.002, 0.002, 0.018)], true, 16, 3), Vector3(side * (0.28 + tuft * 0.025), -0.11 - tuft * 0.06, -0.15), cream)
+-				leaf.rotation.z = -side * 1.20
++			var cheek_mesh: Mesh = _loft(
++				[
++					Vector4(-0.15, 0.045, 0.035, -0.012),
++					Vector4(-0.045, 0.145, 0.130, -0.010),
++					Vector4(0.095, 0.16, 0.135, 0.005),
++					Vector4(0.245, 0.11, 0.077, 0.023),
++					Vector4(0.335, 0.010, 0.013, 0.050),
++				],
++				false, 32, 4
++			)
++			if is_lumo:
++				cheek_mesh = CHARACTER_FINISH.wrap_cheek(cheek_mesh, side)
++			var cheek := _fur(
++				head, cheek_mesh, Vector3(side * 0.12, -0.16, -0.21),
++				cream, 700, 0.028, 821 + int(side)
++			)
++			cheek.rotation.y = side * PI / 2
+ 		_make_ear(side, fur, cream)
+ 		_make_eye(side, fur_shadow)
+ 		# Soft brow arc gives the neutral expression a curious, friendly shape.
+@@ -1809,13 +1868,19 @@
+ 				if part is MeshInstance3D:
+ 					part.material_override = _mat(fur.darkened(0.68), 0.0, 0.82)
+ 		else:
+-			_ribbon(head, brow, 0.012, fur.darkened(0.45))
+-	var muzzle: Array[Vector4] = [Vector4(-0.455, 0.038, 0.028, -0.101), Vector4(-0.418, 0.113, 0.060, -0.122), Vector4(-0.351, 0.168, 0.090, -0.135), Vector4(-0.264, 0.15, 0.08, -0.15), Vector4(-0.21, 0.01, 0.012, -0.15)]
+-	_fur(head, _loft(muzzle, false, 32, 4), Vector3.ZERO, cream, 350, 0.009, 228)
+-	# A small triangular, polished nose and a real mouth cavity underneath.
+-	var nose := _mesh(head, _loft([Vector4(-0.16, 0.004, 0.016, -0.453), Vector4(-0.112, 0.075, 0.044, -0.463), Vector4(-0.079, 0.060, 0.032, -0.449), Vector4(-0.068, 0.004, 0.005, -0.435)], true, 24, 4), Vector3.ZERO, Color("2a1d22"), 0.08, 0.22)
+-	nose.name = "SculptedNose"
+-	_ellipsoid(head, Vector3(-0.020, -0.09, -0.493), Vector3(0.020, 0.009, 0.005), Color("ae8f85"), 0, 0.25)
++			var fitted_brow: Array[Vector3] = []
++			for point in brow:
++				fitted_brow.append(Vector3(point.x * (0.81 if animal == "rabbit" else 0.9), point.y - 0.025, point.z + (0.032 if animal == "rabbit" else 0.018)))
++			_ribbon(head, fitted_brow, 0.009, fur.darkened(0.45))
++	if is_lumo:
++		var muzzle: Array[Vector4] = [Vector4(-0.455, 0.038, 0.028, -0.101), Vector4(-0.418, 0.113, 0.060, -0.122), Vector4(-0.351, 0.168, 0.090, -0.135), Vector4(-0.264, 0.15, 0.08, -0.15), Vector4(-0.21, 0.01, 0.012, -0.15)]
++		_fur(head, _loft(muzzle, false, 32, 4), Vector3.ZERO, cream, 350, 0.009, 228)
++		# A small triangular, polished nose and a real mouth cavity underneath.
++		var nose := _mesh(head, _loft([Vector4(-0.16, 0.004, 0.016, -0.453), Vector4(-0.112, 0.075, 0.044, -0.463), Vector4(-0.079, 0.060, 0.032, -0.449), Vector4(-0.068, 0.004, 0.005, -0.435)], true, 24, 4), Vector3.ZERO, Color("2a1d22"), 0.08, 0.22)
++		nose.name = "SculptedNose"
++		_ellipsoid(head, Vector3(-0.020, -0.09, -0.493), Vector3(0.020, 0.009, 0.005), Color("ae8f85"), 0, 0.25)
++	else:
++		RIVAL_FINISH.make_muzzle(self, cream)
+ 	# The original Lumo mascot smiles with an open, friendly mouth, visible
+ 	# even when the kart camera is pulled back. Keep his real 3D jaw viseme;
+ 	# only fox gets the extra sculpted cavity, teeth and tongue. Other
+@@ -1864,7 +1929,7 @@
+ 		_ellipsoid(jaw, Vector3(0, 0.021, -0.041), Vector3(0.049, 0.014, 0.019), Color("df8890"), 0, 0.58)
+ 	_ribbon(head, [Vector3(-0.127, -0.192, -0.32), Vector3(-0.101, -0.216, -0.342), Vector3(-0.057, -0.221, -0.352)], 0.008, Color("714333"))
+ 	_ribbon(head, [Vector3(0.127, -0.192, -0.32), Vector3(0.101, -0.216, -0.342), Vector3(0.057, -0.221, -0.352)], 0.008, Color("714333"))
+-	for tuft in range(3):
++	for tuft in range(3 if is_lumo or animal == "cat" else 0):
+ 		var quiff := _fur(head, _loft([Vector4(0, 0.034, 0.03, 0), Vector4(0.055, 0.038, 0.034, 0), Vector4(0.11, 0.003, 0.005, 0.030)], true, 18, 4), Vector3(-0.10 + tuft * 0.068, 0.30, -0.06 + tuft * 0.018), fur, 90, 0.019, 175 + tuft)
+ 		quiff.rotation.z = 0.15 + tuft * 0.14
+ 	if animal == "fox":
+@@ -1872,12 +1937,8 @@
+ 	else:
+ 		# A small earpiece integrates the racing identity without obscuring the face.
+ 		for side in [-1.0, 1.0]:
+-			_ellipsoid(head, Vector3(side * 0.372, 0.01, 0.085), Vector3(0.030, 0.085, 0.075), NAVY, 0.35, 0.3)
+-			_ellipsoid(head, Vector3(side * 0.395, 0.01, 0.080), Vector3(0.012, 0.047, 0.043), ICE, 0.45, 0.22)
+-	if animal == "badger":
+-		for side in [-1.0, 1.0]:
+-			var stripe := _mesh(head, _loft([Vector4(-0.15, 0.028, 0.014, -0.28), Vector4(0.06, 0.059, 0.013, -0.310), Vector4(0.29, 0.039, 0.01, -0.172)], true, 16, 4), Vector3(side * 0.17, 0, 0), Color("e8f2fa"))
+-			stripe.rotation.z = side * -0.16
++			_ellipsoid(head, Vector3(side * (0.324 if animal == "rabbit" else 0.365), 0.01, 0.085), Vector3(0.025, 0.065, 0.061), suit, 0.35, 0.3)
++			_ellipsoid(head, Vector3(side * (0.344 if animal == "rabbit" else 0.385), 0.01, 0.080), Vector3(0.008, 0.032, 0.031), Color("a5afb1"), 0.45, 0.22)
+ 	_make_tail(fur, cream)
+ 
+ 
+@@ -1999,6 +2060,9 @@
+ 
+ 
+ func _make_eye(side: float, fur_shadow: Color) -> void:
++	if animal != "fox":
++		RIVAL_FINISH.make_eye(self, side, fur_shadow)
++		return
+ 	var eye := Node3D.new()
+ 	eye.name = "Eye"
+ 	# Compared with the previous full spherical eyeball, this sculpt keeps
+@@ -2049,6 +2113,8 @@
+ 	tail.rotation.y = 0.63
+ 	tail.rotation.x = -0.15
+ 	driver.add_child(tail)
++	if animal != "fox" and RIVAL_FINISH.make_tail(self, fur, cream):
++		return
+ 	if animal == "rabbit":
+ 		_ellipsoid(tail, Vector3(0.05, 0.03, 0.18), Vector3(0.13, 0.14, 0.15), cream, 0, 0.9)
+ 		return
+@@ -2189,7 +2255,7 @@
+ 	for child in parent.get_children():
+ 		# Keep one visible character, including at LOD distance. The rigged
+ 		# skin must never be baked into a rigid proxy or drawn over old Lumo.
+-		if child == lumo_animation or (child == driver and _far_chassis_only):
++		if child == lumo_animation or child == rival_visual or (child == driver and _far_chassis_only):
+ 			continue
+ 		if child is MeshInstance3D:
+ 			if flames.has(child) or sparks.has(child) or brake_lights.has(child) or child.has_meta("near_only") or child.mesh.has_meta("far_skip"):
+@@ -2206,17 +2272,16 @@
+ 	tool.set_material(_vertex_material(_mat(Color.WHITE, 0.16, 0.58)))
+ 	_append_far(self, Transform3D.IDENTITY, tool)
+ 	_far_with_driver = tool.commit()
+-	# Keep a chassis-only alternative for the same fox vehicle. This small
++	# Keep a chassis-only alternative for any imported character. This small
+ 	# proxy avoids rebuilding the Kart (and deleting shield/host attachments)
+ 	# when the visual is enabled or disabled after it entered the scene tree.
+-	if animal == "fox":
+-		var chassis := SurfaceTool.new()
+-		chassis.begin(Mesh.PRIMITIVE_TRIANGLES)
+-		chassis.set_material(_vertex_material(_mat(Color.WHITE, 0.16, 0.58)))
+-		_far_chassis_only = true
+-		_append_far(self, Transform3D.IDENTITY, chassis)
+-		_far_chassis_only = false
+-		_far_without_driver = chassis.commit()
++	var chassis := SurfaceTool.new()
++	chassis.begin(Mesh.PRIMITIVE_TRIANGLES)
++	chassis.set_material(_vertex_material(_mat(Color.WHITE, 0.16, 0.58)))
++	_far_chassis_only = true
++	_append_far(self, Transform3D.IDENTITY, chassis)
++	_far_chassis_only = false
++	_far_without_driver = chassis.commit()
+ 	far_mesh = MeshInstance3D.new()
+ 	far_mesh.name = "DistantKart"
+ 	far_mesh.mesh = _far_with_driver
+@@ -2317,6 +2382,12 @@
+ 		# The animated player stays the same character in both LODs. Keep
+ 		# its wheel anchors current even while the chassis uses a far proxy.
+ 		_update_lumo_visual(delta)
++	elif is_instance_valid(rival_visual):
++		steering_wheel.rotation.z = -motion_steer * 0.40
++		rival_visual.set_reduced_motion(reduced_motion)
++		rival_visual.apply_vehicle_sample(motion_speed, motion_steer, driver_airborne, driver_hit_pending, motion_boost, motion_drift)
++		driver_hit_pending = false
++		rival_visual.advance_tick(delta)
+ 	if far_detail:
+ 		return
+ 	if camera and camera.global_position.distance_squared_to(global_position) > 225.0:
+@@ -2327,7 +2398,7 @@
+ 		wheel_pivots[i].rotation.y = -motion_steer * 0.34 if wheel_pivots[i].get_meta("front") else 0.0
+ 		var hub_height: float = float(wheel_pivots[i].get_meta("height", 0.35))
+ 		wheel_pivots[i].position.y = hub_height if reduced_motion else hub_height + sin(animation_time * 11.0 + i * 1.7) * minf(0.010, absf(motion_speed) * 0.0005)
+-	if is_instance_valid(lumo_animation):
++	if is_instance_valid(lumo_animation) or is_instance_valid(rival_visual):
+ 		return
+ 	if driver:
+ 		driver.rotation.z = lerpf(driver.rotation.z, -motion_steer * 0.06, minf(1, delta * 7.0))
+--- /dev/null
++++ b/scripts/games/kart_coachwork_finish.gd
+@@ -0,0 +1,114 @@
++extends RefCounted
++## Small real manufactured details shared by every existing fleet chassis.
++## These additions fit within the existing contact envelope and LOD budgets.
++
++
++static func rounded_box(kart, parent: Node3D, at: Vector3, size: Vector3, color: Color, metal: float = 0.35, rough: float = 0.56) -> MeshInstance3D:
++	var key: String = "craft_bevel:" + str(size)
++	if not kart.geometries.has(key):
++		var half: Vector3 = size * 0.5
++		var bevel: float = minf(size.x, minf(size.y, size.z)) * 0.22
++		var inner: Vector3 = half - Vector3.ONE * bevel
++		var surface := SurfaceTool.new()
++		surface.begin(Mesh.PRIMITIVE_TRIANGLES)
++		for axis in range(3):
++			var u: int = (axis + 1) % 3
++			var v: int = (axis + 2) % 3
++			for side in [-1.0, 1.0]:
++				var vertices: Array[Vector3] = []
++				var normals: Array[Vector3] = []
++				var us: Array[float] = [-half[u], -inner[u], inner[u], half[u]]
++				var vs: Array[float] = [-half[v], -inner[v], inner[v], half[v]]
++				for row in range(4):
++					for column in range(4):
++						var p := Vector3.ZERO
++						p[axis] = side * half[axis]
++						p[u] = us[column]
++						p[v] = vs[row]
++						var c: Vector3 = p.clamp(-inner, inner)
++						var normal: Vector3 = (p - c).normalized()
++						vertices.append(c + normal * bevel)
++						normals.append(normal)
++				for row in range(3):
++					for column in range(3):
++						var a: int = row * 4 + column
++						for tri in [[a, a + 1, a + 5], [a, a + 5, a + 4]]:
++							# Godot front faces are clockwise when viewed from outside.
++							if side > 0:
++								tri.reverse()
++							for index: int in tri:
++								surface.set_normal(normals[index])
++								surface.add_vertex(vertices[index])
++		var result: ArrayMesh = surface.commit()
++		result.set_meta("far_skip", true)
++		kart.geometries[key] = result
++	return kart._mesh(parent, kart.geometries[key], at, color, metal, rough)
++
++
++static func decorate(kart, body: Node3D, spec: Dictionary) -> void:
++	body.set_meta("craftsmanship_revision", 1)
++	var paint: Color = spec.paint
++	if str(spec.body) == "loft":
++		for child in body.get_children():
++			if child is MeshInstance3D:
++				paint = child.material_override.albedo_color
++				break
++	var metal := Color("a5afb1")
++	var rubber := Color("24292f")
++	# Upholstery channels and piping belong to the rear of the existing seat.
++	for index in range(5):
++		var pad: MeshInstance3D = rounded_box(kart, body, Vector3(-0.16 + index * 0.08, 0.91, 0.458), Vector3(0.062, 0.24, 0.024), Color("283441"), 0.0, 0.82)
++		pad.name = "QuiltedSeatChannel"
++	for side in [-1.0, 1.0]:
++		var heel: MeshInstance3D = rounded_box(kart, body, Vector3(side * 0.34, 0.675, 0.065), Vector3(0.048, 0.045, 0.50), rubber, 0.0, 0.82)
++		heel.name = "PaddedCockpitSill"
++		# Finished inset intake: framed surround, dark well and real depth slats.
++		var frame: MeshInstance3D = rounded_box(kart, body, Vector3(side * 0.585, 0.545, 0.17), Vector3(0.032, 0.125, 0.30), paint.darkened(0.15), 0.35, 0.26)
++		frame.name = "SculptedIntakeFrame"
++		rounded_box(kart, body, Vector3(side * 0.606, 0.545, 0.17), Vector3(0.012, 0.089, 0.252), Color("111b24"), 0.0, 0.82)
++		for vent in range(5):
++			var blade: MeshInstance3D = rounded_box(kart, body, Vector3(side * 0.615, 0.55, 0.075 + vent * 0.047), Vector3(0.014, 0.075, 0.010), metal, 0.7, 0.56)
++			blade.rotation.z = side * -0.16
++		for z in [-0.26, 0.42]:
++			var fastener: MeshInstance3D = rounded_box(kart, body, Vector3(side * 0.47, 0.672, z), Vector3(0.035, 0.010, 0.035), metal, 0.7, 0.56)
++			fastener.name = "RecessedCoachworkFastener"
++	# A distinct brushed lower splitter connects the body across the front.
++	if str(spec.body) == "loft":
++		var splitter: MeshInstance3D = rounded_box(kart, body, Vector3(0, 0.366, -1.068), Vector3(0.68, 0.034, 0.075), rubber, 0.0, 0.82)
++		splitter.name = "RoundedNoseSplitter"
++
++
++static func wheel_details(kart, rotor: Node3D, side: float, radius: float, half: float) -> void:
++	var outside: float = -side * half
++	var bead: MeshInstance3D = kart._ring(rotor, Vector3(0, outside + side * 0.006, 0), radius * 0.81, radius * 0.832, Color("303740"), 0.0)
++	bead.name = "MouldedTyreBead"
++	bead.set_meta("near_only", true)
++	bead.material_override = kart._mat(Color("303740"), 0.0, 0.82)
++	var lip: MeshInstance3D = kart._ring(rotor, Vector3(0, outside - side * 0.012, 0), radius * 0.665, radius * 0.685, Color("a5afb1"), 0.7)
++	lip.name = "MachinedWheelLip"
++	lip.set_meta("near_only", true)
++	# Tiny manufactured lips need fewer sides than the existing tyre itself.
++	# Cache reduced geometry without changing any shared original rim mesh.
++	for detail in [bead, lip]:
++		var ring_key: String = "craft_ring:" + str(detail.mesh.inner_radius) + ":" + str(detail.mesh.outer_radius)
++		if not kart.geometries.has(ring_key):
++			var ring: TorusMesh = detail.mesh.duplicate()
++			ring.rings = 20
++			ring.ring_segments = 4
++			kart.geometries[ring_key] = ring
++		detail.mesh = kart.geometries[ring_key]
++	if not kart.geometries.has("craft_disc_vent"):
++		var vent := CylinderMesh.new()
++		vent.top_radius = 1.0
++		vent.bottom_radius = 1.0
++		vent.height = 2.0
++		vent.radial_segments = 10
++		kart.geometries["craft_disc_vent"] = vent
++	for index in range(10):
++		var angle: float = index * TAU / 10.0 + 0.12
++		var point := Vector3(cos(angle) * radius * 0.47, outside - side * 0.008, sin(angle) * radius * 0.47)
++		var slot: MeshInstance3D = kart._mesh(rotor, kart.geometries["craft_disc_vent"], point, Color("131c25"), 0.0, 0.82)
++		slot.scale = Vector3(0.012, 0.0025, 0.025)
++		slot.name = "BrakeDiscVent"
++		slot.set_meta("near_only", true)
++		slot.rotation.y = -angle
+--- /dev/null
++++ b/scripts/games/kart_modular_aero_kit.gd
+@@ -0,0 +1,99 @@
++extends RefCounted
++## Additional physically modeled aero / lighting hardware for the production fleet.
++## No changes to collider dimensions, chassis anchors, steering joints or original rigs.
++## Called before the existing static combine and distance LOD generation.
++
++const CRAFT = preload("res://scripts/games/kart_coachwork_finish.gd")
++const STEEL := Color("67788b")
++const DARK := Color("192632")
++const RUBBER := Color("101921")
++
++
++static func _detail(node: MeshInstance3D, name: String, close_only: bool = false) -> void:
++	node.name = name
++	if close_only:
++		node.set_meta("near_only", true)
++		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
++
++
++static func decorate(kart, body: Node3D, spec: Dictionary) -> void:
++	var accent: Color = spec.get("accent", Color("6ddfff"))
++	var paint: Color = spec.get("paint", Color("4778a5"))
++	var pieces: int = 0
++	# Sculpted side skirt and inset LED trim; each is inside the existing wheel width.
++	for side in [-1.0, 1.0]:
++		var sill: MeshInstance3D = CRAFT.rounded_box(kart, body,
++			Vector3(side * 0.545, 0.344, 0.01), Vector3(0.11, 0.115, 0.60),
++			DARK, 0.35, 0.56)
++		_detail(sill, "AeroSideSkirt")
++		pieces += 1
++		var edge: MeshInstance3D = CRAFT.rounded_box(kart, body,
++			Vector3(side * 0.612, 0.394, 0.01), Vector3(0.018, 0.030, 0.52),
++			accent, 0.35, 0.26)
++		edge.material_override = kart._mat(accent, 0.35, 0.26, 0.75)
++		_detail(edge, "AeroSillLight", true)
++		pieces += 1
++		# A real bevelled aero intake with a dark interior and four pressed vanes.
++		var surround: MeshInstance3D = CRAFT.rounded_box(kart, body,
++			Vector3(side * 0.45, 0.492, -0.79), Vector3(0.16, 0.125, 0.185),
++			paint.darkened(0.17), 0.35, 0.26)
++		_detail(surround, "SculptedNoseIntake")
++		pieces += 1
++		var well: MeshInstance3D = CRAFT.rounded_box(kart, body,
++			Vector3(side * 0.454, 0.514, -0.793), Vector3(0.108, 0.022, 0.134),
++			RUBBER, 0.0, 0.82)
++		_detail(well, "NoseIntakeWell")
++		pieces += 1
++		for fin in range(3):
++			var at: Vector3 = Vector3(side * 0.456, 0.53, -0.842 + fin * 0.049)
++			var vane: MeshInstance3D = CRAFT.rounded_box(kart, body,
++				at, Vector3(0.08, 0.013, 0.014), STEEL, 0.7, 0.26)
++			_detail(vane, "NoseIntakeVane", true)
++			pieces += 1
++		# Twin metallic exhaust bezels, properly oriented toward the rear.
++		var nozzle: MeshInstance3D = kart._ring(body,
++			Vector3(side * 0.34, 0.466, 1.162), 0.079, 0.112, STEEL, 0.7)
++		nozzle.rotation.x = PI * 0.5
++		_detail(nozzle, "ExhaustMachinedBezel", true)
++		pieces += 1
++		var core: MeshInstance3D = kart._ring(body,
++			Vector3(side * 0.34, 0.466, 1.174), 0.046, 0.067, accent, 0.35, 0.60)
++		core.rotation.x = PI * 0.5
++		core.material_override = kart._mat(accent, 0.35, 0.26, 0.75)
++		_detail(core, "ExhaustEnergyRing", true)
++		pieces += 1
++	# Centerline insignia and low-profile chevrons never enter the driver's footwell.
++	var badge: MeshInstance3D = CRAFT.rounded_box(kart, body,
++		Vector3(0.0, 0.575, -0.955), Vector3(0.20, 0.035, 0.15),
++		STEEL, 0.70, 0.26)
++	_detail(badge, "AuroraNoseEmblemSeat")
++	pieces += 1
++	for side in [-1.0, 1.0]:
++		var stripe: MeshInstance3D = CRAFT.rounded_box(kart, body,
++			Vector3(side * 0.085, 0.600, -0.952),
++			Vector3(0.035, 0.010, 0.105), accent, 0.35, 0.26)
++		stripe.rotation.y = side * 0.32
++		stripe.material_override = kart._mat(accent, 0.35, 0.26, 0.75)
++		_detail(stripe, "AuroraRaisedChevron", true)
++		pieces += 1
++	# The physical rear diffuser remains owned by the vehicle; small overlay only.
++	var rear: MeshInstance3D = CRAFT.rounded_box(kart, body,
++		Vector3(0.0, 0.363, 1.139), Vector3(0.49, 0.040, 0.075),
++		DARK, 0.35, 0.56)
++	_detail(rear, "RearBumperAeroCap")
++	pieces += 1
++	body.set_meta("modular_aero_revision", 1)
++	body.set_meta("modular_aero_count", pieces)
++
++
++static func envelope_anchors() -> PackedVector3Array:
++	# Fixed manufacturing datums, for regression checks and reviewer positioning.
++	return PackedVector3Array([
++		Vector3(-0.612, 0.394, 0.01),
++		Vector3(0.612, 0.394, 0.01),
++		Vector3(-0.45, 0.492, -0.79),
++		Vector3(0.45, 0.492, -0.79),
++		Vector3(-0.34, 0.466, 1.174),
++		Vector3(0.34, 0.466, 1.174),
++		Vector3(0.0, 0.575, -0.955)
++	])
+--- /dev/null
++++ b/scripts/games/kart_rival_character_finish.gd
+@@ -0,0 +1,141 @@
++extends RefCounted
++## Real species anatomy for the existing animated procedural rival rigs.
++## Original Lumo geometry and its imported skin are deliberately never passed here.
++const FACE = preload("res://scripts/games/kart_character_finish.gd")
++
++
++static func palette(kind: String) -> Dictionary:
++	match kind:
++		"rabbit":
++			return {"fur": Color("c5c7c0"), "cream": Color("f0eadc"), "suit": Color("555877"), "iris": Color("796046")}
++		"otter":
++			return {"fur": Color("89644b"), "cream": Color("ddc6a4"), "suit": Color("315c61"), "iris": Color("668065")}
++		"badger":
++			return {"fur": Color("c7c6b9"), "cream": Color("e9e3d2"), "suit": Color("80583f"), "iris": Color("9a7845")}
++		"cat":
++			return {"fur": Color("b9895e"), "cream": Color("f1debc"), "suit": Color("765367"), "iris": Color("5c8b72")}
++	return {"fur": Color("a5937d"), "cream": Color("ece3ce"), "suit": Color("43586d"), "iris": Color("697d82")}
++
++
++static func head_profile(kind: String, fallback: Array[Vector4]) -> Array[Vector4]:
++	match kind:
++		"rabbit":
++			return [Vector4(-0.31, 0.06, 0.07, 0.01), Vector4(-0.24, 0.235, 0.205, 0.015), Vector4(-0.10, 0.335, 0.277, 0.018), Vector4(0.065, 0.335, 0.287, 0.025), Vector4(0.245, 0.255, 0.243, 0.028), Vector4(0.34, 0.135, 0.145, 0.04), Vector4(0.375, 0.008, 0.012, 0.045)]
++		"otter":
++			return [Vector4(-0.31, 0.055, 0.06, 0.01), Vector4(-0.255, 0.26, 0.215, 0.015), Vector4(-0.12, 0.415, 0.285, 0.02), Vector4(0.06, 0.40, 0.304, 0.02), Vector4(0.23, 0.30, 0.27, 0.03), Vector4(0.32, 0.15, 0.16, 0.04), Vector4(0.35, 0.008, 0.012, 0.04)]
++		"badger":
++			return [Vector4(-0.32, 0.055, 0.06, -0.02), Vector4(-0.265, 0.23, 0.22, -0.01), Vector4(-0.13, 0.36, 0.29, 0.015), Vector4(0.055, 0.36, 0.305, 0.03), Vector4(0.23, 0.29, 0.265, 0.04), Vector4(0.33, 0.15, 0.17, 0.055), Vector4(0.37, 0.008, 0.012, 0.055)]
++		"cat":
++			return [Vector4(-0.32, 0.045, 0.055, -0.02), Vector4(-0.25, 0.22, 0.21, 0.0), Vector4(-0.11, 0.375, 0.29, 0.015), Vector4(0.075, 0.365, 0.307, 0.02), Vector4(0.23, 0.28, 0.255, 0.035), Vector4(0.33, 0.15, 0.15, 0.05), Vector4(0.37, 0.008, 0.012, 0.05)]
++	return fallback
++
++
++static func coat(source: Mesh, kind: String, fur: Color, cream: Color) -> ArrayMesh:
++	var arrays: Array = source.surface_get_arrays(0)
++	var points: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
++	var pigments := PackedColorArray()
++	for p in points:
++		var front: float = 1.0 - smoothstep(-0.05, 0.13, p.z)
++		var chin: float = (1.0 - smoothstep(-0.18, -0.035, p.y)) * front
++		var pigment: Color = fur.lerp(cream, chin * 0.90)
++		if kind == "badger":
++			# The eye mask is pigmentation on the actual head, not a floating plate.
++			var stripe_x: float = 0.155 + (p.y + 0.08) * 0.10
++			var stripe: float = 1.0 - smoothstep(0.045, 0.093, absf(absf(p.x) - stripe_x))
++			pigment = pigment.lerp(Color("3b4245"), stripe * front * smoothstep(-0.25, -0.12, p.y))
++		elif kind == "cat":
++			var forehead: float = smoothstep(0.06, 0.19, p.y) * front
++			var band: float = pow(maxf(0.0, cos(p.x * 43.0 + absf(p.y) * 9.0)), 7.0)
++			pigment = pigment.lerp(fur.darkened(0.38), band * forehead * 0.72)
++		elif kind == "otter":
++			var face: float = (1.0 - smoothstep(0.035, 0.23, p.y)) * front
++			pigment = pigment.lerp(cream, face * 0.38)
++		elif kind == "rabbit":
++			pigment = pigment.lerp(cream, front * 0.23)
++		var soft_back: float = smoothstep(0.03, 0.27, p.z) * 0.10
++		pigments.append(pigment.darkened(soft_back))
++	arrays[Mesh.ARRAY_COLOR] = pigments
++	var result := ArrayMesh.new()
++	result.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
++	if source.has_meta("far_geometry"):
++		result.set_meta("far_geometry", coat(source.get_meta("far_geometry"), kind, fur, cream))
++	return result
++
++
++static func _iris(size: Vector3, support: Vector3, offset: Vector2, tint: Color, low: bool = false) -> ArrayMesh:
++	var geometry: ArrayMesh = FACE.eye_overlay(size, support, offset, 0.0012, false, low)
++	var arrays: Array = geometry.surface_get_arrays(0)
++	var pigments := PackedColorArray()
++	for p: Vector3 in arrays[Mesh.ARRAY_VERTEX]:
++		var radius: float = Vector2(p.x / size.x, p.y / size.y).length()
++		var angle: float = atan2(p.y / size.y, p.x / size.x)
++		var fibres: float = sin(angle * 29.0 + radius * 13.0) * 0.10 + sin(angle * 47.0 - radius * 7.0) * 0.06
++		var pigment: Color = tint.lightened(maxf(0.0, fibres)).darkened(maxf(0.0, -fibres))
++		pigments.append(pigment.lerp(tint.darkened(0.64), smoothstep(0.80, 1.0, radius)))
++	arrays[Mesh.ARRAY_COLOR] = pigments
++	var result := ArrayMesh.new()
++	result.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
++	if not low:
++		result.set_meta("far_geometry", _iris(size, support, offset, tint, true))
++	return result
++
++
++static func make_eye(kart, side: float, fur_shadow: Color) -> void:
++	var rabbit: bool = kart.animal == "rabbit"
++	var eye := Node3D.new()
++	eye.name = "Eye"
++	eye.position = Vector3(side * (0.143 if rabbit else 0.165), 0.055, -0.254 if rabbit else -0.270)
++	eye.rotation.y = -side * 0.35
++	kart.head.add_child(eye)
++	kart.eyes.append(eye)
++	var support := Vector3(0.074, 0.093, 0.021) if rabbit else Vector3(0.085, 0.102, 0.024)
++	var socket: MeshInstance3D = kart._ellipsoid(eye, Vector3(0, 0.002, 0.005), support + Vector3(0.012, 0.012, 0.003), fur_shadow, 0.0, 0.82)
++	socket.name = "RecessedEyeSocket"
++	var white: MeshInstance3D = kart._ellipsoid(eye, Vector3(0, 0, -0.004), support, Color("ece8dc"), 0.0, 0.42)
++	white.name = "InsetEyeWhite"
++	var offset := Vector2(-side * 0.003, -0.003)
++	var iris_size := Vector3(0.049, 0.061, 0.005) if rabbit else Vector3(0.055, 0.066, 0.006)
++	var iris: MeshInstance3D = kart._mesh(eye, _iris(iris_size, support, offset, palette(kart.animal).iris), Vector3(offset.x, offset.y, -0.004), Color.WHITE, 0.0, 0.30)
++	iris.name = "CurvedPigmentedIris"
++	var pupil_size := Vector3(0.027, 0.037, 0.004) if rabbit else Vector3(0.031, 0.040, 0.004)
++	var pupil: MeshInstance3D = kart._mesh(eye, FACE.eye_overlay(pupil_size, support, offset, 0.0027, false), Vector3(offset.x, offset.y, -0.004), Color("11191d"), 0.0, 0.22)
++	pupil.name = "SeatedPupil"
++	for highlight in [Vector3(-0.015, 0.019, -0.004), Vector3(0.011, -0.022, -0.004)]:
++		var r: float = pow(highlight.x / support.x, 2) + pow(highlight.y / support.y, 2)
++		highlight.z = -0.004 - support.z * sqrt(1.0 - r) - 0.004
++		kart._ellipsoid(eye, highlight, Vector3(0.008, 0.010, 0.0015) if highlight.x < 0 else Vector3(0.003, 0.004, 0.001), Color("fff9e8"), 0.0, 0.25)
++
++
++static func make_muzzle(kart, cream: Color) -> void:
++	var rabbit: bool = kart.animal == "rabbit"
++	var spread: float = 0.062 if rabbit else 0.079
++	for side in [-1.0, 1.0]:
++		var pad: MeshInstance3D = kart._ellipsoid(kart.head, Vector3(side * spread, -0.155, -0.300), Vector3(0.100 if rabbit else 0.116, 0.077, 0.073), cream, 0.0, 0.82)
++		pad.name = "WhiskerPad"
++		for dot in range(3):
++			kart._ellipsoid(kart.head, Vector3(side * (spread + 0.012 + dot * 0.018), -0.145 - (dot % 2) * 0.018, -0.368 + dot * 0.006), Vector3(0.0038, 0.0034, 0.002), cream.darkened(0.40), 0.0, 0.82)
++	var nose_color := Color("9c7875") if rabbit else Color("33302e")
++	var nose: MeshInstance3D = kart._ellipsoid(kart.head, Vector3(0, -0.097, -0.357), Vector3(0.043 if rabbit else 0.059, 0.030, 0.023), nose_color, 0.0, 0.56)
++	nose.name = "SculptedNose"
++	if rabbit:
++		for side in [-1.0, 1.0]:
++			var tooth: MeshInstance3D = kart._ellipsoid(kart.head, Vector3(side * 0.018, -0.220, -0.333), Vector3(0.016, 0.025, 0.008), Color("f4e9d6"), 0.0, 0.56)
++			tooth.name = "SmallRabbitIncisor"
++
++
++static func make_tail(kart, fur: Color, cream: Color) -> bool:
++	if kart.animal == "rabbit":
++		var rabbit_shape: Array[Vector4] = [Vector4(0.0, 0.035, 0.04, 0), Vector4(0.10, 0.12, 0.13, 0.01), Vector4(0.23, 0.10, 0.11, 0.02), Vector4(0.30, 0.008, 0.008, 0.02)]
++		kart._fur(kart.tail, kart._loft(rabbit_shape, false, 24, 3), Vector3.ZERO, cream, 260, 0.018, 118)
++		return true
++	if kart.animal in ["otter", "badger", "cat"]:
++		var shape: Array[Vector4]
++		if kart.animal == "otter":
++			shape = [Vector4(0.0, 0.095, 0.09, 0), Vector4(0.20, 0.14, 0.10, -0.05), Vector4(0.48, 0.11, 0.07, -0.12), Vector4(0.77, 0.055, 0.04, -0.15), Vector4(0.95, 0.006, 0.006, -0.13)]
++		elif kart.animal == "badger":
++			shape = [Vector4(0.0, 0.075, 0.07, 0), Vector4(0.13, 0.13, 0.12, 0.03), Vector4(0.34, 0.095, 0.10, 0.10), Vector4(0.49, 0.008, 0.008, 0.15)]
++		else:
++			shape = [Vector4(0.0, 0.065, 0.07, 0), Vector4(0.24, 0.085, 0.09, 0.03), Vector4(0.49, 0.082, 0.085, 0.13), Vector4(0.67, 0.077, 0.08, 0.36), Vector4(0.65, 0.065, 0.065, 0.57), Vector4(0.55, 0.008, 0.008, 0.66)]
++		kart._fur(kart.tail, kart._loft(shape, false, 28, 4), Vector3.ZERO, fur, 500, 0.018, 811)
++		return true
++	return false
+--- /dev/null
++++ b/scripts/games/kart_rival_model_contract.gd
+@@ -0,0 +1,123 @@
++extends RefCounted
++## Contract for authored seated rival GLBs. No retargeting or generated stand-ins.
++## Geometry uses Godot metres, Y up, -Z forward, and the kart's local seat space.
++const MAX_TRIANGLES := 60000
++const MAX_BONES := 128
++const MAX_SURFACES := 16
++const CLIPS := ["kart_seated", "kart_steer_left", "kart_steer_right", "kart_hit", "kart_celebrate"]
++
++
++static func model_path_allowed(path: String) -> bool:
++	return path.begins_with("res://assets/characters/rivals/") and path.ends_with(".glb") and not ".." in path
++
++
++static func _belongs_to(node: Node, model: Node) -> bool:
++	return node != null and (node == model or model.is_ancestor_of(node))
++
++
++static func _safe_clip(player: AnimationPlayer, animation: Animation, model: Node3D) -> bool:
++	if animation == null or animation.length <= 0.0 or not is_finite(animation.length):
++		return false
++	var origin: Node = player.get_node_or_null(player.root_node)
++	if not _belongs_to(origin, model):
++		return false
++	var tracks := 0
++	var skeletal_track := false
++	for index in range(animation.get_track_count()):
++		if not animation.track_is_enabled(index):
++			continue
++		var kind: int = animation.track_get_type(index)
++		if kind not in [Animation.TYPE_POSITION_3D, Animation.TYPE_ROTATION_3D, Animation.TYPE_SCALE_3D, Animation.TYPE_BLEND_SHAPE]:
++			return false
++		var path: NodePath = animation.track_get_path(index)
++		var target: Node = origin.get_node_or_null(NodePath(path.get_concatenated_names()))
++		if not _belongs_to(target, model):
++			return false
++		if kind == Animation.TYPE_BLEND_SHAPE:
++			if not target is MeshInstance3D or path.get_subname_count() != 1:
++				return false
++		elif target is Skeleton3D:
++			if path.get_subname_count() != 1 or target.find_bone(str(path.get_subname(0))) < 0:
++				return false
++			skeletal_track = skeletal_track or animation.track_get_key_count(index) > 0
++		elif not target is Node3D or path.get_subname_count() != 0:
++			return false
++		tracks += animation.track_get_key_count(index)
++	return tracks > 0 and skeletal_track
++
++
++static func _valid_skin(part: MeshInstance3D, skeleton: Skeleton3D) -> bool:
++	var binds: int = part.skin.get_bind_count()
++	if binds < 1 or binds > MAX_BONES:
++		return false
++	for bind in range(binds):
++		var named: StringName = part.skin.get_bind_name(bind)
++		var bone: int = skeleton.find_bone(str(named)) if not str(named).is_empty() else part.skin.get_bind_bone(bind)
++		if bone < 0 or bone >= skeleton.get_bone_count():
++			return false
++	for surface in range(part.mesh.get_surface_count()):
++		var arrays: Array = part.mesh.surface_get_arrays(surface)
++		if arrays[Mesh.ARRAY_BONES] == null or arrays[Mesh.ARRAY_WEIGHTS] == null:
++			return false
++		var bones: PackedInt32Array = arrays[Mesh.ARRAY_BONES]
++		var weights: PackedFloat32Array = arrays[Mesh.ARRAY_WEIGHTS]
++		var vertices: int = arrays[Mesh.ARRAY_VERTEX].size()
++		if vertices < 1 or bones.size() != weights.size() or bones.size() not in [vertices * 4, vertices * 8]:
++			return false
++		var stride: int = bones.size() / vertices
++		for vertex in range(vertices):
++			var total := 0.0
++			for influence in range(stride):
++				var index: int = vertex * stride + influence
++				if not is_finite(weights[index]) or weights[index] < 0.0 or (weights[index] > 0.0 and (bones[index] < 0 or bones[index] >= binds)):
++					return false
++				total += weights[index]
++			if total < 0.98 or total > 1.02:
++				return false
++	return true
++
++
++static func inspect(model: Node) -> Dictionary:
++	if not model is Node3D:
++		return {"valid": false, "reason": "The model root must be Node3D."}
++	var nodes: Array[Node] = [model]
++	nodes.append_array(model.find_children("*", "", true, false))
++	var players: Array[AnimationPlayer] = []
++	var skinned := 0
++	var triangles := 0
++	var surfaces := 0
++	for node in nodes:
++		# Imported GLB content is visual data. Scripts and scene-side gameplay
++		# nodes are outside the contract and never enter the kart hierarchy.
++		if node.get_script() != null or node is CollisionObject3D or node is AudioStreamPlayer or node is AudioStreamPlayer3D or node is AnimationTree:
++			return {"valid": false, "reason": "Only imported visual nodes are accepted."}
++		if node is AnimationPlayer:
++			players.append(node)
++		if node is MeshInstance3D and node.mesh != null:
++			for surface in range(node.mesh.get_surface_count()):
++				if node.mesh.surface_get_primitive_type(surface) != Mesh.PRIMITIVE_TRIANGLES:
++					return {"valid": false, "reason": "Triangle mesh required."}
++				var arrays: Array = node.mesh.surface_get_arrays(surface)
++				var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
++				triangles += (indices.size() if not indices.is_empty() else arrays[Mesh.ARRAY_VERTEX].size()) / 3
++				surfaces += 1
++			if node.skin != null and node.skin.get_bind_count() > 0:
++				var skeleton: Node = node.get_node_or_null(node.skeleton)
++				if not skeleton is Skeleton3D or not _belongs_to(skeleton, model) or skeleton.get_bone_count() < 1 or skeleton.get_bone_count() > MAX_BONES:
++					return {"valid": false, "reason": "A local valid skeleton is required for every skin."}
++				if not _valid_skin(node, skeleton):
++					return {"valid": false, "reason": "The skin must bind real normalized vertex weights to its local skeleton."}
++				skinned += 1
++	if skinned == 0 or triangles == 0 or triangles > MAX_TRIANGLES or surfaces > MAX_SURFACES:
++		return {"valid": false, "reason": "Rival must contain a real skinned mesh within the mobile geometry budget."}
++	for player in players:
++		var clips: Dictionary = {}
++		for name: StringName in player.get_animation_list():
++			var key: String = str(name).get_file()
++			if key not in CLIPS:
++				continue
++			if _safe_clip(player, player.get_animation(name), model):
++				clips[key] = name
++		if clips.has("kart_seated"):
++			return {"valid": true, "player": player, "clips": clips, "triangles": triangles, "surfaces": surfaces, "skinned_meshes": skinned}
++	return {"valid": false, "reason": "A scoped kart_seated skeletal animation is required."}
+--- /dev/null
++++ b/scripts/games/kart_rival_visual_adapter.gd
+@@ -0,0 +1,121 @@
++extends Node3D
++## Optional imported rival visual. The vehicle owns the only animation clock.
++## Clips are authored in seated kart space; existing rigs/materials stay intact.
++const ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
++const CONTRACT = preload("res://scripts/games/kart_rival_model_contract.gd")
++const TICK_SECONDS := 1.0 / 30.0
++var model: Node3D
++var player: AnimationPlayer
++var clips: Dictionary = {}
++var suspended := false
++var reduced_motion := false
++var elapsed := 0.0
++var _tick := 0.0
++var _steer := 0.0
++var _hit_remaining := 0.0
++var _celebrating := false
++var _current := ""
++
++
++func bind_visual(_kart: Node3D, identity: String) -> bool:
++	if model != null:
++		return is_instance_valid(player)
++	var scene: PackedScene = ROSTER.racing_scene(identity)
++	if scene == null:
++		return false
++	return bind_scene(scene)
++
++
++func bind_scene(scene: PackedScene) -> bool:
++	if model != null or scene == null:
++		return false
++	var candidate: Node = scene.instantiate()
++	var verified: Dictionary = CONTRACT.inspect(candidate)
++	if not bool(verified.get("valid", false)):
++		candidate.free()
++		return false
++	model = candidate as Node3D
++	player = verified.player
++	clips = verified.clips
++	# Stop every imported player before it enters the live tree. Only our
++	# validated seated clips can be evaluated, once, by the parent vehicle.
++	var players: Array[Node] = model.find_children("*", "AnimationPlayer", true, false)
++	for imported: AnimationPlayer in players:
++		imported.autoplay = ""
++		imported.stop()
++		imported.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
++		imported.set_process(false)
++		imported.set_physics_process(false)
++	add_child(model)
++	set_process(false)
++	_select_clip("kart_seated")
++	player.advance(0.0)
++	return true
++
++
++func set_suspended(value: bool) -> void:
++	if suspended == value:
++		return
++	suspended = value
++	_tick = 0.0
++
++
++func set_reduced_motion(value: bool) -> void:
++	if reduced_motion == value:
++		return
++	reduced_motion = value
++	_tick = 0.0
++	if value and is_instance_valid(player):
++		_hit_remaining = 0.0
++		_select_clip("kart_seated")
++		player.seek(0.0, true)
++
++
++func apply_vehicle_sample(_speed: float, steer: float, _airborne: bool, hit: bool = false, _boost: bool = false, _drift: bool = false) -> void:
++	_steer = clampf(steer, -1.0, 1.0) if is_finite(steer) else 0.0
++	if hit and not suspended and not reduced_motion and clips.has("kart_hit"):
++		_hit_remaining = minf(1.0, player.get_animation(clips.kart_hit).length)
++
++
++func celebrate_finished_race(_place: int = 1) -> void:
++	_celebrating = true
++
++
++func clear_celebration() -> void:
++	_celebrating = false
++
++
++func _select_clip(key: String) -> void:
++	if not clips.has(key):
++		key = "kart_seated"
++	if _current == key:
++		return
++	_current = key
++	player.play(clips[key], 0.10 if not reduced_motion else 0.0)
++
++
++func advance_tick(delta: float) -> void:
++	if not is_instance_valid(player) or suspended or reduced_motion or not is_finite(delta) or delta <= 0.0:
++		return
++	_tick += delta
++	if _tick + 0.000000001 < TICK_SECONDS:
++		return
++	# Preserve fractional time at 50/75/144 Hz, while discarding an unbounded
++	# hitch backlog. The scene still receives at most one evaluation per frame.
++	var intervals: int = floori((_tick + 0.000000001) / TICK_SECONDS)
++	var consumed: float = intervals * TICK_SECONDS
++	_tick = maxf(0.0, _tick - consumed)
++	var step: float = minf(consumed, 0.10)
++	elapsed += step
++	var selected := "kart_seated"
++	if _hit_remaining > 0.0:
++		selected = "kart_hit"
++		_hit_remaining = maxf(0.0, _hit_remaining - step)
++	elif _celebrating:
++		selected = "kart_celebrate"
++	elif absf(_steer) > 0.30:
++		selected = "kart_steer_left" if _steer < 0.0 else "kart_steer_right"
++	_select_clip(selected)
++	if not player.is_playing():
++		player.play(clips[_current], 0.0)
++	player.advance(step)
+--- a/scripts/games/lumo_opponent_roster.gd
++++ b/scripts/games/lumo_opponent_roster.gd
+@@ -3,7 +3,9 @@
+ ## Missing/unvalidated rigs never silently replace an existing animated driver.
+ 
+ const PATH := "res://assets/characters/rivals/roster.json"
++const CONTRACT = preload("res://scripts/games/kart_rival_model_contract.gd")
+ static var _cache: Array[Dictionary] = []
++static var _validated_scenes: Dictionary = {}
+ 
+ 
+ static func all() -> Array[Dictionary]:
+@@ -55,11 +57,32 @@
+ 	return result
+ 
+ 
++static func racing_scene(id: String) -> PackedScene:
++	for entry in all():
++		if str(entry.id) != id:
++			continue
++		var path: String = str(entry.get("godotModel", ""))
++		if not bool(entry.get("runtimeReady", false)) or not CONTRACT.model_path_allowed(path):
++			return null
++		if _validated_scenes.has(id):
++			return _validated_scenes[id]
++		if not ResourceLoader.exists(path, "PackedScene"):
++			return null
++		var scene: PackedScene = load(path) as PackedScene
++		if scene == null:
++			return null
++		var candidate: Node = scene.instantiate()
++		var verified: Dictionary = CONTRACT.inspect(candidate)
++		candidate.free()
++		if bool(verified.get("valid", false)):
++			_validated_scenes[id] = scene
++			return scene
++		return null
++	return null
++
++
+ static func can_use_racing_model(id: String) -> bool:
+-	for entry in all():
+-		if str(entry.id) == id:
+-			return bool(entry.get("runtimeReady", false)) and ResourceLoader.exists(str(entry.get("godotModel", "")))
+-	return false
++	return racing_scene(id) != null
+ 
+ 
+ static func ready_for_race() -> bool:
+--- a/scripts/tests/kart_fox_eye_proportions_regression.gd
++++ b/scripts/tests/kart_fox_eye_proportions_regression.gd
+@@ -51,18 +51,19 @@
+ 	assert(teeth.position.z < smile_volume.position.z + 0.010)
+ 	assert(tongue.position.z < smile_volume.position.z + 0.015)
+ 	fox.free()
+-	# Other animal drivers retain their existing face system.
++	# The rabbit keeps its existing joints with a smaller recessed eye shell.
+ 	var rabbit := AuthoredDriver.new()
+ 	rabbit.configure("rabbit", Color("e9eff8"), "comet")
+ 	root.add_child(rabbit)
+ 	assert(rabbit.eyes.size() == 2)
+ 	for eye: Node3D in rabbit.eyes:
+ 		var white: MeshInstance3D = eye.get_child(1)
+-		assert(absf(white.scale.x - 0.119) < 0.0001)
++		assert(white.scale.x <= 0.075 and white.scale.y <= 0.095)
++		assert(white.scale.z <= 0.022)
+ 	assert(rabbit.head.get_node_or_null("LumoSmileCavity") == null)
+ 	assert(rabbit.ear_joints.size() == 2)
+ 	for ear: Node3D in rabbit.ear_joints:
+ 		assert(absf(ear.rotation.z) < 0.24)
+ 	rabbit.free()
+-	print("[LumoEyeProportions] PASS: fox eyes, swept ears, open smile; other drivers unchanged")
++	print("[LumoEyeProportions] PASS: fox eyes, swept ears, open smile; rabbit eyes recessed with original ear joints")
+ 	quit(0)
+--- /dev/null
++++ b/scripts/tests/kart_rival_finish_regression.gd
+@@ -0,0 +1,104 @@
++extends SceneTree
++## Measures real face surfaces, anatomy, vehicle contacts and runtime batching.
++const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
++var checks := 0
++var failures: Array[String] = []
++
++
++class AuthoredKart:
++	extends LumoRaceKart
++
++	func _make_far_mesh() -> void:
++		pass
++
++	func _merge_static(_parent: Node3D) -> void:
++		pass
++
++
++func _initialize() -> void:
++	call_deferred("_run")
++
++
++func _check(value: bool, label: String) -> void:
++	checks += 1
++	if not value:
++		failures.append(label)
++		push_error(label)
++
++
++func _geometry_stats(node: Node, excluded: Node = null) -> Vector2i:
++	var result := Vector2i.ZERO
++	if node == excluded:
++		return result
++	if node is MeshInstance3D and node.mesh != null:
++		for surface in range(node.mesh.get_surface_count()):
++			var arrays: Array = node.mesh.surface_get_arrays(surface)
++			var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
++			result.x += (indices.size() if not indices.is_empty() else arrays[Mesh.ARRAY_VERTEX].size()) / 3
++			result.y += 1
++	for child in node.get_children():
++		result += _geometry_stats(child, excluded)
++	return result
++
++
++func _run() -> void:
++	var tails: Dictionary = {}
++	for kind in ["rabbit", "otter", "badger", "cat"]:
++		var kart := AuthoredKart.new()
++		kart.configure(kind, Color("7695ba"), "comet")
++		root.add_child(kart)
++		kart.set_process(false)
++		_check(kart.eyes.size() == 2 and kart.ear_joints.size() == 2, kind + " retains blink and ear joints")
++		for eye: Node3D in kart.eyes:
++			var white: MeshInstance3D = eye.get_child(1)
++			_check(white.scale.x < 0.090 and white.scale.z < 0.026, kind + " has small shallow eye shells")
++			if kind == "rabbit":
++				_check(white.scale.x <= 0.075 and white.scale.y <= 0.095 and white.scale.z <= 0.022, "Rabbit eye dimensions fit the narrower skull")
++			for layer in [eye.get_child(2), eye.get_child(3)]:
++				var follows_white := true
++				for vertex: Vector3 in layer.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]:
++					var p: Vector3 = layer.transform * vertex - white.position
++					var radial: float = pow(p.x / white.scale.x, 2) + pow(p.y / white.scale.y, 2)
++					var z: float = -white.scale.z * sqrt(maxf(0.0, 1.0 - radial))
++					follows_white = follows_white and z - p.z > 0.0005 and z - p.z < 0.0035
++				_check(follows_white, kind + " iris and pupil stay attached to the real eye surface")
++		var head_coat: Node3D = kart.head.get_node("SculptedFur")
++		var base: MeshInstance3D = head_coat.get_child(0)
++		var colors: PackedColorArray = base.mesh.surface_get_arrays(0)[Mesh.ARRAY_COLOR]
++		_check(not colors.is_empty() and base.material_override.roughness >= 0.8, kind + " has integrated matte coat pigmentation")
++		var nose: MeshInstance3D = kart.head.get_node("SculptedNose")
++		_check(nose.position.z - nose.scale.z > -0.40, kind + " compact muzzle replaces the projecting fox snout")
++		var tail_coat: Node3D = kart.tail.get_child(0)
++		var tail_mesh: MeshInstance3D = tail_coat.get_child(0)
++		tails[kind] = tail_mesh.mesh.get_aabb().size
++		_check(kart.get_node("AuroraCoachwork").get_meta("craftsmanship_revision", 0) == 1, "Craft finish is present on " + kind)
++		var gloves: Array[Node] = kart.driver.find_children("GripGlove", "MeshInstance3D", true, false)
++		var contacts: Array[Vector3] = []
++		for glove: MeshInstance3D in gloves:
++			contacts.append(kart.steering_wheel.to_local(glove.global_position))
++		kart.set_motion(14.0, 0.8, false, false)
++		for frame in range(6):
++			kart._process(1.0 / 60.0)
++		for index in range(gloves.size()):
++			_check(gloves[index].global_position.distance_to(kart.steering_wheel.to_global(contacts[index])) < 0.0005, kind + " hand remains on moving wheel")
++		kart.animation_time = 4.22
++		kart._process(0.0)
++		_check(kart.eyes[0].scale.y <= 0.08, kind + " smaller eyes still blink")
++		kart.free()
++		var runtime: LumoRaceKart = VEHICLE.new()
++		runtime.configure(kind, Color("7695ba"), "comet")
++		root.add_child(runtime)
++		runtime.set_process(false)
++		var stats: Vector2i = _geometry_stats(runtime, runtime.far_mesh)
++		_check(stats.y <= 64, kind + " fits the existing mobile material surface budget")
++		_check(runtime.far_mesh.mesh.get_surface_count() == 1, kind + " has one distant draw surface")
++		print("[RivalFinish] ", kind, " near_triangles=", stats.x, " near_surfaces=", stats.y)
++		runtime.free()
++	_check(tails.rabbit.z < 0.35, "Rabbit retains a compact pompom tail")
++	_check(tails.otter.z > 0.90 and tails.otter.y < 0.40, "Otter has a long low tapering tail")
++	_check(tails.badger.z < 0.55, "Badger has a short brush tail")
++	_check(tails.cat.y > 0.60 and tails.cat.x < 0.20, "Cat has a narrow raised curling tail")
++	print("[RivalFinish] checks=", checks, " failures=", failures.size())
++	if failures.is_empty():
++		print("[RivalFinish] PASS: real eye attachment, species silhouettes, wheel contacts, mobile batches")
++	quit(0 if failures.is_empty() else 1)
+--- /dev/null
++++ b/scripts/tests/kart_rival_visual_adapter_regression.gd
+@@ -0,0 +1,186 @@
++extends SceneTree
++## In-memory skinned fixtures test the adapter without fabricating roster assets.
++const CONTRACT = preload("res://scripts/games/kart_rival_model_contract.gd")
++const ADAPTER = preload("res://scripts/games/kart_rival_visual_adapter.gd")
++const ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
++const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
++var checks := 0
++var failures: Array[String] = []
++
++
++func _initialize() -> void:
++	call_deferred("_run")
++
++
++func _check(value: bool, label: String) -> void:
++	checks += 1
++	if not value:
++		failures.append(label)
++		push_error(label)
++
++
++func _fixture() -> Node3D:
++	var model := Node3D.new()
++	model.name = "FixtureOnly"
++	var skeleton := Skeleton3D.new()
++	skeleton.name = "Skeleton3D"
++	skeleton.add_bone("Chest")
++	model.add_child(skeleton)
++	skeleton.owner = model
++	var arrays: Array = []
++	arrays.resize(Mesh.ARRAY_MAX)
++	arrays[Mesh.ARRAY_VERTEX] = PackedVector3Array([Vector3(-0.1, 0, 0), Vector3(0, 0.2, 0), Vector3(0.1, 0, 0)])
++	arrays[Mesh.ARRAY_NORMAL] = PackedVector3Array([Vector3.FORWARD, Vector3.FORWARD, Vector3.FORWARD])
++	arrays[Mesh.ARRAY_BONES] = PackedInt32Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
++	arrays[Mesh.ARRAY_WEIGHTS] = PackedFloat32Array([1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0])
++	var geometry := ArrayMesh.new()
++	geometry.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
++	var skin := Skin.new()
++	skin.add_bind(0, Transform3D.IDENTITY)
++	var mesh := MeshInstance3D.new()
++	mesh.name = "Skin"
++	mesh.mesh = geometry
++	mesh.skin = skin
++	mesh.skeleton = NodePath("../Skeleton3D")
++	model.add_child(mesh)
++	mesh.owner = model
++	var player := AnimationPlayer.new()
++	player.name = "AnimationPlayer"
++	model.add_child(player)
++	player.owner = model
++	var library := AnimationLibrary.new()
++	for key in ["kart_seated", "kart_steer_left"]:
++		var clip := Animation.new()
++		clip.length = 1.0
++		clip.loop_mode = Animation.LOOP_LINEAR
++		var track: int = clip.add_track(Animation.TYPE_ROTATION_3D)
++		clip.track_set_path(track, NodePath("Skeleton3D:Chest"))
++		clip.rotation_track_insert_key(track, 0.0, Quaternion.IDENTITY)
++		clip.rotation_track_insert_key(track, 0.5, Quaternion(Vector3.UP, 0.10))
++		library.add_animation(key, clip)
++	player.add_animation_library("", library)
++	return model
++
++
++func _vehicle_cadence(packed: PackedScene, hz: int) -> void:
++	# The real island supplies runtime state every physics frame, even when
++	# suspension has not changed. Exercise that full path with a test-only
++	# skinned fixture; the production roster remains explicitly unready.
++	var kart: LumoRaceKart = VEHICLE.new()
++	kart.configure("rabbit", Color.WHITE, "comet")
++	root.add_child(kart)
++	kart.set_process(false)
++	var visual := ADAPTER.new()
++	kart.add_child(visual)
++	_check(visual.bind_scene(packed), "%d Hz vehicle fixture binds an actual rig" % hz)
++	kart.rival_visual = visual
++	kart.driver.hide()
++	kart._refresh_far_proxy()
++	var evaluations := 0
++	for frame in range(hz):
++		var previous: float = visual.elapsed
++		kart.set_driver_runtime_state(false, false, false)
++		kart._process(1.0 / float(hz))
++		if visual.elapsed > previous:
++			evaluations += 1
++	_check(evaluations == 30, "%d Hz repeated vehicle runtime state retains 30 visual evaluations" % hz)
++	_check(is_equal_approx(visual.elapsed, 1.0), "%d Hz repeated unsuspended state preserves one second of animation" % hz)
++	for frame in range(hz):
++		kart.set_driver_runtime_state(false, false, true)
++		kart._process(1.0 / float(hz))
++	_check(is_equal_approx(visual.elapsed, 1.0), "%d Hz repeated suspended state freezes the rig" % hz)
++	for frame in range(hz):
++		kart.set_driver_runtime_state(false, false, false)
++		kart._process(1.0 / float(hz))
++	_check(is_equal_approx(visual.elapsed, 2.0), "%d Hz resume continues without paused time or repeated resets" % hz)
++	kart.free()
++
++
++func _run() -> void:
++	for entry in ROSTER.all():
++		_check(not bool(entry.runtimeReady), "Pending " + str(entry.id) + " remains explicitly unready")
++		_check(ROSTER.racing_scene(str(entry.id)) == null, "Pending model is never silently instantiated")
++	_check(not ROSTER.ready_for_race(), "The roster cannot claim assets that are still absent")
++	_check(not CONTRACT.model_path_allowed("res://assets/characters/rivals/../lumo.glb"), "Parent traversal is outside the rival model contract")
++	_check(not CONTRACT.model_path_allowed("res://assets/characters/rivals/test.tscn"), "Runtime roster accepts imported GLB data only")
++	var good := _fixture()
++	var inspection: Dictionary = CONTRACT.inspect(good)
++	_check(bool(inspection.valid), "A real skin, local skeleton and seated clip satisfy the contract")
++	var packed := PackedScene.new()
++	_check(packed.pack(good) == OK, "In-memory test skin can be instantiated")
++	var player: AnimationPlayer = good.get_node("AnimationPlayer")
++	var clip: Animation = player.get_animation("kart_seated")
++	clip.track_set_path(0, NodePath("../Outside:Chest"))
++	_check(not bool(CONTRACT.inspect(good).valid), "Animation paths escaping the model are rejected")
++	clip.track_set_path(0, NodePath("Skeleton3D:MissingBone"))
++	_check(not bool(CONTRACT.inspect(good).valid), "Missing bone tracks are rejected")
++	clip.track_set_path(0, NodePath("Skeleton3D:Chest"))
++	var method: int = clip.add_track(Animation.TYPE_METHOD)
++	clip.track_set_path(method, NodePath("Skeleton3D"))
++	clip.track_insert_key(method, 0.0, {"method": "reset_bone_poses", "args": []})
++	_check(not bool(CONTRACT.inspect(good).valid), "Executable animation callbacks are rejected")
++	clip.remove_track(method)
++	good.get_node("Skin").skin = null
++	_check(not bool(CONTRACT.inspect(good).valid), "Static meshes cannot masquerade as a rigged driver")
++	good.free()
++	# PackedScene resources are shared; build a fresh valid fixture after negative mutations.
++	good = _fixture()
++	_check(packed.pack(good) == OK, "Fresh test-only rig is packed")
++	good.free()
++	ROSTER._validated_scenes["rabbit"] = packed
++	_check(ROSTER.racing_scene("rabbit") == null, "An old cached model cannot override explicit unready state")
++	ROSTER._validated_scenes.erase("rabbit")
++	var adapter := ADAPTER.new()
++	root.add_child(adapter)
++	_check(adapter.bind_scene(packed), "Adapter actually instantiates the valid rig")
++	_check(adapter.model != null and adapter.player != null and adapter.get_child_count() == 1, "Exactly one imported model is present")
++	_check(not adapter.bind_scene(packed), "Repeated binding cannot create a second driver")
++	adapter.advance_tick(1.0 / 60.0)
++	_check(is_zero_approx(adapter.elapsed), "One half tick cannot double-evaluate an animation")
++	adapter.advance_tick(1.0 / 60.0)
++	_check(is_equal_approx(adapter.elapsed, 1.0 / 30.0), "Vehicle clock advances the rig once per visual tick")
++	adapter.set_suspended(true)
++	var before: float = adapter.elapsed
++	adapter.advance_tick(1.0)
++	_check(adapter.elapsed == before, "Paused vehicle freezes the imported rig")
++	adapter.set_suspended(false)
++	adapter.apply_vehicle_sample(10, -0.7, false)
++	adapter.advance_tick(1.0 / 30.0)
++	_check(adapter._current == "kart_steer_left", "Authored steering clip is selected")
++	adapter.apply_vehicle_sample(10, 0.7, false)
++	adapter.advance_tick(1.0 / 30.0)
++	_check(adapter._current == "kart_seated", "Missing optional clips use the valid seated pose")
++	adapter.set_reduced_motion(true)
++	before = adapter.elapsed
++	adapter.advance_tick(0.3)
++	_check(adapter.elapsed == before, "Reduced motion keeps the seated rig still")
++	adapter.set_reduced_motion(false)
++	before = adapter.elapsed
++	var evaluations := 0
++	for frame in range(50):
++		var previous: float = adapter.elapsed
++		adapter.advance_tick(1.0 / 50.0)
++		if adapter.elapsed > previous:
++			evaluations += 1
++	_check(evaluations == 30 and is_equal_approx(adapter.elapsed - before, 1.0), "50 Hz input preserves exactly 30 evaluations and all animation time")
++	adapter.advance_tick(1.25)
++	_check(adapter.elapsed - before <= 1.100001 and adapter._tick < 1.0 / 30.0, "A long frame caps work and retains no whole-tick backlog")
++	adapter.free()
++	_vehicle_cadence(packed, 60)
++	_vehicle_cadence(packed, 144)
++	var kart: LumoRaceKart = VEHICLE.new()
++	kart.configure("rabbit", Color.WHITE, "comet")
++	kart.set_reference_rival_enabled(true)
++	_check(kart.rival_visual == null, "Reference preference is safe before entering the tree")
++	root.add_child(kart)
++	kart.set_process(false)
++	_check(kart.rival_visual == null and kart.driver.visible, "Unready reference preserves the current full 3D driver")
++	kart.set_reference_rival_enabled(true)
++	_check(kart.rival_visual == null, "Repeated preference never invents a missing model")
++	kart.set_reference_rival_enabled(false)
++	_check(kart.driver.visible, "Disabling references keeps the real fallback visible")
++	kart.free()
++	print("[RivalAdapter] checks=", checks, " failures=", failures.size())
++	if failures.is_empty():
++		print("[RivalAdapter] PASS: actual rig instantiation, validation, one clock, pause and honest readiness")
++	quit(0 if failures.is_empty() else 1)

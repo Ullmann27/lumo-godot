@@ -1,0 +1,527 @@
+{
+  "schema": 1,
+  "created_utc": "2026-11-14T20:59:09.852738+00:00",
+  "kind": "frozen_sources_and_original_evidence_no_product_execution",
+  "files": [
+    {
+      "path": "README.md",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/README.md",
+      "mode": "0644",
+      "bytes": 8025,
+      "sha256": "8425e48e224c554c11a31599e93b307ef0e381a48960768031cd89d740b868a1",
+      "git_blob": "82ff0d30f59f68b3aba22945f5ed31323f6dd674"
+    },
+    {
+      "path": "base-readonly/after-0.stderr",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/after-0.stderr",
+      "mode": "0644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "base-readonly/after-0.stdout",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/after-0.stdout",
+      "mode": "0644",
+      "bytes": 41,
+      "sha256": "fe5b5870a5142667e3ecc6748bffebd51b0c2858dae11e3fff1d179f65b95448",
+      "git_blob": "1a68b247c75e28bab892499cc0ec96684a39802c"
+    },
+    {
+      "path": "base-readonly/after-1.stderr",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/after-1.stderr",
+      "mode": "0644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "base-readonly/after-1.stdout",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/after-1.stdout",
+      "mode": "0644",
+      "bytes": 41,
+      "sha256": "af356305905b89287b3c5a22d7730c44ef6d5d70493b555ba269d951ea838be0",
+      "git_blob": "4898979f607f9c67646543c8c5915909035f0a57"
+    },
+    {
+      "path": "base-readonly/after-2.stderr",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/after-2.stderr",
+      "mode": "0644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "base-readonly/after-2.stdout",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/after-2.stdout",
+      "mode": "0644",
+      "bytes": 458067,
+      "sha256": "a40ada8f5c67042dab3f58f94ad35a62bcfd13154c2000b33d24262987b60bf2",
+      "git_blob": "a10244022ac8e1ee8119d68b2f039fd935e8b0f8"
+    },
+    {
+      "path": "base-readonly/after-3.stderr",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/after-3.stderr",
+      "mode": "0644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "base-readonly/after-3.stdout",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/after-3.stdout",
+      "mode": "0644",
+      "bytes": 469338,
+      "sha256": "1fe3d9c5bf818332311b2651dbed8a03b29df35a342c730e1c29f272f737c4c2",
+      "git_blob": "c67bc4b38bfb6b77801ffca6808cd17d42f430fd"
+    },
+    {
+      "path": "base-readonly/after-4.stderr",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/after-4.stderr",
+      "mode": "0644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "base-readonly/after-4.stdout",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/after-4.stdout",
+      "mode": "0644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "base-readonly/after-index.original",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/after-index.original",
+      "mode": "0644",
+      "bytes": 558570,
+      "sha256": "661b556869a3121baa1ccb5246e87644dc6fe72ae06b2eea20f7c39a68c099c7",
+      "git_blob": "8c98d740eb9a80ce582f249b772058deb604da53"
+    },
+    {
+      "path": "base-readonly/before-0.stderr",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/before-0.stderr",
+      "mode": "0644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "base-readonly/before-0.stdout",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/before-0.stdout",
+      "mode": "0644",
+      "bytes": 41,
+      "sha256": "fe5b5870a5142667e3ecc6748bffebd51b0c2858dae11e3fff1d179f65b95448",
+      "git_blob": "1a68b247c75e28bab892499cc0ec96684a39802c"
+    },
+    {
+      "path": "base-readonly/before-1.stderr",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/before-1.stderr",
+      "mode": "0644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "base-readonly/before-1.stdout",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/before-1.stdout",
+      "mode": "0644",
+      "bytes": 41,
+      "sha256": "af356305905b89287b3c5a22d7730c44ef6d5d70493b555ba269d951ea838be0",
+      "git_blob": "4898979f607f9c67646543c8c5915909035f0a57"
+    },
+    {
+      "path": "base-readonly/before-2.stderr",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/before-2.stderr",
+      "mode": "0644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "base-readonly/before-2.stdout",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/before-2.stdout",
+      "mode": "0644",
+      "bytes": 458067,
+      "sha256": "a40ada8f5c67042dab3f58f94ad35a62bcfd13154c2000b33d24262987b60bf2",
+      "git_blob": "a10244022ac8e1ee8119d68b2f039fd935e8b0f8"
+    },
+    {
+      "path": "base-readonly/before-3.stderr",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/before-3.stderr",
+      "mode": "0644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "base-readonly/before-3.stdout",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/before-3.stdout",
+      "mode": "0644",
+      "bytes": 469338,
+      "sha256": "1fe3d9c5bf818332311b2651dbed8a03b29df35a342c730e1c29f272f737c4c2",
+      "git_blob": "c67bc4b38bfb6b77801ffca6808cd17d42f430fd"
+    },
+    {
+      "path": "base-readonly/before-4.stderr",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/before-4.stderr",
+      "mode": "0644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "base-readonly/before-4.stdout",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/before-4.stdout",
+      "mode": "0644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "base-readonly/before-index.original",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/before-index.original",
+      "mode": "0644",
+      "bytes": 558570,
+      "sha256": "661b556869a3121baa1ccb5246e87644dc6fe72ae06b2eea20f7c39a68c099c7",
+      "git_blob": "8c98d740eb9a80ce582f249b772058deb604da53"
+    },
+    {
+      "path": "base-readonly/binding.json",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/base-readonly/binding.json",
+      "mode": "0644",
+      "bytes": 3851,
+      "sha256": "0ab389083f65a2308e00d44f5aa308fc404b57ffbd63a9856a4cd835ab269055",
+      "git_blob": "5dc47ea45fbd4001d10cbb21a972342fd164b1b4"
+    },
+    {
+      "path": "before/scripts/games/kart_vehicle.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/before/scripts/games/kart_vehicle.gd",
+      "mode": "0644",
+      "bytes": 118712,
+      "sha256": "1db5369d8521a94d2118833519d90229d3fb2ff8ff95194d39f5ab74e0ba42de",
+      "git_blob": "9fa9dd899d3d1f70a4db53218546282d76a041db"
+    },
+    {
+      "path": "before/scripts/games/lumo_opponent_roster.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/before/scripts/games/lumo_opponent_roster.gd",
+      "mode": "0644",
+      "bytes": 2272,
+      "sha256": "e34f2e3344ee52472fc3285e9fc6c2f88606b5f80d60be9b088e9c3586512e6b",
+      "git_blob": "8ab68fb34fa7ee52f918957ab036d3f368d4c91b"
+    },
+    {
+      "path": "before/scripts/tests/kart_fox_eye_proportions_regression.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/before/scripts/tests/kart_fox_eye_proportions_regression.gd",
+      "mode": "0644",
+      "bytes": 2745,
+      "sha256": "64ce85f2f130f9b5cdcf45619bf8292a5c6a3de9a94383d2b4884e01e19a29a3",
+      "git_blob": "b5465507223be6a066b9b9e89bacbc88c49f1672"
+    },
+    {
+      "path": "ci-observation.json",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/ci-observation.json",
+      "mode": "0644",
+      "bytes": 9950,
+      "sha256": "1e8ca6281fe18831120d6e3158bb964694038b9345a4ce06530423bd7eae7cec",
+      "git_blob": "4117fb5dfef4d630aa534a45f9612f9ad0d1d8ab"
+    },
+    {
+      "path": "dependency-binding.json",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/dependency-binding.json",
+      "mode": "0644",
+      "bytes": 5721,
+      "sha256": "9e050ccaea74e4e90cda250e2354f18c59cc15e4942066bc81fe6abb6913847f",
+      "git_blob": "3eae4ff64bdf117557425e8ce8bc9bee4740b7f8"
+    },
+    {
+      "path": "final-source/scripts/games/kart_coachwork_finish.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/kart_coachwork_finish.gd",
+      "mode": "0644",
+      "bytes": 5518,
+      "sha256": "80d0e9fe300c43743d528098a7548a1ff7abb011db456d282439ed13efbeee09",
+      "git_blob": "1d8ebc55111dd713f10132ea7f42e4112541b57c"
+    },
+    {
+      "path": "final-source/scripts/games/kart_modular_aero_kit.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/kart_modular_aero_kit.gd",
+      "mode": "0644",
+      "bytes": 4098,
+      "sha256": "c862cbd98cae8640889036e9e0986f729ea41096b951ff89e5a046a5c6c10d97",
+      "git_blob": "961a2d1418d6b25b2d64a34757c21541b6b9f4bd"
+    },
+    {
+      "path": "final-source/scripts/games/kart_rival_character_finish.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/kart_rival_character_finish.gd",
+      "mode": "0644",
+      "bytes": 8627,
+      "sha256": "00acdcd5787af3054786a3d669083a8884ebf3888abb8fd275affdc53b95616d",
+      "git_blob": "415a5d06d829a90c8994e5d134322358e368b41a"
+    },
+    {
+      "path": "final-source/scripts/games/kart_rival_model_contract.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/kart_rival_model_contract.gd",
+      "mode": "0644",
+      "bytes": 5986,
+      "sha256": "4510ce3b9f266893717956be4f3804be295d486c7ec23735ae15a8925e542ae1",
+      "git_blob": "568d0b98343b1029c595eb9f914b46c563e4a6f3"
+    },
+    {
+      "path": "final-source/scripts/games/kart_rival_visual_adapter.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/kart_rival_visual_adapter.gd",
+      "mode": "0644",
+      "bytes": 3779,
+      "sha256": "8e6425e7f450acd5602a8c9837e8f33acda2cf143238654658b2a91cf0a0f1be",
+      "git_blob": "ec4020ae99cb88958c29c4df9213f3ed07f874a1"
+    },
+    {
+      "path": "final-source/scripts/games/kart_vehicle.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/kart_vehicle.gd",
+      "mode": "0644",
+      "bytes": 121338,
+      "sha256": "e086d625c0ae187e8bd2810044c33e65b4c325a32eea7eebd6ce1a4ef03b65fa",
+      "git_blob": "c6681fde3a7ad38f764a4f0b22fa4bf6c239fb34"
+    },
+    {
+      "path": "final-source/scripts/games/lumo_opponent_roster.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/lumo_opponent_roster.gd",
+      "mode": "0644",
+      "bytes": 2988,
+      "sha256": "83d70c8aea8d1ae19cdaad0927769f33d16af70a195dade16c08484d71d41b3d",
+      "git_blob": "ef3481b7d9d4f444bf380d44895b5de9e0d13fae"
+    },
+    {
+      "path": "final-source/scripts/tests/kart_fox_eye_proportions_regression.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/tests/kart_fox_eye_proportions_regression.gd",
+      "mode": "0644",
+      "bytes": 2829,
+      "sha256": "4ad7fe72ffb54d1e5f63b25fcfeecd0a2573cf73bfc086f1f5f83ca419ba62bd",
+      "git_blob": "49ef378045e7ee283de6965b0b83104b88494056"
+    },
+    {
+      "path": "final-source/scripts/tests/kart_rival_finish_regression.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/tests/kart_rival_finish_regression.gd",
+      "mode": "0644",
+      "bytes": 4885,
+      "sha256": "c01e54afee0511293e8ed9a13d93a5bb23dd19594ce3df4b8de01a85bcce10aa",
+      "git_blob": "02da56ee96d3d2d385c548ab4b53e33b760a0ff6"
+    },
+    {
+      "path": "final-source/scripts/tests/kart_rival_visual_adapter_regression.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/tests/kart_rival_visual_adapter_regression.gd",
+      "mode": "0644",
+      "bytes": 8886,
+      "sha256": "2e6342bd34611e85d0ad8d6318ac4dc2e63c32033959fe3d9571b88d42a9d94d",
+      "git_blob": "e1804e0d10ae6809757557f482cb9b50d6ab4714"
+    },
+    {
+      "path": "full-producer-disposition.json",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/full-producer-disposition.json",
+      "mode": "0644",
+      "bytes": 13793,
+      "sha256": "e2fb0e9865a079a6d5bbf623b85440c7663f4268b4da607d302fbb379cc7414e",
+      "git_blob": "37009adf39b6293e9ae557a266e3ed5c23027f63"
+    },
+    {
+      "path": "function-preservation.json",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/function-preservation.json",
+      "mode": "0644",
+      "bytes": 17283,
+      "sha256": "cada2784ab01f522b36c8014a60972333bae2e0c81838d832a684cda894139f5",
+      "git_blob": "9e437f07b9f453fbf0fe1a9b69d855ce784e9229"
+    },
+    {
+      "path": "integration.patch",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/integration.patch",
+      "mode": "0644",
+      "bytes": 68649,
+      "sha256": "4678da569966414d1cb0c4ee99cbc95dda23b1485dea721974da7c91539ba26b",
+      "git_blob": "cd9a6380bb44784a2d031b875284f8e4b59c9b9b"
+    },
+    {
+      "path": "material-analysis.json",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/material-analysis.json",
+      "mode": "0644",
+      "bytes": 2076,
+      "sha256": "4c44ace268e210acc4e97699c14bbcf615ab67d4b654e355db55acf3a63e7045",
+      "git_blob": "c80c47c3624f015c75ab2e165a48dc42c336df01"
+    },
+    {
+      "path": "material-repair.patch",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/material-repair.patch",
+      "mode": "0644",
+      "bytes": 953,
+      "sha256": "2346002d6de6cdaf9cf090b9aa1ebf9bf30449d3114510076798cb238f3ac094",
+      "git_blob": "ee78379a0974b99b148801aef56262f71bfc5049"
+    },
+    {
+      "path": "originals-manifest.json",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/originals-manifest.json",
+      "mode": "0644",
+      "bytes": 38771,
+      "sha256": "7176f2ece873699700ee6e92c8b429317d3c27b02807706f6aa7ff6764abc5c1",
+      "git_blob": "c18dca29c032cced15a080ff11a7eedef81fb756"
+    },
+    {
+      "path": "originals-roundtrip.json",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/originals-roundtrip.json",
+      "mode": "0644",
+      "bytes": 28127,
+      "sha256": "86539da3c22e059514164830e329de029ede8b56818564b3cc4bec9e8dd3dbe4",
+      "git_blob": "5815a78010659b771dc07f45b30e83e719bc2620"
+    },
+    {
+      "path": "prepare_candidate.py",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/prepare_candidate.py",
+      "mode": "0644",
+      "bytes": 18053,
+      "sha256": "95bec83ae1eba7cb5427bc28bf701f93164941cd6f3ce3e75302c53060a6dc4b",
+      "git_blob": "6491ae19c45b44feb24118b310199f2fda9c872a"
+    },
+    {
+      "path": "producer-originals-binding.json",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-originals-binding.json",
+      "mode": "0644",
+      "bytes": 18313,
+      "sha256": "f3ba54342770d281fd862964db3c459c7686ee066067b75ebe4ebe87681a2532",
+      "git_blob": "d636520736477f74c514f7e735aadc1c8e69e7ca"
+    },
+    {
+      "path": "producer-originals.tar.gz",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-originals.tar.gz",
+      "mode": "0644",
+      "bytes": 1321855,
+      "sha256": "1c2636b22443517a26eac2f66c0e26ca25ccfe5862642fc0e77676313d6decbf",
+      "git_blob": "23d6b0833234956420b87e4af71b5c9a97861120"
+    },
+    {
+      "path": "producer-source/scripts/games/kart_coachwork_finish.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-source/scripts/games/kart_coachwork_finish.gd",
+      "mode": "0644",
+      "bytes": 5518,
+      "sha256": "80d0e9fe300c43743d528098a7548a1ff7abb011db456d282439ed13efbeee09",
+      "git_blob": "1d8ebc55111dd713f10132ea7f42e4112541b57c"
+    },
+    {
+      "path": "producer-source/scripts/games/kart_modular_aero_kit.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-source/scripts/games/kart_modular_aero_kit.gd",
+      "mode": "0644",
+      "bytes": 4096,
+      "sha256": "6bdb8055dc0dfb46cb2e977133bc13e670d0a502040e6994ae7ca59260d4d65a",
+      "git_blob": "e8075c72284e082d6dfe79164e50f4d62c794bac"
+    },
+    {
+      "path": "producer-source/scripts/games/kart_rival_character_finish.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-source/scripts/games/kart_rival_character_finish.gd",
+      "mode": "0644",
+      "bytes": 8627,
+      "sha256": "00acdcd5787af3054786a3d669083a8884ebf3888abb8fd275affdc53b95616d",
+      "git_blob": "415a5d06d829a90c8994e5d134322358e368b41a"
+    },
+    {
+      "path": "producer-source/scripts/games/kart_rival_model_contract.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-source/scripts/games/kart_rival_model_contract.gd",
+      "mode": "0644",
+      "bytes": 5986,
+      "sha256": "4510ce3b9f266893717956be4f3804be295d486c7ec23735ae15a8925e542ae1",
+      "git_blob": "568d0b98343b1029c595eb9f914b46c563e4a6f3"
+    },
+    {
+      "path": "producer-source/scripts/games/kart_rival_visual_adapter.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-source/scripts/games/kart_rival_visual_adapter.gd",
+      "mode": "0644",
+      "bytes": 3779,
+      "sha256": "8e6425e7f450acd5602a8c9837e8f33acda2cf143238654658b2a91cf0a0f1be",
+      "git_blob": "ec4020ae99cb88958c29c4df9213f3ed07f874a1"
+    },
+    {
+      "path": "producer-source/scripts/games/kart_vehicle.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-source/scripts/games/kart_vehicle.gd",
+      "mode": "0644",
+      "bytes": 121338,
+      "sha256": "e086d625c0ae187e8bd2810044c33e65b4c325a32eea7eebd6ce1a4ef03b65fa",
+      "git_blob": "c6681fde3a7ad38f764a4f0b22fa4bf6c239fb34"
+    },
+    {
+      "path": "producer-source/scripts/games/lumo_opponent_roster.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-source/scripts/games/lumo_opponent_roster.gd",
+      "mode": "0644",
+      "bytes": 2988,
+      "sha256": "83d70c8aea8d1ae19cdaad0927769f33d16af70a195dade16c08484d71d41b3d",
+      "git_blob": "ef3481b7d9d4f444bf380d44895b5de9e0d13fae"
+    },
+    {
+      "path": "producer-source/scripts/tests/kart_fox_eye_proportions_regression.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-source/scripts/tests/kart_fox_eye_proportions_regression.gd",
+      "mode": "0644",
+      "bytes": 2829,
+      "sha256": "4ad7fe72ffb54d1e5f63b25fcfeecd0a2573cf73bfc086f1f5f83ca419ba62bd",
+      "git_blob": "49ef378045e7ee283de6965b0b83104b88494056"
+    },
+    {
+      "path": "producer-source/scripts/tests/kart_rival_finish_regression.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-source/scripts/tests/kart_rival_finish_regression.gd",
+      "mode": "0644",
+      "bytes": 4885,
+      "sha256": "c01e54afee0511293e8ed9a13d93a5bb23dd19594ce3df4b8de01a85bcce10aa",
+      "git_blob": "02da56ee96d3d2d385c548ab4b53e33b760a0ff6"
+    },
+    {
+      "path": "producer-source/scripts/tests/kart_rival_visual_adapter_regression.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-source/scripts/tests/kart_rival_visual_adapter_regression.gd",
+      "mode": "0644",
+      "bytes": 8886,
+      "sha256": "2e6342bd34611e85d0ad8d6318ac4dc2e63c32033959fe3d9571b88d42a9d94d",
+      "git_blob": "e1804e0d10ae6809757557f482cb9b50d6ab4714"
+    },
+    {
+      "path": "protected-source/assets/characters/rivals/roster.json",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/protected-source/assets/characters/rivals/roster.json",
+      "mode": "0644",
+      "bytes": 2445,
+      "sha256": "32035e97a483133aed6a35d181291568a5b93c44bbf27405d48c8872e81c9670",
+      "git_blob": "051bfb33c4aa13f3cce375c91f81c241b4b7a340"
+    },
+    {
+      "path": "protected-source/scripts/tests/kart_dynamic_coastal_foam_regression.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/protected-source/scripts/tests/kart_dynamic_coastal_foam_regression.gd",
+      "mode": "0644",
+      "bytes": 2257,
+      "sha256": "ab7b16e47e4a7efca88ebe074f4cb3fcac56752bd97d592dabf3518ac894860c",
+      "git_blob": "08c6a47957cd263946b5dbced8091d283b33a062"
+    },
+    {
+      "path": "protected-source/scripts/tests/kart_physics_regression.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/protected-source/scripts/tests/kart_physics_regression.gd",
+      "mode": "0644",
+      "bytes": 20821,
+      "sha256": "0b23b736822b00c175b85cc940c9110d26f7ab415daadea1343e304daa7e89b3",
+      "git_blob": "da9e5186a46316996cc44a44b1f2c6c4a83f7d61"
+    },
+    {
+      "path": "protected-source/scripts/tests/kart_vehicle_regression.gd",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/protected-source/scripts/tests/kart_vehicle_regression.gd",
+      "mode": "0644",
+      "bytes": 14460,
+      "sha256": "0b9b4f0de9f0f66b7f1445736178179434eeb9960393eda0461ab8235713550e",
+      "git_blob": "37834ca60640bc3c035da8944d0a932f80fb22a5"
+    },
+    {
+      "path": "source-freeze.json",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/source-freeze.json",
+      "mode": "0644",
+      "bytes": 6659,
+      "sha256": "1485bffdf960628d4e701684f621aaf7422e91bd2b3b3790a21b2c547bdc6201",
+      "git_blob": "ed564299a631745f670976701f187a0dba1f27ea"
+    },
+    {
+      "path": "source-preservation.json",
+      "source_path": "/tmp/native-pr183-184-material-repair-f9-20261114/source-preservation.json",
+      "mode": "0644",
+      "bytes": 767698,
+      "sha256": "70e8a8ddc71b4d6890a84b19724b5da7dc026ea48a5887fb2e64939d5c49aa7d",
+      "git_blob": "07aff36eb64d7e9d95ed8ad31142460fba163ff1"
+    }
+  ]
+}

@@ -1,0 +1,492 @@
+[
+  {
+    "path": "scripts/games/kart_vehicle.gd",
+    "unchanged": [
+      {
+        "name": "set_animated_lumo_enabled",
+        "bytes": 299,
+        "sha256": "d032dd8e8bda855b3c06df902c825520f9134681bd2cfab29ca8c98f38474b6f",
+        "git_blob": "49fb86424c294828b54c73e70771e1411de8ef7b"
+      },
+      {
+        "name": "_ensure_lumo_animation",
+        "bytes": 824,
+        "sha256": "7730ddd3cb090c25e177a86456f35fb42db20590b0012f6dd55c62bbd8dfc274",
+        "git_blob": "2ff65b027315094a96a7f570c7bfa53fcd6f2001"
+      },
+      {
+        "name": "configure",
+        "bytes": 356,
+        "sha256": "690eab2d534145608574d2878f6010e0c50d64620c4f1a4dff156149ec77295b",
+        "git_blob": "86a6662643b03e8a7ba3f19dc42eb939181d9c91"
+      },
+      {
+        "name": "configure_companion",
+        "bytes": 120,
+        "sha256": "be046e06b1c617f3a5d61092f82cfa3ef85d527c6a591d220f8eec14e2ee9874",
+        "git_blob": "6f643d74c097459a9cc0264772cdb98b0f0c2d69"
+      },
+      {
+        "name": "set_companion_pose",
+        "bytes": 2402,
+        "sha256": "fd9e39800a7a6198e2311bc8ad421996a0b1e893a07984c7a69acca8bb68cbfd",
+        "git_blob": "526ab67326dbede08733c5def200b60582da2d85"
+      },
+      {
+        "name": "_animal_id",
+        "bytes": 121,
+        "sha256": "102b153017385dfd5c44473540a8fd9dcb9c5b4a452cce368ab65ebfd5d67d64",
+        "git_blob": "efddb04555ae7815b9e10872890abebcb2221dce"
+      },
+      {
+        "name": "_style_id",
+        "bytes": 90,
+        "sha256": "75507444e6d863656056937d8242287480401ea39a5ef777be614384d8571dd3",
+        "git_blob": "125486bc4a62aaec809d491b41fe9aebac8f9fd2"
+      },
+      {
+        "name": "configure_variant",
+        "bytes": 133,
+        "sha256": "81b4037499f2c7ab11d6bffca6c1a4debe64e8103fe2c5190d6ace64ba9e4d09",
+        "git_blob": "e2f99b31f8af274da84a65dcd46e29cbf82ba0ef"
+      },
+      {
+        "name": "set_kart_style",
+        "bytes": 72,
+        "sha256": "ad63e7292cba97c7794bb84a9369badcc6e764144fd324763d8b802022ffa226",
+        "git_blob": "be105a5bfc0e5c3d5cd960e3964b1b91d44343eb"
+      },
+      {
+        "name": "set_driver_character",
+        "bytes": 105,
+        "sha256": "db7477e7d25ffdfeadd635395319195aab0aee7899ed07874eba27c91e3427f3",
+        "git_blob": "42e8a071edba5da92adce229a3cda9e2a68d1edf"
+      },
+      {
+        "name": "set_speaking",
+        "bytes": 88,
+        "sha256": "d55430f632d9fd21dca561412984bbb613c6a6e6a93c54fd68253242c74bcf34",
+        "git_blob": "343a83e017421037155629393be209fb8d1a743d"
+      },
+      {
+        "name": "set_graphics_quality",
+        "bytes": 248,
+        "sha256": "891808c604ab8f19a0478e577341ae1e9f808d3aeec363f8e7d48ed9d9decaf2",
+        "git_blob": "d155f7922d0b5d50b9bf79ccf28efebb4754e4a2"
+      },
+      {
+        "name": "_apply_cinema_coachwork",
+        "bytes": 986,
+        "sha256": "8a959deadaedf032752e25fe81b9ff041e7aba11420c47a0a4a5ead0cfe9c865",
+        "git_blob": "809e30bfc3218f9e6216e98abc5f15de7e0ef2b2"
+      },
+      {
+        "name": "_mat",
+        "bytes": 878,
+        "sha256": "57033f37d45274696ab39f0ae9884327d97a5e045e968a286c2d974406d3493c",
+        "git_blob": "25b8ea2bf7e5af00db5f532b5bfa8260e961539b"
+      },
+      {
+        "name": "_mesh",
+        "bytes": 748,
+        "sha256": "0986339640fa3b92e52fd0d9a812e0f1af8e0652842b48a135d873ea9d6ac8d4",
+        "git_blob": "0a3b16a0fa15b8c76d8041412607b37982e18c26"
+      },
+      {
+        "name": "_ellipsoid",
+        "bytes": 618,
+        "sha256": "a804539153e9959c1bc11406df96de4264e49bb8a5904d50beeeb9da9debfb9e",
+        "git_blob": "6e6809ac840c5736c42752b59a65e579518609b2"
+      },
+      {
+        "name": "_box",
+        "bytes": 317,
+        "sha256": "bb75b6607075cf6b15c92d5413c3c6bdf1506c9b559a70d79b71da52f7334b81",
+        "git_blob": "de48b0e5581f48979eaffdfc7db755dd0ab2a81e"
+      },
+      {
+        "name": "_rod",
+        "bytes": 480,
+        "sha256": "7b7d2f2b1597dc1dfe38330a00410cb263a3eb3956d1263be69fc750f93c2aa8",
+        "git_blob": "a64696d7a00678c2ce83bf94c05653515a877e56"
+      },
+      {
+        "name": "_ring",
+        "bytes": 521,
+        "sha256": "5074e67dbb0fe790b4ccba29ea2f453ffea2ca8c0c20b91f9054bd29abe6f827",
+        "git_blob": "f978a85376a6ccaad0ea50b95f15d438bf1a4cce"
+      },
+      {
+        "name": "_catmull",
+        "bytes": 214,
+        "sha256": "9bf4b4f061ce817787d08a18b234425cab24a9a1c90f3401f977496df8d98004",
+        "git_blob": "f27b1ca834ebe354833f5b60519e4fe8061e42ab"
+      },
+      {
+        "name": "_loft",
+        "bytes": 2548,
+        "sha256": "d927e258077ca4d2d5294d56b5724b177f12990bc7d4483a8ab9a6126a1555a8",
+        "git_blob": "4a6b39d9396b0455101bff541f5ef759686bc1d1"
+      },
+      {
+        "name": "_ribbon",
+        "bytes": 482,
+        "sha256": "675aa981bf3a06ba5e96654737155fc04eaeeb57a7cf4af717fa6cbb701d5b18",
+        "git_blob": "6063fcb2b69420b3328bf8db96d9dd1fb2f8bbc0"
+      },
+      {
+        "name": "_build_loft",
+        "bytes": 7204,
+        "sha256": "4930e2cea67e0dc95951f9a0d055d7da56636529075435f3e2d8bac98c03f828",
+        "git_blob": "582211099caf4f8d300d0691d3a304fd5c75c527"
+      },
+      {
+        "name": "_make_cockpit",
+        "bytes": 2326,
+        "sha256": "765e30fff0d71153eacaa4105c87224b1b7531e99ca5a57ea9a14e47b785f876",
+        "git_blob": "dc63b6ed64f8d5fdfcc5ff8851d4738b6b283aec"
+      },
+      {
+        "name": "_make_body_details",
+        "bytes": 3611,
+        "sha256": "30b8300be6477164f1dc3ac5c64d3cd5c05b7f9d9a5be461e891b93d1a962ccb",
+        "git_blob": "9ac9d44588a85b065e317cd281dc35965f45c660"
+      },
+      {
+        "name": "_make_tyre_geometry",
+        "bytes": 2457,
+        "sha256": "7591734a5cf55a88b034275119d7ac163de4901d17868e7ad227b43295be2f50",
+        "git_blob": "54f0c498659377a9e64efd5e161c884417405d57"
+      },
+      {
+        "name": "_make_steering_wheel",
+        "bytes": 789,
+        "sha256": "bae489c50f5d14b74a26627bae8699fc0f405e5fd322adb5c8665470b52a7c9d",
+        "git_blob": "31047def98828a776b4e64b657348cd88c1d7de6"
+      },
+      {
+        "name": "_tri",
+        "bytes": 724,
+        "sha256": "2a9b22756c90d9780a43c14426af88c1d855d80ccb84143d9ea29c9e0da76972",
+        "git_blob": "b56026ba89858d0abb1598e115e0af61342c35b0"
+      },
+      {
+        "name": "_slab",
+        "bytes": 3313,
+        "sha256": "b062a3d4b85443d409daf9185524d3171f52e27d0c25bd5770ce419464dee86e",
+        "git_blob": "d609cc2c7d67d70ee5bf4fedb800c607b917187d"
+      },
+      {
+        "name": "_rounded_polygon",
+        "bytes": 1599,
+        "sha256": "5b2cdb8119791c26fb5a64e95f568a25c62be17d34e1adb0a8d23278bc334508",
+        "git_blob": "8b875b4eca65cd8a43bbbd1b2b8a95496900367f"
+      },
+      {
+        "name": "_round_slab",
+        "bytes": 4138,
+        "sha256": "aede6282f7d2eece9293f9326f04750c10b81e27b436bf477d7b0803245eb5bd",
+        "git_blob": "f536d97bc97a865ed3c9d589c3793a8ea9ca3f08"
+      },
+      {
+        "name": "_panel",
+        "bytes": 404,
+        "sha256": "98d876746a2d3174335147ce23d809d54f9fca7a0bf0648c74ada527aae9b215",
+        "git_blob": "b632cf20be37441e2bce35d0b1478273d018ddf8"
+      },
+      {
+        "name": "_shape",
+        "bytes": 488,
+        "sha256": "bf7f211cd32e1871eee29b3bf06ab1aa9f33d5c53090bb130ad084ba2733295b",
+        "git_blob": "da6417f710c9a1cca011b9a41cf4fa88401d733e"
+      },
+      {
+        "name": "_curve",
+        "bytes": 732,
+        "sha256": "bbf3019b79d31506d2ee7bbf02e6b6651a5bc82bc0c00d18f5354c86998cb43b",
+        "git_blob": "cdab00d3ea8413d498b1c9a952336eb60e021f74"
+      },
+      {
+        "name": "_tube",
+        "bytes": 3543,
+        "sha256": "a54ee9f8a5dbbff11194331afbad6ea34e704abcaed12c8162c9d8dbc010f1bc",
+        "git_blob": "fabc834c5e4995606c5c4ab2fc1b6bc2ecbb1fc7"
+      },
+      {
+        "name": "_bar",
+        "bytes": 782,
+        "sha256": "8e58264e78701a5df32f7b5f3f48cdfca42b988513f59b6d02fb6669180e6359",
+        "git_blob": "97465f1ec54e12f0891af396fcec5633f5a7dd7c"
+      },
+      {
+        "name": "_resolved_look",
+        "bytes": 497,
+        "sha256": "b289095648ab3f9555184e2dbe2ebfcfd64ebd14ad55a0c6f5accba812676c91",
+        "git_blob": "5a9e23b508281c918541eb642bfaf820308376d2"
+      },
+      {
+        "name": "set_look",
+        "bytes": 99,
+        "sha256": "e79924b264c7b08bbed8faa69d9f92f04c13c5ce9f2865ff611e8143a42bd254",
+        "git_blob": "434ffd4cb0a39ff63dd262d018db226ed319dfef"
+      },
+      {
+        "name": "_hood_top",
+        "bytes": 95,
+        "sha256": "5b5f8ba41af7e88070953e5d0316b49614a56572319b9705bb8ad7c9025c4f06",
+        "git_blob": "6bd721aad005f59c0b486105be613757d3293b70"
+      },
+      {
+        "name": "_letter_l_outline",
+        "bytes": 2009,
+        "sha256": "c720d7857b518273da2ad30d5670ef91206404d5cbc0adb389b4cdaa61b3e62b",
+        "git_blob": "c004b50f88f8416ae5519cac1f922f51a0838d83"
+      },
+      {
+        "name": "_body_params",
+        "bytes": 255,
+        "sha256": "de6757cb2ed1a38f3dcdafec0f5bd3d0ea39b7db66846cb9d4d175030d1f713b",
+        "git_blob": "5e09f958d494b83d52bdddf295f111dbd4ef12de"
+      },
+      {
+        "name": "_front_run",
+        "bytes": 493,
+        "sha256": "e133f38ee7404f6a25759ea5dd0d71ce7f4cd54a54df25a1b373d20164d25ff5",
+        "git_blob": "de2b20bb860fe76138acc1fb3ae1de7afc3372c9"
+      },
+      {
+        "name": "_star_outline",
+        "bytes": 517,
+        "sha256": "95024c08049274c991bc5f5e8aa19370c48f367ae0c9dc443fcfb72e002aaced",
+        "git_blob": "908124e3c1ccad9637468b41ba142a477e5b151e"
+      },
+      {
+        "name": "_build_aero",
+        "bytes": 7658,
+        "sha256": "caff2c96ed32af9969a3e19e338f68577035b2c25247720872765813cf2fb810",
+        "git_blob": "945962ab99acfe9667b858a80f7c4609ceb9a849"
+      },
+      {
+        "name": "_make_cage",
+        "bytes": 836,
+        "sha256": "da6eef79431465256a3fb85c579c9d20de74a9b20f9f4117eedfe154139d190a",
+        "git_blob": "45fe64262ab102c11a2dcdb6d34b880794261efb"
+      },
+      {
+        "name": "_front_wing",
+        "bytes": 632,
+        "sha256": "98560daf5c3df8216d498e4a3f1d956b23982fe75d6dc6356ebf44aefe24532b",
+        "git_blob": "7ccd996082080533528f221b5f71d75e22cb3049"
+      },
+      {
+        "name": "_bull_bar",
+        "bytes": 599,
+        "sha256": "44635b5491e7ca3069c509b250db5083aa7e5f4b63e9ed4b2a12668f6705cc41",
+        "git_blob": "6b333c602e0d9d7a6e1e0e19d7abe63efaded105"
+      },
+      {
+        "name": "_exhaust_stacks",
+        "bytes": 521,
+        "sha256": "2518b5acdb0dbbd1199a8d931bf1730aba772e62ba6f658a906cc1ed62d6bdd3",
+        "git_blob": "723a28c6737f16144770622114058877cf3f8aa5"
+      },
+      {
+        "name": "_rear_wing",
+        "bytes": 941,
+        "sha256": "f70e37e4d5275052f8db3010cacb576819f840177fd0645e8ad84233440ad079",
+        "git_blob": "fe42fbe5bfeceb691b4e21eef42df5583fb9761e"
+      },
+      {
+        "name": "_armor_plates",
+        "bytes": 534,
+        "sha256": "222168352649d6aabc61aa8c2ed9038f3f8a782a8623d29fc7a029d28c7a0e84",
+        "git_blob": "92994732b01ba042ddc3f7ed9303bfcebe2d77cb"
+      },
+      {
+        "name": "_racing_sleeve_frame",
+        "bytes": 536,
+        "sha256": "f58b8e0063f80d49927efc1f993405258c4fd27776e049835f9f4bae07a89f4f",
+        "git_blob": "c13f5b6066fc9ec0545f33b4b411b5b8dbeac478"
+      },
+      {
+        "name": "_curve_racing_sleeve",
+        "bytes": 1305,
+        "sha256": "f7f5cb5180e9aa3c0b386f86144576d8c4906df6cd54151e65c2a7b18f198c2e",
+        "git_blob": "c07298b4aad27a85db9e59a0ed7792f34721bbe9"
+      },
+      {
+        "name": "_make_goggles",
+        "bytes": 1759,
+        "sha256": "2e5db2539010286afb7dc8433afa50ff500c8f12fe9a3f7152659ccdf4798316",
+        "git_blob": "13e16d2619c40aeaeaf286feff0dc70d9653d4d8"
+      },
+      {
+        "name": "_attach",
+        "bytes": 218,
+        "sha256": "4686022e7f6b0890d2a051ea831e93004c4455258540af72922e22fb8245a628",
+        "git_blob": "76520c79943f6bf819765e2717c9ed3438b8ed9e"
+      },
+      {
+        "name": "_glow_letter_l",
+        "bytes": 615,
+        "sha256": "eaf02eaaffab8eb83c550788af5d67c34615e8bb54579f1cc6fcaee7070234ad",
+        "git_blob": "f95d66ba2bf0e2cc149a50ab32ac7fcb62338cde"
+      },
+      {
+        "name": "_make_companion_limbs",
+        "bytes": 2517,
+        "sha256": "05fd77a2490cf60d9e0f90579450303481a1f588d45fe5ab8cab79ac0ac74090",
+        "git_blob": "427c78382c9534273cfae1ac83bff7e2d3b6d4e0"
+      },
+      {
+        "name": "_make_ear",
+        "bytes": 2291,
+        "sha256": "9fadd42534f844309d69dcb7a792b0433559a3a45acae43461d3c70fa566c393",
+        "git_blob": "dd71643039fe787520fda2764d95b84df72dcd2c"
+      },
+      {
+        "name": "_star",
+        "bytes": 690,
+        "sha256": "a38f4be40a072d50422c423abba75aef5effd57b3265090722434aaac2e6de8f",
+        "git_blob": "ad1d6ce7bceda3e3dc608c130a0c835bbb9b0e44"
+      },
+      {
+        "name": "_merge_static",
+        "bytes": 2336,
+        "sha256": "d85b2ba1e02c85c3c60eb8abff341a534e71dc1fdb363fa110d9f8e213621bf6",
+        "git_blob": "7fa1af68f60b2a17a6d7af75c00e9b87e9e9f6b5"
+      },
+      {
+        "name": "_vertex_material",
+        "bytes": 269,
+        "sha256": "41be22f10f54cd38b1adcdb8616edce01459a80c7a97eb0a00a2b1ed24a41c71",
+        "git_blob": "59a8e607704e4fb445b8d6c922ded876391e3505"
+      },
+      {
+        "name": "_paint_mesh",
+        "bytes": 1161,
+        "sha256": "f5a3669eeed4fb1ece582c7d96b5085347cddebef064b28542620ffc3abcf0a3",
+        "git_blob": "301d25a289da91910cb5c4a5e7c9474b579997a0"
+      },
+      {
+        "name": "_far_geometry",
+        "bytes": 523,
+        "sha256": "7daac53a8f1b2a00a76c81fc514eac7a9cc2e6f89f2dab630f11cc0173cdced7",
+        "git_blob": "74b71b6484df2316f2b59c2db668a6a1416e927e"
+      },
+      {
+        "name": "_set_far_detail",
+        "bytes": 152,
+        "sha256": "752db60aba81df6a64cde7e54182c4f8ec6bbd9e7437a3df6ee1151778727166",
+        "git_blob": "3cb6cc7472348590a711358c75cfb91a06844606"
+      },
+      {
+        "name": "_update_detail",
+        "bytes": 369,
+        "sha256": "7e56625da230fe4cf679a3a394280e3fafc8fd75f3ab78d3214cbec5b77c54dc",
+        "git_blob": "bd00bf191d5962d58c9e5ed60d623b9ca9f72721"
+      },
+      {
+        "name": "set_motion",
+        "bytes": 169,
+        "sha256": "2ed247431b3a619fec15a03c4f46558965c1591da456d17a7e3c31708030286c",
+        "git_blob": "88e3c1ea531f59812eec0d45ada6e7436ce730de"
+      },
+      {
+        "name": "set_drift_spark_tier",
+        "bytes": 436,
+        "sha256": "bcdfd360a01081686168333fe6c6c91739906c891db681c09d64f6f1af697a08",
+        "git_blob": "8a20d0b89bebeadf06438406c464489ade1eebd6"
+      },
+      {
+        "name": "set_braking",
+        "bytes": 84,
+        "sha256": "7f31ff06d2950bc21abba228d32006797c8e57753e7a8164f44be66eb618be2e",
+        "git_blob": "468f02a312e7e6b7af4f48ddbe70038905812298"
+      },
+      {
+        "name": "update_motion",
+        "bytes": 124,
+        "sha256": "452ba4972595c5beb6ab5ba03ecfb4261908affcfbb07012998253219d9516a0",
+        "git_blob": "05eadf23772e8ed299363d21f36f41edd5db3c76"
+      },
+      {
+        "name": "_update_lumo_visual",
+        "bytes": 371,
+        "sha256": "fb6ee951745b506e7b2b3d998b3695cf3ad89fcd1c2a54c7a5fba27f63a94928",
+        "git_blob": "2978e5dbbab76052cfe510487d14b416619699b0"
+      },
+      {
+        "name": "_solve_steering_grips",
+        "bytes": 1778,
+        "sha256": "31e486334508e0fc95487b4cee33f90f3d99ed24d09ac497dcbb2188359b6db5",
+        "git_blob": "ab3a41998d7818b4d0788628cf1a4ae39e63c601"
+      },
+      {
+        "name": "_apply_celebration",
+        "bytes": 1261,
+        "sha256": "c5982aa311f94ef385ec8bdd1a495c64b7322cfb7963741cfd2c01a2ea250498",
+        "git_blob": "8f6b661299fe28ad1560c51dcd1608b055b7dc0c"
+      }
+    ],
+    "changed": [
+      "_ready",
+      "set_driver_runtime_state",
+      "_refresh_far_proxy",
+      "celebrate",
+      "_rebuild",
+      "_fur",
+      "_build",
+      "_make_wheel",
+      "_make_kit_wheel",
+      "_make_racing_sleeve",
+      "_make_driver",
+      "_make_eye",
+      "_make_tail",
+      "_append_far",
+      "_make_far_mesh",
+      "_process"
+    ],
+    "added": [
+      "set_reference_rival_enabled",
+      "_ensure_rival_visual"
+    ],
+    "removed": []
+  },
+  {
+    "path": "scripts/games/lumo_opponent_roster.gd",
+    "unchanged": [
+      {
+        "name": "all",
+        "bytes": 1017,
+        "sha256": "c1b664bea052f43188027fed10f052ac1b85d36241c8d20948b6968cfd083abc",
+        "git_blob": "fbe14f64d14a4bda5e2045fb35c98d8aeb8f93e8"
+      },
+      {
+        "name": "for_game",
+        "bytes": 192,
+        "sha256": "94721c478cd75b6ffb4d27bf71329292bc384d78760cc26417eb660ecc793e94",
+        "git_blob": "bb6ca1369784079c4e2f166830f46b0ce63c5d30"
+      },
+      {
+        "name": "rotation",
+        "bytes": 351,
+        "sha256": "f14b2005bcdbed8b64fd2fdbf7bf8358a34de1da0dcd7a01cdcab8523de2def0",
+        "git_blob": "e31a1ec06bd26b5ec308b52db7f856716eacd864"
+      },
+      {
+        "name": "ready_for_race",
+        "bytes": 209,
+        "sha256": "d8765c8b76114aae0cbf87f0dedead40393cc46a33e7239dbffb6da7c6b09d0c",
+        "git_blob": "659e0a0991c0a0e629ffda476757015b5de07a1f"
+      }
+    ],
+    "changed": [
+      "can_use_racing_model"
+    ],
+    "added": [
+      "racing_scene"
+    ],
+    "removed": []
+  }
+]

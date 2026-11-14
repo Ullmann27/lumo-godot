@@ -1,0 +1,51 @@
+{
+  "status": "STATIC_PRODUCT_CANDIDATE_NOT_RUNTIME_PASS",
+  "evidence": "original job 132580113281 assertion at kart_vehicle_regression.gd:255; no near_surfaces value was printed before failure",
+  "unchanged_acceptance": "optimized.surfaces < original.surfaces * 0.7 and optimized.surfaces <= 64",
+  "causal_source_observation": "kart_vehicle._merge_static groups by metallic, roughness, emission_enabled, emission_energy_multiplier, normal texture and emission colour. The new Aero helper uses one accent colour but three different emissive finish keys on six rigid meshes under the same body.",
+  "before_families": [
+    [
+      0.35,
+      0.26,
+      0.75
+    ],
+    [
+      0.0,
+      0.26,
+      0.5
+    ],
+    [
+      0.35,
+      0.26,
+      0.65
+    ]
+  ],
+  "after_family": [
+    0.35,
+    0.26,
+    0.75
+  ],
+  "static_effect": "The three added accent-light keys collapse to one; at least two distinct new keys are removed in that body. The complete runtime surface count and ratio are not measured here.",
+  "visual_change": "Exhaust energy ring metallic 0 -> .35 and emission .5 -> .75; raised chevron emission .65 -> .75. Sill finish is unchanged. No shade/appearance equivalence is claimed.",
+  "preserved": [
+    "all geometry constructors, vertices and transforms",
+    "all 22 declared Aero components and datums",
+    "all colours",
+    "far-skip and near-only assignments",
+    "existing material quantization",
+    "body/cinema ownership",
+    "animated joints and LOD boundaries",
+    "all existing acceptance thresholds"
+  ],
+  "replacements": [
+    {
+      "before": "core.material_override = kart._mat(accent, 0.0, 0.26, 0.5)",
+      "after": "core.material_override = kart._mat(accent, 0.35, 0.26, 0.75)"
+    },
+    {
+      "before": "stripe.material_override = kart._mat(accent, 0.35, 0.26, 0.65)",
+      "after": "stripe.material_override = kart._mat(accent, 0.35, 0.26, 0.75)"
+    }
+  ],
+  "remaining_gate": "An actual post-checkpoint KartVehicle run must prove both original bounds for every animal; no PASS is inferred from this reduction."
+}

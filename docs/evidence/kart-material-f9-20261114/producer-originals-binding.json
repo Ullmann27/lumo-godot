@@ -1,0 +1,386 @@
+[
+  {
+    "path": "docs/design/2026-11-14-kart-adventure/README.md",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/docs/design/2026-11-14-kart-adventure/README.md",
+    "mode": "100644",
+    "bytes": 7128,
+    "sha256": "8d7282d3c0d8d32ebef1522128a7dc5765e9c2f50c4ca3f6e3645a4020b046c5",
+    "git_blob": "9f556db6eebe128cbfa870b481d4439f882a05a2"
+  },
+  {
+    "path": "docs/design/2026-11-14-kart-adventure/RIVAL_ASSET_HANDOFF.md",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/docs/design/2026-11-14-kart-adventure/RIVAL_ASSET_HANDOFF.md",
+    "mode": "100644",
+    "bytes": 9671,
+    "sha256": "cbd3ca0d5c85f5749d2d20c5183be2644657962177aea47f7962cc11130c5935",
+    "git_blob": "44ec93ac597346c204cf54c797c3d0ab49d7041d"
+  },
+  {
+    "path": "docs/design/2026-11-14-kart-adventure/TRACKS.md",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/docs/design/2026-11-14-kart-adventure/TRACKS.md",
+    "mode": "100644",
+    "bytes": 11572,
+    "sha256": "ba2ea7aeb32ce5875a9547e1a674055e6c909600f6a6811fe3a54458c1903058",
+    "git_blob": "96f9cfe5255747cce446a611ccd9c0856f1110f5"
+  },
+  {
+    "path": "docs/design/2026-11-14-kart-adventure/evidence/track-adventure-report.json",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/docs/design/2026-11-14-kart-adventure/evidence/track-adventure-report.json",
+    "mode": "100644",
+    "bytes": 4750,
+    "sha256": "9ed38e6b4d7f39cdfeceb14c52f35806e4d0915c16db1582feb6009d1ae7a64a",
+    "git_blob": "12cd574743ac3862f7e997df164c76b5c303d84b"
+  },
+  {
+    "path": "docs/design/2026-11-14-kart-adventure/evidence/track-driving-evidence.json",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/docs/design/2026-11-14-kart-adventure/evidence/track-driving-evidence.json",
+    "mode": "100644",
+    "bytes": 2410,
+    "sha256": "1221cfd60d7bdd7f72566120072bd0cb6504f6bbdb978748d78461a53361b3b1",
+    "git_blob": "9c3b0c12da15f3c1159d711b621ccd9b76092e57"
+  },
+  {
+    "path": "scripts/games/kart_action_course.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_action_course.gd",
+    "mode": "100644",
+    "bytes": 20606,
+    "sha256": "0b4e60ab8778d97d11c4cc4ea35d8875c1ed6f6074dbb234dbca42e2dd92a651",
+    "git_blob": "2d421b9fd1ec449ca21198b61223c2483ea1f8d3"
+  },
+  {
+    "path": "scripts/games/kart_adventure_routes.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_adventure_routes.gd",
+    "mode": "100644",
+    "bytes": 13453,
+    "sha256": "b42e4e1adb1b2382a21d20150fa7fc4cfe0a885ee6d96f1319e502244ebec171",
+    "git_blob": "df05f9020bc5d466271d6230645a6e7df6257ce5"
+  },
+  {
+    "path": "scripts/games/kart_adventure_tunnels.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_adventure_tunnels.gd",
+    "mode": "100644",
+    "bytes": 17389,
+    "sha256": "ad0a2b738d4daa779532a999cd55d04d1fe3cd6aa25949fd6a46c1d288ced29a",
+    "git_blob": "e5f80a32068cabf5f14d0d3b22899f02e1df402e"
+  },
+  {
+    "path": "scripts/games/kart_coachwork_finish.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_coachwork_finish.gd",
+    "mode": "100644",
+    "bytes": 5518,
+    "sha256": "80d0e9fe300c43743d528098a7548a1ff7abb011db456d282439ed13efbeee09",
+    "git_blob": "1d8ebc55111dd713f10132ea7f42e4112541b57c"
+  },
+  {
+    "path": "scripts/games/kart_expansion_tracks.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_expansion_tracks.gd",
+    "mode": "100644",
+    "bytes": 6162,
+    "sha256": "fa5091461ba8c33603950898d0140d11e7cfedf0fd7044fb7bcf25785fd60514",
+    "git_blob": "93310e5488ae23a5e6d4d463bca5b5be2393de41"
+  },
+  {
+    "path": "scripts/games/kart_expansion_world.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_expansion_world.gd",
+    "mode": "100644",
+    "bytes": 12634,
+    "sha256": "f4cbe87458c3d64571dbab5e851f088b116b13f406bdaf99ec09c8aa7228828c",
+    "git_blob": "34e9c4c6de7fa501414f8a31873ae423b65d1fb0"
+  },
+  {
+    "path": "scripts/games/kart_fleet_dressing.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_fleet_dressing.gd",
+    "mode": "100644",
+    "bytes": 5744,
+    "sha256": "0836e9f2a992746da9e33ce4914503c5823b9ce57d9881697037bc23c59ea36e",
+    "git_blob": "7d6cc82d984919fe328dd8f54f6f396d23bdc00d"
+  },
+  {
+    "path": "scripts/games/kart_island.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_island.gd",
+    "mode": "100644",
+    "bytes": 175208,
+    "sha256": "62a10b6ae8cb3da4e4bf61af97f605e79e45731cbb4936bfb7936237d33900b2",
+    "git_blob": "b15ca2fda77f2e5d5c95efa5acd6ead8f29f4a21"
+  },
+  {
+    "path": "scripts/games/kart_item_symbols.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_item_symbols.gd",
+    "mode": "100644",
+    "bytes": 10982,
+    "sha256": "dce2f41def5da0232c7eb672c9652ded3102065650266740429ce4222683c18c",
+    "git_blob": "18b5bd7551c2af8fc982a455561662ebb7c1a6e6"
+  },
+  {
+    "path": "scripts/games/kart_resonance_system.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_resonance_system.gd",
+    "mode": "100644",
+    "bytes": 5818,
+    "sha256": "d38a7deed9ef78a7ce319e3c841e6186daa457772ee1573e0a7eadd3a763d806",
+    "git_blob": "4ee7b58ce3987f1e08bc1f5e80abf5405477f145"
+  },
+  {
+    "path": "scripts/games/kart_rival_character_finish.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_rival_character_finish.gd",
+    "mode": "100644",
+    "bytes": 8627,
+    "sha256": "00acdcd5787af3054786a3d669083a8884ebf3888abb8fd275affdc53b95616d",
+    "git_blob": "415a5d06d829a90c8994e5d134322358e368b41a"
+  },
+  {
+    "path": "scripts/games/kart_rival_item_fx.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_rival_item_fx.gd",
+    "mode": "100644",
+    "bytes": 7634,
+    "sha256": "a8628d0dda9b179864867ad365f5ae2d6043bfad35f6d0d6998c82151d0f8772",
+    "git_blob": "3ebc2a8ac377333f51ede33dde1e6d35a8be542d"
+  },
+  {
+    "path": "scripts/games/kart_rival_model_contract.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_rival_model_contract.gd",
+    "mode": "100644",
+    "bytes": 5986,
+    "sha256": "4510ce3b9f266893717956be4f3804be295d486c7ec23735ae15a8925e542ae1",
+    "git_blob": "568d0b98343b1029c595eb9f914b46c563e4a6f3"
+  },
+  {
+    "path": "scripts/games/kart_rival_visual_adapter.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_rival_visual_adapter.gd",
+    "mode": "100644",
+    "bytes": 3779,
+    "sha256": "8e6425e7f450acd5602a8c9837e8f33acda2cf143238654658b2a91cf0a0f1be",
+    "git_blob": "ec4020ae99cb88958c29c4df9213f3ed07f874a1"
+  },
+  {
+    "path": "scripts/games/kart_track_detail.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_track_detail.gd",
+    "mode": "100644",
+    "bytes": 7149,
+    "sha256": "88a311a8324eea62694a9238fa6c7d7db8f5d4f672c9b284fc7abe36fb58ab76",
+    "git_blob": "1df7c64abf93d1ceac942344a9157ef4f21f667b"
+  },
+  {
+    "path": "scripts/games/kart_tracks.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_tracks.gd",
+    "mode": "100644",
+    "bytes": 3713,
+    "sha256": "cdbd03ee3dfb7e87978dfb99db102f1aec15c0d1269a0466f7c31db43fa48582",
+    "git_blob": "90b8a2ec898f9547a0e7956fc319f9ad69f6f28c"
+  },
+  {
+    "path": "scripts/games/kart_vehicle.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_vehicle.gd",
+    "mode": "100644",
+    "bytes": 121338,
+    "sha256": "e086d625c0ae187e8bd2810044c33e65b4c325a32eea7eebd6ce1a4ef03b65fa",
+    "git_blob": "c6681fde3a7ad38f764a4f0b22fa4bf6c239fb34"
+  },
+  {
+    "path": "scripts/games/kart_world.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_world.gd",
+    "mode": "100644",
+    "bytes": 82956,
+    "sha256": "c861bcb8e258fb0594a5ef264c3c52c907dbf3376c6454e5de543738880853fe",
+    "git_blob": "2063cc4241f162911ef510444f18311e340c709f"
+  },
+  {
+    "path": "scripts/games/lumo_opponent_roster.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/lumo_opponent_roster.gd",
+    "mode": "100644",
+    "bytes": 2988,
+    "sha256": "83d70c8aea8d1ae19cdaad0927769f33d16af70a195dade16c08484d71d41b3d",
+    "git_blob": "ef3481b7d9d4f444bf380d44895b5de9e0d13fae"
+  },
+  {
+    "path": "scripts/tests/kart_action_course_regression.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_action_course_regression.gd",
+    "mode": "100644",
+    "bytes": 15026,
+    "sha256": "f30ff893603baa1dca0752b9d1c4d4cf20ae6c7ca57db3d4bf8cc5083c72e154",
+    "git_blob": "743f3db111284196c0aced7ea33c6ba7522fcc00"
+  },
+  {
+    "path": "scripts/tests/kart_adventure_asset_export.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_adventure_asset_export.gd",
+    "mode": "100644",
+    "bytes": 17309,
+    "sha256": "85f3198adb5f1c38ce19e94d76eed53344fabce37d25cbab83a3ff88be833d93",
+    "git_blob": "f2bbebc43a6949b03485b59babc088e6319f11ff"
+  },
+  {
+    "path": "scripts/tests/kart_adventure_regression.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_adventure_regression.gd",
+    "mode": "100644",
+    "bytes": 10082,
+    "sha256": "1e1783406e5538489a4fea44ed44bd736dce00b03c62fd0eb1fd16f647196e1f",
+    "git_blob": "8417ef61fab0539363bdadf27d4783e53a6bf79c"
+  },
+  {
+    "path": "scripts/tests/kart_adventure_tunnel_showcase.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_adventure_tunnel_showcase.gd",
+    "mode": "100644",
+    "bytes": 10950,
+    "sha256": "d26295377f3d61f933376ef780d065a2303bfb90fa266afb8d7e1460dec7c996",
+    "git_blob": "98e751922b2e724eee116df45873a0943c5bf13f"
+  },
+  {
+    "path": "scripts/tests/kart_adventure_visual_capture.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_adventure_visual_capture.gd",
+    "mode": "100644",
+    "bytes": 5602,
+    "sha256": "bdc889511f4ff827e21a04a81d3f1e3039916b815c97a5877b7b1c7e67379403",
+    "git_blob": "8b33922fba5c07affc8fffd15df08dacd8d3a948"
+  },
+  {
+    "path": "scripts/tests/kart_adventure_winding_render_regression.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_adventure_winding_render_regression.gd",
+    "mode": "100644",
+    "bytes": 3791,
+    "sha256": "6041ce5c664a0b316e31c6983c919ac926b6071296c6926b8f92ece5c5420368",
+    "git_blob": "2a0102951cab0c72c8cd8c6ae88ec65dee4870f0"
+  },
+  {
+    "path": "scripts/tests/kart_courses_driving_regression.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_courses_driving_regression.gd",
+    "mode": "100644",
+    "bytes": 2136,
+    "sha256": "ce82dedab2884efea3b87e8eb304a9f5a6d65114fb5e38f9ec6fc54c7286ac25",
+    "git_blob": "5bef8b1e0eebd26dbd5e64e00c9772299909caee"
+  },
+  {
+    "path": "scripts/tests/kart_fox_eye_proportions_regression.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_fox_eye_proportions_regression.gd",
+    "mode": "100644",
+    "bytes": 2829,
+    "sha256": "4ad7fe72ffb54d1e5f63b25fcfeecd0a2573cf73bfc086f1f5f83ca419ba62bd",
+    "git_blob": "49ef378045e7ee283de6965b0b83104b88494056"
+  },
+  {
+    "path": "scripts/tests/kart_item_attachment_regression.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_item_attachment_regression.gd",
+    "mode": "100644",
+    "bytes": 2176,
+    "sha256": "b46e963b407b3a6bf59d752324f081e0cfe22e79e38a6247597c944575c7ee05",
+    "git_blob": "76c86691713d9311e5cfe3ce71c2296c3ccf500a"
+  },
+  {
+    "path": "scripts/tests/kart_item_symbols_capture.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_item_symbols_capture.gd",
+    "mode": "100644",
+    "bytes": 6313,
+    "sha256": "21e4c3975d38f29677704971f5daa791b51689ba27e646c16a4620c17a257919",
+    "git_blob": "08e9056854e6dd2efb983835c6c12e4ceddaddfa"
+  },
+  {
+    "path": "scripts/tests/kart_item_symbols_regression.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_item_symbols_regression.gd",
+    "mode": "100644",
+    "bytes": 7431,
+    "sha256": "f79402b7c15cded66c97fdd1212f2f2505f748e670092bac28758dfe6e0a44cd",
+    "git_blob": "fbb12f2aad48322dd2beb12ce02340dd01d1666f"
+  },
+  {
+    "path": "scripts/tests/kart_resonance_gate_regression.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_resonance_gate_regression.gd",
+    "mode": "100644",
+    "bytes": 5507,
+    "sha256": "706898f4f1f6e135b93f7c943eab7f65655cd026cf27be4ce54ca8d48259b8eb",
+    "git_blob": "b29b0974981008cd7c6e16096449fabe91abb545"
+  },
+  {
+    "path": "scripts/tests/kart_rival_finish_regression.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_rival_finish_regression.gd",
+    "mode": "100644",
+    "bytes": 4885,
+    "sha256": "c01e54afee0511293e8ed9a13d93a5bb23dd19594ce3df4b8de01a85bcce10aa",
+    "git_blob": "02da56ee96d3d2d385c548ab4b53e33b760a0ff6"
+  },
+  {
+    "path": "scripts/tests/kart_rival_visual_adapter_regression.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_rival_visual_adapter_regression.gd",
+    "mode": "100644",
+    "bytes": 8886,
+    "sha256": "2e6342bd34611e85d0ad8d6318ac4dc2e63c32033959fe3d9571b88d42a9d94d",
+    "git_blob": "e1804e0d10ae6809757557f482cb9b50d6ab4714"
+  },
+  {
+    "path": "scripts/tests/kart_track_pack_48_view_capture.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_track_pack_48_view_capture.gd",
+    "mode": "100644",
+    "bytes": 23206,
+    "sha256": "cbc606cb48d06f4ce3b40f6d4b781a1c87cabb7cd752a577ec7c467ca0d13871",
+    "git_blob": "c1bbaa4e74d63cf2f399d122d813ff418aa0f226"
+  },
+  {
+    "path": "scripts/tests/kart_track_pack_geometry_export.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_track_pack_geometry_export.gd",
+    "mode": "100644",
+    "bytes": 10677,
+    "sha256": "976a4f7440a48aeaf8b4de131347b63e94957b135ef63f5abc36048491326402",
+    "git_blob": "5837aaa51ff928e90f8e50c19e465b38c3286bb4"
+  },
+  {
+    "path": "scripts/tests/kart_zauberwald_library_regression.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_zauberwald_library_regression.gd",
+    "mode": "100644",
+    "bytes": 3827,
+    "sha256": "723c90da140e2884a6ecc17e4a77df2c16d373474b350a776755b4e212287759",
+    "git_blob": "9c8958cc724c4e9eaad06901a8111880ffca7265"
+  },
+  {
+    "path": "tools/art/render_kart_adventure.py",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/tools/art/render_kart_adventure.py",
+    "mode": "100644",
+    "bytes": 13393,
+    "sha256": "7ddb87abae4d081be0995b5aed6a993234c7296ddc6877308212597407a36866",
+    "git_blob": "345768628cdaee2bd4a1b5d8bfe03ab12e662044"
+  },
+  {
+    "path": ".github/workflows/kart-vehicle-regression.yml",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/.github/workflows/kart-vehicle-regression.yml",
+    "mode": "100644",
+    "bytes": 5885,
+    "sha256": "8b4b558e6cd1a996ed2c27698cd29133906577e640c8b1db0a57d610783307c1",
+    "git_blob": "9ab720907730733a88e6c2e772c16c8787c831c0"
+  },
+  {
+    "path": ".github/workflows/lumo-kart-modular-parts.yml",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/.github/workflows/lumo-kart-modular-parts.yml",
+    "mode": "100644",
+    "bytes": 2967,
+    "sha256": "43d40ff059154c7518651b0e4f7f998b1bd366699f374658388659facb4c80b6",
+    "git_blob": "e57fd4c47c17ea2dd18f9ded5b77dc40a83dad45"
+  },
+  {
+    "path": "docs/design/2026-11-14-kart-modular-parts/README.md",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/docs/design/2026-11-14-kart-modular-parts/README.md",
+    "mode": "100644",
+    "bytes": 3273,
+    "sha256": "7f2318476bc66591396c573a82500cbb049338455f431225d9ac5f43ac70cefc",
+    "git_blob": "d82b1e5b8d8299b145219e8878e2c81e7df7fc8f"
+  },
+  {
+    "path": "scripts/games/kart_modular_aero_kit.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_modular_aero_kit.gd",
+    "mode": "100644",
+    "bytes": 4096,
+    "sha256": "6bdb8055dc0dfb46cb2e977133bc13e670d0a502040e6994ae7ca59260d4d65a",
+    "git_blob": "e8075c72284e082d6dfe79164e50f4d62c794bac"
+  },
+  {
+    "path": "scripts/games/kart_modular_route_props.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/games/kart_modular_route_props.gd",
+    "mode": "100644",
+    "bytes": 8989,
+    "sha256": "1af3e3295d1df9bf0cdfd0707df256a9dc12abd56f89a2f179344f43c56d5f97",
+    "git_blob": "c5fec8cf6e1837d32c8a1d70de826de1bb2fdef2"
+  },
+  {
+    "path": "scripts/tests/kart_modular_parts_regression.gd",
+    "original_path": "/tmp/native-pr183-184-integration-f9-20261114/producer-source/scripts/tests/kart_modular_parts_regression.gd",
+    "mode": "100644",
+    "bytes": 4036,
+    "sha256": "6530370e75278307735aa0058fbfddbaa5a381b5fb92351d23b81311d11c4bc5",
+    "git_blob": "abaf71ccad455cdfa7224a96fbeb6768c08678bd"
+  }
+]

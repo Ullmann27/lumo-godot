@@ -1,0 +1,193 @@
+{
+  "schema": 1,
+  "status": "FROZEN_FOR_ROOT_CHECKPOINT_NO_ENGINE_RUN",
+  "pack_root": "/tmp/native-pr183-184-material-repair-f9-20261114",
+  "repository": "Ullmann27/lumo-godot",
+  "base_head": "f9d9772bb932d7ee8702eeb5bca6d98c286f3b98",
+  "base_tree": "4036a20ab80de78bcdf0d074b585be88c2946492",
+  "source_freeze": {
+    "path": "/tmp/native-pr183-184-material-repair-f9-20261114/source-freeze.json",
+    "bytes": 6659,
+    "sha256": "1485bffdf960628d4e701684f621aaf7422e91bd2b3b3790a21b2c547bdc6201",
+    "git_blob": "ed564299a631745f670976701f187a0dba1f27ea"
+  },
+  "source_count": 10,
+  "sources": [
+    {
+      "path": "scripts/games/kart_vehicle.gd",
+      "mode": "100644",
+      "old_git_blob": "9fa9dd899d3d1f70a4db53218546282d76a041db",
+      "producer_git_blob": "c6681fde3a7ad38f764a4f0b22fa4bf6c239fb34",
+      "final": {
+        "bytes": 121338,
+        "sha256": "e086d625c0ae187e8bd2810044c33e65b4c325a32eea7eebd6ce1a4ef03b65fa",
+        "git_blob": "c6681fde3a7ad38f764a4f0b22fa4bf6c239fb34"
+      },
+      "local_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/kart_vehicle.gd",
+      "origin": "byte-identical published producer blob"
+    },
+    {
+      "path": "scripts/games/kart_coachwork_finish.gd",
+      "mode": "100644",
+      "old_git_blob": null,
+      "producer_git_blob": "1d8ebc55111dd713f10132ea7f42e4112541b57c",
+      "final": {
+        "bytes": 5518,
+        "sha256": "80d0e9fe300c43743d528098a7548a1ff7abb011db456d282439ed13efbeee09",
+        "git_blob": "1d8ebc55111dd713f10132ea7f42e4112541b57c"
+      },
+      "local_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/kart_coachwork_finish.gd",
+      "origin": "byte-identical published producer blob"
+    },
+    {
+      "path": "scripts/games/kart_modular_aero_kit.gd",
+      "mode": "100644",
+      "old_git_blob": null,
+      "producer_git_blob": "e8075c72284e082d6dfe79164e50f4d62c794bac",
+      "final": {
+        "bytes": 4098,
+        "sha256": "c862cbd98cae8640889036e9e0986f729ea41096b951ff89e5a046a5c6c10d97",
+        "git_blob": "961a2d1418d6b25b2d64a34757c21541b6b9f4bd"
+      },
+      "local_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/kart_modular_aero_kit.gd",
+      "origin": "two bounded material substitutions on exact producer"
+    },
+    {
+      "path": "scripts/games/kart_rival_character_finish.gd",
+      "mode": "100644",
+      "old_git_blob": null,
+      "producer_git_blob": "415a5d06d829a90c8994e5d134322358e368b41a",
+      "final": {
+        "bytes": 8627,
+        "sha256": "00acdcd5787af3054786a3d669083a8884ebf3888abb8fd275affdc53b95616d",
+        "git_blob": "415a5d06d829a90c8994e5d134322358e368b41a"
+      },
+      "local_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/kart_rival_character_finish.gd",
+      "origin": "byte-identical published producer blob"
+    },
+    {
+      "path": "scripts/games/kart_rival_model_contract.gd",
+      "mode": "100644",
+      "old_git_blob": null,
+      "producer_git_blob": "568d0b98343b1029c595eb9f914b46c563e4a6f3",
+      "final": {
+        "bytes": 5986,
+        "sha256": "4510ce3b9f266893717956be4f3804be295d486c7ec23735ae15a8925e542ae1",
+        "git_blob": "568d0b98343b1029c595eb9f914b46c563e4a6f3"
+      },
+      "local_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/kart_rival_model_contract.gd",
+      "origin": "byte-identical published producer blob"
+    },
+    {
+      "path": "scripts/games/kart_rival_visual_adapter.gd",
+      "mode": "100644",
+      "old_git_blob": null,
+      "producer_git_blob": "ec4020ae99cb88958c29c4df9213f3ed07f874a1",
+      "final": {
+        "bytes": 3779,
+        "sha256": "8e6425e7f450acd5602a8c9837e8f33acda2cf143238654658b2a91cf0a0f1be",
+        "git_blob": "ec4020ae99cb88958c29c4df9213f3ed07f874a1"
+      },
+      "local_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/kart_rival_visual_adapter.gd",
+      "origin": "byte-identical published producer blob"
+    },
+    {
+      "path": "scripts/games/lumo_opponent_roster.gd",
+      "mode": "100644",
+      "old_git_blob": "8ab68fb34fa7ee52f918957ab036d3f368d4c91b",
+      "producer_git_blob": "ef3481b7d9d4f444bf380d44895b5de9e0d13fae",
+      "final": {
+        "bytes": 2988,
+        "sha256": "83d70c8aea8d1ae19cdaad0927769f33d16af70a195dade16c08484d71d41b3d",
+        "git_blob": "ef3481b7d9d4f444bf380d44895b5de9e0d13fae"
+      },
+      "local_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/games/lumo_opponent_roster.gd",
+      "origin": "byte-identical published producer blob"
+    },
+    {
+      "path": "scripts/tests/kart_fox_eye_proportions_regression.gd",
+      "mode": "100644",
+      "old_git_blob": "b5465507223be6a066b9b9e89bacbc88c49f1672",
+      "producer_git_blob": "49ef378045e7ee283de6965b0b83104b88494056",
+      "final": {
+        "bytes": 2829,
+        "sha256": "4ad7fe72ffb54d1e5f63b25fcfeecd0a2573cf73bfc086f1f5f83ca419ba62bd",
+        "git_blob": "49ef378045e7ee283de6965b0b83104b88494056"
+      },
+      "local_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/tests/kart_fox_eye_proportions_regression.gd",
+      "origin": "byte-identical published producer blob"
+    },
+    {
+      "path": "scripts/tests/kart_rival_finish_regression.gd",
+      "mode": "100644",
+      "old_git_blob": null,
+      "producer_git_blob": "02da56ee96d3d2d385c548ab4b53e33b760a0ff6",
+      "final": {
+        "bytes": 4885,
+        "sha256": "c01e54afee0511293e8ed9a13d93a5bb23dd19594ce3df4b8de01a85bcce10aa",
+        "git_blob": "02da56ee96d3d2d385c548ab4b53e33b760a0ff6"
+      },
+      "local_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/tests/kart_rival_finish_regression.gd",
+      "origin": "byte-identical published producer blob"
+    },
+    {
+      "path": "scripts/tests/kart_rival_visual_adapter_regression.gd",
+      "mode": "100644",
+      "old_git_blob": null,
+      "producer_git_blob": "e1804e0d10ae6809757557f482cb9b50d6ab4714",
+      "final": {
+        "bytes": 8886,
+        "sha256": "2e6342bd34611e85d0ad8d6318ac4dc2e63c32033959fe3d9571b88d42a9d94d",
+        "git_blob": "e1804e0d10ae6809757557f482cb9b50d6ab4714"
+      },
+      "local_path": "/tmp/native-pr183-184-material-repair-f9-20261114/final-source/scripts/tests/kart_rival_visual_adapter_regression.gd",
+      "origin": "byte-identical published producer blob"
+    }
+  ],
+  "material_patch": {
+    "path": "/tmp/native-pr183-184-material-repair-f9-20261114/material-repair.patch",
+    "bytes": 953,
+    "sha256": "2346002d6de6cdaf9cf090b9aa1ebf9bf30449d3114510076798cb238f3ac094",
+    "git_blob": "ee78379a0974b99b148801aef56262f71bfc5049"
+  },
+  "integration_patch": {
+    "path": "/tmp/native-pr183-184-material-repair-f9-20261114/integration.patch",
+    "bytes": 68649,
+    "sha256": "4678da569966414d1cb0c4ee99cbc95dda23b1485dea721974da7c91539ba26b",
+    "git_blob": "cd9a6380bb44784a2d031b875284f8e4b59c9b9b"
+  },
+  "manifest": {
+    "path": "/tmp/native-pr183-184-material-repair-f9-20261114/manifest.json",
+    "bytes": 24262,
+    "sha256": "8481612484011b73f4247dace608c0537703e8795d9d71a19f8f7dc9084fbdf5",
+    "git_blob": "5f81d6c5a71cb80aa6aec49d38cced22dd2191b3"
+  },
+  "archive": {
+    "path": "/tmp/native-pr183-184-material-repair-f9-20261114/complete-source-pack.tar.gz",
+    "bytes": 2466721,
+    "sha256": "f03e4500b8f8d93f8c74d6814094b6a5e7b519a794c8e1b09ff4cb48862c9e93",
+    "git_blob": "e1e01ce15e3845c9790a401926c41bcfc89b322a",
+    "member_count": 66
+  },
+  "roundtrip": {
+    "path": "/tmp/native-pr183-184-material-repair-f9-20261114/roundtrip.json",
+    "bytes": 18024,
+    "sha256": "eb0c3498b7762640136837b58c3de2cd450bc36d2948b2f10e137a164341db4d",
+    "git_blob": "608b580d00ea16ac1b8e844fb92b4cea73aa092a"
+  },
+  "original_archive": {
+    "path": "/tmp/native-pr183-184-material-repair-f9-20261114/producer-originals.tar.gz",
+    "bytes": 1321855,
+    "sha256": "1c2636b22443517a26eac2f66c0e26ca25ccfe5862642fc0e77676313d6decbf",
+    "git_blob": "23d6b0833234956420b87e4af71b5c9a97861120",
+    "member_count": 99
+  },
+  "no_tests_imports_renderers_or_git_mutations": true,
+  "still_open": [
+    "Actual vehicle <=64 and <70% gate on the new checkpoint; total surfaces are not present in original red log.",
+    "Existing strict geometry/paint/LOD and selected new rival/eye gates.",
+    "Separate route and ring contracts intentionally not integrated.",
+    "Actual visual/Android/FPS qualification."
+  ],
+  "publication_scope": "Only ten final-source paths for a separate checkpoint; all old camera/authority/pin/workflow paths preserved. Root owns publication."
+}

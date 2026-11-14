@@ -1,0 +1,143 @@
+{
+  "scope": "all direct literal load/preload references in the ten selected sources plus roster data; runtime rig candidates remain explicit unavailable data",
+  "dependencies": [
+    {
+      "owner": "scripts/games/kart_vehicle.gd",
+      "resource": "res://scripts/characters/lumo/lumo_kart_animation_adapter.gd",
+      "git_blob": "8431a588aeedfa6e0cc46a4d363b51c8f53cd992",
+      "origin": "unchanged f9 source"
+    },
+    {
+      "owner": "scripts/games/kart_vehicle.gd",
+      "resource": "res://scripts/games/kart_character_finish.gd",
+      "git_blob": "630f3b2bff9e38175dad53bc03fdd27228a256f2",
+      "origin": "unchanged f9 source"
+    },
+    {
+      "owner": "scripts/games/kart_vehicle.gd",
+      "resource": "res://scripts/games/kart_coachwork_finish.gd",
+      "git_blob": "1d8ebc55111dd713f10132ea7f42e4112541b57c",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/games/kart_vehicle.gd",
+      "resource": "res://scripts/games/kart_fleet.gd",
+      "git_blob": "4fc6ac6baf85159a0c48fb2733de50be440ad52d",
+      "origin": "unchanged f9 source"
+    },
+    {
+      "owner": "scripts/games/kart_vehicle.gd",
+      "resource": "res://scripts/games/kart_fur_geometry.gd",
+      "git_blob": "eb490584250d021f88ff8652f4c4a491beec7a02",
+      "origin": "unchanged f9 source"
+    },
+    {
+      "owner": "scripts/games/kart_vehicle.gd",
+      "resource": "res://scripts/games/kart_modular_aero_kit.gd",
+      "git_blob": "961a2d1418d6b25b2d64a34757c21541b6b9f4bd",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/games/kart_vehicle.gd",
+      "resource": "res://scripts/games/kart_rival_character_finish.gd",
+      "git_blob": "415a5d06d829a90c8994e5d134322358e368b41a",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/games/kart_vehicle.gd",
+      "resource": "res://scripts/games/kart_rival_visual_adapter.gd",
+      "git_blob": "ec4020ae99cb88958c29c4df9213f3ed07f874a1",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/games/kart_vehicle.gd",
+      "resource": "res://scripts/games/visual/kart_cinema_materials.gd",
+      "git_blob": "9b10945c42d91086739c49b4b64ce272b7828043",
+      "origin": "unchanged f9 source"
+    },
+    {
+      "owner": "scripts/games/kart_modular_aero_kit.gd",
+      "resource": "res://scripts/games/kart_coachwork_finish.gd",
+      "git_blob": "1d8ebc55111dd713f10132ea7f42e4112541b57c",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/games/kart_rival_character_finish.gd",
+      "resource": "res://scripts/games/kart_character_finish.gd",
+      "git_blob": "630f3b2bff9e38175dad53bc03fdd27228a256f2",
+      "origin": "unchanged f9 source"
+    },
+    {
+      "owner": "scripts/games/kart_rival_visual_adapter.gd",
+      "resource": "res://scripts/games/kart_rival_model_contract.gd",
+      "git_blob": "568d0b98343b1029c595eb9f914b46c563e4a6f3",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/games/kart_rival_visual_adapter.gd",
+      "resource": "res://scripts/games/lumo_opponent_roster.gd",
+      "git_blob": "ef3481b7d9d4f444bf380d44895b5de9e0d13fae",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/games/lumo_opponent_roster.gd",
+      "resource": "res://assets/characters/rivals/roster.json",
+      "git_blob": "051bfb33c4aa13f3cce375c91f81c241b4b7a340",
+      "origin": "unchanged f9 source"
+    },
+    {
+      "owner": "scripts/games/lumo_opponent_roster.gd",
+      "resource": "res://scripts/games/kart_rival_model_contract.gd",
+      "git_blob": "568d0b98343b1029c595eb9f914b46c563e4a6f3",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/tests/kart_fox_eye_proportions_regression.gd",
+      "resource": "res://scripts/games/kart_vehicle.gd",
+      "git_blob": "c6681fde3a7ad38f764a4f0b22fa4bf6c239fb34",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/tests/kart_rival_finish_regression.gd",
+      "resource": "res://scripts/games/kart_vehicle.gd",
+      "git_blob": "c6681fde3a7ad38f764a4f0b22fa4bf6c239fb34",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/tests/kart_rival_visual_adapter_regression.gd",
+      "resource": "res://scripts/games/kart_rival_model_contract.gd",
+      "git_blob": "568d0b98343b1029c595eb9f914b46c563e4a6f3",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/tests/kart_rival_visual_adapter_regression.gd",
+      "resource": "res://scripts/games/kart_rival_visual_adapter.gd",
+      "git_blob": "ec4020ae99cb88958c29c4df9213f3ed07f874a1",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/tests/kart_rival_visual_adapter_regression.gd",
+      "resource": "res://scripts/games/kart_vehicle.gd",
+      "git_blob": "c6681fde3a7ad38f764a4f0b22fa4bf6c239fb34",
+      "origin": "selected final source"
+    },
+    {
+      "owner": "scripts/tests/kart_rival_visual_adapter_regression.gd",
+      "resource": "res://scripts/games/lumo_opponent_roster.gd",
+      "git_blob": "ef3481b7d9d4f444bf380d44895b5de9e0d13fae",
+      "origin": "selected final source"
+    }
+  ],
+  "roster": {
+    "bytes": 2445,
+    "sha256": "32035e97a483133aed6a35d181291568a5b93c44bbf27405d48c8872e81c9670",
+    "git_blob": "051bfb33c4aa13f3cce375c91f81c241b4b7a340"
+  },
+  "runtime_ready_entries": [],
+  "island_source_unchanged": {
+    "mode": "100644",
+    "type": "blob",
+    "sha": "83b3b6b548cffa2790c582e061a74e37bbfcf356"
+  },
+  "island_connection": "Existing island sets reference_rival metadata before configure/add_child. Producer vehicle _ready reads that exact metadata. No island/camera/FX/ring hunk is selected."
+}

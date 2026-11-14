@@ -1,0 +1,20 @@
+--- a/scripts/games/kart_modular_aero_kit.gd
++++ b/scripts/games/kart_modular_aero_kit.gd
+@@ -59,7 +59,7 @@
+ 		var core: MeshInstance3D = kart._ring(body,
+ 			Vector3(side * 0.34, 0.466, 1.174), 0.046, 0.067, accent, 0.35, 0.60)
+ 		core.rotation.x = PI * 0.5
+-		core.material_override = kart._mat(accent, 0.0, 0.26, 0.5)
++		core.material_override = kart._mat(accent, 0.35, 0.26, 0.75)
+ 		_detail(core, "ExhaustEnergyRing", true)
+ 		pieces += 1
+ 	# Centerline insignia and low-profile chevrons never enter the driver's footwell.
+@@ -73,7 +73,7 @@
+ 			Vector3(side * 0.085, 0.600, -0.952),
+ 			Vector3(0.035, 0.010, 0.105), accent, 0.35, 0.26)
+ 		stripe.rotation.y = side * 0.32
+-		stripe.material_override = kart._mat(accent, 0.35, 0.26, 0.65)
++		stripe.material_override = kart._mat(accent, 0.35, 0.26, 0.75)
+ 		_detail(stripe, "AuroraRaisedChevron", true)
+ 		pieces += 1
+ 	# The physical rear diffuser remains owned by the vehicle; small overlay only.
