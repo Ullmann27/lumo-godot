@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "native-source/source-freeze.json",
+      "bytes": 6122,
+      "sha256": "c7d8ad62fc9f8325dd79ffc101bcaf1d00753b5ef2b05b820150e1d6e74e487f",
+      "source": "/tmp/native173-dream-integration-f052-20261114/source-freeze.json"
+    },
+    {
+      "path": "native-source/manifest.json",
+      "bytes": 7249,
+      "sha256": "3fdf5c47f6aed79db72e7df6eaebdb98754faa59493601701119cd1fe300a3ff",
+      "source": "/tmp/native173-dream-integration-f052-20261114/manifest.json"
+    },
+    {
+      "path": "native-source/handoff.json",
+      "bytes": 2696,
+      "sha256": "a29ec0046197ec03485de5e0e097ac2fe6a4a87848f500e659430d1227cf0488",
+      "source": "/tmp/native173-dream-integration-f052-20261114/handoff.json"
+    },
+    {
+      "path": "native-source/gate-contract.json",
+      "bytes": 4698,
+      "sha256": "bc58617ee657ff4f56e06765fffa6ce48f1b5d05910b78d55998cb618dd19663",
+      "source": "/tmp/native173-dream-integration-f052-20261114/gate-contract.json"
+    },
+    {
+      "path": "native-source/glb-validation.json",
+      "bytes": 1993,
+      "sha256": "c7fd355b41ebcc56f5415a9423eb40b8ebba4cfd78d4594c39324a13ce97534e",
+      "source": "/tmp/native173-dream-integration-f052-20261114/glb-validation.json"
+    },
+    {
+      "path": "workflow-v1-red-v2-pass-complete.tar.gz",
+      "bytes": 45425,
+      "sha256": "c90d7baa198715bd295dddd64504765261b5673702d58fd550e208f1e94b715a",
+      "source": "/tmp/native-dream-workflow-f052-20261114/complete-originals.tar.gz"
+    },
+    {
+      "path": "workflow/handoff.json",
+      "bytes": 3139,
+      "sha256": "3e9f5413476f452744b7b151b7a988456884b9080c807d042a91f22f99afc04f",
+      "source": "/tmp/native-dream-workflow-f052-20261114/handoff.json"
+    },
+    {
+      "path": "workflow/manifest.json",
+      "bytes": 7513,
+      "sha256": "f4f1e29ba87d04241474c33c49748639ea29a6b305a4eae097da06f8e242b22a",
+      "source": "/tmp/native-dream-workflow-f052-20261114/manifest.json"
+    },
+    {
+      "path": "workflow/v2-source-freeze.json",
+      "bytes": 2281,
+      "sha256": "ad930cd42dfedfd0dea88d8d07aec6f05ea70e5a091f91f2255b46f55a8b76fd",
+      "source": "/tmp/native-dream-workflow-f052-20261114/v2/source-freeze.json"
+    },
+    {
+      "path": "native-complete-source-pack.tar.gz",
+      "bytes": 558765,
+      "sha256": "81a79185c48d711cac49ae2d25d6c984ae00dabd270a334439b770ac85412501",
+      "source": "/tmp/native173-dream-integration-f052-20261114",
+      "members": 43,
+      "original_manifest_sha256": "3fdf5c47f6aed79db72e7df6eaebdb98754faa59493601701119cd1fe300a3ff",
+      "all_members_read_back_equal": true
+    },
+    {
+      "path": "independent-native-gate-review.tar.gz",
+      "bytes": 5306,
+      "sha256": "a7402df0b60b4c25c007a67c3b440d9d030b3da258b34e909453284d41c6d0f4",
+      "source": "/workspace/scratch/b3485b7bb989/native173-dream-gate-independent-review-20261114",
+      "members": 3,
+      "original_manifest_sha256": "cbb921263fc1adeff2412281d4760f4694dac43c88a707c6cec78972bbebc885",
+      "all_members_read_back_equal": true
+    },
+    {
+      "path": "independent-workflow-v2-review.tar.gz",
+      "bytes": 3934,
+      "sha256": "823ce8788e5c105e18095cc36e27a5d3ae23c630350bd66c30ee9ffa93639305",
+      "source": "/workspace/scratch/b3485b7bb989/native-dream-workflow-v2-independent-review-20261114",
+      "members": 3,
+      "original_manifest_sha256": "7a37a81af9e4f76773fe2cb1b213c934875ad73241f5cd53b3ed94361b03be5d",
+      "all_members_read_back_equal": true
+    }
+  ]
+}

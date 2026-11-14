@@ -1,0 +1,167 @@
+{
+  "schema": 1,
+  "state": "FROZEN_FOR_ROOT_SOURCE_CHECKPOINT",
+  "prepared_at_utc": "2026-11-14T10:02:09.810989+00:00",
+  "base": {
+    "head": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+    "tree": "35492eec16cac6774bc546b6e57628900bef61cb",
+    "tracked_status": "",
+    "index": {
+      "bytes": 524066,
+      "sha256": "a053cd61fd25a65d21654a63fd92d95779502e7af02424dc8cdc15a073b26413",
+      "git_blob": "be524a83d4285d6125d21c666ded39dbf13e034d"
+    }
+  },
+  "producer_head": "454e81229b0193cba75844e9985a53deb2ce5c91",
+  "producer_tree": "ab886683d8bc1ef86f2fff5e154a6dcb654ffb21",
+  "files": [
+    {
+      "path": "assets/dream_garden/dream_blossom.glb",
+      "bytes": 115408,
+      "sha256": "7390bce21e80f9404b009d7a21859b6c1adbb6d9c9f945c79469dc7bd6859ec4",
+      "git_blob": "30bcaa17a7a7d86bc2124823cbd30428aedb0760",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": null
+    },
+    {
+      "path": "assets/dream_garden/dream_storybook.glb",
+      "bytes": 115136,
+      "sha256": "f64698452dc41c10f9659e1641c9386775af891577207ac04a0e5ee82106f102",
+      "git_blob": "d11aac2c5e33d58563ae6707ace16c9c67b59291",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": null
+    },
+    {
+      "path": "assets/dream_garden/provenance.json",
+      "bytes": 1587,
+      "sha256": "926703b434afb2fb90650c6207863e17e0de12803858c8fa0aff55ad9e561d1f",
+      "git_blob": "3f8030d6a113752e771ca2c110478f26efe98d52",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": null
+    },
+    {
+      "path": "assets/shaders/lumo_dream_ambience.gdshader",
+      "bytes": 1545,
+      "sha256": "c73c05003f3051a142ac6a7b87d483e06d1bdf7a3c3e6b60439a3571dc74d7f0",
+      "git_blob": "14ff7da92f330f97a82d2579c009db8c981c2cb8",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": null
+    },
+    {
+      "path": "scripts/learning/learning_atelier.gd",
+      "bytes": 7471,
+      "sha256": "50d01bd437e84333bde534502c4d0bd137c653e819e1c8fb3b5b631447eb4d2b",
+      "git_blob": "6bca8ad6d91e9e4378104a9afef4dc8b9ebf54a9",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": "c14873748bd8ff42cc7f00bd1c39653626de4664"
+    },
+    {
+      "path": "scripts/learning/lumo_dream_props.gd",
+      "bytes": 2903,
+      "sha256": "74bf0cce4848e9ed86a0d0ef5b53bd15042467b9a4aa9113b436a36d667d849a",
+      "git_blob": "e042f4295acfb2e6fa7d95a4789ff149383d77af",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": null
+    },
+    {
+      "path": "scripts/systems/render/lumo_dream_ambience.gd",
+      "bytes": 8956,
+      "sha256": "3ac034e242ce52f89b4295c7b08f45cbef323151a62a7c90229f2eb8c18c2999",
+      "git_blob": "faabc7aeee73c18cf5fa8783dfc77c4e67a2bc33",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": null
+    },
+    {
+      "path": "scripts/systems/render/lumo_environment.gd",
+      "bytes": 6119,
+      "sha256": "bde7fc355ca75817934c95d4b551783a3074b001aca3ec71c2d85843c80e2bef",
+      "git_blob": "a3444f97fe9c6bfa6a509dca64a669fadde55a90",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": "126d309f8ddadee8f20f487a2bcadfc015a7c45b"
+    },
+    {
+      "path": "scripts/systems/render/lumo_environment_creative_presets.gd",
+      "bytes": 12609,
+      "sha256": "5e3036477f83d54b6b74e32161e4d566975df0918fd366b57a9e4e3fb7c4da88",
+      "git_blob": "263d05faedf43adb32b46555811294cba65b8d20",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": "2b985587e87f2d23c5eb12bbe7bceeefabed471b"
+    },
+    {
+      "path": "scripts/tests/dream_garden_capture.gd",
+      "bytes": 2051,
+      "sha256": "7c9178c8cd9284b2669293c79e44e642e54a3d9b203e7071403c3d9d33cca746",
+      "git_blob": "8b514d3f6bf9095e6908765cd3d59bc5ebdb67a4",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": null
+    },
+    {
+      "path": "scripts/tests/dream_garden_props_regression.gd",
+      "bytes": 6389,
+      "sha256": "527b63e2889567e88b8310873801bf87d7bec4b64a661c15be225cba309ae118",
+      "git_blob": "361eed7ed25b46bff8173087eb7df1eaaac96b56",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": null
+    },
+    {
+      "path": "scripts/tests/lumo_dream_ambience_capture.gd",
+      "bytes": 3545,
+      "sha256": "080e4289c12e637562dbae804d2fd8c803357e24933c07a953ad798364c123b9",
+      "git_blob": "75085479ed587335533651adece30b579b8fe11f",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": null
+    },
+    {
+      "path": "scripts/tests/lumo_dream_ambience_regression.gd",
+      "bytes": 5523,
+      "sha256": "c3291510e53fa322b16fb50d444f502143e20b39e969f9cb5bce2e6eec169212",
+      "git_blob": "d96ad6f332b93e3e28d563d72b3c10d208c7be13",
+      "mode": "100644",
+      "origin": "exact published454e blob",
+      "base_blob": null
+    },
+    {
+      "path": "tools/tests/test_dream_rasters.py",
+      "bytes": 10291,
+      "sha256": "d974aeba9a89b5ac0374033d5b70dad085819191ea8fb67704e0d28a2db20085",
+      "git_blob": "0af63932d9f71fd3f1c1657f6aaaba46a019a2c0",
+      "mode": "100644",
+      "origin": "new isolated Dream gate",
+      "base_blob": null
+    },
+    {
+      "path": "tools/validate_dream_connections.sh",
+      "bytes": 4660,
+      "sha256": "19366398784db00c335800bc26ab3e171e062eb2149316021039bc027706dadc",
+      "git_blob": "834ea912003f5e27a271139646a857601baea905",
+      "mode": "100755",
+      "origin": "new isolated Dream gate",
+      "base_blob": null
+    },
+    {
+      "path": "tools/verify_dream_rasters.py",
+      "bytes": 20254,
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5",
+      "mode": "100755",
+      "origin": "new isolated Dream gate",
+      "base_blob": null
+    }
+  ],
+  "files_count": 16,
+  "exact_published_files": 13,
+  "new_gate_files": 3,
+  "tests_run_before_checkpoint": 0
+}

@@ -15,12 +15,15 @@ extends RefCounted
 ##                    sun.shadow_enabled from LumoQuality.budget().shadows.
 
 
+const DREAM_AMBIENCE = preload("res://scripts/systems/render/lumo_dream_ambience.gd")
+
+
 static func apply(root: Node3D, preset: String, tier: String = "") -> Dictionary:
 	# One entry point for every known preset. Creative-table worlds go through
 	# describe()/configure(); this caller then sets sun.shadow_enabled from
 	# the quality budget. creative_night and wolkeninseln stay below, unchanged.
 	if not LumoEnvironmentCreativePresets.describe(preset).is_empty():
-		return _apply_creative_table(root, preset, LumoQuality.budget(tier))
+		return _apply_creative_table(root, preset, LumoQuality.budget(tier), tier)
 
 	var budget: Dictionary = LumoQuality.budget(tier)
 	var world := WorldEnvironment.new()
@@ -50,10 +53,13 @@ static func apply(root: Node3D, preset: String, tier: String = "") -> Dictionary
 	root.add_child(sun)
 	if rim != null:
 		root.add_child(rim)
+	DREAM_AMBIENCE.attach(root, preset, tier)
 	return {"world": world, "environment": env, "sun": sun, "rim": rim}
 
 
-static func _apply_creative_table(root: Node3D, preset: String, budget: Dictionary) -> Dictionary:
+static func _apply_creative_table(
+	root: Node3D, preset: String, budget: Dictionary, tier: String = ""
+) -> Dictionary:
 	var world := WorldEnvironment.new()
 	world.name = "WorldEnvironment"
 	var env := Environment.new()
@@ -67,6 +73,7 @@ static func _apply_creative_table(root: Node3D, preset: String, budget: Dictiona
 	root.add_child(sun)
 	var rim: DirectionalLight3D = _spawn_preset_light(root, extras.get("rim", {}))
 	var fill: DirectionalLight3D = _spawn_preset_light(root, extras.get("fill", {}))
+	DREAM_AMBIENCE.attach(root, preset, tier)
 	return {"world": world, "environment": env, "sun": sun, "rim": rim, "fill": fill}
 
 

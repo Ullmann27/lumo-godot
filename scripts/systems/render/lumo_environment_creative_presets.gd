@@ -37,6 +37,8 @@ extends RefCounted
 ## Bekannte Presets: bauwelt_day, puzzle_atelier, rhythm_party, treasure_day.
 ## wolkeninseln und creative_night bleiben bei LumoEnvironment.
 
+const DREAM_AMBIENCE = preload("res://scripts/systems/render/lumo_dream_ambience.gd")
+
 const PRESET_BAUWELT_DAY := "bauwelt_day"
 const PRESET_PUZZLE_ATELIER := "puzzle_atelier"
 const PRESET_RHYTHM_PARTY := "rhythm_party"
@@ -207,6 +209,7 @@ static func apply(root: Node3D, preset: String, tier: String = "") -> Dictionary
 	root.add_child(sun)
 	var rim: DirectionalLight3D = _spawn_light(root, extras.get("rim", {}))
 	var fill: DirectionalLight3D = _spawn_light(root, extras.get("fill", {}))
+	DREAM_AMBIENCE.attach(root, preset, tier)
 	return {"world": world, "environment": env, "sun": sun, "rim": rim, "fill": fill}
 
 

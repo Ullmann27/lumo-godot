@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "state": "FROZEN_READY_FOR_ROOT_SOURCE_CHECKPOINT",
+  "source_freeze": {
+    "path": "source-freeze.json",
+    "bytes": 6122,
+    "sha256": "c7d8ad62fc9f8325dd79ffc101bcaf1d00753b5ef2b05b820150e1d6e74e487f"
+  },
+  "patch": {
+    "path": "integration.patch",
+    "bytes": 240818,
+    "sha256": "6964f5ffccf964330553a3ac41fecf85f78ce08200d249cf0dc9d018f70bae74"
+  },
+  "gate_contract": {
+    "path": "gate-contract.json",
+    "bytes": 4698,
+    "sha256": "bc58617ee657ff4f56e06765fffa6ce48f1b5d05910b78d55998cb618dd19663"
+  },
+  "source_paths": [
+    "assets/dream_garden/dream_blossom.glb",
+    "assets/dream_garden/dream_storybook.glb",
+    "assets/dream_garden/provenance.json",
+    "assets/shaders/lumo_dream_ambience.gdshader",
+    "scripts/learning/learning_atelier.gd",
+    "scripts/learning/lumo_dream_props.gd",
+    "scripts/systems/render/lumo_dream_ambience.gd",
+    "scripts/systems/render/lumo_environment.gd",
+    "scripts/systems/render/lumo_environment_creative_presets.gd",
+    "scripts/tests/dream_garden_capture.gd",
+    "scripts/tests/dream_garden_props_regression.gd",
+    "scripts/tests/lumo_dream_ambience_capture.gd",
+    "scripts/tests/lumo_dream_ambience_regression.gd",
+    "tools/tests/test_dream_rasters.py",
+    "tools/validate_dream_connections.sh",
+    "tools/verify_dream_rasters.py"
+  ],
+  "new_gate_paths": [
+    "tools/tests/test_dream_rasters.py",
+    "tools/validate_dream_connections.sh",
+    "tools/verify_dream_rasters.py"
+  ],
+  "base_before": "base-before.json",
+  "base_after": "base-after.json",
+  "base_unchanged": true,
+  "actual_asset_validation": "glb-validation.json",
+  "tests_run": 0,
+  "renderer_runs": 0,
+  "workflow_owner": "Root/Flutter, outside this pack",
+  "independent_gate_review": "requested from pipeline_repair against fixed source-freeze; not claimed complete here",
+  "remaining_dependencies": [
+    "unchanged tools/run_godot_probe.py",
+    "Godot4.6.3 imported project",
+    "Python3 standard library",
+    "Pillow",
+    "bash",
+    "git",
+    "DISPLAY or xvfb-run for rendered probes"
+  ],
+  "pending": [
+    "Static/synthetic new gate tests",
+    "Original Dream headless170 and544 probes",
+    "Real renderer seven-PNG evidence",
+    "Independent code review and new source-bound CI"
+  ],
+  "preserved_source_bindings": "protected-source-bindings.json",
+  "original_provenance": [
+    "originals/native173-pr.json",
+    "originals/native173-compare.json",
+    "originals/native173-runs.json",
+    "originals/github-dream_storybook.glb.json",
+    "originals/github-dream_blossom.glb.json",
+    "final-source/assets/dream_garden/provenance.json",
+    "producer-reference/tools/art/build_dream_garden.py"
+  ]
+}

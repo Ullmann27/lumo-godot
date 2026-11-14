@@ -1,0 +1,150 @@
+{
+  "schema": 1,
+  "runner": "tools/validate_dream_connections.sh",
+  "argv": [
+    "bash",
+    "tools/validate_dream_connections.sh"
+  ],
+  "cwd": "<native-checkout>",
+  "environment": {
+    "GODOT_BIN": "Optional exact Godot4.6.3 binary, default godot",
+    "LUMO_DREAM_LOG_DIR": "New/nonexistent directory. Parent may exist. If unset, mktemp outside checkout.",
+    "LUMO_EXPECTED_NATIVE_SHA": "Optional exact published Native commit. Host pin is unchanged.",
+    "DISPLAY": "Use existing real display or installed xvfb-run; no headless renderer fallback."
+  },
+  "probe_modes": [
+    {
+      "probe": "lumo_dream_ambience_regression",
+      "mode": "headless",
+      "timeout_seconds": 120,
+      "marker": "[DreamAmbience] 170 checks, 0 failures"
+    },
+    {
+      "probe": "dream_garden_props_regression",
+      "mode": "headless",
+      "timeout_seconds": 120,
+      "marker": "[DreamGarden] checks=544 failures=0"
+    },
+    {
+      "probe": "lumo_dream_ambience_capture",
+      "mode": "rendered-treasure",
+      "timeout_seconds": 180,
+      "marker": "[DreamAmbienceCapture] PASS treasure original frames in <LOG_DIR>/captures/treasure",
+      "user_args": [
+        "--world=treasure",
+        "--capture-dir=<LOG_DIR>/captures/treasure"
+      ]
+    },
+    {
+      "probe": "lumo_dream_ambience_capture",
+      "mode": "rendered-learning",
+      "timeout_seconds": 180,
+      "marker": "[DreamAmbienceCapture] PASS learning original frames in <LOG_DIR>/captures/learning",
+      "user_args": [
+        "--world=learning",
+        "--capture-dir=<LOG_DIR>/captures/learning"
+      ]
+    },
+    {
+      "probe": "dream_garden_capture",
+      "mode": "rendered",
+      "timeout_seconds": 180,
+      "marker": "[DreamGardenCapture] failures=0",
+      "user_args": [
+        "--output=<LOG_DIR>/captures/garden"
+      ]
+    }
+  ],
+  "sum_probe_deadlines_seconds": 780,
+  "shared_probe_kill_grace_seconds_each": 5,
+  "overall_wrapper_timeout": null,
+  "setup_import_decode_have_separate_job_budget": true,
+  "new_outputs": {
+    "manifest": "dream-images.json",
+    "results": "results.tsv",
+    "source_stamps": [
+      "source-sha.txt",
+      "source-tree.txt",
+      "source-dirty.txt",
+      "source-sha-after.txt",
+      "source-tree-after.txt",
+      "source-dirty-after.txt",
+      "engine.txt",
+      "capture-root.txt"
+    ],
+    "source_inventories": [
+      "source-inventory-before.json",
+      "source-inventory-after.json"
+    ],
+    "source_inventory_contract": "All materialized tracked bytes/modes must match the real index; absent files need skip-worktree. Before/after tracked list and index SHA256 must be identical. Untracked UID/import/other files are separately hash-inventoried, never deleted and never reported as tracked dirt.",
+    "pngs": [
+      "captures/treasure/treasure_00.png",
+      "captures/treasure/treasure_01.png",
+      "captures/learning/learning_00.png",
+      "captures/learning/learning_01.png",
+      "captures/garden/learning-dream-1280x720.png",
+      "captures/garden/learning-dream-412x915.png",
+      "captures/garden/learning-dream-2400x1080.png"
+    ],
+    "reports": [
+      "captures/treasure/treasure.json",
+      "captures/learning/learning.json"
+    ]
+  },
+  "pure_api": "verify_dream_rasters.verify(root, write=False)",
+  "collection_cli": [
+    "python3",
+    "tools/verify_dream_rasters.py",
+    "<LOG_DIR>",
+    "--write"
+  ],
+  "replay_cli": [
+    "python3",
+    "tools/verify_dream_rasters.py",
+    "<relocated-original-evidence-dir>"
+  ],
+  "final_marker": "[LumoDreamConnections] PASS 5 original probes and 7 verified renderer PNGs",
+  "raster_marker": "[DreamRasterRoster] PASS 7 actual PNG files and 2 original reports",
+  "unexecuted_test_command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/tests",
+    "-p",
+    "test_dream_rasters.py"
+  ],
+  "test_methods": 12,
+  "runtime_dependencies": [
+    "unchanged tools/run_godot_probe.py",
+    "Godot4.6.3 imported project",
+    "Python3 standard library",
+    "Pillow",
+    "bash",
+    "git",
+    "DISPLAY or xvfb-run for rendered probes"
+  ],
+  "not_required": [
+    "Blender at runtime",
+    "new SDK",
+    "new texture downloads",
+    "changed Wisp source",
+    "changed52-mode runner",
+    "changed17-image roster"
+  ],
+  "pending_after_root_checkpoint": [
+    "Static/synthetic new gate tests",
+    "Original Dream headless170 and544 probes",
+    "Real renderer seven-PNG evidence",
+    "Independent code review and new source-bound CI"
+  ],
+  "claims": {
+    "engine_tests_run": 0,
+    "renderer_tests_run": 0,
+    "device_tests_run": 0,
+    "contract_tests_run": 0,
+    "source_changes_in_worktree": 0,
+    "git_mutations": 0
+  }
+}

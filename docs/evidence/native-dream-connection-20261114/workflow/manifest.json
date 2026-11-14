@@ -1,0 +1,197 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1916,
+      "sha256": "45b28a0f6e9f4bf50c42fe1c80c3a1ac06fe3941b5f5f8df18450ab3f5d41205",
+      "git_blob": "43927280167c8fb6d2f07debe526e5717883a63f"
+    },
+    {
+      "path": "actionlint-result.json",
+      "bytes": 1010,
+      "sha256": "8108f7d3d922a84aa7e5efccd70c3afe4d843a0ab0f0836d2e1a533996563964",
+      "git_blob": "b5440ee9ae84af3b70ee341e45e725cc2f29fea2"
+    },
+    {
+      "path": "actionlint.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "actionlint.stdout.log",
+      "bytes": 965,
+      "sha256": "aa4091c42329347a8b58e0ea6eae05639ec1d184ad977aeabf4967fc044f010f",
+      "git_blob": "313d7d67786bc3236b067a77d38c9e72af41e8e8"
+    },
+    {
+      "path": "base-source-binding.json",
+      "bytes": 4041,
+      "sha256": "53885ddd0e74f97d455e40041f251ccfd85a2fcfbf380cf0137bdba5754b8fb6",
+      "git_blob": "cd6a65373690e487d0577af623a7a1c2fc3bc600"
+    },
+    {
+      "path": "final-source/.github/workflows/lumo-dream-connections.yml",
+      "bytes": 9951,
+      "sha256": "11fa7257afe2397421696fe2d5d8bce530d7a7e9775c83b2f90eb5b894c3a6d6",
+      "git_blob": "98f6742f1ff2855159118c0d14de9297128f7fcb"
+    },
+    {
+      "path": "handoff.json",
+      "bytes": 3139,
+      "sha256": "3e9f5413476f452744b7b151b7a988456884b9080c807d042a91f22f99afc04f",
+      "git_blob": "997898e5b4c762c7677a29c40fecffaa59490689"
+    },
+    {
+      "path": "original-logs/connect_four_return_regression.log",
+      "bytes": 504,
+      "sha256": "f52a215077309359c79031c719d5df69b526bcb0d45bd2bb161de28153dc5ae2",
+      "git_blob": "186e8fa528a9138ea17a0a1395010f440192a280"
+    },
+    {
+      "path": "original-logs/learning_world_regression.log",
+      "bytes": 10599,
+      "sha256": "4e500ed41f1c9bee1b586b2141e4c7646f660b8dcb5da8311db95babab7ca1cb",
+      "git_blob": "01f4eeb866daca9984822b21a7135da890d60efb"
+    },
+    {
+      "path": "original-logs/treasure_exploration_regression.log",
+      "bytes": 589,
+      "sha256": "6303eda4f9dfbf0eae58630858cdd5ec5cf1dfd19767d484bf72b3001d713b5e",
+      "git_blob": "c8146adee3e0045b27b144aa8cf07ca70b795f45"
+    },
+    {
+      "path": "original-logs/treasure_wisp_regression.log",
+      "bytes": 499,
+      "sha256": "2addbad1078d83ba3fe151557f3748812201ed8dffe5675ec741557083b51d39",
+      "git_blob": "a9af201e589b4813f21814579f5112b87e66b46a"
+    },
+    {
+      "path": "original-source/.github/workflows/lumo-nextgen-2018.yml",
+      "bytes": 18752,
+      "sha256": "e36fb64b70a20ba144dfe25441dedd7332a1919914ddc9c9fa8a65c3375810a0",
+      "git_blob": "b08fbbceb4fff3646d22ecc4754afa8053131d9b"
+    },
+    {
+      "path": "original-source/.gitignore",
+      "bytes": 821,
+      "sha256": "db2819297a51d5d39aa9702fbfe872f30a8710db37efecf8349da9c53b5042e7",
+      "git_blob": "f7a08c32580327b204de74e97c3a21ba018c25f9"
+    },
+    {
+      "path": "original-source/scripts/tests/connect_four_return_regression.gd",
+      "bytes": 4762,
+      "sha256": "2d21893a3581ede82120853b7f7444a2b888fdd82aab44cf005c9a9c4aab09d3",
+      "git_blob": "1d7a4cbd0f3b0d5a21ddeaf218bf27eadfe1f0bb"
+    },
+    {
+      "path": "original-source/scripts/tests/learning_world_regression.gd",
+      "bytes": 23091,
+      "sha256": "562b9812983388e396b80be698eb70a9d091b0d92997e5b58476b15b20df40f8",
+      "git_blob": "8e534e78509283679889335255f39a4f7d49bb64"
+    },
+    {
+      "path": "original-source/scripts/tests/treasure_exploration_regression.gd",
+      "bytes": 7475,
+      "sha256": "de40f0eaed86f2ea20371b3aa0b19ceff3ad553f1751e1fbb41033fecfa770c4",
+      "git_blob": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29"
+    },
+    {
+      "path": "original-source/scripts/tests/treasure_wisp_regression.gd",
+      "bytes": 3061,
+      "sha256": "dce77c62f2848c30c0086b13ec3c2a5ea4fb59a814a2ef1535d837c1e47ed218",
+      "git_blob": "7f256c202defeeba47c8c96a577065ee2eda16c1"
+    },
+    {
+      "path": "original-source/tools/run_godot_probe.py",
+      "bytes": 2934,
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105"
+    },
+    {
+      "path": "runner-binding.json",
+      "bytes": 1273,
+      "sha256": "da69b8da4e2fdcd9a43006a7ff8b8dd5feccd3580fbe0a64e1225d472c5940b0",
+      "git_blob": "fb202a54d7b8ef1fc5ba1f2fecb482880ed2aae8"
+    },
+    {
+      "path": "runner-contract-source/gate-contract.json",
+      "bytes": 4698,
+      "sha256": "bc58617ee657ff4f56e06765fffa6ce48f1b5d05910b78d55998cb618dd19663",
+      "git_blob": "4d4cb5f915e5d0278943464c2a3a03c8a8521f37"
+    },
+    {
+      "path": "runner-contract-source/source-freeze.json",
+      "bytes": 6122,
+      "sha256": "c7d8ad62fc9f8325dd79ffc101bcaf1d00753b5ef2b05b820150e1d6e74e487f",
+      "git_blob": "b2f4453a5e139a530bb340c2ae9517de6a835d27"
+    },
+    {
+      "path": "runner-contract-source/tools/tests/test_dream_rasters.py",
+      "bytes": 10291,
+      "sha256": "d974aeba9a89b5ac0374033d5b70dad085819191ea8fb67704e0d28a2db20085",
+      "git_blob": "0af63932d9f71fd3f1c1657f6aaaba46a019a2c0"
+    },
+    {
+      "path": "runner-contract-source/tools/validate_dream_connections.sh",
+      "bytes": 4660,
+      "sha256": "19366398784db00c335800bc26ab3e171e062eb2149316021039bc027706dadc",
+      "git_blob": "834ea912003f5e27a271139646a857601baea905"
+    },
+    {
+      "path": "runner-contract-source/tools/verify_dream_rasters.py",
+      "bytes": 20254,
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5"
+    },
+    {
+      "path": "source-freeze.json",
+      "bytes": 1884,
+      "sha256": "d6d089930a0e00b77d1fa600ed1d5909ccd23b8d0908a11f0600114a2efa6810",
+      "git_blob": "fa311228fc06d4da2c03722610d68311556104bc"
+    },
+    {
+      "path": "v1-to-v2.patch",
+      "bytes": 2421,
+      "sha256": "232262559b4a8e61f37d92d715497ec8b1a3f031e65699f5525cca1dd17bc55a",
+      "git_blob": "b0da42234790f32d7f3c9dbc335e5d4601b484eb"
+    },
+    {
+      "path": "v2/actionlint-result.json",
+      "bytes": 1183,
+      "sha256": "ca554511fa4d6da6d94485b675a22009915ea5df19de5596fa0569484dd2f712",
+      "git_blob": "03b8d03d34f794049c878399738903b3a7ffb53b"
+    },
+    {
+      "path": "v2/actionlint.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "v2/actionlint.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "v2/final-source/.github/workflows/lumo-dream-connections.yml",
+      "bytes": 10176,
+      "sha256": "7320bc547bbf110ca1374d651fd3867f603e2ae996bd37848939574a67e29217",
+      "git_blob": "321aeff8018435789cc57df3af3e3b5fecc4c910"
+    },
+    {
+      "path": "v2/source-freeze.json",
+      "bytes": 2281,
+      "sha256": "ad930cd42dfedfd0dea88d8d07aec6f05ea70e5a091f91f2255b46f55a8b76fd",
+      "git_blob": "0a74583b09c2ec00173b0d82117a2fe2ba63ada9"
+    },
+    {
+      "path": "v2/workflow.patch",
+      "bytes": 10567,
+      "sha256": "a3dec16c7bf0f8354651724e3189a03d44c3b8b4cf2b46dabf74c64b673a039b",
+      "git_blob": "7928efcd7ecc03e8a859bad3db7fd24f9a729e9a"
+    }
+  ]
+}
