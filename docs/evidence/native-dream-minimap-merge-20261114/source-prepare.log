@@ -1,0 +1,22 @@
+prepare step 0
+warning: source repository is shallow, ignoring --local
+warning: --local is ignored
+remote: warning: lazy fetching disabled; some objects may not be available        
+remote: fatal: could not fetch 8aedf0296e665b3645a83c3fcd09e2181c0561fd from promisor remote        
+error: git upload-pack: git-pack-objects died with error.
+fatal: git upload-pack: aborting due to possible repository corruption on the remote side.
+remote: aborting due to possible repository corruption on the remote side.
+fatal: early EOF
+fatal: fetch-pack: invalid index-pack output
+Fresh independent partial repository after shallow-local-clone refusal
+fresh prepare step 0
+fresh prepare step 1
+fresh prepare step 2
+fresh prepare step 3
+fresh prepare step 4
+From https://github.com/Ullmann27/lumo-godot
+ * branch            bd0712259bb64908a5649ee1999638826c9eb597 -> FETCH_HEAD
+fresh prepare step 5
+fresh prepare step 6
+fresh prepare step 7
+Switched to a new branch 'work/lumo-native-dream-minimap-merge-20261114-2708'

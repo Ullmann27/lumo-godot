@@ -1,0 +1,60 @@
+{
+  "label": "green-v2-headless",
+  "base_head": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "production": "candidate",
+  "before": [
+    {
+      "path": "scripts/games/kart_island.gd",
+      "bytes": 175088,
+      "sha256": "7f916fcf8ea2d17876500e0063d91809db4a608dbc8bf945287231e6d76231d5",
+      "git_blob": "83b3b6b548cffa2790c582e061a74e37bbfcf356"
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "bytes": 26254,
+      "sha256": "8188911d6f91deaec924fdc7857feec876af075a8d04522b49dd14429d501aa5",
+      "git_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+    }
+  ],
+  "after": [
+    {
+      "path": "scripts/games/kart_island.gd",
+      "bytes": 175088,
+      "sha256": "7f916fcf8ea2d17876500e0063d91809db4a608dbc8bf945287231e6d76231d5",
+      "git_blob": "83b3b6b548cffa2790c582e061a74e37bbfcf356"
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "bytes": 26254,
+      "sha256": "8188911d6f91deaec924fdc7857feec876af075a8d04522b49dd14429d501aa5",
+      "git_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+    }
+  ],
+  "source_unchanged": true,
+  "command": [
+    "godot",
+    "--path",
+    "/home/agent/lumo-kart-minimap-2708/source",
+    "--rendering-method",
+    "gl_compatibility",
+    "--headless",
+    "--script",
+    "res://scripts/tests/mobile_safe_area_regression.gd"
+  ],
+  "environment": {
+    "DISPLAY": null,
+    "XDG_DATA_HOME": "/home/agent/lumo-kart-minimap-2708/user-green-v2-headless",
+    "LUMO_CAPTURE_DIR": "/home/agent/lumo-kart-minimap-2708/evidence/green-v2-headless",
+    "LUMO_KART_MINIMAP_CAPTURE_DIR": null
+  },
+  "started_utc": "2026-11-14T11:13:42.092867+00:00",
+  "seconds": 15.474,
+  "engine_exit_code": 0,
+  "log": "/home/agent/lumo-kart-minimap-2708/evidence/green-v2-headless/run.log",
+  "log_bytes": 10570,
+  "log_sha256": "771244a633a0bd24d577bba99f036812e1ab7d2fcfbfa7d3af95098313ce7ba1",
+  "report_present": true,
+  "checks": 380,
+  "failures": [],
+  "report_sha256": "cb5f9ca76c50281984d986bb8d68a8cd525892a093e816eaf9c49f2a4d70bb02"
+}
