@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "status": "FROZEN_SOURCE_PACKAGING_FINDING",
+  "created_utc": "2026-11-14T15:25:12.843009+00:00",
+  "native_base": "baf148b03a7a32c6ad9f737d731f900eb9113ea1",
+  "native_tree": "0c18a0ca5200ade267cfedb4c12d5c4b0a761a00",
+  "host_reference": "0b7bacadd3cdc45d22a8e038c5df50ba8b739d62",
+  "host_tree": "f3a7df4c3112ac63577db00a9637facfea5c0175",
+  "finding": "Current source has no explicit packaging path for the three Markdown notice texts: baf Android include_filter is empty, no source reference/export-plugin path was found in759 verified active native text sources, and Host0b7 contains no corresponding notice asset/copy. Host packaging invokes the native Android preset to produce lumo_game.pck. The proposed producer filter supplies that missing explicit path.",
+  "observations": [
+    {
+      "source": "before/export_presets.cfg",
+      "lines": [
+        61,
+        63,
+        68,
+        69,
+        70
+      ],
+      "fact": "Current Android preset exports all_resources, has an empty include_filter, and its excludes do not enumerate these three notice paths. Empty filter is not a positive inclusion for those non-resource Markdown texts."
+    },
+    {
+      "source": "native-packaging-reference-scan.json",
+      "fact": "759 active tracked text blobs from authentic baf tree were read and hash-verified. No literal ATTRIBUTION.md/THIRD_PARTY_NOTICES reference or EditorExportPlugin/add_file packaging hook was found. Existing Android export paths use the Android preset; Web/Linux retain their separate empty include filters.",
+      "limit": "Source scan scope and every blob are listed. No built PCK/APK or embedded GLB metadata contents inspected."
+    },
+    {
+      "source": "host-packaging-source-binding.json",
+      "fact": "The complete Host0b7 Git tree has no ATTRIBUTION or THIRD_PARTY_NOTICES filename. pubspec asset declarations and both preparation scripts contain no separate copy for these exact native text files."
+    },
+    {
+      "source": "packaging-reference/host-0b7/scripts/export_embedded_game.py",
+      "lines": [
+        134,
+        169
+      ],
+      "fact": "The existing source-checked exporter imports the pinned Native checkout, invokes --export-pack Android without rewriting export_presets.cfg, stores android/app/src/main/assets/lumo_game.pck, checks Godot4.6.3 PCK header, and writes lumo_game_source.json. No notice-copy fallback exists in this path."
+    },
+    {
+      "source": "final-source/export_presets.cfg",
+      "line": 69,
+      "fact": "The only preset change names the exact three existing notice files in Android include_filter. No change to Web/Linux, export_filter, exclude_filter, engine, textures, signing, package or release settings."
+    }
+  ],
+  "original_packaging_instructions": [
+    {
+      "path": "assets/characters/lumo_facial/ATTRIBUTION.md",
+      "local_original": "/workspace/scratch/b3485b7bb989/native181-packaging-followup-baf-20261114/packaging-reference/native/assets/characters/lumo_facial/ATTRIBUTION.md",
+      "source_line": 20,
+      "verbatim_packaging_instruction": "Preserve this attribution, the upstream modification notice and license URL when distributing this derivative.",
+      "bytes": 2626,
+      "sha256": "4bf37300273f8edc20b1557f7284da30d235ed1dc4f1999af4947bbb0056aa85",
+      "git_blob": "50f43591977dc46683fe8c547bbba2fa6e73f216"
+    },
+    {
+      "path": "assets/characters/lumo_animated/ATTRIBUTION.md",
+      "local_original": "/workspace/scratch/b3485b7bb989/native181-packaging-followup-baf-20261114/packaging-reference/native/assets/characters/lumo_animated/ATTRIBUTION.md",
+      "source_line": 16,
+      "verbatim_packaging_instruction": "Preserve this attribution, the license URL and modification notice when distributing this model or a derivative.",
+      "bytes": 1640,
+      "sha256": "aebbc082bd8737234cddeb6d1ddc4202b807aafb1509a294f4a080615c62baca",
+      "git_blob": "3b3f2070c9ef502498b53bb94429cbfae0dceaa7"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "local_original": "/workspace/scratch/b3485b7bb989/native181-packaging-followup-baf-20261114/packaging-reference/native/THIRD_PARTY_NOTICES.md",
+      "source_line": 20,
+      "verbatim_packaging_instruction": "The above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.",
+      "bytes": 1582,
+      "sha256": "5c19d18596a311c336c8d5b8b1e3a225cc18586e32900c8205c7017bd0d6beb6",
+      "git_blob": "ceedc772859dd274b30d4d741a14fca55623e21c"
+    }
+  ],
+  "interpretation_limit": "These are original project-text instructions and source packaging facts. No legal opinion, license-compliance certification, hypothetical violation or current APK/PCK member-absence claim is made. Physical package inclusion remains an explicit later qualification.",
+  "post_checkpoint_minimal_qualification_for_root_decision": "On the actual newly published Native source, perform one genuine Android PCK export through the existing pinned exporter and verify all three exact internal paths and original UTF8 byte hashes in the resulting PCK. Keep source/index binding and actual exporter exit/logs. A complete app/gameplay rerun is not implied by this document; Root selects the needed qualification.",
+  "no_local_export_or_test": true,
+  "peer_host_check": "Flutter independently read the same Host0b7 tree/pubspec/preparation/exporter paths and reported no separate notice copy. This pack also independently binds the exact four Host source blobs; no new Host API query occurred.",
+  "public_docs": {
+    "schema": 1,
+    "kind": "Primary documentation reference and bounded paraphrase, not a local export observation.",
+    "url": "https://docs.godotengine.org/en/4.6/tutorials/export/exporting_projects.html",
+    "retrieval_ref": "turn570808470view0",
+    "version_boundary": "Godot4.6 documentation family; deployed engine pin is4.6.3. No actual export run inferred.",
+    "sections": [
+      "Resource options",
+      "Exporting from the command line"
+    ],
+    "summary": "Godot distinguishes project resources from non-resource files; an include filter adds the latter to an export. A command-line pack export still uses its named export preset.",
+    "direct_quote_words": 0
+  }
+}
