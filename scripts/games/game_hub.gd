@@ -249,6 +249,14 @@ func _action(value: String, accent: Color, callback: Callable, is_gold: bool = f
 	return button
 
 
+func _columns_for_width(width_dp: float) -> int:
+	if width_dp >= 1120:
+		return 3
+	if width_dp >= 650:
+		return 2
+	return 1
+
+
 func _layout() -> void:
 	if not is_inside_tree() or not is_instance_valid(_safe):
 		return
@@ -256,7 +264,7 @@ func _layout() -> void:
 	var landscape := view.x > view.y
 	var compact := view.y < 640
 	var width_dp := view.x / maxf(1.0, MobileRuntime.get_ui_density())
-	_button_row.columns = 3 if width_dp >= 1120 else (2 if width_dp >= 650 else 1)
+	_button_row.columns = _columns_for_width(width_dp)
 	for side in ["left", "right"]:
 		_safe.add_theme_constant_override("margin_" + side, 16 if compact else 24)
 	for side in ["top", "bottom"]:
