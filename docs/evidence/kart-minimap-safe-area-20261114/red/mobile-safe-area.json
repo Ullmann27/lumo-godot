@@ -1,0 +1,2713 @@
+{
+  "checks": 380,
+  "density": 2.625,
+  "events": [
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": false,
+      "window": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": false,
+      "window": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": false,
+      "window": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": false,
+      "window": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": false,
+      "window": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": false,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": false,
+      "window": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": false,
+      "window": [
+        360,
+        800
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        360,
+        800
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": false,
+      "window": [
+        1280,
+        640
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        1280,
+        640
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": false,
+      "window": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "event": "safe_area_changed",
+      "ready": true,
+      "window": [
+        2400,
+        1080
+      ]
+    }
+  ],
+  "failures": [
+    "dense-left-cutout minimap leaves @Button@3229 and its artwork unobscured",
+    "dense-left-cutout minimap leaves DriftAction and its artwork unobscured",
+    "dense-left-cutout minimap leaves BoostAction and its artwork unobscured",
+    "dense-left-cutout minimap leaves header, instructions and jump hint unobscured",
+    "dense-left-cutout minimap leaves header, instructions and jump hint unobscured",
+    "dense-left-cutout entire minimap stays inside the true safe area",
+    "dense-right-cutout minimap leaves @Button@3229 and its artwork unobscured",
+    "dense-right-cutout minimap leaves DriftAction and its artwork unobscured",
+    "dense-right-cutout minimap leaves BoostAction and its artwork unobscured",
+    "dense-right-cutout minimap leaves header, instructions and jump hint unobscured",
+    "dense-right-cutout minimap leaves header, instructions and jump hint unobscured",
+    "dense-right-cutout entire minimap stays inside the true safe area",
+    "same-pixels-density-one minimap leaves header, instructions and jump hint unobscured",
+    "expanded-inner-display minimap leaves header, instructions and jump hint unobscured",
+    "expanded-inner-display entire minimap stays inside the true safe area",
+    "expanded-hint-visible minimap leaves header, instructions and jump hint unobscured",
+    "expanded-hint-visible entire minimap stays inside the true safe area",
+    "showing the real hint repositions the existing map without a resize",
+    "expanded-hint-hidden minimap leaves header, instructions and jump hint unobscured",
+    "expanded-hint-hidden entire minimap stays inside the true safe area",
+    "dense-restored minimap leaves @Button@3229 and its artwork unobscured",
+    "dense-restored minimap leaves DriftAction and its artwork unobscured",
+    "dense-restored minimap leaves BoostAction and its artwork unobscured",
+    "dense-restored minimap leaves header, instructions and jump hint unobscured",
+    "dense-restored minimap leaves header, instructions and jump hint unobscured",
+    "dense-restored entire minimap stays inside the true safe area"
+  ],
+  "images": [],
+  "kart_minimap_images": [],
+  "kart_minimap_layouts": [
+    {
+      "content_rect_px": [
+        2106.0,
+        240.0,
+        420.0,
+        336.0
+      ],
+      "controls": [
+        {
+          "artwork_rect_px": [
+            163.0,
+            90.0,
+            216.0,
+            152.25
+          ],
+          "name": "@Button@3225",
+          "rect_px": [
+            163.0,
+            90.0,
+            216.0,
+            152.25
+          ],
+          "target_dp": [
+            82.2857131958008,
+            58.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            385.000030517578,
+            90.0,
+            209.999969482422,
+            152.25
+          ],
+          "name": "@Button@3226",
+          "rect_px": [
+            385.000030517578,
+            90.0,
+            209.999969482422,
+            152.25
+          ],
+          "target_dp": [
+            79.9999847412109,
+            58.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            2117.5,
+            90.0,
+            255.0,
+            152.25
+          ],
+          "name": "@Button@3229",
+          "rect_px": [
+            2117.5,
+            90.0,
+            255.0,
+            152.25
+          ],
+          "target_dp": [
+            97.1428604125977,
+            58.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            163.0,
+            654.0,
+            336.000030517578,
+            336.0
+          ],
+          "name": "@Control@3233",
+          "rect_px": [
+            163.0,
+            654.0,
+            336.000030517578,
+            336.0
+          ],
+          "target_dp": [
+            128.000015258789,
+            128.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            2094.21508789062,
+            712.195190429688,
+            293.529449462891,
+            293.529632568359
+          ],
+          "name": "GasPedal",
+          "rect_px": [
+            2109.93994140625,
+            727.919982910156,
+            262.079833984375,
+            262.080017089844
+          ],
+          "target_dp": [
+            99.8399353027344,
+            99.8400039672852
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1898.32727050781,
+            783.427124023438,
+            218.265747070312,
+            218.265686035156
+          ],
+          "name": "BrakePedal",
+          "rect_px": [
+            1910.02001953125,
+            795.119934082031,
+            194.880126953125,
+            194.880065917969
+          ],
+          "target_dp": [
+            74.2400512695312,
+            74.2400283813477
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1917.81518554688,
+            567.715148925781,
+            199.449432373047,
+            199.449615478516
+          ],
+          "name": "DriftAction",
+          "rect_px": [
+            1928.5,
+            578.399963378906,
+            178.079833984375,
+            178.080017089844
+          ],
+          "target_dp": [
+            67.8399353027344,
+            67.8400039672852
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            2150.73022460938,
+            491.510406494141,
+            210.739379882812,
+            210.739227294922
+          ],
+          "name": "BoostAction",
+          "rect_px": [
+            2162.01977539062,
+            502.800018310547,
+            188.16015625,
+            188.160003662109
+          ],
+          "target_dp": [
+            71.680061340332,
+            71.6800003051758
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1710.70471191406,
+            780.604736328125,
+            176.870452880859,
+            176.870452880859
+          ],
+          "name": "ItemAction",
+          "rect_px": [
+            1720.17993164062,
+            790.079956054688,
+            157.920043945312,
+            157.920043945312
+          ],
+          "target_dp": [
+            60.1600151062012,
+            60.1600151062012
+          ]
+        }
+      ],
+      "density": 2.625,
+      "insets_px": [
+        136.0,
+        63.0,
+        0.0,
+        63.0
+      ],
+      "label": "dense-left-cutout",
+      "map_rect_px": [
+        2085.0,
+        219.0,
+        462.0,
+        378.0
+      ],
+      "notice_rects_px": [
+        {
+          "name": "@HBoxContainer@3224",
+          "rect_px": [
+            163.0,
+            90.0,
+            2209.5,
+            151.5
+          ]
+        },
+        {
+          "name": "@Label@3230",
+          "rect_px": [
+            163.0,
+            259.5,
+            2209.5,
+            156.0
+          ]
+        }
+      ],
+      "safe_rect_px": [
+        136.0,
+        63.0,
+        2264.0,
+        954.0
+      ],
+      "surface": [
+        2400,
+        1080
+      ],
+      "visible": true
+    },
+    {
+      "content_rect_px": [
+        1970.0,
+        240.0,
+        420.0,
+        336.0
+      ],
+      "controls": [
+        {
+          "artwork_rect_px": [
+            27.0,
+            90.0,
+            216.0,
+            152.25
+          ],
+          "name": "@Button@3225",
+          "rect_px": [
+            27.0,
+            90.0,
+            216.0,
+            152.25
+          ],
+          "target_dp": [
+            82.2857131958008,
+            58.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            249.0,
+            90.0,
+            210.0,
+            152.25
+          ],
+          "name": "@Button@3226",
+          "rect_px": [
+            249.0,
+            90.0,
+            210.0,
+            152.25
+          ],
+          "target_dp": [
+            80.0,
+            58.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1981.5,
+            90.0,
+            255.0,
+            152.25
+          ],
+          "name": "@Button@3229",
+          "rect_px": [
+            1981.5,
+            90.0,
+            255.0,
+            152.25
+          ],
+          "target_dp": [
+            97.1428604125977,
+            58.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            27.0,
+            654.0,
+            336.0,
+            336.0
+          ],
+          "name": "@Control@3233",
+          "rect_px": [
+            27.0,
+            654.0,
+            336.0,
+            336.0
+          ],
+          "target_dp": [
+            128.0,
+            128.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1958.21508789062,
+            712.195190429688,
+            293.529693603516,
+            293.529632568359
+          ],
+          "name": "GasPedal",
+          "rect_px": [
+            1973.93994140625,
+            727.919982910156,
+            262.080078125,
+            262.080017089844
+          ],
+          "target_dp": [
+            99.8400268554688,
+            99.8400039672852
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1762.3271484375,
+            783.427124023438,
+            218.265609741211,
+            218.265670776367
+          ],
+          "name": "BrakePedal",
+          "rect_px": [
+            1774.01989746094,
+            795.119934082031,
+            194.880004882812,
+            194.880065917969
+          ],
+          "target_dp": [
+            74.2400054931641,
+            74.2400283813477
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1781.81518554688,
+            567.715148925781,
+            199.449554443359,
+            199.449615478516
+          ],
+          "name": "DriftAction",
+          "rect_px": [
+            1792.5,
+            578.399963378906,
+            178.079956054688,
+            178.080017089844
+          ],
+          "target_dp": [
+            67.8399810791016,
+            67.8400039672852
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            2014.73034667969,
+            491.510406494141,
+            210.738983154297,
+            210.739196777344
+          ],
+          "name": "BoostAction",
+          "rect_px": [
+            2026.01989746094,
+            502.800018310547,
+            188.159790039062,
+            188.160003662109
+          ],
+          "target_dp": [
+            71.6799163818359,
+            71.6800003051758
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1574.70471191406,
+            780.604736328125,
+            176.870590209961,
+            176.870468139648
+          ],
+          "name": "ItemAction",
+          "rect_px": [
+            1584.17993164062,
+            790.079956054688,
+            157.920166015625,
+            157.920043945312
+          ],
+          "target_dp": [
+            60.1600646972656,
+            60.1600151062012
+          ]
+        }
+      ],
+      "density": 2.625,
+      "insets_px": [
+        0.0,
+        63.0,
+        136.0,
+        63.0
+      ],
+      "label": "dense-right-cutout",
+      "map_rect_px": [
+        1949.0,
+        219.0,
+        462.0,
+        378.0
+      ],
+      "notice_rects_px": [
+        {
+          "name": "@HBoxContainer@3224",
+          "rect_px": [
+            27.0,
+            90.0,
+            2209.5,
+            151.5
+          ]
+        },
+        {
+          "name": "@Label@3230",
+          "rect_px": [
+            27.0,
+            259.5,
+            2209.5,
+            156.0
+          ]
+        }
+      ],
+      "safe_rect_px": [
+        0.0,
+        63.0,
+        2264.0,
+        954.0
+      ],
+      "surface": [
+        2400,
+        1080
+      ],
+      "visible": true
+    },
+    {
+      "content_rect_px": [
+        2106.0,
+        240.0,
+        240.0,
+        192.0
+      ],
+      "controls": [
+        {
+          "artwork_rect_px": [
+            158.5,
+            85.5,
+            108.0,
+            75.0
+          ],
+          "name": "@Button@3225",
+          "rect_px": [
+            158.5,
+            85.5,
+            108.0,
+            75.0
+          ],
+          "target_dp": [
+            108.0,
+            75.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            272.5,
+            85.5,
+            80.0,
+            75.0
+          ],
+          "name": "@Button@3226",
+          "rect_px": [
+            272.5,
+            85.5,
+            80.0,
+            75.0
+          ],
+          "target_dp": [
+            80.0,
+            75.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            2254.0,
+            85.5,
+            123.0,
+            75.0
+          ],
+          "name": "@Button@3229",
+          "rect_px": [
+            2254.0,
+            85.5,
+            123.0,
+            75.0
+          ],
+          "target_dp": [
+            123.0,
+            75.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            158.5,
+            794.499938964844,
+            200.000030517578,
+            200.000061035156
+          ],
+          "name": "@Control@3233",
+          "rect_px": [
+            158.5,
+            794.499938964844,
+            200.000030517578,
+            200.000061035156
+          ],
+          "target_dp": [
+            200.000030517578,
+            200.000061035156
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            2211.13989257812,
+            829.140014648438,
+            174.720001220703,
+            174.720001220703
+          ],
+          "name": "GasPedal",
+          "rect_px": [
+            2220.5,
+            838.5,
+            156.0,
+            156.0
+          ],
+          "target_dp": [
+            156.0,
+            156.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            2094.5400390625,
+            871.539978027344,
+            129.919998168945,
+            129.919998168945
+          ],
+          "name": "BrakePedal",
+          "rect_px": [
+            2101.5,
+            878.5,
+            116.0,
+            116.0
+          ],
+          "target_dp": [
+            116.0,
+            116.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            2106.13989257812,
+            743.140014648438,
+            118.719757080078,
+            118.720001220703
+          ],
+          "name": "DriftAction",
+          "rect_px": [
+            2112.5,
+            749.5,
+            105.999755859375,
+            106.0
+          ],
+          "target_dp": [
+            105.999755859375,
+            106.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            2244.78002929688,
+            697.780029296875,
+            125.440002441406,
+            125.440002441406
+          ],
+          "name": "BoostAction",
+          "rect_px": [
+            2251.5,
+            704.5,
+            112.0,
+            112.0
+          ],
+          "target_dp": [
+            112.0,
+            112.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1982.85998535156,
+            869.859985351562,
+            105.280006408691,
+            105.280067443848
+          ],
+          "name": "ItemAction",
+          "rect_px": [
+            1988.5,
+            875.5,
+            94.0,
+            94.0000610351562
+          ],
+          "target_dp": [
+            94.0,
+            94.0000610351562
+          ]
+        }
+      ],
+      "density": 1.0,
+      "insets_px": [
+        136.0,
+        63.0,
+        0.0,
+        63.0
+      ],
+      "label": "same-pixels-density-one",
+      "map_rect_px": [
+        2085.0,
+        219.0,
+        282.0,
+        234.0
+      ],
+      "notice_rects_px": [
+        {
+          "name": "@HBoxContainer@3224",
+          "rect_px": [
+            158.5,
+            85.5,
+            2218.5,
+            75.0
+          ]
+        },
+        {
+          "name": "@Label@3230",
+          "rect_px": [
+            158.5,
+            178.5,
+            2218.5,
+            60.0
+          ]
+        }
+      ],
+      "safe_rect_px": [
+        136.0,
+        63.0,
+        2264.0,
+        954.0
+      ],
+      "surface": [
+        2400,
+        1080
+      ],
+      "visible": true
+    },
+    {
+      "content_rect_px": [
+        1806.79992675781,
+        248.766189575195,
+        320.000122070312,
+        256.212158203125
+      ],
+      "controls": [
+        {
+          "artwork_rect_px": [
+            92.2000045776367,
+            92.2366256713867,
+            180.199981689453,
+            116.096122741699
+          ],
+          "name": "@Button@3225",
+          "rect_px": [
+            92.2000045776367,
+            92.2366256713867,
+            180.199981689453,
+            116.096122741699
+          ],
+          "target_dp": [
+            90.0999908447266,
+            58.0480613708496
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            279.200012207031,
+            92.2366256713867,
+            160.0,
+            116.096122741699
+          ],
+          "name": "@Button@3226",
+          "rect_px": [
+            279.200012207031,
+            92.2366256713867,
+            160.0,
+            116.096122741699
+          ],
+          "target_dp": [
+            80.0,
+            58.0480613708496
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1885.7001953125,
+            92.2366256713867,
+            209.099853515625,
+            116.096122741699
+          ],
+          "name": "@Button@3229",
+          "rect_px": [
+            1885.7001953125,
+            92.2366256713867,
+            209.099853515625,
+            116.096122741699
+          ],
+          "target_dp": [
+            104.549926757812,
+            58.0480613708496
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            92.2000045776367,
+            1133.81457519531,
+            591.284240722656,
+            591.774169921875
+          ],
+          "name": "@Control@3233",
+          "rect_px": [
+            92.2000045776367,
+            1133.81457519531,
+            591.284240722656,
+            591.774169921875
+          ],
+          "target_dp": [
+            295.642120361328,
+            295.887084960938
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1640.46508789062,
+            1256.56005859375,
+            470.017456054688,
+            470.364990234375
+          ],
+          "name": "GasPedal",
+          "rect_px": [
+            1665.66320800781,
+            1281.75817871094,
+            419.621215820312,
+            419.96875
+          ],
+          "target_dp": [
+            209.810607910156,
+            209.984375
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1316.4111328125,
+            1442.87329101562,
+            288.419860839844,
+            288.633117675781
+          ],
+          "name": "BrakePedal",
+          "rect_px": [
+            1331.87365722656,
+            1458.33581542969,
+            257.494873046875,
+            257.708129882812
+          ],
+          "target_dp": [
+            128.747436523438,
+            128.854064941406
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1305.72900390625,
+            878.588195800781,
+            309.7841796875,
+            310.013305664062
+          ],
+          "name": "DriftAction",
+          "rect_px": [
+            1322.3369140625,
+            895.196044921875,
+            276.568481445312,
+            276.797607421875
+          ],
+          "target_dp": [
+            138.284240722656,
+            138.398803710938
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1709.89953613281,
+            886.987548828125,
+            331.148651123047,
+            331.393463134766
+          ],
+          "name": "BoostAction",
+          "rect_px": [
+            1727.65270996094,
+            904.740783691406,
+            295.642211914062,
+            295.887023925781
+          ],
+          "target_dp": [
+            147.821105957031,
+            147.943511962891
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1327.09338378906,
+            1181.53833007812,
+            267.055389404297,
+            267.252899169922
+          ],
+          "name": "ItemAction",
+          "rect_px": [
+            1341.41052246094,
+            1195.85546875,
+            238.421142578125,
+            238.61865234375
+          ],
+          "target_dp": [
+            119.210571289062,
+            119.309326171875
+          ]
+        }
+      ],
+      "density": 2.0,
+      "insets_px": [
+        48.0,
+        48.0,
+        36.0,
+        42.0
+      ],
+      "label": "expanded-inner-display",
+      "map_rect_px": [
+        1783.0,
+        224.946472167969,
+        367.60009765625,
+        303.8515625
+      ],
+      "notice_rects_px": [
+        {
+          "name": "@HBoxContainer@3224",
+          "rect_px": [
+            92.2000045776367,
+            92.2366256713867,
+            2002.60009765625,
+            115.695777893066
+          ]
+        },
+        {
+          "name": "@Label@3230",
+          "rect_px": [
+            92.2000045776367,
+            228.34928894043,
+            2002.60009765625,
+            119.098587036133
+          ]
+        }
+      ],
+      "safe_rect_px": [
+        48.0,
+        48.0,
+        2092.0,
+        1722.0
+      ],
+      "surface": [
+        2176,
+        1812
+      ],
+      "visible": true
+    },
+    {
+      "content_rect_px": [
+        296.875,
+        57.1926879882812,
+        160.0,
+        128.02001953125
+      ],
+      "controls": [
+        {
+          "artwork_rect_px": [
+            237.78125,
+            34.1265830993652,
+            112.000030517578,
+            56.0087547302246
+          ],
+          "name": "@Button@3229",
+          "rect_px": [
+            237.78125,
+            34.1265830993652,
+            112.000030517578,
+            56.0087547302246
+          ],
+          "target_dp": [
+            112.000030517578,
+            56.0087547302246
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            18.125,
+            666.014099121094,
+            103.68000793457,
+            103.6962890625
+          ],
+          "name": "@Control@3233",
+          "rect_px": [
+            18.125,
+            666.014099121094,
+            103.68000793457,
+            103.6962890625
+          ],
+          "target_dp": [
+            103.68000793457,
+            103.6962890625
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            209.448471069336,
+            702.991394042969,
+            64.2980575561523,
+            64.3070297241211
+          ],
+          "name": "GasPedal",
+          "rect_px": [
+            212.893493652344,
+            706.436401367188,
+            57.4080200195312,
+            57.4169921875
+          ],
+          "target_dp": [
+            57.4080200195312,
+            57.4169921875
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            261.232208251953,
+            645.735717773438,
+            55.9113502502441,
+            55.919132232666
+          ],
+          "name": "BrakePedal",
+          "rect_px": [
+            264.227874755859,
+            648.731384277344,
+            49.9200134277344,
+            49.9277954101562
+          ],
+          "target_dp": [
+            49.9200134277344,
+            49.9277954101562
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            166.051452636719,
+            588.126708984375,
+            55.9113349914551,
+            55.919132232666
+          ],
+          "name": "DriftAction",
+          "rect_px": [
+            169.047119140625,
+            591.122375488281,
+            49.9199981689453,
+            49.9277954101562
+          ],
+          "target_dp": [
+            49.9199981689453,
+            49.9277954101562
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            261.232208251953,
+            588.126708984375,
+            55.9113502502441,
+            55.919132232666
+          ],
+          "name": "BoostAction",
+          "rect_px": [
+            264.227874755859,
+            591.122375488281,
+            49.9200134277344,
+            49.9277954101562
+          ],
+          "target_dp": [
+            49.9200134277344,
+            49.9277954101562
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            166.051452636719,
+            645.735717773438,
+            55.9113349914551,
+            55.919132232666
+          ],
+          "name": "ItemAction",
+          "rect_px": [
+            169.047119140625,
+            648.731384277344,
+            49.9199981689453,
+            49.9277954101562
+          ],
+          "target_dp": [
+            49.9199981689453,
+            49.9277954101562
+          ]
+        }
+      ],
+      "density": 1.0,
+      "insets_px": [
+        8.0,
+        24.0,
+        8.0,
+        20.0
+      ],
+      "label": "compact-portrait",
+      "map_rect_px": [
+        292.9375,
+        53.2545738220215,
+        167.875,
+        135.896240234375
+      ],
+      "notice_rects_px": [
+        {
+          "name": "@HBoxContainer@3224",
+          "rect_px": [
+            18.125,
+            34.1265830993652,
+            331.59375,
+            55.9774971008301
+          ]
+        },
+        {
+          "name": "@Label@3230",
+          "rect_px": [
+            18.125,
+            93.479606628418,
+            331.59375,
+            59.0717391967773
+          ]
+        }
+      ],
+      "safe_rect_px": [
+        8.0,
+        24.0,
+        344.0,
+        756.0
+      ],
+      "surface": [
+        360,
+        800
+      ],
+      "visible": false
+    },
+    {
+      "content_rect_px": [
+        1105.77783203125,
+        128.888885498047,
+        320.0,
+        256.0
+      ],
+      "controls": [
+        {
+          "artwork_rect_px": [
+            1080.0,
+            40.0,
+            184.0,
+            96.0
+          ],
+          "name": "@Button@3229",
+          "rect_px": [
+            1080.0,
+            40.0,
+            184.0,
+            96.0
+          ],
+          "target_dp": [
+            92.0,
+            48.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            16.0,
+            408.0,
+            192.0,
+            192.0
+          ],
+          "name": "@Control@3233",
+          "rect_px": [
+            16.0,
+            408.0,
+            192.0,
+            192.0
+          ],
+          "target_dp": [
+            96.0,
+            96.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1141.76000976562,
+            489.760009765625,
+            116.479995727539,
+            116.479995727539
+          ],
+          "name": "GasPedal",
+          "rect_px": [
+            1148.0,
+            496.0,
+            104.0,
+            104.0
+          ],
+          "target_dp": [
+            52.0,
+            52.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1018.23999023438,
+            494.239990234375,
+            107.520004272461,
+            107.520004272461
+          ],
+          "name": "BrakePedal",
+          "rect_px": [
+            1024.0,
+            500.0,
+            96.0,
+            96.0
+          ],
+          "target_dp": [
+            48.0,
+            48.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1018.23999023438,
+            394.239990234375,
+            107.520004272461,
+            107.520004272461
+          ],
+          "name": "DriftAction",
+          "rect_px": [
+            1024.0,
+            400.0,
+            96.0,
+            96.0
+          ],
+          "target_dp": [
+            48.0,
+            48.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1146.23999023438,
+            394.239990234375,
+            107.520004272461,
+            107.520004272461
+          ],
+          "name": "BoostAction",
+          "rect_px": [
+            1152.0,
+            400.0,
+            96.0,
+            96.0
+          ],
+          "target_dp": [
+            48.0,
+            48.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            898.239990234375,
+            494.239990234375,
+            107.520004272461,
+            107.520004272461
+          ],
+          "name": "ItemAction",
+          "rect_px": [
+            904.0,
+            500.0,
+            96.0,
+            96.0
+          ],
+          "target_dp": [
+            48.0,
+            48.0
+          ]
+        }
+      ],
+      "density": 2.0,
+      "insets_px": [
+        0.0,
+        24.0,
+        0.0,
+        24.0
+      ],
+      "label": "short-landscape",
+      "map_rect_px": [
+        1093.33337402344,
+        116.444442749023,
+        344.888916015625,
+        280.888916015625
+      ],
+      "notice_rects_px": [
+        {
+          "name": "@HBoxContainer@3224",
+          "rect_px": [
+            16.0,
+            40.0,
+            1248.0,
+            96.0
+          ]
+        },
+        {
+          "name": "@Label@3230",
+          "rect_px": [
+            16.0,
+            140.444442749023,
+            1248.0,
+            40.0
+          ]
+        }
+      ],
+      "safe_rect_px": [
+        0.0,
+        24.0,
+        1280.0,
+        592.0
+      ],
+      "surface": [
+        1280,
+        640
+      ],
+      "visible": false
+    },
+    {
+      "content_rect_px": [
+        2106.0,
+        240.0,
+        420.0,
+        336.0
+      ],
+      "controls": [
+        {
+          "artwork_rect_px": [
+            163.0,
+            90.0,
+            216.0,
+            152.25
+          ],
+          "name": "@Button@3225",
+          "rect_px": [
+            163.0,
+            90.0,
+            216.0,
+            152.25
+          ],
+          "target_dp": [
+            82.2857131958008,
+            58.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            385.000030517578,
+            90.0,
+            209.999969482422,
+            152.25
+          ],
+          "name": "@Button@3226",
+          "rect_px": [
+            385.000030517578,
+            90.0,
+            209.999969482422,
+            152.25
+          ],
+          "target_dp": [
+            79.9999847412109,
+            58.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            2117.5,
+            90.0,
+            255.0,
+            152.25
+          ],
+          "name": "@Button@3229",
+          "rect_px": [
+            2117.5,
+            90.0,
+            255.0,
+            152.25
+          ],
+          "target_dp": [
+            97.1428604125977,
+            58.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            163.0,
+            654.0,
+            336.000030517578,
+            336.0
+          ],
+          "name": "@Control@3233",
+          "rect_px": [
+            163.0,
+            654.0,
+            336.000030517578,
+            336.0
+          ],
+          "target_dp": [
+            128.000015258789,
+            128.0
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            2094.21508789062,
+            712.195190429688,
+            293.529449462891,
+            293.529632568359
+          ],
+          "name": "GasPedal",
+          "rect_px": [
+            2109.93994140625,
+            727.919982910156,
+            262.079833984375,
+            262.080017089844
+          ],
+          "target_dp": [
+            99.8399353027344,
+            99.8400039672852
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1898.32727050781,
+            783.427124023438,
+            218.265747070312,
+            218.265686035156
+          ],
+          "name": "BrakePedal",
+          "rect_px": [
+            1910.02001953125,
+            795.119934082031,
+            194.880126953125,
+            194.880065917969
+          ],
+          "target_dp": [
+            74.2400512695312,
+            74.2400283813477
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1917.81518554688,
+            567.715148925781,
+            199.449432373047,
+            199.449615478516
+          ],
+          "name": "DriftAction",
+          "rect_px": [
+            1928.5,
+            578.399963378906,
+            178.079833984375,
+            178.080017089844
+          ],
+          "target_dp": [
+            67.8399353027344,
+            67.8400039672852
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            2150.73022460938,
+            491.510406494141,
+            210.739379882812,
+            210.739227294922
+          ],
+          "name": "BoostAction",
+          "rect_px": [
+            2162.01977539062,
+            502.800018310547,
+            188.16015625,
+            188.160003662109
+          ],
+          "target_dp": [
+            71.680061340332,
+            71.6800003051758
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1710.70471191406,
+            780.604736328125,
+            176.870452880859,
+            176.870452880859
+          ],
+          "name": "ItemAction",
+          "rect_px": [
+            1720.17993164062,
+            790.079956054688,
+            157.920043945312,
+            157.920043945312
+          ],
+          "target_dp": [
+            60.1600151062012,
+            60.1600151062012
+          ]
+        }
+      ],
+      "density": 2.625,
+      "insets_px": [
+        136.0,
+        63.0,
+        0.0,
+        63.0
+      ],
+      "label": "dense-restored",
+      "map_rect_px": [
+        2085.0,
+        219.0,
+        462.0,
+        378.0
+      ],
+      "notice_rects_px": [
+        {
+          "name": "@HBoxContainer@3224",
+          "rect_px": [
+            163.0,
+            90.0,
+            2209.5,
+            151.5
+          ]
+        },
+        {
+          "name": "@Label@3230",
+          "rect_px": [
+            163.0,
+            259.5,
+            2209.5,
+            156.0
+          ]
+        }
+      ],
+      "safe_rect_px": [
+        136.0,
+        63.0,
+        2264.0,
+        954.0
+      ],
+      "surface": [
+        2400,
+        1080
+      ],
+      "visible": true
+    }
+  ],
+  "kart_minimap_transitions": [
+    {
+      "content_rect_px": [
+        1806.79992675781,
+        248.766189575195,
+        320.000122070312,
+        256.212158203125
+      ],
+      "controls": [
+        {
+          "artwork_rect_px": [
+            92.2000045776367,
+            92.2366256713867,
+            180.199981689453,
+            116.096122741699
+          ],
+          "name": "@Button@3225",
+          "rect_px": [
+            92.2000045776367,
+            92.2366256713867,
+            180.199981689453,
+            116.096122741699
+          ],
+          "target_dp": [
+            90.0999908447266,
+            58.0480613708496
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            279.200012207031,
+            92.2366256713867,
+            160.0,
+            116.096122741699
+          ],
+          "name": "@Button@3226",
+          "rect_px": [
+            279.200012207031,
+            92.2366256713867,
+            160.0,
+            116.096122741699
+          ],
+          "target_dp": [
+            80.0,
+            58.0480613708496
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1885.7001953125,
+            92.2366256713867,
+            209.099853515625,
+            116.096122741699
+          ],
+          "name": "@Button@3229",
+          "rect_px": [
+            1885.7001953125,
+            92.2366256713867,
+            209.099853515625,
+            116.096122741699
+          ],
+          "target_dp": [
+            104.549926757812,
+            58.0480613708496
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            92.2000045776367,
+            1133.81457519531,
+            591.284240722656,
+            591.774169921875
+          ],
+          "name": "@Control@3233",
+          "rect_px": [
+            92.2000045776367,
+            1133.81457519531,
+            591.284240722656,
+            591.774169921875
+          ],
+          "target_dp": [
+            295.642120361328,
+            295.887084960938
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1640.46508789062,
+            1256.56005859375,
+            470.017456054688,
+            470.364990234375
+          ],
+          "name": "GasPedal",
+          "rect_px": [
+            1665.66320800781,
+            1281.75817871094,
+            419.621215820312,
+            419.96875
+          ],
+          "target_dp": [
+            209.810607910156,
+            209.984375
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1316.4111328125,
+            1442.87329101562,
+            288.419860839844,
+            288.633117675781
+          ],
+          "name": "BrakePedal",
+          "rect_px": [
+            1331.87365722656,
+            1458.33581542969,
+            257.494873046875,
+            257.708129882812
+          ],
+          "target_dp": [
+            128.747436523438,
+            128.854064941406
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1305.72900390625,
+            878.588195800781,
+            309.7841796875,
+            310.013305664062
+          ],
+          "name": "DriftAction",
+          "rect_px": [
+            1322.3369140625,
+            895.196044921875,
+            276.568481445312,
+            276.797607421875
+          ],
+          "target_dp": [
+            138.284240722656,
+            138.398803710938
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1709.89953613281,
+            886.987548828125,
+            331.148651123047,
+            331.393463134766
+          ],
+          "name": "BoostAction",
+          "rect_px": [
+            1727.65270996094,
+            904.740783691406,
+            295.642211914062,
+            295.887023925781
+          ],
+          "target_dp": [
+            147.821105957031,
+            147.943511962891
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1327.09338378906,
+            1181.53833007812,
+            267.055389404297,
+            267.252899169922
+          ],
+          "name": "ItemAction",
+          "rect_px": [
+            1341.41052246094,
+            1195.85546875,
+            238.421142578125,
+            238.61865234375
+          ],
+          "target_dp": [
+            119.210571289062,
+            119.309326171875
+          ]
+        }
+      ],
+      "density": 2.0,
+      "insets_px": [
+        48.0,
+        48.0,
+        36.0,
+        42.0
+      ],
+      "label": "expanded-hint-visible",
+      "map_rect_px": [
+        1783.0,
+        224.946472167969,
+        367.60009765625,
+        303.8515625
+      ],
+      "notice_rects_px": [
+        {
+          "name": "@HBoxContainer@3224",
+          "rect_px": [
+            92.2000045776367,
+            92.2366256713867,
+            2002.60009765625,
+            115.695777893066
+          ]
+        },
+        {
+          "name": "@Label@3230",
+          "rect_px": [
+            92.2000045776367,
+            228.34928894043,
+            2002.60009765625,
+            119.098587036133
+          ]
+        },
+        {
+          "name": "JumpSpeedHint",
+          "rect_px": [
+            762.0,
+            367.864776611328,
+            660.000122070312,
+            132.109375
+          ]
+        }
+      ],
+      "safe_rect_px": [
+        48.0,
+        48.0,
+        2092.0,
+        1722.0
+      ],
+      "surface": [
+        2176,
+        1812
+      ],
+      "visible": true
+    },
+    {
+      "content_rect_px": [
+        1806.79992675781,
+        248.766189575195,
+        320.000122070312,
+        256.212158203125
+      ],
+      "controls": [
+        {
+          "artwork_rect_px": [
+            92.2000045776367,
+            92.2366256713867,
+            180.199981689453,
+            116.096122741699
+          ],
+          "name": "@Button@3225",
+          "rect_px": [
+            92.2000045776367,
+            92.2366256713867,
+            180.199981689453,
+            116.096122741699
+          ],
+          "target_dp": [
+            90.0999908447266,
+            58.0480613708496
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            279.200012207031,
+            92.2366256713867,
+            160.0,
+            116.096122741699
+          ],
+          "name": "@Button@3226",
+          "rect_px": [
+            279.200012207031,
+            92.2366256713867,
+            160.0,
+            116.096122741699
+          ],
+          "target_dp": [
+            80.0,
+            58.0480613708496
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1885.7001953125,
+            92.2366256713867,
+            209.099853515625,
+            116.096122741699
+          ],
+          "name": "@Button@3229",
+          "rect_px": [
+            1885.7001953125,
+            92.2366256713867,
+            209.099853515625,
+            116.096122741699
+          ],
+          "target_dp": [
+            104.549926757812,
+            58.0480613708496
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            92.2000045776367,
+            1133.81457519531,
+            591.284240722656,
+            591.774169921875
+          ],
+          "name": "@Control@3233",
+          "rect_px": [
+            92.2000045776367,
+            1133.81457519531,
+            591.284240722656,
+            591.774169921875
+          ],
+          "target_dp": [
+            295.642120361328,
+            295.887084960938
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1640.46508789062,
+            1256.56005859375,
+            470.017456054688,
+            470.364990234375
+          ],
+          "name": "GasPedal",
+          "rect_px": [
+            1665.66320800781,
+            1281.75817871094,
+            419.621215820312,
+            419.96875
+          ],
+          "target_dp": [
+            209.810607910156,
+            209.984375
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1316.4111328125,
+            1442.87329101562,
+            288.419860839844,
+            288.633117675781
+          ],
+          "name": "BrakePedal",
+          "rect_px": [
+            1331.87365722656,
+            1458.33581542969,
+            257.494873046875,
+            257.708129882812
+          ],
+          "target_dp": [
+            128.747436523438,
+            128.854064941406
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1305.72900390625,
+            878.588195800781,
+            309.7841796875,
+            310.013305664062
+          ],
+          "name": "DriftAction",
+          "rect_px": [
+            1322.3369140625,
+            895.196044921875,
+            276.568481445312,
+            276.797607421875
+          ],
+          "target_dp": [
+            138.284240722656,
+            138.398803710938
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1709.89953613281,
+            886.987548828125,
+            331.148651123047,
+            331.393463134766
+          ],
+          "name": "BoostAction",
+          "rect_px": [
+            1727.65270996094,
+            904.740783691406,
+            295.642211914062,
+            295.887023925781
+          ],
+          "target_dp": [
+            147.821105957031,
+            147.943511962891
+          ]
+        },
+        {
+          "artwork_rect_px": [
+            1327.09338378906,
+            1181.53833007812,
+            267.055389404297,
+            267.252899169922
+          ],
+          "name": "ItemAction",
+          "rect_px": [
+            1341.41052246094,
+            1195.85546875,
+            238.421142578125,
+            238.61865234375
+          ],
+          "target_dp": [
+            119.210571289062,
+            119.309326171875
+          ]
+        }
+      ],
+      "density": 2.0,
+      "insets_px": [
+        48.0,
+        48.0,
+        36.0,
+        42.0
+      ],
+      "label": "expanded-hint-hidden",
+      "map_rect_px": [
+        1783.0,
+        224.946472167969,
+        367.60009765625,
+        303.8515625
+      ],
+      "notice_rects_px": [
+        {
+          "name": "@HBoxContainer@3224",
+          "rect_px": [
+            92.2000045776367,
+            92.2366256713867,
+            2002.60009765625,
+            115.695777893066
+          ]
+        },
+        {
+          "name": "@Label@3230",
+          "rect_px": [
+            92.2000045776367,
+            228.34928894043,
+            2002.60009765625,
+            119.098587036133
+          ]
+        }
+      ],
+      "safe_rect_px": [
+        48.0,
+        48.0,
+        2092.0,
+        1722.0
+      ],
+      "surface": [
+        2176,
+        1812
+      ],
+      "visible": true
+    }
+  ],
+  "observed_system_inset_fixture": [
+    136,
+    63,
+    0,
+    63
+  ],
+  "scope": "production cache and scenes with asynchronous Android boundary fixture; not device execution",
+  "surface": [
+    2400,
+    1080
+  ],
+  "targets": [
+    {
+      "caption": "‹ Spiele",
+      "exposed_dp": [
+        83.4773181733631,
+        48.000005812872
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "jump",
+      "rect_px": [
+        136.708862304688,
+        63.28125,
+        219.127960205078,
+        126.000015258789
+      ],
+      "target_dp": [
+        83.4773178100586,
+        48.0000076293945
+      ]
+    },
+    {
+      "caption": "Pause",
+      "exposed_dp": [
+        76.0119047619048,
+        48.000005812872
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "jump",
+      "rect_px": [
+        2158.64965820312,
+        63.28125,
+        199.53125,
+        126.000015258789
+      ],
+      "target_dp": [
+        76.0119018554688,
+        48.0000076293945
+      ]
+    },
+    {
+      "caption": "MovementStick",
+      "exposed_dp": [
+        152.023763020833,
+        152.0
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "jump",
+      "rect_px": [
+        136.708862304688,
+        572.0625,
+        399.062377929688,
+        399.0
+      ],
+      "target_dp": [
+        152.02375793457,
+        152.0
+      ]
+    },
+    {
+      "caption": "JumpAction",
+      "exposed_dp": [
+        136.021251860119,
+        136.0
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "jump",
+      "rect_px": [
+        2000.84387207031,
+        613.40625,
+        357.055786132812,
+        357.0
+      ],
+      "target_dp": [
+        136.021255493164,
+        136.0
+      ]
+    },
+    {
+      "caption": "‹ Spiele",
+      "exposed_dp": [
+        82.025640578497,
+        48.050051734561
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "build",
+      "rect_px": [
+        167.509841918945,
+        89.2773666381836,
+        215.317306518555,
+        126.131385803223
+      ],
+      "target_dp": [
+        82.0256423950195,
+        48.0500526428223
+      ]
+    },
+    {
+      "caption": "Ⅱ",
+      "exposed_dp": [
+        52.0162295386905,
+        48.050051734561
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "build",
+      "rect_px": [
+        1824.40270996094,
+        89.2773666381836,
+        136.542602539062,
+        126.131385803223
+      ],
+      "target_dp": [
+        52.016227722168,
+        48.0500526428223
+      ]
+    },
+    {
+      "caption": "Verschieben",
+      "exposed_dp": [
+        120.037527901786,
+        56.0584077380952
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "build",
+      "rect_px": [
+        167.509841918945,
+        294.240875244141,
+        315.098510742188,
+        147.1533203125
+      ],
+      "target_dp": [
+        120.037528991699,
+        56.058406829834
+      ]
+    },
+    {
+      "caption": "‹ Spiele",
+      "exposed_dp": [
+        82.025640578497,
+        48.050051734561
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "puzzle",
+      "rect_px": [
+        172.761489868164,
+        94.532844543457,
+        215.317306518555,
+        126.131385803223
+      ],
+      "target_dp": [
+        82.0256423950195,
+        48.0500526428223
+      ]
+    },
+    {
+      "caption": "Ⅱ",
+      "exposed_dp": [
+        52.0161830357143,
+        48.050051734561
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "puzzle",
+      "rect_px": [
+        2226.1533203125,
+        94.532844543457,
+        136.54248046875,
+        126.131385803223
+      ],
+      "target_dp": [
+        52.0161819458008,
+        48.0500526428223
+      ]
+    },
+    {
+      "caption": "‹ Spiele",
+      "exposed_dp": [
+        82.025640578497,
+        48.050051734561
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "treasure",
+      "rect_px": [
+        172.761489868164,
+        94.532844543457,
+        215.317306518555,
+        126.131385803223
+      ],
+      "target_dp": [
+        82.0256423950195,
+        48.0500526428223
+      ]
+    },
+    {
+      "caption": "Rucksack",
+      "exposed_dp": [
+        96.0299944196429,
+        48.050051734561
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "treasure",
+      "rect_px": [
+        1963.57116699219,
+        94.532844543457,
+        252.078735351562,
+        126.131385803223
+      ],
+      "target_dp": [
+        96.0299911499023,
+        48.0500526428223
+      ]
+    },
+    {
+      "caption": "Ⅱ",
+      "exposed_dp": [
+        52.0161830357143,
+        48.050051734561
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "treasure",
+      "rect_px": [
+        2226.1533203125,
+        94.532844543457,
+        136.54248046875,
+        126.131385803223
+      ],
+      "target_dp": [
+        52.0161819458008,
+        48.0500526428223
+      ]
+    },
+    {
+      "caption": "Springen",
+      "exposed_dp": [
+        110.034319196429,
+        48.0500604538691
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "treasure",
+      "rect_px": [
+        2069.14672851562,
+        531.091979980469,
+        288.840087890625,
+        126.131408691406
+      ],
+      "target_dp": [
+        110.034317016602,
+        48.0500602722168
+      ]
+    },
+    {
+      "caption": "MovementStick",
+      "exposed_dp": [
+        138.002139136905,
+        138.102864583333
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "treasure",
+      "rect_px": [
+        178.013137817383,
+        612.436218261719,
+        362.255615234375,
+        362.52001953125
+      ],
+      "target_dp": [
+        138.002136230469,
+        138.10285949707
+      ]
+    },
+    {
+      "caption": "ANSEHEN",
+      "exposed_dp": [
+        108.948939732143,
+        109.028552827381
+      ],
+      "fully_inside_true_safe_area": true,
+      "module": "treasure",
+      "rect_px": [
+        2071.99584960938,
+        688.756164550781,
+        285.990966796875,
+        286.199951171875
+      ],
+      "target_dp": [
+        108.948936462402,
+        109.028549194336
+      ]
+    }
+  ]
+}
