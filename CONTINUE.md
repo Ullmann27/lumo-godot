@@ -1,3 +1,40 @@
+# Continue the Native Village and Minimap V2 activation
+
+Checkpoint: `4d2cbb6ea235c7bf519aa5f3873a16f6b177be2b`; tree `4d50f5652b43846516f759be300d9b50a960f692`;
+branch `integration/lumo-discovery-bd-20261114`. The activation commit changes
+only documentation and original evidence. Its workflow and runtime blobs are
+identical to the checked source checkpoint.
+
+Completed exactly once on that checkpoint: Actionlint exit 0 and
+`MOBILE_SAFE_AREA_PASS checks=380 failures=0 controls=15 images=0 scope=platform_boundary_fixture`.
+The original report also records seven layouts and two hint transitions. The
+unchanged strict runner used its 420-second deadline and completed in
+19.881693733999782 seconds. All 3,683 tracked entries and the complete Git index
+were unchanged. Retained c040 import caches are documented; no new import or
+local renderer pass is asserted.
+
+Next, observe the existing `discovery-native-acceptance` job on the exact
+activation commit. Preserve the complete API/job/artefact originals and source
+stamps, then check its existing 47 Python contracts, four old headless modes,
+Dream5/7/2, Discovery10/38/2, Village339/42/46 plus two images, and the additional
+MobileSafeArea render report with its four old and nine new images. An early
+PASS or an older c300 result cannot replace those fresh final-source originals.
+No hidden retry or automatic acceptance is authorized by these notes.
+
+The current source/evidence checkpoint is under
+`docs/evidence/native-village-minimap2-v2-20261114/`. The exact local validation
+originals, invocations and source/index inventories are under
+`docs/evidence/native-minimap-v2-headless-20261114/`. The two Producer Minimap blobs remain
+`83b3b6b548cffa2790c582e061a74e37bbfcf356` and
+`6c58c08b8c47a7bf7c957c448b88474a984b9509`; the checked workflow blob is
+`a806855cf51ab7f63b14163596488fc1d3746dc1`.
+
+Root owns activation, Host pin and release actions. This document supplies no
+Android, FPS, visual-review or full52 acceptance, and changes no existing
+52/17 checks or Host deadlines.
+
+## Historical continuation notes preserved below, byte for byte
+
 # Continue the combined LUMO 2019 integration
 
 Active drafts are Native PR160 and Host PR465. The published parent of this geometry-repair checkpoint is `90d34181409c15d1b1ad3a6a9643539453155c1d`, Tree

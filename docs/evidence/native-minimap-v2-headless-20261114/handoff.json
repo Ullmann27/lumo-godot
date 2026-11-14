@@ -1,0 +1,114 @@
+{
+  "schema": 1,
+  "status": "FROZEN_TARGETED_GATES_PASSED_RENDERER_PENDING",
+  "native_source": "4d2cbb6ea235c7bf519aa5f3873a16f6b177be2b",
+  "native_tree": "4d50f5652b43846516f759be300d9b50a960f692",
+  "parent": "c04078541fa553094d6868454d19e9fe5f5f871c",
+  "exactly_two_gate_invocations": [
+    {
+      "name": "actionlint",
+      "argv": [
+        "/tmp/lumo-root-recovery-1242/bin/actionlint",
+        ".github/workflows/lumo-discovery-connections.yml"
+      ],
+      "cwd": "/tmp/lumo-native-recovery-1252/native",
+      "started_at": "2026-11-14T13:35:31.494722+00:00",
+      "duration_seconds": 0.016226183000071615,
+      "returncode": 0,
+      "log": "actionlint.log",
+      "identity": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "mobile-headless.runner",
+      "argv": [
+        "/tmp/lumo-root-recovery-1242/py/bin/python",
+        "/tmp/lumo-native-recovery-1252/native/tools/run_godot_probe.py",
+        "--timeout",
+        "420",
+        "--required",
+        "MOBILE_SAFE_AREA_PASS",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/native-4d2cbb6-targeted-validation-20261114/originals/mobile-headless.log",
+        "--",
+        "/opt/godot/4.6.3/Godot_v4.6.3-stable_linux.x86_64",
+        "--headless",
+        "--path",
+        "/tmp/lumo-native-recovery-1252/native",
+        "--script",
+        "res://scripts/tests/mobile_safe_area_regression.gd"
+      ],
+      "cwd": "/tmp/lumo-native-recovery-1252/native",
+      "started_at": "2026-11-14T13:35:31.511970+00:00",
+      "duration_seconds": 19.881693733999782,
+      "returncode": 0,
+      "log": "mobile-headless.runner.log",
+      "identity": {
+        "bytes": 10227,
+        "sha256": "f6eea0fc2b00291449588a58f1cc3a756500a79136dd63ba35fbbccb56419595",
+        "git_blob": "e8b7826e28796a825ea8cf3d6cf18f144b62e868"
+      }
+    }
+  ],
+  "result": {
+    "actionlint": 0,
+    "mobile_headless": 0,
+    "source_invariant": true,
+    "generated_counts": {
+      "generated_uid": 357,
+      "generated_import_metadata": 604,
+      "other_untracked": 0
+    },
+    "marker": "MOBILE_SAFE_AREA_PASS checks=380 failures=0 controls=15 images=0 scope=platform_boundary_fixture",
+    "checks": 380,
+    "layouts": 7,
+    "hint_transitions": 2,
+    "original_images": 0,
+    "scope": "Actual headless production regression with asynchronous Android boundary fixture; not Android or renderer acceptance"
+  },
+  "source_invariance": {
+    "equal": {
+      "head": true,
+      "tree": true,
+      "index_sha256": true,
+      "tracked": true
+    },
+    "tracked_entries": 3683,
+    "all_materialized": true,
+    "before_untracked": 961,
+    "after_untracked": 961,
+    "cleanup_performed": false,
+    "prior_c040_import_cache_reused": true,
+    "new_import_run": false
+  },
+  "raw_engine_log": {
+    "bytes": 10227,
+    "sha": "e8b7826e28796a825ea8cf3d6cf18f144b62e868",
+    "sha256": "f6eea0fc2b00291449588a58f1cc3a756500a79136dd63ba35fbbccb56419595"
+  },
+  "original_report": {
+    "bytes": 55440,
+    "sha": "880c0da5fa06fa53cffdb18601c5d0c2ed6830ca",
+    "sha256": "ae5dfc3621efa1cb2225b3e444bf1ce1d2b6d85dc7eeb0a09319b03038b9175b"
+  },
+  "generated_archive": {
+    "bytes": 57643,
+    "sha": "76e63342e2ff884695917cd82c4643e49f1723ce",
+    "sha256": "bc8bb343773bff181ac8d6bb47fe74914d9103552fcde95592f417dd284e8ccd"
+  },
+  "pending": [
+    "Fresh isolated Discovery CI on the final documentary activation head",
+    "Scaling rendered46 and two original1280x720 PNGs",
+    "MobileSafeArea rendered original report and four preserved plus nine new PNGs"
+  ],
+  "not_claimed": [
+    "Android execution",
+    "Device FPS",
+    "New full52/17 acceptance",
+    "A new fullDiscovery result from historical c300 evidence"
+  ],
+  "remote_mutation_performed": false
+}

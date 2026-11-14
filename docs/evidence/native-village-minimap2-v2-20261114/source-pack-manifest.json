@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "version": 2,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 2045,
+      "sha256": "825d7feca909d7f188811beb2d0eece5418b287353779f9af679b138cbcf0727",
+      "git_blob": "a2e461bcf6eddd39b8b3bc5c589fe589420fc7d0"
+    },
+    {
+      "path": "before/.github/workflows/lumo-discovery-connections.yml",
+      "bytes": 15142,
+      "sha256": "44285746c1a93586e38892d7b44ef9d0f7b5d6c4dbf10a7f997524e85077a9be",
+      "git_blob": "619023b005be0f5930ea2944ec15e5df1065164e"
+    },
+    {
+      "path": "before/scripts/games/kart_island.gd",
+      "bytes": 170990,
+      "sha256": "c50a7da1387a121e326e8b0b5153075e14c8f93b04ab5196d4c1c1d8d34189c8",
+      "git_blob": "f7473190f51fb5dbda7d0f7ad7292f8ec64c0da2"
+    },
+    {
+      "path": "before/scripts/tests/mobile_safe_area_regression.gd",
+      "bytes": 17619,
+      "sha256": "bca22822a2df33a69bcac5071b16827cecef179b077a08d1b2b0372a68e6fa4f",
+      "git_blob": "61ded805fdbc70c3499814b4e8f74214079fc96c"
+    },
+    {
+      "path": "c040-archive-binding.json",
+      "bytes": 7180,
+      "sha256": "ce225d932291c886024dd6436777f074ff8ea4e40f74f55c4cc494a0ee80b000",
+      "git_blob": "a5e43d248ff63acc2b826139aacb5afe45d2b245"
+    },
+    {
+      "path": "final-source/.github/workflows/lumo-discovery-connections.yml",
+      "bytes": 35914,
+      "sha256": "7808349f14aa39259edaee1d5b832c8660f45a8c7065af65f8e285ff99104a0f",
+      "git_blob": "a806855cf51ab7f63b14163596488fc1d3746dc1"
+    },
+    {
+      "path": "final-source/scripts/games/kart_island.gd",
+      "bytes": 175088,
+      "sha256": "7f916fcf8ea2d17876500e0063d91809db4a608dbc8bf945287231e6d76231d5",
+      "git_blob": "83b3b6b548cffa2790c582e061a74e37bbfcf356"
+    },
+    {
+      "path": "final-source/scripts/tests/mobile_safe_area_regression.gd",
+      "bytes": 26254,
+      "sha256": "8188911d6f91deaec924fdc7857feec876af075a8d04522b49dd14429d501aa5",
+      "git_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+    },
+    {
+      "path": "gate-contract.json",
+      "bytes": 7253,
+      "sha256": "103bd9be9b437345918971c6265e8c6a4b7b185946686301f71556aee4238763",
+      "git_blob": "52d82784f1f2c32b57a978b1a608bfa98ccfa637"
+    },
+    {
+      "path": "handoff.json",
+      "bytes": 1875,
+      "sha256": "571c1e211eb93efc8ed7e737848bbc65acf317c857886bcbba2a555dd793a470",
+      "git_blob": "99abfd9d1c1847ab1b42a67fffbb4086618ecb61"
+    },
+    {
+      "path": "integration.patch",
+      "bytes": 39252,
+      "sha256": "12859c996f903205351024fe2df35afaac4524896f4d68d30ca907095fd08f5d",
+      "git_blob": "46883bcb6d7d8885ee14f704396ec35367892114"
+    },
+    {
+      "path": "originals/71a-to-be58-four-file-compare.json",
+      "bytes": 42708,
+      "sha256": "46890e8d83c9716a0b97e8ff8d45a68dab68e5365e6e2b4769a5aeada8b5a515",
+      "git_blob": "7f9e0b52f35d3a1731a282ab18e1339bb577b5c7"
+    },
+    {
+      "path": "originals/base-c040-commit.json",
+      "bytes": 1235,
+      "sha256": "1c1af62de6c1c9e74759d277ffa35d6620c4760b662da76eb7e2d22cffca8518",
+      "git_blob": "1264648d5fc64ebc0ecf80b3fd313f7792a5180b"
+    },
+    {
+      "path": "originals/c040-targeted-originals.tar.gz",
+      "bytes": 1334100,
+      "sha256": "993dcd9d40ff43ee84f6d538e65529f51591570fa83b4c9359763b9b1a50167b",
+      "git_blob": "268d37e147001824de8d9efa11697e3e593ce945"
+    },
+    {
+      "path": "originals/producer-71a-to-e9-compare.json",
+      "bytes": 880878,
+      "sha256": "5d8b89dd6eafa87d3c01d37d7b3b40c4a4e471908c70eb9cdcf354a32ce10cf4",
+      "git_blob": "a2bea3b8b2f77e3b03c0a09b782c789f9e9c05c5"
+    },
+    {
+      "path": "originals/producer-e9-commit.json",
+      "bytes": 1872,
+      "sha256": "f8929b4006cac46e4cd3418d1b09e91fb92c88f6760532b8701b6c9e3d3418cc",
+      "git_blob": "c2b64cbfcdd03898481251f4db5d9460b023493a"
+    },
+    {
+      "path": "source-freeze.json",
+      "bytes": 2126,
+      "sha256": "0f4276593f986af91ba726c7e0859ea382372ea01d7c8132f7a92ade362cd3de",
+      "git_blob": "9e3f1511b731a2716a4e6c36c7a026da6b02f542"
+    },
+    {
+      "path": "source-review.json",
+      "bytes": 9325,
+      "sha256": "d6e9da28828528c1bbe57933eba1161597a46a8de80b5ed3a89f6a2317d99fc4",
+      "git_blob": "27457c471b477cd9aa618402f961f5df67021c7d"
+    },
+    {
+      "path": "workflow-v1-to-v2.patch",
+      "bytes": 13031,
+      "sha256": "db21aaddeab3bf699f070591a0d3c4756727dc660d20e152aa80f97366cc0f6f",
+      "git_blob": "13e30f5cfb35b6af8ad27e4d81998bdafb4714ad"
+    }
+  ]
+}

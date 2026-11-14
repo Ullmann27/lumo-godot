@@ -259,6 +259,14 @@ func _test_migration() -> void:
 	for i in range(8):
 		legacy.next_day()
 	var old: Dictionary = legacy.snapshot()
+	for town_name in ["player", "rival"]:
+		var misleading: Dictionary = old.duplicate(true)
+		misleading[town_name]["economy_version"] = 2
+		var safely_loaded = MODEL.restore(JSON.parse_string(JSON.stringify(misleading)))
+		check(
+			safely_loaded != null and safely_loaded.snapshot() == old,
+			"legacy envelope ignores unvalidated economy markers: " + town_name
+		)
 	var loaded = MODEL.restore(JSON.parse_string(JSON.stringify(old)))
 	check(
 		loaded != null and not loaded.living_village,
