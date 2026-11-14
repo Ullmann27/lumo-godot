@@ -6,6 +6,7 @@ const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const PARTS = preload("res://scripts/games/kart_modular_route_props.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
+const AERO = preload("res://scripts/games/kart_modular_aero_kit.gd")
 
 func _initialize() -> void:
 	call_deferred("_run")
@@ -58,7 +59,7 @@ func _check_fleet() -> int:
 		var parts: int = int(body.get_meta("modular_aero_count", 0))
 		assert(parts >= 20 and parts <= 28, "New chassis details absent or unbounded")
 		assert(kart.wheel_pivots.size() == 4, "Wheel anchors changed")
-		for anchor: Vector3 in preload("res://scripts/games/kart_modular_aero_kit.gd").envelope_anchors():
+		for anchor: Vector3 in AERO.envelope_anchors():
 			assert(absf(anchor.x) <= 0.7 and anchor.y < 0.9 and absf(anchor.z) <= 1.19,
 				"Additional aero hardware exceeds the original chassis envelope")
 		total += 1
