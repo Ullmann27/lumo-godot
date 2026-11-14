@@ -1,0 +1,324 @@
+{
+  "source_commit": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "source_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "primary_engine_invocations": 23,
+  "logs": [
+    {
+      "path": "headless/treasure_wisp_regression.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "[TreasureWisp] PASS checks=14"
+      ]
+    },
+    {
+      "path": "headless/connect_four_return_regression.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "CONNECT_FOUR_RETURN_PASS checks=21"
+      ]
+    },
+    {
+      "path": "headless/treasure_exploration_regression.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "[TreasureExploration] PASS 92 checks: branching, actual location questions, movement, legacy saves and original rewards"
+      ]
+    },
+    {
+      "path": "headless/learning_world_regression.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "[LearningWorld] PASS checks=5347"
+      ]
+    },
+    {
+      "path": "dream/lumo_dream_ambience_regression-headless.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": []
+    },
+    {
+      "path": "dream/lumo_dream_ambience_capture-rendered-learning.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [
+        "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+        "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+        "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+      ],
+      "markers": [
+        "[DreamAmbienceCapture] PASS learning original frames in /home/runner/work/_temp/lumo-discovery-43613299144-1/evidence/dream/captures/learning"
+      ]
+    },
+    {
+      "path": "dream/dream_garden_props_regression-headless.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "[DreamGarden] checks=544 failures=0"
+      ]
+    },
+    {
+      "path": "dream/dream_garden_capture-rendered.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [
+        "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+        "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+        "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+      ],
+      "markers": [
+        "[DreamGardenCapture] failures=0"
+      ]
+    },
+    {
+      "path": "dream/lumo_dream_ambience_capture-rendered-treasure.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [
+        "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+        "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+        "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+      ],
+      "markers": [
+        "[DreamAmbienceCapture] PASS treasure original frames in /home/runner/work/_temp/lumo-discovery-43613299144-1/evidence/dream/captures/treasure"
+      ]
+    },
+    {
+      "path": "discovery/logs/05-village_host_launch_regression-headless.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "[VillageHost] PASS Flutter village request, native boot scene and child context"
+      ]
+    },
+    {
+      "path": "discovery/logs/07-learning_wonder_details_regression-rendered.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [
+        "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+        "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+        "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+      ],
+      "markers": [
+        "[LearningWonder] checks=108 failures=0 renderer=X11 invalid_scene_checked=true"
+      ]
+    },
+    {
+      "path": "discovery/logs/01-learning_world_regression-headless.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "[LearningWorld] PASS checks=5347"
+      ]
+    },
+    {
+      "path": "discovery/logs/02-learning_sharing_regression-headless.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "[LearningSharing] PASS checks=1811"
+      ]
+    },
+    {
+      "path": "discovery/logs/08-game_hub_magic_capture-rendered.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [
+        "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+        "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+        "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+      ],
+      "markers": [
+        "[LumoHubCapture] PASS 2 original current-source rendered PNGs"
+      ]
+    },
+    {
+      "path": "discovery/logs/09-learning_world_capture-rendered.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [
+        "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+        "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+        "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+      ],
+      "markers": [
+        "[LearningCapture] PASS captures=25"
+      ]
+    },
+    {
+      "path": "discovery/logs/06-learning_wonder_details_regression-headless.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "[LearningWonder] checks=100 failures=0 renderer=headless invalid_scene_checked=false"
+      ]
+    },
+    {
+      "path": "discovery/logs/04-game_hub_magic_regression-headless.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "[LumoHub] PASS 8 visible native game entrances, active village route, preserved child settings and 3D reduced-motion portal"
+      ]
+    },
+    {
+      "path": "discovery/logs/03-learning_studio_regression-headless.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "[LearningStudio] PASS checks=183; runtime asset, materials, reduced motion and preserved learning"
+      ]
+    },
+    {
+      "path": "discovery/logs/10-learning_wonder_details_capture-rendered.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [
+        "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+        "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+        "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+      ],
+      "markers": [
+        "[WonderCapture] checks=136 failures=0 captures=11"
+      ]
+    },
+    {
+      "path": "village-scaling/logs/01-economy-headless.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "[VillageEconomy] PASS 339 checks"
+      ]
+    },
+    {
+      "path": "village-scaling/logs/03-scaling-rendered.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [
+        "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+        "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+        "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+      ],
+      "markers": [
+        "[VillageScaling] PASS 46 checks: full 2178-house model, camera and explorer"
+      ]
+    },
+    {
+      "path": "village-scaling/logs/02-scaling-headless.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [],
+      "markers": [
+        "[VillageScaling] PASS 42 checks: full 2178-house model, camera and explorer"
+      ]
+    },
+    {
+      "path": "mobile-minimap/logs/mobile-safe-area-rendered.log",
+      "engine_banners": 1,
+      "error_lines": [],
+      "warnings": [
+        "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+        "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+        "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+      ],
+      "markers": [
+        "MOBILE_SAFE_AREA_PASS checks=428 failures=0 controls=15 images=4 scope=platform_boundary_fixture"
+      ]
+    }
+  ],
+  "warning_counts": {
+    "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.": 9,
+    "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.": 9,
+    "WARNING: Volumetric fog is only available when using the Forward+ renderer.": 9
+  },
+  "source_inventory_pairs": [
+    {
+      "path": "source",
+      "before_after_equal_fields": [
+        "head",
+        "tree",
+        "index_sha256",
+        "tracked"
+      ],
+      "tracked_materialized": 3770,
+      "raw_index_recorded_sha256": "84726d73c7e80898ca32f2f38ec1037cc6d322960a527cfea9af28b855432772",
+      "untracked_imports_before": 0,
+      "untracked_imports_after": 961
+    },
+    {
+      "path": "dream",
+      "before_after_equal_fields": [
+        "head",
+        "tree",
+        "index_sha256",
+        "tracked"
+      ],
+      "tracked_materialized": 3770,
+      "raw_index_recorded_sha256": "84726d73c7e80898ca32f2f38ec1037cc6d322960a527cfea9af28b855432772",
+      "untracked_imports_before": 961,
+      "untracked_imports_after": 961
+    },
+    {
+      "path": "discovery",
+      "before_after_equal_fields": [
+        "head",
+        "tree",
+        "index_sha256",
+        "tracked"
+      ],
+      "tracked_materialized": 3770,
+      "raw_index_recorded_sha256": "84726d73c7e80898ca32f2f38ec1037cc6d322960a527cfea9af28b855432772",
+      "untracked_imports_before": 961,
+      "untracked_imports_after": 961
+    },
+    {
+      "path": "village-scaling/source",
+      "before_after_equal_fields": [
+        "head",
+        "tree",
+        "index_sha256",
+        "tracked"
+      ],
+      "tracked_materialized": 3770,
+      "raw_index_recorded_sha256": "84726d73c7e80898ca32f2f38ec1037cc6d322960a527cfea9af28b855432772",
+      "untracked_imports_before": 961,
+      "untracked_imports_after": 961
+    },
+    {
+      "path": "mobile-minimap/source",
+      "before_after_equal_fields": [
+        "head",
+        "tree",
+        "index_sha256",
+        "tracked"
+      ],
+      "tracked_materialized": 3770,
+      "raw_index_recorded_sha256": "84726d73c7e80898ca32f2f38ec1037cc6d322960a527cfea9af28b855432772",
+      "untracked_imports_before": 961,
+      "untracked_imports_after": 961
+    }
+  ],
+  "global_index_stage_listings_byte_equal": true,
+  "global_index_recorded_digest_texts_byte_equal": true,
+  "all_sixty_pngs_replayed_by_bound_original_readers": true,
+  "scope": "Actual CI originals only; 14 headless + 9 rendered probes. Includes no complete Native52/17, Live9/7, Android or FPS acceptance."
+}

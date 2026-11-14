@@ -1,0 +1,12 @@
+tree 91cc8fc1c6f8a36336b7ac9a12585284a983a6f6
+parent fe861bd09296ef0051887dc21f48ca38215fc76b
+author Ullmann27 <64243701+Ullmann27@users.noreply.github.com> 1794672020 +0100
+committer Ullmann27 <64243701+Ullmann27@users.noreply.github.com> 1794672020 +0100
+
+ci: run native discovery acceptance on the integrated source
+
+Admit integration/lumo-live-connections-20261114 alongside the existing producer push branch and match both exact refs in the job condition. Scope concurrency by ref, retaining cancel-in-progress=false.
+
+All twelve original run blocks, the 130-minute bound, uploads, runtime, assets, and helper bytes remain unchanged. Actionlint 1.7.12, Bash syntax, and twelve branch/event/repository contract cases pass. The parent union retains the genuine e9a9 and a69f merge ancestry; focused original runtime checks and the two rendered Village Scaling originals were executed on that unchanged parent runtime.
+
+No Android or performance acceptance is asserted by this trigger-only change.

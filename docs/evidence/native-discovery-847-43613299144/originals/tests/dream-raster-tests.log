@@ -1,0 +1,17 @@
+test_capture_and_manifest_symlinks_are_rejected (tools.tests.test_dream_rasters.DreamRasterTests.test_capture_and_manifest_symlinks_are_rejected) ... ok
+test_changed_or_dirty_source_fails (tools.tests.test_dream_rasters.DreamRasterTests.test_changed_or_dirty_source_fails) ... ok
+test_clock_must_advance (tools.tests.test_dream_rasters.DreamRasterTests.test_clock_must_advance) ... ok
+test_complete_contract_and_read_only_recomputation (tools.tests.test_dream_rasters.DreamRasterTests.test_complete_contract_and_read_only_recomputation) ... ok
+test_equal_pixels_fail_even_with_different_png_metadata (tools.tests.test_dream_rasters.DreamRasterTests.test_equal_pixels_fail_even_with_different_png_metadata) ... ok
+test_errors_after_success_and_duplicate_markers_still_fail (tools.tests.test_dream_rasters.DreamRasterTests.test_errors_after_success_and_duplicate_markers_still_fail) ... ok
+test_failed_or_duplicate_probe_pairs_are_rejected (tools.tests.test_dream_rasters.DreamRasterTests.test_failed_or_duplicate_probe_pairs_are_rejected) ... ok
+test_garden_dimensions_remain_exact (tools.tests.test_dream_rasters.DreamRasterTests.test_garden_dimensions_remain_exact) ... ok
+test_invalid_png_cannot_be_a_header_only_success (tools.tests.test_dream_rasters.DreamRasterTests.test_invalid_png_cannot_be_a_header_only_success) ... ok
+test_missing_or_extra_capture_is_rejected (tools.tests.test_dream_rasters.DreamRasterTests.test_missing_or_extra_capture_is_rejected) ... ok
+test_report_path_scene_and_geometry_counts_are_bound (tools.tests.test_dream_rasters.DreamRasterTests.test_report_path_scene_and_geometry_counts_are_bound) ... ok
+test_uniform_and_invisible_frames_are_rejected (tools.tests.test_dream_rasters.DreamRasterTests.test_uniform_and_invisible_frames_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.891s
+
+OK

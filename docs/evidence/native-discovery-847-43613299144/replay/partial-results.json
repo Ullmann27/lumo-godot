@@ -1,0 +1,55 @@
+[
+  {
+    "name": "dream-read-only",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-B",
+      "/workspace/scratch/909ddb52fe7b/native-847-discovery-original-review/originals/discovery/helpers/verify_dream_rasters.py",
+      "/workspace/scratch/909ddb52fe7b/native-847-discovery-original-review/originals/dream"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 0.67,
+    "log": "dream-read-only.log"
+  },
+  {
+    "name": "discovery-read-only",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-B",
+      "/workspace/scratch/909ddb52fe7b/native-847-discovery-original-review/originals/discovery/helpers/verify_discovery_connections.py",
+      "/workspace/scratch/909ddb52fe7b/native-847-discovery-original-review/originals/discovery",
+      "--expected-native-sha",
+      "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+      "--expected-native-tree",
+      "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 3.838,
+    "log": "discovery-read-only.log"
+  },
+  {
+    "name": "village-scaling-original-block",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-B",
+      "/workspace/scratch/909ddb52fe7b/native-847-discovery-original-review/replay/village-scaling-original-workflow-block.py"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 0.266,
+    "log": "village-scaling-original-block.log",
+    "recomputed_report_byte_equal_to_original": true,
+    "original_report_sha256": "fc85d96bd845bb5ccad85807f0e599278f66d5d4bcc042a1ec2f3493a8928e5d",
+    "exact_workflow_python_block_sha256": "7e593ff0e2d11504aef90e141e048c6847be090b4e690473109644bde35c089a"
+  },
+  {
+    "name": "mobile-minimap-original-block",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-B",
+      "/workspace/scratch/909ddb52fe7b/native-847-discovery-original-review/replay/mobile-minimap-original-workflow-block.py"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 1.621,
+    "log": "mobile-minimap-original-block.log"
+  }
+]

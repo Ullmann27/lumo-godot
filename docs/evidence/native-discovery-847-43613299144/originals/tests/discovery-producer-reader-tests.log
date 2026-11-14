@@ -1,0 +1,16 @@
+test_ambiguous_or_nonfinite_json (test_discovery_rasters.DiscoveryEvidenceTest.test_ambiguous_or_nonfinite_json) ... ok
+test_bad_raster_or_nonoriginal_file (test_discovery_rasters.DiscoveryEvidenceTest.test_bad_raster_or_nonoriginal_file) ... ok
+test_clipped_or_overlaid_original_hub (test_discovery_rasters.DiscoveryEvidenceTest.test_clipped_or_overlaid_original_hub) ... ok
+test_complete_exact_roster (test_discovery_rasters.DiscoveryEvidenceTest.test_complete_exact_roster) ... ok
+test_false_or_incomplete_geometry_report (test_discovery_rasters.DiscoveryEvidenceTest.test_false_or_incomplete_geometry_report) ... ok
+test_false_production_state (test_discovery_rasters.DiscoveryEvidenceTest.test_false_production_state) ... ok
+test_false_task_progress_or_budget (test_discovery_rasters.DiscoveryEvidenceTest.test_false_task_progress_or_budget) ... ok
+test_missing_or_duplicate_hub_identity (test_discovery_rasters.DiscoveryEvidenceTest.test_missing_or_duplicate_hub_identity) ... ok
+test_missing_or_extra_image (test_discovery_rasters.DiscoveryEvidenceTest.test_missing_or_extra_image) ... ok
+test_unchanged_completion_image (test_discovery_rasters.DiscoveryEvidenceTest.test_unchanged_completion_image) ... ok
+test_wrong_original_hub_identity (test_discovery_rasters.DiscoveryEvidenceTest.test_wrong_original_hub_identity) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 12.027s
+
+OK

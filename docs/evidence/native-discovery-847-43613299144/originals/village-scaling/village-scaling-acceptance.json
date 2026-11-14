@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "native_sha": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "native_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "source_inventories": [
+    {
+      "path": "source/source-inventory-before.json",
+      "bytes": 1946983,
+      "sha256": "768c5345292054c9de1a151319e8fb059198aa5b876b88e4e41b7eeefebe2ab8"
+    },
+    {
+      "path": "source/source-inventory-after.json",
+      "bytes": 1946983,
+      "sha256": "768c5345292054c9de1a151319e8fb059198aa5b876b88e4e41b7eeefebe2ab8"
+    }
+  ],
+  "probes": [
+    {
+      "probe": "build_village_economy_regression",
+      "mode": "headless",
+      "timeout_seconds": 420,
+      "required_marker": "[VillageEconomy] PASS 339 checks",
+      "log": {
+        "path": "logs/01-economy-headless.log",
+        "bytes": 628,
+        "sha256": "1381f36239164a4b77f21050c2619cb4dbcba281571419ed6cbe544db824c1bb"
+      },
+      "runner": {
+        "path": "logs/01-economy-headless.runner.log",
+        "bytes": 628,
+        "sha256": "1381f36239164a4b77f21050c2619cb4dbcba281571419ed6cbe544db824c1bb"
+      }
+    },
+    {
+      "probe": "build_village_scaling_regression",
+      "mode": "headless",
+      "timeout_seconds": 180,
+      "required_marker": "[VillageScaling] PASS 42 checks: full 2178-house model, camera and explorer",
+      "log": {
+        "path": "logs/02-scaling-headless.log",
+        "bytes": 1701,
+        "sha256": "85418374e7b1b87bd3309904c888530ab5bf4fe21a10851d5a91b05567a18178"
+      },
+      "runner": {
+        "path": "logs/02-scaling-headless.runner.log",
+        "bytes": 1701,
+        "sha256": "85418374e7b1b87bd3309904c888530ab5bf4fe21a10851d5a91b05567a18178"
+      }
+    },
+    {
+      "probe": "build_village_scaling_regression",
+      "mode": "rendered",
+      "timeout_seconds": 300,
+      "required_marker": "[VillageScaling] PASS 46 checks: full 2178-house model, camera and explorer",
+      "log": {
+        "path": "logs/03-scaling-rendered.log",
+        "bytes": 2348,
+        "sha256": "3557a77abf56c329d496a9f5453a76429e02c216e8830f48480e2873ff416f15"
+      },
+      "runner": {
+        "path": "logs/03-scaling-rendered.runner.log",
+        "bytes": 2348,
+        "sha256": "3557a77abf56c329d496a9f5453a76429e02c216e8830f48480e2873ff416f15"
+      }
+    }
+  ],
+  "images": [
+    {
+      "path": "captures/01-home-region.png",
+      "bytes": 767393,
+      "sha256": "ad1d0a16da080fd2526d1e7cc77fb5ab0bf348a18b239234ef176c8eb140e032",
+      "width": 1280,
+      "height": 720,
+      "decoded_rgb_sha256": "75cdb1bb4507753630ad27d134526ebcd8294a6058485ecad86b6e7325e846a1"
+    },
+    {
+      "path": "captures/02-river-boundary.png",
+      "bytes": 994073,
+      "sha256": "c2b69f6f59d2f70d1d6ab555a821763a517b14f08876001768a55b4b9dcf7a81",
+      "width": 1280,
+      "height": 720,
+      "decoded_rgb_sha256": "294ec113d955da9d17d667d43b35dcd880e57912e27b5b4b7d0af5e2db5af8be"
+    }
+  ],
+  "scope": "Three additional Village probes and two actual renderer PNGs; no complete52/17, Android or device-FPS acceptance"
+}

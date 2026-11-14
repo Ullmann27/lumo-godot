@@ -1,0 +1,25 @@
+Reading package lists...
+Building dependency tree...
+Reading state information...
+xvfb is already the newest version (2:21.1.12-1ubuntu1.9).
+libgl1-mesa-dri is already the newest version (25.2.8-0ubuntu0.24.04.4).
+libgl1-mesa-dri set to manually installed.
+libglx-mesa0 is already the newest version (25.2.8-0ubuntu0.24.04.4).
+libglx-mesa0 set to manually installed.
+python3-venv is already the newest version (3.12.3-0ubuntu2.1).
+0 upgraded, 0 newly installed, 0 to remove and 20 not upgraded.
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0 68.4M    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 68.4M  100 68.4M    0     0   160M      0 --:--:-- --:--:-- --:--:--  263M
+/home/runner/work/_temp/lumo-discovery-43613299144-1/engine/godot.zip: OK
+4.6.3.stable.official.7d41c59c4
+Collecting Pillow==12.3.0
+  Downloading pillow-12.3.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.1 kB)
+Downloading pillow-12.3.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (6.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.9/6.9 MB 142.2 MB/s eta 0:00:00
+Installing collected packages: Pillow
+Successfully installed Pillow-12.3.0
+Python 3.12.3
+Pillow 12.3.0
+/usr/bin/xvfb-run

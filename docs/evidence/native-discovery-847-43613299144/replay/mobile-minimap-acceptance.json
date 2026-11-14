@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "native_sha": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "native_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "source_inventories": [
+    {
+      "path": "source/source-inventory-before.json",
+      "bytes": 1946983,
+      "sha256": "768c5345292054c9de1a151319e8fb059198aa5b876b88e4e41b7eeefebe2ab8"
+    },
+    {
+      "path": "source/source-inventory-after.json",
+      "bytes": 1946983,
+      "sha256": "768c5345292054c9de1a151319e8fb059198aa5b876b88e4e41b7eeefebe2ab8"
+    }
+  ],
+  "log": {
+    "path": "logs/mobile-safe-area-rendered.log",
+    "bytes": 11441,
+    "sha256": "8a867383b2b70969bd1f5f15e19ec24a0a1d669c26c87986f2c20a851498b5f0"
+  },
+  "runner": {
+    "path": "logs/mobile-safe-area-rendered.runner.log",
+    "bytes": 11441,
+    "sha256": "8a867383b2b70969bd1f5f15e19ec24a0a1d669c26c87986f2c20a851498b5f0"
+  },
+  "report": {
+    "path": "captures/mobile/mobile-safe-area.json",
+    "bytes": 59823,
+    "sha256": "54a10d893b2233f8bccf6bc1f35a2b3a736e473fe8009ffa06168661947a3166"
+  },
+  "checks": 428,
+  "layouts": [
+    "dense-left-cutout",
+    "dense-right-cutout",
+    "same-pixels-density-one",
+    "expanded-inner-display",
+    "compact-portrait",
+    "short-landscape",
+    "dense-restored"
+  ],
+  "hint_transitions": [
+    "expanded-hint-visible",
+    "expanded-hint-hidden"
+  ],
+  "safe_area_images": [
+    {
+      "path": "captures/mobile/jump-landscape-cutout.png",
+      "bytes": 1859286,
+      "sha256": "8c3cc36833a028db2b1d3fc4b46047a622b5c79abbf678314e931c596e61d431",
+      "width": 2400,
+      "height": 1080,
+      "decoded_rgb_sha256": "1a494e2d8469810039cc0546219fcb48e419eb1b628d491605155471bfb59738"
+    },
+    {
+      "path": "captures/mobile/build-landscape-cutout.png",
+      "bytes": 2487315,
+      "sha256": "693e7c31af1a92bd4b8202f7414f9847907079421dbc0dbcbd8fdc73099b5d01",
+      "width": 2400,
+      "height": 1080,
+      "decoded_rgb_sha256": "724f37337595a0682e7aff33de5b7600aa5b3da8be12421bf262b79b9943646a"
+    },
+    {
+      "path": "captures/mobile/puzzle-landscape-cutout.png",
+      "bytes": 480217,
+      "sha256": "5d1117258b17bab6ecd5b2c97115854520aee92253013ee677da0b2b7b0b794b",
+      "width": 2400,
+      "height": 1080,
+      "decoded_rgb_sha256": "dbc21f4e6e90c2ee63dc6f759d7cb1d364fa52ea0d95d2c92014a70484e351d9"
+    },
+    {
+      "path": "captures/mobile/treasure-landscape-cutout.png",
+      "bytes": 2624320,
+      "sha256": "0525d8f907d70e80287159fc0ef562c269cbec7f4f239a583734804799d0116d",
+      "width": 2400,
+      "height": 1080,
+      "decoded_rgb_sha256": "ea0b0cd67ea16932f791441a1dead13d48ec2d3ad72e7834d16fd245b7d908ed"
+    }
+  ],
+  "minimap_images": [
+    {
+      "path": "captures/minimap/dense-left-cutout.png",
+      "bytes": 1852218,
+      "sha256": "2a340a7bb05ae9cbf70feb02d8b2deead48578aae08990b9d08c2884d96aeed9",
+      "width": 2400,
+      "height": 1080,
+      "label": "dense-left-cutout",
+      "original_report_path": "/home/runner/work/_temp/lumo-discovery-43613299144-1/evidence/mobile-minimap/captures/minimap/dense-left-cutout.png",
+      "decoded_rgb_sha256": "46c833426b8bc78d5205b0533f39d7efd9ea7ce2b0879b6ea7a7186a0f7a4a9c"
+    },
+    {
+      "path": "captures/minimap/dense-right-cutout.png",
+      "bytes": 1852063,
+      "sha256": "f2cc6dae07f2715b5f51f30dfbca451a6f20d7553a7948a8b8324f017486605d",
+      "width": 2400,
+      "height": 1080,
+      "label": "dense-right-cutout",
+      "original_report_path": "/home/runner/work/_temp/lumo-discovery-43613299144-1/evidence/mobile-minimap/captures/minimap/dense-right-cutout.png",
+      "decoded_rgb_sha256": "6239f754669559d601ef4d51ee2ae33eccbba52f5e6af75986dc631fa5724335"
+    },
+    {
+      "path": "captures/minimap/same-pixels-density-one.png",
+      "bytes": 1685733,
+      "sha256": "6e646c779b00e614fa924c7d4b86500b31e698e30821b8312df55f933b6242f0",
+      "width": 2400,
+      "height": 1080,
+      "label": "same-pixels-density-one",
+      "original_report_path": "/home/runner/work/_temp/lumo-discovery-43613299144-1/evidence/mobile-minimap/captures/minimap/same-pixels-density-one.png",
+      "decoded_rgb_sha256": "d131b82f1dee1151f089d701c2106eb19cd41df44350cecbc8df3d933efe2538"
+    },
+    {
+      "path": "captures/minimap/expanded-inner-display.png",
+      "bytes": 2675384,
+      "sha256": "7b1bfeec789d0095d073a9aaa3b81cc01b12f0ee03793bde5438f411c8a6d348",
+      "width": 2176,
+      "height": 1812,
+      "label": "expanded-inner-display",
+      "original_report_path": "/home/runner/work/_temp/lumo-discovery-43613299144-1/evidence/mobile-minimap/captures/minimap/expanded-inner-display.png",
+      "decoded_rgb_sha256": "d304f133f0cc0bf307a6e6c5f7c21b0ec1cde2ee9c4cb2eba2c3805aaabfe569"
+    },
+    {
+      "path": "captures/minimap/expanded-hint-visible.png",
+      "bytes": 2648289,
+      "sha256": "a5dfea73deea053f88b6babc03224d539373907d967a03b7b9a6e4ee9073df90",
+      "width": 2176,
+      "height": 1812,
+      "label": "expanded-hint-visible",
+      "original_report_path": "/home/runner/work/_temp/lumo-discovery-43613299144-1/evidence/mobile-minimap/captures/minimap/expanded-hint-visible.png",
+      "decoded_rgb_sha256": "352034a6a97152fe4a7c64cf2a0cfdd468de4f45ead53f2a69fc3af80bcda9a7"
+    },
+    {
+      "path": "captures/minimap/expanded-hint-hidden.png",
+      "bytes": 2676454,
+      "sha256": "0863ebc322736d70e12ba216708af520c3ee485fa94b500465c1c5fed6465d21",
+      "width": 2176,
+      "height": 1812,
+      "label": "expanded-hint-hidden",
+      "original_report_path": "/home/runner/work/_temp/lumo-discovery-43613299144-1/evidence/mobile-minimap/captures/minimap/expanded-hint-hidden.png",
+      "decoded_rgb_sha256": "59638f1b47284be5b14e7aeb9d900621c252719517fc8035964211d990ac07d9"
+    },
+    {
+      "path": "captures/minimap/compact-portrait.png",
+      "bytes": 263914,
+      "sha256": "da255a202ef1ae83df7a1543af466f39c705a162c35ccf22a7908ea551f88930",
+      "width": 360,
+      "height": 800,
+      "label": "compact-portrait",
+      "original_report_path": "/home/runner/work/_temp/lumo-discovery-43613299144-1/evidence/mobile-minimap/captures/minimap/compact-portrait.png",
+      "decoded_rgb_sha256": "f6ce84dd70573d11026e9fbce8e29ccf9427c207d87762d29b8e4c713a8e8759"
+    },
+    {
+      "path": "captures/minimap/short-landscape.png",
+      "bytes": 746329,
+      "sha256": "37286a1553fdc57e33ee5bc225c745e95a5ccb16fc3708388a5dae3bed6fe3c8",
+      "width": 1280,
+      "height": 640,
+      "label": "short-landscape",
+      "original_report_path": "/home/runner/work/_temp/lumo-discovery-43613299144-1/evidence/mobile-minimap/captures/minimap/short-landscape.png",
+      "decoded_rgb_sha256": "38e0cb7bc44737776e9ddb0f884de08c53c2d2a9140350c6dfc94bfdd33d62ce"
+    },
+    {
+      "path": "captures/minimap/dense-restored.png",
+      "bytes": 1850216,
+      "sha256": "8627d9b02017d5ef0dbd05fb9fbdd4261adce6bdb21a050e86a54dab1d448f62",
+      "width": 2400,
+      "height": 1080,
+      "label": "dense-restored",
+      "original_report_path": "/home/runner/work/_temp/lumo-discovery-43613299144-1/evidence/mobile-minimap/captures/minimap/dense-restored.png",
+      "decoded_rgb_sha256": "f361e05dc36efc8fd15a4ccd6acd7da70d0acca1eae83a6e5a1e73b4c53eccdf"
+    }
+  ],
+  "scope": "Actual desktop renderer with asynchronous Android boundary fixture; no Android/device/FPS claim"
+}

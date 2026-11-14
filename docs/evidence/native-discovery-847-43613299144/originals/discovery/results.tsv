@@ -1,0 +1,11 @@
+probe	mode	result
+learning_world_regression	headless	PASS
+learning_sharing_regression	headless	PASS
+learning_studio_regression	headless	PASS
+game_hub_magic_regression	headless	PASS
+village_host_launch_regression	headless	PASS
+learning_wonder_details_regression	headless	PASS
+learning_wonder_details_regression	rendered	PASS
+game_hub_magic_capture	rendered	PASS
+learning_world_capture	rendered	PASS
+learning_wonder_details_capture	rendered	PASS

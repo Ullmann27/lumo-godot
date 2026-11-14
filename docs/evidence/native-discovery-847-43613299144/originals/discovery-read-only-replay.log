@@ -1,0 +1,1038 @@
+{
+  "schema": 1,
+  "contract": "discovery-originals-10-38-2",
+  "native_source": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "native_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "probe_count": 10,
+  "png_count": 38,
+  "report_count": 2,
+  "source_scope": "Complete tracked HEAD tree/index/bytes unchanged; generated import files separately inventoried",
+  "probes": [
+    {
+      "path": "logs/01-learning_world_regression-headless.log",
+      "bytes": 10599,
+      "sha256": "4e500ed41f1c9bee1b586b2141e4c7646f660b8dcb5da8311db95babab7ca1cb",
+      "git_blob": "01f4eeb866daca9984822b21a7135da890d60efb",
+      "runner": {
+        "path": "logs/01-learning_world_regression-headless.runner.log",
+        "bytes": 10599,
+        "sha256": "4e500ed41f1c9bee1b586b2141e4c7646f660b8dcb5da8311db95babab7ca1cb",
+        "git_blob": "01f4eeb866daca9984822b21a7135da890d60efb"
+      },
+      "probe": "learning_world_regression",
+      "mode": "headless",
+      "timeout_seconds": 420,
+      "elapsed_seconds": 19.416337573,
+      "marker": "[LearningWorld] PASS checks=5347"
+    },
+    {
+      "path": "logs/02-learning_sharing_regression-headless.log",
+      "bytes": 1482,
+      "sha256": "c97f5e3de4f7f795e626defb0a18c239c8f06d0e13198e802d1fb5ac8804d340",
+      "git_blob": "732d54f13499cd10ebc00935e394aac578658904",
+      "runner": {
+        "path": "logs/02-learning_sharing_regression-headless.runner.log",
+        "bytes": 1482,
+        "sha256": "c97f5e3de4f7f795e626defb0a18c239c8f06d0e13198e802d1fb5ac8804d340",
+        "git_blob": "732d54f13499cd10ebc00935e394aac578658904"
+      },
+      "probe": "learning_sharing_regression",
+      "mode": "headless",
+      "timeout_seconds": 420,
+      "elapsed_seconds": 2.870063542,
+      "marker": "[LearningSharing] PASS checks=1811"
+    },
+    {
+      "path": "logs/03-learning_studio_regression-headless.log",
+      "bytes": 1805,
+      "sha256": "bf54a175b9ceb89caf12f2268be19f6766169138d7ae4bfc5b633e377b522343",
+      "git_blob": "30c7b738433cfa79bb22bb89dba214e5ca98e654",
+      "runner": {
+        "path": "logs/03-learning_studio_regression-headless.runner.log",
+        "bytes": 1805,
+        "sha256": "bf54a175b9ceb89caf12f2268be19f6766169138d7ae4bfc5b633e377b522343",
+        "git_blob": "30c7b738433cfa79bb22bb89dba214e5ca98e654"
+      },
+      "probe": "learning_studio_regression",
+      "mode": "headless",
+      "timeout_seconds": 420,
+      "elapsed_seconds": 7.796171795,
+      "marker": "[LearningStudio] PASS checks=183; runtime asset, materials, reduced motion and preserved learning"
+    },
+    {
+      "path": "logs/04-game_hub_magic_regression-headless.log",
+      "bytes": 1331,
+      "sha256": "6e1dc4e4250650c83ce344bf93e9d3ba2bf227925e837f6aec2ed9eb3fed9427",
+      "git_blob": "46c336c5528f770216224855309e219cfac4e17c",
+      "runner": {
+        "path": "logs/04-game_hub_magic_regression-headless.runner.log",
+        "bytes": 1331,
+        "sha256": "6e1dc4e4250650c83ce344bf93e9d3ba2bf227925e837f6aec2ed9eb3fed9427",
+        "git_blob": "46c336c5528f770216224855309e219cfac4e17c"
+      },
+      "probe": "game_hub_magic_regression",
+      "mode": "headless",
+      "timeout_seconds": 150,
+      "elapsed_seconds": 0.735211971,
+      "marker": "[LumoHub] PASS 8 visible native game entrances, active village route, preserved child settings and 3D reduced-motion portal"
+    },
+    {
+      "path": "logs/05-village_host_launch_regression-headless.log",
+      "bytes": 1641,
+      "sha256": "440796a5357d7f7e17c1511c3a4f3bc1b0f0e50bddd10f1e07effb708ea9987c",
+      "git_blob": "904bb871432b11a43b8b396b563b3765e1aa0bd5",
+      "runner": {
+        "path": "logs/05-village_host_launch_regression-headless.runner.log",
+        "bytes": 1641,
+        "sha256": "440796a5357d7f7e17c1511c3a4f3bc1b0f0e50bddd10f1e07effb708ea9987c",
+        "git_blob": "904bb871432b11a43b8b396b563b3765e1aa0bd5"
+      },
+      "probe": "village_host_launch_regression",
+      "mode": "headless",
+      "timeout_seconds": 150,
+      "elapsed_seconds": 0.835471815,
+      "marker": "[VillageHost] PASS Flutter village request, native boot scene and child context"
+    },
+    {
+      "path": "logs/06-learning_wonder_details_regression-headless.log",
+      "bytes": 3912,
+      "sha256": "9db3390e61fd064beb771774ff77319daad0ca2880631988ebe1d2878875ae42",
+      "git_blob": "3756c768b8fb5eaf06a32713fa6fe2536bc0bd98",
+      "runner": {
+        "path": "logs/06-learning_wonder_details_regression-headless.runner.log",
+        "bytes": 3912,
+        "sha256": "9db3390e61fd064beb771774ff77319daad0ca2880631988ebe1d2878875ae42",
+        "git_blob": "3756c768b8fb5eaf06a32713fa6fe2536bc0bd98"
+      },
+      "probe": "learning_wonder_details_regression",
+      "mode": "headless",
+      "timeout_seconds": 150,
+      "elapsed_seconds": 5.197117328,
+      "marker": "[LearningWonder] checks=100 failures=0 renderer=headless invalid_scene_checked=false"
+    },
+    {
+      "path": "logs/07-learning_wonder_details_regression-rendered.log",
+      "bytes": 4553,
+      "sha256": "0e149d618147faaf6db8be2cf656483a306c91d0ecf288a9fafefbc6a4de9b9b",
+      "git_blob": "9dd9605cdabe163b4c15f4c45e7c2820c938642f",
+      "runner": {
+        "path": "logs/07-learning_wonder_details_regression-rendered.runner.log",
+        "bytes": 4553,
+        "sha256": "0e149d618147faaf6db8be2cf656483a306c91d0ecf288a9fafefbc6a4de9b9b",
+        "git_blob": "9dd9605cdabe163b4c15f4c45e7c2820c938642f"
+      },
+      "probe": "learning_wonder_details_regression",
+      "mode": "rendered",
+      "timeout_seconds": 420,
+      "elapsed_seconds": 111.291848561,
+      "marker": "[LearningWonder] checks=108 failures=0 renderer=X11 invalid_scene_checked=true"
+    },
+    {
+      "path": "logs/08-game_hub_magic_capture-rendered.log",
+      "bytes": 1300,
+      "sha256": "aed3c1931aee8b507f8f4e262536b35cf2e650f019b13d5512835e9f92d9c990",
+      "git_blob": "1ffd931f0011a3e18a877a3496975db1b6be362d",
+      "runner": {
+        "path": "logs/08-game_hub_magic_capture-rendered.runner.log",
+        "bytes": 1300,
+        "sha256": "aed3c1931aee8b507f8f4e262536b35cf2e650f019b13d5512835e9f92d9c990",
+        "git_blob": "1ffd931f0011a3e18a877a3496975db1b6be362d"
+      },
+      "probe": "game_hub_magic_capture",
+      "mode": "rendered",
+      "timeout_seconds": 180,
+      "elapsed_seconds": 11.328259545,
+      "marker": "[LumoHubCapture] PASS 2 original current-source rendered PNGs"
+    },
+    {
+      "path": "logs/09-learning_world_capture-rendered.log",
+      "bytes": 8471,
+      "sha256": "24d306c3e3e7421db0c23d7dd0bd4c21ecbf6b15734453683dfba6444e631c54",
+      "git_blob": "4d69a730591612d7803b4ba697fd34440f6d2323",
+      "runner": {
+        "path": "logs/09-learning_world_capture-rendered.runner.log",
+        "bytes": 8471,
+        "sha256": "24d306c3e3e7421db0c23d7dd0bd4c21ecbf6b15734453683dfba6444e631c54",
+        "git_blob": "4d69a730591612d7803b4ba697fd34440f6d2323"
+      },
+      "probe": "learning_world_capture",
+      "mode": "rendered",
+      "timeout_seconds": 900,
+      "elapsed_seconds": 502.964667951,
+      "marker": "[LearningCapture] PASS captures=25"
+    },
+    {
+      "path": "logs/10-learning_wonder_details_capture-rendered.log",
+      "bytes": 3163,
+      "sha256": "75dbe833a9b9358b2bda4d794aaed06080cd932d957f88ec4166d257589feb9b",
+      "git_blob": "1b57aa17a8bd5099ec783f63dde584015a298d0e",
+      "runner": {
+        "path": "logs/10-learning_wonder_details_capture-rendered.runner.log",
+        "bytes": 3163,
+        "sha256": "75dbe833a9b9358b2bda4d794aaed06080cd932d957f88ec4166d257589feb9b",
+        "git_blob": "1b57aa17a8bd5099ec783f63dde584015a298d0e"
+      },
+      "probe": "learning_wonder_details_capture",
+      "mode": "rendered",
+      "timeout_seconds": 420,
+      "elapsed_seconds": 91.519660848,
+      "marker": "[WonderCapture] checks=136 failures=0 captures=11"
+    }
+  ],
+  "original_pngs": [
+    {
+      "path": "captures/hub/hub_portrait.png",
+      "bytes": 1822427,
+      "sha256": "6b86bd7ce4198e4f6f2c7ac9833199b5c0bf7a4204e12722070461853871e80c",
+      "git_blob": "34e38c2d9d0dde843a150ab658a04d6977ef6c48",
+      "width": 1080,
+      "height": 1920
+    },
+    {
+      "path": "captures/hub/hub_fold_landscape.png",
+      "bytes": 1879334,
+      "sha256": "8fff7c8ee573609e1ab1cba5e15eff2d853181eb3db628873aa26ab2a5d3aff8",
+      "git_blob": "87f40f1898520a65e7fc9f7c4c1dcf4b282eef21",
+      "width": 2400,
+      "height": 1080
+    },
+    {
+      "path": "captures/learning/math-start-1280x720.png",
+      "bytes": 346738,
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/math-ten-1280x720.png",
+      "bytes": 353450,
+      "sha256": "c48d94aa57ec3412736754d6c9844ac2857a7f58a8eec2f2ecb779c230a204ec",
+      "git_blob": "8c8d0e472ac9403e798efb0df757e792269032a8",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/math-complete-1280x720.png",
+      "bytes": 359803,
+      "sha256": "7b6c764e769aeef10d5395444871984a59bd228e0c61f7ac38956daaa6a397ab",
+      "git_blob": "01c12e908ddbe41982d6a5b6e0d0eb025352a695",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/math-start-412x915.png",
+      "bytes": 139598,
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5",
+      "width": 412,
+      "height": 915
+    },
+    {
+      "path": "captures/learning/math-ten-412x915.png",
+      "bytes": 144541,
+      "sha256": "f8146ddc462f3163b4754cd76866e1eb8cbb052c880c980b9daee2402a3e7cfb",
+      "git_blob": "9a5332bafd5378ef99653db8ff8ee433ad5a6ba6",
+      "width": 412,
+      "height": 915
+    },
+    {
+      "path": "captures/learning/math-complete-412x915.png",
+      "bytes": 144204,
+      "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+      "git_blob": "efeabdcf9d87f93e9d7569c2ee6a106900f2b4f6",
+      "width": 412,
+      "height": 915
+    },
+    {
+      "path": "captures/learning/math-start-2400x1080.png",
+      "bytes": 614390,
+      "sha256": "d61733698a17eff4089c2500b8e6ac8a900837ca55b81f97af27744145926da7",
+      "git_blob": "30d9e589359bfd05bda4b0d87f87aa0c0d37e90a",
+      "width": 2400,
+      "height": 1080
+    },
+    {
+      "path": "captures/learning/math-ten-2400x1080.png",
+      "bytes": 634242,
+      "sha256": "8a6eee43cdd4ebe4d829d233b650d5b305f8afa7b04af7eba40092e594b8ad66",
+      "git_blob": "afb6d8a8f95c4afa24d6f2bc1da2aca2928c1eeb",
+      "width": 2400,
+      "height": 1080
+    },
+    {
+      "path": "captures/learning/math-complete-2400x1080.png",
+      "bytes": 652893,
+      "sha256": "3dcbc484ed57bf999e20fcfe1c4b786db1a33300be0119755196f3b27da25b61",
+      "git_blob": "5818a6397991f447a96719545119282a1327dcb0",
+      "width": 2400,
+      "height": 1080
+    },
+    {
+      "path": "captures/learning/syllables-start.png",
+      "bytes": 322084,
+      "sha256": "9bd464681be73f59a089375ab95b05dc9203946666ae6e04b4f63741baa5e9ac",
+      "git_blob": "fc33e32d72affd9d228203a0a787da93f76380f5",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/syllables-complete.png",
+      "bytes": 331920,
+      "sha256": "b8e3f46d48120761edf2fba71cf1f83dc9bba67f7e4e83edbe1f9cf807f11c27",
+      "git_blob": "d2088c5d10c6e91bc86b94894cf9ed6f254c95f0",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/plant_parts-start.png",
+      "bytes": 350824,
+      "sha256": "c1baef37292fdf9911377833c0de6561214d691d69d55651b31c7a43a6207326",
+      "git_blob": "7e507b01cd345ef910129d08f3f2390a3228126d",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/plant_parts-complete.png",
+      "bytes": 373016,
+      "sha256": "48c1a8f9ff5971937a42f7049fb12fe6364c6cf20369e451aa64bbabf385f4aa",
+      "git_blob": "61c4a1edaacb97f712a51237793ed0b74800870e",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/subtract_ten-start.png",
+      "bytes": 348921,
+      "sha256": "80b7c6dba3603378800c292d804179f7ff1a98d6f5bcbbae3ff995351a96c592",
+      "git_blob": "ad8b943ed4a7d13ed1d7e36569481bc60e74ce68",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/subtract_ten-complete.png",
+      "bytes": 357989,
+      "sha256": "186a15fd5fe718b2f00b924ac0730820e6e654956c1addfa61a7e9b57b8d00ba",
+      "git_blob": "6959279d523317138ba60babacda70f2efa8dc0d",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/equal_groups-start.png",
+      "bytes": 322084,
+      "sha256": "da6258bc5a17a90f7c85915c6485a65dd717128a0498f309495dcde225c9966a",
+      "git_blob": "71a072aee866ba9510af6b69cc5decd82851de79",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/equal_groups-complete.png",
+      "bytes": 335744,
+      "sha256": "80531c6c9b37a3c9867440a563b05b3e03b26e8252af21d640e3ae0bc2bb7784",
+      "git_blob": "8f4db8ffc4bca029cd960e983e168bdf0caf324a",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/bridge_hundred-start.png",
+      "bytes": 354258,
+      "sha256": "7eb6e728babaa5209b2ec9f8960a52d509c8a100852e46eaa09f780662c5b206",
+      "git_blob": "de063065b385097732090d7323b8a1471fc34147",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/bridge_hundred-complete.png",
+      "bytes": 363900,
+      "sha256": "335865b34d321ef5f4942a5a85c3be670bbf3e12f4999da16bd6188b914ef2b3",
+      "git_blob": "4dc36835c859b0edbc503959470410021f203b30",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/fraction_parts-start.png",
+      "bytes": 322375,
+      "sha256": "21f39f28efd623b9c3bb5bc99ac0a8b140b495404192a3b55a039e536100da4a",
+      "git_blob": "a68ab7a6e7f51deffef22882f300866b3dcdaafd",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/fraction_parts-complete.png",
+      "bytes": 332831,
+      "sha256": "defcd507a087d84dc7249cb7757bf1c15d58b9b2217f6666626666b14c0559e9",
+      "git_blob": "85d144619b09ed3cf68048e65932bcb87c284826",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/learning/bridge_hundred-start-412x915.png",
+      "bytes": 146569,
+      "sha256": "081d01c599541be88fee4b5082ec56c3b797369312c9af43797a2fa8d48eddcc",
+      "git_blob": "8d48b44cf081d0ba7ecccf70bd00fbe354b1e7c1",
+      "width": 412,
+      "height": 915
+    },
+    {
+      "path": "captures/learning/bridge_hundred-complete-412x915.png",
+      "bytes": 149617,
+      "sha256": "d713a5780fde893a9c3c0c4eaefffa09b69739d63a23eb567cc9bf04765a8286",
+      "git_blob": "8dccb6c9b75df4b2002a7fdfc9629f5bc1c6e84a",
+      "width": 412,
+      "height": 915
+    },
+    {
+      "path": "captures/learning/bridge_hundred-start-2400x1080.png",
+      "bytes": 642151,
+      "sha256": "a3fafad94bc683dd9880d2bbdd6de4bd99b433b9073767984f824f8c437d0519",
+      "git_blob": "247895e532b379db10b1c6e0abf82062116fecee",
+      "width": 2400,
+      "height": 1080
+    },
+    {
+      "path": "captures/learning/bridge_hundred-complete-2400x1080.png",
+      "bytes": 659859,
+      "sha256": "6a7306d126cf239c2377a5b045fbf9efae043e26761cd9c106f1a09bfc33830f",
+      "git_blob": "36542445b3a591de8478928f62a255a936d8a699",
+      "width": 2400,
+      "height": 1080
+    },
+    {
+      "path": "captures/wonder/current-numbers-start-1280x720.png",
+      "bytes": 346738,
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/wonder/current-numbers-complete-1280x720.png",
+      "bytes": 359803,
+      "sha256": "7b6c764e769aeef10d5395444871984a59bd228e0c61f7ac38956daaa6a397ab",
+      "git_blob": "01c12e908ddbe41982d6a5b6e0d0eb025352a695",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/wonder/current-numbers-start-412x915.png",
+      "bytes": 139598,
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5",
+      "width": 412,
+      "height": 915
+    },
+    {
+      "path": "captures/wonder/current-numbers-complete-412x915.png",
+      "bytes": 144204,
+      "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+      "git_blob": "efeabdcf9d87f93e9d7569c2ee6a106900f2b4f6",
+      "width": 412,
+      "height": 915
+    },
+    {
+      "path": "captures/wonder/current-numbers-one-step-1280x720.png",
+      "bytes": 349727,
+      "sha256": "cd9fe65a73149dc6cabc684b454b99ce2f94e1f70d0af60b9fbfed3806c0960b",
+      "git_blob": "c77964ea6ca7dd639192c9862c322f9b0feec55d",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/wonder/current-syllables-start.png",
+      "bytes": 322083,
+      "sha256": "29d040d47db0a127405be702fdb2486f88147b36c544c579a18e60fa1065661b",
+      "git_blob": "9c3bf53600a14d1f816feeaa643fd927fb299079",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/wonder/current-syllables-complete.png",
+      "bytes": 331917,
+      "sha256": "c0dd74767241c0dac43e09d1e0b07ff049736e0ed7277b92692783126e6090e4",
+      "git_blob": "f2ddc6054c12fdb961fd0f2e3ee348e851bce222",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/wonder/current-plant_parts-start.png",
+      "bytes": 350824,
+      "sha256": "c1baef37292fdf9911377833c0de6561214d691d69d55651b31c7a43a6207326",
+      "git_blob": "7e507b01cd345ef910129d08f3f2390a3228126d",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/wonder/current-plant_parts-complete.png",
+      "bytes": 369395,
+      "sha256": "4a884534a30245646d04c30ace1f44dd12429ffc56bfe56cb9725c303b34745b",
+      "git_blob": "82154fef0530b0fd2a36539ecb5d8441e308070c",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/wonder/current-hundreds-phone-start.png",
+      "bytes": 146569,
+      "sha256": "081d01c599541be88fee4b5082ec56c3b797369312c9af43797a2fa8d48eddcc",
+      "git_blob": "8d48b44cf081d0ba7ecccf70bd00fbe354b1e7c1",
+      "width": 412,
+      "height": 915
+    },
+    {
+      "path": "captures/wonder/current-hundreds-phone-complete.png",
+      "bytes": 149617,
+      "sha256": "d713a5780fde893a9c3c0c4eaefffa09b69739d63a23eb567cc9bf04765a8286",
+      "git_blob": "8dccb6c9b75df4b2002a7fdfc9629f5bc1c6e84a",
+      "width": 412,
+      "height": 915
+    }
+  ],
+  "original_reports": [
+    {
+      "path": "captures/hub/hub-original-identity.json",
+      "bytes": 2703,
+      "sha256": "12feeba1ca0437c6dca58a2ad3ca47f93d24919af96d79cce263e6a37f9c7f80",
+      "git_blob": "65dc177dc6a70225390c1d3b629240f9d49f2efd"
+    },
+    {
+      "path": "captures/wonder/captures.json",
+      "bytes": 10018,
+      "sha256": "0d50806be4be8f72c691659e253768ae4932cad1aa3096e7f0027efbc153f7cf",
+      "git_blob": "d34255cdd8a50b2a5a81740f3726c35de71114a3"
+    }
+  ],
+  "bound_helpers": [
+    {
+      "path": "helpers/verify_discovery_rasters.py",
+      "bytes": 11528,
+      "sha256": "55591b4478d2074135ea4950fb00200d68a3f9bede286b39642d7fc17aa586da",
+      "git_blob": "219e691fc8aa119cc80221b3db6c77e63caf8bfe"
+    },
+    {
+      "path": "helpers/verify_dream_rasters.py",
+      "bytes": 20254,
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5"
+    },
+    {
+      "path": "helpers/run_godot_probe.py",
+      "bytes": 2934,
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105"
+    },
+    {
+      "path": "helpers/collect_discovery_connections.py",
+      "bytes": 9979,
+      "sha256": "bfc9f32c8287849047e9f7babf400c107d790aecb21a45be16d45fa7302a3f83",
+      "git_blob": "1ebdec66300dfb87bf9287d194525d3c374c8aee"
+    },
+    {
+      "path": "helpers/verify_discovery_connections.py",
+      "bytes": 23700,
+      "sha256": "5edab9f77acaa4114281b74166eec3dbf306eb5b574f677c03190a379081dfaf",
+      "git_blob": "c00ca9873106c974d66282cddfdcfaf5eb3bbebc"
+    }
+  ],
+  "originals": [
+    {
+      "path": "captures/hub/hub-original-identity.json",
+      "bytes": 2703,
+      "sha256": "12feeba1ca0437c6dca58a2ad3ca47f93d24919af96d79cce263e6a37f9c7f80",
+      "git_blob": "65dc177dc6a70225390c1d3b629240f9d49f2efd"
+    },
+    {
+      "path": "captures/hub/hub_fold_landscape.png",
+      "bytes": 1879334,
+      "sha256": "8fff7c8ee573609e1ab1cba5e15eff2d853181eb3db628873aa26ab2a5d3aff8",
+      "git_blob": "87f40f1898520a65e7fc9f7c4c1dcf4b282eef21"
+    },
+    {
+      "path": "captures/hub/hub_portrait.png",
+      "bytes": 1822427,
+      "sha256": "6b86bd7ce4198e4f6f2c7ac9833199b5c0bf7a4204e12722070461853871e80c",
+      "git_blob": "34e38c2d9d0dde843a150ab658a04d6977ef6c48"
+    },
+    {
+      "path": "captures/learning/bridge_hundred-complete-2400x1080.png",
+      "bytes": 659859,
+      "sha256": "6a7306d126cf239c2377a5b045fbf9efae043e26761cd9c106f1a09bfc33830f",
+      "git_blob": "36542445b3a591de8478928f62a255a936d8a699"
+    },
+    {
+      "path": "captures/learning/bridge_hundred-complete-412x915.png",
+      "bytes": 149617,
+      "sha256": "d713a5780fde893a9c3c0c4eaefffa09b69739d63a23eb567cc9bf04765a8286",
+      "git_blob": "8dccb6c9b75df4b2002a7fdfc9629f5bc1c6e84a"
+    },
+    {
+      "path": "captures/learning/bridge_hundred-complete.png",
+      "bytes": 363900,
+      "sha256": "335865b34d321ef5f4942a5a85c3be670bbf3e12f4999da16bd6188b914ef2b3",
+      "git_blob": "4dc36835c859b0edbc503959470410021f203b30"
+    },
+    {
+      "path": "captures/learning/bridge_hundred-start-2400x1080.png",
+      "bytes": 642151,
+      "sha256": "a3fafad94bc683dd9880d2bbdd6de4bd99b433b9073767984f824f8c437d0519",
+      "git_blob": "247895e532b379db10b1c6e0abf82062116fecee"
+    },
+    {
+      "path": "captures/learning/bridge_hundred-start-412x915.png",
+      "bytes": 146569,
+      "sha256": "081d01c599541be88fee4b5082ec56c3b797369312c9af43797a2fa8d48eddcc",
+      "git_blob": "8d48b44cf081d0ba7ecccf70bd00fbe354b1e7c1"
+    },
+    {
+      "path": "captures/learning/bridge_hundred-start.png",
+      "bytes": 354258,
+      "sha256": "7eb6e728babaa5209b2ec9f8960a52d509c8a100852e46eaa09f780662c5b206",
+      "git_blob": "de063065b385097732090d7323b8a1471fc34147"
+    },
+    {
+      "path": "captures/learning/equal_groups-complete.png",
+      "bytes": 335744,
+      "sha256": "80531c6c9b37a3c9867440a563b05b3e03b26e8252af21d640e3ae0bc2bb7784",
+      "git_blob": "8f4db8ffc4bca029cd960e983e168bdf0caf324a"
+    },
+    {
+      "path": "captures/learning/equal_groups-start.png",
+      "bytes": 322084,
+      "sha256": "da6258bc5a17a90f7c85915c6485a65dd717128a0498f309495dcde225c9966a",
+      "git_blob": "71a072aee866ba9510af6b69cc5decd82851de79"
+    },
+    {
+      "path": "captures/learning/fraction_parts-complete.png",
+      "bytes": 332831,
+      "sha256": "defcd507a087d84dc7249cb7757bf1c15d58b9b2217f6666626666b14c0559e9",
+      "git_blob": "85d144619b09ed3cf68048e65932bcb87c284826"
+    },
+    {
+      "path": "captures/learning/fraction_parts-start.png",
+      "bytes": 322375,
+      "sha256": "21f39f28efd623b9c3bb5bc99ac0a8b140b495404192a3b55a039e536100da4a",
+      "git_blob": "a68ab7a6e7f51deffef22882f300866b3dcdaafd"
+    },
+    {
+      "path": "captures/learning/math-complete-1280x720.png",
+      "bytes": 359803,
+      "sha256": "7b6c764e769aeef10d5395444871984a59bd228e0c61f7ac38956daaa6a397ab",
+      "git_blob": "01c12e908ddbe41982d6a5b6e0d0eb025352a695"
+    },
+    {
+      "path": "captures/learning/math-complete-2400x1080.png",
+      "bytes": 652893,
+      "sha256": "3dcbc484ed57bf999e20fcfe1c4b786db1a33300be0119755196f3b27da25b61",
+      "git_blob": "5818a6397991f447a96719545119282a1327dcb0"
+    },
+    {
+      "path": "captures/learning/math-complete-412x915.png",
+      "bytes": 144204,
+      "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+      "git_blob": "efeabdcf9d87f93e9d7569c2ee6a106900f2b4f6"
+    },
+    {
+      "path": "captures/learning/math-start-1280x720.png",
+      "bytes": 346738,
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477"
+    },
+    {
+      "path": "captures/learning/math-start-2400x1080.png",
+      "bytes": 614390,
+      "sha256": "d61733698a17eff4089c2500b8e6ac8a900837ca55b81f97af27744145926da7",
+      "git_blob": "30d9e589359bfd05bda4b0d87f87aa0c0d37e90a"
+    },
+    {
+      "path": "captures/learning/math-start-412x915.png",
+      "bytes": 139598,
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5"
+    },
+    {
+      "path": "captures/learning/math-ten-1280x720.png",
+      "bytes": 353450,
+      "sha256": "c48d94aa57ec3412736754d6c9844ac2857a7f58a8eec2f2ecb779c230a204ec",
+      "git_blob": "8c8d0e472ac9403e798efb0df757e792269032a8"
+    },
+    {
+      "path": "captures/learning/math-ten-2400x1080.png",
+      "bytes": 634242,
+      "sha256": "8a6eee43cdd4ebe4d829d233b650d5b305f8afa7b04af7eba40092e594b8ad66",
+      "git_blob": "afb6d8a8f95c4afa24d6f2bc1da2aca2928c1eeb"
+    },
+    {
+      "path": "captures/learning/math-ten-412x915.png",
+      "bytes": 144541,
+      "sha256": "f8146ddc462f3163b4754cd76866e1eb8cbb052c880c980b9daee2402a3e7cfb",
+      "git_blob": "9a5332bafd5378ef99653db8ff8ee433ad5a6ba6"
+    },
+    {
+      "path": "captures/learning/plant_parts-complete.png",
+      "bytes": 373016,
+      "sha256": "48c1a8f9ff5971937a42f7049fb12fe6364c6cf20369e451aa64bbabf385f4aa",
+      "git_blob": "61c4a1edaacb97f712a51237793ed0b74800870e"
+    },
+    {
+      "path": "captures/learning/plant_parts-start.png",
+      "bytes": 350824,
+      "sha256": "c1baef37292fdf9911377833c0de6561214d691d69d55651b31c7a43a6207326",
+      "git_blob": "7e507b01cd345ef910129d08f3f2390a3228126d"
+    },
+    {
+      "path": "captures/learning/subtract_ten-complete.png",
+      "bytes": 357989,
+      "sha256": "186a15fd5fe718b2f00b924ac0730820e6e654956c1addfa61a7e9b57b8d00ba",
+      "git_blob": "6959279d523317138ba60babacda70f2efa8dc0d"
+    },
+    {
+      "path": "captures/learning/subtract_ten-start.png",
+      "bytes": 348921,
+      "sha256": "80b7c6dba3603378800c292d804179f7ff1a98d6f5bcbbae3ff995351a96c592",
+      "git_blob": "ad8b943ed4a7d13ed1d7e36569481bc60e74ce68"
+    },
+    {
+      "path": "captures/learning/syllables-complete.png",
+      "bytes": 331920,
+      "sha256": "b8e3f46d48120761edf2fba71cf1f83dc9bba67f7e4e83edbe1f9cf807f11c27",
+      "git_blob": "d2088c5d10c6e91bc86b94894cf9ed6f254c95f0"
+    },
+    {
+      "path": "captures/learning/syllables-start.png",
+      "bytes": 322084,
+      "sha256": "9bd464681be73f59a089375ab95b05dc9203946666ae6e04b4f63741baa5e9ac",
+      "git_blob": "fc33e32d72affd9d228203a0a787da93f76380f5"
+    },
+    {
+      "path": "captures/wonder/captures.json",
+      "bytes": 10018,
+      "sha256": "0d50806be4be8f72c691659e253768ae4932cad1aa3096e7f0027efbc153f7cf",
+      "git_blob": "d34255cdd8a50b2a5a81740f3726c35de71114a3"
+    },
+    {
+      "path": "captures/wonder/current-hundreds-phone-complete.png",
+      "bytes": 149617,
+      "sha256": "d713a5780fde893a9c3c0c4eaefffa09b69739d63a23eb567cc9bf04765a8286",
+      "git_blob": "8dccb6c9b75df4b2002a7fdfc9629f5bc1c6e84a"
+    },
+    {
+      "path": "captures/wonder/current-hundreds-phone-start.png",
+      "bytes": 146569,
+      "sha256": "081d01c599541be88fee4b5082ec56c3b797369312c9af43797a2fa8d48eddcc",
+      "git_blob": "8d48b44cf081d0ba7ecccf70bd00fbe354b1e7c1"
+    },
+    {
+      "path": "captures/wonder/current-numbers-complete-1280x720.png",
+      "bytes": 359803,
+      "sha256": "7b6c764e769aeef10d5395444871984a59bd228e0c61f7ac38956daaa6a397ab",
+      "git_blob": "01c12e908ddbe41982d6a5b6e0d0eb025352a695"
+    },
+    {
+      "path": "captures/wonder/current-numbers-complete-412x915.png",
+      "bytes": 144204,
+      "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+      "git_blob": "efeabdcf9d87f93e9d7569c2ee6a106900f2b4f6"
+    },
+    {
+      "path": "captures/wonder/current-numbers-one-step-1280x720.png",
+      "bytes": 349727,
+      "sha256": "cd9fe65a73149dc6cabc684b454b99ce2f94e1f70d0af60b9fbfed3806c0960b",
+      "git_blob": "c77964ea6ca7dd639192c9862c322f9b0feec55d"
+    },
+    {
+      "path": "captures/wonder/current-numbers-start-1280x720.png",
+      "bytes": 346738,
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477"
+    },
+    {
+      "path": "captures/wonder/current-numbers-start-412x915.png",
+      "bytes": 139598,
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5"
+    },
+    {
+      "path": "captures/wonder/current-plant_parts-complete.png",
+      "bytes": 369395,
+      "sha256": "4a884534a30245646d04c30ace1f44dd12429ffc56bfe56cb9725c303b34745b",
+      "git_blob": "82154fef0530b0fd2a36539ecb5d8441e308070c"
+    },
+    {
+      "path": "captures/wonder/current-plant_parts-start.png",
+      "bytes": 350824,
+      "sha256": "c1baef37292fdf9911377833c0de6561214d691d69d55651b31c7a43a6207326",
+      "git_blob": "7e507b01cd345ef910129d08f3f2390a3228126d"
+    },
+    {
+      "path": "captures/wonder/current-syllables-complete.png",
+      "bytes": 331917,
+      "sha256": "c0dd74767241c0dac43e09d1e0b07ff049736e0ed7277b92692783126e6090e4",
+      "git_blob": "f2ddc6054c12fdb961fd0f2e3ee348e851bce222"
+    },
+    {
+      "path": "captures/wonder/current-syllables-start.png",
+      "bytes": 322083,
+      "sha256": "29d040d47db0a127405be702fdb2486f88147b36c544c579a18e60fa1065661b",
+      "git_blob": "9c3bf53600a14d1f816feeaa643fd927fb299079"
+    },
+    {
+      "path": "collection-context.json",
+      "bytes": 668,
+      "sha256": "0c96260e2d84d78ea05c2ec229187065f8a8349d893cbc1e6320d88c24d0fa64",
+      "git_blob": "978f526102f111608f67e8874c30c73267e77210"
+    },
+    {
+      "path": "engine-binary.json",
+      "bytes": 215,
+      "sha256": "6b0cfa0ddee377bcde65d3430ec2e32c503ad0a3f3cfd00e7e8603ceabe58994",
+      "git_blob": "ac8755d73924789b0966306cef5ade6eaf47a7b1"
+    },
+    {
+      "path": "engine.txt",
+      "bytes": 32,
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f",
+      "git_blob": "24277fd09e8cc7154517b66aab4e8bef52babb7e"
+    },
+    {
+      "path": "helpers/collect_discovery_connections.py",
+      "bytes": 9979,
+      "sha256": "bfc9f32c8287849047e9f7babf400c107d790aecb21a45be16d45fa7302a3f83",
+      "git_blob": "1ebdec66300dfb87bf9287d194525d3c374c8aee"
+    },
+    {
+      "path": "helpers/run_godot_probe.py",
+      "bytes": 2934,
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105"
+    },
+    {
+      "path": "helpers/verify_discovery_connections.py",
+      "bytes": 23700,
+      "sha256": "5edab9f77acaa4114281b74166eec3dbf306eb5b574f677c03190a379081dfaf",
+      "git_blob": "c00ca9873106c974d66282cddfdcfaf5eb3bbebc"
+    },
+    {
+      "path": "helpers/verify_discovery_rasters.py",
+      "bytes": 11528,
+      "sha256": "55591b4478d2074135ea4950fb00200d68a3f9bede286b39642d7fc17aa586da",
+      "git_blob": "219e691fc8aa119cc80221b3db6c77e63caf8bfe"
+    },
+    {
+      "path": "helpers/verify_dream_rasters.py",
+      "bytes": 20254,
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5"
+    },
+    {
+      "path": "invocations.json",
+      "bytes": 23014,
+      "sha256": "21e3e3ab14bc4e2b2ba0143fef8f4a95b8d10e2ab6ed635ea38dc162b4f20a6e",
+      "git_blob": "84ea3f117d9673546b4e9a4c8e46ea650ebbd0bd"
+    },
+    {
+      "path": "logs/01-learning_world_regression-headless.log",
+      "bytes": 10599,
+      "sha256": "4e500ed41f1c9bee1b586b2141e4c7646f660b8dcb5da8311db95babab7ca1cb",
+      "git_blob": "01f4eeb866daca9984822b21a7135da890d60efb"
+    },
+    {
+      "path": "logs/01-learning_world_regression-headless.runner.log",
+      "bytes": 10599,
+      "sha256": "4e500ed41f1c9bee1b586b2141e4c7646f660b8dcb5da8311db95babab7ca1cb",
+      "git_blob": "01f4eeb866daca9984822b21a7135da890d60efb"
+    },
+    {
+      "path": "logs/02-learning_sharing_regression-headless.log",
+      "bytes": 1482,
+      "sha256": "c97f5e3de4f7f795e626defb0a18c239c8f06d0e13198e802d1fb5ac8804d340",
+      "git_blob": "732d54f13499cd10ebc00935e394aac578658904"
+    },
+    {
+      "path": "logs/02-learning_sharing_regression-headless.runner.log",
+      "bytes": 1482,
+      "sha256": "c97f5e3de4f7f795e626defb0a18c239c8f06d0e13198e802d1fb5ac8804d340",
+      "git_blob": "732d54f13499cd10ebc00935e394aac578658904"
+    },
+    {
+      "path": "logs/03-learning_studio_regression-headless.log",
+      "bytes": 1805,
+      "sha256": "bf54a175b9ceb89caf12f2268be19f6766169138d7ae4bfc5b633e377b522343",
+      "git_blob": "30c7b738433cfa79bb22bb89dba214e5ca98e654"
+    },
+    {
+      "path": "logs/03-learning_studio_regression-headless.runner.log",
+      "bytes": 1805,
+      "sha256": "bf54a175b9ceb89caf12f2268be19f6766169138d7ae4bfc5b633e377b522343",
+      "git_blob": "30c7b738433cfa79bb22bb89dba214e5ca98e654"
+    },
+    {
+      "path": "logs/04-game_hub_magic_regression-headless.log",
+      "bytes": 1331,
+      "sha256": "6e1dc4e4250650c83ce344bf93e9d3ba2bf227925e837f6aec2ed9eb3fed9427",
+      "git_blob": "46c336c5528f770216224855309e219cfac4e17c"
+    },
+    {
+      "path": "logs/04-game_hub_magic_regression-headless.runner.log",
+      "bytes": 1331,
+      "sha256": "6e1dc4e4250650c83ce344bf93e9d3ba2bf227925e837f6aec2ed9eb3fed9427",
+      "git_blob": "46c336c5528f770216224855309e219cfac4e17c"
+    },
+    {
+      "path": "logs/05-village_host_launch_regression-headless.log",
+      "bytes": 1641,
+      "sha256": "440796a5357d7f7e17c1511c3a4f3bc1b0f0e50bddd10f1e07effb708ea9987c",
+      "git_blob": "904bb871432b11a43b8b396b563b3765e1aa0bd5"
+    },
+    {
+      "path": "logs/05-village_host_launch_regression-headless.runner.log",
+      "bytes": 1641,
+      "sha256": "440796a5357d7f7e17c1511c3a4f3bc1b0f0e50bddd10f1e07effb708ea9987c",
+      "git_blob": "904bb871432b11a43b8b396b563b3765e1aa0bd5"
+    },
+    {
+      "path": "logs/06-learning_wonder_details_regression-headless.log",
+      "bytes": 3912,
+      "sha256": "9db3390e61fd064beb771774ff77319daad0ca2880631988ebe1d2878875ae42",
+      "git_blob": "3756c768b8fb5eaf06a32713fa6fe2536bc0bd98"
+    },
+    {
+      "path": "logs/06-learning_wonder_details_regression-headless.runner.log",
+      "bytes": 3912,
+      "sha256": "9db3390e61fd064beb771774ff77319daad0ca2880631988ebe1d2878875ae42",
+      "git_blob": "3756c768b8fb5eaf06a32713fa6fe2536bc0bd98"
+    },
+    {
+      "path": "logs/07-learning_wonder_details_regression-rendered.log",
+      "bytes": 4553,
+      "sha256": "0e149d618147faaf6db8be2cf656483a306c91d0ecf288a9fafefbc6a4de9b9b",
+      "git_blob": "9dd9605cdabe163b4c15f4c45e7c2820c938642f"
+    },
+    {
+      "path": "logs/07-learning_wonder_details_regression-rendered.runner.log",
+      "bytes": 4553,
+      "sha256": "0e149d618147faaf6db8be2cf656483a306c91d0ecf288a9fafefbc6a4de9b9b",
+      "git_blob": "9dd9605cdabe163b4c15f4c45e7c2820c938642f"
+    },
+    {
+      "path": "logs/08-game_hub_magic_capture-rendered.log",
+      "bytes": 1300,
+      "sha256": "aed3c1931aee8b507f8f4e262536b35cf2e650f019b13d5512835e9f92d9c990",
+      "git_blob": "1ffd931f0011a3e18a877a3496975db1b6be362d"
+    },
+    {
+      "path": "logs/08-game_hub_magic_capture-rendered.runner.log",
+      "bytes": 1300,
+      "sha256": "aed3c1931aee8b507f8f4e262536b35cf2e650f019b13d5512835e9f92d9c990",
+      "git_blob": "1ffd931f0011a3e18a877a3496975db1b6be362d"
+    },
+    {
+      "path": "logs/09-learning_world_capture-rendered.log",
+      "bytes": 8471,
+      "sha256": "24d306c3e3e7421db0c23d7dd0bd4c21ecbf6b15734453683dfba6444e631c54",
+      "git_blob": "4d69a730591612d7803b4ba697fd34440f6d2323"
+    },
+    {
+      "path": "logs/09-learning_world_capture-rendered.runner.log",
+      "bytes": 8471,
+      "sha256": "24d306c3e3e7421db0c23d7dd0bd4c21ecbf6b15734453683dfba6444e631c54",
+      "git_blob": "4d69a730591612d7803b4ba697fd34440f6d2323"
+    },
+    {
+      "path": "logs/10-learning_wonder_details_capture-rendered.log",
+      "bytes": 3163,
+      "sha256": "75dbe833a9b9358b2bda4d794aaed06080cd932d957f88ec4166d257589feb9b",
+      "git_blob": "1b57aa17a8bd5099ec783f63dde584015a298d0e"
+    },
+    {
+      "path": "logs/10-learning_wonder_details_capture-rendered.runner.log",
+      "bytes": 3163,
+      "sha256": "75dbe833a9b9358b2bda4d794aaed06080cd932d957f88ec4166d257589feb9b",
+      "git_blob": "1b57aa17a8bd5099ec783f63dde584015a298d0e"
+    },
+    {
+      "path": "results.tsv",
+      "bytes": 444,
+      "sha256": "8caf920c92ea08a4080056a89e27e71a5193858633d443bc4978f0a06e438b12",
+      "git_blob": "483ed08ab5bb014cc016213afe6a09af3da8e989"
+    },
+    {
+      "path": "source-commit.raw",
+      "bytes": 999,
+      "sha256": "92a4633e52e0acb47f9a1e5c7ca7fa45b774c2c9a11b2ad96894d28ddda3add7",
+      "git_blob": "c30a17523180bc23c8ce00675022b76d11804b3b"
+    },
+    {
+      "path": "source-dirty-after.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "source-dirty.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "source-index-after.bin",
+      "bytes": 552540,
+      "sha256": "84726d73c7e80898ca32f2f38ec1037cc6d322960a527cfea9af28b855432772",
+      "git_blob": "fb16bb3433fbeed38586abb5bb9c46cae8035897"
+    },
+    {
+      "path": "source-index-before.bin",
+      "bytes": 552540,
+      "sha256": "84726d73c7e80898ca32f2f38ec1037cc6d322960a527cfea9af28b855432772",
+      "git_blob": "fb16bb3433fbeed38586abb5bb9c46cae8035897"
+    },
+    {
+      "path": "source-inventory-after.json",
+      "bytes": 1946983,
+      "sha256": "768c5345292054c9de1a151319e8fb059198aa5b876b88e4e41b7eeefebe2ab8",
+      "git_blob": "8757f678fa2c37cd5ebd10431a74fe728023439b"
+    },
+    {
+      "path": "source-inventory-before.json",
+      "bytes": 1946983,
+      "sha256": "768c5345292054c9de1a151319e8fb059198aa5b876b88e4e41b7eeefebe2ab8",
+      "git_blob": "8757f678fa2c37cd5ebd10431a74fe728023439b"
+    },
+    {
+      "path": "source-sha-after.txt",
+      "bytes": 41,
+      "sha256": "32306e96de37175c791b04d458f479ee20851dda736e7ea6ddb577ff81601617",
+      "git_blob": "b6faed40064a256a14f525c9e3e4be7a30086d36"
+    },
+    {
+      "path": "source-sha.txt",
+      "bytes": 41,
+      "sha256": "32306e96de37175c791b04d458f479ee20851dda736e7ea6ddb577ff81601617",
+      "git_blob": "b6faed40064a256a14f525c9e3e4be7a30086d36"
+    },
+    {
+      "path": "source-tree-after.bin",
+      "bytes": 470692,
+      "sha256": "9ca5abc72ffb5866485a7e07d94d3be82b3a3003e33a58d5b7a384dd3c88c629",
+      "git_blob": "9490841d7ff63a18d439d8281bf81a2161ab4431"
+    },
+    {
+      "path": "source-tree-after.txt",
+      "bytes": 41,
+      "sha256": "c2bc43d6a96204ebdcf16498166a2d6a0d3d64be843128b4e72586bf29f8d2a4",
+      "git_blob": "cf3b4626a3dcb9ebaaee5d934f0dae8490201595"
+    },
+    {
+      "path": "source-tree-before.bin",
+      "bytes": 470692,
+      "sha256": "9ca5abc72ffb5866485a7e07d94d3be82b3a3003e33a58d5b7a384dd3c88c629",
+      "git_blob": "9490841d7ff63a18d439d8281bf81a2161ab4431"
+    },
+    {
+      "path": "source-tree.txt",
+      "bytes": 41,
+      "sha256": "c2bc43d6a96204ebdcf16498166a2d6a0d3d64be843128b4e72586bf29f8d2a4",
+      "git_blob": "cf3b4626a3dcb9ebaaee5d934f0dae8490201595"
+    }
+  ],
+  "physical_android_fps_measured": false,
+  "complete_native52_acceptance": false,
+  "scope": "Separate source-bound Discovery renderer evidence; no Android, device FPS or combined Host acceptance"
+}
+[DiscoveryOriginals] PASS 10 exact probes, 38 decoded PNGs and 2 original reports

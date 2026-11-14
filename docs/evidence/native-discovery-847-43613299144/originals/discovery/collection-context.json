@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "native_source": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "native_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "project": "/home/runner/work/lumo-godot/lumo-godot",
+  "output": "/home/runner/work/_temp/lumo-discovery-43613299144-1/evidence/discovery",
+  "output_was_absent": true,
+  "godot": "/home/runner/work/_temp/lumo-discovery-43613299144-1/engine/bin/Godot_v4.6.3-stable_linux.x86_64",
+  "python": "/home/runner/work/_temp/lumo-discovery-43613299144-1/venv/bin/python",
+  "renderer_prefix": [
+    "/usr/bin/xvfb-run",
+    "-a",
+    "-s",
+    "-screen 0 2560x2560x24"
+  ],
+  "display": "",
+  "started_monotonic_ns": 195891893738
+}

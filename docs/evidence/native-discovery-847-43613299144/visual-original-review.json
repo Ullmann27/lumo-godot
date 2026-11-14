@@ -1,0 +1,283 @@
+{
+  "source_commit": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "original_report_geometry_recheck": "All seven visible rows lie within reported safe bounds, contain their content rectangle and do not overlap any reported control rectangle/artwork or notice rectangle (0.05px floating-point tolerance). Compact portrait and short landscape are hidden; no hidden-row rectangle fit is asserted.",
+  "layout_rows": [
+    {
+      "label": "dense-left-cutout",
+      "surface": [
+        2400,
+        1080
+      ],
+      "density": 2.625,
+      "visible": true,
+      "map_rect_px": [
+        1495.55908203125,
+        431.25,
+        406.506103515625,
+        333.604797363281
+      ],
+      "safe_rect_px": [
+        136.0,
+        63.0,
+        2264.0,
+        954.0
+      ],
+      "content_rect_px": [
+        1516.55908203125,
+        452.25,
+        364.506103515625,
+        291.604797363281
+      ]
+    },
+    {
+      "label": "dense-right-cutout",
+      "surface": [
+        2400,
+        1080
+      ],
+      "density": 2.625,
+      "visible": true,
+      "map_rect_px": [
+        1359.55920410156,
+        431.25,
+        406.505981445312,
+        333.604797363281
+      ],
+      "safe_rect_px": [
+        0.0,
+        63.0,
+        2264.0,
+        954.0
+      ],
+      "content_rect_px": [
+        1380.55920410156,
+        452.25,
+        364.505981445312,
+        291.604797363281
+      ]
+    },
+    {
+      "label": "same-pixels-density-one",
+      "surface": [
+        2400,
+        1080
+      ],
+      "density": 1.0,
+      "visible": true,
+      "map_rect_px": [
+        2175.5,
+        244.5,
+        202.0,
+        170.0
+      ],
+      "safe_rect_px": [
+        136.0,
+        63.0,
+        2264.0,
+        954.0
+      ],
+      "content_rect_px": [
+        2196.5,
+        265.5,
+        160.0,
+        128.0
+      ]
+    },
+    {
+      "label": "expanded-inner-display",
+      "surface": [
+        2176,
+        1812
+      ],
+      "density": 2.0,
+      "visible": true,
+      "map_rect_px": [
+        1728.19995117188,
+        359.457794189453,
+        367.60009765625,
+        303.851531982422
+      ],
+      "safe_rect_px": [
+        48.0,
+        48.0,
+        2092.0,
+        1722.0
+      ],
+      "content_rect_px": [
+        1751.99987792969,
+        383.277526855469,
+        320.000122070312,
+        256.212097167969
+      ]
+    },
+    {
+      "label": "compact-portrait",
+      "surface": [
+        360,
+        800
+      ],
+      "density": 1.0,
+      "visible": false,
+      "map_rect_px": [
+        285.974243164062,
+        75.4933395385742,
+        60.8162231445312,
+        50.2357864379883
+      ],
+      "safe_rect_px": [
+        8.0,
+        24.0,
+        344.0,
+        756.0
+      ],
+      "content_rect_px": [
+        289.911743164062,
+        79.4314575195312,
+        52.9412231445312,
+        42.3595581054688
+      ]
+    },
+    {
+      "label": "short-landscape",
+      "surface": [
+        1280,
+        640
+      ],
+      "density": 2.0,
+      "visible": false,
+      "map_rect_px": [
+        878.535949707031,
+        186.718948364258,
+        192.209167480469,
+        158.745071411133
+      ],
+      "safe_rect_px": [
+        0.0,
+        24.0,
+        1280.0,
+        592.0
+      ],
+      "content_rect_px": [
+        890.980346679688,
+        199.163391113281,
+        167.3203125,
+        133.856201171875
+      ]
+    },
+    {
+      "label": "dense-restored",
+      "surface": [
+        2400,
+        1080
+      ],
+      "density": 2.625,
+      "visible": true,
+      "map_rect_px": [
+        1495.55908203125,
+        431.25,
+        406.506103515625,
+        333.604797363281
+      ],
+      "safe_rect_px": [
+        136.0,
+        63.0,
+        2264.0,
+        954.0
+      ],
+      "content_rect_px": [
+        1516.55908203125,
+        452.25,
+        364.506103515625,
+        291.604797363281
+      ]
+    },
+    {
+      "label": "expanded-hint-visible",
+      "surface": [
+        2176,
+        1812
+      ],
+      "density": 2.0,
+      "visible": true,
+      "map_rect_px": [
+        1728.19995117188,
+        511.984130859375,
+        367.60009765625,
+        303.851501464844
+      ],
+      "safe_rect_px": [
+        48.0,
+        48.0,
+        2092.0,
+        1722.0
+      ],
+      "content_rect_px": [
+        1751.99987792969,
+        535.803833007812,
+        320.000122070312,
+        256.212097167969
+      ]
+    },
+    {
+      "label": "expanded-hint-hidden",
+      "surface": [
+        2176,
+        1812
+      ],
+      "density": 2.0,
+      "visible": true,
+      "map_rect_px": [
+        1728.19995117188,
+        359.457794189453,
+        367.60009765625,
+        303.851531982422
+      ],
+      "safe_rect_px": [
+        48.0,
+        48.0,
+        2092.0,
+        1722.0
+      ],
+      "content_rect_px": [
+        1751.99987792969,
+        383.277526855469,
+        320.000122070312,
+        256.212097167969
+      ]
+    }
+  ],
+  "original_images_opened_individually": [
+    {
+      "path": "mobile-minimap/captures/minimap/dense-left-cutout.png",
+      "sha256": "2a340a7bb05ae9cbf70feb02d8b2deead48578aae08990b9d08c2884d96aeed9",
+      "git_blob": "d26cb04b370a3af9211b51f4dacb3c3956bdd2a2",
+      "observation": "Minimap visible beside the gameplay controls, below the HUD/instruction area; no observed overlap with control artwork. The desktop keyboard instruction row is present; this is a platform-boundary fixture, not Android UI proof."
+    },
+    {
+      "path": "mobile-minimap/captures/minimap/expanded-hint-visible.png",
+      "sha256": "a5dfea73deea053f88b6babc03224d539373907d967a03b7b9a6e4ee9073df90",
+      "git_blob": "6cc48adb49e7f6eaca29ff58d4a073aaa60f2d45",
+      "observation": "Minimap remains visible to the right and below the live hint, with space from the displayed steering/action artwork."
+    },
+    {
+      "path": "mobile-minimap/captures/minimap/compact-portrait.png",
+      "sha256": "da255a202ef1ae83df7a1543af466f39c705a162c35ccf22a7908ea551f88930",
+      "git_blob": "1d0b7e91f9f52aa11f9149b275b909feb1cda4fb",
+      "observation": "Minimap is hidden as recorded. The kart sides are clipped by this narrow portrait fixture; no universal full-kart-framing conclusion is made."
+    },
+    {
+      "path": "village-scaling/captures/01-home-region.png",
+      "sha256": "ad1d0a16da080fd2526d1e7cc77fb5ab0bf348a18b239234ef176c8eb140e032",
+      "git_blob": "d5125384c34beb858278d4b11d37ccf9dad66152",
+      "observation": "The 2178-house stress fixture shows a limited detailed neighborhood and simplified distant houses; header and main visible controls are readable. Horizontal action scrolling remains."
+    },
+    {
+      "path": "village-scaling/captures/02-river-boundary.png",
+      "sha256": "c2b69f6f59d2f70d1d6ab555a821763a517b14f08876001768a55b4b9dcf7a81",
+      "git_blob": "86e36e9d1c448b24350aeff98ecfc0dbdf7df419",
+      "observation": "Both river banks and the bridge are visible; detailed regions appear on both sides with simplified farther houses. This is not a default new-village screenshot."
+    }
+  ],
+  "limits": "Five actual existing PNGs inspected visually; all sixty PNGs decoded by original bound readers. Desktop/platform-boundary proof only, no Android or FPS conclusion."
+}

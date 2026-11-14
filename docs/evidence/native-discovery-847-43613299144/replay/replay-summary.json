@@ -1,0 +1,99 @@
+{
+  "source_commit": "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+  "source_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "pillow": "13.0.0",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "ci_pillow": "12.3.0",
+  "readers": [
+    {
+      "name": "verify_discovery_connections.py",
+      "git_blob": "c00ca9873106c974d66282cddfdcfaf5eb3bbebc",
+      "sha256": "5edab9f77acaa4114281b74166eec3dbf306eb5b574f677c03190a379081dfaf"
+    },
+    {
+      "name": "collect_discovery_connections.py",
+      "git_blob": "1ebdec66300dfb87bf9287d194525d3c374c8aee",
+      "sha256": "bfc9f32c8287849047e9f7babf400c107d790aecb21a45be16d45fa7302a3f83"
+    },
+    {
+      "name": "verify_discovery_rasters.py",
+      "git_blob": "219e691fc8aa119cc80221b3db6c77e63caf8bfe",
+      "sha256": "55591b4478d2074135ea4950fb00200d68a3f9bede286b39642d7fc17aa586da"
+    },
+    {
+      "name": "verify_dream_rasters.py",
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5",
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d"
+    },
+    {
+      "name": "run_godot_probe.py",
+      "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13"
+    }
+  ],
+  "workflow_git_blob": "02940ea1a3698d14b8fabaed4d5ee7af5b24907b",
+  "replays": [
+    {
+      "name": "dream-read-only",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/909ddb52fe7b/native-847-discovery-original-review/originals/discovery/helpers/verify_dream_rasters.py",
+        "/workspace/scratch/909ddb52fe7b/native-847-discovery-original-review/originals/dream"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.67,
+      "log": "dream-read-only.log"
+    },
+    {
+      "name": "discovery-read-only",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/909ddb52fe7b/native-847-discovery-original-review/originals/discovery/helpers/verify_discovery_connections.py",
+        "/workspace/scratch/909ddb52fe7b/native-847-discovery-original-review/originals/discovery",
+        "--expected-native-sha",
+        "84789d0c2c6fb4b6ecd2897ce1951b89f958b604",
+        "--expected-native-tree",
+        "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 3.838,
+      "log": "discovery-read-only.log"
+    },
+    {
+      "name": "village-scaling-original-block",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/909ddb52fe7b/native-847-discovery-original-review/replay/village-scaling-original-workflow-block.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.266,
+      "log": "village-scaling-original-block.log",
+      "recomputed_report_byte_equal_to_original": true,
+      "original_report_sha256": "fc85d96bd845bb5ccad85807f0e599278f66d5d4bcc042a1ec2f3493a8928e5d",
+      "exact_workflow_python_block_sha256": "7e593ff0e2d11504aef90e141e048c6847be090b4e690473109644bde35c089a"
+    },
+    {
+      "name": "mobile-minimap-original-block",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/909ddb52fe7b/native-847-discovery-original-review/replay/mobile-minimap-original-workflow-block.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 1.621,
+      "log": "mobile-minimap-original-block.log",
+      "recomputed_report_byte_equal_to_original": true,
+      "original_report_sha256": "7a22917275a367b0bb260e0be7f6a8879e65ececb2edd8a2e1192c578e5f0434",
+      "exact_workflow_python_block_sha256": "d5939bd56ee5abca6200838e2c135bb46db4b4d526662ded9b33f9546f856805"
+    }
+  ],
+  "all_original_files_unchanged": 1516,
+  "original_names_unchanged": true,
+  "engine_invocations": 0,
+  "copied_original_ci_namespace": "/home/runner/work/_temp/lumo-discovery-43613299144-1",
+  "scope": "Original-reader replay only; independent copies for the two unchanged workflow blocks; no Android/FPS claim"
+}

@@ -1,0 +1,29 @@
+test_changed_argv_deadline_or_capture_environment (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_changed_argv_deadline_or_capture_environment) ... ok
+test_changed_bytes_mode_or_sparse_missing_source (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_changed_bytes_mode_or_sparse_missing_source) ... ok
+test_changed_index_or_dirty_status (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_changed_index_or_dirty_status) ... ok
+test_complete_originals_replay_is_read_only (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_complete_originals_replay_is_read_only) ... ok
+test_corrupted_uniform_or_transparent_png (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_corrupted_uniform_or_transparent_png) ... ok
+test_different_runner_transcript (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_different_runner_transcript) ... ok
+test_duplicate_or_reordered_engine_call (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_duplicate_or_reordered_engine_call) ... ok
+test_errors_after_pass_are_not_filtered (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_errors_after_pass_are_not_filtered) ... ok
+test_extra_or_missing_original_log (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_extra_or_missing_original_log) ... ok
+test_foreign_expected_source_or_commit (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_foreign_expected_source_or_commit) ... ok
+test_forged_manifest_and_write_mode_fail (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_forged_manifest_and_write_mode_fail) ... ok
+test_fresh_output_rejects_existing_symlink_and_source_descendant (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_fresh_output_rejects_existing_symlink_and_source_descendant) ... ok
+test_generated_uid_inventory_preserved_without_cleanup (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_generated_uid_inventory_preserved_without_cleanup) ... ok
+test_missing_extra_or_symlink_capture (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_missing_extra_or_symlink_capture) ... ok
+test_missing_or_unfinished_engine_call (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_missing_or_unfinished_engine_call) ... ok
+test_missing_partial_or_duplicate_success_marker (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_missing_partial_or_duplicate_success_marker) ... ok
+test_nonfinite_or_duplicate_report (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_nonfinite_or_duplicate_report) ... ok
+test_nonzero_timeout_or_overlapping_interval (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_nonzero_timeout_or_overlapping_interval) ... ok
+test_omitting_a_source_in_both_snapshots_cannot_pass (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_omitting_a_source_in_both_snapshots_cannot_pass) ... ok
+test_preserved_budgets_and_no_headless_render_substitution (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_preserved_budgets_and_no_headless_render_substitution) ... ok
+test_reader_hash_rejected_before_import (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_reader_hash_rejected_before_import) ... ok
+test_unchanged_activity_pixels_fail (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_unchanged_activity_pixels_fail) ... ok
+test_wrong_hub_and_wonder_original_state (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_wrong_hub_and_wonder_original_state) ... ok
+test_wrong_or_multiple_engine_banner (tools.tests.test_discovery_connections.DiscoveryConnectionsTest.test_wrong_or_multiple_engine_banner) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 7.970s
+
+OK

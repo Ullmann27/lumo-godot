@@ -1,0 +1,21 @@
+[DiscoveryCollector] START 1/10 learning_world_regression headless deadline=420s
+[DiscoveryCollector] END 1/10 returncode=0
+[DiscoveryCollector] START 2/10 learning_sharing_regression headless deadline=420s
+[DiscoveryCollector] END 2/10 returncode=0
+[DiscoveryCollector] START 3/10 learning_studio_regression headless deadline=420s
+[DiscoveryCollector] END 3/10 returncode=0
+[DiscoveryCollector] START 4/10 game_hub_magic_regression headless deadline=150s
+[DiscoveryCollector] END 4/10 returncode=0
+[DiscoveryCollector] START 5/10 village_host_launch_regression headless deadline=150s
+[DiscoveryCollector] END 5/10 returncode=0
+[DiscoveryCollector] START 6/10 learning_wonder_details_regression headless deadline=150s
+[DiscoveryCollector] END 6/10 returncode=0
+[DiscoveryCollector] START 7/10 learning_wonder_details_regression rendered deadline=420s
+[DiscoveryCollector] END 7/10 returncode=0
+[DiscoveryCollector] START 8/10 game_hub_magic_capture rendered deadline=180s
+[DiscoveryCollector] END 8/10 returncode=0
+[DiscoveryCollector] START 9/10 learning_world_capture rendered deadline=900s
+[DiscoveryCollector] END 9/10 returncode=0
+[DiscoveryCollector] START 10/10 learning_wonder_details_capture rendered deadline=420s
+[DiscoveryCollector] END 10/10 returncode=0
+[DiscoveryOriginals] PASS 10 exact probes, 38 decoded PNGs and 2 original reports

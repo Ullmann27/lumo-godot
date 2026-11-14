@@ -1,0 +1,6 @@
+repository=Ullmann27/lumo-godot
+ref=refs/heads/integration/lumo-live-connections-20261114
+source=84789d0c2c6fb4b6ecd2897ce1951b89f958b604
+run=43613299144
+attempt=1
+job=discovery-native-acceptance
