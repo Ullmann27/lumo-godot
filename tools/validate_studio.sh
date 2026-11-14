@@ -123,7 +123,10 @@ check_probe lumo_facial_capture 'LUMO_FACIAL_CAPTURE_PASS frames=144' rendered 4
   --resolution 640x640 --fixed-fps 24 \
   --write-movie "$LOG_DIR/captures/lumo_facial_capture/facial-runtime.avi"
 check_probe connect_four_visual_capture 'CONNECT_FOUR_VISUAL_PASS' rendered 600 -- --capture
-check_probe treasure_title_contrast_regression '[TreasureTitleContrast] PASS' rendered 600 -- --capture
+# This one software-renderer probe already took 584.700 s on the successful 785 CI;
+# the Host run reached its last profile 16.061 s later. Keep all 5 profiles/10 states,
+# real inputs, the 54-raster roster and success marker; bound this probe at 900 s.
+check_probe treasure_title_contrast_regression '[TreasureTitleContrast] PASS' rendered 900 -- --capture
 
 # A logic PASS in a display process is insufficient: require the native rasters.
 if ! python3 - "$LOG_DIR" <<'PY'

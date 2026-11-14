@@ -135,13 +135,13 @@ class StudioPuzzleMenuContractTests(unittest.TestCase):
             ('lumo_facial_regression', 'LUMO_FACIAL_PASS checks=102', 'headless', '180'),
             ('lumo_facial_capture', 'LUMO_FACIAL_CAPTURE_PASS frames=144', 'rendered', '420'),
             ('connect_four_visual_capture', 'CONNECT_FOUR_VISUAL_PASS', 'rendered', '600'),
-            ('treasure_title_contrast_regression', '[TreasureTitleContrast] PASS', 'rendered', '600'),
+            ('treasure_title_contrast_regression', '[TreasureTitleContrast] PASS', 'rendered', '900'),
         ])
         self.assertIn('LUMO_FACE_CAPTURE_DIR="$capture"', self.source)
         self.assertIn('--resolution 640x640 --fixed-fps 24', self.source)
         self.assertIn('--write-movie "$LOG_DIR/captures/lumo_facial_capture/facial-runtime.avi"', self.source)
         self.assertIn("check_probe connect_four_visual_capture 'CONNECT_FOUR_VISUAL_PASS' rendered 600 -- --capture", self.source)
-        self.assertIn("check_probe treasure_title_contrast_regression '[TreasureTitleContrast] PASS' rendered 600 -- --capture", self.source)
+        self.assertIn("check_probe treasure_title_contrast_regression '[TreasureTitleContrast] PASS' rendered 900 -- --capture", self.source)
         self.assertIn('"$@" || return $?', self.source)
         self.assertIn('collect_face_movie "$capture" || return $?', self.source)
         self.assertIn("check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' "
