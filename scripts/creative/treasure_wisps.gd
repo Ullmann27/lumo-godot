@@ -122,6 +122,7 @@ func _billboard() -> Basis:
 func _draw_routes() -> void:
     if _guides.is_empty():
         return
+    print("[TreasureWisp] draw_routes called goals=", _goals.size(), " inside=", is_inside_tree(), " guide_count=", _guides.size())
     var facing := _billboard()
     for route_index in range(_guides.size()):
         var node := _guides[route_index]
@@ -148,6 +149,8 @@ func _draw_routes() -> void:
             batch.set_instance_transform(
                 i, Transform3D(facing.scaled(Vector3.ONE * size), at)
             )
+            if i == 0:
+                print("[TreasureWisp] batch=", route_index, " computed=", at, " observed=", batch.get_instance_transform(0).origin)
 
 
 func _draw_celebration() -> void:
