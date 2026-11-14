@@ -33,6 +33,31 @@ jobs:
           timeout 90 "$RUNNER_TEMP/godot" --headless --path . --script res://scripts/tests/game_hub_magic_regression.gd 2>&1 | tee /tmp/hub-test.log
           grep -F '[LumoHub] PASS' /tmp/hub-test.log
           if grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' /tmp/hub-test.log; then exit 1; fi
+      - name: Capture real rendered 3D hub – phone and Fold landscape
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          LUMO_HUB_CAPTURE_DIR: ${{ github.workspace }}/proof
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          mkdir -p "$LUMO_HUB_CAPTURE_DIR"
+          xvfb-run -a -s '-screen 0 2560x2560x24' timeout 240 "$RUNNER_TEMP/godot" \
+            --path . --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://scripts/tests/game_hub_magic_capture.gd \
+            2>&1 | tee /tmp/hub-render.log
+          grep -F '[LumoHubCapture] PASS' /tmp/hub-render.log
+          if grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' /tmp/hub-render.log; then exit 1; fi
+          python3 - <<'PY'
+          import os, struct
+          for name, dims in (("hub_portrait.png", (1080, 1920)), ("hub_fold_landscape.png", (2400, 1080))):
+              path = os.path.join(os.environ["LUMO_HUB_CAPTURE_DIR"], name)
+              with open(path, "rb") as f:
+                  header = f.read(24)
+              assert header[:8] == b"\x89PNG\r\n\x1a\n", name
+              assert struct.unpack(">II", header[16:24]) == dims, name
+              print("PNG receipt:", name, dims, os.path.getsize(path))
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -40,5 +65,7 @@ jobs:
           path: |
             /tmp/hub-import.log
             /tmp/hub-test.log
+            /tmp/hub-render.log
+            proof/
           if-no-files-found: warn
           retention-days: 30
