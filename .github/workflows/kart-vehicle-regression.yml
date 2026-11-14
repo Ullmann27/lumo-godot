@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/kart-vehicle-regression.yml
       - scripts/games/kart_vehicle.gd
+      - scripts/games/kart_modular_aero_kit.gd
       - scripts/games/kart_fleet.gd
       - scripts/games/kart_fur_geometry.gd
       - scripts/games/kart_character_finish.gd
@@ -21,6 +22,7 @@ on:
     paths:
       - .github/workflows/kart-vehicle-regression.yml
       - scripts/games/kart_vehicle.gd
+      - scripts/games/kart_modular_aero_kit.gd
       - scripts/games/kart_fleet.gd
       - scripts/games/kart_fur_geometry.gd
       - scripts/games/kart_character_finish.gd
@@ -66,6 +68,30 @@ jobs:
           cp scripts/games/visual/kart_cinema_materials.gd "$RUNNER_TEMP/kart-check/scripts/games/visual/"
           cp assets/shaders/kart_lumo_cinema_high.gdshader assets/shaders/kart_lumo_cinema_mobile.gdshader "$RUNNER_TEMP/kart-check/assets/shaders/"
           cp scripts/tests/kart_vehicle_regression.gd "$RUNNER_TEMP/kart-check/scripts/tests/"
+          # Resolve new source preloads recursively: the fixture must match the real kart.
+          python3 - "$RUNNER_TEMP/kart-check" <<'PY'
+          from pathlib import Path
+          import re
+          import shutil
+          import sys
+          destination = Path(sys.argv[1])
+          pending = ["scripts/tests/kart_vehicle_regression.gd"]
+          visited = set()
+          while pending:
+              relative = pending.pop()
+              if relative in visited:
+                  continue
+              source = Path(relative)
+              if not source.is_file():
+                  raise SystemExit("Required Kart source missing: " + relative)
+              target = destination / relative
+              target.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(source, target)
+              visited.add(relative)
+              if source.suffix == ".gd":
+                  pending.extend(re.findall(r"""preload\s*\(\s*["\']res://([^"\']+)["\']\s*\)""", source.read_text()))
+          print("Kart fixture verified dependency files:", len(visited))
+          PY
           printf 'config_version=5\n\n[application]\nconfig/name="Kart vehicle regression"\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n' > "$RUNNER_TEMP/kart-check/project.godot"
           python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/import.log" --timeout 120 --required 'Godot Engine v4.6.3' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path "$RUNNER_TEMP/kart-check" --editor --import --quit
           python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/vehicle.log" --timeout 120 --required '[KartVehicle] Geometry/colours, shadows, animations, effects, LOD and hysteresis passed' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path "$RUNNER_TEMP/kart-check" --script res://scripts/tests/kart_vehicle_regression.gd
