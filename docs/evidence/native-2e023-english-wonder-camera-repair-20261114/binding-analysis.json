@@ -1,0 +1,187 @@
+{
+  "schema": 1,
+  "status": "SOURCE_CAUSE_AND_ORIGINAL_PROJECTION_BOUND_NO_NEW_RUNTIME",
+  "run_id": 43627104987,
+  "attempt": 1,
+  "job_id": 132545372767,
+  "host": "abb53125528bae174b26fcec4c1d6cb6b4a899b5",
+  "native": "2e023854b49979720fec7e176dfe3d7cbc7fc3c7",
+  "tree": "0904821ed75ad1adbcc6a7057be2355c694f5dba",
+  "artifact_id": 14126257026,
+  "artifact_sha256": "253b0a32166c40b6beff96568a9bdd555b0009d77eec9dd05d9e6816350e0162",
+  "production_route": {
+    "scene": "scenes/learning/learning_world.tscn",
+    "scene_blob": "34591fe19b6141c769a8d09a14dcd5b85ea05f2b",
+    "wrapper": "scripts/learning/learning_wonder_world.gd",
+    "wrapper_blob": "933d42907bc5011cdb681907f3a5a022ef38fd7d",
+    "base": "scripts/learning/learning_world.gd",
+    "base_blob": "0e6ae8f3a4900bb1089c291773be2b2ca7442196"
+  },
+  "call_order": [
+    "production scene instantiates learning_wonder_world.gd",
+    "derived _layout calls super._layout",
+    "base _layout calls _layout_english",
+    "English measures/fits actual meshes and invokes landscape enlargement before returning",
+    "derived landscape branch then assigns a larger camera.size and its own v_offset"
+  ],
+  "demonstrated_later_override": {
+    "wrapper_lines": [
+      17,
+      29
+    ],
+    "header_rect_px": [
+      12.0,
+      12.0,
+      616.0,
+      83.0
+    ],
+    "footer_rect_px": [
+      12.0,
+      268.0,
+      616.0,
+      80.0
+    ],
+    "viewport_px": [
+      640.0,
+      360.0
+    ],
+    "ui_scale": 1.0,
+    "free_height_px": 173.0,
+    "formula": "7.0 * 360.0 / (268.0 - 12.0 - 83.0)",
+    "calculated_camera_size": 14.566473988439306,
+    "camera_size_from_original_projection": 14.56647327578855,
+    "absolute_difference": 7.126507561849849e-07,
+    "interpretation": "The later generic garden landscape frame exactly matches the failed original projection, within Float32 precision."
+  },
+  "objects": [
+    {
+      "word": "paper",
+      "mesh_paths": [
+        "NumberedPlinth",
+        "PlinthEdge",
+        "RecognizableObject/LooseSheet",
+        "RecognizableObject/WritingGuide00",
+        "RecognizableObject/WritingGuide01",
+        "RecognizableObject/WritingGuide02",
+        "RecognizableObject/WritingGuide03",
+        "RecognizableObject/WritingGuide04",
+        "RecognizableObject/WritingGuide05",
+        "RecognizableObject/WritingGuide06",
+        "RecognizableObject/WritingGuide07",
+        "RecognizableObject/PageMargin",
+        "RecognizableObject/LiftedCorner",
+        "ChoiceNumber"
+      ],
+      "actual_bounds_px": [
+        273.050140380859,
+        172.459655761719,
+        51.405700683594034,
+        46.62319946289
+      ],
+      "minimum_edge_dp": 46.62319946289,
+      "actual_collision_world_span": [
+        2.1400001049041752,
+        2.199999988079067,
+        2.099999904632572
+      ]
+    },
+    {
+      "word": "pencil case",
+      "mesh_paths": [
+        "NumberedPlinth",
+        "PlinthEdge",
+        "RecognizableObject/SoftCaseBody",
+        "RecognizableObject/ZipperTrack",
+        "RecognizableObject/ZipperTooth00",
+        "RecognizableObject/ZipperTooth01",
+        "RecognizableObject/ZipperTooth02",
+        "RecognizableObject/ZipperTooth03",
+        "RecognizableObject/ZipperTooth04",
+        "RecognizableObject/ZipperTooth05",
+        "RecognizableObject/ZipperTooth06",
+        "RecognizableObject/ZipperTooth07",
+        "RecognizableObject/ZipperTooth08",
+        "RecognizableObject/ZipperTooth09",
+        "RecognizableObject/ZipperTooth10",
+        "RecognizableObject/ZipperTooth11",
+        "RecognizableObject/ZipperTooth12",
+        "RecognizableObject/ZipperTooth13",
+        "RecognizableObject/ZipperTooth14",
+        "RecognizableObject/ZipperPull",
+        "ChoiceNumber"
+      ],
+      "actual_bounds_px": [
+        336.071563720703,
+        173.387664794922,
+        51.40570068359398,
+        45.69519042968702
+      ],
+      "minimum_edge_dp": 45.69519042968702,
+      "actual_collision_world_span": [
+        2.140000104904175,
+        2.199999988079067,
+        2.099999904632572
+      ]
+    },
+    {
+      "word": "ruler",
+      "mesh_paths": [
+        "NumberedPlinth",
+        "PlinthEdge",
+        "RecognizableObject/MeasuringRuler",
+        "RecognizableObject/MeasureMark00",
+        "RecognizableObject/MeasureMark01",
+        "RecognizableObject/MeasureMark02",
+        "RecognizableObject/MeasureMark03",
+        "RecognizableObject/MeasureMark04",
+        "RecognizableObject/MeasureMark05",
+        "RecognizableObject/MeasureMark06",
+        "RecognizableObject/MeasureMark07",
+        "RecognizableObject/MeasureMark08",
+        "RecognizableObject/MeasureMark09",
+        "RecognizableObject/MeasureMark10",
+        "RecognizableObject/MeasureMark11",
+        "RecognizableObject/MeasureMark12",
+        "RecognizableObject/MeasureMark13",
+        "RecognizableObject/MeasureMark14",
+        "RecognizableObject/MeasureMark15",
+        "RecognizableObject/MeasureMark16",
+        "ChoiceNumber"
+      ],
+      "actual_bounds_px": [
+        399.092987060547,
+        173.502670288086,
+        51.40573120117199,
+        45.691390991210994
+      ],
+      "minimum_edge_dp": 45.691390991210994,
+      "actual_collision_world_span": [
+        2.13999986648559,
+        2.199999988079067,
+        2.099999904632572
+      ]
+    }
+  ],
+  "mesh_scope": "Both product _english_projected_bounds and probe _meshes/_mesh_rect include all visible descendant MeshInstance3D AABB corners, including plinth and ChoiceNumber. No differing scope was found.",
+  "helper_return_limit": "The exact earlier enlargement return branch has no separate original trace. Unit collision scale proves no final enlargement; do not label a particular return line as directly observed. The demonstrated later derived-camera override invalidates any earlier fit regardless.",
+  "patch_scope": "Four inserted lines return from the derived camera extension only for english_objects after the complete original base layout. No geometry threshold, camera target, gameplay, voice, input, save or probe is changed.",
+  "preservation": {
+    "ready_function": "byte-identical",
+    "all_old_wrapper_bytes": "recovered exactly by deleting the four added lines",
+    "english_portrait": "base layout remains unchanged; old derived portrait path already returned without camera changes",
+    "other_activities": "same complete old derived landscape/portrait code",
+    "prior_base_repair": "byte-identical 0e6ae8f3, not rewritten"
+  },
+  "official_camera_source": {
+    "url": "https://github.com/godotengine/godot/blob/4.6.3-stable/scene/3d/camera_3d.cpp",
+    "bytes": 30154,
+    "sha256": "46fb0ae6cd69c04159a5d6afdf75b00e6c9dad70a0d90072187513d11ec23429",
+    "git_blob": "148466aa17d1d96e89c4b94ca513c1b2d7c3593c",
+    "scope": "Version4.6.3 source of immediate camera projection and unproject_position; no current-branch claim."
+  },
+  "open_gates": [
+    "Fresh original English renderer on new native commit, all14 profiles/17 captures and unchanged48dp, containment, separation, hints, spatial touches, lifecycle and return assertions.",
+    "No runtime PASS, Android PASS or FPS claim is made by this arithmetic/source review."
+  ],
+  "missing_original": "No ruler failure PNG was written: original probe writes layout JSON, checks geometry, then saves PNG; its first real error stopped before that image."
+}

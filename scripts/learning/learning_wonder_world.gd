@@ -18,6 +18,10 @@ func _layout() -> void:
 	super._layout()
 	if not is_inside_tree() or not is_instance_valid(camera) or not is_instance_valid(header):
 		return
+	# English already fits its measured gallery and touch geometry in the base.
+	# The garden camera override would shrink those objects after that fit.
+	if activity.kind == "english_objects":
+		return
 	var dimensions := get_viewport().get_visible_rect().size
 	if dimensions.x / maxf(1.0, dimensions.y) < 0.95:
 		return

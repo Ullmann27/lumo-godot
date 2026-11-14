@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "scope": "Root static source and archived-original review only; no new renderer/test execution.",
+  "base_native": "2e023854b49979720fec7e176dfe3d7cbc7fc3c7",
+  "base_tree": "0904821ed75ad1adbcc6a7057be2355c694f5dba",
+  "wrapper_before": "933d42907bc5011cdb681907f3a5a022ef38fd7d",
+  "wrapper_after": "6027cc48be6862a9f01b98814b6345fa05d74a2e",
+  "exact_four_added_lines_only": true,
+  "scene_loads_actual_wrapper": true,
+  "base_english_layout_preserved": true,
+  "ready_function_and_other_activity_paths_preserved": true,
+  "derived_camera_size_matches_original_within_float32_precision": true,
+  "complete_pack_members_byte_equal": 29,
+  "first_source_repair_still_not_runtime_qualified": true,
+  "conclusion": "Accept narrow source checkpoint; require actual new English renderer plus unchanged full qualification gates."
+}

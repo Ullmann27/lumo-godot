@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "frozen_utc": "2026-11-14T18:52:09.146901+00:00",
+  "repository": "Ullmann27/lumo-godot",
+  "base_commit": "2e023854b49979720fec7e176dfe3d7cbc7fc3c7",
+  "base_tree": "0904821ed75ad1adbcc6a7057be2355c694f5dba",
+  "scope": "One added English-specific return in production derived layout; no executed test/import/renderer.",
+  "files": [
+    {
+      "path": "scripts/learning/learning_wonder_world.gd",
+      "mode": "100644",
+      "before": {
+        "bytes": 1347,
+        "sha256": "3bc752a0085b181363b5dd50f807938d5b4f26e9e1dcb395ae8436c28bb059ba",
+        "git_blob": "933d42907bc5011cdb681907f3a5a022ef38fd7d"
+      },
+      "after": {
+        "bytes": 1546,
+        "sha256": "9bf0e44c52045c89338cff26b8511afcbdfb4dc2d555af23e4d2509b0b1696fb",
+        "git_blob": "6027cc48be6862a9f01b98814b6345fa05d74a2e"
+      }
+    }
+  ],
+  "patch": {
+    "bytes": 560,
+    "sha256": "244d3368d6df6917ef2e04444955ced40415523d78877f601192eae056a888f7",
+    "git_blob": "49a1ff68079ba42f4e36275ecee55c35931b43d1"
+  },
+  "preserved_source_count": 6
+}
