@@ -11,6 +11,7 @@ const LOAD_TIMEOUT_SECONDS := 30.0
 const COVER_BY_SCENE: Dictionary = {
 	"kart": "res://assets/kart/menu/lumo-world.webp",
 	"build": "res://assets/creative/covers/build.png",
+	"settlement": "res://assets/creative/covers/build.png",
 	"puzzle": "res://assets/creative/covers/puzzle.png",
 	"rhythm": "res://assets/creative/covers/rhythm.png",
 	"treasure": "res://assets/creative/covers/treasure.png",
@@ -19,6 +20,7 @@ const COVER_BY_SCENE: Dictionary = {
 const TITLE_BY_SCENE: Dictionary = {
 	"kart": "LUMO KART",
 	"build": "LUMO BAUWELT",
+	"settlement": "LUMO DORF & WIRTSCHAFT",
 	"puzzle": "LUMO PUZZLE-ATELIER",
 	"rhythm": "LUMO RHYTHM PARTY",
 	"treasure": "LUMO SCHATZSUCHE",
@@ -75,7 +77,7 @@ func _ready() -> void:
 		_reduced_motion = _reduced_motion or bool(session.get_value("race", "reduced_motion", false))
 	var requested: String = str(options.get("scene", ""))
 	var target: String = requested if requested in [
-		"kart", "jump", "puzzle", "build", "rhythm", "treasure", "learning", "cards", "connect_four", "home", "games"
+		"kart", "jump", "puzzle", "build", "settlement", "rhythm", "treasure", "learning", "cards", "connect_four", "home", "games"
 	] else "games"
 	_show_cover(target)
 	_build_actions()
