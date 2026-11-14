@@ -8,6 +8,7 @@ const STICK = preload("res://scripts/games/kart_joystick.gd")
 const ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const CHEST_MODEL = preload("res://assets/creative/models/lumo_treasure_chest.glb")
 const ISLAND_ART = preload("res://scripts/creative/treasure_island_art.gd")
+const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const CAMERA_OFFSET := Vector3(8.5, 6.8, 14.0)
 const CAMERA_LOOK_OFFSET := Vector3(0.0, 1.15, -2.0)
 var model = STATE.new()
@@ -24,6 +25,7 @@ var fox: Node3D
 var camera: Camera3D
 var marker: MeshInstance3D
 var alternate_marker: MeshInstance3D
+var wonder: Node3D
 var available_goals: Array[Dictionary] = []
 var gate: StaticBody3D
 var joystick: Control
@@ -87,6 +89,10 @@ func _ready() -> void:
 	alternate_marker.name = "AlternateExplorationGoal"
 	alternate_marker.scale = Vector3.ONE * 0.65
 	alternate_marker.hide()
+	wonder = WISPS.new()
+	wonder.name = "MagicalGuidance"
+	wonder.set_reduced_motion(bool(SceneRouter.launch_options.get("reduceAnimations", false)))
+	add_child(wonder)
 	_ui()
 	get_viewport().size_changed.connect(_layout)
 	RUNTIME.watch_safe_area(self, _layout)
@@ -436,6 +442,7 @@ func _physics_process(delta: float) -> void:
 	var found := model.try_discover(player.position)
 	if not found.is_empty():
 		toast.text = "Entdeckung: %s!" % found
+		wonder.celebrate(player.position + Vector3.UP * 1.7)
 		_update()
 	if not available_goals.is_empty():
 		marker.position = available_goals[0].at + Vector3.UP * (3.5 + sin(time * 2) * 0.2)
@@ -443,6 +450,7 @@ func _physics_process(delta: float) -> void:
 	if available_goals.size() > 1:
 		alternate_marker.position = available_goals[1].at + Vector3.UP * (3.5 + sin(time * 2 + 1) * 0.2)
 		alternate_marker.rotate_y(-delta)
+	wonder.set_routes(player.position, available_goals)
 	action.disabled = not model.can_interact(player.position)
 	save_clock += delta
 	if save_clock > 3:
@@ -475,6 +483,7 @@ func _update() -> void:
 	marker.visible = not model.completed
 	available_goals = model.available_clues()
 	alternate_marker.visible = available_goals.size() > 1
+	wonder.set_routes(player.position, available_goals)
 	var lead: String = model.current().lead
 	if available_goals.size() > 1:
 		lead = "Wähle deinen Weg: Kristallwächter oder Mondgarten. Für das Schloss brauchst du beide Funde."
@@ -493,6 +502,7 @@ func _update() -> void:
 
 func _open_modal(title: String) -> void:
 	paused = true
+	wonder.set_paused(true)
 	joystick.set_enabled(false)
 	for child in modal_box.get_children():
 		modal_box.remove_child(child)
@@ -505,6 +515,7 @@ func _open_modal(title: String) -> void:
 
 func _close_modal() -> void:
 	paused = false
+	wonder.set_paused(false)
 	modal.hide()
 	joystick.set_enabled(true)
 
@@ -533,6 +544,7 @@ func _answer(choice: int) -> void:
 		return
 	_update()
 	_close_modal()
+	wonder.celebrate(player.position + Vector3.UP * 1.7)
 	toast.text = "Gefunden: " + model.inventory[-1] + "! Dein Rucksack wächst."
 	if model.last_cheer == 3:
 		toast.text = "Gefunden: %s! Super-Serie: 3 Hinweise hintereinander!" % model.inventory[-1]

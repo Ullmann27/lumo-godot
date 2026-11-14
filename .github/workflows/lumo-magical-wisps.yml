@@ -1,0 +1,80 @@
+name: LUMO magical 3D treasure QA
+
+on:
+  push:
+    branches: [chatgpt/lumo-treasure-magic-wisps-20261114]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lumo-magical-wisps
+  cancel-in-progress: true
+
+jobs:
+  native-render-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install verified Godot and software render packages
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import unchanged base and our exact additions
+        run: |
+          set -euo pipefail
+          mkdir -p magic-evidence
+          git rev-parse HEAD > magic-evidence/source.txt
+          godot --version > magic-evidence/engine.txt
+          godot --headless --editor --import --quit 2>&1 | tee magic-evidence/import.log
+          if grep -E 'SCRIPT ERROR|Parse Error|ERROR:' magic-evidence/import.log; then exit 1; fi
+      - name: Test original star rendering and accessibility controls
+        run: |
+          python3 tools/run_godot_probe.py --log magic-evidence/wisps.log \
+            --timeout 180 --required '[TreasureWisp] PASS' -- \
+            godot --headless --path . --audio-driver Dummy --script scripts/tests/treasure_wisp_regression.gd
+      - name: Test untouched puzzle authority and both playable routes
+        run: |
+          python3 tools/run_godot_probe.py --log magic-evidence/quest.log \
+            --timeout 180 --required '[TreasureExploration] PASS' -- \
+            godot --headless --path . --audio-driver Dummy --script scripts/tests/treasure_exploration_regression.gd
+      - name: Render three original island snapshots and verify PNG bytes
+        run: |
+          set -euo pipefail
+          mkdir -p magic-evidence/images
+          TREASURE_EXPLORATION_CAPTURE_DIR="$GITHUB_WORKSPACE/magic-evidence/images" \
+            python3 tools/run_godot_probe.py --log magic-evidence/render.log \
+            --timeout 420 --required '[TreasureExploration] PASS' -- \
+            xvfb-run -a -s '-screen 0 2560x2560x24' godot --path . \
+              --rendering-method gl_compatibility --audio-driver Dummy \
+              --script scripts/tests/treasure_exploration_regression.gd
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          folder = Path('magic-evidence/images')
+          evidence = {}
+          for name in ['treasure_choose_route.png', 'treasure_garden_first.png', 'treasure_route_complete.png']:
+              data = (folder / name).read_bytes()
+              assert data[:8] == b'\x89PNG\r\n\x1a\n' and len(data) > 8192, name
+              evidence[name] = {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+          Path('magic-evidence/images.json').write_text(json.dumps(evidence, indent=2) + '\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-magic-real-3d-render-evidence
+          path: magic-evidence/
+          if-no-files-found: error
+          retention-days: 30
