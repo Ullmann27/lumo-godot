@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify PR167's additional16 PNGs, actual facial movie and original sidecars.
+"""Verify PR167's additional17 PNGs, actual facial movie and original sidecars.
 
 The52-gate caller keeps every earlier gate and roster. Movie collection invokes
 real ffmpeg/ffprobe once; verification can be completely read-only for publisher
@@ -124,7 +124,7 @@ face_names = {'teacher_scene.png', 'neutral.png', 'audio_jaw.png', 'blink.png', 
 
 c4_views = {'c4-empty-landscape.png': ((960, 540), 0, 0, False, 'playing', True, '4b85b841d4981813dfcd61bc2a1232a9a665ea8be1b69f9ca192d57f2e2eb490'), 'c4-playing-phone.png': ((412, 915), 2, 0, False, 'playing', False, 'b871ef7da990d3f31143a80caa9cd4739d91a0dcf0028e56734d61ddfcf56ab6'), 'c4-win-landscape.png': ((960, 540), 7, 4, False, 'won', True, 'f19e96174c8d970a7d10df04259d05e99e370ef1884a5eda8682da48f09d5cc8'), 'c4-paused-small.png': ((640, 360), 3, 0, True, 'playing', False, '6812f85731ce01cf4aed2b34962fa86644ebec07728268f9ff100252e58f99f7')}
 
-treasure_title_views = {'landscape': ((1920, 1080), 1.5, [112, 36, 0, 24]), 'compact': ((640, 320), 1.0, [0, 0, 0, 0]), 'portrait': ((1080, 2400), 2.625, [0, 136, 0, 63]), 'fold': ((2176, 1812), 2.25, [0, 136, 0, 63])}
+treasure_title_views = {'landscape': ((1920, 1080), 1.5, [112, 36, 0, 24]), 'compact': ((640, 320), 1.0, [0, 0, 0, 0]), 'portrait': ((1080, 2400), 2.625, [0, 136, 0, 63]), 'fold': ((2176, 1812), 2.25, [0, 136, 0, 63]), 'landscape-cutout': ((2400, 1080), 2.625, [136, 63, 0, 63])}
 
 
 def verify(root: Path, *, write: bool = True) -> dict:
@@ -245,26 +245,80 @@ def verify(root: Path, *, write: bool = True) -> dict:
     def treasure_title_report(folder):
         path = folder / 'treasure-title-report.json'
         state = read_json(path)
-        require(type(state['checks']) is int and state['checks'] >= 137, path)
+        require(type(state['checks']) is int and state['checks'] >= 3341, path)
         require(state['failures'] == [], path)
         require(state['scope'] == 'Production HUD, real ScreenTouch, declared saved-position and Android-boundary fixture; not device execution', path)
         rows = state['observations']
-        require(len(rows) == 4 and {row['profile'] for row in rows} == set(treasure_title_views), path)
-        reported = {row['profile']: row for row in rows}
-        for profile, (size, density, insets) in treasure_title_views.items():
-            item = reported[profile]
+        starts = {'production fresh start', 'original86445 first tree save'}
+        expected = {(profile, start) for profile in treasure_title_views for start in starts}
+        require(isinstance(rows, list) and len(rows) == 10
+                and {(row['profile'], row['initial_state_fixture']) for row in rows} == expected,
+                (path, 'exact five profiles and both start states'))
+        reported = {}
+
+        def rect(value, label):
+            require(isinstance(value, list) and len(value) == 4
+                    and all(finite(v) for v in value) and min(value[2:]) > 0, label)
+            return value
+
+        def inside(value, bounds, label):
+            require(value[0] >= bounds[0] - .51 and value[1] >= bounds[1] - .51, label)
+            require(value[0] + value[2] <= bounds[2] + .51
+                    and value[1] + value[3] <= bounds[3] + .51, label)
+
+        def overlaps(a, b):
+            return (a[0] < b[0] + b[2] and b[0] < a[0] + a[2]
+                    and a[1] < b[1] + b[3] and b[1] < a[1] + a[3])
+
+        for item in rows:
+            profile = item['profile']
+            size, density, insets = treasure_title_views[profile]
             name = f'treasure-title-{profile}.png'
-            require(Path(item['image']).name == name, path)
-            require(item['image_px'] == item['window_px'] == list(size), name)
+            require(item['window_px'] == list(size), name)
             require(finite(item['density']) and item['density'] == density, name)
-            require(item['insets_fixture'] == insets, name)
-            require(item['initial_state_fixture'] == 'original86445 first tree save', name)
+            require(item['insets_fixture'] == insets
+                    and all(finite(v) for v in item['insets_fixture']), name)
             contrast = item['worst_white_backdrop_contrast']
             require(finite(contrast) and 7 <= contrast <= 21, name)
-            rect = item['title_rect']
-            require(len(rect) == 4 and all((finite(v) for v in rect)) and (min(rect[2:]) > 0), name)
-            require(rect[0] >= insets[0] - 0.51 and rect[1] >= insets[1] - 0.51, name)
-            require(rect[0] + rect[2] <= size[0] - insets[2] + 0.51 and rect[1] + rect[3] <= size[1] - insets[3] + 0.51, name)
+            safe = (insets[0], insets[1], size[0] - insets[2], size[1] - insets[3])
+            inside(rect(item['title_rect'], name), safe, name)
+            view = item['gameplay_view']
+            avatar = rect(view['avatar_rect_px'], (name, 'avatar'))
+            inside(avatar, (0, 0, size[0], size[1]), (name, 'avatar'))
+            contrast = view['secondary_white_backdrop_contrast']
+            require(finite(contrast) and 7 <= contrast <= 21, (name, 'secondary contrast'))
+            compact = profile in {'compact', 'landscape-cutout'}
+            roles = {'header', 'toast', 'joystick', 'action', 'jump', 'hint' if compact else 'clue'}
+            hud = view['hud_rects']
+            require(isinstance(hud, list) and len(hud) == len(roles)
+                    and {region['role'] for region in hud} == roles, (name, 'HUD roles'))
+            regions = {}
+            for region in hud:
+                role = region['role']
+                require(type(region['name']) is str and region['name'], (name, role))
+                bounds = rect(region['rect_px'], (name, role))
+                inside(bounds, safe, (name, role))
+                require(not overlaps(bounds, avatar), (name, role, 'avatar occluded'))
+                overlap = region['overlap_px']
+                require(isinstance(overlap, list) and len(overlap) == 4
+                        and all(finite(v) for v in overlap) and overlap[2:] == [0, 0], (name, role))
+                if role in {'joystick', 'action', 'jump', 'hint'}:
+                    require(min(bounds[2:]) / density >= 47.99, (name, role, 'touch size'))
+                regions[role] = bounds
+            for role in {'joystick', 'action', 'jump', 'hint'} & roles:
+                require(not overlaps(regions['toast'], regions[role]), (name, role, 'toast covers input'))
+            # Both source-declared start states are mandatory. Only the original
+            # four restored views and the fresh cutout view may claim an image.
+            captured_start = ('production fresh start' if profile == 'landscape-cutout'
+                              else 'original86445 first tree save')
+            if item['initial_state_fixture'] == captured_start:
+                require(Path(item['image']).name == name
+                        and item['image_px'] == list(size), name)
+                reported[profile] = item
+            else:
+                require(not {'image', 'image_px', 'image_sha256'} & item.keys(),
+                        (name, 'unexpected capture state'))
+        require(set(reported) == set(treasure_title_views), path)
         return (identity(path), reported)
 
     # Preserve every published sidecar condition, then bind the source and full
@@ -323,7 +377,7 @@ def verify(root: Path, *, write: bool = True) -> dict:
              'proof': identity(face_folder / 'movie.json'),
              'ffprobe': identity(face_folder / 'movie-ffprobe.json'), 'logs': logs}
     result = {'schema': 1, 'kind': 'studio_2020_extension',
-              'scope': '16 actual Native renderer PNGs, original facial movie and sidecars; no Android/device FPS or Dart rules acceptance',
+              'scope': '17 actual Native renderer PNGs, original facial movie and sidecars; no Android/device FPS or Dart rules acceptance',
               'source': {'commit': head, 'tree': tree, 'stamps': stamps},
               'images': images, 'reports': [facial_state, c4_state, title_state], 'movies': [movie]}
     if write:
@@ -352,7 +406,7 @@ def main() -> int:
                 file_record(args.log_dir, args.log_dir / MANIFEST)
                 original = read_json(args.log_dir / MANIFEST)
                 require(original == result, 'Original Studio2020 manifest differs from recomputed evidence')
-            print('[Studio2020RasterRoster] PASS 16 actual PNG files, 3 original sidecars and 1 verified facial movie')
+            print('[Studio2020RasterRoster] PASS 17 actual PNG files, 3 original sidecars and 1 verified facial movie')
     except (OSError, ValueError, TypeError, KeyError, IndexError, subprocess.SubprocessError) as error:
         print('[Studio2020RasterRoster] FAIL: ' + str(error), file=sys.stderr)
         return 1

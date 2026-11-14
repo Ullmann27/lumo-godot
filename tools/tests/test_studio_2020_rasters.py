@@ -66,6 +66,55 @@ def movie_proof(folder: Path) -> dict:
             'encode_exit_code': 0, 'decode_exit_code': 0, 'probe_exit_code': 0}
 
 
+def treasure_visibility_fixture(folder: Path) -> dict:
+    """Published785 report geometry represented by explicit synthetic data.
+
+    This fixture has no renderer or Android provenance. The retained compressed
+    four-view report below remains an original historical negative input.
+    """
+    profiles = [
+        ('landscape', 1920, 1080, 1.5, [112, 36, 0, 24]),
+        ('compact', 640, 320, 1.0, [0, 0, 0, 0]),
+        ('portrait', 1080, 2400, 2.625, [0, 136, 0, 63]),
+        ('fold', 2176, 1812, 2.25, [0, 136, 0, 63]),
+        ('landscape-cutout', 2400, 1080, 2.625, [136, 63, 0, 63]),
+    ]
+    observations = []
+    for profile, width, height, density, insets in profiles:
+        path = folder / f'treasure-title-{profile}.png'
+        data = fixture_png(width, height)
+        path.write_bytes(data)
+        left, top, right, bottom = insets
+        safe_width, safe_height = width - left - right, height - top - bottom
+        avatar = [left + safe_width / 2 - 20, top + safe_height / 2 - 20, 40, 40]
+        clue_role = 'hint' if profile in ('compact', 'landscape-cutout') else 'clue'
+        boxes = {
+            'header': [left + 12, top + 12, safe_width - 24, 48 * density],
+            clue_role: [left + 12, top + 72 * density, 48 * density, 48 * density],
+            'toast': [left + safe_width / 2 - 48 * density, height - bottom - 12 - 48 * density, 96 * density, 48 * density],
+            'joystick': [left + 12, height - bottom - 12 - 48 * density, 48 * density, 48 * density],
+            'action': [width - right - 12 - 48 * density, height - bottom - 12 - 48 * density, 48 * density, 48 * density],
+            'jump': [width - right - 12 - 48 * density, height - bottom - 24 - 96 * density, 48 * density, 48 * density],
+        }
+        for restored in (False, True):
+            item = {'profile': profile, 'window_px': [width, height],
+                'density': density, 'insets_fixture': list(insets),
+                'title_rect': [left + 12, top + 12, 360, 42 * density],
+                'worst_white_backdrop_contrast': 14.4422647052388,
+                'initial_state_fixture': 'original86445 first tree save' if restored else 'production fresh start',
+                'gameplay_view': {'avatar_rect_px': list(avatar),
+                    'secondary_white_backdrop_contrast': 14.4422647052388,
+                    'hud_rects': [{'role': role, 'name': f'Fixture-{role}', 'rect_px': list(bounds),
+                                   'overlap_px': [0, 0, 0, 0]} for role, bounds in boxes.items()]}}
+            recorded = not restored if profile == 'landscape-cutout' else restored
+            if recorded:
+                item.update(image=str(path), image_sha256=hashlib.sha256(data).hexdigest(),
+                            image_px=[width, height])
+            observations.append(item)
+    return {'checks': 3341, 'failures': [], 'observations': observations,
+            'scope': 'Production HUD, real ScreenTouch, declared saved-position and Android-boundary fixture; not device execution'}
+
+
 def write_fixture(root: Path) -> None:
     """Original sidecar shapes plus declared synthetic pictures/movie envelopes."""
     root.mkdir(parents=True, exist_ok=True)
@@ -121,13 +170,7 @@ def write_fixture(root: Path) -> None:
         'captures': captures})
     title = root / verifier.TITLE_DIRECTORY
     title.mkdir(parents=True)
-    report = original('treasure-title')
-    for row in report['observations']:
-        name = 'treasure-title-' + row['profile'] + '.png'
-        data = fixture_png(*verifier.treasure_title_views[row['profile']][0])
-        (title / name).write_bytes(data)
-        row['image_sha256'] = hashlib.sha256(data).hexdigest()
-    store_json(title / 'treasure-title-report.json', report)
+    store_json(title / 'treasure-title-report.json', treasure_visibility_fixture(title))
 
 
 def write_movie_commands(directory: Path, fixture_root: Path) -> None:
@@ -166,9 +209,9 @@ class Studio2020RasterTests(unittest.TestCase):
             verifier.verify(self.root, write=False)
         self.assertFalse((self.root / verifier.MANIFEST).exists())
 
-    def test_original_sidecar_structures_bind_all_sixteen_decoded_synthetic_images(self):
+    def test_original_sidecar_structures_bind_all_seventeen_decoded_synthetic_images(self):
         result = verifier.verify(self.root)
-        self.assertEqual(len(result['images']), 16)
+        self.assertEqual(len(result['images']), 17)
         self.assertEqual(len(result['reports']), 3)
         self.assertEqual(len(result['movies']), 1)
         self.assertEqual(result['source']['commit'], FIXTURE_HEAD)
@@ -251,7 +294,7 @@ class Studio2020RasterTests(unittest.TestCase):
     def test_portrait_movie_dimensions_cannot_pass_square_face_capture(self):
         # Producer acf51d3 documents an actual 720x1280 MovieMaker output.
         # This is a synthetic transport replay of that format, not its movie.
-        self.assertEqual(len(verifier.verify(self.root, write=False)['images']), 16)
+        self.assertEqual(len(verifier.verify(self.root, write=False)['images']), 17)
         folder = self.root / verifier.FACE_DIRECTORY
         media = original('movie-ffprobe')
         media['streams'][0].update(width=720, height=1280)
@@ -262,7 +305,7 @@ class Studio2020RasterTests(unittest.TestCase):
         self.reject()
         store_json(folder / 'movie-ffprobe.json', original('movie-ffprobe'))
         store_json(folder / 'movie.json', movie_proof(folder))
-        self.assertEqual(len(verifier.verify(self.root, write=False)['images']), 16)
+        self.assertEqual(len(verifier.verify(self.root, write=False)['images']), 17)
 
     def test_movie_failed_decode_has_no_success_proof(self):
         prepared = self.root / 'fresh-face'
@@ -303,15 +346,124 @@ class Studio2020RasterTests(unittest.TestCase):
     def test_treasure_contrast_profile_safe_bounds_and_original_hash_are_mandatory(self):
         path = self.root / verifier.TITLE_DIRECTORY / 'treasure-title-report.json'
         before = path.read_bytes()
-        changes = [lambda value: value['observations'][0].update(worst_white_backdrop_contrast=6.99),
-                   lambda value: value['observations'][0].update(insets_fixture=[0, 0, 0, 0]),
-                   lambda value: value['observations'][0].update(title_rect=[-100, -100, 80, 40]),
-                   lambda value: value['observations'][0].update(image_sha256='0' * 64)]
+        changes = [lambda value: value['observations'][1].update(worst_white_backdrop_contrast=6.99),
+                   lambda value: value['observations'][1].update(insets_fixture=[0, 0, 0, 0]),
+                   lambda value: value['observations'][1].update(title_rect=[-100, -100, 80, 40]),
+                   lambda value: value['observations'][1].update(image_sha256='0' * 64)]
         for change in changes:
             with self.subTest(change=change):
                 path.write_bytes(before)
                 self.mutate(verifier.TITLE_DIRECTORY, path.name, change)
                 self.reject()
+
+    def reject_treasure_mutations(self, cases):
+        path = self.root / verifier.TITLE_DIRECTORY / 'treasure-title-report.json'
+        before = path.read_bytes()
+        for name, change in cases:
+            with self.subTest(mutation=name):
+                value = json.loads(before)
+                change(value)
+                store_json(path, value)
+                self.reject()
+        path.write_bytes(before)
+
+    def test_treasure_five_views_bind_both_states_and_designated_capture_only(self):
+        result = verifier.verify(self.root, write=False)
+        title_images = [row for row in result['images'] if '/treasure_title_contrast_regression/' in row['path']]
+        self.assertEqual(len(title_images), 5)
+        report = json.loads((self.root / verifier.TITLE_DIRECTORY / 'treasure-title-report.json').read_bytes())
+        self.assertEqual(len(report['observations']), 10)
+        self.assertEqual(sum('image' in row for row in report['observations']), 5)
+        self.assertEqual(next(row['initial_state_fixture'] for row in report['observations']
+                              if row.get('image', '').endswith('treasure-title-landscape-cutout.png')),
+                         'production fresh start')
+        def capture_on_wrong_state(value):
+            for key in ('image', 'image_px', 'image_sha256'):
+                value['observations'][9][key] = value['observations'][8].pop(key)
+        def extra_capture(value):
+            for key in ('image', 'image_px', 'image_sha256'):
+                value['observations'][0][key] = value['observations'][1][key]
+        self.reject_treasure_mutations([
+            ('missing-fresh', lambda v: v['observations'].pop(8)),
+            ('duplicate-restored', lambda v: v['observations'].__setitem__(8, copy.deepcopy(v['observations'][9]))),
+            ('cutout-capture-restored', capture_on_wrong_state),
+            ('extra-fresh-capture', extra_capture),
+            ('partial-unrecorded-image', lambda v: v['observations'][0].update(image_sha256='a' * 64)),
+            ('cutout-insets-swapped', lambda v: v['observations'][8].update(insets_fixture=[0, 63, 136, 63])),
+            ('boolean-insets', lambda v: v['observations'][2]['insets_fixture'].__setitem__(0, False)),
+            ('old-check-count', lambda v: v.update(checks=137)),
+            ('pre-spacing-check-count', lambda v: v.update(checks=3273)),
+            ('boolean-check-count', lambda v: v.update(checks=True)),
+        ])
+        # Retain the exact earlier original as a historical input, never relabel
+        # its four observations as the new five-format visibility acceptance.
+        store_json(self.root / verifier.TITLE_DIRECTORY / 'treasure-title-report.json', original('treasure-title'))
+        self.reject()
+
+    def test_treasure_cutout_png_dimensions_hash_and_presence_are_mandatory(self):
+        folder = self.root / verifier.TITLE_DIRECTORY
+        path = folder / 'treasure-title-report.json'
+        before = path.read_bytes()
+        image = folder / 'treasure-title-landscape-cutout.png'
+        raw = image.read_bytes()
+        image.unlink()
+        self.reject()
+        bad = fixture_png(2399, 1080)
+        image.write_bytes(bad)
+        value = json.loads(before)
+        value['observations'][8]['image_sha256'] = hashlib.sha256(bad).hexdigest()
+        store_json(path, value)
+        self.reject()
+        image.write_bytes(raw)
+        path.write_bytes(before)
+        self.reject_treasure_mutations([
+            ('wrong-image-hash', lambda v: v['observations'][8].update(image_sha256='0' * 64)),
+            ('wrong-reported-size', lambda v: v['observations'][8].update(image_px=[2399, 1080])),
+            ('wrong-reported-file', lambda v: v['observations'][8].update(image='treasure-title-fold.png')),
+        ])
+
+    def test_treasure_all_start_states_require_real_finite_avatar_and_semantic_hud_bounds(self):
+        def view(value, index=3):
+            return value['observations'][index]['gameplay_view']
+        def region(value, role, index=3):
+            return next(r for r in view(value, index)['hud_rects'] if r['role'] == role)
+        self.reject_treasure_mutations([
+            ('missing-avatar', lambda v: view(v).pop('avatar_rect_px')),
+            ('zero-avatar', lambda v: view(v)['avatar_rect_px'].__setitem__(2, 0)),
+            ('nonfinite-avatar', lambda v: view(v)['avatar_rect_px'].__setitem__(0, float('nan'))),
+            ('boolean-avatar', lambda v: view(v)['avatar_rect_px'].__setitem__(0, True)),
+            ('offscreen-avatar', lambda v: view(v)['avatar_rect_px'].__setitem__(0, 639)),
+            ('missing-hud', lambda v: view(v)['hud_rects'].pop()),
+            ('duplicate-role', lambda v: region(v, 'jump').update(role='action')),
+            ('missing-role', lambda v: region(v, 'jump').pop('role')),
+            ('compact-clue-not-hint', lambda v: region(v, 'hint').update(role='clue')),
+            ('tall-hint-not-clue', lambda v: region(v, 'clue', 4).update(role='hint')),
+            ('empty-control-name', lambda v: region(v, 'jump').update(name='')),
+            ('nonfinite-hud', lambda v: region(v, 'jump')['rect_px'].__setitem__(0, float('inf'))),
+            ('zero-hud', lambda v: region(v, 'toast')['rect_px'].__setitem__(2, 0)),
+            ('outside-cutout-safe-area', lambda v: region(v, 'header', 8)['rect_px'].__setitem__(0, 0)),
+            ('unrecorded-fresh-avatar-covered', lambda v: region(v, 'header', 0).update(rect_px=list(view(v, 0)['avatar_rect_px']))),
+            ('unrecorded-fresh-low-contrast', lambda v: view(v, 0).update(secondary_white_backdrop_contrast=6.99)),
+        ])
+
+    def test_treasure_recomputes_occlusion_and_input_clearance_instead_of_trusting_zero_overlap(self):
+        def view(value):
+            return value['observations'][3]['gameplay_view']
+        def region(value, role):
+            return next(r for r in view(value)['hud_rects'] if r['role'] == role)
+        self.reject_treasure_mutations([
+            ('hud-overlap-despite-zero-report', lambda v: region(v, 'toast').update(rect_px=list(view(v)['avatar_rect_px']))),
+            ('false-overlap-report', lambda v: region(v, 'toast').update(overlap_px=[0, 0, 1, 1])),
+            ('nonfinite-overlap-report', lambda v: region(v, 'toast').update(overlap_px=[float('nan'), 0, 0, 0])),
+            ('toast-covers-jump', lambda v: region(v, 'toast').update(rect_px=list(region(v, 'jump')['rect_px']))),
+            ('toast-covers-hint', lambda v: region(v, 'toast').update(rect_px=list(region(v, 'hint')['rect_px']))),
+            ('small-touch', lambda v: region(v, 'jump')['rect_px'].__setitem__(3, 47.98)),
+            ('boolean-touch', lambda v: region(v, 'jump')['rect_px'].__setitem__(3, True)),
+            ('low-secondary-contrast', lambda v: view(v).update(secondary_white_backdrop_contrast=6.99)),
+            ('nonfinite-secondary-contrast', lambda v: view(v).update(secondary_white_backdrop_contrast=float('nan'))),
+            ('invalid-secondary-contrast', lambda v: view(v).update(secondary_white_backdrop_contrast=21.01)),
+        ])
+
 
     def test_dirty_or_non_commit_native_source_stamps_fail(self):
         (self.root / 'source-dirty.txt').write_text(' M scripts/games/example.gd\n')

@@ -173,5 +173,5 @@ if (( ${#failures[@]} )); then
   exit 1
 fi
 
-echo '[LumoNextgen52] PASS: all 48 previous modes plus four Studio2020 modes and 16 bound rasters/movie/sidecars'
+echo '[LumoNextgen52] PASS: all 48 previous modes plus four Studio2020 modes and 17 bound rasters/movie/sidecars'
 echo "[LumoNextgen] PASS: new production learning, platforming, building, cards, rhythm and garage checks; logs $LOG_DIR"

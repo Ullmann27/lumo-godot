@@ -1,0 +1,434 @@
+{
+  "schema": 1,
+  "source_freeze_sha256": "b816b4cc0d6938115278910acc4370e88a0d2d4dc652e536693d1512ed2cefb5",
+  "native_base": "504c8ba70d02702cbccc370d0d96c36a292c5d27",
+  "native_producer": "785413d395292a243eaa0a0748671eb15d3f80ff",
+  "runner_cli": "GODOT_BIN=/absolute/path/to/godot LUMO_NEXTGEN_LOG_DIR=/absolute/path/to/evidence bash tools/validate_nextgen.sh",
+  "runner_cli_correction": "The previous lost derived gate-contract incorrectly showed positional arguments. The actual unchanged runner takes these environment variables; no source change is made.",
+  "pure_helper_api": "verify(root: Path, *, write: bool = True) -> dict",
+  "read_only_cli": "python3 tools/verify_studio_2020_rasters.py verify /absolute/path/to/evidence --read-only",
+  "mode_count": 52,
+  "mode_calls": [
+    {
+      "probe": "learning_world_regression",
+      "marker": "[LearningWorld] PASS",
+      "mode": "headless",
+      "source_call": "check_probe learning_world_regression '[LearningWorld] PASS' headless"
+    },
+    {
+      "probe": "learning_sharing_regression",
+      "marker": "[LearningSharing] PASS",
+      "mode": "headless",
+      "source_call": "check_probe learning_sharing_regression '[LearningSharing] PASS' headless"
+    },
+    {
+      "probe": "learning_studio_regression",
+      "marker": "[LearningStudio] PASS",
+      "mode": "headless",
+      "source_call": "check_probe learning_studio_regression '[LearningStudio] PASS' headless"
+    },
+    {
+      "probe": "learning_host_payload_regression",
+      "marker": "[LearningHostPayload] PASS",
+      "mode": "headless",
+      "source_call": "check_probe learning_host_payload_regression '[LearningHostPayload] PASS' headless"
+    },
+    {
+      "probe": "puzzle_rotation_regression",
+      "marker": "[PuzzleRotation] PASS",
+      "mode": "headless",
+      "source_call": "check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' headless"
+    },
+    {
+      "probe": "puzzle_menu_lifecycle_regression",
+      "marker": "[PuzzleMenuLifecycle] PASS",
+      "mode": "headless",
+      "source_call": "check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' headless"
+    },
+    {
+      "probe": "treasure_exploration_regression",
+      "marker": "[TreasureExploration] PASS",
+      "mode": "headless",
+      "source_call": "check_probe treasure_exploration_regression '[TreasureExploration] PASS' headless"
+    },
+    {
+      "probe": "jump_nextgen_regression",
+      "marker": "[JumpNextgen] PASS",
+      "mode": "headless",
+      "source_call": "check_probe jump_nextgen_regression '[JumpNextgen] PASS' headless"
+    },
+    {
+      "probe": "jump_expeditions_regression",
+      "marker": "[JumpExpeditions] PASS",
+      "mode": "headless",
+      "source_call": "check_probe jump_expeditions_regression '[JumpExpeditions] PASS' headless"
+    },
+    {
+      "probe": "lumo_teacher_pose_regression",
+      "marker": "[LumoTeacherPose] PASS",
+      "mode": "headless",
+      "source_call": "check_probe lumo_teacher_pose_regression '[LumoTeacherPose] PASS' headless"
+    },
+    {
+      "probe": "lumo_studio_motion_regression",
+      "marker": "[LumoStudioMotion] PASS",
+      "mode": "headless",
+      "source_call": "check_probe lumo_studio_motion_regression '[LumoStudioMotion] PASS' headless"
+    },
+    {
+      "probe": "lumo_65bone_walk_gait_regression",
+      "marker": "[LumoGait] PASS",
+      "mode": "headless",
+      "source_call": "check_probe lumo_65bone_walk_gait_regression '[LumoGait] PASS' headless"
+    },
+    {
+      "probe": "lumo_original_jump_visual_regression",
+      "marker": "[JumpOriginalLumo] PASS",
+      "mode": "headless",
+      "source_call": "check_probe lumo_original_jump_visual_regression '[JumpOriginalLumo] PASS' headless"
+    },
+    {
+      "probe": "bauwelt_identity_2013_regression",
+      "marker": "[BauweltIdentity2013] PASS",
+      "mode": "headless",
+      "source_call": "check_probe bauwelt_identity_2013_regression '[BauweltIdentity2013] PASS' headless"
+    },
+    {
+      "probe": "build_frontier_regression",
+      "marker": "[BuildFrontier] PASS",
+      "mode": "headless",
+      "source_call": "check_probe build_frontier_regression '[BuildFrontier] PASS' headless"
+    },
+    {
+      "probe": "build_transform_regression",
+      "marker": "[BuildTransform] PASS",
+      "mode": "headless",
+      "source_call": "check_probe build_transform_regression '[BuildTransform] PASS' headless"
+    },
+    {
+      "probe": "build_nextgen_play_regression",
+      "marker": "[BuildNextgen] PASS",
+      "mode": "headless",
+      "source_call": "check_probe build_nextgen_play_regression '[BuildNextgen] PASS' headless"
+    },
+    {
+      "probe": "build_settlement_regression",
+      "marker": "[Settlement] PASS",
+      "mode": "headless",
+      "source_call": "check_probe build_settlement_regression '[Settlement] PASS' headless"
+    },
+    {
+      "probe": "build_settlement_play_regression",
+      "marker": "[SettlementPlay] PASS",
+      "mode": "headless",
+      "source_call": "check_probe build_settlement_play_regression '[SettlementPlay] PASS' headless"
+    },
+    {
+      "probe": "build_village_economy_regression",
+      "marker": "[VillageEconomy] PASS",
+      "mode": "headless",
+      "source_call": "check_probe build_village_economy_regression '[VillageEconomy] PASS' headless"
+    },
+    {
+      "probe": "build_village_art_regression",
+      "marker": " checks / 0 failures",
+      "mode": "headless",
+      "source_call": "check_probe build_village_art_regression ' checks / 0 failures' headless"
+    },
+    {
+      "probe": "build_village_scene_regression",
+      "marker": "[VillageScene] PASS",
+      "mode": "headless",
+      "source_call": "check_probe build_village_scene_regression '[VillageScene] PASS' headless"
+    },
+    {
+      "probe": "creative_nextgen_environment_regression",
+      "marker": "[CreativeNextgenEnvironment] PASS",
+      "mode": "headless",
+      "source_call": "check_probe creative_nextgen_environment_regression '[CreativeNextgenEnvironment] PASS' headless"
+    },
+    {
+      "probe": "kart_nextgen_garage_regression",
+      "marker": "[NextGenGarage] PASS",
+      "mode": "headless",
+      "source_call": "check_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' headless"
+    },
+    {
+      "probe": "kart_track_pass_regression",
+      "marker": "[KartTrackPass] PASS",
+      "mode": "headless",
+      "source_call": "check_probe kart_track_pass_regression '[KartTrackPass] PASS' headless"
+    },
+    {
+      "probe": "cards_table_regression",
+      "marker": "CARDS_TABLE_RUNTIME_PASS",
+      "mode": "headless",
+      "source_call": "check_probe cards_table_regression 'CARDS_TABLE_RUNTIME_PASS' headless"
+    },
+    {
+      "probe": "cards_safe_area_android_contract",
+      "marker": "CARDS_ANDROID_INSETS_PASS",
+      "mode": "headless",
+      "source_call": "check_probe cards_safe_area_android_contract 'CARDS_ANDROID_INSETS_PASS' headless"
+    },
+    {
+      "probe": "cards_safe_area_regression",
+      "marker": "CARDS_SAFE_AREA_PASS",
+      "mode": "headless",
+      "source_call": "check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' headless"
+    },
+    {
+      "probe": "mobile_safe_area_regression",
+      "marker": "MOBILE_SAFE_AREA_PASS",
+      "mode": "headless",
+      "source_call": "check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' headless"
+    },
+    {
+      "probe": "rhythm_tour_regression",
+      "marker": "[RhythmTour] PASS",
+      "mode": "headless",
+      "source_call": "check_probe rhythm_tour_regression '[RhythmTour] PASS' headless"
+    },
+    {
+      "probe": "rhythm_tour_play_regression",
+      "marker": "[RhythmTourPlay] PASS",
+      "mode": "headless",
+      "source_call": "check_probe rhythm_tour_play_regression '[RhythmTourPlay] PASS' headless"
+    },
+    {
+      "probe": "learning_world_capture",
+      "marker": "[LearningCapture] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe learning_world_capture '[LearningCapture] PASS' rendered -- \"--output=$LOG_DIR/captures/learning_world_capture\""
+    },
+    {
+      "probe": "learning_sharing_capture",
+      "marker": "[LearningSharingCapture] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe learning_sharing_capture '[LearningSharingCapture] PASS' rendered -- \"--output=$LOG_DIR/captures/learning_sharing_capture\""
+    },
+    {
+      "probe": "lumo_studio_motion_capture",
+      "marker": "[LumoStudioCapture] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe lumo_studio_motion_capture '[LumoStudioCapture] PASS' rendered"
+    },
+    {
+      "probe": "puzzle_rotation_regression",
+      "marker": "[PuzzleRotation] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' rendered"
+    },
+    {
+      "probe": "puzzle_menu_lifecycle_regression",
+      "marker": "[PuzzleMenuLifecycle] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' rendered -- --capture"
+    },
+    {
+      "probe": "treasure_exploration_regression",
+      "marker": "[TreasureExploration] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe treasure_exploration_regression '[TreasureExploration] PASS' rendered"
+    },
+    {
+      "probe": "jump_nextgen_capture",
+      "marker": "[JumpNextgenCapture] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe jump_nextgen_capture '[JumpNextgenCapture] PASS' rendered"
+    },
+    {
+      "probe": "build_nextgen_play_regression",
+      "marker": "[BuildNextgen] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe build_nextgen_play_regression '[BuildNextgen] PASS' rendered -- --capture"
+    },
+    {
+      "probe": "build_settlement_play_regression",
+      "marker": "[SettlementPlay] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe build_settlement_play_regression '[SettlementPlay] PASS' rendered -- --capture"
+    },
+    {
+      "probe": "build_village_scene_regression",
+      "marker": "[VillageScene] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe build_village_scene_regression '[VillageScene] PASS' rendered -- --capture"
+    },
+    {
+      "probe": "creative_nextgen_environment_regression",
+      "marker": "[CreativeNextgenEnvironment] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe creative_nextgen_environment_regression '[CreativeNextgenEnvironment] PASS' rendered"
+    },
+    {
+      "probe": "kart_nextgen_garage_regression",
+      "marker": "[NextGenGarage] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' rendered --fixed-fps 60 -- --capture"
+    },
+    {
+      "probe": "cards_table_capture",
+      "marker": "CARDS_TABLE_RENDER_PASS",
+      "mode": "rendered",
+      "source_call": "check_probe cards_table_capture 'CARDS_TABLE_RENDER_PASS' rendered -- \"--output=$LOG_DIR/captures/cards_table_capture\""
+    },
+    {
+      "probe": "cards_safe_area_regression",
+      "marker": "CARDS_SAFE_AREA_PASS",
+      "mode": "rendered",
+      "source_call": "check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' rendered -- --capture"
+    },
+    {
+      "probe": "mobile_safe_area_regression",
+      "marker": "MOBILE_SAFE_AREA_PASS",
+      "mode": "rendered",
+      "source_call": "check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' rendered -- --capture"
+    },
+    {
+      "probe": "rhythm_tour_play_regression",
+      "marker": "[RhythmTourPlay] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe rhythm_tour_play_regression '[RhythmTourPlay] PASS' rendered -- --capture"
+    },
+    {
+      "probe": "kart_player_full_route_regression",
+      "marker": "[PlayerFullRoute] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe kart_player_full_route_regression '[PlayerFullRoute] PASS' rendered -- \"--out=$LOG_DIR/captures/kart_player_full_route_regression\""
+    },
+    {
+      "probe": "lumo_facial_regression",
+      "marker": "LUMO_FACIAL_PASS checks=102 actual_meshes=true original_bones=65 original_clips=9 phoneme_lipsync=false",
+      "mode": "headless",
+      "source_call": "check_probe lumo_facial_regression 'LUMO_FACIAL_PASS checks=102 actual_meshes=true original_bones=65 original_clips=9 phoneme_lipsync=false' headless"
+    },
+    {
+      "probe": "lumo_facial_capture",
+      "marker": "LUMO_FACIAL_CAPTURE_PASS frames=144 original_word=true recording_fps=24 not_device_fps=true",
+      "mode": "rendered",
+      "source_call": "check_probe lumo_facial_capture 'LUMO_FACIAL_CAPTURE_PASS frames=144 original_word=true recording_fps=24 not_device_fps=true' rendered \\"
+    },
+    {
+      "probe": "connect_four_visual_capture",
+      "marker": "CONNECT_FOUR_VISUAL_PASS",
+      "mode": "rendered",
+      "source_call": "check_probe connect_four_visual_capture 'CONNECT_FOUR_VISUAL_PASS' rendered -- --capture"
+    },
+    {
+      "probe": "treasure_title_contrast_regression",
+      "marker": "[TreasureTitleContrast] PASS",
+      "mode": "rendered",
+      "source_call": "check_probe treasure_title_contrast_regression '[TreasureTitleContrast] PASS' rendered -- --capture"
+    }
+  ],
+  "manifest": "studio-2020-images.json",
+  "image_count": 17,
+  "face_image_count": 8,
+  "c4_image_count": 4,
+  "treasure_image_count": 5,
+  "report_count": 3,
+  "movie_count": 1,
+  "treasure_observations": 10,
+  "treasure_report": "captures/treasure_title_contrast_regression/treasure-title-report.json",
+  "treasure_profiles": [
+    {
+      "profile": "landscape",
+      "image": "captures/treasure_title_contrast_regression/treasure-title-landscape.png",
+      "width": 1920,
+      "height": 1080,
+      "density_fixture": 1.5,
+      "insets_fixture": [
+        112,
+        36,
+        0,
+        24
+      ],
+      "captured_start": "original86445 first tree save",
+      "required_start_states": [
+        "production fresh start",
+        "original86445 first tree save"
+      ]
+    },
+    {
+      "profile": "compact",
+      "image": "captures/treasure_title_contrast_regression/treasure-title-compact.png",
+      "width": 640,
+      "height": 320,
+      "density_fixture": 1.0,
+      "insets_fixture": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "captured_start": "original86445 first tree save",
+      "required_start_states": [
+        "production fresh start",
+        "original86445 first tree save"
+      ]
+    },
+    {
+      "profile": "portrait",
+      "image": "captures/treasure_title_contrast_regression/treasure-title-portrait.png",
+      "width": 1080,
+      "height": 2400,
+      "density_fixture": 2.625,
+      "insets_fixture": [
+        0,
+        136,
+        0,
+        63
+      ],
+      "captured_start": "original86445 first tree save",
+      "required_start_states": [
+        "production fresh start",
+        "original86445 first tree save"
+      ]
+    },
+    {
+      "profile": "fold",
+      "image": "captures/treasure_title_contrast_regression/treasure-title-fold.png",
+      "width": 2176,
+      "height": 1812,
+      "density_fixture": 2.25,
+      "insets_fixture": [
+        0,
+        136,
+        0,
+        63
+      ],
+      "captured_start": "original86445 first tree save",
+      "required_start_states": [
+        "production fresh start",
+        "original86445 first tree save"
+      ]
+    },
+    {
+      "profile": "landscape-cutout",
+      "image": "captures/treasure_title_contrast_regression/treasure-title-landscape-cutout.png",
+      "width": 2400,
+      "height": 1080,
+      "density_fixture": 2.625,
+      "insets_fixture": [
+        136,
+        63,
+        0,
+        63
+      ],
+      "captured_start": "production fresh start",
+      "required_start_states": [
+        "production fresh start",
+        "original86445 first tree save"
+      ]
+    }
+  ],
+  "treasure_required_check_count_minimum": 3341,
+  "markers": [
+    "[Studio2020RasterRoster] PASS 17 actual PNG files, 3 original sidecars and 1 verified facial movie",
+    "[LumoNextgen52] PASS: all 48 previous modes plus four Studio2020 modes and 17 bound rasters/movie/sidecars"
+  ],
+  "preserved": "All prior 52 modes, 24 Studio/4 Village/6 Puzzle/7 Safe Area rosters, separate six Touch modes, facial movie and original sidecars stay required. This source change does not execute those gates.",
+  "host_followup": "Update only current delivery marker literals and image count 16 to17. Replay the pinned Native helper verify(root,write=False); do not duplicate the Treasure raster contract. Root owns native pin and publication.",
+  "execution_status": "NOT_RUN_AWAITING_ROOT_SOURCE_CHECKPOINT"
+}

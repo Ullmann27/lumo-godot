@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "recovery_directory": "/workspace/scratch/b3485b7bb989/native-pr167-785413-integration-20261114-recovered",
+  "lost_temporary_pack": "/tmp/native-pr167-785413-integration-20261114",
+  "source_recovery": "All seven source files reconstructed from retained exact baseline/Producer originals and the previously recorded narrow source delta; independently matched against all seven pre-loss SHA256 and Git blob IDs.",
+  "source_freeze_exact_original_sha256": "b816b4cc0d6938115278910acc4370e88a0d2d4dc652e536693d1512ed2cefb5",
+  "integration_patch_exact_original_sha256": "1730adca81b5891be269132ecf898004b5817921e848f58f6b26dffde3a9d704",
+  "derived_metadata": "Newly reconstructed documentation and manifests are new bytes; no identity with lost derived metadata is claimed.",
+  "runner_cli_correction": "The previous lost derived gate-contract incorrectly showed positional arguments. The actual unchanged runner takes these environment variables; no source change is made.",
+  "correct_runner_cli": "GODOT_BIN=/absolute/path/to/godot LUMO_NEXTGEN_LOG_DIR=/absolute/path/to/evidence bash tools/validate_nextgen.sh",
+  "original_review_pack_unmodified": {
+    "path": "/workspace/scratch/b3485b7bb989/native-pr167-785413-review-20261114-073227/manifest.json",
+    "bytes": 6907,
+    "sha256": "aa5e578fd5a479400b15b1ad264aeb008cdebfc8d652b9d3117c7d14350981ac"
+  },
+  "runtime_retention_notice": "runtime-zip-retention-loss.json",
+  "no_worktree_or_git_operations": true,
+  "no_tests_or_engine_execution": true,
+  "no_downloads": true
+}
