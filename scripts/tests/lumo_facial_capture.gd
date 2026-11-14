@@ -54,6 +54,12 @@ class LocalPlayback:
 		var amplitude: float = envelope[index] if audible and index >= 0 and index < envelope.size() else 0.0
 		return JSON.stringify({"id": id, "state": state, "positionMs": seconds * 1000.0, "durationMs": player.stream.get_length() * 1000.0, "audible": audible, "envelopeAvailable": true, "envelope": amplitude})
 
+func _init() -> void:
+	# MovieMaker chooses its target before SceneTree._initialize/deferred work.
+	# --resolution sets the window but does not replace these project values.
+	ProjectSettings.set_setting("display/window/size/window_width_override", 640)
+	ProjectSettings.set_setting("display/window/size/window_height_override", 640)
+
 func _initialize() -> void:
 	_run.call_deferred()
 

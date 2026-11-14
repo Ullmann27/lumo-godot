@@ -233,6 +233,8 @@ class StudioPuzzleMenuContractTests(unittest.TestCase):
             state['observed_muted_closed'] = False
         elif mutation == 'face-wrong-video-rate':
             media['streams'][0]['r_frame_rate'] = '60/1'
+        elif mutation == 'face-wrong-video-size':
+            media['streams'][0].update(width=720, height=1280)
         elif mutation == 'face-truncated-video':
             media['streams'][0]['nb_read_frames'] = '140'
         elif mutation == 'face-no-recorded-audio':
@@ -572,7 +574,8 @@ class StudioPuzzleMenuContractTests(unittest.TestCase):
                 'face-repeated-step', 'face-stale-render-frame', 'face-nonfinite-weight',
                 'face-no-actual-blink', 'face-no-audio-jaw', 'face-muted-motion',
                 'face-stop-still-playing', 'face-false-positive-flag',
-                'face-wrong-video-rate', 'face-truncated-video', 'face-no-recorded-audio',
+                'face-wrong-video-rate', 'face-wrong-video-size',
+                'face-truncated-video', 'face-no-recorded-audio',
                 'face-wrong-movie-hash', 'face-movie-decode-failure',
                 'face-missing-movie', 'face-missing-movie-proof'):
             with self.subTest(mutation=mutation):
