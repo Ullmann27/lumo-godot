@@ -1,0 +1,47 @@
+name: LUMO immutable native source recovery
+on:
+  push:
+    branches: [chatgpt/lumo-source-recovery-20261114]
+permissions:
+  contents: read
+jobs:
+  native-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Ullmann27/lumo-godot
+          ref: 34421df83566dd4773420cc2a225887956459435
+          persist-credentials: false
+      - name: Archive exact tracked Native344 source and all original assets
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 34421df83566dd4773420cc2a225887956459435
+          git diff --exit-code HEAD --
+          mkdir -p source-recovery
+          python3 - <<'PY'
+          import hashlib, json, subprocess, zipfile
+          from pathlib import Path
+          paths = subprocess.check_output(['git','ls-files','-z']).decode().split('\0')
+          entries = []
+          with zipfile.ZipFile('source-recovery/native344-source.zip','w',compression=zipfile.ZIP_DEFLATED,compresslevel=3) as archive:
+              for name in sorted(x for x in paths if x):
+                  data = Path(name).read_bytes()
+                  blob = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+                  expected = subprocess.check_output(['git','rev-parse','HEAD:' + name],text=True).strip()
+                  assert blob == expected, name
+                  archive.writestr(name,data)
+                  entries.append({'path':name,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),'git_blob_sha':blob})
+          archive = Path('source-recovery/native344-source.zip')
+          report = {'schema':1,'kind':'immutable_source_recovery_only','source':'34421df83566dd4773420cc2a225887956459435','tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(),'archive_bytes':archive.stat().st_size,'archive_sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'files':entries,'scope':'Original tracked source and assets only. No new game implementation, renderer, APK, test or performance acceptance.'}
+          Path('source-recovery/source-manifest.json').write_text(json.dumps(report,indent=2)+'\n')
+          print('Exact Native344 tracked source archived:',len(entries),'files',archive.stat().st_size,'bytes')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lumo-native344-immutable-source
+          path: source-recovery/
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 30
