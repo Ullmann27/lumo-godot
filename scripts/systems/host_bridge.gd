@@ -37,11 +37,11 @@ static func validated_options(raw: Dictionary) -> Dictionary:
 	options["grade"] = clampi(int(raw.get("grade", 1)), 1, 4)
 	options["stars"] = maxi(0, int(raw.get("stars", 0)))
 	options["scene"] = str(raw.get("game", raw.get("scene", "kart")))
-	if options["scene"] not in ["kart", "jump", "puzzle", "build", "rhythm", "treasure", "learning", "cards", "connect_four", "games", "home"]:
+	if options["scene"] not in ["kart", "jump", "puzzle", "build", "rhythm", "treasure", "learning", "cards", "connect_four", "memory", "quiz", "games", "home"]:
 		options["scene"] = "kart"
 	if (
 		str(raw.get("subject", "Mathematik"))
-		not in ["Mathematik", "Deutsch", "Sachunterricht", "Logik"]
+		not in ["Mathematik", "Deutsch", "Sachunterricht", "Englisch", "Logik"]
 	):
 		options["subject"] = "Mathematik"
 	return options
