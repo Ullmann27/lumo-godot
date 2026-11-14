@@ -47,7 +47,8 @@ func _blender_agreement(actor) -> void:
 		return
 	var report: Dictionary = raw
 	_check(bool(report.source_unchanged), "Blender leaves original source unchanged")
-	_check(FileAccess.get_sha256(ACTOR.MODEL) == str(report.source_sha256), "source hash still matches Blender input")
+	_check(FileAccess.get_sha256(ACTOR.ORIGINAL_MODEL) == str(report.source_sha256), "untouched source hash still matches Blender body-clip input")
+	_check(FileAccess.get_sha256(ACTOR.MODEL) != FileAccess.get_sha256(ACTOR.ORIGINAL_MODEL), "authored facial derivative is distinct from preserved source")
 	var original_lengths: Dictionary = {}
 	for side in ["L", "R"]:
 		original_lengths[side] = Vector2(
@@ -131,7 +132,7 @@ func _production_modes(actor) -> void:
 	actor.set_locomotion_speed(0.0)
 	for clip in ACTOR.CLIPS:
 		_check(actor.play_behavior(clip), "original clip retained: " + clip)
-	_check(not actor.mouth_supported, "no facial rig or phoneme evidence is invented")
+	_check(actor.mouth_supported and not actor.phoneme_lipsync_supported, "no facial rig or phoneme evidence is invented")
 
 
 func _idle_phase_independence() -> void:

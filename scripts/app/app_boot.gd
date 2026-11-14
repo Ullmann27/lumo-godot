@@ -25,6 +25,7 @@ const TITLE_BY_SCENE: Dictionary = {
 	"jump": "LUMO ABENTEUER",
 	"learning": "LUMO LERNWERKSTATT",
 	"cards": "LUMO CARDS",
+	"connect_four": "VIER GEWINNT",
 }
 signal load_state_changed(state: String)
 ## Test harnesses may attach the actual boot scene without starting navigation.
@@ -74,7 +75,7 @@ func _ready() -> void:
 		_reduced_motion = _reduced_motion or bool(session.get_value("race", "reduced_motion", false))
 	var requested: String = str(options.get("scene", ""))
 	var target: String = requested if requested in [
-		"kart", "jump", "puzzle", "build", "rhythm", "treasure", "learning", "cards", "home", "games"
+		"kart", "jump", "puzzle", "build", "rhythm", "treasure", "learning", "cards", "connect_four", "home", "games"
 	] else "games"
 	_show_cover(target)
 	_build_actions()

@@ -1295,6 +1295,7 @@ func _stop_speech() -> void:
 		_speech_host.call("stopLearningSpeech")
 	if is_instance_valid(fox) and fox.is_usable():
 		fox.set_teacher_speaking(false)
+		fox.apply_speech_sample(0.0, 0.0, false)
 	_update_voice_button()
 
 
@@ -1309,7 +1310,7 @@ func _tick_speech(delta: float) -> void:
 	if not is_instance_valid(_speech_host) or not _speech_enabled:
 		return
 	_speech_poll += delta
-	if _speech_poll < 0.15:
+	if _speech_poll < 0.05:
 		return
 	_speech_poll = 0.0
 	if not _speech_host.has_method("getLearningSpeechStatus"):
@@ -1321,10 +1322,16 @@ func _tick_speech(delta: float) -> void:
 	if received_state not in ["preparing", "playing", "completed", "unavailable", "idle"]:
 		return
 	_speech_state = received_state
-	# Only a confirmed MediaPlayer start animates speech. Synthesis and a timer
-	# cannot masquerade as audible playback. The original rig has no jaw morph.
+	# Amplitude comes from the exact synthesized WAV and MediaPlayer position.
+	# Preparing, mute, missing envelope and stopped playback remain closed.
 	if is_instance_valid(fox) and fox.is_usable():
-		fox.set_teacher_speaking(_speech_state == "playing")
+		var audible: bool = _speech_state == "playing" and received.get("audible", false) == true
+		fox.set_teacher_speaking(audible)
+		fox.apply_speech_sample(
+			float(received.get("positionMs", 0.0)) / 1000.0,
+			float(received.get("envelope", 0.0)),
+			audible and received.get("envelopeAvailable", false) == true
+		)
 	_update_voice_button()
 
 
