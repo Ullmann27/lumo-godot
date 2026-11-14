@@ -1,0 +1,465 @@
+﻿2026-11-14T12:35:04.7465540Z Current runner version: '2.338.2'
+2026-11-14T12:35:04.7484981Z ##[group]Runner Image Provisioner
+2026-11-14T12:35:04.7485667Z Hosted Compute Agent
+2026-11-14T12:35:04.7486070Z Version: 20261103.629
+2026-11-14T12:35:04.7486474Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-14T12:35:04.7487006Z Build Date: 2026-11-03T17:26:59Z
+2026-11-14T12:35:04.7487455Z Worker ID: {379c8873-5c91-4817-81c4-b7efb254fe98}
+2026-11-14T12:35:04.7487877Z Region: centralus
+2026-11-14T12:35:04.7488283Z Cloud: Azure
+2026-11-14T12:35:04.7488628Z ##[endgroup]
+2026-11-14T12:35:04.7489478Z ##[group]Operating System
+2026-11-14T12:35:04.7489873Z Ubuntu
+2026-11-14T12:35:04.7490223Z 24.04.5
+2026-11-14T12:35:04.7490587Z LTS
+2026-11-14T12:35:04.7490911Z ##[endgroup]
+2026-11-14T12:35:04.7491308Z ##[group]Runner Image
+2026-11-14T12:35:04.7491716Z Image: ubuntu-24.04
+2026-11-14T12:35:04.7492072Z Version: 20261111.370.1
+2026-11-14T12:35:04.7492910Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261111.370/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-14T12:35:04.7494019Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261111.370
+2026-11-14T12:35:04.7494609Z ##[endgroup]
+2026-11-14T12:35:04.7495340Z ##[group]GITHUB_TOKEN Permissions
+2026-11-14T12:35:04.7496598Z Contents: read
+2026-11-14T12:35:04.7496989Z Metadata: read
+2026-11-14T12:35:04.7497405Z ##[endgroup]
+2026-11-14T12:35:04.7499140Z Secret source: Actions
+2026-11-14T12:35:04.7499803Z Cache mode: write
+2026-11-14T12:35:04.7500295Z Prepare workflow directory
+2026-11-14T12:35:04.7791227Z Prepare all required actions
+2026-11-14T12:35:04.7824553Z Getting action download info
+2026-11-14T12:35:04.9970485Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-14T12:35:05.1298046Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-14T12:35:05.3278380Z Complete job name: real-native-proof (precision)
+2026-11-14T12:35:05.3859995Z ##[group]Run actions/checkout@v4
+2026-11-14T12:35:05.3860434Z with:
+2026-11-14T12:35:05.3860690Z   ref: e9a9f60f20403ffa6b2b26d1437f958b2704d2aa
+2026-11-14T12:35:05.3861008Z   persist-credentials: false
+2026-11-14T12:35:05.3861289Z   repository: Ullmann27/lumo-godot
+2026-11-14T12:35:05.3863499Z   token: ***
+2026-11-14T12:35:05.3863720Z   ssh-strict: true
+2026-11-14T12:35:05.3864077Z   ssh-user: git
+2026-11-14T12:35:05.3864301Z   clean: true
+2026-11-14T12:35:05.3864537Z   sparse-checkout-cone-mode: true
+2026-11-14T12:35:05.3864812Z   fetch-depth: 1
+2026-11-14T12:35:05.3865036Z   fetch-tags: false
+2026-11-14T12:35:05.3865269Z   show-progress: true
+2026-11-14T12:35:05.3865504Z   lfs: false
+2026-11-14T12:35:05.3865724Z   submodules: false
+2026-11-14T12:35:05.3865963Z   set-safe-directory: true
+2026-11-14T12:35:05.3866228Z   allow-unsafe-pr-checkout: false
+2026-11-14T12:35:05.3866567Z env:
+2026-11-14T12:35:05.3866787Z   LIBGL_ALWAYS_SOFTWARE: 1
+2026-11-14T12:35:05.3867066Z ##[endgroup]
+2026-11-14T12:35:05.6060512Z Syncing repository: Ullmann27/lumo-godot
+2026-11-14T12:35:05.6061729Z ##[group]Getting Git version info
+2026-11-14T12:35:05.6062118Z Working directory is '/home/runner/work/lumo-godot/lumo-godot'
+2026-11-14T12:35:05.6062667Z [command]/usr/bin/git version
+2026-11-14T12:35:05.6148345Z git version 2.56.1
+2026-11-14T12:35:05.6161222Z ##[endgroup]
+2026-11-14T12:35:05.6172124Z Temporarily overriding HOME='/home/runner/work/_temp/631895aa-f635-482f-b3cd-437fae0c7977' before making global git config changes
+2026-11-14T12:35:05.6173375Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-14T12:35:05.6176411Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/lumo-godot/lumo-godot
+2026-11-14T12:35:05.6224542Z Deleting the contents of '/home/runner/work/lumo-godot/lumo-godot'
+2026-11-14T12:35:05.6227775Z ##[group]Initializing the repository
+2026-11-14T12:35:05.6230679Z [command]/usr/bin/git init /home/runner/work/lumo-godot/lumo-godot
+2026-11-14T12:35:05.6327409Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-14T12:35:05.6328037Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-14T12:35:05.6328545Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-14T12:35:05.6328942Z hint: call:
+2026-11-14T12:35:05.6329249Z hint:
+2026-11-14T12:35:05.6329672Z hint: 	git config --global init.defaultBranch <name>
+2026-11-14T12:35:05.6330011Z hint:
+2026-11-14T12:35:05.6330334Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-14T12:35:05.6330846Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-14T12:35:05.6331250Z hint:
+2026-11-14T12:35:05.6331483Z hint: 	git branch -m <name>
+2026-11-14T12:35:05.6331849Z hint:
+2026-11-14T12:35:05.6332267Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-14T12:35:05.6336818Z Initialized empty Git repository in /home/runner/work/lumo-godot/lumo-godot/.git/
+2026-11-14T12:35:05.6346300Z [command]/usr/bin/git remote add origin https://github.com/Ullmann27/lumo-godot
+2026-11-14T12:35:05.6393041Z ##[endgroup]
+2026-11-14T12:35:05.6393518Z ##[group]Disabling automatic garbage collection
+2026-11-14T12:35:05.6396224Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-14T12:35:05.6426310Z ##[endgroup]
+2026-11-14T12:35:05.6426797Z ##[group]Setting up auth
+2026-11-14T12:35:05.6431468Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-14T12:35:05.6463658Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-14T12:35:05.6783702Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-14T12:35:05.6812998Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-14T12:35:05.7002825Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-14T12:35:05.7033261Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-14T12:35:05.7231958Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-14T12:35:05.7268458Z ##[endgroup]
+2026-11-14T12:35:05.7269100Z ##[group]Fetching the repository
+2026-11-14T12:35:05.7277348Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin e9a9f60f20403ffa6b2b26d1437f958b2704d2aa
+2026-11-14T12:35:10.8367735Z From https://github.com/Ullmann27/lumo-godot
+2026-11-14T12:35:10.8368922Z  * branch            e9a9f60f20403ffa6b2b26d1437f958b2704d2aa -> FETCH_HEAD
+2026-11-14T12:35:10.8370706Z ##[endgroup]
+2026-11-14T12:35:10.8371287Z ##[group]Determining the checkout info
+2026-11-14T12:35:10.8372137Z ##[endgroup]
+2026-11-14T12:35:10.8377023Z [command]/usr/bin/git sparse-checkout disable
+2026-11-14T12:35:10.8433873Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-14T12:35:10.8463996Z ##[group]Checking out the ref
+2026-11-14T12:35:10.8467664Z [command]/usr/bin/git checkout --progress --force e9a9f60f20403ffa6b2b26d1437f958b2704d2aa
+2026-11-14T12:35:11.4699211Z Note: switching to 'e9a9f60f20403ffa6b2b26d1437f958b2704d2aa'.
+2026-11-14T12:35:11.4700050Z 
+2026-11-14T12:35:11.4700547Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-14T12:35:11.4701689Z changes and commit them, and you can discard any commits you make in this
+2026-11-14T12:35:11.4702819Z state without impacting any branches by switching back to a branch.
+2026-11-14T12:35:11.4703560Z 
+2026-11-14T12:35:11.4704289Z If you want to create a new branch to retain commits you create, you may
+2026-11-14T12:35:11.4705575Z do so (now or later) by using -c with the switch command. Example:
+2026-11-14T12:35:11.4706171Z 
+2026-11-14T12:35:11.4706428Z   git switch -c <new-branch-name>
+2026-11-14T12:35:11.4706839Z 
+2026-11-14T12:35:11.4707083Z Or undo this operation with:
+2026-11-14T12:35:11.4707433Z 
+2026-11-14T12:35:11.4707635Z   git switch -
+2026-11-14T12:35:11.4707940Z 
+2026-11-14T12:35:11.4708462Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-14T12:35:11.4709170Z 
+2026-11-14T12:35:11.4709802Z HEAD is now at e9a9f60 Merge Dream and minimap into the complete Lumo Live and Discovery integration
+2026-11-14T12:35:11.4775021Z ##[endgroup]
+2026-11-14T12:35:11.4817403Z [command]/usr/bin/git log -1 --format=%H
+2026-11-14T12:35:11.4841027Z e9a9f60f20403ffa6b2b26d1437f958b2704d2aa
+2026-11-14T12:35:11.4854360Z ##[group]Removing auth
+2026-11-14T12:35:11.4855320Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-14T12:35:11.4886151Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-14T12:35:11.5088011Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-14T12:35:11.5115421Z http.https://github.com/.extraheader
+2026-11-14T12:35:11.5122634Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-14T12:35:11.5154592Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-14T12:35:11.5352632Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-14T12:35:11.5383272Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-14T12:35:11.5578198Z ##[endgroup]
+2026-11-14T12:35:11.5797481Z ##[group]Run set -euo pipefail
+2026-11-14T12:35:11.5798270Z [36;1mset -euo pipefail[0m
+2026-11-14T12:35:11.5798908Z [36;1msudo apt-get update -qq[0m
+2026-11-14T12:35:11.5799658Z [36;1msudo apt-get install -y xvfb libgl1-mesa-dri[0m
+2026-11-14T12:35:11.5801224Z [36;1mcurl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip[0m
+2026-11-14T12:35:11.5802842Z [36;1munzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"[0m
+2026-11-14T12:35:11.5803917Z [36;1mchmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"[0m
+2026-11-14T12:35:11.5873708Z [36;1mecho "$RUNNER_TEMP" >> "$GITHUB_PATH"[0m
+2026-11-14T12:35:11.5897508Z shell: /usr/bin/bash -e {0}
+2026-11-14T12:35:11.5898150Z env:
+2026-11-14T12:35:11.5898651Z   LIBGL_ALWAYS_SOFTWARE: 1
+2026-11-14T12:35:11.5899224Z ##[endgroup]
+2026-11-14T12:35:17.7451050Z Reading package lists...
+2026-11-14T12:35:17.9885232Z Building dependency tree...
+2026-11-14T12:35:17.9891237Z Reading state information...
+2026-11-14T12:35:18.2211718Z xvfb is already the newest version (2:21.1.12-1ubuntu1.9).
+2026-11-14T12:35:18.2212248Z libgl1-mesa-dri is already the newest version (25.2.8-0ubuntu0.24.04.4).
+2026-11-14T12:35:18.2212642Z libgl1-mesa-dri set to manually installed.
+2026-11-14T12:35:18.2213047Z 0 upgraded, 0 newly installed, 0 to remove and 20 not upgraded.
+2026-11-14T12:35:18.2297436Z   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+2026-11-14T12:35:18.2297934Z                                  Dload  Upload   Total   Spent    Left  Speed
+2026-11-14T12:35:18.2298257Z 
+2026-11-14T12:35:18.3795796Z   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+2026-11-14T12:35:18.3796430Z   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+2026-11-14T12:35:18.5099952Z 
+2026-11-14T12:35:18.7504070Z   1 68.4M    1 1221k    0     0  4358k      0  0:00:16 --:--:--  0:00:16 4358k
+2026-11-14T12:35:18.7504924Z 100 68.4M  100 68.4M    0     0   131M      0 --:--:-- --:--:-- --:--:--  280M
+2026-11-14T12:35:19.4973711Z ##[group]Run set -euo pipefail
+2026-11-14T12:35:19.4974332Z [36;1mset -euo pipefail[0m
+2026-11-14T12:35:19.4974509Z [36;1mmkdir -p exports/native-proof exports/creative-build[0m
+2026-11-14T12:35:19.4974750Z [36;1mgit rev-parse HEAD | tee exports/native-proof/source-sha.txt[0m
+2026-11-14T12:35:19.4975029Z [36;1mcp exports/native-proof/source-sha.txt exports/creative-build/source-sha.txt[0m
+2026-11-14T12:35:19.4975424Z [36;1mtimeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit > exports/native-proof/import.log 2>&1[0m
+2026-11-14T12:35:19.4975857Z [36;1mif grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' exports/native-proof/import.log; then exit 1; fi[0m
+2026-11-14T12:35:19.4994160Z shell: /usr/bin/bash -e {0}
+2026-11-14T12:35:19.4994320Z env:
+2026-11-14T12:35:19.4994438Z   LIBGL_ALWAYS_SOFTWARE: 1
+2026-11-14T12:35:19.4994586Z ##[endgroup]
+2026-11-14T12:35:19.5051802Z e9a9f60f20403ffa6b2b26d1437f958b2704d2aa
+2026-11-14T12:35:44.5801624Z ##[group]Run set -euo pipefail
+2026-11-14T12:35:44.5801849Z [36;1mset -euo pipefail[0m
+2026-11-14T12:35:44.5802150Z [36;1mLUMO_CAPTURE_DIR="$PWD/exports/native-proof/precision" xvfb-run -a -s '-screen 0 1280x720x24' \[0m
+2026-11-14T12:35:44.5802496Z [36;1m  python3 tools/run_godot_probe.py --timeout 240 \[0m
+2026-11-14T12:35:44.5802784Z [36;1m    --log exports/native-proof/precision-capture.log \[0m
+2026-11-14T12:35:44.5803067Z [36;1m    --required '[PrecisionCapture] PASS: 10 frames' -- \[0m
+2026-11-14T12:35:44.5803342Z [36;1m    Godot_v4.6.3-stable_linux.x86_64 --verbose --audio-driver Dummy \[0m
+2026-11-14T12:35:44.5803620Z [36;1m    --rendering-method gl_compatibility --path . \[0m
+2026-11-14T12:35:44.5804036Z [36;1m    --script res://scripts/tests/kart_sonnenhafen_precision_capture.gd[0m
+2026-11-14T12:35:44.5820023Z shell: /usr/bin/bash -e {0}
+2026-11-14T12:35:44.5820175Z env:
+2026-11-14T12:35:44.5820289Z   LIBGL_ALWAYS_SOFTWARE: 1
+2026-11-14T12:35:44.5820443Z ##[endgroup]
+2026-11-14T12:35:44.6819708Z WorkerThreadPool: 4 threads, 1 max low-priority.
+2026-11-14T12:35:44.6836226Z Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+2026-11-14T12:35:44.6844497Z TextServer: Added interface "Dummy"
+2026-11-14T12:35:44.6906522Z TextServer: Added interface "ICU / HarfBuzz / Graphite (Built-in)"
+2026-11-14T12:35:44.6917261Z Unrecognized output string "misc2" in mapping:
+2026-11-14T12:35:44.6918502Z 030000008a2e0000dd10000011010000,Hand Held Legend GC Ultimate,a:b0,b:b2,back:b17,dpdown:b5,dpleft:b6,dpright:b7,dpup:b4,guide:b18,leftshoulder:b10,leftstick:b8,lefttrigger:a3,leftx:a0,lefty:a1,misc1:b19,misc2:b24,paddle1:b13,paddle2:b12,rightshoulder:b11,rightstick:b9,righttrigger:a4,rightx:a2,righty:a5,start:b16,x:b1,y:b3,platform:Linux,
+2026-11-14T12:35:44.6919623Z Unrecognized output string "misc2" in mapping:
+2026-11-14T12:35:44.6920446Z 030000000d0f0000ab01000011010000,Horipad Steam,a:b0,b:b1,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b6,leftstick:b13,lefttrigger:a5,leftx:a0,lefty:a1,misc2:b2,paddle1:b19,paddle2:b18,paddle3:b15,paddle4:b5,rightshoulder:b7,rightstick:b14,righttrigger:a4,rightx:a2,righty:a3,start:b11,x:b3,y:b4,platform:Linux,
+2026-11-14T12:35:44.6921311Z Unrecognized output string "misc2" in mapping:
+2026-11-14T12:35:44.6922132Z 050000000d0f00009601000091000000,Horipad Steam,a:b0,b:b1,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b6,leftstick:b13,lefttrigger:a5,leftx:a0,lefty:a1,misc2:b2,paddle1:b19,paddle2:b18,paddle3:b15,paddle4:b5,rightshoulder:b7,rightstick:b14,righttrigger:a4,rightx:a2,righty:a3,start:b11,x:b3,y:b4,platform:Linux,
+2026-11-14T12:35:44.6928138Z Unrecognized output string "misc2" in mapping:
+2026-11-14T12:35:44.6929197Z 030000007e0500006920000011010000,Nintendo Switch 2 Pro Controller,a:b0,b:b1,back:b14,dpdown:b8,dpleft:b10,dpright:b9,dpup:b11,guide:b16,leftshoulder:b12,leftstick:b15,lefttrigger:b13,leftx:a0,lefty:a1~,misc1:b17,misc2:b20,paddle1:b18,paddle2:b19,rightshoulder:b4,rightstick:b7,righttrigger:b5,rightx:a2,righty:a3~,start:b6,x:b2,y:b3,platform:Linux,
+2026-11-14T12:35:44.7031307Z SDL: Init OK!
+2026-11-14T12:35:44.7212969Z Xshape 1.1 detected.
+2026-11-14T12:35:44.7213229Z Xinerama 1.1 detected.
+2026-11-14T12:35:44.7214043Z Xrandr 1.6 detected.
+2026-11-14T12:35:44.7214698Z Xrender 0.11 detected.
+2026-11-14T12:35:44.7216244Z Xinput 2.2 detected.
+2026-11-14T12:35:44.7238479Z XInput: Refreshing devices.
+2026-11-14T12:35:44.7239291Z XInput: No touch devices found.
+2026-11-14T12:35:44.7405502Z Detecting GPUs, set DRI_PRIME in the environment to override GPU detection logic.
+2026-11-14T12:35:45.5480478Z Only one GPU found, using default.
+2026-11-14T12:35:45.5801253Z Accessibility: window 0 adapter created.
+2026-11-14T12:35:45.5822657Z WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+2026-11-14T12:35:45.5823469Z      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+2026-11-14T12:35:45.5824692Z XcursorGetTheme could not get cursor theme
+2026-11-14T12:35:45.6920437Z Failed loading custom cursor: crossed_circle
+2026-11-14T12:35:45.7787287Z DBus 1.14.10 detected.
+2026-11-14T12:35:45.7804516Z Using "default" pen tablet driver...
+2026-11-14T12:35:45.7947027Z Shader 'CanvasSdfShaderGLES3' SHA256: bfb4d3f47e7b197828685d0dcaa3ac71d9e1366c1e65b4f460df2262fa91546c
+2026-11-14T12:35:45.7956726Z Shader 'SkeletonShaderGLES3' SHA256: 84035b3cefc09f9557dd6bf4f292f5563f0545ca349eba904f9efc23e561e23f
+2026-11-14T12:35:45.7960383Z Shader 'ParticlesShaderGLES3' SHA256: 73290417c43773bd027c734f085d428579d637dedf854af6900fc76b8b237a99
+2026-11-14T12:35:45.7964826Z Shader 'ParticlesCopyShaderGLES3' SHA256: 694cd939240250f9bdfd140337959adf14cc7cfce3f814fcfc29a6bf634e28a1
+2026-11-14T12:35:45.7967533Z Shader 'CopyShaderGLES3' SHA256: d2a6cb0418a1a9d4daa260504f4bcfe1b8f47c80b93a4b02975c6c8e4cdec734
+2026-11-14T12:35:45.8985898Z Shader 'CubemapFilterShaderGLES3' SHA256: 4fbad670153b6a753948ef0be8e317037ea189b3a5d2ef0c55dcd669473a8af1
+2026-11-14T12:35:45.8986839Z Shader 'GlowShaderGLES3' SHA256: 1a8d454e812a242df093576020d31bebccf9a3e446f78160d33e363f683df8d2
+2026-11-14T12:35:45.8991489Z Shader 'PostShaderGLES3' SHA256: 314401684c9d4037d224f17896fb50fc3cae526688b7f2cd4b73d1ce59d68cc7
+2026-11-14T12:35:45.9105636Z Shader 'FeedShaderGLES3' SHA256: ff8ce52247f567be25a85ee57b249f526c39fe4595e675da7a92cda3482cc47b
+2026-11-14T12:35:45.9298393Z Shader 'CanvasShaderGLES3' SHA256: ec4ada8cee357dc1d60cc059a0f84ad21dee27e29d58fa9a87f46f2aef80c3ea
+2026-11-14T12:35:45.9299062Z Shader 'CanvasOcclusionShaderGLES3' SHA256: 4e16639184f7526ea06a888f215233eefb1de099c0a4d76f784773cff78d4e14
+2026-11-14T12:35:45.9319722Z Shader 'SceneShaderGLES3' SHA256: 379b6d5785209e37ede487eef03d12e75f5428b8c16d50abfe48d224c95211bf
+2026-11-14T12:35:46.0328593Z Shader 'SkyShaderGLES3' SHA256: da3879461c66f8a3095ce85dad4e18da268ac24a28c200e18cc73aa9bcf0dbc0
+2026-11-14T12:35:46.0329363Z OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+2026-11-14T12:35:46.0329771Z 
+2026-11-14T12:35:46.1547189Z TextServer: Primary interface set to: "ICU / HarfBuzz / Graphite (Built-in)".
+2026-11-14T12:35:46.2098022Z CORE API HASH: 2475187701
+2026-11-14T12:35:46.2104420Z EDITOR API HASH: 3867286884
+2026-11-14T12:35:46.2105447Z Loading resource: res://scripts/tests/kart_sonnenhafen_precision_capture.gd
+2026-11-14T12:35:46.2231080Z Loading resource: res://assets/shaders/kart_stunt_loop.gdshader
+2026-11-14T12:35:46.2231634Z Loading resource: res://assets/shaders/kart_balloon.gdshader
+2026-11-14T12:35:46.2235928Z Loading resource: res://assets/kart/stunt/lumo_balloon_emblem.png
+2026-11-14T12:35:46.2236768Z Loading resource: res://.godot/imported/lumo_balloon_emblem.png-6e2da3d9255fcc6433c61b7a2be44438.ctex
+2026-11-14T12:35:46.2436249Z SceneTreeFTI: traversal method DEFAULT
+2026-11-14T12:35:46.2444166Z WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+2026-11-14T12:35:46.2445071Z      at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+2026-11-14T12:35:46.2449594Z Loading resource: res://scenes/default_env.tres
+2026-11-14T12:35:46.2450012Z WARNING: Volumetric fog is only available when using the Forward+ renderer.
+2026-11-14T12:35:46.2450527Z      at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+2026-11-14T12:35:46.2451370Z Loading resource: res://scripts/systems/event_bus.gd
+2026-11-14T12:35:46.2458776Z Loading resource: res://scripts/systems/settings_store.gd
+2026-11-14T12:35:46.2471460Z Loading resource: res://scripts/systems/performance_manager.gd
+2026-11-14T12:35:46.2501233Z Loading resource: res://scripts/app/mobile_runtime.gd
+2026-11-14T12:35:46.2597909Z Loading resource: res://scripts/app/scene_router.gd
+2026-11-14T12:35:46.2633026Z Loading resource: res://scripts/systems/asset_loader.gd
+2026-11-14T12:35:46.2669755Z Loading resource: res://scripts/systems/audio_manager.gd
+2026-11-14T12:35:46.2699587Z Loading resource: res://scripts/systems/progress_store.gd
+2026-11-14T12:35:46.2763478Z Loaded system CA certificates
+2026-11-14T12:35:46.3481048Z [EventBus] online - signals registered
+2026-11-14T12:35:46.3481493Z [Settings] no settings.cfg yet, defaults used
+2026-11-14T12:35:46.3483029Z [Perf] platform_detected:Linux
+2026-11-14T12:35:46.3500285Z [Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+2026-11-14T12:35:46.3504698Z [AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+2026-11-14T12:35:46.3505082Z [Audio] manager ready (muted:false)
+2026-11-14T12:35:46.3505428Z [Progress] no save file (first run) - starting fresh
+2026-11-14T12:35:46.3546367Z Loading resource: res://scenes/games/kart_island.tscn
+2026-11-14T12:35:46.3546598Z Loading resource: res://scripts/games/kart_island.gd
+2026-11-14T12:35:46.4623277Z Loading resource: res://assets/fonts/Nunito-Black.ttf
+2026-11-14T12:35:46.4623903Z Loading resource: res://.godot/imported/Nunito-Black.ttf-880f0c283166815ed56080446388b042.fontdata
+2026-11-14T12:35:46.4768751Z Loading resource: res://assets/fonts/Nunito-Bold.ttf
+2026-11-14T12:35:46.4769608Z Loading resource: res://.godot/imported/Nunito-Bold.ttf-e301dd6fbe168d4b494ffe849f591c35.fontdata
+2026-11-14T12:35:46.5349699Z Loading resource: res://assets/shaders/kart_menu_platform.gdshader
+2026-11-14T12:35:46.5364267Z Loading resource: res://assets/kart/controls/steering.svg
+2026-11-14T12:35:46.5364812Z Loading resource: res://.godot/imported/steering.svg-e3b23eb8bc44ee503818025dd24d9a41.ctex
+2026-11-14T12:35:46.5684243Z Loading resource: res://assets/kart/menu/lumo-world.webp
+2026-11-14T12:35:46.5684768Z Loading resource: res://.godot/imported/lumo-world.webp-e25d3f16b9195f237ed8ceb0c556337e.ctex
+2026-11-14T12:35:46.6711258Z Loading resource: res://assets/shaders/kart_cinema_stylized.gdshader
+2026-11-14T12:35:46.6711619Z Loading resource: res://assets/shaders/kart_basalt.gdshader
+2026-11-14T12:35:46.6713168Z Loading resource: res://assets/shaders/kart_city_glass.gdshader
+2026-11-14T12:35:46.6725413Z Loading resource: res://assets/shaders/kart_stylized_vertex_tint.gdshader
+2026-11-14T12:35:46.6727135Z Loading resource: res://assets/materials/kart_terrain_grain.tres
+2026-11-14T12:35:46.6729362Z Loading resource: res://assets/shaders/kart_water.gdshader
+2026-11-14T12:35:46.6733689Z Loading resource: res://assets/shaders/kart_asphalt.gdshader
+2026-11-14T12:35:46.6735984Z Loading resource: res://assets/shaders/kart_candy_road.gdshader
+2026-11-14T12:35:46.6754769Z Loading resource: res://assets/shaders/kart_waterfall.gdshader
+2026-11-14T12:35:46.6949685Z Loading resource: res://assets/shaders/kart_lava.gdshader
+2026-11-14T12:35:46.6950175Z Loading resource: res://assets/shaders/kart_cloud_sea.gdshader
+2026-11-14T12:35:46.6950599Z Loading resource: res://assets/shaders/kart_candy_sky.gdshader
+2026-11-14T12:35:46.6951481Z Loading resource: res://assets/shaders/kart_night_sky.gdshader
+2026-11-14T12:35:46.7897269Z Loading resource: res://scenes/games/props/harbor_wave_pavilion.tscn
+2026-11-14T12:35:46.7897892Z Loading resource: res://assets/kart/harbor_pavilion/wave_pavilion_lod0.glb
+2026-11-14T12:35:46.7898524Z Loading resource: res://.godot/imported/wave_pavilion_lod0.glb-e33d2aa3d076781898e76dd4450bfc96.scn
+2026-11-14T12:35:46.7913289Z Loading resource: res://assets/kart/harbor_pavilion/wave_pavilion_lod1.glb
+2026-11-14T12:35:46.7914180Z Loading resource: res://.godot/imported/wave_pavilion_lod1.glb-d10deda67b7727a99611e30bafd236e9.scn
+2026-11-14T12:35:46.7918632Z Loading resource: res://assets/kart/harbor_pavilion/wave_pavilion_lod2.glb
+2026-11-14T12:35:46.7919208Z Loading resource: res://.godot/imported/wave_pavilion_lod2.glb-7d15bffa5592d0683aa3d3860eec0f26.scn
+2026-11-14T12:35:46.8026746Z Loading resource: res://assets/shaders/kart_sonnenhafen_darkride.gdshader
+2026-11-14T12:35:46.8077365Z Loading resource: res://assets/kart/cavern/mineral_kit/strata_shelf_mobile.glb
+2026-11-14T12:35:46.8078284Z Loading resource: res://.godot/imported/strata_shelf_mobile.glb-1e3532fce27663228609923e11ff0753.scn
+2026-11-14T12:35:46.8086074Z Loading resource: res://assets/kart/cavern/mineral_kit/strata_shelf_high.glb
+2026-11-14T12:35:46.8086639Z Loading resource: res://.godot/imported/strata_shelf_high.glb-2fec30ea9ab851f5a481abf38a995fe6.scn
+2026-11-14T12:35:46.8090380Z Loading resource: res://assets/kart/cavern/mineral_kit/split_ledge_mobile.glb
+2026-11-14T12:35:46.8090957Z Loading resource: res://.godot/imported/split_ledge_mobile.glb-2ea14ac918a9f2c950451a01b68696af.scn
+2026-11-14T12:35:46.8093337Z Loading resource: res://assets/kart/cavern/mineral_kit/split_ledge_high.glb
+2026-11-14T12:35:46.8094021Z Loading resource: res://.godot/imported/split_ledge_high.glb-ec098fdb3b6ef0551b8cf632a3811329.scn
+2026-11-14T12:35:46.8097191Z Loading resource: res://assets/kart/cavern/mineral_kit/hanging_canopy_mobile.glb
+2026-11-14T12:35:46.8097794Z Loading resource: res://.godot/imported/hanging_canopy_mobile.glb-c0e0b916cdcecf1a4200c02265837e9c.scn
+2026-11-14T12:35:46.8100403Z Loading resource: res://assets/kart/cavern/mineral_kit/hanging_canopy_high.glb
+2026-11-14T12:35:46.8100989Z Loading resource: res://.godot/imported/hanging_canopy_high.glb-05fc3f5760619a4e7b08a2c90d1815bf.scn
+2026-11-14T12:35:46.8104321Z Loading resource: res://assets/kart/cavern/mineral_kit/crystal_fan_mobile.glb
+2026-11-14T12:35:46.8104893Z Loading resource: res://.godot/imported/crystal_fan_mobile.glb-86a30bf1a601cda70bcb96d9bde8e298.scn
+2026-11-14T12:35:46.8107331Z Loading resource: res://assets/kart/cavern/mineral_kit/crystal_fan_high.glb
+2026-11-14T12:35:46.8107836Z Loading resource: res://.godot/imported/crystal_fan_high.glb-4bb94fd8925960ddbe51364980b35c36.scn
+2026-11-14T12:35:46.8110479Z Loading resource: res://assets/kart/cavern/mineral_kit/crystal_spire_mobile.glb
+2026-11-14T12:35:46.8110921Z Loading resource: res://.godot/imported/crystal_spire_mobile.glb-6eab6506691d14d60e8fbccc8494dfef.scn
+2026-11-14T12:35:46.8113152Z Loading resource: res://assets/kart/cavern/mineral_kit/crystal_spire_high.glb
+2026-11-14T12:35:46.8113822Z Loading resource: res://.godot/imported/crystal_spire_high.glb-55f08b8c7ea8f429a564bcc1c5cc20c9.scn
+2026-11-14T12:35:46.8116403Z Loading resource: res://assets/kart/cavern/mineral_kit/crystal_rosette_mobile.glb
+2026-11-14T12:35:46.8116899Z Loading resource: res://.godot/imported/crystal_rosette_mobile.glb-8720c760b56b9ea7b3ecff8a084cc72e.scn
+2026-11-14T12:35:46.8119117Z Loading resource: res://assets/kart/cavern/mineral_kit/crystal_rosette_high.glb
+2026-11-14T12:35:46.8119518Z Loading resource: res://.godot/imported/crystal_rosette_high.glb-4b70e0046fd8639475e751a258848afa.scn
+2026-11-14T12:35:46.8136353Z Loading resource: res://assets/shaders/kart_lumo_cinema_high.gdshader
+2026-11-14T12:35:46.8137938Z Loading resource: res://assets/shaders/kart_lumo_cinema_mobile.gdshader
+2026-11-14T12:35:46.8393157Z Loading resource: res://assets/shaders/kart_aquarium.gdshader
+2026-11-14T12:35:47.1319846Z Loading resource: res://assets/kart/controls/gas.svg
+2026-11-14T12:35:47.1320582Z Loading resource: res://.godot/imported/gas.svg-914dfa80dabe318dd57e56052e1053de.ctex
+2026-11-14T12:35:47.1323341Z Loading resource: res://assets/kart/controls/boost.svg
+2026-11-14T12:35:47.1324071Z Loading resource: res://.godot/imported/boost.svg-dcf3fc14a70f817a73df0cacee513580.ctex
+2026-11-14T12:35:47.1327517Z Loading resource: res://assets/kart/controls/drift.svg
+2026-11-14T12:35:47.1327950Z Loading resource: res://.godot/imported/drift.svg-f59a3355d3d2135e53b0b1cf3f9eed55.ctex
+2026-11-14T12:35:47.1332279Z Loading resource: res://assets/kart/controls/brake.svg
+2026-11-14T12:35:47.1332745Z Loading resource: res://.godot/imported/brake.svg-b56fcf26ab1ae99ba005eb2f6b9ef722.ctex
+2026-11-14T12:35:47.1336058Z Loading resource: res://assets/kart/controls/item.svg
+2026-11-14T12:35:47.1336479Z Loading resource: res://.godot/imported/item.svg-39c87303f983f95f10f0f5180f09d306.ctex
+2026-11-14T12:35:47.1340279Z Loading resource: res://assets/kart/controls/reference/drift_normal.png
+2026-11-14T12:35:47.1340922Z Loading resource: res://.godot/imported/drift_normal.png-4b2f3b5ae5829667e0f75e1796929924.ctex
+2026-11-14T12:35:47.1366246Z Loading resource: res://assets/kart/controls/reference/drift_pressed.png
+2026-11-14T12:35:47.1366660Z Loading resource: res://.godot/imported/drift_pressed.png-bfaf92cafbdda6fd78c9ae0a1f6e7d6b.ctex
+2026-11-14T12:35:47.1392051Z Loading resource: res://assets/kart/controls/reference/drift_disabled.png
+2026-11-14T12:35:47.1392561Z Loading resource: res://.godot/imported/drift_disabled.png-d9660acf73eec7f356c001f24f129ab9.ctex
+2026-11-14T12:35:47.1417391Z Loading resource: res://assets/kart/controls/reference/gas_normal.png
+2026-11-14T12:35:47.1424813Z Loading resource: res://.godot/imported/gas_normal.png-b9eeff57c9ff87d6cf577311a39c684b.ctex
+2026-11-14T12:35:47.1444693Z Loading resource: res://assets/kart/controls/reference/gas_pressed.png
+2026-11-14T12:35:47.1445316Z Loading resource: res://.godot/imported/gas_pressed.png-effa69e7749875a11c66e4826b7e6b34.ctex
+2026-11-14T12:35:47.1475953Z Loading resource: res://assets/kart/controls/reference/gas_disabled.png
+2026-11-14T12:35:47.1484452Z Loading resource: res://.godot/imported/gas_disabled.png-c74904825386ef540dabe6b4b4bec66a.ctex
+2026-11-14T12:35:47.1507543Z Loading resource: res://assets/kart/controls/reference/bremse_normal.png
+2026-11-14T12:35:47.1508268Z Loading resource: res://.godot/imported/bremse_normal.png-17d79e585cbb64aa102f07ab36f89c30.ctex
+2026-11-14T12:35:47.1538076Z Loading resource: res://assets/kart/controls/reference/bremse_pressed.png
+2026-11-14T12:35:47.1538588Z Loading resource: res://.godot/imported/bremse_pressed.png-42d61aa24cad4bd30e998c3fa5b34d84.ctex
+2026-11-14T12:35:47.1568358Z Loading resource: res://assets/kart/controls/reference/bremse_disabled.png
+2026-11-14T12:35:47.1568908Z Loading resource: res://.godot/imported/bremse_disabled.png-16d3e95ba3b98c5f6be4b8bd3bf27c53.ctex
+2026-11-14T12:35:47.1597994Z Loading resource: res://assets/kart/controls/reference/speed_normal.png
+2026-11-14T12:35:47.1604631Z Loading resource: res://.godot/imported/speed_normal.png-06762b3753a232b6eafc5b70652830ad.ctex
+2026-11-14T12:35:47.1630769Z Loading resource: res://assets/kart/controls/reference/speed_pressed.png
+2026-11-14T12:35:47.1631302Z Loading resource: res://.godot/imported/speed_pressed.png-2815c6cbc7065304baa945df4ae0f6c7.ctex
+2026-11-14T12:35:47.1664258Z Loading resource: res://assets/kart/controls/reference/speed_disabled.png
+2026-11-14T12:35:47.1674489Z Loading resource: res://.godot/imported/speed_disabled.png-1f3947290f7d8b31552dd6bf8c5d0af9.ctex
+2026-11-14T12:35:47.1695672Z Loading resource: res://assets/kart/controls/reference/item_normal.png
+2026-11-14T12:35:47.1696199Z Loading resource: res://.godot/imported/item_normal.png-362eca5066a4737f521cd9d1c81ee115.ctex
+2026-11-14T12:35:47.1725769Z Loading resource: res://assets/kart/controls/reference/item_pressed.png
+2026-11-14T12:35:47.1726288Z Loading resource: res://.godot/imported/item_pressed.png-db16c4ab6f04234c802b2c5141b15fd1.ctex
+2026-11-14T12:35:47.1755928Z Loading resource: res://assets/kart/controls/reference/item_disabled.png
+2026-11-14T12:35:47.1756373Z Loading resource: res://.godot/imported/item_disabled.png-f2205c97afc933e0d4f8f452a61163b7.ctex
+2026-11-14T12:35:47.1785776Z Loading resource: res://assets/kart/hud/icon_shield.png
+2026-11-14T12:35:47.1786165Z Loading resource: res://.godot/imported/icon_shield.png-502f3c6bc05f0df8c2d13d38faa2c957.ctex
+2026-11-14T12:35:47.1793066Z Loading resource: res://assets/kart/hud/icon_pulse.png
+2026-11-14T12:35:47.1793591Z Loading resource: res://.godot/imported/icon_pulse.png-aeb91fa9be73310a019e02f562fadefa.ctex
+2026-11-14T12:35:47.1802579Z Loading resource: res://assets/kart/hud/icon_wind.png
+2026-11-14T12:35:47.1803067Z Loading resource: res://.godot/imported/icon_wind.png-7e73538f9c5aefaf64cf34ea279506d8.ctex
+2026-11-14T12:35:47.1864988Z Loading resource: res://assets/kart/controls/reference/stick_basis.png
+2026-11-14T12:35:47.1874635Z Loading resource: res://.godot/imported/stick_basis.png-deb9a6762bca020b82922e26b6edc3d2.ctex
+2026-11-14T12:35:47.1990023Z Loading resource: res://assets/kart/controls/reference/stick_knopf_normal.png
+2026-11-14T12:35:47.1990417Z Loading resource: res://.godot/imported/stick_knopf_normal.png-da4db6c3b525b78c03edd2d338c5cf84.ctex
+2026-11-14T12:35:47.2008340Z Loading resource: res://assets/kart/controls/reference/stick_knopf_pressed.png
+2026-11-14T12:35:47.2008930Z Loading resource: res://.godot/imported/stick_knopf_pressed.png-b3fc6786154c89e2052a1e3d30f95b09.ctex
+2026-11-14T12:35:47.2970594Z Loading resource: res://assets/audio/kart/garage.ogg
+2026-11-14T12:35:47.2971079Z Loading resource: res://.godot/imported/garage.ogg-e4680e06f68e5389a72f23266d1621aa.oggvorbisstr
+2026-11-14T12:35:47.3142655Z Loading resource: res://assets/kart/menu/race.svg
+2026-11-14T12:35:47.3143065Z Loading resource: res://.godot/imported/race.svg-aee843503549d595ff1412168c0afa41.ctex
+2026-11-14T12:35:47.3166671Z Loading resource: res://assets/kart/menu/clock.svg
+2026-11-14T12:35:47.3167850Z Loading resource: res://.godot/imported/clock.svg-21627f753afcb3a2da11eb08a79e3005.ctex
+2026-11-14T12:35:47.3187097Z Loading resource: res://assets/kart/menu/arena.svg
+2026-11-14T12:35:47.3188109Z Loading resource: res://.godot/imported/arena.svg-dc0ccb0baedddcefa8f49e6d5875723c.ctex
+2026-11-14T12:35:47.3206551Z Loading resource: res://assets/kart/menu/cup.svg
+2026-11-14T12:35:47.3207505Z Loading resource: res://.godot/imported/cup.svg-ca6000eef9703987fa085ff67392fb2c.ctex
+2026-11-14T12:35:47.3225775Z Loading resource: res://assets/kart/menu/practice.svg
+2026-11-14T12:35:47.3226662Z Loading resource: res://.godot/imported/practice.svg-76ebe0161637b7e4d8f02bba9b85bc02.ctex
+2026-11-14T12:35:47.4644102Z Loading resource: res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb
+2026-11-14T12:35:47.4644581Z Loading resource: res://.godot/imported/Lumo-Facial-Mobile.glb-990aa22f389583ec1c7266cfb13484d8.scn
+2026-11-14T12:35:47.5238776Z [Kart] Holographic garage ready: five modes, twelve worlds, free steering
+2026-11-14T12:35:47.6086945Z [Perf] quality_profile:medium
+2026-11-14T12:35:48.8669541Z Loading resource: res://assets/kart/gates/lumo_kart_start_finish_gate_mobile.glb
+2026-11-14T12:35:48.8675311Z Loading resource: res://.godot/imported/lumo_kart_start_finish_gate_mobile.glb-84a49864a9a151eceeb5cb82b917f010.scn
+2026-11-14T12:35:48.8675818Z Loading resource: res://assets/kart/gates/lumo_kart_start_finish_gate_mobile_LumoBaseColor.jpg
+2026-11-14T12:35:48.8676230Z Loading resource: res://.godot/imported/lumo_kart_start_finish_gate_mobile_LumoBaseColor.jpg-57426a748210127b9386992ef016d3d3.ctex
+2026-11-14T12:35:48.8719767Z Loading resource: res://assets/kart/gates/lumo_kart_start_finish_gate_mobile_LumoMetallicRoughness.jpg
+2026-11-14T12:35:48.8720659Z Loading resource: res://.godot/imported/lumo_kart_start_finish_gate_mobile_LumoMetallicRoughness.jpg-5f3c8cd6f2dec1b19a4920d996fe1bbe.ctex
+2026-11-14T12:35:48.8769671Z Loading resource: res://assets/kart/gates/lumo_kart_start_finish_gate_mobile_LumoNormal.jpg
+2026-11-14T12:35:48.8770490Z Loading resource: res://.godot/imported/lumo_kart_start_finish_gate_mobile_LumoNormal.jpg-7818598fbcc0e653558aeaed89bf198c.ctex
+2026-11-14T12:35:49.4215463Z Loading resource: res://assets/audio/kart/sonnenhafen.ogg
+2026-11-14T12:35:49.4216039Z Loading resource: res://.godot/imported/sonnenhafen.ogg-b2daf4a1be388ef18205be3b13b50a39.oggvorbisstr
+2026-11-14T12:35:49.4283565Z [Kart] race_world_ready: sonnenhafen mode=training
+2026-11-14T12:36:02.0667524Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/native-proof/precision/01_loop_runup_overview.png
+2026-11-14T12:36:02.6608901Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/native-proof/precision/02_loop_exit_to_ramp.png
+2026-11-14T12:36:03.2362658Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/native-proof/precision/03_ramp_gap_landing_side.png
+2026-11-14T12:36:03.2472704Z [PrecisionCapture] 04_hint_red_gib_gas: 12.0 m/s -> Gib Gas! (predicted 10.3 m)
+2026-11-14T12:36:04.1051544Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/native-proof/precision/04_hint_red_gib_gas.png
+2026-11-14T12:36:04.1168238Z [PrecisionCapture] 05_hint_green_tempo_passt: 21.6 m/s -> Tempo passt! (predicted 22.8 m)
+2026-11-14T12:36:05.0512430Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/native-proof/precision/05_hint_green_tempo_passt.png
+2026-11-14T12:36:05.0619898Z [PrecisionCapture] 06_hint_orange_etwas_bremsen: 30.0 m/s -> Etwas bremsen! (predicted 37.4 m)
+2026-11-14T12:36:05.8134637Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/native-proof/precision/06_hint_orange_etwas_bremsen.png
+2026-11-14T12:36:06.5228408Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/native-proof/precision/07_midair_over_gap_chase.png
+2026-11-14T12:36:07.2285714Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/native-proof/precision/08_midair_over_gap_side.png
+2026-11-14T12:36:07.2339231Z Loading resource: res://assets/audio/kart/drift.ogg
+2026-11-14T12:36:07.2339921Z Loading resource: res://.godot/imported/drift.ogg-b90a535d4ac4aeeed2cb35df5da7f43d.oggvorbisstr
+2026-11-14T12:36:07.2354768Z [PrecisionCapture] landing: ziel after 19.90 m
+2026-11-14T12:36:08.1931316Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/native-proof/precision/09_landing_in_zone.png
+2026-11-14T12:36:08.9483991Z [PrecisionCapture] saved /home/runner/work/lumo-godot/lumo-godot/exports/native-proof/precision/10_too_slow_falls_into_gap.png
+2026-11-14T12:36:09.0261219Z [PrecisionCapture] released 4 audio streams
+2026-11-14T12:36:09.0280645Z [PrecisionCapture] PASS: 10 frames
+2026-11-14T12:36:09.1939436Z XR: Clearing primary interface
+2026-11-14T12:36:09.1939837Z XR: Removed interface "Native mobile"
+2026-11-14T12:36:09.1940043Z XR: Removed interface "OpenXR"
+2026-11-14T12:36:09.1940242Z Accessibility: window 0 adapter destroyed.
+2026-11-14T12:36:09.2897138Z ##[group]Run actions/upload-artifact@v4
+2026-11-14T12:36:09.2897321Z with:
+2026-11-14T12:36:09.2897448Z   name: lumo-native-precision-43595542891
+2026-11-14T12:36:09.2897639Z   path: exports/native-proof/
+exports/creative-build/
+
+2026-11-14T12:36:09.2897817Z   retention-days: 60
+2026-11-14T12:36:09.2897951Z   if-no-files-found: error
+2026-11-14T12:36:09.2898081Z   compression-level: 6
+2026-11-14T12:36:09.2898200Z   overwrite: false
+2026-11-14T12:36:09.2898321Z   include-hidden-files: false
+2026-11-14T12:36:09.2898451Z env:
+2026-11-14T12:36:09.2898558Z   LIBGL_ALWAYS_SOFTWARE: 1
+2026-11-14T12:36:09.2898685Z ##[endgroup]
+2026-11-14T12:36:09.4044533Z (node:2688) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-14T12:36:09.4044959Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-14T12:36:09.4080828Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-14T12:36:09.4082269Z The least common ancestor is /home/runner/work/lumo-godot/lumo-godot/exports. This will be the root directory of the artifact
+2026-11-14T12:36:09.4083157Z With the provided path, there will be 14 files uploaded
+2026-11-14T12:36:09.4085799Z Artifact name is valid!
+2026-11-14T12:36:09.4086007Z Root directory input is valid!
+2026-11-14T12:36:09.7099174Z Beginning upload of artifact content to blob storage
+2026-11-14T12:36:09.8838685Z (node:2688) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-14T12:36:10.3920250Z Uploaded bytes 7184193
+2026-11-14T12:36:10.4351445Z Finished uploading artifact content to blob storage!
+2026-11-14T12:36:10.4352039Z SHA256 digest of uploaded artifact zip is 4d1bc16bfefc180e19c4b12ed6ea736b40cdc33f802ad4374647e89186570f5a
+2026-11-14T12:36:10.4352501Z Finalizing artifact upload
+2026-11-14T12:36:10.7770773Z Artifact lumo-native-precision-43595542891.zip successfully finalized. Artifact ID 14114525711
+2026-11-14T12:36:10.7771676Z Artifact lumo-native-precision-43595542891 has been successfully uploaded! Final size is 7184193 bytes. Artifact ID is 14114525711
+2026-11-14T12:36:10.7776421Z Artifact download URL: https://github.com/Ullmann27/lumo-godot/actions/runs/43595542891/artifacts/14114525711
+2026-11-14T12:36:10.7969189Z Post job cleanup.
+2026-11-14T12:36:10.8526913Z [command]/usr/bin/git version
+2026-11-14T12:36:10.8557141Z git version 2.56.1
+2026-11-14T12:36:10.8580163Z Temporarily overriding HOME='/home/runner/work/_temp/93e37678-3de3-41e3-aeed-f6657b19a206' before making global git config changes
+2026-11-14T12:36:10.8580822Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-14T12:36:10.8583926Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/lumo-godot/lumo-godot
+2026-11-14T12:36:10.8616594Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-14T12:36:10.8643124Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-14T12:36:10.8833658Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-14T12:36:10.8861796Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-14T12:36:10.9051054Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-14T12:36:10.9078092Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-14T12:36:10.9384441Z Cleaning up orphan processes
+2026-11-14T12:36:10.9644700Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

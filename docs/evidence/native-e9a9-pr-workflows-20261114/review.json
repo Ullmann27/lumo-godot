@@ -1,0 +1,1460 @@
+{
+  "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+  "tree": "1c2b5da7a4485cb8b911adcac2b567481cf902b5",
+  "actual_pr_merge": {
+    "sha": "5fcb2df962602d07613dc73d661455268193ab11",
+    "tree": "1c2b5da7a4485cb8b911adcac2b567481cf902b5",
+    "parents": [
+      "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+      "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa"
+    ]
+  },
+  "workflow_runs": [
+    {
+      "run": 43595542896,
+      "attempt": 1,
+      "event": "pull_request",
+      "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T12:35:01Z",
+      "updated_at": "2026-11-14T12:37:44Z",
+      "jobs": [
+        {
+          "id": 132449119169,
+          "name": "nextgen-visual",
+          "started_at": "2026-11-14T12:35:04Z",
+          "completed_at": "2026-11-14T12:37:43Z",
+          "status": "completed",
+          "conclusion": "success",
+          "duration_seconds": 159
+        }
+      ]
+    },
+    {
+      "run": 43595542888,
+      "attempt": 1,
+      "event": "pull_request",
+      "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T12:35:01Z",
+      "updated_at": "2026-11-14T12:38:13Z",
+      "jobs": [
+        {
+          "id": 132449119140,
+          "name": "video-grade",
+          "started_at": "2026-11-14T12:35:03Z",
+          "completed_at": "2026-11-14T12:38:13Z",
+          "status": "completed",
+          "conclusion": "success",
+          "duration_seconds": 190
+        }
+      ]
+    },
+    {
+      "run": 43595542947,
+      "attempt": 1,
+      "event": "pull_request",
+      "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T12:35:01Z",
+      "updated_at": "2026-11-14T12:36:40Z",
+      "jobs": [
+        {
+          "id": 132449119154,
+          "name": "native-resonance",
+          "started_at": "2026-11-14T12:35:03Z",
+          "completed_at": "2026-11-14T12:36:40Z",
+          "status": "completed",
+          "conclusion": "success",
+          "duration_seconds": 97
+        }
+      ]
+    },
+    {
+      "run": 43595542907,
+      "attempt": 1,
+      "event": "pull_request",
+      "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T12:35:01Z",
+      "updated_at": "2026-11-14T12:36:46Z",
+      "jobs": [
+        {
+          "id": 132449119188,
+          "name": "validated-race-event",
+          "started_at": "2026-11-14T12:35:04Z",
+          "completed_at": "2026-11-14T12:36:46Z",
+          "status": "completed",
+          "conclusion": "success",
+          "duration_seconds": 102
+        }
+      ]
+    },
+    {
+      "run": 43595542961,
+      "attempt": 1,
+      "event": "pull_request",
+      "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T12:35:01Z",
+      "updated_at": "2026-11-14T12:37:00Z",
+      "jobs": [
+        {
+          "id": 132449119376,
+          "name": "hero-flight",
+          "started_at": "2026-11-14T12:35:04Z",
+          "completed_at": "2026-11-14T12:37:00Z",
+          "status": "completed",
+          "conclusion": "success",
+          "duration_seconds": 116
+        }
+      ]
+    },
+    {
+      "run": 43595542899,
+      "attempt": 1,
+      "event": "pull_request",
+      "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T12:35:01Z",
+      "updated_at": "2026-11-14T12:37:18Z",
+      "jobs": [
+        {
+          "id": 132449119225,
+          "name": "rival-feedback",
+          "started_at": "2026-11-14T12:35:04Z",
+          "completed_at": "2026-11-14T12:37:17Z",
+          "status": "completed",
+          "conclusion": "success",
+          "duration_seconds": 133
+        }
+      ]
+    },
+    {
+      "run": 43595542916,
+      "attempt": 1,
+      "event": "pull_request",
+      "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T12:35:01Z",
+      "updated_at": "2026-11-14T12:37:20Z",
+      "jobs": [
+        {
+          "id": 132449119202,
+          "name": "hero-flight",
+          "started_at": "2026-11-14T12:35:04Z",
+          "completed_at": "2026-11-14T12:37:20Z",
+          "status": "completed",
+          "conclusion": "success",
+          "duration_seconds": 136
+        }
+      ]
+    },
+    {
+      "run": 43595542951,
+      "attempt": 1,
+      "event": "pull_request",
+      "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T12:35:01Z",
+      "updated_at": "2026-11-14T12:36:10Z",
+      "jobs": [
+        {
+          "id": 132449119389,
+          "name": "combined-godot-runtime",
+          "started_at": "2026-11-14T12:35:04Z",
+          "completed_at": "2026-11-14T12:36:09Z",
+          "status": "completed",
+          "conclusion": "success",
+          "duration_seconds": 65
+        }
+      ]
+    },
+    {
+      "run": 43595542891,
+      "attempt": 1,
+      "event": "pull_request",
+      "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T12:35:01Z",
+      "updated_at": "2026-11-14T12:36:32Z",
+      "jobs": [
+        {
+          "id": 132449119246,
+          "name": "real-native-proof (bauwelt)",
+          "started_at": "2026-11-14T12:35:04Z",
+          "completed_at": "2026-11-14T12:36:31Z",
+          "status": "completed",
+          "conclusion": "success",
+          "duration_seconds": 87
+        },
+        {
+          "id": 132449119363,
+          "name": "real-native-proof (precision)",
+          "started_at": "2026-11-14T12:35:04Z",
+          "completed_at": "2026-11-14T12:36:12Z",
+          "status": "completed",
+          "conclusion": "success",
+          "duration_seconds": 68
+        }
+      ]
+    },
+    {
+      "run": 43595542924,
+      "attempt": 1,
+      "event": "pull_request",
+      "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T12:35:01Z",
+      "updated_at": "2026-11-14T12:42:22Z",
+      "jobs": [
+        {
+          "id": 132449119138,
+          "name": "real-godot-tests",
+          "started_at": "2026-11-14T12:35:04Z",
+          "completed_at": "2026-11-14T12:42:22Z",
+          "status": "completed",
+          "conclusion": "success",
+          "duration_seconds": 438
+        }
+      ]
+    },
+    {
+      "run": 43595543000,
+      "attempt": 1,
+      "event": "pull_request",
+      "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T12:35:01Z",
+      "updated_at": "2026-11-14T12:50:18Z",
+      "jobs": [
+        {
+          "id": 132449119326,
+          "name": "kart-stage2",
+          "started_at": "2026-11-14T12:35:04Z",
+          "completed_at": "2026-11-14T12:50:17Z",
+          "status": "completed",
+          "conclusion": "success",
+          "duration_seconds": 913
+        }
+      ]
+    }
+  ],
+  "original_logs": [
+    {
+      "run": 43595542947,
+      "job": 132449119154,
+      "name": "Lumo Kart deterministic resonance racing gameplay",
+      "bytes": 23995,
+      "sha256": "bfe6d6282eb11daa333198b344ecde5125d84fad757c907bd9b63683841baf15",
+      "checkout": "5fcb2df962602d07613dc73d661455268193ab11",
+      "checkoutLine": 122,
+      "markers": [
+        {
+          "line": 185,
+          "timestamp": "2026-11-14T12:35:52.4633553Z",
+          "text": "[KartResonance] PASS: skill not RNG, five real ring meshes, one pickup/lap, pulse use, save-key continuity"
+        },
+        {
+          "line": 208,
+          "timestamp": "2026-11-14T12:35:56.7107220Z",
+          "text": "[KartRivalFeedback] PASS: telegraph, dodge, shield block, visible rival shield, bounded boost"
+        },
+        {
+          "line": 249,
+          "timestamp": "2026-11-14T12:36:35.4601718Z",
+          "text": "[KartResonanceCapture] PASS: actual Sonnenhafen in-game ring at 1280x720"
+        }
+      ],
+      "errors": [],
+      "engines": [
+        "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+      ]
+    },
+    {
+      "run": 43595542907,
+      "job": 132449119188,
+      "name": "Lumo Kart dynamic neon surge event inside real race",
+      "bytes": 266541,
+      "sha256": "30ffe574658cae3c12f760c6d928751450cfeecef5c0d3766e3d5baa9b95d2c4",
+      "checkout": "5fcb2df962602d07613dc73d661455268193ab11",
+      "checkoutLine": 122,
+      "markers": [
+        {
+          "line": 2712,
+          "timestamp": "2026-11-14T12:35:54.7316306Z",
+          "text": "[DarkrideEvent] PASS: lap-two neon + cartoon burst, reduced motion, no physics changes"
+        },
+        {
+          "line": 2729,
+          "timestamp": "2026-11-14T12:35:56.7935959Z",
+          "text": "[DarkrideLifecycle] failures=0"
+        },
+        {
+          "line": 2772,
+          "timestamp": "2026-11-14T12:36:41.1203638Z",
+          "text": "[DarkrideEventRender] PASS: real lap-one and lap-two neon event images differ"
+        },
+        {
+          "line": 2773,
+          "timestamp": "2026-11-14T12:36:41.7960574Z",
+          "text": "[DarkrideEventRender] PASS: real lap-one and lap-two neon event images differ"
+        }
+      ],
+      "errors": [],
+      "engines": [
+        "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+      ]
+    },
+    {
+      "run": 43595542961,
+      "job": 132449119376,
+      "name": "Sonnenhafen hero flight actual Godot regression",
+      "bytes": 25264,
+      "sha256": "d686afafd2b246ff6c9cd90aef14ef0aad11e2f53e3ef5bd96d747dd916fcf2a",
+      "checkout": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "checkoutLine": 123,
+      "markers": [
+        {
+          "line": 214,
+          "timestamp": "2026-11-14T12:36:29.1216367Z",
+          "text": "[KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung"
+        },
+        {
+          "line": 215,
+          "timestamp": "2026-11-14T12:36:29.3858895Z",
+          "text": "[KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung"
+        },
+        {
+          "line": 251,
+          "timestamp": "2026-11-14T12:36:56.9837802Z",
+          "text": "[SonnenhafenFlightCapture] PASS: real ramp, airborne and landing screenshots"
+        }
+      ],
+      "errors": [],
+      "engines": [
+        "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+      ]
+    },
+    {
+      "run": 43595542899,
+      "job": 132449119225,
+      "name": "Lumo Kart Rival Feedback",
+      "bytes": 279819,
+      "sha256": "de45ad71e904e8e904d5d10210ffee11d4519d9ed5568596236cffae95f0d675",
+      "checkout": "5fcb2df962602d07613dc73d661455268193ab11",
+      "checkoutLine": 122,
+      "markers": [
+        {
+          "line": 2715,
+          "timestamp": "2026-11-14T12:35:53.6600443Z",
+          "text": "[KartRivalFeedback] PASS: telegraph, dodge, shield block, visible rival shield, bounded boost"
+        },
+        {
+          "line": 2716,
+          "timestamp": "2026-11-14T12:35:53.6613540Z",
+          "text": "[KartRivalFeedback] PASS: telegraph, dodge, shield block, visible rival shield, bounded boost"
+        },
+        {
+          "line": 2758,
+          "timestamp": "2026-11-14T12:36:32.4629816Z",
+          "text": "[KartRivalShots] PASS: 4 real runtime frames at 1280x720"
+        },
+        {
+          "line": 2759,
+          "timestamp": "2026-11-14T12:36:32.4636510Z",
+          "text": "[KartRivalShots] PASS: 4 real runtime frames at 1280x720"
+        },
+        {
+          "line": 2815,
+          "timestamp": "2026-11-14T12:36:50.1149562Z",
+          "text": "[KartModesTests] PASS: 12-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks"
+        },
+        {
+          "line": 2816,
+          "timestamp": "2026-11-14T12:36:50.1155246Z",
+          "text": "[KartModesTests] PASS: 12-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks"
+        },
+        {
+          "line": 2902,
+          "timestamp": "2026-11-14T12:37:14.8237047Z",
+          "text": "[KartSplit] PASS: Wolkenweg raised 2.20 m while main lane stayed at 0.00 m"
+        },
+        {
+          "line": 2905,
+          "timestamp": "2026-11-14T12:37:14.8238562Z",
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        },
+        {
+          "line": 2931,
+          "timestamp": "2026-11-14T12:37:14.8250003Z",
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        }
+      ],
+      "errors": [],
+      "engines": [
+        "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+      ]
+    },
+    {
+      "run": 43595542916,
+      "job": 132449119202,
+      "name": "Lumo Sonnenhafen 2003 real bird eye and jump QA",
+      "bytes": 25386,
+      "sha256": "9488ab0639c79dbd5d8f8ca4f157bf934cbdd88b4332132ed93794a4cb1e4b00",
+      "checkout": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "checkoutLine": 123,
+      "markers": [
+        {
+          "line": 214,
+          "timestamp": "2026-11-14T12:36:46.5023745Z",
+          "text": "[KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung"
+        },
+        {
+          "line": 215,
+          "timestamp": "2026-11-14T12:36:47.0969203Z",
+          "text": "[KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung"
+        },
+        {
+          "line": 252,
+          "timestamp": "2026-11-14T12:37:15.2739200Z",
+          "text": "[SonnenhafenAerial] PASS: full aerial course + takeoff + real flight + landing; no resets; peak 5.26m"
+        }
+      ],
+      "errors": [],
+      "engines": [
+        "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+      ]
+    },
+    {
+      "run": 43595542951,
+      "job": 132449119389,
+      "name": "Lumo Kart and Bauwelt integration QA",
+      "bytes": 267773,
+      "sha256": "17465d6130a9685c0855b4a0de1d3d19e7943bcb0ff83977d2ee03b7743c9841",
+      "checkout": "5fcb2df962602d07613dc73d661455268193ab11",
+      "checkoutLine": 122,
+      "markers": [
+        {
+          "line": 2701,
+          "timestamp": "2026-11-14T12:35:52.1124573Z",
+          "text": "[PremiumRailKit] PASS rail triangles, mesh AABB, unchanged collision, LOD rails=5252 glow_batches=93"
+        },
+        {
+          "line": 2702,
+          "timestamp": "2026-11-14T12:35:52.2040026Z",
+          "text": "[PremiumRailKit] PASS rail triangles, mesh AABB, unchanged collision, LOD rails=5252 glow_batches=93"
+        },
+        {
+          "line": 2719,
+          "timestamp": "2026-11-14T12:35:53.3871905Z",
+          "text": "[KartTerrainExtent] PASS: immutable 17-point 1972 track, approved 23-point route, tidal inlet, adaptive terrain"
+        },
+        {
+          "line": 2721,
+          "timestamp": "2026-11-14T12:35:53.5012636Z",
+          "text": "[KartTerrainExtent] PASS: immutable 17-point 1972 track, approved 23-point route, tidal inlet, adaptive terrain"
+        },
+        {
+          "line": 2738,
+          "timestamp": "2026-11-14T12:35:53.8729936Z",
+          "text": "[Bauwelt12] PASS: 12 real 3D meshes, colliders, placement, rotations, undo/redo, state save/restore"
+        },
+        {
+          "line": 2740,
+          "timestamp": "2026-11-14T12:35:53.9567610Z",
+          "text": "[Bauwelt12] PASS: 12 real 3D meshes, colliders, placement, rotations, undo/redo, state save/restore"
+        },
+        {
+          "line": 2752,
+          "timestamp": "2026-11-14T12:35:54.3446012Z",
+          "text": "[VillageEconomy] PASS 337 checks"
+        },
+        {
+          "line": 2761,
+          "timestamp": "2026-11-14T12:35:54.4160367Z",
+          "text": "[VillageEconomy] PASS 337 checks"
+        },
+        {
+          "line": 2783,
+          "timestamp": "2026-11-14T12:35:59.8287639Z",
+          "text": "[VillageScene] PASS checks=222 : production village, chapter, economy and resume"
+        },
+        {
+          "line": 2784,
+          "timestamp": "2026-11-14T12:35:59.8971598Z",
+          "text": "[VillageScene] PASS checks=222 : production village, chapter, economy and resume"
+        },
+        {
+          "line": 2803,
+          "timestamp": "2026-11-14T12:36:05.9353943Z",
+          "text": "[BuildNextgen] PASS checks=71: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout"
+        },
+        {
+          "line": 2804,
+          "timestamp": "2026-11-14T12:36:06.0289914Z",
+          "text": "[BuildNextgen] PASS checks=71: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout"
+        }
+      ],
+      "errors": [],
+      "engines": [
+        "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+      ]
+    },
+    {
+      "run": 43595542891,
+      "job": 132449119246,
+      "name": "Lumo native lifecycle and Bauwelt play proof",
+      "bytes": 36204,
+      "sha256": "ac86c7c0c41b0633c53cf7867274266bd574981111fe0716e84111d13ebeeb4e",
+      "checkout": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "checkoutLine": 125,
+      "markers": [
+        {
+          "line": 270,
+          "timestamp": "2026-11-14T12:36:06.6104501Z",
+          "text": "[CreativeBuild] PASS: support, collision, crossing, meaningful goals, undo/redo, rejected corrupt save"
+        },
+        {
+          "line": 348,
+          "timestamp": "2026-11-14T12:36:26.7918723Z",
+          "text": "[CreativeBuild] PASS: actual world, successful JSON reload, pause, 4 rendered screenshots"
+        },
+        {
+          "line": 353,
+          "timestamp": "2026-11-14T12:36:27.0191914Z",
+          "text": "[BauweltArtifact] PASS: all four real frames are 1280x720 PNGs"
+        }
+      ],
+      "errors": [],
+      "engines": [
+        "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+      ]
+    },
+    {
+      "run": 43595542891,
+      "job": 132449119363,
+      "name": "Lumo native lifecycle and Bauwelt play proof",
+      "bytes": 44282,
+      "sha256": "5a39940d1833d3a181394522fa55d9e4703d8b70146ff92b0a5b52c7624be029",
+      "checkout": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "checkoutLine": 125,
+      "markers": [
+        {
+          "line": 417,
+          "timestamp": "2026-11-14T12:36:09.0280645Z",
+          "text": "[PrecisionCapture] PASS: 10 frames"
+        }
+      ],
+      "errors": [],
+      "engines": [
+        "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+      ]
+    },
+    {
+      "run": 43595542896,
+      "job": 132449119169,
+      "name": "Lumo Next Gen visual smoke and real Kart screenshots",
+      "bytes": 270874,
+      "sha256": "14ca7f2b6e0931e7d5331a8999795b85a7a077975b61e826575b8c76c81115f6",
+      "checkout": "5fcb2df962602d07613dc73d661455268193ab11",
+      "checkoutLine": 122,
+      "markers": [
+        {
+          "line": 2706,
+          "timestamp": "2026-11-14T12:35:51.8172798Z",
+          "text": "[KartNextGenUI] PASS: live fox, visible scrollable routes, grade/subject and touch targets"
+        },
+        {
+          "line": 2743,
+          "timestamp": "2026-11-14T12:36:32.4704289Z",
+          "text": "[AAAMenuCapture] PASS: three fixed-state real menu captures, five accessible 48dp modes"
+        },
+        {
+          "line": 2776,
+          "timestamp": "2026-11-14T12:36:36.9515819Z",
+          "text": "[NextGenHub] PASS: two actual rendered game hub screenshots"
+        },
+        {
+          "line": 2809,
+          "timestamp": "2026-11-14T12:36:39.0066610Z",
+          "text": "[ReferenceLanding] PASS: native real menu controls, live selected mode, phone and landscape"
+        },
+        {
+          "line": 2844,
+          "timestamp": "2026-11-14T12:37:39.1814224Z",
+          "text": "[ReferenceHost] PASS: brand-consistent modes, live premium START, 3D Kart race and navigation"
+        }
+      ],
+      "errors": [],
+      "engines": [
+        "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+      ]
+    },
+    {
+      "run": 43595542888,
+      "job": 132449119140,
+      "name": "Lumo Kart Video Reference Grade",
+      "bytes": 281232,
+      "sha256": "4699adbfd7ab7f731d10d249ce1c30094c686af729b2023f507ed825b20218dd",
+      "checkout": "5fcb2df962602d07613dc73d661455268193ab11",
+      "checkoutLine": 122,
+      "markers": [
+        {
+          "line": 2746,
+          "timestamp": "2026-11-14T12:37:08.3726256Z",
+          "text": "[KartVideoGrade] PASS: complete rendered kart bounds at rest, speed and reduced motion on phone, cover and inner display"
+        },
+        {
+          "line": 2750,
+          "timestamp": "2026-11-14T12:37:08.3728136Z",
+          "text": "[KartVideoGrade] PASS: close chase framing, glossy emissive road, filmic glow/contrast, bounded boost FOV"
+        },
+        {
+          "line": 2751,
+          "timestamp": "2026-11-14T12:37:08.3741180Z",
+          "text": "[KartVideoGrade] PASS: complete rendered kart bounds at rest, speed and reduced motion on phone, cover and inner display"
+        },
+        {
+          "line": 2752,
+          "timestamp": "2026-11-14T12:37:08.3742537Z",
+          "text": "[KartVideoGrade] PASS: close chase framing, glossy emissive road, filmic glow/contrast, bounded boost FOV"
+        },
+        {
+          "line": 2775,
+          "timestamp": "2026-11-14T12:37:12.6664180Z",
+          "text": "[KartRivalFeedback] PASS: telegraph, dodge, shield block, visible rival shield, bounded boost"
+        },
+        {
+          "line": 2776,
+          "timestamp": "2026-11-14T12:37:12.6685829Z",
+          "text": "[KartRivalFeedback] PASS: telegraph, dodge, shield block, visible rival shield, bounded boost"
+        },
+        {
+          "line": 2835,
+          "timestamp": "2026-11-14T12:37:36.2579334Z",
+          "text": "[KartModesTests] PASS: 12-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks"
+        },
+        {
+          "line": 2836,
+          "timestamp": "2026-11-14T12:37:36.2587813Z",
+          "text": "[KartModesTests] PASS: 12-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks"
+        },
+        {
+          "line": 2909,
+          "timestamp": "2026-11-14T12:38:10.4333576Z",
+          "text": "[KartSplit] PASS: Wolkenweg raised 2.20 m while main lane stayed at 0.00 m"
+        },
+        {
+          "line": 2912,
+          "timestamp": "2026-11-14T12:38:10.4337707Z",
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        },
+        {
+          "line": 2938,
+          "timestamp": "2026-11-14T12:38:10.4360135Z",
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        }
+      ],
+      "errors": [],
+      "engines": [
+        "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+      ]
+    },
+    {
+      "run": 43595542924,
+      "job": 132449119138,
+      "name": "Sonnenhafen 2027 stunt integration",
+      "bytes": 87888,
+      "sha256": "2950936016365fd6b44a3d1606a3dc3356ebced624d761357485afbc888c4c98",
+      "checkout": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "checkoutLine": 123,
+      "markers": [
+        {
+          "line": 182,
+          "timestamp": "2026-11-14T12:35:59.8878695Z",
+          "text": "[PrecisionJump] PASS: 55 checks"
+        },
+        {
+          "line": 235,
+          "timestamp": "2026-11-14T12:36:50.0922568Z",
+          "text": "[SonnenhafenStunt] PASS: real loop, boost pad, stars, safe exit and safe failure"
+        },
+        {
+          "line": 253,
+          "timestamp": "2026-11-14T12:36:57.2367501Z",
+          "text": "[CrystalGorge] PASS: carved depth, open physics gap, tiered batched geology"
+        },
+        {
+          "line": 289,
+          "timestamp": "2026-11-14T12:37:12.9121303Z",
+          "text": "[KartActionCourse] PASS: 12 Strecken ohne Überlagerung, Turbo-Feld, Slalom mit Hütchen, Sprungschanze mit Landung, Unterwasser-Tunnel, offene Kante mit fairer Rettung"
+        },
+        {
+          "line": 307,
+          "timestamp": "2026-11-14T12:37:18.4051324Z",
+          "text": "[SonnenhafenWater] PASS: full/low foam, other-track isolation, real waterfall, shared sea height"
+        },
+        {
+          "line": 327,
+          "timestamp": "2026-11-14T12:37:24.1122760Z",
+          "text": "[Darkride] PASS: deterministic mobile geometry, road width, eight checkpoints and zero collision changes"
+        },
+        {
+          "line": 348,
+          "timestamp": "2026-11-14T12:37:29.4580994Z",
+          "text": "[SonnenhafenLong] PASS: real 1.85km curve, bridged tidal inlet and both LODs"
+        },
+        {
+          "line": 366,
+          "timestamp": "2026-11-14T12:37:34.8031991Z",
+          "text": "[HarborVisualFinish] PASS: 10 opaque contacts, 4 joints, 288 high-only corrugation ribs, no gameplay changes"
+        },
+        {
+          "line": 384,
+          "timestamp": "2026-11-14T12:37:40.3231910Z",
+          "text": "[SonnenhafenHeroCoast] PASS: 5 unique 3D landmarks, actual low/high LOD, safe road and preserved checkpoints"
+        },
+        {
+          "line": 409,
+          "timestamp": "2026-11-14T12:38:22.0575576Z",
+          "text": "[KartTests] PASS: 8000 shared Jump questions; no Kart learning state; free steering; real full race; brake/drift; pause; save/resume; one award"
+        },
+        {
+          "line": 483,
+          "timestamp": "2026-11-14T12:40:28.4187004Z",
+          "text": "[KartLapContinuity] PASS: 104 checks, 0 failures"
+        },
+        {
+          "line": 513,
+          "timestamp": "2026-11-14T12:40:59.7215415Z",
+          "text": "[KartHandoffLifecycle] PASS: 10 checks, 0 failures"
+        },
+        {
+          "line": 514,
+          "timestamp": "2026-11-14T12:41:00.3883502Z",
+          "text": "[KartContinuity] PASS: quality change, save/reopen, next lap, rival states, legacy saves and flight reset"
+        },
+        {
+          "line": 548,
+          "timestamp": "2026-11-14T12:41:01.1656699Z",
+          "text": "[ProgressProfileLifetime] checks=24 failures=0"
+        },
+        {
+          "line": 628,
+          "timestamp": "2026-11-14T12:41:53.4552078Z",
+          "text": "[KartSplit] PASS: Wolkenweg raised 2.20 m while main lane stayed at 0.00 m"
+        },
+        {
+          "line": 631,
+          "timestamp": "2026-11-14T12:41:56.2702497Z",
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        },
+        {
+          "line": 866,
+          "timestamp": "2026-11-14T12:42:17.6709873Z",
+          "text": "[PrecisionCapture] PASS: 10 frames"
+        }
+      ],
+      "errors": [],
+      "engines": [
+        "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+      ]
+    },
+    {
+      "run": 43595543000,
+      "job": 132449119326,
+      "name": "Verify Lumo Kart Stage 2",
+      "bytes": 615491,
+      "sha256": "693d0ce393aeebdf6bc5e9b81810f9ba86caca028958c53364900bd91f35942f",
+      "checkout": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+      "checkoutLine": 123,
+      "markers": [
+        {
+          "line": 277,
+          "timestamp": "2026-11-14T12:35:15.9987599Z",
+          "text": "SUMMARY: 117 PASS / 7 WARN / 0 FAIL"
+        },
+        {
+          "line": 278,
+          "timestamp": "2026-11-14T12:35:15.9987860Z",
+          "text": "RESULT: PASS (7 warnings)"
+        },
+        {
+          "line": 284,
+          "timestamp": "2026-11-14T12:35:16.0378492Z",
+          "text": "[TrackPack] sonnenhafen: 130 details, 48 views, 5 Mystery Prisms PASS"
+        },
+        {
+          "line": 285,
+          "timestamp": "2026-11-14T12:35:16.0379098Z",
+          "text": "[TrackPack] zauberwald: 120 details, 48 views, 5 Mystery Prisms PASS"
+        },
+        {
+          "line": 286,
+          "timestamp": "2026-11-14T12:35:16.0379604Z",
+          "text": "[TrackPack] bergwelt: 120 details, 48 views, 5 Mystery Prisms PASS"
+        },
+        {
+          "line": 287,
+          "timestamp": "2026-11-14T12:35:16.0380098Z",
+          "text": "[TrackPack] holo_city: 122 details, 48 views, 5 Mystery Prisms PASS"
+        },
+        {
+          "line": 288,
+          "timestamp": "2026-11-14T12:35:16.0380647Z",
+          "text": "[SkyHaloAuthoring] 360-degree mesh, no collision, not wired to runtime PASS"
+        },
+        {
+          "line": 2856,
+          "timestamp": "2026-11-14T12:35:54.1871168Z",
+          "text": "[StartLights] PASS: cached materials, red/green states, reduced motion, pause, resize"
+        },
+        {
+          "line": 2872,
+          "timestamp": "2026-11-14T12:35:54.5166820Z",
+          "text": "[KartQualityPersist] PASS: Autoload read/write, file persistence, scene signal"
+        },
+        {
+          "line": 2885,
+          "timestamp": "2026-11-14T12:35:54.8179580Z",
+          "text": "[KartQualitySceneSwitch] PASS: live SceneTree transitions reapply LOW without saving"
+        },
+        {
+          "line": 2900,
+          "timestamp": "2026-11-14T12:35:59.7757799Z",
+          "text": "[HarborPavilion] PASS: three placed UV/PBR LOD prefabs, six piers outside racing guardrails, both detail tiers"
+        },
+        {
+          "line": 2950,
+          "timestamp": "2026-11-14T12:36:00.5145354Z",
+          "text": "[LumoGestureContact] PASS checks=200 failures=0"
+        },
+        {
+          "line": 2969,
+          "timestamp": "2026-11-14T12:36:11.6905242Z",
+          "text": "[LumoKartProduction] PASS actual Kart factory, physics events, pause, rebuild and finish"
+        },
+        {
+          "line": 4435,
+          "timestamp": "2026-11-14T12:36:28.9216383Z",
+          "text": "[LumoKartProduction] PASS actual Kart factory, physics events, pause, rebuild and finish"
+        },
+        {
+          "line": 4459,
+          "timestamp": "2026-11-14T12:36:30.0323530Z",
+          "text": "[TrackContract] sonnenhafen length=1851.7 minimum_curve_radius=27.2 PASS"
+        },
+        {
+          "line": 4460,
+          "timestamp": "2026-11-14T12:36:30.0324030Z",
+          "text": "[TrackContract] zauberwald length=376.5 minimum_curve_radius=19.5 PASS"
+        },
+        {
+          "line": 4461,
+          "timestamp": "2026-11-14T12:36:30.0324487Z",
+          "text": "[TrackContract] bergwelt length=472.8 minimum_curve_radius=24.4 PASS"
+        },
+        {
+          "line": 4462,
+          "timestamp": "2026-11-14T12:36:30.0324938Z",
+          "text": "[TrackContract] holo_city length=442.8 minimum_curve_radius=22.5 PASS"
+        },
+        {
+          "line": 4463,
+          "timestamp": "2026-11-14T12:36:30.0325404Z",
+          "text": "[TrackContract] crystal_canyon length=755.2 minimum_curve_radius=34.2 PASS"
+        },
+        {
+          "line": 4464,
+          "timestamp": "2026-11-14T12:36:30.0326163Z",
+          "text": "[TrackContract] jungle_temple length=691.5 minimum_curve_radius=25.8 PASS"
+        },
+        {
+          "line": 4465,
+          "timestamp": "2026-11-14T12:36:30.0326655Z",
+          "text": "[TrackContract] candy_cloud length=802.8 minimum_curve_radius=23.5 PASS"
+        },
+        {
+          "line": 4466,
+          "timestamp": "2026-11-14T12:36:30.0327127Z",
+          "text": "[TrackContract] volcano_night length=742.3 minimum_curve_radius=27.4 PASS"
+        },
+        {
+          "line": 4467,
+          "timestamp": "2026-11-14T12:36:30.0327604Z",
+          "text": "[TrackContract] winter_sprint length=800.3 minimum_curve_radius=29.2 PASS"
+        },
+        {
+          "line": 4468,
+          "timestamp": "2026-11-14T12:36:30.0328081Z",
+          "text": "[TrackContract] galaxy_ringway length=749.6 minimum_curve_radius=33.8 PASS"
+        },
+        {
+          "line": 4469,
+          "timestamp": "2026-11-14T12:36:30.0328564Z",
+          "text": "[TrackContract] desert_drift length=774.8 minimum_curve_radius=38.4 PASS"
+        },
+        {
+          "line": 4470,
+          "timestamp": "2026-11-14T12:36:30.0329037Z",
+          "text": "[TrackContract] learning_lab length=765.4 minimum_curve_radius=29.6 PASS"
+        },
+        {
+          "line": 4472,
+          "timestamp": "2026-11-14T12:36:30.0344945Z",
+          "text": "[TrackContract] sonnenhafen length=1851.7 minimum_curve_radius=27.2 PASS"
+        },
+        {
+          "line": 4473,
+          "timestamp": "2026-11-14T12:36:30.0345451Z",
+          "text": "[TrackContract] zauberwald length=376.5 minimum_curve_radius=19.5 PASS"
+        },
+        {
+          "line": 4474,
+          "timestamp": "2026-11-14T12:36:30.0346466Z",
+          "text": "[TrackContract] bergwelt length=472.8 minimum_curve_radius=24.4 PASS"
+        },
+        {
+          "line": 4475,
+          "timestamp": "2026-11-14T12:36:30.0347302Z",
+          "text": "[TrackContract] holo_city length=442.8 minimum_curve_radius=22.5 PASS"
+        },
+        {
+          "line": 4476,
+          "timestamp": "2026-11-14T12:36:30.0348073Z",
+          "text": "[TrackContract] crystal_canyon length=755.2 minimum_curve_radius=34.2 PASS"
+        },
+        {
+          "line": 4477,
+          "timestamp": "2026-11-14T12:36:30.0348569Z",
+          "text": "[TrackContract] jungle_temple length=691.5 minimum_curve_radius=25.8 PASS"
+        },
+        {
+          "line": 4478,
+          "timestamp": "2026-11-14T12:36:30.0349043Z",
+          "text": "[TrackContract] candy_cloud length=802.8 minimum_curve_radius=23.5 PASS"
+        },
+        {
+          "line": 4479,
+          "timestamp": "2026-11-14T12:36:30.0349526Z",
+          "text": "[TrackContract] volcano_night length=742.3 minimum_curve_radius=27.4 PASS"
+        },
+        {
+          "line": 4480,
+          "timestamp": "2026-11-14T12:36:30.0350004Z",
+          "text": "[TrackContract] winter_sprint length=800.3 minimum_curve_radius=29.2 PASS"
+        },
+        {
+          "line": 4481,
+          "timestamp": "2026-11-14T12:36:30.0350726Z",
+          "text": "[TrackContract] galaxy_ringway length=749.6 minimum_curve_radius=33.8 PASS"
+        },
+        {
+          "line": 4482,
+          "timestamp": "2026-11-14T12:36:30.0351226Z",
+          "text": "[TrackContract] desert_drift length=774.8 minimum_curve_radius=38.4 PASS"
+        },
+        {
+          "line": 4483,
+          "timestamp": "2026-11-14T12:36:30.0351708Z",
+          "text": "[TrackContract] learning_lab length=765.4 minimum_curve_radius=29.6 PASS"
+        },
+        {
+          "line": 4484,
+          "timestamp": "2026-11-14T12:36:30.0357516Z",
+          "text": "[TrackContract] bergwelt length=472.8 minimum_curve_radius=24.4 PASS"
+        },
+        {
+          "line": 4513,
+          "timestamp": "2026-11-14T12:36:32.8651721Z",
+          "text": "[KartProductionMenu] CASE (360, 800) density=1.0 checks=58 failures=0"
+        },
+        {
+          "line": 4514,
+          "timestamp": "2026-11-14T12:36:33.7163112Z",
+          "text": "[KartProductionMenu] CASE (640, 360) density=1.0 checks=113 failures=0"
+        },
+        {
+          "line": 4515,
+          "timestamp": "2026-11-14T12:36:34.5549196Z",
+          "text": "[KartProductionMenu] CASE (1280, 720) density=1.0 checks=169 failures=0"
+        },
+        {
+          "line": 4516,
+          "timestamp": "2026-11-14T12:36:35.4080093Z",
+          "text": "[KartProductionMenu] CASE (1200, 896) density=1.0 checks=225 failures=0"
+        },
+        {
+          "line": 4517,
+          "timestamp": "2026-11-14T12:36:36.2613467Z",
+          "text": "[KartProductionMenu] CASE (2176, 1812) density=2.25 checks=281 failures=0"
+        },
+        {
+          "line": 4518,
+          "timestamp": "2026-11-14T12:36:37.1055662Z",
+          "text": "[KartProductionMenu] CASE (2316, 904) density=2.5 checks=336 failures=0"
+        },
+        {
+          "line": 4519,
+          "timestamp": "2026-11-14T12:36:37.9505161Z",
+          "text": "[KartProductionMenu] CASE (640, 320) density=1.0 checks=391 failures=0"
+        },
+        {
+          "line": 4520,
+          "timestamp": "2026-11-14T12:36:38.7838440Z",
+          "text": "[KartProductionMenu] CASE (1280, 720) density=1.0 checks=447 failures=0"
+        },
+        {
+          "line": 4521,
+          "timestamp": "2026-11-14T12:36:39.6200846Z",
+          "text": "[KartProductionMenu] CASE (640, 320) density=1.0 checks=502 failures=0"
+        },
+        {
+          "line": 4522,
+          "timestamp": "2026-11-14T12:36:40.4668363Z",
+          "text": "[KartProductionMenu] CASE (1920, 1080) density=1.875 checks=557 failures=0"
+        },
+        {
+          "line": 4523,
+          "timestamp": "2026-11-14T12:36:41.3195336Z",
+          "text": "[KartProductionMenu] CASE (1920, 1080) density=2.75 checks=612 failures=0"
+        },
+        {
+          "line": 4526,
+          "timestamp": "2026-11-14T12:36:44.0428084Z",
+          "text": "[KartProductionMenu] PASS real factory, 11 density/layout cases, 48dp and accessible modes"
+        },
+        {
+          "line": 4572,
+          "timestamp": "2026-11-14T12:37:04.0753837Z",
+          "text": "[StartHero] checks=222 failures=0"
+        },
+        {
+          "line": 4573,
+          "timestamp": "2026-11-14T12:37:04.0760632Z",
+          "text": "[StartHero] PASS: live hero, touch race entry, saved resume, selected modes and calm camera"
+        },
+        {
+          "line": 4609,
+          "timestamp": "2026-11-14T12:37:55.0666502Z",
+          "text": "[KartProductionMenu] CASE (2176, 1812) density=2.25 checks=60 failures=0"
+        },
+        {
+          "line": 4612,
+          "timestamp": "2026-11-14T12:38:33.1237247Z",
+          "text": "[KartProductionMenu] PASS real factory, 1 density/layout cases, 48dp and accessible modes"
+        },
+        {
+          "line": 4636,
+          "timestamp": "2026-11-14T12:38:33.6959122Z",
+          "text": "[AAAStageLifetime] PASS: four stage lifecycles; 0 failures"
+        },
+        {
+          "line": 4646,
+          "timestamp": "2026-11-14T12:38:33.9570394Z",
+          "text": "[RendererProfiles] PASS: 12 capability combinations, actual renderer, full-low-full downgrade"
+        },
+        {
+          "line": 4671,
+          "timestamp": "2026-11-14T12:38:34.3194831Z",
+          "text": "[SkyHaloContract] authoring-only loop bounds=(10.8, 24.0, 24.0) collision=false runtime=false PASS"
+        },
+        {
+          "line": 4672,
+          "timestamp": "2026-11-14T12:38:34.3217922Z",
+          "text": "[SkyHaloContract] authoring-only loop bounds=(10.8, 24.0, 24.0) collision=false runtime=false PASS"
+        },
+        {
+          "line": 4693,
+          "timestamp": "2026-11-14T12:38:34.6774798Z",
+          "text": "[KartEntry] PASS: six genuine scene images, Nunito header, no invented loading percentage"
+        },
+        {
+          "line": 4695,
+          "timestamp": "2026-11-14T12:38:34.6797886Z",
+          "text": "[KartEntry] PASS: six genuine scene images, Nunito header, no invented loading percentage"
+        },
+        {
+          "line": 4733,
+          "timestamp": "2026-11-14T12:38:38.1422944Z",
+          "text": "[KartLoading] PASS:93 real loading, rig, dp, timeout, Retry and existing Kart transition checks"
+        },
+        {
+          "line": 4748,
+          "timestamp": "2026-11-14T12:38:41.3096204Z",
+          "text": "[KartLoading] PASS:90 real loading, rig, dp, timeout, Retry and existing Kart transition checks"
+        },
+        {
+          "line": 4834,
+          "timestamp": "2026-11-14T12:39:16.1024588Z",
+          "text": "[KartSplit] PASS: Wolkenweg raised 2.20 m while main lane stayed at 0.00 m"
+        },
+        {
+          "line": 4837,
+          "timestamp": "2026-11-14T12:39:16.1029647Z",
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        },
+        {
+          "line": 4863,
+          "timestamp": "2026-11-14T12:39:16.1053178Z",
+          "text": "[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, and a physical Wolkenweg split route"
+        },
+        {
+          "line": 4922,
+          "timestamp": "2026-11-14T12:39:44.9452996Z",
+          "text": "[FirstActiveSnapshot] PASS: 41 checks / 0 failures"
+        },
+        {
+          "line": 4923,
+          "timestamp": "2026-11-14T12:39:44.9702812Z",
+          "text": "PASS first-active-snapshot-evidence.json: 41 required checks"
+        },
+        {
+          "line": 4936,
+          "timestamp": "2026-11-14T12:40:02.7329698Z",
+          "text": "[FirstActiveEngine] PASS: 11 checks / 0 failures"
+        },
+        {
+          "line": 4937,
+          "timestamp": "2026-11-14T12:40:02.7568519Z",
+          "text": "PASS natural-engine-public-touch-evidence.json: 11 required checks"
+        },
+        {
+          "line": 4959,
+          "timestamp": "2026-11-14T12:40:07.6886970Z",
+          "text": "[FirstActiveWriteFailure] PASS: 8 checks / 0 failures"
+        },
+        {
+          "line": 4960,
+          "timestamp": "2026-11-14T12:40:07.7126014Z",
+          "text": "PASS actual-write-failure-evidence.json: 8 required checks"
+        },
+        {
+          "line": 5006,
+          "timestamp": "2026-11-14T12:42:13.8083645Z",
+          "text": "[LumoBackdrop] PASS:40 viewport/safe/dialog/color/routing/pixel/touch/reduced-motion checks"
+        },
+        {
+          "line": 5007,
+          "timestamp": "2026-11-14T12:42:13.8101189Z",
+          "text": "[LumoBackdrop] PASS:40 viewport/safe/dialog/color/routing/pixel/touch/reduced-motion checks"
+        },
+        {
+          "line": 5008,
+          "timestamp": "2026-11-14T12:42:13.8350109Z",
+          "text": "PASS: forty pause cover/touch/color checks and five actual Fold/phone PNGs"
+        },
+        {
+          "line": 5056,
+          "timestamp": "2026-11-14T12:43:12.4083803Z",
+          "text": "[KartMenuFlow] PASS: direct selected Cup start inside compact Android safe insets"
+        },
+        {
+          "line": 5057,
+          "timestamp": "2026-11-14T12:43:12.4084584Z",
+          "text": "[KartMenuFlow] PASS: five direct sections; 1280x720,800x480,640x320; safe controls >=44px"
+        },
+        {
+          "line": 5058,
+          "timestamp": "2026-11-14T12:43:14.4555057Z",
+          "text": "[KartMenuFlow] PASS: direct selected Cup start inside compact Android safe insets"
+        },
+        {
+          "line": 5114,
+          "timestamp": "2026-11-14T12:43:38.5191681Z",
+          "text": "[KartModesTests] PASS: 12-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks"
+        },
+        {
+          "line": 5115,
+          "timestamp": "2026-11-14T12:43:38.5201293Z",
+          "text": "[KartModesTests] PASS: 12-race star cup without tasks, legacy learn_cup -> cup, arena completion, training completion, ordered gates, persistent interpolated ghost, durable earned unlocks"
+        },
+        {
+          "line": 5172,
+          "timestamp": "2026-11-14T12:45:03.4375655Z",
+          "text": "[KartPauseLayoutTests] PASS: actual compact/Fold matrix, safe-area controls, pause/results layout and touch navigation"
+        },
+        {
+          "line": 5173,
+          "timestamp": "2026-11-14T12:45:03.4381531Z",
+          "text": "[KartPauseLayoutTests] PASS: actual compact/Fold matrix, safe-area controls, pause/results layout and touch navigation"
+        },
+        {
+          "line": 5284,
+          "timestamp": "2026-11-14T12:46:31.4350054Z",
+          "text": "[SkyShots] PASS: eight views, five prisms and clean factory lifetime"
+        },
+        {
+          "line": 5313,
+          "timestamp": "2026-11-14T12:46:32.0520687Z",
+          "text": "[SkyShots] PASS: eight views, five prisms and clean factory lifetime"
+        },
+        {
+          "line": 5529,
+          "timestamp": "2026-11-14T12:47:37.0771295Z",
+          "text": "[CharacterPose] checks=2325 failures=0"
+        },
+        {
+          "line": 5530,
+          "timestamp": "2026-11-14T12:47:37.0772259Z",
+          "text": "[CharacterPose] PASS: racing, companion, speech, reduced motion and rebuilds preserve authored anatomy"
+        },
+        {
+          "line": 5541,
+          "timestamp": "2026-11-14T12:47:37.6640014Z",
+          "text": "[FaceDepth] checks=23 failures=0"
+        },
+        {
+          "line": 5542,
+          "timestamp": "2026-11-14T12:47:37.6641170Z",
+          "text": "[FaceDepth] PASS: inset eyes and attached smiling muzzle"
+        },
+        {
+          "line": 5553,
+          "timestamp": "2026-11-14T12:47:38.2591134Z",
+          "text": "[LumoEyeProportions] PASS: fox eyes, swept ears, open smile; other drivers unchanged"
+        },
+        {
+          "line": 5565,
+          "timestamp": "2026-11-14T12:47:38.4938579Z",
+          "text": "[LumoFaceStudio] PASS: real studio fill, bounded light cost, retained key, careful color grade"
+        },
+        {
+          "line": 5566,
+          "timestamp": "2026-11-14T12:47:38.5857811Z",
+          "text": "[CharacterPose] PASS: racing, companion, speech, reduced motion and rebuilds preserve authored anatomy"
+        },
+        {
+          "line": 5567,
+          "timestamp": "2026-11-14T12:47:38.5869873Z",
+          "text": "[FaceDepth] PASS: inset eyes and attached smiling muzzle"
+        },
+        {
+          "line": 5589,
+          "timestamp": "2026-11-14T12:47:54.7920493Z",
+          "text": "[LumoFaceCapture] PASS: three actual face views at tablet/compact/phone sizes"
+        },
+        {
+          "line": 5607,
+          "timestamp": "2026-11-14T12:48:13.3928755Z",
+          "text": "[DriverPortrait] PASS: res://exports/face-showroom/lumo-driver-4views.png"
+        },
+        {
+          "line": 5660,
+          "timestamp": "2026-11-14T12:49:36.2139237Z",
+          "text": "[StartHero] checks=225 failures=0"
+        },
+        {
+          "line": 5661,
+          "timestamp": "2026-11-14T12:49:36.2148838Z",
+          "text": "[StartHero] PASS: live hero, touch race entry, saved resume, selected modes and calm camera"
+        },
+        {
+          "line": 5662,
+          "timestamp": "2026-11-14T12:49:36.4874778Z",
+          "text": "[StartHero] PASS: live hero, touch race entry, saved resume, selected modes and calm camera"
+        },
+        {
+          "line": 5676,
+          "timestamp": "2026-11-14T12:49:37.3009070Z",
+          "text": "[KartAquarium] PASS: schools, reefs, clearance, water UVs, budgets and preserved race geometry"
+        },
+        {
+          "line": 5697,
+          "timestamp": "2026-11-14T12:49:38.4992694Z",
+          "text": "[KartAquarium] PASS: schools, reefs, clearance, water UVs, budgets and preserved race geometry"
+        },
+        {
+          "line": 5724,
+          "timestamp": "2026-11-14T12:50:09.7795431Z",
+          "text": "[KartAquariumCapture] PASS: six actual chase-camera views, LOW/HIGH"
+        },
+        {
+          "line": 5725,
+          "timestamp": "2026-11-14T12:50:11.4802803Z",
+          "text": "[Stage2Character] PASS: measured anatomy/start/aquarium checks and fourteen source-bound PNGs"
+        }
+      ],
+      "errors": [],
+      "engines": [
+        "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+      ]
+    }
+  ],
+  "failure_marker_scan": [],
+  "counts": {
+    "runs": 11,
+    "jobs": 12,
+    "success_runs": 11,
+    "exact_head_checkout_jobs": 6,
+    "identical_tree_pr_merge_checkout_jobs": 6,
+    "original_log_bytes": 2224749,
+    "error_lines": 0
+  },
+  "scope": "Read-only original GitHub workflow/job/log review. No workflow dispatch/retry, local execution, artifact-image download or source mutation. No claim that these separate workflows replace the still-required exact Host Native52/17, Live9/7, Discovery10/38 or Dream5/7/2 acceptance.",
+  "failure_marker_scan_note": "Explicit failure markers and nonzero failure counts checked. The review filter distinguishes checks=N failures=0 from the natural-language phrase N failures.",
+  "original_artifact_metadata": [
+    {
+      "run": 43595542896,
+      "id": 14114885003,
+      "name": "lumo-nextgen-kart-real-render-and-tests",
+      "bytes": 6103011,
+      "digest": "sha256:52c779b6d5ef6a2b5a91352d10b3ffc2e8551b37772246f18b365bd67467a725",
+      "expired": false,
+      "created_at": "2026-11-14T12:37:40Z",
+      "expires_at": "2026-12-04T12:37:39Z"
+    },
+    {
+      "run": 43595542888,
+      "id": 14114860102,
+      "name": "kart-video-grade-43595542888",
+      "bytes": 10268653,
+      "digest": "sha256:d777780ca13a7aac2ccb20f0625633046ff74c8be0e33c1683adffe24bd8735f",
+      "expired": false,
+      "created_at": "2026-11-14T12:38:11Z",
+      "expires_at": "2026-11-28T12:38:10Z"
+    },
+    {
+      "run": 43595542947,
+      "id": 14114550742,
+      "name": "lumo-resonance-native-engine-43595542947",
+      "bytes": 928595,
+      "digest": "sha256:8054a33d096aa0aa540d7af9ac81343831d9341157b60cdccfa0d2354f33f3e1",
+      "expired": false,
+      "created_at": "2026-11-14T12:36:38Z",
+      "expires_at": "2026-11-28T12:36:37Z"
+    },
+    {
+      "run": 43595542907,
+      "id": 14114790060,
+      "name": "lumo-lap-reactive-neon-screenshots-43595542907",
+      "bytes": 1198478,
+      "digest": "sha256:f9375c182b60f0f9f19b0078d7457c98a548e347384e7b94d9d5ffa4220ca646",
+      "expired": false,
+      "created_at": "2026-11-14T12:36:43Z",
+      "expires_at": "2026-11-28T12:36:41Z"
+    },
+    {
+      "run": 43595542907,
+      "id": 14113809629,
+      "name": "lumo-darkride-event-probe-43595542907",
+      "bytes": 13273,
+      "digest": "sha256:c57a83d32df0be70d1032c60878f00309f49732b3f29131fac0867ab968910c7",
+      "expired": false,
+      "created_at": "2026-11-14T12:36:44Z",
+      "expires_at": "2027-02-12T12:35:02Z"
+    },
+    {
+      "run": 43595542961,
+      "id": 14114500912,
+      "name": "lumo-sonnenhafen-hero-flight-43595542961",
+      "bytes": 2850479,
+      "digest": "sha256:5ed41ec4aeb5f401d5ee85695b6595dfde84a2dc65c223cd02cea83bccef7e62",
+      "expired": false,
+      "created_at": "2026-11-14T12:36:58Z",
+      "expires_at": "2026-12-14T12:36:57Z"
+    },
+    {
+      "run": 43595542899,
+      "id": 14114401140,
+      "name": "kart-rival-feedback-43595542899",
+      "bytes": 4111733,
+      "digest": "sha256:56b1658d8bcb7a742f9862d3441c535f721642addb745b7a5da8f3ff0648dd97",
+      "expired": false,
+      "created_at": "2026-11-14T12:37:15Z",
+      "expires_at": "2026-11-28T12:37:14Z"
+    },
+    {
+      "run": 43595542916,
+      "id": 14114540875,
+      "name": "lumo-sonnenhafen-aerial-43595542916",
+      "bytes": 4144328,
+      "digest": "sha256:e7158c3860a5a4244990af9f3443fa16305be68db7ddf44b4f3434438d0df2fc",
+      "expired": false,
+      "created_at": "2026-11-14T12:37:17Z",
+      "expires_at": "2026-12-14T12:37:15Z"
+    },
+    {
+      "run": 43595542951,
+      "id": 14114540713,
+      "name": "lumo-kart-bauwelt-integration-logs",
+      "bytes": 14746,
+      "digest": "sha256:1a26014325cde24f8f213686bd851e9edf29c8b6ccb5312ededc57cc1ddb07c1",
+      "expired": false,
+      "created_at": "2026-11-14T12:36:07Z",
+      "expires_at": "2027-02-12T12:35:02Z"
+    },
+    {
+      "run": 43595542891,
+      "id": 14114525711,
+      "name": "lumo-native-precision-43595542891",
+      "bytes": 7184193,
+      "digest": "sha256:4d1bc16bfefc180e19c4b12ed6ea736b40cdc33f802ad4374647e89186570f5a",
+      "expired": false,
+      "created_at": "2026-11-14T12:36:10Z",
+      "expires_at": "2027-01-13T12:36:09Z"
+    },
+    {
+      "run": 43595542891,
+      "id": 14113704835,
+      "name": "lumo-native-bauwelt-43595542891",
+      "bytes": 5346241,
+      "digest": "sha256:7eef46dfe18f31fc2ca55d90f487b0cea0e58612d27eb0869429f0f89520099d",
+      "expired": false,
+      "created_at": "2026-11-14T12:36:29Z",
+      "expires_at": "2027-01-13T12:36:27Z"
+    },
+    {
+      "run": 43595542924,
+      "id": 14114251610,
+      "name": "sonnenhafen-stunt-integration-43595542924",
+      "bytes": 7177953,
+      "digest": "sha256:f22a29a2466dd20a79935bf3845703601c3b72777f9786bbdd7c121c811a8f97",
+      "expired": false,
+      "created_at": "2026-11-14T12:42:19Z",
+      "expires_at": "2027-02-12T12:35:02Z"
+    },
+    {
+      "run": 43595543000,
+      "id": 14114083026,
+      "name": "kart-stage2-regression-43595543000",
+      "bytes": 49681551,
+      "digest": "sha256:e21bf4c90cd075c40f4bdeccba84451168bed1c91836e40d08b53241a1c7e5d2",
+      "expired": false,
+      "created_at": "2026-11-14T12:50:14Z",
+      "expires_at": "2026-11-28T12:50:11Z"
+    }
+  ],
+  "evidence_capture": {
+    "date_utc": "2026-11-14",
+    "logs_downloaded_once": true,
+    "logs_rewritten": false,
+    "api_response_body_format": "The GitHub connector-returned UTF-8 JSON response bodies are preserved verbatim; no JSON reformatting was applied to metadata originals.",
+    "metadata_complete": true,
+    "raw_log_count": 12,
+    "api_body_count": 37,
+    "total_original_files": 49,
+    "archive_format": "Uncompressed POSIX ustar; original member bytes preserved; member timestamps normalized to zero for reproducibility.",
+    "new_engine_test_render_or_workflow_execution": false,
+    "source_mutation": false
+  },
+  "limits": [
+    "These eleven workflows are real newly completed Native PR runs, all attempt1 and bound to e9a9 or its identical-tree PR merge.",
+    "The Nextgen visual-smoke workflow is not the complete Native52/17 suite. This evidence does not replace the next exact Host Native52/17, Live9/7, Discovery10/38 or Dream5/7/2 acceptance.",
+    "Captured-image counts are facts from original successful workflow logs. This archival review did not download, decode or visually inspect the artifact images.",
+    "No new CI dispatch/retry, Godot, renderer, Android or Flutter execution was performed for evidence collection.",
+    "Native source-checkout identities are recorded from actual checkout log output and immutable Git commit/tree objects. No additional post-test worktree cleanliness claim is inferred beyond the original workflows."
+  ]
+}
