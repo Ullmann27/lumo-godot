@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  HOST_SOURCE: c0ca5265eb4159e6848317da5f49edabaa75bfa0
+  HOST_SOURCE: 50503fef8e93700d9a889e33c3d2c37fccb46e42
   LIBGL_ALWAYS_SOFTWARE: '1'
 
 jobs:
@@ -116,7 +116,7 @@ jobs:
           assert report['fixture_kind'] == 'actual_dart_producer_report'
           assert report['task_fixture_sha256'] == hashlib.sha256((folder / 'english-activity.json').read_bytes()).hexdigest()
           assert report['failures'] == [] and report['renderer'] != 'headless'
-          assert len(list((folder / 'english-native').glob('*.png'))) == 10
+          assert len(list((folder / 'english-native').glob('*.png'))) == 17
           PY
       - name: Play all twenty Quiz questions through the real Dart and Godot processes
         if: ${{ !cancelled() && matrix.activity == 'quiz' && steps.import_source.outcome == 'success' && steps.host_dependencies.outcome == 'success' }}

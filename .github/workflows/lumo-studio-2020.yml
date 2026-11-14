@@ -2,7 +2,7 @@ name: LUMO Studio 2020 native acceptance
 
 on:
   push:
-    branches: [chatgpt/lumo-studio-2020-20261114]
+    branches: [chatgpt/lumo-studio-2020-20261114, chatgpt/lumo-nextgen-feature-20261114]
   workflow_dispatch:
 
 permissions:
@@ -302,7 +302,7 @@ jobs:
 
   archive-evidence:
     needs: [learning-preview, gameplay, new-worlds, studio, touch-density, bundle-evidence]
-    if: github.repository == 'Ullmann27/lumo-godot' && github.ref_name == 'chatgpt/lumo-studio-2020-20261114'
+    if: github.repository == 'Ullmann27/lumo-godot' && (github.ref_name == 'chatgpt/lumo-studio-2020-20261114' || github.ref_name == 'chatgpt/lumo-nextgen-feature-20261114')
     runs-on: ubuntu-latest
     timeout-minutes: 12
     permissions:

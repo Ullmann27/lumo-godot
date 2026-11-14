@@ -31,6 +31,34 @@ const ENTRIES := {
 		"meanings": ["Apfel"],
 		"hint": "Diese Frucht wächst am Baum. Sie hat einen Stiel und ein Blatt.",
 	},
+	"bag": {
+		"meanings": ["Tasche"],
+		"hint": "In dieser Tasche kannst du Dinge tragen. Schau auf die beiden Henkel.",
+	},
+	"rubber": {
+		"meanings": ["Radiergummi"],
+		"hint": "Damit entfernst du Bleistiftstriche. Das weiche Stück steckt in einer Papierhülle.",
+	},
+	"school bag": {
+		"meanings": ["Schultasche"],
+		"hint": "Darin trägst du deine Schulsachen. Suche die Schulterriemen und die kleine Vordertasche.",
+	},
+	"desk": {
+		"meanings": ["Schreibtisch"],
+		"hint": "An dieser großen Platte kannst du schreiben. Vier Beine tragen sie.",
+	},
+	"chair": {
+		"meanings": ["Sessel"],
+		"hint": "Darauf kannst du sitzen. Suche die Sitzfläche und die hohe Rückenlehne.",
+	},
+	"pencil case": {
+		"meanings": ["Federpennal"],
+		"hint": "Darin bewahrst du deine Stifte auf. Der Reißverschluss öffnet das kleine längliche Etui.",
+	},
+	"paper": {
+		"meanings": ["Papier"],
+		"hint": "Auf diesem dünnen weißen Blatt kannst du schreiben oder zeichnen. Die Linien helfen dir dabei.",
+	},
 }
 
 

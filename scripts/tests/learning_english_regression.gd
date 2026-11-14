@@ -16,6 +16,7 @@ var failures: Array[String] = []
 var input_events: Array[Dictionary] = []
 var captures: Array[Dictionary] = []
 var cases: Array[Dictionary] = []
+var hint_layouts: Array[Dictionary] = []
 var output := ""
 var capture := false
 var fixture_path := ""
@@ -94,6 +95,13 @@ func _payload(word: String) -> Dictionary:
 		"pen": ["pen", "book", "apple"],
 		"sun": ["apple", "sun", "pen"],
 		"apple": ["ball", "ruler", "apple"],
+		"bag": ["school bag", "bag", "pencil case"],
+		"rubber": ["rubber", "paper", "book"],
+		"school bag": ["bag", "pencil case", "school bag"],
+		"desk": ["desk", "chair", "bag"],
+		"chair": ["desk", "chair", "school bag"],
+		"pencil case": ["pencil case", "rubber", "pen"],
+		"paper": ["paper", "book", "rubber"],
 	}
 	return {
 		"kind": "english_objects", "word": word,
@@ -113,7 +121,7 @@ func _load_actual_tasks() -> bool:
 		_check(false, "actual Dart producer report is complete and successful")
 		return false
 	var source: Dictionary = raw.examples
-	_check(source.size() == VOCABULARY.ENTRIES.size(), "actual Dart producer supplies all seven supported words")
+	_check(source.size() == VOCABULARY.ENTRIES.size(), "actual Dart producer supplies the complete fourteen-object catalogue")
 	for word: String in VOCABULARY.ENTRIES:
 		var entry: Variant = source.get(word)
 		if not entry is Dictionary or not entry.get("activity") is Dictionary:
@@ -167,6 +175,9 @@ func _state_contracts() -> void:
 		{"kind": "english_objects", "word": "book", "meaning": "Buch", "objects": ["book", "res://secret.glb", "ball"]},
 		{"kind": "english_objects", "word": 3, "meaning": "Buch", "objects": ["book", "car", "ball"]},
 		{"kind": "english_objects", "word": "book", "meaning": 7, "objects": ["book", "car", "ball"]},
+		{"kind": "english_objects", "word": "school  bag", "meaning": "Schultasche", "objects": ["school  bag", "bag", "book"]},
+		{"kind": "english_objects", "word": "school bag", "meaning": "Tasche", "objects": ["school bag", "bag", "book"]},
+		{"kind": "english_objects", "word": "homework", "meaning": "Hausübung", "objects": ["homework", "bag", "book"]},
 	]
 	for bad in invalid:
 		var model = ACTIVITY.new()
@@ -267,6 +278,43 @@ func _geometry_depth(node: Node3D, camera: Camera3D) -> Vector2:
 			high = maxf(high, -position.z)
 	return Vector2(low, high)
 
+func _school_geometry(object: Node3D, name: String) -> void:
+	var shape := object.get_node("RecognizableObject")
+	var word := str(object.get_meta("word"))
+	match word:
+		"bag":
+			var handles := shape.find_children("ToteHandle*", "MeshInstance3D", false, false)
+			_check(handles.size() == 2, name + ": carrying bag has two actual handles")
+			for handle: MeshInstance3D in handles:
+				_check(handle.mesh is TorusMesh and handle.mesh.inner_radius > 0.0 and handle.position.y > 1.0, name + ": handle has a real open hole above the bag")
+			_check(shape.get_node("ToteFront").position.z > 0.0 and shape.get_node("ToteBack").position.z < 0.0, name + ": bag is an open volume with separate front and back")
+		"rubber":
+			var rubber := shape.get_node("EraserBody") as MeshInstance3D
+			var sleeve := shape.get_node("PaperSleeve") as MeshInstance3D
+			_check((rubber.mesh as BoxMesh).size.x > (sleeve.mesh as BoxMesh).size.x * 1.5, name + ": eraser protrudes from both ends of its paper sleeve")
+			_check(rubber.material_override.albedo_color != sleeve.material_override.albedo_color, name + ": actual eraser and wrapper have distinct materials")
+		"school bag":
+			_check(shape.find_children("ShoulderStrap*", "Node3D", false, false).size() == 2, name + ": school bag has two shoulder straps")
+			_check(shape.get_node("FrontPocket").position.z > shape.get_node("BackpackBody").position.z, name + ": school bag has an actual protruding front pocket")
+			_check(shape.get_node("CarryHandleTop").position.y > shape.get_node("BackpackBody").position.y, name + ": school bag retains a raised carrying handle")
+		"desk":
+			var legs := shape.find_children("DeskLeg*", "MeshInstance3D", false, false)
+			_check(legs.size() == 4, name + ": writing desk has four separate legs")
+			for leg: MeshInstance3D in legs:
+				_check(leg.position.y < shape.get_node("WritingTop").position.y and absf(leg.position.x) > 0.3 and absf(leg.position.z) > 0.2, name + ": desk legs surround empty space beneath the writing top")
+		"chair":
+			_check(shape.find_children("ChairLeg*", "MeshInstance3D", false, false).size() == 4, name + ": chair has four separate legs")
+			_check(shape.get_node("ChairBackrest").position.y > shape.get_node("ChairSeat").position.y, name + ": chair backrest rises above the seat")
+		"pencil case":
+			_check(shape.find_children("ZipperTooth*", "MeshInstance3D", false, false).size() >= 8, name + ": pencil case has a real detailed zipper")
+			_check(shape.get_node("ZipperPull").position.y > shape.get_node("SoftCaseBody").position.y, name + ": zipper pull is exposed on the case")
+		"paper":
+			var sheet := shape.get_node("LooseSheet") as MeshInstance3D
+			var size := (sheet.mesh as BoxMesh).size
+			_check(size.y < minf(size.x, size.z) * 0.04, name + ": loose paper is a thin sheet, not a book block")
+			_check(shape.find_children("WritingGuide*", "MeshInstance3D", false, false).size() >= 6, name + ": actual ruled lines remain distinct sheet geometry")
+
+
 func _observe(game: Node3D, name: String) -> Dictionary:
 	var viewport := Rect2(Vector2.ZERO, Vector2(root.size))
 	var body: Rect2 = game.english_stage_rect
@@ -282,6 +330,7 @@ func _observe(game: Node3D, name: String) -> Dictionary:
 	var aggregate: Array[Rect2] = []
 	for index in range(game.english_models.size()):
 		var object: Node3D = game.english_models[index]
+		_school_geometry(object, name)
 		var projected := Rect2()
 		var first := true
 		var triangle_count := 0
@@ -396,7 +445,7 @@ func _exercise(word: String, dimensions: Vector2i, density: float, insets: Rect2
 	await _settle(14)
 	_check(game.activity.kind == "english_objects" and game.title.text.ends_with(word), "actual scene displays the exact current word")
 	_check(game.english_models.size() == 3 and game.english_buttons.size() == 3, "three actual objects and equivalent buttons exist")
-	var stem := "english-%s-%dx%d" % [word, dimensions.x, dimensions.y]
+	var stem := "english-%s-%dx%d" % [word.replace(" ", "-"), dimensions.x, dimensions.y]
 	await _capture(game, stem + "-start")
 	var unchanged := FileAccess.get_sha256(OBSERVATION)
 	await _settle(8)
@@ -408,6 +457,7 @@ func _exercise(word: String, dimensions: Vector2i, density: float, insets: Rect2
 	_observation_contract(game, word + "-wrong")
 	await _tap(game.main_button, word + ": first targeted hint")
 	_check(game.activity.english_hint_level == 1 and game.explanation.text == VOCABULARY.hint_for(word), "actual first hint shows the intended object clue")
+	hint_layouts.append(_observe(game, word + ": first hint layout"))
 	await _tap(game.main_button, word + ": bounded outline hint")
 	_check(game.activity.english_hint_level == 2 and not game.activity.is_complete(), "actual second hint leaves selection to the child")
 	_observation_contract(game, word + "-hint")
@@ -508,6 +558,13 @@ func _run() -> void:
 		["pen", Vector2i(1080, 2400), 2.625, Rect2(0, 136, 0, 63)],
 		["sun", Vector2i(960, 540), 1.0, Rect2()],
 		["apple", Vector2i(960, 540), 1.0, Rect2()],
+		["bag", Vector2i(960, 540), 1.0, Rect2()],
+		["rubber", Vector2i(640, 360), 1.0, Rect2()],
+		["school bag", Vector2i(412, 915), 1.0, Rect2()],
+		["desk", Vector2i(960, 540), 1.0, Rect2()],
+		["chair", Vector2i(640, 360), 1.0, Rect2()],
+		["pencil case", Vector2i(1080, 2400), 2.625, Rect2(0, 136, 0, 63)],
+		["paper", Vector2i(2400, 1080), 2.625, Rect2(136, 0, 0, 63)],
 	]
 	for profile in profiles:
 		await _exercise(profile[0], profile[1], profile[2], profile[3])
@@ -524,7 +581,7 @@ func _run() -> void:
 			"schema": 1, "scope": "actual production Godot scene; explicit platform/JNI/audio fixtures; no Android/FPS/mastery claim",
 			"fixture_kind": fixture_kind, "task_fixture_sha256": FileAccess.get_sha256(fixture_path) if not fixture_path.is_empty() else null,
 			"checks": checks, "failures": failures, "renderer": DisplayServer.get_name(),
-			"source_sha256": sources, "cases": cases, "captures": captures,
+			"source_sha256": sources, "cases": cases, "captures": captures, "hint_layouts": hint_layouts,
 			"input_events": input_events, "audio_listened": false, "english_pronunciation_verified": false,
 		}, "\t") + "\n")
 		file.close()

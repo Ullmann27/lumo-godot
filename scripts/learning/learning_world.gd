@@ -883,6 +883,14 @@ func _layout() -> void:
 	var available := logical - (insets.position + insets.size) / scale_value
 	if activity.kind == "english_objects":
 		_english_compact = available.x > available.y and available.y < 480.0
+		# Keep the full hint text and its original readable font. On a short
+		# landscape surface, reduce only empty panel padding so the actual
+		# objects retain their readable size while the hint wraps to two lines.
+		var header_style := header.get_theme_stylebox("panel") as StyleBoxFlat
+		var vertical_margin := 8.0 if _english_compact else 14.0
+		if header_style.content_margin_top != vertical_margin:
+			header_style.content_margin_top = vertical_margin
+			header_style.content_margin_bottom = vertical_margin
 		# A short landscape window needs one row of full-sized actions, not a
 		# two-row footer that reduces the real objects to tiny thumbnails.
 		status.visible = not _english_compact

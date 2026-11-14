@@ -1,33 +1,38 @@
 # English, Memory and Quiz native source integration — 14 November 2026
 
-This source candidate extends Native34421df83566dd4773420cc2a225887956459435. Protected Main and the separate Studio2020 candidate remain unchanged. The authority matrix pins Host c0ca5265eb4159e6848317da5f49edabaa75bfa0. An approved combined Android APK does not yet exist.
+This development candidate builds on Native9f2e865614262c7176f9fdd987766ff5e45f2551 and pins the actual authority matrix to Host50503fef8e93700d9a889e33c3d2c37fccb46e42. Protected Main is unchanged. An approved combined Android APK does not yet exist.
 
 ## Reachable production scenes
 
-The existing learning world presents bounded English object activities from the real Host descriptor. Its new atomic, state-driven observation file records actual controls, selected object, hints, completion, Android insets and projected collision geometry. It does not create an answer, learning mastery, reward or child save. Seven concrete mesh identities currently cover ten activities; the complete school-supplies unit is not yet covered. English pronunciation remains unverified.
+The existing learning world consumes the actual Host English descriptor. Fourteen concrete object identities now include every one of the ten Schulsachen words present in each of grades1 and2: book, pen, ruler, bag, rubber, school bag, desk, chair, pencil case and paper. Ball, car, sun and apple remain supported. The seven added school objects use actual runtime mesh geometry and collision targets. Later abstract phrases remain explicitly unsupported rather than receiving an unrelated prop.
 
-The routed Quiz studio uses original Lumo, physical podium, question lamps, camera presentation and bounded intents to the existing Dart Quiz controller. Questions, jokers, persistence and wallet settlement remain authoritative on the Host.
+The source retains atomic observation of actual controls, selected object, hints, completion, Android insets and projected collision geometry. This observation does not grant mastery, rewards or write a child save. A compact English header reduces vertical padding on narrow layouts; text remains19dp and the action controls remain52dp. English pronunciation and actual Android interaction still require their separate acceptance.
 
-Memory now has an actual routed table scene. Thick card meshes, original artwork, animated flips, elevated match marks, page-aware touch targets and pause/restart/return controls consume public Host state. The original dealer, opponent, child journal and rewards remain in Dart. All thirteen copied artwork files are checked against the current Host tree; the renderer contains no private deck reader or second rules engine.
+The routed Quiz studio uses original Lumo, a physical podium, question lamps, camera presentation and bounded intents to the production Dart controller. A legitimate null explanation is now accepted and omitted from optional explanatory text. JSON numeric hidden-answer indexes are compared after integer normalization in both display and input guards. The committed original failed authority JSON is replayed by the regression. Questions, joker rules, persistence and wallet settlement remain authoritative on the Host.
 
-## Actual current local evidence
+Memory retains its routed spatial table, thick artwork-bound cards, flip animation, match marks, page-aware targets and pause/restart/return controls. The renderer consumes public Host state; it has no private deck reader or second rules engine. The original thirteen artwork bytes match the Host. The actual rules, opponent, child journal and rewards remain in Dart.
 
-- Current English observation source:3,479 headless checks,98 ScreenTouch events; final real renderer3,509 checks,98 touches,10 PNGs,Exit0 in327.971 seconds. All ten new PNGs were individually reviewed. These use actual producer tasks with a desktop transport boundary; they are not Android or speech acceptance.
-- Current Memory presenter:7,004 headless checks; final real renderer7,020 checks,8 reviewed PNGs,Exit0 in88.950 seconds. The first real card/table occlusion defect and its stricter251-failure counterexample are retained. The fixture uses synthetic public state and actual ScreenTouch. It does not prove Dart or Android integration.
-- Quiz startup QA now follows the current settled layout and authority state. An initial pre-heartbeat pause may naturally become active. That transition cancels the planned Resume input; a real persistent pause still requires an exposed48dp Resume tap and its actual same-round ACK. Six local green scenarios and the required missing-ACK failure are recorded. No authority lease, input deadline or error result was waived.
+## Actual evidence already obtained
 
-The older e4e5 actual English CI step passed1,115 checks with10 individually reviewed PNGs, but its complete job failed before Quiz input. The later d5b1 Quiz run also failed: its planned Resume outlived natural activation. Both negatives remain evidence, not current acceptance.
+At Native9f2e, run43603969762 completed the English and Memory jobs successfully. Quiz failed after the actual Host revealed a question whose explanation was null. The original authority state, durable record, layouts, requests and failed log are retained. This failure is not relabelled.
 
-## Independent actual authority jobs
+The successful9f2e Memory pair used real Dart and Godot processes with explicit QA disk-transport and award-ledger adapters. It recorded19 requests,19 touch presses and19 releases, three acknowledged returns, unfinished same-round restore, a distinct token on reopen, four completed pairs and one QA award of2 stars/16XP. It contains8 main captures,12 actual flip frames and8 separate presenter captures. This is neither an Android result nor a production-wallet end-to-end measurement.
 
-English, Quiz and Memory now run as three independent jobs with fail-fast disabled. Each checks out the exact Native commit and pinned Host, records both trees, verifies clean tracked sources, runs actual authorities and preserves original results on failure. A Quiz failure no longer prevents the independent Memory pair from executing.
+For the new English sources, the final local headless regression passed7,177 checks with196 actual Godot touch events. The final real renderer passed7,228 checks with196 touches and17 PNGs in867.538 seconds within the unchanged900-second limit. All17 PNGs were individually opened. These new images use the explicitly named native_catalogue_fixture; the new14-word Dart producer has not yet been exercised through this candidate's Native matrix.
 
-The Memory pair runs actual production Dart rules/controller/session and Godot ScreenTouch input. Its disk store/transport, deterministic clock, private QA deck plan and idempotent award ledger are explicit test adapters. Required evidence includes three acknowledged returns, unfinished same-round restore, a distinct token on reopen, two actual opponent decisions, four completed pairs, exactly one QA award callback,2 stars/16XP,8 main captures and12 actual flip frames. The wrapper independently verifies source identities, both exit codes, original requests/ACKs, current layouts, PNG hashes and unchanged child/best records recorded by the authority. It retains the300/330-second wall deadlines.
+For the Quiz correction, the same current regression against the previous product failed17 checks out of208. Against the corrected product it passed215 checks with0 failures and10 actual renderer images. All10 were individually opened. These are local UI/transport fixtures, not a successful rerun of the full twenty-question actual-authority pair.
 
-The Quiz pair keeps actual20-question, three-joker, pause/reopen/return and5,000-star ledger requirements. Once-only ledger effect is not a count of all production wallet invocations.
+Host50503 includes the Memory result-frame correction, the current English catalog/producer, and the Studio Android QA corrections. Its actual run43606651298 has failed in the focused Memory UI step; the full Flutter suite is therefore not approved. Its Android Host compile and source-contract jobs passed. Investigation continues independently of the Native source tests.
 
-## Acceptance still required
+## Current automated gates
 
-The new parallel pairs have not run before this checkpoint. The Hostc0ca focused Memory widget group still has four failures; its new haptic counterexample passes, but the full suite is not approved. Native fixture results cannot waive that Host failure.
+The activity matrix runs English, Quiz and Memory independently with fail-fast disabled. Each job verifies the exact Host/Native commits and trees and checks that tracked sources remain unchanged. English requires the actual Dart-produced descriptor report and17 genuine screenshots. Memory preserves the existing independent pair verifier and300/330-second deadlines. Quiz still requires all twenty questions, three jokers, pause/reopen/return and the once-only5,000-star QA ledger effect.
 
-Complete legacy Native suites, current Android navigation/input/lifecycle/save/update, an exact new visual receipt and physical-device timing remain gates. The old Native34449-image receipt does not approve these scenes. Neither fixed test clock nor software-renderer timing is a measured Fold7 frame rate. Main remains protected.
+The complete existing Studio Native workflow is now also enabled on this specific development branch. Its full job requirements and evidence-archive gates are unchanged; enabling this branch does not turn the previous Native344 receipt into acceptance of new scenes.
+
+## Remaining acceptance
+
+The new exact-source authority matrix and full Native workflow must actually pass. The known Host focused failure must be corrected and the full Flutter suite rerun. English, Memory and Quiz Android probes then need the same source-bound APK as the existing general tour, lifecycle, save and update checks. Current screenshots need their own receipt. The separately tested Studio candidate is not automatically the combined feature candidate.
+
+Neither a fixed test clock nor software-renderer timing proves60FPS on a Galaxy Z Fold7. Physical-device CPU/GPU timing, input latency and thermals have not been measured. The remaining legacy Native exit-resource errors also remain documented rather than being described as harmless.
+

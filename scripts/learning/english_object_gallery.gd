@@ -133,6 +133,81 @@ static func make(word: String, index: int) -> Node3D:
 			stem.rotation.z = -0.16
 			var leaf := _sphere(shape, "AppleLeaf", Vector3(0.22, 1.25, 0), Vector3(0.50, 0.09, 0.23), _material("5d8748"))
 			leaf.rotation.z = 0.30
+		"bag":
+			var canvas := _material("d9aa50", 0.82)
+			var inner := _material("84683e", 0.90)
+			_box(shape, "ToteBottom", Vector3(0, 0.08, 0), Vector3(1.30, 0.12, 0.76), inner)
+			_box(shape, "ToteFront", Vector3(0, 0.64, 0.36), Vector3(1.30, 1.10, 0.08), canvas)
+			_box(shape, "ToteBack", Vector3(0, 0.64, -0.36), Vector3(1.30, 1.10, 0.08), canvas)
+			for side in [-1.0, 1.0]:
+				_box(shape, "ToteSide%s" % side, Vector3(side * 0.61, 0.64, 0), Vector3(0.08, 1.10, 0.66), canvas)
+			for front in [-1.0, 1.0]:
+				var ring := TorusMesh.new()
+				ring.inner_radius = 0.24
+				ring.outer_radius = 0.30
+				ring.rings = 24
+				ring.ring_segments = 8
+				var handle := _mesh(shape, "ToteHandle%s" % front, ring, Vector3(0, 1.41, front * 0.30), _material("896442", 0.84))
+				handle.rotation.x = PI * 0.5
+			_box(shape, "ToteStitch", Vector3(0, 1.10, 0.407), Vector3(1.16, 0.035, 0.012), _material("eed197", 0.9))
+		"rubber":
+			_box(shape, "EraserBody", Vector3(0, 0.22, 0), Vector3(1.48, 0.42, 0.66), _material("efdac6", 0.92))
+			_box(shape, "PaperSleeve", Vector3(-0.03, 0.22, 0), Vector3(0.72, 0.445, 0.69), _material("387bac", 0.80))
+			_box(shape, "SleeveBand", Vector3(-0.03, 0.448, 0), Vector3(0.46, 0.018, 0.57), _material("e4eef1", 0.90))
+			shape.rotation.y = -0.14
+		"school bag":
+			var fabric := _material("357ba4", 0.82)
+			var trim := _material("173f63", 0.85)
+			_box(shape, "BackpackBody", Vector3(0, 0.69, 0), Vector3(1.18, 1.16, 0.65), fabric)
+			_sphere(shape, "BackpackRoundTop", Vector3(0, 1.23, 0), Vector3(1.18, 0.43, 0.65), fabric)
+			_box(shape, "BackpackBase", Vector3(0, 0.13, 0), Vector3(1.22, 0.17, 0.69), trim)
+			_box(shape, "FrontPocket", Vector3(0, 0.51, 0.40), Vector3(0.86, 0.53, 0.19), _material("e0a652", 0.84))
+			_box(shape, "PocketZip", Vector3(0, 0.71, 0.503), Vector3(0.75, 0.035, 0.025), trim)
+			for side in [-1.0, 1.0]:
+				var strap := Node3D.new()
+				strap.name = "ShoulderStrap%s" % side
+				shape.add_child(strap)
+				_box(strap, "UpperAnchor", Vector3(side * 0.36, 1.18, -0.42), Vector3(0.16, 0.13, 0.28), trim)
+				_box(strap, "LongStrap", Vector3(side * 0.36, 0.77, -0.57), Vector3(0.16, 0.87, 0.09), trim)
+				_box(strap, "LowerAnchor", Vector3(side * 0.36, 0.36, -0.42), Vector3(0.16, 0.13, 0.28), trim)
+			for side in [-1.0, 1.0]:
+				_box(shape, "CarryHandlePost%s" % side, Vector3(side * 0.20, 1.48, 0), Vector3(0.07, 0.18, 0.08), trim)
+			_box(shape, "CarryHandleTop", Vector3(0, 1.56, 0), Vector3(0.44, 0.07, 0.08), trim)
+		"desk":
+			var wood := _material("c99b62", 0.70)
+			var metal := _material("476477", 0.46)
+			_box(shape, "WritingTop", Vector3(0, 1.28, 0), Vector3(1.74, 0.15, 1.16), wood)
+			_box(shape, "DeskApron", Vector3(0, 1.09, -0.42), Vector3(1.44, 0.22, 0.08), wood)
+			for side in [-1.0, 1.0]:
+				for front in [-1.0, 1.0]:
+					var at := Vector3(side * 0.68, 0.64, front * 0.43)
+					_box(shape, "DeskLeg%s_%s" % [side, front], at, Vector3(0.12, 1.22, 0.12), metal)
+					_box(shape, "DeskFoot%s_%s" % [side, front], Vector3(at.x, 0.05, at.z), Vector3(0.17, 0.10, 0.17), _material("233442", 0.88))
+		"chair":
+			var seat := _material("57a09c", 0.72)
+			var legs := _material("bd8c55", 0.77)
+			_box(shape, "ChairSeat", Vector3(0, 0.73, 0), Vector3(1.02, 0.14, 0.96), seat)
+			_box(shape, "ChairBackrest", Vector3(0, 1.24, -0.43), Vector3(1.02, 0.72, 0.12), seat)
+			for side in [-1.0, 1.0]:
+				_box(shape, "BackPost%s" % side, Vector3(side * 0.41, 1.08, -0.43), Vector3(0.11, 0.96, 0.12), legs)
+				for front in [-1.0, 1.0]:
+					_box(shape, "ChairLeg%s_%s" % [side, front], Vector3(side * 0.41, 0.36, front * 0.36), Vector3(0.11, 0.70, 0.11), legs)
+			shape.rotation.y = -0.18
+		"pencil case":
+			_sphere(shape, "SoftCaseBody", Vector3(0, 0.32, 0), Vector3(1.72, 0.56, 0.76), _material("bf5540", 0.84))
+			_box(shape, "ZipperTrack", Vector3(0, 0.59, 0), Vector3(1.24, 0.028, 0.075), _material("273a4b", 0.70))
+			for tooth in range(15):
+				_box(shape, "ZipperTooth%02d" % tooth, Vector3(-0.56 + tooth * 0.08, 0.61, 0), Vector3(0.033, 0.025, 0.082), _material("d3d8d7", 0.35))
+			_box(shape, "ZipperPull", Vector3(0.52, 0.63, 0.13), Vector3(0.12, 0.045, 0.25), _material("dfb459", 0.40))
+			shape.rotation.y = -0.12
+		"paper":
+			_box(shape, "LooseSheet", Vector3(0, 0.065, 0), Vector3(1.46, 0.035, 1.72), _material("f4f1df", 0.96))
+			for line in range(8):
+				_box(shape, "WritingGuide%02d" % line, Vector3(0.04, 0.085, -0.56 + line * 0.16), Vector3(1.18, 0.006, 0.014), _material("84afbc", 0.96))
+			_box(shape, "PageMargin", Vector3(-0.51, 0.086, 0), Vector3(0.014, 0.006, 1.53), _material("c98f8c", 0.96))
+			var corner := _box(shape, "LiftedCorner", Vector3(0.55, 0.13, -0.65), Vector3(0.30, 0.025, 0.31), _material("e3dcc6", 0.96))
+			corner.rotation.z = 0.34
+			shape.rotation.y = -0.14
 	var label_mesh := TextMesh.new()
 	label_mesh.font = ThemeDB.fallback_font
 	label_mesh.font_size = 64

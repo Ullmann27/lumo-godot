@@ -191,7 +191,7 @@ func _valid_state(value: Dictionary) -> bool:
 	if value.get("selected") != null and not _integer(value.selected, 0, 3):
 		return false
 	if bool(value.revealed):
-		if not _integer(value.get("correctIndex"), 0, 3) or not _text(value.get("explanation"), 2000, true):
+		if not _integer(value.get("correctIndex"), 0, 3) or (value.get("explanation") != null and not _text(value.explanation, 2000, true)):
 			return false
 	elif value.get("correctIndex") != null or value.get("explanation") != null:
 		# A premature answer must never become visible even if a bridge is faulty.
@@ -267,10 +267,20 @@ func apply_state(value: Dictionary) -> bool:
 	return true
 
 
+func _option_hidden(option: int) -> bool:
+	# JSON numbers are floats in Godot. _valid_state already requires unique
+	# whole indices; compare their validated integer values without changing
+	# the authoritative state or its original numeric representation.
+	for hidden in _state.hidden:
+		if int(hidden) == option:
+			return true
+	return false
+
+
 func _allowed(action: String, extras: Dictionary) -> bool:
 	match action:
 		"select":
-			return bool(_state.canSelect) and extras.size() == 1 and _integer(extras.get("option"), 0, 3) and int(extras.option) not in _state.hidden
+			return bool(_state.canSelect) and extras.size() == 1 and _integer(extras.get("option"), 0, 3) and not _option_hidden(int(extras.option))
 		"reveal":
 			return bool(_state.canReveal) and extras.is_empty()
 		"next":
@@ -655,7 +665,7 @@ func _update_ui() -> void:
 	progress.text = "Frage %d von %d · %s · Stufe %d" % [int(_state.number), int(_state.total), str(_state.questionSubject), int(_state.grade)]
 	prompt.text = str(_state.prompt)
 	for i in range(4):
-		var option_hidden: bool = i in _state.hidden
+		var option_hidden: bool = _option_hidden(i)
 		var caption: String = LETTERS[i] + "  " + ("Ausgeblendet" if option_hidden else str(_state.options[i]))
 		if _state.audience is Array and not option_hidden:
 			caption += "  ·  Publikum: %d %%" % int(_state.audience[i])
@@ -678,7 +688,8 @@ func _update_ui() -> void:
 	feedback.text = ""
 	if revealed:
 		var verdict: String = "Richtig!" if _state.selected == _state.correctIndex else "Die richtige Antwort ist " + LETTERS[int(_state.correctIndex)] + "."
-		feedback.text = verdict + "\n" + str(_state.explanation)
+		var explanation: String = _state.explanation if _state.explanation is String else ""
+		feedback.text = verdict + ("\n" + explanation if not explanation.is_empty() else "")
 	hint.text = "Lumos Tipp: " + str(_state.hint) if _state.hint != null else ""
 	hint.visible = hint.visible and not hint.text.is_empty()
 	status.text = "Anfrage gesendet. Speichern wird bestätigt …" if waiting else "Gesichert: %d Sterne" % int(_state.securedStars)
