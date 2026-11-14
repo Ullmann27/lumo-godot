@@ -19,7 +19,7 @@ class SpeechHost:
 
 	func getLearningSpeechStatus() -> String:
 		return JSON.stringify(
-			{"id": request.get("id", 0), "state": state, "positionMs": 0, "durationMs": 1000}
+			{"id": request.get("id", 0), "state": state, "positionMs": 0, "durationMs": 1000, "audible": state == "playing", "envelopeAvailable": false, "envelope": 0.0}
 		)
 
 	func stopLearningSpeech() -> void:

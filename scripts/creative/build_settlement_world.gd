@@ -373,7 +373,10 @@ func _cost_text(cost: Dictionary) -> String:
 	var parts := PackedStringArray()
 	for resource in ["wood", "stone", "food", "coins"]:
 		if int(cost.get(resource, 0)) > 0:
-			parts.append("%d %s" % [int(cost[resource]), labels[resource]])
+			var label: String = labels[resource]
+			if resource == "coins" and int(cost[resource]) == 1:
+				label = "Münze"
+			parts.append("%d %s" % [int(cost[resource]), label])
 	return ", ".join(parts)
 
 
