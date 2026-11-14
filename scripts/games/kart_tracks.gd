@@ -2,6 +2,7 @@ class_name LumoKartTracks
 extends RefCounted
 ## Original course designs. Distances and heights are metres in the shared world.
 
+const ADVENTURE = preload("res://scripts/games/kart_adventure_routes.gd")
 const EXPANSION = preload("res://scripts/games/kart_expansion_tracks.gd")
 const HARBOR_LONG = preload("res://scripts/games/kart_sonnenhafen_long_course.gd")
 static var IDS: Array[String] = _all_ids()
@@ -14,6 +15,14 @@ static func _all_ids() -> Array[String]:
 
 
 static func definition(id: String) -> Dictionary:
+	var result: Dictionary = _original_definition(id)
+	if ADVENTURE.supports(id):
+		result["points"] = ADVENTURE.points(id)
+		result["adventure"] = ADVENTURE.profile(id)
+	return result
+
+
+static func _original_definition(id: String) -> Dictionary:
 	if id in EXPANSION.IDS:
 		return EXPANSION.definition(id)
 	match id:

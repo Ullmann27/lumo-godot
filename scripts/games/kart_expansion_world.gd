@@ -84,8 +84,12 @@ static func build(world) -> void:
 	rng.seed = world.definition.seed
 	# The landmarks repeat around the whole course, with a clear navigable roadway.
 	var count: int = 32 if world.low_detail else 56
+	if not world.adventure_tunnel.is_empty():
+		count = clampi(ceili(world.length / (30.0 if world.low_detail else 17.0)), count, 76 if world.low_detail else 128)
 	for i in range(count):
 		var d: float = (float(i) + 0.25) * world.length / count
+		if world.ADVENTURE_TUNNELS.contains(world, d, 25.0):
+			continue
 		var basis: Basis = world.frame(d)
 		var side: float = -1 if i % 2 == 0 else 1
 		var at: Vector3 = world.position_at(d, side * rng.randf_range(15, 29))

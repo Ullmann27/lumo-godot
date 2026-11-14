@@ -15,6 +15,9 @@ const GLOVE := Color("1d2230")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const FUR = preload("res://scripts/games/kart_fur_geometry.gd")
 const CHARACTER_FINISH = preload("res://scripts/games/kart_character_finish.gd")
+const RIVAL_FINISH = preload("res://scripts/games/kart_rival_character_finish.gd")
+const RIVAL_VISUAL = preload("res://scripts/games/kart_rival_visual_adapter.gd")
+const COACHWORK_FINISH = preload("res://scripts/games/kart_coachwork_finish.gd")
 const LUMO_ANIMATION = preload("res://scripts/characters/lumo/lumo_kart_animation_adapter.gd")
 const CINEMA_FINISH = preload("res://scripts/games/visual/kart_cinema_materials.gd")
 const CARBON := Color("0b1019")
@@ -86,6 +89,8 @@ var wheel_rest_grips: Array[Vector3] = []
 ## retain their existing visuals until their own integration is approved.
 var animated_lumo_enabled := false
 var lumo_animation
+var reference_rival_enabled := false
+var rival_visual
 var driver_airborne := false
 var driver_hit_active := false
 var driver_hit_pending := false
@@ -97,7 +102,9 @@ var _cinema_profile: String = ""
 
 
 func _ready() -> void:
+	reference_rival_enabled = reference_rival_enabled or bool(get_meta("reference_rival", false))
 	_ensure_lumo_animation()
+	_ensure_rival_visual()
 
 
 func set_animated_lumo_enabled(enabled: bool) -> void:
@@ -112,6 +119,40 @@ func set_animated_lumo_enabled(enabled: bool) -> void:
 		_ensure_lumo_animation()
 
 
+func set_reference_rival_enabled(enabled: bool) -> void:
+	reference_rival_enabled = enabled
+	set_meta("reference_rival", enabled)
+	if not enabled and is_instance_valid(rival_visual):
+		rival_visual.free()
+		rival_visual = null
+		if is_instance_valid(driver):
+			driver.show()
+		_refresh_far_proxy()
+	elif enabled:
+		_ensure_rival_visual()
+
+
+func _ensure_rival_visual() -> void:
+	if not is_inside_tree() or companion_mode or animal == "fox" or not reference_rival_enabled:
+		return
+	if is_instance_valid(rival_visual) or not is_instance_valid(driver):
+		return
+	var candidate = RIVAL_VISUAL.new()
+	candidate.name = "ImportedRivalDriver"
+	add_child(candidate)
+	if not candidate.bind_visual(self, animal):
+		candidate.free()
+		return
+	rival_visual = candidate
+	rival_visual.set_process(false)
+	rival_visual.set_reduced_motion(reduced_motion)
+	rival_visual.set_suspended(driver_animation_paused)
+	driver.hide()
+	_refresh_far_proxy()
+	if celebration_place > 0:
+		rival_visual.celebrate_finished_race(celebration_place)
+
+
 func set_driver_runtime_state(in_air: bool, hit_active: bool, suspended: bool) -> void:
 	driver_airborne = in_air
 	driver_hit_pending = driver_hit_pending or (hit_active and not driver_hit_active)
@@ -120,6 +161,9 @@ func set_driver_runtime_state(in_air: bool, hit_active: bool, suspended: bool) -
 	if is_instance_valid(lumo_animation):
 		lumo_animation.set_suspended(suspended)
 		lumo_animation.set_reduced_motion(reduced_motion)
+	if is_instance_valid(rival_visual):
+		rival_visual.set_suspended(suspended)
+		rival_visual.set_reduced_motion(reduced_motion)
 
 
 func _ensure_lumo_animation() -> void:
@@ -152,7 +196,7 @@ func _refresh_far_proxy() -> void:
 		# Both proxies are authored before static batching. Rebuilding from
 		# batched multi-material surfaces would lose their source materials.
 		far_mesh.mesh = (
-			_far_without_driver if is_instance_valid(lumo_animation) else _far_with_driver
+			_far_without_driver if is_instance_valid(lumo_animation) or is_instance_valid(rival_visual) else _far_with_driver
 		)
 		_set_far_detail(far_detail)
 
@@ -261,6 +305,11 @@ func celebrate(place: int) -> void:
 			lumo_animation.celebrate_finished_race(place)
 		else:
 			lumo_animation.clear_celebration()
+	if is_instance_valid(rival_visual):
+		if place > 0:
+			rival_visual.celebrate_finished_race(place)
+		else:
+			rival_visual.clear_celebration()
 
 
 func set_speaking(amount: float) -> void:
@@ -299,6 +348,7 @@ func _rebuild() -> void:
 	for child in get_children():
 		child.free()
 	lumo_animation = null
+	rival_visual = null
 	wheel_pivots.clear()
 	wheel_rotors.clear()
 	eyes.clear()
@@ -330,6 +380,7 @@ func _rebuild() -> void:
 		_build()
 	_built = true
 	_ensure_lumo_animation()
+	_ensure_rival_visual()
 	_apply_cinema_coachwork()
 
 
@@ -416,6 +467,11 @@ func _fur(parent: Node3D, geometry: Mesh, at: Vector3, color: Color, count: int,
 	if animal == "fox":
 		var strands := _mesh(coat, FUR.build(geometry, color, count, strand_length, seed_value), Vector3.ZERO, Color.WHITE, 0.0, 0.82)
 		strands.set_meta("near_only", true)
+	elif animal in ["rabbit", "otter", "badger", "cat"]:
+		# Sparse short fibres soften the existing real geometry without a second
+		# material pass. Head pigmentation supplies the coat colour underneath.
+		var fibres := _mesh(coat, FUR.build(geometry, color, clampi(count / 5, 24, 480), strand_length * 0.45, seed_value), Vector3.ZERO, Color.WHITE, 0.0, 0.82)
+		fibres.set_meta("near_only", true)
 	return coat
 
 
@@ -531,6 +587,7 @@ func _build() -> void:
 		_build_loft(spec)
 	else:
 		_build_aero(spec)
+	COACHWORK_FINISH.decorate(self, get_node("AuroraCoachwork"), spec)
 	_make_steering_wheel()
 	# Two independent emissive lamp meshes; keep them out of static and LOD batches.
 	# Shared geometry/material, no light nodes or per-frame material allocations.
@@ -886,7 +943,8 @@ func _make_wheel(side: float, axle: float, stance: float) -> void:
 	_ellipsoid(rotor, Vector3(0, outside - side * 0.04, 0), Vector3(0.071, 0.029, 0.071), vehicle_color, 0.65, 0.25)
 	_ellipsoid(rotor, Vector3(0, outside - side * 0.065, 0), Vector3(0.026, 0.01, 0.026), ICE, 0.7, 0.2)
 	# A fixed caliper follows the steering hub while the disc and spokes rotate inside it.
-	var caliper := _box(pivot, Vector3(side * 0.165, 0.07, -0.15), Vector3(0.055, 0.13, 0.07), ORANGE, 0.7)
+	COACHWORK_FINISH.wheel_details(self, rotor, side, 0.35, 0.193)
+	var caliper := COACHWORK_FINISH.rounded_box(self, pivot, Vector3(side * 0.165, 0.07, -0.15), Vector3(0.055, 0.13, 0.07), ORANGE, 0.7)
 	caliper.name = "BrakeCaliper"
 	caliper.rotation.x = -0.26
 	caliper.material_override = _mat(ORANGE, 0.7, 0.24)
@@ -1568,7 +1626,9 @@ func _make_kit_wheel(side: float, axle: float, radius: float, width: float, trac
 	brake.height = 0.012
 	brake.radial_segments = 24
 	_mesh(rotor, brake, Vector3(0, outside + inward * 0.075, 0), Color("323d4f"), 0.7, 0.3)
-	var caliper: MeshInstance3D = _box(pivot, Vector3(side * (half - 0.06), radius * 0.46, 0.0), Vector3(0.05, 0.12, 0.09), spec.accent, 0.35)
+	COACHWORK_FINISH.wheel_details(self, rotor, side, radius, half)
+	var caliper: MeshInstance3D = COACHWORK_FINISH.rounded_box(self, pivot, Vector3(side * (half - 0.06), radius * 0.46, 0.0), Vector3(0.05, 0.12, 0.09), spec.accent, 0.35)
+	caliper.name = "BrakeCaliper"
 	caliper.material_override = _mat(spec.accent, 0.35, 0.35)
 	# Profil: zwei Längsrillen; Geländereifen bekommen grobe Stollen am Rand
 	for groove in [-0.30, 0.30]:
@@ -1652,7 +1712,7 @@ func _make_racing_sleeve(limb: Node3D, side: float, is_lumo: bool) -> void:
 			Vector4(cuff_distance, 0.064, 0.060, 0)
 		], true, 20, 4), side
 	)
-	var sleeve := _mesh(limb, sleeve_shape, Vector3.ZERO, NAVY, 0.0, 0.82)
+	var sleeve := _mesh(limb, sleeve_shape, Vector3.ZERO, NAVY if is_lumo else RIVAL_FINISH.palette(animal).suit, 0.0, 0.82)
 	sleeve.name = "RacingSleeve"
 	sleeve_shape.set_meta("cuff_vertex_start", sleeve_shape.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size() - 20)
 	sleeve_shape.set_meta("cuff_vertex_count", 20)
@@ -1675,18 +1735,20 @@ func _make_racing_sleeve(limb: Node3D, side: float, is_lumo: bool) -> void:
 
 
 func _make_driver() -> void:
-	var fur: Color = {"fox": Color("ed762d"), "otter": Color("ad8064"), "rabbit": Color("cedbe8"), "badger": Color("64718a"), "cat": Color("d4b396")}.get(animal, Color("ed762d"))
-	var cream := Color("f4f2ea") if animal == "fox" else Color("eaf4f9")
+	var is_lumo: bool = animal == "fox"
+	var palette: Dictionary = RIVAL_FINISH.palette(animal)
+	var fur: Color = Color("ed762d") if is_lumo else palette.fur
+	var cream: Color = Color("f4f2ea") if is_lumo else palette.cream
+	var suit: Color = NAVY if is_lumo else palette.suit
 	var fur_shadow: Color = fur.darkened(0.18)
 	driver = Node3D.new()
 	driver.name = "RacerRig"
 	add_child(driver)
 	# Fitted racing suit with shoulder yoke, collar, sleeves and a distinct white back panel.
-	_mesh(driver, _loft([Vector4(0.77, 0.19, 0.19, 0.13), Vector4(0.90, 0.25, 0.20, 0.13), Vector4(1.12, 0.26, 0.195, 0.10), Vector4(1.27, 0.28, 0.16, 0.11), Vector4(1.32, 0.17, 0.11, 0.11)], true, 28, 4, 0.88), Vector3.ZERO, NAVY, 0, 0.7)
+	_mesh(driver, _loft([Vector4(0.77, 0.19, 0.19, 0.13), Vector4(0.90, 0.25, 0.20, 0.13), Vector4(1.12, 0.26, 0.195, 0.10), Vector4(1.27, 0.28, 0.16, 0.11), Vector4(1.32, 0.17, 0.11, 0.11)], true, 28, 4, 0.88), Vector3.ZERO, suit, 0, 0.7)
 	# The neck bridges the collar and the head base, keeping the silhouette connected in side view.
 	var neck := _mesh(driver, _loft([Vector4(1.285, 0.11, 0.10, 0.10), Vector4(1.36, 0.115, 0.105, 0.09), Vector4(1.43, 0.10, 0.09, 0.075)], true, 20, 3), Vector3.ZERO, fur, 0.0, 0.82)
 	neck.name = "NeckBridge"
-	var is_lumo: bool = animal == "fox"
 	# Closed navy racing armour and large cyan L match the supplied character sheet.
 	var chest_fill: Color = cream if is_lumo else WHITE
 	if is_lumo:
@@ -1694,9 +1756,9 @@ func _make_driver() -> void:
 		for side in [-1.0, 1.0]:
 			_ribbon(driver, [Vector3(side * 0.175, 1.02, -0.12), Vector3(side * 0.20, 1.14, -0.12), Vector3(side * 0.18, 1.25, -0.084)], 0.009, ICE, 0.18, 0.4)
 	else:
-		_mesh(driver, _loft([Vector4(0.89, 0.10, 0.017, -0.073), Vector4(1.02, 0.155, 0.022, -0.093), Vector4(1.21, 0.17, 0.020, -0.070), Vector4(1.29, 0.11, 0.012, -0.035)], true, 22, 4), Vector3.ZERO, WHITE, 0.04, 0.57)
-	_mesh(driver, _loft([Vector4(0.91, 0.11, 0.015, 0.332), Vector4(1.12, 0.17, 0.015, 0.302), Vector4(1.28, 0.17, 0.014, 0.244), Vector4(1.31, 0.09, 0.012, 0.223)], true, 22, 4), Vector3.ZERO, Color("0f2a52") if is_lumo else WHITE, 0.03, 0.65)
-	var collar := _ring(driver, Vector3(0, 1.32, 0.10), 0.112, 0.163, NAVY if is_lumo else ICE, 0.18)
+		_mesh(driver, _loft([Vector4(0.89, 0.10, 0.017, -0.073), Vector4(1.02, 0.155, 0.022, -0.093), Vector4(1.21, 0.17, 0.020, -0.070), Vector4(1.29, 0.11, 0.012, -0.035)], true, 22, 4), Vector3.ZERO, cream, 0.0, 0.82)
+	_mesh(driver, _loft([Vector4(0.91, 0.11, 0.015, 0.332), Vector4(1.12, 0.17, 0.015, 0.302), Vector4(1.28, 0.17, 0.014, 0.244), Vector4(1.31, 0.09, 0.012, 0.223)], true, 22, 4), Vector3.ZERO, Color("0f2a52") if is_lumo else cream, 0.03, 0.65)
+	var collar := _ring(driver, Vector3(0, 1.32, 0.10), 0.112, 0.163, NAVY if is_lumo else suit.darkened(0.16), 0.18)
 	collar.scale.z = 0.8
 	if is_lumo:
 		_ring(driver, Vector3(0, 1.335, 0.10), 0.158, 0.170, ICE, 0.18).scale.z = 0.8
@@ -1727,10 +1789,10 @@ func _make_driver() -> void:
 			if is_lumo and side > 0:
 				arm_right = limb
 			_make_racing_sleeve(limb, side, is_lumo)
-			_ellipsoid(limb, Vector3(side * 0.29, 1.215, 0.015) - origin, Vector3(0.092, 0.056, 0.096), NAVY if is_lumo else WHITE, 0.07, 0.6)
-			var leg := _ellipsoid(driver, Vector3(side * 0.16, 0.81, -0.18), Vector3(0.105, 0.105, 0.16), NAVY, 0, 0.72)
+			_ellipsoid(limb, Vector3(side * 0.29, 1.215, 0.015) - origin, Vector3(0.092, 0.056, 0.096), NAVY if is_lumo else cream, 0.07, 0.6)
+			var leg := _ellipsoid(driver, Vector3(side * 0.16, 0.81, -0.18), Vector3(0.105, 0.105, 0.16), suit, 0, 0.72)
 			leg.name = "SeatedLegLeft" if side < 0 else "SeatedLegRight"
-			var glove_color: Color = GLOVE if is_lumo else WHITE
+			var glove_color: Color = GLOVE if is_lumo else cream
 			var glove := _ellipsoid(limb, Vector3(side * 0.16, 1.055, -0.34) - origin, Vector3(0.079, 0.070, 0.083), glove_color, 0, 0.68)
 			glove.name = "GripGlove"
 			glove.rotation.z = side * -0.2
@@ -1751,7 +1813,7 @@ func _make_driver() -> void:
 				if cloth_part is MeshInstance3D:
 					var finish: StandardMaterial3D = cloth_part.material_override
 					cloth_part.material_override = _mat(finish.albedo_color, 0.0, 0.82)
-			var boot := _ellipsoid(driver, Vector3(side * 0.18, 0.80, -0.24), Vector3(0.12, 0.09, 0.14), NAVY, 0.08, 0.6)
+			var boot := _ellipsoid(driver, Vector3(side * 0.18, 0.80, -0.24), Vector3(0.12, 0.09, 0.14), suit.darkened(0.12) if not is_lumo else NAVY, 0.08, 0.6)
 			boot.name = "RacingBootLeft" if side < 0 else "RacingBootRight"
 			var sole := _ellipsoid(driver, Vector3(side * 0.18, 0.742, -0.24), Vector3(0.119, 0.026, 0.15), WHITE, 0.08, 0.6)
 			sole.name = "BootSoleLeft" if side < 0 else "BootSoleRight"
@@ -1761,39 +1823,34 @@ func _make_driver() -> void:
 	driver.add_child(head)
 	var head_width: float = 0.43 if animal != "rabbit" else 0.36
 	var head_profile: Array[Vector4] = [Vector4(-0.32, 0.055, 0.060, -0.025), Vector4(-0.26, 0.27, 0.225, -0.003), Vector4(-0.13, head_width, 0.30, 0.006), Vector4(0.055, head_width * 0.98, 0.326, 0.015), Vector4(0.23, 0.31, 0.277, 0.025), Vector4(0.33, 0.17, 0.17, 0.038), Vector4(0.375, 0.008, 0.012, 0.038)]
+	if not is_lumo:
+		head_profile = RIVAL_FINISH.head_profile(animal, head_profile)
 	var head_mesh: Mesh = _loft(head_profile, true, 48, 5)
 	if is_lumo:
 		head_mesh = CHARACTER_FINISH.coat(head_mesh, fur, cream, "head")
-	_fur(head, head_mesh, Vector3.ZERO, Color.WHITE if is_lumo else fur, 2900, 0.016, 715)
+	else:
+		head_mesh = RIVAL_FINISH.coat(head_mesh, animal, fur, cream)
+	_fur(head, head_mesh, Vector3.ZERO, Color.WHITE, 2900, 0.016, 715)
 	# The cheek mask is sculpted as two swept, tapered volumes, with a joined muzzle.
 	for side in [-1.0, 1.0]:
-		var cheek_mesh: Mesh = _loft(
-			[
-				Vector4(-0.15, 0.045, 0.035, -0.012),
-				Vector4(-0.045, 0.145, 0.130, -0.010),
-				Vector4(0.095, 0.16, 0.135, 0.005),
-				Vector4(0.245, 0.11, 0.077, 0.023),
-				Vector4(0.335, 0.010, 0.013, 0.050),
-			],
-			false, 32, 4
-		)
 		if is_lumo:
-			cheek_mesh = CHARACTER_FINISH.wrap_cheek(cheek_mesh, side)
-		var cheek := _fur(
-			head, cheek_mesh, Vector3(side * 0.12, -0.16, -0.21),
-			cream, 700, 0.028, 821 + int(side)
-		)
-		cheek.rotation.y = side * PI / 2
-		if not is_lumo:
-			# Other drivers retain their existing cheek anatomy. Lumo's continuous
-			# cream head and wrapped cheek now provide the side/rear fringe.
-			_fur(head, _loft([Vector4(-0.285, 0.012, 0.018, 0), Vector4(-0.22, 0.10, 0.125, 0.018), Vector4(-0.16, 0.137, 0.153, 0.008), Vector4(-0.10, 0.067, 0.102, 0), Vector4(-0.075, 0.005, 0.010, 0)], true, 28, 4), Vector3(side * 0.315, 0, 0.044), cream, 330, 0.025, 531 + int(side))
-		if not is_lumo:
-			# Lumo's wrapped cheek and its fur now carry the continuous silhouette.
-			# Keep the other drivers' original separate cheek tufts.
-			for tuft in range(2):
-				var leaf := _mesh(head, _loft([Vector4(0, 0.05, 0.022, 0), Vector4(0.055, 0.055, 0.035, 0), Vector4(0.115, 0.002, 0.002, 0.018)], true, 16, 3), Vector3(side * (0.28 + tuft * 0.025), -0.11 - tuft * 0.06, -0.15), cream)
-				leaf.rotation.z = -side * 1.20
+			var cheek_mesh: Mesh = _loft(
+				[
+					Vector4(-0.15, 0.045, 0.035, -0.012),
+					Vector4(-0.045, 0.145, 0.130, -0.010),
+					Vector4(0.095, 0.16, 0.135, 0.005),
+					Vector4(0.245, 0.11, 0.077, 0.023),
+					Vector4(0.335, 0.010, 0.013, 0.050),
+				],
+				false, 32, 4
+			)
+			if is_lumo:
+				cheek_mesh = CHARACTER_FINISH.wrap_cheek(cheek_mesh, side)
+			var cheek := _fur(
+				head, cheek_mesh, Vector3(side * 0.12, -0.16, -0.21),
+				cream, 700, 0.028, 821 + int(side)
+			)
+			cheek.rotation.y = side * PI / 2
 		_make_ear(side, fur, cream)
 		_make_eye(side, fur_shadow)
 		# Soft brow arc gives the neutral expression a curious, friendly shape.
@@ -1809,13 +1866,19 @@ func _make_driver() -> void:
 				if part is MeshInstance3D:
 					part.material_override = _mat(fur.darkened(0.68), 0.0, 0.82)
 		else:
-			_ribbon(head, brow, 0.012, fur.darkened(0.45))
-	var muzzle: Array[Vector4] = [Vector4(-0.455, 0.038, 0.028, -0.101), Vector4(-0.418, 0.113, 0.060, -0.122), Vector4(-0.351, 0.168, 0.090, -0.135), Vector4(-0.264, 0.15, 0.08, -0.15), Vector4(-0.21, 0.01, 0.012, -0.15)]
-	_fur(head, _loft(muzzle, false, 32, 4), Vector3.ZERO, cream, 350, 0.009, 228)
-	# A small triangular, polished nose and a real mouth cavity underneath.
-	var nose := _mesh(head, _loft([Vector4(-0.16, 0.004, 0.016, -0.453), Vector4(-0.112, 0.075, 0.044, -0.463), Vector4(-0.079, 0.060, 0.032, -0.449), Vector4(-0.068, 0.004, 0.005, -0.435)], true, 24, 4), Vector3.ZERO, Color("2a1d22"), 0.08, 0.22)
-	nose.name = "SculptedNose"
-	_ellipsoid(head, Vector3(-0.020, -0.09, -0.493), Vector3(0.020, 0.009, 0.005), Color("ae8f85"), 0, 0.25)
+			var fitted_brow: Array[Vector3] = []
+			for point in brow:
+				fitted_brow.append(Vector3(point.x * (0.81 if animal == "rabbit" else 0.9), point.y - 0.025, point.z + (0.032 if animal == "rabbit" else 0.018)))
+			_ribbon(head, fitted_brow, 0.009, fur.darkened(0.45))
+	if is_lumo:
+		var muzzle: Array[Vector4] = [Vector4(-0.455, 0.038, 0.028, -0.101), Vector4(-0.418, 0.113, 0.060, -0.122), Vector4(-0.351, 0.168, 0.090, -0.135), Vector4(-0.264, 0.15, 0.08, -0.15), Vector4(-0.21, 0.01, 0.012, -0.15)]
+		_fur(head, _loft(muzzle, false, 32, 4), Vector3.ZERO, cream, 350, 0.009, 228)
+		# A small triangular, polished nose and a real mouth cavity underneath.
+		var nose := _mesh(head, _loft([Vector4(-0.16, 0.004, 0.016, -0.453), Vector4(-0.112, 0.075, 0.044, -0.463), Vector4(-0.079, 0.060, 0.032, -0.449), Vector4(-0.068, 0.004, 0.005, -0.435)], true, 24, 4), Vector3.ZERO, Color("2a1d22"), 0.08, 0.22)
+		nose.name = "SculptedNose"
+		_ellipsoid(head, Vector3(-0.020, -0.09, -0.493), Vector3(0.020, 0.009, 0.005), Color("ae8f85"), 0, 0.25)
+	else:
+		RIVAL_FINISH.make_muzzle(self, cream)
 	# The original Lumo mascot smiles with an open, friendly mouth, visible
 	# even when the kart camera is pulled back. Keep his real 3D jaw viseme;
 	# only fox gets the extra sculpted cavity, teeth and tongue. Other
@@ -1864,7 +1927,7 @@ func _make_driver() -> void:
 		_ellipsoid(jaw, Vector3(0, 0.021, -0.041), Vector3(0.049, 0.014, 0.019), Color("df8890"), 0, 0.58)
 	_ribbon(head, [Vector3(-0.127, -0.192, -0.32), Vector3(-0.101, -0.216, -0.342), Vector3(-0.057, -0.221, -0.352)], 0.008, Color("714333"))
 	_ribbon(head, [Vector3(0.127, -0.192, -0.32), Vector3(0.101, -0.216, -0.342), Vector3(0.057, -0.221, -0.352)], 0.008, Color("714333"))
-	for tuft in range(3):
+	for tuft in range(3 if is_lumo or animal == "cat" else 0):
 		var quiff := _fur(head, _loft([Vector4(0, 0.034, 0.03, 0), Vector4(0.055, 0.038, 0.034, 0), Vector4(0.11, 0.003, 0.005, 0.030)], true, 18, 4), Vector3(-0.10 + tuft * 0.068, 0.30, -0.06 + tuft * 0.018), fur, 90, 0.019, 175 + tuft)
 		quiff.rotation.z = 0.15 + tuft * 0.14
 	if animal == "fox":
@@ -1872,12 +1935,8 @@ func _make_driver() -> void:
 	else:
 		# A small earpiece integrates the racing identity without obscuring the face.
 		for side in [-1.0, 1.0]:
-			_ellipsoid(head, Vector3(side * 0.372, 0.01, 0.085), Vector3(0.030, 0.085, 0.075), NAVY, 0.35, 0.3)
-			_ellipsoid(head, Vector3(side * 0.395, 0.01, 0.080), Vector3(0.012, 0.047, 0.043), ICE, 0.45, 0.22)
-	if animal == "badger":
-		for side in [-1.0, 1.0]:
-			var stripe := _mesh(head, _loft([Vector4(-0.15, 0.028, 0.014, -0.28), Vector4(0.06, 0.059, 0.013, -0.310), Vector4(0.29, 0.039, 0.01, -0.172)], true, 16, 4), Vector3(side * 0.17, 0, 0), Color("e8f2fa"))
-			stripe.rotation.z = side * -0.16
+			_ellipsoid(head, Vector3(side * (0.324 if animal == "rabbit" else 0.365), 0.01, 0.085), Vector3(0.025, 0.065, 0.061), suit, 0.35, 0.3)
+			_ellipsoid(head, Vector3(side * (0.344 if animal == "rabbit" else 0.385), 0.01, 0.080), Vector3(0.008, 0.032, 0.031), Color("a5afb1"), 0.45, 0.22)
 	_make_tail(fur, cream)
 
 
@@ -1999,6 +2058,9 @@ func _make_ear(side: float, fur: Color, cream: Color) -> void:
 
 
 func _make_eye(side: float, fur_shadow: Color) -> void:
+	if animal != "fox":
+		RIVAL_FINISH.make_eye(self, side, fur_shadow)
+		return
 	var eye := Node3D.new()
 	eye.name = "Eye"
 	# Compared with the previous full spherical eyeball, this sculpt keeps
@@ -2049,6 +2111,8 @@ func _make_tail(fur: Color, cream: Color) -> void:
 	tail.rotation.y = 0.63
 	tail.rotation.x = -0.15
 	driver.add_child(tail)
+	if animal != "fox" and RIVAL_FINISH.make_tail(self, fur, cream):
+		return
 	if animal == "rabbit":
 		_ellipsoid(tail, Vector3(0.05, 0.03, 0.18), Vector3(0.13, 0.14, 0.15), cream, 0, 0.9)
 		return
@@ -2189,7 +2253,7 @@ func _append_far(parent: Node3D, transform_from_kart: Transform3D, tool: Surface
 	for child in parent.get_children():
 		# Keep one visible character, including at LOD distance. The rigged
 		# skin must never be baked into a rigid proxy or drawn over old Lumo.
-		if child == lumo_animation or (child == driver and _far_chassis_only):
+		if child == lumo_animation or child == rival_visual or (child == driver and _far_chassis_only):
 			continue
 		if child is MeshInstance3D:
 			if flames.has(child) or sparks.has(child) or brake_lights.has(child) or child.has_meta("near_only") or child.mesh.has_meta("far_skip"):
@@ -2206,17 +2270,16 @@ func _make_far_mesh() -> void:
 	tool.set_material(_vertex_material(_mat(Color.WHITE, 0.16, 0.58)))
 	_append_far(self, Transform3D.IDENTITY, tool)
 	_far_with_driver = tool.commit()
-	# Keep a chassis-only alternative for the same fox vehicle. This small
+	# Keep a chassis-only alternative for any imported character. This small
 	# proxy avoids rebuilding the Kart (and deleting shield/host attachments)
 	# when the visual is enabled or disabled after it entered the scene tree.
-	if animal == "fox":
-		var chassis := SurfaceTool.new()
-		chassis.begin(Mesh.PRIMITIVE_TRIANGLES)
-		chassis.set_material(_vertex_material(_mat(Color.WHITE, 0.16, 0.58)))
-		_far_chassis_only = true
-		_append_far(self, Transform3D.IDENTITY, chassis)
-		_far_chassis_only = false
-		_far_without_driver = chassis.commit()
+	var chassis := SurfaceTool.new()
+	chassis.begin(Mesh.PRIMITIVE_TRIANGLES)
+	chassis.set_material(_vertex_material(_mat(Color.WHITE, 0.16, 0.58)))
+	_far_chassis_only = true
+	_append_far(self, Transform3D.IDENTITY, chassis)
+	_far_chassis_only = false
+	_far_without_driver = chassis.commit()
 	far_mesh = MeshInstance3D.new()
 	far_mesh.name = "DistantKart"
 	far_mesh.mesh = _far_with_driver
@@ -2317,6 +2380,12 @@ func _process(delta: float) -> void:
 		# The animated player stays the same character in both LODs. Keep
 		# its wheel anchors current even while the chassis uses a far proxy.
 		_update_lumo_visual(delta)
+	elif is_instance_valid(rival_visual):
+		steering_wheel.rotation.z = -motion_steer * 0.40
+		rival_visual.set_reduced_motion(reduced_motion)
+		rival_visual.apply_vehicle_sample(motion_speed, motion_steer, driver_airborne, driver_hit_pending, motion_boost, motion_drift)
+		driver_hit_pending = false
+		rival_visual.advance_tick(delta)
 	if far_detail:
 		return
 	if camera and camera.global_position.distance_squared_to(global_position) > 225.0:
@@ -2327,7 +2396,7 @@ func _process(delta: float) -> void:
 		wheel_pivots[i].rotation.y = -motion_steer * 0.34 if wheel_pivots[i].get_meta("front") else 0.0
 		var hub_height: float = float(wheel_pivots[i].get_meta("height", 0.35))
 		wheel_pivots[i].position.y = hub_height if reduced_motion else hub_height + sin(animation_time * 11.0 + i * 1.7) * minf(0.010, absf(motion_speed) * 0.0005)
-	if is_instance_valid(lumo_animation):
+	if is_instance_valid(lumo_animation) or is_instance_valid(rival_visual):
 		return
 	if driver:
 		driver.rotation.z = lerpf(driver.rotation.z, -motion_steer * 0.06, minf(1, delta * 7.0))

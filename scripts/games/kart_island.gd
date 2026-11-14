@@ -514,6 +514,7 @@ func _build_world() -> void:
 		opponent.set_meta("roadside_speed_factor", 1.0)
 		opponent.set_meta("reference_rival", reference_rivals)
 		opponent.configure(animals[i], colors[i], rival_karts[i % rival_karts.size()])
+		opponent.set_reference_rival_enabled(reference_rivals)
 		opponent.reduced_motion = reduced_motion
 		opponent.set_graphics_quality(graphics_profile)
 		race_root.add_child(opponent)
@@ -1598,9 +1599,8 @@ func _physics_process(delta: float) -> void:
 	if mode != "arena":
 		_sync_item_box_visibility()
 		for i in range(item_boxes.size()):
-			if item_boxes[i].visible and not paused and not reduced_motion:
-				item_boxes[i].rotation.y += delta * 1.35
-				item_boxes[i].rotation.x = sin(elapsed * 2.0 + float(i)) * 0.08
+			if item_boxes[i].visible:
+				RESONANCE.advance_ring(item_boxes[i], elapsed + float(i) * 0.37, reduced_motion)
 	if is_instance_valid(shield_visual):
 		shield_visual.visible = shield_time > 0
 		if shield_visual.visible and not reduced_motion:
@@ -2787,6 +2787,9 @@ func _update_vehicles(_delta: float) -> void:
 			kart.set_motion(0, 0, false, false)
 	for kart in opponents:
 		kart.set_driver_runtime_state(false, false, paused)
+	for fx in opponent_item_fx:
+		if is_instance_valid(fx):
+			fx.advance(_delta, paused or not racing or finished, reduced_motion)
 
 
 func _update_camera(delta: float, snap: bool = false) -> void:
