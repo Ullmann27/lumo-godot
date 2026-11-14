@@ -1,0 +1,457 @@
+[
+  {
+    "path": ".github/workflows/lumo-discovery-connections.yml",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "a806855cf51ab7f63b14163596488fc1d3746dc1",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "CONTINUE.md",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "6c51e37f7f6fcf5732b7023e45e4752ad5ca10f8",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-bd-source-checkpoint-20261114/ambience-independent-review-originals.tar.gz",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "e444f5d5a68a9d0428a0d3a5c84aa84e1535d0a8",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-bd-source-checkpoint-20261114/gate-contract.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "3315457f75b496fbf7c78beec86349f43e4d416d",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-bd-source-checkpoint-20261114/handoff.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "ee1219492f98f6dd6ee244e93197fee7b2a37132",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-bd-source-checkpoint-20261114/integration-review.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "5790119083c002bea16264ad4c9d9d00d1683d64",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-bd-source-checkpoint-20261114/native173-frozen-source-originals.tar.gz",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "cae135f0622c505c338d31e6e3aace87ecaa07e6",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-bd-source-checkpoint-20261114/original-archive-bindings.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "c0bf67cb003db687e20ae26c4e7a22fc680d1ed5",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-bd-source-checkpoint-20261114/prepare-connection.py",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "a1fe6273fcecf9d4bd5e87a5d1b9edd424aadfff",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-bd-source-checkpoint-20261114/protected-base-files.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "1c29346c2aec4f4a6e575506edb3c71eee051a2c",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-bd-source-checkpoint-20261114/root-connection.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "b784f794ceb5362f73aca9de92434bcd7825500d",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-bd-source-checkpoint-20261114/source-freeze.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "05f9d28ed5e0e4649276cf6b6b24bfd7b858d361",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-dd3-validation-activation-20261114/actionlint.stderr.log",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-dd3-validation-activation-20261114/actionlint.stdout.log",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-dd3-validation-activation-20261114/counterexamples.stderr.log",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "1717836af7659a9d1c07b7e2f8b2e0d0a127d98f",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-dd3-validation-activation-20261114/counterexamples.stdout.log",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-dd3-validation-activation-20261114/original-archive-bindings.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "f2eb091ce90eb86f067461c707d54893c4532f93",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-dd3-validation-activation-20261114/prepare-connection.py",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "a1fe6273fcecf9d4bd5e87a5d1b9edd424aadfff",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-dd3-validation-activation-20261114/root-connection.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "85e8955eda6c9b17b1a49bf0b041bb33d2d21625",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-dd3-validation-activation-20261114/summary.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "a16dce4b8bafaa607ca44208fa7eb271af8c5281",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-dd3-validation-activation-20261114/targeted-originals.tar.gz",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "20bfe53489b67c23f8b41f3e365dacb088c039f8",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-strict-source-20261114/four-source-originals.tar.gz",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "2e688fc2363d04879c00d351c640d58c578c11d8",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-strict-source-20261114/gate-contract.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "076e29b2f9c6d59309f6e8ddc1bf71c15bae099c",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-strict-source-20261114/handoff.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "e9a0cfbe344e722cf2b43a4f81c074b28f8506d2",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-strict-source-20261114/independent-manifest.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "b0d981ba25255c65dabd6a28bdc94d57d8410f39",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-strict-source-20261114/independent-review.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "9eb8112369b34d69f4ea5add7bbeba5a8f5fd19f",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-strict-source-20261114/original-archive-bindings.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "73c900b55fe08b923c4f72f784cde813dab4e983",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-strict-source-20261114/prepare-connection.py",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "a1fe6273fcecf9d4bd5e87a5d1b9edd424aadfff",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-strict-source-20261114/root-connection.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "aed0a1e73c71f03eb2b665f941648772ef08784d",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/discovery-strict-source-20261114/source-freeze.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "38a97947a40c53e41a94bae114086453506bcf12",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-minimap-v2-headless-20261114/activation-bindings.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "c46c7becd2309274b27ad53d8e6b9636a5d32148",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-minimap-v2-headless-20261114/handoff.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "681ddd728e9d665cd442f4e5bfd412dee160320e",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-minimap-v2-headless-20261114/manifest.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "6fadc2f2dc1a5c1d01e1cd0d57d1d88fe7952f6d",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-minimap-v2-headless-20261114/README.md",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "caa51937714fc592de04802ec97ada78f010bd66",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-minimap-v2-headless-20261114/result.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "c8ac3686921388b81201099f9f22bd86f2607c55",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-minimap-v2-headless-20261114/validation-originals.tar.gz",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "e4c278b7f7ac6df5b52e5ee9c39efb0b0eb69d62",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-village-minimap2-v2-20261114/c040-archive-binding.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "a5e43d248ff63acc2b826139aacb5afe45d2b245",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-village-minimap2-v2-20261114/gate-contract.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "52d82784f1f2c32b57a978b1a608bfa98ccfa637",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-village-minimap2-v2-20261114/handoff.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "99abfd9d1c1847ab1b42a67fffbb4086618ecb61",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-village-minimap2-v2-20261114/integration.patch",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "46883bcb6d7d8885ee14f704396ec35367892114",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-village-minimap2-v2-20261114/peer-review/manifest.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "9f2aec744801a7bd1f25d9da2affa40741f27b19",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-village-minimap2-v2-20261114/peer-review/review.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "67dc3d444bf2316e27088bae465fb5da00b0e5cf",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-village-minimap2-v2-20261114/publication-bindings.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "268cea3677b8a732037bb7b61383f8fd05c41ac1",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-village-minimap2-v2-20261114/README.md",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "a2e461bcf6eddd39b8b3bc5c589fe589420fc7d0",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-village-minimap2-v2-20261114/source-freeze.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "9e3f1511b731a2716a4e6c36c7a026da6b02f542",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-village-minimap2-v2-20261114/source-originals.tar.gz",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "73526d4b0030c1faa357329d95219943c3f9edc8",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-village-minimap2-v2-20261114/source-pack-manifest.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "3314bc805241a5a4653c01bec3ec036f95ec86e8",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/native-village-minimap2-v2-20261114/workflow-v1-to-v2.patch",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "13e30f5cfb35b6af8ad27e4d81998bdafb4714ad",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/village-pr181-source-20261114/handoff.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "8f3688656bb4c109ac357cb640bd9c5eeb2bd55b",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/village-pr181-source-20261114/integration.patch",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "26f1db090cf8b94ca37f20a69a71111e481cd144",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/village-pr181-source-20261114/materialization-proof.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "de8dcfd457930e7fa2cb49509ad4967b72ea3978",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/village-pr181-source-20261114/producer-invocation-contract.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "999908d394c2ad29da62fce51c21050e8a4c4d77",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/village-pr181-source-20261114/root-review.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "00a2ca70d09b39d8cabb16c86bb4c79b3414eac2",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/village-pr181-source-20261114/source-freeze.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "a61b612a17f5cb96e174af4dd32e54ab49157101",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "docs/evidence/village-pr181-source-20261114/source-originals.tar.gz",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "f79903eafe3f98797cba62089b8abd61573330ec",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "scripts/creative/build_settlement_state.gd",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "625a8db46195d034cbe7ae2dd84d6b208abff645",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "scripts/creative/build_settlement_world.gd",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "149a4386225812592917b1bcac0b85294413f1b4",
+    "reason": "both-changed"
+  },
+  {
+    "path": "scripts/learning/learning_wonder_garden.gd",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "616e9824e3c14f9ab4f5e29da0d926a577516b5e",
+    "reason": "both-changed"
+  },
+  {
+    "path": "scripts/tests/build_village_economy_regression.gd",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "9dd8ff269e266dd73ad5207febd87aab367a4986",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "scripts/tests/build_village_scaling_regression.gd",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "c6abdb5f9576c0b48db7bd59716da52ea5fac036",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "scripts/tests/learning_wonder_details_regression.gd",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "4801759f704708bc53613d5aed8cacd595b01289",
+    "reason": "both-changed"
+  },
+  {
+    "path": "STATUS.md",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "eb527172ffe30f43db3567fbd1e126f0c8eaf158",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "tools/collect_discovery_connections.py",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "1ebdec66300dfb87bf9287d194525d3c374c8aee",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "tools/tests/test_discovery_connections.py",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "ffe8fdd88cae1abc942e7a3d14f57493bc381478",
+    "reason": "upstream-only-change"
+  },
+  {
+    "path": "tools/verify_discovery_connections.py",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "c00ca9873106c974d66282cddfdcfaf5eb3bbebc",
+    "reason": "upstream-only-change"
+  }
+]

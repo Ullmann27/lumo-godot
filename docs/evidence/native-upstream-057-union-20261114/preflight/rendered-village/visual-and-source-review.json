@@ -1,0 +1,83 @@
+{
+  "source_commit": "fe861bd09296ef0051887dc21f48ca38215fc76b",
+  "source_tree": "c4271487ba818845a5428e31877ca701c4dd5f5f",
+  "tracked_files": 3770,
+  "tracked_bytes_modes_and_logical_index_entries_equal_before_after": true,
+  "raw_index_bytes_equal_before_after": false,
+  "raw_index_sha256_before": "7c7edd8cfbbd8cf72be4d69f5da099e37430700c272f5cc99ac4967073d520fc",
+  "raw_index_sha256_after": "b5b4f3ad78741fc278ae456ef285f82caea0d92ef0476f9881a978f774d3c332",
+  "raw_index_limitation": "After the renderer and before the after-inventory, this reviewer executed git status without GIT_OPTIONAL_LOCKS=0. The raw index hash changed, consistent with a Git stat-cache refresh; exact causal byte-level attribution is not claimed because the before raw index bytes were not retained. Both original inventories remain unchanged. Tracked entries, blobs, modes and on-disk bytes match completely, and the index tree was observed as c4271487ba818845a5428e31877ca701c4dd5f5f. This is not a raw-index equality PASS.",
+  "untracked_import_inventory_before": 961,
+  "untracked_import_inventory_after": 961,
+  "untracked_import_inventory_equal": true,
+  "post_read_only_git_checks": [
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-status"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--name-status"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "original_pngs": [
+    {
+      "path": "captures/01-home-region.png",
+      "bytes": 767547,
+      "sha256": "002d626354042e070fabebb5d8537926880f7e2f8062ffb5a3ae54754e480491",
+      "git_blob": "0f3d7cdd0e6738961fecd77d0ea5f2ec40819790",
+      "width": 1280,
+      "height": 720,
+      "mode": "RGBA"
+    },
+    {
+      "path": "captures/02-river-boundary.png",
+      "bytes": 996507,
+      "sha256": "3e17cff1e6cb5c6b477914a08b80eb310be4957ffd411469226cb1dae669d87c",
+      "git_blob": "1dd069f09f8baf82289c82b3a7d77767d3d0297e",
+      "width": 1280,
+      "height": 720,
+      "mode": "RGBA"
+    }
+  ],
+  "visual_review": {
+    "reviewer": "godot_integration",
+    "both_original_pngs_opened_individually": true,
+    "home_region": "The stress fixture shows a dense house grid, detailed houses near the active region and simplified roof/body instances farther away. Header values, back, Lumo and pause controls are readable. Bottom build/action rows retain their horizontal scrollbars; this is not a claim that every horizontal action is simultaneously visible.",
+    "river_boundary": "Both banks and the bridge are visible between the housing grids. Detailed houses appear beside both banks while farther houses use simplified geometry. No black/error view or missing whole-town region is visible in either original.",
+    "limits": "These are the existing 2178-house stress-fixture frames at 1280x720 on a local software renderer. They do not prove Android performance, FPS, physical touch usability or the default empty/new-village presentation."
+  },
+  "original_renderer_warnings": [
+    "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.",
+    "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+    "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+  ],
+  "warning_scope": "Local X11/Mesa Compatibility renderer explicitly reports unsupported V-Sync change, screen-space AA and volumetric fog; no error/leak lines and the original PASS marker are recorded separately.",
+  "renderer": "Mesa llvmpipe, OpenGL 4.5 Compatibility, Mesa 25.0.7-2+deb13u1, LLVM 19.1.7 256 bits",
+  "probe_count": 46,
+  "png_count": 2
+}

@@ -1,0 +1,16 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[SettlementWorld] ready mode=settlement save=user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json
+[VillageHostReady] {"host_entry":true,"initialized_plot_nodes":9,"living_village":true,"mode":"settlement","plots":9,"population":2,"return_scene":"games","save_blocked":false,"save_path":"user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json","scene":"res://scenes/creative/build_settlement_world.tscn","slot":3,"visible_residents":2}
+[Perf] quality_profile:medium
+[LumoHost] return: games
+[SettlementWorld] ready mode=settlement save=user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json
+[VillageHostReady] {"host_entry":false,"initialized_plot_nodes":9,"living_village":true,"mode":"settlement","plots":9,"population":2,"return_scene":"build","save_blocked":false,"save_path":"user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json","scene":"res://scenes/creative/build_settlement_world.tscn","slot":3,"visible_residents":2}
+[VillageHost] PASS Flutter village request, native boot scene and child context

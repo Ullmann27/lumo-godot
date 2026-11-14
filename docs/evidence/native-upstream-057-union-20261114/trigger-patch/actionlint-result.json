@@ -1,0 +1,11 @@
+{
+  "version_command_exit": 0,
+  "version": "1.7.12\ninstalled by downloading from release page\nbuilt with go1.26.1 compiler for linux/amd64\n",
+  "command": [
+    "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/trigger-patch/bin/actionlint",
+    "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/trigger-patch/.github/workflows/lumo-discovery-connections.yml"
+  ],
+  "exit": 0,
+  "stdout": "",
+  "stderr": ""
+}

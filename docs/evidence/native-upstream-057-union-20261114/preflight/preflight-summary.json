@@ -1,0 +1,326 @@
+{
+  "source_commit": "fe861bd09296ef0051887dc21f48ca38215fc76b",
+  "source_tree": "c4271487ba818845a5428e31877ca701c4dd5f5f",
+  "tracked_files": 3770,
+  "all_tracked_materialized": true,
+  "tracked_bytes_modes_index_unchanged": true,
+  "index_sha256": "7c7edd8cfbbd8cf72be4d69f5da099e37430700c272f5cc99ac4967073d520fc",
+  "python": [
+    {
+      "module": "tools.tests.test_discovery_connections",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "tools.tests.test_discovery_connections",
+        "-v"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 20.046,
+      "log": "test_discovery_connections.log",
+      "tests": 24,
+      "unittest_reported_seconds": 19.781,
+      "skip_lines": []
+    },
+    {
+      "module": "test_discovery_rasters",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "test_discovery_rasters",
+        "-v"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 38.882,
+      "log": "test_discovery_rasters.log",
+      "tests": 11,
+      "unittest_reported_seconds": 38.613,
+      "skip_lines": []
+    },
+    {
+      "module": "test_studio_2020_rasters",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "test_studio_2020_rasters",
+        "-v"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 14.277,
+      "log": "test_studio_2020_rasters.log",
+      "tests": 24,
+      "unittest_reported_seconds": 13.797,
+      "skip_lines": []
+    }
+  ],
+  "native": [
+    {
+      "probe": "build_village_economy_regression",
+      "mode": "headless",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime/tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/preflight/build_village_economy_regression.log",
+        "--timeout",
+        "420",
+        "--required",
+        "[VillageEconomy] PASS 339 checks",
+        "--",
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime",
+        "--script",
+        "res://scripts/tests/build_village_economy_regression.gd"
+      ],
+      "deadline_seconds": 420,
+      "returncode": 0,
+      "elapsed_seconds": 1.131,
+      "required_marker": "[VillageEconomy] PASS 339 checks",
+      "exact_marker_count": 1,
+      "original_runner_equal": true,
+      "error_lines": [],
+      "log": "build_village_economy_regression.log",
+      "runner_log": "build_village_economy_regression.runner.log"
+    },
+    {
+      "probe": "build_village_scaling_regression",
+      "mode": "headless",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime/tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/preflight/build_village_scaling_regression.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[VillageScaling] PASS 42 checks: full 2178-house model, camera and explorer",
+        "--",
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime",
+        "--script",
+        "res://scripts/tests/build_village_scaling_regression.gd"
+      ],
+      "deadline_seconds": 180,
+      "returncode": 0,
+      "elapsed_seconds": 5.321,
+      "required_marker": "[VillageScaling] PASS 42 checks: full 2178-house model, camera and explorer",
+      "exact_marker_count": 1,
+      "original_runner_equal": true,
+      "error_lines": [],
+      "log": "build_village_scaling_regression.log",
+      "runner_log": "build_village_scaling_regression.runner.log"
+    },
+    {
+      "probe": "village_host_launch_regression",
+      "mode": "headless",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime/tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/preflight/village_host_launch_regression.log",
+        "--timeout",
+        "150",
+        "--required",
+        "[VillageHost] PASS Flutter village request, native boot scene and child context",
+        "--",
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime",
+        "--script",
+        "res://scripts/tests/village_host_launch_regression.gd"
+      ],
+      "deadline_seconds": 150,
+      "returncode": 0,
+      "elapsed_seconds": 1.579,
+      "required_marker": "[VillageHost] PASS Flutter village request, native boot scene and child context",
+      "exact_marker_count": 1,
+      "original_runner_equal": true,
+      "error_lines": [],
+      "log": "village_host_launch_regression.log",
+      "runner_log": "village_host_launch_regression.runner.log"
+    },
+    {
+      "probe": "learning_wonder_details_regression",
+      "mode": "headless",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime/tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/preflight/learning_wonder_details_regression.log",
+        "--timeout",
+        "150",
+        "--required",
+        "[LearningWonder] checks=100 failures=0 renderer=headless invalid_scene_checked=false",
+        "--",
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime",
+        "--script",
+        "res://scripts/tests/learning_wonder_details_regression.gd"
+      ],
+      "deadline_seconds": 150,
+      "returncode": 0,
+      "elapsed_seconds": 5.961,
+      "required_marker": "[LearningWonder] checks=100 failures=0 renderer=headless invalid_scene_checked=false",
+      "exact_marker_count": 1,
+      "original_runner_equal": true,
+      "error_lines": [],
+      "log": "learning_wonder_details_regression.log",
+      "runner_log": "learning_wonder_details_regression.runner.log"
+    }
+  ],
+  "import": {
+    "command": [
+      "godot",
+      "--headless",
+      "--audio-driver",
+      "Dummy",
+      "--path",
+      "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime",
+      "--editor",
+      "--import",
+      "--quit"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 41.628,
+    "error_lines": [],
+    "log": "import-original.log"
+  },
+  "static_contracts": {
+    "python_ast_files": [
+      "tools/collect_discovery_connections.py",
+      "tools/verify_discovery_connections.py",
+      "tools/tests/test_discovery_connections.py",
+      "tools/verify_discovery_rasters.py",
+      "tools/tests/test_discovery_rasters.py",
+      "tools/tests/test_studio_2020_rasters.py"
+    ],
+    "yaml_parsed": ".github/workflows/lumo-discovery-connections.yml",
+    "bash_blocks": [
+      {
+        "job": "discovery-native-acceptance",
+        "step": 2,
+        "name": "Bind the original source and external evidence directories",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "job": "discovery-native-acceptance",
+        "step": 3,
+        "name": "Install the verified engine and external Pillow environment",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "job": "discovery-native-acceptance",
+        "step": 4,
+        "name": "Bind the unchanged helpers before any import or test",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "job": "discovery-native-acceptance",
+        "step": 5,
+        "name": "Require the separate Dream raster counterexamples",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "job": "discovery-native-acceptance",
+        "step": 6,
+        "name": "Require the strict Discovery counterexamples and original reader tests",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "job": "discovery-native-acceptance",
+        "step": 7,
+        "name": "Import the exact production project with a strict error guard",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "job": "discovery-native-acceptance",
+        "step": 8,
+        "name": "Preserve the four existing exact headless acceptance gates",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "job": "discovery-native-acceptance",
+        "step": 9,
+        "name": "Collect all five new Dream gates and seven original renderer images",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "job": "discovery-native-acceptance",
+        "step": 10,
+        "name": "Require ten source-bound Discovery probes and all original 38 PNGs and two reports",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "job": "discovery-native-acceptance",
+        "step": 11,
+        "name": "Require exact village save schema and bounded original renderer evidence",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "job": "discovery-native-acceptance",
+        "step": 12,
+        "name": "Render the exact MobileSafeArea and live minimap observations",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "job": "discovery-native-acceptance",
+        "step": 13,
+        "name": "Always preserve final source and index identities",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "actionlint_available": null,
+    "actionlint_executed": false,
+    "elapsed_seconds": 0.234
+  },
+  "warning_lines": {},
+  "scope": "Fresh focused headless/helper preflight only; no new Native52/full renderer/Android acceptance"
+}

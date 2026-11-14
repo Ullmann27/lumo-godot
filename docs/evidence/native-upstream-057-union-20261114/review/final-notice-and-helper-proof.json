@@ -1,0 +1,56 @@
+[
+  {
+    "path": "assets/fonts/Nunito-LICENSE.txt",
+    "sha": "c8210f08ca3cece05b4f7baa428afe8e1abe3293",
+    "mode": "100644",
+    "unchanged_from_upstream": true
+  },
+  {
+    "path": "assets/characters/lumo_animated/ATTRIBUTION.md",
+    "sha": "3b3f2070c9ef502498b53bb94429cbfae0dceaa7",
+    "mode": "100644",
+    "unchanged_from_upstream": true
+  },
+  {
+    "path": "assets/characters/lumo_facial/ATTRIBUTION.md",
+    "sha": "50f43591977dc46683fe8c547bbba2fa6e73f216",
+    "mode": "100644",
+    "unchanged_from_upstream": true
+  },
+  {
+    "path": "THIRD_PARTY_NOTICES.md",
+    "sha": "ceedc772859dd274b30d4d741a14fca55623e21c",
+    "mode": "100644",
+    "unchanged_from_upstream": true
+  },
+  {
+    "path": "tools/verify_discovery_connections.py",
+    "sha": "c00ca9873106c974d66282cddfdcfaf5eb3bbebc",
+    "mode": "100644",
+    "unchanged_from_upstream": true
+  },
+  {
+    "path": "tools/collect_discovery_connections.py",
+    "sha": "1ebdec66300dfb87bf9287d194525d3c374c8aee",
+    "mode": "100644",
+    "unchanged_from_upstream": true
+  },
+  {
+    "path": "tools/verify_discovery_rasters.py",
+    "sha": "219e691fc8aa119cc80221b3db6c77e63caf8bfe",
+    "mode": "100644",
+    "unchanged_from_upstream": true
+  },
+  {
+    "path": "tools/verify_dream_rasters.py",
+    "sha": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5",
+    "mode": "100755",
+    "unchanged_from_upstream": true
+  },
+  {
+    "path": "tools/run_godot_probe.py",
+    "sha": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+    "mode": "100644",
+    "unchanged_from_upstream": true
+  }
+]

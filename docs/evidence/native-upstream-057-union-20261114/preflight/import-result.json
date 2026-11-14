@@ -1,0 +1,17 @@
+{
+  "command": [
+    "godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime",
+    "--editor",
+    "--import",
+    "--quit"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 41.628,
+  "error_lines": [],
+  "log": "import-original.log"
+}

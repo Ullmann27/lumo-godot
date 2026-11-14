@@ -1,0 +1,44 @@
+[
+  {
+    "module": "tools.tests.test_discovery_connections",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "tools.tests.test_discovery_connections",
+      "-v"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 20.046,
+    "log": "test_discovery_connections.log"
+  },
+  {
+    "module": "test_discovery_rasters",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_discovery_rasters",
+      "-v"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 38.882,
+    "log": "test_discovery_rasters.log"
+  },
+  {
+    "module": "test_studio_2020_rasters",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_studio_2020_rasters",
+      "-v"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 14.277,
+    "log": "test_studio_2020_rasters.log"
+  }
+]

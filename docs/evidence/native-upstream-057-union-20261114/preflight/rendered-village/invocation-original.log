@@ -1,0 +1,1 @@
+{"exit_code": 0, "elapsed_seconds": 33.96211302300071, "display": 166, "project": "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime", "godot_arguments": ["--resolution", "1280x720", "--script", "res://scripts/tests/build_village_scaling_regression.gd", "--", "--capture"], "timed_out": false, "scope": "Local software renderer; not physical Android performance"}

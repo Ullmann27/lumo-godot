@@ -1,0 +1,112 @@
+{
+  "python_ast_files": [
+    "tools/collect_discovery_connections.py",
+    "tools/verify_discovery_connections.py",
+    "tools/tests/test_discovery_connections.py",
+    "tools/verify_discovery_rasters.py",
+    "tools/tests/test_discovery_rasters.py",
+    "tools/tests/test_studio_2020_rasters.py"
+  ],
+  "yaml_parsed": ".github/workflows/lumo-discovery-connections.yml",
+  "bash_blocks": [
+    {
+      "job": "discovery-native-acceptance",
+      "step": 2,
+      "name": "Bind the original source and external evidence directories",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "job": "discovery-native-acceptance",
+      "step": 3,
+      "name": "Install the verified engine and external Pillow environment",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "job": "discovery-native-acceptance",
+      "step": 4,
+      "name": "Bind the unchanged helpers before any import or test",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "job": "discovery-native-acceptance",
+      "step": 5,
+      "name": "Require the separate Dream raster counterexamples",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "job": "discovery-native-acceptance",
+      "step": 6,
+      "name": "Require the strict Discovery counterexamples and original reader tests",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "job": "discovery-native-acceptance",
+      "step": 7,
+      "name": "Import the exact production project with a strict error guard",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "job": "discovery-native-acceptance",
+      "step": 8,
+      "name": "Preserve the four existing exact headless acceptance gates",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "job": "discovery-native-acceptance",
+      "step": 9,
+      "name": "Collect all five new Dream gates and seven original renderer images",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "job": "discovery-native-acceptance",
+      "step": 10,
+      "name": "Require ten source-bound Discovery probes and all original 38 PNGs and two reports",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "job": "discovery-native-acceptance",
+      "step": 11,
+      "name": "Require exact village save schema and bounded original renderer evidence",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "job": "discovery-native-acceptance",
+      "step": 12,
+      "name": "Render the exact MobileSafeArea and live minimap observations",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "job": "discovery-native-acceptance",
+      "step": 13,
+      "name": "Always preserve final source and index identities",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "actionlint_available": null,
+  "actionlint_executed": false,
+  "elapsed_seconds": 0.234
+}

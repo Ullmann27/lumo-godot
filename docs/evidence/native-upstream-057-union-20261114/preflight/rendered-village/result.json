@@ -1,0 +1,31 @@
+{
+  "source_commit": "fe861bd09296ef0051887dc21f48ca38215fc76b",
+  "source_tree": "c4271487ba818845a5428e31877ca701c4dd5f5f",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime/tools/run_local_renderer.py",
+    "--display",
+    "166",
+    "--output",
+    "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/preflight/rendered-village/renderer",
+    "--timeout",
+    "300",
+    "--project",
+    "/workspace/scratch/909ddb52fe7b/native-upstream-057-review/runtime",
+    "--",
+    "--resolution",
+    "1280x720",
+    "--script",
+    "res://scripts/tests/build_village_scaling_regression.gd",
+    "--",
+    "--capture"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 34.12,
+  "timeout_seconds": 300,
+  "required_marker": "[VillageScaling] PASS 46 checks: full 2178-house model, camera and explorer",
+  "exact_marker_count": 1,
+  "error_lines": [],
+  "scope": "One actual local X11 software-renderer Scaling probe, not Android performance"
+}

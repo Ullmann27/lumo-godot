@@ -1,0 +1,16 @@
+{
+  "source_commit": "fe861bd09296ef0051887dc21f48ca38215fc76b",
+  "source_tree": "c4271487ba818845a5428e31877ca701c4dd5f5f",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "pillow": "13.0.0",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "godot_version": "4.6.3.stable.official.7d41c59c4",
+  "godot_binary": {
+    "path": "/opt/godot/4.6.3/Godot_v4.6.3-stable_linux.x86_64",
+    "bytes": 138981968,
+    "sha256": "f64d4ed19fc9df9440321653fcc80df8c6e365ba7b6de0a29e2cfa9fa71bfeb3"
+  },
+  "actionlint": null,
+  "scope": "Focused local source-checkpoint preflight, not a full Native52, raster series, APK or Android acceptance"
+}

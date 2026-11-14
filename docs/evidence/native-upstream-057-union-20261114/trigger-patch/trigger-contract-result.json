@@ -1,0 +1,234 @@
+{
+  "scope": "Static workflow contract; no GitHub workflow or Godot test launched",
+  "source_commit": "fe861bd09296ef0051887dc21f48ca38215fc76b",
+  "only_authorized_semantic_fields_changed": true,
+  "original_steps_equal": true,
+  "upload_steps_equal": true,
+  "timeout_minutes": 130,
+  "cancel_in_progress": false,
+  "original_run_blocks": [
+    {
+      "number": 1,
+      "name": "Bind the original source and external evidence directories",
+      "sha256": "dfb9c6e6ea4bb3bee49f83cbfbe3ac42f9a46c4a8a771fa24364d52a9820011d",
+      "bash_n_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "number": 2,
+      "name": "Install the verified engine and external Pillow environment",
+      "sha256": "85ae9c42e83e6259d1ae19555e989820c4ea5e5742d361adc0b8c7d49f8b7d4f",
+      "bash_n_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "number": 3,
+      "name": "Bind the unchanged helpers before any import or test",
+      "sha256": "f80f62c38f73e659058432a93ccd0bdbccc8ab041205015b81e937bd3db83a6a",
+      "bash_n_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "number": 4,
+      "name": "Require the separate Dream raster counterexamples",
+      "sha256": "c7642f65a7defda3dd30ef5da597b970920acdfe187c1c7a285d25f110a35447",
+      "bash_n_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "number": 5,
+      "name": "Require the strict Discovery counterexamples and original reader tests",
+      "sha256": "7484c0e76166cb75dcdb0e6670bb2679493b2a20b8d72172940805df2de90edb",
+      "bash_n_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "number": 6,
+      "name": "Import the exact production project with a strict error guard",
+      "sha256": "11cc85da4be176cf50b99a09271440fb0cbc05779dcc06f1ec1d1f7efde28e95",
+      "bash_n_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "number": 7,
+      "name": "Preserve the four existing exact headless acceptance gates",
+      "sha256": "11c24c43a264772cf7c9b66e88a57ff2d0fcf8399b38332631bc671282384e8d",
+      "bash_n_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "number": 8,
+      "name": "Collect all five new Dream gates and seven original renderer images",
+      "sha256": "442b947f97fa9a53f015bd091e7002b8b981924ffbf15ada5fa7a9a5d8f89a55",
+      "bash_n_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "number": 9,
+      "name": "Require ten source-bound Discovery probes and all original 38 PNGs and two reports",
+      "sha256": "d09a65844d770c44d3881bc3981f95bff9b7f58e1396155ff13b2766830e5604",
+      "bash_n_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "number": 10,
+      "name": "Require exact village save schema and bounded original renderer evidence",
+      "sha256": "9c819398130ae553def1aea36a159e36743c039ec17222b38bd254269f786d78",
+      "bash_n_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "number": 11,
+      "name": "Render the exact MobileSafeArea and live minimap observations",
+      "sha256": "cdf055141459dfc1aaaf389eef732609e5b75814cec978ca95d743279d72de26",
+      "bash_n_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "number": 12,
+      "name": "Always preserve final source and index identities",
+      "sha256": "18dc69986dc93c44cb60d03887ec1ff11b92fc94c50eb5f754aadac6d0959a2f",
+      "bash_n_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "cases": [
+    {
+      "case": "existing producer push",
+      "repository": "Ullmann27/lumo-godot",
+      "event_name": "push",
+      "ref": "refs/heads/integration/lumo-discovery-bd-20261114",
+      "push_filter": true,
+      "job_if": true,
+      "will_run": true,
+      "expected": true
+    },
+    {
+      "case": "integrated source push",
+      "repository": "Ullmann27/lumo-godot",
+      "event_name": "push",
+      "ref": "refs/heads/integration/lumo-live-connections-20261114",
+      "push_filter": true,
+      "job_if": true,
+      "will_run": true,
+      "expected": true
+    },
+    {
+      "case": "foreign main",
+      "repository": "Ullmann27/lumo-godot",
+      "event_name": "push",
+      "ref": "refs/heads/main",
+      "push_filter": false,
+      "job_if": false,
+      "will_run": false,
+      "expected": false
+    },
+    {
+      "case": "similar branch suffix",
+      "repository": "Ullmann27/lumo-godot",
+      "event_name": "push",
+      "ref": "refs/heads/integration/lumo-live-connections-20261114-other",
+      "push_filter": false,
+      "job_if": false,
+      "will_run": false,
+      "expected": false
+    },
+    {
+      "case": "similar branch prefix",
+      "repository": "Ullmann27/lumo-godot",
+      "event_name": "push",
+      "ref": "refs/heads/other-integration/lumo-discovery-bd-20261114",
+      "push_filter": false,
+      "job_if": false,
+      "will_run": false,
+      "expected": false
+    },
+    {
+      "case": "tag with allowed spelling",
+      "repository": "Ullmann27/lumo-godot",
+      "event_name": "push",
+      "ref": "refs/tags/integration/lumo-live-connections-20261114",
+      "push_filter": false,
+      "job_if": false,
+      "will_run": false,
+      "expected": false
+    },
+    {
+      "case": "fork repository",
+      "repository": "another-owner/lumo-godot",
+      "event_name": "push",
+      "ref": "refs/heads/integration/lumo-live-connections-20261114",
+      "push_filter": true,
+      "job_if": false,
+      "will_run": false,
+      "expected": false
+    },
+    {
+      "case": "other repository",
+      "repository": "Ullmann27/lumo-lernen",
+      "event_name": "push",
+      "ref": "refs/heads/integration/lumo-discovery-bd-20261114",
+      "push_filter": true,
+      "job_if": false,
+      "will_run": false,
+      "expected": false
+    },
+    {
+      "case": "pull request event",
+      "repository": "Ullmann27/lumo-godot",
+      "event_name": "pull_request",
+      "ref": "refs/heads/integration/lumo-live-connections-20261114",
+      "push_filter": false,
+      "job_if": false,
+      "will_run": false,
+      "expected": false
+    },
+    {
+      "case": "manual event",
+      "repository": "Ullmann27/lumo-godot",
+      "event_name": "workflow_dispatch",
+      "ref": "refs/heads/integration/lumo-discovery-bd-20261114",
+      "push_filter": false,
+      "job_if": false,
+      "will_run": false,
+      "expected": false
+    },
+    {
+      "case": "pull request merge ref",
+      "repository": "Ullmann27/lumo-godot",
+      "event_name": "push",
+      "ref": "refs/pull/173/merge",
+      "push_filter": false,
+      "job_if": false,
+      "will_run": false,
+      "expected": false
+    },
+    {
+      "case": "wrong repository plus foreign ref",
+      "repository": "another-owner/lumo-godot",
+      "event_name": "push",
+      "ref": "refs/heads/main",
+      "push_filter": false,
+      "job_if": false,
+      "will_run": false,
+      "expected": false
+    }
+  ],
+  "distinct_allowed_ref_concurrency_groups": [
+    "lumo-discovery-connections-refs/heads/integration/lumo-discovery-bd-20261114",
+    "lumo-discovery-connections-refs/heads/integration/lumo-live-connections-20261114"
+  ],
+  "all_passed": true
+}

@@ -1,0 +1,29 @@
+{
+  "base_tree": "c4271487ba818845a5428e31877ca701c4dd5f5f",
+  "final_tree": "91cc8fc1c6f8a36336b7ac9a12585284a983a6f6",
+  "truncated": false,
+  "base_file_count": 3770,
+  "final_file_count": 3770,
+  "exact_delta": [
+    {
+      "path": ".github/workflows/lumo-discovery-connections.yml",
+      "before": {
+        "path": ".github/workflows/lumo-discovery-connections.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a806855cf51ab7f63b14163596488fc1d3746dc1",
+        "size": 35914,
+        "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/a806855cf51ab7f63b14163596488fc1d3746dc1"
+      },
+      "after": {
+        "path": ".github/workflows/lumo-discovery-connections.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "02940ea1a3698d14b8fabaed4d5ee7af5b24907b",
+        "size": 36019,
+        "url": "https://api.github.com/repos/Ullmann27/lumo-godot/git/blobs/02940ea1a3698d14b8fabaed4d5ee7af5b24907b"
+      }
+    }
+  ],
+  "unchanged_other_files": 3769
+}
