@@ -600,8 +600,8 @@ static func restore(data: Dictionary):
 	)
 	model.day = int(data.day)
 	model.winner = str(data.get("winner", ""))
-	model._player = _restored_town(data.player)
-	model._rival = _restored_town(data.rival)
+	model._player = _restored_town(data.player, data.version == 2)
+	model._rival = _restored_town(data.rival, data.version == 2)
 	if model.mode == "settlement" and not model.winner.is_empty():
 		return null
 	if model.winner in ["player", "tie"] and model._level(model._player) != 3:
@@ -611,7 +611,7 @@ static func restore(data: Dictionary):
 	return model
 
 
-static func _restored_town(town: Dictionary) -> Dictionary:
+static func _restored_town(town: Dictionary, is_living: bool = false) -> Dictionary:
 	# JSON numbers arrive as floats. Restore the canonical integer representation
 	# before arithmetic and exact snapshot comparisons; never round invalid input.
 	var result := _new_town()
@@ -631,7 +631,9 @@ static func _restored_town(town: Dictionary) -> Dictionary:
 				"stone": int(building.purchase_cost.stone)
 			}
 		result.buildings.append(restored_building)
-	if int(town.get("economy_version", 0)) == 2:
+	# Only the validated envelope can select the new schema. Old saves may
+	# contain unknown fields without providing any validated village ledger.
+	if is_living:
 		VILLAGE.restore_fields(town, result)
 	return result
 
