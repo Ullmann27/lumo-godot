@@ -3,10 +3,12 @@ extends Node3D
 ## Uses the existing companion behavior names rather than a second event bus.
 signal behavior_started(behavior: String)
 signal behavior_finished(behavior: String)
-const MODEL := "res://assets/characters/lumo_animated/Lumo-Animated-Mobile.glb"
+const MODEL := "res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb"
+const ORIGINAL_MODEL := "res://assets/characters/lumo_animated/Lumo-Animated-Mobile.glb"
 const WALK = preload("res://scripts/characters/lumo/lumo_walk_locomotion.gd")
 const PLATFORM_POSE = preload("res://scripts/characters/lumo/lumo_platform_pose.gd")
 const TEACHER_POSE = preload("res://scripts/characters/lumo/lumo_teacher_pose.gd")
+const FACIAL_POSE = preload("res://scripts/characters/lumo/lumo_facial_pose.gd")
 static var _cached_model: PackedScene
 static var _cached_load_kind := ""
 var model_load_kind := ""
@@ -21,6 +23,8 @@ var current_behavior := "idle"
 var reduced_motion := false
 var suspended := false
 var mouth_supported := false
+var phoneme_lipsync_supported := false
+var facial_pose
 var last_audio_position := 0.0
 var last_audio_envelope := 0.0
 var audio_active := false
@@ -36,17 +40,20 @@ var _teacher_previous_process_mode: int = AnimationMixer.ANIMATION_CALLBACK_MODE
 
 func _ready() -> void:
 	if _cached_model == null:
+		var selected_model := MODEL
+		if not ResourceLoader.exists(selected_model, "PackedScene") and not FileAccess.file_exists(selected_model):
+			selected_model = ORIGINAL_MODEL
 		# Exported games resolve the GLB through Godot's imported PackedScene.
 		# Do not require raw source bytes, and never put loading side effects
 		# inside assert(): release builds remove those expressions.
-		if ResourceLoader.exists(MODEL, "PackedScene"):
-			_cached_model = ResourceLoader.load(MODEL, "PackedScene") as PackedScene
+		if ResourceLoader.exists(selected_model, "PackedScene"):
+			_cached_model = ResourceLoader.load(selected_model, "PackedScene") as PackedScene
 			_cached_load_kind = "imported_packed_scene"
-		elif FileAccess.file_exists(MODEL):
+		elif FileAccess.file_exists(selected_model):
 			# Bare headless review fixtures can run before editor import.
 			var document := GLTFDocument.new()
 			var state := GLTFState.new()
-			var error := document.append_from_file(MODEL, state)
+			var error := document.append_from_file(selected_model, state)
 			if error != OK:
 				push_warning("[LumoRig] Source model cannot be loaded; retain existing visual")
 				return
@@ -84,6 +91,10 @@ func _ready() -> void:
 		player.get_animation(clip).loop_mode = Animation.LOOP_LINEAR
 	player.animation_finished.connect(_finished)
 	locomotion = WALK.new()
+	facial_pose = FACIAL_POSE.new()
+	if not facial_pose.bind(visual, skeleton):
+		facial_pose = null
+	mouth_supported = facial_pose != null
 	play_behavior("idle")
 
 
@@ -99,9 +110,16 @@ func _process(delta: float) -> void:
 			teacher_pose.restore_sampled_pose()
 			player.advance(minf(delta, 0.10))
 			teacher_pose.advance(self, delta)
+		_advance_face(delta)
 		return
 	if walking and not platform_active and not suspended and not reduced_motion and locomotion != null:
 		locomotion.advance(delta, walk_speed_mps)
+	_advance_face(delta)
+
+
+func _advance_face(delta: float) -> void:
+	if facial_pose != null and not suspended and not reduced_motion:
+		facial_pose.advance(delta)
 
 
 ## The owner supplies actual horizontal velocity from navigation/physics.
@@ -205,12 +223,16 @@ func _stop_teacher_mode() -> void:
 func set_teaching_target(world_position: Vector3) -> bool:
 	if not world_position.is_finite() or not _enable_teacher_mode():
 		return false
+	if facial_pose != null:
+		facial_pose.set_target(world_position)
 	return teacher_pose.set_target(world_position)
 
 
 func clear_teaching_target() -> void:
 	if teacher_enabled:
 		teacher_pose.has_target = false
+	if facial_pose != null:
+		facial_pose.has_target = false
 
 
 func teacher_react(event: String) -> bool:
@@ -276,6 +298,9 @@ func set_suspended(value: bool) -> void:
 	if suspended == value:
 		return
 	suspended = value
+	if value and facial_pose != null:
+		facial_pose.reset()
+		apply_speech_sample(0.0, 0.0, false)
 	if player == null:
 		return
 	if value:
@@ -291,6 +316,9 @@ func set_suspended(value: bool) -> void:
 
 func set_reduced_motion(value: bool) -> void:
 	reduced_motion = value
+	if value and facial_pose != null:
+		facial_pose.reset()
+		apply_speech_sample(0.0, 0.0, false)
 	if platform_active:
 		if value:
 			platform_pose.stop()
@@ -300,11 +328,14 @@ func set_reduced_motion(value: bool) -> void:
 
 
 func apply_speech_sample(media_seconds: float, envelope: float, speaking: bool) -> void:
-	# Transport-neutral synchronization seam. The current model has no mouth
-	# morphs, so accepting a real playback envelope does NOT claim lip sync.
+	# Actual PCM amplitude drives the derived closed-muzzle shape. The source
+	# still has no mouth cavity or phoneme/viseme model; do not claim lip sync.
+	speaking = speaking and not suspended and not reduced_motion
 	last_audio_position = maxf(0.0, media_seconds) if is_finite(media_seconds) else 0.0
 	last_audio_envelope = clampf(envelope, 0.0, 1.0) if speaking and is_finite(envelope) else 0.0
 	audio_active = speaking
+	if facial_pose != null:
+		facial_pose.speech_sample(media_seconds, envelope, speaking)
 
 
 func get_current_behavior() -> String:

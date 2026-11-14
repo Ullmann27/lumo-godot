@@ -37,6 +37,10 @@ run_probe() {
   elif [[ "$name" == mobile_safe_area_regression ]]; then
     timeout_seconds=240
     [[ "$mode" != rendered ]] || timeout_seconds=900
+  elif [[ "$name" == lumo_facial_regression ]]; then
+    timeout_seconds=180
+  elif [[ "$name" == connect_four_visual_capture || "$name" == treasure_title_contrast_regression ]]; then
+    timeout_seconds=600
   fi
   if [[ ! -s "$script" ]]; then
     echo "Missing required nextgen probe: $script" >&2
@@ -57,11 +61,22 @@ run_probe() {
       command=(xvfb-run -a -s '-screen 0 2560x2560x24' "${command[@]}")
     fi
   fi
+  # In a Host build GITHUB_SHA belongs to the Host. Only this new capture
+  # consumes it as a Native revision; bind that report to our actual checkout.
+  if [[ "$name" == connect_four_visual_capture ]]; then
+    local GITHUB_SHA
+    GITHUB_SHA="$(<"$LOG_DIR/source-sha.txt")"
+    export GITHUB_SHA
+  fi
   XDG_DATA_HOME="$user_dir" LUMO_CAPTURE_DIR="$capture_dir" LUMO_EVIDENCE_DIR="$capture_dir" \
+    LUMO_FACE_CAPTURE_DIR="$capture_dir" \
     LUMO_PUZZLE_MENU_EVIDENCE_DIR="$capture_dir" \
     PUZZLE_ROTATION_CAPTURE_DIR="$capture_dir" TREASURE_EXPLORATION_CAPTURE_DIR="$capture_dir" \
     python3 tools/run_godot_probe.py --log "$LOG_DIR/$name-$mode.log" \
-    --timeout "$timeout_seconds" --required "$marker" -- "${command[@]}" "${args[@]}" "$@"
+    --timeout "$timeout_seconds" --required "$marker" -- "${command[@]}" "${args[@]}" "$@" || return $?
+  if [[ "$name" == lumo_facial_capture && "$mode" == rendered ]]; then
+    python3 tools/verify_studio_2020_rasters.py collect-face-movie "$capture_dir" || return $?
+  fi
 }
 
 # Every independent module still produces its own evidence when another module
@@ -127,6 +142,14 @@ check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' rendered -- --ca
 check_probe rhythm_tour_play_regression '[RhythmTourPlay] PASS' rendered -- --capture
 check_probe kart_player_full_route_regression '[PlayerFullRoute] PASS' rendered -- "--out=$LOG_DIR/captures/kart_player_full_route_regression"
 
+# PR167 additions preserve all 48 preceding probe/mode/argument combinations.
+check_probe lumo_facial_regression 'LUMO_FACIAL_PASS checks=102 actual_meshes=true original_bones=65 original_clips=9 phoneme_lipsync=false' headless
+check_probe lumo_facial_capture 'LUMO_FACIAL_CAPTURE_PASS frames=144 original_word=true recording_fps=24 not_device_fps=true' rendered \
+  --resolution 640x640 --fixed-fps 24 \
+  --write-movie "$LOG_DIR/captures/lumo_facial_capture/facial-runtime.avi"
+check_probe connect_four_visual_capture 'CONNECT_FOUR_VISUAL_PASS' rendered -- --capture
+check_probe treasure_title_contrast_regression '[TreasureTitleContrast] PASS' rendered -- --capture
+
 # Every required Studio view must exist even when all probe markers say PASS.
 if ! python3 tools/verify_studio_rasters.py "$LOG_DIR"; then
   failures+=("renderer-roster")
@@ -141,10 +164,14 @@ fi
 if ! python3 tools/verify_safe_area_rasters.py "$LOG_DIR"; then
   failures+=("safe-area-raster-roster")
 fi
+if ! python3 tools/verify_studio_2020_rasters.py verify "$LOG_DIR"; then
+  failures+=("studio-2020-raster-movie-roster")
+fi
 
 if (( ${#failures[@]} )); then
   printf '[LumoNextgen] FAIL: %s\n' "${failures[*]}" >&2
   exit 1
 fi
 
+echo '[LumoNextgen52] PASS: all 48 previous modes plus four Studio2020 modes and 16 bound rasters/movie/sidecars'
 echo "[LumoNextgen] PASS: new production learning, platforming, building, cards, rhythm and garage checks; logs $LOG_DIR"

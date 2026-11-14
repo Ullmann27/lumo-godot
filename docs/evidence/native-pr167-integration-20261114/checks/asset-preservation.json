@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "scope": "Actual GLB and source byte structure only; no engine import, rendered geometry, collision, device timing, FPS or phoneme assertion.",
+  "base_commit": "27ae427029a5199699c95a79a84b0027d7571752",
+  "original": {
+    "path": "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb",
+    "bytes": 5156596,
+    "sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+    "git_blob": "53cb01bfbd23a2962da5428a08b8aee313d5e152"
+  },
+  "derived": {
+    "path": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+    "bytes": 8408740,
+    "sha256": "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524",
+    "git_blob": "4d18f240a34a5aa6320ecd61c0ab0fa719c0b0ad"
+  },
+  "derived_byte_increase": 3252144,
+  "original_meshes": [
+    {
+      "name": "Mesh_0",
+      "surfaces": 1,
+      "weights": [],
+      "primitives": [
+        {
+          "vertices": 21659,
+          "triangles": 30000,
+          "morph_targets": 0
+        }
+      ]
+    }
+  ],
+  "derived_meshes": [
+    {
+      "name": "Mesh_0",
+      "surfaces": 1,
+      "weights": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primitives": [
+        {
+          "vertices": 21659,
+          "triangles": 30000,
+          "morph_targets": 5
+        }
+      ]
+    },
+    {
+      "name": "LumoEyelids",
+      "surfaces": 2,
+      "weights": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primitives": [
+        {
+          "vertices": 1924,
+          "triangles": 3456,
+          "morph_targets": 8
+        },
+        {
+          "vertices": 444,
+          "triangles": 864,
+          "morph_targets": 8
+        }
+      ]
+    }
+  ],
+  "original_node_count_checked": 67,
+  "body_clips": {
+    "path": "assets/characters/lumo_animated/lumo_studio_clips.gd",
+    "bytes": 196296,
+    "sha256": "c0b4be7f094b4f69942d92ad25d54c8c45f01b6cb8471c00e7d5a0513ee8df18",
+    "git_blob": "10b38ae0590626db40b24080e8a55edcb47ecf2b"
+  },
+  "checks": {
+    "original_expected_sha256": true,
+    "all_original_binary_bytes_preserved_as_prefix": true,
+    "65_joint_skin_exact": true,
+    "nine_animation_definitions_exact": true,
+    "original_materials_preserved": true,
+    "images_exact": true,
+    "textures_exact": true,
+    "original_accessors_exact_prefix": true,
+    "original_buffer_views_exact_prefix": true,
+    "only_two_meshes": true,
+    "body_five_targets": true,
+    "lid_eight_targets": true,
+    "lid_two_surfaces": true,
+    "neutral_zero_weights": true,
+    "embedded_resources_only": true,
+    "body_attributes_indices_material_exact": true,
+    "all_original_nodes_preserved_except_new_child_links": true,
+    "separate_six_studio_clips_original_blob": true
+  },
+  "all_checks_passed": true
+}

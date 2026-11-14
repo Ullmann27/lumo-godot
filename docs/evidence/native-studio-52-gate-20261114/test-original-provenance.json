@@ -1,0 +1,21 @@
+{
+  "scope": "Four byte-exact published/source-bound original report/state payloads embedded with hashes. Tests use derivative synthetic raster/movie transport and are not renderer proof.",
+  "inputs": {
+    "face-runtime": {
+      "sha256": "387e88b82304292e01a2dad27104da394a21d4507f5d245aeecee2563c6c31e3",
+      "bytes": 83168
+    },
+    "movie-ffprobe": {
+      "sha256": "fca341ff4aaf0787c4aeba1a5ebcf336ea9edc4db9571156db6c1a32c9f2844c",
+      "bytes": 4655
+    },
+    "c4-states": {
+      "sha256": "cb2b8d22d32066777698ba4af01eb139e90c2d75bf7a7c2b95ab4b757de7f6c0",
+      "bytes": 3872
+    },
+    "treasure-title": {
+      "sha256": "42edeca87413b05cb7b1ae4b6a717c8aebf18f3ef15d26db65a6ffe50e3b92c9",
+      "bytes": 3116
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "at": "2026-11-14T06:18:25.484125+00:00",
+  "source_files_exact": 16,
+  "original_metadata_byte_identical": true,
+  "producer_local_evidence_byte_identical": true,
+  "base_head_unchanged": "27ae427029a5199699c95a79a84b0027d7571752",
+  "tracked_status_after": "",
+  "new_engine_runs": 0,
+  "new_renderer_runs": 0,
+  "new_android_runs": 0,
+  "source_freeze": {
+    "path": "source-freeze.json",
+    "bytes": 9501,
+    "sha256": "adebc0799e1178c65590c007af735c8860c766842bfb47331c98796f051dd717"
+  },
+  "active_gate_wiring": "pending Root/Pipeline implementation decision",
+  "runtime_blocker": "No local xvfb-run/display used; no rendering substitute attempted"
+}

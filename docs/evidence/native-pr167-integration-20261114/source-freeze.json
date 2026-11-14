@@ -1,0 +1,184 @@
+{
+  "schema": 1,
+  "status": "FROZEN_SOURCE",
+  "frozen_at": "2026-11-14T06:15:33.157736+00:00",
+  "repository": "Ullmann27/lumo-godot",
+  "base_commit": "27ae427029a5199699c95a79a84b0027d7571752",
+  "base_tree": "c389c0de01d9a6ca9fd6e9332fafdf2dedbc8153",
+  "producer": {
+    "commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+    "tree": "9edd7afed143c83fec5d2dc89949ca9325e042ce",
+    "parent": "803e7a626ea6ef0aeeda9c37010e844033d3a8e3",
+    "pr": 167
+  },
+  "file_count": 16,
+  "files": [
+    {
+      "path": "assets/characters/lumo_facial/ATTRIBUTION.md",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/assets/characters/lumo_facial/ATTRIBUTION.md",
+      "mode": "100644",
+      "bytes": 2626,
+      "sha256": "4bf37300273f8edc20b1557f7284da30d235ed1dc4f1999af4947bbb0056aa85",
+      "git_blob": "50f43591977dc46683fe8c547bbba2fa6e73f216",
+      "group": "face",
+      "published_blob": "50f43591977dc46683fe8c547bbba2fa6e73f216"
+    },
+    {
+      "path": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+      "mode": "100644",
+      "bytes": 8408740,
+      "sha256": "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524",
+      "git_blob": "4d18f240a34a5aa6320ecd61c0ab0fa719c0b0ad",
+      "group": "face",
+      "published_blob": "4d18f240a34a5aa6320ecd61c0ab0fa719c0b0ad"
+    },
+    {
+      "path": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import",
+      "mode": "100644",
+      "bytes": 1162,
+      "sha256": "fb3244345f930d628253b8f687646566273c8adb77aa276b46815e5861304b15",
+      "git_blob": "3b65ce3c2d8e63efe4c2251261b047be37e383a0",
+      "group": "face",
+      "published_blob": "3b65ce3c2d8e63efe4c2251261b047be37e383a0"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_facial_pose.gd",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/characters/lumo/lumo_facial_pose.gd",
+      "mode": "100644",
+      "bytes": 6120,
+      "sha256": "2d89319ccb622cad1b54c36113bda8594706c024d77f2a0605ec057d51a0f6ef",
+      "git_blob": "91b8a8cd25f21dab84b77f178aa82d06673b54f9",
+      "group": "face",
+      "published_blob": "91b8a8cd25f21dab84b77f178aa82d06673b54f9"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_rigged_actor.gd",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/characters/lumo/lumo_rigged_actor.gd",
+      "mode": "100644",
+      "bytes": 11313,
+      "sha256": "caad03c39ac9098443cda2db937e2a412cecc4365cde238b465bc98e13a6b610",
+      "git_blob": "e4b6a6081a922a137f68491de66f51e096528510",
+      "group": "face",
+      "published_blob": "e4b6a6081a922a137f68491de66f51e096528510"
+    },
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/creative/treasure_world.gd",
+      "mode": "100644",
+      "bytes": 25074,
+      "sha256": "ce7c7df90f85604f912ff1afc46077935053e883359db47c3f9e9d7dcc4fe65d",
+      "git_blob": "fdddd40fdf9958b7bc0bff50b75ccd4e8a2458b8",
+      "group": "treasure",
+      "published_blob": "fdddd40fdf9958b7bc0bff50b75ccd4e8a2458b8"
+    },
+    {
+      "path": "scripts/learning/learning_world.gd",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/learning/learning_world.gd",
+      "mode": "100644",
+      "bytes": 45446,
+      "sha256": "1ec88577645b89d11d13191a0dcc987af9beb6b3d2b2e7f0379525470711921a",
+      "git_blob": "25e41d3d81e091e7e357400ff8ba76a18d6d2890",
+      "group": "face",
+      "published_blob": "25e41d3d81e091e7e357400ff8ba76a18d6d2890"
+    },
+    {
+      "path": "scripts/tests/connect_four_visual_capture.gd",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/tests/connect_four_visual_capture.gd",
+      "mode": "100644",
+      "bytes": 19435,
+      "sha256": "178bc5b179e0402f1e4cc9901b21f2592745eae20b164706ec621506350f9324",
+      "git_blob": "6e3d98071bf3f0f16f4a20a6599d4950521c8a29",
+      "group": "c4_visual_probe_only",
+      "published_blob": "6e3d98071bf3f0f16f4a20a6599d4950521c8a29"
+    },
+    {
+      "path": "scripts/tests/fixtures/treasure_title_86445.json",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/tests/fixtures/treasure_title_86445.json",
+      "mode": "100644",
+      "bytes": 317,
+      "sha256": "29bcc428329e2a6106f0608a3f0a53060d3073ca4c1fdffa5fd809848977ce73",
+      "git_blob": "78afb5e77187170a345940059da450eed02530cf",
+      "group": "treasure",
+      "published_blob": "78afb5e77187170a345940059da450eed02530cf"
+    },
+    {
+      "path": "scripts/tests/learning_world_regression.gd",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/tests/learning_world_regression.gd",
+      "mode": "100644",
+      "bytes": 22332,
+      "sha256": "4873ac19bfadf84f318973d02950e11ffafd57024898148790e3d66d221f715d",
+      "git_blob": "93a903efb43a2bdef97121434fc7e89e60cab6ac",
+      "group": "face",
+      "published_blob": "93a903efb43a2bdef97121434fc7e89e60cab6ac"
+    },
+    {
+      "path": "scripts/tests/lumo_facial_capture.gd",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/tests/lumo_facial_capture.gd",
+      "mode": "100644",
+      "bytes": 8675,
+      "sha256": "cd223ad265b46626a09350583466d3cbcb70c1d7061170c753f58d24269aba38",
+      "git_blob": "e272be6f0aed98fdc5b5a1bfca58bb7f0d0edba9",
+      "group": "face",
+      "published_blob": "e272be6f0aed98fdc5b5a1bfca58bb7f0d0edba9"
+    },
+    {
+      "path": "scripts/tests/lumo_facial_regression.gd",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/tests/lumo_facial_regression.gd",
+      "mode": "100644",
+      "bytes": 7102,
+      "sha256": "dc98c2521543d5b28238f37ed064b0ccd105378d124e44bbefd668c1b16cc03e",
+      "git_blob": "9834e1c8cbef59f86f8ec1840895357cb429b624",
+      "group": "face",
+      "published_blob": "9834e1c8cbef59f86f8ec1840895357cb429b624"
+    },
+    {
+      "path": "scripts/tests/lumo_rigged_animation_capture.gd",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/tests/lumo_rigged_animation_capture.gd",
+      "mode": "100644",
+      "bytes": 5631,
+      "sha256": "03ce996e765947e20c32cea4b683e70b25ec07e20f8d8c844a0cb0af038df151",
+      "git_blob": "f821f2b7bfa5d15c9dc1a23b0f171caf31264926",
+      "group": "face",
+      "published_blob": "f821f2b7bfa5d15c9dc1a23b0f171caf31264926"
+    },
+    {
+      "path": "scripts/tests/lumo_studio_motion_regression.gd",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/tests/lumo_studio_motion_regression.gd",
+      "mode": "100644",
+      "bytes": 8857,
+      "sha256": "f6451145eec7729f35b3aab70d9fe69ad970e171288c156de3e484213984253e",
+      "git_blob": "2a3e40da3a48e68d587f635658f9db645e70e4e7",
+      "group": "face",
+      "published_blob": "2a3e40da3a48e68d587f635658f9db645e70e4e7"
+    },
+    {
+      "path": "scripts/tests/lumo_teacher_pose_regression.gd",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/tests/lumo_teacher_pose_regression.gd",
+      "mode": "100644",
+      "bytes": 7298,
+      "sha256": "51b32d1cb3d3684334bb5445626cacc5b20d87471f9e0f8325f07514f23f1a26",
+      "git_blob": "bc534776d2f9295369e5e2de90abb8a2f3a46268",
+      "group": "face",
+      "published_blob": "bc534776d2f9295369e5e2de90abb8a2f3a46268"
+    },
+    {
+      "path": "scripts/tests/treasure_title_contrast_regression.gd",
+      "local_path": "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/final-source/scripts/tests/treasure_title_contrast_regression.gd",
+      "mode": "100644",
+      "bytes": 8982,
+      "sha256": "1f0d170fbe05c89a36501463ec9307d3f830e10a4cb63a02f663f98a5e7b600d",
+      "git_blob": "6e50ace998d896fd88f0006112152e490e7c64e3",
+      "group": "treasure",
+      "published_blob": "6e50ace998d896fd88f0006112152e490e7c64e3"
+    }
+  ],
+  "patch": {
+    "path": "integration.patch",
+    "bytes": 6584207,
+    "sha256": "f5d6aa7fd29c78d1228c01198610a1407b17ac5a12aec2c2c5af552a2ab1d161"
+  },
+  "preservation": "Six existing C4 blobs remain identical and are not copied. Seven existing files constructed from exact published hunks with zero fuzz/offset; all sixteen final blobs equal PR167. Existing48-Core/Responsive/Resume/source/teardown/Touch infrastructure unchanged.",
+  "acceptance": "Source-only freeze; no fresh imported/renderer/Android/performance acceptance. Root/Pipeline must wire and run four new modes on a fresh combined revision, paired with the Host PCM/installer change."
+}

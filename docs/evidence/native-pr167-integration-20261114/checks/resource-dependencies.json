@@ -1,0 +1,1117 @@
+{
+  "schema": 1,
+  "base_commit": "27ae427029a5199699c95a79a84b0027d7571752",
+  "scope": "Transitive literal res:// references in selected sources, project/autoloads and referenced GD/scene/resource files; no claim of dynamic-path or runtime resolution.",
+  "resources": {
+    "project.godot": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1944,
+      "sha256": "eac3b969cc475e9b9047d420eb6012a1b98b127c1a8706a9eb88e0e83f33b280",
+      "git_blob": "296b8b1752ebfd526aedd019907ac88efbfd0c02"
+    },
+    "scenes/default_env.tres": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1700,
+      "sha256": "659c707ad122dc81f36e11a872ade3a0eabdb2bc548cea50521d72ffc8976fa3",
+      "git_blob": "67cff9c763ea80bd6a43adc66f4abe31f7c240f9"
+    },
+    "icon.svg": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1981,
+      "sha256": "8f55446a927cf3a912e1cb170dbd1fcdc2e1756792c510981645d6d60d99b5ec",
+      "git_blob": "1dfa1114a6ce5d6621ec343925ebcec588c4d345"
+    },
+    "scenes/app/boot.tscn": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1372,
+      "sha256": "678c8b2907c704f9975a2c38936df45c71f04e987f0e1ee6bc36f24216c62823",
+      "git_blob": "792c0324ae03debe7904517af52fe5473880bb8b"
+    },
+    "assets/kart/menu/lumo-world.webp": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 263468,
+      "sha256": "0bdf969d0a3662367a7473820e05044e5bd8b3ab8df12e209db256d4db94e8dd",
+      "git_blob": "4f70c62237a4c57041669f4e268d284664d25e93"
+    },
+    "scripts/app/app_boot.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 18707,
+      "sha256": "4ed973120d62f1942842c43f3fe1f1b6b7390997d39e8cef7c1cefdd6ffebaf0",
+      "git_blob": "2fc3b5ea4fac7440733ae5a77a8289bcd57557f6"
+    },
+    "scripts/games/kart_vehicle.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 118712,
+      "sha256": "1db5369d8521a94d2118833519d90229d3fb2ff8ff95194d39f5ab74e0ba42de",
+      "git_blob": "9fa9dd899d3d1f70a4db53218546282d76a041db"
+    },
+    "scripts/games/visual/kart_cinema_materials.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 2016,
+      "sha256": "69fc8def6197e5173104f015d82daf7a6b7c8574e0e6b158ae3e2a083ba0df15",
+      "git_blob": "9b10945c42d91086739c49b4b64ce272b7828043"
+    },
+    "assets/shaders/kart_lumo_cinema_mobile.gdshader": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 2254,
+      "sha256": "928e51083968d94e4361f6aa75f84c60a7c21141f3130a3901fc445c58582536",
+      "git_blob": "0107cdef09f8106c86f38c8483a0037750e2981b"
+    },
+    "assets/shaders/kart_lumo_cinema_high.gdshader": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 3921,
+      "sha256": "85881b8a48a4b4f48e772d4518f846b4e3934eeaf418d52a9db33e37104c49f4",
+      "git_blob": "c72e2d6d510c5b2c32b323d173b7798196c56cc7"
+    },
+    "scripts/characters/lumo/lumo_kart_animation_adapter.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 13808,
+      "sha256": "afe2bc4f6b3a1753d64e536878754fcfa52d0c5758cf6adfdccdaa38ea779edc",
+      "git_blob": "8431a588aeedfa6e0cc46a4d363b51c8f53cd992"
+    },
+    "scripts/characters/lumo/lumo_rigged_actor.gd": {
+      "source": "final-overlay",
+      "bytes": 11313,
+      "sha256": "caad03c39ac9098443cda2db937e2a412cecc4365cde238b465bc98e13a6b610",
+      "git_blob": "e4b6a6081a922a137f68491de66f51e096528510"
+    },
+    "scripts/characters/lumo/lumo_facial_pose.gd": {
+      "source": "final-overlay",
+      "bytes": 6120,
+      "sha256": "2d89319ccb622cad1b54c36113bda8594706c024d77f2a0605ec057d51a0f6ef",
+      "git_blob": "91b8a8cd25f21dab84b77f178aa82d06673b54f9"
+    },
+    "scripts/characters/lumo/lumo_teacher_pose.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 4228,
+      "sha256": "1be589448b18f2c63faebfb72ff81639f4e014b828093d931f9e9c04c4ce2a6d",
+      "git_blob": "5d3a1ae763e84cb09276cafe9ba5f9541bf49447"
+    },
+    "scripts/characters/lumo/lumo_platform_pose.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 5002,
+      "sha256": "2f89ad0660ed3f74ff0cfe50837e18265bcf54fdccd24712de6a8b0d680c0a59",
+      "git_blob": "f2085dc82b9840077e631f586a4f4fb5159d7c08"
+    },
+    "scripts/characters/lumo/lumo_body_space_pose.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 2902,
+      "sha256": "043d9eb3cbd1d56f2be4ad62aff71b99753540b524f3d4b69c030fc9217dcd9e",
+      "git_blob": "2b0c2f5b379535cbc4e54c9c1badca72c0f1bc19"
+    },
+    "assets/characters/lumo_animated/lumo_studio_clips.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 196296,
+      "sha256": "c0b4be7f094b4f69942d92ad25d54c8c45f01b6cb8471c00e7d5a0513ee8df18",
+      "git_blob": "10b38ae0590626db40b24080e8a55edcb47ecf2b"
+    },
+    "scripts/characters/lumo/lumo_walk_locomotion.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 2736,
+      "sha256": "95366a2716a557b27383757771923ec73971a385651749c78da8f2cc14a24ec2",
+      "git_blob": "0f5f8f508cf6cfb6f67c8178a25e5522580a5e85"
+    },
+    "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 5156596,
+      "sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+      "git_blob": "53cb01bfbd23a2962da5428a08b8aee313d5e152"
+    },
+    "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb": {
+      "source": "final-overlay",
+      "bytes": 8408740,
+      "sha256": "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524",
+      "git_blob": "4d18f240a34a5aa6320ecd61c0ab0fa719c0b0ad"
+    },
+    "scripts/games/kart_character_finish.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 9469,
+      "sha256": "42182df326361dcce398f1a8e3210bce53c760db467cb4b64ed59df4b5da16ef",
+      "git_blob": "630f3b2bff9e38175dad53bc03fdd27228a256f2"
+    },
+    "scripts/games/kart_fur_geometry.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 3477,
+      "sha256": "eaee8cabfe93e5c7f39d16a371f87d2c20fa3bc78bc5b99c955e9e0e20491eba",
+      "git_blob": "eb490584250d021f88ff8652f4c4a491beec7a02"
+    },
+    "scripts/games/kart_fleet.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 16092,
+      "sha256": "0aa63caf22f5fd6aaa841b889415e794420518f7ce3f388b9ee4a346e5ef0377",
+      "git_blob": "4fc6ac6baf85159a0c48fb2733de50be440ad52d"
+    },
+    "scripts/games/kart_stage.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 4880,
+      "sha256": "2a137dfd4750a9d5dfdc2be2e370f3ab1c258c32b044a2018641822662d579e5",
+      "git_blob": "27350b9a435d73d02b8f0b22756b686a0f0104c7"
+    },
+    "scripts/games/kart_world_meshes.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 6120,
+      "sha256": "df551c3a231c251a4e5be976775d720758295b2fda2eefc49cf80780f7795a12",
+      "git_blob": "861fb19384da4c332d0c2d70150c7810ef85f58c"
+    },
+    "assets/creative/covers/treasure.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 843028,
+      "sha256": "79fd7f32c968260b6677271cd83d6c198aead94226606f93d03830bb65247036",
+      "git_blob": "4108fc953337ba6aa11889f4c3b59573c6f2ec51"
+    },
+    "assets/creative/covers/rhythm.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 670316,
+      "sha256": "4686b082cbf17613ee284382de605154c88998449e202f98e0c43fbe9708e704",
+      "git_blob": "431c82bdb02cf303de8f349fb8b802ea0b38801d"
+    },
+    "assets/creative/covers/puzzle.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1233226,
+      "sha256": "90d2d04f8ed3bc920b86076efd27df7bc1372651aa503fac723ad062506055fd",
+      "git_blob": "dedaa85046a365b042896aeb200ccdee6306ad70"
+    },
+    "assets/creative/covers/build.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1119310,
+      "sha256": "40b3299e7fa3b5a87808cc1e7b4a70fba541711feb280f5c848c2e1ca11cb898",
+      "git_blob": "95c368392ebd89ac8d2ebe2c9ea55cf0be265016"
+    },
+    "scripts/games/kart_menu_art.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 645,
+      "sha256": "6d80186b511708224da8f861fac88c6319cdabf920001956a540cb86f053a3ee",
+      "git_blob": "3bc166896e3de8716a84af898b750f9a2bd98498"
+    },
+    "scripts/games/kart_wordmark.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 3754,
+      "sha256": "2992bc843842b8abe19ea8c70f2de5210fdbfe2091e36cc732e28373d3cd130b",
+      "git_blob": "f83124bcb86d8415501aa346d833fe5f8acfb918"
+    },
+    "scripts/games/kart_ui_theme.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 3014,
+      "sha256": "376cdd77582eece65625787d1b76ab554b64d7759f6829fad1dfc8dc4ce4f21f",
+      "git_blob": "e3e95240df1a2e4df7a87b6085f98cdd40433285"
+    },
+    "assets/fonts/Nunito-Black.ttf": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 39260,
+      "sha256": "3a373c4d17cffecdc9f3c351e2ce9ec83edb0622925a59d802be24fd442346f8",
+      "git_blob": "9e7743ebb7efc2bda51e99eda079cb9b2061f566"
+    },
+    "assets/fonts/Nunito-Bold.ttf": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 39284,
+      "sha256": "5d6ac65faf73856810797d4e6843a57c7444ee6089b764399c3ebfa85d61e448",
+      "git_blob": "e289ba049b167e4fd0e5ba5f537fa3f4b94a92fb"
+    },
+    "scripts/tests/connect_four_visual_capture.gd": {
+      "source": "final-overlay",
+      "bytes": 19435,
+      "sha256": "178bc5b179e0402f1e4cc9901b21f2592745eae20b164706ec621506350f9324",
+      "git_blob": "6e3d98071bf3f0f16f4a20a6599d4950521c8a29"
+    },
+    "scripts/app/android_safe_area.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 5708,
+      "sha256": "28077c1eca89e7e915fc346973c6397d2c1b545fca9592f16394b2d9d2b04564",
+      "git_blob": "9658440b3effad06358fe7cfe62f04a95ccbe279"
+    },
+    "scripts/app/mobile_runtime.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 7146,
+      "sha256": "eec90f6187525eda2c330718e93c592cabc523ee93406b4c02e739286a8fd517",
+      "git_blob": "53c6974ef2e1ba82bbb1fff71c9be4d9c16a911f"
+    },
+    "scripts/systems/host_bridge.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 5193,
+      "sha256": "56ecb470319ea047aa5d8c3aad92d55c99355ee07c533a6543fcf167f098abb7",
+      "git_blob": "dab96a1b918dc754568c0eda14cdda05175c89fb"
+    },
+    "scripts/games/connect_four/connect_four_table.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 30031,
+      "sha256": "76ab128b835bffd41b87274566408b8baab4073fe6733b2f5e3e990e0e027a72",
+      "git_blob": "cdeb31fc6cfe30c18fc6c96afb2b1d749532c37f"
+    },
+    "scenes/games/connect_four_table.tscn": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 204,
+      "sha256": "49d116bd0436200d01b1e03eac3601854b33bf75142969b69d2c588418dd3af2",
+      "git_blob": "e1c14734e2bde85fd9852db3d8ef20f4cd0ca24d"
+    },
+    "scripts/creative/treasure_world.gd": {
+      "source": "final-overlay",
+      "bytes": 25074,
+      "sha256": "ce7c7df90f85604f912ff1afc46077935053e883359db47c3f9e9d7dcc4fe65d",
+      "git_blob": "fdddd40fdf9958b7bc0bff50b75ccd4e8a2458b8"
+    },
+    "scripts/creative/treasure_island_art.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 17431,
+      "sha256": "0577c27db2a8260605d08fe3fed885d2cfdb00d38738a459e7bc814007f0f570",
+      "git_blob": "9edd945c56729e778937a6533228c8ff213d81f5"
+    },
+    "assets/creative/models/lumo_treasure_chest.glb": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 175048,
+      "sha256": "606bf5f7b1c25849fc12bd857957d632fe63dab8b4849e128c7554cf07845096",
+      "git_blob": "14905eaeb1cf7a0f96172d415b06fd9a0d490e07"
+    },
+    "scripts/games/kart_touch_action.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 8500,
+      "sha256": "72ba965c75bbb2d94b05dd3f47936e50e895e64e7c0bd6b65ec89a1ed4c61eb2",
+      "git_blob": "22064c491ff9aec8515a188a20ed5458b7ae5226"
+    },
+    "assets/kart/hud/icon_wind.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 58271,
+      "sha256": "ba608466f9a79af607c15536f4ccf2097e645d15f68e2559787b0fc85d88e170",
+      "git_blob": "b161e84de02b281dcc38aed13c7e22150b86b195"
+    },
+    "assets/kart/hud/icon_pulse.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 92765,
+      "sha256": "15a2ccbf76989f203157b1ffdf7f16f38147a9940d6d46082c1078e77cdad9b4",
+      "git_blob": "cbcae7c4ea3d8c94c8687d637fb9b639d1ea4235"
+    },
+    "assets/kart/hud/icon_shield.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 47165,
+      "sha256": "d339766055262afa8cf759dea301f323568974f89c9d46deac5ff72871912353",
+      "git_blob": "1f7d476cb9e52fe96ce64ff04394a9e92a0dcfb2"
+    },
+    "assets/kart/controls/reference/item_disabled.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 259235,
+      "sha256": "942a1af13c344591cb95ee61cf56e908ecd8935eceae2831adc666a2462367bf",
+      "git_blob": "19bdee46a70ee6b2bca8da2aec55daf52566f43b"
+    },
+    "assets/kart/controls/reference/item_pressed.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 252547,
+      "sha256": "ef15af959600718a28a2938e61e8376997440eae49f5b4038e862739d09a054d",
+      "git_blob": "2d07bb7eaa2dfce8957998f01b69fbacd9d9abd4"
+    },
+    "assets/kart/controls/reference/item_normal.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 251399,
+      "sha256": "f8b7647c123cfbdfb5b987090a58904657f95e12d6fad88de196e51879069b74",
+      "git_blob": "6a1eaa899cbb9447d9935867f0e5cd0ef83550c0"
+    },
+    "assets/kart/controls/reference/speed_disabled.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 274111,
+      "sha256": "7648a3c1f94744d68941cdb0ee785a295641e4fa50830a95eea9995ab5b5bd23",
+      "git_blob": "8f8a3366bab042e942f9d57bbae43ff2df97fc63"
+    },
+    "assets/kart/controls/reference/speed_pressed.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 291699,
+      "sha256": "1ad35bbd97b07d2820d10ae774cc458bb17b00c2b504319e8a30279bbeb55129",
+      "git_blob": "ca8a45bb96b99c8f6f21bfc600755919ae859d27"
+    },
+    "assets/kart/controls/reference/speed_normal.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 284192,
+      "sha256": "942a93918d0d993adc64e436cad9945f53f80f7bf5ffdaf8bc103190fa1a5f28",
+      "git_blob": "48cce3059bd447f647d1243e29ee20e06b9a0821"
+    },
+    "assets/kart/controls/reference/bremse_disabled.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 269939,
+      "sha256": "af4a3b149eec5af057bffac8f6a8e6edbc3e4ab582671dedaaa4c1b686a7aa74",
+      "git_blob": "f5a0173605232db7a4a7e37ae4cf632bba2e84ae"
+    },
+    "assets/kart/controls/reference/bremse_pressed.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 256109,
+      "sha256": "270e3c96a96b9b0d1411c8b92dba3a5d2181965970aedb9bc408a520aa1dad35",
+      "git_blob": "11ef6be9a5ae5b396d097bfb2af3a7d029d921bd"
+    },
+    "assets/kart/controls/reference/bremse_normal.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 258309,
+      "sha256": "c214c6a838701698c249c90d391cce29ef83ca2ccd8cbfa8a5b099ec7ab11f00",
+      "git_blob": "352b2a1bf544c3499b0f1e2b10be7f1ed49c2fdd"
+    },
+    "assets/kart/controls/reference/gas_disabled.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 316722,
+      "sha256": "6c619503418d338c178139ad750cfedb998ccfa72cc403db8d58dbf2f08e0ece",
+      "git_blob": "114f1482763e5d44c1789d988faa94be18e4a6d4"
+    },
+    "assets/kart/controls/reference/gas_pressed.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 253740,
+      "sha256": "662e79b1900228259093bea7b61925fb856a6b9c32820978e3cee6d195b4a342",
+      "git_blob": "81596c67f596bf8cd0ed7cf583c60e9dbdb2ab9c"
+    },
+    "assets/kart/controls/reference/gas_normal.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 248981,
+      "sha256": "ce7af81ab3da7efe717b3e81f9ae1f020c21658c59cd452dd5157114a89dfc97",
+      "git_blob": "2216c5847abbdecf0f9861a84745e33ab45c364b"
+    },
+    "assets/kart/controls/reference/drift_disabled.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 244800,
+      "sha256": "64370ab1d0408e0ba6d44b6942fdea47dc3512ce302ea19fbe4d574cf8e2b361",
+      "git_blob": "cc1294393d75b080ac80c097b9466e11d1fd76f4"
+    },
+    "assets/kart/controls/reference/drift_pressed.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 232017,
+      "sha256": "465e4847f66bddb29a7f5fd8fb5deadc4803e88e35a38cafb768b2a2c9576920",
+      "git_blob": "dfa63873fa7b44b3a4f62aef7854cc7a0f19859f"
+    },
+    "assets/kart/controls/reference/drift_normal.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 228995,
+      "sha256": "8bac60aa96e3b6d75b6337756357c7fee52ad52fdc3e26746a75a7278fcc47b7",
+      "git_blob": "6108a7d227fc05665f06ad8a42d8a58e545e5456"
+    },
+    "assets/kart/controls/item.svg": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 905,
+      "sha256": "220ba6d09575a9242ed5f95b4d095f0ff1d39cf0183a1350a2f5a425237a6080",
+      "git_blob": "e982e1c815ee019ac699845ef87bcb28592e2c7e"
+    },
+    "assets/kart/controls/brake.svg": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 731,
+      "sha256": "789dc074270fe1d2d81e1643c7904377c16e777185c2b5cd5016fd0115e4a4e7",
+      "git_blob": "de75558ff6e48a89bd15bf8f9548556d28b9dada"
+    },
+    "assets/kart/controls/drift.svg": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1032,
+      "sha256": "417cb6879b6a90d1ac45a8d2d8c4e375a0a371a1ea8702d0058c4af8d36ed0c2",
+      "git_blob": "681c04f903e92b11e7f670a34f8548534c86c05f"
+    },
+    "assets/kart/controls/boost.svg": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1056,
+      "sha256": "2869fc2721b9d585d5709cc15a819e56e4383663548419c9c8912143de0a9330",
+      "git_blob": "5f6dc2f7e5aaba1982daa8c451a596753167bfb8"
+    },
+    "assets/kart/controls/gas.svg": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 813,
+      "sha256": "23674887ee88bca0f84090a55d5e3d588e076661610f67684c1c40700719d9ab",
+      "git_blob": "d65f7a4f5410c8920e6d81e037b665961fb4621f"
+    },
+    "scripts/games/kart_joystick.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 3283,
+      "sha256": "040d901a499e97c18086579047d1f1332e4c46244fe0b5b10f1512effc49671e",
+      "git_blob": "7cba3eff104c50b3d968499d38ac85fdd7d85def"
+    },
+    "assets/kart/controls/reference/stick_knopf_pressed.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 162274,
+      "sha256": "9b2b6edef18ab5cbf6f1b5ebaca0ee0c67ca27bc880ec359935f68d2a6f880bd",
+      "git_blob": "79181609f99db9fb6835e264a57d68bcec8f88b1"
+    },
+    "assets/kart/controls/reference/stick_knopf_normal.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 149841,
+      "sha256": "5128df0c2309856ad728f3b2bf0dfc5f6d80ea62c2ef27b228d2269506926271",
+      "git_blob": "2802d966812e6a414ee76ed483b1419d4f1127c1"
+    },
+    "assets/kart/controls/reference/stick_basis.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1023296,
+      "sha256": "71a61749cf29ffd6ec4e7813e815b6405365ac4e0a671ef0f1706bc81a45b773",
+      "git_blob": "91094fea6985b44c1d0c0b71fa71df42dd53c7a5"
+    },
+    "scripts/creative/creative_runtime.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 3498,
+      "sha256": "b800c7d77c7a4fcc9a47081c2f25672fb2f2eefbb95c24fdc442f4f2df2185aa",
+      "git_blob": "45596983292c4f7c8fbcd847a5dca671b324ba5c"
+    },
+    "scripts/creative/creative_kit.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 10563,
+      "sha256": "a3d32bb117ba62f984575907d99c8b95b0e92849cab46b2a5ef097998ea4fed7",
+      "git_blob": "3408e7d270abe02f73b4fc187f8efd43a488196c"
+    },
+    "assets/creative/models/lumo_lantern.glb": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 58924,
+      "sha256": "88628b79065a08963e27bc7c12da68a38782c4fe9dfe34eeaffc903675c45ea3",
+      "git_blob": "38d75ea1b5ec21a360098f282b02081f2974e453"
+    },
+    "assets/generated/lumo3d_assets/textures/albedo/wood_warm_soft_albedo.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 186009,
+      "sha256": "867d6d23f7b210c89c99c334385ecda9cab97fdafa92f3f80032d8ea9a06b986",
+      "git_blob": "489e3cac089f5030fa727d76eede39d1a7b38131"
+    },
+    "assets/generated/lumo3d_assets/textures/albedo/grass_deep_albedo.png": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 107312,
+      "sha256": "8aaf2052d431557fccf9fdd0fc3a8b108f04397bb82b4db8f716b57b6ae58d2b",
+      "git_blob": "af05a907c0b24d8f6f3f1d44a03d73cf7f6d5d26"
+    },
+    "assets/creative/sandstone.webp": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 433820,
+      "sha256": "c0c0f19e7ef59754b39f7c584d9a9800a25469dcca1ddf3ede495aa5a939715e",
+      "git_blob": "c2c5e456460f41f214cbef59049a2771bef1f32d"
+    },
+    "scripts/creative/build_premium_props.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 15990,
+      "sha256": "f453019cf41ed1e06d77ca0454abc6524f2f5858ec33356c7b5def30b0137157",
+      "git_blob": "5858f1be89291a298433ec666e03fd853648114c"
+    },
+    "scripts/creative/build_catalog.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 6711,
+      "sha256": "4a2f35b589d22722ca1b48b16638c711f47f54f83001f327660f5aef8556d427",
+      "git_blob": "9a84715c5ef8d4057bb503e3b3b129f0f45024ae"
+    },
+    "scripts/creative/treasure_state.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 7517,
+      "sha256": "8a11898f66d1db922158d3169dd9ddcd7985bb7e3639c64fbfc60e3980064288",
+      "git_blob": "d507e1fe167ce02a10bcc0d414dde291b7edcb49"
+    },
+    "scripts/tests/lumo_studio_motion_regression.gd": {
+      "source": "final-overlay",
+      "bytes": 8857,
+      "sha256": "f6451145eec7729f35b3aab70d9fe69ad970e171288c156de3e484213984253e",
+      "git_blob": "2a3e40da3a48e68d587f635658f9db645e70e4e7"
+    },
+    "docs/evidence/studio-character-20261113/motion_build.json": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 41859,
+      "sha256": "4513ca5eb16f37d31c2f06c9ce6043059223da3fb6d42b110322aa124a3f4637",
+      "git_blob": "69a0688789c8bcbdfabb297e3c7fbc283ecbf948"
+    },
+    "scripts/tests/learning_world_regression.gd": {
+      "source": "final-overlay",
+      "bytes": 22332,
+      "sha256": "4873ac19bfadf84f318973d02950e11ffafd57024898148790e3d66d221f715d",
+      "git_blob": "93a903efb43a2bdef97121434fc7e89e60cab6ac"
+    },
+    "scenes/learning/learning_world.tscn": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 191,
+      "sha256": "9f9d43a306a500da06ae3a4625695e3f6cf348b275d8d515a8bfcdc3097c846e",
+      "git_blob": "05f835f6c87c528b64b38054c2c41adc8cbef078"
+    },
+    "scripts/learning/learning_world.gd": {
+      "source": "final-overlay",
+      "bytes": 45446,
+      "sha256": "1ec88577645b89d11d13191a0dcc987af9beb6b3d2b2e7f0379525470711921a",
+      "git_blob": "25e41d3d81e091e7e357400ff8ba76a18d6d2890"
+    },
+    "scripts/games/visual/kart_harbor_cinema.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 11619,
+      "sha256": "bc180fa343ad690680d52c8223e1ceca105457bf8db8db6e487060098511eb90",
+      "git_blob": "5a409d72db69d93b861576aaa2eb53052eb88e1d"
+    },
+    "scripts/learning/learning_atelier.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 6954,
+      "sha256": "6696a9f5604bf71efa5eb6d64fe5b6ff4ca85f76cee8553586dec8743ad7022b",
+      "git_blob": "c14873748bd8ff42cc7f00bd1c39653626de4664"
+    },
+    "assets/learning/studio/studio_leaf_motion.gdshader": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 562,
+      "sha256": "92e405a96eb23e5da0f12bf229e6e9227d2cc4c9b28f2aaf080f51e7ab63c410",
+      "git_blob": "61df8690c84dbbd6c75453d68235c5f804a0e693"
+    },
+    "assets/learning/studio/learning_studio.glb": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1522224,
+      "sha256": "e5b33abceaba8df76b6475efc04454aac3db353a1b40005267d2986be718a034",
+      "git_blob": "1f133149d426691330b193e0ce563d899a3c0622"
+    },
+    "scripts/learning/learning_activity.gd": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 9286,
+      "sha256": "c8071598b341a9ef8d905effe70aafacf98f325e9289903bb12a370d0d29541a",
+      "git_blob": "c1eed0eefb4017ac4db3cb3d1d4551e2d9c601fe"
+    },
+    "scripts/tests/lumo_facial_regression.gd": {
+      "source": "final-overlay",
+      "bytes": 7102,
+      "sha256": "dc98c2521543d5b28238f37ed064b0ccd105378d124e44bbefd668c1b16cc03e",
+      "git_blob": "9834e1c8cbef59f86f8ec1840895357cb429b624"
+    },
+    "scripts/tests/treasure_title_contrast_regression.gd": {
+      "source": "final-overlay",
+      "bytes": 8982,
+      "sha256": "1f0d170fbe05c89a36501463ec9307d3f830e10a4cb63a02f663f98a5e7b600d",
+      "git_blob": "6e50ace998d896fd88f0006112152e490e7c64e3"
+    },
+    "scenes/creative/treasure_world.tscn": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 190,
+      "sha256": "ab8602737e328c2c6b57d28151cdcbed7e52b06e4c770f8cb480a41b3190b0d4",
+      "git_blob": "21d837290cd35c21946207967ef53645fbc97f86"
+    },
+    "scripts/tests/fixtures/treasure_title_86445.json": {
+      "source": "final-overlay",
+      "bytes": 317,
+      "sha256": "29bcc428329e2a6106f0608a3f0a53060d3073ca4c1fdffa5fd809848977ce73",
+      "git_blob": "78afb5e77187170a345940059da450eed02530cf"
+    },
+    "scripts/tests/lumo_rigged_animation_capture.gd": {
+      "source": "final-overlay",
+      "bytes": 5631,
+      "sha256": "03ce996e765947e20c32cea4b683e70b25ec07e20f8d8c844a0cb0af038df151",
+      "git_blob": "f821f2b7bfa5d15c9dc1a23b0f171caf31264926"
+    },
+    "scripts/tests/lumo_facial_capture.gd": {
+      "source": "final-overlay",
+      "bytes": 8675,
+      "sha256": "cd223ad265b46626a09350583466d3cbcb70c1d7061170c753f58d24269aba38",
+      "git_blob": "e272be6f0aed98fdc5b5a1bfca58bb7f0d0edba9"
+    },
+    "assets/audio/voice/words/apfel.wav": {
+      "source": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 40970,
+      "sha256": "39aba71e80a9230d832f038630eaff8fa0fc0c5eae104581ce487bce9ebbd586",
+      "git_blob": "671784b6bdf9ebb3c0aa994b762e236c7f3a8905"
+    },
+    "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import": {
+      "source": "final-overlay",
+      "bytes": 1162,
+      "sha256": "fb3244345f930d628253b8f687646566273c8adb77aa276b46815e5861304b15",
+      "git_blob": "3b65ce3c2d8e63efe4c2251261b047be37e383a0"
+    },
+    "scripts/tests/lumo_teacher_pose_regression.gd": {
+      "source": "final-overlay",
+      "bytes": 7298,
+      "sha256": "51b32d1cb3d3684334bb5445626cacc5b20d87471f9e0f8325f07514f23f1a26",
+      "git_blob": "bc534776d2f9295369e5e2de90abb8a2f3a46268"
+    },
+    "assets/characters/lumo_facial/ATTRIBUTION.md": {
+      "source": "final-overlay",
+      "bytes": 2626,
+      "sha256": "4bf37300273f8edc20b1557f7284da30d235ed1dc4f1999af4947bbb0056aa85",
+      "git_blob": "50f43591977dc46683fe8c547bbba2fa6e73f216"
+    }
+  },
+  "links": [
+    {
+      "from": "project.godot",
+      "to": "scenes/app/boot.tscn"
+    },
+    {
+      "from": "project.godot",
+      "to": "icon.svg"
+    },
+    {
+      "from": "project.godot",
+      "to": "scenes/default_env.tres"
+    },
+    {
+      "from": "scenes/app/boot.tscn",
+      "to": "scripts/app/app_boot.gd"
+    },
+    {
+      "from": "scenes/app/boot.tscn",
+      "to": "assets/kart/menu/lumo-world.webp"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "scripts/games/kart_ui_theme.gd"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "scripts/games/kart_wordmark.gd"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "scripts/games/kart_menu_art.gd"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "assets/kart/menu/lumo-world.webp"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "assets/creative/covers/build.png"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "assets/creative/covers/puzzle.png"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "assets/creative/covers/rhythm.png"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "assets/creative/covers/treasure.png"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "assets/kart/menu/lumo-world.webp"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "scripts/games/kart_stage.gd"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "scripts/games/kart_vehicle.gd"
+    },
+    {
+      "from": "scripts/app/app_boot.gd",
+      "to": "assets/kart/menu/lumo-world.webp"
+    },
+    {
+      "from": "scripts/games/kart_vehicle.gd",
+      "to": "scripts/games/kart_fleet.gd"
+    },
+    {
+      "from": "scripts/games/kart_vehicle.gd",
+      "to": "scripts/games/kart_fur_geometry.gd"
+    },
+    {
+      "from": "scripts/games/kart_vehicle.gd",
+      "to": "scripts/games/kart_character_finish.gd"
+    },
+    {
+      "from": "scripts/games/kart_vehicle.gd",
+      "to": "scripts/characters/lumo/lumo_kart_animation_adapter.gd"
+    },
+    {
+      "from": "scripts/games/kart_vehicle.gd",
+      "to": "scripts/games/visual/kart_cinema_materials.gd"
+    },
+    {
+      "from": "scripts/games/visual/kart_cinema_materials.gd",
+      "to": "assets/shaders/kart_lumo_cinema_high.gdshader"
+    },
+    {
+      "from": "scripts/games/visual/kart_cinema_materials.gd",
+      "to": "assets/shaders/kart_lumo_cinema_mobile.gdshader"
+    },
+    {
+      "from": "scripts/characters/lumo/lumo_kart_animation_adapter.gd",
+      "to": "scripts/characters/lumo/lumo_rigged_actor.gd"
+    },
+    {
+      "from": "scripts/characters/lumo/lumo_rigged_actor.gd",
+      "to": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb"
+    },
+    {
+      "from": "scripts/characters/lumo/lumo_rigged_actor.gd",
+      "to": "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb"
+    },
+    {
+      "from": "scripts/characters/lumo/lumo_rigged_actor.gd",
+      "to": "scripts/characters/lumo/lumo_walk_locomotion.gd"
+    },
+    {
+      "from": "scripts/characters/lumo/lumo_rigged_actor.gd",
+      "to": "scripts/characters/lumo/lumo_platform_pose.gd"
+    },
+    {
+      "from": "scripts/characters/lumo/lumo_rigged_actor.gd",
+      "to": "scripts/characters/lumo/lumo_teacher_pose.gd"
+    },
+    {
+      "from": "scripts/characters/lumo/lumo_rigged_actor.gd",
+      "to": "scripts/characters/lumo/lumo_facial_pose.gd"
+    },
+    {
+      "from": "scripts/characters/lumo/lumo_platform_pose.gd",
+      "to": "scripts/characters/lumo/lumo_body_space_pose.gd"
+    },
+    {
+      "from": "scripts/characters/lumo/lumo_body_space_pose.gd",
+      "to": "assets/characters/lumo_animated/lumo_studio_clips.gd"
+    },
+    {
+      "from": "scripts/characters/lumo/lumo_walk_locomotion.gd",
+      "to": "scripts/characters/lumo/lumo_body_space_pose.gd"
+    },
+    {
+      "from": "scripts/games/kart_stage.gd",
+      "to": "scripts/games/kart_world_meshes.gd"
+    },
+    {
+      "from": "scripts/games/kart_menu_art.gd",
+      "to": "assets/kart/menu/lumo-world.webp"
+    },
+    {
+      "from": "scripts/games/kart_wordmark.gd",
+      "to": "scripts/games/kart_ui_theme.gd"
+    },
+    {
+      "from": "scripts/games/kart_ui_theme.gd",
+      "to": "assets/fonts/Nunito-Bold.ttf"
+    },
+    {
+      "from": "scripts/games/kart_ui_theme.gd",
+      "to": "assets/fonts/Nunito-Black.ttf"
+    },
+    {
+      "from": "scripts/tests/connect_four_visual_capture.gd",
+      "to": "scenes/games/connect_four_table.tscn"
+    },
+    {
+      "from": "scripts/tests/connect_four_visual_capture.gd",
+      "to": "scripts/tests/connect_four_visual_capture.gd"
+    },
+    {
+      "from": "scripts/tests/connect_four_visual_capture.gd",
+      "to": "scenes/games/connect_four_table.tscn"
+    },
+    {
+      "from": "scripts/tests/connect_four_visual_capture.gd",
+      "to": "scripts/games/connect_four/connect_four_table.gd"
+    },
+    {
+      "from": "scripts/tests/connect_four_visual_capture.gd",
+      "to": "scripts/systems/host_bridge.gd"
+    },
+    {
+      "from": "scripts/tests/connect_four_visual_capture.gd",
+      "to": "scripts/app/mobile_runtime.gd"
+    },
+    {
+      "from": "scripts/tests/connect_four_visual_capture.gd",
+      "to": "scripts/app/android_safe_area.gd"
+    },
+    {
+      "from": "scripts/tests/connect_four_visual_capture.gd",
+      "to": "scripts/characters/lumo/lumo_rigged_actor.gd"
+    },
+    {
+      "from": "scripts/tests/connect_four_visual_capture.gd",
+      "to": "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb"
+    },
+    {
+      "from": "scripts/app/mobile_runtime.gd",
+      "to": "scripts/app/android_safe_area.gd"
+    },
+    {
+      "from": "scripts/games/connect_four/connect_four_table.gd",
+      "to": "scripts/characters/lumo/lumo_rigged_actor.gd"
+    },
+    {
+      "from": "scenes/games/connect_four_table.tscn",
+      "to": "scripts/games/connect_four/connect_four_table.gd"
+    },
+    {
+      "from": "scripts/creative/treasure_world.gd",
+      "to": "scripts/creative/treasure_state.gd"
+    },
+    {
+      "from": "scripts/creative/treasure_world.gd",
+      "to": "scripts/creative/build_catalog.gd"
+    },
+    {
+      "from": "scripts/creative/treasure_world.gd",
+      "to": "scripts/creative/creative_kit.gd"
+    },
+    {
+      "from": "scripts/creative/treasure_world.gd",
+      "to": "scripts/creative/creative_runtime.gd"
+    },
+    {
+      "from": "scripts/creative/treasure_world.gd",
+      "to": "scripts/games/kart_vehicle.gd"
+    },
+    {
+      "from": "scripts/creative/treasure_world.gd",
+      "to": "scripts/games/kart_joystick.gd"
+    },
+    {
+      "from": "scripts/creative/treasure_world.gd",
+      "to": "scripts/games/kart_touch_action.gd"
+    },
+    {
+      "from": "scripts/creative/treasure_world.gd",
+      "to": "assets/creative/models/lumo_treasure_chest.glb"
+    },
+    {
+      "from": "scripts/creative/treasure_world.gd",
+      "to": "scripts/creative/treasure_island_art.gd"
+    },
+    {
+      "from": "scripts/creative/treasure_world.gd",
+      "to": "assets/fonts/Nunito-Black.ttf"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/gas.svg"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/boost.svg"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/drift.svg"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/brake.svg"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/item.svg"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/drift_normal.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/drift_pressed.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/drift_disabled.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/gas_normal.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/gas_pressed.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/gas_disabled.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/bremse_normal.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/bremse_pressed.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/bremse_disabled.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/speed_normal.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/speed_pressed.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/speed_disabled.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/item_normal.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/item_pressed.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/controls/reference/item_disabled.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/fonts/Nunito-Black.ttf"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/hud/icon_shield.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/hud/icon_pulse.png"
+    },
+    {
+      "from": "scripts/games/kart_touch_action.gd",
+      "to": "assets/kart/hud/icon_wind.png"
+    },
+    {
+      "from": "scripts/games/kart_joystick.gd",
+      "to": "assets/kart/controls/reference/stick_basis.png"
+    },
+    {
+      "from": "scripts/games/kart_joystick.gd",
+      "to": "assets/kart/controls/reference/stick_knopf_normal.png"
+    },
+    {
+      "from": "scripts/games/kart_joystick.gd",
+      "to": "assets/kart/controls/reference/stick_knopf_pressed.png"
+    },
+    {
+      "from": "scripts/creative/creative_kit.gd",
+      "to": "scripts/games/kart_world_meshes.gd"
+    },
+    {
+      "from": "scripts/creative/creative_kit.gd",
+      "to": "scripts/creative/build_premium_props.gd"
+    },
+    {
+      "from": "scripts/creative/creative_kit.gd",
+      "to": "assets/creative/sandstone.webp"
+    },
+    {
+      "from": "scripts/creative/creative_kit.gd",
+      "to": "assets/generated/lumo3d_assets/textures/albedo/grass_deep_albedo.png"
+    },
+    {
+      "from": "scripts/creative/creative_kit.gd",
+      "to": "assets/generated/lumo3d_assets/textures/albedo/wood_warm_soft_albedo.png"
+    },
+    {
+      "from": "scripts/creative/creative_kit.gd",
+      "to": "assets/creative/models/lumo_lantern.glb"
+    },
+    {
+      "from": "scripts/tests/lumo_studio_motion_regression.gd",
+      "to": "scripts/characters/lumo/lumo_rigged_actor.gd"
+    },
+    {
+      "from": "scripts/tests/lumo_studio_motion_regression.gd",
+      "to": "scripts/characters/lumo/lumo_body_space_pose.gd"
+    },
+    {
+      "from": "scripts/tests/lumo_studio_motion_regression.gd",
+      "to": "scripts/characters/lumo/lumo_platform_pose.gd"
+    },
+    {
+      "from": "scripts/tests/lumo_studio_motion_regression.gd",
+      "to": "docs/evidence/studio-character-20261113/motion_build.json"
+    },
+    {
+      "from": "scripts/tests/learning_world_regression.gd",
+      "to": "scripts/learning/learning_activity.gd"
+    },
+    {
+      "from": "scripts/tests/learning_world_regression.gd",
+      "to": "scenes/learning/learning_world.tscn"
+    },
+    {
+      "from": "scenes/learning/learning_world.tscn",
+      "to": "scripts/learning/learning_world.gd"
+    },
+    {
+      "from": "scripts/learning/learning_world.gd",
+      "to": "scripts/learning/learning_activity.gd"
+    },
+    {
+      "from": "scripts/learning/learning_world.gd",
+      "to": "scripts/characters/lumo/lumo_rigged_actor.gd"
+    },
+    {
+      "from": "scripts/learning/learning_world.gd",
+      "to": "scripts/learning/learning_atelier.gd"
+    },
+    {
+      "from": "scripts/learning/learning_world.gd",
+      "to": "scripts/games/visual/kart_harbor_cinema.gd"
+    },
+    {
+      "from": "scripts/games/visual/kart_harbor_cinema.gd",
+      "to": "scripts/games/visual/kart_cinema_materials.gd"
+    },
+    {
+      "from": "scripts/learning/learning_atelier.gd",
+      "to": "scripts/games/visual/kart_harbor_cinema.gd"
+    },
+    {
+      "from": "scripts/learning/learning_atelier.gd",
+      "to": "assets/learning/studio/learning_studio.glb"
+    },
+    {
+      "from": "scripts/learning/learning_atelier.gd",
+      "to": "assets/learning/studio/studio_leaf_motion.gdshader"
+    },
+    {
+      "from": "scripts/learning/learning_atelier.gd",
+      "to": "assets/creative/models/lumo_lantern.glb"
+    },
+    {
+      "from": "scripts/tests/lumo_facial_regression.gd",
+      "to": "scripts/characters/lumo/lumo_rigged_actor.gd"
+    },
+    {
+      "from": "scripts/tests/lumo_facial_regression.gd",
+      "to": "scripts/learning/learning_world.gd"
+    },
+    {
+      "from": "scripts/tests/treasure_title_contrast_regression.gd",
+      "to": "scripts/tests/fixtures/treasure_title_86445.json"
+    },
+    {
+      "from": "scripts/tests/treasure_title_contrast_regression.gd",
+      "to": "scenes/creative/treasure_world.tscn"
+    },
+    {
+      "from": "scenes/creative/treasure_world.tscn",
+      "to": "scripts/creative/treasure_world.gd"
+    },
+    {
+      "from": "scripts/tests/lumo_rigged_animation_capture.gd",
+      "to": "scripts/characters/lumo/lumo_rigged_actor.gd"
+    },
+    {
+      "from": "scripts/tests/lumo_rigged_animation_capture.gd",
+      "to": "exports/lumo-animation"
+    },
+    {
+      "from": "scripts/tests/lumo_facial_capture.gd",
+      "to": "scripts/learning/learning_world.gd"
+    },
+    {
+      "from": "scripts/tests/lumo_facial_capture.gd",
+      "to": "assets/audio/voice/words/apfel.wav"
+    },
+    {
+      "from": "scripts/tests/lumo_facial_capture.gd",
+      "to": "assets/audio/voice/words/apfel.wav"
+    },
+    {
+      "from": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import",
+      "to": ".godot/imported/Lumo-Facial-Mobile.glb-990aa22f389583ec1c7266cfb13484d8.scn"
+    },
+    {
+      "from": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import",
+      "to": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb"
+    },
+    {
+      "from": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import",
+      "to": ".godot/imported/Lumo-Facial-Mobile.glb-990aa22f389583ec1c7266cfb13484d8.scn"
+    },
+    {
+      "from": "scripts/tests/lumo_teacher_pose_regression.gd",
+      "to": "scripts/characters/lumo/lumo_rigged_actor.gd"
+    }
+  ],
+  "expected_generated_import_destinations": [
+    ".godot/imported/Lumo-Facial-Mobile.glb-990aa22f389583ec1c7266cfb13484d8.scn"
+  ],
+  "directory_references": [],
+  "missing_literal_resources": [],
+  "runtime_output_locations": [
+    "exports/lumo-animation"
+  ]
+}

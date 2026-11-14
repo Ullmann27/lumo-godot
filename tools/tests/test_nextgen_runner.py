@@ -43,6 +43,12 @@ SAFE_AREA_BUDGETS = {
 }
 SAFE_AREA_NAMES = {'cards_safe_area_android_contract', 'cards_safe_area_regression',
                    'mobile_safe_area_regression'}
+STUDIO_2020_BUDGETS = {
+    'lumo_facial_regression-headless': '180',
+    'lumo_facial_capture-rendered': '420',
+    'connect_four_visual_capture-rendered': '600',
+    'treasure_title_contrast_regression-rendered': '600',
+}
 
 
 @lru_cache(maxsize=16)
@@ -61,6 +67,12 @@ def fixture_png(width=640, height=360, varied=False):
 
 
 class NextgenRunnerTests(unittest.TestCase):
+    def test_all_previous_forty_eight_probe_marker_mode_contracts_remain_exact(self):
+        cases = re.findall(r"^check_probe (\S+) '([^']+)' (\S+)", RUNNER.read_text(), re.M)
+        self.assertEqual(len(cases), 52)
+        previous = hashlib.sha256(json.dumps(cases[:48], separators=(',', ':')).encode()).hexdigest()
+        self.assertEqual(previous, '64522b86f238780030cf35f36bfd20f18cf733e31ab8cacc817405de9f3889f3')
+
     def run_fixture(self, *, failing='', missing='', missing_raster='',
                     invalid_raster='', post_pass_error='', puzzle_mutation='', runner=RUNNER):
         """The fake engine tests orchestration, never claims rendered/gameplay proof."""
@@ -79,6 +91,10 @@ class NextgenRunnerTests(unittest.TestCase):
             if puzzle_verifier.exists():
                 shutil.copyfile(puzzle_verifier, root / 'tools/verify_puzzle_menu_rasters.py')
             shutil.copyfile(ROOT / 'tools/verify_safe_area_rasters.py', root / 'tools/verify_safe_area_rasters.py')
+            shutil.copyfile(ROOT / 'tools/verify_studio_2020_rasters.py', root / 'tools/verify_studio_2020_rasters.py')
+            from test_studio_2020_rasters import write_fixture as write_studio_2020_fixture, write_movie_commands
+            write_studio_2020_fixture(root / 'studio-2020-fixtures')
+            write_movie_commands(root / 'bin', root / 'studio-2020-fixtures')
             from test_safe_area_rasters import write_fixture
             write_fixture(root / 'safe-area-fixtures')
             root.joinpath('fixture-raster.png').write_bytes(fixture_png())
@@ -99,7 +115,7 @@ class NextgenRunnerTests(unittest.TestCase):
                               'if "--version" in sys.argv: print("fixture-engine"); sys.exit(0)\n'
                               'name=pathlib.Path(sys.argv[sys.argv.index("--script")+1]).stem\n'
                               'with open("invocations.jsonl", "a") as log:\n'
-                              '    log.write(json.dumps({"name":name,"args":sys.argv[1:],"capture_dir":os.environ.get("LUMO_CAPTURE_DIR"),"puzzle_menu_dir":os.environ.get("LUMO_PUZZLE_MENU_EVIDENCE_DIR")})+"\\n")\n'
+                              '    log.write(json.dumps({"name":name,"args":sys.argv[1:],"capture_dir":os.environ.get("LUMO_CAPTURE_DIR"),"puzzle_menu_dir":os.environ.get("LUMO_PUZZLE_MENU_EVIDENCE_DIR"),"face_dir":os.environ.get("LUMO_FACE_CAPTURE_DIR"),"source_sha":os.environ.get("GITHUB_SHA")})+"\\n")\n'
                               f'if name == {failing!r}: print("ERROR: requested fixture failure"); sys.exit(1)\n'
                               f'rasters={RASTERS!r}\n'
                               'if "--headless" not in sys.argv and name in rasters:\n'
@@ -142,11 +158,24 @@ class NextgenRunnerTests(unittest.TestCase):
                               '    shutil.copytree(pathlib.Path("safe-area-fixtures/captures")/name,capture,dirs_exist_ok=True)\n'
                               f'    if name=={missing_raster!r}: next(capture.glob("*.png")).unlink()\n'
                               f'    if name=={invalid_raster!r}: next(capture.glob("*.png")).write_bytes(b"not a PNG")\n'
+                              'if name in ("lumo_facial_capture", "connect_four_visual_capture", "treasure_title_contrast_regression") and "--headless" not in sys.argv:\n'
+                              '    capture=pathlib.Path(os.environ["LUMO_CAPTURE_DIR"])\n'
+                              '    source=pathlib.Path("studio-2020-fixtures/captures")/name\n'
+                              '    for path in source.iterdir():\n'
+                              '        if name!="lumo_facial_capture" or path.suffix==".png" or path.name in ("runtime-frames.json", "facial-runtime.avi"):\n'
+                              '            shutil.copyfile(path,capture/path.name)\n'
+                              '    if name=="connect_four_visual_capture":\n'
+                              '        report=capture/"visual-state.json"\n'
+                              '        document=json.loads(report.read_text()); document["source_revision"]=os.environ.get("GITHUB_SHA"); report.write_text(json.dumps(document))\n'
+                              f'    if name=={missing_raster!r}: next(capture.glob("*.png")).unlink()\n'
+                              f'    if name=={invalid_raster!r}: next(capture.glob("*.png")).write_bytes(b"not a PNG")\n'
                               f'print({markers!r}[name])\n'
                               f'if name=={post_pass_error!r}: print("ERROR: native fixture error after PASS with process exit zero")\n')
             engine.chmod(0o755)
             git = root / 'bin/git'
-            git.write_text('#!/bin/sh\nif [ "$1" = rev-parse ]; then echo fixture-source; fi\n')
+            git.write_text('#!/bin/sh\nif [ "$1" = rev-parse ]; then\n'
+                           'if [ "$2" = "HEAD^{tree}" ]; then echo ' + '2' * 40 + ';\n'
+                           'else echo ' + '1' * 40 + '; fi\nfi\n')
             git.chmod(0o755)
             python = root / 'bin/python3'
             python.write_text(f'#!{sys.executable}\n'
@@ -158,6 +187,7 @@ class NextgenRunnerTests(unittest.TestCase):
                               f'os.execv({sys.executable!r}, [{sys.executable!r}, *sys.argv[1:]])\n')
             python.chmod(0o755)
             env = dict(os.environ, GODOT_BIN=str(engine), DISPLAY=':fixture',
+                       GITHUB_SHA='3' * 40,
                        LUMO_NEXTGEN_LOG_DIR=str(root / 'logs'),
                        LUMO_STUDIO_LOG_DIR=str(root / 'logs'),
                        PATH=str(root / 'bin') + os.pathsep + os.environ['PATH'])
@@ -173,13 +203,15 @@ class NextgenRunnerTests(unittest.TestCase):
             result.puzzle_menu_images = json.loads(puzzle_manifest.read_text())['images'] if puzzle_manifest.exists() else []
             safe_manifest = root / 'logs/safe-area-images.json'
             result.safe_area_images = json.loads(safe_manifest.read_text())['images'] if safe_manifest.exists() else []
+            studio_2020_manifest = root / 'logs/studio-2020-images.json'
+            result.studio_2020 = json.loads(studio_2020_manifest.read_text()) if studio_2020_manifest.exists() else None
             result.invocations = [json.loads(line) for line in root.joinpath('invocations.jsonl').read_text().splitlines()]
             return result, rows, cases, budgets, images
 
     def test_success_requires_every_logic_and_rendered_probe(self):
         result, rows, cases, budgets, images = self.run_fixture()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(len(cases), 48)
+        self.assertEqual(len(cases), 52)
         self.assertEqual(len(rows), len(cases))
         self.assertTrue(all(row.endswith('\tPASS') for row in rows))
         self.assertIn('[LumoNextgen] PASS', result.stdout)
@@ -187,9 +219,11 @@ class NextgenRunnerTests(unittest.TestCase):
         self.assertEqual(budgets['treasure_exploration_regression-rendered'], '600')
         for name, budget in SAFE_AREA_BUDGETS.items():
             self.assertEqual(budgets[name], budget)
+        for name, budget in STUDIO_2020_BUDGETS.items():
+            self.assertEqual(budgets[name], budget)
         self.assertTrue(all(value == '420' for key, value in budgets.items()
                             if key not in {'learning_world_capture-rendered',
-                                           'treasure_exploration_regression-rendered', *SAFE_AREA_BUDGETS}))
+                                           'treasure_exploration_regression-rendered', *SAFE_AREA_BUDGETS, *STUDIO_2020_BUDGETS}))
         self.assertIn('[StudioRasterRoster] PASS 24 actual PNG files', result.stdout)
         self.assertEqual(len(images), 24)
         self.assertTrue(all(image['sha256'] == hashlib.sha256(fixture_png()).hexdigest()
@@ -223,6 +257,43 @@ class NextgenRunnerTests(unittest.TestCase):
         for call in safe_calls:
             self.assertEqual('--capture' in call['args'], '--headless' not in call['args'])
             self.assertTrue(call['capture_dir'].endswith('/captures/' + call['name']))
+        self.assertIn('[LumoNextgen52] PASS', result.stdout)
+        self.assertIn('[Studio2020RasterRoster] PASS 16 actual PNG files', result.stdout)
+        self.assertEqual(len(result.studio_2020['images']), 16)
+        self.assertEqual(len(result.studio_2020['reports']), 3)
+        self.assertEqual(len(result.studio_2020['movies']), 1)
+        face = next(call for call in result.invocations if call['name'] == 'lumo_facial_capture')
+        self.assertEqual(face['face_dir'], face['capture_dir'])
+        self.assertEqual(face['args'][face['args'].index('--resolution') + 1], '640x640')
+        self.assertEqual(face['args'][face['args'].index('--fixed-fps') + 1], '24')
+        self.assertEqual(face['args'][face['args'].index('--write-movie') + 1], face['capture_dir'] + '/facial-runtime.avi')
+        c4 = next(call for call in result.invocations if call['name'] == 'connect_four_visual_capture')
+        self.assertIn('--capture', c4['args'])
+        self.assertEqual(c4['source_sha'], '1' * 40)
+        self.assertTrue(all(call['source_sha'] == '3' * 40 for call in result.invocations
+                            if call['name'] != 'connect_four_visual_capture'))
+
+    def test_new_rosters_remain_mandatory_after_all_fifty_two_pass_markers(self):
+        for name in ('lumo_facial_capture', 'connect_four_visual_capture', 'treasure_title_contrast_regression'):
+            with self.subTest(name=name):
+                result, rows, cases, _, images = self.run_fixture(missing_raster=name)
+                self.assertEqual(result.returncode, 1)
+                self.assertEqual(len(cases), 52)
+                self.assertTrue(all(row.endswith('\tPASS') for row in rows))
+                self.assertEqual(len(images), 24)
+                self.assertEqual(len(result.safe_area_images), 7)
+                self.assertIsNone(result.studio_2020)
+                self.assertIn('studio-2020-raster-movie-roster', result.stderr)
+                self.assertNotIn('[LumoNextgen52] PASS', result.stdout)
+                self.assertNotIn('[LumoNextgen] PASS', result.stdout)
+
+    def test_new_face_error_after_marker_is_fatal_and_other_probes_continue(self):
+        result, rows, _, _, _ = self.run_fixture(post_pass_error='lumo_facial_capture')
+        self.assertEqual(result.returncode, 1)
+        self.assertIn('lumo_facial_capture\trendered\tFAIL', rows)
+        self.assertIn('connect_four_visual_capture\trendered\tPASS', rows)
+        self.assertIn('treasure_title_contrast_regression\trendered\tPASS', rows)
+        self.assertNotIn('[LumoNextgen] PASS', result.stdout)
 
     def test_safe_area_rosters_are_mandatory_even_with_every_probe_marker(self):
         for runner in (RUNNER, STUDIO_RUNNER):

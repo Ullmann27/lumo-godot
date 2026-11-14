@@ -20,7 +20,7 @@ EXPECTED_PNGS = {
 
 
 def verify_fixed_rasters(root: Path, *, directory: str, expected: dict[str, tuple[int, int]],
-                         label: str, manifest: str) -> list[dict]:
+                         label: str, manifest: str, write: bool = True) -> list[dict]:
     """Validate an internally fixed set of decoded, visible production frames."""
     capture = root / directory
     if not capture.is_dir() or capture.is_symlink():
@@ -56,9 +56,10 @@ def verify_fixed_rasters(root: Path, *, directory: str, expected: dict[str, tupl
         images.append({'path': relative, 'width': dimensions[0], 'height': dimensions[1],
                        'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()})
     # Publish metadata only after the entire original image set passed.
-    temporary = root / ('.' + manifest + '.tmp')
-    temporary.write_text(json.dumps({'images': images}, indent=2) + '\n')
-    temporary.replace(root / manifest)
+    if write:
+        temporary = root / ('.' + manifest + '.tmp')
+        temporary.write_text(json.dumps({'images': images}, indent=2) + '\n')
+        temporary.replace(root / manifest)
     return images
 
 
