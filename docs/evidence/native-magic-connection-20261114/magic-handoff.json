@@ -1,0 +1,281 @@
+{
+  "schema": 1,
+  "status": "FROZEN_SOURCE_READY_FOR_ROOT_CHECKPOINT",
+  "repository": "Ullmann27/lumo-godot",
+  "base_commit": "f0c19f9eb69ea330ac5d2b8f9948cb029ca218aa",
+  "base_tree": "40e7a8d073de320865613152f8a027abbe025d51",
+  "producer_heads": [
+    "1b01b08abd4ff2580125d787a6150e10b2fe47b8",
+    "f2edd325142b92a534b06518f66eadad3551412b"
+  ],
+  "source_paths": [
+    "scripts/creative/treasure_world.gd",
+    "scripts/tests/treasure_exploration_regression.gd",
+    "scripts/learning/learning_world.gd",
+    "scripts/tests/learning_world_regression.gd",
+    "assets/creative/shaders/treasure_wisp.gdshader",
+    "scripts/creative/treasure_wisps.gd",
+    "scripts/tests/treasure_wisp_regression.gd"
+  ],
+  "source_files": [
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "mode": "100644",
+      "operation": "modify",
+      "base_blob": "aae80484834823c8cf063df6bfb2607313f39ef7",
+      "base_sha256": "e68fc85498b76fb7b482417a1bf6b64410a53d2f018fec7771e263ea60fa5447",
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "703873a3b0fbe7e589c81bf9695fac5ecf43cd63",
+      "final_blob": "703873a3b0fbe7e589c81bf9695fac5ecf43cd63",
+      "bytes": 27404,
+      "sha256": "f5118a5cb00670eeaa5337699c0253f6aad84bdb4b9cff18764098420ba64c3b",
+      "producer_byte_identical": true,
+      "published_hunks_applied": [
+        {
+          "current_start": 8,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 25,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 89,
+          "old_lines": 6,
+          "new_lines": 10
+        },
+        {
+          "current_start": 442,
+          "old_lines": 13,
+          "new_lines": 15
+        },
+        {
+          "current_start": 483,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 502,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 515,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 544,
+          "old_lines": 6,
+          "new_lines": 7
+        }
+      ]
+    },
+    {
+      "path": "scripts/tests/treasure_exploration_regression.gd",
+      "mode": "100644",
+      "operation": "modify",
+      "base_blob": "5fae309c47082f4e182492fe0dde6ac1e3e6a7e1",
+      "base_sha256": "2fff6b5359237626dbb402e46482aac0e15697491f8790ef0e6fb89d0ac00384",
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29",
+      "final_blob": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29",
+      "bytes": 7475,
+      "sha256": "de40f0eaed86f2ea20371b3aa0b19ceff3ad553f1751e1fbb41033fecfa770c4",
+      "producer_byte_identical": true,
+      "published_hunks_applied": [
+        {
+          "current_start": 75,
+          "old_lines": 9,
+          "new_lines": 13
+        },
+        {
+          "current_start": 102,
+          "old_lines": 13,
+          "new_lines": 15
+        }
+      ]
+    },
+    {
+      "path": "scripts/learning/learning_world.gd",
+      "mode": "100644",
+      "operation": "modify",
+      "base_blob": "25e41d3d81e091e7e357400ff8ba76a18d6d2890",
+      "base_sha256": "1ec88577645b89d11d13191a0dcc987af9beb6b3d2b2e7f0379525470711921a",
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "c3b1bc8c73cd764724464d8d2fe0413bdba62a96",
+      "final_blob": "c3b1bc8c73cd764724464d8d2fe0413bdba62a96",
+      "bytes": 45953,
+      "sha256": "1aaad2fdbe53e75e44009e443cda1273d2c3bc85b2eda7446349eba466883a6b",
+      "producer_byte_identical": true,
+      "published_hunks_applied": [
+        {
+          "current_start": 5,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 19,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 264,
+          "old_lines": 6,
+          "new_lines": 11
+        },
+        {
+          "current_start": 1084,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 1144,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 1155,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 1166,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 1220,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 1230,
+          "old_lines": 6,
+          "new_lines": 7
+        }
+      ]
+    },
+    {
+      "path": "scripts/tests/learning_world_regression.gd",
+      "mode": "100644",
+      "operation": "modify",
+      "base_blob": "93a903efb43a2bdef97121434fc7e89e60cab6ac",
+      "base_sha256": "4873ac19bfadf84f318973d02950e11ffafd57024898148790e3d66d221f715d",
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "8e534e78509283679889335255f39a4f7d49bb64",
+      "final_blob": "8e534e78509283679889335255f39a4f7d49bb64",
+      "bytes": 23091,
+      "sha256": "562b9812983388e396b80be698eb70a9d091b0d92997e5b58476b15b20df40f8",
+      "producer_byte_identical": true,
+      "published_hunks_applied": [
+        {
+          "current_start": 263,
+          "old_lines": 6,
+          "new_lines": 10
+        },
+        {
+          "current_start": 314,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 460,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 492,
+          "old_lines": 6,
+          "new_lines": 7
+        }
+      ]
+    },
+    {
+      "path": "assets/creative/shaders/treasure_wisp.gdshader",
+      "mode": "100644",
+      "operation": "add",
+      "base_blob": null,
+      "base_sha256": null,
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "63fd420156242d2bea3a5a9d3ec04eac9da4974b",
+      "final_blob": "63fd420156242d2bea3a5a9d3ec04eac9da4974b",
+      "bytes": 867,
+      "sha256": "9ea827c8caad1c3431be766db571ad84ab6f9398508d055230873f2f7af8af68",
+      "producer_byte_identical": true,
+      "published_hunks_applied": []
+    },
+    {
+      "path": "scripts/creative/treasure_wisps.gd",
+      "mode": "100644",
+      "operation": "add",
+      "base_blob": null,
+      "base_sha256": null,
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "2d854c19869a1959f9bbc76b9aa21c1ca8947a80",
+      "final_blob": "2d854c19869a1959f9bbc76b9aa21c1ca8947a80",
+      "bytes": 6446,
+      "sha256": "318b074c876eb5c4134f84eb6de387bdb4ed9ac1eef42100f4eaaf2e4c867e60",
+      "producer_byte_identical": true,
+      "published_hunks_applied": []
+    },
+    {
+      "path": "scripts/tests/treasure_wisp_regression.gd",
+      "mode": "100644",
+      "operation": "add",
+      "base_blob": null,
+      "base_sha256": null,
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "7f256c202defeeba47c8c96a577065ee2eda16c1",
+      "final_blob": "7f256c202defeeba47c8c96a577065ee2eda16c1",
+      "bytes": 3061,
+      "sha256": "dce77c62f2848c30c0086b13ec3c2a5ea4fb59a814a2ef1535d837c1e47ed218",
+      "producer_byte_identical": true,
+      "published_hunks_applied": []
+    }
+  ],
+  "files": {
+    "source-freeze.json": {
+      "path": "source-freeze.json",
+      "sha256": "3fe8fdc5d85bfa0dd6419792688b72ed3840c3122e2267f695e800e6f986b1e2"
+    },
+    "integration.patch": {
+      "path": "integration.patch",
+      "sha256": "4c4ab6b204ca2bda0784cfbdd7a863ce5de3514c8bb902f5d2c99228b97078a2"
+    },
+    "preservation.json": {
+      "path": "preservation.json",
+      "sha256": "faafb8214f4da1180da616d229bcbafd8515b848b1650a9e2418928497023d3c"
+    },
+    "gate-contract.json": {
+      "path": "gate-contract.json",
+      "sha256": "fc334096a459be91bdcb6bccb3722820d55b9e312b09e493f5863450987bcfef"
+    },
+    "ci-evidence.json": {
+      "path": "ci-evidence.json",
+      "sha256": "85f94007a8df006937af8f3077efceeee5983323af21d91b023a416b4e251a26"
+    },
+    "source-review.json": {
+      "path": "source-review.json",
+      "sha256": "c9687655df7e8ef378236dceaf14c63d6d8f779f69bc441849683b4b597ff7f8"
+    },
+    "README.md": {
+      "path": "README.md",
+      "sha256": "328f925d33e0c1906027729566ddb8c6e5244e5ddb0f71269b3f059a27386b1d"
+    }
+  },
+  "new_separate_gate": "scripts/tests/treasure_wisp_regression.gd",
+  "existing_runner_modes": 52,
+  "existing_studio2020_pngs": 17,
+  "local_tests_executed": false,
+  "root_gitdata_reuse_all_seven_published_blobs": true,
+  "root_action": "Checkpoint seven exact source blobs on f0c19; wire the separate Magic section without changing 52/17; then execute and bind fresh combined validation.",
+  "excluded": [
+    "Producer workflow triggers and pins",
+    "all unrelated divergent-base changes",
+    "binary assets or large artifact payloads",
+    "any claim of combined tests, renderer pixels, Android, FPS or publishing"
+  ]
+}

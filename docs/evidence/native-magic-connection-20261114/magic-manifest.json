@@ -1,0 +1,394 @@
+{
+  "schema": 1,
+  "status": "FROZEN",
+  "created_at": "2026-11-14T09:08:12.190875+00:00",
+  "pack": "native-pr172-174-magic-integration-f0c19-20261114",
+  "base_commit": "f0c19f9eb69ea330ac5d2b8f9948cb029ca218aa",
+  "base_tree": "40e7a8d073de320865613152f8a027abbe025d51",
+  "producer_heads": [
+    "1b01b08abd4ff2580125d787a6150e10b2fe47b8",
+    "f2edd325142b92a534b06518f66eadad3551412b"
+  ],
+  "source_freeze_sha256": "3fe8fdc5d85bfa0dd6419792688b72ed3840c3122e2267f695e800e6f986b1e2",
+  "member_count": 60,
+  "stored_bytes": 1065448,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 10549,
+      "sha256": "328f925d33e0c1906027729566ddb8c6e5244e5ddb0f71269b3f059a27386b1d"
+    },
+    {
+      "path": "additional-retrieval-binding.json",
+      "bytes": 10270,
+      "sha256": "b43b139b970c8d42524ac6ae350f56e6248042fe0b8c522ac4be16cc48de8143"
+    },
+    {
+      "path": "artifact-retrieval-binding.json",
+      "bytes": 1063,
+      "sha256": "3a4ddcc7aedfe8e592f864d1a25fbce7bd785c106e580fe0b5ca188196661f65"
+    },
+    {
+      "path": "before-source/scripts/creative/treasure_world.gd",
+      "bytes": 26887,
+      "sha256": "e68fc85498b76fb7b482417a1bf6b64410a53d2f018fec7771e263ea60fa5447"
+    },
+    {
+      "path": "before-source/scripts/learning/learning_world.gd",
+      "bytes": 45446,
+      "sha256": "1ec88577645b89d11d13191a0dcc987af9beb6b3d2b2e7f0379525470711921a"
+    },
+    {
+      "path": "before-source/scripts/tests/learning_world_regression.gd",
+      "bytes": 22332,
+      "sha256": "4873ac19bfadf84f318973d02950e11ffafd57024898148790e3d66d221f715d"
+    },
+    {
+      "path": "before-source/scripts/tests/treasure_exploration_regression.gd",
+      "bytes": 6999,
+      "sha256": "2fff6b5359237626dbb402e46482aac0e15697491f8790ef0e6fb89d0ac00384"
+    },
+    {
+      "path": "before-source/tools/validate_nextgen.sh",
+      "bytes": 9791,
+      "sha256": "fbb95e0ab5d3f60a915fdd63ff95b6e01ad3776bb67f6227df1c394b5bd64a7f"
+    },
+    {
+      "path": "ci-evidence.json",
+      "bytes": 17118,
+      "sha256": "85f94007a8df006937af8f3077efceeee5983323af21d91b023a416b4e251a26"
+    },
+    {
+      "path": "final-source/assets/creative/shaders/treasure_wisp.gdshader",
+      "bytes": 867,
+      "sha256": "9ea827c8caad1c3431be766db571ad84ab6f9398508d055230873f2f7af8af68"
+    },
+    {
+      "path": "final-source/scripts/creative/treasure_wisps.gd",
+      "bytes": 6446,
+      "sha256": "318b074c876eb5c4134f84eb6de387bdb4ed9ac1eef42100f4eaaf2e4c867e60"
+    },
+    {
+      "path": "final-source/scripts/creative/treasure_world.gd",
+      "bytes": 27404,
+      "sha256": "f5118a5cb00670eeaa5337699c0253f6aad84bdb4b9cff18764098420ba64c3b"
+    },
+    {
+      "path": "final-source/scripts/learning/learning_world.gd",
+      "bytes": 45953,
+      "sha256": "1aaad2fdbe53e75e44009e443cda1273d2c3bc85b2eda7446349eba466883a6b"
+    },
+    {
+      "path": "final-source/scripts/tests/learning_world_regression.gd",
+      "bytes": 23091,
+      "sha256": "562b9812983388e396b80be698eb70a9d091b0d92997e5b58476b15b20df40f8"
+    },
+    {
+      "path": "final-source/scripts/tests/treasure_exploration_regression.gd",
+      "bytes": 7475,
+      "sha256": "de40f0eaed86f2ea20371b3aa0b19ceff3ad553f1751e1fbb41033fecfa770c4"
+    },
+    {
+      "path": "final-source/scripts/tests/treasure_wisp_regression.gd",
+      "bytes": 3061,
+      "sha256": "dce77c62f2848c30c0086b13ec3c2a5ea4fb59a814a2ef1535d837c1e47ed218"
+    },
+    {
+      "path": "gate-contract.json",
+      "bytes": 8741,
+      "sha256": "fc334096a459be91bdcb6bccb3722820d55b9e312b09e493f5863450987bcfef"
+    },
+    {
+      "path": "handoff.json",
+      "bytes": 9141,
+      "sha256": "7889afae85567bcef50fc51eb5747f56ddd332d14d8dc573501a7efb7bc99c09"
+    },
+    {
+      "path": "hunk-application.json",
+      "bytes": 5583,
+      "sha256": "a44d90fd4c78065e1f4eec8fc2ebc8c0e639941ce81ab95e5061162554abecae"
+    },
+    {
+      "path": "integration.patch",
+      "bytes": 21948,
+      "sha256": "4c4ab6b204ca2bda0784cfbdd7a863ce5de3514c8bb902f5d2c99228b97078a2"
+    },
+    {
+      "path": "originals/api/172-commit.json.gz",
+      "bytes": 518,
+      "sha256": "a185b03a15f97cdebdabfdd944423cfb3fe76a9ae0604f63d3b1f0ffdbacb1a1",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 1212,
+      "original_sha256": "e970939aa4669eb081e4ba5defe8a613db5c2c33475eccc0dfa8ba803c32907d"
+    },
+    {
+      "path": "originals/api/172-delta.json.gz",
+      "bytes": 10333,
+      "sha256": "b396d85c0f0c3011216f67e53f8ee8df92b72f28837d153395e8ba49683ce13e",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 48252,
+      "original_sha256": "3981186c0b5dd2f11ed8cf12e9d52bf37a6cd74ca55a8abdd987912a88070ba2"
+    },
+    {
+      "path": "originals/api/172-runs.json.gz",
+      "bytes": 2490,
+      "sha256": "cbf6c0f0e6e0a68d59f2270073d8d21ba68aeb66d3965a858f89fc5518636e79",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 51709,
+      "original_sha256": "11f0978478142d2c5f339ec249a2fa13fa18547a18c92a83801b9f3d1018658c"
+    },
+    {
+      "path": "originals/api/172-to-174.json.gz",
+      "bytes": 5573,
+      "sha256": "2a767ed56b5a4576ad7686fe22f14d4cfc5c37ceed5d583431331c0fc7f95a20",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 24007,
+      "original_sha256": "d0e1e870254a39d87b8b856a408a010a0cd5df94152ab8cd479087152c0b35d6"
+    },
+    {
+      "path": "originals/api/174-commit.json.gz",
+      "bytes": 514,
+      "sha256": "e9eea87e69ff66c482e9dbe4946624fca1fcec22397afaf75765e34cab8a79ea",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 1201,
+      "original_sha256": "a98459571effc1dfca01e49df04a0da43ded7c73defc5db3804d9012e249cf8a"
+    },
+    {
+      "path": "originals/api/174-runs.json.gz",
+      "bytes": 2470,
+      "sha256": "1d88d69a9b65d0e3ebb91002a2acb801f890830f1a6fd6a2756cf000b34caeff",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 51738,
+      "original_sha256": "9fed30164ebdac590137e32828a928fcdadd68a2c27b1029619434f51a582497"
+    },
+    {
+      "path": "originals/api/174-tree.json.gz",
+      "bytes": 106878,
+      "sha256": "4c1f492dbe383ca3f4df21d3cfdd08e814a4d59387a10da45b2e542a06b960ae",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 664106,
+      "original_sha256": "ffde6738b6ceb92d2eb773a2f2f456f6b4e4f0f9eca2470a50a90aace4d736cb"
+    },
+    {
+      "path": "originals/api/artifacts-43574914204.json.gz",
+      "bytes": 459,
+      "sha256": "16405e1f7cd93d9356a6ac4646b834d2ef1700cd9e97f5a6dab76fd404323659",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 773,
+      "original_sha256": "f77819763c15163f0e51df676ef887f398fe55e495a337a085fa7a2debae9904"
+    },
+    {
+      "path": "originals/api/artifacts-43575163668.json.gz",
+      "bytes": 453,
+      "sha256": "67e41ce7a5003bd1051890c7b34c913dac68198279aca74e0bd3cfafa5701850",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 773,
+      "original_sha256": "dc58c9d4b300f1282bddfb476277e35cddb6d63e43899e2411b0dab10c6f1458"
+    },
+    {
+      "path": "originals/api/base-commit.json.gz",
+      "bytes": 523,
+      "sha256": "ef54b8c57dd8a0aa46e66a73dca462dbf228de7b54fe46f48e4c188583efb623",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 1207,
+      "original_sha256": "3d9931b3e212cc43c47c79ed438d92d7bcdf86c7b1778c455368d6e543f58cff"
+    },
+    {
+      "path": "originals/api/base-to-172.json.gz",
+      "bytes": 174746,
+      "sha256": "24be64ed23c4304351264c1d380389f298a6cc241fabe49886e2cc860e03d9b5",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 907613,
+      "original_sha256": "868f0d122074d10bd1c304716375dc4f842136639938e80a3b0c5a611aceb469"
+    },
+    {
+      "path": "originals/api/base-tree.json.gz",
+      "bytes": 179838,
+      "sha256": "3eb274047870bfab92ab383be87c33d79193e4bc892ff5ae2a6ce24fbc749184",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 1270539,
+      "original_sha256": "55615a19ef310f3e6dd1a9605ec3d1f3467dcfceb665919f008513dee3cf8195"
+    },
+    {
+      "path": "originals/api/jobs-43574914204.json.gz",
+      "bytes": 808,
+      "sha256": "1c5af68bb1d5151b091e90af74408de89edc3fade04d649beda7185ca83540d4",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 2758,
+      "original_sha256": "cd05761e580a1f1c8548dd2c830834ab1979f404411684e6415f976c38a9bdb8"
+    },
+    {
+      "path": "originals/api/jobs-43574919726.json.gz",
+      "bytes": 898,
+      "sha256": "81280847f137d5f630888b47463bdbe93cfda640d7e961f047608afbd31353b2",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 5124,
+      "original_sha256": "43371a49ba504383bc2b8843c54dafd6cf7f41df1a3ee6d72cd48c3b86c19ca3"
+    },
+    {
+      "path": "originals/api/jobs-43574919731.json.gz",
+      "bytes": 776,
+      "sha256": "fe40a466a71d6c7b6a413950715c358fa3664ce57d166d50c2a6c968953ba1e6",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 2689,
+      "original_sha256": "dae11adad3735e3139dff08403ab9aec9b1138ca0a351a354e573f1e2d2d52fa"
+    },
+    {
+      "path": "originals/api/jobs-43574919837.json.gz",
+      "bytes": 802,
+      "sha256": "c23bb73ae5ec446d7b9854f4c92a491078d307ad0f218072f631de7fc931977f",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 2719,
+      "original_sha256": "822caaa77a891adc6c83a39f032a28803d0636fb13ad173c566b5305d27a2db4"
+    },
+    {
+      "path": "originals/api/jobs-43575163668.json.gz",
+      "bytes": 767,
+      "sha256": "46ad4c1830713a96c7acae12ca646c74c34037e89e4c7e9d48693bb9f98102eb",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 2584,
+      "original_sha256": "7f5f275f3f4d1cd09e23688984492073e13556b9cd3b65f0d63ca7f75eea716a"
+    },
+    {
+      "path": "originals/api/jobs-43575167291.json.gz",
+      "bytes": 775,
+      "sha256": "28fba1fd77ce65df85e45b98d69cbb637b1c4f04b45e66d0ca41aad15f502294",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 2693,
+      "original_sha256": "cfc8ee91265374f214071bf44dbc9f5ffb3f08ca92607141db71cebdffc2e6fc"
+    },
+    {
+      "path": "originals/api/jobs-43575167292.json.gz",
+      "bytes": 899,
+      "sha256": "bc7ccb09779c789c0a1d3a6d43391bbba3bcc34703184f07c987ce33fc977ff5",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 5132,
+      "original_sha256": "30b4f3dca0fd54b2bb70de246ba93e8f23f9d401cf5b97d66400107468ebce8d"
+    },
+    {
+      "path": "originals/api/jobs-43575167321.json.gz",
+      "bytes": 801,
+      "sha256": "af07a574c1b27a663033bd292769adbbcfa0a47a896af56f188843c2d5f68ffe",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 2723,
+      "original_sha256": "74fdd954c9837c536bc0d26c9a5d1cec643125e7c0b2ab2c90911132ef2f29d7"
+    },
+    {
+      "path": "originals/api/pr172.json.gz",
+      "bytes": 2338,
+      "sha256": "07b4481700cda5ed40686c9e909ec7d6f541e584b9ab62255a8f7c37ba62690d",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 16308,
+      "original_sha256": "b75332dbfc6bae902fc98db7f3572f5594860f4b65e96b630b2c86dedc2af8bc"
+    },
+    {
+      "path": "originals/api/pr174.json.gz",
+      "bytes": 2276,
+      "sha256": "74ea0ac1704964d35f7602b7a5f49594954e9b4b0bc443af47063400f8e81472",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 16255,
+      "original_sha256": "5fcac5c37df92cf371177821fbddf131e21114c0ee2a56fb27ddec4bc30e7744"
+    },
+    {
+      "path": "originals/logs/magic-job-132386964721.log.gz",
+      "bytes": 30210,
+      "sha256": "49ee7add3da3e54ec9d7da8cfe898cdb2e3aaf9dccacab24e31738b49bf0a442",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 256952,
+      "original_sha256": "c02acb1a75c8dac525c7539399ec8d22bbaf35b24a4ab2144f1f30fe5249ec2f"
+    },
+    {
+      "path": "originals/logs/magic-job-132387709703.log.gz",
+      "bytes": 29976,
+      "sha256": "55ffd4bd67db662e5e2c32df0e1885da1f0db9fa765fd9310bfae0d26dbcfb89",
+      "storage": "lossless deterministic gzip",
+      "original_bytes": 265514,
+      "original_sha256": "bf5a2c981ea9107843a2ba677157dea510e9c1f8c903885447cb5ec36c41a6a3"
+    },
+    {
+      "path": "originals/source/pr174/.github/workflows/lumo-magic-learning.yml",
+      "bytes": 2441,
+      "sha256": "c85a4c6acb2ca40b9fd92caedfbd085244ec05d1186127aaae23612e820c5b0f"
+    },
+    {
+      "path": "originals/source/pr174/.github/workflows/lumo-magical-wisps.yml",
+      "bytes": 3796,
+      "sha256": "6dec787f4ce283f83030d1798d27943e23218159252e772f9f4f12c2c1ae0132"
+    },
+    {
+      "path": "originals/source/pr174/assets/creative/shaders/treasure_wisp.gdshader",
+      "bytes": 867,
+      "sha256": "9ea827c8caad1c3431be766db571ad84ab6f9398508d055230873f2f7af8af68"
+    },
+    {
+      "path": "originals/source/pr174/docs/development/LUMO_LEARNING_MAGIC_20261114.md",
+      "bytes": 1289,
+      "sha256": "08f42fad3a4c29a045c4e6c98678d8ce7a44704b9a276ee56eddfae3df5624b4"
+    },
+    {
+      "path": "originals/source/pr174/docs/development/LUMO_MAGIC_TREASURE_20261114.md",
+      "bytes": 1680,
+      "sha256": "a15de851ec5fcbd06aeb9441ec1155ea82a283b33a0d0840c3c47daec62fe175"
+    },
+    {
+      "path": "originals/source/pr174/scripts/creative/treasure_wisps.gd",
+      "bytes": 6446,
+      "sha256": "318b074c876eb5c4134f84eb6de387bdb4ed9ac1eef42100f4eaaf2e4c867e60"
+    },
+    {
+      "path": "originals/source/pr174/scripts/creative/treasure_world.gd",
+      "bytes": 27404,
+      "sha256": "f5118a5cb00670eeaa5337699c0253f6aad84bdb4b9cff18764098420ba64c3b"
+    },
+    {
+      "path": "originals/source/pr174/scripts/learning/learning_world.gd",
+      "bytes": 45953,
+      "sha256": "1aaad2fdbe53e75e44009e443cda1273d2c3bc85b2eda7446349eba466883a6b"
+    },
+    {
+      "path": "originals/source/pr174/scripts/tests/learning_world_regression.gd",
+      "bytes": 23091,
+      "sha256": "562b9812983388e396b80be698eb70a9d091b0d92997e5b58476b15b20df40f8"
+    },
+    {
+      "path": "originals/source/pr174/scripts/tests/treasure_exploration_regression.gd",
+      "bytes": 7475,
+      "sha256": "de40f0eaed86f2ea20371b3aa0b19ceff3ad553f1751e1fbb41033fecfa770c4"
+    },
+    {
+      "path": "originals/source/pr174/scripts/tests/treasure_wisp_regression.gd",
+      "bytes": 3061,
+      "sha256": "dce77c62f2848c30c0086b13ec3c2a5ea4fb59a814a2ef1535d837c1e47ed218"
+    },
+    {
+      "path": "pack-integrity.json",
+      "bytes": 16109,
+      "sha256": "6825e0c554e824c70420ac2596e9397677ac414a4788945d9aa0886d18baa844"
+    },
+    {
+      "path": "preservation.json",
+      "bytes": 31967,
+      "sha256": "faafb8214f4da1180da616d229bcbafd8515b848b1650a9e2418928497023d3c"
+    },
+    {
+      "path": "retrieval-binding.json",
+      "bytes": 13042,
+      "sha256": "2df84f5f3f0c8865b0de1774d6382c4ec53e997dea28264e9ac59850b2c2d9ef"
+    },
+    {
+      "path": "source-freeze.json",
+      "bytes": 12904,
+      "sha256": "3fe8fdc5d85bfa0dd6419792688b72ed3840c3122e2267f695e800e6f986b1e2"
+    },
+    {
+      "path": "source-review.json",
+      "bytes": 1637,
+      "sha256": "c9687655df7e8ef378236dceaf14c63d6d8f779f69bc441849683b4b597ff7f8"
+    }
+  ],
+  "source_files_proposed": 7,
+  "tests_executed": false,
+  "artifact_payloads_downloaded": false,
+  "signed_transport_urls_published": false,
+  "scope": "Source integration proposal and exact original Producer API/log evidence. No combined runtime, renderer, Android, FPS, visual receipt or release acceptance."
+}

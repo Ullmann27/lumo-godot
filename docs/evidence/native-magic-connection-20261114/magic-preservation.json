@@ -1,0 +1,818 @@
+{
+  "schema": 1,
+  "base_commit": "f0c19f9eb69ea330ac5d2b8f9948cb029ca218aa",
+  "base_tree": "40e7a8d073de320865613152f8a027abbe025d51",
+  "source_freeze_sha256": "3fe8fdc5d85bfa0dd6419792688b72ed3840c3122e2267f695e800e6f986b1e2",
+  "four_modified_files_additions_only": [
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "inserted_lines": 12,
+      "removed_lines": 0,
+      "all_original_lines_preserved_in_order": true
+    },
+    {
+      "path": "scripts/tests/treasure_exploration_regression.gd",
+      "inserted_lines": 6,
+      "removed_lines": 0,
+      "all_original_lines_preserved_in_order": true
+    },
+    {
+      "path": "scripts/learning/learning_world.gd",
+      "inserted_lines": 13,
+      "removed_lines": 0,
+      "all_original_lines_preserved_in_order": true
+    },
+    {
+      "path": "scripts/tests/learning_world_regression.gd",
+      "inserted_lines": 7,
+      "removed_lines": 0,
+      "all_original_lines_preserved_in_order": true
+    }
+  ],
+  "protected_base_files": [
+    {
+      "path": "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb",
+      "base_blob": "53cb01bfbd23a2962da5428a08b8aee313d5e152",
+      "mode": "100644",
+      "producer_blob": "53cb01bfbd23a2962da5428a08b8aee313d5e152",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+      "base_blob": "4d18f240a34a5aa6320ecd61c0ab0fa719c0b0ad",
+      "mode": "100644",
+      "producer_blob": "4d18f240a34a5aa6320ecd61c0ab0fa719c0b0ad",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "project.godot",
+      "base_blob": "296b8b1752ebfd526aedd019907ac88efbfd0c02",
+      "mode": "100644",
+      "producer_blob": "296b8b1752ebfd526aedd019907ac88efbfd0c02",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/app/android_safe_area.gd",
+      "base_blob": "9658440b3effad06358fe7cfe62f04a95ccbe279",
+      "mode": "100644",
+      "producer_blob": "9658440b3effad06358fe7cfe62f04a95ccbe279",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/app/mobile_runtime.gd",
+      "base_blob": "53c6974ef2e1ba82bbb1fff71c9be4d9c16a911f",
+      "mode": "100644",
+      "producer_blob": "53c6974ef2e1ba82bbb1fff71c9be4d9c16a911f",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_animation_state.gd",
+      "base_blob": "b7263670066ae008a067b2912ed8f4bfd33dc2d1",
+      "mode": "100644",
+      "producer_blob": "b7263670066ae008a067b2912ed8f4bfd33dc2d1",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_animation_state.gd.uid",
+      "base_blob": "329d109b40f7139ef92c4a0fd2c9e62a0e09d53b",
+      "mode": "100644",
+      "producer_blob": "329d109b40f7139ef92c4a0fd2c9e62a0e09d53b",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_behavior_controller.gd",
+      "base_blob": "b8ef1a5b4d3f8212a7fc3988c63075f2ba060521",
+      "mode": "100644",
+      "producer_blob": "b8ef1a5b4d3f8212a7fc3988c63075f2ba060521",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_behavior_controller.gd.uid",
+      "base_blob": "164dd624559a2bab8642602cf97e1bc436f63b67",
+      "mode": "100644",
+      "producer_blob": "164dd624559a2bab8642602cf97e1bc436f63b67",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_body_space_pose.gd",
+      "base_blob": "2b0c2f5b379535cbc4e54c9c1badca72c0f1bc19",
+      "mode": "100644",
+      "producer_blob": "2b0c2f5b379535cbc4e54c9c1badca72c0f1bc19",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_character_controller.gd",
+      "base_blob": "0e7a6bc3b5c63408ad13c4b35edd62425ccf99b8",
+      "mode": "100644",
+      "producer_blob": "0e7a6bc3b5c63408ad13c4b35edd62425ccf99b8",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_character_controller.gd.uid",
+      "base_blob": "ab148ecc608ddd17c1abbc784130fe65857c9cd3",
+      "mode": "100644",
+      "producer_blob": "ab148ecc608ddd17c1abbc784130fe65857c9cd3",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_eye_system.gd",
+      "base_blob": "cd9a80d1e11590e964227e341e2b17f5255db272",
+      "mode": "100644",
+      "producer_blob": "cd9a80d1e11590e964227e341e2b17f5255db272",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_eye_system.gd.uid",
+      "base_blob": "73fb5fb075aef4aac5c49bc8dbe2afb6e81a12be",
+      "mode": "100644",
+      "producer_blob": "73fb5fb075aef4aac5c49bc8dbe2afb6e81a12be",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_facial_pose.gd",
+      "base_blob": "91b8a8cd25f21dab84b77f178aa82d06673b54f9",
+      "mode": "100644",
+      "producer_blob": "91b8a8cd25f21dab84b77f178aa82d06673b54f9",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_gait.gd",
+      "base_blob": "f9ff787590d8be9590a95eaa8285c0ac804d84f3",
+      "mode": "100644",
+      "producer_blob": "f9ff787590d8be9590a95eaa8285c0ac804d84f3",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_gait.gd.uid",
+      "base_blob": "999b708b368bdecbeecdca582152328fd627b48a",
+      "mode": "100644",
+      "producer_blob": "999b708b368bdecbeecdca582152328fd627b48a",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_kart_animation_adapter.gd",
+      "base_blob": "8431a588aeedfa6e0cc46a4d363b51c8f53cd992",
+      "mode": "100644",
+      "producer_blob": "8431a588aeedfa6e0cc46a4d363b51c8f53cd992",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_kart_animation_adapter.gd.uid",
+      "base_blob": "2eb82cce7a44a3297f891919ba170d01a5880653",
+      "mode": "100644",
+      "producer_blob": "2eb82cce7a44a3297f891919ba170d01a5880653",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_mouth_system.gd",
+      "base_blob": "af0675a3e987745cb3136e9aceed997f203524be",
+      "mode": "100644",
+      "producer_blob": "af0675a3e987745cb3136e9aceed997f203524be",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_mouth_system.gd.uid",
+      "base_blob": "a498ac0872b33677093b143e7c10a95ed49c2ca7",
+      "mode": "100644",
+      "producer_blob": "a498ac0872b33677093b143e7c10a95ed49c2ca7",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_platform_pose.gd",
+      "base_blob": "f2085dc82b9840077e631f586a4f4fb5159d7c08",
+      "mode": "100644",
+      "producer_blob": "f2085dc82b9840077e631f586a4f4fb5159d7c08",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_reference_board.gd",
+      "base_blob": "9bb54e33cf5ff4b1e873f7302d9c9b6201149413",
+      "mode": "100644",
+      "producer_blob": "9bb54e33cf5ff4b1e873f7302d9c9b6201149413",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_reference_board.gd.uid",
+      "base_blob": "0d7b558b92ab650a8d557f0e7eab1e1a4c1e13a9",
+      "mode": "100644",
+      "producer_blob": "0d7b558b92ab650a8d557f0e7eab1e1a4c1e13a9",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_rigged_actor.gd",
+      "base_blob": "e4b6a6081a922a137f68491de66f51e096528510",
+      "mode": "100644",
+      "producer_blob": "e4b6a6081a922a137f68491de66f51e096528510",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_rigged_actor.gd.uid",
+      "base_blob": "137fcfc743a0506901976758306c9cc74b11f611",
+      "mode": "100644",
+      "producer_blob": "137fcfc743a0506901976758306c9cc74b11f611",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_teacher_pose.gd",
+      "base_blob": "5d3a1ae763e84cb09276cafe9ba5f9541bf49447",
+      "mode": "100644",
+      "producer_blob": "5d3a1ae763e84cb09276cafe9ba5f9541bf49447",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_walk_locomotion.gd",
+      "base_blob": "0f5f8f508cf6cfb6f67c8178a25e5522580a5e85",
+      "mode": "100644",
+      "producer_blob": "0f5f8f508cf6cfb6f67c8178a25e5522580a5e85",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/build_settlement_economy.gd",
+      "base_blob": "72dd5a880488a60ad6708928c212841afa587df2",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/build_settlement_economy.gd.uid",
+      "base_blob": "626b8db8012fac318910e90f186c042a4411b523",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/build_settlement_region.gd",
+      "base_blob": "612ea82cc6494882e429a1090a64024f6c11c081",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/build_settlement_region.gd.uid",
+      "base_blob": "c4de65f51719a6b9449285152c977b9c09514d3a",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/build_settlement_residents.gd",
+      "base_blob": "43fef81fab8e5abae9d84ad168470994ee416bcb",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/build_settlement_residents.gd.uid",
+      "base_blob": "5f611975fefcfcad9a2d8f5171fc493552188404",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/build_settlement_state.gd",
+      "base_blob": "b42d3fdb034034018ee494b96d456ade8edabe64",
+      "mode": "100644",
+      "producer_blob": "5d04e2881f7a70cb7c8d4354e0dffcc9bf97461a",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/build_settlement_state.gd.uid",
+      "base_blob": "8ce4629c44ad1e2cf8c4dbac1811e8690a27f26e",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/build_settlement_visual.gd",
+      "base_blob": "e55457b64f71968acd1fae59e8d444884e0cd22a",
+      "mode": "100644",
+      "producer_blob": "25ae41b6f78f80ab1b441d9cc82415adea4006a8",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/build_settlement_visual.gd.uid",
+      "base_blob": "9c8b0a4dd2abac61159a83b857b561ce9f93d882",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/build_settlement_world.gd",
+      "base_blob": "dd1e7b0662f2d4325a6fa562e3a111ecbb31fd50",
+      "mode": "100644",
+      "producer_blob": "a0b2b6c34d2242075f9f735adae481b7e3ecc3c5",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/build_settlement_world.gd.uid",
+      "base_blob": "67f050acfcfbbd5472094dac52af4d29c31fd777",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/creative/treasure_state.gd",
+      "base_blob": "d507e1fe167ce02a10bcc0d414dde291b7edcb49",
+      "mode": "100644",
+      "producer_blob": "d507e1fe167ce02a10bcc0d414dde291b7edcb49",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/games/connect_four/connect_four_table.gd",
+      "base_blob": "f2ae17e7edf8ac1b2d0d72a0d477d7e1459b1458",
+      "mode": "100644",
+      "producer_blob": "cdeb31fc6cfe30c18fc6c96afb2b1d749532c37f",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/learning/learning_activity.gd",
+      "base_blob": "c1eed0eefb4017ac4db3cb3d1d4551e2d9c601fe",
+      "mode": "100644",
+      "producer_blob": "c1eed0eefb4017ac4db3cb3d1d4551e2d9c601fe",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/systems/host_bridge.gd",
+      "base_blob": "dab96a1b918dc754568c0eda14cdda05175c89fb",
+      "mode": "100644",
+      "producer_blob": "dab96a1b918dc754568c0eda14cdda05175c89fb",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/tests/cards_safe_area_android_contract.gd",
+      "base_blob": "a375771d3a2bfd71481383052b236135cd37188a",
+      "mode": "100644",
+      "producer_blob": "a375771d3a2bfd71481383052b236135cd37188a",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/tests/cards_safe_area_regression.gd",
+      "base_blob": "6861d4ac4d14cbd94e33a006293994a583ec2140",
+      "mode": "100644",
+      "producer_blob": "a7000e7f6ccc75c6aef16cbbab67194b5b1ae3d8",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/tests/connect_four_return_regression.gd",
+      "base_blob": "1d7a4cbd0f3b0d5a21ddeaf218bf27eadfe1f0bb",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/tests/fixtures/cards_safe_area_table.gd",
+      "base_blob": "73e5f8663e7bb458a9cd41e7bcaf3bdc3f55cdfd",
+      "mode": "100644",
+      "producer_blob": "73e5f8663e7bb458a9cd41e7bcaf3bdc3f55cdfd",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "base_blob": "61ded805fdbc70c3499814b4e8f74214079fc96c",
+      "mode": "100644",
+      "producer_blob": "61ded805fdbc70c3499814b4e8f74214079fc96c",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/tests/treasure_title_contrast_regression.gd",
+      "base_blob": "73939c37e38bdbaca77220f79227e3dcde26e59c",
+      "mode": "100644",
+      "producer_blob": "73939c37e38bdbaca77220f79227e3dcde26e59c",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/ui/mobile_safe_area.gd",
+      "base_blob": "6e65b507b1503809cce5c2fc5f9852ccbdb5810f",
+      "mode": "100644",
+      "producer_blob": "6e65b507b1503809cce5c2fc5f9852ccbdb5810f",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "scripts/ui/mobile_safe_area.gd.uid",
+      "base_blob": "3f05c2bc6b343f85bcb7d8df22ab4e2e932b0eff",
+      "mode": "100644",
+      "producer_blob": "3f05c2bc6b343f85bcb7d8df22ab4e2e932b0eff",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "tools/run_godot_probe.py",
+      "base_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+      "mode": "100644",
+      "producer_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "tools/tests/test_nextgen_runner.py",
+      "base_blob": "6abee84f4df65fd2e379d013b7068552a962ce15",
+      "mode": "100644",
+      "producer_blob": "80855965a767fb966bc2cdd496ec0b931dd07154",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "tools/tests/test_safe_area_rasters.py",
+      "base_blob": "5f601a6e2910b6026a7fe5b3a430be8073acd8d7",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "tools/tests/test_studio_2020_rasters.py",
+      "base_blob": "8f8310c66e6477680996a5fabd407e53ec0d9e2b",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "tools/validate_nextgen.sh",
+      "base_blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+      "mode": "100755",
+      "producer_blob": "bf5e8e129fa8c3d7872fb92d21046c1ef7f87e9e",
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "tools/verify_puzzle_menu_rasters.py",
+      "base_blob": "391630e0bcd394dd0e274725cf15a7474eb41e77",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "tools/verify_safe_area_rasters.py",
+      "base_blob": "34fb3c4f31e476a5f29f98abc9a2ecc0337e6863",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "tools/verify_studio_2020_rasters.py",
+      "base_blob": "b60c3360730f0db73f91324cbaed3a8806fd141e",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "tools/verify_studio_rasters.py",
+      "base_blob": "0278d71030e87e4e46dd04b855e77711b2759252",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    },
+    {
+      "path": "tools/verify_village_rasters.py",
+      "base_blob": "7c9522903db13f9bd0917ef2768ddbc08e624b1d",
+      "mode": "100644",
+      "producer_blob": null,
+      "operation": "leave_base_unchanged"
+    }
+  ],
+  "protected_base_file_count": 62,
+  "function_bindings": [
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "modified_functions": [
+        "_answer",
+        "_close_modal",
+        "_open_modal",
+        "_physics_process",
+        "_ready",
+        "_update"
+      ],
+      "unchanged_functions": [
+        {
+          "name": "_branch_trails",
+          "sha256": "42ddff0f47da938d7e9283512ef2c1566e245b26c03de45661fd11be3cd63f26"
+        },
+        {
+          "name": "_exit_tree",
+          "sha256": "16d8481fea4e5cc7a98feb6b5b7a24cc9203fd21fd634279eabfef98ae891ae5"
+        },
+        {
+          "name": "_interact",
+          "sha256": "199d11cf8c76578e58515e5fb27ef1d9ba5706d8d7342ddf2a6c5da88653f083"
+        },
+        {
+          "name": "_inventory",
+          "sha256": "8b1aa5d14e11777a08c0223f6bcacb7ba938dafd463ae35a4e4292192a966024"
+        },
+        {
+          "name": "_jump",
+          "sha256": "93d5e6c7696db7d0267be6b93220fd8e94f451c1e223d41e78718dc0bbd17682"
+        },
+        {
+          "name": "_landscape",
+          "sha256": "5e9619d0e568cd55262b33e658689e467fe699474ed0dbe67cec61f16f82b357"
+        },
+        {
+          "name": "_layout",
+          "sha256": "cfcb01eac424c929a0a99efd53e5af64e9a79c2d4b8896a75ed757bed663ccbd"
+        },
+        {
+          "name": "_layout_modal",
+          "sha256": "c24ba0b0b15771bc7bf804de26141b2e66ce65694a20f89c75666ad6ef418df8"
+        },
+        {
+          "name": "_leave",
+          "sha256": "d8ee6f4c6e84c552fe02462b2c14935601cd37280ecd6207eac2c3db69741972"
+        },
+        {
+          "name": "_new_adventure",
+          "sha256": "15f23309b86abbe9f5c932e29d28ef9735bee93ab68f7f0c9540be9243620c89"
+        },
+        {
+          "name": "_notification",
+          "sha256": "a5f62e360ebc0e18784f3fcdf01949ac4628410af1c27028cb6f2f70d9430e67"
+        },
+        {
+          "name": "_pause_menu",
+          "sha256": "4233335ff2795b189817f83f9a7f6291df39f70e386fb0e1a4c69fca6e2b8492"
+        },
+        {
+          "name": "_save",
+          "sha256": "c811a34c002a1a9829030a84e18a51fb5062eb64e3ebe3c634234b6b76526334"
+        },
+        {
+          "name": "_show_clue",
+          "sha256": "eeffeddc1d3f147d6823c96d90acd4e2eab3352599447d0ac56bd67cd53f4e7d"
+        },
+        {
+          "name": "_terrain_material",
+          "sha256": "00fe8f336a0c7f51ab72e52f6ce3174223d45c586022b176c5361e71c60646ff"
+        },
+        {
+          "name": "_terrain_mesh",
+          "sha256": "af0993ce3d6d38796f65407277b6fbe506f80af7cd5e667a26368f78794b0c85"
+        },
+        {
+          "name": "_ui",
+          "sha256": "9a15a706b2472da73ea681aec009a2fca886c87ed23a1a482077230aa9170221"
+        },
+        {
+          "name": "_unhandled_input",
+          "sha256": "51f8457666566ffb8c9999d8bd9a1616542ad270edaa7928ad551278acf68f02"
+        },
+        {
+          "name": "_win",
+          "sha256": "f03b718af66341cd7c69beeff6bc0c861d518e59be7a73795ad0f426b20e8cee"
+        }
+      ]
+    },
+    {
+      "path": "scripts/learning/learning_world.gd",
+      "modified_functions": [
+        "_build_stage",
+        "_give_sun",
+        "_give_water",
+        "_inspect",
+        "_notification",
+        "move_token"
+      ],
+      "unchanged_functions": [
+        {
+          "name": "_animate_token",
+          "sha256": "aa9272b94108f2e009986cef24882894451ca586d4c2661b94e2ba1773e3124a"
+        },
+        {
+          "name": "_arrange_activity",
+          "sha256": "ca12be7267f08ac1ee8e71a4246b8159203e8d166178ba7e274234cf274ab389"
+        },
+        {
+          "name": "_begin_drag",
+          "sha256": "c6bc6c9114bcc8fe15c29f1c90f314d524a91d250a7073a5a129fffe8d5580ac"
+        },
+        {
+          "name": "_box",
+          "sha256": "f5c5354811a3e496b2c7503bba89e09aed1ce1ab147d180cdc4054fd8d0b161f"
+        },
+        {
+          "name": "_branch",
+          "sha256": "ff515405b9482f5b1a6196475048819ed161520c8b2b1bd3a2d0e020a5bd08e5"
+        },
+        {
+          "name": "_build_fractions",
+          "sha256": "991725998afbe14257e4d8d51a9770b5f09bb444bf0a58db6c6d293adca75527"
+        },
+        {
+          "name": "_build_groups",
+          "sha256": "26d15c62617fd92503229bf0ad25a2789c9d8ea4b9d1401c9e01a902d3a53228"
+        },
+        {
+          "name": "_build_hundred_stock",
+          "sha256": "03cef386ea547ce898a2b28923fc252087b25d0fd19f61cb7aa7dd06cd100d29"
+        },
+        {
+          "name": "_build_plant",
+          "sha256": "a54643e8c6beebabdd04db6b33eb287b5903ef861b62d0dfde86e258534d0891"
+        },
+        {
+          "name": "_build_subtraction",
+          "sha256": "70010cbd1879b5a41a74c61987ab30f3a5198162c9244bb5303df07e9e069bb0"
+        },
+        {
+          "name": "_build_syllables",
+          "sha256": "f888aa4a3f2b6edde06c981e8ec802bfd3beed20ea0d987e757e29e3b520b87a"
+        },
+        {
+          "name": "_build_ten_frame",
+          "sha256": "11b733922e8c4c09a5c2c0f9d3a6a54a299880f603f5a8988d0b41d9564e0a72"
+        },
+        {
+          "name": "_build_ui",
+          "sha256": "5843ea7bb11c532ab2980e2482c0cefa006910df8226abbc7d2436b34e0182d9"
+        },
+        {
+          "name": "_button",
+          "sha256": "7e9d047c646eaac99261bd1d8449bead48c08bdd2221ac34db896110f2e1c598"
+        },
+        {
+          "name": "_cancel_drag",
+          "sha256": "9140bffcebfd556b543a86826d713a16463cc4c5b1c00d30aa7073473fa3bb6a"
+        },
+        {
+          "name": "_cylinder",
+          "sha256": "1d03a02e92bb56c0e6d4c7b7d198e7e5829788a9c2035a450f27ed1e1ec81965"
+        },
+        {
+          "name": "_drag_to",
+          "sha256": "03808e6440f468401f8739cbf83f920909857d418144058e1cffe1230d724869"
+        },
+        {
+          "name": "_end_drag",
+          "sha256": "c175151a289be76c756f25a473d076b6767a0cfc691e48cde46cbf2740f27601"
+        },
+        {
+          "name": "_exit_tree",
+          "sha256": "ee95346cd2550f88e1f2edf56863a297737264fbb960c001991e681abbc3f637"
+        },
+        {
+          "name": "_input",
+          "sha256": "b153e707f9dcc78371009e970a34f8aa4dd9675869cafdf8b6a64f63ce7e2cab"
+        },
+        {
+          "name": "_layout",
+          "sha256": "67639169cbb1e8f22088b2f0e5980a2c770964f6ffc9d5d585fcc9a5017fbf9e"
+        },
+        {
+          "name": "_material",
+          "sha256": "f62def1a948091c414cb230147aefb2bc970616abc45b9a4a11eb254806ebb2c"
+        },
+        {
+          "name": "_mesh",
+          "sha256": "ffd97fc6d3ee1c02baf3be067a93718bc2e4880c8ef4d62a7123eddc809b6439"
+        },
+        {
+          "name": "_panel",
+          "sha256": "6a59ff74cd0fb28bb1965afca9e1d684dea78a8f5fcaf16c6fc6d362a7d6d638"
+        },
+        {
+          "name": "_part_position",
+          "sha256": "a98ff26a3835f4e3c0783c9d508f46839244ba645c91893fc3c42d12b1450ce0"
+        },
+        {
+          "name": "_process",
+          "sha256": "e0c81613c77d13ea38f5597bfd2bcbb7cc1e222d7c1c097bae263b00637ad8ab"
+        },
+        {
+          "name": "_queue_layout",
+          "sha256": "8f4f6e0f59315baab7cb4283518d8ca9ce90cac4be1652b614aac4cc3831a111"
+        },
+        {
+          "name": "_queue_narration",
+          "sha256": "6f8a3d7ca3741e3913d6ae4c2b6fdec3dbc6418a50dd2cc2cc2569e877c931c4"
+        },
+        {
+          "name": "_ready",
+          "sha256": "f3540ab15ca02188b9891b5dcae15598fc0d6b8b9c7ef10cb174c88720150a67"
+        },
+        {
+          "name": "_rebuild_activity",
+          "sha256": "02a66e124c36a49d8a6cd9801fa2bcd753bb4d74b57f1162051fbc34b60f9275"
+        },
+        {
+          "name": "_refresh",
+          "sha256": "5656ca5d4a023601c6d39b86237774d43fc9f818c156465a53a9bb6a5715d3c6"
+        },
+        {
+          "name": "_return_to_lesson",
+          "sha256": "7819d3d9daa9b285ebf6e69295fb06d083a9cb1e1fc8da5c15924f43d1134c38"
+        },
+        {
+          "name": "_show_one",
+          "sha256": "18bfd23e241069dd14bfea2f9fe15f13f13d6046fa0f604617148e64dadba87e"
+        },
+        {
+          "name": "_slot",
+          "sha256": "02405f781cddc90f58c4a0aece852e4ec1d85c492199c836147411d410ff61a9"
+        },
+        {
+          "name": "_soften_teacher_materials",
+          "sha256": "8fbaf2c41c0296ed961a5ac98211792c00ac9a8bc737e5026b2e7e1aee3bd67a"
+        },
+        {
+          "name": "_speak",
+          "sha256": "9d5d1cbaee6313b353dd759e3ef25aeba53c0dc87353a7fb3fb582d394f97087"
+        },
+        {
+          "name": "_sphere",
+          "sha256": "aa5ac6c56f6fff494da041a4dc2f4d985a2d36f40d9b88edf99e91e6b436d249"
+        },
+        {
+          "name": "_stop_speech",
+          "sha256": "f5fcd0f16f320f2adeb063d2c601ff94e4e233660576af394f7252a2bc2c1a95"
+        },
+        {
+          "name": "_teacher",
+          "sha256": "9811c60d15dbad6f636e3af7393bc09ebb13a3af08bf6605f1fc8fc1c4a26209"
+        },
+        {
+          "name": "_text",
+          "sha256": "1f919e87c8c164ca7c1ed635db3fd651f7c41256110e0d18db6cf60cd3726e84"
+        },
+        {
+          "name": "_tick_speech",
+          "sha256": "24ae01a8bae8c6b0f4a760a7e96e2768da94cf214c4415545146eaab64d2a86b"
+        },
+        {
+          "name": "_top_text",
+          "sha256": "21f74b5f33bb20423be5c158f1fc37ec14368d1bd2ecd9d2dcfdc23e1a55849b"
+        },
+        {
+          "name": "_unhandled_input",
+          "sha256": "d855e93b7fbc2b54fa29893c35e08aaf17aa97190d61a90d50940254a474b9ad"
+        },
+        {
+          "name": "_update_voice_button",
+          "sha256": "5b79966a771f58b040e23881fb9677f029e982b0cb3927e695d652a6861d8cbe"
+        },
+        {
+          "name": "_voice_action",
+          "sha256": "961ffff8c85612dc058ede89f29c6601618ef97497e8486e55176689135303f2"
+        },
+        {
+          "name": "restart",
+          "sha256": "ec22a7e443d8e363aa9f8e5ea9051c28ee320db4eff2ec0e191a273308233d40"
+        }
+      ]
+    }
+  ],
+  "unchanged_52_runner_calls": [
+    "check_probe learning_world_regression '[LearningWorld] PASS' headless",
+    "check_probe learning_sharing_regression '[LearningSharing] PASS' headless",
+    "check_probe learning_studio_regression '[LearningStudio] PASS' headless",
+    "check_probe learning_host_payload_regression '[LearningHostPayload] PASS' headless",
+    "check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' headless",
+    "check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' headless",
+    "check_probe treasure_exploration_regression '[TreasureExploration] PASS' headless",
+    "check_probe jump_nextgen_regression '[JumpNextgen] PASS' headless",
+    "check_probe jump_expeditions_regression '[JumpExpeditions] PASS' headless",
+    "check_probe lumo_teacher_pose_regression '[LumoTeacherPose] PASS' headless",
+    "check_probe lumo_studio_motion_regression '[LumoStudioMotion] PASS' headless",
+    "check_probe lumo_65bone_walk_gait_regression '[LumoGait] PASS' headless",
+    "check_probe lumo_original_jump_visual_regression '[JumpOriginalLumo] PASS' headless",
+    "check_probe bauwelt_identity_2013_regression '[BauweltIdentity2013] PASS' headless",
+    "check_probe build_frontier_regression '[BuildFrontier] PASS' headless",
+    "check_probe build_transform_regression '[BuildTransform] PASS' headless",
+    "check_probe build_nextgen_play_regression '[BuildNextgen] PASS' headless",
+    "check_probe build_settlement_regression '[Settlement] PASS' headless",
+    "check_probe build_settlement_play_regression '[SettlementPlay] PASS' headless",
+    "check_probe build_village_economy_regression '[VillageEconomy] PASS' headless",
+    "check_probe build_village_art_regression ' checks / 0 failures' headless",
+    "check_probe build_village_scene_regression '[VillageScene] PASS' headless",
+    "check_probe creative_nextgen_environment_regression '[CreativeNextgenEnvironment] PASS' headless",
+    "check_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' headless",
+    "check_probe kart_track_pass_regression '[KartTrackPass] PASS' headless",
+    "check_probe cards_table_regression 'CARDS_TABLE_RUNTIME_PASS' headless",
+    "check_probe cards_safe_area_android_contract 'CARDS_ANDROID_INSETS_PASS' headless",
+    "check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' headless",
+    "check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' headless",
+    "check_probe rhythm_tour_regression '[RhythmTour] PASS' headless",
+    "check_probe rhythm_tour_play_regression '[RhythmTourPlay] PASS' headless",
+    "check_probe learning_world_capture '[LearningCapture] PASS' rendered -- \"--output=$LOG_DIR/captures/learning_world_capture\"",
+    "check_probe learning_sharing_capture '[LearningSharingCapture] PASS' rendered -- \"--output=$LOG_DIR/captures/learning_sharing_capture\"",
+    "check_probe lumo_studio_motion_capture '[LumoStudioCapture] PASS' rendered",
+    "check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' rendered",
+    "check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' rendered -- --capture",
+    "check_probe treasure_exploration_regression '[TreasureExploration] PASS' rendered",
+    "check_probe jump_nextgen_capture '[JumpNextgenCapture] PASS' rendered",
+    "check_probe build_nextgen_play_regression '[BuildNextgen] PASS' rendered -- --capture",
+    "check_probe build_settlement_play_regression '[SettlementPlay] PASS' rendered -- --capture",
+    "check_probe build_village_scene_regression '[VillageScene] PASS' rendered -- --capture",
+    "check_probe creative_nextgen_environment_regression '[CreativeNextgenEnvironment] PASS' rendered",
+    "check_probe kart_nextgen_garage_regression '[NextGenGarage] PASS' rendered --fixed-fps 60 -- --capture",
+    "check_probe cards_table_capture 'CARDS_TABLE_RENDER_PASS' rendered -- \"--output=$LOG_DIR/captures/cards_table_capture\"",
+    "check_probe cards_safe_area_regression 'CARDS_SAFE_AREA_PASS' rendered -- --capture",
+    "check_probe mobile_safe_area_regression 'MOBILE_SAFE_AREA_PASS' rendered -- --capture",
+    "check_probe rhythm_tour_play_regression '[RhythmTourPlay] PASS' rendered -- --capture",
+    "check_probe kart_player_full_route_regression '[PlayerFullRoute] PASS' rendered -- \"--out=$LOG_DIR/captures/kart_player_full_route_regression\"",
+    "check_probe lumo_facial_regression 'LUMO_FACIAL_PASS checks=102 actual_meshes=true original_bones=65 original_clips=9 phoneme_lipsync=false' headless",
+    "check_probe lumo_facial_capture 'LUMO_FACIAL_CAPTURE_PASS frames=144 original_word=true recording_fps=24 not_device_fps=true' rendered \\",
+    "check_probe connect_four_visual_capture 'CONNECT_FOUR_VISUAL_PASS' rendered -- --capture",
+    "check_probe treasure_title_contrast_regression '[TreasureTitleContrast] PASS' rendered -- --capture"
+  ],
+  "studio2020_png_count": 17,
+  "runner_changed": false,
+  "original_lumo_or_facial_binary_copied": false,
+  "village_grain_changes": false,
+  "c4_return_changes": false,
+  "safe_area_or_treasure_title_geometry_changes": false,
+  "product_or_scene_tests_run": false
+}
