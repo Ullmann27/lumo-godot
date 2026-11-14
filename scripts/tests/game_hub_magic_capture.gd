@@ -18,7 +18,12 @@ func _run() -> void:
 		"childKey": "capture-no-production-save", "reduceAnimations": false
 	}
 	root.size = Vector2i(1080, 1920)
-	var hub := load("res://scenes/games/game_hub.tscn").instantiate()
+	var packed := load("res://scenes/games/game_hub.tscn") as PackedScene
+	if packed == null:
+		printerr("[LumoHubCapture] Native games scene could not be imported")
+		quit(1)
+		return
+	var hub: Node = packed.instantiate()
 	root.add_child(hub)
 	for spec in [
 		{"size": Vector2i(1080, 1920), "name": "hub_portrait.png"},
