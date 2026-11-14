@@ -1,0 +1,1245 @@
+{
+  "schema": 1,
+  "repository": "Ullmann27/lumo-godot",
+  "artifact_id": 14114083026,
+  "artifact_name": "kart-stage2-regression-43595543000",
+  "run_id": 43595543000,
+  "job_id": 132449119326,
+  "run_attempt": 1,
+  "native_head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+  "native_tree": "1c2b5da7a4485cb8b911adcac2b567481cf902b5",
+  "archive": {
+    "file": "lumo-kart-stage2-43595543000-original.zip",
+    "bytes": 49681551,
+    "sha256": "e21bf4c90cd075c40f4bdeccba84451168bed1c91836e40d08b53241a1c7e5d2",
+    "zip_crc_all_members_passed": true
+  },
+  "members": [
+    {
+      "path": "_temp/godot-import.log",
+      "bytes": 167884,
+      "sha256": "a8b773a4b6e8ab4bf93fd634ee6bafb84988873ad582bb54fed4285689cd1567",
+      "zip_crc32": "b56cc3a3"
+    },
+    {
+      "path": "_temp/track-contract.log",
+      "bytes": 1347,
+      "sha256": "bc31c5b7fa47babc671df56b3ab97256a84d4f68a705973f341f34d49274e7a4",
+      "zip_crc32": "7cb7d607"
+    },
+    {
+      "path": "_temp/kart-physics.log",
+      "bytes": 5175,
+      "sha256": "262298bde18a47c2598f7a9b53080f322af9fbc6529395a1ca06d42333a89b08",
+      "zip_crc32": "598f868c"
+    },
+    {
+      "path": "_temp/game-entry.log",
+      "bytes": 564,
+      "sha256": "291084e2e0271f53c5ff3d85754e4cb6c681b040475c2d7ec9e2b4227f3b0f74",
+      "zip_crc32": "14d68263"
+    },
+    {
+      "path": "_temp/kart-modes.log",
+      "bytes": 2410,
+      "sha256": "9d9c1020f3d70b4c2dd893ad17a26e6db388a78beadd025718c85386414f724c",
+      "zip_crc32": "ad54ee22"
+    },
+    {
+      "path": "_temp/kart-fold.log",
+      "bytes": 2034,
+      "sha256": "5d0b0b44a9c88c32369190ad9a2b181f0127562c5a6e78e7d4f741b328b84c0d",
+      "zip_crc32": "797e6c5e"
+    },
+    {
+      "path": "_temp/kart-sonnenhafen-capture.log",
+      "bytes": 1368,
+      "sha256": "dae298c88354b58ec7b816661972a9adcd2bad91e121c6b2ae129cd4c3ef59bc",
+      "zip_crc32": "49040473"
+    },
+    {
+      "path": "_temp/kart-sky-capture.log",
+      "bytes": 1630,
+      "sha256": "16aaca1b89e9fc839afa8c1c3e4c3ce83b0616d36d468e086e08a83a059a5f72",
+      "zip_crc32": "ccb4da5e"
+    },
+    {
+      "path": "_temp/kart-zauberwald-capture.log",
+      "bytes": 1364,
+      "sha256": "6e817a6f8d7644c6878476408fff91f8bdd24161b1ba410602e7a570970dd23c",
+      "zip_crc32": "a02afee4"
+    },
+    {
+      "path": "_temp/kart-holo-city-capture.log",
+      "bytes": 1344,
+      "sha256": "34c5e8278534be5fa96ce6ffa15d937194f01f5ef7146a703e1f3d4ae64c07ea",
+      "zip_crc32": "6d4b4185"
+    },
+    {
+      "path": "_temp/sky-halo-contract.log",
+      "bytes": 573,
+      "sha256": "5f03d4b60cd684c03c6c48b31cb8e0c3d291ef892787a27db21a2a9a29727c0e",
+      "zip_crc32": "01dd143b"
+    },
+    {
+      "path": "_temp/sky-halo-capture.log",
+      "bytes": 1217,
+      "sha256": "3de9f71cc02a321c4f4cbee5e6c9b907a4095bbe2e0e253af01a1a6781b9241d",
+      "zip_crc32": "2bf34287"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_engine_probe/01-public-start-session.cfg",
+      "bytes": 1846,
+      "sha256": "67c5f2715bf9b0967cf1fdcf610d8501ad04f9ec7f06d19c669745a8d49450df",
+      "zip_crc32": "d954eb64"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_engine_probe/02-first-active-session.cfg",
+      "bytes": 2020,
+      "sha256": "9aec3cdeb853e7698a3e9e2240fc5c2ce05a93b0fd354ee272f23c5b90153ede",
+      "zip_crc32": "6238c1c4"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_engine_probe/03-next-periodic-session.cfg",
+      "bytes": 2008,
+      "sha256": "f1c31369b4b08c84d65764abcd1807eb1be0c99941633a7a17006d8481635c8b",
+      "zip_crc32": "af26c2c6"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_engine_probe/natural-engine-public-touch-evidence.json",
+      "bytes": 4836,
+      "sha256": "42b9eccdef38aa91be51e6caa88fe1672f8a2cae46bd7c48872407d81df5d522",
+      "zip_crc32": "89b5dea6"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/001-race-initial-session.cfg",
+      "bytes": 1860,
+      "sha256": "d26fefb5e14471cc0dc712733af45b51e65de8957ff2aae638c61358324d0bc8",
+      "zip_crc32": "47e34b4e"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_engine_probe/run.log",
+      "bytes": 644,
+      "sha256": "4179f4a36194cbe9a1fd36c81335e9147e7b873e3dba15bfef75b4cfab255841",
+      "zip_crc32": "db61fa67"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/002-race-subsecond-session.cfg",
+      "bytes": 1860,
+      "sha256": "d26fefb5e14471cc0dc712733af45b51e65de8957ff2aae638c61358324d0bc8",
+      "zip_crc32": "47e34b4e"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/003-race-first-active-session.cfg",
+      "bytes": 2004,
+      "sha256": "afc5ccceebc75fd056cb0e1d79eb34515b6dd7c328848c9377f3cd185e23808b",
+      "zip_crc32": "39ef1912"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/004-race-before-periodic-session.cfg",
+      "bytes": 2004,
+      "sha256": "afc5ccceebc75fd056cb0e1d79eb34515b6dd7c328848c9377f3cd185e23808b",
+      "zip_crc32": "39ef1912"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/005-race-periodic-session.cfg",
+      "bytes": 2019,
+      "sha256": "cc1d0c21a1c89b6499fc82dc87235ed1dc07c403b0a1b124564f20f90a1d5fd3",
+      "zip_crc32": "7e2918ba"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/006-cup-initial-session.cfg",
+      "bytes": 1858,
+      "sha256": "704527612aa6897bbb3ec751385d1f905e5955f6337402b61a511a7082df7cc4",
+      "zip_crc32": "34ddcfdc"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/007-cup-subsecond-session.cfg",
+      "bytes": 1858,
+      "sha256": "704527612aa6897bbb3ec751385d1f905e5955f6337402b61a511a7082df7cc4",
+      "zip_crc32": "34ddcfdc"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/008-cup-first-active-session.cfg",
+      "bytes": 2002,
+      "sha256": "5009ee7417b3664e11c95dcd965bca556474ae76717d40e14a917e0cf39f6803",
+      "zip_crc32": "7714a50e"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/009-cup-before-periodic-session.cfg",
+      "bytes": 2002,
+      "sha256": "5009ee7417b3664e11c95dcd965bca556474ae76717d40e14a917e0cf39f6803",
+      "zip_crc32": "7714a50e"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/010-cup-periodic-session.cfg",
+      "bytes": 2017,
+      "sha256": "4605e6e64afa18edc718f3c1bcea8acbb1e9e6c480a14c42a24eecbb90bab6ae",
+      "zip_crc32": "03cf4bb5"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/011-time_trial-initial-session.cfg",
+      "bytes": 1410,
+      "sha256": "631705e025e2d0eb0a1b66376e61a5f0496e1b93e9e0ba5d7aef3f114f7ef449",
+      "zip_crc32": "a22b4f47"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/012-time_trial-subsecond-session.cfg",
+      "bytes": 1410,
+      "sha256": "631705e025e2d0eb0a1b66376e61a5f0496e1b93e9e0ba5d7aef3f114f7ef449",
+      "zip_crc32": "a22b4f47"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/013-time_trial-first-active-session.cfg",
+      "bytes": 1461,
+      "sha256": "0431f0bbe0e5378721531ec05108d75ca375aaddfab9d54633d77138024c298a",
+      "zip_crc32": "60d1c026"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/014-time_trial-before-periodic-session.cfg",
+      "bytes": 1461,
+      "sha256": "0431f0bbe0e5378721531ec05108d75ca375aaddfab9d54633d77138024c298a",
+      "zip_crc32": "60d1c026"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/015-time_trial-periodic-session.cfg",
+      "bytes": 1470,
+      "sha256": "1a14de5e6962591cc0012ce36b11a513dd72e932295c99099a5fe6268196951e",
+      "zip_crc32": "6005bc25"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/016-training-initial-session.cfg",
+      "bytes": 1406,
+      "sha256": "26085efb74c1819a0fcbb4a83d3cc762408349458bbd86ca87741c34cc97eed5",
+      "zip_crc32": "017d27f6"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/017-training-subsecond-session.cfg",
+      "bytes": 1406,
+      "sha256": "26085efb74c1819a0fcbb4a83d3cc762408349458bbd86ca87741c34cc97eed5",
+      "zip_crc32": "017d27f6"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/018-training-first-active-session.cfg",
+      "bytes": 1457,
+      "sha256": "1a87d6e5438e8e28b4db9d93dc9a43ce01b796c96933254fa80a7862ccf2ab47",
+      "zip_crc32": "3fd9cc97"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/019-training-before-periodic-session.cfg",
+      "bytes": 1457,
+      "sha256": "1a87d6e5438e8e28b4db9d93dc9a43ce01b796c96933254fa80a7862ccf2ab47",
+      "zip_crc32": "3fd9cc97"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/020-training-periodic-session.cfg",
+      "bytes": 1466,
+      "sha256": "9f0256052fca88facb0513caee8cb7676b3787223aee4ae0db8d0dcea7bf91e0",
+      "zip_crc32": "5d95c4e0"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/021-arena-initial-session.cfg",
+      "bytes": 1924,
+      "sha256": "d4724da5273949b0e83c9671407f20fcc43e12134a3195d5810c37c7c3c2c4e7",
+      "zip_crc32": "028029b0"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/022-arena-subsecond-session.cfg",
+      "bytes": 1924,
+      "sha256": "d4724da5273949b0e83c9671407f20fcc43e12134a3195d5810c37c7c3c2c4e7",
+      "zip_crc32": "028029b0"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/023-arena-first-active-session.cfg",
+      "bytes": 2013,
+      "sha256": "10605020c8b48e6cd4bafd54fd43eae9bad7ec4ae8b63e0e406434849af382d7",
+      "zip_crc32": "e7dcd7b3"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/024-arena-before-periodic-session.cfg",
+      "bytes": 2013,
+      "sha256": "10605020c8b48e6cd4bafd54fd43eae9bad7ec4ae8b63e0e406434849af382d7",
+      "zip_crc32": "e7dcd7b3"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/025-arena-periodic-session.cfg",
+      "bytes": 2091,
+      "sha256": "7744b8807eea228d59a37768ba346fa304a09c56137f221aa89fc49fe06cffc0",
+      "zip_crc32": "eb272dc0"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/026-paused-subsecond-session.cfg",
+      "bytes": 2021,
+      "sha256": "e38c5d260c8bad87902c9ecb053d5e04d80d52b1dd07fe3733af226795b7b583",
+      "zip_crc32": "dd6c128c"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/027-restored-subsecond-first-active-session.cfg",
+      "bytes": 2009,
+      "sha256": "d3849a221c4b6adc1f00ad8b6d64ea5df07df467c154e0d9bcee1c03d9f1132d",
+      "zip_crc32": "d8b2d0ff"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/028-paused-after-first-active-session.cfg",
+      "bytes": 2008,
+      "sha256": "da1c4e8973050cfeddfe8cbbf98a8996f2a4311c720e85aedba5af55506272c4",
+      "zip_crc32": "fb5bb786"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/029-restored-after-first-no-duplicate-session.cfg",
+      "bytes": 2008,
+      "sha256": "da1c4e8973050cfeddfe8cbbf98a8996f2a4311c720e85aedba5af55506272c4",
+      "zip_crc32": "fb5bb786"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/030-restored-after-first-periodic-session.cfg",
+      "bytes": 2015,
+      "sha256": "dbdbf0bb8631855d3cccabdc550b6439ac31fc04d22739e18fd4b0aed0494b0b",
+      "zip_crc32": "52965def"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/031-preview-initial-session.cfg",
+      "bytes": 1866,
+      "sha256": "c4319c95dc051e8de07a4ced25b8b38be678b97b49d6b1c88f50748c57089a77",
+      "zip_crc32": "6eef89c2"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/032-preview-after-two-seconds-session.cfg",
+      "bytes": 1866,
+      "sha256": "c4319c95dc051e8de07a4ced25b8b38be678b97b49d6b1c88f50748c57089a77",
+      "zip_crc32": "6eef89c2"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/033-restart-initial-session.cfg",
+      "bytes": 1866,
+      "sha256": "5eb174e4753b619d7d50f71ff54d5fdd4f379e1ebd4d085d74a8462b6a24a3e7",
+      "zip_crc32": "f7d2d8f2"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/034-restart-subsecond-session.cfg",
+      "bytes": 1866,
+      "sha256": "5eb174e4753b619d7d50f71ff54d5fdd4f379e1ebd4d085d74a8462b6a24a3e7",
+      "zip_crc32": "f7d2d8f2"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/035-restart-first-active-session.cfg",
+      "bytes": 2005,
+      "sha256": "d66196d08fc209d9199bf69a4d4ffb4701eadde7363296a8e52f19fec99e3fcb",
+      "zip_crc32": "cc30e99c"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/first-active-snapshot-evidence.json",
+      "bytes": 10758,
+      "sha256": "105f4711beb930ba2d46d3b53e467165336f36e02d37295285b59114c9218180",
+      "zip_crc32": "27a23fb5"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_regression/run.log",
+      "bytes": 1577,
+      "sha256": "d87da18df658a760ce30bf81e54508abb71b54c430be095f03c13dcd40329bfc",
+      "zip_crc32": "2ea25c65"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_write_failure_probe/001-fault-initial-session.cfg",
+      "bytes": 1860,
+      "sha256": "11737e0c2a53acbbb4ac3efffb13e5fdc427efeffd189f7eec6f3f3fd86cd16e",
+      "zip_crc32": "837b712a"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_write_failure_probe/002-fault-old-save-session.cfg",
+      "bytes": 1860,
+      "sha256": "11737e0c2a53acbbb4ac3efffb13e5fdc427efeffd189f7eec6f3f3fd86cd16e",
+      "zip_crc32": "837b712a"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_write_failure_probe/003-fault-before-retry-session.cfg",
+      "bytes": 1860,
+      "sha256": "11737e0c2a53acbbb4ac3efffb13e5fdc427efeffd189f7eec6f3f3fd86cd16e",
+      "zip_crc32": "837b712a"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_write_failure_probe/004-fault-recovered-session.cfg",
+      "bytes": 2019,
+      "sha256": "f32e9d66116b6a567743bb4071ef57952c6b5a8c66ba961669c0036917ff7a5e",
+      "zip_crc32": "3c66acc7"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_write_failure_probe/actual-write-failure-evidence.json",
+      "bytes": 3710,
+      "sha256": "4dd5133a109cfa5fa5649d57016cb58452068075138a8c2d682c7a81baef55d4",
+      "zip_crc32": "a85a61f8"
+    },
+    {
+      "path": "_temp/lumo-first-active/kart_first_active_snapshot_write_failure_probe/run.log",
+      "bytes": 1343,
+      "sha256": "ff553deb586569b2e922657e1128a758978936eb3ea480ec042fb5165990a5c2",
+      "zip_crc32": "b010f3e6"
+    },
+    {
+      "path": "_temp/lumo-modal-backdrop/cover-DIAGNOSTIC-white-mask.png",
+      "bytes": 262303,
+      "sha256": "0ef75fad2f221bb18ab567430f9cac46c739b32a92e886dd9094fd5e3e3fbea9",
+      "zip_crc32": "d628db48",
+      "width": 2316,
+      "height": 904
+    },
+    {
+      "path": "_temp/lumo-modal-backdrop/cover-actual-pause.png",
+      "bytes": 728261,
+      "sha256": "306cdc23b5e2b1a35e4f0e3547834cd4b6ee335c6904c38822612c8e3c3e464d",
+      "zip_crc32": "6937d007",
+      "width": 2316,
+      "height": 904
+    },
+    {
+      "path": "_temp/lumo-modal-backdrop/cover_restored-DIAGNOSTIC-white-mask.png",
+      "bytes": 261596,
+      "sha256": "118f32a3be0254c3adf5ac17bb42a8ddd7771f5ed3634acfb686c20d838d68ed",
+      "zip_crc32": "828e6163",
+      "width": 2316,
+      "height": 904
+    },
+    {
+      "path": "_temp/lumo-modal-backdrop/cover_restored-actual-pause.png",
+      "bytes": 727488,
+      "sha256": "18f67ac53ac8bc0718109651cc44a707fefffeb6fc7a9c7d13b1cef2ea7d54f0",
+      "zip_crc32": "e4bcc307",
+      "width": 2316,
+      "height": 904
+    },
+    {
+      "path": "_temp/lumo-modal-backdrop/inner-DIAGNOSTIC-white-mask.png",
+      "bytes": 749408,
+      "sha256": "27d9901218f9dfbc1dc07a1ad0772ff90b4c2951b6f6008e1d859342ce49d054",
+      "zip_crc32": "eb4c6c81",
+      "width": 2176,
+      "height": 1812
+    },
+    {
+      "path": "_temp/lumo-modal-backdrop/inner-actual-pause.png",
+      "bytes": 1505340,
+      "sha256": "196638aa0396317a2c4fa528611d97d26428bfe10d4535f4c26d211629b2a77a",
+      "zip_crc32": "7228314c",
+      "width": 2176,
+      "height": 1812
+    },
+    {
+      "path": "_temp/lumo-modal-backdrop/modal-backdrop-evidence.json",
+      "bytes": 35518,
+      "sha256": "e4f7173f431d151f313675fccd37fe15cb4bc12cc7274372d7bab2d3cda7c83a",
+      "zip_crc32": "0cd09d25"
+    },
+    {
+      "path": "_temp/lumo-modal-backdrop/phone_reduced-DIAGNOSTIC-white-mask.png",
+      "bytes": 254244,
+      "sha256": "7f20a00bd627df61fa8a46a92379b6100ff7f3408ee4982972011a3789194e22",
+      "zip_crc32": "ecd222aa",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "_temp/lumo-modal-backdrop/phone_reduced-actual-pause.png",
+      "bytes": 733057,
+      "sha256": "ef19282fbb44747de0eff7c95f95cc0e0ea8cdac30be9ff37718029fd075bd91",
+      "zip_crc32": "0a6c5d27",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "_temp/lumo-modal-backdrop/phone_restored-DIAGNOSTIC-white-mask.png",
+      "bytes": 255579,
+      "sha256": "d4ddd145bc7d90309902138b5fd8208541a4db37df64b0d624ffa89f17ad2ad6",
+      "zip_crc32": "a859a386",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "_temp/lumo-modal-backdrop/phone_restored-actual-pause.png",
+      "bytes": 733446,
+      "sha256": "f6254d9dce689cdaf987e6952d5aa8c4b462826a390a5a9d844e3886bb1255b0",
+      "zip_crc32": "9094bda3",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "_temp/lumo-modal-backdrop/run.log",
+      "bytes": 1376,
+      "sha256": "927aebe3ab2632bfd17426beef9d817cc0ddce5d1f16ed37940bd4191a5e784a",
+      "zip_crc32": "4f3385cd"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sonnenhafen/01_start_grid.png",
+      "bytes": 815576,
+      "sha256": "4f1a40c50a9b3866b030e9355bedaffca64ef5784792ca8751a172544eafe5bc",
+      "zip_crc32": "d7bdfd57",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sonnenhafen/02_grandstand.png",
+      "bytes": 754877,
+      "sha256": "ece4e4370312b66289efae063f2f70e957c8a269174be1f7e87fea16cefadd0b",
+      "zip_crc32": "5e7adadd",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sonnenhafen/03_terraced_curve.png",
+      "bytes": 793810,
+      "sha256": "3bb0e30c201d703f3ded5f25e48f3c915749b2af6453c7032bf3816fec01ee2b",
+      "zip_crc32": "13d32545",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sonnenhafen/04_waterfall.png",
+      "bytes": 754142,
+      "sha256": "14367d71dbca022936312d5fff9b8821f4261d035b2541dc41447596bdf6fa50",
+      "zip_crc32": "596dd71d",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sonnenhafen/05_harbour_run.png",
+      "bytes": 821989,
+      "sha256": "c8bcce82a4ee1e634d25907d26b0b2ee146cb1683f30af6d908bd4f27ab3538a",
+      "zip_crc32": "dd0ca7c0",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sonnenhafen/06_overview.png",
+      "bytes": 742146,
+      "sha256": "55f231ecf33672a3d9e4d7bec989f43e74d2c36d30b3f6747aaaf067fd40d3bc",
+      "zip_crc32": "4804a573",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sky-islands/01_start_gate.png",
+      "bytes": 685525,
+      "sha256": "268f5878c4c49d5dfb321c46a8daa7c0ad4298863f840a892da99004f2385d86",
+      "zip_crc32": "d5dfdbc7",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sky-islands/02_waterfall_bridge.png",
+      "bytes": 640247,
+      "sha256": "620055eb9a7759b84b526c79f8880f38d705d17c6dc3a2f37ff2f25d5b532473",
+      "zip_crc32": "4b9b7916",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sky-islands/03_floating_town.png",
+      "bytes": 626369,
+      "sha256": "29ee498e5695f10b27ce7222661942b93201e5cdf5d9a536cb406eaaaeac677e",
+      "zip_crc32": "71a7f3b0",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sky-islands/04_suspension_bridge.png",
+      "bytes": 502764,
+      "sha256": "0d0eb86e84d568a82cc9276b0acea83d072410f40b6b7cb1ce84c80ad65a10ec",
+      "zip_crc32": "36860eb2",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sky-islands/05_crystal_cave.png",
+      "bytes": 690108,
+      "sha256": "2934bd457ac02dc9cbc9be885838f5e14f9f86b784f17eaf3672f3449ae3a511",
+      "zip_crc32": "25913041",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sky-islands/06_temple_ruins.png",
+      "bytes": 682045,
+      "sha256": "1801e4b049f0af8291824c1d34249d038e4be0e75d8496ecbe0671529f2731b8",
+      "zip_crc32": "09c6f9d8",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sky-islands/07_overview.png",
+      "bytes": 697348,
+      "sha256": "da42837bc7518c78b0bcb45a73b59ea46e99732b94e26acd7f9ddc0045aa536a",
+      "zip_crc32": "e551f64a",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sky-islands/08_mystery_prisms.png",
+      "bytes": 647251,
+      "sha256": "e93c411d718f20571f3f6b499fa94f625eb9a9c5327e155a151faa4d575a5d2e",
+      "zip_crc32": "6684619d",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/zauberwald/01_glow_arch.png",
+      "bytes": 726982,
+      "sha256": "0ae4d5e590a61e1a0c556af2b812c3a37cd2da023910b3eb39ce09e4cd070e77",
+      "zip_crc32": "80f37f24",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/zauberwald/02_tree_tunnel.png",
+      "bytes": 390809,
+      "sha256": "03b4f5a380917030e0b6448c8773d7e9900cbdeaa2ed64f67c6bc1c922c4e153",
+      "zip_crc32": "0cd35f42",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/zauberwald/03_lichterhain.png",
+      "bytes": 726094,
+      "sha256": "236d7156a524c3665c55be84814ac91d273315634672b651050dfb15f1d17501",
+      "zip_crc32": "e3f8a1c5",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/zauberwald/04_mushroom_glade.png",
+      "bytes": 671123,
+      "sha256": "9b72655a69d433f419a4c9ceeb2d9836b1211f8688be452aa3671dd9e18ebc0b",
+      "zip_crc32": "f070c9fe",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/zauberwald/05_second_arch.png",
+      "bytes": 689327,
+      "sha256": "b5187cdd2d0810dc6ae1f0dc05e6fbad2f474f6abf566fc616fa70f8060a620c",
+      "zip_crc32": "87fab2f9",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/zauberwald/06_overview.png",
+      "bytes": 767840,
+      "sha256": "b59f00624357251c65e9dd82abf1a0cf7ae7ab161ea714d53263f3bc49cc4a8a",
+      "zip_crc32": "3f3c0ead",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/holo-city/01_nova_link.png",
+      "bytes": 772397,
+      "sha256": "8147fb9ab9487ee184ec16779bcb8fb17e3cb7cd75f3b0d2576821b37420fc60",
+      "zip_crc32": "9d02de11",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/holo-city/02_lumo_nexus.png",
+      "bytes": 853606,
+      "sha256": "4769a26a4012aee53318e6ae60641eb722717aeaf09fe8f42dbf0a6935559819",
+      "zip_crc32": "bae3df8b",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/holo-city/03_holo_gate.png",
+      "bytes": 787428,
+      "sha256": "d72089e29090f8b0c61081a32aea6254fb22b4551a6fe43376ba8d67c30faa18",
+      "zip_crc32": "d0bd3393",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/holo-city/04_aurora_link.png",
+      "bytes": 832909,
+      "sha256": "37972a41962a7a1a6809af63d7f062665c91378f8caf32e2c1c1b7974133b558",
+      "zip_crc32": "fd77f0b7",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/holo-city/05_star_core.png",
+      "bytes": 814384,
+      "sha256": "8fee961b74c4fcaf894d4327bc6f563b117e8335fc3d982777a0f998baca0974",
+      "zip_crc32": "e630ee9e",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/holo-city/06_overview.png",
+      "bytes": 1082683,
+      "sha256": "09e2a3303707b3bad93029b189c55522a6b78dc13d6b682f3ed4d8e7d12a6c0b",
+      "zip_crc32": "ee56e862",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sky-halo-authoring/01_side.png",
+      "bytes": 57545,
+      "sha256": "2df8475620bcdc6cf430f8e9337f40834213f9019ed72307ddcf4dc5b280f0df",
+      "zip_crc32": "076560be",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/sky-halo-authoring/02_three_quarter.png",
+      "bytes": 68144,
+      "sha256": "856c15655136256ac6bcb4aac2178c9dd648087db43eef8123634f37bcdb5cc8",
+      "zip_crc32": "c1866d73",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/01-low-entry.png",
+      "bytes": 624013,
+      "sha256": "6abaa6024ae5298f86c65a9d76f195633e9d3d8a9f842aadef0362e2afdcebd6",
+      "zip_crc32": "a63fb8ab",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/02-low-middle.png",
+      "bytes": 607936,
+      "sha256": "d51ef1fd5e627af06d1c2a80dba55bacb861b89cc223e0a0eeb91dd3e77a6314",
+      "zip_crc32": "e9dee4eb",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/03-low-exit.png",
+      "bytes": 595884,
+      "sha256": "bdeec18bf348112cf7f4b63ec94fc357432ec65453ad6feccfdd9f79d6f98e6e",
+      "zip_crc32": "be639282",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/04-high-entry.png",
+      "bytes": 969951,
+      "sha256": "74ddf1499e8efe5bff8849c25a300e25c1b05519c45f92305c8903aa0b430625",
+      "zip_crc32": "01592490",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/05-high-middle.png",
+      "bytes": 962582,
+      "sha256": "f103e41cfbebfa3a308a4eb4383563452f2d8a75bdee905bad83a869104213d9",
+      "zip_crc32": "2e829d67",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/06-high-exit.png",
+      "bytes": 874055,
+      "sha256": "310e51b5461a7a4ab830b5677c185ef6ad84e780c949ce01a43e7d3e8daaef44",
+      "zip_crc32": "8cf738c1",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/STAGE2-CHARACTER-EVIDENCE.json",
+      "bytes": 7489,
+      "sha256": "44ac0fcea17134de8250fa7f2122d0c3fb538a5ba999963690f16bd0a5d5fd71",
+      "zip_crc32": "6843dd56"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/aquarium-capture.log",
+      "bytes": 1751,
+      "sha256": "368e208d9b55809b7241abf91f488886c0edc62beabd26047a88987a760b2f3b",
+      "zip_crc32": "58a8f209"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/aquarium-headless.log",
+      "bytes": 735,
+      "sha256": "00f64f890c73ab2eef677e903a1089a7107192b8f7eebdc85727d82c7b3bb0e9",
+      "zip_crc32": "611fe4c5"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/aquarium-rendered.log",
+      "bytes": 1391,
+      "sha256": "95bee80eeb9a8432e62650d80391b4aad61e7fcc91c21a1bab93bb2025e61b57",
+      "zip_crc32": "07519756"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/character-pose.log",
+      "bytes": 609,
+      "sha256": "c9e510a3395fdd3e85106c8cca2a2e5c0dbfdbfe5719955b770e31e77a091870",
+      "zip_crc32": "6fb514c8"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/face-depth.log",
+      "bytes": 557,
+      "sha256": "44c597737c14c2d72fd6dca28bed27c0da8e284a59047bca6c164a2cd57d7bb6",
+      "zip_crc32": "64ae0fd0"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/face-studio.log",
+      "bytes": 562,
+      "sha256": "8d099d2f47587b68e55066186fedf2a47b54032bfcc774524b501b1786ed5c88",
+      "zip_crc32": "664c1eaa"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/fox-eyes.log",
+      "bytes": 552,
+      "sha256": "c8c9d2e4209c4810b1a5e20694bf04d145e58612b077d85c02f3a8bdf4012cc3",
+      "zip_crc32": "3f59e5f5"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/lumo-driver-4views.log",
+      "bytes": 1188,
+      "sha256": "2fa91732275553d5710dab8d8c549ccd9a8928be7785dc378c2159c14f0fcb9f",
+      "zip_crc32": "a2536e50"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/lumo-driver-4views.png",
+      "bytes": 658888,
+      "sha256": "7dd9ee88f597ee506044f980a424a64d699559bcf6a791f313d5cb932c171626",
+      "zip_crc32": "002dd7c6",
+      "width": 1280,
+      "height": 1280
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/lumo-face-1280x720.png",
+      "bytes": 497350,
+      "sha256": "cb7d63ab00ac8a2fbcea5d05fb1b65482f0d21321d72878b14b1b8a38d79121e",
+      "zip_crc32": "fff3aebf",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/lumo-face-412x915.png",
+      "bytes": 312486,
+      "sha256": "55ac281441c2b7ba0601b164581f61e0f31848860b3a3517a99db8c21a7773fc",
+      "zip_crc32": "c08ccfd1",
+      "width": 412,
+      "height": 915
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/lumo-face-800x480.png",
+      "bytes": 260439,
+      "sha256": "f6d436b4058692a34b32f77071b585da473aa4b301e86b2c7f8664fc9857f958",
+      "zip_crc32": "3411d8bb",
+      "width": 800,
+      "height": 480
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/lumo-face-capture.log",
+      "bytes": 1546,
+      "sha256": "c59f813cabd5944e8de21b7988fd678f2a10821bfa8962345f8b845295c957c4",
+      "zip_crc32": "5b5f8548"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/start-1280x720.png",
+      "bytes": 915709,
+      "sha256": "d7e26877d403dd5c2f9304fbaa04878f17d9d6979b388a77b258a7ae71f0be9f",
+      "zip_crc32": "0a36d906",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/start-412x915.png",
+      "bytes": 465378,
+      "sha256": "f18fc8b0866c218a0a205da3029695d2874d5a2701a9cabf310b81f01646936e",
+      "zip_crc32": "6334d1a7",
+      "width": 412,
+      "height": 915
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/start-800x480.png",
+      "bytes": 475573,
+      "sha256": "52e3c4726fe888a54a49e6e40d286377d9405b257132178fe8585324b42f47ed",
+      "zip_crc32": "7c03337d",
+      "width": 800,
+      "height": 480
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/start-hero.log",
+      "bytes": 2790,
+      "sha256": "479342ad9bc57f2fef013f18be404d91e6f3cad77016b00314054bfabb780ee5",
+      "zip_crc32": "ca347da0"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/character-review/start-saved-320x568.png",
+      "bytes": 266890,
+      "sha256": "aa92520bb1a2bc9024f0e05abd1a8fc9a52239a50c9cdaf5bb2b8be4aa1ea033",
+      "zip_crc32": "ffe876b8",
+      "width": 320,
+      "height": 568
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/menu-safe-area/menu-direct-640x320.png",
+      "bytes": 97297,
+      "sha256": "7dddf20c49f83ed3abfd5572cf76a7799872773b91a3dc6434fd6b644a73d84f",
+      "zip_crc32": "0069b1e8",
+      "width": 640,
+      "height": 320
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/menu-safe-area/menu-flow-1280x720.png",
+      "bytes": 419136,
+      "sha256": "650b36e9a744d97542c294ceee842a4252ba6597854519b3a6e4d23688728616",
+      "zip_crc32": "75fd5157",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/menu-safe-area/menu-flow-640x320.png",
+      "bytes": 97297,
+      "sha256": "7dddf20c49f83ed3abfd5572cf76a7799872773b91a3dc6434fd6b644a73d84f",
+      "zip_crc32": "0069b1e8",
+      "width": 640,
+      "height": 320
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/menu-safe-area/menu-flow-800x480.png",
+      "bytes": 226483,
+      "sha256": "324ca018cd54d4846d71ec0f9bad38041c6bc9b27c1caf5da357808d7abfd3bc",
+      "zip_crc32": "2a4aae7e",
+      "width": 800,
+      "height": 480
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/menu-safe-area/menu-flow.log",
+      "bytes": 3680,
+      "sha256": "6f63ba6ddbf23c16a25a37c54096dc15185725dc9e5ac1e4c6c9e27472681cc7",
+      "zip_crc32": "c7990d01"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/lumo-kart-production/export.log",
+      "bytes": 173629,
+      "sha256": "44bd1c04534e2d496ce7adc4646da5ac86d0d3e1093386f24d15e815f9360adf",
+      "zip_crc32": "155cf72b"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/lumo-kart-production/gesture-contact/contact.json",
+      "bytes": 895,
+      "sha256": "47af19d298d91666d2f439ea31267a0bdab7087574752ffa9fba116a443848dd",
+      "zip_crc32": "0d9977de"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/lumo-kart-production/gesture-contact.log",
+      "bytes": 1225,
+      "sha256": "ee7c939dd791796b7f743f760781239c53c999fb48b26ed3b30cb62e58369278",
+      "zip_crc32": "ac1bc50d"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/lumo-kart-production/packed-runtime.log",
+      "bytes": 1196,
+      "sha256": "bbf94458d66e79858ae53036877a075fb55d6156f225b49154f761f0a7b0f947",
+      "zip_crc32": "6b3da2cd"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/lumo-kart-production/production-report.json",
+      "bytes": 265,
+      "sha256": "834bb9a35000894768b864b06e2e2ceb455c0538276d646941f5d1bc4fc747a8",
+      "zip_crc32": "bcd650ef"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/lumo-kart-production/production.log",
+      "bytes": 1196,
+      "sha256": "bbf94458d66e79858ae53036877a075fb55d6156f225b49154f761f0a7b0f947",
+      "zip_crc32": "6b3da2cd"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/gl/menu-2176x1812-density-2.25.png",
+      "bytes": 1541311,
+      "sha256": "a4b5b47a556527e690dca4f2b34c5d3156fe9866aaa32b1c5d621dc511da9f68",
+      "zip_crc32": "9cfcc3bb",
+      "width": 2176,
+      "height": 1812
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/gl/menu-progress.json",
+      "bytes": 576,
+      "sha256": "f8acde6330241a5ee443805b84540669a422f572118f16bf03bdf08b4a8d0d54",
+      "zip_crc32": "dab26e47"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/gl/menu-report.json",
+      "bytes": 694,
+      "sha256": "16ff6c5b29a7261b1f97eec3e74540c87d67f1cbe2b9a8c560a9d1f17e693d13",
+      "zip_crc32": "ab23e2ff"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/gl-menu.log",
+      "bytes": 1455,
+      "sha256": "95db1107ddb2d68e2f5da83b31007eace2ea5a44a681bf97acca74cbdcba07e8",
+      "zip_crc32": "f2fd3d82"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/menu-progress.json",
+      "bytes": 5339,
+      "sha256": "38048076486b71cf6d2a23a5485d60272aa5d8a290a9d016c85c17216078ea2e",
+      "zip_crc32": "404724a3"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/menu-report.json",
+      "bytes": 5456,
+      "sha256": "1664701f27c3fe9da352da0a0fed12b45413f3cb2cd3381d5c8b077e0a8a5730",
+      "zip_crc32": "cded94c7"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/menu.log",
+      "bytes": 1530,
+      "sha256": "4f2a347d639505591c8c4e5d594d386463eff8dd8b9f7ea94efb1ca65f8d9976",
+      "zip_crc32": "b5b0053b"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/provenance.json",
+      "bytes": 217,
+      "sha256": "894a00027777ec433e6f5c6f13ba34d1d27d1ab20ee09c914db7a178630573ff",
+      "zip_crc32": "6843e4ae"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-000.png",
+      "bytes": 478737,
+      "sha256": "bd6c79ab4921afc9f664e90229caeeb81680ec2e6399599d7aee390d4ccfa916",
+      "zip_crc32": "d20d3e5b",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-001.png",
+      "bytes": 480085,
+      "sha256": "a87f888bcc49616aeb6d20516730795fa8ec9d67c6d6de9eda9618c9084f1cbf",
+      "zip_crc32": "6c548086",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-002.png",
+      "bytes": 480962,
+      "sha256": "174f2a7eec38e019963e937d1198861b8e681f21794867393efc07fd57b7cae4",
+      "zip_crc32": "41394068",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-003.png",
+      "bytes": 481590,
+      "sha256": "ff083833c26028416d9e01dffcb8da11bae8dd3e8f948512f9afa3a8fc30f01e",
+      "zip_crc32": "924956dd",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-004.png",
+      "bytes": 481549,
+      "sha256": "ad8dbb9f627787913aa5ca797c0347414ccd3697e3802ad9b050dbfb28faa198",
+      "zip_crc32": "33a758ce",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-005.png",
+      "bytes": 481279,
+      "sha256": "2711ee15b1025e9506ec2c8ec739f8d73ee6ef72bdd9649f753883b8e5fb6ce1",
+      "zip_crc32": "c92e767f",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-006.png",
+      "bytes": 481170,
+      "sha256": "05b454d015b4f72e7a27a5a9a49d007721139861b1eb9c4278443a90fc2a6d52",
+      "zip_crc32": "cb09c54f",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-007.png",
+      "bytes": 481289,
+      "sha256": "1824e80b3d8a39bb7ed48743bfb8b77b463f45898e5e946d0bb54c3e4bdbfa15",
+      "zip_crc32": "9782f70d",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-008.png",
+      "bytes": 480982,
+      "sha256": "c616ea8b597bf9b6ff51058210ccca4178929b3fd82c9085382266a639f46a56",
+      "zip_crc32": "1eb691a9",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-009.png",
+      "bytes": 480949,
+      "sha256": "5b7fdd705e65bcf8c38a868e90e789b5aea9c918efc0bf504a5f3f5021e14db5",
+      "zip_crc32": "04d6662c",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-010.png",
+      "bytes": 480811,
+      "sha256": "ce2335f9ffd0468f21adab751446e7a2bf0eba42b07cd337ae3a7f2d8dd5aa44",
+      "zip_crc32": "ced3e506",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-011.png",
+      "bytes": 480616,
+      "sha256": "00f141f3bcf5481a743a9118966a00fb10e80495ee4f6a5b6584727377738d49",
+      "zip_crc32": "e674629c",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-012.png",
+      "bytes": 480825,
+      "sha256": "8c5497e361691d8adab22f11a4e8a6bc3462d4196fb424243cd45a337178ebf1",
+      "zip_crc32": "b3774a36",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-013.png",
+      "bytes": 481634,
+      "sha256": "c75c0fb90e599e7320bdf393129047d6ac8792c095d95ba2d51c7746b0d4aff8",
+      "zip_crc32": "f2c243e0",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-014.png",
+      "bytes": 481611,
+      "sha256": "468c3196e4d3a8a05b95c92ba1598e8ffb4ddeb01487f3ec72869b657e89e9df",
+      "zip_crc32": "e83895c1",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-015.png",
+      "bytes": 481812,
+      "sha256": "fb6b7fbae8bb9b32f3c55b0145d9e7830d4060b455e6c720f3e63302f642c57a",
+      "zip_crc32": "81a27249",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-016.png",
+      "bytes": 481381,
+      "sha256": "e607786c20e5dbe36a8c6d1605aeb1e11094bea9ff31b940b615e9c8c3b4c09f",
+      "zip_crc32": "72d36358",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-017.png",
+      "bytes": 480550,
+      "sha256": "df431f886a23def12972b9f3fc8d720e12a74137ca1bdc120c62e909782317f7",
+      "zip_crc32": "e1cd8880",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-018.png",
+      "bytes": 479685,
+      "sha256": "f9ad2b982e5761f17477a93110598199a3b5f1c0ec4534c63c11cd066bfff07a",
+      "zip_crc32": "b192cdaa",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-019.png",
+      "bytes": 479597,
+      "sha256": "47e95813afd196a7ca14d336bc93a9308b71695c0b21142b29a5f18e165d7d2f",
+      "zip_crc32": "a7ee993b",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-020.png",
+      "bytes": 478269,
+      "sha256": "b588b0da12ef0229c4b945f721fd94386463342ae22e9a475f94e3eae857256d",
+      "zip_crc32": "e2f31ef2",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-021.png",
+      "bytes": 479735,
+      "sha256": "c876b707e2ca2561715af5d0755f91b7cb7787eb98a42232d837344a6a4cf541",
+      "zip_crc32": "06797175",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-022.png",
+      "bytes": 478823,
+      "sha256": "5ececf9af8ae80074d88a621d760c38236c561de74558a9925049978715146a4",
+      "zip_crc32": "ed3fefed",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-023.png",
+      "bytes": 478649,
+      "sha256": "2eff02c9886faa45eef3c6d6acb070d7231dfbc8859ad0e08bdf86e502d4f42f",
+      "zip_crc32": "0e81d9af",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-024.png",
+      "bytes": 478564,
+      "sha256": "ec592ebfcd0964d39709b9b04b8355ef6a2bf006c6739c4d1a5f3801db615a71",
+      "zip_crc32": "c225d751",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-025.png",
+      "bytes": 478509,
+      "sha256": "8e6eba218ecf2837884eced3d90cdf1d59be7c2c79fe383babe07d18095dcf52",
+      "zip_crc32": "d9703b36",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-026.png",
+      "bytes": 478348,
+      "sha256": "e25f2a7f26fe39e11aa44fa5b7fffc6eb73c5a7bcf6adc4f46f575fffbc50797",
+      "zip_crc32": "1052d5aa",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/motion/wave-027.png",
+      "bytes": 478290,
+      "sha256": "92fb9e66db3bc1d76fc72bb5ed4348de6734a3775e53024da280140d0f7fc6a7",
+      "zip_crc32": "1da556b1",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/production-menu/touch-journey.log",
+      "bytes": 2145,
+      "sha256": "fd5ee027d4a36fce00769065147458e1bfa56b69b457bbdcd081349d577ef09a",
+      "zip_crc32": "d7f345db"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/kart-loading/loading-report.json",
+      "bytes": 1200,
+      "sha256": "807452b6767e628d02593e10195cd38841895a182d2f651096c9ac11f4ef57f2",
+      "zip_crc32": "eb0219b0"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/kart-loading/loading.log",
+      "bytes": 838,
+      "sha256": "1f640c054cbcb2965f9f96aa0754f5f1093b14b019ba952ff180101197922171",
+      "zip_crc32": "c67ace6f"
+    },
+    {
+      "path": "lumo-godot/lumo-godot/exports/kart-loading/packed-loading.log",
+      "bytes": 838,
+      "sha256": "1c06f607db107965ca281b30435553e0b7aa11b1e2b33bae0f2a8ff588ab9a0a",
+      "zip_crc32": "8fcc1b6c"
+    }
+  ]
+}

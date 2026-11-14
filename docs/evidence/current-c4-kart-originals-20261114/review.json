@@ -1,0 +1,223 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-11-14T13:11:13.045240+00:00",
+  "scope": "Read-only review of existing current CI artifact originals. No new renderer/test/capture or source mutation.",
+  "source": {
+    "host_head": "1e22d2455937e2640d1e44e153d290746f3afe49",
+    "host_tree": "7fcc3748f8178bff91176ff27f11f7e86ca165ca",
+    "native_head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+    "native_tree": "1c2b5da7a4485cb8b911adcac2b567481cf902b5",
+    "source_before_after_identical": true,
+    "source_snapshot_sha256": "a0ddced07343d2d9550345144b6e368a76d83dab5395e0d5e7d4d10786c645c9",
+    "native_snapshot_records_checked_against_committed_tree": 1267,
+    "native_selected_source_identities": {
+      "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb": {
+        "mode": "100644",
+        "git_blob": "4d18f240a34a5aa6320ecd61c0ab0fa719c0b0ad",
+        "bytes": 8408740,
+        "sha256": "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524"
+      },
+      "scripts/characters/lumo/lumo_rigged_actor.gd": {
+        "mode": "100644",
+        "git_blob": "e4b6a6081a922a137f68491de66f51e096528510",
+        "bytes": 11313,
+        "sha256": "caad03c39ac9098443cda2db937e2a412cecc4365cde238b465bc98e13a6b610"
+      },
+      "scripts/games/connect_four/connect_four_table.gd": {
+        "mode": "100644",
+        "git_blob": "f2ae17e7edf8ac1b2d0d72a0d477d7e1459b1458",
+        "bytes": 30241,
+        "sha256": "72d23cbe54a250624adecc7f829b8797cc0e19d3e8148cdf5ad43fd2fb8dfbeb"
+      },
+      "scripts/games/kart_island.gd": {
+        "mode": "100644",
+        "git_blob": "83b3b6b548cffa2790c582e061a74e37bbfcf356",
+        "bytes": 175088,
+        "sha256": "7f916fcf8ea2d17876500e0063d91809db4a608dbc8bf945287231e6d76231d5"
+      },
+      "scripts/tests/kart_aquarium_capture.gd": {
+        "mode": "100644",
+        "git_blob": "c3e3c63a75fcf693673cdd1bd389b1239aabcaa2",
+        "bytes": 3648,
+        "sha256": "86a58fa50dfe576ffd7cd2e2f7ef158a1a38b92b9f81362300817287434e99f0"
+      }
+    }
+  },
+  "c4": {
+    "run_id": 43596913210,
+    "job_id": 132453271437,
+    "attempt": 1,
+    "job_conclusion": "success",
+    "artifact_id": 14114408787,
+    "archive_bytes": 22148477,
+    "archive_sha256": "2ea72b69b30c4fbe154dc497c57c39bd69f418acb8c6548d90e0c7df38639438",
+    "zip_crc_all_members_passed": true,
+    "member_count": 399,
+    "png_count": 259,
+    "all_result_index_images_verified": 259,
+    "native_checks": 170,
+    "native_errors": [],
+    "exit_codes": {
+      "dart": 0,
+      "godot": 0
+    },
+    "movie_frames": 250,
+    "observed_moving_frames": 90,
+    "observed_winning_frames": 43,
+    "actual_recording_format_fps": 24,
+    "device_fps_claim": false,
+    "production_dart_test_preferences_local_transport": true,
+    "android_binder_or_disk_claim": false,
+    "single_player_human_and_bot_observed": true,
+    "same_process_same_round_reopen": true,
+    "observed_stars": 5,
+    "observed_xp": 40
+  },
+  "kart": {
+    "run_id": 43595543000,
+    "job_id": 132449119326,
+    "attempt": 1,
+    "job_conclusion": "success",
+    "artifact_id": 14114083026,
+    "archive_bytes": 49681551,
+    "archive_sha256": "e21bf4c90cd075c40f4bdeccba84451168bed1c91836e40d08b53241a1c7e5d2",
+    "zip_crc_all_members_passed": true,
+    "member_count": 176,
+    "png_count": 85,
+    "png_collection_note": "Includes five explicitly named DIAGNOSTIC-white-mask files; only the unmodified actual chase-camera frame is selected for visual review.",
+    "stage2_capture_records_verified": 14,
+    "selected_actual_kart_images_viewed": 1,
+    "selected_capture": "04-high-entry.png",
+    "capture_driven_metres": 6.43,
+    "capture_detail": "HIGH",
+    "physical_device_performance": "NOT EXECUTED"
+  },
+  "selected_originals": [
+    {
+      "path": "c4/connect_four_empty.png",
+      "artifact_member": "runtime/connect_four_empty.png",
+      "bytes": 82537,
+      "sha256": "aa1bde4d9f074b6d509024f064f14e27a40866d344657a7d522005bb60e52fd8",
+      "kind": "original_png"
+    },
+    {
+      "path": "c4/connect_four_empty.layout.json",
+      "artifact_member": "runtime/connect_four_empty.layout.json",
+      "bytes": 19574,
+      "sha256": "6d312cd8ff31563a7cca707dddf240534ac52fa8d528d8e66e55e07d11b98313",
+      "kind": "original_layout_sidecar"
+    },
+    {
+      "path": "c4/connect_four_phone_bot_response.png",
+      "artifact_member": "runtime/connect_four_phone_bot_response.png",
+      "bytes": 239686,
+      "sha256": "3278b7867f790cc16f60738995404b436d8dd05b02a3132387005872a671ab04",
+      "kind": "original_png"
+    },
+    {
+      "path": "c4/connect_four_phone_bot_response.layout.json",
+      "artifact_member": "runtime/connect_four_phone_bot_response.layout.json",
+      "bytes": 20996,
+      "sha256": "fae7767c7b75bb6c56363e868f3e21b35eed43023d1811045bed823b58d2fd76",
+      "kind": "original_layout_sidecar"
+    },
+    {
+      "path": "c4/connect_four_fold_landscape.png",
+      "artifact_member": "runtime/connect_four_fold_landscape.png",
+      "bytes": 123809,
+      "sha256": "aac2efa26eafaf9eebdd9288f4db8b7a7f747860ebaade1a159b54a2747e7e96",
+      "kind": "original_png"
+    },
+    {
+      "path": "c4/connect_four_fold_landscape.layout.json",
+      "artifact_member": "runtime/connect_four_fold_landscape.layout.json",
+      "bytes": 20950,
+      "sha256": "d810fa0995864a4ab9cb948c10621ffe669665b2b74f0c66d0a35f2e01ab5db0",
+      "kind": "original_layout_sidecar"
+    },
+    {
+      "path": "c4/connect_four_small_portrait.png",
+      "artifact_member": "runtime/connect_four_small_portrait.png",
+      "bytes": 35739,
+      "sha256": "dc189342ac6f0150c5a1a569d4377d484a015a49fbafafe3e924e9f51f1740e1",
+      "kind": "original_png"
+    },
+    {
+      "path": "c4/connect_four_small_portrait.layout.json",
+      "artifact_member": "runtime/connect_four_small_portrait.layout.json",
+      "bytes": 19745,
+      "sha256": "e8eac73de0903aa434e5a54192ede3682c6261c510b4588c4ccd4977aca54967",
+      "kind": "original_layout_sidecar"
+    },
+    {
+      "path": "kart/04-high-entry.png",
+      "artifact_member": "lumo-godot/lumo-godot/exports/character-review/04-high-entry.png",
+      "bytes": 969951,
+      "sha256": "74ddf1499e8efe5bff8849c25a300e25c1b05519c45f92305c8903aa0b430625",
+      "kind": "original_png"
+    },
+    {
+      "path": "kart/STAGE2-CHARACTER-EVIDENCE.json",
+      "artifact_member": "lumo-godot/lumo-godot/exports/character-review/STAGE2-CHARACTER-EVIDENCE.json",
+      "bytes": 7489,
+      "sha256": "44ac0fcea17134de8250fa7f2122d0c3fb538a5ba999963690f16bd0a5d5fd71",
+      "kind": "original_result_or_probe_log"
+    },
+    {
+      "path": "kart/aquarium-capture.log",
+      "artifact_member": "lumo-godot/lumo-godot/exports/character-review/aquarium-capture.log",
+      "bytes": 1751,
+      "sha256": "368e208d9b55809b7241abf91f488886c0edc62beabd26047a88987a760b2f3b",
+      "kind": "original_result_or_probe_log"
+    }
+  ],
+  "visual_findings": [
+    {
+      "file": "c4/connect_four_empty.png",
+      "dimensions": [
+        960,
+        540
+      ],
+      "finding": "The full 7-column, 6-row board and original fox with blue glasses/dark clothing are visible. Fox body, hands, feet and tail fit beside the board; back, pause and all seven column controls are clear."
+    },
+    {
+      "file": "c4/connect_four_phone_bot_response.png",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "finding": "Full board, cyan human disc and gold bot response are visible; all seven column controls plus back and pause fit with no visible overlap. Existing runtime explicitly hides fox when logical safe width is below 700; this is not an actor-loading failure."
+    },
+    {
+      "file": "c4/connect_four_fold_landscape.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "finding": "This is the won/paused modal state, not an unobstructed board view. Winner text and Brett ansehen are fully visible. Neue Runde is partly below the modal viewport and Gegen Lumo spielen requires its existing vertical scroll. All seven disabled column controls and back are visible."
+    },
+    {
+      "file": "c4/connect_four_small_portrait.png",
+      "dimensions": [
+        320,
+        740
+      ],
+      "finding": "Winner text and all three modal actions are visible. The disabled bottom column strip uses existing horizontal scrolling: first five buttons fully visible, sixth partly visible, seventh outside the initial viewport. No claim that all seven are simultaneously visible."
+    },
+    {
+      "file": "kart/04-high-entry.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "finding": "Actual training chase view through the aquarium shows the driver/kart and roadway. Minimap at upper right shows course and player dot, with no overlap on driver, road center, top pause or right-hand drift/speed/shield/brake controls. Exactly one current Kart original was viewed."
+    }
+  ],
+  "bounded_conclusion": "No new visible geometry blocker in the selected current originals. Responsive scrolling and fox visibility limits are recorded; no source change is justified by this review.",
+  "limitations": [
+    "Host full workflow was still in_progress when its original metadata was captured; only the referenced runtime job is claimed successful.",
+    "These desktop/X11 software-rendered originals do not establish Android Binder/disk persistence, emulator acceptance, physical-device performance, stable 60 FPS, a full lap, or unviewed raster quality.",
+    "Only five PNGs were visually reviewed. The complete 344-PNG collection is integrity-indexed, not claimed visually reviewed.",
+    "No full runtime job-log refetch. The already archived Host log is Gitblob f71dc893fea8f8e8b5297b82fad151b3d866ca30. Stage2 full logs were already archived in Native evidence commit 935a4d8f764d993d384e21a9e2937572415028db."
+  ]
+}
