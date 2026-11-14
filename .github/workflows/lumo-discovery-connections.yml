@@ -2,13 +2,13 @@ name: Lumo Discovery connections separate native acceptance
 
 on:
   push:
-    branches: [integration/lumo-discovery-bd-20261114]
+    branches: [integration/lumo-discovery-bd-20261114, integration/lumo-live-connections-20261114]
 
 permissions:
   contents: read
 
 concurrency:
-  group: lumo-discovery-connections-integration-lumo-discovery-bd-20261114
+  group: lumo-discovery-connections-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -16,7 +16,8 @@ jobs:
     if: >-
       github.repository == 'Ullmann27/lumo-godot' &&
       github.event_name == 'push' &&
-      github.ref == 'refs/heads/integration/lumo-discovery-bd-20261114'
+      (github.ref == 'refs/heads/integration/lumo-discovery-bd-20261114' ||
+       github.ref == 'refs/heads/integration/lumo-live-connections-20261114')
     runs-on: ubuntu-latest
     # Existing four headless probes: 1,080s; five Dream probes: 780s.
     # Discovery ten probes: 3,630s (old learning headless 420s, capture 900s).
