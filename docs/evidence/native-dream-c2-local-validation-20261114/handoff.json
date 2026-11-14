@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "status": "FROZEN_LOCAL_SCOPE_PASS",
+  "source": "c2e025f9bb34334323d989b19085f6fe0e6c5694",
+  "tree": "24c4bfe70a0b3c575b4c6209973ff244237f7b19",
+  "summary": "summary.json",
+  "compact_archive": "compact-originals.tar.gz",
+  "archive_proof": "archive-proof.json",
+  "original_preflight": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f",
+  "actual_evidence": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual",
+  "root_next_step": "Preserve this compact original pack in Git, then activate the already reviewed real renderer CI on its separately chosen source. No renderer/device success is inferred from this local pack.",
+  "source_worktree_must_remain_untouched": true,
+  "generated_files_retained": true
+}

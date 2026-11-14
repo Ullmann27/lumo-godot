@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "archive": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/compact-originals.tar.gz",
+  "bytes": 4580253,
+  "sha256": "449805e96762fd143870dd452bc679434b4e3b4049513b0bc3652e7d5b91ed47",
+  "members": 53,
+  "uncompressed_original_bytes": 10914808,
+  "roundtrip_all_members_verified": true,
+  "manifest_sha256": "3c7347122371bd3a1e075d9d558cec2b59abb0642bb0d5c43457f1238ed2432e",
+  "sha256sums_sha256": "f413f795a5fcf6baecd1c780a5977786fbf643a385d2a50006c4915e5525af9e",
+  "summary_sha256": "1b7fc2ea82a8561d8fce5c285d0ef3cf804236959d4366e778c0b701b9f28303",
+  "handoff_sha256": "04536f21cf251527d71ae7d4a2bc120ce01dbdff6cf9d4cf222d0f31d3a8f924",
+  "preflight_original_bytes_unchanged": true
+}

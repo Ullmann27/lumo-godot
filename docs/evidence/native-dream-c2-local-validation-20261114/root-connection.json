@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "tested_native": "c2e025f9bb34334323d989b19085f6fe0e6c5694",
+  "tested_tree": "24c4bfe70a0b3c575b4c6209973ff244237f7b19",
+  "activation_scope": "Evidence-only commit; the17 active source/workflow files remain byte- and mode-identical to the exact source checkpoint.",
+  "actual_local_results": {
+    "python_contracts": {
+      "passed": 12,
+      "errors": 0,
+      "skipped": 0
+    },
+    "import": {
+      "exit_code": 0,
+      "seconds": 10.198
+    },
+    "dream_ambience": {
+      "checks": 170,
+      "failures": 0
+    },
+    "dream_garden": {
+      "checks": 544,
+      "failures": 0
+    }
+  },
+  "source_binding": {
+    "materialized_tracked_files": 1468,
+    "missing_explicit_skip_worktree": 2139,
+    "missing_distribution": {
+      "docs": 2083,
+      "evidence": 8,
+      "tools": 48
+    },
+    "head_tree_index_bytes_modes_unchanged": true
+  },
+  "preflight_correction": "Earlier preflight stopped before any test or engine stage because of an incorrect docs-only prefix assumption. Original failed preflight is preserved unchanged in the archive. No real source deviation or test failure was ignored. None of the48 missing tool paths is a direct dependency of the authorized tests/probes.",
+  "generated_outputs": {
+    "uid_files_archived_and_retained": 337,
+    "import_metadata_files_archived_and_retained": 463,
+    "cache_files_hash_inventoried_and_retained": 1033,
+    "cache_bytes_not_duplicated": 76986000,
+    "cleanup_performed": false
+  },
+  "environment": {
+    "local_pillow": "13.0.0",
+    "workflow_pillow": "12.3.0",
+    "godot": "4.6.3.stable.official.7d41c59c4"
+  },
+  "next_gate": "Activate the already independently reviewed branch-only workflow for12 raster counterexamples, exact import, four preserved headless gates, five Dream gates and seven genuinely rendered PNGs.",
+  "active_host_unchanged": "32e7efbff427fef64e90b3a1fcecd3b52f00af42",
+  "active_host_native_pin_unchanged": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "no_claims": [
+    "Renderer acceptance before the real new CI",
+    "Android device or FPS acceptance",
+    "APK or public release"
+  ]
+}
