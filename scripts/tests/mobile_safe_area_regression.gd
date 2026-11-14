@@ -17,6 +17,17 @@ class AndroidBoundary extends RefCounted:
 		requests[index].call_deferred(observation)
 
 
+class VillageHostBoundary extends Node:
+	var returns: Array[String] = []
+
+	# Match the existing native host API at this explicit test boundary.
+	# gdlint: disable=function-name
+	func returnToApp(destination: String, _payload: String) -> int:
+		returns.append(destination)
+		return 0
+	# gdlint: enable=function-name
+
+
 var checks := 0
 var failures: Array[String] = []
 var targets: Array[Dictionary] = []
@@ -27,10 +38,13 @@ var boundary := AndroidBoundary.new()
 var changes := 0
 var capture := false
 var output := "res://exports/mobile-safe-area"
+var village_hud_only := false
+var village_hud: Dictionary = {}
 
 
 func _initialize() -> void:
 	capture = "--capture" in OS.get_cmdline_user_args()
+	village_hud_only = "--village-hud-only" in OS.get_cmdline_user_args()
 	if not OS.get_environment("LUMO_CAPTURE_DIR").is_empty():
 		output = OS.get_environment("LUMO_CAPTURE_DIR")
 	call_deferred("_run")
@@ -347,6 +361,280 @@ func _kart_readers_contract() -> void:
 	await _complete_current(LANDSCAPE_INSETS)
 
 
+func _village_hud_geometry(game: Node, phase: String) -> void:
+	var safe := Rect2(LANDSCAPE_INSETS.position,
+		Vector2(root.size) - LANDSCAPE_INSETS.position - LANDSCAPE_INSETS.size)
+	var header := _pixels(game.top_backdrop)
+	var footer := _pixels(game.bottom_backdrop)
+	var task := _pixels(game.goal_label)
+	var playfield := Rect2(safe.position.x, header.end.y,
+		safe.size.x, maxf(0.0, footer.position.y - header.end.y))
+	_check(safe.grow(0.51).encloses(header), phase + " complete upper HUD fits measured Android safe area")
+	_check(safe.grow(0.51).encloses(footer), phase + " complete lower HUD fits measured Android safe area")
+	_check(not header.intersects(footer), phase + " upper and lower HUD backdrops do not overlap")
+	_check(game.goal_label.is_visible_in_tree() and not game.goal_label.text.is_empty(),
+		phase + " real chapter/task label remains visible")
+	_check(header.grow(0.51).encloses(task) and not task.intersects(footer),
+		phase + " complete task label is not covered by the lower HUD")
+	_check(playfield.size.y / DENSITY >= 48.0,
+		phase + " a central playfield of at least one full touch-target height remains")
+	var minimum_button_dp := Vector2(INF, INF)
+	var button_count := 0
+	for button in game.find_children("*", "Button", true, false):
+		if button.is_visible_in_tree():
+			var dp := _pixels(button).size / DENSITY
+			minimum_button_dp.x = minf(minimum_button_dp.x, dp.x)
+			minimum_button_dp.y = minf(minimum_button_dp.y, dp.y)
+			button_count += 1
+			_check(dp.x >= 47.95 and dp.y >= 47.95,
+				phase + " " + button.text + " retains a 48 dp physical touch target")
+	_check(button_count > 0, phase + " retains actual village controls")
+	village_hud["geometry"].append({"phase": phase, "safe_px": _values(safe),
+		"header_px": _values(header), "footer_px": _values(footer), "task_px": _values(task),
+		"playfield_px": _values(playfield), "button_count": button_count,
+		"minimum_button_dp": [minimum_button_dp.x, minimum_button_dp.y]})
+
+
+func _village_screen_touch(point: Vector2, pressed: bool) -> void:
+	var event := InputEventScreenTouch.new()
+	event.index = 4
+	event.position = point
+	event.pressed = pressed
+	Input.parse_input_event(event)
+	Input.flush_buffered_events()
+	await process_frame
+
+
+func _village_hud_restore_contract(game: Node) -> void:
+	var controls: Array[Control] = [game.plot_label, game.buildings_scroll, game.action_row,
+		game.feedback, game.resource_label, game.goal_label]
+	var button_connections: Dictionary = {}
+	for button in game.find_children("*", "Button", true, false):
+		button_connections[button.get_instance_id()] = button.get_signal_connection_list("pressed")
+	var snapshot: Dictionary = game.model.snapshot().duplicate(true)
+	var selected: int = game.selected_plot
+	root.size = Vector2i(1080, 2400)
+	await _frames(12)
+	await _complete_current(Rect2(0, 136, 0, 63))
+	await _frames(12)
+	_check(not game.compact_village_hud, "the same livingVillage changes to tall portrait layout")
+	var portrait_rects: Array = []
+	for index in range(4):
+		_check(controls[index].is_visible_in_tree(), "portrait retains original bottom control %d" % index)
+		portrait_rects.append(_pixels(controls[index]))
+	_check(portrait_rects[0].end.y <= portrait_rects[1].position.y + 0.51,
+		"portrait visibly places the plot caption before buildings")
+	_check(portrait_rects[1].end.y <= portrait_rects[2].position.y + 0.51,
+		"portrait visibly places buildings before the action row")
+	_check(portrait_rects[2].end.y <= portrait_rects[3].position.y + 0.51,
+		"portrait visibly restores the original action row before feedback")
+	_check(controls == [game.plot_label, game.buildings_scroll, game.action_row,
+		game.feedback, game.resource_label, game.goal_label],
+		"portrait reuses the identical production labels and scroll controls")
+	root.size = LANDSCAPE
+	await _frames(12)
+	await _complete_current(LANDSCAPE_INSETS)
+	await _frames(12)
+	await physics_frame
+	_check(game.compact_village_hud, "the same livingVillage returns to compact landscape")
+	_check(controls == [game.plot_label, game.buildings_scroll, game.action_row,
+		game.feedback, game.resource_label, game.goal_label],
+		"returning to landscape keeps the identical production controls")
+	var after_connections: Dictionary = {}
+	for button in game.find_children("*", "Button", true, false):
+		after_connections[button.get_instance_id()] = button.get_signal_connection_list("pressed")
+	_check(button_connections == after_connections,
+		"landscape portrait landscape keeps the same pressed callbacks without duplicates")
+	_check(game.model.snapshot() == snapshot and game.selected_plot == selected,
+		"live orientation changes do not alter the village or its selection")
+	_village_hud_geometry(game, "restored-landscape")
+	var logical: Vector2 = game.camera.unproject_position(game._plot_world(4) + Vector3(0, 0.1, 0))
+	var point := logical * Vector2(root.size) / root.get_visible_rect().size
+	await _village_screen_touch(point, true)
+	await _village_screen_touch(point, false)
+	await physics_frame
+	await _frames(12)
+	_check(game.selected_plot == 4 and game.pointer == -1,
+		"the original world input selects a plot again after the live orientation roundtrip")
+	_check(game.model.snapshot() == snapshot, "post-rotation plot selection preserves the village model")
+	village_hud["restore"] = {"surface_sequence": [[2400, 1080], [1080, 2400], [2400, 1080]],
+		"portrait_plot_px": _values(portrait_rects[0]), "portrait_buildings_px": _values(portrait_rects[1]),
+		"portrait_actions_px": _values(portrait_rects[2]), "portrait_feedback_px": _values(portrait_rects[3]),
+		"same_pressed_callbacks": button_connections == after_connections,
+		"post_rotation_touch_px": [point.x, point.y], "post_rotation_selected_plot": game.selected_plot}
+
+
+func _village_zoom_pick_contract(game: Node) -> void:
+	var before_radius: float = game.radius
+	var before_tilt: float = game.tilt
+	var before_orbit: float = game.orbit
+	var before_focus: Vector3 = game.focus
+	var before_offsets := Vector2(game.camera.h_offset, game.camera.v_offset)
+	var before_selected: int = game.selected_plot
+	var snapshot: Dictionary = game.model.snapshot().duplicate(true)
+	var save_path: String = game.save_path
+	var had_save := FileAccess.file_exists(save_path)
+	var saved := FileAccess.get_file_as_bytes(save_path) if had_save else PackedByteArray()
+	# This permitted camera-angle endpoint is an explicit geometry fixture,
+	# not a claim that a new Android drag was performed. Plot selection below
+	# still enters through real ScreenTouch events and the production raycast.
+	game.tilt = 1.1
+	for step in range(20):
+		if is_equal_approx(game.radius, 94.0):
+			break
+		game._zoom_village(1)
+	game._camera_update(true)
+	await _frames(12)
+	await physics_frame
+	_check(is_equal_approx(game.radius, 94.0) and is_equal_approx(game.tilt, 1.1),
+		"existing zoom action reaches radius 94 at the permitted steep tilt endpoint")
+	var samples: Array[Dictionary] = []
+	for index in range(9):
+		var world: Vector3 = game._plot_world(index) + Vector3(0, 0.1, 0)
+		var logical: Vector2 = game.camera.unproject_position(world)
+		var point := logical * Vector2(root.size) / root.get_visible_rect().size
+		var origin: Vector3 = game.camera.project_ray_origin(logical)
+		var far_point: Vector3 = game.camera.project_position(logical, game.camera.far)
+		_check(not _pixels(game.top_backdrop).has_point(point)
+			and not _pixels(game.bottom_backdrop).has_point(point),
+			"steep maximum-zoom plot %d remains outside both HUDs" % index)
+		await _village_screen_touch(point, true)
+		await _village_screen_touch(point, false)
+		await physics_frame
+		await _frames(12)
+		_check(game.selected_plot == index and game.pointer == -1,
+			"actual ScreenTouch selects plot %d at radius 94 and tilt 1.1" % index)
+		_check(game.model.snapshot() == snapshot,
+			"maximum-zoom plot %d selection preserves the village model" % index)
+		samples.append({"plot": index, "point_px": [point.x, point.y],
+			"target_distance": origin.distance_to(world), "far_plane_distance": origin.distance_to(far_point),
+			"selected_plot": game.selected_plot, "pointer_after_release": game.pointer})
+	_check(FileAccess.file_exists(save_path) == had_save, "maximum zoom and selection preserve save existence")
+	if had_save:
+		_check(FileAccess.get_file_as_bytes(save_path) == saved, "maximum zoom and selection preserve save bytes")
+	game.radius = before_radius
+	game.tilt = before_tilt
+	game.orbit = before_orbit
+	game.focus = before_focus
+	game._camera_update(true)
+	await _frames(12)
+	if before_selected >= 0:
+		var logical: Vector2 = game.camera.unproject_position(game._plot_world(before_selected) + Vector3(0, 0.1, 0))
+		var point := logical * Vector2(root.size) / root.get_visible_rect().size
+		await _village_screen_touch(point, true)
+		await _village_screen_touch(point, false)
+		await _frames(12)
+	_check(game.radius == before_radius and game.tilt == before_tilt
+		and game.orbit == before_orbit and game.focus == before_focus,
+		"maximum-zoom fixture restores the prior planning-camera parameters")
+	_check(Vector2(game.camera.h_offset, game.camera.v_offset).distance_to(before_offsets) < 0.001,
+		"maximum-zoom fixture restores the prior planning-camera offsets")
+	_check(game.selected_plot == before_selected and game.model.snapshot() == snapshot,
+		"maximum-zoom fixture restores selection through an actual touch without changing the model")
+	village_hud["maximum_zoom"] = {"radius": 94.0, "tilt_fixture": 1.1,
+		"scope": "permitted camera endpoint fixture and actual ScreenTouch selection; not Android rotation evidence",
+		"plots": samples, "restored_radius": game.radius, "restored_tilt": game.tilt,
+		"restored_offsets": [game.camera.h_offset, game.camera.v_offset]}
+
+
+func _village_hud_contract() -> void:
+	var packed := load("res://scenes/creative/build_settlement_world.tscn") as PackedScene
+	_check(packed != null, "actual village scene is available for the Android HUD counterexample")
+	if packed == null:
+		return
+	var host := root.get_node("HostBridge")
+	var router := root.get_node("SceneRouter")
+	var old_options: Dictionary = host._options.duplicate(true)
+	var old_launch: Dictionary = router.launch_options.duplicate(true)
+	var old_host: Variant = host.get("_host")
+	var old_current: Node = current_scene
+	var old_touch_emulation := Input.emulate_touch_from_mouse
+	var fake := VillageHostBoundary.new()
+	root.add_child(fake)
+	var child := "safe-village-hud-%d-%d" % [OS.get_process_id(), Time.get_ticks_usec()]
+	host.set("_host", fake)
+	host._options = {"scene": "settlement", "livingVillage": true, "settlementMode": "settlement",
+		"childKey": child, "buildSlot": 1, "displayDensity": DENSITY, "soundEnabled": false}
+	router.launch_options = host._options.duplicate(true)
+	Input.emulate_touch_from_mouse = true
+	root.size = LANDSCAPE
+	await _frames()
+	await _complete_current(LANDSCAPE_INSETS)
+	var before_connections: int = mobile.safe_area_changed.get_connections().size()
+	var game = packed.instantiate()
+	root.add_child(game)
+	current_scene = game
+	await _frames(12)
+	await physics_frame
+	var actual_source: String = game.get_script().get_source_code()
+	var expected_source := FileAccess.get_file_as_string("res://scripts/creative/build_settlement_world.gd")
+	_check(not actual_source.is_empty() and actual_source == expected_source,
+		"running village script is the exact current production source, not an older packed GDC")
+	_check(game.model.living_village and game.host_entry and game.return_scene == "games",
+		"exact embedded livingVillage path retains the Flutter games destination")
+	_check(game.model.player().plots == 9 and game.plot_nodes.size() == 9,
+		"fresh village exposes the actual nine initial plot colliders")
+	_check(mobile.get_safe_area_insets() == LANDSCAPE_INSETS,
+		"village uses the original 2400x1080 Android View insets")
+	_check(is_equal_approx(mobile.get_ui_density(), DENSITY), "village uses the original 420 dpi density")
+	var snapshot: Dictionary = game.model.snapshot().duplicate(true)
+	var save_path: String = game.save_path
+	var had_save := FileAccess.file_exists(save_path)
+	var saved := FileAccess.get_file_as_bytes(save_path) if had_save else PackedByteArray()
+	village_hud = {"scope": "production scene, real InputEventScreenTouch and explicit Android/host boundaries; not device execution",
+		"surface": [root.size.x, root.size.y], "density": DENSITY,
+		"running_world_source_sha256": actual_source.sha256_text(),
+		"file_world_source_sha256": FileAccess.get_sha256("res://scripts/creative/build_settlement_world.gd"),
+		"system_insets_px": _values(LANDSCAPE_INSETS), "geometry": [], "plots": []}
+	_village_hud_geometry(game, "initial")
+	if village_hud_only:
+		await _capture("village-hud-initial")
+	for index in range(9):
+		var logical: Vector2 = game.camera.unproject_position(game._plot_world(index) + Vector3(0, 0.1, 0))
+		var factor := Vector2(root.size) / root.get_visible_rect().size
+		var point := logical * factor
+		var safe := Rect2(LANDSCAPE_INSETS.position,
+			Vector2(root.size) - LANDSCAPE_INSETS.position - LANDSCAPE_INSETS.size)
+		var header := _pixels(game.top_backdrop)
+		var footer := _pixels(game.bottom_backdrop)
+		_check(safe.has_point(point) and not header.has_point(point) and not footer.has_point(point),
+			"initial plot %d projects into actual unobscured world pixels" % index)
+		await _village_screen_touch(point, true)
+		await _village_screen_touch(point, false)
+		await physics_frame
+		await _frames(12)
+		_check(game.selected_plot == index, "actual screen touch selects initial plot %d" % index)
+		_check(game.pointer == -1, "plot %d touch releases its actual world pointer" % index)
+		_check(game.model.snapshot() == snapshot, "plot %d selection leaves the village model unchanged" % index)
+		_check(FileAccess.file_exists(save_path) == had_save,
+			"plot %d selection leaves save existence unchanged" % index)
+		if had_save:
+			_check(FileAccess.get_file_as_bytes(save_path) == saved,
+				"plot %d selection leaves original save bytes unchanged" % index)
+		village_hud["plots"].append({"plot": index, "point_px": [point.x, point.y],
+			"selected_plot": game.selected_plot, "pointer_after_release": game.pointer})
+		_village_hud_geometry(game, "selected-%d" % index)
+	_check(fake.returns.is_empty(), "plot touches do not trigger the Flutter return control")
+	await _village_hud_restore_contract(game)
+	await _village_zoom_pick_contract(game)
+	if village_hud_only:
+		await _capture("village-hud-selected")
+	root.remove_child(game)
+	current_scene = old_current
+	await _frames()
+	_check(mobile.safe_area_changed.get_connections().size() == before_connections,
+		"livingVillage HUD leaves no safe-area callback on exit")
+	game.free()
+	host.set("_host", old_host)
+	host._options = old_options
+	router.launch_options = old_launch
+	Input.emulate_touch_from_mouse = old_touch_emulation
+	fake.queue_free()
+	DirAccess.remove_absolute(save_path)
+	DirAccess.remove_absolute(save_path + ".tmp")
+	await _complete_current(LANDSCAPE_INSETS)
+
+
 func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(output)
 	root.size = LANDSCAPE
@@ -359,11 +647,16 @@ func _run() -> void:
 	mobile._android_safe_area_enabled = true
 	mobile.set_process(false)
 	mobile.safe_area_changed.connect(_changed)
-	await _cache_contract()
-	await _scene_contract()
-	await _extra_readers_contract()
-	await _kart_readers_contract()
-	await _cache_exit_contract()
+	if village_hud_only:
+		await _complete_current(LANDSCAPE_INSETS)
+		await _village_hud_contract()
+	else:
+		await _cache_contract()
+		await _scene_contract()
+		await _extra_readers_contract()
+		await _village_hud_contract()
+		await _kart_readers_contract()
+		await _cache_exit_contract()
 	mobile.safe_area_changed.disconnect(_changed)
 	mobile._safe_area_reader = original_reader
 	mobile._android_safe_area_enabled = original_enabled
@@ -373,7 +666,8 @@ func _run() -> void:
 	_check(file != null, "source-bound result file opens")
 	var report := {"scope": "production cache and scenes with asynchronous Android boundary fixture; not device execution",
 		"surface": [2400, 1080], "density": DENSITY, "observed_system_inset_fixture": [136, 63, 0, 63],
-		"checks": checks, "failures": failures, "targets": targets, "events": events, "images": images}
+		"checks": checks, "failures": failures, "targets": targets, "events": events, "images": images,
+		"village_hud": village_hud, "village_hud_only": village_hud_only}
 	if file != null:
 		file.store_string(JSON.stringify(report, "  "))
 		file.close()

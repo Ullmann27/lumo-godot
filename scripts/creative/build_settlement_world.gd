@@ -14,6 +14,7 @@ const JUMP = preload("res://scripts/games/jump_touch_button.gd")
 const FONT = preload("res://assets/fonts/Nunito-Black.ttf")
 const SPACING := 5.3
 const MAX_DETAILED_FACILITIES := 96
+const DEFAULT_RADIUS := 34.0
 var model
 var mode := "settlement"
 var child_key := "standalone"
@@ -26,6 +27,11 @@ var camera: Camera3D
 var safe_ui: Control
 var top: VBoxContainer
 var bottom: VBoxContainer
+var top_info: HBoxContainer
+var bottom_status: HBoxContainer
+var buildings_scroll: ScrollContainer
+var action_row: HBoxContainer
+var compact_village_hud := false
 var top_backdrop: Panel
 var bottom_backdrop: Panel
 var resource_label: Label
@@ -51,7 +57,7 @@ var pause_panel: PanelContainer
 var focus := Vector3(-16, 0, 0)
 var orbit := 0.28
 var tilt := 0.70
-var radius := 34.0
+var radius := DEFAULT_RADIUS
 var pointer := -1
 var tap_origin := Vector2.ZERO
 var dragged := false
@@ -317,6 +323,10 @@ func _build_ui() -> void:
 	rival_label = _label("", 14)
 	rival_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	top.add_child(rival_label)
+	top_info = HBoxContainer.new()
+	top_info.add_theme_constant_override("separation", 12)
+	top_info.hide()
+	top.add_child(top_info)
 	bottom_backdrop = Panel.new()
 	bottom_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bottom_backdrop.add_theme_stylebox_override("panel", _panel())
@@ -331,7 +341,7 @@ func _build_ui() -> void:
 	plot_label = _label("Wähle ein freies Grundstück und ein Gebäude.", 15)
 	plot_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	bottom.add_child(plot_label)
-	var buildings_scroll := ScrollContainer.new()
+	buildings_scroll = ScrollContainer.new()
 	buildings_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	bottom.add_child(buildings_scroll)
 	var buildings := HBoxContainer.new()
@@ -344,12 +354,12 @@ func _build_ui() -> void:
 		button.mouse_filter = Control.MOUSE_FILTER_PASS
 		buildings.add_child(button)
 		purchase_buttons[kind] = button
-	var row := HBoxContainer.new()
-	bottom.add_child(row)
+	action_row = HBoxContainer.new()
+	bottom.add_child(action_row)
 	var actions_scroll := ScrollContainer.new()
 	actions_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	actions_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(actions_scroll)
+	action_row.add_child(actions_scroll)
 	var actions := HBoxContainer.new()
 	actions_scroll.add_child(actions)
 	var actions_data: Array = [
@@ -382,12 +392,16 @@ func _build_ui() -> void:
 	expand_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	actions.add_child(expand_button)
 	day_button = _button("Nächster Tag ☀", _day_action, 148)
-	row.add_child(day_button)
+	action_row.add_child(day_button)
 	feedback = _label(
 		"Dein Plan zählt: Nahrung, Material und Wohnraum halten die Siedlung am Leben.", 14
 	)
 	feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	bottom.add_child(feedback)
+	bottom_status = HBoxContainer.new()
+	bottom_status.add_theme_constant_override("separation", 12)
+	bottom_status.hide()
+	bottom.add_child(bottom_status)
 	pause_panel = PanelContainer.new()
 	pause_panel.add_theme_stylebox_override("panel", _panel())
 	pause_panel.custom_minimum_size = Vector2(300, 0)
@@ -470,12 +484,52 @@ func _cost_text(cost: Dictionary) -> String:
 	return ", ".join(parts)
 
 
+func _set_compact_village_hud(compact: bool) -> void:
+	if compact_village_hud == compact:
+		return
+	compact_village_hud = compact
+	# Reuse every existing label, scroll list and action. Short landscape
+	# surfaces need columns, not two full-width stacks over the entire world.
+	if compact:
+		resource_label.reparent(top_info, false)
+		goal_label.reparent(top_info, false)
+		top.move_child(top_info, 1)
+		buildings_scroll.reparent(action_row, false)
+		action_row.move_child(buildings_scroll, 0)
+		plot_label.reparent(bottom_status, false)
+		feedback.reparent(bottom_status, false)
+		bottom.move_child(bottom_status, 0)
+	else:
+		resource_label.reparent(top, false)
+		top.move_child(resource_label, 1)
+		goal_label.reparent(top, false)
+		top.move_child(goal_label, 2)
+		plot_label.reparent(bottom, false)
+		bottom.move_child(plot_label, 0)
+		buildings_scroll.reparent(bottom, false)
+		bottom.move_child(buildings_scroll, 1)
+		bottom.move_child(action_row, 2)
+		feedback.reparent(bottom, false)
+		bottom.move_child(feedback, 3)
+	for control in [resource_label, goal_label, plot_label, feedback, buildings_scroll]:
+		control.size_flags_horizontal = Control.SIZE_EXPAND_FILL if compact else Control.SIZE_FILL
+	top_info.visible = compact
+	bottom_status.visible = compact
+
+
 func _layout() -> void:
 	if not is_inside_tree():
 		return
 	RUNTIME.safe_area(self, safe_ui)
 	var size := safe_ui.size
-	bottom.offset_top = -maxf(176, bottom.get_combined_minimum_size().y + 10)
+	_set_compact_village_hud(model.living_village and size.y < 560 and size.x > size.y)
+	top.offset_bottom = top.offset_top + top.get_combined_minimum_size().y
+	if compact_village_hud:
+		bottom.offset_top = -(bottom.get_combined_minimum_size().y + 6)
+		bottom.offset_bottom = -6
+	else:
+		bottom.offset_top = -maxf(176, bottom.get_combined_minimum_size().y + 10)
+		bottom.offset_bottom = 0
 	var short := size.y < 560
 	rival_label.visible = mode == "rival" and not short
 	var goal_size := 13 if short else 15
@@ -1272,7 +1326,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _pick_plot(point: Vector2) -> void:
 	var origin := camera.project_ray_origin(point)
 	var query := PhysicsRayQueryParameters3D.create(
-		origin, origin + camera.project_ray_normal(point) * 180, 1
+		origin, camera.project_position(point, camera.far), 1
 	)
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	if hit.is_empty() or not hit.collider.has_meta("plot"):
@@ -1284,6 +1338,33 @@ func _pick_plot(point: Vector2) -> void:
 	_rebuild()
 
 
+func _fit_village_planning_camera(target_radius: float) -> void:
+	var upper := top_backdrop.get_global_rect().end.y
+	var lower := bottom_backdrop.get_global_rect().position.y
+	var field := Rect2(safe_ui.global_position.x, upper, safe_ui.size.x, lower - upper).grow(-8)
+	if not field.has_area():
+		return
+	var viewport_size := get_viewport().get_visible_rect().size
+	var projection := camera.get_camera_projection()
+	var focal := Vector2(projection.x.x, projection.y.y) * viewport_size * 0.5
+	var center := field.get_center()
+	var shift := Vector2(center.x - viewport_size.x * 0.5, viewport_size.y * 0.5 - center.y) / focal
+	var half_field := field.size * 0.5 / focal
+	var fit_radius := DEFAULT_RADIUS
+	var basis_inverse := camera.basis.inverse()
+	# Fit the real initial 3x3 footprint around the current focus. Using its
+	# default-distance ratio preserves deliberate zoom and pan, instead of
+	# snapping every later view back to the original nine world coordinates.
+	for index in range(9):
+		var point := basis_inverse * (_plot_world(index) - _plot_world(4))
+		fit_radius = maxf(fit_radius, point.z + absf(point.x + shift.x * point.z) / half_field.x)
+		fit_radius = maxf(fit_radius, point.z + absf(point.y + shift.y * point.z) / half_field.y)
+	var distance := target_radius * fit_radius / DEFAULT_RADIUS
+	camera.position = focus + camera.basis.z * distance
+	camera.h_offset = -shift.x * distance
+	camera.v_offset = -shift.y * distance
+
+
 func _camera_update(immediate := false) -> void:
 	if not is_instance_valid(camera) or not camera.is_inside_tree() or walking:
 		return
@@ -1293,6 +1374,10 @@ func _camera_update(immediate := false) -> void:
 		focus + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * target_radius
 	)
 	camera.look_at(focus)
+	camera.h_offset = 0.0
+	camera.v_offset = 0.0
+	if compact_village_hud:
+		_fit_village_planning_camera(target_radius)
 	if is_instance_valid(village_region):
 		village_region.update_focus(focus)
 	if is_instance_valid(village_residents):
@@ -1308,6 +1393,8 @@ func _toggle_walk() -> void:
 		return
 	walking = not walking
 	if walking:
+		camera.h_offset = 0.0
+		camera.v_offset = 0.0
 		stored_camera = {"focus": focus, "orbit": orbit, "tilt": tilt}
 		explorer.start_at(Vector3(-REGION.TOWN_CENTER, 0.08, 13.8) if model.living_village else Vector3(-16, 0.08, 13.8))
 		tilt = 0.34
