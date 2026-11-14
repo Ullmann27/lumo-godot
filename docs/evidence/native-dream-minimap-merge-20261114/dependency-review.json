@@ -1,0 +1,162 @@
+{
+  "scope": "Source-level integration review only, followed by the actual existing SafeArea probe recorded separately",
+  "exact_common_base": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "first_parent": "bd0712259bb64908a5649ee1999638826c9eb597",
+  "second_parent": "6ecc560ea16202b935c4f1d32b08b93cda358e02",
+  "changed_dependency_diffs": [
+    {
+      "path": "scripts/learning/learning_atelier.gd",
+      "base_blob": "c14873748bd8ff42cc7f00bd1c39653626de4664",
+      "dream_blob": "6bca8ad6d91e9e4378104a9afef4dc8b9ebf54a9",
+      "diff": [
+        {
+          "kind": "+",
+          "line": 7,
+          "text": "const DREAM_PROPS = preload(\"res://scripts/learning/lumo_dream_props.gd\")"
+        },
+        {
+          "kind": "+",
+          "line": 8,
+          "text": "const QUALITY = preload(\"res://scripts/systems/render/lumo_quality.gd\")"
+        },
+        {
+          "kind": "+",
+          "line": 9,
+          "text": "const AMBIENCE = preload(\"res://scripts/systems/render/lumo_dream_ambience.gd\")"
+        },
+        {
+          "kind": "+",
+          "line": 24,
+          "text": "\tvar dream_garden := DREAM_PROPS.new()"
+        },
+        {
+          "kind": "+",
+          "line": 25,
+          "text": "\tdream_garden.reduced_motion = bool(get_parent().get(\"reduced_motion\"))"
+        },
+        {
+          "kind": "+",
+          "line": 26,
+          "text": "\tdream_garden.quality = QUALITY.tier()"
+        },
+        {
+          "kind": "+",
+          "line": 27,
+          "text": "\tadd_child(dream_garden)"
+        },
+        {
+          "kind": "+",
+          "line": 28,
+          "text": "\tvar ambience := AMBIENCE.attach(self, \"learning_garden\")"
+        },
+        {
+          "kind": "+",
+          "line": 29,
+          "text": "\tambience.set_reduced_motion(dream_garden.reduced_motion)"
+        }
+      ]
+    },
+    {
+      "path": "scripts/systems/render/lumo_environment.gd",
+      "base_blob": "126d309f8ddadee8f20f487a2bcadfc015a7c45b",
+      "dream_blob": "a3444f97fe9c6bfa6a509dca64a669fadde55a90",
+      "diff": [
+        {
+          "kind": "+",
+          "line": 18,
+          "text": "const DREAM_AMBIENCE = preload(\"res://scripts/systems/render/lumo_dream_ambience.gd\")"
+        },
+        {
+          "kind": "+",
+          "line": 19,
+          "text": ""
+        },
+        {
+          "kind": "+",
+          "line": 20,
+          "text": ""
+        },
+        {
+          "kind": "+",
+          "line": 26,
+          "text": "\t\treturn _apply_creative_table(root, preset, LumoQuality.budget(tier), tier)"
+        },
+        {
+          "kind": "-",
+          "line": 23,
+          "text": "\t\treturn _apply_creative_table(root, preset, LumoQuality.budget(tier))"
+        },
+        {
+          "kind": "+",
+          "line": 56,
+          "text": "\tDREAM_AMBIENCE.attach(root, preset, tier)"
+        },
+        {
+          "kind": "+",
+          "line": 60,
+          "text": "static func _apply_creative_table("
+        },
+        {
+          "kind": "+",
+          "line": 61,
+          "text": "\troot: Node3D, preset: String, budget: Dictionary, tier: String = \"\""
+        },
+        {
+          "kind": "+",
+          "line": 62,
+          "text": ") -> Dictionary:"
+        },
+        {
+          "kind": "-",
+          "line": 56,
+          "text": "static func _apply_creative_table(root: Node3D, preset: String, budget: Dictionary) -> Dictionary:"
+        },
+        {
+          "kind": "+",
+          "line": 76,
+          "text": "\tDREAM_AMBIENCE.attach(root, preset, tier)"
+        }
+      ]
+    },
+    {
+      "path": "scripts/systems/render/lumo_environment_creative_presets.gd",
+      "base_blob": "2b985587e87f2d23c5eb12bbe7bceeefabed471b",
+      "dream_blob": "263d05faedf43adb32b46555811294cba65b8d20",
+      "diff": [
+        {
+          "kind": "+",
+          "line": 40,
+          "text": "const DREAM_AMBIENCE = preload(\"res://scripts/systems/render/lumo_dream_ambience.gd\")"
+        },
+        {
+          "kind": "+",
+          "line": 41,
+          "text": ""
+        },
+        {
+          "kind": "+",
+          "line": 212,
+          "text": "\tDREAM_AMBIENCE.attach(root, preset, tier)"
+        }
+      ]
+    }
+  ],
+  "additional_new_dependencies": [
+    {
+      "path": "scripts/learning/lumo_dream_props.gd",
+      "blob": "e042f4295acfb2e6fa7d95a4789ff149383d77af",
+      "finding": "Adds bounded Node3D sculptures and per-part transforms; no Control, collision body, input handler or viewport/safe-area mutation in the reviewed source."
+    },
+    {
+      "path": "scripts/systems/render/lumo_dream_ambience.gd",
+      "blob": "faabc7aeee73c18cf5fa8783dfc77c4e67a2bc33",
+      "finding": "Adds bounded Node3D MultiMesh ambience and shader updates; no Control, collision, input handler or viewport/safe-area mutation in the reviewed source."
+    }
+  ],
+  "conclusion": "No source-level merge collision. Kart layout and input dependencies listed in source-preservation.json are byte-identical between common base and Dream parent; LearningAtelier and environment additions loaded by the existing SafeArea probe justify one integration-only headless probe. Original minimap red/green is retained unchanged, not repeated.",
+  "limits": [
+    "This source review does not establish Dream raster correctness, device performance or Android touch behavior.",
+    "No new rendered capture is claimed; previous local display capability failure remains documented in the retained minimap evidence."
+  ],
+  "branch_or_host_pin_changed": false
+}

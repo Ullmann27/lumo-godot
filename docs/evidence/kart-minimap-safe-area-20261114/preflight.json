@@ -1,0 +1,13 @@
+{
+  "base_head": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "engine_version": "4.6.3.stable.official.7d41c59c4",
+  "cache_source": "/workspace/scratch/5987865ae883/qa/creative-geometry-readiness-86445/runtime/.godot",
+  "cache_copied_physically": true,
+  "raw_hash_matched_import_sidecars": 240,
+  "candidate_sha256": {
+    "kart_island.gd": "7f916fcf8ea2d17876500e0063d91809db4a608dbc8bf945287231e6d76231d5",
+    "mobile_safe_area_regression.gd": "8188911d6f91deaec924fdc7857feec876af075a8d04522b49dd14429d501aa5"
+  },
+  "tracked_diff": " scripts/tests/mobile_safe_area_regression.gd | 185 ++++++++++++++++++++++++++-\n 1 file changed, 184 insertions(+), 1 deletion(-)\n",
+  "free_home": 5043650560
+}

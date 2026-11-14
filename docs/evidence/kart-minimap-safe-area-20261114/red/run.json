@@ -1,0 +1,87 @@
+{
+  "label": "red-v2-headless",
+  "base_head": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "production": "baseline",
+  "before": [
+    {
+      "path": "scripts/games/kart_island.gd",
+      "bytes": 170990,
+      "sha256": "c50a7da1387a121e326e8b0b5153075e14c8f93b04ab5196d4c1c1d8d34189c8",
+      "git_blob": "f7473190f51fb5dbda7d0f7ad7292f8ec64c0da2"
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "bytes": 26254,
+      "sha256": "8188911d6f91deaec924fdc7857feec876af075a8d04522b49dd14429d501aa5",
+      "git_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+    }
+  ],
+  "after": [
+    {
+      "path": "scripts/games/kart_island.gd",
+      "bytes": 170990,
+      "sha256": "c50a7da1387a121e326e8b0b5153075e14c8f93b04ab5196d4c1c1d8d34189c8",
+      "git_blob": "f7473190f51fb5dbda7d0f7ad7292f8ec64c0da2"
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "bytes": 26254,
+      "sha256": "8188911d6f91deaec924fdc7857feec876af075a8d04522b49dd14429d501aa5",
+      "git_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+    }
+  ],
+  "source_unchanged": true,
+  "command": [
+    "godot",
+    "--path",
+    "/home/agent/lumo-kart-minimap-2708/source",
+    "--rendering-method",
+    "gl_compatibility",
+    "--headless",
+    "--script",
+    "res://scripts/tests/mobile_safe_area_regression.gd"
+  ],
+  "environment": {
+    "DISPLAY": null,
+    "XDG_DATA_HOME": "/home/agent/lumo-kart-minimap-2708/user-red-v2-headless",
+    "LUMO_CAPTURE_DIR": "/home/agent/lumo-kart-minimap-2708/evidence/red-v2-headless",
+    "LUMO_KART_MINIMAP_CAPTURE_DIR": null
+  },
+  "started_utc": "2026-11-14T11:12:57.106145+00:00",
+  "seconds": 14.813,
+  "engine_exit_code": 1,
+  "log": "/home/agent/lumo-kart-minimap-2708/evidence/red-v2-headless/run.log",
+  "log_bytes": 24393,
+  "log_sha256": "b89d810ea4c4008acd6ad2cc1d11e51102bc77d6aae03594e3ca788106db2777",
+  "report_present": true,
+  "checks": 380,
+  "failures": [
+    "dense-left-cutout minimap leaves @Button@3229 and its artwork unobscured",
+    "dense-left-cutout minimap leaves DriftAction and its artwork unobscured",
+    "dense-left-cutout minimap leaves BoostAction and its artwork unobscured",
+    "dense-left-cutout minimap leaves header, instructions and jump hint unobscured",
+    "dense-left-cutout minimap leaves header, instructions and jump hint unobscured",
+    "dense-left-cutout entire minimap stays inside the true safe area",
+    "dense-right-cutout minimap leaves @Button@3229 and its artwork unobscured",
+    "dense-right-cutout minimap leaves DriftAction and its artwork unobscured",
+    "dense-right-cutout minimap leaves BoostAction and its artwork unobscured",
+    "dense-right-cutout minimap leaves header, instructions and jump hint unobscured",
+    "dense-right-cutout minimap leaves header, instructions and jump hint unobscured",
+    "dense-right-cutout entire minimap stays inside the true safe area",
+    "same-pixels-density-one minimap leaves header, instructions and jump hint unobscured",
+    "expanded-inner-display minimap leaves header, instructions and jump hint unobscured",
+    "expanded-inner-display entire minimap stays inside the true safe area",
+    "expanded-hint-visible minimap leaves header, instructions and jump hint unobscured",
+    "expanded-hint-visible entire minimap stays inside the true safe area",
+    "showing the real hint repositions the existing map without a resize",
+    "expanded-hint-hidden minimap leaves header, instructions and jump hint unobscured",
+    "expanded-hint-hidden entire minimap stays inside the true safe area",
+    "dense-restored minimap leaves @Button@3229 and its artwork unobscured",
+    "dense-restored minimap leaves DriftAction and its artwork unobscured",
+    "dense-restored minimap leaves BoostAction and its artwork unobscured",
+    "dense-restored minimap leaves header, instructions and jump hint unobscured",
+    "dense-restored minimap leaves header, instructions and jump hint unobscured",
+    "dense-restored entire minimap stays inside the true safe area"
+  ],
+  "report_sha256": "27916c6efb3e6b2aae410a5887df6abce55e5d9f0465716a047c1841f512ae8b"
+}

@@ -1,0 +1,779 @@
+{
+  "schema": 1,
+  "date_utc": "2026-11-14",
+  "scope": "Exact GitData reconciliation of existing Live/Discovery integration and consumed Dream/minimap source; no new local engine execution.",
+  "repository": "Ullmann27/lumo-godot",
+  "parents": {
+    "first": "71a4c1e2304b52005950b12490d070c286c45438",
+    "additional": [
+      "e2d15dbc5f3709306decb139eeb70a1cf30c0b73"
+    ]
+  },
+  "common_ancestor": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "actual_base_ref": {
+    "ref": "refs/heads/integration/lumo-c4-connections-20261114",
+    "sha": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+    "method": "direct Git refs API; PR base cache not used"
+  },
+  "consumed_host": {
+    "repository": "Ullmann27/lumo-lernen",
+    "sha": "aab09275ec6b5808de9be539ca4e1a7e70921249",
+    "pin_path": "config/godot-source.json",
+    "pin_blob": "3ce3b0d1f53f5d9b9f7ff0dcb7c3bd519c250788",
+    "native_pin": "e2d15dbc5f3709306decb139eeb70a1cf30c0b73"
+  },
+  "parent_trees": {
+    "base": "35492eec16cac6774bc546b6e57628900bef61cb",
+    "ours": "8633c0ac611f2ba9f261cc247a60997634d43dd9",
+    "theirs": "ea0f73ae6aad8792a963cadaa483c290a2f2a62e"
+  },
+  "merge_method": "Three full recursive non-truncated Git trees, comparing path/mode/type/blob. Reuse 63 exact upstream blobs on the first-parent tree. Add these two provenance files only. Two real Git parents; no command-line merge execution claimed.",
+  "upstream_changed_entries": 76,
+  "already_identical_entries": [
+    {
+      "path": "scripts/learning/learning_atelier.gd",
+      "base": "c14873748bd8ff42cc7f00bd1c39653626de4664",
+      "ours": "6bca8ad6d91e9e4378104a9afef4dc8b9ebf54a9",
+      "theirs": "6bca8ad6d91e9e4378104a9afef4dc8b9ebf54a9",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/systems/render/lumo_environment.gd",
+      "base": "126d309f8ddadee8f20f487a2bcadfc015a7c45b",
+      "ours": "a3444f97fe9c6bfa6a509dca64a669fadde55a90",
+      "theirs": "a3444f97fe9c6bfa6a509dca64a669fadde55a90",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/systems/render/lumo_environment_creative_presets.gd",
+      "base": "2b985587e87f2d23c5eb12bbe7bceeefabed471b",
+      "ours": "263d05faedf43adb32b46555811294cba65b8d20",
+      "theirs": "263d05faedf43adb32b46555811294cba65b8d20",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "assets/dream_garden/dream_blossom.glb",
+      "base": null,
+      "ours": "30bcaa17a7a7d86bc2124823cbd30428aedb0760",
+      "theirs": "30bcaa17a7a7d86bc2124823cbd30428aedb0760",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "assets/dream_garden/dream_storybook.glb",
+      "base": null,
+      "ours": "d11aac2c5e33d58563ae6707ace16c9c67b59291",
+      "theirs": "d11aac2c5e33d58563ae6707ace16c9c67b59291",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "assets/dream_garden/provenance.json",
+      "base": null,
+      "ours": "3f8030d6a113752e771ca2c110478f26efe98d52",
+      "theirs": "3f8030d6a113752e771ca2c110478f26efe98d52",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "assets/shaders/lumo_dream_ambience.gdshader",
+      "base": null,
+      "ours": "14ff7da92f330f97a82d2579c009db8c981c2cb8",
+      "theirs": "14ff7da92f330f97a82d2579c009db8c981c2cb8",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/learning/lumo_dream_props.gd",
+      "base": null,
+      "ours": "e042f4295acfb2e6fa7d95a4789ff149383d77af",
+      "theirs": "e042f4295acfb2e6fa7d95a4789ff149383d77af",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/systems/render/lumo_dream_ambience.gd",
+      "base": null,
+      "ours": "faabc7aeee73c18cf5fa8783dfc77c4e67a2bc33",
+      "theirs": "faabc7aeee73c18cf5fa8783dfc77c4e67a2bc33",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/tests/dream_garden_capture.gd",
+      "base": null,
+      "ours": "8b514d3f6bf9095e6908765cd3d59bc5ebdb67a4",
+      "theirs": "8b514d3f6bf9095e6908765cd3d59bc5ebdb67a4",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/tests/dream_garden_props_regression.gd",
+      "base": null,
+      "ours": "361eed7ed25b46bff8173087eb7df1eaaac96b56",
+      "theirs": "361eed7ed25b46bff8173087eb7df1eaaac96b56",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/tests/lumo_dream_ambience_capture.gd",
+      "base": null,
+      "ours": "75085479ed587335533651adece30b579b8fe11f",
+      "theirs": "75085479ed587335533651adece30b579b8fe11f",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/tests/lumo_dream_ambience_regression.gd",
+      "base": null,
+      "ours": "d96ad6f332b93e3e28d563d72b3c10d208c7be13",
+      "theirs": "d96ad6f332b93e3e28d563d72b3c10d208c7be13",
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "overlay_entries": [
+    {
+      "path": "scripts/games/kart_island.gd",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "83b3b6b548cffa2790c582e061a74e37bbfcf356"
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+    },
+    {
+      "path": ".github/workflows/lumo-dream-connections.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "321aeff8018435789cc57df3af3e3b5fecc4c910"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "085d6f9d84449d670085220ff2c541937cdfbe75"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/attempt.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "befbbd037e0891ed7b7b37baa6bc2df688f6fb9a"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/capability.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "78fe143d3533b689caae5fda4ed0c091f386b77e"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/xorg-start.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d551e61d9251c43bccc49c9001e9760557117407"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/xorg.conf",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "62582a38acc749ec9543ee8115cde480a6119ee3"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/xorg.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ead5853ab22f12c6ed0960d2453faa0749cc4595"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/green/mobile-safe-area.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee2b818b2cb2fe1f44f436efd9b02b42d601960c"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/green/run.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d60163a04f79387e3352a3a73591a7dd146711c"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/green/run.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8c8d0acedfaa337f87250ba3dfe9add54f273538"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/import-run.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8facd02d5a10c357f44690bf8e673a2c7bd24295"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/import.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "01f574ec4276b0733538a74b3629ccb1f8f41cf5"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/independent-review.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fb45674454d43a5365d67f45c9eb83cbaad66fa9"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6c660fff77fadbb8b8bfccb34e1fff96f4c497ef"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/preflight.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6cbdb223b6b97abf6405001744eca4e2a76acf60"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/red/mobile-safe-area.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5b01f0fdf019f09e819bb10020e8168fea3fa6af"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/red/run.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c8ee322fdd06057b07b8a8a2be01913ea74aebc"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/red/run.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de2f6da1b5fd5a8b6abe61ace120d611d2520d92"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/result-summary.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "59e09a4b41cc07c84c2b1fb57193e357759393ae"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/run_probe.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2a0ed84f5f29fa002be3f4303ccd3750b74a2bb"
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/source-prepare.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dae78e6f187731383a9c53e1a94355d4b810f310"
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/archive-proof.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f7ec98bacf6ef0eff09af410f6afe8d5cba594d4"
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/complete-local-originals.tar.gz",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bd323f8ae6dbc5b20b3c162957aa59bfcfd1f2a0"
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/handoff.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "222a3bf389bb681bb5bd02bb38b7a64e160e80ba"
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "839f87b977d811623fa80b676e074484355d61c0"
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/missing-sparse-paths.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5cf340219bb679f4c8c6b32ffc758269199e6780"
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/original-archive-bindings.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de557bf51e872fc96d89b3b9c8c8140a38a55092"
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/preflight-resolution.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3377a5f71a90ab798919a58f35d09272d5f3351a"
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/prepare-connection.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a1fe6273fcecf9d4bd5e87a5d1b9edd424aadfff"
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/root-connection.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bff7521ae0a01f2183b845ce1e7051b7cf63028a"
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/summary.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7e2ea18b8c80dfef928b4899e6dbea87e88e93ee"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/independent-native-gate-review.tar.gz",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7fa0a736d1af24b6b69e7061c2d9a639a54d7395"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/independent-workflow-v2-review.tar.gz",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "646e84f471f30c10c657c9109a1f5e6108c06158"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/native-complete-source-pack.tar.gz",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "108ec28517c508257e51d533befe41ad84c9a5e4"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/native-source/gate-contract.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4d4cb5f915e5d0278943464c2a3a03c8a8521f37"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/native-source/glb-validation.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cd977787a298e2c4b9f7dd98ac75c2db8aa65068"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/native-source/handoff.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee6f8ce6aa42e937fe9362defba38ffd29c3c31e"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/native-source/manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3a36e3299b41d11cc611942d7b2f3f8dd41ecd8b"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/native-source/source-freeze.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b2f4453a5e139a530bb340c2ae9517de6a835d27"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/original-archive-bindings.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d5352c6da81cf369740134ee0e32ee5d49713dc8"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/prepare-connection.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a1fe6273fcecf9d4bd5e87a5d1b9edd424aadfff"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/root-connection.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ef624dc6dc0afc4015dcc2c20b009677370b6a6f"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/workflow-v1-red-v2-pass-complete.tar.gz",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d1baad1cf51dcd2006662b3ea157c18d5f3d2e37"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/workflow/handoff.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "997898e5b4c762c7677a29c40fecffaa59490689"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/workflow/manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2e789eca7534e4d6bb4ac1c7b9397345670da9fe"
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/workflow/v2-source-freeze.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0a74583b09c2ec00173b0d82117a2fe2ba63ada9"
+    },
+    {
+      "path": "docs/evidence/native-dream-minimap-merge-20261114/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d88bbbecddee7f3269bbaf69080b62ba127219a5"
+    },
+    {
+      "path": "docs/evidence/native-dream-minimap-merge-20261114/dependency-review.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "eb8e1e4d85b805cf04207ee406e41c21c29675ed"
+    },
+    {
+      "path": "docs/evidence/native-dream-minimap-merge-20261114/import/run.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f470f88e1576cab009f649e4b5190cad113c1652"
+    },
+    {
+      "path": "docs/evidence/native-dream-minimap-merge-20261114/import/run.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f9ef5c42157f7518622330df9e97bc588f3af9b8"
+    },
+    {
+      "path": "docs/evidence/native-dream-minimap-merge-20261114/integration/mobile-safe-area.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "880c0da5fa06fa53cffdb18601c5d0c2ed6830ca"
+    },
+    {
+      "path": "docs/evidence/native-dream-minimap-merge-20261114/integration/run.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "50d1ab378e1399c1b01ab8c86c19b97d27d93ec6"
+    },
+    {
+      "path": "docs/evidence/native-dream-minimap-merge-20261114/integration/run.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "87eef50f2b112ae226f3e99c45741402e9f47f96"
+    },
+    {
+      "path": "docs/evidence/native-dream-minimap-merge-20261114/manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d7789985a6ec76881c693ed6541bab0fa432fc9b"
+    },
+    {
+      "path": "docs/evidence/native-dream-minimap-merge-20261114/preflight.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b8e84be38e28d4bfb6ab1eb5ffda72fc15f34e56"
+    },
+    {
+      "path": "docs/evidence/native-dream-minimap-merge-20261114/run_integration.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8017b4dc13ab21bb71878ce333162cde056c80da"
+    },
+    {
+      "path": "docs/evidence/native-dream-minimap-merge-20261114/source-prepare.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35966e7d173c586aac6256fcc84ec4cd7ae0ed74"
+    },
+    {
+      "path": "docs/evidence/native-dream-minimap-merge-20261114/source-preservation.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ab379090c441d7834620bf58dfa264f68e141b10"
+    },
+    {
+      "path": "tools/tests/test_dream_rasters.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0af63932d9f71fd3f1c1657f6aaaba46a019a2c0"
+    },
+    {
+      "path": "tools/validate_dream_connections.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "834ea912003f5e27a271139646a857601baea905"
+    },
+    {
+      "path": "tools/verify_dream_rasters.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5"
+    }
+  ],
+  "conflicts": [],
+  "source_union_proof": {
+    "tree": "a247759c62dceeecf840b35ebb2b37c118d5b396",
+    "truncated": false,
+    "full_non_tree_entries": 3710,
+    "expected_non_tree_entries": 3710,
+    "canonical_entry_sha256": "e6ce3613b04e8b8d05db523c1f0d3306bb775b7aa6de4bf413d5cfa832f2e0e3",
+    "expected_canonical_entry_sha256": "e6ce3613b04e8b8d05db523c1f0d3306bb775b7aa6de4bf413d5cfa832f2e0e3",
+    "full_tree_mismatches": [],
+    "upstream_changed_paths_exact": 76,
+    "existing_integration_changed_paths_preserved": 81,
+    "preserved_existing_entries": 3647,
+    "overlay_paths": 63,
+    "added_paths": 61,
+    "modified_paths": [
+      "scripts/games/kart_island.gd",
+      "scripts/tests/mobile_safe_area_regression.gd"
+    ],
+    "deleted_paths": [],
+    "protected_entries": [
+      {
+        "path": "scripts/games/game_hub.gd",
+        "sha": "5a4fd789dcfb3dcd1bc1fcc2f7b0fd7f64ade1f6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "scripts/creative/build_settlement_world.gd",
+        "sha": "e6a2a84447757c04a7f07436b162ed698b827a33",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "scripts/tests/game_hub_magic_regression.gd",
+        "sha": "ff2a392c1317fddc21c3de49fa6d6453c09ca66d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "scripts/tests/game_hub_magic_capture.gd",
+        "sha": "4d2a6c61688054ce69b90afa07702f8f56a20cbf",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "scripts/tests/helpers/game_hub_original_identity.gd",
+        "sha": "b420ef154c12dda62ee02c28a20f23ad400abc8a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "scripts/tests/village_host_launch_regression.gd",
+        "sha": "082cecfc4a6542c8372bc592b4729051b105a079",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "tools/verify_discovery_rasters.py",
+        "sha": "219e691fc8aa119cc80221b3db6c77e63caf8bfe",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "tools/tests/test_discovery_rasters.py",
+        "sha": "d8af97bcd61c5ced583b0be133d504feb978e6a9",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "tools/validate_nextgen.sh",
+        "sha": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+        "mode": "100755",
+        "type": "blob"
+      },
+      {
+        "path": "tools/validate_live_connections.sh",
+        "sha": "047c48b60af8ea8c1ed91426604cdb0e5dac7299",
+        "mode": "100755",
+        "type": "blob"
+      },
+      {
+        "path": "tools/validate_discovery_connections.sh",
+        "sha": "07975f12c1f9b07d586cbeb85270329955198f04",
+        "mode": "100755",
+        "type": "blob"
+      },
+      {
+        "path": "tools/verify_studio_2020_rasters.py",
+        "sha": "b60c3360730f0db73f91324cbaed3a8806fd141e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "scripts/tests/treasure_wisp_regression.gd",
+        "sha": "67927a6f2147658d13e60cacdbbd24bf717a0c1d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "scripts/creative/treasure_world.gd",
+        "sha": "703873a3b0fbe7e589c81bf9695fac5ecf43cd63",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "scripts/tests/connect_four_return_regression.gd",
+        "sha": "1d7a4cbd0f3b0d5a21ddeaf218bf27eadfe1f0bb",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "tools/verify_safe_area_rasters.py",
+        "sha": "34fb3c4f31e476a5f29f98abc9a2ecc0337e6863",
+        "mode": "100644",
+        "type": "blob"
+      }
+    ]
+  },
+  "source_union_canonicalization": "JSON.stringify of every non-tree entry as {path,mode,type,sha}, sorted ascending by JavaScript string comparison on path, UTF-8 SHA256.",
+  "protected_semantics": [
+    "Original facial Lumo GLB/rig adapter, measured Hub framing, reduced motion, all eight routes, profile and Back behavior.",
+    "Village initialized-state JSON, actual registered child save identity/default slot, guarded saves and direct visible host return to games; internal Bauwelt return remains contextual.",
+    "Treasure Wisp hooks, C4 return, original Nextgen52/17, Live9/7 and Discovery10/38 runners and raster readers."
+  ],
+  "dream_contract": {
+    "reader_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5",
+    "reader_bytes": 20254,
+    "reader_sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+    "reader_sha256_independently_recomputed": true,
+    "runner_blob": "834ea912003f5e27a271139646a857601baea905",
+    "probes": 5,
+    "original_pngs": 7,
+    "original_reports": 2,
+    "final_marker": "[LumoDreamConnections] PASS 5 original probes and 7 verified renderer PNGs",
+    "raster_marker": "[DreamRasterRoster] PASS 7 actual PNG files and 2 original reports",
+    "isolated_output": "LUMO_DREAM_LOG_DIR",
+    "snapshot_guards": "Exact before/after tracked bytes, modes, Git index, HEAD and tree; generated import files separately inventoried"
+  },
+  "observed_producer_evidence": {
+    "combined_minimap": {
+      "source_parent": "bd0712259bb64908a5649ee1999638826c9eb597",
+      "source_overrides": {
+        "scripts/games/kart_island.gd": "83b3b6b548cffa2790c582e061a74e37bbfcf356",
+        "scripts/tests/mobile_safe_area_regression.gd": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+      },
+      "run_record_blob": "50d1ab378e1399c1b01ab8c86c19b97d27d93ec6",
+      "log_blob": "87eef50f2b112ae226f3e99c45741402e9f47f96",
+      "report_blob": "880c0da5fa06fa53cffdb18601c5d0c2ed6830ca",
+      "read_original_log_and_report": true,
+      "original_hashes_recomputed": {
+        "dream-runner": {
+          "bytes": 4660,
+          "sha256": "19366398784db00c335800bc26ab3e171e062eb2149316021039bc027706dadc"
+        },
+        "dream-verifier": {
+          "bytes": 20254,
+          "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d"
+        },
+        "dream-tests": {
+          "bytes": 10291,
+          "sha256": "d974aeba9a89b5ac0374033d5b70dad085819191ea8fb67704e0d28a2db20085"
+        },
+        "combined-original-log": {
+          "bytes": 10571,
+          "sha256": "89cfe73badf95e3e653d948c0445feaa6d3eb269652c069c290380445d439924"
+        },
+        "combined-report": {
+          "bytes": 55440,
+          "sha256": "ae5dfc3621efa1cb2225b3e444bf1ce1d2b6d85dc7eeb0a09319b03038b9175b"
+        }
+      },
+      "checks": 380,
+      "failures": 0,
+      "controls": 15,
+      "layout_profiles": 7,
+      "live_hint_transitions": 2,
+      "exit_code": 0,
+      "seconds": 14.646,
+      "engine": "4.6.3.stable.official.7d41c59c4",
+      "renderer_mode": "headless",
+      "images": 0,
+      "materialized_files": 1454,
+      "before_after_inventory_unchanged": true,
+      "diagnostics": "Two retained compatibility-renderer warnings; no SCRIPT ERROR/Parse Error/ERROR/resource-leak marker in the original log."
+    },
+    "minimap_red_green": {
+      "source": "6ecc560ea16202b935c4f1d32b08b93cda358e02",
+      "summary_blob": "59e09a4b41cc07c84c2b1fb57193e357759393ae",
+      "readme_blob": "085d6f9d84449d670085220ff2c541937cdfbe75",
+      "same_test_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509",
+      "reported_original": {
+        "checks": 380,
+        "failures": 26,
+        "exit_code": 1,
+        "seconds": 14.813
+      },
+      "reported_candidate": {
+        "checks": 380,
+        "failures": 0,
+        "exit_code": 0,
+        "seconds": 15.474
+      },
+      "scope": "Producer red/green summary and README read; original combined-source run independently checked above. No new minimap PNG."
+    },
+    "dream_local": {
+      "source": "c2e025f9bb34334323d989b19085f6fe0e6c5694",
+      "summary_blob": "7e2ea18b8c80dfef928b4899e6dbea87e88e93ee",
+      "reported_contracts": {
+        "methods": 12,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      "reported_headless_checks": [
+        170,
+        544
+      ],
+      "reported_import_exit": 0,
+      "renderer_runs": 0,
+      "scope": "Read the producer source-bound summary; did not repeat its Python/import/headless runs or download its archive."
+    },
+    "prior_live_integration": {
+      "host": "07cac7225e2f7b6451665dfda9c38841f51c758b",
+      "native": "71a4c1e2304b52005950b12490d070c286c45438",
+      "run_id": 43586101225,
+      "job_id": 132421769277,
+      "original_log_blob": "c246b7ddce9d1b66db659a93b0af8abec539ee0d",
+      "review_repository": "Ullmann27/lumo-lernen",
+      "review_commit": "a6216484bd48bc2db8615d73d1397c0b5b35feb4",
+      "completed": {
+        "nextgen_modes": 52,
+        "studio_rasters": 17,
+        "live_probes": 9,
+        "live_pngs": 7
+      },
+      "discovery": "8/10 probes completed; actual Hub2 PNG succeeded; Learning capture was cancelled at 10/25. Final Discovery10/38 acceptance was not reached.",
+      "scope": "Successful prior source portions are evidence for parent71a, not an execution of this new merge."
+    }
+  },
+  "static_review": {
+    "six_added_or_updated_code_gate_paths": [
+      "scripts/games/kart_island.gd",
+      "scripts/tests/mobile_safe_area_regression.gd",
+      ".github/workflows/lumo-dream-connections.yml",
+      "tools/tests/test_dream_rasters.py",
+      "tools/validate_dream_connections.sh",
+      "tools/verify_dream_rasters.py"
+    ],
+    "minimap": "Deferred layout fits settled safe bounds and excludes visible header, instruction, jump hint, joystick and expanded 1.12x action artwork; no physics/action/asset change.",
+    "regression": "Seven density/cutout/viewport profiles plus live hint show/hide exercise actual scene geometry. Existing 15 controls/four Mobile PNGs remain; optional Kart captures have a separate explicit directory.",
+    "compatibility": "The unchanged 52-mode runner requires MOBILE_SAFE_AREA_PASS without freezing the old check count; the unchanged raster reader retains its original 15-control/four-Mobile-image contract.",
+    "dream": "Original runner checks exact marker counts, process errors/resource leaks and isolated fresh evidence; reader requires five exact probe/mode rows, seven decoded original PNGs, changing pixels/clocks and original source snapshots.",
+    "independent_execution_performed": false
+  },
+  "limits": [
+    "The executor is unavailable. No local shell, lint, parser, Godot, Python test, new render or Android run was performed for this merge.",
+    "Complete final Native52/17, Live9/7, Discovery10/38 and separate Dream5/7 acceptance must run on the exact final commit through Host CI.",
+    "Minimap producer acceptance is headless geometry; it does not establish new rendered/device appearance.",
+    "The existing Dream workflow remains scoped to its original producer branch. Host's explicit Dream step is the final integration gate.",
+    "No existing runner limit, failure guard, original raster roster or helper source was weakened."
+  ]
+}

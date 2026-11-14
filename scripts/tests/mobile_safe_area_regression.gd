@@ -20,6 +20,9 @@ class AndroidBoundary extends RefCounted:
 var checks := 0
 var failures: Array[String] = []
 var targets: Array[Dictionary] = []
+var kart_minimap_layouts: Array[Dictionary] = []
+var kart_minimap_images: Array[Dictionary] = []
+var kart_minimap_transitions: Array[Dictionary] = []
 var images: Array[Dictionary] = []
 var events: Array[Dictionary] = []
 var mobile: Node
@@ -347,6 +350,183 @@ func _kart_readers_contract() -> void:
 	await _complete_current(LANDSCAPE_INSETS)
 
 
+func _capture_kart_minimap(label: String) -> void:
+	# Additional originals have a separate explicit destination. The existing
+	# four mandatory Safe-Area rasters and their verifier remain unchanged.
+	var directory := OS.get_environment("LUMO_KART_MINIMAP_CAPTURE_DIR")
+	if directory.is_empty():
+		return
+	_check(capture and DisplayServer.get_name() != "headless",
+		"Kart minimap capture requires the actual renderer")
+	if not capture or DisplayServer.get_name() == "headless":
+		return
+	_check(DirAccess.make_dir_recursive_absolute(directory) == OK,
+		"Kart minimap original capture directory opens")
+	await RenderingServer.frame_post_draw
+	var image := root.get_texture().get_image()
+	_check(image != null and image.get_size() == root.size,
+		label + " Kart minimap capture has actual window pixels")
+	if image == null:
+		return
+	var path := directory.path_join(label + ".png")
+	_check(image.save_png(path) == OK, label + " Kart minimap original PNG saves")
+	kart_minimap_images.append({"label": label, "path": path,
+		"width": image.get_width(), "height": image.get_height(),
+		"sha256": FileAccess.get_sha256(path)})
+
+
+func _observe_kart_minimap(
+	game, label: String, dimensions: Vector2i, density: float, insets: Rect2,
+	expect_visible: bool
+) -> Dictionary:
+	var safe := Rect2(insets.position,
+		Vector2(dimensions) - insets.position - insets.size)
+	var shown: bool = game.map_panel.is_visible_in_tree()
+	_check(shown == expect_visible, label + " preserves the usable map visibility")
+	var map_rect: Rect2 = _pixels(game.map_panel)
+	var content_rect: Rect2 = _pixels(game.map)
+	var controls: Array = [game.top_menu_button, game.top_reset_button,
+		game.top_pause_button, game.joystick, game.gas_button,
+		game.brake_button, game.drift_button, game.boost_button, game.item_button]
+	var control_rects: Array[Dictionary] = []
+	for control in controls:
+		if not control.is_visible_in_tree():
+			continue
+		var rect: Rect2 = _pixels(control)
+		var dp: Vector2 = rect.size / density
+		_check(safe.grow(0.51).encloses(rect),
+			label + " " + str(control.name) + " remains inside the true safe area")
+		_check(minf(dp.x, dp.y) >= 47.95,
+			label + " " + str(control.name) + " retains a 48 dp touch target")
+		var artwork := rect
+		if control.get_parent() == game.pedal_pad:
+			# kart_touch_action draws its existing art at 1.12 of the hit box.
+			artwork = rect.grow(maxf(rect.size.x, rect.size.y) * 0.06)
+		control_rects.append({"name": str(control.name),
+			"rect_px": _values(rect), "artwork_rect_px": _values(artwork),
+			"target_dp": [dp.x, dp.y]})
+		if shown:
+			_check(not map_rect.intersects(artwork),
+				label + " minimap leaves " + str(control.name) + " and its artwork unobscured")
+	var notice_rects: Array[Dictionary] = []
+	var header: Control = game.top_pause_button.get_parent()
+	for notice in [header, game.message, game.jump_hint]:
+		if not notice.is_visible_in_tree():
+			continue
+		var rectangle: Rect2 = _pixels(notice)
+		notice_rects.append({"name": str(notice.name), "rect_px": _values(rectangle)})
+		if shown:
+			_check(not map_rect.intersects(rectangle),
+				label + " minimap leaves header, instructions and jump hint unobscured")
+	if shown:
+		_check(safe.grow(0.51).encloses(map_rect),
+			label + " entire minimap stays inside the true safe area")
+		_check(map_rect.grow(0.51).encloses(content_rect),
+			label + " actual map canvas stays inside its panel")
+		_check(content_rect.size.x / density >= 79.95
+				and content_rect.size.y / density >= 63.95,
+			label + " visible map retains a readable overview")
+	return {"label": label, "surface": [dimensions.x, dimensions.y],
+		"density": density, "insets_px": _values(insets), "safe_rect_px": _values(safe),
+		"visible": shown, "map_rect_px": _values(map_rect),
+		"content_rect_px": _values(content_rect), "controls": control_rects,
+		"notice_rects_px": notice_rects}
+
+
+func _kart_minimap_hint_transition(game, density: float, insets: Rect2) -> void:
+	var unchanged_surface: Vector2i = root.size
+	var original_map: Rect2 = _pixels(game.map_panel)
+	# Only the speed-hint's display input is a fixture. Exercise its real public
+	# show/hide methods and Container signals without a resize or layout call.
+	game.jump_hint.show_for(0.0, {"angle": 0.0, "height": 0.0,
+		"flight_gravity": 1.0, "landing_min": 1.0, "landing_max": 2.0})
+	await _frames(12)
+	_check(root.size == unchanged_surface and game.jump_hint.is_visible_in_tree(),
+		"jump hint appears in the unchanged live viewport")
+	kart_minimap_transitions.append(_observe_kart_minimap(game,
+		"expanded-hint-visible", unchanged_surface, density, insets, true))
+	var moved_map: Rect2 = _pixels(game.map_panel)
+	_check(moved_map.position.distance_to(original_map.position) > 1.0,
+		"showing the real hint repositions the existing map without a resize")
+	await _capture_kart_minimap("expanded-hint-visible")
+	game.jump_hint.hide_hint()
+	await _frames(12)
+	_check(root.size == unchanged_surface and not game.jump_hint.is_visible_in_tree(),
+		"jump hint hides in the unchanged live viewport")
+	kart_minimap_transitions.append(_observe_kart_minimap(game,
+		"expanded-hint-hidden", unchanged_surface, density, insets, true))
+	var restored_map: Rect2 = _pixels(game.map_panel)
+	_check(restored_map.position.distance_to(original_map.position) < 0.6
+			and restored_map.size.distance_to(original_map.size) < 0.6,
+		"hiding the real hint restores the available map space without a resize")
+	await _capture_kart_minimap("expanded-hint-hidden")
+
+
+func _kart_minimap_contract() -> void:
+	var bridge := root.get_node("HostBridge")
+	bridge._options = {"displayDensity": DENSITY, "soundEnabled": false,
+		"reduceAnimations": true, "childKey": "safe-kart-minimap-contract"}
+	var game = load("res://scenes/games/kart_island.tscn").instantiate()
+	game.lightweight = true
+	root.add_child(game)
+	await _frames(12)
+	game._start_selected_race({"mode": "training", "driver": "fox", "kart": "comet",
+		"track": "candy_cloud", "difficulty": "gemuetlich"})
+	game._end_preview()
+	game.set_physics_process(false)
+	game.auto_gas = false
+	game.countdown = 0.0
+	game.racing = true
+	game.paused = false
+	game.modal.hide()
+	game._update_hud()
+	var profiles: Array[Dictionary] = [
+		{"label": "dense-left-cutout", "size": LANDSCAPE, "density": DENSITY,
+			"insets": LANDSCAPE_INSETS, "map_visible": true},
+		{"label": "dense-right-cutout", "size": LANDSCAPE, "density": DENSITY,
+			"insets": Rect2(0, 63, 136, 63), "map_visible": true},
+		{"label": "same-pixels-density-one", "size": LANDSCAPE, "density": 1.0,
+			"insets": LANDSCAPE_INSETS, "map_visible": true},
+		{"label": "expanded-inner-display", "size": Vector2i(2176, 1812), "density": 2.0,
+			"insets": Rect2(48, 48, 36, 42), "map_visible": true},
+		{"label": "compact-portrait", "size": Vector2i(360, 800), "density": 1.0,
+			"insets": Rect2(8, 24, 8, 20), "map_visible": false},
+		{"label": "short-landscape", "size": Vector2i(1280, 640), "density": 2.0,
+			"insets": Rect2(0, 24, 0, 24), "map_visible": false},
+		{"label": "dense-restored", "size": LANDSCAPE, "density": DENSITY,
+			"insets": LANDSCAPE_INSETS, "map_visible": true},
+	]
+	for profile in profiles:
+		var label: String = profile["label"]
+		var dimensions: Vector2i = profile["size"]
+		var density: float = profile["density"]
+		var insets: Rect2 = profile["insets"]
+		bridge._options["displayDensity"] = density
+		root.size = dimensions
+		await _frames()
+		await _complete_current(insets)
+		# A density configuration can change without new pixel dimensions.
+		# Exercise the production callback, then let real Containers settle.
+		game._on_viewport_size_changed()
+		await _frames(12)
+		kart_minimap_layouts.append(_observe_kart_minimap(
+			game, label, dimensions, density, insets, bool(profile["map_visible"])))
+		await _capture_kart_minimap(label)
+		if label == "expanded-inner-display":
+			await _kart_minimap_hint_transition(game, density, insets)
+	_check(kart_minimap_layouts.size() == profiles.size(),
+		"all seven Kart minimap density, cutout and resize observations execute")
+	_check(kart_minimap_transitions.size() == 2,
+		"both live jump-hint visibility transitions execute without a resize")
+	game.abandoned = true
+	root.remove_child(game)
+	game.free()
+	bridge._options["displayDensity"] = DENSITY
+	root.size = LANDSCAPE
+	await _frames()
+	await _complete_current(LANDSCAPE_INSETS)
+
+
 func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(output)
 	root.size = LANDSCAPE
@@ -363,6 +543,7 @@ func _run() -> void:
 	await _scene_contract()
 	await _extra_readers_contract()
 	await _kart_readers_contract()
+	await _kart_minimap_contract()
 	await _cache_exit_contract()
 	mobile.safe_area_changed.disconnect(_changed)
 	mobile._safe_area_reader = original_reader
@@ -373,7 +554,9 @@ func _run() -> void:
 	_check(file != null, "source-bound result file opens")
 	var report := {"scope": "production cache and scenes with asynchronous Android boundary fixture; not device execution",
 		"surface": [2400, 1080], "density": DENSITY, "observed_system_inset_fixture": [136, 63, 0, 63],
-		"checks": checks, "failures": failures, "targets": targets, "events": events, "images": images}
+		"checks": checks, "failures": failures, "targets": targets, "events": events, "images": images,
+		"kart_minimap_layouts": kart_minimap_layouts, "kart_minimap_images": kart_minimap_images,
+		"kart_minimap_transitions": kart_minimap_transitions}
 	if file != null:
 		file.store_string(JSON.stringify(report, "  "))
 		file.close()
