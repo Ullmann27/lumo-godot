@@ -1,0 +1,32 @@
+{
+  "images": [
+    {
+      "path": "captures/mobile_safe_area_regression/build-landscape-cutout.png",
+      "width": 2400,
+      "height": 1080,
+      "bytes": 2486845,
+      "sha256": "9e88f92bf02ebf6eb372e84624df5cce9b148ab8ae016633e9e2db7234943cd4"
+    },
+    {
+      "path": "captures/mobile_safe_area_regression/jump-landscape-cutout.png",
+      "width": 2400,
+      "height": 1080,
+      "bytes": 1854305,
+      "sha256": "5e4e3f52556eda6e7609f94f3a10e7442b60b28a7dbd5e37daf520023e0b9fbb"
+    },
+    {
+      "path": "captures/mobile_safe_area_regression/puzzle-landscape-cutout.png",
+      "width": 2400,
+      "height": 1080,
+      "bytes": 480217,
+      "sha256": "5d1117258b17bab6ecd5b2c97115854520aee92253013ee677da0b2b7b0b794b"
+    },
+    {
+      "path": "captures/mobile_safe_area_regression/treasure-landscape-cutout.png",
+      "width": 2400,
+      "height": 1080,
+      "bytes": 2623433,
+      "sha256": "3bbbb384db2b1b2a037d0fed1d7a93bc93c32b93da8b966144b1056e1ef70b7b"
+    }
+  ]
+}

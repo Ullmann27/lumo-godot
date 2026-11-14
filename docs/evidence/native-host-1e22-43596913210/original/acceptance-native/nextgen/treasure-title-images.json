@@ -1,0 +1,39 @@
+{
+  "images": [
+    {
+      "path": "captures/treasure_title_contrast_regression/treasure-title-compact.png",
+      "width": 640,
+      "height": 320,
+      "bytes": 324268,
+      "sha256": "f6a20ab8fed4bdde0ac38744bde99645699cb889e231f5a6f68c3defe7380c1d"
+    },
+    {
+      "path": "captures/treasure_title_contrast_regression/treasure-title-fold.png",
+      "width": 2176,
+      "height": 1812,
+      "bytes": 4227320,
+      "sha256": "bd4f695faf179736a4ca6073c2c311720a302d760250c8859a4dfffc49bfe355"
+    },
+    {
+      "path": "captures/treasure_title_contrast_regression/treasure-title-landscape-cutout.png",
+      "width": 2400,
+      "height": 1080,
+      "bytes": 2623577,
+      "sha256": "20de9259d6e49fd232f177e8bac3f39c87993fa0f362ea88709d0ed357b8f3ee"
+    },
+    {
+      "path": "captures/treasure_title_contrast_regression/treasure-title-landscape.png",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 2719803,
+      "sha256": "4aac0c4c1e6476ec6e6cf4412da22ebe7018517c3d5abb2ebbfa549b776bc9b4"
+    },
+    {
+      "path": "captures/treasure_title_contrast_regression/treasure-title-portrait.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 2103183,
+      "sha256": "b7ca37811b5dfec39a7706a348dfc7be5b9fe3e3aebaf973a9c5a132d681f612"
+    }
+  ]
+}

@@ -1,0 +1,1899 @@
+{
+  "schema": 1,
+  "original_files_rehashed": 6074,
+  "original_bytes_rehashed": 588336682,
+  "all_original_byte_hashes_unchanged": true,
+  "original_file_set_unchanged": true,
+  "all_pngs_fully_decoded": 188,
+  "png_integrity": "PNG format, recorded dimensions, Pillow verify and full pixel load on every original PNG; no blanket nonuniform claim for unrelated diagnostic images",
+  "local_python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "local_pillow": "13.0.0",
+  "ci_pillow_requirement": {
+    "workflow_blob": "4acbf17dd2635f75b8e7b8d8280d43364c8d08c6",
+    "version": "12.3.0",
+    "basis": "exact workflow install command; final job log confirmation remains separate"
+  },
+  "new_engine_or_renderer_runs": 0,
+  "pngs": [
+    {
+      "path": "action-stage/action-captures/lasso-catch.png",
+      "bytes": 623002,
+      "sha256": "e1e0585a5e1102b1f7fe1fdaf9cf861f6d14b45b89fa3c782e462329403a79b9",
+      "git_blob": "47a4970ff679269fff2f62d864961e1f16ff8503",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "action-stage/action-captures/ramp-1544-speed-20.png",
+      "bytes": 631461,
+      "sha256": "75b6b6d0be3159c9564ecbe92600c8d531be28b9f38de9a71c58d962d9eb4695",
+      "git_blob": "67e2a1e9340416a9c66ba7940cd515cf9f885f2f",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "action-stage/action-captures/ramp-1544-speed-48.png",
+      "bytes": 626100,
+      "sha256": "6d183f21e657b14ce77a5271f042dc56e1b144150b7d7c3bca0fc2fdcd19eeaf",
+      "git_blob": "8f1370569bdff978e8ca35818028deaa9b4f4bcb",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "action-stage/action-captures/ramp-1544-speed-70.png",
+      "bytes": 625828,
+      "sha256": "33a10634581fb827b0237901242e479ce99970de426abc16e3d7fbc6957c6fca",
+      "git_blob": "9a55a056d77c99097fe2abb5e3d2637379b5c40c",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "action-stage/action-captures/ramp-407-speed-20.png",
+      "bytes": 644755,
+      "sha256": "2f3fb8383c99f4049465db62d4d30f5e56b9502ef951597254fa38ab8f9cd3aa",
+      "git_blob": "d8671dbaea1207becf1a949794348706b3bd1194",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "action-stage/action-captures/ramp-407-speed-48.png",
+      "bytes": 622148,
+      "sha256": "038d035c7283395a8f031b1f90da3289ff5d5eb24d303b54ecc1f06ff360ffb0",
+      "git_blob": "751f31403276556c723885c8926c695407713d8d",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "action-stage/action-captures/ramp-407-speed-70.png",
+      "bytes": 615760,
+      "sha256": "561397354ecadb1182818e327174f5f06f672340edebb4f52fad004286806728",
+      "git_blob": "7345859833ffc3d46f3eb5cca52a18d8d7407fe4",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/hub/hub_fold_landscape.png",
+      "bytes": 1878594,
+      "sha256": "070e6567c6607e25c730fd1818f1d59a279a2cb0cd6289dd5c75edbb4f6fb7c4",
+      "git_blob": "89f629bf313bbce480812026d775a3c936d557c2",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "discovery/captures/hub/hub_portrait.png",
+      "bytes": 1822576,
+      "sha256": "740863c0e2fa0151c0d4e169a7985117589a6fee57467457eca6b68625651751",
+      "git_blob": "35268fcf20e3ce8319f347a7cf9e5b19e75156da",
+      "dimensions": [
+        1080,
+        1920
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/bridge_hundred-complete-2400x1080.png",
+      "bytes": 659859,
+      "sha256": "6a7306d126cf239c2377a5b045fbf9efae043e26761cd9c106f1a09bfc33830f",
+      "git_blob": "36542445b3a591de8478928f62a255a936d8a699",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/bridge_hundred-complete-412x915.png",
+      "bytes": 149617,
+      "sha256": "d713a5780fde893a9c3c0c4eaefffa09b69739d63a23eb567cc9bf04765a8286",
+      "git_blob": "8dccb6c9b75df4b2002a7fdfc9629f5bc1c6e84a",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/bridge_hundred-complete.png",
+      "bytes": 363900,
+      "sha256": "335865b34d321ef5f4942a5a85c3be670bbf3e12f4999da16bd6188b914ef2b3",
+      "git_blob": "4dc36835c859b0edbc503959470410021f203b30",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/bridge_hundred-start-412x915.png",
+      "bytes": 146569,
+      "sha256": "081d01c599541be88fee4b5082ec56c3b797369312c9af43797a2fa8d48eddcc",
+      "git_blob": "8d48b44cf081d0ba7ecccf70bd00fbe354b1e7c1",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/bridge_hundred-start.png",
+      "bytes": 354258,
+      "sha256": "7eb6e728babaa5209b2ec9f8960a52d509c8a100852e46eaa09f780662c5b206",
+      "git_blob": "de063065b385097732090d7323b8a1471fc34147",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/equal_groups-complete.png",
+      "bytes": 335741,
+      "sha256": "4f2406682e33270c1bfba8c3c72c421699c1a4842574c57b1e40d236e5343e88",
+      "git_blob": "665e527981d54366f7c33ca79c5a67daf4e54c17",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/bridge_hundred-start-2400x1080.png",
+      "bytes": 642151,
+      "sha256": "9b82faa6c8b2cfab5e789b047669d5a2b8bd5b1b7d32eb27cee24b55fd9cb372",
+      "git_blob": "e487612e9f557cfd73dba32531dc566f03161de3",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/equal_groups-start.png",
+      "bytes": 322081,
+      "sha256": "1ddfe04f7d05cb7b9a571abf0da3d92aa9fa158a65855bb60202bd0df6e42fee",
+      "git_blob": "6b0f42474cec0d8d541a516a11c88406324ab1b4",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/fraction_parts-complete.png",
+      "bytes": 332831,
+      "sha256": "defcd507a087d84dc7249cb7757bf1c15d58b9b2217f6666626666b14c0559e9",
+      "git_blob": "85d144619b09ed3cf68048e65932bcb87c284826",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/fraction_parts-start.png",
+      "bytes": 322375,
+      "sha256": "21f39f28efd623b9c3bb5bc99ac0a8b140b495404192a3b55a039e536100da4a",
+      "git_blob": "a68ab7a6e7f51deffef22882f300866b3dcdaafd",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-complete-1280x720.png",
+      "bytes": 359803,
+      "sha256": "7b6c764e769aeef10d5395444871984a59bd228e0c61f7ac38956daaa6a397ab",
+      "git_blob": "01c12e908ddbe41982d6a5b6e0d0eb025352a695",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-complete-2400x1080.png",
+      "bytes": 652893,
+      "sha256": "3dcbc484ed57bf999e20fcfe1c4b786db1a33300be0119755196f3b27da25b61",
+      "git_blob": "5818a6397991f447a96719545119282a1327dcb0",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-start-1280x720.png",
+      "bytes": 346738,
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-complete-412x915.png",
+      "bytes": 144204,
+      "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+      "git_blob": "efeabdcf9d87f93e9d7569c2ee6a106900f2b4f6",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-start-412x915.png",
+      "bytes": 139598,
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-start-2400x1080.png",
+      "bytes": 614391,
+      "sha256": "58de1dfada401700fda7edfdf160da1a2a64bfddc4dbe4f157c0078cde761ad3",
+      "git_blob": "c5486b3e4a402ce41bf73d5d88f589a9cbe9e131",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-ten-1280x720.png",
+      "bytes": 353450,
+      "sha256": "c48d94aa57ec3412736754d6c9844ac2857a7f58a8eec2f2ecb779c230a204ec",
+      "git_blob": "8c8d0e472ac9403e798efb0df757e792269032a8",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-ten-2400x1080.png",
+      "bytes": 634243,
+      "sha256": "d65c5d10a2331cbf15c60e267ac3570f76f0de5c8c51b32bd2522cfd92abe496",
+      "git_blob": "90ba53fcde54ba6a5f3badf060ad1fde8f655b0f",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-ten-412x915.png",
+      "bytes": 144541,
+      "sha256": "f8146ddc462f3163b4754cd76866e1eb8cbb052c880c980b9daee2402a3e7cfb",
+      "git_blob": "9a5332bafd5378ef99653db8ff8ee433ad5a6ba6",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/plant_parts-complete.png",
+      "bytes": 373016,
+      "sha256": "48c1a8f9ff5971937a42f7049fb12fe6364c6cf20369e451aa64bbabf385f4aa",
+      "git_blob": "61c4a1edaacb97f712a51237793ed0b74800870e",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/plant_parts-start.png",
+      "bytes": 350824,
+      "sha256": "c1baef37292fdf9911377833c0de6561214d691d69d55651b31c7a43a6207326",
+      "git_blob": "7e507b01cd345ef910129d08f3f2390a3228126d",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/subtract_ten-complete.png",
+      "bytes": 357989,
+      "sha256": "186a15fd5fe718b2f00b924ac0730820e6e654956c1addfa61a7e9b57b8d00ba",
+      "git_blob": "6959279d523317138ba60babacda70f2efa8dc0d",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/subtract_ten-start.png",
+      "bytes": 348921,
+      "sha256": "80b7c6dba3603378800c292d804179f7ff1a98d6f5bcbbae3ff995351a96c592",
+      "git_blob": "ad8b943ed4a7d13ed1d7e36569481bc60e74ce68",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/syllables-complete.png",
+      "bytes": 331920,
+      "sha256": "b8e3f46d48120761edf2fba71cf1f83dc9bba67f7e4e83edbe1f9cf807f11c27",
+      "git_blob": "d2088c5d10c6e91bc86b94894cf9ed6f254c95f0",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/syllables-start.png",
+      "bytes": 322084,
+      "sha256": "9bd464681be73f59a089375ab95b05dc9203946666ae6e04b4f63741baa5e9ac",
+      "git_blob": "fc33e32d72affd9d228203a0a787da93f76380f5",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-hundreds-phone-complete.png",
+      "bytes": 149617,
+      "sha256": "d713a5780fde893a9c3c0c4eaefffa09b69739d63a23eb567cc9bf04765a8286",
+      "git_blob": "8dccb6c9b75df4b2002a7fdfc9629f5bc1c6e84a",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-hundreds-phone-start.png",
+      "bytes": 146569,
+      "sha256": "081d01c599541be88fee4b5082ec56c3b797369312c9af43797a2fa8d48eddcc",
+      "git_blob": "8d48b44cf081d0ba7ecccf70bd00fbe354b1e7c1",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-numbers-complete-1280x720.png",
+      "bytes": 359803,
+      "sha256": "7b6c764e769aeef10d5395444871984a59bd228e0c61f7ac38956daaa6a397ab",
+      "git_blob": "01c12e908ddbe41982d6a5b6e0d0eb025352a695",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-numbers-complete-412x915.png",
+      "bytes": 144204,
+      "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+      "git_blob": "efeabdcf9d87f93e9d7569c2ee6a106900f2b4f6",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-numbers-one-step-1280x720.png",
+      "bytes": 349727,
+      "sha256": "cd9fe65a73149dc6cabc684b454b99ce2f94e1f70d0af60b9fbfed3806c0960b",
+      "git_blob": "c77964ea6ca7dd639192c9862c322f9b0feec55d",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-numbers-start-412x915.png",
+      "bytes": 139598,
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-numbers-start-1280x720.png",
+      "bytes": 346738,
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-plant_parts-complete.png",
+      "bytes": 369395,
+      "sha256": "4a884534a30245646d04c30ace1f44dd12429ffc56bfe56cb9725c303b34745b",
+      "git_blob": "82154fef0530b0fd2a36539ecb5d8441e308070c",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-plant_parts-start.png",
+      "bytes": 350824,
+      "sha256": "c1baef37292fdf9911377833c0de6561214d691d69d55651b31c7a43a6207326",
+      "git_blob": "7e507b01cd345ef910129d08f3f2390a3228126d",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-syllables-complete.png",
+      "bytes": 331917,
+      "sha256": "c0dd74767241c0dac43e09d1e0b07ff049736e0ed7277b92692783126e6090e4",
+      "git_blob": "f2ddc6054c12fdb961fd0f2e3ee348e851bce222",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-syllables-start.png",
+      "bytes": 322083,
+      "sha256": "29d040d47db0a127405be702fdb2486f88147b36c544c579a18e60fa1065661b",
+      "git_blob": "9c3bf53600a14d1f816feeaa643fd927fb299079",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "dream/captures/garden/learning-dream-1280x720.png",
+      "bytes": 346738,
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "dream/captures/garden/learning-dream-2400x1080.png",
+      "bytes": 614391,
+      "sha256": "58de1dfada401700fda7edfdf160da1a2a64bfddc4dbe4f157c0078cde761ad3",
+      "git_blob": "c5486b3e4a402ce41bf73d5d88f589a9cbe9e131",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "dream/captures/garden/learning-dream-412x915.png",
+      "bytes": 139598,
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "dream/captures/learning/learning_00.png",
+      "bytes": 287549,
+      "sha256": "f31b5ed96810d971a5b1f8b9869ad2ec43ecdfdda046496b6ba0d067bb858840",
+      "git_blob": "07e8df852cf635cb72d3d59259acba47df1fcdf7",
+      "dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "dream/captures/learning/learning_01.png",
+      "bytes": 288733,
+      "sha256": "5c127d13f001ac9e7ccf147d2d5bf7b625809d76d0dcf33e17b93d668d67d4c6",
+      "git_blob": "8d77a2660e3d3e1550ce6f36e979a3245ea56520",
+      "dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "dream/captures/treasure/treasure_00.png",
+      "bytes": 1138454,
+      "sha256": "4b5fc9433f76d8a0d397dee3088a124a2f0d9b6902f718db365a85d44b8dc6f6",
+      "git_blob": "4a4bc4552c6f25e1e706e8cffac0ad7601ae3b63",
+      "dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "dream/captures/treasure/treasure_01.png",
+      "bytes": 1137652,
+      "sha256": "3d0d983220e4d7e590bd1b11e2eb3c78ab1db297f8bfb66bf6d2648573f2b36e",
+      "git_blob": "4a9bc801cac5b5d70ccf3b38d070f17d4d808870",
+      "dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "live/captures/garden/learning-dream-2400x1080.png",
+      "bytes": 614391,
+      "sha256": "58de1dfada401700fda7edfdf160da1a2a64bfddc4dbe4f157c0078cde761ad3",
+      "git_blob": "c5486b3e4a402ce41bf73d5d88f589a9cbe9e131",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "live/captures/garden/learning-dream-1280x720.png",
+      "bytes": 346738,
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "live/captures/garden/learning-dream-412x915.png",
+      "bytes": 139598,
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "live/captures/learning/learning_00.png",
+      "bytes": 287479,
+      "sha256": "9da2389d3ad4ba7c4c198f5b2a9ed2a434448c053091aa1bc57dd14bac42eeef",
+      "git_blob": "f1057c797dd3fc3aef80109ad11d121fbd1352ac",
+      "dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "live/captures/learning/learning_01.png",
+      "bytes": 288673,
+      "sha256": "e584d99ee753d3f1a575951043747fa5069f79de5e1fa5fb55ad7a8a83e424eb",
+      "git_blob": "97bc8e210b5e430a806082c04f32b7887123f4f2",
+      "dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "live/captures/treasure/treasure_00.png",
+      "bytes": 1138533,
+      "sha256": "490f55f96f452bf0b11db3a9fa2f405687ad42e00312d8ef38ab07184b325209",
+      "git_blob": "831a051142a4de5a7cbb0ce88a5f7f4fcd590e7b",
+      "dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "live/captures/treasure/treasure_01.png",
+      "bytes": 1137815,
+      "sha256": "b68e61495f2cf033e7c79cc25b02836a707e4d72ab47cf71c192b84271003268",
+      "git_blob": "fe781ffd2fe339540f9a5c70df56219e8217d7c7",
+      "dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_nextgen_play_regression/01_build_selection.png",
+      "bytes": 1420092,
+      "sha256": "cf907a71abef941ae6b1b713a3fe10f120be4bf1494ee76e12edd55b2b703979",
+      "git_blob": "d031e52a6d762d473ae0bf0c9c582660687a88c0",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_nextgen_play_regression/02_build_moved.png",
+      "bytes": 1419822,
+      "sha256": "ac475e2504b09d8c122351045eade349d6ae34cbf92ed6016dc433c5a8068ee2",
+      "git_blob": "d4ae9471ea8fefc619e9bb325c308fff18d2c819",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_nextgen_play_regression/03_build_walking.png",
+      "bytes": 1350316,
+      "sha256": "30387f46342844f0906aba1480ebce607e9811c2324ace985e4c3587500fdecc",
+      "git_blob": "0fbdb465ecf72fecd69f721c2ac26896f1280360",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_nextgen_play_regression/04_build_jump.png",
+      "bytes": 1336637,
+      "sha256": "2658c543a4f6b279cc408ba21b7404e3b52ad146293b874703043bfcaf368007",
+      "git_blob": "c75a8bd7472c53557e2b9bb1986fa52b9d6bdd7d",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_settlement_play_regression/01_settlement_start.png",
+      "bytes": 741894,
+      "sha256": "3bc0962ac72f2cb8e5a35dfe41704e6e75b02c49c8c1cae4ccc7e91c935def96",
+      "git_blob": "08bb388c25396f1f751b07506cc19c079332da36",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_settlement_play_regression/02_settlement_purchases.png",
+      "bytes": 761790,
+      "sha256": "a11046df9554ecdacefbfd1f1bebef9b5de3078068af6855310ad7f3c30480a2",
+      "git_blob": "fc03b7e9367a5b16aec6949874ca8ab73cf0948e",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_settlement_play_regression/03_settlement_rival_day.png",
+      "bytes": 633147,
+      "sha256": "dc5aee4840fab9fb0a27429430d1418520da549a373607d8301b72aeb8370036",
+      "git_blob": "d173b0391dc7d7e80235dae9512178046c0085a0",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_settlement_play_regression/04_settlement_lumo.png",
+      "bytes": 1099042,
+      "sha256": "e2bd6cb49618770086a17fc2f2c100f650777601a16e611ee831f2ee9df4665c",
+      "git_blob": "4a62f19dae7e4dc70bba3df220c4d04727c85e32",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_settlement_play_regression/05_settlement_result.png",
+      "bytes": 790112,
+      "sha256": "a939865a36c9c74e80b7ddaa50030a9fd6dd8eb1be3f5ce904ea89b52c0e6a5c",
+      "git_blob": "ba9d686f4a611195ba47092f0c94bcdaab0d5a44",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_settlement_play_regression/06_settlement_relocation.png",
+      "bytes": 57203,
+      "sha256": "6824c6062589561b0ad965dba32b186ca550a514f789f62ee1198f4f22db30cc",
+      "git_blob": "4d1ac3ca603e3be8b6fbba0efbb7e8705a0ab2b6",
+      "dimensions": [
+        388,
+        390
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_village_scene_regression/village-chapters-412x915.png",
+      "bytes": 232402,
+      "sha256": "1a3635a5eeaa89c925cd466eff84b282795b53514cdb969ded2e1c1c1db2f268",
+      "git_blob": "f74ca79db7f5994267cd4a32f1e4ca7520b096b1",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_village_scene_regression/village-overview-1280x720.png",
+      "bytes": 1006298,
+      "sha256": "87d87ea54b870dcbe12ce9d661b7fe298208f9f15dc969a93b49121a890a7e9e",
+      "git_blob": "60bc30c38f246dc125959815b3eafe42f4fd6180",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_village_scene_regression/village-trader-2176x1812.png",
+      "bytes": 2347987,
+      "sha256": "364b85e65b1cad319bfd7a5943fece6a3f4c56854d152e54128fa0a2174191ed",
+      "git_blob": "31e62e9abff20565d1cbd584eab98350573c1e9a",
+      "dimensions": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_village_scene_regression/village-treasury-640x360.png",
+      "bytes": 97278,
+      "sha256": "49bdbdb6d1c1ca886b117bc6ddff9319ee3044592a81412cde6a7950ab45ae2b",
+      "git_blob": "afd07040fe5d7e69c3ed8b5bb6d00bfbb36f9bb0",
+      "dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/cards_safe_area_regression/android35_portrait-paused.png",
+      "bytes": 1141701,
+      "sha256": "bc1a5465f83736f8c0db00a7188075a02503f6d33eecaf58e2ece62d813e1a45",
+      "git_blob": "63b97a082c335a66f44707415175c22353495158",
+      "dimensions": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "path": "nextgen/captures/cards_safe_area_regression/android35_portrait-playing.png",
+      "bytes": 1272865,
+      "sha256": "ae53121f34679850bd86163c6a1f3245accd8369710cd5815efd7a6c12145a8d",
+      "git_blob": "af10b0a63a693d4096eef2614feec42c1ba33e0a",
+      "dimensions": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "path": "nextgen/captures/cards_safe_area_regression/landscape_cutout_fixture-playing.png",
+      "bytes": 1002653,
+      "sha256": "e97b23764222326565d07e46023869467c2333861c4f9e19223a9b6eaf4fb93b",
+      "git_blob": "fd58805253ac462cfceabd430c1a6dc7b3d1218b",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/cards_table_capture/cards-table-2400x1080.png",
+      "bytes": 1028876,
+      "sha256": "f490777f4013edffb9ea29cfde2a79cac4ec0a8e3424c6c7c3086d1a54e46c0e",
+      "git_blob": "521df1cfa0aca589ead516db15acfe6dc50378d8",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/cards_table_capture/cards-table-1280x720.png",
+      "bytes": 568103,
+      "sha256": "55089d40b1c3f7b7e7ff77066006fbba85df74d367744dae2bd454eb2d5d2377",
+      "git_blob": "7de6847d7ee4af098810d6214957c97c8d2f22d1",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/cards_table_capture/cards-table-412x915.png",
+      "bytes": 289390,
+      "sha256": "86a462dbb002106e96dd943c546755e080a720db072944f32c0fb5bba9543e18",
+      "git_blob": "0c39bbd562a7f89d7f03fbf2dba59ca167b46d2b",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/cards_table_capture/cards-table-690x829.png",
+      "bytes": 429618,
+      "sha256": "41451199331254949c1456baa0fde059ca52081b40f764fe60d5c49f98eb82f3",
+      "git_blob": "f3453086fbe9a4d0c7b65f6f76d0a83b77c563bb",
+      "dimensions": [
+        690,
+        829
+      ]
+    },
+    {
+      "path": "nextgen/captures/connect_four_visual_capture/c4-empty-landscape.png",
+      "bytes": 82092,
+      "sha256": "168d6a214a5f90ab75e669205439146fd33e265c004ac159b10474f17e91159a",
+      "git_blob": "32961c1ebcce6f55b8c1640417a491ddc19a56f0",
+      "dimensions": [
+        960,
+        540
+      ]
+    },
+    {
+      "path": "nextgen/captures/connect_four_visual_capture/c4-paused-small.png",
+      "bytes": 29411,
+      "sha256": "502a673e160d5a9f3f95883ddf1e259f568819de67731340681d2666d7282195",
+      "git_blob": "7806e7f57e122d27342bbd6342325cf96b96ef55",
+      "dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/connect_four_visual_capture/c4-playing-phone.png",
+      "bytes": 67672,
+      "sha256": "332d15a61e7eb1e93cbc49f9fedaa7b1e67f985b1d0fd9f97334a093678fbe6c",
+      "git_blob": "93f1122761f944ff0ec85829d666dea0fc491cc0",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/connect_four_visual_capture/c4-win-landscape.png",
+      "bytes": 83733,
+      "sha256": "755ed7f8a64af3215f65e315c3bf68df8cc1571b959ec224983194f53eb69e32",
+      "git_blob": "8a7ac510eb6dbf8a860c3b00f2164737fc2ccb29",
+      "dimensions": [
+        960,
+        540
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_1280x720_landed.png",
+      "bytes": 855286,
+      "sha256": "9b14cf123d1136ddcfd6749e1672f21b4ce9f1a40262ddb4f83b101a23aa2dd4",
+      "git_blob": "222d8c493f501c830ed5b677733cea471e36836e",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_1280x720_airborne.png",
+      "bytes": 895583,
+      "sha256": "fbc130f5c6a472221c998c5837547143a7014bc88fbc46c68d1a09a9a8ec010c",
+      "git_blob": "b86553ea5f4f0e905998c52eedffd0f7ebb01afd",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_1280x720_ready.png",
+      "bytes": 753443,
+      "sha256": "c9b742bb31da8f8572c2b7e535e91ce0055f46a91798ac3e567c5061080f82ba",
+      "git_blob": "ae7275da3eed342488589a1d8d19aca8f477eba5",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_1280x720_touch_ascent.png",
+      "bytes": 839627,
+      "sha256": "84963034a673e861fe56e539d42494c9eec69c1dc9472e5ceb85c378fd49af89",
+      "git_blob": "734ba41dc5a211ad31075ced58ceb915d6081c7d",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_2400x1080_airborne.png",
+      "bytes": 2132983,
+      "sha256": "7e04264c6417255e42c5d993c7989912b0d9cec81a6f172684d79a9bb985ebf3",
+      "git_blob": "be81181c9c54fc9e45716f4f08988c69390522f1",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_2400x1080_landed.png",
+      "bytes": 2053141,
+      "sha256": "9372ba438def9706512927801ba54f83aa4d87c36771d2c20b33b7af1b078aa5",
+      "git_blob": "e4527d84ca8b01f3f48bdb4eaa5e3ded5b5f8fde",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_2400x1080_ready.png",
+      "bytes": 1846155,
+      "sha256": "4df7e36ed88c08057190cd0e8d8032c4bed3f637eb654150b3c786ef374eb875",
+      "git_blob": "ec4614e2825bb9dc1142410174740942f27b10de",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_412x915_airborne.png",
+      "bytes": 492101,
+      "sha256": "7d5ee484d32751680770599b636f4a24cd59a3d0562d4a7a12ddc82abe1e73e3",
+      "git_blob": "852cf068811d060a26148b8d3dcf548890c8dfb9",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_2400x1080_touch_ascent.png",
+      "bytes": 2022689,
+      "sha256": "1cb74d2f1fa42a987cc0633918c81cf6b938db876dfa3a0ad4b1084d5edf2e0a",
+      "git_blob": "0883eef5a51d5b53c1bd7383733240f9176043ff",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_412x915_landed.png",
+      "bytes": 473545,
+      "sha256": "682b255b86662a3fd591e28ae240f6a7640de003484b51ab5fc34255a2a4cd80",
+      "git_blob": "cc83573f0c5e5beddcf8b1ef2417cde34d0f99ea",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_412x915_ready.png",
+      "bytes": 414367,
+      "sha256": "a9ad4be942eb6d8fdf44a5f581d4e493f0a72d178dac2b8eb390853e572e9d5f",
+      "git_blob": "67658938d72dc8cab83fd9cd20a35023572c93ae",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_412x915_touch_ascent.png",
+      "bytes": 458858,
+      "sha256": "531c89abdbacffeeab525e5a0817841d2053f85b7b57a92c6c87f6d04b54f812",
+      "git_blob": "c4f50ef466b00d3f84110f150dc1f2e554e91c04",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_690x829_airborne.png",
+      "bytes": 659858,
+      "sha256": "fd6ef1c3875d348e89e70c20580b8d07614c938457a46b8ea0f10de8c1dee729",
+      "git_blob": "9e9c32d2471d19104c330bfed22b9ee11161e204",
+      "dimensions": [
+        690,
+        829
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_690x829_landed.png",
+      "bytes": 625640,
+      "sha256": "2c2d427d793b94c58f2c8e8e54bbac29a92d544de6a2476b7d59c209bc21d074",
+      "git_blob": "ef59d19475735647293bff6c200fd009e0b76764",
+      "dimensions": [
+        690,
+        829
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_690x829_ready.png",
+      "bytes": 540155,
+      "sha256": "9143a8ee4530956529a9b111bf35d795d7d94dba5ca3a679e7c7dcdda7bf3c64",
+      "git_blob": "f4697750de77d8af8317f1fb745d418420b476e4",
+      "dimensions": [
+        690,
+        829
+      ]
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_690x829_touch_ascent.png",
+      "bytes": 605793,
+      "sha256": "84a8dadd5c59493ba3862449975451d9bd8a634b58ee88a9118a25738a6f50a8",
+      "git_blob": "04fb2a73a163872d693ab79277b9cba9a7e34ac3",
+      "dimensions": [
+        690,
+        829
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/garage-1280x720.png",
+      "bytes": 436811,
+      "sha256": "268d4547ca4864fb280cdee567c23b21e87ff604af3bb8cb4f8dfa3b878634e0",
+      "git_blob": "b5fb69d9cdd8b08f6f292ea3fb5b9f8ca2de9718",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/garage-2400x1080.png",
+      "bytes": 875159,
+      "sha256": "cd4978e055a2e2e9c0920184a38fa77a698376053cdab770a7a45200a4b2fffa",
+      "git_blob": "2a8588ae934f4d4299300864278f777267bdf5ed",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/garage-412x915.png",
+      "bytes": 213552,
+      "sha256": "2826910fe88615380024b73d9c46c78dd91b41ba4ffd0a822e3c79f43a088177",
+      "git_blob": "67bd0eeae75d2ca5bf54baeb95c56e6e44d9e3a9",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/selection-1280x720.png",
+      "bytes": 439040,
+      "sha256": "417762c123033752a354f46306ec94443ba8155070decac67e9541e7ad207357",
+      "git_blob": "8a9ea30e0144e9fdd4fb89d166cd7b9e879925ce",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/selection-2400x1080.png",
+      "bytes": 874278,
+      "sha256": "12fb79ba7868d1af35172bd889a0237ba97a875e726f02d4ba8dc51bbcd51725",
+      "git_blob": "05d6e9d610c1636014ba167afe487c56adb41d9b",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/selection-412x915.png",
+      "bytes": 214891,
+      "sha256": "85c02c5bdbd737eabea8f116ced8c880a23b6ab9a42eca24cf36d58420d33523",
+      "git_blob": "d0061c8ac9d69e07e1888e82848b726a6faa7224",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/track-goals-1280x720.png",
+      "bytes": 579130,
+      "sha256": "6442cefc5feb3b38f69a5a9025772f178b9ae96a4267e12595992afc54e83ae8",
+      "git_blob": "cf60252b18fb24db61ce8c112ebdb2e0acc17b2b",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/track-goals-2400x1080.png",
+      "bytes": 943606,
+      "sha256": "5cf02677c291f98d230cc7923fb1c8976e8341828fcf231d961425562864aec5",
+      "git_blob": "1c882189acfe93c07b288a20828c13dd53930f25",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/track-goals-412x915.png",
+      "bytes": 263621,
+      "sha256": "db78065c3cf939fc75e9844c11c5ce0030a9c7a95c343d51b1b3355ae76aa4c3",
+      "git_blob": "9112da2a0f16bd4c3f7d1dd1ce29c5ad3f08ef40",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/zoom-1280x720.png",
+      "bytes": 449389,
+      "sha256": "802da807077c58be2744aae3f9c62674e780a55cb09573cf7077ff45d345bc2a",
+      "git_blob": "48f018b95d0d8c88cfd60c62a00ff108963a7fdf",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/zoom-2400x1080.png",
+      "bytes": 884417,
+      "sha256": "50cf0f722b76bad633174a174c2c9936610779f1c0053ea10a39435d825848ef",
+      "git_blob": "0fda425e662a1a69b1a1a1a198537b89c1580a6e",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/zoom-412x915.png",
+      "bytes": 221070,
+      "sha256": "22dff46ce803601ee313e99a5449b7b6c796053b6e6334524359cb4006b8bf3c",
+      "git_blob": "c8fa56f5958aca8d91eb18db61275c6ecc9b54bf",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/sharing-complete-1280x720.png",
+      "bytes": 336577,
+      "sha256": "76ae1b6b5e80e4ad1bd9dce3a2b180616aba4b0197b1d83294c91d3f832bfd81",
+      "git_blob": "f444e6ce56f4887cc61b1d70efc82ac7fdc2335d",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/sharing-complete-412x915.png",
+      "bytes": 128451,
+      "sha256": "efcd02e26db87f530de6b1ac3a6f55276b1b5fb22b55cd52e69a6e71acf15661",
+      "git_blob": "18ed95f41957f892b3e79f2702e3295d1a1d691e",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/sharing-first-round-1280x720.png",
+      "bytes": 327988,
+      "sha256": "f8ee7caaa158ad5a341f3ed79b8ea3a2eeee9eaffc8d31daaf4839a17b590bdb",
+      "git_blob": "c24181b4b6a23565f4888f6d6ee10963af582c23",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/sharing-first-round-412x915.png",
+      "bytes": 125294,
+      "sha256": "bbd90b9048f918edcb20b96b5f328e81204fbc2939d0ac82378d0ecc259c0321",
+      "git_blob": "c94b928c1694e76b1be7ddaa487ac21da2b68f91",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/sharing-start-1280x720.png",
+      "bytes": 322132,
+      "sha256": "2de4239be4933e1e81ddd6d50980e3f6aca2a0133e066a40113fab80878065a1",
+      "git_blob": "aa85ebf7b417b5210814ad27f5c6e4ca707a4280",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/sharing-start-412x915.png",
+      "bytes": 120703,
+      "sha256": "ac23382822e0a1b277ed1148180b25554e20342a3db84cf84c5f558947015787",
+      "git_blob": "60b1096aac7a606f33d44537bf0f03a8c32ad574",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/bridge_hundred-complete-2400x1080.png",
+      "bytes": 659859,
+      "sha256": "6a7306d126cf239c2377a5b045fbf9efae043e26761cd9c106f1a09bfc33830f",
+      "git_blob": "36542445b3a591de8478928f62a255a936d8a699",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/bridge_hundred-complete-412x915.png",
+      "bytes": 149617,
+      "sha256": "d713a5780fde893a9c3c0c4eaefffa09b69739d63a23eb567cc9bf04765a8286",
+      "git_blob": "8dccb6c9b75df4b2002a7fdfc9629f5bc1c6e84a",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/bridge_hundred-complete.png",
+      "bytes": 363900,
+      "sha256": "335865b34d321ef5f4942a5a85c3be670bbf3e12f4999da16bd6188b914ef2b3",
+      "git_blob": "4dc36835c859b0edbc503959470410021f203b30",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/bridge_hundred-start-2400x1080.png",
+      "bytes": 642151,
+      "sha256": "9b82faa6c8b2cfab5e789b047669d5a2b8bd5b1b7d32eb27cee24b55fd9cb372",
+      "git_blob": "e487612e9f557cfd73dba32531dc566f03161de3",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/bridge_hundred-start-412x915.png",
+      "bytes": 146569,
+      "sha256": "081d01c599541be88fee4b5082ec56c3b797369312c9af43797a2fa8d48eddcc",
+      "git_blob": "8d48b44cf081d0ba7ecccf70bd00fbe354b1e7c1",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/bridge_hundred-start.png",
+      "bytes": 354258,
+      "sha256": "7eb6e728babaa5209b2ec9f8960a52d509c8a100852e46eaa09f780662c5b206",
+      "git_blob": "de063065b385097732090d7323b8a1471fc34147",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/equal_groups-complete.png",
+      "bytes": 335741,
+      "sha256": "4f2406682e33270c1bfba8c3c72c421699c1a4842574c57b1e40d236e5343e88",
+      "git_blob": "665e527981d54366f7c33ca79c5a67daf4e54c17",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/equal_groups-start.png",
+      "bytes": 322081,
+      "sha256": "1ddfe04f7d05cb7b9a571abf0da3d92aa9fa158a65855bb60202bd0df6e42fee",
+      "git_blob": "6b0f42474cec0d8d541a516a11c88406324ab1b4",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/fraction_parts-complete.png",
+      "bytes": 332831,
+      "sha256": "defcd507a087d84dc7249cb7757bf1c15d58b9b2217f6666626666b14c0559e9",
+      "git_blob": "85d144619b09ed3cf68048e65932bcb87c284826",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/fraction_parts-start.png",
+      "bytes": 322375,
+      "sha256": "21f39f28efd623b9c3bb5bc99ac0a8b140b495404192a3b55a039e536100da4a",
+      "git_blob": "a68ab7a6e7f51deffef22882f300866b3dcdaafd",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/math-complete-1280x720.png",
+      "bytes": 359803,
+      "sha256": "7b6c764e769aeef10d5395444871984a59bd228e0c61f7ac38956daaa6a397ab",
+      "git_blob": "01c12e908ddbe41982d6a5b6e0d0eb025352a695",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/math-complete-2400x1080.png",
+      "bytes": 652893,
+      "sha256": "3dcbc484ed57bf999e20fcfe1c4b786db1a33300be0119755196f3b27da25b61",
+      "git_blob": "5818a6397991f447a96719545119282a1327dcb0",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/math-start-1280x720.png",
+      "bytes": 346738,
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/math-complete-412x915.png",
+      "bytes": 144204,
+      "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+      "git_blob": "efeabdcf9d87f93e9d7569c2ee6a106900f2b4f6",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/math-start-412x915.png",
+      "bytes": 139598,
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/math-start-2400x1080.png",
+      "bytes": 614391,
+      "sha256": "58de1dfada401700fda7edfdf160da1a2a64bfddc4dbe4f157c0078cde761ad3",
+      "git_blob": "c5486b3e4a402ce41bf73d5d88f589a9cbe9e131",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/math-ten-1280x720.png",
+      "bytes": 353450,
+      "sha256": "c48d94aa57ec3412736754d6c9844ac2857a7f58a8eec2f2ecb779c230a204ec",
+      "git_blob": "8c8d0e472ac9403e798efb0df757e792269032a8",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/math-ten-2400x1080.png",
+      "bytes": 634243,
+      "sha256": "d65c5d10a2331cbf15c60e267ac3570f76f0de5c8c51b32bd2522cfd92abe496",
+      "git_blob": "90ba53fcde54ba6a5f3badf060ad1fde8f655b0f",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/math-ten-412x915.png",
+      "bytes": 144541,
+      "sha256": "f8146ddc462f3163b4754cd76866e1eb8cbb052c880c980b9daee2402a3e7cfb",
+      "git_blob": "9a5332bafd5378ef99653db8ff8ee433ad5a6ba6",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/plant_parts-start.png",
+      "bytes": 350824,
+      "sha256": "c1baef37292fdf9911377833c0de6561214d691d69d55651b31c7a43a6207326",
+      "git_blob": "7e507b01cd345ef910129d08f3f2390a3228126d",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/plant_parts-complete.png",
+      "bytes": 373016,
+      "sha256": "48c1a8f9ff5971937a42f7049fb12fe6364c6cf20369e451aa64bbabf385f4aa",
+      "git_blob": "61c4a1edaacb97f712a51237793ed0b74800870e",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/subtract_ten-complete.png",
+      "bytes": 357989,
+      "sha256": "186a15fd5fe718b2f00b924ac0730820e6e654956c1addfa61a7e9b57b8d00ba",
+      "git_blob": "6959279d523317138ba60babacda70f2efa8dc0d",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/subtract_ten-start.png",
+      "bytes": 348921,
+      "sha256": "80b7c6dba3603378800c292d804179f7ff1a98d6f5bcbbae3ff995351a96c592",
+      "git_blob": "ad8b943ed4a7d13ed1d7e36569481bc60e74ce68",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/syllables-complete.png",
+      "bytes": 331920,
+      "sha256": "b8e3f46d48120761edf2fba71cf1f83dc9bba67f7e4e83edbe1f9cf807f11c27",
+      "git_blob": "d2088c5d10c6e91bc86b94894cf9ed6f254c95f0",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_world_capture/syllables-start.png",
+      "bytes": 322084,
+      "sha256": "9bd464681be73f59a089375ab95b05dc9203946666ae6e04b4f63741baa5e9ac",
+      "git_blob": "fc33e32d72affd9d228203a0a787da93f76380f5",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/audio_jaw.png",
+      "bytes": 306763,
+      "sha256": "0e4e25d2a434014a78a58e3168a0a2cea1f1eb4ae354860197649cdbd968e399",
+      "git_blob": "9877228fc74f9d5ef83bbf36482649f357245ee4",
+      "dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/blink.png",
+      "bytes": 301645,
+      "sha256": "13cc217a29ae082a33f3fc886b5ff511ca94b9234f084b116e9a3e0b7f49bf64",
+      "git_blob": "e40a554ae5e0b15f65af5c3434f623fdd440c960",
+      "dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/blink_intermediate.png",
+      "bytes": 302869,
+      "sha256": "4b77f44d74202d872c3c294c0586917cbb9a430e0c2659565aab3701628f2a05",
+      "git_blob": "dbcc04129cf562688efbc697daa24e2ae05c1c95",
+      "dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/gaze_left.png",
+      "bytes": 295648,
+      "sha256": "4dcdfecc01d1d64f8327419b95ee0ace5914a37cc09e8d699dfe22158d7a8d51",
+      "git_blob": "321b4d98cf9d68d8918721ebf1af71dc69733ce6",
+      "dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/muted.png",
+      "bytes": 303284,
+      "sha256": "d856e49b331a8b42c0a877d6a5d234acfa7240c0d40427be59250fbb5437d27a",
+      "git_blob": "b55c91954833b2230d546ba5a87f220f9e8a9577",
+      "dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/neutral.png",
+      "bytes": 283369,
+      "sha256": "1a567ec18d7e17d136734ada25d49197892ea4300a12b7a4159956db89e7ad8b",
+      "git_blob": "db72ba4c0a959a8d3dd9ad338746a602f3edb899",
+      "dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/stopped.png",
+      "bytes": 299919,
+      "sha256": "f58fa3e0e9ab84c0fd2f69138a429714b7a77933a08ba991657ef12b73b67c3c",
+      "git_blob": "df8b17c2fea2f36ef2782e9033bcca13ba252ae5",
+      "dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/teacher_scene.png",
+      "bytes": 116521,
+      "sha256": "734e318635eb6e296984ba48ecc09d2b74ec30533196d9baa2f058bc104a3dac",
+      "git_blob": "96c7ef3672a3dcb7a56ca9b7dc358e9ae8f09e5f",
+      "dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/after_jump_rise.png",
+      "bytes": 229662,
+      "sha256": "3a16b54adfda3f134baefed9804d5534b5d401c07adfc9a3d14f52bbafc82238",
+      "git_blob": "89e83aa3812e65e532289209d6ba8a66239f8b98",
+      "dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/after_land.png",
+      "bytes": 232967,
+      "sha256": "e0a3da89d35334abcc1e0eda77c58048c3423529aa02299c27547e3c4ade645b",
+      "git_blob": "362ca3b45bfc87388fcded923e968408bcd00cf5",
+      "dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/after_sprint.png",
+      "bytes": 226024,
+      "sha256": "3d43a78372c622ebac7abac15f5aae49b4ba4ee729aed3207f326a04a2ed0185",
+      "git_blob": "d022df91b5470ce975cc195a2513db9e373d6e55",
+      "dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/after_walk.png",
+      "bytes": 229796,
+      "sha256": "557393c69f428d8c6cc300fd1f25b49314823c8078982df95fb2678dc9990772",
+      "git_blob": "9de7668215cf74755a648868ed84be4b5a81c5c6",
+      "dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/before_jump_rise.png",
+      "bytes": 233672,
+      "sha256": "2dfe8f9b8dd52b7fa3243a15405d7ba7a0f2e3babc47a2a7a06959ceb8530d98",
+      "git_blob": "b4702696873cd94b5243d4298460ebac603f20b5",
+      "dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/before_land.png",
+      "bytes": 226564,
+      "sha256": "9b2040079dabdc3c39c26e1288b69ae727b5d7c363e2441cad1eb91b46c9f61d",
+      "git_blob": "2d3dc45dd0f3edfecd9419cf1c5fdb5ed9eac430",
+      "dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/before_sprint.png",
+      "bytes": 236265,
+      "sha256": "3a71643c2fa4fb5ad24714e9faea71c81250f1d855c16fb5066d75a8e0db048e",
+      "git_blob": "a349a29683e33f0dda2b6ee733e808004582df8a",
+      "dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/before_walk.png",
+      "bytes": 234896,
+      "sha256": "33acdddf1b1af9aeb8b5858f80b470b818450639857a677603afd08ba26b89a1",
+      "git_blob": "1ffe0491433b1b67e8c0ff9bdee6d2424a6b60a7",
+      "dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/mobile_safe_area_regression/build-landscape-cutout.png",
+      "bytes": 2486845,
+      "sha256": "9e88f92bf02ebf6eb372e84624df5cce9b148ab8ae016633e9e2db7234943cd4",
+      "git_blob": "b15d463c4fcab02811916f8c0d1b1e86670bfb4d",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/mobile_safe_area_regression/jump-landscape-cutout.png",
+      "bytes": 1854305,
+      "sha256": "5e4e3f52556eda6e7609f94f3a10e7442b60b28a7dbd5e37daf520023e0b9fbb",
+      "git_blob": "6acdda87ac4ca4db03374e4c29e7bfb5d66bd19c",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/mobile_safe_area_regression/puzzle-landscape-cutout.png",
+      "bytes": 480217,
+      "sha256": "5d1117258b17bab6ecd5b2c97115854520aee92253013ee677da0b2b7b0b794b",
+      "git_blob": "ef1a9debc3922bf35d3ac51337ff12760fd0d3b9",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/mobile_safe_area_regression/treasure-landscape-cutout.png",
+      "bytes": 2623433,
+      "sha256": "3bbbb384db2b1b2a037d0fed1d7a93bc93c32b93da8b966144b1056e1ef70b7b",
+      "git_blob": "23c435077d05da6c26d44a26ad9bb115a1387d65",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/640x360-classic-play.png",
+      "bytes": 109746,
+      "sha256": "9da1795df6094d2208fbf6d9e2d09dd3bbdccc40ea7a1d0e8cdf904de2f047b9",
+      "git_blob": "57bd185f1ce136fe09a8743921fc9a7dc98a3586",
+      "dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/640x360-rotation-menu.png",
+      "bytes": 73010,
+      "sha256": "7f59cd80ef226187fe5528dddce60b8439ad8a97845672625a5a23c17d87f47b",
+      "git_blob": "c719833d50c5389e01bf042e236076fa8df2dd88",
+      "dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/640x360-rotation-play.png",
+      "bytes": 109740,
+      "sha256": "a40f808221b0d75121c6becfd69dbd983dfbb0d164a8c185d893d4e618879ded",
+      "git_blob": "ae7bb639f5f69e794faabb332f09c5ce018d98a9",
+      "dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/960x540-classic-play.png",
+      "bytes": 302628,
+      "sha256": "25117996c85c3acd1aa3c5b28d83a2336d10091a3f52429d61af89609e4db28f",
+      "git_blob": "a0bd5a36a4dbb2e9fb1ecbde844760684560ac0c",
+      "dimensions": [
+        960,
+        540
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/960x540-rotation-menu.png",
+      "bytes": 152856,
+      "sha256": "3994006c2525eea1ee676c7c1e19107bdb7993719d0a230c7f76ec29a6e452cf",
+      "git_blob": "dbec31b09087bc0420f8a997606e30226ddd5dca",
+      "dimensions": [
+        960,
+        540
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/960x540-rotation-play.png",
+      "bytes": 301683,
+      "sha256": "c6d9c17e011ecd665abed127104ca468fc668e91e1d03d6e5f08c6efb0feaaa4",
+      "git_blob": "52431ec9bd728eb5446454f431c2fdd23e51de4a",
+      "dimensions": [
+        960,
+        540
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_412x915.png",
+      "bytes": 228313,
+      "sha256": "185b86bb140815be42a0b104dbb57861fad3830c171a44c01cca8d31d6b79dec",
+      "git_blob": "1c5b600891f8942519dda852a68644130b3de577",
+      "dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_840x760.png",
+      "bytes": 327013,
+      "sha256": "80326b23f280e343d075d9fc5bc07020145d3403c2e4b7014792608d3f718d89",
+      "git_blob": "227adbcb9ef1bdea8ea6c010a84dfa43bb2e7dcf",
+      "dimensions": [
+        840,
+        760
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_640x360.png",
+      "bytes": 114010,
+      "sha256": "7d080303c997b88c3a096da26d02dc0fa33cc3db6f998e9e9012147e136c28c1",
+      "git_blob": "0ca798c2ed4b3a35def5e32256855c4ab793d5b8",
+      "dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_compact_menu.png",
+      "bytes": 58998,
+      "sha256": "6500d67f984fdf8e3f6a6da78281ee78b2d337bf443fc447c43d215a162e4f5d",
+      "git_blob": "c8e807322df7876fe4442a7d6ecc0ace6559d91a",
+      "dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_hint.png",
+      "bytes": 519906,
+      "sha256": "7ac22317cd294df2f3508871bbba0d6ba703cf73e75ee15798a67415933115c9",
+      "git_blob": "62539a1aa1f14526918162f577208a88f19fe32e",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_placed.png",
+      "bytes": 510305,
+      "sha256": "99a77cfe46973ca8fc405d7a07414d9d31fb6f5d55c1a260da1848a3365be557",
+      "git_blob": "7000399dddc1ea1690166012a165cd2898b6f6d1",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_table.png",
+      "bytes": 508151,
+      "sha256": "4df60eec4a5a94efda57faa53ffebb96a1012a5601b0328e4cf52102eb03f33a",
+      "git_blob": "6335812def10b0fa4f45a6e009ecfeb51213b052",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/rhythm_tour_play_regression/02_rhythm_slide.png",
+      "bytes": 656491,
+      "sha256": "db6aaac17cd9b0aac7ede813f34c0315960dc806875c8269388cae5908530a06",
+      "git_blob": "58e89622489978a8c745406fb486e9d925642709",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/rhythm_tour_play_regression/01_rhythm_tour_map.png",
+      "bytes": 391494,
+      "sha256": "c4fa1903a5f1c90915a4f5d08cbbd85929840d96e6c98e14a569ef95191cbe4a",
+      "git_blob": "86af3cb611fcf2ef60a48948648a734aa319b551",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/rhythm_tour_play_regression/03_rhythm_tour_result.png",
+      "bytes": 422775,
+      "sha256": "8878df3ab7d59387eba3cf0ca400b47188d08538ab68da3c941abf930290014b",
+      "git_blob": "1afff987d4a4832c40f8a4f5d55e1a7dac3bd2fc",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_exploration_regression/treasure_choose_route.png",
+      "bytes": 1292109,
+      "sha256": "8f1fefe8e574dba64d1a2fa900f2583152b1aaafd82f84e47ecac79eb13737de",
+      "git_blob": "13d37dec7739e33491f2b30f5b51add408b5d8e0",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_exploration_regression/treasure_garden_first.png",
+      "bytes": 1260332,
+      "sha256": "0a538c3d213fac30d07e8ef0919bf2f4c69a91c8d618408df3a00dc3a46f3983",
+      "git_blob": "68c5ad119770508528669d03d923d66ac6d763a1",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_exploration_regression/treasure_route_complete.png",
+      "bytes": 1282876,
+      "sha256": "3584538b049cdbb2f29744c3d08ad8581fe1dc6e99c4b8dcf2c5d7f9f139f9c0",
+      "git_blob": "705ced206d00a0062b99509270caa7c7fc968a41",
+      "dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-compact.png",
+      "bytes": 324268,
+      "sha256": "f6a20ab8fed4bdde0ac38744bde99645699cb889e231f5a6f68c3defe7380c1d",
+      "git_blob": "817cb80b57e8f1080308c8168d56818cab23167b",
+      "dimensions": [
+        640,
+        320
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-fold.png",
+      "bytes": 4227320,
+      "sha256": "bd4f695faf179736a4ca6073c2c311720a302d760250c8859a4dfffc49bfe355",
+      "git_blob": "eeba564e6587843dc40d09c2f084f16b25687ca2",
+      "dimensions": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-landscape-cutout.png",
+      "bytes": 2623577,
+      "sha256": "20de9259d6e49fd232f177e8bac3f39c87993fa0f362ea88709d0ed357b8f3ee",
+      "git_blob": "ec07c95bcc6fb835b8512771809fa67d118c090f",
+      "dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-landscape.png",
+      "bytes": 2719803,
+      "sha256": "4aac0c4c1e6476ec6e6cf4412da22ebe7018517c3d5abb2ebbfa549b776bc9b4",
+      "git_blob": "8b27b1d0fb6c8467ce6d4d13816676dabc54585e",
+      "dimensions": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-portrait.png",
+      "bytes": 2103183,
+      "sha256": "b7ca37811b5dfec39a7706a348dfc7be5b9fe3e3aebaf973a9c5a132d681f612",
+      "git_blob": "1828f786e90113d0d2b709cee9c1f4b4b9fc2e94",
+      "dimensions": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "path": "user-data/godot/app_userdata/Lumo 3D/godot-kart-pause-800x480.png",
+      "bytes": 178038,
+      "sha256": "f0884e9338bb723c14d231885b56d845870e1e7a87c38f879673de0734321fb1",
+      "git_blob": "e8ac6c0fc43a0e384c210f29cf88e556caddfac4",
+      "dimensions": [
+        800,
+        480
+      ]
+    }
+  ]
+}

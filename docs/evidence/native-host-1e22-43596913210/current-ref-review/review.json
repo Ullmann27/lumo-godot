@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "exact_observations": {
+    "pr": 173,
+    "head": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+    "base_ref": "integration/lumo-c4-connections-20261114",
+    "base_actual_ref": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+    "main_actual_ref": "aebfcd7634fc64dbe20b462bcb6e6bffaa2721b4",
+    "e2d_to_main_ahead": 0,
+    "e2d_to_main_behind": 484,
+    "e2d_to_base_ahead": 0,
+    "e2d_to_base_behind": 4,
+    "base_to_accepted_ahead": 14,
+    "base_to_accepted_behind": 0,
+    "pr_test_merge": "5fcb2df962602d07613dc73d661455268193ab11",
+    "pr_test_merge_tree": "1c2b5da7a4485cb8b911adcac2b567481cf902b5",
+    "pr_test_merge_tree_equals_accepted": true
+  },
+  "conclusion": "No new commits from either current ref relative to the already integrated e2d producer head. Zero compare files here mean older ancestors, not identity of main with e2d. No claim about when a ref changed without historic ref records.",
+  "source_or_ref_mutations": 0,
+  "new_test_runs": 0,
+  "original_api_responses": [
+    {
+      "path": "base_ref.json",
+      "bytes": 461,
+      "sha256": "7b91476e3c6900c0e942807b35d6ae56bc7a09d11b8acc01cdb2be4be96aea8d",
+      "git_blob": "20e7b7b3dd86e7ea1259c45308322aed38b71ad6"
+    },
+    {
+      "path": "compare_e2d_base.json",
+      "bytes": 8171,
+      "sha256": "89f158347cb6f51a55329cb93d7bde4a1a48618899633a36c29442978b7c87d3",
+      "git_blob": "64195cacd9f7c8da4c698131668f9485c238150e"
+    },
+    {
+      "path": "compare_main.json",
+      "bytes": 8418,
+      "sha256": "f51d2b15934afd0b8d968f7d5fecc8b9d731263cc405b0dc9d3f088206b5f355",
+      "git_blob": "84104cc6fc88d9da108fbb87c2950ed09b63d52b"
+    },
+    {
+      "path": "compare_prbase.json",
+      "bytes": 1010030,
+      "sha256": "9a650a21ec503c01953950df9921893299119f31ac7fec44170321bc17ff72dc",
+      "git_blob": "730f2535082f534a1ab5e7d1ef6a78b073771255"
+    },
+    {
+      "path": "main_branch.json",
+      "bytes": 4025,
+      "sha256": "1a3c75e07b1258ad4a5c828d3127b2348c8558dd77107307f277a20f42aed711",
+      "git_blob": "dc25b9bd170e95e6943c25b60f9eb718765f3e41"
+    },
+    {
+      "path": "main_commit.json",
+      "bytes": 1469,
+      "sha256": "499f4f49b663393bce1760df21b7c4b0cdad20601bf893e97b37ded1138695c3",
+      "git_blob": "dd1d9004c9f75a2927fc86565c1d4eef743e1eb4"
+    },
+    {
+      "path": "main_ref.json",
+      "bytes": 338,
+      "sha256": "551d250adb01be8e17dc5982255764c082fdf093ada87336c3acc551ed6f8f4b",
+      "git_blob": "0ea5af0f3b9d7afefe74ce102e1dbd5d6387efb8"
+    },
+    {
+      "path": "old_commit.json",
+      "bytes": 1790,
+      "sha256": "d6a39e79fcccbc4491a0f5d85d72e8a5e750820ad11c5c79ce38e71eda9c4cae",
+      "git_blob": "6dbb46f7857cf3e2a972758f871b8605c6f06d16"
+    },
+    {
+      "path": "pr.json",
+      "bytes": 25706,
+      "sha256": "3d27feb03159fc014db37438ea148bc8d5f9048957382882060a6381aaf7493e",
+      "git_blob": "4c6ff06997a2529d3ac16705860e596d3cca7735"
+    },
+    {
+      "path": "pr_test_merge.json",
+      "bytes": 2667,
+      "sha256": "a1e05b0ecf533eb95be1863e7581d6f88210d4106f61b0c55b868a85718f58b3",
+      "git_blob": "d5d3110486e55248f23858b4be6f9664b37bcaff"
+    }
+  ],
+  "observed_after_root_request": "2026-11-14 14:23 UTC",
+  "individual_api_completion_timestamps_recorded": false
+}

@@ -1,0 +1,32 @@
+{
+  "images": [
+    {
+      "path": "captures/connect_four_visual_capture/c4-empty-landscape.png",
+      "width": 960,
+      "height": 540,
+      "bytes": 82092,
+      "sha256": "168d6a214a5f90ab75e669205439146fd33e265c004ac159b10474f17e91159a"
+    },
+    {
+      "path": "captures/connect_four_visual_capture/c4-paused-small.png",
+      "width": 640,
+      "height": 360,
+      "bytes": 29411,
+      "sha256": "502a673e160d5a9f3f95883ddf1e259f568819de67731340681d2666d7282195"
+    },
+    {
+      "path": "captures/connect_four_visual_capture/c4-playing-phone.png",
+      "width": 412,
+      "height": 915,
+      "bytes": 67672,
+      "sha256": "332d15a61e7eb1e93cbc49f9fedaa7b1e67f985b1d0fd9f97334a093678fbe6c"
+    },
+    {
+      "path": "captures/connect_four_visual_capture/c4-win-landscape.png",
+      "width": 960,
+      "height": 540,
+      "bytes": 83733,
+      "sha256": "755ed7f8a64af3215f65e315c3bf68df8cc1571b959ec224983194f53eb69e32"
+    }
+  ]
+}

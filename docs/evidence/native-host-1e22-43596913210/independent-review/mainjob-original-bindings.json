@@ -1,0 +1,219 @@
+{
+  "schema": 1,
+  "source_repo": "Ullmann27/lumo-lernen",
+  "original_log_commit": "5f964e9b56a2505ef667cefacb14c95f279aab09",
+  "original_log_path": "docs/evidence/live-integration-20261114/final-1e22d245/terminal-verify-and-build/job-132454178537-original.log",
+  "original_log": {
+    "git_blob": "511fdb28b35703da777e38f6eda83722c4ca9d17",
+    "bytes": 1937867,
+    "sha256": "03751f95954ae914925ba6247ebfb7c546bca9a382fa282a512bc7ab7aaa3ac5"
+  },
+  "run_id": 43596913210,
+  "attempt": 1,
+  "job_id": 132454178537,
+  "host_source": "1e22d2455937e2640d1e44e153d290746f3afe49",
+  "native_source": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+  "retrieval": "Read the single QA-archived immutable Git blob; no second Actions job-log download",
+  "selected_verbatim_lines": [
+    {
+      "line": 1571,
+      "text": "2026-11-14T13:10:48.6310354Z Successfully installed Pillow-12.3.0",
+      "kind": "actual_output"
+    },
+    {
+      "line": 2745,
+      "text": "2026-11-14T13:16:58.7266729Z \u001b[36;1m.ci-python/bin/python -c 'from PIL import Image; print(\"Pillow ready\", Image.__version__ if hasattr(Image, \"__version__\") else \"ok\")'\u001b[0m",
+      "kind": "shell_command_echo"
+    },
+    {
+      "line": 2838,
+      "text": "2026-11-14T13:17:04.7703971Z Pillow ready 12.3.0",
+      "kind": "actual_output"
+    },
+    {
+      "line": 4487,
+      "text": "2026-11-14T13:20:08.8024281Z SUMMARY: 117 PASS / 7 WARN / 0 FAIL",
+      "kind": "actual_output"
+    },
+    {
+      "line": 9336,
+      "text": "2026-11-14T13:38:50.4381339Z [JumpOriginalLumo] PASS: original 65-bone GLB visible, grounded, moving, paused and resumed",
+      "kind": "actual_output"
+    },
+    {
+      "line": 10309,
+      "text": "2026-11-14T14:23:11.4661638Z [Studio2020RasterRoster] PASS 17 actual PNG files, 3 original sidecars and 1 verified facial movie",
+      "kind": "actual_output"
+    },
+    {
+      "line": 10310,
+      "text": "2026-11-14T14:23:11.4767612Z [LumoNextgen52] PASS: all 48 previous modes plus four Studio2020 modes and 17 bound rasters/movie/sidecars",
+      "kind": "actual_output"
+    },
+    {
+      "line": 10325,
+      "text": "2026-11-14T14:23:11.4819925Z \u001b[36;1mtest \"$(grep -Fxc 'CONNECT_FOUR_RETURN_PASS checks=21' \"$native_logs/connect-four-return.log\")\" -eq 1\u001b[0m",
+      "kind": "shell_command_echo"
+    },
+    {
+      "line": 10351,
+      "text": "2026-11-14T14:23:11.8943975Z CONNECT_FOUR_RETURN_PASS checks=21",
+      "kind": "actual_output"
+    },
+    {
+      "line": 10468,
+      "text": "2026-11-14T14:24:28.2728086Z [DreamRasterRoster] PASS 7 actual PNG files and 2 original reports",
+      "kind": "actual_output"
+    },
+    {
+      "line": 10469,
+      "text": "2026-11-14T14:24:28.2833304Z [LumoDreamConnections] PASS 5 original probes and 7 verified renderer PNGs",
+      "kind": "actual_output"
+    },
+    {
+      "line": 10530,
+      "text": "2026-11-14T14:24:33.2871850Z CONNECT_FOUR_RETURN_PASS checks=21",
+      "kind": "actual_output"
+    },
+    {
+      "line": 10531,
+      "text": "2026-11-14T14:24:33.3698974Z CONNECT_FOUR_RETURN_PASS checks=21",
+      "kind": "actual_output"
+    },
+    {
+      "line": 10637,
+      "text": "2026-11-14T14:25:39.6781668Z [LumoLiveConnections] PASS 9 original probes and 7 verified renderer PNGs",
+      "kind": "actual_output"
+    },
+    {
+      "line": 11144,
+      "text": "2026-11-14T14:44:55.8903674Z [LumoDiscoveryConnections] PASS 10 original probes and 38 verified renderer PNGs",
+      "kind": "actual_output"
+    },
+    {
+      "line": 11257,
+      "text": "2026-11-14T14:45:44.8646260Z Successfully installed Pillow-12.3.0",
+      "kind": "actual_output"
+    }
+  ],
+  "exact_artifact_runner_block_matches": [
+    {
+      "artifact_log": "nextgen-runner.log",
+      "full_original_block_matches": [
+        {
+          "first_line": 8840,
+          "last_line": 10311,
+          "first_timestamp": "2026-11-14T13:37:37.5554664Z",
+          "last_timestamp": "2026-11-14T14:23:11.4769670Z",
+          "elapsed_seconds": 2733.921
+        }
+      ]
+    },
+    {
+      "artifact_log": "dream-runner.log",
+      "full_original_block_matches": [
+        {
+          "first_line": 10382,
+          "last_line": 10469,
+          "first_timestamp": "2026-11-14T14:23:12.9328210Z",
+          "last_timestamp": "2026-11-14T14:24:28.2833304Z",
+          "elapsed_seconds": 75.351
+        }
+      ]
+    },
+    {
+      "artifact_log": "live-runner.log",
+      "full_original_block_matches": [
+        {
+          "first_line": 10493,
+          "last_line": 10637,
+          "first_timestamp": "2026-11-14T14:24:28.3463985Z",
+          "last_timestamp": "2026-11-14T14:25:39.6781668Z",
+          "elapsed_seconds": 71.332
+        }
+      ]
+    },
+    {
+      "artifact_log": "discovery-runner.log",
+      "full_original_block_matches": [
+        {
+          "first_line": 10638,
+          "last_line": 11144,
+          "first_timestamp": "2026-11-14T14:25:55.4653522Z",
+          "last_timestamp": "2026-11-14T14:44:55.8903674Z",
+          "elapsed_seconds": 1140.425
+        }
+      ]
+    },
+    {
+      "artifact_log": "discovery/learning_world_capture-rendered.log",
+      "full_original_block_matches": [
+        {
+          "first_line": 9613,
+          "last_line": 9707,
+          "first_timestamp": "2026-11-14T13:40:13.6044408Z",
+          "last_timestamp": "2026-11-14T13:50:34.8176929Z",
+          "elapsed_seconds": 621.213
+        },
+        {
+          "first_line": 11000,
+          "last_line": 11094,
+          "first_timestamp": "2026-11-14T14:29:38.9980454Z",
+          "last_timestamp": "2026-11-14T14:42:34.1954338Z",
+          "elapsed_seconds": 775.197
+        }
+      ],
+      "actual_parent_runner": "discovery-runner.log",
+      "contained_in_actual_parent_runner": [
+        {
+          "first_line": 11000,
+          "last_line": 11094,
+          "first_timestamp": "2026-11-14T14:29:38.9980454Z",
+          "last_timestamp": "2026-11-14T14:42:34.1954338Z",
+          "elapsed_seconds": 775.197
+        }
+      ]
+    },
+    {
+      "artifact_log": "nextgen/learning_world_capture-rendered.log",
+      "full_original_block_matches": [
+        {
+          "first_line": 9613,
+          "last_line": 9707,
+          "first_timestamp": "2026-11-14T13:40:13.6044408Z",
+          "last_timestamp": "2026-11-14T13:50:34.8176929Z",
+          "elapsed_seconds": 621.213
+        },
+        {
+          "first_line": 11000,
+          "last_line": 11094,
+          "first_timestamp": "2026-11-14T14:29:38.9980454Z",
+          "last_timestamp": "2026-11-14T14:42:34.1954338Z",
+          "elapsed_seconds": 775.197
+        }
+      ],
+      "actual_parent_runner": "nextgen-runner.log",
+      "contained_in_actual_parent_runner": [
+        {
+          "first_line": 9613,
+          "last_line": 9707,
+          "first_timestamp": "2026-11-14T13:40:13.6044408Z",
+          "last_timestamp": "2026-11-14T13:50:34.8176929Z",
+          "elapsed_seconds": 621.213
+        }
+      ]
+    }
+  ],
+  "elapsed_scope": "UTC timestamp spans of exact original stdout blocks, computed to milliseconds; not a process timer, capture frame rate or physical device FPS",
+  "ci_versions": {
+    "pillow": {
+      "version": "12.3.0",
+      "observed_original_log_lines": [
+        1571,
+        2838,
+        11257
+      ]
+    },
+    "python_full_patch_version": "Not explicitly printed by the observed Native gate; no patch version inferred"
+  }
+}

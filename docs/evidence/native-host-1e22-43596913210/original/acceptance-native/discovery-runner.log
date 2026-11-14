@@ -1,0 +1,507 @@
+...........
+----------------------------------------------------------------------
+Ran 11 tests in 15.699s
+
+OK
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_ten token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_ten token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_ten token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_ten token=4 target=12 placed=5 complete=true
+[LearningWorld] move kind=syllables token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=syllables token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=syllables token=2 target=2 placed=3 complete=true
+[LearningWorld] move kind=addition token=0 target=4 placed=1 complete=false
+[LearningWorld] move kind=addition token=1 target=5 placed=2 complete=false
+[LearningWorld] move kind=addition token=2 target=6 placed=3 complete=true
+[LearningWorld] move kind=subtract_ten token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=subtract_ten token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=subtract_ten token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=subtract_ten token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=subtract_ten token=4 target=4 placed=5 complete=true
+[LearningWorld] move kind=equal_groups token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=equal_groups token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=equal_groups token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=equal_groups token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=equal_groups token=4 target=4 placed=5 complete=false
+[LearningWorld] move kind=equal_groups token=5 target=5 placed=6 complete=false
+[LearningWorld] move kind=equal_groups token=6 target=6 placed=7 complete=false
+[LearningWorld] move kind=equal_groups token=7 target=7 placed=8 complete=false
+[LearningWorld] move kind=equal_groups token=8 target=8 placed=9 complete=false
+[LearningWorld] move kind=equal_groups token=9 target=9 placed=10 complete=false
+[LearningWorld] move kind=equal_groups token=10 target=10 placed=11 complete=false
+[LearningWorld] move kind=equal_groups token=11 target=11 placed=12 complete=true
+[LearningWorld] move kind=bridge_hundred token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_hundred token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_hundred token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_hundred token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_hundred token=4 target=12 placed=5 complete=true
+[LearningWorld] move kind=fraction_parts token=0 target=1 placed=1 complete=false
+[LearningWorld] move kind=fraction_parts token=1 target=2 placed=2 complete=true
+[LearningWorld] move kind=addition token=0 target=10 placed=1 complete=false
+[LearningWorld] move kind=addition token=1 target=11 placed=2 complete=false
+[LearningWorld] move kind=addition token=2 target=12 placed=3 complete=false
+[LearningWorld] move kind=addition token=3 target=13 placed=4 complete=false
+[LearningWorld] move kind=addition token=4 target=14 placed=5 complete=false
+[LearningWorld] move kind=addition token=5 target=15 placed=6 complete=false
+[LearningWorld] move kind=addition token=6 target=16 placed=7 complete=false
+[LearningWorld] move kind=addition token=7 target=17 placed=8 complete=false
+[LearningWorld] move kind=addition token=8 target=18 placed=9 complete=false
+[LearningWorld] move kind=addition token=9 target=19 placed=10 complete=true
+[LearningWorld] move kind=subtract_ten token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=subtract_ten token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=subtract_ten token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=subtract_ten token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=subtract_ten token=4 target=4 placed=5 complete=false
+[LearningWorld] move kind=subtract_ten token=5 target=5 placed=6 complete=false
+[LearningWorld] move kind=subtract_ten token=6 target=6 placed=7 complete=false
+[LearningWorld] move kind=subtract_ten token=7 target=7 placed=8 complete=false
+[LearningWorld] move kind=subtract_ten token=8 target=8 placed=9 complete=false
+[LearningWorld] move kind=subtract_ten token=9 target=9 placed=10 complete=false
+[LearningWorld] move kind=subtract_ten token=10 target=10 placed=11 complete=false
+[LearningWorld] move kind=subtract_ten token=11 target=11 placed=12 complete=false
+[LearningWorld] move kind=subtract_ten token=12 target=12 placed=13 complete=false
+[LearningWorld] move kind=subtract_ten token=13 target=13 placed=14 complete=false
+[LearningWorld] move kind=subtract_ten token=14 target=14 placed=15 complete=false
+[LearningWorld] move kind=subtract_ten token=15 target=15 placed=16 complete=false
+[LearningWorld] move kind=subtract_ten token=16 target=16 placed=17 complete=false
+[LearningWorld] move kind=subtract_ten token=17 target=17 placed=18 complete=false
+[LearningWorld] move kind=subtract_ten token=18 target=18 placed=19 complete=false
+[LearningWorld] move kind=subtract_ten token=19 target=19 placed=20 complete=true
+[LearningWorld] move kind=equal_groups token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=equal_groups token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=equal_groups token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=equal_groups token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=equal_groups token=4 target=4 placed=5 complete=false
+[LearningWorld] move kind=equal_groups token=5 target=5 placed=6 complete=false
+[LearningWorld] move kind=equal_groups token=6 target=6 placed=7 complete=false
+[LearningWorld] move kind=equal_groups token=7 target=7 placed=8 complete=false
+[LearningWorld] move kind=equal_groups token=8 target=8 placed=9 complete=false
+[LearningWorld] move kind=equal_groups token=9 target=9 placed=10 complete=false
+[LearningWorld] move kind=equal_groups token=10 target=10 placed=11 complete=false
+[LearningWorld] move kind=equal_groups token=11 target=11 placed=12 complete=false
+[LearningWorld] move kind=equal_groups token=12 target=12 placed=13 complete=false
+[LearningWorld] move kind=equal_groups token=13 target=13 placed=14 complete=false
+[LearningWorld] move kind=equal_groups token=14 target=14 placed=15 complete=false
+[LearningWorld] move kind=equal_groups token=15 target=15 placed=16 complete=false
+[LearningWorld] move kind=equal_groups token=16 target=16 placed=17 complete=false
+[LearningWorld] move kind=equal_groups token=17 target=17 placed=18 complete=false
+[LearningWorld] move kind=equal_groups token=18 target=18 placed=19 complete=false
+[LearningWorld] move kind=equal_groups token=19 target=19 placed=20 complete=false
+[LearningWorld] move kind=equal_groups token=20 target=20 placed=21 complete=false
+[LearningWorld] move kind=equal_groups token=21 target=21 placed=22 complete=false
+[LearningWorld] move kind=equal_groups token=22 target=22 placed=23 complete=false
+[LearningWorld] move kind=equal_groups token=23 target=23 placed=24 complete=false
+[LearningWorld] move kind=equal_groups token=24 target=24 placed=25 complete=false
+[LearningWorld] move kind=equal_groups token=25 target=25 placed=26 complete=false
+[LearningWorld] move kind=equal_groups token=26 target=26 placed=27 complete=false
+[LearningWorld] move kind=equal_groups token=27 target=27 placed=28 complete=false
+[LearningWorld] move kind=equal_groups token=28 target=28 placed=29 complete=false
+[LearningWorld] move kind=equal_groups token=29 target=29 placed=30 complete=false
+[LearningWorld] move kind=equal_groups token=30 target=30 placed=31 complete=false
+[LearningWorld] move kind=equal_groups token=31 target=31 placed=32 complete=false
+[LearningWorld] move kind=equal_groups token=32 target=32 placed=33 complete=false
+[LearningWorld] move kind=equal_groups token=33 target=33 placed=34 complete=false
+[LearningWorld] move kind=equal_groups token=34 target=34 placed=35 complete=false
+[LearningWorld] move kind=equal_groups token=35 target=35 placed=36 complete=true
+[LearningWorld] move kind=bridge_hundred token=0 target=9 placed=1 complete=false
+[LearningWorld] move kind=bridge_hundred token=1 target=10 placed=2 complete=false
+[LearningWorld] move kind=bridge_hundred token=2 target=11 placed=3 complete=false
+[LearningWorld] move kind=bridge_hundred token=3 target=12 placed=4 complete=false
+[LearningWorld] move kind=bridge_hundred token=4 target=13 placed=5 complete=false
+[LearningWorld] move kind=bridge_hundred token=5 target=14 placed=6 complete=false
+[LearningWorld] move kind=bridge_hundred token=6 target=15 placed=7 complete=false
+[LearningWorld] move kind=bridge_hundred token=7 target=16 placed=8 complete=false
+[LearningWorld] move kind=bridge_hundred token=8 target=17 placed=9 complete=true
+[LearningWorld] move kind=fraction_parts token=0 target=1 placed=1 complete=false
+[LearningWorld] move kind=fraction_parts token=1 target=2 placed=2 complete=false
+[LearningWorld] move kind=fraction_parts token=2 target=3 placed=3 complete=false
+[LearningWorld] move kind=fraction_parts token=3 target=4 placed=4 complete=false
+[LearningWorld] move kind=fraction_parts token=4 target=5 placed=5 complete=false
+[LearningWorld] move kind=fraction_parts token=5 target=6 placed=6 complete=false
+[LearningWorld] move kind=fraction_parts token=6 target=7 placed=7 complete=false
+[LearningWorld] move kind=fraction_parts token=7 target=8 placed=8 complete=false
+[LearningWorld] move kind=fraction_parts token=8 target=9 placed=9 complete=false
+[LearningWorld] move kind=fraction_parts token=9 target=10 placed=10 complete=true
+[LearningWorld] move kind=syllables token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=syllables token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=syllables token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=syllables token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=syllables token=4 target=4 placed=5 complete=true
+[LearningWorld] PASS checks=5347
+[LearningWorld] PASS checks=5347
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[LearningWorld] move kind=equal_sharing token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=equal_sharing token=1 target=4 placed=2 complete=false
+[LearningWorld] move kind=equal_sharing token=2 target=8 placed=3 complete=false
+[LearningWorld] move kind=equal_sharing token=3 target=1 placed=4 complete=false
+[LearningWorld] move kind=equal_sharing token=4 target=5 placed=5 complete=false
+[LearningWorld] move kind=equal_sharing token=5 target=9 placed=6 complete=false
+[LearningWorld] move kind=equal_sharing token=6 target=2 placed=7 complete=false
+[LearningWorld] move kind=equal_sharing token=7 target=6 placed=8 complete=false
+[LearningWorld] move kind=equal_sharing token=8 target=10 placed=9 complete=false
+[LearningWorld] move kind=equal_sharing token=9 target=3 placed=10 complete=false
+[LearningWorld] move kind=equal_sharing token=10 target=7 placed=11 complete=false
+[LearningWorld] move kind=equal_sharing token=11 target=11 placed=12 complete=true
+[LearningSharing] PASS checks=1811
+[LearningSharing] PASS checks=1811
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[LearningWorld] move kind=bridge_hundred token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_hundred token=1 target=9 placed=2 complete=false
+[LearningStudio] EQUAL step 2 in (1280, 720) gap_px=2.64816284179688
+[LearningStudio] EQUAL step 2 in (412, 915) gap_px=2.24810791015625
+[LearningStudio] EQUAL step 2 in (2400, 1080) gap_px=2.60049438476562
+[LearningWorld] move kind=bridge_hundred token=2 target=10 placed=3 complete=false
+[LearningStudio] EQUAL step 3 in (1280, 720) gap_px=2.64816284179688
+[LearningStudio] EQUAL step 3 in (412, 915) gap_px=2.24810791015625
+[LearningStudio] EQUAL step 3 in (2400, 1080) gap_px=2.60049438476562
+[LearningWorld] move kind=bridge_hundred token=3 target=11 placed=4 complete=false
+[LearningStudio] EQUAL step 4 in (1280, 720) gap_px=2.64816284179688
+[LearningStudio] EQUAL step 4 in (412, 915) gap_px=2.24810791015625
+[LearningStudio] EQUAL step 4 in (2400, 1080) gap_px=2.60049438476562
+[LearningWorld] move kind=bridge_hundred token=4 target=12 placed=5 complete=true
+[LearningStudio] EQUAL step 5 in (1280, 720) gap_px=2.64816284179688
+[LearningStudio] EQUAL step 5 in (412, 915) gap_px=2.260009765625
+[LearningStudio] EQUAL step 5 in (2400, 1080) gap_px=2.60049438476562
+[LearningStudio] PASS checks=183; runtime asset, materials, reduced motion and preserved learning
+[LearningStudio] PASS checks=183; runtime asset, materials, reduced motion and preserved learning
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[LumoHubIdentity] {"actual_production_scene":"res://scenes/games/game_hub.tscn","adapter":"res://scripts/characters/lumo/lumo_rigged_actor.gd","bones":65,"clips":["idle","greeting_wave","celebrate","point_portal","agree_nod","kart_seated","kart_steer_left","kart_steer_right","kart_jump"],"failures":[],"headless":true,"load_kind":"imported_packed_scene","mesh_resources":["res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb::ArrayMesh_e6unq","res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb::ArrayMesh_4wn44"],"model":"res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb","skinned_meshes":2,"vertices":24027,"visible_vertices":21659}
+[Router] goto:settlement (res://scenes/creative/build_settlement_world.tscn)
+[LumoHub] PASS 8 visible native game entrances, active village route, preserved child settings and 3D reduced-motion portal
+[LumoHub] PASS 8 visible native game entrances, active village route, preserved child settings and 3D reduced-motion portal
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[SettlementWorld] ready mode=settlement save=user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json
+[VillageHostReady] {"host_entry":true,"initialized_plot_nodes":9,"living_village":true,"mode":"settlement","plots":9,"population":2,"return_scene":"games","save_blocked":false,"save_path":"user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json","scene":"res://scenes/creative/build_settlement_world.tscn","slot":3,"visible_residents":2}
+[Perf] quality_profile:medium
+[LumoHost] return: games
+[SettlementWorld] ready mode=settlement save=user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json
+[VillageHostReady] {"host_entry":false,"initialized_plot_nodes":9,"living_village":true,"mode":"settlement","plots":9,"population":2,"return_scene":"build","save_blocked":false,"save_path":"user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json","scene":"res://scenes/creative/build_settlement_world.tscn","slot":3,"visible_residents":2}
+[VillageHost] PASS Flutter village request, native boot scene and child context
+[VillageHost] PASS Flutter village request, native boot scene and child context
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_ten token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_ten token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_ten token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_ten token=4 target=12 placed=5 complete=true
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=addition token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=addition token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=addition token=2 target=2 placed=3 complete=true
+[LearningWorld] move kind=subtract_ten token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=subtract_ten token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=subtract_ten token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=subtract_ten token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=subtract_ten token=4 target=4 placed=5 complete=true
+[LearningWorld] move kind=equal_groups token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=equal_groups token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=equal_groups token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=equal_groups token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=equal_groups token=4 target=4 placed=5 complete=false
+[LearningWorld] move kind=equal_groups token=5 target=5 placed=6 complete=true
+[LearningWorld] move kind=equal_sharing token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=equal_sharing token=1 target=4 placed=2 complete=false
+[LearningWorld] move kind=equal_sharing token=2 target=8 placed=3 complete=false
+[LearningWorld] move kind=equal_sharing token=3 target=1 placed=4 complete=false
+[LearningWorld] move kind=equal_sharing token=4 target=5 placed=5 complete=false
+[LearningWorld] move kind=equal_sharing token=5 target=9 placed=6 complete=false
+[LearningWorld] move kind=equal_sharing token=6 target=2 placed=7 complete=false
+[LearningWorld] move kind=equal_sharing token=7 target=6 placed=8 complete=false
+[LearningWorld] move kind=equal_sharing token=8 target=10 placed=9 complete=false
+[LearningWorld] move kind=equal_sharing token=9 target=3 placed=10 complete=false
+[LearningWorld] move kind=equal_sharing token=10 target=7 placed=11 complete=false
+[LearningWorld] move kind=equal_sharing token=11 target=11 placed=12 complete=true
+[LearningWorld] move kind=bridge_hundred token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_hundred token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_hundred token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_hundred token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_hundred token=4 target=12 placed=5 complete=true
+[LearningWorld] move kind=fraction_parts token=0 target=1 placed=1 complete=false
+[LearningWorld] move kind=fraction_parts token=1 target=2 placed=2 complete=true
+[LearningWorld] move kind=syllables token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=syllables token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=syllables token=2 target=2 placed=3 complete=true
+[LearningWonder] checks=100 failures=0 renderer=headless invalid_scene_checked=false
+[LearningWonder] checks=100 failures=0 renderer=headless invalid_scene_checked=false
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+
+WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+     at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+WARNING: Volumetric fog is only available when using the Forward+ renderer.
+     at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_ten token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_ten token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_ten token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_ten token=4 target=12 placed=5 complete=true
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=addition token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=addition token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=addition token=2 target=2 placed=3 complete=true
+[LearningWorld] move kind=subtract_ten token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=subtract_ten token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=subtract_ten token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=subtract_ten token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=subtract_ten token=4 target=4 placed=5 complete=true
+[LearningWorld] move kind=equal_groups token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=equal_groups token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=equal_groups token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=equal_groups token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=equal_groups token=4 target=4 placed=5 complete=false
+[LearningWorld] move kind=equal_groups token=5 target=5 placed=6 complete=true
+[LearningWorld] move kind=equal_sharing token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=equal_sharing token=1 target=4 placed=2 complete=false
+[LearningWorld] move kind=equal_sharing token=2 target=8 placed=3 complete=false
+[LearningWorld] move kind=equal_sharing token=3 target=1 placed=4 complete=false
+[LearningWorld] move kind=equal_sharing token=4 target=5 placed=5 complete=false
+[LearningWorld] move kind=equal_sharing token=5 target=9 placed=6 complete=false
+[LearningWorld] move kind=equal_sharing token=6 target=2 placed=7 complete=false
+[LearningWorld] move kind=equal_sharing token=7 target=6 placed=8 complete=false
+[LearningWorld] move kind=equal_sharing token=8 target=10 placed=9 complete=false
+[LearningWorld] move kind=equal_sharing token=9 target=3 placed=10 complete=false
+[LearningWorld] move kind=equal_sharing token=10 target=7 placed=11 complete=false
+[LearningWorld] move kind=equal_sharing token=11 target=11 placed=12 complete=true
+[LearningWorld] move kind=bridge_hundred token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_hundred token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_hundred token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_hundred token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_hundred token=4 target=12 placed=5 complete=true
+[LearningWorld] move kind=fraction_parts token=0 target=1 placed=1 complete=false
+[LearningWorld] move kind=fraction_parts token=1 target=2 placed=2 complete=true
+[LearningWorld] move kind=syllables token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=syllables token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=syllables token=2 target=2 placed=3 complete=true
+[LearningWonder] checks=108 failures=0 renderer=X11 invalid_scene_checked=true
+[LearningWonder] checks=108 failures=0 renderer=X11 invalid_scene_checked=true
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+
+WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+     at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+WARNING: Volumetric fog is only available when using the Forward+ renderer.
+     at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[LumoHubCapture] screenshot hub_portrait.png (1080, 1920)
+[LumoHubCapture] screenshot hub_fold_landscape.png (2400, 1080)
+[LumoHubCapture] PASS 2 original current-source rendered PNGs
+[LumoHubCapture] PASS 2 original current-source rendered PNGs
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+
+WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+     at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+WARNING: Volumetric fog is only available when using the Forward+ renderer.
+     at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[LearningCapture] SCREENSHOT math-start-1280x720 lit=52907 orange=25461 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_ten token=1 target=9 placed=2 complete=false
+[LearningCapture] SCREENSHOT math-ten-1280x720 lit=53158 orange=25553 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningWorld] move kind=bridge_ten token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_ten token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_ten token=4 target=12 placed=5 complete=true
+[LearningCapture] SCREENSHOT math-complete-1280x720 lit=53715 orange=26173 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningCapture] SCREENSHOT math-start-412x915 lit=18777 orange=10261 fox_head_orange=969 clipped_ratio=0.0005812376487
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_ten token=1 target=9 placed=2 complete=false
+[LearningCapture] SCREENSHOT math-ten-412x915 lit=19082 orange=10441 fox_head_orange=969 clipped_ratio=0.0005812376487
+[LearningWorld] move kind=bridge_ten token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_ten token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_ten token=4 target=12 placed=5 complete=true
+[LearningCapture] SCREENSHOT math-complete-412x915 lit=18428 orange=10354 fox_head_orange=870 clipped_ratio=0.00073087542634
+[LearningCapture] SCREENSHOT math-start-2400x1080 lit=107160 orange=24549 fox_head_orange=1253 clipped_ratio=0.00186936615814
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_ten token=1 target=9 placed=2 complete=false
+[LearningCapture] SCREENSHOT math-ten-2400x1080 lit=107386 orange=24614 fox_head_orange=1253 clipped_ratio=0.00186936615814
+[LearningWorld] move kind=bridge_ten token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_ten token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_ten token=4 target=12 placed=5 complete=true
+[LearningCapture] SCREENSHOT math-complete-2400x1080 lit=107914 orange=25215 fox_head_orange=1253 clipped_ratio=0.00186936615814
+[LearningCapture] SCREENSHOT syllables-start lit=55049 orange=21550 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningWorld] move kind=syllables token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=syllables token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=syllables token=2 target=2 placed=3 complete=true
+[LearningCapture] SCREENSHOT syllables-complete lit=55705 orange=21447 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningCapture] SCREENSHOT plant_parts-start lit=55450 orange=23941 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningCapture] SCREENSHOT plant_parts-complete lit=55237 orange=23821 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningCapture] SCREENSHOT subtract_ten-start lit=51719 orange=22944 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningWorld] move kind=subtract_ten token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=subtract_ten token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=subtract_ten token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=subtract_ten token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=subtract_ten token=4 target=4 placed=5 complete=true
+[LearningCapture] SCREENSHOT subtract_ten-complete lit=52028 orange=22997 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningCapture] SCREENSHOT equal_groups-start lit=56013 orange=21861 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningWorld] move kind=equal_groups token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=equal_groups token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=equal_groups token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=equal_groups token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=equal_groups token=4 target=4 placed=5 complete=false
+[LearningWorld] move kind=equal_groups token=5 target=5 placed=6 complete=false
+[LearningWorld] move kind=equal_groups token=6 target=6 placed=7 complete=false
+[LearningWorld] move kind=equal_groups token=7 target=7 placed=8 complete=false
+[LearningWorld] move kind=equal_groups token=8 target=8 placed=9 complete=false
+[LearningWorld] move kind=equal_groups token=9 target=9 placed=10 complete=false
+[LearningWorld] move kind=equal_groups token=10 target=10 placed=11 complete=false
+[LearningWorld] move kind=equal_groups token=11 target=11 placed=12 complete=true
+[LearningCapture] SCREENSHOT equal_groups-complete lit=56211 orange=21832 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningCapture] SCREENSHOT bridge_hundred-start lit=52561 orange=24001 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningWorld] move kind=bridge_hundred token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_hundred token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_hundred token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_hundred token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_hundred token=4 target=12 placed=5 complete=true
+[LearningCapture] SCREENSHOT bridge_hundred-complete lit=53355 orange=24703 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningCapture] SCREENSHOT fraction_parts-start lit=55096 orange=21626 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningWorld] move kind=fraction_parts token=0 target=1 placed=1 complete=false
+[LearningWorld] move kind=fraction_parts token=1 target=2 placed=2 complete=true
+[LearningCapture] SCREENSHOT fraction_parts-complete lit=55457 orange=21492 fox_head_orange=1309 clipped_ratio=0.00348324514991
+[LearningCapture] SCREENSHOT bridge_hundred-start-412x915 lit=19013 orange=9625 fox_head_orange=969 clipped_ratio=0.0005812376487
+[LearningWorld] move kind=bridge_hundred token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_hundred token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_hundred token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_hundred token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_hundred token=4 target=12 placed=5 complete=true
+[LearningCapture] SCREENSHOT bridge_hundred-complete-412x915 lit=18587 orange=9913 fox_head_orange=870 clipped_ratio=0.00069027123599
+[LearningCapture] SCREENSHOT bridge_hundred-start-2400x1080 lit=106832 orange=23140 fox_head_orange=1253 clipped_ratio=0.00186936615814
+[LearningWorld] move kind=bridge_hundred token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_hundred token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_hundred token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_hundred token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_hundred token=4 target=12 placed=5 complete=true
+[LearningCapture] SCREENSHOT bridge_hundred-complete-2400x1080 lit=107606 orange=23821 fox_head_orange=1253 clipped_ratio=0.00186936615814
+[LearningCapture] PASS captures=25
+[LearningCapture] PASS captures=25
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+
+WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+     at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+WARNING: Volumetric fog is only available when using the Forward+ renderer.
+     at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[WonderCapture] saved current-numbers-start-1280x720
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[WonderCapture] saved current-numbers-one-step-1280x720
+[LearningWorld] move kind=bridge_ten token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_ten token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_ten token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_ten token=4 target=12 placed=5 complete=true
+[WonderCapture] saved current-numbers-complete-1280x720
+[WonderCapture] saved current-numbers-start-412x915
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_ten token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_ten token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_ten token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_ten token=4 target=12 placed=5 complete=true
+[WonderCapture] saved current-numbers-complete-412x915
+[WonderCapture] saved current-syllables-start
+[LearningWorld] move kind=syllables token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=syllables token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=syllables token=2 target=2 placed=3 complete=true
+[WonderCapture] saved current-syllables-complete
+[WonderCapture] saved current-plant_parts-start
+[WonderCapture] saved current-plant_parts-complete
+[WonderCapture] saved current-hundreds-phone-start
+[LearningWorld] move kind=bridge_hundred token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_hundred token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_hundred token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_hundred token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_hundred token=4 target=12 placed=5 complete=true
+[WonderCapture] saved current-hundreds-phone-complete
+[WonderCapture] checks=136 failures=0 captures=11
+[WonderCapture] checks=136 failures=0 captures=11
+[LumoDiscoveryConnections] PASS 10 original probes and 38 verified renderer PNGs

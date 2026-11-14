@@ -1,0 +1,46 @@
+{
+  "images": [
+    {
+      "path": "captures/puzzle_menu_lifecycle_regression/640x360-classic-play.png",
+      "width": 640,
+      "height": 360,
+      "bytes": 109746,
+      "sha256": "9da1795df6094d2208fbf6d9e2d09dd3bbdccc40ea7a1d0e8cdf904de2f047b9"
+    },
+    {
+      "path": "captures/puzzle_menu_lifecycle_regression/640x360-rotation-menu.png",
+      "width": 640,
+      "height": 360,
+      "bytes": 73010,
+      "sha256": "7f59cd80ef226187fe5528dddce60b8439ad8a97845672625a5a23c17d87f47b"
+    },
+    {
+      "path": "captures/puzzle_menu_lifecycle_regression/640x360-rotation-play.png",
+      "width": 640,
+      "height": 360,
+      "bytes": 109740,
+      "sha256": "a40f808221b0d75121c6becfd69dbd983dfbb0d164a8c185d893d4e618879ded"
+    },
+    {
+      "path": "captures/puzzle_menu_lifecycle_regression/960x540-classic-play.png",
+      "width": 960,
+      "height": 540,
+      "bytes": 302628,
+      "sha256": "25117996c85c3acd1aa3c5b28d83a2336d10091a3f52429d61af89609e4db28f"
+    },
+    {
+      "path": "captures/puzzle_menu_lifecycle_regression/960x540-rotation-menu.png",
+      "width": 960,
+      "height": 540,
+      "bytes": 152856,
+      "sha256": "3994006c2525eea1ee676c7c1e19107bdb7993719d0a230c7f76ec29a6e452cf"
+    },
+    {
+      "path": "captures/puzzle_menu_lifecycle_regression/960x540-rotation-play.png",
+      "width": 960,
+      "height": 540,
+      "bytes": 301683,
+      "sha256": "c6d9c17e011ecd665abed127104ca468fc668e91e1d03d6e5f08c6efb0feaaa4"
+    }
+  ]
+}

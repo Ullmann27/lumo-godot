@@ -1,0 +1,140 @@
+{
+	"captures": [
+		{
+			"actual_production_scene": "res://scenes/games/game_hub.tscn",
+			"adapter": "res://scripts/characters/lumo/lumo_rigged_actor.gd",
+			"bones": 65,
+			"clips": [
+				"idle",
+				"greeting_wave",
+				"celebrate",
+				"point_portal",
+				"agree_nod",
+				"kart_seated",
+				"kart_steer_left",
+				"kart_steer_right",
+				"kart_jump"
+			],
+			"control_rects": {
+				"ExistingLearningOptions": [
+					24.0,
+					762.0,
+					664.0,
+					110.0
+				],
+				"LiveGameRoutes": [
+					24.0,
+					881.0,
+					664.0,
+					420.0
+				],
+				"ReturnToHome": [
+					24.0,
+					20.0,
+					146.0,
+					56.0
+				]
+			},
+			"failures": [],
+			"headless": false,
+			"hero_rect": [
+				24.0,
+				85.0,
+				672.0,
+				583.0
+			],
+			"load_kind": "imported_packed_scene",
+			"mesh_resources": [
+				"res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb::ArrayMesh_e6unq",
+				"res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb::ArrayMesh_4wn44"
+			],
+			"model": "res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+			"pixels": [
+				1080,
+				1920
+			],
+			"png": "hub_portrait.png",
+			"projected_mesh_rect": [
+				210.894088745117,
+				132.192611694336,
+				298.211791992188,
+				504.571838378906
+			],
+			"skinned_meshes": 2,
+			"vertices": 24027,
+			"viewport": [
+				720.0,
+				1280.0
+			],
+			"visible_vertices": 21659
+		},
+		{
+			"actual_production_scene": "res://scenes/games/game_hub.tscn",
+			"adapter": "res://scripts/characters/lumo/lumo_rigged_actor.gd",
+			"bones": 65,
+			"clips": [
+				"idle",
+				"greeting_wave",
+				"celebrate",
+				"point_portal",
+				"agree_nod",
+				"kart_seated",
+				"kart_steer_left",
+				"kart_steer_right",
+				"kart_jump"
+			],
+			"control_rects": {
+				"ExistingLearningOptions": [
+					24.0,
+					762.0,
+					2796.0,
+					110.0
+				],
+				"LiveGameRoutes": [
+					24.0,
+					881.0,
+					2796.0,
+					312.0
+				],
+				"ReturnToHome": [
+					24.0,
+					20.0,
+					146.0,
+					56.0
+				]
+			},
+			"failures": [],
+			"headless": false,
+			"hero_rect": [
+				24.0,
+				85.0,
+				2796.0,
+				583.0
+			],
+			"load_kind": "imported_packed_scene",
+			"mesh_resources": [
+				"res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb::ArrayMesh_e6unq",
+				"res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb::ArrayMesh_4wn44"
+			],
+			"model": "res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+			"pixels": [
+				2400,
+				1080
+			],
+			"png": "hub_fold_landscape.png",
+			"projected_mesh_rect": [
+				1272.89404296875,
+				132.192611694336,
+				298.2119140625,
+				504.571838378906
+			],
+			"skinned_meshes": 2,
+			"vertices": 24027,
+			"viewport": [
+				2844.0,
+				1280.0
+			],
+			"visible_vertices": 21659
+		}
+	]
+}

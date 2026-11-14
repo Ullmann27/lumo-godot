@@ -1,0 +1,370 @@
+{
+  "schema": 1,
+  "kind": "studio_2020_extension",
+  "scope": "17 actual Native renderer PNGs, original facial movie and sidecars; no Android/device FPS or Dart rules acceptance",
+  "source": {
+    "commit": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+    "tree": "1c2b5da7a4485cb8b911adcac2b567481cf902b5",
+    "stamps": [
+      {
+        "path": "source-sha.txt",
+        "bytes": 41,
+        "sha256": "d0a09fa076dc0f9c7db7dae2c693ad843176312371e712fc3343d38d34bc25c2"
+      },
+      {
+        "path": "source-tree.txt",
+        "bytes": 41,
+        "sha256": "7ce9a8f7736baeb67a5c3b71fc112cf3d1466bed85e4b13fb5f9e8056af9457d"
+      },
+      {
+        "path": "source-dirty.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "images": [
+    {
+      "path": "captures/lumo_facial_capture/audio_jaw.png",
+      "width": 640,
+      "height": 640,
+      "bytes": 306763,
+      "sha256": "0e4e25d2a434014a78a58e3168a0a2cea1f1eb4ae354860197649cdbd968e399",
+      "facial_runtime": {
+        "path": "captures/lumo_facial_capture/runtime-frames.json",
+        "bytes": 83168,
+        "sha256": "387e88b82304292e01a2dad27104da394a21d4507f5d245aeecee2563c6c31e3"
+      },
+      "facial_movie": {
+        "path": "captures/lumo_facial_capture/facial-runtime.mp4",
+        "bytes": 1074432,
+        "sha256": "70a09162be85675161bd488346fb6c946e4a72ac78e2f1895f190ca4fa2eb5c9",
+        "proof": {
+          "path": "captures/lumo_facial_capture/movie.json",
+          "bytes": 1201,
+          "sha256": "35d9da9b05f7926a3ab07cf225731409994f9d715c96d58444b5c20b6ef46295"
+        }
+      }
+    },
+    {
+      "path": "captures/lumo_facial_capture/blink.png",
+      "width": 640,
+      "height": 640,
+      "bytes": 301645,
+      "sha256": "13cc217a29ae082a33f3fc886b5ff511ca94b9234f084b116e9a3e0b7f49bf64",
+      "facial_runtime": {
+        "path": "captures/lumo_facial_capture/runtime-frames.json",
+        "bytes": 83168,
+        "sha256": "387e88b82304292e01a2dad27104da394a21d4507f5d245aeecee2563c6c31e3"
+      },
+      "facial_movie": {
+        "path": "captures/lumo_facial_capture/facial-runtime.mp4",
+        "bytes": 1074432,
+        "sha256": "70a09162be85675161bd488346fb6c946e4a72ac78e2f1895f190ca4fa2eb5c9",
+        "proof": {
+          "path": "captures/lumo_facial_capture/movie.json",
+          "bytes": 1201,
+          "sha256": "35d9da9b05f7926a3ab07cf225731409994f9d715c96d58444b5c20b6ef46295"
+        }
+      }
+    },
+    {
+      "path": "captures/lumo_facial_capture/blink_intermediate.png",
+      "width": 640,
+      "height": 640,
+      "bytes": 302869,
+      "sha256": "4b77f44d74202d872c3c294c0586917cbb9a430e0c2659565aab3701628f2a05",
+      "facial_runtime": {
+        "path": "captures/lumo_facial_capture/runtime-frames.json",
+        "bytes": 83168,
+        "sha256": "387e88b82304292e01a2dad27104da394a21d4507f5d245aeecee2563c6c31e3"
+      },
+      "facial_movie": {
+        "path": "captures/lumo_facial_capture/facial-runtime.mp4",
+        "bytes": 1074432,
+        "sha256": "70a09162be85675161bd488346fb6c946e4a72ac78e2f1895f190ca4fa2eb5c9",
+        "proof": {
+          "path": "captures/lumo_facial_capture/movie.json",
+          "bytes": 1201,
+          "sha256": "35d9da9b05f7926a3ab07cf225731409994f9d715c96d58444b5c20b6ef46295"
+        }
+      }
+    },
+    {
+      "path": "captures/lumo_facial_capture/gaze_left.png",
+      "width": 640,
+      "height": 640,
+      "bytes": 295648,
+      "sha256": "4dcdfecc01d1d64f8327419b95ee0ace5914a37cc09e8d699dfe22158d7a8d51",
+      "facial_runtime": {
+        "path": "captures/lumo_facial_capture/runtime-frames.json",
+        "bytes": 83168,
+        "sha256": "387e88b82304292e01a2dad27104da394a21d4507f5d245aeecee2563c6c31e3"
+      },
+      "facial_movie": {
+        "path": "captures/lumo_facial_capture/facial-runtime.mp4",
+        "bytes": 1074432,
+        "sha256": "70a09162be85675161bd488346fb6c946e4a72ac78e2f1895f190ca4fa2eb5c9",
+        "proof": {
+          "path": "captures/lumo_facial_capture/movie.json",
+          "bytes": 1201,
+          "sha256": "35d9da9b05f7926a3ab07cf225731409994f9d715c96d58444b5c20b6ef46295"
+        }
+      }
+    },
+    {
+      "path": "captures/lumo_facial_capture/muted.png",
+      "width": 640,
+      "height": 640,
+      "bytes": 303284,
+      "sha256": "d856e49b331a8b42c0a877d6a5d234acfa7240c0d40427be59250fbb5437d27a",
+      "facial_runtime": {
+        "path": "captures/lumo_facial_capture/runtime-frames.json",
+        "bytes": 83168,
+        "sha256": "387e88b82304292e01a2dad27104da394a21d4507f5d245aeecee2563c6c31e3"
+      },
+      "facial_movie": {
+        "path": "captures/lumo_facial_capture/facial-runtime.mp4",
+        "bytes": 1074432,
+        "sha256": "70a09162be85675161bd488346fb6c946e4a72ac78e2f1895f190ca4fa2eb5c9",
+        "proof": {
+          "path": "captures/lumo_facial_capture/movie.json",
+          "bytes": 1201,
+          "sha256": "35d9da9b05f7926a3ab07cf225731409994f9d715c96d58444b5c20b6ef46295"
+        }
+      }
+    },
+    {
+      "path": "captures/lumo_facial_capture/neutral.png",
+      "width": 640,
+      "height": 640,
+      "bytes": 283369,
+      "sha256": "1a567ec18d7e17d136734ada25d49197892ea4300a12b7a4159956db89e7ad8b",
+      "facial_runtime": {
+        "path": "captures/lumo_facial_capture/runtime-frames.json",
+        "bytes": 83168,
+        "sha256": "387e88b82304292e01a2dad27104da394a21d4507f5d245aeecee2563c6c31e3"
+      },
+      "facial_movie": {
+        "path": "captures/lumo_facial_capture/facial-runtime.mp4",
+        "bytes": 1074432,
+        "sha256": "70a09162be85675161bd488346fb6c946e4a72ac78e2f1895f190ca4fa2eb5c9",
+        "proof": {
+          "path": "captures/lumo_facial_capture/movie.json",
+          "bytes": 1201,
+          "sha256": "35d9da9b05f7926a3ab07cf225731409994f9d715c96d58444b5c20b6ef46295"
+        }
+      }
+    },
+    {
+      "path": "captures/lumo_facial_capture/stopped.png",
+      "width": 640,
+      "height": 640,
+      "bytes": 299919,
+      "sha256": "f58fa3e0e9ab84c0fd2f69138a429714b7a77933a08ba991657ef12b73b67c3c",
+      "facial_runtime": {
+        "path": "captures/lumo_facial_capture/runtime-frames.json",
+        "bytes": 83168,
+        "sha256": "387e88b82304292e01a2dad27104da394a21d4507f5d245aeecee2563c6c31e3"
+      },
+      "facial_movie": {
+        "path": "captures/lumo_facial_capture/facial-runtime.mp4",
+        "bytes": 1074432,
+        "sha256": "70a09162be85675161bd488346fb6c946e4a72ac78e2f1895f190ca4fa2eb5c9",
+        "proof": {
+          "path": "captures/lumo_facial_capture/movie.json",
+          "bytes": 1201,
+          "sha256": "35d9da9b05f7926a3ab07cf225731409994f9d715c96d58444b5c20b6ef46295"
+        }
+      }
+    },
+    {
+      "path": "captures/lumo_facial_capture/teacher_scene.png",
+      "width": 640,
+      "height": 640,
+      "bytes": 116521,
+      "sha256": "734e318635eb6e296984ba48ecc09d2b74ec30533196d9baa2f058bc104a3dac",
+      "facial_runtime": {
+        "path": "captures/lumo_facial_capture/runtime-frames.json",
+        "bytes": 83168,
+        "sha256": "387e88b82304292e01a2dad27104da394a21d4507f5d245aeecee2563c6c31e3"
+      },
+      "facial_movie": {
+        "path": "captures/lumo_facial_capture/facial-runtime.mp4",
+        "bytes": 1074432,
+        "sha256": "70a09162be85675161bd488346fb6c946e4a72ac78e2f1895f190ca4fa2eb5c9",
+        "proof": {
+          "path": "captures/lumo_facial_capture/movie.json",
+          "bytes": 1201,
+          "sha256": "35d9da9b05f7926a3ab07cf225731409994f9d715c96d58444b5c20b6ef46295"
+        }
+      }
+    },
+    {
+      "path": "captures/connect_four_visual_capture/c4-empty-landscape.png",
+      "width": 960,
+      "height": 540,
+      "bytes": 82092,
+      "sha256": "168d6a214a5f90ab75e669205439146fd33e265c004ac159b10474f17e91159a",
+      "connect_four_visual_state": {
+        "path": "captures/connect_four_visual_capture/visual-state.json",
+        "bytes": 172226,
+        "sha256": "3ada2ff4cc37bda38a5d560c4628ddad63fbb6bec7fa22160d99d0026bcb23c1"
+      }
+    },
+    {
+      "path": "captures/connect_four_visual_capture/c4-paused-small.png",
+      "width": 640,
+      "height": 360,
+      "bytes": 29411,
+      "sha256": "502a673e160d5a9f3f95883ddf1e259f568819de67731340681d2666d7282195",
+      "connect_four_visual_state": {
+        "path": "captures/connect_four_visual_capture/visual-state.json",
+        "bytes": 172226,
+        "sha256": "3ada2ff4cc37bda38a5d560c4628ddad63fbb6bec7fa22160d99d0026bcb23c1"
+      }
+    },
+    {
+      "path": "captures/connect_four_visual_capture/c4-playing-phone.png",
+      "width": 412,
+      "height": 915,
+      "bytes": 67672,
+      "sha256": "332d15a61e7eb1e93cbc49f9fedaa7b1e67f985b1d0fd9f97334a093678fbe6c",
+      "connect_four_visual_state": {
+        "path": "captures/connect_four_visual_capture/visual-state.json",
+        "bytes": 172226,
+        "sha256": "3ada2ff4cc37bda38a5d560c4628ddad63fbb6bec7fa22160d99d0026bcb23c1"
+      }
+    },
+    {
+      "path": "captures/connect_four_visual_capture/c4-win-landscape.png",
+      "width": 960,
+      "height": 540,
+      "bytes": 83733,
+      "sha256": "755ed7f8a64af3215f65e315c3bf68df8cc1571b959ec224983194f53eb69e32",
+      "connect_four_visual_state": {
+        "path": "captures/connect_four_visual_capture/visual-state.json",
+        "bytes": 172226,
+        "sha256": "3ada2ff4cc37bda38a5d560c4628ddad63fbb6bec7fa22160d99d0026bcb23c1"
+      }
+    },
+    {
+      "path": "captures/treasure_title_contrast_regression/treasure-title-compact.png",
+      "width": 640,
+      "height": 320,
+      "bytes": 324268,
+      "sha256": "f6a20ab8fed4bdde0ac38744bde99645699cb889e231f5a6f68c3defe7380c1d",
+      "treasure_title_report": {
+        "path": "captures/treasure_title_contrast_regression/treasure-title-report.json",
+        "bytes": 30551,
+        "sha256": "541d8fb269002bb460e58b6cccc13aa6aa5e9aa92ac2681f640c34a6c3d89b35"
+      }
+    },
+    {
+      "path": "captures/treasure_title_contrast_regression/treasure-title-fold.png",
+      "width": 2176,
+      "height": 1812,
+      "bytes": 4227320,
+      "sha256": "bd4f695faf179736a4ca6073c2c311720a302d760250c8859a4dfffc49bfe355",
+      "treasure_title_report": {
+        "path": "captures/treasure_title_contrast_regression/treasure-title-report.json",
+        "bytes": 30551,
+        "sha256": "541d8fb269002bb460e58b6cccc13aa6aa5e9aa92ac2681f640c34a6c3d89b35"
+      }
+    },
+    {
+      "path": "captures/treasure_title_contrast_regression/treasure-title-landscape-cutout.png",
+      "width": 2400,
+      "height": 1080,
+      "bytes": 2623577,
+      "sha256": "20de9259d6e49fd232f177e8bac3f39c87993fa0f362ea88709d0ed357b8f3ee",
+      "treasure_title_report": {
+        "path": "captures/treasure_title_contrast_regression/treasure-title-report.json",
+        "bytes": 30551,
+        "sha256": "541d8fb269002bb460e58b6cccc13aa6aa5e9aa92ac2681f640c34a6c3d89b35"
+      }
+    },
+    {
+      "path": "captures/treasure_title_contrast_regression/treasure-title-landscape.png",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 2719803,
+      "sha256": "4aac0c4c1e6476ec6e6cf4412da22ebe7018517c3d5abb2ebbfa549b776bc9b4",
+      "treasure_title_report": {
+        "path": "captures/treasure_title_contrast_regression/treasure-title-report.json",
+        "bytes": 30551,
+        "sha256": "541d8fb269002bb460e58b6cccc13aa6aa5e9aa92ac2681f640c34a6c3d89b35"
+      }
+    },
+    {
+      "path": "captures/treasure_title_contrast_regression/treasure-title-portrait.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 2103183,
+      "sha256": "b7ca37811b5dfec39a7706a348dfc7be5b9fe3e3aebaf973a9c5a132d681f612",
+      "treasure_title_report": {
+        "path": "captures/treasure_title_contrast_regression/treasure-title-report.json",
+        "bytes": 30551,
+        "sha256": "541d8fb269002bb460e58b6cccc13aa6aa5e9aa92ac2681f640c34a6c3d89b35"
+      }
+    }
+  ],
+  "reports": [
+    {
+      "path": "captures/lumo_facial_capture/runtime-frames.json",
+      "bytes": 83168,
+      "sha256": "387e88b82304292e01a2dad27104da394a21d4507f5d245aeecee2563c6c31e3"
+    },
+    {
+      "path": "captures/connect_four_visual_capture/visual-state.json",
+      "bytes": 172226,
+      "sha256": "3ada2ff4cc37bda38a5d560c4628ddad63fbb6bec7fa22160d99d0026bcb23c1"
+    },
+    {
+      "path": "captures/treasure_title_contrast_regression/treasure-title-report.json",
+      "bytes": 30551,
+      "sha256": "541d8fb269002bb460e58b6cccc13aa6aa5e9aa92ac2681f640c34a6c3d89b35"
+    }
+  ],
+  "movies": [
+    {
+      "encoded": {
+        "path": "captures/lumo_facial_capture/facial-runtime.mp4",
+        "bytes": 1074432,
+        "sha256": "70a09162be85675161bd488346fb6c946e4a72ac78e2f1895f190ca4fa2eb5c9"
+      },
+      "source_avi": {
+        "path": "captures/lumo_facial_capture/facial-runtime.avi",
+        "bytes": 7717126,
+        "sha256": "1f0d5bcf11c5b52154e44b74bc5fd1eda50c5574b156be76daae29d0acf7b7c0"
+      },
+      "proof": {
+        "path": "captures/lumo_facial_capture/movie.json",
+        "bytes": 1201,
+        "sha256": "35d9da9b05f7926a3ab07cf225731409994f9d715c96d58444b5c20b6ef46295"
+      },
+      "ffprobe": {
+        "path": "captures/lumo_facial_capture/movie-ffprobe.json",
+        "bytes": 4564,
+        "sha256": "1d8c9c58f4c45e35270b8cd7cfc74fb380a300ce83e78d4e8576fbdb65db3795"
+      },
+      "logs": [
+        {
+          "path": "captures/lumo_facial_capture/movie-encode.log",
+          "bytes": 6262,
+          "sha256": "4ae2936bfbca2851a626a31ee90d51f0e0744fe3fb3118ed0abff082622b670d"
+        },
+        {
+          "path": "captures/lumo_facial_capture/movie-decode.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "captures/lumo_facial_capture/movie-ffprobe-stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    }
+  ]
+}

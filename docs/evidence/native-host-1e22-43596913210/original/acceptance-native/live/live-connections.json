@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "native_source": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+  "probes": 9,
+  "original_pngs": [
+    {
+      "path": "captures/treasure/treasure_00.png",
+      "width": 720,
+      "height": 1280,
+      "sha256": "490f55f96f452bf0b11db3a9fa2f405687ad42e00312d8ef38ab07184b325209"
+    },
+    {
+      "path": "captures/treasure/treasure_01.png",
+      "width": 720,
+      "height": 1280,
+      "sha256": "b68e61495f2cf033e7c79cc25b02836a707e4d72ab47cf71c192b84271003268"
+    },
+    {
+      "path": "captures/learning/learning_00.png",
+      "width": 720,
+      "height": 1280,
+      "sha256": "9da2389d3ad4ba7c4c198f5b2a9ed2a434448c053091aa1bc57dd14bac42eeef"
+    },
+    {
+      "path": "captures/learning/learning_01.png",
+      "width": 720,
+      "height": 1280,
+      "sha256": "e584d99ee753d3f1a575951043747fa5069f79de5e1fa5fb55ad7a8a83e424eb"
+    },
+    {
+      "path": "captures/garden/learning-dream-1280x720.png",
+      "width": 1280,
+      "height": 720,
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5"
+    },
+    {
+      "path": "captures/garden/learning-dream-412x915.png",
+      "width": 412,
+      "height": 915,
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06"
+    },
+    {
+      "path": "captures/garden/learning-dream-2400x1080.png",
+      "width": 2400,
+      "height": 1080,
+      "sha256": "58de1dfada401700fda7edfdf160da1a2a64bfddc4dbe4f157c0078cde761ad3"
+    }
+  ],
+  "physical_android_fps_measured": false
+}

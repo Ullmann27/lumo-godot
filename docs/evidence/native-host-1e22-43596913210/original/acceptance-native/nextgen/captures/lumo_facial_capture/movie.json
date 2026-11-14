@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "kind": "actual_godot_movie",
+  "recording_fps": 24,
+  "scope": "Actual MovieMaker frames and original local audio; not Android/device FPS or phoneme lip sync",
+  "source_avi": {
+    "file": "facial-runtime.avi",
+    "bytes": 7717126,
+    "sha256": "1f0d5bcf11c5b52154e44b74bc5fd1eda50c5574b156be76daae29d0acf7b7c0"
+  },
+  "encoded_movie": {
+    "file": "facial-runtime.mp4",
+    "bytes": 1074432,
+    "sha256": "70a09162be85675161bd488346fb6c946e4a72ac78e2f1895f190ca4fa2eb5c9"
+  },
+  "ffprobe": {
+    "file": "movie-ffprobe.json",
+    "bytes": 4564,
+    "sha256": "1d8c9c58f4c45e35270b8cd7cfc74fb380a300ce83e78d4e8576fbdb65db3795"
+  },
+  "encode_log": {
+    "file": "movie-encode.log",
+    "bytes": 6262,
+    "sha256": "4ae2936bfbca2851a626a31ee90d51f0e0744fe3fb3118ed0abff082622b670d"
+  },
+  "decode_log": {
+    "file": "movie-decode.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "probe_stderr": {
+    "file": "movie-ffprobe-stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "encode_exit_code": 0,
+  "decode_exit_code": 0,
+  "probe_exit_code": 0
+}

@@ -1,0 +1,32 @@
+{
+  "images": [
+    {
+      "path": "captures/build_village_scene_regression/village-chapters-412x915.png",
+      "width": 412,
+      "height": 915,
+      "bytes": 232402,
+      "sha256": "1a3635a5eeaa89c925cd466eff84b282795b53514cdb969ded2e1c1c1db2f268"
+    },
+    {
+      "path": "captures/build_village_scene_regression/village-overview-1280x720.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 1006298,
+      "sha256": "87d87ea54b870dcbe12ce9d661b7fe298208f9f15dc969a93b49121a890a7e9e"
+    },
+    {
+      "path": "captures/build_village_scene_regression/village-trader-2176x1812.png",
+      "width": 2176,
+      "height": 1812,
+      "bytes": 2347987,
+      "sha256": "364b85e65b1cad319bfd7a5943fece6a3f4c56854d152e54128fa0a2174191ed"
+    },
+    {
+      "path": "captures/build_village_scene_regression/village-treasury-640x360.png",
+      "width": 640,
+      "height": 360,
+      "bytes": 97278,
+      "sha256": "49bdbdb6d1c1ca886b117bc6ddff9319ee3044592a81412cde6a7950ab45ae2b"
+    }
+  ]
+}

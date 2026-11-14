@@ -1,0 +1,212 @@
+{
+  "schema": 1,
+  "native_source": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+  "native_tree": "1c2b5da7a4485cb8b911adcac2b567481cf902b5",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "probes": [
+    {
+      "path": "lumo_dream_ambience_regression-headless.log",
+      "bytes": 593,
+      "sha256": "0e06fbe26cc4fab495f303f614749b1164b2ea673a17c70ee7a38f2b18600709",
+      "probe": "lumo_dream_ambience_regression",
+      "mode": "headless",
+      "marker": "[DreamAmbience] 170 checks, 0 failures"
+    },
+    {
+      "path": "dream_garden_props_regression-headless.log",
+      "bytes": 505,
+      "sha256": "bbfcbd97e786dad12bb49ebf8a088d2b7e0c6a1a834e413c018c0c8c52c5013f",
+      "probe": "dream_garden_props_regression",
+      "mode": "headless",
+      "marker": "[DreamGarden] checks=544 failures=0"
+    },
+    {
+      "path": "lumo_dream_ambience_capture-rendered-treasure.log",
+      "bytes": 1284,
+      "sha256": "8e1bfaf37e62a9a3f14cad6ad852caa789a93e0067a05278774d44bc73be4c4c",
+      "probe": "lumo_dream_ambience_capture",
+      "mode": "rendered-treasure",
+      "marker": "[DreamAmbienceCapture] PASS treasure original frames in /home/runner/work/lumo-lernen/lumo-lernen/acceptance-native/dream/captures/treasure"
+    },
+    {
+      "path": "lumo_dream_ambience_capture-rendered-learning.log",
+      "bytes": 1284,
+      "sha256": "bb760e4265fbfa978562ad3f11c40e45e935cefd439568c6700b4875d38c11db",
+      "probe": "lumo_dream_ambience_capture",
+      "mode": "rendered-learning",
+      "marker": "[DreamAmbienceCapture] PASS learning original frames in /home/runner/work/lumo-lernen/lumo-lernen/acceptance-native/dream/captures/learning"
+    },
+    {
+      "path": "dream_garden_capture-rendered.log",
+      "bytes": 1628,
+      "sha256": "9dfa1a5d62d03e6e39faa1e54562a7724477bf8e912db83138b7d2281c59c9ff",
+      "probe": "dream_garden_capture",
+      "mode": "rendered",
+      "marker": "[DreamGardenCapture] failures=0"
+    }
+  ],
+  "results": {
+    "path": "results.tsv",
+    "bytes": 244,
+    "sha256": "e13332961fe89a044b7b25aff2408199425dbf9935be79ffca222f214442a169"
+  },
+  "source_stamps": [
+    {
+      "path": "source-sha.txt",
+      "bytes": 41,
+      "sha256": "d0a09fa076dc0f9c7db7dae2c693ad843176312371e712fc3343d38d34bc25c2"
+    },
+    {
+      "path": "source-sha-after.txt",
+      "bytes": 41,
+      "sha256": "d0a09fa076dc0f9c7db7dae2c693ad843176312371e712fc3343d38d34bc25c2"
+    },
+    {
+      "path": "source-tree.txt",
+      "bytes": 41,
+      "sha256": "7ce9a8f7736baeb67a5c3b71fc112cf3d1466bed85e4b13fb5f9e8056af9457d"
+    },
+    {
+      "path": "source-tree-after.txt",
+      "bytes": 41,
+      "sha256": "7ce9a8f7736baeb67a5c3b71fc112cf3d1466bed85e4b13fb5f9e8056af9457d"
+    },
+    {
+      "path": "source-dirty.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "source-dirty-after.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "engine.txt",
+      "bytes": 32,
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f"
+    },
+    {
+      "path": "capture-root.txt",
+      "bytes": 66,
+      "sha256": "aa93b3c7464ff425688e15203874000632bf3f50147ea08dedae8e09f886c631"
+    }
+  ],
+  "source_inventories": [
+    {
+      "path": "source-inventory-before.json",
+      "bytes": 1922588,
+      "sha256": "d5fc7bcebe6561b413b85e3c0c52d3c165412e01df29e22960688c37b18ac7f8"
+    },
+    {
+      "path": "source-inventory-after.json",
+      "bytes": 1922588,
+      "sha256": "d5fc7bcebe6561b413b85e3c0c52d3c165412e01df29e22960688c37b18ac7f8"
+    }
+  ],
+  "untracked_inventory_counts": [
+    {
+      "generated_uid": 356,
+      "generated_import_metadata": 604,
+      "other_untracked": 0
+    },
+    {
+      "generated_uid": 356,
+      "generated_import_metadata": 604,
+      "other_untracked": 0
+    }
+  ],
+  "original_pngs": [
+    {
+      "path": "captures/treasure/treasure_00.png",
+      "bytes": 1138454,
+      "sha256": "4b5fc9433f76d8a0d397dee3088a124a2f0d9b6902f718db365a85d44b8dc6f6",
+      "width": 720,
+      "height": 1280
+    },
+    {
+      "path": "captures/treasure/treasure_01.png",
+      "bytes": 1137652,
+      "sha256": "3d0d983220e4d7e590bd1b11e2eb3c78ab1db297f8bfb66bf6d2648573f2b36e",
+      "width": 720,
+      "height": 1280
+    },
+    {
+      "path": "captures/learning/learning_00.png",
+      "bytes": 287549,
+      "sha256": "f31b5ed96810d971a5b1f8b9869ad2ec43ecdfdda046496b6ba0d067bb858840",
+      "width": 720,
+      "height": 1280
+    },
+    {
+      "path": "captures/learning/learning_01.png",
+      "bytes": 288733,
+      "sha256": "5c127d13f001ac9e7ccf147d2d5bf7b625809d76d0dcf33e17b93d668d67d4c6",
+      "width": 720,
+      "height": 1280
+    },
+    {
+      "path": "captures/garden/learning-dream-1280x720.png",
+      "bytes": 346738,
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "path": "captures/garden/learning-dream-412x915.png",
+      "bytes": 139598,
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "width": 412,
+      "height": 915
+    },
+    {
+      "path": "captures/garden/learning-dream-2400x1080.png",
+      "bytes": 614391,
+      "sha256": "58de1dfada401700fda7edfdf160da1a2a64bfddc4dbe4f157c0078cde761ad3",
+      "width": 2400,
+      "height": 1080
+    }
+  ],
+  "original_reports": [
+    {
+      "path": "captures/treasure/treasure.json",
+      "bytes": 844,
+      "sha256": "98890e629aa52fffbd0de561e61e8ea9e4987b14e2400e3540f4a8f156f8b1fa"
+    },
+    {
+      "path": "captures/learning/learning.json",
+      "bytes": 848,
+      "sha256": "e5823289442d615754eaef67c3a8f6fc13e4532c2fa0f7f8a95e9c50719dc639"
+    }
+  ],
+  "changed_pairs": [
+    {
+      "world": "treasure",
+      "animation_times": [
+        0.5,
+        1.9
+      ],
+      "changed_pixel_bounds": [
+        0,
+        0,
+        720,
+        1280
+      ]
+    },
+    {
+      "world": "learning",
+      "animation_times": [
+        0.5,
+        1.9
+      ],
+      "changed_pixel_bounds": [
+        43,
+        209,
+        334,
+        521
+      ]
+    }
+  ],
+  "scope": "Five separate Dream probes and seven original renderer PNGs; existing52/17, Android and visual review remain separate",
+  "physical_android_fps_measured": false
+}

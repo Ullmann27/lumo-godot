@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "native_source": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+  "native_tree": "1c2b5da7a4485cb8b911adcac2b567481cf902b5",
+  "method": "Unchanged original Live heredoc on a separate capture copy; unchanged Discovery.verify on original files; no renderer or runtime launch",
+  "live": {
+    "probes": 9,
+    "original_pngs": 7,
+    "exact_manifest_equal": true,
+    "exit_code": 0,
+    "reader": {
+      "path": "reader-sources/validate_live_connections.sh",
+      "bytes": 5085,
+      "sha256": "12fdf2e50f90ec452d66048324edaf5fbd1f9f658128422d9ec55af7e67ba4dd",
+      "git_blob": "047c48b60af8ea8c1ed91426604cdb0e5dac7299"
+    },
+    "heredoc": {
+      "path": "read-only-replay/live-original-heredoc.py",
+      "bytes": 2395,
+      "sha256": "4446520c7c8e38c926772e274d7449ad83b108d7a8edca395adb8aedd3cc315e",
+      "git_blob": "a4a228759a48e39c0b329d4e967d08fc02d504a4"
+    },
+    "transcript": {
+      "path": "read-only-replay/live-original-heredoc-replay.log",
+      "bytes": 74,
+      "sha256": "5850001e08c084c8c9e11b9732defc9fa017e18c2b018f44cd6e02be682833b9",
+      "git_blob": "ad34d5b09213409ad733bf36ec80c3d7b330be8d"
+    }
+  },
+  "discovery": {
+    "probes": 10,
+    "original_pngs": 38,
+    "exact_manifest_equal": true,
+    "mandatory_original_hub_identity_checked": true,
+    "reader": {
+      "path": "reader-sources/verify_discovery_rasters.py",
+      "bytes": 11528,
+      "sha256": "55591b4478d2074135ea4950fb00200d68a3f9bede286b39642d7fc17aa586da",
+      "git_blob": "219e691fc8aa119cc80221b3db6c77e63caf8bfe"
+    }
+  },
+  "new_engine_or_renderer_executions": 0,
+  "physical_android_fps_measured": false
+}

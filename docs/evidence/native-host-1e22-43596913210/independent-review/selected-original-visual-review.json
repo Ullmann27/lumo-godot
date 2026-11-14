@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "source": "e9a9f60f20403ffa6b2b26d1437f958b2704d2aa",
+  "artifact": 14118079396,
+  "new_captures": 0,
+  "original_images": [
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_1280x720_ready.png",
+      "observation": "Viewed unchanged original. Player is visible from behind on the first island, with orange ears/tail, white tail tip and dark blue clothing. Both movement/jump controls, pause and Spiele return are separated and visible. Face/glasses are not judged from this rear view. The distinct original-rig identity comes from the actual headless probe plus pinned scene/adapter, not image appearance alone.",
+      "bytes": 753443,
+      "sha256": "c9b742bb31da8f8572c2b7e535e91ce0055f46a91798ac3e567c5061080f82ba",
+      "git_blob": "ae7275da3eed342488589a1d8d19aca8f477eba5",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/hub/hub_fold_landscape.png",
+      "observation": "Viewed unchanged original. Original fox with blue goggles and dark clothing is fully framed; all eight game cards, both profile controls and Back are visible and unoccluded. This is the desktop Compatibility capture, not Android evidence.",
+      "bytes": 1878594,
+      "sha256": "070e6567c6607e25c730fd1818f1d59a279a2cb0cd6289dd5c75edbb4f6fb7c4",
+      "git_blob": "89f629bf313bbce480812026d775a3c936d557c2",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    }
+  ]
+}

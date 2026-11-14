@@ -1,0 +1,2776 @@
+{
+  "schema": 1,
+  "artifact_id": 14118079396,
+  "selection": "All original reader-required PNGs, all relevant logs/reports/source stamps excluding generated user caches, original facial AVI/MP4 and one viewed Jump frame; every artifact file remains in the complete hash index.",
+  "selected_files": [
+    {
+      "path": "2014/build_sandbox_tools_regression.log",
+      "bytes": 541,
+      "compressed_bytes": 375,
+      "zip_crc32": "b23b8bb8",
+      "sha256": "b27faaf614cae03d325f41790f146c441a5a71ee1c7a025e255dd1a8a2fa810a",
+      "git_blob": "b27ea60acdbc5f9abb0d39cfd09ebf485e1b7a73"
+    },
+    {
+      "path": "2014/build_sandbox_ui_regression.log",
+      "bytes": 1269,
+      "compressed_bytes": 759,
+      "zip_crc32": "4af7d43c",
+      "sha256": "df12e6cd24264f30e4b81b215caff309e233d3e0c2cf4c42e70bfe9f65070c82",
+      "git_blob": "d594496761a4316408ef5ac9d79bf5ed674a61af"
+    },
+    {
+      "path": "2014/creative_touch_layout_regression.log",
+      "bytes": 1574,
+      "compressed_bytes": 778,
+      "zip_crc32": "f12b05c6",
+      "sha256": "943713b7b7afc8cf32c07c362a1046f0c2ee7e8776cbf1ccaf6af2b8352ce172",
+      "git_blob": "4ba2a2be2331afe02bc2284a42f7cdf82ec4b2be"
+    },
+    {
+      "path": "2014/jump_extras_regression.log",
+      "bytes": 726,
+      "compressed_bytes": 435,
+      "zip_crc32": "ba7b7b3a",
+      "sha256": "6d19463f0b3ab9993fe8d855b6f14107ee95998713b559990f568c08ea97083b",
+      "git_blob": "7fa1eb401b090b5d787750318310338ed217cee4"
+    },
+    {
+      "path": "2014/kart_full_field_regression.log",
+      "bytes": 83863,
+      "compressed_bytes": 14063,
+      "zip_crc32": "50cd7c17",
+      "sha256": "dc90d6f8f7a3d5b500216ccf981d06ab02fe68668ad9da1d674e3249c118b1cb",
+      "git_blob": "728b5b4784c7d22897706551cd961ca09c0f2192"
+    },
+    {
+      "path": "2014/kart_garage_3d_touch_regression.log",
+      "bytes": 1451,
+      "compressed_bytes": 806,
+      "zip_crc32": "4b75d982",
+      "sha256": "274b08e18d03f7c2b26fd2fe12c20213bc28df11e28f995ab98c0be022e0ed96",
+      "git_blob": "4fbbbf43205422f0fbd389630e572a6ad3f730b0"
+    },
+    {
+      "path": "2014/kart_harbor_attraction_regression.log",
+      "bytes": 1656,
+      "compressed_bytes": 877,
+      "zip_crc32": "435484e9",
+      "sha256": "00a5c14f0534e154c87619cb3ad1c4427dad6ceb531e290f2ef00e70d5dd9bd3",
+      "git_blob": "76af4dfa9432e64978941636b76fdfce06b4e9e9"
+    },
+    {
+      "path": "2014/kart_harbor_race_hook_regression.log",
+      "bytes": 1375,
+      "compressed_bytes": 803,
+      "zip_crc32": "ea228fa4",
+      "sha256": "698a79a5cd09890b222b963b9203aeb09c1983b2ebeb7e6f23bf84ae8c8afdc0",
+      "git_blob": "eff887b2fa6452e09964c0e0df2ff396a3f5ba3b"
+    },
+    {
+      "path": "2014/kart_loop_contact_regression.log",
+      "bytes": 674,
+      "compressed_bytes": 417,
+      "zip_crc32": "bef02408",
+      "sha256": "e61e28086e56d00d9ad94780105b6de81bd76e3a9e8091afac83e36e0659ff99",
+      "git_blob": "23aa034e4c55608a9b0865e5a5308ce80c72b499"
+    },
+    {
+      "path": "2014/kart_menu_depth_2013_regression.log",
+      "bytes": 1327,
+      "compressed_bytes": 779,
+      "zip_crc32": "fcc7312a",
+      "sha256": "e083443c0f646ffdc0a4c9e8a49253ef8dac5ae8c4f4582967e61555b8ff935e",
+      "git_blob": "509cbaf7f09d40d283ed7b017e863879403b813e"
+    },
+    {
+      "path": "2014/kart_player_full_route_regression.log",
+      "bytes": 21732,
+      "compressed_bytes": 3924,
+      "zip_crc32": "d8a2163c",
+      "sha256": "fffd3fa9b306fe116f9fc065136e9f8094e00c3647efd032fde905af12ad0139",
+      "git_blob": "9ce0a2858035b58158b7bac1c0a17c71217dab9e"
+    },
+    {
+      "path": "2014/kart_racecraft_regression.log",
+      "bytes": 800,
+      "compressed_bytes": 506,
+      "zip_crc32": "88ccead6",
+      "sha256": "1a3427d469d14b411bf62bc18e20fb91f1fd9568f6176d47e29c31c04d6f51cb",
+      "git_blob": "2e2feed0d18604184aaf3a41f271669415dcbc48"
+    },
+    {
+      "path": "2014/kart_rival_drift_items_regression.log",
+      "bytes": 800,
+      "compressed_bytes": 503,
+      "zip_crc32": "42504dc2",
+      "sha256": "2ee8832bc55d2f8d4255cc01bc20c6a1e13027781d2a1bdd8faba77dc91a92d8",
+      "git_blob": "0c8bb9ec19c92d7dde9c44469c5f477e469673fc"
+    },
+    {
+      "path": "2014/kart_rival_flight_regression.log",
+      "bytes": 1875,
+      "compressed_bytes": 969,
+      "zip_crc32": "26468963",
+      "sha256": "7758d678610c51702f43557268cee4f1ec1a449bf1e134e718d9ac84e3dc6992",
+      "git_blob": "f83de7b9df1b226cf6aee84aa2bd86b0a6bc825d"
+    },
+    {
+      "path": "2014/kart_sonnenhafen_generation_regression.log",
+      "bytes": 552,
+      "compressed_bytes": 382,
+      "zip_crc32": "da9196a7",
+      "sha256": "a25509ce894804614d69e35f9b898757f4b4605ac64db8d2c2a98c79658eee60",
+      "git_blob": "969af661d4414a4178223f335f008aff9ce27a18"
+    },
+    {
+      "path": "2014/kart_stunt_continuity_regression.log",
+      "bytes": 1736,
+      "compressed_bytes": 902,
+      "zip_crc32": "ce73a97e",
+      "sha256": "47e0d6fae7fb5d5f9851ad77324c05cdf8379369539c61e99f31ccd203e2d7ab",
+      "git_blob": "e071acde19fa2e4879f412b195c9a0b9735b05d0"
+    },
+    {
+      "path": "2014/kart_zauberwald_library_regression.log",
+      "bytes": 1320,
+      "compressed_bytes": 744,
+      "zip_crc32": "fc57786a",
+      "sha256": "83bb911a70a054f7cd068868a401a911b2a16308b0cf6915c23e8e2c2e4ad50d",
+      "git_blob": "f6814ef940b3d2966dcb1a5c534d7e8278715d5e"
+    },
+    {
+      "path": "2014/puzzle_expansion_regression.log",
+      "bytes": 1191,
+      "compressed_bytes": 716,
+      "zip_crc32": "2d40717c",
+      "sha256": "15e66dba4f57135ff127300eff8f6457f9a837ebe383a2528b3d3a32ce5075f4",
+      "git_blob": "b0f395b600d31ae84837ece90b1127c9338580a3"
+    },
+    {
+      "path": "action-stage/engine.txt",
+      "bytes": 32,
+      "compressed_bytes": 34,
+      "zip_crc32": "12281f13",
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f",
+      "git_blob": "24277fd09e8cc7154517b66aab4e8bef52babb7e"
+    },
+    {
+      "path": "action-stage/kart_lasso_production_regression.log",
+      "bytes": 1033,
+      "compressed_bytes": 514,
+      "zip_crc32": "086a2580",
+      "sha256": "af9d18f16e90a44c8fd2548fffea8dfc0fa2fcc50eeed870e79e131c67ec8ac2",
+      "git_blob": "67209cc162132325a8b0f2cbff0195b747f923b0"
+    },
+    {
+      "path": "action-stage/kart_lasso_regression.log",
+      "bytes": 562,
+      "compressed_bytes": 385,
+      "zip_crc32": "81a7a65d",
+      "sha256": "1d727cef9d8c4c8b13a22c5efca13914f33cc39c8513da90b8ca8fae4cecb856",
+      "git_blob": "e6ba2a413e64c56f2b1d7f265c8b9ff78568bd6d"
+    },
+    {
+      "path": "action-stage/kart_menu_flow_regression.log",
+      "bytes": 3675,
+      "compressed_bytes": 1229,
+      "zip_crc32": "3fd055cd",
+      "sha256": "b2c789a4f2d251a056ece8698005830de32934d0cd4ac9869ed693154dc1c58b",
+      "git_blob": "85f2e02cec72570545b2092a5cba27ca68a800f8"
+    },
+    {
+      "path": "action-stage/kart_roadside_action_regression.log",
+      "bytes": 1798,
+      "compressed_bytes": 880,
+      "zip_crc32": "00d28780",
+      "sha256": "e582b58303683f6228689e133b1306e2d56bd35138051cce6c81e9ff91a9d57f",
+      "git_blob": "13ac62ee26294c5309ef5bae50bc24a83eea88b1"
+    },
+    {
+      "path": "action-stage/kart_spatial_menu_regression.log",
+      "bytes": 5531,
+      "compressed_bytes": 1635,
+      "zip_crc32": "d1828d91",
+      "sha256": "8feed6477bb707e156dfe968eb6f8f89d9def4118d4f31f9162646d8fbe8cada",
+      "git_blob": "e56bd045742fe4926575e7d02be45a652f6903b5"
+    },
+    {
+      "path": "action-stage/source-sha.txt",
+      "bytes": 41,
+      "compressed_bytes": 41,
+      "zip_crc32": "7ef88f56",
+      "sha256": "d0a09fa076dc0f9c7db7dae2c693ad843176312371e712fc3343d38d34bc25c2",
+      "git_blob": "74b78e2390fd6fbcea08f926b52f12b10b3dd7a8"
+    },
+    {
+      "path": "connect-four-return.log",
+      "bytes": 504,
+      "compressed_bytes": 362,
+      "zip_crc32": "77417d45",
+      "sha256": "f52a215077309359c79031c719d5df69b526bcb0d45bd2bb161de28153dc5ae2",
+      "git_blob": "186e8fa528a9138ea17a0a1395010f440192a280"
+    },
+    {
+      "path": "discovery-runner.log",
+      "bytes": 39130,
+      "compressed_bytes": 3640,
+      "zip_crc32": "4c15b6cf",
+      "sha256": "22a94913bcba1d9dee6082828d4737a031d00a3506110f902f3efc6f7ccf8589",
+      "git_blob": "813ec3333cba852105d5acaa731a868c42e2d6cb"
+    },
+    {
+      "path": "discovery/captures/hub/hub-original-identity.json",
+      "bytes": 2703,
+      "compressed_bytes": 674,
+      "zip_crc32": "2c9049d9",
+      "sha256": "12feeba1ca0437c6dca58a2ad3ca47f93d24919af96d79cce263e6a37f9c7f80",
+      "git_blob": "65dc177dc6a70225390c1d3b629240f9d49f2efd"
+    },
+    {
+      "path": "discovery/captures/hub/hub_fold_landscape.png",
+      "bytes": 1878594,
+      "compressed_bytes": 1878046,
+      "zip_crc32": "c57cce35",
+      "sha256": "070e6567c6607e25c730fd1818f1d59a279a2cb0cd6289dd5c75edbb4f6fb7c4",
+      "git_blob": "89f629bf313bbce480812026d775a3c936d557c2",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "discovery/captures/hub/hub_portrait.png",
+      "bytes": 1822576,
+      "compressed_bytes": 1822091,
+      "zip_crc32": "f0a03068",
+      "sha256": "740863c0e2fa0151c0d4e169a7985117589a6fee57467457eca6b68625651751",
+      "git_blob": "35268fcf20e3ce8319f347a7cf9e5b19e75156da",
+      "png_dimensions": [
+        1080,
+        1920
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/bridge_hundred-complete-2400x1080.png",
+      "bytes": 659859,
+      "compressed_bytes": 651020,
+      "zip_crc32": "71e4fd43",
+      "sha256": "6a7306d126cf239c2377a5b045fbf9efae043e26761cd9c106f1a09bfc33830f",
+      "git_blob": "36542445b3a591de8478928f62a255a936d8a699",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/bridge_hundred-complete-412x915.png",
+      "bytes": 149617,
+      "compressed_bytes": 148969,
+      "zip_crc32": "163dd308",
+      "sha256": "d713a5780fde893a9c3c0c4eaefffa09b69739d63a23eb567cc9bf04765a8286",
+      "git_blob": "8dccb6c9b75df4b2002a7fdfc9629f5bc1c6e84a",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/bridge_hundred-complete.png",
+      "bytes": 363900,
+      "compressed_bytes": 362190,
+      "zip_crc32": "ab3a9028",
+      "sha256": "335865b34d321ef5f4942a5a85c3be670bbf3e12f4999da16bd6188b914ef2b3",
+      "git_blob": "4dc36835c859b0edbc503959470410021f203b30",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/bridge_hundred-start-2400x1080.png",
+      "bytes": 642151,
+      "compressed_bytes": 633180,
+      "zip_crc32": "25b8de29",
+      "sha256": "9b82faa6c8b2cfab5e789b047669d5a2b8bd5b1b7d32eb27cee24b55fd9cb372",
+      "git_blob": "e487612e9f557cfd73dba32531dc566f03161de3",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/bridge_hundred-start-412x915.png",
+      "bytes": 146569,
+      "compressed_bytes": 146192,
+      "zip_crc32": "4c029deb",
+      "sha256": "081d01c599541be88fee4b5082ec56c3b797369312c9af43797a2fa8d48eddcc",
+      "git_blob": "8d48b44cf081d0ba7ecccf70bd00fbe354b1e7c1",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/bridge_hundred-start.png",
+      "bytes": 354258,
+      "compressed_bytes": 352616,
+      "zip_crc32": "f93e774d",
+      "sha256": "7eb6e728babaa5209b2ec9f8960a52d509c8a100852e46eaa09f780662c5b206",
+      "git_blob": "de063065b385097732090d7323b8a1471fc34147",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/equal_groups-complete.png",
+      "bytes": 335741,
+      "compressed_bytes": 333884,
+      "zip_crc32": "0a57a7ea",
+      "sha256": "4f2406682e33270c1bfba8c3c72c421699c1a4842574c57b1e40d236e5343e88",
+      "git_blob": "665e527981d54366f7c33ca79c5a67daf4e54c17",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/equal_groups-start.png",
+      "bytes": 322081,
+      "compressed_bytes": 320275,
+      "zip_crc32": "9141fee1",
+      "sha256": "1ddfe04f7d05cb7b9a571abf0da3d92aa9fa158a65855bb60202bd0df6e42fee",
+      "git_blob": "6b0f42474cec0d8d541a516a11c88406324ab1b4",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/fraction_parts-complete.png",
+      "bytes": 332831,
+      "compressed_bytes": 330972,
+      "zip_crc32": "2413a3aa",
+      "sha256": "defcd507a087d84dc7249cb7757bf1c15d58b9b2217f6666626666b14c0559e9",
+      "git_blob": "85d144619b09ed3cf68048e65932bcb87c284826",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/fraction_parts-start.png",
+      "bytes": 322375,
+      "compressed_bytes": 320873,
+      "zip_crc32": "679f44de",
+      "sha256": "21f39f28efd623b9c3bb5bc99ac0a8b140b495404192a3b55a039e536100da4a",
+      "git_blob": "a68ab7a6e7f51deffef22882f300866b3dcdaafd",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-complete-1280x720.png",
+      "bytes": 359803,
+      "compressed_bytes": 358311,
+      "zip_crc32": "c9cdabe9",
+      "sha256": "7b6c764e769aeef10d5395444871984a59bd228e0c61f7ac38956daaa6a397ab",
+      "git_blob": "01c12e908ddbe41982d6a5b6e0d0eb025352a695",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-complete-2400x1080.png",
+      "bytes": 652893,
+      "compressed_bytes": 643716,
+      "zip_crc32": "888ae0ad",
+      "sha256": "3dcbc484ed57bf999e20fcfe1c4b786db1a33300be0119755196f3b27da25b61",
+      "git_blob": "5818a6397991f447a96719545119282a1327dcb0",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-complete-412x915.png",
+      "bytes": 144204,
+      "compressed_bytes": 143536,
+      "zip_crc32": "5de0ee23",
+      "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+      "git_blob": "efeabdcf9d87f93e9d7569c2ee6a106900f2b4f6",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-start-1280x720.png",
+      "bytes": 346738,
+      "compressed_bytes": 345252,
+      "zip_crc32": "dbdc5876",
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-start-2400x1080.png",
+      "bytes": 614391,
+      "compressed_bytes": 604954,
+      "zip_crc32": "7eb38711",
+      "sha256": "58de1dfada401700fda7edfdf160da1a2a64bfddc4dbe4f157c0078cde761ad3",
+      "git_blob": "c5486b3e4a402ce41bf73d5d88f589a9cbe9e131",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-start-412x915.png",
+      "bytes": 139598,
+      "compressed_bytes": 139101,
+      "zip_crc32": "b0bc137d",
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-ten-1280x720.png",
+      "bytes": 353450,
+      "compressed_bytes": 351829,
+      "zip_crc32": "d0ce5d73",
+      "sha256": "c48d94aa57ec3412736754d6c9844ac2857a7f58a8eec2f2ecb779c230a204ec",
+      "git_blob": "8c8d0e472ac9403e798efb0df757e792269032a8",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-ten-2400x1080.png",
+      "bytes": 634243,
+      "compressed_bytes": 624979,
+      "zip_crc32": "246f32da",
+      "sha256": "d65c5d10a2331cbf15c60e267ac3570f76f0de5c8c51b32bd2522cfd92abe496",
+      "git_blob": "90ba53fcde54ba6a5f3badf060ad1fde8f655b0f",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/math-ten-412x915.png",
+      "bytes": 144541,
+      "compressed_bytes": 144099,
+      "zip_crc32": "d1ebeabe",
+      "sha256": "f8146ddc462f3163b4754cd76866e1eb8cbb052c880c980b9daee2402a3e7cfb",
+      "git_blob": "9a5332bafd5378ef99653db8ff8ee433ad5a6ba6",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/plant_parts-complete.png",
+      "bytes": 373016,
+      "compressed_bytes": 371269,
+      "zip_crc32": "e5efe840",
+      "sha256": "48c1a8f9ff5971937a42f7049fb12fe6364c6cf20369e451aa64bbabf385f4aa",
+      "git_blob": "61c4a1edaacb97f712a51237793ed0b74800870e",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/plant_parts-start.png",
+      "bytes": 350824,
+      "compressed_bytes": 348845,
+      "zip_crc32": "095f7edb",
+      "sha256": "c1baef37292fdf9911377833c0de6561214d691d69d55651b31c7a43a6207326",
+      "git_blob": "7e507b01cd345ef910129d08f3f2390a3228126d",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/subtract_ten-complete.png",
+      "bytes": 357989,
+      "compressed_bytes": 356538,
+      "zip_crc32": "88e460f2",
+      "sha256": "186a15fd5fe718b2f00b924ac0730820e6e654956c1addfa61a7e9b57b8d00ba",
+      "git_blob": "6959279d523317138ba60babacda70f2efa8dc0d",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/subtract_ten-start.png",
+      "bytes": 348921,
+      "compressed_bytes": 347245,
+      "zip_crc32": "6abcf26c",
+      "sha256": "80b7c6dba3603378800c292d804179f7ff1a98d6f5bcbbae3ff995351a96c592",
+      "git_blob": "ad8b943ed4a7d13ed1d7e36569481bc60e74ce68",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/syllables-complete.png",
+      "bytes": 331920,
+      "compressed_bytes": 329962,
+      "zip_crc32": "85b2aafc",
+      "sha256": "b8e3f46d48120761edf2fba71cf1f83dc9bba67f7e4e83edbe1f9cf807f11c27",
+      "git_blob": "d2088c5d10c6e91bc86b94894cf9ed6f254c95f0",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/learning/syllables-start.png",
+      "bytes": 322084,
+      "compressed_bytes": 320524,
+      "zip_crc32": "407c7f2b",
+      "sha256": "9bd464681be73f59a089375ab95b05dc9203946666ae6e04b4f63741baa5e9ac",
+      "git_blob": "fc33e32d72affd9d228203a0a787da93f76380f5",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/captures.json",
+      "bytes": 10018,
+      "compressed_bytes": 674,
+      "zip_crc32": "75881ea6",
+      "sha256": "0d50806be4be8f72c691659e253768ae4932cad1aa3096e7f0027efbc153f7cf",
+      "git_blob": "d34255cdd8a50b2a5a81740f3726c35de71114a3"
+    },
+    {
+      "path": "discovery/captures/wonder/current-hundreds-phone-complete.png",
+      "bytes": 149617,
+      "compressed_bytes": 148969,
+      "zip_crc32": "163dd308",
+      "sha256": "d713a5780fde893a9c3c0c4eaefffa09b69739d63a23eb567cc9bf04765a8286",
+      "git_blob": "8dccb6c9b75df4b2002a7fdfc9629f5bc1c6e84a",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-hundreds-phone-start.png",
+      "bytes": 146569,
+      "compressed_bytes": 146192,
+      "zip_crc32": "4c029deb",
+      "sha256": "081d01c599541be88fee4b5082ec56c3b797369312c9af43797a2fa8d48eddcc",
+      "git_blob": "8d48b44cf081d0ba7ecccf70bd00fbe354b1e7c1",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-numbers-complete-1280x720.png",
+      "bytes": 359803,
+      "compressed_bytes": 358311,
+      "zip_crc32": "c9cdabe9",
+      "sha256": "7b6c764e769aeef10d5395444871984a59bd228e0c61f7ac38956daaa6a397ab",
+      "git_blob": "01c12e908ddbe41982d6a5b6e0d0eb025352a695",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-numbers-complete-412x915.png",
+      "bytes": 144204,
+      "compressed_bytes": 143536,
+      "zip_crc32": "5de0ee23",
+      "sha256": "962634f012b10c172eead7c0302c2b57e8c9084ca41ace789c51e5280348c9e8",
+      "git_blob": "efeabdcf9d87f93e9d7569c2ee6a106900f2b4f6",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-numbers-one-step-1280x720.png",
+      "bytes": 349727,
+      "compressed_bytes": 348305,
+      "zip_crc32": "e5676633",
+      "sha256": "cd9fe65a73149dc6cabc684b454b99ce2f94e1f70d0af60b9fbfed3806c0960b",
+      "git_blob": "c77964ea6ca7dd639192c9862c322f9b0feec55d",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-numbers-start-1280x720.png",
+      "bytes": 346738,
+      "compressed_bytes": 345252,
+      "zip_crc32": "dbdc5876",
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-numbers-start-412x915.png",
+      "bytes": 139598,
+      "compressed_bytes": 139101,
+      "zip_crc32": "b0bc137d",
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-plant_parts-complete.png",
+      "bytes": 369395,
+      "compressed_bytes": 367691,
+      "zip_crc32": "7a17d9d1",
+      "sha256": "4a884534a30245646d04c30ace1f44dd12429ffc56bfe56cb9725c303b34745b",
+      "git_blob": "82154fef0530b0fd2a36539ecb5d8441e308070c",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-plant_parts-start.png",
+      "bytes": 350824,
+      "compressed_bytes": 348845,
+      "zip_crc32": "095f7edb",
+      "sha256": "c1baef37292fdf9911377833c0de6561214d691d69d55651b31c7a43a6207326",
+      "git_blob": "7e507b01cd345ef910129d08f3f2390a3228126d",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-syllables-complete.png",
+      "bytes": 331917,
+      "compressed_bytes": 329960,
+      "zip_crc32": "ceb1e6a2",
+      "sha256": "c0dd74767241c0dac43e09d1e0b07ff049736e0ed7277b92692783126e6090e4",
+      "git_blob": "f2ddc6054c12fdb961fd0f2e3ee348e851bce222",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/captures/wonder/current-syllables-start.png",
+      "bytes": 322083,
+      "compressed_bytes": 320501,
+      "zip_crc32": "dc72b480",
+      "sha256": "29d040d47db0a127405be702fdb2486f88147b36c544c579a18e60fa1065661b",
+      "git_blob": "9c3bf53600a14d1f816feeaa643fd927fb299079",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "discovery/discovery-connections.json",
+      "bytes": 7833,
+      "compressed_bytes": 1747,
+      "zip_crc32": "a1395ec5",
+      "sha256": "896e9d5b48c41dd9ba94e39bb6635572305b315b3a9c974eb7a03745ab1b88bb",
+      "git_blob": "8967053ea12b543cf0821e5801618c5a9be8a0ad"
+    },
+    {
+      "path": "discovery/evidence-checker-tests.log",
+      "bytes": 111,
+      "compressed_bytes": 38,
+      "zip_crc32": "20b5cd1c",
+      "sha256": "f9d423b9ea467b012ab78459e5706a04bbbb6e93c8e50379a3f48fa790d50040",
+      "git_blob": "8fb5ac9933ea3ce2ff50007a437257d6ac72706d"
+    },
+    {
+      "path": "discovery/game_hub_magic_capture-rendered.log",
+      "bytes": 1300,
+      "compressed_bytes": 747,
+      "zip_crc32": "9016a643",
+      "sha256": "aed3c1931aee8b507f8f4e262536b35cf2e650f019b13d5512835e9f92d9c990",
+      "git_blob": "1ffd931f0011a3e18a877a3496975db1b6be362d"
+    },
+    {
+      "path": "discovery/game_hub_magic_regression-headless.log",
+      "bytes": 1331,
+      "compressed_bytes": 740,
+      "zip_crc32": "d9658a1c",
+      "sha256": "6e1dc4e4250650c83ce344bf93e9d3ba2bf227925e837f6aec2ed9eb3fed9427",
+      "git_blob": "46c336c5528f770216224855309e219cfac4e17c"
+    },
+    {
+      "path": "discovery/learning_sharing_regression-headless.log",
+      "bytes": 1482,
+      "compressed_bytes": 495,
+      "zip_crc32": "ffa60be0",
+      "sha256": "c97f5e3de4f7f795e626defb0a18c239c8f06d0e13198e802d1fb5ac8804d340",
+      "git_blob": "732d54f13499cd10ebc00935e394aac578658904"
+    },
+    {
+      "path": "discovery/learning_studio_regression-headless.log",
+      "bytes": 1805,
+      "compressed_bytes": 602,
+      "zip_crc32": "6755f869",
+      "sha256": "bf54a175b9ceb89caf12f2268be19f6766169138d7ae4bfc5b633e377b522343",
+      "git_blob": "30c7b738433cfa79bb22bb89dba214e5ca98e654"
+    },
+    {
+      "path": "discovery/learning_wonder_details_capture-rendered.log",
+      "bytes": 3163,
+      "compressed_bytes": 956,
+      "zip_crc32": "c296826b",
+      "sha256": "75dbe833a9b9358b2bda4d794aaed06080cd932d957f88ec4166d257589feb9b",
+      "git_blob": "1b57aa17a8bd5099ec783f63dde584015a298d0e"
+    },
+    {
+      "path": "discovery/learning_wonder_details_regression-headless.log",
+      "bytes": 3912,
+      "compressed_bytes": 734,
+      "zip_crc32": "9a7daa2f",
+      "sha256": "9db3390e61fd064beb771774ff77319daad0ca2880631988ebe1d2878875ae42",
+      "git_blob": "3756c768b8fb5eaf06a32713fa6fe2536bc0bd98"
+    },
+    {
+      "path": "discovery/learning_wonder_details_regression-rendered.log",
+      "bytes": 4553,
+      "compressed_bytes": 1068,
+      "zip_crc32": "bfa3df90",
+      "sha256": "0e149d618147faaf6db8be2cf656483a306c91d0ecf288a9fafefbc6a4de9b9b",
+      "git_blob": "9dd9605cdabe163b4c15f4c45e7c2820c938642f"
+    },
+    {
+      "path": "discovery/learning_world_capture-rendered.log",
+      "bytes": 8471,
+      "compressed_bytes": 1511,
+      "zip_crc32": "14705025",
+      "sha256": "24d306c3e3e7421db0c23d7dd0bd4c21ecbf6b15734453683dfba6444e631c54",
+      "git_blob": "4d69a730591612d7803b4ba697fd34440f6d2323"
+    },
+    {
+      "path": "discovery/learning_world_regression-headless.log",
+      "bytes": 10599,
+      "compressed_bytes": 1158,
+      "zip_crc32": "adb79977",
+      "sha256": "4e500ed41f1c9bee1b586b2141e4c7646f660b8dcb5da8311db95babab7ca1cb",
+      "git_blob": "01f4eeb866daca9984822b21a7135da890d60efb"
+    },
+    {
+      "path": "discovery/village_host_launch_regression-headless.log",
+      "bytes": 1641,
+      "compressed_bytes": 657,
+      "zip_crc32": "52bd97b1",
+      "sha256": "440796a5357d7f7e17c1511c3a4f3bc1b0f0e50bddd10f1e07effb708ea9987c",
+      "git_blob": "904bb871432b11a43b8b396b563b3765e1aa0bd5"
+    },
+    {
+      "path": "dream-runner.log",
+      "bytes": 5511,
+      "compressed_bytes": 1039,
+      "zip_crc32": "1b61f284",
+      "sha256": "d488703fa43cb0fd906d8bb6f6fc387c2ec53a3225e0b3036b3c5298e187ddcc",
+      "git_blob": "a699e305404155f80833ee22660eeaa7a1c0fed1"
+    },
+    {
+      "path": "dream-verifier-original.py",
+      "bytes": 20254,
+      "compressed_bytes": 6102,
+      "zip_crc32": "173ff0d9",
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5"
+    },
+    {
+      "path": "dream/capture-root.txt",
+      "bytes": 66,
+      "compressed_bytes": 55,
+      "zip_crc32": "448a3846",
+      "sha256": "aa93b3c7464ff425688e15203874000632bf3f50147ea08dedae8e09f886c631",
+      "git_blob": "86b908ec2c699222728a20d3d0e8511ce360ab48"
+    },
+    {
+      "path": "dream/captures/garden/learning-dream-1280x720.png",
+      "bytes": 346738,
+      "compressed_bytes": 345252,
+      "zip_crc32": "dbdc5876",
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "dream/captures/garden/learning-dream-2400x1080.png",
+      "bytes": 614391,
+      "compressed_bytes": 604954,
+      "zip_crc32": "7eb38711",
+      "sha256": "58de1dfada401700fda7edfdf160da1a2a64bfddc4dbe4f157c0078cde761ad3",
+      "git_blob": "c5486b3e4a402ce41bf73d5d88f589a9cbe9e131",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "dream/captures/garden/learning-dream-412x915.png",
+      "bytes": 139598,
+      "compressed_bytes": 139101,
+      "zip_crc32": "b0bc137d",
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "dream/captures/learning/learning.json",
+      "bytes": 848,
+      "compressed_bytes": 312,
+      "zip_crc32": "93f51bce",
+      "sha256": "e5823289442d615754eaef67c3a8f6fc13e4532c2fa0f7f8a95e9c50719dc639",
+      "git_blob": "1cf6f240d33d12f352bfd0befa9bd9e784dd123d"
+    },
+    {
+      "path": "dream/captures/learning/learning_00.png",
+      "bytes": 287549,
+      "compressed_bytes": 285835,
+      "zip_crc32": "b954c3ff",
+      "sha256": "f31b5ed96810d971a5b1f8b9869ad2ec43ecdfdda046496b6ba0d067bb858840",
+      "git_blob": "07e8df852cf635cb72d3d59259acba47df1fcdf7",
+      "png_dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "dream/captures/learning/learning_01.png",
+      "bytes": 288733,
+      "compressed_bytes": 286997,
+      "zip_crc32": "32ac03dc",
+      "sha256": "5c127d13f001ac9e7ccf147d2d5bf7b625809d76d0dcf33e17b93d668d67d4c6",
+      "git_blob": "8d77a2660e3d3e1550ce6f36e979a3245ea56520",
+      "png_dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "dream/captures/treasure/treasure.json",
+      "bytes": 844,
+      "compressed_bytes": 315,
+      "zip_crc32": "e81be3fe",
+      "sha256": "98890e629aa52fffbd0de561e61e8ea9e4987b14e2400e3540f4a8f156f8b1fa",
+      "git_blob": "fc11411a2a7d60eeba360e9d9ebbd7e7332b67b7"
+    },
+    {
+      "path": "dream/captures/treasure/treasure_00.png",
+      "bytes": 1138454,
+      "compressed_bytes": 1138792,
+      "zip_crc32": "5395bb2e",
+      "sha256": "4b5fc9433f76d8a0d397dee3088a124a2f0d9b6902f718db365a85d44b8dc6f6",
+      "git_blob": "4a4bc4552c6f25e1e706e8cffac0ad7601ae3b63",
+      "png_dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "dream/captures/treasure/treasure_01.png",
+      "bytes": 1137652,
+      "compressed_bytes": 1138002,
+      "zip_crc32": "171b84e6",
+      "sha256": "3d0d983220e4d7e590bd1b11e2eb3c78ab1db297f8bfb66bf6d2648573f2b36e",
+      "git_blob": "4a9bc801cac5b5d70ccf3b38d070f17d4d808870",
+      "png_dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "dream/dream-images.json",
+      "bytes": 6414,
+      "compressed_bytes": 1919,
+      "zip_crc32": "f7258616",
+      "sha256": "f6ab9a0d73d06dcbe3edadea1689393abb9522071516a244fea5608f8f272d45",
+      "git_blob": "a1b4b59a5068a829ec2bbdbdb0c3cfa3eaebdeb5"
+    },
+    {
+      "path": "dream/dream_garden_capture-rendered.log",
+      "bytes": 1628,
+      "compressed_bytes": 797,
+      "zip_crc32": "309e8c12",
+      "sha256": "9dfa1a5d62d03e6e39faa1e54562a7724477bf8e912db83138b7d2281c59c9ff",
+      "git_blob": "2a732c46247d16af42e0152b755008e4378d0d2c"
+    },
+    {
+      "path": "dream/dream_garden_props_regression-headless.log",
+      "bytes": 505,
+      "compressed_bytes": 351,
+      "zip_crc32": "548fe0e9",
+      "sha256": "bbfcbd97e786dad12bb49ebf8a088d2b7e0c6a1a834e413c018c0c8c52c5013f",
+      "git_blob": "df3496e441a6e21488595c33fc2a66510dba7801"
+    },
+    {
+      "path": "dream/engine.txt",
+      "bytes": 32,
+      "compressed_bytes": 34,
+      "zip_crc32": "12281f13",
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f",
+      "git_blob": "24277fd09e8cc7154517b66aab4e8bef52babb7e"
+    },
+    {
+      "path": "dream/lumo_dream_ambience_capture-rendered-learning.log",
+      "bytes": 1284,
+      "compressed_bytes": 746,
+      "zip_crc32": "d8a2cce7",
+      "sha256": "bb760e4265fbfa978562ad3f11c40e45e935cefd439568c6700b4875d38c11db",
+      "git_blob": "7b262fe5ae406a13e4ee086a38dd046d2860e691"
+    },
+    {
+      "path": "dream/lumo_dream_ambience_capture-rendered-treasure.log",
+      "bytes": 1284,
+      "compressed_bytes": 747,
+      "zip_crc32": "eedc3cc4",
+      "sha256": "8e1bfaf37e62a9a3f14cad6ad852caa789a93e0067a05278774d44bc73be4c4c",
+      "git_blob": "c28444ee86ac2e1f1d2df8d05bdda6c068fc7e2a"
+    },
+    {
+      "path": "dream/lumo_dream_ambience_regression-headless.log",
+      "bytes": 593,
+      "compressed_bytes": 363,
+      "zip_crc32": "3d52128c",
+      "sha256": "0e06fbe26cc4fab495f303f614749b1164b2ea673a17c70ee7a38f2b18600709",
+      "git_blob": "5a204508af13e9ab0106b3b59931bac4be8b20ed"
+    },
+    {
+      "path": "dream/results.tsv",
+      "bytes": 244,
+      "compressed_bytes": 108,
+      "zip_crc32": "7917e572",
+      "sha256": "e13332961fe89a044b7b25aff2408199425dbf9935be79ffca222f214442a169",
+      "git_blob": "03d9d027d45a2fc1610e35db1c1186bd8f39c943"
+    },
+    {
+      "path": "dream/source-dirty-after.txt",
+      "bytes": 0,
+      "compressed_bytes": 2,
+      "zip_crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "dream/source-dirty.txt",
+      "bytes": 0,
+      "compressed_bytes": 2,
+      "zip_crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "dream/source-inventory-after.json",
+      "bytes": 1922588,
+      "compressed_bytes": 363967,
+      "zip_crc32": "f36cbd4b",
+      "sha256": "d5fc7bcebe6561b413b85e3c0c52d3c165412e01df29e22960688c37b18ac7f8",
+      "git_blob": "b561284a122364ec016a1d8ef9df71373348ddf0"
+    },
+    {
+      "path": "dream/source-inventory-before.json",
+      "bytes": 1922588,
+      "compressed_bytes": 363967,
+      "zip_crc32": "f36cbd4b",
+      "sha256": "d5fc7bcebe6561b413b85e3c0c52d3c165412e01df29e22960688c37b18ac7f8",
+      "git_blob": "b561284a122364ec016a1d8ef9df71373348ddf0"
+    },
+    {
+      "path": "dream/source-sha-after.txt",
+      "bytes": 41,
+      "compressed_bytes": 41,
+      "zip_crc32": "7ef88f56",
+      "sha256": "d0a09fa076dc0f9c7db7dae2c693ad843176312371e712fc3343d38d34bc25c2",
+      "git_blob": "74b78e2390fd6fbcea08f926b52f12b10b3dd7a8"
+    },
+    {
+      "path": "dream/source-sha.txt",
+      "bytes": 41,
+      "compressed_bytes": 41,
+      "zip_crc32": "7ef88f56",
+      "sha256": "d0a09fa076dc0f9c7db7dae2c693ad843176312371e712fc3343d38d34bc25c2",
+      "git_blob": "74b78e2390fd6fbcea08f926b52f12b10b3dd7a8"
+    },
+    {
+      "path": "dream/source-tree-after.txt",
+      "bytes": 41,
+      "compressed_bytes": 41,
+      "zip_crc32": "1617cec9",
+      "sha256": "7ce9a8f7736baeb67a5c3b71fc112cf3d1466bed85e4b13fb5f9e8056af9457d",
+      "git_blob": "5964638bbdd6016672e192d5b9fd0ac1f7e2ccfd"
+    },
+    {
+      "path": "dream/source-tree.txt",
+      "bytes": 41,
+      "compressed_bytes": 41,
+      "zip_crc32": "1617cec9",
+      "sha256": "7ce9a8f7736baeb67a5c3b71fc112cf3d1466bed85e4b13fb5f9e8056af9457d",
+      "git_blob": "5964638bbdd6016672e192d5b9fd0ac1f7e2ccfd"
+    },
+    {
+      "path": "legacy-gameplay.log",
+      "bytes": 222497,
+      "compressed_bytes": 20923,
+      "zip_crc32": "7d917217",
+      "sha256": "918ab66be377cf60db11e7e43179f1ef8eaf5fb57fde13a6ed26f855b4a9ff2e",
+      "git_blob": "986506924f2beba6f4ba506d63ef75d0592d7ae7"
+    },
+    {
+      "path": "live-runner.log",
+      "bytes": 8683,
+      "compressed_bytes": 1125,
+      "zip_crc32": "c8516738",
+      "sha256": "cd77286f425c40a81cf4afc46f7559a4905a924f5fd8846a81857306b6b2b957",
+      "git_blob": "ca177797b46b5574bd5476f477644387d93f6467"
+    },
+    {
+      "path": "live/captures/garden/learning-dream-1280x720.png",
+      "bytes": 346738,
+      "compressed_bytes": 345252,
+      "zip_crc32": "dbdc5876",
+      "sha256": "ae2aea3e664cb92354505de68457135409b7d7c35c46b0cb6dd641b85c1318e5",
+      "git_blob": "e07e50053314da3aa031c279b9ff375fbae28477",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "live/captures/garden/learning-dream-2400x1080.png",
+      "bytes": 614391,
+      "compressed_bytes": 604954,
+      "zip_crc32": "7eb38711",
+      "sha256": "58de1dfada401700fda7edfdf160da1a2a64bfddc4dbe4f157c0078cde761ad3",
+      "git_blob": "c5486b3e4a402ce41bf73d5d88f589a9cbe9e131",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "live/captures/garden/learning-dream-412x915.png",
+      "bytes": 139598,
+      "compressed_bytes": 139101,
+      "zip_crc32": "b0bc137d",
+      "sha256": "cc267aea99c4152e6c300331a6527ef9b8fdaf9b867e5c6f32c20313d4f8db06",
+      "git_blob": "d341e5b725eec41807a30d1ce344784a67938cb5",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "live/captures/learning/learning.json",
+      "bytes": 856,
+      "compressed_bytes": 316,
+      "zip_crc32": "76aa594b",
+      "sha256": "532b6c05c7e7035d1739367fbe98a19357fab692d1428901af4d8c743528753f",
+      "git_blob": "25a7310433b27c8cd3894e98937b3a35c331b9db"
+    },
+    {
+      "path": "live/captures/learning/learning_00.png",
+      "bytes": 287479,
+      "compressed_bytes": 285770,
+      "zip_crc32": "d9022218",
+      "sha256": "9da2389d3ad4ba7c4c198f5b2a9ed2a434448c053091aa1bc57dd14bac42eeef",
+      "git_blob": "f1057c797dd3fc3aef80109ad11d121fbd1352ac",
+      "png_dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "live/captures/learning/learning_01.png",
+      "bytes": 288673,
+      "compressed_bytes": 286990,
+      "zip_crc32": "90144109",
+      "sha256": "e584d99ee753d3f1a575951043747fa5069f79de5e1fa5fb55ad7a8a83e424eb",
+      "git_blob": "97bc8e210b5e430a806082c04f32b7887123f4f2",
+      "png_dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "live/captures/treasure/treasure.json",
+      "bytes": 852,
+      "compressed_bytes": 319,
+      "zip_crc32": "56285431",
+      "sha256": "545ed47e266c3f8c4f7d60b1ee2def804891fc313ba6ca2a5339a56f4fb2e17f",
+      "git_blob": "fbd45a74204422c539181db149c62e7779de6c63"
+    },
+    {
+      "path": "live/captures/treasure/treasure_00.png",
+      "bytes": 1138533,
+      "compressed_bytes": 1138865,
+      "zip_crc32": "91e7d9e0",
+      "sha256": "490f55f96f452bf0b11db3a9fa2f405687ad42e00312d8ef38ab07184b325209",
+      "git_blob": "831a051142a4de5a7cbb0ce88a5f7f4fcd590e7b",
+      "png_dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "live/captures/treasure/treasure_01.png",
+      "bytes": 1137815,
+      "compressed_bytes": 1138165,
+      "zip_crc32": "421b346e",
+      "sha256": "b68e61495f2cf033e7c79cc25b02836a707e4d72ab47cf71c192b84271003268",
+      "git_blob": "fe781ffd2fe339540f9a5c70df56219e8217d7c7",
+      "png_dimensions": [
+        720,
+        1280
+      ]
+    },
+    {
+      "path": "live/connect_four_return_regression-headless.log",
+      "bytes": 502,
+      "compressed_bytes": 353,
+      "zip_crc32": "94a33c3a",
+      "sha256": "36628af105d3473a74d5ef10c9944827171bf538d328d421f70c38a75860813b",
+      "git_blob": "1d0b10826b2dafcd64dc7c01e214386668bb8b0d"
+    },
+    {
+      "path": "live/dream_garden_capture-rendered.log",
+      "bytes": 1623,
+      "compressed_bytes": 784,
+      "zip_crc32": "3903ed2b",
+      "sha256": "ef8eb178e902e58824a4b65cd447937f49e3d729178da53b676a321d5d24adaf",
+      "git_blob": "a3cec48a7b069c6f5dfe49432514d0aef0374bf9"
+    },
+    {
+      "path": "live/dream_garden_props_regression-headless.log",
+      "bytes": 503,
+      "compressed_bytes": 343,
+      "zip_crc32": "94d66e05",
+      "sha256": "2afd430b1038c7ae65a0619c43434b3bbb5a87ecec05a29adc1f8ba7350fb2c9",
+      "git_blob": "f5ff70612d2e3c77aa45bdca8ff46473d27cbfc9"
+    },
+    {
+      "path": "live/live-connections.json",
+      "bytes": 1516,
+      "compressed_bytes": 565,
+      "zip_crc32": "3e7b9fad",
+      "sha256": "4d40ceb934397aaa6afdc9cc57d65b9084be071d764138924895fae934029b1b",
+      "git_blob": "98b6fd4cd8f16d4c467378429a140d1162affddd"
+    },
+    {
+      "path": "live/lumo_dream_ambience_capture-rendered-learning.log",
+      "bytes": 1281,
+      "compressed_bytes": 733,
+      "zip_crc32": "aa07a61f",
+      "sha256": "2121db8a1b2ecfd82f25c8dc357b141a5093eecc3fb0b473d58df6aab4b118b4",
+      "git_blob": "dc20ab5091706d8337c53651d2960904996c5997"
+    },
+    {
+      "path": "live/lumo_dream_ambience_capture-rendered-treasure.log",
+      "bytes": 1281,
+      "compressed_bytes": 733,
+      "zip_crc32": "6ca3b2f7",
+      "sha256": "a9dde424c2d85cae0cae30d8caa614f65b567ff5af1e6bfe273267c53ca800b9",
+      "git_blob": "ceed0f876b1c3497ca52192923e47da12b54151f"
+    },
+    {
+      "path": "live/lumo_dream_ambience_regression-headless.log",
+      "bytes": 591,
+      "compressed_bytes": 355,
+      "zip_crc32": "275c11a7",
+      "sha256": "873423476517f7c38bd00db195128129cc3207a697f21ad85663f58f63c19c7d",
+      "git_blob": "f1376b38e04e94306d0fd2435f9fbbcb2894c690"
+    },
+    {
+      "path": "live/treasure_exploration_regression-headless.log",
+      "bytes": 587,
+      "compressed_bytes": 391,
+      "zip_crc32": "82cfd738",
+      "sha256": "f2037b73d817a1228d2e482133ab0aa74e08d0e048086cfa7f188affa6e6cdc1",
+      "git_blob": "481f272749259aca194cc9794f9593ac4f7c7434"
+    },
+    {
+      "path": "live/treasure_wisp_regression-headless.log",
+      "bytes": 497,
+      "compressed_bytes": 342,
+      "zip_crc32": "f5834139",
+      "sha256": "7aceacd05a9ac6925be6d73f02d8f797bf798d8c47fb7dc4a1e8894a1f45c41b",
+      "git_blob": "70cc87423904c5002f275bcafa38c461dd86fb18"
+    },
+    {
+      "path": "live/treasure_wisp_regression-rendered.log",
+      "bytes": 1144,
+      "compressed_bytes": 672,
+      "zip_crc32": "37a3454d",
+      "sha256": "05be237a8bed8bf75211054753f5cea971781eb9c0e42d521cab9cbe46b647b5",
+      "git_blob": "259a66e778204856369eac5c6890b7aba15140f4"
+    },
+    {
+      "path": "nextgen-runner.log",
+      "bytes": 123985,
+      "compressed_bytes": 12338,
+      "zip_crc32": "228240d5",
+      "sha256": "a6dbbd258d235941df8e5fcd16c2dc834e1df70d342675238ff8ce694326d1bd",
+      "git_blob": "02e8c69841d6b4f18a66b30312d498d3563d6960"
+    },
+    {
+      "path": "nextgen/bauwelt_identity_2013_regression-headless.log",
+      "bytes": 586,
+      "compressed_bytes": 402,
+      "zip_crc32": "758e6af1",
+      "sha256": "43460fe46162fb0a1f96253f6dd8be84d96f7ba7ed80efc91a16358ee0b7b886",
+      "git_blob": "de5ae7a33ce27ca13aa7ea5bc2b6a4f0f4b0daf0"
+    },
+    {
+      "path": "nextgen/build_frontier_regression-headless.log",
+      "bytes": 617,
+      "compressed_bytes": 417,
+      "zip_crc32": "3570cd6d",
+      "sha256": "308eaa91651df8283c82cb991ff6e0421a37a5b0f06e8ed4bf6d3c3deede910b",
+      "git_blob": "62b304c84cdec71cf36ebe3ff70aa9dd3253a351"
+    },
+    {
+      "path": "nextgen/build_nextgen_play_regression-headless.log",
+      "bytes": 687,
+      "compressed_bytes": 460,
+      "zip_crc32": "febea551",
+      "sha256": "2c8f4beab40d012483a875b7471f3a4f10c8306575d2e9afc9349d47dd5cc654",
+      "git_blob": "0c956e3d796ca6dd2810db4de9577c3d4b3c23e6"
+    },
+    {
+      "path": "nextgen/build_nextgen_play_regression-rendered.log",
+      "bytes": 1334,
+      "compressed_bytes": 797,
+      "zip_crc32": "64209f67",
+      "sha256": "3eda2ac6efeeea1a14bc39ab8cb3492c64a1fd5d9375187811182a4c34c1cff6",
+      "git_blob": "ecebcfafeda02f7e6b995601aad401182117e513"
+    },
+    {
+      "path": "nextgen/build_settlement_play_regression-headless.log",
+      "bytes": 2069,
+      "compressed_bytes": 613,
+      "zip_crc32": "0bacb639",
+      "sha256": "bddad00b5183a4e10a69a2b12daefdf519c1f5daeb65a2912fb181d1f561bf9a",
+      "git_blob": "83fe16fae0f5691b51308a0175fffd0deb966e18"
+    },
+    {
+      "path": "nextgen/build_settlement_play_regression-rendered.log",
+      "bytes": 2716,
+      "compressed_bytes": 947,
+      "zip_crc32": "5d3181d6",
+      "sha256": "5f9ca1025869eebb8b63d7de734663cdddcac05a5e1541af94dbf566b5264127",
+      "git_blob": "c66d375adf85f5171807c73c28140d4639d531e1"
+    },
+    {
+      "path": "nextgen/build_settlement_regression-headless.log",
+      "bytes": 537,
+      "compressed_bytes": 371,
+      "zip_crc32": "0b89464f",
+      "sha256": "faa89fbcc8f29a9f1ad7e1bfbe13a0f2e12daef573c4502bc6b178c1e8fb5e09",
+      "git_blob": "f7e7d5d85bdf778f34511d2e3429d9142742fdd7"
+    },
+    {
+      "path": "nextgen/build_transform_regression-headless.log",
+      "bytes": 565,
+      "compressed_bytes": 389,
+      "zip_crc32": "c0b76907",
+      "sha256": "3cab191ff67916f9cc576d136303b98f46ba5079b32c3c4a93fd93c5192ce993",
+      "git_blob": "a809519d49f229db2485e4cb3cecc9c027e3d7de"
+    },
+    {
+      "path": "nextgen/build_village_art_regression-headless.log",
+      "bytes": 507,
+      "compressed_bytes": 352,
+      "zip_crc32": "48e2ca8e",
+      "sha256": "7cd0e559889ced1ae6133b57d3279d5281d1d0dd086f8415338c9ebfedf528f8",
+      "git_blob": "a5320694e1fce243c76f850b306aa0f20c1b8582"
+    },
+    {
+      "path": "nextgen/build_village_economy_regression-headless.log",
+      "bytes": 628,
+      "compressed_bytes": 416,
+      "zip_crc32": "9da4228b",
+      "sha256": "54d5d0caa2d8d20a57ec8e7e6a3eadddf6331f19c4b7273acf1b5588546c26fb",
+      "git_blob": "58cd37e6ad7286d4ba78574e20c0951a55aac4a9"
+    },
+    {
+      "path": "nextgen/build_village_scene_regression-headless.log",
+      "bytes": 1618,
+      "compressed_bytes": 647,
+      "zip_crc32": "eb8a550d",
+      "sha256": "909f4ac47fbf7dbb8e2db379aed07ea1527d6c1d9d92e3a48078bd1bc27e732d",
+      "git_blob": "5f7e40418d0a51828319a91053dcfbe6ea516e35"
+    },
+    {
+      "path": "nextgen/build_village_scene_regression-rendered.log",
+      "bytes": 2265,
+      "compressed_bytes": 978,
+      "zip_crc32": "28f90f29",
+      "sha256": "845b8093e74e08fa0fe052a2cd5fad24f6c62f7dd09c86c3675f02a4f02d3262",
+      "git_blob": "dcf553ae2c49ec1267ae19cdc7a80870416e8319"
+    },
+    {
+      "path": "nextgen/captures/build_village_scene_regression/village-chapters-412x915.png",
+      "bytes": 232402,
+      "compressed_bytes": 231664,
+      "zip_crc32": "dcf75efa",
+      "sha256": "1a3635a5eeaa89c925cd466eff84b282795b53514cdb969ded2e1c1c1db2f268",
+      "git_blob": "f74ca79db7f5994267cd4a32f1e4ca7520b096b1",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_village_scene_regression/village-overview-1280x720.png",
+      "bytes": 1006298,
+      "compressed_bytes": 1006418,
+      "zip_crc32": "fcb3dd0e",
+      "sha256": "87d87ea54b870dcbe12ce9d661b7fe298208f9f15dc969a93b49121a890a7e9e",
+      "git_blob": "60bc30c38f246dc125959815b3eafe42f4fd6180",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_village_scene_regression/village-touch-targets.json",
+      "bytes": 7151,
+      "compressed_bytes": 927,
+      "zip_crc32": "d3b39c15",
+      "sha256": "ddd4a05543b69e117f22d60d457792f8d8a242780447301059fd9e7b361aebf5",
+      "git_blob": "14e178a7a118b4acf4fc0631a8457042f88970c4"
+    },
+    {
+      "path": "nextgen/captures/build_village_scene_regression/village-trader-2176x1812.png",
+      "bytes": 2347987,
+      "compressed_bytes": 2333355,
+      "zip_crc32": "c854ef0b",
+      "sha256": "364b85e65b1cad319bfd7a5943fece6a3f4c56854d152e54128fa0a2174191ed",
+      "git_blob": "31e62e9abff20565d1cbd584eab98350573c1e9a",
+      "png_dimensions": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "path": "nextgen/captures/build_village_scene_regression/village-treasury-640x360.png",
+      "bytes": 97278,
+      "compressed_bytes": 96454,
+      "zip_crc32": "86ef53d5",
+      "sha256": "49bdbdb6d1c1ca886b117bc6ddff9319ee3044592a81412cde6a7950ab45ae2b",
+      "git_blob": "afd07040fe5d7e69c3ed8b5bb6d00bfbb36f9bb0",
+      "png_dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/cards_safe_area_regression/android35_portrait-paused.layout.json",
+      "bytes": 1277,
+      "compressed_bytes": 541,
+      "zip_crc32": "f7f6aada",
+      "sha256": "0881def0dca09e23e8729878914d43d08896545a9b0b6a5c1a3c16e3ce36c07f",
+      "git_blob": "fa078661c675e1555414b983bfb3848e8abdeee5"
+    },
+    {
+      "path": "nextgen/captures/cards_safe_area_regression/android35_portrait-paused.png",
+      "bytes": 1141701,
+      "compressed_bytes": 1139555,
+      "zip_crc32": "6635d933",
+      "sha256": "bc1a5465f83736f8c0db00a7188075a02503f6d33eecaf58e2ece62d813e1a45",
+      "git_blob": "63b97a082c335a66f44707415175c22353495158",
+      "png_dimensions": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "path": "nextgen/captures/cards_safe_area_regression/android35_portrait-playing.layout.json",
+      "bytes": 1277,
+      "compressed_bytes": 545,
+      "zip_crc32": "9825694b",
+      "sha256": "534aa0ed163a1a877c4ad04fb1d3c4079cb5d1a0939d98a98bce694cd07e3c4e",
+      "git_blob": "a1a053e5992b803a8f9b77460e5c869ac41c9b39"
+    },
+    {
+      "path": "nextgen/captures/cards_safe_area_regression/android35_portrait-playing.png",
+      "bytes": 1272865,
+      "compressed_bytes": 1272010,
+      "zip_crc32": "60cdb404",
+      "sha256": "ae53121f34679850bd86163c6a1f3245accd8369710cd5815efd7a6c12145a8d",
+      "git_blob": "af10b0a63a693d4096eef2614feec42c1ba33e0a",
+      "png_dimensions": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "path": "nextgen/captures/cards_safe_area_regression/cards-safe-area.json",
+      "bytes": 67395,
+      "compressed_bytes": 4788,
+      "zip_crc32": "37367c7a",
+      "sha256": "2e5a0f6c7453565d1396d63fd4f5c0360352fb6596f2ef20ece82ae4c6394b2c",
+      "git_blob": "677b7eb806a28cec79f9c19b779b1b1557f5c293"
+    },
+    {
+      "path": "nextgen/captures/cards_safe_area_regression/landscape_cutout_fixture-playing.layout.json",
+      "bytes": 1956,
+      "compressed_bytes": 673,
+      "zip_crc32": "9dd1a8cc",
+      "sha256": "483ea771ea179dcb2eb30f2745090349e18649a1f3cb07b6e6d81843027fa46b",
+      "git_blob": "56e9766341adb348a65743a086b5ffcbc9f3b06c"
+    },
+    {
+      "path": "nextgen/captures/cards_safe_area_regression/landscape_cutout_fixture-playing.png",
+      "bytes": 1002653,
+      "compressed_bytes": 999342,
+      "zip_crc32": "631cb7b9",
+      "sha256": "e97b23764222326565d07e46023869467c2333861c4f9e19223a9b6eaf4fb93b",
+      "git_blob": "fd58805253ac462cfceabd430c1a6dc7b3d1218b",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/cards_table_capture/cards-render.json",
+      "bytes": 822,
+      "compressed_bytes": 321,
+      "zip_crc32": "02166a65",
+      "sha256": "2e589cfb223c58235c7f2fa094d21b32fb1c432e81dec02f117398dafe916fac",
+      "git_blob": "ad30a9caf6f61597777b468c869bd85acefa4869"
+    },
+    {
+      "path": "nextgen/captures/connect_four_visual_capture/c4-empty-landscape.png",
+      "bytes": 82092,
+      "compressed_bytes": 80592,
+      "zip_crc32": "93e3de8a",
+      "sha256": "168d6a214a5f90ab75e669205439146fd33e265c004ac159b10474f17e91159a",
+      "git_blob": "32961c1ebcce6f55b8c1640417a491ddc19a56f0",
+      "png_dimensions": [
+        960,
+        540
+      ]
+    },
+    {
+      "path": "nextgen/captures/connect_four_visual_capture/c4-paused-small.png",
+      "bytes": 29411,
+      "compressed_bytes": 28378,
+      "zip_crc32": "3a9d0686",
+      "sha256": "502a673e160d5a9f3f95883ddf1e259f568819de67731340681d2666d7282195",
+      "git_blob": "7806e7f57e122d27342bbd6342325cf96b96ef55",
+      "png_dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/connect_four_visual_capture/c4-playing-phone.png",
+      "bytes": 67672,
+      "compressed_bytes": 65112,
+      "zip_crc32": "fc4542aa",
+      "sha256": "332d15a61e7eb1e93cbc49f9fedaa7b1e67f985b1d0fd9f97334a093678fbe6c",
+      "git_blob": "93f1122761f944ff0ec85829d666dea0fc491cc0",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/connect_four_visual_capture/c4-win-landscape.png",
+      "bytes": 83733,
+      "compressed_bytes": 82215,
+      "zip_crc32": "a80de4a9",
+      "sha256": "755ed7f8a64af3215f65e315c3bf68df8cc1571b959ec224983194f53eb69e32",
+      "git_blob": "8a7ac510eb6dbf8a860c3b00f2164737fc2ccb29",
+      "png_dimensions": [
+        960,
+        540
+      ]
+    },
+    {
+      "path": "nextgen/captures/connect_four_visual_capture/visual-state.json",
+      "bytes": 172226,
+      "compressed_bytes": 22581,
+      "zip_crc32": "3cb539ba",
+      "sha256": "3ada2ff4cc37bda38a5d560c4628ddad63fbb6bec7fa22160d99d0026bcb23c1",
+      "git_blob": "16bda2fa62bfac78748ea20bb3c4c45d2916d477"
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump-nextgen-evidence.json",
+      "bytes": 4933,
+      "compressed_bytes": 679,
+      "zip_crc32": "0b07acc9",
+      "sha256": "1b1ea5fcae695f47b1a3ebf112eee3bb7f57669c53c649aba0b93b9d018a9730",
+      "git_blob": "103a1291d7c71427f863ee2a8b7945528bce7b92"
+    },
+    {
+      "path": "nextgen/captures/jump_nextgen_capture/jump_1280x720_ready.png",
+      "bytes": 753443,
+      "compressed_bytes": 753598,
+      "zip_crc32": "cb3a9393",
+      "sha256": "c9b742bb31da8f8572c2b7e535e91ce0055f46a91798ac3e567c5061080f82ba",
+      "git_blob": "ae7275da3eed342488589a1d8d19aca8f477eba5",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/kart_nextgen_garage_regression/capture.json",
+      "bytes": 2521,
+      "compressed_bytes": 350,
+      "zip_crc32": "a044d68d",
+      "sha256": "4b1148672f44bd85775c0c26c88993306cfcd9670b85715bef35e6bcce60fad4",
+      "git_blob": "d2b16ab6d41e6535da72d7a6f58d2634fdedb65e"
+    },
+    {
+      "path": "nextgen/captures/kart_player_full_route_regression/player-route.json",
+      "bytes": 78215,
+      "compressed_bytes": 8191,
+      "zip_crc32": "4ef4fc6f",
+      "sha256": "b020b4ce128f9c3f0b79f1023b4bd05e542dd5529f521b27f888ccc41a5cdb51",
+      "git_blob": "35e8decbda8befb5a87ea7743a14cc03346a6ae2"
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/manifest.json",
+      "bytes": 1385,
+      "compressed_bytes": 298,
+      "zip_crc32": "c7be45cc",
+      "sha256": "05b76a8216362650075cd241071a42e98a509905b2dec5a24fd2bd09cf061bbf",
+      "git_blob": "665ea6657ccc0dc249b78b25ec5caa730d8a2e66"
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/sharing-complete-1280x720.png",
+      "bytes": 336577,
+      "compressed_bytes": 334736,
+      "zip_crc32": "a59d0cb8",
+      "sha256": "76ae1b6b5e80e4ad1bd9dce3a2b180616aba4b0197b1d83294c91d3f832bfd81",
+      "git_blob": "f444e6ce56f4887cc61b1d70efc82ac7fdc2335d",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/sharing-complete-412x915.png",
+      "bytes": 128451,
+      "compressed_bytes": 127245,
+      "zip_crc32": "cce9e7a9",
+      "sha256": "efcd02e26db87f530de6b1ac3a6f55276b1b5fb22b55cd52e69a6e71acf15661",
+      "git_blob": "18ed95f41957f892b3e79f2702e3295d1a1d691e",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/sharing-first-round-1280x720.png",
+      "bytes": 327988,
+      "compressed_bytes": 325998,
+      "zip_crc32": "7041ce0d",
+      "sha256": "f8ee7caaa158ad5a341f3ed79b8ea3a2eeee9eaffc8d31daaf4839a17b590bdb",
+      "git_blob": "c24181b4b6a23565f4888f6d6ee10963af582c23",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/sharing-first-round-412x915.png",
+      "bytes": 125294,
+      "compressed_bytes": 124430,
+      "zip_crc32": "41260376",
+      "sha256": "bbd90b9048f918edcb20b96b5f328e81204fbc2939d0ac82378d0ecc259c0321",
+      "git_blob": "c94b928c1694e76b1be7ddaa487ac21da2b68f91",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/sharing-start-1280x720.png",
+      "bytes": 322132,
+      "compressed_bytes": 320383,
+      "zip_crc32": "bab65eb1",
+      "sha256": "2de4239be4933e1e81ddd6d50980e3f6aca2a0133e066a40113fab80878065a1",
+      "git_blob": "aa85ebf7b417b5210814ad27f5c6e4ca707a4280",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/learning_sharing_capture/sharing-start-412x915.png",
+      "bytes": 120703,
+      "compressed_bytes": 119915,
+      "zip_crc32": "a1628999",
+      "sha256": "ac23382822e0a1b277ed1148180b25554e20342a3db84cf84c5f558947015787",
+      "git_blob": "60b1096aac7a606f33d44537bf0f03a8c32ad574",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/audio_jaw.png",
+      "bytes": 306763,
+      "compressed_bytes": 306447,
+      "zip_crc32": "99d3fa43",
+      "sha256": "0e4e25d2a434014a78a58e3168a0a2cea1f1eb4ae354860197649cdbd968e399",
+      "git_blob": "9877228fc74f9d5ef83bbf36482649f357245ee4",
+      "png_dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/blink.png",
+      "bytes": 301645,
+      "compressed_bytes": 301311,
+      "zip_crc32": "4aeaae69",
+      "sha256": "13cc217a29ae082a33f3fc886b5ff511ca94b9234f084b116e9a3e0b7f49bf64",
+      "git_blob": "e40a554ae5e0b15f65af5c3434f623fdd440c960",
+      "png_dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/blink_intermediate.png",
+      "bytes": 302869,
+      "compressed_bytes": 302515,
+      "zip_crc32": "35a4d875",
+      "sha256": "4b77f44d74202d872c3c294c0586917cbb9a430e0c2659565aab3701628f2a05",
+      "git_blob": "dbcc04129cf562688efbc697daa24e2ae05c1c95",
+      "png_dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/facial-runtime.avi",
+      "bytes": 7717126,
+      "compressed_bytes": 6080555,
+      "zip_crc32": "407419f7",
+      "sha256": "1f0d5bcf11c5b52154e44b74bc5fd1eda50c5574b156be76daae29d0acf7b7c0",
+      "git_blob": "fb70d1cadf856aa0ceeb0eb9583788e023112030"
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/facial-runtime.mp4",
+      "bytes": 1074432,
+      "compressed_bytes": 1070163,
+      "zip_crc32": "333c8eb5",
+      "sha256": "70a09162be85675161bd488346fb6c946e4a72ac78e2f1895f190ca4fa2eb5c9",
+      "git_blob": "47798d18245acb55f3d5477d1be9ced68dba5d55"
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/gaze_left.png",
+      "bytes": 295648,
+      "compressed_bytes": 295257,
+      "zip_crc32": "e58fd165",
+      "sha256": "4dcdfecc01d1d64f8327419b95ee0ace5914a37cc09e8d699dfe22158d7a8d51",
+      "git_blob": "321b4d98cf9d68d8918721ebf1af71dc69733ce6",
+      "png_dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/movie-decode.log",
+      "bytes": 0,
+      "compressed_bytes": 2,
+      "zip_crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/movie-encode.log",
+      "bytes": 6262,
+      "compressed_bytes": 2533,
+      "zip_crc32": "417c84ac",
+      "sha256": "4ae2936bfbca2851a626a31ee90d51f0e0744fe3fb3118ed0abff082622b670d",
+      "git_blob": "e53d6320588292dc702decb1461ce4abf09a737d"
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/movie-ffprobe-stderr.log",
+      "bytes": 0,
+      "compressed_bytes": 2,
+      "zip_crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/movie-ffprobe.json",
+      "bytes": 4564,
+      "compressed_bytes": 1144,
+      "zip_crc32": "b26be165",
+      "sha256": "1d8c9c58f4c45e35270b8cd7cfc74fb380a300ce83e78d4e8576fbdb65db3795",
+      "git_blob": "d215319da97e571f66a81b5e5a64cd30c56b8639"
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/movie.json",
+      "bytes": 1201,
+      "compressed_bytes": 529,
+      "zip_crc32": "8b632db0",
+      "sha256": "35d9da9b05f7926a3ab07cf225731409994f9d715c96d58444b5c20b6ef46295",
+      "git_blob": "be8f085e0ecb70a5323de9295874f32b2cd7075c"
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/muted.png",
+      "bytes": 303284,
+      "compressed_bytes": 302883,
+      "zip_crc32": "1fe8d4ab",
+      "sha256": "d856e49b331a8b42c0a877d6a5d234acfa7240c0d40427be59250fbb5437d27a",
+      "git_blob": "b55c91954833b2230d546ba5a87f220f9e8a9577",
+      "png_dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/neutral.png",
+      "bytes": 283369,
+      "compressed_bytes": 283047,
+      "zip_crc32": "faba08b9",
+      "sha256": "1a567ec18d7e17d136734ada25d49197892ea4300a12b7a4159956db89e7ad8b",
+      "git_blob": "db72ba4c0a959a8d3dd9ad338746a602f3edb899",
+      "png_dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/runtime-frames.json",
+      "bytes": 83168,
+      "compressed_bytes": 6126,
+      "zip_crc32": "e3a20976",
+      "sha256": "387e88b82304292e01a2dad27104da394a21d4507f5d245aeecee2563c6c31e3",
+      "git_blob": "471e2e633df635545f99270e1960eb5ba41ced2e"
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/stopped.png",
+      "bytes": 299919,
+      "compressed_bytes": 299567,
+      "zip_crc32": "31b4c6d0",
+      "sha256": "f58fa3e0e9ab84c0fd2f69138a429714b7a77933a08ba991657ef12b73b67c3c",
+      "git_blob": "df8b17c2fea2f36ef2782e9033bcca13ba252ae5",
+      "png_dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_facial_capture/teacher_scene.png",
+      "bytes": 116521,
+      "compressed_bytes": 115724,
+      "zip_crc32": "d8f41446",
+      "sha256": "734e318635eb6e296984ba48ecc09d2b74ec30533196d9baa2f058bc104a3dac",
+      "git_blob": "96c7ef3672a3dcb7a56ca9b7dc358e9ae8f09e5f",
+      "png_dimensions": [
+        640,
+        640
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/after_jump_rise.png",
+      "bytes": 229662,
+      "compressed_bytes": 229355,
+      "zip_crc32": "04d420c4",
+      "sha256": "3a16b54adfda3f134baefed9804d5534b5d401c07adfc9a3d14f52bbafc82238",
+      "git_blob": "89e83aa3812e65e532289209d6ba8a66239f8b98",
+      "png_dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/after_land.png",
+      "bytes": 232967,
+      "compressed_bytes": 232584,
+      "zip_crc32": "0478bf5b",
+      "sha256": "e0a3da89d35334abcc1e0eda77c58048c3423529aa02299c27547e3c4ade645b",
+      "git_blob": "362ca3b45bfc87388fcded923e968408bcd00cf5",
+      "png_dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/after_sprint.png",
+      "bytes": 226024,
+      "compressed_bytes": 225738,
+      "zip_crc32": "14732002",
+      "sha256": "3d43a78372c622ebac7abac15f5aae49b4ba4ee729aed3207f326a04a2ed0185",
+      "git_blob": "d022df91b5470ce975cc195a2513db9e373d6e55",
+      "png_dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/after_walk.png",
+      "bytes": 229796,
+      "compressed_bytes": 229450,
+      "zip_crc32": "07a071eb",
+      "sha256": "557393c69f428d8c6cc300fd1f25b49314823c8078982df95fb2678dc9990772",
+      "git_blob": "9de7668215cf74755a648868ed84be4b5a81c5c6",
+      "png_dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/before_jump_rise.png",
+      "bytes": 233672,
+      "compressed_bytes": 233346,
+      "zip_crc32": "9e13f464",
+      "sha256": "2dfe8f9b8dd52b7fa3243a15405d7ba7a0f2e3babc47a2a7a06959ceb8530d98",
+      "git_blob": "b4702696873cd94b5243d4298460ebac603f20b5",
+      "png_dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/before_land.png",
+      "bytes": 226564,
+      "compressed_bytes": 226195,
+      "zip_crc32": "af822bd9",
+      "sha256": "9b2040079dabdc3c39c26e1288b69ae727b5d7c363e2441cad1eb91b46c9f61d",
+      "git_blob": "2d3dc45dd0f3edfecd9419cf1c5fdb5ed9eac430",
+      "png_dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/before_sprint.png",
+      "bytes": 236265,
+      "compressed_bytes": 236063,
+      "zip_crc32": "83273c8e",
+      "sha256": "3a71643c2fa4fb5ad24714e9faea71c81250f1d855c16fb5066d75a8e0db048e",
+      "git_blob": "a349a29683e33f0dda2b6ee733e808004582df8a",
+      "png_dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/before_walk.png",
+      "bytes": 234896,
+      "compressed_bytes": 234677,
+      "zip_crc32": "a36d3dfb",
+      "sha256": "33acdddf1b1af9aeb8b5858f80b470b818450639857a677603afd08ba26b89a1",
+      "git_blob": "1ffe0491433b1b67e8c0ff9bdee6d2424a6b60a7",
+      "png_dimensions": [
+        720,
+        840
+      ]
+    },
+    {
+      "path": "nextgen/captures/lumo_studio_motion_capture/studio-motion-capture.json",
+      "bytes": 2206,
+      "compressed_bytes": 552,
+      "zip_crc32": "6f8eb36b",
+      "sha256": "126a697b87ba699266a101c1fb33bf0bd2b0aee1d16d913643883700dce2f061",
+      "git_blob": "4b54f41b2c6963dfd9b4bb1a31d67bbfba77d409"
+    },
+    {
+      "path": "nextgen/captures/mobile_safe_area_regression/build-landscape-cutout.png",
+      "bytes": 2486845,
+      "compressed_bytes": 2487387,
+      "zip_crc32": "0805b054",
+      "sha256": "9e88f92bf02ebf6eb372e84624df5cce9b148ab8ae016633e9e2db7234943cd4",
+      "git_blob": "b15d463c4fcab02811916f8c0d1b1e86670bfb4d",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/mobile_safe_area_regression/jump-landscape-cutout.png",
+      "bytes": 1854305,
+      "compressed_bytes": 1854353,
+      "zip_crc32": "f3e57ef0",
+      "sha256": "5e4e3f52556eda6e7609f94f3a10e7442b60b28a7dbd5e37daf520023e0b9fbb",
+      "git_blob": "6acdda87ac4ca4db03374e4c29e7bfb5d66bd19c",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/mobile_safe_area_regression/mobile-safe-area.json",
+      "bytes": 57026,
+      "compressed_bytes": 5574,
+      "zip_crc32": "74eb73f8",
+      "sha256": "a0b198d8bb89992f06705027d579d08d4ca5195a133d61b73b4859f1ffb04243",
+      "git_blob": "a6a8ba4b9bcb2b0d12c41bbfa874c78f9145fe70"
+    },
+    {
+      "path": "nextgen/captures/mobile_safe_area_regression/puzzle-landscape-cutout.png",
+      "bytes": 480217,
+      "compressed_bytes": 475324,
+      "zip_crc32": "ab063e04",
+      "sha256": "5d1117258b17bab6ecd5b2c97115854520aee92253013ee677da0b2b7b0b794b",
+      "git_blob": "ef1a9debc3922bf35d3ac51337ff12760fd0d3b9",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/mobile_safe_area_regression/treasure-landscape-cutout.png",
+      "bytes": 2623433,
+      "compressed_bytes": 2623937,
+      "zip_crc32": "ed7e2139",
+      "sha256": "3bbbb384db2b1b2a037d0fed1d7a93bc93c32b93da8b966144b1056e1ef70b7b",
+      "git_blob": "23c435077d05da6c26d44a26ad9bb115a1387d65",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/640x360-classic-play.png",
+      "bytes": 109746,
+      "compressed_bytes": 109736,
+      "zip_crc32": "5ab58656",
+      "sha256": "9da1795df6094d2208fbf6d9e2d09dd3bbdccc40ea7a1d0e8cdf904de2f047b9",
+      "git_blob": "57bd185f1ce136fe09a8743921fc9a7dc98a3586",
+      "png_dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/640x360-rotation-menu.png",
+      "bytes": 73010,
+      "compressed_bytes": 72698,
+      "zip_crc32": "cc50f2e6",
+      "sha256": "7f59cd80ef226187fe5528dddce60b8439ad8a97845672625a5a23c17d87f47b",
+      "git_blob": "c719833d50c5389e01bf042e236076fa8df2dd88",
+      "png_dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/640x360-rotation-play.png",
+      "bytes": 109740,
+      "compressed_bytes": 109726,
+      "zip_crc32": "b3b8f0d2",
+      "sha256": "a40f808221b0d75121c6becfd69dbd983dfbb0d164a8c185d893d4e618879ded",
+      "git_blob": "ae7bb639f5f69e794faabb332f09c5ce018d98a9",
+      "png_dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/960x540-classic-play.png",
+      "bytes": 302628,
+      "compressed_bytes": 302309,
+      "zip_crc32": "199025c5",
+      "sha256": "25117996c85c3acd1aa3c5b28d83a2336d10091a3f52429d61af89609e4db28f",
+      "git_blob": "a0bd5a36a4dbb2e9fb1ecbde844760684560ac0c",
+      "png_dimensions": [
+        960,
+        540
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/960x540-rotation-menu.png",
+      "bytes": 152856,
+      "compressed_bytes": 152276,
+      "zip_crc32": "905d97bd",
+      "sha256": "3994006c2525eea1ee676c7c1e19107bdb7993719d0a230c7f76ec29a6e452cf",
+      "git_blob": "dbec31b09087bc0420f8a997606e30226ddd5dca",
+      "png_dimensions": [
+        960,
+        540
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/960x540-rotation-play.png",
+      "bytes": 301683,
+      "compressed_bytes": 301355,
+      "zip_crc32": "b8547776",
+      "sha256": "c6d9c17e011ecd665abed127104ca468fc668e91e1d03d6e5f08c6efb0feaaa4",
+      "git_blob": "52431ec9bd728eb5446454f431c2fdd23e51de4a",
+      "png_dimensions": [
+        960,
+        540
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_menu_lifecycle_regression/puzzle-menu-lifecycle.json",
+      "bytes": 37700,
+      "compressed_bytes": 2305,
+      "zip_crc32": "4cdb3e49",
+      "sha256": "f0fd4f759aca7be0a5d3f1dbf2d5118fd0dbe9e70d0a813c7b507568020a6c11",
+      "git_blob": "db75c4e70f020230cf07a8a8b3f349a09b890915"
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_412x915.png",
+      "bytes": 228313,
+      "compressed_bytes": 228099,
+      "zip_crc32": "e7181662",
+      "sha256": "185b86bb140815be42a0b104dbb57861fad3830c171a44c01cca8d31d6b79dec",
+      "git_blob": "1c5b600891f8942519dda852a68644130b3de577",
+      "png_dimensions": [
+        412,
+        915
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_640x360.png",
+      "bytes": 114010,
+      "compressed_bytes": 113989,
+      "zip_crc32": "7e7c76ed",
+      "sha256": "7d080303c997b88c3a096da26d02dc0fa33cc3db6f998e9e9012147e136c28c1",
+      "git_blob": "0ca798c2ed4b3a35def5e32256855c4ab793d5b8",
+      "png_dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_840x760.png",
+      "bytes": 327013,
+      "compressed_bytes": 326065,
+      "zip_crc32": "7885f10d",
+      "sha256": "80326b23f280e343d075d9fc5bc07020145d3403c2e4b7014792608d3f718d89",
+      "git_blob": "227adbcb9ef1bdea8ea6c010a84dfa43bb2e7dcf",
+      "png_dimensions": [
+        840,
+        760
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_compact_menu.png",
+      "bytes": 58998,
+      "compressed_bytes": 58530,
+      "zip_crc32": "066e22e7",
+      "sha256": "6500d67f984fdf8e3f6a6da78281ee78b2d337bf443fc447c43d215a162e4f5d",
+      "git_blob": "c8e807322df7876fe4442a7d6ecc0ace6559d91a",
+      "png_dimensions": [
+        640,
+        360
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_hint.png",
+      "bytes": 519906,
+      "compressed_bytes": 519001,
+      "zip_crc32": "c539765c",
+      "sha256": "7ac22317cd294df2f3508871bbba0d6ba703cf73e75ee15798a67415933115c9",
+      "git_blob": "62539a1aa1f14526918162f577208a88f19fe32e",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_placed.png",
+      "bytes": 510305,
+      "compressed_bytes": 509406,
+      "zip_crc32": "68000181",
+      "sha256": "99a77cfe46973ca8fc405d7a07414d9d31fb6f5d55c1a260da1848a3365be557",
+      "git_blob": "7000399dddc1ea1690166012a165cd2898b6f6d1",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/puzzle_rotation_regression/puzzle_rotation_table.png",
+      "bytes": 508151,
+      "compressed_bytes": 507085,
+      "zip_crc32": "7441ada1",
+      "sha256": "4df60eec4a5a94efda57faa53ffebb96a1012a5601b0328e4cf52102eb03f33a",
+      "git_blob": "6335812def10b0fa4f45a6e009ecfeb51213b052",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_exploration_regression/treasure_choose_route.png",
+      "bytes": 1292109,
+      "compressed_bytes": 1292504,
+      "zip_crc32": "3d960bde",
+      "sha256": "8f1fefe8e574dba64d1a2fa900f2583152b1aaafd82f84e47ecac79eb13737de",
+      "git_blob": "13d37dec7739e33491f2b30f5b51add408b5d8e0",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_exploration_regression/treasure_garden_first.png",
+      "bytes": 1260332,
+      "compressed_bytes": 1260713,
+      "zip_crc32": "ca737a42",
+      "sha256": "0a538c3d213fac30d07e8ef0919bf2f4c69a91c8d618408df3a00dc3a46f3983",
+      "git_blob": "68c5ad119770508528669d03d923d66ac6d763a1",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_exploration_regression/treasure_route_complete.png",
+      "bytes": 1282876,
+      "compressed_bytes": 1283271,
+      "zip_crc32": "d9c81e89",
+      "sha256": "3584538b049cdbb2f29744c3d08ad8581fe1dc6e99c4b8dcf2c5d7f9f139f9c0",
+      "git_blob": "705ced206d00a0062b99509270caa7c7fc968a41",
+      "png_dimensions": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-compact.png",
+      "bytes": 324268,
+      "compressed_bytes": 324368,
+      "zip_crc32": "181134ef",
+      "sha256": "f6a20ab8fed4bdde0ac38744bde99645699cb889e231f5a6f68c3defe7380c1d",
+      "git_blob": "817cb80b57e8f1080308c8168d56818cab23167b",
+      "png_dimensions": [
+        640,
+        320
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-fold.png",
+      "bytes": 4227320,
+      "compressed_bytes": 4227636,
+      "zip_crc32": "bff02df0",
+      "sha256": "bd4f695faf179736a4ca6073c2c311720a302d760250c8859a4dfffc49bfe355",
+      "git_blob": "eeba564e6587843dc40d09c2f084f16b25687ca2",
+      "png_dimensions": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-landscape-cutout.png",
+      "bytes": 2623577,
+      "compressed_bytes": 2624098,
+      "zip_crc32": "b32b9455",
+      "sha256": "20de9259d6e49fd232f177e8bac3f39c87993fa0f362ea88709d0ed357b8f3ee",
+      "git_blob": "ec07c95bcc6fb835b8512771809fa67d118c090f",
+      "png_dimensions": [
+        2400,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-landscape.png",
+      "bytes": 2719803,
+      "compressed_bytes": 2720387,
+      "zip_crc32": "07b60d87",
+      "sha256": "4aac0c4c1e6476ec6e6cf4412da22ebe7018517c3d5abb2ebbfa549b776bc9b4",
+      "git_blob": "8b27b1d0fb6c8467ce6d4d13816676dabc54585e",
+      "png_dimensions": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-portrait.png",
+      "bytes": 2103183,
+      "compressed_bytes": 2103210,
+      "zip_crc32": "f98399ff",
+      "sha256": "b7ca37811b5dfec39a7706a348dfc7be5b9fe3e3aebaf973a9c5a132d681f612",
+      "git_blob": "1828f786e90113d0d2b709cee9c1f4b4b9fc2e94",
+      "png_dimensions": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "path": "nextgen/captures/treasure_title_contrast_regression/treasure-title-report.json",
+      "bytes": 30551,
+      "compressed_bytes": 2811,
+      "zip_crc32": "822ab72b",
+      "sha256": "541d8fb269002bb460e58b6cccc13aa6aa5e9aa92ac2681f640c34a6c3d89b35",
+      "git_blob": "eff54b3fb6132eeadd3fad97eaa2cfbc62d40637"
+    },
+    {
+      "path": "nextgen/cards-safe-area-images.json",
+      "bytes": 767,
+      "compressed_bytes": 330,
+      "zip_crc32": "450f76cb",
+      "sha256": "072ab49b42781baac70fbb72c1e1d75c7d8e3e151109d80fc5839f6bff89e6f8",
+      "git_blob": "af538474c9681b33e70952499d5e088ca6a5f613"
+    },
+    {
+      "path": "nextgen/cards_safe_area_android_contract-headless.log",
+      "bytes": 553,
+      "compressed_bytes": 393,
+      "zip_crc32": "2be8fbb7",
+      "sha256": "37c5c2a79205c1c00a28388a7ddf4a03b1df30827ce7f6fd258e1d681a408e04",
+      "git_blob": "32d492b0d1614577e839f90915104bc3823fd816"
+    },
+    {
+      "path": "nextgen/cards_safe_area_regression-headless.log",
+      "bytes": 532,
+      "compressed_bytes": 371,
+      "zip_crc32": "9345c2aa",
+      "sha256": "19957f04f78da618bffec97d55a52efd1874963a011808c113fbd7cf4a8b9177",
+      "git_blob": "89ac7c1f16d898f3d2c3d487eba20dbe3b24f768"
+    },
+    {
+      "path": "nextgen/cards_safe_area_regression-rendered.log",
+      "bytes": 1179,
+      "compressed_bytes": 707,
+      "zip_crc32": "24087754",
+      "sha256": "e4b86d0d3e105c298176539d00c4ec5e53cc78931acfbae24f0bf1eff5f3eefe",
+      "git_blob": "6817c5af327f85606f855423f6e7c1baec46a3c1"
+    },
+    {
+      "path": "nextgen/cards_table_capture-rendered.log",
+      "bytes": 1162,
+      "compressed_bytes": 697,
+      "zip_crc32": "4ad13969",
+      "sha256": "eecb702cd200bcbb695665dc4b060aa33463fdb0023ba4bb6a5321c4fe352ef4",
+      "git_blob": "4ab838eb569b625c283fc53dd3bdd8a0e6320d11"
+    },
+    {
+      "path": "nextgen/cards_table_regression-headless.log",
+      "bytes": 583,
+      "compressed_bytes": 413,
+      "zip_crc32": "1ee49473",
+      "sha256": "41e0d2c8c51d40fc256c9db46563e4aa7ed3b6e02377714507f53bde680292ab",
+      "git_blob": "a67596289c9f6e0e9c13246d5aa9769e5e1051b7"
+    },
+    {
+      "path": "nextgen/connect-four-visual-images.json",
+      "bytes": 958,
+      "compressed_bytes": 372,
+      "zip_crc32": "64ca0811",
+      "sha256": "f59b53820eaa7f1f955d235c299a1c28dfefeb0a2fa6aeec3ac9b946d930b791",
+      "git_blob": "5bbd97a0179c63ebe386cf7d4ce60418f44e0a58"
+    },
+    {
+      "path": "nextgen/connect_four_visual_capture-rendered.log",
+      "bytes": 1176,
+      "compressed_bytes": 708,
+      "zip_crc32": "12045637",
+      "sha256": "1cc3d59bbf0a2f7fa7680ad0d70bdcbfb1c6690cb88edf523b344f9d18afaaae",
+      "git_blob": "1038e9423bfa3591b7b8985869bd3193ba027425"
+    },
+    {
+      "path": "nextgen/creative_nextgen_environment_regression-headless.log",
+      "bytes": 592,
+      "compressed_bytes": 399,
+      "zip_crc32": "8fe2b338",
+      "sha256": "c9ef21f1da4f1f5f3fd5b2c07eccc18d17663f4eee091014b88755101711587e",
+      "git_blob": "07dca06fcc9fcfad02598082f814dd32dbc277eb"
+    },
+    {
+      "path": "nextgen/creative_nextgen_environment_regression-rendered.log",
+      "bytes": 1239,
+      "compressed_bytes": 733,
+      "zip_crc32": "ba739a41",
+      "sha256": "27a24847d258f729ae3b900606e681e18cf6db1c824df169d455a22d2cd72b4e",
+      "git_blob": "3726d656d46389cd1cb095f14c9ea09abe84494a"
+    },
+    {
+      "path": "nextgen/engine.txt",
+      "bytes": 32,
+      "compressed_bytes": 34,
+      "zip_crc32": "12281f13",
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f",
+      "git_blob": "24277fd09e8cc7154517b66aab4e8bef52babb7e"
+    },
+    {
+      "path": "nextgen/facial-images.json",
+      "bytes": 1782,
+      "compressed_bytes": 542,
+      "zip_crc32": "dcc985d9",
+      "sha256": "1eaa2b594f79daee702b819a379a2c87345b66b627be4354463c6bc349139ef4",
+      "git_blob": "8e55679a4cff0fcca407448a85a017b6d5f74951"
+    },
+    {
+      "path": "nextgen/jump_expeditions_regression-headless.log",
+      "bytes": 2760,
+      "compressed_bytes": 611,
+      "zip_crc32": "c5705638",
+      "sha256": "f5b49f003ab7a8245417454a5ff22351f71ae3209ea5b1882951805f5ffe92f9",
+      "git_blob": "93f0f06d6b1b2fc8255fcf8bf76de64dd0407a32"
+    },
+    {
+      "path": "nextgen/jump_nextgen_capture-rendered.log",
+      "bytes": 1727,
+      "compressed_bytes": 796,
+      "zip_crc32": "63467577",
+      "sha256": "d33f5bdc289d680eb893d7646ff6358ab22285b28a2d0134e58c3763b49c72f3",
+      "git_blob": "54af114e9f1b69d66d1625f31c3a7e1658e02653"
+    },
+    {
+      "path": "nextgen/jump_nextgen_regression-headless.log",
+      "bytes": 1997,
+      "compressed_bytes": 650,
+      "zip_crc32": "6b0953b3",
+      "sha256": "d9b281bc042b4978a0fced1a760668fffc6b892eae044121835ec4978c3d9444",
+      "git_blob": "fddee704870eeaca1da6744f2e5eea7fe0cb8612"
+    },
+    {
+      "path": "nextgen/kart_nextgen_garage_regression-headless.log",
+      "bytes": 734,
+      "compressed_bytes": 407,
+      "zip_crc32": "4d013b7f",
+      "sha256": "85548fd5a6e77accad5c6a73357b753849880e7c327e71ceb951dc6073a2f9ab",
+      "git_blob": "bad5c03b84bc7ee62f1a3f895093cbff5f09b12b"
+    },
+    {
+      "path": "nextgen/kart_nextgen_garage_regression-rendered.log",
+      "bytes": 1383,
+      "compressed_bytes": 740,
+      "zip_crc32": "32640aec",
+      "sha256": "f294d786d1cd2f2885ebcc7d72f46d713fb75df70c72c4e3976e3a8f838135f5",
+      "git_blob": "1fe508554dde6409111b9cbfbd239f53f78141e4"
+    },
+    {
+      "path": "nextgen/kart_player_full_route_regression-rendered.log",
+      "bytes": 21733,
+      "compressed_bytes": 3924,
+      "zip_crc32": "06851187",
+      "sha256": "0b0b12b30cabf289da299fca9576f35cc7c844ef1658cfeb0883e67b5d13b9de",
+      "git_blob": "3a14c7356eacbcaf50ce8eb8afc11fc403fb33fa"
+    },
+    {
+      "path": "nextgen/kart_track_pass_regression-headless.log",
+      "bytes": 1076,
+      "compressed_bytes": 464,
+      "zip_crc32": "2ba22cd4",
+      "sha256": "338f3ad36a3ea657013ebc496ccf30b0a16e8705c3e5f9bd683de7a171a44955",
+      "git_blob": "7c880b4a83a1fbbd7c5db626f40d94930509e31c"
+    },
+    {
+      "path": "nextgen/learning_host_payload_regression-headless.log",
+      "bytes": 561,
+      "compressed_bytes": 394,
+      "zip_crc32": "c4b3c6c7",
+      "sha256": "36c68f542c61752654355a9cc359c81d89d9a7c01f1aa3367a0bcf7fa67b33b6",
+      "git_blob": "f383abdb67a69003ff38758e0787f2b953f42ed7"
+    },
+    {
+      "path": "nextgen/learning_sharing_capture-rendered.log",
+      "bytes": 3506,
+      "compressed_bytes": 915,
+      "zip_crc32": "3c7b246a",
+      "sha256": "017c872ceb1c84497da50b042ab3cd5807e99e78e40078be095ca23e5433c38e",
+      "git_blob": "ef4578c3a25377b077e884eda72b71b462ed8298"
+    },
+    {
+      "path": "nextgen/learning_sharing_regression-headless.log",
+      "bytes": 1482,
+      "compressed_bytes": 495,
+      "zip_crc32": "ffa60be0",
+      "sha256": "c97f5e3de4f7f795e626defb0a18c239c8f06d0e13198e802d1fb5ac8804d340",
+      "git_blob": "732d54f13499cd10ebc00935e394aac578658904"
+    },
+    {
+      "path": "nextgen/learning_studio_regression-headless.log",
+      "bytes": 1805,
+      "compressed_bytes": 602,
+      "zip_crc32": "6755f869",
+      "sha256": "bf54a175b9ceb89caf12f2268be19f6766169138d7ae4bfc5b633e377b522343",
+      "git_blob": "30c7b738433cfa79bb22bb89dba214e5ca98e654"
+    },
+    {
+      "path": "nextgen/learning_world_capture-rendered.log",
+      "bytes": 8471,
+      "compressed_bytes": 1511,
+      "zip_crc32": "14705025",
+      "sha256": "24d306c3e3e7421db0c23d7dd0bd4c21ecbf6b15734453683dfba6444e631c54",
+      "git_blob": "4d69a730591612d7803b4ba697fd34440f6d2323"
+    },
+    {
+      "path": "nextgen/learning_world_regression-headless.log",
+      "bytes": 10599,
+      "compressed_bytes": 1158,
+      "zip_crc32": "adb79977",
+      "sha256": "4e500ed41f1c9bee1b586b2141e4c7646f660b8dcb5da8311db95babab7ca1cb",
+      "git_blob": "01f4eeb866daca9984822b21a7135da890d60efb"
+    },
+    {
+      "path": "nextgen/lumo_65bone_walk_gait_regression-headless.log",
+      "bytes": 572,
+      "compressed_bytes": 387,
+      "zip_crc32": "f2b6a9cf",
+      "sha256": "86bc5e72882422903d6ead6054ef38169ec8126efc8cf46c255353e41d08e78e",
+      "git_blob": "b06c80eb963d79653f8afa5eb0586168f7e0f726"
+    },
+    {
+      "path": "nextgen/lumo_facial_capture-rendered.log",
+      "bytes": 1847,
+      "compressed_bytes": 965,
+      "zip_crc32": "615daec7",
+      "sha256": "a1c020e7401e38c867cced8d16344e213df2432e75a0ed1757d85b947e97e5e3",
+      "git_blob": "6a8543fd00967d0548ddad9b06d56b865f1c09d7"
+    },
+    {
+      "path": "nextgen/lumo_facial_regression-headless.log",
+      "bytes": 633,
+      "compressed_bytes": 439,
+      "zip_crc32": "df4f12e9",
+      "sha256": "8a3ba1eef6bead880d8965bbdda6a3277f2be445063aa84d6c6652e11312a22b",
+      "git_blob": "2374357756a7f9a2320bceb9c0533fa6b58a02b9"
+    },
+    {
+      "path": "nextgen/lumo_original_jump_visual_regression-headless.log",
+      "bytes": 691,
+      "compressed_bytes": 451,
+      "zip_crc32": "a6f89275",
+      "sha256": "73b437ce767d4a0fb73acc9c1db08b351e22b207d4fe68e8c93081948b920f43",
+      "git_blob": "4759604de66df40923c8d65041e1dceea0e74c92"
+    },
+    {
+      "path": "nextgen/lumo_studio_motion_capture-rendered.log",
+      "bytes": 1202,
+      "compressed_bytes": 714,
+      "zip_crc32": "c8d5efb6",
+      "sha256": "b86485f1f5cee930cada12044d9f425daf403e73e51f2497c7593ee634270669",
+      "git_blob": "4f08daeda90feb45075b2de588ac04099ab0bc39"
+    },
+    {
+      "path": "nextgen/lumo_studio_motion_regression-headless.log",
+      "bytes": 603,
+      "compressed_bytes": 407,
+      "zip_crc32": "d832c9ab",
+      "sha256": "90e7ef7f3e42090afcbd835cea00564edfa18fd49e0153177d65d739da0bfd2b",
+      "git_blob": "d06b4aa8600722e4474cd7584db3ac81f134d1e4"
+    },
+    {
+      "path": "nextgen/lumo_teacher_pose_regression-headless.log",
+      "bytes": 589,
+      "compressed_bytes": 402,
+      "zip_crc32": "f6cf0e0c",
+      "sha256": "348ade9cd8a258b3aa3380c94664ec9ed4529e6edf270c3e683981c2bb5da629",
+      "git_blob": "9afe1fa0218bcaeb55c301046a7a9507c10fd10f"
+    },
+    {
+      "path": "nextgen/mobile-safe-area-images.json",
+      "bytes": 999,
+      "compressed_bytes": 356,
+      "zip_crc32": "4e12f24f",
+      "sha256": "8a959ef68ea2300a0ec4a740b7429fcf1e12965d04b1a6dc141c148f030eea34",
+      "git_blob": "cb76c284156a8509258d8f131735de38883ddf74"
+    },
+    {
+      "path": "nextgen/mobile_safe_area_regression-headless.log",
+      "bytes": 10230,
+      "compressed_bytes": 1067,
+      "zip_crc32": "a1e5e500",
+      "sha256": "aca8c55fe8a2cd296496e3fd4969f43500cfe2218b4cf34b13c736998755e4aa",
+      "git_blob": "7ea693efc7aae3b63b11d7f4c91de79eb554f03a"
+    },
+    {
+      "path": "nextgen/mobile_safe_area_regression-rendered.log",
+      "bytes": 11441,
+      "compressed_bytes": 1405,
+      "zip_crc32": "1c96e8d3",
+      "sha256": "958dc9c8f05e4e84ea08450692b52194f30b1dfee33daad1ad6c575c357b7325",
+      "git_blob": "bfb925e35fb1a8bf60e4a762fb5b05934e4dbf24"
+    },
+    {
+      "path": "nextgen/puzzle-menu-images.json",
+      "bytes": 1488,
+      "compressed_bytes": 460,
+      "zip_crc32": "fd5d7ead",
+      "sha256": "abc60cfed0463be30fc7100e9d6d0d1cbed04bd44040188ea058ce0438fb8a21",
+      "git_blob": "dff31c712b551b23a7a9eea0f20d9a0a7d97b437"
+    },
+    {
+      "path": "nextgen/puzzle_menu_lifecycle_regression-headless.log",
+      "bytes": 3084,
+      "compressed_bytes": 711,
+      "zip_crc32": "f8bcfc19",
+      "sha256": "661f94c08a44790f949ab961e19f751b58d12bd0673b7b8925da0bac91232a98",
+      "git_blob": "adb5eca8ae5da6228ce71085a84300c26471351c"
+    },
+    {
+      "path": "nextgen/puzzle_menu_lifecycle_regression-rendered.log",
+      "bytes": 3733,
+      "compressed_bytes": 1044,
+      "zip_crc32": "633b4b0a",
+      "sha256": "f2102a2c19940958192cc1bd9460d17786717285dcde44eeacd845cd45b9393c",
+      "git_blob": "f32e4347b8fc9ecc5f2e3555977e628e9223ca13"
+    },
+    {
+      "path": "nextgen/puzzle_rotation_regression-headless.log",
+      "bytes": 571,
+      "compressed_bytes": 388,
+      "zip_crc32": "72005231",
+      "sha256": "eb6e0efe8ad9f642c5d6cb53e35b175a2679ff50441ddd45859e531d80fd81d9",
+      "git_blob": "aea567f1bad4a7577043682889e8c450fa5663d0"
+    },
+    {
+      "path": "nextgen/puzzle_rotation_regression-rendered.log",
+      "bytes": 1218,
+      "compressed_bytes": 726,
+      "zip_crc32": "3e4d6f37",
+      "sha256": "48fce4400a65d1ba6fb1d998ec2d021435bd3242aed3e471b1be74d1dd767871",
+      "git_blob": "dc08e72a340d1ac25e166d06eca8e93c5fa0b837"
+    },
+    {
+      "path": "nextgen/renderer-images.json",
+      "bytes": 5737,
+      "compressed_bytes": 1435,
+      "zip_crc32": "1026ddac",
+      "sha256": "1aaff042b3be3e542a6a9a5e94ec6f95932e55cfb521bf3d977672eda5a98f01",
+      "git_blob": "fe3256111757f41d5dc08312dafdf045bcab0334"
+    },
+    {
+      "path": "nextgen/results.tsv",
+      "bytes": 2259,
+      "compressed_bytes": 464,
+      "zip_crc32": "d2b2ade3",
+      "sha256": "e055b2d3ac43199e50b37b824bbcc84c75dc9aa683389478e898637f7c0b16d4",
+      "git_blob": "db0de72ce9ada78bbe039dc96745928e0b5fd30a"
+    },
+    {
+      "path": "nextgen/rhythm_tour_play_regression-headless.log",
+      "bytes": 600,
+      "compressed_bytes": 406,
+      "zip_crc32": "0d31a0d1",
+      "sha256": "d227dd4228251b5e9dd1523af71676e5f4ccd2928188843335c0203ed29fe4e9",
+      "git_blob": "f384e4bff800f093fdc9d1506937684edf87c4fc"
+    },
+    {
+      "path": "nextgen/rhythm_tour_play_regression-rendered.log",
+      "bytes": 1247,
+      "compressed_bytes": 745,
+      "zip_crc32": "1fdf5af7",
+      "sha256": "57329a3591776a16ea496e6e51806bb8044654b3ff5e434c203aa94823ff5ee9",
+      "git_blob": "e0c84933eba2d8ae0c81f0d5a8899c1356fd76c1"
+    },
+    {
+      "path": "nextgen/rhythm_tour_regression-headless.log",
+      "bytes": 582,
+      "compressed_bytes": 400,
+      "zip_crc32": "aed58923",
+      "sha256": "36554a86f4e83f79940b77fb886d4b1c96a9dd2481db9540b8697fdabfa4493b",
+      "git_blob": "f8758688f3cccde8c297793e95b7e20078e957c1"
+    },
+    {
+      "path": "nextgen/safe-area-images.json",
+      "bytes": 2878,
+      "compressed_bytes": 848,
+      "zip_crc32": "255115a1",
+      "sha256": "be389d3bc65af1a0a851d06bb864a65b39363ae1e5c79a348b45a6a9d5a84d03",
+      "git_blob": "14a038c79f544a25784ea85425db42675f278688"
+    },
+    {
+      "path": "nextgen/source-dirty.txt",
+      "bytes": 0,
+      "compressed_bytes": 2,
+      "zip_crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "nextgen/source-sha.txt",
+      "bytes": 41,
+      "compressed_bytes": 41,
+      "zip_crc32": "7ef88f56",
+      "sha256": "d0a09fa076dc0f9c7db7dae2c693ad843176312371e712fc3343d38d34bc25c2",
+      "git_blob": "74b78e2390fd6fbcea08f926b52f12b10b3dd7a8"
+    },
+    {
+      "path": "nextgen/source-tree.txt",
+      "bytes": 41,
+      "compressed_bytes": 41,
+      "zip_crc32": "1617cec9",
+      "sha256": "7ce9a8f7736baeb67a5c3b71fc112cf3d1466bed85e4b13fb5f9e8056af9457d",
+      "git_blob": "5964638bbdd6016672e192d5b9fd0ac1f7e2ccfd"
+    },
+    {
+      "path": "nextgen/studio-2020-images.json",
+      "bytes": 13986,
+      "compressed_bytes": 2197,
+      "zip_crc32": "c98b7df9",
+      "sha256": "b58b65a56de47e970292ddc8bff95a0e89d02e4e23d3a2d588134bf5e375f381",
+      "git_blob": "b58ffa08c1ee79a92d461790b56202b1aa7f0510"
+    },
+    {
+      "path": "nextgen/treasure-title-images.json",
+      "bytes": 1282,
+      "compressed_bytes": 444,
+      "zip_crc32": "4f447e82",
+      "sha256": "4a47b93a8f1442ebf76f3f63b104b11d6f799f9745b391cb420e0f279fe240d4",
+      "git_blob": "7fcfe84899b9f4680d41ffa7b6a4d6daf3ecd9f4"
+    },
+    {
+      "path": "nextgen/treasure_exploration_regression-headless.log",
+      "bytes": 589,
+      "compressed_bytes": 400,
+      "zip_crc32": "51cf56a7",
+      "sha256": "6303eda4f9dfbf0eae58630858cdd5ec5cf1dfd19767d484bf72b3001d713b5e",
+      "git_blob": "c8146adee3e0045b27b144aa8cf07ca70b795f45"
+    },
+    {
+      "path": "nextgen/treasure_exploration_regression-rendered.log",
+      "bytes": 1236,
+      "compressed_bytes": 737,
+      "zip_crc32": "b790fda2",
+      "sha256": "d3ab6703a5a6d829268ef78107f2ae5a7a7c05be21eaf44bceb9c4c04d4adbba",
+      "git_blob": "f29e0e5a8ff25a35bf41749428de181b3a07d06f"
+    },
+    {
+      "path": "nextgen/treasure_title_contrast_regression-rendered.log",
+      "bytes": 3669,
+      "compressed_bytes": 952,
+      "zip_crc32": "11b4219e",
+      "sha256": "e715acf96478f26498f6fef6acbb0a04fb41680ef43b154addcdade4003a04f4",
+      "git_blob": "831a4bad0e10708fafdb8c278bda8b03ee872df4"
+    },
+    {
+      "path": "nextgen/village-images.json",
+      "bytes": 1010,
+      "compressed_bytes": 399,
+      "zip_crc32": "ec95c008",
+      "sha256": "551287d6f657c10619afd488bde67d73d351b7c1d5c46ab20cfa220b95bfbfd0",
+      "git_blob": "3250c7b428161be1c8cbd0776f1780a2fb15fbc6"
+    },
+    {
+      "path": "project.log",
+      "bytes": 6131,
+      "compressed_bytes": 1400,
+      "zip_crc32": "f8539618",
+      "sha256": "2d6b03148c37199f78d2a55916dfa91b1f73a2362123270cc9e54b23622afe75",
+      "git_blob": "6832ded5fe2577ae0c0a69bcc5d1fa658f727577"
+    },
+    {
+      "path": "source-sha.txt",
+      "bytes": 41,
+      "compressed_bytes": 41,
+      "zip_crc32": "7ef88f56",
+      "sha256": "d0a09fa076dc0f9c7db7dae2c693ad843176312371e712fc3343d38d34bc25c2",
+      "git_blob": "74b78e2390fd6fbcea08f926b52f12b10b3dd7a8"
+    },
+    {
+      "path": "technical-art/engine.txt",
+      "bytes": 32,
+      "compressed_bytes": 34,
+      "zip_crc32": "12281f13",
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f",
+      "git_blob": "24277fd09e8cc7154517b66aab4e8bef52babb7e"
+    },
+    {
+      "path": "technical-art/kart_air_trick_regression.log",
+      "bytes": 496,
+      "compressed_bytes": 347,
+      "zip_crc32": "18f1a67d",
+      "sha256": "daf7039e71f62ed3fc00ec3f6d8663c42f83f63cb1ed6b27329ee8c0d9b2eff2",
+      "git_blob": "924424a86975e6d00c90a28e8e95a45f994a80a8"
+    },
+    {
+      "path": "technical-art/kart_garage_presentation_regression.log",
+      "bytes": 1502,
+      "compressed_bytes": 792,
+      "zip_crc32": "b9d59a59",
+      "sha256": "ba5e0cdba9674ea37191b8f44d513df91fc5c53f7cf85fd5af6716e68ae36f7a",
+      "git_blob": "0a175d9fa70ce7b90c8141031964707b0db0c08a"
+    },
+    {
+      "path": "technical-art/kart_harbor_race_hook_regression.log",
+      "bytes": 1383,
+      "compressed_bytes": 806,
+      "zip_crc32": "c0f4e998",
+      "sha256": "67dc0b1eb329385bf9ec27bf1220b1410f5556b386f695a043461ffc17feedb1",
+      "git_blob": "a450261eff56a74b3f5746ca09212b2be014d3a5"
+    },
+    {
+      "path": "technical-art/kart_sonnenhafen_streetfronts_regression.log",
+      "bytes": 1661,
+      "compressed_bytes": 869,
+      "zip_crc32": "43444fa1",
+      "sha256": "d36e9e933970ad56bb374bfd132e0d0571a0e23e1f302e4c483fbc2abadae749",
+      "git_blob": "c8448dfca3bac975a693e37a2a36ed603594d8ac"
+    },
+    {
+      "path": "technical-art/kart_sonnenhafen_streetfronts_world_regression.log",
+      "bytes": 1149,
+      "compressed_bytes": 617,
+      "zip_crc32": "3bbae864",
+      "sha256": "bd6d21fd57a6d22d7af0dc64baad93520df68c1b6f05e455c8134ef6c52771e6",
+      "git_blob": "a7591c587dfb1424e54887705ec7edf20fe254fe"
+    },
+    {
+      "path": "technical-art/lumo_attention_landing_regression.log",
+      "bytes": 1129,
+      "compressed_bytes": 695,
+      "zip_crc32": "0c7c3af7",
+      "sha256": "5b3a48c81fa1cfbdf4b9e88d82a48c8d6647e01fe92b573617fc3cddd590fc94",
+      "git_blob": "dc9e0bec52792ac63c329df7f9576d69558153b1"
+    },
+    {
+      "path": "technical-art/lumo_gesture_contact_regression.log",
+      "bytes": 1233,
+      "compressed_bytes": 567,
+      "zip_crc32": "6395a904",
+      "sha256": "bdc10cfd4c98c376b0832a6b52730d35dbc5a4ea3921a982dfd02ef55d4f6880",
+      "git_blob": "fe812ce0c42815e44b40a06ec57b1010c9d345d0"
+    },
+    {
+      "path": "technical-art/lumo_kart_tick_cadence_regression.log",
+      "bytes": 2099,
+      "compressed_bytes": 633,
+      "zip_crc32": "5ebb3d53",
+      "sha256": "999c3f18cb45b3d42739d99ccd38c00cdf51092820fda5c2152334101faca732",
+      "git_blob": "fed36758621adb82581992b68ce6531ccd70cfd0"
+    },
+    {
+      "path": "technical-art/source-sha.txt",
+      "bytes": 41,
+      "compressed_bytes": 41,
+      "zip_crc32": "7ef88f56",
+      "sha256": "d0a09fa076dc0f9c7db7dae2c693ad843176312371e712fc3343d38d34bc25c2",
+      "git_blob": "74b78e2390fd6fbcea08f926b52f12b10b3dd7a8"
+    }
+  ],
+  "selected_png_count": 111,
+  "selected_bytes": 77868957,
+  "full_artifact_files": 6074,
+  "full_artifact_pngs": 188,
+  "original_pngs_indexed_without_duplicate_git_copy": 77
+}

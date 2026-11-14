@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "scope": "Four unchanged pre-existing raster readers replayed on separate copies of original capture files; no engine, renderer, unit-test or source launch",
+  "readers": [
+    {
+      "reader": "verify_studio_rasters.py",
+      "git_blob": "0278d71030e87e4e46dd04b855e77711b2759252",
+      "returned_records": 24
+    },
+    {
+      "reader": "verify_village_rasters.py",
+      "git_blob": "7c9522903db13f9bd0917ef2768ddbc08e624b1d",
+      "returned_records": 4
+    },
+    {
+      "reader": "verify_puzzle_menu_rasters.py",
+      "git_blob": "391630e0bcd394dd0e274725cf15a7474eb41e77",
+      "returned_records": 6
+    },
+    {
+      "reader": "verify_safe_area_rasters.py",
+      "git_blob": "34fb3c4f31e476a5f29f98abc9a2ecc0337e6863",
+      "returned_records": null
+    }
+  ],
+  "manifests": [
+    {
+      "manifest": "renderer-images.json",
+      "exact_original_manifest_equal": true,
+      "images": 24,
+      "sha256": "1aaff042b3be3e542a6a9a5e94ec6f95932e55cfb521bf3d977672eda5a98f01"
+    },
+    {
+      "manifest": "village-images.json",
+      "exact_original_manifest_equal": true,
+      "images": 4,
+      "sha256": "551287d6f657c10619afd488bde67d73d351b7c1d5c46ab20cfa220b95bfbfd0"
+    },
+    {
+      "manifest": "puzzle-menu-images.json",
+      "exact_original_manifest_equal": true,
+      "images": 6,
+      "sha256": "abc60cfed0463be30fc7100e9d6d0d1cbed04bd44040188ea058ce0438fb8a21"
+    },
+    {
+      "manifest": "safe-area-images.json",
+      "exact_original_manifest_equal": true,
+      "images": 7,
+      "sha256": "be389d3bc65af1a0a851d06bb864a65b39363ae1e5c79a348b45a6a9d5a84d03"
+    },
+    {
+      "manifest": "cards-safe-area-images.json",
+      "exact_original_manifest_equal": true,
+      "images": 3,
+      "sha256": "072ab49b42781baac70fbb72c1e1d75c7d8e3e151109d80fc5839f6bff89e6f8"
+    },
+    {
+      "manifest": "mobile-safe-area-images.json",
+      "exact_original_manifest_equal": true,
+      "images": 4,
+      "sha256": "8a959ef68ea2300a0ec4a740b7429fcf1e12965d04b1a6dc141c148f030eea34"
+    }
+  ],
+  "new_renderer_executions": 0
+}
