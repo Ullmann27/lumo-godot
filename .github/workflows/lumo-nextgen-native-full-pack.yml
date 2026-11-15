@@ -1,0 +1,72 @@
+name: LUMO NextGen full native learning pack (candidate)
+on:
+  push:
+    branches: [chatgpt/lumo-nextgen-native-blender-integration-20261115]
+    paths:
+      - scripts/learning/learning_world.gd
+      - scripts/characters/lumo/lumo_nextgen_learning_actor.gd
+      - assets/characters/lumo_nextgen_chat3/**
+      - scenes/learning/nextgen/**
+      - scripts/learning/nextgen/**
+      - .github/workflows/lumo-nextgen-native-full-pack.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lumo-nextgen-native-full-pack
+  cancel-in-progress: true
+jobs:
+  import-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot 4.6.3 with sha-pinned binary
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot-bin"
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot-bin/engine.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          echo "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3  $RUNNER_TEMP/godot-bin/engine.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot-bin/engine.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import complete production learning world and all Blender assets
+        run: |
+          set -euo pipefail
+          mkdir -p exports/learning-nextgen-proof
+          timeout 420s Godot_v4.6.3-stable_linux.x86_64 --headless \
+            --path . --editor --import --quit \
+            > exports/learning-nextgen-proof/full-import.log 2>&1 || {
+              tail -180 exports/learning-nextgen-proof/full-import.log
+              exit 1
+            }
+          if grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' exports/learning-nextgen-proof/full-import.log; then
+            echo 'Godot source did not import cleanly'; exit 1
+          fi
+      - name: Export actual Android-target PCK from entire current project
+        run: |
+          set -euo pipefail
+          timeout 300s Godot_v4.6.3-stable_linux.x86_64 --headless \
+            --path . --export-pack Android exports/learning-nextgen-proof/lumo_game.pck \
+            > exports/learning-nextgen-proof/export.log 2>&1 || {
+              tail -100 exports/learning-nextgen-proof/export.log; exit 1
+            }
+          test -s exports/learning-nextgen-proof/lumo_game.pck
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, struct
+          p=Path('exports/learning-nextgen-proof/lumo_game.pck')
+          magic, _reserved, major, minor, patch=struct.unpack('<4s4I',p.read_bytes()[:20])
+          assert (magic,major,minor,patch)==(b'GDPC',4,6,3), (magic,major,minor,patch)
+          print('[LumoNativeFullPack] PASS PCK Godot 4.6.3, bytes',p.stat().st_size)
+          print('[LumoNativeFullPack] SHA256',hashlib.file_digest(p.open('rb'),'sha256').hexdigest())
+          PY
+      - name: Upload real native Android pack and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-nextgen-native-pack-${{ github.run_id }}
+          path: exports/learning-nextgen-proof/
+          retention-days: 14
+          if-no-files-found: warn
