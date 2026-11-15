@@ -7,7 +7,17 @@ on:
       - assets/characters/lumo_nextgen_chat3/**
       - scenes/learning/nextgen/**
       - scripts/learning/nextgen/**
+      - scripts/learning/learning_world.gd
       - scripts/tests/lumo_nextgen_chat3_capture.gd
+      - scripts/tests/lumo_nextgen_learning_guide.gd
+      - .github/workflows/lumo-nextgen-integrated-native.yml
+  pull_request:
+    branches:
+      - integration/lumo-learning-generation-20261115-ea41
+    paths:
+      - scripts/learning/nextgen/**
+      - scripts/learning/learning_world.gd
+      - scripts/tests/lumo_nextgen_learning_guide.gd
       - .github/workflows/lumo-nextgen-integrated-native.yml
   workflow_dispatch:
 permissions:
@@ -55,6 +65,17 @@ jobs:
               echo "Full existing project import reported errors; isolated new rig import remains mandatory."
               tail -70 proof/lumo-nextgen-native/full-project-import.log
             }
+      - name: Load the actual production learning actor in native scene tree
+        run: |
+          set -euo pipefail
+          timeout 160s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script \
+            res://scripts/tests/lumo_nextgen_learning_guide.gd \
+            > proof/lumo-nextgen-native/guide-runtime-test.log 2>&1 || {
+              tail -120 proof/lumo-nextgen-native/guide-runtime-test.log
+              exit 1
+            }
+          grep -F '[LumoLearningGuide] PASS:' proof/lumo-nextgen-native/guide-runtime-test.log
       - name: Isolate exact imported NextGen scene and GLBs for independent proof
         run: |
           set -euo pipefail
