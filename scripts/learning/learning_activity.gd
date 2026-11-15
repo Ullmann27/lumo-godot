@@ -1,3 +1,6 @@
+# gdlint: disable=max-public-methods,max-returns
+# The existing activity API is a tagged union. Explicit bounded guards and
+# independent actions keep each kind readable without nested fallback paths.
 extends RefCounted
 const ENGLISH = preload("res://scripts/learning/english_vocabulary.gd")
 ## Deterministic manipulative state, separate from presentation and rewards.
@@ -20,12 +23,28 @@ var english_choice := -1
 var english_hint_level := 0
 var english_attempts := 0
 var english_complete := false
+var pattern_sequence: Array[String] = []
+var pattern_choices: Array[String] = []
+var pattern_period := 0
+var pattern_candidate := -1
+var pattern_hint_level := 0
+var pattern_attempts := 0
+var pattern_complete := false
+var _pattern_candidate_confirmed := false
+var _pattern_last_action := ""
 
 
 func configure(raw: Dictionary) -> bool:
 	reset()
+	pattern_sequence.clear()
+	pattern_choices.clear()
+	pattern_period = 0
 	kind = str(raw.get("kind", "invalid"))
 	match kind:
+		"pattern":
+			if not _configure_pattern(raw):
+				kind = "invalid"
+				return false
 		"english_objects":
 			var checked := ENGLISH.checked_payload(raw)
 			if checked.is_empty():
@@ -106,6 +125,61 @@ func configure(raw: Dictionary) -> bool:
 	return kind != "invalid"
 
 
+func _configure_pattern(raw: Dictionary) -> bool:
+	var sequence: Variant = raw.get("sequence")
+	var choices: Variant = raw.get("choices")
+	if not sequence is Array or sequence.size() < 4 or sequence.size() > 12:
+		return false
+	if not choices is Array or choices.size() < 2 or choices.size() > 6:
+		return false
+	if not _bounded_integer(raw.get("period"), 1, 4):
+		return false
+	var checked_sequence: Array[String] = []
+	var checked_choices: Array[String] = []
+	for token: Variant in sequence:
+		if not _pattern_token(token):
+			return false
+		checked_sequence.append(token)
+	for token: Variant in choices:
+		if not _pattern_token(token) or checked_choices.has(token):
+			return false
+		checked_choices.append(token)
+	# A claimed period must be the smallest demonstrable repeating group.
+	# Two full repetitions are required; the visible suffix may be partial.
+	var smallest := 0
+	for length in range(1, 5):
+		if checked_sequence.size() < length * 2:
+			continue
+		var repeats := true
+		for index in range(length, checked_sequence.size()):
+			if checked_sequence[index] != checked_sequence[index % length]:
+				repeats = false
+				break
+		if repeats:
+			smallest = length
+			break
+	if smallest == 0 or smallest != int(raw.period):
+		return false
+	if not checked_choices.has(checked_sequence[checked_sequence.size() % smallest]):
+		return false
+	pattern_sequence = checked_sequence
+	pattern_choices = checked_choices
+	pattern_period = smallest
+	return true
+
+
+static func _pattern_token(value: Variant) -> bool:
+	if not value is String or value.is_empty() or value.length() > 24:
+		return false
+	if value != value.strip_edges():
+		return false
+	for index in range(value.length()):
+		var code: int = value.unicode_at(index)
+		if code < 32 or (code >= 127 and code <= 159) or code in [8232, 8233]:
+			return false
+	return true
+
+
 static func _whole_number(value: Variant) -> bool:
 	# JSON.parse_string uses floating point numbers. Accept exact bounded
 	# integers from the native JSON bridge, never truncating fractional input.
@@ -137,10 +211,18 @@ func reset() -> void:
 	english_hint_level = 0
 	english_attempts = 0
 	english_complete = false
+	pattern_candidate = -1
+	pattern_hint_level = 0
+	pattern_attempts = 0
+	pattern_complete = false
+	_pattern_candidate_confirmed = false
+	_pattern_last_action = ""
 
 
 func token_count() -> int:
 	match kind:
+		"pattern":
+			return pattern_choices.size()
 		"english_objects":
 			return english_objects.size()
 		"bridge_ten", "addition":
@@ -157,7 +239,7 @@ func token_count() -> int:
 
 
 func goal_count() -> int:
-	if kind == "english_objects":
+	if kind in ["english_objects", "pattern"]:
 		return 1
 	return b if kind == "subtract_ten" else token_count()
 
@@ -171,6 +253,8 @@ func initial_count() -> int:
 
 
 func is_complete() -> bool:
+	if kind == "pattern":
+		return pattern_complete
 	if kind == "english_objects":
 		return english_complete
 	if kind == "plant_parts":
@@ -207,7 +291,12 @@ func count_in_group(group: int) -> int:
 
 
 func place(token: int, target: int) -> bool:
-	if kind in ["invalid", "plant_parts", "english_objects"] or is_complete() or token < 0 or token >= token_count():
+	if (
+		kind in ["invalid", "plant_parts", "english_objects", "pattern"]
+		or is_complete()
+		or token < 0
+		or token >= token_count()
+	):
 		return false
 	if placed.has(token) or target != target_index():
 		return false
@@ -228,7 +317,12 @@ func inspect_part(part: String) -> bool:
 
 
 func choose_english(index: int) -> bool:
-	if kind != "english_objects" or english_complete or index < 0 or index >= english_objects.size():
+	if (
+		kind != "english_objects"
+		or english_complete
+		or index < 0
+		or index >= english_objects.size()
+	):
 		return false
 	english_choice = index
 	english_attempts += 1
@@ -243,8 +337,89 @@ func english_hint() -> bool:
 	return true
 
 
+func pattern_group() -> Array[String]:
+	if kind != "pattern":
+		return []
+	return pattern_sequence.slice(0, pattern_period)
+
+
+func select_pattern_candidate(index: int) -> bool:
+	if kind != "pattern" or pattern_complete or index < 0 or index >= pattern_choices.size():
+		return false
+	# Selection is only a proposal. Repeated input cannot reopen a confirmation.
+	if pattern_candidate != index:
+		_pattern_candidate_confirmed = false
+	pattern_candidate = index
+	_pattern_last_action = "select"
+	return true
+
+
+func clear_pattern_candidate() -> void:
+	if kind != "pattern" or pattern_complete:
+		return
+	pattern_candidate = -1
+	_pattern_candidate_confirmed = false
+	_pattern_last_action = ""
+
+
+func confirm_pattern_candidate() -> bool:
+	if (
+		kind != "pattern"
+		or pattern_complete
+		or pattern_candidate < 0
+		or pattern_candidate >= pattern_choices.size()
+	):
+		return false
+	if _pattern_candidate_confirmed:
+		return false
+	_pattern_candidate_confirmed = true
+	_pattern_last_action = "confirm"
+	pattern_attempts += 1
+	var next_token := pattern_sequence[pattern_sequence.size() % pattern_period]
+	pattern_complete = pattern_choices[pattern_candidate] == next_token
+	return pattern_complete
+
+
+func pattern_hint() -> String:
+	if kind != "pattern" or pattern_complete:
+		return ""
+	pattern_hint_level = mini(3, pattern_hint_level + 1)
+	_pattern_last_action = "hint"
+	return _pattern_hint_text()
+
+
+func _pattern_hint_text() -> String:
+	match pattern_hint_level:
+		1:
+			return (
+				"Die kleinste Gruppe hat %d Zeichen. Suche dieselbe Gruppe noch einmal."
+				% pattern_period
+			)
+		2:
+			return "Vergleiche die ersten beiden Gruppen. Die Zeichen stehen in derselben Reihenfolge."
+		3:
+			return (
+				"Als Nächstes ist Stelle %d der Gruppe dran. Schau dort nach und wähle selbst."
+				% [pattern_sequence.size() % pattern_period + 1]
+			)
+	return ""
+
+
 func explanation() -> String:
 	match kind:
+		"pattern":
+			if pattern_complete:
+				return "Die Reihenfolge passt. Kehre zur Aufgabe zurück und gib dort deine Antwort."
+			if _pattern_last_action == "confirm":
+				return "Das passt noch nicht zur Wiederholung. Vergleiche die Gruppen oder hole einen Hinweis."
+			if _pattern_last_action == "select":
+				return (
+					"Dein Vorschlag ist „%s“. Du kannst ihn ändern oder ausdrücklich prüfen."
+					% pattern_choices[pattern_candidate]
+				)
+			if pattern_hint_level > 0:
+				return _pattern_hint_text()
+			return "Welche Gruppe wiederholt sich? Hole einen Hinweis oder wähle selbst das nächste Zeichen."
 		"english_objects":
 			if english_complete:
 				return "Richtig: „%s“. Wähle jetzt „Zur Aufgabe“." % english_meaning
