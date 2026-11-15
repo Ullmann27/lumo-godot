@@ -98,6 +98,40 @@ def resolve_vehicle(original: str, matches: list[re.Match[str]]) -> tuple[str, d
                     "production_driver_preserved": True, "rival_visual_preserved": True}
 
 
+def resolve_world(original: str, matches: list[re.Match[str]]) -> tuple[str, dict]:
+    if len(matches) != 4:
+        raise RuntimeError(f"World changed: {len(matches)} regions, expected 4")
+    replacements: list[str] = []
+    expected = [
+        ("production_tunnels = null", "adventure_tunnel.clear()"),
+        ("if is_instance_valid(production_tunnels):", "ADVENTURE_TUNNELS.contains(self, distance, 16.0)"),
+        ("if is_instance_valid(production_tunnels):", "ADVENTURE_TUNNELS.contains(self, distance, 15.0)"),
+        ("if is_instance_valid(production_tunnels):", "ADVENTURE_TUNNELS.contains(self, distance, 25.0)"),
+    ]
+    for i, match in enumerate(matches):
+        old, newer = match.group(1), match.group(2)
+        unique(expected[i][0], old, f"world hunk {i + 1}")
+        unique(expected[i][1], newer, f"world hunk {i + 1}")
+        if i == 0:
+            replacement = old.rstrip("\n") + "\n" + newer
+        else:
+            # Both old production-tunnel and new Adventure-tunnel footprints
+            # must be excluded from the existing decorative arches.
+            replacement = old.rstrip("\n").removesuffix(":") + " or " + newer.strip().removeprefix("if ") + "\n"
+            if not replacement.strip().endswith(":"):
+                raise RuntimeError("Bad combined world exclusion predicate")
+        replacements.append(replacement)
+    cursor = 0
+    segments: list[str] = []
+    for match, text in zip(matches, replacements):
+        segments.extend([original[cursor:match.start()], text])
+        cursor = match.end()
+    segments.append(original[cursor:])
+    return "".join(segments), {"file": "scripts/games/kart_world.gd",
+        "regions": 4, "production_tunnels_preserved": True,
+        "adventure_tunnels_preserved": True}
+
+
 def resolve_file(name: str) -> dict:
     path = ROOT / name
     # Git's ort strategy may produce 1 or many conflict blocks depending on
@@ -122,8 +156,10 @@ def resolve_file(name: str) -> dict:
         (proof / ("mergefile_" + Path(name).stem + ".txt")).write_text(
             original, encoding="utf8")
     print(f"[LumoNativeUnion] {name}: merge-file conflict regions={len(matches)}", flush=True)
-    if name.endswith("kart_vehicle.gd"):
-        out, report = resolve_vehicle(original, matches)
+    if name.endswith("kart_vehicle.gd") or name.endswith("kart_world.gd"):
+        out, report = (resolve_vehicle(original, matches)
+                       if name.endswith("kart_vehicle.gd")
+                       else resolve_world(original, matches))
         path.write_text(out, encoding="utf8")
         git("add", "--", name)
         return report
