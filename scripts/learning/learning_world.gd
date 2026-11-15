@@ -3,7 +3,7 @@ extends Node3D
 ## real meshes and spatial picking; tap is the equivalent accessible action.
 
 const ACTIVITY = preload("res://scripts/learning/learning_activity.gd")
-const FOX = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
+const FOX = preload("res://scripts/characters/lumo/lumo_nextgen_learning_actor.gd")
 const ATELIER = preload("res://scripts/learning/learning_atelier.gd")
 const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const ENGLISH_GALLERY = preload("res://scripts/learning/english_object_gallery.gd")
@@ -257,7 +257,7 @@ func _build_stage() -> void:
 	_atelier = ATELIER.new()
 	add_child(_atelier)
 	fox = FOX.new()
-	fox.name = "OriginalLearningLumo"
+	fox.name = "BlenderNextGenLearningLumo"
 	add_child(fox)
 	fox.position = Vector3(-4.6, 0.05, -0.4)
 	if fox.is_usable():
