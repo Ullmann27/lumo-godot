@@ -1,7 +1,7 @@
 class_name LumoRaceKart
 extends Node3D
-## Original Lumo Aurora-series racers. All geometry is authored here, no external IP.
-## The lofted bodywork/character shells use shared normals and retain animated joints.
+## Aurora production models share the live vehicle API with the procedural fleet.
+## Imported meshes retain their PBR finishes, mechanical joints and authored LODs.
 
 const FAR_DETAIL_DISTANCE: float = 32.0
 const DETAIL_HYSTERESIS: float = 4.0
@@ -17,6 +17,9 @@ const FUR = preload("res://scripts/games/kart_fur_geometry.gd")
 const CHARACTER_FINISH = preload("res://scripts/games/kart_character_finish.gd")
 const LUMO_ANIMATION = preload("res://scripts/characters/lumo/lumo_kart_animation_adapter.gd")
 const CINEMA_FINISH = preload("res://scripts/games/visual/kart_cinema_materials.gd")
+const PRODUCTION_VEHICLE = preload("res://scripts/games/kart_production_vehicle.gd")
+const PRODUCTION_DRIVER = preload("res://scripts/games/kart_production_driver.gd")
+const PRODUCTION_LUMO_SEAT = preload("res://scripts/games/kart_production_lumo_seat.gd")
 const CARBON := Color("0b1019")
 const GUNMETAL := Color("2a3342")
 ## Leuchtstärke aller Neonteile: stark genug fürs Glühen, aber noch farbig (kein weißes Ausbrennen).
@@ -82,8 +85,8 @@ var arm_blend: float = 0.0
 var racing_arm_joints: Array[Node3D] = []
 var racing_rest_grips: Array[Vector3] = []
 var wheel_rest_grips: Array[Vector3] = []
-## Only the actual player race enables the new Lumo. Garage, ghosts and rivals
-## retain their existing visuals until their own integration is approved.
+## Original Lumo stays behind his existing explicit adapter switch. Authored
+## rival rigs have their own helper and never replace this character path.
 var animated_lumo_enabled := false
 var lumo_animation
 var driver_airborne := false
@@ -94,6 +97,10 @@ var _far_with_driver: Mesh
 var _far_without_driver: Mesh
 var _far_chassis_only := false
 var _cinema_profile: String = ""
+var production_vehicle
+var production_driver
+var production_lumo_seat
+var _preview_detail := false
 
 
 func _ready() -> void:
@@ -103,6 +110,7 @@ func _ready() -> void:
 func set_animated_lumo_enabled(enabled: bool) -> void:
 	animated_lumo_enabled = enabled
 	if not enabled and is_instance_valid(lumo_animation):
+		production_lumo_seat = null
 		lumo_animation.free()
 		lumo_animation = null
 		if is_instance_valid(driver):
@@ -120,6 +128,9 @@ func set_driver_runtime_state(in_air: bool, hit_active: bool, suspended: bool) -
 	if is_instance_valid(lumo_animation):
 		lumo_animation.set_suspended(suspended)
 		lumo_animation.set_reduced_motion(reduced_motion)
+	if is_instance_valid(production_driver):
+		production_driver.set_suspended(suspended)
+		production_driver.set_reduced_motion(reduced_motion)
 
 
 func _ensure_lumo_animation() -> void:
@@ -139,6 +150,11 @@ func _ensure_lumo_animation() -> void:
 	lumo_animation.set_process(false)
 	lumo_animation.set_reduced_motion(reduced_motion)
 	lumo_animation.set_suspended(driver_animation_paused)
+	if is_instance_valid(production_vehicle):
+		var seat_fit = PRODUCTION_LUMO_SEAT.new()
+		if seat_fit.bind_visual(self, lumo_animation):
+			production_lumo_seat = seat_fit
+			production_lumo_seat.advance_tick()
 	driver.hide()
 	_refresh_far_proxy()
 	if celebration_place > 0:
@@ -261,6 +277,11 @@ func celebrate(place: int) -> void:
 			lumo_animation.celebrate_finished_race(place)
 		else:
 			lumo_animation.clear_celebration()
+	if is_instance_valid(production_driver):
+		if place > 0:
+			production_driver.celebrate_finished_race(place)
+		else:
+			production_driver.clear_celebration()
 
 
 func set_speaking(amount: float) -> void:
@@ -271,7 +292,22 @@ func set_graphics_quality(profile: String) -> void:
 	detail_distance = 14.0 if profile in ["light", "low"] else (22.0 if profile == "medium" else FAR_DETAIL_DISTANCE)
 	detail_check_time = 0.0
 	_cinema_profile = profile
+	if is_instance_valid(production_vehicle):
+		production_vehicle.set_graphics_quality(profile)
+	if is_instance_valid(production_driver):
+		production_driver.set_graphics_quality(profile)
 	_apply_cinema_coachwork()
+
+
+func set_preview_detail(enabled: bool) -> void:
+	_preview_detail = enabled
+	detail_check_time = 0.0
+	if is_instance_valid(production_vehicle):
+		production_vehicle.set_preview_detail(enabled)
+	if enabled:
+		_set_far_detail(false)
+		if is_instance_valid(production_driver):
+			production_driver.set_visual_lod(0)
 
 
 func _apply_cinema_coachwork() -> void:
@@ -299,6 +335,11 @@ func _rebuild() -> void:
 	for child in get_children():
 		child.free()
 	lumo_animation = null
+	production_vehicle = null
+	production_driver = null
+	production_lumo_seat = null
+	steering_wheel = null
+	driver = null
 	wheel_pivots.clear()
 	wheel_rotors.clear()
 	eyes.clear()
@@ -525,6 +566,11 @@ func _build() -> void:
 	name = "Kart_" + animal + "_" + kart_style
 	var spec: Dictionary = _resolved_look()
 	chassis_look = spec
+	if _build_production_vehicle():
+		_make_driver()
+		_make_far_mesh()
+		_merge_static(self)
+		return
 	# Comet, Glider, Aurora GT und die sechs Profil-Designs nutzen die gelofteten Karosserien,
 	# Blitz, Terra, Koloss, Phantom und Stella den Plattenbaukasten (_build_aero).
 	if str(spec.body) == "loft":
@@ -544,6 +590,51 @@ func _build() -> void:
 	_make_driver()
 	_make_far_mesh()
 	_merge_static(self)
+
+
+func _build_production_vehicle() -> bool:
+	if not PRODUCTION_VEHICLE.supports(kart_style):
+		return false
+	var candidate = PRODUCTION_VEHICLE.new()
+	if not candidate.build(kart_style, look, FLEET.entry(kart_style).look):
+		candidate.free()
+		return false
+	production_vehicle = candidate
+	add_child(production_vehicle)
+	wheel_pivots.assign(candidate.wheel_pivots)
+	wheel_rotors.assign(candidate.wheel_rotors)
+	steering_wheel = candidate.steering_wheel
+	candidate.set_graphics_quality(_cinema_profile)
+	candidate.set_preview_detail(_preview_detail)
+	# Reuse the live feedback system, anchored to the authored ports and tyres.
+	for port in candidate.boost_positions:
+		var flame := _mesh(self, _loft([
+			Vector4(0, 0.055, 0.055, 0), Vector4(0.18, 0.10, 0.09, 0),
+			Vector4(0.60, 0.002, 0.002, 0)
+		], false, 16, 3), port + Vector3(0, 0, 0.025), ICE, 0.0, 0.25, 2.0)
+		flame.name = "ProductionBoostFlame%d" % flames.size()
+		flame.hide()
+		flame.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		flames.append(flame)
+	for pivot in wheel_pivots:
+		if not bool(pivot.get_meta("front")):
+			var spark := _mesh(self, _loft([
+				Vector4(0, 0.07, 0.013, 0), Vector4(0.2, 0.03, 0.035, 0),
+				Vector4(0.45, 0.002, 0.002, 0)
+			], false, 12, 2), pivot.position + Vector3(0, -0.29, 0.14), ICE, 0, 0.3, 2.0)
+			spark.hide()
+			spark.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			sparks.append(spark)
+	var stance: float = 0.91 if kart_style == "glider" else (1.10 if kart_style == "turbo" else 1.0)
+	for side in [-1.0, 1.0]:
+		var lamp := _box(self, Vector3(side * 0.242 * stance, 0.683, 1.065),
+			Vector3(0.150 * stance, 0.025, 0.002), Color("ff4054"))
+		lamp.name = "BrakeLampLeft" if side < 0 else "BrakeLampRight"
+		lamp.material_override = _mat(Color("ff4054"), 0.0, 0.26, 2.6)
+		lamp.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		lamp.hide()
+		brake_lights.append(lamp)
+	return true
 
 
 func _build_loft(spec: Dictionary) -> void:
@@ -1674,7 +1765,35 @@ func _make_racing_sleeve(limb: Node3D, side: float, is_lumo: bool) -> void:
 			_attach(stripe, frame)
 
 
+func _build_production_driver() -> bool:
+	if companion_mode or animal not in ["rabbit", "lion", "squirrel", "owl", "turtle"]:
+		return false
+	wheel_rest_grips.clear()
+	if is_instance_valid(production_vehicle):
+		wheel_rest_grips.assign(production_vehicle.wheel_rest_grips)
+	else:
+		for side in [-1.0, 1.0]:
+			wheel_rest_grips.append(steering_wheel.transform.affine_inverse() * Vector3(side * 0.16, 1.055, -0.34))
+	var candidate = PRODUCTION_DRIVER.new()
+	candidate.name = "ProductionDriver"
+	add_child(candidate)
+	if candidate.bind_visual(self, animal):
+		production_driver = candidate
+		driver = candidate
+		candidate.set_graphics_quality(_cinema_profile)
+		candidate.set_reduced_motion(reduced_motion)
+		candidate.set_suspended(driver_animation_paused)
+		if celebration_place > 0:
+			candidate.celebrate_finished_race(celebration_place)
+		return true
+	candidate.free()
+	wheel_rest_grips.clear()
+	return false
+
+
 func _make_driver() -> void:
+	if _build_production_driver():
+		return
 	var fur: Color = {"fox": Color("ed762d"), "otter": Color("ad8064"), "rabbit": Color("cedbe8"), "badger": Color("64718a"), "cat": Color("d4b396")}.get(animal, Color("ed762d"))
 	var cream := Color("f4f2ea") if animal == "fox" else Color("eaf4f9")
 	var fur_shadow: Color = fur.darkened(0.18)
@@ -2082,6 +2201,8 @@ func _star(parent: Node3D, at: Vector3, size: float, color: Color) -> MeshInstan
 
 
 func _merge_static(parent: Node3D) -> void:
+	if parent == production_vehicle or parent == production_driver:
+		return
 	# One surface per PBR material family, preserving all animated joints.
 	# Fur volumes have no independent animation. Bake their local transform into
 	# the head/ear/tail batch, rather than adding a draw pass for every cheek.
@@ -2189,7 +2310,7 @@ func _append_far(parent: Node3D, transform_from_kart: Transform3D, tool: Surface
 	for child in parent.get_children():
 		# Keep one visible character, including at LOD distance. The rigged
 		# skin must never be baked into a rigid proxy or drawn over old Lumo.
-		if child == lumo_animation or (child == driver and _far_chassis_only):
+		if child == lumo_animation or child == production_vehicle or child == production_driver or (child == driver and _far_chassis_only):
 			continue
 		if child is MeshInstance3D:
 			if flames.has(child) or sparks.has(child) or brake_lights.has(child) or child.has_meta("near_only") or child.mesh.has_meta("far_skip"):
@@ -2201,6 +2322,9 @@ func _append_far(parent: Node3D, transform_from_kart: Transform3D, tool: Surface
 
 
 func _make_far_mesh() -> void:
+	if is_instance_valid(production_vehicle) and is_instance_valid(production_driver):
+		# Both imported models retain their own animated LOD meshes.
+		return
 	var tool := SurfaceTool.new()
 	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 	tool.set_material(_vertex_material(_mat(Color.WHITE, 0.16, 0.58)))
@@ -2209,7 +2333,7 @@ func _make_far_mesh() -> void:
 	# Keep a chassis-only alternative for the same fox vehicle. This small
 	# proxy avoids rebuilding the Kart (and deleting shield/host attachments)
 	# when the visual is enabled or disabled after it entered the scene tree.
-	if animal == "fox":
+	if animal == "fox" and not is_instance_valid(production_vehicle):
 		var chassis := SurfaceTool.new()
 		chassis.begin(Mesh.PRIMITIVE_TRIANGLES)
 		chassis.set_material(_vertex_material(_mat(Color.WHITE, 0.16, 0.58)))
@@ -2226,13 +2350,23 @@ func _make_far_mesh() -> void:
 
 func _set_far_detail(enabled: bool) -> void:
 	far_detail = enabled
-	far_mesh.visible = enabled
+	if is_instance_valid(far_mesh):
+		far_mesh.visible = enabled and far_mesh.mesh != null
 	for node in near_meshes:
 		node.visible = not enabled
 
 
 func _update_detail(camera: Camera3D) -> void:
+	if _preview_detail:
+		_set_far_detail(false)
+		return
 	var distance_squared: float = camera.global_position.distance_squared_to(global_position)
+	if is_instance_valid(production_vehicle):
+		production_vehicle.update_distance(distance_squared)
+		var distant: bool = production_vehicle.lod_level == 2
+		if distant != far_detail:
+			_set_far_detail(distant)
+		return
 	var switch_distance: float = detail_distance - DETAIL_HYSTERESIS if far_detail else detail_distance
 	var distant: bool = distance_squared > switch_distance * switch_distance
 	if distant != far_detail:
@@ -2267,7 +2401,7 @@ func update_motion(speed: float, steer: float, drift: bool, boost: bool) -> void
 
 
 func _update_lumo_visual(delta: float) -> void:
-	if steering_wheel:
+	if steering_wheel and not is_instance_valid(production_vehicle):
 		steering_wheel.rotation.z = -motion_steer * 0.40
 	lumo_animation.set_reduced_motion(reduced_motion)
 	lumo_animation.apply_vehicle_sample(
@@ -2275,6 +2409,8 @@ func _update_lumo_visual(delta: float) -> void:
 	)
 	driver_hit_pending = false
 	lumo_animation.advance_tick(delta)
+	if is_instance_valid(production_lumo_seat):
+		production_lumo_seat.advance_tick()
 
 
 func _process(delta: float) -> void:
@@ -2285,6 +2421,9 @@ func _process(delta: float) -> void:
 		return
 	animation_time += delta
 	wheel_spin_phase = fposmod(wheel_spin_phase + motion_speed * delta / 0.35, TAU)
+	if is_instance_valid(production_vehicle):
+		production_vehicle.apply_motion(wheel_spin_phase, motion_steer)
+		production_vehicle.set_braking(motion_brake)
 	# A restrained exhaust pilot light gives cruising karts a sense of speed.
 	# Full plasma remains boost-only; reduced-motion keeps the original policy.
 	var cruising_exhaust: bool = motion_speed > 7.0 and not reduced_motion and not far_detail
@@ -2317,17 +2456,27 @@ func _process(delta: float) -> void:
 		# The animated player stays the same character in both LODs. Keep
 		# its wheel anchors current even while the chassis uses a far proxy.
 		_update_lumo_visual(delta)
+	if is_instance_valid(production_driver):
+		if not is_instance_valid(production_vehicle) and steering_wheel:
+			steering_wheel.rotation.z = -motion_steer * 0.40
+		production_driver.set_visual_lod(production_vehicle.lod_level if is_instance_valid(production_vehicle) else (2 if far_detail else 0))
+		production_driver.set_reduced_motion(reduced_motion)
+		production_driver.apply_vehicle_sample(motion_speed, motion_steer, driver_airborne,
+			driver_hit_pending, motion_boost, motion_drift)
+		driver_hit_pending = false
+		production_driver.advance_tick(delta)
 	if far_detail:
 		return
 	if camera and camera.global_position.distance_squared_to(global_position) > 225.0:
 		if not camera.is_position_in_frustum(global_position + Vector3.UP):
 			return
-	for i in range(wheel_rotors.size()):
-		wheel_rotors[i].quaternion = Quaternion(Vector3.BACK, PI / 2) * Quaternion(Vector3.UP, wheel_spin_phase)
-		wheel_pivots[i].rotation.y = -motion_steer * 0.34 if wheel_pivots[i].get_meta("front") else 0.0
-		var hub_height: float = float(wheel_pivots[i].get_meta("height", 0.35))
-		wheel_pivots[i].position.y = hub_height if reduced_motion else hub_height + sin(animation_time * 11.0 + i * 1.7) * minf(0.010, absf(motion_speed) * 0.0005)
-	if is_instance_valid(lumo_animation):
+	if not is_instance_valid(production_vehicle):
+		for i in range(wheel_rotors.size()):
+			wheel_rotors[i].quaternion = Quaternion(Vector3.BACK, PI / 2) * Quaternion(Vector3.UP, wheel_spin_phase)
+			wheel_pivots[i].rotation.y = -motion_steer * 0.34 if wheel_pivots[i].get_meta("front") else 0.0
+			var hub_height: float = float(wheel_pivots[i].get_meta("height", 0.35))
+			wheel_pivots[i].position.y = hub_height if reduced_motion else hub_height + sin(animation_time * 11.0 + i * 1.7) * minf(0.010, absf(motion_speed) * 0.0005)
+	if is_instance_valid(lumo_animation) or is_instance_valid(production_driver):
 		return
 	if driver:
 		driver.rotation.z = lerpf(driver.rotation.z, -motion_steer * 0.06, minf(1, delta * 7.0))
@@ -2347,7 +2496,7 @@ func _process(delta: float) -> void:
 		jaw.position = jaw_rest_position + Vector3(0, -speaking_amount * 0.035, 0)
 	if tail and not reduced_motion:
 		tail.rotation.y = 0.63 + sin(animation_time * 2.6) * 0.055 - motion_steer * 0.07
-	if steering_wheel:
+	if steering_wheel and not is_instance_valid(production_vehicle):
 		steering_wheel.rotation.z = -motion_steer * 0.40
 	if celebration_place > 0:
 		_apply_celebration(delta)

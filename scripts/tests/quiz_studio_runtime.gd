@@ -229,6 +229,19 @@ func _swipe_checked(control: Control, condition: Callable = Callable(), deadline
 			inputs.append({"frame": frames, "kind": "screen_drag", "target": str(control.name), "position": [point.x, point.y]})
 			previous = point
 			await _frame()
+		# End the drag with the finger held still before releasing it. Immediate
+		# release turns this bounded aiming gesture into an inertial flick: on
+		# the 640x360 production list it alternated between both scroll ends.
+		# Keep genuine input events, the existing attempt limit and the original
+		# authority/deadline guards; never assign a scroll position directly.
+		var hold_seconds := 0.16
+		if deadline_msec > 0:
+			hold_seconds = minf(hold_seconds, maxf(0.0, float(deadline_msec - Time.get_ticks_msec()) / 1000.0))
+		var held_at := Time.get_ticks_msec()
+		if hold_seconds > 0.0:
+			await create_timer(hold_seconds).timeout
+		inputs.append({"frame": frames, "kind": "screen_hold", "target": str(control.name),
+			"position": [end.x, end.y], "duration_ms": Time.get_ticks_msec() - held_at})
 		guarded = _input_guard(condition, deadline_msec)
 		if guarded != InputResult.DONE:
 			await _cancel_pointer(3, end, "Canceled startup swipe after authority/deadline change")

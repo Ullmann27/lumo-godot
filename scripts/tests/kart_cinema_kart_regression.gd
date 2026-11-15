@@ -8,11 +8,34 @@ const FLEET = preload("res://scripts/games/kart_fleet.gd")
 func _initialize() -> void:
 	call_deferred("_run")
 
+func _check_imported_finish(kart: LumoRaceKart) -> void:
+	var meshes: Array[MeshInstance3D] = []
+	var originals: Array[Array] = []
+	for item in kart.production_vehicle.asset_root.find_children("*", "MeshInstance3D", true, false):
+		var mesh := item as MeshInstance3D
+		meshes.append(mesh)
+		var row: Array = []
+		for surface in range(mesh.mesh.get_surface_count()):
+			row.append(mesh.get_active_material(surface))
+		originals.append(row)
+	for quality in ["high", "low", "high"]:
+		kart.set_graphics_quality(quality)
+		for index in range(meshes.size()):
+			for surface in range(meshes[index].mesh.get_surface_count()):
+				var active := meshes[index].get_active_material(surface)
+				assert(active is StandardMaterial3D, "Imported authored PBR remains active")
+				assert(active == originals[index][surface], "Quality cannot replace authored material resources")
+	assert(meshes.size() >= 30, "All three imported LODs retain their material families")
+
 func _run() -> void:
 	for identity in FLEET.ids():
 		var fleet_kart: LumoRaceKart = KART.new()
 		root.add_child(fleet_kart)
 		fleet_kart.configure("fox", Color("f08a2c"), identity)
+		if is_instance_valid(fleet_kart.production_vehicle):
+			_check_imported_finish(fleet_kart)
+			fleet_kart.free()
+			continue
 		var proxy: Mesh = fleet_kart.far_mesh.mesh
 		for quality in ["high", "low"]:
 			fleet_kart.set_graphics_quality(quality)
@@ -31,7 +54,8 @@ func _run() -> void:
 		fleet_kart.free()
 	var kart: LumoRaceKart = KART.new()
 	root.add_child(kart)
-	kart.configure("fox", Color("f08a2c"), "comet")
+	# A remaining procedural profile still exercises the Cinema shader path.
+	kart.configure("fox", Color("f08a2c"), "gecko_velo")
 	var body: MeshInstance3D = kart.get_node("AuroraCoachwork/BatchedSculptedSurfaces")
 	var mesh: Mesh = body.mesh
 	var source_colors: Array = []

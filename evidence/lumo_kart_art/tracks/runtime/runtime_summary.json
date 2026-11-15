@@ -1,0 +1,989 @@
+{
+  "status": "PASS",
+  "scope": "Actual game world construction, real physics and visible warped triangles; APK/device tests are separate",
+  "frozen_asset_count": 396,
+  "frozen_assets_byte_identical": true,
+  "modified_frozen_files": [],
+  "runtime_glb_count": 165,
+  "runtime_glb_bytes": 114710136,
+  "unused_authoring_glb_count": 220,
+  "runtime_assets": [
+    {
+      "path": "assets/kart/production/tracks/zauberwald/portal_entry.glb",
+      "sha256": "3a63f9ac91a3aae490c0169fb49f6762c04b1baaeafc272064986793f0f0bc0f",
+      "bytes": 2531924
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/portal_entry_lod1.glb",
+      "sha256": "04833eb6fb26ef1bf354387b4510e0b173c146f4b04bec05a1f0e5e8df38e31f",
+      "bytes": 2459156
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/portal_entry_collision.glb",
+      "sha256": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f",
+      "bytes": 10368
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/portal_entry_terrain.glb",
+      "sha256": "ee4ac2210a9bf7f95a71f7bb1fc26c1bdac86a8610bf946294ced51b48b24b51",
+      "bytes": 42296
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/portal_entry_terrain_lod1.glb",
+      "sha256": "63991955a7a10085d11e054d9b8692413c003bb2a68064cd01b5f3463772976d",
+      "bytes": 42304
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/straight_12m.glb",
+      "sha256": "99cb3c00516f27c23473e005540a638f3700be7452b0744abeead4f8c2ff734a",
+      "bytes": 2542360
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/straight_12m_lod1.glb",
+      "sha256": "0a554a38b8c542f95bfcbe150aa8751d303934602b962d2b0739a6277a2bc576",
+      "bytes": 2458348
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/straight_12m_collision.glb",
+      "sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+      "bytes": 12856
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/straight_12m_terrain.glb",
+      "sha256": "833df58efea2a54b37d0a22361ee62c4331adff6f97d2ce28debf6ce01cd33da",
+      "bytes": 91472
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/straight_12m_terrain_lod1.glb",
+      "sha256": "5c8b5e3b039824b821111b4af1e86ec27847b25df654a12737dab1d0eda60785",
+      "bytes": 42308
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/portal_exit.glb",
+      "sha256": "77f65cc6f0a636f3f5ff2f294cf35e2069d88d2be5c2a925c8e8ebc292009c97",
+      "bytes": 2531928
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/portal_exit_lod1.glb",
+      "sha256": "6bcc2089f7b54e7ec9513c37f8467499c271b4955bf91781f27bf3dc73ee40fd",
+      "bytes": 2459160
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/portal_exit_collision.glb",
+      "sha256": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+      "bytes": 10380
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/portal_exit_terrain.glb",
+      "sha256": "9c2446d30146c0d46df3db94ba88f5079430aef7f5f5e1088ce9c93e729efdf2",
+      "bytes": 42304
+    },
+    {
+      "path": "assets/kart/production/tracks/zauberwald/portal_exit_terrain_lod1.glb",
+      "sha256": "0dc0494e13f41cdfda947286b83bfe889c4a4aa97d4c4cc994d4fc10c41e1358",
+      "bytes": 42304
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/portal_entry.glb",
+      "sha256": "fe38b73d68519260e28319e9a18b1a4bc704e6b2db8cdfb9e409d9df851d927c",
+      "bytes": 2368808
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/portal_entry_lod1.glb",
+      "sha256": "bccab109187e5e07e54d46b7ec5514cc7b0fb08b6918f64ea712f438262947be",
+      "bytes": 1816220
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/portal_entry_collision.glb",
+      "sha256": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f",
+      "bytes": 10368
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/portal_entry_terrain.glb",
+      "sha256": "066c34245150b240e6fde60124e892367c3059d068a57704b230bd3866e03100",
+      "bytes": 42292
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/portal_entry_terrain_lod1.glb",
+      "sha256": "d52341dd7aa588b2d8516efd64dc0ea3cce6092cebb067f441747899d8e5dc3c",
+      "bytes": 42300
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/straight_12m.glb",
+      "sha256": "d9d13b29451f4791828f9cd5181661a26de1de592966cd14bab959c6c0402e81",
+      "bytes": 2978440
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/straight_12m_lod1.glb",
+      "sha256": "f9233395ad50f3235ed6c4f956400b5263f2faadee0e30124142cc9dc066cf59",
+      "bytes": 2034112
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/straight_12m_collision.glb",
+      "sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+      "bytes": 12856
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/straight_12m_terrain.glb",
+      "sha256": "3ce136dc149a73811a99ac2cb7eca1921006cf60a207a1fbda942047d0048a05",
+      "bytes": 91464
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/straight_12m_terrain_lod1.glb",
+      "sha256": "8701565b98cb7fda71f00cf0d423f276888746b2da5a3f1d72e52c8cbf3eab57",
+      "bytes": 42300
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/portal_exit.glb",
+      "sha256": "ae19132aa0bf60031dbe5b3ba61c0b73e3f04d0c77ea6e8d5ac6b3643d4cdfed",
+      "bytes": 2369004
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/portal_exit_lod1.glb",
+      "sha256": "5261dc7c30b84dc3c4cde4a61d9e82ca87d7320d999c6f35281a18e855a2ee3a",
+      "bytes": 1816312
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/portal_exit_collision.glb",
+      "sha256": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+      "bytes": 10380
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/portal_exit_terrain.glb",
+      "sha256": "52478da2702d5e2e7b611f4e52fe843a3fe4e142eff38418a0778659fb564c8e",
+      "bytes": 42296
+    },
+    {
+      "path": "assets/kart/production/tracks/bergwelt/portal_exit_terrain_lod1.glb",
+      "sha256": "b671810b5d4c7fc338a4ed36e68839576b8d3e70e2b766b813b1273a1b019ef6",
+      "bytes": 42296
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/portal_entry.glb",
+      "sha256": "ebca9a3da2b7b11d093bcf4d4f8c6fdbaa5942a5a8cb03c248346b168cdd2290",
+      "bytes": 1129704
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/portal_entry_lod1.glb",
+      "sha256": "87039f55bb92af72a39e57a05f1cc4e6bdb2e66173eea215469c65546f2df3fd",
+      "bytes": 537340
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/portal_entry_collision.glb",
+      "sha256": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f",
+      "bytes": 10368
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/portal_entry_terrain.glb",
+      "sha256": "6a248068a3b719eade47196df9852b6c035a92a07331e6ada0cee1975bad236a",
+      "bytes": 42312
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/portal_entry_terrain_lod1.glb",
+      "sha256": "5775217f42efa50b6b8b5069f79a4456435ccadbbc5a34643fb5971479cde094",
+      "bytes": 42320
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/straight_12m.glb",
+      "sha256": "2b783d1b81349d305a52062ef430d80757017436d6d9fb935b32ee1852086c47",
+      "bytes": 683380
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/straight_12m_lod1.glb",
+      "sha256": "fb94227a656c71330a0d7620a5de8b858c8c93932beedf065ff82013b1aa52c0",
+      "bytes": 456844
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/straight_12m_collision.glb",
+      "sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+      "bytes": 12856
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/straight_12m_terrain.glb",
+      "sha256": "faa1aa5abc1c0933fb2ec781bcd6e981dc2b5446ef448cda53a65d8ebc6edf4d",
+      "bytes": 91488
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/straight_12m_terrain_lod1.glb",
+      "sha256": "22ed0cf3e769d3d79e129fc605c55c2924973611bc1a79ac4ba920f84e3c541f",
+      "bytes": 42324
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/portal_exit.glb",
+      "sha256": "95925e62415c22423e72e00a3bf88d6cc1958976fbc132a86b23a97ee39d2d3c",
+      "bytes": 1129512
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/portal_exit_lod1.glb",
+      "sha256": "4a5801a71c59965ffb6d245338d3010841e9910d7e95a656be170ead279e7556",
+      "bytes": 536964
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/portal_exit_collision.glb",
+      "sha256": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+      "bytes": 10380
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/portal_exit_terrain.glb",
+      "sha256": "82c5a105ea78b3ca47d57bf2353e106f6a0656539c7489f48c69b0ecd84c26e5",
+      "bytes": 42320
+    },
+    {
+      "path": "assets/kart/production/tracks/holo_city/portal_exit_terrain_lod1.glb",
+      "sha256": "62b88981feae3e845396e51a7f1364e7f2dccbe5fe406a354fe504c4622671d7",
+      "bytes": 42320
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/portal_entry.glb",
+      "sha256": "6076a79b341eebfae27b77f6c8221fa82fa58f98928492634ae8968714ea17ec",
+      "bytes": 2230076
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/portal_entry_lod1.glb",
+      "sha256": "5adb8b9b70feab05537a102b2638da1573f4d258703c99eaf4200308551f5cb0",
+      "bytes": 1755012
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/portal_entry_collision.glb",
+      "sha256": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f",
+      "bytes": 10368
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/portal_entry_terrain.glb",
+      "sha256": "48ff771b4e991bccda6762a6dd68dc609de4e62f2f65971db60707ec52b5afc3",
+      "bytes": 118280
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/portal_entry_terrain_lod1.glb",
+      "sha256": "9eeab4e0d5025350c001ab64fe206195779b7bf521a30a88e0e5005e5f8631f2",
+      "bytes": 118288
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/straight_12m.glb",
+      "sha256": "80c4b87428f03d7bab6e9f242c027d764baa69bd98b710e937484fa248d1320f",
+      "bytes": 2942656
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/straight_12m_lod1.glb",
+      "sha256": "776c663833cabe0dffbe2196ea7b70afc18861355a90a320c5fb56424b1a7400",
+      "bytes": 1998324
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/straight_12m_collision.glb",
+      "sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+      "bytes": 12856
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/straight_12m_terrain.glb",
+      "sha256": "0678bf8744c653b098b22a3c56a706abc87403723ed1ef3c21d67a1679d0b535",
+      "bytes": 229908
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/straight_12m_terrain_lod1.glb",
+      "sha256": "b2da68aa687191550ce0b748315cb00d04ce2c34b78a794b2b42d102a6488f09",
+      "bytes": 88468
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/portal_exit.glb",
+      "sha256": "50b913b2f58f80b2fb09e03e5ea52ef983bb7efc978b8a73693f09d01b458a69",
+      "bytes": 2229792
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/portal_exit_lod1.glb",
+      "sha256": "d3b529b048e956a9a4b8ab6674bda380f3341dc1ca8c6c5ba8c204a08bb6573f",
+      "bytes": 1754724
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/portal_exit_collision.glb",
+      "sha256": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+      "bytes": 10380
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/portal_exit_terrain.glb",
+      "sha256": "eb917ab631acb219a88c6836c803da8c8776eab19c136721c404bfdb4d7787e1",
+      "bytes": 118288
+    },
+    {
+      "path": "assets/kart/production/tracks/crystal_canyon/portal_exit_terrain_lod1.glb",
+      "sha256": "9af8a5991e44503407d4298cd6f636a3d8bce6c191f448c66791fa487ef0e564",
+      "bytes": 118288
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/portal_entry.glb",
+      "sha256": "13ad81529e441fa7962b32cf232fa6c87cf4ff02c05bfd84e52006632b82ff69",
+      "bytes": 2425656
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/portal_entry_lod1.glb",
+      "sha256": "03bdf959db7f40369367094320d9e34c935436b3cafa00ec09c97236b9ec9b7e",
+      "bytes": 1830060
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/portal_entry_collision.glb",
+      "sha256": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f",
+      "bytes": 10368
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/portal_entry_terrain.glb",
+      "sha256": "4b01b275b6ebae7488a8681f71f2c8a59d9ddf0526d2572909d033471a5b2615",
+      "bytes": 42304
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/portal_entry_terrain_lod1.glb",
+      "sha256": "71b3bb8707d8b8ca519297576fa0e667d5cae3e4d12f99d9fc784246869cf114",
+      "bytes": 42312
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/straight_12m.glb",
+      "sha256": "50e72ac379baa0e151d65b1913fe3c63dee96b3f553fc7d6715135386361c23f",
+      "bytes": 3087348
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/straight_12m_lod1.glb",
+      "sha256": "45c6fac003bc433cb71daa1cc6a181ac8e3a1df393e257b8e3a00b50b01cbe2e",
+      "bytes": 2057240
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/straight_12m_collision.glb",
+      "sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+      "bytes": 12856
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/straight_12m_terrain.glb",
+      "sha256": "8771c2a01a92bfef1a7f02e00cca8a54ab09d65b54a5a58e0baddb9b06273ff0",
+      "bytes": 91480
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/straight_12m_terrain_lod1.glb",
+      "sha256": "00fa32ec055b37bd03aa7f59100b12a07a803ef7053e54c3ff023ae338dee77a",
+      "bytes": 42316
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/portal_exit.glb",
+      "sha256": "85bd490f232c56120ff215c0ff1d547b8ec534ad93b7d9e0e9e72e7fd5557223",
+      "bytes": 2425852
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/portal_exit_lod1.glb",
+      "sha256": "0077a94c745c7bd85b38d1b177fd84fc509e5fa4f001e0db0b9e2be3f16490ef",
+      "bytes": 1830152
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/portal_exit_collision.glb",
+      "sha256": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+      "bytes": 10380
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/portal_exit_terrain.glb",
+      "sha256": "6e5575de7665b45a9a20f630c037112fd5ec2a669771afb1d5c63a8d10fd93d0",
+      "bytes": 42312
+    },
+    {
+      "path": "assets/kart/production/tracks/jungle_temple/portal_exit_terrain_lod1.glb",
+      "sha256": "4971476a441f6c810aa5059330a512b449a00da290a3016af4e73b57e73609f0",
+      "bytes": 42312
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/portal_entry.glb",
+      "sha256": "c08fe269151d9c44584995e95083099e93fe4f43f944c24606fe1cbaa7bc3ad9",
+      "bytes": 1805896
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/portal_entry_lod1.glb",
+      "sha256": "1d715b61d803fc9a8954345ff0eef234eb174bbf36cf02d75315c4932a329199",
+      "bytes": 1727960
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/portal_entry_collision.glb",
+      "sha256": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f",
+      "bytes": 10368
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/portal_entry_terrain.glb",
+      "sha256": "0e207cf81210d8c6e39efa2a739c85538947c0c7d49714864d7eead4c046e29a",
+      "bytes": 42300
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/portal_entry_terrain_lod1.glb",
+      "sha256": "66bbe1ad307aee22485df750df71370ba57f25b54609794169d903e53c57923b",
+      "bytes": 42308
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/straight_12m.glb",
+      "sha256": "9ea8379f725c070adea7791ea8367382f713e61e97c9d493cba0c5656a96b254",
+      "bytes": 1863996
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/straight_12m_lod1.glb",
+      "sha256": "b6e3aebc63b0edca9cec30c82169f8e079c1172e1633cd19049e98ddf2f2520c",
+      "bytes": 1805904
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/straight_12m_collision.glb",
+      "sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+      "bytes": 12856
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/straight_12m_terrain.glb",
+      "sha256": "f88f628230a8f735f1a0293bd835dd0cce983796e270c24d99a6b458e96ac711",
+      "bytes": 91472
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/straight_12m_terrain_lod1.glb",
+      "sha256": "cf7cf3fe2cbbdc29a51cf44e4a40d9bc84d904c666ed3db563ba4b6fc9067f9a",
+      "bytes": 42308
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/portal_exit.glb",
+      "sha256": "698edc062538661628292a2c6a4e2f309ec6185d6bbbfcd4f09d23e3738a7975",
+      "bytes": 1805884
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/portal_exit_lod1.glb",
+      "sha256": "0074605d96d79c2b8fc99768f6733b60725a3aa380b8e9e059c6eb787758c1a0",
+      "bytes": 1727960
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/portal_exit_collision.glb",
+      "sha256": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+      "bytes": 10380
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/portal_exit_terrain.glb",
+      "sha256": "ffcc0b05dac584e56288e237c639f177f2126c296e35cf87ac0f0a2c93c07553",
+      "bytes": 42304
+    },
+    {
+      "path": "assets/kart/production/tracks/candy_cloud/portal_exit_terrain_lod1.glb",
+      "sha256": "17dc8ca4321e94d5afef38e466e717840894ac1d1a23c9d174cd6a389bed4fb7",
+      "bytes": 42304
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/portal_entry.glb",
+      "sha256": "af9e14838e94e685f7aaed1c603e93d57a655b5af0eadf32139038d250c15ec5",
+      "bytes": 1890052
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/portal_entry_lod1.glb",
+      "sha256": "2ebfbe10b531409ef08c9bd7016bc01b545533f7db752380879363251f6173df",
+      "bytes": 1678984
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/portal_entry_collision.glb",
+      "sha256": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f",
+      "bytes": 10368
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/portal_entry_terrain.glb",
+      "sha256": "3b77ef0950fe995503f0970335abaa497e405796fa8c5e8c94ec1015c63653ed",
+      "bytes": 118280
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/portal_entry_terrain_lod1.glb",
+      "sha256": "35e4179a3c4b423676a8a46abf676e8399b1996a869207573c3940dbe436c2db",
+      "bytes": 118288
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/straight_12m.glb",
+      "sha256": "8e89e6c38bb6534eac2828685a73779d9473329a9bc5650b87f7e84f3803972d",
+      "bytes": 2303420
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/straight_12m_lod1.glb",
+      "sha256": "9673246bb1c3dcfe234b5fd8f76abcbef6de5992e4fe6569662f86e287005666",
+      "bytes": 1880904
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/straight_12m_collision.glb",
+      "sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+      "bytes": 12856
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/straight_12m_terrain.glb",
+      "sha256": "9f50a1e1c220f6e8303b26bf15e5a47a7dd95b64d4997d319911370a0a411984",
+      "bytes": 229904
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/straight_12m_terrain_lod1.glb",
+      "sha256": "af97e2d94ec6ed860bba2abdacc3d48eb161fc622dfb61bd3476937fd5fb04c6",
+      "bytes": 88468
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/portal_exit.glb",
+      "sha256": "0513d72b92499df7897e2e17005e6dac9c236fc4b2cad05d69fc2aecb7c1b03f",
+      "bytes": 1890064
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/portal_exit_lod1.glb",
+      "sha256": "1760f9da5b53ae31f4b7cf1e0af253583d2e37803e67157cfed631876cb0fdb6",
+      "bytes": 1678996
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/portal_exit_collision.glb",
+      "sha256": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+      "bytes": 10380
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/portal_exit_terrain.glb",
+      "sha256": "7a9837fc309278f746c809a3ef72be8d806d19d19414d7f32b52704741d3b931",
+      "bytes": 118284
+    },
+    {
+      "path": "assets/kart/production/tracks/volcano_night/portal_exit_terrain_lod1.glb",
+      "sha256": "6aa90fb7e602ac47aa5aeaa9bae4f60d496086735d36b654333738dba3aee573",
+      "bytes": 118284
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/portal_entry.glb",
+      "sha256": "07e96fd976600705700c5feec3095d1a912e9d2fca19ab41119c3f70dbff7711",
+      "bytes": 565252
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/portal_entry_lod1.glb",
+      "sha256": "e660aba20e019a868b641fb3930fed92b6193b5ee78904ee1b79344d2df4fd20",
+      "bytes": 547248
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/portal_entry_collision.glb",
+      "sha256": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f",
+      "bytes": 10368
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/portal_entry_terrain.glb",
+      "sha256": "134fb087ba92df0d284f16c784a461537b8739892c23b47f1c4184a7e495df4e",
+      "bytes": 42304
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/portal_entry_terrain_lod1.glb",
+      "sha256": "992f2489544122fa9cd3c50062a773c8713e9131a0d5807b13798ab4899d4401",
+      "bytes": 42312
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/straight_12m.glb",
+      "sha256": "884edaa5c7db66f6db363df5c3399e7b04b034662d189170a6655d6bcaf1a695",
+      "bytes": 683832
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/straight_12m_lod1.glb",
+      "sha256": "b597567b23682ec706efd0d5311189fdfff17c594dccd2973ed26f3b9cb849b0",
+      "bytes": 647824
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/straight_12m_collision.glb",
+      "sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+      "bytes": 12856
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/straight_12m_terrain.glb",
+      "sha256": "85193b451495d5b9e8272bdb518f23d57b758695f98bc8d80a570d07b1170ead",
+      "bytes": 91480
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/straight_12m_terrain_lod1.glb",
+      "sha256": "64eae36a6add45af15f7a136011c7a8bf993fca905b1e249d887f3a75ac76271",
+      "bytes": 42316
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/portal_exit.glb",
+      "sha256": "d332f86309dd4624f3f7c4011b4eec762e28f0b06dfedbb065d7dad01c7f5b09",
+      "bytes": 565252
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/portal_exit_lod1.glb",
+      "sha256": "476df2efeca8e101e60f2a8675aa48e4754ee959df6e271aca5c77c817451767",
+      "bytes": 547244
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/portal_exit_collision.glb",
+      "sha256": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+      "bytes": 10380
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/portal_exit_terrain.glb",
+      "sha256": "67a51cba76a08fb10567a66611cabdf83fc7441f094973cba9a7fc299286503e",
+      "bytes": 42312
+    },
+    {
+      "path": "assets/kart/production/tracks/winter_sprint/portal_exit_terrain_lod1.glb",
+      "sha256": "2c6249b222188a1598bba3b41bc90a568dfb10d85da91f12d09be80cf51b6836",
+      "bytes": 42312
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/portal_entry.glb",
+      "sha256": "ecb1cfb3771f5da75672c92412e659d98daf7e5ed5c419b6912b3597fd3ab53b",
+      "bytes": 1242828
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/portal_entry_lod1.glb",
+      "sha256": "a9dc244e95c0409615701090773db5281df2493b2075f63e8c27aff8ec470d3d",
+      "bytes": 642156
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/portal_entry_collision.glb",
+      "sha256": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f",
+      "bytes": 10368
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/portal_entry_terrain.glb",
+      "sha256": "05594ffec33e9f6340e9757c6868311f4270ec68e91548aba9faaffd128a247c",
+      "bytes": 42328
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/portal_entry_terrain_lod1.glb",
+      "sha256": "8d34795bd2825765734dd5fb5397eb66e9d3a3a746cf5586d34900b209076886",
+      "bytes": 42336
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/straight_12m.glb",
+      "sha256": "52a6428146dea7e7b36235a55bf69744c6e5bd4adef9cf54d7da8c6c16124c41",
+      "bytes": 804808
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/straight_12m_lod1.glb",
+      "sha256": "6d92790caccd238bad97276448f4ec83ad4ad2297be10338f9904ae2e448b63a",
+      "bytes": 578272
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/straight_12m_collision.glb",
+      "sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+      "bytes": 12856
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/straight_12m_terrain.glb",
+      "sha256": "4f0c8186ad60a20dd92ad446c25d7ca7dea907f59f1ff090a60c6c2302a2bbc8",
+      "bytes": 91500
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/straight_12m_terrain_lod1.glb",
+      "sha256": "99cd4ad0353fa1e574eb8f2a499596a2e38d653961b8b9c3869bf63df494a082",
+      "bytes": 42336
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/portal_exit.glb",
+      "sha256": "e1d043fc94dfb53e2a46e7196aa3e3db58015f7ecf33f25cdfd8d998cffb9c56",
+      "bytes": 1242636
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/portal_exit_lod1.glb",
+      "sha256": "0163b4aa3017b360f94b213064f2759f647878881df73099b1055e3a010d7599",
+      "bytes": 641780
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/portal_exit_collision.glb",
+      "sha256": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+      "bytes": 10380
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/portal_exit_terrain.glb",
+      "sha256": "6ab112d99f62b68a0a4405d62e07561a1f4b46d97474eebc6a05c2e8f39bd84a",
+      "bytes": 42332
+    },
+    {
+      "path": "assets/kart/production/tracks/galaxy_ringway/portal_exit_terrain_lod1.glb",
+      "sha256": "868b156b9ed2eb8700f2c15425f5bb15ac4769178511865a7320fbb4b1c7ae2d",
+      "bytes": 42332
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/portal_entry.glb",
+      "sha256": "dd710c0fb0bac162861d0b505354f9c792f1f341674372cccdb53c94228c23bb",
+      "bytes": 2879168
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/portal_entry_lod1.glb",
+      "sha256": "474f735f8e3a129ef5e5739f679a1df57ff843c8117f82726a9dbf5db8192109",
+      "bytes": 1929412
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/portal_entry_collision.glb",
+      "sha256": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f",
+      "bytes": 10368
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/portal_entry_terrain.glb",
+      "sha256": "6f9d0db73f0050f5df2482ca9fc055982b24d196a43962836d784d1b3deba47b",
+      "bytes": 42304
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/portal_entry_terrain_lod1.glb",
+      "sha256": "6bc551e5a6e7eb67a736a498458f80c7a91d1cd44f4c753ac7b69179c7a3a892",
+      "bytes": 42312
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/straight_12m.glb",
+      "sha256": "6bf42aedcc1e991b0186f67ad56ccda3aded283f77a0566b449353c2da5ed5a7",
+      "bytes": 3075196
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/straight_12m_lod1.glb",
+      "sha256": "44a82ace84b89c3f920e0c2e384aee58495e1f676bbf1765cf1600f751e0c4f4",
+      "bytes": 2052384
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/straight_12m_collision.glb",
+      "sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+      "bytes": 12856
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/straight_12m_terrain.glb",
+      "sha256": "7983914bd0e0bb4ae2542e631a71461bc764d7269665025dc03e22cba84ccc2f",
+      "bytes": 91476
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/straight_12m_terrain_lod1.glb",
+      "sha256": "7f677f01bef755978b9700a13bf82996dceb2b56db0002376344f8ca360e6a58",
+      "bytes": 42312
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/portal_exit.glb",
+      "sha256": "b9d3e6546255589faf617f7682590d153227244408293a06b485a17e7a1b96a2",
+      "bytes": 2878448
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/portal_exit_lod1.glb",
+      "sha256": "e25a636cc658ff991c0df8025e9aa6b81974b3bb4a1fdd4c1d75bad3ee78888a",
+      "bytes": 1929652
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/portal_exit_collision.glb",
+      "sha256": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+      "bytes": 10380
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/portal_exit_terrain.glb",
+      "sha256": "863a9b2608b585d32af10d0ec5be1eff307a1cd7a6976359578dbc9c6e74acd2",
+      "bytes": 42308
+    },
+    {
+      "path": "assets/kart/production/tracks/desert_drift/portal_exit_terrain_lod1.glb",
+      "sha256": "0c6d18ad409e808b9e0baff4df19599353f44717fc2c11138eb29b45cad06756",
+      "bytes": 42308
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/portal_entry.glb",
+      "sha256": "69efa9cc04f779aa4660b6652ff63c9ae084d3e5b67f4e37002bf37cbd274859",
+      "bytes": 1251664
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/portal_entry_lod1.glb",
+      "sha256": "ad38fc3df0d9386097f18216c858e564cd834ccf8c8ce45b72ee4b30bf2e2cd7",
+      "bytes": 638076
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/portal_entry_collision.glb",
+      "sha256": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f",
+      "bytes": 10368
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/portal_entry_terrain.glb",
+      "sha256": "38aa1d36c58e789a2130f63d6c78b27eaa0e9a311cfe6a87024dbf5ec3d0a289",
+      "bytes": 42320
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/portal_entry_terrain_lod1.glb",
+      "sha256": "881ed1b5a40ef10cc0c4fdb3eade3169265fa81fcebfb778dc8f861267c1276e",
+      "bytes": 42328
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/straight_12m.glb",
+      "sha256": "fec3b927ba6f9c69e8a518df14158f96c8bd2aa93b2652088a0b1d2b843a02a1",
+      "bytes": 778936
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/straight_12m_lod1.glb",
+      "sha256": "97c605dd98903a6550786706518a296b03f8192cd314d9b4d8a42977f4b3f3db",
+      "bytes": 552400
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/straight_12m_collision.glb",
+      "sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+      "bytes": 12856
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/straight_12m_terrain.glb",
+      "sha256": "1fed80c38df0a2957d51f8e870060fafc913165013c98118b063603ae6758582",
+      "bytes": 91496
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/straight_12m_terrain_lod1.glb",
+      "sha256": "43a20d074d08acd19a1996f86b397862297229eaaa37da41ae24b05b76506569",
+      "bytes": 42332
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/portal_exit.glb",
+      "sha256": "c7eb4f38452e9e444b6d175ead820a3133ae736f6a295a354c15568e2397e5e8",
+      "bytes": 1251468
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/portal_exit_lod1.glb",
+      "sha256": "a1706e106a524cd6857afe5e39153e5948f03044ab65643a891bb5cafa409ad0",
+      "bytes": 637696
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/portal_exit_collision.glb",
+      "sha256": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+      "bytes": 10380
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/portal_exit_terrain.glb",
+      "sha256": "b152801571e96b909413d14dace3b415f59b9b5fef4ebac88056b4477e3a1668",
+      "bytes": 42328
+    },
+    {
+      "path": "assets/kart/production/tracks/learning_lab/portal_exit_terrain_lod1.glb",
+      "sha256": "9eadfb8bcb4e01cdd792976a6780b66f4159623eb18c1526cefe78f39ea9c179",
+      "bytes": 42328
+    }
+  ],
+  "themes_tested_in_each_detail_mode": 11,
+  "physics_world_builds": 22,
+  "free_kart_capsule_sweeps": 1980,
+  "free_road_camera_rays": 1980,
+  "wall_roof_slide_contacts": 88,
+  "visible_clear_cross_sections": 1958,
+  "maximum_socket_error_m": 9.5367431640625e-07,
+  "maximum_joint_error_m": 9.5367431640625e-07,
+  "maximum_joint_rotation_error_rad": 0.0009765625,
+  "capsule": {
+    "radius_m": 0.85,
+    "height_m": 2.0,
+    "origin": "kart feet",
+    "center_offset_y_m": 1.0
+  },
+  "camera_sphere_radius_m": 0.2,
+  "world_layouts": [
+    {
+      "track": "zauberwald",
+      "start": 247.0,
+      "end": 291.0,
+      "modules": 5,
+      "mobile_triangles": 37628,
+      "collision_triangles": 1368
+    },
+    {
+      "track": "bergwelt",
+      "start": 151.0,
+      "end": 195.0,
+      "modules": 5,
+      "mobile_triangles": 33036,
+      "collision_triangles": 1368
+    },
+    {
+      "track": "holo_city",
+      "start": 243.0,
+      "end": 287.0,
+      "modules": 5,
+      "mobile_triangles": 36712,
+      "collision_triangles": 1368
+    },
+    {
+      "track": "crystal_canyon",
+      "start": 159.0,
+      "end": 203.0,
+      "modules": 5,
+      "mobile_triangles": 32976,
+      "collision_triangles": 1368
+    },
+    {
+      "track": "jungle_temple",
+      "start": 367.0,
+      "end": 411.0,
+      "modules": 5,
+      "mobile_triangles": 34736,
+      "collision_triangles": 1368
+    },
+    {
+      "track": "candy_cloud",
+      "start": 427.0,
+      "end": 471.0,
+      "modules": 5,
+      "mobile_triangles": 28344,
+      "collision_triangles": 1368
+    },
+    {
+      "track": "volcano_night",
+      "start": 423.0,
+      "end": 467.0,
+      "modules": 5,
+      "mobile_triangles": 34144,
+      "collision_triangles": 1368
+    },
+    {
+      "track": "winter_sprint",
+      "start": 419.0,
+      "end": 463.0,
+      "modules": 5,
+      "mobile_triangles": 28784,
+      "collision_triangles": 1368
+    },
+    {
+      "track": "galaxy_ringway",
+      "start": 363.0,
+      "end": 407.0,
+      "modules": 5,
+      "mobile_triangles": 47752,
+      "collision_triangles": 1368
+    },
+    {
+      "track": "desert_drift",
+      "start": 419.0,
+      "end": 463.0,
+      "modules": 5,
+      "mobile_triangles": 33248,
+      "collision_triangles": 1368
+    },
+    {
+      "track": "learning_lab",
+      "start": 383.0,
+      "end": 427.0,
+      "modules": 5,
+      "mobile_triangles": 39192,
+      "collision_triangles": 1368
+    }
+  ],
+  "evidence": {
+    "physics_all_mobile.json": "830dc8f3899003f7116280b92d5d008cc5411746b4f742fe478ee1b2abd6da82",
+    "physics_all_full.json": "8092f958f195a026e8e8438792d9bc3ed2d20ba151cc5b0a3d4922f2841887fd",
+    "visible_clearance_all.json": "60577e61c436815040b857821d5b4bf14dd16d99a283d3ba6366da4a34b1010e"
+  },
+  "source_snapshot": {
+    "scripts/games/kart_world.gd": "28140ebfcec2af629dd8040eb320345d1b5040f99ae4e6ba85216ee3b6989561",
+    "scripts/games/kart_production_tunnel_layout.gd": "756295a12ba63505870741370f2f7614840b254831cc8f031c480a3b5c1a8164",
+    "scripts/games/kart_production_tunnel_mesh.gd": "fae04724633e5d72006eee8a9f0d8ce8f956a7b21ca26c0c845b4db258108f3e",
+    "scripts/games/kart_production_tunnels.gd": "17ead6668ec80a91a2014858810b5d20c17e14f4517b657ace828b6dc5b41209",
+    "scripts/tests/kart_production_tunnel_layout_regression.gd": "1eb4e9d95f217bc6efb77b34fb74b3cac5def148df743a3182b49ecff5b4c413",
+    "scripts/tests/kart_production_tunnel_physics_regression.gd": "8c82f70f797bc284ba868853a0d5109c383ac562266871be0c5d19c85bc8fba4",
+    "scripts/tests/kart_production_tunnel_visual_clearance.gd": "a54466403d34ad346916b1977d0ff47adb4a28da1ea2b07d018a3396f5a710eb",
+    "scripts/tests/kart_production_tunnel_lighting_probe.gd": "c9bd2579c65ae364b2e6002f9df584d724701aa13606020919f3ccf115f3ece2"
+  },
+  "source_snapshot_semantics": "Final delivery snapshot; geometry/physics checks precede the Volcano-only local lighting correction. Separate light probes and native recapture validate that later change.",
+  "physical_android_device_fps_measured": false,
+  "native_visual_review": {
+    "status": "PASS",
+    "reviewed_current_images": 22,
+    "manual_image_inspections": 24,
+    "report": "evidence/lumo_kart_art/tracks/runtime/visual_qa.json",
+    "sha256": "d808affb46180d0ed5943bfb8593847bc7a8875c7ebb376408b2db3c2efe2aee",
+    "volcano_light_profile": {
+      "status": "RUNTIME_VERIFIED_AND_NATIVE_RECAPTURE_VISUALLY_APPROVED",
+      "theme": "volcano_night",
+      "energy_before": 1.6,
+      "energy_after": 4.8,
+      "range_before_m": 11,
+      "range_after_m": 15,
+      "attenuation_before": 0.8,
+      "attenuation_after": 0.6,
+      "color_before": "ee9548",
+      "color_after": "f9c896",
+      "maximum_high_lights": 4,
+      "maximum_mobile_lights": 3,
+      "shadow_enabled": false,
+      "geometry_materials_and_global_environment_changed": false,
+      "source_sha256": "17ead6668ec80a91a2014858810b5d20c17e14f4517b657ace828b6dc5b41209",
+      "probe_reports": [
+        "evidence/lumo_kart_art/tracks/runtime/volcano_lighting_before.json",
+        "evidence/lumo_kart_art/tracks/runtime/volcano_lighting_after.json",
+        "evidence/lumo_kart_art/tracks/runtime/volcano_lighting_after_mobile.json"
+      ]
+    }
+  }
+}

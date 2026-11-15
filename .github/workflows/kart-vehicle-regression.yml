@@ -10,6 +10,10 @@ on:
       - scripts/games/kart_fleet.gd
       - scripts/games/kart_fur_geometry.gd
       - scripts/games/kart_character_finish.gd
+      - scripts/games/kart_production_vehicle.gd
+      - scripts/games/kart_production_lumo_seat.gd
+      - scripts/games/kart_production_driver.gd
+      - scripts/games/lumo_opponent_roster.gd
       - scripts/games/visual/kart_cinema_materials.gd
       - assets/shaders/kart_lumo_cinema_*.gdshader
       - scripts/characters/lumo/**
@@ -24,6 +28,10 @@ on:
       - scripts/games/kart_fleet.gd
       - scripts/games/kart_fur_geometry.gd
       - scripts/games/kart_character_finish.gd
+      - scripts/games/kart_production_vehicle.gd
+      - scripts/games/kart_production_lumo_seat.gd
+      - scripts/games/kart_production_driver.gd
+      - scripts/games/lumo_opponent_roster.gd
       - scripts/games/visual/kart_cinema_materials.gd
       - assets/shaders/kart_lumo_cinema_*.gdshader
       - scripts/characters/lumo/**
@@ -60,8 +68,11 @@ jobs:
           mkdir -p "$RUNNER_TEMP/kart-check/scripts/games/visual" "$RUNNER_TEMP/kart-check/assets/shaders"
           mkdir -p "$RUNNER_TEMP/kart-check/assets/characters/lumo_animated"
           cp scripts/games/kart_vehicle.gd scripts/games/kart_fleet.gd scripts/games/kart_fur_geometry.gd scripts/games/kart_character_finish.gd "$RUNNER_TEMP/kart-check/scripts/games/"
+          cp scripts/games/kart_production_vehicle.gd scripts/games/kart_production_driver.gd scripts/games/lumo_opponent_roster.gd "$RUNNER_TEMP/kart-check/scripts/games/"
+          cp scripts/games/kart_production_lumo_seat.gd "$RUNNER_TEMP/kart-check/scripts/games/"
           cp scripts/characters/lumo/lumo_kart_animation_adapter.gd scripts/characters/lumo/lumo_rigged_actor.gd scripts/characters/lumo/lumo_walk_locomotion.gd "$RUNNER_TEMP/kart-check/scripts/characters/lumo/"
           cp scripts/characters/lumo/lumo_platform_pose.gd scripts/characters/lumo/lumo_teacher_pose.gd scripts/characters/lumo/lumo_body_space_pose.gd "$RUNNER_TEMP/kart-check/scripts/characters/lumo/"
+          cp scripts/characters/lumo/lumo_facial_pose.gd "$RUNNER_TEMP/kart-check/scripts/characters/lumo/"
           cp assets/characters/lumo_animated/lumo_studio_clips.gd "$RUNNER_TEMP/kart-check/assets/characters/lumo_animated/"
           cp scripts/games/visual/kart_cinema_materials.gd "$RUNNER_TEMP/kart-check/scripts/games/visual/"
           cp assets/shaders/kart_lumo_cinema_high.gdshader assets/shaders/kart_lumo_cinema_mobile.gdshader "$RUNNER_TEMP/kart-check/assets/shaders/"

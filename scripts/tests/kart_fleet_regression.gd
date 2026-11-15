@@ -20,6 +20,8 @@ func _settle() -> void:
 
 func _geometry(node: Node3D, kart, result: Dictionary) -> void:
 	for child in node.get_children():
+		if child is Node3D and not child.is_visible_in_tree():
+			continue
 		if child is MeshInstance3D:
 			if child == kart.far_mesh or kart.flames.has(child) or kart.sparks.has(child):
 				continue
@@ -40,16 +42,22 @@ func _run() -> void:
 		seen[entry.id] = true
 		var kart = VEHICLE.new()
 		kart.configure("fox", Color("76d9ff"), str(entry.id))
+		kart.set_animated_lumo_enabled(true)
 		root.add_child(kart)
 		kart.set_process(false)
 		assert(kart.kart_style == entry.id, "Selectable design must not fall back to Comet")
 		assert(kart.wheel_pivots.size() == 4 and kart.wheel_rotors.size() == 4)
-		assert(kart.head != null and kart.arm_right != null)
+		assert(is_instance_valid(kart.lumo_animation) and not kart.driver.visible)
 		var shape := {"surfaces": 0, "vertices": 0}
 		_geometry(kart, kart, shape)
 		assert(shape.vertices > 1000)
 		assert(shape.surfaces <= 64, "Fleet must retain the mobile draw-surface budget")
-		assert(kart.far_mesh.mesh.get_surface_count() == 1)
+		if is_instance_valid(kart.production_vehicle):
+			assert(kart.production_vehicle.source_paths.size() == 3)
+			assert(kart.production_vehicle.visible_surface_count() <= 39)
+			assert(kart.far_mesh.mesh == null, "The animated imported chassis needs no rigid proxy")
+		else:
+			assert(kart.far_mesh.mesh.get_surface_count() == 1)
 		assert(float(entry.speed) >= 0.9 and float(entry.speed) <= 1.11)
 		assert(float(entry.turn) >= 0.9 and float(entry.turn) <= 1.14)
 		kart.set_motion(12.0, 0.7, true, true)

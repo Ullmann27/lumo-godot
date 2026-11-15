@@ -563,6 +563,9 @@ func _build_world() -> void:
 				ghost = VEHICLE.new()
 				ghost.configure(selected_driver, Color("d3faff"), selected_kart)
 				ghost.reduced_motion = reduced_motion
+				# Lock the replay skin before applying transparency; a later driver
+				# LOD replacement would otherwise reintroduce opaque materials.
+				ghost.set_graphics_quality("low")
 				race_root.add_child(ghost)
 				_set_ghost_materials(ghost)
 	_update_vehicles(0)
@@ -1738,7 +1741,9 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		if absf(excess) > 0.0001:
 			var side: Vector3 = (next_road.basis as Basis).x
 			physical_velocity -= side * (excess / maxf(delta, 0.0001))
+	var before_horizontal: Vector3 = player.position
 	player.position += physical_velocity * delta
+	_constrain_tunnel_motion(before_horizontal)
 	if drifting and speed > 6 and not airborne:
 		drift_charge = minf(3, drift_charge + delta * absf(axis) * POWERTRAIN.PACE_SCALE)
 	if mode == "arena":
@@ -1771,8 +1776,10 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	# An einer offenen Kante gibt es neben der Fahrbahn keinen Boden: dort beginnt der Sturz sofort.
 	var edge_margin: float = 0.3 if mode != "arena" and world.open_edge_side(road_distance) == signf(lane) else 2.0
 	if not open_edge_fall and absf(lane) < ROAD_WIDTH * 0.5 + edge_margin:
+		var before_vertical: Vector3 = player.position
 		if not _move_vertically(road, road_distance, delta):
 			return
+		_constrain_tunnel_motion(before_vertical)
 		offroad_seconds = 0
 		if absf(travel) <= maxf(3.0, speed * delta * 2.5):
 			distance = maxf(0.0, distance + travel)
@@ -1981,6 +1988,21 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 		air_time = 0.0
 		vertical_speed = 0.0
 	return true
+
+
+## The race integrates position itself; imported tunnel bodies therefore need
+## the same swept collision query for horizontal movement and ballistic lift.
+func _constrain_tunnel_motion(previous_position: Vector3) -> void:
+	if mode == "arena" or not is_instance_valid(world):
+		return
+	var contact: Dictionary = world.resolve_tunnel_motion(previous_position, player.position)
+	player.position = contact.position
+	if not bool(contact.collided):
+		return
+	var normal: Vector3 = contact.normal
+	physical_velocity = physical_velocity.slide(normal)
+	if vertical_speed > 0.0 and normal.y < -0.25:
+		vertical_speed = 0.0
 
 
 func _record_precision_landing(result: String, road_distance: float) -> void:
@@ -2785,8 +2807,12 @@ func _update_vehicles(_delta: float) -> void:
 	if not enabled:
 		for kart in opponents:
 			kart.set_motion(0, 0, false, false)
-	for kart in opponents:
-		kart.set_driver_runtime_state(false, false, paused)
+	for i in range(opponents.size()):
+		var kart: LumoRaceKart = opponents[i]
+		var flight: Variant = kart.get_meta(RIVAL_FLIGHT.STATE_KEY) if kart.has_meta(RIVAL_FLIGHT.STATE_KEY) else null
+		var rival_airborne: bool = flight != null and bool(flight.active)
+		var rival_stunned: bool = i < opponent_stuns.size() and opponent_stuns[i] > 0.0
+		kart.set_driver_runtime_state(rival_airborne, rival_stunned, paused)
 
 
 func _update_camera(delta: float, snap: bool = false) -> void:
@@ -2847,6 +2873,8 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 	if finished:
 		target = player.position + Vector3.UP * 1.25
 		camera.position = _clear_finish_camera(camera.position, target)
+	if mode != "arena" and is_instance_valid(world):
+		camera.position = world.clip_tunnel_camera(player.position + Vector3.UP, camera.position)
 	camera.look_at(target)
 	if not reduced_motion:
 		var roll: float = (
@@ -3425,6 +3453,7 @@ func _finish(cinematic: bool = true) -> void:
 	# Belohnung und Ergebnis-ID gehen sofort an der Linie raus; die Zielfahrt ist nur Bild.
 	var reward_accepted: bool = HostBridge.reward(result_payload)
 	_save_session()
+	_celebrate_opponents()
 	var save_failed: bool = HostBridge.is_embedded() and not reward_accepted
 	if cinematic and not save_failed:
 		_start_finish_cine(place)
@@ -3436,6 +3465,18 @@ func _finish(cinematic: bool = true) -> void:
 	if save_failed:
 		_show_host_save_failure()
 	print("[Kart] completed: mode=%s track=%s stars=%d place=%d" % [mode, track_id, earned, place])
+
+
+func _celebrate_opponents() -> void:
+	for i in range(opponents.size()):
+		var rival: LumoRaceKart = opponents[i]
+		var place: int = _opponent_place(i)
+		if mode == "arena" and i < opponent_scores.size():
+			place = 1 + int(arena_scores > opponent_scores[i])
+			for j in range(opponent_scores.size()):
+				if j != i and opponent_scores[j] > opponent_scores[i]:
+					place += 1
+		rival.celebrate(place)
 
 
 func _show_result() -> void:
@@ -3621,6 +3662,8 @@ func _update_finish_cine(delta: float) -> void:
 			var desired: Vector3 = player.position + offset + Vector3.UP * lerpf(3.5, 1.7, blend)
 			desired = camera.position.lerp(desired, minf(1.0, delta * 6.0))
 			camera.position = _clear_finish_camera(desired, target)
+			if mode != "arena" and is_instance_valid(world):
+				camera.position = world.clip_tunnel_camera(player.position + Vector3.UP, camera.position)
 			camera.look_at(target)
 	_update_hud()
 	if finish_cine_left <= 0.0:
@@ -3632,7 +3675,9 @@ func _coast_finished_kart(delta: float) -> void:
 	var magnitude: float = physical_velocity.length()
 	var damped: float = move_toward(magnitude, 0.0, delta * maxf(6.0, magnitude * 0.55))
 	physical_velocity *= damped / magnitude if magnitude > 0.0 else 0.0
+	var before_horizontal: Vector3 = player.position
 	player.position += physical_velocity * delta
+	_constrain_tunnel_motion(before_horizontal)
 	if mode != "arena" and is_instance_valid(world):
 		var road: Dictionary = world.sample_road(player.position, finish_road_distance)
 		lane = float(road.lateral)
@@ -3663,7 +3708,9 @@ func _coast_finished_kart(delta: float) -> void:
 		if airborne or world.in_gap(finish_road_distance):
 			airborne = true
 			vertical_speed -= JUMP_GRAVITY * delta
+			var before_vertical: Vector3 = player.position
 			player.position.y += vertical_speed * delta
+			_constrain_tunnel_motion(before_vertical)
 			if not world.in_gap(finish_road_distance) and player.position.y <= ground:
 				player.position.y = ground
 				airborne = false

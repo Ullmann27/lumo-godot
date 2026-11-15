@@ -990,8 +990,11 @@ func _fit_welcome_camera() -> void:
 	if is_instance_valid(preview_kart):
 		for mesh in preview_kart.find_children("*", "MeshInstance3D", true, false):
 			# A skin's bind-pose AABB is not its seated or greeting silhouette.
-			# Ignore the hidden old driver and the distant LOD proxy as well.
-			if not mesh.is_visible_in_tree() or mesh.skin != null or mesh == preview_kart.far_mesh:
+			# Production rivals are authored already seated; their bounds include
+			# their different ears/shells. The original standing fox keeps its
+			# existing measured head-based fitting below.
+			var seated_rival: bool = is_instance_valid(preview_kart.production_driver) and preview_kart.production_driver.is_ancestor_of(mesh)
+			if not mesh.is_visible_in_tree() or (mesh.skin != null and not seated_rival) or mesh == preview_kart.far_mesh:
 				continue
 			var bounds: AABB = mesh.get_aabb()
 			for corner in range(8):
@@ -1577,6 +1580,7 @@ func _refresh_preview() -> void:
 		preview_pivot.remove_child(preview_kart)
 		preview_kart.queue_free()
 	preview_kart = VEHICLE.new()
+	preview_kart.set_preview_detail(true)
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, str(setup.driver))
 	if workshop != null:
 		preview_kart.set_look(workshop.look(str(setup.kart)))

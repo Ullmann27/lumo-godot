@@ -26,6 +26,10 @@ const HARBOR_CRANE = preload("res://scripts/games/kart_harbor_crane.gd")
 const HARBOR_AQUARIUM = preload("res://scripts/games/kart_harbor_aquarium.gd")
 const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const GENERATION = preload("res://scripts/games/kart_sonnenhafen_generation.gd")
+const PRODUCTION_TUNNELS = preload("res://scripts/games/kart_production_tunnels.gd")
+const PRODUCTION_TUNNEL_LAYOUT = preload("res://scripts/games/kart_production_tunnel_layout.gd")
+var production_tunnels
+var production_tunnel_layout: Dictionary = {}
 var action_obstacles: Array[Vector3] = []
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
@@ -74,6 +78,10 @@ func build(
 		remove_child(child)
 		child.queue_free()
 	groups.clear()
+	production_tunnels = null
+	production_tunnel_layout = {}
+	if has_meta("production_tunnel"):
+		remove_meta("production_tunnel")
 	action_obstacles.clear()
 	decoration_count = 0
 	low_detail = lightweight
@@ -358,6 +366,33 @@ func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_dist
 func reset_transform(distance: float, lateral: float = 0.0) -> Transform3D:
 	var basis: Basis = frame(distance)
 	return Transform3D(basis,position_at(distance,clampf(lateral,-3.5,3.5))+basis.y*0.08)
+
+
+## Query the real hollow tunnel proxy using the race's existing road coordinate space.
+## Player origin is at the feet: radius 0.85 m, total capsule height 2.0 m, centre +1 m.
+func resolve_tunnel_motion(from: Vector3, desired: Vector3) -> Dictionary:
+	if not is_instance_valid(production_tunnels):
+		return {"position": desired, "normal": Vector3.ZERO, "collided": false}
+	return production_tunnels.resolve_motion(from, desired)
+
+
+func clip_tunnel_camera(anchor: Vector3, desired: Vector3) -> Vector3:
+	if not is_instance_valid(production_tunnels):
+		return desired
+	return production_tunnels.clip_camera(anchor, desired)
+
+
+func _install_production_tunnel() -> void:
+	production_tunnel_layout = PRODUCTION_TUNNEL_LAYOUT.plan(self)
+	if production_tunnel_layout.is_empty():
+		return
+	production_tunnels = PRODUCTION_TUNNELS.new()
+	add_child(production_tunnels)
+	if not production_tunnels.build(self, production_tunnel_layout):
+		remove_child(production_tunnels)
+		production_tunnels.queue_free()
+		production_tunnels = null
+		production_tunnel_layout = {}
 
 func _material(color: Color, glow: bool = false) -> StandardMaterial3D:
 	var key: String = color.to_html()+("_glow" if glow else "")
@@ -829,6 +864,7 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 
 func _road() -> void:
 	action = ACTION.plan(self)
+	_install_production_tunnel()
 	var asphalt := ShaderMaterial.new()
 	asphalt.shader=preload("res://assets/shaders/kart_asphalt.gdshader")
 	asphalt.set_shader_parameter("road_tint",definition.asphalt)
@@ -1576,6 +1612,8 @@ func _mushroom(at: Vector3, size: float) -> void:
 	_prop("cylinder",at+Vector3.UP*size*1.22,Vector3(0.65,0.08,0.65)*size,Color("b4dcde"),Basis.IDENTITY,true)
 
 func _tree_tunnel(distance: float) -> void:
+	if is_instance_valid(production_tunnels):
+		return
 	for i in range(4):
 		var d: float=distance+(i-1.5)*7.0
 		var basis: Basis=frame(d)
@@ -1597,6 +1635,8 @@ func _branch(a: Vector3,b: Vector3,radius: float,color: Color) -> void:
 	_prop("cylinder",(a+b)*0.5,Vector3(radius,(b-a).length(),radius),color,basis)
 
 func _snow_tunnel(distance: float, palette: Dictionary={}) -> void:
+	if is_instance_valid(production_tunnels):
+		return
 	var inner: Color=palette.get("inner",Color("819da6"))
 	var outer: Color=palette.get("outer",Color("dce9e5"))
 	var stripes: Array=palette.get("stripes",[Color("b5c6c6"),Color("9aafb5")])
@@ -1706,6 +1746,8 @@ func _holo_lane_lights() -> void:
 
 
 func _holo_speed_tunnel(distance: float) -> void:
+	if is_instance_valid(production_tunnels):
+		return
 	# Large race-readable Aurora tunnel: visible several seconds before entry.
 	# Decorative only; roadway, collision and AI path remain unchanged.
 	var cyan:=Color("58ebff")

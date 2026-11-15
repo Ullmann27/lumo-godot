@@ -470,9 +470,11 @@ func _refresh_preview() -> void:
 				look["underglow"] = str(option.id) != "werk" or look.underglow
 	if not is_instance_valid(preview_kart):
 		preview_kart = VEHICLE.new()
+		preview_kart.set_preview_detail(true)
 		var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, driver_id)
 		preview_kart.set_look(look)
 		preview_kart.configure(driver_id, driver.color, kart_id)
+		preview_kart.set_animated_lumo_enabled(true)
 		preview_kart.reduced_motion = reduced_motion
 		preview_kart.set_graphics_quality(graphics_profile)
 		preview_pivot.add_child(preview_kart)

@@ -1,0 +1,1363 @@
+{
+  "status": "PASS",
+  "sample_count": 54,
+  "method": "Godot-evaluated, bone-weighted foot/leg triangles against unmodified Blender coachwork and bucket-seat shell triangles; BVH overlap. Includes leg/foot transition triangles.",
+  "contacts_sha256": "506456cdb1070b9d1186baba7b8d86e6a479c98b103103030a46bbab6494c282",
+  "sources": {
+    "art/lumo_kart/blender/karts/aurora_comet.blend": "4a959df68d03f2858775e602fa0df8663150328858a099fb3c8b90b860f534e1",
+    "art/lumo_kart/blender/karts/aurora_glider.blend": "aa9936550710406df40e7a8657a28ca0a5e3d5e2715b2f966ca2abf2cdcaf6c1",
+    "art/lumo_kart/blender/karts/aurora_turbo.blend": "334b537426d1961a301f49468b07552b8992df6f15600f89e35c124b85118fd2"
+  },
+  "samples": [
+    {
+      "variant": "comet",
+      "phase": "driving",
+      "seconds": 0.2,
+      "geometry_sha256": "8627a7702a9a326863cdf0c57a62f436ed9c16573a409f0a856890f5495bd930",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "driving",
+      "seconds": 0.7,
+      "geometry_sha256": "8627a7702a9a326863cdf0c57a62f436ed9c16573a409f0a856890f5495bd930",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "driving",
+      "seconds": 1.5,
+      "geometry_sha256": "8627a7702a9a326863cdf0c57a62f436ed9c16573a409f0a856890f5495bd930",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "left",
+      "seconds": 0.2,
+      "geometry_sha256": "8627a7702a9a326863cdf0c57a62f436ed9c16573a409f0a856890f5495bd930",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "left",
+      "seconds": 0.7,
+      "geometry_sha256": "8627a7702a9a326863cdf0c57a62f436ed9c16573a409f0a856890f5495bd930",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "left",
+      "seconds": 1.5,
+      "geometry_sha256": "8627a7702a9a326863cdf0c57a62f436ed9c16573a409f0a856890f5495bd930",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "right",
+      "seconds": 0.2,
+      "geometry_sha256": "8627a7702a9a326863cdf0c57a62f436ed9c16573a409f0a856890f5495bd930",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "right",
+      "seconds": 0.7,
+      "geometry_sha256": "8627a7702a9a326863cdf0c57a62f436ed9c16573a409f0a856890f5495bd930",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "right",
+      "seconds": 1.5,
+      "geometry_sha256": "8627a7702a9a326863cdf0c57a62f436ed9c16573a409f0a856890f5495bd930",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "jump",
+      "seconds": 0.2,
+      "geometry_sha256": "36fa87fb20bf245c3dd2afd64ac12d3da6adfaad5fb37526d7a9b0debd4c827b",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "jump",
+      "seconds": 0.7,
+      "geometry_sha256": "4340d3d86c34227f6f877f24a8e9dbbcf7880aabcd9c537ad6fe3c23df63f0a7",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "jump",
+      "seconds": 1.5,
+      "geometry_sha256": "7c650ec99f70eb64f07b6ad7a6372361b54f4e1274268543e99643877da906c0",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "landing",
+      "seconds": 0.2,
+      "geometry_sha256": "8627a7702a9a326863cdf0c57a62f436ed9c16573a409f0a856890f5495bd930",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "landing",
+      "seconds": 0.7,
+      "geometry_sha256": "8627a7702a9a326863cdf0c57a62f436ed9c16573a409f0a856890f5495bd930",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "landing",
+      "seconds": 1.5,
+      "geometry_sha256": "8627a7702a9a326863cdf0c57a62f436ed9c16573a409f0a856890f5495bd930",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "finish",
+      "seconds": 0.2,
+      "geometry_sha256": "2ef1e7bfe650955a72a340510b0fd975ca3e18bd535a328da4bb346ee518bba4",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "finish",
+      "seconds": 0.7,
+      "geometry_sha256": "4f95a57642db2d5336fd0ad55e79070067bca4894e99499c8dda97c1d8fffa60",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "comet",
+      "phase": "finish",
+      "seconds": 1.5,
+      "geometry_sha256": "2137c33e0d84cddc2bb6b8d2713e92dc19967d7317412db8e1000dac7b9670e8",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "driving",
+      "seconds": 0.2,
+      "geometry_sha256": "6726bec540a5b40a595e9ed2fdcc52c265ec9870f7327bfe7582653e6f228d68",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "driving",
+      "seconds": 0.7,
+      "geometry_sha256": "6726bec540a5b40a595e9ed2fdcc52c265ec9870f7327bfe7582653e6f228d68",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "driving",
+      "seconds": 1.5,
+      "geometry_sha256": "6726bec540a5b40a595e9ed2fdcc52c265ec9870f7327bfe7582653e6f228d68",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "left",
+      "seconds": 0.2,
+      "geometry_sha256": "6726bec540a5b40a595e9ed2fdcc52c265ec9870f7327bfe7582653e6f228d68",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "left",
+      "seconds": 0.7,
+      "geometry_sha256": "6726bec540a5b40a595e9ed2fdcc52c265ec9870f7327bfe7582653e6f228d68",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "left",
+      "seconds": 1.5,
+      "geometry_sha256": "6726bec540a5b40a595e9ed2fdcc52c265ec9870f7327bfe7582653e6f228d68",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "right",
+      "seconds": 0.2,
+      "geometry_sha256": "6726bec540a5b40a595e9ed2fdcc52c265ec9870f7327bfe7582653e6f228d68",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "right",
+      "seconds": 0.7,
+      "geometry_sha256": "6726bec540a5b40a595e9ed2fdcc52c265ec9870f7327bfe7582653e6f228d68",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "right",
+      "seconds": 1.5,
+      "geometry_sha256": "6726bec540a5b40a595e9ed2fdcc52c265ec9870f7327bfe7582653e6f228d68",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "jump",
+      "seconds": 0.2,
+      "geometry_sha256": "34b0aa41474cc7dfb5a2735850031ae63b2e0a2e8070da8d0f85f8b61b6e209e",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "jump",
+      "seconds": 0.7,
+      "geometry_sha256": "ca04695d2429c4851521d11ca65fa99e7cb42d274bc7ff7cc93dd83d5b7c4030",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "jump",
+      "seconds": 1.5,
+      "geometry_sha256": "f42c3c800533f6614874bae9277ea5fc0f1cfd03b40cbe05efc74e4c92e64eab",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "landing",
+      "seconds": 0.2,
+      "geometry_sha256": "6726bec540a5b40a595e9ed2fdcc52c265ec9870f7327bfe7582653e6f228d68",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "landing",
+      "seconds": 0.7,
+      "geometry_sha256": "6726bec540a5b40a595e9ed2fdcc52c265ec9870f7327bfe7582653e6f228d68",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "landing",
+      "seconds": 1.5,
+      "geometry_sha256": "6726bec540a5b40a595e9ed2fdcc52c265ec9870f7327bfe7582653e6f228d68",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "finish",
+      "seconds": 0.2,
+      "geometry_sha256": "299c4188d0702742279fca99679bbb7aa5ae5a5fed567763f49220d9c4fd403a",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "finish",
+      "seconds": 0.7,
+      "geometry_sha256": "cb62709d385695f78b90fe0058d6099790c8f625dc5977bd73fe26ef5ac733b2",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "glider",
+      "phase": "finish",
+      "seconds": 1.5,
+      "geometry_sha256": "7d22cd9ba5a9b436db534b7cc170f3c6a2b8625548920d1b6075c48308a48f6c",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "driving",
+      "seconds": 0.2,
+      "geometry_sha256": "376ca202dc2884335bce4f9bc37c0e9a88d34aa8bd5a84c496e7aeb42102f328",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "driving",
+      "seconds": 0.7,
+      "geometry_sha256": "376ca202dc2884335bce4f9bc37c0e9a88d34aa8bd5a84c496e7aeb42102f328",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "driving",
+      "seconds": 1.5,
+      "geometry_sha256": "376ca202dc2884335bce4f9bc37c0e9a88d34aa8bd5a84c496e7aeb42102f328",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "left",
+      "seconds": 0.2,
+      "geometry_sha256": "376ca202dc2884335bce4f9bc37c0e9a88d34aa8bd5a84c496e7aeb42102f328",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "left",
+      "seconds": 0.7,
+      "geometry_sha256": "376ca202dc2884335bce4f9bc37c0e9a88d34aa8bd5a84c496e7aeb42102f328",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "left",
+      "seconds": 1.5,
+      "geometry_sha256": "376ca202dc2884335bce4f9bc37c0e9a88d34aa8bd5a84c496e7aeb42102f328",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "right",
+      "seconds": 0.2,
+      "geometry_sha256": "376ca202dc2884335bce4f9bc37c0e9a88d34aa8bd5a84c496e7aeb42102f328",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "right",
+      "seconds": 0.7,
+      "geometry_sha256": "376ca202dc2884335bce4f9bc37c0e9a88d34aa8bd5a84c496e7aeb42102f328",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "right",
+      "seconds": 1.5,
+      "geometry_sha256": "376ca202dc2884335bce4f9bc37c0e9a88d34aa8bd5a84c496e7aeb42102f328",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "jump",
+      "seconds": 0.2,
+      "geometry_sha256": "ce8d353054b97189847dc8d90e7660a02550f93e501b3f62ed873714c2741e75",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "jump",
+      "seconds": 0.7,
+      "geometry_sha256": "dbfe2060ca43421504a2dfe7eaa90495412e85e00a8884dabed504e07cc7ebdd",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "jump",
+      "seconds": 1.5,
+      "geometry_sha256": "0437865fae5f9f7a0d5dfa0e969409f53cfc31e70384afeec9d1083ea6e58361",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "landing",
+      "seconds": 0.2,
+      "geometry_sha256": "376ca202dc2884335bce4f9bc37c0e9a88d34aa8bd5a84c496e7aeb42102f328",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "landing",
+      "seconds": 0.7,
+      "geometry_sha256": "376ca202dc2884335bce4f9bc37c0e9a88d34aa8bd5a84c496e7aeb42102f328",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "landing",
+      "seconds": 1.5,
+      "geometry_sha256": "376ca202dc2884335bce4f9bc37c0e9a88d34aa8bd5a84c496e7aeb42102f328",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "finish",
+      "seconds": 0.2,
+      "geometry_sha256": "5e3e986acff27f4e8e9aa678927aa63a8a1f67a9a121b2135614067567893f47",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "finish",
+      "seconds": 0.7,
+      "geometry_sha256": "23a4a35447e79befbf7c9c51048b7981504864fa0a173c60dac892b5ea689ef3",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    },
+    {
+      "variant": "turbo",
+      "phase": "finish",
+      "seconds": 1.5,
+      "geometry_sha256": "74b01ab2a6a9321201b1abbc2c4b9a5570fb884f7fd10e3782a340ab83dfd425",
+      "intersection_pairs": 0,
+      "checks": [
+        {
+          "surface": 0,
+          "selection": "foot_faces",
+          "triangles": 1529,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        },
+        {
+          "surface": 0,
+          "selection": "leg_faces",
+          "triangles": 6664,
+          "intersection_pairs": 0,
+          "kart_parts": {},
+          "contact_bounds_godot": {}
+        }
+      ]
+    }
+  ]
+}

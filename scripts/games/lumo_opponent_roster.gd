@@ -29,6 +29,8 @@ static func all() -> Array[Dictionary]:
 			ids[id] = true
 			var entry: Dictionary = row.duplicate(true)
 			entry["games"].make_read_only()
+			if entry.get("godotLods") is Array:
+				entry["godotLods"].make_read_only()
 			entry.make_read_only()
 			entries.append(entry)
 		entries.make_read_only()
@@ -58,8 +60,28 @@ static func rotation(game: String, round_index: int = 0) -> Array[Dictionary]:
 static func can_use_racing_model(id: String) -> bool:
 	for entry in all():
 		if str(entry.id) == id:
-			return bool(entry.get("runtimeReady", false)) and ResourceLoader.exists(str(entry.get("godotModel", "")))
+			if not bool(entry.get("runtimeReady", false)):
+				return false
+			for level in range(3):
+				var path := racing_model_path(id, level)
+				if path.is_empty() or not ResourceLoader.exists(path, "PackedScene"):
+					return false
+			return true
 	return false
+
+
+static func racing_model_path(id: String, level: int = 0) -> String:
+	for entry in all():
+		if str(entry.id) != id or not bool(entry.get("runtimeReady", false)):
+			continue
+		var paths: Variant = entry.get("godotLods", [])
+		if not paths is Array or paths.size() != 3:
+			return ""
+		var selected: String = str(paths[clampi(level, 0, 2)])
+		var filename := "driver.glb" if level <= 0 else "driver_lod%d.glb" % clampi(level, 1, 2)
+		var expected := "res://assets/kart/production/drivers/%s/%s" % [id, filename]
+		return selected if selected == expected else ""
+	return ""
 
 
 static func ready_for_race() -> bool:
