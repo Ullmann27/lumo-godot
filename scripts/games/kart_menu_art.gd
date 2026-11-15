@@ -2,7 +2,7 @@ extends RefCounted
 ## Sampling boundary for the existing original illustration, not a replacement asset.
 ## The source WebP has a baked white strip at x >= 1069 and y >= 1907.
 ## Leave its bytes untouched and exclude the antialiased transition as well.
-const WORLD := preload("res://assets/kart/menu/lumo-world.webp")
+static var WORLD: Texture2D = load("res://assets/kart/menu/lumo-world.webp") as Texture2D
 const WORLD_CONTENT := Rect2(0, 0, 1066, 1904)
 static var _world_content: AtlasTexture
 
