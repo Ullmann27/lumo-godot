@@ -10,7 +10,7 @@ NEW = {"learn_idle_breathe","learn_listen","learn_think","learn_explain",
        "learn_celebrate","learn_interrupt","learn_return_listen","learn_farewell"}
 OLD = {"idle","greeting_wave","celebrate","point_portal","agree_nod",
        "kart_seated","kart_steer_left","kart_steer_right","kart_jump"}
-PROPS = {"CounterBerry","LetterTile","TenBundle","ShapeCircle",
+PROPS = {"CounterBerry","CounterBerryGold","LetterTile","TenBundle","ShapeCircle",
          "ShapeSquare","ShapeTriangle","TenFrameCell","LearningPodium"}
 
 
