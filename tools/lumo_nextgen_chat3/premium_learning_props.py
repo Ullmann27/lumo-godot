@@ -140,6 +140,25 @@ def add_berry():
     merge_under(base, additions)
 
 
+def duplicate_gold_berry():
+    """A real gold PBR variant; never override every seed and green leaf."""
+    original = bpy.data.objects["CounterBerry"]
+    gold = original.copy()
+    gold.data = original.data.copy()
+    gold.name = "CounterBerryGold"
+    gold.location = original.location + Vector((.38, .49, 0))
+    bpy.context.scene.collection.objects.link(gold)
+    source_index = -1
+    for index, material in enumerate(gold.data.materials):
+        if material and material.name == "Berry_MatteCoral":
+            source_index = index
+            break
+    assert source_index >= 0, "Berry albedo material not found"
+    gold.data.materials[source_index] = mat(
+        "Berry_GoldAmber", (.94,.59,.12), .42)
+    assert gold.data is not original.data
+
+
 def add_tile():
     base = bpy.data.objects["LetterTile"]
     center = base.location.copy()
@@ -268,17 +287,18 @@ def upgrade():
     """Preserve all original top-level asset names for existing Godot scenes."""
     assert all(bpy.data.objects.get(n) for n in ASSET_NAMES)
     add_berry()
+    duplicate_gold_berry()
     add_tile()
     add_bundle()
     shapes()
     ten_cell()
     podium()
-    assert {o.name for o in bpy.context.scene.objects if o.type=="MESH"} == set(ASSET_NAMES)
+    assert {o.name for o in bpy.context.scene.objects if o.type=="MESH"} == set(ASSET_NAMES) | {"CounterBerryGold"}
     polygons=sum(sum(len(f.vertices)-2 for f in obj.data.polygons)
                  for obj in bpy.context.scene.objects if obj.type=="MESH")
     assert polygons <= 11000, f"Detailed kit exceeds 11k triangle prototype budget ({polygons})"
-    return {"assets": list(ASSET_NAMES),
-            "asset_mesh_objects": 8,
+    return {"assets": list(ASSET_NAMES) + ["CounterBerryGold"],
+            "asset_mesh_objects": 9,
             "triangles_in_full_kit": polygons,
             "materials": len(bpy.data.materials),
             "license": "Original locally authored scripted meshes and materials"}
