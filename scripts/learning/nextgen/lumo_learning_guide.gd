@@ -18,15 +18,24 @@ var _last_speaking := false
 
 
 func _ready() -> void:
-	super._ready()
-	if not ResourceLoader.exists(NEXTGEN_MODEL, "PackedScene"):
-		push_warning("[LumoNextGenLearning] New rig is not imported; using original learning Lumo")
-		return
-	var packed := ResourceLoader.load(NEXTGEN_MODEL, "PackedScene") as PackedScene
-	if packed == null:
-		return
-	var next_visual := packed.instantiate() as Node3D
+	# Prefer the new original 65-bone actor, without loading the old mesh
+	# first. A stale .glb.import can point at a missing generated .scn in
+	# CI fixtures; in that case the raw author-supplied GLB is a safe
+	# source fallback. Release exports normally use the imported PackedScene.
+	var next_visual: Node3D
+	if ResourceLoader.exists(NEXTGEN_MODEL, "PackedScene"):
+		var imported := ResourceLoader.load(NEXTGEN_MODEL, "PackedScene") as PackedScene
+		if imported != null:
+			next_visual = imported.instantiate() as Node3D
+	if next_visual == null and FileAccess.file_exists(NEXTGEN_MODEL):
+		var document := GLTFDocument.new()
+		var state := GLTFState.new()
+		var err := document.append_from_file(NEXTGEN_MODEL, state)
+		if err == OK:
+			next_visual = document.generate_scene(state) as Node3D
 	if next_visual == null:
+		push_warning("[LumoNextGenLearning] GLB unavailable, falling back to installed original")
+		super._ready()
 		return
 	var next_skeleton: Skeleton3D
 	var next_player: AnimationPlayer
@@ -43,38 +52,36 @@ func _ready() -> void:
 		if child is MeshInstance3D and child.name.begins_with("MouthVisemes"):
 			next_mouth = child
 			break
-	if next_skeleton == null or next_player == null or next_mouth == null:
-		push_warning("[LumoNextGenLearning] Rig incompatible; retaining previously loaded actor")
-		next_visual.queue_free()
+	var rig_valid := next_skeleton != null and next_player != null and next_mouth != null
+	if rig_valid:
+		for clip in CLIPS:
+			if not next_player.has_animation(clip):
+				push_warning("[LumoNextGenLearning] Missing original clip: " + clip)
+				rig_valid = false
+				break
+	if rig_valid:
+		for clip in LEARNING_CLIPS.values():
+			if not next_player.has_animation(str(clip)):
+				push_warning("[LumoNextGenLearning] Missing learning clip: " + str(clip))
+				rig_valid = false
+				break
+	if rig_valid:
+		for i in range(next_mouth.mesh.get_blend_shape_count()):
+			if str(next_mouth.mesh.get_blend_shape_name(i)).begins_with("viseme_"):
+				_viseme_indices.append(i)
+		rig_valid = not _viseme_indices.is_empty()
+	if not rig_valid:
+		next_visual.free()
+		_viseme_indices.clear()
+		push_warning("[LumoNextGenLearning] Incompatible GLB, fallback to original")
+		super._ready()
 		return
-	for clip in CLIPS:
-		if not next_player.has_animation(clip):
-			push_warning("[LumoNextGenLearning] Original clip missing: " + clip)
-			next_visual.queue_free()
-			return
-	for clip in LEARNING_CLIPS.values():
-		if not next_player.has_animation(str(clip)):
-			push_warning("[LumoNextGenLearning] Learning clip missing: " + str(clip))
-			next_visual.queue_free()
-			return
-	for i in range(next_mouth.mesh.get_blend_shape_count()):
-		if str(next_mouth.mesh.get_blend_shape_name(i)).begins_with("viseme_"):
-			_viseme_indices.append(i)
-	if _viseme_indices.is_empty():
-		next_visual.queue_free()
-		return
-	if player != null and player.animation_finished.is_connected(_finished):
-		player.animation_finished.disconnect(_finished)
-	if is_instance_valid(visual):
-		remove_child(visual)
-		visual.queue_free()
 	visual = next_visual
 	add_child(visual)
 	skeleton = next_skeleton
 	player = next_player
 	_mouth_mesh = next_mouth
-	teacher_enabled = false
-	teacher_pose = null
+	locomotion = WALK.new()
 	facial_pose = FACIAL_POSE.new()
 	if not facial_pose.bind(visual, skeleton):
 		facial_pose = null
@@ -87,7 +94,6 @@ func _ready() -> void:
 	mouth_supported = true
 	phoneme_lipsync_supported = false
 	play_behavior("idle")
-
 
 func teacher_react(event: String) -> bool:
 	var ok := super.teacher_react(event)
