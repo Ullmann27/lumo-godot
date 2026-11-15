@@ -1,6 +1,6 @@
 {
   "character_sha256": "a6cb12578b015e177717ec9505d1f4d814b927f98643ef69ab391afb512437f2",
-  "props_sha256": "0da11713827386f4134e86f6672efd1bfdf83c79a6054e034eefb4a6475a89ad",
+  "props_sha256": "57ab3f7b270ef9f2106b935bea5801a785175163fab1efbf702393cfa889e16f",
   "triangles": 30116,
   "bones": 65,
   "clips_original": [
@@ -43,6 +43,7 @@
   ],
   "props": [
     "CounterBerry",
+    "CounterBerryGold",
     "LearningPodium",
     "LetterTile",
     "ShapeCircle",

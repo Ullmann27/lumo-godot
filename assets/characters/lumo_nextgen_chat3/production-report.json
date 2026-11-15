@@ -47,7 +47,7 @@
       ],
       "eyelid_morph": "blink"
     },
-    "blend_sha256": "ed8a4818fee86be2889c2e0270020525ea6c7fba5f5d3b90afe5c78d19e272aa",
+    "blend_sha256": "eb28f9743b9a585e142e3d45c06d80aae782b337e1aaf89eb7b0f3cb4fa2bece",
     "glb_sha256": "a6cb12578b015e177717ec9505d1f4d814b927f98643ef69ab391afb512437f2",
     "glb_bytes": 6010952,
     "blender_version": "4.0.2",
@@ -57,6 +57,7 @@
   "objects": {
     "asset_names": [
       "CounterBerry",
+      "CounterBerryGold",
       "LetterTile",
       "TenBundle",
       "ShapeCircle",
@@ -65,9 +66,27 @@
       "TenFrameCell",
       "LearningPodium"
     ],
-    "blend_sha256": "b75e3eb0823d2ff4d49e150f660d4285be49a9c606b4d67f3e8580af84a80cfc",
-    "glb_sha256": "0da11713827386f4134e86f6672efd1bfdf83c79a6054e034eefb4a6475a89ad",
-    "glb_bytes": 80280
+    "production_details": {
+      "assets": [
+        "CounterBerry",
+        "LetterTile",
+        "TenBundle",
+        "ShapeCircle",
+        "ShapeSquare",
+        "ShapeTriangle",
+        "TenFrameCell",
+        "LearningPodium",
+        "CounterBerryGold"
+      ],
+      "asset_mesh_objects": 9,
+      "triangles_in_full_kit": 10940,
+      "materials": 29,
+      "license": "Original locally authored scripted meshes and materials"
+    },
+    "blend_sha256": "e992c225815704e29e171819a96ea9e9f77fbdfe9d7b9b179b6e241be88de9c7",
+    "glb_sha256": "57ab3f7b270ef9f2106b935bea5801a785175163fab1efbf702393cfa889e16f",
+    "glb_bytes": 429800,
+    "preview_image": "Blender_Lumo_LearningObjects.png"
   },
   "coordinate_system": "Blender Z-up meters; glTF exported Y-up",
   "source_rights": "Retains Meshy CC BY 4.0 original, see assets/characters/lumo_animated/ATTRIBUTION.md",
