@@ -10,7 +10,7 @@ var session_id: String = ""
 var task_id: String = ""
 var revision: int = 0
 var cancel_epoch: int = 0
-var step_id: String = "start"
+var step_id: Variant = null
 var object_ids: Array[String] = []
 var valid: bool = false
 var allowed_actions: Array[String] = ["stop"]
@@ -31,8 +31,10 @@ func configure(raw: Dictionary, fallback_session: String, fallback_task: String)
 	var task: Variant = wire.get("taskId", fallback_task)
 	var rev: Variant = wire.get("revision", 0)
 	var epoch: Variant = wire.get("cancelEpoch", 0)
-	var step: Variant = wire.get("stepId", "start")
-	if not _identifier(session) or not _identifier(task) or not _identifier(step):
+	var step: Variant = wire.get("stepId", null)
+	if not _identifier(session) or not _identifier(task):
+		return false
+	if step != null and not _identifier(step):
 		return false
 	if not _integer(rev, 0, 2147483646) or not _integer(epoch, 0, 2147483646):
 		return false
@@ -78,7 +80,7 @@ func matches(wire: Dictionary) -> bool:
 			and wire.get("taskId") == task_id
 			and _integer(wire.get("revision"), revision, revision)
 			and _integer(wire.get("cancelEpoch"), cancel_epoch, cancel_epoch)
-			and (not wire.has("stepId") or wire.stepId == step_id)
+			and wire.get("stepId", null) == step_id
 		)
 	)
 
