@@ -208,8 +208,9 @@ static func _checked_text(value: Variant, limit: int, allow_empty: bool = false)
 		return false
 	if value.find("\n") >= 0 or value.find("\r") >= 0:
 		return false
-	for codepoint in value.to_utf32_buffer():
-		if codepoint < 32 or codepoint >= 127 and codepoint <= 159:
+	for index in range(value.length()):
+		var codepoint: int = value.unicode_at(index)
+		if codepoint < 32 or (codepoint >= 127 and codepoint <= 159):
 			return false
 	return true
 
