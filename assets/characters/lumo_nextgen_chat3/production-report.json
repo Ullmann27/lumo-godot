@@ -30,8 +30,9 @@
     ],
     "face": {
       "head_z": 1.1853516101837158,
-      "face_z": 1.2003516101837157,
-      "face_forward_y": -0.4757055654525757,
+      "face_z": 1.2223516101837157,
+      "mouth_front_y": -0.44453297424316407,
+      "neutral_controls_recessed_inside_head": true,
       "morphs": [
         "viseme_A",
         "viseme_E",
@@ -46,9 +47,9 @@
       ],
       "eyelid_morph": "blink"
     },
-    "blend_sha256": "4947752806427ba05ed244c0c7a750eb8ff9cd78986ea41b3990aa5f4b1fa21d",
-    "glb_sha256": "1694c5877f6a13144482545a53a721cd1ff62b238db7624281c5962d483023f3",
-    "glb_bytes": 6008948,
+    "blend_sha256": "ed8a4818fee86be2889c2e0270020525ea6c7fba5f5d3b90afe5c78d19e272aa",
+    "glb_sha256": "a6cb12578b015e177717ec9505d1f4d814b927f98643ef69ab391afb512437f2",
+    "glb_bytes": 6010952,
     "blender_version": "4.0.2",
     "android_tested": false,
     "true_lipsync_tested": false
@@ -64,8 +65,8 @@
       "TenFrameCell",
       "LearningPodium"
     ],
-    "blend_sha256": "6a3c4070f1d8504dfe05d227018330d8b294d0ada77f3cb981d41b58220f5e14",
-    "glb_sha256": "9628db6607c81ebd36c24b3c0b2960d3d6c7ffa57d5d2759776683010ed72c2a",
+    "blend_sha256": "b75e3eb0823d2ff4d49e150f660d4285be49a9c606b4d67f3e8580af84a80cfc",
+    "glb_sha256": "0da11713827386f4134e86f6672efd1bfdf83c79a6054e034eefb4a6475a89ad",
     "glb_bytes": 80280
   },
   "coordinate_system": "Blender Z-up meters; glTF exported Y-up",
