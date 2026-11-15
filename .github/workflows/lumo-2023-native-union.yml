@@ -10,7 +10,7 @@ permissions:
   contents: write
 concurrency:
   group: lumo-2023-native-union
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   reconcile:
     runs-on: ubuntu-latest
@@ -66,7 +66,10 @@ jobs:
       - name: Commit integrated sources to isolated review branch
         run: |
           set -euo pipefail
-          git add -A
+          # Git merged objects are already staged. Do not add downloaded proof
+          # logs or Godot-generated import sidecars to the source tree.
+          test -z "$(git diff --name-only --diff-filter=U)"
+          git diff --cached --check
           git commit -m "integrate(native): retain Lumo 2022 production and add Kart Adventure+Art [skip ci]"
           git rev-parse HEAD | tee "$PROOF/merged-commit.txt"
           git rev-parse HEAD^{tree} | tee "$PROOF/merged-tree.txt"
