@@ -21,9 +21,33 @@ var english_hint_level := 0
 var english_attempts := 0
 var english_complete := false
 
+# Read-only, Flutter-verified native illustration data. There is no
+# correctAnswer, childId or reward value inside these payloads.
+var pattern_sequence: Array[String] = []
+var pattern_choices: Array[String] = []
+var pattern_unit: Array[String] = []
+var pattern_period := 0
+var pattern_hint_level := 0
+var task_source_id := ""
+var task_prompt := ""
+var task_subject := ""
+var task_unit := ""
+var task_explanation := ""
+var task_choices: Array[String] = []
+
 
 func configure(raw: Dictionary) -> bool:
 	reset()
+	pattern_sequence.clear()
+	pattern_choices.clear()
+	pattern_unit.clear()
+	pattern_period = 0
+	task_choices.clear()
+	task_source_id = ""
+	task_prompt = ""
+	task_subject = ""
+	task_unit = ""
+	task_explanation = ""
 	kind = str(raw.get("kind", "invalid"))
 	match kind:
 		"english_objects":
@@ -97,6 +121,14 @@ func configure(raw: Dictionary) -> bool:
 				syllables.append(item)
 			if word.is_empty() or word.length() > 24 or "".join(syllables) != word:
 				kind = "invalid"
+		"pattern":
+			if not _configure_pattern(raw):
+				kind = "invalid"
+				return false
+		"task_card":
+			if not _configure_task_card(raw):
+				kind = "invalid"
+				return false
 		"plant_parts":
 			plant_part = str(raw.get("plantPart", "root"))
 			if plant_part not in ["root", "stem", "leaf", "flower"]:
@@ -104,6 +136,102 @@ func configure(raw: Dictionary) -> bool:
 		_:
 			kind = "invalid"
 	return kind != "invalid"
+
+
+# Strictly validate the already-reviewed pattern presentation. Both existing
+# Flutter adapters are supported without passing a correct-answer marker.
+func _configure_pattern(raw: Dictionary) -> bool:
+	var source: Variant = raw.get("sequence", raw.get("patternSequence", []))
+	var choices: Variant = raw.get("choices", raw.get("patternChoices", []))
+	var period: Variant = raw.get("period", 0)
+	var unit: Variant = raw.get("patternUnit", [])
+	if unit is Array and not unit.is_empty():
+		period = unit.size()
+		if not _append_checked_words(unit, pattern_unit, 1, 4):
+			return false
+	if not _bounded_integer(period, 1, 4):
+		return false
+	if not _append_checked_words(source, pattern_sequence, 4, 12):
+		return false
+	if not _append_checked_words(choices, pattern_choices, 2, 6):
+		return false
+	if pattern_choices.size() != _unique_word_count(pattern_choices):
+		return false
+	pattern_period = int(period)
+	if pattern_sequence.size() < pattern_period * 2:
+		return false
+	for i in range(pattern_sequence.size()):
+		if pattern_sequence[i] != pattern_sequence[i % pattern_period]:
+			return false
+		if not pattern_unit.is_empty() and pattern_sequence[i] != pattern_unit[i % pattern_period]:
+			return false
+	# Reject a visually misleading period if a smaller one already explains it.
+	for candidate in range(1, pattern_period):
+		if pattern_sequence.size() < candidate * 2:
+			continue
+		var repeats := true
+		for i in range(candidate, pattern_sequence.size()):
+			if pattern_sequence[i] != pattern_sequence[i % candidate]:
+				repeats = false
+				break
+		if repeats:
+			return false
+	var expected_next := pattern_sequence[pattern_sequence.size() % pattern_period]
+	return pattern_choices.has(expected_next)
+
+
+func _configure_task_card(raw: Dictionary) -> bool:
+	if not _checked_text(raw.get("sourceTaskId", ""), 180):
+		return false
+	if not _checked_text(raw.get("prompt", ""), 800):
+		return false
+	task_source_id = str(raw["sourceTaskId"])
+	task_prompt = str(raw["prompt"])
+	for key in ["subject", "unit"]:
+		if not raw.has(key) or not _checked_text(raw[key], 80, true):
+			return false
+	task_subject = str(raw["subject"])
+	task_unit = str(raw["unit"])
+	if not _checked_text(raw.get("explanation", ""), 1200, true):
+		return false
+	task_explanation = str(raw.get("explanation", ""))
+	var raw_choices: Variant = raw.get("answerChoices", [])
+	if not _append_checked_words(raw_choices, task_choices, 0, 8, 120):
+		return false
+	return true
+
+
+static func _checked_text(value: Variant, limit: int, allow_empty: bool = false) -> bool:
+	if not value is String or value.length() > limit:
+		return false
+	if not allow_empty and value.strip_edges().is_empty():
+		return false
+	if value.find("\n") >= 0 or value.find("\r") >= 0:
+		return false
+	for codepoint in value.to_utf32_buffer():
+		if codepoint < 32 or codepoint >= 127 and codepoint <= 159:
+			return false
+	return true
+
+
+static func _append_checked_words(raw: Variant, output: Array[String], low: int, high: int, max_length: int = 24) -> bool:
+	if not raw is Array or raw.size() < low or raw.size() > high:
+		return false
+	for item in raw:
+		if not _checked_text(item, max_length):
+			return false
+		if item.strip_edges() != item:
+			return false
+		output.append(item)
+	return true
+
+
+static func _unique_word_count(input: Array[String]) -> int:
+	var unique := {}
+	for value in input:
+		unique[value] = true
+	return unique.size()
+
 
 
 static func _whole_number(value: Variant) -> bool:
@@ -137,6 +265,7 @@ func reset() -> void:
 	english_hint_level = 0
 	english_attempts = 0
 	english_complete = false
+	pattern_hint_level = 0
 
 
 func token_count() -> int:
@@ -171,6 +300,9 @@ func initial_count() -> int:
 
 
 func is_complete() -> bool:
+	if kind in ["pattern", "task_card"]:
+		# An illustration cannot submit or mark an exercise complete.
+		return false
 	if kind == "english_objects":
 		return english_complete
 	if kind == "plant_parts":
@@ -207,7 +339,7 @@ func count_in_group(group: int) -> int:
 
 
 func place(token: int, target: int) -> bool:
-	if kind in ["invalid", "plant_parts", "english_objects"] or is_complete() or token < 0 or token >= token_count():
+	if kind in ["invalid", "plant_parts", "english_objects", "pattern", "task_card"] or is_complete() or token < 0 or token >= token_count():
 		return false
 	if placed.has(token) or target != target_index():
 		return false
@@ -245,6 +377,11 @@ func english_hint() -> bool:
 
 func explanation() -> String:
 	match kind:
+		"pattern":
+			return ("Die kleinste Wiederholung hat %d Formen. Schau dir die markierte Gruppe an und entscheide selbst in der Aufgabe." % pattern_period
+				if pattern_hint_level > 0 else "Welche Form kommt als Nächstes? Suche die Gruppe, die sich immer wiederholt.")
+		"task_card":
+			return task_prompt if task_prompt.length() <= 180 else task_prompt.substr(0, 177) + " …"
 		"english_objects":
 			if english_complete:
 				return "Richtig: „%s“. Wähle jetzt „Zur Aufgabe“." % english_meaning
