@@ -45,7 +45,8 @@ def resolve_file(name: str) -> dict:
         raise RuntimeError(f"{name}: expected one conflict, found {len(matches)}")
     old, newer = matches[0].group(1), matches[0].group(2)
     if name.endswith("kart_island.gd"):
-        unique("RIVAL_FLIGHT.STATE_KEY", old, name)
+        if old.count("RIVAL_FLIGHT.STATE_KEY") != 2:
+            raise RuntimeError("Expected airborne flight metadata guard and read")
         unique("kart.set_driver_runtime_state(rival_airborne, rival_stunned, paused)", old, name)
         unique("fx.advance(_delta, paused or not racing or finished, reduced_motion)", newer, name)
         if newer.count("for fx in opponent_item_fx:") != 1:
@@ -64,9 +65,9 @@ def resolve_file(name: str) -> dict:
         # Preserve the new validated skinned-GLB racing adapter and its real
         # scene factory. The 2022 3-LOD path accessor remains below the conflict
         # so old production drivers and their checks are still addressable.
-        unique("static func racing_scene(id: String) -> PackedScene:", newer, name)
         unique("static func can_use_racing_model(id: String) -> bool:", newer, name)
-        unique("static func can_use_racing_model(id: String) -> bool:", old, name)
+        if not old.startswith("\t\tif str(entry.id) == id:"):
+            raise RuntimeError("Unexpected 2022 racing model guard")
         merged = newer
     out = original[: matches[0].start()] + merged + original[matches[0].end():]
     if re.search(r"^(<<<<<<<|=======|>>>>>>>)", out, flags=re.MULTILINE):
