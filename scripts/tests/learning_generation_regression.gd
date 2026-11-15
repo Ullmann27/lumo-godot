@@ -2,10 +2,15 @@ extends SceneTree
 const SCOPE = preload("res://scripts/learning/learning_companion_scope.gd")
 const MODEL = preload("res://scripts/learning/learning_activity.gd")
 const WORLD := "res://scenes/learning/learning_world.tscn"
+const MOUTH_SHAPES: Array[String] = [
+	"AA", "EE", "OH", "OU", "MBP", "FV", "L", "TH", "JawArticulation"
+]
 var checks := 0
 var failures: Array[String] = []
 
 
+# JNI fixture method names must match the production host interface exactly.
+# gdlint: disable=function-name
 class Host:
 	extends RefCounted
 	var context: Dictionary = {}
@@ -53,6 +58,7 @@ class Host:
 		return JSON.stringify(result)
 
 
+# gdlint: enable=function-name
 func _initialize() -> void:
 	_run.call_deferred()
 
@@ -69,10 +75,24 @@ func _settle() -> void:
 		await process_frame
 
 
+func _shape_weight(actor: Node3D, names: Array[String]) -> float:
+	var result := 0.0
+	for node in actor.visual.find_children("*", "MeshInstance3D", true, false):
+		var mesh := node as MeshInstance3D
+		if mesh.mesh == null:
+			continue
+		for index in range(mesh.mesh.get_blend_shape_count()):
+			if str(mesh.mesh.get_blend_shape_name(index)) in names:
+				result = maxf(result, absf(mesh.get_blend_shape_value(index)))
+	return result
+
+
 func _scene(payload: Dictionary, task: String) -> Node3D:
 	var game := load(WORLD).instantiate() as Node3D
 	var scoped := payload.duplicate(true)
-	scoped["allowedActions"] = ["explain", "repeat", "slower", "hint", "stop", "proposeAnswer"]
+	scoped["allowedActions"] = [
+		"point", "explain", "repeat", "slower", "hint", "stop", "proposeAnswer"
+	]
 	scoped["scope"] = {
 		"protocolVersion": 1,
 		"sessionId": "test-session",
@@ -143,7 +163,7 @@ func _run() -> void:
 	broken.sequence[3] = "yellow_triangle"
 	_check(not model.configure(broken), "incorrect declared pattern rejected")
 	broken = pattern.duplicate(true)
-	broken.patternChoices = ["blue_square", "yellow_triangle"]
+	broken.choices = ["blue_square", "yellow_triangle"]
 	_check(not model.configure(broken), "pattern without possible next choice rejected")
 	var game := _scene({"kind": "bridge_ten", "a": 8, "b": 5}, "eight-plus-five")
 	await _settle()
@@ -154,7 +174,7 @@ func _run() -> void:
 		game.companion_scope.session_id == "native-session",
 		"native launch session replaces caller transport identity"
 	)
-	_check(game.fox.is_usable(), "original 65-bone teacher available in actual scene")
+	_check(game.fox.is_usable(), "authored learning teacher available in actual scene")
 	_check(
 		game.companion_objects.has_all(["ten_frame", "addend", "bridge_two", "remainder_three"]),
 		"required 8+5 objects bound to actual scene"
@@ -182,20 +202,21 @@ func _run() -> void:
 	host.audio_state = "playing"
 	game.fox.set_reduced_motion(false)
 	game._tick_speech(0.06)
-	game.fox._process(0.06)
+	game.fox.director.advance(0.06)
 	_check(
-		game.fox.audio_active and game.fox.facial_pose.jaw > 0.0,
+		game.fox.audio_active and _shape_weight(game.fox, MOUTH_SHAPES) > 0.0,
 		"real playback sample drives actual mouth morph"
 	)
 	var old_response := host.response.duplicate(true)
 	game._explicit_stop()
 	_check(
 		(
-			game.fox.current_behavior == "idle"
-			and not game.fox.teacher_pose.has_target
-			and not game.fox.facial_pose.has_target
+			game.fox.director.state == "listening"
+			and game.fox.director.point_target_id.is_empty()
+			and game.fox.director.target_id.is_empty()
 			and not game.fox.audio_active
-			and game.fox.facial_pose.jaw == 0.0
+			and _shape_weight(game.fox, MOUTH_SHAPES) == 0.0
+			and _shape_weight(game.fox, ["LookLeft", "LookRight", "LookUp", "LookDown"]) == 0.0
 		),
 		"stop jointly neutralizes gesture gaze and mouth"
 	)
@@ -218,7 +239,8 @@ func _run() -> void:
 			)
 	game._notification(Node.NOTIFICATION_APPLICATION_PAUSED)
 	_check(
-		game.suspended and game.fox.current_behavior == "idle", "app interruption cancels gesture"
+		game.suspended and game.fox.director.suspended and game.fox.director.state == "paused",
+		"app interruption cancels gesture"
 	)
 	game._notification(Node.NOTIFICATION_APPLICATION_RESUMED)
 	_check(
@@ -265,12 +287,12 @@ func _run() -> void:
 	)
 	game._pattern_hint()
 	_check(
-		game._pattern_group_outline.visible and game.activity.pattern_choice == -1,
+		game._pattern_group_outline.visible and game.activity.pattern_candidate == -1,
 		"hint exposes group without submitting a child's answer"
 	)
 	game._choose_pattern(1)
 	_check(
-		game.activity.pattern_choice == 1 and not game.activity.is_complete(),
+		game.activity.pattern_candidate == 1 and not game.activity.is_complete(),
 		"even wrong proposal remains unscored for original task"
 	)
 	game.queue_free()
