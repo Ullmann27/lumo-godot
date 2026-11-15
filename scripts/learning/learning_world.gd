@@ -4,6 +4,7 @@ extends Node3D
 
 const ACTIVITY = preload("res://scripts/learning/learning_activity.gd")
 const FOX = preload("res://scripts/characters/lumo/lumo_nextgen_learning_actor.gd")
+const TUTOR = preload("res://scripts/learning/lumo_native_dialogue_panel.gd")
 const ATELIER = preload("res://scripts/learning/learning_atelier.gd")
 const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const ENGLISH_GALLERY = preload("res://scripts/learning/english_object_gallery.gd")
@@ -76,6 +77,7 @@ var _speech_wait := -1.0
 var _speech_state := "idle"
 var _speech_text := ""
 var voice_button: Button
+var talk_panel: CanvasLayer
 var english_models: Array[Node3D] = []
 var english_buttons: Array[Button] = []
 var english_stage_rect := Rect2()
@@ -120,6 +122,11 @@ func _ready() -> void:
 	HostBridge.returned.connect(_observation_returned)
 	_build_stage()
 	_build_ui()
+	talk_panel = TUTOR.new()
+	talk_panel.configure(options, _speech_host)
+	add_child(talk_panel)
+	talk_panel.reply_ready.connect(_on_tutor_reply)
+	talk_panel.dialog_stopped.connect(_stop_speech)
 	_rebuild_activity()
 	get_viewport().size_changed.connect(_layout)
 	MobileRuntime.safe_area_changed.connect(_layout)
@@ -464,6 +471,8 @@ func _rebuild_activity() -> void:
 		and _speech_host.has_method("speakLearning")
 	):
 		voice_button = _button("Schritt anhören", _voice_action)
+	if is_instance_valid(talk_panel) and talk_panel.is_available():
+		_button("Frag Lumo", _open_tutor)
 	_button("Zur Aufgabe", _return_to_lesson)
 	_layout.call_deferred()
 
@@ -860,6 +869,8 @@ func _refresh() -> void:
 		main_button.disabled = activity.is_complete() or not _moving.is_empty()
 	if activity.is_complete() and activity.kind != "english_objects":
 		status.text = "Geschafft! Zurück bei deiner Aufgabe kannst du es selbst versuchen."
+	if is_instance_valid(talk_panel) and talk_panel.is_available():
+		talk_panel.update_explanation(explanation.text)
 	_layout.call_deferred()
 
 
@@ -1271,6 +1282,8 @@ func _cancel_drag() -> void:
 
 
 func _return_to_lesson() -> void:
+	if is_instance_valid(talk_panel):
+		talk_panel.close_dialog()
 	_stop_speech()
 	_cancel_drag()
 	if HostBridge.is_embedded():
@@ -1288,6 +1301,8 @@ func _notification(what: int) -> void:
 		if is_instance_valid(wonder):
 			wonder.set_paused(true)
 		_mark_learning_observation()
+		if is_instance_valid(talk_panel):
+			talk_panel.close_dialog()
 		_stop_speech()
 		_cancel_drag()
 		for tween in _tweens:
@@ -1318,10 +1333,42 @@ func _exit_tree() -> void:
 		MobileRuntime.safe_area_changed.disconnect(_layout)
 	if get_viewport().size_changed.is_connected(_layout):
 		get_viewport().size_changed.disconnect(_layout)
+	if is_instance_valid(talk_panel):
+		talk_panel.close_dialog()
 	_stop_speech()
 	get_tree().auto_accept_quit = _original_auto_quit
 	get_tree().quit_on_go_back = _original_back_quit
 	get_window().content_scale_mode = _original_scale_mode
+
+
+func _open_tutor() -> void:
+	if not is_instance_valid(talk_panel) or suspended:
+		return
+	_stop_speech()
+	_cancel_drag()
+	talk_panel.update_explanation(explanation.text)
+	talk_panel.open_dialog()
+	if fox != null and fox.is_usable():
+		fox.teacher_react("welcome")
+
+
+func _on_tutor_reply(words: String, object_id: String, action: String) -> void:
+	# Host already validated text, task lease, allowable action and object ID.
+	# This view neither grades nor awards anything.
+	if words.is_empty() or suspended:
+		return
+	var focus := Vector3(0, 0.8, 0)
+	if object_id != "" and part_nodes.has(object_id):
+		var named_part = part_nodes[object_id]
+		if is_instance_valid(named_part):
+			focus = named_part.global_position
+	elif activity.kind in ["bridge_ten", "addition", "subtract_ten", "syllables"]:
+		var step := activity.target_index()
+		if step >= 0 and step < targets.size():
+			focus = content.to_global(targets[step])
+	if is_instance_valid(fox) and fox.is_usable():
+		_teacher("explain" if action != "hint" else "encourage", focus)
+	_speak(words)
 
 
 func _teacher(reaction: String, at: Vector3) -> void:
