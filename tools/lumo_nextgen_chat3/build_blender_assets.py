@@ -257,6 +257,8 @@ def setup_preview(mats, avatar_collection):
     scene.render.resolution_percentage = 100
     scene.render.film_transparent = False
     scene.render.image_settings.file_format = "PNG"
+    if scene.world is None:
+        scene.world = bpy.data.worlds.new("LumoPreviewWorld")
     scene.world.color = (0.06, 0.05, 0.12)
     scene.render.engine = "CYCLES"
     scene.cycles.samples = 24
