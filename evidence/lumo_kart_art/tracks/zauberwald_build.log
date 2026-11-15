@@ -1,0 +1,119 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+20:53:14 | INFO: Starting glTF 2.0 export
+20:53:15 | INFO: Extracting primitive: Icosphere.032
+20:53:16 | INFO: Primitives created: 7
+20:53:16 | INFO: Finished glTF 2.0 export in 1.6340219974517822 s
+
+20:53:17 | INFO: Starting glTF 2.0 export
+20:53:17 | INFO: Extracting primitive: Icosphere.062
+20:53:17 | INFO: Primitives created: 7
+20:53:18 | INFO: Finished glTF 2.0 export in 0.8830034732818604 s
+
+20:53:18 | INFO: Starting glTF 2.0 export
+20:53:18 | INFO: Extracting primitive: TunnelShellCollision_Mesh
+20:53:18 | INFO: Primitives created: 1
+20:53:18 | INFO: Finished glTF 2.0 export in 0.023376941680908203 s
+
+LUMO_TRACK_MODULE zauberwald portal_entry 8534 7
+20:53:19 | INFO: Starting glTF 2.0 export
+20:53:19 | INFO: Extracting primitive: Icosphere.116
+20:53:20 | INFO: Primitives created: 7
+20:53:20 | INFO: Finished glTF 2.0 export in 1.0352907180786133 s
+
+20:53:21 | INFO: Starting glTF 2.0 export
+20:53:21 | INFO: Extracting primitive: Icosphere.146
+20:53:22 | INFO: Primitives created: 7
+20:53:22 | INFO: Finished glTF 2.0 export in 1.2465975284576416 s
+
+20:53:22 | INFO: Starting glTF 2.0 export
+20:53:22 | INFO: Extracting primitive: TunnelShellCollision_Mesh.001
+20:53:22 | INFO: Primitives created: 1
+20:53:22 | INFO: Finished glTF 2.0 export in 0.0924692153930664 s
+
+LUMO_TRACK_MODULE zauberwald portal_exit 8534 7
+20:53:24 | INFO: Starting glTF 2.0 export
+20:53:24 | INFO: Extracting primitive: Icosphere.220
+20:53:25 | INFO: Primitives created: 7
+20:53:25 | INFO: Finished glTF 2.0 export in 1.5062000751495361 s
+
+20:53:27 | INFO: Starting glTF 2.0 export
+20:53:27 | INFO: Extracting primitive: Icosphere.270
+20:53:28 | INFO: Primitives created: 7
+20:53:28 | INFO: Finished glTF 2.0 export in 1.6233789920806885 s
+
+20:53:29 | INFO: Starting glTF 2.0 export
+20:53:29 | INFO: Extracting primitive: TunnelShellCollision_Mesh.002
+20:53:29 | INFO: Primitives created: 1
+20:53:29 | INFO: Finished glTF 2.0 export in 0.0390315055847168 s
+
+LUMO_TRACK_MODULE zauberwald straight_12m 9084 7
+20:53:31 | INFO: Starting glTF 2.0 export
+20:53:31 | INFO: Extracting primitive: Icosphere.388
+20:53:33 | INFO: Primitives created: 7
+20:53:33 | INFO: Finished glTF 2.0 export in 1.9947285652160645 s
+
+20:53:35 | INFO: Starting glTF 2.0 export
+20:53:35 | INFO: Extracting primitive: Icosphere.462
+20:53:36 | INFO: Primitives created: 7
+20:53:36 | INFO: Finished glTF 2.0 export in 0.9633626937866211 s
+
+20:53:39 | INFO: Starting glTF 2.0 export
+20:53:39 | INFO: Extracting primitive: TunnelShellCollision_Mesh.003
+20:53:39 | INFO: Primitives created: 1
+20:53:39 | INFO: Finished glTF 2.0 export in 0.044437408447265625 s
+
+LUMO_TRACK_MODULE zauberwald curve_left_30 13348 7
+20:53:41 | INFO: Starting glTF 2.0 export
+20:53:41 | INFO: Extracting primitive: Icosphere.604
+20:53:42 | INFO: Primitives created: 7
+20:53:42 | INFO: Finished glTF 2.0 export in 1.0803959369659424 s
+
+20:53:44 | INFO: Starting glTF 2.0 export
+20:53:44 | INFO: Extracting primitive: Icosphere.678
+20:53:46 | INFO: Primitives created: 7
+20:53:46 | INFO: Finished glTF 2.0 export in 1.596855640411377 s
+
+20:53:46 | INFO: Starting glTF 2.0 export
+20:53:46 | INFO: Extracting primitive: TunnelShellCollision_Mesh.004
+20:53:46 | INFO: Primitives created: 1
+20:53:46 | INFO: Finished glTF 2.0 export in 0.04909658432006836 s
+
+LUMO_TRACK_MODULE zauberwald curve_right_30 13348 7
+20:53:48 | INFO: Starting glTF 2.0 export
+20:53:48 | INFO: Extracting primitive: Icosphere.796
+20:53:49 | INFO: Primitives created: 7
+20:53:49 | INFO: Finished glTF 2.0 export in 0.8135454654693604 s
+
+20:53:51 | INFO: Starting glTF 2.0 export
+20:53:51 | INFO: Extracting primitive: Icosphere.846
+20:53:52 | INFO: Primitives created: 7
+20:53:52 | INFO: Finished glTF 2.0 export in 1.025322437286377 s
+
+20:53:53 | INFO: Starting glTF 2.0 export
+20:53:53 | INFO: Extracting primitive: TunnelShellCollision_Mesh.005
+20:53:53 | INFO: Primitives created: 1
+20:53:53 | INFO: Finished glTF 2.0 export in 0.0569760799407959 s
+
+LUMO_TRACK_MODULE zauberwald grade_down 9084 7
+20:53:55 | INFO: Starting glTF 2.0 export
+20:53:55 | INFO: Extracting primitive: Icosphere.940
+20:53:56 | INFO: Primitives created: 7
+20:53:56 | INFO: Finished glTF 2.0 export in 1.2211029529571533 s
+
+20:53:58 | INFO: Starting glTF 2.0 export
+20:53:58 | INFO: Extracting primitive: Icosphere.990
+20:53:59 | INFO: Primitives created: 7
+20:53:59 | INFO: Finished glTF 2.0 export in 1.1219837665557861 s
+
+20:54:00 | INFO: Starting glTF 2.0 export
+20:54:00 | INFO: Extracting primitive: TunnelShellCollision_Mesh.006
+20:54:00 | INFO: Primitives created: 1
+20:54:00 | INFO: Finished glTF 2.0 export in 0.14765024185180664 s
+
+LUMO_TRACK_MODULE zauberwald grade_up 9084 7
+Info: Packed 5 file(s)
+Info: Saved "zauberwald_tunnel_workshop.blend"
+LUMO_TRACK_THEME_DONE zauberwald
+Blender 4.3.2
+
+Blender quit

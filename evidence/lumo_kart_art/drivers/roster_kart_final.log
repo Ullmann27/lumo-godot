@@ -1,0 +1,309 @@
+21:51:06 | INFO: Data are loaded, start creating Blender stuff
+21:51:06 | INFO: Blender create Mesh node DamperShaft_FL_mesh
+21:51:06 | INFO: Blender create Mesh node Cube.016
+21:51:06 | INFO: Blender create Mesh node BackCushion_mesh
+21:51:06 | INFO: Blender create Mesh node Cube.035
+21:51:06 | INFO: Blender create Mesh node BrakeDisc_FL_mesh
+21:51:06 | INFO: Blender create Mesh node Cube.037
+21:51:06 | INFO: Blender create Mesh node BrakeDisc_FR_mesh
+21:51:06 | INFO: Blender create Mesh node Cube.036
+21:51:06 | INFO: Blender create Mesh node BrakeDisc_RL_mesh
+21:51:06 | INFO: Blender create Mesh node Cube.038
+21:51:06 | INFO: Blender create Mesh node BrakeDisc_RR_mesh
+21:51:06 | INFO: Blender create Mesh node LeatherSteeringRim_mesh
+21:51:06 | INFO: glTF import finished in 0.09s
+21:51:06 | INFO: Data are loaded, start creating Blender stuff
+21:51:06 | INFO: Blender create Mesh node DamperShaft_FL_mesh
+21:51:06 | INFO: Blender create Mesh node Cube.016
+21:51:06 | INFO: Blender create Mesh node BackCushion_mesh
+21:51:06 | INFO: Blender create Mesh node Cube.035
+21:51:06 | INFO: Blender create Mesh node BrakeDisc_FL_mesh
+21:51:06 | INFO: Blender create Mesh node Cube.037
+21:51:06 | INFO: Blender create Mesh node BrakeDisc_FR_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.036
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_RL_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.038
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_RR_mesh
+21:51:07 | INFO: Blender create Mesh node LeatherSteeringRim_mesh
+21:51:07 | INFO: glTF import finished in 0.11s
+21:51:07 | INFO: Data are loaded, start creating Blender stuff
+21:51:07 | INFO: Blender create Mesh node DamperShaft_FL_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.016
+21:51:07 | INFO: Blender create Mesh node BackCushion_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.035
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_FL_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.037
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_FR_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.036
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_RL_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.038
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_RR_mesh
+21:51:07 | INFO: Blender create Mesh node LeatherSteeringRim_mesh
+21:51:07 | INFO: glTF import finished in 0.15s
+21:51:07 | INFO: Data are loaded, start creating Blender stuff
+21:51:07 | INFO: Blender create Mesh node DamperShaft_FL_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.016
+21:51:07 | INFO: Blender create Mesh node BackCushion_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.035
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_FL_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.037
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_FR_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.036
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_RL_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.038
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_RR_mesh
+21:51:07 | INFO: Blender create Mesh node LeatherSteeringRim_mesh
+21:51:07 | INFO: glTF import finished in 0.10s
+21:51:07 | INFO: Data are loaded, start creating Blender stuff
+21:51:07 | INFO: Blender create Mesh node DamperShaft_FL_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.016
+21:51:07 | INFO: Blender create Mesh node BackCushion_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.035
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_FL_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.037
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_FR_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.036
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_RL_mesh
+21:51:07 | INFO: Blender create Mesh node Cube.038
+21:51:07 | INFO: Blender create Mesh node BrakeDisc_RR_mesh
+21:51:07 | INFO: Blender create Mesh node LeatherSteeringRim_mesh
+21:51:07 | INFO: glTF import finished in 0.11s
+Blender 4.3.2
+Fra:1 Mem:101.33M (Peak 101.33M) | Time:00:00.04 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | ReviewFloor
+Fra:1 Mem:101.33M (Peak 101.33M) | Time:00:00.04 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | DriverMesh
+Fra:1 Mem:101.81M (Peak 101.81M) | Time:00:00.04 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Aurora_comet_Mesh
+Fra:1 Mem:103.83M (Peak 103.83M) | Time:00:00.04 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | SteeringWheel_Mesh.004
+Fra:1 Mem:104.81M (Peak 104.81M) | Time:00:00.04 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | BonnetBadge_Mesh
+Fra:1 Mem:105.10M (Peak 105.10M) | Time:00:00.04 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Coachwork_Mesh
+Fra:1 Mem:106.51M (Peak 106.51M) | Time:00:00.05 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RR_Mesh.004
+Fra:1 Mem:107.32M (Peak 107.32M) | Time:00:00.05 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FL_Mesh
+Fra:1 Mem:108.17M (Peak 108.17M) | Time:00:00.05 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FL_Mesh
+Fra:1 Mem:109.07M (Peak 109.07M) | Time:00:00.05 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RR_Mesh.004
+Fra:1 Mem:109.09M (Peak 109.09M) | Time:00:00.05 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RL_Mesh.004
+Fra:1 Mem:110.72M (Peak 110.72M) | Time:00:00.05 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FR_Mesh
+Fra:1 Mem:110.75M (Peak 110.75M) | Time:00:00.05 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FR_Mesh
+Fra:1 Mem:111.88M (Peak 111.88M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RL_Mesh.004
+Fra:1 Mem:111.91M (Peak 111.91M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FR_Mesh.004
+Fra:1 Mem:112.50M (Peak 112.50M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RL_Mesh
+Fra:1 Mem:112.53M (Peak 112.53M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RL_Mesh
+Fra:1 Mem:113.59M (Peak 113.59M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FR_Mesh.004
+Fra:1 Mem:113.65M (Peak 113.65M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FL_Mesh.004
+Fra:1 Mem:114.13M (Peak 114.13M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RR_Mesh
+Fra:1 Mem:114.11M (Peak 114.13M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RR_Mesh
+Fra:1 Mem:115.46M (Peak 115.46M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FL_Mesh.004
+Fra:1 Mem:115.49M (Peak 115.49M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Coachwork_Mesh.004
+Fra:1 Mem:117.13M (Peak 117.21M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | SteeringWheel_Mesh
+Fra:1 Mem:117.26M (Peak 117.26M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | DriverMesh.001
+Fra:1 Mem:121.34M (Peak 121.34M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Aurora_comet_Mesh.001
+Fra:1 Mem:124.22M (Peak 124.22M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | BonnetBadge_Mesh.004
+Fra:1 Mem:124.26M (Peak 124.26M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Aurora_comet_Mesh.004
+Fra:1 Mem:124.73M (Peak 124.73M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | BonnetBadge_Mesh.001
+Fra:1 Mem:124.69M (Peak 124.73M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Coachwork_Mesh.001
+Fra:1 Mem:125.97M (Peak 126.03M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | DriverMesh.004
+Fra:1 Mem:134.23M (Peak 134.23M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FL_Mesh.001
+Fra:1 Mem:134.26M (Peak 134.26M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FL_Mesh.001
+Fra:1 Mem:135.87M (Peak 135.87M) | Time:00:00.10 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FR_Mesh.001
+Fra:1 Mem:135.90M (Peak 135.90M) | Time:00:00.10 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FR_Mesh.001
+Fra:1 Mem:138.34M (Peak 138.39M) | Time:00:00.10 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RL_Mesh.001
+Fra:1 Mem:138.36M (Peak 138.39M) | Time:00:00.10 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RL_Mesh.001
+Fra:1 Mem:141.13M (Peak 141.13M) | Time:00:00.11 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RR_Mesh.001
+Fra:1 Mem:141.16M (Peak 141.16M) | Time:00:00.11 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RR_Mesh.001
+Fra:1 Mem:142.44M (Peak 142.44M) | Time:00:00.12 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | SteeringWheel_Mesh.001
+Fra:1 Mem:142.58M (Peak 142.58M) | Time:00:00.12 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | DriverMesh.002
+Fra:1 Mem:149.49M (Peak 151.48M) | Time:00:00.18 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Aurora_comet_Mesh.002
+Fra:1 Mem:149.68M (Peak 151.48M) | Time:00:00.18 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | BonnetBadge_Mesh.002
+Fra:1 Mem:149.78M (Peak 151.48M) | Time:00:00.18 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Coachwork_Mesh.002
+Fra:1 Mem:152.07M (Peak 153.73M) | Time:00:00.18 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | SteeringWheel_Mesh.003
+Fra:1 Mem:152.74M (Peak 153.73M) | Time:00:00.18 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FL_Mesh.002
+Fra:1 Mem:152.75M (Peak 153.73M) | Time:00:00.18 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FL_Mesh.002
+Fra:1 Mem:153.24M (Peak 153.73M) | Time:00:00.18 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RR_Mesh.003
+Fra:1 Mem:153.49M (Peak 153.73M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FR_Mesh.002
+Fra:1 Mem:153.44M (Peak 153.73M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RR_Mesh.003
+Fra:1 Mem:153.49M (Peak 153.73M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RL_Mesh.003
+Fra:1 Mem:153.98M (Peak 153.98M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FR_Mesh.002
+Fra:1 Mem:154.78M (Peak 154.78M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RL_Mesh.002
+Fra:1 Mem:155.14M (Peak 155.14M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RL_Mesh.002
+Fra:1 Mem:155.93M (Peak 155.93M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RL_Mesh.003
+Fra:1 Mem:155.96M (Peak 155.96M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FR_Mesh.003
+Fra:1 Mem:156.50M (Peak 156.50M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RR_Mesh.002
+Fra:1 Mem:156.72M (Peak 156.72M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RR_Mesh.002
+Fra:1 Mem:157.11M (Peak 157.11M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | SteeringWheel_Mesh.002
+Fra:1 Mem:157.33M (Peak 157.33M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FR_Mesh.003
+Fra:1 Mem:157.34M (Peak 157.34M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | DriverMesh.003
+Fra:1 Mem:157.77M (Peak 157.77M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FL_Mesh.003
+Fra:1 Mem:161.15M (Peak 161.15M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FL_Mesh.003
+Fra:1 Mem:161.09M (Peak 161.15M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Aurora_comet_Mesh.003
+Fra:1 Mem:161.10M (Peak 161.15M) | Time:00:00.19 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Coachwork_Mesh.003
+Fra:1 Mem:163.45M (Peak 163.45M) | Time:00:00.20 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | BonnetBadge_Mesh.003
+Fra:1 Mem:167.32M (Peak 168.68M) | Time:00:00.24 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Initializing
+Fra:1 Mem:157.59M (Peak 168.68M) | Time:00:00.24 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Organic_MicroNormal
+Fra:1 Mem:157.59M (Peak 168.68M) | Time:00:00.24 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Fabric_MicroNormal
+Fra:1 Mem:157.59M (Peak 168.68M) | Time:00:00.24 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Organic_MicroNormal.001
+Fra:1 Mem:161.60M (Peak 168.68M) | Time:00:00.26 | Mem:1.00M, Peak:1.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Fabric_MicroNormal.001
+Fra:1 Mem:164.61M (Peak 168.68M) | Time:00:00.27 | Mem:2.00M, Peak:2.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Organic_MicroNormal.002
+Fra:1 Mem:165.61M (Peak 168.68M) | Time:00:00.27 | Mem:3.00M, Peak:3.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Organic_MicroNormal.004
+Fra:1 Mem:166.61M (Peak 168.68M) | Time:00:00.27 | Mem:4.00M, Peak:4.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Fabric_MicroNormal.002
+Fra:1 Mem:167.61M (Peak 168.68M) | Time:00:00.27 | Mem:5.00M, Peak:5.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Organic_MicroNormal.003
+Fra:1 Mem:166.60M (Peak 168.68M) | Time:00:00.27 | Mem:6.00M, Peak:6.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Fabric_MicroNormal.003
+Fra:1 Mem:157.59M (Peak 170.62M) | Time:00:00.29 | Mem:10.00M, Peak:10.00M | Scene, ViewLayer | Waiting for render to start
+Fra:1 Mem:157.60M (Peak 170.62M) | Time:00:00.29 | Mem:10.00M, Peak:10.00M | Scene, ViewLayer | Loading render kernels (may take a few minutes the first time)
+Fra:1 Mem:157.60M (Peak 170.62M) | Time:00:00.29 | Mem:10.00M, Peak:10.00M | Scene, ViewLayer | Updating Scene
+Fra:1 Mem:157.60M (Peak 170.62M) | Time:00:00.29 | Mem:10.00M, Peak:10.00M | Scene, ViewLayer | Updating Shaders
+Fra:1 Mem:157.73M (Peak 170.62M) | Time:00:00.29 | Mem:10.05M, Peak:10.05M | Scene, ViewLayer | Updating Procedurals
+Fra:1 Mem:157.73M (Peak 170.62M) | Time:00:00.29 | Mem:10.05M, Peak:10.05M | Scene, ViewLayer | Updating Background
+Fra:1 Mem:157.73M (Peak 170.62M) | Time:00:00.29 | Mem:10.05M, Peak:10.05M | Scene, ViewLayer | Updating Camera
+Fra:1 Mem:157.73M (Peak 170.62M) | Time:00:00.29 | Mem:10.05M, Peak:10.05M | Scene, ViewLayer | Updating Meshes Flags
+Fra:1 Mem:157.73M (Peak 170.62M) | Time:00:00.29 | Mem:10.05M, Peak:10.05M | Scene, ViewLayer | Updating Objects
+Fra:1 Mem:157.73M (Peak 170.62M) | Time:00:00.29 | Mem:10.05M, Peak:10.05M | Scene, ViewLayer | Updating Objects | Copying Transformations to device
+Fra:1 Mem:157.74M (Peak 170.62M) | Time:00:00.29 | Mem:10.06M, Peak:10.06M | Scene, ViewLayer | Updating Objects | Applying Static Transformations
+Fra:1 Mem:157.74M (Peak 170.62M) | Time:00:00.29 | Mem:10.06M, Peak:10.06M | Scene, ViewLayer | Updating Particle Systems
+Fra:1 Mem:157.74M (Peak 170.62M) | Time:00:00.29 | Mem:10.06M, Peak:10.06M | Scene, ViewLayer | Updating Particle Systems | Copying Particles to device
+Fra:1 Mem:157.74M (Peak 170.62M) | Time:00:00.29 | Mem:10.06M, Peak:10.06M | Scene, ViewLayer | Updating Meshes
+Fra:1 Mem:164.53M (Peak 170.62M) | Time:00:00.32 | Mem:10.06M, Peak:10.06M | Scene, ViewLayer | Updating Mesh | Computing attributes
+Fra:1 Mem:184.46M (Peak 184.46M) | Time:00:00.41 | Mem:10.07M, Peak:10.07M | Scene, ViewLayer | Updating Mesh | Copying Attributes to device
+Fra:1 Mem:184.44M (Peak 184.46M) | Time:00:00.42 | Mem:29.98M, Peak:29.98M | Scene, ViewLayer | Updating Scene BVH | Building
+Fra:1 Mem:184.44M (Peak 184.46M) | Time:00:00.42 | Mem:29.98M, Peak:29.98M | Scene, ViewLayer | Updating Scene BVH | Building BVH
+Fra:1 Mem:184.44M (Peak 184.46M) | Time:00:00.42 | Mem:43.56M, Peak:43.56M | Scene, ViewLayer | Updating Scene BVH | Building BVH 0%
+Fra:1 Mem:184.44M (Peak 184.46M) | Time:00:00.51 | Mem:58.33M, Peak:71.91M | Scene, ViewLayer | Updating Scene BVH | Copying BVH to device
+Fra:1 Mem:184.44M (Peak 184.46M) | Time:00:00.51 | Mem:58.33M, Peak:71.91M | Scene, ViewLayer | Updating Mesh | Computing normals
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.58 | Mem:58.33M, Peak:71.91M | Scene, ViewLayer | Updating Mesh | Copying Mesh to device
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.58 | Mem:76.11M, Peak:76.11M | Scene, ViewLayer | Updating Objects Flags
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.58 | Mem:76.11M, Peak:76.11M | Scene, ViewLayer | Updating Primitive Offsets
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.58 | Mem:76.11M, Peak:76.11M | Scene, ViewLayer | Updating Images
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.58 | Mem:76.11M, Peak:76.11M | Scene, ViewLayer | Updating Camera Volume
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.58 | Mem:76.11M, Peak:76.11M | Scene, ViewLayer | Updating Lookup Tables
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.58 | Mem:76.19M, Peak:76.19M | Scene, ViewLayer | Updating Lights
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.58 | Mem:76.20M, Peak:76.20M | Scene, ViewLayer | Updating Lights | Computing tree
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.58 | Mem:76.20M, Peak:76.20M | Scene, ViewLayer | Updating Integrator
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.58 | Mem:76.20M, Peak:76.20M | Scene, ViewLayer | Updating Film
+Fra:1 Mem:202.24M (Peak 202.24M) | Time:00:00.58 | Mem:76.12M, Peak:76.20M | Scene, ViewLayer | Updating Lookup Tables
+Fra:1 Mem:202.24M (Peak 202.24M) | Time:00:00.58 | Mem:76.20M, Peak:76.20M | Scene, ViewLayer | Updating Baking
+Fra:1 Mem:202.24M (Peak 202.24M) | Time:00:00.58 | Mem:76.20M, Peak:76.20M | Scene, ViewLayer | Updating Device | Writing constant memory
+Fra:1 Mem:202.24M (Peak 202.24M) | Time:00:00.58 | Mem:76.20M, Peak:76.20M | Scene, ViewLayer | Sample 0/32
+Fra:1 Mem:275.17M (Peak 275.17M) | Time:00:02.96 | Remaining:01:13.72 | Mem:149.13M, Peak:149.13M | Scene, ViewLayer | Sample 1/32
+Fra:1 Mem:275.17M (Peak 275.17M) | Time:00:37.77 | Remaining:00:32.81 | Mem:149.13M, Peak:149.13M | Scene, ViewLayer | Sample 17/32
+Fra:1 Mem:307.59M (Peak 372.41M) | Time:01:13.80 | Mem:149.13M, Peak:149.13M | Scene, ViewLayer | Sample 32/32
+Fra:1 Mem:307.59M (Peak 372.41M) | Time:01:13.80 | Mem:149.13M, Peak:149.13M | Scene, ViewLayer | Finished
+Saved: '/workspace/scratch/eb2882c140f8/lumo-kart-art/evidence/lumo_kart_art/drivers/roster_kart_rear_three_quarter.png'
+Time: 01:14.40 (Saving: 00:00.58)
+
+Fra:1 Mem:121.50M (Peak 121.50M) | Time:00:00.02 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | ReviewFloor
+Fra:1 Mem:121.50M (Peak 121.50M) | Time:00:00.02 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Aurora_comet_Mesh
+Fra:1 Mem:121.97M (Peak 121.97M) | Time:00:00.02 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | BonnetBadge_Mesh
+Fra:1 Mem:122.23M (Peak 122.23M) | Time:00:00.02 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Coachwork_Mesh
+Fra:1 Mem:124.03M (Peak 124.03M) | Time:00:00.02 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FL_Mesh
+Fra:1 Mem:124.04M (Peak 124.04M) | Time:00:00.02 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FL_Mesh
+Fra:1 Mem:125.16M (Peak 125.16M) | Time:00:00.02 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | SteeringWheel_Mesh.004
+Fra:1 Mem:125.40M (Peak 125.40M) | Time:00:00.02 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FR_Mesh
+Fra:1 Mem:125.48M (Peak 125.48M) | Time:00:00.02 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FR_Mesh
+Fra:1 Mem:125.85M (Peak 125.85M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RR_Mesh.004
+Fra:1 Mem:126.21M (Peak 126.21M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RR_Mesh.004
+Fra:1 Mem:126.23M (Peak 126.23M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RL_Mesh.004
+Fra:1 Mem:126.60M (Peak 126.60M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RL_Mesh
+Fra:1 Mem:126.62M (Peak 126.62M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RL_Mesh
+Fra:1 Mem:126.62M (Peak 126.62M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RR_Mesh
+Fra:1 Mem:127.15M (Peak 127.15M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RR_Mesh
+Fra:1 Mem:127.69M (Peak 127.69M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RL_Mesh.004
+Fra:1 Mem:128.18M (Peak 128.18M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FR_Mesh.004
+Fra:1 Mem:128.54M (Peak 128.54M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | SteeringWheel_Mesh
+Fra:1 Mem:128.61M (Peak 128.61M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | DriverMesh.001
+Fra:1 Mem:129.44M (Peak 129.44M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Aurora_comet_Mesh.001
+Fra:1 Mem:131.22M (Peak 131.22M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FR_Mesh.004
+Fra:1 Mem:131.28M (Peak 131.28M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FL_Mesh.004
+Fra:1 Mem:131.39M (Peak 131.39M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | BonnetBadge_Mesh.001
+Fra:1 Mem:132.55M (Peak 132.55M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FL_Mesh.004
+Fra:1 Mem:132.56M (Peak 132.56M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Coachwork_Mesh.004
+Fra:1 Mem:132.85M (Peak 132.85M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Coachwork_Mesh.001
+Fra:1 Mem:136.39M (Peak 136.39M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | BonnetBadge_Mesh.004
+Fra:1 Mem:136.41M (Peak 136.41M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Aurora_comet_Mesh.004
+Fra:1 Mem:136.94M (Peak 136.94M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | DriverMesh.004
+Fra:1 Mem:139.30M (Peak 139.30M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FL_Mesh.001
+Fra:1 Mem:139.65M (Peak 139.65M) | Time:00:00.03 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FL_Mesh.001
+Fra:1 Mem:145.08M (Peak 145.08M) | Time:00:00.04 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FR_Mesh.001
+Fra:1 Mem:148.06M (Peak 148.06M) | Time:00:00.04 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FR_Mesh.001
+Fra:1 Mem:148.76M (Peak 148.76M) | Time:00:00.04 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RL_Mesh.001
+Fra:1 Mem:148.95M (Peak 148.95M) | Time:00:00.04 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RL_Mesh.001
+Fra:1 Mem:149.31M (Peak 149.31M) | Time:00:00.04 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RR_Mesh.001
+Fra:1 Mem:149.33M (Peak 149.33M) | Time:00:00.04 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RR_Mesh.001
+Fra:1 Mem:149.70M (Peak 149.70M) | Time:00:00.05 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | SteeringWheel_Mesh.001
+Fra:1 Mem:149.76M (Peak 149.76M) | Time:00:00.05 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | DriverMesh.002
+Fra:1 Mem:152.12M (Peak 152.12M) | Time:00:00.05 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Aurora_comet_Mesh.002
+Fra:1 Mem:156.24M (Peak 158.12M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | BonnetBadge_Mesh.002
+Fra:1 Mem:156.26M (Peak 158.12M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Coachwork_Mesh.002
+Fra:1 Mem:157.02M (Peak 158.12M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FL_Mesh.002
+Fra:1 Mem:157.03M (Peak 158.12M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FL_Mesh.002
+Fra:1 Mem:157.74M (Peak 158.12M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FR_Mesh.002
+Fra:1 Mem:157.92M (Peak 158.12M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FR_Mesh.002
+Fra:1 Mem:159.78M (Peak 159.78M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RL_Mesh.002
+Fra:1 Mem:159.79M (Peak 159.79M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RL_Mesh.002
+Fra:1 Mem:158.18M (Peak 159.79M) | Time:00:00.06 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RR_Mesh.002
+Fra:1 Mem:158.28M (Peak 159.79M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RR_Mesh.002
+Fra:1 Mem:158.57M (Peak 159.79M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | SteeringWheel_Mesh.002
+Fra:1 Mem:158.63M (Peak 159.79M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | DriverMesh.003
+Fra:1 Mem:159.06M (Peak 159.79M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Aurora_comet_Mesh.003
+Fra:1 Mem:159.30M (Peak 159.79M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | BonnetBadge_Mesh.003
+Fra:1 Mem:159.32M (Peak 159.79M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Coachwork_Mesh.003
+Fra:1 Mem:159.74M (Peak 159.79M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FL_Mesh.003
+Fra:1 Mem:159.75M (Peak 159.79M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FL_Mesh.003
+Fra:1 Mem:162.11M (Peak 162.11M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_FR_Mesh.003
+Fra:1 Mem:162.12M (Peak 162.12M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_FR_Mesh.003
+Fra:1 Mem:162.71M (Peak 162.71M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RL_Mesh.003
+Fra:1 Mem:162.71M (Peak 162.71M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RL_Mesh.003
+Fra:1 Mem:162.74M (Peak 162.74M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Steer_RR_Mesh.003
+Fra:1 Mem:162.94M (Peak 162.94M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Wheel_RR_Mesh.003
+Fra:1 Mem:163.78M (Peak 163.78M) | Time:00:00.07 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | SteeringWheel_Mesh.003
+Fra:1 Mem:167.32M (Peak 169.31M) | Time:00:00.10 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Initializing
+Fra:1 Mem:157.59M (Peak 169.31M) | Time:00:00.11 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Organic_MicroNormal
+Fra:1 Mem:157.59M (Peak 169.31M) | Time:00:00.11 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Fabric_MicroNormal
+Fra:1 Mem:157.59M (Peak 169.31M) | Time:00:00.11 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Organic_MicroNormal.001
+Fra:1 Mem:163.61M (Peak 169.31M) | Time:00:00.11 | Mem:1.00M, Peak:1.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Organic_MicroNormal.004
+Fra:1 Mem:161.60M (Peak 169.31M) | Time:00:00.11 | Mem:2.00M, Peak:2.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Fabric_MicroNormal.001
+Fra:1 Mem:165.61M (Peak 169.31M) | Time:00:00.11 | Mem:3.00M, Peak:3.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Organic_MicroNormal.002
+Fra:1 Mem:164.61M (Peak 169.31M) | Time:00:00.11 | Mem:4.00M, Peak:4.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Fabric_MicroNormal.002
+Fra:1 Mem:165.61M (Peak 169.31M) | Time:00:00.12 | Mem:5.00M, Peak:5.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Organic_MicroNormal.003
+Fra:1 Mem:166.61M (Peak 169.31M) | Time:00:00.12 | Mem:6.00M, Peak:6.00M | Scene, ViewLayer | Updating Images | Loading LUMO_Fabric_MicroNormal.003
+Fra:1 Mem:157.59M (Peak 169.31M) | Time:00:00.13 | Mem:10.00M, Peak:10.00M | Scene, ViewLayer | Waiting for render to start
+Fra:1 Mem:157.60M (Peak 169.31M) | Time:00:00.13 | Mem:10.00M, Peak:10.00M | Scene, ViewLayer | Loading render kernels (may take a few minutes the first time)
+Fra:1 Mem:157.60M (Peak 169.31M) | Time:00:00.13 | Mem:10.00M, Peak:10.00M | Scene, ViewLayer | Updating Scene
+Fra:1 Mem:157.60M (Peak 169.31M) | Time:00:00.13 | Mem:10.00M, Peak:10.00M | Scene, ViewLayer | Updating Shaders
+Fra:1 Mem:157.73M (Peak 169.31M) | Time:00:00.13 | Mem:10.05M, Peak:10.05M | Scene, ViewLayer | Updating Procedurals
+Fra:1 Mem:157.73M (Peak 169.31M) | Time:00:00.13 | Mem:10.05M, Peak:10.05M | Scene, ViewLayer | Updating Background
+Fra:1 Mem:157.73M (Peak 169.31M) | Time:00:00.13 | Mem:10.05M, Peak:10.05M | Scene, ViewLayer | Updating Camera
+Fra:1 Mem:157.73M (Peak 169.31M) | Time:00:00.13 | Mem:10.05M, Peak:10.05M | Scene, ViewLayer | Updating Meshes Flags
+Fra:1 Mem:157.73M (Peak 169.31M) | Time:00:00.13 | Mem:10.05M, Peak:10.05M | Scene, ViewLayer | Updating Objects
+Fra:1 Mem:157.73M (Peak 169.31M) | Time:00:00.13 | Mem:10.05M, Peak:10.05M | Scene, ViewLayer | Updating Objects | Copying Transformations to device
+Fra:1 Mem:157.74M (Peak 169.31M) | Time:00:00.13 | Mem:10.06M, Peak:10.06M | Scene, ViewLayer | Updating Objects | Applying Static Transformations
+Fra:1 Mem:157.74M (Peak 169.31M) | Time:00:00.14 | Mem:10.06M, Peak:10.06M | Scene, ViewLayer | Updating Particle Systems
+Fra:1 Mem:157.74M (Peak 169.31M) | Time:00:00.14 | Mem:10.06M, Peak:10.06M | Scene, ViewLayer | Updating Particle Systems | Copying Particles to device
+Fra:1 Mem:157.74M (Peak 169.31M) | Time:00:00.14 | Mem:10.06M, Peak:10.06M | Scene, ViewLayer | Updating Meshes
+Fra:1 Mem:164.53M (Peak 169.31M) | Time:00:00.16 | Mem:10.06M, Peak:10.06M | Scene, ViewLayer | Updating Mesh | Computing attributes
+Fra:1 Mem:184.46M (Peak 184.46M) | Time:00:00.17 | Mem:10.07M, Peak:10.07M | Scene, ViewLayer | Updating Mesh | Copying Attributes to device
+Fra:1 Mem:184.44M (Peak 184.46M) | Time:00:00.17 | Mem:29.98M, Peak:29.98M | Scene, ViewLayer | Updating Scene BVH | Building
+Fra:1 Mem:184.45M (Peak 184.46M) | Time:00:00.17 | Mem:29.98M, Peak:29.98M | Scene, ViewLayer | Updating Scene BVH | Building BVH
+Fra:1 Mem:184.45M (Peak 184.46M) | Time:00:00.17 | Mem:43.56M, Peak:43.56M | Scene, ViewLayer | Updating Scene BVH | Building BVH 0%
+Fra:1 Mem:184.45M (Peak 184.46M) | Time:00:00.23 | Mem:58.33M, Peak:71.91M | Scene, ViewLayer | Updating Scene BVH | Copying BVH to device
+Fra:1 Mem:184.45M (Peak 184.46M) | Time:00:00.23 | Mem:58.33M, Peak:71.91M | Scene, ViewLayer | Updating Mesh | Computing normals
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.23 | Mem:58.33M, Peak:71.91M | Scene, ViewLayer | Updating Mesh | Copying Mesh to device
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.23 | Mem:76.11M, Peak:76.11M | Scene, ViewLayer | Updating Objects Flags
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.23 | Mem:76.11M, Peak:76.11M | Scene, ViewLayer | Updating Primitive Offsets
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.23 | Mem:76.11M, Peak:76.11M | Scene, ViewLayer | Updating Images
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.23 | Mem:76.11M, Peak:76.11M | Scene, ViewLayer | Updating Camera Volume
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.24 | Mem:76.11M, Peak:76.11M | Scene, ViewLayer | Updating Lookup Tables
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.24 | Mem:76.19M, Peak:76.19M | Scene, ViewLayer | Updating Lights
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.24 | Mem:76.20M, Peak:76.20M | Scene, ViewLayer | Updating Lights | Computing tree
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.24 | Mem:76.20M, Peak:76.20M | Scene, ViewLayer | Updating Integrator
+Fra:1 Mem:202.23M (Peak 202.23M) | Time:00:00.24 | Mem:76.20M, Peak:76.20M | Scene, ViewLayer | Updating Film
+Fra:1 Mem:202.24M (Peak 202.24M) | Time:00:00.24 | Mem:76.12M, Peak:76.20M | Scene, ViewLayer | Updating Lookup Tables
+Fra:1 Mem:202.24M (Peak 202.24M) | Time:00:00.24 | Mem:76.20M, Peak:76.20M | Scene, ViewLayer | Updating Baking
+Fra:1 Mem:202.24M (Peak 202.24M) | Time:00:00.24 | Mem:76.20M, Peak:76.20M | Scene, ViewLayer | Updating Device | Writing constant memory
+Fra:1 Mem:202.24M (Peak 202.24M) | Time:00:00.24 | Mem:76.20M, Peak:76.20M | Scene, ViewLayer | Sample 0/32
+Fra:1 Mem:275.18M (Peak 275.18M) | Time:00:02.00 | Remaining:00:54.58 | Mem:149.13M, Peak:149.13M | Scene, ViewLayer | Sample 1/32
+Fra:1 Mem:275.18M (Peak 275.18M) | Time:00:32.20 | Remaining:00:28.20 | Mem:149.13M, Peak:149.13M | Scene, ViewLayer | Sample 17/32
+Fra:1 Mem:307.59M (Peak 372.41M) | Time:00:56.94 | Mem:149.13M, Peak:149.13M | Scene, ViewLayer | Sample 32/32
+Fra:1 Mem:307.59M (Peak 372.41M) | Time:00:56.94 | Mem:149.13M, Peak:149.13M | Scene, ViewLayer | Finished
+Saved: '/workspace/scratch/eb2882c140f8/lumo-kart-art/evidence/lumo_kart_art/drivers/roster_kart_rear.png'
+Time: 00:57.30 (Saving: 00:00.33)
+
+ROSTER_RENDER_PASS 5 2
+
+Blender quit

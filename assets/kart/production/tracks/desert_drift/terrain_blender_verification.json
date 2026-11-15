@@ -1,0 +1,233 @@
+{
+  "status": "PASS",
+  "theme": "desert_drift",
+  "blender": "4.3.2",
+  "assets": [
+    {
+      "file": "portal_entry_terrain.glb",
+      "sha256": "6f9d0db73f0050f5df2482ca9fc055982b24d196a43962836d784d1b3deba47b",
+      "bytes": 42304,
+      "triangles": 820,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.213367462158203,
+      "measured_min_roof_clearance_m": 6.672275161743164,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "portal_entry_terrain_lod1.glb",
+      "sha256": "6bc551e5a6e7eb67a736a498458f80c7a91d1cd44f4c753ac7b69179c7a3a892",
+      "bytes": 42312,
+      "triangles": 820,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.213367462158203,
+      "measured_min_roof_clearance_m": 6.672275161743164,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "portal_exit_terrain.glb",
+      "sha256": "863a9b2608b585d32af10d0ec5be1eff307a1cd7a6976359578dbc9c6e74acd2",
+      "bytes": 42308,
+      "triangles": 820,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.213367462158203,
+      "measured_min_roof_clearance_m": 6.672274208068847,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "portal_exit_terrain_lod1.glb",
+      "sha256": "0c6d18ad409e808b9e0baff4df19599353f44717fc2c11138eb29b45cad06756",
+      "bytes": 42308,
+      "triangles": 820,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.213367462158203,
+      "measured_min_roof_clearance_m": 6.672274208068847,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "straight_12m_terrain.glb",
+      "sha256": "7983914bd0e0bb4ae2542e631a71461bc764d7269665025dc03e22cba84ccc2f",
+      "bytes": 91476,
+      "triangles": 2132,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.1937479972839355,
+      "measured_min_roof_clearance_m": 6.6495696067810055,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "straight_12m_terrain_lod1.glb",
+      "sha256": "7f677f01bef755978b9700a13bf82996dceb2b56db0002376344f8ca360e6a58",
+      "bytes": 42312,
+      "triangles": 820,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.1937479972839355,
+      "measured_min_roof_clearance_m": 6.6495696067810055,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "curve_left_30_terrain.glb",
+      "sha256": "d719fc46cf8656b8e8a717fd963c4dffb949c732e0d68588c1ef4413f802dfe5",
+      "bytes": 134576,
+      "triangles": 3280,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.189647197723389,
+      "measured_min_roof_clearance_m": 6.646342849731445,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "curve_left_30_terrain_lod1.glb",
+      "sha256": "859d8d1e0950e0b08bf4fdb32111202f95847cd7bfe96f432b421fcdcdcd6550",
+      "bytes": 60836,
+      "triangles": 1312,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.163541793823242,
+      "measured_min_roof_clearance_m": 6.625785446166992,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "curve_right_30_terrain.glb",
+      "sha256": "713196d6b228ad2265955c798cf5b2eea1454bbf92cad4c7bef50d84eded3976",
+      "bytes": 134576,
+      "triangles": 3280,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.189648151397705,
+      "measured_min_roof_clearance_m": 6.646343326568603,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "curve_right_30_terrain_lod1.glb",
+      "sha256": "f5f52a6e513a3ed0bd73207b14aa15260b43a65ae1e95753bd478afadf2b1e04",
+      "bytes": 60840,
+      "triangles": 1312,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.163541793823242,
+      "measured_min_roof_clearance_m": 6.625785446166992,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "grade_down_terrain.glb",
+      "sha256": "9e336a22290afb34288c097d86648149be3733cf3a59dd03e8d34deffdf271a0",
+      "bytes": 91476,
+      "triangles": 2132,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.189420223236084,
+      "measured_min_roof_clearance_m": 6.6396890640258786,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "grade_down_terrain_lod1.glb",
+      "sha256": "608b408d0cf2a1193f7f8fc24aeceb7754444f277ec28f41b54ad6b69a513ef9",
+      "bytes": 42312,
+      "triangles": 820,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.163152694702148,
+      "measured_min_roof_clearance_m": 6.580758190155029,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "grade_up_terrain.glb",
+      "sha256": "a60dd6d43254c18df9d21f466951518e9ef01798c2203ced52c160551136534f",
+      "bytes": 91472,
+      "triangles": 2132,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.189420700073242,
+      "measured_min_roof_clearance_m": 6.639689540863037,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    },
+    {
+      "file": "grade_up_terrain_lod1.glb",
+      "sha256": "598c191459befa7dc574b14c70990bbb398b8327c352b5e199f5165b6cc86d16",
+      "bytes": 42308,
+      "triangles": 820,
+      "material_count": 1,
+      "degenerate_triangles": 0,
+      "nonmanifold_edges_after_seam_weld": 0,
+      "clearance_rays": 253,
+      "measured_min_side_clearance_m": 7.163152694702148,
+      "measured_min_roof_clearance_m": 6.580757713317871,
+      "sockets": [
+        "in",
+        "out"
+      ]
+    }
+  ],
+  "preserved_core_glbs": 21,
+  "physical_device_fps_verified": false
+}

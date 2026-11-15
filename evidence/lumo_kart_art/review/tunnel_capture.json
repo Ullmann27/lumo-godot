@@ -1,0 +1,520 @@
+{
+  "camera_height_m": 2.52,
+  "curve_radius_m": 36.0,
+  "fps": 24,
+  "frames": [
+    {
+      "distance_m": 0.75,
+      "frame": 0,
+      "sha256": "8fd4bb1748b7256864980e4ab9f061f5058121d03435913b79ae3d176ba169e6"
+    },
+    {
+      "distance_m": 1.02631578947368,
+      "frame": 1,
+      "sha256": "d11d59a1e7da83b97ae57e39c917f0fc6d20eec97d96e4cc5bc1cc94d6734be1"
+    },
+    {
+      "distance_m": 1.30263157894737,
+      "frame": 2,
+      "sha256": "4d841dd88d8fb07a9d918d2750feddf5db8a4a4b11e4ecf89d3743e8610b0182"
+    },
+    {
+      "distance_m": 1.57894736842105,
+      "frame": 3,
+      "sha256": "78eaa241fd77b84dac58a01c302b7789d31d9ff14afb42be80cea25f40ed0125"
+    },
+    {
+      "distance_m": 1.85526315789474,
+      "frame": 4,
+      "sha256": "55ed294a7f73f4751d57a086a531381f7ead8dcf6346724e1afb79552301dfd8"
+    },
+    {
+      "distance_m": 2.13157894736842,
+      "frame": 5,
+      "sha256": "f26a727faf615127aa1354364b1ba890f68e306639e42bc38de7ef5d75a781ee"
+    },
+    {
+      "distance_m": 2.40789473684211,
+      "frame": 6,
+      "sha256": "abd0cf89ea80f601f1d9431853d54021d318b6035732254ecf707558b40fe7b5"
+    },
+    {
+      "distance_m": 2.68421052631579,
+      "frame": 7,
+      "sha256": "41a470f8202fcd93b3b45776f5c7ec3dec9ffb96377bd273421d9b0a8e5b71a8"
+    },
+    {
+      "distance_m": 2.96052631578947,
+      "frame": 8,
+      "sha256": "3f043cf6d3eb9585a54ca885ad53f74b78cc214893da05734b7185a45beb09e9"
+    },
+    {
+      "distance_m": 3.23684210526316,
+      "frame": 9,
+      "sha256": "23c6883b34b0aea8b11d56b1487c14efb3f784644853176a7e0f9715080ec535"
+    },
+    {
+      "distance_m": 3.51315789473684,
+      "frame": 10,
+      "sha256": "e374deda3c9f9f6ce6ee8cd9dae4fe85f22681a1fa3e89e592c715624e868419"
+    },
+    {
+      "distance_m": 3.78947368421053,
+      "frame": 11,
+      "sha256": "64a905c0697ce6466e3be0d0ffe269b0e97c255bc010c86421f2500d1888dac4"
+    },
+    {
+      "distance_m": 4.06578947368421,
+      "frame": 12,
+      "sha256": "f165c51dd5ccbef88c3d0088d7ca7cfad12c31479d911bb47b8fdba769f69f63"
+    },
+    {
+      "distance_m": 4.3421052631579,
+      "frame": 13,
+      "sha256": "0729cd8627af4eb5671adbf4913eda3c659fa55721ac04b14ba8c02b423736f5"
+    },
+    {
+      "distance_m": 4.61842105263158,
+      "frame": 14,
+      "sha256": "8e309a24e19a46f2923e728e68a0b78671365a490b78280a97755fee37d136db"
+    },
+    {
+      "distance_m": 4.89473684210526,
+      "frame": 15,
+      "sha256": "33d7cd10310ae60eb65c50ffe5ebd9698d90783a3c6fd362d1391db05cab31a3"
+    },
+    {
+      "distance_m": 5.17105263157895,
+      "frame": 16,
+      "sha256": "7f5b839e01a804afb24f418a3d6f5e82fe41186ba9bf2aaaf74b7a14dced2394"
+    },
+    {
+      "distance_m": 5.44736842105263,
+      "frame": 17,
+      "sha256": "c2039bbe8be30cac2562a2dbdcd8a6318760dce520c5a6c79d438bdb0277d60f"
+    },
+    {
+      "distance_m": 5.72368421052632,
+      "frame": 18,
+      "sha256": "2d89e3c3b1111c5464001fb15822d41a6eaed68cfeea6d6784bf43613f2d9bef"
+    },
+    {
+      "distance_m": 6.0,
+      "frame": 19,
+      "sha256": "396d823252c36e8947d0e51d629f978f2dbea563d118f8735228f68be16785eb"
+    },
+    {
+      "distance_m": 6.27631578947368,
+      "frame": 20,
+      "sha256": "51a41c06f488de5e1b7b732138aafda9777b9cf562eddcdcf45bf5a453abfa46"
+    },
+    {
+      "distance_m": 6.55263157894737,
+      "frame": 21,
+      "sha256": "3298e36d6296c7db92a2353d487569cb145678d1f77e9480b589538f6215626c"
+    },
+    {
+      "distance_m": 6.82894736842105,
+      "frame": 22,
+      "sha256": "7348334a5a4162a789b0d8d1fa5419c3deef62152d1faa2a48b2c6dc805bef02"
+    },
+    {
+      "distance_m": 7.10526315789474,
+      "frame": 23,
+      "sha256": "00252feeff424830af69b9d3e56cd6c3b1f197a3141a7c32556730e722e39e79"
+    },
+    {
+      "distance_m": 7.38157894736842,
+      "frame": 24,
+      "sha256": "870102919d15fca41150aa476eadab3c0226972cb07c16ecb53e0ae7cb468f21"
+    },
+    {
+      "distance_m": 7.65789473684211,
+      "frame": 25,
+      "sha256": "87b81c60a22f4943467a6a50eaf1fc590a7e18b4baa7ee5a300d60e5e2022b3b"
+    },
+    {
+      "distance_m": 7.93421052631579,
+      "frame": 26,
+      "sha256": "7883f7dd7852c38c1262675a4d4078908bc0e222727104bbcf0171f01bbf682f"
+    },
+    {
+      "distance_m": 8.21052631578947,
+      "frame": 27,
+      "sha256": "46c0ba8ec603bef1fd8c243263f4399668efd8220fec963166866faab27da3f8"
+    },
+    {
+      "distance_m": 8.48684210526316,
+      "frame": 28,
+      "sha256": "d068bdc570dd2d9637122b4608d3876e55fed7620b7bebb63cc3b45e2a1e4dbc"
+    },
+    {
+      "distance_m": 8.76315789473684,
+      "frame": 29,
+      "sha256": "f937d1a47dc16886bffdad8076ae6bc438648935f3e3380ba00117359bb68c97"
+    },
+    {
+      "distance_m": 9.03947368421053,
+      "frame": 30,
+      "sha256": "9f07aa136e901af6f778212930ec4c7852442976ec6d0c4c97f50197ed2500e7"
+    },
+    {
+      "distance_m": 9.31578947368421,
+      "frame": 31,
+      "sha256": "f0def4a4207e0342113bb1c3453ed639e7b703a028d9cf3ba47c153db50eb5e3"
+    },
+    {
+      "distance_m": 9.59210526315789,
+      "frame": 32,
+      "sha256": "0b9928889a66feb78b3c237395c501adb234a44795b0aefa36d69c6561211bc6"
+    },
+    {
+      "distance_m": 9.86842105263158,
+      "frame": 33,
+      "sha256": "439e8b45d6242bd110911d3bc24249272581f2fd447e07d51ec50937b3cfbd15"
+    },
+    {
+      "distance_m": 10.1447368421053,
+      "frame": 34,
+      "sha256": "cb28ff7a278ffdc15e15d25cd121c1761a002ec904070b8aa5095f8dff3c2e77"
+    },
+    {
+      "distance_m": 10.4210526315789,
+      "frame": 35,
+      "sha256": "311b72bad4e8b3e2043181f60550fcb5d08e8dcfc7696d6826ec08d478a62926"
+    },
+    {
+      "distance_m": 10.6973684210526,
+      "frame": 36,
+      "sha256": "57d7a0c3200ded3c11d456114431106fe04370c6b263429663c7ef97f7f92d69"
+    },
+    {
+      "distance_m": 10.9736842105263,
+      "frame": 37,
+      "sha256": "dfa06175396ef9be3e883babd31751508bbd5796259d2bf08d5f276f39f494b4"
+    },
+    {
+      "distance_m": 11.25,
+      "frame": 38,
+      "sha256": "357d3ded4d58a01545899ffa0615de756f5b3d7e2b3cce39374038f89c62ba85"
+    },
+    {
+      "distance_m": 11.5263157894737,
+      "frame": 39,
+      "sha256": "25fe8de57117d2e4a783c5aa3dd9c6b9aa992c464a87df6f8e9df5b0f29e0dc2"
+    },
+    {
+      "distance_m": 11.8026315789474,
+      "frame": 40,
+      "sha256": "56d790854105c67a740b01c3832b9bd5b87ec9655522634dac631a5aa5d30add"
+    },
+    {
+      "distance_m": 12.0789473684211,
+      "frame": 41,
+      "sha256": "d13944e44b3af95974f5d97eecb801b1a2115bba72fd6b99276369cc4932e004"
+    },
+    {
+      "distance_m": 12.3552631578947,
+      "frame": 42,
+      "sha256": "05de0b3e7b492005bfb48c43ef9972d1db5983f1850f178aa7dff31f89faba72"
+    },
+    {
+      "distance_m": 12.6315789473684,
+      "frame": 43,
+      "sha256": "3a85b0f61f8532efbdfaefd3444e6b4bdc3934a90a7028eb61c3abbe0232c2e2"
+    },
+    {
+      "distance_m": 12.9078947368421,
+      "frame": 44,
+      "sha256": "ab5d2e86bf7ad4d96f7f57f3172e53fff86eaf42956dee3a5030903c76db7afa"
+    },
+    {
+      "distance_m": 13.1842105263158,
+      "frame": 45,
+      "sha256": "fc342f1aedd29fcb579e1093d6814ab4508033dfd5bb393ca3f2f11a04bc7aea"
+    },
+    {
+      "distance_m": 13.4605263157895,
+      "frame": 46,
+      "sha256": "607f7b9ec91a48e2b6971bcdb4e1c8fd0f7c8ccf6c3d994e864f79e7ec642958"
+    },
+    {
+      "distance_m": 13.7368421052632,
+      "frame": 47,
+      "sha256": "1355c63c84641aec1a1c3aba56c29703e217f268df5355c223c36e03507253d3"
+    },
+    {
+      "distance_m": 14.0131578947368,
+      "frame": 48,
+      "sha256": "a8fcaf4d57b835acde1fecc70a55560378d6e8d6d72b7df5d53b9342c8262dd5"
+    },
+    {
+      "distance_m": 14.2894736842105,
+      "frame": 49,
+      "sha256": "0d26c5db94c37fef1955a26741218f7cb5ce739ff6d5e7e60399f5a427dcd475"
+    },
+    {
+      "distance_m": 14.5657894736842,
+      "frame": 50,
+      "sha256": "7f2766c9c2ff9baaf2f9ad06e4d3d0ece4353eb8d50a776286d6e65550435b37"
+    },
+    {
+      "distance_m": 14.8421052631579,
+      "frame": 51,
+      "sha256": "1d76a0c5abcf2989c3bb3e0c26bbc35cc07a943598cd8d0121681df8622a22be"
+    },
+    {
+      "distance_m": 15.1184210526316,
+      "frame": 52,
+      "sha256": "3b40ae161cfb49e005116160d5930b9ff61964c0dbb130dbc2887b45b4bf1890"
+    },
+    {
+      "distance_m": 15.3947368421053,
+      "frame": 53,
+      "sha256": "7b0b4679b67155ad905cad62ce84648531a20b9ed966ab80ef635b0a3919a8b1"
+    },
+    {
+      "distance_m": 15.6710526315789,
+      "frame": 54,
+      "sha256": "bb4f449f60ef1c7ffac0adbf0a0fd32069321ffb9a627eef5d4be9b2a0042f05"
+    },
+    {
+      "distance_m": 15.9473684210526,
+      "frame": 55,
+      "sha256": "56300c9db8a1a6a3ce1f2855334cb0762dd98d8cf9f715e1736634775a5f3486"
+    },
+    {
+      "distance_m": 16.2236842105263,
+      "frame": 56,
+      "sha256": "3843a67412525d509dc70d895e7644485d648c0d0c22990dd8aad17dd57df7d9"
+    },
+    {
+      "distance_m": 16.5,
+      "frame": 57,
+      "sha256": "ce930b81dc9457253cdee8d830288f4b0a861954551629541ee7fd59f35bac97"
+    },
+    {
+      "distance_m": 16.7763157894737,
+      "frame": 58,
+      "sha256": "68caf95580e4ac34c1dbf4ab424eb39a49da766c0e0bdd06943b826bc4311445"
+    },
+    {
+      "distance_m": 17.0526315789474,
+      "frame": 59,
+      "sha256": "02a8175b73cfdb42256ae719d764b318bf597b317e4c1adc919c1b2a114b0d18"
+    },
+    {
+      "distance_m": 17.3289473684211,
+      "frame": 60,
+      "sha256": "737adf4af4da1bd369c3cdce3e146605c5832dc3f67fe8c001ae626028b90182"
+    },
+    {
+      "distance_m": 17.6052631578947,
+      "frame": 61,
+      "sha256": "87bf5b1b4c6dcd090eb298fba32353c81eda0939139d2b815114e0c81593533b"
+    },
+    {
+      "distance_m": 17.8815789473684,
+      "frame": 62,
+      "sha256": "c5d13e7a24a28f0ec63f7eb6530abba15557dd3f2cd9d1fb95569ba0a27f9f57"
+    },
+    {
+      "distance_m": 18.1578947368421,
+      "frame": 63,
+      "sha256": "df5a39fe70da2ac4073c9a1e55a6048fcc747b39a9c1c4b988e3a243f80cf330"
+    },
+    {
+      "distance_m": 18.4342105263158,
+      "frame": 64,
+      "sha256": "8561b64d9d65cc6b8a1aa0c5ecb905f4acf6d82b54d8f51bf5c1ef78ae623378"
+    },
+    {
+      "distance_m": 18.7105263157895,
+      "frame": 65,
+      "sha256": "8261502f2452c738d1d210ba828b45bd1253f4c09792a23da5bc3cdae23f747e"
+    },
+    {
+      "distance_m": 18.9868421052632,
+      "frame": 66,
+      "sha256": "f05b3eb697ec14cb0ab4c5afe2b743dedbe3a3029189d24483f56d848a746f9b"
+    },
+    {
+      "distance_m": 19.2631578947368,
+      "frame": 67,
+      "sha256": "be35a41a5736d861f5387c09cc2601a04383dea85018ce5e42ae19ce75ad6379"
+    },
+    {
+      "distance_m": 19.5394736842105,
+      "frame": 68,
+      "sha256": "c3da89ee33d914e43203d6d2b9480431d1d691a132c7707f2dbda599b2f540db"
+    },
+    {
+      "distance_m": 19.8157894736842,
+      "frame": 69,
+      "sha256": "50645db1a298900ece454e73d01f1cde689fd89d96c54a690d933f9ea9db61c7"
+    },
+    {
+      "distance_m": 20.0921052631579,
+      "frame": 70,
+      "sha256": "7f0134c38144911300f1739c08dfc86e48188d609d5881ac1b38634e777f13c1"
+    },
+    {
+      "distance_m": 20.3684210526316,
+      "frame": 71,
+      "sha256": "ddca2af7f1991ef7cd653ce13fcc94d0e059b29149ec55054d7412aba576ab21"
+    },
+    {
+      "distance_m": 20.6447368421053,
+      "frame": 72,
+      "sha256": "429b30bd665965236b23874a204eb3c4bf8e0e281bac6367f07d4f51a47f9f9c"
+    },
+    {
+      "distance_m": 20.9210526315789,
+      "frame": 73,
+      "sha256": "8dc83e15ae70f6f66d8550790b0b345ac3c7fa4ccaac73fd3e2958b2d73cd50d"
+    },
+    {
+      "distance_m": 21.1973684210526,
+      "frame": 74,
+      "sha256": "8cdd0886240cc652ea4f5e5532b14561089cae8ceca6c771dcb090509ffbccda"
+    },
+    {
+      "distance_m": 21.4736842105263,
+      "frame": 75,
+      "sha256": "2e1ad19fa7d69e52e0a56ab4cd6d6258a4501ae13cb6286ab16ba9622dac4175"
+    },
+    {
+      "distance_m": 21.75,
+      "frame": 76,
+      "sha256": "c6813e863636258675f852a45ced93f4c5beb05ec8fe3e92356b2696b5b19546"
+    },
+    {
+      "distance_m": 22.0263157894737,
+      "frame": 77,
+      "sha256": "b3fc2224aa1148362a3e657e172cd7cde2cc4e1c69cf5d4fb1dede61717bc750"
+    },
+    {
+      "distance_m": 22.3026315789474,
+      "frame": 78,
+      "sha256": "683451293af0fdc346f8981328935c9ef18388e94ca501b7b51cfea660247149"
+    },
+    {
+      "distance_m": 22.5789473684211,
+      "frame": 79,
+      "sha256": "e7533d546bd04b58e6ffcac382850cc4f042338b2d736a81cd41729739b9d3d8"
+    },
+    {
+      "distance_m": 22.8552631578947,
+      "frame": 80,
+      "sha256": "9adaa639c0be4752c3713d6e9736e15039e73793031e992b658a3950d557cad2"
+    },
+    {
+      "distance_m": 23.1315789473684,
+      "frame": 81,
+      "sha256": "95f78cebf7dc1abb257064b6f5a70402ec6069f8e2113587378865a8ae7f9b6b"
+    },
+    {
+      "distance_m": 23.4078947368421,
+      "frame": 82,
+      "sha256": "aa2dc709424d546a596e13aab736d195453abe3c687251df80697b6df6ee41a5"
+    },
+    {
+      "distance_m": 23.6842105263158,
+      "frame": 83,
+      "sha256": "e59b906e750b478eafb45067babef922de5e29c98af94a723f3379e30d05303e"
+    },
+    {
+      "distance_m": 23.9605263157895,
+      "frame": 84,
+      "sha256": "55f1fe7671815411b786b81c33e6e0715e834eb6767af86b506db92bdf0fa12d"
+    },
+    {
+      "distance_m": 24.2368421052632,
+      "frame": 85,
+      "sha256": "ebf6343d6b89f6cfc0e2c537c1470544d03d50abe9f327fd5aaf356615d2ac93"
+    },
+    {
+      "distance_m": 24.5131578947368,
+      "frame": 86,
+      "sha256": "debefd7c2c8ca6f8a3b99dacae827c1b2232273c4995ae06e22f936c1da60a6f"
+    },
+    {
+      "distance_m": 24.7894736842105,
+      "frame": 87,
+      "sha256": "da63a0cea66c019b2d61a765486f2935c06b480802a897f52acb9110a8beb3a4"
+    },
+    {
+      "distance_m": 25.0657894736842,
+      "frame": 88,
+      "sha256": "53173b805bf821526de78657dc29625f1b83901cd3bee7b342885a47a5117143"
+    },
+    {
+      "distance_m": 25.3421052631579,
+      "frame": 89,
+      "sha256": "0e0ba3c21942be447898afc2c86cfc4741b1ba6a5cd619630cd0e8c2e9981f82"
+    },
+    {
+      "distance_m": 25.6184210526316,
+      "frame": 90,
+      "sha256": "669ee8207a5abec5524c2837c75b93c428bdd7016ba3ca6f522530877d1246c2"
+    },
+    {
+      "distance_m": 25.8947368421053,
+      "frame": 91,
+      "sha256": "8ba68db31f05b2df10d7ca73c6feb7b82a20342d761d91a8ba8e78a8bdfcbc1e"
+    },
+    {
+      "distance_m": 26.1710526315789,
+      "frame": 92,
+      "sha256": "091e752313525c4e808c16f099eeebbdbd07ab35b45eb37a4d98710a812da269"
+    },
+    {
+      "distance_m": 26.4473684210526,
+      "frame": 93,
+      "sha256": "21027af0a24e5f126f78388187b171307b01cf1a2f6bccd93c39673b6c6a11f6"
+    },
+    {
+      "distance_m": 26.7236842105263,
+      "frame": 94,
+      "sha256": "c4466853ecb5d8cf2e8fada32a2b87b7b61fda16021c1f167d346a92cce5b7fb"
+    },
+    {
+      "distance_m": 27.0,
+      "frame": 95,
+      "sha256": "be79a0c04fc5e11af9c26f95875e0da2902e335dee4720704ad73e6a89eb7a16"
+    }
+  ],
+  "physical_android": false,
+  "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "sources": {
+    "assets/kart/production/drivers/lion/driver.glb": "343c181e14eb76f617b071dc06d79d44263a929d79970075ba14c43891e4bea8",
+    "assets/kart/production/drivers/owl/driver.glb": "804352d57c70c8d1391ce83139d810b55eb4f71828bdab26659272f2c0332d6d",
+    "assets/kart/production/drivers/rabbit/driver.glb": "d058633188252e874666dfa8f917a090d9306d2c2fbea63c44b9be9380e935fd",
+    "assets/kart/production/drivers/squirrel/driver.glb": "bbee7648a8363cd341463c23bdb70bcdd51783251cf444bfca4c695a8b78dd20",
+    "assets/kart/production/drivers/turtle/driver.glb": "8a421080ca1d58bd7dab809b59146b4fe913ae5115dd8c0738d66b5d45274d2c",
+    "assets/kart/production/karts/aurora_comet.glb": "d2b80327d4c35f8f5cd43929966c0c887ae2aa01ceaaba9b35b87ffd46a37f2f",
+    "assets/kart/production/karts/aurora_glider.glb": "2993929ce54e5b30cb9e921985f9e8cb979141908c60b8ae5d8c476c07527b0e",
+    "assets/kart/production/karts/aurora_turbo.glb": "d0840f0918a3bdf0f5fdcee5193b713b95b54f53f465118f75c5840e41212639",
+    "assets/kart/production/tracks/bergwelt/curve_right_30.glb": "797d17385c4c3677087da1862b6f13f3c1a9f022ac365fae4a4dfeddcf1302f0",
+    "assets/kart/production/tracks/bergwelt/portal_entry.glb": "fe38b73d68519260e28319e9a18b1a4bc704e6b2db8cdfb9e409d9df851d927c",
+    "assets/kart/production/tracks/bergwelt/straight_12m.glb": "d9d13b29451f4791828f9cd5181661a26de1de592966cd14bab959c6c0402e81",
+    "assets/kart/production/tracks/candy_cloud/curve_right_30.glb": "463b68a697f5bea2f093ddd16fe0b1721abc392e01cbd2a73db3bc8bade5288b",
+    "assets/kart/production/tracks/candy_cloud/portal_entry.glb": "c08fe269151d9c44584995e95083099e93fe4f43f944c24606fe1cbaa7bc3ad9",
+    "assets/kart/production/tracks/candy_cloud/straight_12m.glb": "9ea8379f725c070adea7791ea8367382f713e61e97c9d493cba0c5656a96b254",
+    "assets/kart/production/tracks/crystal_canyon/curve_right_30.glb": "e15f3c7fc2648b1cd23fdd3ebe1a0dbfc7de48a8d4322ba1657b0de2e0e56f33",
+    "assets/kart/production/tracks/crystal_canyon/portal_entry.glb": "6076a79b341eebfae27b77f6c8221fa82fa58f98928492634ae8968714ea17ec",
+    "assets/kart/production/tracks/crystal_canyon/straight_12m.glb": "80c4b87428f03d7bab6e9f242c027d764baa69bd98b710e937484fa248d1320f",
+    "assets/kart/production/tracks/holo_city/curve_right_30.glb": "aea29966fe9ea7c44e9de6594c4295da94ff20743cb328ac956553b4a38cacdc",
+    "assets/kart/production/tracks/holo_city/portal_entry.glb": "ebca9a3da2b7b11d093bcf4d4f8c6fdbaa5942a5a8cb03c248346b168cdd2290",
+    "assets/kart/production/tracks/holo_city/straight_12m.glb": "2b783d1b81349d305a52062ef430d80757017436d6d9fb935b32ee1852086c47",
+    "assets/kart/production/tracks/jungle_temple/curve_right_30.glb": "d72815ba0c6b48866f4b08670596d5e534d9435a6efc63005b28c3b2eb5fdf79",
+    "assets/kart/production/tracks/jungle_temple/portal_entry.glb": "13ad81529e441fa7962b32cf232fa6c87cf4ff02c05bfd84e52006632b82ff69",
+    "assets/kart/production/tracks/jungle_temple/straight_12m.glb": "50e72ac379baa0e151d65b1913fe3c63dee96b3f553fc7d6715135386361c23f",
+    "assets/kart/production/tracks/volcano_night/curve_right_30.glb": "228cbc1254f5001c3c3fa4bbe63c055ab1bd586d465ac290452b4b7808e6c50c",
+    "assets/kart/production/tracks/volcano_night/portal_entry.glb": "af9e14838e94e685f7aaed1c603e93d57a655b5af0eadf32139038d250c15ec5",
+    "assets/kart/production/tracks/volcano_night/straight_12m.glb": "8e89e6c38bb6534eac2828685a73779d9473329a9bc5650b87f7e84f3803972d",
+    "assets/kart/production/tracks/zauberwald/curve_right_30.glb": "f4792072529d753379071f3f5cb93c55685ba5a256e8a2a8443dfb6a958f473c",
+    "assets/kart/production/tracks/zauberwald/portal_entry.glb": "3a63f9ac91a3aae490c0169fb49f6762c04b1baaeafc272064986793f0f0bc0f",
+    "assets/kart/production/tracks/zauberwald/straight_12m.glb": "99cb3c00516f27c23473e005540a638f3700be7452b0744abeead4f8c2ff734a"
+  }
+}

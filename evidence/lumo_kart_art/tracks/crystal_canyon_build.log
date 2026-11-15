@@ -1,0 +1,119 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:03:15 | INFO: Starting glTF 2.0 export
+21:03:15 | INFO: Extracting primitive: Cube.013
+21:03:16 | INFO: Primitives created: 5
+21:03:16 | INFO: Finished glTF 2.0 export in 0.9265718460083008 s
+
+21:03:17 | INFO: Starting glTF 2.0 export
+21:03:17 | INFO: Extracting primitive: Cube.025
+21:03:17 | INFO: Primitives created: 5
+21:03:17 | INFO: Finished glTF 2.0 export in 0.6346487998962402 s
+
+21:03:17 | INFO: Starting glTF 2.0 export
+21:03:17 | INFO: Extracting primitive: TunnelShellCollision_Mesh
+21:03:17 | INFO: Primitives created: 1
+21:03:17 | INFO: Finished glTF 2.0 export in 0.013921976089477539 s
+
+LUMO_TRACK_MODULE crystal_canyon portal_entry 7460 5
+21:03:18 | INFO: Starting glTF 2.0 export
+21:03:18 | INFO: Extracting primitive: Cube.050
+21:03:19 | INFO: Primitives created: 5
+21:03:19 | INFO: Finished glTF 2.0 export in 1.027151346206665 s
+
+21:03:19 | INFO: Starting glTF 2.0 export
+21:03:19 | INFO: Extracting primitive: Cube.062
+21:03:20 | INFO: Primitives created: 5
+21:03:20 | INFO: Finished glTF 2.0 export in 0.6665842533111572 s
+
+21:03:20 | INFO: Starting glTF 2.0 export
+21:03:20 | INFO: Extracting primitive: TunnelShellCollision_Mesh.001
+21:03:20 | INFO: Primitives created: 1
+21:03:20 | INFO: Finished glTF 2.0 export in 0.009564399719238281 s
+
+LUMO_TRACK_MODULE crystal_canyon portal_exit 7460 5
+21:03:21 | INFO: Starting glTF 2.0 export
+21:03:21 | INFO: Extracting primitive: Cube.098
+21:03:21 | INFO: Primitives created: 5
+21:03:21 | INFO: Finished glTF 2.0 export in 0.6623761653900146 s
+
+21:03:22 | INFO: Starting glTF 2.0 export
+21:03:22 | INFO: Extracting primitive: Cube.122
+21:03:23 | INFO: Primitives created: 5
+21:03:23 | INFO: Finished glTF 2.0 export in 0.754361629486084 s
+
+21:03:23 | INFO: Starting glTF 2.0 export
+21:03:23 | INFO: Extracting primitive: TunnelShellCollision_Mesh.002
+21:03:23 | INFO: Primitives created: 1
+21:03:23 | INFO: Finished glTF 2.0 export in 0.016174793243408203 s
+
+LUMO_TRACK_MODULE crystal_canyon straight_12m 13100 5
+21:03:24 | INFO: Starting glTF 2.0 export
+21:03:24 | INFO: Extracting primitive: Cube.182
+21:03:25 | INFO: Primitives created: 5
+21:03:25 | INFO: Finished glTF 2.0 export in 1.163449764251709 s
+
+21:03:27 | INFO: Starting glTF 2.0 export
+21:03:27 | INFO: Extracting primitive: Cube.218
+21:03:28 | INFO: Primitives created: 5
+21:03:28 | INFO: Finished glTF 2.0 export in 0.9838063716888428 s
+
+21:03:28 | INFO: Starting glTF 2.0 export
+21:03:28 | INFO: Extracting primitive: TunnelShellCollision_Mesh.003
+21:03:28 | INFO: Primitives created: 1
+21:03:28 | INFO: Finished glTF 2.0 export in 0.03476309776306152 s
+
+LUMO_TRACK_MODULE crystal_canyon curve_left_30 19372 5
+21:03:32 | INFO: Starting glTF 2.0 export
+21:03:32 | INFO: Extracting primitive: Cube.290
+21:03:33 | INFO: Primitives created: 5
+21:03:33 | INFO: Finished glTF 2.0 export in 1.7098305225372314 s
+
+21:03:37 | INFO: Starting glTF 2.0 export
+21:03:37 | INFO: Extracting primitive: Cube.326
+21:03:38 | INFO: Primitives created: 5
+21:03:38 | INFO: Finished glTF 2.0 export in 1.6175401210784912 s
+
+21:03:39 | INFO: Starting glTF 2.0 export
+21:03:39 | INFO: Extracting primitive: TunnelShellCollision_Mesh.004
+21:03:39 | INFO: Primitives created: 1
+21:03:39 | INFO: Finished glTF 2.0 export in 0.09441828727722168 s
+
+LUMO_TRACK_MODULE crystal_canyon curve_right_30 19372 5
+21:03:42 | INFO: Starting glTF 2.0 export
+21:03:42 | INFO: Extracting primitive: Cube.386
+21:03:44 | INFO: Primitives created: 5
+21:03:44 | INFO: Finished glTF 2.0 export in 1.9623656272888184 s
+
+21:03:46 | INFO: Starting glTF 2.0 export
+21:03:46 | INFO: Extracting primitive: Cube.410
+21:03:48 | INFO: Primitives created: 5
+21:03:48 | INFO: Finished glTF 2.0 export in 1.5808732509613037 s
+
+21:03:49 | INFO: Starting glTF 2.0 export
+21:03:49 | INFO: Extracting primitive: TunnelShellCollision_Mesh.005
+21:03:49 | INFO: Primitives created: 1
+21:03:49 | INFO: Finished glTF 2.0 export in 0.0353238582611084 s
+
+LUMO_TRACK_MODULE crystal_canyon grade_down 13100 5
+21:03:50 | INFO: Starting glTF 2.0 export
+21:03:50 | INFO: Extracting primitive: Cube.458
+21:03:51 | INFO: Primitives created: 5
+21:03:51 | INFO: Finished glTF 2.0 export in 0.8786590099334717 s
+
+21:03:53 | INFO: Starting glTF 2.0 export
+21:03:53 | INFO: Extracting primitive: Cube.482
+21:03:54 | INFO: Primitives created: 5
+21:03:54 | INFO: Finished glTF 2.0 export in 0.7531263828277588 s
+
+21:03:55 | INFO: Starting glTF 2.0 export
+21:03:55 | INFO: Extracting primitive: TunnelShellCollision_Mesh.006
+21:03:55 | INFO: Primitives created: 1
+21:03:55 | INFO: Finished glTF 2.0 export in 0.07357263565063477 s
+
+LUMO_TRACK_MODULE crystal_canyon grade_up 13100 5
+Info: Packed 5 file(s)
+Info: Saved "crystal_canyon_tunnel_workshop.blend"
+LUMO_TRACK_THEME_DONE crystal_canyon
+Blender 4.3.2
+
+Blender quit

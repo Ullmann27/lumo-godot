@@ -1,0 +1,22 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:16:35 | INFO: Starting glTF 2.0 export
+21:16:35 | INFO: Extracting primitive: DriverSurface
+21:16:36 | INFO: Primitives created: 6
+21:16:38 | INFO: Finished glTF 2.0 export in 2.5135207176208496 s
+
+21:16:38 | INFO: Starting glTF 2.0 export
+21:16:39 | INFO: Extracting primitive: DriverSurface.001
+21:16:39 | INFO: Primitives created: 6
+21:16:41 | INFO: Finished glTF 2.0 export in 2.9339468479156494 s
+
+21:16:42 | INFO: Starting glTF 2.0 export
+21:16:42 | INFO: Extracting primitive: DriverSurface.002
+21:16:42 | INFO: Primitives created: 6
+21:16:45 | INFO: Finished glTF 2.0 export in 2.600074291229248 s
+
+Info: Saved "lion.blend"
+Info: Saved "lion.blend"
+DRIVER_BUILD_COMPLETE {"species": "lion", "files": {"lod0": {"vertices": 20752, "triangles": 41008, "materials": 6, "nonmanifold_edges": 0, "zero_weight_vertices": 0, "max_weight_sum_error": 2.9802322387695312e-08, "max_influences": 2, "evaluated_dimensions_blender_m": [0.8279998898506165, 1.0662376880645752, 1.2401467561721802], "file": "assets/kart/production/drivers/lion/driver.glb", "sha256": "36ba5dfc83f8b1dac4c9776224b56de366447519ddd68a8a102470662c6d0879"}, "lod1": {"vertices": 11935, "triangles": 23374, "materials": 6, "nonmanifold_edges": 0, "zero_weight_vertices": 0, "max_weight_sum_error": 8.940696716308594e-08, "max_influences": 2, "evaluated_dimensions_blender_m": [0.8279998898506165, 1.0662376880645752, 1.240160346031189], "file": "assets/kart/production/drivers/lion/driver_lod1.glb", "sha256": "6b476ed9ffbaee1cb83fb320793f7904a48d109336c3b011ab52b33bc7c1ae68"}, "lod2": {"vertices": 6194, "triangles": 11892, "materials": 6, "nonmanifold_edges": 0, "zero_weight_vertices": 0, "max_weight_sum_error": 8.940696716308594e-08, "max_influences": 2, "evaluated_dimensions_blender_m": [0.8279998898506165, 1.0659313201904297, 1.2405853271484375], "file": "assets/kart/production/drivers/lion/driver_lod2.glb", "sha256": "01ee682b59ee917b6c4197f7966767cdfc5e6ed836661cc4e6802b1763afb511"}}, "blend": "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/drivers/lion.blend"}
+Blender 4.3.2
+
+Blender quit

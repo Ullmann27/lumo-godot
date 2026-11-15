@@ -1,0 +1,28 @@
+{
+  "changed_visible_glbs": [
+    "portal_entry.glb",
+    "portal_entry_lod1.glb",
+    "portal_exit.glb",
+    "portal_exit_lod1.glb"
+  ],
+  "preserved_glb_sha256": {
+    "grade_down_collision.glb": "a802a354dcabc9403443e19d5c6e5c1c9518e3d1157eb18da3441cea83af33b6",
+    "straight_12m_collision.glb": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+    "straight_12m.glb": "99cb3c00516f27c23473e005540a638f3700be7452b0744abeead4f8c2ff734a",
+    "grade_down.glb": "45633fc3d5fb37a39a236568bb29ae89faae77827d761d21bd5f5ae842847e04",
+    "straight_12m_lod1.glb": "0a554a38b8c542f95bfcbe150aa8751d303934602b962d2b0739a6277a2bc576",
+    "portal_exit_collision.glb": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+    "curve_left_30_collision.glb": "21570deb1b050cc999102e176f0d1af2ec3e71165626ec10a0c099745f3dad7a",
+    "curve_right_30.glb": "f4792072529d753379071f3f5cb93c55685ba5a256e8a2a8443dfb6a958f473c",
+    "curve_right_30_lod1.glb": "56bb540750e77ccc560900e1cbfc7c20bb8f759a7781f546967b233cc45fca03",
+    "grade_up.glb": "704dfc82197f418bb5f2e01ee886d59dc9974bffad3c21508349dad6b4e4236f",
+    "grade_up_collision.glb": "d051e511dfc22e2caf2163c00eddd537372d34a61ff2e9437852e7f9499138f6",
+    "curve_left_30.glb": "35b922064188ab168df76293f39996d18da8fb2d6f2561a4115b2d420be64483",
+    "grade_down_lod1.glb": "3d2db32666bb92a2246735539e7973a42894778dfaea48be9684d6fd12a865e8",
+    "curve_left_30_lod1.glb": "23363357ceeaefbf2544948a2d9bf45976ab42683bc8209cc4a531768d029c4a",
+    "grade_up_lod1.glb": "31ffeab7c3e383efe1fb422af770aa1e1c9f14e25baac80b8869f23c47e293b7",
+    "curve_right_30_collision.glb": "b9737ea61fb95dec0ccf8f81e35c68ed1050adaa122fd190b5196183aead0257",
+    "portal_entry_collision.glb": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f"
+  },
+  "scope": "Exterior portal roots only; inner race modules and every collision proxy preserved byte-for-byte"
+}

@@ -1,0 +1,487 @@
+{
+  "source": "art/lumo_kart/blender/karts/aurora_comet.blend",
+  "source_sha256": "4a959df68d03f2858775e602fa0df8663150328858a099fb3c8b90b860f534e1",
+  "method": "Ray cast through evaluated BucketSeatShell triangles from Godot Z=-.7 in +Z direction. Values describe the nearest actual shell boundary at each (X,Y); they are not a free-space certificate for other parts.",
+  "samples": [
+    {
+      "godot_x": 0,
+      "godot_y": 0.775,
+      "first_shell_z": 0.0882079005241394
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 0.8,
+      "first_shell_z": 0.1199999451637268
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 0.825,
+      "first_shell_z": 0.1475762128829956
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 0.85,
+      "first_shell_z": 0.1747998595237732
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 0.875,
+      "first_shell_z": 0.20139509439468384
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 0.9,
+      "first_shell_z": 0.2274608016014099
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 0.925,
+      "first_shell_z": 0.25280994176864624
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 0.95,
+      "first_shell_z": 0.2771396040916443
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 0.975,
+      "first_shell_z": 0.30035656690597534
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 1,
+      "first_shell_z": 0.3195062279701233
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 1.025,
+      "first_shell_z": 0.33550387620925903
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 1.05,
+      "first_shell_z": 0.3481512665748596
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 1.075,
+      "first_shell_z": 0.35970717668533325
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 1.1,
+      "first_shell_z": 0.37716466188430786
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 1.115,
+      "first_shell_z": 0.4039999842643738
+    },
+    {
+      "godot_x": 0,
+      "godot_y": 1.125,
+      "first_shell_z": null
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 0.775,
+      "first_shell_z": 0.08928823471069336
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 0.8,
+      "first_shell_z": 0.12103134393692017
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 0.825,
+      "first_shell_z": 0.14851164817810059
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 0.85,
+      "first_shell_z": 0.17569231986999512
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 0.875,
+      "first_shell_z": 0.20222294330596924
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 0.9,
+      "first_shell_z": 0.22824203968048096
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 0.925,
+      "first_shell_z": 0.25353819131851196
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 0.95,
+      "first_shell_z": 0.27782392501831055
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 0.975,
+      "first_shell_z": 0.30101150274276733
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 1,
+      "first_shell_z": 0.32011979818344116
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 1.025,
+      "first_shell_z": 0.33610373735427856
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 1.05,
+      "first_shell_z": 0.3487423062324524
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 1.075,
+      "first_shell_z": 0.36029285192489624
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 1.1,
+      "first_shell_z": 0.3777526021003723
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 1.115,
+      "first_shell_z": 0.41079336404800415
+    },
+    {
+      "godot_x": 0.05,
+      "godot_y": 1.125,
+      "first_shell_z": null
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 0.775,
+      "first_shell_z": 0.09039998054504395
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 0.8,
+      "first_shell_z": 0.12206274271011353
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 0.825,
+      "first_shell_z": 0.14951354265213013
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 0.85,
+      "first_shell_z": 0.1766277551651001
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 0.875,
+      "first_shell_z": 0.20310312509536743
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 0.9,
+      "first_shell_z": 0.22906982898712158
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 0.925,
+      "first_shell_z": 0.25430941581726074
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 0.95,
+      "first_shell_z": 0.27855223417282104
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 0.975,
+      "first_shell_z": 0.3016771674156189
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 1,
+      "first_shell_z": 0.32076698541641235
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 1.025,
+      "first_shell_z": 0.336717426776886
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 1.05,
+      "first_shell_z": 0.34951168298721313
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 1.075,
+      "first_shell_z": 0.3613749146461487
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 1.1,
+      "first_shell_z": 0.37964576482772827
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 1.115,
+      "first_shell_z": null
+    },
+    {
+      "godot_x": 0.1,
+      "godot_y": 1.125,
+      "first_shell_z": null
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 0.775,
+      "first_shell_z": 0.09500747919082642
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 0.8,
+      "first_shell_z": 0.12644338607788086
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 0.825,
+      "first_shell_z": 0.15349775552749634
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 0.85,
+      "first_shell_z": 0.18043571710586548
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 0.875,
+      "first_shell_z": 0.20659053325653076
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 0.9,
+      "first_shell_z": 0.2324005365371704
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 0.925,
+      "first_shell_z": 0.25738972425460815
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 0.95,
+      "first_shell_z": 0.28152477741241455
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 0.975,
+      "first_shell_z": 0.3045364022254944
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 1,
+      "first_shell_z": 0.3235810399055481
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 1.025,
+      "first_shell_z": 0.33958762884140015
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 1.05,
+      "first_shell_z": 0.3523337244987488
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 1.075,
+      "first_shell_z": 0.3645114302635193
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 1.1,
+      "first_shell_z": 0.38468116521835327
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 1.115,
+      "first_shell_z": null
+    },
+    {
+      "godot_x": 0.15,
+      "godot_y": 1.125,
+      "first_shell_z": null
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 0.775,
+      "first_shell_z": 0.10316717624664307
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 0.8,
+      "first_shell_z": 0.13420140743255615
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 0.825,
+      "first_shell_z": 0.16071343421936035
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 0.85,
+      "first_shell_z": 0.18717485666275024
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 0.875,
+      "first_shell_z": 0.2129197120666504
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 0.9,
+      "first_shell_z": 0.2382906675338745
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 0.925,
+      "first_shell_z": 0.26297610998153687
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 0.95,
+      "first_shell_z": 0.28680962324142456
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 0.975,
+      "first_shell_z": 0.30967944860458374
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 1,
+      "first_shell_z": 0.3286743760108948
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 1.025,
+      "first_shell_z": 0.34483426809310913
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 1.05,
+      "first_shell_z": 0.3578959107398987
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 1.075,
+      "first_shell_z": 0.3715285658836365
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 1.1,
+      "first_shell_z": 0.4013339877128601
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 1.115,
+      "first_shell_z": null
+    },
+    {
+      "godot_x": 0.2,
+      "godot_y": 1.125,
+      "first_shell_z": null
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 0.775,
+      "first_shell_z": 0.11825406551361084
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 0.8,
+      "first_shell_z": 0.14848625659942627
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 0.825,
+      "first_shell_z": 0.1739797592163086
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 0.85,
+      "first_shell_z": 0.19966638088226318
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 0.875,
+      "first_shell_z": 0.22452056407928467
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 0.9,
+      "first_shell_z": 0.24922269582748413
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 0.925,
+      "first_shell_z": 0.27322083711624146
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 0.95,
+      "first_shell_z": 0.29664146900177
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 0.975,
+      "first_shell_z": 0.31916362047195435
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 1,
+      "first_shell_z": 0.33822470903396606
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 1.025,
+      "first_shell_z": 0.3546333909034729
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 1.05,
+      "first_shell_z": 0.36998575925827026
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 1.075,
+      "first_shell_z": 0.3886060118675232
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 1.1,
+      "first_shell_z": null
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 1.115,
+      "first_shell_z": null
+    },
+    {
+      "godot_x": 0.25,
+      "godot_y": 1.125,
+      "first_shell_z": null
+    }
+  ]
+}

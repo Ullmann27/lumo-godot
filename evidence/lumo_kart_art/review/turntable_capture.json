@@ -1,0 +1,1330 @@
+{
+  "fps": 24,
+  "frames": [
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.0,
+      "frame": 0,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "bdcb672497c4104f09ea6ec8fbe93680dd7485511af8ccf672f1b572308e4921",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.0416666666666667,
+      "frame": 1,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "fa5c38b7914062fa7133a4d14d7273483ca78251caf29b9987e70fd9579fae46",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.0833333333333333,
+      "frame": 2,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "5c873a408a03847e2b687c0e814766c1cf76859c2ecc2874c30f8652967d35c4",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.125,
+      "frame": 3,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "9e99479a695d7d87ed8c1e5354cebfc7c89df123eb02ee36ff2aba2c84250298",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.166666666666667,
+      "frame": 4,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "1c3a68926ca8d3f57fab77d32634258f0ae08933a5230b12e6091245c35e7fa4",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.208333333333333,
+      "frame": 5,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "961c09ab74f0c38bd0d294e9fd6de1f852eb5d5fabf4f3ab44573d86a6a77525",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.25,
+      "frame": 6,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "fe658fd43b46416ae711c240d038457c2b6eba14e336023ace3db561b0981d44",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.291666666666667,
+      "frame": 7,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "64c0220841c06ef75bf916e930ea1ad8b1b9a238f71bd8c0395357d266f6859a",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.333333333333333,
+      "frame": 8,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "f9191884fa60d21b431d1d99797376e783d9f6635140a82fa18fee8932840d67",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.375,
+      "frame": 9,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "a6d32de1fd86ff0b4983e864b255d4999c76a8b21fc6cc63a0b786c9d6d641c2",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.416666666666667,
+      "frame": 10,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "85454d29290d99b2add6fce4dfbded3dd0ec8ce12ac56d9247b49ada4fff27b6",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.458333333333333,
+      "frame": 11,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "4f83d1d2b0ad6e3f1a1044401546d8667706253ce2b6610acde61647e2578b38",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.5,
+      "frame": 12,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "5e290ea798d52e42c31587517ae36058da74bfdf466e07a40f9fa322920ef0c1",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.541666666666667,
+      "frame": 13,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "e7a96f6f9ffb5239d2ee8ccddd6549757c0f158edc90507c7884bb52a014ffcc",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.583333333333333,
+      "frame": 14,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "b56693542fc5ad40efa19b8a97a6cb1227da1fb5f9a6998921f84eaf4f579748",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.625,
+      "frame": 15,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "f78c53c7a491a4e5e2cb66f979b5270847aacd4e2976135c145b918313f705a7",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.666666666666667,
+      "frame": 16,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "51a7d6c1b27fdb1503254998e097ba7b6f992932bcbcdd7772f257eda5d76ae1",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.708333333333333,
+      "frame": 17,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "b5a09133170dbec2f053db6c00d30935b2d8c5107f0927387f3f2c00e646c5aa",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.75,
+      "frame": 18,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "a226751e805b9d2425940b1d9904691a834b2e46e034dc0c048205ce937b0547",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.791666666666667,
+      "frame": 19,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "d9874422b63f3e28e2985b5bc834b20f137685f6ff2db581c3cd854be2ca40ee",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.833333333333333,
+      "frame": 20,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "d1a71fa63370acd923e9c4e798745908a07a630bd305d799ea8ad1620e253131",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.875,
+      "frame": 21,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "904f9ec1f432fa8c1243fe412245169973bd54632b65e94857a73d01f3614f52",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.916666666666667,
+      "frame": 22,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "3fb19ad43ff47b372930ea814612fad550297d6aeb11b312104ecb159de780d5",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.958333333333333,
+      "frame": 23,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "d3d5db873142e9132332bed488bffbdd3a1b07e9c90d5963718be5dcd83b74e2",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.0,
+      "frame": 24,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "cac8eeb022735e2e626fe3c3b34e2750ab3c881009117af006ece75c64a65383",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.04166666666667,
+      "frame": 25,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "69f28f54ca9f2ab29817f733d4366f3e2ad79e14567cfb77b05037b73e206d2c",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.08333333333333,
+      "frame": 26,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "f1196c8538b238f46c3435fdd7a91cc51ef7122c98fc815ca1a48d1e871a83f4",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.125,
+      "frame": 27,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "882e2ac1974511e071ad94c341500e5ebd381621da8b21bda3e1e4b6b41ef593",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.16666666666667,
+      "frame": 28,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "724c813be9d6646addeec344ac8d22b94e95c2b187ccca8e7562046207767375",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.20833333333333,
+      "frame": 29,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "6eab55905623325fb1f39f7884134d6a81404d6efb49bae8098ff880ab242238",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.25,
+      "frame": 30,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "08e07d051700266c51a007f5aa0d995db4d859e6f4929b7d70621ac576c09c6e",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.29166666666667,
+      "frame": 31,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "0207147cbed14995346c454ac8ab3c75f1d3714d84416b06a07f8e9cc11b28de",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.33333333333333,
+      "frame": 32,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "5f2099831a2a8582ddb65b3158294b62cd38ed7a29790714492e2ddd09b88b7a",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.375,
+      "frame": 33,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "1e6e76a90649751731bb115c1fdd1c197247788edb20a76d23231a89e00987f1",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.41666666666667,
+      "frame": 34,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "5c1dd7234ab2d4f2fa77e894c4f92842b16d12149f6120c5eac17334740e3e61",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.45833333333333,
+      "frame": 35,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "a538f33467e932dd70d29a86c5364a8efc1afb468a5ecd4e8c7ffd4dc159ba37",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.5,
+      "frame": 36,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "5caf9f1300ade800e76832664fc5e9a0dc4177e0eea1ad8a125607999649d5a1",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.54166666666667,
+      "frame": 37,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "ae26b8d204289fb970957f867307683bd912929c4c5f1c55d58427853df48145",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.58333333333333,
+      "frame": 38,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "3e0118ed954a3bf4bc93ebad7c537575785d5d0489d34cdc8a724228fff69ee7",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.625,
+      "frame": 39,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "58f326439b2978bb059a37c248e2f94d6ad08fd81d0315b9d985957c2795228c",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.66666666666667,
+      "frame": 40,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "81103f332782c7236c20393f6a9ab6fd1026923dd3117de844948d5110e3abb3",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.70833333333333,
+      "frame": 41,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "9db1df4d4ae5efe429d8ff005c598f719e3a4418346d422ac25c73f63845c9b9",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.75,
+      "frame": 42,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "f63b2bcd363e759690b3b0e65eb7707f18df49c259b56409748633d0cc33864e",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.79166666666667,
+      "frame": 43,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "a2d995731cf812184328a83f74639cbe3a2e88f19e715defbfb9e63183e26824",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.83333333333333,
+      "frame": 44,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "82d50f615d9d267ad67c8b6206232058f164d2fa71786f1f4620914328b80743",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.875,
+      "frame": 45,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "081d86bc698150401a72f1f24f4282360742b0d447d860c7a3a2fa15f53643ff",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.91666666666667,
+      "frame": 46,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "5fb02d2049ba5d5d22af21821f8bede65b401f72b0702bf7cbacd64be1b7270d",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.95833333333333,
+      "frame": 47,
+      "height": 750,
+      "kart": "comet",
+      "sha256": "a4dbc5ece0260c0ac8e7231f5d18b7ed18776374bd7a97ea88c11911e1107ff3",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.0,
+      "frame": 48,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "bd76b6cda58b4624a3541e21783e633fa33d8b147159ff0abdc07c8c91442711",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.0416666666666667,
+      "frame": 49,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "208cb7a4fd1d09da00e38315673058eae3f6e14c435d7a3f66491208d0c51fc9",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.0833333333333333,
+      "frame": 50,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "5c27ac4ddca52e4ef0177d040854377a978e999873fea743d13df6bc99a725bc",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.125,
+      "frame": 51,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "367da8293ca1beda1274dac79ae43166410c48e52a72c9a308607d97d27f9e96",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.166666666666667,
+      "frame": 52,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "26ff4c37c60555fb48c5a010ed3013d49c2defb12677d08b1386a7e9bad517c6",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.208333333333333,
+      "frame": 53,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "8d14ec349507efae8b169e7ae8f256344ae51347d6416c68e47c867053f6281f",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.25,
+      "frame": 54,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "a7dcb369ed3b980431d2a0d62d1a707ded24ba398b925281132299c09d17a882",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.291666666666667,
+      "frame": 55,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "3c4a2e00e20805211bb9ea587f519f03f03b5fe680e778bc5e2ae4cc376ad846",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.333333333333333,
+      "frame": 56,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "8ef9a2a431207e56fdf3538de4fd23d9f33b37f34787c90d1349621aac9db446",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.375,
+      "frame": 57,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "1e10c5b3f1cec4897d9999349ccbf9c1b37d8e48e7d90553e994638b427c7e84",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.416666666666667,
+      "frame": 58,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "0b19fa33c7e7a2f57b5d90af9bd006b114ded20c5a4e1726a893cd5659157656",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.458333333333333,
+      "frame": 59,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "8ca4fbceb7b1eee073bcc2403beb93a149bf636eca331121b3fda77817d93dac",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.5,
+      "frame": 60,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "338a4eeded456a89471730366a36ff2f76e91796d9f26434dfa7b5d8d26d0c1f",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.541666666666667,
+      "frame": 61,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "7a831117a0d0e168de129e375985312a8c66a7019b6919303f8a320f479b867c",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.583333333333333,
+      "frame": 62,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "5ddae9bc69e3dfdde95938e5e3b80b135dbd9951fa233a90c3231163d2d3067e",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.625,
+      "frame": 63,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "cc731c91c52b7f1a8b47bd30ab0106a73391399c9dbcd7d7ace32b314907d982",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.666666666666667,
+      "frame": 64,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "8664055d129e5c73baa130c70fbc70613f2b8f926f8770620c8d7b749066698d",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.708333333333333,
+      "frame": 65,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "e5dba143c803979b535f126c12214f9541b278344db0d0f346ea5aa2f56ddd14",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.75,
+      "frame": 66,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "afc0610f3fe465d728e5765a99b075cca8aea736a02c0f20c4c625661773ba52",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.791666666666667,
+      "frame": 67,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "6213aac381f29460301ece3c798f05015b25ab8448837495bbaca07a49ac5225",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.833333333333333,
+      "frame": 68,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "c8209fe4d1c4b135e619a6a89b80948d92b3b1c9e2fb544407f6af2b937559e9",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.875,
+      "frame": 69,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "ceeb0ed6108a999883366f41183f0af55f5f31f2551add38e26df4795e7446ec",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.916666666666667,
+      "frame": 70,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "ae73f136c8755497a1f2fb6a20a2f6bae8e076f84ca453bf83009a5e7ab96ff1",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.958333333333333,
+      "frame": 71,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "d1bd95864cd744109ab0755ee3fe755735eb2935639505f950a3861255c11ce1",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.0,
+      "frame": 72,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "39c8ea7604609715c821a44b552ab7334736daf799801173e011f5ab5a4dba4f",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.04166666666667,
+      "frame": 73,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "853098d0f90ffa37864f293b9aa8f54dee01a470df535816884bf4642eb7e983",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.08333333333333,
+      "frame": 74,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "1b162126f76e5e9d82a49fbe639f948e8ac51bc49080fd2abbe6db32433e3cb4",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.125,
+      "frame": 75,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "093886fbd20c8bfcd86e03a412f8c8aee0cd9c9fc59427c36d8cf8d52f28c472",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.16666666666667,
+      "frame": 76,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "6b4b933568d68c964af140d55593523ac0d5d6355b3d37722d943e4ab2a531f4",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.20833333333333,
+      "frame": 77,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "ee40eb1d18b8985ecb16109c5c134f9b2711bf20438e916c9e4a8db9b3c806cf",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.25,
+      "frame": 78,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "91d5e4759e9507de88441b2dd81f72075a5497b779edb2e593395e64bacd42a7",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.29166666666667,
+      "frame": 79,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "4197dc26db5ba6359215e7308419a4e27846a10518f7a03dad22c534dc062d17",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.33333333333333,
+      "frame": 80,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "e08f47b290eb4d958c07faedf98c7e42871788353ec5b6756503d83e17328905",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.375,
+      "frame": 81,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "c817b7abf6a06127939649dc9c65b76c7f40f796056682b8f807cd7fdd93847b",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.41666666666667,
+      "frame": 82,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "514cc707aaff119cb3594a83052aac466f91b044a4cdbc93d2ae48d2de73fe17",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.45833333333333,
+      "frame": 83,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "6d46399565abc2b867b5c70f078912d7cff6ea8f25e6dd38b45e5e529058809c",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.5,
+      "frame": 84,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "fe8e23e673e76711232551386db23bcbeb28471caa1146d9c432e71c31125d66",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.54166666666667,
+      "frame": 85,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "4a4215e484e1a52239ced90ed58c4fc7f56b8a52c1eb268fa756870498882cad",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.58333333333333,
+      "frame": 86,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "bb80dbc6f7ee946ab29e23b1e71e99fe94739ab112b942ce767529d7f0610b77",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.625,
+      "frame": 87,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "a8d95fc80fe9a0ea8e02c4df9344209c704e77eb99f2fb9375d18a0fbca8c03d",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.66666666666667,
+      "frame": 88,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "757fb3f729bff94f78cad10fccc4fb3bb9a98f783b2aca9972006d8b819ab04a",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.70833333333333,
+      "frame": 89,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "498ad67110f1c93c202fe404b01e749743883879681ab1f4e9588fd7dafb2dac",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.75,
+      "frame": 90,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "a625add90d7b9883e855e2bf87d39e6ad863d1630c0baa41f90b088177c669a0",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.79166666666667,
+      "frame": 91,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "6233b69f72c0e9bef16b5a2bbfec410a2f2550972778b7a2f38aa594f516019e",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.83333333333333,
+      "frame": 92,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "749fd6b2a14642a36b750366e0873198865187e2fde02c3b9e1b0fc18980c124",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.875,
+      "frame": 93,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "238fdb4fadf93dae308cc57b5fd66571137fc22fad1cf95d5f697a5c3cbdc9e0",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.91666666666667,
+      "frame": 94,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "fc9aeb2425aa3fe51a48aa63673ebbddad537654863d2532696aef7bac4ada69",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.95833333333333,
+      "frame": 95,
+      "height": 750,
+      "kart": "glider",
+      "sha256": "f8246a5b9b2cea23c0707ca9e9a37b423ccdad34dc29fab930250ed4af66c23f",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.0,
+      "frame": 96,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "8bba25941c8233bdfddf3859e9a1388f9ae0e96f5fe1b5f9ce1aaaaf36a466e3",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.0416666666666667,
+      "frame": 97,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "90ccaef2c9c803ac8e5467a2915177b35e50be677b43118f93d1519964d1256e",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.0833333333333333,
+      "frame": 98,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "9fa96d1badd5461da7cd9074d3b4d6b765fbd9bba6a97228362070add0e2c6d6",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.125,
+      "frame": 99,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "77772d70c19c51677c489ca0da60c209cb1486d3c4783400d17b82a73b9a935a",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.166666666666667,
+      "frame": 100,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "4a76f5350cc7961b8d9bd7a518b16804301b0e13c16b1890e807537717ce40f6",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.208333333333333,
+      "frame": 101,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "1a3d48ea84688d8231e5bf8d91f740eb73da270a11ad5f1dd2374fe8d645f285",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.25,
+      "frame": 102,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "6eebde2a6c299a2292569f9599c1f1e57d1cb95825c2b3a8776454699559f4e4",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.291666666666667,
+      "frame": 103,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "caec1ee2ce63b446960a4db15b2f6714a2332f43881d424e51eb188d60e9a113",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.333333333333333,
+      "frame": 104,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "29c26e6b18b03c703370ba0f982845efea5253ed687de2db46c4a801cc253f0d",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.375,
+      "frame": 105,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "1e949e401c55d09e7554eda71687f05b0be665e7b738bf487bb8c5e7b2e73a04",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.416666666666667,
+      "frame": 106,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "1ded711510795cf0457fe15029df25f56e88e6b1890202c3635e76919d894cbf",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.458333333333333,
+      "frame": 107,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "6e1e6c921855972a3e690132471d327c20701d1970178b95eaad1522d696bd70",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.5,
+      "frame": 108,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "d50c1c1a48b503171af3f07c3c03a2f245dd91857db44cbdc6e5b2f1606d5826",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.541666666666667,
+      "frame": 109,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "8db5b27431a3a8b52566729685d14f9393d518d732b7f773b00aad4435700ec4",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.583333333333333,
+      "frame": 110,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "b10ba4dd4597cc56991f96d69af8c7c5a9d66ea4f73ee2aad31bb0eb8852d1a7",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.625,
+      "frame": 111,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "4189cb22b4e66b030629ce62260223077f09db2cf5629c0448be752af351b01e",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.666666666666667,
+      "frame": 112,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "46ada2980591471455cccd9c2dfbbd6328a74ab0af361672aa45de6931ee483b",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.708333333333333,
+      "frame": 113,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "8408a3420b489236f75ff3c2bbfcdac2df756c5bb8cfd7b8cbf5f7bf389b40b0",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.75,
+      "frame": 114,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "a1da361778654a7ae5249bf14ddc4d66809c4ac67b802e79851f3bc69b243db0",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.791666666666667,
+      "frame": 115,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "64a7d76f973cf988b8826def52508ce610ba8fb5c5e4ac61ef6b6d88adf76600",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.833333333333333,
+      "frame": 116,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "d6bce947f250f64e724a2cc0ba801ca07dae53e0375f4e01377d0449232d222e",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.875,
+      "frame": 117,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "75c411987b6d4362175a0354e328fc995da682ba357b70c0ddf0b962df4433b3",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.916666666666667,
+      "frame": 118,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "b2a1fec81e80a5950cc5685ac40d9d5e6bc7195510a359fa407daa05a2a9a76c",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 0.958333333333333,
+      "frame": 119,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "1178c214f77dafabcc21203b0992aefff6e29debbdda7678dabf212ee6fad9e7",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.0,
+      "frame": 120,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "cf984628f8fac8cc6521c8295c91bfdfd5233577300aa009bcd97da3c5ba6e64",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.04166666666667,
+      "frame": 121,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "fe26cf843c0c8039e23e0e8deeff1501c69deaa0d3be1d666c1301e8e0b15698",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.08333333333333,
+      "frame": 122,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "42707a050ece2d5518ca69bbd780999bb58cec3e41d3ef3180900175029256b1",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.125,
+      "frame": 123,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "2a01e69f623c56310491fcb38efcee51889e727a0a9ea77baa3a0257867ddb46",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.16666666666667,
+      "frame": 124,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "c06ae2746913d99713e22a45cc5bb3b56977dd08a6401258fb82090015426e37",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.20833333333333,
+      "frame": 125,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "97bd18a1699a9aedff676e561f4927431b937c651022a0e6b61bcec6cd7987b5",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.25,
+      "frame": 126,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "504a1c097178bf586b84433a7355465659185ed984d00170a91cfe242fa71346",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.29166666666667,
+      "frame": 127,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "7a24b3074614cbf58c889dd29132fcb6f4650cdc6275b0462d51551278b85ead",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.33333333333333,
+      "frame": 128,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "c618251bfdc8b1ce76c34785f8d7645d8f1c101231adb13308de1531f770fd10",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.375,
+      "frame": 129,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "01f07356c7ae6d234b6a8b3a4bad4f75da6d91074edaa02a379d13d4d8fbad67",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.41666666666667,
+      "frame": 130,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "0a50e864d934f96285d4d6d49bbf274212e668c9c206a8ed1fb5b1a5633fdf53",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.45833333333333,
+      "frame": 131,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "3f50d5ece65288fc4df129da2f4920028e4e18d092556792a61680fdfd4c4a7a",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.5,
+      "frame": 132,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "7c7fea47b8176f8df02b64a969f3f57a4b213ebec142038996ead79cf5087fac",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.54166666666667,
+      "frame": 133,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "be772c715eb29eac2ad0755b9005388c413b1495c831d8cbb0b62d064c4a0f15",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.58333333333333,
+      "frame": 134,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "1191ab147a35fb54f6f3e59dbafa157b19fe2145d58f13899e7c942820aca32e",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.625,
+      "frame": 135,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "a9b5f4301c7ab1490567e6ef9ef6363320166ea8514f293d925417b58876e214",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.66666666666667,
+      "frame": 136,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "a22fe922171eb8fff910601eb8fb0adbc2e7ce0b08d28944740dbad6ce2abfc0",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.70833333333333,
+      "frame": 137,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "39ac14831285e7a4440c0511dee1a0857f3a13e936da2c79a8896a5ee1b3a513",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.75,
+      "frame": 138,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "77580b885e585495be383f44034ed7c0e9a1c0fc2bae8afde314951156156f2b",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.79166666666667,
+      "frame": 139,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "20ddd62e0ad6f6ad5686c806103252db8e41b7932eeb188b7da519b67cf4b9da",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.83333333333333,
+      "frame": 140,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "1304dc38f7f07cc530f110585862d9b32daece0997eed493dfe6a2c05df58a0a",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.875,
+      "frame": 141,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "b9261a89e3fff0bee85d9dd3dd02f0dabee23507f396b83d4361760c3e3a1a8d",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.91666666666667,
+      "frame": 142,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "77ec90db8638cbeccca8dafabfcf236be2005bcc77d0aaa3859970476d45017d",
+      "width": 1200
+    },
+    {
+      "clip": "mechanical_demo",
+      "clip_time": 1.95833333333333,
+      "frame": 143,
+      "height": 750,
+      "kart": "turbo",
+      "sha256": "cd6e6bc96c5b4409a7f74613f51844d9068db829e7e39f74d3eccb6c4c84244a",
+      "width": 1200
+    }
+  ],
+  "godot": "4.6.3-stable (official)",
+  "physical_android": false,
+  "product_runtime_changed": false,
+  "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "sources": {
+    "assets/kart/production/drivers/lion/driver.glb": "343c181e14eb76f617b071dc06d79d44263a929d79970075ba14c43891e4bea8",
+    "assets/kart/production/drivers/owl/driver.glb": "804352d57c70c8d1391ce83139d810b55eb4f71828bdab26659272f2c0332d6d",
+    "assets/kart/production/drivers/rabbit/driver.glb": "d058633188252e874666dfa8f917a090d9306d2c2fbea63c44b9be9380e935fd",
+    "assets/kart/production/drivers/squirrel/driver.glb": "bbee7648a8363cd341463c23bdb70bcdd51783251cf444bfca4c695a8b78dd20",
+    "assets/kart/production/drivers/turtle/driver.glb": "8a421080ca1d58bd7dab809b59146b4fe913ae5115dd8c0738d66b5d45274d2c",
+    "assets/kart/production/karts/aurora_comet.glb": "d2b80327d4c35f8f5cd43929966c0c887ae2aa01ceaaba9b35b87ffd46a37f2f",
+    "assets/kart/production/karts/aurora_glider.glb": "2993929ce54e5b30cb9e921985f9e8cb979141908c60b8ae5d8c476c07527b0e",
+    "assets/kart/production/karts/aurora_turbo.glb": "d0840f0918a3bdf0f5fdcee5193b713b95b54f53f465118f75c5840e41212639",
+    "assets/kart/production/tracks/bergwelt/curve_right_30.glb": "797d17385c4c3677087da1862b6f13f3c1a9f022ac365fae4a4dfeddcf1302f0",
+    "assets/kart/production/tracks/bergwelt/portal_entry.glb": "fe38b73d68519260e28319e9a18b1a4bc704e6b2db8cdfb9e409d9df851d927c",
+    "assets/kart/production/tracks/bergwelt/straight_12m.glb": "d9d13b29451f4791828f9cd5181661a26de1de592966cd14bab959c6c0402e81",
+    "assets/kart/production/tracks/crystal_canyon/curve_right_30.glb": "e15f3c7fc2648b1cd23fdd3ebe1a0dbfc7de48a8d4322ba1657b0de2e0e56f33",
+    "assets/kart/production/tracks/crystal_canyon/portal_entry.glb": "6076a79b341eebfae27b77f6c8221fa82fa58f98928492634ae8968714ea17ec",
+    "assets/kart/production/tracks/crystal_canyon/straight_12m.glb": "80c4b87428f03d7bab6e9f242c027d764baa69bd98b710e937484fa248d1320f",
+    "assets/kart/production/tracks/holo_city/curve_right_30.glb": "aea29966fe9ea7c44e9de6594c4295da94ff20743cb328ac956553b4a38cacdc",
+    "assets/kart/production/tracks/holo_city/portal_entry.glb": "ebca9a3da2b7b11d093bcf4d4f8c6fdbaa5942a5a8cb03c248346b168cdd2290",
+    "assets/kart/production/tracks/holo_city/straight_12m.glb": "2b783d1b81349d305a52062ef430d80757017436d6d9fb935b32ee1852086c47",
+    "assets/kart/production/tracks/jungle_temple/curve_right_30.glb": "0b3559746d54a1e4ceaacc56a8445f7a22ba83ecdc4de0065850d359afefa858",
+    "assets/kart/production/tracks/jungle_temple/portal_entry.glb": "90fab78c931b8846da97489a4fa83a9e202b764390ede2268974c7f6dfbb11e6",
+    "assets/kart/production/tracks/jungle_temple/straight_12m.glb": "d37bc1e3fd2cfe887a22652709fa7211329a56eda22b59eed4e374903c9eadd3",
+    "assets/kart/production/tracks/zauberwald/curve_right_30.glb": "f4792072529d753379071f3f5cb93c55685ba5a256e8a2a8443dfb6a958f473c",
+    "assets/kart/production/tracks/zauberwald/portal_entry.glb": "3a63f9ac91a3aae490c0169fb49f6762c04b1baaeafc272064986793f0f0bc0f",
+    "assets/kart/production/tracks/zauberwald/straight_12m.glb": "99cb3c00516f27c23473e005540a638f3700be7452b0744abeead4f8c2ff734a"
+  }
+}
