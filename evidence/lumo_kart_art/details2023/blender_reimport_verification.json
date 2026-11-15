@@ -1,0 +1,251 @@
+{
+  "status": "PASS",
+  "blender": "4.3.2",
+  "modules": {
+    "lumo_guide_beacon.glb": {
+      "checks": {
+        "one_mesh_four_surfaces": true,
+        "exact_material_roles": true,
+        "round_trip_bounds": true,
+        "finite_normals_uvs": true,
+        "no_degenerate_faces": true,
+        "positive_volume": true,
+        "bytes_unchanged": true,
+        "no_external_dependencies": true,
+        "under_triangle_budget": true
+      },
+      "reimport": {
+        "mesh_count": 1,
+        "vertices": 1484,
+        "triangles": 1660,
+        "materials": [
+          "guide_body",
+          "guide_inset",
+          "guide_signal",
+          "guide_trim"
+        ],
+        "material_count": 4,
+        "bounds_blender_m": {
+          "min": [
+            -0.23999999463558197,
+            -0.3400000035762787,
+            0.0
+          ],
+          "max": [
+            0.23999999463558197,
+            0.3400000035762787,
+            1.3200000524520874
+          ]
+        },
+        "dimensions_m": [
+          0.47999998927116394,
+          0.6800000071525574,
+          1.3200000524520874
+        ],
+        "nonmanifold_edges": 1120,
+        "degenerate_triangles": 0,
+        "finite_uvs": true,
+        "finite_normals": true,
+        "positive_component_volumes": true
+      },
+      "glb": {
+        "meshes": 1,
+        "material_surfaces": 4,
+        "materials": [
+          "guide_inset",
+          "guide_trim",
+          "guide_body",
+          "guide_signal"
+        ],
+        "embedded_images": 0,
+        "external_dependencies": 0,
+        "bytes": 62072,
+        "sha256": "b4ef4cf5ecef7c7569b85b6dabc7c20c9aa975485ca0545a1308f127b38c8775"
+      }
+    },
+    "lumo_guide_beacon_lod1.glb": {
+      "checks": {
+        "one_mesh_four_surfaces": true,
+        "exact_material_roles": true,
+        "round_trip_bounds": true,
+        "finite_normals_uvs": true,
+        "no_degenerate_faces": true,
+        "positive_volume": true,
+        "bytes_unchanged": true,
+        "no_external_dependencies": true,
+        "under_triangle_budget": true
+      },
+      "reimport": {
+        "mesh_count": 1,
+        "vertices": 604,
+        "triangles": 524,
+        "materials": [
+          "guide_body",
+          "guide_inset",
+          "guide_signal",
+          "guide_trim"
+        ],
+        "material_count": 4,
+        "bounds_blender_m": {
+          "min": [
+            -0.23999999463558197,
+            -0.3400000035762787,
+            0.0
+          ],
+          "max": [
+            0.23999999463558197,
+            0.3400000035762787,
+            1.3200000524520874
+          ]
+        },
+        "dimensions_m": [
+          0.47999998927116394,
+          0.6800000071525574,
+          1.3200000524520874
+        ],
+        "nonmanifold_edges": 520,
+        "degenerate_triangles": 0,
+        "finite_uvs": true,
+        "finite_normals": true,
+        "positive_component_volumes": true
+      },
+      "glb": {
+        "meshes": 1,
+        "material_surfaces": 4,
+        "materials": [
+          "guide_inset",
+          "guide_trim",
+          "guide_body",
+          "guide_signal"
+        ],
+        "embedded_images": 0,
+        "external_dependencies": 0,
+        "bytes": 27084,
+        "sha256": "dc15a19d1c8e55a6e2960dcfb1405f7658835107d699db6cc01dea34e2048c31"
+      }
+    },
+    "lumo_guide_ribbon_2m.glb": {
+      "checks": {
+        "one_mesh_four_surfaces": true,
+        "exact_material_roles": true,
+        "round_trip_bounds": true,
+        "finite_normals_uvs": true,
+        "no_degenerate_faces": true,
+        "positive_volume": true,
+        "bytes_unchanged": true,
+        "no_external_dependencies": true,
+        "under_triangle_budget": true
+      },
+      "reimport": {
+        "mesh_count": 1,
+        "vertices": 876,
+        "triangles": 924,
+        "materials": [
+          "guide_body",
+          "guide_inset",
+          "guide_signal",
+          "guide_trim"
+        ],
+        "material_count": 4,
+        "bounds_blender_m": {
+          "min": [
+            -0.14000000059604645,
+            -1.0,
+            0.0
+          ],
+          "max": [
+            0.14000000059604645,
+            1.0,
+            0.2199999988079071
+          ]
+        },
+        "dimensions_m": [
+          0.2800000011920929,
+          2.0,
+          0.2199999988079071
+        ],
+        "nonmanifold_edges": 684,
+        "degenerate_triangles": 0,
+        "finite_uvs": true,
+        "finite_normals": true,
+        "positive_component_volumes": true
+      },
+      "glb": {
+        "meshes": 1,
+        "material_surfaces": 4,
+        "materials": [
+          "guide_inset",
+          "guide_body",
+          "guide_trim",
+          "guide_signal"
+        ],
+        "embedded_images": 0,
+        "external_dependencies": 0,
+        "bytes": 38164,
+        "sha256": "c816c59d187255f910b8e8479bcfe250be94bf889c644a51d4a1856c22ad5668"
+      }
+    },
+    "lumo_guide_ribbon_2m_lod1.glb": {
+      "checks": {
+        "one_mesh_four_surfaces": true,
+        "exact_material_roles": true,
+        "round_trip_bounds": true,
+        "finite_normals_uvs": true,
+        "no_degenerate_faces": true,
+        "positive_volume": true,
+        "bytes_unchanged": true,
+        "no_external_dependencies": true,
+        "under_triangle_budget": true
+      },
+      "reimport": {
+        "mesh_count": 1,
+        "vertices": 500,
+        "triangles": 412,
+        "materials": [
+          "guide_body",
+          "guide_inset",
+          "guide_signal",
+          "guide_trim"
+        ],
+        "material_count": 4,
+        "bounds_blender_m": {
+          "min": [
+            -0.14000000059604645,
+            -1.0,
+            0.0
+          ],
+          "max": [
+            0.14000000059604645,
+            1.0,
+            0.2199999988079071
+          ]
+        },
+        "dimensions_m": [
+          0.2800000011920929,
+          2.0,
+          0.2199999988079071
+        ],
+        "nonmanifold_edges": 444,
+        "degenerate_triangles": 0,
+        "finite_uvs": true,
+        "finite_normals": true,
+        "positive_component_volumes": true
+      },
+      "glb": {
+        "meshes": 1,
+        "material_surfaces": 4,
+        "materials": [
+          "guide_inset",
+          "guide_body",
+          "guide_trim",
+          "guide_signal"
+        ],
+        "embedded_images": 0,
+        "external_dependencies": 0,
+        "bytes": 23048,
+        "sha256": "d6fd2fdc8ca63555806a71dbe99feac52357767e73ca5de55553470f165ff58d"
+      }
+    }
+  },
+  "scope": "Static exported bytes and actual Blender re-import; no Android performance claim"
+}

@@ -1,0 +1,281 @@
+{
+  "schema": 1,
+  "name": "LUMO shoulder guide details",
+  "version": 2023,
+  "authoring": "Original deterministic Blender geometry authored for this LUMO project; no external model or paid generator",
+  "license": "Original project artwork; distribution follows the LUMO repository license. No third-party model or texture inputs in the new GLBs.",
+  "blender": "4.3.2",
+  "units": "meters",
+  "source_blend": "art/lumo_kart/blender/details/lumo_guide_details_2023.blend",
+  "axes": {
+    "blender_forward": "+Y",
+    "blender_up": "+Z",
+    "godot_forward": "-Z",
+    "godot_up": "+Y"
+  },
+  "placement": {
+    "root": "floor center",
+    "recommended_lateral_m": 6.5,
+    "road_half_width_m": 5.4,
+    "reserved_clear_half_width_m": 5.9,
+    "existing_curb_center_m": 6.13,
+    "existing_curb_radius_m": 0.09,
+    "existing_inner_wall_half_width_m": 6.8,
+    "mirror": false,
+    "facing": "Both sides use the same road-frame basis, forward chevrons on both lateral faces",
+    "colliders": 0,
+    "light_nodes": 0
+  },
+  "materials": {
+    "guide_body": {
+      "role": "theme body"
+    },
+    "guide_trim": {
+      "role": "edge and rim"
+    },
+    "guide_inset": {
+      "role": "dark recess"
+    },
+    "guide_signal": {
+      "role": "forward signal with bounded emission"
+    }
+  },
+  "palette_srgb": {
+    "holo_city": [
+      "233951",
+      "c6a46b",
+      "101c29",
+      "72e6ed"
+    ],
+    "zauberwald": [
+      "536c59",
+      "d0ad65",
+      "263d34",
+      "a5f0ca"
+    ],
+    "crystal_canyon": [
+      "665c85",
+      "d4b0da",
+      "29243e",
+      "7ce0ee"
+    ]
+  },
+  "mobile_policy": {
+    "max_meshes_per_glb": 1,
+    "max_surfaces_per_glb": 4,
+    "textures": 0,
+    "alpha_blending": false,
+    "material_policy": "shared by theme; instancing supported"
+  },
+  "modules": {
+    "lumo_guide_beacon.glb": {
+      "lod": 0,
+      "geometry": {
+        "mesh_count": 1,
+        "vertices": 864,
+        "triangles": 1660,
+        "materials": [
+          "guide_body",
+          "guide_inset",
+          "guide_signal",
+          "guide_trim"
+        ],
+        "material_count": 4,
+        "bounds_blender_m": {
+          "min": [
+            -0.23999999463558197,
+            -0.3400000035762787,
+            0.0
+          ],
+          "max": [
+            0.23999999463558197,
+            0.3400000035762787,
+            1.3200000524520874
+          ]
+        },
+        "dimensions_m": [
+          0.47999998927116394,
+          0.6800000071525574,
+          1.3200000524520874
+        ],
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0,
+        "finite_uvs": true,
+        "finite_normals": true,
+        "positive_component_volumes": true
+      },
+      "glb": {
+        "meshes": 1,
+        "material_surfaces": 4,
+        "materials": [
+          "guide_inset",
+          "guide_trim",
+          "guide_body",
+          "guide_signal"
+        ],
+        "embedded_images": 0,
+        "external_dependencies": 0,
+        "bytes": 62072,
+        "sha256": "b4ef4cf5ecef7c7569b85b6dabc7c20c9aa975485ca0545a1308f127b38c8775"
+      }
+    },
+    "lumo_guide_beacon_lod1.glb": {
+      "lod": 1,
+      "geometry": {
+        "mesh_count": 1,
+        "vertices": 288,
+        "triangles": 524,
+        "materials": [
+          "guide_body",
+          "guide_inset",
+          "guide_signal",
+          "guide_trim"
+        ],
+        "material_count": 4,
+        "bounds_blender_m": {
+          "min": [
+            -0.23999999463558197,
+            -0.3400000035762787,
+            0.0
+          ],
+          "max": [
+            0.23999999463558197,
+            0.3400000035762787,
+            1.3200000524520874
+          ]
+        },
+        "dimensions_m": [
+          0.47999998927116394,
+          0.6800000071525574,
+          1.3200000524520874
+        ],
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0,
+        "finite_uvs": true,
+        "finite_normals": true,
+        "positive_component_volumes": true
+      },
+      "glb": {
+        "meshes": 1,
+        "material_surfaces": 4,
+        "materials": [
+          "guide_inset",
+          "guide_trim",
+          "guide_body",
+          "guide_signal"
+        ],
+        "embedded_images": 0,
+        "external_dependencies": 0,
+        "bytes": 27084,
+        "sha256": "dc15a19d1c8e55a6e2960dcfb1405f7658835107d699db6cc01dea34e2048c31"
+      }
+    },
+    "lumo_guide_ribbon_2m.glb": {
+      "lod": 0,
+      "geometry": {
+        "mesh_count": 1,
+        "vertices": 484,
+        "triangles": 924,
+        "materials": [
+          "guide_body",
+          "guide_inset",
+          "guide_signal",
+          "guide_trim"
+        ],
+        "material_count": 4,
+        "bounds_blender_m": {
+          "min": [
+            -0.14000000059604645,
+            -1.0,
+            0.0
+          ],
+          "max": [
+            0.14000000059604645,
+            1.0,
+            0.2199999988079071
+          ]
+        },
+        "dimensions_m": [
+          0.2800000011920929,
+          2.0,
+          0.2199999988079071
+        ],
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0,
+        "finite_uvs": true,
+        "finite_normals": true,
+        "positive_component_volumes": true
+      },
+      "glb": {
+        "meshes": 1,
+        "material_surfaces": 4,
+        "materials": [
+          "guide_inset",
+          "guide_body",
+          "guide_trim",
+          "guide_signal"
+        ],
+        "embedded_images": 0,
+        "external_dependencies": 0,
+        "bytes": 38164,
+        "sha256": "c816c59d187255f910b8e8479bcfe250be94bf889c644a51d4a1856c22ad5668"
+      }
+    },
+    "lumo_guide_ribbon_2m_lod1.glb": {
+      "lod": 1,
+      "geometry": {
+        "mesh_count": 1,
+        "vertices": 228,
+        "triangles": 412,
+        "materials": [
+          "guide_body",
+          "guide_inset",
+          "guide_signal",
+          "guide_trim"
+        ],
+        "material_count": 4,
+        "bounds_blender_m": {
+          "min": [
+            -0.14000000059604645,
+            -1.0,
+            0.0
+          ],
+          "max": [
+            0.14000000059604645,
+            1.0,
+            0.2199999988079071
+          ]
+        },
+        "dimensions_m": [
+          0.2800000011920929,
+          2.0,
+          0.2199999988079071
+        ],
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0,
+        "finite_uvs": true,
+        "finite_normals": true,
+        "positive_component_volumes": true
+      },
+      "glb": {
+        "meshes": 1,
+        "material_surfaces": 4,
+        "materials": [
+          "guide_inset",
+          "guide_body",
+          "guide_trim",
+          "guide_signal"
+        ],
+        "embedded_images": 0,
+        "external_dependencies": 0,
+        "bytes": 23048,
+        "sha256": "d6fd2fdc8ca63555806a71dbe99feac52357767e73ca5de55553470f165ff58d"
+      }
+    }
+  },
+  "source_sha256": "ea984c10e6786128226d73394a6bcd22b826a9dc551d2beab55e63c17a086f2b",
+  "builder_sha256": "695fe3d674e74032d93729150f15f8d206a9db7526756c7b0ec2aca758bd3a48",
+  "android_runtime_verified": false,
+  "geometry_builder_sha256_at_export": "13a1a13c9c5cd3b193eac310a19de0fd21da19ab812e71b3687de8b12fb10142",
+  "builder_render_changes": "Only render preparation, camera framing and external offline denoise added after geometry export. GLB and editable source bytes are unchanged."
+}

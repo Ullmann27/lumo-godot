@@ -2,6 +2,7 @@ extends Node3D
 ## Real road-following Blender tunnels, hollow physics, bounded lights and mobile LOD.
 const LAYOUT = preload("res://scripts/games/kart_production_tunnel_layout.gd")
 const GEOMETRY = preload("res://scripts/games/kart_production_tunnel_mesh.gd")
+const GUIDANCE = preload("res://scripts/games/kart_production_guidance.gd")
 const COLLISION_LAYER: int = 1 << 20
 ## Origin is the same road-contact/feet origin as kart_island.player.position.
 const BODY_RADIUS: float = 0.85
@@ -17,6 +18,7 @@ var light_mounts: Array[Marker3D] = []
 var light_pool: Array[OmniLight3D] = []
 var collision_bodies: Array[StaticBody3D] = []
 var statistics: Dictionary = {}
+var guidance
 var _curve_map = GEOMETRY.CurveMap.new()
 var _scenes: Dictionary = {}
 var _materials: Dictionary = {}
@@ -47,6 +49,11 @@ func build(world, selected_layout: Dictionary) -> bool:
 		if not _build_module(index, spec):
 			return false
 	_build_ground_aprons()
+	guidance = GUIDANCE.new()
+	add_child(guidance)
+	if not guidance.build(world, layout, _curve_map):
+		return false
+	statistics["guidance"] = guidance.statistics.duplicate(true)
 	# The basalt tunnel needs more local fill beneath the existing ACES
 	# night grade. Preserve the original lighting of all other themes.
 	var basalt: bool = str(world.track_id) == "volcano_night"

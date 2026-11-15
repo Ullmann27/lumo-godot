@@ -12,14 +12,18 @@ func _initialize() -> void:
 
 func _run() -> void:
 	var selected: String = "all"
+	var output_directory: String = "res://evidence/lumo_kart_art/tracks/runtime"
 	for argument in OS.get_cmdline_user_args():
 		if argument.begins_with("--track="):
 			selected = argument.trim_prefix("--track=")
+		elif argument.begins_with("--output="):
+			output_directory = argument.trim_prefix("--output=")
 	var records: Array[Dictionary] = []
 	for low_detail in [true, false]:
 		for track in LAYOUT.THEMES:
 			if selected != "all" and track != selected:
 				continue
+			var failures_before: int = failures
 			var world = WORLD.new()
 			root.add_child(world)
 			world.build(low_detail, track, true)
@@ -40,6 +44,18 @@ func _run() -> void:
 			for module in tunnel.modules:
 				for category in ["Core", "Terrain"]:
 					_collect_faces(module.get_node(category + "LOD" + level), world.global_transform.affine_inverse(), faces)
+			if not is_instance_valid(tunnel.guidance):
+				failures += 1
+				push_error("[ProductionTunnelVisible] missing real Blender shoulder guidance on " + track)
+			else:
+				_collect_faces(tunnel.guidance, world.global_transform.affine_inverse(), faces)
+				var guide_stats: Dictionary = tunnel.guidance.statistics
+				if int(guide_stats.instances) <= 0 or int(guide_stats.surface_batches) > 8 or int(guide_stats.shared_materials) != 4:
+					failures += 1
+					push_error("[ProductionTunnelVisible] missing or unbatched Blender shoulder meshes on " + track)
+				if int(guide_stats.lod) != (1 if low_detail else 0):
+					failures += 1
+					push_error("[ProductionTunnelVisible] incorrect mobile guidance LOD on " + track)
 			var shape := ConcavePolygonShape3D.new()
 			shape.set_faces(faces)
 			shape.backface_collision = true
@@ -73,14 +89,14 @@ func _run() -> void:
 				push_error("[ProductionTunnelVisible] " + track + " LOD" + level + " obstructs reserved sections " + str(blocked))
 			records.append({"track": track, "level": level, "visible_triangles": faces.size() / 3,
 				"width_m": 11.8, "bottom_m": 0.15, "top_m": 4.5, "step_m": 0.5,
-				"clear_cross_sections": clear_sections, "obstructed_sections": blocked, "passed": blocked.is_empty()})
+				"clear_cross_sections": clear_sections, "obstructed_sections": blocked,
+				"guidance": tunnel.statistics.get("guidance", {}), "passed": failures == failures_before})
 			print("[ProductionTunnelVisible] ", track, " LOD", level, " ", "PASS" if blocked.is_empty() else "FAIL", " clear_sections=", clear_sections)
 			world.queue_free()
 			await process_frame
 			await physics_frame
-	var directory: String = "res://evidence/lumo_kart_art/tracks/runtime"
-	DirAccess.make_dir_recursive_absolute(directory)
-	var output := FileAccess.open(directory + "/visible_clearance_" + selected + ".json", FileAccess.WRITE)
+	DirAccess.make_dir_recursive_absolute(output_directory)
+	var output := FileAccess.open(output_directory + "/visible_clearance_" + selected + ".json", FileAccess.WRITE)
 	if output != null:
 		output.store_string(JSON.stringify({"passed": failures == 0, "failures": failures,
 			"method": "Actual warped visible LOD0/LOD1 core and terrain triangles, Godot concave intersection; independent of game collision proxies",
@@ -89,7 +105,15 @@ func _run() -> void:
 
 
 func _collect_faces(node: Node, world_inverse: Transform3D, faces: PackedVector3Array) -> void:
-	if node is MeshInstance3D:
+	if node is MultiMeshInstance3D:
+		var multimesh: MultiMesh = (node as MultiMeshInstance3D).multimesh
+		if multimesh != null and multimesh.mesh != null:
+			var source_faces: PackedVector3Array = multimesh.mesh.get_faces()
+			for index in multimesh.instance_count:
+				var transform: Transform3D = world_inverse * (node as Node3D).global_transform * multimesh.get_instance_transform(index)
+				for vertex in source_faces:
+					faces.append(transform * vertex)
+	elif node is MeshInstance3D:
 		var instance: MeshInstance3D = node as MeshInstance3D
 		if instance.mesh != null:
 			var transform: Transform3D = world_inverse * instance.global_transform
