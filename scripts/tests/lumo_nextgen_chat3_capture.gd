@@ -77,5 +77,24 @@ func _run() -> void:
 			"pattern has eight existing shapes and one non-counting question"):
 		return
 	await _capture("03_shapes_pattern")
-	print("[LumoChat3Runtime] PASS: avatar imported; 13 math objects; ten bridge; three syllables; eight shapes; ID targeting; speech cancellation; 3 native screenshots")
+	root.size = Vector2i(412, 900)
+	for i in range(12):
+		await process_frame
+	stage.configure_lesson("math_8_plus_5")
+	if not _require(is_equal_approx(stage._camera.size, 8.0),
+			"phone portrait layout must increase orthographic safe area"):
+		return
+	if not _require(stage._board_background.position == stage._board.position,
+			"portrait panel must follow stable 3D learning-board transform"):
+		return
+	await _capture("04_phone_portrait_math")
+	root.size = Vector2i(920, 820)
+	for i in range(12):
+		await process_frame
+	stage.configure_lesson("reading_ba_na_ne")
+	if not _require(is_equal_approx(stage._camera.size, 5.9),
+			"fold-like opened layout must retain wide screen framing"):
+		return
+	await _capture("05_fold_like_opened_syllables")
+	print("[LumoChat3Runtime] PASS: avatar imported; 13 math objects; ten bridge; three syllables; eight shapes; stable ID targeting; speech cancellation; 5 native screenshots including phone portrait and opened fold-like viewports")
 	quit(0)
