@@ -60,17 +60,39 @@ func _run() -> void:
 	if not _require(stage.get_counted_amount() == 13,
 			"8+5 must contain exactly 13 countable objects"):
 		return
+	if not _require(stage.get_ten_frame_slot_count() == 10,
+			"a ten-frame must have exactly ten decorative, noncountable cells"):
+		return
+	if not _require(stage._mesh_assets.has("CounterBerryGold"),
+			"real PBR amber berry variant must be imported from Blender"):
+		return
+	await _capture("00_math_8_plus_5_initial")
 	var original_ids: Array[String] = stage.get_target_ids()
 	stage.bridge_to_ten()
-	for i in range(30):
+	for i in range(75):
 		await process_frame
 	if not _require(stage.get_counted_amount() == 13
 			and stage.get_target_ids() == original_ids,
 			"ten bridge must move existing objects without changing identities"):
 		return
+	if not _require(stage._math_caption != null
+			and stage._math_caption.text == "10 + 3 = 13",
+			"only after the actual motion the teacher reveals ten plus three"):
+		return
+	for index in range(2):
+		var moved := stage._targets.get("math:8plus5:right:%02d" % (index + 1)) as Node3D
+		var slot := stage._math_slots[8 + index] as Node3D
+		if not _require(moved.position.distance_to(slot.position + Vector3(0,0,0.27)) < 0.035,
+				"exact two gold berries must occupy two empty frame slots"):
+			return
+	await _capture("08_math_10_plus_3_bridge")
 	if not _require(stage.point_at_object("math:8plus5:right:03"),
 			"pointing uses a valid stable 3D target"):
 		return
+	if not _require(stage.pointer_uses_real_hand_bone and stage._point_line.visible,
+			"pointing ray must start at imported Blender Hand.L bone"):
+		return
+	await _capture("06_hand_bone_target_ray")
 	if not _require(not stage.point_at_object("not_a_real_object"),
 			"unresolved IDs must never produce a fake point"):
 		return
@@ -78,10 +100,21 @@ func _run() -> void:
 	if not _require(stage.character_state == "speak" and stage.speech_active,
 			"speaking requires real time event input"):
 		return
+	var a_morph_found := false
+	for shape_index in range(stage._face.mesh.get_blend_shape_count()):
+		if str(stage._face.mesh.get_blend_shape_name(shape_index)) == "viseme_A":
+			a_morph_found = stage._face.get_blend_shape_value(shape_index) > 0.99
+	if not _require(a_morph_found, "the actual glTF viseme must drive a mesh shape key"):
+		return
+	await _capture("07_viseme_A_speaking")
 	stage.interrupt()
 	if not _require(not stage.speech_active and stage._current_mouth == "",
 			"interruption must immediately stop speech and clear mouth"):
 		return
+	for shape_index in range(stage._face.mesh.get_blend_shape_count()):
+		if not _require(is_zero_approx(stage._face.get_blend_shape_value(shape_index)),
+				"interruption must close every mouth shape in GLB mesh"):
+			return
 	stage.configure_lesson("math_8_plus_5")
 	await _capture("01_math_8_plus_5")
 	stage.configure_lesson("reading_ba_na_ne")
@@ -117,5 +150,5 @@ func _run() -> void:
 	if not _targets_inside_viewport(stage, "fold_like_syllables"):
 		return
 	await _capture("05_fold_like_opened_syllables")
-	print("[LumoChat3Runtime] PASS: avatar imported; 13 math objects; ten bridge; three syllables; eight shapes; stable ID targeting; speech cancellation; 5 native screenshots including phone portrait and opened fold-like viewports")
+	print("[LumoChat3Runtime] PASS: avatar imported; 13 math objects; ten bridge; three syllables; eight shapes; stable ID targeting; speech cancellation; 9 native screenshots including math bridge, real hand pointing, viseme and responsive portrait/fold viewports")
 	quit(0)
