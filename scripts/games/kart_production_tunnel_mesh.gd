@@ -37,13 +37,13 @@ class CurveMap:
 		return Basis(frame.basis.x, frame.basis.y, -longitudinal)
 
 
-static func make_visible(scene: PackedScene, curve_map: CurveMap, module_start: float, shared_materials: Dictionary) -> Dictionary:
+static func make_visible(scene: PackedScene, curve_map: CurveMap, module_start: float, shared_materials: Dictionary, floor_material: String = "") -> Dictionary:
 	var source: Node3D = scene.instantiate() as Node3D
 	var result := Node3D.new()
 	var origin: Vector3 = curve_map.sample(module_start).origin
 	result.position = origin
-	var record: Dictionary = {"node": result, "triangles": 0, "markers": [], "meshes": []}
-	_copy_tree(source, Transform3D.IDENTITY, result, curve_map, module_start, origin, shared_materials, record)
+	var record: Dictionary = {"node": result, "triangles": 0, "markers": [], "meshes": [], "floor_faces": PackedVector3Array()}
+	_copy_tree(source, Transform3D.IDENTITY, result, curve_map, module_start, origin, shared_materials, record, floor_material)
 	source.free()
 	return record
 
@@ -69,7 +69,7 @@ static func make_collision(scene: PackedScene, curve_map: CurveMap, module_start
 	return body
 
 
-static func _copy_tree(node: Node, inherited: Transform3D, target: Node3D, curve_map: CurveMap, module_start: float, origin: Vector3, shared_materials: Dictionary, record: Dictionary) -> void:
+static func _copy_tree(node: Node, inherited: Transform3D, target: Node3D, curve_map: CurveMap, module_start: float, origin: Vector3, shared_materials: Dictionary, record: Dictionary, floor_material: String) -> void:
 	var local: Transform3D = inherited
 	if node is Node3D:
 		local = inherited * (node as Node3D).transform
@@ -77,13 +77,20 @@ static func _copy_tree(node: Node, inherited: Transform3D, target: Node3D, curve
 		var source_mesh: Mesh = (node as MeshInstance3D).mesh
 		var geometry := ArrayMesh.new()
 		for surface in source_mesh.get_surface_count():
+			var material: Material = source_mesh.surface_get_material(surface)
+			var collect_floor: bool = not floor_material.is_empty() and material != null and material.resource_name == floor_material and source_mesh.surface_get_primitive_type(surface) == Mesh.PRIMITIVE_TRIANGLES
 			var arrays: Array = source_mesh.surface_get_arrays(surface).duplicate(true)
 			var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+			var floor_vertices := PackedByteArray()
+			if collect_floor:
+				floor_vertices.resize(vertices.size())
 			var normals: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
 			var tangents: PackedFloat32Array = arrays[Mesh.ARRAY_TANGENT] if arrays[Mesh.ARRAY_TANGENT] != null else PackedFloat32Array()
 			var source_normal_basis: Basis = local.basis.inverse().transposed()
 			for index in vertices.size():
 				var point: Vector3 = local * vertices[index]
+				if collect_floor:
+					floor_vertices[index] = 1 if absf(point.y + 0.32) <= 0.0001 else 0
 				var jacobian: Basis = curve_map.jacobian(point, module_start)
 				vertices[index] = curve_map.point(point, module_start) - origin
 				if normals.size() == vertices.size():
@@ -100,7 +107,6 @@ static func _copy_tree(node: Node, inherited: Transform3D, target: Node3D, curve
 			if not tangents.is_empty():
 				arrays[Mesh.ARRAY_TANGENT] = tangents
 			geometry.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-			var material: Material = source_mesh.surface_get_material(surface)
 			if material != null:
 				var key: String = material.resource_name
 				if key.is_empty():
@@ -109,6 +115,19 @@ static func _copy_tree(node: Node, inherited: Transform3D, target: Node3D, curve
 					shared_materials[key] = material
 				geometry.surface_set_material(surface, shared_materials[key])
 			var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
+			if collect_floor:
+				var floor_faces: PackedVector3Array = record.floor_faces
+				var count: int = indices.size() if not indices.is_empty() else vertices.size()
+				for offset in range(0, count - 2, 3):
+					var a: int = indices[offset] if not indices.is_empty() else offset
+					var b: int = indices[offset + 1] if not indices.is_empty() else offset + 1
+					var c: int = indices[offset + 2] if not indices.is_empty() else offset + 2
+					if floor_vertices[a] != 0 and floor_vertices[b] != 0 and floor_vertices[c] != 0:
+						# Match the actual visible triangle, including the module Node3D origin.
+						floor_faces.append(vertices[a] + origin)
+						floor_faces.append(vertices[b] + origin)
+						floor_faces.append(vertices[c] + origin)
+				record.floor_faces = floor_faces
 			record.triangles += (indices.size() if not indices.is_empty() else vertices.size()) / 3
 		var visible := MeshInstance3D.new()
 		visible.name = node.name
@@ -133,7 +152,7 @@ static func _copy_tree(node: Node, inherited: Transform3D, target: Node3D, curve
 			target.add_child(marker)
 			record.markers.append(marker)
 	for child in node.get_children():
-		_copy_tree(child, local, target, curve_map, module_start, origin, shared_materials, record)
+		_copy_tree(child, local, target, curve_map, module_start, origin, shared_materials, record, floor_material)
 
 
 static func _collision_faces(node: Node, inherited: Transform3D, curve_map: CurveMap, module_start: float, origin: Vector3, points: PackedVector3Array) -> void:

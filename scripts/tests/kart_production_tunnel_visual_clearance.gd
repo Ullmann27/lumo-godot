@@ -11,6 +11,10 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	if DisplayServer.get_name() == "headless":
+		push_error("[ProductionTunnelVisible] Requires a real rendering server: the dummy renderer does not retain MultiMesh instance transforms")
+		quit(1)
+		return
 	var selected: String = "all"
 	var output_directory: String = "res://evidence/lumo_kart_art/tracks/runtime"
 	for argument in OS.get_cmdline_user_args():
@@ -99,7 +103,8 @@ func _run() -> void:
 	var output := FileAccess.open(output_directory + "/visible_clearance_" + selected + ".json", FileAccess.WRITE)
 	if output != null:
 		output.store_string(JSON.stringify({"passed": failures == 0, "failures": failures,
-			"method": "Actual warped visible LOD0/LOD1 core and terrain triangles, Godot concave intersection; independent of game collision proxies",
+			"display_server": DisplayServer.get_name(), "renderer": RenderingServer.get_current_rendering_method(),
+			"method": "Actual warped visible LOD0/LOD1 core, terrain and renderer-readback guidance triangles, Godot concave intersection; independent of game collision proxies",
 			"records": records}, "  "))
 	quit(0 if failures == 0 else 1)
 

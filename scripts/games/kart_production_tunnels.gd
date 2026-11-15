@@ -22,6 +22,7 @@ var guidance
 var _curve_map = GEOMETRY.CurveMap.new()
 var _scenes: Dictionary = {}
 var _materials: Dictionary = {}
+var _guidance_floor_faces := PackedVector3Array()
 var _collision_bounds := AABB()
 var _capsule := CapsuleShape3D.new()
 var _camera_shape := SphereShape3D.new()
@@ -51,8 +52,10 @@ func build(world, selected_layout: Dictionary) -> bool:
 	_build_ground_aprons()
 	guidance = GUIDANCE.new()
 	add_child(guidance)
-	if not guidance.build(world, layout, _curve_map):
+	if not guidance.build(world, layout, _curve_map, _guidance_floor_faces):
 		return false
+	statistics["guidance_floor_triangles"] = _guidance_floor_faces.size() / 3
+	_guidance_floor_faces.clear()
 	statistics["guidance"] = guidance.statistics.duplicate(true)
 	# The basalt tunnel needs more local fill beneath the existing ACES
 	# night grade. Preserve the original lighting of all other themes.
@@ -110,7 +113,9 @@ func _build_module(index: int, spec: Dictionary) -> bool:
 			var source: PackedScene = _scene(kind, suffix)
 			if source == null:
 				return false
-			var built: Dictionary = GEOMETRY.make_visible(source, _curve_map, start, _materials)
+			var floor_material: String = str(race_world.track_id) + "_inner" if not terrain and level == levels[0] else ""
+			var built: Dictionary = GEOMETRY.make_visible(source, _curve_map, start, _materials, floor_material)
+			_guidance_floor_faces.append_array(built.floor_faces as PackedVector3Array)
 			var model: Node3D = built.node
 			model.name = ("Terrain" if terrain else "Core") + "LOD" + str(level)
 			model.set_meta("source_asset", "assets/kart/production/tracks/%s/%s%s.glb" % [race_world.track_id, kind, suffix])
