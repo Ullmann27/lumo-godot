@@ -130,7 +130,7 @@ jobs:
         run: |
           set -euo pipefail
           PROBE="exports/lumo-nextgen-chat3/native-fixture"
-          timeout 250s xvfb-run -a -s '-screen 0 1024x768x24' \
+          timeout 250s xvfb-run -a -s '-screen 0 1200x1200x24' \
             Godot_v4.6.3-stable_linux.x86_64 \
             --path "$PROBE" \
             --rendering-method gl_compatibility --audio-driver Dummy \
@@ -140,7 +140,7 @@ jobs:
               exit 1
             }
           grep -F '[LumoChat3Runtime] PASS:' exports/lumo-nextgen-chat3/godot-runtime.log
-          for file in 01_math_8_plus_5 02_reading_ba_na_ne 03_shapes_pattern; do
+          for file in 01_math_8_plus_5 02_reading_ba_na_ne 03_shapes_pattern 04_phone_portrait_math 05_fold_like_opened_syllables; do
             test -s "$PROBE/exports/lumo-nextgen-chat3/runtime/$file.png"
           done
           cp -r "$PROBE/exports/lumo-nextgen-chat3/runtime" exports/lumo-nextgen-chat3/
