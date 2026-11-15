@@ -262,6 +262,13 @@ def setup_preview(mats, avatar_collection):
     scene.world.color = (0.06, 0.05, 0.12)
     scene.render.engine = "CYCLES"
     scene.cycles.samples = 24
+    # Ubuntu's packaged Blender Cycles may be compiled without OpenImageDenoise.
+    # Disable denoising explicitly; render native Cycles samples instead.
+    for layer in scene.view_layers:
+        if hasattr(layer, "cycles"):
+            layer.cycles.use_denoising = False
+    if hasattr(scene.cycles, "use_preview_denoising"):
+        scene.cycles.use_preview_denoising = False
     scene.render.fps = FPS
     return camera
 
