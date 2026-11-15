@@ -38,6 +38,66 @@ def unique(fragment: str, text: str, name: str) -> None:
         raise RuntimeError(f"{name} expected exactly once: {fragment[:100]!r}")
 
 
+def resolve_vehicle(original: str, matches: list[re.Match[str]]) -> tuple[str, dict]:
+    """Reconcile all eight observed 2022-production vs 2026-rival regions."""
+    if len(matches) != 8:
+        raise RuntimeError(f"Vehicle source changed: {len(matches)} regions, expected 8")
+    replacements: list[str] = []
+    anchors = [
+        ("production_driver.set_suspended(suspended)", "rival_visual.set_suspended(suspended)"),
+        ("production_driver.celebrate_finished_race(place)", "rival_visual.celebrate_finished_race(place)"),
+        ("production_vehicle = null", "rival_visual = null"),
+        ("if _build_production_driver():", "var is_lumo: bool = animal == \"fox\""),
+        ("child == production_vehicle", "child == rival_visual"),
+        ("if animal == \"fox\" and not is_instance_valid(production_vehicle):",
+         "var chassis := SurfaceTool.new()"),
+        ("production_driver.apply_vehicle_sample", "rival_visual.apply_vehicle_sample"),
+        ("if not is_instance_valid(production_vehicle):", "for i in range(wheel_rotors.size()):"),
+    ]
+    for index, item in enumerate(matches):
+        old, newer = item.group(1), item.group(2)
+        unique(anchors[index][0], old, f"kart_vehicle hunk {index + 1}")
+        unique(anchors[index][1], newer, f"kart_vehicle hunk {index + 1}")
+        if index in (0, 1, 2, 6):
+            # Production Lumo retains all existing motion/contact state;
+            # skinned-GLB rivals get their separate animation update.
+            replacement = old.rstrip("\n") + "\n" + newer
+        elif index == 3:
+            # Returning early for production Lumo is essential: the standard
+            # fox must not get two separately rendered driver heads.
+            replacement = "\tif _build_production_driver():\n\t\treturn\n" + newer
+        elif index == 4:
+            # Neither the imported original nor the new imported rivals
+            # may be baked into the low-detail rigid proxy.
+            replacement = old.replace(
+                "child == production_driver or (child == driver",
+                "child == production_driver or child == rival_visual or (child == driver")
+        elif index == 5:
+            # Production vehicle already supplies the distant chassis;
+            # every other kart (fox fallback or rival) builds the proxy.
+            replacement = old.replace(
+                'if animal == "fox" and not is_instance_valid(production_vehicle):',
+                'if not is_instance_valid(production_vehicle):')
+        else:
+            # For the original imported vehicle, chassis/wheel joints remain
+            # owned by that imported GLB. This does not change driving.
+            replacement = old.replace(
+                "is_instance_valid(lumo_animation) or is_instance_valid(production_driver):",
+                "is_instance_valid(lumo_animation) or is_instance_valid(production_driver) or is_instance_valid(rival_visual):")
+        replacements.append(replacement)
+    cursor = 0
+    pieces: list[str] = []
+    for match, replacement in zip(matches, replacements):
+        pieces.extend((original[cursor:match.start()], replacement))
+        cursor = match.end()
+    pieces.append(original[cursor:])
+    result = "".join(pieces)
+    if re.search(r"^(<<<<<<<|=======|>>>>>>>)", result, flags=re.MULTILINE):
+        raise RuntimeError("Unresolved vehicle marker")
+    return result, {"file": "scripts/games/kart_vehicle.gd", "regions": 8,
+                    "production_driver_preserved": True, "rival_visual_preserved": True}
+
+
 def resolve_file(name: str) -> dict:
     path = ROOT / name
     # Git's ort strategy may produce 1 or many conflict blocks depending on
@@ -62,6 +122,11 @@ def resolve_file(name: str) -> dict:
         (proof / ("mergefile_" + Path(name).stem + ".txt")).write_text(
             original, encoding="utf8")
     print(f"[LumoNativeUnion] {name}: merge-file conflict regions={len(matches)}", flush=True)
+    if name.endswith("kart_vehicle.gd"):
+        out, report = resolve_vehicle(original, matches)
+        path.write_text(out, encoding="utf8")
+        git("add", "--", name)
+        return report
     if len(matches) != 1:
         raise RuntimeError(f"{name}: review {len(matches)} regions in mergefile evidence")
     old, newer = matches[0].group(1), matches[0].group(2)
