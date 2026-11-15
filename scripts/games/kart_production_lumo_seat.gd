@@ -1,9 +1,12 @@
 extends RefCounted
-## Fits Original Lumo's unchanged leg chains to the imported kart's real pedals.
-## Positions the existing adapter for this bucket seat and solves leg angles only.
+## Fits Original Lumo to the actual seat, pedals and clear space above the back.
+## Positions the existing adapter and solves only leg and tail joint angles.
 ## The authored actor, skeleton proportions, clips and chassis remain unchanged.
 
 const ADAPTER_OFFSET := Vector3(0.0, 0.14, -0.10)
+const TAIL_BONES := ["TailBase", "Tail1"]
+const TAIL_PITCHES := [-50.0, -70.0]
+const TAIL_YAWS := [0.0, 20.0]
 const TOE_LIFT := 0.25
 const SOLE_CLEARANCE := 0.003
 var kart: Node3D
@@ -18,6 +21,10 @@ var _lengths: Array[Vector2] = []
 var _foot_samples: Array = [[], []]
 var _sole_samples: Array = [[], []]
 var _skin_bone_poses: Array[Transform3D] = []
+var _tail_bones := PackedInt32Array()
+var _sampled_tail_rotations: Array[Quaternion] = []
+var _applied_tail_rotations: Array[Quaternion] = []
+var _tail_applied := false
 var _knee_poles: Array[Vector3] = [Vector3(-0.48, 0.99, -0.60), Vector3(0.48, 0.99, -0.60)]
 
 
@@ -28,6 +35,13 @@ func bind_visual(vehicle: Node3D, adapter) -> bool:
 	skeleton = adapter.actor.skeleton
 	if skeleton == null or skeleton.get_bone_count() != 65:
 		return false
+	for tail_name in TAIL_BONES:
+		var bone := skeleton.find_bone(tail_name)
+		if bone < 0:
+			return false
+		_tail_bones.append(bone)
+	_sampled_tail_rotations.resize(_tail_bones.size())
+	_applied_tail_rotations.resize(_tail_bones.size())
 	var coachwork: Node3D = vehicle.production_vehicle.asset_root.find_child("Coachwork", true, false)
 	if coachwork == null:
 		return false
@@ -222,6 +236,7 @@ func advance_tick() -> void:
 	if not is_usable():
 		return
 	_solve_pose()
+	_apply_tail_clearance()
 	if _sole_samples[0].is_empty() or _sole_samples[1].is_empty():
 		return
 	# The existing celebration animates the pelvis. A weighted heel therefore
@@ -237,6 +252,37 @@ func advance_tick() -> void:
 		if largest_error < 0.00005:
 			break
 		_solve_pose()
+
+
+func prepare_animation_frame() -> void:
+	if not _tail_applied or not is_instance_valid(skeleton):
+		return
+	# Remove only our previous correction before the source clip is sampled.
+	# An external clip change may already have replaced this bone; preserve it.
+	for index in range(_tail_bones.size()):
+		var current := skeleton.get_bone_pose_rotation(_tail_bones[index])
+		if current.is_equal_approx(_applied_tail_rotations[index]):
+			skeleton.set_bone_pose_rotation(_tail_bones[index], _sampled_tail_rotations[index])
+	skeleton.force_update_all_bone_transforms()
+	_tail_applied = false
+
+
+func _apply_tail_clearance() -> void:
+	if _tail_applied or _tail_bones.is_empty():
+		return
+	var skeleton_frame := skeleton.global_basis.get_rotation_quaternion()
+	var kart_frame := kart.global_basis.get_rotation_quaternion()
+	# Keep the first section behind the rump, then lift the next section over
+	# the seat. Original lengths, downstream joints and live clip motion stay.
+	for index in range(_tail_bones.size()):
+		var bone := _tail_bones[index]
+		_sampled_tail_rotations[index] = skeleton.get_bone_pose_rotation(bone)
+		var original := skeleton.get_bone_global_pose(bone).basis.get_rotation_quaternion()
+		var tilt := Quaternion(Vector3.UP, deg_to_rad(TAIL_YAWS[index])) * Quaternion(Vector3.RIGHT, deg_to_rad(TAIL_PITCHES[index]))
+		var delta := skeleton_frame.inverse() * kart_frame * tilt * kart_frame.inverse() * skeleton_frame
+		_set_global_rotation(bone, (delta * original).normalized())
+		_applied_tail_rotations[index] = skeleton.get_bone_pose_rotation(bone)
+	_tail_applied = true
 
 
 func _solve_pose() -> void:

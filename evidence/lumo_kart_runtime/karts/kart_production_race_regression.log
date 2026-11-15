@@ -11,5 +11,5 @@ Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
 [Perf] quality_profile:medium
 [Kart] race_world_ready: zauberwald mode=race
 [Kart] completed: mode=race track=zauberwald stars=3 place=1
-[ProductionRace] teardown tracked=3 scene_released=true audio_released=true elapsed_ms=177
+[ProductionRace] teardown tracked=3 scene_released=true audio_released=true elapsed_ms=114
 [ProductionRace] PASS: 25 checks, 0 failures

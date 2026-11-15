@@ -12,7 +12,7 @@ Diese Datei beschreibt den Runtime-Anschluss. Die ursprüngliche Asset-Übergabe
 | `scripts/games/kart_vehicle.gd` | Bestehende Fahrzeug-API, einziger Animationstakt, Effekte, Anbindung beider Fahrerpfade |
 | `scripts/games/kart_garage_menu.gd` | Auswahl zeigt das tatsächliche Modell; volle Fahrzeugdetails; sitzende Rivalen werden bei der Kamerabegrenzung berücksichtigt |
 | `scripts/games/kart_workshop.gd` | Tatsächliche Lackvorschau, volle Fahrzeugdetails und bestehender Original-Lumo-Adapter |
-| `scripts/games/kart_production_lumo_seat.gd` | Sitzrahmen, unveränderte Original-Lumo-Beinproportionen und tatsächlicher Sohlenkontakt |
+| `scripts/games/kart_production_lumo_seat.gd` | Sitzrahmen, unveränderte Original-Lumo-Proportionen, tatsächlicher Sohlenkontakt und freie Schwanzführung |
 | `scripts/games/kart_production_driver.gd` | Separater Fahrer-Helper für Rabbit, Lion, Squirrel, Owl und Turtle; vom Fahrer-Agent implementiert und geprüft |
 
 Die öffentlichen Aufrufe `configure`, `set_look`, `set_motion`, `set_braking`, `set_graphics_quality`, `set_driver_runtime_state` und `celebrate` bleiben nutzbar. `set_preview_detail(true)` hält ein Vorschaufahrzeug auf Kart-LOD0. Nur Comet, Glider und Turbo wählen den neuen Kart-Helper.
@@ -45,7 +45,7 @@ Die eingefrorenen PBR-Materialien bleiben im Werkszustand erhalten. Lack-, Akzen
 
 ## Fahrer und Spielzustände
 
-Original-Lumo bleibt an seinem vorhandenen `lumo_kart_animation_adapter.gd` und unveränderten Modell. Der zusätzliche Sitz-Helper positioniert ausschließlich diesen Adapter um 0,14 m höher und 0,10 m nach vorne für die importierte Sitzschale. Die bestehende einheitliche Skalierung von 1,15, alle 65 Knochen, die Quelldateien und die Originalclips bleiben erhalten. Die Beine behalten ihre ursprünglichen Segmentlängen; nur ihre Gelenkwinkel werden auf die realen Pedale ausgerichtet. Die fünf neuen Rivalen benutzen den separaten Produktionsfahrer-Helper. Beide werden ausschließlich vom Fahrzeug getaktet, nachdem die tatsächliche Lenkraddrehung gesetzt wurde.
+Original-Lumo bleibt an seinem vorhandenen `lumo_kart_animation_adapter.gd` und unveränderten Modell. Der zusätzliche Sitz-Helper positioniert diesen Adapter um 0,14 m höher und 0,10 m nach vorne für die importierte Sitzschale. Die bestehende einheitliche Skalierung von 1,15, alle 65 Knochen, die Quelldateien und die Originalclips bleiben erhalten. Die Beine behalten ihre ursprünglichen Segmentlängen; ihre Gelenkwinkel werden auf die realen Pedale ausgerichtet. Zwei Schwanzgelenke führen den unveränderten Schwanz oberhalb und seitlich des Sitzrückens entlang. Die fünf neuen Rivalen benutzen den separaten Produktionsfahrer-Helper. Beide werden ausschließlich vom Fahrzeug getaktet, nachdem die tatsächliche Lenkraddrehung gesetzt wurde.
 
 Pause friert den gemeinsamen Takt ein. Weniger Bewegung erhält die physikalische Radbewegung. Flug-, Treffer-, Boost-, Drift- und Zieleinlaufzustände werden an die jeweiligen bestehenden APIs weitergegeben. Die neuen Fahrer besitzen keinen erfundenen Treffer- oder Boost-Clip; ihre vorhandenen sechs Clips und die bisherigen Fahrzeugeffekte bestimmen das sichtbare Verhalten.
 
@@ -67,6 +67,26 @@ env XDG_DATA_HOME=/tmp/lumo-kart-tests/seat \
   --script scripts/tests/kart_production_lumo_seat_regression.gd
 blender -b -t 1 --python-exit-code 1 \
   --python tools/lumo_kart_art/review/verify_original_lumo_seat.py
+```
+
+## Original-Lumo: Schwanz und Sitzrücken
+
+Die ergänzende Seitenansicht und die anschließende Dreiecksprüfung zeigten, dass der originale Schwanz die importierten Sitzflächen durchdrang. Die Korrektur dreht ausschließlich `TailBase` und `Tail1`; Modell, Hautgewichte, Knochenlängen, Originalclips und Karosserie bleiben unverändert. Im Kartkoordinatensystem erhält `TailBase` −50° Pitch, `Tail1` −70° Pitch und +20° Yaw. Die Rotation wird als `UP-Yaw * RIGHT-Pitch` mit Quaternionen auf die jeweilige aktuelle Cliporientierung angewendet. Die seitliche Komponente hält den Schwanz auch im echten Sprungclip vom Oberkörper frei.
+
+Vor jeder neuen Clipauswertung entfernt der Fahrzeugtakt nur die zuletzt selbst aufgebrachte Korrektur. Hat eine externe Clipänderung den betreffenden Knochen bereits ersetzt, bleibt diese erhalten. Nach der Originalanimation wird die Korrektur genau einmal wieder aufgebracht. Damit akkumuliert sie nicht zwischen dem 60-Hz-Fahrzeugtakt und der 30-Hz-Auswertung der Originalanimation.
+
+Die versionierte Prüfung `kart_production_lumo_tail_regression.gd` erfasst 72 tatsächliche Posen aus allen drei Karts, sechs Fahrzuständen und den Frames 12, 13, 42 und 90 bei 60 Hz. Sie prüft außerdem, dass Entfernen und Wiederaufbringen der Korrektur dieselbe Gelenkorientierung herstellen. Alle 148 Prüfungen bestehen. Jeder Capture enthält die tatsächlich aktive Originalanimation und ihre Zeit sowie dieselbe Körperpose mit unverändertem Schwanz als Vergleich.
+
+`verify_original_lumo_tail.py` prüft unabhängig 2.402 Schwanzdreiecke gegen die vollständige Karosserie und 1.823 freie Schwanzdreiecke gegen 31.205 Körperdreiecke. Alle 290 Prüfungen über 72 Posen bestehen: keine Schwanz-/Karosseriedurchdringung, kein freier Schwanz-/Körperkontakt und kein Ansatzkontakt außerhalb der ursprünglichen anatomischen Hautregion. Die bereits im Original vorhandenen Überschneidungen am Schwanzansatz werden nach tatsächlichen Knochengewichten separat dokumentiert; der Bericht behauptet dort keine vollständige Kontaktfreiheit. Die Grenze der unveränderten Ansatzregion wird für jede Vergleichspose neu berechnet, mit lediglich 1 µm numerischer Toleranz.
+
+Die endgültige Korrektur besteht zusätzlich erneut die oben beschriebenen 225 Bein-/Sohlenprüfungen und alle 54 unabhängigen Sitz-BVH-Posen. Die Schwanzberichte stehen als `original_lumo_tail_contacts.json` und `original_lumo_tail_surfaces.json` unter `evidence/lumo_kart_runtime/karts/`.
+
+```sh
+env XDG_DATA_HOME=/tmp/lumo-kart-tests/tail \
+  godot --headless --path . \
+  --script scripts/tests/kart_production_lumo_tail_regression.gd
+blender -b -t 1 --python-exit-code 1 \
+  --python tools/lumo_kart_art/review/verify_original_lumo_tail.py
 ```
 
 ## Gezielte Prüfung

@@ -7,7 +7,7 @@
 	"samples": [
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_driving_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_driving_002.json",
 			"hand_error_m": 0.000281339685898274,
 			"phase": "driving",
 			"seconds": 0.2,
@@ -16,7 +16,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_driving_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_driving_007.json",
 			"hand_error_m": 0.000283640052657574,
 			"phase": "driving",
 			"seconds": 0.7,
@@ -25,7 +25,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_driving_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_driving_015.json",
 			"hand_error_m": 0.000288498791633174,
 			"phase": "driving",
 			"seconds": 1.5,
@@ -34,7 +34,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_left_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_left_002.json",
 			"hand_error_m": 0.000459496950497851,
 			"phase": "left",
 			"seconds": 0.2,
@@ -43,7 +43,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_left_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_left_007.json",
 			"hand_error_m": 0.000529745186213404,
 			"phase": "left",
 			"seconds": 0.7,
@@ -52,7 +52,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_left_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_left_015.json",
 			"hand_error_m": 0.000422481971327215,
 			"phase": "left",
 			"seconds": 1.5,
@@ -61,7 +61,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_right_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_right_002.json",
 			"hand_error_m": 0.000762200390454382,
 			"phase": "right",
 			"seconds": 0.2,
@@ -70,7 +70,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_right_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_right_007.json",
 			"hand_error_m": 0.000432942935731262,
 			"phase": "right",
 			"seconds": 0.7,
@@ -79,7 +79,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_right_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_right_015.json",
 			"hand_error_m": 0.00041415257146582,
 			"phase": "right",
 			"seconds": 1.5,
@@ -88,7 +88,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_jump_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_jump_002.json",
 			"hand_error_m": 0.000359762576408684,
 			"phase": "jump",
 			"seconds": 0.2,
@@ -97,7 +97,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_jump_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_jump_007.json",
 			"hand_error_m": 0.000390893634175882,
 			"phase": "jump",
 			"seconds": 0.7,
@@ -106,7 +106,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_jump_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_jump_015.json",
 			"hand_error_m": 0.000440051459008828,
 			"phase": "jump",
 			"seconds": 1.5,
@@ -115,7 +115,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_landing_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_landing_002.json",
 			"hand_error_m": 0.000609435373917222,
 			"phase": "landing",
 			"seconds": 0.2,
@@ -124,7 +124,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_landing_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_landing_007.json",
 			"hand_error_m": 0.000240195920923725,
 			"phase": "landing",
 			"seconds": 0.7,
@@ -133,7 +133,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_landing_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_landing_015.json",
 			"hand_error_m": 0.000410125416237861,
 			"phase": "landing",
 			"seconds": 1.5,
@@ -142,7 +142,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_finish_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_finish_002.json",
 			"hand_error_m": 0.00076474720844999,
 			"phase": "finish",
 			"seconds": 0.2,
@@ -151,7 +151,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_finish_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_finish_007.json",
 			"hand_error_m": 0.000511798949446529,
 			"phase": "finish",
 			"seconds": 0.7,
@@ -160,7 +160,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/comet_finish_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/comet_finish_015.json",
 			"hand_error_m": 0.00055300653912127,
 			"phase": "finish",
 			"seconds": 1.5,
@@ -169,7 +169,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_driving_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_driving_002.json",
 			"hand_error_m": 0.000281339685898274,
 			"phase": "driving",
 			"seconds": 0.2,
@@ -178,7 +178,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_driving_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_driving_007.json",
 			"hand_error_m": 0.000283640052657574,
 			"phase": "driving",
 			"seconds": 0.7,
@@ -187,7 +187,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_driving_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_driving_015.json",
 			"hand_error_m": 0.000288498791633174,
 			"phase": "driving",
 			"seconds": 1.5,
@@ -196,7 +196,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_left_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_left_002.json",
 			"hand_error_m": 0.000459496950497851,
 			"phase": "left",
 			"seconds": 0.2,
@@ -205,7 +205,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_left_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_left_007.json",
 			"hand_error_m": 0.000529745186213404,
 			"phase": "left",
 			"seconds": 0.7,
@@ -214,7 +214,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_left_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_left_015.json",
 			"hand_error_m": 0.000422481971327215,
 			"phase": "left",
 			"seconds": 1.5,
@@ -223,7 +223,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_right_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_right_002.json",
 			"hand_error_m": 0.000762200390454382,
 			"phase": "right",
 			"seconds": 0.2,
@@ -232,7 +232,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_right_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_right_007.json",
 			"hand_error_m": 0.000432942935731262,
 			"phase": "right",
 			"seconds": 0.7,
@@ -241,7 +241,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_right_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_right_015.json",
 			"hand_error_m": 0.00041415257146582,
 			"phase": "right",
 			"seconds": 1.5,
@@ -250,7 +250,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_jump_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_jump_002.json",
 			"hand_error_m": 0.000359762576408684,
 			"phase": "jump",
 			"seconds": 0.2,
@@ -259,7 +259,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_jump_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_jump_007.json",
 			"hand_error_m": 0.000390893634175882,
 			"phase": "jump",
 			"seconds": 0.7,
@@ -268,7 +268,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_jump_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_jump_015.json",
 			"hand_error_m": 0.000440051459008828,
 			"phase": "jump",
 			"seconds": 1.5,
@@ -277,7 +277,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_landing_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_landing_002.json",
 			"hand_error_m": 0.000609435373917222,
 			"phase": "landing",
 			"seconds": 0.2,
@@ -286,7 +286,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_landing_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_landing_007.json",
 			"hand_error_m": 0.000240195920923725,
 			"phase": "landing",
 			"seconds": 0.7,
@@ -295,7 +295,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_landing_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_landing_015.json",
 			"hand_error_m": 0.000410125416237861,
 			"phase": "landing",
 			"seconds": 1.5,
@@ -304,7 +304,7 @@
 		},
 		{
 			"foot_error_m": 0.000000476837158203125,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_finish_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_finish_002.json",
 			"hand_error_m": 0.00076474720844999,
 			"phase": "finish",
 			"seconds": 0.2,
@@ -313,7 +313,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_finish_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_finish_007.json",
 			"hand_error_m": 0.000511798949446529,
 			"phase": "finish",
 			"seconds": 0.7,
@@ -322,7 +322,7 @@
 		},
 		{
 			"foot_error_m": 0.000000546285605196317,
-			"geometry": "/tmp/lumo-original-seat-f131/glider_finish_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/glider_finish_015.json",
 			"hand_error_m": 0.00055300653912127,
 			"phase": "finish",
 			"seconds": 1.5,
@@ -331,7 +331,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_driving_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_driving_002.json",
 			"hand_error_m": 0.000281339685898274,
 			"phase": "driving",
 			"seconds": 0.2,
@@ -340,7 +340,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_driving_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_driving_007.json",
 			"hand_error_m": 0.000283640052657574,
 			"phase": "driving",
 			"seconds": 0.7,
@@ -349,7 +349,7 @@
 		},
 		{
 			"foot_error_m": 0.000000546285605196317,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_driving_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_driving_015.json",
 			"hand_error_m": 0.000288498791633174,
 			"phase": "driving",
 			"seconds": 1.5,
@@ -358,7 +358,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_left_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_left_002.json",
 			"hand_error_m": 0.000459496950497851,
 			"phase": "left",
 			"seconds": 0.2,
@@ -367,7 +367,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_left_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_left_007.json",
 			"hand_error_m": 0.000529745186213404,
 			"phase": "left",
 			"seconds": 0.7,
@@ -376,7 +376,7 @@
 		},
 		{
 			"foot_error_m": 0.000000546285605196317,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_left_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_left_015.json",
 			"hand_error_m": 0.000422481971327215,
 			"phase": "left",
 			"seconds": 1.5,
@@ -385,7 +385,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_right_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_right_002.json",
 			"hand_error_m": 0.000762200390454382,
 			"phase": "right",
 			"seconds": 0.2,
@@ -394,7 +394,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_right_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_right_007.json",
 			"hand_error_m": 0.000432942935731262,
 			"phase": "right",
 			"seconds": 0.7,
@@ -403,7 +403,7 @@
 		},
 		{
 			"foot_error_m": 0.000000546285605196317,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_right_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_right_015.json",
 			"hand_error_m": 0.00041415257146582,
 			"phase": "right",
 			"seconds": 1.5,
@@ -412,7 +412,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_jump_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_jump_002.json",
 			"hand_error_m": 0.000359762576408684,
 			"phase": "jump",
 			"seconds": 0.2,
@@ -421,7 +421,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_jump_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_jump_007.json",
 			"hand_error_m": 0.000390893634175882,
 			"phase": "jump",
 			"seconds": 0.7,
@@ -430,7 +430,7 @@
 		},
 		{
 			"foot_error_m": 0.000000546285605196317,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_jump_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_jump_015.json",
 			"hand_error_m": 0.000440051459008828,
 			"phase": "jump",
 			"seconds": 1.5,
@@ -439,7 +439,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_landing_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_landing_002.json",
 			"hand_error_m": 0.000609435373917222,
 			"phase": "landing",
 			"seconds": 0.2,
@@ -448,7 +448,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_landing_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_landing_007.json",
 			"hand_error_m": 0.000240195920923725,
 			"phase": "landing",
 			"seconds": 0.7,
@@ -457,7 +457,7 @@
 		},
 		{
 			"foot_error_m": 0.000000546285605196317,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_landing_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_landing_015.json",
 			"hand_error_m": 0.000410125416237861,
 			"phase": "landing",
 			"seconds": 1.5,
@@ -466,7 +466,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_finish_002.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_finish_002.json",
 			"hand_error_m": 0.00076474720844999,
 			"phase": "finish",
 			"seconds": 0.2,
@@ -475,7 +475,7 @@
 		},
 		{
 			"foot_error_m": 0.000000491512480493839,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_finish_007.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_finish_007.json",
 			"hand_error_m": 0.000511798949446529,
 			"phase": "finish",
 			"seconds": 0.7,
@@ -484,7 +484,7 @@
 		},
 		{
 			"foot_error_m": 0.000000533120157797384,
-			"geometry": "/tmp/lumo-original-seat-f131/turbo_finish_015.json",
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_finish_015.json",
 			"hand_error_m": 0.00055300653912127,
 			"phase": "finish",
 			"seconds": 1.5,

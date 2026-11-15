@@ -2401,6 +2401,8 @@ func update_motion(speed: float, steer: float, drift: bool, boost: bool) -> void
 
 
 func _update_lumo_visual(delta: float) -> void:
+	if is_instance_valid(production_lumo_seat):
+		production_lumo_seat.prepare_animation_frame()
 	if steering_wheel and not is_instance_valid(production_vehicle):
 		steering_wheel.rotation.z = -motion_steer * 0.40
 	lumo_animation.set_reduced_motion(reduced_motion)

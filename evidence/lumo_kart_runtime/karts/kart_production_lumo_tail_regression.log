@@ -1,0 +1,83 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 0 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[OriginalTailDynamic] sampled comet_driving_012
+[OriginalTailDynamic] sampled comet_driving_013
+[OriginalTailDynamic] sampled comet_driving_042
+[OriginalTailDynamic] sampled comet_driving_090
+[OriginalTailDynamic] sampled comet_left_012
+[OriginalTailDynamic] sampled comet_left_013
+[OriginalTailDynamic] sampled comet_left_042
+[OriginalTailDynamic] sampled comet_left_090
+[OriginalTailDynamic] sampled comet_right_012
+[OriginalTailDynamic] sampled comet_right_013
+[OriginalTailDynamic] sampled comet_right_042
+[OriginalTailDynamic] sampled comet_right_090
+[OriginalTailDynamic] sampled comet_jump_012
+[OriginalTailDynamic] sampled comet_jump_013
+[OriginalTailDynamic] sampled comet_jump_042
+[OriginalTailDynamic] sampled comet_jump_090
+[OriginalTailDynamic] sampled comet_landing_012
+[OriginalTailDynamic] sampled comet_landing_013
+[OriginalTailDynamic] sampled comet_landing_042
+[OriginalTailDynamic] sampled comet_landing_090
+[OriginalTailDynamic] sampled comet_finish_012
+[OriginalTailDynamic] sampled comet_finish_013
+[OriginalTailDynamic] sampled comet_finish_042
+[OriginalTailDynamic] sampled comet_finish_090
+[OriginalTailDynamic] sampled glider_driving_012
+[OriginalTailDynamic] sampled glider_driving_013
+[OriginalTailDynamic] sampled glider_driving_042
+[OriginalTailDynamic] sampled glider_driving_090
+[OriginalTailDynamic] sampled glider_left_012
+[OriginalTailDynamic] sampled glider_left_013
+[OriginalTailDynamic] sampled glider_left_042
+[OriginalTailDynamic] sampled glider_left_090
+[OriginalTailDynamic] sampled glider_right_012
+[OriginalTailDynamic] sampled glider_right_013
+[OriginalTailDynamic] sampled glider_right_042
+[OriginalTailDynamic] sampled glider_right_090
+[OriginalTailDynamic] sampled glider_jump_012
+[OriginalTailDynamic] sampled glider_jump_013
+[OriginalTailDynamic] sampled glider_jump_042
+[OriginalTailDynamic] sampled glider_jump_090
+[OriginalTailDynamic] sampled glider_landing_012
+[OriginalTailDynamic] sampled glider_landing_013
+[OriginalTailDynamic] sampled glider_landing_042
+[OriginalTailDynamic] sampled glider_landing_090
+[OriginalTailDynamic] sampled glider_finish_012
+[OriginalTailDynamic] sampled glider_finish_013
+[OriginalTailDynamic] sampled glider_finish_042
+[OriginalTailDynamic] sampled glider_finish_090
+[OriginalTailDynamic] sampled turbo_driving_012
+[OriginalTailDynamic] sampled turbo_driving_013
+[OriginalTailDynamic] sampled turbo_driving_042
+[OriginalTailDynamic] sampled turbo_driving_090
+[OriginalTailDynamic] sampled turbo_left_012
+[OriginalTailDynamic] sampled turbo_left_013
+[OriginalTailDynamic] sampled turbo_left_042
+[OriginalTailDynamic] sampled turbo_left_090
+[OriginalTailDynamic] sampled turbo_right_012
+[OriginalTailDynamic] sampled turbo_right_013
+[OriginalTailDynamic] sampled turbo_right_042
+[OriginalTailDynamic] sampled turbo_right_090
+[OriginalTailDynamic] sampled turbo_jump_012
+[OriginalTailDynamic] sampled turbo_jump_013
+[OriginalTailDynamic] sampled turbo_jump_042
+[OriginalTailDynamic] sampled turbo_jump_090
+[OriginalTailDynamic] sampled turbo_landing_012
+[OriginalTailDynamic] sampled turbo_landing_013
+[OriginalTailDynamic] sampled turbo_landing_042
+[OriginalTailDynamic] sampled turbo_landing_090
+[OriginalTailDynamic] sampled turbo_finish_012
+[OriginalTailDynamic] sampled turbo_finish_013
+[OriginalTailDynamic] sampled turbo_finish_042
+[OriginalTailDynamic] sampled turbo_finish_090
+[OriginalTailDynamic] PASS 72 paired poses; 148 checks
+[Perf] quality_profile:medium
