@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 EXPECTED = {
@@ -39,7 +40,21 @@ def unique(fragment: str, text: str, name: str) -> None:
 
 def resolve_file(name: str) -> dict:
     path = ROOT / name
-    original = path.read_text(encoding="utf8")
+    # Git's ort strategy may produce 1 or many conflict blocks depending on
+    # neighbouring edits; resolve the immutable index stages, not those hunks.
+    with tempfile.TemporaryDirectory(prefix="lumo-three-way-") as directory:
+        inputs = []
+        for stage in (2, 1, 3):
+            stage_file = Path(directory) / f"stage-{stage}.gd"
+            record = git("show", f":{stage}:{name}")
+            stage_file.write_text(record.stdout, encoding="utf8")
+            inputs.append(str(stage_file))
+        merged = subprocess.run(
+            ["git", "merge-file", "-p", *inputs],
+            cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if merged.returncode not in (0, 1):
+            raise RuntimeError(f"merge-file could not reconcile {name}: {merged.stderr}")
+        original = merged.stdout
     matches = list(PATTERN.finditer(original))
     if len(matches) != 1:
         raise RuntimeError(f"{name}: expected one conflict, found {len(matches)}")
