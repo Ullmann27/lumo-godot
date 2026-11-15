@@ -46,6 +46,7 @@ var _light: DirectionalLight3D
 var _reduced_motion := false
 var _point_target: Node3D
 var _point_line: MeshInstance3D
+var pointer_uses_real_hand_bone := false
 var _portrait_podium: MeshInstance3D
 
 
@@ -125,6 +126,14 @@ func _make_world() -> void:
 	_portrait_podium.visible = false
 	_point_line = MeshInstance3D.new()
 	_point_line.name = "TargetRayFeedback"
+	var beam := CylinderMesh.new()
+	beam.top_radius = 0.008
+	beam.bottom_radius = 0.008
+	beam.height = 0.10
+	_point_line.mesh = beam
+	var light_ray := _material(Color(1.0, 0.85, 0.31), 0.45)
+	light_ray.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_point_line.material_override = light_ray
 	_point_line.visible = false
 	add_child(_point_line)
 	get_viewport().size_changed.connect(_layout)
@@ -174,6 +183,8 @@ func _process(delta: float) -> void:
 	if _blink_timer <= 0.0:
 		blink()
 		_blink_timer = randf_range(2.9, 5.1)
+	if _point_line.visible and is_instance_valid(_point_target):
+		_show_target_line()
 
 
 func _layout() -> void:
@@ -278,6 +289,8 @@ func _erase_board() -> void:
 	_targets.clear()
 	_counter_objects.clear()
 	current_focus_id = ""
+	_point_target = null
+	pointer_uses_real_hand_bone = false
 	_point_line.visible = false
 
 
@@ -459,22 +472,38 @@ func point_at_object(id: String) -> bool:
 	return true
 
 
+func _hand_anchor_world() -> Vector3:
+	# Real imported Hand.L bone, evaluated after the current Blender
+	# learn_point animation. No invented screen coordinates or fixed ray.
+	if is_instance_valid(_skeleton):
+		var index := _skeleton.find_bone("Hand.L")
+		if index >= 0:
+			pointer_uses_real_hand_bone = true
+			_skeleton.force_update_all_bone_transforms()
+			return _skeleton.to_global(
+				_skeleton.get_bone_global_pose(index).origin)
+	pointer_uses_real_hand_bone = false
+	return _actor_mount.global_position + Vector3(0.48, 1.07, 0.18)
+
+
 func _show_target_line() -> void:
-	if not is_instance_valid(_point_target):
+	if not is_instance_valid(_point_target) or _point_line.mesh == null:
 		return
-	var beginning := _actor_mount.global_position + Vector3(0.48, 1.07, 0.18)
-	var end := _point_target.global_position
-	var segment := end - beginning
+	var beginning: Vector3 = _hand_anchor_world()
+	var end: Vector3 = _point_target.global_position
+	var segment: Vector3 = end - beginning
 	if segment.length() < 0.0001:
+		_point_line.visible = false
 		return
-	var beam := CylinderMesh.new()
-	beam.top_radius = 0.008
-	beam.bottom_radius = 0.008
+	var beam := _point_line.mesh as CylinderMesh
+	if beam == null:
+		return
+	# Reuse the SAME imported runtime mesh. A new GPU resource per frame
+	# used to allocate continuously when the pointing target moved.
 	beam.height = segment.length()
-	_point_line.mesh = beam
-	_point_line.material_override = _material(Color(1.0, 0.85, 0.31))
-	_point_line.position = (beginning + end) / 2.0
-	_point_line.quaternion = Quaternion(Vector3.UP, segment.normalized())
+	_point_line.global_transform = Transform3D(
+		Basis(Quaternion(Vector3.UP, segment.normalized())),
+		(beginning + end) * 0.5)
 	_point_line.visible = true
 
 
@@ -488,6 +517,7 @@ func set_character_state(state: String) -> bool:
 	character_state = state
 	if state != "speak":
 		_set_mouth("")
+		_point_line.visible = false
 	if state == "interrupt":
 		speech_active = false
 		_point_line.visible = false
