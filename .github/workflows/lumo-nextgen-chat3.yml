@@ -35,6 +35,7 @@ jobs:
               tail -120 exports/lumo-nextgen-chat3/blender-build.log
               exit 1
             }
+          tail -100 exports/lumo-nextgen-chat3/blender-build.log
           grep -F 'LUMO_CHAT3_BUILD_PASS' exports/lumo-nextgen-chat3/blender-build.log
           for file in Lumo-Learning-Animated.blend Lumo-Learning-Animated.glb Lumo-Learning-Objects.blend Lumo-Learning-Objects.glb; do
             test -s "exports/lumo-nextgen-chat3/$file"
