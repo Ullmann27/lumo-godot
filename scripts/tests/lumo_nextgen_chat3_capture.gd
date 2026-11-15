@@ -1,0 +1,81 @@
+extends SceneTree
+## Real Godot viewport evidence; NOT an Android device proof.
+const STAGE := "res://scenes/learning/nextgen/lumo_learning_stage.tscn"
+const OUTPUT := "res://exports/lumo-nextgen-chat3/runtime"
+
+
+func _initialize() -> void:
+	call_deferred("_run")
+
+
+func _require(value: bool, what: String) -> bool:
+	if value:
+		return true
+	push_error("[LumoChat3Runtime] FAILED: " + what)
+	quit(1)
+	return false
+
+
+func _capture(name: String) -> void:
+	for i in range(6):
+		await process_frame
+	var image := root.get_texture().get_image()
+	var path := OUTPUT + "/" + name + ".png"
+	var err := image.save_png(path)
+	assert(err == OK, "Unable to write native screenshot " + path)
+
+
+func _run() -> void:
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUTPUT))
+	var source := ResourceLoader.load(STAGE, "PackedScene") as PackedScene
+	if not _require(source != null, "learning scene must load"):
+		return
+	var stage := source.instantiate()
+	root.add_child(stage)
+	for i in range(12):
+		await process_frame
+	if not _require(stage._actor != null and stage._player != null,
+			"original model, new actions and animation player must import"):
+		return
+	if not _require(stage._face != null,
+			"MouthVisemes morph mesh must import"):
+		return
+	if not _require(stage.get_counted_amount() == 13,
+			"8+5 must contain exactly 13 countable objects"):
+		return
+	var original_ids: Array[String] = stage.get_target_ids()
+	stage.bridge_to_ten()
+	for i in range(30):
+		await process_frame
+	if not _require(stage.get_counted_amount() == 13
+			and stage.get_target_ids() == original_ids,
+			"ten bridge must move existing objects without changing identities"):
+		return
+	if not _require(stage.point_at_object("math:8plus5:right:03"),
+			"pointing uses a valid stable 3D target"):
+		return
+	if not _require(not stage.point_at_object("not_a_real_object"),
+			"unresolved IDs must never produce a fake point"):
+		return
+	stage.apply_speech_frame(0.22, "viseme_A", true)
+	if not _require(stage.character_state == "speak" and stage.speech_active,
+			"speaking requires real time event input"):
+		return
+	stage.interrupt()
+	if not _require(not stage.speech_active and stage._current_mouth == "",
+			"interruption must immediately stop speech and clear mouth"):
+		return
+	stage.configure_lesson("math_8_plus_5")
+	await _capture("01_math_8_plus_5")
+	stage.configure_lesson("reading_ba_na_ne")
+	if not _require(stage.get_target_ids().size() == 3,
+			"Ba-na-ne must have three syllable targets"):
+		return
+	await _capture("02_reading_ba_na_ne")
+	stage.configure_lesson("patterns_circle_square_triangle")
+	if not _require(stage.get_target_ids().size() == 8,
+			"pattern has eight existing shapes and one non-counting question"):
+		return
+	await _capture("03_shapes_pattern")
+	print("[LumoChat3Runtime] PASS: avatar imported; 13 math objects; ten bridge; three syllables; eight shapes; ID targeting; speech cancellation; 3 native screenshots")
+	quit(0)
