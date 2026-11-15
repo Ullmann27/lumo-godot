@@ -30,6 +30,8 @@ var _skeleton: Skeleton3D
 var _face: MeshInstance3D
 var _eyelids: Array[MeshInstance3D] = []
 var _board := Node3D.new()
+var _board_background := Node3D.new()
+var _blink_timer := 3.25
 var _actor_mount := Node3D.new()
 var _targets: Dictionary = {}
 var _counter_objects: Array[Node3D] = []
@@ -47,6 +49,8 @@ func _ready() -> void:
 	add_child(_actor_mount)
 	_board.name = "LessonBoard"
 	add_child(_board)
+	_board_background.name = "NonCountingLearningBackdrop"
+	add_child(_board_background)
 	_make_world()
 	_load_assets()
 	configure_lesson(lesson_id)
@@ -78,6 +82,7 @@ func _make_world() -> void:
 	setting.ambient_light_energy = 0.65
 	env.environment = setting
 	add_child(env)
+	_make_backdrop()
 	var floor_tile := MeshInstance3D.new()
 	floor_tile.name = "NonCountingStageFloor"
 	var cylinder := CylinderMesh.new()
@@ -88,12 +93,71 @@ func _make_world() -> void:
 	floor_tile.position = Vector3(0.0, -0.08, 0.0)
 	floor_tile.material_override = _material(Color(0.17, 0.22, 0.35), 0.8)
 	add_child(floor_tile)
+	var rim := MeshInstance3D.new()
+	rim.name = "NonCountingPodiumRim"
+	var ring := TorusMesh.new()
+	ring.inner_radius = 2.66
+	ring.outer_radius = 2.73
+	ring.rings = 48
+	rim.mesh = ring
+	rim.position = Vector3(0, -0.011, 0)
+	var edge_material := _material(Color(0.30, 0.72, 0.84), 0.32)
+	edge_material.emission_enabled = true
+	edge_material.emission = Color(0.13, 0.48, 0.78)
+	edge_material.emission_energy_multiplier = 0.65
+	rim.material_override = edge_material
+	add_child(rim)
 	_point_line = MeshInstance3D.new()
 	_point_line.name = "TargetRayFeedback"
 	_point_line.visible = false
 	add_child(_point_line)
 	get_viewport().size_changed.connect(_layout)
 	_layout()
+
+
+func _make_backdrop() -> void:
+	# Fixed, non-counting visual layers, never placed in the interactive board.
+	var sky := MeshInstance3D.new()
+	sky.name = "NonCountingAuroraGradient"
+	var plane := QuadMesh.new()
+	plane.size = Vector2(18.0, 12.0)
+	sky.mesh = plane
+	sky.position = Vector3(0, 1.8, -6.0)
+	var shader := Shader.new()
+	shader.code = "shader_type spatial;\nrender_mode unshaded, cull_disabled;\nvoid fragment() {\n  vec3 bottom = vec3(0.046, 0.067, 0.157);\n  vec3 top = vec3(0.185, 0.114, 0.296);\n  float t = smoothstep(0.03, 0.98, UV.y);\n  ALBEDO = mix(bottom, top, t);\n}\n"
+	var backdrop_material := ShaderMaterial.new()
+	backdrop_material.shader = shader
+	sky.material_override = backdrop_material
+	add_child(sky)
+	var frame := MeshInstance3D.new()
+	frame.name = "NonCountingLessonFrame"
+	var frame_mesh := BoxMesh.new()
+	frame_mesh.size = Vector3(2.97, 2.78, 0.10)
+	frame.mesh = frame_mesh
+	frame.position = Vector3(1.0, 1.25, -0.21)
+	var frame_mat := _material(Color(0.24, 0.63, 0.82), 0.43)
+	frame_mat.emission_enabled = true
+	frame_mat.emission = Color(0.10, 0.38, 0.54)
+	frame_mat.emission_energy_multiplier = 0.42
+	frame.material_override = frame_mat
+	_board_background.add_child(frame)
+	var desk := MeshInstance3D.new()
+	desk.name = "NonCountingVelvetLessonPanel"
+	var desk_mesh := BoxMesh.new()
+	desk_mesh.size = Vector3(2.88, 2.69, 0.11)
+	desk.mesh = desk_mesh
+	desk.position = Vector3(1.0, 1.25, -0.13)
+	desk.material_override = _material(Color(0.13, 0.20, 0.33), 0.82)
+	_board_background.add_child(desk)
+
+
+func _process(delta: float) -> void:
+	if _actor == null or _reduced_motion or character_state == "interrupt":
+		return
+	_blink_timer -= delta
+	if _blink_timer <= 0.0:
+		blink()
+		_blink_timer = randf_range(2.9, 5.1)
 
 
 func _layout() -> void:
@@ -105,11 +169,14 @@ func _layout() -> void:
 		# Portrait: keep counters and text at the center, without occlusion.
 		_camera.size = 8.0
 		_actor_mount.position = Vector3(-1.25, 0.70, -0.55)
+		_actor_mount.scale = Vector3.ONE * 1.15
 		_board.position = Vector3(-0.12, -0.70, 0.62)
 	else:
 		_camera.size = 5.9
-		_actor_mount.position = Vector3(-1.85, 0.0, 0.0)
+		_actor_mount.position = Vector3(-1.80, 0.0, 0.0)
+		_actor_mount.scale = Vector3.ONE * 1.20
 		_board.position = Vector3(0.12, 0.0, 0.25)
+	_board_background.position = _board.position
 
 
 func _load_assets() -> void:
@@ -135,6 +202,9 @@ func _load_assets() -> void:
 		elif part.name.begins_with("Eyelid"):
 			_eyelids.append(part)
 	if _player:
+		for clip in ["learn_idle_breathe", "learn_listen", "learn_think", "learn_explain"]:
+			if _player.has_animation(clip):
+				_player.get_animation(clip).loop_mode = Animation.LOOP_LINEAR
 		_player.animation_finished.connect(_on_animation_finished)
 	var props_scene := ResourceLoader.load(PROPS_RESOURCE, "PackedScene") as PackedScene
 	if props_scene == null:
@@ -185,20 +255,28 @@ func _add_prop(id: String, asset: String, position: Vector3, color: Color = Colo
 	target.position = position
 	var visual := _mesh_object(asset, fallback, color)
 	visual.position = Vector3.ZERO
+	if asset == "ShapeCircle" or asset == "ShapeTriangle":
+		visual.rotation_degrees.x = 90.0
 	target.add_child(visual)
 	_targets[id] = target
 	return target
 
 
-func _text(text: String, parent: Node3D, height: float = 0.22) -> void:
+func _text(text: String, parent: Node3D, height: float = 0.22,
+		on_cream_tile: bool = false) -> void:
 	var label := Label3D.new()
 	label.name = "LearningText"
 	label.text = text
 	label.font_size = 80
 	label.pixel_size = height / 80.0
-	label.outline_size = 6
-	label.modulate = Color(0.12, 0.13, 0.22)
-	label.position = Vector3(0, 0, 0.16)
+	label.outline_size = 10
+	label.outline_modulate = Color(0.08, 0.10, 0.17)
+	label.modulate = Color(0.96, 0.96, 1.0)
+	if on_cream_tile:
+		label.modulate = Color(0.08, 0.13, 0.29)
+		label.outline_modulate = Color(0.94, 0.90, 0.74)
+	label.no_depth_test = true
+	label.position = Vector3(0, 0, 0.38 if on_cream_tile else 0.25)
 	parent.add_child(label)
 
 
@@ -256,7 +334,7 @@ func _lesson_syllables() -> void:
 		var syllable: String = ["Ba", "na", "ne"][i]
 		var id := "reading:banane:syllable:%d" % (i + 1)
 		var prop := _add_prop(id, "LetterTile", Vector3(-0.02 + i * 0.73, 1.07, 0.02))
-		_text(syllable, prop, 0.32)
+		_text(syllable, prop, 0.32, true)
 
 
 func _lesson_pattern() -> void:
