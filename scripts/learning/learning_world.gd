@@ -415,7 +415,7 @@ func _build_ui() -> void:
 		(
 			_microphone_enabled
 			and is_instance_valid(_speech_host)
-			and _speech_host.has_method("startLearningListening")
+			and HostBridge.supports_method(_speech_host, "startLearningListening")
 		)
 	)
 
@@ -557,7 +557,7 @@ func _rebuild_activity() -> void:
 	if (
 		_speech_enabled
 		and is_instance_valid(_speech_host)
-		and _speech_host.has_method("speakLearning")
+		and HostBridge.supports_method(_speech_host, "speakLearning")
 	):
 		voice_button = _button("Schritt anhören", _voice_action)
 	question_button = _button("Lumo fragen", _open_question)
@@ -1537,7 +1537,11 @@ func _speak_syllables() -> void:
 
 
 func _start_audio_segment() -> void:
-	if _speech_segment >= _speech_segments.size() or suspended:
+	if (
+		_speech_segment >= _speech_segments.size()
+		or suspended
+		or not HostBridge.supports_method(_speech_host, "speakLearning")
+	):
 		return
 	_speech_id += 1
 	_speech_audible = false
@@ -1566,7 +1570,10 @@ func _stop_speech() -> void:
 	_speech_cues.clear()
 	_speech_segment = 0
 	_audio_scope.clear()
-	if is_instance_valid(_speech_host) and _speech_host.has_method("stopLearningSpeech"):
+	if (
+		is_instance_valid(_speech_host)
+		and HostBridge.supports_method(_speech_host, "stopLearningSpeech")
+	):
 		_speech_host.call("stopLearningSpeech")
 	if is_instance_valid(fox) and fox.is_usable():
 		fox.set_teacher_speaking(false)
@@ -1588,7 +1595,7 @@ func _tick_speech(delta: float) -> void:
 	if _speech_poll < 0.05:
 		return
 	_speech_poll = 0.0
-	if not _speech_host.has_method("getLearningSpeechStatus"):
+	if not HostBridge.supports_method(_speech_host, "getLearningSpeechStatus"):
 		return
 	var received: Variant = JSON.parse_string(str(_speech_host.call("getLearningSpeechStatus")))
 	if (
@@ -2216,7 +2223,10 @@ func _sync_companion_context() -> void:
 	if not _context_signature.is_empty() and signature != _context_signature:
 		companion_scope.advance("step-%d" % (companion_scope.revision + 1))
 	_context_signature = signature
-	if is_instance_valid(_speech_host) and _speech_host.has_method("updateLearningContext"):
+	if (
+		is_instance_valid(_speech_host)
+		and HostBridge.supports_method(_speech_host, "updateLearningContext")
+	):
 		var context: Dictionary = companion_scope.envelope()
 		context.merge(
 			{
@@ -2236,7 +2246,10 @@ func _cancel_performance() -> void:
 	_turn_id = 0
 	_handled_turn = 0
 	_stop_speech()
-	if is_instance_valid(_speech_host) and _speech_host.has_method("stopLearningConversation"):
+	if (
+		is_instance_valid(_speech_host)
+		and HostBridge.supports_method(_speech_host, "stopLearningConversation")
+	):
 		_speech_host.call("stopLearningConversation")
 	_focus_id = ""
 	if is_instance_valid(_focus_ring):
@@ -2304,7 +2317,10 @@ func _request_conversation(words: String, action: String) -> void:
 	var request: Dictionary = companion_scope.envelope(_turn_id)
 	request["text"] = words.strip_edges().left(500)
 	request["action"] = action
-	if is_instance_valid(_speech_host) and _speech_host.has_method("requestLearningConversation"):
+	if (
+		is_instance_valid(_speech_host)
+		and HostBridge.supports_method(_speech_host, "requestLearningConversation")
+	):
 		var accepted: Variant = _speech_host.call(
 			"requestLearningConversation", JSON.stringify(request)
 		)
@@ -2325,7 +2341,10 @@ func _start_listening() -> void:
 	_cancel_performance()
 	_turn_serial += 1
 	_turn_id = _turn_serial
-	if not is_instance_valid(_speech_host) or not _speech_host.has_method("startLearningListening"):
+	if (
+		not is_instance_valid(_speech_host)
+		or not HostBridge.supports_method(_speech_host, "startLearningListening")
+	):
 		question_panel.set_state("error", "Du kannst deine Frage in das Feld schreiben.")
 		return
 	var accepted: Variant = _speech_host.call(
@@ -2345,7 +2364,7 @@ func _tick_conversation(delta: float) -> void:
 	if (
 		_turn_id <= 0
 		or not is_instance_valid(_speech_host)
-		or not _speech_host.has_method("getLearningConversationStatus")
+		or not HostBridge.supports_method(_speech_host, "getLearningConversationStatus")
 	):
 		return
 	_conversation_poll += delta
