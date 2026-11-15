@@ -200,6 +200,46 @@ def resolve_file(name: str) -> dict:
             "newer_lines": len(newer.splitlines()), "merged_lines": len(merged.splitlines())}
 
 
+def assert_production_models_in_shared_regression() -> None:
+    """Preserve genuine 2022 Blender LOD karts instead of testing fake coachwork."""
+    name = "scripts/tests/kart_modular_parts_regression.gd"
+    path = ROOT / name
+    source = path.read_text(encoding="utf8")
+    expected = """\t\tvar body: Node3D = kart.get_node_or_null("AuroraCoachwork")
+\t\tassert(body != null, "Original chassis root missing")
+\t\tassert(int(body.get_meta("modular_aero_revision", 0)) == 1)
+\t\tvar parts: int = int(body.get_meta("modular_aero_count", 0))
+\t\tassert(parts >= 20 and parts <= 28, "New chassis details absent or unbounded")
+\t\tassert(kart.wheel_pivots.size() == 4, "Wheel anchors changed")
+\t\tfor anchor: Vector3 in AERO.envelope_anchors():
+\t\t\tassert(absf(anchor.x) <= 0.7 and anchor.y < 0.9 and absf(anchor.z) <= 1.19,
+\t\t\t\t"Additional aero hardware exceeds the original chassis envelope")"""
+    upgraded = """\t\tvar body: Node3D = kart.get_node_or_null("AuroraCoachwork")
+\t\tif style in ["comet", "glider"]:
+\t\t\t# The installed 2022 family app uses real Blender chassis with
+\t\t\t# all three original LOD GLBs. Preserve these instead of replacing
+\t\t\t# them with lower-detail procedural coachwork.
+\t\t\tassert(body == null, "Original production GLB unexpectedly replaced")
+\t\t\tassert(is_instance_valid(kart.production_vehicle),
+\t\t\t\t"Original 2022 Blender vehicle disappeared")
+\t\t\tassert(kart.production_vehicle.source_paths.size() == 3,
+\t\t\t\t"Original 2022 LOD0/LOD1/LOD2 source assets missing")
+\t\telse:
+\t\t\tassert(body != null, "Procedural chassis root missing")
+\t\t\tassert(int(body.get_meta("modular_aero_revision", 0)) == 1)
+\t\t\tvar parts: int = int(body.get_meta("modular_aero_count", 0))
+\t\t\tassert(parts >= 20 and parts <= 28, "New chassis details absent")
+\t\t\tfor anchor: Vector3 in AERO.envelope_anchors():
+\t\t\t\tassert(absf(anchor.x) <= 0.7 and anchor.y < 0.9 and absf(anchor.z) <= 1.19,
+\t\t\t\t\t"Additional aero hardware exceeds the original chassis envelope")
+\t\tassert(kart.wheel_pivots.size() == 4, "Wheel anchors changed")"""
+    unique(expected, source, name)
+    path.write_text(source.replace(expected, upgraded), encoding="utf8")
+    git("add", "--", name)
+    print("[LumoNativeUnion] production GLB LOD contract and procedural Aero"
+          " explicitly tested separately", flush=True)
+
+
 def main() -> None:
     conflicts = set(git("diff", "--name-only", "--diff-filter=U").stdout.splitlines())
     if conflicts != EXPECTED:
@@ -211,6 +251,7 @@ def main() -> None:
     combined = (ROOT / "scripts/games/kart_tracks.gd").read_text(encoding="utf8")
     if 'kart_adventure_routes.gd' not in combined:
         raise RuntimeError("Missing authored Adventure routes in merged source")
+    assert_production_models_in_shared_regression()
     for item in reports:
         print("[LumoNativeUnion]", item, flush=True)
     print("[LumoNativeUnion] PASS explicit 2022 and Adventure+Art reconciliation",
