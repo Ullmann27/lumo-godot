@@ -69,6 +69,8 @@ var _hundred_summary: MeshInstance3D
 var _frame_label: MeshInstance3D
 var _group_labels: Array[MeshInstance3D] = []
 var _group_plates: Array[MeshInstance3D] = []
+var _pattern_highlights: Array[MeshInstance3D] = []
+var _task_prompt_dialog: AcceptDialog
 var _layout_queued := false
 var _speech_host: Object
 var _speech_enabled := false
@@ -426,6 +428,7 @@ func _rebuild_activity() -> void:
 	_frame_label = null
 	_group_labels.clear()
 	_group_plates.clear()
+	_pattern_highlights.clear()
 	plant = null
 	for button in actions.get_children():
 		button.free()
@@ -453,6 +456,12 @@ func _rebuild_activity() -> void:
 		"syllables":
 			_build_syllables()
 			main_button = _button("Nächste Silbe zeigen", _show_one)
+		"pattern":
+			_build_pattern()
+			main_button = _button("Wiederholungsgruppe zeigen", _pattern_hint)
+		"task_card":
+			_build_task_card()
+			main_button = _button("Ganze Frage lesen", _show_full_task)
 		"plant_parts":
 			_build_plant()
 			water_button = _button("Wasser geben", _give_water)
@@ -720,6 +729,114 @@ func _build_syllables() -> void:
 		token_sources.append(at)
 
 
+# Render the exact existing checked pattern; the generated objects have no
+# buttons that submit answers or award rewards to the child.
+func _build_pattern() -> void:
+	title.text = "Muster entdecken · Was kommt danach?"
+	var ink := _material("nextgen_pattern_ink", Color("f4e8c6"))
+	var rim := _material("nextgen_pattern_group", Color("e2bb71"), 0.08)
+	var paper := _material("nextgen_pattern_base", Color("203b52"), 0.06)
+	var labels := _material("nextgen_pattern_label", Color("9cdbe2"))
+	_text(content, "Schau genau hin!", Vector3(-2.2, 1.6, -2.0), 0.65, ink)
+	for index in range(activity.pattern_sequence.size()):
+		var word: String = activity.pattern_sequence[index]
+		var location := Vector3(
+			-2.55 + float(index % 6) * 1.02,
+			0.24,
+			-1.25 + float(index / 6) * 1.35)
+		var tray := _box(content, location + Vector3(0.0, -0.17, 0.0),
+			Vector3(0.91, 0.13, 0.91), paper, "sequence.%d" % index)
+		var highlight := _box(content, location + Vector3(0.0, -0.18, 0.0),
+			Vector3(0.97, 0.1, 0.98), rim, "group.%d" % index)
+		highlight.visible = false
+		_pattern_highlights.append(highlight)
+		_pattern_shape(tray, word, location - tray.position, index)
+		_top_text(content, word, location + Vector3(-0.38, 0.34, 0.32),
+			0.19, labels)
+	_text(content, "Welche Form fehlt?", Vector3(-2.35, 1.1, 1.4), 0.43, ink)
+	var caption_size := maxf(0.16, 0.27 - 0.018 * float(activity.pattern_choices.size()))
+	for i in range(activity.pattern_choices.size()):
+		var choice: String = activity.pattern_choices[i]
+		var pos := Vector3(-2.5 + float(i) * (5.0 / float(activity.pattern_choices.size())),
+			0.11, 2.4)
+		_box(content, pos, Vector3(0.85, 0.22, 1.08), paper, "choice.%d" % i)
+		_top_text(content, choice, pos + Vector3(-0.30, 0.13, 0.18), caption_size, labels)
+	# The native artwork contains choices; only Flutter's actual task
+	# controller accepts or evaluates a response.
+
+
+func _pattern_shape(parent: Node3D, word: String, offset: Vector3, index: int) -> void:
+	var palette: Array[Color] = [
+		Color("50b6dc"), Color("ebb75e"), Color("a58cda"),
+		Color("7fc6a6"), Color("f0a7b9"), Color("d4cf79")]
+	var material := _material("nextgen_shape_%d" % index, palette[index % palette.size()], 0.08)
+	var pos := offset + Vector3(0, 0.27, 0)
+	match word.to_lower():
+		"circle", "kreis":
+			_sphere(parent, pos, Vector3(0.52, 0.48, 0.52), material,
+				"ShapeCircle")
+		"triangle", "dreieck":
+			var prism := PrismMesh.new()
+			prism.size = Vector3(0.56, 0.51, 0.55)
+			_mesh(parent, prism, pos, material, "ShapeTriangle")
+		"heart", "herz":
+			_text(parent, "♥", pos, 0.45, material)
+		"star", "stern":
+			_text(parent, "★", pos, 0.45, material)
+		"diamond", "raute":
+			var diamond := _box(parent, pos, Vector3(0.41, 0.42, 0.41), material,
+				"ShapeDiamond")
+			diamond.rotation.y = PI * 0.25
+		_:
+			_box(parent, pos, Vector3(0.5, 0.43, 0.5), material,
+				"ShapeSquare")
+
+
+func _pattern_hint() -> void:
+	if suspended or activity.kind != "pattern" or activity.pattern_hint_level > 0:
+		return
+	activity.pattern_hint_level = 1
+	for i in range(_pattern_highlights.size()):
+		_pattern_highlights[i].visible = i < activity.pattern_period
+	_teacher("explain", Vector3(-2.3, 0.7, -1.25))
+	_refresh()
+	_queue_narration()
+
+
+# A safe, read-only illustrative fallback for every existing TaskInstance
+# whose specialist manipulative does not exist yet. Prompt and choices are
+# provided by Flutter; this board does not contain an evaluated answer.
+func _build_task_card() -> void:
+	title.text = "Deine Lernfrage"
+	var paper := _material("nextgen_card_paper", Color("254a5a"), 0.05)
+	var ink := _material("nextgen_card_ink", Color("f8ebce"))
+	_box(content, Vector3(0, -0.12, -0.65), Vector3(5.9, 0.28, 2.5),
+		paper, "task_model")
+	_text(content, activity.task_subject,
+		Vector3(-2.65, 0.45, -1.5), 0.49, ink)
+	_text(content, "Lumo hilft dir beim Verstehen",
+		Vector3(-2.65, 0.32, -0.4), 0.30, ink)
+	for i in range(activity.task_choices.size()):
+		var pos := Vector3(-2.50 + float(i % 4) * 1.34,
+			0.15, 1.2 + float(i / 4) * 1.1)
+		_box(content, pos, Vector3(1.22, 0.26, 0.9), paper,
+			"answer_%d" % i)
+		_top_text(content, activity.task_choices[i], pos + Vector3(-0.46, 0.20, 0.16),
+			0.20, ink)
+
+
+func _show_full_task() -> void:
+	if suspended or activity.kind != "task_card":
+		return
+	if not is_instance_valid(_task_prompt_dialog):
+		_task_prompt_dialog = AcceptDialog.new()
+		_task_prompt_dialog.title = "Deine aktuelle Frage"
+		_task_prompt_dialog.min_size = Vector2i(420, 240)
+		ui.add_child(_task_prompt_dialog)
+	_task_prompt_dialog.dialog_text = activity.task_prompt
+	_task_prompt_dialog.popup_centered()
+
+
 func _branch(
 	parent: Node3D, from: Vector3, to: Vector3, radius: float, material: Material
 ) -> MeshInstance3D:
@@ -838,7 +955,13 @@ func _refresh() -> void:
 			if activity.initial_count() + activity.placed.size() >= 10
 			else "Zehner sammeln"
 		)
-	if activity.kind == "invalid":
+	if activity.kind == "pattern":
+		status.text = "Schau auf die wiederkehrende Gruppe. Antworte danach in deiner Aufgabe."
+		main_button.disabled = activity.pattern_hint_level > 0
+	elif activity.kind == "task_card":
+		status.text = "Deine Aufgabe bleibt in Flutter. Hier gibt es keine Bewertung oder Sterne."
+		main_button.disabled = false
+	elif activity.kind == "invalid":
 		title.text = "Lumo Lernwerkstatt"
 		status.text = "Kehre zur Aufgabe zurück und öffne die Lernansicht erneut."
 	elif activity.kind == "english_objects":
@@ -861,7 +984,7 @@ func _refresh() -> void:
 			% [activity.placed.size(), activity.goal_count()]
 		)
 		main_button.disabled = activity.is_complete() or not _moving.is_empty()
-	if activity.is_complete() and activity.kind != "english_objects":
+	if activity.is_complete() and activity.kind not in ["english_objects", "task_card", "pattern"]:
 		status.text = "Geschafft! Zurück bei deiner Aufgabe kannst du es selbst versuchen."
 	_layout.call_deferred()
 
