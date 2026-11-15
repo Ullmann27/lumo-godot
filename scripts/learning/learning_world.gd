@@ -436,6 +436,12 @@ func _rebuild_activity() -> void:
 	main_button = null
 	voice_button = null
 	match activity.kind:
+		"task_card":
+			_build_task_card_preview()
+			main_button = _button("Hinweis", _preview_task_hint)
+		"pattern":
+			_build_pattern_preview()
+			main_button = _button("Muster betrachten", _preview_pattern_group)
 		"english_objects":
 			_build_english_objects()
 			main_button = _button("Hinweis", _english_hint)
@@ -475,6 +481,123 @@ func _rebuild_activity() -> void:
 		_button("Frag Lumo", _open_tutor)
 	_button("Zur Aufgabe", _return_to_lesson)
 	_layout.call_deferred()
+
+
+
+## A read-only educational model: original Flutter owns all correctness,
+## answer submission, profile writes and reward authorization.
+func _build_task_card_preview() -> void:
+	title.text = "Deine Lernaufgabe"
+	var panel := _material("task_card_plinth", Color("15394a"), 0.08)
+	var rim := _material("task_card_gold", Color("f1c478"), 0.1)
+	var ink := _material("task_card_ink", Color("fff8e8"))
+	_box(content, Vector3(0.0, 1.45, -1.4), Vector3(5.9, 2.55, 0.18), panel)
+	_box(content, Vector3(0.0, 2.78, -1.42), Vector3(5.8, 0.06, 0.24), rim)
+	var summary := activity.task_prompt.left(48)
+	if activity.task_prompt.length() > 48:
+		summary += " …"
+	_text(content, summary, Vector3(-2.75, 2.18, -1.26), 0.17, ink)
+	for index in range(activity.task_choices.size()):
+		var col := index % 2
+		var row := index / 2
+		var x := -1.45 if col == 0 else 1.45
+		var y := 1.69 - float(row) * 0.54
+		var block := Node3D.new()
+		block.name = "ReadOnlyOption_%d" % index
+		block.position = Vector3(x, y, -1.19)
+		content.add_child(block)
+		part_nodes["answer_%d" % index] = block
+		_box(block, Vector3.ZERO, Vector3(2.65, 0.43, 0.12),
+			_material("option_%d" % col, Color("356579") if col == 0 else Color("4c6479")))
+		_text(block, activity.task_choices[index].left(23),
+			Vector3(-1.17, -0.07, 0.09), 0.14, ink)
+	var prompt_target := Node3D.new()
+	prompt_target.name = "TaskPromptVisualAnchor"
+	prompt_target.position = Vector3(0, 2.2, -1.1)
+	content.add_child(prompt_target)
+	part_nodes["task_prompt"] = prompt_target
+	part_nodes["task_model"] = prompt_target
+
+
+func _preview_task_hint() -> void:
+	if suspended or activity.kind != "task_card":
+		return
+	status.text = "Sieh dir die Antwortmöglichkeiten an und entscheide danach selbst."
+	_teacher("encourage", part_nodes["task_prompt"].global_position)
+	if is_instance_valid(talk_panel):
+		talk_panel.update_explanation(activity.explanation())
+
+
+func _pattern_shape_mesh(symbol: String, root: Node3D, col: int) -> Node3D:
+	var colors := [
+		Color("ffd77b"), Color("7fe3d7"), Color("ff9db9"),
+		Color("bdb1ff"), Color("b6e28b"), Color("ffbb82")
+	]
+	var material := _material("pattern_shape_%s" % symbol, colors[col % colors.size()], 0.12)
+	var shape := Node3D.new()
+	root.add_child(shape)
+	if symbol in ["Kreis", "circle", "Oval"]:
+		_sphere(shape, Vector3.ZERO, Vector3(0.48, 0.48, 0.18), material)
+	elif symbol in ["Dreieck", "triangle", "Sechseck"]:
+		var disc := CylinderMesh.new()
+		disc.top_radius = 0.29
+		disc.bottom_radius = 0.29
+		disc.height = 0.11
+		disc.radial_segments = 6 if symbol == "Sechseck" else 3
+		var form := _mesh(shape, disc, Vector3.ZERO, material)
+		form.rotation.x = PI * 0.5
+	elif symbol in ["Quadrat", "square", "Rechteck", "Raute", "diamond"]:
+		var tile := _box(shape, Vector3.ZERO, Vector3(0.43, 0.43, 0.17), material)
+		if symbol in ["Raute", "diamond"]:
+			tile.rotation.z = PI * 0.25
+	else:
+		var star := _sphere(shape, Vector3.ZERO, Vector3(0.46, 0.46, 0.18), material)
+		star.scale.x = 1.2
+	return shape
+
+
+func _build_pattern_preview() -> void:
+	title.text = "Welches Muster erkennst du?"
+	var panel := _material("pattern_board", Color("183d58"), 0.1)
+	var gold := _material("pattern_border", Color("ebbc70"), 0.1)
+	var ink := _material("pattern_letters", Color("fff5e7"))
+	_box(content, Vector3(0.0, 1.4, -1.35), Vector3(6.1, 3.25, 0.16), panel)
+	_box(content, Vector3(0.0, 3.05, -1.35), Vector3(5.8, 0.04, 0.17), gold)
+	_text(content, "Beobachte die Folge", Vector3(-2.35, 2.65, -1.2), 0.18, ink)
+	for index in range(activity.pattern_sequence.size()):
+		var row := index / 6
+		var column := index % 6
+		var x := -2.45 + float(column) * 0.96
+		var y := 1.98 - float(row) * 1.1
+		var place := Node3D.new()
+		place.name = "PatternObject_%d" % index
+		place.position = Vector3(x, y, -1.1)
+		content.add_child(place)
+		part_nodes["pattern_%d" % index] = place
+		_box(place, Vector3(0, -0.38, -0.06),
+			Vector3(0.75, 0.07, 0.39),
+			_material("pattern_plinth", Color("57788b")))
+		_pattern_shape_mesh(activity.pattern_sequence[index], place, index)
+		_text(place, str(index + 1), Vector3(-0.09, -0.64, 0.06), 0.12, ink)
+	_text(content, "Welche Form kommt danach?",
+		Vector3(-2.35, -0.15, -1.18), 0.17, ink)
+
+
+func _preview_pattern_group() -> void:
+	if suspended or activity.kind != "pattern" or activity.pattern_sequence.is_empty():
+		return
+	var index := activity.preview_step % activity.pattern_period
+	activity.preview_step += 1
+	var focus_id := "pattern_%d" % index
+	if part_nodes.has(focus_id):
+		var item: Node3D = part_nodes[focus_id]
+		_teacher("explain", item.global_position)
+		if not reduced_motion:
+			var tween := create_tween()
+			_tweens.append(tween)
+			tween.tween_property(item, "scale", Vector3.ONE * 1.22, 0.18)
+			tween.tween_property(item, "scale", Vector3.ONE, 0.22)
+	status.text = "Schau auf die wiederkehrende Gruppe: %d von %d." % [index + 1, activity.pattern_period]
 
 
 func _slot(index: int) -> Vector3:
@@ -856,6 +979,12 @@ func _refresh() -> void:
 			english_models[index].get_node("HintRing").visible = (
 				activity.english_objects[index] == activity.word
 				and (activity.english_hint_level >= 2 or activity.is_complete()))
+	elif activity.kind == "task_card":
+		status.text = "Betrachte die Aufgabe. Die Antwort gibst du danach selbst ein."
+		main_button.disabled = false
+	elif activity.kind == "pattern":
+		status.text = "Entdecke die wiederkehrende Gruppe."
+		main_button.disabled = false
 	elif activity.kind == "plant_parts":
 		title.text = "Pflanzen entdecken"
 		status.text = "%d von 4 Pflanzenteilen entdeckt" % activity.inspected.size()
@@ -939,6 +1068,9 @@ func _layout() -> void:
 	var focus_width := 6.25 if portrait else 10.8
 	if activity.kind == "syllables" and activity.syllables.size() > 3:
 		focus_width = maxf(focus_width, 8.2)
+	if activity.kind in ["task_card", "pattern"]:
+		focus_width = maxf(focus_width, 7.3)
+		focus_height = maxf(focus_height, 5.7)
 	var needed_height := focus_height * dimensions.y / free_height
 	camera.size = maxf(focus_width / maxf(0.2, dimensions.x / dimensions.y), needed_height)
 	camera.h_offset = 0.0 if portrait else 0.1
