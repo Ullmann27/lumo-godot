@@ -1,5 +1,5 @@
 extends SceneTree
-## Exercise actual instanced geometry, branching, pause and accessibility.
+## Check shared route coordinates headless and real MultiMesh readback with a renderer.
 const FX = preload("res://scripts/creative/treasure_wisps.gd")
 var checks := 0
 var failures := 0
@@ -17,6 +17,7 @@ func _check(ok: bool, message: String) -> void:
 
 
 func _run() -> void:
+    var has_renderer := DisplayServer.get_name() != "headless"
     var effects = FX.new()
     root.add_child(effects)
     await process_frame
@@ -31,6 +32,8 @@ func _run() -> void:
     await process_frame
     _check(effects.route_count() == 1 and gold.visible and not moon.visible, "one real clue gives one path")
     _check(effects.route_point(0, 0).z < 5.0, "rendered sprite source points toward the first goal")
+    if has_renderer:
+        _check(gold.multimesh.get_instance_transform(0).origin.z < 5.0, "instanced sparkle moves forward")
     effects.set_routes(Vector3(0, 0, -33), [
         {"at": Vector3(-20, 0, -47)}, {"at": Vector3(20, 0, -47)}
     ])
@@ -38,6 +41,9 @@ func _run() -> void:
     _check(effects.route_count() == 2 and gold.visible and moon.visible, "both available forks glow")
     _check(effects.route_point(0, 0).x < 0, "gold route points to left quest goal")
     _check(effects.route_point(1, 0).x > 0, "moon route points to right quest goal")
+    if has_renderer:
+        _check(gold.multimesh.get_instance_transform(0).origin.x < 0, "rendered left fork is golden")
+        _check(moon.multimesh.get_instance_transform(0).origin.x > 0, "rendered right fork is moon blue")
     effects.celebrate(Vector3(0, 1.5, -33))
     _check(celebration.visible, "success visibly starts a 3D sparkle ring")
     effects.set_paused(true)
@@ -48,9 +54,12 @@ func _run() -> void:
     effects.set_paused(false)
     effects.set_reduced_motion(true)
     var steady := effects.route_point(0, 0)
+    var steady_instance := gold.multimesh.get_instance_transform(0) if has_renderer else Transform3D.IDENTITY
     for i in range(5):
         await process_frame
     _check(steady.is_equal_approx(effects.route_point(0, 0)), "reduced motion keeps visual positions static")
+    if has_renderer:
+        _check(steady_instance.is_equal_approx(gold.multimesh.get_instance_transform(0)), "reduced motion keeps actual GPU instances static")
     effects.set_routes(Vector3(4, 0, 0), [
         {"at": Vector3(INF, 0, 0)}, {"at": Vector3.ZERO}, {"other": 4}
     ])

@@ -1,0 +1,271 @@
+{
+  "red-v2-headless": {
+    "checks": 380,
+    "failures": 26,
+    "old_targets": 15,
+    "profiles": 7,
+    "hint_transitions": 2,
+    "images": 0,
+    "markers": [
+      "MOBILE_SAFE_AREA_FAIL checks=380 failures=26 controls=15 images=0 scope=platform_boundary_fixture"
+    ],
+    "diagnostics": [
+      "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+      "WARNING: Volumetric fog is only available when using the Forward+ renderer.",
+      "ERROR: [MobileSafeArea] dense-left-cutout minimap leaves @Button@3229 and its artwork unobscured",
+      "ERROR: [MobileSafeArea] dense-left-cutout minimap leaves DriftAction and its artwork unobscured",
+      "ERROR: [MobileSafeArea] dense-left-cutout minimap leaves BoostAction and its artwork unobscured",
+      "ERROR: [MobileSafeArea] dense-left-cutout minimap leaves header, instructions and jump hint unobscured",
+      "ERROR: [MobileSafeArea] dense-left-cutout minimap leaves header, instructions and jump hint unobscured",
+      "ERROR: [MobileSafeArea] dense-left-cutout entire minimap stays inside the true safe area",
+      "ERROR: [MobileSafeArea] dense-right-cutout minimap leaves @Button@3229 and its artwork unobscured",
+      "ERROR: [MobileSafeArea] dense-right-cutout minimap leaves DriftAction and its artwork unobscured",
+      "ERROR: [MobileSafeArea] dense-right-cutout minimap leaves BoostAction and its artwork unobscured",
+      "ERROR: [MobileSafeArea] dense-right-cutout minimap leaves header, instructions and jump hint unobscured",
+      "ERROR: [MobileSafeArea] dense-right-cutout minimap leaves header, instructions and jump hint unobscured",
+      "ERROR: [MobileSafeArea] dense-right-cutout entire minimap stays inside the true safe area",
+      "ERROR: [MobileSafeArea] same-pixels-density-one minimap leaves header, instructions and jump hint unobscured",
+      "ERROR: [MobileSafeArea] expanded-inner-display minimap leaves header, instructions and jump hint unobscured",
+      "ERROR: [MobileSafeArea] expanded-inner-display entire minimap stays inside the true safe area",
+      "ERROR: [MobileSafeArea] expanded-hint-visible minimap leaves header, instructions and jump hint unobscured",
+      "ERROR: [MobileSafeArea] expanded-hint-visible entire minimap stays inside the true safe area",
+      "ERROR: [MobileSafeArea] showing the real hint repositions the existing map without a resize",
+      "ERROR: [MobileSafeArea] expanded-hint-hidden minimap leaves header, instructions and jump hint unobscured",
+      "ERROR: [MobileSafeArea] expanded-hint-hidden entire minimap stays inside the true safe area",
+      "ERROR: [MobileSafeArea] dense-restored minimap leaves @Button@3229 and its artwork unobscured",
+      "ERROR: [MobileSafeArea] dense-restored minimap leaves DriftAction and its artwork unobscured",
+      "ERROR: [MobileSafeArea] dense-restored minimap leaves BoostAction and its artwork unobscured",
+      "ERROR: [MobileSafeArea] dense-restored minimap leaves header, instructions and jump hint unobscured",
+      "ERROR: [MobileSafeArea] dense-restored minimap leaves header, instructions and jump hint unobscured",
+      "ERROR: [MobileSafeArea] dense-restored entire minimap stays inside the true safe area"
+    ],
+    "source_unchanged": true
+  },
+  "green-v2-headless": {
+    "checks": 380,
+    "failures": 0,
+    "old_targets": 15,
+    "profiles": 7,
+    "hint_transitions": 2,
+    "images": 0,
+    "markers": [
+      "MOBILE_SAFE_AREA_PASS checks=380 failures=0 controls=15 images=0 scope=platform_boundary_fixture"
+    ],
+    "diagnostics": [
+      "WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.",
+      "WARNING: Volumetric fog is only available when using the Forward+ renderer."
+    ],
+    "source_unchanged": true,
+    "layouts": [
+      {
+        "label": "dense-left-cutout",
+        "visible": true,
+        "map_px": [
+          1495.55908203125,
+          431.25,
+          406.506103515625,
+          333.604797363281
+        ],
+        "content_px": [
+          1516.55908203125,
+          452.25,
+          364.506103515625,
+          291.604797363281
+        ],
+        "safe_px": [
+          136.0,
+          63.0,
+          2264.0,
+          954.0
+        ],
+        "minimum_visible_target_dp": 58.0
+      },
+      {
+        "label": "dense-right-cutout",
+        "visible": true,
+        "map_px": [
+          1359.55920410156,
+          431.25,
+          406.505981445312,
+          333.604797363281
+        ],
+        "content_px": [
+          1380.55920410156,
+          452.25,
+          364.505981445312,
+          291.604797363281
+        ],
+        "safe_px": [
+          0.0,
+          63.0,
+          2264.0,
+          954.0
+        ],
+        "minimum_visible_target_dp": 58.0
+      },
+      {
+        "label": "same-pixels-density-one",
+        "visible": true,
+        "map_px": [
+          2175.5,
+          244.5,
+          202.0,
+          170.0
+        ],
+        "content_px": [
+          2196.5,
+          265.5,
+          160.0,
+          128.0
+        ],
+        "safe_px": [
+          136.0,
+          63.0,
+          2264.0,
+          954.0
+        ],
+        "minimum_visible_target_dp": 75.0
+      },
+      {
+        "label": "expanded-inner-display",
+        "visible": true,
+        "map_px": [
+          1728.19995117188,
+          359.457794189453,
+          367.60009765625,
+          303.851531982422
+        ],
+        "content_px": [
+          1751.99987792969,
+          383.277526855469,
+          320.000122070312,
+          256.212097167969
+        ],
+        "safe_px": [
+          48.0,
+          48.0,
+          2092.0,
+          1722.0
+        ],
+        "minimum_visible_target_dp": 58.0480613708496
+      },
+      {
+        "label": "compact-portrait",
+        "visible": false,
+        "map_px": [
+          285.974243164062,
+          75.4933395385742,
+          60.8162231445312,
+          50.2357864379883
+        ],
+        "content_px": [
+          289.911743164062,
+          79.4314575195312,
+          52.9412231445312,
+          42.3595581054688
+        ],
+        "safe_px": [
+          8.0,
+          24.0,
+          344.0,
+          756.0
+        ],
+        "minimum_visible_target_dp": 49.9199981689453
+      },
+      {
+        "label": "short-landscape",
+        "visible": false,
+        "map_px": [
+          878.535949707031,
+          186.718948364258,
+          192.209167480469,
+          158.745071411133
+        ],
+        "content_px": [
+          890.980346679688,
+          199.163391113281,
+          167.3203125,
+          133.856201171875
+        ],
+        "safe_px": [
+          0.0,
+          24.0,
+          1280.0,
+          592.0
+        ],
+        "minimum_visible_target_dp": 48.0
+      },
+      {
+        "label": "dense-restored",
+        "visible": true,
+        "map_px": [
+          1495.55908203125,
+          431.25,
+          406.506103515625,
+          333.604797363281
+        ],
+        "content_px": [
+          1516.55908203125,
+          452.25,
+          364.506103515625,
+          291.604797363281
+        ],
+        "safe_px": [
+          136.0,
+          63.0,
+          2264.0,
+          954.0
+        ],
+        "minimum_visible_target_dp": 58.0
+      },
+      {
+        "label": "expanded-hint-visible",
+        "visible": true,
+        "map_px": [
+          1728.19995117188,
+          511.984130859375,
+          367.60009765625,
+          303.851501464844
+        ],
+        "content_px": [
+          1751.99987792969,
+          535.803833007812,
+          320.000122070312,
+          256.212097167969
+        ],
+        "safe_px": [
+          48.0,
+          48.0,
+          2092.0,
+          1722.0
+        ],
+        "minimum_visible_target_dp": 58.0480613708496
+      },
+      {
+        "label": "expanded-hint-hidden",
+        "visible": true,
+        "map_px": [
+          1728.19995117188,
+          359.457794189453,
+          367.60009765625,
+          303.851531982422
+        ],
+        "content_px": [
+          1751.99987792969,
+          383.277526855469,
+          320.000122070312,
+          256.212097167969
+        ],
+        "safe_px": [
+          48.0,
+          48.0,
+          2092.0,
+          1722.0
+        ],
+        "minimum_visible_target_dp": 58.0480613708496
+      }
+    ]
+  },
+  "import_diagnostics": [],
+  "tracked_diff": " scripts/games/kart_island.gd                 | 104 +++++++++++++--\n scripts/tests/mobile_safe_area_regression.gd | 185 ++++++++++++++++++++++++++-\n 2 files changed, 276 insertions(+), 13 deletions(-)\n"
+}

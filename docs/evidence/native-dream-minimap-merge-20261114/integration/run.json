@@ -1,0 +1,235 @@
+{
+  "purpose": "one exact existing SafeArea probe on combined Dream and reviewed minimap source",
+  "mode": "probe",
+  "base_head": "bd0712259bb64908a5649ee1999638826c9eb597",
+  "source_overrides": {
+    "scripts/games/kart_island.gd": "83b3b6b548cffa2790c582e061a74e37bbfcf356",
+    "scripts/tests/mobile_safe_area_regression.gd": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+  },
+  "before": {
+    "head": "bd0712259bb64908a5649ee1999638826c9eb597",
+    "head_tree": "2eb628d3e3a327ee8985385130c96168db7aa852",
+    "tracked_materialized_count": 1454,
+    "tracked_sparse_absent_count": 2163,
+    "inventory_sha256": "6dc7aa3125e04caa6d9cc19b108ce9ca22de3bafd54d30b7b4a141307edbf0fe",
+    "important_sources": [
+      {
+        "path": ".github/workflows/lumo-dream-connections.yml",
+        "bytes": 10176,
+        "sha256": "7320bc547bbf110ca1374d651fd3867f603e2ae996bd37848939574a67e29217",
+        "git_blob": "321aeff8018435789cc57df3af3e3b5fecc4c910"
+      },
+      {
+        "path": "assets/dream_garden/dream_blossom.glb",
+        "bytes": 115408,
+        "sha256": "7390bce21e80f9404b009d7a21859b6c1adbb6d9c9f945c79469dc7bd6859ec4",
+        "git_blob": "30bcaa17a7a7d86bc2124823cbd30428aedb0760"
+      },
+      {
+        "path": "assets/dream_garden/dream_storybook.glb",
+        "bytes": 115136,
+        "sha256": "f64698452dc41c10f9659e1641c9386775af891577207ac04a0e5ee82106f102",
+        "git_blob": "d11aac2c5e33d58563ae6707ace16c9c67b59291"
+      },
+      {
+        "path": "assets/shaders/lumo_dream_ambience.gdshader",
+        "bytes": 1545,
+        "sha256": "c73c05003f3051a142ac6a7b87d483e06d1bdf7a3c3e6b60439a3571dc74d7f0",
+        "git_blob": "14ff7da92f330f97a82d2579c009db8c981c2cb8"
+      },
+      {
+        "path": "project.godot",
+        "bytes": 1944,
+        "sha256": "eac3b969cc475e9b9047d420eb6012a1b98b127c1a8706a9eb88e0e83f33b280",
+        "git_blob": "296b8b1752ebfd526aedd019907ac88efbfd0c02"
+      },
+      {
+        "path": "scripts/games/kart_island.gd",
+        "bytes": 175088,
+        "sha256": "7f916fcf8ea2d17876500e0063d91809db4a608dbc8bf945287231e6d76231d5",
+        "git_blob": "83b3b6b548cffa2790c582e061a74e37bbfcf356"
+      },
+      {
+        "path": "scripts/learning/learning_atelier.gd",
+        "bytes": 7471,
+        "sha256": "50d01bd437e84333bde534502c4d0bd137c653e819e1c8fb3b5b631447eb4d2b",
+        "git_blob": "6bca8ad6d91e9e4378104a9afef4dc8b9ebf54a9"
+      },
+      {
+        "path": "scripts/learning/lumo_dream_props.gd",
+        "bytes": 2903,
+        "sha256": "74bf0cce4848e9ed86a0d0ef5b53bd15042467b9a4aa9113b436a36d667d849a",
+        "git_blob": "e042f4295acfb2e6fa7d95a4789ff149383d77af"
+      },
+      {
+        "path": "scripts/systems/render/lumo_dream_ambience.gd",
+        "bytes": 8956,
+        "sha256": "3ac034e242ce52f89b4295c7b08f45cbef323151a62a7c90229f2eb8c18c2999",
+        "git_blob": "faabc7aeee73c18cf5fa8783dfc77c4e67a2bc33"
+      },
+      {
+        "path": "scripts/systems/render/lumo_environment.gd",
+        "bytes": 6119,
+        "sha256": "bde7fc355ca75817934c95d4b551783a3074b001aca3ec71c2d85843c80e2bef",
+        "git_blob": "a3444f97fe9c6bfa6a509dca64a669fadde55a90"
+      },
+      {
+        "path": "scripts/systems/render/lumo_environment_creative_presets.gd",
+        "bytes": 12609,
+        "sha256": "5e3036477f83d54b6b74e32161e4d566975df0918fd366b57a9e4e3fb7c4da88",
+        "git_blob": "263d05faedf43adb32b46555811294cba65b8d20"
+      },
+      {
+        "path": "scripts/tests/mobile_safe_area_regression.gd",
+        "bytes": 26254,
+        "sha256": "8188911d6f91deaec924fdc7857feec876af075a8d04522b49dd14429d501aa5",
+        "git_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+      },
+      {
+        "path": "tools/validate_dream_connections.sh",
+        "bytes": 4660,
+        "sha256": "19366398784db00c335800bc26ab3e171e062eb2149316021039bc027706dadc",
+        "git_blob": "834ea912003f5e27a271139646a857601baea905"
+      },
+      {
+        "path": "tools/validate_nextgen.sh",
+        "bytes": 9791,
+        "sha256": "fbb95e0ab5d3f60a915fdd63ff95b6e01ad3776bb67f6227df1c394b5bd64a7f",
+        "git_blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946"
+      },
+      {
+        "path": "tools/verify_dream_rasters.py",
+        "bytes": 20254,
+        "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+        "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5"
+      }
+    ]
+  },
+  "after": {
+    "head": "bd0712259bb64908a5649ee1999638826c9eb597",
+    "head_tree": "2eb628d3e3a327ee8985385130c96168db7aa852",
+    "tracked_materialized_count": 1454,
+    "tracked_sparse_absent_count": 2163,
+    "inventory_sha256": "6dc7aa3125e04caa6d9cc19b108ce9ca22de3bafd54d30b7b4a141307edbf0fe",
+    "important_sources": [
+      {
+        "path": ".github/workflows/lumo-dream-connections.yml",
+        "bytes": 10176,
+        "sha256": "7320bc547bbf110ca1374d651fd3867f603e2ae996bd37848939574a67e29217",
+        "git_blob": "321aeff8018435789cc57df3af3e3b5fecc4c910"
+      },
+      {
+        "path": "assets/dream_garden/dream_blossom.glb",
+        "bytes": 115408,
+        "sha256": "7390bce21e80f9404b009d7a21859b6c1adbb6d9c9f945c79469dc7bd6859ec4",
+        "git_blob": "30bcaa17a7a7d86bc2124823cbd30428aedb0760"
+      },
+      {
+        "path": "assets/dream_garden/dream_storybook.glb",
+        "bytes": 115136,
+        "sha256": "f64698452dc41c10f9659e1641c9386775af891577207ac04a0e5ee82106f102",
+        "git_blob": "d11aac2c5e33d58563ae6707ace16c9c67b59291"
+      },
+      {
+        "path": "assets/shaders/lumo_dream_ambience.gdshader",
+        "bytes": 1545,
+        "sha256": "c73c05003f3051a142ac6a7b87d483e06d1bdf7a3c3e6b60439a3571dc74d7f0",
+        "git_blob": "14ff7da92f330f97a82d2579c009db8c981c2cb8"
+      },
+      {
+        "path": "project.godot",
+        "bytes": 1944,
+        "sha256": "eac3b969cc475e9b9047d420eb6012a1b98b127c1a8706a9eb88e0e83f33b280",
+        "git_blob": "296b8b1752ebfd526aedd019907ac88efbfd0c02"
+      },
+      {
+        "path": "scripts/games/kart_island.gd",
+        "bytes": 175088,
+        "sha256": "7f916fcf8ea2d17876500e0063d91809db4a608dbc8bf945287231e6d76231d5",
+        "git_blob": "83b3b6b548cffa2790c582e061a74e37bbfcf356"
+      },
+      {
+        "path": "scripts/learning/learning_atelier.gd",
+        "bytes": 7471,
+        "sha256": "50d01bd437e84333bde534502c4d0bd137c653e819e1c8fb3b5b631447eb4d2b",
+        "git_blob": "6bca8ad6d91e9e4378104a9afef4dc8b9ebf54a9"
+      },
+      {
+        "path": "scripts/learning/lumo_dream_props.gd",
+        "bytes": 2903,
+        "sha256": "74bf0cce4848e9ed86a0d0ef5b53bd15042467b9a4aa9113b436a36d667d849a",
+        "git_blob": "e042f4295acfb2e6fa7d95a4789ff149383d77af"
+      },
+      {
+        "path": "scripts/systems/render/lumo_dream_ambience.gd",
+        "bytes": 8956,
+        "sha256": "3ac034e242ce52f89b4295c7b08f45cbef323151a62a7c90229f2eb8c18c2999",
+        "git_blob": "faabc7aeee73c18cf5fa8783dfc77c4e67a2bc33"
+      },
+      {
+        "path": "scripts/systems/render/lumo_environment.gd",
+        "bytes": 6119,
+        "sha256": "bde7fc355ca75817934c95d4b551783a3074b001aca3ec71c2d85843c80e2bef",
+        "git_blob": "a3444f97fe9c6bfa6a509dca64a669fadde55a90"
+      },
+      {
+        "path": "scripts/systems/render/lumo_environment_creative_presets.gd",
+        "bytes": 12609,
+        "sha256": "5e3036477f83d54b6b74e32161e4d566975df0918fd366b57a9e4e3fb7c4da88",
+        "git_blob": "263d05faedf43adb32b46555811294cba65b8d20"
+      },
+      {
+        "path": "scripts/tests/mobile_safe_area_regression.gd",
+        "bytes": 26254,
+        "sha256": "8188911d6f91deaec924fdc7857feec876af075a8d04522b49dd14429d501aa5",
+        "git_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+      },
+      {
+        "path": "tools/validate_dream_connections.sh",
+        "bytes": 4660,
+        "sha256": "19366398784db00c335800bc26ab3e171e062eb2149316021039bc027706dadc",
+        "git_blob": "834ea912003f5e27a271139646a857601baea905"
+      },
+      {
+        "path": "tools/validate_nextgen.sh",
+        "bytes": 9791,
+        "sha256": "fbb95e0ab5d3f60a915fdd63ff95b6e01ad3776bb67f6227df1c394b5bd64a7f",
+        "git_blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946"
+      },
+      {
+        "path": "tools/verify_dream_rasters.py",
+        "bytes": 20254,
+        "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+        "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5"
+      }
+    ]
+  },
+  "sources_unchanged": true,
+  "engine_version": "4.6.3.stable.official.7d41c59c4",
+  "command": [
+    "godot",
+    "--path",
+    "/home/agent/lumo-kart-dream-merge-2708/source",
+    "--rendering-method",
+    "gl_compatibility",
+    "--headless",
+    "--script",
+    "res://scripts/tests/mobile_safe_area_regression.gd"
+  ],
+  "environment": {
+    "XDG_DATA_HOME": "/home/agent/lumo-kart-dream-merge-2708/user-integration-probe",
+    "DISPLAY": null,
+    "LUMO_CAPTURE_DIR": "/home/agent/lumo-kart-dream-merge-2708/evidence/integration-probe",
+    "LUMO_KART_MINIMAP_CAPTURE_DIR": null
+  },
+  "started_utc": "2026-11-14T11:29:03.473121+00:00",
+  "seconds": 14.646,
+  "exit_code": 0,
+  "log_bytes": 10571,
+  "log_sha256": "89cfe73badf95e3e653d948c0445feaa6d3eb269652c069c290380445d439924",
+  "report_present": true,
+  "checks": 380,
+  "failures": [],
+  "report_sha256": "ae5dfc3621efa1cb2225b3e444bf1ce1d2b6d85dc7eeb0a09319b03038b9175b",
+  "rendered_capture_requested": false
+}

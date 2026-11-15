@@ -1,0 +1,25 @@
+{
+  "pid": 7,
+  "display": ":91",
+  "xauthority": "/home/agent/lumo-kart-minimap-2708/Xauthority",
+  "command": [
+    "Xorg",
+    ":91",
+    "-config",
+    "/home/agent/lumo-kart-minimap-2708/xorg.conf",
+    "-logfile",
+    "/home/agent/lumo-kart-minimap-2708/evidence/xorg.log",
+    "-auth",
+    "/home/agent/lumo-kart-minimap-2708/Xauthority",
+    "-noreset",
+    "-nolisten",
+    "tcp",
+    "-novtswitch"
+  ],
+  "ready": false,
+  "process_exit": 1,
+  "logs": [
+    "/home/agent/lumo-kart-minimap-2708/evidence/xorg-start.log",
+    "/home/agent/lumo-kart-minimap-2708/evidence/xorg.log"
+  ]
+}

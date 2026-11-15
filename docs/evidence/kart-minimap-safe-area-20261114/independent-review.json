@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "date_utc": "2026-11-14",
+  "reviewer": "/root/lumo_release_lead",
+  "scope": "Independent read-only source review of the second Kart minimap candidate, plus personal inspection of one original Android screenshot.",
+  "repository": "Ullmann27/lumo-godot",
+  "parent": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "sources": {
+    "production_path": "scripts/games/kart_island.gd",
+    "production_baseline_blob": "f7473190f51fb5dbda7d0f7ad7292f8ec64c0da2",
+    "production_candidate_blob": "83b3b6b548cffa2790c582e061a74e37bbfcf356",
+    "test_path": "scripts/tests/mobile_safe_area_regression.gd",
+    "test_baseline_blob": "61ded805fdbc70c3499814b4e8f74214079fc96c",
+    "test_candidate_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509",
+    "existing_runner_blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+    "existing_raster_verifier_blob": "34fb3c4f31e476a5f29f98abc9a2ecc0337e6863",
+    "action_artwork_blob": "22064c491ff9aec8515a188a20ed5458b7ae5226",
+    "jump_hint_blob": "50e80f5bb9a8a3935222af8842262b5ff3082dc8"
+  },
+  "original_image": {
+    "repository": "Ullmann27/lumo-lernen",
+    "evidence_commit": "6a5ae5327570fc60434672074f246c95e1c59283",
+    "path": "docs/evidence/android-803a-original-20261114/upgrade/original/21_race_driving_late_2.png",
+    "host": "803a4e960ffb804a46b6d09417731c031f00f680",
+    "native": "0e26153f0e58cc05739e72923b4c563a4cf380b8",
+    "git_blob": "d77817c87f3f2629bc05f1f1b050a13a1d7a0107",
+    "sha256": "d001d59a610941fbd641a33f4312946bc362998f367e3e912fbb20c365338fff",
+    "bytes": 1972454,
+    "dimensions": [
+      2400,
+      1080
+    ],
+    "personally_opened": true,
+    "independent_local_hash_and_png_header_check": true,
+    "observations": [
+      "The old minimap panel overlaps the upper part of the SPEED action artwork.",
+      "Its visible panel/map extends beyond the right edge of the image and overlaps the lower part of the right header/Pause region.",
+      "The SPEED caption remains visible; this is a visual overlap, not a claim that the complete control is absent."
+    ],
+    "limitation": "This is an unchanged original from Host803a/Native0e261, not a render of the new candidate. The second requested original, 21_lumo_kart_real_race.png, has not been personally viewed by this reviewer."
+  },
+  "findings": [
+    "Both baseline source files were independently fetched at f052 and are byte-identical to their previously reviewed f0c19 blobs.",
+    "The previous fixed offsets and recursively scaled map-child minimum are replaced by a deferred fit using settled safe-area, header, message, hint and action rectangles.",
+    "The first candidate omitted the full-width centered message row. The reviewer identified that omission; V2 reserves both the actual message and visible jump-hint rectangles.",
+    "V2 binds item_rect_changed and visibility_changed for message and jump hint, as well as relevant controls. A hint becoming visible therefore queues layout without relying on a viewport resize.",
+    "Candidate rectangles remain inside the safe bounds and below the full visible notices. The fit can only reduce the preferred candidate rectangle; intersecting controls cap its bottom. Candidate right edges are limited to the safe right edge and actual obstacle edges.",
+    "All visible header buttons, joystick and pedal actions are considered. Existing action artwork draws at 1.12 times the square hit rectangle; the corresponding 0.06 per-side expansion is verified against the actual drawing source.",
+    "Only _build_ui, _apply_responsive_layout and _apply_ui_scale differ among the 142 existing production functions; the remaining 139 are byte-identical. Two layout helpers and one queue flag are added. Driving physics, action behavior and asset references are unchanged.",
+    "The new actual-scene contract observes seven density/cutout/viewport profiles, including small portrait, short landscape and restored dense layout. It checks safe bounds, map/content containment and existing controls at least 47.95 dp, with 48 dp as the target.",
+    "A single added hint show_for/hide_hint cycle uses the real hint methods, with unchanged window size and no manual layout call, and checks map movement/restoration plus control/notice exclusion.",
+    "Removing only the four added test functions, three added report arrays/fields and the new _run call reconstructs the complete previous test source byte-for-byte.",
+    "The existing runner still contains exactly 52 probe/mode invocations and executes mobile_safe_area_regression in both headless and rendered modes. The existing raster verifier still requires the original 15 shared controls and four Mobile SafeArea images; new Kart records/captures use separate report fields."
+  ],
+  "decision": "No remaining static blocker found in the two exact V2 blobs. Proceed with the targeted unchanged-test red/green engine run.",
+  "execution_limits": [
+    "No new candidate Godot/parser/render run has been performed by this reviewer.",
+    "The worker's targeted baseline/candidate execution is still pending at this review checkpoint.",
+    "No complete 52-mode native rerun, Android device acceptance, release approval or performance claim follows from this source review.",
+    "The other changes already present in f052 are outside this bounded minimap review."
+  ]
+}

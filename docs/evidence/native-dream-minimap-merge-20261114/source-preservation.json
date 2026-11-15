@@ -1,0 +1,830 @@
+{
+  "schema": 1,
+  "repository": "Ullmann27/lumo-godot",
+  "common_base": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "intended_parents": [
+    "bd0712259bb64908a5649ee1999638826c9eb597",
+    "6ecc560ea16202b935c4f1d32b08b93cda358e02"
+  ],
+  "first_parent_tree": "2eb628d3e3a327ee8985385130c96168db7aa852",
+  "second_parent_tree": "2fa788fed751a2b526a6f69d648d57eb6e181953",
+  "comparisons": [
+    {
+      "base": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+      "head": "bd0712259bb64908a5649ee1999638826c9eb597",
+      "status": "ahead",
+      "ahead_by": 2,
+      "behind_by": 0,
+      "total_commits": 2,
+      "too_large": null,
+      "merge_base": "f052c2795b765265dbb6f5c27b9e92b557d39a39"
+    },
+    {
+      "base": "6ecc560ea16202b935c4f1d32b08b93cda358e02",
+      "head": "bd0712259bb64908a5649ee1999638826c9eb597",
+      "status": "diverged",
+      "ahead_by": 2,
+      "behind_by": 1,
+      "total_commits": 2,
+      "too_large": null,
+      "merge_base": "f052c2795b765265dbb6f5c27b9e92b557d39a39"
+    }
+  ],
+  "all_recursive_inputs_complete": true,
+  "non_tree_input_counts": {
+    "base": 3578,
+    "dream": 3617,
+    "minimap": 3598
+  },
+  "dream_changed_entries": [
+    {
+      "path": ".github/workflows/lumo-dream-connections.yml",
+      "before": null,
+      "after": {
+        "path": ".github/workflows/lumo-dream-connections.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "321aeff8018435789cc57df3af3e3b5fecc4c910"
+      }
+    },
+    {
+      "path": "assets/dream_garden/dream_blossom.glb",
+      "before": null,
+      "after": {
+        "path": "assets/dream_garden/dream_blossom.glb",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "30bcaa17a7a7d86bc2124823cbd30428aedb0760"
+      }
+    },
+    {
+      "path": "assets/dream_garden/dream_storybook.glb",
+      "before": null,
+      "after": {
+        "path": "assets/dream_garden/dream_storybook.glb",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d11aac2c5e33d58563ae6707ace16c9c67b59291"
+      }
+    },
+    {
+      "path": "assets/dream_garden/provenance.json",
+      "before": null,
+      "after": {
+        "path": "assets/dream_garden/provenance.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3f8030d6a113752e771ca2c110478f26efe98d52"
+      }
+    },
+    {
+      "path": "assets/shaders/lumo_dream_ambience.gdshader",
+      "before": null,
+      "after": {
+        "path": "assets/shaders/lumo_dream_ambience.gdshader",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "14ff7da92f330f97a82d2579c009db8c981c2cb8"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/archive-proof.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-c2-local-validation-20261114/archive-proof.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f7ec98bacf6ef0eff09af410f6afe8d5cba594d4"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/complete-local-originals.tar.gz",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-c2-local-validation-20261114/complete-local-originals.tar.gz",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bd323f8ae6dbc5b20b3c162957aa59bfcfd1f2a0"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/handoff.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-c2-local-validation-20261114/handoff.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "222a3bf389bb681bb5bd02bb38b7a64e160e80ba"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/manifest.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-c2-local-validation-20261114/manifest.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "839f87b977d811623fa80b676e074484355d61c0"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/missing-sparse-paths.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-c2-local-validation-20261114/missing-sparse-paths.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5cf340219bb679f4c8c6b32ffc758269199e6780"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/original-archive-bindings.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-c2-local-validation-20261114/original-archive-bindings.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "de557bf51e872fc96d89b3b9c8c8140a38a55092"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/preflight-resolution.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-c2-local-validation-20261114/preflight-resolution.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3377a5f71a90ab798919a58f35d09272d5f3351a"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/prepare-connection.py",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-c2-local-validation-20261114/prepare-connection.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a1fe6273fcecf9d4bd5e87a5d1b9edd424aadfff"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/root-connection.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-c2-local-validation-20261114/root-connection.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bff7521ae0a01f2183b845ce1e7051b7cf63028a"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-c2-local-validation-20261114/summary.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-c2-local-validation-20261114/summary.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7e2ea18b8c80dfef928b4899e6dbea87e88e93ee"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/independent-native-gate-review.tar.gz",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/independent-native-gate-review.tar.gz",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7fa0a736d1af24b6b69e7061c2d9a639a54d7395"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/independent-workflow-v2-review.tar.gz",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/independent-workflow-v2-review.tar.gz",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "646e84f471f30c10c657c9109a1f5e6108c06158"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/native-complete-source-pack.tar.gz",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/native-complete-source-pack.tar.gz",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "108ec28517c508257e51d533befe41ad84c9a5e4"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/native-source/gate-contract.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/native-source/gate-contract.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4d4cb5f915e5d0278943464c2a3a03c8a8521f37"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/native-source/glb-validation.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/native-source/glb-validation.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cd977787a298e2c4b9f7dd98ac75c2db8aa65068"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/native-source/handoff.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/native-source/handoff.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ee6f8ce6aa42e937fe9362defba38ffd29c3c31e"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/native-source/manifest.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/native-source/manifest.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3a36e3299b41d11cc611942d7b2f3f8dd41ecd8b"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/native-source/source-freeze.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/native-source/source-freeze.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b2f4453a5e139a530bb340c2ae9517de6a835d27"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/original-archive-bindings.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/original-archive-bindings.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d5352c6da81cf369740134ee0e32ee5d49713dc8"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/prepare-connection.py",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/prepare-connection.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a1fe6273fcecf9d4bd5e87a5d1b9edd424aadfff"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/root-connection.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/root-connection.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ef624dc6dc0afc4015dcc2c20b009677370b6a6f"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/workflow-v1-red-v2-pass-complete.tar.gz",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/workflow-v1-red-v2-pass-complete.tar.gz",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d1baad1cf51dcd2006662b3ea157c18d5f3d2e37"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/workflow/handoff.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/workflow/handoff.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "997898e5b4c762c7677a29c40fecffaa59490689"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/workflow/manifest.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/workflow/manifest.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2e789eca7534e4d6bb4ac1c7b9397345670da9fe"
+      }
+    },
+    {
+      "path": "docs/evidence/native-dream-connection-20261114/workflow/v2-source-freeze.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/native-dream-connection-20261114/workflow/v2-source-freeze.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0a74583b09c2ec00173b0d82117a2fe2ba63ada9"
+      }
+    },
+    {
+      "path": "scripts/learning/learning_atelier.gd",
+      "before": {
+        "path": "scripts/learning/learning_atelier.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c14873748bd8ff42cc7f00bd1c39653626de4664"
+      },
+      "after": {
+        "path": "scripts/learning/learning_atelier.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6bca8ad6d91e9e4378104a9afef4dc8b9ebf54a9"
+      }
+    },
+    {
+      "path": "scripts/learning/lumo_dream_props.gd",
+      "before": null,
+      "after": {
+        "path": "scripts/learning/lumo_dream_props.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e042f4295acfb2e6fa7d95a4789ff149383d77af"
+      }
+    },
+    {
+      "path": "scripts/systems/render/lumo_dream_ambience.gd",
+      "before": null,
+      "after": {
+        "path": "scripts/systems/render/lumo_dream_ambience.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "faabc7aeee73c18cf5fa8783dfc77c4e67a2bc33"
+      }
+    },
+    {
+      "path": "scripts/systems/render/lumo_environment.gd",
+      "before": {
+        "path": "scripts/systems/render/lumo_environment.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "126d309f8ddadee8f20f487a2bcadfc015a7c45b"
+      },
+      "after": {
+        "path": "scripts/systems/render/lumo_environment.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a3444f97fe9c6bfa6a509dca64a669fadde55a90"
+      }
+    },
+    {
+      "path": "scripts/systems/render/lumo_environment_creative_presets.gd",
+      "before": {
+        "path": "scripts/systems/render/lumo_environment_creative_presets.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2b985587e87f2d23c5eb12bbe7bceeefabed471b"
+      },
+      "after": {
+        "path": "scripts/systems/render/lumo_environment_creative_presets.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "263d05faedf43adb32b46555811294cba65b8d20"
+      }
+    },
+    {
+      "path": "scripts/tests/dream_garden_capture.gd",
+      "before": null,
+      "after": {
+        "path": "scripts/tests/dream_garden_capture.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8b514d3f6bf9095e6908765cd3d59bc5ebdb67a4"
+      }
+    },
+    {
+      "path": "scripts/tests/dream_garden_props_regression.gd",
+      "before": null,
+      "after": {
+        "path": "scripts/tests/dream_garden_props_regression.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "361eed7ed25b46bff8173087eb7df1eaaac96b56"
+      }
+    },
+    {
+      "path": "scripts/tests/lumo_dream_ambience_capture.gd",
+      "before": null,
+      "after": {
+        "path": "scripts/tests/lumo_dream_ambience_capture.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "75085479ed587335533651adece30b579b8fe11f"
+      }
+    },
+    {
+      "path": "scripts/tests/lumo_dream_ambience_regression.gd",
+      "before": null,
+      "after": {
+        "path": "scripts/tests/lumo_dream_ambience_regression.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d96ad6f332b93e3e28d563d72b3c10d208c7be13"
+      }
+    },
+    {
+      "path": "tools/tests/test_dream_rasters.py",
+      "before": null,
+      "after": {
+        "path": "tools/tests/test_dream_rasters.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0af63932d9f71fd3f1c1657f6aaaba46a019a2c0"
+      }
+    },
+    {
+      "path": "tools/validate_dream_connections.sh",
+      "before": null,
+      "after": {
+        "path": "tools/validate_dream_connections.sh",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "834ea912003f5e27a271139646a857601baea905"
+      }
+    },
+    {
+      "path": "tools/verify_dream_rasters.py",
+      "before": null,
+      "after": {
+        "path": "tools/verify_dream_rasters.py",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5"
+      }
+    }
+  ],
+  "minimap_changed_entries": [
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/README.md",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "085d6f9d84449d670085220ff2c541937cdfbe75"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/attempt.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/display/attempt.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "befbbd037e0891ed7b7b37baa6bc2df688f6fb9a"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/capability.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/display/capability.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "78fe143d3533b689caae5fda4ed0c091f386b77e"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/xorg-start.log",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/display/xorg-start.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d551e61d9251c43bccc49c9001e9760557117407"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/xorg.conf",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/display/xorg.conf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "62582a38acc749ec9543ee8115cde480a6119ee3"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/display/xorg.log",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/display/xorg.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ead5853ab22f12c6ed0960d2453faa0749cc4595"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/green/mobile-safe-area.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/green/mobile-safe-area.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ee2b818b2cb2fe1f44f436efd9b02b42d601960c"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/green/run.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/green/run.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0d60163a04f79387e3352a3a73591a7dd146711c"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/green/run.log",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/green/run.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8c8d0acedfaa337f87250ba3dfe9add54f273538"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/import-run.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/import-run.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8facd02d5a10c357f44690bf8e673a2c7bd24295"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/import.log",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/import.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "01f574ec4276b0733538a74b3629ccb1f8f41cf5"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/independent-review.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/independent-review.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fb45674454d43a5365d67f45c9eb83cbaad66fa9"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/manifest.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/manifest.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6c660fff77fadbb8b8bfccb34e1fff96f4c497ef"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/preflight.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/preflight.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6cbdb223b6b97abf6405001744eca4e2a76acf60"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/red/mobile-safe-area.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/red/mobile-safe-area.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5b01f0fdf019f09e819bb10020e8168fea3fa6af"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/red/run.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/red/run.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0c8ee322fdd06057b07b8a8a2be01913ea74aebc"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/red/run.log",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/red/run.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "de2f6da1b5fd5a8b6abe61ace120d611d2520d92"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/result-summary.json",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/result-summary.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "59e09a4b41cc07c84c2b1fb57193e357759393ae"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/run_probe.py",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/run_probe.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e2a0ed84f5f29fa002be3f4303ccd3750b74a2bb"
+      }
+    },
+    {
+      "path": "docs/evidence/kart-minimap-safe-area-20261114/source-prepare.log",
+      "before": null,
+      "after": {
+        "path": "docs/evidence/kart-minimap-safe-area-20261114/source-prepare.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dae78e6f187731383a9c53e1a94355d4b810f310"
+      }
+    },
+    {
+      "path": "scripts/games/kart_island.gd",
+      "before": {
+        "path": "scripts/games/kart_island.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f7473190f51fb5dbda7d0f7ad7292f8ec64c0da2"
+      },
+      "after": {
+        "path": "scripts/games/kart_island.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "83b3b6b548cffa2790c582e061a74e37bbfcf356"
+      }
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "before": {
+        "path": "scripts/tests/mobile_safe_area_regression.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "61ded805fdbc70c3499814b4e8f74214079fc96c"
+      },
+      "after": {
+        "path": "scripts/tests/mobile_safe_area_regression.gd",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+      }
+    }
+  ],
+  "intersecting_changed_paths": [],
+  "unchanged_direct_layout_dependencies": [
+    {
+      "path": "project.godot",
+      "f052": "296b8b1752ebfd526aedd019907ac88efbfd0c02",
+      "bd071": "296b8b1752ebfd526aedd019907ac88efbfd0c02",
+      "minimap": "296b8b1752ebfd526aedd019907ac88efbfd0c02",
+      "baseDreamIdentical": true
+    },
+    {
+      "path": "scenes/games/kart_island.tscn",
+      "f052": "f03cdb78a6c8c800deed68f0fc214b4cb61167af",
+      "bd071": "f03cdb78a6c8c800deed68f0fc214b4cb61167af",
+      "minimap": "f03cdb78a6c8c800deed68f0fc214b4cb61167af",
+      "baseDreamIdentical": true
+    },
+    {
+      "path": "scripts/games/kart_island.gd",
+      "f052": "f7473190f51fb5dbda7d0f7ad7292f8ec64c0da2",
+      "bd071": "f7473190f51fb5dbda7d0f7ad7292f8ec64c0da2",
+      "minimap": "83b3b6b548cffa2790c582e061a74e37bbfcf356",
+      "baseDreamIdentical": true
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "f052": "61ded805fdbc70c3499814b4e8f74214079fc96c",
+      "bd071": "61ded805fdbc70c3499814b4e8f74214079fc96c",
+      "minimap": "6c58c08b8c47a7bf7c957c448b88474a984b9509",
+      "baseDreamIdentical": true
+    },
+    {
+      "path": "scripts/app/mobile_runtime.gd",
+      "f052": "53c6974ef2e1ba82bbb1fff71c9be4d9c16a911f",
+      "bd071": "53c6974ef2e1ba82bbb1fff71c9be4d9c16a911f",
+      "minimap": "53c6974ef2e1ba82bbb1fff71c9be4d9c16a911f",
+      "baseDreamIdentical": true
+    },
+    {
+      "path": "scripts/app/android_safe_area.gd",
+      "f052": "9658440b3effad06358fe7cfe62f04a95ccbe279",
+      "bd071": "9658440b3effad06358fe7cfe62f04a95ccbe279",
+      "minimap": "9658440b3effad06358fe7cfe62f04a95ccbe279",
+      "baseDreamIdentical": true
+    },
+    {
+      "path": "scripts/ui/mobile_safe_area.gd",
+      "f052": "6e65b507b1503809cce5c2fc5f9852ccbdb5810f",
+      "bd071": "6e65b507b1503809cce5c2fc5f9852ccbdb5810f",
+      "minimap": "6e65b507b1503809cce5c2fc5f9852ccbdb5810f",
+      "baseDreamIdentical": true
+    },
+    {
+      "path": "scripts/games/kart_minimap.gd",
+      "f052": "50474b51ea22f9070b6cdc6e6052f9f6d0158a95",
+      "bd071": "50474b51ea22f9070b6cdc6e6052f9f6d0158a95",
+      "minimap": "50474b51ea22f9070b6cdc6e6052f9f6d0158a95",
+      "baseDreamIdentical": true
+    },
+    {
+      "path": "scripts/games/kart_touch_action.gd",
+      "f052": "22064c491ff9aec8515a188a20ed5458b7ae5226",
+      "bd071": "22064c491ff9aec8515a188a20ed5458b7ae5226",
+      "minimap": "22064c491ff9aec8515a188a20ed5458b7ae5226",
+      "baseDreamIdentical": true
+    },
+    {
+      "path": "scripts/games/visual/kart_jump_speed_hint.gd",
+      "f052": "50e80f5bb9a8a3935222af8842262b5ff3082dc8",
+      "bd071": "50e80f5bb9a8a3935222af8842262b5ff3082dc8",
+      "minimap": "50e80f5bb9a8a3935222af8842262b5ff3082dc8",
+      "baseDreamIdentical": true
+    },
+    {
+      "path": "tools/validate_nextgen.sh",
+      "f052": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+      "bd071": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+      "minimap": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+      "baseDreamIdentical": true
+    },
+    {
+      "path": "tools/verify_safe_area_rasters.py",
+      "f052": "34fb3c4f31e476a5f29f98abc9a2ecc0337e6863",
+      "bd071": "34fb3c4f31e476a5f29f98abc9a2ecc0337e6863",
+      "minimap": "34fb3c4f31e476a5f29f98abc9a2ecc0337e6863",
+      "baseDreamIdentical": true
+    }
+  ],
+  "dream_gate_entries": [
+    {
+      "path": ".github/workflows/lumo-dream-connections.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "321aeff8018435789cc57df3af3e3b5fecc4c910"
+    },
+    {
+      "path": "tools/validate_dream_connections.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "834ea912003f5e27a271139646a857601baea905"
+    },
+    {
+      "path": "tools/verify_dream_rasters.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5"
+    }
+  ],
+  "source_union_verification": {
+    "tree": "71a6ca75c3c21de70ae857d2d5c3b259c7db7f1a",
+    "expected_non_tree_entries": 3637,
+    "actual_non_tree_entries": 3637,
+    "mismatches": [],
+    "whole_path_union_exact": true
+  },
+  "method": "Exact path/mode/type/blob union of complete recursive Git trees, using Dream tree as base and the 22 non-overlapping minimap entries. GitData merge commit with two actual parent objects; no command-line git merge is claimed.",
+  "runtime_binding": {
+    "materialized_count": 1454,
+    "materialized_inventory_sha256": "6dc7aa3125e04caa6d9cc19b108ce9ca22de3bafd54d30b7b4a141307edbf0fe",
+    "all_materialized_tracked_bytes_unchanged": true
+  },
+  "remote_refs_updated": false,
+  "host_pins_updated": false
+}

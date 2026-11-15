@@ -1,0 +1,349 @@
+
+## Baseline: unchanged7d53 Hub rejected by real identity probe
+
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Lumo] character_ready
+[Perf] quality_profile:medium
+behavior:idle_bounce
+[Router] goto:settlement (res://scenes/creative/build_settlement_world.tscn)
+[LumoHub] FAIL Hub must use the same original rig adapter as the learning world
+[SettlementWorld] ready mode=settlement save=user://lumo_settlement_47fd6be273deeaa007063e0c03ae73e6f03ecae738696c7d89b82186afb8e26d_2_village.json
+
+
+## Baseline: direct village lacked a host return
+
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[SettlementWorld] ready mode=settlement save=user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json
+[VillageHostReady] {"initialized_plot_nodes":9,"living_village":true,"mode":"settlement","plots":9,"population":2,"save_blocked":false,"save_path":"user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json","scene":"res://scenes/creative/build_settlement_world.tscn","slot":3,"visible_residents":2}
+[Perf] quality_profile:medium
+[SettlementWorld] ready mode=settlement save=user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json
+[VillageHostReady] {"initialized_plot_nodes":9,"living_village":true,"mode":"settlement","plots":9,"population":2,"save_blocked":false,"save_path":"user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json","scene":"res://scenes/creative/build_settlement_world.tscn","slot":3,"visible_residents":2}
+[VillageHost] FAIL Direct Flutter village entry lacks a visible return to host games
+[VillageHost] FAIL A native Hub/Bauwelt entry must retain its existing Bauwelt return
+
+
+## Final Hub identity/lifecycle
+
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[LumoHubIdentity] {"actual_production_scene":"res://scenes/games/game_hub.tscn","adapter":"res://scripts/characters/lumo/lumo_rigged_actor.gd","bones":65,"clips":["idle","greeting_wave","celebrate","point_portal","agree_nod","kart_seated","kart_steer_left","kart_steer_right","kart_jump"],"failures":[],"headless":true,"load_kind":"imported_packed_scene","mesh_resources":["res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb::ArrayMesh_e6unq","res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb::ArrayMesh_4wn44"],"model":"res://assets/characters/lumo_facial/Lumo-Facial-Mobile.glb","skinned_meshes":2,"vertices":24027,"visible_vertices":21659}
+[Router] goto:settlement (res://scenes/creative/build_settlement_world.tscn)
+[LumoHub] PASS 8 visible native game entrances, active village route, preserved child settings and 3D reduced-motion portal
+
+
+## Final actual Village host contexts and return/save
+
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[SettlementWorld] ready mode=settlement save=user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json
+[VillageHostReady] {"host_entry":true,"initialized_plot_nodes":9,"living_village":true,"mode":"settlement","plots":9,"population":2,"return_scene":"games","save_blocked":false,"save_path":"user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json","scene":"res://scenes/creative/build_settlement_world.tscn","slot":3,"visible_residents":2}
+[Perf] quality_profile:medium
+[LumoHost] return: games
+[SettlementWorld] ready mode=settlement save=user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json
+[VillageHostReady] {"host_entry":false,"initialized_plot_nodes":9,"living_village":true,"mode":"settlement","plots":9,"population":2,"return_scene":"build","save_blocked":false,"save_path":"user://lumo_settlement_fd4f2a3e52c6d8124ed2b619ac41364f6354c1b4077a5114bde9ee543166b895_3_village.json","scene":"res://scenes/creative/build_settlement_world.tscn","slot":3,"visible_residents":2}
+[VillageHost] PASS Flutter village request, native boot scene and child context
+
+
+## Unchanged original rig21 checks
+
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[LumoRig] actual animation=idle duration=3.03333330154419
+[LumoRig] actual animation=greeting_wave duration=2.03333330154419
+[LumoRig] actual animation=celebrate duration=2.03333330154419
+[LumoRig] actual animation=point_portal duration=1.63333332538605
+[LumoRig] actual animation=agree_nod duration=1.63333332538605
+[LumoRig] actual animation=kart_seated duration=1.03333330154419
+[LumoRig] actual animation=kart_steer_left duration=1.03333330154419
+[LumoRig] actual animation=kart_steer_right duration=1.03333330154419
+[LumoRig] actual animation=kart_jump duration=1.03333330154419
+[LumoRig] PASS checks=21 real exported rig and clips; physical Android not tested
+
+
+## Unchanged HostBridge original regression
+
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[LumoHost] reward reported: integer-result
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:296)
+         [2] _run (res://scripts/tests/host_bridge_regression.gd:73)
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] retry_pending_rewards (res://scripts/systems/host_bridge.gd:147)
+         [2] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:303)
+         [3] _run (res://scripts/tests/host_bridge_regression.gd:73)
+[LumoHost] reward reported: integer-pending
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:296)
+         [2] _run (res://scripts/tests/host_bridge_regression.gd:73)
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] retry_pending_rewards (res://scripts/systems/host_bridge.gd:147)
+         [2] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:303)
+         [3] _run (res://scripts/tests/host_bridge_regression.gd:73)
+[LumoHost] reward reported: integer-pending
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:296)
+         [2] _run (res://scripts/tests/host_bridge_regression.gd:73)
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] retry_pending_rewards (res://scripts/systems/host_bridge.gd:147)
+         [2] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:303)
+         [3] _run (res://scripts/tests/host_bridge_regression.gd:73)
+[LumoHost] reward reported: integer-pending
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:296)
+         [2] _run (res://scripts/tests/host_bridge_regression.gd:73)
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] retry_pending_rewards (res://scripts/systems/host_bridge.gd:147)
+         [2] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:303)
+         [3] _run (res://scripts/tests/host_bridge_regression.gd:73)
+[LumoHost] reward reported: integer-pending
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:296)
+         [2] _run (res://scripts/tests/host_bridge_regression.gd:73)
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] retry_pending_rewards (res://scripts/systems/host_bridge.gd:147)
+         [2] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:303)
+         [3] _run (res://scripts/tests/host_bridge_regression.gd:73)
+[LumoHost] reward reported: integer-pending
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:296)
+         [2] _run (res://scripts/tests/host_bridge_regression.gd:73)
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] retry_pending_rewards (res://scripts/systems/host_bridge.gd:147)
+         [2] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:303)
+         [3] _run (res://scripts/tests/host_bridge_regression.gd:73)
+[LumoHost] reward reported: integer-pending
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:296)
+         [2] _run (res://scripts/tests/host_bridge_regression.gd:73)
+WARNING: [LumoHost] reward not saved; retry on return: integer-pending
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] retry_pending_rewards (res://scripts/systems/host_bridge.gd:147)
+         [2] _test_integer_ack_bridge (res://scripts/tests/host_bridge_regression.gd:303)
+         [3] _run (res://scripts/tests/host_bridge_regression.gd:73)
+[LumoHost] reward reported: integer-pending
+[LumoHost] return: learn
+[HostBridgeTests] PASS: actual JNI integer ACK, strict rejection, reward dedup/backup, return
+[Progress] host wallet synchronized: 31 (lifetime 31)
+WARNING: [LumoHost] reward not saved; retry on return: retry-test
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] _run (res://scripts/tests/host_bridge_regression.gd:85)
+[LumoHost] reward reported: retry-test
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: sonnenhafen mode=race
+[LumoHost] return: games
+[HostBridgeTests] paused Kart teardown tracked=2 scene_released=true audio_released=true elapsed_ms=66
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+WARNING: [LumoHost] reward not saved; retry on return: host-test-1794650574127-1713141
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] _finish (res://scripts/games/kart_island.gd:3346)
+         [2] _run (res://scripts/tests/host_bridge_regression.gd:163)
+[Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+WARNING: [LumoHost] reward not saved; retry on return: host-test-1794650574127-1713141
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] retry_pending_rewards (res://scripts/systems/host_bridge.gd:147)
+         [2] _run (res://scripts/tests/host_bridge_regression.gd:177)
+WARNING: [LumoHost] reward not saved; retry on return: host-test-1794650574127-1713141
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] _return_to_app (res://scripts/games/kart_island.gd:3255)
+         [2] _run (res://scripts/tests/host_bridge_regression.gd:180)
+WARNING: [LumoHost] reward not saved; retry on return: host-test-1794650574127-1713141
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] reward (res://scripts/systems/host_bridge.gd:101)
+         [1] retry_pending_rewards (res://scripts/systems/host_bridge.gd:147)
+         [2] return_to_app (res://scripts/systems/host_bridge.gd:156)
+         [3] _return_to_app (res://scripts/games/kart_island.gd:3260)
+         [4] _run (res://scripts/tests/host_bridge_regression.gd:180)
+[LumoHost] reward reported: host-test-1794650574127-1713141
+[LumoHost] return: learn
+[HostBridgeTests] returned Kart teardown tracked=3 scene_released=true audio_released=true elapsed_ms=95
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[HostBridgeTests] restarted Kart teardown tracked=1 scene_released=true audio_released=true elapsed_ms=116
+[HostBridgeTests] PASS: native options, lifecycle save/pause, Back, resume identity, reward retry/once, games/learn return, fresh restart
+[Lumo] character_ready
+[Jump] ready: true 3D, grade=4, subject=Logik
+behavior:idle_bounce
+[Lumo] character_ready
+[Jump] ready: true 3D, grade=4, subject=Logik
+behavior:idle_bounce
+[LumoHost] reward reported: host-test-1794650577895-5480887
+[Jump] finished: stars=5 questions=1
+[LumoHost] return: games
+[HostBridgeTests] PASS: jump native reward, question pause, save/resume identity, Back to games
+
+
+## Original production VillageScene222 checks
+
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[SettlementWorld] ready mode=settlement save=user://lumo_settlement_158b1309a8ac6594be8e275d8620f29a8c3368f495cf56f456b5b79a7f147b23_6_village.json
+[VillageHostReady] {"host_entry":false,"initialized_plot_nodes":9,"living_village":true,"mode":"settlement","plots":9,"population":2,"return_scene":"build","save_blocked":false,"save_path":"user://lumo_settlement_158b1309a8ac6594be8e275d8620f29a8c3368f495cf56f456b5b79a7f147b23_6_village.json","scene":"res://scenes/creative/build_settlement_world.tscn","slot":6,"visible_residents":2}
+[Perf] quality_profile:medium
+[SettlementWorld] ready mode=settlement save=user://lumo_settlement_158b1309a8ac6594be8e275d8620f29a8c3368f495cf56f456b5b79a7f147b23_6_village.json
+[VillageHostReady] {"host_entry":false,"initialized_plot_nodes":9,"living_village":true,"mode":"settlement","plots":9,"population":2,"return_scene":"build","save_blocked":false,"save_path":"user://lumo_settlement_158b1309a8ac6594be8e275d8620f29a8c3368f495cf56f456b5b79a7f147b23_6_village.json","scene":"res://scenes/creative/build_settlement_world.tscn","slot":6,"visible_residents":2}
+[VillageScene] PASS checks=222 : production village, chapter, economy and resume
+
+
+## Original VillageEconomy337 checks
+
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[VillageEconomy] mirrored new AI victory turns=17
+[VillageEconomy] legal campaign turns=55 plots=1089 residents=98 chapter=12
+[VillageEconomy] PASS 337 checks
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+
+
+## Original final Hub renderer
+
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+     at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+WARNING: Volumetric fog is only available when using the Forward+ renderer.
+     at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[LumoHubCapture] screenshot hub_portrait.png (1080, 1920)
+[LumoHubCapture] screenshot hub_fold_landscape.png (2400, 1080)
+[LumoHubCapture] PASS 2 original current-source rendered PNGs
+
+
+## Strict Discovery checker11 tests
+
+test_ambiguous_or_nonfinite_json (test_discovery_rasters.DiscoveryEvidenceTest.test_ambiguous_or_nonfinite_json) ... ok
+test_bad_raster_or_nonoriginal_file (test_discovery_rasters.DiscoveryEvidenceTest.test_bad_raster_or_nonoriginal_file) ... ok
+test_clipped_or_overlaid_original_hub (test_discovery_rasters.DiscoveryEvidenceTest.test_clipped_or_overlaid_original_hub) ... ok
+test_complete_exact_roster (test_discovery_rasters.DiscoveryEvidenceTest.test_complete_exact_roster) ... ok
+test_false_or_incomplete_geometry_report (test_discovery_rasters.DiscoveryEvidenceTest.test_false_or_incomplete_geometry_report) ... ok
+test_false_production_state (test_discovery_rasters.DiscoveryEvidenceTest.test_false_production_state) ... ok
+test_false_task_progress_or_budget (test_discovery_rasters.DiscoveryEvidenceTest.test_false_task_progress_or_budget) ... ok
+test_missing_or_duplicate_hub_identity (test_discovery_rasters.DiscoveryEvidenceTest.test_missing_or_duplicate_hub_identity) ... ok
+test_missing_or_extra_image (test_discovery_rasters.DiscoveryEvidenceTest.test_missing_or_extra_image) ... ok
+test_unchanged_completion_image (test_discovery_rasters.DiscoveryEvidenceTest.test_unchanged_completion_image) ... ok
+test_wrong_original_hub_identity (test_discovery_rasters.DiscoveryEvidenceTest.test_wrong_original_hub_identity) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 12.634s
+
+OK

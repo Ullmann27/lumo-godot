@@ -1,0 +1,16 @@
+[128842.686] _XSERVTransSocketOpenCOTSServer: Unable to open socket for local
+[128842.686] _XSERVTransOpen: transport open failed for local/e1c6b05d5230:91
+[128842.686] _XSERVTransMakeAllCOTSServerListeners: failed to open listener for local
+[128842.686] _XSERVTransSocketOpenCOTSServer: Unable to open socket for unix
+[128842.686] _XSERVTransOpen: transport open failed for unix/e1c6b05d5230:91
+[128842.686] _XSERVTransMakeAllCOTSServerListeners: failed to open listener for unix
+[128842.686] (EE) 
+Fatal server error:
+[128842.686] (EE) Cannot establish any listening sockets - Make sure an X server isn't already running(EE) 
+[128842.686] (EE) 
+Please consult the The X.Org Foundation support 
+	 at http://wiki.x.org
+ for help. 
+[128842.686] (EE) Please also check the log file at "/home/agent/lumo-kart-minimap-2708/evidence/xorg.log" for additional information.
+[128842.686] (EE) 
+[128842.686] (EE) Server terminated with error (1). Closing log file.

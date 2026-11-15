@@ -1,0 +1,8 @@
+{
+  "head": "bd0712259bb64908a5649ee1999638826c9eb597",
+  "tree": "2eb628d3e3a327ee8985385130c96168db7aa852",
+  "matched_import_sidecars": 459,
+  "cache_copy": "physical copy from own prior verified checkout",
+  "source_diff": " scripts/games/kart_island.gd                 | 104 +++++++++++++--\n scripts/tests/mobile_safe_area_regression.gd | 185 ++++++++++++++++++++++++++-\n 2 files changed, 276 insertions(+), 13 deletions(-)\n",
+  "free_home": 4645277696
+}
