@@ -68,6 +68,13 @@ func _run() -> void:
 		else:
 			camera.fov = 44.0
 			var eye: Vector3 = target - basis.x * side * 12.0 + basis.z * 17.0 + Vector3.UP * 9.0
+			# These two production worlds have an elevated road or a large foreground
+			# tower at the old inspection position. Inspect from the outer shoulder;
+			# never hide a world mesh or alter the real game camera for a prettier shot.
+			if track_id in ["zauberwald", "learning_lab"]:
+				eye = target + basis.x * side * 11.0 - basis.z * 12.0
+				eye.y = maxf(target.y + 10.0, centre.y + 6.0)
+				camera.fov = 50.0
 			camera.look_at_from_position(eye, target + Vector3.UP * 2.8)
 		finish.set_enabled(false)
 		await _save(view + "_before")
