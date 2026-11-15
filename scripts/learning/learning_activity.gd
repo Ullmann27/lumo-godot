@@ -20,12 +20,69 @@ var english_choice := -1
 var english_hint_level := 0
 var english_attempts := 0
 var english_complete := false
+# Read-only display data. Native lesson never authorizes grading/rewards.
+var task_prompt := ""
+var task_explanation := ""
+var task_choices: Array[String] = []
+var pattern_sequence: Array[String] = []
+var pattern_period := 0
+var preview_step := 0
 
 
 func configure(raw: Dictionary) -> bool:
 	reset()
 	kind = str(raw.get("kind", "invalid"))
 	match kind:
+		"task_card":
+			task_prompt = str(raw.get("prompt", ""))
+			task_explanation = str(raw.get("explanation", ""))
+			var provided: Variant = raw.get("answerChoices", [])
+			if task_prompt.strip_edges().is_empty() or task_prompt.length() > 800 or task_explanation.length() > 1200 or not provided is Array or provided.size() > 8:
+				kind = "invalid"
+				return false
+			task_choices.clear()
+			for candidate in provided:
+				if not candidate is String or candidate.strip_edges().is_empty() or candidate.length() > 120:
+					kind = "invalid"
+					return false
+				task_choices.append(candidate)
+		"pattern":
+			var words: Variant = raw.get("patternSequence", raw.get("sequence", []))
+			var samples: Variant = raw.get("patternChoices", raw.get("choices", []))
+			var group: Variant = raw.get("patternUnit", [])
+			var width_value: Variant = group.size() if group is Array and not group.is_empty() else raw.get("period")
+			if not words is Array or not samples is Array or not _bounded_integer(width_value, 1, 4) or words.size() < int(width_value) * 2 or words.size() > 12 or samples.size() < 2 or samples.size() > 6:
+				kind = "invalid"
+				return false
+			pattern_period = int(width_value)
+			pattern_sequence.clear()
+			task_choices.clear()
+			for value in words:
+				if not value is String or value.strip_edges().is_empty() or value.length() > 24:
+					kind = "invalid"
+					return false
+				pattern_sequence.append(value)
+			for value in samples:
+				if not value is String or value.strip_edges().is_empty() or value.length() > 24 or task_choices.has(value):
+					kind = "invalid"
+					return false
+				task_choices.append(value)
+			for i in range(pattern_sequence.size()):
+				if pattern_sequence[i] != pattern_sequence[i % pattern_period]:
+					kind = "invalid"
+					return false
+			for shorter in range(1, pattern_period):
+				var simpler := true
+				for i in range(pattern_sequence.size()):
+					if pattern_sequence[i] != pattern_sequence[i % shorter]:
+						simpler = false
+						break
+				if simpler:
+					kind = "invalid"
+					return false
+			if not task_choices.has(pattern_sequence[pattern_sequence.size() % pattern_period]):
+				kind = "invalid"
+				return false
 		"english_objects":
 			var checked := ENGLISH.checked_payload(raw)
 			if checked.is_empty():
@@ -137,6 +194,7 @@ func reset() -> void:
 	english_hint_level = 0
 	english_attempts = 0
 	english_complete = false
+	preview_step = 0
 
 
 func token_count() -> int:
@@ -173,6 +231,8 @@ func initial_count() -> int:
 func is_complete() -> bool:
 	if kind == "english_objects":
 		return english_complete
+	if kind in ["task_card", "pattern"]:
+		return false
 	if kind == "plant_parts":
 		return watered and sunlight and inspected.size() == 4
 	return kind != "invalid" and placed.size() == goal_count()
@@ -207,7 +267,7 @@ func count_in_group(group: int) -> int:
 
 
 func place(token: int, target: int) -> bool:
-	if kind in ["invalid", "plant_parts", "english_objects"] or is_complete() or token < 0 or token >= token_count():
+	if kind in ["invalid", "plant_parts", "english_objects", "pattern", "task_card"] or is_complete() or token < 0 or token >= token_count():
 		return false
 	if placed.has(token) or target != target_index():
 		return false
@@ -245,6 +305,12 @@ func english_hint() -> bool:
 
 func explanation() -> String:
 	match kind:
+		"task_card":
+			if task_explanation.is_empty():
+				return "Schau dir die Aufgabe an. Entscheide anschließend selbst in deiner Lernaufgabe."
+			return task_explanation
+		"pattern":
+			return "Sieh dir die Reihenfolge der Formen an. Welche kleine Gruppe wiederholt sich?"
 		"english_objects":
 			if english_complete:
 				return "Richtig: „%s“. Wähle jetzt „Zur Aufgabe“." % english_meaning
