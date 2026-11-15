@@ -433,7 +433,7 @@ def build_kit(output):
     bpy.context.preferences.filepaths.save_version = 0
     bpy.ops.wm.save_as_mainfile(filepath=str(output / "Lumo-Learning-Objects.blend"))
     return {"asset_names": [
-        "CounterBerry", "LetterTile", "TenBundle",
+        "CounterBerry", "CounterBerryGold", "LetterTile", "TenBundle",
         "ShapeCircle", "ShapeSquare", "ShapeTriangle",
         "TenFrameCell", "LearningPodium"],
         "production_details": detail,
