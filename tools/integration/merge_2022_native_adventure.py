@@ -52,12 +52,18 @@ def resolve_file(name: str) -> dict:
         merged = subprocess.run(
             ["git", "merge-file", "-p", *inputs],
             cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if merged.returncode not in (0, 1):
-            raise RuntimeError(f"merge-file could not reconcile {name}: {merged.stderr}")
+        # git-merge-file exits with the number of conflicts (not merely 1).
+        if merged.returncode < 0 or merged.returncode > 127:
+            raise RuntimeError(f"merge-file failed for {name}: {merged.stderr}")
         original = merged.stdout
     matches = list(PATTERN.finditer(original))
+    proof = Path(os.environ.get("PROOF", "/tmp"))
+    if proof.is_dir():
+        (proof / ("mergefile_" + Path(name).stem + ".txt")).write_text(
+            original, encoding="utf8")
+    print(f"[LumoNativeUnion] {name}: merge-file conflict regions={len(matches)}", flush=True)
     if len(matches) != 1:
-        raise RuntimeError(f"{name}: expected one conflict, found {len(matches)}")
+        raise RuntimeError(f"{name}: review {len(matches)} regions in mergefile evidence")
     old, newer = matches[0].group(1), matches[0].group(2)
     if name.endswith("kart_island.gd"):
         if old.count("RIVAL_FLIGHT.STATE_KEY") != 2:
