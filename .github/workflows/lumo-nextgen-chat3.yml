@@ -8,7 +8,7 @@ permissions:
   contents: write
 concurrency:
   group: lumo-nextgen-chat3-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   make-and-verify:
     runs-on: ubuntu-24.04
@@ -17,6 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
+          fetch-depth: 2
       - name: Install real Blender and software rendering
         run: |
           set -euo pipefail
@@ -24,35 +25,25 @@ jobs:
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y blender python3-numpy xvfb libgl1-mesa-dri mesa-vulkan-drivers
           blender --version | head -n 3
           blender --background --python-expr 'import sys; print("PYTHON",sys.version); import numpy; print("NUMPY",numpy.__version__)'
-      - name: Produce or reuse already audited Blender sources and renders
+      - name: Produce actual Blender sources and all real renders
         run: |
           set -euo pipefail
           mkdir -p exports/lumo-nextgen-chat3
           git rev-parse HEAD > exports/lumo-nextgen-chat3/build-source-sha.txt
-          ASSETS="assets/characters/lumo_nextgen_chat3"
           OUT="exports/lumo-nextgen-chat3"
-          if test -s "$ASSETS/Lumo-Learning-Animated.blend" \
-             && test -s "$ASSETS/Lumo-Learning-Objects.blend" \
-             && test -s "$ASSETS/Lumo-Learning-Animated.glb" \
-             && ! git diff --name-only HEAD^ HEAD | grep -qE '^(tools/lumo_nextgen_chat3/build_blender_assets.py|assets/characters/lumo_animated/)'; then
-            cp "$ASSETS"/*.blend "$ASSETS"/*.glb "$ASSETS"/Blender_Lumo_*.png \
-               "$ASSETS"/production-report.json "$OUT/"
-            echo 'LUMO_CHAT3_BUILD_PASS_REUSED: exact previously produced, saved GLB/BLEND bytes'
-          else
-            blender --background --factory-startup -t 2 \
-              --python tools/lumo_nextgen_chat3/build_blender_assets.py -- \
-              --source assets/characters/lumo_animated/Lumo-Animated-Mobile.glb \
-              --output "$OUT" > "$OUT/blender-build.log" 2>&1 || {
-                tail -120 "$OUT/blender-build.log"
-                exit 1
-              }
-            tail -80 "$OUT/blender-build.log"
-            grep -F 'LUMO_CHAT3_BUILD_PASS' "$OUT/blender-build.log"
-          fi
+          blender --background --factory-startup -t 2 \
+            --python tools/lumo_nextgen_chat3/build_blender_assets.py -- \
+            --source assets/characters/lumo_animated/Lumo-Animated-Mobile.glb \
+            --output "$OUT" > "$OUT/blender-build.log" 2>&1 || {
+              tail -130 "$OUT/blender-build.log"
+              exit 1
+            }
+          tail -35 "$OUT/blender-build.log"
+          grep -F 'LUMO_CHAT3_BUILD_PASS' "$OUT/blender-build.log"
           for file in Lumo-Learning-Animated.blend Lumo-Learning-Animated.glb Lumo-Learning-Objects.blend Lumo-Learning-Objects.glb; do
             test -s "$OUT/$file"
           done
-          for view in front three_quarter side back; do
+          for view in front three_quarter side back LearningObjects; do
             test -s "$OUT/Blender_Lumo_$view.png"
           done
       - name: Audit real GLB binary animations, morph shapes, skin and objects
@@ -157,6 +148,15 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -f assets/characters/lumo_nextgen_chat3
           if git diff --cached --quiet; then exit 0; fi
+          # Never force push. If a teammate has advanced this branch since
+          # checkout, publish the full generated artifact and let the newest
+          # run push its own output instead of overwriting newer source.
+          REMOTE_SHA="$(git ls-remote origin "refs/heads/$GITHUB_REF_NAME" | awk '{print $1}')"
+          if test "$REMOTE_SHA" != "$(git rev-parse HEAD)"; then
+            echo "Chat3 generated assets saved as Actions artifact: branch advanced ($REMOTE_SHA)"
+            git reset
+            exit 0
+          fi
           git commit -m 'assets(lumo-chat3): generated Blender source, GLBs and native evidence'
           git push origin "HEAD:$GITHUB_REF_NAME"
       - name: Upload real generated sources and QA logs
