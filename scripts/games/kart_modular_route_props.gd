@@ -4,6 +4,7 @@ extends RefCounted
 ## All primitives are fed into the production world's spatial MultiMesh batching.
 
 const TUNNELS = preload("res://scripts/games/kart_adventure_tunnels.gd")
+const ART_FINISH = preload("res://scripts/games/visual/kart_track_art_finish.gd")
 const SAFETY_LATERAL_M: float = 8.25
 const GANTRY_TOP_M: float = 8.5
 const MIN_GAP_M: float = 25.0
@@ -100,6 +101,7 @@ static func build(world) -> void:
 		"minimum_lateral_m": SAFETY_LATERAL_M,
 		"colliders_added": 0
 	})
+	ART_FINISH.install(world)
 
 
 static func _dark_color(track: String) -> Color:
