@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "scope": "frozen runtime snapshot; integration validation in progress",
+  "producer": {
+    "schema": "lumo.independent.producer_snapshot",
+    "version": 1,
+    "producer_root": "/workspace/scratch/54fec2798782/lumo-godot",
+    "producer_branch": "art/lumo-nextgen-avatar-20261115-54fe",
+    "producer_head": "20fb9f71939f4acdb7dd87cbca54a5d9da36e504",
+    "producer_committed": false,
+    "snapshot_utc": "2026-11-15T17:07:08Z",
+    "consumer_core_commit": "aee6a418ea5b56b9d2696b825ac8ec477eb5bdc0"
+  },
+  "integrationBase": "36bb426758b8125ef805267ba20f321130931c09",
+  "selectedFiles": {
+    "assets/lumo_next/character/ATTRIBUTION.md": {
+      "bytes": 1679,
+      "sha256": "70233469e3f6cd6094aeaef98fa368b75dcae4164cdd99553f3838619a4e8495"
+    },
+    "assets/lumo_next/character/Lumo-Learning.glb": {
+      "bytes": 7734740,
+      "sha256": "cc210fb03bd831f21f0ba99aa12c7b7ef60f2fb5a38e0ca30a8b059d51f08163"
+    },
+    "assets/lumo_next/character/lumo_albedo.png": {
+      "bytes": 1614372,
+      "sha256": "5ca4e69c6420e8ce56f714e9a03fe1303d102706e4ce7b29443ec6b990b613d0"
+    },
+    "assets/lumo_next/character/lumo_normal.png": {
+      "bytes": 1311280,
+      "sha256": "02fe4e8a6e876962eac9bef283e315eb64e9095b72165349d9f20d389619ff09"
+    },
+    "assets/lumo_next/character/lumo_orm.png": {
+      "bytes": 1118352,
+      "sha256": "b74eb3404c784dc09284d3945464d824cd1947f6a1681d8ebe7dca58e44c2a5b"
+    },
+    "assets/lumo_next/learning/backdrop_module.glb": {
+      "bytes": 240068,
+      "sha256": "2a0e230baa3d42606559fb48e0aa138b2dd769087ecc687998e41bdae8f8eb1f"
+    },
+    "assets/lumo_next/learning/banana.glb": {
+      "bytes": 157912,
+      "sha256": "eb3fb9f86c9e501e6516574a4da597bddf5f5792abaf346e573d4efebf352acb"
+    },
+    "assets/lumo_next/learning/count_token_gold.glb": {
+      "bytes": 125124,
+      "sha256": "a3a895d5d4fbbf20b328299d1edfba58c8053223cff6556726566cf33bd56ec9"
+    },
+    "assets/lumo_next/learning/count_token_teal.glb": {
+      "bytes": 125120,
+      "sha256": "5049cd76f4feb2ca4ea0c8516c629524dcc19a03b9dac55d2edbd76456f00dac"
+    },
+    "assets/lumo_next/learning/floor_module.glb": {
+      "bytes": 198436,
+      "sha256": "d8c3e45c43d94bf00a9d17bdc1c4f7ad39fcc61d280aed3af6a04887d549f6f3"
+    },
+    "assets/lumo_next/learning/letter_tile.glb": {
+      "bytes": 134524,
+      "sha256": "360360ce66410e52e794fb8c608a7b6a02ddd99558c064a1579c115f0a1dbc53"
+    },
+    "assets/lumo_next/learning/manifest.json": {
+      "bytes": 21346,
+      "sha256": "3788b5d924d366b6b639bd497de38f6f8d8578b1e618804a9f679cd9809435d6"
+    },
+    "assets/lumo_next/learning/pedestal.glb": {
+      "bytes": 159244,
+      "sha256": "78a1fc33fc921f1d5544667149936bca7ec656951959942a987e35487c85c173"
+    },
+    "assets/lumo_next/learning/plant_study.glb": {
+      "bytes": 237116,
+      "sha256": "73782e6c3e9bf1472416f68d6f7d10b817fe18768e01e51b3c8a849560b2227a"
+    },
+    "assets/lumo_next/learning/provenance.json": {
+      "bytes": 1265,
+      "sha256": "d3cbea77b1047b3b6049dd2f3efda879835d129389c0c3c23daea8a7ab0cf367"
+    },
+    "assets/lumo_next/learning/shape_circle.glb": {
+      "bytes": 136996,
+      "sha256": "919422efa64d11d2177f2f17de51f0d1259f2a81585f9da4aa32e10120edd539"
+    },
+    "assets/lumo_next/learning/shape_hexagon.glb": {
+      "bytes": 125100,
+      "sha256": "d7317d1ea6118c69499adef40bf37110d7278b9a5ec10339f8d969e6c4f38f38"
+    },
+    "assets/lumo_next/learning/shape_square.glb": {
+      "bytes": 122280,
+      "sha256": "549d7b298540acae6a70bc442b47df26f21088cfdf8c2ad8fc9e3730e0201aa6"
+    },
+    "assets/lumo_next/learning/shape_triangle.glb": {
+      "bytes": 120780,
+      "sha256": "62d83f5a6e47aae0d0d67326fd8ffee7b7c9ff70b471b7ff10e0f044f0234982"
+    },
+    "assets/lumo_next/learning/syllable_tile.glb": {
+      "bytes": 133612,
+      "sha256": "1bb3106769c4606070b79263b8e0109988f0ba54b84a8e980f562d70d753c7ee"
+    },
+    "assets/lumo_next/learning/ten_bundle.glb": {
+      "bytes": 156060,
+      "sha256": "7e017975349f1604b8db8a48264064cc467724f35b71197e9d97fb47c09c67d1"
+    },
+    "assets/lumo_next/learning/ten_frame.glb": {
+      "bytes": 234576,
+      "sha256": "d2efd217fb911d4cb9d15dd86d257a54b3b3bcd7d0f67a9d879bb80921694a52"
+    },
+    "scripts/lumo_next/avatar_director.gd": {
+      "bytes": 34415,
+      "sha256": "891617cbfe9cb4efbeaa695f47469e9a4c809eecd2b60bea20055dc0a77112b6"
+    },
+    "scripts/lumo_next/learning_asset_meshes.gd": {
+      "bytes": 2236,
+      "sha256": "178b2cb62a55a07b2ef97600fb768a48de988a1e0cce38e6c0a0bf6674afc89d"
+    },
+    "scripts/lumo_next/learning_lumo_actor.gd": {
+      "bytes": 9674,
+      "sha256": "4a7b3318896d545bebfc85b37b8ec862bec7e2cbb2b8c43fccfb9cb71b0bfc66"
+    },
+    "scripts/lumo_next/learning_target_registry.gd": {
+      "bytes": 4040,
+      "sha256": "9c541b37ace5d5269dbbffe2ba1b195965532e2d5fab7d2b356722be45b9b031"
+    },
+    "scripts/lumo_next/learning_world_next.gd": {
+      "bytes": 10523,
+      "sha256": "2c832e5d471282d04e8a5a8784042bfc97f8a598c280cd78b0ea27a4fd52b873"
+    },
+    "scenes/learning/learning_world.tscn": {
+      "bytes": 197,
+      "sha256": "fe7a004d16558b6f017dbb3ec10b27a3f7682da7e3d6469e8166fd957e953d97"
+    }
+  },
+  "excludedFiles": {
+    "scripts/learning/learning_world.gd": "Retained reviewed integration base with canonical pattern and scoped dialogue; factory hook is already present."
+  },
+  "knownOpenChecks": [
+    "Canonical protocolVersion 1 binding and monotonic turn handling",
+    "Segmented native speech synchronization and cancellation",
+    "Actual Android import, rendering, performance and release validation"
+  ],
+  "claims": "Producer changes were uncommitted when frozen; hashes identify the delivered source. This integration commit makes the selected runtime reproducible."
+}

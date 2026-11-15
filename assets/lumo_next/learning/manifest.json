@@ -1,0 +1,834 @@
+{
+  "schema": "lumo.learning_assets.v1",
+  "generated_with": "4.3.2",
+  "units": "metres",
+  "axis": "right-handed; +X right, +Y up, +Z towards viewer",
+  "geometry": "Opaque low-poly meshes; no hair, geometry nodes, Blender-only shaders or alpha cards required at runtime.",
+  "texture_policy": "Two packed original 512x512 images on a single opaque material per asset. Individual GLBs embed copies; runtime decoded-texture sharing has not been verified.",
+  "source": "art/lumo_next/learning/lumo_learning_assets.blend",
+  "assets": [
+    {
+      "id": "count_token_teal",
+      "category": "counting",
+      "countable": true,
+      "anchors": {
+        "object_anchor": {
+          "node": "count_token_teal__object_anchor",
+          "position": [
+            0,
+            0.36,
+            0
+          ],
+          "semantic_id": "addend_a_00"
+        },
+        "grip_anchor": {
+          "node": "count_token_teal__grip_anchor",
+          "position": [
+            0,
+            0.18,
+            0
+          ],
+          "semantic_id": "grip_anchor"
+        }
+      },
+      "cardinality": 1,
+      "logical_type": "count_token",
+      "path": "res://assets/lumo_next/learning/count_token_teal.glb",
+      "bytes": 125120,
+      "sha256": "5049cd76f4feb2ca4ea0c8516c629524dcc19a03b9dac55d2edbd76456f00dac",
+      "vertices": 152,
+      "triangles": 300,
+      "bounds_min": [
+        -0.28999999165534973,
+        0.0,
+        -0.28999999165534973
+      ],
+      "bounds_max": [
+        0.28999999165534973,
+        0.36000001430511475,
+        0.28999999165534973
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "count_token_gold",
+      "category": "counting",
+      "countable": true,
+      "anchors": {
+        "object_anchor": {
+          "node": "count_token_gold__object_anchor",
+          "position": [
+            0,
+            0.36,
+            0
+          ],
+          "semantic_id": "addend_b_00"
+        },
+        "grip_anchor": {
+          "node": "count_token_gold__grip_anchor",
+          "position": [
+            0,
+            0.18,
+            0
+          ],
+          "semantic_id": "grip_anchor"
+        }
+      },
+      "cardinality": 1,
+      "logical_type": "count_token",
+      "path": "res://assets/lumo_next/learning/count_token_gold.glb",
+      "bytes": 125124,
+      "sha256": "a3a895d5d4fbbf20b328299d1edfba58c8053223cff6556726566cf33bd56ec9",
+      "vertices": 152,
+      "triangles": 300,
+      "bounds_min": [
+        -0.28999999165534973,
+        0.0,
+        -0.28999999165534973
+      ],
+      "bounds_max": [
+        0.28999999165534973,
+        0.36000001430511475,
+        0.28999999165534973
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "ten_frame",
+      "category": "counting_support",
+      "countable": false,
+      "anchors": {
+        "slot_0": {
+          "node": "ten_frame__slot_0",
+          "position": [
+            -1.7,
+            0.112,
+            -0.5
+          ],
+          "semantic_id": "ten_frame_primary/slot_0"
+        },
+        "slot_1": {
+          "node": "ten_frame__slot_1",
+          "position": [
+            -0.85,
+            0.112,
+            -0.5
+          ],
+          "semantic_id": "ten_frame_primary/slot_1"
+        },
+        "slot_2": {
+          "node": "ten_frame__slot_2",
+          "position": [
+            0.0,
+            0.112,
+            -0.5
+          ],
+          "semantic_id": "ten_frame_primary/slot_2"
+        },
+        "slot_3": {
+          "node": "ten_frame__slot_3",
+          "position": [
+            0.8499999999999999,
+            0.112,
+            -0.5
+          ],
+          "semantic_id": "ten_frame_primary/slot_3"
+        },
+        "slot_4": {
+          "node": "ten_frame__slot_4",
+          "position": [
+            1.7,
+            0.112,
+            -0.5
+          ],
+          "semantic_id": "ten_frame_primary/slot_4"
+        },
+        "slot_5": {
+          "node": "ten_frame__slot_5",
+          "position": [
+            -1.7,
+            0.112,
+            0.5
+          ],
+          "semantic_id": "ten_frame_primary/slot_5"
+        },
+        "slot_6": {
+          "node": "ten_frame__slot_6",
+          "position": [
+            -0.85,
+            0.112,
+            0.5
+          ],
+          "semantic_id": "ten_frame_primary/slot_6"
+        },
+        "slot_7": {
+          "node": "ten_frame__slot_7",
+          "position": [
+            0.0,
+            0.112,
+            0.5
+          ],
+          "semantic_id": "ten_frame_primary/slot_7"
+        },
+        "slot_8": {
+          "node": "ten_frame__slot_8",
+          "position": [
+            0.8499999999999999,
+            0.112,
+            0.5
+          ],
+          "semantic_id": "ten_frame_primary/slot_8"
+        },
+        "slot_9": {
+          "node": "ten_frame__slot_9",
+          "position": [
+            1.7,
+            0.112,
+            0.5
+          ],
+          "semantic_id": "ten_frame_primary/slot_9"
+        },
+        "object_anchor": {
+          "node": "ten_frame__object_anchor",
+          "position": [
+            0,
+            0.18,
+            0
+          ],
+          "semantic_id": "ten_frame_primary"
+        }
+      },
+      "slot_count": 10,
+      "logical_type": "ten_frame",
+      "path": "res://assets/lumo_next/learning/ten_frame.glb",
+      "bytes": 234576,
+      "sha256": "d2efd217fb911d4cb9d15dd86d257a54b3b3bcd7d0f67a9d879bb80921694a52",
+      "vertices": 1920,
+      "triangles": 3760,
+      "bounds_min": [
+        -2.325000047683716,
+        0.0,
+        -1.024999976158142
+      ],
+      "bounds_max": [
+        2.325000047683716,
+        0.18000000715255737,
+        1.024999976158142
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "ten_bundle",
+      "category": "counting",
+      "countable": true,
+      "anchors": {
+        "unit_anchor_0": {
+          "node": "ten_bundle__unit_anchor_0",
+          "position": [
+            -0.945,
+            0.21,
+            0
+          ],
+          "semantic_id": "tens_bundle_00/unit_0"
+        },
+        "unit_anchor_1": {
+          "node": "ten_bundle__unit_anchor_1",
+          "position": [
+            -0.735,
+            0.21,
+            0
+          ],
+          "semantic_id": "tens_bundle_00/unit_1"
+        },
+        "unit_anchor_2": {
+          "node": "ten_bundle__unit_anchor_2",
+          "position": [
+            -0.5249999999999999,
+            0.21,
+            0
+          ],
+          "semantic_id": "tens_bundle_00/unit_2"
+        },
+        "unit_anchor_3": {
+          "node": "ten_bundle__unit_anchor_3",
+          "position": [
+            -0.31499999999999995,
+            0.21,
+            0
+          ],
+          "semantic_id": "tens_bundle_00/unit_3"
+        },
+        "unit_anchor_4": {
+          "node": "ten_bundle__unit_anchor_4",
+          "position": [
+            -0.10499999999999998,
+            0.21,
+            0
+          ],
+          "semantic_id": "tens_bundle_00/unit_4"
+        },
+        "unit_anchor_5": {
+          "node": "ten_bundle__unit_anchor_5",
+          "position": [
+            0.1050000000000001,
+            0.21,
+            0
+          ],
+          "semantic_id": "tens_bundle_00/unit_5"
+        },
+        "unit_anchor_6": {
+          "node": "ten_bundle__unit_anchor_6",
+          "position": [
+            0.31500000000000006,
+            0.21,
+            0
+          ],
+          "semantic_id": "tens_bundle_00/unit_6"
+        },
+        "unit_anchor_7": {
+          "node": "ten_bundle__unit_anchor_7",
+          "position": [
+            0.525,
+            0.21,
+            0
+          ],
+          "semantic_id": "tens_bundle_00/unit_7"
+        },
+        "unit_anchor_8": {
+          "node": "ten_bundle__unit_anchor_8",
+          "position": [
+            0.735,
+            0.21,
+            0
+          ],
+          "semantic_id": "tens_bundle_00/unit_8"
+        },
+        "unit_anchor_9": {
+          "node": "ten_bundle__unit_anchor_9",
+          "position": [
+            0.945,
+            0.21,
+            0
+          ],
+          "semantic_id": "tens_bundle_00/unit_9"
+        },
+        "object_anchor": {
+          "node": "ten_bundle__object_anchor",
+          "position": [
+            0,
+            0.21,
+            0
+          ],
+          "semantic_id": "tens_bundle_00"
+        }
+      },
+      "cardinality": 10,
+      "note": "Ten separately named units; its root represents one ten. Hide individual units only during an explicit bundling step.",
+      "logical_type": "ten_bundle",
+      "path": "res://assets/lumo_next/learning/ten_bundle.glb",
+      "bytes": 156060,
+      "sha256": "7e017975349f1604b8db8a48264064cc467724f35b71197e9d97fb47c09c67d1",
+      "vertices": 560,
+      "triangles": 1080,
+      "bounds_min": [
+        -1.0464999675750732,
+        0.0,
+        -0.10499999672174454
+      ],
+      "bounds_max": [
+        1.0464999675750732,
+        0.20999999344348907,
+        0.10499999672174454
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "syllable_tile",
+      "category": "text_support",
+      "countable": false,
+      "anchors": {
+        "label_anchor": {
+          "node": "syllable_tile__label_anchor",
+          "position": [
+            0,
+            0.375,
+            -0.02
+          ],
+          "semantic_id": "syllable_0"
+        },
+        "object_anchor": {
+          "node": "syllable_tile__object_anchor",
+          "position": [
+            0,
+            0.375,
+            0
+          ],
+          "semantic_id": "object_anchor"
+        }
+      },
+      "note": "No baked characters. Godot TextMesh/Label3D supplies current letters or syllables at label_anchor.",
+      "logical_type": "syllable_tile",
+      "path": "res://assets/lumo_next/learning/syllable_tile.glb",
+      "bytes": 133612,
+      "sha256": "1bb3106769c4606070b79263b8e0109988f0ba54b84a8e980f562d70d753c7ee",
+      "vertices": 264,
+      "triangles": 516,
+      "bounds_min": [
+        -0.7250000238418579,
+        0.0,
+        -0.4749999940395355
+      ],
+      "bounds_max": [
+        0.7250000238418579,
+        0.367000013589859,
+        0.4749999940395355
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "letter_tile",
+      "category": "text_support",
+      "countable": false,
+      "anchors": {
+        "label_anchor": {
+          "node": "letter_tile__label_anchor",
+          "position": [
+            0,
+            0.375,
+            -0.02
+          ],
+          "semantic_id": "letter_0"
+        },
+        "object_anchor": {
+          "node": "letter_tile__object_anchor",
+          "position": [
+            0,
+            0.375,
+            0
+          ],
+          "semantic_id": "object_anchor"
+        }
+      },
+      "note": "No baked characters. Godot TextMesh/Label3D supplies current letters or syllables at label_anchor.",
+      "logical_type": "letter_tile",
+      "path": "res://assets/lumo_next/learning/letter_tile.glb",
+      "bytes": 134524,
+      "sha256": "360360ce66410e52e794fb8c608a7b6a02ddd99558c064a1579c115f0a1dbc53",
+      "vertices": 264,
+      "triangles": 516,
+      "bounds_min": [
+        -0.4099999964237213,
+        0.0,
+        -0.4099999964237213
+      ],
+      "bounds_max": [
+        0.4099999964237213,
+        0.367000013589859,
+        0.4099999964237213
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "shape_circle",
+      "category": "pattern",
+      "countable": true,
+      "anchors": {
+        "object_anchor": {
+          "node": "shape_circle__object_anchor",
+          "position": [
+            0,
+            0.22,
+            0
+          ],
+          "semantic_id": "pattern_item_00"
+        }
+      },
+      "cardinality": 1,
+      "shape": "circle",
+      "logical_type": "circle",
+      "path": "res://assets/lumo_next/learning/shape_circle.glb",
+      "bytes": 136996,
+      "sha256": "919422efa64d11d2177f2f17de51f0d1259f2a81585f9da4aa32e10120edd539",
+      "vertices": 384,
+      "triangles": 764,
+      "bounds_min": [
+        -0.3799999952316284,
+        0.0,
+        -0.3799999952316284
+      ],
+      "bounds_max": [
+        0.3799999952316284,
+        0.2199999988079071,
+        0.3799999952316284
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "shape_triangle",
+      "category": "pattern",
+      "countable": true,
+      "anchors": {
+        "object_anchor": {
+          "node": "shape_triangle__object_anchor",
+          "position": [
+            0,
+            0.22,
+            0
+          ],
+          "semantic_id": "pattern_item_00"
+        }
+      },
+      "cardinality": 1,
+      "shape": "triangle",
+      "logical_type": "triangle",
+      "path": "res://assets/lumo_next/learning/shape_triangle.glb",
+      "bytes": 120780,
+      "sha256": "62d83f5a6e47aae0d0d67326fd8ffee7b7c9ff70b471b7ff10e0f044f0234982",
+      "vertices": 72,
+      "triangles": 140,
+      "bounds_min": [
+        -0.3815160095691681,
+        0.0,
+        -0.43799299001693726
+      ],
+      "bounds_max": [
+        0.3815160095691681,
+        0.2199999988079071,
+        0.22499999403953552
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "shape_square",
+      "category": "pattern",
+      "countable": true,
+      "anchors": {
+        "object_anchor": {
+          "node": "shape_square__object_anchor",
+          "position": [
+            0,
+            0.22,
+            0
+          ],
+          "semantic_id": "pattern_item_00"
+        }
+      },
+      "cardinality": 1,
+      "shape": "square",
+      "logical_type": "square",
+      "path": "res://assets/lumo_next/learning/shape_square.glb",
+      "bytes": 122280,
+      "sha256": "549d7b298540acae6a70bc442b47df26f21088cfdf8c2ad8fc9e3730e0201aa6",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds_min": [
+        -0.3400000035762787,
+        0.0,
+        -0.3400000035762787
+      ],
+      "bounds_max": [
+        0.3400000035762787,
+        0.2199999988079071,
+        0.3400000035762787
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "shape_hexagon",
+      "category": "pattern",
+      "countable": true,
+      "anchors": {
+        "object_anchor": {
+          "node": "shape_hexagon__object_anchor",
+          "position": [
+            0,
+            0.22,
+            0
+          ],
+          "semantic_id": "pattern_item_00"
+        }
+      },
+      "cardinality": 1,
+      "shape": "hexagon",
+      "logical_type": "hexagon",
+      "path": "res://assets/lumo_next/learning/shape_hexagon.glb",
+      "bytes": 125100,
+      "sha256": "d7317d1ea6118c69499adef40bf37110d7278b9a5ec10339f8d969e6c4f38f38",
+      "vertices": 144,
+      "triangles": 284,
+      "bounds_min": [
+        -0.3637309968471527,
+        0.0,
+        -0.4130679965019226
+      ],
+      "bounds_max": [
+        0.3637309968471527,
+        0.2199999988079071,
+        0.4130679965019226
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "banana",
+      "category": "science",
+      "countable": true,
+      "anchors": {
+        "object_anchor": {
+          "node": "banana__object_anchor",
+          "position": [
+            0,
+            0.43,
+            0
+          ],
+          "semantic_id": "science_banana"
+        }
+      },
+      "cardinality": 1,
+      "note": "Single banana, supporting the word Banane without extra countable fruit.",
+      "logical_type": "banana",
+      "path": "res://assets/lumo_next/learning/banana.glb",
+      "bytes": 157912,
+      "sha256": "eb3fb9f86c9e501e6516574a4da597bddf5f5792abaf346e573d4efebf352acb",
+      "vertices": 597,
+      "triangles": 1174,
+      "bounds_min": [
+        -0.9508270025253296,
+        0.0,
+        -0.2150000035762787
+      ],
+      "bounds_max": [
+        0.8769009709358215,
+        0.9477310180664062,
+        0.2150000035762787
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "plant_study",
+      "category": "science",
+      "countable": false,
+      "anchors": {
+        "plant_root": {
+          "node": "plant_study__plant_root",
+          "position": [
+            0,
+            0.245,
+            0.24
+          ],
+          "semantic_id": "plant_root"
+        },
+        "plant_stem": {
+          "node": "plant_study__plant_stem",
+          "position": [
+            0,
+            0.83,
+            0.03
+          ],
+          "semantic_id": "plant_stem"
+        },
+        "plant_leaf": {
+          "node": "plant_study__plant_leaf",
+          "position": [
+            0.34,
+            1.29,
+            0.06
+          ],
+          "semantic_id": "plant_leaf"
+        },
+        "plant_flower": {
+          "node": "plant_study__plant_flower",
+          "position": [
+            0,
+            1.79,
+            0.15
+          ],
+          "semantic_id": "plant_flower"
+        }
+      },
+      "note": "Parts are individually named and separated from countable items. Roots are exposed on a teaching cutaway.",
+      "logical_type": "plant",
+      "path": "res://assets/lumo_next/learning/plant_study.glb",
+      "bytes": 237116,
+      "sha256": "73782e6c3e9bf1472416f68d6f7d10b817fe18768e01e51b3c8a849560b2227a",
+      "vertices": 1632,
+      "triangles": 3176,
+      "bounds_min": [
+        -0.6600000262260437,
+        0.0,
+        -0.6600000262260437
+      ],
+      "bounds_max": [
+        0.6600000262260437,
+        2.134999990463257,
+        0.6600000262260437
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "pedestal",
+      "category": "scenery",
+      "countable": false,
+      "anchors": {
+        "top_surface": {
+          "node": "pedestal__top_surface",
+          "position": [
+            0,
+            0.3525,
+            0
+          ],
+          "semantic_id": "top_surface"
+        }
+      },
+      "logical_type": "pedestal",
+      "path": "res://assets/lumo_next/learning/pedestal.glb",
+      "bytes": 159244,
+      "sha256": "78a1fc33fc921f1d5544667149936bca7ec656951959942a987e35487c85c173",
+      "vertices": 720,
+      "triangles": 1428,
+      "bounds_min": [
+        -0.8299999833106995,
+        0.0,
+        -0.8299999833106995
+      ],
+      "bounds_max": [
+        0.8299999833106995,
+        0.35249999165534973,
+        0.8299999833106995
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "floor_module",
+      "category": "scenery",
+      "countable": false,
+      "anchors": {
+        "teaching_origin": {
+          "node": "floor_module__teaching_origin",
+          "position": [
+            0,
+            0.08,
+            0
+          ],
+          "semantic_id": "teaching_origin"
+        }
+      },
+      "note": "Reusable quiet floor. No counters or bright decorative dots within the teaching area.",
+      "logical_type": "floor_module",
+      "path": "res://assets/lumo_next/learning/floor_module.glb",
+      "bytes": 198436,
+      "sha256": "d8c3e45c43d94bf00a9d17bdc1c4f7ad39fcc61d280aed3af6a04887d549f6f3",
+      "vertices": 1184,
+      "triangles": 2292,
+      "bounds_min": [
+        -5.199999809265137,
+        -0.18000000715255737,
+        -4.5
+      ],
+      "bounds_max": [
+        5.199999809265137,
+        0.07999999821186066,
+        4.5
+      ],
+      "materials": 1,
+      "surface_origin": "floor datum; see bounds",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    },
+    {
+      "id": "backdrop_module",
+      "category": "scenery",
+      "countable": false,
+      "anchors": {},
+      "note": "Optional side/perimeter module; do not add atop the existing atelier or in a countable region.",
+      "logical_type": "backdrop_module",
+      "path": "res://assets/lumo_next/learning/backdrop_module.glb",
+      "bytes": 240068,
+      "sha256": "2a0e230baa3d42606559fb48e0aa138b2dd769087ecc687998e41bdae8f8eb1f",
+      "vertices": 1488,
+      "triangles": 2832,
+      "bounds_min": [
+        -4.341599941253662,
+        0.0,
+        -0.42500001192092896
+      ],
+      "bounds_max": [
+        4.341599941253662,
+        1.7806559801101685,
+        0.42500001192092896
+      ],
+      "materials": 1,
+      "surface_origin": "bottom centre",
+      "texture_resolution": [
+        512,
+        512
+      ]
+    }
+  ]
+}

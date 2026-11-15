@@ -32,6 +32,12 @@ var pattern_attempts := 0
 var pattern_complete := false
 var _pattern_candidate_confirmed := false
 var _pattern_last_action := ""
+var task_prompt: String = ""
+var task_subject: String = ""
+var task_unit: String = ""
+var task_explanation: String = ""
+var task_choices: Array[String] = []
+var task_choice: int = -1
 
 
 func configure(raw: Dictionary) -> bool:
@@ -39,8 +45,17 @@ func configure(raw: Dictionary) -> bool:
 	pattern_sequence.clear()
 	pattern_choices.clear()
 	pattern_period = 0
+	task_prompt = ""
+	task_subject = ""
+	task_unit = ""
+	task_explanation = ""
+	task_choices.clear()
 	kind = str(raw.get("kind", "invalid"))
 	match kind:
+		"task_card":
+			if not _configure_task_card(raw):
+				kind = "invalid"
+				return false
 		"pattern":
 			if not _configure_pattern(raw):
 				kind = "invalid"
@@ -203,6 +218,7 @@ static func _bounded_integer(value: Variant, low: int, high: int) -> bool:
 
 
 func reset() -> void:
+	task_choice = -1
 	placed.clear()
 	watered = false
 	sunlight = false
@@ -253,6 +269,8 @@ func initial_count() -> int:
 
 
 func is_complete() -> bool:
+	if kind == "task_card":
+		return false
 	if kind == "pattern":
 		return pattern_complete
 	if kind == "english_objects":
@@ -407,6 +425,13 @@ func _pattern_hint_text() -> String:
 
 func explanation() -> String:
 	match kind:
+		"task_card":
+			if task_choice >= 0:
+				return (
+					"Dein Vorschlag: %s. In deiner Aufgabe kannst du ihn prüfen und bestätigen."
+					% task_choices[task_choice]
+				)
+			return task_prompt if task_prompt.length() <= 220 else task_prompt.left(217) + "…"
 		"pattern":
 			if pattern_complete:
 				return "Die Reihenfolge passt. Kehre zur Aufgabe zurück und gib dort deine Antwort."
@@ -536,3 +561,130 @@ func explanation() -> String:
 				return "Licht und Wasser helfen der Pflanze zu wachsen. Entdecke ihre vier Teile."
 			return "Gib Wasser und öffne die Sonne. Tippe auf Wurzel, Stängel, Blatt und Blüte."
 	return "Diese Lernansicht konnte nicht sicher geladen werden."
+
+
+static func pattern_label(value: String) -> String:
+	var parts := value.split("_")
+	var forms := {
+		"circle": "Kreis",
+		"square": "Quadrat",
+		"triangle": "Dreieck",
+		"star": "Stern",
+		"heart": "Herz",
+		"diamond": "Raute"
+	}
+	var colors := {
+		"red": "Rot",
+		"blue": "Blau",
+		"yellow": "Gelb",
+		"green": "Grün",
+		"purple": "Violett",
+		"orange": "Orange"
+	}
+	return (
+		str(forms.get(parts[-1], value))
+		if parts.size() == 1
+		else "%s · %s" % [forms.get(parts[-1], value), colors.get(parts[0], "")]
+	)
+
+
+func companion_explanation(request: String) -> Dictionary:
+	# Small, transparent local explanations are derived from checked operands.
+	# This helper cannot award, score or apply an answer to the original task.
+	var words := request.to_lower()
+	var command := words.strip_edges().trim_suffix(".").trim_suffix("!").strip_edges()
+	if (
+		command
+		in [
+			"stop",
+			"stopp",
+			"bitte stop",
+			"bitte stopp",
+			"stop bitte",
+			"stopp bitte",
+			"hör auf",
+			"halte an"
+		]
+	):
+		return {
+			"reply": "Ich habe angehalten. Du kannst in deinem Tempo weitermachen.",
+			"action": "stop"
+		}
+	if (
+		kind in ["bridge_ten", "addition"]
+		and a < 10
+		and a + b > 10
+		and (words.contains("warum") or words.contains("zuerst"))
+	):
+		var needed := 10 - a
+		return {
+			"reply":
+			(
+				"Bis zur Zehn fehlen %d: zehn minus %d ist %d. Von den %d nehmen wir zuerst %d. Dann bleiben %d übrig."
+				% [needed, a, needed, b, needed, a + b - 10]
+			),
+			"action": "explain",
+			"objectId": "bridge_two" if needed == 2 else "bridge_needed"
+		}
+	if kind == "syllables":
+		return {
+			"reply":
+			"%s: %s. Jede Silbe bekommt einen eigenen Baustein." % [word, " – ".join(syllables)],
+			"action": "explain",
+			"objectId": "syllable_0"
+		}
+	if kind == "pattern":
+		return {
+			"reply":
+			"Schau auf die markierte Gruppe. Danach beginnt dieselbe Gruppe von vorn. Suche das nächste Zeichen selbst.",
+			"action": "hint",
+			"objectId": "pattern_group"
+		}
+	if kind == "task_card":
+		return {
+			"reply":
+			(
+				task_explanation
+				if not task_explanation.is_empty()
+				else "Lies den Auftrag in Ruhe. Was ist gegeben, und was sollst du herausfinden? Du kannst einen Antwortvorschlag wählen und ihn anschließend in deiner Aufgabe prüfen."
+			),
+			"action": "explain",
+			"objectId": "task_prompt"
+		}
+	return {"reply": explanation(), "action": "explain"}
+
+
+func _configure_task_card(raw: Dictionary) -> bool:
+	var prompt: Variant = raw.get("prompt", raw.get("taskPrompt", ""))
+	var subject: Variant = raw.get("subject", "")
+	var unit: Variant = raw.get("unit", "")
+	var help: Variant = raw.get("explanation", "")
+	var choices: Variant = raw.get("answerChoices", [])
+	if not prompt is String or prompt.strip_edges().is_empty() or prompt.length() > 800:
+		return false
+	if not subject is String or subject.length() > 80 or not unit is String or unit.length() > 80:
+		return false
+	if not help is String or help.length() > 1200 or not choices is Array or choices.size() > 8:
+		return false
+	task_choices.clear()
+	for choice in choices:
+		if (
+			not choice is String
+			or choice.strip_edges().is_empty()
+			or choice.length() > 120
+			or choice in task_choices
+		):
+			return false
+		task_choices.append(choice)
+	task_prompt = prompt
+	task_subject = subject
+	task_unit = unit
+	task_explanation = help
+	return true
+
+
+func propose_task_answer(index: int) -> bool:
+	if kind != "task_card" or index < 0 or index >= task_choices.size():
+		return false
+	task_choice = index
+	return true
