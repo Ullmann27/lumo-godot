@@ -380,12 +380,13 @@ func blink() -> void:
 		for i in range(lid.mesh.get_blend_shape_count()):
 			if str(lid.mesh.get_blend_shape_name(i)) == "blink":
 				var tween := create_tween()
-				tween.tween_method(func(v: float) -> void:
-					if is_instance_valid(lid):
-						lid.set_blend_shape_value(i, v), 0.0, 1.0, 0.10)
-				tween.tween_method(func(v: float) -> void:
-					if is_instance_valid(lid):
-						lid.set_blend_shape_value(i, v), 1.0, 0.0, 0.14)
+				tween.tween_method(_apply_blink.bind(lid, i), 0.0, 1.0, 0.10)
+				tween.tween_method(_apply_blink.bind(lid, i), 1.0, 0.0, 0.14)
+
+
+func _apply_blink(value: float, lid: MeshInstance3D, shape_index: int) -> void:
+	if is_instance_valid(lid):
+		lid.set_blend_shape_value(shape_index, value)
 
 
 func interrupt() -> void:
