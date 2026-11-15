@@ -1,0 +1,47 @@
+name: LUMO Kart – Arrow Direction and Original Fox Tail QA
+on:
+  push:
+    branches: [fix/lumo-kart-chevrons-tail-clearance-20261115]
+    paths:
+      - scripts/games/kart_world.gd
+      - scripts/games/kart_vehicle.gd
+      - scripts/tests/kart_arrow_tail_clearance_regression.gd
+      - .github/workflows/lumo-kart-arrow-tail-qa.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  godot-real:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Godot 4.6.3 verified engine
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 --retry-all-errors -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/bin"
+          ln -s "$RUNNER_TEMP/bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/bin/godot"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+      - name: Actual project import
+        run: |
+          set -euo pipefail
+          mkdir -p proof
+          git rev-parse HEAD > proof/commit.txt
+          python3 tools/validate_project.py > proof/source.log 2>&1
+          godot --headless --editor --import --path . > proof/import.log 2>&1
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' proof/import.log; then tail -n 80 proof/import.log; exit 1; fi
+      - name: Arrow and fox-tail geometry runtime gate
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --log proof/arrow-tail.log --timeout 600 --required '[KartArrowTail] PASS' -- godot --headless --path . --script res://scripts/tests/kart_arrow_tail_clearance_regression.gd
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-kart-arrow-tail-real-godot-test
+          path: proof/
+          if-no-files-found: error
+          retention-days: 21
