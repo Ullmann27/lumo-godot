@@ -1,3 +1,117 @@
+# Dschungelherz – Detail V2: dichterer Blender-Ausbau
+
+## Tatsächlicher Stand
+
+**34 neue Einzelassets, 98 neue GLBs und 23 bearbeitbare Blender-Dateien** ergänzen die unverändert erhaltene V1-Lieferung. Drei in Blender ausgearbeitete Landschaftsausschnitte enthalten zusammen **1.972 Platzierungen**. Ein separater, standardmäßig ausgeschalteter Dekorationsadapter enthält **1.443 Platzierungen entlang der gesampelten Hauptteamroute**. Diese Zahlen beschreiben unterschiedliche Lieferungen und werden nicht zu einer angeblich fertig ausgestatteten Gesamtstrecke addiert.
+
+Die Arbeit erfolgte mit genau den drei Produktionsagents Vegetation, Bauwerke/Landschaft und Audio/Atmosphäre; keine weiteren Agents wurden gestartet. Der Koordinator prüfte die gemeinsame Lieferung unabhängig und betrachtete alle 26 endgültigen Vergleichsbilder.
+
+**Technische Paket- und Importprüfung bestanden. Künstlerische Referenzabnahme und physische Android-Abnahme bleiben offen.** Die Landschaft ist sichtbar stilisiert und erreicht die durchgehende Ausarbeitung und Lichtwirkung der vorgegebenen Referenz noch nicht. Die Lieferung ist ein geprüfter Asset- und Landschaftsausbau, keine fertig integrierte, freigegebene 3.600-m-Rennstrecke.
+
+## Verifizierte Dateien
+
+| Lieferung | Datei | Größe, dezimal |
+|---|---|---:|
+| Vollständige V2-Ergänzung | [Dschungelherz_Detail_V2_Vollstaendig_dc31bbe3cf0c.zip](https://chatgpt.com/library?file_id=libfile_fde3_f-fa1f587230b8819197e428b04a80cfdf_6ebd937ff63881919793f20afab4b8a6&account_id=personal) | 535,84 MB |
+| Eigenständiges Godot-Prüfprojekt | [Dschungelherz_Detail_V2_Godot_dc31bbe3cf0c.zip](https://chatgpt.com/library?file_id=libfile_fde3_f-f7cd9c33e2888191863975caaf1bd3ca_6ebd937ff63881919793f20afab4b8a6&account_id=personal) | 200,32 MB |
+| Inkrementeller Quellzweig | [Dschungelherz_Detail_V2_Quellzweig_dc31bbe3cf0c.bundle](https://chatgpt.com/library?file_id=libfile_fde3_f-10a3b112c76c8191a1542c5b5010b492_6ebd937ff63881919793f20afab4b8a6&account_id=personal) | 413,05 MB |
+| Archiv-/Importbelege und Anleitung | [Dschungelherz_Detail_V2_Archiv_und_Importpruefung.zip](https://chatgpt.com/library?file_id=libfile_fde3_f-9ab3d663b758819181f49e3ae9e4d374_6ebd937ff63881919793f20afab4b8a6&account_id=personal) | 0,08 MB |
+| Tatsächliche Wind-/Wasservorschau | [godot_wind_water_motion_v2.mp4](https://chatgpt.com/library?file_id=libfile_fde3_f-96ed4a4534188191a92d5d3acf378ae7_6ebd937ff63881919793f20afab4b8a6&account_id=personal) | 0,93 MB |
+
+Das vollständige V2-Paket enthält alle neuen Blender-Quellen, Texturen, Exporte, Werkzeuge, Dokumente und Bildbelege sowie die benötigten V1-Runtime-Abhängigkeiten. Das kleinere Godot-Paket enthält die ausführbare Prüfszene mit allen 140 Modellabhängigkeiten; die Blender-Quellen und Bildgalerie liegen im vollständigen Paket. Die V1-Pakete A–D bleiben getrennt erhalten.
+
+Alle ZIPs besitzen einen eigenen Wurzelordner. Separat entpacken; den enthaltenen `project.godot` nicht über die produktive Projektkonfiguration kopieren. Die Downloads sind Dateien des Auftraggebers und kein öffentlicher Asset-Host.
+
+### Tatsächliche Prüfsummen
+
+- Vollständiges V2-ZIP: `cd4a202a1fb06480f39d3119a42d9aa45e76128487ee7bdab99d4d4be726bb45`
+- Godot-ZIP: `eb6a928c8f10605a97dd4d1f645a48b15b6ea266ced2cbdef83788623a2b953b`
+- Git-Bundle: `bc35cda4cd980b15fb760f5bb9bba89d1e1a679336e64691b5777c502c27afcd`
+
+Beide Hauptarchive wurden vollständig gelesen und auf CRC32, SHA256, sichere Pfade und vorhandene GLB-Texturreferenzen geprüft. Pro Archiv sind 140 GLBs und 872 lokale Bildverweise geschlossen vorhanden. Das vollständige Archiv enthält 982 Nutzdateien plus `DELIVERY.json`, das Godot-Archiv 550 Nutzdateien plus `DELIVERY.json`.
+
+Das fertige Godot-ZIP wurde anschließend in ein neues Verzeichnis **ohne Importcache** entpackt. Tatsächlicher Editorimport und tatsächliche Instanziierung/Vermessung: **140 Modelle, 0 Fehler**. Die zu genau diesem ZIP gehörenden Logs und Prüfsummen liegen im kleinen Nachweispaket. `git bundle verify` bestätigt das Quell-Bundle.
+
+## 1. Bäume und Pflanzen
+
+Die 20 neuen Vegetationsassets umfassen zwei stark ausgearbeitete Hauptbäume (`je_hero_kapok_v2`, `je_hero_strangler_v2`), fünf Waldbaumformen mit je drei Varianten und drei neue Farnformen. Es gibt je drei explizite LODs, insgesamt 60 GLBs.
+
+Die Hauptbäume besitzen große Brettwurzeln, Haupt- und Nebenäste, mehrere Kronenlagen, modellierte Blätter, Rindenstruktur, Moos und Aufsitzer. Die Nahvarianten haben jeweils ungefähr 175.000–179.000 Dreiecke und rund 7.800 Kronenblätter; Fernstufen sind separat geliefert. Die hohen Nahzahlen sind ein Geometrieinventar und keine Android-Budgetfreigabe. Originale Rindenkarten liegen mit 2.048 Pixeln, Blattkarten mit 1.024 und Mooskarten mit 512 Pixeln vor. Der optionale Windshader verwendet echte Vertexgewichte; Stämme bleiben stabil.
+
+Quellen: `art/jungle_emerald_3600/detail_v2/vegetation/`. Runtime, Texturen und Wind: `assets/kart/jungle_emerald_3600/detail_v2/vegetation/`. Der V1-Bestand mit Palmen, Bambus, weiteren Pflanzen, Wurzeln und Lianen bleibt erhalten und wird teilweise wiederverwendet.
+
+## 2. Landschaft und Bauwerke
+
+Elf neue Architektur-/Landschaftsassets liefern Wasserfallmassiv, separate Wasserfallflächen, Grotteneingang, 8-m-Grottenmodul, großes Tempeltor, Felswand, gebrochene Tempelmauer, Moosfugen, Sandsteintrümmer, Wurzelmantel und Beckenrand. Je zwei LODs ergeben 22 GLBs und elf Blender-Quellen.
+
+Drei Atmosphärebauteile ergänzen Laterne, kleine Leuchtpflanzengruppe und Reliefstein: sechs GLBs, drei Blender-Dateien. Die Laterne verwendet die dokumentierte Normalenreparatur 2.0.1; ihre Maße und Kennung wurden dabei nicht geändert. V1-Brücken, Hafen und weitere Landschaftsbauteile bleiben unverändert verfügbar.
+
+| Ausschnitt | Stationen des Straßenkontexts | Ausgearbeiteter Kern | Platzierungen |
+|---|---:|---:|---:|
+| Smaragdschlucht | 980–1.260 m | 130 m | 528 |
+| Tempelwald | 2.210–2.490 m | 130 m | 726 |
+| Wurzelgrotte | 1.160–1.440 m | 130 m | 718 |
+
+Diese Ausschnitte enthalten Gelände, Böschungen, Wurzelauflagen, Pflanzencluster, Steine, Blüten und Lichtpunkte. Zehn Szenengeometrien ergänzen die Einzelassets; die drei Szenendateien und drei verknüpften Bibliotheken gehören zusammen. Die sichtbare Straße ist Referenzgeometrie ohne endgültige Fahrbahnkollision.
+
+Blender: `art/jungle_emerald_3600/detail_v2/scene/je_<layout>_landscape_v2.blend`. Das Layout und die Terrain-/Straßen-/Bodendetail-GLBs liegen unter `assets/kart/jungle_emerald_3600/detail_v2/scene/`. Die Bildgalerie liegt im vollständigen Paket unter `evidence/jungle_emerald_3600/detail_v2/scene/VIEW_GALLERY.html`.
+
+## 3. Musik und Geräusche
+
+V2 enthält keine neue Musikfassung. Die 18 originalen Audioassets aus Paket D bleiben bytegleich: drei 64-Takt-Musikvarianten bei 112 BPM, zehn Atmosphären, drei Vogelrufe und zwei Rennsignale. WAV-Master, MIDI-/JSON-Partituren und Synthese-/Arrangementquellen gehören weiterhin zum gesonderten V1-Audiopaket. Drei unveränderte OGG-Atmosphären sind als optionale Abhängigkeiten des V2-Dekorationsadapters enthalten.
+
+Die bisherige technische Audioabnahme ersetzt keine subjektive Hörabnahme. Eine tatsächlich durchgeführte menschliche Hörprüfung wird weiterhin nicht behauptet.
+
+## 4. Sichtprüfung, Renderer und Bewegung
+
+Produktion: **Blender 4.3.2**, Prüfung: **Godot 4.6.3**, Maßstab **1 Einheit = 1 m**. Blender +Z oben/+Y vorwärts wird zu Godot +Y oben/−Z vorwärts. Die normale Rennkamera liegt 2,52 m über der Kursreferenz und nutzt 55° Sichtfeld.
+
+13 tatsächliche Cycles-Ansichten und 13 tatsächliche Godot-Aufnahmen decken Rennkamera, Übersicht, Nahansicht und Schattenvergleich ab; die Grotte hat zusätzlich eine Innenansicht. Sie sind an die aktuellen Quellen, Layouts, GLBs und erfolgreich beendeten Rendererprozesse gebunden. Die Godot-Aufnahmen verwenden **Mobile/Vulkan auf llvmpipe**: Smaragd 1.280 × 720 Pixel, Tempel/Grotte 960 × 540 Pixel. Unterbrochene Versuche bleiben getrennt dokumentiert.
+
+Die Wind-/Wasservorschau besteht aus 72 echten, unterschiedlichen Bildern, kodiert als drei Sekunden bei 24 fps. Der Koordinator betrachtete die Vergleichsframes 0, 35 und 71. Das ist eine Aufnahme mit kontrollierter Shader-Zeit und fester Kamera; **keine Messung der Echtzeit-Framerate und kein LOD-Fahrtest**.
+
+Vorschauen: [Blender – Wasserfall](https://chatgpt.com/library?file_id=libfile_fde3_f-b65624381f1c81918eeb5aed15686db7_6ebd937ff63881919793f20afab4b8a6&account_id=personal) · [Blender – Tempelübersicht](https://chatgpt.com/library?file_id=libfile_fde3_f-2634fe7484e08191b8135f0d1b50cd89_6ebd937ff63881919793f20afab4b8a6&account_id=personal) · [Blender – Grotte](https://chatgpt.com/library?file_id=libfile_fde3_f-3a9e327559d88191860fec6e96a3ec72_6ebd937ff63881919793f20afab4b8a6&account_id=personal) · [Godot – Wasserfall](https://chatgpt.com/library?file_id=libfile_fde3_f-b0c37a326a3881918b7a6b7229134630_6ebd937ff63881919793f20afab4b8a6&account_id=personal).
+
+## 5. Konkrete Commits und Integration
+
+| Bestandteil | Commit |
+|---|---|
+| V1-Basis und Bundle-Voraussetzung | `420ef173392ff891dc8b6d52834cf80f7c433fab` |
+| A2: Vegetation | `ab77b53bf5d5139ae5bc2fc295eb6cd711cf9ab4` |
+| B2/C2: Architektur, Atmosphäre, Dekorationsadapter | `04acd7e2d723497ba91077bdb90cc6bb2fc68e8e` |
+| Landschaften und geprüfte gemeinsame Ansichten | `35e7d3cf6e94b4506cacb3cb446a2288598e0790` |
+| Vollständiger V2-Paket-/Bundle-HEAD | `dc31bbe3cf0c9f98f15c98822edc2d10668ac0b3` |
+
+Quellzweig: `art/jungle-emerald-detail-v2-20261115-1a6e`. Die Binär-Produktionscommits werden über das Git-Bundle übergeben; sie werden nicht als erfolgreich auf GitHub gepusht ausgegeben. Der gemeinsame Draft-PR #186 enthält die Übergabedokumentation. Main bleibt unverändert.
+
+Nach Einspielen der V1-Basis aus dem bereits gelieferten V1-Bundle:
+
+```bash
+git bundle verify ./Dschungelherz_Detail_V2_Quellzweig_dc31bbe3cf0c.bundle
+git fetch ./Dschungelherz_Detail_V2_Quellzweig_dc31bbe3cf0c.bundle refs/heads/art/jungle-emerald-detail-v2-20261115-1a6e:refs/remotes/jungle-support/detail-v2
+git worktree add ../lumo-jungle-detail-v2-review --detach refs/remotes/jungle-support/detail-v2
+```
+
+Die tatsächliche Hauptteamquelle ist an `36a2a240d3f21b3943ab123b30408735fb7b9298` auf `feature/lumo-jungle-emerald-3600-20261115-a298` gebunden. Der PR-Basisstand wurde vor der Übergabe erneut bestätigt. 1.801 echte Kurssamples ergeben 3.600,0503 m. Normale Straßenbreite 14 m, Fluss/Tempel 16 m, Start/Ziel 18 m. Wasserfall/Grotte haben 16 × 8 m freien Raum, das neue Tempeltor 18 × 8 m.
+
+Vollständige Maße, Material-/Texturinformationen, Geometriezahlen, LODs, Quellpfade und Hashes: `docs/art/jungle_emerald_3600/detail_v2/ASSET_REGISTER_V2.json`. Anleitung: `INTEGRATION_V2.md`; Quellbindung: `RELEASE.json`; Sichturteil: `VISUAL_REVIEW_V2.md` im selben Ordner.
+
+Der optionale Adapter unter `assets/kart/jungle_emerald_3600/detail_v2/dressing/` hält drei oder fünf 100-m-Abschnitte aktiv und ist zunächst ausgeschaltet. Er besitzt 175 tatsächliche Runtimekontrollen und einen Abgleich gegen sämtliche gesampelten Straßensegmente. Vor produktiver Verwendung muss der echte Gelände-Resolver angeschlossen werden. Die Standardhöhe aus der gebankten Straßenebene ist keine vollständige Geländeabnahme.
+
+## 6. Konkret offene Punkte
+
+- Das höhere künstlerische Referenzniveau, durchgehend ausgearbeiteter Fernbewuchs und finale Lichtgestaltung sind nicht abgenommen.
+- Einpassen in das tatsächliche Gelände, endgültige Bankung, Fahrflächen/Kollision, Wasser-VFX, Audiozonen und App-Integration bleiben beim Hauptteam.
+- Physische Android-Framezeiten, RAM/VRAM, transparente Sortierung, Texturflimmern und LOD-Wechsel während einer Fahrt fehlen. Keine 60-FPS-Freigabe.
+- Die unveränderte V1-Audiolieferung benötigt weiterhin eine tatsächliche subjektive Hörabnahme.
+- Die sechs neuen GDScript-Dateien bestehen Lint/Format; der Projektvalidator meldet 118 PASS. Die bytegleichen vorhandenen 553 Projektskripte besitzen weiterhin 2.838 Lint-Befunde und 360 Formatabweichungen. Eine projektweit grüne Codeprüfung wird nicht behauptet.
+- Eine Kenntnisnahme oder Übernahme durch das Hauptteam ist nicht bestätigt. Der PR und die konkreten Dateien bilden den gemeinsamen Übergabepunkt.
+
+
+---
+
+# Erhaltene V1-Übergabe
+
 # Dschungelherz – Unterstützungspakete A–D
 
 ## Tatsächlicher Lieferstand
