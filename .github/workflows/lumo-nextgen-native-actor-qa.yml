@@ -1,0 +1,86 @@
+name: LUMO NextGen Blender actor on production learning route
+on:
+  push:
+    branches:
+      - chatgpt/lumo-nextgen-native-blender-integration-20261115
+    paths:
+      - assets/characters/lumo_nextgen_chat3/**
+      - scripts/characters/lumo/lumo_nextgen_learning_actor.gd
+      - scripts/learning/learning_world.gd
+      - scripts/tests/lumo_nextgen_native_actor_smoke.gd
+      - .github/workflows/lumo-nextgen-native-actor-qa.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-actor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify actual Blender GLBs, original bone and morph metadata
+        run: |
+          set -euo pipefail
+          python3 tools/lumo_nextgen_chat3/validate_glb.py \
+            assets/characters/lumo_nextgen_chat3/Lumo-Learning-Animated.glb \
+            assets/characters/lumo_nextgen_chat3/Lumo-Learning-Objects.glb \
+            /tmp/nextgen-glb-audit.json
+          grep -Fq 'const FOX = preload("res://scripts/characters/lumo/lumo_nextgen_learning_actor.gd")' scripts/learning/learning_world.gd
+          test -s assets/characters/lumo_nextgen_chat3/Lumo-Learning-Animated.blend
+          test -s assets/characters/lumo_nextgen_chat3/Lumo-Learning-Objects.blend
+      - name: Install exact Godot 4.6.3 editor
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/lumo-godot-bin"
+          curl -fL --retry 3 -o "$RUNNER_TEMP/lumo-godot-bin/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/lumo-godot-bin/godot.zip" -d "$RUNNER_TEMP/lumo-godot-bin"
+          chmod +x "$RUNNER_TEMP/lumo-godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/lumo-godot-bin" >> "$GITHUB_PATH"
+      - name: Build genuine isolated Godot fixture from production actor and Blender export
+        run: |
+          set -euo pipefail
+          P="$RUNNER_TEMP/learning-fox-fixture"
+          mkdir -p "$P/scripts/characters/lumo" "$P/scripts/tests" "$P/assets/characters/lumo_nextgen_chat3"
+          cp scripts/characters/lumo/*.gd "$P/scripts/characters/lumo/"
+          cp scripts/tests/lumo_nextgen_native_actor_smoke.gd "$P/scripts/tests/"
+          cp assets/characters/lumo_nextgen_chat3/Lumo-Learning-Animated.glb "$P/assets/characters/lumo_nextgen_chat3/"
+          printf '%s\n' \
+            'config_version=5' \
+            '[application]' \
+            'config/name="LUMO NextGen Actor Runtime Fixture"' \
+            '[rendering]' \
+            'renderer/rendering_method="gl_compatibility"' \
+            > "$P/project.godot"
+          echo "LUMO_FIXTURE=$P" >> "$GITHUB_ENV"
+      - name: Import the real Blender rig into Godot
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless \
+            --path "$LUMO_FIXTURE" --editor --import --quit > "$RUNNER_TEMP/lumo-import.log" 2>&1 || {
+              tail -120 "$RUNNER_TEMP/lumo-import.log"
+              exit 1
+            }
+          if grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' "$RUNNER_TEMP/lumo-import.log"; then
+            exit 1
+          fi
+      - name: Test imported original bones, animations, gaze, audible mouth and Stop
+        run: |
+          set -euo pipefail
+          timeout 120s Godot_v4.6.3-stable_linux.x86_64 --headless \
+            --path "$LUMO_FIXTURE" --script res://scripts/tests/lumo_nextgen_native_actor_smoke.gd \
+            > "$RUNNER_TEMP/lumo-actor.log" 2>&1 || {
+              cat "$RUNNER_TEMP/lumo-actor.log"
+              exit 1
+            }
+          cat "$RUNNER_TEMP/lumo-actor.log"
+          grep -F '[NextGenNativeActor] PASS:' "$RUNNER_TEMP/lumo-actor.log"
+      - name: Upload reproducible Godot logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-nextgen-native-actor-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/lumo-import.log
+            ${{ runner.temp }}/lumo-actor.log
+          if-no-files-found: warn
