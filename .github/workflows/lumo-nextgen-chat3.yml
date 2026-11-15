@@ -131,7 +131,7 @@ jobs:
               exit 1
             }
           grep -F '[LumoChat3Runtime] PASS:' exports/lumo-nextgen-chat3/godot-runtime.log
-          for file in 01_math_8_plus_5 02_reading_ba_na_ne 03_shapes_pattern 04_phone_portrait_math 05_fold_like_opened_syllables; do
+          for file in 00_math_8_plus_5_initial 01_math_8_plus_5 02_reading_ba_na_ne 03_shapes_pattern 04_phone_portrait_math 05_fold_like_opened_syllables 06_hand_bone_target_ray 07_viseme_A_speaking 08_math_10_plus_3_bridge; do
             test -s "$PROBE/exports/lumo-nextgen-chat3/runtime/$file.png"
           done
           cp -r "$PROBE/exports/lumo-nextgen-chat3/runtime" exports/lumo-nextgen-chat3/
