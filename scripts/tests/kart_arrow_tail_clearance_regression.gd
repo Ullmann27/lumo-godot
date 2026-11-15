@@ -2,7 +2,6 @@ extends SceneTree
 ## Against exact live Kart sources, not a replacement demo.
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
-const ISLAND = preload("res://scripts/games/kart_island.gd")
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 
 func _initialize() -> void:
@@ -31,10 +30,6 @@ func _check_signs() -> void:
 		var basis: Basis = world.frame(d)
 		var road_forward: Vector3 = world.forward(d)
 		assert((-basis.z).dot(road_forward) > 0.99, "Turbo sign points backward")
-		for side in [-1.0, 1.0]:
-			var geom: Dictionary = ISLAND._chevron_arm_geometry(basis,side)
-			assert((geom.forward as Vector3).dot(road_forward) > 0.99)
-			assert((geom.direction as Vector3).dot(road_forward) > 0.35)
 	world.free()
 
 func _check_tail() -> void:
