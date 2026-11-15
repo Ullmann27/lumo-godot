@@ -8,6 +8,8 @@ on:
       - scenes/learning/nextgen/**
       - scripts/learning/nextgen/**
       - scripts/learning/learning_world.gd
+      - scripts/learning/learning_activity.gd
+      - scripts/tests/lumo_nextgen_activity_types.gd
       - scripts/tests/lumo_nextgen_chat3_capture.gd
       - scripts/tests/lumo_nextgen_learning_guide.gd
       - .github/workflows/lumo-nextgen-integrated-native.yml
@@ -17,6 +19,8 @@ on:
     paths:
       - scripts/learning/nextgen/**
       - scripts/learning/learning_world.gd
+      - scripts/learning/learning_activity.gd
+      - scripts/tests/lumo_nextgen_activity_types.gd
       - scripts/tests/lumo_nextgen_learning_guide.gd
       - .github/workflows/lumo-nextgen-integrated-native.yml
   workflow_dispatch:
@@ -65,6 +69,17 @@ jobs:
               echo "Full existing project import reported errors; isolated new rig import remains mandatory."
               tail -70 proof/lumo-nextgen-native/full-project-import.log
             }
+      - name: Check every newly integrated teaching activity source
+        run: |
+          set -euo pipefail
+          timeout 75s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script \
+            res://scripts/tests/lumo_nextgen_activity_types.gd \
+            > proof/lumo-nextgen-native/activity-types-test.log 2>&1 || {
+              tail -100 proof/lumo-nextgen-native/activity-types-test.log
+              exit 1
+            }
+          grep -F '[NextGenActivity] PASS:' proof/lumo-nextgen-native/activity-types-test.log
       - name: Load the actual production learning actor in native scene tree
         run: |
           set -euo pipefail
