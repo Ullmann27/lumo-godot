@@ -18,6 +18,7 @@ const CHARACTER_FINISH = preload("res://scripts/games/kart_character_finish.gd")
 const RIVAL_FINISH = preload("res://scripts/games/kart_rival_character_finish.gd")
 const RIVAL_VISUAL = preload("res://scripts/games/kart_rival_visual_adapter.gd")
 const COACHWORK_FINISH = preload("res://scripts/games/kart_coachwork_finish.gd")
+const MODULAR_AERO = preload("res://scripts/games/kart_modular_aero_kit.gd")
 const LUMO_ANIMATION = preload("res://scripts/characters/lumo/lumo_kart_animation_adapter.gd")
 const CINEMA_FINISH = preload("res://scripts/games/visual/kart_cinema_materials.gd")
 const CARBON := Color("0b1019")
@@ -588,6 +589,7 @@ func _build() -> void:
 	else:
 		_build_aero(spec)
 	COACHWORK_FINISH.decorate(self, get_node("AuroraCoachwork"), spec)
+	MODULAR_AERO.decorate(self, get_node("AuroraCoachwork"), spec)
 	_make_steering_wheel()
 	# Two independent emissive lamp meshes; keep them out of static and LOD batches.
 	# Shared geometry/material, no light nodes or per-frame material allocations.
