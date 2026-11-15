@@ -1,0 +1,169 @@
+name: LUMO Chat 3 Blender and Godot Proof
+on:
+  push:
+    branches: [chatgpt/lumo-nextgen-chat3-3d-20261115]
+    paths: ['tools/lumo_nextgen_chat3/**', 'scripts/learning/nextgen/**', 'scripts/tests/lumo_nextgen_chat3_capture.gd', 'scenes/learning/nextgen/**', '.github/workflows/lumo-nextgen-chat3.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: lumo-nextgen-chat3-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  make-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 2
+      - name: Install real Blender and software rendering
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y blender python3-numpy xvfb libgl1-mesa-dri mesa-vulkan-drivers
+          blender --version | head -n 3
+          blender --background --python-expr 'import sys; print("PYTHON",sys.version); import numpy; print("NUMPY",numpy.__version__)'
+      - name: Produce actual Blender sources and all real renders
+        run: |
+          set -euo pipefail
+          mkdir -p exports/lumo-nextgen-chat3
+          git rev-parse HEAD > exports/lumo-nextgen-chat3/build-source-sha.txt
+          OUT="exports/lumo-nextgen-chat3"
+          blender --background --factory-startup -t 2 \
+            --python tools/lumo_nextgen_chat3/build_blender_assets.py -- \
+            --source assets/characters/lumo_animated/Lumo-Animated-Mobile.glb \
+            --output "$OUT" > "$OUT/blender-build.log" 2>&1 || {
+              tail -130 "$OUT/blender-build.log"
+              exit 1
+            }
+          tail -35 "$OUT/blender-build.log"
+          grep -F 'LUMO_CHAT3_BUILD_PASS' "$OUT/blender-build.log"
+          for file in Lumo-Learning-Animated.blend Lumo-Learning-Animated.glb Lumo-Learning-Objects.blend Lumo-Learning-Objects.glb; do
+            test -s "$OUT/$file"
+          done
+          for view in front three_quarter side back LearningObjects; do
+            test -s "$OUT/Blender_Lumo_$view.png"
+          done
+      - name: Audit real GLB binary animations, morph shapes, skin and objects
+        run: |
+          set -euo pipefail
+          python3 tools/lumo_nextgen_chat3/validate_glb.py \
+            exports/lumo-nextgen-chat3/Lumo-Learning-Animated.glb \
+            exports/lumo-nextgen-chat3/Lumo-Learning-Objects.glb \
+            exports/lumo-nextgen-chat3/glb-audit.json
+      - name: Supply actual Blender generated binaries to Godot
+        run: |
+          set -euo pipefail
+          mkdir -p assets/characters/lumo_nextgen_chat3
+          cp exports/lumo-nextgen-chat3/Lumo-Learning-Animated.blend \
+             exports/lumo-nextgen-chat3/Lumo-Learning-Animated.glb \
+             exports/lumo-nextgen-chat3/Lumo-Learning-Objects.blend \
+             exports/lumo-nextgen-chat3/Lumo-Learning-Objects.glb \
+             exports/lumo-nextgen-chat3/production-report.json \
+             exports/lumo-nextgen-chat3/glb-audit.json \
+             exports/lumo-nextgen-chat3/Blender_Lumo_*.png \
+             assets/characters/lumo_nextgen_chat3/
+      - name: Install exact project Godot 4.6.3 stable
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/lumo-godot"
+          cd "$RUNNER_TEMP/lumo-godot"
+          curl -fL --retry 3 --retry-delay 2 -o godot.zip https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q godot.zip
+          chmod +x Godot_v4.6.3-stable_linux.x86_64
+          echo "$RUNNER_TEMP/lumo-godot" >> "$GITHUB_PATH"
+      - name: Full existing Godot project import diagnosis (do not hide baseline parser errors)
+        run: |
+          set -euo pipefail
+          timeout 360s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --editor --import --quit \
+            > exports/lumo-nextgen-chat3/godot-full-project-import.log 2>&1 || true
+          if grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' exports/lumo-nextgen-chat3/godot-full-project-import.log; then
+            echo 'NOTE: full existing project contains errors; isolated feature proof follows'
+          else
+            echo 'Full Godot project import returned no script parse errors'
+          fi
+      - name: Create independent Godot 4.6.3 fixture with actual source, GLBs and scripts
+        run: |
+          set -euo pipefail
+          PROBE="exports/lumo-nextgen-chat3/native-fixture"
+          mkdir -p "$PROBE/scenes/learning/nextgen" \
+                   "$PROBE/scripts/learning/nextgen" \
+                   "$PROBE/scripts/tests" \
+                   "$PROBE/assets/characters/lumo_nextgen_chat3"
+          cp scenes/learning/nextgen/lumo_learning_stage.tscn "$PROBE/scenes/learning/nextgen/"
+          cp scripts/learning/nextgen/lumo_learning_stage.gd "$PROBE/scripts/learning/nextgen/"
+          cp scripts/tests/lumo_nextgen_chat3_capture.gd "$PROBE/scripts/tests/"
+          cp assets/characters/lumo_nextgen_chat3/*.glb "$PROBE/assets/characters/lumo_nextgen_chat3/"
+          printf '%s\n' \
+            'config_version=5' \
+            '[application]' \
+            'config/name="LUMO Chat3 Isolated Runtime QA"' \
+            'run/main_scene="res://scenes/learning/nextgen/lumo_learning_stage.tscn"' \
+            'config/features=PackedStringArray("4.6", "GL Compatibility")' \
+            '[rendering]' \
+            'renderer/rendering_method="gl_compatibility"' \
+            > "$PROBE/project.godot"
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 --headless \
+            --path "$PROBE" --editor --import --quit \
+            > exports/lumo-nextgen-chat3/godot-isolated-import.log 2>&1 || {
+              tail -120 exports/lumo-nextgen-chat3/godot-isolated-import.log
+              exit 1
+            }
+          if grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' exports/lumo-nextgen-chat3/godot-isolated-import.log; then
+            exit 1
+          fi
+      - name: Run native isolated scene, speech interruption and real viewport capture
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          PROBE="exports/lumo-nextgen-chat3/native-fixture"
+          timeout 250s xvfb-run -a -s '-screen 0 1200x1200x24' \
+            Godot_v4.6.3-stable_linux.x86_64 \
+            --path "$PROBE" \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --resolution 1024x768 --script res://scripts/tests/lumo_nextgen_chat3_capture.gd \
+            > exports/lumo-nextgen-chat3/godot-runtime.log 2>&1 || {
+              tail -120 exports/lumo-nextgen-chat3/godot-runtime.log
+              exit 1
+            }
+          grep -F '[LumoChat3Runtime] PASS:' exports/lumo-nextgen-chat3/godot-runtime.log
+          for file in 00_math_8_plus_5_initial 01_math_8_plus_5 02_reading_ba_na_ne 03_shapes_pattern 04_phone_portrait_math 05_fold_like_opened_syllables 06_hand_bone_target_ray 07_viseme_A_speaking 08_math_10_plus_3_bridge; do
+            test -s "$PROBE/exports/lumo-nextgen-chat3/runtime/$file.png"
+          done
+          cp -r "$PROBE/exports/lumo-nextgen-chat3/runtime" exports/lumo-nextgen-chat3/
+          cp -r exports/lumo-nextgen-chat3/runtime assets/characters/lumo_nextgen_chat3/
+      - name: Commit real output and evidence onto own development branch
+        if: always()
+        run: |
+          set -euo pipefail
+          if ! test -s assets/characters/lumo_nextgen_chat3/Lumo-Learning-Animated.blend; then
+            echo 'Blender output missing: no generated assets committed'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f assets/characters/lumo_nextgen_chat3
+          if git diff --cached --quiet; then exit 0; fi
+          # Never force push. If a teammate has advanced this branch since
+          # checkout, publish the full generated artifact and let the newest
+          # run push its own output instead of overwriting newer source.
+          REMOTE_SHA="$(git ls-remote origin "refs/heads/$GITHUB_REF_NAME" | awk '{print $1}')"
+          if test "$REMOTE_SHA" != "$(git rev-parse HEAD)"; then
+            echo "Chat3 generated assets saved as Actions artifact: branch advanced ($REMOTE_SHA)"
+            git reset
+            exit 0
+          fi
+          git commit -m 'assets(lumo-chat3): generated Blender source, GLBs and native evidence'
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - name: Upload real generated sources and QA logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-chat3-production-${{ github.run_id }}
+          path: exports/lumo-nextgen-chat3/
+          if-no-files-found: warn
+          retention-days: 30
