@@ -1,0 +1,147 @@
+extends "res://scripts/characters/lumo/lumo_rigged_actor.gd"
+## Learning-only adapter. Keeps Kart/other original Lumo actors completely
+## unchanged. This swaps the visual source for the verified original fox rig
+## plus new Blender clips and mouth shapes. All host progression and answering
+## remain in the existing Flutter task authority.
+const NEXTGEN_MODEL := "res://assets/characters/lumo_nextgen_chat3/Lumo-Learning-Animated.glb"
+const LEARNING_CLIPS := {
+	"welcome": "learn_listen",
+	"explain": "learn_explain",
+	"encourage": "learn_encourage",
+	"correct": "learn_nod",
+	"celebrate": "learn_celebrate",
+}
+var learning_model_active := false
+var _mouth_mesh: MeshInstance3D
+var _viseme_indices: Array[int] = []
+var _last_speaking := false
+
+
+func _ready() -> void:
+	super._ready()
+	if not ResourceLoader.exists(NEXTGEN_MODEL, "PackedScene"):
+		push_warning("[LumoNextGenLearning] New rig is not imported; using original learning Lumo")
+		return
+	var packed := ResourceLoader.load(NEXTGEN_MODEL, "PackedScene") as PackedScene
+	if packed == null:
+		return
+	var next_visual := packed.instantiate() as Node3D
+	if next_visual == null:
+		return
+	var next_skeleton: Skeleton3D
+	var next_player: AnimationPlayer
+	var next_mouth: MeshInstance3D
+	for child in next_visual.find_children("*", "Skeleton3D", true, false):
+		if child is Skeleton3D and (child as Skeleton3D).get_bone_count() == 65:
+			next_skeleton = child
+			break
+	for child in next_visual.find_children("*", "AnimationPlayer", true, false):
+		if child is AnimationPlayer and (child as AnimationPlayer).has_animation("learn_listen"):
+			next_player = child
+			break
+	for child in next_visual.find_children("*", "MeshInstance3D", true, false):
+		if child is MeshInstance3D and child.name.begins_with("MouthVisemes"):
+			next_mouth = child
+			break
+	if next_skeleton == null or next_player == null or next_mouth == null:
+		push_warning("[LumoNextGenLearning] Rig incompatible; retaining previously loaded actor")
+		next_visual.queue_free()
+		return
+	for clip in CLIPS:
+		if not next_player.has_animation(clip):
+			push_warning("[LumoNextGenLearning] Original clip missing: " + clip)
+			next_visual.queue_free()
+			return
+	for clip in LEARNING_CLIPS.values():
+		if not next_player.has_animation(str(clip)):
+			push_warning("[LumoNextGenLearning] Learning clip missing: " + str(clip))
+			next_visual.queue_free()
+			return
+	for i in range(next_mouth.mesh.get_blend_shape_count()):
+		if str(next_mouth.mesh.get_blend_shape_name(i)).begins_with("viseme_"):
+			_viseme_indices.append(i)
+	if _viseme_indices.is_empty():
+		next_visual.queue_free()
+		return
+	if player != null and player.animation_finished.is_connected(_finished):
+		player.animation_finished.disconnect(_finished)
+	if is_instance_valid(visual):
+		remove_child(visual)
+		visual.queue_free()
+	visual = next_visual
+	add_child(visual)
+	skeleton = next_skeleton
+	player = next_player
+	_mouth_mesh = next_mouth
+	teacher_enabled = false
+	teacher_pose = null
+	facial_pose = FACIAL_POSE.new()
+	if not facial_pose.bind(visual, skeleton):
+		facial_pose = null
+	for clip in ["idle", "kart_seated", "kart_steer_left", "kart_steer_right"]:
+		if player.has_animation(clip):
+			player.get_animation(clip).loop_mode = Animation.LOOP_LINEAR
+	player.animation_finished.connect(_finished)
+	model_load_kind = "nextgen_learning_visual"
+	learning_model_active = true
+	mouth_supported = true
+	phoneme_lipsync_supported = false
+	play_behavior("idle")
+
+
+func teacher_react(event: String) -> bool:
+	var ok := super.teacher_react(event)
+	if not ok or not learning_model_active or reduced_motion or suspended:
+		return ok
+	var clip := str(LEARNING_CLIPS.get(event, ""))
+	if not clip.is_empty() and player != null and player.has_animation(clip):
+		player.play(clip, 0.18)
+	return ok
+
+
+func set_teacher_speaking(value: bool) -> bool:
+	var ok := super.set_teacher_speaking(value)
+	if not learning_model_active:
+		return ok
+	var live := ok and value and not suspended and not reduced_motion
+	if live != _last_speaking:
+		_last_speaking = live
+		if live:
+			if player != null and player.has_animation("learn_explain"):
+				player.play("learn_explain", 0.13)
+		elif player != null and player.has_animation("learn_listen"):
+			player.play("learn_listen", 0.15)
+	return ok
+
+
+func apply_speech_sample(media_seconds: float, envelope: float, speaking: bool) -> void:
+	# The only source of mouth movement is the REAL player envelope from
+	# getLearningSpeechStatus. This is NOT phoneme-accurate viseme sync.
+	super.apply_speech_sample(media_seconds, envelope, speaking)
+	if not learning_model_active or _mouth_mesh == null:
+		return
+	var amount := clampf(last_audio_envelope, 0.0, 1.0) if audio_active else 0.0
+	for index in _viseme_indices:
+		_mouth_mesh.set_blend_shape_value(index, amount if
+			str(_mouth_mesh.mesh.get_blend_shape_name(index)) == "viseme_A" else 0.0)
+
+
+func set_suspended(value: bool) -> void:
+	super.set_suspended(value)
+	if value:
+		_last_speaking = false
+		_clear_learning_mouth()
+
+
+func set_reduced_motion(value: bool) -> void:
+	super.set_reduced_motion(value)
+	if value:
+		_last_speaking = false
+		_clear_learning_mouth()
+
+
+func _clear_learning_mouth() -> void:
+	if not is_instance_valid(_mouth_mesh):
+		return
+	for index in _viseme_indices:
+		_mouth_mesh.set_blend_shape_value(index, 0.0)
