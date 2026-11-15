@@ -1,8 +1,8 @@
 extends RefCounted
 ## Lumo Next Gen: one shared, low-cost native Godot UI skin.
 ## Keeps the exact Nunito font files shared with the Flutter application.
-const BODY = preload("res://assets/fonts/Nunito-Bold.ttf")
-const HEADING = preload("res://assets/fonts/Nunito-Black.ttf")
+static var BODY: Font = load("res://assets/fonts/Nunito-Bold.ttf") as Font
+static var HEADING: Font = load("res://assets/fonts/Nunito-Black.ttf") as Font
 const NIGHT := Color("03193f")
 const NAVY := Color("061839")
 const GLASS := Color("082851")
