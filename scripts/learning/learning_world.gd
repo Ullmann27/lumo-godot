@@ -3,7 +3,10 @@ extends Node3D
 ## real meshes and spatial picking; tap is the equivalent accessible action.
 
 const ACTIVITY = preload("res://scripts/learning/learning_activity.gd")
-const FOX = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
+# This learning-only adapter prefers the imported, original 65-bone Blender fox
+# with added teaching and mouth clips, falling back safely to the old model.
+# Kart and every non-learning scene still preload lumo_rigged_actor.gd directly.
+const FOX = preload("res://scripts/learning/nextgen/lumo_learning_guide.gd")
 const ATELIER = preload("res://scripts/learning/learning_atelier.gd")
 const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const ENGLISH_GALLERY = preload("res://scripts/learning/english_object_gallery.gd")
