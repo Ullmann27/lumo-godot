@@ -337,7 +337,7 @@ func configure_lesson(new_lesson: String) -> void:
 func _math_slot_position(slot_index: int) -> Vector3:
 	# 2 rows of 5; visual support slots are NOT countable objects.
 	return Vector3(0.10 + float(slot_index % 5) * 0.45,
-		1.57 - float(slot_index / 5) * 0.44, -0.05)
+		1.57 - float(floori(float(slot_index) / 5.0)) * 0.44, -0.05)
 
 
 func _lesson_math() -> void:
