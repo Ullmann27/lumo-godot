@@ -3,6 +3,8 @@ on:
   push:
     branches: [chatgpt/lumo-nextgen-native-blender-integration-20261115]
     paths:
+      - scripts/games/kart_menu_art.gd
+      - scripts/games/kart_ui_theme.gd
       - scripts/app/app_boot.gd
       - scripts/learning/learning_world.gd
       - scripts/characters/lumo/lumo_nextgen_learning_actor.gd
@@ -36,6 +38,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p exports/learning-nextgen-proof
+          # First editor scan builds fresh asset import caches on ephemeral CI.
+          # The second scan must parse all source scripts without failures.
+          timeout 420s Godot_v4.6.3-stable_linux.x86_64 --headless \
+            --path . --editor --import --quit \
+            > exports/learning-nextgen-proof/import-warmup.log 2>&1 || true
           timeout 420s Godot_v4.6.3-stable_linux.x86_64 --headless \
             --path . --editor --import --quit \
             > exports/learning-nextgen-proof/full-import.log 2>&1 || {
