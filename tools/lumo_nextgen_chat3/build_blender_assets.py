@@ -90,38 +90,50 @@ def rigged_face_mesh(name, vertices_world, faces, rig, source_mesh, head_name, m
 
 
 def face_overlay(rig, source_mesh, mats):
+    """Fit controls to the existing animal face; no detached face rings.
+
+    A resting mouth and both unclosed eyelids are recessed INSIDE the
+    original fox mesh. The external surfaces only appear with a requested
+    timed viseme or blink; the native original artwork remains intact.
+    """
     bone = rig.data.bones["Head"]
     head_z = (rig.matrix_world @ bone.head_local).z
-    # Actual source vertex data determines the forward surface, not an
-    # invented fixed 2D screen position. The offset remains editable.
-    candidate = [
-        source_mesh.matrix_world @ v.co for v in source_mesh.data.vertices
-        if (source_mesh.matrix_world @ v.co).z > head_z - 0.03
-        and (source_mesh.matrix_world @ v.co).z < head_z + 0.39
-    ]
-    assert len(candidate) > 30, "Cannot locate face on the imported Lumo mesh"
-    face_front = min(p.y for p in candidate) - 0.014
-    face_z = head_z + 0.015
+    all_points = [source_mesh.matrix_world @ v.co
+                  for v in source_mesh.data.vertices]
+    face_z = head_z + 0.037
+
+    def front_surface(x, z, half_width, half_height):
+        hits = [p.y for p in all_points
+                if abs(p.x - x) <= half_width
+                and abs(p.z - z) <= half_height]
+        assert len(hits) >= 3, (
+            f"Cannot locate original face surface at x={x} z={z}")
+        return min(hits)
+
+    mouth_front = front_surface(0.0, face_z, 0.042, 0.027) - 0.008
     segments = 24
 
-    def ellipse(ax, az, ix, iz, smile=0.0):
+    def ellipse(ax, az, ix, iz, smile=0.0, front_y=mouth_front):
         verts = []
         for radius_x, radius_z in ((ax, az), (ix, iz)):
             for j in range(segments):
                 theta = 2 * math.pi * j / segments
                 x = radius_x * math.cos(theta)
                 z = radius_z * math.sin(theta) + smile * abs(math.cos(theta))
-                verts.append((x, face_front, face_z + z))
-        verts.append((0.0, face_front + 0.0008, face_z))
+                verts.append((x, front_y, face_z + z))
+        verts.append((0.0, front_y + 0.001, face_z))
         return verts
 
-    base = ellipse(0.112, 0.037, 0.081, 0.014)
+    # This small neutral basis is entirely recessed; no permanent pink
+    # oval is permitted to float below the chin in a Blender front render.
+    basis = ellipse(0.035, 0.008, 0.023, 0.002,
+                    front_y=mouth_front + 0.135)
     faces = []
     for j in range(segments):
         k = (j + 1) % segments
         faces.append((j, k, segments + k, segments + j))
         faces.append((segments + j, segments + k, 2 * segments))
-    obj = rigged_face_mesh("MouthVisemes", base, faces, rig, source_mesh, "Head",
+    obj = rigged_face_mesh("MouthVisemes", basis, faces, rig, source_mesh, "Head",
                            [mats["lip"], mats["mouth_inner"]])
     for poly in obj.data.polygons:
         poly.material_index = 0 if poly.index % 2 == 0 else 1
@@ -129,27 +141,39 @@ def face_overlay(rig, source_mesh, mats):
     to_local = source_mesh.matrix_world.inverted()
     for key, dimensions in FACE_KEYS.items():
         morph = obj.shape_key_add(name=key, from_mix=False)
-        for i, w in enumerate(ellipse(*dimensions)):
-            morph.data[i].co = to_local @ Vector(w)
+        ax, az, ix, iz, smile = dimensions
+        # Size for the original narrow fox muzzle, not a wide human mouth.
+        world_mouth = ellipse(
+            ax * 0.63, az * 0.68, ix * 0.63, iz * 0.68,
+            smile * 0.48, front_y=mouth_front)
+        for i, world_position in enumerate(world_mouth):
+            morph.data[i].co = to_local @ Vector(world_position)
+
     for side, sign in (("Left", -1), ("Right", 1)):
-        cx = sign * 0.205
-        lid_z = head_z + 0.204
+        cx = sign * 0.110
+        lid_z = head_z + 0.255
+        eye_front = front_surface(cx, lid_z, 0.025, 0.030) - 0.008
         lid_world = []
         for j in range(12):
-            x = (j / 11 - 0.5) * 0.18
-            lid_world.append((cx + x, face_front + 0.020, lid_z + 0.020 - 0.042 * (x / 0.09) ** 2))
-        lid_world += [(x, y + 0.0007, z - 0.012) for x, y, z in lid_world]
-        quads = [(j, j+1, j+13, j+12) for j in range(11)]
+            x = (j / 11.0 - 0.5) * 0.135
+            crest = 0.012 - 0.012 * (x / 0.0675) ** 2
+            lid_world.append((cx + x, eye_front + 0.17, lid_z + crest))
+        lid_world += [(x, y + 0.002, z - 0.009) for x, y, z in lid_world]
+        quads = [(j, j + 1, j + 13, j + 12) for j in range(11)]
         lid = rigged_face_mesh("Eyelid" + side, lid_world, quads, rig,
                                source_mesh, "Head", [mats["lid"]])
         lid.shape_key_add(name="Basis", from_mix=False)
         closed = lid.shape_key_add(name="blink", from_mix=False)
-        for i, p in enumerate(lid_world):
-            x, y, z = p
-            closed.data[i].co = to_local @ Vector((x, y, z - (0.090 if i < 12 else 0.068)))
-    return obj, {"head_z": head_z, "face_z": face_z,
-                 "face_forward_y": face_front, "morphs": list(FACE_KEYS),
-                 "eyelid_morph": "blink"}
+        for i, position in enumerate(lid_world):
+            x, _, z = position
+            closed_y = eye_front - (0.007 if i < 12 else 0.010)
+            closed_z = z - (0.062 if i < 12 else 0.095)
+            closed.data[i].co = to_local @ Vector((x, closed_y, closed_z))
+    return obj, {
+        "head_z": head_z, "face_z": face_z, "mouth_front_y": mouth_front,
+        "neutral_controls_recessed_inside_head": True,
+        "morphs": list(FACE_KEYS), "eyelid_morph": "blink",
+    }
 
 
 def create_actions(rig):
