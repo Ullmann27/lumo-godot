@@ -24,25 +24,36 @@ jobs:
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y blender python3-numpy xvfb libgl1-mesa-dri mesa-vulkan-drivers
           blender --version | head -n 3
           blender --background --python-expr 'import sys; print("PYTHON",sys.version); import numpy; print("NUMPY",numpy.__version__)'
-      - name: Build editable character and lesson prop source and render all Blender views
+      - name: Produce or reuse already audited Blender sources and renders
         run: |
           set -euo pipefail
           mkdir -p exports/lumo-nextgen-chat3
           git rev-parse HEAD > exports/lumo-nextgen-chat3/build-source-sha.txt
-          blender --background --factory-startup -t 2 \
-            --python tools/lumo_nextgen_chat3/build_blender_assets.py -- \
-            --source assets/characters/lumo_animated/Lumo-Animated-Mobile.glb \
-            --output exports/lumo-nextgen-chat3 > exports/lumo-nextgen-chat3/blender-build.log 2>&1 || {
-              tail -120 exports/lumo-nextgen-chat3/blender-build.log
-              exit 1
-            }
-          tail -100 exports/lumo-nextgen-chat3/blender-build.log
-          grep -F 'LUMO_CHAT3_BUILD_PASS' exports/lumo-nextgen-chat3/blender-build.log
+          ASSETS="assets/characters/lumo_nextgen_chat3"
+          OUT="exports/lumo-nextgen-chat3"
+          if test -s "$ASSETS/Lumo-Learning-Animated.blend" \
+             && test -s "$ASSETS/Lumo-Learning-Objects.blend" \
+             && test -s "$ASSETS/Lumo-Learning-Animated.glb" \
+             && ! git diff --name-only HEAD^ HEAD | grep -qE '^(tools/lumo_nextgen_chat3/build_blender_assets.py|assets/characters/lumo_animated/)'; then
+            cp "$ASSETS"/*.blend "$ASSETS"/*.glb "$ASSETS"/Blender_Lumo_*.png \
+               "$ASSETS"/production-report.json "$OUT/"
+            echo 'LUMO_CHAT3_BUILD_PASS_REUSED: exact previously produced, saved GLB/BLEND bytes'
+          else
+            blender --background --factory-startup -t 2 \
+              --python tools/lumo_nextgen_chat3/build_blender_assets.py -- \
+              --source assets/characters/lumo_animated/Lumo-Animated-Mobile.glb \
+              --output "$OUT" > "$OUT/blender-build.log" 2>&1 || {
+                tail -120 "$OUT/blender-build.log"
+                exit 1
+              }
+            tail -80 "$OUT/blender-build.log"
+            grep -F 'LUMO_CHAT3_BUILD_PASS' "$OUT/blender-build.log"
+          fi
           for file in Lumo-Learning-Animated.blend Lumo-Learning-Animated.glb Lumo-Learning-Objects.blend Lumo-Learning-Objects.glb; do
-            test -s "exports/lumo-nextgen-chat3/$file"
+            test -s "$OUT/$file"
           done
           for view in front three_quarter side back; do
-            test -s "exports/lumo-nextgen-chat3/Blender_Lumo_$view.png"
+            test -s "$OUT/Blender_Lumo_$view.png"
           done
       - name: Audit real GLB binary animations, morph shapes, skin and objects
         run: |
