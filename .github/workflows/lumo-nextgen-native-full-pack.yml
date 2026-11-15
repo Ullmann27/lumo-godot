@@ -9,6 +9,9 @@ on:
       - scripts/learning/learning_world.gd
       - scripts/characters/lumo/lumo_nextgen_learning_actor.gd
       - assets/characters/lumo_nextgen_chat3/**
+      - scripts/learning/learning_activity.gd
+      - scripts/learning/lumo_native_dialogue_panel.gd
+      - scripts/tests/lumo_nextgen_readonly_lessons_smoke.gd
       - scenes/learning/nextgen/**
       - scripts/learning/nextgen/**
       - .github/workflows/lumo-nextgen-native-full-pack.yml
@@ -52,6 +55,17 @@ jobs:
           if grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' exports/learning-nextgen-proof/full-import.log; then
             echo 'Godot source did not import cleanly'; exit 1
           fi
+      - name: Verify the child keeps authorship of actual answers
+        run: |
+          set -euo pipefail
+          timeout 60s Godot_v4.6.3-stable_linux.x86_64 --headless \
+            --path . --script res://scripts/tests/lumo_nextgen_readonly_lessons_smoke.gd \
+            > exports/learning-nextgen-proof/readonly-lessons.log 2>&1 || {
+              cat exports/learning-nextgen-proof/readonly-lessons.log
+              exit 1
+            }
+          cat exports/learning-nextgen-proof/readonly-lessons.log
+          grep -F '[NextGenReadOnly] PASS:' exports/learning-nextgen-proof/readonly-lessons.log
       - name: Export actual Android-target PCK from entire current project
         run: |
           set -euo pipefail
