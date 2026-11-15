@@ -1,4 +1,6 @@
 extends Node
+# gdlint: disable=max-file-lines,max-returns
+# The existing rig owner stays intact; wire gates retain explicit early exits.
 ## An instance-local animation owner for the editable LUMO learning character.
 ## Mouth time is supplied by actual audio playback, never elapsed text length.
 ## Timed shape cues are supported; their phonetic accuracy is not inferred here.
@@ -34,18 +36,39 @@ const STATE_CLIP: Dictionary = {
 	"paused": "focused_input",
 }
 const EVENT_STATE: Dictionary = {
-	"idle": "idle", "wait": "idle", "greeting": "greeting", "greet": "greeting",
-	"welcome": "greeting", "greeting_wave": "greeting", "listen": "listening",
-	"listening": "listening", "think": "thinking", "thinking": "thinking",
-	"answer": "answer", "explain": "explaining", "demonstrate": "explaining",
-	"point": "pointing", "point_portal": "pointing", "nod": "nodding",
-	"agree_nod": "nodding", "correct": "nodding", "approve": "nodding",
-	"unsure": "unsure", "encourage": "encouraging", "celebrate": "celebrating",
-	"celebrate_step": "celebrating", "farewell": "farewell", "goodbye": "farewell",
+	"idle": "idle",
+	"wait": "idle",
+	"greeting": "greeting",
+	"greet": "greeting",
+	"welcome": "greeting",
+	"greeting_wave": "greeting",
+	"listen": "listening",
+	"listening": "listening",
+	"think": "thinking",
+	"thinking": "thinking",
+	"answer": "answer",
+	"explain": "explaining",
+	"demonstrate": "explaining",
+	"point": "pointing",
+	"point_portal": "pointing",
+	"nod": "nodding",
+	"agree_nod": "nodding",
+	"correct": "nodding",
+	"approve": "nodding",
+	"unsure": "unsure",
+	"encourage": "encouraging",
+	"celebrate": "celebrating",
+	"celebrate_step": "celebrating",
+	"farewell": "farewell",
+	"goodbye": "farewell",
 }
 const CLIP_FALLBACKS: Dictionary = {
-	"idle_breathe": "idle", "greeting": "greeting_wave", "nod": "agree_nod",
-	"point": "point_portal", "explain": "point_portal", "celebrate_step": "celebrate",
+	"idle_breathe": "idle",
+	"greeting": "greeting_wave",
+	"nod": "agree_nod",
+	"point": "point_portal",
+	"explain": "point_portal",
+	"celebrate_step": "celebrate",
 }
 
 var visual: Node3D
@@ -132,9 +155,22 @@ func bind_character(source: Node3D, target_registry: Node = null) -> bool:
 		unbind_character()
 		return _reject("missing_rig_or_animation_player")
 	for name in [
-		"Head", "Neck", "Ear.L", "Ear.R", "TailBase", "Tail1", "Tail2", "Tail3",
-		"UpperArm.L", "Forearm.L", "Wrist.L", "Hand.L",
-		"UpperArm.R", "Forearm.R", "Wrist.R", "Hand.R"
+		"Head",
+		"Neck",
+		"Ear.L",
+		"Ear.R",
+		"TailBase",
+		"Tail1",
+		"Tail2",
+		"Tail3",
+		"UpperArm.L",
+		"Forearm.L",
+		"Wrist.L",
+		"Hand.L",
+		"UpperArm.R",
+		"Forearm.R",
+		"Wrist.R",
+		"Hand.R"
 	]:
 		var index := skeleton.find_bone(name)
 		if index >= 0:
@@ -163,7 +199,9 @@ func bind_character(source: Node3D, target_registry: Node = null) -> bool:
 	# Imported Animation resources may be shared with other instantiated actors.
 	# Copy libraries before changing loop flags; only this director owns them.
 	for library_name in player.get_animation_library_list():
-		var library := player.get_animation_library(library_name).duplicate(true) as AnimationLibrary
+		var library := (
+			player.get_animation_library(library_name).duplicate(true) as AnimationLibrary
+		)
 		player.remove_animation_library(library_name)
 		player.add_animation_library(library_name, library)
 	for clip in LOOP_CLIPS:
@@ -184,9 +222,15 @@ func unbind_character() -> void:
 	_cues.clear()
 	clear_attention_target()
 	if is_instance_valid(registry):
-		if registry.has_signal("lesson_changed") and registry.lesson_changed.is_connected(_lesson_changed):
+		if (
+			registry.has_signal("lesson_changed")
+			and registry.lesson_changed.is_connected(_lesson_changed)
+		):
 			registry.lesson_changed.disconnect(_lesson_changed)
-		if registry.has_signal("target_removed") and registry.target_removed.is_connected(_target_removed):
+		if (
+			registry.has_signal("target_removed")
+			and registry.target_removed.is_connected(_target_removed)
+		):
 			registry.target_removed.disconnect(_target_removed)
 	registry = null
 	_restore_bone_offsets()
@@ -213,7 +257,7 @@ func is_usable() -> bool:
 
 
 func begin_turn(id: String, lesson: String, revision: int = 0) -> bool:
-	if not _valid_id(id) or not _valid_id(lesson) or revision < 0:
+	if not _valid_id(id) or not _valid_id(lesson, 385) or revision < 0:
 		return _reject("invalid_turn_scope")
 	if suspended or focused_input:
 		return _reject("input_or_pause_active")
@@ -236,6 +280,8 @@ func begin_turn(id: String, lesson: String, revision: int = 0) -> bool:
 	_audio_age = 1000.0
 	last_media_ms = 0.0
 	_interrupt_left = 0.0
+	if state == "interrupt":
+		_transition("listening", true)
 	last_rejection = ""
 	return true
 
@@ -313,6 +359,10 @@ func clear_attention_target() -> void:
 	point_target_id = ""
 
 
+func can_target(id: String) -> bool:
+	return _resolved_attention(id) is Vector3
+
+
 func _lesson_changed(lesson: String, revision: int) -> void:
 	if not active_lesson.is_empty() and (lesson != active_lesson or revision != active_revision):
 		interrupt("lesson_changed")
@@ -320,13 +370,7 @@ func _lesson_changed(lesson: String, revision: int) -> void:
 
 func _target_removed(id: String) -> void:
 	if id == target_id or id == point_target_id:
-		clear_attention_target()
-		_point_weight = 0.0
-		_restore_bone_offsets()
-		_gaze_angles = Vector2.ZERO
-		_eye_angles = Vector2.ZERO
-		for name in ["LookLeft", "LookRight", "LookUp", "LookDown"]:
-			_set_shape(name, 0.0)
+		interrupt("target_removed")
 		target_unavailable.emit(id, "removed")
 
 
@@ -358,9 +402,14 @@ func set_mouth_cues(
 		var shape := str(raw.get("shape", ""))
 		var weight: Variant = raw.get("weight", 1.0)
 		if (
-			start < 0.0 or end <= start or end > MAX_CUE_TIME_MS or start < previous_end
+			start < 0.0
+			or end <= start
+			or end > MAX_CUE_TIME_MS
+			or start < previous_end
 			or (shape not in MOUTH_SHAPES and shape != "Neutral")
-			or not _finite_number(weight) or float(weight) < 0.0 or float(weight) > 1.0
+			or not _finite_number(weight)
+			or float(weight) < 0.0
+			or float(weight) > 1.0
 		):
 			return _reject("invalid_or_overlapping_cue")
 		parsed.append({"start_ms": start, "end_ms": end, "shape": shape, "weight": float(weight)})
@@ -384,8 +433,11 @@ func push_playback_sample(sample: Dictionary) -> bool:
 	var position: Variant = sample.get("position_ms", sample.get("positionMs", 0.0))
 	var envelope: Variant = sample.get("envelope", 0.0)
 	if (
-		not _finite_number(position) or float(position) < 0.0
-		or not _finite_number(envelope) or float(envelope) < 0.0 or float(envelope) > 1.0
+		not _finite_number(position)
+		or float(position) < 0.0
+		or not _finite_number(envelope)
+		or float(envelope) < 0.0
+		or float(envelope) > 1.0
 	):
 		_audio_audible = false
 		_audio_envelope_available = false
@@ -395,9 +447,9 @@ func push_playback_sample(sample: Dictionary) -> bool:
 	_audio_state = next_state
 	_audio_id = str(sample.get("audio_id", ""))
 	_audio_audible = next_state == "playing" and sample.get("audible", false) == true
-	_audio_envelope_available = sample.get(
-		"envelope_available", sample.get("envelopeAvailable", false)
-	) == true
+	_audio_envelope_available = (
+		sample.get("envelope_available", sample.get("envelopeAvailable", false)) == true
+	)
 	_audio_envelope = float(envelope) if _audio_audible else 0.0
 	if not _has_audio_position or not is_equal_approx(float(position), last_media_ms):
 		_audio_age = 0.0
@@ -425,7 +477,10 @@ func push_playback_sample(sample: Dictionary) -> bool:
 ## Godot-owned audio path. The supplied callback, if any, reads measured PCM
 ## amplitude at this player's position; omitting it never invents amplitude.
 func bind_audio_player(
-	source: AudioStreamPlayer, id: String, audio_id: String = "", envelope_provider: Callable = Callable()
+	source: AudioStreamPlayer,
+	id: String,
+	audio_id: String = "",
+	envelope_provider: Callable = Callable()
 ) -> bool:
 	if not is_instance_valid(source) or id != active_turn or not _turn_open:
 		return _reject("invalid_audio_binding")
@@ -561,15 +616,17 @@ func _sample_audio_player() -> void:
 	var playback_state := "playing" if playing else "paused"
 	if not _audio_player.playing and not _audio_player.stream_paused:
 		playback_state = "completed"
-	push_playback_sample({
-		"turn_id": _audio_turn,
-		"audio_id": _audio_id,
-		"position_ms": measured * 1000.0,
-		"state": playback_state,
-		"audible": audible,
-		"envelope_available": measured_envelope,
-		"envelope": amplitude,
-	})
+	push_playback_sample(
+		{
+			"turn_id": _audio_turn,
+			"audio_id": _audio_id,
+			"position_ms": measured * 1000.0,
+			"state": playback_state,
+			"audible": audible,
+			"envelope_available": measured_envelope,
+			"envelope": amplitude,
+		}
+	)
 
 
 static func _bus_audible(name: StringName) -> bool:
@@ -586,7 +643,13 @@ static func _bus_audible(name: StringName) -> bool:
 
 
 func _update_mouth(dt: float) -> void:
-	if suspended or focused_input or not _turn_open or not _audio_audible or _audio_age >= STALE_AUDIO_SECONDS:
+	if (
+		suspended
+		or focused_input
+		or not _turn_open
+		or not _audio_audible
+		or _audio_age >= STALE_AUDIO_SECONDS
+	):
 		_close_mouth()
 		return
 	var desired: Dictionary = {}
@@ -647,24 +710,47 @@ func _update_attention(dt: float) -> void:
 			)
 	elif target_id.is_empty() and not focused_input and not reduced_motion:
 		if _clock >= _next_idle_gaze:
-			_idle_gaze = Vector2(_random.randf_range(-0.07, 0.07), _random.randf_range(-0.035, 0.025))
+			_idle_gaze = Vector2(
+				_random.randf_range(-0.07, 0.07), _random.randf_range(-0.035, 0.025)
+			)
 			_next_idle_gaze = _clock + _random.randf_range(2.0, 4.8)
 		desired = _idle_gaze
 	_gaze_angles = _gaze_angles.lerp(desired, 1.0 - exp(-8.0 * dt))
 	if not reduced_motion and not focused_input:
-		_add_body_rotation("Neck", Quaternion(Vector3.UP, _gaze_angles.x * 0.35) * Quaternion(Vector3.RIGHT, _gaze_angles.y * 0.35))
-		_add_body_rotation("Head", Quaternion(Vector3.UP, _gaze_angles.x * 0.65) * Quaternion(Vector3.RIGHT, _gaze_angles.y * 0.65))
+		_add_body_rotation(
+			"Neck",
+			(
+				Quaternion(Vector3.UP, _gaze_angles.x * 0.35)
+				* Quaternion(Vector3.RIGHT, _gaze_angles.y * 0.35)
+			)
+		)
+		_add_body_rotation(
+			"Head",
+			(
+				Quaternion(Vector3.UP, _gaze_angles.x * 0.65)
+				* Quaternion(Vector3.RIGHT, _gaze_angles.y * 0.65)
+			)
+		)
 	# Morph gaze uses the residual direction in the animated head's rest frame.
 	var eye_desired := Vector2.ZERO
 	if at is Vector3 and not focused_input:
 		var head_index := int(_bones.Head)
 		var pose := skeleton.get_bone_global_pose(head_index)
-		var frame := (skeleton.global_basis * pose.basis * skeleton.get_bone_global_rest(head_index).basis.inverse()).orthonormalized()
+		var frame := (
+			(
+				skeleton.global_basis
+				* pose.basis
+				* skeleton.get_bone_global_rest(head_index).basis.inverse()
+			)
+			. orthonormalized()
+		)
 		var direction: Vector3 = frame.inverse() * (at - skeleton.to_global(pose.origin))
 		if direction.z > 0.05:
 			eye_desired = Vector2(
 				clampf(atan2(direction.x, direction.z) / 0.32, -1.0, 1.0),
-				clampf(atan2(direction.y, Vector2(direction.x, direction.z).length()) / 0.24, -1.0, 1.0)
+				clampf(
+					atan2(direction.y, Vector2(direction.x, direction.z).length()) / 0.24, -1.0, 1.0
+				)
 			)
 	_eye_angles = _eye_angles.lerp(eye_desired, 1.0 - exp(-16.0 * dt))
 	var point: Variant = _resolved_attention(point_target_id)
@@ -689,7 +775,10 @@ func _resolved_attention(id: String) -> Variant:
 	if id.is_empty() or not is_instance_valid(registry):
 		return null
 	if not active_lesson.is_empty():
-		if registry.get("lesson_id") != active_lesson or registry.get("revision") != active_revision:
+		if (
+			registry.get("lesson_id") != active_lesson
+			or registry.get("revision") != active_revision
+		):
 			return null
 	var resolved: Dictionary = registry.resolve_target(id)
 	if resolved.is_empty() or not resolved.visible:
@@ -713,7 +802,14 @@ func _update_blink(_dt: float) -> void:
 			_blink = clampf((0.19 - elapsed) / 0.115, 0.0, 1.0)
 		else:
 			_blink_start = -1.0
-			_next_blink = _clock + (_random.randf_range(0.16, 0.24) if _random.randf() < 0.10 else _random.randf_range(2.7, 5.3))
+			_next_blink = (
+				_clock
+				+ (
+					_random.randf_range(0.16, 0.24)
+					if _random.randf() < 0.10
+					else _random.randf_range(2.7, 5.3)
+				)
+			)
 	var gaze := _eye_angles * (1.0 - smoothstep(0.0, 0.3, _blink))
 	_set_shape("LookLeft", maxf(0.0, -gaze.x))
 	_set_shape("LookRight", maxf(0.0, gaze.x))
@@ -724,7 +820,10 @@ func _update_blink(_dt: float) -> void:
 			_set_shape("Blink" + side, 0.0)
 			var stages := ["Quarter", "Half", "ThreeQuarter", "Close"]
 			for index in range(stages.size()):
-				_set_shape("Blink" + side + stages[index], maxf(0.0, 1.0 - absf(_blink * 4.0 - float(index + 1))))
+				_set_shape(
+					"Blink" + side + stages[index],
+					maxf(0.0, 1.0 - absf(_blink * 4.0 - float(index + 1)))
+				)
 		else:
 			_set_shape("Blink" + side, _blink)
 	for lids in _lid_meshes:
@@ -747,7 +846,12 @@ func _choose_point_side() -> void:
 
 
 func _aim_pointing_arm(at: Vector3, weight: float) -> void:
-	var names := ["UpperArm" + _point_side, "Forearm" + _point_side, "Wrist" + _point_side, "Hand" + _point_side]
+	var names := [
+		"UpperArm" + _point_side,
+		"Forearm" + _point_side,
+		"Wrist" + _point_side,
+		"Hand" + _point_side
+	]
 	for name in names:
 		if not _bones.has(name):
 			return
@@ -761,8 +865,14 @@ func _aim_pointing_arm(at: Vector3, weight: float) -> void:
 		return
 	var direction := (at - shoulder) / target_distance
 	# Keep a bent elbow; the arm indicates the object without chasing/touching it.
-	var reach := clampf(target_distance * 0.88, absf(upper_length - lower_length) + 0.001, (upper_length + lower_length) * 0.94)
-	var along := (upper_length * upper_length - lower_length * lower_length + reach * reach) / (2.0 * reach)
+	var reach := clampf(
+		target_distance * 0.88,
+		absf(upper_length - lower_length) + 0.001,
+		(upper_length + lower_length) * 0.94
+	)
+	var along := (
+		(upper_length * upper_length - lower_length * lower_length + reach * reach) / (2.0 * reach)
+	)
 	var bend := sqrt(maxf(0.0, upper_length * upper_length - along * along))
 	var pole := visual.global_basis.orthonormalized() * Vector3(0, -1, -0.25)
 	var bend_direction := pole - direction * pole.dot(direction)
@@ -789,10 +899,16 @@ func _rotate_bone_toward(index: int, current: Vector3, desired: Vector3, weight:
 		return
 	var world_delta := Quaternion(current.normalized(), desired.normalized())
 	world_delta = Quaternion.IDENTITY.slerp(world_delta, clampf(weight, 0.0, 1.0))
-	var world_rotation := (skeleton.global_basis * skeleton.get_bone_global_pose(index).basis).orthonormalized().get_rotation_quaternion()
+	var world_rotation := (
+		(skeleton.global_basis * skeleton.get_bone_global_pose(index).basis)
+		. orthonormalized()
+		. get_rotation_quaternion()
+	)
 	_save_bone(index)
 	var local_delta := world_rotation.inverse() * world_delta * world_rotation
-	skeleton.set_bone_pose_rotation(index, (skeleton.get_bone_pose_rotation(index) * local_delta).normalized())
+	skeleton.set_bone_pose_rotation(
+		index, (skeleton.get_bone_pose_rotation(index) * local_delta).normalized()
+	)
 	skeleton.force_update_all_bone_transforms()
 
 
@@ -806,9 +922,15 @@ func _add_body_rotation(name: String, rotation: Quaternion) -> void:
 	var index := int(_bones[name])
 	_save_bone(index)
 	var body := visual.global_basis.orthonormalized().get_rotation_quaternion()
-	var bone := (skeleton.global_basis * skeleton.get_bone_global_pose(index).basis).orthonormalized().get_rotation_quaternion()
+	var bone := (
+		(skeleton.global_basis * skeleton.get_bone_global_pose(index).basis)
+		. orthonormalized()
+		. get_rotation_quaternion()
+	)
 	var local := bone.inverse() * body * rotation * body.inverse() * bone
-	skeleton.set_bone_pose_rotation(index, (skeleton.get_bone_pose_rotation(index) * local).normalized())
+	skeleton.set_bone_pose_rotation(
+		index, (skeleton.get_bone_pose_rotation(index) * local).normalized()
+	)
 	skeleton.force_update_all_bone_transforms()
 
 
@@ -841,7 +963,14 @@ func _transition(next: String, force: bool = false) -> void:
 	player.play(clip, 0.18)
 	player.advance(0.0)
 	if reduced_motion or suspended:
-		player.seek(0.0 if next in ["idle", "listening", "focused_input", "paused"] else player.get_animation(clip).length * 0.5, true)
+		player.seek(
+			(
+				0.0
+				if next in ["idle", "listening", "focused_input", "paused"]
+				else player.get_animation(clip).length * 0.5
+			),
+			true
+		)
 		player.pause()
 	behavior_started.emit(clip)
 
@@ -870,7 +999,11 @@ func _clip_finished(clip: StringName) -> void:
 
 func _end_audio(reason: String, request_stop: bool) -> void:
 	var previous := active_turn
-	var was_active := _turn_open or _audio_state in ["preparing", "playing", "paused"]
+	# A listening/gesture-only turn owns no transport. In particular, retiring
+	# it after a new native speak request must not stop that new request.
+	var was_active := (
+		_audio_state in ["preparing", "playing", "paused"] or is_instance_valid(_audio_player)
+	)
 	if is_instance_valid(_audio_player):
 		_audio_player.stop()
 	_audio_player = null
@@ -928,7 +1061,10 @@ func _scope_matches(packet: Dictionary) -> bool:
 	if not _finite_number(revision) or float(revision) != float(active_revision):
 		return _reject("lesson_revision_mismatch")
 	if is_instance_valid(registry):
-		if registry.get("lesson_id") != active_lesson or registry.get("revision") != active_revision:
+		if (
+			registry.get("lesson_id") != active_lesson
+			or registry.get("revision") != active_revision
+		):
 			return _reject("lesson_revision_mismatch")
 	return true
 
@@ -943,8 +1079,8 @@ static func _finite_number(value: Variant) -> bool:
 	return typeof(value) in [TYPE_FLOAT, TYPE_INT] and is_finite(float(value))
 
 
-static func _valid_id(id: String) -> bool:
-	if id.is_empty() or id.length() > 160 or id != id.strip_edges():
+static func _valid_id(id: String, maximum_length: int = 160) -> bool:
+	if id.is_empty() or id.length() > maximum_length or id != id.strip_edges():
 		return false
 	for index in range(id.length()):
 		if id.unicode_at(index) < 32 or id.unicode_at(index) == 127:

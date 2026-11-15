@@ -1,8 +1,14 @@
 extends Node3D
+# gdlint: disable=max-returns
+# Fail-closed wire validation intentionally uses one guard per independent field.
 ## Learning-only adapter. The original shared Kart/Jump actor remains intact.
 const DIRECTOR = preload("res://scripts/lumo_next/avatar_director.gd")
 const REGISTRY = preload("res://scripts/lumo_next/learning_target_registry.gd")
 const MODEL := "res://assets/lumo_next/character/Lumo-Learning.glb"
+const MAX_SEQUENCE := 2147483646
+const ACTIONS: Array[String] = [
+	"explain", "repeat", "slower", "hint", "highlight", "point", "look", "stop", "proposeAnswer"
+]
 var visual: Node3D
 var skeleton: Skeleton3D
 var player: AnimationPlayer
@@ -27,6 +33,11 @@ var _audio_id := ""
 var _native_utterance_id := ""
 var _interaction: Dictionary = {}
 var _speaking := false
+var _audio_owner: Dictionary = {}
+var _allowed_actions: Array[String] = ["stop"]
+var _owner_serial := 0
+var _highest_interaction_turn := 0
+var _active_interaction_turn := 0
 
 
 func _ready() -> void:
@@ -54,6 +65,7 @@ func _ready() -> void:
 		return
 	model_load_kind = "imported_packed_scene"
 	mouth_supported = true
+	director.stop_playback_requested.connect(_playback_stopped)
 	begin_lesson(_lesson, _revision)
 	play_behavior("idle")
 
@@ -62,27 +74,72 @@ func is_usable() -> bool:
 	return is_instance_valid(director) and not model_load_kind.is_empty()
 
 
-func begin_lesson(lesson_id: String, revision: int) -> void:
+func begin_lesson(lesson_id: String, revision: int) -> bool:
+	if not is_usable() or not registry.begin_lesson(lesson_id, revision):
+		return false
 	_lesson = lesson_id
 	_revision = revision
 	_target_id = ""
-	_native_utterance_id = ""
-	registry.begin_lesson(lesson_id, revision)
-	if is_instance_valid(director):
-		_new_idle_turn()
+	_clear_audio_binding()
+	if is_instance_valid(director) and _new_idle_turn():
+		_emit("listening")
+	return true
 
 
-func begin_audio_turn(turn: String, audio_id: String = "", cues: Array = [], cue_source: String = "aligned_audio") -> void:
-	if not is_usable():
-		return
-	_turn = _lesson + ":" + str(_revision) + ":audio:" + turn
-	_audio_id = audio_id if not audio_id.is_empty() else _turn
-	_native_utterance_id = turn
-	if not director.begin_turn(_turn, _lesson, _revision):
-		return
+func can_begin_audio_turn(scope: Dictionary = {}) -> bool:
+	if not is_usable() or suspended or focused_input:
+		return false
+	if not scope.is_empty() and not interaction_context_matches(scope):
+		return false
+	if scope.has("turnId"):
+		if not _integer(scope.turnId, 1, MAX_SEQUENCE):
+			return false
+		var number := int(scope.turnId)
+		if number < _highest_interaction_turn:
+			return false
+		if number == _highest_interaction_turn and number != _active_interaction_turn:
+			return false
+	return true
+
+
+func begin_audio_turn(
+	turn: String,
+	audio_id: String = "",
+	cues: Array = [],
+	cue_source: String = "aligned_audio",
+	scope: Dictionary = {}
+) -> bool:
+	var identifier := _native_id(turn)
+	if identifier.is_empty() or not can_begin_audio_turn(scope):
+		return false
+	var next_turn := "owner:%d/audio:%s" % [_owner_serial, identifier]
+	if not director.begin_turn(next_turn, _lesson, _revision):
+		return false
+	_turn = next_turn
+	_audio_id = audio_id if not audio_id.is_empty() else next_turn
+	_native_utterance_id = identifier
+	_audio_owner = _interaction.duplicate(true)
+	_speaking = false
+	audio_active = false
+	_active_interaction_turn = int(scope.get("turnId", 0))
+	_highest_interaction_turn = maxi(_highest_interaction_turn, _active_interaction_turn)
 	if not cues.is_empty() and director.has_method("set_mouth_cues"):
-		director.set_mouth_cues(_turn, _audio_id, cues, cue_source)
+		if not director.set_mouth_cues(_turn, _audio_id, cues, cue_source):
+			interrupt("invalid_mouth_cues")
+			return false
+	director.push_playback_sample(
+		{
+			"turn_id": _turn,
+			"audio_id": _audio_id,
+			"position_ms": 0.0,
+			"state": "preparing",
+			"audible": false,
+			"envelope_available": false,
+			"envelope": 0.0
+		}
+	)
 	_emit("thinking")
+	return true
 
 
 func _emit(kind: String, extra: Dictionary = {}) -> bool:
@@ -102,7 +159,7 @@ func _new_idle_turn() -> bool:
 	if not is_usable() or suspended or focused_input:
 		return false
 	_turn_serial += 1
-	_turn = _lesson + ":" + str(_revision) + ":idle:" + str(_turn_serial)
+	_turn = "owner:%d/idle:%d" % [_owner_serial, _turn_serial]
 	_audio_id = ""
 	return bool(director.begin_turn(_turn, _lesson, _revision))
 
@@ -130,19 +187,32 @@ func set_teaching_target(world_position: Vector3) -> void:
 
 
 func teacher_react(reaction: String) -> bool:
-	var events := {"welcome": "greeting", "correct": "nod", "celebrate": "celebrate", "encourage": "encourage", "explain": "explain", "idle": "listening"}
+	var events := {
+		"welcome": "greeting",
+		"correct": "nod",
+		"celebrate": "celebrate",
+		"encourage": "encourage",
+		"explain": "explain",
+		"idle": "listening"
+	}
 	current_behavior = reaction
 	return _emit(str(events.get(reaction, reaction)))
 
 
 func play_behavior(behavior: String) -> bool:
-	var events := {"idle": "listening", "greeting_wave": "greeting", "agree_nod": "nod", "point_portal": "point", "celebrate_step": "celebrate"}
+	var events := {
+		"idle": "listening",
+		"greeting_wave": "greeting",
+		"agree_nod": "nod",
+		"point_portal": "point",
+		"celebrate_step": "celebrate"
+	}
 	current_behavior = behavior
 	return _emit(str(events.get(behavior, behavior)))
 
 
 func set_teacher_speaking(active: bool) -> void:
-	var now_speaking := active and not suspended and not focused_input
+	var now_speaking := active and _owns_audio() and not suspended and not focused_input
 	if now_speaking and not _speaking:
 		_emit("explain")
 	_speaking = now_speaking
@@ -150,34 +220,93 @@ func set_teacher_speaking(active: bool) -> void:
 
 
 func apply_speech_sample(position_seconds: float, envelope: float, active: bool) -> bool:
-	if not is_usable():
+	if not is_usable() or not _owns_audio():
 		return false
 	last_audio_position = maxf(0.0, position_seconds)
 	last_audio_envelope = clampf(envelope, 0.0, 1.0) if active else 0.0
 	audio_active = _speaking and not suspended and not focused_input
-	return bool(director.push_playback_sample({"turn_id": _turn, "audio_id": _audio_id, "position_ms": last_audio_position * 1000.0, "state": "playing" if audio_active else "paused", "audible": audio_active, "envelope": last_audio_envelope, "envelope_available": active and audio_active}))
+	return bool(
+		director.push_playback_sample(
+			{
+				"turn_id": _turn,
+				"audio_id": _audio_id,
+				"position_ms": last_audio_position * 1000.0,
+				"state": "playing" if audio_active else "paused",
+				"audible": audio_active,
+				"envelope": last_audio_envelope,
+				"envelope_available": active and audio_active
+			}
+		)
+	)
 
 
 func apply_playback_status(status: Dictionary) -> bool:
-	if not is_usable():
+	if not is_usable() or not _owns_audio():
 		return false
 	# Never relabel an unscoped or older host callback as the current turn.
-	if _native_utterance_id.is_empty() or str(status.get("id", "")) != _native_utterance_id:
+	if _native_id(status.get("id")) != _native_utterance_id:
+		return false
+	if status.has("protocolVersion") and not interaction_context_matches(status):
+		return false
+	if (
+		status.has("turnId")
+		and (
+			not _integer(status.turnId, 1, MAX_SEQUENCE)
+			or int(status.turnId) != _active_interaction_turn
+		)
+	):
 		return false
 	if status.has("turn_id") and status.turn_id != _turn:
+		return false
+	if (
+		not status.get("audible", false) is bool
+		or not status.get("envelopeAvailable", false) is bool
+	):
 		return false
 	var sample := status.duplicate(true)
 	sample["turn_id"] = _turn
 	sample["audio_id"] = _audio_id
-	return bool(director.push_playback_sample(sample))
+	if not director.push_playback_sample(sample):
+		return false
+	last_audio_position = float(status.get("positionMs", status.get("position_ms", 0.0))) / 1000.0
+	last_audio_envelope = float(status.get("envelope", 0.0))
+	var state_value := str(status.get("state", "idle"))
+	if state_value in ["completed", "unavailable", "idle"]:
+		_clear_audio_binding()
+	else:
+		set_teacher_speaking(state_value == "playing" and status.get("audible", false) == true)
+	return true
+
+
+func stop_audio_turn(reason: String = "speech_stopped") -> void:
+	if not _native_utterance_id.is_empty():
+		interrupt(reason)
+
+
+func _owns_audio() -> bool:
+	if _native_utterance_id.is_empty() or not is_usable() or not director.diagnostics().turn_open:
+		return false
+	return _audio_owner == _interaction
+
+
+func _clear_audio_binding() -> void:
+	_native_utterance_id = ""
+	_audio_owner.clear()
+	_audio_id = ""
+	_speaking = false
+	audio_active = false
+	last_audio_envelope = 0.0
+
+
+func _playback_stopped(turn: String, _reason: String) -> void:
+	if turn == _turn:
+		_clear_audio_binding()
+		_target_id = ""
 
 
 func interrupt(reason: String = "interrupted", _epoch: int = -1) -> void:
-	audio_active = false
-	_speaking = false
-	last_audio_envelope = 0.0
+	_clear_audio_binding()
 	_target_id = ""
-	_native_utterance_id = ""
 	if is_usable():
 		director.interrupt(reason)
 		if _new_idle_turn():
@@ -189,9 +318,7 @@ func set_focused_input(value: bool) -> void:
 		return
 	focused_input = value
 	if value:
-		audio_active = false
-		_speaking = false
-		last_audio_envelope = 0.0
+		_clear_audio_binding()
 		_target_id = ""
 	if is_usable():
 		director.set_focused_input(value)
@@ -210,9 +337,7 @@ func set_suspended(value: bool) -> void:
 		return
 	suspended = value
 	if value:
-		audio_active = false
-		_speaking = false
-		last_audio_envelope = 0.0
+		_clear_audio_binding()
 		_target_id = ""
 	if is_usable():
 		director.set_suspended(value)
@@ -229,50 +354,160 @@ func apply_avatar_event(event: Dictionary) -> bool:
 ## Bind the task-owner envelope before accepting external speech proposals.
 ## This adapter changes presentation only: it never scores or awards anything.
 func bind_interaction_context(context: Dictionary) -> bool:
-	if not _valid_context(context):
+	if not is_usable():
 		return false
+	var identity := _canonical_identity(context)
+	var actions: Variant = context.get("allowedActions", ["stop"])
+	if identity.is_empty() or not actions is Array:
+		return false
+	var checked_actions: Array[String] = ["stop"]
+	for action: Variant in actions:
+		if not action is String or action not in ACTIONS:
+			return false
+		if action not in checked_actions:
+			checked_actions.append(action)
+	if identity == _interaction:
+		_allowed_actions = checked_actions
+		return true
+	if (
+		not _interaction.is_empty()
+		and identity.sessionId == _interaction.sessionId
+		and identity.taskId == _interaction.taskId
+	):
+		if (
+			identity.revision < _interaction.revision
+			or (
+				identity.revision == _interaction.revision
+				and identity.cancelEpoch < _interaction.cancelEpoch
+			)
+		):
+			return false
 	interrupt("context_changed")
-	_interaction = context.duplicate(true)
-	begin_lesson(str(context.sessionId) + "/" + str(context.taskId), int(context.revision))
-	return true
+	_interaction = identity
+	_allowed_actions = checked_actions
+	_owner_serial += 1
+	_highest_interaction_turn = 0
+	_active_interaction_turn = 0
+	return begin_lesson(
+		str(identity.sessionId) + "/" + str(identity.taskId), int(identity.revision)
+	)
+
+
+func interaction_context_matches(context: Dictionary) -> bool:
+	var identity := _canonical_identity(context)
+	return not identity.is_empty() and identity == _interaction
 
 
 func apply_interaction_event(event: Dictionary) -> bool:
-	if _interaction.is_empty() or not _valid_context(event):
+	if not interaction_context_matches(event):
 		return false
-	for key in ["sessionId", "taskId", "revision", "contextRevision", "cancelEpoch"]:
-		if event.get(key) != _interaction.get(key):
+	var action: Variant = event.get("action")
+	if not action is String or action not in _allowed_actions:
+		return false
+	var number := 0
+	if event.has("turnId"):
+		if not _integer(event.turnId, 1, MAX_SEQUENCE):
 			return false
-	var event_type := str(event.get("type", ""))
-	if event_type in ["stop", "interrupt"]:
-		interrupt("host_stop", int(event.cancelEpoch))
-		_interaction["cancelEpoch"] = int(event.cancelEpoch) + 1
+		number = int(event.turnId)
+		if number < _highest_interaction_turn:
+			return false
+	if action == "stop":
+		interrupt("host_stop")
+		_interaction["cancelEpoch"] = int(_interaction.cancelEpoch) + 1
+		_owner_serial += 1
+		_highest_interaction_turn = 0
+		_active_interaction_turn = 0
 		return true
-	var allowed := {"listening": "listening", "thinking": "thinking", "explain": "explain", "focusObject": "point", "point": "point", "focused_input": "focused_input", "encourage": "encourage", "celebrate": "celebrate", "greeting": "greeting", "farewell": "farewell"}
-	if not allowed.has(event_type) or suspended or focused_input:
+	var presentation := {
+		"explain": "explain",
+		"repeat": "explain",
+		"slower": "explain",
+		"hint": "explain",
+		"point": "point",
+		"highlight": "point",
+		"look": "listening"
+	}
+	if number <= 0 or not presentation.has(action) or suspended or focused_input:
 		return false
-	var id := str(event.get("turnId", "")) + "/" + str(event.cancelEpoch)
-	if str(event.get("turnId", "")).is_empty():
+	var target: Variant = event.get("objectId", "")
+	if not target is String or (action in ["point", "highlight", "look"] and target.is_empty()):
 		return false
-	if director.active_turn != id:
+	if not target.is_empty() and not director.can_target(target):
+		return false
+	if number == _highest_interaction_turn:
+		if number != _active_interaction_turn or not director.diagnostics().turn_open:
+			return false
+	else:
+		var id := "owner:%d/interaction:%d" % [_owner_serial, number]
 		if not director.begin_turn(id, _lesson, _revision):
 			return false
+		_clear_audio_binding()
 		_turn = id
-	var translated := {"type": allowed[event_type], "turn_id": id, "lesson_id": _lesson, "revision": _revision}
-	var target := str(event.get("target_id", event.get("targetId", "")))
+		_highest_interaction_turn = number
+		_active_interaction_turn = number
+	var translated := {
+		"type": presentation[action], "turn_id": _turn, "lesson_id": _lesson, "revision": _revision
+	}
 	if not target.is_empty():
 		translated["target_id"] = target
 	return bool(director.handle_event(translated))
 
 
-static func _valid_context(value: Dictionary) -> bool:
-	if value.get("schema") != "lumo.learning.interaction" or value.get("version") != 1:
-		return false
+static func _canonical_identity(value: Dictionary) -> Dictionary:
+	if not _integer(value.get("protocolVersion"), 1, 1):
+		return {}
 	for key in ["sessionId", "taskId"]:
-		if not value.get(key) is String or str(value[key]).is_empty():
-			return false
-	for key in ["revision", "contextRevision", "cancelEpoch"]:
-		var number: Variant = value.get(key)
-		if typeof(number) not in [TYPE_INT, TYPE_FLOAT] or not is_finite(float(number)) or float(number) < 0.0 or float(number) != floorf(float(number)):
+		if not _identifier(value.get(key)):
+			return {}
+	for key in ["revision", "cancelEpoch"]:
+		if not _integer(value.get(key), 0, MAX_SEQUENCE):
+			return {}
+	var step: Variant = value.get("stepId")
+	if step != null and not _identifier(step):
+		return {}
+	return {
+		"protocolVersion": 1,
+		"sessionId": value.sessionId,
+		"taskId": value.taskId,
+		"revision": int(value.revision),
+		"cancelEpoch": int(value.cancelEpoch),
+		"stepId": step
+	}
+
+
+static func _identifier(value: Variant) -> bool:
+	if (
+		not value is String
+		or value.is_empty()
+		or value.length() > 192
+		or value.strip_edges() != value
+	):
+		return false
+	for index in range(value.length()):
+		var point: int = value.unicode_at(index)
+		if point < 32 or (point >= 127 and point <= 159):
 			return false
 	return true
+
+
+static func _integer(value: Variant, minimum: int, maximum: int) -> bool:
+	return (
+		typeof(value) in [TYPE_INT, TYPE_FLOAT]
+		and is_finite(float(value))
+		and float(value) == floorf(float(value))
+		and float(value) >= minimum
+		and float(value) <= maximum
+	)
+
+
+static func _native_id(value: Variant) -> String:
+	if _integer(value, 1, MAX_SEQUENCE):
+		return str(int(value))
+	if (
+		value is String
+		and value.is_valid_int()
+		and _integer(value.to_int(), 1, MAX_SEQUENCE)
+		and str(value.to_int()) == value
+	):
+		return value
+	return ""

@@ -1,8 +1,11 @@
 extends Node3D
+# gdlint: disable=max-file-lines,class-definitions-order,max-returns
+# Preserve the established scene's member layout; async gates fail before mutation.
 ## The production Android route for the current Flutter lesson. Objects use
 ## real meshes and spatial picking; tap is the equivalent accessible action.
 
 const COMPANION_SCOPE = preload("res://scripts/learning/learning_companion_scope.gd")
+const FRAME_PROBE = preload("res://scripts/learning/learning_frame_probe.gd")
 const QUESTION_PANEL = preload("res://scripts/learning/learning_conversation_panel.gd")
 const ACTIVITY = preload("res://scripts/learning/learning_activity.gd")
 const FOX = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
@@ -76,6 +79,8 @@ var _speech_id := 0
 var _speech_poll := 0.0
 var _speech_wait := -1.0
 var _speech_state := "idle"
+var _speech_audible := false
+var _frame_probe = FRAME_PROBE.new()
 var _speech_text := ""
 var voice_button: Button
 var english_models: Array[Node3D] = []
@@ -947,7 +952,10 @@ func _refresh() -> void:
 				and (activity.english_hint_level >= 2 or activity.is_complete())
 			)
 	elif activity.kind == "task_card":
-		status.text = "Deine Aufgabe bleibt erhalten. Hier kannst du Lumo fragen oder einen Antwortvorschlag wählen."
+		status.text = (
+			"Deine Aufgabe bleibt erhalten. Hier kannst du Lumo fragen "
+			+ "oder einen Antwortvorschlag wählen."
+		)
 		main_button.disabled = false
 	elif activity.kind == "pattern":
 		status.text = "Wähle einen Vorschlag. Bestätige deine Antwort anschließend in deiner Aufgabe."
@@ -1373,11 +1381,15 @@ func restart() -> void:
 func _process(delta: float) -> void:
 	_publish_learning_observation()
 	if suspended:
+		_frame_probe.reset()
 		return
 	_clock += delta
 	_tick_speech(delta)
 	_tick_conversation(delta)
 	_update_focus()
+	_frame_probe.sample(
+		self, activity.kind, reduced_motion, _speech_state == "playing", _speech_audible
+	)
 	if plant != null:
 		var desired := 1.0 if activity.watered and activity.sunlight else 0.62
 		_growth = desired if reduced_motion else move_toward(_growth, desired, delta * 0.12)
@@ -1411,6 +1423,7 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		_return_to_lesson()
 	elif what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT]:
+		_frame_probe.reset()
 		suspended = true
 		if is_instance_valid(wonder):
 			wonder.set_paused(true)
@@ -1423,6 +1436,7 @@ func _notification(what: int) -> void:
 		if fox != null:
 			fox.set_suspended(true)
 	elif what in [NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN]:
+		_frame_probe.reset()
 		suspended = false
 		if is_instance_valid(wonder):
 			wonder.set_paused(false)
@@ -1519,6 +1533,7 @@ func _start_audio_segment() -> void:
 	if _speech_segment >= _speech_segments.size() or suspended:
 		return
 	_speech_id += 1
+	_speech_audible = false
 	_speech_cue_applied = false
 	_audio_scope = companion_scope.envelope(_turn_id, "audio-%d" % _speech_id)
 	var request := _audio_scope.duplicate(true)
@@ -1539,6 +1554,7 @@ func _stop_speech() -> void:
 	_speech_wait = -1.0
 	_speech_id += 1
 	_speech_state = "idle"
+	_speech_audible = false
 	_speech_segments.clear()
 	_speech_cues.clear()
 	_speech_segment = 0
@@ -1568,7 +1584,10 @@ func _tick_speech(delta: float) -> void:
 	if not _speech_host.has_method("getLearningSpeechStatus"):
 		return
 	var received: Variant = JSON.parse_string(str(_speech_host.call("getLearningSpeechStatus")))
-	if not received is Dictionary or int(received.get("id", -1)) != _speech_id:
+	if (
+		not received is Dictionary
+		or not COMPANION_SCOPE._integer(received.get("id"), _speech_id, _speech_id)
+	):
 		return
 	# A legacy status still belongs to its captured scoped request. A native
 	# v1 response must additionally carry the same identity on the wire.
@@ -1577,27 +1596,66 @@ func _tick_speech(delta: float) -> void:
 		return
 	if received.has("protocolVersion") and not companion_scope.matches(received):
 		return
+	if received.has("turnId"):
+		var expected_turn: int = int(_audio_scope.get("turnId", 0))
+		if (
+			expected_turn <= 0
+			or not COMPANION_SCOPE._integer(received.turnId, expected_turn, expected_turn)
+		):
+			return
+	if received.has("utteranceId") and received.utteranceId != _audio_scope.get("utteranceId"):
+		return
 	var received_state := str(received.get("state", "idle"))
-	if received_state not in ["preparing", "playing", "completed", "unavailable", "idle"]:
+	if received_state not in ["preparing", "playing", "paused", "completed", "unavailable", "idle"]:
+		return
+	if not _apply_speech_status(received):
 		return
 	_speech_state = received_state
 	var audible: bool = _speech_state == "playing" and received.get("audible", false) == true
+	_speech_audible = audible
 	if audible and not _speech_cue_applied and _speech_segment < _speech_cues.size():
 		_speech_cue_applied = true
 		var cue: String = _speech_cues[_speech_segment]
 		if not cue.is_empty() and _focus_object(cue):
 			fox.teacher_react("explain")
-	if is_instance_valid(fox) and fox.is_usable():
-		fox.set_teacher_speaking(audible)
-		fox.apply_speech_sample(
-			float(received.get("positionMs", 0.0)) / 1000.0,
-			float(received.get("envelope", 0.0)),
-			audible and received.get("envelopeAvailable", false) == true
-		)
 	if _speech_state == "completed" and _speech_segment + 1 < _speech_segments.size():
 		_speech_segment += 1
 		_start_audio_segment()
 	_update_voice_button()
+
+
+func _apply_speech_status(received: Dictionary) -> bool:
+	# Called by the sole polling/segment owner before any UI or cue mutation.
+	# The learning-only actor overrides this gate with its exact audio lease.
+	var position: Variant = received.get("positionMs", 0.0)
+	var envelope: Variant = received.get("envelope", 0.0)
+	if (
+		typeof(position) not in [TYPE_INT, TYPE_FLOAT]
+		or not is_finite(float(position))
+		or float(position) < 0
+	):
+		return false
+	if (
+		typeof(envelope) not in [TYPE_INT, TYPE_FLOAT]
+		or not is_finite(float(envelope))
+		or float(envelope) < 0
+		or float(envelope) > 1
+	):
+		return false
+	if (
+		not received.get("audible", false) is bool
+		or not received.get("envelopeAvailable", false) is bool
+	):
+		return false
+	var audible: bool = received.get("state") == "playing" and received.get("audible", false)
+	if is_instance_valid(fox) and fox.is_usable():
+		fox.set_teacher_speaking(audible)
+		fox.apply_speech_sample(
+			float(position) / 1000.0,
+			float(envelope),
+			audible and received.get("envelopeAvailable", false)
+		)
+	return true
 
 
 func _update_voice_button() -> void:
@@ -2168,12 +2226,25 @@ func _cancel_performance() -> void:
 	_focus_id = ""
 	if is_instance_valid(_focus_ring):
 		_focus_ring.hide()
+	_clear_pending_proposal()
 	if is_instance_valid(fox) and fox.is_usable():
 		if fox.has_method("cancel_teaching_performance"):
 			fox.cancel_teaching_performance()
 		elif fox.has_method("interrupt"):
 			fox.interrupt("conversation_cancelled")
 	_sync_companion_context()
+
+
+func _clear_pending_proposal() -> void:
+	if activity.kind == "pattern":
+		activity.clear_pattern_candidate()
+		if is_instance_valid(_pattern_candidate):
+			_pattern_candidate.free()
+		_pattern_candidate = null
+		for button: Button in pattern_choice_buttons:
+			button.set_pressed_no_signal(false)
+	elif activity.kind == "task_card":
+		activity.task_choice = -1
 
 
 func _explicit_stop() -> void:
@@ -2391,9 +2462,11 @@ func _pattern_hint() -> void:
 
 
 func _choose_pattern(index: int) -> void:
-	if suspended or not activity.select_pattern_candidate(index):
+	if suspended or index < 0 or index >= activity.pattern_choices.size():
 		return
 	_cancel_performance()
+	if not activity.select_pattern_candidate(index):
+		return
 	if is_instance_valid(_pattern_candidate):
 		_pattern_candidate.free()
 	_pattern_candidate = _pattern_symbol(
@@ -2414,9 +2487,11 @@ func _show_task_prompt() -> void:
 
 
 func _choose_task_answer(index: int) -> void:
-	if suspended or not activity.propose_task_answer(index):
+	if suspended or index < 0 or index >= activity.task_choices.size():
 		return
 	_cancel_performance()
+	if not activity.propose_task_answer(index):
+		return
 	question_panel.visible = false
 	_refresh()
 	_focus_object("answer_%d" % index)

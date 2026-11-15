@@ -11,7 +11,7 @@ var _targets: Dictionary = {}
 
 
 func begin_lesson(id: String, next_revision: int = 0) -> bool:
-	if not _valid_id(id) or next_revision < 0:
+	if not _valid_id(id, 385) or next_revision < 0:
 		return false
 	if id == lesson_id and next_revision < revision:
 		return false
@@ -25,10 +25,7 @@ func begin_lesson(id: String, next_revision: int = 0) -> bool:
 
 
 func register_target(
-	id: String,
-	object: Node3D,
-	local_anchor: Vector3 = Vector3.ZERO,
-	metadata: Dictionary = {}
+	id: String, object: Node3D, local_anchor: Vector3 = Vector3.ZERO, metadata: Dictionary = {}
 ) -> bool:
 	if lesson_id.is_empty() or not _valid_id(id):
 		return false
@@ -131,8 +128,8 @@ func viewport_visibility(id: String, camera: Camera3D, usable_rect: Rect2) -> Di
 	}
 
 
-static func _valid_id(id: String) -> bool:
-	if id.is_empty() or id.length() > 160 or id != id.strip_edges():
+static func _valid_id(id: String, maximum_length: int = 160) -> bool:
+	if id.is_empty() or id.length() > maximum_length or id != id.strip_edges():
 		return false
 	for i in range(id.length()):
 		if id.unicode_at(i) < 32 or id.unicode_at(i) == 127:
