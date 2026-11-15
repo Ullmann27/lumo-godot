@@ -25,6 +25,23 @@ func _capture(name: String) -> void:
 	assert(err == OK, "Unable to write native screenshot " + path)
 
 
+func _targets_inside_viewport(stage: Node3D, layout_name: String) -> bool:
+	var size := stage.get_viewport().get_visible_rect().size
+	for object_id in stage.get_target_ids():
+		var point := stage._targets.get(object_id) as Node3D
+		if not _require(point != null, "stable target exists in " + layout_name):
+			return false
+		if not _require(not stage._camera.is_position_behind(point.global_position),
+				"3D lesson object behind camera in " + layout_name):
+			return false
+		var pixel: Vector2 = stage._camera.unproject_position(point.global_position)
+		if not _require(pixel.x >= 12.0 and pixel.x < size.x - 12.0
+				and pixel.y >= 12.0 and pixel.y < size.y - 12.0,
+				"3D target " + object_id + " clipped in " + layout_name):
+			return false
+	return true
+
+
 func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUTPUT))
 	var source := ResourceLoader.load(STAGE, "PackedScene") as PackedScene
@@ -81,8 +98,10 @@ func _run() -> void:
 	for i in range(12):
 		await process_frame
 	stage.configure_lesson("math_8_plus_5")
-	if not _require(is_equal_approx(stage._camera.size, 8.0),
-			"phone portrait layout must increase orthographic safe area"):
+	if not _require(is_equal_approx(stage._camera.size, 7.0),
+			"phone portrait must use its own stacked orthographic stage"):
+		return
+	if not _targets_inside_viewport(stage, "phone_portrait_math"):
 		return
 	if not _require(stage._board_background.position == stage._board.position,
 			"portrait panel must follow stable 3D learning-board transform"):
@@ -94,6 +113,8 @@ func _run() -> void:
 	stage.configure_lesson("reading_ba_na_ne")
 	if not _require(is_equal_approx(stage._camera.size, 5.9),
 			"fold-like opened layout must retain wide screen framing"):
+		return
+	if not _targets_inside_viewport(stage, "fold_like_syllables"):
 		return
 	await _capture("05_fold_like_opened_syllables")
 	print("[LumoChat3Runtime] PASS: avatar imported; 13 math objects; ten bridge; three syllables; eight shapes; stable ID targeting; speech cancellation; 5 native screenshots including phone portrait and opened fold-like viewports")
