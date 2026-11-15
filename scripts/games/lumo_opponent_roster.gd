@@ -3,7 +3,9 @@ extends RefCounted
 ## Missing/unvalidated rigs never silently replace an existing animated driver.
 
 const PATH := "res://assets/characters/rivals/roster.json"
+const CONTRACT = preload("res://scripts/games/kart_rival_model_contract.gd")
 static var _cache: Array[Dictionary] = []
+static var _validated_scenes: Dictionary = {}
 
 
 static func all() -> Array[Dictionary]:
@@ -57,17 +59,32 @@ static func rotation(game: String, round_index: int = 0) -> Array[Dictionary]:
 	return result
 
 
-static func can_use_racing_model(id: String) -> bool:
+static func racing_scene(id: String) -> PackedScene:
 	for entry in all():
-		if str(entry.id) == id:
-			if not bool(entry.get("runtimeReady", false)):
-				return false
-			for level in range(3):
-				var path := racing_model_path(id, level)
-				if path.is_empty() or not ResourceLoader.exists(path, "PackedScene"):
-					return false
-			return true
-	return false
+		if str(entry.id) != id:
+			continue
+		var path: String = str(entry.get("godotModel", ""))
+		if not bool(entry.get("runtimeReady", false)) or not CONTRACT.model_path_allowed(path):
+			return null
+		if _validated_scenes.has(id):
+			return _validated_scenes[id]
+		if not ResourceLoader.exists(path, "PackedScene"):
+			return null
+		var scene: PackedScene = load(path) as PackedScene
+		if scene == null:
+			return null
+		var candidate: Node = scene.instantiate()
+		var verified: Dictionary = CONTRACT.inspect(candidate)
+		candidate.free()
+		if bool(verified.get("valid", false)):
+			_validated_scenes[id] = scene
+			return scene
+		return null
+	return null
+
+
+static func can_use_racing_model(id: String) -> bool:
+	return racing_scene(id) != null
 
 
 static func racing_model_path(id: String, level: int = 0) -> String:

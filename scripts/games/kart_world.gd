@@ -1,9 +1,10 @@
 class_name LumoRaceWorld
 extends Node3D
-## Four original banked courses. Spatial GPU batches preserve Android performance.
+## Twelve banked courses sharing one road authority and spatial GPU instance batches.
 const LANDMARKS = preload("res://scripts/games/kart_landmarks.gd")
 const EXPANSION = preload("res://scripts/games/kart_expansion_world.gd")
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
+const ADVENTURE_TUNNELS = preload("res://scripts/games/kart_adventure_tunnels.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
@@ -13,6 +14,7 @@ const MESHY_START_GATE = preload("res://scripts/games/kart_meshy_start_gate.gd")
 const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
 const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
+const MODULAR_PARTS = preload("res://scripts/games/kart_modular_route_props.gd")
 const PREMIUM_RAIL_KIT = preload("res://scripts/games/kart_premium_rail_kit.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
@@ -57,6 +59,8 @@ var checkpoint_positions := PackedVector3Array()
 var jump: Dictionary = {}
 ## Action-Parcours dieser Runde (Turbo-Felder, Slalom, Schanze, Tauchstrecke, offene Kanten).
 var action: Dictionary = {}
+## Planned from authored curve anchors, before action placement or geometry is built.
+var adventure_tunnel: Dictionary = {}
 ## Streckenhimmel werden einmal je Strecke angelegt und wiederverwendet (siehe _sky_for): Wird ein
 ## schon gezeichneter Himmel im Kompatibilitäts-Renderer von Godot 4.6.3 freigegeben, bleiben seine
 ## zwei 256er-Spiegelungstexturen bis zum Beenden liegen („Texture … leaked“).
@@ -82,6 +86,9 @@ func build(
 	production_tunnel_layout = {}
 	if has_meta("production_tunnel"):
 		remove_meta("production_tunnel")
+	adventure_tunnel.clear()
+	if has_meta("adventure_tunnel"):
+		remove_meta("adventure_tunnel")
 	action_obstacles.clear()
 	decoration_count = 0
 	low_detail = lightweight
@@ -104,6 +111,8 @@ func build(
 		SKY_ISLANDS.chevrons(self)
 		FLEET_DRESSING.build(self)
 		TRACK_DETAIL.build(self)
+		MODULAR_PARTS.build(self)
+		ADVENTURE_TUNNELS.build(self)
 		_flush_instances()
 		if not geometry_only:
 			AAA_GATES.decorate(self)
@@ -120,6 +129,8 @@ func build(
 		_navigation()
 		FLEET_DRESSING.build(self)
 		TRACK_DETAIL.build(self)
+		MODULAR_PARTS.build(self)
+		ADVENTURE_TUNNELS.build(self)
 		_flush_instances()
 		if not geometry_only:
 			AAA_GATES.decorate(self)
@@ -150,6 +161,8 @@ func build(
 	LANDMARKS.build(self)
 	FLEET_DRESSING.build(self)
 	TRACK_DETAIL.build(self)
+	MODULAR_PARTS.build(self)
+	ADVENTURE_TUNNELS.build(self)
 	_flush_instances()
 	if not geometry_only:
 		AAA_GATES.decorate(self)
@@ -176,6 +189,8 @@ func _make_curve() -> void:
 		var tangent: Vector3 = (points[(index+1)%points.size()] - points[posmod(index-1,points.size())]) * 0.22
 		curve.add_point(points[index], -tangent, tangent)
 	length = curve.get_baked_length()
+	adventure_tunnel = ADVENTURE_TUNNELS.layout(self)
+	set_meta("adventure_tunnel_plan", adventure_tunnel.duplicate())
 	_road_samples.clear()
 	_road_distances.clear()
 	var count: int = ceili(length / 5.0)
@@ -188,11 +203,12 @@ func _make_curve() -> void:
 	# untouched and preserve the exact legacy bounds for current-sized routes.
 	world_extent = Vector2(101.0, 91.0)
 	if track_id in ["sonnenhafen", "zauberwald", "holo_city"]:
+		var verge_margin: float = 48.0 if not adventure_tunnel.is_empty() else 18.0
 		for sample in _road_samples:
 			if absf(sample.x) > 101.0:
-				world_extent.x = maxf(world_extent.x, absf(sample.x) + 18.0)
+				world_extent.x = maxf(world_extent.x, absf(sample.x) + verge_margin)
 			if absf(sample.z) > 91.0:
-				world_extent.y = maxf(world_extent.y, absf(sample.z) + 18.0)
+				world_extent.y = maxf(world_extent.y, absf(sample.z) + verge_margin)
 	checkpoint_positions.clear()
 	for i in range(8):
 		checkpoint_positions.append(position_at(float(i) * length / 8.0))
@@ -956,6 +972,10 @@ func _beam(a: Vector3, b: Vector3, width: float, color: Color, glow: bool=false)
 	_prop("box",(a+b)*0.5,Vector3(width,width,delta.length()),color,basis,glow)
 
 func _suspension_bridge(distance: float, span: float, palette: Dictionary={}) -> void:
+	# The authoritative road already supplies the deck. A covered gallery replaces
+	# the otherwise overlapping outdoor pylons and cables on this part of the route.
+	if ADVENTURE_TUNNELS.contains(self, distance, span * 0.5 + 8.0):
+		return
 	var tower: Color=palette.get("tower",Color("e7e1c7"))
 	var cap: Color=palette.get("cap",Color("446b85"))
 	var crossbeam: Color=palette.get("crossbeam",Color("dfe2d0"))
@@ -1018,6 +1038,8 @@ func _sign(at: Vector3, basis: Basis, text: String, pixel_size: float=0.026) -> 
 	add_child(label)
 
 func _arch(distance: float, text: String, color: Color) -> void:
+	if ADVENTURE_TUNNELS.contains(self, distance, 12.0):
+		return
 	var basis: Basis=frame(distance)
 	var at: Vector3=position_at(distance)
 	for side in [-1.0,1.0]:
@@ -1457,13 +1479,28 @@ func _forest() -> void:
 			library_sites.append(site)
 	var cleared_clusters := 0
 	var retained_clusters: Array[Dictionary] = []
-	for i in range(250 if not low_detail else 145):
+	var extended_forest: bool = not adventure_tunnel.is_empty()
+	var forest_count: int = (300 if not low_detail else 180) if extended_forest else (250 if not low_detail else 145)
+	for i in range(forest_count):
 		var p := Vector3(_rng.randf_range(-93,93),0,_rng.randf_range(-84,84))
-		if Vector2(p.x/94.0,p.z/85.0).length()>1.0 or _near_road(p,9.8): continue
+		if extended_forest:
+			var d: float = length * (float(i) + 0.35) / forest_count
+			var lateral: float = _rng.randf_range(18.0, 37.0)
+			if ADVENTURE_TUNNELS.contains(self, d, 30.0):
+				lateral = _rng.randf_range(36.0, 44.0)
+			p = position_at(d, (-1.0 if i % 2 == 0 else 1.0) * lateral)
+		elif Vector2(p.x/94.0,p.z/85.0).length()>1.0:
+			continue
+		if _near_road(p, 11.5 if extended_forest else 9.8):
+			continue
 		p.y=_ground_height(p.x,p.z)
+		if extended_forest and p.y < -1.8:
+			continue
 		var tree_size: float = _rng.randf_range(1.4,2.8)
 		# Conservative bound includes the rotated crowns and neighboring flora.
 		var cluster_radius: float = maxf(tree_size * 3.5, 4.5)
+		if extended_forest and _near_road(p, 8.5 + cluster_radius):
+			continue
 		var overlaps_library := false
 		for site: Dictionary in library_sites:
 			var site_at: Vector3 = site.position
@@ -1492,6 +1529,8 @@ func _forest() -> void:
 	set_meta("forest_library_retained_clusters",retained_clusters)
 	for i in range(28):
 		var d: float=float(i)*length/28.0
+		if ADVENTURE_TUNNELS.contains(self, d, 10.0):
+			continue
 		var p: Vector3=position_at(d,8.0 if i%2==0 else -8.0)
 		p.y=_ground_height(p.x,p.z)
 		_mushroom(p,0.65+float(i%3)*0.20)
@@ -1612,7 +1651,7 @@ func _mushroom(at: Vector3, size: float) -> void:
 	_prop("cylinder",at+Vector3.UP*size*1.22,Vector3(0.65,0.08,0.65)*size,Color("b4dcde"),Basis.IDENTITY,true)
 
 func _tree_tunnel(distance: float) -> void:
-	if is_instance_valid(production_tunnels):
+	if is_instance_valid(production_tunnels) or ADVENTURE_TUNNELS.contains(self, distance, 16.0):
 		return
 	for i in range(4):
 		var d: float=distance+(i-1.5)*7.0
@@ -1635,7 +1674,7 @@ func _branch(a: Vector3,b: Vector3,radius: float,color: Color) -> void:
 	_prop("cylinder",(a+b)*0.5,Vector3(radius,(b-a).length(),radius),color,basis)
 
 func _snow_tunnel(distance: float, palette: Dictionary={}) -> void:
-	if is_instance_valid(production_tunnels):
+	if is_instance_valid(production_tunnels) or ADVENTURE_TUNNELS.contains(self, distance, 15.0):
 		return
 	var inner: Color=palette.get("inner",Color("819da6"))
 	var outer: Color=palette.get("outer",Color("dce9e5"))
@@ -1696,9 +1735,27 @@ func _city() -> void:
 				_rng.randf_range(14,42 if not low_detail else 34),
 				x+z
 			)
+	var extended_city: bool = not adventure_tunnel.is_empty()
 	for i in range(24 if not low_detail else 18):
 		var angle: float=float(i)*TAU/20.0
-		_city_tower(Vector3(cos(angle)*160,-3,sin(angle)*145),_rng.randf_range(10,17),_rng.randf_range(35,75),i)
+		var skyline_x: float = world_extent.x + 60.0 if extended_city else 160.0
+		var skyline_z: float = world_extent.y + 60.0 if extended_city else 145.0
+		_city_tower(Vector3(cos(angle)*skyline_x,-3,sin(angle)*skyline_z),_rng.randf_range(10,17),_rng.randf_range(35,75),i)
+	if extended_city:
+		var boulevard_blocks: int = 60 if low_detail else 96
+		for i in range(boulevard_blocks):
+			var d: float = length * (float(i) + 0.4) / boulevard_blocks
+			if ADVENTURE_TUNNELS.contains(self, d, 28.0):
+				continue
+			var side: float = -1.0 if i % 2 == 0 else 1.0
+			var at: Vector3 = position_at(d, side * _rng.randf_range(21.0, 33.0))
+			var width: float = _rng.randf_range(6.0, 10.0)
+			if _near_road(at, width * 0.75 + 9.0):
+				continue
+			at.y = _ground_height(at.x, at.z)
+			if at.y < -1.8:
+				continue
+			_city_tower(at, width, _rng.randf_range(25.0, 49.0), i)
 	for i in range(11):
 		var d: float=float(i)*length/11.0+8.0
 		var basis: Basis=frame(d)
@@ -1746,7 +1803,7 @@ func _holo_lane_lights() -> void:
 
 
 func _holo_speed_tunnel(distance: float) -> void:
-	if is_instance_valid(production_tunnels):
+	if is_instance_valid(production_tunnels) or ADVENTURE_TUNNELS.contains(self, distance, 25.0):
 		return
 	# Large race-readable Aurora tunnel: visible several seconds before entry.
 	# Decorative only; roadway, collision and AI path remain unchanged.

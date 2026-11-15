@@ -35,8 +35,20 @@ func _check(id: String, low: bool) -> void:
 		assert(is_equal_approx(actual, 1.0) and old > 3.0,
 			"New outer shoreline should line up with normalized radius ~1")
 	else:
-		assert(extent.x <= 150.0 and extent.y <= 150.0,
-			"Unrelated tracks should keep their original coast geometry")
+		# The 2026 Adventure courses legitimately extend Zauberwald and Holo City
+		# beyond their old 101x91 m footprints. Independently derive shoreline
+		# bounds from the authored race-curve samples, not decorative parts.
+		var expected := Vector2(101.0, 91.0)
+		var margin: float = 48.0 if not world.adventure_tunnel.is_empty() else 18.0
+		for sample: Vector3 in world._road_samples:
+			if absf(sample.x) > 101.0:
+				expected.x = maxf(expected.x, absf(sample.x) + margin)
+			if absf(sample.z) > 91.0:
+				expected.y = maxf(expected.y, absf(sample.z) + margin)
+		assert(extent.is_equal_approx(expected),
+			"Non-harbor shoreline bounds must match the extended authored road")
+		assert(world.length > 1500.0,
+			"Adventure route unexpectedly reverted to the short legacy course")
 	world.queue_free()
 	await process_frame
 

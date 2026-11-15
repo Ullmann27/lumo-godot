@@ -159,6 +159,9 @@ static func _extra_kicker_start(world, wish: float, blocked: Array, taken: Array
 
 static func _blocked_ranges(world, length: float) -> Array:
 	var blocked: Array = [Vector2(length - 30.0, length), Vector2(0.0, 35.0)]
+	var tunnel: Dictionary = world.get_meta("adventure_tunnel_plan", {})
+	if not tunnel.is_empty():
+		blocked.append(Vector2(float(tunnel.start) - CLEARANCE, float(tunnel.end) + CLEARANCE))
 	var jump: Dictionary = world.jump
 	if not jump.is_empty():
 		blocked.append(Vector2(float(jump.ramp_start) - CLEARANCE, float(jump.gap_end) + CLEARANCE))
@@ -168,9 +171,11 @@ static func _blocked_ranges(world, length: float) -> Array:
 	return blocked
 
 
-## Erste freie Lage ab der Wunschdistanz (in 4-m-Schritten, höchstens ±120 m); -1 ohne Platz.
+## Erste freie Lage ab der Wunschdistanz in 4-m-Schritten; -1 ohne freien Abschnitt.
 static func _free_start(wish: float, span: float, length: float, blocked: Array, taken: Array) -> float:
-	for step in range(61):
+	# Longer authored routes need a wider deterministic search, retaining the same
+	# first-fit order and every original separation/start/jump/loop constraint.
+	for step in range(maxi(61, ceili(length / 4.0))):
 		var offset: float = floorf(float(step + 1) / 2.0) * 4.0 * (1.0 if step % 2 == 0 else -1.0)
 		var start: float = wish + offset
 		if start < 0.0 or start + span > length:

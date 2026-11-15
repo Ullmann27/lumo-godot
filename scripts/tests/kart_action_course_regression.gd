@@ -65,6 +65,8 @@ func _check_plans() -> void:
 			track, course.pads.size(), course.gates.size(), course.kickers.size(), course.dives.size(), course.edges.size()
 		])
 		world.free()
+		# Drain the renderer's deferred RID frees before the next whole world.
+		await process_frame
 	var plain = WORLD.new()
 	root.add_child(plain)
 	plain.build(true, "sonnenhafen", true)
@@ -132,13 +134,21 @@ func _check_pad_and_slalom() -> void:
 	game.auto_gas = false
 	game.gas_held = true
 	for gate in gates:
-		while game.previous_road_distance < float(gate.distance) + 1.0:
-			var target: Vector3 = game.world.position_at(float(gate.distance), float(gate.lateral))
+		var gate_frames: int = 0
+		while game.previous_road_distance < float(gate.distance) + 1.0 and gate_frames < 600:
+			# Continue through the gate; steering back toward a point already below
+			# the front axle can trap a test driver in an unbounded circle.
+			var aim_distance: float = maxf(float(gate.distance), game.previous_road_distance + 5.0)
+			var target: Vector3 = game.world.position_at(aim_distance, float(gate.lateral))
 			var direction: Vector3 = target - game.player.position
 			var heading: float = atan2(-direction.x, -direction.z)
 			game.steering = clampf(-angle_difference(game.player_heading, heading) * 2.6, -1, 1)
 			game.speed = minf(game.speed, 12.0)
 			game._physics_process(STEP)
+			gate_frames += 1
+			if gate_frames % 60 == 0:
+				await process_frame
+		assert(gate_frames < 600, "Physical test driver did not cross the slalom gate")
 	assert(game.action_slaloms_cleared == 1 and game.action_gates_hit == 0, "Alle vier Tore getroffen: Slalom-Turbo (%d Tore, %d Hütchen)" % [game.action_gates_passed, game.action_gates_hit])
 	assert(game.boost_time > 0.0, "Slalom-Turbo läuft")
 	# Mitten durch ein Hütchen: bremst und zählt nicht.
@@ -269,7 +279,7 @@ func _check_open_edge() -> void:
 
 func _run() -> void:
 	assert(DisplayServer.get_name() != "headless")
-	_check_plans()
+	await _check_plans()
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
