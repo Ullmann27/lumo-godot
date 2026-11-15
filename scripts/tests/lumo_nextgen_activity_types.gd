@@ -80,7 +80,7 @@ func _verify() -> void:
 			"card never books learning progress"):
 		return
 	if not _assert(not task.configure({"kind": "task_card",
-			"sourceTaskId": "anonymous", "prompt": "bad",
+			"sourceTaskId": "", "prompt": "bad",
 			"subject": "Deutsch", "unit": "",
 			"answerChoices": ["2", "3"], "childId": "should-not-pass"}),
 			"incomplete required UI contract rejected"):
