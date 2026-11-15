@@ -1,0 +1,150 @@
+name: LUMO NextGen 3D – native Godot 4.6.3 imported rig and runtime proof
+on:
+  push:
+    branches:
+      - integration/lumo-learning-nextgen-20261115
+    paths:
+      - assets/characters/lumo_nextgen_chat3/**
+      - scenes/learning/nextgen/**
+      - scripts/learning/nextgen/**
+      - scripts/learning/learning_world.gd
+      - scripts/learning/learning_activity.gd
+      - scripts/tests/lumo_nextgen_activity_types.gd
+      - scripts/tests/lumo_nextgen_chat3_capture.gd
+      - scripts/tests/lumo_nextgen_learning_guide.gd
+      - .github/workflows/lumo-nextgen-integrated-native.yml
+  pull_request:
+    branches:
+      - integration/lumo-learning-generation-20261115-ea41
+    paths:
+      - scripts/learning/nextgen/**
+      - scripts/learning/learning_world.gd
+      - scripts/learning/learning_activity.gd
+      - scripts/tests/lumo_nextgen_activity_types.gd
+      - scripts/tests/lumo_nextgen_learning_guide.gd
+      - .github/workflows/lumo-nextgen-integrated-native.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lumo-nextgen-integrated-native-20261115
+  cancel-in-progress: true
+jobs:
+  import-and-test-original-lumo:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Capture exact native commit and source metadata
+        run: |
+          set -euo pipefail
+          mkdir -p proof/lumo-nextgen-native
+          git rev-parse HEAD | tee proof/lumo-nextgen-native/source-sha.txt
+          test -s assets/characters/lumo_nextgen_chat3/Lumo-Learning-Animated.blend
+          test -s assets/characters/lumo_nextgen_chat3/Lumo-Learning-Animated.glb
+          test -s assets/characters/lumo_nextgen_chat3/Lumo-Learning-Objects.glb
+          cp assets/characters/lumo_nextgen_chat3/production-report.json proof/lumo-nextgen-native/
+          sha256sum assets/characters/lumo_nextgen_chat3/*.blend assets/characters/lumo_nextgen_chat3/*.glb \
+            | tee proof/lumo-nextgen-native/imported-asset-sha256.txt
+      - name: Install software rendering and Godot 4.6.3
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y xvfb libgl1-mesa-dri mesa-vulkan-drivers
+          mkdir -p "$RUNNER_TEMP/lumo-godot"
+          cd "$RUNNER_TEMP/lumo-godot"
+          curl -fL --retry 3 --retry-delay 2 -o godot.zip \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q godot.zip
+          chmod +x Godot_v4.6.3-stable_linux.x86_64
+          echo "$RUNNER_TEMP/lumo-godot" >> "$GITHUB_PATH"
+      - name: Import entire pinned native project (diagnostic, existing problems noted)
+        run: |
+          set -euo pipefail
+          timeout 280s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --editor --import --quit \
+            > proof/lumo-nextgen-native/full-project-import.log 2>&1 || {
+              echo "Full existing project import reported errors; isolated new rig import remains mandatory."
+              tail -70 proof/lumo-nextgen-native/full-project-import.log
+            }
+      - name: Check every newly integrated teaching activity source
+        run: |
+          set -euo pipefail
+          timeout 75s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script \
+            res://scripts/tests/lumo_nextgen_activity_types.gd \
+            > proof/lumo-nextgen-native/activity-types-test.log 2>&1 || {
+              tail -100 proof/lumo-nextgen-native/activity-types-test.log
+              exit 1
+            }
+          grep -F '[NextGenActivity] PASS:' proof/lumo-nextgen-native/activity-types-test.log
+      - name: Load the actual production learning actor in native scene tree
+        run: |
+          set -euo pipefail
+          timeout 160s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --script \
+            res://scripts/tests/lumo_nextgen_learning_guide.gd \
+            > proof/lumo-nextgen-native/guide-runtime-test.log 2>&1 || {
+              tail -120 proof/lumo-nextgen-native/guide-runtime-test.log
+              exit 1
+            }
+          grep -F '[LumoLearningGuide] PASS:' proof/lumo-nextgen-native/guide-runtime-test.log
+      - name: Isolate exact imported NextGen scene and GLBs for independent proof
+        run: |
+          set -euo pipefail
+          FIXTURE="$RUNNER_TEMP/lumo-nextgen-fixture"
+          mkdir -p "$FIXTURE/scenes/learning/nextgen" \
+            "$FIXTURE/scripts/learning/nextgen" \
+            "$FIXTURE/scripts/tests" \
+            "$FIXTURE/assets/characters/lumo_nextgen_chat3"
+          cp scenes/learning/nextgen/lumo_learning_stage.tscn "$FIXTURE/scenes/learning/nextgen/"
+          cp scripts/learning/nextgen/lumo_learning_stage.gd "$FIXTURE/scripts/learning/nextgen/"
+          cp scripts/tests/lumo_nextgen_chat3_capture.gd "$FIXTURE/scripts/tests/"
+          cp assets/characters/lumo_nextgen_chat3/*.glb "$FIXTURE/assets/characters/lumo_nextgen_chat3/"
+          printf '%s\n' \
+            'config_version=5' \
+            '[application]' \
+            'config/name="LUMO Integrated Native Stage QA"' \
+            'run/main_scene="res://scenes/learning/nextgen/lumo_learning_stage.tscn"' \
+            'config/features=PackedStringArray("4.6", "GL Compatibility")' \
+            '[rendering]' \
+            'renderer/rendering_method="gl_compatibility"' > "$FIXTURE/project.godot"
+          echo "$FIXTURE" > proof/lumo-nextgen-native/fixture-path.txt
+          timeout 220s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path "$FIXTURE" --editor --import --quit \
+            > proof/lumo-nextgen-native/isolated-import.log 2>&1 || {
+              tail -95 proof/lumo-nextgen-native/isolated-import.log
+              exit 1
+            }
+          if grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' proof/lumo-nextgen-native/isolated-import.log; then exit 1; fi
+      - name: Verify actual Godot stage with 8+5, Banane, patterns, stop and viewport captures
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          FIXTURE="$(cat proof/lumo-nextgen-native/fixture-path.txt)"
+          timeout 210s xvfb-run -a -s '-screen 0 1200x1200x24' \
+            Godot_v4.6.3-stable_linux.x86_64 \
+            --path "$FIXTURE" --rendering-method gl_compatibility --audio-driver Dummy \
+            --resolution 1024x768 \
+            --script res://scripts/tests/lumo_nextgen_chat3_capture.gd \
+            > proof/lumo-nextgen-native/runtime-test.log 2>&1 || {
+              tail -120 proof/lumo-nextgen-native/runtime-test.log
+              exit 1
+            }
+          grep -F '[LumoChat3Runtime] PASS:' proof/lumo-nextgen-native/runtime-test.log
+          for name in 01_math_8_plus_5 02_reading_ba_na_ne 03_shapes_pattern 04_phone_portrait_math 05_fold_like_opened_syllables; do
+            test -s "$FIXTURE/exports/lumo-nextgen-chat3/runtime/$name.png"
+          done
+          mkdir -p proof/lumo-nextgen-native/screenshots
+          cp "$FIXTURE"/exports/lumo-nextgen-chat3/runtime/*.png proof/lumo-nextgen-native/screenshots/
+      - name: Keep exact test logs and real render screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-nextgen-godot-stage-proof
+          path: proof/lumo-nextgen-native/
+          if-no-files-found: warn
+          retention-days: 30
