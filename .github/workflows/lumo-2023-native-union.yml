@@ -1,0 +1,82 @@
+name: LUMO 2023 Native - 2022 + Abenteuer + Optik
+on:
+  push:
+    branches: [integration/lumo-2023-native-complete-20261115]
+    paths:
+      - tools/integration/merge_2022_native_adventure.py
+      - .github/workflows/lumo-2023-native-union.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: lumo-2023-native-union
+  cancel-in-progress: false
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      LUMO_NEW_NATIVE: ebf5a5c75d43164ea888e29b987ee9b163cdc72c
+      LUMO_2022_NATIVE: 0e7be88791bf4ed5d556d535078471e05a02315d
+      PROOF: ${{ github.workspace }}/native-union-proof
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Verify original Lumo 2022 as ancestor
+        run: |
+          set -euo pipefail
+          mkdir -p "$PROOF"
+          git rev-parse HEAD | tee "$PROOF/base-checkout-sha.txt"
+          git merge-base --is-ancestor "$LUMO_2022_NATIVE" HEAD
+          git fetch --no-tags origin "$LUMO_NEW_NATIVE"
+          git rev-parse "$LUMO_NEW_NATIVE^{commit}" | tee "$PROOF/incoming-sha.txt"
+      - name: Merge exact Adventure with bounded four-file resolution
+        run: |
+          set -euo pipefail
+          git config user.name "LUMO Integrationsprüfung"
+          git config user.email "64243701+Ullmann27@users.noreply.github.com"
+          set +e
+          git merge --no-commit --no-ff "$LUMO_NEW_NATIVE" > "$PROOF/merge.log" 2>&1
+          result=$?
+          set -e
+          echo "git_merge_status=$result" | tee "$PROOF/merge-status.txt"
+          git diff --name-only --diff-filter=U | tee "$PROOF/conflicts.txt"
+          python3 tools/integration/merge_2022_native_adventure.py | tee "$PROOF/conflict-resolution.txt"
+          git diff --cached --name-status > "$PROOF/combined-source-changes.txt"
+          test -z "$(git diff --name-only --diff-filter=U)"
+          test -n "$(git diff --cached --name-only)"
+          git status --short | tee "$PROOF/source-status.txt"
+      - name: Install pinned Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/bin"
+          ln -s "$RUNNER_TEMP/bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/bin/godot"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+      - name: Import actual unified source and verify Adventure routes and aero
+        run: |
+          set -euo pipefail
+          python3 tools/validate_project.py 2>&1 | tee "$PROOF/project-validation.txt"
+          godot --headless --editor --import --path . 2>&1 | tee "$PROOF/godot-import.log"
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$PROOF/godot-import.log"; then exit 1; fi
+          python3 tools/run_godot_probe.py --log "$PROOF/kart-modular-regression.log" --timeout 600 --required '[KartModularParts] PASS' -- godot --headless --path . --script res://scripts/tests/kart_modular_parts_regression.gd
+      - name: Commit integrated sources to isolated review branch
+        run: |
+          set -euo pipefail
+          git add -A
+          git commit -m "integrate(native): retain Lumo 2022 production and add Kart Adventure+Art [skip ci]"
+          git rev-parse HEAD | tee "$PROOF/merged-commit.txt"
+          git rev-parse HEAD^{tree} | tee "$PROOF/merged-tree.txt"
+          git diff --exit-code HEAD --
+          git push origin HEAD:refs/heads/integration/lumo-2023-native-complete-20261115
+      - name: Preserve conflict review and source-bound test evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-2023-native-2022-adventure-union
+          path: native-union-proof/
+          retention-days: 30
+          if-no-files-found: warn
