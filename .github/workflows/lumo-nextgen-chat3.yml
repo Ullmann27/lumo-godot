@@ -1,0 +1,122 @@
+name: LUMO Chat 3 Blender and Godot Proof
+on:
+  push:
+    branches: [chatgpt/lumo-nextgen-chat3-3d-20261115]
+    paths: ['tools/lumo_nextgen_chat3/**', 'scripts/learning/nextgen/**', 'scripts/tests/lumo_nextgen_chat3_capture.gd', 'scenes/learning/nextgen/**', '.github/workflows/lumo-nextgen-chat3.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: lumo-nextgen-chat3-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  make-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Install real Blender and software rendering
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y blender xvfb libgl1-mesa-dri mesa-vulkan-drivers
+          blender --version | head -n 3
+      - name: Build editable character and lesson prop source and render all Blender views
+        run: |
+          set -euo pipefail
+          mkdir -p exports/lumo-nextgen-chat3
+          git rev-parse HEAD > exports/lumo-nextgen-chat3/build-source-sha.txt
+          blender --background --factory-startup -t 2 \
+            --python tools/lumo_nextgen_chat3/build_blender_assets.py -- \
+            --source assets/characters/lumo_animated/Lumo-Animated-Mobile.glb \
+            --output exports/lumo-nextgen-chat3 > exports/lumo-nextgen-chat3/blender-build.log 2>&1 || {
+              tail -120 exports/lumo-nextgen-chat3/blender-build.log
+              exit 1
+            }
+          grep -F 'LUMO_CHAT3_BUILD_PASS' exports/lumo-nextgen-chat3/blender-build.log
+          for file in Lumo-Learning-Animated.blend Lumo-Learning-Animated.glb Lumo-Learning-Objects.blend Lumo-Learning-Objects.glb; do
+            test -s "exports/lumo-nextgen-chat3/$file"
+          done
+          for view in front three_quarter side back; do
+            test -s "exports/lumo-nextgen-chat3/Blender_Lumo_$view.png"
+          done
+      - name: Audit real GLB binary animations, morph shapes, skin and objects
+        run: |
+          set -euo pipefail
+          python3 tools/lumo_nextgen_chat3/validate_glb.py \
+            exports/lumo-nextgen-chat3/Lumo-Learning-Animated.glb \
+            exports/lumo-nextgen-chat3/Lumo-Learning-Objects.glb \
+            exports/lumo-nextgen-chat3/glb-audit.json
+      - name: Supply actual Blender generated binaries to Godot
+        run: |
+          set -euo pipefail
+          mkdir -p assets/characters/lumo_nextgen_chat3
+          cp exports/lumo-nextgen-chat3/Lumo-Learning-Animated.blend \
+             exports/lumo-nextgen-chat3/Lumo-Learning-Animated.glb \
+             exports/lumo-nextgen-chat3/Lumo-Learning-Objects.blend \
+             exports/lumo-nextgen-chat3/Lumo-Learning-Objects.glb \
+             exports/lumo-nextgen-chat3/production-report.json \
+             exports/lumo-nextgen-chat3/glb-audit.json \
+             exports/lumo-nextgen-chat3/Blender_Lumo_*.png \
+             assets/characters/lumo_nextgen_chat3/
+      - name: Install exact project Godot 4.6.3 stable
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/lumo-godot"
+          cd "$RUNNER_TEMP/lumo-godot"
+          curl -fL --retry 3 --retry-delay 2 -o godot.zip https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q godot.zip
+          chmod +x Godot_v4.6.3-stable_linux.x86_64
+          echo "$RUNNER_TEMP/lumo-godot" >> "$GITHUB_PATH"
+      - name: Import real Godot project
+        run: |
+          set -euo pipefail
+          timeout 360s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --editor --import --quit \
+            > exports/lumo-nextgen-chat3/godot-import.log 2>&1 || {
+              tail -120 exports/lumo-nextgen-chat3/godot-import.log
+              exit 1
+            }
+          if grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' exports/lumo-nextgen-chat3/godot-import.log; then exit 1; fi
+      - name: Run native learning scene and actual framebuffer captures
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          timeout 250s xvfb-run -a -s '-screen 0 1024x768x24' \
+            Godot_v4.6.3-stable_linux.x86_64 --path . \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --resolution 1024x768 --script res://scripts/tests/lumo_nextgen_chat3_capture.gd \
+            > exports/lumo-nextgen-chat3/godot-runtime.log 2>&1 || {
+              tail -120 exports/lumo-nextgen-chat3/godot-runtime.log
+              exit 1
+            }
+          grep -F '[LumoChat3Runtime] PASS:' exports/lumo-nextgen-chat3/godot-runtime.log
+          for file in 01_math_8_plus_5 02_reading_ba_na_ne 03_shapes_pattern; do
+            test -s "exports/lumo-nextgen-chat3/runtime/$file.png"
+          done
+          cp -r exports/lumo-nextgen-chat3/runtime assets/characters/lumo_nextgen_chat3/
+      - name: Commit real output and evidence onto own development branch
+        if: always()
+        run: |
+          set -euo pipefail
+          if ! test -s assets/characters/lumo_nextgen_chat3/Lumo-Learning-Animated.blend; then
+            echo 'Blender output missing: no generated assets committed'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f assets/characters/lumo_nextgen_chat3
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'assets(lumo-chat3): generated Blender source, GLBs and native evidence'
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - name: Upload real generated sources and QA logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-chat3-production-${{ github.run_id }}
+          path: exports/lumo-nextgen-chat3/
+          if-no-files-found: warn
+          retention-days: 30
