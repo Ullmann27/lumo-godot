@@ -253,7 +253,7 @@ func bridge_to_ten() -> void:
 
 func _lesson_syllables() -> void:
 	for i in range(3):
-		var syllable := ["Ba", "na", "ne"][i]
+		var syllable: String = ["Ba", "na", "ne"][i]
 		var id := "reading:banane:syllable:%d" % (i + 1)
 		var prop := _add_prop(id, "LetterTile", Vector3(-0.02 + i * 0.73, 1.07, 0.02))
 		_text(syllable, prop, 0.32)
@@ -262,7 +262,7 @@ func _lesson_syllables() -> void:
 func _lesson_pattern() -> void:
 	var kinds := ["ShapeCircle", "ShapeSquare", "ShapeTriangle"]
 	for i in range(8):
-		var kind := kinds[i % 3]
+		var kind: String = kinds[i % 3]
 		var id := "pattern:shapes:item:%02d" % (i + 1)
 		_add_prop(id, kind, Vector3(-0.15 + (i % 4) * 0.64,
 			1.13 + int(i / 4) * 0.63, 0.04))
