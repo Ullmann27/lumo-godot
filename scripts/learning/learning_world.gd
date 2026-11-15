@@ -1026,8 +1026,15 @@ func _layout() -> void:
 		# A short landscape window needs one row of full-sized actions, not a
 		# two-row footer that reduces the real objects to tiny thumbnails.
 		status.visible = not _english_compact
+		actions.add_theme_constant_override("h_separation", 4 if _english_compact else 8)
+		question_button.text = "Fragen" if _english_compact else "Lumo fragen"
+		question_button.tooltip_text = "Lumo eine Frage zur aktuellen Aufgabe stellen"
 		for button: Button in actions.get_children():
 			button.custom_minimum_size = Vector2(52, 52)
+			for state in ["normal", "hover", "pressed", "focus"]:
+				var button_style := button.get_theme_stylebox(state) as StyleBoxFlat
+				button_style.content_margin_left = 4.0 if _english_compact else 12.0
+				button_style.content_margin_right = 4.0 if _english_compact else 12.0
 		_update_voice_button()
 	header.position = origin + Vector2(12, 12)
 	header.size.x = maxf(100, available.x - 24)
@@ -1718,10 +1725,18 @@ func _layout_english(dimensions: Vector2, scale_value: float) -> void:
 	fox.position.z = -0.6 if portrait else 0.2
 	fox.rotation.y = 0.10 if portrait else 0.35
 	for index in range(english_models.size()):
+		# Flat school objects need a larger real silhouette on short landscape
+		# surfaces. Space their whole models, colliders and numbered plinths
+		# together; the camera still fits the measured geometry and full fox.
+		english_models[index].scale = Vector3.ONE * (1.5 if _english_compact else 1.0)
 		english_models[index].position = (
 			Vector3(1.25, 0, -2.8 + index * 2.8)
 			if portrait
-			else Vector3(-1.15 + index * 2.55, 0, 0.15)
+			else (
+				Vector3(-1.0 + index * 3.3, 0, 0.15)
+				if _english_compact
+				else Vector3(-1.15 + index * 2.55, 0, 0.15)
+			)
 		)
 		var number := english_models[index].get_node("ChoiceNumber") as MeshInstance3D
 		number.global_basis = camera.global_basis

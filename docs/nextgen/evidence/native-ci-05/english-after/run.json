@@ -1,0 +1,15 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 56.6414718790038,
+  "display": 191,
+  "project": "/workspace/scratch/4fa97167812c/agent-avatar",
+  "godot_arguments": [
+    "--script",
+    "/workspace/scratch/4fa97167812c/avatar-qa/ci-hang-05/english_review_capture.gd",
+    "--",
+    "--capture",
+    "--output=/workspace/scratch/4fa97167812c/avatar-qa/ci-hang-05/english-after"
+  ],
+  "timed_out": false,
+  "scope": "Local software renderer; not physical Android performance"
+}

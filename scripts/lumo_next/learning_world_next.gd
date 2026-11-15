@@ -25,9 +25,14 @@ func _create_fox() -> Node3D:
 
 func _build_stage() -> void:
 	super._build_stage()
-	# A lower, still readable teaching view exposes the original face and
-	# mouth while keeping both rows of the ten-frame visibly separated.
-	camera.position = Vector3(0.0, 9.5, 14.0)
+	# Expose the face and mouth. Countable ten-frame rows need a slightly
+	# steeper view so the real token silhouettes have a clear vertical gap.
+	var height := (
+		11.5
+		if activity.kind in ["bridge_ten", "addition", "bridge_hundred", "subtract_ten"]
+		else 9.5
+	)
+	camera.position = Vector3(0.0, height, 14.0)
 	camera.look_at(Vector3(0.0, 0.7, 0.0))
 	if fox.is_usable():
 		fox.director.stop_playback_requested.connect(_director_stop_requested)
