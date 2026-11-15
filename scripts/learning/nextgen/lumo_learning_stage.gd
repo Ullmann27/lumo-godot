@@ -42,6 +42,7 @@ var _light: DirectionalLight3D
 var _reduced_motion := false
 var _point_target: Node3D
 var _point_line: MeshInstance3D
+var _portrait_podium: MeshInstance3D
 
 
 func _ready() -> void:
@@ -107,6 +108,17 @@ func _make_world() -> void:
 	edge_material.emission_energy_multiplier = 0.65
 	rim.material_override = edge_material
 	add_child(rim)
+	_portrait_podium = MeshInstance3D.new()
+	_portrait_podium.name = "NonCountingPortraitFoxPodium"
+	var short_dais := CylinderMesh.new()
+	short_dais.top_radius = 0.82
+	short_dais.bottom_radius = 0.90
+	short_dais.height = 0.10
+	_portrait_podium.mesh = short_dais
+	_portrait_podium.position = Vector3(0, -0.07, 0)
+	_portrait_podium.material_override = _material(Color(0.22, 0.39, 0.57), 0.44)
+	_actor_mount.add_child(_portrait_podium)
+	_portrait_podium.visible = false
 	_point_line = MeshInstance3D.new()
 	_point_line.name = "TargetRayFeedback"
 	_point_line.visible = false
@@ -165,18 +177,32 @@ func _layout() -> void:
 		return
 	var screen := get_viewport().get_visible_rect().size
 	var ratio := screen.x / maxf(screen.y, 1.0)
-	if ratio < 0.75:
-		# Portrait: keep counters and text at the center, without occlusion.
-		_camera.size = 8.0
-		_actor_mount.position = Vector3(-1.25, 0.70, -0.55)
-		_actor_mount.scale = Vector3.ONE * 1.15
-		_board.position = Vector3(-0.12, -0.70, 0.62)
+	var phone_portrait := ratio < 0.75
+	if phone_portrait:
+		# A narrow viewport cannot accommodate a side-by-side scene:
+		# put Lumo ABOVE the task, with all 13 counters below and visible.
+		_camera.size = 7.0
+		_camera.position = Vector3(0.20, 1.80, 10.0)
+		_camera.look_at(Vector3(0.20, 0.95, 0.0), Vector3.UP)
+		_actor_mount.position = Vector3(0.15, 1.55, -0.30)
+		_actor_mount.scale = Vector3.ONE * 1.10
+		_board.position = Vector3(-0.80, -1.45, 0.62)
 	else:
 		_camera.size = 5.9
+		_camera.position = Vector3(0.35, 2.9, 6.5)
+		_camera.look_at(Vector3(0.25, 0.95, 0), Vector3.UP)
 		_actor_mount.position = Vector3(-1.80, 0.0, 0.0)
 		_actor_mount.scale = Vector3.ONE * 1.20
 		_board.position = Vector3(0.12, 0.0, 0.25)
 	_board_background.position = _board.position
+	if _portrait_podium:
+		_portrait_podium.visible = phone_portrait
+	var floor_obj := get_node_or_null("NonCountingStageFloor") as MeshInstance3D
+	var rim_obj := get_node_or_null("NonCountingPodiumRim") as MeshInstance3D
+	if floor_obj:
+		floor_obj.visible = not phone_portrait
+	if rim_obj:
+		rim_obj.visible = not phone_portrait
 
 
 func _load_assets() -> void:
