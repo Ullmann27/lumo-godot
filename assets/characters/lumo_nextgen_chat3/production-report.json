@@ -1,0 +1,75 @@
+{
+  "character": {
+    "source_sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+    "legacy_rig_bones": 65,
+    "original_mesh_preserved": true,
+    "additional_clips": [
+      "learn_idle_breathe",
+      "learn_listen",
+      "learn_think",
+      "learn_explain",
+      "learn_point",
+      "learn_nod",
+      "learn_unsure",
+      "learn_encourage",
+      "learn_celebrate",
+      "learn_interrupt",
+      "learn_return_listen",
+      "learn_farewell"
+    ],
+    "existing_actions_retained": [
+      "agree_nod_SmartRigArmature",
+      "celebrate_SmartRigArmature",
+      "greeting_wave_SmartRigArmature",
+      "idle_SmartRigArmature",
+      "kart_jump_SmartRigArmature",
+      "kart_seated_SmartRigArmature",
+      "kart_steer_left_SmartRigArmature",
+      "kart_steer_right_SmartRigArmature",
+      "point_portal_SmartRigArmature"
+    ],
+    "face": {
+      "head_z": 1.1853516101837158,
+      "face_z": 1.2223516101837157,
+      "mouth_front_y": -0.44453297424316407,
+      "neutral_controls_recessed_inside_head": true,
+      "morphs": [
+        "viseme_A",
+        "viseme_E",
+        "viseme_I",
+        "viseme_O",
+        "viseme_U",
+        "viseme_MBP",
+        "viseme_FV",
+        "viseme_L",
+        "expression_smile",
+        "expression_surprise"
+      ],
+      "eyelid_morph": "blink"
+    },
+    "blend_sha256": "ed8a4818fee86be2889c2e0270020525ea6c7fba5f5d3b90afe5c78d19e272aa",
+    "glb_sha256": "a6cb12578b015e177717ec9505d1f4d814b927f98643ef69ab391afb512437f2",
+    "glb_bytes": 6010952,
+    "blender_version": "4.0.2",
+    "android_tested": false,
+    "true_lipsync_tested": false
+  },
+  "objects": {
+    "asset_names": [
+      "CounterBerry",
+      "LetterTile",
+      "TenBundle",
+      "ShapeCircle",
+      "ShapeSquare",
+      "ShapeTriangle",
+      "TenFrameCell",
+      "LearningPodium"
+    ],
+    "blend_sha256": "b75e3eb0823d2ff4d49e150f660d4285be49a9c606b4d67f3e8580af84a80cfc",
+    "glb_sha256": "0da11713827386f4134e86f6672efd1bfdf83c79a6054e034eefb4a6475a89ad",
+    "glb_bytes": 80280
+  },
+  "coordinate_system": "Blender Z-up meters; glTF exported Y-up",
+  "source_rights": "Retains Meshy CC BY 4.0 original, see assets/characters/lumo_animated/ATTRIBUTION.md",
+  "generated_assets": "Original scripted geometry, own actions, no external assets"
+}
