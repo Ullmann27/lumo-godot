@@ -35,6 +35,10 @@ var _blink_timer := 3.25
 var _actor_mount := Node3D.new()
 var _targets: Dictionary = {}
 var _counter_objects: Array[Node3D] = []
+var _math_slots: Array[Node3D] = []
+var _math_tweens: Array[Tween] = []
+var _math_caption: Label3D
+var _math_bridge_done := false
 var _mesh_assets: Dictionary = {}
 var _current_mouth := ""
 var _camera: Camera3D
@@ -264,6 +268,13 @@ func _erase_board() -> void:
 	for child in _board.get_children():
 		_board.remove_child(child)
 		child.queue_free()
+	for tween in _math_tweens:
+		if tween.is_running():
+			tween.kill()
+	_math_tweens.clear()
+	_math_slots.clear()
+	_math_caption = null
+	_math_bridge_done = false
 	_targets.clear()
 	_counter_objects.clear()
 	current_focus_id = ""
@@ -289,7 +300,7 @@ func _add_prop(id: String, asset: String, position: Vector3, color: Color = Colo
 
 
 func _text(text: String, parent: Node3D, height: float = 0.22,
-		on_cream_tile: bool = false) -> void:
+		on_cream_tile: bool = false) -> Label3D:
 	var label := Label3D.new()
 	label.name = "LearningText"
 	label.text = text
@@ -304,6 +315,7 @@ func _text(text: String, parent: Node3D, height: float = 0.22,
 	label.no_depth_test = true
 	label.position = Vector3(0, 0, 0.38 if on_cream_tile else 0.25)
 	parent.add_child(label)
+	return label
 
 
 func configure_lesson(new_lesson: String) -> void:
@@ -322,37 +334,76 @@ func configure_lesson(new_lesson: String) -> void:
 	lesson_changed.emit(new_lesson)
 
 
+func _math_slot_position(slot_index: int) -> Vector3:
+	# 2 rows of 5; visual support slots are NOT countable objects.
+	return Vector3(0.10 + float(slot_index % 5) * 0.45,
+		1.57 - float(slot_index / 5) * 0.44, -0.05)
+
+
 func _lesson_math() -> void:
-	# Exactly 13 colored counting objects, with stable math identifiers.
-	# 8 on the left, 5 on the right; moving two does NOT create duplicates.
+	# A real ten frame: 8 of 10 cells occupied, 2 empty.
+	# Five separate gold berries are shown below; during the bridge two
+	# of THOSE exact five instances move into the two empty slots.
+	for slot_index in range(10):
+		var holder := Node3D.new()
+		holder.name = "DecorativeTenFrameCell_%02d" % (slot_index + 1)
+		holder.set_meta("non_counting_decoration", true)
+		holder.position = _math_slot_position(slot_index)
+		var cell := _mesh_object("TenFrameCell", BoxMesh.new())
+		cell.scale = Vector3.ONE * 1.04
+		holder.add_child(cell)
+		_board.add_child(holder)
+		_math_slots.append(holder)
 	for i in range(8):
 		var id := "math:8plus5:left:%02d" % (i + 1)
-		var pos := Vector3(-0.09 + (i % 5) * 0.39, 0.52 + int(i / 5) * 0.43, 0.1)
-		_counter_objects.append(_add_prop(id, "CounterBerry", pos))
+		var p := _math_slot_position(i)
+		p.z += 0.27
+		_counter_objects.append(_add_prop(id, "CounterBerry", p))
 	for i in range(5):
 		var id := "math:8plus5:right:%02d" % (i + 1)
-		var pos := Vector3(-0.09 + (i % 5) * 0.39, 1.51, 0.10)
-		_counter_objects.append(_add_prop(id, "CounterBerry", pos, Color(1.0, 0.82, 0.43)))
-	var caption := Node3D.new()
-	caption.name = "NonCountingEquation"
-	caption.position = Vector3(0.72, 2.16, 0.0)
-	_board.add_child(caption)
-	_text("8 + 5 = ?", caption, 0.34)
+		var p := Vector3(0.10 + float(i) * 0.45, 0.46, 0.22)
+		_counter_objects.append(_add_prop(id, "CounterBerryGold", p))
+	var heading := Node3D.new()
+	heading.name = "NonCountingMathEquation"
+	heading.position = Vector3(0.92, 2.27, 0.05)
+	_board.add_child(heading)
+	_math_caption = _text("8 + 5 = ?", heading, 0.32)
+
+
+func get_ten_frame_slot_count() -> int:
+	return _math_slots.size()
 
 
 func bridge_to_ten() -> void:
 	if lesson_id != "math_8_plus_5" or _counter_objects.size() != 13:
 		return
+	if _math_bridge_done or _math_slots.size() != 10:
+		return
+	_math_bridge_done = true
 	for i in range(2):
 		var moved := _targets.get("math:8plus5:right:%02d" % (i + 1)) as Node3D
 		if moved == null:
 			continue
-		var dest := Vector3(1.08 + i * 0.39, 0.95, 0.1)
+		# No extra meshes are created. The stable content object moves.
+		var goal := _math_slots[8 + i].position + Vector3(0, 0, 0.27)
 		if _reduced_motion:
-			moved.position = dest
+			moved.position = goal
 		else:
-			var tween := create_tween().set_trans(Tween.TRANS_CUBIC)
-			tween.tween_property(moved, "position", dest, 0.55)
+			var tween := create_tween()
+			tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+			tween.tween_property(moved, "position",
+				moved.position.lerp(goal, 0.56) + Vector3(0, 0.21, 0.08), 0.23)
+			tween.tween_property(moved, "position", goal, 0.29)
+			if i == 1:
+				tween.tween_callback(_finish_math_bridge)
+			_math_tweens.append(tween)
+	if _reduced_motion:
+		_finish_math_bridge()
+
+
+func _finish_math_bridge() -> void:
+	if lesson_id == "math_8_plus_5" and is_instance_valid(_math_caption):
+		_math_caption.text = "10 + 3 = 13"
 
 
 func _lesson_syllables() -> void:
