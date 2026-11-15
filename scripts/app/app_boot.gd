@@ -325,20 +325,20 @@ func _show_cover(scene_id: String) -> void:
 	# loading surface instead of falsely presenting the Kart world as learning.
 	cover.visible = scene_id not in ["learning", "memory", "quiz"]
 	var path: String = str(COVER_BY_SCENE.get(scene_id, "res://assets/kart/menu/lumo-world.webp"))
-	cover.texture = MENU_ART.world_texture() if path == MENU_ART.WORLD.resource_path else load(path) as Texture2D
+	cover.texture = MENU_ART.world_texture() if path == "res://assets/kart/menu/lumo-world.webp" else load(path) as Texture2D
 	var title: Label = $Layer/Title
 	title.text = str(TITLE_BY_SCENE.get(scene_id, "LUMO SPIELEWELT"))
-	title.add_theme_font_override("font", UI.HEADING)
+	title.add_theme_font_override("font", load("res://assets/fonts/Nunito-Black.ttf") as Font)
 	title.add_theme_color_override("font_color", Color("f7fbff"))
 	var subtitle: Label = $Layer/Subtitle
 	subtitle.text = "MIT LUMO BEGREIFEN UND AUSPROBIEREN" if scene_id == "learning" else "DEIN NÄCHSTES ABENTEUER"
-	subtitle.add_theme_font_override("font", UI.BODY)
+	subtitle.add_theme_font_override("font", load("res://assets/fonts/Nunito-Bold.ttf") as Font)
 	subtitle.add_theme_color_override("font_color", Color("53ddfd"))
 	var status: Label = $Layer/LoadingLabel
 	status.text = "Deine Lernansicht wird vorbereitet …" if scene_id == "learning" else "Spielwelt wird vorbereitet …"
 	if is_instance_valid(_back_button):
 		_back_button.text = "Zur Aufgabe" if scene_id == "learning" else "Zur Spielewelt"
-	status.add_theme_font_override("font", UI.BODY)
+	status.add_theme_font_override("font", load("res://assets/fonts/Nunito-Bold.ttf") as Font)
 	status.add_theme_color_override("font_color", Color("f7fbff"))
 	var bar: ProgressBar = $Layer/LoadBar
 	bar.indeterminate = true
