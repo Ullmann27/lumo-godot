@@ -69,6 +69,9 @@ jobs:
           # Git merged objects are already staged. Do not add downloaded proof
           # logs or Godot-generated import sidecars to the source tree.
           test -z "$(git diff --name-only --diff-filter=U)"
+          # The runtime token has no workflows-write scope. Keep the existing
+          # immutable CI files; the union changes only actual Godot sources.
+          git restore --source=HEAD --staged --worktree -- .github/workflows
           git diff --cached --check
           git commit -m "integrate(native): retain Lumo 2022 production and add Kart Adventure+Art [skip ci]"
           git rev-parse HEAD | tee "$PROOF/merged-commit.txt"
