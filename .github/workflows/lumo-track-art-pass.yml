@@ -1,0 +1,82 @@
+name: LUMO twelve-track art pass - three proof workers
+
+on:
+  push:
+    branches: [chatgpt/lumo-track-art-pass-20261115]
+    paths:
+      - scripts/games/visual/kart_track_art_*.gd
+      - assets/shaders/kart_track_art.gdshader
+      - scripts/games/kart_modular_route_props.gd
+      - scripts/tests/kart_track_art_*.gd
+      - .github/workflows/lumo-track-art-pass.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lumo-track-art-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  art-worker:
+    name: Art proof worker ${{ matrix.worker }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - worker: 1
+            tracks: sonnenhafen zauberwald bergwelt holo_city
+          - worker: 2
+            tracks: crystal_canyon jungle_temple candy_cloud volcano_night
+          - worker: 3
+            tracks: winter_sprint galaxy_ringway desert_drift learning_lab
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      PROOF: ${{ github.workspace }}/art-proof
+      TRACKS: ${{ matrix.tracks }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install pinned Godot and renderer
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/bin"
+          ln -s "$RUNNER_TEMP/bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/bin/godot"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+      - name: Import exact source
+        run: |
+          set -euo pipefail
+          mkdir -p "$PROOF"
+          git rev-parse HEAD > "$PROOF/source-sha.txt"
+          godot --version > "$PROOF/engine.txt"
+          godot --headless --editor --import --path . > "$PROOF/import.log" 2>&1
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$PROOF/import.log"; then cat "$PROOF/import.log"; exit 1; fi
+      - name: Assert original physics and bounded materials on both detail levels
+        run: |
+          set -euo pipefail
+          for track in $TRACKS; do
+            for quality in low high; do
+              args=()
+              if [ "$quality" = high ]; then args+=(--high); fi
+              python3 tools/run_godot_probe.py --log "$PROOF/$track-$quality.log" --timeout 150 --required '[KartTrackArt] PASS' -- godot --headless --path . --script scripts/tests/kart_track_art_regression.gd -- --track="$track" "${args[@]}"
+            done
+          done
+      - name: Capture same-camera original and finished production scenes
+        run: |
+          set -euo pipefail
+          for track in $TRACKS; do
+            python3 tools/run_godot_probe.py --log "$PROOF/$track-render.log" --timeout 180 --required '[KartTrackArtCapture] PASS' -- xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --rendering-method gl_compatibility --audio-driver Dummy --script scripts/tests/kart_track_art_capture.gd -- --track="$track" --output="$PROOF/images"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-track-art-worker-${{ matrix.worker }}
+          path: art-proof/
+          retention-days: 30
+          if-no-files-found: error
