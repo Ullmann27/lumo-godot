@@ -3,6 +3,7 @@ on:
   push:
     branches: [chatgpt/lumo-nextgen-native-blender-integration-20261115]
     paths:
+      - scripts/app/app_boot.gd
       - scripts/learning/learning_world.gd
       - scripts/characters/lumo/lumo_nextgen_learning_actor.gd
       - assets/characters/lumo_nextgen_chat3/**
