@@ -441,7 +441,10 @@ func _director_stop_requested(_turn_id: String, reason: String) -> void:
 		return
 	_native_stop_guard = true
 	if reason == "segment_replaced":
-		if is_instance_valid(_speech_host) and _speech_host.has_method("stopLearningSpeech"):
+		if (
+			is_instance_valid(_speech_host)
+			and HostBridge.supports_method(_speech_host, "stopLearningSpeech")
+		):
 			_speech_host.call("stopLearningSpeech")
 	else:
 		_stop_speech()
@@ -480,7 +483,10 @@ func bind_interaction_context(context: Dictionary) -> bool:
 	_turn_id = 0
 	_handled_turn = 0
 	_stop_speech()
-	if is_instance_valid(_speech_host) and _speech_host.has_method("stopLearningConversation"):
+	if (
+		is_instance_valid(_speech_host)
+		and HostBridge.supports_method(_speech_host, "stopLearningConversation")
+	):
 		_speech_host.call("stopLearningConversation")
 	_focus_id = ""
 	if is_instance_valid(_focus_ring):
