@@ -417,19 +417,30 @@ def build_kit(output):
     mesh_prop("cone", "ShapeTriangle", mint, (1.80, 0.0, 0.23), 0.23)
     mesh_prop("cube", "TenFrameCell", cream, (0.0, 1.0, 0.08), 0.18)
     mesh_prop("cylinder", "LearningPodium", blue, (0.0, 1.90, -0.04), 1.05)
+    # Art-team geometry and materials are generated in Blender itself.
+    # Keep all eight source object names and pivots byte-stable for Godot.
+    sys.path.insert(0, str(Path(__file__).parent))
+    from premium_learning_props import upgrade, render_preview
+    detail = upgrade()
     scene = bpy.context.scene
     scene.render.fps = FPS
-    bpy.ops.wm.save_as_mainfile(filepath=str(output / "Lumo-Learning-Objects.blend"))
     glb = output / "Lumo-Learning-Objects.glb"
     bpy.ops.export_scene.gltf(filepath=str(glb), export_format="GLB",
                                export_animations=False, export_yup=True)
+    render_preview(output)
+    # Save the editable studio lighting and preview camera as well.
+    # Avoid noisy .blend1 backups in the published artifact.
+    bpy.context.preferences.filepaths.save_version = 0
+    bpy.ops.wm.save_as_mainfile(filepath=str(output / "Lumo-Learning-Objects.blend"))
     return {"asset_names": [
         "CounterBerry", "LetterTile", "TenBundle",
         "ShapeCircle", "ShapeSquare", "ShapeTriangle",
         "TenFrameCell", "LearningPodium"],
+        "production_details": detail,
         "blend_sha256": sha256(output / "Lumo-Learning-Objects.blend"),
         "glb_sha256": sha256(glb),
-        "glb_bytes": glb.stat().st_size}
+        "glb_bytes": glb.stat().st_size,
+        "preview_image": "Blender_Lumo_LearningObjects.png"}
 
 
 def main():
