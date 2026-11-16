@@ -326,7 +326,13 @@ func _layout() -> void:
 	if not _hub_ready or not is_inside_tree():
 		return
 	var viewport_size := get_viewport_rect().size
-	var window_dp := Vector2(get_window().size) / MobileRuntime.get_ui_density()
+	# Autoload is absent when this scene is evaluated by a standalone
+	# SceneTree probe. Resolve the same production object at runtime instead.
+	var mobile_runtime: Node = get_tree().root.get_node_or_null("MobileRuntime")
+	var density := 1.0
+	if mobile_runtime != null and mobile_runtime.has_method("get_ui_density"):
+		density = maxf(float(mobile_runtime.call("get_ui_density")), 0.25)
+	var window_dp := Vector2(get_window().size) / density
 	if window_dp.x <= 0.0 or window_dp.y <= 0.0 or size.x <= 0.0 or size.y <= 0.0:
 		return
 	var factor := maxf(viewport_size.x / window_dp.x, viewport_size.y / window_dp.y)
