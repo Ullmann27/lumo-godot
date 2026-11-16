@@ -48,7 +48,13 @@ func _draw() -> void:
 		Vector2(inset, bevel * 0.5), Vector2(size.x - bevel, inset),
 		Vector2(size.x - inset, size.y - bevel * 0.5), Vector2(bevel, size.y - inset),
 	])
-	var background := Color("ffce4c") if selected else Color("163f51")
+	# Material-coloured bevels instead of the previous flat cyan monotone.
+	for glow in [9.0, 5.0]:
+		var aura := accent
+		aura.a = 0.055 if glow > 6.0 else 0.13
+		draw_polyline(PackedVector2Array([outline[0], outline[1], outline[2], outline[3], outline[0]]),
+			aura, glow * _paint_scale, true)
+	var background := accent.darkened(0.34) if selected else accent.darkened(0.67)
 	if is_hovered() or has_focus():
 		background = background.lightened(0.1)
 	if is_pressed():
