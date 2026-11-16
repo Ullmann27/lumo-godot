@@ -284,7 +284,13 @@ func _build_dock() -> void:
 			button = _action(entry[0], entry[2], func(): _route_dock(target), "Dock_" + target)
 		button.text = entry[0]
 		_skin(button, entry[2])
-		_navigation.add_child(button)
+		# Keep inherited Garage/Tracks buttons and their existing signal wiring.
+		# Those nodes were moved to this Control temporarily; add_child would
+		# fail because they still have a parent. Reparent them instead.
+		if button.get_parent() != null:
+			button.reparent(_navigation, false)
+		else:
+			_navigation.add_child(button)
 
 
 func _route_dock(target: String) -> void:
