@@ -222,9 +222,12 @@ func _surface_checks(village: Node) -> void:
 		_check(entry != null, "Production toolbar contains " + caption)
 		if entry == null:
 			continue
-		if not await _reveal_toolbar(village, entry):
+		if caption != "Kapitel" and not await _reveal_toolbar(village, entry):
 			continue
 		_target(entry, "toolbar " + caption)
+		if caption == "Kapitel":
+			_check(entry.get_parent().name == "VillagePrimaryActions",
+				"The children's chapter button is permanently visible outside the kinetic scroll toolbar")
 		if caption == "Kapitel":
 			await _capture("chapter-touch-before")
 		await _tap(entry)
