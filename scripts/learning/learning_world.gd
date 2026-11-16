@@ -468,7 +468,16 @@ func _button(caption: String, action: Callable, flags: int = 0) -> Button:
 	focus.border_color = Color("376b51")
 	focus.set_border_width_all(3)
 	button.add_theme_stylebox_override("focus", focus)
-	button.add_theme_color_override("font_color", Color("1d3540") if primary else Color("234537"))
+	# These custom pale backgrounds need dark text in every interactive state.
+	var font_color := Color("1d3540") if primary else Color("234537")
+	for item in [
+		"font_color",
+		"font_hover_color",
+		"font_focus_color",
+		"font_pressed_color",
+		"font_hover_pressed_color",
+	]:
+		button.add_theme_color_override(item, font_color)
 	button.pressed.connect(action, flags)
 	actions.add_child(button)
 	return button

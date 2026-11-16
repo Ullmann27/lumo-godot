@@ -1,0 +1,17 @@
+{
+  "base_commit": "678cb38fea3a83a7f5841e71fba9bb2f3bfa2eef",
+  "outside_button_factory_byte_identical": true,
+  "only_factory_delta": "Replace the existing normal-font call with identical dark colors for the five actual interactive theme font items",
+  "normal_font_colors_unchanged": true,
+  "all_styleboxes_unchanged": true,
+  "disabled_palette_unchanged": true,
+  "input_observations_identical": true,
+  "callbacks_before": 6,
+  "callbacks_after": 6,
+  "red_failures_only_contrast": true,
+  "test_bytes_identical_red_green": true,
+  "gdtoolkit": "NOT_AVAILABLE; no installation performed",
+  "full_project_structure_validator": "NOT_RUN; intentionally sparse worktree, no asset materialization",
+  "framebuffer": "NOT_RUN; Xorg :94 exited1 because listening sockets could not be established",
+  "android": "NOT_RUN"
+}
