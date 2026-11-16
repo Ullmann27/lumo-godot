@@ -3,6 +3,18 @@ extends RefCounted
 ## German descriptions use the existing German local voice. The English word
 ## stays visible; this class does not claim an English pronunciation channel.
 const ENTRIES := {
+	"cat": {
+		"meanings": ["Katze"],
+		"hint": "Die Katze hat zwei spitze Ohren, Schnurrhaare und einen langen Schwanz.",
+	},
+	"dog": {
+		"meanings": ["Hund"],
+		"hint": "Der Hund hat vier Pfoten, eine Schnauze und weiche Hängeohren.",
+	},
+	"bird": {
+		"meanings": ["Vogel"],
+		"hint": "Der Vogel hat einen Schnabel, zwei Flügel und Federn.",
+	},
 	"book": {
 		"meanings": ["Buch"],
 		"hint": "Dieser Gegenstand hat viele Seiten. Du kannst darin lesen.",

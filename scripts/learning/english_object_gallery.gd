@@ -65,6 +65,67 @@ static func make(word: String, index: int) -> Node3D:
 	shape.position.y = 0.22
 	object.add_child(shape)
 	match word:
+		"cat":
+			var fur := _material("d58950", 0.76)
+			var cream := _material("f3d3a6", 0.82)
+			var ear_inner := _material("e9a19b", 0.80)
+			var face := _material("29384a", 0.52)
+			_sphere(shape, "CatBody", Vector3(0, 0.56, -0.15), Vector3(1.26, 0.77, 0.87), fur)
+			_sphere(shape, "CatChest", Vector3(0, 0.66, 0.29), Vector3(0.65, 0.73, 0.30), cream)
+			_sphere(shape, "CatHead", Vector3(0, 1.04, 0.47), Vector3(0.85, 0.75, 0.71), fur)
+			for side in [-1.0, 1.0]:
+				_cylinder(shape, "CatEar%s" % side, Vector3(side * 0.31, 1.48, 0.40), 0.20, 0.38, fur, 0.0)
+				_cylinder(shape, "CatEarInner%s" % side, Vector3(side * 0.31, 1.50, 0.56), 0.115, 0.26, ear_inner, 0.0)
+				_sphere(shape, "CatEye%s" % side, Vector3(side * 0.19, 1.13, 0.791), Vector3(0.13, 0.19, 0.09), face)
+				_sphere(shape, "CatEyeGlint%s" % side, Vector3(side * 0.19 - 0.025, 1.18, 0.848), Vector3.ONE * 0.046, cream)
+				_cylinder(shape, "CatFrontPaw%s" % side, Vector3(side * 0.39, 0.25, 0.20), 0.15, 0.41, fur)
+				_cylinder(shape, "CatBackPaw%s" % side, Vector3(side * 0.40, 0.25, -0.44), 0.16, 0.41, fur)
+				for strand in range(2):
+					var whisker := _cylinder(shape, "CatWhisker%s_%d" % [side, strand], Vector3(side * 0.40, 0.88 - strand * 0.11, 0.81), 0.014, 0.47, cream)
+					whisker.rotation.z = side * (PI * 0.45 + strand * 0.10)
+			_sphere(shape, "CatNose", Vector3(0, 0.94, 0.84), Vector3(0.16, 0.11, 0.10), ear_inner)
+			for section in range(4):
+				_sphere(shape, "CatTail%d" % section, Vector3(0.55 + section * 0.12, 0.52 + section * 0.23, -0.60), Vector3(0.18, 0.32, 0.18), fur)
+		"dog":
+			var fur := _material("b77b52", 0.80)
+			var muzzle := _material("e7c69a", 0.82)
+			var ear := _material("744936", 0.85)
+			var eye := _material("283849", 0.45)
+			_sphere(shape, "DogBody", Vector3(0, 0.58, -0.17), Vector3(1.43, 0.79, 0.89), fur)
+			_sphere(shape, "DogNeck", Vector3(0, 0.84, 0.24), Vector3(0.67, 0.80, 0.55), muzzle)
+			_sphere(shape, "DogHead", Vector3(0, 1.12, 0.53), Vector3(0.83, 0.70, 0.66), fur)
+			_sphere(shape, "DogMuzzle", Vector3(0, 0.97, 0.91), Vector3(0.57, 0.32, 0.46), muzzle)
+			_sphere(shape, "DogNose", Vector3(0, 1.00, 1.15), Vector3(0.24, 0.17, 0.14), eye)
+			for side in [-1.0, 1.0]:
+				var floppy := _sphere(shape, "DogEar%s" % side, Vector3(side * 0.43, 1.18, 0.40), Vector3(0.33, 0.63, 0.29), ear)
+				floppy.rotation.z = side * 0.25
+				_sphere(shape, "DogEye%s" % side, Vector3(side * 0.22, 1.20, 0.839), Vector3(0.15, 0.16, 0.09), eye)
+				_sphere(shape, "DogEyeGlint%s" % side, Vector3(side * 0.22 - 0.028, 1.25, 0.890), Vector3.ONE * 0.048, muzzle)
+				for end in [-0.40, 0.32]:
+					_cylinder(shape, "DogLeg%s_%s" % [side, end], Vector3(side * 0.43, 0.27, end), 0.17, 0.46, fur)
+					_sphere(shape, "DogPaw%s_%s" % [side, end], Vector3(side * 0.43, 0.12, end + 0.13), Vector3(0.36, 0.15, 0.40), muzzle)
+			var tail := _cylinder(shape, "DogWagTail", Vector3(0.75, 0.90, -0.49), 0.105, 0.72, fur, 0.06)
+			tail.rotation.z = PI * 0.30
+		"bird":
+			var feather := _material("4c9dce", 0.72)
+			var wing_color := _material("2d74ba", 0.74)
+			var belly := _material("e6f1e9", 0.78)
+			var beak := _material("ecc05b", 0.64)
+			var eye := _material("283a4a", 0.48)
+			_sphere(shape, "BirdBody", Vector3(0, 0.66, 0), Vector3(0.99, 1.17, 0.89), feather)
+			_sphere(shape, "BirdBreast", Vector3(0, 0.59, 0.35), Vector3(0.72, 0.80, 0.31), belly)
+			_sphere(shape, "BirdHead", Vector3(0, 1.29, 0.30), Vector3(0.76, 0.71, 0.74), feather)
+			for side in [-1.0, 1.0]:
+				var wing := _sphere(shape, "BirdWing%s" % side, Vector3(side * 0.48, 0.71, -0.13), Vector3(0.31, 0.65, 0.73), wing_color)
+				wing.rotation.z = -side * 0.35
+				_sphere(shape, "BirdEye%s" % side, Vector3(side * 0.24, 1.36, 0.627), Vector3(0.14, 0.18, 0.09), eye)
+				_sphere(shape, "BirdEyeGlint%s" % side, Vector3(side * 0.24 - 0.03, 1.42, 0.678), Vector3.ONE * 0.050, belly)
+				_cylinder(shape, "BirdLeg%s" % side, Vector3(side * 0.24, 0.21, 0.08), 0.052, 0.35, beak)
+				_sphere(shape, "BirdFoot%s" % side, Vector3(side * 0.24, 0.08, 0.23), Vector3(0.26, 0.09, 0.38), beak)
+			var upper := _cylinder(shape, "BirdUpperBeak", Vector3(0, 1.20, 0.80), 0.20, 0.35, beak, 0.0)
+			upper.rotation.x = PI * 0.50
+			for tip in [-1.0, 0.0, 1.0]:
+				_sphere(shape, "BirdTail%s" % tip, Vector3(tip * 0.18, 0.50, -0.60), Vector3(0.18, 0.18, 0.65), wing_color)
 		"book":
 			var red := _material("a94238")
 			var pages := _material("f6edcf")
