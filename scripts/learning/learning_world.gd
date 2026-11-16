@@ -38,6 +38,9 @@ var title: Label
 var explanation: Label
 var status: Label
 var actions: HFlowContainer
+var choice_bar: HFlowContainer
+var choice_buttons: Array[Button] = []
+var _clock_dial: Node3D
 var main_button: Button
 var sun_button: Button
 var water_button: Button
@@ -383,12 +386,12 @@ func _build_ui() -> void:
 	title = Label.new()
 	title.add_theme_font_size_override("font_size", 26)
 	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title.add_theme_color_override("font_color", Color("173e34"))
+	title.add_theme_color_override("font_color", Color("eaf5ff"))
 	heading.add_child(title)
 	explanation = Label.new()
 	explanation.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	explanation.add_theme_font_size_override("font_size", 19)
-	explanation.add_theme_color_override("font_color", Color("294e42"))
+	explanation.add_theme_color_override("font_color", Color("c7e2ee"))
 	heading.add_child(explanation)
 	footer = _panel()
 	ui.add_child(footer)
@@ -398,8 +401,13 @@ func _build_ui() -> void:
 	status = Label.new()
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	status.add_theme_font_size_override("font_size", 17)
-	status.add_theme_color_override("font_color", Color("3d5648"))
+	status.add_theme_color_override("font_color", Color("b4d7e9"))
 	controls.add_child(status)
+	choice_bar = HFlowContainer.new()
+	choice_bar.name = "LessonAnswers"
+	choice_bar.add_theme_constant_override("h_separation", 8)
+	choice_bar.add_theme_constant_override("v_separation", 7)
+	controls.add_child(choice_bar)
 	actions = HFlowContainer.new()
 	actions.add_theme_constant_override("h_separation", 8)
 	actions.add_theme_constant_override("v_separation", 8)
@@ -423,17 +431,17 @@ func _build_ui() -> void:
 func _panel() -> PanelContainer:
 	var panel := PanelContainer.new()
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("fff6e4")
-	style.border_color = Color("aac3aa")
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(16)
+	style.bg_color = Color("0b1d32", 0.93)
+	style.border_color = Color("4f9eb5", 0.83)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(20)
 	style.set_content_margin_all(14)
 	panel.add_theme_stylebox_override("panel", style)
 	panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	return panel
 
 
-func _button(caption: String, action: Callable, flags: int = 0) -> Button:
+func _button(caption: String, action: Callable, flags: int = 0, parent: Control = null) -> Button:
 	var button := Button.new()
 	button.text = caption
 	button.custom_minimum_size = Vector2(64, 52)
@@ -452,10 +460,10 @@ func _button(caption: String, action: Callable, flags: int = 0) -> Button:
 		]
 	)
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("dca847") if primary else Color("dce9d4")
-	style.border_color = Color("f1d59c") if primary else Color("a1b89b")
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(12)
+	style.bg_color = Color("dc9e3b") if primary else Color("1d415b")
+	style.border_color = Color("ffd37d") if primary else Color("4f9bb8")
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(13)
 	style.set_content_margin_all(12)
 	button.add_theme_stylebox_override("normal", style)
 	var hover := style.duplicate() as StyleBoxFlat
@@ -465,12 +473,12 @@ func _button(caption: String, action: Callable, flags: int = 0) -> Button:
 	pressed.bg_color = style.bg_color.darkened(0.12)
 	button.add_theme_stylebox_override("pressed", pressed)
 	var focus := style.duplicate() as StyleBoxFlat
-	focus.border_color = Color("376b51")
+	focus.border_color = Color("6bdeec")
 	focus.set_border_width_all(3)
 	button.add_theme_stylebox_override("focus", focus)
-	button.add_theme_color_override("font_color", Color("1d3540") if primary else Color("234537"))
+	button.add_theme_color_override("font_color", Color("10243a") if primary else Color("e4f7ff"))
 	button.pressed.connect(action, flags)
-	actions.add_child(button)
+	(parent if is_instance_valid(parent) else actions).add_child(button)
 	return button
 
 
@@ -499,6 +507,11 @@ func _rebuild_activity() -> void:
 	_pattern_next = null
 	_pattern_candidate = null
 	_task_card = null
+	_clock_dial = null
+	choice_buttons.clear()
+	for item in choice_bar.get_children():
+		item.free()
+	choice_bar.visible = false
 	_focus_ring = null
 	_focus_id = ""
 	water_particles.clear()
@@ -519,7 +532,12 @@ func _rebuild_activity() -> void:
 	match activity.kind:
 		"task_card":
 			_build_task_card()
-			main_button = _button("Auftrag anschauen", _show_task_prompt)
+			main_button = _button("Auftrag ansehen", _show_task_prompt)
+			_build_answer_choices()
+		"clock":
+			_build_clock()
+			main_button = _button("Zeiger erklären", _clock_hint)
+			_build_answer_choices()
 		"pattern":
 			_build_pattern()
 			main_button = _button("Gruppe entdecken", _pattern_hint)
@@ -951,12 +969,19 @@ func _refresh() -> void:
 				activity.english_objects[index] == activity.word
 				and (activity.english_hint_level >= 2 or activity.is_complete())
 			)
-	elif activity.kind == "task_card":
+	elif activity.kind in ["task_card", "clock"]:
 		status.text = (
-			"Deine Aufgabe bleibt erhalten. Hier kannst du Lumo fragen "
-			+ "oder einen Antwortvorschlag wählen."
+			"Dein Vorschlag ist markiert. Prüfe ihn anschließend in der Aufgabe."
+			if activity.task_choice >= 0
+			else (
+				"Schau auf die Zeiger, wähle eine Uhrzeit oder frag Lumo."
+				if activity.kind == "clock"
+				else "Wähle eine Antwort oder frag Lumo. Die Aufgabe bleibt erhalten."
+			)
 		)
 		main_button.disabled = false
+		for index in range(choice_buttons.size()):
+			choice_buttons[index].button_pressed = index == activity.task_choice
 	elif activity.kind == "pattern":
 		status.text = "Wähle einen Vorschlag. Bestätige deine Antwort anschließend in deiner Aufgabe."
 		main_button.disabled = (activity.pattern_hint_level > 0)
@@ -1058,7 +1083,7 @@ func _layout() -> void:
 	if activity.kind == "fraction_parts":
 		focus_height = maxf(focus_height, 5.8)
 	var focus_width := 6.25 if portrait else 10.8
-	if activity.kind in ["pattern", "task_card"]:
+	if activity.kind in ["pattern", "task_card", "clock"]:
 		focus_width = maxf(focus_width, 8.6)
 		focus_height = maxf(focus_height, 5.7)
 	if activity.kind == "syllables" and activity.syllables.size() > 3:
@@ -1197,6 +1222,11 @@ func _unhandled_input(event: InputEvent) -> void:
 func _begin_drag(point: Vector2, finger: int) -> void:
 	if activity.kind == "english_objects":
 		_pick_english_object(point)
+		return
+	if activity.kind == "task_card":
+		_pick_task_card(point)
+		return
+	if activity.kind == "clock":
 		return
 	if activity.kind == "plant_parts":
 		var best := ""
@@ -2127,12 +2157,17 @@ func _update_object_registry() -> void:
 			companion_objects["pattern_%d" % index] = pattern_nodes[index]
 		companion_objects["pattern_group"] = _pattern_group_outline
 		companion_objects["pattern_next"] = _pattern_next
-	elif activity.kind == "task_card":
-		companion_objects["task_prompt"] = _task_card
-		companion_objects["task_card"] = _task_card
-		for index in range(activity.task_choices.size()):
-			companion_objects["answer_%d" % index] = _task_card.get_node_or_null("Answer%d" % index)
-			companion_objects["choice_%d" % index] = _task_card.get_node_or_null("Answer%d" % index)
+	elif activity.kind in ["task_card", "clock"]:
+		companion_objects["task_prompt"] = _task_card if activity.kind == "task_card" else _clock_dial
+		if activity.kind == "task_card":
+			companion_objects["task_card"] = _task_card
+			for index in range(activity.task_choices.size()):
+				companion_objects["answer_%d" % index] = _task_card.get_node_or_null("Answer%d" % index)
+				companion_objects["choice_%d" % index] = _task_card.get_node_or_null("Answer%d" % index)
+		else:
+			companion_objects["clock_face"] = _clock_dial
+			companion_objects["clock_hour"] = _clock_dial.get_node_or_null("HourHand")
+			companion_objects["clock_minute"] = _clock_dial.get_node_or_null("MinuteHand")
 	elif activity.kind == "plant_parts":
 		for part in part_nodes:
 			companion_objects["plant_" + str(part)] = part_nodes[part]
@@ -2528,8 +2563,12 @@ func _choose_task_answer(index: int) -> void:
 		return
 	question_panel.visible = false
 	_refresh()
-	_focus_object("answer_%d" % index)
-	_teacher("encourage", _task_card.global_position)
+	if activity.kind == "task_card":
+		_focus_object("answer_%d" % index)
+		_teacher("encourage", _task_card.global_position)
+	elif is_instance_valid(_clock_dial):
+		_focus_object("clock_face")
+		_teacher("encourage", _clock_dial.global_position)
 
 
 func _build_task_card() -> void:
