@@ -22,6 +22,19 @@ func _settle() -> void:
 		await process_frame
 
 
+func _capture(label: String) -> void:
+	var dir: String = ProjectSettings.globalize_path("res://exports/learning-workshop/captures")
+	_check(DirAccess.make_dir_recursive_absolute(dir) == OK,
+		"real screenshot output directory exists")
+	await RenderingServer.frame_post_draw
+	var image := root.get_viewport().get_texture().get_image()
+	_check(image != null and image.get_width() > 0 and image.get_height() > 0,
+		"actual renderer produced a frame for " + label)
+	if image != null:
+		_check(image.save_png(dir.path_join(label + ".png")) == OK,
+			"captured real Godot frame " + label)
+
+
 func _open(payload: Dictionary) -> Node3D:
 	var game: Node3D = load(WORLD).instantiate()
 	game.capture_options = {"learning": payload, "reduceAnimations": true}
@@ -57,6 +70,16 @@ func _run() -> void:
 	var game := _open(data)
 	await _settle()
 	_check(game.activity.kind == "clock", "the clock gets a dedicated native activity")
+	_check(game.has_node("LumoLearningHoloAtrium"), "modern holographic learning stage is actually mounted")
+	_check(not game._atelier.visible, "deprecated garden no longer obscures the lesson")
+	await _capture("clock-fold-1280x900")
+	root.size = Vector2i(412, 915)
+	game._layout()
+	await _settle()
+	await _capture("clock-phone-412x915")
+	root.size = Vector2i(1280, 900)
+	game._layout()
+	await _settle()
 	_check(is_instance_valid(game._clock_dial), "clock face exists")
 	_check(game._clock_dial.get_node_or_null("HourHand") != null, "hour hand exists")
 	_check(game._clock_dial.get_node_or_null("MinuteHand") != null, "minute hand exists")
