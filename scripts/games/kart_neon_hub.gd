@@ -326,7 +326,13 @@ func _layout() -> void:
 	if not _hub_ready or not is_inside_tree():
 		return
 	var viewport_size := get_viewport_rect().size
-	var window_dp := Vector2(get_window().size) / MobileRuntime.get_ui_density()
+	# The headless Godot SceneTree test does not always instantiate autoloads.
+	# In the Android app use the original density service; in test tools use OS density.
+	var density := maxf(DisplayServer.screen_get_scale(), 1.0)
+	var runtime := get_node_or_null("/root/MobileRuntime")
+	if runtime != null and runtime.has_method("get_ui_density"):
+		density = maxf(float(runtime.call("get_ui_density")), 1.0)
+	var window_dp := Vector2(get_window().size) / density
 	if window_dp.x <= 0.0 or window_dp.y <= 0.0 or size.x <= 0.0 or size.y <= 0.0:
 		return
 	var factor := maxf(viewport_size.x / window_dp.x, viewport_size.y / window_dp.y)
