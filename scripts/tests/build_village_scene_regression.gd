@@ -225,7 +225,17 @@ func _surface_checks(village: Node) -> void:
 		if not await _reveal_toolbar(village, entry):
 			continue
 		_target(entry, "toolbar " + caption)
+		if caption == "Kapitel":
+			await _capture("chapter-touch-before")
 		await _tap(entry)
+		if caption == "Kapitel" and not is_instance_valid(village.village_window):
+			print("[VillageTouchDiagnosis] entry=", _pixels(entry),
+				" toolbar=", _pixels(entry.get_parent().get_parent()),
+				" bottom=", _pixels(village.bottom),
+				" top=", _pixels(village.top),
+				" blocked=", village._transactions_blocked(),
+				" dialog=", village.village_window)
+			await _capture("chapter-touch-after")
 		_check(is_instance_valid(village.village_window), "Actual toolbar touch opens " + caption)
 		if not is_instance_valid(village.village_window):
 			continue
