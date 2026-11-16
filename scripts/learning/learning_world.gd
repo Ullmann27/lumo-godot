@@ -1227,6 +1227,7 @@ func _begin_drag(point: Vector2, finger: int) -> void:
 		_pick_task_card(point)
 		return
 	if activity.kind == "clock":
+		_pick_clock(point)
 		return
 	if activity.kind == "plant_parts":
 		var best := ""
@@ -2555,6 +2556,133 @@ func _show_task_prompt() -> void:
 	question_panel.show_task(activity.task_prompt, activity.task_choices)
 
 
+func _build_answer_choices() -> void:
+	# Real, directly tappable option labels; no numbered dummy answers.
+	choice_bar.visible = not activity.task_choices.is_empty()
+	for index in range(activity.task_choices.size()):
+		var answer := _button(
+			str(activity.task_choices[index]), _choose_task_answer.bind(index), 0, choice_bar
+		)
+		answer.name = "LearningChoice%d" % index
+		answer.toggle_mode = true
+		answer.custom_minimum_size = Vector2(90, 52)
+		answer.tooltip_text = "Antwortvorschlag: " + str(activity.task_choices[index])
+		choice_buttons.append(answer)
+
+
+func _clock_hint() -> void:
+	if suspended or activity.kind != "clock":
+		return
+	_cancel_performance()
+	explanation.text = (
+		"Der lange türkise Zeiger zählt Minuten in Fünferschritten. "
+		+ "Der kurze goldene Zeiger zeigt die Stunde und wandert dazwischen weiter."
+	)
+	status.text = "Tippe auf einen Zeiger, oder wähle unten deinen Vorschlag."
+	_focus_object("clock_minute")
+	_teacher("explain", _clock_dial.global_position)
+	_queue_narration()
+
+
+func _build_clock() -> void:
+	title.text = "Uhrzeit entdecken · Zeiger verstehen"
+	_clock_dial = Node3D.new()
+	_clock_dial.name = "LearningClock"
+	content.add_child(_clock_dial)
+	_clock_dial.position = Vector3(0.85, 1.48, 0.28)
+	_clock_dial.global_basis = camera.global_basis
+	var shell := _material("clock_shell", Color("235773"), 0.18)
+	var face := _material("clock_face", Color("eafaff"))
+	var marks := _material("clock_marks", Color("1b425a"))
+	var gold := _material("clock_hour_gold", Color("f5b947"), 0.12)
+	var cyan := _material("clock_minute_cyan", Color("17bce3"), 0.08)
+	var dial := _cylinder(_clock_dial, Vector3.ZERO, 1.45, 0.21, shell, "ClockShell")
+	dial.rotation.x = PI * 0.5
+	var surface := _cylinder(
+		_clock_dial, Vector3(0, 0, 0.12), 1.30, 0.08, face, "ClockFace"
+	)
+	surface.rotation.x = PI * 0.5
+	for index in range(12):
+		var angle := float(index) * TAU / 12.0
+		var direction := Vector2(sin(angle), cos(angle))
+		var number := str(index if index > 0 else 12)
+		_text(
+			_clock_dial, number,
+			Vector3(direction.x * 1.03 - 0.12, direction.y * 1.03 - 0.10, 0.23),
+			0.24, marks
+		)
+		var tick := _box(
+			_clock_dial, Vector3(direction.x * 1.23, direction.y * 1.23, 0.23),
+			Vector3(0.06, 0.13, 0.07), marks, "ClockTick%d" % index
+		)
+		tick.rotation.z = -angle
+	var hour_hand := Node3D.new()
+	hour_hand.name = "HourHand"
+	_clock_dial.add_child(hour_hand)
+	_box(hour_hand, Vector3(0, 0.40, 0.34), Vector3(0.13, 0.83, 0.13), gold, "GoldenHour")
+	hour_hand.rotation.z = -TAU * (
+		float(activity.clock_hour % 12) + float(activity.clock_minute) / 60.0
+	) / 12.0
+	var minute_hand := Node3D.new()
+	minute_hand.name = "MinuteHand"
+	_clock_dial.add_child(minute_hand)
+	_box(minute_hand, Vector3(0, 0.55, 0.39), Vector3(0.075, 1.13, 0.12),
+		cyan, "TurquoiseMinute")
+	minute_hand.rotation.z = -TAU * float(activity.clock_minute) / 60.0
+	_sphere(
+		_clock_dial, Vector3(0, 0, 0.47), Vector3.ONE * 0.22,
+		_material("clock_hub", Color("1c3850")), "ClockCenter"
+	)
+
+
+func _pick_clock(point: Vector2) -> void:
+	if suspended or not is_instance_valid(_clock_dial):
+		return
+	var minute_hand: Node3D = _clock_dial.get_node("MinuteHand")
+	var hour_hand: Node3D = _clock_dial.get_node("HourHand")
+	var points: Array[Vector2] = [
+		camera.unproject_position(minute_hand.to_global(Vector3(0, 0.78, 0.39))),
+		camera.unproject_position(hour_hand.to_global(Vector3(0, 0.53, 0.34)))
+	]
+	var nearest := -1
+	var distance := 58.0 * ui.scale.x
+	for index in range(points.size()):
+		var candidate := points[index].distance_to(point)
+		if candidate < distance:
+			nearest = index
+			distance = candidate
+	if nearest < 0:
+		return
+	_cancel_performance()
+	_focus_object("clock_minute" if nearest == 0 else "clock_hour")
+	explanation.text = (
+		"Der lange türkise Zeiger zeigt die Minuten. Jede Zahl zählt fünf Minuten."
+		if nearest == 0
+		else "Der kurze goldene Zeiger zeigt die Stunde. Er bewegt sich zwischen den Zahlen."
+	)
+	_teacher("explain", _clock_dial.global_position)
+	_queue_narration()
+	get_viewport().set_input_as_handled()
+
+
+func _pick_task_card(point: Vector2) -> void:
+	if suspended or not is_instance_valid(_task_card):
+		return
+	var nearest := -1
+	var distance := 56.0 * ui.scale.x
+	for index in range(activity.task_choices.size()):
+		var node := _task_card.get_node_or_null("Answer%d" % index)
+		if not is_instance_valid(node):
+			continue
+		var candidate := camera.unproject_position(node.global_position).distance_to(point)
+		if candidate < distance:
+			nearest = index
+			distance = candidate
+	if nearest >= 0:
+		_choose_task_answer(nearest)
+		get_viewport().set_input_as_handled()
+
+
 func _choose_task_answer(index: int) -> void:
 	if suspended or index < 0 or index >= activity.task_choices.size():
 		return
@@ -2581,9 +2709,9 @@ func _build_task_card() -> void:
 	content.add_child(_task_card)
 	_task_card.position = Vector3(0.85, 1.45, 0.2)
 	_task_card.global_basis = camera.global_basis
-	var wood := _material("task_card_wood", Color("a27444"))
-	var paper := _material("task_card_paper", Color("fff4d5"))
-	var ink := _material("task_card_ink", Color("214938"))
+	var wood := _material("task_card_wood", Color("224c69"), 0.18)
+	var paper := _material("task_card_paper", Color("14324c"))
+	var ink := _material("task_card_ink", Color("e6faff"))
 	_box(_task_card, Vector3.ZERO, Vector3(5.8, 4.0, 0.20), wood, "OakFrame")
 	_box(_task_card, Vector3(0, 0, 0.14), Vector3(5.48, 3.7, 0.12), paper, "LearningPaper")
 	var caption: String = (
@@ -2603,9 +2731,11 @@ func _build_task_card() -> void:
 			node,
 			Vector3.ZERO,
 			Vector3(0.95, 0.28, 0.08),
-			_material("answer_paper", Color("d7e5c6"))
+			_material("answer_paper", Color("316b87"), 0.08)
 		)
-		_text(node, str(index + 1), Vector3(0, 0, 0.06), 0.20, ink)
+		var choice_label: String = str(activity.task_choices[index]).left(16)
+		_text(node, choice_label, Vector3(-0.40, 0, 0.06),
+			minf(0.18, 2.0 / maxf(4.0, float(choice_label.length()))), ink)
 	if not question_panel.answer_proposed.is_connected(_choose_task_answer):
 		question_panel.answer_proposed.connect(_choose_task_answer)
 
