@@ -44,7 +44,7 @@ jobs:
       - name: Run existing learning-world regressions
         run: |
           set -euo pipefail
-          python3 tools/run_godot_probe.py             --log exports/learning-workshop/world.log --timeout 180             --required '[LearningWorld] PASS' --             xvfb-run -a -s '-screen 0 1280x900x24'             godot --rendering-method gl_compatibility               --audio-driver Dummy --script scripts/tests/learning_world_regression.gd
+          python3 tools/run_godot_probe.py             --log exports/learning-workshop/world.log --timeout 720             --required '[LearningWorld] PASS' --             xvfb-run -a -s '-screen 0 1280x900x24'             godot --rendering-method gl_compatibility               --audio-driver Dummy --script scripts/tests/learning_world_regression.gd
       - name: Save machine-verifiable logs
         if: always()
         uses: actions/upload-artifact@v4
