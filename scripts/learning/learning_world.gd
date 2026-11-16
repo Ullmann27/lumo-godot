@@ -2559,6 +2559,8 @@ func _show_task_prompt() -> void:
 func _build_answer_choices() -> void:
 	# Real, directly tappable option labels; no numbered dummy answers.
 	choice_bar.visible = not activity.task_choices.is_empty()
+	if not question_panel.answer_proposed.is_connected(_choose_task_answer):
+		question_panel.answer_proposed.connect(_choose_task_answer)
 	for index in range(activity.task_choices.size()):
 		var answer := _button(
 			str(activity.task_choices[index]), _choose_task_answer.bind(index), 0, choice_bar
