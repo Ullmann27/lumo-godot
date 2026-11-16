@@ -544,7 +544,8 @@ func _rebuild_activity() -> void:
 			_build_answer_choices()
 		"clock":
 			_build_clock()
-			main_button = _button("Zeiger erklären", _clock_hint)
+			main_button = _button("Hilfe", _clock_hint)
+			main_button.tooltip_text = "Stunden- und Minutenzeiger erklären"
 			_build_answer_choices()
 		"pattern":
 			_build_pattern()
@@ -578,7 +579,7 @@ func _rebuild_activity() -> void:
 				_button(str(PART_LABELS[part]), _inspect.bind(str(part)))
 	# Rebuilding frees the old controls after their input signal has returned.
 	_button(
-		"Neu" if activity.kind == "english_objects" else "Noch einmal", restart, CONNECT_DEFERRED
+		"Neu" if activity.kind in ["english_objects", "clock"] else "Noch einmal", restart, CONNECT_DEFERRED
 	)
 	if (
 		_speech_enabled
@@ -586,9 +587,9 @@ func _rebuild_activity() -> void:
 		and HostBridge.supports_method(_speech_host, "speakLearning")
 	):
 		voice_button = _button("Schritt anhören", _voice_action)
-	question_button = _button("Lumo fragen", _open_question)
+	question_button = _button("Lumo" if activity.kind == "clock" else "Lumo fragen", _open_question)
 	question_button.disabled = not _scope_valid or activity.kind == "invalid"
-	_button("Zur Aufgabe", _return_to_lesson)
+	_button("Aufgabe" if activity.kind == "clock" else "Zur Aufgabe", _return_to_lesson)
 	_build_focus_ring()
 	_update_object_registry()
 	_layout.call_deferred()
@@ -1043,6 +1044,15 @@ func _layout() -> void:
 	)
 	var origin := insets.position / scale_value
 	var available := logical - (insets.position + insets.size) / scale_value
+	# Two equal answer columns in narrow portrait screens: no 3+1 orphan row.
+	if activity.kind == "clock":
+		var narrow := available.x < 600.0
+		for option: Button in choice_buttons:
+			option.custom_minimum_size.x = (
+				maxf(142.0, (available.x - 42.0) * 0.5)
+				if narrow
+				else 105.0
+			)
 	if is_instance_valid(question_panel):
 		question_panel.position = origin
 		question_panel.size = available
@@ -1091,9 +1101,14 @@ func _layout() -> void:
 	if activity.kind == "fraction_parts":
 		focus_height = maxf(focus_height, 5.8)
 	var focus_width := 6.25 if portrait else 10.8
-	if activity.kind in ["pattern", "task_card", "clock"]:
+	if activity.kind in ["pattern", "task_card"] or (
+		activity.kind == "clock" and not portrait
+	):
 		focus_width = maxf(focus_width, 8.6)
 		focus_height = maxf(focus_height, 5.7)
+	if activity.kind == "clock" and portrait:
+		focus_width = maxf(focus_width, 6.3)
+		focus_height = maxf(focus_height, 5.0)
 	if activity.kind == "syllables" and activity.syllables.size() > 3:
 		focus_width = maxf(focus_width, 8.2)
 	var needed_height := focus_height * dimensions.y / free_height
@@ -1715,7 +1730,7 @@ func _update_voice_button() -> void:
 	if not is_instance_valid(voice_button):
 		return
 	var previous_caption := voice_button.text
-	if activity.kind == "english_objects" and _english_compact:
+	if (activity.kind == "english_objects" and _english_compact) or activity.kind == "clock":
 		voice_button.text = "Stopp" if _speech_state in ["preparing", "playing"] else "Anhören"
 	else:
 		voice_button.text = (
@@ -2595,7 +2610,7 @@ func _clock_hint() -> void:
 
 
 func _build_clock() -> void:
-	title.text = "Uhrzeit entdecken · Zeiger verstehen"
+	title.text = "Uhrzeit entdecken"
 	_clock_dial = Node3D.new()
 	_clock_dial.name = "LearningClock"
 	content.add_child(_clock_dial)
