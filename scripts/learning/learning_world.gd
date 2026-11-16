@@ -484,7 +484,13 @@ func _button(caption: String, action: Callable, flags: int = 0, parent: Control 
 	focus.border_color = Color("6bdeec")
 	focus.set_border_width_all(3)
 	button.add_theme_stylebox_override("focus", focus)
-	button.add_theme_color_override("font_color", Color("10243a") if primary else Color("e4f7ff"))
+	# Preserve published 2032 high-contrast button states in the new dark atrium.
+	var font_color := Color("10243a") if primary else Color("e4f7ff")
+	for state in [
+		"font_color", "font_hover_color", "font_focus_color",
+		"font_pressed_color", "font_hover_pressed_color"
+	]:
+		button.add_theme_color_override(state, font_color)
 	button.pressed.connect(action, flags)
 	(parent if is_instance_valid(parent) else actions).add_child(button)
 	return button
