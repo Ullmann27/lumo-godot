@@ -335,6 +335,31 @@ func _run() -> void:
 		"The first chapter is displayed in the real HUD"
 	)
 	_check(
+		is_instance_valid(village.free_plot_button)
+		and village.free_plot_button.is_visible_in_tree()
+		and village.free_plot_button.text == "Freies Feld",
+		"The real village shows the child an explicit free-plot action"
+	)
+	var first_selection_snapshot: Dictionary = village.model.snapshot()
+	village._next_free_plot()
+	_check(
+		village.selected_plot == 0 and village.plot_nodes.has("p_0")
+		and village.selection_marker.visible,
+		"The first free plot is selected in real 3D"
+	)
+	_check(
+		village.focus.distance_to(village._plot_world(0)) < 0.01,
+		"The camera brings the selected free village plot into view"
+	)
+	_check(
+		village.model.snapshot() == first_selection_snapshot,
+		"Finding a plot never spends resources, changes day or modifies a save"
+	)
+	_check(
+		village.plot_label.text.contains("Grundstück 1 von 9"),
+		"Plot selection reports the real number of unlocked building places"
+	)
+	_check(
 		not village.purchase_buttons["market"].text.contains("Münzen"),
 		"The actual market purchase button uses the coin-free village quote"
 	)
@@ -352,6 +377,13 @@ func _run() -> void:
 		"The market keeps its exact cost receipt without gaining coins"
 	)
 	_check(FileAccess.file_exists(save), "Village market is saved to the isolated file")
+	var after_market: Dictionary = village.model.snapshot()
+	village._next_free_plot()
+	_check(
+		village.selected_plot == 5,
+		"Free-field action skips the occupied fourth plot after buying a market"
+	)
+	_check(village.model.snapshot() == after_market, "Free-field cycling is read-only")
 
 	village._chapter_dialog()
 	await _frames(2)

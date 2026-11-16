@@ -39,6 +39,7 @@ var walk_button: Button
 var trade_window: Window
 var demolition_window: Window
 var plot_label: Label
+var free_plot_button: Button
 var purchase_buttons: Dictionary = {}
 var transaction_buttons: Array[Button] = []
 var plot_nodes: Dictionary = {}
@@ -328,9 +329,19 @@ func _build_ui() -> void:
 	bottom.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	bottom.minimum_size_changed.connect(func(): call_deferred("_layout"))
 	safe_ui.add_child(bottom)
+	# The child sees the next genuinely buildable plot without hunting for a
+	# tiny terrain collider. This only moves the camera and selection; it never
+	# charges resources, advances time, or changes existing save identities.
+	var plot_row := HBoxContainer.new()
+	bottom.add_child(plot_row)
 	plot_label = _label("Wähle ein freies Grundstück und ein Gebäude.", 15)
 	plot_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	bottom.add_child(plot_label)
+	plot_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	plot_row.add_child(plot_label)
+	free_plot_button = _button("Freies Feld", _next_free_plot, 112)
+	free_plot_button.name = "SettlementNextFreePlot"
+	free_plot_button.tooltip_text = "Nächstes freies Grundstück zeigen"
+	plot_row.add_child(free_plot_button)
 	var buildings_scroll := ScrollContainer.new()
 	buildings_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	bottom.add_child(buildings_scroll)
@@ -699,9 +710,13 @@ func _refresh_labels() -> void:
 			% [int(rival.population), rival.buildings.size()]
 		)
 	plot_label.text = (
-		"Grundstück %d gewählt · Gebäude antippen zum Bauen" % (selected_plot + 1)
+		"Grundstück %d von %d gewählt · Gebäude antippen" % [selected_plot + 1, int(town.plots)]
 		if selected_plot >= 0
-		else "Wähle ein Grundstück in deiner Siedlung."
+		else (
+			"Lumos Aufgabe: %s\nTippe Freies Feld zum Bauen." % str(model.campaign_status().task)
+			if model.living_village
+			else "Tippe Freies Feld, um ein Grundstück zu wählen."
+		)
 	)
 	var occupied := false
 	for building in town.buildings:
@@ -712,6 +727,7 @@ func _refresh_labels() -> void:
 				% [selected_plot + 1, str(STATE.BUILDINGS[str(building.kind)].title)]
 			)
 	var blocked := _transactions_blocked()
+	free_plot_button.disabled = blocked or town.buildings.size() >= int(town.plots)
 	for kind in purchase_buttons:
 		purchase_buttons[kind].disabled = blocked or selected_plot < 0 or occupied
 		purchase_buttons[kind].text = (
@@ -842,6 +858,30 @@ func _redo() -> void:
 		feedback.text = "Bau und Rohstoffe gemeinsam wiederhergestellt."
 	else:
 		feedback.text = model.last_error
+
+
+func _next_free_plot() -> void:
+	if _transactions_blocked():
+		return
+	var town: Dictionary = model.player()
+	var plot_count: int = int(town.plots)
+	if plot_count <= 0:
+		return
+	var occupied: Dictionary = {}
+	for building: Dictionary in town.buildings:
+		occupied[int(building.plot)] = true
+	for offset in range(plot_count):
+		var index: int = (selected_plot + 1 + offset) % plot_count
+		if occupied.has(index):
+			continue
+		selected_plot = index
+		if model.living_village:
+			focus = _plot_world(index)
+		_rebuild()
+		_camera_update(true)
+		feedback.text = "Freies Grundstück %d von %d. Wähle unten ein Gebäude." % [index + 1, plot_count]
+		return
+	feedback.text = "Alle Grundstücke sind bebaut. Erweitern schaltet weitere Flächen frei."
 
 
 func _expand() -> void:
