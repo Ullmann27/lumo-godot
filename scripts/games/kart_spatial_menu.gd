@@ -3,7 +3,7 @@ extends "res://scripts/games/kart_garage_menu.gd"
 ## Selection, unlocks, tuning, native gestures and saved setups stay in the base.
 const SERVICE_STATION = preload("res://scripts/games/kart_garage_service_station.gd")
 const STAGE_PINCH = preload("res://scripts/games/kart_stage_pinch.gd")
-const HOME_PROMENADE = preload("res://scripts/games/kart_home_promenade.gd")
+const HOME_PROMENADE = preload("res://scripts/games/kart_neon_arena.gd")
 var service_station
 var home_promenade
 var track_pass
@@ -195,8 +195,8 @@ func _sync_home_stage() -> void:
 	home_promenade.set_active(home_visible and visible and _application_active, reduced_motion)
 	garage_interior.root.visible = not home_visible and step != 3
 	if _home_environment != null:
-		_home_environment.ambient_light_color = Color("a7b9b6") if home_visible else _studio_ambient
-		_home_environment.ambient_light_energy = 0.60 if home_visible else _studio_ambient_energy
+		_home_environment.ambient_light_color = Color("284286") if home_visible else _studio_ambient
+		_home_environment.ambient_light_energy = 0.36 if home_visible else _studio_ambient_energy
 
 
 func _advance_home_camera(delta: float) -> void:
