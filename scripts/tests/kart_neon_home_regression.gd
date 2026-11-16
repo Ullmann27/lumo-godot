@@ -29,6 +29,14 @@ func _run() -> void:
 	await process_frame
 	hub.size = Vector2(1280, 720)
 	await process_frame
+	print("[NeonHomeLayout] ", JSON.stringify({
+		"window": [root.size.x, root.size.y],
+		"viewport": [hub.get_viewport_rect().size.x, hub.get_viewport_rect().size.y],
+		"hub": [hub.size.x, hub.size.y],
+		"hubVisible": hub.is_visible_in_tree(),
+		"featured": hub._highlight.visible if hub._highlight != null else false,
+		"featuredInTree": hub._highlight.is_visible_in_tree() if hub._highlight != null else false
+	}))
 	_check(hub._highlight != null and hub._highlight.is_visible_in_tree(), "real native featured track panel")
 	_check(hub._track_buttons.size() == 4, "four source-backed playable tracks")
 	for id in ["volcano_night", "jungle_emerald_3600", "desert_drift", "sonnenhafen"]:

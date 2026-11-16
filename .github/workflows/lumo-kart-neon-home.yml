@@ -30,6 +30,8 @@ jobs:
       - name: Install verified Godot 4.6.3
         run: |
           set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
           curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
           echo "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3  $RUNNER_TEMP/godot.zip" | sha256sum -c -
           mkdir -p "$RUNNER_TEMP/godot"
@@ -48,7 +50,7 @@ jobs:
       - name: Run actual clickable menu and live neon showroom regression
         run: |
           set -euo pipefail
-          python3 tools/run_godot_probe.py --timeout 180 --log proof/neon-home.log --required '"status":"PASS"' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://scripts/tests/kart_neon_home_regression.gd
+          python3 tools/run_godot_probe.py --timeout 240 --log proof/neon-home.log --required '"status":"PASS"' -- xvfb-run -a -s '-screen 0 1280x720x24' Godot_v4.6.3-stable_linux.x86_64 --rendering-method gl_compatibility --audio-driver Dummy --path . --script res://scripts/tests/kart_neon_home_regression.gd
       - name: Keep original Godot project integrity
         run: |
           set -euo pipefail
