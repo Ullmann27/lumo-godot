@@ -19,13 +19,13 @@ var choices: VBoxContainer
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var shade := ColorRect.new()
-	shade.color = Color(0.06, 0.13, 0.12, 0.62)
+	shade.color = Color(0.01, 0.04, 0.11, 0.78)
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(shade)
 	sheet = PanelContainer.new()
 	var panel := StyleBoxFlat.new()
-	panel.bg_color = Color("fff8e8")
-	panel.border_color = Color("c4d6b9")
+	panel.bg_color = Color("10253e", 0.97)
+	panel.border_color = Color("69c9ea")
 	panel.set_border_width_all(2)
 	panel.set_corner_radius_all(22)
 	panel.set_content_margin_all(18)
@@ -50,11 +50,11 @@ func _ready() -> void:
 	input.max_length = 500
 	input.custom_minimum_size = Vector2(0, 54)
 	input.add_theme_font_size_override("font_size", 19)
-	input.add_theme_color_override("font_color", Color("193d35"))
-	input.add_theme_color_override("font_placeholder_color", Color("66776c"))
+	input.add_theme_color_override("font_color", Color("ecf9ff"))
+	input.add_theme_color_override("font_placeholder_color", Color("a1c6d8"))
 	var field := StyleBoxFlat.new()
-	field.bg_color = Color("ffffff")
-	field.border_color = Color("a6c1ad")
+	field.bg_color = Color("1a3c57")
+	field.border_color = Color("6bbad4")
 	field.set_border_width_all(2)
 	field.set_corner_radius_all(12)
 	field.set_content_margin_all(12)
@@ -93,7 +93,7 @@ func _label(words: String, font_size: int) -> Label:
 	label.text = words
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_font_size_override("font_size", font_size)
-	label.add_theme_color_override("font_color", Color("193d35"))
+	label.add_theme_color_override("font_color", Color("d9efff"))
 	return label
 
 
@@ -102,20 +102,20 @@ func _button(parent: Control, caption: String, action: Callable) -> Button:
 	button.text = caption
 	button.custom_minimum_size = Vector2(52, 52)
 	button.add_theme_font_size_override("font_size", 17)
-	button.add_theme_color_override("font_color", Color("18382f"))
+	button.add_theme_color_override("font_color", Color("f1fbff"))
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("e2eddb")
-	style.border_color = Color("a9bea1")
+	style.bg_color = Color("255475")
+	style.border_color = Color("68c8e5")
 	style.set_border_width_all(1)
 	style.set_corner_radius_all(12)
 	style.set_content_margin_all(12)
 	button.add_theme_stylebox_override("normal", style)
 	var focus := style.duplicate() as StyleBoxFlat
-	focus.border_color = Color("315e4e")
+	focus.border_color = Color("f4c46e")
 	focus.set_border_width_all(3)
 	button.add_theme_stylebox_override("focus", focus)
 	var pressed := style.duplicate() as StyleBoxFlat
-	pressed.bg_color = Color("cadcbe")
+	pressed.bg_color = Color("397596")
 	button.add_theme_stylebox_override("pressed", pressed)
 	button.pressed.connect(action)
 	parent.add_child(button)
