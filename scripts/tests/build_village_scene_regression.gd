@@ -339,6 +339,35 @@ func _run() -> void:
 		"The actual market purchase button uses the coin-free village quote"
 	)
 
+
+	# The real village exposes its story instead of hiding it behind trades.
+	_check(village.has_node("LumoVillageStoryBeacon"),
+		"A modern 3D mission landmark is attached outside all plots")
+	_check(village.beacon_progress.size() == 12,
+		"Twelve visible chapter markers use shared low-poly geometry")
+	_check(village.goal_label.text.contains("Lumos Auftrag:"),
+		"The active story task is visible without opening a separate menu")
+	_check(_button(village, "Kapitel") != null,
+		"The chapter story is in the accessible first-action toolbar")
+	_check(_button(village, "Freier Bauplatz") != null,
+		"A child can find an empty plot without raycast or camera guessing")
+	var guide_before: Dictionary = village.model.snapshot()
+	var original_focus: Vector3 = village.focus
+	village._focus_next_free_plot()
+	_check(village.selected_plot == 0,
+		"The first guided search finds the first free building plot")
+	_check(village.focus == village._plot_world(0),
+		"The camera points at the actual free plot, not an invented tile")
+	village._focus_next_free_plot()
+	_check(village.selected_plot == 1,
+		"Guided search advances to the next unused plot")
+	_check(village.model.snapshot() == guide_before,
+		"Finding a plot never purchases, advances time, or modifies child data")
+	village.selected_plot = -1
+	village.focus = original_focus
+	village._rebuild()
+	village._camera_update(true)
+
 	village.model._player.resources.coins = 0
 	village.selected_plot = 4
 	village._buy("market")
