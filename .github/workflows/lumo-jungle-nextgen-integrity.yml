@@ -15,14 +15,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-          fetch-depth: 2
+          fetch-depth: 0
       - name: Verify source heads and immutable Jungle files
         shell: bash
         run: |
           set -euo pipefail
-          git show -s --format=%P HEAD > /tmp/merge-parents.txt
-          grep -F '678cb38fea3a83a7f5841e71fba9bb2f3bfa2eef' /tmp/merge-parents.txt
-          grep -F '36a2a240d3f21b3943ab123b30408735fb7b9298' /tmp/merge-parents.txt
+          git merge-base --is-ancestor 678cb38fea3a83a7f5841e71fba9bb2f3bfa2eef HEAD
+          git merge-base --is-ancestor 36a2a240d3f21b3943ab123b30408735fb7b9298 HEAD
           for file in             scripts/games/kart_jungle_course.gd             scripts/games/kart_jungle_audio.gd             scripts/tests/kart_jungle_geometry_regression.gd             assets/shaders/kart_jungle_road.gdshader; do
             test -s "$file"
           done
