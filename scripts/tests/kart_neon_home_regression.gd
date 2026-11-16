@@ -17,6 +17,9 @@ func _check(value: bool, message: String) -> void:
 		push_error(message)
 
 func _run() -> void:
+	# Match the actual viewport to the surface under test: a 1280x720
+	# layout on the default 720x1280 test window incorrectly triggers compact UI.
+	root.size = Vector2i(1280, 720)
 	var hub = HUB.new()
 	hub.total_stars = 17
 	hub.current_mode = "race"
