@@ -348,7 +348,7 @@ func _ready() -> void:
 	)
 	_show_garage()
 	set_physics_process(true)
-	print("[Kart] Holographic garage ready: five modes, twelve worlds, free steering")
+	print("[Kart] Holographic garage ready: five modes, %d worlds, free steering" % CATALOG.TRACKS.size())
 
 
 func _wait_for_landscape() -> bool:
@@ -398,6 +398,8 @@ func _build_world() -> void:
 	arena_pickup_timers.clear()
 	ghost = null
 	darkride_event.bind_world(null)
+	if is_instance_valid(kart_audio):
+		kart_audio.bind_world(null)
 	roadside_lasso = null
 	world = null
 	arena = null
@@ -415,6 +417,8 @@ func _build_world() -> void:
 		world = WORLD.new()
 		race_root.add_child(world)
 		world.build(lightweight, track_id)
+		if is_instance_valid(kart_audio):
+			kart_audio.bind_world(world)
 		roadside_lasso = ROADSIDE_LASSO.new()
 		roadside_lasso.name = "RoadsideLasso"
 		world.add_child(roadside_lasso)
@@ -447,6 +451,12 @@ func _build_world() -> void:
 			[0.69, -2.7],
 			[0.86, 2.7],
 		]
+		if track_id == "jungle_emerald_3600":
+			item_layout = [
+				[0.045, -3.0], [0.13, 3.0], [0.21, 0.0], [0.29, -3.0],
+				[0.365, 2.7], [0.455, 0.0], [0.535, -2.7], [0.63, 0.0],
+				[0.705, 2.7], [0.795, -3.0], [0.875, 0.0], [0.95, 3.0]
+			]
 		for entry in item_layout:
 			_item_box(float(entry[0]) * track_length, float(entry[1]))
 	player = VEHICLE.new()
@@ -1517,9 +1527,32 @@ func _apply_ui_scale(control: Node, ui_scale: float) -> void:
 		_apply_ui_scale(child, ui_scale)
 
 
+## Per-course contact width; every legacy track keeps its original values.
+func _road_width_at(at: float) -> float:
+	return world.road_width_at(at) if is_instance_valid(world) else ROAD_WIDTH
+
+
+func _wall_lateral_at(at: float) -> float:
+	return world.wall_lateral_at(at) if is_instance_valid(world) else WORLD.WALL_LATERAL
+
+
+func _advance_jungle_world(delta: float) -> void:
+	if track_id != "jungle_emerald_3600" or not is_instance_valid(world):
+		return
+	if is_instance_valid(kart_audio):
+		kart_audio.update_course_state(
+			delta, distance, track_length, distance >= track_length * float(TOTAL_LAPS - 1),
+			finished, player.global_position
+		)
+	var jungle_environment = world.get_node_or_null("DschungelherzEnvironment")
+	if jungle_environment != null and jungle_environment.has_method("advance"):
+		jungle_environment.advance(delta, player.global_position, not paused, reduced_motion)
+
+
 func _physics_process(delta: float) -> void:
 	if menu_active or not is_instance_valid(player):
 		return
+	_advance_jungle_world(delta)
 	if finished and finish_cine_left > 0.0:
 		if not paused:
 			_update_finish_cine(delta)
@@ -1702,10 +1735,10 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	if mode != "arena":
 		road = world.sample_road(player.position, previous_road_distance)
 		lane = float(road.lateral)
-		if absf(lane) > ROAD_WIDTH * 0.48:
+		if absf(lane) > _road_width_at(float(road.distance)) * 0.48:
 			target *= _factor("offroad", 0.54)
 		# Beginner assistance nudges the steering at the shoulder; movement stays physical.
-		if difficulty == "gemuetlich" and absf(lane) > ROAD_WIDTH * 0.31:
+		if difficulty == "gemuetlich" and absf(lane) > _road_width_at(float(road.distance)) * 0.31:
 			var correction: float = angle_difference(player_heading, _heading(float(road.distance)))
 			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
 	var acceleration: float = POWERTRAIN.acceleration(kart_factors, braking > 0.1)
@@ -1765,7 +1798,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		return
 	road = world.sample_road(player.position, previous_road_distance)
 	lane = float(road.lateral)
-	if not open_edge_fall and absf(lane) > WORLD.WALL_LATERAL and world.open_edge_side(float(road.distance)) != signf(lane):
+	if not open_edge_fall and absf(lane) > _wall_lateral_at(float(road.distance)) and world.open_edge_side(float(road.distance)) != signf(lane):
 		_collide_with_rail(road)
 		road = world.sample_road(player.position, previous_road_distance)
 		lane = float(road.lateral)
@@ -1775,7 +1808,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var travel: float = fposmod(road_distance - previous_road_distance + track_length * 0.5, track_length) - track_length * 0.5
 	# An einer offenen Kante gibt es neben der Fahrbahn keinen Boden: dort beginnt der Sturz sofort.
 	var edge_margin: float = 0.3 if mode != "arena" and world.open_edge_side(road_distance) == signf(lane) else 2.0
-	if not open_edge_fall and absf(lane) < ROAD_WIDTH * 0.5 + edge_margin:
+	if not open_edge_fall and absf(lane) < _road_width_at(road_distance) * 0.5 + edge_margin:
 		var before_vertical: Vector3 = player.position
 		if not _move_vertically(road, road_distance, delta):
 			return
@@ -2136,7 +2169,7 @@ func _collide_with_rail(road: Dictionary) -> void:
 	# The rail is a wall: stay on its inner face and slide along it.
 	var road_basis: Basis = road.basis
 	var side: float = signf(lane)
-	player.position -= road_basis.x * (lane - side * WORLD.WALL_LATERAL)
+	player.position -= road_basis.x * (lane - side * _wall_lateral_at(float(road.distance)))
 	var into_wall: float = physical_velocity.dot(road_basis.x) * side
 	if into_wall <= 0.0:
 		return
@@ -2464,21 +2497,21 @@ func _drive_opponents(delta: float) -> void:
 		if RIVAL_FLIGHT.try_launch(self, i, sampled, next, target_speed):
 			continue
 		var rival_lateral: float = float(next.lateral)
-		if absf(rival_lateral) > WORLD.WALL_LATERAL and absf(rival_lateral) <= ROAD_WIDTH * 0.5 + 1:
+		if absf(rival_lateral) > _wall_lateral_at(float(next.distance)) and absf(rival_lateral) <= _road_width_at(float(next.distance)) * 0.5 + 1:
 			# Rivals respect the same rail wall as the player.
 			var rail_side: float = signf(rival_lateral)
-			var overlap: float = rival_lateral - rail_side * WORLD.WALL_LATERAL
+			var overlap: float = rival_lateral - rail_side * _wall_lateral_at(float(next.distance))
 			rival.position -= (next.basis as Basis).x * overlap
-			opponent_lanes[i] = rail_side * WORLD.WALL_LATERAL
+			opponent_lanes[i] = rail_side * _wall_lateral_at(float(next.distance))
 		rival.position.y = (
 			float(next.height)
 			+ 0.035
 			+ world.ramp_height(float(next.distance))
 			+ world.alternate_route_height(float(next.distance), rival_lateral)
 		)
-		if absf(float(next.lateral)) > ROAD_WIDTH * 0.5 + 1:
+		if absf(float(next.lateral)) > _road_width_at(float(next.distance)) * 0.5 + 1:
 			# Steer back onto the asphalt. Never teleport with reset_transform.
-			var overflow: float = absf(float(next.lateral)) - (ROAD_WIDTH * 0.5 + 0.85)
+			var overflow: float = absf(float(next.lateral)) - (_road_width_at(float(next.distance)) * 0.5 + 0.85)
 			var recover: float = minf(overflow, maxf(target_speed, 8.0) * delta * 1.15)
 			rival.position -= (next.basis as Basis).x * signf(float(next.lateral)) * recover
 			opponent_lanes[i] = float(next.lateral) - signf(float(next.lateral)) * recover
@@ -2523,7 +2556,7 @@ func _reset_kart() -> void:
 	var fell_from_edge: bool = (
 		open_edge_fall or (
 			mode != "arena" and world.open_edge_side(previous_road_distance) != 0.0
-			and absf(lane) > ROAD_WIDTH * 0.5
+			and absf(lane) > _road_width_at(previous_road_distance) * 0.5
 		)
 	)
 	open_edge_fall = false
@@ -2772,7 +2805,7 @@ func _update_arena(delta: float) -> void:
 
 
 func _update_checkpoints() -> void:
-	if absf(lane) > ROAD_WIDTH * 0.5 + 0.8:
+	if absf(lane) > _road_width_at(distance) * 0.5 + 0.8:
 		return
 	var spacing: float = track_length / 8.0
 	var target: float = (checkpoint_index + 1) * spacing
@@ -3414,6 +3447,10 @@ func _finish(cinematic: bool = true) -> void:
 	if is_instance_valid(kart_audio):
 		kart_audio.set_paused(false)
 	_sound_effect("finish")
+	if track_id == "jungle_emerald_3600" and is_instance_valid(world):
+		var jungle_environment = world.get_node_or_null("DschungelherzEnvironment")
+		if jungle_environment != null and jungle_environment.has_method("celebrate_finish"):
+			jungle_environment.celebrate_finish()
 	var place: int = _place()
 	var earned: int = 3
 	if mode == "training":
@@ -3698,7 +3735,7 @@ func _coast_finished_kart(delta: float) -> void:
 				)
 				road = world.sample_road(player.position, finish_road_distance)
 				lane = float(road.lateral)
-			if absf(lane) > WORLD.WALL_LATERAL:
+			if absf(lane) > _wall_lateral_at(float(road.distance)):
 				_collide_with_rail(road)
 			road = world.sample_road(player.position, finish_road_distance)
 			lane = float(road.lateral)

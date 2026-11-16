@@ -1,0 +1,17 @@
+{
+	"checkpoint_count": 8,
+	"checks_completed": 6,
+	"collision_max_error_m": 0.00612068176269531,
+	"collision_ray_tests": 435,
+	"curve_length_m": 3600.05029296875,
+	"device_performance": "not_measured",
+	"export_max_error_m": 0.00006103515625,
+	"exported_polyline_length_m": 3599.755222857,
+	"godot_version": "4.6.3-stable (official)",
+	"maximum_grade_fraction": 0.0749977241796602,
+	"mesh_seam_max_error_m": 0.0,
+	"road_projection_max_error_m": 0.0,
+	"road_triangles": 14408,
+	"status": "passed",
+	"track_id": "jungle_emerald_3600"
+}

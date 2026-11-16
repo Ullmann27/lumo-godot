@@ -4,6 +4,7 @@ extends Node3D
 const LANDMARKS = preload("res://scripts/games/kart_landmarks.gd")
 const EXPANSION = preload("res://scripts/games/kart_expansion_world.gd")
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
+const JUNGLE = preload("res://scripts/games/kart_jungle_course.gd")
 const ADVENTURE_TUNNELS = preload("res://scripts/games/kart_adventure_tunnels.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
@@ -96,10 +97,22 @@ func build(
 	definition = TRACKS.definition(selected_track)
 	track_id = definition.id
 	track_name = definition.name
+	road_width = float(definition.get("road_width_m", WIDTH))
 	_rng.seed = definition.seed
 	_make_curve()
 	jump={}
 	loop_layout={}
+	if track_id == JUNGLE.ID:
+		JUNGLE.build_road(self)
+		if not geometry_only:
+			var environment_script: Script = load("res://scripts/games/kart_jungle_environment.gd")
+			assert(environment_script != null, "Dschungelherz environment is part of the track package")
+			var jungle_environment: Node3D = environment_script.new()
+			jungle_environment.name = "DschungelherzEnvironment"
+			add_child(jungle_environment)
+			jungle_environment.build(self)
+		_flush_instances()
+		return
 	if track_id=="bergwelt":
 		# Himmelsinseln Sprint (reference k07): the road is carried by floating islands.
 		jump=SKY_ISLANDS.jump_layout(length)
@@ -168,28 +181,12 @@ func build(
 		AAA_GATES.decorate(self)
 
 func _make_curve() -> void:
-	var original_points: PackedVector3Array = definition.points
-	var source_points:=PackedVector3Array()
-	var horizontal_scale: float = 1.18 if track_id == "bergwelt" else 1.0
-	for point in original_points:
-		source_points.append(Vector3(point.x * horizontal_scale, point.y, point.z * horizontal_scale))
-	var points:=PackedVector3Array()
-	for i in range(source_points.size()):
-		points.append(
-			source_points[i] * 0.5
-			+ (
-				source_points[posmod(i - 1, source_points.size())]
-				+ source_points[(i + 1) % source_points.size()]
-			) * 0.25
-		)
-	curve = Curve3D.new()
-	curve.bake_interval = 0.35
-	for i in range(points.size() + 1):
-		var index: int = i % points.size()
-		var tangent: Vector3 = (points[(index+1)%points.size()] - points[posmod(index-1,points.size())]) * 0.22
-		curve.add_point(points[index], -tangent, tangent)
+	if track_id == JUNGLE.ID:
+		curve = JUNGLE.make_curve()
+	else:
+		_make_legacy_curve()
 	length = curve.get_baked_length()
-	adventure_tunnel = ADVENTURE_TUNNELS.layout(self)
+	adventure_tunnel = {} if track_id == JUNGLE.ID else ADVENTURE_TUNNELS.layout(self)
 	set_meta("adventure_tunnel_plan", adventure_tunnel.duplicate())
 	_road_samples.clear()
 	_road_distances.clear()
@@ -212,6 +209,35 @@ func _make_curve() -> void:
 	checkpoint_positions.clear()
 	for i in range(8):
 		checkpoint_positions.append(position_at(float(i) * length / 8.0))
+
+func _make_legacy_curve() -> void:
+	var original_points: PackedVector3Array = definition.points
+	var source_points:=PackedVector3Array()
+	var horizontal_scale: float = 1.18 if track_id == "bergwelt" else 1.0
+	for point in original_points:
+		source_points.append(Vector3(point.x * horizontal_scale, point.y, point.z * horizontal_scale))
+	var points:=PackedVector3Array()
+	for i in range(source_points.size()):
+		points.append(
+			source_points[i] * 0.5
+			+ (
+				source_points[posmod(i - 1, source_points.size())]
+				+ source_points[(i + 1) % source_points.size()]
+			) * 0.25
+		)
+	curve = Curve3D.new()
+	curve.bake_interval = 0.35
+	for i in range(points.size() + 1):
+		var index: int = i % points.size()
+		var tangent: Vector3 = (points[(index+1)%points.size()] - points[posmod(index-1,points.size())]) * 0.22
+		curve.add_point(points[index], -tangent, tangent)
+
+func road_width_at(distance: float) -> float:
+	return JUNGLE.width_at(distance) if track_id == JUNGLE.ID else WIDTH
+
+func wall_lateral_at(distance: float) -> float:
+	return JUNGLE.wall_at(distance) if track_id == JUNGLE.ID else WALL_LATERAL
+
 
 func forward(distance: float) -> Vector3:
 	return (curve.sample_baked(fposmod(distance + 0.5, length), true) - curve.sample_baked(fposmod(distance, length), true)).normalized()
@@ -266,7 +292,7 @@ func sample_road(world_position: Vector3, hint_distance: float = -1.0) -> Dictio
 	centre = curve.sample_baked(best_distance,true)
 	var lateral: float = (world_position-centre).dot(basis.x)
 	var surface_position: Vector3 = centre+basis.x*lateral
-	return {"distance":best_distance,"lateral":lateral,"height":surface_position.y,"position":surface_position,"basis":basis,"on_road":absf(lateral)<=WIDTH*0.5,"width":WIDTH,"forward":-basis.z}
+	return {"distance":best_distance,"lateral":lateral,"height":surface_position.y,"position":surface_position,"basis":basis,"on_road":absf(lateral)<=road_width_at(best_distance)*0.5,"width":road_width_at(best_distance),"forward":-basis.z}
 
 func in_gap(distance: float) -> bool:
 	var d: float = fposmod(distance, length)
@@ -393,6 +419,8 @@ func resolve_tunnel_motion(from: Vector3, desired: Vector3) -> Dictionary:
 
 
 func clip_tunnel_camera(anchor: Vector3, desired: Vector3) -> Vector3:
+	if track_id == JUNGLE.ID:
+		return JUNGLE.clip_camera(self, anchor, desired)
 	if not is_instance_valid(production_tunnels):
 		return desired
 	return production_tunnels.clip_camera(anchor, desired)
