@@ -27,7 +27,10 @@ func _run() -> void:
 	hub.preview_rotate_requested.connect(func(angle: float): rotations.append(angle))
 	root.add_child(hub)
 	await process_frame
-	hub.size = Vector2(1280, 720)
+	# Godot's expand stretch maps a 1280x720 window to a 2275x1280
+	# canvas. Set the Control size in canvas coordinates, as the app does.
+	hub.size = hub.get_viewport_rect().size
+	hub._layout()
 	await process_frame
 	print("[NeonHomeLayout] ", JSON.stringify({
 		"window": [root.size.x, root.size.y],
