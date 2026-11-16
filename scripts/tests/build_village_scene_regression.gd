@@ -222,10 +222,23 @@ func _surface_checks(village: Node) -> void:
 		_check(entry != null, "Production toolbar contains " + caption)
 		if entry == null:
 			continue
-		if not await _reveal_toolbar(village, entry):
+		if caption != "Kapitel" and not await _reveal_toolbar(village, entry):
 			continue
 		_target(entry, "toolbar " + caption)
+		if caption == "Kapitel":
+			_check(entry.get_parent().name == "VillagePrimaryActions",
+				"The children's chapter button is permanently visible outside the kinetic scroll toolbar")
+		if caption == "Kapitel":
+			await _capture("chapter-touch-before")
 		await _tap(entry)
+		if caption == "Kapitel" and not is_instance_valid(village.village_window):
+			print("[VillageTouchDiagnosis] entry=", _pixels(entry),
+				" toolbar=", _pixels(entry.get_parent().get_parent()),
+				" bottom=", _pixels(village.bottom),
+				" top=", _pixels(village.top),
+				" blocked=", village._transactions_blocked(),
+				" dialog=", village.village_window)
+			await _capture("chapter-touch-after")
 		_check(is_instance_valid(village.village_window), "Actual toolbar touch opens " + caption)
 		if not is_instance_valid(village.village_window):
 			continue
@@ -324,6 +337,19 @@ func _run() -> void:
 		and village.village_region.get_meta("max_plots_per_town", 0) == 1089,
 		"The 1089-plot region is attached to the production scene"
 	)
+	_check(village.village_region.get_meta("road_lines_player", 0) == 8,
+		"The opening nine plots have a real 3x3 street grid, not 1089 empty plots")
+	_check(village.village_region.get_meta("garden_instances_player", 0) > 30,
+		"The village edge has actual low-poly trees and flowers in bounded batches")
+	_check(village.village_region.has_node("WildflowerBeltPlayer"),
+		"Opening meadow is separate 3D geometry, not a static background")
+	var original_map: Dictionary = village.model.snapshot()
+	village.village_region.set_unlocked_plots(25, false)
+	_check(village.village_region.get_meta("road_lines_player", 0) == 12,
+		"Visual expansion reveals five by five roads as actual land is unlocked")
+	_check(village.model.snapshot() == original_map,
+		"Visual-only road expansion cannot modify the economy or save state")
+	village.village_region.set_unlocked_plots(int(village.model.player().plots), false)
 	_check(
 		village.village_residents != null
 		and village.village_residents.has_node("VillageFamilies"),
@@ -338,6 +364,35 @@ func _run() -> void:
 		not village.purchase_buttons["market"].text.contains("Münzen"),
 		"The actual market purchase button uses the coin-free village quote"
 	)
+
+
+	# The real village exposes its story instead of hiding it behind trades.
+	_check(village.has_node("LumoVillageStoryBeacon"),
+		"A modern 3D mission landmark is attached outside all plots")
+	_check(village.beacon_progress.size() == 12,
+		"Twelve visible chapter markers use shared low-poly geometry")
+	_check(village.goal_label.text.contains("Lumos Auftrag:"),
+		"The active story task is visible without opening a separate menu")
+	_check(_button(village, "Kapitel") != null,
+		"The chapter story is in the accessible first-action toolbar")
+	_check(_button(village, "Freier Bauplatz") != null,
+		"A child can find an empty plot without raycast or camera guessing")
+	var guide_before: Dictionary = village.model.snapshot()
+	var original_focus: Vector3 = village.focus
+	village._focus_next_free_plot()
+	_check(village.selected_plot == 0,
+		"The first guided search finds the first free building plot")
+	_check(village.focus == village._plot_world(0),
+		"The camera points at the actual free plot, not an invented tile")
+	village._focus_next_free_plot()
+	_check(village.selected_plot == 1,
+		"Guided search advances to the next unused plot")
+	_check(village.model.snapshot() == guide_before,
+		"Finding a plot never purchases, advances time, or modifies child data")
+	village.selected_plot = -1
+	village.focus = original_focus
+	village._rebuild()
+	village._camera_update(true)
 
 	village.model._player.resources.coins = 0
 	village.selected_plot = 4

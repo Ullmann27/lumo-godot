@@ -73,6 +73,8 @@ var return_scene := "build"
 var last_view_focus := Vector3.INF
 var last_view_radius := -1.0
 var overview_nodes: Array[MultiMeshInstance3D] = []
+# Twelve real chapter milestones share one lightweight world landmark.
+var beacon_progress: Array[MeshInstance3D] = []
 
 
 func _ready() -> void:
@@ -218,11 +220,61 @@ func _plot_world(index: int, opponent := false) -> Vector3:
 	)
 
 
+
+# A tangible, low-poly chapter marker at the children's town entrance,
+# outside all plots. It introduces no collider, commerce or gameplay shortcut.
+func _build_village_story_beacon() -> void:
+	var beacon := Node3D.new()
+	beacon.name = "LumoVillageStoryBeacon"
+	beacon.position = Vector3(-REGION.TOWN_CENTER, 0.03, -13.0)
+	add_child(beacon)
+	var base := kit.cylinder(beacon, Vector3(0, 0.22, 0), 2.6, 0.44, Color("29465f"))
+	base.material_override = kit.material(Color("274b62"))
+	kit.cylinder(beacon, Vector3(0, 0.49, 0), 2.24, 0.12, Color("f2cc71"))
+	for side in [-1.95, 1.95]:
+		var pillar := kit.cylinder(beacon, Vector3(side, 1.45, 0), 0.20, 2.7, Color("d1e8d7"))
+		pillar.material_override = kit.material(Color("d1e8d7"))
+		kit.sphere(beacon, Vector3(side, 2.91, 0), Vector3(0.63, 0.63, 0.63), Color("8df2e1"), true)
+	kit.box(beacon, Vector3(0, 3.12, 0), Vector3(4.3, 0.28, 0.46), Color("a2dbe2"), true)
+	kit.sphere(beacon, Vector3(0, 2.40, 0), Vector3(1.34, 1.54, 1.34), Color("fbd079"), true)
+	var sign := Label3D.new()
+	sign.name = "LumoStoryBeaconCaption"
+	sign.text = "LUMOS DORFGESCHICHTE"
+	sign.position = Vector3(0, 3.83, 0)
+	sign.font_size = 42
+	sign.pixel_size = 0.009
+	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	sign.modulate = Color("fff9e7")
+	sign.outline_modulate = Color("16415b")
+	beacon.add_child(sign)
+	for number in range(12):
+		var x := -2.15 + float(number) * 0.39
+		var marker := kit.sphere(
+			beacon, Vector3(x, 0.70, 1.49),
+			Vector3(0.27, 0.27, 0.27), Color("5c8395")
+		)
+		marker.name = "ChapterMark_%02d" % (number + 1)
+		beacon_progress.append(marker)
+	_update_chapter_beacon()
+
+
+func _update_chapter_beacon() -> void:
+	if beacon_progress.is_empty() or not model.living_village:
+		return
+	var chapter: int = clampi(int(model.campaign_status().chapter), 1, 12)
+	for number in range(beacon_progress.size()):
+		if is_instance_valid(beacon_progress[number]):
+			beacon_progress[number].material_override = kit.material(
+				Color("ffdc83") if number < chapter else Color("537f94"), number < chapter
+			)
+
+
 func _build_landscape() -> void:
 	if model.living_village:
 		village_region = REGION.new()
 		add_child(village_region)
 		village_region.build_landscape(mode)
+		_build_village_story_beacon()
 		village_residents = RESIDENTS.new()
 		add_child(village_residents)
 		village_residents.configure()
@@ -284,7 +336,7 @@ func _build_ui() -> void:
 	layer.add_child(safe_ui)
 	top_backdrop = Panel.new()
 	top_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	top_backdrop.add_theme_stylebox_override("panel", _panel())
+	top_backdrop.add_theme_stylebox_override("panel", _hud_panel())
 	safe_ui.add_child(top_backdrop)
 	top = VBoxContainer.new()
 	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -317,9 +369,11 @@ func _build_ui() -> void:
 	rival_label = _label("", 14)
 	rival_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	top.add_child(rival_label)
+	for info_label in [title, resource_label, goal_label, rival_label]:
+		info_label.add_theme_color_override("font_color", Color("f6fcff"))
 	bottom_backdrop = Panel.new()
 	bottom_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bottom_backdrop.add_theme_stylebox_override("panel", _panel())
+	bottom_backdrop.add_theme_stylebox_override("panel", _hud_panel())
 	safe_ui.add_child(bottom_backdrop)
 	bottom = VBoxContainer.new()
 	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
@@ -330,7 +384,23 @@ func _build_ui() -> void:
 	safe_ui.add_child(bottom)
 	plot_label = _label("Wähle ein freies Grundstück und ein Gebäude.", 15)
 	plot_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	plot_label.add_theme_color_override("font_color", Color("f6fcff"))
 	bottom.add_child(plot_label)
+	# Child's two primary decisions stay visible above the horizontal catalog.
+	# They must not be swallowed by a kinetic scroll gesture on phones.
+	var primary := HBoxContainer.new()
+	primary.name = "VillagePrimaryActions"
+	primary.add_theme_constant_override("separation", 8)
+	bottom.add_child(primary)
+	if model.living_village:
+		var chapter_action := _button("Kapitel", _chapter_dialog, 120)
+		chapter_action.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		chapter_action.mouse_filter = Control.MOUSE_FILTER_STOP
+		primary.add_child(chapter_action)
+	var find_action := _button("Freier Bauplatz", _focus_next_free_plot, 140)
+	find_action.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	find_action.mouse_filter = Control.MOUSE_FILTER_STOP
+	primary.add_child(find_action)
 	var buildings_scroll := ScrollContainer.new()
 	buildings_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	bottom.add_child(buildings_scroll)
@@ -352,6 +422,8 @@ func _build_ui() -> void:
 	row.add_child(actions_scroll)
 	var actions := HBoxContainer.new()
 	actions_scroll.add_child(actions)
+	# Put the children's next useful actions FIRST instead of hiding the
+	# chapter behind trade and maintenance buttons in a long horizontal rail.
 	var actions_data: Array = [
 		["Rückgängig", _undo],
 		["Wiederholen", _redo],
@@ -360,7 +432,6 @@ func _build_ui() -> void:
 	]
 	if model.living_village:
 		actions_data.append_array([
-			["Kapitel", _chapter_dialog],
 			["Tilda · Lieferung", _tilda_dialog],
 			["Stadtkasse", _public_project_dialog],
 			["←", _pan_village.bind(-1, 0)],
@@ -387,6 +458,7 @@ func _build_ui() -> void:
 		"Dein Plan zählt: Nahrung, Material und Wohnraum halten die Siedlung am Leben.", 14
 	)
 	feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	feedback.add_theme_color_override("font_color", Color("f6fcff"))
 	bottom.add_child(feedback)
 	pause_panel = PanelContainer.new()
 	pause_panel.add_theme_stylebox_override("panel", _panel())
@@ -434,6 +506,20 @@ func _panel() -> StyleBoxFlat:
 	style.set_border_width_all(1)
 	style.set_corner_radius_all(12)
 	style.set_content_margin_all(10)
+	return style
+
+
+
+# A calm, readable HUD over the actual 3D village; dialogs retain their
+# existing light accessibility style and established touch geometry.
+func _hud_panel() -> StyleBoxFlat:
+	var style := _panel()
+	style.bg_color = Color(0.035, 0.16, 0.25, 0.93)
+	style.border_color = Color("64d7c8")
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(18)
+	style.shadow_color = Color(0.015, 0.07, 0.12, 0.36)
+	style.shadow_size = 8
 	return style
 
 
@@ -499,6 +585,10 @@ func _layout() -> void:
 
 
 func _rebuild() -> void:
+	if model.living_village and is_instance_valid(village_region):
+		village_region.set_unlocked_plots(int(model.player().plots), false)
+		if mode == "rival":
+			village_region.set_unlocked_plots(int(model.rival().plots), true)
 	_sync_visible_plots(true)
 	if mode == "rival":
 		var rival: Dictionary = model.rival()
@@ -517,6 +607,7 @@ func _rebuild() -> void:
 		village_residents.sync(model.player())
 		village_residents.set_focus(explorer.position if walking else focus)
 	_refresh_labels()
+	_update_chapter_beacon()
 
 
 func _sync_visible_plots(force := false) -> void:
@@ -683,10 +774,16 @@ func _refresh_labels() -> void:
 		var next_steps := PackedStringArray()
 		for goal in chapter.goals:
 			next_steps.append("%s %d/%d" % [str(goal.title), int(goal.current), int(goal.target)])
+		# The real story goal is always visible. Full story and hints remain
+		# accessible through the FIRST action button, not a hidden submenu.
+		var compact_hud := is_instance_valid(safe_ui) and safe_ui.size.y < 600.0
 		goal_label.text = (
-			"Kapitel %d/%d · %s\n%s"
-			% [int(chapter.chapter), int(chapter.total), str(chapter.title), " · ".join(next_steps)]
+			"Kapitel %d/%d · %s\nLumos Auftrag: %s"
+			% [int(chapter.chapter), int(chapter.total),
+				str(chapter.title), str(chapter.task)]
 		)
+		if not compact_hud:
+			goal_label.text += "\nFortschritt: " + " · ".join(next_steps)
 		var economy: Dictionary = model.economy_status()
 		resource_label.text += (
 			"\nStadtkasse %d · Zufriedenheit %d%% · Wasser für %d"
@@ -701,7 +798,8 @@ func _refresh_labels() -> void:
 	plot_label.text = (
 		"Grundstück %d gewählt · Gebäude antippen zum Bauen" % (selected_plot + 1)
 		if selected_plot >= 0
-		else "Wähle ein Grundstück in deiner Siedlung."
+		else "Tippe einen freien Bauplatz oder „Freier Bauplatz“. "
+			+ "Dein Dorf hat %d Grundstücke – sechs sind nur die Speicherplätze." % int(town.plots)
 	)
 	var occupied := false
 	for building in town.buildings:
@@ -764,6 +862,36 @@ func _buy(kind: String) -> void:
 		+ " gebaut. Am nächsten Tag arbeitet deine Siedlung weiter."
 	)
 	_save()
+
+
+
+# Keyboard/touch-accessible plot finding. This changes only camera and
+# selection, never a save, a purchase, a day or a child's resources.
+func _focus_next_free_plot() -> void:
+	if _transactions_blocked():
+		return
+	var town: Dictionary = model.player()
+	var used: Dictionary = {}
+	for building in town.buildings:
+		used[int(building.plot)] = true
+	var count: int = int(town.plots)
+	for offset in range(count):
+		var candidate: int = (selected_plot + 1 + offset) % count
+		if used.has(candidate):
+			continue
+		selected_plot = candidate
+		focus = _plot_world(candidate)
+		_rebuild()
+		_camera_update(true)
+		feedback.text = (
+			"Freier Bauplatz %d von %d. Wähle unten ein Gebäude. "
+			+ "Dein Dorf wird erst gebaut, wenn du es bestätigst."
+		) % [candidate + 1, count]
+		return
+	feedback.text = (
+		"Alle %d Bauplätze sind belegt. Erweitern zeigt dir den nächsten "
+		+ "Schritt. Rückbauen verändert erst nach deiner Bestätigung etwas."
+	) % count
 
 
 func _next_day() -> void:

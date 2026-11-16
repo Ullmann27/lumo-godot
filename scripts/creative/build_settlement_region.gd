@@ -13,6 +13,11 @@ var _kit := KIT.new()
 var _chunks: Array[Node3D] = []
 var _built := false
 var _last_focus := Vector3(INF, INF, INF)
+# Unused future building plots remain available in the game model but are no
+# longer pre-painted as an endless maze of roads from the first village day.
+var _road_layers: Dictionary = {}
+var _garden_groups: Dictionary = {}
+var _unlocked_counts: Dictionary = {}
 
 
 static func plot_coordinate(index: int) -> Vector2i:
@@ -93,18 +98,15 @@ func _build_bank(opponent: bool) -> void:
 	_kit.collision(
 		bank, Vector3(center, -1.4, 0), Vector3(HALF_EXTENT * 2.0, 2.8, HALF_EXTENT * 2.0)
 	)
-	var road_shapes: Array[Transform3D] = []
-	for grid in range(-17, 17):
-		var lane := (float(grid) + 0.5) * SPACING
-		road_shapes.append(
-			Transform3D(
-				Basis.from_scale(Vector3(0.73, 0.018, 181.0)), Vector3(center + lane, 0.024, 0)
-			)
-		)
-		road_shapes.append(
-			Transform3D(Basis.from_scale(Vector3(181.0, 0.018, 0.73)), Vector3(center, 0.025, lane))
-		)
-	_batch(self, "VillageLanes", _box_mesh(), road_shapes, Color("c9c7a3"), 0)
+	var road_layer := MultiMeshInstance3D.new()
+	road_layer.name = "VillageLanesNeighbor" if opponent else "VillageLanesPlayer"
+	road_layer.material_override = _kit.material(Color("a6bc9e"))
+	add_child(road_layer)
+	_road_layers[opponent] = road_layer
+	var garden := Node3D.new()
+	garden.name = "WildflowerBeltNeighbor" if opponent else "WildflowerBeltPlayer"
+	add_child(garden)
+	_garden_groups[opponent] = garden
 	for z_index in range(4):
 		for x_index in range(4):
 			var chunk := Node3D.new()
@@ -133,6 +135,84 @@ func _build_bank(opponent: bool) -> void:
 	for x in [-5.0, 5.0]:
 		_kit.cylinder(self, Vector3(center + x, 1.1, -90.3), 0.09, 2.2, Color("8c6140"))
 		_kit.sphere(self, Vector3(center + x, 2.3, -90.3), Vector3.ONE * 0.42, Color("ffd68a"))
+	set_unlocked_plots(9, opponent)
+
+
+
+# Only the actually unlocked district is drawn. This changes no plot IDs,
+# ownership, building capacity, saved data or unlock thresholds.
+func set_unlocked_plots(count: int, opponent := false) -> void:
+	if not _road_layers.has(opponent):
+		return
+	var bounded := clampi(count, 1, MAX_PLOTS)
+	if int(_unlocked_counts.get(opponent, -1)) == bounded:
+		return
+	_unlocked_counts[opponent] = bounded
+	var ring := 1
+	for index in range(bounded):
+		var point := plot_coordinate(index)
+		ring = maxi(ring, maxi(absi(point.x), absi(point.y)))
+	var width := float(ring * 2 + 1) * SPACING
+	var center := TOWN_CENTER if opponent else -TOWN_CENTER
+	var lines: Array[Transform3D] = []
+	for grid in range(-ring - 1, ring + 1):
+		var offset := (float(grid) + 0.5) * SPACING
+		lines.append(Transform3D(
+			Basis.from_scale(Vector3(0.38, 0.012, width)),
+			Vector3(center + offset, 0.024, 0)))
+		lines.append(Transform3D(
+			Basis.from_scale(Vector3(width, 0.012, 0.38)),
+			Vector3(center, 0.025, offset)))
+	var road_mesh := MultiMesh.new()
+	road_mesh.transform_format = MultiMesh.TRANSFORM_3D
+	road_mesh.mesh = _box_mesh()
+	road_mesh.instance_count = lines.size()
+	for index in range(lines.size()):
+		road_mesh.set_instance_transform(index, lines[index])
+	var road: MultiMeshInstance3D = _road_layers[opponent]
+	road.multimesh = road_mesh
+	set_meta("road_lines_neighbor" if opponent else "road_lines_player", lines.size())
+	_replant_village_edge(bounded, opponent)
+
+
+# Batched scenery around the unlocked town. Trees and wildflowers move to
+# the NEW meadow border when a region is expanded; no old plant is left on
+# a building plot and no simulated residents or collision objects are made.
+func _replant_village_edge(count: int, opponent: bool) -> void:
+	var group: Node3D = _garden_groups[opponent]
+	for node in group.get_children():
+		group.remove_child(node)
+		node.queue_free()
+	var distance := extent_for_plots(count) + 6.0
+	var trunks: Array[Transform3D] = []
+	var crowns: Array[Transform3D] = []
+	var flowers: Array[Transform3D] = []
+	var center := TOWN_CENTER if opponent else -TOWN_CENTER
+	for index in range(84):
+		var angle := float(index) * 2.3999632 + (0.4 if opponent else 0.0)
+		var radius := distance + float(index % 5) * 2.0
+		var x := sin(angle) * radius
+		var z := cos(angle) * radius
+		if maxf(absf(x), absf(z)) > HALF_EXTENT - 3.0:
+			continue
+		var at := Vector3(center + x, 0.07, z)
+		if index % 4 == 0:
+			var height := 1.5 + float(index % 3) * 0.3
+			trunks.append(Transform3D(
+				Basis.from_scale(Vector3(0.25, height, 0.25)),
+				at + Vector3.UP * height * 0.5))
+			crowns.append(Transform3D(
+				Basis.from_scale(Vector3(1.5, 1.5, 1.5)),
+				at + Vector3.UP * (height + 0.25)))
+		else:
+			flowers.append(Transform3D(
+				Basis.from_scale(Vector3(0.5, 0.40, 0.5)),
+				at + Vector3.UP * 0.2))
+	_batch(group, "MeadowSaplingTrunks", _box_mesh(), trunks, Color("936b4a"), 100)
+	_batch(group, "MeadowSaplingCrowns", _sphere_mesh(), crowns, Color("549875"), 100)
+	_batch(group, "MeadowWildflowers", _sphere_mesh(), flowers, Color("f4bfda"), 100)
+	set_meta("garden_instances_neighbor" if opponent else "garden_instances_player",
+		trunks.size() + crowns.size() + flowers.size())
 
 
 func _decorate_chunk(chunk: Node3D, xi: int, zi: int, opponent: bool) -> void:
