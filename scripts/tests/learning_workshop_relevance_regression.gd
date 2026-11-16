@@ -80,6 +80,20 @@ func _run() -> void:
 	game._layout()
 	await _settle()
 	await _capture("clock-phone-412x915")
+	_check(game.choice_buttons.size() == 4, "all 4 clock choices remain visible on phone")
+	if game.choice_buttons.size() == 4:
+		var first: Rect2 = game.choice_buttons[0].get_global_rect()
+		var second: Rect2 = game.choice_buttons[1].get_global_rect()
+		var third: Rect2 = game.choice_buttons[2].get_global_rect()
+		var fourth: Rect2 = game.choice_buttons[3].get_global_rect()
+		_check(absf(first.position.y - second.position.y) <= 2.0,
+			"phone clock answers 1 and 2 share a row")
+		_check(absf(third.position.y - fourth.position.y) <= 2.0,
+			"phone clock answers 3 and 4 share a row")
+		_check(third.position.y > first.position.y + 5.0,
+			"phone clock answers form exactly two rows")
+		_check(second.end.x <= root.size.x and fourth.end.x <= root.size.x,
+			"two-column clock buttons stay within phone screen")
 	root.size = Vector2i(1280, 900)
 	game._layout()
 	await _settle()
