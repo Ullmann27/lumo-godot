@@ -43,6 +43,14 @@ jobs:
           Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit 2>&1 | tee proof/import.log
           if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' proof/import.log; then exit 1; fi
           python3 tools/validate_project.py 2>&1 | tee proof/validate.log
+      - name: Regenerate authoritative 3600m centreline from actual course
+        shell: bash
+        run: |
+          set -euo pipefail
+          Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://tools/jungle_emerald_3600/export_geometry.gd 2>&1 | tee proof/centreline.log
+          test -s assets/kart/jungle_emerald_3600/geometry/centerline.json
+          test -s assets/kart/jungle_emerald_3600/geometry/centerline.tres
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' proof/centreline.log; then exit 1; fi
       - name: Test closed 3600 metre circuit geometry and actual collision
         shell: bash
         run: |
