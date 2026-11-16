@@ -1049,7 +1049,7 @@ func _layout() -> void:
 		var narrow := available.x < 600.0
 		for option: Button in choice_buttons:
 			option.custom_minimum_size.x = (
-				maxf(142.0, (available.x - 42.0) * 0.5)
+				maxf(125.0, (available.x - 96.0) * 0.5)
 				if narrow
 				else 105.0
 			)
