@@ -235,6 +235,31 @@ func clear_teaching_target() -> void:
 		facial_pose.has_target = false
 
 
+func cancel_teaching_performance() -> void:
+	# One explicit cancellation for a lesson/utterance: the old point/celebrate
+	# clip must not continue after the mouth has already closed. Callers that
+	# merely replace audio use apply_speech_sample(false) instead.
+	clear_teaching_target()
+	apply_speech_sample(0.0, 0.0, false)
+	if facial_pose != null:
+		facial_pose.reset()
+	if not teacher_enabled or not is_usable():
+		return
+	teacher_pose.restore_sampled_pose()
+	teacher_pose.speaking = false
+	teacher_pose.reaction = "idle"
+	teacher_pose.reaction_left = 0.0
+	teacher_pose.angles = Vector2.ZERO
+	current_behavior = "idle"
+	# No crossfade from a cancelled pointing pose, even for a reduced-motion
+	# frame. Sample the authored neutral pose now, then keep normal idle alive.
+	player.play("idle", 0.0)
+	player.seek(0.0, true)
+	player.advance(0.0)
+	if suspended or reduced_motion:
+		player.pause()
+
+
 func teacher_react(event: String) -> bool:
 	var clips: Dictionary = {"explain": "point_portal", "encourage": "agree_nod", "correct": "agree_nod", "celebrate": "celebrate", "welcome": "greeting_wave"}
 	if not clips.has(event) or suspended or not _enable_teacher_mode():

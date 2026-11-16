@@ -1,0 +1,92 @@
+name: LUMO village – visible plots, story and real scene QA
+
+on:
+  push:
+    branches:
+      - integration/lumo-2031-nextgen-jungle-20261116
+    paths:
+      - .github/workflows/lumo-village-free-plots-qa.yml
+      - scripts/creative/build_settlement_world.gd
+      - scripts/tests/build_village_scene_regression.gd
+      - scripts/tests/build_settlement_play_regression.gd
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lumo-village-free-plots-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  real-village:
+    if: github.repository == 'Ullmann27/lumo-godot' && github.ref == 'refs/heads/integration/lumo-2031-nextgen-jungle-20261116'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      GALLIUM_DRIVER: llvmpipe
+      LP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify actual source and install original pinned Godot engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0 libegl1
+          curl --fail --location --retry 3 \
+            --output "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          echo "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3  $RUNNER_TEMP/godot.zip" | sha256sum --check --status
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Fresh native Godot import and exact game validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p proof/village
+          Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit 2>&1 | tee proof/village/import.log
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' proof/village/import.log; then exit 1; fi
+          python3 tools/validate_project.py 2>&1 | tee proof/village/validation.log
+      - name: Test actual living village with plot selection, 12 chapters and safe saves
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 500 \
+            --log proof/village/scene.log --required '[VillageScene] PASS' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --script res://scripts/tests/build_village_scene_regression.gd
+      - name: Test classic build-world controls and real child touch navigation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 500 \
+            --log proof/village/classic-touch.log --required '[SettlementPlay] PASS' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --script res://scripts/tests/build_settlement_play_regression.gd
+      - name: Capture genuine rendered village frames, not mockups
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p proof/village/images
+          export LUMO_CAPTURE_DIR="$GITHUB_WORKSPACE/proof/village/images"
+          python3 tools/run_godot_probe.py --timeout 500 \
+            --log proof/village/render.log --required '[VillageScene] PASS' -- \
+            xvfb-run -a -s '-screen 0 2560x1600x24' \
+            Godot_v4.6.3-stable_linux.x86_64 --path . \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://scripts/tests/build_village_scene_regression.gd -- --capture
+          test -n "$(find proof/village/images -type f -name '*.png' -print -quit)"
+      - name: Preserve source-bound logs and genuine PNG captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lumo-village-free-plots-real-Godot-evidence
+          path: proof/village/
+          retention-days: 14
+          if-no-files-found: ignore

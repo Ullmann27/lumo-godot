@@ -6,6 +6,8 @@ var checks := 0
 var failures := 0
 
 
+# JNI fixture method names must match the production host interface exactly.
+# gdlint: disable=function-name
 class SpeechHost:
 	extends RefCounted
 	var request: Dictionary = {}
@@ -19,13 +21,22 @@ class SpeechHost:
 
 	func getLearningSpeechStatus() -> String:
 		return JSON.stringify(
-			{"id": request.get("id", 0), "state": state, "positionMs": 0, "durationMs": 1000, "audible": state == "playing", "envelopeAvailable": false, "envelope": 0.0}
+			{
+				"id": request.get("id", 0),
+				"state": state,
+				"positionMs": 0,
+				"durationMs": 1000,
+				"audible": state == "playing",
+				"envelopeAvailable": false,
+				"envelope": 0.0
+			}
 		)
 
 	func stopLearningSpeech() -> void:
 		stops += 1
 
 
+# gdlint: enable=function-name
 func _initialize() -> void:
 	_run.call_deferred()
 
@@ -40,6 +51,27 @@ func _check(condition: bool, message: String) -> void:
 func _settle() -> void:
 	for i in range(8):
 		await process_frame
+
+
+func _speech_silent(game: Node3D) -> bool:
+	var state: Dictionary = game.fox.director.diagnostics()
+	return not game.fox.audio_active and not state.audio_audible and state.mouth_mode == "closed"
+
+
+func _mesh_silhouette(game: Node3D, node: Node3D) -> Rect2:
+	var result := Rect2()
+	var found := false
+	var meshes := node.find_children("*", "MeshInstance3D", true, false)
+	if node is MeshInstance3D:
+		meshes.append(node)
+	for mesh: MeshInstance3D in meshes:
+		if mesh.mesh == null or not mesh.is_visible_in_tree():
+			continue
+		for vertex: Vector3 in mesh.mesh.get_faces():
+			var point: Vector2 = game.camera.unproject_position(mesh.to_global(vertex))
+			result = result.expand(point) if found else Rect2(point, Vector2.ZERO)
+			found = true
+	return result
 
 
 func _tap_learning_button(game: Node3D, caption: String) -> void:
@@ -262,14 +294,27 @@ func _run() -> void:
 	root.add_child(game)
 	await _settle()
 	_check(game.activity.kind == "bridge_ten", "actual production scene consumes current lesson")
-	_check(game.fox.is_usable(), "original 65-bone fox is actually mounted")
+	_check(game.fox.is_usable(), "authored learning fox is actually mounted")
 	_check(game.has_node("LearningWonder"), "real learning scene mounts the magical feedback layer")
 	_check(game.wonder.celebration_only, "learning uses no quest trails or extra 32 guide sprites")
-	_check(game.wonder.get_node("DiscoverySparkles").multimesh.instance_count == 20, "reuses bounded native star geometry")
+	_check(
+		game.wonder.get_node("DiscoverySparkles").multimesh.instance_count == 20,
+		"reuses bounded native star geometry"
+	)
 	_check(game.wonder._reduced_motion, "native magic respects the current reduced-motion lesson")
 	_check(
-		game.fox.teacher_enabled and game.fox.teacher_pose.has_target,
-		"original fox actually enters teaching mode in production scene"
+		game.fox.director.state == "greeting" and game.fox.director.diagnostics().turn_open,
+		"actual learning director enters the scene's welcome behavior"
+	)
+	game._teacher("explain", game.targets[8])
+	_check(
+		(
+			game.fox.director.state == "explaining"
+			and game.fox.director.target_id == "ten_frame_primary/slot_8"
+			and game.fox.director.point_target_id == "ten_frame_primary/slot_8"
+			and game.fox.director.can_target("ten_frame_primary/slot_8")
+		),
+		"scene teaching action binds gaze and gesture to the actual next receiving slot"
 	)
 	var atelier: Node3D = game.get_node("LearningGardenAtelier")
 	var batches := atelier.find_children("*", "MultiMeshInstance3D", true, false)
@@ -314,7 +359,10 @@ func _run() -> void:
 	Input.parse_input_event(touch)
 	await _settle()
 	_check(game.activity.placed.size() == 1, "tap manipulation reaches current next slot")
-	_check(game.wonder.get_node("DiscoverySparkles").visible, "correct spatial move starts visible star feedback")
+	_check(
+		game.wonder.get_node("DiscoverySparkles").visible,
+		"correct spatial move starts visible star feedback"
+	)
 	_check(
 		game.tokens[0].position.is_equal_approx(game.targets[8]),
 		"visible object occupies ninth slot"
@@ -377,32 +425,29 @@ func _run() -> void:
 		for button in game.actions.get_children():
 			_check(button.size.y >= 48, "minimum 48 logical pixel actions")
 		if dimensions.x == 412:
-			var feet: Vector2 = game.camera.unproject_position(game.fox.global_position)
-			var head: Vector2 = game.camera.unproject_position(
-				game.fox.global_position + Vector3.UP * 3.1
-			)
+			var teacher := _mesh_silhouette(game, game.fox)
 			_check(
-				feet.distance_to(head) >= 110,
+				teacher.has_area() and teacher.size.y >= 110,
 				"portrait camera keeps the actual original teacher large enough to read"
 			)
 			_check(
 				game.token_sources[0].z > 3 and game.fox.position.z < -3,
 				"portrait arrangement uses vertical space instead of shrinking the entire desktop stage"
 			)
-		# Actual cube silhouettes, not only their centers, must separate both rows.
-		var row_distance: float = absf(
-			(
-				game.camera.unproject_position(game.targets[0]).y
-				- game.camera.unproject_position(game.targets[5]).y
-			)
-		)
-		var top: Vector2 = game.camera.unproject_position(game.targets[0] + Vector3(0, 0.18, -0.29))
-		var bottom: Vector2 = game.camera.unproject_position(
-			game.targets[0] + Vector3(0, -0.18, 0.29)
-		)
+		# Project the actual authored token vertices. The old fixed box corners
+		# do not describe the imported beveled meshes or their current placement.
+		var first := _mesh_silhouette(game, game.content.get_node("InitialCube0"))
+		var second := _mesh_silhouette(game, game.content.get_node("InitialCube5"))
 		_check(
-			row_distance > absf(top.y - bottom.y) + 1.0,
-			"both rows of quantity blocks are visually separated"
+			(
+				first.has_area()
+				and second.has_area()
+				and maxf(first.position.y - second.end.y, second.position.y - first.end.y) > 1.0
+			),
+			(
+				"both rows of quantity blocks are visually separated %s: %s / %s"
+				% [dimensions, first, second]
+			)
 		)
 	game.restart()
 	_check(
@@ -419,24 +464,31 @@ func _run() -> void:
 	)
 	game._tick_speech(0.2)
 	_check(
-		not game.fox.teacher_pose.speaking,
+		_speech_silent(game) and game.fox.director.diagnostics().audio_state == "preparing",
 		"synthesis request does not pretend to be audible speech"
 	)
 	speech.state = "playing"
 	game._tick_speech(0.2)
 	_check(
-		game.fox.teacher_pose.speaking, "confirmed native playback drives original teacher gesture"
+		(
+			game.fox.audio_active
+			and game.fox.director.diagnostics().audio_audible
+			and game.fox.director.diagnostics().audio_state == "playing"
+			and game.fox.director.state == "explaining"
+		),
+		"confirmed native playback drives the actual teaching director"
 	)
 	speech.state = "completed"
 	game._tick_speech(0.2)
-	_check(not game.fox.teacher_pose.speaking, "actual completion stops speaking gesture")
+	_check(
+		_speech_silent(game) and game.fox.director.state == "listening",
+		"actual completion stops speaking gesture"
+	)
 	game._speak(game.explanation.text)
 	game._stop_speech()
 	speech.state = "playing"
 	game._tick_speech(0.2)
-	_check(
-		not game.fox.teacher_pose.speaking, "stale audio result cannot restart a cancelled gesture"
-	)
+	_check(_speech_silent(game), "stale audio result cannot restart a cancelled gesture")
 	game._auto_read = false
 	game._queue_narration()
 	_check(game._speech_wait < 0, "parent automatic-reading preference respected")
@@ -445,7 +497,7 @@ func _run() -> void:
 	_check(game._speech_wait > 0, "automatic narration waits for the current manipulation")
 	game._notification(Node.NOTIFICATION_APPLICATION_PAUSED)
 	_check(
-		game._speech_wait < 0 and not game.fox.teacher_pose.speaking,
+		game._speech_wait < 0 and _speech_silent(game),
 		"background cancels pending narration and speaking gesture"
 	)
 	game._notification(Node.NOTIFICATION_APPLICATION_RESUMED)
@@ -460,7 +512,10 @@ func _run() -> void:
 	root.add_child(game)
 	await _settle()
 	_check(not game.move_token(2), "wrong syllable is not accepted as first")
-	_check(not game.wonder.get_node("DiscoverySparkles").visible, "incorrect syllable triggers no success stars")
+	_check(
+		not game.wonder.get_node("DiscoverySparkles").visible,
+		"incorrect syllable triggers no success stars"
+	)
 	await _check_manipulative_layouts(game)
 	for index in range(3):
 		var letters: MeshInstance3D = game.tokens[index].get_node("SyllableGlyphs")
@@ -492,7 +547,10 @@ func _run() -> void:
 		game.title.text == "Pflanzen entdecken", "general plant introduction has a neutral title"
 	)
 	await _tap_learning_button(game, "Blüte")
-	_check(game.wonder.get_node("DiscoverySparkles").visible, "correct plant observation creates living fairy-light feedback")
+	_check(
+		game.wonder.get_node("DiscoverySparkles").visible,
+		"correct plant observation creates living fairy-light feedback"
+	)
 	await _tap_learning_button(game, "Wasser geben")
 	_check(
 		game.title.text == "Pflanzen entdecken" and game.explanation.text.begins_with("Wasser"),

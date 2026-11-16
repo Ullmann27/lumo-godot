@@ -182,6 +182,16 @@ func _run() -> void:
 		"Both towns start with identical resources"
 	)
 	_check(city.plot_nodes.size() == 18, "Both nine-plot towns exist in live 3D")
+	_check(is_instance_valid(city.free_plot_button) and city.free_plot_button.is_visible_in_tree(),
+		"The simple settlement exposes a child-readable free plot control")
+	var before_selection: Dictionary = city.model.snapshot()
+	await _tap(city.free_plot_button.get_global_rect().get_center())
+	_check(city.selected_plot == 0 and city.selection_marker.visible,
+		"A real touch selects the next unoccupied classic construction plot")
+	_check(city.model.snapshot() == before_selection,
+		"Choosing a free plot does not mutate a saved settlement")
+	city.selected_plot = -1
+	city._rebuild()
 	await _capture("01_settlement_start")
 	await _world_release_over_hud()
 	var initial: Dictionary = city.model.snapshot()

@@ -1,0 +1,112 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 0 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_ten token=1 target=9 placed=2 complete=false
+ERROR: [NextgenLearningReview] syllables (360, 800): word does not cover head, body or paws: [P: (45.46655, 154.7927), S: (108.783, 192.4373)] / [P: (114.2402, 268.5178), S: (133.3233, 24.29745)]
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/nextgen_learning_route_review.gd:135)
+       [1] _check_relative_layout (res://scripts/tests/nextgen_learning_route_review.gd:401)
+       [2] _check_layout (res://scripts/tests/nextgen_learning_route_review.gd:367)
+       [3] _test_layouts (res://scripts/tests/nextgen_learning_route_review.gd:277)
+       [4] _settle (res://scripts/tests/nextgen_learning_route_review.gd:141)
+ERROR: [NextgenLearningReview] syllables (412, 915): word does not cover head, body or paws: [P: (34.89123, 159.63), S: (138.3576, 244.7547)] / [P: (122.3622, 304.2732), S: (169.5696, 30.90317)]
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/nextgen_learning_route_review.gd:135)
+       [1] _check_relative_layout (res://scripts/tests/nextgen_learning_route_review.gd:401)
+       [2] _check_layout (res://scripts/tests/nextgen_learning_route_review.gd:367)
+       [3] _test_layouts (res://scripts/tests/nextgen_learning_route_review.gd:277)
+       [4] _settle (res://scripts/tests/nextgen_learning_route_review.gd:141)
+ERROR: [NextgenLearningReview] syllables (412, 960): word does not cover head, body or paws: [P: (20.57917, 161.5228), S: (149.9303, 265.2268)] / [P: (115.3665, 318.2645), S: (183.7529, 33.48801)]
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/nextgen_learning_route_review.gd:135)
+       [1] _check_relative_layout (res://scripts/tests/nextgen_learning_route_review.gd:401)
+       [2] _check_layout (res://scripts/tests/nextgen_learning_route_review.gd:367)
+       [3] _test_layouts (res://scripts/tests/nextgen_learning_route_review.gd:277)
+       [4] _settle (res://scripts/tests/nextgen_learning_route_review.gd:141)
+ERROR: [NextgenLearningReview] syllables (750, 832): word does not cover head, body or paws: [P: (230.2891, 156.1387), S: (117.0125, 206.9952)] / [P: (304.2655, 278.4671), S: (143.4092, 26.13556)]
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/nextgen_learning_route_review.gd:135)
+       [1] _check_relative_layout (res://scripts/tests/nextgen_learning_route_review.gd:401)
+       [2] _check_layout (res://scripts/tests/nextgen_learning_route_review.gd:367)
+       [3] _test_layouts (res://scripts/tests/nextgen_learning_route_review.gd:277)
+       [4] _settle (res://scripts/tests/nextgen_learning_route_review.gd:141)
+ERROR: [NextgenLearningReview] syllables (900, 1100): word does not cover head, body or paws: [P: (191.4286, 141.1972), S: (209.0795, 369.8618)] / [P: (323.6106, 359.7753), S: (256.2455, 46.69937)]
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/nextgen_learning_route_review.gd:135)
+       [1] _check_relative_layout (res://scripts/tests/nextgen_learning_route_review.gd:401)
+       [2] _check_layout (res://scripts/tests/nextgen_learning_route_review.gd:367)
+       [3] _test_layouts (res://scripts/tests/nextgen_learning_route_review.gd:277)
+       [4] _settle (res://scripts/tests/nextgen_learning_route_review.gd:141)
+ERROR: [NextgenLearningReview] syllables (412, 915): word does not cover head, body or paws: [P: (96.9102, 295.4276), S: (88.20941, 156.0425)] / [P: (152.677, 387.6444), S: (108.1085, 19.70221)]
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/nextgen_learning_route_review.gd:135)
+       [1] _check_relative_layout (res://scripts/tests/nextgen_learning_route_review.gd:401)
+       [2] _check_layout (res://scripts/tests/nextgen_learning_route_review.gd:367)
+       [3] _test_layouts (res://scripts/tests/nextgen_learning_route_review.gd:295)
+       [4] _settle (res://scripts/tests/nextgen_learning_route_review.gd:141)
+[LearningWorld] move kind=syllables token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=syllables token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=syllables token=2 target=2 placed=3 complete=true
+ERROR: [NextgenLearningReview] task_card (360, 800): full teacher and task card have separate horizontal rooms: [P: (75.04482, 189.8808), S: (84.8662, 150.1284)] / [P: (108.7895, 279.219), S: (201.4737, 138.9474)]
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/nextgen_learning_route_review.gd:135)
+       [1] _check_relative_layout (res://scripts/tests/nextgen_learning_route_review.gd:376)
+       [2] _check_layout (res://scripts/tests/nextgen_learning_route_review.gd:367)
+       [3] _test_layouts (res://scripts/tests/nextgen_learning_route_review.gd:277)
+       [4] _settle (res://scripts/tests/nextgen_learning_route_review.gd:141)
+ERROR: [NextgenLearningReview] task_card (412, 915): full teacher and task card have separate horizontal rooms: [P: (64.46952, 194.7181), S: (114.4408, 202.4458)] / [P: (109.9737, 315.1892), S: (271.6842, 187.3684)]
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/nextgen_learning_route_review.gd:135)
+       [1] _check_relative_layout (res://scripts/tests/nextgen_learning_route_review.gd:376)
+       [2] _check_layout (res://scripts/tests/nextgen_learning_route_review.gd:367)
+       [3] _test_layouts (res://scripts/tests/nextgen_learning_route_review.gd:277)
+       [4] _settle (res://scripts/tests/nextgen_learning_route_review.gd:141)
+ERROR: [NextgenLearningReview] task_card (412, 960): full teacher and task card have separate horizontal rooms: [P: (61.25208, 197.5855), S: (117.0424, 207.048)] / [P: (107.7907, 320.7953), S: (277.8605, 191.6279)]
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/nextgen_learning_route_review.gd:135)
+       [1] _check_relative_layout (res://scripts/tests/nextgen_learning_route_review.gd:376)
+       [2] _check_layout (res://scripts/tests/nextgen_learning_route_review.gd:367)
+       [3] _test_layouts (res://scripts/tests/nextgen_learning_route_review.gd:277)
+       [4] _settle (res://scripts/tests/nextgen_learning_route_review.gd:141)
+ERROR: [NextgenLearningReview] task_card (750, 832): full teacher and task card have separate horizontal rooms: [P: (250.326, 162.4888), S: (100.8108, 178.3343)] / [P: (290.4105, 268.6116), S: (239.3264, 165.0527)]
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/nextgen_learning_route_review.gd:135)
+       [1] _check_relative_layout (res://scripts/tests/nextgen_learning_route_review.gd:376)
+       [2] _check_layout (res://scripts/tests/nextgen_learning_route_review.gd:367)
+       [3] _test_layouts (res://scripts/tests/nextgen_learning_route_review.gd:277)
+       [4] _settle (res://scripts/tests/nextgen_learning_route_review.gd:141)
+ERROR: [NextgenLearningReview] task_card (900, 1100): full teacher and task card have separate horizontal rooms: [P: (200.0158, 140.0617), S: (202.1359, 357.5784)] / [P: (280.3894, 352.8489), S: (479.8737, 330.9474)]
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/nextgen_learning_route_review.gd:135)
+       [1] _check_relative_layout (res://scripts/tests/nextgen_learning_route_review.gd:376)
+       [2] _check_layout (res://scripts/tests/nextgen_learning_route_review.gd:367)
+       [3] _test_layouts (res://scripts/tests/nextgen_learning_route_review.gd:277)
+       [4] _settle (res://scripts/tests/nextgen_learning_route_review.gd:141)
+ERROR: [NextgenLearningReview] task_card (412, 915): full teacher and task card have separate horizontal rooms: [P: (126.1704, 305.5579), S: (64.54974, 114.1885)] / [P: (151.8368, 373.509), S: (153.2421, 105.6842)]
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/nextgen_learning_route_review.gd:135)
+       [1] _check_relative_layout (res://scripts/tests/nextgen_learning_route_review.gd:376)
+       [2] _check_layout (res://scripts/tests/nextgen_learning_route_review.gd:367)
+       [3] _test_layouts (res://scripts/tests/nextgen_learning_route_review.gd:295)
+       [4] _settle (res://scripts/tests/nextgen_learning_route_review.gd:141)
+[NextgenLearningReview] FAIL {"captures":[],"checks":1774,"failures":["syllables (360, 800): word does not cover head, body or paws: [P: (45.46655, 154.7927), S: (108.783, 192.4373)] / [P: (114.2402, 268.5178), S: (133.3233, 24.29745)]","syllables (412, 915): word does not cover head, body or paws: [P: (34.89123, 159.63), S: (138.3576, 244.7547)] / [P: (122.3622, 304.2732), S: (169.5696, 30.90317)]","syllables (412, 960): word does not cover head, body or paws: [P: (20.57917, 161.5228), S: (149.9303, 265.2268)] / [P: (115.3665, 318.2645), S: (183.7529, 33.48801)]","syllables (750, 832): word does not cover head, body or paws: [P: (230.2891, 156.1387), S: (117.0125, 206.9952)] / [P: (304.2655, 278.4671), S: (143.4092, 26.13556)]","syllables (900, 1100): word does not cover head, body or paws: [P: (191.4286, 141.1972), S: (209.0795, 369.8618)] / [P: (323.6106, 359.7753), S: (256.2455, 46.69937)]","syllables (412, 915): word does not cover head, body or paws: [P: (96.9102, 295.4276), S: (88.20941, 156.0425)] / [P: (152.677, 387.6444), S: (108.1085, 19.70221)]","task_card (360, 800): full teacher and task card have separate horizontal rooms: [P: (75.04482, 189.8808), S: (84.8662, 150.1284)] / [P: (108.7895, 279.219), S: (201.4737, 138.9474)]","task_card (412, 915): full teacher and task card have separate horizontal rooms: [P: (64.46952, 194.7181), S: (114.4408, 202.4458)] / [P: (109.9737, 315.1892), S: (271.6842, 187.3684)]","task_card (412, 960): full teacher and task card have separate horizontal rooms: [P: (61.25208, 197.5855), S: (117.0424, 207.048)] / [P: (107.7907, 320.7953), S: (277.8605, 191.6279)]","task_card (750, 832): full teacher and task card have separate horizontal rooms: [P: (250.326, 162.4888), S: (100.8108, 178.3343)] / [P: (290.4105, 268.6116), S: (239.3264, 165.0527)]","task_card (900, 1100): full teacher and task card have separate horizontal rooms: [P: (200.0158, 140.0617), S: (202.1359, 357.5784)] / [P: (280.3894, 352.8489), S: (479.8737, 330.9474)]","task_card (412, 915): full teacher and task card have separate horizontal rooms: [P: (126.1704, 305.5579), S: (64.54974, 114.1885)] / [P: (151.8368, 373.509), S: (153.2421, 105.6842)]"],"full_flutter_coverage":false,"native_activity_kinds":["bridge_ten","syllables","task_card"],"physical_android_audio_verified":false}

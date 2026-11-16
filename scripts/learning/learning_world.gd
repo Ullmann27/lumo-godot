@@ -1,7 +1,12 @@
 extends Node3D
+# gdlint: disable=max-file-lines,class-definitions-order,max-returns
+# Preserve the established scene's member layout; async gates fail before mutation.
 ## The production Android route for the current Flutter lesson. Objects use
 ## real meshes and spatial picking; tap is the equivalent accessible action.
 
+const COMPANION_SCOPE = preload("res://scripts/learning/learning_companion_scope.gd")
+const FRAME_PROBE = preload("res://scripts/learning/learning_frame_probe.gd")
+const QUESTION_PANEL = preload("res://scripts/learning/learning_conversation_panel.gd")
 const ACTIVITY = preload("res://scripts/learning/learning_activity.gd")
 const FOX = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const ATELIER = preload("res://scripts/learning/learning_atelier.gd")
@@ -74,6 +79,8 @@ var _speech_id := 0
 var _speech_poll := 0.0
 var _speech_wait := -1.0
 var _speech_state := "idle"
+var _speech_audible := false
+var _frame_probe = FRAME_PROBE.new()
 var _speech_text := ""
 var voice_button: Button
 var english_models: Array[Node3D] = []
@@ -81,6 +88,36 @@ var english_buttons: Array[Button] = []
 var english_stage_rect := Rect2()
 var _atelier: Node3D
 var _english_compact := false
+var companion_scope = COMPANION_SCOPE.new()
+var companion_objects: Dictionary = {}
+var question_panel: Control
+var question_button: Button
+var _context_signature: String = ""
+var _turn_serial: int = 0
+var _turn_id: int = 0
+var _handled_turn: int = 0
+var _conversation_poll: float = 0.0
+var _last_question: String = ""
+var _last_reply: String = ""
+var _last_action: String = "explain"
+var _performance_serial: int = 0
+var _audio_scope: Dictionary = {}
+var _speech_segments: Array[String] = []
+var _speech_cues: Array[String] = []
+var _speech_segment: int = 0
+var _speech_rate: float = 1.0
+var _speech_base_rate: float = 1.0
+var _microphone_enabled: bool = false
+var _speech_cue_applied: bool = false
+var _focus_id: String = ""
+var _focus_ring: MeshInstance3D
+var pattern_nodes: Array[Node3D] = []
+var pattern_choice_buttons: Array[Button] = []
+var _pattern_group_outline: Node3D
+var _pattern_next: Node3D
+var _pattern_candidate: Node3D
+var _scope_valid: bool = false
+var _task_card: Node3D
 
 # App-private observation only. This file never supplies inputs or persistence.
 const LEARNING_OBSERVATION := "user://learning_layout_v1.json"
@@ -110,12 +147,29 @@ func _ready() -> void:
 		and options.get("localVoiceLicenseAccepted", false) == true
 	)
 	_auto_read = options.get("learningAutoRead", false) == true
+	_microphone_enabled = options.get("learningMicrophoneEnabled", false) == true
+	var requested_rate: Variant = options.get("learningVoiceRate", 1.0)
+	if (requested_rate is float or requested_rate is int) and is_finite(float(requested_rate)):
+		_speech_base_rate = clampf(float(requested_rate), 0.70, 1.60)
+	_speech_rate = _speech_base_rate
 	if Engine.has_singleton("LumoHost"):
 		_speech_host = Engine.get_singleton("LumoHost")
 	var raw: Variant = options.get("learning", {})
 	if not raw is Dictionary:
 		raw = {}
 	activity.configure(raw)
+	var scoped: Dictionary = raw.duplicate(true)
+	if scoped.get("scope") is Dictionary:
+		scoped = scoped.scope.duplicate(true)
+	scoped["allowedActions"] = raw.get("allowedActions", ["stop"])
+	var launch_session := str(options.get("sessionId", ""))
+	if not launch_session.is_empty():
+		scoped["sessionId"] = launch_session
+	_scope_valid = companion_scope.configure(
+		scoped, "local-%d" % Time.get_ticks_usec(), "illustration-" + activity.kind
+	)
+	if not _scope_valid:
+		activity.kind = "invalid"
 	_learning_launch = _observed_launch(options)
 	HostBridge.returned.connect(_observation_returned)
 	_build_stage()
@@ -225,6 +279,10 @@ func _top_text(
 	return node
 
 
+func _create_fox() -> Node3D:
+	return FOX.new()
+
+
 func _build_stage() -> void:
 	var environment := WorldEnvironment.new()
 	var settings := Environment.new()
@@ -256,7 +314,7 @@ func _build_stage() -> void:
 	add_child(fill)
 	_atelier = ATELIER.new()
 	add_child(_atelier)
-	fox = FOX.new()
+	fox = _create_fox()
 	fox.name = "OriginalLearningLumo"
 	add_child(fox)
 	fox.position = Vector3(-4.6, 0.05, -0.4)
@@ -325,10 +383,12 @@ func _build_ui() -> void:
 	title = Label.new()
 	title.add_theme_font_size_override("font_size", 26)
 	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	title.add_theme_color_override("font_color", Color("173e34"))
 	heading.add_child(title)
 	explanation = Label.new()
 	explanation.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	explanation.add_theme_font_size_override("font_size", 19)
+	explanation.add_theme_color_override("font_color", Color("294e42"))
 	heading.add_child(explanation)
 	footer = _panel()
 	ui.add_child(footer)
@@ -338,18 +398,33 @@ func _build_ui() -> void:
 	status = Label.new()
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	status.add_theme_font_size_override("font_size", 17)
+	status.add_theme_color_override("font_color", Color("3d5648"))
 	controls.add_child(status)
 	actions = HFlowContainer.new()
 	actions.add_theme_constant_override("h_separation", 8)
 	actions.add_theme_constant_override("v_separation", 8)
 	controls.add_child(actions)
+	question_panel = QUESTION_PANEL.new()
+	question_panel.name = "LumoQuestion"
+	ui.add_child(question_panel)
+	question_panel.requested.connect(_request_conversation)
+	question_panel.listen_requested.connect(_start_listening)
+	question_panel.stopped.connect(_explicit_stop)
+	question_panel.closed.connect(_question_closed)
+	question_panel.set_microphone_available(
+		(
+			_microphone_enabled
+			and is_instance_valid(_speech_host)
+			and HostBridge.supports_method(_speech_host, "startLearningListening")
+		)
+	)
 
 
 func _panel() -> PanelContainer:
 	var panel := PanelContainer.new()
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("112e49")
-	style.border_color = Color("70b6d2")
+	style.bg_color = Color("fff6e4")
+	style.border_color = Color("aac3aa")
 	style.set_border_width_all(1)
 	style.set_corner_radius_all(16)
 	style.set_content_margin_all(14)
@@ -377,8 +452,8 @@ func _button(caption: String, action: Callable, flags: int = 0) -> Button:
 		]
 	)
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("dca847") if primary else Color("294b5a")
-	style.border_color = Color("f1d59c") if primary else Color("648390")
+	style.bg_color = Color("dca847") if primary else Color("dce9d4")
+	style.border_color = Color("f1d59c") if primary else Color("a1b89b")
 	style.set_border_width_all(1)
 	style.set_corner_radius_all(12)
 	style.set_content_margin_all(12)
@@ -389,7 +464,11 @@ func _button(caption: String, action: Callable, flags: int = 0) -> Button:
 	var pressed := style.duplicate() as StyleBoxFlat
 	pressed.bg_color = style.bg_color.darkened(0.12)
 	button.add_theme_stylebox_override("pressed", pressed)
-	button.add_theme_color_override("font_color", Color("1d3540") if primary else Color("f5ead5"))
+	var focus := style.duplicate() as StyleBoxFlat
+	focus.border_color = Color("376b51")
+	focus.set_border_width_all(3)
+	button.add_theme_stylebox_override("focus", focus)
+	button.add_theme_color_override("font_color", Color("1d3540") if primary else Color("234537"))
 	button.pressed.connect(action, flags)
 	actions.add_child(button)
 	return button
@@ -413,6 +492,15 @@ func _rebuild_activity() -> void:
 	part_nodes.clear()
 	english_models.clear()
 	english_buttons.clear()
+	pattern_nodes.clear()
+	pattern_choice_buttons.clear()
+	companion_objects.clear()
+	_pattern_group_outline = null
+	_pattern_next = null
+	_pattern_candidate = null
+	_task_card = null
+	_focus_ring = null
+	_focus_id = ""
 	water_particles.clear()
 	_arrangement_set = false
 	_source_tray = null
@@ -429,6 +517,12 @@ func _rebuild_activity() -> void:
 	main_button = null
 	voice_button = null
 	match activity.kind:
+		"task_card":
+			_build_task_card()
+			main_button = _button("Auftrag anschauen", _show_task_prompt)
+		"pattern":
+			_build_pattern()
+			main_button = _button("Gruppe entdecken", _pattern_hint)
 		"english_objects":
 			_build_english_objects()
 			main_button = _button("Hinweis", _english_hint)
@@ -457,14 +551,20 @@ func _rebuild_activity() -> void:
 			for part in PART_LABELS:
 				_button(str(PART_LABELS[part]), _inspect.bind(str(part)))
 	# Rebuilding frees the old controls after their input signal has returned.
-	_button("Neu" if activity.kind == "english_objects" else "Noch einmal", restart, CONNECT_DEFERRED)
+	_button(
+		"Neu" if activity.kind == "english_objects" else "Noch einmal", restart, CONNECT_DEFERRED
+	)
 	if (
 		_speech_enabled
 		and is_instance_valid(_speech_host)
-		and _speech_host.has_method("speakLearning")
+		and HostBridge.supports_method(_speech_host, "speakLearning")
 	):
 		voice_button = _button("Schritt anhören", _voice_action)
+	question_button = _button("Lumo fragen", _open_question)
+	question_button.disabled = not _scope_valid or activity.kind == "invalid"
 	_button("Zur Aufgabe", _return_to_lesson)
+	_build_focus_ring()
+	_update_object_registry()
 	_layout.call_deferred()
 
 
@@ -839,14 +939,31 @@ func _refresh() -> void:
 		title.text = "Lumo Lernwerkstatt"
 		status.text = "Kehre zur Aufgabe zurück und öffne die Lernansicht erneut."
 	elif activity.kind == "english_objects":
-		status.text = ("%s = %s · Passend zugeordnet" % [activity.word, activity.english_meaning]
-			if activity.is_complete() else "Tippe den Gegenstand oder seine Zahl an.")
+		status.text = (
+			"%s = %s · Passend zugeordnet" % [activity.word, activity.english_meaning]
+			if activity.is_complete()
+			else "Tippe den Gegenstand oder seine Zahl an."
+		)
 		main_button.disabled = activity.is_complete() or activity.english_hint_level >= 2
 		for index in range(english_models.size()):
 			english_buttons[index].disabled = activity.is_complete()
 			english_models[index].get_node("HintRing").visible = (
 				activity.english_objects[index] == activity.word
-				and (activity.english_hint_level >= 2 or activity.is_complete()))
+				and (activity.english_hint_level >= 2 or activity.is_complete())
+			)
+	elif activity.kind == "task_card":
+		status.text = (
+			"Deine Aufgabe bleibt erhalten. Hier kannst du Lumo fragen "
+			+ "oder einen Antwortvorschlag wählen."
+		)
+		main_button.disabled = false
+	elif activity.kind == "pattern":
+		status.text = "Wähle einen Vorschlag. Bestätige deine Antwort anschließend in deiner Aufgabe."
+		main_button.disabled = (activity.pattern_hint_level > 0)
+		if is_instance_valid(_pattern_group_outline):
+			_pattern_group_outline.visible = (activity.pattern_hint_level > 0)
+		for index in range(pattern_choice_buttons.size()):
+			pattern_choice_buttons[index].button_pressed = index == activity.pattern_candidate
 	elif activity.kind == "plant_parts":
 		title.text = "Pflanzen entdecken"
 		status.text = "%d von 4 Pflanzenteilen entdeckt" % activity.inspected.size()
@@ -860,6 +977,7 @@ func _refresh() -> void:
 		main_button.disabled = activity.is_complete() or not _moving.is_empty()
 	if activity.is_complete() and activity.kind != "english_objects":
 		status.text = "Geschafft! Zurück bei deiner Aufgabe kannst du es selbst versuchen."
+	_sync_companion_context()
 	_layout.call_deferred()
 
 
@@ -885,9 +1003,16 @@ func _layout() -> void:
 	ui.scale = Vector2.ONE * scale_value
 	var logical := dimensions / scale_value
 	ui.visible = MobileRuntime.safe_area_is_ready()
-	var insets := MobileRuntime.get_safe_area_insets() if OS.has_feature("android") or MobileRuntime.requires_safe_area_observation() else Rect2()
+	var insets := (
+		MobileRuntime.get_safe_area_insets()
+		if OS.has_feature("android") or MobileRuntime.requires_safe_area_observation()
+		else Rect2()
+	)
 	var origin := insets.position / scale_value
 	var available := logical - (insets.position + insets.size) / scale_value
+	if is_instance_valid(question_panel):
+		question_panel.position = origin
+		question_panel.size = available
 	if activity.kind == "english_objects":
 		_english_compact = available.x > available.y and available.y < 480.0
 		# Keep the full hint text and its original readable font. On a short
@@ -901,8 +1026,15 @@ func _layout() -> void:
 		# A short landscape window needs one row of full-sized actions, not a
 		# two-row footer that reduces the real objects to tiny thumbnails.
 		status.visible = not _english_compact
+		actions.add_theme_constant_override("h_separation", 4 if _english_compact else 8)
+		question_button.text = "Fragen" if _english_compact else "Lumo fragen"
+		question_button.tooltip_text = "Lumo eine Frage zur aktuellen Aufgabe stellen"
 		for button: Button in actions.get_children():
 			button.custom_minimum_size = Vector2(52, 52)
+			for state in ["normal", "hover", "pressed", "focus"]:
+				var button_style := button.get_theme_stylebox(state) as StyleBoxFlat
+				button_style.content_margin_left = 4.0 if _english_compact else 12.0
+				button_style.content_margin_right = 4.0 if _english_compact else 12.0
 		_update_voice_button()
 	header.position = origin + Vector2(12, 12)
 	header.size.x = maxf(100, available.x - 24)
@@ -926,6 +1058,9 @@ func _layout() -> void:
 	if activity.kind == "fraction_parts":
 		focus_height = maxf(focus_height, 5.8)
 	var focus_width := 6.25 if portrait else 10.8
+	if activity.kind in ["pattern", "task_card"]:
+		focus_width = maxf(focus_width, 8.6)
+		focus_height = maxf(focus_height, 5.7)
 	if activity.kind == "syllables" and activity.syllables.size() > 3:
 		focus_width = maxf(focus_width, 8.2)
 	var needed_height := focus_height * dimensions.y / free_height
@@ -1011,8 +1146,9 @@ func _arrange_activity(portrait: bool) -> void:
 			if placed_index >= 0
 			else token_sources[index]
 		)
-	if is_instance_valid(fox) and fox.is_usable():
-		fox.set_teaching_target(Vector3(0, 0.5, 0))
+	_update_object_registry()
+	if is_instance_valid(fox) and fox.is_usable() and not _focus_id.is_empty():
+		_focus_object(_focus_id)
 
 
 func _input(event: InputEvent) -> void:
@@ -1088,7 +1224,7 @@ func _begin_drag(point: Vector2, finger: int) -> void:
 	drag_finger = finger
 	drag_start = point
 	drag_moved = false
-	_stop_speech()
+	_cancel_performance()
 	_teacher("explain", tokens[active_drag].global_position)
 	get_viewport().set_input_as_handled()
 
@@ -1136,6 +1272,7 @@ func _end_drag(point: Vector2, canceled: bool) -> void:
 func move_token(index: int) -> bool:
 	if suspended or not _moving.is_empty():
 		return false
+	_cancel_performance()
 	var destination: int = activity.target_index()
 	if not activity.place(index, destination):
 		_teacher("encourage", Vector3(0, 1, 0))
@@ -1204,6 +1341,7 @@ func _part_position(part: String) -> Vector3:
 func _inspect(part: String) -> void:
 	if suspended or not activity.inspect_part(part):
 		return
+	_cancel_performance()
 	_refresh()
 	title.text = "Pflanzen entdecken · " + str(PART_LABELS[part])
 	explanation.text = str(PART_HELP[part])
@@ -1215,6 +1353,7 @@ func _inspect(part: String) -> void:
 func _give_water() -> void:
 	if suspended or activity.kind != "plant_parts" or activity.watered:
 		return
+	_cancel_performance()
 	activity.watered = true
 	_refresh()
 	explanation.text = "Wasser gelangt über die Wurzeln in den Stängel und zu den Blättern."
@@ -1226,6 +1365,7 @@ func _give_water() -> void:
 func _give_sun() -> void:
 	if suspended or activity.kind != "plant_parts" or activity.sunlight:
 		return
+	_cancel_performance()
 	activity.sunlight = true
 	sun.material_override = _material("sun_open", Color("ffcf65"), 0.06)
 	_refresh()
@@ -1237,7 +1377,7 @@ func _give_sun() -> void:
 func restart() -> void:
 	if suspended:
 		return
-	_stop_speech()
+	_cancel_performance()
 	activity.reset()
 	_rebuild_activity()
 	_refresh()
@@ -1248,9 +1388,15 @@ func restart() -> void:
 func _process(delta: float) -> void:
 	_publish_learning_observation()
 	if suspended:
+		_frame_probe.reset()
 		return
 	_clock += delta
 	_tick_speech(delta)
+	_tick_conversation(delta)
+	_update_focus()
+	_frame_probe.sample(
+		self, activity.kind, reduced_motion, _speech_state == "playing", _speech_audible
+	)
 	if plant != null:
 		var desired := 1.0 if activity.watered and activity.sunlight else 0.62
 		_growth = desired if reduced_motion else move_toward(_growth, desired, delta * 0.12)
@@ -1271,7 +1417,7 @@ func _cancel_drag() -> void:
 
 
 func _return_to_lesson() -> void:
-	_stop_speech()
+	_cancel_performance()
 	_cancel_drag()
 	if HostBridge.is_embedded():
 		if not HostBridge.return_to_app("learn", {"status": "illustrated", "game": "learning"}):
@@ -1284,11 +1430,12 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		_return_to_lesson()
 	elif what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT]:
+		_frame_probe.reset()
 		suspended = true
 		if is_instance_valid(wonder):
 			wonder.set_paused(true)
 		_mark_learning_observation()
-		_stop_speech()
+		_cancel_performance()
 		_cancel_drag()
 		for tween in _tweens:
 			if tween.is_valid():
@@ -1296,6 +1443,7 @@ func _notification(what: int) -> void:
 		if fox != null:
 			fox.set_suspended(true)
 	elif what in [NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN]:
+		_frame_probe.reset()
 		suspended = false
 		if is_instance_valid(wonder):
 			wonder.set_paused(false)
@@ -1318,7 +1466,7 @@ func _exit_tree() -> void:
 		MobileRuntime.safe_area_changed.disconnect(_layout)
 	if get_viewport().size_changed.is_connected(_layout):
 		get_viewport().size_changed.disconnect(_layout)
-	_stop_speech()
+	_cancel_performance()
 	get_tree().auto_accept_quit = _original_auto_quit
 	get_tree().quit_on_go_back = _original_back_quit
 	get_window().content_scale_mode = _original_scale_mode
@@ -1341,7 +1489,7 @@ func _voice_action() -> void:
 	if suspended:
 		return
 	if _speech_state in ["preparing", "playing"] or _speech_wait >= 0:
-		_stop_speech()
+		_explicit_stop()
 	else:
 		_speak(explanation.text)
 
@@ -1350,7 +1498,6 @@ func _speak(words: String) -> void:
 	if not _speech_enabled or suspended or not is_instance_valid(_speech_host):
 		return
 	_stop_speech()
-	# Read the actual displayed quantities. No unrelated prerecorded answer.
 	var spoken := (
 		words
 		. replace(" + ", " plus ")
@@ -1358,19 +1505,58 @@ func _speak(words: String) -> void:
 		. replace("/", " von ")
 		. replace("×", "mal")
 	)
-	if spoken.is_empty() or spoken.length() > 220:
+	if spoken.is_empty() or spoken.length() > 1200:
+		return
+	var remaining := spoken
+	while not remaining.is_empty():
+		var amount := mini(220, remaining.length())
+		if amount < remaining.length():
+			var split := remaining.rfind(" ", amount)
+			if split > 0:
+				amount = split
+		_speech_segments.append(remaining.left(amount).strip_edges())
+		_speech_cues.append("")
+		remaining = remaining.substr(amount).strip_edges()
+	_speech_segment = 0
+	_start_audio_segment()
+
+
+func _speak_syllables() -> void:
+	if not _speech_enabled or suspended or not is_instance_valid(_speech_host):
+		return
+	_stop_speech()
+	# Each highlighted syllable owns a real audio segment. No invented word
+	# timestamps or reading-speed timer are used for the visible cue.
+	_speech_segments.append(activity.word)
+	_speech_cues.append("")
+	for index in range(activity.syllables.size()):
+		_speech_segments.append(activity.syllables[index])
+		_speech_cues.append("syllable_%d" % index)
+	_speech_segment = 0
+	_start_audio_segment()
+
+
+func _start_audio_segment() -> void:
+	if (
+		_speech_segment >= _speech_segments.size()
+		or suspended
+		or not HostBridge.supports_method(_speech_host, "speakLearning")
+	):
 		return
 	_speech_id += 1
-	var accepted: Variant = _speech_host.call(
-		"speakLearning",
-		JSON.stringify(
-			{
-				"id": _speech_id,
-				"text": spoken,
-				"style": "celebrate" if activity.is_complete() else "explain"
-			}
-		)
+	_speech_audible = false
+	_speech_cue_applied = false
+	_audio_scope = companion_scope.envelope(_turn_id, "audio-%d" % _speech_id)
+	var request := _audio_scope.duplicate(true)
+	request.merge(
+		{
+			"id": _speech_id,
+			"text": _speech_segments[_speech_segment],
+			"rate": _speech_rate,
+			"style": "celebrate" if activity.is_complete() else "explain"
+		}
 	)
+	var accepted: Variant = _speech_host.call("speakLearning", JSON.stringify(request))
 	_speech_state = "preparing" if HostBridge.durable_ack(accepted) else "unavailable"
 	_update_voice_button()
 
@@ -1379,7 +1565,15 @@ func _stop_speech() -> void:
 	_speech_wait = -1.0
 	_speech_id += 1
 	_speech_state = "idle"
-	if is_instance_valid(_speech_host) and _speech_host.has_method("stopLearningSpeech"):
+	_speech_audible = false
+	_speech_segments.clear()
+	_speech_cues.clear()
+	_speech_segment = 0
+	_audio_scope.clear()
+	if (
+		is_instance_valid(_speech_host)
+		and HostBridge.supports_method(_speech_host, "stopLearningSpeech")
+	):
 		_speech_host.call("stopLearningSpeech")
 	if is_instance_valid(fox) and fox.is_usable():
 		fox.set_teacher_speaking(false)
@@ -1401,26 +1595,81 @@ func _tick_speech(delta: float) -> void:
 	if _speech_poll < 0.05:
 		return
 	_speech_poll = 0.0
-	if not _speech_host.has_method("getLearningSpeechStatus"):
+	if not HostBridge.supports_method(_speech_host, "getLearningSpeechStatus"):
 		return
 	var received: Variant = JSON.parse_string(str(_speech_host.call("getLearningSpeechStatus")))
-	if not received is Dictionary or int(received.get("id", -1)) != _speech_id:
+	if (
+		not received is Dictionary
+		or not COMPANION_SCOPE._integer(received.get("id"), _speech_id, _speech_id)
+	):
+		return
+	# A legacy status still belongs to its captured scoped request. A native
+	# v1 response must additionally carry the same identity on the wire.
+	if not _audio_scope.is_empty() and not companion_scope.matches(_audio_scope):
+		_stop_speech()
+		return
+	if received.has("protocolVersion") and not companion_scope.matches(received):
+		return
+	if received.has("turnId"):
+		var expected_turn: int = int(_audio_scope.get("turnId", 0))
+		if (
+			expected_turn <= 0
+			or not COMPANION_SCOPE._integer(received.turnId, expected_turn, expected_turn)
+		):
+			return
+	if received.has("utteranceId") and received.utteranceId != _audio_scope.get("utteranceId"):
 		return
 	var received_state := str(received.get("state", "idle"))
-	if received_state not in ["preparing", "playing", "completed", "unavailable", "idle"]:
+	if received_state not in ["preparing", "playing", "paused", "completed", "unavailable", "idle"]:
+		return
+	if not _apply_speech_status(received):
 		return
 	_speech_state = received_state
-	# Amplitude comes from the exact synthesized WAV and MediaPlayer position.
-	# Preparing, mute, missing envelope and stopped playback remain closed.
+	var audible: bool = _speech_state == "playing" and received.get("audible", false) == true
+	_speech_audible = audible
+	if audible and not _speech_cue_applied and _speech_segment < _speech_cues.size():
+		_speech_cue_applied = true
+		var cue: String = _speech_cues[_speech_segment]
+		if not cue.is_empty() and _focus_object(cue):
+			fox.teacher_react("explain")
+	if _speech_state == "completed" and _speech_segment + 1 < _speech_segments.size():
+		_speech_segment += 1
+		_start_audio_segment()
+	_update_voice_button()
+
+
+func _apply_speech_status(received: Dictionary) -> bool:
+	# Called by the sole polling/segment owner before any UI or cue mutation.
+	# The learning-only actor overrides this gate with its exact audio lease.
+	var position: Variant = received.get("positionMs", 0.0)
+	var envelope: Variant = received.get("envelope", 0.0)
+	if (
+		typeof(position) not in [TYPE_INT, TYPE_FLOAT]
+		or not is_finite(float(position))
+		or float(position) < 0
+	):
+		return false
+	if (
+		typeof(envelope) not in [TYPE_INT, TYPE_FLOAT]
+		or not is_finite(float(envelope))
+		or float(envelope) < 0
+		or float(envelope) > 1
+	):
+		return false
+	if (
+		not received.get("audible", false) is bool
+		or not received.get("envelopeAvailable", false) is bool
+	):
+		return false
+	var audible: bool = received.get("state") == "playing" and received.get("audible", false)
 	if is_instance_valid(fox) and fox.is_usable():
-		var audible: bool = _speech_state == "playing" and received.get("audible", false) == true
 		fox.set_teacher_speaking(audible)
 		fox.apply_speech_sample(
-			float(received.get("positionMs", 0.0)) / 1000.0,
-			float(received.get("envelope", 0.0)),
-			audible and received.get("envelopeAvailable", false) == true
+			float(position) / 1000.0,
+			float(envelope),
+			audible and received.get("envelopeAvailable", false)
 		)
-	_update_voice_button()
+	return true
 
 
 func _update_voice_button() -> void:
@@ -1483,9 +1732,19 @@ func _layout_english(dimensions: Vector2, scale_value: float) -> void:
 	fox.position.z = -0.6 if portrait else 0.2
 	fox.rotation.y = 0.10 if portrait else 0.35
 	for index in range(english_models.size()):
+		# Flat school objects need a larger real silhouette on short landscape
+		# surfaces. Space their whole models, colliders and numbered plinths
+		# together; the camera still fits the measured geometry and full fox.
+		english_models[index].scale = Vector3.ONE * (1.5 if _english_compact else 1.0)
 		english_models[index].position = (
 			Vector3(1.25, 0, -2.8 + index * 2.8)
-			if portrait else Vector3(-1.15 + index * 2.55, 0, 0.15))
+			if portrait
+			else (
+				Vector3(-1.0 + index * 3.3, 0, 0.15)
+				if _english_compact
+				else Vector3(-1.15 + index * 2.55, 0, 0.15)
+			)
+		)
 		var number := english_models[index].get_node("ChoiceNumber") as MeshInstance3D
 		number.global_basis = camera.global_basis
 	if portrait:
@@ -1494,7 +1753,8 @@ func _layout_english(dimensions: Vector2, scale_value: float) -> void:
 		# a tall pen cover the ruler or book behind it.
 		var pixels_per_depth := (
 			camera.unproject_position(Vector3.FORWARD * -1.0).y
-			- camera.unproject_position(Vector3.ZERO).y)
+			- camera.unproject_position(Vector3.ZERO).y
+		)
 		if pixels_per_depth > 0.001:
 			for index in range(1, english_models.size()):
 				var previous := _english_projected_bounds(english_models[index - 1])
@@ -1505,14 +1765,19 @@ func _layout_english(dimensions: Vector2, scale_value: float) -> void:
 	var top: float = header.get_global_rect().end.y + 8.0 * scale_value
 	var bottom: float = footer.get_global_rect().position.y - 8.0 * scale_value
 	var left: float = header.get_global_rect().position.x + 4.0 * scale_value
-	english_stage_rect = Rect2(left, top, header.get_global_rect().size.x - 8.0 * scale_value, maxf(1.0, bottom - top))
+	english_stage_rect = Rect2(
+		left, top, header.get_global_rect().size.x - 8.0 * scale_value, maxf(1.0, bottom - top)
+	)
 	var bounds := _english_projected_bounds(content)
 	var fox_bounds := _english_projected_bounds(fox)
 	if fox_bounds.has_area():
 		bounds = bounds.merge(fox_bounds)
 	if bounds.size.x < 1.0 or bounds.size.y < 1.0:
 		return
-	var fitting := minf(english_stage_rect.size.x / bounds.size.x, english_stage_rect.size.y / bounds.size.y) * 0.94
+	var fitting := (
+		minf(english_stage_rect.size.x / bounds.size.x, english_stage_rect.size.y / bounds.size.y)
+		* 0.94
+	)
 	camera.size /= maxf(0.001, fitting)
 	bounds = _english_projected_bounds(content)
 	if fox_bounds.has_area():
@@ -1522,7 +1787,12 @@ func _layout_english(dimensions: Vector2, scale_value: float) -> void:
 	camera.h_offset = -shift.x / pixels_per_unit
 	camera.v_offset = shift.y / pixels_per_unit
 	if fox.is_usable():
-		fox.set_teaching_target(english_models[activity.english_objects.find(activity.word)].global_position + Vector3.UP)
+		fox.set_teaching_target(
+			(
+				english_models[activity.english_objects.find(activity.word)].global_position
+				+ Vector3.UP
+			)
+		)
 
 
 func english_pick_rect(index: int) -> Rect2:
@@ -1531,7 +1801,9 @@ func english_pick_rect(index: int) -> Rect2:
 	# Numbered 52dp buttons remain the equivalent action in tighter layouts.
 	if index < 0 or index >= english_models.size() or not camera.is_inside_tree():
 		return Rect2()
-	var collision := english_models[index].get_node("ObjectTouchBody/CollisionShape3D") as CollisionShape3D
+	var collision := (
+		english_models[index].get_node("ObjectTouchBody/CollisionShape3D") as CollisionShape3D
+	)
 	var shape := collision.shape as BoxShape3D
 	var box := AABB(-shape.size * 0.5, shape.size)
 	var points := PackedVector2Array()
@@ -1543,7 +1815,12 @@ func english_pick_rect(index: int) -> Rect2:
 	var target := Rect2(center - Vector2.ONE * edge * 0.5, Vector2.ONE * edge)
 	if not english_stage_rect.encloses(target):
 		return Rect2()
-	for corner in [target.position, Vector2(target.end.x, target.position.y), target.end, Vector2(target.position.x, target.end.y)]:
+	for corner in [
+		target.position,
+		Vector2(target.end.x, target.position.y),
+		target.end,
+		Vector2(target.position.x, target.end.y)
+	]:
 		if not Geometry2D.is_point_in_polygon(corner, hull):
 			return Rect2()
 	return target
@@ -1553,7 +1830,9 @@ func _pick_english_object(point: Vector2) -> void:
 	if suspended or activity.is_complete():
 		return
 	var origin := camera.project_ray_origin(point)
-	var query := PhysicsRayQueryParameters3D.create(origin, origin + camera.project_ray_normal(point) * 60.0, 8)
+	var query := PhysicsRayQueryParameters3D.create(
+		origin, origin + camera.project_ray_normal(point) * 60.0, 8
+	)
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	if hit.is_empty() or not hit.collider.has_meta("english_choice"):
 		return
@@ -1569,19 +1848,31 @@ func _choose_english(index: int) -> void:
 		return
 	if index < 0 or index >= english_models.size():
 		return
-	_stop_speech()
+	_cancel_performance()
 	var matched: bool = activity.choose_english(index)
-	_teacher("correct" if matched else "encourage", english_models[index].global_position + Vector3.UP)
+	_teacher(
+		"correct" if matched else "encourage", english_models[index].global_position + Vector3.UP
+	)
 	_refresh()
 	_queue_narration()
-	print("[LearningEnglish] choice=", index, " attempts=", activity.english_attempts, " complete=", activity.is_complete())
+	print(
+		"[LearningEnglish] choice=",
+		index,
+		" attempts=",
+		activity.english_attempts,
+		" complete=",
+		activity.is_complete()
+	)
 
 
 func _english_hint() -> void:
 	if suspended or not activity.english_hint():
 		return
-	_stop_speech()
-	_teacher("explain", english_models[activity.english_objects.find(activity.word)].global_position + Vector3.UP)
+	_cancel_performance()
+	_teacher(
+		"explain",
+		english_models[activity.english_objects.find(activity.word)].global_position + Vector3.UP
+	)
 	_refresh()
 	_queue_narration()
 
@@ -1591,7 +1882,9 @@ func _observed_launch(options: Dictionary) -> Dictionary:
 	# Child names, typed answers, free-form text and audio never enter this file.
 	var session := str(options.get("sessionId", ""))
 	var child := str(options.get("childKey", ""))
-	var uuid := RegEx.create_from_string("^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$")
+	var uuid := RegEx.create_from_string(
+		"^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
+	)
 	var owner := RegEx.create_from_string("^p_[a-f0-9]{32}$")
 	return {
 		"scene": str(options.get("scene", options.get("game", ""))),
@@ -1602,11 +1895,17 @@ func _observed_launch(options: Dictionary) -> Dictionary:
 		"learningVoiceEnabled": options.get("learningVoiceEnabled", false) == true,
 		"localVoiceLicenseAccepted": options.get("localVoiceLicenseAccepted", false) == true,
 		"learningAutoRead": options.get("learningAutoRead", false) == true,
-		"learning": {
-			"kind": activity.kind, "word": activity.word,
-			"meaning": activity.english_meaning,
-			"objects": activity.english_objects.duplicate(),
-		} if activity.kind == "english_objects" else {},
+		"learning":
+		(
+			{
+				"kind": activity.kind,
+				"word": activity.word,
+				"meaning": activity.english_meaning,
+				"objects": activity.english_objects.duplicate(),
+			}
+			if activity.kind == "english_objects"
+			else {}
+		),
 	}
 
 
@@ -1647,8 +1946,10 @@ func _observation_control(button: Button, identifier: String, factor: Vector2) -
 			hit = hit.intersection(parent.get_global_rect())
 		parent = parent.get_parent()
 	return {
-		"id": identifier, "text": button.text,
-		"visible": button.is_visible_in_tree(), "enabled": not button.disabled and not suspended,
+		"id": identifier,
+		"text": button.text,
+		"visible": button.is_visible_in_tree(),
+		"enabled": not button.disabled and not suspended,
 		"rect_px": _observation_rect(Rect2(rect.position * factor, rect.size * factor)),
 		"hit_rect_px": _observation_rect(Rect2(hit.position * factor, hit.size * factor)),
 	}
@@ -1657,7 +1958,11 @@ func _observation_control(button: Button, identifier: String, factor: Vector2) -
 func _publish_learning_observation() -> void:
 	if not _observation_pending or _observation_closed or not is_inside_tree():
 		return
-	if not is_instance_valid(ui) or not ui.is_visible_in_tree() or not MobileRuntime.safe_area_is_ready():
+	if (
+		not is_instance_valid(ui)
+		or not ui.is_visible_in_tree()
+		or not MobileRuntime.safe_area_is_ready()
+	):
 		return
 	if _layout_queued or _observation_settle_frames > 0:
 		_observation_settle_frames = maxi(0, _observation_settle_frames - 1)
@@ -1676,14 +1981,24 @@ func _publish_learning_observation() -> void:
 			android[key] = _observation_rect(measured[key])
 	var observation_source := "platform_safe_area"
 	if not measured.is_empty():
-		observation_source = "android_window_insets" if OS.has_feature("android") else "platform_fixture"
+		observation_source = (
+			"android_window_insets" if OS.has_feature("android") else "platform_fixture"
+		)
 	var controls := []
 	for index in range(english_buttons.size()):
 		controls.append(_observation_control(english_buttons[index], "choice_%d" % index, factor))
 	for button: Button in actions.get_children():
 		if button in english_buttons:
 			continue
-		var identifier := "hint" if button == main_button else "voice" if button == voice_button else "restart" if button.text == "Neu" else "return"
+		var identifier := (
+			"hint"
+			if button == main_button
+			else (
+				"voice"
+				if button == voice_button
+				else "restart" if button.text == "Neu" else "return"
+			)
+		)
 		controls.append(_observation_control(button, identifier, factor))
 	var objects := []
 	for index in range(english_models.size()):
@@ -1701,25 +2016,53 @@ func _publish_learning_observation() -> void:
 	var safe := Rect2(insets.position, viewport - insets.position - insets.size)
 	_observation_sequence += 1
 	var snapshot := {
-		"schema": 1, "layout_sequence": int(_observation_sequence),
-		"ticks_msec": int(Time.get_ticks_msec()), "pid": int(OS.get_process_id()),
-		"settled": true, "ui_visible": true, "observation_source": observation_source,
+		"schema": 1,
+		"layout_sequence": int(_observation_sequence),
+		"ticks_msec": int(Time.get_ticks_msec()),
+		"pid": int(OS.get_process_id()),
+		"settled": true,
+		"ui_visible": true,
+		"observation_source": observation_source,
 		"launch": _learning_launch.duplicate(true),
-		"selection": int(activity.english_choice), "hint_level": int(activity.english_hint_level),
-		"attempts": int(activity.english_attempts), "complete": activity.is_complete(),
-		"suspended": suspended, "voice_available": is_instance_valid(voice_button),
+		"selection": int(activity.english_choice),
+		"hint_level": int(activity.english_hint_level),
+		"attempts": int(activity.english_attempts),
+		"complete": activity.is_complete(),
+		"suspended": suspended,
+		"voice_available": is_instance_valid(voice_button),
 		"window_px": _observation_vector(Vector2(get_window().size)),
-		"viewport_px": _observation_vector(viewport), "density": MobileRuntime.get_ui_density(),
+		"viewport_px": _observation_vector(viewport),
+		"density": MobileRuntime.get_ui_density(),
 		"android_observation": android,
 		"safe_rect_px": _observation_rect(Rect2(safe.position * factor, safe.size * factor)),
-		"stage_rect_px": _observation_rect(Rect2(english_stage_rect.position * factor, english_stage_rect.size * factor)),
-		"header_rect_px": _observation_rect(Rect2(header.get_global_position() * factor, header.size * ui.scale * factor)),
-		"footer_rect_px": _observation_rect(Rect2(footer.get_global_position() * factor, footer.size * ui.scale * factor)),
-		"title": title.text, "explanation": explanation.text, "status": status.text,
-		"controls": controls, "objects": objects,
-		"camera": {"projection_columns": columns,
-			"view_basis_columns": [_observation_vector3(view.basis.x), _observation_vector3(view.basis.y), _observation_vector3(view.basis.z)],
-			"view_origin": _observation_vector3(view.origin)},
+		"stage_rect_px":
+		_observation_rect(
+			Rect2(english_stage_rect.position * factor, english_stage_rect.size * factor)
+		),
+		"header_rect_px":
+		_observation_rect(
+			Rect2(header.get_global_position() * factor, header.size * ui.scale * factor)
+		),
+		"footer_rect_px":
+		_observation_rect(
+			Rect2(footer.get_global_position() * factor, footer.size * ui.scale * factor)
+		),
+		"title": title.text,
+		"explanation": explanation.text,
+		"status": status.text,
+		"controls": controls,
+		"objects": objects,
+		"camera":
+		{
+			"projection_columns": columns,
+			"view_basis_columns":
+			[
+				_observation_vector3(view.basis.x),
+				_observation_vector3(view.basis.y),
+				_observation_vector3(view.basis.z)
+			],
+			"view_origin": _observation_vector3(view.origin)
+		},
 	}
 	var file := FileAccess.open(LEARNING_OBSERVATION + ".tmp", FileAccess.WRITE)
 	if file == null:
@@ -1735,3 +2078,658 @@ func _publish_learning_observation() -> void:
 		_observation_pending = false
 	else:
 		_observation_retry_after = Time.get_ticks_msec() + 2000
+
+
+func _build_focus_ring() -> void:
+	_focus_ring = MeshInstance3D.new()
+	_focus_ring.name = "CurrentLearningFocus"
+	var mesh := TorusMesh.new()
+	mesh.inner_radius = 0.32
+	mesh.outer_radius = 0.38
+	mesh.rings = 24
+	mesh.ring_segments = 8
+	_focus_ring.mesh = mesh
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color("fff0a1")
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_focus_ring.material_override = material
+	_focus_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	content.add_child(_focus_ring)
+	_focus_ring.hide()
+
+
+func _update_object_registry() -> void:
+	companion_objects.clear()
+	companion_objects["task_model"] = Vector3(0, 0.6, 0)
+	for index in range(tokens.size()):
+		companion_objects["object_%d" % index] = tokens[index]
+	if activity.kind in ["bridge_ten", "addition", "bridge_hundred"]:
+		companion_objects["ten_frame"] = Vector3(0, 0.45, -1.6)
+		companion_objects["addend"] = _source_tray
+		var needed: int = 10 - activity.initial_count()
+		if needed > 0 and needed <= activity.token_count():
+			var middle := Vector3.ZERO
+			for index in range(activity.initial_count(), 10):
+				middle += _slot(index)
+			middle /= float(needed)
+			companion_objects["bridge_needed"] = middle
+			companion_objects["gap_objects"] = middle
+			if needed == 2:
+				companion_objects["bridge_two"] = middle
+			var remainder := activity.token_count() - needed
+			if remainder == 3:
+				companion_objects["remainder_three"] = _source_tray
+	elif activity.kind == "syllables":
+		for index in range(tokens.size()):
+			companion_objects["syllable_%d" % index] = tokens[index]
+	elif activity.kind == "pattern":
+		for index in range(pattern_nodes.size()):
+			companion_objects["pattern_%d" % index] = pattern_nodes[index]
+		companion_objects["pattern_group"] = _pattern_group_outline
+		companion_objects["pattern_next"] = _pattern_next
+	elif activity.kind == "task_card":
+		companion_objects["task_prompt"] = _task_card
+		companion_objects["task_card"] = _task_card
+		for index in range(activity.task_choices.size()):
+			companion_objects["answer_%d" % index] = _task_card.get_node_or_null("Answer%d" % index)
+			companion_objects["choice_%d" % index] = _task_card.get_node_or_null("Answer%d" % index)
+	elif activity.kind == "plant_parts":
+		for part in part_nodes:
+			companion_objects["plant_" + str(part)] = part_nodes[part]
+		companion_objects["sun"] = sun
+	elif activity.kind == "english_objects":
+		for index in range(english_models.size()):
+			companion_objects["english_%d" % index] = english_models[index]
+	companion_scope.object_ids.clear()
+	for key in companion_objects:
+		if companion_objects[key] is Vector3 or is_instance_valid(companion_objects[key]):
+			companion_scope.object_ids.append(str(key))
+
+
+func _object_position(identifier: String) -> Variant:
+	var value: Variant = companion_objects.get(identifier)
+	if value is Vector3 and value.is_finite():
+		return value
+	if is_instance_valid(value) and value is Node3D and value.is_inside_tree():
+		return value.global_position + Vector3.UP * 0.28
+	return null
+
+
+func _focus_object(identifier: String) -> bool:
+	if identifier not in companion_scope.object_ids:
+		return false
+	var at: Variant = _object_position(identifier)
+	if not at is Vector3:
+		return false
+	_focus_id = identifier
+	if identifier == "pattern_group" and is_instance_valid(_pattern_group_outline):
+		_pattern_group_outline.visible = true
+	if is_instance_valid(fox) and fox.is_usable():
+		fox.set_teaching_target(at)
+	_update_focus()
+	return true
+
+
+func _update_focus() -> void:
+	if _focus_id.is_empty() or suspended or not is_instance_valid(_focus_ring):
+		return
+	var at: Variant = _object_position(_focus_id)
+	if not at is Vector3:
+		_focus_ring.hide()
+		return
+	_focus_ring.visible = _focus_id not in ["pattern_group", "task_prompt"]
+	_focus_ring.global_position = at + Vector3.UP * 0.02
+	if is_instance_valid(fox) and fox.is_usable():
+		fox.set_teaching_target(at)
+
+
+func _parameters() -> Dictionary:
+	return {
+		"a": activity.a,
+		"b": activity.b,
+		"extra": activity.extra,
+		"word": activity.word,
+		"syllables": activity.syllables.duplicate(),
+		"placed": activity.placed.size(),
+		"plantPart": activity.plant_part,
+		"watered": activity.watered,
+		"sunlight": activity.sunlight,
+		"inspected": activity.inspected.duplicate(),
+		"objects": activity.english_objects.duplicate(),
+		"meaning": activity.english_meaning,
+		"hintLevel": activity.english_hint_level,
+		"attempts": activity.english_attempts,
+		"patternUnit": activity.pattern_group().duplicate(),
+		"patternSequence": activity.pattern_sequence.duplicate(),
+		"patternChoices": activity.pattern_choices.duplicate(),
+		"patternChoice": activity.pattern_candidate,
+		"patternHint": activity.pattern_hint_level > 0,
+		"prompt": activity.task_prompt,
+		"taskPrompt": activity.task_prompt,
+		"subject": activity.task_subject,
+		"unit": activity.task_unit,
+		"explanation": activity.task_explanation,
+		"answerChoices": activity.task_choices.duplicate(),
+		"taskChoice": activity.task_choice,
+	}
+
+
+func _sync_companion_context() -> void:
+	if not _scope_valid:
+		return
+	_update_object_registry()
+	var parameters := _parameters()
+	var signature := JSON.stringify(parameters)
+	if not _context_signature.is_empty() and signature != _context_signature:
+		companion_scope.advance("step-%d" % (companion_scope.revision + 1))
+	_context_signature = signature
+	if (
+		is_instance_valid(_speech_host)
+		and HostBridge.supports_method(_speech_host, "updateLearningContext")
+	):
+		var context: Dictionary = companion_scope.envelope()
+		context.merge(
+			{
+				"kind": activity.kind,
+				"parameters": parameters,
+				"explanation": activity.explanation(),
+				"objectIds": companion_scope.object_ids.duplicate(),
+				"allowedActions": companion_scope.allowed_actions.duplicate()
+			}
+		)
+		_speech_host.call("updateLearningContext", JSON.stringify(context))
+
+
+func _cancel_performance() -> void:
+	_performance_serial += 1
+	companion_scope.cancel()
+	_turn_id = 0
+	_handled_turn = 0
+	_stop_speech()
+	if (
+		is_instance_valid(_speech_host)
+		and HostBridge.supports_method(_speech_host, "stopLearningConversation")
+	):
+		_speech_host.call("stopLearningConversation")
+	_focus_id = ""
+	if is_instance_valid(_focus_ring):
+		_focus_ring.hide()
+	_clear_pending_proposal()
+	if is_instance_valid(fox) and fox.is_usable():
+		if fox.has_method("cancel_teaching_performance"):
+			fox.cancel_teaching_performance()
+		elif fox.has_method("interrupt"):
+			fox.interrupt("conversation_cancelled")
+	_sync_companion_context()
+
+
+func _clear_pending_proposal() -> void:
+	if activity.kind == "pattern":
+		activity.clear_pattern_candidate()
+		if is_instance_valid(_pattern_candidate):
+			_pattern_candidate.free()
+		_pattern_candidate = null
+		for button: Button in pattern_choice_buttons:
+			button.set_pressed_no_signal(false)
+	elif activity.kind == "task_card":
+		activity.task_choice = -1
+
+
+func _explicit_stop() -> void:
+	_cancel_performance()
+	if is_instance_valid(question_panel):
+		question_panel.set_state(
+			"idle", "Lumo hat angehalten. Deine Aufgabe und deine Eingaben bleiben erhalten."
+		)
+
+
+func _question_closed() -> void:
+	_cancel_performance()
+
+
+func _open_question() -> void:
+	if suspended or not _scope_valid or activity.kind == "invalid":
+		return
+	_cancel_performance()
+	question_panel.open_question()
+	question_panel.reply.text = _last_reply
+	question_panel.set_state("idle", "Frage mit deinen eigenen Worten. Deine Aufgabe bleibt hier.")
+	if is_instance_valid(fox) and fox.is_usable():
+		fox.set_teaching_target(camera.global_position)
+
+
+func _request_conversation(words: String, action: String) -> void:
+	if (
+		suspended
+		or not _scope_valid
+		or action not in companion_scope.allowed_actions
+		or action not in ["explain", "repeat", "slower", "hint"]
+	):
+		return
+	_cancel_performance()
+	_turn_serial += 1
+	_turn_id = _turn_serial
+	_last_action = action
+	if not words.strip_edges().is_empty():
+		_last_question = words.strip_edges().left(500)
+	_speech_rate = maxf(0.70, _speech_base_rate * 0.75) if action == "slower" else _speech_base_rate
+	question_panel.set_state("thinking")
+	var request: Dictionary = companion_scope.envelope(_turn_id)
+	request["text"] = words.strip_edges().left(500)
+	request["action"] = action
+	if (
+		is_instance_valid(_speech_host)
+		and HostBridge.supports_method(_speech_host, "requestLearningConversation")
+	):
+		var accepted: Variant = _speech_host.call(
+			"requestLearningConversation", JSON.stringify(request)
+		)
+		if HostBridge.durable_ack(accepted):
+			return
+	# Desktop and a host without recognition still have genuine, checked local
+	# explanatory actions. This is deterministic lesson logic, not cloud AI.
+	var response: Dictionary = activity.companion_explanation(
+		words if not words.is_empty() else action
+	)
+	response.merge(companion_scope.envelope(_turn_id))
+	_apply_conversation_reply(response)
+
+
+func _start_listening() -> void:
+	if suspended or not _scope_valid or not _microphone_enabled:
+		return
+	_cancel_performance()
+	_turn_serial += 1
+	_turn_id = _turn_serial
+	if (
+		not is_instance_valid(_speech_host)
+		or not HostBridge.supports_method(_speech_host, "startLearningListening")
+	):
+		question_panel.set_state("error", "Du kannst deine Frage in das Feld schreiben.")
+		return
+	var accepted: Variant = _speech_host.call(
+		"startLearningListening", JSON.stringify(companion_scope.envelope(_turn_id))
+	)
+	question_panel.set_state(
+		"listening" if HostBridge.durable_ack(accepted) else "error",
+		(
+			""
+			if HostBridge.durable_ack(accepted)
+			else "Sprechen ist hier gerade nicht verfügbar. Du kannst deine Frage schreiben."
+		)
+	)
+
+
+func _tick_conversation(delta: float) -> void:
+	if (
+		_turn_id <= 0
+		or not is_instance_valid(_speech_host)
+		or not HostBridge.supports_method(_speech_host, "getLearningConversationStatus")
+	):
+		return
+	_conversation_poll += delta
+	if _conversation_poll < 0.10:
+		return
+	_conversation_poll = 0.0
+	var received: Variant = JSON.parse_string(
+		str(_speech_host.call("getLearningConversationStatus"))
+	)
+	if (
+		not received is Dictionary
+		or not companion_scope.matches(received)
+		or received.get("turnId") != _turn_id
+	):
+		return
+	var state := str(received.get("state", "idle"))
+	if state in ["starting", "listening", "thinking", "recognizing"]:
+		question_panel.set_state(state)
+	elif state in ["error", "permission", "unavailable"]:
+		_cancel_performance()
+		question_panel.set_state(
+			"error",
+			str(received.get("message", received.get("reply", "Du kannst deine Frage schreiben.")))
+		)
+	elif state in ["paused", "cancelled"]:
+		_explicit_stop()
+	elif (
+		state in ["transcript", "recognized", "transcribed"]
+		or (
+			state == "ready"
+			and not str(received.get("transcript", "")).is_empty()
+			and str(received.get("reply", "")).is_empty()
+		)
+	):
+		if _handled_turn != _turn_id:
+			_handled_turn = _turn_id
+			question_panel.set_transcript(str(received.get("transcript", "")).left(500))
+	elif state == "ready" and _handled_turn != _turn_id:
+		_apply_conversation_reply(received)
+
+
+func _apply_conversation_reply(response: Dictionary) -> bool:
+	if suspended or not companion_scope.permits_reply(response, _turn_id):
+		return false
+	var action: String = response.get("action", "explain")
+	if action == "stop":
+		_explicit_stop()
+		return true
+	var reply: Variant = response.get("reply", "")
+	if not reply is String or reply.is_empty() or reply.length() > 1200:
+		return false
+	var response_rate: Variant = response.get("rate", _speech_rate)
+	if not (response_rate is float or response_rate is int) or not is_finite(float(response_rate)):
+		return false
+	_speech_rate = clampf(float(response_rate), 0.70, 1.60)
+	if action in ["repeat", "slower"]:
+		_last_action = action
+		if action == "slower" and not response.has("rate"):
+			_speech_rate = maxf(0.70, _speech_base_rate * 0.75)
+	_handled_turn = _turn_id
+	_last_reply = reply
+	question_panel.reply.text = reply
+	question_panel.set_state("ready")
+	if action == "proposeAnswer":
+		# An uncertain spoken candidate is visible and editable. Only the normal
+		# Flutter question may score it after the child confirms it there.
+		question_panel.set_transcript(str(response.get("candidate", "")).left(500))
+		return true
+	var object_id: String = response.get("objectId", "")
+	if not object_id.is_empty():
+		_focus_object(object_id)
+	if activity.kind == "pattern" and object_id == "pattern_group":
+		activity.pattern_hint()
+		_refresh()
+	question_panel.visible = false
+	explanation.text = reply
+	_layout.call_deferred()
+	if is_instance_valid(fox) and fox.is_usable():
+		fox.teacher_react("explain")
+	if (
+		activity.kind in ["bridge_ten", "addition"]
+		and object_id in ["bridge_two", "bridge_needed", "gap_objects"]
+	):
+		_demonstrate_bridge(reply, _performance_serial)
+	elif activity.kind == "syllables" and _last_action in ["repeat", "slower"]:
+		_speak_syllables()
+	else:
+		_speak(reply)
+	return true
+
+
+func _demonstrate_bridge(reply: String, serial: int) -> void:
+	var needed: int = 10 - activity.a
+	if needed < 1 or needed > activity.b:
+		_speak(reply)
+		return
+	while activity.placed.size() < needed:
+		if serial != _performance_serial or suspended or not is_inside_tree():
+			return
+		if not _moving.is_empty():
+			await get_tree().process_frame
+			continue
+		var index: int = activity.placed.size()
+		var destination: int = activity.target_index()
+		if not activity.place(index, destination):
+			return
+		_animate_token(index, targets[destination])
+		_refresh()
+		explanation.text = reply
+		_focus_object("bridge_two" if needed == 2 else "bridge_needed")
+	while not _moving.is_empty():
+		if serial != _performance_serial or suspended or not is_inside_tree():
+			return
+		await get_tree().process_frame
+	if serial == _performance_serial and not suspended:
+		explanation.text = reply
+		_speak(reply)
+
+
+func _pattern_hint() -> void:
+	if suspended:
+		return
+	_cancel_performance()
+	activity.pattern_hint()
+	_refresh()
+	_focus_object("pattern_group")
+	_teacher("explain", _pattern_group_outline.global_position)
+	_queue_narration()
+
+
+func _choose_pattern(index: int) -> void:
+	if suspended or index < 0 or index >= activity.pattern_choices.size():
+		return
+	_cancel_performance()
+	if not activity.select_pattern_candidate(index):
+		return
+	if is_instance_valid(_pattern_candidate):
+		_pattern_candidate.free()
+	_pattern_candidate = _pattern_symbol(
+		activity.pattern_choices[index],
+		_pattern_next.position + Vector3.UP * 0.18,
+		"ProposedPattern"
+	)
+	_refresh()
+	_focus_object("pattern_next")
+	_teacher("encourage", _pattern_next.global_position)
+
+
+func _show_task_prompt() -> void:
+	if suspended:
+		return
+	_cancel_performance()
+	question_panel.show_task(activity.task_prompt, activity.task_choices)
+
+
+func _choose_task_answer(index: int) -> void:
+	if suspended or index < 0 or index >= activity.task_choices.size():
+		return
+	_cancel_performance()
+	if not activity.propose_task_answer(index):
+		return
+	question_panel.visible = false
+	_refresh()
+	_focus_object("answer_%d" % index)
+	_teacher("encourage", _task_card.global_position)
+
+
+func _build_task_card() -> void:
+	title.text = (
+		"Deine Lernwerkstatt"
+		+ (" · " + activity.task_subject if not activity.task_subject.is_empty() else "")
+	)
+	_task_card = Node3D.new()
+	_task_card.name = "CurrentTaskCard"
+	content.add_child(_task_card)
+	_task_card.position = Vector3(0.85, 1.45, 0.2)
+	_task_card.global_basis = camera.global_basis
+	var wood := _material("task_card_wood", Color("a27444"))
+	var paper := _material("task_card_paper", Color("fff4d5"))
+	var ink := _material("task_card_ink", Color("214938"))
+	_box(_task_card, Vector3.ZERO, Vector3(5.8, 4.0, 0.20), wood, "OakFrame")
+	_box(_task_card, Vector3(0, 0, 0.14), Vector3(5.48, 3.7, 0.12), paper, "LearningPaper")
+	var caption: String = (
+		activity.task_unit if not activity.task_unit.is_empty() else "Dein Auftrag"
+	)
+	_text(_task_card, caption.left(32), Vector3(0, 1.40, 0.24), 0.35, ink)
+	var wrapped := _wrapped_card_text(activity.task_prompt, 39, 5)
+	_text(_task_card, wrapped, Vector3(0, 0.45, 0.25), 0.245, ink)
+	for index in range(activity.task_choices.size()):
+		var node := Node3D.new()
+		node.name = "Answer%d" % index
+		_task_card.add_child(node)
+		node.position = Vector3(
+			-1.65 + float(index % 4) * 1.1, -1.05 - float(index / 4) * 0.36, 0.25
+		)
+		_box(
+			node,
+			Vector3.ZERO,
+			Vector3(0.95, 0.28, 0.08),
+			_material("answer_paper", Color("d7e5c6"))
+		)
+		_text(node, str(index + 1), Vector3(0, 0, 0.06), 0.20, ink)
+	if not question_panel.answer_proposed.is_connected(_choose_task_answer):
+		question_panel.answer_proposed.connect(_choose_task_answer)
+
+
+func _wrapped_card_text(words: String, width: int, lines: int) -> String:
+	var output: Array[String] = []
+	var line := ""
+	for word: String in words.replace("\n", " ").split(" ", false):
+		if line.length() + word.length() + 1 > width and not line.is_empty():
+			output.append(line)
+			line = ""
+			if output.size() >= lines:
+				output[-1] = output[-1].left(width - 2) + " …"
+				return "\n".join(output)
+		line += (" " if not line.is_empty() else "") + word
+	if not line.is_empty():
+		output.append(line)
+	return "\n".join(output)
+
+
+func _build_pattern() -> void:
+	title.text = "Muster entdecken · Was kommt als Nächstes?"
+	var count: int = activity.pattern_group().size()
+	for index in range(activity.pattern_sequence.size()):
+		var at := _pattern_position(index)
+		var piece := _pattern_symbol(activity.pattern_sequence[index], at, "Pattern%d" % index)
+		pattern_nodes.append(piece)
+		_cylinder(
+			content,
+			at + Vector3(0, -0.20, 0),
+			0.38,
+			0.12,
+			_material("pattern_tiles", Color("ecd9ae"))
+		)
+	_pattern_group_outline = Node3D.new()
+	_pattern_group_outline.name = "RepeatingGroup"
+	content.add_child(_pattern_group_outline)
+	_pattern_group_outline.position = (_pattern_position(0) + _pattern_position(count - 1)) * 0.5
+	var edge := _material("pattern_edge", Color("e5ae3c"), 0.10)
+	var width := float(count - 1) * 1.05 + 0.9
+	for side in [-1, 1]:
+		_box(
+			_pattern_group_outline, Vector3(0, -0.14, side * 0.48), Vector3(width, 0.10, 0.06), edge
+		)
+		_box(
+			_pattern_group_outline,
+			Vector3(side * width * 0.5, -0.14, 0),
+			Vector3(0.06, 0.10, 0.96),
+			edge
+		)
+	_pattern_group_outline.hide()
+	_pattern_next = Node3D.new()
+	_pattern_next.name = "NextPatternPlace"
+	content.add_child(_pattern_next)
+	_pattern_next.position = _pattern_position(activity.pattern_sequence.size())
+	_cylinder(
+		_pattern_next, Vector3(0, -0.16, 0), 0.42, 0.12, _material("pattern_next", Color("e6c16b"))
+	)
+	_top_text(
+		_pattern_next, "?", Vector3(0, -0.06, 0), 0.44, _material("pattern_ink", Color("254a39"))
+	)
+	for index in range(activity.pattern_choices.size()):
+		var caption: String = ACTIVITY.pattern_label(activity.pattern_choices[index])
+		var button := _button(caption, _choose_pattern.bind(index))
+		button.toggle_mode = true
+		pattern_choice_buttons.append(button)
+
+
+func _pattern_position(index: int) -> Vector3:
+	var columns: int = activity.pattern_group().size()
+	return Vector3(
+		0.55 + (float(index % columns) - float(columns - 1) * 0.5) * 1.05,
+		0.36,
+		-1.65 + float(index / columns) * 1.05
+	)
+
+
+func _pattern_symbol(symbol: String, at: Vector3, identifier: String) -> Node3D:
+	symbol = (
+		{
+			"Kreis": "circle",
+			"Quadrat": "square",
+			"Dreieck": "triangle",
+			"Stern": "star",
+			"Rechteck": "rectangle",
+			"Oval": "oval"
+		}
+		. get(symbol, symbol)
+	)
+	var parts := symbol.split("_")
+	var form: String = parts[-1]
+	var palette := {
+		"red": Color("dd6a5e"),
+		"blue": Color("5b9cbe"),
+		"yellow": Color("e5b447"),
+		"green": Color("70a868"),
+		"purple": Color("a28ac4"),
+		"orange": Color("df914e")
+	}
+	var color: Color = palette.get(parts[0], Color("d59c47"))
+	var material := _material("pattern_" + symbol, color, 0.04)
+	var result := Node3D.new()
+	result.name = identifier
+	content.add_child(result)
+	result.position = at
+	if form == "circle":
+		_cylinder(result, Vector3.ZERO, 0.27, 0.24, material)
+	elif form == "square":
+		_box(result, Vector3.ZERO, Vector3(0.5, 0.24, 0.5), material)
+	else:
+		var outline := PackedVector2Array()
+		if form == "triangle":
+			outline = PackedVector2Array(
+				[Vector2(0, -0.31), Vector2(0.30, 0.24), Vector2(-0.30, 0.24)]
+			)
+		elif form == "diamond":
+			outline = PackedVector2Array(
+				[Vector2(0, -0.34), Vector2(0.27, 0), Vector2(0, 0.34), Vector2(-0.27, 0)]
+			)
+		elif form == "star":
+			for index in range(10):
+				var angle := -PI * 0.5 + float(index) * TAU / 10.0
+				outline.append(Vector2(cos(angle), sin(angle)) * (0.32 if index % 2 == 0 else 0.15))
+		else:
+			for index in range(32):
+				var angle := float(index) * TAU / 32.0
+				outline.append(
+					(
+						Vector2(
+							16.0 * pow(sin(angle), 3),
+							-(
+								13.0 * cos(angle)
+								- 5.0 * cos(2 * angle)
+								- 2.0 * cos(3 * angle)
+								- cos(4 * angle)
+							)
+						)
+						* 0.019
+					)
+				)
+		_mesh(result, _extruded_pattern(outline), Vector3.ZERO, material)
+	return result
+
+
+func _extruded_pattern(outline: PackedVector2Array) -> ArrayMesh:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var triangles := Geometry2D.triangulate_polygon(outline)
+	for side in [-1, 1]:
+		for index in range(0, triangles.size(), 3):
+			for corner in [0, 1, 2] if side == -1 else [2, 1, 0]:
+				var p := outline[triangles[index + corner]]
+				surface.add_vertex(Vector3(p.x, float(side) * 0.12, p.y))
+	for index in range(outline.size()):
+		var first := outline[index]
+		var second := outline[(index + 1) % outline.size()]
+		var vertices := [
+			Vector3(first.x, -0.12, first.y),
+			Vector3(second.x, -0.12, second.y),
+			Vector3(second.x, 0.12, second.y),
+			Vector3(first.x, 0.12, first.y)
+		]
+		for corner in [0, 1, 2, 0, 2, 3]:
+			surface.add_vertex(vertices[corner])
+	surface.generate_normals()
+	return surface.commit()

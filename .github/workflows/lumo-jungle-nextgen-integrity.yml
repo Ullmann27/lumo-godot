@@ -1,0 +1,71 @@
+name: LUMO NextGen plus Jungle source integrity
+on:
+  push:
+    branches:
+      - integration/lumo-2031-nextgen-jungle-20261116
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  integrated-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout merge commit without changing main
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify source heads and immutable Jungle files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 678cb38fea3a83a7f5841e71fba9bb2f3bfa2eef HEAD
+          git merge-base --is-ancestor 36a2a240d3f21b3943ab123b30408735fb7b9298 HEAD
+          for file in             scripts/games/kart_jungle_course.gd             scripts/games/kart_jungle_audio.gd             scripts/tests/kart_jungle_geometry_regression.gd             assets/shaders/kart_jungle_road.gdshader; do
+            test -s "$file"
+          done
+          python3 -m py_compile tools/art/generate_jungle_audio.py
+      - name: Install pinned Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          echo "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3  $RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Fresh Godot import and source validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p proof
+          Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit 2>&1 | tee proof/import.log
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' proof/import.log; then exit 1; fi
+          python3 tools/validate_project.py 2>&1 | tee proof/validate.log
+      - name: Regenerate authoritative 3600m centreline from actual course
+        shell: bash
+        run: |
+          set -euo pipefail
+          Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://tools/jungle_emerald_3600/export_geometry.gd 2>&1 | tee proof/centreline.log
+          test -s assets/kart/jungle_emerald_3600/geometry/centerline.json
+          test -s assets/kart/jungle_emerald_3600/geometry/centerline.tres
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' proof/centreline.log; then exit 1; fi
+      - name: Test closed 3600 metre circuit geometry and actual collision
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 240 --log proof/jungle.log --required '[DschungelherzGeometry] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://scripts/tests/kart_jungle_geometry_regression.gd
+      - name: Test connected native LUMO conversation and stop contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 180 --log proof/lumo-dialogue.log --required '"status":"PASS"' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://scripts/tests/learning_android_host_capability_regression.gd
+      - name: Preserve genuine results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-nextgen-jungle-combined-source-gates
+          path: proof/
+          retention-days: 30
+          if-no-files-found: warn

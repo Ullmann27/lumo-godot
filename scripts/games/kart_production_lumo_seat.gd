@@ -9,9 +9,13 @@ const TAIL_PITCHES := [-50.0, -70.0]
 const TAIL_YAWS := [0.0, 20.0]
 const TOE_LIFT := 0.25
 const SOLE_CLEARANCE := 0.003
+const SEAT_CLEARANCE := 0.008
+const MAX_SEAT_CORRECTION := 0.18
 var kart: Node3D
 var skeleton: Skeleton3D
 var maximum_foot_error := 0.0
+var seat_contact_error := INF
+var seat_contact_verified := false
 var support_points: Array[Vector3] = []
 var foot_targets: Array[Vector3] = []
 var _legs: Array[PackedInt32Array] = []
@@ -48,6 +52,12 @@ func bind_visual(vehicle: Node3D, adapter) -> bool:
 	# The previous procedural seat sits lower and farther back. Keep its
 	# source pose untouched; place this adapter in the imported seat frame.
 	adapter.position = ADAPTER_OFFSET
+	# The old 2031 karts keep their existing seat position; R02 receives measured contact.
+	if vehicle.production_vehicle.has_method("is_r02") and vehicle.production_vehicle.is_r02():
+		if vehicle.production_vehicle.has_method("driver_origin_offset"):
+			adapter.position += vehicle.production_vehicle.driver_origin_offset()
+		if not _fit_seat_surface(vehicle, adapter):
+			return false
 	_capture_foot_samples(adapter.actor)
 	for side_name in ["L", "R"]:
 		var side := -1.0 if side_name == "L" else 1.0
@@ -100,6 +110,76 @@ func bind_visual(vehicle: Node3D, adapter) -> bool:
 	_fit_sole_height()
 	_capture_sole_contacts()
 	return true
+
+
+func _fit_seat_surface(vehicle: Node3D, adapter: Node3D) -> bool:
+	var seat: Node3D = vehicle.production_vehicle.asset_root.find_child("SeatAnchor", true, false) as Node3D
+	if seat == null:
+		return false
+	var pelvis_bone: int = skeleton.find_bone("Pelvis")
+	if pelvis_bone < 0:
+		return false
+	var seat_in_kart: Vector3 = kart.to_local(seat.to_global(Vector3.ZERO))
+	skeleton.force_update_all_bone_transforms()
+	var to_kart: Transform3D = kart.global_transform.affine_inverse() * skeleton.global_transform
+	var pose_cache: Array[Transform3D] = []
+	for bone in range(skeleton.get_bone_count()):
+		pose_cache.append(skeleton.get_bone_global_pose(bone))
+	var lowest := INF
+	var matching_vertices := 0
+	for item in adapter.actor.visual.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = item as MeshInstance3D
+		if mesh.skin == null or mesh.mesh == null:
+			continue
+		var binding: Array[int] = []
+		var inverses: Array[Transform3D] = []
+		for index in range(mesh.skin.get_bind_count()):
+			var bone: int = mesh.skin.get_bind_bone(index)
+			if bone < 0:
+				bone = skeleton.find_bone(mesh.skin.get_bind_name(index))
+			binding.append(bone)
+			inverses.append(mesh.skin.get_bind_pose(index))
+		for surface in range(mesh.mesh.get_surface_count()):
+			var arrays: Array = mesh.mesh.surface_get_arrays(surface)
+			var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+			var joints: PackedInt32Array = arrays[Mesh.ARRAY_BONES]
+			var weights: PackedFloat32Array = arrays[Mesh.ARRAY_WEIGHTS]
+			if vertices.is_empty() or joints.is_empty() or joints.size() != weights.size():
+				continue
+			var stride: int = joints.size() / vertices.size()
+			if stride <= 0:
+				continue
+			for index in range(vertices.size()):
+				var weight_on_pelvis := 0.0
+				for slot in range(stride):
+					var bind_index: int = joints[index * stride + slot]
+					if bind_index >= 0 and bind_index < binding.size() and binding[bind_index] == pelvis_bone:
+						weight_on_pelvis += weights[index * stride + slot]
+				if weight_on_pelvis < 0.42:
+					continue
+				var skinned := Vector3.ZERO
+				for slot in range(stride):
+					var bind_index: int = joints[index * stride + slot]
+					var weight: float = weights[index * stride + slot]
+					if weight <= 0.0 or bind_index >= binding.size() or binding[bind_index] < 0:
+						continue
+					skinned += (pose_cache[binding[bind_index]] * inverses[bind_index] * vertices[index]) * weight
+				var point: Vector3 = to_kart * skinned
+				if absf(point.x - seat_in_kart.x) > 0.34 or absf(point.z - seat_in_kart.z) > 0.41:
+					continue
+				if absf(point.y - seat_in_kart.y) > 0.64:
+					continue
+				lowest = minf(lowest, point.y)
+				matching_vertices += 1
+	if matching_vertices < 4 or not is_finite(lowest):
+		# Never claim a seated contact when a mesh does not provide real skin data.
+		return false
+	var target: float = seat_in_kart.y + SEAT_CLEARANCE
+	var correction := clampf(target - lowest, -MAX_SEAT_CORRECTION, MAX_SEAT_CORRECTION)
+	adapter.position.y += correction
+	seat_contact_error = absf(target - (lowest + correction))
+	seat_contact_verified = seat_contact_error < 0.012
+	return seat_contact_verified
 
 
 func _fit_sole_height() -> void:
