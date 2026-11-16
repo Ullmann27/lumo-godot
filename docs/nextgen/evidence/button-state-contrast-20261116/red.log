@@ -1,0 +1,227 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+ERROR: [LearningButtonContrast] Stimme stoppen normal/font_hover_color contrast 1.129177 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen normal/font_focus_color contrast 1.129177 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen normal/font_pressed_color contrast 1.261308 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen normal/font_hover_pressed_color contrast 1.261308 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen hover/font_hover_color contrast 1.102359 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen hover/font_focus_color contrast 1.102359 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen hover/font_pressed_color contrast 1.231351 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen hover/font_hover_pressed_color contrast 1.231351 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen pressed/font_hover_color contrast 1.476434 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen pressed/font_focus_color contrast 1.476434 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen pressed/font_pressed_color contrast 1.649198 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen pressed/font_hover_pressed_color contrast 1.649198 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen focus/font_hover_color contrast 1.129177 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen focus/font_focus_color contrast 1.129177 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen focus/font_pressed_color contrast 1.261308 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Stimme stoppen focus/font_hover_pressed_color contrast 1.261308 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen normal/font_hover_color contrast 1.931154 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen normal/font_focus_color contrast 1.931154 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen normal/font_pressed_color contrast 2.157128 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen normal/font_hover_pressed_color contrast 2.157128 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen hover/font_hover_color contrast 1.779591 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen hover/font_focus_color contrast 1.779591 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen hover/font_pressed_color contrast 1.987830 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen hover/font_hover_pressed_color contrast 1.987830 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen pressed/font_hover_color contrast 2.480276 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen pressed/font_focus_color contrast 2.480276 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen pressed/font_pressed_color contrast 2.770506 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen pressed/font_hover_pressed_color contrast 2.770506 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen focus/font_hover_color contrast 1.931154 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen focus/font_focus_color contrast 1.931154 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen focus/font_pressed_color contrast 2.157128 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+ERROR: [LearningButtonContrast] Ein Objekt zeigen focus/font_hover_pressed_color contrast 2.157128 >= 4.5
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:30)
+       [1] _palette (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:123)
+       [2] _run (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:203)
+       [3] _frames (/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd:35)
+[LearningButtonContrast] 47/79 PASS; 32 FAIL

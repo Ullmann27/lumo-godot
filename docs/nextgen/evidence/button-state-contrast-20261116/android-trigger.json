@@ -1,0 +1,31 @@
+{
+  "run_id": 43828196598,
+  "qa_commit": "1c84838538f79100f660fefc776d8ba7472a61a2",
+  "artifact_id": 14208352381,
+  "artifact_bytes": 61713245,
+  "artifact_sha256": "2919adada699c2614dfea8daa193d51a5f9619c2f51ed0d43909792671c67c01",
+  "native_source": "678cb38fea3a83a7f5841e71fba9bb2f3bfa2eef",
+  "result": "FAIL_BEFORE_STOP_TOUCH",
+  "original_draw_mode": "NOT_RECORDED",
+  "new_android_execution": "NOT_RUN",
+  "originals": [
+    {
+      "path": "0529-runtime-voice-stop.png",
+      "bytes": 677778,
+      "sha256": "9a3c7634f851fe976ea3d925af2749fa59be3b6d32ce2d79f55bb871e76009b1",
+      "copied_to_this_evidence_directory": true
+    },
+    {
+      "path": "0530-runtime-failure-current-screen.png",
+      "bytes": 676587,
+      "sha256": "90a2e645ab623bd8ae3f803ebf42e73e6b68def3a51ca2db63b53297c3c722d3",
+      "copied_to_this_evidence_directory": false
+    },
+    {
+      "path": "0483-runtime-active-stop.json",
+      "bytes": 10339,
+      "sha256": "1ef9d5272a8cbdf074cc577dcf5dd637ab8db0164e4175bb99593bded4ae52a1",
+      "copied_to_this_evidence_directory": false
+    }
+  ]
+}

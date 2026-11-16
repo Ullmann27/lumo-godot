@@ -1,0 +1,16 @@
+{
+  "base_commit": "678cb38fea3a83a7f5841e71fba9bb2f3bfa2eef",
+  "command": [
+    "/opt/godot/4.6.3/Godot_v4.6.3-stable_linux.x86_64",
+    "--headless",
+    "--path",
+    "/workspace/scratch/4fa97167812c/native-button-state-contrast-fix/runtime",
+    "--script",
+    "/workspace/scratch/4fa97167812c/agent-learning-button-contrast/scripts/tests/learning_button_state_contrast_regression.gd"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 0.8569798349926714,
+  "source_sha256": "c2855613e79f7fd233190eb56e1f7379e780c1979c629e536e49690bbc4608e3",
+  "test_sha256": "56aca033f3b19a8063145b6a603be3c8d26a2ae4508ea1789ce35eb7ae9a0567",
+  "engine_sha256": "f64d4ed19fc9df9440321653fcc80df8c6e365ba7b6de0a29e2cfa9fa71bfeb3"
+}

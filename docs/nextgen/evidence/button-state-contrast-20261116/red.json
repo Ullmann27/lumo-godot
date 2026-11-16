@@ -1,0 +1,292 @@
+{
+	"callback_activations": 6,
+	"checks": 79,
+	"display_driver": "headless",
+	"engine": {
+		"build": "official",
+		"hash": "7d41c59c457bd5a245092b4e7eb2d833e3b3f8c3",
+		"hex": 263683,
+		"major": 4,
+		"minor": 6,
+		"patch": 3,
+		"status": "stable",
+		"string": "4.6.3-stable (official)",
+		"timestamp": 0
+	},
+	"failures": [
+		"Stimme stoppen normal/font_hover_color contrast 1.129177 >= 4.5",
+		"Stimme stoppen normal/font_focus_color contrast 1.129177 >= 4.5",
+		"Stimme stoppen normal/font_pressed_color contrast 1.261308 >= 4.5",
+		"Stimme stoppen normal/font_hover_pressed_color contrast 1.261308 >= 4.5",
+		"Stimme stoppen hover/font_hover_color contrast 1.102359 >= 4.5",
+		"Stimme stoppen hover/font_focus_color contrast 1.102359 >= 4.5",
+		"Stimme stoppen hover/font_pressed_color contrast 1.231351 >= 4.5",
+		"Stimme stoppen hover/font_hover_pressed_color contrast 1.231351 >= 4.5",
+		"Stimme stoppen pressed/font_hover_color contrast 1.476434 >= 4.5",
+		"Stimme stoppen pressed/font_focus_color contrast 1.476434 >= 4.5",
+		"Stimme stoppen pressed/font_pressed_color contrast 1.649198 >= 4.5",
+		"Stimme stoppen pressed/font_hover_pressed_color contrast 1.649198 >= 4.5",
+		"Stimme stoppen focus/font_hover_color contrast 1.129177 >= 4.5",
+		"Stimme stoppen focus/font_focus_color contrast 1.129177 >= 4.5",
+		"Stimme stoppen focus/font_pressed_color contrast 1.261308 >= 4.5",
+		"Stimme stoppen focus/font_hover_pressed_color contrast 1.261308 >= 4.5",
+		"Ein Objekt zeigen normal/font_hover_color contrast 1.931154 >= 4.5",
+		"Ein Objekt zeigen normal/font_focus_color contrast 1.931154 >= 4.5",
+		"Ein Objekt zeigen normal/font_pressed_color contrast 2.157128 >= 4.5",
+		"Ein Objekt zeigen normal/font_hover_pressed_color contrast 2.157128 >= 4.5",
+		"Ein Objekt zeigen hover/font_hover_color contrast 1.779591 >= 4.5",
+		"Ein Objekt zeigen hover/font_focus_color contrast 1.779591 >= 4.5",
+		"Ein Objekt zeigen hover/font_pressed_color contrast 1.987830 >= 4.5",
+		"Ein Objekt zeigen hover/font_hover_pressed_color contrast 1.987830 >= 4.5",
+		"Ein Objekt zeigen pressed/font_hover_color contrast 2.480276 >= 4.5",
+		"Ein Objekt zeigen pressed/font_focus_color contrast 2.480276 >= 4.5",
+		"Ein Objekt zeigen pressed/font_pressed_color contrast 2.770506 >= 4.5",
+		"Ein Objekt zeigen pressed/font_hover_pressed_color contrast 2.770506 >= 4.5",
+		"Ein Objekt zeigen focus/font_hover_color contrast 1.931154 >= 4.5",
+		"Ein Objekt zeigen focus/font_focus_color contrast 1.931154 >= 4.5",
+		"Ein Objekt zeigen focus/font_pressed_color contrast 2.157128 >= 4.5",
+		"Ein Objekt zeigen focus/font_hover_pressed_color contrast 2.157128 >= 4.5"
+	],
+	"input_observations": [
+		{
+			"caption": "Stimme stoppen",
+			"disabled": false,
+			"draw_mode": 0,
+			"focused": false,
+			"hovered": false,
+			"pressed": false,
+			"state": "normal"
+		},
+		{
+			"caption": "Stimme stoppen",
+			"disabled": false,
+			"draw_mode": 0,
+			"focused": true,
+			"hovered": false,
+			"pressed": false,
+			"state": "focus"
+		},
+		{
+			"caption": "Stimme stoppen",
+			"disabled": false,
+			"draw_mode": 2,
+			"focused": false,
+			"hovered": true,
+			"pressed": false,
+			"state": "hover"
+		},
+		{
+			"caption": "Stimme stoppen",
+			"disabled": false,
+			"draw_mode": 2,
+			"focused": true,
+			"hovered": true,
+			"pressed": false,
+			"state": "hover+focus"
+		},
+		{
+			"caption": "Stimme stoppen",
+			"disabled": false,
+			"draw_mode": 1,
+			"focused": true,
+			"hovered": true,
+			"pressed": true,
+			"state": "mouse-held+hover+focus"
+		},
+		{
+			"caption": "Stimme stoppen",
+			"disabled": false,
+			"draw_mode": 1,
+			"focused": true,
+			"hovered": true,
+			"pressed": true,
+			"state": "key-held+hover+focus"
+		},
+		{
+			"caption": "Stimme stoppen",
+			"disabled": false,
+			"draw_mode": 1,
+			"focused": true,
+			"hovered": false,
+			"pressed": true,
+			"state": "key-held+focus"
+		},
+		{
+			"caption": "Stimme stoppen",
+			"disabled": false,
+			"draw_mode": 0,
+			"focused": true,
+			"hovered": false,
+			"pressed": false,
+			"state": "released+focus"
+		},
+		{
+			"caption": "Ein Objekt zeigen",
+			"disabled": false,
+			"draw_mode": 0,
+			"focused": false,
+			"hovered": false,
+			"pressed": false,
+			"state": "normal"
+		},
+		{
+			"caption": "Ein Objekt zeigen",
+			"disabled": false,
+			"draw_mode": 0,
+			"focused": true,
+			"hovered": false,
+			"pressed": false,
+			"state": "focus"
+		},
+		{
+			"caption": "Ein Objekt zeigen",
+			"disabled": false,
+			"draw_mode": 2,
+			"focused": false,
+			"hovered": true,
+			"pressed": false,
+			"state": "hover"
+		},
+		{
+			"caption": "Ein Objekt zeigen",
+			"disabled": false,
+			"draw_mode": 2,
+			"focused": true,
+			"hovered": true,
+			"pressed": false,
+			"state": "hover+focus"
+		},
+		{
+			"caption": "Ein Objekt zeigen",
+			"disabled": false,
+			"draw_mode": 1,
+			"focused": true,
+			"hovered": true,
+			"pressed": true,
+			"state": "mouse-held+hover+focus"
+		},
+		{
+			"caption": "Ein Objekt zeigen",
+			"disabled": false,
+			"draw_mode": 1,
+			"focused": true,
+			"hovered": true,
+			"pressed": true,
+			"state": "key-held+hover+focus"
+		},
+		{
+			"caption": "Ein Objekt zeigen",
+			"disabled": false,
+			"draw_mode": 1,
+			"focused": true,
+			"hovered": false,
+			"pressed": true,
+			"state": "key-held+focus"
+		},
+		{
+			"caption": "Ein Objekt zeigen",
+			"disabled": false,
+			"draw_mode": 0,
+			"focused": true,
+			"hovered": false,
+			"pressed": false,
+			"state": "released+focus"
+		}
+	],
+	"limits": [
+		"Exact production factory tested in isolation; no full learning scene or 3D assets",
+		"Theme colors and actual input states; no framebuffer or Android pixel measurement",
+		"Original Android draw mode unknown; this run does not identify it",
+		"Non-toggle hover+press uses DRAW_PRESSED; hover_pressed font is palette-tested only",
+		"Disabled palette reported only; disabled behavior and styles remain unchanged",
+		"No speech, acoustic stop, mouth timing, or device touch claim"
+	],
+	"minimum_required_contrast": 4.5,
+	"palettes": [
+		{
+			"backgrounds": {
+				"focus": "dce9d4ff",
+				"hover": "e0ebd8ff",
+				"normal": "dce9d4ff",
+				"pressed": "c2cdbbff"
+			},
+			"caption": "Stimme stoppen",
+			"colors": {
+				"font_color": "234537ff",
+				"font_focus_color": "f2f2f2ff",
+				"font_hover_color": "f2f2f2ff",
+				"font_hover_pressed_color": "ffffffff",
+				"font_pressed_color": "ffffffff"
+			},
+			"contrast_ratios": {
+				"focus/font_color": 8.41779070681693,
+				"focus/font_focus_color": 1.12917712500443,
+				"focus/font_hover_color": 1.12917712500443,
+				"focus/font_hover_pressed_color": 1.26130765247825,
+				"focus/font_pressed_color": 1.26130765247825,
+				"hover/font_color": 8.6225791493053,
+				"hover/font_focus_color": 1.10235888179447,
+				"hover/font_hover_color": 1.10235888179447,
+				"hover/font_hover_pressed_color": 1.23135127571707,
+				"hover/font_pressed_color": 1.23135127571707,
+				"normal/font_color": 8.41779070681693,
+				"normal/font_focus_color": 1.12917712500443,
+				"normal/font_hover_color": 1.12917712500443,
+				"normal/font_hover_pressed_color": 1.26130765247825,
+				"normal/font_pressed_color": 1.26130765247825,
+				"pressed/font_color": 6.43793072776729,
+				"pressed/font_focus_color": 1.47643351740583,
+				"pressed/font_hover_color": 1.47643351740583,
+				"pressed/font_hover_pressed_color": 1.64919821048628,
+				"pressed/font_pressed_color": 1.64919821048628
+			},
+			"disabled_font_observed_only": "dfdfdf80",
+			"minimum_contrast": 1.10235888179447
+		},
+		{
+			"backgrounds": {
+				"focus": "dca847ff",
+				"hover": "e0b159ff",
+				"normal": "dca847ff",
+				"pressed": "c2943eff"
+			},
+			"caption": "Ein Objekt zeigen",
+			"colors": {
+				"font_color": "1d3540ff",
+				"font_focus_color": "f2f2f2ff",
+				"font_hover_color": "f2f2f2ff",
+				"font_hover_pressed_color": "ffffffff",
+				"font_pressed_color": "ffffffff"
+			},
+			"contrast_ratios": {
+				"focus/font_color": 5.95235117220918,
+				"focus/font_focus_color": 1.93115381727969,
+				"focus/font_hover_color": 1.93115381727969,
+				"focus/font_hover_pressed_color": 2.15712755236509,
+				"focus/font_pressed_color": 2.15712755236509,
+				"hover/font_color": 6.45929523309065,
+				"hover/font_focus_color": 1.77959131347847,
+				"hover/font_hover_color": 1.77959131347847,
+				"hover/font_hover_pressed_color": 1.98782998014187,
+				"hover/font_pressed_color": 1.98782998014187,
+				"normal/font_color": 5.95235117220918,
+				"normal/font_focus_color": 1.93115381727969,
+				"normal/font_hover_color": 1.93115381727969,
+				"normal/font_hover_pressed_color": 2.15712755236509,
+				"normal/font_pressed_color": 2.15712755236509,
+				"pressed/font_color": 4.6345262419692,
+				"pressed/font_focus_color": 2.48027631905626,
+				"pressed/font_hover_color": 2.48027631905626,
+				"pressed/font_hover_pressed_color": 2.7705055586155,
+				"pressed/font_pressed_color": 2.7705055586155
+			},
+			"disabled_font_observed_only": "dfdfdf80",
+			"minimum_contrast": 1.77959131347847
+		}
+	],
+	"production_factory_sha256": "26f64f9452dcb1e3f35db71b9f1a5545a57ae5f07a0626d16a0fe84130b2ba58",
+	"production_source_sha256": "c2855613e79f7fd233190eb56e1f7379e780c1979c629e536e49690bbc4608e3",
+	"renderer": "gl_compatibility",
+	"status": "FAIL",
+	"test_sha256": "56aca033f3b19a8063145b6a603be3c8d26a2ae4508ea1789ce35eb7ae9a0567"
+}
