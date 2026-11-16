@@ -380,7 +380,8 @@ func _layout() -> void:
 	# The live Godot SubViewport fills the model slot, never a screenshot.
 	var hero_top := header_bottom
 	var hero_bottom: float
-	_highlight.visible = not compact
+	# The real track preview must remain discoverable also on compact phones.
+	_highlight.visible = true
 	_progress.visible = not compact
 	_features.visible = not compact
 	if portrait:
