@@ -23,7 +23,7 @@ func _settle() -> void:
 
 
 func _open(payload: Dictionary) -> Node3D:
-	var game := load(WORLD).instantiate()
+	var game: Node3D = load(WORLD).instantiate()
 	game.capture_options = {"learning": payload, "reduceAnimations": true}
 	root.add_child(game)
 	return game
