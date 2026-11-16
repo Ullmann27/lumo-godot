@@ -60,11 +60,112 @@ jobs:
           PY
           tar -I 'zstd -T2 -3' -cf "$ARCHIVE_ID-2032-public-prerequisite.tar.zst" -C recovery.git .git provenance.json
           ls -lh "$ARCHIVE_ID-2032-public-prerequisite.tar.zst"
-      - name: Export original Git objects and source provenance
+          sha256sum "$ARCHIVE_ID-2032-public-prerequisite.tar.zst" > "$ARCHIVE_ID-2032-public-prerequisite.sha256"
+          split -b 220M -d -a 2 "$ARCHIVE_ID-2032-public-prerequisite.tar.zst" "$ARCHIVE_ID-2032-public-prerequisite.tar.zst.part"
+          rm -f "$ARCHIVE_ID-2032-public-prerequisite.tar.zst"
+          test -s "$ARCHIVE_ID-2032-public-prerequisite.tar.zst.part00"
+          ls -lh "$ARCHIVE_ID-2032-public-prerequisite.tar.zst.part"*
+      - name: Export original archive SHA-256
         uses: actions/upload-artifact@v4
         with:
-          name: lumo-2032-public-prerequisite-${{ matrix.id }}
-          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-checksum
+          path: ${{ matrix.id }}-2032-public-prerequisite.sha256
           compression-level: 0
           retention-days: 15
           if-no-files-found: error
+      - name: Export Git object archive part 00
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-part00
+          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst.part00
+          compression-level: 0
+          retention-days: 15
+          if-no-files-found: ignore
+      - name: Export Git object archive part 01
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-part01
+          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst.part01
+          compression-level: 0
+          retention-days: 15
+          if-no-files-found: ignore
+      - name: Export Git object archive part 02
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-part02
+          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst.part02
+          compression-level: 0
+          retention-days: 15
+          if-no-files-found: ignore
+      - name: Export Git object archive part 03
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-part03
+          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst.part03
+          compression-level: 0
+          retention-days: 15
+          if-no-files-found: ignore
+      - name: Export Git object archive part 04
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-part04
+          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst.part04
+          compression-level: 0
+          retention-days: 15
+          if-no-files-found: ignore
+      - name: Export Git object archive part 05
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-part05
+          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst.part05
+          compression-level: 0
+          retention-days: 15
+          if-no-files-found: ignore
+      - name: Export Git object archive part 06
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-part06
+          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst.part06
+          compression-level: 0
+          retention-days: 15
+          if-no-files-found: ignore
+      - name: Export Git object archive part 07
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-part07
+          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst.part07
+          compression-level: 0
+          retention-days: 15
+          if-no-files-found: ignore
+      - name: Export Git object archive part 08
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-part08
+          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst.part08
+          compression-level: 0
+          retention-days: 15
+          if-no-files-found: ignore
+      - name: Export Git object archive part 09
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-part09
+          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst.part09
+          compression-level: 0
+          retention-days: 15
+          if-no-files-found: ignore
+      - name: Export Git object archive part 10
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-part10
+          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst.part10
+          compression-level: 0
+          retention-days: 15
+          if-no-files-found: ignore
+      - name: Export Git object archive part 11
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-2032-public-prerequisite-${{ matrix.id }}-part11
+          path: ${{ matrix.id }}-2032-public-prerequisite.tar.zst.part11
+          compression-level: 0
+          retention-days: 15
+          if-no-files-found: ignore
