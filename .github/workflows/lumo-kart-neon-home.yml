@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - integration/lumo-2031-nextgen-jungle-20261116
+      - integration/lumo-2034-allworkshop-jungle-bauwelt-20261116
     paths:
       - scripts/games/kart_neon_hub.gd
       - scripts/games/kart_neon_arena.gd

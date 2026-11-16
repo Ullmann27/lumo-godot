@@ -1,7 +1,7 @@
 name: LUMO 3D Lernwerkstatt – echte Aufgaben und Uhr
 on:
   push:
-    branches: [repair/lumo-learning-workshop-3d-20261116]
+    branches: [repair/lumo-learning-workshop-3d-20261116, integration/lumo-2034-allworkshop-jungle-bauwelt-20261116]
     paths:
       - scripts/learning/**
       - scripts/tests/learning_workshop_relevance_regression.gd

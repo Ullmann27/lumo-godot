@@ -2,7 +2,7 @@ name: "LUMO Bauwelt – guided village and real 3D rendering QA"
 
 on:
   push:
-    branches: [feature/lumo-child-guided-bauwelt-20261116]
+    branches: [feature/lumo-child-guided-bauwelt-20261116, integration/lumo-2034-allworkshop-jungle-bauwelt-20261116]
     paths:
       - scripts/creative/build_settlement_world.gd
       - scripts/tests/build_village_scene_regression.gd
@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   native-village:
-    if: github.repository == 'Ullmann27/lumo-godot' && github.ref == 'refs/heads/feature/lumo-child-guided-bauwelt-20261116'
+    if: github.repository == 'Ullmann27/lumo-godot' && (github.ref == 'refs/heads/feature/lumo-child-guided-bauwelt-20261116' || github.ref == 'refs/heads/integration/lumo-2034-allworkshop-jungle-bauwelt-20261116')
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     env:
