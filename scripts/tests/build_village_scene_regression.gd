@@ -378,6 +378,9 @@ func _run() -> void:
 	)
 	_check(FileAccess.file_exists(save), "Village market is saved to the isolated file")
 	var after_market: Dictionary = village.model.snapshot()
+	# The purchase clears selection. Select the preceding free plot so the
+	# next-field command must skip occupied plot 4 and land on plot 5.
+	village.selected_plot = 3
 	village._next_free_plot()
 	_check(
 		village.selected_plot == 5,
