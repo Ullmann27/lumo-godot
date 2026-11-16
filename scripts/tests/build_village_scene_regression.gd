@@ -337,6 +337,19 @@ func _run() -> void:
 		and village.village_region.get_meta("max_plots_per_town", 0) == 1089,
 		"The 1089-plot region is attached to the production scene"
 	)
+	_check(village.village_region.get_meta("road_lines_player", 0) == 8,
+		"The opening nine plots have a real 3x3 street grid, not 1089 empty plots")
+	_check(village.village_region.get_meta("garden_instances_player", 0) > 30,
+		"The village edge has actual low-poly trees and flowers in bounded batches")
+	_check(village.village_region.has_node("WildflowerBeltPlayer"),
+		"Opening meadow is separate 3D geometry, not a static background")
+	var original_map: Dictionary = village.model.snapshot()
+	village.village_region.set_unlocked_plots(25, false)
+	_check(village.village_region.get_meta("road_lines_player", 0) == 12,
+		"Visual expansion reveals five by five roads as actual land is unlocked")
+	_check(village.model.snapshot() == original_map,
+		"Visual-only road expansion cannot modify the economy or save state")
+	village.village_region.set_unlocked_plots(int(village.model.player().plots), false)
 	_check(
 		village.village_residents != null
 		and village.village_residents.has_node("VillageFamilies"),

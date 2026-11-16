@@ -585,6 +585,10 @@ func _layout() -> void:
 
 
 func _rebuild() -> void:
+	if model.living_village and is_instance_valid(village_region):
+		village_region.set_unlocked_plots(int(model.player().plots), false)
+		if mode == "rival":
+			village_region.set_unlocked_plots(int(model.rival().plots), true)
 	_sync_visible_plots(true)
 	if mode == "rival":
 		var rival: Dictionary = model.rival()
