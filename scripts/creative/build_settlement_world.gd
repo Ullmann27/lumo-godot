@@ -386,6 +386,21 @@ func _build_ui() -> void:
 	plot_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	plot_label.add_theme_color_override("font_color", Color("f6fcff"))
 	bottom.add_child(plot_label)
+	# Child's two primary decisions stay visible above the horizontal catalog.
+	# They must not be swallowed by a kinetic scroll gesture on phones.
+	var primary := HBoxContainer.new()
+	primary.name = "VillagePrimaryActions"
+	primary.add_theme_constant_override("separation", 8)
+	bottom.add_child(primary)
+	if model.living_village:
+		var chapter_action := _button("Kapitel", _chapter_dialog, 120)
+		chapter_action.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		chapter_action.mouse_filter = Control.MOUSE_FILTER_STOP
+		primary.add_child(chapter_action)
+	var find_action := _button("Freier Bauplatz", _focus_next_free_plot, 140)
+	find_action.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	find_action.mouse_filter = Control.MOUSE_FILTER_STOP
+	primary.add_child(find_action)
 	var buildings_scroll := ScrollContainer.new()
 	buildings_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	bottom.add_child(buildings_scroll)
@@ -409,16 +424,12 @@ func _build_ui() -> void:
 	actions_scroll.add_child(actions)
 	# Put the children's next useful actions FIRST instead of hiding the
 	# chapter behind trade and maintenance buttons in a long horizontal rail.
-	var actions_data: Array = []
-	if model.living_village:
-		actions_data.append(["Kapitel", _chapter_dialog])
-	actions_data.append(["Freier Bauplatz", _focus_next_free_plot])
-	actions_data.append_array([
+	var actions_data: Array = [
 		["Rückgängig", _undo],
 		["Wiederholen", _redo],
 		["Handeln", _trade_dialog],
 		["Nachbar ansehen" if mode == "rival" else "Überblick", _look_neighbor]
-	])
+	]
 	if model.living_village:
 		actions_data.append_array([
 			["Tilda · Lieferung", _tilda_dialog],
