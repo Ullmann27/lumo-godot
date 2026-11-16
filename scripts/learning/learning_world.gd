@@ -10,6 +10,7 @@ const QUESTION_PANEL = preload("res://scripts/learning/learning_conversation_pan
 const ACTIVITY = preload("res://scripts/learning/learning_activity.gd")
 const FOX = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const ATELIER = preload("res://scripts/learning/learning_atelier.gd")
+const HOLO_ATRIUM = preload("res://scripts/learning/lumo_holo_atrium.gd")
 const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const ENGLISH_GALLERY = preload("res://scripts/learning/english_object_gallery.gd")
 const BEVEL = preload("res://scripts/games/visual/kart_harbor_cinema.gd")
@@ -38,6 +39,9 @@ var title: Label
 var explanation: Label
 var status: Label
 var actions: HFlowContainer
+var choice_bar: HFlowContainer
+var choice_buttons: Array[Button] = []
+var _clock_dial: Node3D
 var main_button: Button
 var sun_button: Button
 var water_button: Button
@@ -87,6 +91,7 @@ var english_models: Array[Node3D] = []
 var english_buttons: Array[Button] = []
 var english_stage_rect := Rect2()
 var _atelier: Node3D
+var _holo_stage: Node3D
 var _english_compact := false
 var companion_scope = COMPANION_SCOPE.new()
 var companion_objects: Dictionary = {}
@@ -287,10 +292,10 @@ func _build_stage() -> void:
 	var environment := WorldEnvironment.new()
 	var settings := Environment.new()
 	settings.background_mode = Environment.BG_COLOR
-	settings.background_color = Color("a6bdc4")
+	settings.background_color = Color("09182c")
 	settings.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	settings.ambient_light_color = Color("e7e6d9")
-	settings.ambient_light_energy = 0.24
+	settings.ambient_light_color = Color("bed8f5")
+	settings.ambient_light_energy = 0.34
 	settings.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	settings.tonemap_white = 6.0
 	settings.fog_density = 0.0
@@ -314,6 +319,12 @@ func _build_stage() -> void:
 	add_child(fill)
 	_atelier = ATELIER.new()
 	add_child(_atelier)
+	# Keep original scene resources for regression/rollback, but never show
+	# the outdated garden architecture behind the modern learning activity.
+	_atelier.hide()
+	_holo_stage = HOLO_ATRIUM.new()
+	_holo_stage.reduced_motion = reduced_motion
+	add_child(_holo_stage)
 	fox = _create_fox()
 	fox.name = "OriginalLearningLumo"
 	add_child(fox)
@@ -383,12 +394,12 @@ func _build_ui() -> void:
 	title = Label.new()
 	title.add_theme_font_size_override("font_size", 26)
 	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title.add_theme_color_override("font_color", Color("173e34"))
+	title.add_theme_color_override("font_color", Color("eaf5ff"))
 	heading.add_child(title)
 	explanation = Label.new()
 	explanation.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	explanation.add_theme_font_size_override("font_size", 19)
-	explanation.add_theme_color_override("font_color", Color("294e42"))
+	explanation.add_theme_color_override("font_color", Color("c7e2ee"))
 	heading.add_child(explanation)
 	footer = _panel()
 	ui.add_child(footer)
@@ -398,8 +409,13 @@ func _build_ui() -> void:
 	status = Label.new()
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	status.add_theme_font_size_override("font_size", 17)
-	status.add_theme_color_override("font_color", Color("3d5648"))
+	status.add_theme_color_override("font_color", Color("b4d7e9"))
 	controls.add_child(status)
+	choice_bar = HFlowContainer.new()
+	choice_bar.name = "LessonAnswers"
+	choice_bar.add_theme_constant_override("h_separation", 8)
+	choice_bar.add_theme_constant_override("v_separation", 7)
+	controls.add_child(choice_bar)
 	actions = HFlowContainer.new()
 	actions.add_theme_constant_override("h_separation", 8)
 	actions.add_theme_constant_override("v_separation", 8)
@@ -423,17 +439,17 @@ func _build_ui() -> void:
 func _panel() -> PanelContainer:
 	var panel := PanelContainer.new()
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("fff6e4")
-	style.border_color = Color("aac3aa")
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(16)
+	style.bg_color = Color("0b1d32", 0.93)
+	style.border_color = Color("4f9eb5", 0.83)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(20)
 	style.set_content_margin_all(14)
 	panel.add_theme_stylebox_override("panel", style)
 	panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	return panel
 
 
-func _button(caption: String, action: Callable, flags: int = 0) -> Button:
+func _button(caption: String, action: Callable, flags: int = 0, parent: Control = null) -> Button:
 	var button := Button.new()
 	button.text = caption
 	button.custom_minimum_size = Vector2(64, 52)
@@ -452,10 +468,10 @@ func _button(caption: String, action: Callable, flags: int = 0) -> Button:
 		]
 	)
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("dca847") if primary else Color("dce9d4")
-	style.border_color = Color("f1d59c") if primary else Color("a1b89b")
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(12)
+	style.bg_color = Color("dc9e3b") if primary else Color("1d415b")
+	style.border_color = Color("ffd37d") if primary else Color("4f9bb8")
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(13)
 	style.set_content_margin_all(12)
 	button.add_theme_stylebox_override("normal", style)
 	var hover := style.duplicate() as StyleBoxFlat
@@ -465,12 +481,12 @@ func _button(caption: String, action: Callable, flags: int = 0) -> Button:
 	pressed.bg_color = style.bg_color.darkened(0.12)
 	button.add_theme_stylebox_override("pressed", pressed)
 	var focus := style.duplicate() as StyleBoxFlat
-	focus.border_color = Color("376b51")
+	focus.border_color = Color("6bdeec")
 	focus.set_border_width_all(3)
 	button.add_theme_stylebox_override("focus", focus)
-	button.add_theme_color_override("font_color", Color("1d3540") if primary else Color("234537"))
+	button.add_theme_color_override("font_color", Color("10243a") if primary else Color("e4f7ff"))
 	button.pressed.connect(action, flags)
-	actions.add_child(button)
+	(parent if is_instance_valid(parent) else actions).add_child(button)
 	return button
 
 
@@ -499,6 +515,11 @@ func _rebuild_activity() -> void:
 	_pattern_next = null
 	_pattern_candidate = null
 	_task_card = null
+	_clock_dial = null
+	choice_buttons.clear()
+	for item in choice_bar.get_children():
+		item.free()
+	choice_bar.visible = false
 	_focus_ring = null
 	_focus_id = ""
 	water_particles.clear()
@@ -519,7 +540,13 @@ func _rebuild_activity() -> void:
 	match activity.kind:
 		"task_card":
 			_build_task_card()
-			main_button = _button("Auftrag anschauen", _show_task_prompt)
+			main_button = _button("Auftrag ansehen", _show_task_prompt)
+			_build_answer_choices()
+		"clock":
+			_build_clock()
+			main_button = _button("Hilfe", _clock_hint)
+			main_button.tooltip_text = "Stunden- und Minutenzeiger erklären"
+			_build_answer_choices()
 		"pattern":
 			_build_pattern()
 			main_button = _button("Gruppe entdecken", _pattern_hint)
@@ -552,7 +579,7 @@ func _rebuild_activity() -> void:
 				_button(str(PART_LABELS[part]), _inspect.bind(str(part)))
 	# Rebuilding frees the old controls after their input signal has returned.
 	_button(
-		"Neu" if activity.kind == "english_objects" else "Noch einmal", restart, CONNECT_DEFERRED
+		"Neu" if activity.kind in ["english_objects", "clock"] else "Noch einmal", restart, CONNECT_DEFERRED
 	)
 	if (
 		_speech_enabled
@@ -560,9 +587,9 @@ func _rebuild_activity() -> void:
 		and HostBridge.supports_method(_speech_host, "speakLearning")
 	):
 		voice_button = _button("Schritt anhören", _voice_action)
-	question_button = _button("Lumo fragen", _open_question)
+	question_button = _button("Lumo" if activity.kind == "clock" else "Lumo fragen", _open_question)
 	question_button.disabled = not _scope_valid or activity.kind == "invalid"
-	_button("Zur Aufgabe", _return_to_lesson)
+	_button("Aufgabe" if activity.kind == "clock" else "Zur Aufgabe", _return_to_lesson)
 	_build_focus_ring()
 	_update_object_registry()
 	_layout.call_deferred()
@@ -951,12 +978,19 @@ func _refresh() -> void:
 				activity.english_objects[index] == activity.word
 				and (activity.english_hint_level >= 2 or activity.is_complete())
 			)
-	elif activity.kind == "task_card":
+	elif activity.kind in ["task_card", "clock"]:
 		status.text = (
-			"Deine Aufgabe bleibt erhalten. Hier kannst du Lumo fragen "
-			+ "oder einen Antwortvorschlag wählen."
+			"Dein Vorschlag ist markiert. Prüfe ihn anschließend in der Aufgabe."
+			if activity.task_choice >= 0
+			else (
+				"Schau auf die Zeiger, wähle eine Uhrzeit oder frag Lumo."
+				if activity.kind == "clock"
+				else "Wähle eine Antwort oder frag Lumo. Die Aufgabe bleibt erhalten."
+			)
 		)
 		main_button.disabled = false
+		for index in range(choice_buttons.size()):
+			choice_buttons[index].button_pressed = index == activity.task_choice
 	elif activity.kind == "pattern":
 		status.text = "Wähle einen Vorschlag. Bestätige deine Antwort anschließend in deiner Aufgabe."
 		main_button.disabled = (activity.pattern_hint_level > 0)
@@ -1010,6 +1044,15 @@ func _layout() -> void:
 	)
 	var origin := insets.position / scale_value
 	var available := logical - (insets.position + insets.size) / scale_value
+	# Two equal answer columns in narrow portrait screens: no 3+1 orphan row.
+	if activity.kind == "clock":
+		var narrow := available.x < 600.0
+		for option: Button in choice_buttons:
+			option.custom_minimum_size.x = (
+				maxf(125.0, (available.x - 96.0) * 0.5)
+				if narrow
+				else 105.0
+			)
 	if is_instance_valid(question_panel):
 		question_panel.position = origin
 		question_panel.size = available
@@ -1058,9 +1101,14 @@ func _layout() -> void:
 	if activity.kind == "fraction_parts":
 		focus_height = maxf(focus_height, 5.8)
 	var focus_width := 6.25 if portrait else 10.8
-	if activity.kind in ["pattern", "task_card"]:
+	if activity.kind in ["pattern", "task_card"] or (
+		activity.kind == "clock" and not portrait
+	):
 		focus_width = maxf(focus_width, 8.6)
 		focus_height = maxf(focus_height, 5.7)
+	if activity.kind == "clock" and portrait:
+		focus_width = maxf(focus_width, 6.3)
+		focus_height = maxf(focus_height, 5.0)
 	if activity.kind == "syllables" and activity.syllables.size() > 3:
 		focus_width = maxf(focus_width, 8.2)
 	var needed_height := focus_height * dimensions.y / free_height
@@ -1197,6 +1245,12 @@ func _unhandled_input(event: InputEvent) -> void:
 func _begin_drag(point: Vector2, finger: int) -> void:
 	if activity.kind == "english_objects":
 		_pick_english_object(point)
+		return
+	if activity.kind == "task_card":
+		_pick_task_card(point)
+		return
+	if activity.kind == "clock":
+		_pick_clock(point)
 		return
 	if activity.kind == "plant_parts":
 		var best := ""
@@ -1676,7 +1730,7 @@ func _update_voice_button() -> void:
 	if not is_instance_valid(voice_button):
 		return
 	var previous_caption := voice_button.text
-	if activity.kind == "english_objects" and _english_compact:
+	if (activity.kind == "english_objects" and _english_compact) or activity.kind == "clock":
 		voice_button.text = "Stopp" if _speech_state in ["preparing", "playing"] else "Anhören"
 	else:
 		voice_button.text = (
@@ -2127,12 +2181,17 @@ func _update_object_registry() -> void:
 			companion_objects["pattern_%d" % index] = pattern_nodes[index]
 		companion_objects["pattern_group"] = _pattern_group_outline
 		companion_objects["pattern_next"] = _pattern_next
-	elif activity.kind == "task_card":
-		companion_objects["task_prompt"] = _task_card
-		companion_objects["task_card"] = _task_card
-		for index in range(activity.task_choices.size()):
-			companion_objects["answer_%d" % index] = _task_card.get_node_or_null("Answer%d" % index)
-			companion_objects["choice_%d" % index] = _task_card.get_node_or_null("Answer%d" % index)
+	elif activity.kind in ["task_card", "clock"]:
+		companion_objects["task_prompt"] = _task_card if activity.kind == "task_card" else _clock_dial
+		if activity.kind == "task_card":
+			companion_objects["task_card"] = _task_card
+			for index in range(activity.task_choices.size()):
+				companion_objects["answer_%d" % index] = _task_card.get_node_or_null("Answer%d" % index)
+				companion_objects["choice_%d" % index] = _task_card.get_node_or_null("Answer%d" % index)
+		else:
+			companion_objects["clock_face"] = _clock_dial
+			companion_objects["clock_hour"] = _clock_dial.get_node_or_null("HourHand")
+			companion_objects["clock_minute"] = _clock_dial.get_node_or_null("MinuteHand")
 	elif activity.kind == "plant_parts":
 		for part in part_nodes:
 			companion_objects["plant_" + str(part)] = part_nodes[part]
@@ -2520,6 +2579,135 @@ func _show_task_prompt() -> void:
 	question_panel.show_task(activity.task_prompt, activity.task_choices)
 
 
+func _build_answer_choices() -> void:
+	# Real, directly tappable option labels; no numbered dummy answers.
+	choice_bar.visible = not activity.task_choices.is_empty()
+	if not question_panel.answer_proposed.is_connected(_choose_task_answer):
+		question_panel.answer_proposed.connect(_choose_task_answer)
+	for index in range(activity.task_choices.size()):
+		var answer := _button(
+			str(activity.task_choices[index]), _choose_task_answer.bind(index), 0, choice_bar
+		)
+		answer.name = "LearningChoice%d" % index
+		answer.toggle_mode = true
+		answer.custom_minimum_size = Vector2(90, 52)
+		answer.tooltip_text = "Antwortvorschlag: " + str(activity.task_choices[index])
+		choice_buttons.append(answer)
+
+
+func _clock_hint() -> void:
+	if suspended or activity.kind != "clock":
+		return
+	_cancel_performance()
+	explanation.text = (
+		"Der lange türkise Zeiger zählt Minuten in Fünferschritten. "
+		+ "Der kurze goldene Zeiger zeigt die Stunde und wandert dazwischen weiter."
+	)
+	status.text = "Tippe auf einen Zeiger, oder wähle unten deinen Vorschlag."
+	_focus_object("clock_minute")
+	_teacher("explain", _clock_dial.global_position)
+	_queue_narration()
+
+
+func _build_clock() -> void:
+	title.text = "Uhrzeit entdecken"
+	_clock_dial = Node3D.new()
+	_clock_dial.name = "LearningClock"
+	content.add_child(_clock_dial)
+	_clock_dial.position = Vector3(0.85, 1.48, 0.28)
+	_clock_dial.global_basis = camera.global_basis
+	var shell := _material("clock_shell", Color("235773"), 0.18)
+	var face := _material("clock_face", Color("eafaff"))
+	var marks := _material("clock_marks", Color("1b425a"))
+	var gold := _material("clock_hour_gold", Color("f5b947"), 0.12)
+	var cyan := _material("clock_minute_cyan", Color("17bce3"), 0.08)
+	var dial := _cylinder(_clock_dial, Vector3.ZERO, 1.45, 0.21, shell, "ClockShell")
+	dial.rotation.x = PI * 0.5
+	var surface := _cylinder(
+		_clock_dial, Vector3(0, 0, 0.12), 1.30, 0.08, face, "ClockFace"
+	)
+	surface.rotation.x = PI * 0.5
+	for index in range(12):
+		var angle := float(index) * TAU / 12.0
+		var direction := Vector2(sin(angle), cos(angle))
+		var number := str(index if index > 0 else 12)
+		_text(
+			_clock_dial, number,
+			Vector3(direction.x * 1.03 - 0.12, direction.y * 1.03 - 0.10, 0.23),
+			0.24, marks
+		)
+		var tick := _box(
+			_clock_dial, Vector3(direction.x * 1.23, direction.y * 1.23, 0.23),
+			Vector3(0.06, 0.13, 0.07), marks, "ClockTick%d" % index
+		)
+		tick.rotation.z = -angle
+	var hour_hand := Node3D.new()
+	hour_hand.name = "HourHand"
+	_clock_dial.add_child(hour_hand)
+	_box(hour_hand, Vector3(0, 0.40, 0.34), Vector3(0.13, 0.83, 0.13), gold, "GoldenHour")
+	hour_hand.rotation.z = -TAU * (
+		float(activity.clock_hour % 12) + float(activity.clock_minute) / 60.0
+	) / 12.0
+	var minute_hand := Node3D.new()
+	minute_hand.name = "MinuteHand"
+	_clock_dial.add_child(minute_hand)
+	_box(minute_hand, Vector3(0, 0.55, 0.39), Vector3(0.075, 1.13, 0.12),
+		cyan, "TurquoiseMinute")
+	minute_hand.rotation.z = -TAU * float(activity.clock_minute) / 60.0
+	_sphere(
+		_clock_dial, Vector3(0, 0, 0.47), Vector3.ONE * 0.22,
+		_material("clock_hub", Color("1c3850")), "ClockCenter"
+	)
+
+
+func _pick_clock(point: Vector2) -> void:
+	if suspended or not is_instance_valid(_clock_dial):
+		return
+	var minute_hand: Node3D = _clock_dial.get_node("MinuteHand")
+	var hour_hand: Node3D = _clock_dial.get_node("HourHand")
+	var points: Array[Vector2] = [
+		camera.unproject_position(minute_hand.to_global(Vector3(0, 0.78, 0.39))),
+		camera.unproject_position(hour_hand.to_global(Vector3(0, 0.53, 0.34)))
+	]
+	var nearest := -1
+	var distance := 58.0 * ui.scale.x
+	for index in range(points.size()):
+		var candidate := points[index].distance_to(point)
+		if candidate < distance:
+			nearest = index
+			distance = candidate
+	if nearest < 0:
+		return
+	_cancel_performance()
+	_focus_object("clock_minute" if nearest == 0 else "clock_hour")
+	explanation.text = (
+		"Der lange türkise Zeiger zeigt die Minuten. Jede Zahl zählt fünf Minuten."
+		if nearest == 0
+		else "Der kurze goldene Zeiger zeigt die Stunde. Er bewegt sich zwischen den Zahlen."
+	)
+	_teacher("explain", _clock_dial.global_position)
+	_queue_narration()
+	get_viewport().set_input_as_handled()
+
+
+func _pick_task_card(point: Vector2) -> void:
+	if suspended or not is_instance_valid(_task_card):
+		return
+	var nearest := -1
+	var distance := 56.0 * ui.scale.x
+	for index in range(activity.task_choices.size()):
+		var node := _task_card.get_node_or_null("Answer%d" % index)
+		if not is_instance_valid(node):
+			continue
+		var candidate := camera.unproject_position(node.global_position).distance_to(point)
+		if candidate < distance:
+			nearest = index
+			distance = candidate
+	if nearest >= 0:
+		_choose_task_answer(nearest)
+		get_viewport().set_input_as_handled()
+
+
 func _choose_task_answer(index: int) -> void:
 	if suspended or index < 0 or index >= activity.task_choices.size():
 		return
@@ -2528,8 +2716,12 @@ func _choose_task_answer(index: int) -> void:
 		return
 	question_panel.visible = false
 	_refresh()
-	_focus_object("answer_%d" % index)
-	_teacher("encourage", _task_card.global_position)
+	if activity.kind == "task_card":
+		_focus_object("answer_%d" % index)
+		_teacher("encourage", _task_card.global_position)
+	elif is_instance_valid(_clock_dial):
+		_focus_object("clock_face")
+		_teacher("encourage", _clock_dial.global_position)
 
 
 func _build_task_card() -> void:
@@ -2542,9 +2734,9 @@ func _build_task_card() -> void:
 	content.add_child(_task_card)
 	_task_card.position = Vector3(0.85, 1.45, 0.2)
 	_task_card.global_basis = camera.global_basis
-	var wood := _material("task_card_wood", Color("a27444"))
-	var paper := _material("task_card_paper", Color("fff4d5"))
-	var ink := _material("task_card_ink", Color("214938"))
+	var wood := _material("task_card_wood", Color("224c69"), 0.18)
+	var paper := _material("task_card_paper", Color("14324c"))
+	var ink := _material("task_card_ink", Color("e6faff"))
 	_box(_task_card, Vector3.ZERO, Vector3(5.8, 4.0, 0.20), wood, "OakFrame")
 	_box(_task_card, Vector3(0, 0, 0.14), Vector3(5.48, 3.7, 0.12), paper, "LearningPaper")
 	var caption: String = (
@@ -2564,9 +2756,11 @@ func _build_task_card() -> void:
 			node,
 			Vector3.ZERO,
 			Vector3(0.95, 0.28, 0.08),
-			_material("answer_paper", Color("d7e5c6"))
+			_material("answer_paper", Color("316b87"), 0.08)
 		)
-		_text(node, str(index + 1), Vector3(0, 0, 0.06), 0.20, ink)
+		var choice_label: String = str(activity.task_choices[index]).left(16)
+		_text(node, choice_label, Vector3(-0.40, 0, 0.06),
+			minf(0.18, 2.0 / maxf(4.0, float(choice_label.length()))), ink)
 	if not question_panel.answer_proposed.is_connected(_choose_task_answer):
 		question_panel.answer_proposed.connect(_choose_task_answer)
 

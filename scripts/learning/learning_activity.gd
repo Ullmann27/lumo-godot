@@ -38,6 +38,8 @@ var task_unit: String = ""
 var task_explanation: String = ""
 var task_choices: Array[String] = []
 var task_choice: int = -1
+var clock_hour := 12
+var clock_minute := 0
 
 
 func configure(raw: Dictionary) -> bool:
@@ -52,6 +54,17 @@ func configure(raw: Dictionary) -> bool:
 	task_choices.clear()
 	kind = str(raw.get("kind", "invalid"))
 	match kind:
+		"clock":
+			if (
+				not _bounded_integer(raw.get("hour"), 1, 12)
+				or not _bounded_integer(raw.get("minute"), 0, 59)
+				or not _configure_task_card(raw)
+				or task_choices.size() < 2
+			):
+				kind = "invalid"
+				return false
+			clock_hour = int(raw.hour)
+			clock_minute = int(raw.minute)
 		"task_card":
 			if not _configure_task_card(raw):
 				kind = "invalid"
@@ -269,7 +282,7 @@ func initial_count() -> int:
 
 
 func is_complete() -> bool:
-	if kind == "task_card":
+	if kind in ["task_card", "clock"]:
 		return false
 	if kind == "pattern":
 		return pattern_complete
@@ -425,7 +438,7 @@ func _pattern_hint_text() -> String:
 
 func explanation() -> String:
 	match kind:
-		"task_card":
+		"task_card", "clock":
 			if task_choice >= 0:
 				return (
 					"Dein Vorschlag: %s. In deiner Aufgabe kannst du ihn prüfen und bestätigen."
@@ -640,7 +653,7 @@ func companion_explanation(request: String) -> Dictionary:
 			"action": "hint",
 			"objectId": "pattern_group"
 		}
-	if kind == "task_card":
+	if kind in ["task_card", "clock"]:
 		return {
 			"reply":
 			(
@@ -684,7 +697,7 @@ func _configure_task_card(raw: Dictionary) -> bool:
 
 
 func propose_task_answer(index: int) -> bool:
-	if kind != "task_card" or index < 0 or index >= task_choices.size():
+	if kind not in ["task_card", "clock"] or index < 0 or index >= task_choices.size():
 		return false
 	task_choice = index
 	return true
