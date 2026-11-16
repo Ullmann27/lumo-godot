@@ -284,7 +284,10 @@ func _build_dock() -> void:
 			button = _action(entry[0], entry[2], func(): _route_dock(target), "Dock_" + target)
 		button.text = entry[0]
 		_skin(button, entry[2])
-		_navigation.add_child(button)
+		if button.get_parent() == null:
+			_navigation.add_child(button)
+		elif button.get_parent() != _navigation:
+			button.reparent(_navigation, false)
 
 
 func _route_dock(target: String) -> void:
