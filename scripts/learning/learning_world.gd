@@ -10,6 +10,7 @@ const QUESTION_PANEL = preload("res://scripts/learning/learning_conversation_pan
 const ACTIVITY = preload("res://scripts/learning/learning_activity.gd")
 const FOX = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const ATELIER = preload("res://scripts/learning/learning_atelier.gd")
+const HOLO_ATRIUM = preload("res://scripts/learning/lumo_holo_atrium.gd")
 const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const ENGLISH_GALLERY = preload("res://scripts/learning/english_object_gallery.gd")
 const BEVEL = preload("res://scripts/games/visual/kart_harbor_cinema.gd")
@@ -90,6 +91,7 @@ var english_models: Array[Node3D] = []
 var english_buttons: Array[Button] = []
 var english_stage_rect := Rect2()
 var _atelier: Node3D
+var _holo_stage: Node3D
 var _english_compact := false
 var companion_scope = COMPANION_SCOPE.new()
 var companion_objects: Dictionary = {}
@@ -290,10 +292,10 @@ func _build_stage() -> void:
 	var environment := WorldEnvironment.new()
 	var settings := Environment.new()
 	settings.background_mode = Environment.BG_COLOR
-	settings.background_color = Color("a6bdc4")
+	settings.background_color = Color("09182c")
 	settings.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	settings.ambient_light_color = Color("e7e6d9")
-	settings.ambient_light_energy = 0.24
+	settings.ambient_light_color = Color("bed8f5")
+	settings.ambient_light_energy = 0.34
 	settings.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	settings.tonemap_white = 6.0
 	settings.fog_density = 0.0
@@ -317,6 +319,12 @@ func _build_stage() -> void:
 	add_child(fill)
 	_atelier = ATELIER.new()
 	add_child(_atelier)
+	# Keep original scene resources for regression/rollback, but never show
+	# the outdated garden architecture behind the modern learning activity.
+	_atelier.hide()
+	_holo_stage = HOLO_ATRIUM.new()
+	_holo_stage.reduced_motion = reduced_motion
+	add_child(_holo_stage)
 	fox = _create_fox()
 	fox.name = "OriginalLearningLumo"
 	add_child(fox)
