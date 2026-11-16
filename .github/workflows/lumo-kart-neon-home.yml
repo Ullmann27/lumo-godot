@@ -1,0 +1,61 @@
+name: LUMO Kart Neon Home – real Godot UI and 3D actor tests
+on:
+  push:
+    branches:
+      - integration/lumo-2031-nextgen-jungle-20261116
+    paths:
+      - scripts/games/kart_neon_hub.gd
+      - scripts/games/kart_neon_arena.gd
+      - scripts/games/kart_spatial_menu.gd
+      - scripts/games/kart_island.gd
+      - scripts/games/kart_wordmark.gd
+      - scripts/games/kart_home_mode_choice.gd
+      - scripts/tests/kart_neon_home_regression.gd
+      - assets/kart/neon_previews/**
+      - .github/workflows/lumo-kart-neon-home.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  actual-godot-neon-home:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact experimental integration SHA
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install verified Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          echo "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3  $RUNNER_TEMP/godot.zip" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/godot"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot" >> "$GITHUB_PATH"
+      - name: Import exact 3D source and all real preview textures
+        run: |
+          set -euo pipefail
+          mkdir -p proof
+          Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit 2>&1 | tee proof/import.log
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' proof/import.log; then exit 1; fi
+          for name in volcano_night jungle_emerald_3600 desert_drift sonnenhafen; do
+            test -s "assets/kart/neon_previews/${name}.webp"
+          done
+      - name: Run actual clickable menu and live neon showroom regression
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 180 --log proof/neon-home.log --required '"status":"PASS"' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://scripts/tests/kart_neon_home_regression.gd
+      - name: Keep original Godot project integrity
+        run: |
+          set -euo pipefail
+          python3 tools/validate_project.py 2>&1 | tee proof/project-validation.log
+      - name: Preserve real editor and runtime logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-kart-neon-native-qa
+          path: proof/
+          retention-days: 30
+          if-no-files-found: warn

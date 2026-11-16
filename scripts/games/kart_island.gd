@@ -9,7 +9,7 @@ const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const TUNING = preload("res://scripts/games/kart_tuning.gd")
 const GARAGE = preload("res://scripts/games/kart_spatial_menu.gd")
-const REFERENCE_LANDING = preload("res://scripts/games/kart_spatial_landing.gd")
+const REFERENCE_LANDING = preload("res://scripts/games/kart_neon_hub.gd")
 const INTRO = preload("res://scripts/games/kart_intro.gd")
 const RECORDS = preload("res://scripts/games/kart_records.gd")
 const TRACK_PASS = preload("res://scripts/games/kart_track_pass.gd")
@@ -660,6 +660,7 @@ func _show_reference_landing(preserve_setup: bool = false) -> void:
 	reference_landing.open_settings.connect(_reference_open_settings)
 	reference_landing.return_to_games.connect(func(): _return_to_app("games"))
 	reference_landing.stage_region_changed.connect(garage.set_landing_stage_region)
+	reference_landing.preview_rotate_requested.connect(_reference_rotate_kart)
 	garage.show()
 	garage.set_landing_active(true)
 	safe_ui.add_child(reference_landing)
@@ -678,12 +679,12 @@ func _reference_select_mode(selected: String) -> void:
 	if not is_instance_valid(garage):
 		return
 	match selected:
-		"race", "cup", "time_trial":
+		"race", "cup", "time_trial", "training", "arena":
 			# Mode selection updates the actual next race on the same live stage.
 			garage.setup["mode"] = selected
 			return
-		"sonnenhafen":
-			garage.setup["track"] = "sonnenhafen"
+		"volcano_night", "jungle_emerald_3600", "desert_drift", "sonnenhafen":
+			garage.setup["track"] = selected
 			return
 		"driver":
 			garage.step = 1
@@ -701,6 +702,16 @@ func _reference_select_mode(selected: String) -> void:
 	garage._refresh()
 	garage._apply_responsive_layout.call_deferred()
 
+
+
+func _reference_rotate_kart(radians: float) -> void:
+	if not is_instance_valid(garage) or not is_instance_valid(garage.preview_pivot):
+		return
+	if not is_finite(radians):
+		return
+	garage.preview_angle = fposmod(garage.preview_angle + clampf(radians, -PI * 0.5, PI * 0.5), TAU)
+	garage.preview_pivot.rotation.y = garage.preview_angle
+	garage._fit_welcome_camera()
 
 func _reference_open_settings() -> void:
 	if not menu_active or not is_instance_valid(garage):
