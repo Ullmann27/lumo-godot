@@ -60,8 +60,12 @@ func _run() -> void:
 	_check(is_instance_valid(game._clock_dial), "clock face exists")
 	_check(game._clock_dial.get_node_or_null("HourHand") != null, "hour hand exists")
 	_check(game._clock_dial.get_node_or_null("MinuteHand") != null, "minute hand exists")
-	_check(game._clock_dial.find_children("ClockTick*", "MeshInstance3D").size() == 12,
-		"twelve clock ticks are actual geometry")
+	var tick_count := 0
+	for node: Node in game._clock_dial.get_children():
+		if node is MeshInstance3D and node.name.begins_with("ClockTick"):
+			tick_count += 1
+	_check(tick_count == 12,
+		"twelve clock ticks are actual geometry, observed=%d" % tick_count)
 	_check(game.choice_buttons.size() == 4, "four visible answer controls exist")
 	_check(game.choice_buttons[1].text == "3:30 Uhr", "real answer text replaces 1 to 4 labels")
 	_check(is_equal_approx(game._clock_dial.get_node("MinuteHand").rotation.z, -PI),
