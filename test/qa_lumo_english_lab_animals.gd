@@ -21,4 +21,5 @@ func _initialize() -> void:
 		assert(meshes.size() >= 12)
 		assert(model.get_node_or_null("ObjectTouchBody/CollisionShape3D") != null)
 		model.free()
+	print("[LumoEnglishAnimals] PASS")
 	quit(0)
