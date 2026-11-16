@@ -1,0 +1,44 @@
+name: LUMO 2034 – echte 3D-Englischtiere
+on:
+  push:
+    branches: [fix/lumo-2034-3d-english-animals-20261116]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  animals:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Official pinned Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          echo "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3  $RUNNER_TEMP/godot.zip" | sha256sum -c
+          mkdir -p "$RUNNER_TEMP/godot-bin"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Parse all native scripts and import the actual 3D project
+        run: |
+          set -euo pipefail
+          mkdir -p proof
+          Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit 2>&1 | tee proof/import.log
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' proof/import.log; then exit 1; fi
+      - name: Create animal geometry and validate touch collision
+        run: |
+          set -euo pipefail
+          Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --script res://test/qa_lumo_english_lab_animals.gd 2>&1 | tee proof/animals.log
+          grep -F '[LumoEnglishAnimals] PASS' proof/animals.log
+      - name: Preserve real Godot import and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lumo-2034-English-3D-Proof
+          path: proof/
+          retention-days: 30
