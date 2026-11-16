@@ -1,0 +1,95 @@
+name: LUMO 2034 – Lernen, Bauwelt, Kart und Dschungel
+on:
+  push:
+    branches: [integration/lumo-2034-workshop-bauwelt-neon-20261116]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  integrated:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Official pinned Godot 4.6.3 and software renderer
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          echo "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3  $RUNNER_TEMP/godot.zip" | sha256sum -c
+          mkdir -p "$RUNNER_TEMP/godot-bin"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Fresh import of actual source and checked project
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p proof
+          git rev-parse HEAD > proof/GODOT-SOURCE.txt
+          godot --headless --path . --editor --import --quit 2>&1 | tee proof/import.log
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' proof/import.log; then exit 1; fi
+          python3 tools/validate_project.py 2>&1 | tee proof/validation.log
+      - name: Real clock, correct answer buttons, phone and Fold
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --log proof/learning.log --timeout 240 \
+            --required '[LearningWorkshop] PASS' -- \
+            xvfb-run -a -s '-screen 0 1280x900x24' godot --path . \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --script scripts/tests/learning_workshop_relevance_regression.gd
+      - name: Bauwelt original 3D chapters and real touch
+        run: |
+          set -euo pipefail
+          mkdir -p proof/village proof/village-captures
+          export LUMO_CAPTURE_DIR="$GITHUB_WORKSPACE/proof/village-captures"
+          export LUMO_EVIDENCE_DIR="$GITHUB_WORKSPACE/proof/village"
+          python3 tools/run_godot_probe.py --log proof/bauwelt.log --timeout 480 \
+            --required '[VillageScene] PASS' -- \
+            xvfb-run -a -s '-screen 0 2560x1440x24' godot --path . \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --script scripts/tests/build_village_scene_regression.gd -- --capture
+      - name: Neon Kart showroom and actual previews
+        run: |
+          set -euo pipefail
+          for name in volcano_night jungle_emerald_3600 desert_drift sonnenhafen; do
+            test -s "assets/kart/neon_previews/$name.webp"
+          done
+          python3 tools/run_godot_probe.py --log proof/neon.log --timeout 240 \
+            --required '"status":"PASS"' -- \
+            godot --headless --path . --script res://scripts/tests/kart_neon_home_regression.gd
+      - name: Actual 3600 metre Jungle geometry test
+        run: |
+          set -euo pipefail
+          for file in scripts/games/kart_jungle_course.gd \
+            scripts/games/kart_jungle_audio.gd \
+            scripts/tests/kart_jungle_geometry_regression.gd \
+            assets/shaders/kart_jungle_road.gdshader; do
+            test -s "$file"
+          done
+          godot --headless --path . \
+            --script res://tools/jungle_emerald_3600/export_geometry.gd \
+            2>&1 | tee proof/jungle-export.log
+          test -s assets/kart/jungle_emerald_3600/geometry/centerline.json
+          test -s assets/kart/jungle_emerald_3600/geometry/centerline.tres
+          python3 tools/run_godot_probe.py --log proof/jungle.log --timeout 240 \
+            --required '[DschungelherzGeometry] PASS' -- \
+            godot --headless --path . \
+            --script res://scripts/tests/kart_jungle_geometry_regression.gd
+      - name: Preserve exact-source logs and real image captures
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Lumo-2034-Native-Integration
+          path: |
+            proof/
+            exports/learning-workshop/captures/
+          retention-days: 30
+          if-no-files-found: warn
