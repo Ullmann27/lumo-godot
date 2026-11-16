@@ -8,6 +8,7 @@ on:
       - scripts/games/kart_neon_hub.gd
       - scripts/games/kart_neon_arena.gd
       - scripts/games/kart_spatial_menu.gd
+      - scripts/games/kart_spatial_landing.gd
       - scripts/games/kart_island.gd
       - scripts/games/kart_wordmark.gd
       - scripts/games/kart_home_mode_choice.gd
