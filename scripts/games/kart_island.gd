@@ -1408,6 +1408,12 @@ func _apply_responsive_layout() -> void:
 	)
 	for side in ["left", "right", "top", "bottom"]:
 		modal_padding.add_theme_constant_override("margin_" + side, roundi(8.0 * ui_scale))
+	modal_height = _result_modal_height(
+		modal_height,
+		maxf(1.0, safe_ui.size.y - margin_dp * 2.0 * ui_scale),
+		modal_width,
+		ui_scale
+	)
 	for button in [top_menu_button, top_reset_button, top_pause_button]:
 		button.custom_minimum_size = top_button_size * ui_scale
 		button.add_theme_font_size_override("font_size", roundi((15.0 if short_landscape else 21.0) * ui_scale))
@@ -1514,6 +1520,54 @@ func _apply_minimap_layout() -> void:
 		map_panel.show()
 		return
 	map_panel.hide()
+
+## The finished-race dialog shows every action without scrolling. It grows to
+## its content first; only when the safe area is too short do the buttons drop
+## to the 48 dp touch minimum and the two optional lines step aside.
+func _result_modal_height(
+	base_height: float, available: float, modal_width: float, ui_scale: float
+) -> float:
+	if not finished or not modal.visible or not modal_column.has_node("ResultTitle"):
+		return base_height
+	var frame: Vector2 = modal.get_theme_stylebox("panel").get_minimum_size()
+	var padding: float = roundi(8.0 * ui_scale) * 2.0
+	var text_width: float = maxf(1.0, modal_width - frame.x - padding)
+	var needed: float = base_height
+	for stage in range(3):
+		var button_size := Vector2(80.0, 58.0 if stage == 0 else 48.0)
+		for child in modal_column.get_children():
+			if child is Button:
+				child.set_meta("kart_base_minimum_size", button_size)
+				child.custom_minimum_size = button_size * ui_scale
+			elif child.name == "ResultPlaceLine":
+				child.visible = stage < 1
+			elif child.name == "ResultCheer":
+				child.visible = stage < 2
+		needed = _result_content_height(text_width) + frame.y + padding
+		if needed <= available:
+			break
+	return minf(available, maxf(base_height, needed))
+
+
+## Wrapped labels report a reliable minimum only after layout, so the dialog
+## measures its lines against the width it is about to receive.
+func _result_content_height(text_width: float) -> float:
+	var height: float = 0.0
+	var rows: int = 0
+	for child in modal_column.get_children():
+		if not (child is Control) or not child.visible:
+			continue
+		rows += 1
+		if child is Label:
+			var font: Font = child.get_theme_font("font")
+			var font_size: int = child.get_theme_font_size("font_size")
+			height += ceilf(font.get_multiline_string_size(
+				child.text, HORIZONTAL_ALIGNMENT_LEFT, text_width, font_size
+			).y) + 2.0
+		else:
+			height += child.get_combined_minimum_size().y
+	return height + maxf(0.0, rows - 1.0) * modal_column.get_theme_constant("separation")
+
 
 func _apply_ui_scale(control: Node, ui_scale: float) -> void:
 	# These controls own their device-dp layout. In particular, the minimap
@@ -3561,6 +3615,7 @@ func _show_result() -> void:
 	modal_column.add_child(title_label)
 	if ranked:
 		var cheer: Label = _label(_place_cheer(place_now), 21)
+		cheer.name = "ResultCheer"
 		cheer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		modal_column.add_child(cheer)
 	var stats: Label = _label(_result_stats_text(), 21)
@@ -3580,7 +3635,11 @@ func _show_result() -> void:
 	if mode == "arena":
 		details += ("\n" if details != "" else "") + "%d Kristalle gesammelt" % arena_scores
 	if details != "":
-		modal_column.add_child(_label(details, 21))
+		var details_label: Label = _label(details, 21)
+		# The ranked title already names the place; this line may yield on small screens.
+		if ranked and mode != "arena":
+			details_label.name = "ResultPlaceLine"
+		modal_column.add_child(details_label)
 	if mode == "time_trial":
 		var record_text: String = "Deine neue Bestzeit – Geisterfahrt gespeichert!" if best_record else ("Bestzeit: %.2f Sekunden" % records.previous_best if records.previous_best > 0 else "Erste Trainingszeit. Ohne Zurücksetzen wird deine Geisterfahrt gespeichert.")
 		modal_column.add_child(_label(record_text, 20))
