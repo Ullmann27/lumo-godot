@@ -555,6 +555,26 @@ func _remember(before: Dictionary) -> void:
 	_redo.clear()
 
 
+## Spend wood, stone or coins for the defence layer. Defence purchases are
+## committed immediately: the village undo history is cleared so undo can
+## never refund resources while trained squads or walls remain.
+func spend_committed(cost: Dictionary) -> bool:
+	if not living_village or not _can_act():
+		return false
+	for resource: String in cost:
+		if resource not in ["wood", "stone", "coins"] or int(cost[resource]) < 0:
+			last_error = "Diese Kosten kann das Dorf nicht bezahlen."
+			return false
+	if not _affords(_player, cost):
+		last_error = "Dafür fehlen noch Baustoffe oder Münzen."
+		return false
+	_pay(_player, cost)
+	_undo.clear()
+	_redo.clear()
+	last_error = ""
+	return true
+
+
 func undo() -> bool:
 	if _undo.is_empty() or not _can_act():
 		return false

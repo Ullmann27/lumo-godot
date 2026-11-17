@@ -481,7 +481,9 @@ func _layout_camera_tools() -> void:
 		return
 	var floating_top := safe_ui.get_global_rect().end.y - 228.0
 	var toolbar_bottom := tool_actions.get_global_rect().end.y
-	var compact := floating_top < toolbar_bottom + 8.0
+	# Short landscape phones keep the playfield free: the camera row then
+	# joins the scrolling toolbar instead of floating over the world.
+	var compact := floating_top < toolbar_bottom + 8.0 or safe_ui.size.y < 400.0
 	for button in camera_tools.get_children():
 		button.mouse_filter = Control.MOUSE_FILTER_PASS if compact else Control.MOUSE_FILTER_STOP
 	# On a short landscape screen the floating camera row would intercept
