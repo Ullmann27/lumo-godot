@@ -1,22 +1,28 @@
-# TEST_RESULTS – lumo-2013/bauwelt-sandbox-20261110 (PR #144)
+# TEST_RESULTS – lumo-2040/kart-20261117 (17.11.2026, Europe/Vienna)
 
-Stand: 10.11.2026 19:55 (Europe/Vienna), Abschluss nach Nutzungslimit. Basis fe493ea1 (#140).
+Umgebung: Godot 4.6.3 headless bzw. Xvfb/llvmpipe, gl_compatibility, Box mit hoher Last (Load ~60). Keine FPS-Aussagen.
 
-## Commits von Lumo · Design
-- 6309c9a9: leerer WIP-Checkpoint (kein Feature-Code). Lokal nichts getestet.
+## Grün
+| Test | Ergebnis |
+|---|---|
+| `kart_loop_seam_regression` (neu) | PASS – 4 Loops: Spalt 0,0000 m, Versatz 0,0000 m, Banking 0,000°, Knick ≤ 2,19°, Reihen-Schritt ≤ 0,514 m, Abstand auf-/absteigende Bahn 0,249–0,429 m |
+| `kart_track_pieces_regression` (neu) | PASS – gap_ramp landet bei 21,4 m/s in der Zone, zu langsam → Lücke + Wolkenrettung; Engstelle |Spur| ≤ 3,00 m ohne Rettung; Lava 29,9 → 18,6 m/s; Eis 19° vs. 37°; Schanzenfuß-Spalt 0,0000 m |
+| `kart_track_seam_capture` (neu) | PASS – 15 Frames vorher/nachher |
+| `kart_loop_contact_regression` | PASS |
+| `kart_sonnenhafen_stunt_regression` | PASS (Assertion „Exit on the loop lane“ auf Ausfahrtsspur angepasst) |
+| `kart_stunt_continuity_regression` | PASS (Assertion „Exit preserves steering position“ auf Ausfahrtsspur angepasst) |
+| `kart_stunt_logic_regression` | PASS |
 
-## Commits eines anderen Bearbeiters (Ullmann27, 14:40–14:52), nicht von mir geprüft
-- cf42829..44da602: Füllen/Kopieren/Spiegeln als atomare Werkzeuge inkl. Touch-UI, Tests
-  `scripts/tests/build_sandbox_tools_regression.gd`, `scripts/tests/build_sandbox_ui_regression.gd`.
-- GitHub-Checks auf 44da602 (abgefragt 10.11.2026 19:55):
-  real-godot-tests success, real-native-proof (bauwelt) success, real-native-proof (precision) success,
-  combined-godot-runtime success, Gitar success, **verify failure**, CodeRabbit skipped.
-  Ursache des verify-Fehlers: nicht untersucht.
+## Rot / nicht gelaufen
+- `tools/validate_project.sh`: **abgebrochen beim ersten Schritt** `kart_regression` mit „Steering from rest still moves the kart“ / „Steering turns the actual kart heading“ = bekannter Flake (Lenk-Assertion, siehe REGELN-2040). Das Skript bricht bei der ersten Abweichung ab; alle folgenden Gate-Schritte sind **NOT RUN**. Ein zweiter Lauf wurde wegen Abschluss (13:13) abgebrochen.
+- Gegenprobe `kart_regression` einzeln: auf Basis `bb478880` und auf diesem Branch jeweils 2× nach 200 s Timeout ohne Ergebnis (Box-Last ~60) – weder grün noch rot belegt.
+- Weitere Kart-Suiten (`kart_world_regression`, `kart_ai_behavior_regression`, `kart_complete_flow_regression`, `kart_drive_feedback_regression`, `kart_action_course_regression`): **NOT RUN**.
+- DEVICE TEST NOT RUN · FOLD7 NOT RUN.
+- Draw Calls vorher: NOT RUN (nur Nachher-Frames gemessen: Loop-Achse 247, Loop-Einfahrt 213, Schanzenfuß 149–173, Desktop-Profil).
 
-## Nicht gelaufen (von mir)
-- `tools/validate_project.sh`: NOT RUN. VISUAL PROOF NOT RUN, DEVICE TEST NOT RUN, FOLD7 NOT RUN.
-
-## Nächster Schritt
-1. verify-Fehler auf 44da602 klären.
-2. M1 Rest: Chunks/MultiMesh, Migrationstest SAVE_VERSION 1, Vorher/Nachher-Captures.
-3. M2: Funktionsblöcke + Spielmodus. M3: Robo-NPCs, JSON-Missionen, Wallet.
+## Offene Punkte
+- Volles Gate `validate_project.sh` auf ruhiger Maschine wiederholen (Grund: Abbruch am bekannten Flake + Abschluss).
+- Rivalen reagieren nicht auf Lava/Eis (nur Spieler-Effekt); Engstelle wirkt für alle (Wand).
+- Lava/Eis noch mit einfachen Materialien statt eigenem Shader.
+- Bei 9,6 m/s ohne Gas blieb das Kart in einem Testlauf an der Lippe einer gap_ramp stehen (nicht weiter untersucht; mit Gas normaler Ablauf).
+- Temporärer Prüf-Worktree `/workspace/lumo/wt-2040-kart-basecheck` (detached bb478880) liegt noch auf der Box (nicht gelöscht, Regel „nichts löschen“).

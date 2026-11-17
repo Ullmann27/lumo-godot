@@ -178,7 +178,10 @@ func _check_full_loop() -> void:
 	assert(stars >= 5, "Stars on the riding line collected (%d)" % stars)
 	# Onward: back on the road, fast, and into the tunnel without a reset.
 	var road: Dictionary = game.world.sample_road(game.player.position, game.previous_road_distance)
-	assert(absf(float(road.lateral) - STUNT.LOOP_LANE) < 0.6, "Exit on the loop lane")
+	assert(
+		absf(float(road.lateral) - STUNT.LOOP_LANE - STUNT.LOOP_EXIT_SHIFT) < 0.6,
+		"Exit on the loop's exit lane beside the entry"
+	)
 	assert(absf(game.player.position.y - float(road.height)) < 0.3, "Exit on the road surface")
 	assert(game.speed > 12.0, "Kart keeps speed after the loop (%.1f)" % game.speed)
 	var tunnel: float = STUNT.tunnel_start(game.world)

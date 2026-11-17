@@ -10,7 +10,16 @@ const CRYSTAL_RESONANCE = preload("res://scripts/games/kart_crystal_resonance_wo
 
 static func prepare(world) -> void:
 	if world.track_id in ["candy_cloud", "volcano_night", "galaxy_ringway"]:
-		world.loop_layout = {"start": world.length * 0.72, "lane": 2.9}
+		# Entry on the outer right lane, exit on the inner right lane: the two
+		# tracks of the ring sit side by side and never cross each other.
+		world.loop_layout = {
+			"start": world.length * 0.72,
+			"lane": 4.0,
+			"exit_shift": -2.75,
+			"deck_half_width": 1.2,
+			"lateral_limit": 0.3,
+			"lane_tolerance": 1.3,
+		}
 	if (
 		world.track_id
 		in ["crystal_canyon", "candy_cloud", "volcano_night", "winter_sprint", "galaxy_ringway"]
