@@ -71,6 +71,9 @@ func _reduced_motion_case() -> void:
 
 func _run() -> void:
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
+	# Saved Kart settings (e.g. "Ruhige Bewegung" left on by another run) must not
+	# decide this test, and its own reduced-motion case must not outlive it.
+	DirAccess.remove_absolute("user://kart_preferences.cfg")
 	var bridge: Node = root.get_node("HostBridge")
 	for entry in WINDOWS:
 		var window: Vector2i = entry[0]
@@ -189,6 +192,7 @@ func _run() -> void:
 			failures += 1
 	bridge._options.erase("displayDensity")
 	await _reduced_motion_case()
+	DirAccess.remove_absolute("user://kart_preferences.cfg")
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	if failures > 0:
 		print("[KartResultReach] FAIL: %d checks" % failures)

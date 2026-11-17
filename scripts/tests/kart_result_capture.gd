@@ -97,6 +97,9 @@ func _run() -> void:
 		return
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
+	# Gespeicherte Kart-Einstellungen (etwa „Ruhige Bewegung“) dürfen das Bild
+	# nicht bestimmen, und --reduced darf nicht gespeichert zurückbleiben.
+	DirAccess.remove_absolute("user://kart_preferences.cfg")
 	var bridge: Node = root.get_node("HostBridge")
 	for place in places:
 		root.size = sizes[0][0]
@@ -190,6 +193,7 @@ func _run() -> void:
 		if not (await SCENE_TEARDOWN.release_scene(self, game, "[KartResultCapture]")):
 			failures += 1
 	bridge._options.erase("displayDensity")
+	DirAccess.remove_absolute("user://kart_preferences.cfg")
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	if failures > 0:
 		print("[KartResultCapture] FAIL: %d problems" % failures)
