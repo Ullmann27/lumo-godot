@@ -88,17 +88,34 @@ preserved. This prevents pale suits, tyres and item accents in Blender without
 altering runtime materials. The color convention follows the
 [glTF 2.0 specification](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html).
 
+Tunnel export uses a real rendering backend: Godot's headless dummy backend does
+not retain usable MultiMesh transform/color readback. The exporter rejects that
+backend for tunnel/all mode before creating output files. Its bounded tunnel
+scene keeps the actual road ribbons, nearby road instances and themed passage;
+instance transforms are checked before writing. The camera and optional studio
+light points are sampled from the existing driving curve. They do not add game
+lighting or alter the course.
+
 ```sh
 godot --headless --path . --script res://scripts/tests/kart_adventure_asset_export.gd -- --mode=items --output=/absolute/output/models
 godot --headless --path . --script res://scripts/tests/kart_adventure_asset_export.gd -- --mode=vehicles --output=/absolute/output/models
-godot --headless --path . --script res://scripts/tests/kart_adventure_asset_export.gd -- --mode=tunnel --track-id=crystal_canyon --output=/absolute/output/models
+python3 tools/run_local_renderer.py --display 120 --output /absolute/output/tunnel-export-qa --timeout 240 -- --script res://scripts/tests/kart_adventure_asset_export.gd -- --mode=tunnel --track-id=crystal_canyon --output=/absolute/output/models
 blender -b --python-exit-code 1 --python tools/art/render_kart_adventure.py -- --input /absolute/output/models --output /absolute/output/blender-items --mode items --samples 96 --animate
 blender -b --python-exit-code 1 --python tools/art/render_kart_adventure.py -- --input /absolute/output/models --output /absolute/output/blender-vehicles --mode vehicles --samples 96
 blender -b --python-exit-code 1 --python tools/art/render_kart_adventure.py -- --input /absolute/output/models --output /absolute/output/blender-tunnel --mode tunnel --track-id=crystal_canyon --samples 64
 ```
+
+The isolated renderer command requires an unused display number and a new QA
+output directory. An existing desktop can instead run the export script with
+Godot's normal Compatibility renderer and without `--headless`.
 
 The Blender scenes retain the exported product meshes. Review lighting, cameras,
 floor and display plinths are presentation elements. The optional item loop is
 a studio preview of the real geometry, not a recording of an earned gameplay
 event. Blender files, images, clips and export manifests are supplied separately
 with the review package; the repository contains their reproducible source.
+The item review uses Standard color display for clear hue separation; vehicles
+use AgX. The tunnel uses broad studio lamps, bounded light paths and Blender's
+albedo-guided bilateral compositor to reduce CPU sampling noise while retaining
+part boundaries. This review setup does not change the game's materials or
+lighting. The saved Blender scene includes those settings for inspection.

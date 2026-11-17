@@ -14,7 +14,7 @@ from pathlib import Path
 import sys
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 
 def arguments():
@@ -261,16 +261,63 @@ def godot_to_blender(value):
     return Vector((value[0], -value[2], value[1]))
 
 
+def configure_tunnel_review(scene):
+    # The passage is a bounded studio review. Broad lamps illuminate it;
+    # the small emissive game decorations remain visible without acting as
+    # thousands of sampled lights. No source palette or mesh is changed.
+    for source_material in bpy.data.materials:
+        source_material.cycles.emission_sampling = "NONE"
+    scene.cycles.sample_clamp_indirect = 0.5
+    scene.cycles.sample_clamp_direct = 1.0
+    scene.cycles.max_bounces = 2
+    scene.cycles.diffuse_bounces = 2
+    scene.cycles.glossy_bounces = 1
+    scene.cycles.blur_glossy = 1.0
+    # This Blender build has no usable Cycles denoiser. Its native bilateral
+    # compositor uses the clean albedo pass to preserve edges between parts.
+    bpy.context.view_layer.use_pass_diffuse_color = True
+    scene.use_nodes = True
+    nodes = scene.node_tree.nodes
+    nodes.clear()
+    layers = nodes.new("CompositorNodeRLayers")
+    guide = layers.outputs.get("DiffCol") or layers.outputs.get("Diffuse Color")
+    assert guide is not None, "The albedo guide pass must exist"
+    filtered = nodes.new("CompositorNodeBilateralblur")
+    filtered.name = "LUMO_AlbedoGuidedStudioFilter"
+    filtered.iterations = 2
+    filtered.sigma_space = 4.0
+    filtered.sigma_color = 0.1
+    result = nodes.new("CompositorNodeComposite")
+    scene.node_tree.links.new(layers.outputs["Image"], filtered.inputs["Image"])
+    scene.node_tree.links.new(guide, filtered.inputs["Determinator"])
+    scene.node_tree.links.new(filtered.outputs["Image"], result.inputs["Image"])
+
+
 def tunnel(args, scene):
     manifest = json.loads((args.input / "manifest-tunnel.json").read_text())
     record = next(row for row in manifest["models"] if row.get("track") == args.track_id)
     import_asset(args.input / record["file"], "LUMO_AdventureTunnel", normalize=False)
     eye = godot_to_blender(record["camera"])
     target = godot_to_blender(record["target"])
-    camera(eye, target, 25.0)
+    view = camera(eye, target, 25.0)
+    # Match the reviewed Godot driver's view, including road banking and the
+    # vertical field of view, rather than guessing a photographic lens.
+    up = godot_to_blender(record["camera_up"]).normalized()
+    forward = (target - eye).normalized()
+    right = forward.cross(up).normalized()
+    assert right.length > 0.99
+    up = right.cross(forward).normalized()
+    view.rotation_mode = "QUATERNION"
+    view.rotation_quaternion = Matrix((right, up, -forward)).transposed().to_quaternion()
+    view.data.sensor_fit = "VERTICAL"
+    view.data.sensor_height = 24.0
+    view.data.lens = view.data.sensor_height / (2.0 * math.tan(math.radians(record["vertical_fov_degrees"]) * 0.5))
     area("LUMO_PortalSoftlight", eye + Vector((0, 0, 7)), target, 3500, 9.0)
     area("LUMO_GalleryFill", target + Vector((0, 0, 3)), target - Vector((0, 0, 2)), 1800, 6.0,
          (0.65, 0.83, 1.0))
+    for index, point in enumerate(record["review_light_points"]):
+        area(f"LUMO_ReviewInterior_{index + 1:02d}", godot_to_blender(point["position"]),
+             godot_to_blender(point["target"]), 1200, 8.0, (0.86, 0.91, 1.0))
     sun_data = bpy.data.lights.new("LUMO_Daylight", "SUN")
     sun_data.energy = 2.0
     sun_data.angle = math.radians(12)
@@ -279,6 +326,7 @@ def tunnel(args, scene):
     sun.rotation_euler = (math.radians(25), math.radians(-24), math.radians(36))
     scene.render.resolution_x = 1920
     scene.render.resolution_y = 1080
+    configure_tunnel_review(scene)
     render(scene, args.output / ("LUMO_Tunnel_" + args.track_id + ".png"))
     pack_and_save(args.output / ("LUMO_Tunnel_" + args.track_id + ".blend"))
 
