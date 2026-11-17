@@ -43,7 +43,7 @@ static func _mode_cards(hub: Control, factor: float, vertical: bool) -> void:
 					if row is HBoxContainer:
 						row.add_theme_constant_override("separation", roundi(6.0 * factor))
 
-static func apply(hub: Control) -> void:
+static func arrange(hub: Control) -> void:
 	var viewport_size := hub.get_viewport_rect().size
 	var runtime: Node = hub.get_tree().root.get_node_or_null("MobileRuntime")
 	var density := 1.0
