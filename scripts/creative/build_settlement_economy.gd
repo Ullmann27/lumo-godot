@@ -795,6 +795,19 @@ static func campaign_status(model, town: Dictionary) -> Dictionary:
 	return result
 
 
+## All twelve chapters with their live goals and a state of "done",
+## "current" or "locked". Read-only: derived from the saved chapter index.
+static func campaign_overview(model, town: Dictionary) -> Array:
+	var reached := int(town.campaign_chapter)
+	var result: Array = []
+	for index in range(12):
+		var chapter := _chapter(model, town, index)
+		chapter.chapter = index + 1
+		chapter.state = "done" if index < reached else ("current" if index == reached else "locked")
+		result.append(chapter)
+	return result
+
+
 static func valid(town: Dictionary, whole: Callable) -> bool:
 	if town.get("economy_version") != 2:
 		return false

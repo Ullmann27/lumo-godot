@@ -3,7 +3,9 @@ extends RefCounted
 ## Each terrain patch has its own bounds for renderer frustum culling. Empty
 ## terrain never creates one node per cell, and decoration stays off build land.
 const ORIGINAL_EDGE := 24.5
-const CHUNK := 32.0
+## 64 m patches: at the start camera most patches are on screen, so larger
+## patches save draw calls while still giving the far land culling bounds.
+const CHUNK := 64.0
 
 
 static func dress(root: Node3D, kit: RefCounted, edge: float) -> void:
@@ -73,10 +75,11 @@ static func _add_ground_patch(root: Node3D, area: Rect2, material: Material) -> 
 
 static func _add_border_groves(root: Node3D, edge: float) -> void:
 	for side in [-1.0, 1.0]:
-		for section in range(8):
+		# Two batched sections per side (28 trees each) instead of eight.
+		for section in range(2):
 			var transforms: Array[Transform3D] = []
-			for index in range(7):
-				var z := -edge + float(section) * edge / 4.0 + float(index) * 4.4
+			for index in range(28):
+				var z := -edge + float(section) * edge + float(index) * 4.4 + floorf(index / 7.0) * (edge / 4.0 - 30.8)
 				var scale := 1.1 + float(index % 3) * 0.18
 				transforms.append(Transform3D(Basis.from_scale(Vector3.ONE * scale),
 					Vector3(side * (edge + 2.2), -0.12, z)))
