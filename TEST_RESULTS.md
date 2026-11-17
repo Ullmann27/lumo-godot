@@ -1,3 +1,31 @@
+# TEST_RESULTS – ccr-54af69f2-4uged4 (Integration-2 auf Nullpunkt) – 17.11.2026
+
+Basis `lumo-nullpunkt/integration-20261117` @ `ebd3401`. Nicht nach main gemergt, kein Release, keine APK aus diesem Stand.
+Alle Angaben: in dieser Sitzung selbst ausgeführt, Linux, Godot 4.6.3. Renderer-Tests unter Xvfb mit Software-GL. Keine Geräte- und keine FPS-Aussage.
+
+## Reparaturen
+- `8eb2493` Ergebnisdialog: „Zur Spieleauswahl“/„Zum Lernen“ lagen unterhalb des sichtbaren Scrollbereichs (Handy quer, Fold außen/innen, 800×480). Ursache des roten `kart_complete_flow_regression.gd:450`. Neu: `kart_result_reachability_regression.gd` (5 Displaygrößen; ohne Fix rot).
+- `a5061c7` Himmelsinseln-Sprung: seit der verlängerten Route (`f5cc417`, per Bisect bestimmt) nur noch 0,48 s Flug. Jetzt 0,75 s; Schleichfahrt fällt weiter. Ursache des roten `kart_jump_regression`.
+
+## Integration-2 (einzeln gemergt)
+memory-godot `90f0c4e`, kreativ `f6a2b44`, bauwelt `6005586`, kart (Bauteile) `a1587ff`, tutor-godot `55c0135` (WIP, in der App nicht erreichbar), menu-strecken `9f5e30b` (2 Konflikte gelöst).
+Nicht gemergt: `lumo-kart/gameplay-items-20261117` @ `17b63b4` – zweites Item-System neben den Resonanz-Ringen, 24 Konfliktblöcke; braucht ein eigenes Paket. Stream-Berichte unverändert unter `docs/integration-2/`.
+
+## Grün
+- Import ohne Fehler.
+- Alle Schritte aus `tools/validate_project.sh` (22 Tests). Der Gesamtlauf brach unter Parallellast bei `kart_pause_layout_regression` am 180-s-Limit ab; einzeln wiederholt grün, ebenso die vier folgenden.
+- Kart: complete_flow, result_reachability, jump, regression, physics, touch, race_bridge, host_bridge, precision_jump (55), neon_home (38), neon_readability (1180), adventure_drama (874), track_pieces, loop_seam, nextgen_ui_smoke; unter Xvfb: rival_flight, stunt_continuity, sonnenhafen_stunt, pause_layout.
+- Memory: `memory_table_regression` mit CI-Parametern (7020 Prüfungen, 8 Bilder), `memory_table_capture`.
+- Bauwelt/Dorf: campaign_map (54), defense (162), frontier, settlement (194), settlement_play (127), village_economy (339), village_scaling, nextgen_play, sandbox_tools.
+- Schatzsuche: island, density (1085), exploration (92), wisp. Rhythmus: party, tour (2118), tour_play (87).
+
+## Nicht gelaufen
+- Übrige rund 300 Testskripte, alle Capture-/Visual-Workflows, CI auf diesem Kopf.
+- Nachhilfe-Szene (kein Test vorhanden), Puzzle, Karten-, 4-Gewinnt-, Quiz-Tisch.
+- APK, Emulator, Gerät, Fold: NOT RUN.
+
+---
+
 # TEST_RESULTS – lumo-2040/bauwelt-20261117 (PR #195)
 
 Stand: 17.11.2026 ca. 13:30 (Europe/Vienna). Basis bb478880. Godot 4.6.3, Xvfb/llvmpipe, gl_compatibility. Keine FPS-Aussagen.
