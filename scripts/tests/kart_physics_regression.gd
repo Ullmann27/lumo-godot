@@ -42,15 +42,18 @@ func _test_walls(track: String) -> void:
 		await _start("training", track)
 		var start_distance: float = game.distance
 		var widest: float = 0.0
+		var overshoot: float = -INF
 		for frame in range(300):
 			# Aim far beyond the rail at full turbo speed: the worst case for tunnelling.
 			_steer_towards(game.world.position_at(game.previous_road_distance + 14.0, side * 14.0))
 			game.boost_time = 3.0
 			game._physics_process(STEP)
 			widest = maxf(widest, absf(game.lane))
-		var wall: float = game.WORLD.WALL_LATERAL
+			# Dschungelherz has a measured per-distance rail; legacy tracks keep 5 m.
+			overshoot = maxf(overshoot, absf(game.lane) - game.world.wall_lateral_at(game.distance))
 		assert(
-			widest <= wall + 0.02, "%s: the kart stays inside the rail (%.2f m)" % [track, widest]
+			overshoot <= 0.02,
+			"%s: the kart stays inside the rail (widest %.2f m, overshoot %.2f m)" % [track, widest, overshoot]
 		)
 		assert(game.wall_contacts > 10, "%s: the rail was actually hit" % track)
 		assert(game.reset_count == 0, "%s: a rail hit never drops the kart" % track)
@@ -242,14 +245,22 @@ func _test_skill_resonance_rings() -> void:
 	for ring in game.item_boxes:
 		assert(str(ring.get_meta("lumo_racing_pickup", "")) == "skill_resonance",
 			"Random violet mystery prisms must not masquerade as racing resonance rings")
-		assert(ring.get_child_count() == 1, "A ring uses only one opaque draw surface")
-		var halo: MeshInstance3D = ring.get_node("ResonanceHalo")
-		assert(halo.mesh is TorusMesh, "Real luminous ring geometry replaces box facets")
+		# f5cc4176 gate: static GateStructure (halo + light rail), the three real
+		# outcome symbols and the travelling GateMotion traces; the root itself
+		# stays the placement frame.
+		assert(ring.get_child_count() == 3, "A gate has exactly structure, outcome symbols and motion")
+		assert(ring.get_node_or_null("OutcomeSymbols") != null, "All skill outcomes stay visible")
+		assert(ring.get_node_or_null("GateMotion") != null, "The powered crossing traces exist")
+		var halo: MeshInstance3D = ring.get_node("GateStructure/ResonanceHalo")
+		assert(halo.mesh is TorusMesh, "Real ring geometry replaces box facets")
 		assert(halo.material_override is StandardMaterial3D)
-		var finish: StandardMaterial3D = halo.material_override
+		assert(halo.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+		var rail: MeshInstance3D = ring.get_node("GateStructure/InnerLightRail")
+		assert(rail.mesh is TorusMesh and rail.material_override is StandardMaterial3D)
+		var finish: StandardMaterial3D = rail.material_override
 		assert(finish.emission_enabled and finish.emission_energy_multiplier <= 2.0,
 			"Visible low-poly racing arch without extreme mobile bloom")
-		assert(halo.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+		assert(rail.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
 	# Deprecated callers cannot receive random / rank-biased loot.
 	assert(game._item_pool_for_place(1) == ["boost"])
 	assert(game._item_pool_for_place(6) == ["boost"])
