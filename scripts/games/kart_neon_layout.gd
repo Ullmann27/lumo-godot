@@ -50,6 +50,7 @@ static func arrange(hub: Control) -> void:
 		hub._overlay.position = (Vector2((area.x - w) * 0.5, (area.y - h) * 0.5) * k).round()
 		hub._overlay.size = (Vector2(w, h) * k).round()
 		hub._overlay.scale = Vector2.ONE
+		hub.set_race_kind_layout(area.x > area.y, area.y < 480.0)
 		_scale_overlay(hub, k)
 
 
@@ -57,6 +58,11 @@ static func _scale_overlay(hub: Control, k: float) -> void:
 	hub._overlay_title.add_theme_font_size_override("font_size", roundi(24 * k))
 	for label in hub._overlay_list.get_children():
 		label.add_theme_font_size_override("font_size", roundi(17 * k))
+	for kind in hub._race_kinds.get_children():
+		kind.custom_minimum_size = Vector2(0, 60) * k
+		kind.add_theme_font_size_override("font_size", roundi(16 * k))
+	hub._live_start.custom_minimum_size = Vector2(0, 64) * k
+	hub._live_start.add_theme_font_size_override("font_size", roundi(22 * k))
 	var close: Button = hub._overlay.find_child("CloseOverlay", true, false)
 	close.custom_minimum_size = Vector2(120, 56) * k
 	close.add_theme_font_size_override("font_size", roundi(18 * k))

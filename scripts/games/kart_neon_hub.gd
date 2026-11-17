@@ -62,6 +62,11 @@ var _rotation_right: Button
 var _overlay: PanelContainer
 var _overlay_title: Label
 var _overlay_list: VBoxContainer
+## Rennarten bleiben dauerhaft im Menü, damit jede Rennart einen Tipp entfernt ist.
+var _race_kinds: GridContainer
+var _race_kinds_compact := false
+var _race_kind_buttons: Dictionary = {}
+var _live_start: Button
 var _weekly_track := ""
 var _stage_bounds := Rect2()
 var _hub_ready := false
@@ -317,7 +322,10 @@ func _route(target: String) -> void:
 	match target:
 		"home":
 			_close_overlay()
-		"race", "cup":
+		"race":
+			# Die Leiste öffnet die Auswahl aller Rennarten; die große Kachel startet sofort.
+			_open_overlay("race")
+		"cup":
 			_press_mode(target)
 		"season", "event":
 			_press_mode(target)
@@ -379,12 +387,91 @@ func _build_overlay() -> void:
 	_overlay_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_overlay_list.add_theme_constant_override("separation", 6)
 	scroll.add_child(_overlay_list)
+	_build_race_kinds(column)
+
+
+## Alle fünf Rennarten des Katalogs. Das Neon-Menü startete sonst nur Rennen und
+## Turnier; Zeitfahren, Training und Arena waren nur noch über die Garage erreichbar.
+func _build_race_kinds(column: VBoxContainer) -> void:
+	_race_kinds = GridContainer.new()
+	_race_kinds.name = "RaceKinds"
+	_race_kinds.columns = 1
+	_race_kinds.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_race_kinds.add_theme_constant_override("h_separation", 8)
+	_race_kinds.add_theme_constant_override("v_separation", 8)
+	_race_kinds.visible = false
+	_overlay_list.add_child(_race_kinds)
+	for entry in CATALOG.MODES:
+		var id: String = str(entry.id)
+		var kind := Button.new()
+		# Rennen und Turnier haben schon große Kacheln mit den Namen Mode_race/Mode_cup.
+		kind.name = ("RaceKind_" if id in ["race", "cup"] else "Mode_") + id
+		kind.custom_minimum_size = Vector2(0, 60)
+		kind.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		kind.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		kind.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		kind.set_meta("race_kind_name", str(entry.name))
+		kind.set_meta("race_kind_description", str(entry.description))
+		THEME.premium_button(kind, NEON, false)
+		kind.pressed.connect(func(): _select_race_kind(id))
+		_race_kinds.add_child(kind)
+		_race_kind_buttons[id] = kind
+	_live_start = Button.new()
+	_live_start.name = "LiveQuickStart"
+	_live_start.text = "START"
+	_live_start.custom_minimum_size = Vector2(0, 64)
+	THEME.premium_button(_live_start, AMBER, true)
+	_live_start.pressed.connect(func(): quick_start.emit())
+	_live_start.visible = false
+	column.add_child(_live_start)
+	_refresh_race_kinds()
+
+
+func _select_race_kind(id: String) -> void:
+	current_mode = id
+	mode_selected.emit(id)
+	_refresh_race_kinds()
+
+
+func _refresh_race_kinds() -> void:
+	for id in _race_kind_buttons:
+		var kind: Button = _race_kind_buttons[id]
+		var chosen: bool = id == current_mode
+		kind.text = ("✓ " if chosen else "") + str(kind.get_meta("race_kind_name"))
+		if not _race_kinds_compact:
+			kind.text += "\n" + str(kind.get_meta("race_kind_description"))
+		kind.tooltip_text = str(kind.get_meta("race_kind_description"))
+		kind.alignment = HORIZONTAL_ALIGNMENT_CENTER if _race_kinds_compact else HORIZONTAL_ALIGNMENT_LEFT
+		kind.modulate = Color.WHITE if chosen else Color(1, 1, 1, 0.82)
+
+
+## Querformat: drei Spalten nur mit Namen, damit alle fünf Rennarten und START
+## ohne Scrollen sichtbar sind. Hochformat: eine Spalte mit Beschreibung.
+func set_race_kind_layout(landscape: bool, short: bool) -> void:
+	_race_kinds.columns = 3 if landscape else 1
+	_race_kinds_compact = landscape and short
+	_refresh_race_kinds()
 
 
 func _open_overlay(kind: String) -> void:
 	for child in _overlay_list.get_children():
+		if child == _race_kinds:
+			continue
 		_overlay_list.remove_child(child)
 		child.queue_free()
+	_race_kinds.visible = kind == "race"
+	_live_start.visible = kind == "race"
+	if kind == "race":
+		_overlay_title.text = "Rennarten"
+		_overlay_line("Wähle deine Rennart. START beginnt das Rennen.", Color("d9e6ff"))
+		_overlay_list.move_child(_race_kinds, -1)
+		_refresh_race_kinds()
+		_overlay.visible = true
+		_overlay.move_to_front()
+		_layout()
+		for tile in _navigation.get_children():
+			tile.set_active(tile.name == "Dock_race")
+		return
 	var unlocked := PATH.unlocked_count(total_stars)
 	var all := PATH.milestones()
 	if kind == "season":
