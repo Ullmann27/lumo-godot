@@ -56,7 +56,8 @@ func _continuous_player_loop() -> void:
 		"Complete player loop without rescue"
 	)
 	assert(
-		absf(game.lane - STUNT.LOOP_LANE - exit_offset) < 0.01, "Exit preserves steering position"
+		absf(game.lane - STUNT.LOOP_LANE - STUNT.LOOP_EXIT_SHIFT - exit_offset) < 0.01,
+		"Exit preserves steering position on the exit lane"
 	)
 	await _capture("loop-exit")
 	completed_checks += 1
