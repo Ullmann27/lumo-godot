@@ -562,7 +562,7 @@ func _finish() -> void:
 			}
 		)
 	_clear_menu()
-	menu_box.add_child(_star_row(earned))
+	menu_box.add_child(KIT.star_row(earned))
 	menu_box.add_child(
 		_menu_text(
 			"Deine Sterne funkeln!" if earned > 0 else "Nächster Versuch – du schaffst das!",
@@ -804,42 +804,6 @@ func _set_play_hud_visible(playing: bool) -> void:
 	progress_bar.visible = playing
 	if not playing:
 		goal_banner.visible = false
-
-
-func _star_row(earned: int) -> HBoxContainer:
-	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 16)
-	for i in range(3):
-		row.add_child(_star_icon(i < earned))
-	return row
-
-
-func _star_icon(filled: bool) -> Control:
-	var icon := Control.new()
-	icon.custom_minimum_size = Vector2(48, 48)
-	icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	icon.set_meta("filled", filled)
-	icon.draw.connect(_draw_star.bind(icon))
-	icon.resized.connect(icon.queue_redraw)
-	return icon
-
-
-func _draw_star(icon: Control) -> void:
-	var filled := bool(icon.get_meta("filled"))
-	var center := icon.size * 0.5
-	var radius := minf(icon.size.x, icon.size.y) * 0.46
-	var points := PackedVector2Array()
-	for i in range(10):
-		var angle := deg_to_rad(-90.0 + float(i) * 36.0)
-		var ring := radius if i % 2 == 0 else radius * 0.42
-		points.append(center + Vector2(cos(angle), sin(angle)) * ring)
-	if filled:
-		icon.draw_colored_polygon(points, Color("ffd56a"))
-		icon.draw_polyline(points + PackedVector2Array([points[0]]), Color("ffe9a8"), 1.6, true)
-	else:
-		icon.draw_colored_polygon(points, Color(0.16, 0.22, 0.34, 0.95))
-		icon.draw_polyline(points + PackedVector2Array([points[0]]), Color(0.62, 0.74, 0.9, 0.7), 1.8, true)
 
 
 func _batch_speakers(specs: Array[Dictionary]) -> void:

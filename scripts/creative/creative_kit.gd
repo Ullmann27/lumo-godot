@@ -312,3 +312,38 @@ static func label(text: String, size: int = 18) -> Label:
 	control.add_theme_font_size_override("font_size", size)
 	control.add_theme_color_override("font_color", Color("e4f5ff"))
 	return control
+
+
+class StarIcon extends Control:
+	var filled: bool = false
+
+	func _ready() -> void:
+		custom_minimum_size = Vector2(48, 48)
+		size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		resized.connect(queue_redraw)
+
+	func _draw() -> void:
+		var center := size * 0.5
+		var radius := minf(size.x, size.y) * 0.46
+		var points := PackedVector2Array()
+		for i in range(10):
+			var angle := deg_to_rad(-90.0 + float(i) * 36.0)
+			var ring := radius if i % 2 == 0 else radius * 0.42
+			points.append(center + Vector2(cos(angle), sin(angle)) * ring)
+		if filled:
+			draw_colored_polygon(points, Color("ffd56a"))
+			draw_polyline(points + PackedVector2Array([points[0]]), Color("ffe9a8"), 1.6, true)
+		else:
+			draw_colored_polygon(points, Color(0.16, 0.22, 0.34, 0.95))
+			draw_polyline(points + PackedVector2Array([points[0]]), Color(0.62, 0.74, 0.9, 0.7), 1.8, true)
+
+
+static func star_row(earned: int, total: int = 3) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 16)
+	for i in range(total):
+		var icon := StarIcon.new()
+		icon.filled = i < earned
+		row.add_child(icon)
+	return row

@@ -267,7 +267,7 @@ func _exercise() -> void:
 
 	await _tap(_button("Rucksack"))
 	await _shot("inventory")
-	await _dialog("full seven-item inventory and three discoveries")
+	await _dialog("full seven-item inventory and all discoveries")
 	await _drag_dialog()
 	var before_rotation: String = JSON.stringify(game.model.to_data())
 	var dimensions := root.size
@@ -283,7 +283,7 @@ func _exercise() -> void:
 	_check(not game.paused and game.joystick.enabled, "Real inventory return re-enables exploration")
 	_check(game._save(), "The original atomic save still succeeds after responsive dialogs")
 	saved = JSON.parse_string(FileAccess.get_file_as_string(game.save_path))
-	_check(restored.restore(saved) and restored.completed and restored.inventory.size() == 7 and restored.discoveries.size() == 3, "Completed inventory survives original save/restore without migration")
+	_check(restored.restore(saved) and restored.completed and restored.inventory.size() == 7 and restored.discoveries.size() == STATE.DISCOVERIES.size(), "Completed inventory survives original save/restore without migration")
 
 
 func _run() -> void:
