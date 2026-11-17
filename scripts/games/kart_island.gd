@@ -1597,7 +1597,7 @@ func _layout_result(ui_scale: float, margin_dp: float, display_size: Vector2) ->
 	else:
 		var free_bottom: float = origin.y + area.y * 0.5 + modal.offset_top
 		result_free = Vector2(1.0, clampf(free_bottom / viewport_size.y, 0.2, 1.0))
-		result_focus = Vector2(0.5, result_free.y * 0.53)
+		result_focus = Vector2(0.5, result_free.y * 0.57)
 	modal.queue_redraw()
 
 
@@ -3145,9 +3145,10 @@ func _update_result_camera(delta: float, snap: bool) -> void:
 	var tan_vertical: float = tan(deg_to_rad(target_fov) * 0.5)
 	var tan_horizontal: float = tan_vertical * aspect
 	# Kart mit Lumo (schräg von vorn, mit Perspektive etwa 3,6 m breit und
-	# 2,5 m hoch) füllt die freie Fläche.
+	# 2,5 m hoch) füllt die freie Fläche; hoch steht es ohne Tafel daneben.
+	var subject_width: float = 3.6 if result_free.x < 1.0 else 3.0
 	var view_distance: float = clampf(maxf(
-		3.6 / (2.0 * tan_horizontal * result_free.x * 0.92),
+		subject_width / (2.0 * tan_horizontal * result_free.x * 0.92),
 		2.5 / (2.0 * tan_vertical * result_free.y * 0.86)
 	), 2.8, 9.5)
 	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
