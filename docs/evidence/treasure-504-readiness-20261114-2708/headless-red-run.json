@@ -1,0 +1,25 @@
+{
+  "command": [
+    "godot",
+    "--headless",
+    "--path",
+    "/home/agent/lumo-treasure-2708/source",
+    "--audio-driver",
+    "Dummy",
+    "--rendering-method",
+    "gl_compatibility",
+    "--script",
+    "res://scripts/tests/treasure_title_contrast_regression.gd"
+  ],
+  "exit_code": 1,
+  "source_before": {
+    "scripts/creative/treasure_world.gd": "ce7c7df90f85604f912ff1afc46077935053e883359db47c3f9e9d7dcc4fe65d",
+    "scripts/tests/treasure_title_contrast_regression.gd": "ea6087ef56a96d585382f4228661d753121152aa249c4a5afdc99d2e946941ea"
+  },
+  "source_after": {
+    "scripts/creative/treasure_world.gd": "ce7c7df90f85604f912ff1afc46077935053e883359db47c3f9e9d7dcc4fe65d",
+    "scripts/tests/treasure_title_contrast_regression.gd": "ea6087ef56a96d585382f4228661d753121152aa249c4a5afdc99d2e946941ea"
+  },
+  "elapsed_seconds": 17.873734617009177,
+  "scope": "Actual Godot baseline production with new regression; headless, no raster or Android claim"
+}

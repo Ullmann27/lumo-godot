@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "scope": "Original targeted runtime evidence and review; no PNG, full gate, Android or Play acceptance",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3994,
+      "sha256": "db250a78c2b12180d3b30dd5b84c87d059f6dad0398fa392329003d0101af3fc"
+    },
+    {
+      "path": "headless-green-godot.log",
+      "bytes": 3366,
+      "sha256": "2f8dbddbb3bdd1f0927946fd59b29ac99e1e9f8efdb81430ae17293a8207ddbb"
+    },
+    {
+      "path": "headless-green-report.json",
+      "bytes": 29032,
+      "sha256": "8d9f618b765066258bc1a64d318d1d3890a95f75b58fe788bb8b16835fec245a"
+    },
+    {
+      "path": "headless-green-run.json",
+      "bytes": 966,
+      "sha256": "bb1b92fa1ef87ed9fd14968eebb6e2f18b14d2fbe3d28c47a78d3adc626b6162"
+    },
+    {
+      "path": "headless-red-godot.log",
+      "bytes": 25997,
+      "sha256": "412689e2574b527e893ff8abe5d5f7760e56a8b0213ce927537371c6e510261e"
+    },
+    {
+      "path": "headless-red-report.json",
+      "bytes": 32089,
+      "sha256": "140ffca5a5660234ff5dcbb0256cbf0e652d26c39571ae83f5111b84770ddf06"
+    },
+    {
+      "path": "headless-red-run.json",
+      "bytes": 965,
+      "sha256": "85acc802bb0fdf189a34c1e10572c6499ecdbd95ad6b897183acb11b4f00e247"
+    },
+    {
+      "path": "independent-review.md",
+      "bytes": 2275,
+      "sha256": "2c803a2a6947adc2bb4cb6b63ccc3f38db61dc1c8d16e42681c1fcea176983ea"
+    },
+    {
+      "path": "source-identity.json",
+      "bytes": 2066,
+      "sha256": "9e0364aed7e571a106a3e199a3f517daef699953eadf6a873799a1bc2890716d"
+    },
+    {
+      "path": "x11-default-godot.log",
+      "bytes": 1667,
+      "sha256": "b47d7b377984d13dc4a0dce29b73c413519a78b29649f01fdc7270071115bff5"
+    },
+    {
+      "path": "x11-default-provenance.json",
+      "bytes": 1256,
+      "sha256": "d5605f279b789a2bcbac2832c958b537ff69f1f32fdb3b28bbf0d7ac5359f3d4"
+    },
+    {
+      "path": "x11-default-run.json",
+      "bytes": 363,
+      "sha256": "7969a9fd29dee35f915c5deee6e5b9a5425f72737d961074717ccf32c9487679"
+    },
+    {
+      "path": "x11-threads2-godot.log",
+      "bytes": 1667,
+      "sha256": "b47d7b377984d13dc4a0dce29b73c413519a78b29649f01fdc7270071115bff5"
+    },
+    {
+      "path": "x11-threads2-provenance.json",
+      "bytes": 1356,
+      "sha256": "392a4197179062aa237ab3996f032ac546bd31faeee55ab25c8c83c6d9452034"
+    },
+    {
+      "path": "x11-threads2-run.json",
+      "bytes": 363,
+      "sha256": "9a9e7b1aed4f29e3fa98b294e8bd72fe2aa9a067a33cdf5b6228f7151980fd64"
+    }
+  ]
+}

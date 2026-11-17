@@ -1,0 +1,36 @@
+{
+  "command": [
+    "python3",
+    "/home/agent/lumo-treasure-2708/source/tools/run_local_renderer.py",
+    "--display",
+    "193",
+    "--output",
+    "/home/agent/lumo-treasure-2708/green-rendered-threads2",
+    "--timeout",
+    "600",
+    "--project",
+    "/home/agent/lumo-treasure-2708/source",
+    "--",
+    "--script",
+    "res://scripts/tests/treasure_title_contrast_regression.gd",
+    "--",
+    "--capture"
+  ],
+  "environment_overrides": {
+    "LP_NUM_THREADS": "2"
+  },
+  "exit_code": 247,
+  "base_commit": "504c8ba70d02702cbccc370d0d96c36a292c5d27",
+  "production_test_checkpoint": "a8e730ee8f9a9943ebd8b2d55544cc63c27af72c",
+  "source_before": {
+    "scripts/creative/treasure_world.gd": "e68fc85498b76fb7b482417a1bf6b64410a53d2f018fec7771e263ea60fa5447",
+    "scripts/tests/treasure_title_contrast_regression.gd": "ea6087ef56a96d585382f4228661d753121152aa249c4a5afdc99d2e946941ea"
+  },
+  "source_after": {
+    "scripts/creative/treasure_world.gd": "e68fc85498b76fb7b482417a1bf6b64410a53d2f018fec7771e263ea60fa5447",
+    "scripts/tests/treasure_title_contrast_regression.gd": "ea6087ef56a96d585382f4228661d753121152aa249c4a5afdc99d2e946941ea"
+  },
+  "elapsed_seconds": 64.54559751799388,
+  "max_child_rss_kib": 924216,
+  "scope": "Actual X11 software renderer on integrated504c plus narrow Treasure port; no physical Android or FPS claim"
+}
