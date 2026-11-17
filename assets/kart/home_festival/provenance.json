@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "tool": "Blender 4.3.2",
+  "source": "original scripted geometry",
+  "runtime_asset": "assets/kart/home_festival/sonnenhafen_festival_gate.glb",
+  "asset_bytes": 701096,
+  "sha256": "4932d47165bacec63140c6cff229667d8beafd8b17b6401f13fe0babe36383d1",
+  "blend_sha256": "4738e3891fdb1c6da86451ec072b686774c4d8288214777ef7b4b98da26a1c73",
+  "origin": "ground center",
+  "front": "-Z",
+  "up": "+Y",
+  "units": "metres",
+  "runtime_render_verified": false,
+  "physical_android_fps_verified": false,
+  "mesh_nodes": 6,
+  "material_surfaces": 6,
+  "triangles": 14652,
+  "bbox_min_m": [
+    -3.8974082469940186,
+    0.0,
+    -0.7850000262260437
+  ],
+  "bbox_max_m": [
+    3.8974082469940186,
+    5.90500020980835,
+    0.7850000262260437
+  ],
+  "reserved_passage_m": [
+    4.8,
+    3.8
+  ],
+  "passage_triangle_test": "PASS",
+  "alpha_blended_materials": 0,
+  "blender_preview_sha256": "cbf3183f57d5fde167f0af209bf14679f0fab23b39ed1fe6f019d000632d90e1",
+  "blender_preview_scope": "Asset geometry and lighting; not Godot or Android evidence"
+}
