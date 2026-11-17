@@ -72,6 +72,26 @@ var celebration_place: int = 0
 var celebration_time: float = 0.0
 ## Lumos rechter Arm hängt an einem Schultergelenk: Lenken, Winken, Jubeln.
 const SHOULDER_RIGHT := Vector3(0.29, 1.215, 0.015)
+## Species tails for rival drivers (loft rings: length, radius, radius, rise).
+const RIVAL_TAILS: Dictionary = {
+	"otter": {"rings": [Vector4(0.0, 0.075, 0.062, 0.0), Vector4(0.2, 0.088, 0.070, 0.0), Vector4(0.45, 0.074, 0.056, 0.03), Vector4(0.68, 0.048, 0.036, 0.08), Vector4(0.84, 0.004, 0.004, 0.12)], "shade": 0.12, "strands": 420, "lift": -0.30},
+	"badger": {"rings": [Vector4(0.0, 0.060, 0.060, 0.0), Vector4(0.10, 0.100, 0.092, 0.02), Vector4(0.24, 0.090, 0.082, 0.06), Vector4(0.33, 0.004, 0.004, 0.09)], "shade": 0.25, "strands": 380, "lift": -0.05},
+	"cat": {"rings": [Vector4(0.0, 0.036, 0.036, 0.0), Vector4(0.24, 0.041, 0.041, 0.05), Vector4(0.48, 0.039, 0.039, 0.17), Vector4(0.66, 0.034, 0.034, 0.33), Vector4(0.74, 0.004, 0.004, 0.45)], "shade": 0.05, "strands": 320, "lift": 0.10},
+}
+## Wheel hub to dash pod along the steering axis (metres).
+const STEERING_COLUMN_LENGTH: float = 0.34
+## Rival (non-Lumo) face proportions: calmer, more natural eyes and snout.
+const RIVAL_EYE_WHITE := Vector3(0.074, 0.084, 0.030)
+const RIVAL_EYE_SOCKET := Vector3(0.084, 0.094, 0.028)
+const RIVAL_IRIS := Vector3(0.050, 0.058, 0.010)
+const RIVAL_PUPIL := Vector3(0.030, 0.038, 0.008)
+const RIVAL_MUZZLE_SCALE := Vector3(0.80, 0.82, 0.74)
+const RIVAL_NOSE: Dictionary = {
+	"otter": [Vector3(0.050, 0.030, 0.026), Color("2b1f1d")],
+	"badger": [Vector3(0.046, 0.030, 0.026), Color("16161c")],
+	"rabbit": [Vector3(0.026, 0.019, 0.016), Color("d98a9c")],
+	"cat": [Vector3(0.028, 0.019, 0.016), Color("d77f8f")],
+}
 ## Schulter → Hand am Lenkrad (Ruhe) und Schulter → Hand hoch und nach außen (Jubel).
 const ARM_REST_DIR := Vector3(-0.13, -0.16, -0.355)
 const ARM_CHEER_DIR := Vector3(0.42, 0.78, -0.06)
@@ -91,6 +111,9 @@ var driver_animation_paused := false
 var _far_with_driver: Mesh
 var _far_without_driver: Mesh
 var _far_chassis_only := false
+## Procedural rival-driver reactions (Lumo uses his rigged animation adapter).
+var hit_reaction: float = 0.0
+var brief_cheer_time: float = 0.0
 
 
 func _ready() -> void:
@@ -248,6 +271,15 @@ func set_driver_character(value: String) -> void:
 	animal = _animal_id(value)
 	if _built:
 		_rebuild()
+
+
+## Short in-race cheer (e.g. after a successful item hit): fist up, happy hop.
+func cheer_briefly(seconds: float = 1.2) -> void:
+	if is_instance_valid(lumo_animation) or celebration_place > 0:
+		return
+	brief_cheer_time = seconds
+	celebration_place = -1
+	celebration_time = 0.0
 
 
 func celebrate(place: int) -> void:
@@ -892,7 +924,18 @@ func _make_steering_wheel() -> void:
 	_rod(steering_wheel, Vector3(0, 0, 0), Vector3(0, -0.13, 0), 0.02, CHROME, 0.6)
 	_ellipsoid(steering_wheel, Vector3(0, 0, -0.023), Vector3(0.065, 0.042, 0.017), NAVY, 0.4, 0.3)
 	_ellipsoid(steering_wheel, Vector3(0, 0, -0.04), Vector3(0.018, 0.018, 0.007), ICE, 0.3, 0.25)
-	_rod(self, Vector3(0, 0.68, -0.22), steering_wheel.position, 0.035, INK, 0.4)
+	# The column leaves the hub along the wheel's own axis, forward and down into a
+	# dash pod on the bonnet (it used to rise from the seat between the boots).
+	var column_axis: Vector3 = (steering_wheel.basis * Vector3.BACK).normalized()
+	var hub_back: Vector3 = steering_wheel.position + column_axis * 0.045
+	var column_base: Vector3 = steering_wheel.position + column_axis * STEERING_COLUMN_LENGTH
+	# One shared INK finish keeps the mobile surface budget (column, pod and mount batch).
+	var column := _rod(self, hub_back, column_base, 0.030, INK, 0.4)
+	column.name = "SteeringColumn"
+	var pod := _ellipsoid(self, column_base, Vector3(0.105, 0.075, 0.095), INK, 0.4)
+	pod.name = "SteeringDashPod"
+	var mount := _rod(self, column_base, Vector3(0, 0.58, column_base.z - 0.03), 0.05, INK, 0.4)
+	mount.name = "SteeringDashMount"
 
 
 func _tri(tool: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, outward: Vector3) -> void:
@@ -1697,7 +1740,7 @@ func _make_driver() -> void:
 			limb.position = origin
 			driver.add_child(limb)
 			racing_arm_joints.append(limb)
-			if is_lumo and side > 0:
+			if side > 0:
 				arm_right = limb
 			_make_racing_sleeve(limb, side, is_lumo)
 			_ellipsoid(limb, Vector3(side * 0.29, 1.215, 0.015) - origin, Vector3(0.092, 0.056, 0.096), NAVY if is_lumo else WHITE, 0.07, 0.6)
@@ -1784,11 +1827,20 @@ func _make_driver() -> void:
 		else:
 			_ribbon(head, brow, 0.012, fur.darkened(0.45))
 	var muzzle: Array[Vector4] = [Vector4(-0.455, 0.038, 0.028, -0.101), Vector4(-0.418, 0.113, 0.060, -0.122), Vector4(-0.351, 0.168, 0.090, -0.135), Vector4(-0.264, 0.15, 0.08, -0.15), Vector4(-0.21, 0.01, 0.012, -0.15)]
-	_fur(head, _loft(muzzle, false, 32, 4), Vector3.ZERO, cream, 350, 0.009, 228)
-	# A small triangular, polished nose and a real mouth cavity underneath.
-	var nose := _mesh(head, _loft([Vector4(-0.16, 0.004, 0.016, -0.453), Vector4(-0.112, 0.075, 0.044, -0.463), Vector4(-0.079, 0.060, 0.032, -0.449), Vector4(-0.068, 0.004, 0.005, -0.435)], true, 24, 4), Vector3.ZERO, Color("2a1d22"), 0.08, 0.22)
-	nose.name = "SculptedNose"
-	_ellipsoid(head, Vector3(-0.020, -0.09, -0.493), Vector3(0.020, 0.009, 0.005), Color("ae8f85"), 0, 0.25)
+	var muzzle_fur := _fur(head, _loft(muzzle, false, 32, 4), Vector3.ZERO, cream, 350, 0.009, 228)
+	if is_lumo:
+		# A small triangular, polished nose and a real mouth cavity underneath.
+		var nose := _mesh(head, _loft([Vector4(-0.16, 0.004, 0.016, -0.453), Vector4(-0.112, 0.075, 0.044, -0.463), Vector4(-0.079, 0.060, 0.032, -0.449), Vector4(-0.068, 0.004, 0.005, -0.435)], true, 24, 4), Vector3.ZERO, Color("2a1d22"), 0.08, 0.22)
+		nose.name = "SculptedNose"
+		_ellipsoid(head, Vector3(-0.020, -0.09, -0.493), Vector3(0.020, 0.009, 0.005), Color("ae8f85"), 0, 0.25)
+	else:
+		# Rivals: a shorter snout and a species-sized nose (no oversized fox nose).
+		muzzle_fur.scale = RIVAL_MUZZLE_SCALE
+		muzzle_fur.position = Vector3(0, 0.006, -0.02)
+		var nose_spec: Array = RIVAL_NOSE.get(animal, [Vector3(0.036, 0.024, 0.02), Color("2a1d22")])
+		var nose := _ellipsoid(head, Vector3(0, -0.068, -0.372), nose_spec[0], nose_spec[1], 0.08, 0.28)
+		nose.name = "SculptedNose"
+		_ellipsoid(head, Vector3(-0.010, -0.058, -0.392), Vector3(0.010, 0.005, 0.003), Color("e9d6d2"), 0, 0.2)
 	# The original Lumo mascot smiles with an open, friendly mouth, visible
 	# even when the kart camera is pulled back. Keep his real 3D jaw viseme;
 	# only fox gets the extra sculpted cavity, teeth and tongue. Other
@@ -1979,9 +2031,9 @@ func _make_eye(side: float, fur_shadow: Color) -> void:
 	# Do not alter the existing joint, blink, brow or non-fox animal anatomy.
 	eye.position = (
 		Vector3(side * 0.173, 0.065, -0.274)
-		if animal == "fox" else Vector3(side * 0.169, 0.052, -0.282)
+		if animal == "fox" else Vector3(side * 0.150, 0.068, -0.286)
 	)
-	eye.rotation.y = -side * (0.33 if animal == "fox" else 0.12)
+	eye.rotation.y = -side * (0.33 if animal == "fox" else 0.26)
 	head.add_child(eye)
 	eyes.append(eye)
 	if animal == "fox":
@@ -1989,28 +2041,30 @@ func _make_eye(side: float, fur_shadow: Color) -> void:
 		_ellipsoid(eye, Vector3(0, 0.005, 0.008), Vector3(0.113, 0.128, 0.025), fur_shadow)
 		_ellipsoid(eye, Vector3(0, 0, -0.004), Vector3(0.100, 0.114, 0.024), WHITE, 0.0, 0.42)
 	else:
-		_ellipsoid(eye, Vector3(0, 0.005, 0.006), Vector3(0.134, 0.155, 0.064), fur_shadow)
-		_ellipsoid(eye, Vector3(0, 0, -0.009), Vector3(0.119, 0.141, 0.065), WHITE, 0, 0.3)
-	var iris_size := Vector3(0.076, 0.082, 0.008) if animal == "fox" else Vector3(0.075, 0.093, 0.018)
-	var pupil_size := Vector3(0.047, 0.051, 0.006) if animal == "fox" else Vector3(0.049, 0.062, 0.013)
+		# Natural, slightly almond eyes set into the face instead of bulging 13 cm discs.
+		_ellipsoid(eye, Vector3(0, 0.004, 0.004), RIVAL_EYE_SOCKET, fur_shadow)
+		_ellipsoid(eye, Vector3(0, 0, -0.004), RIVAL_EYE_WHITE, WHITE, 0, 0.3)
+	var iris_size := Vector3(0.076, 0.082, 0.008) if animal == "fox" else RIVAL_IRIS
+	var pupil_size := Vector3(0.047, 0.051, 0.006) if animal == "fox" else RIVAL_PUPIL
 	if animal == "fox":
 		_mesh(
 			eye, CHARACTER_FINISH.eye_overlay(iris_size, Vector3(0.100, 0.114, 0.024), Vector2(-side * 0.006, -0.009), 0.0015, true), Vector3(-side * 0.006, -0.009, -0.004),
 			Color.WHITE, 0.08, 0.27
 		)
 	else:
-		_ellipsoid(eye, Vector3(-side * 0.008, -0.009, -0.066), iris_size, Color("287788"), 0.08, 0.22)
+		var iris_color: Color = {"otter": Color("5a3b22"), "badger": Color("3d3022"), "rabbit": Color("4f6fa8"), "cat": Color("6f9a3a")}.get(animal, Color("287788"))
+		_ellipsoid(eye, Vector3(-side * 0.004, -0.004, -0.030), iris_size, iris_color, 0.08, 0.22)
 	if animal == "fox":
 		_mesh(eye, CHARACTER_FINISH.eye_overlay(pupil_size, Vector3(0.100, 0.114, 0.024), Vector2(-side * 0.006, -0.004), 0.003, false), Vector3(-side * 0.006, -0.004, -0.004), Color("080c12"), 0.10, 0.18)
 	else:
-		_ellipsoid(eye, Vector3(-side * 0.008, -0.004, -0.081), pupil_size, Color("080c12"), 0.10, 0.15)
+		_ellipsoid(eye, Vector3(-side * 0.004, -0.002, -0.037), pupil_size, Color("080c12"), 0.10, 0.15)
 	_ellipsoid(
-		eye, Vector3(-0.022, 0.027, -0.031) if animal == "fox" else Vector3(-0.026, 0.032, -0.093),
-		Vector3(0.014, 0.017, 0.003) if animal == "fox" else Vector3(0.019, 0.025, 0.008), Color.WHITE, 0, 0.1
+		eye, Vector3(-0.022, 0.027, -0.031) if animal == "fox" else Vector3(-0.014, 0.018, -0.044),
+		Vector3(0.014, 0.017, 0.003) if animal == "fox" else Vector3(0.010, 0.012, 0.004), Color.WHITE, 0, 0.1
 	)
 	_ellipsoid(
-		eye, Vector3(0.019, -0.033, -0.030) if animal == "fox" else Vector3(0.020, -0.038, -0.093),
-		Vector3(0.005, 0.007, 0.002) if animal == "fox" else Vector3(0.007, 0.010, 0.004), Color.WHITE, 0, 0.1
+		eye, Vector3(0.019, -0.033, -0.030) if animal == "fox" else Vector3(0.012, -0.020, -0.043),
+		Vector3(0.005, 0.007, 0.002) if animal == "fox" else Vector3(0.004, 0.005, 0.002), Color.WHITE, 0, 0.1
 	)
 
 
@@ -2024,6 +2078,16 @@ func _make_tail(fur: Color, cream: Color) -> void:
 	driver.add_child(tail)
 	if animal == "rabbit":
 		_ellipsoid(tail, Vector3(0.05, 0.03, 0.18), Vector3(0.13, 0.14, 0.15), cream, 0, 0.9)
+		return
+	if animal in RIVAL_TAILS:
+		# Species tails instead of a recoloured fox brush: thick tapering otter rudder,
+		# short bushy badger tail and a slim curved cat tail.
+		var spec: Dictionary = RIVAL_TAILS[animal]
+		var rings: Array[Vector4] = []
+		for ring in spec.rings:
+			rings.append(ring)
+		_fur(tail, _loft(rings, false, 24, 4), Vector3.ZERO, fur.darkened(float(spec.shade)), int(spec.strands), 0.022, 7138)
+		tail.rotation.x = float(spec.lift)
 		return
 	var scale_factor: float = 0.8 if animal in ["otter", "badger"] else 1.0
 	var tail_shape: Array[Vector4] = [Vector4(0.00, 0.055, 0.075, 0), Vector4(0.17, 0.115, 0.13, 0.00), Vector4(0.38, 0.195, 0.22, 0.07), Vector4(0.61, 0.22, 0.24, 0.21), Vector4(0.77, 0.165, 0.21, 0.37), Vector4(0.84, 0.072, 0.13, 0.56), Vector4(0.83, 0.004, 0.008, 0.73)]
@@ -2289,19 +2353,29 @@ func _process(delta: float) -> void:
 		wheel_pivots[i].position.y = hub_height if reduced_motion else hub_height + sin(animation_time * 11.0 + i * 1.7) * minf(0.010, absf(motion_speed) * 0.0005)
 	if is_instance_valid(lumo_animation):
 		return
+	if driver_hit_pending:
+		driver_hit_pending = false
+		hit_reaction = 1.0
+	hit_reaction = maxf(0.0, hit_reaction - delta * 1.25)
+	var jolt: float = 0.0 if reduced_motion else hit_reaction * hit_reaction
 	if driver:
-		driver.rotation.z = lerpf(driver.rotation.z, -motion_steer * 0.06, minf(1, delta * 7.0))
+		# Lean into the corner, settle back under boost, jolt on a friendly hit.
+		driver.rotation.z = lerpf(driver.rotation.z, -motion_steer * 0.09, minf(1, delta * 7.0)) + sin(animation_time * 31.0) * 0.07 * jolt
+		driver.rotation.x = lerpf(driver.rotation.x, 0.05 if motion_boost else (-0.03 if motion_brake > 0.3 else 0.0), minf(1, delta * 5.0))
 		driver.position.y = 0.0 if reduced_motion else sin(animation_time * 7.0) * minf(0.009, absf(motion_speed) * 0.0006)
 	if head:
-		head.rotation.y = lerpf(head.rotation.y, -motion_steer * 0.22, minf(1, delta * 8))
-		head.rotation.z = 0.0 if reduced_motion else sin(animation_time * 2.2) * 0.014 - motion_steer * 0.024
-		head.rotation.x = lerpf(head.rotation.x, -0.035 if motion_boost else 0.0, minf(1, delta * 5))
+		head.rotation.y = lerpf(head.rotation.y, -motion_steer * 0.30, minf(1, delta * 8)) + sin(animation_time * 21.0) * 0.32 * jolt
+		head.rotation.z = 0.0 if reduced_motion else sin(animation_time * 2.2) * 0.014 - motion_steer * 0.05
+		head.rotation.x = lerpf(head.rotation.x, -0.06 if motion_boost else 0.0, minf(1, delta * 5))
+	for ear_index in range(ear_joints.size()):
+		var ear: Node3D = ear_joints[ear_index]
+		ear.rotation.x = lerpf(ear.rotation.x, 0.30 * hit_reaction + (0.12 if motion_boost else 0.0), minf(1, delta * 8.0))
 	for eye in eyes:
 		var blink_phase: float = fposmod(animation_time + 0.45, 4.6)
 		var blink: float = 1.0
 		if blink_phase < 0.14:
 			blink = maxf(0.07, absf(blink_phase - 0.07) / 0.07)
-		eye.scale.y = blink
+		eye.scale.y = minf(blink, 1.0 - 0.55 * hit_reaction)
 	if jaw:
 		jaw.rotation.x = speaking_amount * 0.45
 		jaw.position = jaw_rest_position + Vector3(0, -speaking_amount * 0.035, 0)
@@ -2309,7 +2383,11 @@ func _process(delta: float) -> void:
 		tail.rotation.y = 0.63 + sin(animation_time * 2.6) * 0.055 - motion_steer * 0.07
 	if steering_wheel:
 		steering_wheel.rotation.z = -motion_steer * 0.40
-	if celebration_place > 0:
+	if brief_cheer_time > 0.0:
+		brief_cheer_time = maxf(0.0, brief_cheer_time - delta)
+		if brief_cheer_time <= 0.0 and celebration_place == -1:
+			celebration_place = 0
+	if celebration_place > 0 or celebration_place == -1:
 		_apply_celebration(delta)
 	_solve_steering_grips(delta)
 
@@ -2317,7 +2395,7 @@ func _process(delta: float) -> void:
 func _solve_steering_grips(delta: float) -> void:
 	if not steering_wheel or not driver:
 		return
-	var cheer: bool = arm_right != null and celebration_place >= 1 and celebration_place <= 3
+	var cheer: bool = arm_right != null and (celebration_place == -1 or (celebration_place >= 1 and celebration_place <= 3))
 	arm_blend = move_toward(arm_blend, 1.0 if cheer else 0.0, delta * 3.2)
 	var raise: float = smoothstep(0.0, 1.0, arm_blend)
 	for i in range(racing_arm_joints.size()):
@@ -2356,17 +2434,18 @@ func _solve_steering_grips(delta: float) -> void:
 
 func _apply_celebration(delta: float) -> void:
 	celebration_time += delta
+	# -1 is the short in-race cheer; it reads like a first place.
 	var happy: bool = celebration_place <= 3
-	var tempo: float = 1.7 if celebration_place == 1 else 1.15
+	var tempo: float = 1.7 if celebration_place <= 1 else 1.15
 	var beat: float = 0.0 if reduced_motion else sin(celebration_time * TAU * tempo)
 	if driver:
 		# Freudensprung im Sitz: Platz 1 hüpft, 2–3 wippen, ab 4 bleibt Lumo ruhig.
-		var hop: float = 0.0 if reduced_motion or not happy else absf(beat) * (0.075 if celebration_place == 1 else 0.035)
+		var hop: float = 0.0 if reduced_motion or not happy else absf(beat) * (0.075 if celebration_place <= 1 else 0.035)
 		driver.position.y = hop
 		driver.rotation.z = beat * (0.05 if happy else 0.0)
 	if head:
 		var nod: float = 0.06 + absf(beat) * 0.06
-		head.rotation.x = lerpf(head.rotation.x, (-0.16 if celebration_place == 1 else -0.08) if happy else nod, minf(1, delta * 6))
+		head.rotation.x = lerpf(head.rotation.x, (-0.16 if celebration_place <= 1 else -0.08) if happy else nod, minf(1, delta * 6))
 		head.rotation.z = beat * (0.09 if happy else 0.02)
 		# Zur Kamera drehen, die beim Zieleinlauf seitlich nach vorn schwenkt.
 		head.rotation.y = lerpf(head.rotation.y, 0.3, minf(1, delta * 3))
