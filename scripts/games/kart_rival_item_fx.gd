@@ -3,6 +3,8 @@ extends Node3D
 ## Lightweight world-space feedback for the existing Lumo rival items.
 ## Five rivals share primitive meshes only; no external asset or gameplay rule lives here.
 
+const ITEM_CATALOG = preload("res://scripts/games/kart_items/kart_item_catalog.gd")
+
 const ITEM_COLORS := {
 	"boost": Color("ffd166"),
 	"shield": Color("66e8ff"),
@@ -117,11 +119,11 @@ func set_item(value: String) -> void:
 	held_item = value
 	if not is_instance_valid(item_orb):
 		return
-	var visible_item: bool = ITEM_COLORS.has(value)
+	var visible_item: bool = ITEM_COLORS.has(value) or ITEM_CATALOG.has(value)
 	item_orb.visible = visible_item
 	item_ring.visible = visible_item
 	if visible_item:
-		var color: Color = ITEM_COLORS[value]
+		var color: Color = ITEM_COLORS.get(value, ITEM_CATALOG.color(value))
 		item_orb.material_override = _material(color, 0.95, 1.7)
 		item_ring.material_override = _material(color.lightened(0.16), 0.82, 1.4)
 
