@@ -749,6 +749,8 @@ def plate_layers(w, h, spec):
         shape("wall", [path(0.4, lip, -lip / 2), hole], 0, depth, 2.0, wall)
     rim_mat = solid("rim", spec["rim_color"], rough=0.14, emit=spec.get("rim_emit", 0.75), coat=1.0)
     shape("rim", [path(0), path(rim)], depth - 1, rim_h + 1, min(rim / 2 - 0.2, rim_h), rim_mat, res=5)
+    if spec["face"] is None:  # reiner Neonrahmen, die Mitte bleibt durchsichtig
+        return path(rim + 0.5)
     face_kw = dict(rough=spec.get("rough", 0.14), emit=spec.get("emit", 0.55), coat=1.0)
     top, bottom = spec["face"]
     lo, hi = cy - bh / 2, cy + bh / 2
@@ -775,11 +777,10 @@ def poly_mask(w, h, loop, ss=4):
 
 def hero_spec(accent, face_top, face_bottom, rim_color, wall):
     return dict(
-        kind="plate", size=(208, 212), nine=(96, 96, 96, 100), pad=(26, 24, 26, 26), lip=7,
-        corners=(("r", 20), ("c", 38), ("r", 20), ("c", 38)), rim=5, rim_h=6, depth=12, slab=7, rim_emit=0.55,
-        face=(face_top, face_bottom), rim_color=rim_color, wall=wall, alpha=0.94, emit=0.46,
-        checker=dict(cell=16.0, radius=60.0, color=mixc(face_top, WHITE, 0.6), strength=0.42),
-        glow=(accent, 0.95, 11.0), inner=(mixc(accent, WHITE, 0.3), 0.10, 6.0),
+        kind="plate", size=(236, 240), nine=(110, 110, 110, 114), pad=(40, 38, 40, 40), lip=7,
+        corners=(("r", 20), ("c", 38), ("r", 20), ("c", 38)), rim=6, rim_h=7, depth=12, slab=7, rim_emit=0.70,
+        face=(face_top, face_bottom), rim_color=rim_color, wall=wall, alpha=0.95, emit=0.50,
+        glow=(accent, 2.1, 12.0), inner=(mixc(accent, WHITE, 0.3), 0.14, 6.0),
     )
 
 
@@ -825,6 +826,41 @@ PLATES = {
         face=("0e2a72", "071440"), rim_color="4f8ff0", wall=NAVY, alpha=0.88, emit=0.45, rim_emit=0.55,
         glow=("2f6fe0", 0.3, 4.0), inner=("3f8fff", 0.12, 5.0),
         use="Abgerundete dunkle Zeile für Werte wie Gesamtzeit, 9-Slice",
+    ),
+    "frame_neon_cyan": dict(
+        kind="plate", size=(120, 120), nine=(50, 50, 50, 50), pad=(16, 16, 16, 16), lip=0,
+        corners=(("r", 13), ("r", 13), ("r", 13), ("r", 13)), rim=6, rim_h=6, depth=8,
+        face=None, rim_color="8fe6ff", wall=NAVY, rim_emit=1.0,
+        glow=(CYAN, 0.5, 5.0),
+        use="Neonrahmen mit durchsichtiger Mitte für Streckenbilder, 9-Slice",
+    ),
+    "frame_neon_amber": dict(
+        kind="plate", size=(120, 120), nine=(50, 50, 50, 50), pad=(16, 16, 16, 16), lip=0,
+        corners=(("r", 13), ("r", 13), ("r", 13), ("r", 13)), rim=7, rim_h=7, depth=8,
+        face=None, rim_color="ffe9a8", wall=NAVY, rim_emit=1.0,
+        glow=(AMBER, 0.85, 6.0),
+        use="Bernstein-Neonrahmen für das gewählte Streckenbild, 9-Slice",
+    ),
+    "bar_track": dict(
+        kind="plate", size=(72, 64), nine=(34, 30, 34, 30), pad=(8, 8, 8, 8), lip=0,
+        corners=(("r", 22), ("r", 22), ("r", 22), ("r", 22)), rim=3, rim_h=3, depth=6, slab=2,
+        face=("050c2c", "0a1a52"), rim_color="3f6fd0", wall=NAVY, alpha=0.92, emit=0.35, rim_emit=0.5,
+        glow=("2f6fe0", 0.2, 3.0),
+        use="Dunkle Rinne eines Fortschrittsbalkens, 9-Slice",
+    ),
+    "bar_fill_gold": dict(
+        kind="plate", size=(72, 64), nine=(34, 30, 34, 30), pad=(8, 8, 8, 8), lip=0,
+        corners=(("r", 22), ("r", 22), ("r", 22), ("r", 22)), rim=2, rim_h=3, depth=8, slab=7,
+        face=("ffe457", "ff9408"), rim_color="fff3b8", wall="7a3506", emit=0.7, rim_emit=0.9,
+        glow=(AMBER, 0.55, 3.5),
+        use="Goldene Füllung eines Fortschrittsbalkens (Sternenpfad), 9-Slice",
+    ),
+    "bar_fill_cyan": dict(
+        kind="plate", size=(72, 64), nine=(34, 30, 34, 30), pad=(8, 8, 8, 8), lip=0,
+        corners=(("r", 22), ("r", 22), ("r", 22), ("r", 22)), rim=2, rim_h=3, depth=8, slab=7,
+        face=("8df4ff", "1a9cf2"), rim_color="e0fcff", wall="0a3a7a", emit=0.7, rim_emit=0.9,
+        glow=(CYAN, 0.55, 3.5),
+        use="Türkise Füllung eines Fortschrittsbalkens (Fahrer-Stufe), 9-Slice",
     ),
 }
 
@@ -1152,6 +1188,51 @@ def icon_laurel(m):
     ROOT.rotation_euler = (math.radians(-8), 0, 0)
 
 
+def icon_back(m):
+    mk = Mask().line([(36, 84), (-48, 0), (36, -84)], 46)
+    shape("chevron", mk.loops(smooth=1.2), 0, 34, 10, m["white"], res=5)
+    ROOT.rotation_euler = (math.radians(-10), math.radians(10), 0)
+
+
+def icon_play(m):
+    ring = Mask().circle(0, 0, 106).circle(0, 0, 89, fill=0)
+    shape("ring", ring.loops(), 6, 26, 8, m["cyan"], res=5)
+    shape("glass", Mask().circle(0, 0, 93).loops(), 0, 20, 6, m["navy"], res=5)
+    corners = [(-28, -52), (58, 0), (-28, 52)]
+    tri = Mask().poly(corners).line(corners + [corners[0]], 18)
+    shape("triangle", tri.loops(smooth=1.2), 18, 18, 7, m["white"], res=5)
+    ROOT.rotation_euler = (math.radians(-8), math.radians(8), 0)
+
+
+def icon_rotate(m):
+    """Drehpfeil im Uhrzeigersinn (Spitze rechts); für die Gegenrichtung gespiegelt zeichnen."""
+    radius, end = 70.0, 20.0
+    shape("arc", Mask().line(arc_pts(0, 0, radius, 290, end + 14, 40), 30).loops(smooth=1.2), 0, 32, 10, m["white"], res=5)
+    a = math.radians(end)
+    ex, ey = radius * math.cos(a), radius * math.sin(a)
+    tx, ty = math.sin(a), -math.cos(a)  # Laufrichtung am Pfeilende (Winkel fällt)
+    nx, ny = math.cos(a), math.sin(a)
+    tip = [(ex + tx * 66, ey + ty * 66), (ex + nx * 34 - tx * 4, ey + ny * 34 - ty * 4), (ex - nx * 34 - tx * 4, ey - ny * 34 - ty * 4)]
+    head = Mask().poly(tip).line(tip + [tip[0]], 16)
+    shape("head", head.loops(smooth=1.2), 0, 32, 10, m["white"], res=5)
+    ROOT.rotation_euler = (math.radians(-10), math.radians(8), 0)
+
+
+def icon_chevrons(m):
+    mk = Mask()
+    for dx in (-50, 36):
+        mk.line([(dx - 28, 72), (dx + 40, 0), (dx - 28, -72)], 30)
+    shape("chevrons", mk.loops(smooth=1.0), 0, 28, 9, m["white"], res=5)
+    ROOT.rotation_euler = (math.radians(-8), math.radians(8), 0)
+
+
+def icon_alert(m):
+    shape("disc", Mask().circle(0, 0, 100).loops(), 0, 42, 17, m["gold"], res=6)
+    mark = Mask().rrect(-16, -20, 16, 64, 16).circle(0, -54, 18)
+    shape("mark", mark.loops(smooth=1.0), 40, 10, 4, m["dark"])
+    ROOT.rotation_euler = (math.radians(-8), math.radians(8), 0)
+
+
 ICONS = {
     "icon_flag": (icon_flag, "Zielflagge (Rennen, Strecken)"),
     "icon_trophy": (icon_trophy, "Pokal (Turniere)"),
@@ -1167,6 +1248,73 @@ ICONS = {
     "icon_lock": (icon_lock, "Schloss (gesperrt)"),
     "icon_crown": (icon_crown, "Krone (Bestwert, Rang)"),
     "icon_laurel": (icon_laurel, "Lorbeerkranz (Sieg)"),
+    "icon_back": (icon_back, "Pfeil zurück"),
+    "icon_play": (icon_play, "Abspielknopf (Strecke fahren)"),
+    "icon_rotate": (icon_rotate, "Drehpfeil im Uhrzeigersinn (Kart drehen; gespiegelt für links)"),
+    "icon_chevrons": (icon_chevrons, "Doppelpfeil » (weiter, Tempo)"),
+    "icon_alert": (icon_alert, "Hinweis-Scheibe mit Ausrufezeichen (Neues)"),
+}
+
+
+# ---------------------------------------------------------------- Lichtschichten (nicht dehnen)
+def _soft_band(t, centre, width, soft=2.0):
+    return np.clip((width / 2 - np.abs(t - centre)) / soft + 0.5, 0, 1)
+
+
+def overlay_hero_streak(w, h):
+    """Weiße Lichtbahnen und großes Schachmuster für die Modus-Kacheln. Wird unverzerrt über die
+    Kachel gelegt (rechts oben verankert) und auf deren Umriss beschnitten."""
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    slant = 0.52
+    t = x + (y - h / 2) * slant  # Bahnen lehnen wie "/"
+    a = _soft_band(t, 0.36 * w, 0.20 * w) * 0.085
+    a += _soft_band(t, 0.545 * w, 0.045 * w) * 0.15
+    a += _soft_band(t, 0.70 * w, 0.11 * w) * 0.075
+    cell = 40.0
+    cx = np.floor((x + y * slant) / cell)
+    cy = np.floor(y / cell)
+    parity = ((cx + cy) % 2 == 0).astype(np.float32)
+    # weiche Zellkanten, damit das Muster beim Verkleinern nicht flimmert
+    fx = np.abs(((x + y * slant) / cell) % 1.0 - 0.5) * cell
+    fy = np.abs((y / cell) % 1.0 - 0.5) * cell
+    edge = np.clip((cell / 2 - np.maximum(fx, fy)) / 1.5, 0, 1)
+    fade = np.clip((x / w - 0.46) / 0.54, 0, 1) ** 1.25 * (1.0 - 0.72 * y / h)
+    a += parity * edge * fade * 0.26
+    a += np.clip(1.0 - y / (0.42 * h), 0, 1) ** 1.6 * 0.10  # Glanz von oben
+    a = np.clip(a, 0, 1) * edge_fade(h, w, 2.0)
+    return np.dstack([np.ones((h, w, 3), np.float32), a])
+
+
+def overlay_glass_grid(w, h):
+    """Holo-Bodenraster mit Lichtfleck für die dunklen Glas-Kacheln (rechts unten verankert)."""
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    horizon, vx = 0.34 * h, 0.66 * w
+    dy = np.maximum(y - horizon, 0.75)
+    depth = 56.0 / dy  # Tiefe in Rasterzellen
+    wx = (x - vx) * depth / 30.0
+
+    def lines(value, per_px):
+        dist = np.abs(value - np.round(value)) / np.maximum(per_px, 1e-6)
+        return np.clip(1.15 - dist, 0, 1)
+
+    grid = np.maximum(lines(depth, 56.0 / (dy * dy)), lines(wx, depth / 30.0))
+    below = np.clip((y - horizon) / (0.30 * h), 0, 1)
+    side = np.clip(1.0 - np.abs(x - vx) / (0.72 * w), 0, 1) ** 0.8
+    a = grid * below * side * 0.34
+    spot = np.exp(-(((x - 0.70 * w) / (0.36 * w)) ** 2 + ((y - 0.80 * h) / (0.30 * h)) ** 2))
+    a += spot * 0.20
+    rng = np.random.default_rng(11)
+    for _ in range(14):  # feste Funkelpunkte über dem Horizont
+        sx, sy = rng.uniform(0.30, 0.97) * w, rng.uniform(0.08, 0.62) * h
+        a += np.exp(-((x - sx) ** 2 + (y - sy) ** 2) / rng.uniform(1.2, 3.2)) * rng.uniform(0.25, 0.6)
+    a = np.clip(a, 0, 1) * edge_fade(h, w, 3.0)
+    col = np.asarray(srgb("7fe3ff"), np.float32)
+    return np.dstack([np.broadcast_to(col, (h, w, 3)).copy(), a])
+
+
+OVERLAYS = {
+    "overlay_hero_streak": dict(size=(384, 256), build=overlay_hero_streak, anchor="top_right", use="Lichtschicht der Modus-Kacheln: schräge Lichtbahnen und großes Schachmuster; unverzerrt, auf den Kachelumriss beschnitten"),
+    "overlay_glass_grid": dict(size=(384, 256), build=overlay_glass_grid, anchor="bottom_right", use="Lichtschicht der dunklen Glas-Kacheln: Holo-Bodenraster mit Lichtfleck; unverzerrt, auf den Kachelumriss beschnitten"),
 }
 
 
@@ -1223,6 +1371,8 @@ def all_specs():
         specs[name] = dict(kind="icon", size=(256, 256), nine=None, build=fn, use="Icon: " + use)
     for name, spec in BADGES.items():
         specs[name] = dict(spec, kind="badge", size=(512, 512), nine=None)
+    for name, spec in OVERLAYS.items():
+        specs[name] = dict(spec, kind="overlay", nine=None)
     return specs
 
 
@@ -1241,6 +1391,8 @@ def render_asset(name, spec, samples):
         button_layers(w, h, spec)
         img = render_rgba(w, h)
         img = decorate(img, glow=spec.get("glow"), shadow=(5, 5.0, 0.5))
+    elif kind == "overlay":
+        img = spec["build"](w, h)  # rechnerisch erzeugte Lichtschicht, kein Render
     elif kind == "icon":
         stage(w, h, samples)
         spec["build"](icon_materials())
@@ -1261,6 +1413,10 @@ def render_asset(name, spec, samples):
     return deviation
 
 
+def kind_is_plate(spec):
+    return spec["kind"] == "plate"
+
+
 def write_manifest(specs):
     assets = []
     for name, spec in specs.items():
@@ -1273,13 +1429,20 @@ def write_manifest(specs):
         if spec.get("pad"):
             pad = list(spec["pad"])
             entry["glow_pad"] = pad
+        if kind_is_plate(spec):
+            # Umriss des Glasfelds, damit Lichtschichten exakt beschnitten werden können
+            entry["lip"] = spec.get("lip", 0)
+            entry["rim"] = spec["rim"]
+            entry["corners"] = [[c[0], c[1]] for c in spec["corners"]]
+        if spec.get("anchor"):
+            entry["anchor"] = spec["anchor"]
         entry["use"] = spec["use"]
         assets.append(entry)
     manifest = {
         "kit": "lumo_kart_ui3d",
         "generator": "tools/art/render_ui_kit.py",
         "design_scale": 2.0,
-        "units": "Texturpixel; nine_slice und glow_pad jeweils [links, oben, rechts, unten]",
+        "units": "Texturpixel; nine_slice und glow_pad jeweils [links, oben, rechts, unten]; corners [unten links, unten rechts, oben rechts, oben links] je ['r' rund | 'c' abgeschrägt, Größe]; lip = sichtbare Kante unter dem Glasfeld; rim = Randbreite",
         "hint": "Für die 720x1280-Grundfläche in doppelter Auflösung gebaut: 9-Slice mit Faktor 0.5 zeichnen (siehe README.md). glow_pad ist der durchsichtige Leuchtrand um den festen Körper.",
         "assets": assets,
     }
