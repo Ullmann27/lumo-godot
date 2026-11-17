@@ -52,9 +52,12 @@ static func try_launch(
 			"start": jump.ramp_start,
 			"take_off": jump.take_off,
 			"height": jump.height,
-			"angle": jump.angle,
+			# Same speed-scaled lift as the player on a level-crest ramp.
+			"angle": asin(clampf(
+				sin(float(jump.angle)) * float(jump.get("lift_scale", 1.0)), 0.0, 1.0
+			)),
 			"flight_gravity": game.JUMP_GRAVITY,
-			"max_lift": game.JUMP_MAX_LIFT
+			"max_lift": float(jump.get("max_lift", game.JUMP_MAX_LIFT))
 		}
 	if ramp.is_empty():
 		return false

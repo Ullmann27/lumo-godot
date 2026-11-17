@@ -1984,7 +1984,10 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			jump_count += 1
 			air_time = 0.0
 			current_jump_gravity = JUMP_GRAVITY
-			vertical_speed = minf(speed * sin(float(jump.angle)), JUMP_MAX_LIFT)
+			vertical_speed = minf(
+				speed * sin(float(jump.angle)) * float(jump.get("lift_scale", 1.0)),
+				float(jump.get("max_lift", JUMP_MAX_LIFT))
+			)
 			message.text = "Sprung!"
 	if not airborne and world.in_gap(road_distance):
 		# Rolled or reversed into a gap without take-off: there is no road here.
