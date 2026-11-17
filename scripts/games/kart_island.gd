@@ -21,6 +21,7 @@ const RIVAL_FLIGHT = preload("res://scripts/games/kart_rival_flight.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const DARKRIDE_EVENT = preload("res://scripts/games/kart_darkride_event_director.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
+const ADVENTURE_DRAMA = preload("res://scripts/games/kart_adventure_drama.gd")
 const ROADSIDE_LASSO = preload("res://scripts/games/kart_roadside_lasso.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
@@ -442,21 +443,11 @@ func _build_world() -> void:
 			stunt_star.material_override = _glow_material(Color("ffc94a"), 0.6)
 			gems.append(stunt_star)
 			gem_distances.append(STUNT.loop_start(world))
-		for fraction in [0.12, 0.42, 0.74]:
-			_turbo_pad(fraction * track_length)
-		var item_layout: Array = [
-			[0.18, -2.7],
-			[0.34, 2.7],
-			[0.53, 0.0],
-			[0.69, -2.7],
-			[0.86, 2.7],
-		]
-		if track_id == "jungle_emerald_3600":
-			item_layout = [
-				[0.045, -3.0], [0.13, 3.0], [0.21, 0.0], [0.29, -3.0],
-				[0.365, 2.7], [0.455, 0.0], [0.535, -2.7], [0.63, 0.0],
-				[0.705, 2.7], [0.795, -3.0], [0.875, 0.0], [0.95, 3.0]
-			]
+		# Turbo-Felder und Item-Ringe folgen der Abenteuer-Dramaturgie je Strecke
+		# (kart_adventure_drama.gd); Strecken ohne eigene Dramaturgie behalten die alten Werte.
+		for fraction in ADVENTURE_DRAMA.turbo_fractions(track_id):
+			_turbo_pad(float(fraction) * track_length)
+		var item_layout: Array = ADVENTURE_DRAMA.item_layout(track_id)
 		for entry in item_layout:
 			_item_box(float(entry[0]) * track_length, float(entry[1]))
 	player = VEHICLE.new()
@@ -2692,7 +2683,11 @@ func _track_events() -> void:
 		if separation.length() < 0.9 and hit_timer <= 0.0 and shield_time <= 0.0:
 			hit_timer = 0.15
 			speed *= 0.88
-			message.text = "Hütchen! Lenke durch die freie Mitte."
+			message.text = (
+				"Hindernis! Weiche zur freien Spur aus."
+				if ADVENTURE_DRAMA.has(track_id) and track_id != "sonnenhafen"
+				else "Hütchen! Lenke durch die freie Mitte."
+			)
 			_sound_effect("collision")
 	for i in range(opponents.size()):
 		var away: Vector3 = player.position - opponents[i].position
@@ -2737,8 +2732,8 @@ func _track_events() -> void:
 				"Impuls" if item == "pulse" else "Schild" if item == "shield" else "Schub"
 			]
 			_sound_effect("item")
-	for fraction in [0.12, 0.42, 0.74]:
-		if absf(fposmod(distance, track_length) - fraction * track_length - 1.1) < 1.2 and absf(lane) < 2.1:
+	for fraction in ADVENTURE_DRAMA.turbo_fractions(track_id):
+		if absf(fposmod(distance, track_length) - float(fraction) * track_length - 1.1) < 1.2 and absf(lane) < 2.1:
 			boost_time = maxf(boost_time, _boost_for(1.0))
 
 
