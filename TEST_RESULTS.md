@@ -19,6 +19,20 @@ Nicht gemergt: `lumo-kart/gameplay-items-20261117` @ `17b63b4` – zweites Item-
 - Bauwelt/Dorf: campaign_map (54), defense (162), frontier, settlement (194), settlement_play (127), village_economy (339), village_scaling, nextgen_play, sandbox_tools.
 - Schatzsuche: island, density (1085), exploration (92), wisp. Rhythmus: party, tour (2118), tour_play (87).
 
+## Szenenkosten vorher/nachher (Xvfb, gl_compatibility, 1280×720, Rennansicht; lastunabhängige Zähler)
+| Strecke | Zeichenaufrufe Basis → jetzt | Dreiecke Basis → jetzt | Lichter |
+|---|---|---|---|
+| Sonnenhafen | 666 → 671 | 2.133.163 → 2.136.945 | 2 → 2 |
+| Himmelsinseln | 425 → 425 | 792.596 → 792.596 | 6 → 6 |
+| Vulkan | 409 → 436 | 884.096 → 889.844 | 6 → 6 |
+| Dschungelherz | 324 → 329 | 882.946 → 887.998 | 0 → 0 |
+| Holo City | 438 → 438 | 1.137.618 → 1.137.618 | 6 → 6 |
+
+Die Integration-2-Streams machen die Szenen nicht spürbar schwerer. Unabhängig davon ist Sonnenhafen mit rund 670 Zeichenaufrufen und 2,1 Mio. Dreiecken pro Bild für Handys viel; das ist keine Gerätemessung.
+
+## CI-Fristen
+`kart_reference_host_visual` lief in CI nach bestandenen Prüfungen ins 120-s-Limit (auf der Basis ebenso), ein Fall in `real-godot-tests` ins 180-s-Limit. Beide Fristen für Software-Rendering angehoben (300 s bzw. 360 s); keine Prüfung geändert.
+
 ## Nicht gelaufen
 - Übrige rund 300 Testskripte, alle Capture-/Visual-Workflows, CI auf diesem Kopf.
 - Nachhilfe-Szene (kein Test vorhanden), Puzzle, Karten-, 4-Gewinnt-, Quiz-Tisch.
