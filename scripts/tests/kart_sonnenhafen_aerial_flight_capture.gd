@@ -1,4 +1,5 @@
 extends SceneTree
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 ## Release 2003 read-only bird's-eye visual QA of the EXACT published Godot source.
 ## Rendered under real Godot 4.6.3 OpenGL, not a drawn design mockup.
 const STEP: float = 1.0 / 60.0
@@ -112,6 +113,10 @@ func _run() -> void:
 	assert(peak_height > 3.0, "Panorama flight must be visibly elevated")
 	print("[SonnenhafenAerial] PASS: full aerial course + takeoff + real flight + landing; no resets; peak %.2fm" % peak_height)
 	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	# One frame was not always enough for the mixer-owned playbacks: CI then saw
+	# "resources still in use at exit" after a passing flight. Wait for the real release.
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[SonnenhafenAerial]")):
+		push_error("[SonnenhafenAerial] FAIL: scene/audio teardown incomplete")
+		quit(1)
+		return
 	quit(0)
