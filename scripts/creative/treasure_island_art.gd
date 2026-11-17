@@ -3,7 +3,10 @@ extends RefCounted
 
 ## Visuelle Anreicherung der Schatzsuche: Runenbogen statt Sandsteinsturz,
 ## Pfotenpfad, Felsen, Ruinen, Runensteine, Wasserfallnebel, Schatzkammer
-## und Lichtstrahlen. Keine Gameplay-, Collision- oder Hinweis-Änderungen.
+## und Lichtstrahlen. Landmarken der zusätzlichen Fundorte stehen nur als
+## sichtbare Hinweise in der Welt; Fundregeln liegen in TreasureState.
+const LANTERN_MODEL = preload("res://assets/creative/models/lumo_lantern.glb")
+const CHEST_MODEL = preload("res://assets/creative/models/lumo_treasure_chest.glb")
 
 
 static func apply(root: Node3D) -> void:
@@ -22,6 +25,7 @@ static func apply(root: Node3D) -> void:
 	_flowers(root, box, density)
 	_chamber_light(root, sparkles)
 	_light_rays(root, sparkles)
+	_secret_finds(root, box)
 
 
 static func _mat(
@@ -441,3 +445,59 @@ static func _flowers(root: Node3D, mesh: BoxMesh, density: float) -> void:
 	BuildVoxelStyle.multimesh(
 		root, "TreasureFlowersBlue", mesh, _mat(Color("3a78e0"), Color("7eb6ff"), 0.45), blue
 	)
+
+
+static func _secret_finds(root: Node3D, mesh: BoxMesh) -> void:
+	# Muschelbank am rechten Ufer der Startbucht.
+	var shells: Array[Transform3D] = []
+	var shell_at := Vector3(18.5, 0.0, -5.5)
+	for i in range(5):
+		var offset := Vector3(float(i % 3) * 0.55 - 0.55, 0.0, float(i / 3) * 0.6 - 0.3)
+		shells.append(_xform(shell_at + offset + Vector3(0, 0.12, 0), Vector3(0.42, 0.16, 0.32), float(i) * 0.7))
+		shells.append(_xform(shell_at + offset + Vector3(0, 0.2, 0), Vector3(0.22, 0.1, 0.18), float(i) * 0.7 + 0.4))
+	BuildVoxelStyle.multimesh(
+		root, "TreasureShells", mesh, _mat(Color("f0e4c8"), Color("ffe9b8"), 0.35), shells
+	)
+	# Pfadlaterne links der Hauptspur.
+	var lamp: Node3D = LANTERN_MODEL.instantiate()
+	lamp.name = "TreasurePathLantern"
+	lamp.position = Vector3(-8.5, 0, -14.0)
+	root.add_child(lamp)
+	# Aussichtsfels rechts hinter dem Tor: kleine Steinpyramide mit Leuchtstein.
+	var cairn: Array[Transform3D] = []
+	var look := Vector3(20.5, 0.0, -36.5)
+	cairn.append(_xform(look + Vector3(0, 0.35, 0), Vector3(1.6, 0.7, 1.3)))
+	cairn.append(_xform(look + Vector3(0.1, 0.9, -0.1), Vector3(1.1, 0.55, 0.95), 0.4))
+	cairn.append(_xform(look + Vector3(0, 1.35, 0), Vector3(0.7, 0.45, 0.65), -0.2))
+	BuildVoxelStyle.multimesh(
+		root, "TreasureLookout", mesh, _mat(Color("8c8678"), Color("c8c2b4"), 0.08), cairn
+	)
+	var beacon := SphereMesh.new()
+	beacon.radius = 0.28
+	beacon.height = 0.56
+	beacon.radial_segments = 16
+	beacon.rings = 8
+	var beacon_x: Array[Transform3D] = [_xform(look + Vector3(0, 1.85, 0), Vector3.ONE)]
+	BuildVoxelStyle.multimesh(
+		root, "TreasureLookoutBeacon", beacon, _mat(Color("ffe08a"), Color("ffd56a"), 1.6), beacon_x
+	)
+	# Mondspiegel: flacher leuchtender Teich.
+	var pool := CylinderMesh.new()
+	pool.top_radius = 1.0
+	pool.bottom_radius = 1.0
+	pool.height = 1.0
+	pool.radial_segments = 20
+	var pool_mat := _mat(Color(0.45, 0.72, 0.92, 0.7), Color("b8e7ff"), 0.8)
+	pool_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	var pool_x: Array[Transform3D] = [
+		Transform3D(Basis.from_scale(Vector3(1.8, 0.08, 1.8)), Vector3(8.0, 0.08, -43.0))
+	]
+	BuildVoxelStyle.multimesh(root, "TreasureMoonPool", pool, pool_mat, pool_x)
+	# Versteckte Truhe in der Kammerflanke.
+	var cache: Node3D = CHEST_MODEL.instantiate()
+	cache.name = "TreasureHiddenCache"
+	cache.position = Vector3(-16.0, 0, -58.5)
+	cache.rotation.y = deg_to_rad(35)
+	cache.scale = Vector3.ONE * 0.85
+	root.add_child(cache)
+

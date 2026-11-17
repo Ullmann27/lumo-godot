@@ -86,7 +86,12 @@ var last_cheer: int = 0
 const DISCOVERIES = [
 	{"id": "arch", "name": "Willkommensbogen", "at": Vector3(0, 0, 1.35)},
 	{"id": "compass", "name": "Kompass-Sockel", "at": Vector3(2.45, 0, 4.55)},
-	{"id": "falls", "name": "Start-Wasserfall", "at": Vector3(-12.5, 0, 2.2)}
+	{"id": "falls", "name": "Start-Wasserfall", "at": Vector3(-12.5, 0, 2.2)},
+	{"id": "shell", "name": "Muschelbank", "at": Vector3(18.5, 0, -5.5)},
+	{"id": "lantern", "name": "Pfadlaterne", "at": Vector3(-8.5, 0, -14.0)},
+	{"id": "lookout", "name": "Aussichtsfels", "at": Vector3(20.5, 0, -36.5)},
+	{"id": "moonpool", "name": "Mondspiegel", "at": Vector3(8.0, 0, -43.0)},
+	{"id": "cache", "name": "Versteckte Truhe", "at": Vector3(-16.0, 0, -58.5)}
 ]
 const STREAK_MILESTONES: Array[int] = [3, 7]
 const CLUE_REQUIREMENTS := {

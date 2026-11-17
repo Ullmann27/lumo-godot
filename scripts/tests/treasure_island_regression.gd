@@ -88,6 +88,21 @@ func _discoveries() -> void:
 	assert(restored.restore(data))
 	assert(restored.discoveries.size() == 3)
 	assert(restored.discovery_xp() == 6)
+	assert(STATE.DISCOVERIES.size() == 8, "Five additional optional finds exist")
+	assert(model.try_discover(Vector3(18.5, 0, -5.5)) == "Muschelbank")
+	assert(model.try_discover(Vector3(-8.5, 0, -14.0)) == "Pfadlaterne")
+	assert(model.try_discover(Vector3(20.5, 0, -36.5)) == "Aussichtsfels")
+	assert(model.try_discover(Vector3(8.0, 0, -43.0)) == "Mondspiegel")
+	assert(model.try_discover(Vector3(-16.0, 0, -58.5)) == "Versteckte Truhe")
+	assert(model.discoveries.size() == 8)
+	assert(model.discovery_xp() == 16)
+	assert(model.reward_xp() == 56)
+	var with_new: Dictionary = model.to_data()
+	var loaded_new := STATE.new()
+	assert(loaded_new.restore(with_new) and loaded_new.discoveries.size() == 8)
+	var old_only := STATE.new()
+	assert(old_only.restore(data) and old_only.discoveries == ["compass", "arch", "falls"])
+	assert(old_only.discovery_xp() == 6)
 
 
 func _world_camera_and_reward() -> void:
