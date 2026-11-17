@@ -66,6 +66,11 @@ func _run() -> void:
 	root.add_child(game)
 	game.set_physics_process(false)
 	await process_frame
+	# Root cause of the former "steering" flake: auto_gas is loaded from the
+	# persisted user://kart_preferences.cfg, and other Kart tests save
+	# auto_gas=false there. A later run then drove without throttle and the kart
+	# never moved. These checks are specified for Auto-Gas, so pin it here.
+	game.auto_gas = true
 	_check(game.menu_active and game.garage.visible, "The garage must precede any race")
 	_check(game.garage._entries().size() == 5, "Five usable mode choices")
 	for entry in game.garage._entries():
@@ -89,6 +94,7 @@ func _run() -> void:
 	game._end_preview()
 	game.countdown = 0
 	game.racing = true
+	game.gas_held = false
 	var start_position: Vector3 = game.player.position
 	var heading_before: float = game.player_heading
 	for i in range(35):
@@ -144,6 +150,7 @@ func _run() -> void:
 	root.add_child(game)
 	game.set_physics_process(false)
 	await process_frame
+	game.auto_gas = true
 	_check(game.menu_active and game.saved_session_available)
 	game.lightweight = true
 	game._resume_saved_race()
