@@ -1,0 +1,258 @@
+{
+  "schema": 1,
+  "recorded_at": "2026-11-13T15:57:10.483083+00:00",
+  "base_local_commit": "a76f26b1d19662f6429a9cff063991e994d1e19a",
+  "published_studio_source": "76980a941fa05d047574d8cc386d3249d93ffca3",
+  "published_studio_tree": "8df22766bd0dbae31aacaa26c0228811c027686e",
+  "initial_headless_results": {
+    "build_play": 62,
+    "learning_studio": 183,
+    "build_dialog_checks": 2016,
+    "build_dialog_failed": 3
+  },
+  "counterexperiment": {
+    "only_runtime_change": "toolbar.mouse_filter STOP to PASS",
+    "observed_exit_code": 0,
+    "passing_checks": 2016
+  },
+  "final_headless_results": {
+    "build_play": 62,
+    "build_dialog": 2016,
+    "errors": 0,
+    "source_files": 1189
+  },
+  "changed_between_initial_and_final_batches": [
+    "scripts/creative/build_world.gd"
+  ],
+  "unchanged_learning_source_reused": true,
+  "pointer_block_sha256": "da369265e956da28c7d4679e29158061738b732f1ed17b1ba1dac93559d2c86f",
+  "final_product_blob": "6d81ac47bec01fa68c69f9886c5d356b6647fc1a",
+  "final_probe_blob": "f8ccce81b4f92b07eb383fdaccb86b400d22a1c1",
+  "files": [
+    {
+      "path": "initial/manifest.json",
+      "encoding": "identity",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/manifest.json",
+      "original_bytes": 3194,
+      "original_sha256": "18ad40597b99339eb90fc3b016e7ac52359538ea5b6b9e38c1b69416603cdda6",
+      "stored_bytes": 3194,
+      "stored_sha256": "18ad40597b99339eb90fc3b016e7ac52359538ea5b6b9e38c1b69416603cdda6"
+    },
+    {
+      "path": "initial/build_nextgen_play_regression.json",
+      "encoding": "identity",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/build_nextgen_play_regression.json",
+      "original_bytes": 780,
+      "original_sha256": "1b5c2ef5bb4e51a1e20667087a1bfa4d66386f2082a7281de242a3c5ee66a903",
+      "stored_bytes": 780,
+      "stored_sha256": "1b5c2ef5bb4e51a1e20667087a1bfa4d66386f2082a7281de242a3c5ee66a903"
+    },
+    {
+      "path": "initial/build_nextgen_play_regression.log",
+      "encoding": "identity",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/build_nextgen_play_regression.log",
+      "original_bytes": 685,
+      "original_sha256": "4f02d44a99debb7a5b7a8580c5c7ef215201906963f133e6d10c79d65d27c01c",
+      "stored_bytes": 685,
+      "stored_sha256": "4f02d44a99debb7a5b7a8580c5c7ef215201906963f133e6d10c79d65d27c01c"
+    },
+    {
+      "path": "initial/build_dialog_density_regression.json",
+      "encoding": "identity",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/build_dialog_density_regression.json",
+      "original_bytes": 900,
+      "original_sha256": "510feafde13d553ff3be48cdda4fe86b68aaeae3f128e6a2daf1faadc184fef3",
+      "stored_bytes": 900,
+      "stored_sha256": "510feafde13d553ff3be48cdda4fe86b68aaeae3f128e6a2daf1faadc184fef3"
+    },
+    {
+      "path": "initial/build_dialog_density_regression.log",
+      "encoding": "identity",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/build_dialog_density_regression.log",
+      "original_bytes": 2999,
+      "original_sha256": "93f5e593de518fdb3572ded9b7437a0ef1586d51a2b5075c53ce4e11801d5885",
+      "stored_bytes": 2999,
+      "stored_sha256": "93f5e593de518fdb3572ded9b7437a0ef1586d51a2b5075c53ce4e11801d5885"
+    },
+    {
+      "path": "initial/learning_studio_regression.json",
+      "encoding": "identity",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/learning_studio_regression.json",
+      "original_bytes": 754,
+      "original_sha256": "6ffde3e91e1667a5ac085f35d37940bd311f241d26641788c5f2e1bbf856161f",
+      "stored_bytes": 754,
+      "stored_sha256": "6ffde3e91e1667a5ac085f35d37940bd311f241d26641788c5f2e1bbf856161f"
+    },
+    {
+      "path": "initial/learning_studio_regression.log",
+      "encoding": "identity",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/learning_studio_regression.log",
+      "original_bytes": 1799,
+      "original_sha256": "4c3f76fbf9eae0869b4055830f947781d98f5809e22bf7c62066dfb3d0f97766",
+      "stored_bytes": 1799,
+      "stored_sha256": "4c3f76fbf9eae0869b4055830f947781d98f5809e22bf7c62066dfb3d0f97766"
+    },
+    {
+      "path": "initial/source-before.json.gz",
+      "encoding": "gzip",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/source-before.json",
+      "original_bytes": 141098,
+      "original_sha256": "538356c84fea5e4a96e5b9a3c8b20180b96b4560a2e759c296253b3b41164940",
+      "stored_bytes": 56383,
+      "stored_sha256": "a9278cb8bcf7e664d8d211916f0423b7d8e091207e685eee917a0e8c837585c9"
+    },
+    {
+      "path": "initial/source-after.json.gz",
+      "encoding": "gzip",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/source-after.json",
+      "original_bytes": 141098,
+      "original_sha256": "538356c84fea5e4a96e5b9a3c8b20180b96b4560a2e759c296253b3b41164940",
+      "stored_bytes": 56383,
+      "stored_sha256": "a9278cb8bcf7e664d8d211916f0423b7d8e091207e685eee917a0e8c837585c9"
+    },
+    {
+      "path": "final-green/source-before.json.gz",
+      "encoding": "gzip",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/final-green/source-before.json",
+      "original_bytes": 141098,
+      "original_sha256": "aef433ab5990528eb95a2eb7fb920f9d596480bc93980de8cde872fb96f067e1",
+      "stored_bytes": 56383,
+      "stored_sha256": "67f084715fb86637c93d5624eb53c06f490b867c3cda757f8ae961977f42d53a"
+    },
+    {
+      "path": "final-green/source-after.json.gz",
+      "encoding": "gzip",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/final-green/source-after.json",
+      "original_bytes": 141098,
+      "original_sha256": "aef433ab5990528eb95a2eb7fb920f9d596480bc93980de8cde872fb96f067e1",
+      "stored_bytes": 56383,
+      "stored_sha256": "67f084715fb86637c93d5624eb53c06f490b867c3cda757f8ae961977f42d53a"
+    },
+    {
+      "path": "diagnostic/world-gesture-diagnostic.gd.gz",
+      "encoding": "gzip",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/world-gesture-diagnostic.gd",
+      "original_bytes": 2041,
+      "original_sha256": "00cbf6e110c8258351646da2dee9c07d4a713d3ab8d0a01eb99e1f25de969684",
+      "stored_bytes": 797,
+      "stored_sha256": "01e2aeac2c0a7056e6e8c3d0200ddc8e578bfea9b636850e0ddeb32083f95065"
+    },
+    {
+      "path": "diagnostic/world-gesture-diagnostic.log.gz",
+      "encoding": "gzip",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/world-gesture-diagnostic.log",
+      "original_bytes": 13318,
+      "original_sha256": "b26edaece0386c6e4512129806c5c3f46d0fcd6800f54d0546d7ffa7ef45f0d6",
+      "stored_bytes": 1996,
+      "stored_sha256": "7014b43a9f6ce3f1b61bc3471ac0e74c2dc8d815eb78e1732ebd0cf3f3a910a8"
+    },
+    {
+      "path": "diagnostic/toolbar-pass-counterexperiment.gd.gz",
+      "encoding": "gzip",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/toolbar-pass-counterexperiment.gd",
+      "original_bytes": 695,
+      "original_sha256": "069eac0c1e58d8fd4ed6c2907c4e52dd667f5dcc7153c0db190edacc0bbc7525",
+      "stored_bytes": 373,
+      "stored_sha256": "6ac042bc3c7c5a5737465d8c08aa97375bdc123934e54d5b212f955c031bd5ea"
+    },
+    {
+      "path": "diagnostic/toolbar-pass-counterexperiment.log.gz",
+      "encoding": "gzip",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/toolbar-pass-counterexperiment.log",
+      "original_bytes": 2441,
+      "original_sha256": "5d7ebea99ae24a677060f0d551ed38c3a2924e09edee08bd4bd166336d1d87e0",
+      "stored_bytes": 731,
+      "stored_sha256": "2fccfc9e9f46a128887152b381ab23883fc0bd2d23accda0ecd906e39fa43c6f"
+    },
+    {
+      "path": "final-green/manifest.json",
+      "encoding": "identity",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/final-green/manifest.json",
+      "original_bytes": 2149,
+      "original_sha256": "590cc9cca092807c5c978882e96ce0334f53a94db222225167d9c094cf78da38",
+      "stored_bytes": 2149,
+      "stored_sha256": "590cc9cca092807c5c978882e96ce0334f53a94db222225167d9c094cf78da38"
+    },
+    {
+      "path": "final-green/build_nextgen_play_regression.json",
+      "encoding": "identity",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/final-green/build_nextgen_play_regression.json",
+      "original_bytes": 760,
+      "original_sha256": "275b72de747e1553b1b652e4fe7eb07acdf28e997fccbc96e69aa57ea773922d",
+      "stored_bytes": 760,
+      "stored_sha256": "275b72de747e1553b1b652e4fe7eb07acdf28e997fccbc96e69aa57ea773922d"
+    },
+    {
+      "path": "final-green/build_nextgen_play_regression.log",
+      "encoding": "identity",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/final-green/build_nextgen_play_regression.log",
+      "original_bytes": 685,
+      "original_sha256": "4f02d44a99debb7a5b7a8580c5c7ef215201906963f133e6d10c79d65d27c01c",
+      "stored_bytes": 685,
+      "stored_sha256": "4f02d44a99debb7a5b7a8580c5c7ef215201906963f133e6d10c79d65d27c01c"
+    },
+    {
+      "path": "final-green/build_dialog_density_regression.json",
+      "encoding": "identity",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/final-green/build_dialog_density_regression.json",
+      "original_bytes": 774,
+      "original_sha256": "627940b7e0d44615d26787c1b661d63f000282d6c4adfbece6572d6594a0b5f5",
+      "stored_bytes": 774,
+      "stored_sha256": "627940b7e0d44615d26787c1b661d63f000282d6c4adfbece6572d6594a0b5f5"
+    },
+    {
+      "path": "final-green/build_dialog_density_regression.log",
+      "encoding": "identity",
+      "original": "/workspace/scratch/b3485b7bb989/studio-76980-merge-evidence/final-green/build_dialog_density_regression.log",
+      "original_bytes": 1419,
+      "original_sha256": "55064ac791ded9d7c46d854d983ca94fc03597a53f7fdbd6ac891473c01e4a8a",
+      "stored_bytes": 1419,
+      "stored_sha256": "55064ac791ded9d7c46d854d983ca94fc03597a53f7fdbd6ac891473c01e4a8a"
+    },
+    {
+      "path": "source/build_world.with-old-stop.gd.gz",
+      "encoding": "gzip",
+      "original": "exact merged index before targeted correction",
+      "original_bytes": 55706,
+      "original_sha256": "747a4c50ea2d863374786be4b521d1e6f1a545cc6a5cf31a7707e830bf2dfb14",
+      "stored_bytes": 15937,
+      "stored_sha256": "4af31a0f067c9d32b8f8cd4a08d21a9f409e3b2728702fe7348db039c90feedf"
+    },
+    {
+      "path": "source/build_world.final.gd.gz",
+      "encoding": "gzip",
+      "original": "working-tree:scripts/creative/build_world.gd",
+      "original_bytes": 55577,
+      "original_sha256": "12fb662ba096154f41d4f4deb63c5837b1b3197398927418afb60d5d6246e00e",
+      "stored_bytes": 15893,
+      "stored_sha256": "2ce627c04d13495dfa67070458d27c7a91501a547762f9932d8e39cb6a5d9a74"
+    },
+    {
+      "path": "source/build_dialog_density_regression.gd.gz",
+      "encoding": "gzip",
+      "original": "working-tree:scripts/tests/build_dialog_density_regression.gd",
+      "original_bytes": 22270,
+      "original_sha256": "fc978b94c927965888088e5b5fc4a6abdbd7eb8052323ab30b10faa418a9cb94",
+      "stored_bytes": 7057,
+      "stored_sha256": "823cd0af1b0c19554675976d1d3110386937c7e276f80fb16e4878079198dce4"
+    },
+    {
+      "path": "source/ownership-correction.patch.gz",
+      "encoding": "gzip",
+      "original": "git diff -- scripts/creative/build_world.gd",
+      "original_bytes": 643,
+      "original_sha256": "9cd8ee9cf742eaada595ccd23abfcd3c255122084260b0bcd9ae00fc064182be",
+      "stored_bytes": 366,
+      "stored_sha256": "07995e1d7b2981c2d4ab654ce747f7573725934735f5a0d48abbe3ab13055a32"
+    },
+    {
+      "path": "README.md",
+      "encoding": "identity",
+      "original": "generated pack explanation",
+      "original_bytes": 3506,
+      "original_sha256": "eeacaf3973ac80ad9e48b370c6e75d89e3041458cad0eb69e2eec9609bc3da3d",
+      "stored_bytes": 3506,
+      "stored_sha256": "eeacaf3973ac80ad9e48b370c6e75d89e3041458cad0eb69e2eec9609bc3da3d"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+20:37:54 | INFO: Data are loaded, start creating Blender stuff
+20:37:54 | INFO: Blender create Mesh node Icosphere.047
+20:37:54 | INFO: glTF import finished in 0.06s
+{
+  "file": "portal_entry.glb",
+  "sha256": "6857291d630e715fa5d817f0f19b2077b71a4f97ed45c66589b27b87017fb60b",
+  "bytes": 2551596,
+  "triangles": 6540,
+  "material_count": 7,
+  "degenerate_triangles": 0,
+  "nonmanifold_edges_after_seam_weld": 0,
+  "clearance_rays": 253,
+  "measured_min_side_clearance_m": 5.975038528442383,
+  "measured_min_roof_clearance_m": 5.243462657928466,
+  "sockets": [
+    "in",
+    "out"
+  ]
+}
+Blender 4.3.2
+
+Blender quit

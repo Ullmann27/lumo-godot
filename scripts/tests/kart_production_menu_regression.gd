@@ -99,18 +99,13 @@ func _run() -> void:
 		_check(not menu.preview_caption_panel.visible
 			or _dp(menu.preview_caption_panel, density).y < 48.0,
 			"Hero hint is a bounded single-line pill, never a column of letters")
-		var world_rect: Rect2 = menu.world_backdrop.get_global_rect()
-		_check(world_rect.position.distance_to(root.get_visible_rect().position) < 0.5
-			and world_rect.size.distance_to(root.get_visible_rect().size) < 0.5,
-			"Original world fills the viewport, not only SafeUI: " + str(pixels))
-		_check(menu.world_veil.get_global_rect().is_equal_approx(world_rect),
-			"Readability gradient covers exactly the same full-bleed area")
-		var art: AtlasTexture = menu.world_backdrop.texture as AtlasTexture
-		_check(art != null and art.filter_clip and art.region == Rect2(0, 0, 1066, 1904)
-			and art.atlas.resource_path == "res://assets/kart/menu/lumo-world.webp",
-			"Baked white edges excluded by sampling, original asset retained")
-		_check(menu.world_backdrop.mouse_filter == Control.MOUSE_FILTER_IGNORE,
-			"Full-bleed artwork never intercepts safe-area buttons")
+		_check(menu.preview_container.is_visible_in_tree()
+			and menu.preview_container.get_global_rect().size.x >= viewport.size.x * 0.98
+			and menu.preview_container.get_global_rect().size.y >= viewport.size.y * 0.98,
+			"One live 3D stage fills the production menu: " + str(pixels))
+		_check(not menu.world_backdrop.is_visible_in_tree(), "Actual 3D scene owns the background")
+		_check(menu._selection_surface.mouse_filter == Control.MOUSE_FILTER_IGNORE,
+			"Readability surface never intercepts safe-area buttons")
 		_check(menu.stage_rings.size() == 3, "Three actual lightweight 3D light rings")
 		for ring in menu.stage_rings:
 			_check(ring.mesh.ring_segments == 6 and ring.mesh.outer_radius < 1.72,
@@ -141,7 +136,8 @@ func _run() -> void:
 		_check(not menu.quick_start_button.visible, "Exactly one main gold action")
 		_check(menu.progress_icon.visible == menu.progress_label.visible,
 			"Reward icon never appears as a clipped unlabelled star")
-		_check(viewport.encloses(menu.brand_wordmark.get_global_rect()), "Whole two-line wordmark stays inside")
+		_check(not menu.brand_wordmark.is_visible_in_tree()
+			or viewport.encloses(menu.brand_wordmark.get_global_rect()), "Visible wordmark stays inside")
 		_check(menu.brand_wordmark.get_script().resource_path == "res://scripts/games/kart_wordmark.gd",
 			"Reference wordmark uses native sharp lettering and flags, not emoji text")
 		var cards: GridContainer = menu.choices.get_child(0)
@@ -253,7 +249,9 @@ func _run() -> void:
 	await _settle()
 	_check(menu.setup.mode == "time_trial", "Actual mode selection survives the visual change")
 	menu._next()
-	_check(menu.step == 1, "Actual Weiter enters the existing setup, no competing menu")
+	await _settle()
+	_check(not game.menu_active and game.mode == "time_trial"
+		and is_instance_valid(game.player), "Primary action starts the selected real race directly")
 	game.abandoned = true
 	game.queue_free()
 	await _settle()

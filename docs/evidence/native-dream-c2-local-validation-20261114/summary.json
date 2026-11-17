@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "scope": "Exactly one authorized local Dream contract/import/headless validation on the published combined source; no renderer or device acceptance.",
+  "source": "c2e025f9bb34334323d989b19085f6fe0e6c5694",
+  "tree": "24c4bfe70a0b3c575b4c6209973ff244237f7b19",
+  "source_checkout": "/tmp/lumo-root-recovery-0900/native-dream",
+  "status": "PASS_AUTHORIZED_LOCAL_SCOPE",
+  "contracts": {
+    "methods": 12,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "elapsed_seconds": 1.0663639340054942,
+    "log": "contracts-console.log",
+    "sha256": "5a7c4e38fb683fa587b60a6b942d3c38ece1dc4b9dbc42c1f599eb86469bd9d4"
+  },
+  "engine_import": {
+    "runs": 1,
+    "returncode": 0,
+    "elapsed_seconds": 10.19843631501135,
+    "warnings": 0,
+    "errors": 0,
+    "log": "import-console.log",
+    "sha256": "85578a75dc702f793e55dfd69aed13ef3c0222a85af7a4ef5f3abf5e71c57852"
+  },
+  "headless": [
+    {
+      "probe": "lumo_dream_ambience_regression",
+      "checks": 170,
+      "failures": 0,
+      "deadline_seconds": 120,
+      "elapsed_seconds": 0.7817407029942842,
+      "exact_marker": "[DreamAmbience] 170 checks, 0 failures",
+      "exact_marker_count": 1,
+      "returncode": 0,
+      "log": "lumo_dream_ambience_regression-headless.log",
+      "sha256": "0e06fbe26cc4fab495f303f614749b1164b2ea673a17c70ee7a38f2b18600709",
+      "warnings": [],
+      "forbidden_lines": []
+    },
+    {
+      "probe": "dream_garden_props_regression",
+      "checks": 544,
+      "failures": 0,
+      "deadline_seconds": 120,
+      "elapsed_seconds": 3.951203381002415,
+      "exact_marker": "[DreamGarden] checks=544 failures=0",
+      "exact_marker_count": 1,
+      "returncode": 0,
+      "log": "dream_garden_props_regression-headless.log",
+      "sha256": "bbfcbd97e786dad12bb49ebf8a088d2b7e0c6a1a834e413c018c0c8c52c5013f",
+      "warnings": [],
+      "forbidden_lines": []
+    }
+  ],
+  "source_invariants": {
+    "head": true,
+    "tree": true,
+    "index_sha256": true,
+    "tracked": true,
+    "tracked_status_clean": true,
+    "stage_listing_bytes": true,
+    "index_flags_bytes": true
+  },
+  "materialized_tracked_files": 1468,
+  "explicit_missing_skip_worktree_paths": 2139,
+  "sparse_distribution": {
+    "docs": 2083,
+    "evidence": 8,
+    "tools": 48
+  },
+  "missing_tools_groups": {
+    "tools/ai3d": 2,
+    "tools/android_patches": 20,
+    "tools/argon_review": 1,
+    "tools/art": 16,
+    "tools/harbor": 1,
+    "tools/lumo_animation": 6,
+    "tools/qa": 2
+  },
+  "authorized_dependency_overlap_with_missing_paths": [],
+  "generated_source_adjacent_counts": {
+    "generated_import_metadata": 463,
+    "generated_uid": 337
+  },
+  "generated_files_archive": {
+    "path": "generated-import-originals.tar.gz",
+    "bytes": 45669,
+    "sha256": "0c2f50bf6a3f43dc83cbe6cad9531093d9915f08543939e11f3d90f3df0294d5",
+    "roundtrip_verified_members": 800
+  },
+  "generated_cache": {
+    "files": 1033,
+    "bytes": 76986000,
+    "inventory": "generated-cache-inventory.json",
+    "payload_not_duplicated": true,
+    "original_cache_retained": true
+  },
+  "renderer_runs": 0,
+  "device_runs": 0,
+  "new_capture_pngs": 0,
+  "prior_existing_regression_runs": 0,
+  "prior_preflight": {
+    "path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f",
+    "status": "COLLECTOR_PRECONDITION_FAILURE_ONLY",
+    "engine_runs": 0,
+    "test_runs": 0,
+    "stages": [],
+    "original_unchanged": true,
+    "correction": "The exact 2139 sparse omissions are docs2083/evidence8/tools48, not docs-only. No source-integrity condition was relaxed."
+  },
+  "limits": [
+    "The 12 tests use synthetic raster fixtures; they do not render the game.",
+    "Only DreamAmbience and DreamGarden headless modes ran. The three renderer modes and seven actual PNGs remain for CI.",
+    "The four existing regression probes, complete52/17 suite, Android, device input and FPS were not run here.",
+    "Local Pillow13.0.0 differs from the workflow declaration12.3.0; actual local dependency version is recorded."
+  ],
+  "finished_at": "2026-11-14T10:28:10.697889+00:00"
+}

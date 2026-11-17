@@ -1,11 +1,22 @@
 extends SceneTree
-## Compares the full-detail model to its original unmerged geometry and tests LOD.
+## Isolates the surviving procedural generator and its exact merge/LOD contract.
+## Actual imported runtime models have kart_production_vehicle_regression.gd.
 
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 
 
-class ReferenceKart:
+class ProceduralKart:
 	extends LumoRaceKart
+
+	func _build_production_vehicle() -> bool:
+		return false
+
+	func _build_production_driver() -> bool:
+		return false
+
+
+class ReferenceKart:
+	extends ProceduralKart
 
 	func _make_far_mesh() -> void:
 		pass
@@ -216,7 +227,7 @@ func _run() -> void:
 		reference.configure(kind, Color("7760ef"))
 		root.add_child(reference)
 		reference.set_process(false)
-		var kart: LumoRaceKart = VEHICLE.new()
+		var kart: LumoRaceKart = ProceduralKart.new()
 		kart.configure(kind, Color("7760ef"))
 		root.add_child(kart)
 		kart.set_process(false)

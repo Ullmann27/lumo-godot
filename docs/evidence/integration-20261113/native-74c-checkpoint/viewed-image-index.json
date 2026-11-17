@@ -1,0 +1,111 @@
+{
+  "status": "TARGETED_ROOT_OBSERVATIONS_ONLY_NO_FULL_NATIVE_APPROVAL",
+  "head": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "images": [
+    {
+      "part": "native",
+      "observation_file": "native/root-targeted-observations.json",
+      "area": "bridge_hundred_landscape",
+      "artifact_id": 14054939339,
+      "archive_entry": "images/bridge_hundred-complete-2400x1080.png",
+      "sha256": "9f596453d96c3a7a35d16a75c3b81a784821656f791067399c46b08daa12c1e8",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "findings": "Das von root im vorherigen Arbeitsabschnitt tats\u00e4chlich ge\u00f6ffnete Original zeigt das obere Gleichheitszeichen zwischen 10 Zehner und 100 mit zwei getrennten Balken und sichtbarem Zwischenraum. Auch das untere Gleichheitszeichen der 230-Gleichung ist erkennbar. Dies ist eine gezielte Sichtpr\u00fcfung dieser Korrektur, keine vollst\u00e4ndige Freigabe aller Lernmodule."
+    },
+    {
+      "part": "native",
+      "observation_file": "native/root-targeted-observations.json",
+      "area": "build_goal_short",
+      "artifact_id": 14055797670,
+      "archive_entry": "build/captures/build_dialog_density_regression/build-dialog-640x360-current-goal.png",
+      "sha256": "ff988314b99c3967fa9d13e73f2cd58ca6f9bd3ba76107c6df06e171505ed380",
+      "dimensions": [
+        640,
+        360
+      ],
+      "findings": "Der ge\u00f6ffnete Dialog passt vollst\u00e4ndig in die Aufnahme mit 640 \u00d7 360 Pixeln. Titel, Insel-Aufgabe, Beschreibung sowie Mein Bauwerk testen und Abbrechen sind lesbar und innerhalb des Dialogs. Hinter dem Dialog bleiben Teile der seitlich scrollbaren Werkzeugleisten sichtbar; eine vollst\u00e4ndige Bewertung der Hintergrundnavigation ist nicht Gegenstand dieses Bildes."
+    },
+    {
+      "part": "native",
+      "observation_file": "native/root-targeted-observations.json",
+      "area": "build_goal_portrait",
+      "artifact_id": 14055797670,
+      "archive_entry": "build/captures/build_dialog_density_regression/build-dialog-1080x2400-current-goal.png",
+      "sha256": "b9d0941533151431460983759782eac503c33a8ab1baef9662565587d47fb652",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "findings": "Der ge\u00f6ffnete Dialog zeigt Titel, Insel-Aufgabe und vollst\u00e4ndige Beschreibung im Hochformat. Beide Aktionsfl\u00e4chen sind vollst\u00e4ndig sichtbar; der gro\u00dfe freie Bereich trennt die Testaktion von Abbrechen. Die hinter dem modalen Dialog liegenden horizontalen Werkzeugleisten sind teilweise angeschnitten; der Befund betrifft die vollst\u00e4ndige Sichtbarkeit und Lesbarkeit des aktuellen Dialogs."
+    },
+    {
+      "part": "graphics",
+      "observation_file": "graphics/74c-graphics-viewed-audit.json",
+      "area": "winter_sprint",
+      "artifact_id": 14055182823,
+      "archive_entry": "images/winter_sprint/02_world_landmark.png",
+      "sha256": "099bbefbfb5532080da8ae5a52a047dfd49f5f4b540eff9006f812154f55a3e2",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "findings": "Die frische Aufnahme zeigt eine klar begrenzte blaue Fahrbahn, Schneeberge, Seilbahnkabinen und die Station auf sichtbaren St\u00fctzen. Die Streckenf\u00fchrung bleibt im Landschaftsbild erkennbar. HUD, Karte, Lenkung und Fahraktionen sind vollst\u00e4ndig im Bild; gesichtet ist die stehende aktuelle Landmarkansicht."
+    },
+    {
+      "part": "graphics",
+      "observation_file": "graphics/74c-graphics-viewed-audit.json",
+      "area": "crystal_canyon",
+      "artifact_id": 14055182823,
+      "archive_entry": "images/crystal_canyon/02_world_landmark.png",
+      "sha256": "e5d2db23751308307d007f1a00dac32461d1cfd72b5063c8fdc102cc89948fbe",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "findings": "T\u00fcrkise und violette Kristalle sowie der dunkle Felsbogen rahmen die sichtbare Kurve. Fahrbahnmarkierung und seitliche Begrenzungen bleiben auch im Schatten erkennbar. Alle dargestellten HUD- und Fahrbedienelemente sind lesbar und vollst\u00e4ndig im Bild."
+    },
+    {
+      "part": "graphics",
+      "observation_file": "graphics/74c-graphics-viewed-audit.json",
+      "area": "feedback",
+      "artifact_id": 14054878169,
+      "archive_entry": "images/03_drift_release.png",
+      "sha256": "a636786cde7b087766e05c087a53761f9c40b6dc82ae1da64dc3b7000be1c8a6",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "findings": "Im neuen tats\u00e4chlichen Drift-Release-Bild sind Lumo und Kart vollst\u00e4ndig sichtbar. Zwei helle Ausl\u00e4sse mit gelben Schweifen und die farbigen Geschwindigkeitslinien zeigen den aktiven Turbo; die Strecke bleibt zwischen den Effekten sichtbar. Drift-Hinweis, Karte, Pause und Fahraktionen bleiben lesbar. Die Aufnahme zeigt einen konkreten Moment und ist keine Messung der Bildrate."
+    },
+    {
+      "part": "graphics",
+      "observation_file": "graphics/74c-graphics-viewed-audit.json",
+      "area": "home_portrait",
+      "artifact_id": 14056672152,
+      "archive_entry": "images/home-412x915.png",
+      "sha256": "cd3b8e20ca4bd26bf3c553202cceeaacf85cba2bd43e879d45d5a34e3e289e51",
+      "dimensions": [
+        412,
+        915
+      ],
+      "findings": "Die aktuelle Hochformat-Aufnahme zeigt Lumo mit Kart vollst\u00e4ndig auf dem Podest. Die drei kompakten Modusfelder, f\u00fcnf Navigationsfelder, Zur\u00fcck und START sind innerhalb des Bildes angeordnet; ihre Beschriftungen \u00fcberschneiden sich nicht. Die sichtbaren Bedienelemente werden nicht vom Fahrzeug verdeckt."
+    },
+    {
+      "part": "graphics",
+      "observation_file": "graphics/74c-graphics-viewed-audit.json",
+      "area": "home_landscape",
+      "artifact_id": 14056672152,
+      "archive_entry": "images/home-1280x720.png",
+      "sha256": "84bc4e149cac520df7aa704497b63067c7c359d5cff55a2c8b78cc8611aceae6",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "findings": "Die aktuelle Querformat-Aufnahme zeigt die drei Rennmodi links und das vollst\u00e4ndige Kart mit Lumo rechts. Die f\u00fcnf Navigationsfelder stehen \u00fcber der unteren Reihe mit Spielwelt und START; die sichtbaren Beschriftungen und Optionen bleiben im Bild und \u00fcberschneiden sich nicht."
+    }
+  ]
+}

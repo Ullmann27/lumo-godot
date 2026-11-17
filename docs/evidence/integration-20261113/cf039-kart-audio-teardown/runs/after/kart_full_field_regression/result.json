@@ -1,0 +1,47 @@
+{
+  "phase": "after",
+  "test": "kart_full_field_regression",
+  "started_utc": "2026-11-13T15:10:58.974442+00:00",
+  "finished_utc": "2026-11-13T15:10:59.192791+00:00",
+  "elapsed_seconds": 0.218,
+  "command": [
+    "python3",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_full_field_regression/engine.log",
+    "--timeout",
+    "240",
+    "--required",
+    "[KartFullField] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_full_field_regression.gd",
+    "--fixed-fps",
+    "60"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "xdg": {
+    "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_full_field_regression/xdg-data",
+    "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_full_field_regression/xdg-config",
+    "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_full_field_regression/xdg-cache",
+    "XDG_STATE_HOME": "/home/agent/.local/state",
+    "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+  },
+  "script_sha256": "3347fc096890b51a885a1a76cb1a987d1534176c38325363f71ce69a4418c530",
+  "strict_runner_exit": 1,
+  "required_marker": "[KartFullField] PASS",
+  "marker_present": false,
+  "errors": [
+    "SCRIPT ERROR: Parse Error: The variable type is being inferred from a Variant value, so it will be typed as Variant. (Warning treated as error.)"
+  ],
+  "cleanup_lines": [],
+  "engine_log_sha256": "cfe99a48301d3e40cab7f9f74b3951b8edcca37750640689d0ec8887792d83eb",
+  "runner_log_sha256": "70b2bbe5ac1392c54350c1fd360011b9c59bdc28646727fa758b49b5d3999936"
+}

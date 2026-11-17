@@ -1,0 +1,1243 @@
+{
+  "schema": "lumo.kart_audio_teardown_repair.v1",
+  "created_utc": "2026-11-13T15:13:55.873488+00:00",
+  "repository": "Ullmann27/lumo-godot",
+  "pull_request": 160,
+  "original_ci": {
+    "head_sha": "cf039ad8c834522f355b858e3bee1e201e397da4",
+    "run_id": 43444649016,
+    "run_attempt": 1,
+    "event": "pull_request",
+    "run_status": "completed",
+    "run_conclusion": "failure",
+    "job_id": 131950806261,
+    "job_name": "gameplay",
+    "job_conclusion": "success",
+    "job_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43444649016/job/131950806261",
+    "artifact_id": 14047474807,
+    "artifact_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43444649016/artifacts/14047474807",
+    "zip_path_preserved_in_scratch": "/workspace/scratch/b3485b7bb989/godot-pr160-cf039-nextgen-evidence/legacy-14047474807.zip",
+    "zip_sha256": "49f400c6b6c697e01cf8b797ce55aed567c4098be614377d68fd4ec7c1d77877",
+    "zip_bytes": 39927362,
+    "post_pass_resources": {
+      "KartAI": 4,
+      "GarageTargets": 2,
+      "KartFullField": 2
+    },
+    "legacy_error_filter_meant_github_success_did_not_prove_clean_teardown": true
+  },
+  "local_source": {
+    "base_head": "97b91e312eb982ab1fe9083b7415d11085385235",
+    "base_head_after": "97b91e312eb982ab1fe9083b7415d11085385235",
+    "working_tree_patch": "verification/final-test-only.patch",
+    "test_files": [
+      {
+        "path": "scripts/tests/kart_ai_behavior_regression.gd",
+        "sha256": "14c1ba4ddceb64cdf46108feac55c486a16a5f763e26b5b4762198f4c5411fe2",
+        "git_blob_sha": "562099c948d1495156fd4270921a3e5206fea8ea"
+      },
+      {
+        "path": "scripts/tests/kart_garage_touch_targets_regression.gd",
+        "sha256": "14452b7f8d424c427a66671a49d2c474bfe5cf2a1d56de8efe9e3c31b036ab88",
+        "git_blob_sha": "b55cf3612dbf9fae403d4d48841e5902de5ed9dd"
+      },
+      {
+        "path": "scripts/tests/kart_full_field_regression.gd",
+        "sha256": "db8c0e55dd4b91f611c5be33ed6036f5df7e5ceacfa437c16b5207280f543106",
+        "git_blob_sha": "09ca3799378ab17be93c235699b32eb6b2e44cb3"
+      }
+    ],
+    "product_changed_by_this_repair": false,
+    "all_positive_and_negative_stamped_sources_unchanged_during_runs": true,
+    "scope": "tracked product scripts/scenes/shaders, project.godot, audio assets, the three assigned tests and strict Python runner; excludes unrelated tests, docs, shell gates, generated caches and concurrently repaired scripts/creative/build_world.gd (not part of these Kart scenes)",
+    "stamped_file_count_final": 287,
+    "original_three_test_and_audio_blobs_equal_local_before": true
+  },
+  "repair": {
+    "owner": "Actual game scene weak reference",
+    "playbacks": "Actual existing AudioStreamPlayer.get_stream_playback() weak references",
+    "deadline_wall_time_ms": 2000,
+    "checks_unchanged": "All original AI, garage-layout and full-field driving assertions remain intact.",
+    "success_condition": "Owner gone and all tracked playbacks released before deadline; then original PASS marker.",
+    "global_engine_timeout_unchanged_seconds": 240
+  },
+  "validation": {
+    "engine": {
+      "path": "/opt/godot/4.6.3/Godot_v4.6.3-stable_linux.x86_64",
+      "sha256": "f64d4ed19fc9df9440321653fcc80df8c6e365ba7b6de0a29e2cfa9fa71bfeb3",
+      "version": "4.6.3.stable.official.7d41c59c4"
+    },
+    "positive": {
+      "phase": "after-typed",
+      "source_files_unchanged": true,
+      "changed_files": [],
+      "head_before": "97b91e312eb982ab1fe9083b7415d11085385235",
+      "head_after": "97b91e312eb982ab1fe9083b7415d11085385235",
+      "results": [
+        {
+          "phase": "after-typed",
+          "test": "kart_ai_behavior_regression",
+          "started_utc": "2026-11-13T15:11:08.359426+00:00",
+          "finished_utc": "2026-11-13T15:11:14.282273+00:00",
+          "elapsed_seconds": 5.923,
+          "command": [
+            "python3",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+            "--log",
+            "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_ai_behavior_regression/engine.log",
+            "--timeout",
+            "240",
+            "--required",
+            "[KartAI] PASS",
+            "--",
+            "/usr/local/bin/godot",
+            "--headless",
+            "--audio-driver",
+            "Dummy",
+            "--verbose",
+            "--path",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+            "--script",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_ai_behavior_regression.gd",
+            "--fixed-fps",
+            "60"
+          ],
+          "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+          "xdg": {
+            "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_ai_behavior_regression/xdg-data",
+            "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_ai_behavior_regression/xdg-config",
+            "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_ai_behavior_regression/xdg-cache",
+            "XDG_STATE_HOME": "/home/agent/.local/state",
+            "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+          },
+          "script_sha256": "14c1ba4ddceb64cdf46108feac55c486a16a5f763e26b5b4762198f4c5411fe2",
+          "strict_runner_exit": 0,
+          "required_marker": "[KartAI] PASS",
+          "marker_present": true,
+          "errors": [],
+          "cleanup_lines": [
+            "[KartAI] audio_release tracked=2 scene_released=true elapsed_ms=68"
+          ],
+          "engine_log_sha256": "b9d4b8b873d05cf57db0a97dc730c906f2396a2787bfe904d48615f5d3db7f8e",
+          "runner_log_sha256": "b9d4b8b873d05cf57db0a97dc730c906f2396a2787bfe904d48615f5d3db7f8e"
+        },
+        {
+          "phase": "after-typed",
+          "test": "kart_garage_touch_targets_regression",
+          "started_utc": "2026-11-13T15:11:14.285014+00:00",
+          "finished_utc": "2026-11-13T15:11:24.488573+00:00",
+          "elapsed_seconds": 10.204,
+          "command": [
+            "python3",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+            "--log",
+            "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_garage_touch_targets_regression/engine.log",
+            "--timeout",
+            "240",
+            "--required",
+            "[GarageTargets] PASS",
+            "--",
+            "/usr/local/bin/godot",
+            "--headless",
+            "--audio-driver",
+            "Dummy",
+            "--verbose",
+            "--path",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+            "--script",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_garage_touch_targets_regression.gd",
+            "--fixed-fps",
+            "60"
+          ],
+          "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+          "xdg": {
+            "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_garage_touch_targets_regression/xdg-data",
+            "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_garage_touch_targets_regression/xdg-config",
+            "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_garage_touch_targets_regression/xdg-cache",
+            "XDG_STATE_HOME": "/home/agent/.local/state",
+            "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+          },
+          "script_sha256": "14452b7f8d424c427a66671a49d2c474bfe5cf2a1d56de8efe9e3c31b036ab88",
+          "strict_runner_exit": 0,
+          "required_marker": "[GarageTargets] PASS",
+          "marker_present": true,
+          "errors": [],
+          "cleanup_lines": [
+            "[GarageTargets] audio_release tracked=1 scene_released=true elapsed_ms=50"
+          ],
+          "engine_log_sha256": "8d8185b6af7bb1d2c27b416ea5221fa39c8f39150073fe4985eb6f787b81816d",
+          "runner_log_sha256": "8d8185b6af7bb1d2c27b416ea5221fa39c8f39150073fe4985eb6f787b81816d"
+        },
+        {
+          "phase": "after-typed",
+          "test": "kart_full_field_regression",
+          "started_utc": "2026-11-13T15:11:24.489868+00:00",
+          "finished_utc": "2026-11-13T15:12:10.147166+00:00",
+          "elapsed_seconds": 45.657,
+          "command": [
+            "python3",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+            "--log",
+            "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_full_field_regression/engine.log",
+            "--timeout",
+            "240",
+            "--required",
+            "[KartFullField] PASS",
+            "--",
+            "/usr/local/bin/godot",
+            "--headless",
+            "--audio-driver",
+            "Dummy",
+            "--verbose",
+            "--path",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+            "--script",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_full_field_regression.gd",
+            "--fixed-fps",
+            "60"
+          ],
+          "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+          "xdg": {
+            "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_full_field_regression/xdg-data",
+            "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_full_field_regression/xdg-config",
+            "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_full_field_regression/xdg-cache",
+            "XDG_STATE_HOME": "/home/agent/.local/state",
+            "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+          },
+          "script_sha256": "db8c0e55dd4b91f611c5be33ed6036f5df7e5ceacfa437c16b5207280f543106",
+          "strict_runner_exit": 0,
+          "required_marker": "[KartFullField] PASS",
+          "marker_present": true,
+          "errors": [],
+          "cleanup_lines": [
+            "[KartFullField] audio_release tracked=1 scene_released=true elapsed_ms=72",
+            "[KartFullField] audio_release tracked=3 scene_released=true elapsed_ms=62",
+            "[KartFullField] audio_release tracked=1 scene_released=true elapsed_ms=39",
+            "[KartFullField] audio_release tracked=1 scene_released=true elapsed_ms=73",
+            "[KartFullField] audio_release tracked=4 scene_released=true elapsed_ms=0",
+            "[KartFullField] audio_release tracked=1 scene_released=true elapsed_ms=58"
+          ],
+          "engine_log_sha256": "91f1cb43a9565b0d913447f5c7922e2bfcda8774496c5cb2cd39d3e1c03eb4fc",
+          "runner_log_sha256": "91f1cb43a9565b0d913447f5c7922e2bfcda8774496c5cb2cd39d3e1c03eb4fc"
+        }
+      ]
+    },
+    "negative": {
+      "phase": "held-reference-negative",
+      "source_files_unchanged": true,
+      "changed_files": [],
+      "head_before": "97b91e312eb982ab1fe9083b7415d11085385235",
+      "head_after": "97b91e312eb982ab1fe9083b7415d11085385235",
+      "results": [
+        {
+          "phase": "held-reference-negative",
+          "test": "kart_ai_behavior_regression",
+          "started_utc": "2026-11-13T15:12:12.919032+00:00",
+          "finished_utc": "2026-11-13T15:12:20.690626+00:00",
+          "elapsed_seconds": 7.772,
+          "command": [
+            "python3",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+            "--log",
+            "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/engine.log",
+            "--timeout",
+            "240",
+            "--required",
+            "[KartAI] PASS",
+            "--",
+            "/usr/local/bin/godot",
+            "--headless",
+            "--audio-driver",
+            "Dummy",
+            "--verbose",
+            "--path",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+            "--script",
+            "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_ai_behavior_regression.gd",
+            "--fixed-fps",
+            "60"
+          ],
+          "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+          "xdg": {
+            "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/xdg-data",
+            "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/xdg-config",
+            "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/xdg-cache",
+            "XDG_STATE_HOME": "/home/agent/.local/state",
+            "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+          },
+          "script_sha256": "ffcedd5de38e59dc1b36c341cb88c3119a60234e5fbd23c602e895b4993d0178",
+          "strict_runner_exit": 1,
+          "required_marker": "[KartAI] PASS",
+          "marker_present": false,
+          "errors": [
+            "ERROR: [KartAI] FAIL: Scene or audio playback retained after teardown"
+          ],
+          "cleanup_lines": [
+            "[KartAI] retained_scene=false retained_audio_playbacks=1 elapsed_ms=2001"
+          ],
+          "engine_log_sha256": "2b523a3cf40130db2c4131670463fdf35b4d0c5d76b33fbb47af502170b6390d",
+          "runner_log_sha256": "9b13cff17587ae9e4cef6e71a17c89b6d5df36bbdd87b89b9ea9d0632bc75cd7"
+        },
+        {
+          "phase": "held-reference-negative",
+          "test": "kart_garage_touch_targets_regression",
+          "started_utc": "2026-11-13T15:12:20.693116+00:00",
+          "finished_utc": "2026-11-13T15:12:33.108683+00:00",
+          "elapsed_seconds": 12.416,
+          "command": [
+            "python3",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+            "--log",
+            "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/engine.log",
+            "--timeout",
+            "240",
+            "--required",
+            "[GarageTargets] PASS",
+            "--",
+            "/usr/local/bin/godot",
+            "--headless",
+            "--audio-driver",
+            "Dummy",
+            "--verbose",
+            "--path",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+            "--script",
+            "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_garage_touch_targets_regression.gd",
+            "--fixed-fps",
+            "60"
+          ],
+          "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+          "xdg": {
+            "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/xdg-data",
+            "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/xdg-config",
+            "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/xdg-cache",
+            "XDG_STATE_HOME": "/home/agent/.local/state",
+            "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+          },
+          "script_sha256": "2452c060ef632b3ffe5fb85707732bbc7b256856e7560b9027951a392c7cc1b8",
+          "strict_runner_exit": 1,
+          "required_marker": "[GarageTargets] PASS",
+          "marker_present": false,
+          "errors": [
+            "ERROR: [GarageTargets] FAIL: Scene or audio playback retained after teardown"
+          ],
+          "cleanup_lines": [
+            "[GarageTargets] retained_scene=false retained_audio_playbacks=1 elapsed_ms=2001"
+          ],
+          "engine_log_sha256": "1b4a0e866b3e67e4ccd32ee126e571c6078fcec0b39d8e421e52e7a3a9743fac",
+          "runner_log_sha256": "e6c2622c04b1c75168d3ae338790f48f60889d2c924108d875eb7da44891e367"
+        },
+        {
+          "phase": "held-reference-negative",
+          "test": "kart_full_field_regression",
+          "started_utc": "2026-11-13T15:12:33.112848+00:00",
+          "finished_utc": "2026-11-13T15:12:44.913035+00:00",
+          "elapsed_seconds": 11.8,
+          "command": [
+            "python3",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+            "--log",
+            "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/engine.log",
+            "--timeout",
+            "240",
+            "--required",
+            "[KartFullField] PASS",
+            "--",
+            "/usr/local/bin/godot",
+            "--headless",
+            "--audio-driver",
+            "Dummy",
+            "--verbose",
+            "--path",
+            "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+            "--script",
+            "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_full_field_regression.gd",
+            "--fixed-fps",
+            "60"
+          ],
+          "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+          "xdg": {
+            "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/xdg-data",
+            "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/xdg-config",
+            "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/xdg-cache",
+            "XDG_STATE_HOME": "/home/agent/.local/state",
+            "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+          },
+          "script_sha256": "2d139cb90a9d7fe37b1ee43697f014a462a8dfa6353594b83f0dd5428b003551",
+          "strict_runner_exit": 1,
+          "required_marker": "[KartFullField] PASS",
+          "marker_present": false,
+          "errors": [
+            "ERROR: [KartFullField] Scene or audio playback retained after teardown"
+          ],
+          "cleanup_lines": [
+            "[KartFullField] retained_scene=false retained_audio_playbacks=1 elapsed_ms=2002"
+          ],
+          "engine_log_sha256": "ca3beb1ad5378f1fb425e8f200bcfa32726b9c7a8b69660f25c95673cf09d7bc",
+          "runner_log_sha256": "106f4b4f78d80c7473e3e979b0183208a5783f0267cd0b31370a547285873792"
+        }
+      ]
+    },
+    "full_field_scenarios": 6,
+    "full_field_rivals_finishing_two_laps": 30,
+    "garage_visible_controls": 240,
+    "headless_only": true,
+    "renderer_or_android_acceptance_claimed": false,
+    "new_combined_ci_acceptance_claimed": false
+  },
+  "historical_notes": [
+    "The first unrestricted-time Garage run and two direct FullField diagnostic runs were clean; leak timing was variable, and these runs are retained without relabelling.",
+    "FullField instrumentation observed the real Sonnenhafen Ogg playback alive after the original single-frame teardown; the same run reported its two retained resources.",
+    "The intermediate after phase stopped on strict Variant-inference parse errors. Explicit WeakRef typing fixed this; after-typed is the final successful source.",
+    "Concurrent build_world.gd and unrelated tests, docs, shell gates and generated caches are excluded from final Kart stamps. No claim of a clean whole working tree is made.",
+    "Root separately removes legacy shell-log filtering. This patch does not modify any filter, runner or product file."
+  ],
+  "files": [
+    {
+      "path": "original/workflow-run.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/original/workflow-run.json",
+      "encoding": "unchanged bytes",
+      "bytes": 13404,
+      "sha256": "f980cbb9194fc319283b4d8a7ade52210eedbc5572170d43090124aa4e14216e",
+      "source_bytes": 13404,
+      "source_sha256": "f980cbb9194fc319283b4d8a7ade52210eedbc5572170d43090124aa4e14216e"
+    },
+    {
+      "path": "original/workflow-jobs.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/original/workflow-jobs.json",
+      "encoding": "unchanged bytes",
+      "bytes": 16259,
+      "sha256": "fe67b67ffcabf63f4505f62640269b9e74f95a683d24686d4f56384b3f8b68e7",
+      "source_bytes": 16259,
+      "source_sha256": "fe67b67ffcabf63f4505f62640269b9e74f95a683d24686d4f56384b3f8b68e7"
+    },
+    {
+      "path": "original/workflow-artifacts.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/original/workflow-artifacts.json",
+      "encoding": "unchanged bytes",
+      "bytes": 4448,
+      "sha256": "30780bde3ee2b9684474ba3b0a4ce0fc90abd6bb8f42e74a588e2542826e1530",
+      "source_bytes": 4448,
+      "source_sha256": "30780bde3ee2b9684474ba3b0a4ce0fc90abd6bb8f42e74a588e2542826e1530"
+    },
+    {
+      "path": "original/source-sha.txt",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/original/source-sha.txt",
+      "encoding": "unchanged bytes",
+      "bytes": 41,
+      "sha256": "ae4d4a47b0f95ee7049b643d5d933e825bcce9a73935943db683ea195fa5c57e",
+      "source_bytes": 41,
+      "source_sha256": "ae4d4a47b0f95ee7049b643d5d933e825bcce9a73935943db683ea195fa5c57e"
+    },
+    {
+      "path": "original/gameplay-job-131950806261.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/godot-pr160-cf039-nextgen-evidence/gameplay-job-131950806261.log",
+      "encoding": "lossless gzip",
+      "bytes": 77595,
+      "sha256": "e2ec5644f63bc76812fe34ffe321713b41df80a0539846d892b5bddc341bc735",
+      "source_bytes": 527894,
+      "source_sha256": "b3265b384ca01f6d23cdbf65d1a2a9a6ef75795217c7bfba4acad79e039895aa"
+    },
+    {
+      "path": "original/existing-gameplay.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/original/existing-gameplay.log",
+      "encoding": "lossless gzip",
+      "bytes": 10315,
+      "sha256": "d7d229fccee9227181d232c7238495277bcb74e8a4d38d65f29c669b1159c81a",
+      "source_bytes": 61935,
+      "source_sha256": "74b0a55789e98317299efcdc07349ac36a7cf9f7854ae4efbd8e8a36ac1a6255"
+    },
+    {
+      "path": "original/kart_full_field_regression.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/original/kart_full_field_regression.log",
+      "encoding": "lossless gzip",
+      "bytes": 14148,
+      "sha256": "f7d09ac2af865e4c72c0a0ffa4a67cada416968031e7660e01126fb6470cc4d7",
+      "source_bytes": 83651,
+      "source_sha256": "c36216292a763b3330c722569018f292383cc087a15bf33f4643db19e6e3167e"
+    },
+    {
+      "path": "runs/before/kart_ai_behavior_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_ai_behavior_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 4005,
+      "sha256": "cbb6cfd13e65b0263dae13bf6597e364e30ef131b5b30163aa836131e48b667e",
+      "source_bytes": 15165,
+      "source_sha256": "a6cde22065c5eed7aa013f7f0627dc1029f929b98dcd90e23fc3ba8487de65dc"
+    },
+    {
+      "path": "runs/before/kart_ai_behavior_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_ai_behavior_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 1993,
+      "sha256": "1c216e98ab14556c1305c6b2ed1a6663c09ba8867e2db69ed92e7e02c73fcfb9",
+      "source_bytes": 1993,
+      "source_sha256": "1c216e98ab14556c1305c6b2ed1a6663c09ba8867e2db69ed92e7e02c73fcfb9"
+    },
+    {
+      "path": "runs/before/kart_ai_behavior_regression/runner.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_ai_behavior_regression/runner.log",
+      "encoding": "lossless gzip",
+      "bytes": 4056,
+      "sha256": "c22b646c2baaa7dd654bc8aea5fd19e30bb64024729f6d83772a089e4190a1df",
+      "source_bytes": 15246,
+      "source_sha256": "e01bf2451699a454da3ae04b7e438de5c4910393541564689d55e18d15cb379e"
+    },
+    {
+      "path": "runs/before/kart_full_field_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_full_field_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 18132,
+      "sha256": "cb1fca303377581f0c6e0680c9d740211a1dd15db35206d795fe0afbb243a8dc",
+      "source_bytes": 107522,
+      "source_sha256": "395bd5a5c8be75c31d7bd4802a9de415099c993711d3f9a899fd7910e9f1ba22"
+    },
+    {
+      "path": "runs/before/kart_full_field_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_full_field_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 2002,
+      "sha256": "3d38196e03ed69623294b3c7424bb532c48646ac886453743cd03e461d02dc54",
+      "source_bytes": 2002,
+      "source_sha256": "3d38196e03ed69623294b3c7424bb532c48646ac886453743cd03e461d02dc54"
+    },
+    {
+      "path": "runs/before/kart_full_field_regression/runner.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_full_field_regression/runner.log",
+      "encoding": "lossless gzip",
+      "bytes": 18193,
+      "sha256": "d4b2064ee02b48dcdec9ad73a99a95ae52e278cba989c593f30c7a131918c2b2",
+      "source_bytes": 107603,
+      "source_sha256": "b7e9beaa8d06df8c308f069aa94708b48fe531163b60c0e51cc79083fc07ff53"
+    },
+    {
+      "path": "runs/before/kart_garage_touch_targets_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_garage_touch_targets_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 4225,
+      "sha256": "b92d03f9e053bd3f46736e317abfb5dff334deb28c42586dc1c5a807d8c815de",
+      "source_bytes": 24136,
+      "source_sha256": "b5fba941f74d0ce2e8efeabd3bbae4662281a88021250870625ef15ed0a67029"
+    },
+    {
+      "path": "runs/before/kart_garage_touch_targets_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_garage_touch_targets_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 1928,
+      "sha256": "5d11498b9ca0fc64be1b5e1979e1d570bf6c258e924ebffb7e53b03ef4e88115",
+      "source_bytes": 1928,
+      "source_sha256": "5d11498b9ca0fc64be1b5e1979e1d570bf6c258e924ebffb7e53b03ef4e88115"
+    },
+    {
+      "path": "runs/before/kart_garage_touch_targets_regression/runner.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_garage_touch_targets_regression/runner.log",
+      "encoding": "lossless gzip",
+      "bytes": 4225,
+      "sha256": "b92d03f9e053bd3f46736e317abfb5dff334deb28c42586dc1c5a807d8c815de",
+      "source_bytes": 24136,
+      "source_sha256": "b5fba941f74d0ce2e8efeabd3bbae4662281a88021250870625ef15ed0a67029"
+    },
+    {
+      "path": "runs/before/results.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/results.json",
+      "encoding": "unchanged bytes",
+      "bytes": 6687,
+      "sha256": "6f2ca4dcdb88703f04f737d2bbefeea3f6da29ec554f7a6b6b4dd90c585a039b",
+      "source_bytes": 6687,
+      "source_sha256": "6f2ca4dcdb88703f04f737d2bbefeea3f6da29ec554f7a6b6b4dd90c585a039b"
+    },
+    {
+      "path": "runs/before/source-after.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/source-after.json",
+      "encoding": "lossless gzip",
+      "bytes": 15821,
+      "sha256": "d65f8c76bc1729a7020fbed2b06df8c8bd81ac59c88d1d41af0f8ec7f404b29c",
+      "source_bytes": 45491,
+      "source_sha256": "b756b2cd7d4e6dc04815dd9e99657c952f211161fabd60ec30106e4940463d4a"
+    },
+    {
+      "path": "runs/before/source-before.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/source-before.json",
+      "encoding": "lossless gzip",
+      "bytes": 15821,
+      "sha256": "b2d70f85c6f86401e06666246b0c969eba70714bf7dba5b60ed9aadf66352958",
+      "source_bytes": 45491,
+      "source_sha256": "f5377042646cddb9c3755f90cc556fbf5ffaf285e447e1543e1f411016812ade"
+    },
+    {
+      "path": "runs/diagnostic-before/kart_ai_behavior_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/diagnostic-before/kart_ai_behavior_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 4395,
+      "sha256": "06da6c163c63cb3b308808c0f0e5455364a4eae148c8111f131e1b52d9d71f7e",
+      "source_bytes": 16545,
+      "source_sha256": "89c6bb6e6e9fbd56e2f0b629703348b24d8f0a432803fe7cd76ef4c852c59569"
+    },
+    {
+      "path": "runs/diagnostic-before/kart_ai_behavior_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/diagnostic-before/kart_ai_behavior_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 1869,
+      "sha256": "02e4090d043e62736ba903fe240554492549e3d09ebea4ebd152a482af1e75ff",
+      "source_bytes": 1869,
+      "source_sha256": "02e4090d043e62736ba903fe240554492549e3d09ebea4ebd152a482af1e75ff"
+    },
+    {
+      "path": "runs/diagnostic-before/kart_full_field_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/diagnostic-before/kart_full_field_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 6240,
+      "sha256": "f5fd135c29a167a9108192b1e380f16c0b9c23548788203085f2deb11eff402c",
+      "source_bytes": 27974,
+      "source_sha256": "c1c87e68f6c49fca86673e38a24ebe66eb28ab1fb0386bb7c7cd93d82adb4f22"
+    },
+    {
+      "path": "runs/diagnostic-before/kart_full_field_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/diagnostic-before/kart_full_field_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 699,
+      "sha256": "c245dcc97577b63188c9e02c9aebfa0d9b8979c3dc849b7215dd1ba9780b73ac",
+      "source_bytes": 699,
+      "source_sha256": "c245dcc97577b63188c9e02c9aebfa0d9b8979c3dc849b7215dd1ba9780b73ac"
+    },
+    {
+      "path": "runs/diagnostic-before/kart_garage_touch_targets_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/diagnostic-before/kart_garage_touch_targets_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 4638,
+      "sha256": "3fe45ad77243285beb661bee171781e4f3f643a762bbc99a7a02dcf941e262d0",
+      "source_bytes": 25099,
+      "source_sha256": "8d940cc0d0037246b941b252747369c678d4c0a1b0ae5473e5891829e9f947a6"
+    },
+    {
+      "path": "runs/diagnostic-before/kart_garage_touch_targets_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/diagnostic-before/kart_garage_touch_targets_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 1355,
+      "sha256": "cb8316b69a6b51bbf7d20f74f31330f4c63da90c7ae9cc5e3a8f0187a78b71de",
+      "source_bytes": 1355,
+      "source_sha256": "cb8316b69a6b51bbf7d20f74f31330f4c63da90c7ae9cc5e3a8f0187a78b71de"
+    },
+    {
+      "path": "runs/diagnostic-before/results.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/diagnostic-before/results.json",
+      "encoding": "unchanged bytes",
+      "bytes": 4381,
+      "sha256": "4ee5d7e32df7c9ac197b6c26e1860e268fd98be1ba57cb7bd951a31af384c475",
+      "source_bytes": 4381,
+      "source_sha256": "4ee5d7e32df7c9ac197b6c26e1860e268fd98be1ba57cb7bd951a31af384c475"
+    },
+    {
+      "path": "runs/diagnostic-before/source-after.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/diagnostic-before/source-after.json",
+      "encoding": "lossless gzip",
+      "bytes": 15824,
+      "sha256": "ee90ef6878add54134fdebf300d97c5e957edf9c8effb6226edd73d509ef2d54",
+      "source_bytes": 45491,
+      "source_sha256": "86448d2101eea5136090d4a36a8d6a643b813e27a2ba9cb5af635df70ed3a744"
+    },
+    {
+      "path": "runs/diagnostic-before/source-before.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/diagnostic-before/source-before.json",
+      "encoding": "lossless gzip",
+      "bytes": 15821,
+      "sha256": "357ab0399b7fc9ece432414ab77906ddafd0310707b7b768435d3113edb5303c",
+      "source_bytes": 45491,
+      "source_sha256": "eee5b1f9c7fec31746f59704543a2d6067da7cbabe2ad6ddebc5205c543fa1ff"
+    },
+    {
+      "path": "runs/full-field-verbose-before/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/full-field-verbose-before/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 18047,
+      "sha256": "95ebfc1788e118567ef831a86438c3a547c7b445a45bbe97fd15c90bb24bacdf",
+      "source_bytes": 107419,
+      "source_sha256": "2c4a739752a745ce1dad955cf77521c02b672a2f91d15554a2a56c5579c8f04d"
+    },
+    {
+      "path": "runs/full-field-verbose-before/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/full-field-verbose-before/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 488,
+      "sha256": "ec88fb3ba1d1142b63270162082c3fd47f5a7b692938b9591ed028feb9c2c778",
+      "source_bytes": 488,
+      "source_sha256": "ec88fb3ba1d1142b63270162082c3fd47f5a7b692938b9591ed028feb9c2c778"
+    },
+    {
+      "path": "runs/full-field-verbose-before/source-after.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/full-field-verbose-before/source-after.json",
+      "encoding": "lossless gzip",
+      "bytes": 15821,
+      "sha256": "1a13c3a9fc9c697eb3d9dc323d8ac75eecab2919766c019df599329868cc9e41",
+      "source_bytes": 45491,
+      "source_sha256": "858438d01453ad006a7c2c92d3f5467880822e04f720922f3a4a3d8b9e9b2128"
+    },
+    {
+      "path": "runs/full-field-verbose-before/source-before.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/full-field-verbose-before/source-before.json",
+      "encoding": "lossless gzip",
+      "bytes": 15824,
+      "sha256": "68f8b52430e1633d18411d61d55175284abf633b0ff89f524908f3ebc1cba39b",
+      "source_bytes": 45491,
+      "source_sha256": "ac51e08e17a1ee53199eaf5fed02a89d897ddbd51932f84cecd975450053fdae"
+    },
+    {
+      "path": "runs/full-field-owner-diagnostic/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/full-field-owner-diagnostic/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 6773,
+      "sha256": "c21317df6e872ca716ab0e751e28b5cc4d20415f03f0c9d03b3550038e8cb99a",
+      "source_bytes": 29171,
+      "source_sha256": "39a2516ae6b4d050e56e5dab59fab26e061e7b941592a6c3b28f82472066b52c"
+    },
+    {
+      "path": "runs/full-field-owner-diagnostic/kart_full_field_regression.gd.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/full-field-owner-diagnostic/kart_full_field_regression.gd",
+      "encoding": "lossless gzip",
+      "bytes": 3757,
+      "sha256": "032ff228a8ca204b17da80d7a84c8cb7fd9d0ca6dc263c0802fd3e24b47798c4",
+      "source_bytes": 11789,
+      "source_sha256": "2e3934985e006dc6cf00b5333e69aa67b67570401a47345aa7f8e808bb8be555"
+    },
+    {
+      "path": "runs/full-field-owner-diagnostic/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/full-field-owner-diagnostic/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 1610,
+      "sha256": "fa91fa58eb9b603167635701b5bf904bcd0637ff1d594905db0a35a78265715d",
+      "source_bytes": 1610,
+      "source_sha256": "fa91fa58eb9b603167635701b5bf904bcd0637ff1d594905db0a35a78265715d"
+    },
+    {
+      "path": "runs/full-field-owner-diagnostic/source-after.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/full-field-owner-diagnostic/source-after.json",
+      "encoding": "lossless gzip",
+      "bytes": 15820,
+      "sha256": "36a2c7654061f5f7137a02b7c8aed9d82c8976633c2289008733d7890a5e9276",
+      "source_bytes": 45491,
+      "source_sha256": "290e051e775b223458744cee2d11442a374b25b25a837eeb17f85dbd174aefd8"
+    },
+    {
+      "path": "runs/full-field-owner-diagnostic/source-before.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/full-field-owner-diagnostic/source-before.json",
+      "encoding": "lossless gzip",
+      "bytes": 15821,
+      "sha256": "b1dbf9ebc3b58034c836db92de5c0b4ae1d2ee6c9d213be794d40c2895fa1ee0",
+      "source_bytes": 45491,
+      "source_sha256": "8e05e606bc0f607f4c68bbf4c93b0cbc7b5d4d4b67cf753cb9445c34b3d842d0"
+    },
+    {
+      "path": "runs/after/kart_ai_behavior_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_ai_behavior_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 895,
+      "sha256": "0153ec8c823fde32ea6c3baa6f8d4d86145b7b9ed250fcf0e2e95c318806458f",
+      "source_bytes": 2280,
+      "source_sha256": "256319c0f44d9046118ec4fcc744d14aa550690cf2612e78ff8c33817dbf9a01"
+    },
+    {
+      "path": "runs/after/kart_ai_behavior_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_ai_behavior_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 2038,
+      "sha256": "fdd583155f8d544f65e46645cdebe6dbbd5fe2007069d2f3fb68205ca9994d10",
+      "source_bytes": 2038,
+      "source_sha256": "fdd583155f8d544f65e46645cdebe6dbbd5fe2007069d2f3fb68205ca9994d10"
+    },
+    {
+      "path": "runs/after/kart_ai_behavior_regression/runner.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_ai_behavior_regression/runner.log",
+      "encoding": "lossless gzip",
+      "bytes": 953,
+      "sha256": "45e83d0aafc6cdb85f51f57a6c0ecc458806177d776b2e4db077c9ea744906cf",
+      "source_bytes": 2361,
+      "source_sha256": "3dcada55614011ded8974f6f2aff81e3a12043d72c7cb0a14ea1b30062c67100"
+    },
+    {
+      "path": "runs/after/kart_full_field_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_full_field_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 872,
+      "sha256": "d38dece515cf6275bb0e996d8623b274678a341599d4bd2b674d50406b0cd085",
+      "source_bytes": 2191,
+      "source_sha256": "cfe99a48301d3e40cab7f9f74b3951b8edcca37750640689d0ec8887792d83eb"
+    },
+    {
+      "path": "runs/after/kart_full_field_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_full_field_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 2046,
+      "sha256": "32a2bb31ad37774f449a924a8f347de5f5c2102eb7e4515ae144879221da3294",
+      "source_bytes": 2046,
+      "source_sha256": "32a2bb31ad37774f449a924a8f347de5f5c2102eb7e4515ae144879221da3294"
+    },
+    {
+      "path": "runs/after/kart_full_field_regression/runner.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_full_field_regression/runner.log",
+      "encoding": "lossless gzip",
+      "bytes": 929,
+      "sha256": "a3d0cf58c0385d7b98dc1579e52b35df7e66c26845683b7dc06805adfc503d04",
+      "source_bytes": 2272,
+      "source_sha256": "70b2bbe5ac1392c54350c1fd360011b9c59bdc28646727fa758b49b5d3999936"
+    },
+    {
+      "path": "runs/after/kart_garage_touch_targets_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_garage_touch_targets_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 878,
+      "sha256": "aea78b63c0c644985c99f978c619dbf7205a2959b5595e4bc41bf7cb8472111d",
+      "source_bytes": 2201,
+      "source_sha256": "ee686e93fa6acc53968d4e2af8089b15c719a4c958c753f0c1e5b72be306b636"
+    },
+    {
+      "path": "runs/after/kart_garage_touch_targets_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_garage_touch_targets_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 2106,
+      "sha256": "3c12e621d4e5c5b5d9d4c9689a34b921d3aeced866f1c92f7236acbb9848d2c8",
+      "source_bytes": 2106,
+      "source_sha256": "3c12e621d4e5c5b5d9d4c9689a34b921d3aeced866f1c92f7236acbb9848d2c8"
+    },
+    {
+      "path": "runs/after/kart_garage_touch_targets_regression/runner.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_garage_touch_targets_regression/runner.log",
+      "encoding": "lossless gzip",
+      "bytes": 936,
+      "sha256": "432bc288fb3bcb2865cfcefe0b9b88bc06d03456fae6fa58e69b3366ad7b68d7",
+      "source_bytes": 2282,
+      "source_sha256": "dc54b53dbb3e3f45f5c7a5517751270239ef3a71781f74f6991ebbf4bbf2cd1b"
+    },
+    {
+      "path": "runs/after/results.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/results.json",
+      "encoding": "unchanged bytes",
+      "bytes": 6977,
+      "sha256": "52feaf16fa1963487585b8dd0eb67e99b4c4181a5e2ea29a2511aed6af5c66e6",
+      "source_bytes": 6977,
+      "source_sha256": "52feaf16fa1963487585b8dd0eb67e99b4c4181a5e2ea29a2511aed6af5c66e6"
+    },
+    {
+      "path": "runs/after/source-after.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/source-after.json",
+      "encoding": "lossless gzip",
+      "bytes": 15834,
+      "sha256": "f33289eadd12fc576181b5d57fe3bf72a281553e1a3caa660a82690a92369bf3",
+      "source_bytes": 45425,
+      "source_sha256": "3098bc2c9c3b1843264d9bb311577a070bace94622e5fb3a9ff203e807f78303"
+    },
+    {
+      "path": "runs/after/source-before.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/source-before.json",
+      "encoding": "lossless gzip",
+      "bytes": 15834,
+      "sha256": "87db50ad7860303fb8565c8abe66052fb80343ffd3fd2af3e38063150b119d03",
+      "source_bytes": 45425,
+      "source_sha256": "690cc78b14c565c7ccb4d220c12c85ffd67472e44be30389abe82802091812b7"
+    },
+    {
+      "path": "runs/after-typed/kart_ai_behavior_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_ai_behavior_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 3959,
+      "sha256": "ad56e0b394a9607deece54b49ea1cd2201b2d9386552467ee3483469e4faeaa7",
+      "source_bytes": 15129,
+      "source_sha256": "b9d4b8b873d05cf57db0a97dc730c906f2396a2787bfe904d48615f5d3db7f8e"
+    },
+    {
+      "path": "runs/after-typed/kart_ai_behavior_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_ai_behavior_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 1989,
+      "sha256": "f889413c5302f63c289e587ee65afb44137b29c68406343284362403db2a29e9",
+      "source_bytes": 1989,
+      "source_sha256": "f889413c5302f63c289e587ee65afb44137b29c68406343284362403db2a29e9"
+    },
+    {
+      "path": "runs/after-typed/kart_ai_behavior_regression/runner.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_ai_behavior_regression/runner.log",
+      "encoding": "lossless gzip",
+      "bytes": 3959,
+      "sha256": "ad56e0b394a9607deece54b49ea1cd2201b2d9386552467ee3483469e4faeaa7",
+      "source_bytes": 15129,
+      "source_sha256": "b9d4b8b873d05cf57db0a97dc730c906f2396a2787bfe904d48615f5d3db7f8e"
+    },
+    {
+      "path": "runs/after-typed/kart_full_field_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_full_field_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 18113,
+      "sha256": "5a42059a490cef45bef33e3bd3d7e17955e8b3e13d29fe476d7e43b7d3ce5a47",
+      "source_bytes": 107862,
+      "source_sha256": "91f1cb43a9565b0d913447f5c7922e2bfcda8774496c5cb2cd39d3e1c03eb4fc"
+    },
+    {
+      "path": "runs/after-typed/kart_full_field_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_full_field_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 2409,
+      "sha256": "47d056467c3b0d5fba4b60426cf68da493725ee4f8aeb9fcc21156bdb3a1448a",
+      "source_bytes": 2409,
+      "source_sha256": "47d056467c3b0d5fba4b60426cf68da493725ee4f8aeb9fcc21156bdb3a1448a"
+    },
+    {
+      "path": "runs/after-typed/kart_full_field_regression/runner.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_full_field_regression/runner.log",
+      "encoding": "lossless gzip",
+      "bytes": 18113,
+      "sha256": "5a42059a490cef45bef33e3bd3d7e17955e8b3e13d29fe476d7e43b7d3ce5a47",
+      "source_bytes": 107862,
+      "source_sha256": "91f1cb43a9565b0d913447f5c7922e2bfcda8774496c5cb2cd39d3e1c03eb4fc"
+    },
+    {
+      "path": "runs/after-typed/kart_garage_touch_targets_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_garage_touch_targets_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 4264,
+      "sha256": "7b0ba12fc7dfa0469e19c5b2f45729ff27530e50ba3d787e082d6b3878b7f95f",
+      "source_bytes": 24210,
+      "source_sha256": "8d8185b6af7bb1d2c27b416ea5221fa39c8f39150073fe4985eb6f787b81816d"
+    },
+    {
+      "path": "runs/after-typed/kart_garage_touch_targets_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_garage_touch_targets_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 2065,
+      "sha256": "24a4f0b6217f8c04fdf3cb28bd7ea8304b3dfab5ad10d597a33f9aa8a9f3dc58",
+      "source_bytes": 2065,
+      "source_sha256": "24a4f0b6217f8c04fdf3cb28bd7ea8304b3dfab5ad10d597a33f9aa8a9f3dc58"
+    },
+    {
+      "path": "runs/after-typed/kart_garage_touch_targets_regression/runner.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/kart_garage_touch_targets_regression/runner.log",
+      "encoding": "lossless gzip",
+      "bytes": 4264,
+      "sha256": "7b0ba12fc7dfa0469e19c5b2f45729ff27530e50ba3d787e082d6b3878b7f95f",
+      "source_bytes": 24210,
+      "source_sha256": "8d8185b6af7bb1d2c27b416ea5221fa39c8f39150073fe4985eb6f787b81816d"
+    },
+    {
+      "path": "runs/after-typed/results.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/results.json",
+      "encoding": "unchanged bytes",
+      "bytes": 7276,
+      "sha256": "90187633bdb549532c3c82dbd530e6445982803658f6c3cdf2608cfa7d095ee0",
+      "source_bytes": 7276,
+      "source_sha256": "90187633bdb549532c3c82dbd530e6445982803658f6c3cdf2608cfa7d095ee0"
+    },
+    {
+      "path": "runs/after-typed/source-after.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/source-after.json",
+      "encoding": "lossless gzip",
+      "bytes": 15833,
+      "sha256": "beefd46145adbeb5f98358b7bc3d483b58b3c0b713c444ad7ea9713363a5cbf9",
+      "source_bytes": 45425,
+      "source_sha256": "29cd785fa57035940725686d682cbea174e5986bf917f2b384c05adcd1468500"
+    },
+    {
+      "path": "runs/after-typed/source-before.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after-typed/source-before.json",
+      "encoding": "lossless gzip",
+      "bytes": 15833,
+      "sha256": "511dcaaadb13554e5ae2c48f0105ed05a3d7b1f95e3fb6ca02674a86e8c0ef3d",
+      "source_bytes": 45425,
+      "source_sha256": "c4af287558f5dfceb045349bd080739a9af3251c70fcad1108530bb9b9c13d35"
+    },
+    {
+      "path": "runs/held-reference-negative/kart_ai_behavior_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 4147,
+      "sha256": "2efc7ae9c5b05b98b1c6d396b631908eb753896a7bc84ccbeed8d27728591cae",
+      "source_bytes": 15800,
+      "source_sha256": "2b523a3cf40130db2c4131670463fdf35b4d0c5d76b33fbb47af502170b6390d"
+    },
+    {
+      "path": "runs/held-reference-negative/kart_ai_behavior_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 2163,
+      "sha256": "0460540e6c3706699dd4e0f366c81a80336eb3763f9ece4556895c488166dbc6",
+      "source_bytes": 2163,
+      "source_sha256": "0460540e6c3706699dd4e0f366c81a80336eb3763f9ece4556895c488166dbc6"
+    },
+    {
+      "path": "runs/held-reference-negative/kart_ai_behavior_regression/runner.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_ai_behavior_regression/runner.log",
+      "encoding": "lossless gzip",
+      "bytes": 4199,
+      "sha256": "1d8a38dd1890db58a99d55d4f1b581bf539b95f1442bc333ab19b35dac99ed20",
+      "source_bytes": 15881,
+      "source_sha256": "9b13cff17587ae9e4cef6e71a17c89b6d5df36bbdd87b89b9ea9d0632bc75cd7"
+    },
+    {
+      "path": "runs/held-reference-negative/kart_full_field_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 6579,
+      "sha256": "1d69265a4255ed4b6ea944f3fb0e8d14097b3e9dd3bb876a2406eff16d0651f3",
+      "source_bytes": 27113,
+      "source_sha256": "ca3beb1ad5378f1fb425e8f200bcfa32726b9c7a8b69660f25c95673cf09d7bc"
+    },
+    {
+      "path": "runs/held-reference-negative/kart_full_field_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 2178,
+      "sha256": "86d1085a479c9c6bf219f46cc887364ae44a5afac85f8fec504e04772cca7018",
+      "source_bytes": 2178,
+      "source_sha256": "86d1085a479c9c6bf219f46cc887364ae44a5afac85f8fec504e04772cca7018"
+    },
+    {
+      "path": "runs/held-reference-negative/kart_full_field_regression/runner.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/runner.log",
+      "encoding": "lossless gzip",
+      "bytes": 6642,
+      "sha256": "ac5bcc2ecdb320417ae65d4e7e891372dc836b418c8f45be1b4bc0bf4f4efa43",
+      "source_bytes": 27194,
+      "source_sha256": "106f4b4f78d80c7473e3e979b0183208a5783f0267cd0b31370a547285873792"
+    },
+    {
+      "path": "runs/held-reference-negative/kart_garage_touch_targets_regression/engine.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/engine.log",
+      "encoding": "lossless gzip",
+      "bytes": 4456,
+      "sha256": "61d27776adfc8a3d6d567684279cbb47e936a44e6489cb31904ed12879dd8f4a",
+      "source_bytes": 24751,
+      "source_sha256": "1b4a0e866b3e67e4ccd32ee126e571c6078fcec0b39d8e421e52e7a3a9743fac"
+    },
+    {
+      "path": "runs/held-reference-negative/kart_garage_touch_targets_regression/result.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/result.json",
+      "encoding": "unchanged bytes",
+      "bytes": 2246,
+      "sha256": "32bc66216b6acb8ce183362ebd58ca4a8878607aec01ff64d4b7edb1fd8402ee",
+      "source_bytes": 2246,
+      "source_sha256": "32bc66216b6acb8ce183362ebd58ca4a8878607aec01ff64d4b7edb1fd8402ee"
+    },
+    {
+      "path": "runs/held-reference-negative/kart_garage_touch_targets_regression/runner.log.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_garage_touch_targets_regression/runner.log",
+      "encoding": "lossless gzip",
+      "bytes": 4514,
+      "sha256": "b803480b2c064c6a72666714168fb522fce785a04321d3d913234b503d61caf6",
+      "source_bytes": 24832,
+      "source_sha256": "e6c2622c04b1c75168d3ae338790f48f60889d2c924108d875eb7da44891e367"
+    },
+    {
+      "path": "runs/held-reference-negative/results.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/results.json",
+      "encoding": "unchanged bytes",
+      "bytes": 7416,
+      "sha256": "f205b2f0d625a5eb840c9e65cbc45f38cd5a5dfde13bc8b666e101265b31a8ed",
+      "source_bytes": 7416,
+      "source_sha256": "f205b2f0d625a5eb840c9e65cbc45f38cd5a5dfde13bc8b666e101265b31a8ed"
+    },
+    {
+      "path": "runs/held-reference-negative/source-after.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/source-after.json",
+      "encoding": "lossless gzip",
+      "bytes": 15832,
+      "sha256": "3d64022972bf1a2b62935a36837a382a4c8d13fb254257b3675c23adeba10eef",
+      "source_bytes": 45425,
+      "source_sha256": "badd00d0c25f0bfd13d9cb38f17fecd9966733e48701d81eeb54af1306655368"
+    },
+    {
+      "path": "runs/held-reference-negative/source-before.json.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/source-before.json",
+      "encoding": "lossless gzip",
+      "bytes": 15832,
+      "sha256": "de4c390cd2aa9fa1dbe520a9a0cce766be6329210de803c0570ab4e4244d2de7",
+      "source_bytes": 45425,
+      "source_sha256": "50e1ee6a70dccf949c71f2002963603e3cf7c9ab31d111a62a6cb37920a61623"
+    },
+    {
+      "path": "sources/cf039-source/kart_ai_behavior_regression.gd.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/cf039-source/kart_ai_behavior_regression.gd",
+      "encoding": "lossless gzip",
+      "bytes": 3276,
+      "sha256": "f959d0e9619148931d5ed23eb6d28e065aa0167e909cc61795a22ba25b3b151a",
+      "source_bytes": 10477,
+      "source_sha256": "19b6dcb13d282a10931b30da1dca4966d2f4d0e41383b969f76f9da81881176b"
+    },
+    {
+      "path": "sources/cf039-source/kart_audio.gd.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/cf039-source/kart_audio.gd",
+      "encoding": "lossless gzip",
+      "bytes": 1996,
+      "sha256": "16e68d66570ed2a819dd04452726a62466a7061ba28d4afd305b1bb885b9f319",
+      "source_bytes": 5383,
+      "source_sha256": "a4f4f0a88faa47645c90e7274e3694adbd6634df7212fc72c797e83738191427"
+    },
+    {
+      "path": "sources/cf039-source/kart_full_field_regression.gd.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/cf039-source/kart_full_field_regression.gd",
+      "encoding": "lossless gzip",
+      "bytes": 3550,
+      "sha256": "ab6df7567778c21b101bd361cf0cc8d48c4d287336e886c1e271d7c179096619",
+      "source_bytes": 11238,
+      "source_sha256": "c8a8b42a534605286a6537a3fdb22f4edacccee35c5bcd4028e077b4cce5fdf8"
+    },
+    {
+      "path": "sources/cf039-source/kart_garage_touch_targets_regression.gd.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/cf039-source/kart_garage_touch_targets_regression.gd",
+      "encoding": "lossless gzip",
+      "bytes": 1084,
+      "sha256": "7ca0941e07846c21250ae3dd37624a6d1917e6c74d140ba01b77fd995f1f88ef",
+      "source_bytes": 2327,
+      "source_sha256": "9f974cc04c021b5b04aac32b2f1b8229182cf1aa2f82254936d8c4268591c83b"
+    },
+    {
+      "path": "sources/cf039-source/metadata.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/cf039-source/metadata.json",
+      "encoding": "unchanged bytes",
+      "bytes": 1401,
+      "sha256": "68bdc0f893aded4fcbf843fc201e4029b00e9d51f347551c90517600015080d0",
+      "source_bytes": 1401,
+      "source_sha256": "68bdc0f893aded4fcbf843fc201e4029b00e9d51f347551c90517600015080d0"
+    },
+    {
+      "path": "sources/cf039-source/verification.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/cf039-source/verification.json",
+      "encoding": "unchanged bytes",
+      "bytes": 1885,
+      "sha256": "a3a9efb63f1b58d021c2664e98f31e639532139662ee30c2ff434cae09b9517c",
+      "source_bytes": 1885,
+      "source_sha256": "a3a9efb63f1b58d021c2664e98f31e639532139662ee30c2ff434cae09b9517c"
+    },
+    {
+      "path": "sources/before-sources/kart_ai_behavior_regression.gd.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before-sources/kart_ai_behavior_regression.gd",
+      "encoding": "lossless gzip",
+      "bytes": 3276,
+      "sha256": "f959d0e9619148931d5ed23eb6d28e065aa0167e909cc61795a22ba25b3b151a",
+      "source_bytes": 10477,
+      "source_sha256": "19b6dcb13d282a10931b30da1dca4966d2f4d0e41383b969f76f9da81881176b"
+    },
+    {
+      "path": "sources/before-sources/kart_full_field_regression.gd.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before-sources/kart_full_field_regression.gd",
+      "encoding": "lossless gzip",
+      "bytes": 3550,
+      "sha256": "ab6df7567778c21b101bd361cf0cc8d48c4d287336e886c1e271d7c179096619",
+      "source_bytes": 11238,
+      "source_sha256": "c8a8b42a534605286a6537a3fdb22f4edacccee35c5bcd4028e077b4cce5fdf8"
+    },
+    {
+      "path": "sources/before-sources/kart_garage_touch_targets_regression.gd.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before-sources/kart_garage_touch_targets_regression.gd",
+      "encoding": "lossless gzip",
+      "bytes": 1084,
+      "sha256": "7ca0941e07846c21250ae3dd37624a6d1917e6c74d140ba01b77fd995f1f88ef",
+      "source_bytes": 2327,
+      "source_sha256": "9f974cc04c021b5b04aac32b2f1b8229182cf1aa2f82254936d8c4268591c83b"
+    },
+    {
+      "path": "sources/negative-fixtures/kart_ai_behavior_regression.diff",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_ai_behavior_regression.diff",
+      "encoding": "unchanged bytes",
+      "bytes": 839,
+      "sha256": "45f69f805b3d8b4270d32e08272ef0b3794d4e95b2e39b52239181ab93da182f",
+      "source_bytes": 839,
+      "source_sha256": "45f69f805b3d8b4270d32e08272ef0b3794d4e95b2e39b52239181ab93da182f"
+    },
+    {
+      "path": "sources/negative-fixtures/kart_ai_behavior_regression.gd.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_ai_behavior_regression.gd",
+      "encoding": "lossless gzip",
+      "bytes": 3855,
+      "sha256": "5155e0f0bcf674584249b4d7421558f9e453dd044a53c8515a7efab7365f57f2",
+      "source_bytes": 12056,
+      "source_sha256": "ffcedd5de38e59dc1b36c341cb88c3119a60234e5fbd23c602e895b4993d0178"
+    },
+    {
+      "path": "sources/negative-fixtures/kart_full_field_regression.diff",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_full_field_regression.diff",
+      "encoding": "unchanged bytes",
+      "bytes": 994,
+      "sha256": "21165dcf9d8d4faa8c59adcce32d9e488a97fd81b9e0a4dc80504430f3e677c1",
+      "source_bytes": 994,
+      "source_sha256": "21165dcf9d8d4faa8c59adcce32d9e488a97fd81b9e0a4dc80504430f3e677c1"
+    },
+    {
+      "path": "sources/negative-fixtures/kart_full_field_regression.gd.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_full_field_regression.gd",
+      "encoding": "lossless gzip",
+      "bytes": 4107,
+      "sha256": "49b58754c5d04459c0958cc41c8cc2e30ac4aad5f3730520a85e6d35e5bd4ce7",
+      "source_bytes": 12789,
+      "source_sha256": "2d139cb90a9d7fe37b1ee43697f014a462a8dfa6353594b83f0dd5428b003551"
+    },
+    {
+      "path": "sources/negative-fixtures/kart_garage_touch_targets_regression.diff",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_garage_touch_targets_regression.diff",
+      "encoding": "unchanged bytes",
+      "bytes": 854,
+      "sha256": "a8dad98f588cfb75521d015743a90538f6c3d41893b4141b1cf0b05fbf5c4ffa",
+      "source_bytes": 854,
+      "source_sha256": "a8dad98f588cfb75521d015743a90538f6c3d41893b4141b1cf0b05fbf5c4ffa"
+    },
+    {
+      "path": "sources/negative-fixtures/kart_garage_touch_targets_regression.gd.gz",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_garage_touch_targets_regression.gd",
+      "encoding": "lossless gzip",
+      "bytes": 1688,
+      "sha256": "b90378655fa816da17c1176699982ca660584e3e0d3a6c1920b41387802a01c9",
+      "source_bytes": 3955,
+      "source_sha256": "2452c060ef632b3ffe5fb85707732bbc7b256856e7560b9027951a392c7cc1b8"
+    },
+    {
+      "path": "sources/negative-fixtures/manifest.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/manifest.json",
+      "encoding": "unchanged bytes",
+      "bytes": 1130,
+      "sha256": "27485bada8735885d2dbeb925c05489d7c08e2a15bca38f427ac81342c295132",
+      "source_bytes": 1130,
+      "source_sha256": "27485bada8735885d2dbeb925c05489d7c08e2a15bca38f427ac81342c295132"
+    },
+    {
+      "path": "verification/engine.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/engine.json",
+      "encoding": "unchanged bytes",
+      "bytes": 194,
+      "sha256": "ef2ac73c1787ecfb0c91994b6e032f9d9f5dddfeabb0dfa0d1bcf5e688aca27b",
+      "source_bytes": 194,
+      "source_sha256": "ef2ac73c1787ecfb0c91994b6e032f9d9f5dddfeabb0dfa0d1bcf5e688aca27b"
+    },
+    {
+      "path": "verification/final-source-hashes.json",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/final-source-hashes.json",
+      "encoding": "unchanged bytes",
+      "bytes": 653,
+      "sha256": "0d830a0a4ccd2a94f18bf03b63b7fc1d332c991bc6a66fb1d4096c4c5322cc07",
+      "source_bytes": 653,
+      "source_sha256": "0d830a0a4ccd2a94f18bf03b63b7fc1d332c991bc6a66fb1d4096c4c5322cc07"
+    },
+    {
+      "path": "verification/run_checks.py",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/run_checks.py",
+      "encoding": "unchanged bytes",
+      "bytes": 5548,
+      "sha256": "d2425f5003c9e887b61645473db1b2a00b97c7a6b3aa6f334ce8cee1edbb7ce0",
+      "source_bytes": 5548,
+      "source_sha256": "d2425f5003c9e887b61645473db1b2a00b97c7a6b3aa6f334ce8cee1edbb7ce0"
+    },
+    {
+      "path": "verification/diagnose.py",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/diagnose.py",
+      "encoding": "unchanged bytes",
+      "bytes": 2504,
+      "sha256": "ec2e2b7d81e46e6f41b9cd3335d157de83b5774029cf636b64e5c9aaa0534c64",
+      "source_bytes": 2504,
+      "source_sha256": "ec2e2b7d81e46e6f41b9cd3335d157de83b5774029cf636b64e5c9aaa0534c64"
+    },
+    {
+      "path": "verification/final-test-only.patch",
+      "source": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/final-test-only.patch",
+      "encoding": "unchanged bytes",
+      "bytes": 5816,
+      "sha256": "9cf1eb7640d065c60fbaae0726c6fac117a822711bf763c724a79ba480067d3a",
+      "source_bytes": 5816,
+      "source_sha256": "9cf1eb7640d065c60fbaae0726c6fac117a822711bf763c724a79ba480067d3a"
+    }
+  ]
+}

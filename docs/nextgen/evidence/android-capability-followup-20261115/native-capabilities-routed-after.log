@@ -1,0 +1,5 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+{"checks":43,"failures":[],"scope":"4.6.3 capability dispatch and actual routed Stop owners; no Android audio or device PASS claim","status":"PASS","test":"learning_android_host_capability"}
+[EventBus] online - signals registered
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]

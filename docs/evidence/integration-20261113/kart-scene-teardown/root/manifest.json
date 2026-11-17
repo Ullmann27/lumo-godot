@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "recorded_at": "2026-11-13T16:35:01.021854+00:00",
+  "failed_ci_source": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "failed_ci_tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "ci_run": 43458898046,
+  "ci_job": 132000245650,
+  "ci_artifact": 14056855034,
+  "ci_zip_sha256": "8b672f73e0141c138b2ee0631e4146dc72181258cc7ac1a3c926e6059a44681c",
+  "code": {
+    "scripts/tests/helpers/kart_scene_teardown.gd": {
+      "blob": "03939804a22a0c7792de798676a5ef7d5338aa15",
+      "sha256": "63f4138d64d4bc0d9bd8f5698ad34c1b305062567197f4d28ba01c02995bf885"
+    },
+    "scripts/tests/kart_regression.gd": {
+      "blob": "eea6d558f75de1942619e83d98abfe4ef56bd680",
+      "sha256": "0f4ce86deff362b87b8e4a3d3cd054c8af821134a41ff84a597551f404552dd6"
+    }
+  },
+  "scope": "Actual original CI reported eight retained resources after KartTests PASS; original nonverbose log does not identify their classes. Both unchanged local original probes passed. New actual main probe waits for real weak scene/playback release before success and passes. A deliberately retained real playback fails at 2000 ms before any gameplay PASS, then exits cleanly with expected code 1. No product runtime or error-filter changes; fresh full CI remains mandatory.",
+  "ci_originals": "../../native-74c-checkpoint/",
+  "files": [
+    {
+      "path": "final-main.json",
+      "stored_bytes": 1015,
+      "stored_sha256": "58111bb3ba219f1cc76ca5329ef9ccd6e1afcaf2dbb2eb41b63163ef2572fd9d",
+      "original_name": "final-main.json",
+      "original_bytes": 1015,
+      "original_sha256": "58111bb3ba219f1cc76ca5329ef9ccd6e1afcaf2dbb2eb41b63163ef2572fd9d",
+      "encoding": "original"
+    },
+    {
+      "path": "final-main.log.gz",
+      "stored_bytes": 4025,
+      "stored_sha256": "d7e8e8a40c8e73725e225cc5d81a9ad6b214d31a415d22ad5cd9b2963afa0fc8",
+      "original_name": "final-main.log",
+      "original_bytes": 17953,
+      "original_sha256": "a824d3a3cf0ee862d762764b935a68c277c9b6dbd25b8a48f26fb09c8d386678",
+      "encoding": "gzip"
+    },
+    {
+      "path": "held-playback-negative.gd",
+      "stored_bytes": 1458,
+      "stored_sha256": "088f83498988801d86ad85cdacf8df2402b7dd4cbf92d93a3589bc221e63bd4b",
+      "original_name": "held-playback-negative.gd",
+      "original_bytes": 1458,
+      "original_sha256": "088f83498988801d86ad85cdacf8df2402b7dd4cbf92d93a3589bc221e63bd4b",
+      "encoding": "original"
+    },
+    {
+      "path": "kart_regression.original.gd",
+      "stored_bytes": 8931,
+      "stored_sha256": "6dc96f9b8d83582840db4b6c147ab371520ed7e0da2e72e07bb90d7a5ba3b685",
+      "original_name": "kart_regression.original.gd",
+      "original_bytes": 8931,
+      "original_sha256": "6dc96f9b8d83582840db4b6c147ab371520ed7e0da2e72e07bb90d7a5ba3b685",
+      "encoding": "original"
+    },
+    {
+      "path": "negative-held-playback.json",
+      "stored_bytes": 1011,
+      "stored_sha256": "237add1b1108cd52b28dff473298970a9cc17e582c17084a6b631ec1682c03d1",
+      "original_name": "negative-held-playback.json",
+      "original_bytes": 1011,
+      "original_sha256": "237add1b1108cd52b28dff473298970a9cc17e582c17084a6b631ec1682c03d1",
+      "encoding": "original"
+    },
+    {
+      "path": "negative-held-playback.log.gz",
+      "stored_bytes": 3568,
+      "stored_sha256": "4bf4e2b93db51903447897ebe65ac657550f49fae2deceb1347e239a9e08269f",
+      "original_name": "negative-held-playback.log",
+      "original_bytes": 13675,
+      "original_sha256": "e0efb6e29fec22567fc4008f1127ca18ded827b9b25b1fecaa102d9a95295639",
+      "encoding": "gzip"
+    },
+    {
+      "path": "original-fixedfps-verbose.json",
+      "stored_bytes": 1080,
+      "stored_sha256": "7c0f0f7bc35ea03fbed82ed804687a4e56108cf77f64c7565cdefdbf4d486a13",
+      "original_name": "original-fixedfps-verbose.json",
+      "original_bytes": 1080,
+      "original_sha256": "7c0f0f7bc35ea03fbed82ed804687a4e56108cf77f64c7565cdefdbf4d486a13",
+      "encoding": "original"
+    },
+    {
+      "path": "original-fixedfps-verbose.log.gz",
+      "stored_bytes": 3955,
+      "stored_sha256": "44a518eee24d66f9ad9ed11ebf6a983616992e1a06034702db2579263bca666d",
+      "original_name": "original-fixedfps-verbose.log",
+      "original_bytes": 17607,
+      "original_sha256": "3eeeab0109de7e3b3061c96a199d21015b7b84b1c788c2387be0c8baefff53ee",
+      "encoding": "gzip"
+    },
+    {
+      "path": "original-verbose.json",
+      "stored_bytes": 892,
+      "stored_sha256": "2e0736cd991009ea43250c85902141627d5f02832c51a23dcb5e064f4c2c4412",
+      "original_name": "original-verbose.json",
+      "original_bytes": 892,
+      "original_sha256": "2e0736cd991009ea43250c85902141627d5f02832c51a23dcb5e064f4c2c4412",
+      "encoding": "original"
+    },
+    {
+      "path": "original-verbose.log.gz",
+      "stored_bytes": 3955,
+      "stored_sha256": "44a518eee24d66f9ad9ed11ebf6a983616992e1a06034702db2579263bca666d",
+      "original_name": "original-verbose.log",
+      "original_bytes": 17607,
+      "original_sha256": "3eeeab0109de7e3b3061c96a199d21015b7b84b1c788c2387be0c8baefff53ee",
+      "encoding": "gzip"
+    },
+    {
+      "path": "repair-source-after.json.gz",
+      "stored_bytes": 40440,
+      "stored_sha256": "a46e84f72c58bbb032644c73f4ecb079d65f4872fc66c13da2f937b12f1499c4",
+      "original_name": "repair-source-after.json",
+      "original_bytes": 100845,
+      "original_sha256": "aec0e34b453be9779d2b4e01c58ca2644c97fcf40fa24b963e6f53ac6a64b1c0",
+      "encoding": "gzip"
+    },
+    {
+      "path": "repair-source-before.json.gz",
+      "stored_bytes": 40440,
+      "stored_sha256": "a46e84f72c58bbb032644c73f4ecb079d65f4872fc66c13da2f937b12f1499c4",
+      "original_name": "repair-source-before.json",
+      "original_bytes": 100845,
+      "original_sha256": "aec0e34b453be9779d2b4e01c58ca2644c97fcf40fa24b963e6f53ac6a64b1c0",
+      "encoding": "gzip"
+    },
+    {
+      "path": "repair-validation.json",
+      "stored_bytes": 2493,
+      "stored_sha256": "2ae36ec6d8dfaace30955208b4721cf70b0db256d15af9b4960ed592f2c4c3ae",
+      "original_name": "repair-validation.json",
+      "original_bytes": 2493,
+      "original_sha256": "2ae36ec6d8dfaace30955208b4721cf70b0db256d15af9b4960ed592f2c4c3ae",
+      "encoding": "original"
+    }
+  ]
+}

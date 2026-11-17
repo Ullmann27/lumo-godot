@@ -1,0 +1,10 @@
+extends "res://scripts/tests/kart_jump_regression.gd"
+## Intentional report-gate failure; not a gameplay validation.
+func _test_clean_jump() -> void:
+	assert(false, "Intentional negative control: jump helper abort")
+func _test_too_slow() -> void:
+	completed_checks += 1
+func _test_rival_arc() -> void:
+	completed_checks += 1
+func _test_no_ramp_elsewhere() -> void:
+	completed_checks += 1

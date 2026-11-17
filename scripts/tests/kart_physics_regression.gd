@@ -2,7 +2,11 @@ extends SceneTree
 ## Rails are real walls on every course, drift has two turbo tiers, driving against the course
 ## is announced, and neither reversing over the line nor jumping ahead creates lap progress.
 const STEP: float = 1.0 / 60.0
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 var game
+## An assertion aborts its function. PASS requires every check to finish.
+var completed_checks: int = 0
 
 
 func _initialize() -> void:
@@ -38,15 +42,18 @@ func _test_walls(track: String) -> void:
 		await _start("training", track)
 		var start_distance: float = game.distance
 		var widest: float = 0.0
+		var overshoot: float = -INF
 		for frame in range(300):
 			# Aim far beyond the rail at full turbo speed: the worst case for tunnelling.
 			_steer_towards(game.world.position_at(game.previous_road_distance + 14.0, side * 14.0))
 			game.boost_time = 3.0
 			game._physics_process(STEP)
 			widest = maxf(widest, absf(game.lane))
-		var wall: float = game.WORLD.WALL_LATERAL
+			# Dschungelherz has a measured per-distance rail; legacy tracks keep 5 m.
+			overshoot = maxf(overshoot, absf(game.lane) - game.world.wall_lateral_at(game.distance))
 		assert(
-			widest <= wall + 0.02, "%s: the kart stays inside the rail (%.2f m)" % [track, widest]
+			overshoot <= 0.02,
+			"%s: the kart stays inside the rail (widest %.2f m, overshoot %.2f m)" % [track, widest, overshoot]
 		)
 		assert(game.wall_contacts > 10, "%s: the rail was actually hit" % track)
 		assert(game.reset_count == 0, "%s: a rail hit never drops the kart" % track)
@@ -57,16 +64,18 @@ func _test_walls(track: String) -> void:
 				% [track, int(side), widest, game.wall_contacts, game.distance - start_distance]
 			)
 		)
+	completed_checks += 1
 
 
 func _test_drift_tiers() -> void:
 	await _start("training", "sonnenhafen")
 	_face(game._heading(0), 15.0)
 	game.drifting = true
-	for frame in range(60):
+	var blue_frames: int = roundi(1.0 / (STEP * POWERTRAIN.PACE_SCALE))
+	for frame in range(blue_frames):
 		game.steering = 1.0
 		game._physics_process(STEP)
-	assert(game.drift_charge >= 0.8 and game.drift_charge < 1.8, "One second of drift charges blue")
+	assert(game.drift_charge >= 0.8 and game.drift_charge < 1.8, "A controlled drift charges blue at the live pace scale")
 	game.boost_time = 0
 	game._release_drift()
 	assert(is_equal_approx(game.boost_time, 1.0) and game.drift_tier_count == [1, 0])
@@ -81,6 +90,7 @@ func _test_drift_tiers() -> void:
 	game.boost_time = 0
 	game._release_drift()
 	assert(game.boost_time == 0 and game.drift_tier_count == [1, 1], "A short drift gives nothing")
+	completed_checks += 1
 
 
 func _test_wrong_way() -> void:
@@ -100,6 +110,7 @@ func _test_wrong_way() -> void:
 		_steer_towards(game.world.position_at(game.previous_road_distance + 12.0))
 		game._physics_process(STEP)
 	assert(not game.wrong_way, "The warning clears once the kart turns around")
+	completed_checks += 1
 
 
 func _test_lap_validity() -> void:
@@ -116,6 +127,7 @@ func _test_lap_validity() -> void:
 	assert(game.distance - before < 5.0, "Jumping ahead gives no progress")
 	assert(game.checkpoint_index == 0)
 	assert(not game.finished)
+	completed_checks += 1
 
 
 func _test_pedals() -> void:
@@ -153,6 +165,7 @@ func _test_pedals() -> void:
 		rects.append(rect)
 	assert(not game.joystick.get_global_rect().intersects(rects[0]), "Stick and GAS are apart")
 	game.auto_gas = true
+	completed_checks += 1
 
 
 func _test_boost_response() -> void:
@@ -222,47 +235,48 @@ func _test_boost_response() -> void:
 		"A second tap cannot queue an empty boost"
 	)
 	game.boost_button._release()
+	completed_checks += 1
 
 
-func _test_mystery_item_boxes() -> void:
+func _test_skill_resonance_rings() -> void:
 	await _start("training", "bergwelt")
-	assert(game.item_boxes.size() == 5, "Race course exposes five mystery item boxes")
-	for box in game.item_boxes:
-		assert(box.get_meta("mystery_visual") == "lumo_prism")
-		var core: MeshInstance3D = box.get_node("MysteryPrismCore")
-		var edges: MeshInstance3D = box.get_node("MysteryPrismEdges")
-		assert(
-			core.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size() == 24,
-			"Mystery pickup has eight true triangular facets"
-		)
-		assert(box.get_child_count() == 2, "Readable pickup keeps only two opaque draw surfaces")
-		var finish: StandardMaterial3D = core.material_override
-		assert(
-			finish.albedo_color.b > 0.5 and finish.albedo_color.g < 0.4,
-			"Prism retains its violet colour"
-		)
-		assert(
-			finish.emission_energy_multiplier <= 0.25,
-			"Core emission cannot bleach the faceted pickup"
-		)
-		assert(edges.material_override.albedo_color.r > 0.9)
-		assert(
-			(
-				is_equal_approx(box.scale.x, 1.18)
-				and is_equal_approx(box.scale.y, 1.18)
-				and is_equal_approx(box.scale.z, 1.18)
-			),
-			"Himmelsinseln mystery prisms keep the readability scale from the visual pass"
-		)
-	var leader_pool: Array[String] = game._item_pool_for_place(1)
-	var comeback_pool: Array[String] = game._item_pool_for_place(6)
-	assert(leader_pool.count("boost") < comeback_pool.count("boost"))
-	assert(comeback_pool.count("boost") >= 3, "Back positions receive stronger catch-up odds")
+	assert(game.item_boxes.size() == 5, "All five racing pickups must be real resonance rings")
+	assert(game.item_box_laterals.size() == 5, "The skill policy needs the actual ideal crossing lane")
+	for ring in game.item_boxes:
+		assert(str(ring.get_meta("lumo_racing_pickup", "")) == "skill_resonance",
+			"Random violet mystery prisms must not masquerade as racing resonance rings")
+		# f5cc4176 gate: static GateStructure (halo + light rail), the three real
+		# outcome symbols and the travelling GateMotion traces; the root itself
+		# stays the placement frame.
+		assert(ring.get_child_count() == 3, "A gate has exactly structure, outcome symbols and motion")
+		assert(ring.get_node_or_null("OutcomeSymbols") != null, "All skill outcomes stay visible")
+		assert(ring.get_node_or_null("GateMotion") != null, "The powered crossing traces exist")
+		var halo: MeshInstance3D = ring.get_node("GateStructure/ResonanceHalo")
+		assert(halo.mesh is TorusMesh, "Real ring geometry replaces box facets")
+		assert(halo.material_override is StandardMaterial3D)
+		assert(halo.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+		var rail: MeshInstance3D = ring.get_node("GateStructure/InnerLightRail")
+		assert(rail.mesh is TorusMesh and rail.material_override is StandardMaterial3D)
+		var finish: StandardMaterial3D = rail.material_override
+		assert(finish.emission_enabled and finish.emission_energy_multiplier <= 2.0,
+			"Visible low-poly racing arch without extreme mobile bloom")
+		assert(rail.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+	# Deprecated callers cannot receive random / rank-biased loot.
+	assert(game._item_pool_for_place(1) == ["boost"])
+	assert(game._item_pool_for_place(6) == ["boost"])
 	game.item = ""
+	game.racing = true
+	game.countdown = 0.0
+	game.speed = 20.0
+	game.drift_charge = 1.5
+	game.lane = game.item_box_laterals[0]
 	game.player.position = game.item_boxes[0].position
 	game._track_events()
-	assert(not game.item.is_empty(), "Touching a mystery box grants an item immediately")
-	assert(game.item_box_collected.has(0), "Collected mystery box stays hidden for the current lap")
+	assert(not game.item.is_empty(), "Crossing a ring awards an actual tier by driving skill")
+	assert(game.item_box_collected.has(0), "Used resonance ring remains hidden this lap")
+	game._sync_item_box_visibility()
+	assert(not game.item_boxes[0].visible, "No repeat farming on the same lap")
+	completed_checks += 1
 
 
 func _test_rival_item_tactics() -> void:
@@ -271,17 +285,47 @@ func _test_rival_item_tactics() -> void:
 	assert(game.opponent_boost_times.size() == 5)
 	assert(game.opponent_shield_times.size() == 5)
 
-	game.distance = 20.0
-	game.opponent_distances[0] = 10.0
+	# Keep physical transforms, headings, motion and race progress consistent.
+	# The former fixture changed only progress and passed an invented gap while
+	# the actual cars stayed in the crowded starting grid.
+	var straight: float = -1.0
+	for candidate in range(80, int(game.track_length) - 100, 5):
+		var at: float = float(candidate)
+		var forward: Vector3 = game.world.forward(at)
+		var safe: bool = true
+		for offset in [8.0, 20.0, 36.0]:
+			if forward.angle_to(game.world.forward(at + offset)) > 0.10:
+				safe = false
+		if safe and not game.world.in_gap(at) and game.world.ramp_height(at) == 0.0:
+			straight = at
+			break
+	assert(straight >= 0.0, "Bergwelt must contain a measurable clear straight for boost tactics")
+	for i in range(game.opponents.size()):
+		var at: float = straight if i == 0 else straight - 80.0 - i * 8.0
+		game.opponents[i].transform = game.world.reset_transform(at, 0.0)
+		game.opponent_distances[i] = at
+		game.opponent_lanes[i] = 0.0
+		game.opponent_headings[i] = game._heading(at)
+		game.opponents[i].set_motion(18.0, 0.0, false, false)
 	game.opponent_items[0] = "boost"
 	game.opponent_boost_times[0] = 0.0
-	game._update_rival_item_tactics(0, Vector3(0, 0, 12), STEP)
+	game.distance = straight + 6.0
+	game.speed = 0.0
+	game.player.transform = game.world.reset_transform(game.distance, 0.0)
+	game._update_rival_item_tactics(0, game.player.position - game.opponents[0].position, STEP)
+	assert(game.opponent_items[0] == "boost", "A blocked rival must not boost into the stopped player")
+	assert(game.opponent_boost_times[0] == 0.0)
+	game.distance = straight + 70.0
+	game.player.transform = game.world.reset_transform(game.distance, 0.0)
+	game._update_rival_item_tactics(0, game.player.position - game.opponents[0].position, STEP)
 	assert(game.opponent_items[0].is_empty())
-	assert(game.opponent_boost_times[0] > 0.0, "Trailing rival uses boost to attack the gap")
+	assert(game.opponent_boost_times[0] > 0.0, "Trailing rival boosts through a genuinely clear corridor")
 
+	game.player.transform = game.world.reset_transform(straight + 6.0, 0.0)
+	game.opponents[1].transform = game.world.reset_transform(straight + 4.0, 1.0)
 	game.opponent_items[1] = "shield"
 	game.opponent_shield_times[1] = 0.0
-	game._update_rival_item_tactics(1, Vector3(0, 0, 5), STEP)
+	game._update_rival_item_tactics(1, game.player.position - game.opponents[1].position, STEP)
 	assert(game.opponent_shield_times[1] > 0.0, "Nearby rival can protect itself")
 
 	game.opponent_stuns[1] = 0.0
@@ -292,21 +336,26 @@ func _test_rival_item_tactics() -> void:
 
 	game.hit_timer = 0.0
 	game.shield_time = 0.0
+	game.opponents[2].position = game.player.position + Vector3.RIGHT * 4.0
 	game.opponent_items[2] = "pulse"
-	game._update_rival_item_tactics(2, Vector3(0, 0, 5), STEP)
+	var pulse_gap: Vector3 = game.player.position - game.opponents[2].position
+	game._update_rival_item_tactics(2, pulse_gap, STEP)
 	assert(
 		game.hit_timer == 0.0 and game.opponent_pulse_warning_times[2] > 0.0,
 		"Rival pulse must warn before it can affect the player"
 	)
-	game._update_rival_item_tactics(2, Vector3(0, 0, 5), game.RIVAL_PULSE_WARNING_SECONDS + STEP)
+	game._update_rival_item_tactics(2, pulse_gap, game.RIVAL_PULSE_WARNING_SECONDS + STEP)
 	assert(game.hit_timer > 0.0, "Rival pulse can pressure a player who stays in range")
 
 	game.hit_timer = 0.0
 	game.shield_time = 4.0
+	game.opponents[3].position = game.player.position + Vector3.LEFT * 4.0
 	game.opponent_items[3] = "pulse"
-	game._update_rival_item_tactics(3, Vector3(0, 0, 5), STEP)
-	game._update_rival_item_tactics(3, Vector3(0, 0, 5), game.RIVAL_PULSE_WARNING_SECONDS + STEP)
+	pulse_gap = game.player.position - game.opponents[3].position
+	game._update_rival_item_tactics(3, pulse_gap, STEP)
+	game._update_rival_item_tactics(3, pulse_gap, game.RIVAL_PULSE_WARNING_SECONDS + STEP)
 	assert(game.hit_timer == 0.0, "Player shield blocks a telegraphed rival pulse")
+	completed_checks += 1
 
 
 func _test_wolkenweg_split_route() -> void:
@@ -347,6 +396,7 @@ func _test_wolkenweg_split_route() -> void:
 			% [raised_height, main_height]
 		)
 	)
+	completed_checks += 1
 
 
 func _test_boost_gates_and_restart() -> void:
@@ -378,6 +428,7 @@ func _test_boost_gates_and_restart() -> void:
 	assert(game.boost_time == 0, "An empty boost slot cannot activate later")
 	await _start("training", "sonnenhafen")
 	assert(game.boosts == 1 and game.boost_time == 0, "Restart resets charges and active boost")
+	completed_checks += 1
 
 
 func _track_frame(forward: Vector3, normal: Vector3, mirrored: bool = false) -> Basis:
@@ -416,6 +467,7 @@ func _test_boost_chevrons_follow_travel() -> void:
 			Vector3(left_arm.offset).dot(right) < Vector3(right_arm.offset).dot(right),
 			"%s chevron arms stay mirrored left/right" % sample.name
 		)
+	completed_checks += 1
 
 
 func _test_boost_pad_and_airborne() -> void:
@@ -437,6 +489,7 @@ func _test_boost_pad_and_airborne() -> void:
 	game._physics_process(STEP)
 	assert(game.speed > airborne_speed, "Boost also accelerates during a ramp jump")
 	assert(game.airborne, "Boost does not cancel the jump")
+	completed_checks += 1
 
 
 func _run() -> void:
@@ -458,22 +511,27 @@ func _run() -> void:
 	await _test_boost_gates_and_restart()
 	await _test_boost_pad_and_airborne()
 	await _test_boost_chevrons_follow_travel()
-	await _test_mystery_item_boxes()
+	await _test_skill_resonance_rings()
 	await _test_rival_item_tactics()
 	await _test_wolkenweg_split_route()
 	await _test_pedals()
+	var expected_checks: int = game.CATALOG.TRACKS.size() + 11
 	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[KartPhysics]")):
+		push_error("[KartPhysics] FAIL: scene/audio teardown incomplete")
+		quit(1)
+		return
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
+	if completed_checks != expected_checks:
+		print("[KartPhysics] FAIL: %d of %d checks completed" % [completed_checks, expected_checks])
+		quit(1)
+		return
 	print(
 		(
-			"[KartPhysics] PASS: rail walls on four courses at full turbo, sliding contact, "
+			"[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, "
 			+ "blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, "
 			+ "GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, "
 			+ "and a physical Wolkenweg split route"
 		)
 	)
-	# The audio mix thread releases the course music late.
-	await create_timer(0.5).timeout
 	quit(0)

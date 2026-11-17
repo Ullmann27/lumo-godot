@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "version": 2,
+  "ready_for_root_checkpoint": true,
+  "source_freeze_sha256": "0f4276593f986af91ba726c7e0859ea382372ea01d7c8132f7a92ade362cd3de",
+  "base": "c04078541fa553094d6868454d19e9fe5f5f871c",
+  "paths": [
+    {
+      "path": ".github/workflows/lumo-discovery-connections.yml",
+      "mode": "100644",
+      "bytes": 35914,
+      "sha256": "7808349f14aa39259edaee1d5b832c8660f45a8c7065af65f8e285ff99104a0f",
+      "git_blob": "a806855cf51ab7f63b14163596488fc1d3746dc1"
+    },
+    {
+      "path": "scripts/games/kart_island.gd",
+      "mode": "100644",
+      "bytes": 175088,
+      "sha256": "7f916fcf8ea2d17876500e0063d91809db4a608dbc8bf945287231e6d76231d5",
+      "git_blob": "83b3b6b548cffa2790c582e061a74e37bbfcf356"
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "mode": "100644",
+      "bytes": 26254,
+      "sha256": "8188911d6f91deaec924fdc7857feec876af075a8d04522b49dd14429d501aa5",
+      "git_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+    }
+  ],
+  "scope": "Additional Village and actual MobileSafeArea/minimap renderer acceptance; preserve existing47Python,4headless,Dream5/7/2,Discovery10/38/2 and all52/17 contracts. No Android/device/FPS acceptance.",
+  "c040_originals": {
+    "path": "originals/c040-targeted-originals.tar.gz",
+    "bytes": 1334100,
+    "sha256": "993dcd9d40ff43ee84f6d538e65529f51591570fa83b4c9359763b9b1a50167b",
+    "members": 46,
+    "unchanged": true
+  },
+  "v1_freeze": "94d31fbe2927c8798a2296d4ce7d0bbd946f6ade64094d8a4d18c4e2cc879c9c",
+  "pending": [
+    "Root checkpoint and Actionlint",
+    "Actual MobileSafeArea probe on the next combined SHA",
+    "Fresh native CI including Scaling46/two PNGs and MobileSafeArea/four old+nine new PNGs"
+  ],
+  "not_claimed": [
+    "New full Discovery acceptance",
+    "Full52/17 acceptance",
+    "Android",
+    "DeviceFPS"
+  ]
+}

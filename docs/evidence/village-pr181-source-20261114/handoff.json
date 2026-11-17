@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "status": "READY_FOR_ROOT_SOURCE_CHECKPOINT",
+  "freeze_sha256": "01d3fc898bb3dc9ba79d598378625a935cc2d05a9fb40b7d18649090aa6b6c23",
+  "base": {
+    "commit": "c3008e6bba3909f422da127ba8d711f9bd821a33",
+    "tree": "ef34a6b4972c6bcf693f9556333732e05085d583"
+  },
+  "producer": {
+    "pull_request": 181,
+    "head": "be58fe0afcbbd8bf982592d05d83f0e7742e8934",
+    "tree": "faffacb93be479c3b8d3534cc056370c69e1407e",
+    "exact_delta_base": "71a4c1e2304b52005950b12490d070c286c45438"
+  },
+  "source_only_candidate_tree": "c0c424c35ddb3149d1a8d7ba611d09c9014572cb",
+  "root_tree_overlay": [
+    {
+      "path": "scripts/creative/build_settlement_state.gd",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "625a8db46195d034cbe7ae2dd84d6b208abff645"
+    },
+    {
+      "path": "scripts/creative/build_settlement_world.gd",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "149a4386225812592917b1bcac0b85294413f1b4"
+    },
+    {
+      "path": "scripts/tests/build_village_economy_regression.gd",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9dd8ff269e266dd73ad5207febd87aab367a4986"
+    },
+    {
+      "path": "scripts/tests/build_village_scaling_regression.gd",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c6abdb5f9576c0b48db7bd59716da52ea5fac036"
+    }
+  ],
+  "existing_blob_reuse_requires_no_new_source_blob_upload": true,
+  "remaining": "Root publication and then explicitly assigned exact-source tests; no code/engine test has been run for this new overlay",
+  "new_probe": {
+    "path": "scripts/tests/build_village_scaling_regression.gd",
+    "headless_marker": "[VillageScaling] PASS 42 checks: full 2178-house model, camera and explorer",
+    "rendered_marker": "[VillageScaling] PASS 46 checks: full 2178-house model, camera and explorer",
+    "capture_arg": "--capture",
+    "capture_environment": "LUMO_CAPTURE_DIR",
+    "pngs": [
+      {
+        "file": "01-home-region.png",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "file": "02-river-boundary.png",
+        "width": 1280,
+        "height": 720
+      }
+    ],
+    "existing_runner_connection": "Not added in this sources-only pack. The existing52 runner retains its current calls. Root must separately assign any scaling-gate addition; no success inferred from file presence."
+  },
+  "economy_test": {
+    "path": "scripts/tests/build_village_economy_regression.gd",
+    "existing_runner_marker": "[VillageEconomy] PASS",
+    "two_additional_legacy_cases": true,
+    "current_tests_preserved": true
+  },
+  "separate_PR167_followup": {
+    "head": "34421df83566dd4773420cc2a225887956459435",
+    "current52_runner_blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+    "current_treasure_title_timeout_seconds": 600,
+    "producer_new_timeout_seconds": 900,
+    "changed_here": false,
+    "scope": "Different Producer runner; no blind replacement or unapproved timeout change included"
+  },
+  "scope_boundaries": {
+    "current_ci_pack_unchanged": true,
+    "host_pins_unchanged": true,
+    "all_current_source_unchanged": true,
+    "no_runtime_or_visual_pass": true
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "base_revision": "f5b2950c31e6c376c24a6a5819814c728e4e8b3d",
+  "base_tree": "e3d5a5503394ff5b830db41950d8cf3981a0a2ec",
+  "producer_fix_revision": "3c26573d070a131ed5215fbdbff2517e719b3bbd",
+  "producer_fix_published": false,
+  "scope": "Isolated review only; no producer or integration files changed",
+  "files": [
+    {
+      "path": "scripts/games/cards/cards_table.gd",
+      "before_blob": "9de98a6dd4c0fd9dfad5e199ba91fc243433c44f",
+      "git_blob": "8b5f60aae8be647cee9b8a5c18ccf00819ddbcaa",
+      "sha256": "6bdf5350dc9e03076ca56590516196961de01cd7743f6a78d8e62828b0d04332"
+    },
+    {
+      "path": "scripts/tests/cards_table_regression.gd",
+      "before_blob": "dbd87e1167969b35985be97b4b04840b8376a0f4",
+      "git_blob": "67d0b664f51abfae8680da478029d02bf32d3a19",
+      "sha256": "4497487dd6cdf27a04e53452fc772d8833061e6586b3c7ef371be2edf4d35371"
+    }
+  ],
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "test": {
+    "script": "scripts/tests/cards_table_regression.gd",
+    "runner": "tools/run_godot_probe.py",
+    "headless": true,
+    "required": "CARDS_TABLE_RUNTIME_PASS",
+    "checks": 295,
+    "failures": 0,
+    "error_lines": 0,
+    "timeout_seconds": 240,
+    "product_files_unchanged": true,
+    "runtime_claim": "Native geometry, original textures, input actions and preserved round state; no Android image/render claim"
+  },
+  "import": {
+    "exit_code": 0,
+    "error_lines": 0,
+    "cache": "Separate copy of base import cache followed by actual editor import in immutable source snapshot; source sidecars regenerated before test"
+  },
+  "logs": [
+    {
+      "path": "cards-producer-regression.log",
+      "bytes": 581,
+      "sha256": "6aaf54424923fd7d7b472e55e52de02d1bd5040845c4982659844db4314121a8"
+    },
+    {
+      "path": "import.log",
+      "bytes": 160992,
+      "sha256": "c7c98c55750b87006c43f4e0004d5bda175432916ca167d6cee95c03e46fb639"
+    }
+  ],
+  "official_source": [
+    {
+      "url": "https://github.com/godotengine/godot/blob/4.6.3-stable/platform/android/display_server_android.cpp",
+      "method": "screen_get_usable_rect",
+      "finding": "Returns full Android display rectangle, so it does not yield status/navigation insets."
+    },
+    {
+      "url": "https://github.com/godotengine/godot/blob/4.6.3-stable/platform/android/java/lib/src/main/java/org/godotengine/godot/GodotIO.java",
+      "method": "getDisplaySafeArea",
+      "finding": "Outside immersive mode requests systemBars OR displayCutout. Applies actual top/left when edge-to-edge or immersive; otherwise expects window padding."
+    },
+    {
+      "url": "https://github.com/godotengine/godot/blob/4.6.3-stable/platform/android/java/lib/src/main/java/org/godotengine/godot/Godot.kt",
+      "method": "useImmersive / isEdgeToEdge initialization and command-line parsing",
+      "finding": "Both flags default false. --fullscreen enables immersive; --edge_to_edge enables edge-to-edge. Host path still under parallel review."
+    }
+  ]
+}

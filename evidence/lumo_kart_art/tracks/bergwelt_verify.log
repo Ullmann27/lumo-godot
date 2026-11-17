@@ -1,0 +1,67 @@
+20:59:33 | INFO: Data are loaded, start creating Blender stuff
+20:59:33 | INFO: Blender create Mesh node Cube.023
+20:59:33 | INFO: glTF import finished in 0.10s
+20:59:33 | INFO: Data are loaded, start creating Blender stuff
+20:59:33 | INFO: Blender create Mesh node Cube.043
+20:59:33 | INFO: glTF import finished in 0.09s
+20:59:34 | INFO: Data are loaded, start creating Blender stuff
+20:59:34 | INFO: Blender create Mesh node TunnelShellCollision_Mesh
+20:59:34 | INFO: glTF import finished in 0.00s
+20:59:34 | INFO: Data are loaded, start creating Blender stuff
+20:59:34 | INFO: Blender create Mesh node Cube.086
+20:59:34 | INFO: glTF import finished in 0.11s
+20:59:34 | INFO: Data are loaded, start creating Blender stuff
+20:59:34 | INFO: Blender create Mesh node Cube.106
+20:59:35 | INFO: glTF import finished in 0.04s
+20:59:35 | INFO: Data are loaded, start creating Blender stuff
+20:59:35 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.001
+20:59:35 | INFO: glTF import finished in 0.01s
+20:59:35 | INFO: Data are loaded, start creating Blender stuff
+20:59:35 | INFO: Blender create Mesh node Cube.150
+20:59:35 | INFO: glTF import finished in 0.14s
+20:59:36 | INFO: Data are loaded, start creating Blender stuff
+20:59:36 | INFO: Blender create Mesh node Cube.174
+20:59:36 | INFO: glTF import finished in 0.13s
+20:59:36 | INFO: Data are loaded, start creating Blender stuff
+20:59:36 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.002
+20:59:36 | INFO: glTF import finished in 0.00s
+20:59:36 | INFO: Data are loaded, start creating Blender stuff
+20:59:36 | INFO: Blender create Mesh node Cube.234
+20:59:37 | INFO: glTF import finished in 0.31s
+20:59:37 | INFO: Data are loaded, start creating Blender stuff
+20:59:37 | INFO: Blender create Mesh node Cube.270
+20:59:38 | INFO: glTF import finished in 0.19s
+20:59:38 | INFO: Data are loaded, start creating Blender stuff
+20:59:38 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.003
+20:59:38 | INFO: glTF import finished in 0.01s
+20:59:38 | INFO: Data are loaded, start creating Blender stuff
+20:59:38 | INFO: Blender create Mesh node Cube.342
+20:59:38 | INFO: glTF import finished in 0.30s
+20:59:39 | INFO: Data are loaded, start creating Blender stuff
+20:59:39 | INFO: Blender create Mesh node Cube.378
+20:59:39 | INFO: glTF import finished in 0.13s
+20:59:40 | INFO: Data are loaded, start creating Blender stuff
+20:59:40 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.004
+20:59:40 | INFO: glTF import finished in 0.01s
+20:59:40 | INFO: Data are loaded, start creating Blender stuff
+20:59:40 | INFO: Blender create Mesh node Cube.438
+20:59:40 | INFO: glTF import finished in 0.24s
+20:59:41 | INFO: Data are loaded, start creating Blender stuff
+20:59:41 | INFO: Blender create Mesh node Cube.462
+20:59:41 | INFO: glTF import finished in 0.07s
+20:59:41 | INFO: Data are loaded, start creating Blender stuff
+20:59:41 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.005
+20:59:41 | INFO: glTF import finished in 0.00s
+20:59:41 | INFO: Data are loaded, start creating Blender stuff
+20:59:41 | INFO: Blender create Mesh node Cube.510
+20:59:41 | INFO: glTF import finished in 0.11s
+20:59:42 | INFO: Data are loaded, start creating Blender stuff
+20:59:42 | INFO: Blender create Mesh node Cube.534
+20:59:42 | INFO: glTF import finished in 0.11s
+20:59:42 | INFO: Data are loaded, start creating Blender stuff
+20:59:42 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.006
+20:59:42 | INFO: glTF import finished in 0.00s
+LUMO_TRACK_VERIFY_PASS bergwelt 21
+Blender 4.3.2
+
+Blender quit

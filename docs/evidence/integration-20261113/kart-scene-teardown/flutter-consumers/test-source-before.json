@@ -1,0 +1,9 @@
+{
+  "scripts/tests/kart_touch_regression.gd": "6c6294bc2d392428c2ff00c174653df5af422c31da6e74f68d9cdc99b8fe2ee1",
+  "scripts/tests/host_bridge_regression.gd": "10d1460a5f0033f7c80622f78f9e2b78154771d52d623d5ed58de1b98bc08ba2",
+  "scripts/tests/kart_race_bridge_regression.gd": "58e289a4b1f35f16707250848ec534251f03e31ff00fab7e956b57ec58ee5800",
+  "scripts/tests/kart_jump_regression.gd": "e49d318c410f31238c58f7c4b379c9542fbad8071dbb144b1512600160c88192",
+  "scripts/tests/kart_physics_regression.gd": "0b23b736822b00c175b85cc940c9110d26f7ab415daadea1343e304daa7e89b3",
+  "scripts/tests/kart_compact_selection_regression.gd": "3b88da88970a26c8e3c99140e1dc6662dece0f8277100d2a17524b7dc4fee138",
+  "scripts/tests/helpers/kart_scene_teardown.gd": "63f4138d64d4bc0d9bd8f5698ad34c1b305062567197f4d28ba01c02995bf885"
+}

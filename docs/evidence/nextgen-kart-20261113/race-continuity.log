@@ -1,0 +1,100 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: sonnenhafen mode=race
+[KartContinuityDiag] before: ringCount=5 item= airborne=false speed=7.50 lap=0 distance=0.0000
+[KartContinuityDiag] after events: keys={ 0: true } item=boost
+[Perf] quality_profile:high
+[KartContinuity] rebuild: consumed prism stays hidden; next lap releases it
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[KartContinuityDiag] before: ringCount=5 item= airborne=false speed=7.50 lap=0 distance=0.0000
+[KartContinuityDiag] after events: keys={ 0: true } item=boost
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[KartContinuity] reopen: ConfigFile round-trip preserves prism and result ID
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[KartContinuity] rivals: real item effects remain bounded, visible and paused after reopen
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[KartContinuity] compatibility: v1–v4 missing fields and malformed optional values load safely
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: bergwelt mode=training
+[KartContinuity] reset: genuine ramp flight ends safely without landing turbo
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[LumoHost] reward reported: recovered-lap-continuity-1794536121283-21139735
+[Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[LumoHost] return: games
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=time_trial
+[Kart] completed: mode=time_trial track=sonnenhafen stars=3 place=1
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] completed: mode=training track=sonnenhafen stars=0 place=1
+[KartLapContinuity] PASS: 104 checks, 0 failures
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[LumoHost] reward reported: natural-ack-state-fixture-1794536145371-45227943
+[Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+[LumoHost] return: games
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[LumoHost] reward reported: natural-ack-state-fixture-1794536147114-46971391
+[Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[LumoHost] return: games
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=cup
+[LumoHost] reward reported: natural-ack-state-fixture-1794536150178-50035251
+[Kart] completed: mode=cup track=sonnenhafen stars=3 place=1
+[LumoHost] return: games
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[LumoHost] reward reported: natural-ack-state-fixture-1794536151709-51566252
+[Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+[LumoHost] return: games
+[Kart] race_world_ready: sonnenhafen mode=race
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=race
+[LumoHost] reward reported: natural-ack-state-fixture-1794536154427-54283638
+[Kart] completed: mode=race track=sonnenhafen stars=3 place=1
+[Router] goto:games (res://scenes/games/game_hub.tscn)
+[Lumo] character_ready
+behavior:idle_bounce
+[KartHandoffLifecycle] PASS: 10 checks, 0 failures
+[KartContinuity] PASS: quality change, save/reopen, next lap, rival states, legacy saves and flight reset

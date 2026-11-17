@@ -1,0 +1,24 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: sonnenhafen mode=training
+[LoopDiagnostic] frame=0 offset=-0.570 speed=13.333 active=false minimum=13.0
+[LoopDiagnostic] frame=1 offset=-0.351 speed=12.667 active=false minimum=13.0
+[LoopDiagnostic] frame=2 offset=-0.136 speed=12.000 active=false minimum=13.0
+[LoopDiagnostic] frame=3 offset=0.070 speed=11.333 active=false minimum=13.0
+[LoopDiagnostic] frame=4 offset=0.267 speed=10.667 active=false minimum=13.0
+[LoopDiagnostic] frame=5 offset=0.453 speed=10.000 active=false minimum=13.0
+[LoopDiagnostic] frame=6 offset=0.631 speed=9.333 active=false minimum=13.0
+[LoopDiagnostic] frame=7 offset=0.797 speed=8.667 active=false minimum=13.0
+[LoopDiagnostic] frame=8 offset=0.953 speed=8.000 active=false minimum=13.0
+[LoopDiagnostic] frame=9 offset=1.099 speed=7.333 active=false minimum=13.0
+[LoopDiagnostic] frame=10 offset=1.234 speed=6.667 active=false minimum=13.0
+[LoopDiagnostic] frame=11 offset=1.357 speed=6.000 active=false minimum=13.0

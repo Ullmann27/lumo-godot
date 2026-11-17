@@ -1,0 +1,25 @@
+{
+  "source": "art/lumo_kart/blender/karts/aurora_glider.blend",
+  "source_sha256": "aa9936550710406df40e7a8657a28ca0a5e3d5e2715b2f966ca2abf2cdcaf6c1",
+  "image_sha256": "a713364058ba7602deadbf685fe44588532158e012556eb2fd597a11cbe6a95f",
+  "engine": "Blender Cycles CPU",
+  "samples": 32,
+  "resolution": [
+    1440,
+    1080
+  ],
+  "camera_godot_m": [
+    3.1,
+    2.25,
+    -3.7
+  ],
+  "target_godot_m": [
+    0,
+    0.54,
+    0
+  ],
+  "lens_mm": 48,
+  "frame": 1,
+  "production_race_camera": false,
+  "postprocess": "Blender AgX only; no AI image generation"
+}

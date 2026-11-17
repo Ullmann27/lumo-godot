@@ -1,0 +1,325 @@
+{
+  "schema": 1,
+  "source": "c2e025f9bb34334323d989b19085f6fe0e6c5694",
+  "tree": "24c4bfe70a0b3c575b4c6209973ff244237f7b19",
+  "files": [
+    {
+      "archive_path": "actual/README.md",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/README.md",
+      "bytes": 3167,
+      "sha256": "b3769da01ca49f168db712970e1612d4e6c23a853cd321d8dfc33b4f19cf5a6e"
+    },
+    {
+      "archive_path": "actual/authorized-results.tsv",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/authorized-results.tsv",
+      "bytes": 176,
+      "sha256": "6688b36ae11b49fb09e23a92c896d217c165be8a66a4b1a902772bfce3115d2a"
+    },
+    {
+      "archive_path": "actual/contracts-command.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/contracts-command.json",
+      "bytes": 552,
+      "sha256": "69bc63c91621e12e896af15ba8e52127fdf7d6bf875f23490578d48e8fa85efd"
+    },
+    {
+      "archive_path": "actual/contracts-console.log",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/contracts-console.log",
+      "bytes": 1883,
+      "sha256": "5a7c4e38fb683fa587b60a6b942d3c38ece1dc4b9dbc42c1f599eb86469bd9d4"
+    },
+    {
+      "archive_path": "actual/contracts-result.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/contracts-result.json",
+      "bytes": 794,
+      "sha256": "20726bed4e99a4c9b2fc091658e258358727596bfbdbcfc2d8191b0941378f4f"
+    },
+    {
+      "archive_path": "actual/direct-runtime-source-bindings.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/direct-runtime-source-bindings.json",
+      "bytes": 4804,
+      "sha256": "2e62cfcec81a5ddc3ddc64938a69c1effe094f57d7e58b0aa0a846276c2c24b2"
+    },
+    {
+      "archive_path": "actual/dream_garden_props_regression-command.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/dream_garden_props_regression-command.json",
+      "bytes": 1489,
+      "sha256": "c3e296e270603c724d9dc2c4150000194d647c8b58af6beda507128662d69cd0"
+    },
+    {
+      "archive_path": "actual/dream_garden_props_regression-console.log",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/dream_garden_props_regression-console.log",
+      "bytes": 505,
+      "sha256": "bbfcbd97e786dad12bb49ebf8a088d2b7e0c6a1a834e413c018c0c8c52c5013f"
+    },
+    {
+      "archive_path": "actual/dream_garden_props_regression-headless.log",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/dream_garden_props_regression-headless.log",
+      "bytes": 505,
+      "sha256": "bbfcbd97e786dad12bb49ebf8a088d2b7e0c6a1a834e413c018c0c8c52c5013f"
+    },
+    {
+      "archive_path": "actual/dream_garden_props_regression-result.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/dream_garden_props_regression-result.json",
+      "bytes": 1912,
+      "sha256": "df18baed6a480d7f55f6646489be7cc4d6382e4bdf2ec646a2d3b7f51d84acc8"
+    },
+    {
+      "archive_path": "actual/environment.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/environment.json",
+      "bytes": 641,
+      "sha256": "7770324fdbaefb0a2a8828fd8871a198e3fa55e431125d9ef80a0058e6e7ef2a"
+    },
+    {
+      "archive_path": "actual/generated-cache-inventory.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/generated-cache-inventory.json",
+      "bytes": 215435,
+      "sha256": "64a7291c1ebfe62a2db711553f11f5ce0b2c89289c467d489941872b7e575d7e"
+    },
+    {
+      "archive_path": "actual/generated-import-archive.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/generated-import-archive.json",
+      "bytes": 497219,
+      "sha256": "1544ec0aa04ec16d92461ba46387bb87e8f79c94ee021d58cbb153c688dc4068"
+    },
+    {
+      "archive_path": "actual/generated-import-originals.tar.gz",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/generated-import-originals.tar.gz",
+      "bytes": 45669,
+      "sha256": "0c2f50bf6a3f43dc83cbe6cad9531093d9915f08543939e11f3d90f3df0294d5"
+    },
+    {
+      "archive_path": "actual/handoff.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/handoff.json",
+      "bytes": 764,
+      "sha256": "04536f21cf251527d71ae7d4a2bc120ce01dbdff6cf9d4cf222d0f31d3a8f924"
+    },
+    {
+      "archive_path": "actual/import-command.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/import-command.json",
+      "bytes": 1145,
+      "sha256": "9e86a20dbcb9ad8674f6384cfe48dc6373fc062789f7d5c64fcb84b2c9c9219d"
+    },
+    {
+      "archive_path": "actual/import-console.log",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/import-console.log",
+      "bytes": 136586,
+      "sha256": "85578a75dc702f793e55dfd69aed13ef3c0222a85af7a4ef5f3abf5e71c57852"
+    },
+    {
+      "archive_path": "actual/import-result.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/import-result.json",
+      "bytes": 1433,
+      "sha256": "57f5e3105855c9bbdc950145d89415d7b050add018d530c77731e569e48f9f35"
+    },
+    {
+      "archive_path": "actual/index-flags-after.bin",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/index-flags-after.bin",
+      "bytes": 267802,
+      "sha256": "a7511fccd8a93b81635cbfecad3501e4934065ef5904e3b06ab1a7bc3db10769"
+    },
+    {
+      "archive_path": "actual/index-flags-before.bin",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/index-flags-before.bin",
+      "bytes": 267802,
+      "sha256": "a7511fccd8a93b81635cbfecad3501e4934065ef5904e3b06ab1a7bc3db10769"
+    },
+    {
+      "archive_path": "actual/index-stage-after.bin",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/index-stage-after.bin",
+      "bytes": 440938,
+      "sha256": "30afdacd29663680d62f2d399acc3f04ddb1b842d28bc85de1c5866a1cfb7427"
+    },
+    {
+      "archive_path": "actual/index-stage-before.bin",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/index-stage-before.bin",
+      "bytes": 440938,
+      "sha256": "30afdacd29663680d62f2d399acc3f04ddb1b842d28bc85de1c5866a1cfb7427"
+    },
+    {
+      "archive_path": "actual/lumo_dream_ambience_regression-command.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/lumo_dream_ambience_regression-command.json",
+      "bytes": 1501,
+      "sha256": "aade592c2a62c52fb043952f558270876b8c0e9c50cffe099192ce9d0c28917f"
+    },
+    {
+      "archive_path": "actual/lumo_dream_ambience_regression-console.log",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/lumo_dream_ambience_regression-console.log",
+      "bytes": 593,
+      "sha256": "0e06fbe26cc4fab495f303f614749b1164b2ea673a17c70ee7a38f2b18600709"
+    },
+    {
+      "archive_path": "actual/lumo_dream_ambience_regression-headless.log",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/lumo_dream_ambience_regression-headless.log",
+      "bytes": 593,
+      "sha256": "0e06fbe26cc4fab495f303f614749b1164b2ea673a17c70ee7a38f2b18600709"
+    },
+    {
+      "archive_path": "actual/lumo_dream_ambience_regression-result.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/lumo_dream_ambience_regression-result.json",
+      "bytes": 1925,
+      "sha256": "a830f74c3cf178be5191fed37cf95914d9af749eeee287af7988ae83225f94c1"
+    },
+    {
+      "archive_path": "actual/missing-sparse-paths.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/missing-sparse-paths.json",
+      "bytes": 534943,
+      "sha256": "047308c8f27721e1f99ef88db9def443362370583e439d82ae9b0a4fbb0c395a"
+    },
+    {
+      "archive_path": "actual/preflight-resolution.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/preflight-resolution.json",
+      "bytes": 1390,
+      "sha256": "b3879e4a47e394582921e4c87f7504e9cc1a38ec07b369e5cb9e2fa2accf1be9"
+    },
+    {
+      "archive_path": "actual/source-commit-original.txt",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/source-commit-original.txt",
+      "bytes": 351,
+      "sha256": "812d0e3cbeabd53136865aee137067028d18152850870d6aa06c19c823e9ab76"
+    },
+    {
+      "archive_path": "actual/source-comparison.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/source-comparison.json",
+      "bytes": 450,
+      "sha256": "90f375b8138781fd7281a43a1871f8f91f2537ea342db7be21024341f139f393"
+    },
+    {
+      "archive_path": "actual/source-head-after.txt",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/source-head-after.txt",
+      "bytes": 41,
+      "sha256": "aed3fd7e7a9a4157e6662e7650d85357d9ea5da290f3ee663e68cb218bd96241"
+    },
+    {
+      "archive_path": "actual/source-head.txt",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/source-head.txt",
+      "bytes": 41,
+      "sha256": "aed3fd7e7a9a4157e6662e7650d85357d9ea5da290f3ee663e68cb218bd96241"
+    },
+    {
+      "archive_path": "actual/source-inventory-after.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/source-inventory-after.json",
+      "bytes": 1448363,
+      "sha256": "133db6813c341da9b9e5468f6f2ff0a3e6833c08e8cfce413b02a150c690e2a0"
+    },
+    {
+      "archive_path": "actual/source-inventory-before.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/source-inventory-before.json",
+      "bytes": 1134738,
+      "sha256": "ed6d9ff5345ca50115d7f2e9b069fc46d521471517552a81dba6731bad052a55"
+    },
+    {
+      "archive_path": "actual/source-tree-after.txt",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/source-tree-after.txt",
+      "bytes": 41,
+      "sha256": "69125d31a42ae7e66a821e66f38b748b0a502e5965cfaf936bfa121c98eabfc7"
+    },
+    {
+      "archive_path": "actual/source-tree.txt",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/source-tree.txt",
+      "bytes": 41,
+      "sha256": "69125d31a42ae7e66a821e66f38b748b0a502e5965cfaf936bfa121c98eabfc7"
+    },
+    {
+      "archive_path": "actual/sparse-dependency-check.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/sparse-dependency-check.json",
+      "bytes": 14151,
+      "sha256": "a054af1938474e99fdd1f72862715216ab6f1d21458bfa435f4131d7bfd8cb33"
+    },
+    {
+      "archive_path": "actual/summary.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/summary.json",
+      "bytes": 4071,
+      "sha256": "1b7fc2ea82a8561d8fce5c285d0ef3cf804236959d4366e778c0b701b9f28303"
+    },
+    {
+      "archive_path": "actual/tracked-status-after-import.txt",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/tracked-status-after-import.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "actual/tracked-status-after.txt",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/tracked-status-after.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "actual/tracked-status-before.txt",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/tracked-status-before.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "actual/xdg/dream_garden_props_regression/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/xdg/dream_garden_props_regression/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "bytes": 505,
+      "sha256": "bbfcbd97e786dad12bb49ebf8a088d2b7e0c6a1a834e413c018c0c8c52c5013f"
+    },
+    {
+      "archive_path": "actual/xdg/import/cache/godot/editor_doc_cache-4.6.res",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/xdg/import/cache/godot/editor_doc_cache-4.6.res",
+      "bytes": 3142772,
+      "sha256": "05cb7eb83dbbd2eb9758643607134740b3b821c5cf9d64688cd178751c5c1172"
+    },
+    {
+      "archive_path": "actual/xdg/import/config/godot/editor_settings-4.6.tres",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/xdg/import/config/godot/editor_settings-4.6.tres",
+      "bytes": 3374,
+      "sha256": "58fac221a3a9f430eda4d7d76948e8cf8240d821f0b654740b31ef56487d9f5f"
+    },
+    {
+      "archive_path": "actual/xdg/lumo_dream_ambience_regression/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f-actual/xdg/lumo_dream_ambience_regression/data/godot/app_userdata/Lumo 3D/logs/godot.log",
+      "bytes": 593,
+      "sha256": "0e06fbe26cc4fab495f303f614749b1164b2ea673a17c70ee7a38f2b18600709"
+    },
+    {
+      "archive_path": "preflight/generated-import-originals.tar.gz",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f/generated-import-originals.tar.gz",
+      "bytes": 45,
+      "sha256": "272adeccafe73e7009d51f2ec2be9871db5e0eb14239f483ea429be26c3c6402"
+    },
+    {
+      "archive_path": "preflight/original-orchestration-error.txt",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f/original-orchestration-error.txt",
+      "bytes": 128,
+      "sha256": "81aef2c3b8309cc2eb7130775930967e432e5dcd58565f4fba249ad33bcb9ac2"
+    },
+    {
+      "archive_path": "preflight/run-state.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f/run-state.json",
+      "bytes": 1025,
+      "sha256": "e35bb13ac647640e0d80f8ef7a901e50a06f3ce954f488095b9d00e9a8c79789"
+    },
+    {
+      "archive_path": "preflight/source-inventory-after.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f/source-inventory-after.json",
+      "bytes": 1134738,
+      "sha256": "ed6d9ff5345ca50115d7f2e9b069fc46d521471517552a81dba6731bad052a55"
+    },
+    {
+      "archive_path": "preflight/source-inventory-before.json",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f/source-inventory-before.json",
+      "bytes": 1134738,
+      "sha256": "ed6d9ff5345ca50115d7f2e9b069fc46d521471517552a81dba6731bad052a55"
+    },
+    {
+      "archive_path": "preflight/tracked-status-after.txt",
+      "original_path": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f/tracked-status-after.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "original_bytes_total": 10893310,
+  "payload_retention": "All selected regular evidence original bytes preserved; source checkout/generated cache payload not duplicated and recorded by complete hash inventories.",
+  "excluded_payloads": [
+    {
+      "path": "/tmp/lumo-root-recovery-0900/native-dream/.godot",
+      "bytes": 76986000,
+      "files": 1033,
+      "inventory": "actual/generated-cache-inventory.json",
+      "reason": "Reproducible import cache retained in checkout; no duplicate payload."
+    }
+  ],
+  "no_original_normalization": true
+}

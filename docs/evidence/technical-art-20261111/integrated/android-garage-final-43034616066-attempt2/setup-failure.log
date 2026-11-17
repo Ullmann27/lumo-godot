@@ -1,0 +1,125 @@
+﻿2026-11-11T14:06:05.0965579Z Current runner version: '2.338.2'
+const p = {owner: 'Ullmann27', repo: 'lumo-lernen', run_id: 43024454590};
+const run = (await github.request('GET /repos/{owner}/{repo}/actions/runs/{run_id}', p)).data;
+const jobs = await github.paginate('GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs', {...p, filter: 'latest', per_page: 100});
+const artifacts = await github.paginate('GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts', {...p, per_page: 100});
+for (const [name, data] of [['source-run', run], ['source-jobs', jobs], ['source-artifacts', artifacts]]) {
+}
+2026-11-11T14:06:48.0145209Z Loading local repository...                                                     
+2026-11-11T14:06:48.0150172Z [                                       ] 3% Loading local repository...        
+2026-11-11T14:06:48.0246155Z [                                       ] 3% Fetch remote repository...         
+2026-11-11T14:06:48.5015032Z [=                                      ] 3% Fetch remote repository...         
+2026-11-11T14:06:48.5924206Z [=                                      ] 4% Fetch remote repository...         
+2026-11-11T14:06:48.6320902Z [=                                      ] 5% Fetch remote repository...         
+2026-11-11T14:06:48.7108674Z [==                                     ] 5% Fetch remote repository...         
+2026-11-11T14:06:48.8035070Z [==                                     ] 6% Fetch remote repository...         
+2026-11-11T14:06:48.9034577Z [==                                     ] 7% Fetch remote repository...         
+2026-11-11T14:06:48.9063820Z [==                                     ] 7% Computing updates...               
+2026-11-11T14:06:48.9151283Z [===                                    ] 8% Computing updates...               
+2026-11-11T14:06:48.9225138Z [===                                    ] 10% Computing updates...              
+2026-11-11T14:06:48.9226198Z [=======================================] 100% Computing updates...             
+2026-11-11T14:06:48.9227286Z 
+2026-11-11T14:06:48.9616360Z ##[group]Run set -euo pipefail
+2026-11-11T14:06:48.9616803Z [36;1mset -euo pipefail[0m
+2026-11-11T14:06:48.9617189Z [36;1m# Run43032732151 could not resolve the runner's Azure Ubuntu mirror.[0m
+2026-11-11T14:06:48.9617685Z [36;1m# Change only that mirror hostname on this disposable runner, and[0m
+2026-11-11T14:06:48.9618195Z [36;1m# retain Ubuntu's existing signing keys and normal APT verification.[0m
+2026-11-11T14:06:48.9618796Z [36;1mif ! timeout 15s getent ahosts azure.archive.ubuntu.com > garage-proof/azure-mirror-dns.txt; then[0m
+2026-11-11T14:06:48.9619460Z [36;1m  timeout 15s getent ahosts archive.ubuntu.com > garage-proof/ubuntu-archive-dns.txt[0m
+2026-11-11T14:06:48.9620007Z [36;1m  sudo python3 - <<'PY' | tee garage-proof/apt-mirror-fallback.txt[0m
+2026-11-11T14:06:48.9620395Z [36;1mfrom pathlib import Path[0m
+2026-11-11T14:06:48.9620747Z [36;1msources = list(Path('/etc/apt').glob('apt-mirrors*.txt'))[0m
+2026-11-11T14:06:48.9621242Z [36;1msources += list(Path('/etc/apt/sources.list.d').glob('*.list'))[0m
+2026-11-11T14:06:48.9621711Z [36;1msources += list(Path('/etc/apt/sources.list.d').glob('*.sources'))[0m
+2026-11-11T14:06:48.9622137Z [36;1msources.append(Path('/etc/apt/sources.list'))[0m
+2026-11-11T14:06:48.9622458Z [36;1mchanged = [][0m
+2026-11-11T14:06:48.9622696Z [36;1mfor path in sources:[0m
+2026-11-11T14:06:48.9623443Z [36;1m    if not path.is_file():[0m
+2026-11-11T14:06:48.9623720Z [36;1m        continue[0m
+2026-11-11T14:06:48.9623985Z [36;1m    original = path.read_text()[0m
+2026-11-11T14:06:48.9624422Z [36;1m    updated = original.replace('http://azure.archive.ubuntu.com/ubuntu',[0m
+2026-11-11T14:06:48.9624906Z [36;1m                               'https://archive.ubuntu.com/ubuntu')[0m
+2026-11-11T14:06:48.9625375Z [36;1m    updated = updated.replace('https://azure.archive.ubuntu.com/ubuntu',[0m
+2026-11-11T14:06:48.9625842Z [36;1m                              'https://archive.ubuntu.com/ubuntu')[0m
+2026-11-11T14:06:48.9626192Z [36;1m    if updated != original:[0m
+2026-11-11T14:06:48.9626479Z [36;1m        path.write_text(updated)[0m
+2026-11-11T14:06:48.9626786Z [36;1m        changed.append(str(path))[0m
+2026-11-11T14:06:48.9627078Z [36;1mif not changed:[0m
+2026-11-11T14:06:48.9627492Z [36;1m    raise RuntimeError('Azure DNS failed but its known Ubuntu mirror entry was not found')[0m
+2026-11-11T14:06:48.9628138Z [36;1mprint('Official Ubuntu archive fallback; existing signing configuration preserved:')[0m
+2026-11-11T14:06:48.9628599Z [36;1mprint('\n'.join(changed))[0m
+2026-11-11T14:06:48.9628858Z [36;1mPY[0m
+2026-11-11T14:06:48.9629057Z [36;1mfi[0m
+2026-11-11T14:06:48.9629489Z [36;1msudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update -qq[0m
+2026-11-11T14:06:48.9630593Z [36;1msudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y xvfb mesa-utils libegl1 libgl1-mesa-dri libglx-mesa0 libpulse0 tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng[0m
+2026-11-11T14:06:48.9631590Z [36;1mtesseract --list-langs 2>&1 | tee garage-proof/tesseract-languages.txt[0m
+2026-11-11T14:06:48.9632070Z [36;1mgrep -Fxq 'deu' garage-proof/tesseract-languages.txt[0m
+2026-11-11T14:06:48.9632479Z [36;1mgrep -Fxq 'eng' garage-proof/tesseract-languages.txt[0m
+2026-11-11T14:06:48.9633102Z [36;1mpython3 -m venv .garage-venv[0m
+2026-11-11T14:06:48.9633638Z [36;1m.garage-venv/bin/python -m pip install --disable-pip-version-check uiautomator2==3.7.0 Pillow==12.3.0[0m
+2026-11-11T14:06:48.9653624Z shell: /usr/bin/bash -e {0}
+2026-11-11T14:06:48.9653886Z env:
+2026-11-11T14:06:48.9654205Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-11T14:06:48.9654718Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-11T14:06:48.9655133Z   ANDROID_HOME: /usr/local/lib/android/sdk
+2026-11-11T14:06:48.9655448Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+2026-11-11T14:06:48.9655916Z ##[endgroup]
+2026-11-11T14:07:08.7642360Z ##[error]Process completed with exit code 2.
+2026-11-11T14:07:08.7733306Z ##[group]Run actions/upload-artifact@v4
+2026-11-11T14:07:08.7733640Z with:
+2026-11-11T14:07:08.7733911Z   name: lumo-2015-existing-apk-garage-android-proof
+2026-11-11T14:07:08.7734263Z   path: garage-proof/
+2026-11-11T14:07:08.7734512Z   if-no-files-found: error
+2026-11-11T14:07:08.7734777Z   retention-days: 30
+2026-11-11T14:07:08.7735014Z   compression-level: 6
+2026-11-11T14:07:08.7735247Z   overwrite: false
+2026-11-11T14:07:08.7735483Z   include-hidden-files: false
+2026-11-11T14:07:08.7735728Z env:
+2026-11-11T14:07:08.7736038Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-11T14:07:08.7736540Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-11T14:07:08.7736959Z   ANDROID_HOME: /usr/local/lib/android/sdk
+2026-11-11T14:07:08.7737272Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+2026-11-11T14:07:08.7737562Z ##[endgroup]
+2026-11-11T14:07:08.9448918Z (node:2948) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-11T14:07:08.9450166Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-11T14:07:08.9521007Z With the provided path, there will be 10 files uploaded
+2026-11-11T14:07:08.9527148Z Artifact name is valid!
+2026-11-11T14:07:08.9528017Z Root directory input is valid!
+2026-11-11T14:07:09.2456273Z Beginning upload of artifact content to blob storage
+2026-11-11T14:07:09.2802473Z (node:2948) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-11T14:07:09.4245654Z Uploaded bytes 8480
+2026-11-11T14:07:09.4687597Z Finished uploading artifact content to blob storage!
+2026-11-11T14:07:09.4689364Z SHA256 digest of uploaded artifact zip is 8a59b7d5538b490ec42bb565866df056b0c15e12633d6d660b0df998ea116514
+2026-11-11T14:07:09.4690746Z Finalizing artifact upload
+2026-11-11T14:07:09.9394515Z Artifact lumo-2015-existing-apk-garage-android-proof.zip successfully finalized. Artifact ID 13861309860
+2026-11-11T14:07:09.9397020Z Artifact lumo-2015-existing-apk-garage-android-proof has been successfully uploaded! Final size is 8480 bytes. Artifact ID is 13861309860
+2026-11-11T14:07:09.9398717Z Artifact download URL: https://github.com/Ullmann27/lumo-lernen/actions/runs/43034616066/artifacts/13861309860
+2026-11-11T14:07:09.9609328Z Post job cleanup.
+2026-11-11T14:07:10.1040419Z (node:2960) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-11T14:07:10.1041705Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-11T14:07:10.1256238Z Post job cleanup.
+2026-11-11T14:07:10.2180520Z [command]/usr/bin/git version
+2026-11-11T14:07:10.2228770Z git version 2.56.0
+2026-11-11T14:07:10.2271670Z Temporarily overriding HOME='/home/runner/work/_temp/b484d558-9eef-4543-83c8-fffee76f6737' before making global git config changes
+2026-11-11T14:07:10.2273758Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-11T14:07:10.2276862Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/lumo-lernen/lumo-lernen/qa
+2026-11-11T14:07:10.2323763Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T14:07:10.2363891Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-11T14:07:10.2612595Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T14:07:10.2651103Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-11T14:07:10.2897160Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T14:07:10.2935089Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-11T14:07:10.3358595Z Post job cleanup.
+2026-11-11T14:07:10.4248340Z [command]/usr/bin/git version
+2026-11-11T14:07:10.4321067Z git version 2.56.0
+2026-11-11T14:07:10.4361521Z Temporarily overriding HOME='/home/runner/work/_temp/6dd59a15-7867-46ae-ac6a-ceffa62c21b7' before making global git config changes
+2026-11-11T14:07:10.4363673Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-11T14:07:10.4367900Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/lumo-lernen/lumo-lernen/source
+2026-11-11T14:07:10.4408094Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T14:07:10.4444060Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-11T14:07:10.4684988Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T14:07:10.4721694Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-11T14:07:10.4959392Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T14:07:10.4993406Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-11T14:07:10.5401071Z Cleaning up orphan processes
+2026-11-11T14:07:10.5775466Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/download-artifact@v4, actions/github-script@v7, actions/setup-java@v4, actions/upload-artifact@v4, android-actions/setup-android@v3. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -357,7 +357,7 @@ func _run() -> void:
 	await _settle()
 	await _resize(Vector2i(1280, 720))
 	for step in range(5):
-		await _tap(game.garage.next_button)
+		await _tap(game.garage.step_buttons[step + 1] if step < 4 else game.garage.next_button)
 	await _pause()
 	if not await _expect(
 		(

@@ -1,0 +1,30 @@
+{
+  "status": "ORIGINAL_ARTIFACT_AND_ARCHIVE_DIGEST_MATCH",
+  "source": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a",
+  "tree": "049c8a5be914b9babad0e9af8712ada777e5a077",
+  "run_id": 43452284466,
+  "archive_job_id": 131990514434,
+  "release_id": 444416762,
+  "tag": "integration-evidence-703a8f3ff7714d079223c7f0a03ab2400ba6a36a-14054081246",
+  "release_url": "https://github.com/Ullmann27/lumo-godot/releases/tag/integration-evidence-703a8f3ff7714d079223c7f0a03ab2400ba6a36a-14054081246",
+  "artifact_id": 14054081246,
+  "zip_asset_id": 744207951,
+  "zip_digest": "sha256:c3c0b856b3236c7288640cf27f390833b7cf9f2ac3b49ee32a4fff922ada898e",
+  "zip_bytes": 163275110,
+  "ci_public_redownload_cmp": "Present in original successful archive job; no APK step",
+  "original_artifact_zip_downloaded_locally": true,
+  "release_zip_downloaded_locally": false,
+  "log_lines": [
+    "2026-11-13T15:47:38.3803141Z native-evidence.zip: OK",
+    "2026-11-13T15:47:48.0069190Z https://github.com/Ullmann27/lumo-godot/releases/tag/integration-evidence-703a8f3ff7714d079223c7f0a03ab2400ba6a36a-14054081246"
+  ],
+  "raw_metadata": {
+    "workflow-run.json": "eec4305bbcb806d842a81563ec1d1643ae150a2d9947ac10a8f5010112a69fc6",
+    "workflow-jobs.json": "1e28daa1a92ccf54f2b7571a4a52113f61733f1796cc7a39b612f4028b921bbe",
+    "workflow-artifacts.json": "0cc361688f62800869b498e716596a5781b9eb4d2aab887db44b8a75d51d2c3e",
+    "archive-release.json": "c31fb2294d6297802d74288bd0fe9c012ddb69d078095ad7154819353113791d",
+    "archive-ref.json": "d0b2fb1d34f4c8a09544c3e775d95b59340784545349670ff1283d576b8ceb0a",
+    "archive-evidence-job-131990514434.log": "1a3a1f3ed031c2cffa63203902fe6babf6a449170d070bdc7d8fff01d87fc5d1"
+  },
+  "no_visual_or_android_approval_claim": true
+}

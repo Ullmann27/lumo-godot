@@ -1,0 +1,46 @@
+{
+  "phase": "before",
+  "test": "kart_full_field_regression",
+  "started_utc": "2026-11-13T15:06:34.569945+00:00",
+  "finished_utc": "2026-11-13T15:07:18.454711+00:00",
+  "elapsed_seconds": 43.885,
+  "command": [
+    "python3",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_full_field_regression/engine.log",
+    "--timeout",
+    "240",
+    "--required",
+    "[KartFullField] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_full_field_regression.gd"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "xdg": {
+    "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_full_field_regression/xdg-data",
+    "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_full_field_regression/xdg-config",
+    "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/before/kart_full_field_regression/xdg-cache",
+    "XDG_STATE_HOME": "/home/agent/.local/state",
+    "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+  },
+  "script_sha256": "c8a8b42a534605286a6537a3fdb22f4edacccee35c5bcd4028e077b4cce5fdf8",
+  "strict_runner_exit": 1,
+  "required_marker": "[KartFullField] PASS",
+  "marker_present": true,
+  "errors": [
+    "WARNING: ObjectDB instances leaked at exit (run with --verbose for details).",
+    "ERROR: 2 resources still in use at exit."
+  ],
+  "cleanup_lines": [],
+  "engine_log_sha256": "395bd5a5c8be75c31d7bd4802a9de415099c993711d3f9a899fd7910e9f1ba22",
+  "runner_log_sha256": "b7e9beaa8d06df8c308f069aa94708b48fe531163b60c0e51cc79083fc07ff53"
+}

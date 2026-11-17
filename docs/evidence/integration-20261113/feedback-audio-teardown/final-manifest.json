@@ -1,0 +1,81 @@
+{
+  "head": "e156356178760cb5f83f7c10bb07fc4c498100a9",
+  "path": "scripts/tests/kart_drive_feedback_regression.gd",
+  "before_sha256": "f289edce07d31f31176861ac004f3dd79fc10e5928a83d48dd40ba45c7646605",
+  "before_git_blob": "e57dd0978f2d0439abe639b4eca3af925d63e7bd",
+  "product_blob": "98f9f7d2b02fd7d7ada6086493f014f173c5de53",
+  "after_sha256": "c732b36daa773df5dc5d1afb3cdde4a9ceb46b054adfd427b7a566b1be58d8cc",
+  "after_git_blob": "7db094abd78b238bec48f08ca98e60fb9d7d6ed5",
+  "product_blob_unchanged": true,
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "diagnosis": {
+    "fixed_fps": 60,
+    "original_logic_checks": 51,
+    "raw_original_exit_code": 0,
+    "strict_original_gate": "FAIL: ERROR despite success marker",
+    "leaked_playbacks": 3,
+    "leaked_resource_pairs": [
+      "garage.ogg + OggPacketSequence",
+      "sonnenhafen.ogg + OggPacketSequence",
+      "finish.ogg + OggPacketSequence"
+    ],
+    "cause": "The SceneTree 0.5-second timer follows fixed simulation time; mixer-side playback retirement follows actual time."
+  },
+  "repair": {
+    "scope": "Only scripts/tests/kart_drive_feedback_regression.gd; no product, runner, filter, workflow, stage, commit or ref changes",
+    "wait": "Observe existing AudioStreamPlayer playbacks through WeakRef; wait for actual release with real 2000 ms deadline",
+    "checks_preserved": 51,
+    "new_teardown_check": 1
+  },
+  "verification": {
+    "strict_green_exit_code": 0,
+    "strict_green_checks": 52,
+    "tracked_playbacks": 3,
+    "release_elapsed_ms": 26,
+    "strict_green_error_lines": 0,
+    "negative_fixture_outside_repo": true,
+    "negative_held_playbacks": 1,
+    "negative_timeout_ms": 2000,
+    "negative_runner_exit_code": 1,
+    "negative_pass_marker_absent": true,
+    "git_diff_check": "PASS",
+    "renderer_repeat": "Still required in the new exact CI head"
+  },
+  "evidence_files": [
+    {
+      "path": "diagnostic-before.log",
+      "bytes": 15098,
+      "sha256": "8827efcdea53ef1b8045081053c26d811814a7d5e28b2c5b7801d44c70fcbd20"
+    },
+    {
+      "path": "diagnostic-before-fixed60.log",
+      "bytes": 17091,
+      "sha256": "000402c89ef134ddb5134e89902089224afe9e5207bc9749cad9f03e42077c7c"
+    },
+    {
+      "path": "green-fixed60.log",
+      "bytes": 15156,
+      "sha256": "d460a8cee5deb8f7a0add0db72b61c63226202f55aa6fb12bee1305d815a61ea"
+    },
+    {
+      "path": "negative-held.log",
+      "bytes": 1466,
+      "sha256": "4be3fc983b4f8c09d8b2899cb423af9f6ab7926c390da6896d9afb2b3612a912"
+    },
+    {
+      "path": "negative-runner.log",
+      "bytes": 1547,
+      "sha256": "fef31e8b0b95e859a9dd4e7e917ab52c14313aa1de9aba120bad4f3fb3b408ea"
+    },
+    {
+      "path": "retained-playback-negative.gd",
+      "bytes": 754,
+      "sha256": "72e98573681d44fe2d6e88f03c35b01c1b97b3c3c03e4dc12f38daf2d1046ef5"
+    },
+    {
+      "path": "feedback-audio-release.patch",
+      "bytes": 2097,
+      "sha256": "302d413c907b16b0a1c74020d9b4293174f1e3eaaaa785e93b69ec27116dc54e"
+    }
+  ]
+}

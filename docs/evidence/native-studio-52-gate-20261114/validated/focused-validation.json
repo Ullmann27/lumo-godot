@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "native_commit": "7e03f1113073e2f941b052028a649aa144eefe64",
+  "native_tree": "a79d41272a55b1bf1ffb82e656ea34556b3a0a83",
+  "status": "PASS_FOCUSED_SYNTHETIC_CONTRACTS_ONLY",
+  "tests": 41,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "reported_test_seconds": 109.394,
+  "wall_seconds": 109.5541782729997,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_studio_2020_rasters",
+    "test_nextgen_runner",
+    "test_safe_area_rasters"
+  ],
+  "execution": {
+    "path": "local-tests/focused-v1-execution.json",
+    "bytes": 910,
+    "sha256": "47946f4e0595366982af5dc43a09471b28724b742aec0572aecdb9a1e82aef20"
+  },
+  "original_log": {
+    "path": "local-tests/focused-v1.log",
+    "bytes": 7873,
+    "sha256": "4d0ad842aaaedebd154317225d86c8e0884f9bfbefaa4ca3eb66ff91fee76ced"
+  },
+  "source_before": {
+    "path": "published-7e03f111-before.json",
+    "bytes": 9237,
+    "sha256": "fe7189ac50ca5d23f5270c42e237955907016f28ec9c3cf55f7ddfc5ba2dbc7d"
+  },
+  "source_after": {
+    "path": "published-7e03f111-after.json",
+    "bytes": 9621,
+    "sha256": "30b2bcfeecae0114ddcdc479586751d70d174ed001c3216fa5536787bbceaeae"
+  },
+  "source_freeze": {
+    "path": "source-freeze-v2.json",
+    "bytes": 2934,
+    "sha256": "fb8d09a4474b6d130214d98ec5dd38640f763f9bfbcf4df2f7386e594f8bd546"
+  },
+  "scope": [
+    "52-mode shell orchestration with synthetic Godot/ffmpeg adapters",
+    "Unchanged previous 48 mode contracts and safe-area raster assertions",
+    "16 decoded synthetic raster fixtures tied to byte-exact original report structures",
+    "Read-only verification preserves all original bytes and manifests",
+    "Negative cases reject missing/changed/corrupt images, reports, source stamps and movie evidence"
+  ],
+  "not_claimed": [
+    "Godot/import execution",
+    "Actual rendered capture or movie",
+    "Android, physical-device FPS, end-to-end C4 game/persistence",
+    "Acceptance of subsequent producer acf51d3 source"
+  ]
+}

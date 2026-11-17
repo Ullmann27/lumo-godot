@@ -1,0 +1,119 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:20:19 | INFO: Starting glTF 2.0 export
+21:20:19 | INFO: Extracting primitive: ContinuousVault_Mesh.001
+21:20:19 | INFO: Primitives created: 6
+21:20:19 | INFO: Finished glTF 2.0 export in 0.282545804977417 s
+
+21:20:19 | INFO: Starting glTF 2.0 export
+21:20:19 | INFO: Extracting primitive: ContinuousVault_Mesh.002
+21:20:20 | INFO: Primitives created: 6
+21:20:20 | INFO: Finished glTF 2.0 export in 0.17649197578430176 s
+
+21:20:20 | INFO: Starting glTF 2.0 export
+21:20:20 | INFO: Extracting primitive: TunnelShellCollision_Mesh
+21:20:20 | INFO: Primitives created: 1
+21:20:20 | INFO: Finished glTF 2.0 export in 0.0045795440673828125 s
+
+LUMO_TRACK_MODULE learning_lab portal_entry 12012 6
+21:20:20 | INFO: Starting glTF 2.0 export
+21:20:20 | INFO: Extracting primitive: ContinuousVault_Mesh.004
+21:20:20 | INFO: Primitives created: 6
+21:20:20 | INFO: Finished glTF 2.0 export in 0.20774531364440918 s
+
+21:20:20 | INFO: Starting glTF 2.0 export
+21:20:20 | INFO: Extracting primitive: ContinuousVault_Mesh.005
+21:20:21 | INFO: Primitives created: 6
+21:20:21 | INFO: Finished glTF 2.0 export in 0.2248244285583496 s
+
+21:20:21 | INFO: Starting glTF 2.0 export
+21:20:21 | INFO: Extracting primitive: TunnelShellCollision_Mesh.001
+21:20:21 | INFO: Primitives created: 1
+21:20:21 | INFO: Finished glTF 2.0 export in 0.006908893585205078 s
+
+LUMO_TRACK_MODULE learning_lab portal_exit 12012 6
+21:20:21 | INFO: Starting glTF 2.0 export
+21:20:21 | INFO: Extracting primitive: ContinuousVault_Mesh.007
+21:20:21 | INFO: Primitives created: 5
+21:20:21 | INFO: Finished glTF 2.0 export in 0.21073484420776367 s
+
+21:20:21 | INFO: Starting glTF 2.0 export
+21:20:21 | INFO: Extracting primitive: ContinuousVault_Mesh.008
+21:20:22 | INFO: Primitives created: 5
+21:20:22 | INFO: Finished glTF 2.0 export in 0.2274618148803711 s
+
+21:20:22 | INFO: Starting glTF 2.0 export
+21:20:22 | INFO: Extracting primitive: TunnelShellCollision_Mesh.002
+21:20:22 | INFO: Primitives created: 1
+21:20:22 | INFO: Finished glTF 2.0 export in 0.006217241287231445 s
+
+LUMO_TRACK_MODULE learning_lab straight_12m 10556 5
+21:20:22 | INFO: Starting glTF 2.0 export
+21:20:22 | INFO: Extracting primitive: ContinuousVault_Mesh.010
+21:20:22 | INFO: Primitives created: 5
+21:20:22 | INFO: Finished glTF 2.0 export in 0.23122048377990723 s
+
+21:20:23 | INFO: Starting glTF 2.0 export
+21:20:23 | INFO: Extracting primitive: ContinuousVault_Mesh.011
+21:20:23 | INFO: Primitives created: 5
+21:20:23 | INFO: Finished glTF 2.0 export in 0.27722668647766113 s
+
+21:20:23 | INFO: Starting glTF 2.0 export
+21:20:23 | INFO: Extracting primitive: TunnelShellCollision_Mesh.003
+21:20:23 | INFO: Primitives created: 1
+21:20:23 | INFO: Finished glTF 2.0 export in 0.010403156280517578 s
+
+LUMO_TRACK_MODULE learning_lab curve_left_30 15556 5
+21:20:23 | INFO: Starting glTF 2.0 export
+21:20:23 | INFO: Extracting primitive: ContinuousVault_Mesh.013
+21:20:24 | INFO: Primitives created: 5
+21:20:24 | INFO: Finished glTF 2.0 export in 0.39089417457580566 s
+
+21:20:24 | INFO: Starting glTF 2.0 export
+21:20:24 | INFO: Extracting primitive: ContinuousVault_Mesh.014
+21:20:24 | INFO: Primitives created: 5
+21:20:24 | INFO: Finished glTF 2.0 export in 0.223982572555542 s
+
+21:20:24 | INFO: Starting glTF 2.0 export
+21:20:24 | INFO: Extracting primitive: TunnelShellCollision_Mesh.004
+21:20:24 | INFO: Primitives created: 1
+21:20:24 | INFO: Finished glTF 2.0 export in 0.011378288269042969 s
+
+LUMO_TRACK_MODULE learning_lab curve_right_30 15556 5
+21:20:25 | INFO: Starting glTF 2.0 export
+21:20:25 | INFO: Extracting primitive: ContinuousVault_Mesh.016
+21:20:25 | INFO: Primitives created: 5
+21:20:25 | INFO: Finished glTF 2.0 export in 0.2529876232147217 s
+
+21:20:25 | INFO: Starting glTF 2.0 export
+21:20:25 | INFO: Extracting primitive: ContinuousVault_Mesh.017
+21:20:26 | INFO: Primitives created: 5
+21:20:26 | INFO: Finished glTF 2.0 export in 0.33956408500671387 s
+
+21:20:26 | INFO: Starting glTF 2.0 export
+21:20:26 | INFO: Extracting primitive: TunnelShellCollision_Mesh.005
+21:20:26 | INFO: Primitives created: 1
+21:20:26 | INFO: Finished glTF 2.0 export in 0.010906457901000977 s
+
+LUMO_TRACK_MODULE learning_lab grade_down 10556 5
+21:20:26 | INFO: Starting glTF 2.0 export
+21:20:26 | INFO: Extracting primitive: ContinuousVault_Mesh.019
+21:20:26 | INFO: Primitives created: 5
+21:20:26 | INFO: Finished glTF 2.0 export in 0.23294973373413086 s
+
+21:20:27 | INFO: Starting glTF 2.0 export
+21:20:27 | INFO: Extracting primitive: ContinuousVault_Mesh.020
+21:20:27 | INFO: Primitives created: 5
+21:20:27 | INFO: Finished glTF 2.0 export in 0.28475308418273926 s
+
+21:20:27 | INFO: Starting glTF 2.0 export
+21:20:27 | INFO: Extracting primitive: TunnelShellCollision_Mesh.006
+21:20:27 | INFO: Primitives created: 1
+21:20:27 | INFO: Finished glTF 2.0 export in 0.020287513732910156 s
+
+LUMO_TRACK_MODULE learning_lab grade_up 10556 5
+Info: Packed 5 file(s)
+Info: Saved "learning_lab_tunnel_workshop.blend"
+LUMO_TRACK_THEME_DONE learning_lab
+Blender 4.3.2
+
+Blender quit

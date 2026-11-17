@@ -1,0 +1,74 @@
+[
+  {
+    "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "animation": "kart_seated",
+    "animation_position": 0.3,
+    "camera_transform": "[X: (-0.814955, 0.0, -0.579524), Y: (-0.12307, 0.97719, 0.173068), Z: (0.566305, 0.212364, -0.796367), O: (3.2, 2.2, -4.5)]",
+    "clean_tracked_source": true,
+    "draw_calls": 147,
+    "engine": "4.6.3-stable (official)",
+    "fov": 37.0,
+    "image": "garage-1280x720.png",
+    "physical_android_device": false,
+    "preview_resolution": "(1417, 553)",
+    "quality": "high",
+    "renderer": "gl_compatibility",
+    "resolution": [
+      1280,
+      720
+    ],
+    "seed": 2014,
+    "source_commit": "2d2288dced90b49e8df7a9427f3e5b8be62ba170",
+    "tracked_differences": "",
+    "visual_acceptance": "Manual reference review required; render success is not art approval",
+    "yaw": -0.25
+  },
+  {
+    "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "animation": "kart_seated",
+    "animation_position": 0.3,
+    "camera_transform": "[X: (-0.814955, 0.0, -0.579524), Y: (-0.12307, 0.97719, 0.173068), Z: (0.566305, 0.212364, -0.796367), O: (3.2, 2.2, -4.5)]",
+    "clean_tracked_source": true,
+    "draw_calls": 138,
+    "engine": "4.6.3-stable (official)",
+    "fov": 37.0,
+    "image": "garage-412x915.png",
+    "physical_android_device": false,
+    "preview_resolution": "(686, 375)",
+    "quality": "high",
+    "renderer": "gl_compatibility",
+    "resolution": [
+      412,
+      915
+    ],
+    "seed": 2014,
+    "source_commit": "2d2288dced90b49e8df7a9427f3e5b8be62ba170",
+    "tracked_differences": "",
+    "visual_acceptance": "Manual reference review required; render success is not art approval",
+    "yaw": -0.25
+  },
+  {
+    "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "animation": "kart_seated",
+    "animation_position": 0.3,
+    "camera_transform": "[X: (-0.814955, 0.0, -0.579524), Y: (-0.12307, 0.97719, 0.173068), Z: (0.566305, 0.212364, -0.796367), O: (3.2, 2.2, -4.5)]",
+    "clean_tracked_source": true,
+    "draw_calls": 150,
+    "engine": "4.6.3-stable (official)",
+    "fov": 37.0,
+    "image": "garage-690x829.png",
+    "physical_android_device": false,
+    "preview_resolution": "(1013, 300)",
+    "quality": "high",
+    "renderer": "gl_compatibility",
+    "resolution": [
+      690,
+      829
+    ],
+    "seed": 2014,
+    "source_commit": "2d2288dced90b49e8df7a9427f3e5b8be62ba170",
+    "tracked_differences": "",
+    "visual_acceptance": "Manual reference review required; render success is not art approval",
+    "yaw": -0.25
+  }
+]

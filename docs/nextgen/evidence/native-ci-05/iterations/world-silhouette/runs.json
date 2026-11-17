@@ -1,0 +1,27 @@
+[
+  {
+    "script": "learning_world_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_world_regression.gd"
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 21.482,
+    "minimum_free_bytes": 864632832,
+    "termination_reason": "",
+    "markers": [
+      "ERROR: [LearningWorld] FAIL both rows of quantity blocks are visually separated (412, 915): [P: (86.39053, 407.2934), S: (34.86105, 33.6554)] / [P: (86.39053, 439.2797), S: (34.86105, 33.6554)]",
+      "ERROR: [LearningWorld] FAIL both rows of quantity blocks are visually separated (690, 829): [P: (243.4053, 366.5837), S: (29.61052, 28.58649)] / [P: (243.4053, 393.7525), S: (29.61052, 28.58649)]",
+      "ERROR: [LearningWorld] FAIL both rows of quantity blocks are visually separated (2400, 1080): [P: (945.3186, 411.2774), S: (70.67712, 68.23279)] / [P: (945.3186, 476.1263), S: (70.67712, 68.23282)]",
+      "ERROR: [LearningWorld] FAIL checks=5351 failures=3"
+    ]
+  }
+]

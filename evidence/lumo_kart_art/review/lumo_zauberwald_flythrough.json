@@ -1,0 +1,19 @@
+{
+  "movie": "evidence/lumo_kart_art/review/lumo_zauberwald_flythrough.mp4",
+  "sha256": "5560551d7265bab700f7a2e6a69369cd07c0f266339dcf1c627c19b99b7498d2",
+  "bytes": 3093495,
+  "capture_receipt": "evidence/lumo_kart_art/review/tunnel_capture.json",
+  "capture_receipt_sha256": "ef58018504680e25015cda36c2aa51385e102bf5f6bd7d31a7e690b9784476e9",
+  "captured_frames": 96,
+  "encoded_frames": 96,
+  "width": 1200,
+  "height": 750,
+  "fps": "24/1",
+  "duration_seconds": 4.0,
+  "codec": "h264",
+  "pixel_format": "yuv420p",
+  "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "physical_android": false,
+  "runtime_fps_measurement": false,
+  "method": "Frame-by-frame capture of actual Godot rendering; encoded with FFmpeg, no generated concept imagery"
+}

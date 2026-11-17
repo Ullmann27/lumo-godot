@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "scope": "Single cover normal-only probe; no delivered asset or source modified",
+  "original": "assets/kart/production/tracks/zauberwald/straight_12m_terrain.glb",
+  "probe": "evidence/lumo_kart_art/tracks/normal_probe/zauberwald_straight_12m_flat_caps.glb",
+  "geometry_and_sockets_identical": true,
+  "geometry_signature": {
+    "triangles": 2132,
+    "triangle_positions_sha256": "070eb746e0796840aa7b84061a204f26d185485943a39dcdee1a02b4b89cbfe9",
+    "sockets": [
+      [
+        "in",
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "out",
+        [
+          0,
+          0,
+          -12
+        ],
+        null,
+        null,
+        null
+      ]
+    ]
+  },
+  "changes": [
+    {
+      "end_cap_triangles": 164,
+      "changed_smooth_flags": 164,
+      "before": {
+        "seam_side_corners": 492,
+        "mean_abs_longitudinal_normal": 0.7086804659385991,
+        "max_abs_longitudinal_normal": 0.9045345187187195
+      },
+      "after": {
+        "seam_side_corners": 492,
+        "mean_abs_longitudinal_normal": 0.003171792252032901,
+        "max_abs_longitudinal_normal": 0.030789390206336975
+      }
+    }
+  ]
+}

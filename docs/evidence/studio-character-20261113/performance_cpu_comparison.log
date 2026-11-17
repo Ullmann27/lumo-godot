@@ -1,0 +1,17 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] loaded stars:50 streak:0 letters:0
+[StudioCPU] walk actors=1 before_median/p95_us=6.0/9.0 after_median/p95_us=19.0/21.0 ratio=3.16666666666667
+[StudioCPU] platform actors=1 before_median/p95_us=12.0/18.0 after_median/p95_us=32.0/39.0 ratio=2.66666666666667
+[StudioCPU] walk actors=4 before_median/p95_us=24.0/27.0 after_median/p95_us=78.0/133.0 ratio=3.25
+[StudioCPU] platform actors=4 before_median/p95_us=47.0/88.0 after_median/p95_us=132.0/181.0 ratio=2.80851063829787
+[StudioCPU] walk actors=8 before_median/p95_us=49.0/73.0 after_median/p95_us=154.0/208.0 ratio=3.14285714285714
+[StudioCPU] platform actors=8 before_median/p95_us=92.0/150.0 after_median/p95_us=261.5/379.0 ratio=2.84239130434783
+[StudioCPU] PASS 1/4/8 original actors, 480 native timed ticks per path, no retained object/resource growth; GPU/physical device unmeasured
+[Perf] quality_profile:medium

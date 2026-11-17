@@ -1,0 +1,26 @@
+[
+  {
+    "source": "baseline",
+    "tool": "gdlint",
+    "exit_code": 1,
+    "files": 396
+  },
+  {
+    "source": "baseline",
+    "tool": "gdformat",
+    "exit_code": 1,
+    "files": 396
+  },
+  {
+    "source": "candidate",
+    "tool": "gdlint",
+    "exit_code": 1,
+    "files": 432
+  },
+  {
+    "source": "candidate",
+    "tool": "gdformat",
+    "exit_code": 1,
+    "files": 432
+  }
+]

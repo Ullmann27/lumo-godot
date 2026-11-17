@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "source-freeze.json",
+      "bytes": 14357,
+      "sha256": "cb3d4b733105ea767b044b22c57b50cbeb8143dd8692a1b111eb6ffafeeca4e3",
+      "source": "/tmp/native173-discovery-integration-bd071225-20261114/source-freeze.json"
+    },
+    {
+      "path": "handoff.json",
+      "bytes": 2035,
+      "sha256": "ecf51ff84a30d3b23eb219b79e8a82e61a57a0af89595e505de4c09ca3b1858a",
+      "source": "/tmp/native173-discovery-integration-bd071225-20261114/handoff.json"
+    },
+    {
+      "path": "integration-review.json",
+      "bytes": 4852,
+      "sha256": "37730d097cf238c3d7ae7b6bc45e71dc19bbf77add6c34c8a69e029f2eab6a25",
+      "source": "/tmp/native173-discovery-integration-bd071225-20261114/integration-review.json"
+    },
+    {
+      "path": "gate-contract.json",
+      "bytes": 4326,
+      "sha256": "fe98b9d3da7b57c90d0def9cc9f05b4e52af1dc8a7e60205b00aecf35af5f882",
+      "source": "/tmp/native173-discovery-integration-bd071225-20261114/gate-contract.json"
+    },
+    {
+      "path": "protected-base-files.json",
+      "bytes": 5976,
+      "sha256": "f72424236be8ec882c7e65b954d9fb99dd51604d951c0e4886d1591de6895dea",
+      "source": "/tmp/native173-discovery-integration-bd071225-20261114/protected-base-files.json"
+    },
+    {
+      "path": "native173-frozen-source-originals.tar.gz",
+      "bytes": 423937,
+      "sha256": "6a34189a96fe16317e29e868e419c1ec55b6d270976735b4e87c6679fc352033",
+      "source": "/tmp/native173-discovery-integration-bd071225-20261114",
+      "members": 91,
+      "original_manifest_sha256": "dc29df7738a442d1d089c1ca26dd268e66030efd297dd81074fdc16e328c88be",
+      "all_members_read_back_equal": true
+    },
+    {
+      "path": "ambience-independent-review-originals.tar.gz",
+      "bytes": 3869,
+      "sha256": "62409c8fd575b11e2ade777f135937bb2cb24150ef7bc7fcfffd5636431767dd",
+      "source": "/tmp/native173-ambience-independent-review-20261114",
+      "members": 3,
+      "original_manifest_sha256": "4556847658dc4476808e6cdd2fcf6c70c79b128be61020f1e980c716c3c5a74f",
+      "all_members_read_back_equal": true
+    }
+  ]
+}

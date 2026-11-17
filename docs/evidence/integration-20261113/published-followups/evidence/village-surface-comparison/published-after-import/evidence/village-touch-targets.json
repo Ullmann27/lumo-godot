@@ -1,0 +1,219 @@
+{
+	"checks": 125,
+	"failures": [
+		"Real horizontal drags expose Fürsorgehaus\n8 Holz, 8 Stein, 6 Münzen",
+		"Real horizontal drags expose Fürsorgehaus\n8 Holz, 8 Stein, 6 Münzen",
+		"Real horizontal drags expose Kapitel",
+		"Real horizontal drags expose Fürsorgehaus\n8 Holz, 8 Stein, 6 Münzen",
+		"An already open village dialog remains bounded after orientation and density change",
+		"Real horizontal drags expose Fürsorgehaus\n8 Holz, 8 Stein, 6 Münzen",
+		"Real horizontal drags expose Stadtkasse"
+	],
+	"scope": "Production controls, real InputEvents and explicit density fixtures; not physical Android or frame-rate evidence",
+	"targets": [
+		{
+			"density": 1.0,
+			"dp": [
+				148.0,
+				56.0
+			],
+			"fully_exposed_required": true,
+			"label": "next village day",
+			"physical_size": [
+				148.0,
+				56.0
+			],
+			"surface": [
+				1280,
+				720
+			]
+		},
+		{
+			"density": 1.0,
+			"dp": [
+				148.0,
+				56.0
+			],
+			"fully_exposed_required": true,
+			"label": "next village day",
+			"physical_size": [
+				148.0,
+				56.0
+			],
+			"surface": [
+				412,
+				915
+			]
+		},
+		{
+			"density": 2.25,
+			"dp": [
+				148.017028808594,
+				56.0231666564941
+			],
+			"fully_exposed_required": true,
+			"label": "next village day",
+			"physical_size": [
+				333.038330078125,
+				126.052124023438
+			],
+			"surface": [
+				2176,
+				1812
+			]
+		},
+		{
+			"density": 2.25,
+			"dp": [
+				136.015625,
+				48.0198554992676
+			],
+			"fully_exposed_required": true,
+			"label": "toolbar Tilda · Lieferung",
+			"physical_size": [
+				306.03515625,
+				108.044677734375
+			],
+			"surface": [
+				2176,
+				1812
+			]
+		},
+		{
+			"density": 2.25,
+			"dp": [
+				500.057403564453,
+				48.0198707580566
+			],
+			"fully_exposed_required": true,
+			"label": "close at dialog opening",
+			"physical_size": [
+				1125.12915039062,
+				108.044708251953
+			],
+			"surface": [
+				2176,
+				1812
+			]
+		},
+		{
+			"density": 2.25,
+			"dp": [
+				500.057403564453,
+				48.0198707580566
+			],
+			"fully_exposed_required": false,
+			"label": "dialog choice Schließen",
+			"physical_size": [
+				1125.12915039062,
+				108.044708251953
+			],
+			"surface": [
+				2176,
+				1812
+			]
+		},
+		{
+			"density": 2.25,
+			"dp": [
+				500.057403564453,
+				68.0281600952148
+			],
+			"fully_exposed_required": false,
+			"label": "dialog choice Karottenkiste\n4 Münzen → 12 Essen",
+			"physical_size": [
+				1125.12915039062,
+				153.063354492188
+			],
+			"surface": [
+				2176,
+				1812
+			]
+		},
+		{
+			"density": 2.25,
+			"dp": [
+				500.057403564453,
+				68.0281600952148
+			],
+			"fully_exposed_required": false,
+			"label": "dialog choice Baustoffwagen\n6 Münzen → 8 Holz, 6 Stein",
+			"physical_size": [
+				1125.12915039062,
+				153.063354492188
+			],
+			"surface": [
+				2176,
+				1812
+			]
+		},
+		{
+			"density": 2.25,
+			"dp": [
+				500.057403564453,
+				68.0281600952148
+			],
+			"fully_exposed_required": false,
+			"label": "dialog choice Kornwagen\n3 Münzen → 9 Korn",
+			"physical_size": [
+				1125.12915039062,
+				153.063354492188
+			],
+			"surface": [
+				2176,
+				1812
+			]
+		},
+		{
+			"density": 2.25,
+			"dp": [
+				500.057403564453,
+				48.0198707580566
+			],
+			"fully_exposed_required": true,
+			"label": "close after actual dialog scrolling",
+			"physical_size": [
+				1125.12915039062,
+				108.044708251953
+			],
+			"surface": [
+				2176,
+				1812
+			]
+		},
+		{
+			"density": 1.0,
+			"dp": [
+				500.0,
+				48.0
+			],
+			"fully_exposed_required": true,
+			"label": "close after live orientation and density change",
+			"physical_size": [
+				500.0,
+				48.0
+			],
+			"surface": [
+				640,
+				360
+			]
+		},
+		{
+			"density": 1.0,
+			"dp": [
+				148.0,
+				56.0
+			],
+			"fully_exposed_required": true,
+			"label": "next village day",
+			"physical_size": [
+				148.0,
+				56.0
+			],
+			"surface": [
+				640,
+				360
+			]
+		}
+	]
+}

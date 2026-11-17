@@ -1,0 +1,119 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:12:08 | INFO: Starting glTF 2.0 export
+21:12:08 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.001
+21:12:08 | INFO: Primitives created: 5
+21:12:08 | INFO: Finished glTF 2.0 export in 0.42240357398986816 s
+
+21:12:08 | INFO: Starting glTF 2.0 export
+21:12:08 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.002
+21:12:09 | INFO: Primitives created: 5
+21:12:09 | INFO: Finished glTF 2.0 export in 0.5872702598571777 s
+
+21:12:09 | INFO: Starting glTF 2.0 export
+21:12:09 | INFO: Extracting primitive: TunnelShellCollision_Mesh
+21:12:09 | INFO: Primitives created: 1
+21:12:09 | INFO: Finished glTF 2.0 export in 0.01630091667175293 s
+
+LUMO_TRACK_MODULE winter_sprint portal_entry 4304 5
+21:12:09 | INFO: Starting glTF 2.0 export
+21:12:09 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.004
+21:12:10 | INFO: Primitives created: 5
+21:12:10 | INFO: Finished glTF 2.0 export in 0.5072031021118164 s
+
+21:12:10 | INFO: Starting glTF 2.0 export
+21:12:10 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.005
+21:12:10 | INFO: Primitives created: 5
+21:12:10 | INFO: Finished glTF 2.0 export in 0.4127674102783203 s
+
+21:12:10 | INFO: Starting glTF 2.0 export
+21:12:10 | INFO: Extracting primitive: TunnelShellCollision_Mesh.001
+21:12:10 | INFO: Primitives created: 1
+21:12:10 | INFO: Finished glTF 2.0 export in 0.014312744140625 s
+
+LUMO_TRACK_MODULE winter_sprint portal_exit 4304 5
+21:12:11 | INFO: Starting glTF 2.0 export
+21:12:11 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.007
+21:12:11 | INFO: Primitives created: 5
+21:12:11 | INFO: Finished glTF 2.0 export in 0.4530057907104492 s
+
+21:12:11 | INFO: Starting glTF 2.0 export
+21:12:11 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.008
+21:12:12 | INFO: Primitives created: 5
+21:12:12 | INFO: Finished glTF 2.0 export in 0.5478017330169678 s
+
+21:12:12 | INFO: Starting glTF 2.0 export
+21:12:12 | INFO: Extracting primitive: TunnelShellCollision_Mesh.002
+21:12:12 | INFO: Primitives created: 1
+21:12:12 | INFO: Finished glTF 2.0 export in 0.008948564529418945 s
+
+LUMO_TRACK_MODULE winter_sprint straight_12m 6788 5
+21:12:13 | INFO: Starting glTF 2.0 export
+21:12:13 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.010
+21:12:13 | INFO: Primitives created: 5
+21:12:13 | INFO: Finished glTF 2.0 export in 0.4354212284088135 s
+
+21:12:13 | INFO: Starting glTF 2.0 export
+21:12:14 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.011
+21:12:14 | INFO: Primitives created: 5
+21:12:14 | INFO: Finished glTF 2.0 export in 0.4665045738220215 s
+
+21:12:14 | INFO: Starting glTF 2.0 export
+21:12:14 | INFO: Extracting primitive: TunnelShellCollision_Mesh.003
+21:12:14 | INFO: Primitives created: 1
+21:12:14 | INFO: Finished glTF 2.0 export in 0.026954174041748047 s
+
+LUMO_TRACK_MODULE winter_sprint curve_left_30 9904 5
+21:12:15 | INFO: Starting glTF 2.0 export
+21:12:15 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.013
+21:12:15 | INFO: Primitives created: 5
+21:12:15 | INFO: Finished glTF 2.0 export in 0.4677915573120117 s
+
+21:12:16 | INFO: Starting glTF 2.0 export
+21:12:16 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.014
+21:12:16 | INFO: Primitives created: 5
+21:12:16 | INFO: Finished glTF 2.0 export in 0.6237921714782715 s
+
+21:12:17 | INFO: Starting glTF 2.0 export
+21:12:17 | INFO: Extracting primitive: TunnelShellCollision_Mesh.004
+21:12:17 | INFO: Primitives created: 1
+21:12:17 | INFO: Finished glTF 2.0 export in 0.027815580368041992 s
+
+LUMO_TRACK_MODULE winter_sprint curve_right_30 9904 5
+21:12:17 | INFO: Starting glTF 2.0 export
+21:12:17 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.016
+21:12:18 | INFO: Primitives created: 5
+21:12:18 | INFO: Finished glTF 2.0 export in 0.953005313873291 s
+
+21:12:19 | INFO: Starting glTF 2.0 export
+21:12:19 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.017
+21:12:20 | INFO: Primitives created: 5
+21:12:20 | INFO: Finished glTF 2.0 export in 0.6884257793426514 s
+
+21:12:20 | INFO: Starting glTF 2.0 export
+21:12:20 | INFO: Extracting primitive: TunnelShellCollision_Mesh.005
+21:12:20 | INFO: Primitives created: 1
+21:12:20 | INFO: Finished glTF 2.0 export in 0.06059622764587402 s
+
+LUMO_TRACK_MODULE winter_sprint grade_down 6788 5
+21:12:21 | INFO: Starting glTF 2.0 export
+21:12:21 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.019
+21:12:22 | INFO: Primitives created: 5
+21:12:22 | INFO: Finished glTF 2.0 export in 0.6006102561950684 s
+
+21:12:22 | INFO: Starting glTF 2.0 export
+21:12:23 | INFO: Extracting primitive: CeilingIce_0_-2_Mesh.020
+21:12:23 | INFO: Primitives created: 5
+21:12:23 | INFO: Finished glTF 2.0 export in 0.6091785430908203 s
+
+21:12:24 | INFO: Starting glTF 2.0 export
+21:12:24 | INFO: Extracting primitive: TunnelShellCollision_Mesh.006
+21:12:24 | INFO: Primitives created: 1
+21:12:24 | INFO: Finished glTF 2.0 export in 0.05992412567138672 s
+
+LUMO_TRACK_MODULE winter_sprint grade_up 6788 5
+Info: Packed 5 file(s)
+Info: Saved "winter_sprint_tunnel_workshop.blend"
+LUMO_TRACK_THEME_DONE winter_sprint
+Blender 4.3.2
+
+Blender quit

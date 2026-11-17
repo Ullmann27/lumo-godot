@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "scope": "Targeted runtime identity; not a full0e261 checkout gate, original PNG acceptance, Android/device evidence, or Play approval",
+  "baseline_commit": "504c8ba70d02702cbccc370d0d96c36a292c5d27",
+  "baseline_tree": "05ba53c02321da069007d5c4b045622f06cc9175",
+  "two_file_checkpoint_commit": "a8e730ee8f9a9943ebd8b2d55544cc63c27af72c",
+  "two_file_checkpoint_tree": "37396c7231155a17467cb59f13b98b2387cb6be9",
+  "current_upstream_commit": "0e26153f0e58cc05739e72923b4c563a4cf380b8",
+  "current_upstream_tree": "5b5992487e60ae805d708965f1500954c6b0556d",
+  "current_upstream_parent": "504c8ba70d02702cbccc370d0d96c36a292c5d27",
+  "engine_version": "4.6.3.stable.official.7d41c59c4",
+  "sources": {
+    "scripts/creative/treasure_world.gd": {
+      "baseline_blob": "fdddd40fdf9958b7bc0bff50b75ccd4e8a2458b8",
+      "baseline_sha256": "ce7c7df90f85604f912ff1afc46077935053e883359db47c3f9e9d7dcc4fe65d",
+      "green_and_current_upstream_blob": "aae80484834823c8cf063df6bfb2607313f39ef7",
+      "green_and_current_upstream_sha256": "e68fc85498b76fb7b482417a1bf6b64410a53d2f018fec7771e263ea60fa5447"
+    },
+    "scripts/tests/treasure_title_contrast_regression.gd": {
+      "red_green_and_current_upstream_blob": "73939c37e38bdbaca77220f79227e3dcde26e59c",
+      "red_green_and_current_upstream_sha256": "ea6087ef56a96d585382f4228661d753121152aa249c4a5afdc99d2e946941ea"
+    }
+  },
+  "headless_red": {
+    "exit_code": 1,
+    "checks": 3221,
+    "failures": 40
+  },
+  "headless_green": {
+    "exit_code": 0,
+    "checks": 3341,
+    "failures": 0
+  },
+  "x11_default": {
+    "godot_exit_code": -9,
+    "wrapper_exit_code": 247,
+    "original_png_count": 0,
+    "timed_out": false
+  },
+  "x11_threads2": {
+    "godot_exit_code": -9,
+    "wrapper_exit_code": 247,
+    "original_png_count": 0,
+    "timed_out": false,
+    "LP_NUM_THREADS": "2",
+    "max_child_rss_kib": 924216
+  },
+  "physical_android_tested": false,
+  "play_acceptance": false,
+  "this_run_full_52_actual_engine_modes_passed": false,
+  "five_local_original_pngs_available": false
+}

@@ -1,0 +1,8 @@
+{
+  "before_commit": "0b93d806a47df4a0b4aca02461b7dcc5210ee4c8",
+  "before_presenter_sha256": "028b920e1ba39deac98805c7d0dea21bad381def26abb435d50d61d8baf87234",
+  "fixed_presenter_sha256": "4f27104653a2c45b87ad778a915704f19b49793598e6b26ebe94b8fb1bebd6c9",
+  "identical_probe_sha256": "e110bd0c372f9df35fffce77ac778e3be26248ed0db4f411e53a90e1ae4aad42",
+  "before_exit_code": 1,
+  "restored_fixed_sha256": "4f27104653a2c45b87ad778a915704f19b49793598e6b26ebe94b8fb1bebd6c9"
+}

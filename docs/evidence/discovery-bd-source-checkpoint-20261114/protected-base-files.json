@@ -1,0 +1,171 @@
+{
+  "schema": 1,
+  "source": {
+    "sha": "bd0712259bb64908a5649ee1999638826c9eb597",
+    "tree": "2eb628d3e3a327ee8985385130c96168db7aa852"
+  },
+  "files": [
+    {
+      "path": "tools/validate_nextgen.sh",
+      "mode": "100755",
+      "git_blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+      "in_selected_patch": false,
+      "producer_blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946"
+    },
+    {
+      "path": "tools/verify_studio_2020_rasters.py",
+      "mode": "100644",
+      "git_blob": "b60c3360730f0db73f91324cbaed3a8806fd141e",
+      "in_selected_patch": false,
+      "producer_blob": "b60c3360730f0db73f91324cbaed3a8806fd141e"
+    },
+    {
+      "path": "tools/tests/test_studio_2020_rasters.py",
+      "mode": "100644",
+      "git_blob": "8f8310c66e6477680996a5fabd407e53ec0d9e2b",
+      "in_selected_patch": false,
+      "producer_blob": "575c3ab5de57ec614684263fa594ea76fe8b8edc"
+    },
+    {
+      "path": "tools/validate_dream_connections.sh",
+      "mode": "100755",
+      "git_blob": "834ea912003f5e27a271139646a857601baea905",
+      "in_selected_patch": false,
+      "producer_blob": null
+    },
+    {
+      "path": "tools/verify_dream_rasters.py",
+      "mode": "100755",
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5",
+      "in_selected_patch": false,
+      "producer_blob": null
+    },
+    {
+      "path": "tools/tests/test_dream_rasters.py",
+      "mode": "100644",
+      "git_blob": "0af63932d9f71fd3f1c1657f6aaaba46a019a2c0",
+      "in_selected_patch": false,
+      "producer_blob": null
+    },
+    {
+      "path": "scripts/tests/connect_four_return_regression.gd",
+      "mode": "100644",
+      "git_blob": "1d7a4cbd0f3b0d5a21ddeaf218bf27eadfe1f0bb",
+      "in_selected_patch": false,
+      "producer_blob": "1d7a4cbd0f3b0d5a21ddeaf218bf27eadfe1f0bb"
+    },
+    {
+      "path": "scripts/games/connect_four/connect_four_table.gd",
+      "mode": "100644",
+      "git_blob": "f2ae17e7edf8ac1b2d0d72a0d477d7e1459b1458",
+      "in_selected_patch": false,
+      "producer_blob": "f2ae17e7edf8ac1b2d0d72a0d477d7e1459b1458"
+    },
+    {
+      "path": "scripts/tests/treasure_wisp_regression.gd",
+      "mode": "100644",
+      "git_blob": "7f256c202defeeba47c8c96a577065ee2eda16c1",
+      "in_selected_patch": false,
+      "producer_blob": "67927a6f2147658d13e60cacdbbd24bf717a0c1d"
+    },
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "mode": "100644",
+      "git_blob": "703873a3b0fbe7e589c81bf9695fac5ecf43cd63",
+      "in_selected_patch": false,
+      "producer_blob": "703873a3b0fbe7e589c81bf9695fac5ecf43cd63"
+    },
+    {
+      "path": "scripts/tests/treasure_title_contrast_regression.gd",
+      "mode": "100644",
+      "git_blob": "73939c37e38bdbaca77220f79227e3dcde26e59c",
+      "in_selected_patch": false,
+      "producer_blob": "73939c37e38bdbaca77220f79227e3dcde26e59c"
+    },
+    {
+      "path": "scripts/learning/learning_world.gd",
+      "mode": "100644",
+      "git_blob": "c3b1bc8c73cd764724464d8d2fe0413bdba62a96",
+      "in_selected_patch": false,
+      "producer_blob": "c3b1bc8c73cd764724464d8d2fe0413bdba62a96"
+    },
+    {
+      "path": "scripts/learning/learning_atelier.gd",
+      "mode": "100644",
+      "git_blob": "6bca8ad6d91e9e4378104a9afef4dc8b9ebf54a9",
+      "in_selected_patch": false,
+      "producer_blob": "6bca8ad6d91e9e4378104a9afef4dc8b9ebf54a9"
+    },
+    {
+      "path": "scripts/learning/lumo_dream_props.gd",
+      "mode": "100644",
+      "git_blob": "e042f4295acfb2e6fa7d95a4789ff149383d77af",
+      "in_selected_patch": false,
+      "producer_blob": "e042f4295acfb2e6fa7d95a4789ff149383d77af"
+    },
+    {
+      "path": "scripts/systems/render/lumo_dream_ambience.gd",
+      "mode": "100644",
+      "git_blob": "faabc7aeee73c18cf5fa8783dfc77c4e67a2bc33",
+      "in_selected_patch": false,
+      "producer_blob": "faabc7aeee73c18cf5fa8783dfc77c4e67a2bc33"
+    },
+    {
+      "path": "scripts/ui/mobile_safe_area.gd",
+      "mode": "100644",
+      "git_blob": "6e65b507b1503809cce5c2fc5f9852ccbdb5810f",
+      "in_selected_patch": false,
+      "producer_blob": "6e65b507b1503809cce5c2fc5f9852ccbdb5810f"
+    },
+    {
+      "path": "scripts/tests/cards_safe_area_regression.gd",
+      "mode": "100644",
+      "git_blob": "6861d4ac4d14cbd94e33a006293994a583ec2140",
+      "in_selected_patch": false,
+      "producer_blob": "6861d4ac4d14cbd94e33a006293994a583ec2140"
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "mode": "100644",
+      "git_blob": "61ded805fdbc70c3499814b4e8f74214079fc96c",
+      "in_selected_patch": false,
+      "producer_blob": "61ded805fdbc70c3499814b4e8f74214079fc96c"
+    },
+    {
+      "path": "scripts/app/scene_router.gd",
+      "mode": "100644",
+      "git_blob": "0e28e5c797af076d2a2410143e42605982e8d1d5",
+      "in_selected_patch": false,
+      "producer_blob": "0e28e5c797af076d2a2410143e42605982e8d1d5"
+    },
+    {
+      "path": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+      "mode": "100644",
+      "git_blob": "4d18f240a34a5aa6320ecd61c0ab0fa719c0b0ad",
+      "in_selected_patch": false,
+      "producer_blob": "4d18f240a34a5aa6320ecd61c0ab0fa719c0b0ad"
+    },
+    {
+      "path": "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb",
+      "mode": "100644",
+      "git_blob": "53cb01bfbd23a2962da5428a08b8aee313d5e152",
+      "in_selected_patch": false,
+      "producer_blob": "53cb01bfbd23a2962da5428a08b8aee313d5e152"
+    },
+    {
+      "path": "assets/dream_garden/dream_blossom.glb",
+      "mode": "100644",
+      "git_blob": "30bcaa17a7a7d86bc2124823cbd30428aedb0760",
+      "in_selected_patch": false,
+      "producer_blob": "30bcaa17a7a7d86bc2124823cbd30428aedb0760"
+    },
+    {
+      "path": "assets/dream_garden/dream_storybook.glb",
+      "mode": "100644",
+      "git_blob": "d11aac2c5e33d58563ae6707ace16c9c67b59291",
+      "in_selected_patch": false,
+      "producer_blob": "d11aac2c5e33d58563ae6707ace16c9c67b59291"
+    }
+  ],
+  "unchanged_in_proposed_patch": true
+}

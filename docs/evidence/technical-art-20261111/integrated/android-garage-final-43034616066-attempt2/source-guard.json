@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "source": "2718f405e69c193d0121c6f6447fe53769d7c803",
+  "source_run": 43024454590,
+  "build_job": 130535492985,
+  "artifact_id": 13858046311,
+  "artifact_digest": "sha256:f45fbeee373a339654d35d395065055aa9f1c2e4156697f9926a1f4706625d2a",
+  "scope": "Fixed successful build identity; not a runtime acceptance result"
+}

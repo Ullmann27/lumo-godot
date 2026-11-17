@@ -1,0 +1,209 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] loaded stars:50 streak:0 letters:0
+[Perf] quality_profile:medium
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_ten token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_ten token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_ten token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_ten token=4 target=12 placed=5 complete=true
+[LearningWorld] move kind=syllables token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=syllables token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=syllables token=2 target=2 placed=3 complete=true
+ERROR: [LearningWorld] FAIL general plant introduction has a neutral title
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/learning_world_regression.gd:37)
+       [1] _run (res://scripts/tests/learning_world_regression.gd:485)
+       [2] _settle (res://scripts/tests/learning_world_regression.gd:42)
+ERROR: [LearningWorld] FAIL water explanation clears a previously selected plant-part title
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/learning_world_regression.gd:37)
+       [1] _run (res://scripts/tests/learning_world_regression.gd:488)
+       [2] _tap_learning_button (res://scripts/tests/learning_world_regression.gd:62)
+       [3] _settle (res://scripts/tests/learning_world_regression.gd:42)
+ERROR: [LearningWorld] FAIL light explanation clears a previously selected plant-part title
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/learning_world_regression.gd:37)
+       [1] _run (res://scripts/tests/learning_world_regression.gd:498)
+       [2] _tap_learning_button (res://scripts/tests/learning_world_regression.gd:62)
+       [3] _settle (res://scripts/tests/learning_world_regression.gd:42)
+ERROR: [LearningWorld] FAIL selected plant title matches its actual explanation: Wurzel
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/learning_world_regression.gd:37)
+       [1] _run (res://scripts/tests/learning_world_regression.gd:512)
+       [2] _tap_learning_button (res://scripts/tests/learning_world_regression.gd:62)
+       [3] _settle (res://scripts/tests/learning_world_regression.gd:42)
+ERROR: [LearningWorld] FAIL selected plant title matches its actual explanation: Stängel
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/learning_world_regression.gd:37)
+       [1] _run (res://scripts/tests/learning_world_regression.gd:512)
+       [2] _tap_learning_button (res://scripts/tests/learning_world_regression.gd:62)
+       [3] _settle (res://scripts/tests/learning_world_regression.gd:42)
+ERROR: [LearningWorld] FAIL selected plant title matches its actual explanation: Blüte
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/learning_world_regression.gd:37)
+       [1] _run (res://scripts/tests/learning_world_regression.gd:512)
+       [2] _tap_learning_button (res://scripts/tests/learning_world_regression.gd:62)
+       [3] _settle (res://scripts/tests/learning_world_regression.gd:42)
+ERROR: Object is locked and can't be freed.
+   at: callp (core/object/object.cpp:912)
+   GDScript backtrace (most recent call first):
+       [0] _rebuild_activity (res://scripts/learning/learning_world.gd:388)
+       [1] restart (res://scripts/learning/learning_world.gd:1096)
+SCRIPT ERROR: Attempted to free a locked object (calling or emitting).
+          at: _rebuild_activity (res://scripts/learning/learning_world.gd:388)
+          GDScript backtrace (most recent call first):
+              [0] _rebuild_activity (res://scripts/learning/learning_world.gd:388)
+              [1] restart (res://scripts/learning/learning_world.gd:1096)
+SCRIPT ERROR: Invalid assignment of property or key 'disabled' with value of type 'bool' on a base object of type 'previously freed'.
+          at: _refresh (res://scripts/learning/learning_world.gd:749)
+          GDScript backtrace (most recent call first):
+              [0] _refresh (res://scripts/learning/learning_world.gd:749)
+              [1] restart (res://scripts/learning/learning_world.gd:1097)
+ERROR: [LearningWorld] FAIL restart restores the general plant title and introduction
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/learning_world_regression.gd:37)
+       [1] _run (res://scripts/tests/learning_world_regression.gd:520)
+       [2] _tap_learning_button (res://scripts/tests/learning_world_regression.gd:62)
+       [3] _settle (res://scripts/tests/learning_world_regression.gd:42)
+SCRIPT ERROR: Invalid access to property or key 'position' on a base object of type 'previously freed'.
+          at: _arrange_activity (res://scripts/learning/learning_world.gd:868)
+          GDScript backtrace (most recent call first):
+              [0] _arrange_activity (res://scripts/learning/learning_world.gd:868)
+              [1] _layout (res://scripts/learning/learning_world.gd:793)
+              [2] _exit_tree (res://scripts/learning/learning_world.gd:1161)
+[LearningWorld] move kind=addition token=0 target=4 placed=1 complete=false
+[LearningWorld] move kind=addition token=1 target=5 placed=2 complete=false
+[LearningWorld] move kind=addition token=2 target=6 placed=3 complete=true
+[LearningWorld] move kind=subtract_ten token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=subtract_ten token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=subtract_ten token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=subtract_ten token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=subtract_ten token=4 target=4 placed=5 complete=true
+[LearningWorld] move kind=equal_groups token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=equal_groups token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=equal_groups token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=equal_groups token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=equal_groups token=4 target=4 placed=5 complete=false
+[LearningWorld] move kind=equal_groups token=5 target=5 placed=6 complete=false
+[LearningWorld] move kind=equal_groups token=6 target=6 placed=7 complete=false
+[LearningWorld] move kind=equal_groups token=7 target=7 placed=8 complete=false
+[LearningWorld] move kind=equal_groups token=8 target=8 placed=9 complete=false
+[LearningWorld] move kind=equal_groups token=9 target=9 placed=10 complete=false
+[LearningWorld] move kind=equal_groups token=10 target=10 placed=11 complete=false
+[LearningWorld] move kind=equal_groups token=11 target=11 placed=12 complete=true
+[LearningWorld] move kind=bridge_hundred token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_hundred token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_hundred token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_hundred token=3 target=11 placed=4 complete=false
+[LearningWorld] move kind=bridge_hundred token=4 target=12 placed=5 complete=true
+[LearningWorld] move kind=fraction_parts token=0 target=1 placed=1 complete=false
+[LearningWorld] move kind=fraction_parts token=1 target=2 placed=2 complete=true
+[LearningWorld] move kind=addition token=0 target=10 placed=1 complete=false
+[LearningWorld] move kind=addition token=1 target=11 placed=2 complete=false
+[LearningWorld] move kind=addition token=2 target=12 placed=3 complete=false
+[LearningWorld] move kind=addition token=3 target=13 placed=4 complete=false
+[LearningWorld] move kind=addition token=4 target=14 placed=5 complete=false
+[LearningWorld] move kind=addition token=5 target=15 placed=6 complete=false
+[LearningWorld] move kind=addition token=6 target=16 placed=7 complete=false
+[LearningWorld] move kind=addition token=7 target=17 placed=8 complete=false
+[LearningWorld] move kind=addition token=8 target=18 placed=9 complete=false
+[LearningWorld] move kind=addition token=9 target=19 placed=10 complete=true
+[LearningWorld] move kind=subtract_ten token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=subtract_ten token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=subtract_ten token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=subtract_ten token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=subtract_ten token=4 target=4 placed=5 complete=false
+[LearningWorld] move kind=subtract_ten token=5 target=5 placed=6 complete=false
+[LearningWorld] move kind=subtract_ten token=6 target=6 placed=7 complete=false
+[LearningWorld] move kind=subtract_ten token=7 target=7 placed=8 complete=false
+[LearningWorld] move kind=subtract_ten token=8 target=8 placed=9 complete=false
+[LearningWorld] move kind=subtract_ten token=9 target=9 placed=10 complete=false
+[LearningWorld] move kind=subtract_ten token=10 target=10 placed=11 complete=false
+[LearningWorld] move kind=subtract_ten token=11 target=11 placed=12 complete=false
+[LearningWorld] move kind=subtract_ten token=12 target=12 placed=13 complete=false
+[LearningWorld] move kind=subtract_ten token=13 target=13 placed=14 complete=false
+[LearningWorld] move kind=subtract_ten token=14 target=14 placed=15 complete=false
+[LearningWorld] move kind=subtract_ten token=15 target=15 placed=16 complete=false
+[LearningWorld] move kind=subtract_ten token=16 target=16 placed=17 complete=false
+[LearningWorld] move kind=subtract_ten token=17 target=17 placed=18 complete=false
+[LearningWorld] move kind=subtract_ten token=18 target=18 placed=19 complete=false
+[LearningWorld] move kind=subtract_ten token=19 target=19 placed=20 complete=true
+[LearningWorld] move kind=equal_groups token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=equal_groups token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=equal_groups token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=equal_groups token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=equal_groups token=4 target=4 placed=5 complete=false
+[LearningWorld] move kind=equal_groups token=5 target=5 placed=6 complete=false
+[LearningWorld] move kind=equal_groups token=6 target=6 placed=7 complete=false
+[LearningWorld] move kind=equal_groups token=7 target=7 placed=8 complete=false
+[LearningWorld] move kind=equal_groups token=8 target=8 placed=9 complete=false
+[LearningWorld] move kind=equal_groups token=9 target=9 placed=10 complete=false
+[LearningWorld] move kind=equal_groups token=10 target=10 placed=11 complete=false
+[LearningWorld] move kind=equal_groups token=11 target=11 placed=12 complete=false
+[LearningWorld] move kind=equal_groups token=12 target=12 placed=13 complete=false
+[LearningWorld] move kind=equal_groups token=13 target=13 placed=14 complete=false
+[LearningWorld] move kind=equal_groups token=14 target=14 placed=15 complete=false
+[LearningWorld] move kind=equal_groups token=15 target=15 placed=16 complete=false
+[LearningWorld] move kind=equal_groups token=16 target=16 placed=17 complete=false
+[LearningWorld] move kind=equal_groups token=17 target=17 placed=18 complete=false
+[LearningWorld] move kind=equal_groups token=18 target=18 placed=19 complete=false
+[LearningWorld] move kind=equal_groups token=19 target=19 placed=20 complete=false
+[LearningWorld] move kind=equal_groups token=20 target=20 placed=21 complete=false
+[LearningWorld] move kind=equal_groups token=21 target=21 placed=22 complete=false
+[LearningWorld] move kind=equal_groups token=22 target=22 placed=23 complete=false
+[LearningWorld] move kind=equal_groups token=23 target=23 placed=24 complete=false
+[LearningWorld] move kind=equal_groups token=24 target=24 placed=25 complete=false
+[LearningWorld] move kind=equal_groups token=25 target=25 placed=26 complete=false
+[LearningWorld] move kind=equal_groups token=26 target=26 placed=27 complete=false
+[LearningWorld] move kind=equal_groups token=27 target=27 placed=28 complete=false
+[LearningWorld] move kind=equal_groups token=28 target=28 placed=29 complete=false
+[LearningWorld] move kind=equal_groups token=29 target=29 placed=30 complete=false
+[LearningWorld] move kind=equal_groups token=30 target=30 placed=31 complete=false
+[LearningWorld] move kind=equal_groups token=31 target=31 placed=32 complete=false
+[LearningWorld] move kind=equal_groups token=32 target=32 placed=33 complete=false
+[LearningWorld] move kind=equal_groups token=33 target=33 placed=34 complete=false
+[LearningWorld] move kind=equal_groups token=34 target=34 placed=35 complete=false
+[LearningWorld] move kind=equal_groups token=35 target=35 placed=36 complete=true
+[LearningWorld] move kind=bridge_hundred token=0 target=9 placed=1 complete=false
+[LearningWorld] move kind=bridge_hundred token=1 target=10 placed=2 complete=false
+[LearningWorld] move kind=bridge_hundred token=2 target=11 placed=3 complete=false
+[LearningWorld] move kind=bridge_hundred token=3 target=12 placed=4 complete=false
+[LearningWorld] move kind=bridge_hundred token=4 target=13 placed=5 complete=false
+[LearningWorld] move kind=bridge_hundred token=5 target=14 placed=6 complete=false
+[LearningWorld] move kind=bridge_hundred token=6 target=15 placed=7 complete=false
+[LearningWorld] move kind=bridge_hundred token=7 target=16 placed=8 complete=false
+[LearningWorld] move kind=bridge_hundred token=8 target=17 placed=9 complete=true
+[LearningWorld] move kind=fraction_parts token=0 target=1 placed=1 complete=false
+[LearningWorld] move kind=fraction_parts token=1 target=2 placed=2 complete=false
+[LearningWorld] move kind=fraction_parts token=2 target=3 placed=3 complete=false
+[LearningWorld] move kind=fraction_parts token=3 target=4 placed=4 complete=false
+[LearningWorld] move kind=fraction_parts token=4 target=5 placed=5 complete=false
+[LearningWorld] move kind=fraction_parts token=5 target=6 placed=6 complete=false
+[LearningWorld] move kind=fraction_parts token=6 target=7 placed=7 complete=false
+[LearningWorld] move kind=fraction_parts token=7 target=8 placed=8 complete=false
+[LearningWorld] move kind=fraction_parts token=8 target=9 placed=9 complete=false
+[LearningWorld] move kind=fraction_parts token=9 target=10 placed=10 complete=true
+[LearningWorld] move kind=syllables token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=syllables token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=syllables token=2 target=2 placed=3 complete=false
+[LearningWorld] move kind=syllables token=3 target=3 placed=4 complete=false
+[LearningWorld] move kind=syllables token=4 target=4 placed=5 complete=true
+ERROR: [LearningWorld] FAIL checks=5328 failures=7
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://scripts/tests/learning_world_regression.gd:632)
+       [1] _settle (res://scripts/tests/learning_world_regression.gd:42)

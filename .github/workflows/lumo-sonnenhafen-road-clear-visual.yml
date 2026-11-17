@@ -1,0 +1,107 @@
+name: Lumo B6 genuine before-after obstruction screenshots
+on:
+  push:
+    branches:
+      - chatgpt/lumo-b6-clear-sonnenhafen-road-2026-10-17
+  pull_request:
+    paths:
+      - scripts/games/kart_world.gd
+      - scripts/tests/kart_sonnenhafen_obstruction_capture.gd
+      - .github/workflows/lumo-sonnenhafen-road-clear-visual.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-road-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Godot 4.6.3 and software OpenGL
+        run: |
+          set -euo pipefail
+          sudo apt-get -qq update
+          sudo apt-get -y install xvfb libgl1-mesa-dri
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import repaired 1.85km world
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit \
+            2>&1 | tee "$RUNNER_TEMP/import-after.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import-after.log"
+      - name: Render five actual post-fix Sonnenhafen driving camera frames
+        env:
+          LUMO_CAPTURE_DIR: ${{ github.workspace }}/exports/road-clearance/after
+        run: |
+          set -euo pipefail
+          mkdir -p "$LUMO_CAPTURE_DIR"
+          timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' \
+            godot --path . --audio-driver Dummy --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_sonnenhafen_obstruction_capture.gd \
+            2>&1 | tee "$RUNNER_TEMP/road-after.log"
+          grep -F '[RoadObstructionCapture] PASS:' "$RUNNER_TEMP/road-after.log"
+      - name: Render identical cameras with frozen pre-fix B5 Godot source
+        run: |
+          set -euo pipefail
+          baseline="$RUNNER_TEMP/lumo-road-before"
+          git clone --quiet --no-hardlinks . "$baseline"
+          git -C "$baseline" remote set-url origin https://github.com/Ullmann27/lumo-godot.git
+          git -C "$baseline" fetch --depth 1 origin 38b3e4890cc0a4b5f70dfdb7a5d523274aa5d647
+          git -C "$baseline" checkout --detach FETCH_HEAD
+          test "$(git -C "$baseline" rev-parse HEAD)" = 38b3e4890cc0a4b5f70dfdb7a5d523274aa5d647
+          cp scripts/tests/kart_sonnenhafen_obstruction_capture.gd \
+            "$baseline/scripts/tests/kart_sonnenhafen_obstruction_capture.gd"
+          (cd "$baseline" && timeout 240s godot --headless --path . --editor --import --quit)
+          mkdir -p "$GITHUB_WORKSPACE/exports/road-clearance/before"
+          (cd "$baseline" && LUMO_CAPTURE_DIR="$GITHUB_WORKSPACE/exports/road-clearance/before" \
+            timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' \
+            godot --path . --audio-driver Dummy --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_sonnenhafen_obstruction_capture.gd) \
+            2>&1 | tee "$RUNNER_TEMP/road-before.log"
+          grep -F '[RoadObstructionCapture] PASS:' "$RUNNER_TEMP/road-before.log"
+      - name: Validate five source-matched 3D frames and generate visual manifest
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --break-system-packages Pillow==12.3.0
+          python3 - <<'PY'
+          from PIL import Image, ImageChops
+          from pathlib import Path
+          import hashlib, json
+          base = Path("exports/road-clearance")
+          before = sorted((base / "before").glob("road_*.png"))
+          after = sorted((base / "after").glob("road_*.png"))
+          assert len(before) == len(after) == 5
+          assert [x.name for x in before] == [x.name for x in after]
+          report = {}
+          changed_count = 0
+          for p,q in zip(before, after):
+              a = Image.open(p).convert("RGB")
+              b = Image.open(q).convert("RGB")
+              assert a.size == b.size == (1280,720)
+              diff = ImageChops.difference(a,b).convert("L")
+              changed = sum(diff.histogram()[30:])/(1280*720)
+              changed_count += changed > 0.005
+              report[p.name] = {
+                  "changed_pixel_ratio":round(changed,5),
+                  "before_sha256":hashlib.sha256(p.read_bytes()).hexdigest(),
+                  "after_sha256":hashlib.sha256(q.read_bytes()).hexdigest()
+              }
+          (base/"proof.json").write_text(json.dumps(report,indent=2)+"\n")
+          print(json.dumps(report,indent=2))
+          assert changed_count >= 2, "At least two worst-mountain vistas must visibly change"
+          PY
+      - name: Save original Godot before-after PNGs and JSON evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-road-clear-5x-before-after-${{ github.run_id }}
+          path: exports/road-clearance/
+          if-no-files-found: warn

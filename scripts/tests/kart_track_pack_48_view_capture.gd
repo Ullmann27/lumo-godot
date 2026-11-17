@@ -36,22 +36,25 @@ func _initialize() -> void:
 
 func _setup() -> void:
 	track_id = _track_id_from_args()
-	assert(track_id in ["sonnenhafen", "zauberwald", "bergwelt", "holo_city"])
+	assert(track_id in preload("res://scripts/games/kart_tracks.gd").IDS)
 	out_dir = "res://exports/track-pack-views/" + track_id
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	root.size = CAPTURE_SIZE
 
 	var pack_path := "res://docs/track_expansion/2026-10-06/packs/" + track_id + ".json"
-	var raw := FileAccess.get_file_as_string(pack_path)
-	var parsed = JSON.parse_string(raw)
-	assert(typeof(parsed) == TYPE_DICTIONARY)
-	pack = parsed
-	views = pack.get("views", [])
-	assert(views.size() == 48)
-
 	world = WORLD.new()
 	root.add_child(world)
 	world.build(false, track_id)
+	if FileAccess.file_exists(pack_path):
+		var parsed = JSON.parse_string(FileAccess.get_file_as_string(pack_path))
+		assert(typeof(parsed) == TYPE_DICTIONARY)
+		pack = parsed
+	else:
+		# Expansion worlds have no historical four-track developer-pack JSON.
+		# Derive their views from the current production curve and tunnel span.
+		pack = _runtime_pack()
+	views = pack.get("views", [])
+	assert(views.size() == 48)
 
 	camera = Camera3D.new()
 	camera.far = 1400.0
@@ -72,6 +75,36 @@ func _setup() -> void:
 
 	print("[TrackPackViews] track=", track_id, " views=", views.size(), " length=", world.length)
 	_place_current_view()
+
+
+func _runtime_pack() -> Dictionary:
+	var current_views: Array[Dictionary] = []
+	for index in range(36):
+		current_views.append({"id": "route_%02d" % index, "kind": "driver",
+			"target": "route_fraction:%.6f" % (float(index) / 36.0),
+			"camera": {"distance_m": 9.0, "elevation_deg": 15.0},
+			"acceptance": "Current production road, shared curve and scenery are visible"})
+	var tunnel: Dictionary = world.adventure_tunnel
+	assert(not tunnel.is_empty(), "An expansion capture requires its authored tunnel span")
+	for index in range(8):
+		var distance: float = lerpf(float(tunnel.start_m) - 20.0, float(tunnel.end_m) + 16.0, float(index) / 7.0)
+		current_views.append({"id": "tunnel_%02d" % index, "kind": "driver",
+			"target": "route_fraction:%.6f" % (distance / world.length),
+			"camera": {"distance_m": 8.0, "elevation_deg": 12.0},
+			"acceptance": "Themed portal, enclosed passage and actual descent are visible"})
+	current_views.append({"id": "whole_route", "kind": "orbit", "target": "whole_course",
+		"camera": {"azimuth_deg": 35.0, "elevation_deg": 60.0}, "acceptance": "Complete current circuit"})
+	for axis in ["top", "front", "left"]:
+		current_views.append({"id": "route_" + axis, "kind": "orthographic", "target": "whole_course",
+			"camera": {"axis": axis}, "acceptance": "Complete road extents fit the frame"})
+	var zones: Array[Dictionary] = []
+	for entry: Vector2 in [Vector2(0.18, -2.7), Vector2(0.34, 2.7), Vector2(0.53, 0.0), Vector2(0.69, -2.7), Vector2(0.86, 2.7)]:
+		zones.append({"id": "runtime_prism_%d" % zones.size(), "route_fraction": entry.x, "lateral_m": entry.y})
+	var checkpoints: Array[Dictionary] = []
+	for index in range(world.checkpoint_positions.size()):
+		checkpoints.append({"id": "checkpoint_%d" % index, "route_fraction": float(index) / world.checkpoint_positions.size()})
+	return {"source": "current_runtime_curve_and_adventure_tunnel", "views": current_views,
+		"mystery_prism_zones": zones, "checkpoints": checkpoints, "ai_racing_line": [], "signature_setpieces": []}
 
 
 func _track_id_from_args() -> String:

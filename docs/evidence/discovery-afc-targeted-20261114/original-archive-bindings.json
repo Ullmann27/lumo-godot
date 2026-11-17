@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "handoff.json",
+      "bytes": 1035,
+      "sha256": "9a507eed399c71bc83d99ae01f6e219d258367f8574119e59fb2751b15e09037",
+      "source": "/tmp/native-afc0df9-targeted-validation-20261114/handoff.json"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 6194,
+      "sha256": "506742331b7e9b0069dd6f0530cf99cdb2370016edd3ba087690d83f7cf893e3",
+      "source": "/tmp/native-afc0df9-targeted-validation-20261114/summary.json"
+    },
+    {
+      "path": "engine.json",
+      "bytes": 194,
+      "sha256": "96151ed1e8d6c9e956b4cbd7976c0413bf62192d4ed0d9c57128354d94a9f19d",
+      "source": "/tmp/native-afc0df9-targeted-validation-20261114/engine.json"
+    },
+    {
+      "path": "targeted-originals.tar.gz",
+      "bytes": 482785,
+      "sha256": "4523f4fb1284e4efc6c11f67a9712327718ae437d19d5be860e6af3ea1bc216e",
+      "source": "/tmp/native-afc0df9-targeted-compact-20261114",
+      "members": 38,
+      "original_manifest_sha256": "cfb62bc361e9550a0ff88d238a08cc3e1fff549791d0ce086a26a863bb917c46",
+      "all_members_read_back_equal": true
+    }
+  ]
+}

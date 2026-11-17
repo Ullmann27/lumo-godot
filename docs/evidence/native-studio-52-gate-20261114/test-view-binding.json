@@ -1,0 +1,105 @@
+{
+  "scope": "Small isolated source overlay for focused Python tests; explicitly no Git repository and no Godot import or renderer",
+  "source_freeze_sha256": "66893fcc808cb546f777c18149e4801c82426913c5d4763e475fd7c8a651fde8",
+  "files": [
+    {
+      "path": "tools/validate_studio.sh",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 3987,
+      "sha256": "a7c4260b1a684d1f17dacd9da26b3a62c3c988983ee5abffab4456b3ce2bf856",
+      "git_blob": "371c06bc01899439b605d2623b4e498e25c1047f"
+    },
+    {
+      "path": "tools/run_godot_probe.py",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 2934,
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105"
+    },
+    {
+      "path": "tools/verify_studio_rasters.py",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1872,
+      "sha256": "eefad8134f66404aa4bd3fedee279661e3f243a1a9aa3042c69e3d181fda62dd",
+      "git_blob": "0278d71030e87e4e46dd04b855e77711b2759252"
+    },
+    {
+      "path": "tools/verify_puzzle_menu_rasters.py",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1191,
+      "sha256": "3afe208e8572b683d12a338d73cf261416958ec2306ae87007f9c2c6b35e4994",
+      "git_blob": "391630e0bcd394dd0e274725cf15a7474eb41e77"
+    },
+    {
+      "path": "tools/verify_safe_area_rasters.py",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 8079,
+      "sha256": "7894e44fd3bc77e3bcd98489c4d5f391b400198a62d89382a0d6adad3adf4a3b",
+      "git_blob": "34fb3c4f31e476a5f29f98abc9a2ecc0337e6863"
+    },
+    {
+      "path": "tools/tests/test_safe_area_rasters.py",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 8287,
+      "sha256": "2d85982ee8be47e4e63578b44eaf980b6d96a332841ce26303edf114c9878716",
+      "git_blob": "5f601a6e2910b6026a7fe5b3a430be8073acd8d7"
+    },
+    {
+      "path": ".github/workflows/lumo-nextgen-2018.yml",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 18752,
+      "sha256": "e36fb64b70a20ba144dfe25441dedd7332a1919914ddc9c9fa8a65c3375810a0",
+      "git_blob": "b08fbbceb4fff3646d22ecc4754afa8053131d9b"
+    },
+    {
+      "path": "tools/tests/test_nextgen_runner.py",
+      "origin": "frozen-v1",
+      "bytes": 40588,
+      "sha256": "5b75a07da4f2b3a289635def172cf891db5dfd256d3d025d0b563932979abdd0",
+      "git_blob": "a22821fc87123eaa6e4fb9f68ba80d5ce6385c4c"
+    },
+    {
+      "path": "tools/tests/test_studio_2020_rasters.py",
+      "origin": "frozen-v1",
+      "bytes": 30303,
+      "sha256": "7652684bc21cda590e7d451f312b3545dba49c4d97e3abb596a5e357ca8651bf",
+      "git_blob": "033564dbaaebeb1fd49adac8b1d862fd62cd2eb2"
+    },
+    {
+      "path": "tools/validate_nextgen.sh",
+      "origin": "frozen-v1",
+      "bytes": 9791,
+      "sha256": "f48fdff8bd0a96b7c81468f4a8b516fd8bcb9f2a4b1ea31b232d931aad2475df",
+      "git_blob": "e5c02cf83818a4fd1c958db12f56332bb8ec93de"
+    },
+    {
+      "path": "tools/verify_studio_2020_rasters.py",
+      "origin": "frozen-v1",
+      "bytes": 23524,
+      "sha256": "4deca56cc7f4a6751b16da8e01352044d44e5c7428bcde6594d48576e675e792",
+      "git_blob": "d410c80d11611676e589875b0f94c392911b06df"
+    },
+    {
+      "path": "tools/verify_village_rasters.py",
+      "origin": "frozen-v1",
+      "bytes": 3905,
+      "sha256": "23834a1baaaa2f98ffc3df5b0b4e2a4b3bbf23e41f402a7f051adeae9fd230a8",
+      "git_blob": "7c9522903db13f9bd0917ef2768ddbc08e624b1d"
+    }
+  ],
+  "Pillow_available": true,
+  "test_command": [
+    "python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_studio_2020_rasters",
+    "test_nextgen_runner",
+    "test_safe_area_rasters"
+  ],
+  "test_environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "tools/tests:tools"
+  },
+  "tests_started": false
+}

@@ -53,7 +53,7 @@ func _input(event: InputEvent) -> void:
 		_reset()
 	elif event is InputEventScreenDrag and event.index == touch_id:
 		_move(get_global_transform_with_canvas().affine_inverse() * event.position)
-	elif event is InputEventMouseButton and not event.pressed and mouse_active:
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed and mouse_active:
 		_reset()
 
 

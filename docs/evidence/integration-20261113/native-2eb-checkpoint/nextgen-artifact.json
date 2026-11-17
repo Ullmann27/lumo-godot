@@ -1,0 +1,20 @@
+{
+  "id": 14042319645,
+  "node_id": "MDg6QXJ0aWZhY3QxNDA0MjMxOTY0NQ==",
+  "name": "lumo-nextgen-2018-native-evidence",
+  "size_in_bytes": 90262819,
+  "url": "https://api.github.com/repos/Ullmann27/lumo-godot/actions/artifacts/14042319645",
+  "archive_download_url": "https://api.github.com/repos/Ullmann27/lumo-godot/actions/artifacts/14042319645/zip",
+  "expired": false,
+  "digest": "sha256:a5e66a7a96fc8f00dd62d9bfd6ad0fed14a6314c2dc2e8e1bbbd3b8e0aae412f",
+  "created_at": "2026-11-13T13:48:42Z",
+  "updated_at": "2026-11-13T13:48:42Z",
+  "expires_at": "2026-12-13T13:48:37Z",
+  "workflow_run": {
+    "id": 43434091038,
+    "repository_id": 1251414584,
+    "head_repository_id": 1251414584,
+    "head_branch": "integration/lumo-connections-20261113",
+    "head_sha": "2eb6c9ae388b1d79e4ac970088f9235a6aab59f7"
+  }
+}

@@ -1,0 +1,7 @@
+{"status": "PASS", "samples": 54, "colliding_samples": []}
+Blender 4.3.2
+Read blend: "/workspace/scratch/f13175e1ed4d/lumo-godot-runtime/art/lumo_kart/blender/karts/aurora_comet.blend"
+Read blend: "/workspace/scratch/f13175e1ed4d/lumo-godot-runtime/art/lumo_kart/blender/karts/aurora_glider.blend"
+Read blend: "/workspace/scratch/f13175e1ed4d/lumo-godot-runtime/art/lumo_kart/blender/karts/aurora_turbo.blend"
+
+Blender quit

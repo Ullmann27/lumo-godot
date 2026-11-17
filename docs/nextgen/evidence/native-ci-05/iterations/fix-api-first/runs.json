@@ -1,0 +1,59 @@
+[
+  {
+    "script": "learning_world_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_world_regression.gd"
+    ],
+    "source_sha256": "d413f73e4026bfa5e0834e58993ba569f98c2c0985b82201d6fe07c215651d49",
+    "exit_code": 1,
+    "elapsed_seconds": 23.797043192003912,
+    "stop_reason": null,
+    "errors": [
+      "ERROR: [LearningWorld] FAIL both rows of quantity blocks are visually separated",
+      "ERROR: [LearningWorld] FAIL both rows of quantity blocks are visually separated",
+      "ERROR: [LearningWorld] FAIL both rows of quantity blocks are visually separated",
+      "ERROR: [LearningWorld] FAIL checks=5351 failures=3"
+    ],
+    "summary": [
+      "ERROR: [LearningWorld] FAIL both rows of quantity blocks are visually separated",
+      "ERROR: [LearningWorld] FAIL both rows of quantity blocks are visually separated",
+      "ERROR: [LearningWorld] FAIL both rows of quantity blocks are visually separated",
+      "ERROR: [LearningWorld] FAIL checks=5351 failures=3"
+    ]
+  },
+  {
+    "script": "learning_generation_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_generation_regression.gd"
+    ],
+    "source_sha256": "ef3781eafd2f9f178b119ddbeefc0d91d79cd62a415a4521876713d42774941a",
+    "exit_code": -15,
+    "elapsed_seconds": 2.259886176994769,
+    "stop_reason": "runtime error before normal exit",
+    "errors": [
+      "ERROR: [LearningGeneration] slower syllables preserve checked text with separate actual utterances",
+      "ERROR: [LearningGeneration] next syllable starts only on actual audio completion",
+      "ERROR: [LearningGeneration] matching real syllable playback highlights matching object",
+      "SCRIPT ERROR: Invalid access to property or key 'pattern_choice' on a base object of type 'RefCounted (learning_activity.gd)'."
+    ],
+    "summary": []
+  }
+]

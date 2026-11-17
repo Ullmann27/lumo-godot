@@ -1,0 +1,14 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+CARD_BOUNDS fresh selected Gecko viewport_px=(2400, 1080) density=2.625 safe_dp=(914.2857, 351.2381) root_pixels_per_logical=(1.5, 1.5) scroll_px=[P: (42.0, 384.5), S: (721.5, 358.5)] scroll_dp=(274.8571, 136.5714) card_px=[P: (42.0, 624.5), S: (709.5, 236.25)] card_dp=(270.2857, 90.0) card_min_dp=(17.14286, 90.0) fully_enclosed=false vertical_scroll=0 workshop_parent=GridContainer footer_columns=3
+CARD_BOUNDS after ensure_control_visible viewport_px=(2400, 1080) density=2.625 safe_dp=(914.2857, 351.2381) root_pixels_per_logical=(1.5, 1.5) scroll_px=[P: (42.0, 384.5), S: (721.5, 358.5)] scroll_dp=(274.8571, 136.5714) card_px=[P: (42.0, 507.5), S: (709.5, 236.25)] card_dp=(270.2857, 90.0) card_min_dp=(17.14286, 90.0) fully_enclosed=false vertical_scroll=78 workshop_parent=GridContainer footer_columns=3
+CARD_BOUNDS card top aligned with viewport viewport_px=(2400, 1080) density=2.625 safe_dp=(914.2857, 351.2381) root_pixels_per_logical=(1.5, 1.5) scroll_px=[P: (42.0, 384.5), S: (721.5, 358.5)] scroll_dp=(274.8571, 136.5714) card_px=[P: (42.0, 384.5), S: (709.5, 236.25)] card_dp=(270.2857, 90.0) card_min_dp=(17.14286, 90.0) fully_enclosed=true vertical_scroll=160 workshop_parent=GridContainer footer_columns=3

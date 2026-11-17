@@ -1,0 +1,54 @@
+{
+  "base_commit": "b4ccf593d7833e8c259ff0f963494b00d245d03d",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "environment": "Linux headless, fixed 1/60-second simulation",
+  "comet_base_top_mps": 41.0,
+  "previous_comet_base_top_mps": 20.5,
+  "physical_top_speed_ratio": 2.0,
+  "full_field": {
+    "scenarios": 6,
+    "finishers": 30,
+    "flight_landings": 120,
+    "flight_rescues": 0,
+    "failed_loops": 0,
+    "stalled_windows": 0,
+    "max_frame_step_m": 1.15185058116913,
+    "last_finish_seconds": [
+      {
+        "difficulty": "gemuetlich",
+        "stopped_player": false,
+        "seconds": 127.316666666667
+      },
+      {
+        "difficulty": "flott",
+        "stopped_player": false,
+        "seconds": 88.9166666666667
+      },
+      {
+        "difficulty": "pro",
+        "stopped_player": false,
+        "seconds": 77.9
+      },
+      {
+        "difficulty": "gemuetlich",
+        "stopped_player": true,
+        "seconds": 128.25
+      },
+      {
+        "difficulty": "flott",
+        "stopped_player": true,
+        "seconds": 90.65
+      },
+      {
+        "difficulty": "pro",
+        "stopped_player": true,
+        "seconds": 80.5
+      }
+    ]
+  },
+  "limitations": [
+    "No Android/Fold7 frame-rate or APK evidence.",
+    "Track-action slice not integrated in these results.",
+    "Existing teardown resource warnings occur in two tests after their PASS."
+  ]
+}

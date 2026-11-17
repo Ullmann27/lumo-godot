@@ -1,0 +1,66 @@
+--- a/assets/manifests/assets.json
++++ b/assets/manifests/assets.json
+@@ -1,13 +1,6 @@
+ {
+-  "_doc": "Lumo 3D Asset Manifest. AssetLoader liest hier ID->Pfad. Fehlende Dateien sind OK - AssetLoader liefert Magenta-Placeholder + WARN. _fetch_prompts ist optionale Info fuer tools/fetch_assets.py (Meshy/Replicate).",
+-  "models": {
+-    "lumo_fox": "res://assets/models/lumo_fox.glb",
+-    "hub_island": "res://assets/models/hub_island.glb",
+-    "portal_learn": "res://assets/models/portal_learn.glb",
+-    "portal_games": "res://assets/models/portal_games.glb",
+-    "portal_parent": "res://assets/models/portal_parent.glb",
+-    "star_collectible": "res://assets/models/star_collectible.glb"
+-  },
++  "_doc": "Lumo 3D Asset Manifest. AssetLoader liest hier ID->Pfad. models und _fetch_prompts bleiben als leere Kategorien erhalten.",
++  "models": {},
+   "materials": {
+     "holographic_soft": "res://assets/materials/holographic_soft.tres",
+     "mat_grass_magic": "res://assets/materials/generated/mat_grass_magic.tres",
+@@ -24,32 +17,7 @@
+     "mat_particle_gold": "res://assets/materials/generated/mat_particle_gold.tres"
+   },
+   "audio": {},
+-  "_fetch_prompts": {
+-    "lumo_fox": {
+-      "provider": "meshy",
+-      "prompt": "low-poly friendly cartoon fox mascot, warm orange fur, big eyes, soft style, t-pose, single GLB"
+-    },
+-    "hub_island": {
+-      "provider": "meshy",
+-      "prompt": "low-poly floating magical island base, warm tones, soft glow edges, single GLB"
+-    },
+-    "portal_learn": {
+-      "provider": "meshy",
+-      "prompt": "low-poly magical portal ring, warm gold color, glowing emissive, simple torus form"
+-    },
+-    "portal_games": {
+-      "provider": "meshy",
+-      "prompt": "low-poly magical portal ring, turquoise color, glowing emissive, simple torus form"
+-    },
+-    "portal_parent": {
+-      "provider": "meshy",
+-      "prompt": "low-poly magical portal ring, soft violet color, glowing emissive, simple torus form"
+-    },
+-    "star_collectible": {
+-      "provider": "meshy",
+-      "prompt": "low-poly 5-pointed star, golden warm color, emissive yellow center"
+-    }
+-  },
++  "_fetch_prompts": {},
+   "textures": {
+     "lumo_tex_grass_magic": "res://assets/generated/lumo3d_assets/textures/albedo/grass_magic_albedo.png",
+     "lumo_tex_grass_deep": "res://assets/generated/lumo3d_assets/textures/albedo/grass_deep_albedo.png",
+--- a/export_presets.cfg
++++ b/export_presets.cfg
+@@ -66,7 +66,7 @@
+ dedicated_server=false
+ custom_features=""
+ export_filter="all_resources"
+-include_filter=""
++include_filter="assets/characters/lumo_facial/ATTRIBUTION.md,assets/characters/lumo_animated/ATTRIBUTION.md,THIRD_PARTY_NOTICES.md"
+ exclude_filter="exports/*,tools/*,scripts/tests/*,docs/*,assets/characters/rivals/reference/*"
+ export_path="exports/android/lumo3d.apk"
+ encryption_include_filters=""
+diff --git a/tools/build_web_bundle.sh b/tools/build_web_bundle.sh
+old mode 100644
+new mode 100755

@@ -1,0 +1,49 @@
+{
+  "source_before": "cf039ad8c834522f355b858e3bee1e201e397da4",
+  "producer_source_after": "25e3a1187234860414fa69822e7b301e75880c82",
+  "producer_workflow_blob_sha": "06313a6a75d60c6c6d68a64e85cf59b0b4efc221",
+  "producer_workflow_sha256": "3d41a87bd12f38850f13200c085577436221bd2264b2a4c278806fdc6ec0ebc6",
+  "reviewed_import_block_changes": [
+    {
+      "step": 2,
+      "name": "Import and record exact unmodified source",
+      "before_sha256": "e669013047ca75f045866ecde966ee6182a1e40f21bbc6e47298110ef26cc88f",
+      "after_sha256": "c0673c63ecb369586a11f08dc8ce6157ef65a39ea2051b587a872df1fb4d4c94"
+    },
+    {
+      "step": 6,
+      "name": "Capture the exact prior source with the same comparison harness",
+      "before_sha256": "c7e907a42bc77fae3c448b4e7a5d4e8b1d29bc40042d92f0fd727db934480f90",
+      "after_sha256": "ec2f743b73d280bf761489179891c5432e5c8a85951c01f08fccadf0cfe62b71"
+    }
+  ],
+  "producer_only_configuration_differences": [
+    "pull_request trigger absent",
+    "checkout ref github.sha instead of PR head expression"
+  ],
+  "integration_requirement": "Keep existing integration PR trigger and PR head.sha || github.sha checkout; adopt only import blocks.",
+  "all_other_steps_and_job_configuration_identical": true,
+  "required_probe_arguments_identical": true,
+  "import_error_checks_preserved": 2,
+  "tracked_source_checks_preserved": true,
+  "artifact_retention_and_upload_conditions_identical": true,
+  "engine_help_verified": {
+    "engine": "4.6.3.stable.official.7d41c59c4",
+    "--import": "waits for resources to be imported then quits",
+    "--quit": "quits after first iteration"
+  },
+  "root_reported_integration": {
+    "before": "0aec",
+    "after": "97b91e312eb982ab1fe9083b7415d11085385235",
+    "diff": "Only two import blocks and comments",
+    "PR_trigger_and_checkout_preserved": true,
+    "actionlint": "PASS as reported by Root"
+  },
+  "scope": "Source review of published producer correction; no successful new workflow execution claimed.",
+  "integration_source_independently_verified": {
+    "commit": "97b91e312eb982ab1fe9083b7415d11085385235",
+    "workflow_sha256": "fbc70c9353a65804f42b3083414e7aff753eb9c48f8e167c121b1bac762b515d",
+    "git_blob_sha": "b59973a9c9437450452fbe1a13dd0c125cba6174",
+    "matches_producer_import_changes_with_existing_integration_events_and_PR_head_checkout": true
+  }
+}

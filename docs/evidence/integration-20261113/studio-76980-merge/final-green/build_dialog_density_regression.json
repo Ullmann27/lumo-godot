@@ -1,0 +1,25 @@
+{
+  "probe": "build_dialog_density_regression",
+  "command": [
+    "godot",
+    "--headless",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--audio-driver",
+    "Dummy",
+    "--script",
+    "res://scripts/tests/build_dialog_density_regression.gd"
+  ],
+  "started_at": "2026-11-13T15:54:01.437429+00:00",
+  "finished_at": "2026-11-13T15:54:38.257319+00:00",
+  "seconds": 36.82,
+  "exit_code": 0,
+  "pass_lines": [
+    "[BuildDialogDensity] PASS 2016 checks: bounded dialogs, preserved choices, actual scroll/select/cancel, >=48dp and restore"
+  ],
+  "error_lines": [],
+  "log": "build_dialog_density_regression.log",
+  "log_bytes": 1419,
+  "log_sha256": "55064ac791ded9d7c46d854d983ca94fc03597a53f7fdbd6ac891473c01e4a8a",
+  "passed": true
+}

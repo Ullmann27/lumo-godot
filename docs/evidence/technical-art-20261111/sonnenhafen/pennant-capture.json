@@ -1,0 +1,62 @@
+{
+	"adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+	"camera": "[X: (-0.167699, 0.0, 0.985838), Y: (0.048098, 0.998809, 0.008182), Z: (-0.984664, 0.048789, -0.167499), O: (27.57724, 9.130263, 111.4986)]",
+	"engine": "4.6.3-stable (official)",
+	"events": [
+		{
+			"frame": 0,
+			"nearby": false,
+			"phase": 0.0833333333333333,
+			"triggers": 0
+		},
+		{
+			"frame": 12,
+			"nearby": true,
+			"phase": 1.08333333333333,
+			"triggers": 4
+		},
+		{
+			"frame": 24,
+			"nearby": true,
+			"phase": 2.08333333333333,
+			"triggers": 4
+		},
+		{
+			"frame": 48,
+			"nearby": false,
+			"phase": 4.08333333333334,
+			"triggers": 4
+		},
+		{
+			"frame": 71,
+			"nearby": false,
+			"phase": 6.0,
+			"triggers": 4
+		}
+	],
+	"fov": 53.0,
+	"frames": 72,
+	"is_device_performance_measurement": false,
+	"metrics": {
+		"authored_parts": 5793,
+		"banner_draw_batches": 1,
+		"banner_instances": 15,
+		"collision_nodes": 0,
+		"external_assets": 0,
+		"houses": 15,
+		"low_detail": false,
+		"material_surfaces": 24,
+		"materials": 4,
+		"triangles": 95196,
+		"windows": 210
+	},
+	"proof_scope": "Actual world and fabric render; deterministic position stimulus, not a driven lap",
+	"quality": "HIGH",
+	"renderer": "gl_compatibility",
+	"resolution": [
+		960,
+		540
+	],
+	"source_sha": "977f120bf586db96250b3f3eb5f2503d2994a8d4",
+	"timeline_fps": 12
+}

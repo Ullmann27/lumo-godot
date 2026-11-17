@@ -1,0 +1,119 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:14:28 | INFO: Starting glTF 2.0 export
+21:14:28 | INFO: Extracting primitive: Cube.035
+21:14:29 | INFO: Primitives created: 5
+21:14:29 | INFO: Finished glTF 2.0 export in 1.0936203002929688 s
+
+21:14:31 | INFO: Starting glTF 2.0 export
+21:14:31 | INFO: Extracting primitive: Cube.065
+21:14:31 | INFO: Primitives created: 5
+21:14:31 | INFO: Finished glTF 2.0 export in 0.8141088485717773 s
+
+21:14:32 | INFO: Starting glTF 2.0 export
+21:14:32 | INFO: Extracting primitive: TunnelShellCollision_Mesh
+21:14:32 | INFO: Primitives created: 1
+21:14:32 | INFO: Finished glTF 2.0 export in 0.022298574447631836 s
+
+LUMO_TRACK_MODULE desert_drift portal_entry 11244 5
+21:14:32 | INFO: Starting glTF 2.0 export
+21:14:32 | INFO: Extracting primitive: Cube.130
+21:14:33 | INFO: Primitives created: 5
+21:14:33 | INFO: Finished glTF 2.0 export in 0.8595681190490723 s
+
+21:14:33 | INFO: Starting glTF 2.0 export
+21:14:33 | INFO: Extracting primitive: Cube.160
+21:14:34 | INFO: Primitives created: 5
+21:14:34 | INFO: Finished glTF 2.0 export in 0.8777284622192383 s
+
+21:14:34 | INFO: Starting glTF 2.0 export
+21:14:34 | INFO: Extracting primitive: TunnelShellCollision_Mesh.001
+21:14:34 | INFO: Primitives created: 1
+21:14:34 | INFO: Finished glTF 2.0 export in 0.034632205963134766 s
+
+LUMO_TRACK_MODULE desert_drift portal_exit 11244 5
+21:14:35 | INFO: Starting glTF 2.0 export
+21:14:35 | INFO: Extracting primitive: Cube.222
+21:14:36 | INFO: Primitives created: 5
+21:14:36 | INFO: Finished glTF 2.0 export in 0.9197607040405273 s
+
+21:14:37 | INFO: Starting glTF 2.0 export
+21:14:37 | INFO: Extracting primitive: Cube.254
+21:14:38 | INFO: Primitives created: 5
+21:14:38 | INFO: Finished glTF 2.0 export in 0.8597526550292969 s
+
+21:14:38 | INFO: Starting glTF 2.0 export
+21:14:38 | INFO: Extracting primitive: TunnelShellCollision_Mesh.002
+21:14:38 | INFO: Primitives created: 1
+21:14:38 | INFO: Finished glTF 2.0 export in 0.027210712432861328 s
+
+LUMO_TRACK_MODULE desert_drift straight_12m 13324 5
+21:14:40 | INFO: Starting glTF 2.0 export
+21:14:40 | INFO: Extracting primitive: Cube.334
+21:14:41 | INFO: Primitives created: 5
+21:14:41 | INFO: Finished glTF 2.0 export in 1.0777554512023926 s
+
+21:14:42 | INFO: Starting glTF 2.0 export
+21:14:42 | INFO: Extracting primitive: Cube.382
+21:14:44 | INFO: Primitives created: 5
+21:14:44 | INFO: Finished glTF 2.0 export in 1.1919198036193848 s
+
+21:14:44 | INFO: Starting glTF 2.0 export
+21:14:44 | INFO: Extracting primitive: TunnelShellCollision_Mesh.003
+21:14:44 | INFO: Primitives created: 1
+21:14:44 | INFO: Finished glTF 2.0 export in 0.04398393630981445 s
+
+LUMO_TRACK_MODULE desert_drift curve_left_30 19708 5
+21:14:46 | INFO: Starting glTF 2.0 export
+21:14:46 | INFO: Extracting primitive: Cube.478
+21:14:47 | INFO: Primitives created: 5
+21:14:47 | INFO: Finished glTF 2.0 export in 0.7859833240509033 s
+
+21:14:48 | INFO: Starting glTF 2.0 export
+21:14:48 | INFO: Extracting primitive: Cube.526
+21:14:48 | INFO: Primitives created: 5
+21:14:48 | INFO: Finished glTF 2.0 export in 0.47507596015930176 s
+
+21:14:48 | INFO: Starting glTF 2.0 export
+21:14:48 | INFO: Extracting primitive: TunnelShellCollision_Mesh.004
+21:14:48 | INFO: Primitives created: 1
+21:14:48 | INFO: Finished glTF 2.0 export in 0.026533126831054688 s
+
+LUMO_TRACK_MODULE desert_drift curve_right_30 19708 5
+21:14:49 | INFO: Starting glTF 2.0 export
+21:14:49 | INFO: Extracting primitive: Cube.606
+21:14:50 | INFO: Primitives created: 5
+21:14:50 | INFO: Finished glTF 2.0 export in 0.5722570419311523 s
+
+21:14:51 | INFO: Starting glTF 2.0 export
+21:14:51 | INFO: Extracting primitive: Cube.638
+21:14:51 | INFO: Primitives created: 5
+21:14:51 | INFO: Finished glTF 2.0 export in 0.48186302185058594 s
+
+21:14:51 | INFO: Starting glTF 2.0 export
+21:14:51 | INFO: Extracting primitive: TunnelShellCollision_Mesh.005
+21:14:51 | INFO: Primitives created: 1
+21:14:51 | INFO: Finished glTF 2.0 export in 0.028243303298950195 s
+
+LUMO_TRACK_MODULE desert_drift grade_down 13324 5
+21:14:52 | INFO: Starting glTF 2.0 export
+21:14:52 | INFO: Extracting primitive: Cube.702
+21:14:53 | INFO: Primitives created: 5
+21:14:53 | INFO: Finished glTF 2.0 export in 0.534921407699585 s
+
+21:14:54 | INFO: Starting glTF 2.0 export
+21:14:54 | INFO: Extracting primitive: Cube.734
+21:14:54 | INFO: Primitives created: 5
+21:14:54 | INFO: Finished glTF 2.0 export in 0.5770177841186523 s
+
+21:14:55 | INFO: Starting glTF 2.0 export
+21:14:55 | INFO: Extracting primitive: TunnelShellCollision_Mesh.006
+21:14:55 | INFO: Primitives created: 1
+21:14:55 | INFO: Finished glTF 2.0 export in 0.08867073059082031 s
+
+LUMO_TRACK_MODULE desert_drift grade_up 13324 5
+Info: Packed 5 file(s)
+Info: Saved "desert_drift_tunnel_workshop.blend"
+LUMO_TRACK_THEME_DONE desert_drift
+Blender 4.3.2
+
+Blender quit

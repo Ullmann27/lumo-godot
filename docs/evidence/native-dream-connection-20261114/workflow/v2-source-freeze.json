@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "state": "V2_FROZEN_FOR_ROOT_AUTHORIZED_SINGLE_RECHECK",
+  "base_head": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "base_tree": "35492eec16cac6774bc546b6e57628900bef61cb",
+  "files": [
+    {
+      "path": ".github/workflows/lumo-dream-connections.yml",
+      "mode": "100644",
+      "before_blob": null,
+      "bytes": 10176,
+      "sha256": "7320bc547bbf110ca1374d651fd3867f603e2ae996bd37848939574a67e29217",
+      "git_blob": "321aeff8018435789cc57df3af3e3b5fecc4c910"
+    }
+  ],
+  "required_runner_freeze": "c7d8ad62fc9f8325dd79ffc101bcaf1d00753b5ef2b05b820150e1d6e74e487f",
+  "scope": "One new Dream-only native workflow. No app/host/source-pin/release/other-workflow change.",
+  "event": "push",
+  "branch": "integration/lumo-dream-connections-20261114",
+  "repository": "Ullmann27/lumo-godot",
+  "checkout": "github.sha, persist-credentials false",
+  "permissions": {
+    "contents": "read"
+  },
+  "budget_seconds": 2700,
+  "existing_headless_seconds": [
+    60,
+    180,
+    420,
+    420
+  ],
+  "dream_probe_seconds": [
+    120,
+    120,
+    180,
+    180,
+    180
+  ],
+  "import_timeout_seconds": 420,
+  "remaining_job_seconds_before_setup_test_upload_and_probe_grace": 420,
+  "engine_archive_sha256": "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3",
+  "pillow": "12.3.0",
+  "external_paths": "Engine installation, venv, TMPDIR, XDG state and all evidence under RUNNER_TEMP. Normal ignored project .godot import cache remains a standard project input/output of real import; no source cleanup.",
+  "untracked_files": "Full statuses preserved separately. The runner inventories generated UID/import/other files. Only tracked dirt and source/index change fail the workflow identity gates.",
+  "allowed_local_validation": "Root authorized one additional actionlint invocation for the two concrete V1 context errors. No other tests, engine or CI run.",
+  "previous_workflow_sha256": "11fa7257afe2397421696fe2d5d8bce530d7a7e9775c83b2f90eb5b894c3a6d6",
+  "v1_freeze_sha256": "d6d089930a0e00b77d1fa600ed1d5909ccd23b8d0908a11f0600114a2efa6810",
+  "correction": "Only move external path construction from unsupported job.env runner context into runtime step variables and GITHUB_ENV; use allowed step.with runner context for always-upload."
+}

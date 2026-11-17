@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "status": "NO_CONCRETE_INVOCATION_OR_DIRECT_DEPENDENCY_BLOCKER_FOUND",
+  "scope": "Independent read-only source/command/metadata review; no tests, imports, renderer, Android run or new downloads.",
+  "source_freeze": {
+    "path": "/workspace/scratch/b3485b7bb989/native-pr172-174-magic-integration-f0c19-20261114/source-freeze.json",
+    "bytes": 12904,
+    "sha256": "3fe8fdc5d85bfa0dd6419792688b72ed3840c3122e2267f695e800e6f986b1e2",
+    "git_blob": "4b2790db9c2cb409eb6a59eae00d2efd110d6e17"
+  },
+  "gate_contract": {
+    "path": "/workspace/scratch/b3485b7bb989/native-pr172-174-magic-integration-f0c19-20261114/gate-contract.json",
+    "bytes": 8741,
+    "sha256": "fc334096a459be91bdcb6bccb3722820d55b9e312b09e493f5863450987bcfef",
+    "git_blob": "573d54954972b0964bdf4ffa9426ce354695f7b0"
+  },
+  "base": {
+    "head": "f0c19f9eb69ea330ac5d2b8f9948cb029ca218aa",
+    "tree": "40e7a8d073de320865613152f8a027abbe025d51"
+  },
+  "source_files": [
+    {
+      "path": "/workspace/scratch/b3485b7bb989/native-pr172-174-magic-integration-f0c19-20261114/final-source/scripts/creative/treasure_world.gd",
+      "bytes": 27404,
+      "sha256": "f5118a5cb00670eeaa5337699c0253f6aad84bdb4b9cff18764098420ba64c3b",
+      "git_blob": "703873a3b0fbe7e589c81bf9695fac5ecf43cd63"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/native-pr172-174-magic-integration-f0c19-20261114/final-source/scripts/tests/treasure_exploration_regression.gd",
+      "bytes": 7475,
+      "sha256": "de40f0eaed86f2ea20371b3aa0b19ceff3ad553f1751e1fbb41033fecfa770c4",
+      "git_blob": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/native-pr172-174-magic-integration-f0c19-20261114/final-source/scripts/learning/learning_world.gd",
+      "bytes": 45953,
+      "sha256": "1aaad2fdbe53e75e44009e443cda1273d2c3bc85b2eda7446349eba466883a6b",
+      "git_blob": "c3b1bc8c73cd764724464d8d2fe0413bdba62a96"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/native-pr172-174-magic-integration-f0c19-20261114/final-source/scripts/tests/learning_world_regression.gd",
+      "bytes": 23091,
+      "sha256": "562b9812983388e396b80be698eb70a9d091b0d92997e5b58476b15b20df40f8",
+      "git_blob": "8e534e78509283679889335255f39a4f7d49bb64"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/native-pr172-174-magic-integration-f0c19-20261114/final-source/assets/creative/shaders/treasure_wisp.gdshader",
+      "bytes": 867,
+      "sha256": "9ea827c8caad1c3431be766db571ad84ab6f9398508d055230873f2f7af8af68",
+      "git_blob": "63fd420156242d2bea3a5a9d3ec04eac9da4974b"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/native-pr172-174-magic-integration-f0c19-20261114/final-source/scripts/creative/treasure_wisps.gd",
+      "bytes": 6446,
+      "sha256": "318b074c876eb5c4134f84eb6de387bdb4ed9ac1eef42100f4eaaf2e4c867e60",
+      "git_blob": "2d854c19869a1959f9bbc76b9aa21c1ca8947a80"
+    },
+    {
+      "path": "/workspace/scratch/b3485b7bb989/native-pr172-174-magic-integration-f0c19-20261114/final-source/scripts/tests/treasure_wisp_regression.gd",
+      "bytes": 3061,
+      "sha256": "dce77c62f2848c30c0086b13ec3c2a5ea4fb59a814a2ef1535d837c1e47ed218",
+      "git_blob": "7f256c202defeeba47c8c96a577065ee2eda16c1"
+    }
+  ],
+  "checks": {
+    "seven_source_files_match_frozen_sha256_and_exact_published_blobs": true,
+    "direct_res_dependencies_verified_against_exact_base_tree_or_same_patch": 22,
+    "original_base_tree_truncated": false,
+    "existing_52_runner": {
+      "path": "/workspace/scratch/b3485b7bb989/native-pr172-174-magic-integration-f0c19-20261114/before-source/tools/validate_nextgen.sh",
+      "bytes": 9791,
+      "sha256": "fbb95e0ab5d3f60a915fdd63ff95b6e01ad3776bb67f6227df1c394b5bd64a7f",
+      "git_blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946"
+    },
+    "existing_mode_count": 52,
+    "unchanged_strict_runner_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+    "new_commands": [
+      {
+        "id": "magic-wisps-headless",
+        "source_blob": "7f256c202defeeba47c8c96a577065ee2eda16c1",
+        "mode": "headless",
+        "deadline_seconds": 180,
+        "required_marker": "[TreasureWisp] PASS",
+        "already_in_52": false
+      },
+      {
+        "id": "magic-treasure-headless",
+        "source_blob": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29",
+        "mode": "headless",
+        "deadline_seconds": 180,
+        "required_marker": "[TreasureExploration] PASS",
+        "already_in_52": true
+      },
+      {
+        "id": "magic-learning-headless",
+        "source_blob": "8e534e78509283679889335255f39a4f7d49bb64",
+        "mode": "headless",
+        "deadline_seconds": 240,
+        "required_marker": "[LearningWorld] PASS",
+        "already_in_52": true
+      },
+      {
+        "id": "magic-treasure-rendered",
+        "source_blob": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29",
+        "mode": "rendered",
+        "deadline_seconds": 420,
+        "required_marker": "[TreasureExploration] PASS",
+        "already_in_52": true
+      }
+    ],
+    "capture_names": [
+      "treasure_choose_route",
+      "treasure_garden_first",
+      "treasure_route_complete"
+    ]
+  },
+  "findings": [
+    "The new Wisp headless180 command is additional to the unchanged52-mode/17-Studio-raster contract. Learning headless and Treasure headless/rendered already exist in that core.",
+    "All described argv use the existing strict runner CLI, exact source scripts, required original markers and separate deadlines. Rendered Treasure uses Xvfb/gl_compatibility and the real capture environment; each save directory is distinct.",
+    "All seven final source bytes match their frozen published Producer blobs. Each declared direct res dependency resolves to either the same patch or the nontruncated exact base tree.",
+    "The three Treasure capture filenames match the actual script. The1280x720 source-window declaration is not a decoded-image result.",
+    "Original Producer logs contain exactly the declared Wisp14, Treasure92/95 and Learning5347 markers. Their source identities remain separate from the future combined source."
+  ],
+  "original_producer_logs": [
+    {
+      "job_id": 132386964721,
+      "stored": {
+        "path": "/workspace/scratch/b3485b7bb989/native-pr172-174-magic-integration-f0c19-20261114/originals/logs/magic-job-132386964721.log.gz",
+        "bytes": 30210,
+        "sha256": "49ee7add3da3e54ec9d7da8cfe898cdb2e3aaf9dccacab24e31738b49bf0a442",
+        "git_blob": "c71420becd5c4b0bb13628db69df42e4d04bac77"
+      },
+      "raw_bytes": 256952,
+      "raw_sha256": "c02acb1a75c8dac525c7539399ec8d22bbaf35b24a4ab2144f1f30fe5249ec2f",
+      "markers": [
+        {
+          "line": 2623,
+          "original": "2026-11-14T08:16:17.2768081Z [TreasureWisp] PASS checks=14"
+        },
+        {
+          "line": 2642,
+          "original": "2026-11-14T08:16:19.1916016Z [TreasureExploration] PASS 92 checks: branching, actual location questions, movement, legacy saves and original rewards"
+        },
+        {
+          "line": 2684,
+          "original": "2026-11-14T08:16:54.7626137Z [TreasureExploration] PASS 95 checks: branching, actual location questions, movement, legacy saves and original rewards"
+        }
+      ]
+    },
+    {
+      "job_id": 132387709703,
+      "stored": {
+        "path": "/workspace/scratch/b3485b7bb989/native-pr172-174-magic-integration-f0c19-20261114/originals/logs/magic-job-132387709703.log.gz",
+        "bytes": 29976,
+        "sha256": "55ffd4bd67db662e5e2c32df0e1885da1f0db9fa765fd9310bfae0d26dbcfb89",
+        "git_blob": "38e68b1b7b1e100808162b636a7f3a09f747268f"
+      },
+      "raw_bytes": 265514,
+      "raw_sha256": "bf5a2c981ea9107843a2ba677157dea510e9c1f8c903885447cb5ec36c41a6a3",
+      "markers": [
+        {
+          "line": 2729,
+          "original": "2026-11-14T08:19:01.5412677Z [LearningWorld] PASS checks=5347"
+        },
+        {
+          "line": 2746,
+          "original": "2026-11-14T08:19:01.9929961Z [TreasureWisp] PASS checks=14"
+        }
+      ]
+    }
+  ],
+  "required_followup": [
+    "Root must actually connect the additional Wisp gate and bind every execution to the subsequently published combined native commit/host pin; this handoff itself is not executable CI activation.",
+    "The combined rendered Treasure and Learning visual state still need fresh actual evidence. The older PR172 rendered effect cannot stand in for the final PR174 combination.",
+    "Retain all52 existing gates and17 Studio rasters/movie/sidecars. The three Treasure images remain a distinct existing capture family.",
+    "Producer image-index checks described in the contract are only signature/size/hash; full decode and visual review must not be inferred from those checks."
+  ],
+  "limits": [
+    "No general full product review or performance/60FPS/Android/audio claim.",
+    "The strict runner implementation is bound by its original tree blob and matching existing invocation shape; it was not re-executed.",
+    "Only this independent review directory was written."
+  ]
+}

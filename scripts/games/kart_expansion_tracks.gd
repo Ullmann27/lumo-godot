@@ -1,5 +1,6 @@
 extends RefCounted
 ## Original circuits following the ten supplied track boards. Existing four worlds stay intact.
+const ADVENTURE = preload("res://scripts/games/kart_adventure_routes.gd")
 const IDS: Array[String] = [
 	"crystal_canyon",
 	"jungle_temple",
@@ -74,6 +75,14 @@ const CATALOG: Array[Dictionary] = [
 
 
 static func definition(id: String) -> Dictionary:
+	var result: Dictionary = _original_definition(id)
+	if not result.is_empty():
+		result["points"] = ADVENTURE.points(id)
+		result["adventure"] = ADVENTURE.profile(id)
+	return result
+
+
+static func _original_definition(id: String) -> Dictionary:
 	var index := IDS.find(id)
 	if index < 0:
 		return {}

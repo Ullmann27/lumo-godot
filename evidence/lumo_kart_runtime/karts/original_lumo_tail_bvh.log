@@ -1,0 +1,79 @@
+{"variant": "comet", "phase": "driving", "frame": 12, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "driving", "frame": 13, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "driving", "frame": 42, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "driving", "frame": 90, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "left", "frame": 12, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "left", "frame": 13, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "left", "frame": 42, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "left", "frame": 90, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "right", "frame": 12, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "right", "frame": 13, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "right", "frame": 42, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "right", "frame": 90, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "jump", "frame": 12, "kart": 0, "free_self": 0, "attachment": 108, "baseline_attachment": 117}
+{"variant": "comet", "phase": "jump", "frame": 13, "kart": 0, "free_self": 0, "attachment": 108, "baseline_attachment": 117}
+{"variant": "comet", "phase": "jump", "frame": 42, "kart": 0, "free_self": 0, "attachment": 112, "baseline_attachment": 120}
+{"variant": "comet", "phase": "jump", "frame": 90, "kart": 0, "free_self": 0, "attachment": 111, "baseline_attachment": 124}
+{"variant": "comet", "phase": "landing", "frame": 12, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "landing", "frame": 13, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "landing", "frame": 42, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "landing", "frame": 90, "kart": 0, "free_self": 0, "attachment": 110, "baseline_attachment": 118}
+{"variant": "comet", "phase": "finish", "frame": 12, "kart": 0, "free_self": 0, "attachment": 102, "baseline_attachment": 114}
+{"variant": "comet", "phase": "finish", "frame": 13, "kart": 0, "free_self": 0, "attachment": 102, "baseline_attachment": 114}
+{"variant": "comet", "phase": "finish", "frame": 42, "kart": 0, "free_self": 0, "attachment": 103, "baseline_attachment": 75}
+{"variant": "comet", "phase": "finish", "frame": 90, "kart": 0, "free_self": 0, "attachment": 103, "baseline_attachment": 99}
+{"variant": "glider", "phase": "driving", "frame": 12, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "driving", "frame": 13, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "driving", "frame": 42, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "driving", "frame": 90, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "left", "frame": 12, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "left", "frame": 13, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "left", "frame": 42, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "left", "frame": 90, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "right", "frame": 12, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "right", "frame": 13, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "right", "frame": 42, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "right", "frame": 90, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "jump", "frame": 12, "kart": 0, "free_self": 0, "attachment": 81, "baseline_attachment": 89}
+{"variant": "glider", "phase": "jump", "frame": 13, "kart": 0, "free_self": 0, "attachment": 81, "baseline_attachment": 89}
+{"variant": "glider", "phase": "jump", "frame": 42, "kart": 0, "free_self": 0, "attachment": 82, "baseline_attachment": 89}
+{"variant": "glider", "phase": "jump", "frame": 90, "kart": 0, "free_self": 0, "attachment": 83, "baseline_attachment": 89}
+{"variant": "glider", "phase": "landing", "frame": 12, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "landing", "frame": 13, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "landing", "frame": 42, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "landing", "frame": 90, "kart": 0, "free_self": 0, "attachment": 80, "baseline_attachment": 88}
+{"variant": "glider", "phase": "finish", "frame": 12, "kart": 0, "free_self": 0, "attachment": 90, "baseline_attachment": 87}
+{"variant": "glider", "phase": "finish", "frame": 13, "kart": 0, "free_self": 0, "attachment": 90, "baseline_attachment": 87}
+{"variant": "glider", "phase": "finish", "frame": 42, "kart": 0, "free_self": 0, "attachment": 91, "baseline_attachment": 56}
+{"variant": "glider", "phase": "finish", "frame": 90, "kart": 0, "free_self": 0, "attachment": 81, "baseline_attachment": 83}
+{"variant": "turbo", "phase": "driving", "frame": 12, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "driving", "frame": 13, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "driving", "frame": 42, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "driving", "frame": 90, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "left", "frame": 12, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "left", "frame": 13, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "left", "frame": 42, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "left", "frame": 90, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "right", "frame": 12, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "right", "frame": 13, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "right", "frame": 42, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "right", "frame": 90, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "jump", "frame": 12, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 144}
+{"variant": "turbo", "phase": "jump", "frame": 13, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 144}
+{"variant": "turbo", "phase": "jump", "frame": 42, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "jump", "frame": 90, "kart": 0, "free_self": 0, "attachment": 144, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "landing", "frame": 12, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "landing", "frame": 13, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "landing", "frame": 42, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "landing", "frame": 90, "kart": 0, "free_self": 0, "attachment": 140, "baseline_attachment": 142}
+{"variant": "turbo", "phase": "finish", "frame": 12, "kart": 0, "free_self": 0, "attachment": 147, "baseline_attachment": 118}
+{"variant": "turbo", "phase": "finish", "frame": 13, "kart": 0, "free_self": 0, "attachment": 147, "baseline_attachment": 118}
+{"variant": "turbo", "phase": "finish", "frame": 42, "kart": 0, "free_self": 0, "attachment": 119, "baseline_attachment": 92}
+{"variant": "turbo", "phase": "finish", "frame": 90, "kart": 0, "free_self": 0, "attachment": 130, "baseline_attachment": 103}
+[OriginalTailDynamicBVH] PASS: 290 checks / 72 poses
+Blender 4.3.2
+Read blend: "/workspace/scratch/f13175e1ed4d/lumo-godot-runtime/art/lumo_kart/blender/karts/aurora_comet.blend"
+Read blend: "/workspace/scratch/f13175e1ed4d/lumo-godot-runtime/art/lumo_kart/blender/karts/aurora_glider.blend"
+Read blend: "/workspace/scratch/f13175e1ed4d/lumo-godot-runtime/art/lumo_kart/blender/karts/aurora_turbo.blend"
+
+Blender quit

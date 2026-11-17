@@ -1,0 +1,17 @@
+[
+  {
+    "path": "scripts/tests/kart_ai_behavior_regression.gd",
+    "sha256": "14c1ba4ddceb64cdf46108feac55c486a16a5f763e26b5b4762198f4c5411fe2",
+    "git_blob_sha": "562099c948d1495156fd4270921a3e5206fea8ea"
+  },
+  {
+    "path": "scripts/tests/kart_garage_touch_targets_regression.gd",
+    "sha256": "14452b7f8d424c427a66671a49d2c474bfe5cf2a1d56de8efe9e3c31b036ab88",
+    "git_blob_sha": "b55cf3612dbf9fae403d4d48841e5902de5ed9dd"
+  },
+  {
+    "path": "scripts/tests/kart_full_field_regression.gd",
+    "sha256": "db8c0e55dd4b91f611c5be33ed6036f5df7e5ceacfa437c16b5207280f543106",
+    "git_blob_sha": "09ca3799378ab17be93c235699b32eb6b2e44cb3"
+  }
+]

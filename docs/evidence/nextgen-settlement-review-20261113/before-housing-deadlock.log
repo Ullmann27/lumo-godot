@@ -1,0 +1,12 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+HOUSING_AUDIT before={"day":122,"mode":"settlement","player":{"buildings":[{"id":"b2","kind":"farm","plot":3},{"id":"b5","kind":"house","plot":0},{"id":"b6","kind":"house","plot":1},{"id":"b7","kind":"house","plot":2},{"id":"b8","kind":"house","plot":4},{"id":"b9","kind":"house","plot":5},{"id":"b10","kind":"house","plot":6},{"id":"b11","kind":"house","plot":7},{"id":"b12","kind":"house","plot":8}],"food_shortfall":0,"next_id":13,"plots":9,"population":16,"region":0,"resources":{"coins":5,"food":284,"stone":0,"wood":0}},"rival":{"buildings":[],"food_shortfall":0,"next_id":1,"plots":9,"population":2,"region":0,"resources":{"coins":8,"food":12,"stone":12,"wood":18}},"version":1,"winner":""}
+HOUSING_AUDIT after_farm_refund={"day":123,"mode":"settlement","player":{"buildings":[{"id":"b5","kind":"house","plot":0},{"id":"b6","kind":"house","plot":1},{"id":"b7","kind":"house","plot":2},{"id":"b8","kind":"house","plot":4},{"id":"b9","kind":"house","plot":5},{"id":"b10","kind":"house","plot":6},{"id":"b11","kind":"house","plot":7},{"id":"b12","kind":"house","plot":8}],"food_shortfall":0,"next_id":13,"plots":9,"population":16,"region":0,"resources":{"coins":5,"food":268,"stone":1,"wood":4}},"rival":{"buildings":[],"food_shortfall":0,"next_id":1,"plots":9,"population":2,"region":0,"resources":{"coins":8,"food":12,"stone":12,"wood":18}},"version":1,"winner":""} demolishable_homes=[] available=["farm"]
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium

@@ -1,0 +1,198 @@
+{
+  "schema": 1,
+  "base_commit": "afc0df9a2b1794f39051add9dfce0cf947bb177b",
+  "base_tree": "3e621dc8230e155e1089deb1a40c22f177e546b3",
+  "workflow": ".github/workflows/lumo-discovery-connections.yml",
+  "branch": "integration/lumo-discovery-bd-20261114",
+  "job": "discovery-native-acceptance",
+  "job_timeout_minutes": 120,
+  "collector_cli": "python3 tools/collect_discovery_connections.py --project PROJECT --output NEW_OUTPUT --expected-native-sha EXPECTED_SHA --expected-native-tree EXPECTED_TREE --godot GODOT_BIN",
+  "replay_cli": "python3 tools/verify_discovery_connections.py ORIGINAL_OUTPUT --expected-native-sha EXPECTED_SHA --expected-native-tree EXPECTED_TREE",
+  "replay_api": "verify(root, *, expected_native_sha, expected_native_tree, write=False)",
+  "output_parent_must_exist": true,
+  "output_must_not_exist": true,
+  "full_materialized_checkout_required_for_collector": true,
+  "expected_artifact": "lumo-discovery-connections-native-evidence-RUN_ID-RUN_ATTEMPT",
+  "discovery_output_in_artifact": "discovery/",
+  "manifest": "discovery/discovery-acceptance.json",
+  "probes": [
+    {
+      "ordinal": 1,
+      "probe": "learning_world_regression",
+      "mode": "headless",
+      "timeout_seconds": 420,
+      "required_exact_marker": "[LearningWorld] PASS checks=5347",
+      "original_log": "discovery/logs/01-learning_world_regression-headless.log",
+      "runner_transcript": "discovery/logs/01-learning_world_regression-headless.runner.log"
+    },
+    {
+      "ordinal": 2,
+      "probe": "learning_sharing_regression",
+      "mode": "headless",
+      "timeout_seconds": 420,
+      "required_exact_marker": "[LearningSharing] PASS checks=1811",
+      "original_log": "discovery/logs/02-learning_sharing_regression-headless.log",
+      "runner_transcript": "discovery/logs/02-learning_sharing_regression-headless.runner.log"
+    },
+    {
+      "ordinal": 3,
+      "probe": "learning_studio_regression",
+      "mode": "headless",
+      "timeout_seconds": 420,
+      "required_exact_marker": "[LearningStudio] PASS checks=183; runtime asset, materials, reduced motion and preserved learning",
+      "original_log": "discovery/logs/03-learning_studio_regression-headless.log",
+      "runner_transcript": "discovery/logs/03-learning_studio_regression-headless.runner.log"
+    },
+    {
+      "ordinal": 4,
+      "probe": "game_hub_magic_regression",
+      "mode": "headless",
+      "timeout_seconds": 150,
+      "required_exact_marker": "[LumoHub] PASS 8 visible native game entrances, active village route, preserved child settings and 3D reduced-motion portal",
+      "original_log": "discovery/logs/04-game_hub_magic_regression-headless.log",
+      "runner_transcript": "discovery/logs/04-game_hub_magic_regression-headless.runner.log"
+    },
+    {
+      "ordinal": 5,
+      "probe": "village_host_launch_regression",
+      "mode": "headless",
+      "timeout_seconds": 150,
+      "required_exact_marker": "[VillageHost] PASS Flutter village request, native boot scene and child context",
+      "original_log": "discovery/logs/05-village_host_launch_regression-headless.log",
+      "runner_transcript": "discovery/logs/05-village_host_launch_regression-headless.runner.log"
+    },
+    {
+      "ordinal": 6,
+      "probe": "learning_wonder_details_regression",
+      "mode": "headless",
+      "timeout_seconds": 150,
+      "required_exact_marker": "[LearningWonder] checks=100 failures=0 renderer=headless invalid_scene_checked=false",
+      "original_log": "discovery/logs/06-learning_wonder_details_regression-headless.log",
+      "runner_transcript": "discovery/logs/06-learning_wonder_details_regression-headless.runner.log"
+    },
+    {
+      "ordinal": 7,
+      "probe": "learning_wonder_details_regression",
+      "mode": "rendered",
+      "timeout_seconds": 420,
+      "required_exact_marker": "[LearningWonder] checks=108 failures=0 renderer=X11 invalid_scene_checked=true",
+      "original_log": "discovery/logs/07-learning_wonder_details_regression-rendered.log",
+      "runner_transcript": "discovery/logs/07-learning_wonder_details_regression-rendered.runner.log"
+    },
+    {
+      "ordinal": 8,
+      "probe": "game_hub_magic_capture",
+      "mode": "rendered",
+      "timeout_seconds": 180,
+      "required_exact_marker": "[LumoHubCapture] PASS 2 original current-source rendered PNGs",
+      "original_log": "discovery/logs/08-game_hub_magic_capture-rendered.log",
+      "runner_transcript": "discovery/logs/08-game_hub_magic_capture-rendered.runner.log"
+    },
+    {
+      "ordinal": 9,
+      "probe": "learning_world_capture",
+      "mode": "rendered",
+      "timeout_seconds": 900,
+      "required_exact_marker": "[LearningCapture] PASS captures=25",
+      "original_log": "discovery/logs/09-learning_world_capture-rendered.log",
+      "runner_transcript": "discovery/logs/09-learning_world_capture-rendered.runner.log"
+    },
+    {
+      "ordinal": 10,
+      "probe": "learning_wonder_details_capture",
+      "mode": "rendered",
+      "timeout_seconds": 420,
+      "required_exact_marker": "[WonderCapture] checks=136 failures=0 captures=11",
+      "original_log": "discovery/logs/10-learning_wonder_details_capture-rendered.log",
+      "runner_transcript": "discovery/logs/10-learning_wonder_details_capture-rendered.runner.log"
+    }
+  ],
+  "individual_budget_sum_seconds": 3630,
+  "budget_preservation": "First three existing learning headless modes retain 420s each; learning capture retains 900s; all six added-mode budgets match original Producer runner. Original Producer runner remains unchanged.",
+  "renderer_png_count": 38,
+  "original_report_count": 2,
+  "reports": [
+    "discovery/captures/hub/hub-original-identity.json",
+    "discovery/captures/wonder/captures.json"
+  ],
+  "png_groups": {
+    "hub": 2,
+    "learning": 25,
+    "wonder": 11
+  },
+  "pure_reader": {
+    "path": "tools/verify_discovery_rasters.py",
+    "bytes": 11528,
+    "sha256": "55591b4478d2074135ea4950fb00200d68a3f9bede286b39642d7fc17aa586da",
+    "git_blob": "219e691fc8aa119cc80221b3db6c77e63caf8bfe",
+    "mode": "100644"
+  },
+  "unchanged_helpers": [
+    {
+      "path": "tools/verify_discovery_rasters.py",
+      "bytes": 11528,
+      "sha256": "55591b4478d2074135ea4950fb00200d68a3f9bede286b39642d7fc17aa586da",
+      "git_blob": "219e691fc8aa119cc80221b3db6c77e63caf8bfe",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/verify_dream_rasters.py",
+      "bytes": 20254,
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5",
+      "mode": "100755"
+    },
+    {
+      "path": "tools/run_godot_probe.py",
+      "bytes": 2934,
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/validate_discovery_connections.sh",
+      "bytes": 3315,
+      "sha256": "b508826d07120d5b85a65858971562a941901ee3750c951ab315ff9dbd7cc041",
+      "git_blob": "07975f12c1f9b07d586cbeb85270329955198f04",
+      "mode": "100755"
+    },
+    {
+      "path": "tools/validate_dream_connections.sh",
+      "bytes": 4660,
+      "sha256": "19366398784db00c335800bc26ab3e171e062eb2149316021039bc027706dadc",
+      "git_blob": "834ea912003f5e27a271139646a857601baea905",
+      "mode": "100755"
+    }
+  ],
+  "python_methods": {
+    "existing_dream": 12,
+    "original_discovery_reader": 11,
+    "new_originals_counterexamples": 24
+  },
+  "preserved_prior_runtime_gates": {
+    "headless": [
+      "CONNECT_FOUR_RETURN_PASS checks=21",
+      "[TreasureWisp] PASS checks=14",
+      "[TreasureExploration] PASS 92 checks: branching, actual location questions, movement, legacy saves and original rewards",
+      "[LearningWorld] PASS checks=5347"
+    ],
+    "headless_seconds": [
+      60,
+      180,
+      420,
+      420
+    ],
+    "dream_modes": 5,
+    "dream_pngs": 7,
+    "dream_reports": 2,
+    "dream_budget_sum_seconds": 780
+  },
+  "engine": {
+    "version": "4.6.3.stable.official.7d41c59c4",
+    "zip_sha256": "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3",
+    "pillow_version": "12.3.0",
+    "setup_reference": "originals/source/.github/workflows/lumo-dream-connections.yml"
+  },
+  "pass_marker": "[DiscoveryOriginals] PASS 10 exact probes, 38 decoded PNGs and 2 original reports",
+  "scope": "Separate Discovery source/log/raster acceptance. Never a complete52/17, Host/APK, Android, physical device or FPS acceptance."
+}

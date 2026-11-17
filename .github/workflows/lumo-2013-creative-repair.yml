@@ -1,0 +1,204 @@
+name: LUMO 2013 creative repair proof
+
+on:
+  push:
+    branches:
+      - lumo-2013/creative-repair-20261110
+    paths:
+      - scripts/creative/treasure_island_art.gd
+      - scripts/creative/rhythm_stage_art.gd
+      - scripts/creative/rhythm_world.gd
+      - .github/workflows/lumo-2013-creative-repair.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lumo-2013-creative-repair-proof
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for lint baseline worktree at BASE_SHA.
+
+      - name: Install verification tools
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check gdtoolkit==4.5.0
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip"             https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Format and lint the repaired GDScript
+        run: |
+          set -euo pipefail
+          gdformat scripts/creative/treasure_island_art.gd scripts/creative/rhythm_stage_art.gd scripts/creative/rhythm_world.gd
+          gdformat --check scripts/creative/treasure_island_art.gd scripts/creative/rhythm_stage_art.gd scripts/creative/rhythm_world.gd
+          gdlint scripts/creative/treasure_island_art.gd scripts/creative/rhythm_stage_art.gd scripts/creative/rhythm_world.gd
+          git diff --check
+
+      - name: Import project
+        run: |
+          set -euo pipefail
+          timeout 300s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --editor --import --quit             2>&1 | tee "$RUNNER_TEMP/import.log"
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' "$RUNNER_TEMP/import.log"; then
+            exit 1
+          fi
+
+      - name: Rhythm and Treasure regressions
+        run: |
+          set -euo pipefail
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --script scripts/tests/rhythm_party_regression.gd             2>&1 | tee "$RUNNER_TEMP/rhythm-regression.log"
+          grep -F '[RhythmParty] PASS' "$RUNNER_TEMP/rhythm-regression.log"
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64             --headless --path . --script scripts/tests/treasure_island_regression.gd             2>&1 | tee "$RUNNER_TEMP/treasure-regression.log"
+          grep -F '[TreasureIsland] PASS' "$RUNNER_TEMP/treasure-regression.log"
+
+      - name: Render LOW MEDIUM HIGH visual and draw-call proof
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          for tier in low medium high; do
+            out="$RUNNER_TEMP/creative-$tier"
+            mkdir -p "$out"
+            CREATIVE_CAPTURE_DIR="$out"             CREATIVE_CAPTURE_GAMES="rhythm,treasure"             CREATIVE_CAPTURE_TIER="$tier"             timeout 300s xvfb-run -a -s '-screen 0 1600x900x24'               Godot_v4.6.3-stable_linux.x86_64               --path . --audio-driver Dummy --rendering-method gl_compatibility               --script scripts/tests/creative_worlds_optik_capture.gd               2>&1 | tee "$RUNNER_TEMP/capture-$tier.log"
+            grep -F '[CreativeWorldsCapture] PASS' "$RUNNER_TEMP/capture-$tier.log"
+          done
+
+      - name: Enforce current draw-call ceilings
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          ceilings = {
+              "low": {"rhythm": 105, "treasure": 138},
+              "medium": {"rhythm": 187, "treasure": 243},
+              "high": {"rhythm": 188, "treasure": 265},
+          }
+          report = {}
+          for tier, games in ceilings.items():
+              data = json.loads((root / f"creative-{tier}" / "metrics.json").read_text())
+              report[tier] = {}
+              for game, ceiling in games.items():
+                  actual = int(data[game]["overview"]["draw_calls"])
+                  report[tier][game] = {"draw_calls": actual, "ceiling": ceiling}
+                  if actual > ceiling:
+                      raise SystemExit(
+                          f"{tier} {game}: {actual} draw calls exceed ceiling {ceiling}"
+                      )
+          (root / "draw-call-report.json").write_text(json.dumps(report, indent=2))
+          print(json.dumps(report, indent=2))
+          PY
+
+      - name: Render complete gameplay captures
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          rm -rf exports/creative-build
+          mkdir -p exports/creative-build
+          timeout 300s xvfb-run -a -s '-screen 0 1600x900x24'             Godot_v4.6.3-stable_linux.x86_64             --path . --audio-driver Dummy --rendering-method gl_compatibility             --script scripts/tests/creative_adventure_capture.gd             2>&1 | tee "$RUNNER_TEMP/creative-adventure.log"
+          grep -F '[CreativeAdventure] PASS actual 3D notes' "$RUNNER_TEMP/creative-adventure.log"
+          test -s exports/creative-build/06_rhythm_play.png
+          test -s exports/creative-build/07_treasure_exploration.png
+
+      - name: Run full validators and prevent new repository lint debt
+        env:
+          GODOT_BIN: Godot_v4.6.3-stable_linux.x86_64
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          BASE_SHA: 93af86afcfebc17f9720f38a84db0c9c57ffcb4b
+        run: |
+          set -euo pipefail
+
+          python3 tools/validate_project.py 2>&1 | tee "$RUNNER_TEMP/validate-project-py.log"
+          timeout 1200s bash tools/validate_project.sh 2>&1 | tee "$RUNNER_TEMP/validate-project.log"
+          grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/validate-project.log"
+
+          count_gdlint() {
+            local tree="$1"
+            local out="$2"
+            (
+              cd "$tree"
+              mapfile -t files < <(find scripts -name '*.gd' -type f -print | sort)
+              set +e
+              gdlint "${files[@]}" > "$out" 2>&1
+              set -e
+            )
+            grep -Ec 'Error:' "$out" || true
+          }
+
+          count_gdformat() {
+            local tree="$1"
+            local out="$2"
+            (
+              cd "$tree"
+              mapfile -t files < <(find scripts -name '*.gd' -type f -print | sort)
+              set +e
+              gdformat --check "${files[@]}" > "$out" 2>&1
+              set -e
+            )
+            grep -Ec '^would reformat ' "$out" || true
+          }
+
+          git worktree add --detach "$RUNNER_TEMP/lint-base" "$BASE_SHA"
+          base_lint="$(count_gdlint "$RUNNER_TEMP/lint-base" "$RUNNER_TEMP/gdlint-base.log")"
+          head_lint="$(count_gdlint "$GITHUB_WORKSPACE" "$RUNNER_TEMP/gdlint-head.log")"
+          base_format="$(count_gdformat "$RUNNER_TEMP/lint-base" "$RUNNER_TEMP/gdformat-base.log")"
+          head_format="$(count_gdformat "$GITHUB_WORKSPACE" "$RUNNER_TEMP/gdformat-head.log")"
+
+          printf 'BASE_GDLINT=%s\nHEAD_GDLINT=%s\nBASE_GDFORMAT=%s\nHEAD_GDFORMAT=%s\n' \
+            "$base_lint" "$head_lint" "$base_format" "$head_format" \
+            | tee "$RUNNER_TEMP/repo-lint-delta.txt"
+
+          test "$head_lint" -le "$base_lint"
+          test "$head_format" -le "$base_format"
+          echo "PASS no new repository-wide GDScript lint/format debt"
+
+      - name: Commit verified formatting and fixes
+        if: success()
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            scripts/creative/treasure_island_art.gd \
+            scripts/creative/rhythm_stage_art.gd \
+            scripts/creative/rhythm_world.gd
+          if git diff --cached --quiet; then
+            echo "No product changes to commit"
+            exit 0
+          fi
+          git diff --cached --check
+          git commit -m "style(creative): gdformat verified Rhythm and Treasure repair"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-2013-creative-repair-proof
+          path: |
+            exports/creative-build/
+            ${{ runner.temp }}/creative-low/
+            ${{ runner.temp }}/creative-medium/
+            ${{ runner.temp }}/creative-high/
+            ${{ runner.temp }}/draw-call-report.json
+            ${{ runner.temp }}/validate-project.log
+            ${{ runner.temp }}/validate-project-py.log
+            ${{ runner.temp }}/repo-lint-delta.txt
+            ${{ runner.temp }}/gdlint-base.log
+            ${{ runner.temp }}/gdlint-head.log
+            ${{ runner.temp }}/gdformat-base.log
+            ${{ runner.temp }}/gdformat-head.log
+            ${{ runner.temp }}/*.log
+          if-no-files-found: warn
+          retention-days: 30

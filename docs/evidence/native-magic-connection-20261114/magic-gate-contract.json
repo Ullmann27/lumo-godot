@@ -1,0 +1,238 @@
+{
+  "schema": 1,
+  "status": "SEPARATE_GATE_HANDOFF_NOT_EXECUTED",
+  "native_base": "f0c19f9eb69ea330ac5d2b8f9948cb029ca218aa",
+  "source_freeze_sha256": "3fe8fdc5d85bfa0dd6419792688b72ed3840c3122e2267f695e800e6f986b1e2",
+  "execution_source": "The subsequently published combined native commit containing these seven exact blobs, bound to the host native pin. Neither f0c19 nor a Producer head may stand in for that combined source.",
+  "working_directory": "Repository root of that exact combined native checkout.",
+  "existing_core": {
+    "runner": "tools/validate_nextgen.sh",
+    "blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+    "calls": 52,
+    "studio2020_images": 17,
+    "changed": false,
+    "new_wisp_mode_is_included": false
+  },
+  "separate_sequence": [
+    {
+      "id": "magic-wisps-headless",
+      "script": "scripts/tests/treasure_wisp_regression.gd",
+      "mode": "headless",
+      "timeout_seconds": 180,
+      "required_marker": "[TreasureWisp] PASS",
+      "log": "magic-evidence/wisps.log",
+      "observed_producer_marker": "[TreasureWisp] PASS checks=14",
+      "producer_jobs": [
+        132386964721,
+        132387709703
+      ],
+      "existing_52_call": false,
+      "argv_template": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "${MAGIC_EVIDENCE_DIR}/wisps.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[TreasureWisp] PASS",
+        "--",
+        "${GODOT_BIN}",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "scripts/tests/treasure_wisp_regression.gd"
+      ],
+      "environment_template": {
+        "XDG_DATA_HOME": "${MAGIC_EVIDENCE_DIR}/user-data/magic-wisps-headless"
+      },
+      "source_blob": "7f256c202defeeba47c8c96a577065ee2eda16c1"
+    },
+    {
+      "id": "magic-treasure-headless",
+      "script": "scripts/tests/treasure_exploration_regression.gd",
+      "mode": "headless",
+      "timeout_seconds": 180,
+      "required_marker": "[TreasureExploration] PASS",
+      "log": "magic-evidence/quest.log",
+      "observed_producer_marker": "[TreasureExploration] PASS 92 checks: branching, actual location questions, movement, legacy saves and original rewards",
+      "producer_jobs": [
+        132386964721
+      ],
+      "existing_52_call": true,
+      "argv_template": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "${MAGIC_EVIDENCE_DIR}/quest.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[TreasureExploration] PASS",
+        "--",
+        "${GODOT_BIN}",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "scripts/tests/treasure_exploration_regression.gd"
+      ],
+      "environment_template": {
+        "XDG_DATA_HOME": "${MAGIC_EVIDENCE_DIR}/user-data/magic-treasure-headless"
+      },
+      "source_blob": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29"
+    },
+    {
+      "id": "magic-learning-headless",
+      "script": "scripts/tests/learning_world_regression.gd",
+      "mode": "headless",
+      "timeout_seconds": 240,
+      "required_marker": "[LearningWorld] PASS",
+      "log": "magic-evidence/learning-3d.log",
+      "observed_producer_marker": "[LearningWorld] PASS checks=5347",
+      "producer_jobs": [
+        132387709703
+      ],
+      "existing_52_call": true,
+      "argv_template": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "${MAGIC_EVIDENCE_DIR}/learning-3d.log",
+        "--timeout",
+        "240",
+        "--required",
+        "[LearningWorld] PASS",
+        "--",
+        "${GODOT_BIN}",
+        "--headless",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "scripts/tests/learning_world_regression.gd"
+      ],
+      "environment_template": {
+        "XDG_DATA_HOME": "${MAGIC_EVIDENCE_DIR}/user-data/magic-learning-headless"
+      },
+      "source_blob": "8e534e78509283679889335255f39a4f7d49bb64"
+    },
+    {
+      "id": "magic-treasure-rendered",
+      "script": "scripts/tests/treasure_exploration_regression.gd",
+      "mode": "rendered",
+      "timeout_seconds": 420,
+      "required_marker": "[TreasureExploration] PASS",
+      "log": "magic-evidence/render.log",
+      "observed_producer_marker": "[TreasureExploration] PASS 95 checks: branching, actual location questions, movement, legacy saves and original rewards",
+      "producer_jobs": [
+        132386964721
+      ],
+      "existing_52_call": true,
+      "argv_template": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "${MAGIC_EVIDENCE_DIR}/render.log",
+        "--timeout",
+        "420",
+        "--required",
+        "[TreasureExploration] PASS",
+        "--",
+        "xvfb-run",
+        "-a",
+        "-s",
+        "-screen 0 2560x2560x24",
+        "${GODOT_BIN}",
+        "--path",
+        ".",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "scripts/tests/treasure_exploration_regression.gd"
+      ],
+      "environment_template": {
+        "XDG_DATA_HOME": "${MAGIC_EVIDENCE_DIR}/user-data/magic-treasure-rendered",
+        "TREASURE_EXPLORATION_CAPTURE_DIR": "${MAGIC_EVIDENCE_DIR}/images",
+        "LIBGL_ALWAYS_SOFTWARE": "1"
+      },
+      "source_blob": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29"
+    }
+  ],
+  "setup_requirements": [
+    "Use the existing validated Godot 4.6.3 installation and original strict importer; do not copy either Producer workflow wholesale.",
+    "Set GODOT_BIN to the installed executable and MAGIC_EVIDENCE_DIR to an absolute separate output directory.",
+    "Create the log/image/XDG directories before invoking commands; isolate each probe save directory.",
+    "Record actual source-sha.txt, source-tree.txt, source-dirty.txt, source-dirty-after.txt and engine.txt for the combined checkout.",
+    "Keep every existing 52-mode deadline/marker and every existing raster/movie/sidecar check unchanged. The listed budgets belong only to these separately described Producer commands.",
+    "Use the actual tools/run_godot_probe.py from the same native checkout, unchanged blob c23859ece2d62101d000d7a89556fda5d3fe4105; preserve its error handling."
+  ],
+  "capture_environment": "TREASURE_EXPLORATION_CAPTURE_DIR",
+  "capture_files": [
+    {
+      "path": "magic-evidence/images/treasure_choose_route.png",
+      "capture_name": "treasure_choose_route.png",
+      "source_window_size": [
+        1280,
+        720
+      ],
+      "source_size_is_not_a_decoded_image_claim": true
+    },
+    {
+      "path": "magic-evidence/images/treasure_garden_first.png",
+      "capture_name": "treasure_garden_first.png",
+      "source_window_size": [
+        1280,
+        720
+      ],
+      "source_size_is_not_a_decoded_image_claim": true
+    },
+    {
+      "path": "magic-evidence/images/treasure_route_complete.png",
+      "capture_name": "treasure_route_complete.png",
+      "source_window_size": [
+        1280,
+        720
+      ],
+      "source_size_is_not_a_decoded_image_claim": true
+    }
+  ],
+  "capture_roster_relationship": "These are existing TreasureExploration capture names; do not add them to or replace the separate 17 Studio2020 PNG roster.",
+  "producer_image_index": {
+    "path": "magic-evidence/images.json",
+    "schema": "Object keyed by the three PNG basenames, each value contains bytes (integer) and sha256 (hex).",
+    "producer_checks": "PNG signature, >8192 bytes, SHA256; no full decode or visual review claimed by this handoff."
+  },
+  "original_producer_workflows": [
+    {
+      "path": ".github/workflows/lumo-magical-wisps.yml",
+      "blob": "97a70c318dc674c8e52f4380f297ed21f2142622",
+      "run_id": 43574914204,
+      "job_id": 132386964721,
+      "head": "1b01b08abd4ff2580125d787a6150e10b2fe47b8",
+      "artifact_id": 14105782145
+    },
+    {
+      "path": ".github/workflows/lumo-magic-learning.yml",
+      "blob": "2782edc7fae21dfe85fa913e2102fbbe685b9790",
+      "run_id": 43575163668,
+      "job_id": 132387709703,
+      "head": "f2edd325142b92a534b06518f66eadad3551412b",
+      "artifact_id": 14105997353
+    }
+  ],
+  "limits": [
+    "This contract describes commands; none was executed locally in this pack.",
+    "The original rendered Treasure run used the earlier PR172 effect. The final PR174 effect and the combined source still require current rendered validation.",
+    "The Learning producer job is headless; mounted/visible properties are not a fresh Learning pixel or animation acceptance.",
+    "No Android, input-device, audible speech, 60 FPS, visual receipt, publication or pin approval is inferred."
+  ]
+}

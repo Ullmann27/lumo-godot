@@ -1,0 +1,1280 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:19:25 | INFO: Starting glTF 2.0 export
+21:19:25 | INFO: Extracting primitive: TerrainRoof_Mesh
+21:19:25 | INFO: Primitives created: 1
+21:19:25 | INFO: Finished glTF 2.0 export in 0.08100295066833496 s
+
+21:19:25 | INFO: Starting glTF 2.0 export
+21:19:25 | INFO: Extracting primitive: TerrainRoof_Mesh.001
+21:19:25 | INFO: Primitives created: 1
+21:19:25 | INFO: Finished glTF 2.0 export in 0.11541295051574707 s
+
+21:19:25 | INFO: Starting glTF 2.0 export
+21:19:26 | INFO: Extracting primitive: TerrainRoof_Mesh.002
+21:19:26 | INFO: Primitives created: 1
+21:19:26 | INFO: Finished glTF 2.0 export in 0.05837869644165039 s
+
+21:19:26 | INFO: Starting glTF 2.0 export
+21:19:26 | INFO: Extracting primitive: TerrainRoof_Mesh.003
+21:19:26 | INFO: Primitives created: 1
+21:19:26 | INFO: Finished glTF 2.0 export in 0.07193279266357422 s
+
+21:19:26 | INFO: Starting glTF 2.0 export
+21:19:26 | INFO: Extracting primitive: TerrainRoof_Mesh.004
+21:19:26 | INFO: Primitives created: 1
+21:19:26 | INFO: Finished glTF 2.0 export in 0.08597421646118164 s
+
+21:19:26 | INFO: Starting glTF 2.0 export
+21:19:27 | INFO: Extracting primitive: TerrainRoof_Mesh.005
+21:19:27 | INFO: Primitives created: 1
+21:19:27 | INFO: Finished glTF 2.0 export in 0.10293054580688477 s
+
+21:19:27 | INFO: Starting glTF 2.0 export
+21:19:27 | INFO: Extracting primitive: TerrainRoof_Mesh.006
+21:19:27 | INFO: Primitives created: 1
+21:19:27 | INFO: Finished glTF 2.0 export in 0.17414093017578125 s
+
+21:19:27 | INFO: Starting glTF 2.0 export
+21:19:28 | INFO: Extracting primitive: TerrainRoof_Mesh.007
+21:19:28 | INFO: Primitives created: 1
+21:19:28 | INFO: Finished glTF 2.0 export in 0.15652942657470703 s
+
+21:19:28 | INFO: Starting glTF 2.0 export
+21:19:28 | INFO: Extracting primitive: TerrainRoof_Mesh.008
+21:19:28 | INFO: Primitives created: 1
+21:19:28 | INFO: Finished glTF 2.0 export in 0.18376946449279785 s
+
+21:19:29 | INFO: Starting glTF 2.0 export
+21:19:29 | INFO: Extracting primitive: TerrainRoof_Mesh.009
+21:19:29 | INFO: Primitives created: 1
+21:19:29 | INFO: Finished glTF 2.0 export in 0.1376795768737793 s
+
+21:19:30 | INFO: Starting glTF 2.0 export
+21:19:30 | INFO: Extracting primitive: TerrainRoof_Mesh.010
+21:19:30 | INFO: Primitives created: 1
+21:19:30 | INFO: Finished glTF 2.0 export in 0.17873120307922363 s
+
+21:19:30 | INFO: Starting glTF 2.0 export
+21:19:30 | INFO: Extracting primitive: TerrainRoof_Mesh.011
+21:19:30 | INFO: Primitives created: 1
+21:19:30 | INFO: Finished glTF 2.0 export in 0.14499926567077637 s
+
+21:19:31 | INFO: Starting glTF 2.0 export
+21:19:31 | INFO: Extracting primitive: TerrainRoof_Mesh.012
+21:19:31 | INFO: Primitives created: 1
+21:19:31 | INFO: Finished glTF 2.0 export in 0.16304850578308105 s
+
+21:19:31 | INFO: Starting glTF 2.0 export
+21:19:31 | INFO: Extracting primitive: TerrainRoof_Mesh.013
+21:19:31 | INFO: Primitives created: 1
+21:19:31 | INFO: Finished glTF 2.0 export in 0.13768959045410156 s
+
+Info: No new files have been packed
+Info: Saved "zauberwald_tunnel_workshop.blend"
+21:19:33 | INFO: Data are loaded, start creating Blender stuff
+21:19:33 | INFO: Blender create Mesh node TerrainRoof_Mesh
+21:19:33 | INFO: glTF import finished in 0.02s
+21:19:33 | INFO: Data are loaded, start creating Blender stuff
+21:19:33 | INFO: Blender create Mesh node TerrainRoof_Mesh.001
+21:19:33 | INFO: glTF import finished in 0.02s
+21:19:34 | INFO: Data are loaded, start creating Blender stuff
+21:19:34 | INFO: Blender create Mesh node TerrainRoof_Mesh.002
+21:19:34 | INFO: glTF import finished in 0.01s
+21:19:34 | INFO: Data are loaded, start creating Blender stuff
+21:19:34 | INFO: Blender create Mesh node TerrainRoof_Mesh.003
+21:19:34 | INFO: glTF import finished in 0.01s
+21:19:34 | INFO: Data are loaded, start creating Blender stuff
+21:19:34 | INFO: Blender create Mesh node TerrainRoof_Mesh.004
+21:19:34 | INFO: glTF import finished in 0.03s
+21:19:34 | INFO: Data are loaded, start creating Blender stuff
+21:19:34 | INFO: Blender create Mesh node TerrainRoof_Mesh.005
+21:19:34 | INFO: glTF import finished in 0.01s
+21:19:35 | INFO: Data are loaded, start creating Blender stuff
+21:19:35 | INFO: Blender create Mesh node TerrainRoof_Mesh.006
+21:19:35 | INFO: glTF import finished in 0.03s
+21:19:35 | INFO: Data are loaded, start creating Blender stuff
+21:19:35 | INFO: Blender create Mesh node TerrainRoof_Mesh.007
+21:19:35 | INFO: glTF import finished in 0.02s
+21:19:35 | INFO: Data are loaded, start creating Blender stuff
+21:19:35 | INFO: Blender create Mesh node TerrainRoof_Mesh.008
+21:19:35 | INFO: glTF import finished in 0.01s
+21:19:35 | INFO: Data are loaded, start creating Blender stuff
+21:19:35 | INFO: Blender create Mesh node TerrainRoof_Mesh.009
+21:19:35 | INFO: glTF import finished in 0.01s
+21:19:35 | INFO: Data are loaded, start creating Blender stuff
+21:19:35 | INFO: Blender create Mesh node TerrainRoof_Mesh.010
+21:19:35 | INFO: glTF import finished in 0.02s
+21:19:35 | INFO: Data are loaded, start creating Blender stuff
+21:19:35 | INFO: Blender create Mesh node TerrainRoof_Mesh.011
+21:19:35 | INFO: glTF import finished in 0.01s
+21:19:36 | INFO: Data are loaded, start creating Blender stuff
+21:19:36 | INFO: Blender create Mesh node TerrainRoof_Mesh.012
+21:19:36 | INFO: glTF import finished in 0.01s
+21:19:36 | INFO: Data are loaded, start creating Blender stuff
+21:19:36 | INFO: Blender create Mesh node TerrainRoof_Mesh.013
+21:19:36 | INFO: glTF import finished in 0.01s
+LUMO_TERRAIN_PASS zauberwald 14 core_unchanged 21
+21:19:36 | INFO: Starting glTF 2.0 export
+21:19:37 | INFO: Extracting primitive: TerrainRoof_Mesh
+21:19:37 | INFO: Primitives created: 1
+21:19:37 | INFO: Finished glTF 2.0 export in 0.11835217475891113 s
+
+21:19:37 | INFO: Starting glTF 2.0 export
+21:19:37 | INFO: Extracting primitive: TerrainRoof_Mesh.001
+21:19:37 | INFO: Primitives created: 1
+21:19:37 | INFO: Finished glTF 2.0 export in 0.12673664093017578 s
+
+21:19:37 | INFO: Starting glTF 2.0 export
+21:19:37 | INFO: Extracting primitive: TerrainRoof_Mesh.002
+21:19:37 | INFO: Primitives created: 1
+21:19:37 | INFO: Finished glTF 2.0 export in 0.20998549461364746 s
+
+21:19:38 | INFO: Starting glTF 2.0 export
+21:19:38 | INFO: Extracting primitive: TerrainRoof_Mesh.003
+21:19:38 | INFO: Primitives created: 1
+21:19:38 | INFO: Finished glTF 2.0 export in 0.1613454818725586 s
+
+21:19:38 | INFO: Starting glTF 2.0 export
+21:19:38 | INFO: Extracting primitive: TerrainRoof_Mesh.004
+21:19:38 | INFO: Primitives created: 1
+21:19:38 | INFO: Finished glTF 2.0 export in 0.08189249038696289 s
+
+21:19:38 | INFO: Starting glTF 2.0 export
+21:19:38 | INFO: Extracting primitive: TerrainRoof_Mesh.005
+21:19:38 | INFO: Primitives created: 1
+21:19:38 | INFO: Finished glTF 2.0 export in 0.06676840782165527 s
+
+21:19:39 | INFO: Starting glTF 2.0 export
+21:19:39 | INFO: Extracting primitive: TerrainRoof_Mesh.006
+21:19:39 | INFO: Primitives created: 1
+21:19:39 | INFO: Finished glTF 2.0 export in 0.131608247756958 s
+
+21:19:39 | INFO: Starting glTF 2.0 export
+21:19:39 | INFO: Extracting primitive: TerrainRoof_Mesh.007
+21:19:39 | INFO: Primitives created: 1
+21:19:39 | INFO: Finished glTF 2.0 export in 0.17471098899841309 s
+
+21:19:40 | INFO: Starting glTF 2.0 export
+21:19:40 | INFO: Extracting primitive: TerrainRoof_Mesh.008
+21:19:40 | INFO: Primitives created: 1
+21:19:40 | INFO: Finished glTF 2.0 export in 0.20490312576293945 s
+
+21:19:41 | INFO: Starting glTF 2.0 export
+21:19:41 | INFO: Extracting primitive: TerrainRoof_Mesh.009
+21:19:41 | INFO: Primitives created: 1
+21:19:41 | INFO: Finished glTF 2.0 export in 0.11372995376586914 s
+
+21:19:41 | INFO: Starting glTF 2.0 export
+21:19:42 | INFO: Extracting primitive: TerrainRoof_Mesh.010
+21:19:42 | INFO: Primitives created: 1
+21:19:42 | INFO: Finished glTF 2.0 export in 0.46654558181762695 s
+
+21:19:42 | INFO: Starting glTF 2.0 export
+21:19:42 | INFO: Extracting primitive: TerrainRoof_Mesh.011
+21:19:42 | INFO: Primitives created: 1
+21:19:42 | INFO: Finished glTF 2.0 export in 0.07488584518432617 s
+
+21:19:42 | INFO: Starting glTF 2.0 export
+21:19:42 | INFO: Extracting primitive: TerrainRoof_Mesh.012
+21:19:42 | INFO: Primitives created: 1
+21:19:42 | INFO: Finished glTF 2.0 export in 0.09394145011901855 s
+
+21:19:43 | INFO: Starting glTF 2.0 export
+21:19:43 | INFO: Extracting primitive: TerrainRoof_Mesh.013
+21:19:43 | INFO: Primitives created: 1
+21:19:43 | INFO: Finished glTF 2.0 export in 0.08065581321716309 s
+
+Info: No new files have been packed
+Info: Saved "bergwelt_tunnel_workshop.blend"
+21:19:43 | INFO: Data are loaded, start creating Blender stuff
+21:19:43 | INFO: Blender create Mesh node TerrainRoof_Mesh
+21:19:43 | INFO: glTF import finished in 0.01s
+21:19:44 | INFO: Data are loaded, start creating Blender stuff
+21:19:44 | INFO: Blender create Mesh node TerrainRoof_Mesh.001
+21:19:44 | INFO: glTF import finished in 0.01s
+21:19:44 | INFO: Data are loaded, start creating Blender stuff
+21:19:44 | INFO: Blender create Mesh node TerrainRoof_Mesh.002
+21:19:44 | INFO: glTF import finished in 0.01s
+21:19:44 | INFO: Data are loaded, start creating Blender stuff
+21:19:44 | INFO: Blender create Mesh node TerrainRoof_Mesh.003
+21:19:44 | INFO: glTF import finished in 0.01s
+21:19:44 | INFO: Data are loaded, start creating Blender stuff
+21:19:44 | INFO: Blender create Mesh node TerrainRoof_Mesh.004
+21:19:44 | INFO: glTF import finished in 0.02s
+21:19:44 | INFO: Data are loaded, start creating Blender stuff
+21:19:44 | INFO: Blender create Mesh node TerrainRoof_Mesh.005
+21:19:44 | INFO: glTF import finished in 0.02s
+21:19:44 | INFO: Data are loaded, start creating Blender stuff
+21:19:44 | INFO: Blender create Mesh node TerrainRoof_Mesh.006
+21:19:44 | INFO: glTF import finished in 0.05s
+21:19:45 | INFO: Data are loaded, start creating Blender stuff
+21:19:45 | INFO: Blender create Mesh node TerrainRoof_Mesh.007
+21:19:45 | INFO: glTF import finished in 0.01s
+21:19:45 | INFO: Data are loaded, start creating Blender stuff
+21:19:45 | INFO: Blender create Mesh node TerrainRoof_Mesh.008
+21:19:45 | INFO: glTF import finished in 0.03s
+21:19:45 | INFO: Data are loaded, start creating Blender stuff
+21:19:45 | INFO: Blender create Mesh node TerrainRoof_Mesh.009
+21:19:45 | INFO: glTF import finished in 0.01s
+21:19:45 | INFO: Data are loaded, start creating Blender stuff
+21:19:45 | INFO: Blender create Mesh node TerrainRoof_Mesh.010
+21:19:45 | INFO: glTF import finished in 0.04s
+21:19:46 | INFO: Data are loaded, start creating Blender stuff
+21:19:46 | INFO: Blender create Mesh node TerrainRoof_Mesh.011
+21:19:46 | INFO: glTF import finished in 0.01s
+21:19:46 | INFO: Data are loaded, start creating Blender stuff
+21:19:46 | INFO: Blender create Mesh node TerrainRoof_Mesh.012
+21:19:46 | INFO: glTF import finished in 0.03s
+21:19:46 | INFO: Data are loaded, start creating Blender stuff
+21:19:46 | INFO: Blender create Mesh node TerrainRoof_Mesh.013
+21:19:46 | INFO: glTF import finished in 0.02s
+LUMO_TERRAIN_PASS bergwelt 14 core_unchanged 21
+21:19:46 | INFO: Starting glTF 2.0 export
+21:19:46 | INFO: Extracting primitive: TerrainRoof_Mesh
+21:19:46 | INFO: Primitives created: 1
+21:19:46 | INFO: Finished glTF 2.0 export in 0.047878265380859375 s
+
+21:19:46 | INFO: Starting glTF 2.0 export
+21:19:46 | INFO: Extracting primitive: TerrainRoof_Mesh.001
+21:19:46 | INFO: Primitives created: 1
+21:19:46 | INFO: Finished glTF 2.0 export in 0.03821969032287598 s
+
+21:19:46 | INFO: Starting glTF 2.0 export
+21:19:47 | INFO: Extracting primitive: TerrainRoof_Mesh.002
+21:19:47 | INFO: Primitives created: 1
+21:19:47 | INFO: Finished glTF 2.0 export in 0.22890543937683105 s
+
+21:19:47 | INFO: Starting glTF 2.0 export
+21:19:47 | INFO: Extracting primitive: TerrainRoof_Mesh.003
+21:19:47 | INFO: Primitives created: 1
+21:19:47 | INFO: Finished glTF 2.0 export in 0.2792022228240967 s
+
+21:19:47 | INFO: Starting glTF 2.0 export
+21:19:47 | INFO: Extracting primitive: TerrainRoof_Mesh.004
+21:19:48 | INFO: Primitives created: 1
+21:19:48 | INFO: Finished glTF 2.0 export in 0.21316981315612793 s
+
+21:19:48 | INFO: Starting glTF 2.0 export
+21:19:48 | INFO: Extracting primitive: TerrainRoof_Mesh.005
+21:19:48 | INFO: Primitives created: 1
+21:19:48 | INFO: Finished glTF 2.0 export in 0.07891631126403809 s
+
+21:19:48 | INFO: Starting glTF 2.0 export
+21:19:48 | INFO: Extracting primitive: TerrainRoof_Mesh.006
+21:19:48 | INFO: Primitives created: 1
+21:19:48 | INFO: Finished glTF 2.0 export in 0.13174796104431152 s
+
+21:19:49 | INFO: Starting glTF 2.0 export
+21:19:49 | INFO: Extracting primitive: TerrainRoof_Mesh.007
+21:19:49 | INFO: Primitives created: 1
+21:19:49 | INFO: Finished glTF 2.0 export in 0.21364188194274902 s
+
+21:19:49 | INFO: Starting glTF 2.0 export
+21:19:49 | INFO: Extracting primitive: TerrainRoof_Mesh.008
+21:19:50 | INFO: Primitives created: 1
+21:19:50 | INFO: Finished glTF 2.0 export in 0.10406374931335449 s
+
+21:19:50 | INFO: Starting glTF 2.0 export
+21:19:50 | INFO: Extracting primitive: TerrainRoof_Mesh.009
+21:19:50 | INFO: Primitives created: 1
+21:19:50 | INFO: Finished glTF 2.0 export in 0.08714628219604492 s
+
+21:19:50 | INFO: Starting glTF 2.0 export
+21:19:50 | INFO: Extracting primitive: TerrainRoof_Mesh.010
+21:19:50 | INFO: Primitives created: 1
+21:19:50 | INFO: Finished glTF 2.0 export in 0.10123252868652344 s
+
+21:19:51 | INFO: Starting glTF 2.0 export
+21:19:51 | INFO: Extracting primitive: TerrainRoof_Mesh.011
+21:19:51 | INFO: Primitives created: 1
+21:19:51 | INFO: Finished glTF 2.0 export in 0.0932159423828125 s
+
+21:19:51 | INFO: Starting glTF 2.0 export
+21:19:51 | INFO: Extracting primitive: TerrainRoof_Mesh.012
+21:19:51 | INFO: Primitives created: 1
+21:19:51 | INFO: Finished glTF 2.0 export in 0.10948514938354492 s
+
+21:19:51 | INFO: Starting glTF 2.0 export
+21:19:51 | INFO: Extracting primitive: TerrainRoof_Mesh.013
+21:19:51 | INFO: Primitives created: 1
+21:19:51 | INFO: Finished glTF 2.0 export in 0.08578157424926758 s
+
+Info: No new files have been packed
+Info: Saved "holo_city_tunnel_workshop.blend"
+21:19:52 | INFO: Data are loaded, start creating Blender stuff
+21:19:52 | INFO: Blender create Mesh node TerrainRoof_Mesh
+21:19:52 | INFO: glTF import finished in 0.03s
+21:19:52 | INFO: Data are loaded, start creating Blender stuff
+21:19:52 | INFO: Blender create Mesh node TerrainRoof_Mesh.001
+21:19:52 | INFO: glTF import finished in 0.03s
+21:19:53 | INFO: Data are loaded, start creating Blender stuff
+21:19:53 | INFO: Blender create Mesh node TerrainRoof_Mesh.002
+21:19:53 | INFO: glTF import finished in 0.02s
+21:19:53 | INFO: Data are loaded, start creating Blender stuff
+21:19:53 | INFO: Blender create Mesh node TerrainRoof_Mesh.003
+21:19:53 | INFO: glTF import finished in 0.03s
+21:19:53 | INFO: Data are loaded, start creating Blender stuff
+21:19:53 | INFO: Blender create Mesh node TerrainRoof_Mesh.004
+21:19:54 | INFO: glTF import finished in 0.04s
+21:19:54 | INFO: Data are loaded, start creating Blender stuff
+21:19:54 | INFO: Blender create Mesh node TerrainRoof_Mesh.005
+21:19:54 | INFO: glTF import finished in 0.02s
+21:19:54 | INFO: Data are loaded, start creating Blender stuff
+21:19:54 | INFO: Blender create Mesh node TerrainRoof_Mesh.006
+21:19:54 | INFO: glTF import finished in 0.04s
+21:19:54 | INFO: Data are loaded, start creating Blender stuff
+21:19:54 | INFO: Blender create Mesh node TerrainRoof_Mesh.007
+21:19:54 | INFO: glTF import finished in 0.02s
+21:19:54 | INFO: Data are loaded, start creating Blender stuff
+21:19:54 | INFO: Blender create Mesh node TerrainRoof_Mesh.008
+21:19:55 | INFO: glTF import finished in 0.04s
+21:19:55 | INFO: Data are loaded, start creating Blender stuff
+21:19:55 | INFO: Blender create Mesh node TerrainRoof_Mesh.009
+21:19:55 | INFO: glTF import finished in 0.01s
+21:19:55 | INFO: Data are loaded, start creating Blender stuff
+21:19:55 | INFO: Blender create Mesh node TerrainRoof_Mesh.010
+21:19:55 | INFO: glTF import finished in 0.03s
+21:19:55 | INFO: Data are loaded, start creating Blender stuff
+21:19:55 | INFO: Blender create Mesh node TerrainRoof_Mesh.011
+21:19:55 | INFO: glTF import finished in 0.02s
+21:19:56 | INFO: Data are loaded, start creating Blender stuff
+21:19:56 | INFO: Blender create Mesh node TerrainRoof_Mesh.012
+21:19:56 | INFO: glTF import finished in 0.02s
+21:19:56 | INFO: Data are loaded, start creating Blender stuff
+21:19:56 | INFO: Blender create Mesh node TerrainRoof_Mesh.013
+21:19:56 | INFO: glTF import finished in 0.01s
+LUMO_TERRAIN_PASS holo_city 14 core_unchanged 21
+21:19:57 | INFO: Starting glTF 2.0 export
+21:19:58 | INFO: Extracting primitive: TerrainRoof_Mesh
+21:19:58 | INFO: Primitives created: 1
+21:19:58 | INFO: Finished glTF 2.0 export in 0.1768949031829834 s
+
+21:19:58 | INFO: Starting glTF 2.0 export
+21:19:58 | INFO: Extracting primitive: TerrainRoof_Mesh.001
+21:19:58 | INFO: Primitives created: 1
+21:19:58 | INFO: Finished glTF 2.0 export in 0.2746601104736328 s
+
+21:19:59 | INFO: Starting glTF 2.0 export
+21:19:59 | INFO: Extracting primitive: TerrainRoof_Mesh.002
+21:19:59 | INFO: Primitives created: 1
+21:19:59 | INFO: Finished glTF 2.0 export in 0.1520400047302246 s
+
+21:19:59 | INFO: Starting glTF 2.0 export
+21:19:59 | INFO: Extracting primitive: TerrainRoof_Mesh.003
+21:19:59 | INFO: Primitives created: 1
+21:20:00 | INFO: Finished glTF 2.0 export in 0.2575557231903076 s
+
+21:20:00 | INFO: Starting glTF 2.0 export
+21:20:00 | INFO: Extracting primitive: TerrainRoof_Mesh.004
+21:20:00 | INFO: Primitives created: 1
+21:20:00 | INFO: Finished glTF 2.0 export in 0.16226792335510254 s
+
+21:20:01 | INFO: Starting glTF 2.0 export
+21:20:01 | INFO: Extracting primitive: TerrainRoof_Mesh.005
+21:20:01 | INFO: Primitives created: 1
+21:20:01 | INFO: Finished glTF 2.0 export in 0.15169429779052734 s
+
+21:20:01 | INFO: Starting glTF 2.0 export
+21:20:01 | INFO: Extracting primitive: TerrainRoof_Mesh.006
+21:20:01 | INFO: Primitives created: 1
+21:20:01 | INFO: Finished glTF 2.0 export in 0.1809251308441162 s
+
+21:20:02 | INFO: Starting glTF 2.0 export
+21:20:02 | INFO: Extracting primitive: TerrainRoof_Mesh.007
+21:20:02 | INFO: Primitives created: 1
+21:20:02 | INFO: Finished glTF 2.0 export in 0.16105914115905762 s
+
+21:20:03 | INFO: Starting glTF 2.0 export
+21:20:03 | INFO: Extracting primitive: TerrainRoof_Mesh.008
+21:20:03 | INFO: Primitives created: 1
+21:20:03 | INFO: Finished glTF 2.0 export in 0.16269183158874512 s
+
+21:20:03 | INFO: Starting glTF 2.0 export
+21:20:03 | INFO: Extracting primitive: TerrainRoof_Mesh.009
+21:20:03 | INFO: Primitives created: 1
+21:20:03 | INFO: Finished glTF 2.0 export in 0.14995121955871582 s
+
+21:20:04 | INFO: Starting glTF 2.0 export
+21:20:04 | INFO: Extracting primitive: TerrainRoof_Mesh.010
+21:20:04 | INFO: Primitives created: 1
+21:20:04 | INFO: Finished glTF 2.0 export in 0.14394426345825195 s
+
+21:20:04 | INFO: Starting glTF 2.0 export
+21:20:04 | INFO: Extracting primitive: TerrainRoof_Mesh.011
+21:20:04 | INFO: Primitives created: 1
+21:20:04 | INFO: Finished glTF 2.0 export in 0.1434800624847412 s
+
+21:20:05 | INFO: Starting glTF 2.0 export
+21:20:05 | INFO: Extracting primitive: TerrainRoof_Mesh.012
+21:20:05 | INFO: Primitives created: 1
+21:20:05 | INFO: Finished glTF 2.0 export in 0.26062726974487305 s
+
+21:20:05 | INFO: Starting glTF 2.0 export
+21:20:05 | INFO: Extracting primitive: TerrainRoof_Mesh.013
+21:20:05 | INFO: Primitives created: 1
+21:20:05 | INFO: Finished glTF 2.0 export in 0.1383216381072998 s
+
+Info: No new files have been packed
+Info: Saved "crystal_canyon_tunnel_workshop.blend"
+21:20:07 | INFO: Data are loaded, start creating Blender stuff
+21:20:07 | INFO: Blender create Mesh node TerrainRoof_Mesh
+21:20:07 | INFO: glTF import finished in 0.02s
+21:20:07 | INFO: Data are loaded, start creating Blender stuff
+21:20:07 | INFO: Blender create Mesh node TerrainRoof_Mesh.001
+21:20:07 | INFO: glTF import finished in 0.04s
+21:20:07 | INFO: Data are loaded, start creating Blender stuff
+21:20:07 | INFO: Blender create Mesh node TerrainRoof_Mesh.002
+21:20:07 | INFO: glTF import finished in 0.02s
+21:20:07 | INFO: Data are loaded, start creating Blender stuff
+21:20:07 | INFO: Blender create Mesh node TerrainRoof_Mesh.003
+21:20:07 | INFO: glTF import finished in 0.02s
+21:20:08 | INFO: Data are loaded, start creating Blender stuff
+21:20:08 | INFO: Blender create Mesh node TerrainRoof_Mesh.004
+21:20:08 | INFO: glTF import finished in 0.02s
+21:20:08 | INFO: Data are loaded, start creating Blender stuff
+21:20:08 | INFO: Blender create Mesh node TerrainRoof_Mesh.005
+21:20:08 | INFO: glTF import finished in 0.01s
+21:20:08 | INFO: Data are loaded, start creating Blender stuff
+21:20:08 | INFO: Blender create Mesh node TerrainRoof_Mesh.006
+21:20:08 | INFO: glTF import finished in 0.06s
+21:20:08 | INFO: Data are loaded, start creating Blender stuff
+21:20:08 | INFO: Blender create Mesh node TerrainRoof_Mesh.007
+21:20:08 | INFO: glTF import finished in 0.03s
+21:20:09 | INFO: Data are loaded, start creating Blender stuff
+21:20:09 | INFO: Blender create Mesh node TerrainRoof_Mesh.008
+21:20:09 | INFO: glTF import finished in 0.05s
+21:20:09 | INFO: Data are loaded, start creating Blender stuff
+21:20:09 | INFO: Blender create Mesh node TerrainRoof_Mesh.009
+21:20:09 | INFO: glTF import finished in 0.02s
+21:20:09 | INFO: Data are loaded, start creating Blender stuff
+21:20:09 | INFO: Blender create Mesh node TerrainRoof_Mesh.010
+21:20:09 | INFO: glTF import finished in 0.04s
+21:20:10 | INFO: Data are loaded, start creating Blender stuff
+21:20:10 | INFO: Blender create Mesh node TerrainRoof_Mesh.011
+21:20:10 | INFO: glTF import finished in 0.03s
+21:20:10 | INFO: Data are loaded, start creating Blender stuff
+21:20:10 | INFO: Blender create Mesh node TerrainRoof_Mesh.012
+21:20:10 | INFO: glTF import finished in 0.03s
+21:20:10 | INFO: Data are loaded, start creating Blender stuff
+21:20:10 | INFO: Blender create Mesh node TerrainRoof_Mesh.013
+21:20:10 | INFO: glTF import finished in 0.03s
+LUMO_TERRAIN_PASS crystal_canyon 14 core_unchanged 21
+21:20:11 | INFO: Starting glTF 2.0 export
+21:20:12 | INFO: Extracting primitive: TerrainRoof_Mesh
+21:20:12 | INFO: Primitives created: 1
+21:20:12 | INFO: Finished glTF 2.0 export in 0.05653572082519531 s
+
+21:20:12 | INFO: Starting glTF 2.0 export
+21:20:12 | INFO: Extracting primitive: TerrainRoof_Mesh.001
+21:20:12 | INFO: Primitives created: 1
+21:20:12 | INFO: Finished glTF 2.0 export in 0.05651426315307617 s
+
+21:20:12 | INFO: Starting glTF 2.0 export
+21:20:12 | INFO: Extracting primitive: TerrainRoof_Mesh.002
+21:20:12 | INFO: Primitives created: 1
+21:20:12 | INFO: Finished glTF 2.0 export in 0.30391716957092285 s
+
+21:20:13 | INFO: Starting glTF 2.0 export
+21:20:13 | INFO: Extracting primitive: TerrainRoof_Mesh.003
+21:20:13 | INFO: Primitives created: 1
+21:20:13 | INFO: Finished glTF 2.0 export in 0.6888585090637207 s
+
+21:20:14 | INFO: Starting glTF 2.0 export
+21:20:14 | INFO: Extracting primitive: TerrainRoof_Mesh.004
+21:20:14 | INFO: Primitives created: 1
+21:20:14 | INFO: Finished glTF 2.0 export in 0.10101580619812012 s
+
+21:20:14 | INFO: Starting glTF 2.0 export
+21:20:14 | INFO: Extracting primitive: TerrainRoof_Mesh.005
+21:20:14 | INFO: Primitives created: 1
+21:20:14 | INFO: Finished glTF 2.0 export in 0.07172536849975586 s
+
+21:20:14 | INFO: Starting glTF 2.0 export
+21:20:14 | INFO: Extracting primitive: TerrainRoof_Mesh.006
+21:20:14 | INFO: Primitives created: 1
+21:20:14 | INFO: Finished glTF 2.0 export in 0.08591938018798828 s
+
+21:20:15 | INFO: Starting glTF 2.0 export
+21:20:15 | INFO: Extracting primitive: TerrainRoof_Mesh.007
+21:20:15 | INFO: Primitives created: 1
+21:20:15 | INFO: Finished glTF 2.0 export in 0.0799708366394043 s
+
+21:20:15 | INFO: Starting glTF 2.0 export
+21:20:15 | INFO: Extracting primitive: TerrainRoof_Mesh.008
+21:20:15 | INFO: Primitives created: 1
+21:20:15 | INFO: Finished glTF 2.0 export in 0.12856101989746094 s
+
+21:20:16 | INFO: Starting glTF 2.0 export
+21:20:16 | INFO: Extracting primitive: TerrainRoof_Mesh.009
+21:20:16 | INFO: Primitives created: 1
+21:20:16 | INFO: Finished glTF 2.0 export in 0.15399765968322754 s
+
+21:20:17 | INFO: Starting glTF 2.0 export
+21:20:17 | INFO: Extracting primitive: TerrainRoof_Mesh.010
+21:20:17 | INFO: Primitives created: 1
+21:20:17 | INFO: Finished glTF 2.0 export in 0.16585040092468262 s
+
+21:20:18 | INFO: Starting glTF 2.0 export
+21:20:18 | INFO: Extracting primitive: TerrainRoof_Mesh.011
+21:20:18 | INFO: Primitives created: 1
+21:20:18 | INFO: Finished glTF 2.0 export in 0.3435842990875244 s
+
+21:20:19 | INFO: Starting glTF 2.0 export
+21:20:19 | INFO: Extracting primitive: TerrainRoof_Mesh.012
+21:20:19 | INFO: Primitives created: 1
+21:20:19 | INFO: Finished glTF 2.0 export in 0.1815648078918457 s
+
+21:20:19 | INFO: Starting glTF 2.0 export
+21:20:19 | INFO: Extracting primitive: TerrainRoof_Mesh.013
+21:20:19 | INFO: Primitives created: 1
+21:20:19 | INFO: Finished glTF 2.0 export in 0.21270370483398438 s
+
+Info: No new files have been packed
+Info: Saved "jungle_temple_tunnel_workshop.blend"
+21:20:21 | INFO: Data are loaded, start creating Blender stuff
+21:20:21 | INFO: Blender create Mesh node TerrainRoof_Mesh
+21:20:21 | INFO: glTF import finished in 0.02s
+21:20:21 | INFO: Data are loaded, start creating Blender stuff
+21:20:21 | INFO: Blender create Mesh node TerrainRoof_Mesh.001
+21:20:21 | INFO: glTF import finished in 0.05s
+21:20:21 | INFO: Data are loaded, start creating Blender stuff
+21:20:21 | INFO: Blender create Mesh node TerrainRoof_Mesh.002
+21:20:21 | INFO: glTF import finished in 0.01s
+21:20:21 | INFO: Data are loaded, start creating Blender stuff
+21:20:21 | INFO: Blender create Mesh node TerrainRoof_Mesh.003
+21:20:21 | INFO: glTF import finished in 0.02s
+21:20:22 | INFO: Data are loaded, start creating Blender stuff
+21:20:22 | INFO: Blender create Mesh node TerrainRoof_Mesh.004
+21:20:22 | INFO: glTF import finished in 0.02s
+21:20:22 | INFO: Data are loaded, start creating Blender stuff
+21:20:22 | INFO: Blender create Mesh node TerrainRoof_Mesh.005
+21:20:22 | INFO: glTF import finished in 0.04s
+21:20:22 | INFO: Data are loaded, start creating Blender stuff
+21:20:22 | INFO: Blender create Mesh node TerrainRoof_Mesh.006
+21:20:22 | INFO: glTF import finished in 0.06s
+21:20:23 | INFO: Data are loaded, start creating Blender stuff
+21:20:23 | INFO: Blender create Mesh node TerrainRoof_Mesh.007
+21:20:23 | INFO: glTF import finished in 0.02s
+21:20:23 | INFO: Data are loaded, start creating Blender stuff
+21:20:23 | INFO: Blender create Mesh node TerrainRoof_Mesh.008
+21:20:23 | INFO: glTF import finished in 0.04s
+21:20:23 | INFO: Data are loaded, start creating Blender stuff
+21:20:23 | INFO: Blender create Mesh node TerrainRoof_Mesh.009
+21:20:23 | INFO: glTF import finished in 0.02s
+21:20:24 | INFO: Data are loaded, start creating Blender stuff
+21:20:24 | INFO: Blender create Mesh node TerrainRoof_Mesh.010
+21:20:24 | INFO: glTF import finished in 0.02s
+21:20:24 | INFO: Data are loaded, start creating Blender stuff
+21:20:24 | INFO: Blender create Mesh node TerrainRoof_Mesh.011
+21:20:24 | INFO: glTF import finished in 0.02s
+21:20:24 | INFO: Data are loaded, start creating Blender stuff
+21:20:24 | INFO: Blender create Mesh node TerrainRoof_Mesh.012
+21:20:24 | INFO: glTF import finished in 0.03s
+21:20:24 | INFO: Data are loaded, start creating Blender stuff
+21:20:24 | INFO: Blender create Mesh node TerrainRoof_Mesh.013
+21:20:24 | INFO: glTF import finished in 0.01s
+LUMO_TERRAIN_PASS jungle_temple 14 core_unchanged 21
+21:20:25 | INFO: Starting glTF 2.0 export
+21:20:25 | INFO: Extracting primitive: TerrainRoof_Mesh
+21:20:25 | INFO: Primitives created: 1
+21:20:25 | INFO: Finished glTF 2.0 export in 0.18478965759277344 s
+
+21:20:26 | INFO: Starting glTF 2.0 export
+21:20:26 | INFO: Extracting primitive: TerrainRoof_Mesh.001
+21:20:26 | INFO: Primitives created: 1
+21:20:26 | INFO: Finished glTF 2.0 export in 0.39199066162109375 s
+
+21:20:27 | INFO: Starting glTF 2.0 export
+21:20:27 | INFO: Extracting primitive: TerrainRoof_Mesh.002
+21:20:27 | INFO: Primitives created: 1
+21:20:27 | INFO: Finished glTF 2.0 export in 0.08946561813354492 s
+
+21:20:27 | INFO: Starting glTF 2.0 export
+21:20:27 | INFO: Extracting primitive: TerrainRoof_Mesh.003
+21:20:27 | INFO: Primitives created: 1
+21:20:27 | INFO: Finished glTF 2.0 export in 0.14600634574890137 s
+
+21:20:28 | INFO: Starting glTF 2.0 export
+21:20:28 | INFO: Extracting primitive: TerrainRoof_Mesh.004
+21:20:28 | INFO: Primitives created: 1
+21:20:28 | INFO: Finished glTF 2.0 export in 0.10511302947998047 s
+
+21:20:28 | INFO: Starting glTF 2.0 export
+21:20:28 | INFO: Extracting primitive: TerrainRoof_Mesh.005
+21:20:28 | INFO: Primitives created: 1
+21:20:28 | INFO: Finished glTF 2.0 export in 0.10536718368530273 s
+
+21:20:29 | INFO: Starting glTF 2.0 export
+21:20:29 | INFO: Extracting primitive: TerrainRoof_Mesh.006
+21:20:29 | INFO: Primitives created: 1
+21:20:29 | INFO: Finished glTF 2.0 export in 0.1396198272705078 s
+
+21:20:29 | INFO: Starting glTF 2.0 export
+21:20:29 | INFO: Extracting primitive: TerrainRoof_Mesh.007
+21:20:30 | INFO: Primitives created: 1
+21:20:30 | INFO: Finished glTF 2.0 export in 0.36516571044921875 s
+
+21:20:30 | INFO: Starting glTF 2.0 export
+21:20:30 | INFO: Extracting primitive: TerrainRoof_Mesh.008
+21:20:30 | INFO: Primitives created: 1
+21:20:30 | INFO: Finished glTF 2.0 export in 0.11808180809020996 s
+
+21:20:30 | INFO: Starting glTF 2.0 export
+21:20:30 | INFO: Extracting primitive: TerrainRoof_Mesh.009
+21:20:30 | INFO: Primitives created: 1
+21:20:30 | INFO: Finished glTF 2.0 export in 0.08537030220031738 s
+
+21:20:31 | INFO: Starting glTF 2.0 export
+21:20:31 | INFO: Extracting primitive: TerrainRoof_Mesh.010
+21:20:31 | INFO: Primitives created: 1
+21:20:31 | INFO: Finished glTF 2.0 export in 0.11063289642333984 s
+
+21:20:31 | INFO: Starting glTF 2.0 export
+21:20:31 | INFO: Extracting primitive: TerrainRoof_Mesh.011
+21:20:31 | INFO: Primitives created: 1
+21:20:31 | INFO: Finished glTF 2.0 export in 0.08266592025756836 s
+
+21:20:31 | INFO: Starting glTF 2.0 export
+21:20:32 | INFO: Extracting primitive: TerrainRoof_Mesh.012
+21:20:32 | INFO: Primitives created: 1
+21:20:32 | INFO: Finished glTF 2.0 export in 0.10079407691955566 s
+
+21:20:32 | INFO: Starting glTF 2.0 export
+21:20:32 | INFO: Extracting primitive: TerrainRoof_Mesh.013
+21:20:32 | INFO: Primitives created: 1
+21:20:32 | INFO: Finished glTF 2.0 export in 0.09990072250366211 s
+
+Info: No new files have been packed
+Info: Saved "candy_cloud_tunnel_workshop.blend"
+21:20:33 | INFO: Data are loaded, start creating Blender stuff
+21:20:33 | INFO: Blender create Mesh node TerrainRoof_Mesh
+21:20:33 | INFO: glTF import finished in 0.03s
+21:20:33 | INFO: Data are loaded, start creating Blender stuff
+21:20:33 | INFO: Blender create Mesh node TerrainRoof_Mesh.001
+21:20:33 | INFO: glTF import finished in 0.02s
+21:20:34 | INFO: Data are loaded, start creating Blender stuff
+21:20:34 | INFO: Blender create Mesh node TerrainRoof_Mesh.002
+21:20:34 | INFO: glTF import finished in 0.03s
+21:20:34 | INFO: Data are loaded, start creating Blender stuff
+21:20:34 | INFO: Blender create Mesh node TerrainRoof_Mesh.003
+21:20:34 | INFO: glTF import finished in 0.01s
+21:20:34 | INFO: Data are loaded, start creating Blender stuff
+21:20:34 | INFO: Blender create Mesh node TerrainRoof_Mesh.004
+21:20:34 | INFO: glTF import finished in 0.07s
+21:20:35 | INFO: Data are loaded, start creating Blender stuff
+21:20:35 | INFO: Blender create Mesh node TerrainRoof_Mesh.005
+21:20:35 | INFO: glTF import finished in 0.05s
+21:20:36 | INFO: Data are loaded, start creating Blender stuff
+21:20:36 | INFO: Blender create Mesh node TerrainRoof_Mesh.006
+21:20:36 | INFO: glTF import finished in 0.19s
+21:20:36 | INFO: Data are loaded, start creating Blender stuff
+21:20:36 | INFO: Blender create Mesh node TerrainRoof_Mesh.007
+21:20:36 | INFO: glTF import finished in 0.05s
+21:20:37 | INFO: Data are loaded, start creating Blender stuff
+21:20:37 | INFO: Blender create Mesh node TerrainRoof_Mesh.008
+21:20:37 | INFO: glTF import finished in 0.04s
+21:20:37 | INFO: Data are loaded, start creating Blender stuff
+21:20:37 | INFO: Blender create Mesh node TerrainRoof_Mesh.009
+21:20:37 | INFO: glTF import finished in 0.04s
+21:20:38 | INFO: Data are loaded, start creating Blender stuff
+21:20:38 | INFO: Blender create Mesh node TerrainRoof_Mesh.010
+21:20:38 | INFO: glTF import finished in 0.04s
+21:20:38 | INFO: Data are loaded, start creating Blender stuff
+21:20:38 | INFO: Blender create Mesh node TerrainRoof_Mesh.011
+21:20:38 | INFO: glTF import finished in 0.02s
+21:20:39 | INFO: Data are loaded, start creating Blender stuff
+21:20:39 | INFO: Blender create Mesh node TerrainRoof_Mesh.012
+21:20:39 | INFO: glTF import finished in 0.04s
+21:20:39 | INFO: Data are loaded, start creating Blender stuff
+21:20:39 | INFO: Blender create Mesh node TerrainRoof_Mesh.013
+21:20:39 | INFO: glTF import finished in 0.03s
+LUMO_TERRAIN_PASS candy_cloud 14 core_unchanged 21
+21:20:40 | INFO: Starting glTF 2.0 export
+21:20:41 | INFO: Extracting primitive: TerrainRoof_Mesh
+21:20:41 | INFO: Primitives created: 1
+21:20:41 | INFO: Finished glTF 2.0 export in 0.17471551895141602 s
+
+21:20:41 | INFO: Starting glTF 2.0 export
+21:20:41 | INFO: Extracting primitive: TerrainRoof_Mesh.001
+21:20:41 | INFO: Primitives created: 1
+21:20:41 | INFO: Finished glTF 2.0 export in 0.18489718437194824 s
+
+21:20:42 | INFO: Starting glTF 2.0 export
+21:20:42 | INFO: Extracting primitive: TerrainRoof_Mesh.002
+21:20:42 | INFO: Primitives created: 1
+21:20:42 | INFO: Finished glTF 2.0 export in 0.2208549976348877 s
+
+21:20:42 | INFO: Starting glTF 2.0 export
+21:20:42 | INFO: Extracting primitive: TerrainRoof_Mesh.003
+21:20:42 | INFO: Primitives created: 1
+21:20:42 | INFO: Finished glTF 2.0 export in 0.19835710525512695 s
+
+21:20:43 | INFO: Starting glTF 2.0 export
+21:20:43 | INFO: Extracting primitive: TerrainRoof_Mesh.004
+21:20:43 | INFO: Primitives created: 1
+21:20:43 | INFO: Finished glTF 2.0 export in 0.174760103225708 s
+
+21:20:43 | INFO: Starting glTF 2.0 export
+21:20:44 | INFO: Extracting primitive: TerrainRoof_Mesh.005
+21:20:44 | INFO: Primitives created: 1
+21:20:44 | INFO: Finished glTF 2.0 export in 0.17173123359680176 s
+
+21:20:44 | INFO: Starting glTF 2.0 export
+21:20:44 | INFO: Extracting primitive: TerrainRoof_Mesh.006
+21:20:44 | INFO: Primitives created: 1
+21:20:44 | INFO: Finished glTF 2.0 export in 0.21893095970153809 s
+
+21:20:45 | INFO: Starting glTF 2.0 export
+21:20:45 | INFO: Extracting primitive: TerrainRoof_Mesh.007
+21:20:45 | INFO: Primitives created: 1
+21:20:45 | INFO: Finished glTF 2.0 export in 0.18259716033935547 s
+
+21:20:45 | INFO: Starting glTF 2.0 export
+21:20:46 | INFO: Extracting primitive: TerrainRoof_Mesh.008
+21:20:46 | INFO: Primitives created: 1
+21:20:46 | INFO: Finished glTF 2.0 export in 0.21596479415893555 s
+
+21:20:46 | INFO: Starting glTF 2.0 export
+21:20:46 | INFO: Extracting primitive: TerrainRoof_Mesh.009
+21:20:46 | INFO: Primitives created: 1
+21:20:46 | INFO: Finished glTF 2.0 export in 0.16908550262451172 s
+
+21:20:47 | INFO: Starting glTF 2.0 export
+21:20:47 | INFO: Extracting primitive: TerrainRoof_Mesh.010
+21:20:47 | INFO: Primitives created: 1
+21:20:47 | INFO: Finished glTF 2.0 export in 0.1391746997833252 s
+
+21:20:47 | INFO: Starting glTF 2.0 export
+21:20:47 | INFO: Extracting primitive: TerrainRoof_Mesh.011
+21:20:47 | INFO: Primitives created: 1
+21:20:47 | INFO: Finished glTF 2.0 export in 0.08439326286315918 s
+
+21:20:47 | INFO: Starting glTF 2.0 export
+21:20:47 | INFO: Extracting primitive: TerrainRoof_Mesh.012
+21:20:47 | INFO: Primitives created: 1
+21:20:47 | INFO: Finished glTF 2.0 export in 0.11306953430175781 s
+
+21:20:48 | INFO: Starting glTF 2.0 export
+21:20:48 | INFO: Extracting primitive: TerrainRoof_Mesh.013
+21:20:48 | INFO: Primitives created: 1
+21:20:48 | INFO: Finished glTF 2.0 export in 0.10457348823547363 s
+
+Info: No new files have been packed
+Info: Saved "volcano_night_tunnel_workshop.blend"
+21:20:49 | INFO: Data are loaded, start creating Blender stuff
+21:20:49 | INFO: Blender create Mesh node TerrainRoof_Mesh
+21:20:49 | INFO: glTF import finished in 0.02s
+21:20:49 | INFO: Data are loaded, start creating Blender stuff
+21:20:49 | INFO: Blender create Mesh node TerrainRoof_Mesh.001
+21:20:49 | INFO: glTF import finished in 0.01s
+21:20:49 | INFO: Data are loaded, start creating Blender stuff
+21:20:49 | INFO: Blender create Mesh node TerrainRoof_Mesh.002
+21:20:49 | INFO: glTF import finished in 0.03s
+21:20:51 | INFO: Data are loaded, start creating Blender stuff
+21:20:51 | INFO: Blender create Mesh node TerrainRoof_Mesh.003
+21:20:51 | INFO: glTF import finished in 0.02s
+21:20:53 | INFO: Data are loaded, start creating Blender stuff
+21:20:53 | INFO: Blender create Mesh node TerrainRoof_Mesh.004
+21:20:53 | INFO: glTF import finished in 0.16s
+21:20:53 | INFO: Data are loaded, start creating Blender stuff
+21:20:53 | INFO: Blender create Mesh node TerrainRoof_Mesh.005
+21:20:53 | INFO: glTF import finished in 0.06s
+21:20:54 | INFO: Data are loaded, start creating Blender stuff
+21:20:54 | INFO: Blender create Mesh node TerrainRoof_Mesh.006
+21:20:54 | INFO: glTF import finished in 0.11s
+21:20:54 | INFO: Data are loaded, start creating Blender stuff
+21:20:54 | INFO: Blender create Mesh node TerrainRoof_Mesh.007
+21:20:54 | INFO: glTF import finished in 0.03s
+21:20:55 | INFO: Data are loaded, start creating Blender stuff
+21:20:55 | INFO: Blender create Mesh node TerrainRoof_Mesh.008
+21:20:55 | INFO: glTF import finished in 0.07s
+21:20:55 | INFO: Data are loaded, start creating Blender stuff
+21:20:55 | INFO: Blender create Mesh node TerrainRoof_Mesh.009
+21:20:55 | INFO: glTF import finished in 0.03s
+21:20:56 | INFO: Data are loaded, start creating Blender stuff
+21:20:56 | INFO: Blender create Mesh node TerrainRoof_Mesh.010
+21:20:56 | INFO: glTF import finished in 0.06s
+21:20:56 | INFO: Data are loaded, start creating Blender stuff
+21:20:56 | INFO: Blender create Mesh node TerrainRoof_Mesh.011
+21:20:56 | INFO: glTF import finished in 0.03s
+21:20:57 | INFO: Data are loaded, start creating Blender stuff
+21:20:57 | INFO: Blender create Mesh node TerrainRoof_Mesh.012
+21:20:57 | INFO: glTF import finished in 0.07s
+21:20:57 | INFO: Data are loaded, start creating Blender stuff
+21:20:57 | INFO: Blender create Mesh node TerrainRoof_Mesh.013
+21:20:58 | INFO: glTF import finished in 0.06s
+LUMO_TERRAIN_PASS volcano_night 14 core_unchanged 21
+21:20:59 | INFO: Starting glTF 2.0 export
+21:20:59 | INFO: Extracting primitive: TerrainRoof_Mesh
+21:20:59 | INFO: Primitives created: 1
+21:20:59 | INFO: Finished glTF 2.0 export in 0.1501154899597168 s
+
+21:20:59 | INFO: Starting glTF 2.0 export
+21:20:59 | INFO: Extracting primitive: TerrainRoof_Mesh.001
+21:20:59 | INFO: Primitives created: 1
+21:20:59 | INFO: Finished glTF 2.0 export in 0.21680426597595215 s
+
+21:21:00 | INFO: Starting glTF 2.0 export
+21:21:00 | INFO: Extracting primitive: TerrainRoof_Mesh.002
+21:21:00 | INFO: Primitives created: 1
+21:21:00 | INFO: Finished glTF 2.0 export in 0.11092090606689453 s
+
+21:21:00 | INFO: Starting glTF 2.0 export
+21:21:00 | INFO: Extracting primitive: TerrainRoof_Mesh.003
+21:21:00 | INFO: Primitives created: 1
+21:21:00 | INFO: Finished glTF 2.0 export in 0.31554174423217773 s
+
+21:21:01 | INFO: Starting glTF 2.0 export
+21:21:01 | INFO: Extracting primitive: TerrainRoof_Mesh.004
+21:21:01 | INFO: Primitives created: 1
+21:21:01 | INFO: Finished glTF 2.0 export in 0.31652283668518066 s
+
+21:21:01 | INFO: Starting glTF 2.0 export
+21:21:01 | INFO: Extracting primitive: TerrainRoof_Mesh.005
+21:21:01 | INFO: Primitives created: 1
+21:21:01 | INFO: Finished glTF 2.0 export in 0.10740995407104492 s
+
+21:21:02 | INFO: Starting glTF 2.0 export
+21:21:02 | INFO: Extracting primitive: TerrainRoof_Mesh.006
+21:21:02 | INFO: Primitives created: 1
+21:21:02 | INFO: Finished glTF 2.0 export in 0.13082623481750488 s
+
+21:21:02 | INFO: Starting glTF 2.0 export
+21:21:02 | INFO: Extracting primitive: TerrainRoof_Mesh.007
+21:21:02 | INFO: Primitives created: 1
+21:21:02 | INFO: Finished glTF 2.0 export in 0.13942909240722656 s
+
+21:21:03 | INFO: Starting glTF 2.0 export
+21:21:03 | INFO: Extracting primitive: TerrainRoof_Mesh.008
+21:21:03 | INFO: Primitives created: 1
+21:21:03 | INFO: Finished glTF 2.0 export in 0.16562891006469727 s
+
+21:21:03 | INFO: Starting glTF 2.0 export
+21:21:03 | INFO: Extracting primitive: TerrainRoof_Mesh.009
+21:21:04 | INFO: Primitives created: 1
+21:21:04 | INFO: Finished glTF 2.0 export in 0.12276554107666016 s
+
+21:21:04 | INFO: Starting glTF 2.0 export
+21:21:04 | INFO: Extracting primitive: TerrainRoof_Mesh.010
+21:21:04 | INFO: Primitives created: 1
+21:21:04 | INFO: Finished glTF 2.0 export in 0.13147425651550293 s
+
+21:21:04 | INFO: Starting glTF 2.0 export
+21:21:04 | INFO: Extracting primitive: TerrainRoof_Mesh.011
+21:21:04 | INFO: Primitives created: 1
+21:21:04 | INFO: Finished glTF 2.0 export in 0.12413239479064941 s
+
+21:21:05 | INFO: Starting glTF 2.0 export
+21:21:05 | INFO: Extracting primitive: TerrainRoof_Mesh.012
+21:21:05 | INFO: Primitives created: 1
+21:21:05 | INFO: Finished glTF 2.0 export in 0.17357492446899414 s
+
+21:21:05 | INFO: Starting glTF 2.0 export
+21:21:05 | INFO: Extracting primitive: TerrainRoof_Mesh.013
+21:21:05 | INFO: Primitives created: 1
+21:21:05 | INFO: Finished glTF 2.0 export in 0.22777342796325684 s
+
+Info: No new files have been packed
+Info: Saved "winter_sprint_tunnel_workshop.blend"
+21:21:07 | INFO: Data are loaded, start creating Blender stuff
+21:21:07 | INFO: Blender create Mesh node TerrainRoof_Mesh
+21:21:07 | INFO: glTF import finished in 0.05s
+21:21:07 | INFO: Data are loaded, start creating Blender stuff
+21:21:07 | INFO: Blender create Mesh node TerrainRoof_Mesh.001
+21:21:07 | INFO: glTF import finished in 0.03s
+21:21:07 | INFO: Data are loaded, start creating Blender stuff
+21:21:08 | INFO: Blender create Mesh node TerrainRoof_Mesh.002
+21:21:08 | INFO: glTF import finished in 0.07s
+21:21:08 | INFO: Data are loaded, start creating Blender stuff
+21:21:08 | INFO: Blender create Mesh node TerrainRoof_Mesh.003
+21:21:08 | INFO: glTF import finished in 0.06s
+21:21:08 | INFO: Data are loaded, start creating Blender stuff
+21:21:08 | INFO: Blender create Mesh node TerrainRoof_Mesh.004
+21:21:09 | INFO: glTF import finished in 0.05s
+21:21:09 | INFO: Data are loaded, start creating Blender stuff
+21:21:09 | INFO: Blender create Mesh node TerrainRoof_Mesh.005
+21:21:09 | INFO: glTF import finished in 0.02s
+21:21:09 | INFO: Data are loaded, start creating Blender stuff
+21:21:09 | INFO: Blender create Mesh node TerrainRoof_Mesh.006
+21:21:09 | INFO: glTF import finished in 0.08s
+21:21:10 | INFO: Data are loaded, start creating Blender stuff
+21:21:10 | INFO: Blender create Mesh node TerrainRoof_Mesh.007
+21:21:10 | INFO: glTF import finished in 0.02s
+21:21:10 | INFO: Data are loaded, start creating Blender stuff
+21:21:10 | INFO: Blender create Mesh node TerrainRoof_Mesh.008
+21:21:10 | INFO: glTF import finished in 0.05s
+21:21:10 | INFO: Data are loaded, start creating Blender stuff
+21:21:10 | INFO: Blender create Mesh node TerrainRoof_Mesh.009
+21:21:10 | INFO: glTF import finished in 0.02s
+21:21:11 | INFO: Data are loaded, start creating Blender stuff
+21:21:11 | INFO: Blender create Mesh node TerrainRoof_Mesh.010
+21:21:11 | INFO: glTF import finished in 0.02s
+21:21:11 | INFO: Data are loaded, start creating Blender stuff
+21:21:11 | INFO: Blender create Mesh node TerrainRoof_Mesh.011
+21:21:11 | INFO: glTF import finished in 0.01s
+21:21:11 | INFO: Data are loaded, start creating Blender stuff
+21:21:11 | INFO: Blender create Mesh node TerrainRoof_Mesh.012
+21:21:11 | INFO: glTF import finished in 0.02s
+21:21:11 | INFO: Data are loaded, start creating Blender stuff
+21:21:11 | INFO: Blender create Mesh node TerrainRoof_Mesh.013
+21:21:11 | INFO: glTF import finished in 0.01s
+LUMO_TERRAIN_PASS winter_sprint 14 core_unchanged 21
+21:21:12 | INFO: Starting glTF 2.0 export
+21:21:12 | INFO: Extracting primitive: TerrainRoof_Mesh
+21:21:12 | INFO: Primitives created: 1
+21:21:12 | INFO: Finished glTF 2.0 export in 0.08225035667419434 s
+
+21:21:12 | INFO: Starting glTF 2.0 export
+21:21:12 | INFO: Extracting primitive: TerrainRoof_Mesh.001
+21:21:12 | INFO: Primitives created: 1
+21:21:12 | INFO: Finished glTF 2.0 export in 0.08420538902282715 s
+
+21:21:12 | INFO: Starting glTF 2.0 export
+21:21:13 | INFO: Extracting primitive: TerrainRoof_Mesh.002
+21:21:13 | INFO: Primitives created: 1
+21:21:13 | INFO: Finished glTF 2.0 export in 0.08729290962219238 s
+
+21:21:13 | INFO: Starting glTF 2.0 export
+21:21:13 | INFO: Extracting primitive: TerrainRoof_Mesh.003
+21:21:13 | INFO: Primitives created: 1
+21:21:13 | INFO: Finished glTF 2.0 export in 0.06797385215759277 s
+
+21:21:13 | INFO: Starting glTF 2.0 export
+21:21:13 | INFO: Extracting primitive: TerrainRoof_Mesh.004
+21:21:13 | INFO: Primitives created: 1
+21:21:13 | INFO: Finished glTF 2.0 export in 0.08847880363464355 s
+
+21:21:13 | INFO: Starting glTF 2.0 export
+21:21:13 | INFO: Extracting primitive: TerrainRoof_Mesh.005
+21:21:13 | INFO: Primitives created: 1
+21:21:13 | INFO: Finished glTF 2.0 export in 0.09224081039428711 s
+
+21:21:14 | INFO: Starting glTF 2.0 export
+21:21:14 | INFO: Extracting primitive: TerrainRoof_Mesh.006
+21:21:14 | INFO: Primitives created: 1
+21:21:14 | INFO: Finished glTF 2.0 export in 0.1033334732055664 s
+
+21:21:14 | INFO: Starting glTF 2.0 export
+21:21:14 | INFO: Extracting primitive: TerrainRoof_Mesh.007
+21:21:14 | INFO: Primitives created: 1
+21:21:14 | INFO: Finished glTF 2.0 export in 0.08301806449890137 s
+
+21:21:15 | INFO: Starting glTF 2.0 export
+21:21:15 | INFO: Extracting primitive: TerrainRoof_Mesh.008
+21:21:15 | INFO: Primitives created: 1
+21:21:15 | INFO: Finished glTF 2.0 export in 0.09946537017822266 s
+
+21:21:15 | INFO: Starting glTF 2.0 export
+21:21:15 | INFO: Extracting primitive: TerrainRoof_Mesh.009
+21:21:15 | INFO: Primitives created: 1
+21:21:15 | INFO: Finished glTF 2.0 export in 0.08347487449645996 s
+
+21:21:15 | INFO: Starting glTF 2.0 export
+21:21:15 | INFO: Extracting primitive: TerrainRoof_Mesh.010
+21:21:15 | INFO: Primitives created: 1
+21:21:15 | INFO: Finished glTF 2.0 export in 0.08917903900146484 s
+
+21:21:15 | INFO: Starting glTF 2.0 export
+21:21:15 | INFO: Extracting primitive: TerrainRoof_Mesh.011
+21:21:15 | INFO: Primitives created: 1
+21:21:15 | INFO: Finished glTF 2.0 export in 0.0893712043762207 s
+
+21:21:16 | INFO: Starting glTF 2.0 export
+21:21:16 | INFO: Extracting primitive: TerrainRoof_Mesh.012
+21:21:16 | INFO: Primitives created: 1
+21:21:16 | INFO: Finished glTF 2.0 export in 0.14309310913085938 s
+
+21:21:16 | INFO: Starting glTF 2.0 export
+21:21:16 | INFO: Extracting primitive: TerrainRoof_Mesh.013
+21:21:16 | INFO: Primitives created: 1
+21:21:16 | INFO: Finished glTF 2.0 export in 0.0815582275390625 s
+
+Info: No new files have been packed
+Info: Saved "galaxy_ringway_tunnel_workshop.blend"
+21:21:17 | INFO: Data are loaded, start creating Blender stuff
+21:21:17 | INFO: Blender create Mesh node TerrainRoof_Mesh
+21:21:17 | INFO: glTF import finished in 0.02s
+21:21:17 | INFO: Data are loaded, start creating Blender stuff
+21:21:17 | INFO: Blender create Mesh node TerrainRoof_Mesh.001
+21:21:17 | INFO: glTF import finished in 0.01s
+21:21:17 | INFO: Data are loaded, start creating Blender stuff
+21:21:17 | INFO: Blender create Mesh node TerrainRoof_Mesh.002
+21:21:17 | INFO: glTF import finished in 0.01s
+21:21:17 | INFO: Data are loaded, start creating Blender stuff
+21:21:17 | INFO: Blender create Mesh node TerrainRoof_Mesh.003
+21:21:17 | INFO: glTF import finished in 0.02s
+21:21:18 | INFO: Data are loaded, start creating Blender stuff
+21:21:18 | INFO: Blender create Mesh node TerrainRoof_Mesh.004
+21:21:18 | INFO: glTF import finished in 0.04s
+21:21:18 | INFO: Data are loaded, start creating Blender stuff
+21:21:18 | INFO: Blender create Mesh node TerrainRoof_Mesh.005
+21:21:18 | INFO: glTF import finished in 0.02s
+21:21:18 | INFO: Data are loaded, start creating Blender stuff
+21:21:18 | INFO: Blender create Mesh node TerrainRoof_Mesh.006
+21:21:18 | INFO: glTF import finished in 0.04s
+21:21:18 | INFO: Data are loaded, start creating Blender stuff
+21:21:18 | INFO: Blender create Mesh node TerrainRoof_Mesh.007
+21:21:18 | INFO: glTF import finished in 0.02s
+21:21:19 | INFO: Data are loaded, start creating Blender stuff
+21:21:19 | INFO: Blender create Mesh node TerrainRoof_Mesh.008
+21:21:19 | INFO: glTF import finished in 0.03s
+21:21:19 | INFO: Data are loaded, start creating Blender stuff
+21:21:19 | INFO: Blender create Mesh node TerrainRoof_Mesh.009
+21:21:19 | INFO: glTF import finished in 0.02s
+21:21:19 | INFO: Data are loaded, start creating Blender stuff
+21:21:19 | INFO: Blender create Mesh node TerrainRoof_Mesh.010
+21:21:19 | INFO: glTF import finished in 0.03s
+21:21:19 | INFO: Data are loaded, start creating Blender stuff
+21:21:19 | INFO: Blender create Mesh node TerrainRoof_Mesh.011
+21:21:19 | INFO: glTF import finished in 0.02s
+21:21:19 | INFO: Data are loaded, start creating Blender stuff
+21:21:19 | INFO: Blender create Mesh node TerrainRoof_Mesh.012
+21:21:19 | INFO: glTF import finished in 0.02s
+21:21:20 | INFO: Data are loaded, start creating Blender stuff
+21:21:20 | INFO: Blender create Mesh node TerrainRoof_Mesh.013
+21:21:20 | INFO: glTF import finished in 0.01s
+LUMO_TERRAIN_PASS galaxy_ringway 14 core_unchanged 21
+21:21:21 | INFO: Starting glTF 2.0 export
+21:21:21 | INFO: Extracting primitive: TerrainRoof_Mesh
+21:21:21 | INFO: Primitives created: 1
+21:21:21 | INFO: Finished glTF 2.0 export in 0.11861491203308105 s
+
+21:21:21 | INFO: Starting glTF 2.0 export
+21:21:21 | INFO: Extracting primitive: TerrainRoof_Mesh.001
+21:21:21 | INFO: Primitives created: 1
+21:21:21 | INFO: Finished glTF 2.0 export in 0.11956977844238281 s
+
+21:21:22 | INFO: Starting glTF 2.0 export
+21:21:22 | INFO: Extracting primitive: TerrainRoof_Mesh.002
+21:21:22 | INFO: Primitives created: 1
+21:21:22 | INFO: Finished glTF 2.0 export in 0.1362764835357666 s
+
+21:21:22 | INFO: Starting glTF 2.0 export
+21:21:22 | INFO: Extracting primitive: TerrainRoof_Mesh.003
+21:21:22 | INFO: Primitives created: 1
+21:21:22 | INFO: Finished glTF 2.0 export in 0.14398908615112305 s
+
+21:21:22 | INFO: Starting glTF 2.0 export
+21:21:23 | INFO: Extracting primitive: TerrainRoof_Mesh.004
+21:21:23 | INFO: Primitives created: 1
+21:21:23 | INFO: Finished glTF 2.0 export in 0.14223456382751465 s
+
+21:21:23 | INFO: Starting glTF 2.0 export
+21:21:23 | INFO: Extracting primitive: TerrainRoof_Mesh.005
+21:21:23 | INFO: Primitives created: 1
+21:21:23 | INFO: Finished glTF 2.0 export in 0.3168807029724121 s
+
+21:21:24 | INFO: Starting glTF 2.0 export
+21:21:24 | INFO: Extracting primitive: TerrainRoof_Mesh.006
+21:21:24 | INFO: Primitives created: 1
+21:21:24 | INFO: Finished glTF 2.0 export in 0.18993902206420898 s
+
+21:21:24 | INFO: Starting glTF 2.0 export
+21:21:24 | INFO: Extracting primitive: TerrainRoof_Mesh.007
+21:21:24 | INFO: Primitives created: 1
+21:21:24 | INFO: Finished glTF 2.0 export in 0.1784675121307373 s
+
+21:21:25 | INFO: Starting glTF 2.0 export
+21:21:25 | INFO: Extracting primitive: TerrainRoof_Mesh.008
+21:21:25 | INFO: Primitives created: 1
+21:21:25 | INFO: Finished glTF 2.0 export in 0.2078249454498291 s
+
+21:21:26 | INFO: Starting glTF 2.0 export
+21:21:26 | INFO: Extracting primitive: TerrainRoof_Mesh.009
+21:21:26 | INFO: Primitives created: 1
+21:21:26 | INFO: Finished glTF 2.0 export in 0.23154330253601074 s
+
+21:21:27 | INFO: Starting glTF 2.0 export
+21:21:27 | INFO: Extracting primitive: TerrainRoof_Mesh.010
+21:21:27 | INFO: Primitives created: 1
+21:21:27 | INFO: Finished glTF 2.0 export in 0.18097901344299316 s
+
+21:21:27 | INFO: Starting glTF 2.0 export
+21:21:27 | INFO: Extracting primitive: TerrainRoof_Mesh.011
+21:21:27 | INFO: Primitives created: 1
+21:21:27 | INFO: Finished glTF 2.0 export in 0.12791037559509277 s
+
+21:21:28 | INFO: Starting glTF 2.0 export
+21:21:28 | INFO: Extracting primitive: TerrainRoof_Mesh.012
+21:21:28 | INFO: Primitives created: 1
+21:21:28 | INFO: Finished glTF 2.0 export in 0.14953994750976562 s
+
+21:21:28 | INFO: Starting glTF 2.0 export
+21:21:28 | INFO: Extracting primitive: TerrainRoof_Mesh.013
+21:21:28 | INFO: Primitives created: 1
+21:21:28 | INFO: Finished glTF 2.0 export in 0.12196755409240723 s
+
+Info: No new files have been packed
+Info: Saved "desert_drift_tunnel_workshop.blend"
+21:21:30 | INFO: Data are loaded, start creating Blender stuff
+21:21:30 | INFO: Blender create Mesh node TerrainRoof_Mesh
+21:21:30 | INFO: glTF import finished in 0.02s
+21:21:30 | INFO: Data are loaded, start creating Blender stuff
+21:21:30 | INFO: Blender create Mesh node TerrainRoof_Mesh.001
+21:21:30 | INFO: glTF import finished in 0.02s
+21:21:30 | INFO: Data are loaded, start creating Blender stuff
+21:21:30 | INFO: Blender create Mesh node TerrainRoof_Mesh.002
+21:21:30 | INFO: glTF import finished in 0.03s
+21:21:30 | INFO: Data are loaded, start creating Blender stuff
+21:21:30 | INFO: Blender create Mesh node TerrainRoof_Mesh.003
+21:21:30 | INFO: glTF import finished in 0.01s
+21:21:31 | INFO: Data are loaded, start creating Blender stuff
+21:21:31 | INFO: Blender create Mesh node TerrainRoof_Mesh.004
+21:21:31 | INFO: glTF import finished in 0.06s
+21:21:31 | INFO: Data are loaded, start creating Blender stuff
+21:21:31 | INFO: Blender create Mesh node TerrainRoof_Mesh.005
+21:21:31 | INFO: glTF import finished in 0.02s
+21:21:31 | INFO: Data are loaded, start creating Blender stuff
+21:21:31 | INFO: Blender create Mesh node TerrainRoof_Mesh.006
+21:21:31 | INFO: glTF import finished in 0.10s
+21:21:32 | INFO: Data are loaded, start creating Blender stuff
+21:21:32 | INFO: Blender create Mesh node TerrainRoof_Mesh.007
+21:21:32 | INFO: glTF import finished in 0.01s
+21:21:32 | INFO: Data are loaded, start creating Blender stuff
+21:21:32 | INFO: Blender create Mesh node TerrainRoof_Mesh.008
+21:21:32 | INFO: glTF import finished in 0.03s
+21:21:32 | INFO: Data are loaded, start creating Blender stuff
+21:21:32 | INFO: Blender create Mesh node TerrainRoof_Mesh.009
+21:21:32 | INFO: glTF import finished in 0.02s
+21:21:32 | INFO: Data are loaded, start creating Blender stuff
+21:21:32 | INFO: Blender create Mesh node TerrainRoof_Mesh.010
+21:21:32 | INFO: glTF import finished in 0.02s
+21:21:32 | INFO: Data are loaded, start creating Blender stuff
+21:21:32 | INFO: Blender create Mesh node TerrainRoof_Mesh.011
+21:21:33 | INFO: glTF import finished in 0.02s
+21:21:33 | INFO: Data are loaded, start creating Blender stuff
+21:21:33 | INFO: Blender create Mesh node TerrainRoof_Mesh.012
+21:21:33 | INFO: glTF import finished in 0.02s
+21:21:33 | INFO: Data are loaded, start creating Blender stuff
+21:21:33 | INFO: Blender create Mesh node TerrainRoof_Mesh.013
+21:21:33 | INFO: glTF import finished in 0.01s
+LUMO_TERRAIN_PASS desert_drift 14 core_unchanged 21
+21:21:34 | INFO: Starting glTF 2.0 export
+21:21:34 | INFO: Extracting primitive: TerrainRoof_Mesh
+21:21:34 | INFO: Primitives created: 1
+21:21:34 | INFO: Finished glTF 2.0 export in 0.14034581184387207 s
+
+21:21:34 | INFO: Starting glTF 2.0 export
+21:21:34 | INFO: Extracting primitive: TerrainRoof_Mesh.001
+21:21:34 | INFO: Primitives created: 1
+21:21:34 | INFO: Finished glTF 2.0 export in 0.10787320137023926 s
+
+21:21:34 | INFO: Starting glTF 2.0 export
+21:21:34 | INFO: Extracting primitive: TerrainRoof_Mesh.002
+21:21:34 | INFO: Primitives created: 1
+21:21:34 | INFO: Finished glTF 2.0 export in 0.09233474731445312 s
+
+21:21:35 | INFO: Starting glTF 2.0 export
+21:21:35 | INFO: Extracting primitive: TerrainRoof_Mesh.003
+21:21:35 | INFO: Primitives created: 1
+21:21:35 | INFO: Finished glTF 2.0 export in 0.09593367576599121 s
+
+21:21:35 | INFO: Starting glTF 2.0 export
+21:21:35 | INFO: Extracting primitive: TerrainRoof_Mesh.004
+21:21:35 | INFO: Primitives created: 1
+21:21:35 | INFO: Finished glTF 2.0 export in 0.10522675514221191 s
+
+21:21:35 | INFO: Starting glTF 2.0 export
+21:21:35 | INFO: Extracting primitive: TerrainRoof_Mesh.005
+21:21:35 | INFO: Primitives created: 1
+21:21:35 | INFO: Finished glTF 2.0 export in 0.11059045791625977 s
+
+21:21:36 | INFO: Starting glTF 2.0 export
+21:21:36 | INFO: Extracting primitive: TerrainRoof_Mesh.006
+21:21:36 | INFO: Primitives created: 1
+21:21:36 | INFO: Finished glTF 2.0 export in 0.13962054252624512 s
+
+21:21:36 | INFO: Starting glTF 2.0 export
+21:21:36 | INFO: Extracting primitive: TerrainRoof_Mesh.007
+21:21:36 | INFO: Primitives created: 1
+21:21:36 | INFO: Finished glTF 2.0 export in 0.11025023460388184 s
+
+21:21:37 | INFO: Starting glTF 2.0 export
+21:21:37 | INFO: Extracting primitive: TerrainRoof_Mesh.008
+21:21:37 | INFO: Primitives created: 1
+21:21:37 | INFO: Finished glTF 2.0 export in 0.13847970962524414 s
+
+21:21:37 | INFO: Starting glTF 2.0 export
+21:21:37 | INFO: Extracting primitive: TerrainRoof_Mesh.009
+21:21:37 | INFO: Primitives created: 1
+21:21:38 | INFO: Finished glTF 2.0 export in 0.20852994918823242 s
+
+21:21:39 | INFO: Starting glTF 2.0 export
+21:21:39 | INFO: Extracting primitive: TerrainRoof_Mesh.010
+21:21:39 | INFO: Primitives created: 1
+21:21:39 | INFO: Finished glTF 2.0 export in 0.3469197750091553 s
+
+21:21:40 | INFO: Starting glTF 2.0 export
+21:21:40 | INFO: Extracting primitive: TerrainRoof_Mesh.011
+21:21:40 | INFO: Primitives created: 1
+21:21:40 | INFO: Finished glTF 2.0 export in 0.22500085830688477 s
+
+21:21:40 | INFO: Starting glTF 2.0 export
+21:21:41 | INFO: Extracting primitive: TerrainRoof_Mesh.012
+21:21:41 | INFO: Primitives created: 1
+21:21:41 | INFO: Finished glTF 2.0 export in 0.3087756633758545 s
+
+21:21:41 | INFO: Starting glTF 2.0 export
+21:21:41 | INFO: Extracting primitive: TerrainRoof_Mesh.013
+21:21:41 | INFO: Primitives created: 1
+21:21:41 | INFO: Finished glTF 2.0 export in 0.11721467971801758 s
+
+Info: No new files have been packed
+Info: Saved "learning_lab_tunnel_workshop.blend"
+21:21:42 | INFO: Data are loaded, start creating Blender stuff
+21:21:42 | INFO: Blender create Mesh node TerrainRoof_Mesh
+21:21:42 | INFO: glTF import finished in 0.01s
+21:21:42 | INFO: Data are loaded, start creating Blender stuff
+21:21:42 | INFO: Blender create Mesh node TerrainRoof_Mesh.001
+21:21:42 | INFO: glTF import finished in 0.01s
+21:21:42 | INFO: Data are loaded, start creating Blender stuff
+21:21:42 | INFO: Blender create Mesh node TerrainRoof_Mesh.002
+21:21:42 | INFO: glTF import finished in 0.02s
+21:21:42 | INFO: Data are loaded, start creating Blender stuff
+21:21:42 | INFO: Blender create Mesh node TerrainRoof_Mesh.003
+21:21:42 | INFO: glTF import finished in 0.04s
+21:21:43 | INFO: Data are loaded, start creating Blender stuff
+21:21:43 | INFO: Blender create Mesh node TerrainRoof_Mesh.004
+21:21:43 | INFO: glTF import finished in 0.02s
+21:21:43 | INFO: Data are loaded, start creating Blender stuff
+21:21:43 | INFO: Blender create Mesh node TerrainRoof_Mesh.005
+21:21:43 | INFO: glTF import finished in 0.04s
+21:21:43 | INFO: Data are loaded, start creating Blender stuff
+21:21:43 | INFO: Blender create Mesh node TerrainRoof_Mesh.006
+21:21:43 | INFO: glTF import finished in 0.03s
+21:21:44 | INFO: Data are loaded, start creating Blender stuff
+21:21:44 | INFO: Blender create Mesh node TerrainRoof_Mesh.007
+21:21:44 | INFO: glTF import finished in 0.02s
+21:21:44 | INFO: Data are loaded, start creating Blender stuff
+21:21:44 | INFO: Blender create Mesh node TerrainRoof_Mesh.008
+21:21:44 | INFO: glTF import finished in 0.03s
+21:21:44 | INFO: Data are loaded, start creating Blender stuff
+21:21:44 | INFO: Blender create Mesh node TerrainRoof_Mesh.009
+21:21:44 | INFO: glTF import finished in 0.02s
+21:21:44 | INFO: Data are loaded, start creating Blender stuff
+21:21:44 | INFO: Blender create Mesh node TerrainRoof_Mesh.010
+21:21:44 | INFO: glTF import finished in 0.02s
+21:21:45 | INFO: Data are loaded, start creating Blender stuff
+21:21:45 | INFO: Blender create Mesh node TerrainRoof_Mesh.011
+21:21:45 | INFO: glTF import finished in 0.01s
+21:21:45 | INFO: Data are loaded, start creating Blender stuff
+21:21:45 | INFO: Blender create Mesh node TerrainRoof_Mesh.012
+21:21:45 | INFO: glTF import finished in 0.03s
+21:21:45 | INFO: Data are loaded, start creating Blender stuff
+21:21:45 | INFO: Blender create Mesh node TerrainRoof_Mesh.013
+21:21:45 | INFO: glTF import finished in 0.01s
+LUMO_TERRAIN_PASS learning_lab 14 core_unchanged 21
+Blender 4.3.2
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/zauberwald_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/bergwelt_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/holo_city_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/crystal_canyon_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/jungle_temple_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/candy_cloud_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/volcano_night_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/winter_sprint_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/galaxy_ringway_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/desert_drift_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/learning_lab_tunnel_workshop.blend"
+
+Blender quit
