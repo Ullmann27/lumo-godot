@@ -10,6 +10,7 @@ const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 const STEP: float = 1.0 / 60.0
 var game
 ## A failed assert aborts its check; PASS needs every check to reach its end.
@@ -433,6 +434,14 @@ func _run() -> void:
 	await _check_too_slow()
 	await _check_stunt_jump()
 	await _check_precision_speeds()
+	# Quitting with the race still mounted left "resources still in use at exit"
+	# on some runs, which the probe runner rightly rejects. Release it first.
+	game.abandoned = true
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[SonnenhafenStunt]")):
+		push_error("[SonnenhafenStunt] FAIL: scene/audio teardown incomplete")
+		quit(1)
+		return
+	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	if completed_checks != 5:
 		print("[SonnenhafenStunt] FAIL: %d of 5 checks completed" % completed_checks)
 		quit(1)
