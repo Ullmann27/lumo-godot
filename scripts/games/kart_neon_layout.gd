@@ -28,9 +28,11 @@ static func _mode_cards(hub: Control, factor: float, vertical: bool) -> void:
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		card.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		card.caption_label.hide()
-		card.badge_label.hide()
-		card.art_frame.visible = vertical
-		card.art_frame.custom_minimum_size = Vector2(30.0, 30.0) * factor
+		# Mode cards (kart_menu_choice.gd) carry their artwork in icon_plate;
+		# they have no separate badge label.
+		if is_instance_valid(card.icon_plate):
+			card.icon_plate.visible = vertical
+			card.icon_plate.custom_minimum_size = Vector2(30.0, 30.0) * factor
 		card.title_label.text = card.title
 		card.title_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 		card.title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if vertical else HORIZONTAL_ALIGNMENT_CENTER
