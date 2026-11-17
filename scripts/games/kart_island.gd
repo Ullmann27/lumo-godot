@@ -678,13 +678,14 @@ func _hide_reference_landing() -> void:
 func _reference_select_mode(selected: String) -> void:
 	if not is_instance_valid(garage):
 		return
+	if _is_catalog_track(selected):
+		# Neon-Menü: Strecken-Highlight und Wochen-Abenteuer wählen echte Katalogstrecken.
+		garage.setup["track"] = selected
+		return
 	match selected:
 		"race", "cup", "time_trial", "training", "arena":
 			# Mode selection updates the actual next race on the same live stage.
 			garage.setup["mode"] = selected
-			return
-		"volcano_night", "jungle_emerald_3600", "desert_drift", "sonnenhafen":
-			garage.setup["track"] = selected
 			return
 		"driver":
 			garage.step = 1
@@ -702,6 +703,13 @@ func _reference_select_mode(selected: String) -> void:
 	garage._refresh()
 	garage._apply_responsive_layout.call_deferred()
 
+
+
+static func _is_catalog_track(id: String) -> bool:
+	for entry in CATALOG.TRACKS:
+		if str(entry.id) == id:
+			return true
+	return false
 
 
 func _reference_rotate_kart(radians: float) -> void:
@@ -744,6 +752,8 @@ func _menu_back() -> void:
 	elif is_instance_valid(garage) and garage.handle_back():
 		return
 	elif is_instance_valid(reference_landing) and reference_landing.visible:
+		if reference_landing.has_method("handle_back") and reference_landing.handle_back():
+			return
 		_return_to_world()
 	elif is_instance_valid(garage):
 		garage._back()
