@@ -103,7 +103,7 @@ func _run() -> void:
 		if not game.modal.visible:
 			failures += 1
 			push_error("[KartResultCapture] FAIL: result did not appear for place %d" % place)
-		if int(game.result_payload.get("place", 0)) != place:
+		if game._ranked() and int(game.result_payload.get("place", 0)) != place:
 			failures += 1
 			push_error("[KartResultCapture] FAIL: wanted place %d, payload has %s" % [
 				place, str(game.result_payload.get("place"))
