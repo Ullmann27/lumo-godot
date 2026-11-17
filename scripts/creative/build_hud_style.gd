@@ -42,9 +42,6 @@ static func _tile(fill: Color, base: Color, depth: int, lift: int) -> StyleBoxFl
 	style.content_margin_right = 12
 	style.content_margin_top = 6 + lift
 	style.content_margin_bottom = 6
-	style.shadow_color = Color(0.02, 0.08, 0.12, 0.28 if depth > 2 else 0.12)
-	style.shadow_size = 3 if depth > 2 else 1
-	style.shadow_offset = Vector2(0, 2 if depth > 2 else 0)
 	style.anti_aliasing = true
 	return style
 
@@ -153,11 +150,7 @@ static func chip(icon: String, tint: Color, caption: String) -> PanelContainer:
 	row.add_theme_constant_override("separation", 6)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(row)
-	var glyph = ICON.new()
-	glyph.kind = icon
-	glyph.tint = tint
-	glyph.custom_minimum_size = Vector2(30, 30)
-	row.add_child(glyph)
+	row.add_child(ICON.rect(icon, tint, 30.0))
 	var value := label(caption, 16, INK_LIGHT)
 	value.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(value)

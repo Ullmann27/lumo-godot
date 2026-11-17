@@ -11,9 +11,9 @@ signal closed
 
 const HUD = preload("res://scripts/creative/build_hud_style.gd")
 const REGIONS := [
-	{"name": "Wiesenwinkel", "ground": Color("8fd16a"), "accent": Color("ffd25a")},
-	{"name": "Handelstal", "ground": Color("d9c27a"), "accent": Color("ff9f5a")},
-	{"name": "Lumo-Stadt", "ground": Color("8cc7e8"), "accent": Color("6fe0cf")},
+	{"name": "Wiesenwinkel", "ground": Color("63b843"), "accent": Color("e8553f")},
+	{"name": "Handelstal", "ground": Color("d4a24c"), "accent": Color("3f7fd9")},
+	{"name": "Lumo-Stadt", "ground": Color("4d9fcf"), "accent": Color("f2b33d")},
 ]
 const STATE_COLORS := {
 	"done": Color("ffc93c"), "current": Color("38e1ff"), "locked": Color("a3aaa8")
@@ -42,12 +42,14 @@ var drag_from := Vector2.INF
 var drag_moved := false
 var elapsed := 0.0
 var high_detail := true
+var shadows := true
 
 
 ## chapter_data: Array of dictionaries from campaign_overview().
 func setup(chapter_data: Array, quality_tier: String) -> void:
 	chapters = chapter_data
 	high_detail = quality_tier != "low"
+	shadows = quality_tier == "high"
 	selected = 0
 	for index in range(chapters.size()):
 		if str(chapters[index].state) == "current":
@@ -85,6 +87,8 @@ func _material(color: Color, emission: float = 0.0) -> StandardMaterial3D:
 	material.albedo_color = color
 	material.roughness = 0.82
 	material.vertex_color_use_as_albedo = true
+	# Instance colours are authored in sRGB like every other LUMO colour.
+	material.vertex_color_is_srgb = true
 	if emission > 0.0:
 		material.emission_enabled = true
 		material.emission = color
@@ -135,18 +139,18 @@ func _build_diorama() -> void:
 	environment.background_color = Color("163c55")
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color("cfe9ff")
-	environment.ambient_light_energy = 0.55
+	environment.ambient_light_energy = 0.38
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	environment.glow_enabled = high_detail
-	environment.glow_intensity = 0.5
+	environment.tonemap_white = 6.0
+	environment.glow_enabled = false
 	var world_environment := WorldEnvironment.new()
 	world_environment.environment = environment
 	viewport.add_child(world_environment)
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-52, -35, 0)
-	sun.light_energy = 1.25
+	sun.light_energy = 0.95
 	sun.light_color = Color("fff1d6")
-	sun.shadow_enabled = high_detail
+	sun.shadow_enabled = shadows
 	viewport.add_child(sun)
 	camera = Camera3D.new()
 	camera.fov = 42
@@ -156,15 +160,20 @@ func _build_diorama() -> void:
 	# Sea and the three region plateaus.
 	var sea := PlaneMesh.new()
 	sea.size = Vector2(80, 60)
-	_mesh_instance(sea, Color("2e8fc4"), Vector3(0, -0.35, 0), 0.05)
+	_mesh_instance(sea, Color("2a7fb2"), Vector3(0, -0.35, 0))
+	# Region plateaus with darker cliff skirts, batched into one draw.
+	var slab := BoxMesh.new()
+	slab.size = Vector3.ONE
+	var slab_xforms: Array = []
+	var slab_colors: Array = []
 	for row in range(3):
-		var plateau := BoxMesh.new()
-		plateau.size = Vector3(26.0, 0.9, 6.4)
 		var region: Dictionary = REGIONS[row]
-		_mesh_instance(plateau, region.ground, Vector3(0, 0.0, 6.5 - row * 6.5))
-		var cliff := BoxMesh.new()
-		cliff.size = Vector3(26.6, 0.7, 6.9)
-		_mesh_instance(cliff, Color(region.ground).darkened(0.35), Vector3(0, -0.45, 6.5 - row * 6.5))
+		var z := 6.5 - row * 6.5
+		slab_xforms.append(Transform3D(Basis().scaled(Vector3(26.0, 0.9, 6.4)), Vector3(0, 0.0, z)))
+		slab_colors.append(region.ground)
+		slab_xforms.append(Transform3D(Basis().scaled(Vector3(26.6, 0.7, 6.9)), Vector3(0, -0.45, z)))
+		slab_colors.append(Color(region.ground).darkened(0.4))
+	_multimesh(slab, slab_xforms, slab_colors)
 	stations.clear()
 	for index in range(12):
 		stations.append(station_position(index))
@@ -208,12 +217,12 @@ func _build_diorama() -> void:
 		var at := stations[index]
 		var tint: Color = STATE_COLORS[state]
 		lists.pedestal[0].append(Transform3D(Basis(), at + Vector3(0, 0.0, 0)))
-		lists.pedestal[1].append(tint.lerp(Color.WHITE, 0.25))
-		var house_color: Color = Color("f4ead4") if state != "locked" else Color("b9bfbd")
+		lists.pedestal[1].append(tint.darkened(0.15))
+		var house_color: Color = Color("f1e2c2") if state != "locked" else Color("c9c2b4")
 		lists.body[0].append(Transform3D(Basis(Vector3.UP, 0.4 * (index % 3 - 1)), at + Vector3(0, 0.7, 0)))
 		lists.body[1].append(house_color)
 		lists.roof[0].append(Transform3D(Basis(Vector3.UP, 0.4 * (index % 3 - 1)), at + Vector3(0, 1.6, 0)))
-		lists.roof[1].append(Color(region.accent).darkened(0.1) if state != "locked" else Color("8d9593"))
+		lists.roof[1].append(Color(region.accent) if state != "locked" else Color(region.accent).lerp(Color("8d9593"), 0.65))
 		lists.pole[0].append(Transform3D(Basis(), at + Vector3(0.95, 1.2, 0.55)))
 		lists.pole[1].append(Color("6b4a2b"))
 		lists.flag[0].append(Transform3D(Basis(), at + Vector3(1.32, 1.95, 0.55)))
@@ -292,7 +301,7 @@ func _build_decor() -> void:
 	for index in range(9):
 		var x := -14.0 + index * 3.5
 		peaks.append(Transform3D(Basis().scaled(Vector3.ONE * (0.8 + 0.3 * (index % 3))), Vector3(x, 1.2, -12.2)))
-		peak_colors.append(Color("7f95a8").lerp(Color("a8bccb"), float(index % 2)))
+		peak_colors.append(Color("6d8597").lerp(Color("8ea4b5"), float(index % 2)))
 	_multimesh(peak, peaks, peak_colors)
 
 
@@ -312,9 +321,15 @@ func _update_camera() -> void:
 	if not is_instance_valid(camera):
 		return
 	var portrait := size.y > size.x
-	var distance := 30.0 if portrait else 22.0
-	camera.position = Vector3(pan, distance * 0.82, distance * 0.62 + 1.0)
-	camera.look_at(Vector3(pan, 0.0, 0.2))
+	# Frame the whole board; in landscape it sits left of the detail card,
+	# in portrait above it.
+	# Portrait keeps the board's width on screen instead of its height.
+	camera.keep_aspect = Camera3D.KEEP_WIDTH if portrait else Camera3D.KEEP_HEIGHT
+	camera.fov = 58.0 if portrait else 42.0
+	var distance := 30.0 if portrait else 31.0
+	var target := Vector3(pan + (0.0 if portrait else 4.2), 0.0, 6.5 if portrait else 0.8)
+	camera.position = target + Vector3(0, distance * 0.8, distance * 0.6)
+	camera.look_at(target)
 
 
 func _build_overlay() -> void:

@@ -10,7 +10,8 @@ var bands: Array = []
 var markers: Array = []
 var view_center := Vector2.ZERO
 var view_extent := 8.0
-var title := ""
+var _baked: ImageTexture
+const BAKE := 128
 
 
 func _ready() -> void:
@@ -22,7 +23,31 @@ func _ready() -> void:
 func set_content(new_bands: Array, new_markers: Array) -> void:
 	bands = new_bands
 	markers = new_markers
+	_bake()
 	queue_redraw()
+
+
+## Terrain and markers go into one texture so the overview costs a single
+## batched draw regardless of how many parts the child has placed.
+func _bake() -> void:
+	var image := Image.create(BAKE, BAKE, false, Image.FORMAT_RGBA8)
+	image.fill(Color("6fbf5a"))
+	var scale := Vector2(BAKE, BAKE) / world_rect.size
+	for band in bands:
+		var rect: Rect2 = band[0]
+		var pixels := Rect2i(
+			Vector2i((rect.position - world_rect.position) * scale), Vector2i((rect.size * scale).ceil())
+		)
+		image.fill_rect(pixels.intersection(Rect2i(0, 0, BAKE, BAKE)), band[1])
+	for marker in markers:
+		var at := Vector2i((Vector2(marker[0]) - world_rect.position) * scale)
+		var half := maxi(1, int(round(float(marker[2]) * 0.6)))
+		var dot := Rect2i(at - Vector2i(half, half), Vector2i(half * 2, half * 2))
+		image.fill_rect(dot.intersection(Rect2i(0, 0, BAKE, BAKE)), marker[1])
+	if _baked == null:
+		_baked = ImageTexture.create_from_image(image)
+	else:
+		_baked.update(image)
 
 
 func set_view(center: Vector2, extent: float) -> void:
@@ -59,23 +84,12 @@ func _draw() -> void:
 	frame.set_corner_radius_all(16)
 	draw_style_box(frame, Rect2(Vector2.ZERO, size))
 	var area := _map_rect()
-	draw_rect(area, Color("6fbf5a"))
-	for band in bands:
-		var rect: Rect2 = band[0]
-		var a := to_local_point(rect.position)
-		var b := to_local_point(rect.end)
-		draw_rect(Rect2(a, b - a).intersection(area), band[1])
-	for marker in markers:
-		var at := to_local_point(marker[0])
-		if area.grow(2).has_point(at):
-			draw_circle(at, float(marker[2]), marker[1])
+	if _baked != null:
+		draw_texture_rect(_baked, area, false)
 	var half := Vector2.ONE * view_extent
 	var va := to_local_point(view_center - half)
 	var vb := to_local_point(view_center + half)
 	draw_rect(Rect2(va, vb - va).intersection(area.grow(2)), Color(1, 1, 1, 0.95), false, 2.0)
-	if not title.is_empty():
-		var font := get_theme_default_font()
-		draw_string(font, area.position + Vector2(4, 14), title, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1, 1, 1, 0.9))
 
 
 func _gui_input(event: InputEvent) -> void:
