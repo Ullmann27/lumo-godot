@@ -1,5 +1,5 @@
 extends SceneTree
-## Exercise the real production controls, not a screenshot or a parallel mock UI.
+## Exercise real production controls; every requested window must change the canvas.
 const HUB = preload("res://scripts/games/kart_neon_hub.gd")
 const SURFACES := [Vector2i(360, 800), Vector2i(412, 915), Vector2i(840, 960), Vector2i(960, 720), Vector2i(1280, 800), Vector2i(915, 412)]
 var checks := 0
@@ -32,13 +32,17 @@ func _inside(control: Control, surface: Rect2, tag: String) -> void:
 	_check(surface.grow(1.0).encloses(bounds), tag + ": control remains in the visible surface")
 
 func _run() -> void:
+	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
+	root.content_scale_size = Vector2i.ZERO
+	root.content_scale_factor = 1.0
 	var hub = HUB.new()
 	hub.total_stars = 17
 	hub.current_mode = "race"
 	root.add_child(hub)
 	for dimensions in SURFACES:
 		root.size = dimensions
-		await process_frame
+		for frame in range(3):
+			await process_frame
 		hub.size = hub.get_viewport_rect().size
 		hub._layout()
 		for frame in range(8):
@@ -46,6 +50,7 @@ func _run() -> void:
 		var factor: float = hub._layout_scale
 		var surface := Rect2(Vector2.ZERO, hub.size)
 		var tag := "%dx%d" % [dimensions.x, dimensions.y]
+		_check(hub.size.is_equal_approx(Vector2(dimensions)), tag + ": actual canvas matches requested dimensions")
 		for group in [hub._features, hub._extra_modes, hub._navigation, hub._track_row]:
 			for child in group.get_children():
 				if child is Button and child.is_visible_in_tree():
