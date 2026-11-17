@@ -175,9 +175,14 @@ func _draw_hero(font: Font, body: Font, k: float, pulse: float) -> void:
 				draw_string(body, Vector2(pad, y), line, HORIZONTAL_ALIGNMENT_LEFT, -1, cpx, Color(1, 1, 1, 0.86))
 				y += cpx * 1.15
 	else:
-		ICONS.draw(self, icon_kind, Vector2(pad + icon_s * 0.55, size.y * 0.5), icon_s, Color.WHITE)
 		var left := pad * 1.6 + icon_s
 		var tpx := _fit(font, title, roundi(24 * k), size.x - left - pad - 20 * k)
+		if tpx < roundi(16 * k):
+			# A wide, flat tile: the mode name must stay readable, so the icon yields.
+			icon_s = minf(icon_s, 26.0 * k)
+			left = pad * 1.4 + icon_s
+			tpx = _fit(font, title, roundi(24 * k), size.x - left - pad - 6 * k)
+		ICONS.draw(self, icon_kind, Vector2(pad + icon_s * 0.55, size.y * 0.5), icon_s, Color.WHITE)
 		var has_caption := not compact and not caption.is_empty() and size.y >= 60.0 * k
 		var ty := size.y * 0.5 + tpx * 0.35 - (8.0 * k if has_caption else 0.0)
 		draw_string(font, Vector2(left, ty), title, HORIZONTAL_ALIGNMENT_LEFT, -1, tpx, Color.WHITE)
@@ -197,7 +202,9 @@ func _draw_feature(font: Font, body: Font, k: float) -> void:
 	var icon_s := minf(size.y * 0.34, 30.0 * k)
 	ICONS.draw(self, icon_kind, Vector2(pad + icon_s * 0.5, pad + icon_s * 0.5), icon_s, accent.lightened(0.35))
 	var left := pad * 1.5 + icon_s
-	var tpx := _fit(font, title, roundi(20 * k), size.x - left - pad)
+	# The "!" badge sits in the top-right corner; the title ends before it.
+	var badge_room: float = 20.0 * k if badge else 0.0
+	var tpx := _fit(font, title, roundi(20 * k), size.x - left - pad - badge_room)
 	draw_string(font, Vector2(left, pad + icon_s * 0.5 + tpx * 0.36), title, HORIZONTAL_ALIGNMENT_LEFT, -1, tpx, Color.WHITE)
 	if not compact and not caption.is_empty() and size.y >= 72.0 * k:
 		var cpx := roundi(12 * k)
