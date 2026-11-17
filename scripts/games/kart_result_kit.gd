@@ -33,8 +33,8 @@ const TIERS: Dictionary = {
 		"deep": Color("5c2709"), "glow": Color("ff9a4a")
 	},
 	"neutral": {
-		"light": Color("e3f7ff"), "mid": Color("8fd6f7"), "dark": Color("3384b8"),
-		"deep": Color("0e3559"), "glow": Color("53ddfd")
+		"light": Color("f4fcff"), "mid": Color("bfe8fc"), "dark": Color("5aa7d6"),
+		"deep": Color("0b2f52"), "glow": Color("53ddfd")
 	},
 }
 static var _textures: Dictionary = {}
@@ -190,6 +190,8 @@ static func star_points(center: Vector2, outer: float, inner: float, turn: float
 
 ## Facettierter Stern: jede Zacke hat eine helle und eine dunkle Hälfte.
 static func draw_star(canvas: CanvasItem, center: Vector2, radius: float, colors: Dictionary = TIERS.gold) -> void:
+	if radius < 0.5:
+		return
 	var replacement: Texture2D = texture("star")
 	if replacement != null:
 		canvas.draw_texture_rect(replacement, Rect2(center - Vector2.ONE * radius, Vector2.ONE * radius * 2.0), false)
@@ -213,6 +215,8 @@ static func _ring(canvas: CanvasItem, center: Vector2, radius: float, width: flo
 
 ## Kleine Icons mit Glanz und Schatten; `kind` wie in TEXTURE_IDS ohne „icon_“.
 static func draw_icon(canvas: CanvasItem, kind: String, center: Vector2, size: float) -> void:
+	if size < 1.0:
+		return
 	var replacement: Texture2D = texture("icon_" + kind)
 	if replacement != null:
 		canvas.draw_texture_rect(replacement, Rect2(center - Vector2.ONE * size * 0.5, Vector2.ONE * size), false)

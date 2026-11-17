@@ -4,7 +4,7 @@ extends Control
 ## Alles skaliert mit der Größe des Knotens. Eine Textur „badge_<stufe>“ aus
 ## kart_result_kit.gd ersetzt Band, Lorbeer und Krone; Zahl und Wort bleiben Text.
 const KIT = preload("res://scripts/games/kart_result_kit.gd")
-const DESIGN := Vector2(520, 168)
+const DESIGN := Vector2(520, 190)
 var place: int = 1
 var ranked: bool = true
 ## Ohne Rang (Training, Zeitfahren, Arena) steht hier die Überschrift.
@@ -34,7 +34,7 @@ var text: String:
 func _init() -> void:
 	name = "ResultTitle"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	custom_minimum_size = Vector2(0, 150)
+	custom_minimum_size = Vector2(0, 172)
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_numeral_face = _layer(_draw_numeral_face)
 	_word_face = _layer(_draw_word_face)
@@ -58,7 +58,7 @@ func _ready() -> void:
 
 
 func apply_result_scale(factor: float, _dp: float) -> void:
-	custom_minimum_size.y = 150.0 * factor
+	custom_minimum_size.y = 172.0 * factor
 
 
 func result_height(_width: float) -> float:
@@ -96,6 +96,12 @@ func _colors() -> Dictionary:
 	return KIT.tier(place, ranked)
 
 
+## Ohne Rang trägt die Überschrift das Gold des Sterns; so bleibt sie auf dem
+## blauen Band gut lesbar.
+func _word_colors() -> Dictionary:
+	return KIT.tier(place, true) if ranked else KIT.TIERS.gold
+
+
 func _factor() -> float:
 	return minf(size.x / DESIGN.x, size.y / DESIGN.y) * lerpf(0.7, 1.0, clampf(appear, 0.0, 1.2))
 
@@ -107,14 +113,14 @@ func _point(x: float, y: float) -> Vector2:
 
 func _numeral_spec() -> Dictionary:
 	var f: float = _factor()
-	var font_size: int = maxi(8, roundi(158.0 * f))
+	var font_size: int = maxi(8, roundi(188.0 * f))
 	var font: Font = KIT.display_font()
 	var value: String = str(place)
 	var width: float = font.get_string_size(value, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
 	return {
 		"text": value, "size": font_size,
-		"position": _point(128, 156) - Vector2(width * 0.5, 0),
-		"top": _point(0, 42).y, "bottom": _point(0, 158).y
+		"position": _point(122, 181) - Vector2(width * 0.5, 0),
+		"top": _point(0, 46).y, "bottom": _point(0, 183).y
 	}
 
 
@@ -122,21 +128,21 @@ func _numeral_spec() -> Dictionary:
 func _word_spec() -> Dictionary:
 	var f: float = _factor()
 	var font: Font = KIT.display_font()
-	var left: float = 226.0
-	var room: float = (442.0 - left) * f
+	var left: float = 232.0
+	var room: float = (470.0 - left) * f
 	var lines: PackedStringArray = ["PLATZ"]
-	var font_size: int = maxi(6, roundi(66.0 * f))
-	var baseline: float = 124.0 if subline != "" else 132.0
+	var font_size: int = maxi(6, roundi(74.0 * f))
+	var baseline: float = 141.0 if subline != "" else 150.0
 	if not ranked:
 		lines = [title]
-		room = (486.0 - left) * f
+		room = (492.0 - left) * f
 		if title.length() > 12 and title.contains(" "):
 			var cut: int = title.find(" ", title.length() / 2 - 2)
 			if cut < 0:
 				cut = title.rfind(" ")
 			lines = [title.substr(0, cut), title.substr(cut + 1)]
-		font_size = maxi(6, roundi((56.0 if lines.size() == 1 else 40.0) * f))
-		baseline = 124.0 if lines.size() == 1 else 100.0
+		font_size = maxi(6, roundi((60.0 if lines.size() == 1 else 44.0) * f))
+		baseline = 142.0 if lines.size() == 1 else 116.0
 	var widest: float = 1.0
 	for line in lines:
 		widest = maxf(widest, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x)
@@ -164,23 +170,23 @@ func _draw() -> void:
 		_draw_laurel(f, colors)
 	if ranked:
 		var numeral: Dictionary = _numeral_spec()
-		_draw_glow(_point(128, 100), 86.0 * f, colors.glow)
+		_draw_glow(_point(122, 116), 96.0 * f, colors.glow)
 		_extrude(numeral.text, numeral.position, numeral.size, colors, 9.0 * f)
 	else:
-		_draw_glow(_point(128, 100), 80.0 * f, KIT.TIERS.gold.glow)
+		_draw_glow(_point(122, 116), 90.0 * f, KIT.TIERS.gold.glow)
 	var word: Dictionary = _word_spec()
 	for index in range(word.lines.size()):
 		_extrude(
 			word.lines[index], Vector2(word.left, word.baseline + word.line_height * index),
-			word.size, colors, 5.0 * f
+			word.size, _word_colors(), 5.0 * f
 		)
 	if subline != "":
-		var sub_size: int = maxi(6, roundi(23.0 * f))
-		var at: Vector2 = _point(230, 149)
+		var sub_size: int = maxi(6, roundi(24.0 * f))
+		var at: Vector2 = _point(237, 168)
 		draw_string_outline(KIT.UI.HEADING, at, subline, HORIZONTAL_ALIGNMENT_LEFT, -1, sub_size, maxi(1, roundi(4.0 * f)), Color(0.0, 0.04, 0.14, 0.9))
 		draw_string(KIT.UI.HEADING, at, subline, HORIZONTAL_ALIGNMENT_LEFT, -1, sub_size, Color("d7f1ff"))
 	_metal(_numeral_face, colors, _numeral_spec().top, _numeral_spec().bottom)
-	_metal(_word_face, colors, word.top, word.bottom)
+	_metal(_word_face, _word_colors(), word.top, word.bottom)
 
 
 func _metal(layer: Control, colors: Dictionary, top: float, bottom: float) -> void:
@@ -234,8 +240,8 @@ func _draw_word_face() -> void:
 
 ## Schräges Rennband mit Karo-Enden, Verlauf, Glanzkante und Neonlinien.
 func _draw_ribbon(f: float) -> void:
-	var top: float = 60.0
-	var bottom: float = 152.0
+	var top: float = 76.0
+	var bottom: float = 174.0
 	var lean: float = 16.0
 	var shape := PackedVector2Array([
 		_point(4 + lean, top), _point(516 + lean, top), _point(516 - lean, bottom), _point(4 - lean, bottom)
@@ -297,8 +303,8 @@ func _leaf(base: Vector2, angle: float, length: float, width: float, colors: Dic
 
 
 func _draw_laurel(f: float, colors: Dictionary) -> void:
-	var center: Vector2 = _point(128, 98)
-	var radius: float = 78.0 * f
+	var center: Vector2 = _point(122, 114)
+	var radius: float = 90.0 * f
 	for side in [-1.0, 1.0]:
 		var stem := PackedVector2Array()
 		for index in range(9):
@@ -311,14 +317,14 @@ func _draw_laurel(f: float, colors: Dictionary) -> void:
 			var base: Vector2 = center + Vector2(side * sin(a), cos(a)) * radius
 			var tangent: float = Vector2(side * cos(a), -sin(a)).angle()
 			var size_scale: float = lerpf(1.0, 0.72, float(index) / 6.0)
-			_leaf(base, tangent + side * 0.62, 27.0 * f * size_scale, 13.0 * f * size_scale, colors)
-			_leaf(base, tangent - side * 0.5, 22.0 * f * size_scale, 11.0 * f * size_scale, colors)
+			_leaf(base, tangent + side * 0.62, 31.0 * f * size_scale, 15.0 * f * size_scale, colors)
+			_leaf(base, tangent - side * 0.5, 25.0 * f * size_scale, 12.5 * f * size_scale, colors)
 
 
 func _draw_crown(f: float) -> void:
 	var gold: Dictionary = KIT.TIERS.gold
-	var c: Vector2 = _point(110, 26)
-	var u: float = 30.0 * f
+	var c: Vector2 = _point(100, 30)
+	var u: float = 33.0 * f
 	var tilt: float = -0.14
 	var body := PackedVector2Array()
 	for corner in [
@@ -359,10 +365,10 @@ func _draw_top() -> void:
 	if ranked and place == 1 and KIT.texture("badge_gold") == null:
 		_draw_crown(f)
 	if not ranked:
-		KIT.draw_star(_top, _point(128, 100), 50.0 * f)
-	var glints: Array = [Vector2(168, 52), Vector2(98, 138), Vector2(430, 78)]
+		KIT.draw_star(_top, _point(122, 116), 58.0 * f)
+	var glints: Array = [Vector2(170, 62), Vector2(88, 160), Vector2(452, 96)]
 	if not ranked or place > 3:
-		glints = [Vector2(168, 52), Vector2(430, 78)]
+		glints = [Vector2(170, 62), Vector2(452, 96)]
 	for index in range(glints.size()):
 		var strength: float = 0.9 if reduced_motion else 0.62 + 0.38 * sin(_phase * 2.6 + float(index) * 2.1)
 		_sparkle(_point(glints[index].x, glints[index].y), (9.0 + 3.0 * strength) * f, strength)
