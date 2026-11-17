@@ -1,0 +1,27 @@
+{
+  "name": "final-main",
+  "command": [
+    "godot",
+    "--headless",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "res://scripts/tests/kart_regression.gd"
+  ],
+  "expected_exit_code": 0,
+  "exit_code": 0,
+  "started_at": "2026-11-13T16:25:39.794817+00:00",
+  "finished_at": "2026-11-13T16:25:50.415179+00:00",
+  "seconds": 10.62,
+  "log": "final-main.log",
+  "log_bytes": 17953,
+  "log_sha256": "a824d3a3cf0ee862d762764b935a68c277c9b6dbd25b8a48f26fb09c8d386678",
+  "significant_lines": [
+    "[KartTests] before resume teardown tracked=5 scene_released=true audio_released=true elapsed_ms=110",
+    "[KartTests] Full free-steering race: 85.7s, 5078 frames, 1 resets",
+    "[KartTests] final race teardown tracked=4 scene_released=true audio_released=true elapsed_ms=88",
+    "[KartTests] PASS: 8000 shared Jump questions; no Kart learning state; free steering; real full race; brake/drift; pause; save/resume; one award"
+  ],
+  "passed": true
+}

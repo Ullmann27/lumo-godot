@@ -1,0 +1,41 @@
+{
+  "native/tools/validate_studio.sh": {
+    "sha256": "70b2fc4a4835bd1af0169e6f5115387437b13feb4d0efc2928e0778798455bd7"
+  },
+  "native/tools/tests/test_nextgen_runner.py": {
+    "sha256": "ff694ff34e237044af09f585da9a24ebab2c11b711f560eda1d786825bc103a5"
+  },
+  "native/tools/validate_nextgen.sh": {
+    "sha256": "8b1844825b3c6ea6ecd4a186ca7d28b94ed4fd5a218f4e34a102cd739981c4b6"
+  },
+  "native/tools/verify_studio_rasters.py": {
+    "sha256": "eefad8134f66404aa4bd3fedee279661e3f243a1a9aa3042c69e3d181fda62dd"
+  },
+  "native/tools/verify_village_rasters.py": {
+    "sha256": "0605a556d45ba9a7d6db6f85bdab21f0bc338a9c5fb5b8efb0ff40d04fa472e5"
+  },
+  "native/tools/verify_puzzle_menu_rasters.py": {
+    "sha256": "3afe208e8572b683d12a338d73cf261416958ec2306ae87007f9c2c6b35e4994"
+  },
+  "native/tools/run_godot_probe.py": {
+    "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13"
+  },
+  "native/.github/workflows/lumo-nextgen-2018.yml": {
+    "sha256": "b238b61fab9625da90faebcefcf40cf4b6a4a125d128ccd4ab8e2b55a75e6e90"
+  },
+  "native/.github/workflows/lumo-studio-2019.yml": {
+    "sha256": "699d12f9f63e0a595cd1e26735d9202e33c5ff7b378aae62e0fb8b575f606f94"
+  },
+  "host/scripts/verify_studio_delivery.py": {
+    "sha256": "f5bfd40078087ec59442be19a400210ba18e4fd713b6f00bfe0853bf2de61ae4"
+  },
+  "host/scripts/record_studio_visual_review.py": {
+    "sha256": "dd8d73d72838186a51d494acb4d1b796bd12beebdd923e7bb48369f606bed64d"
+  },
+  "host/scripts/tests/test_nextgen_2019_review.py": {
+    "sha256": "ce037aff18a5c9a1552bc5a1ff2caf5a8389f94cc01ec640ddd425a80ebb8165"
+  },
+  "host/scripts/tests/test_kart_graphics_delivery.py": {
+    "sha256": "a254ef1cb5bcf736ba79e5f74337d765ce40c91ea3e1d2b983ec3de19f3d6582"
+  }
+}

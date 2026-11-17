@@ -1,0 +1,57 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:33:12 | INFO: Starting glTF 2.0 export
+21:33:12 | INFO: Extracting primitive: TerrainRoof_Mesh.004
+21:33:12 | INFO: Primitives created: 1
+21:33:12 | INFO: Finished glTF 2.0 export in 0.08774852752685547 s
+
+{
+  "status": "PASS",
+  "scope": "Single cover normal-only probe; no delivered asset or source modified",
+  "original": "assets/kart/production/tracks/zauberwald/straight_12m_terrain.glb",
+  "probe": "evidence/lumo_kart_art/tracks/normal_probe/zauberwald_straight_12m_flat_caps.glb",
+  "geometry_and_sockets_identical": true,
+  "geometry_signature": {
+    "triangles": 2132,
+    "triangle_positions_sha256": "070eb746e0796840aa7b84061a204f26d185485943a39dcdee1a02b4b89cbfe9",
+    "sockets": [
+      [
+        "in",
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "out",
+        [
+          0,
+          0,
+          -12
+        ],
+        null,
+        null,
+        null
+      ]
+    ]
+  },
+  "changes": [
+    {
+      "end_cap_triangles": 164,
+      "changed_smooth_flags": 164,
+      "before": {
+        "seam_side_corners": 492,
+        "mean_abs_longitudinal_normal": 0.7086804659385991,
+        "max_abs_longitudinal_normal": 0.9045345187187195
+      },
+      "after": {
+        "seam_side_corners": 492,
+        "mean_abs_longitudinal_normal": 0.003171792252032901,
+        "max_abs_longitudinal_normal": 0.030789390206336975
+      }
+    }
+  ]
+}
+Blender 4.3.2
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/zauberwald_tunnel_workshop.blend"
+
+Blender quit

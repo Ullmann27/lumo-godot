@@ -1,0 +1,59 @@
+{
+  "schema": "lumo.pattern.native.review",
+  "version": 1,
+  "base": "d38967f6d39bc20188afe525b0af122d80634029",
+  "branch": "support/lumo-nextgen-native-review-20261115",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "scope": "Real Godot import and headless production-model/legacy-scene regressions; no new pattern rendering, Android or audible speech claim.",
+  "results": {
+    "pattern_checks": 33077,
+    "learning_world_checks": 5347,
+    "sharing_checks": 1811,
+    "host_payload_checks": 135,
+    "project_checks": 118,
+    "failures": 0
+  },
+  "sources": {
+    "scripts/learning/learning_activity.gd": "102dd8f290db593fd1c5d88802f6b49e8648aed8e6b22fd5441bf0007dede339",
+    "scripts/tests/learning_pattern_regression.gd": "233357ed40a34473d66f87ddfec909ce3b98338f7e7ce00a2ddf5058b0d679f5",
+    "docs/nextgen/PATTERN_NATIVE_V1.md": "436a02fcfabdd0425419d029794e47985a26a2c8dd4669b4c4a7aedb5dbabc7e"
+  },
+  "logs": [
+    {
+      "file": "godot-import.log",
+      "bytes": 367815,
+      "sha256": "25e1c1b09dcd4b5f88c55531056cf2530febee6d2c99cc2d76b8873bef2bd548",
+      "errors": []
+    },
+    {
+      "file": "learning_pattern_regression.log",
+      "bytes": 516,
+      "sha256": "218cf9af10b3a0b0840b6da9cc5b2ae2a0a29a155e2b343571e1254fed4a9f9b",
+      "errors": []
+    },
+    {
+      "file": "learning_world_regression.log",
+      "bytes": 10599,
+      "sha256": "b37601ebdaf9b3618f978ec539054afa9bd38945e3ec5d3892c7136ba58420e2",
+      "errors": []
+    },
+    {
+      "file": "learning_sharing_regression.log",
+      "bytes": 1482,
+      "sha256": "46611a9b8519f2137a9ce2a5cf8dab5b11b66b298a062b70a5bf8e039f138b3e",
+      "errors": []
+    },
+    {
+      "file": "learning_host_payload_regression.log",
+      "bytes": 561,
+      "sha256": "c763d84b6655eadfffb6b9fbbd62ab446baf0468976b0630248786ccb1e69387",
+      "errors": []
+    },
+    {
+      "file": "validate-project.log",
+      "bytes": 5508,
+      "sha256": "e04d8c44e231e5a994937734bc3a32134b4f8dd8b387907b2e1c6dae09bfc22a",
+      "errors": []
+    }
+  ]
+}

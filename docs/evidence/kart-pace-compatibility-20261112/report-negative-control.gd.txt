@@ -1,0 +1,26 @@
+extends "res://scripts/tests/kart_physics_regression.gd"
+## Intentional failure: verifies the inherited report gate, not driving.
+func _test_walls(_track: String) -> void:
+	completed_checks += 1
+func _test_drift_tiers() -> void:
+	assert(false, "Intentional negative control: helper assertion abort")
+func _test_wrong_way() -> void:
+	completed_checks += 1
+func _test_lap_validity() -> void:
+	completed_checks += 1
+func _test_pedals() -> void:
+	completed_checks += 1
+func _test_boost_response() -> void:
+	completed_checks += 1
+func _test_skill_resonance_rings() -> void:
+	completed_checks += 1
+func _test_rival_item_tactics() -> void:
+	completed_checks += 1
+func _test_wolkenweg_split_route() -> void:
+	completed_checks += 1
+func _test_boost_gates_and_restart() -> void:
+	completed_checks += 1
+func _test_boost_chevrons_follow_travel() -> void:
+	completed_checks += 1
+func _test_boost_pad_and_airborne() -> void:
+	completed_checks += 1

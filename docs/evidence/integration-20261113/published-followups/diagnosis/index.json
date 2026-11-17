@@ -1,0 +1,27 @@
+{
+  "scope": "Historical diagnostic summaries only. None is used as the causal original-product red result.",
+  "authoritative_red": "evidence/village-surface-comparison/published-after-import/result.json",
+  "authoritative_green": "evidence/village-surface-comparison/repaired/result.json",
+  "entries": [
+    {
+      "directory": "village-surface-v1",
+      "file": "diagnosis/village-surface-v1/result.json",
+      "reason_not_causal_red": "Early prototype without the desktop touchscreen capability and with an invalid freed-Window assignment. Not a causal product baseline."
+    },
+    {
+      "directory": "village-surface-published-failure",
+      "file": "diagnosis/village-surface-published-failure/result.json",
+      "reason_not_causal_red": "Early probe without the required desktop touchscreen capability. Its 99-check failure is not a causal product baseline."
+    },
+    {
+      "directory": "village-surface-scroll-fix",
+      "file": "diagnosis/village-surface-scroll-fix/result.json",
+      "reason_not_causal_red": "Intermediate repair/probe without the complete desktop touchscreen capability. Its 122-check failure is not the final identical-probe comparison."
+    },
+    {
+      "directory": "village-surface-comparison/published",
+      "file": "diagnosis/village-surface-comparison/published/result.json",
+      "reason_not_causal_red": "Initial isolated comparison stopped at font resource import/parse failure before valid product assertions. Superseded by published-after-import."
+    }
+  ]
+}

@@ -1,21 +1,38 @@
 class_name LumoRaceWorld
 extends Node3D
-## Four original banked courses. Spatial GPU batches preserve Android performance.
+## Twelve banked courses sharing one road authority and spatial GPU instance batches.
 const LANDMARKS = preload("res://scripts/games/kart_landmarks.gd")
 const EXPANSION = preload("res://scripts/games/kart_expansion_world.gd")
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
+const JUNGLE = preload("res://scripts/games/kart_jungle_course.gd")
+const ADVENTURE_TUNNELS = preload("res://scripts/games/kart_adventure_tunnels.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const AAA_ENV = preload("res://scripts/games/visual/kart_environment_polish.gd")
 const AAA_GATES = preload("res://scripts/games/visual/kart_neon_gates.gd")
+const MESHY_START_GATE = preload("res://scripts/games/kart_meshy_start_gate.gd")
 const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
 const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
+const MODULAR_PARTS = preload("res://scripts/games/kart_modular_route_props.gd")
 const PREMIUM_RAIL_KIT = preload("res://scripts/games/kart_premium_rail_kit.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
+const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const HARBOR_PAVILIONS = preload("res://scripts/games/kart_harbor_pavilions.gd")
+const HARBOR_LOOKOUTS = preload("res://scripts/games/kart_harbor_lookout_towers.gd")
+const COASTAL_VIADUCT = preload("res://scripts/games/kart_sonnenhafen_coastal_viaduct.gd")
+const LONG_BRIDGE = preload("res://scripts/games/kart_sonnenhafen_long_bridge.gd")
+const HERO_COAST = preload("res://scripts/games/kart_sonnenhafen_hero_coast.gd")
+const DARK_RIDE = preload("res://scripts/games/kart_sonnenhafen_darkride.gd")
+const HARBOR_CRANE = preload("res://scripts/games/kart_harbor_crane.gd")
 const HARBOR_AQUARIUM = preload("res://scripts/games/kart_harbor_aquarium.gd")
+const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
+const GENERATION = preload("res://scripts/games/kart_sonnenhafen_generation.gd")
+const PRODUCTION_TUNNELS = preload("res://scripts/games/kart_production_tunnels.gd")
+const PRODUCTION_TUNNEL_LAYOUT = preload("res://scripts/games/kart_production_tunnel_layout.gd")
+var production_tunnels
+var production_tunnel_layout: Dictionary = {}
 var action_obstacles: Array[Vector3] = []
 const WIDTH: float = 10.8
 ## Continuous guardrails: the drawn rail and the collision wall are the same line.
@@ -29,6 +46,7 @@ var length: float = 0.0
 var world_extent: Vector2 = Vector2(101.0, 91.0)
 var road: MeshInstance3D
 var low_detail: bool = false
+var _only_geometry: bool = false
 var groups: Dictionary = {}
 var meshes: Dictionary = {}
 var materials: Dictionary = {}
@@ -42,6 +60,8 @@ var checkpoint_positions := PackedVector3Array()
 var jump: Dictionary = {}
 ## Action-Parcours dieser Runde (Turbo-Felder, Slalom, Schanze, Tauchstrecke, offene Kanten).
 var action: Dictionary = {}
+## Planned from authored curve anchors, before action placement or geometry is built.
+var adventure_tunnel: Dictionary = {}
 ## Streckenhimmel werden einmal je Strecke angelegt und wiederverwendet (siehe _sky_for): Wird ein
 ## schon gezeichneter Himmel im Kompatibilitäts-Renderer von Godot 4.6.3 freigegeben, bleiben seine
 ## zwei 256er-Spiegelungstexturen bis zum Beenden liegen („Texture … leaked“).
@@ -49,6 +69,11 @@ static var _skies: Dictionary = {}
 var loop_layout: Dictionary = {}
 var _road_samples := PackedVector3Array()
 var _road_distances := PackedFloat32Array()
+## 2D k-d search over the SAME baked road samples used by the original scan.
+## Only accelerates terrain/decoration proximity lookups, never road physics.
+var _road_kd_nodes: Array[Dictionary] = []
+var _road_kd_root: int = -1
+var _road_kd_count: int = 0
 var _rng := RandomNumberGenerator.new()
 
 func build(
@@ -58,16 +83,36 @@ func build(
 		remove_child(child)
 		child.queue_free()
 	groups.clear()
+	production_tunnels = null
+	production_tunnel_layout = {}
+	if has_meta("production_tunnel"):
+		remove_meta("production_tunnel")
+	adventure_tunnel.clear()
+	if has_meta("adventure_tunnel"):
+		remove_meta("adventure_tunnel")
 	action_obstacles.clear()
 	decoration_count = 0
 	low_detail = lightweight
+	_only_geometry = geometry_only
 	definition = TRACKS.definition(selected_track)
 	track_id = definition.id
 	track_name = definition.name
+	road_width = float(definition.get("road_width_m", WIDTH))
 	_rng.seed = definition.seed
 	_make_curve()
 	jump={}
 	loop_layout={}
+	if track_id == JUNGLE.ID:
+		JUNGLE.build_road(self)
+		if not geometry_only:
+			var environment_script: Script = load("res://scripts/games/kart_jungle_environment.gd")
+			assert(environment_script != null, "Dschungelherz environment is part of the track package")
+			var jungle_environment: Node3D = environment_script.new()
+			jungle_environment.name = "DschungelherzEnvironment"
+			add_child(jungle_environment)
+			jungle_environment.build(self)
+		_flush_instances()
+		return
 	if track_id=="bergwelt":
 		# Himmelsinseln Sprint (reference k07): the road is carried by floating islands.
 		jump=SKY_ISLANDS.jump_layout(length)
@@ -79,6 +124,8 @@ func build(
 		SKY_ISLANDS.chevrons(self)
 		FLEET_DRESSING.build(self)
 		TRACK_DETAIL.build(self)
+		MODULAR_PARTS.build(self)
+		ADVENTURE_TUNNELS.build(self)
 		_flush_instances()
 		if not geometry_only:
 			AAA_GATES.decorate(self)
@@ -95,10 +142,13 @@ func build(
 		_navigation()
 		FLEET_DRESSING.build(self)
 		TRACK_DETAIL.build(self)
+		MODULAR_PARTS.build(self)
+		ADVENTURE_TUNNELS.build(self)
 		_flush_instances()
 		if not geometry_only:
 			AAA_GATES.decorate(self)
 		return
+	STUNT.prepare(self)
 	_terrain()
 	_road()
 	match track_id:
@@ -112,14 +162,55 @@ func build(
 		_grand_prix_dressing()
 		HARBOR_AQUARIUM.build(self)
 		HARBOR_PAVILIONS.build(self)
+		HARBOR_LOOKOUTS.build(self)
+		COASTAL_VIADUCT.build(self)
+		LONG_BRIDGE.build(self)
+		HERO_COAST.build(self)
+		HARBOR_CRANE.build(self)
+		STUNT.build(self)
+		GENERATION.build(self)
+		if not geometry_only:
+			DARK_RIDE.build(self)
 	LANDMARKS.build(self)
 	FLEET_DRESSING.build(self)
 	TRACK_DETAIL.build(self)
+	MODULAR_PARTS.build(self)
+	ADVENTURE_TUNNELS.build(self)
 	_flush_instances()
 	if not geometry_only:
 		AAA_GATES.decorate(self)
 
 func _make_curve() -> void:
+	if track_id == JUNGLE.ID:
+		curve = JUNGLE.make_curve()
+	else:
+		_make_legacy_curve()
+	length = curve.get_baked_length()
+	adventure_tunnel = {} if track_id == JUNGLE.ID else ADVENTURE_TUNNELS.layout(self)
+	set_meta("adventure_tunnel_plan", adventure_tunnel.duplicate())
+	_road_samples.clear()
+	_road_distances.clear()
+	var count: int = ceili(length / 5.0)
+	for i in range(count):
+		var d: float = float(i) * length / count
+		_road_samples.append(curve.sample_baked(d, true))
+		_road_distances.append(d)
+	_build_road_spatial_index()
+	# Only primary coastal maps use _terrain(). Leave expansion-only terrain
+	# untouched and preserve the exact legacy bounds for current-sized routes.
+	world_extent = Vector2(101.0, 91.0)
+	if track_id in ["sonnenhafen", "zauberwald", "holo_city"]:
+		var verge_margin: float = 48.0 if not adventure_tunnel.is_empty() else 18.0
+		for sample in _road_samples:
+			if absf(sample.x) > 101.0:
+				world_extent.x = maxf(world_extent.x, absf(sample.x) + verge_margin)
+			if absf(sample.z) > 91.0:
+				world_extent.y = maxf(world_extent.y, absf(sample.z) + verge_margin)
+	checkpoint_positions.clear()
+	for i in range(8):
+		checkpoint_positions.append(position_at(float(i) * length / 8.0))
+
+func _make_legacy_curve() -> void:
 	var original_points: PackedVector3Array = definition.points
 	var source_points:=PackedVector3Array()
 	var horizontal_scale: float = 1.18 if track_id == "bergwelt" else 1.0
@@ -140,33 +231,25 @@ func _make_curve() -> void:
 		var index: int = i % points.size()
 		var tangent: Vector3 = (points[(index+1)%points.size()] - points[posmod(index-1,points.size())]) * 0.22
 		curve.add_point(points[index], -tangent, tangent)
-	length = curve.get_baked_length()
-	_road_samples.clear()
-	_road_distances.clear()
-	var count: int = ceili(length / 5.0)
-	for i in range(count):
-		var d: float = float(i) * length / count
-		_road_samples.append(curve.sample_baked(d, true))
-		_road_distances.append(d)
-	# Only primary coastal maps use _terrain(). Leave expansion-only terrain
-	# untouched and preserve the exact legacy bounds for current-sized routes.
-	world_extent = Vector2(101.0, 91.0)
-	if track_id in ["sonnenhafen", "zauberwald", "holo_city"]:
-		for sample in _road_samples:
-			if absf(sample.x) > 101.0:
-				world_extent.x = maxf(world_extent.x, absf(sample.x) + 18.0)
-			if absf(sample.z) > 91.0:
-				world_extent.y = maxf(world_extent.y, absf(sample.z) + 18.0)
-	checkpoint_positions.clear()
-	for i in range(8):
-		checkpoint_positions.append(position_at(float(i) * length / 8.0))
+
+func road_width_at(distance: float) -> float:
+	return JUNGLE.width_at(distance) if track_id == JUNGLE.ID else WIDTH
+
+func wall_lateral_at(distance: float) -> float:
+	return JUNGLE.wall_at(distance) if track_id == JUNGLE.ID else WALL_LATERAL
+
 
 func forward(distance: float) -> Vector3:
 	return (curve.sample_baked(fposmod(distance + 0.5, length), true) - curve.sample_baked(fposmod(distance, length), true)).normalized()
 
 func frame(distance: float) -> Basis:
 	var ahead: Vector3 = forward(distance)
-	var right: Vector3 = ahead.cross(Vector3.UP).normalized()
+	var raw_right: Vector3 = ahead.cross(Vector3.UP)
+	# A truly vertical centreline has no horizontal cross-product with UP.
+	# Keep the existing road-frame convention everywhere else unchanged.
+	if raw_right.length_squared() < 0.000001:
+		raw_right = ahead.cross(Vector3.FORWARD)
+	var right: Vector3 = raw_right.normalized()
 	var up: Vector3 = right.cross(ahead).normalized()
 	var bend: float = right.dot(forward(distance + 5.0) - ahead)
 	return Basis(right, up, -ahead).rotated(ahead, clampf(-bend * 0.68, -0.14, 0.14))
@@ -175,20 +258,22 @@ func position_at(distance: float, lateral: float = 0.0) -> Vector3:
 	return curve.sample_baked(fposmod(distance, length), true) + frame(distance).x * lateral
 
 func sample_road(world_position: Vector3, hint_distance: float = -1.0) -> Dictionary:
+	# 3D metric, including Y: selects the correct road deck at stacked crossings.
+	# Preserve search windows, hint behavior, public return keys and race physics.
 	var best_distance: float = 0.0
 	var best_square: float = INF
 	if hint_distance >= 0.0:
 		for i in range(-9, 10):
 			var d: float = fposmod(hint_distance + float(i)*5.0, length)
 			var p: Vector3 = curve.sample_baked(d, true)
-			var square: float = Vector2(p.x-world_position.x,p.z-world_position.z).length_squared()
+			var square: float = p.distance_squared_to(world_position)
 			if square < best_square:
 				best_square = square
 				best_distance = d
 	if hint_distance < 0.0 or best_square > 625.0:
 		for i in range(_road_samples.size()):
 			var p: Vector3 = _road_samples[i]
-			var square: float = Vector2(p.x-world_position.x,p.z-world_position.z).length_squared()
+			var square: float = p.distance_squared_to(world_position)
 			if square < best_square:
 				best_square = square
 				best_distance = _road_distances[i]
@@ -196,7 +281,7 @@ func sample_road(world_position: Vector3, hint_distance: float = -1.0) -> Dictio
 	for i in range(-10, 11):
 		var d: float = fposmod(estimate + float(i)*0.5, length)
 		var p: Vector3 = curve.sample_baked(d, true)
-		var square: float = Vector2(p.x-world_position.x,p.z-world_position.z).length_squared()
+		var square: float = p.distance_squared_to(world_position)
 		if square < best_square:
 			best_square = square
 			best_distance = d
@@ -207,10 +292,11 @@ func sample_road(world_position: Vector3, hint_distance: float = -1.0) -> Dictio
 	centre = curve.sample_baked(best_distance,true)
 	var lateral: float = (world_position-centre).dot(basis.x)
 	var surface_position: Vector3 = centre+basis.x*lateral
-	return {"distance":best_distance,"lateral":lateral,"height":surface_position.y,"position":surface_position,"basis":basis,"on_road":absf(lateral)<=WIDTH*0.5,"width":WIDTH,"forward":-basis.z}
+	return {"distance":best_distance,"lateral":lateral,"height":surface_position.y,"position":surface_position,"basis":basis,"on_road":absf(lateral)<=road_width_at(best_distance)*0.5,"width":road_width_at(best_distance),"forward":-basis.z}
 
 func in_gap(distance: float) -> bool:
-	return SKY_ISLANDS.in_gap(jump,fposmod(distance,length))
+	var d: float = fposmod(distance, length)
+	return SKY_ISLANDS.in_gap(jump, d) or not ACTION.precision_gap_at(action, d).is_empty()
 
 ## Height of the ramp surface above the road at this distance (0 without a ramp).
 func ramp_height(distance: float) -> float:
@@ -255,17 +341,55 @@ func rival_arc(distance: float) -> float:
 	var d: float=fposmod(distance,length)
 	var kicker: float=ACTION.kicker_height(action,d)
 	if kicker>0.0: return kicker
+	var stunt: float=_precision_rival_arc(d)
+	if stunt>0.0: return stunt
 	if jump.is_empty() or d<jump.ramp_start or d>=jump.gap_end: return 0.0
 	if d<jump.take_off: return ramp_height(d)
 	var u: float=(d-jump.take_off)/(jump.gap_end-jump.take_off)
 	return jump.height*(1.0-u)+6.0*u*(1.0-u)
+
+## Rivals over the Sonnenhafen precision gap: the real ballistic arc of a
+## clean landing in the middle of the zone (height above the local road).
+func _precision_rival_arc(d: float) -> float:
+	for kicker in action.get("kickers", []):
+		if not bool(kicker.get("precision_jump", false)):
+			continue
+		var along: float=d-float(kicker.take_off)
+		var speed: float=float(kicker.get("rival_speed",0.0))
+		if along<0.0 or speed<=0.0:
+			continue
+		var flight: float=PRECISION.landing_distance(speed,kicker)
+		if along>=flight:
+			continue
+		var above_lip: float=PRECISION.height_at(speed,kicker,along)
+		return maxf(0.0,above_lip-float(kicker.get("landing_slope",0.0))*along)
+	return 0.0
+
+## Where a kart that fell into a gap is set down again (just past the gap).
+## Also covers a kart that hit the far edge just behind the gap.
+func gap_exit_distance(distance: float) -> float:
+	var d: float=fposmod(distance,length)
+	for kicker in action.get("kickers", []):
+		if bool(kicker.get("precision_jump", false)) and d>=float(kicker.take_off) and d<float(kicker.gap_end)+6.0:
+			return distance-d+float(kicker.gap_end)+3.0
+	if not jump.is_empty():
+		return distance-d+float(jump.gap_end)+3.0
+	return distance
 
 func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_distance: float) -> float:
 	var lower: float = maxf(0.0, floor_distance)
 	var upper: float = maxf(lower + 0.5, ceiling_distance)
 	var safe: float = clampf(candidate, lower, upper)
 	if jump.is_empty():
-		return safe
+		var stunt_gap: Dictionary = ACTION.precision_gap_at(action, fposmod(safe, length))
+		if stunt_gap.is_empty():
+			return safe
+		var local_stunt: float = fposmod(safe, length)
+		var origin: float = safe - local_stunt
+		var before_stunt: float = origin + float(stunt_gap.start) - 4.0
+		if before_stunt >= lower:
+			return minf(before_stunt, upper)
+		return clampf(origin + float(stunt_gap.gap_end) + 3.0, lower, upper)
 	var local_distance: float = fposmod(safe, length)
 	var danger_start: float = float(jump.ramp_start) - 1.5
 	var danger_end: float = float(jump.gap_end) + 2.5
@@ -284,6 +408,35 @@ func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_dist
 func reset_transform(distance: float, lateral: float = 0.0) -> Transform3D:
 	var basis: Basis = frame(distance)
 	return Transform3D(basis,position_at(distance,clampf(lateral,-3.5,3.5))+basis.y*0.08)
+
+
+## Query the real hollow tunnel proxy using the race's existing road coordinate space.
+## Player origin is at the feet: radius 0.85 m, total capsule height 2.0 m, centre +1 m.
+func resolve_tunnel_motion(from: Vector3, desired: Vector3) -> Dictionary:
+	if not is_instance_valid(production_tunnels):
+		return {"position": desired, "normal": Vector3.ZERO, "collided": false}
+	return production_tunnels.resolve_motion(from, desired)
+
+
+func clip_tunnel_camera(anchor: Vector3, desired: Vector3) -> Vector3:
+	if track_id == JUNGLE.ID:
+		return JUNGLE.clip_camera(self, anchor, desired)
+	if not is_instance_valid(production_tunnels):
+		return desired
+	return production_tunnels.clip_camera(anchor, desired)
+
+
+func _install_production_tunnel() -> void:
+	production_tunnel_layout = PRODUCTION_TUNNEL_LAYOUT.plan(self)
+	if production_tunnel_layout.is_empty():
+		return
+	production_tunnels = PRODUCTION_TUNNELS.new()
+	add_child(production_tunnels)
+	if not production_tunnels.build(self, production_tunnel_layout):
+		remove_child(production_tunnels)
+		production_tunnels.queue_free()
+		production_tunnels = null
+		production_tunnel_layout = {}
 
 func _material(color: Color, glow: bool = false) -> StandardMaterial3D:
 	var key: String = color.to_html()+("_glow" if glow else "")
@@ -388,6 +541,18 @@ func _flush_instances() -> void:
 			material.roughness = 0.90 if group.kind == "ball" else 0.42
 			material.metallic = 0.03
 		node.material_override=material
+		if group.kind == "rock" and track_id == "sonnenhafen" and not low_detail:
+			# One shared shader/material for all close rock MultiMesh batches.
+			# Far/background rocks, other tracks and mobile low-detail retain
+			# their existing low-cost vertex-color material and lighting.
+			var cinema_key: String = "cinema_rock_sonnenhafen_v1"
+			if not materials.has(cinema_key):
+				var cinema := ShaderMaterial.new()
+				cinema.shader = preload("res://assets/shaders/kart_cinema_stylized.gdshader")
+				cinema.set_shader_parameter("tactility", 0.095)
+				cinema.set_shader_parameter("rim_strength", 0.15)
+				materials[cinema_key] = cinema
+			node.material_override = materials[cinema_key]
 		if group.kind == "volcano_mountain":
 			var basalt := ShaderMaterial.new()
 			basalt.shader = preload("res://assets/shaders/kart_basalt.gdshader")
@@ -421,6 +586,15 @@ func _sky_for(id: String) -> Sky:
 	atmosphere.ground_horizon_color=definition.horizon
 	atmosphere.sky_curve=0.44
 	atmosphere.sun_angle_max=5.0
+	if id=="sonnenhafen":
+		# Mediterranean noon from the 2026-11-03 reference: deep zenith, warm horizon.
+		atmosphere.sky_top_color=Color("1a64b8")
+		atmosphere.sky_horizon_color=Color("f0c898")
+		atmosphere.ground_horizon_color=Color("e0c090")
+		atmosphere.sky_curve=0.15
+		atmosphere.sky_energy_multiplier=0.98
+		atmosphere.sun_angle_max=16.0
+		atmosphere.sun_curve=0.07
 	sky.sky_material=atmosphere
 	_skies[id]=sky
 	return sky
@@ -446,7 +620,7 @@ func _lighting() -> void:
 	environment.fog_enabled=true
 	environment.fog_light_color=definition.fog
 	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.003)
-	environment.fog_aerial_perspective=0.22
+	environment.fog_aerial_perspective=0.26 if track_id=="sonnenhafen" else 0.22
 	# Additive desktop polish with a strict Mobile/GL fallback; no new environment node.
 	set_meta("aaa_visual_profile", AAA_ENV.configure(environment, low_detail))
 	var world_environment := WorldEnvironment.new()
@@ -455,7 +629,7 @@ func _lighting() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees=Vector3(-25,-36,0) if track_id=="sonnenhafen" else (Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0))
 	sun.light_color=definition.sun
-	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.86 if low_detail else 0.94) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
+	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.90 if low_detail else 1.00) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -477,16 +651,86 @@ func _is_bridge(distance: float) -> bool:
 		"zauberwald": return t>0.15 and t<0.33
 		_: return t>0.20 and t<0.45
 
-func _nearest_horizontal(at: Vector3) -> Vector2:
-	var best_square: float=INF
-	var best_index: int=0
+func _build_road_spatial_index() -> void:
+	_road_kd_nodes.clear()
+	_road_kd_root = -1
+	_road_kd_count = 0
+	if _road_samples.is_empty():
+		return
+	var indices: Array[int] = []
 	for i in range(_road_samples.size()):
-		var delta := Vector2(_road_samples[i].x-at.x,_road_samples[i].z-at.z)
-		var square: float=delta.length_squared()
-		if square<best_square:
-			best_square=square
-			best_index=i
-	return Vector2(sqrt(best_square),best_index)
+		indices.append(i)
+	_road_kd_root = _build_road_kd_node(indices, 0)
+	_road_kd_count = _road_samples.size()
+
+func _build_road_kd_node(indices: Array[int], depth: int) -> int:
+	if indices.is_empty():
+		return -1
+	var axis: int = depth % 2
+	indices.sort_custom(func(a: int, b: int) -> bool:
+		var p_a: Vector3 = _road_samples[a]
+		var p_b: Vector3 = _road_samples[b]
+		var v_a: float = p_a.x if axis == 0 else p_a.z
+		var v_b: float = p_b.x if axis == 0 else p_b.z
+		return a < b if v_a == v_b else v_a < v_b
+	)
+	var median: int = indices.size() / 2
+	var node_id: int = _road_kd_nodes.size()
+	_road_kd_nodes.append({})
+	var left_indices: Array[int] = []
+	var right_indices: Array[int] = []
+	for i in range(median):
+		left_indices.append(indices[i])
+	for i in range(median + 1, indices.size()):
+		right_indices.append(indices[i])
+	var left_id: int = _build_road_kd_node(left_indices, depth + 1)
+	var right_id: int = _build_road_kd_node(right_indices, depth + 1)
+	_road_kd_nodes[node_id] = {
+		"index": indices[median], "axis": axis,
+		"left": left_id, "right": right_id
+	}
+	return node_id
+
+func _nearest_road_kd(at: Vector3, node_id: int, best: Vector2) -> Vector2:
+	if node_id < 0:
+		return best
+	var node: Dictionary = _road_kd_nodes[node_id]
+	var sample_index: int = int(node["index"])
+	var sample: Vector3 = _road_samples[sample_index]
+	var dx: float = sample.x - at.x
+	var dz: float = sample.z - at.z
+	var square: float = dx * dx + dz * dz
+	# Stable legacy tie rule: the earliest baked sample wins.
+	if square < best.x or (square == best.x and sample_index < int(best.y)):
+		best = Vector2(square, float(sample_index))
+	var axis: int = int(node["axis"])
+	var split: float = at.x - sample.x if axis == 0 else at.z - sample.z
+	var near_id: int = int(node["left"]) if split <= 0.0 else int(node["right"])
+	var far_id: int = int(node["right"]) if split <= 0.0 else int(node["left"])
+	best = _nearest_road_kd(at, near_id, best)
+	# True squared lower bound for the entire opposite subtree.
+	# Unlike a fixed-radius grid, this remains exact for distant terrain.
+	if split * split <= best.x:
+		best = _nearest_road_kd(at, far_id, best)
+	return best
+
+func _nearest_horizontal(at: Vector3) -> Vector2:
+	# Test fixtures may replace the original sample arrays directly; retain
+	# the proven scan until their spatial index is explicitly regenerated.
+	if _road_kd_root >= 0 and _road_kd_count == _road_samples.size():
+		var hit: Vector2 = _nearest_road_kd(at, _road_kd_root, Vector2(INF, 0.0))
+		return Vector2(sqrt(hit.x), hit.y)
+	var best_square: float = INF
+	var best_index: int = 0
+	for i in range(_road_samples.size()):
+		var sample: Vector3 = _road_samples[i]
+		var dx: float = sample.x - at.x
+		var dz: float = sample.z - at.z
+		var square: float = dx * dx + dz * dz
+		if square < best_square:
+			best_square = square
+			best_index = i
+	return Vector2(sqrt(best_square), float(best_index))
 
 func _ground_height(x: float, z: float) -> float:
 	var angle: float=atan2(z,x)
@@ -500,7 +744,32 @@ func _ground_height(x: float, z: float) -> float:
 	var index: int=int(nearest.y)
 	if not _is_bridge(_road_distances[index]):
 		base=lerpf(base,_road_samples[index].y-0.85,1.0-smoothstep(5.0,23.0,nearest.x))
-	return lerpf(-2.4,base,smoothstep(0.0,0.075,shore-radius))
+	var terrain_height: float = lerpf(-2.4, base, smoothstep(0.0, 0.075, shore - radius))
+	if track_id == "sonnenhafen" and world_extent.x > 160.0:
+		# Extended coast: retain the original marina as a navigable eastern
+		# tidal inlet. Without this carve the larger terrain turns its piers
+		# into inland structures, breaking the existing water-footprint gate.
+		# The channel reaches the offshore sea; the elevated east Grand Prix
+		# section crosses it as an actual open-water viaduct.
+		var inlet: float = smoothstep(98.0, 108.0, x) * (
+			1.0 - smoothstep(64.0, 90.0, absf(z))
+		)
+		terrain_height = lerpf(terrain_height, -4.2, inlet)
+	# The real precision-jump road gap must also be a visible geological cut,
+	# not a ribbon of empty asphalt over unchanged green grass.
+	# Sampling uses the existing nearest-road index (no new O(N) scan), and
+	# changes terrain geometry only; no kart collision or landing logic.
+	if track_id == "sonnenhafen" and index >= 0:
+		var gap_start: float = STUNT.jump_take_off(self) + STUNT.PRECISION_GAP_START_M
+		var gap_end: float = STUNT.jump_take_off(self) + STUNT.PRECISION_LANDING_START_M
+		var road_d: float = float(_road_distances[index])
+		var across: float = 1.0 - smoothstep(6.0, 14.0, nearest.x)
+		var along: float = (
+			smoothstep(gap_start - 3.0, gap_start + 2.0, road_d)
+			* (1.0 - smoothstep(gap_end - 2.0, gap_end + 3.0, road_d))
+		)
+		terrain_height = lerpf(terrain_height, -13.0, across * along)
+	return terrain_height
 
 func _terrain() -> void:
 	var surface := SurfaceTool.new()
@@ -536,10 +805,10 @@ func _terrain() -> void:
 	if track_id=="sonnenhafen":
 		var stylized := ShaderMaterial.new()
 		stylized.shader=preload("res://assets/shaders/kart_stylized_vertex_tint.gdshader")
-		stylized.set_shader_parameter("top_tint",Color("e8f4cf"))
-		stylized.set_shader_parameter("side_tint",Color("91bd72"))
+		stylized.set_shader_parameter("top_tint",Color("d8ef9c"))
+		stylized.set_shader_parameter("side_tint",Color("7eae5e"))
 		stylized.set_shader_parameter("bottom_tint",Color("657b68"))
-		stylized.set_shader_parameter("overall_tint",Color("e6efcf"))
+		stylized.set_shader_parameter("overall_tint",Color("e4efc0"))
 		stylized.set_shader_parameter("roughness_value",0.90)
 		if not low_detail:
 			stylized.set_shader_parameter(
@@ -565,9 +834,15 @@ func _terrain() -> void:
 	# headless backends. Unset ShaderMaterial uniforms can return null rather
 	# than the default declared in the shader.
 	water_material.set_shader_parameter("coastal_foam", 0.0)
+	# The actual 1.85km coastal island extends far past the old 101x91m
+	# ring: keep shader shoreline harmonics aligned with ground generation.
+	water_material.set_shader_parameter("coastal_extent", world_extent)
 	if track_id=="holo_city":
 		water_material.set_shader_parameter("deep_water",Color("0d1934"))
 		water_material.set_shader_parameter("shallow_water",Color("174970"))
+	if track_id=="sonnenhafen":
+		water_material.set_shader_parameter("deep_water",Color("0c648c"))
+		water_material.set_shader_parameter("shallow_water",Color("2ec4c0"))
 	# Follow Sonnenhafen's authored shoreline, never light up other seas.
 	# Disabled on low-detail/mobile-saving mode without affecting physics.
 	if track_id=="sonnenhafen" and not low_detail:
@@ -575,13 +850,36 @@ func _terrain() -> void:
 	water.material_override=water_material
 	water.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(water)
+	var relocated_mountains: int = 0
 	for i in range(12):
 		var angle: float=float(i)*TAU/12.0+_rng.randf_range(-0.08,0.08)
 		var at := Vector3(cos(angle)*245.0,-5.0,sin(angle)*220.0)
 		var h: float=_rng.randf_range(28,56) if track_id!="bergwelt" else _rng.randf_range(62,105)
 		if track_id!="holo_city":
-			_prop("mountain",at,Vector3(_rng.randf_range(45,85),h,_rng.randf_range(34,65)),Color("72a3ad") if track_id!="bergwelt" else Color("7d99ae"))
+			var mountain_size := Vector3(_rng.randf_range(45,85),h,_rng.randf_range(34,65))
+			if track_id == "sonnenhafen" and length > 1500.0:
+				# These fixed 245x220m background mountains belonged to the old
+				# 17-point island. The 1.85km course now runs THROUGH that ring.
+				# Preserve all mountains, but move each complete footprint
+				# beyond the new coastal race corridor (not merely its centre).
+				var radius: float = maxf(mountain_size.x,mountain_size.z) * 1.32
+				var clearance: float = radius + RAIL_LATERAL + 5.0
+				var ring_x: float = world_extent.x + radius + 40.0
+				var ring_z: float = world_extent.y + radius + 40.0
+				at = Vector3(cos(angle) * ring_x,-5.0,sin(angle) * ring_z)
+				for attempt in range(9):
+					if not _near_road(at,clearance):
+						break
+					ring_x += 28.0
+					ring_z += 28.0
+					at = Vector3(cos(angle) * ring_x,-5.0,sin(angle) * ring_z)
+				assert(not _near_road(at,clearance),
+					"Large Sonnenhafen backdrop must never overlap the actual 1.85km racing lane")
+				relocated_mountains += 1
+			_prop("mountain",at,mountain_size,Color("72a3ad") if track_id!="bergwelt" else Color("7d99ae"))
 			if track_id=="bergwelt": _prop("mountain",at+Vector3.UP*h*0.58,Vector3(16,h*0.43,15),Color("eaf4f4"))
+	if track_id == "sonnenhafen":
+		set_meta("sonnenhafen_mountains_relocated",relocated_mountains)
 	if track_id!="holo_city":
 		for i in range(13):
 			var angle: float=float(i)*TAU/13.0
@@ -610,6 +908,7 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 
 func _road() -> void:
 	action = ACTION.plan(self)
+	_install_production_tunnel()
 	var asphalt := ShaderMaterial.new()
 	asphalt.shader=preload("res://assets/shaders/kart_asphalt.gdshader")
 	asphalt.set_shader_parameter("road_tint",definition.asphalt)
@@ -681,7 +980,8 @@ func _road() -> void:
 		SKY_ISLANDS.road_lights(self)
 		SKY_ISLANDS.road_surface_details(self)
 	elif track_id=="sonnenhafen":
-		_arch(0.0,"LUMO GRAND PRIX",Color("65dff5"))
+		if _only_geometry or not MESHY_START_GATE.install(self):
+			_arch(0.0,"LUMO GRAND PRIX",Color("65dff5"))
 	else:
 		_arch(0.0,track_name.to_upper(),definition.accent)
 	match track_id:
@@ -700,6 +1000,10 @@ func _beam(a: Vector3, b: Vector3, width: float, color: Color, glow: bool=false)
 	_prop("box",(a+b)*0.5,Vector3(width,width,delta.length()),color,basis,glow)
 
 func _suspension_bridge(distance: float, span: float, palette: Dictionary={}) -> void:
+	# The authoritative road already supplies the deck. A covered gallery replaces
+	# the otherwise overlapping outdoor pylons and cables on this part of the route.
+	if ADVENTURE_TUNNELS.contains(self, distance, span * 0.5 + 8.0):
+		return
 	var tower: Color=palette.get("tower",Color("e7e1c7"))
 	var cap: Color=palette.get("cap",Color("446b85"))
 	var crossbeam: Color=palette.get("crossbeam",Color("dfe2d0"))
@@ -762,6 +1066,8 @@ func _sign(at: Vector3, basis: Basis, text: String, pixel_size: float=0.026) -> 
 	add_child(label)
 
 func _arch(distance: float, text: String, color: Color) -> void:
+	if ADVENTURE_TUNNELS.contains(self, distance, 12.0):
+		return
 	var basis: Basis=frame(distance)
 	var at: Vector3=position_at(distance)
 	for side in [-1.0,1.0]:
@@ -884,7 +1190,11 @@ func _terraced_cliffs() -> void:
 			var d: float=centre_d-span*0.5+float(slice)*span/6.0
 			var basis: Basis=frame(d)
 			var road_y: float=position_at(d).y
-			var outward: float=10.3+sin(float(slice)*0.8)*1.1
+			# The old tight cliff shelf could project rock silhouettes into
+			# the 6.05m race rail on the expanded 1.85km circuit. Move the
+			# entire multi-tier formation outward; keep original short course.
+			var cliff_offset: float = 14.8 if length > 1500.0 else 10.3
+			var outward: float=cliff_offset+sin(float(slice)*0.8)*1.1
 			for tier in range(3):
 				var lateral: float=outward+float(tier)*2.8
 				var at: Vector3=position_at(d,side*lateral)
@@ -1105,9 +1415,19 @@ func _harbour() -> void:
 		if i%3==0: _flower_patch(p+Vector3(2,0,1),Color("eef0b1"),5)
 	HARBOR_DRESSING.build(self)
 	_windmill(Vector3(-17,_ground_height(-17,12),12))
+	var skipped_old_shore_rocks: int = 0
 	for i in range(30):
 		var angle: float=float(i)*TAU/30.0
-		_prop("rock",Vector3(cos(angle)*98,-1.5,sin(angle)*88),Vector3(_rng.randf_range(2,4),_rng.randf_range(1.2,3.6),_rng.randf_range(2,4)),Color("b8b6a0"),Basis(Vector3.UP,angle))
+		var at := Vector3(cos(angle)*98,-1.5,sin(angle)*88)
+		var size := Vector3(_rng.randf_range(2,4),_rng.randf_range(1.2,3.6),_rng.randf_range(2,4))
+		if length > 1500.0 and _near_road(at,maxf(size.x,size.z)*1.35 + RAIL_LATERAL + 2.0):
+			# The old 98x88m shoreline ring is now *inside* the expanded
+			# circuit. Remove only rocks with an actual road-footprint overlap.
+			skipped_old_shore_rocks += 1
+			continue
+		_prop("rock",at,size,Color("b8b6a0"),Basis(Vector3.UP,angle))
+	if length > 1500.0:
+		set_meta("sonnenhafen_legacy_shore_rocks_skipped",skipped_old_shore_rocks)
 
 func _house(at: Vector3, basis: Basis, color: Color, index: int) -> void:
 	var height: float=5.1+float(index%3)*1.3
@@ -1181,18 +1501,64 @@ func _windmill(at: Vector3) -> void:
 		for slat in range(6): _prop("box",hub+basis.y*(1.2+slat*0.65)+basis.x*0.42,Vector3(1.05,0.36,0.09),Color("f1e4c9"),basis)
 
 func _forest() -> void:
-	for i in range(250 if not low_detail else 145):
+	var library_sites: Array[Dictionary] = []
+	for site: Dictionary in TRACK_DETAIL.accepted_sites(self):
+		if site.large:
+			library_sites.append(site)
+	var cleared_clusters := 0
+	var retained_clusters: Array[Dictionary] = []
+	var extended_forest: bool = not adventure_tunnel.is_empty()
+	var forest_count: int = (300 if not low_detail else 180) if extended_forest else (250 if not low_detail else 145)
+	for i in range(forest_count):
 		var p := Vector3(_rng.randf_range(-93,93),0,_rng.randf_range(-84,84))
-		if Vector2(p.x/94.0,p.z/85.0).length()>1.0 or _near_road(p,9.8): continue
+		if extended_forest:
+			var d: float = length * (float(i) + 0.35) / forest_count
+			var lateral: float = _rng.randf_range(18.0, 37.0)
+			if ADVENTURE_TUNNELS.contains(self, d, 30.0):
+				lateral = _rng.randf_range(36.0, 44.0)
+			p = position_at(d, (-1.0 if i % 2 == 0 else 1.0) * lateral)
+		elif Vector2(p.x/94.0,p.z/85.0).length()>1.0:
+			continue
+		if _near_road(p, 11.5 if extended_forest else 9.8):
+			continue
 		p.y=_ground_height(p.x,p.z)
-		_tree(p,_rng.randf_range(1.4,2.8),_rng)
+		if extended_forest and p.y < -1.8:
+			continue
+		var tree_size: float = _rng.randf_range(1.4,2.8)
+		# Conservative bound includes the rotated crowns and neighboring flora.
+		var cluster_radius: float = maxf(tree_size * 3.5, 4.5)
+		if extended_forest and _near_road(p, 8.5 + cluster_radius):
+			continue
+		var overlaps_library := false
+		for site: Dictionary in library_sites:
+			var site_at: Vector3 = site.position
+			if Vector2(p.x-site_at.x,p.z-site_at.z).length() < cluster_radius + float(site.radius):
+				overlaps_library = true
+				break
+		# Run the real generators even for an omitted cluster. This preserves all
+		# random draws, so unaffected forest geometry never shifts after this fix.
+		var saved_groups: Dictionary = groups
+		var saved_count: int = decoration_count
+		if overlaps_library:
+			groups = {}
+		_tree(p,tree_size,_rng)
 		if i%4==0: _mushroom(p+Vector3(2,0,1),_rng.randf_range(0.9,1.8))
 		if i%2==0:
 			_prop("crown",p+Vector3(1,0.25,1),Vector3(1.5,0.6,1.3),Color("397964"))
 			_prop("fir",p+Vector3(-1,0.05,-1),Vector3(0.8,0.5,0.8),Color("75a783"))
 		if i%6==0: _flower_patch(p+Vector3(-2,0,1),Color("aac8ec"),6)
+		if overlaps_library:
+			groups = saved_groups
+			decoration_count = saved_count
+			cleared_clusters += 1
+		else:
+			retained_clusters.append({"position":p,"radius":cluster_radius})
+	set_meta("forest_library_cleared_clusters",cleared_clusters)
+	set_meta("forest_library_retained_clusters",retained_clusters)
 	for i in range(28):
 		var d: float=float(i)*length/28.0
+		if ADVENTURE_TUNNELS.contains(self, d, 10.0):
+			continue
 		var p: Vector3=position_at(d,8.0 if i%2==0 else -8.0)
 		p.y=_ground_height(p.x,p.z)
 		_mushroom(p,0.65+float(i%3)*0.20)
@@ -1313,6 +1679,8 @@ func _mushroom(at: Vector3, size: float) -> void:
 	_prop("cylinder",at+Vector3.UP*size*1.22,Vector3(0.65,0.08,0.65)*size,Color("b4dcde"),Basis.IDENTITY,true)
 
 func _tree_tunnel(distance: float) -> void:
+	if is_instance_valid(production_tunnels) or ADVENTURE_TUNNELS.contains(self, distance, 16.0):
+		return
 	for i in range(4):
 		var d: float=distance+(i-1.5)*7.0
 		var basis: Basis=frame(d)
@@ -1334,6 +1702,8 @@ func _branch(a: Vector3,b: Vector3,radius: float,color: Color) -> void:
 	_prop("cylinder",(a+b)*0.5,Vector3(radius,(b-a).length(),radius),color,basis)
 
 func _snow_tunnel(distance: float, palette: Dictionary={}) -> void:
+	if is_instance_valid(production_tunnels) or ADVENTURE_TUNNELS.contains(self, distance, 15.0):
+		return
 	var inner: Color=palette.get("inner",Color("819da6"))
 	var outer: Color=palette.get("outer",Color("dce9e5"))
 	var stripes: Array=palette.get("stripes",[Color("b5c6c6"),Color("9aafb5")])
@@ -1393,9 +1763,27 @@ func _city() -> void:
 				_rng.randf_range(14,42 if not low_detail else 34),
 				x+z
 			)
+	var extended_city: bool = not adventure_tunnel.is_empty()
 	for i in range(24 if not low_detail else 18):
 		var angle: float=float(i)*TAU/20.0
-		_city_tower(Vector3(cos(angle)*160,-3,sin(angle)*145),_rng.randf_range(10,17),_rng.randf_range(35,75),i)
+		var skyline_x: float = world_extent.x + 60.0 if extended_city else 160.0
+		var skyline_z: float = world_extent.y + 60.0 if extended_city else 145.0
+		_city_tower(Vector3(cos(angle)*skyline_x,-3,sin(angle)*skyline_z),_rng.randf_range(10,17),_rng.randf_range(35,75),i)
+	if extended_city:
+		var boulevard_blocks: int = 60 if low_detail else 96
+		for i in range(boulevard_blocks):
+			var d: float = length * (float(i) + 0.4) / boulevard_blocks
+			if ADVENTURE_TUNNELS.contains(self, d, 28.0):
+				continue
+			var side: float = -1.0 if i % 2 == 0 else 1.0
+			var at: Vector3 = position_at(d, side * _rng.randf_range(21.0, 33.0))
+			var width: float = _rng.randf_range(6.0, 10.0)
+			if _near_road(at, width * 0.75 + 9.0):
+				continue
+			at.y = _ground_height(at.x, at.z)
+			if at.y < -1.8:
+				continue
+			_city_tower(at, width, _rng.randf_range(25.0, 49.0), i)
 	for i in range(11):
 		var d: float=float(i)*length/11.0+8.0
 		var basis: Basis=frame(d)
@@ -1443,6 +1831,8 @@ func _holo_lane_lights() -> void:
 
 
 func _holo_speed_tunnel(distance: float) -> void:
+	if is_instance_valid(production_tunnels) or ADVENTURE_TUNNELS.contains(self, distance, 25.0):
+		return
 	# Large race-readable Aurora tunnel: visible several seconds before entry.
 	# Decorative only; roadway, collision and AI path remain unchanged.
 	var cyan:=Color("58ebff")

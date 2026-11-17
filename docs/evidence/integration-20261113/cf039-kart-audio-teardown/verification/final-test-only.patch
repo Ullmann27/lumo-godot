@@ -1,0 +1,144 @@
+diff --git a/scripts/tests/kart_ai_behavior_regression.gd b/scripts/tests/kart_ai_behavior_regression.gd
+index 4820335..562099c 100644
+--- a/scripts/tests/kart_ai_behavior_regression.gd
++++ b/scripts/tests/kart_ai_behavior_regression.gd
+@@ -263,11 +263,46 @@ func _run() -> void:
+ 
+ 	if failed:
+ 		return
+-	print("[KartAI] PASS: no teleport, no rubber-band, difficulty order holds")
++	var playbacks: Array[WeakRef] = []
++	for player: Node in game.find_children("*", "AudioStreamPlayer", true, false):
++		if player.has_stream_playback():
++			playbacks.append(weakref(player.get_stream_playback()))
++	var scene: WeakRef = weakref(game)
+ 	game.queue_free()
++	await process_frame
++	game = null
++	_check(await _release_audio(scene, playbacks), "Scene or audio playback retained after teardown")
++	if failed:
++		return
++	print("[KartAI] PASS: no teleport, no rubber-band, difficulty order holds")
+ 	quit(0)
+ 
+ 
++func _release_audio(scene: WeakRef, playbacks: Array[WeakRef]) -> bool:
++	# A freed scene can leave mixer-side Ogg fadeout alive beyond one frame.
++	# Observe real owners without retaining them; simulation time is not a deadline.
++	var started := Time.get_ticks_msec()
++	while true:
++		var pending := 0
++		for playback: WeakRef in playbacks:
++			if playback.get_ref() != null:
++				pending += 1
++		var scene_retained := scene.get_ref() != null
++		var elapsed := Time.get_ticks_msec() - started
++		if elapsed >= 2000:
++			printerr(
++				"[KartAI] retained_scene=%s retained_audio_playbacks=%d elapsed_ms=%d"
++				% [scene_retained, pending, elapsed]
++			)
++			return false
++		if not scene_retained and pending == 0:
++			print("[KartAI] audio_release tracked=%d scene_released=true elapsed_ms=%d" % [playbacks.size(), elapsed])
++			return true
++		OS.delay_msec(2)
++		await process_frame
++	return false
++
++
+ func _measure_unobstructed_line() -> Dictionary:
+ 	for i in range(game.opponents.size() - 1, 0, -1):
+ 		game.opponents[i].queue_free()
+diff --git a/scripts/tests/kart_full_field_regression.gd b/scripts/tests/kart_full_field_regression.gd
+index 33c4c28..09ca379 100644
+--- a/scripts/tests/kart_full_field_regression.gd
++++ b/scripts/tests/kart_full_field_regression.gd
+@@ -312,7 +312,39 @@ func _drive(level: String) -> Dictionary:
+ 	}
+ 	_check(absf(game.roadside_lasso.clock - seconds) < STEP, "Lasso clock must run once per production physics tick")
+ 	print("[KartFullField] REPORT " + JSON.stringify(report))
++	var playbacks: Array[WeakRef] = []
++	for player: Node in game.find_children("*", "AudioStreamPlayer", true, false):
++		if player.has_stream_playback():
++			playbacks.append(weakref(player.get_stream_playback()))
++	var scene: WeakRef = weakref(game)
+ 	game.abandoned = true
+ 	game.queue_free()
+ 	await process_frame
++	game = null
++	_check(await _release_audio(scene, playbacks), "Scene or audio playback retained after teardown")
+ 	return report
++
++
++func _release_audio(scene: WeakRef, playbacks: Array[WeakRef]) -> bool:
++	# A freed scene can leave mixer-side Ogg fadeout alive beyond one frame.
++	# Observe real owners without retaining them; simulation time is not a deadline.
++	var started := Time.get_ticks_msec()
++	while true:
++		var pending := 0
++		for playback: WeakRef in playbacks:
++			if playback.get_ref() != null:
++				pending += 1
++		var scene_retained := scene.get_ref() != null
++		var elapsed := Time.get_ticks_msec() - started
++		if elapsed >= 2000:
++			printerr(
++				"[KartFullField] retained_scene=%s retained_audio_playbacks=%d elapsed_ms=%d"
++				% [scene_retained, pending, elapsed]
++			)
++			return false
++		if not scene_retained and pending == 0:
++			print("[KartFullField] audio_release tracked=%d scene_released=true elapsed_ms=%d" % [playbacks.size(), elapsed])
++			return true
++		OS.delay_msec(2)
++		await process_frame
++	return false
+diff --git a/scripts/tests/kart_garage_touch_targets_regression.gd b/scripts/tests/kart_garage_touch_targets_regression.gd
+index 5afc4d9..b55cf36 100644
+--- a/scripts/tests/kart_garage_touch_targets_regression.gd
++++ b/scripts/tests/kart_garage_touch_targets_regression.gd
+@@ -67,6 +67,42 @@ func _run() -> void:
+ 			game.garage._apply_responsive_layout()
+ 			await _settle(4)
+ 			total += _assert_targets("%dx%d step %d" % [pixels.x, pixels.y, step], game.garage)
+-	print("[GarageTargets] PASS: %d visible controls checked at >= 48x48 dp" % total)
++	var playbacks: Array[WeakRef] = []
++	for player: Node in game.find_children("*", "AudioStreamPlayer", true, false):
++		if player.has_stream_playback():
++			playbacks.append(weakref(player.get_stream_playback()))
++	var scene: WeakRef = weakref(game)
+ 	game.queue_free()
++	await process_frame
++	game = null
++	if not (await _release_audio(scene, playbacks)):
++		push_error("[GarageTargets] FAIL: Scene or audio playback retained after teardown")
++		quit(1)
++		return
++	print("[GarageTargets] PASS: %d visible controls checked at >= 48x48 dp" % total)
+ 	quit(0)
++
++
++func _release_audio(scene: WeakRef, playbacks: Array[WeakRef]) -> bool:
++	# A freed scene can leave mixer-side Ogg fadeout alive beyond one frame.
++	# Observe real owners without retaining them; simulation time is not a deadline.
++	var started := Time.get_ticks_msec()
++	while true:
++		var pending := 0
++		for playback: WeakRef in playbacks:
++			if playback.get_ref() != null:
++				pending += 1
++		var scene_retained := scene.get_ref() != null
++		var elapsed := Time.get_ticks_msec() - started
++		if elapsed >= 2000:
++			printerr(
++				"[GarageTargets] retained_scene=%s retained_audio_playbacks=%d elapsed_ms=%d"
++				% [scene_retained, pending, elapsed]
++			)
++			return false
++		if not scene_retained and pending == 0:
++			print("[GarageTargets] audio_release tracked=%d scene_released=true elapsed_ms=%d" % [playbacks.size(), elapsed])
++			return true
++		OS.delay_msec(2)
++		await process_frame
++	return false

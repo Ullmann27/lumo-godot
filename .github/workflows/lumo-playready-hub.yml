@@ -1,0 +1,54 @@
+name: LUMO Play preparation - actual menu readability
+on:
+  push:
+    branches: [fix/lumo-playready-hub-20261117]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lumo-playready-hub-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-menu:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install the existing pinned Godot engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          echo "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3  $RUNNER_TEMP/godot.zip" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/godot" proof
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot" >> "$GITHUB_PATH"
+          git rev-parse HEAD > proof/SOURCE-COMMIT.txt
+      - name: Fresh import of the real project
+        shell: bash
+        run: |
+          set -euo pipefail
+          Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit 2>&1 | tee proof/import.log
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' proof/import.log; then exit 1; fi
+      - name: Actual phone, Fold, tablet and short-landscape controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 180 --log proof/readability.log --required '"status":"PASS"' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://scripts/tests/kart_neon_readability_regression.gd
+      - name: Existing real track navigation and 3D motion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 180 --log proof/existing-neon.log --required '"status":"PASS"' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://scripts/tests/kart_neon_home_regression.gd
+          python3 tools/validate_project.py 2>&1 | tee proof/project-validation.log
+      - name: Preserve evidence even for the failing baseline
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-playready-menu-${{ github.run_id }}
+          path: proof/
+          retention-days: 14
+          if-no-files-found: warn

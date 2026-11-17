@@ -1,0 +1,312 @@
+{
+  "scope": "Manual visual inspection of all 22 actual native race entry/interior screenshots",
+  "status": "PASS",
+  "native_index_sha256": "df698da16e4291bc72da1c27b84c2192df1d2a5099a645bbd32fe0456d902b4b",
+  "engine": "4.6.3-stable (official)",
+  "display_server": "X11",
+  "reviewed_images": 22,
+  "passed_images": 22,
+  "open_images": 0,
+  "finding": {
+    "track": "volcano_night",
+    "observed": "Wall and ceiling form nearly black in both views; road edges, vehicles and exit remain visible",
+    "cause_confirmed": false,
+    "initial_light_pool_inactive_hypothesis": "Ruled out: capture updates focus and waits three frame_post_draw events; actual probe reports four active lights at the imported mounts",
+    "status": "RESOLVED",
+    "after_observed": "New native entry and interior images show arches, wall texture and basalt spikes; dark night setting remains, with continuous clear road and exit"
+  },
+  "images": [
+    {
+      "path": "evidence/lumo_kart_runtime/review/zauberwald_entry.png",
+      "sha256": "975e68c39b8c0f4296c3d87ab382e803a9d220e2a57f875a65ab45934dec393b",
+      "track": "zauberwald",
+      "view": "entry",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/zauberwald_inside.png",
+      "sha256": "f90e7f829710118a5c1d6db57a69d1726e2d0d9b7600575e974861b500011e60",
+      "track": "zauberwald",
+      "view": "inside",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/bergwelt_entry.png",
+      "sha256": "3840c9488280f91dc16d24c5d71fa9027afea191e13f8a68a466316b281d2ffb",
+      "track": "bergwelt",
+      "view": "entry",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/bergwelt_inside.png",
+      "sha256": "20c011e6891993136273ce98ddb1c8e6e9a4095790f74fa98bd5cec278874993",
+      "track": "bergwelt",
+      "view": "inside",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/holo_city_entry.png",
+      "sha256": "0227eb9a63613bbae83829e2dc0e7645c5d89d2a72456969322f30482894f342",
+      "track": "holo_city",
+      "view": "entry",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/holo_city_inside.png",
+      "sha256": "bb4438bdedd926a4b37c699bca46bd2263b679977e5f37f3f4cc821dd24abf12",
+      "track": "holo_city",
+      "view": "inside",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/crystal_canyon_entry.png",
+      "sha256": "d89adcddb861b8023b6aa5bbf3be8b8debccaa13637b714d83fef8b09e669b1c",
+      "track": "crystal_canyon",
+      "view": "entry",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/crystal_canyon_inside.png",
+      "sha256": "e834f46e458982a3039786539aa558649aa4443f9926560acebd4f0dba200db1",
+      "track": "crystal_canyon",
+      "view": "inside",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/jungle_temple_entry.png",
+      "sha256": "fd6d8199a7e5772286be0f7aa20eae30161c6a293f93851ac6b6395096452d27",
+      "track": "jungle_temple",
+      "view": "entry",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/jungle_temple_inside.png",
+      "sha256": "f30ba5426c6cb2d11d2c0e9affb2826829b6a16ac2e899df17b9a6a4a4bc7295",
+      "track": "jungle_temple",
+      "view": "inside",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/candy_cloud_entry.png",
+      "sha256": "107ccf48febcd41a4a913b0b104bdca1aee5a17b087e38d21514b080b4709d6f",
+      "track": "candy_cloud",
+      "view": "entry",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/candy_cloud_inside.png",
+      "sha256": "61f1921f416003b8783c423513843c938d1d684dcb18038246667d4e3f0a98b7",
+      "track": "candy_cloud",
+      "view": "inside",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/volcano_night_entry.png",
+      "sha256": "c6243522bd056b5af8717ee54d444fceb451848020203f20d3e62919a2867239",
+      "track": "volcano_night",
+      "view": "entry",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS",
+      "recaptured_after_local_lighting_change": true
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/volcano_night_inside.png",
+      "sha256": "7826eb937f30d132784cd85bc4a515e2b54197c1d51fc12bc1768db21d1004c2",
+      "track": "volcano_night",
+      "view": "inside",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS",
+      "recaptured_after_local_lighting_change": true
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/winter_sprint_entry.png",
+      "sha256": "ee0605d81eb7586321896913b4d66e1b2e0d6b1f262a6696173f5198380e8c64",
+      "track": "winter_sprint",
+      "view": "entry",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/winter_sprint_inside.png",
+      "sha256": "038cd966ee5df4268b5f363785a18222d66bbbdb06052ec513253da6fb9c3c1c",
+      "track": "winter_sprint",
+      "view": "inside",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/galaxy_ringway_entry.png",
+      "sha256": "0b3031727b9e70bd44e28be368b6920654d370afad6057fe9ab9e4260b775828",
+      "track": "galaxy_ringway",
+      "view": "entry",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/galaxy_ringway_inside.png",
+      "sha256": "d5a2a5a88673a5238ae04ba96126cc8dcd733142166e7fbd8ef0f8eba2aef160",
+      "track": "galaxy_ringway",
+      "view": "inside",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/desert_drift_entry.png",
+      "sha256": "cf80a6deb73d568e911ba71498915e307a4c3a88e4370f82456685c8ad5310df",
+      "track": "desert_drift",
+      "view": "entry",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/desert_drift_inside.png",
+      "sha256": "45797d10b465c8c1e9f3e2bb1d67e9a8ed98fc5f538c3aee698ab43f5716aa06",
+      "track": "desert_drift",
+      "view": "inside",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/learning_lab_entry.png",
+      "sha256": "860c58d30c4f6c9f5700b909ccce0c23342f2e6003f2f9d658658ed87e2e4c42",
+      "track": "learning_lab",
+      "view": "entry",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/learning_lab_inside.png",
+      "sha256": "0dc4082425ba2d8e2f61ef6d8c73bdb2f4731b445684be019c7ac19512e59fdc",
+      "track": "learning_lab",
+      "view": "inside",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "PASS",
+      "status": "PASS"
+    }
+  ],
+  "physical_android_device_fps_measured": false,
+  "lighting_correction": {
+    "status": "RUNTIME_VERIFIED_AND_NATIVE_RECAPTURE_VISUALLY_APPROVED",
+    "theme": "volcano_night",
+    "energy_before": 1.6,
+    "energy_after": 4.8,
+    "range_before_m": 11,
+    "range_after_m": 15,
+    "attenuation_before": 0.8,
+    "attenuation_after": 0.6,
+    "color_before": "ee9548",
+    "color_after": "f9c896",
+    "maximum_high_lights": 4,
+    "maximum_mobile_lights": 3,
+    "shadow_enabled": false,
+    "geometry_materials_and_global_environment_changed": false,
+    "source_sha256": "17ead6668ec80a91a2014858810b5d20c17e14f4517b657ace828b6dc5b41209",
+    "probe_reports": [
+      "evidence/lumo_kart_art/tracks/runtime/volcano_lighting_before.json",
+      "evidence/lumo_kart_art/tracks/runtime/volcano_lighting_after.json",
+      "evidence/lumo_kart_art/tracks/runtime/volcano_lighting_after_mobile.json"
+    ]
+  },
+  "manual_image_inspections": 24,
+  "superseded_volcano_images": [
+    {
+      "path": "evidence/lumo_kart_runtime/review/volcano_night_entry.png",
+      "sha256": "21a97b55faaf720b00e7b469efae7544c1aa342dd6324b5e79ce7d4dd857c042",
+      "track": "volcano_night",
+      "view": "entry",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "OPEN",
+      "status": "OPEN"
+    },
+    {
+      "path": "evidence/lumo_kart_runtime/review/volcano_night_inside.png",
+      "sha256": "1ca0da51c7fb7bdf7b4b2713da990349e16480b5f3aca23522425a3fe6eccc98",
+      "track": "volcano_night",
+      "view": "inside",
+      "manually_viewed": true,
+      "road_surface_gap_observed": false,
+      "old_dressing_covering_driving_lane_observed": false,
+      "lighting_readability": "OPEN",
+      "status": "OPEN"
+    }
+  ]
+}

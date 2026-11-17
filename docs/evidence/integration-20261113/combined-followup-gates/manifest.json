@@ -1,0 +1,53 @@
+{
+  "scope": "Original local headless/contract evidence only; no new renderer or Android claim",
+  "native_merge": "e156356178760cb5f83f7c10bb07fc4c498100a9",
+  "tests": [
+    {
+      "log": "preview.log.gz",
+      "original_bytes": 24367,
+      "sha256": "af306507a92bfc487c66f8f770ae1cf4ad5591b40d9de6a13acd8f63b8f9241e"
+    },
+    {
+      "log": "preview-runner.log.gz",
+      "original_bytes": 24367,
+      "sha256": "af306507a92bfc487c66f8f770ae1cf4ad5591b40d9de6a13acd8f63b8f9241e"
+    },
+    {
+      "log": "winter-visibility.log.gz",
+      "original_bytes": 14293,
+      "sha256": "1986ad19d966f6bb9399f1b54787e5145926a69e6efbf03ce53af2d1175daf35"
+    },
+    {
+      "log": "winter-visibility-runner.log.gz",
+      "original_bytes": 14293,
+      "sha256": "1986ad19d966f6bb9399f1b54787e5145926a69e6efbf03ce53af2d1175daf35"
+    },
+    {
+      "log": "combined-workflow-contracts.log.gz",
+      "original_bytes": 1563,
+      "sha256": "504a9967eca90d3cad92b7b5b88843b2c0298b5fb3a0a5cedc5f6285e1d9af29"
+    }
+  ],
+  "files": [
+    {
+      "path": ".github/workflows/lumo-nextgen-2018.yml",
+      "sha256": "2dc506d818f2d6c3f2f11ea56ccfdf8c0e45a3a87d22645d1cfe6753b651c5bc",
+      "git_blob": "d80b08bc4c79435d951675592578d84f7b9d43b9"
+    },
+    {
+      "path": ".github/workflows/lumo-kart-experience.yml",
+      "sha256": "6c7ba87813e6c807b4f31bc83447cdeb22cece77322023bc12347289f95de538",
+      "git_blob": "e6d798b0728d360824211bd9d802a69de740e572"
+    },
+    {
+      "path": "tools/tests/test_nextgen_runner.py",
+      "sha256": "3a0921e2d0a05e9c49354b1583e63e19dc777e78421dabb376a84a986bcbbadb",
+      "git_blob": "f2a6ec62a2f863ce9a3b53d14290f682ca0cc2b1"
+    },
+    {
+      "path": "tools/validate_studio_touch.sh",
+      "sha256": "006adc0ab87a731fb39e5203359d7e25ee399e756b133596d4699492557cde9d",
+      "git_blob": "bd3e6a052ba51140c81648a393eb826d970a87c2"
+    }
+  ]
+}

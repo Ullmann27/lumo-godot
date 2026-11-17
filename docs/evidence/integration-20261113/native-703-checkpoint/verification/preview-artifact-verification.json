@@ -1,0 +1,286 @@
+{
+  "status": "ORIGINAL_ARTIFACT_VERIFIED",
+  "scope": "preview",
+  "head_sha": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a",
+  "tree": "049c8a5be914b9babad0e9af8712ada777e5a077",
+  "run_id": 43452284466,
+  "artifact_id": 14053671218,
+  "artifact_name": "lumo-nextgen-2018-learning-preview",
+  "zip_sha256": "57d26f8e11e8d72d9f16176d406b736fc3bfb1fd3e7fbe288d7c9fd7685e7f4d",
+  "zip_bytes": 13130253,
+  "sources": {
+    "source-sha.txt": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a"
+  },
+  "trees": {
+    "source-tree.txt": "049c8a5be914b9babad0e9af8712ada777e5a077"
+  },
+  "tracked_dirty": {},
+  "images": [
+    {
+      "path": "images/bridge_hundred-complete-2400x1080.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 723681,
+      "sha256": "2839604104d7bfc817ff7c6f12481d1791ef1e77d1f1a2fbf22e8e53bf30c34a",
+      "baseline": false
+    },
+    {
+      "path": "images/bridge_hundred-complete.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 293473,
+      "sha256": "7ffb621afc72660fb44ecb9de7d75a93e49163767f34f46dd6973efc43412f59",
+      "baseline": false
+    },
+    {
+      "path": "images/bridge_hundred-complete-412x915.png",
+      "dimensions": [
+        412,
+        915
+      ],
+      "bytes": 135209,
+      "sha256": "f9fb8ec21cff3c5968dd24c63fc9b2294c70635e14849f77e96d5646effb9cab",
+      "baseline": false
+    },
+    {
+      "path": "images/bridge_hundred-start-2400x1080.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 717622,
+      "sha256": "ec4e44c1b2341c500f48a449341377ffb9e7191c7136bbd93bdc622d057b7c2b",
+      "baseline": false
+    },
+    {
+      "path": "images/bridge_hundred-start-412x915.png",
+      "dimensions": [
+        412,
+        915
+      ],
+      "bytes": 139708,
+      "sha256": "25e4b985bda1ee1b37587621d22398d874ca4ba3699d39f95a92d8995a695108",
+      "baseline": false
+    },
+    {
+      "path": "images/bridge_hundred-start.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 295787,
+      "sha256": "81764976fce6917dd609a953081879fec0b5fd01ffbaeb0455610d3919825063",
+      "baseline": false
+    },
+    {
+      "path": "images/equal_groups-complete.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 248558,
+      "sha256": "693e6d6443b55091ea64ce4a0a5431ef0f71015404890ed4d12653eafc9d67c5",
+      "baseline": false
+    },
+    {
+      "path": "images/equal_groups-start.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 244128,
+      "sha256": "f87b424fa3b5773f144d533a24344d99817c145da218cd0ba7341f3e8d8bbea1",
+      "baseline": false
+    },
+    {
+      "path": "images/fraction_parts-complete.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 259738,
+      "sha256": "bec647a0a84f5fc9f10f08fe2a04038e72f39d1dda13aa91102fec986b2da692",
+      "baseline": false
+    },
+    {
+      "path": "images/fraction_parts-start.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 260944,
+      "sha256": "dae35db7fadfdbe3415146cc4a99f61b771b9d68f6d7a338deb413889e95b29e",
+      "baseline": false
+    },
+    {
+      "path": "images/math-complete-1280x720.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 289242,
+      "sha256": "1d461553c8fc3dfead784a18fcd5fa348f7c7bc089e56b80a4a47d01dee90d8e",
+      "baseline": false
+    },
+    {
+      "path": "images/math-complete-2400x1080.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 716783,
+      "sha256": "e969d77a7a1286732ff7d65465b1ff122e9caa615b8b019f6d17f52429a30b0b",
+      "baseline": false
+    },
+    {
+      "path": "images/math-complete-412x915.png",
+      "dimensions": [
+        412,
+        915
+      ],
+      "bytes": 126214,
+      "sha256": "c3f8e0527ff768531c9ff2b32e82c190f812d8ac2eccff31dac76b909a848ac1",
+      "baseline": false
+    },
+    {
+      "path": "images/math-start-1280x720.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 287808,
+      "sha256": "6bdbeb76a691f0bcef8e8ab39511da5b5e16c94deddf950a87ab67d9c352286e",
+      "baseline": false
+    },
+    {
+      "path": "images/math-start-2400x1080.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 691167,
+      "sha256": "1ac999494b8a1ccb1ef9f8fcf7f46e7aa77d78de88cd4047cc2ffa6c63337bf7",
+      "baseline": false
+    },
+    {
+      "path": "images/math-start-412x915.png",
+      "dimensions": [
+        412,
+        915
+      ],
+      "bytes": 129174,
+      "sha256": "5f4f430fc7ba90b9223562087d92e73eccd98d5459c414f97cee77f89aad19e0",
+      "baseline": false
+    },
+    {
+      "path": "images/math-ten-1280x720.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 288423,
+      "sha256": "4bc327656b40ce16795e08a5427f8c6bf541115ae8b2126763237dda0b533ae0",
+      "baseline": false
+    },
+    {
+      "path": "images/math-ten-2400x1080.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 705796,
+      "sha256": "4795caf4663c9b51167cb21243608d8c7ed354d4bf07fd6cb9293e95dde30db9",
+      "baseline": false
+    },
+    {
+      "path": "images/math-ten-412x915.png",
+      "dimensions": [
+        412,
+        915
+      ],
+      "bytes": 129708,
+      "sha256": "5b55c28fffbe66904672af973af520312066def2ff43f8ea8471c989f22ec341",
+      "baseline": false
+    },
+    {
+      "path": "images/plant_parts-complete.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 301229,
+      "sha256": "ae81e7c0cd33a0d13a912d7340e5976641ac70fd7c673a0232119c01ea34fca2",
+      "baseline": false
+    },
+    {
+      "path": "images/plant_parts-start.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 284840,
+      "sha256": "0013fd54ec89d2cca1829bf1d13bf331c75c1defcc800f12b8540bc292913779",
+      "baseline": false
+    },
+    {
+      "path": "images/subtract_ten-complete.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 287414,
+      "sha256": "412b0990f744720991fe483e4c87d2cf442fabca9be0b4df273dc326eb4086d5",
+      "baseline": false
+    },
+    {
+      "path": "images/syllables-start.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 246466,
+      "sha256": "cd90ac66dd49f90c2ac876a6828f25cee5c90dddd32c4e4aac1ee859204b508b",
+      "baseline": false
+    },
+    {
+      "path": "images/subtract_ten-start.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 288792,
+      "sha256": "268e8c2d671205894611bc6435aeeceb2ab0ce0d9d28ead0bd065b853135a7c1",
+      "baseline": false
+    },
+    {
+      "path": "images/syllables-complete.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 243605,
+      "sha256": "11cebd9159f7b0098f6a861257dec87aac3ae0298e9646d11c38bb8d6db72917",
+      "baseline": false
+    }
+  ],
+  "capture_counts": {},
+  "logs": {
+    "import.log": {
+      "sha256": "5e0110b80ea6c372a4ded1d9002de92e923be32ae040ccd7d73f8cea136a35a7",
+      "error_lines": []
+    },
+    "render.log": {
+      "sha256": "37707f826653f03bc1403310427a45c8e688ddfec708c00f2e4a6d03eed1b332",
+      "error_lines": []
+    },
+    "user-data/godot/app_userdata/Lumo 3D/logs/godot.log": {
+      "sha256": "62cc38ae5f8236e6e768cf73fe63e77bf2794062b230ecf6ed739886da7986db",
+      "error_lines": []
+    }
+  },
+  "no_visual_or_android_approval_claim": true
+}

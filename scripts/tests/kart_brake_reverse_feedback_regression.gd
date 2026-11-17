@@ -81,5 +81,6 @@ func _run() -> void:
 	game.queue_free()
 	await process_frame
 	print("[KartBrakeReverse] PASS: Auto-Gas reverse, manual-GAS interlock, two visible brake lights")
-	await create_timer(0.1).timeout
+	# Real menu/race audio releases playback references on the mix thread.
+	await create_timer(0.25).timeout
 	quit(0)

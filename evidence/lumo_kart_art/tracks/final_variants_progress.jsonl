@@ -1,0 +1,21 @@
+{"theme": "jungle_temple", "stage": "build", "elapsed_seconds": 46.6}
+{"theme": "jungle_temple", "stage": "verify", "elapsed_seconds": 81.5}
+{"theme": "candy_cloud", "stage": "build", "elapsed_seconds": 49.6}
+{"theme": "candy_cloud", "stage": "verify", "elapsed_seconds": 72.7}
+{"theme": "volcano_night", "stage": "build", "elapsed_seconds": 44.0}
+{"theme": "volcano_night", "stage": "verify", "elapsed_seconds": 66.5}
+{"theme": "winter_sprint", "stage": "build", "elapsed_seconds": 23.5}
+{"theme": "winter_sprint", "stage": "verify", "elapsed_seconds": 53.8}
+{"theme": "galaxy_ringway", "stage": "build", "elapsed_seconds": 54.6}
+{"theme": "galaxy_ringway", "stage": "verify", "elapsed_seconds": 78.3}
+{"theme": "desert_drift", "stage": "build", "elapsed_seconds": 43.6}
+{"theme": "desert_drift", "stage": "verify", "elapsed_seconds": 63.7}
+{"theme": "learning_lab", "stage": "build", "elapsed_seconds": 45.5}
+Traceback (most recent call last):
+  File "/workspace/scratch/eb2882c140f8/lumo-kart-art/tools/lumo_kart_art/tracks/produce_verified_tracks.py", line 42, in <module>
+    main()
+  File "/workspace/scratch/eb2882c140f8/lumo-kart-art/tools/lumo_kart_art/tracks/produce_verified_tracks.py", line 32, in main
+    subprocess.run(command, cwd=repo, stdout=log, stderr=subprocess.STDOUT, check=True)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['blender', '-b', '-t', '1', '--python-exit-code', '1', '--python', 'tools/lumo_kart_art/tracks/verify_tunnel_kit.py', '--', '--assets', 'assets/kart/production/tracks/learning_lab']' returned non-zero exit status 1.

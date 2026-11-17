@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "source_head": "97b91e312eb982ab1fe9083b7415d11085385235",
+  "source_tree": "79a9d0c98c4b6cd359cbd1531abfe1eefc663ac8",
+  "original_failed_ci": {
+    "run_id": 43444649016,
+    "head_sha": "cf039ad8c834522f355b858e3bee1e201e397da4",
+    "source_tree": "4fdbcbfcf069c6790e17101a09d4fb3f2955c2e2",
+    "job_id": 131950806346,
+    "artifact_id": 14048220569,
+    "zip_sha256": "9c6ddde95423630d63d8c609797175cf3b0e861f03bafbc58db54be71676b1b4"
+  },
+  "modified_file": "scripts/tests/build_dialog_density_regression.gd",
+  "probe_git_blob": "6dae9eafef0e7ea397aa347fd3b66dbee3979d76",
+  "probe_sha256": "b75bf153da7259d7d561a5f2145338883b283ed90c95b250c03ed3cdc425fd84",
+  "unchanged_product_file": "scripts/creative/build_world.gd",
+  "product_git_blob": "a775d7d6a6975bdef4dcadd27fd5086ef1b913db",
+  "product_sha256": "68ae2d1f2b63d1e0f24100da73b8a4b082667cce83696bbc81f50b34570fe778",
+  "headless": {
+    "exit_code": 0,
+    "checks": 1637,
+    "timeout_seconds": 600,
+    "log": "/workspace/scratch/b3485b7bb989/godot-build-touch-repair-evidence/build-dialog-headless.log",
+    "log_sha256": "1cc5915fd5b63a712418498edd66898386415bdbddcf67970ee7e881d864c80b",
+    "rendered": false,
+    "display_pointer_branch_exercised": false,
+    "strict_error_scan": "PASS"
+  },
+  "changed_during_test": [],
+  "unchanged_input_helpers": [
+    "_pixels",
+    "_touch",
+    "_tap"
+  ],
+  "renderer_validation": "PENDING. Existing local Xorg/dummy driver cannot establish its local sockets; no desktop rendered green claimed. Original cf039 rendered red preserved.",
+  "repair_scope": "Desktop-only input fixture precondition before the same final ScreenTouch. Native subwindow and mouse-warp support required. Actual hover required. Production, geometry, lifecycle assertions, touch and pressed callback unchanged."
+}

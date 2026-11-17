@@ -1,0 +1,186 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "timestamp": "2026-11-14T12:42:44.548860+00:00",
+  "boot_id": "12a5865a-5e21-4eac-bcf8-b0abd352b09c",
+  "root": "/workspace/scratch/b3485b7bb989/native-pr181-village-integration-c300-20261114",
+  "frozen_source_pack_files": 25,
+  "files": [
+    {
+      "path": "before/scripts/creative/build_settlement_state.gd",
+      "bytes": 23948,
+      "sha256": "50dc7958ee3d1f09e70aa951da1e6a17e4f2fceabac0d336164ace771e24c7ee",
+      "git_blob": "b42d3fdb034034018ee494b96d456ade8edabe64",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "originals/source/scripts/creative/build_settlement_state.gd",
+      "bytes": 24126,
+      "sha256": "2b3ffcaa451da3cc73f8682a62ecd7d7dfeceea7605bac2ca345f4bb17c398dd",
+      "git_blob": "625a8db46195d034cbe7ae2dd84d6b208abff645",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "final-source/scripts/creative/build_settlement_state.gd",
+      "bytes": 24126,
+      "sha256": "2b3ffcaa451da3cc73f8682a62ecd7d7dfeceea7605bac2ca345f4bb17c398dd",
+      "git_blob": "625a8db46195d034cbe7ae2dd84d6b208abff645",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "before/scripts/creative/build_settlement_world.gd",
+      "bytes": 46954,
+      "sha256": "6bd9dd4380db95962f370aa2703e7f41b51eab2430f33ea4874c60de0b73bcfb",
+      "git_blob": "e6a2a84447757c04a7f07436b162ed698b827a33",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "originals/source/scripts/creative/build_settlement_world.gd",
+      "bytes": 50514,
+      "sha256": "5849c7afa7a8bc7a42e2158ded98b7ec4ea1d777f8607a9721727ec6cdc9c588",
+      "git_blob": "149a4386225812592917b1bcac0b85294413f1b4",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "final-source/scripts/creative/build_settlement_world.gd",
+      "bytes": 50514,
+      "sha256": "5849c7afa7a8bc7a42e2158ded98b7ec4ea1d777f8607a9721727ec6cdc9c588",
+      "git_blob": "149a4386225812592917b1bcac0b85294413f1b4",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "before/scripts/tests/build_village_economy_regression.gd",
+      "bytes": 17501,
+      "sha256": "2a53c910ba56af76dd85e826a187d64ebd44ebda30be4a392dd12044c1bd832a",
+      "git_blob": "9ff2960ebaa946f9611e0509964dd0f53668e281",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "originals/source/scripts/tests/build_village_economy_regression.gd",
+      "bytes": 17867,
+      "sha256": "1fa590e75ebf408c2a0531377acb1079f6bb9c0d83d924e83878d3e06e049fd1",
+      "git_blob": "9dd8ff269e266dd73ad5207febd87aab367a4986",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "final-source/scripts/tests/build_village_economy_regression.gd",
+      "bytes": 17867,
+      "sha256": "1fa590e75ebf408c2a0531377acb1079f6bb9c0d83d924e83878d3e06e049fd1",
+      "git_blob": "9dd8ff269e266dd73ad5207febd87aab367a4986",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "originals/source/scripts/tests/build_village_scaling_regression.gd",
+      "bytes": 6163,
+      "sha256": "3c91d1001cab476bf171bf8d9517b0f4fa46db976f1c4be6d8ef125d86af5436",
+      "git_blob": "c6abdb5f9576c0b48db7bd59716da52ea5fac036",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "final-source/scripts/tests/build_village_scaling_regression.gd",
+      "bytes": 6163,
+      "sha256": "3c91d1001cab476bf171bf8d9517b0f4fa46db976f1c4be6d8ef125d86af5436",
+      "git_blob": "c6abdb5f9576c0b48db7bd59716da52ea5fac036",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "originals/71a-to-be58-compare.json",
+      "bytes": 42708,
+      "sha256": "46890e8d83c9716a0b97e8ff8d45a68dab68e5365e6e2b4769a5aeada8b5a515",
+      "git_blob": "7f9e0b52f35d3a1731a282ab18e1339bb577b5c7",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "originals/c300-complete-tree.json",
+      "bytes": 1299682,
+      "sha256": "16f0a563c87bf2af01379f846bc4911e145a790c0984978bdda2967e28e1bd40",
+      "git_blob": "a7ee472eb11696cec280795d929574eabdb6c317",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "originals/be58-complete-tree.json",
+      "bytes": 1294052,
+      "sha256": "b7ff55228c686e244bacc1833e70d551bb7d64af75d7bbda34fe6d1501ff9412",
+      "git_blob": "65dbc53a4efc80652f19fabbdcde44bde5d00613",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "originals/be58-workflow-runs.json",
+      "bytes": 40603,
+      "sha256": "706a7f241500c55e60ef184f8a4e25b690d8e3344ce29404355b281b6c1755e6",
+      "git_blob": "8d6f3859a629b6052cf4fb272d3ed36482dddb16",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "integration.patch",
+      "bytes": 18372,
+      "sha256": "6f02c3910b0ae4c5b9f76c473b395972fec465e2dbbcbdde42694508b9ff6f12",
+      "git_blob": "26f1db090cf8b94ca37f20a69a71111e481cd144",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "exact-patch-application.json",
+      "bytes": 6395,
+      "sha256": "77865082442fe13ebbeca37b7e96171728cdad402edfb543d0b0282aba155d5e",
+      "git_blob": "a092efa5940525992b45c48463b7cac2f47df8b4",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "tree-overlay.json",
+      "bytes": 1361,
+      "sha256": "5b584b163a82323f15c652cff305281397f80bc88458ebb652311bb1060632e4",
+      "git_blob": "4e2c30324d586c03ba8658c8ab082d330aeccdca",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "protected-source-binding.json",
+      "bytes": 16161,
+      "sha256": "e239a27bf95bce681deb26a05a30a9dd0c230eca65ad54842962130661d69e53",
+      "git_blob": "12ee8f1a480b8d655569fbd4a79553f46b716bfc",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "source-freeze.json",
+      "bytes": 4449,
+      "sha256": "01d3fc898bb3dc9ba79d598378625a935cc2d05a9fb40b7d18649090aa6b6c23",
+      "git_blob": "a61b612a17f5cb96e174af4dd32e54ab49157101",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "source-review.json",
+      "bytes": 4534,
+      "sha256": "e0b28f94fa05f0c49190422d46243a1ce33a5bbdf6a09da510c95364988a89bc",
+      "git_blob": "c9278ef284ee1fcd8d6a8505345f0364a4ac8ccc",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "handoff.json",
+      "bytes": 3129,
+      "sha256": "bb9ea2117683c8663a66d6b507c0dcd4957c0f623104c00d5e2fbdbc30a90135",
+      "git_blob": "8f3688656bb4c109ac357cb640bd9c5eeb2bd55b",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "README.md",
+      "bytes": 2330,
+      "sha256": "6f139846034439adca0fdc24a01036523fd63b31c915e466ad084008442049d7",
+      "git_blob": "62fb3449ce3dd790a80276616cd532458689e1b6",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 6166,
+      "sha256": "3d9ecfd369b95a05f488903ca5300e86793c1d7de60b5423a876d4639a5618d2",
+      "git_blob": "902bf7bbac71d702b7e9c43f3f175accee4796ca",
+      "complete_readback_equal": true
+    },
+    {
+      "path": "SHA256SUMS",
+      "bytes": 2540,
+      "sha256": "54e2abf81ec7326d58921466f756a674e0f0ec5f8a7962a40c30a176ed9f4525",
+      "git_blob": "10bbb23fd60241d2e459f9d248e2f9d21e0fb2af",
+      "complete_readback_equal": true
+    }
+  ],
+  "scope": "Exact unchanged functions.store originals materialized and completely read back after machine replacement. Source freeze and historical storage statement remain unchanged; this is the later materialization addendum. No tests/engine/Git/ref writes."
+}

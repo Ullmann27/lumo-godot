@@ -1,5 +1,5 @@
 extends SceneTree
-## Actual physical-pixel taps complete all five setup steps on desktop and compact Android sizes.
+## Actual physical-pixel taps reach all five direct sections and start the chosen race.
 var game
 
 
@@ -171,7 +171,9 @@ func _run() -> void:
 				root.get_texture().get_image().save_png(
 					"res://exports/holographic-proof/menu-flow-%dx%d.png" % [pixels.x, pixels.y]
 				)
-			await _tap(game.garage.next_button)
+			# Sections are now directly selectable; the single START action is
+			# available everywhere rather than advancing a mandatory wizard.
+			await _tap(game.garage.step_buttons[step + 1] if step < 4 else game.garage.next_button)
 			await _settle()
 		assert(not game.menu_active and game.mode == "cup" and game.track_id == "sonnenhafen")
 		assert(is_instance_valid(game.player) and game.opponents.size() == 5)
@@ -223,7 +225,7 @@ func _run() -> void:
 	game._apply_safe_area(Rect2(16, 32, 16, 48), Vector2(640, 320))
 	game.garage._apply_responsive_layout()
 	await _settle()
-	# One gold "Weiter" button is the design contract. The legacy
+	# One gold race-start button is the design contract. The legacy
 	# cyan quick-start button is deliberately hidden and MUST NOT be tapped.
 	assert(not game.garage.quick_start_button.visible)
 	var cup_mode: Button = null
@@ -239,18 +241,16 @@ func _run() -> void:
 	root.get_texture().get_image().save_png(
 		"res://exports/holographic-proof/menu-direct-640x320.png"
 	)
-	for index in range(5):
-		assert(game.garage.step == index)
-		assert(game.garage.next_button.visible)
-		await _tap(game.garage.next_button)
-		await _settle()
+	assert(game.garage.next_button.visible)
+	await _tap(game.garage.next_button)
+	await _settle()
 	assert(not game.menu_active and game.mode == "cup" and game.track_id == "sonnenhafen")
 	assert(is_instance_valid(game.player) and game.opponents.size() == 5)
 	game.abandoned = true
 	game.queue_free()
 	await _settle()
 	print("[KartMenuFlow] PASS: direct selected Cup start inside compact Android safe insets")
-	print("[KartMenuFlow] PASS: five touch steps; 1280x720,800x480,640x320; safe controls >=44px")
+	print("[KartMenuFlow] PASS: five direct sections; 1280x720,800x480,640x320; safe controls >=44px")
 	# Destroy all camera/world references and allow Godot's GL renderer to
 	# consume the deferred free queue before exiting this 4-scene integration run.
 	# A 120 ms timeout previously logged four outstanding SceneCull RIDs.

@@ -58,6 +58,39 @@ def pixels_from_png(data):
     return width, height, channels, rows
 
 
+
+def validate_race_transition(garage_data, race_data):
+    """Reject a valid but still-visible garage after Android reports race startup.
+
+    Both screenshots are taken with adb screencap; animated backgrounds and the
+    small menu kart can change a few pixels even when the garage remains open.
+    Therefore require substantial changes over the central playable viewport,
+    independent of the Godot race-world readiness marker.
+    """
+    before_w, before_h, before_channels, before = pixels_from_png(garage_data)
+    after_w, after_h, after_channels, after = pixels_from_png(race_data)
+    if (before_w, before_h) != (after_w, after_h):
+        raise ValueError('Race capture and garage must share the same Android viewport')
+    total = changed = summed_delta = 0
+    for y in range(before_h // 8, before_h * 7 // 8, 4):
+        for x in range(before_w // 12, before_w * 11 // 12, 4):
+            before_rgb = before[y][x * before_channels:x * before_channels + 3]
+            after_rgb = after[y][x * after_channels:x * after_channels + 3]
+            delta = sum(abs(a - b) for a, b in zip(before_rgb, after_rgb))
+            summed_delta += delta
+            changed += delta >= 96
+            total += 1
+    fraction = changed / max(1, total)
+    mean_channel_delta = summed_delta / max(1, 3 * total)
+    if fraction < 0.22 or mean_channel_delta < 18:
+        raise ValueError(
+            'Actual Android screenshot still resembles the kart garage: '
+            f'{fraction:.1%} changed pixels, {mean_channel_delta:.1f} mean colour delta'
+        )
+    return {'changed_fraction': round(fraction, 3),
+            'mean_channel_delta': round(mean_channel_delta, 1)}
+
+
 def validate_frame(data):
     width, height, channels, rows = pixels_from_png(data)
     if width <= height or width < 320 or height < 160:
@@ -90,7 +123,11 @@ def validate_frame(data):
 
 if __name__ == '__main__':
     try:
-        print('[AndroidFrame] PASS:', validate_frame(Path(sys.argv[1]).read_bytes()))
+        frame = Path(sys.argv[1]).read_bytes()
+        print('[AndroidFrame] PASS:', validate_frame(frame))
+        if len(sys.argv) > 2:
+            print('[AndroidFrame] Race transition PASS:',
+                  validate_race_transition(Path(sys.argv[2]).read_bytes(), frame))
     except (ValueError, zlib.error, OSError, IndexError) as error:
         print('[AndroidFrame] FAIL:', error, file=sys.stderr)
         raise SystemExit(1)

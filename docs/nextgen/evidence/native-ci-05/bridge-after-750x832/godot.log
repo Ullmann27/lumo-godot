@@ -1,0 +1,26 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+     at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+WARNING: Volumetric fog is only available when using the Forward+ renderer.
+     at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+[AssetLoader] manifest loaded: 0 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+LUMO_LEARNING_PERF {"adapter":"llvmpipe (LLVM 19.1.7, 256 bits)","display_driver":"X11","effects_active_samples":1,"fox_usable_samples":1,"frame_ms":{"max":6817.766,"mean":6817.766,"over_16_7_count":1,"over_16_7_fraction":1.0,"p50":6817.766,"p95":6817.766,"p99":6817.766},"kind":"bridge_ten","platform":"Linux","process_ms":{"max":0.0,"mean":0.0,"p95":0.0},"reduced_motion":false,"render":{"draw_calls_mean":237.0,"nodes_mean":196.0,"objects_mean":2068.0,"primitives_mean":273161.0,"render_objects_mean":362.0},"renderer":"gl_compatibility","sample_count":1,"schema":"lumo.learning.perf","speech_fox_effects_samples":0,"speech_playing_audible_samples":0,"speech_playing_samples":0,"version":1,"window_index":1,"window_ms":6817.766}
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+LUMO_LEARNING_PERF {"adapter":"llvmpipe (LLVM 19.1.7, 256 bits)","display_driver":"X11","effects_active_samples":27,"fox_usable_samples":28,"frame_ms":{"max":303.457,"mean":183.766071428571,"over_16_7_count":28,"over_16_7_fraction":1.0,"p50":177.997,"p95":212.044,"p99":303.457},"kind":"bridge_ten","platform":"Linux","process_ms":{"max":6810.292,"mean":448.819428571429,"p95":302.723},"reduced_motion":false,"render":{"draw_calls_mean":237.0,"nodes_mean":196.0,"objects_mean":2069.42857142857,"primitives_mean":273096.571428571,"render_objects_mean":362.0},"renderer":"gl_compatibility","sample_count":28,"schema":"lumo.learning.perf","speech_fox_effects_samples":0,"speech_playing_audible_samples":0,"speech_playing_samples":0,"version":1,"window_index":2,"window_ms":5145.45}
+[LearningWorld] move kind=bridge_ten token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=bridge_ten token=2 target=10 placed=3 complete=false
+[LearningWorld] move kind=bridge_ten token=3 target=11 placed=4 complete=false
+LUMO_LEARNING_PERF {"adapter":"llvmpipe (LLVM 19.1.7, 256 bits)","display_driver":"X11","effects_active_samples":26,"fox_usable_samples":27,"frame_ms":{"max":258.223,"mean":187.457259259259,"over_16_7_count":27,"over_16_7_fraction":1.0,"p50":184.809,"p95":234.71,"p99":258.223},"kind":"bridge_ten","platform":"Linux","process_ms":{"max":233.989,"mean":209.929814814815,"p95":233.989},"reduced_motion":false,"render":{"draw_calls_mean":235.962962962963,"nodes_mean":196.0,"objects_mean":2071.81481481481,"primitives_mean":272548.148148148,"render_objects_mean":367.555555555556},"renderer":"gl_compatibility","sample_count":27,"schema":"lumo.learning.perf","speech_fox_effects_samples":0,"speech_playing_audible_samples":0,"speech_playing_samples":0,"version":1,"window_index":3,"window_ms":5061.346}
+[LearningWorld] move kind=bridge_ten token=4 target=12 placed=5 complete=true
+LUMO_PRODUCT_CAPTURE {"captures":5,"errors":[],"output":"/workspace/scratch/4fa97167812c/avatar-qa/ci-hang-05/bridge-after-750x832"}

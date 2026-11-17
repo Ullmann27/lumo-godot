@@ -74,6 +74,12 @@ jobs:
             exit 1
           fi
 
+      - name: Start lights reuse resources and respect motion preferences
+        run: |
+          python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/start-lights.log" --timeout 30 --required '[StartLights] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_start_lights_regression.gd
+          python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/quality-persistence.log" --timeout 30 --required '[KartQualityPersist] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_quality_persistence_regression.gd
+          python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/quality-scene-switch.log" --timeout 45 --required '[KartQualitySceneSwitch] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_quality_scene_switch_regression.gd
+
       - name: Verify actual harbor prefab placement and mobile LODs
         run: |
           python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/harbor-pavilion.log" --timeout 120 --required '[HarborPavilion] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_harbor_pavilion_regression.gd
@@ -301,13 +307,13 @@ jobs:
           print("PASS: forty pause cover/touch/color checks and five actual Fold/phone PNGs")
           PY
 
-      - name: Actual five-step and direct menu entry inside Android safe insets
+      - name: Actual direct sections and race entry inside Android safe insets
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p exports/menu-safe-area
           python3 tools/run_godot_probe.py --log exports/menu-safe-area/menu-flow.log \
-            --timeout 300 --required '[KartMenuFlow] PASS: five touch steps;' -- \
+            --timeout 300 --required '[KartMenuFlow] PASS: five direct sections;' -- \
             xvfb-run -a -s '-screen 0 2500x2500x24' Godot_v4.6.3-stable_linux.x86_64 \
             --path . --rendering-method gl_compatibility --audio-driver Dummy \
             --script res://scripts/tests/kart_menu_flow_regression.gd

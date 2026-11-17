@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "godotVersion": "4.6.3.stable.official.7d41c59c4",
+  "verification": "Every PNG equals the corresponding GLB embedded image buffer byte for byte. Tracking the exact importer filenames preserves reproducible clean-tree export without relaxing its guard.",
+  "files": [
+    {
+      "path": "assets/lumo_next/character/Lumo-Learning_lumo_normal.png",
+      "source": "assets/lumo_next/character/Lumo-Learning.glb",
+      "image": "lumo_normal",
+      "bytes": 1311280,
+      "sha256": "02fe4e8a6e876962eac9bef283e315eb64e9095b72165349d9f20d389619ff09"
+    },
+    {
+      "path": "assets/lumo_next/character/Lumo-Learning_lumo_albedo.png",
+      "source": "assets/lumo_next/character/Lumo-Learning.glb",
+      "image": "lumo_albedo",
+      "bytes": 1614372,
+      "sha256": "5ca4e69c6420e8ce56f714e9a03fe1303d102706e4ce7b29443ec6b990b613d0"
+    },
+    {
+      "path": "assets/lumo_next/learning/backdrop_module_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/backdrop_module.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/backdrop_module_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/backdrop_module.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/banana_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/banana.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/banana_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/banana.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/count_token_gold_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/count_token_gold.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/count_token_gold_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/count_token_gold.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/count_token_teal_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/count_token_teal.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/count_token_teal_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/count_token_teal.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/floor_module_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/floor_module.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/floor_module_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/floor_module.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/letter_tile_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/letter_tile.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/letter_tile_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/letter_tile.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/pedestal_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/pedestal.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/pedestal_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/pedestal.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/plant_study_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/plant_study.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/plant_study_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/plant_study.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/shape_circle_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/shape_circle.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/shape_circle_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/shape_circle.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/shape_hexagon_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/shape_hexagon.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/shape_hexagon_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/shape_hexagon.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/shape_square_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/shape_square.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/shape_square_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/shape_square.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/shape_triangle_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/shape_triangle.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/shape_triangle_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/shape_triangle.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/syllable_tile_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/syllable_tile.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/syllable_tile_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/syllable_tile.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/ten_bundle_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/ten_bundle.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/ten_bundle_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/ten_bundle.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    },
+    {
+      "path": "assets/lumo_next/learning/ten_frame_lumo_learning_atlas.png",
+      "source": "assets/lumo_next/learning/ten_frame.glb",
+      "image": "lumo_learning_atlas",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "assets/lumo_next/learning/ten_frame_lumo_learning_roughness.png",
+      "source": "assets/lumo_next/learning/ten_frame.glb",
+      "image": "lumo_learning_roughness",
+      "bytes": 60975,
+      "sha256": "8340162273e01a0f8aefd3272f19129e1bc3c751af715e13e7d308563c23b587"
+    }
+  ]
+}

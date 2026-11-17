@@ -14,12 +14,17 @@ static var TRACKS: Array[Dictionary] = _all_tracks()
 static func _all_tracks() -> Array[Dictionary]:
 	var result: Array[Dictionary] = BASE_TRACKS.duplicate(true)
 	result.append_array(EXPANSION.CATALOG)
+	result.append({
+		"id": "jungle_emerald_3600", "name": "Dschungelherz",
+		"tag": "EXPEDITION SMARAGD · 3,6 KM", "color": Color("9dcb6b"),
+		"description": "Zwölf Dschungelwelten: Flusshafen, Wasserfall, Wurzelgrotte und Kronenbrücke."
+	})
 	result.make_read_only()
 	return result
 
 const MODES: Array[Dictionary] = [
 	{"id": "race", "name": "Einzelrennen", "tag": "DEIN SCHNELLER START", "description": "Zwei Runden, fünf Rivalen und deine Lieblingsstrecke."},
-	{"id": "cup", "name": "Sternen-Cup", "tag": "ZWÖLF WELTEN · EIN POKAL", "description": "Fahre alle zwölf Strecken. Jeder Platz zählt für die Gesamtwertung."},
+	{"id": "cup", "name": "Sternen-Cup", "tag": "ALLE WELTEN · EIN POKAL", "description": "Fahre durch alle Rennwelten. Jeder Platz zählt für die Gesamtwertung."},
 	{"id": "time_trial", "name": "Zeitfahren", "tag": "DU GEGEN DEINEN GEIST", "description": "Verbessere deine Bestzeit. Deine beste Fahrt fährt als Geist mit."},
 	{"id": "training", "name": "Freies Training", "tag": "ENTDECKEN OHNE DRUCK", "description": "Lerne lenken, bremsen und driften. Du bestimmst, wann du fertig bist."},
 	{"id": "arena", "name": "Kristall-Arena", "tag": "90 SEKUNDEN ABENTEUER", "description": "Sammle mehr Kristalle als deine Rivalen. Schild und Impuls helfen dir."}
@@ -32,9 +37,9 @@ const DRIVERS: Array[Dictionary] = [
 ## Die Flotte mit Werten, Preisen und Aussehen steht in kart_fleet.gd.
 static var KARTS: Array[Dictionary] = FLEET.KARTS
 const DIFFICULTIES: Array[Dictionary] = [
-	{"id": "gemuetlich", "name": "Entdecken", "tag": "MIT LENKHILFE", "description": "Gemütliches Tempo. Lumo hilft sanft am Fahrbahnrand.", "speed": 0.83, "rival": 0.71},
-	{"id": "flott", "name": "Abenteuer", "tag": "DEIN EIGENES TEMPO", "description": "Mehr Tempo, freie Lenkung und ausgeglichene Rivalen.", "speed": 1.0, "rival": 0.87},
-	{"id": "pro", "name": "Sternen-Profi", "tag": "DRIFT MACHT DEN UNTERSCHIED", "description": "Volles Tempo. Gewinne mit sauberen Kurven und cleverem Boost.", "speed": 1.17, "rival": 0.99}
+	{"id": "gemuetlich", "name": "Entdecken", "tag": "MIT LENKHILFE", "description": "Schnelle Rennen mit sanfter Hilfe am Fahrbahnrand.", "speed": 0.83, "rival": 0.86},
+	{"id": "flott", "name": "Abenteuer", "tag": "DOPPELTES RENNTEMPO", "description": "Doppeltes Renntempo, freie Lenkung und starke Rivalen.", "speed": 1.0, "rival": 0.96},
+	{"id": "pro", "name": "Extrem", "tag": "MAXIMALE HERAUSFORDERUNG", "description": "Rivalen nutzen volle Kartleistung, schnelle Kurven, Überholmanöver und verdiente Turbos.", "speed": 1.17, "rival": 1.0}
 ]
 const CUP_POINTS: Array[int] = [12, 9, 7, 5, 3, 1]
 

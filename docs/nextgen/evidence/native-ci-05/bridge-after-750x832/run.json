@@ -1,0 +1,16 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 24.998031406001246,
+  "display": 193,
+  "project": "/workspace/scratch/4fa97167812c/agent-avatar",
+  "godot_arguments": [
+    "--script",
+    "tools/lumo_next/capture_learning_scene.gd",
+    "--",
+    "--case=bridge_ten",
+    "--size=750x832",
+    "--output=/workspace/scratch/4fa97167812c/avatar-qa/ci-hang-05/bridge-after-750x832"
+  ],
+  "timed_out": false,
+  "scope": "Local software renderer; not physical Android performance"
+}

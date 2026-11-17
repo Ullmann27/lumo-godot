@@ -1,0 +1,25 @@
+{
+  "source": "art/lumo_kart/blender/karts/aurora_turbo.blend",
+  "source_sha256": "334b537426d1961a301f49468b07552b8992df6f15600f89e35c124b85118fd2",
+  "image_sha256": "b22f1d420e7a56b42a1c8bf735bade531e308ca795393faf35d233e1984ede63",
+  "engine": "Blender Cycles CPU",
+  "samples": 32,
+  "resolution": [
+    1440,
+    1080
+  ],
+  "camera_godot_m": [
+    3.1,
+    2.25,
+    -3.7
+  ],
+  "target_godot_m": [
+    0,
+    0.54,
+    0
+  ],
+  "lens_mm": 48,
+  "frame": 1,
+  "production_race_camera": false,
+  "postprocess": "Blender AgX only; no AI image generation"
+}

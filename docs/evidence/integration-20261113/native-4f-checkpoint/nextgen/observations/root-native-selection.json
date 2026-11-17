@@ -1,0 +1,62 @@
+[
+  {
+    "module": "learning",
+    "artifact_entry": "nextgen-evidence/nextgen/captures/learning_world_capture/bridge_hundred-complete-2400x1080.png",
+    "findings": "Die vollständige Erklärung zu 180 + 50, Zehnerfeld, Hunderterblock und Rücknavigation sind im Original sichtbar. Beide Gleichheitszeichen haben klar getrennte waagerechte Balken."
+  },
+  {
+    "module": "jump",
+    "artifact_entry": "nextgen-evidence/nextgen/captures/jump_nextgen_capture/jump_412x915_touch_ascent.png",
+    "findings": "Im Hochformat ist Lumo im Sprung vor dem nächsten schwebenden Inselabschnitt sichtbar. Fortschritt, Pause und die voneinander getrennten Bewegungs- und Sprungflächen bleiben im Bild."
+  },
+  {
+    "module": "build",
+    "artifact_entry": "touch-evidence/build/captures/build_dialog_density_regression/build-dialog-640x360-current-goal.png",
+    "findings": "Auf der kurzen Fläche zeigt der begrenzte Bauziel-Dialog den vollständigen Auftrag, Mein Bauwerk testen und Abbrechen. Die hinterliegende Werkzeugleiste ist als scrollbarer Hintergrund angeschnitten; der Dialoginhalt bleibt lesbar."
+  },
+  {
+    "module": "settlement",
+    "artifact_entry": "nextgen-evidence/nextgen/captures/build_settlement_play_regression/04_settlement_lumo.png",
+    "findings": "Die ursprüngliche Wettbau-Siedlung zeigt Lumo zwischen begehbarer Grünfläche und tatsächlich gebauten Anlagen. Ressourcen, Tag, Ziele, Nachbarstatus sowie Planen, Pause und Laufsteuerung sind sichtbar. Das Bild zeigt die klassische Siedlung, keine spätere Dorfwelt."
+  },
+  {
+    "module": "garage",
+    "artifact_entry": "touch-evidence/workshop/captures/kart_workshop_density_regression/workshop-1080x2400-performance.png",
+    "findings": "Die Hochformat-Werkstatt zeigt Lumo vollständig im Kart, fünf Wertebalken, Prüflauf starten und getrennte Upgradezeilen. Der lange Titel ist mit Auslassung gekürzt; der obere Teil der Leistungsbeschreibung liegt im gescrollten Bereich. Die sichtbaren Hauptaktionen überschneiden sich nicht."
+  },
+  {
+    "module": "cards",
+    "artifact_entry": "nextgen-evidence/nextgen/captures/cards_table_capture/cards-table-412x915.png",
+    "findings": "Die Kartenstube zeigt Lumo, Tisch, Ziehstapel und drei große Handkarten im Hochformat. Kopfzeile, Zurück, Pause, Seitenwahl und Ziehen liegen innerhalb des Bildes. Karte legen ist im gezeigten Zustand deaktiviert."
+  },
+  {
+    "module": "rhythm",
+    "artifact_entry": "nextgen-evidence/nextgen/captures/rhythm_tour_play_regression/02_rhythm_slide.png",
+    "findings": "Die vier farblich getrennten Rhythmusspuren, Bühnenfigur, Richtungsimpuls und vier untere Eingabeflächen sind sichtbar. Punkte, Lernhinweis und Pausentaste bleiben lesbar."
+  },
+  {
+    "module": "puzzle",
+    "artifact_entry": "nextgen-evidence/nextgen/captures/puzzle_rotation_regression/puzzle_rotation_placed.png",
+    "findings": "Die Originalaufnahme zeigt ein korrekt platziertes Teil auf dem zentralen Feld und weitere Teile in beiden Ablagen. Status 1/6, Erfolgshinweis und die untere Aktionsleiste sind sichtbar. Drehen ist für den gezeigten Zustand deaktiviert."
+  },
+  {
+    "module": "treasure",
+    "artifact_entry": "touch-evidence/treasure/captures/treasure_density_regression/treasure-640x320-question.png",
+    "findings": "Auf der sehr kurzen Fläche bleibt die Frage zum Sternenbaum mit allen drei lesbaren Antwortflächen im begrenzten Dialog. Der Scrollbereich und die hinterliegende Spielwelt bleiben erkennbar."
+  },
+  {
+    "module": "build",
+    "artifact_entry": "touch-evidence/build/captures/build_dialog_density_regression/build-dialog-1080x2400-current-goal.png",
+    "findings": "Im Hochformat enthält der aktuelle Bauziel-Dialog den vollständigen umbrochenen Auftrag sowie große getrennte Test- und Abbrechen-Schaltflächen. Der gesamte Dialog liegt im Bild; die dahinterliegende Leiste ist horizontal gescrollt."
+  },
+  {
+    "module": "build",
+    "artifact_entry": "nextgen-evidence/nextgen/captures/build_nextgen_play_regression/03_build_walking.png",
+    "findings": "Lumo steht in der ursprünglichen Bauwelt neben einem echten Bauteil. Inseln, begehbare Fläche, Joystick, Sprung, Ansehen und Weiterbauen sind im Querformat sichtbar."
+  },
+  {
+    "module": "treasure",
+    "artifact_entry": "nextgen-evidence/nextgen/captures/treasure_exploration_regression/treasure_garden_first.png",
+    "findings": "Lumo und die gefundene Mondblüte sind im Garten vor den Burgmauern sichtbar. Fundhinweis, Fortschritt, Rucksack und Bewegungsaktionen bleiben lesbar; der Entdeckungszähler ist im oberen Panel umgebrochen."
+  }
+]

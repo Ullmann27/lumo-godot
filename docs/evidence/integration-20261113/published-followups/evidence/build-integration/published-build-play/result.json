@@ -1,0 +1,30 @@
+{
+  "case": "published-build-play",
+  "command": [
+    "python",
+    "tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/build-integration/published-build-play/engine.log",
+    "--timeout",
+    "210",
+    "--required",
+    "[BuildNextgen] PASS",
+    "--",
+    "godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+    "--script",
+    "res://scripts/tests/build_nextgen_play_regression.gd"
+  ],
+  "started_at": "2026-11-13T17:00:58.247713+00:00",
+  "finished_at": "2026-11-13T17:01:04.761813+00:00",
+  "seconds": 6.514,
+  "exit_code": 0,
+  "engine_log_sha256": "6002e63e5c39a4a7b638ca52081be4843141dcb7f25adce45d5360ff5e30d2bd",
+  "significant_lines": [
+    "[BuildNextgen] PASS checks=71: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout"
+  ]
+}

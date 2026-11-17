@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "review.json",
+      "bytes": 13844,
+      "sha256": "79b41498f6e0413ee28b25e18097e5f42a74fec555a9d4476846922ea077fce7",
+      "git_blob": "9eb8112369b34d69f4ea5add7bbeba5a8f5fd19f"
+    }
+  ],
+  "self_excluded": true
+}

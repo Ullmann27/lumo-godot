@@ -1,0 +1,106 @@
+{
+  "original_logs": [
+    {
+      "original": "diagnostic-1-kart_rival_drift_items_regression.log",
+      "original_sha256": "0d60426f87ea5a66f3cfbc5b2eec213583ece69bd05242d0e5ac9c33e5b94bda",
+      "archive": "diagnostic-1-kart_rival_drift_items_regression.log.gz",
+      "archive_sha256": "92bac4df5ac300c84690763c028ed93964d7072f3c62fa2ecd7d9e8da3bc80b2"
+    },
+    {
+      "original": "diagnostic-2-kart_racecraft_regression.log",
+      "original_sha256": "706bac0fb66eb0a2cda8c372ffa6424e8b731fb97daea2a57d9946b5b61b6a5b",
+      "archive": "diagnostic-2-kart_racecraft_regression.log.gz",
+      "archive_sha256": "23cc8a2329bb7f90bdfa0c34ec5dd0e0337d67f1783c4ce8f79130bc0b55d8fd"
+    },
+    {
+      "original": "kart_harbor_race_hook_regression-green-runner.log",
+      "original_sha256": "45e27cdef936db7aad6931f349466e6de81ed125598dc5ad2484c0a64489e45e",
+      "archive": "kart_harbor_race_hook_regression-green-runner.log.gz",
+      "archive_sha256": "2e22fdf40bec3cc90f41a6d0732cabdac282b3de5428890b7cf7beecb4a4510c"
+    },
+    {
+      "original": "kart_harbor_race_hook_regression-green.log",
+      "original_sha256": "45e27cdef936db7aad6931f349466e6de81ed125598dc5ad2484c0a64489e45e",
+      "archive": "kart_harbor_race_hook_regression-green.log.gz",
+      "archive_sha256": "2e22fdf40bec3cc90f41a6d0732cabdac282b3de5428890b7cf7beecb4a4510c"
+    },
+    {
+      "original": "kart_harbor_race_hook_regression-red-runner.log",
+      "original_sha256": "b08e27b227872e6a97e7026bbaf2fa7489d2bf39c4b8229cf3075945052a0e50",
+      "archive": "kart_harbor_race_hook_regression-red-runner.log.gz",
+      "archive_sha256": "616213ca679c51a3592aba0ccc75c2d2466cc41fc6c3f234b6e7d5ca952e0081"
+    },
+    {
+      "original": "kart_harbor_race_hook_regression-red.log",
+      "original_sha256": "b08e27b227872e6a97e7026bbaf2fa7489d2bf39c4b8229cf3075945052a0e50",
+      "archive": "kart_harbor_race_hook_regression-red.log.gz",
+      "archive_sha256": "616213ca679c51a3592aba0ccc75c2d2466cc41fc6c3f234b6e7d5ca952e0081"
+    },
+    {
+      "original": "kart_racecraft_regression-diagnostic.log",
+      "original_sha256": "6766f9eb97bcdf338b78285f154805b083402d8df84ff7a3bafc6869f04c6965",
+      "archive": "kart_racecraft_regression-diagnostic.log.gz",
+      "archive_sha256": "b76e77dec3d99f5df7dee4dfd0582bfba0167cf335405d0a8024f770fbcf227a"
+    },
+    {
+      "original": "kart_racecraft_regression-green-runner.log",
+      "original_sha256": "8a96c3ee8b96138292fda2b7f4416b63235a5e4275761d1d77bd53303c0600f4",
+      "archive": "kart_racecraft_regression-green-runner.log.gz",
+      "archive_sha256": "e3570e523b5e0b21a325bf839152da1b600f4339ed611bb6e14b88502c6a43f0"
+    },
+    {
+      "original": "kart_racecraft_regression-green.log",
+      "original_sha256": "8a96c3ee8b96138292fda2b7f4416b63235a5e4275761d1d77bd53303c0600f4",
+      "archive": "kart_racecraft_regression-green.log.gz",
+      "archive_sha256": "e3570e523b5e0b21a325bf839152da1b600f4339ed611bb6e14b88502c6a43f0"
+    },
+    {
+      "original": "kart_racecraft_regression-red-runner.log",
+      "original_sha256": "d344dae6161a90618ad767731bd62be95eaf7d2e3627bd6b48251ac613264f16",
+      "archive": "kart_racecraft_regression-red-runner.log.gz",
+      "archive_sha256": "7108c258b4ba12d992f508d43018e230265285eaccfdc061b071b40e1775b704"
+    },
+    {
+      "original": "kart_racecraft_regression-red.log",
+      "original_sha256": "3be7137dfa7f29910e48340108226a0fe64a81a2d5ba1f2e35f96497293f7c1b",
+      "archive": "kart_racecraft_regression-red.log.gz",
+      "archive_sha256": "d874d2bd6e8a4073a94abff79bfc650c24c7aa56242faa9e8949c0114ec5534f"
+    },
+    {
+      "original": "kart_rival_drift_items_regression-green-runner.log",
+      "original_sha256": "62758517042a3476be924203e58025bedad3f4c297f876ebc7ab287bd50924cb",
+      "archive": "kart_rival_drift_items_regression-green-runner.log.gz",
+      "archive_sha256": "60a07db7e2971053512c36211a7df6fba8ae10f0f4738d65dfb37c1212812456"
+    },
+    {
+      "original": "kart_rival_drift_items_regression-green.log",
+      "original_sha256": "62758517042a3476be924203e58025bedad3f4c297f876ebc7ab287bd50924cb",
+      "archive": "kart_rival_drift_items_regression-green.log.gz",
+      "archive_sha256": "60a07db7e2971053512c36211a7df6fba8ae10f0f4738d65dfb37c1212812456"
+    },
+    {
+      "original": "kart_rival_drift_items_regression-red-runner.log",
+      "original_sha256": "7d8851ae0960e5ac09f6a59eb5439671697086b7d7496e7e20de965afc2561ce",
+      "archive": "kart_rival_drift_items_regression-red-runner.log.gz",
+      "archive_sha256": "2ebeb345f53abe8b56dbb372294cd32f04242f4cbe41958faa092c0aa375412e"
+    },
+    {
+      "original": "kart_rival_drift_items_regression-red.log",
+      "original_sha256": "17d3720ab4c0444a0b0440369f3e90fcfad01e0ded8480e898d350d0c23fe3f4",
+      "archive": "kart_rival_drift_items_regression-red.log.gz",
+      "archive_sha256": "00c6e1bdbee2ea25dd38cad00b5410d1a8b3cfc4342ea935b245f1363a965566"
+    },
+    {
+      "original": "retained-audio-negative-runner.log",
+      "original_sha256": "ba7f0a25b07c7127307ff34cf24057eca1d60911849efdbe2a02d4686c3dbd20",
+      "archive": "retained-audio-negative-runner.log.gz",
+      "archive_sha256": "fd6b87557e013451ff616dc76b35e6d4a8c7809a1e8d3fc95b46d7c869441284"
+    },
+    {
+      "original": "retained-audio-negative.log",
+      "original_sha256": "d5b0c8ce4ea0957632e9a30a433a72576cfdfa029968da1bce1b57ad11860ff1",
+      "archive": "retained-audio-negative.log.gz",
+      "archive_sha256": "bcf9c573a3dae221e5ef0ca003f0cb9e30fed1c87c6ad55c884d00b0d4ee1e3a"
+    }
+  ]
+}

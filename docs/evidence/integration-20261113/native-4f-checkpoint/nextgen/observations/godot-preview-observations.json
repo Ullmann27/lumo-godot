@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "status": "LIMITED_ACTUAL_IMAGE_OBSERVATION_ONLY",
+  "observer": "/root/godot_integration",
+  "observed_at_utc": "2026-11-13T17:06:18.151143+00:00",
+  "head_sha": "4f3449253fd59023a2544432a178eb9efcafe4f9",
+  "tree": "189b7a66c731067559469e2503e3a190b337031d",
+  "run_id": 43466004918,
+  "artifact_id": 14058528261,
+  "image": {
+    "path": "preview-14058528261/images/bridge_hundred-complete-2400x1080.png",
+    "sha256": "9f596453d96c3a7a35d16a75c3b81a784821656f791067399c46b08daa12c1e8",
+    "bytes": 723952,
+    "size": [
+      2400,
+      1080
+    ]
+  },
+  "observations": [
+    "The original full-resolution image was actually opened with view_image.",
+    "The upper label reads 10 Zehner = 100. The equality sign visibly contains two separated horizontal light bars.",
+    "The lower label reads 230 = 2 Hunderter + 3 Zehner. Its equality sign also has separated horizontal bars."
+  ],
+  "limits": [
+    "One source-bound static image only; no claim of reviewing all preview images or complete native acceptance.",
+    "This records the Godot agent observation, not a Root observation or an approval.",
+    "Android runtime behaviour and accessibility are not established by this renderer image."
+  ]
+}

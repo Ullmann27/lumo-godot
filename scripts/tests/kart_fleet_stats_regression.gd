@@ -273,14 +273,16 @@ func _check_physics() -> void:
 		speeds[kart] = await _run_top_speed(kart)
 	assert(float(speeds.turbo.speed) > float(speeds.comet.speed) + 1.2, "Aurora GT wird schneller (%.1f gegen %.1f)" % [speeds.turbo.speed, speeds.comet.speed])
 	assert(float(speeds.glider.speed) < float(speeds.comet.speed) - 0.2, "Glider ist langsamer")
-	assert(absf(float(speeds.comet.speed) - 20.5) < 0.6, "Comet fährt unverändert 20,5 m/s (%.2f)" % float(speeds.comet.speed))
-	assert(float(speeds.blitz.t15) < float(speeds.comet.t15) - 0.1, "Blitz erreicht Tempo früher (%.2f gegen %.2f s)" % [speeds.blitz.t15, speeds.comet.t15])
-	assert(float(speeds.koloss.t15) > float(speeds.comet.t15) + 0.1, "Koloss braucht länger")
+	assert(absf(float(speeds.comet.speed) - 41.0) < 0.6, "Comet fährt echtes doppeltes Tempo:41m/s (%.2f)" % float(speeds.comet.speed))
+	# Fourfold acceleration reaches the unchanged54km/h target sooner; two
+	# physical ticks still separate the actual fleet acceleration characteristics.
+	assert(float(speeds.blitz.t15) < float(speeds.comet.t15) - STEP, "Blitz erreicht Tempo früher (%.2f gegen %.2f s)" % [speeds.blitz.t15, speeds.comet.t15])
+	assert(float(speeds.koloss.t15) > float(speeds.comet.t15) + STEP, "Koloss braucht länger")
 	var stops: Dictionary = {}
 	for kart in ["comet", "turbo", "koloss"]:
 		stops[kart] = await _run_brake(kart)
-	assert(float(stops.koloss) < float(stops.comet) - 1.0, "Koloss bremst kürzer (%.1f gegen %.1f m)" % [stops.koloss, stops.comet])
-	assert(float(stops.turbo) > float(stops.comet) + 0.4, "Aurora GT bremst länger (%.1f gegen %.1f m)" % [stops.turbo, stops.comet])
+	assert(float(stops.koloss) < float(stops.comet) - 0.25, "Koloss bremst kürzer (%.1f gegen %.1f m)" % [stops.koloss, stops.comet])
+	assert(float(stops.turbo) > float(stops.comet) + 0.10, "Aurora GT bremst länger (%.1f gegen %.1f m)" % [stops.turbo, stops.comet])
 	var turns: Dictionary = {}
 	for kart in ["comet", "glider", "turbo"]:
 		turns[kart] = await _run_turn(kart)

@@ -1,0 +1,15 @@
+{
+  "native_revision": "4f3449253fd59023a2544432a178eb9efcafe4f9",
+  "tree": "189b7a66c731067559469e2503e3a190b337031d",
+  "run_id": 43466004918,
+  "artifact_id": 14058528261,
+  "archive_sha256": "d6fb54f046cb0e51e44d3aa8de4689cfd011df6afd8b210c25010b6d97f7fd80",
+  "path": "/workspace/scratch/b3485b7bb989/godot-pr160-4f34492-nextgen-evidence/preview-14058528261/images/bridge_hundred-complete-2400x1080.png",
+  "sha256": "9f596453d96c3a7a35d16a75c3b81a784821656f791067399c46b08daa12c1e8",
+  "width": 2400,
+  "height": 1080,
+  "reviewer": "ChatGPT root; actual original opened with view_image",
+  "reviewed_at": "2026-11-13T17:07:32.987445+00:00",
+  "findings": "Die originale Aufnahme zeigt die vollständige Erklärung zu 180 + 50 = 230, das Zehnerfeld, den Hunderterblock und die Rücknavigation. In der sichtbaren Beschriftung 10 Zehner = 100 und 230 = 2 Hunderter + 3 Zehner sind die Gleichheitszeichen klar als zwei getrennte waagerechte Balken erkennbar. Keine verdeckte Beschriftung in diesem Einzelbild.",
+  "scope": "Source-bound Learning Preview observation only; not final Native bundle or later combined-source approval."
+}

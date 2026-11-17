@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "status": "SOURCE_FROZEN_NOT_RUNTIME_ACCEPTED",
+  "base_commit": "c04078541fa553094d6868454d19e9fe5f5f871c",
+  "base_tree": "abab7754b5f3399c0644970e54c6cb474b7a612d",
+  "files": [
+    {
+      "path": ".github/workflows/lumo-discovery-connections.yml",
+      "mode": "100644",
+      "before": {
+        "bytes": 15142,
+        "sha256": "44285746c1a93586e38892d7b44ef9d0f7b5d6c4dbf10a7f997524e85077a9be",
+        "git_blob": "619023b005be0f5930ea2944ec15e5df1065164e"
+      },
+      "final": {
+        "bytes": 35914,
+        "sha256": "7808349f14aa39259edaee1d5b832c8660f45a8c7065af65f8e285ff99104a0f",
+        "git_blob": "a806855cf51ab7f63b14163596488fc1d3746dc1"
+      },
+      "origin": "Additive Village gate plus explicitly approved MobileSafeArea render gate and isolated Native job130"
+    },
+    {
+      "path": "scripts/games/kart_island.gd",
+      "mode": "100644",
+      "before": {
+        "bytes": 170990,
+        "sha256": "c50a7da1387a121e326e8b0b5153075e14c8f93b04ab5196d4c1c1d8d34189c8",
+        "git_blob": "f7473190f51fb5dbda7d0f7ad7292f8ec64c0da2"
+      },
+      "final": {
+        "bytes": 175088,
+        "sha256": "7f916fcf8ea2d17876500e0063d91809db4a608dbc8bf945287231e6d76231d5",
+        "git_blob": "83b3b6b548cffa2790c582e061a74e37bbfcf356"
+      },
+      "origin": "Exact published Producer blob"
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "mode": "100644",
+      "before": {
+        "bytes": 17619,
+        "sha256": "bca22822a2df33a69bcac5071b16827cecef179b077a08d1b2b0372a68e6fa4f",
+        "git_blob": "61ded805fdbc70c3499814b4e8f74214079fc96c"
+      },
+      "final": {
+        "bytes": 26254,
+        "sha256": "8188911d6f91deaec924fdc7857feec876af075a8d04522b49dd14429d501aa5",
+        "git_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509"
+      },
+      "origin": "Exact published Producer blob"
+    }
+  ],
+  "exactly_three_source_paths": true,
+  "local_runtime_evidence": "originals/c040-targeted-originals.tar.gz",
+  "version": 2,
+  "previous_freeze_sha256": "94d31fbe2927c8798a2296d4ce7d0bbd946f6ade64094d8a4d18c4e2cc879c9c"
+}

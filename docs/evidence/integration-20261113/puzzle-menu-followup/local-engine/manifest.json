@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "source_local_head": "a4de0e68a76ab37109cef5fd1bf499ff94464d10",
+  "source_tree": "9cfe439e2607e3644aa7705e739fcac41e865885",
+  "published_puzzle_parent": "ab9237025e5e5a30a168c4d1fbbd0a24a82690b6",
+  "scope": "Actual local headless engine checks on the integrated published repair:720 menu lifecycle,1103 expansion,4558 rotation. Six original rendered frames remain required from the later exact-source CI. The headless capture-negative intentionally exits1 with noPNG/noPASS. The producer original rendered red/green evidence remains at docs/evidence/puzzle-menu-followup-20261113; it is not relabelled as Root renderer proof.",
+  "source_files_unchanged": 688,
+  "objects": [
+    {
+      "path": "editor-import.log.gz",
+      "bytes": 10078,
+      "sha256": "3589f12fe21d61b42fc00d49dc5cd276190c5b51fe4a7b73cfdada8e0f5dbb89",
+      "original_path": "editor-import.log",
+      "original_bytes": 164254,
+      "original_sha256": "eaf62806ea89cf53ab51b614af44d964a7030ad13edf743a668e4a078dae695f"
+    },
+    {
+      "path": "editor-import-result.json",
+      "bytes": 523,
+      "sha256": "1533988a95fe19a66f7a0810ffcd4a88cb63b5a09f9759b7fcea49480a2538e0"
+    },
+    {
+      "path": "local-source-before.json",
+      "bytes": 78942,
+      "sha256": "6bd4f0e838ab16e05a6ce6cc15daa26079dab051aeb197f946a78fc6a13045af"
+    },
+    {
+      "path": "local-source-after.json",
+      "bytes": 78942,
+      "sha256": "6bd4f0e838ab16e05a6ce6cc15daa26079dab051aeb197f946a78fc6a13045af"
+    },
+    {
+      "path": "local-results.json",
+      "bytes": 4745,
+      "sha256": "17ff0d2e877edd83c1108bf023beea03ae292b9907a807442b37dd6203607d2b"
+    },
+    {
+      "path": "puzzle_menu_lifecycle_regression-headless/godot.log.gz",
+      "bytes": 689,
+      "sha256": "def81b861cff8d63d0c76311ed2fef840b6b488d27a88d2a814a12bdebeacff4",
+      "original_path": "puzzle_menu_lifecycle_regression-headless/godot.log",
+      "original_bytes": 3082,
+      "original_sha256": "e4abf43a73ce8a31a60e23f78730c873cd8b4a8a98c799f25d136594100d7363"
+    },
+    {
+      "path": "puzzle_menu_lifecycle_regression-headless/strict-runner.log.gz",
+      "bytes": 689,
+      "sha256": "def81b861cff8d63d0c76311ed2fef840b6b488d27a88d2a814a12bdebeacff4",
+      "original_path": "puzzle_menu_lifecycle_regression-headless/strict-runner.log",
+      "original_bytes": 3082,
+      "original_sha256": "e4abf43a73ce8a31a60e23f78730c873cd8b4a8a98c799f25d136594100d7363"
+    },
+    {
+      "path": "puzzle_expansion_regression-headless/godot.log.gz",
+      "bytes": 395,
+      "sha256": "c67d9c51a1c08616b19ea7f34a555224ba21236dc5e95619d094d83526dbafb7",
+      "original_path": "puzzle_expansion_regression-headless/godot.log",
+      "original_bytes": 550,
+      "original_sha256": "924ad72d475a497fe8f5fc88e849b02c8450ef3cde3ece16d6e949c17cef1d6f"
+    },
+    {
+      "path": "puzzle_expansion_regression-headless/strict-runner.log.gz",
+      "bytes": 395,
+      "sha256": "c67d9c51a1c08616b19ea7f34a555224ba21236dc5e95619d094d83526dbafb7",
+      "original_path": "puzzle_expansion_regression-headless/strict-runner.log",
+      "original_bytes": 550,
+      "original_sha256": "924ad72d475a497fe8f5fc88e849b02c8450ef3cde3ece16d6e949c17cef1d6f"
+    },
+    {
+      "path": "puzzle_rotation_regression-headless/godot.log.gz",
+      "bytes": 404,
+      "sha256": "7a18af0464fe4dabf1b9b2e9a1faca3bd2a422d26153469bda500bbf3c0e50d0",
+      "original_path": "puzzle_rotation_regression-headless/godot.log",
+      "original_bytes": 569,
+      "original_sha256": "eb86541e102b1706bd36e900c63d46fd5db5fd8989021c9ebd8782435164252b"
+    },
+    {
+      "path": "puzzle_rotation_regression-headless/strict-runner.log.gz",
+      "bytes": 404,
+      "sha256": "7a18af0464fe4dabf1b9b2e9a1faca3bd2a422d26153469bda500bbf3c0e50d0",
+      "original_path": "puzzle_rotation_regression-headless/strict-runner.log",
+      "original_bytes": 569,
+      "original_sha256": "eb86541e102b1706bd36e900c63d46fd5db5fd8989021c9ebd8782435164252b"
+    },
+    {
+      "path": "puzzle_menu_lifecycle_regression-capture-negative/godot.log.gz",
+      "bytes": 491,
+      "sha256": "845ebdaa94db5f8c3881b2d526538f725f58359ff342eb160ca61175bd3cee70",
+      "original_path": "puzzle_menu_lifecycle_regression-capture-negative/godot.log",
+      "original_bytes": 715,
+      "original_sha256": "b494e61359c7dc7b5464266bf7d7d516314243faed929017c4ddcbe8b23472e2"
+    },
+    {
+      "path": "puzzle_menu_lifecycle_regression-capture-negative/strict-runner.log.gz",
+      "bytes": 540,
+      "sha256": "688cada9ff930e8028c0fc244d608683a679933328aae9b14307989fdf91f287",
+      "original_path": "puzzle_menu_lifecycle_regression-capture-negative/strict-runner.log",
+      "original_bytes": 796,
+      "original_sha256": "220e1851c367d1343bd3046f1ce15542a404a142952afddb250b814a04904440"
+    },
+    {
+      "path": "puzzle_menu_lifecycle_regression-headless/probe-evidence/puzzle-menu-lifecycle.json",
+      "bytes": 37507,
+      "sha256": "8454f03f6793c956c8487a60c1fc0fffaf1cbf074f4bc6bfeb7024ba23c7d9d9"
+    }
+  ]
+}

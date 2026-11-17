@@ -1,0 +1,288 @@
+{
+  "status": "ORIGINAL_FAILURE_ARTIFACT_PRESERVED_NOT_ACCEPTANCE",
+  "head_sha": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "run_id": 43458898046,
+  "job_id": 132000245650,
+  "job_name": "gameplay",
+  "job_conclusion": "failure",
+  "failed_steps": [
+    {
+      "name": "Existing gameplay regression suite",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 6,
+      "started_at": "2026-11-13T16:11:28Z",
+      "completed_at": "2026-11-13T16:11:46Z"
+    }
+  ],
+  "artifact_id": 14056855034,
+  "artifact_name": "lumo-nextgen-2018-legacy-evidence",
+  "zip_sha256": "8b672f73e0141c138b2ee0631e4146dc72181258cc7ac1a3c926e6059a44681c",
+  "zip_bytes": 21229856,
+  "source_stamps": {
+    "acceptance-evidence/action-stage/source-sha.txt": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+    "acceptance-evidence/source-sha.txt": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef"
+  },
+  "original_images": [
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/lasso-catch.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 625723,
+      "sha256": "8d25d35a8026f414e6d08e5b89e6487cd033a91dcbcd89b1a2cad5c7d35bbd80"
+    },
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/ramp-1544-speed-20.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 634178,
+      "sha256": "01ad543b07afa1c2890390e374ef44fcf80a4492dde5e2ed565831b98b5e383c"
+    },
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/ramp-1544-speed-48.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 628637,
+      "sha256": "0455980eeabe5825dc8b7e4b546335edfe95e06c3e63304f32ba8c5ce56f42ba"
+    },
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/ramp-1544-speed-70.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 628037,
+      "sha256": "911ada452a7416f4c7ab3aa5526e8add196c083836073f0dbfd81ae45c8bb88b"
+    },
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/ramp-407-speed-20.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 644673,
+      "sha256": "1baa99decf46b041a7dee38af8248839081a2f334615cbaf68e2ebecf2d1e6d6"
+    },
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/ramp-407-speed-48.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 621975,
+      "sha256": "676cb2a64ee9ae88633b784ba9e45da6f2696b9f3644c1a8e31452c894325ba0"
+    },
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/ramp-407-speed-70.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 615153,
+      "sha256": "5c9a9f3937b6e32db27d25bba89949a18c98167b73eb9d69e4a2a08da5c532b1"
+    },
+    {
+      "path": "exports/spatial-menu/garage-1280x720.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 445357,
+      "sha256": "bfe831198de0b3581ba8566635b5ae75bc996cae7dc02fc6c10428c7de2fa822"
+    },
+    {
+      "path": "exports/spatial-menu/garage-2400x1080.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 793125,
+      "sha256": "b8aec440388e4bb18cd76ae97bf3bf40f5c672b9a34237dcfb83831bdb555cac"
+    },
+    {
+      "path": "exports/spatial-menu/garage-412x915.png",
+      "dimensions": [
+        412,
+        915
+      ],
+      "bytes": 217847,
+      "sha256": "2adde57491047ed63b11afb3a56abc56739239f4b24aac3357dea99859b23f39"
+    },
+    {
+      "path": "exports/spatial-menu/garage-640x320.png",
+      "dimensions": [
+        640,
+        320
+      ],
+      "bytes": 129807,
+      "sha256": "274857b9af7a1ac4b11524f8e0424e434cbc9a7f64f656dd7220f5c03c5b5463"
+    },
+    {
+      "path": "exports/spatial-menu/garage-690x829.png",
+      "dimensions": [
+        690,
+        829
+      ],
+      "bytes": 320526,
+      "sha256": "a05b3bcaebd0ea6b135fa1a4c2c8e2f64a6dd21f0a5fdb6112efb53cbcefe32c"
+    },
+    {
+      "path": "exports/spatial-menu/landing-1280x720.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 587691,
+      "sha256": "a1d261e54ba8f4dffd67ad7f1aef3682b884daf2f751058d9efdf30e5179712f"
+    },
+    {
+      "path": "exports/spatial-menu/landing-2400x1080.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 1119303,
+      "sha256": "6a29a2088a24acc2e35980489f8dc240d84c621cb1883a31e088d8528ec5a86f"
+    },
+    {
+      "path": "exports/spatial-menu/landing-412x915.png",
+      "dimensions": [
+        412,
+        915
+      ],
+      "bytes": 314063,
+      "sha256": "6294de3bc9e5b4a522167794b64ebf75913c9cc6ec389319a2b0e9db0640e7a9"
+    },
+    {
+      "path": "exports/spatial-menu/landing-640x320.png",
+      "dimensions": [
+        640,
+        320
+      ],
+      "bytes": 143376,
+      "sha256": "059ce69ed9869dcc28ea1592d63b76e9cd51e26200611c1b71e3a49b4aec39c3"
+    },
+    {
+      "path": "exports/spatial-menu/landing-690x829.png",
+      "dimensions": [
+        690,
+        829
+      ],
+      "bytes": 472131,
+      "sha256": "8d95ef2f66ca26168d26b773fd734f55be93ad7cef299c56f841d960118cac7c"
+    },
+    {
+      "path": "exports/spatial-menu/tracks-1280x720.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 569095,
+      "sha256": "766991f2875d1e9625666a0520c653418e48d6bad7c8ba53dd1344befb61522f"
+    },
+    {
+      "path": "exports/spatial-menu/tracks-2400x1080.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 736169,
+      "sha256": "a0791373ba79a14119974f1dc6783ce4c70a4d2d7ede055dbeabf14a12db318f"
+    },
+    {
+      "path": "exports/spatial-menu/tracks-412x915.png",
+      "dimensions": [
+        412,
+        915
+      ],
+      "bytes": 210612,
+      "sha256": "e97f6e9c879a54528b47e96506e84ed46a1882de462fbe7490c10dd3db7416a3"
+    },
+    {
+      "path": "exports/spatial-menu/tracks-640x320.png",
+      "dimensions": [
+        640,
+        320
+      ],
+      "bytes": 142729,
+      "sha256": "7ceccc3594df37de281dd12f09c7742bf2f3713ff396dd4f3cfada4d300bc945"
+    },
+    {
+      "path": "exports/spatial-menu/tracks-690x829.png",
+      "dimensions": [
+        690,
+        829
+      ],
+      "bytes": 381656,
+      "sha256": "7627d51e00a1d793c8c6886fe09f64cfbe81f4da30ad87e9944dd94a9f1417e7"
+    }
+  ],
+  "log_hashes": {
+    "acceptance-evidence/action-stage/kart_lasso_production_regression.log": "83aea1051cb10e8fbb46cc3834df42134196e8842a9500919a33c375ef02ef49",
+    "acceptance-evidence/action-stage/kart_lasso_regression.log": "95d9505e9aa9db3f20d26bc7b9535589aabc2a7309a048ef1bfb12255103560a",
+    "acceptance-evidence/action-stage/kart_menu_flow_regression.log": "b2c789a4f2d251a056ece8698005830de32934d0cd4ac9869ed693154dc1c58b",
+    "acceptance-evidence/action-stage/kart_roadside_action_regression.log": "e582b58303683f6228689e133b1306e2d56bd35138051cce6c81e9ff91a9d57f",
+    "acceptance-evidence/action-stage/kart_spatial_menu_regression.log": "3396db6660df045d5473df2b5bad568620dce0b248bd5b226ec5556782b86645",
+    "acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot.log": "4b6464e36a96d41269d3fbc6cf491b51fa31d8bb4aee63d6509baf5f630b70da",
+    "acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.04.57.log": "95d9505e9aa9db3f20d26bc7b9535589aabc2a7309a048ef1bfb12255103560a",
+    "acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.05.08.log": "83aea1051cb10e8fbb46cc3834df42134196e8842a9500919a33c375ef02ef49",
+    "acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.09.32.log": "64ccaea9832714d93466ad66ff427b939dec8700c2c1a1afda89ab8efcac2898",
+    "acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T16.09.45.log": "fb49c369492a9b947bf272f11d80d5f15183a1ea46b47515c5dbd1ea7e6782f6",
+    "acceptance-evidence/existing-gameplay.log": "e62f975703e818df4a9b4803185f3d230fb349e2e2e81b1b7a67ee59510f7951",
+    "acceptance-evidence/import.log": "ed80affe21680406f7015c628bb7cfc7879566c1dbb1b4ef52bb60116cfd21ff",
+    "acceptance-evidence/project-validation.log": "9ce4cc5c5d80ff2abf463f3328ea7ffa1aa612ad10f867910e7fc370f571da5e"
+  },
+  "artifact_error_lines": {
+    "acceptance-evidence/existing-gameplay.log": [
+      "WARNING: ObjectDB instances leaked at exit (run with --verbose for details).",
+      "ERROR: 8 resources still in use at exit (run with --verbose for details)."
+    ]
+  },
+  "raw_job_log": "gameplay-job-132000245650.log",
+  "raw_job_log_sha256": "f4fdc0620f811f0a7cc2571d1deaaaf411be66ba12c4163ac7c51ea34f2f99c9",
+  "actual_job_error_lines": [
+    "2026-11-13T16:11:46.6457002Z WARNING: ObjectDB instances leaked at exit (run with --verbose for details).",
+    "2026-11-13T16:11:46.6460677Z ERROR: 8 resources still in use at exit (run with --verbose for details).",
+    "2026-11-13T16:11:46.6816076Z errors in /tmp/lumo-kart-tests.log",
+    "2026-11-13T16:11:46.6832800Z ##[error]Process completed with exit code 1."
+  ],
+  "preceding_pass_markers": [
+    "2026-11-13T16:04:57.3738186Z [KartLasso] PASS: 34 assertions; 70 m/s sweeps, counterplay, bounded hold, equal rival rules",
+    "2026-11-13T16:05:07.8019885Z [KartLassoProduction] PASS: 26 assertions; real warning/catch/rival motion, pause, rescue and saved-race rebuild",
+    "2026-11-13T16:11:46.5788743Z [KartTests] PASS: 8000 shared Jump questions; no Kart learning state; free steering; real full race; brake/drift; pause; save/resume; one award"
+  ],
+  "immutable_source_hashes": {
+    "scripts/tests/kart_regression.gd": {
+      "blob": "da5a3bf5f3be56d9c875c630141f2c18937bb099",
+      "sha256": "6dc96f9b8d83582840db4b6c147ab371520ed7e0da2e72e07bb90d7a5ba3b685"
+    },
+    "scripts/tests/kart_lasso_production_regression.gd": {
+      "blob": "cb1a4bd050a7bb961e324678eb65d9af9d0731ff",
+      "sha256": "9f3c81acfa9c5f864e3032d1d7ec66d3e45b25e11df8c21b519785cf7e05fe3c"
+    },
+    "tools/validate_project.sh": {
+      "blob": "4becf6ba14f91db7c7accf13158075e7651e17b3",
+      "sha256": "1cbf032a49206be0686e0ceca58160ebcc837cd35ff833848d776753d44c5bba"
+    },
+    "tools/validate_action_stage.sh": {
+      "blob": "d5c980624727b3b6b39bdc2c7f51c653dd5899ad",
+      "sha256": "aff17bc1c763cdd8d6a25852d9cf276bc403f5ce1c64e835a772831ed5582be9"
+    },
+    "tools/validate_2014.sh": {
+      "blob": "82ff8b743ca99dd166ffa0f3cae12eaca3c140dd",
+      "sha256": "d414c8c8f30feefc8c2e004d39c0cade37424865375d2d50afd239abd3ffa855"
+    },
+    "scripts/games/kart_audio.gd": {
+      "blob": "f8256867f410aafe7602734b3d59615c1c8a896a",
+      "sha256": "a4f4f0a88faa47645c90e7274e3694adbd6634df7212fc72c797e83738191427"
+    }
+  },
+  "scope": "The strict acceptance remains failed; kart_regression resource types are not diagnosed from this non-verbose original log. Earlier Lasso markers do not imply a repaired Lasso source."
+}

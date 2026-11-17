@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "created_at_utc": "2026-11-14T08:34:28.193891+00:00",
+  "base": "0e26153f0e58cc05739e72923b4c563a4cf380b8",
+  "producer": "c99fd3f387d78f44157f4a29cb8dbb707e058452",
+  "source_files": [
+    {
+      "path": "docs/handoffs/C4_RETURN_RECOVERY_2026-11-14.md",
+      "bytes": 3507,
+      "sha256": "93d01b8a9f8fe0067a722737a082cefa26370598dceb23186cb9e95f6e61034e",
+      "blob": "d91d54528b49b4098bdf62ec162800a96c48d9a9"
+    },
+    {
+      "path": "scripts/games/connect_four/connect_four_table.gd",
+      "bytes": 30241,
+      "sha256": "72d23cbe54a250624adecc7f829b8797cc0e19d3e8148cdf5ad43fd2fb8dfbeb",
+      "blob": "f2ae17e7edf8ac1b2d0d72a0d477d7e1459b1458"
+    },
+    {
+      "path": "scripts/tests/connect_four_return_regression.gd",
+      "bytes": 4762,
+      "sha256": "2d21893a3581ede82120853b7f7444a2b888fdd82aab44cf005c9a9c4aab09d3",
+      "blob": "1d7a4cbd0f3b0d5a21ddeaf218bf27eadfe1f0bb"
+    }
+  ],
+  "preserved_runner_blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+  "preserved_mode_count": 52,
+  "preserved_images": 17,
+  "current_execution": "None before this source checkpoint",
+  "next_required_check": "Actual Godot C4 scene, connect_four_return_regression.gd;21 checks with explicit Android boundary fixture",
+  "limits": [
+    "Producer results belong to its original source; no new combined test, renderer, Android or device claim.",
+    "Only acknowledged return is retried; game state, geometry, rewards and unrelated Kart payloads are preserved."
+  ]
+}

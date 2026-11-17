@@ -1,0 +1,449 @@
+Blender 4.3.2
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/volcano_night_tunnel_workshop.blend"
+Fra:1 Mem:50.27M (Peak 50.27M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_BasaltColumn_0_0
+Fra:1 Mem:50.28M (Peak 50.28M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_BasaltColumn_0_1
+Fra:1 Mem:50.29M (Peak 50.29M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_BasaltColumn_0_2
+Fra:1 Mem:50.29M (Peak 50.29M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_BasaltColumn_1_0
+Fra:1 Mem:50.29M (Peak 50.29M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_BasaltColumn_1_1
+Fra:1 Mem:50.29M (Peak 50.29M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_BasaltColumn_1_2
+Fra:1 Mem:50.30M (Peak 50.30M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_BasaltColumn_2_0
+Fra:1 Mem:50.30M (Peak 50.30M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_BasaltColumn_2_1
+Fra:1 Mem:50.30M (Peak 50.30M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_BasaltColumn_2_2
+Fra:1 Mem:50.31M (Peak 50.31M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_BasaltColumn_3_0
+Fra:1 Mem:50.31M (Peak 50.31M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_BasaltColumn_3_1
+Fra:1 Mem:50.31M (Peak 50.31M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_BasaltColumn_3_2
+Fra:1 Mem:50.32M (Peak 50.32M) | Time:00:00.22 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_ContinuousVault
+Fra:1 Mem:50.51M (Peak 50.51M) | Time:00:00.24 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_0_0
+Fra:1 Mem:52.55M (Peak 52.55M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_0_1
+Fra:1 Mem:52.56M (Peak 52.56M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_0_2
+Fra:1 Mem:52.58M (Peak 52.58M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_0_3
+Fra:1 Mem:52.59M (Peak 52.59M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_1_0
+Fra:1 Mem:52.61M (Peak 52.61M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_1_1
+Fra:1 Mem:52.62M (Peak 52.62M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_1_2
+Fra:1 Mem:52.63M (Peak 52.63M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_1_3
+Fra:1 Mem:52.65M (Peak 52.65M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_2_0
+Fra:1 Mem:52.66M (Peak 52.66M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_2_1
+Fra:1 Mem:52.68M (Peak 52.68M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_2_2
+Fra:1 Mem:52.69M (Peak 52.69M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_2_3
+Fra:1 Mem:52.70M (Peak 52.70M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_3_0
+Fra:1 Mem:52.72M (Peak 52.72M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_3_1
+Fra:1 Mem:52.73M (Peak 52.73M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_3_2
+Fra:1 Mem:52.75M (Peak 52.75M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_EmberGuard_3_3
+Fra:1 Mem:52.76M (Peak 52.76M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_PortalBasaltColumn_-1_0
+Fra:1 Mem:52.76M (Peak 52.76M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_PortalBasaltColumn_-1_1
+Fra:1 Mem:52.77M (Peak 52.77M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_PortalBasaltColumn_-1_2
+Fra:1 Mem:52.77M (Peak 52.77M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_PortalBasaltColumn_-1_3
+Fra:1 Mem:52.78M (Peak 52.78M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_PortalBasaltColumn_-1_4
+Fra:1 Mem:52.78M (Peak 52.78M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_PortalBasaltColumn_1_0
+Fra:1 Mem:52.78M (Peak 52.78M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_PortalBasaltColumn_1_1
+Fra:1 Mem:52.79M (Peak 52.79M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_PortalBasaltColumn_1_2
+Fra:1 Mem:52.79M (Peak 52.79M) | Time:00:00.25 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_PortalBasaltColumn_1_3
+Fra:1 Mem:52.83M (Peak 52.83M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_PortalBasaltColumn_1_4
+Fra:1 Mem:52.84M (Peak 52.84M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_ProtectedEmber_0
+Fra:1 Mem:52.85M (Peak 52.85M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_ProtectedEmber_1
+Fra:1 Mem:52.86M (Peak 52.86M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_ProtectedEmber_2
+Fra:1 Mem:52.88M (Peak 52.88M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_ProtectedEmber_3
+Fra:1 Mem:52.89M (Peak 52.89M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_ProtectedPortalEmber_-1
+Fra:1 Mem:52.89M (Peak 52.89M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_ProtectedPortalEmber_1
+Fra:1 Mem:52.90M (Peak 52.90M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_RaisedDirectionChevron_-1_0_0
+Fra:1 Mem:52.90M (Peak 52.90M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_RaisedDirectionChevron_-1_0_1
+Fra:1 Mem:52.90M (Peak 52.90M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_RaisedDirectionChevron_1_0_0
+Fra:1 Mem:52.90M (Peak 52.90M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_RaisedDirectionChevron_1_0_1
+Fra:1 Mem:52.91M (Peak 52.91M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_RaisedGuideCurb
+Fra:1 Mem:52.93M (Peak 52.93M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_RaisedGuideCurb.001
+Fra:1 Mem:52.95M (Peak 52.95M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_StructuralRib_0
+Fra:1 Mem:53.00M (Peak 53.00M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_0_StructuralRib_1
+Fra:1 Mem:53.06M (Peak 53.06M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | PreviewRoad_NotPartOfExport
+Fra:1 Mem:53.06M (Peak 53.06M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_0_0.002
+Fra:1 Mem:53.06M (Peak 53.06M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_0_1.002
+Fra:1 Mem:53.06M (Peak 53.06M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_0_2.002
+Fra:1 Mem:53.07M (Peak 53.07M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_1_0.002
+Fra:1 Mem:53.07M (Peak 53.07M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_1_1.002
+Fra:1 Mem:53.07M (Peak 53.07M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_1_2.002
+Fra:1 Mem:53.08M (Peak 53.08M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_2_0.002
+Fra:1 Mem:53.08M (Peak 53.08M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_2_1.002
+Fra:1 Mem:53.08M (Peak 53.08M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_2_2.002
+Fra:1 Mem:53.08M (Peak 53.08M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_3_0.002
+Fra:1 Mem:53.09M (Peak 53.09M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_3_1.002
+Fra:1 Mem:53.09M (Peak 53.09M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_3_2.002
+Fra:1 Mem:53.09M (Peak 53.09M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_4_0
+Fra:1 Mem:53.09M (Peak 53.09M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_4_1
+Fra:1 Mem:53.10M (Peak 53.10M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_4_2
+Fra:1 Mem:53.10M (Peak 53.10M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_5_0
+Fra:1 Mem:53.10M (Peak 53.10M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_5_1
+Fra:1 Mem:53.11M (Peak 53.11M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_5_2
+Fra:1 Mem:53.11M (Peak 53.11M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_6_0
+Fra:1 Mem:53.11M (Peak 53.11M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_6_1
+Fra:1 Mem:53.11M (Peak 53.11M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_6_2
+Fra:1 Mem:53.12M (Peak 53.12M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_7_0
+Fra:1 Mem:53.12M (Peak 53.12M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_7_1
+Fra:1 Mem:53.12M (Peak 53.12M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_BasaltColumn_7_2
+Fra:1 Mem:53.12M (Peak 53.12M) | Time:00:00.26 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_ContinuousVault.002
+Fra:1 Mem:53.21M (Peak 53.21M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | ReviewGround
+Fra:1 Mem:53.21M (Peak 53.21M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | PreviewRoad_NotPartOfExport.004
+Fra:1 Mem:53.21M (Peak 53.21M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_StructuralRib_1.001
+Fra:1 Mem:53.27M (Peak 53.27M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_StructuralRib_0.001
+Fra:1 Mem:53.32M (Peak 53.32M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_RaisedGuideCurb.003
+Fra:1 Mem:53.34M (Peak 53.34M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_RaisedGuideCurb.002
+Fra:1 Mem:53.36M (Peak 53.36M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_RaisedDirectionChevron_1_0_1.001
+Fra:1 Mem:53.37M (Peak 53.37M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_RaisedDirectionChevron_1_0_0.001
+Fra:1 Mem:53.37M (Peak 53.37M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_RaisedDirectionChevron_-1_0_1.001
+Fra:1 Mem:53.37M (Peak 53.37M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_RaisedDirectionChevron_-1_0_0.001
+Fra:1 Mem:53.37M (Peak 53.37M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_ProtectedPortalEmber_1.001
+Fra:1 Mem:53.38M (Peak 53.38M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_ProtectedPortalEmber_-1.001
+Fra:1 Mem:53.38M (Peak 53.38M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_ProtectedEmber_3.001
+Fra:1 Mem:53.39M (Peak 53.39M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_ProtectedEmber_2.001
+Fra:1 Mem:53.64M (Peak 53.64M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_0_0.002
+Fra:1 Mem:53.66M (Peak 53.66M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_0_1.002
+Fra:1 Mem:53.67M (Peak 53.67M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_0_2.002
+Fra:1 Mem:53.66M (Peak 53.67M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_ProtectedEmber_1.001
+Fra:1 Mem:53.67M (Peak 53.67M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_ProtectedEmber_0.001
+Fra:1 Mem:53.68M (Peak 53.68M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_PortalBasaltColumn_1_4.001
+Fra:1 Mem:53.69M (Peak 53.69M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_PortalBasaltColumn_1_3.001
+Fra:1 Mem:53.69M (Peak 53.69M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_PortalBasaltColumn_1_2.001
+Fra:1 Mem:53.69M (Peak 53.69M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_PortalBasaltColumn_1_1.001
+Fra:1 Mem:53.70M (Peak 53.70M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_PortalBasaltColumn_1_0.001
+Fra:1 Mem:53.70M (Peak 53.70M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_PortalBasaltColumn_-1_4.001
+Fra:1 Mem:53.70M (Peak 53.70M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_PortalBasaltColumn_-1_3.001
+Fra:1 Mem:53.71M (Peak 53.71M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_PortalBasaltColumn_-1_2.001
+Fra:1 Mem:53.71M (Peak 53.71M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_PortalBasaltColumn_-1_1.001
+Fra:1 Mem:53.72M (Peak 53.72M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_PortalBasaltColumn_-1_0.001
+Fra:1 Mem:53.72M (Peak 53.72M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_3_3.001
+Fra:1 Mem:53.74M (Peak 53.74M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_3_2.001
+Fra:1 Mem:53.75M (Peak 53.75M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_3_1.001
+Fra:1 Mem:53.76M (Peak 53.76M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_3_0.001
+Fra:1 Mem:53.78M (Peak 53.78M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_2_3.001
+Fra:1 Mem:53.79M (Peak 53.79M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_2_2.001
+Fra:1 Mem:53.80M (Peak 53.80M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_2_1.001
+Fra:1 Mem:53.82M (Peak 53.82M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_2_0.001
+Fra:1 Mem:53.83M (Peak 53.83M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_1_3.001
+Fra:1 Mem:53.85M (Peak 53.85M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_1_2.001
+Fra:1 Mem:53.86M (Peak 53.86M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_1_1.001
+Fra:1 Mem:53.87M (Peak 53.87M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_1_0.001
+Fra:1 Mem:53.89M (Peak 53.89M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_0_3.001
+Fra:1 Mem:53.90M (Peak 53.90M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_0_2.001
+Fra:1 Mem:53.92M (Peak 53.92M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_0_1.001
+Fra:1 Mem:53.93M (Peak 53.93M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_EmberGuard_0_0.001
+Fra:1 Mem:53.94M (Peak 53.94M) | Time:00:00.27 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_ContinuousVault.001
+Fra:1 Mem:54.03M (Peak 54.03M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_0_3.002
+Fra:1 Mem:54.04M (Peak 54.04M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_1_0.002
+Fra:1 Mem:54.06M (Peak 54.06M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_1_1.002
+Fra:1 Mem:54.07M (Peak 54.07M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_1_2.002
+Fra:1 Mem:54.08M (Peak 54.08M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_1_3.002
+Fra:1 Mem:54.10M (Peak 54.10M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_2_0.002
+Fra:1 Mem:54.11M (Peak 54.11M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_2_1.002
+Fra:1 Mem:54.12M (Peak 54.12M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_2_2.002
+Fra:1 Mem:54.14M (Peak 54.14M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_2_3.002
+Fra:1 Mem:54.15M (Peak 54.15M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_3_0.002
+Fra:1 Mem:54.17M (Peak 54.17M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_3_1.002
+Fra:1 Mem:54.18M (Peak 54.18M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_3_2.002
+Fra:1 Mem:54.19M (Peak 54.19M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_3_3.002
+Fra:1 Mem:54.21M (Peak 54.21M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_4_0
+Fra:1 Mem:54.22M (Peak 54.22M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_4_1
+Fra:1 Mem:54.24M (Peak 54.24M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_4_2
+Fra:1 Mem:54.25M (Peak 54.25M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_4_3
+Fra:1 Mem:54.26M (Peak 54.26M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_5_0
+Fra:1 Mem:54.28M (Peak 54.28M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_5_1
+Fra:1 Mem:54.39M (Peak 54.39M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_BasaltColumn_3_2.001
+Fra:1 Mem:54.39M (Peak 54.39M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_BasaltColumn_3_1.001
+Fra:1 Mem:54.39M (Peak 54.39M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_BasaltColumn_3_0.001
+Fra:1 Mem:54.39M (Peak 54.39M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_BasaltColumn_2_2.001
+Fra:1 Mem:54.40M (Peak 54.40M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_BasaltColumn_2_1.001
+Fra:1 Mem:54.40M (Peak 54.40M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_BasaltColumn_2_0.001
+Fra:1 Mem:54.40M (Peak 54.40M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_BasaltColumn_1_2.001
+Fra:1 Mem:54.41M (Peak 54.41M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_BasaltColumn_1_1.001
+Fra:1 Mem:54.41M (Peak 54.41M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_BasaltColumn_1_0.001
+Fra:1 Mem:54.41M (Peak 54.41M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_BasaltColumn_0_2.001
+Fra:1 Mem:54.41M (Peak 54.41M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_BasaltColumn_0_1.001
+Fra:1 Mem:54.42M (Peak 54.42M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_4_BasaltColumn_0_0.001
+Fra:1 Mem:54.42M (Peak 54.42M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | PreviewRoad_NotPartOfExport.003
+Fra:1 Mem:54.42M (Peak 54.42M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_StructuralRib_3
+Fra:1 Mem:54.47M (Peak 54.47M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_StructuralRib_2
+Fra:1 Mem:54.53M (Peak 54.53M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_StructuralRib_1.002
+Fra:1 Mem:54.58M (Peak 54.58M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_StructuralRib_0.002
+Fra:1 Mem:54.63M (Peak 54.63M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedGuideCurb.005
+Fra:1 Mem:54.65M (Peak 54.65M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedGuideCurb.004
+Fra:1 Mem:54.68M (Peak 54.68M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedDirectionChevron_1_2_1
+Fra:1 Mem:54.68M (Peak 54.68M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedDirectionChevron_1_2_0
+Fra:1 Mem:54.68M (Peak 54.68M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedDirectionChevron_1_1_1
+Fra:1 Mem:54.68M (Peak 54.68M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedDirectionChevron_1_1_0
+Fra:1 Mem:54.69M (Peak 54.69M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedDirectionChevron_1_0_1.002
+Fra:1 Mem:54.69M (Peak 54.69M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedDirectionChevron_1_0_0.002
+Fra:1 Mem:54.69M (Peak 54.69M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedDirectionChevron_-1_2_1
+Fra:1 Mem:54.69M (Peak 54.69M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedDirectionChevron_-1_2_0
+Fra:1 Mem:54.70M (Peak 54.70M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedDirectionChevron_-1_1_1
+Fra:1 Mem:54.70M (Peak 54.70M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedDirectionChevron_-1_1_0
+Fra:1 Mem:54.70M (Peak 54.70M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedDirectionChevron_-1_0_1.002
+Fra:1 Mem:54.70M (Peak 54.70M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_RaisedDirectionChevron_-1_0_0.002
+Fra:1 Mem:54.71M (Peak 54.71M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_ProtectedEmber_7
+Fra:1 Mem:54.75M (Peak 54.75M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_5_2
+Fra:1 Mem:54.76M (Peak 54.76M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_5_3
+Fra:1 Mem:54.78M (Peak 54.78M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_6_0
+Fra:1 Mem:54.79M (Peak 54.79M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_6_1
+Fra:1 Mem:54.81M (Peak 54.81M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_6_2
+Fra:1 Mem:54.82M (Peak 54.82M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_6_3
+Fra:1 Mem:54.83M (Peak 54.83M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_7_0
+Fra:1 Mem:54.85M (Peak 54.85M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_7_1
+Fra:1 Mem:54.86M (Peak 54.86M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_7_2
+Fra:1 Mem:54.87M (Peak 54.87M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_EmberGuard_7_3
+Fra:1 Mem:54.89M (Peak 54.89M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_ProtectedEmber_0.002
+Fra:1 Mem:54.90M (Peak 54.90M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_ProtectedEmber_1.002
+Fra:1 Mem:54.92M (Peak 54.92M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_ProtectedEmber_2.002
+Fra:1 Mem:54.93M (Peak 54.93M) | Time:00:00.28 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_ProtectedEmber_3.002
+Fra:1 Mem:54.94M (Peak 54.94M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_ProtectedEmber_4
+Fra:1 Mem:54.96M (Peak 54.96M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_ProtectedEmber_5
+Fra:1 Mem:54.97M (Peak 54.97M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_ProtectedEmber_6
+Fra:1 Mem:54.99M (Peak 54.99M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_ProtectedEmber_7
+Fra:1 Mem:55.00M (Peak 55.00M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedDirectionChevron_-1_0_0.002
+Fra:1 Mem:55.00M (Peak 55.00M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedDirectionChevron_-1_0_1.002
+Fra:1 Mem:55.01M (Peak 55.01M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedDirectionChevron_-1_1_0
+Fra:1 Mem:55.01M (Peak 55.01M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedDirectionChevron_-1_1_1
+Fra:1 Mem:55.01M (Peak 55.01M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedDirectionChevron_-1_2_0
+Fra:1 Mem:55.01M (Peak 55.01M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedDirectionChevron_-1_2_1
+Fra:1 Mem:55.02M (Peak 55.02M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedDirectionChevron_1_0_0.002
+Fra:1 Mem:55.02M (Peak 55.02M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedDirectionChevron_1_0_1.002
+Fra:1 Mem:55.02M (Peak 55.02M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedDirectionChevron_1_1_0
+Fra:1 Mem:55.02M (Peak 55.02M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedDirectionChevron_1_1_1
+Fra:1 Mem:55.03M (Peak 55.03M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedDirectionChevron_1_2_0
+Fra:1 Mem:55.03M (Peak 55.03M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedDirectionChevron_1_2_1
+Fra:1 Mem:55.03M (Peak 55.03M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedGuideCurb.004
+Fra:1 Mem:55.05M (Peak 55.05M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_RaisedGuideCurb.005
+Fra:1 Mem:55.07M (Peak 55.07M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_StructuralRib_0.002
+Fra:1 Mem:55.13M (Peak 55.13M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_StructuralRib_1.002
+Fra:1 Mem:55.18M (Peak 55.18M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_StructuralRib_2
+Fra:1 Mem:55.21M (Peak 55.21M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_ProtectedEmber_6
+Fra:1 Mem:55.22M (Peak 55.22M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_ProtectedEmber_5
+Fra:1 Mem:55.23M (Peak 55.23M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_ProtectedEmber_4
+Fra:1 Mem:55.25M (Peak 55.25M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_ProtectedEmber_3.002
+Fra:1 Mem:55.26M (Peak 55.26M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_ProtectedEmber_2.002
+Fra:1 Mem:55.27M (Peak 55.27M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_ProtectedEmber_1.002
+Fra:1 Mem:55.29M (Peak 55.29M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_ProtectedEmber_0.002
+Fra:1 Mem:55.30M (Peak 55.30M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_7_3
+Fra:1 Mem:55.32M (Peak 55.32M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_7_2
+Fra:1 Mem:55.33M (Peak 55.33M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_7_1
+Fra:1 Mem:55.34M (Peak 55.34M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_7_0
+Fra:1 Mem:55.36M (Peak 55.36M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_6_3
+Fra:1 Mem:55.37M (Peak 55.37M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_6_2
+Fra:1 Mem:55.39M (Peak 55.39M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_6_1
+Fra:1 Mem:55.40M (Peak 55.40M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_6_0
+Fra:1 Mem:55.41M (Peak 55.41M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_5_3
+Fra:1 Mem:55.43M (Peak 55.43M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_5_2
+Fra:1 Mem:55.44M (Peak 55.44M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_5_1
+Fra:1 Mem:55.46M (Peak 55.46M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_5_0
+Fra:1 Mem:55.47M (Peak 55.47M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_4_3
+Fra:1 Mem:55.48M (Peak 55.48M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_4_2
+Fra:1 Mem:55.50M (Peak 55.50M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_4_1
+Fra:1 Mem:55.51M (Peak 55.51M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_4_0
+Fra:1 Mem:55.53M (Peak 55.53M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_3_3.002
+Fra:1 Mem:55.54M (Peak 55.54M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_3_2.002
+Fra:1 Mem:55.55M (Peak 55.55M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_3_1.002
+Fra:1 Mem:55.57M (Peak 55.57M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_3_0.002
+Fra:1 Mem:55.59M (Peak 55.59M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_1_StructuralRib_3
+Fra:1 Mem:55.64M (Peak 55.64M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | PreviewRoad_NotPartOfExport.001
+Fra:1 Mem:55.64M (Peak 55.64M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_0_0.004
+Fra:1 Mem:55.65M (Peak 55.65M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_0_1.004
+Fra:1 Mem:55.65M (Peak 55.65M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_0_2.004
+Fra:1 Mem:55.65M (Peak 55.65M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_10_0.001
+Fra:1 Mem:55.65M (Peak 55.65M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_10_1.001
+Fra:1 Mem:55.66M (Peak 55.66M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_10_2.001
+Fra:1 Mem:55.66M (Peak 55.66M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_11_0.001
+Fra:1 Mem:55.66M (Peak 55.66M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_11_1.001
+Fra:1 Mem:55.67M (Peak 55.67M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_11_2.001
+Fra:1 Mem:55.67M (Peak 55.67M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_1_0.004
+Fra:1 Mem:55.67M (Peak 55.67M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_1_1.004
+Fra:1 Mem:55.67M (Peak 55.67M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_1_2.004
+Fra:1 Mem:55.68M (Peak 55.68M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_2_0.004
+Fra:1 Mem:55.68M (Peak 55.68M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_2_1.004
+Fra:1 Mem:55.68M (Peak 55.68M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_2_2.004
+Fra:1 Mem:55.68M (Peak 55.68M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_3_0.004
+Fra:1 Mem:55.69M (Peak 55.69M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_3_1.004
+Fra:1 Mem:55.69M (Peak 55.69M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_3_2.004
+Fra:1 Mem:55.69M (Peak 55.69M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_4_0.002
+Fra:1 Mem:55.70M (Peak 55.70M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_4_1.002
+Fra:1 Mem:55.70M (Peak 55.70M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_4_2.002
+Fra:1 Mem:55.70M (Peak 55.70M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_5_0.002
+Fra:1 Mem:55.70M (Peak 55.70M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_5_1.002
+Fra:1 Mem:55.71M (Peak 55.71M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_5_2.002
+Fra:1 Mem:55.71M (Peak 55.71M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_6_0.002
+Fra:1 Mem:55.71M (Peak 55.71M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_6_1.002
+Fra:1 Mem:55.71M (Peak 55.71M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_6_2.002
+Fra:1 Mem:55.72M (Peak 55.72M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_7_0.002
+Fra:1 Mem:55.72M (Peak 55.72M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_7_1.002
+Fra:1 Mem:55.72M (Peak 55.72M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_7_2.002
+Fra:1 Mem:55.73M (Peak 55.73M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_8_0.001
+Fra:1 Mem:55.73M (Peak 55.73M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_8_1.001
+Fra:1 Mem:55.73M (Peak 55.73M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_8_2.001
+Fra:1 Mem:55.73M (Peak 55.73M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_9_0.001
+Fra:1 Mem:55.74M (Peak 55.74M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_9_1.001
+Fra:1 Mem:55.74M (Peak 55.74M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_BasaltColumn_9_2.001
+Fra:1 Mem:55.74M (Peak 55.74M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_ContinuousVault.004
+Fra:1 Mem:56.18M (Peak 56.18M) | Time:00:00.29 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_2_3.002
+Fra:1 Mem:56.19M (Peak 56.19M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_2_2.002
+Fra:1 Mem:56.20M (Peak 56.20M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_2_1.002
+Fra:1 Mem:56.22M (Peak 56.22M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_2_0.002
+Fra:1 Mem:56.23M (Peak 56.23M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_1_3.002
+Fra:1 Mem:56.25M (Peak 56.25M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_1_2.002
+Fra:1 Mem:56.26M (Peak 56.26M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_1_1.002
+Fra:1 Mem:56.27M (Peak 56.27M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_1_0.002
+Fra:1 Mem:56.29M (Peak 56.29M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_0_3.002
+Fra:1 Mem:56.30M (Peak 56.30M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_0_2.002
+Fra:1 Mem:56.31M (Peak 56.31M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_0_1.002
+Fra:1 Mem:56.33M (Peak 56.33M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_EmberGuard_0_0.002
+Fra:1 Mem:56.34M (Peak 56.34M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_ContinuousVault.002
+Fra:1 Mem:56.71M (Peak 56.71M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_0_0.004
+Fra:1 Mem:56.72M (Peak 56.72M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_0_1.004
+Fra:1 Mem:56.73M (Peak 56.73M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_0_2.004
+Fra:1 Mem:56.75M (Peak 56.75M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_0_3.004
+Fra:1 Mem:56.76M (Peak 56.76M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_10_0.001
+Fra:1 Mem:56.78M (Peak 56.78M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_10_1.001
+Fra:1 Mem:56.79M (Peak 56.79M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_10_2.001
+Fra:1 Mem:56.80M (Peak 56.80M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_10_3.001
+Fra:1 Mem:56.82M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_11_0.001
+Fra:1 Mem:56.75M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_7_2
+Fra:1 Mem:56.75M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_7_1
+Fra:1 Mem:56.75M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_7_0
+Fra:1 Mem:56.76M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_6_2
+Fra:1 Mem:56.76M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_6_1
+Fra:1 Mem:56.76M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_6_0
+Fra:1 Mem:56.76M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_5_2
+Fra:1 Mem:56.77M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_5_1
+Fra:1 Mem:56.77M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_5_0
+Fra:1 Mem:56.77M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_4_2
+Fra:1 Mem:56.78M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_4_1
+Fra:1 Mem:56.78M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_4_0
+Fra:1 Mem:56.78M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_3_2.002
+Fra:1 Mem:56.78M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_3_1.002
+Fra:1 Mem:56.79M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_3_0.002
+Fra:1 Mem:56.79M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_2_2.002
+Fra:1 Mem:56.79M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_2_1.002
+Fra:1 Mem:56.79M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_2_0.002
+Fra:1 Mem:56.80M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_1_2.002
+Fra:1 Mem:56.80M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_1_1.002
+Fra:1 Mem:56.80M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_1_0.002
+Fra:1 Mem:56.81M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_0_2.002
+Fra:1 Mem:56.81M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_0_1.002
+Fra:1 Mem:56.81M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_3_BasaltColumn_0_0.002
+Fra:1 Mem:56.81M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | PreviewRoad_NotPartOfExport.002
+Fra:1 Mem:56.82M (Peak 56.82M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_StructuralRib_5.001
+Fra:1 Mem:56.87M (Peak 56.87M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_StructuralRib_4.001
+Fra:1 Mem:56.92M (Peak 56.92M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_StructuralRib_3.002
+Fra:1 Mem:56.98M (Peak 56.98M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_StructuralRib_2.002
+Fra:1 Mem:57.03M (Peak 57.03M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_StructuralRib_1.004
+Fra:1 Mem:57.09M (Peak 57.09M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_StructuralRib_0.004
+Fra:1 Mem:57.15M (Peak 57.15M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedGuideCurb.009
+Fra:1 Mem:57.17M (Peak 57.17M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_11_2.001
+Fra:1 Mem:57.17M (Peak 57.17M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedGuideCurb.008
+Fra:1 Mem:57.22M (Peak 57.22M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_1_3_1.001
+Fra:1 Mem:57.22M (Peak 57.22M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_1_3_0.001
+Fra:1 Mem:57.21M (Peak 57.22M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_1_2_1.002
+Fra:1 Mem:57.21M (Peak 57.22M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_11_3.001
+Fra:1 Mem:57.22M (Peak 57.22M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_1_2_0.002
+Fra:1 Mem:57.23M (Peak 57.23M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_1_1_1.002
+Fra:1 Mem:57.24M (Peak 57.24M) | Time:00:00.30 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_1_1_0.002
+Fra:1 Mem:57.24M (Peak 57.24M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_1_0_1.004
+Fra:1 Mem:57.24M (Peak 57.24M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_1_0_0.004
+Fra:1 Mem:57.24M (Peak 57.24M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_-1_3_1.001
+Fra:1 Mem:57.25M (Peak 57.25M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_-1_3_0.001
+Fra:1 Mem:57.25M (Peak 57.25M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_-1_2_1.002
+Fra:1 Mem:57.25M (Peak 57.25M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_-1_2_0.002
+Fra:1 Mem:57.26M (Peak 57.26M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_-1_1_1.002
+Fra:1 Mem:57.27M (Peak 57.27M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_-1_1_0.002
+Fra:1 Mem:57.27M (Peak 57.27M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_-1_0_1.004
+Fra:1 Mem:57.28M (Peak 57.28M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_RaisedDirectionChevron_-1_0_0.004
+Fra:1 Mem:57.28M (Peak 57.28M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_ProtectedEmber_9.001
+Fra:1 Mem:57.27M (Peak 57.28M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_1_0.004
+Fra:1 Mem:57.30M (Peak 57.30M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_1_1.004
+Fra:1 Mem:57.29M (Peak 57.30M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_ProtectedEmber_8.001
+Fra:1 Mem:57.33M (Peak 57.33M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_1_2.004
+Fra:1 Mem:57.33M (Peak 57.33M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_ProtectedEmber_7.002
+Fra:1 Mem:57.33M (Peak 57.33M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_1_3.004
+Fra:1 Mem:57.37M (Peak 57.37M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_2_0.004
+Fra:1 Mem:57.36M (Peak 57.37M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_ProtectedEmber_6.002
+Fra:1 Mem:57.40M (Peak 57.40M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_ProtectedEmber_5.002
+Fra:1 Mem:57.40M (Peak 57.40M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_2_1.004
+Fra:1 Mem:57.42M (Peak 57.42M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_ProtectedEmber_4.002
+Fra:1 Mem:57.43M (Peak 57.43M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_2_2.004
+Fra:1 Mem:57.44M (Peak 57.44M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_ProtectedEmber_3.004
+Fra:1 Mem:57.46M (Peak 57.46M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_2_3.004
+Fra:1 Mem:57.47M (Peak 57.47M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_ProtectedEmber_2.004
+Fra:1 Mem:57.49M (Peak 57.49M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_3_0.004
+Fra:1 Mem:57.51M (Peak 57.51M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_ProtectedEmber_11.001
+Fra:1 Mem:57.51M (Peak 57.51M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_3_1.004
+Fra:1 Mem:57.52M (Peak 57.52M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_3_2.004
+Fra:1 Mem:57.54M (Peak 57.54M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_3_3.004
+Fra:1 Mem:57.55M (Peak 57.55M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_4_0.002
+Fra:1 Mem:57.57M (Peak 57.57M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_4_1.002
+Fra:1 Mem:57.58M (Peak 57.58M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_4_2.002
+Fra:1 Mem:57.59M (Peak 57.59M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_4_3.002
+Fra:1 Mem:57.61M (Peak 57.61M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_5_0.002
+Fra:1 Mem:57.62M (Peak 57.62M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_5_1.002
+Fra:1 Mem:57.63M (Peak 57.63M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_5_2.002
+Fra:1 Mem:57.65M (Peak 57.65M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_5_3.002
+Fra:1 Mem:57.66M (Peak 57.66M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_6_0.002
+Fra:1 Mem:57.68M (Peak 57.68M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_6_1.002
+Fra:1 Mem:57.69M (Peak 57.69M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_6_2.002
+Fra:1 Mem:57.70M (Peak 57.70M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_6_3.002
+Fra:1 Mem:57.72M (Peak 57.72M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_7_0.002
+Fra:1 Mem:57.73M (Peak 57.73M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_7_1.002
+Fra:1 Mem:57.75M (Peak 57.75M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_7_2.002
+Fra:1 Mem:57.76M (Peak 57.76M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_7_3.002
+Fra:1 Mem:57.77M (Peak 57.77M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_8_0.001
+Fra:1 Mem:57.79M (Peak 57.79M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_8_1.001
+Fra:1 Mem:57.80M (Peak 57.80M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_8_2.001
+Fra:1 Mem:57.82M (Peak 57.82M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_8_3.001
+Fra:1 Mem:57.83M (Peak 57.83M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_9_0.001
+Fra:1 Mem:57.84M (Peak 57.84M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_9_1.001
+Fra:1 Mem:57.86M (Peak 57.86M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_ProtectedEmber_1.004
+Fra:1 Mem:57.88M (Peak 57.88M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_ProtectedEmber_0.004
+Fra:1 Mem:57.89M (Peak 57.89M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_9_3.001
+Fra:1 Mem:57.90M (Peak 57.90M) | Time:00:00.31 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Synchronizing object | Demo_2_EmberGuard_9_2.001
+Fra:1 Mem:57.93M (Peak 57.93M) | Time:00:00.32 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Initializing
+Fra:1 Mem:56.36M (Peak 57.93M) | Time:00:00.33 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Updating Images | Loading volcano_night_outer_albedo
+Fra:1 Mem:60.36M (Peak 60.36M) | Time:00:00.34 | Mem:0.00M, Peak:0.00M | Scene, ViewLayer | Updating Images | Loading volcano_night_inner_albedo
+Fra:1 Mem:72.38M (Peak 80.37M) | Time:00:00.39 | Mem:4.00M, Peak:4.00M | Scene, ViewLayer | Updating Images | Loading Original_stone_roughness_1024
+Fra:1 Mem:64.37M (Peak 80.37M) | Time:00:00.40 | Mem:8.00M, Peak:8.00M | Scene, ViewLayer | Updating Images | Loading Original_stone_normal_1024
+Fra:1 Mem:60.48M (Peak 88.39M) | Time:00:00.55 | Mem:16.00M, Peak:16.00M | Scene, ViewLayer | Waiting for render to start
+Fra:1 Mem:60.48M (Peak 88.39M) | Time:00:00.55 | Mem:16.00M, Peak:16.00M | Scene, ViewLayer | Loading render kernels (may take a few minutes the first time)
+Fra:1 Mem:60.48M (Peak 88.39M) | Time:00:00.55 | Mem:16.00M, Peak:16.00M | Scene, ViewLayer | Updating Scene
+Fra:1 Mem:60.48M (Peak 88.39M) | Time:00:00.55 | Mem:16.00M, Peak:16.00M | Scene, ViewLayer | Updating Shaders
+Fra:1 Mem:60.57M (Peak 88.39M) | Time:00:00.55 | Mem:16.01M, Peak:16.01M | Scene, ViewLayer | Updating Procedurals
+Fra:1 Mem:60.57M (Peak 88.39M) | Time:00:00.55 | Mem:16.01M, Peak:16.01M | Scene, ViewLayer | Updating Background
+Fra:1 Mem:60.57M (Peak 88.39M) | Time:00:00.55 | Mem:16.01M, Peak:16.01M | Scene, ViewLayer | Updating Camera
+Fra:1 Mem:60.57M (Peak 88.39M) | Time:00:00.55 | Mem:16.01M, Peak:16.01M | Scene, ViewLayer | Updating Meshes Flags
+Fra:1 Mem:60.57M (Peak 88.39M) | Time:00:00.55 | Mem:16.01M, Peak:16.01M | Scene, ViewLayer | Updating Objects
+Fra:1 Mem:60.57M (Peak 88.39M) | Time:00:00.55 | Mem:16.01M, Peak:16.01M | Scene, ViewLayer | Updating Objects | Copying Transformations to device
+Fra:1 Mem:60.66M (Peak 88.39M) | Time:00:00.55 | Mem:16.10M, Peak:16.10M | Scene, ViewLayer | Updating Objects | Applying Static Transformations
+Fra:1 Mem:60.66M (Peak 88.39M) | Time:00:00.55 | Mem:16.10M, Peak:16.10M | Scene, ViewLayer | Updating Particle Systems
+Fra:1 Mem:60.66M (Peak 88.39M) | Time:00:00.55 | Mem:16.10M, Peak:16.10M | Scene, ViewLayer | Updating Particle Systems | Copying Particles to device
+Fra:1 Mem:60.66M (Peak 88.39M) | Time:00:00.55 | Mem:16.10M, Peak:16.10M | Scene, ViewLayer | Updating Meshes
+Fra:1 Mem:61.42M (Peak 88.39M) | Time:00:00.57 | Mem:16.10M, Peak:16.10M | Scene, ViewLayer | Updating Mesh | Computing attributes
+Fra:1 Mem:62.75M (Peak 88.39M) | Time:00:00.57 | Mem:16.12M, Peak:16.12M | Scene, ViewLayer | Updating Mesh | Copying Attributes to device
+Fra:1 Mem:62.69M (Peak 88.39M) | Time:00:00.57 | Mem:17.36M, Peak:17.36M | Scene, ViewLayer | Updating Scene BVH | Building
+Fra:1 Mem:62.69M (Peak 88.39M) | Time:00:00.57 | Mem:17.36M, Peak:17.36M | Scene, ViewLayer | Updating Scene BVH | Building BVH
+Fra:1 Mem:62.69M (Peak 88.39M) | Time:00:00.58 | Mem:18.88M, Peak:18.88M | Scene, ViewLayer | Updating Scene BVH | Building BVH 0%
+Fra:1 Mem:62.69M (Peak 88.39M) | Time:00:00.69 | Mem:20.54M, Peak:22.06M | Scene, ViewLayer | Updating Scene BVH | Copying BVH to device
+Fra:1 Mem:62.69M (Peak 88.39M) | Time:00:00.69 | Mem:20.54M, Peak:22.06M | Scene, ViewLayer | Updating Mesh | Computing normals
+Fra:1 Mem:65.31M (Peak 88.39M) | Time:00:00.69 | Mem:20.54M, Peak:22.06M | Scene, ViewLayer | Updating Mesh | Copying Mesh to device
+Fra:1 Mem:65.31M (Peak 88.39M) | Time:00:00.69 | Mem:23.15M, Peak:23.15M | Scene, ViewLayer | Updating Objects Flags
+Fra:1 Mem:65.31M (Peak 88.39M) | Time:00:00.69 | Mem:23.15M, Peak:23.15M | Scene, ViewLayer | Updating Primitive Offsets
+Fra:1 Mem:65.31M (Peak 88.39M) | Time:00:00.69 | Mem:23.16M, Peak:23.16M | Scene, ViewLayer | Updating Images
+Fra:1 Mem:65.31M (Peak 88.39M) | Time:00:00.69 | Mem:23.16M, Peak:23.16M | Scene, ViewLayer | Updating Camera Volume
+Fra:1 Mem:65.31M (Peak 88.39M) | Time:00:00.69 | Mem:23.16M, Peak:23.16M | Scene, ViewLayer | Updating Lookup Tables
+Fra:1 Mem:65.31M (Peak 88.39M) | Time:00:00.69 | Mem:23.24M, Peak:23.24M | Scene, ViewLayer | Updating Lights
+Fra:1 Mem:65.31M (Peak 88.39M) | Time:00:00.69 | Mem:23.24M, Peak:23.24M | Scene, ViewLayer | Updating Lights | Computing tree
+Fra:1 Mem:66.31M (Peak 88.39M) | Time:00:00.82 | Mem:24.24M, Peak:24.24M | Scene, ViewLayer | Updating Integrator
+Fra:1 Mem:66.31M (Peak 88.39M) | Time:00:00.82 | Mem:24.24M, Peak:24.24M | Scene, ViewLayer | Updating Film
+Fra:1 Mem:66.31M (Peak 88.39M) | Time:00:00.82 | Mem:24.16M, Peak:24.24M | Scene, ViewLayer | Updating Lookup Tables
+Fra:1 Mem:66.31M (Peak 88.39M) | Time:00:00.82 | Mem:24.24M, Peak:24.24M | Scene, ViewLayer | Updating Baking
+Fra:1 Mem:66.31M (Peak 88.39M) | Time:00:00.82 | Mem:24.24M, Peak:24.24M | Scene, ViewLayer | Updating Device | Writing constant memory
+Fra:1 Mem:66.32M (Peak 88.39M) | Time:00:00.82 | Mem:24.24M, Peak:24.24M | Scene, ViewLayer | Sample 0/8
+Fra:1 Mem:86.10M (Peak 88.39M) | Time:00:09.09 | Remaining:00:57.88 | Mem:44.03M, Peak:44.03M | Scene, ViewLayer | Sample 1/8
+Fra:1 Mem:86.10M (Peak 88.39M) | Time:00:54.80 | Remaining:00:32.38 | Mem:44.03M, Peak:44.03M | Scene, ViewLayer | Sample 5/8
+Fra:1 Mem:94.89M (Peak 112.47M) | Time:01:08.47 | Mem:44.03M, Peak:44.03M | Scene, ViewLayer | Sample 8/8
+Fra:1 Mem:94.89M (Peak 112.47M) | Time:01:08.48 | Mem:44.03M, Peak:44.03M | Scene, ViewLayer | Finished
+Saved: '/workspace/scratch/eb2882c140f8/lumo-kart-art/evidence/lumo_kart_art/tracks/volcano_night/volcano_night_interior.png'
+Time: 01:10.29 (Saving: 00:01.66)
+
+LUMO_TRACK_RENDER volcano_night interior 960 600
+
+Blender quit

@@ -1,0 +1,25 @@
+extends SceneTree
+func _initialize() -> void:
+	var state = load("res://scripts/creative/build_settlement_state.gd").new("settlement")
+	for choice in [["house", 0], ["house", 1], ["lumber", 2], ["quarry", 3]]:
+		assert(state.try_build(choice[0], choice[1]))
+	for i in range(10):
+		assert(state.next_day().advanced)
+	assert(state.try_build("market", 4))
+	for i in range(3): assert(state.try_trade("wood", 5, true))
+	assert(state.try_trade("wood", 5, false))
+	assert(state.try_trade("wood", 5, true))
+	for i in range(2): assert(state.try_trade("stone", 5, true))
+	assert(state.try_trade("stone", 5, false))
+	assert(state.try_trade("stone", 5, true))
+	for plot in [2, 3, 4]: assert(state.try_demolish(plot))
+	print("EXPANSION_AUDIT before=", JSON.stringify(state.snapshot()))
+	assert(state.expand())
+	assert(state.next_day().advanced)
+	var actions := []
+	for kind in state.BUILDINGS:
+		if state.try_build(kind, 2): actions.append(kind)
+	for plot in [0, 1]:
+		if state.try_demolish(plot): actions.append("demolish_"+str(plot))
+	print("EXPANSION_AUDIT after=", JSON.stringify(state.snapshot()), " available=", actions, " undo=", state.status().can_undo)
+	quit(0)

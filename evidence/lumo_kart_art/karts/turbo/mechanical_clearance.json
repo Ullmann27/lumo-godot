@@ -1,0 +1,115 @@
+{
+  "variant": "turbo",
+  "method": "Evaluated Blender triangles; BVH surface intersection at seven steering samples; dimensions from source mechanical contract.",
+  "tyre_coachwork_intersections": [
+    {
+      "wheel": "FL",
+      "steer_rad": -0.34,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FL",
+      "steer_rad": -0.2267,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FL",
+      "steer_rad": -0.1133,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FL",
+      "steer_rad": 0,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FL",
+      "steer_rad": 0.1133,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FL",
+      "steer_rad": 0.2267,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FL",
+      "steer_rad": 0.34,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FR",
+      "steer_rad": -0.34,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FR",
+      "steer_rad": -0.2267,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FR",
+      "steer_rad": -0.1133,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FR",
+      "steer_rad": 0,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FR",
+      "steer_rad": 0.1133,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FR",
+      "steer_rad": 0.2267,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "FR",
+      "steer_rad": 0.34,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "RL",
+      "steer_rad": 0,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    },
+    {
+      "wheel": "RR",
+      "steer_rad": 0,
+      "triangle_pairs": 0,
+      "coachwork_parts": []
+    }
+  ],
+  "pivot_errors_m": {
+    "FL": 0.0,
+    "FR": 0.0,
+    "RL": 0.0,
+    "RR": 0.0
+  },
+  "grip_rest_errors_m": {
+    "L": 1.228781230931777e-07,
+    "R": 1.228781230931777e-07
+  },
+  "forward_axis_godot": "-Z",
+  "source_file": "art/lumo_kart/blender/karts/aurora_turbo.blend",
+  "passed": true
+}

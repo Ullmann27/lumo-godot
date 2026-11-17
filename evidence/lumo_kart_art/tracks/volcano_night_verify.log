@@ -1,0 +1,67 @@
+21:11:49 | INFO: Data are loaded, start creating Blender stuff
+21:11:49 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.001
+21:11:49 | INFO: glTF import finished in 0.11s
+21:11:49 | INFO: Data are loaded, start creating Blender stuff
+21:11:49 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.002
+21:11:50 | INFO: glTF import finished in 0.08s
+21:11:50 | INFO: Data are loaded, start creating Blender stuff
+21:11:50 | INFO: Blender create Mesh node TunnelShellCollision_Mesh
+21:11:50 | INFO: glTF import finished in 0.00s
+21:11:50 | INFO: Data are loaded, start creating Blender stuff
+21:11:50 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.004
+21:11:50 | INFO: glTF import finished in 0.10s
+21:11:51 | INFO: Data are loaded, start creating Blender stuff
+21:11:51 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.005
+21:11:51 | INFO: glTF import finished in 0.13s
+21:11:51 | INFO: Data are loaded, start creating Blender stuff
+21:11:51 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.001
+21:11:51 | INFO: glTF import finished in 0.01s
+21:11:51 | INFO: Data are loaded, start creating Blender stuff
+21:11:51 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.007
+21:11:52 | INFO: glTF import finished in 0.13s
+21:11:52 | INFO: Data are loaded, start creating Blender stuff
+21:11:52 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.008
+21:11:52 | INFO: glTF import finished in 0.10s
+21:11:53 | INFO: Data are loaded, start creating Blender stuff
+21:11:53 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.002
+21:11:53 | INFO: glTF import finished in 0.00s
+21:11:53 | INFO: Data are loaded, start creating Blender stuff
+21:11:53 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.010
+21:11:53 | INFO: glTF import finished in 0.21s
+21:11:54 | INFO: Data are loaded, start creating Blender stuff
+21:11:54 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.011
+21:11:55 | INFO: glTF import finished in 0.19s
+21:11:55 | INFO: Data are loaded, start creating Blender stuff
+21:11:55 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.003
+21:11:55 | INFO: glTF import finished in 0.01s
+21:11:55 | INFO: Data are loaded, start creating Blender stuff
+21:11:55 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.013
+21:11:55 | INFO: glTF import finished in 0.25s
+21:11:57 | INFO: Data are loaded, start creating Blender stuff
+21:11:57 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.014
+21:11:57 | INFO: glTF import finished in 0.13s
+21:11:57 | INFO: Data are loaded, start creating Blender stuff
+21:11:57 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.004
+21:11:57 | INFO: glTF import finished in 0.01s
+21:11:57 | INFO: Data are loaded, start creating Blender stuff
+21:11:57 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.016
+21:11:58 | INFO: glTF import finished in 0.14s
+21:11:58 | INFO: Data are loaded, start creating Blender stuff
+21:11:58 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.017
+21:11:58 | INFO: glTF import finished in 0.21s
+21:11:59 | INFO: Data are loaded, start creating Blender stuff
+21:11:59 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.005
+21:11:59 | INFO: glTF import finished in 0.01s
+21:11:59 | INFO: Data are loaded, start creating Blender stuff
+21:11:59 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.019
+21:11:59 | INFO: glTF import finished in 0.19s
+21:12:00 | INFO: Data are loaded, start creating Blender stuff
+21:12:00 | INFO: Blender create Mesh node BasaltColumn_0_0_Mesh.020
+21:12:00 | INFO: glTF import finished in 0.10s
+21:12:01 | INFO: Data are loaded, start creating Blender stuff
+21:12:01 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.006
+21:12:01 | INFO: glTF import finished in 0.00s
+LUMO_TRACK_VERIFY_PASS volcano_night 21
+Blender 4.3.2
+
+Blender quit

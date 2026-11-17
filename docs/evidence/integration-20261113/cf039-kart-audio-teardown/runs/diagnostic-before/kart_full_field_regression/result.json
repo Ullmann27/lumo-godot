@@ -1,0 +1,26 @@
+{
+  "test": "kart_full_field_regression",
+  "command": [
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "scripts/tests/kart_full_field_regression.gd",
+    "--fixed-fps",
+    "60",
+    "--",
+    "--level=pro",
+    "--clear-player"
+  ],
+  "started_utc": "2026-11-13T15:07:54.481553+00:00",
+  "elapsed_seconds": 8.734,
+  "engine_exit": 0,
+  "mode": "diagnostic only; complete teardown output, not an acceptance run",
+  "marker_present": true,
+  "errors_and_objects": [],
+  "log_sha256": "c1c87e68f6c49fca86673e38a24ebe66eb28ab1fb0386bb7c7cd93d82adb4f22"
+}

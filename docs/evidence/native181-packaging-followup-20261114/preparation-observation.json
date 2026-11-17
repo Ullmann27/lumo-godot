@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "scope": "Local pack materialization only; no product/test execution.",
+  "first_check": "Local metadata assertion compared permission-only st_mode&0777 with a full Git mode100644 and stopped after materializing the first candidate. Its bytes and actual0644 permissions were already exact.",
+  "resolution": "Compare regular-file type separately and permission bits with full Git mode&0777; continue the same source copies unchanged. All three final files now read back with expected Git content hash and executable mode.",
+  "local_commit_query": "baf commit object is not in the selected object store, so whole-commit grep could not run. Exact available blobs are bound by the already authentic complete baf tree; no lazy fetch or Git mutation was used."
+}

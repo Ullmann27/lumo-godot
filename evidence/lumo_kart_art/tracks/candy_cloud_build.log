@@ -1,0 +1,119 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:09:58 | INFO: Starting glTF 2.0 export
+21:09:58 | INFO: Extracting primitive: ContinuousVault_Mesh.001
+21:10:00 | INFO: Primitives created: 5
+21:10:00 | INFO: Finished glTF 2.0 export in 2.2324905395507812 s
+
+21:10:01 | INFO: Starting glTF 2.0 export
+21:10:01 | INFO: Extracting primitive: ContinuousVault_Mesh.002
+21:10:03 | INFO: Primitives created: 5
+21:10:03 | INFO: Finished glTF 2.0 export in 2.111318826675415 s
+
+21:10:03 | INFO: Starting glTF 2.0 export
+21:10:03 | INFO: Extracting primitive: TunnelShellCollision_Mesh
+21:10:03 | INFO: Primitives created: 1
+21:10:03 | INFO: Finished glTF 2.0 export in 0.052073001861572266 s
+
+LUMO_TRACK_MODULE candy_cloud portal_entry 5772 5
+21:10:04 | INFO: Starting glTF 2.0 export
+21:10:04 | INFO: Extracting primitive: ContinuousVault_Mesh.004
+21:10:06 | INFO: Primitives created: 5
+21:10:06 | INFO: Finished glTF 2.0 export in 1.7056052684783936 s
+
+21:10:06 | INFO: Starting glTF 2.0 export
+21:10:06 | INFO: Extracting primitive: ContinuousVault_Mesh.005
+21:10:08 | INFO: Primitives created: 5
+21:10:08 | INFO: Finished glTF 2.0 export in 1.8716416358947754 s
+
+21:10:08 | INFO: Starting glTF 2.0 export
+21:10:09 | INFO: Extracting primitive: TunnelShellCollision_Mesh.001
+21:10:09 | INFO: Primitives created: 1
+21:10:09 | INFO: Finished glTF 2.0 export in 0.09241104125976562 s
+
+LUMO_TRACK_MODULE candy_cloud portal_exit 5772 5
+21:10:10 | INFO: Starting glTF 2.0 export
+21:10:10 | INFO: Extracting primitive: ContinuousVault_Mesh.007
+21:10:12 | INFO: Primitives created: 5
+21:10:12 | INFO: Finished glTF 2.0 export in 2.1196744441986084 s
+
+21:10:14 | INFO: Starting glTF 2.0 export
+21:10:14 | INFO: Extracting primitive: ContinuousVault_Mesh.008
+21:10:16 | INFO: Primitives created: 5
+21:10:16 | INFO: Finished glTF 2.0 export in 2.08349609375 s
+
+21:10:16 | INFO: Starting glTF 2.0 export
+21:10:16 | INFO: Extracting primitive: TunnelShellCollision_Mesh.002
+21:10:16 | INFO: Primitives created: 1
+21:10:16 | INFO: Finished glTF 2.0 export in 0.16481804847717285 s
+
+LUMO_TRACK_MODULE candy_cloud straight_12m 7228 5
+21:10:18 | INFO: Starting glTF 2.0 export
+21:10:18 | INFO: Extracting primitive: ContinuousVault_Mesh.010
+21:10:20 | INFO: Primitives created: 5
+21:10:20 | INFO: Finished glTF 2.0 export in 1.547389030456543 s
+
+21:10:21 | INFO: Starting glTF 2.0 export
+21:10:21 | INFO: Extracting primitive: ContinuousVault_Mesh.011
+21:10:21 | INFO: Primitives created: 5
+21:10:21 | INFO: Finished glTF 2.0 export in 0.7844443321228027 s
+
+21:10:22 | INFO: Starting glTF 2.0 export
+21:10:22 | INFO: Extracting primitive: TunnelShellCollision_Mesh.003
+21:10:22 | INFO: Primitives created: 1
+21:10:22 | INFO: Finished glTF 2.0 export in 0.047686100006103516 s
+
+LUMO_TRACK_MODULE candy_cloud curve_left_30 10564 5
+21:10:23 | INFO: Starting glTF 2.0 export
+21:10:23 | INFO: Extracting primitive: ContinuousVault_Mesh.013
+21:10:23 | INFO: Primitives created: 5
+21:10:23 | INFO: Finished glTF 2.0 export in 0.4844815731048584 s
+
+21:10:24 | INFO: Starting glTF 2.0 export
+21:10:24 | INFO: Extracting primitive: ContinuousVault_Mesh.014
+21:10:25 | INFO: Primitives created: 5
+21:10:25 | INFO: Finished glTF 2.0 export in 0.894932746887207 s
+
+21:10:25 | INFO: Starting glTF 2.0 export
+21:10:25 | INFO: Extracting primitive: TunnelShellCollision_Mesh.004
+21:10:25 | INFO: Primitives created: 1
+21:10:25 | INFO: Finished glTF 2.0 export in 0.01810431480407715 s
+
+LUMO_TRACK_MODULE candy_cloud curve_right_30 10564 5
+21:10:25 | INFO: Starting glTF 2.0 export
+21:10:25 | INFO: Extracting primitive: ContinuousVault_Mesh.016
+21:10:26 | INFO: Primitives created: 5
+21:10:26 | INFO: Finished glTF 2.0 export in 0.5253984928131104 s
+
+21:10:27 | INFO: Starting glTF 2.0 export
+21:10:27 | INFO: Extracting primitive: ContinuousVault_Mesh.017
+21:10:27 | INFO: Primitives created: 5
+21:10:27 | INFO: Finished glTF 2.0 export in 0.4926619529724121 s
+
+21:10:27 | INFO: Starting glTF 2.0 export
+21:10:27 | INFO: Extracting primitive: TunnelShellCollision_Mesh.005
+21:10:27 | INFO: Primitives created: 1
+21:10:27 | INFO: Finished glTF 2.0 export in 0.02805781364440918 s
+
+LUMO_TRACK_MODULE candy_cloud grade_down 7228 5
+21:10:28 | INFO: Starting glTF 2.0 export
+21:10:28 | INFO: Extracting primitive: ContinuousVault_Mesh.019
+21:10:29 | INFO: Primitives created: 5
+21:10:29 | INFO: Finished glTF 2.0 export in 1.1969196796417236 s
+
+21:10:30 | INFO: Starting glTF 2.0 export
+21:10:30 | INFO: Extracting primitive: ContinuousVault_Mesh.020
+21:10:30 | INFO: Primitives created: 5
+21:10:31 | INFO: Finished glTF 2.0 export in 0.6019470691680908 s
+
+21:10:31 | INFO: Starting glTF 2.0 export
+21:10:31 | INFO: Extracting primitive: TunnelShellCollision_Mesh.006
+21:10:31 | INFO: Primitives created: 1
+21:10:31 | INFO: Finished glTF 2.0 export in 0.021498680114746094 s
+
+LUMO_TRACK_MODULE candy_cloud grade_up 7228 5
+Info: Packed 5 file(s)
+Info: Saved "candy_cloud_tunnel_workshop.blend"
+LUMO_TRACK_THEME_DONE candy_cloud
+Blender 4.3.2
+
+Blender quit

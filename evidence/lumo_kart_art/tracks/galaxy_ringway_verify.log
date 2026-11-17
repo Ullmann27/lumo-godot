@@ -1,0 +1,67 @@
+21:14:00 | INFO: Data are loaded, start creating Blender stuff
+21:14:00 | INFO: Blender create Mesh node ContinuousVault_Mesh.001
+21:14:00 | INFO: glTF import finished in 0.43s
+21:14:01 | INFO: Data are loaded, start creating Blender stuff
+21:14:01 | INFO: Blender create Mesh node ContinuousVault_Mesh.002
+21:14:02 | INFO: glTF import finished in 0.16s
+21:14:02 | INFO: Data are loaded, start creating Blender stuff
+21:14:02 | INFO: Blender create Mesh node TunnelShellCollision_Mesh
+21:14:02 | INFO: glTF import finished in 0.00s
+21:14:02 | INFO: Data are loaded, start creating Blender stuff
+21:14:02 | INFO: Blender create Mesh node ContinuousVault_Mesh.004
+21:14:03 | INFO: glTF import finished in 0.19s
+21:14:04 | INFO: Data are loaded, start creating Blender stuff
+21:14:04 | INFO: Blender create Mesh node ContinuousVault_Mesh.005
+21:14:04 | INFO: glTF import finished in 0.13s
+21:14:04 | INFO: Data are loaded, start creating Blender stuff
+21:14:04 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.001
+21:14:04 | INFO: glTF import finished in 0.01s
+21:14:04 | INFO: Data are loaded, start creating Blender stuff
+21:14:04 | INFO: Blender create Mesh node ContinuousVault_Mesh.007
+21:14:05 | INFO: glTF import finished in 0.21s
+21:14:05 | INFO: Data are loaded, start creating Blender stuff
+21:14:05 | INFO: Blender create Mesh node ContinuousVault_Mesh.008
+21:14:06 | INFO: glTF import finished in 0.25s
+21:14:06 | INFO: Data are loaded, start creating Blender stuff
+21:14:06 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.002
+21:14:06 | INFO: glTF import finished in 0.01s
+21:14:06 | INFO: Data are loaded, start creating Blender stuff
+21:14:06 | INFO: Blender create Mesh node ContinuousVault_Mesh.010
+21:14:06 | INFO: glTF import finished in 0.21s
+21:14:07 | INFO: Data are loaded, start creating Blender stuff
+21:14:07 | INFO: Blender create Mesh node ContinuousVault_Mesh.011
+21:14:07 | INFO: glTF import finished in 0.13s
+21:14:08 | INFO: Data are loaded, start creating Blender stuff
+21:14:08 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.003
+21:14:08 | INFO: glTF import finished in 0.01s
+21:14:08 | INFO: Data are loaded, start creating Blender stuff
+21:14:08 | INFO: Blender create Mesh node ContinuousVault_Mesh.013
+21:14:08 | INFO: glTF import finished in 0.21s
+21:14:09 | INFO: Data are loaded, start creating Blender stuff
+21:14:09 | INFO: Blender create Mesh node ContinuousVault_Mesh.014
+21:14:09 | INFO: glTF import finished in 0.16s
+21:14:10 | INFO: Data are loaded, start creating Blender stuff
+21:14:10 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.004
+21:14:10 | INFO: glTF import finished in 0.01s
+21:14:10 | INFO: Data are loaded, start creating Blender stuff
+21:14:10 | INFO: Blender create Mesh node ContinuousVault_Mesh.016
+21:14:10 | INFO: glTF import finished in 0.17s
+21:14:11 | INFO: Data are loaded, start creating Blender stuff
+21:14:11 | INFO: Blender create Mesh node ContinuousVault_Mesh.017
+21:14:11 | INFO: glTF import finished in 0.10s
+21:14:11 | INFO: Data are loaded, start creating Blender stuff
+21:14:11 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.005
+21:14:11 | INFO: glTF import finished in 0.00s
+21:14:11 | INFO: Data are loaded, start creating Blender stuff
+21:14:11 | INFO: Blender create Mesh node ContinuousVault_Mesh.019
+21:14:12 | INFO: glTF import finished in 0.14s
+21:14:12 | INFO: Data are loaded, start creating Blender stuff
+21:14:12 | INFO: Blender create Mesh node ContinuousVault_Mesh.020
+21:14:12 | INFO: glTF import finished in 0.12s
+21:14:13 | INFO: Data are loaded, start creating Blender stuff
+21:14:13 | INFO: Blender create Mesh node TunnelShellCollision_Mesh.006
+21:14:13 | INFO: glTF import finished in 0.01s
+LUMO_TRACK_VERIFY_PASS galaxy_ringway 21
+Blender 4.3.2
+
+Blender quit

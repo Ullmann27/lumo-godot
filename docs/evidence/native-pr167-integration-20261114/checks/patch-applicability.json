@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "scope": "Git diff and git apply --check only; no index, ref or repository mutation, no engine execution",
+  "diff_command": [
+    "git",
+    "diff",
+    "--no-index",
+    "--no-ext-diff",
+    "--no-textconv",
+    "--binary",
+    "--src-prefix=a/",
+    "--dst-prefix=b/",
+    "before",
+    "final-source"
+  ],
+  "diff_exit_code": 1,
+  "diff_stderr": "",
+  "patch_bytes": 6584207,
+  "patch_sha256": "f5d6aa7fd29c78d1228c01198610a1407b17ac5a12aec2c2c5af552a2ab1d161",
+  "check_command": [
+    "git",
+    "apply",
+    "--check",
+    "--unsafe-paths",
+    "--directory=/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/before",
+    "/workspace/scratch/b3485b7bb989/native-pr167-facial-treasure-integration-20261114/integration.patch"
+  ],
+  "check_exit_code": 0,
+  "check_stdout": "",
+  "check_stderr": ""
+}

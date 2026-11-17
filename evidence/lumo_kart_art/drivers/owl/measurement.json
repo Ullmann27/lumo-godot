@@ -1,0 +1,185 @@
+{
+  "species": "owl",
+  "authoring": "Local Blender Python mesh construction; reference-guided original LUMO rival art. No external generation.",
+  "blender": "4.3.2",
+  "runtime_integrated": false,
+  "axes": {
+    "blender": "X right,+Y forward,Z up",
+    "godot": "X right,Y up,-Z forward"
+  },
+  "units": "metres",
+  "rig": "DriverRig",
+  "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R"
+  ],
+  "markers": [
+    "Grip_L",
+    "Grip_R",
+    "Foot_L",
+    "Foot_R",
+    "SeatAnchor",
+    "HeadAnchor",
+    "NeckAnchor"
+  ],
+  "animations": {
+    "idle": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 0.0,
+      "exported_first_key_s": 0.041666666666666664,
+      "active_key_span_s": 2.9583333333333335,
+      "godot_clip_length_s": 3.0
+    },
+    "kart_seated": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 6.343065695104826e-07,
+      "exported_first_key_s": 0.041666666666666664,
+      "active_key_span_s": 2.9583333333333335,
+      "godot_clip_length_s": 3.0
+    },
+    "kart_steer_left": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 5.63098300328588e-07,
+      "exported_first_key_s": 0.041666666666666664,
+      "active_key_span_s": 1.9583333333333333,
+      "godot_clip_length_s": 2.0
+    },
+    "kart_steer_right": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 5.63098300328588e-07,
+      "exported_first_key_s": 0.041666666666666664,
+      "active_key_span_s": 1.9583333333333333,
+      "godot_clip_length_s": 2.0
+    },
+    "kart_jump": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 5.094802676820385e-07,
+      "exported_first_key_s": 0.041666666666666664,
+      "active_key_span_s": 1.4583333333333333,
+      "godot_clip_length_s": 1.5
+    },
+    "celebrate": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 0.0,
+      "exported_first_key_s": 0.041666666666666664,
+      "active_key_span_s": 2.9583333333333335,
+      "godot_clip_length_s": 3.0
+    }
+  },
+  "lods": {
+    "lod0": {
+      "vertices": 21985,
+      "triangles": 43462,
+      "materials": 6,
+      "nonmanifold_edges": 0,
+      "zero_weight_vertices": 0,
+      "max_weight_sum_error": 2.9802322387695312e-08,
+      "max_influences": 2,
+      "evaluated_dimensions_blender_m": [
+        0.8279998898506165,
+        0.656999945640564,
+        1.3331164121627808
+      ],
+      "file": "assets/kart/production/drivers/owl/driver.glb",
+      "sha256": "f07f9c26140790af36961fe780fe0ba77d0d1df8de2117fa5c10a064f89094c3"
+    },
+    "lod1": {
+      "vertices": 12640,
+      "triangles": 24772,
+      "materials": 6,
+      "nonmanifold_edges": 0,
+      "zero_weight_vertices": 0,
+      "max_weight_sum_error": 8.940696716308594e-08,
+      "max_influences": 2,
+      "evaluated_dimensions_blender_m": [
+        0.8279998898506165,
+        0.656999945640564,
+        1.3329423666000366
+      ],
+      "file": "assets/kart/production/drivers/owl/driver_lod1.glb",
+      "sha256": "f423385a7386e651b5f784729fb5427177d8bde5927975a8f542e60daf87fa69"
+    },
+    "lod2": {
+      "vertices": 6555,
+      "triangles": 12602,
+      "materials": 6,
+      "nonmanifold_edges": 0,
+      "zero_weight_vertices": 0,
+      "max_weight_sum_error": 8.940696716308594e-08,
+      "max_influences": 2,
+      "evaluated_dimensions_blender_m": [
+        0.8279998898506165,
+        0.6568284034729004,
+        1.3328900337219238
+      ],
+      "file": "assets/kart/production/drivers/owl/driver_lod2.glb",
+      "sha256": "9847a75504fe05c6f5a24831453f6c7349fcd4af5826e8194a999294919444f5"
+    }
+  },
+  "texture_images": [
+    {
+      "name": "LUMO_Fabric_MicroNormal",
+      "width": 512,
+      "height": 512,
+      "packed_bytes": 21018,
+      "sha256": "7a04ba78dd5b94ea489d983e550e555573f272b8e329a2266fd63dcfd0fd5167"
+    },
+    {
+      "name": "LUMO_Organic_MicroNormal",
+      "width": 512,
+      "height": 512,
+      "packed_bytes": 236489,
+      "sha256": "e5999f936c6d2be93f751a91c7feb19223dc16b58b6f9bed6e3c27b5f31656d1"
+    }
+  ],
+  "material_policy": "Six PBR finishes with per-vertex palette colors and two locally authored 512px periodic micro-normal maps, packed in Blender and embedded in GLB.",
+  "reference_paths": [
+    "assets/characters/rivals/reference/inputs/owl-front.jpg",
+    "assets/characters/rivals/reference/inputs/owl-material.jpg"
+  ],
+  "eye_scale": {
+    "sclera_width_m": 0.10752,
+    "sclera_height_m": 0.13944,
+    "maximum_local_sclera_protrusion_m": 0.01092,
+    "head_width_m": 0.5315887499999999,
+    "comment": "Eye surfaces follow the measured curved skull; closed shallow cornea geometry and attached lids replace protruding globes."
+  },
+  "proof_limit": "Blender render and mesh measurements only. Godot and Android tests must be reported separately.",
+  "head_proportion_scale": 0.84,
+  "head_scale_attachment_blender_m": [
+    0.0,
+    -0.014999999664723873,
+    1.4199999570846558
+  ]
+}

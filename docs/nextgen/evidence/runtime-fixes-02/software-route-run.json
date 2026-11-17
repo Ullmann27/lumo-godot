@@ -1,0 +1,15 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 62.13654664099886,
+  "display": 187,
+  "project": "/workspace/scratch/4fa97167812c/agent-avatar",
+  "godot_arguments": [
+    "--script",
+    "scripts/tests/nextgen_learning_route_review.gd",
+    "--",
+    "--review-kind=bridge_ten,syllables,pattern,task_card",
+    "--review-capture-dir=/workspace/scratch/4fa97167812c/avatar-qa/runtime-fixes-02/software-route/screenshots"
+  ],
+  "timed_out": false,
+  "scope": "Local software renderer; not physical Android performance"
+}

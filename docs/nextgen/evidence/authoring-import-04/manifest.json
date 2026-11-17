@@ -1,0 +1,53 @@
+{
+  "schema": "lumo.nextgen.authoring-import-evidence",
+  "version": 1,
+  "checked_commit": "3ea2e3777aa97e8a44ae2aacba7ff9d60ab360f8",
+  "root_authoring_commit": "5a289a1",
+  "production_changes_in_evidence_commit": false,
+  "sources": {
+    "scripts/lumo_next/learning_world_next.gd": "4f27104653a2c45b87ad778a915704f19b49793598e6b26ebe94b8fb1bebd6c9",
+    "scripts/tests/nextgen_learning_route_review.gd": "e110bd0c372f9df35fffce77ac778e3be26248ed0db4f411e53a90e1ae4aad42",
+    "scripts/learning/learning_companion_scope.gd": "d498c1dbae91462a40f4afeb3a512df9c616506c9c3ba519133814e9677d0612",
+    "scripts/tests/learning_companion_scope_regression.gd": "c9de1834eeeab841ecbc4e7cfb6d0ac44355d930bde8281ea4f0b530db3e3bc3",
+    "tools/lumo_next/capture_learning_scene.gd": "5210eabf3114f2dbe427b2ff0f985b2adfafd8876a53ddc2e3c9c59bf87a5c44",
+    "export_presets.cfg": "d624a3ec1e3502335448dcfe66736d00ea35472f18c943b0378b3fa4256e991a"
+  },
+  "files": {
+    ".gdignore": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "README.md": {
+      "sha256": "4e3a04c80cb5dc7d4a7bbb6a26c10bd7e3dc58dd4553baf30d12ce98f425fa85",
+      "bytes": 2809
+    },
+    "authoring-files.json": {
+      "sha256": "138815350fdd29c5bbfb7138fddab8ba6fb59c851fa30306965ae8f943013d78",
+      "bytes": 5163
+    },
+    "authoring-parser.log.gz": {
+      "sha256": "517801cf8e481102b53a6ac405cc87fd5a6b18a016679d496dbc46e8dee9c939",
+      "bytes": 88
+    },
+    "import.log": {
+      "sha256": "4fe38538d296fc116e759f30db845eb8416cfc4dfd42bdaa94a71e324a876ef7",
+      "bytes": 1203
+    },
+    "route.log": {
+      "sha256": "532196e1f0bc5e4ade5dc123be6ac729a3aa1ce8ce971676543114d913b1348e",
+      "bytes": 1061
+    },
+    "runs.json": {
+      "sha256": "1029ac1db0a3d9e3b463ebb1be20ee0d6326a31503e6bf66bfdc71630e4ef120",
+      "bytes": 3084
+    },
+    "runtime-assets-and-export-scope.json": {
+      "sha256": "85cc4057a432ae0385017e1193082666349c86d85860b0b43b50b77de18f8476",
+      "bytes": 5205
+    },
+    "scope.log": {
+      "sha256": "aa30c2986ff93d43dbeeecc52e991bdc1da8a781282f4bf9067cf5478b33996c",
+      "bytes": 547
+    }
+  }
+}

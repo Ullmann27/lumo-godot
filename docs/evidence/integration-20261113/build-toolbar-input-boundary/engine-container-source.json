@@ -1,0 +1,7 @@
+{
+  "url": "https://raw.githubusercontent.com/godotengine/godot/4.6.3-stable/scene/gui/container.cpp",
+  "tag": "4.6.3-stable",
+  "bytes": 8036,
+  "sha256": "bfe508b33d1b3841233ae19835601cd47e09e032995c9b036f842c269a380ebf",
+  "finding": "Container constructor explicitly sets MOUSE_FILTER_PASS; ScrollContainer inherits it unless overridden."
+}

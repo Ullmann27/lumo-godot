@@ -1,0 +1,119 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:11:06 | INFO: Starting glTF 2.0 export
+21:11:06 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.001
+21:11:07 | INFO: Primitives created: 5
+21:11:07 | INFO: Finished glTF 2.0 export in 1.0107004642486572 s
+
+21:11:07 | INFO: Starting glTF 2.0 export
+21:11:07 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.002
+21:11:08 | INFO: Primitives created: 5
+21:11:08 | INFO: Finished glTF 2.0 export in 0.7922158241271973 s
+
+21:11:08 | INFO: Starting glTF 2.0 export
+21:11:08 | INFO: Extracting primitive: TunnelShellCollision_Mesh
+21:11:08 | INFO: Primitives created: 1
+21:11:08 | INFO: Finished glTF 2.0 export in 0.015614509582519531 s
+
+LUMO_TRACK_MODULE volcano_night portal_entry 6236 5
+21:11:09 | INFO: Starting glTF 2.0 export
+21:11:09 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.004
+21:11:09 | INFO: Primitives created: 5
+21:11:09 | INFO: Finished glTF 2.0 export in 0.787534236907959 s
+
+21:11:10 | INFO: Starting glTF 2.0 export
+21:11:10 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.005
+21:11:11 | INFO: Primitives created: 5
+21:11:11 | INFO: Finished glTF 2.0 export in 1.1672358512878418 s
+
+21:11:11 | INFO: Starting glTF 2.0 export
+21:11:11 | INFO: Extracting primitive: TunnelShellCollision_Mesh.001
+21:11:11 | INFO: Primitives created: 1
+21:11:11 | INFO: Finished glTF 2.0 export in 0.0207061767578125 s
+
+LUMO_TRACK_MODULE volcano_night portal_exit 6236 5
+21:11:12 | INFO: Starting glTF 2.0 export
+21:11:12 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.007
+21:11:13 | INFO: Primitives created: 5
+21:11:13 | INFO: Finished glTF 2.0 export in 0.8528091907501221 s
+
+21:11:13 | INFO: Starting glTF 2.0 export
+21:11:13 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.008
+21:11:14 | INFO: Primitives created: 5
+21:11:14 | INFO: Finished glTF 2.0 export in 0.8398838043212891 s
+
+21:11:14 | INFO: Starting glTF 2.0 export
+21:11:14 | INFO: Extracting primitive: TunnelShellCollision_Mesh.002
+21:11:14 | INFO: Primitives created: 1
+21:11:14 | INFO: Finished glTF 2.0 export in 0.03737926483154297 s
+
+LUMO_TRACK_MODULE volcano_night straight_12m 10700 5
+21:11:15 | INFO: Starting glTF 2.0 export
+21:11:15 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.010
+21:11:16 | INFO: Primitives created: 5
+21:11:16 | INFO: Finished glTF 2.0 export in 1.0039517879486084 s
+
+21:11:17 | INFO: Starting glTF 2.0 export
+21:11:17 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.011
+21:11:18 | INFO: Primitives created: 5
+21:11:18 | INFO: Finished glTF 2.0 export in 1.0358564853668213 s
+
+21:11:18 | INFO: Starting glTF 2.0 export
+21:11:18 | INFO: Extracting primitive: TunnelShellCollision_Mesh.003
+21:11:18 | INFO: Primitives created: 1
+21:11:18 | INFO: Finished glTF 2.0 export in 0.03169369697570801 s
+
+LUMO_TRACK_MODULE volcano_night curve_left_30 15772 5
+21:11:20 | INFO: Starting glTF 2.0 export
+21:11:20 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.013
+21:11:21 | INFO: Primitives created: 5
+21:11:21 | INFO: Finished glTF 2.0 export in 1.079787015914917 s
+
+21:11:22 | INFO: Starting glTF 2.0 export
+21:11:22 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.014
+21:11:23 | INFO: Primitives created: 5
+21:11:23 | INFO: Finished glTF 2.0 export in 0.9127528667449951 s
+
+21:11:23 | INFO: Starting glTF 2.0 export
+21:11:23 | INFO: Extracting primitive: TunnelShellCollision_Mesh.004
+21:11:23 | INFO: Primitives created: 1
+21:11:23 | INFO: Finished glTF 2.0 export in 0.059359073638916016 s
+
+LUMO_TRACK_MODULE volcano_night curve_right_30 15772 5
+21:11:24 | INFO: Starting glTF 2.0 export
+21:11:24 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.016
+21:11:25 | INFO: Primitives created: 5
+21:11:25 | INFO: Finished glTF 2.0 export in 1.0661265850067139 s
+
+21:11:27 | INFO: Starting glTF 2.0 export
+21:11:27 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.017
+21:11:29 | INFO: Primitives created: 5
+21:11:29 | INFO: Finished glTF 2.0 export in 1.775205373764038 s
+
+21:11:30 | INFO: Starting glTF 2.0 export
+21:11:30 | INFO: Extracting primitive: TunnelShellCollision_Mesh.005
+21:11:30 | INFO: Primitives created: 1
+21:11:30 | INFO: Finished glTF 2.0 export in 0.07133293151855469 s
+
+LUMO_TRACK_MODULE volcano_night grade_down 10700 5
+21:11:32 | INFO: Starting glTF 2.0 export
+21:11:32 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.019
+21:11:34 | INFO: Primitives created: 5
+21:11:34 | INFO: Finished glTF 2.0 export in 1.6567833423614502 s
+
+21:11:35 | INFO: Starting glTF 2.0 export
+21:11:35 | INFO: Extracting primitive: BasaltColumn_0_0_Mesh.020
+21:11:36 | INFO: Primitives created: 5
+21:11:36 | INFO: Finished glTF 2.0 export in 1.1675021648406982 s
+
+21:11:37 | INFO: Starting glTF 2.0 export
+21:11:37 | INFO: Extracting primitive: TunnelShellCollision_Mesh.006
+21:11:37 | INFO: Primitives created: 1
+21:11:37 | INFO: Finished glTF 2.0 export in 0.05872821807861328 s
+
+LUMO_TRACK_MODULE volcano_night grade_up 10700 5
+Info: Packed 5 file(s)
+Info: Saved "volcano_night_tunnel_workshop.blend"
+LUMO_TRACK_THEME_DONE volcano_night
+Blender 4.3.2
+
+Blender quit

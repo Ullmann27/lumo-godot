@@ -1,0 +1,101 @@
+{
+  "base_graphics": "01cf063a7c11681b0060430cdb72c16d56a0b061",
+  "upstream_creative": "74bf164fc0b5dc53e5bd015912f98d092d76246f",
+  "upstream_home": "493083821d2b55de01e57f5ae883b4a76706d079",
+  "local_repair_files": [
+    "scripts/games/kart_drive_feedback.gd",
+    "scripts/tests/kart_drive_feedback_regression.gd"
+  ],
+  "source_sha256": {
+    "scripts/games/kart_drive_feedback.gd": "0c6dbd4865d8a64a57d68b82b156f60527382b583b986fb17fb650f3ef0f2a66",
+    "scripts/tests/kart_drive_feedback_regression.gd": "defbedaa1dba58fc896350d263daadda945ac92e725fd18f41eb755bd7dfa409",
+    "scripts/tests/kart_home_experience_regression.gd": "9007ae3c55787fe6dbc730964c43ca41705685d6ad7464a47bd19be0b6249fb5"
+  },
+  "source_hashes_unchanged": true,
+  "cases": [
+    {
+      "name": "feedback-combined",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/graphics-followup/feedback-combined.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[KartDriveFeedback] LOGIC_PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/review-graphics-followup-20261113",
+        "--script",
+        "scripts/tests/kart_drive_feedback_regression.gd",
+        "--",
+        "--logic-only"
+      ],
+      "exit_code": 0,
+      "summary": [
+        "[KartDriveFeedback] LOGIC_PASS 44 checks: pause, reset, bounded pools and real events"
+      ]
+    },
+    {
+      "name": "production-combined",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/graphics-followup/production-combined.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[LumoKartProduction] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/review-graphics-followup-20261113",
+        "--script",
+        "scripts/tests/lumo_kart_production_regression.gd",
+        "--",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/graphics-followup/production-output"
+      ],
+      "exit_code": 0,
+      "summary": [
+        "[LumoKartProduction] PASS actual Kart factory, physics events, pause, rebuild and finish"
+      ]
+    },
+    {
+      "name": "home-metadata-combined",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/graphics-followup/home-metadata-combined.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[KartHomeExperience] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/review-graphics-followup-20261113",
+        "--script",
+        "scripts/tests/kart_home_experience_regression.gd"
+      ],
+      "exit_code": 0,
+      "summary": [
+        "[KartHomeExperience] PASS checks=239 cases=4/4 baseline=false renderer=headless"
+      ]
+    }
+  ],
+  "updated_utc": "2026-11-13T13:20:38.786319+00:00",
+  "scope": "Headless combined logic/lifecycle and real native UI-event tests. No renderer process, fresh pixels, Android run or Studio/native integration acceptance."
+}

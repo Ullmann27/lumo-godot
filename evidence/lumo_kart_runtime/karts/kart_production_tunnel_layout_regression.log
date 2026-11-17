@@ -1,0 +1,21 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 0 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[ProductionTunnelLayout] zauberwald length=376.5 tunnel=247.0..291.0 curvature=0.036 other_road=41.9 PASS
+[ProductionTunnelLayout] bergwelt length=472.8 tunnel=151.0..195.0 curvature=0.041 other_road=42.8 PASS
+[ProductionTunnelLayout] holo_city length=442.8 tunnel=243.0..287.0 curvature=0.037 other_road=43.2 PASS
+[ProductionTunnelLayout] crystal_canyon length=755.2 tunnel=159.0..203.0 curvature=0.015 other_road=44.7 PASS
+[ProductionTunnelLayout] jungle_temple length=691.5 tunnel=367.0..411.0 curvature=0.029 other_road=43.9 PASS
+[ProductionTunnelLayout] candy_cloud length=802.8 tunnel=427.0..471.0 curvature=0.023 other_road=43.8 PASS
+[ProductionTunnelLayout] volcano_night length=742.3 tunnel=423.0..467.0 curvature=0.023 other_road=43.1 PASS
+[ProductionTunnelLayout] winter_sprint length=800.3 tunnel=419.0..463.0 curvature=0.014 other_road=44.9 PASS
+[ProductionTunnelLayout] galaxy_ringway length=749.6 tunnel=363.0..407.0 curvature=0.007 other_road=44.9 PASS
+[ProductionTunnelLayout] desert_drift length=774.8 tunnel=419.0..463.0 curvature=0.015 other_road=44.6 PASS
+[ProductionTunnelLayout] learning_lab length=765.4 tunnel=383.0..427.0 curvature=0.008 other_road=44.8 PASS
+[Perf] quality_profile:medium

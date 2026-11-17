@@ -9,6 +9,11 @@ const FLEET = preload("res://scripts/games/kart_fleet.gd")
 class AuthoredKart:
 	extends LumoRaceKart
 
+	func _build_production_vehicle() -> bool:
+		# This fixture isolates the surviving procedural generator. Imported
+		# runtime mechanics are checked in kart_production_vehicle_regression.
+		return false
+
 	func _make_far_mesh() -> void:
 		pass
 
@@ -23,6 +28,8 @@ func _initialize() -> void:
 func _surfaces(node: Node3D, kart: LumoRaceKart) -> int:
 	var count: int = 0
 	for child in node.get_children():
+		if child is Node3D and not child.is_visible_in_tree():
+			continue
 		if child is MeshInstance3D:
 			if child != kart.far_mesh and not kart.flames.has(child) and not kart.sparks.has(child):
 				count += child.mesh.get_surface_count()
@@ -108,17 +115,24 @@ func _run() -> void:
 	for entry in CATALOG.KARTS:
 		var kart: LumoRaceKart = VEHICLE.new()
 		kart.configure("fox", Color("76d9ff"), str(entry.id))
+		kart.set_animated_lumo_enabled(true)
 		root.add_child(kart)
 		kart.set_process(false)
 		var count: int = _surfaces(kart, kart)
 		print("[KartDetails] measured ", entry.id, ": ", count, " surfaces")
 		assert(count <= 64, "Detailed fleet retains the mobile surface budget")
-		assert(kart.far_mesh.mesh.get_surface_count() == 1)
-		var body: Node3D = kart.get_node("AuroraCoachwork")
-		assert(body.get_meta("seat_design") == "contoured_bucket")
-		# Die Detail-Revision gehört zur gelofteten Karosserie; Baukasten-Karts haben eigene Teile.
-		if str(FLEET.entry(str(entry.id)).look.body) == "loft":
-			assert(body.get_meta("body_detail_revision") == 2)
+		if is_instance_valid(kart.production_vehicle):
+			assert(kart.production_vehicle.visible_surface_count() <= 39)
+			assert(kart.production_vehicle.asset_root.find_child("DriverOrigin", true, false) != null)
+			assert(kart.production_vehicle.wheel_rest_grips.size() == 2)
+			assert(kart.far_mesh.mesh == null, "Imported wheels remain live in their authored LODs")
+		else:
+			assert(kart.far_mesh.mesh.get_surface_count() == 1)
+			var body: Node3D = kart.get_node("AuroraCoachwork")
+			assert(body.get_meta("seat_design") == "contoured_bucket")
+			# The body revision belongs to the surviving procedural loft family.
+			if str(FLEET.entry(str(entry.id)).look.body) == "loft":
+				assert(body.get_meta("body_detail_revision") == 2)
 		kart.set_motion(14.0, 0.65, true, true)
 		kart._process(0.04)
 		assert(kart.flames[0].visible and kart.sparks[0].visible)

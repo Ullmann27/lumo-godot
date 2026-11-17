@@ -1,0 +1,2 @@
+7e03f1113073e2f941b052028a649aa144eefe64:scripts/tests/lumo_attention_landing_regression.gd:176:		"model_unchanged": model_sha == ORIGINAL_MODEL_SHA256, "model_sha256": model_sha,
+7e03f1113073e2f941b052028a649aa144eefe64:tools/validate_technical_art.sh:44:run_probe lumo_attention_landing_regression '"failures":0' headless

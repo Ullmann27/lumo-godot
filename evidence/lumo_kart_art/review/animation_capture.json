@@ -1,0 +1,2918 @@
+{
+  "fps": 24,
+  "frames": [
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.0,
+      "driver": "rabbit",
+      "frame": 0,
+      "height": 750,
+      "sha256": "edbd1ac767fb7a4bc0b8016a24179157313e4676ba8f924c2edbf01d8e7cc61e",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.0857142857142857,
+      "driver": "rabbit",
+      "frame": 1,
+      "height": 750,
+      "sha256": "8f57f8c27eae20401f6192e4b93a7c0dedc9131bc119c4505ca2db5acd6675a1",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.171428571428571,
+      "driver": "rabbit",
+      "frame": 2,
+      "height": 750,
+      "sha256": "5dd8f9da4cb9fc3a0d174c0a5a37181654286fc166bee9ebd662a35fc376a474",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.257142857142857,
+      "driver": "rabbit",
+      "frame": 3,
+      "height": 750,
+      "sha256": "4d99f1247269b5383032a4b03287b069f05605bff772d12a7b3cad3c6777ae80",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.342857142857143,
+      "driver": "rabbit",
+      "frame": 4,
+      "height": 750,
+      "sha256": "18ddb3f535a693217a50e290b75e46172eed8124832934df0fb81c4951676b7e",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.428571428571429,
+      "driver": "rabbit",
+      "frame": 5,
+      "height": 750,
+      "sha256": "608c88428c8547b1865b0c4d7bd65ddcfb68944e06d4c1d783de9c24aedebefb",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.514285714285714,
+      "driver": "rabbit",
+      "frame": 6,
+      "height": 750,
+      "sha256": "a8d9cef1f9fb1b5b52e385888f0252e335f7463766f888ac32b2e3ad7889685f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.6,
+      "driver": "rabbit",
+      "frame": 7,
+      "height": 750,
+      "sha256": "7e3c94da38734998ae4d52f6127a1c01f42c7b98dfde97ab722838e68fe5be3a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.685714285714286,
+      "driver": "rabbit",
+      "frame": 8,
+      "height": 750,
+      "sha256": "abfacd8511bcfc31e01cbbb917b0a6ec5e938dbc1fe07a1d12f6a1e706b7fb01",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.771428571428571,
+      "driver": "rabbit",
+      "frame": 9,
+      "height": 750,
+      "sha256": "8948cdcd8a966c5b5ad5b0ebe362540798c3dc4276d63cfe86dfae7f819c4691",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.857142857142857,
+      "driver": "rabbit",
+      "frame": 10,
+      "height": 750,
+      "sha256": "21b75963e198bf14c892f7e44fa816a658ed1c663f6645e24cc4b35361a8f560",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.942857142857143,
+      "driver": "rabbit",
+      "frame": 11,
+      "height": 750,
+      "sha256": "b25208af25d51a7a99a65fe0b69f3b714b134a11994b48155e0f243537a27795",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.02857142857143,
+      "driver": "rabbit",
+      "frame": 12,
+      "height": 750,
+      "sha256": "bf6c17b6a05f9b076c6934e857664b4a72615edc0e2d0c220f3ac008ff25ade2",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.11428571428571,
+      "driver": "rabbit",
+      "frame": 13,
+      "height": 750,
+      "sha256": "fe020976a1bbd747bb4d1eaa87c33a01287356104bf8fe7b494d32ff108fbd89",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.2,
+      "driver": "rabbit",
+      "frame": 14,
+      "height": 750,
+      "sha256": "cc85b5e5c1d14ceae0e8f3ebfbd10d892b12ab8ffabd71f83bd956911e9afa52",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.28571428571429,
+      "driver": "rabbit",
+      "frame": 15,
+      "height": 750,
+      "sha256": "7c5e6b06d65d003ee24781753950acb6d23e93111fbb0e94fc7db918395d1e44",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.37142857142857,
+      "driver": "rabbit",
+      "frame": 16,
+      "height": 750,
+      "sha256": "9a0b8fc5c8549e1da46dc2a79471ed9e2f63c4606cc93c2bb6f22ab79acccf90",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.45714285714286,
+      "driver": "rabbit",
+      "frame": 17,
+      "height": 750,
+      "sha256": "600e02775943ba67b610e29b87692f59471e9e8ffc1b9cab4b7f5be58a2c756d",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.54285714285714,
+      "driver": "rabbit",
+      "frame": 18,
+      "height": 750,
+      "sha256": "2fc0edac93590bf8b09bc7f4eda35dcc4c069fe72b218a7acbc13801c5396cf5",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.62857142857143,
+      "driver": "rabbit",
+      "frame": 19,
+      "height": 750,
+      "sha256": "81dd1649082d148dedf6cee1e4e0f6d0a3b97def15e1fe331f3ead36dd32f946",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.71428571428571,
+      "driver": "rabbit",
+      "frame": 20,
+      "height": 750,
+      "sha256": "07b2836b567ab262b11432776c9d3957bf301c8bb94ea7c51c06d184801e3f25",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.8,
+      "driver": "rabbit",
+      "frame": 21,
+      "height": 750,
+      "sha256": "d76df05f2f90a58819d874bf6106330b68c03925b532166e79e9997c25d8b49b",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.88571428571429,
+      "driver": "rabbit",
+      "frame": 22,
+      "height": 750,
+      "sha256": "0c9f89e60394284235132b31b921fb529df2891d3c9de73f12a7791ce607a404",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.97142857142857,
+      "driver": "rabbit",
+      "frame": 23,
+      "height": 750,
+      "sha256": "ec59408ceb71789a0d6f31bd2b3e639a4b812d20fabf259daedd2ff7f076939c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.05714285714286,
+      "driver": "rabbit",
+      "frame": 24,
+      "height": 750,
+      "sha256": "62678d27251bea116bb60273e423310c3811b004174a5be27f3e417e959f84a7",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.14285714285714,
+      "driver": "rabbit",
+      "frame": 25,
+      "height": 750,
+      "sha256": "8f33fabb26bb4cc4a38d56e06cc49c18c34e639ade3b94bfa3875f80669e0dc5",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.22857142857143,
+      "driver": "rabbit",
+      "frame": 26,
+      "height": 750,
+      "sha256": "8187740de86bdfcb426463f69bea021a5dd70a9c1cd845f036be1657a483aedf",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.31428571428571,
+      "driver": "rabbit",
+      "frame": 27,
+      "height": 750,
+      "sha256": "f12f5281558bb1156ed863b4372b385d74e77f16c083628abf98938a0bc1207b",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.4,
+      "driver": "rabbit",
+      "frame": 28,
+      "height": 750,
+      "sha256": "f2ce8fc257e7ce43bfc6d9888948b6d6db8085475efa9e9d1b99336f611cdb34",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.48571428571429,
+      "driver": "rabbit",
+      "frame": 29,
+      "height": 750,
+      "sha256": "07e185a7f6d683ac1567cdf10a6a76be64db0464e86e44edaa671b2c5e75a7e3",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.57142857142857,
+      "driver": "rabbit",
+      "frame": 30,
+      "height": 750,
+      "sha256": "73d4f185720421ea33d2ea668489c8a3778a3013e8b108073de5d21046befa9e",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.65714285714286,
+      "driver": "rabbit",
+      "frame": 31,
+      "height": 750,
+      "sha256": "e63c31a535612c8e5198f2ba09ce063771095eded1c328cf1eba192dc530a80a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.74285714285714,
+      "driver": "rabbit",
+      "frame": 32,
+      "height": 750,
+      "sha256": "6cc7d3c16fa2928e3599a451a259243a01be970251d58d89a2babf33474d776b",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.82857142857143,
+      "driver": "rabbit",
+      "frame": 33,
+      "height": 750,
+      "sha256": "3c10333cc11d8ade4f02ff79466c92324565130edf811d48583916273ae35355",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.91428571428571,
+      "driver": "rabbit",
+      "frame": 34,
+      "height": 750,
+      "sha256": "55405f15bcce95fa31a264fb90d33b3d74dca027fcad91b9627ca7201fd19464",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 3.0,
+      "driver": "rabbit",
+      "frame": 35,
+      "height": 750,
+      "sha256": "789839fa78e619e0287405ea14f5cccf1506b369ef05e87514ca08b8b15eb48b",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.0,
+      "driver": "rabbit",
+      "frame": 36,
+      "height": 750,
+      "sha256": "c7e3e4e5376f485858c024c85c60324eb0354efaddcc9024f2e5367f5a4ea9b3",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.0571428571428571,
+      "driver": "rabbit",
+      "frame": 37,
+      "height": 750,
+      "sha256": "d27d6b8bccdb95bcc1ad368d9d1c40416a15db98242add230decbdcaebca8dec",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.114285714285714,
+      "driver": "rabbit",
+      "frame": 38,
+      "height": 750,
+      "sha256": "ec19a6edbcf0531ed3bd53e4ef148cae333692093e52a0ef01d8854950b3c1a6",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.171428571428571,
+      "driver": "rabbit",
+      "frame": 39,
+      "height": 750,
+      "sha256": "5795849802a30146e88afa0e05afaea5b80670ab9f0868889a8994fd0bb3151c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.228571428571429,
+      "driver": "rabbit",
+      "frame": 40,
+      "height": 750,
+      "sha256": "6c5363dcda5a2bb412ebf0fc370ffc3bffd75028ab8448701030e2f9cde485f2",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.285714285714286,
+      "driver": "rabbit",
+      "frame": 41,
+      "height": 750,
+      "sha256": "9a9698abffda0eea26e45ecb0b915f17c2aa3d337898c29a9a6419f2149a7f5a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.342857142857143,
+      "driver": "rabbit",
+      "frame": 42,
+      "height": 750,
+      "sha256": "8210016a992d1bb7376a61de7a81ee67bd649799742890e7036156bfefaabd97",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.4,
+      "driver": "rabbit",
+      "frame": 43,
+      "height": 750,
+      "sha256": "2579750cb39203724404e706f799aa9ac74caf19395ef6c74f79d423d292c00e",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.457142857142857,
+      "driver": "rabbit",
+      "frame": 44,
+      "height": 750,
+      "sha256": "4c78c429124124a004f54a7fd8a19931a536549d79bb094861f3cc386ca522ee",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.514285714285714,
+      "driver": "rabbit",
+      "frame": 45,
+      "height": 750,
+      "sha256": "b781eaa4ce96cfe55762b92cffe300af96f63346ad2a3c9c526f5ab3ed339d2d",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.571428571428571,
+      "driver": "rabbit",
+      "frame": 46,
+      "height": 750,
+      "sha256": "f4e11a85c7e2927ea726c21c7d1a158af41b3f1465cce2217390119b06638720",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.628571428571429,
+      "driver": "rabbit",
+      "frame": 47,
+      "height": 750,
+      "sha256": "cd01db55a53bc1c39c6625bb9391a054db7a16604936acc4fcc2d2feda9a3c26",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.685714285714286,
+      "driver": "rabbit",
+      "frame": 48,
+      "height": 750,
+      "sha256": "7d25d94cb18496e407555513fe1391a4f6956eb7153a6c7b57b6bb2f85279f05",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.742857142857143,
+      "driver": "rabbit",
+      "frame": 49,
+      "height": 750,
+      "sha256": "a1f3bdf9dd13739914ef4d05f313d855cbad25292188278ed93aa75bc3653d7a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.8,
+      "driver": "rabbit",
+      "frame": 50,
+      "height": 750,
+      "sha256": "35d8a873a27511d608b638e453588d6d5a0579b9374dea80f777308cc9c3156f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.857142857142857,
+      "driver": "rabbit",
+      "frame": 51,
+      "height": 750,
+      "sha256": "202e2f7d5e67944fc9fadab7153700113d702872820b0ff71828256d84a8b2c9",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.914285714285714,
+      "driver": "rabbit",
+      "frame": 52,
+      "height": 750,
+      "sha256": "29ff80b3f9060e16942c757a40107838bd32f494e941a585aa5087da74b141c6",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 0.971428571428571,
+      "driver": "rabbit",
+      "frame": 53,
+      "height": 750,
+      "sha256": "d12a631148cd66050ab863220600dce93f7182ff2beccfe74fcaad0542a32a03",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.02857142857143,
+      "driver": "rabbit",
+      "frame": 54,
+      "height": 750,
+      "sha256": "f60f43682996ffd1c38f937ce4acb1c53ce4f863e25f63f0fb801fa8db41978f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.08571428571429,
+      "driver": "rabbit",
+      "frame": 55,
+      "height": 750,
+      "sha256": "0ef51d934be26f8c1f5c3d8a25acbdcbbf5fef3e35953ce3a09fa96c29bb8aa6",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.14285714285714,
+      "driver": "rabbit",
+      "frame": 56,
+      "height": 750,
+      "sha256": "c53ebd915b58cf36333ee0e72513f9ee4471b75c85266d7f73e9ee8e422c0791",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.2,
+      "driver": "rabbit",
+      "frame": 57,
+      "height": 750,
+      "sha256": "677e58bdf068a239fa628ac34e681c28c5003794227132202f2f0ad5cfc48a8d",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.25714285714286,
+      "driver": "rabbit",
+      "frame": 58,
+      "height": 750,
+      "sha256": "979f844dd09c281513b7ca5fd73288fa82f42e3e906234f833d9e1669a64be17",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.31428571428571,
+      "driver": "rabbit",
+      "frame": 59,
+      "height": 750,
+      "sha256": "05ee67a727d3b0b1aa6fd156fd6a85257cfc01637045b1071e35f97e27aebb9e",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.37142857142857,
+      "driver": "rabbit",
+      "frame": 60,
+      "height": 750,
+      "sha256": "9ad1ffffa3fb5c438724ed082e0352ec8b499fcd16c8198405f007740990773c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.42857142857143,
+      "driver": "rabbit",
+      "frame": 61,
+      "height": 750,
+      "sha256": "d0e682de9111d6ee4b344448a7e75cd2758fb7e9c56df736e8884c7914cd9bc6",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.48571428571429,
+      "driver": "rabbit",
+      "frame": 62,
+      "height": 750,
+      "sha256": "3b5e39bc801727fcbb36467d7c4268f79878eac147dba8b4c436a747e9d97d74",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.54285714285714,
+      "driver": "rabbit",
+      "frame": 63,
+      "height": 750,
+      "sha256": "f16414bf94f398e9b1aed1a0a5ae7a63ed195d385ad585037a9dc38d5f32f782",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.6,
+      "driver": "rabbit",
+      "frame": 64,
+      "height": 750,
+      "sha256": "3ffceb699ff5f0209cd2b9edd298e290e1849e42d0ffeccffbd44165f6aa598b",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.65714285714286,
+      "driver": "rabbit",
+      "frame": 65,
+      "height": 750,
+      "sha256": "1399f5c307630d3ac04803c8089c6c175a6043ef147ee7dffccf69734bac72b2",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.71428571428571,
+      "driver": "rabbit",
+      "frame": 66,
+      "height": 750,
+      "sha256": "08b5073a82996ef82d45ba9160f49fc61306e0100268f61c30bd9d31e47da990",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.77142857142857,
+      "driver": "rabbit",
+      "frame": 67,
+      "height": 750,
+      "sha256": "4748a8fe6e017a2fdca60051dd5280ff70abdb16e87f5811313b17a05505081b",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.82857142857143,
+      "driver": "rabbit",
+      "frame": 68,
+      "height": 750,
+      "sha256": "ca1e7247d4109c8f036979190f6610005da9d776a557ad102365d56dd0ad6fd3",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.88571428571429,
+      "driver": "rabbit",
+      "frame": 69,
+      "height": 750,
+      "sha256": "c5168e388861102b5e04c712582017fae4de570786723289737dcc197cfccb87",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 1.94285714285714,
+      "driver": "rabbit",
+      "frame": 70,
+      "height": 750,
+      "sha256": "c3687d5311090d9ba151d70f5cb74ec8db9388c2dd8c4fdca0a9bbff9e3e9c36",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_left",
+      "clip_time": 2.0,
+      "driver": "rabbit",
+      "frame": 71,
+      "height": 750,
+      "sha256": "ce12dc391907d23fc9eaf4e71f4088be2f2563b0af82594e7583a1b77f4b45f5",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.0,
+      "driver": "rabbit",
+      "frame": 72,
+      "height": 750,
+      "sha256": "a40e85a99792eba226919f41c20bf145b36b09272fec810b088255446e7ecf0f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.0571428571428571,
+      "driver": "rabbit",
+      "frame": 73,
+      "height": 750,
+      "sha256": "1a4a2be3cd312fc8231939c221ad1d363ead39a5e3f7b965e7ea76f54d66dba5",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.114285714285714,
+      "driver": "rabbit",
+      "frame": 74,
+      "height": 750,
+      "sha256": "a8f70b46df4b63cf85450ea9044555925251d6a0ac6b0e3c36b2b05abeb21be8",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.171428571428571,
+      "driver": "rabbit",
+      "frame": 75,
+      "height": 750,
+      "sha256": "42010e2f04dfc5939490aa99afefb1178ff76d3ece3e0a424950f4030f504aba",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.228571428571429,
+      "driver": "rabbit",
+      "frame": 76,
+      "height": 750,
+      "sha256": "28531aae57f4a0f5f0453f33dc2be7fab8648d2fdcd8b40a0c2c9a15df3778cf",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.285714285714286,
+      "driver": "rabbit",
+      "frame": 77,
+      "height": 750,
+      "sha256": "c0101686d1bfbecb782cb7e865cb35cb4ad1d3b31e30b2e33489e8c1e06feedd",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.342857142857143,
+      "driver": "rabbit",
+      "frame": 78,
+      "height": 750,
+      "sha256": "95fcc6e6b3dfae6470ac204a8c9e2e2a5413c4543bbee8be9d63f80b2d34b65d",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.4,
+      "driver": "rabbit",
+      "frame": 79,
+      "height": 750,
+      "sha256": "efa1b75dd2331e896f852cfd3a2c2876302b3931e41a16e312c67fb842f861bf",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.457142857142857,
+      "driver": "rabbit",
+      "frame": 80,
+      "height": 750,
+      "sha256": "707972915059380e561e42bf75112370e8b51a29de5b38cc6172b675e07d5b51",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.514285714285714,
+      "driver": "rabbit",
+      "frame": 81,
+      "height": 750,
+      "sha256": "d116b85194e7395d59ce184984afcbe885b04bd7be9c42fccdc95c9764f79265",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.571428571428571,
+      "driver": "rabbit",
+      "frame": 82,
+      "height": 750,
+      "sha256": "a6401abaadea51fb2d3f2ef9bbfb90294775779dba75fd52e1ca32d636be3631",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.628571428571429,
+      "driver": "rabbit",
+      "frame": 83,
+      "height": 750,
+      "sha256": "3ab62cf4db903ce5b0d41205060a76bbaec6dc4becfe955a4c68eaf4ef530ced",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.685714285714286,
+      "driver": "rabbit",
+      "frame": 84,
+      "height": 750,
+      "sha256": "db629755d2cfcf204dd081d82e4adf75b450e12a3e842a0c5dbb180cf4f07655",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.742857142857143,
+      "driver": "rabbit",
+      "frame": 85,
+      "height": 750,
+      "sha256": "443faf74cdf0b64e83cd936028051c8354353471ea8dc764348090bc1a5ccb73",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.8,
+      "driver": "rabbit",
+      "frame": 86,
+      "height": 750,
+      "sha256": "605056c87133a664a9e76bc25c5b68634e8459d83ae5406a2236d7820a4824cd",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.857142857142857,
+      "driver": "rabbit",
+      "frame": 87,
+      "height": 750,
+      "sha256": "31bbeb9d5c54906d49d959f7e40b193dc450aacf797a2cd8564dfd21f8e09eb0",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.914285714285714,
+      "driver": "rabbit",
+      "frame": 88,
+      "height": 750,
+      "sha256": "27567a3e261ecdbc969e8238e85db125fe71cc54d4c8d144605fcbb1291f2360",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 0.971428571428571,
+      "driver": "rabbit",
+      "frame": 89,
+      "height": 750,
+      "sha256": "41e762969e53b0b7c54384fa337965640a185ccadae3cbcc04ed6bc876adb6d8",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.02857142857143,
+      "driver": "rabbit",
+      "frame": 90,
+      "height": 750,
+      "sha256": "9ca082fe8f9c4abb46b6a8fe1572e0f2952bb81d34acba28d7689d58931230ef",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.08571428571429,
+      "driver": "rabbit",
+      "frame": 91,
+      "height": 750,
+      "sha256": "26cc8f2e8530c1a2c5901db69a63d2db552b4b288f9a478752f728e653619589",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.14285714285714,
+      "driver": "rabbit",
+      "frame": 92,
+      "height": 750,
+      "sha256": "da5cfe4967286767cb20332f12864c01d746d8203519c5a68c338a2a6adf894d",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.2,
+      "driver": "rabbit",
+      "frame": 93,
+      "height": 750,
+      "sha256": "03472b323be010e11e63f8c8bb1ec3b678ae351bff57c4a22ddc221653fa361a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.25714285714286,
+      "driver": "rabbit",
+      "frame": 94,
+      "height": 750,
+      "sha256": "ed7cb95d885c4cd1f01189dbd11efd09b2250c26a573581594299d36bc9e497f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.31428571428571,
+      "driver": "rabbit",
+      "frame": 95,
+      "height": 750,
+      "sha256": "90b5dbf32c73587a77364bc25861a41d1c9262e690aaeef885f69b23638ee201",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.37142857142857,
+      "driver": "rabbit",
+      "frame": 96,
+      "height": 750,
+      "sha256": "4ac81221392520f6fe2a847054572d3a8a14a5c9070a8158ac30befa822fedea",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.42857142857143,
+      "driver": "rabbit",
+      "frame": 97,
+      "height": 750,
+      "sha256": "fd5968311e35509dddbc4c358a022dcb14ecc78abe5d2355e278b172a1c979d9",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.48571428571429,
+      "driver": "rabbit",
+      "frame": 98,
+      "height": 750,
+      "sha256": "29e75fc090e79cca7328e3ba29af835f61ab092a46d586f6aa44ff61d2f7b6f5",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.54285714285714,
+      "driver": "rabbit",
+      "frame": 99,
+      "height": 750,
+      "sha256": "57c53b99df6dbde1c251182f5d0dbb223ef7e7215c4a4d799a4421d3f476a6e8",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.6,
+      "driver": "rabbit",
+      "frame": 100,
+      "height": 750,
+      "sha256": "f1f1ac877fd0cf0a88bd410668183560164346e7a64fdf708eaf80b7b4b89473",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.65714285714286,
+      "driver": "rabbit",
+      "frame": 101,
+      "height": 750,
+      "sha256": "9683393e3e080b8038fbe142320b4e930a947b6351c7a3debf2df6e0ea8131c4",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.71428571428571,
+      "driver": "rabbit",
+      "frame": 102,
+      "height": 750,
+      "sha256": "2377382d48df1371f268057d9671dfa915122dc4f6c8bbaee8ea6abf49b2aa5f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.77142857142857,
+      "driver": "rabbit",
+      "frame": 103,
+      "height": 750,
+      "sha256": "6d13a202ddeeae532ffadc279054007c4c3aee30a66e3ac4cf57d3602420a186",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.82857142857143,
+      "driver": "rabbit",
+      "frame": 104,
+      "height": 750,
+      "sha256": "a04aa726aa673d0e90d4d240390b8f4cf471623fd097b8cc723cf5b5499e84b2",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.88571428571429,
+      "driver": "rabbit",
+      "frame": 105,
+      "height": 750,
+      "sha256": "e78c16a7cb9aaa207d4a3186dc8c3270dd4212352cd821e907974ca38c739235",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 1.94285714285714,
+      "driver": "rabbit",
+      "frame": 106,
+      "height": 750,
+      "sha256": "c6e9d69c32dafd8140cf56328e80cce6082f9834082c226d40dc7f0c315edc81",
+      "width": 1200
+    },
+    {
+      "clip": "kart_steer_right",
+      "clip_time": 2.0,
+      "driver": "rabbit",
+      "frame": 107,
+      "height": 750,
+      "sha256": "a74cdc0d674353cf10dfc22c2d15e49f2f4674d6511418be7c79930155d6a97f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.0,
+      "driver": "rabbit",
+      "frame": 108,
+      "height": 750,
+      "sha256": "75c02d084d163aea0a9e01ae5b37ab1ded8a37a1b37c7065db0c35c4daf1fa5c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.0428571428571429,
+      "driver": "rabbit",
+      "frame": 109,
+      "height": 750,
+      "sha256": "7b5f498f1d6cfad94bbd5342184c79b2e17127a8b9235b691c1a8fee8073b919",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.0857142857142857,
+      "driver": "rabbit",
+      "frame": 110,
+      "height": 750,
+      "sha256": "a02b3ddf95f8ea977030fbaa0bd5413f4ca50b00129547bf8bccbef5b5f79ca3",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.128571428571429,
+      "driver": "rabbit",
+      "frame": 111,
+      "height": 750,
+      "sha256": "bb4de4009c2d9f2bf67433cb18f8e9176bc7254e767faad86d28005d2aaf2ebe",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.171428571428571,
+      "driver": "rabbit",
+      "frame": 112,
+      "height": 750,
+      "sha256": "dae403c1e396d4ab02252784d3a179690961a82b34c32fba550298492bfaebef",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.214285714285714,
+      "driver": "rabbit",
+      "frame": 113,
+      "height": 750,
+      "sha256": "4748fa0954f36b528134bb1a516a095df01f61b1c88a284caf8d017dc00c29bf",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.257142857142857,
+      "driver": "rabbit",
+      "frame": 114,
+      "height": 750,
+      "sha256": "c2010dfa995d65c41166a53a3213ebc1f46f475be13a25e9ec8a7c9bcdf74ad6",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.3,
+      "driver": "rabbit",
+      "frame": 115,
+      "height": 750,
+      "sha256": "9d8352ed33b40c5b855690029aa9d7eca57bafc5fe443ad6315f601c17aa7133",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.342857142857143,
+      "driver": "rabbit",
+      "frame": 116,
+      "height": 750,
+      "sha256": "1dabaa71cf989385ee494c2ae24a476dc379b9e14aef83a3aeda89d5805f73f3",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.385714285714286,
+      "driver": "rabbit",
+      "frame": 117,
+      "height": 750,
+      "sha256": "31b211f60371c9bbcbbfd0b642a432bc001ed89cc9aaddbbed2ac76e9eea87c3",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.428571428571429,
+      "driver": "rabbit",
+      "frame": 118,
+      "height": 750,
+      "sha256": "4a5818a88c4af9d306302f32f0ebea854e21d750f4322d57202a33558568aeb5",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.471428571428571,
+      "driver": "rabbit",
+      "frame": 119,
+      "height": 750,
+      "sha256": "6bfe822d0dcd7a6064923e1ff17ed66aaf78f695c8d85cc739e941bffe8f4d3e",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.514285714285714,
+      "driver": "rabbit",
+      "frame": 120,
+      "height": 750,
+      "sha256": "35d7b1adba2da4476fa30eaed0414bf2c39d0867ab8e92667d167868f8b3965c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.557142857142857,
+      "driver": "rabbit",
+      "frame": 121,
+      "height": 750,
+      "sha256": "bd896bf977bdeae4d2e3afcedffd2772e070d49fad5f3d6e94faf14fd1632bbe",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.6,
+      "driver": "rabbit",
+      "frame": 122,
+      "height": 750,
+      "sha256": "a4e4aceccc554a41210d17296157bc74f2db8ea6f897e00a341af01aa21c1017",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.642857142857143,
+      "driver": "rabbit",
+      "frame": 123,
+      "height": 750,
+      "sha256": "8e24d966ce112098e2c0556e3fabc390c7e7a5e4976db2af60591f09742fd81c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.685714285714286,
+      "driver": "rabbit",
+      "frame": 124,
+      "height": 750,
+      "sha256": "36618ec6e94bed97071c569d599003467ffe831bcbe608ce377785eec40a2d1b",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.728571428571429,
+      "driver": "rabbit",
+      "frame": 125,
+      "height": 750,
+      "sha256": "a6112b517358220cf234956619b7c4e915bd1836f06e376fe81eac957da6a497",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.771428571428571,
+      "driver": "rabbit",
+      "frame": 126,
+      "height": 750,
+      "sha256": "9fa4f5cdad9b74a09f2d9f057dd9fe80ebd3432dd373bfeb41443546e5f632e1",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.814285714285714,
+      "driver": "rabbit",
+      "frame": 127,
+      "height": 750,
+      "sha256": "734435b7a6b94e6761bf27b9d9ab0c136cbddb4f25fb444e026c6c7ca460e7c9",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.857142857142857,
+      "driver": "rabbit",
+      "frame": 128,
+      "height": 750,
+      "sha256": "14a5d26510d6d3de3f1ef096783154f5d8153e80c852f4b85b846d4e3bf3a710",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.9,
+      "driver": "rabbit",
+      "frame": 129,
+      "height": 750,
+      "sha256": "7536dc41ed09d4e87ddb13d5f632552cdd3c4befc2d4cc737be2cdc6c2534a81",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.942857142857143,
+      "driver": "rabbit",
+      "frame": 130,
+      "height": 750,
+      "sha256": "a6aee0d4999b29e9e6f7e008b6c37f25811e915262a5340bc2564f5e8249bd10",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 0.985714285714286,
+      "driver": "rabbit",
+      "frame": 131,
+      "height": 750,
+      "sha256": "5df060c209db1ebf9944a9018dc9cffb642dbf521bfe8a43894ee9f9ef6609e0",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 1.02857142857143,
+      "driver": "rabbit",
+      "frame": 132,
+      "height": 750,
+      "sha256": "c113766b1c783d813c83f1c174fde3d8e86e867a44f81052376d71e4781cdfe6",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 1.07142857142857,
+      "driver": "rabbit",
+      "frame": 133,
+      "height": 750,
+      "sha256": "9ce055c4fb7ba01d5c474ae5c0d36b953deade51423934979b830530503c793f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 1.11428571428571,
+      "driver": "rabbit",
+      "frame": 134,
+      "height": 750,
+      "sha256": "ef5cb8ae1e991d4bc69cf9397f2245f2c2d3c763ac6540b5e8e6f8529d44540a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 1.15714285714286,
+      "driver": "rabbit",
+      "frame": 135,
+      "height": 750,
+      "sha256": "ac141108af20bee20befc0e411777077b7f6247c9a17c790620ce7055815269f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 1.2,
+      "driver": "rabbit",
+      "frame": 136,
+      "height": 750,
+      "sha256": "dfd1d600f235cefc502bbf69c5930f1f0d568f7a2e62dbd90e0e4c8c202b0757",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 1.24285714285714,
+      "driver": "rabbit",
+      "frame": 137,
+      "height": 750,
+      "sha256": "fd1e48986c82a61078c71fcd264bf0cd7663b4c4354da6f2f636e73bda6cd698",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 1.28571428571429,
+      "driver": "rabbit",
+      "frame": 138,
+      "height": 750,
+      "sha256": "10834d903c261717a2fc230a66d8dc211fcab571ef272c5629e69ae15c4a2dce",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 1.32857142857143,
+      "driver": "rabbit",
+      "frame": 139,
+      "height": 750,
+      "sha256": "204a0f42488a037aceec3eaf70bb15dff01efa5065a7115b6a5979db81278c43",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 1.37142857142857,
+      "driver": "rabbit",
+      "frame": 140,
+      "height": 750,
+      "sha256": "8c2df14922bc9fa02d7d8a5107d741d0e4709adc8164be8cef5a2b564929112c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 1.41428571428571,
+      "driver": "rabbit",
+      "frame": 141,
+      "height": 750,
+      "sha256": "18f412717d944c34ec7a34cfe927335d1624c076b8d3a85c373bb960cc812fe0",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 1.45714285714286,
+      "driver": "rabbit",
+      "frame": 142,
+      "height": 750,
+      "sha256": "387c46fd1a0f057d7aeaa62a6e1437d18f8bbefb92dc4526e918603747dc100f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_jump",
+      "clip_time": 1.5,
+      "driver": "rabbit",
+      "frame": 143,
+      "height": 750,
+      "sha256": "22a36a094acf968f55ac72689e2dbb47d332a0f1ed2a3d53e318998f81e0e8dc",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 0.0,
+      "driver": "rabbit",
+      "frame": 144,
+      "height": 750,
+      "sha256": "ab989a095641ac5dbc26c761d098cd3e124aa269413ace8c62a832433b5cbe1b",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 0.0857142857142857,
+      "driver": "rabbit",
+      "frame": 145,
+      "height": 750,
+      "sha256": "aebd1f23306b8e735c6a4202f582bdf1a5fa0025bf85b95de0091bcd9fcf20aa",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 0.171428571428571,
+      "driver": "rabbit",
+      "frame": 146,
+      "height": 750,
+      "sha256": "d2e886f46f4916654d01cd55735be77b90bdf3aa175608b76031c3ca190403af",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 0.257142857142857,
+      "driver": "rabbit",
+      "frame": 147,
+      "height": 750,
+      "sha256": "848eee5144b3ba94c37329007e611ee1c4df6e56ae139cee14ffc3dc2212d666",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 0.342857142857143,
+      "driver": "rabbit",
+      "frame": 148,
+      "height": 750,
+      "sha256": "b503de872c46aefab78d18299f4b0ec1106a523094e8f18ac8b7b107900901e1",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 0.428571428571429,
+      "driver": "rabbit",
+      "frame": 149,
+      "height": 750,
+      "sha256": "90b77f1cd7567a8045b9b62c949e89a74108985d8737024ca555b94b8d10b43b",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 0.514285714285714,
+      "driver": "rabbit",
+      "frame": 150,
+      "height": 750,
+      "sha256": "33a2248e34ff583332b254d440fa270831fecb69a965e2dc7bdf0e1e8254b603",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 0.6,
+      "driver": "rabbit",
+      "frame": 151,
+      "height": 750,
+      "sha256": "4d6f6e27c9bd3d0adb7d3e3204433a5464b886cbb3da52b9b55ef08ca293ab80",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 0.685714285714286,
+      "driver": "rabbit",
+      "frame": 152,
+      "height": 750,
+      "sha256": "00cc746df845529eaa7d28fd66a7923121614be5790e7cdbe4e8926e54c741cf",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 0.771428571428571,
+      "driver": "rabbit",
+      "frame": 153,
+      "height": 750,
+      "sha256": "5b254e92d1d2505744e59607ce49b224c52f4c56fce85c24f695bbca22650ba7",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 0.857142857142857,
+      "driver": "rabbit",
+      "frame": 154,
+      "height": 750,
+      "sha256": "a1a3e063336c89cdd0c5606e283f1134397754a56eae0323f22df222da5a634b",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 0.942857142857143,
+      "driver": "rabbit",
+      "frame": 155,
+      "height": 750,
+      "sha256": "7b95a7a17134200fa1cdf63e6e70b2aae11c9d8d162ebdcc7ab037f34b4adb60",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 1.02857142857143,
+      "driver": "rabbit",
+      "frame": 156,
+      "height": 750,
+      "sha256": "3aa6d983e0675b38a9d5a97e1645907c7df3396c1520b3ce469952777d8d098d",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 1.11428571428571,
+      "driver": "rabbit",
+      "frame": 157,
+      "height": 750,
+      "sha256": "74441a9d00fcd6a6dc148e8f8460adb9b018a92ec4de42aa98827cf584625f12",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 1.2,
+      "driver": "rabbit",
+      "frame": 158,
+      "height": 750,
+      "sha256": "6abbe6532c76a9dc4b4a33a2385fd487b910c710fb9bcbc31262807377aa25a2",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 1.28571428571429,
+      "driver": "rabbit",
+      "frame": 159,
+      "height": 750,
+      "sha256": "47ce0282c164b920aca67e58cb08b31e321bde2016c01d443c30cce9491b152d",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 1.37142857142857,
+      "driver": "rabbit",
+      "frame": 160,
+      "height": 750,
+      "sha256": "fc10cfe16a8e7904994546fa1ff5475d96e430f1986c9c0151796644cab833a1",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 1.45714285714286,
+      "driver": "rabbit",
+      "frame": 161,
+      "height": 750,
+      "sha256": "805c154303b0adeebe8b21feecd4534d54eda608ef82e36f5ec8d357dc4f67dd",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 1.54285714285714,
+      "driver": "rabbit",
+      "frame": 162,
+      "height": 750,
+      "sha256": "54b5ca5aa1675a154b6ac953b1c9bd2232b3611f3112a138dbe97e8fad7443e0",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 1.62857142857143,
+      "driver": "rabbit",
+      "frame": 163,
+      "height": 750,
+      "sha256": "2623f76cbc5411d084d722b6ea957290018fc3b4f6cf7015bfa3bf2b9a41567e",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 1.71428571428571,
+      "driver": "rabbit",
+      "frame": 164,
+      "height": 750,
+      "sha256": "ef853c26ea6e8e4bc1b9ff2c0b70acfd3603b427468f39586d8d6c969243a131",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 1.8,
+      "driver": "rabbit",
+      "frame": 165,
+      "height": 750,
+      "sha256": "0d084d3c1d4f8295dbc66c668b15e0b2120d68fcb928392858751fa622ace176",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 1.88571428571429,
+      "driver": "rabbit",
+      "frame": 166,
+      "height": 750,
+      "sha256": "2a4884d8a7694fa22c9fb46ebd4991b5b7ff2e69d7dca1184f8d077eaabd8f73",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 1.97142857142857,
+      "driver": "rabbit",
+      "frame": 167,
+      "height": 750,
+      "sha256": "81231989049c8aee206d0c2910c7ff7b9c42cbeb467d3df9dbbc80e10159e3bf",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 2.05714285714286,
+      "driver": "rabbit",
+      "frame": 168,
+      "height": 750,
+      "sha256": "b23bea2c3de60428d78420c3c3b5e4d3f40202c13e5863c81ed82403da59383a",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 2.14285714285714,
+      "driver": "rabbit",
+      "frame": 169,
+      "height": 750,
+      "sha256": "0906fd67505a6070d0fde05f0c9719bead1560a8a31fda790e2332322c956818",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 2.22857142857143,
+      "driver": "rabbit",
+      "frame": 170,
+      "height": 750,
+      "sha256": "ce74990b8e9ba66c2a8983c0c1c7854bfd8eaf37cb8d774664cd383957cfda8c",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 2.31428571428571,
+      "driver": "rabbit",
+      "frame": 171,
+      "height": 750,
+      "sha256": "500d193742efb4640b14b3781abaa87fd3f2266aff92c17543826cd165ad6f78",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 2.4,
+      "driver": "rabbit",
+      "frame": 172,
+      "height": 750,
+      "sha256": "1e2625c410b2c25af0036f8e4aed070f68151ee119ac4fd6f0f3c528c5e16b61",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 2.48571428571429,
+      "driver": "rabbit",
+      "frame": 173,
+      "height": 750,
+      "sha256": "eac9b6522222b85ef77d37f444dbf7d9417482fa5380ec90a8c3794878fa5b85",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 2.57142857142857,
+      "driver": "rabbit",
+      "frame": 174,
+      "height": 750,
+      "sha256": "21f6792eb748bb7ac73e448239ac3e69d971664d514e192c58cd17531b0e358d",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 2.65714285714286,
+      "driver": "rabbit",
+      "frame": 175,
+      "height": 750,
+      "sha256": "fe41501213060fa38d6db79a265f610d8d654ac8dd5a20850af800b9253a06c5",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 2.74285714285714,
+      "driver": "rabbit",
+      "frame": 176,
+      "height": 750,
+      "sha256": "36d1309e2f081b388603dc80c7aaba047fc3861e991c3970a4320fb3bcee1657",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 2.82857142857143,
+      "driver": "rabbit",
+      "frame": 177,
+      "height": 750,
+      "sha256": "650d0a7b410a9fdac7cc1795cd45e572f93b8dc4a9915654efe95792fcb94ef0",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 2.91428571428571,
+      "driver": "rabbit",
+      "frame": 178,
+      "height": 750,
+      "sha256": "8e0bee6e3cc48ec4f3a079641cb813c9e1ffcf3a9f426854ea2fc1702cb6c689",
+      "width": 1200
+    },
+    {
+      "clip": "celebrate",
+      "clip_time": 3.0,
+      "driver": "rabbit",
+      "frame": 179,
+      "height": 750,
+      "sha256": "9d7028396e5ac757f3a1e64bf1b1afa81e408727df340f03ad8a0909c0135208",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 0.0,
+      "driver": "rabbit",
+      "frame": 180,
+      "height": 750,
+      "sha256": "0284a4d1b9531844d8f8f88b169ef071cd859da562cdfc950d9082e7a7aeb003",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 0.0857142857142857,
+      "driver": "rabbit",
+      "frame": 181,
+      "height": 750,
+      "sha256": "26429855a5ae9aed185068b1402ad41413f76630a3b61be4aa8a7003f4caf4f5",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 0.171428571428571,
+      "driver": "rabbit",
+      "frame": 182,
+      "height": 750,
+      "sha256": "987a5c4ddaddcd1b62c6b68514cb00744e1aaffb212616a403d3f21d1d887cd4",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 0.257142857142857,
+      "driver": "rabbit",
+      "frame": 183,
+      "height": 750,
+      "sha256": "af750be321a0148c86eb906476848816c16f90eff90b9a183ff21b22ec66e611",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 0.342857142857143,
+      "driver": "rabbit",
+      "frame": 184,
+      "height": 750,
+      "sha256": "74f2d5190da3cac2eb34bbae3fd7e9e8d91893bbdfcda98127c6998d72081c1e",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 0.428571428571429,
+      "driver": "rabbit",
+      "frame": 185,
+      "height": 750,
+      "sha256": "7b6d7cfe346457ac4ce4a5ebc5ff92f80b3dc887a89aef6280f73799deba43ae",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 0.514285714285714,
+      "driver": "rabbit",
+      "frame": 186,
+      "height": 750,
+      "sha256": "74cf8a42be00425d1592f04d542056be50617bda8151269f9cc83656a0a78313",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 0.6,
+      "driver": "rabbit",
+      "frame": 187,
+      "height": 750,
+      "sha256": "c1988a7ee4d1da2722b067c773cd76e90e8240dc1f5bf9f19d665fe8021683d2",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 0.685714285714286,
+      "driver": "rabbit",
+      "frame": 188,
+      "height": 750,
+      "sha256": "99a293167d3b864cd840e15f19886e1218fea86ce0577fc0510dd38c041ff3ab",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 0.771428571428571,
+      "driver": "rabbit",
+      "frame": 189,
+      "height": 750,
+      "sha256": "1970d4999e60e497dfada8aa77b0d6879de96e313e9c279f363e0980c911b5c4",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 0.857142857142857,
+      "driver": "rabbit",
+      "frame": 190,
+      "height": 750,
+      "sha256": "eb661c5c47bf0d7ff7ff43dc98a2c3241846e0129de5033b4e81cf5f45bd3a8f",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 0.942857142857143,
+      "driver": "rabbit",
+      "frame": 191,
+      "height": 750,
+      "sha256": "7aa073eeace12a764a35bff73fb9bc11f1f9da8b5fcdc0f98a130b3b5db081f3",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 1.02857142857143,
+      "driver": "rabbit",
+      "frame": 192,
+      "height": 750,
+      "sha256": "80f1f67eb6a23665a54a6b4d6bdff5d92b0a11b8581efb9096757125a420ae4e",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 1.11428571428571,
+      "driver": "rabbit",
+      "frame": 193,
+      "height": 750,
+      "sha256": "fa6bc4017c9d2dc1cc0cb99266a8dce4684ee39f50b109f99ba415e5c85f51f8",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 1.2,
+      "driver": "rabbit",
+      "frame": 194,
+      "height": 750,
+      "sha256": "974777ad3d641c9006783fc6d170a17c7e0dee284a61c8c961739b6ecda8b727",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 1.28571428571429,
+      "driver": "rabbit",
+      "frame": 195,
+      "height": 750,
+      "sha256": "e3e8d69ae5be44171b569b95c81b378914a980abed54e82199267380437ca209",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 1.37142857142857,
+      "driver": "rabbit",
+      "frame": 196,
+      "height": 750,
+      "sha256": "88524a09dba19334e8fd210eb1408dae59b0cfd1584930abc378811af299f641",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 1.45714285714286,
+      "driver": "rabbit",
+      "frame": 197,
+      "height": 750,
+      "sha256": "5691ef40dd0bf5fc20a7c059657ad0681628ef5cf15eaa709b474c47b6a4cb1e",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 1.54285714285714,
+      "driver": "rabbit",
+      "frame": 198,
+      "height": 750,
+      "sha256": "48091497ed7854e416f5d7b92b63d209e67792d0be02444c7c6e859e8faf5790",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 1.62857142857143,
+      "driver": "rabbit",
+      "frame": 199,
+      "height": 750,
+      "sha256": "762c3979fcdfda0931dfba54ba8706151bb616fb74c7dc5a4e0b28f493d35915",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 1.71428571428571,
+      "driver": "rabbit",
+      "frame": 200,
+      "height": 750,
+      "sha256": "87d5bd2b2cd34fddaf7a69f2084aa0dfead329c11160fb48b4de0fa6857c7b96",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 1.8,
+      "driver": "rabbit",
+      "frame": 201,
+      "height": 750,
+      "sha256": "b787d0e07ce389404df7680ae5cf8c22505a1dc633255d70f20bec8e1e84e014",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 1.88571428571429,
+      "driver": "rabbit",
+      "frame": 202,
+      "height": 750,
+      "sha256": "161722171db76987e3815afee092bc1c128c06d913cdf37398e459b2736a13b4",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 1.97142857142857,
+      "driver": "rabbit",
+      "frame": 203,
+      "height": 750,
+      "sha256": "babd72eb32d9012a61b66432625a5f4851cfb8b0c7fdb60d183433226ce1531e",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 2.05714285714286,
+      "driver": "rabbit",
+      "frame": 204,
+      "height": 750,
+      "sha256": "3e863471d2a852d06c7fac06542b6d76e7bef671d1555bb7b5dc4f47169511ff",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 2.14285714285714,
+      "driver": "rabbit",
+      "frame": 205,
+      "height": 750,
+      "sha256": "8ceee42b9c2910ac461a0b5f1f5654da1193bedd1e168018cf638e916f527e6e",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 2.22857142857143,
+      "driver": "rabbit",
+      "frame": 206,
+      "height": 750,
+      "sha256": "b6cea345b3adfde967a974794fb5c844e5706df9795f893773454a3614432387",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 2.31428571428571,
+      "driver": "rabbit",
+      "frame": 207,
+      "height": 750,
+      "sha256": "0484daefe85a640950858de068264934ecee92531dfd29e2c3c10711cd240654",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 2.4,
+      "driver": "rabbit",
+      "frame": 208,
+      "height": 750,
+      "sha256": "903f0c15c8b7f15641a0ec4f5245841d807b4959aac4d183fa738c5db5b226f7",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 2.48571428571429,
+      "driver": "rabbit",
+      "frame": 209,
+      "height": 750,
+      "sha256": "699324ee5141fdc078b9dcbeb53311829db07da7f5b08c505a33802222b99cf0",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 2.57142857142857,
+      "driver": "rabbit",
+      "frame": 210,
+      "height": 750,
+      "sha256": "6d12b72bced5c6a496a73a9fb680729e6630dd32de885c58528f175ee701d467",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 2.65714285714286,
+      "driver": "rabbit",
+      "frame": 211,
+      "height": 750,
+      "sha256": "a07bf6b865c5c521f4ee07fb49b0f02cbfec5bb6da0c43a3afe05ee84a7368c8",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 2.74285714285714,
+      "driver": "rabbit",
+      "frame": 212,
+      "height": 750,
+      "sha256": "495074e5e6acdbe94af137d4507e5e4aabfe87fc8775ab0b35686e3910714bce",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 2.82857142857143,
+      "driver": "rabbit",
+      "frame": 213,
+      "height": 750,
+      "sha256": "4d6bc7ef4fac2539635819820c917c67fbf31d26dc72bc6faac7ec5859524575",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 2.91428571428571,
+      "driver": "rabbit",
+      "frame": 214,
+      "height": 750,
+      "sha256": "9b5f85f8680bc79a21e878c675b4825b9640d784dc3b8d8be8db949d95e92257",
+      "width": 1200
+    },
+    {
+      "clip": "idle",
+      "clip_time": 3.0,
+      "driver": "rabbit",
+      "frame": 215,
+      "height": 750,
+      "sha256": "dc9ff2a9f2290ac85d07e579367cfb4f5214022b6720f9973f8da6f295d11849",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.0,
+      "driver": "lion",
+      "frame": 216,
+      "height": 750,
+      "sha256": "b4f4b2aa29f6e34d211ad038d283f8558c975a0038eab83378471af12b5ac8ce",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.130434782608696,
+      "driver": "lion",
+      "frame": 217,
+      "height": 750,
+      "sha256": "2b2c8e7883a91254574a58d66fc2c8daf9053b9fc3eb4ca5b27c3b04ab4cda9a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.260869565217391,
+      "driver": "lion",
+      "frame": 218,
+      "height": 750,
+      "sha256": "64d1465906fe01b17e81828780527d37f055130deaf9838b77782a84de1dcfd4",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.391304347826087,
+      "driver": "lion",
+      "frame": 219,
+      "height": 750,
+      "sha256": "aa1bee4f3e1b57dcf8046ac1c48335aa006ce04aa4a0a5bcd1e066ebf778dee4",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.521739130434783,
+      "driver": "lion",
+      "frame": 220,
+      "height": 750,
+      "sha256": "da2c39ec315918a41ed5834b59ad7519c31ad20fac1bf923a6ec4b89d0e0883a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.652173913043478,
+      "driver": "lion",
+      "frame": 221,
+      "height": 750,
+      "sha256": "a2d6459ef92380f070a5c31ad2ad54e2a9a2a6779ac7a3bcf6c987872fb8e1f2",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.782608695652174,
+      "driver": "lion",
+      "frame": 222,
+      "height": 750,
+      "sha256": "68c252f0ea347a6e88c3bd5afc72fa059740cfef19b99a8e5b2569f6ee92e0a2",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.91304347826087,
+      "driver": "lion",
+      "frame": 223,
+      "height": 750,
+      "sha256": "f293b8f69328b35b22234845b0add2ca36415c454ac9884206bc99835561e3fd",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.04347826086957,
+      "driver": "lion",
+      "frame": 224,
+      "height": 750,
+      "sha256": "fe0f72e7b73435714ba1843cb207129138288fda54cf29aa30c181a8f1b4b72f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.17391304347826,
+      "driver": "lion",
+      "frame": 225,
+      "height": 750,
+      "sha256": "d3b14da84bcb69819c3c200c80464d6e2b5a36ca8a6e88ebaf1b97ecbaa21055",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.30434782608696,
+      "driver": "lion",
+      "frame": 226,
+      "height": 750,
+      "sha256": "3236e5b2d898f6fa12d7b9518da51b8ae60bd932b86ab4fd69e59a29d3e99b31",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.43478260869565,
+      "driver": "lion",
+      "frame": 227,
+      "height": 750,
+      "sha256": "8a9dac70b203b14db25d8f58ba52bb18558a1d81021ae1b93d6a77c51d5a55d2",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.56521739130435,
+      "driver": "lion",
+      "frame": 228,
+      "height": 750,
+      "sha256": "597cee6f0af22bce470a28dfa5930a376b083b794d1ef997c8bb0f47885fc94f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.69565217391304,
+      "driver": "lion",
+      "frame": 229,
+      "height": 750,
+      "sha256": "272af5275853cc9844a4b8da97eb24a9ef33c42651235f66cfe514b394c9e965",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.82608695652174,
+      "driver": "lion",
+      "frame": 230,
+      "height": 750,
+      "sha256": "149b0041a182f0c8a9070dba6603b072fe1ff601dcc3e6c129a3c1edd76a98c0",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.95652173913043,
+      "driver": "lion",
+      "frame": 231,
+      "height": 750,
+      "sha256": "98039d3dc379dbd47d77bbd5a704239ec1266eb31f34313a3d50ae3ee6644e2a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.08695652173913,
+      "driver": "lion",
+      "frame": 232,
+      "height": 750,
+      "sha256": "6dca42fa83af17a6aaff03aa255e1e9e0f30d9a2fe06d85985542ac1d95d1e13",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.21739130434783,
+      "driver": "lion",
+      "frame": 233,
+      "height": 750,
+      "sha256": "80e5f8c7661cfc3a4b4d5561614e1f9dc720a3c41585387247d3a2ff0a982097",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.34782608695652,
+      "driver": "lion",
+      "frame": 234,
+      "height": 750,
+      "sha256": "6da6a810210d00bd3230fcc8065c304a9d5d7e31962aa199b958e942402f3c8d",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.47826086956522,
+      "driver": "lion",
+      "frame": 235,
+      "height": 750,
+      "sha256": "0c2769098b9e43a01dbc9bf4a7b3a40bf71b23dab3af1979ac48b45ab46d4979",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.60869565217391,
+      "driver": "lion",
+      "frame": 236,
+      "height": 750,
+      "sha256": "cbe5a456ca55880ff19ff7f91e94f0fe7beb29d02cb227995eb831c1c722efd6",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.73913043478261,
+      "driver": "lion",
+      "frame": 237,
+      "height": 750,
+      "sha256": "5e47b975eae0c5200f4e79844d825f8721957b3e7e9743efe60f6251bb52f7a5",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.8695652173913,
+      "driver": "lion",
+      "frame": 238,
+      "height": 750,
+      "sha256": "f20e5e180ff284cc1600c6b3699565093cc57aaa3ceb433e9f264f202f217388",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 3.0,
+      "driver": "lion",
+      "frame": 239,
+      "height": 750,
+      "sha256": "fd9fc1506e522238fbe63a0d669ce143a8cc780f8b2185742fe0a3e0bf784b72",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.0,
+      "driver": "owl",
+      "frame": 240,
+      "height": 750,
+      "sha256": "d5a97bc5f59571e9c53d5c68b5b5d431030124f21fc62cba1a68271115e293b8",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.130434782608696,
+      "driver": "owl",
+      "frame": 241,
+      "height": 750,
+      "sha256": "77b650a38d8e9bf6bb8e1f72504a023691c2faea26df4523eb68c40d3dc19430",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.260869565217391,
+      "driver": "owl",
+      "frame": 242,
+      "height": 750,
+      "sha256": "d788c786cd63deddac5d89d28c8985d64be76876cbf4c36cf6d695e8e87a8fb5",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.391304347826087,
+      "driver": "owl",
+      "frame": 243,
+      "height": 750,
+      "sha256": "edd23c32951aab53cf078927f1ffd046875b44f1146969cb523e176ae6f0fcc5",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.521739130434783,
+      "driver": "owl",
+      "frame": 244,
+      "height": 750,
+      "sha256": "d007f9c734e331b17365abd83df6cf92b8a2e1c6807537e1af3d3b243b5e2faf",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.652173913043478,
+      "driver": "owl",
+      "frame": 245,
+      "height": 750,
+      "sha256": "3ac3fb8e0c7dbe8085a364b64529a1074fd61f7a4d48fe07439aa9d371c42990",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.782608695652174,
+      "driver": "owl",
+      "frame": 246,
+      "height": 750,
+      "sha256": "25e3b662f0e70be6fe991a05c63d28839f8a611d9599406a8bd95ca861a0305e",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.91304347826087,
+      "driver": "owl",
+      "frame": 247,
+      "height": 750,
+      "sha256": "dd2802b8c83cb2af5102ab5ba169da3db0f7971c047fcfc8f350072a70ec2d30",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.04347826086957,
+      "driver": "owl",
+      "frame": 248,
+      "height": 750,
+      "sha256": "7611ed5c64d62b29fdf9413fa338938226a7fc342664653f9e6dbf49ea00818c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.17391304347826,
+      "driver": "owl",
+      "frame": 249,
+      "height": 750,
+      "sha256": "054dfea853f0bdb3ac62050c2ff5753f397c42bacd4c16ff8033af3863b274e9",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.30434782608696,
+      "driver": "owl",
+      "frame": 250,
+      "height": 750,
+      "sha256": "4881796ae0f244d9b0e8aef4ab402c8ce2277ff6af9c8a0296fac708d1f1c1cb",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.43478260869565,
+      "driver": "owl",
+      "frame": 251,
+      "height": 750,
+      "sha256": "db23ef0998b9b33eb7721a8acd47a98f86e7f3b465396ca4d6c501f3a30ced1a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.56521739130435,
+      "driver": "owl",
+      "frame": 252,
+      "height": 750,
+      "sha256": "3eba85775607fa8ef96be2a26504695452a3eff29eba561c36388be54c58f6cd",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.69565217391304,
+      "driver": "owl",
+      "frame": 253,
+      "height": 750,
+      "sha256": "5b63197bff7a9bdf3e23004c566d11a5e10d4d981f5fc39dd8a6c22dcc0cc66f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.82608695652174,
+      "driver": "owl",
+      "frame": 254,
+      "height": 750,
+      "sha256": "9269b0ded285905b85ab1ad3f8a5cb25ce4a0de60497a0ed4c692e48e262410d",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.95652173913043,
+      "driver": "owl",
+      "frame": 255,
+      "height": 750,
+      "sha256": "ededfaa34b395e66a8d6a1e277ca03de722f477737825771c412eef701061d9a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.08695652173913,
+      "driver": "owl",
+      "frame": 256,
+      "height": 750,
+      "sha256": "b1d224c75db31105e0bf84529f7c581d8d622dd9da1d5c0feab6a0c69820eb1e",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.21739130434783,
+      "driver": "owl",
+      "frame": 257,
+      "height": 750,
+      "sha256": "beb28c4ce53be6564b4a66d967e463874b1ff68b81a99d2dd3fbd45998a4cb6e",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.34782608695652,
+      "driver": "owl",
+      "frame": 258,
+      "height": 750,
+      "sha256": "52db10a0f5ad1ba74227cda203299e34a56ead5f8b3ad823571decba28f7535c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.47826086956522,
+      "driver": "owl",
+      "frame": 259,
+      "height": 750,
+      "sha256": "777c6c5aaded43c5cbfbb40bc27b82109f851c5ad7d69c51c4b58a2c551bed00",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.60869565217391,
+      "driver": "owl",
+      "frame": 260,
+      "height": 750,
+      "sha256": "fa5390b954d2fcb56c072d4f3d8a84a7bd60c531f566ef60a8411d83db635dfb",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.73913043478261,
+      "driver": "owl",
+      "frame": 261,
+      "height": 750,
+      "sha256": "4f9cc81ecf99a0bb0467767cb48c8262ee579fa60119216fb2202a7f6c04463c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.8695652173913,
+      "driver": "owl",
+      "frame": 262,
+      "height": 750,
+      "sha256": "0e3e246cc9126444649fe3dad8c201ad8d21e595cbb206595e8ed5578854eb9f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 3.0,
+      "driver": "owl",
+      "frame": 263,
+      "height": 750,
+      "sha256": "3c78a77c9bafcd77076a90294d7b9c6983c1a42962f146145436a4a4ab67ed90",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.0,
+      "driver": "squirrel",
+      "frame": 264,
+      "height": 750,
+      "sha256": "e7d0f594e0217b52392b40394899c8e8916ff6588fd1b00e958cbb2d578e58bd",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.130434782608696,
+      "driver": "squirrel",
+      "frame": 265,
+      "height": 750,
+      "sha256": "aea0489d8020fafca56f1fbf6295f47ec8f53876d9f455e7d785b2caa28c642a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.260869565217391,
+      "driver": "squirrel",
+      "frame": 266,
+      "height": 750,
+      "sha256": "981723e73050240cd100478694eac8c57c12cc82f6783625c44755206a5c33e7",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.391304347826087,
+      "driver": "squirrel",
+      "frame": 267,
+      "height": 750,
+      "sha256": "3b63c811b73f5716e7f03113aed8634ee85c8d27b93989c845d42efe8c10f7cc",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.521739130434783,
+      "driver": "squirrel",
+      "frame": 268,
+      "height": 750,
+      "sha256": "dea0aa4ca76a61a5b6fd1afdf3a1958319e00d31eb2aed81ffd547d517970f2f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.652173913043478,
+      "driver": "squirrel",
+      "frame": 269,
+      "height": 750,
+      "sha256": "3027eeb8cee8e3ca5527fa51e624ba2c3bc65e41c54529ccf863b256f2aa7aed",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.782608695652174,
+      "driver": "squirrel",
+      "frame": 270,
+      "height": 750,
+      "sha256": "3dd9479e95903145c1540cde2ea2c5cc0acb4fd5550a687d5b9a9ddcc4d135f0",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.91304347826087,
+      "driver": "squirrel",
+      "frame": 271,
+      "height": 750,
+      "sha256": "5dcc6e664088fe298b3654cd6bb515f7f6557836cd213665a92e524db1dd40cb",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.04347826086957,
+      "driver": "squirrel",
+      "frame": 272,
+      "height": 750,
+      "sha256": "beef61a2a738abc65b27ad7e0ff256ce395feb8887806e5d360323b4220cef38",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.17391304347826,
+      "driver": "squirrel",
+      "frame": 273,
+      "height": 750,
+      "sha256": "53792b11557d0c3753e86df9ae84efd8c713b933003b3a9936e6760f930ed3aa",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.30434782608696,
+      "driver": "squirrel",
+      "frame": 274,
+      "height": 750,
+      "sha256": "f3b37825fa60f32f0cb3330c292fa2ca8cd367afa9d5bc156f82fffe4fcd2679",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.43478260869565,
+      "driver": "squirrel",
+      "frame": 275,
+      "height": 750,
+      "sha256": "4ca9b6db0e3b46c2a55e0b9bf54b58290c5e0ba6e33c97a7febbeb95c2cd9d7a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.56521739130435,
+      "driver": "squirrel",
+      "frame": 276,
+      "height": 750,
+      "sha256": "814b84b0fe73fbe5e7064d5d63013c9529da1e20b8103cafaf3f202a3a8e35f1",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.69565217391304,
+      "driver": "squirrel",
+      "frame": 277,
+      "height": 750,
+      "sha256": "cae654a7d928d1395c30322eaf4bd44ab48e6ca15f9107674250350faaa22040",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.82608695652174,
+      "driver": "squirrel",
+      "frame": 278,
+      "height": 750,
+      "sha256": "512a09ba21593f95057b7a2075b17c94eff59735135800501a09db7f55f22734",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.95652173913043,
+      "driver": "squirrel",
+      "frame": 279,
+      "height": 750,
+      "sha256": "c4f82c581f7b454336c311710ef3e529e1a053b9cf1e270cc463bbedcab23d8b",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.08695652173913,
+      "driver": "squirrel",
+      "frame": 280,
+      "height": 750,
+      "sha256": "c511457f044916e58a7891c9b089af4fe82124a798817aa00f1d5ffef0a827b4",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.21739130434783,
+      "driver": "squirrel",
+      "frame": 281,
+      "height": 750,
+      "sha256": "c3be79a6c351291db5f61f84e10706c58d62b3cf8e0ff9fc0d51a69ccc3f7e11",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.34782608695652,
+      "driver": "squirrel",
+      "frame": 282,
+      "height": 750,
+      "sha256": "5e70beeab80f7d7a34e52d02374af6c2f3dee24b9aad881da8e1df0e0b9f1f8a",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.47826086956522,
+      "driver": "squirrel",
+      "frame": 283,
+      "height": 750,
+      "sha256": "23bcc926a07f7a2e50c8c1111016ca1f9a8be0967c1f3ea31297868057d38977",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.60869565217391,
+      "driver": "squirrel",
+      "frame": 284,
+      "height": 750,
+      "sha256": "3dc306a606de0ef53f80c2c5d40196563d7070c5d3b3df3a118cff3dad061f24",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.73913043478261,
+      "driver": "squirrel",
+      "frame": 285,
+      "height": 750,
+      "sha256": "e5fd04cc5c0bb5313067147c490e9a2633af0e6cd5db5e325490041ca7834f6d",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.8695652173913,
+      "driver": "squirrel",
+      "frame": 286,
+      "height": 750,
+      "sha256": "bbeaac98f5c1c2da7a2439c97d0ae29fe81ad8bafb71edb913af84b58db7ce42",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 3.0,
+      "driver": "squirrel",
+      "frame": 287,
+      "height": 750,
+      "sha256": "bfa614be8a0e7c2ab76bbd309d8267d6fa66e3efccd72c7336390e4af1c76157",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.0,
+      "driver": "turtle",
+      "frame": 288,
+      "height": 750,
+      "sha256": "06b36c2c69556986910d157fc1a71829904dd6f25b2edbc49a6fab3ae6933bc0",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.130434782608696,
+      "driver": "turtle",
+      "frame": 289,
+      "height": 750,
+      "sha256": "a2a4042d3025897677067a99d450b28d21d42d030febae4ed6c0674de024609f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.260869565217391,
+      "driver": "turtle",
+      "frame": 290,
+      "height": 750,
+      "sha256": "1f22231e59261cd85fd395c306901d00312ccf7afb3b1e4a18bfb338be80e6af",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.391304347826087,
+      "driver": "turtle",
+      "frame": 291,
+      "height": 750,
+      "sha256": "31947311010b0032f43e1c56c8e1d000c69de34adf11de76efe00bfcf4416e89",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.521739130434783,
+      "driver": "turtle",
+      "frame": 292,
+      "height": 750,
+      "sha256": "b09e922838856308ceb6c4fd0598d486083f852740c71c9139a71f0cc0900d02",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.652173913043478,
+      "driver": "turtle",
+      "frame": 293,
+      "height": 750,
+      "sha256": "d64dfcbec748c98f4c7bc82d4b590a9d7c98474af8cb8f688731ff0ceb7d349f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.782608695652174,
+      "driver": "turtle",
+      "frame": 294,
+      "height": 750,
+      "sha256": "f7360c4290dfe55ad2588efe33d14c5e795be29096f600e00ddf8fd52cf22edf",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 0.91304347826087,
+      "driver": "turtle",
+      "frame": 295,
+      "height": 750,
+      "sha256": "01ca8f48bd57e6291555a790b67b7b8b8d6816814651da682375811255c0e5c8",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.04347826086957,
+      "driver": "turtle",
+      "frame": 296,
+      "height": 750,
+      "sha256": "0632c8ee5d5dbba2d46d722057632b2a4592205b866881ec8ee9dd9f0055cb5e",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.17391304347826,
+      "driver": "turtle",
+      "frame": 297,
+      "height": 750,
+      "sha256": "4bc4c6d4f477eebfa6c646e0cecd8d23d9a45a1760d7296e023e61507647875c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.30434782608696,
+      "driver": "turtle",
+      "frame": 298,
+      "height": 750,
+      "sha256": "e5e35e0085cf53301150db151c9017131f1ee4a907dd0f8ca8463cac36e4b2fd",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.43478260869565,
+      "driver": "turtle",
+      "frame": 299,
+      "height": 750,
+      "sha256": "5de4b22a15ac38a5aae1a88946457dcc7605d183b84de483b575d66e55fa0bc4",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.56521739130435,
+      "driver": "turtle",
+      "frame": 300,
+      "height": 750,
+      "sha256": "90730c788342f665e7da1485ee91e2113dc71e7e7dc6e0966c16ae2afa00a24f",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.69565217391304,
+      "driver": "turtle",
+      "frame": 301,
+      "height": 750,
+      "sha256": "0779faa521997686796a00e9c0b9bc477d87775434e747d543a71cedb7e4f27d",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.82608695652174,
+      "driver": "turtle",
+      "frame": 302,
+      "height": 750,
+      "sha256": "01e25eba132907a210952bfd05cebc132b86eb7143406f93a4c8eaddf83970c8",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 1.95652173913043,
+      "driver": "turtle",
+      "frame": 303,
+      "height": 750,
+      "sha256": "4c369dadd9e162dd7b6c1b64b71b556a8aae5ea3bb82320f615280473964c9fa",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.08695652173913,
+      "driver": "turtle",
+      "frame": 304,
+      "height": 750,
+      "sha256": "d5024edfd3b55ef69c212b16764aefcd66a697f8c63e63ff426571493db34f42",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.21739130434783,
+      "driver": "turtle",
+      "frame": 305,
+      "height": 750,
+      "sha256": "5a2e1f4f5e0dd0251dd74b1eaf0ca4750eb9c6b0b20339575304d52ef2dc20d9",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.34782608695652,
+      "driver": "turtle",
+      "frame": 306,
+      "height": 750,
+      "sha256": "318add35fdbfa5e80efc334ec0f366ce8188c4e2c97cd4792e2d9f0a5f3c699c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.47826086956522,
+      "driver": "turtle",
+      "frame": 307,
+      "height": 750,
+      "sha256": "610e42621af926c1ed00840c2d3ea75defa9b0719bc9bff23d8a70255825c872",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.60869565217391,
+      "driver": "turtle",
+      "frame": 308,
+      "height": 750,
+      "sha256": "e65f45695887461de2a20349151617fa005d56481615ee0a3b5bc6a85efcde36",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.73913043478261,
+      "driver": "turtle",
+      "frame": 309,
+      "height": 750,
+      "sha256": "b380e97ff92048fcf96424526b0b12939bf2e124b8947ee14578433d0d91212b",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 2.8695652173913,
+      "driver": "turtle",
+      "frame": 310,
+      "height": 750,
+      "sha256": "8961c17dd198c886364764fa3aefe196d1dd0f1155a9d8ba8a1b27448333e82c",
+      "width": 1200
+    },
+    {
+      "clip": "kart_seated",
+      "clip_time": 3.0,
+      "driver": "turtle",
+      "frame": 311,
+      "height": 750,
+      "sha256": "96727f68b2e3e9d918b5946ff1014cde174cc712b6adbd1d8c23ea51c5531201",
+      "width": 1200
+    }
+  ],
+  "godot": "4.6.3-stable (official)",
+  "physical_android": false,
+  "product_runtime_changed": false,
+  "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "review_script_sha256": "662785069f51c413a150a57bad5e0d64fd8e33e97580a4058770fa881bda5477",
+  "sources": {
+    "assets/kart/production/drivers/lion/driver.glb": "b3925896a2addd6de0f1710410953a77efbe1e72e35f5d74b6339414f3510833",
+    "assets/kart/production/drivers/owl/driver.glb": "f07f9c26140790af36961fe780fe0ba77d0d1df8de2117fa5c10a064f89094c3",
+    "assets/kart/production/drivers/rabbit/driver.glb": "3f21d290e77fee2e7d0ac66f1f8af0195759628895a2a3d391a1db2b419a13e3",
+    "assets/kart/production/drivers/squirrel/driver.glb": "61b1bf1c4d8f7c407001ef23334d402e81417435b841ed87095c5eea3c2a0db0",
+    "assets/kart/production/drivers/turtle/driver.glb": "282febd626d383eaf666ace1d845e728e1d5526d6894bdb8209b92ecb3bec77f",
+    "assets/kart/production/karts/aurora_comet.glb": "d2b80327d4c35f8f5cd43929966c0c887ae2aa01ceaaba9b35b87ffd46a37f2f",
+    "assets/kart/production/karts/aurora_glider.glb": "2993929ce54e5b30cb9e921985f9e8cb979141908c60b8ae5d8c476c07527b0e",
+    "assets/kart/production/karts/aurora_turbo.glb": "d0840f0918a3bdf0f5fdcee5193b713b95b54f53f465118f75c5840e41212639",
+    "assets/kart/production/tracks/bergwelt/curve_right_30.glb": "797d17385c4c3677087da1862b6f13f3c1a9f022ac365fae4a4dfeddcf1302f0",
+    "assets/kart/production/tracks/bergwelt/curve_right_30_terrain.glb": "007f23b47c9810cf5389e40ccdce47a228fa803a17fb06e58cb1bd3d43005965",
+    "assets/kart/production/tracks/bergwelt/portal_entry.glb": "fe38b73d68519260e28319e9a18b1a4bc704e6b2db8cdfb9e409d9df851d927c",
+    "assets/kart/production/tracks/bergwelt/portal_entry_terrain.glb": "066c34245150b240e6fde60124e892367c3059d068a57704b230bd3866e03100",
+    "assets/kart/production/tracks/bergwelt/portal_exit.glb": "ae19132aa0bf60031dbe5b3ba61c0b73e3f04d0c77ea6e8d5ac6b3643d4cdfed",
+    "assets/kart/production/tracks/bergwelt/portal_exit_terrain.glb": "52478da2702d5e2e7b611f4e52fe843a3fe4e142eff38418a0778659fb564c8e",
+    "assets/kart/production/tracks/bergwelt/straight_12m.glb": "d9d13b29451f4791828f9cd5181661a26de1de592966cd14bab959c6c0402e81",
+    "assets/kart/production/tracks/bergwelt/straight_12m_terrain.glb": "3ce136dc149a73811a99ac2cb7eca1921006cf60a207a1fbda942047d0048a05",
+    "assets/kart/production/tracks/candy_cloud/curve_right_30.glb": "463b68a697f5bea2f093ddd16fe0b1721abc392e01cbd2a73db3bc8bade5288b",
+    "assets/kart/production/tracks/candy_cloud/curve_right_30_terrain.glb": "b345e22e4b7dca520332500c0aa700368f40a9bfcf72d72ade427de25bcfce33",
+    "assets/kart/production/tracks/candy_cloud/portal_entry.glb": "c08fe269151d9c44584995e95083099e93fe4f43f944c24606fe1cbaa7bc3ad9",
+    "assets/kart/production/tracks/candy_cloud/portal_entry_terrain.glb": "0e207cf81210d8c6e39efa2a739c85538947c0c7d49714864d7eead4c046e29a",
+    "assets/kart/production/tracks/candy_cloud/portal_exit.glb": "698edc062538661628292a2c6a4e2f309ec6185d6bbbfcd4f09d23e3738a7975",
+    "assets/kart/production/tracks/candy_cloud/portal_exit_terrain.glb": "ffcc0b05dac584e56288e237c639f177f2126c296e35cf87ac0f0a2c93c07553",
+    "assets/kart/production/tracks/candy_cloud/straight_12m.glb": "9ea8379f725c070adea7791ea8367382f713e61e97c9d493cba0c5656a96b254",
+    "assets/kart/production/tracks/candy_cloud/straight_12m_terrain.glb": "f88f628230a8f735f1a0293bd835dd0cce983796e270c24d99a6b458e96ac711",
+    "assets/kart/production/tracks/crystal_canyon/curve_right_30.glb": "e15f3c7fc2648b1cd23fdd3ebe1a0dbfc7de48a8d4322ba1657b0de2e0e56f33",
+    "assets/kart/production/tracks/crystal_canyon/curve_right_30_terrain.glb": "5e740dce504ddf598b4b6fedde493dc3b3e6171b1c9d1c10c252f03316b7eb9d",
+    "assets/kart/production/tracks/crystal_canyon/portal_entry.glb": "6076a79b341eebfae27b77f6c8221fa82fa58f98928492634ae8968714ea17ec",
+    "assets/kart/production/tracks/crystal_canyon/portal_entry_terrain.glb": "48ff771b4e991bccda6762a6dd68dc609de4e62f2f65971db60707ec52b5afc3",
+    "assets/kart/production/tracks/crystal_canyon/portal_exit.glb": "50b913b2f58f80b2fb09e03e5ea52ef983bb7efc978b8a73693f09d01b458a69",
+    "assets/kart/production/tracks/crystal_canyon/portal_exit_terrain.glb": "eb917ab631acb219a88c6836c803da8c8776eab19c136721c404bfdb4d7787e1",
+    "assets/kart/production/tracks/crystal_canyon/straight_12m.glb": "80c4b87428f03d7bab6e9f242c027d764baa69bd98b710e937484fa248d1320f",
+    "assets/kart/production/tracks/crystal_canyon/straight_12m_terrain.glb": "0678bf8744c653b098b22a3c56a706abc87403723ed1ef3c21d67a1679d0b535",
+    "assets/kart/production/tracks/desert_drift/curve_right_30.glb": "ee164d64f09a798e9be9a71694b1d5f4138d25747d878921605debc109c77f20",
+    "assets/kart/production/tracks/desert_drift/curve_right_30_terrain.glb": "713196d6b228ad2265955c798cf5b2eea1454bbf92cad4c7bef50d84eded3976",
+    "assets/kart/production/tracks/desert_drift/portal_entry.glb": "dd710c0fb0bac162861d0b505354f9c792f1f341674372cccdb53c94228c23bb",
+    "assets/kart/production/tracks/desert_drift/portal_entry_terrain.glb": "6f9d0db73f0050f5df2482ca9fc055982b24d196a43962836d784d1b3deba47b",
+    "assets/kart/production/tracks/desert_drift/portal_exit.glb": "b9d3e6546255589faf617f7682590d153227244408293a06b485a17e7a1b96a2",
+    "assets/kart/production/tracks/desert_drift/portal_exit_terrain.glb": "863a9b2608b585d32af10d0ec5be1eff307a1cd7a6976359578dbc9c6e74acd2",
+    "assets/kart/production/tracks/desert_drift/straight_12m.glb": "6bf42aedcc1e991b0186f67ad56ccda3aded283f77a0566b449353c2da5ed5a7",
+    "assets/kart/production/tracks/desert_drift/straight_12m_terrain.glb": "7983914bd0e0bb4ae2542e631a71461bc764d7269665025dc03e22cba84ccc2f",
+    "assets/kart/production/tracks/galaxy_ringway/curve_right_30.glb": "9cd90baf70d494238017fb09c8adfa9587a980f7a6da12f8dd052d67152983f1",
+    "assets/kart/production/tracks/galaxy_ringway/curve_right_30_terrain.glb": "75d26503003f1011bd45c504eed5a1d5dc6515e3d3268e9c693d4d36ce4e7517",
+    "assets/kart/production/tracks/galaxy_ringway/portal_entry.glb": "ecb1cfb3771f5da75672c92412e659d98daf7e5ed5c419b6912b3597fd3ab53b",
+    "assets/kart/production/tracks/galaxy_ringway/portal_entry_terrain.glb": "05594ffec33e9f6340e9757c6868311f4270ec68e91548aba9faaffd128a247c",
+    "assets/kart/production/tracks/galaxy_ringway/portal_exit.glb": "e1d043fc94dfb53e2a46e7196aa3e3db58015f7ecf33f25cdfd8d998cffb9c56",
+    "assets/kart/production/tracks/galaxy_ringway/portal_exit_terrain.glb": "6ab112d99f62b68a0a4405d62e07561a1f4b46d97474eebc6a05c2e8f39bd84a",
+    "assets/kart/production/tracks/galaxy_ringway/straight_12m.glb": "52a6428146dea7e7b36235a55bf69744c6e5bd4adef9cf54d7da8c6c16124c41",
+    "assets/kart/production/tracks/galaxy_ringway/straight_12m_terrain.glb": "4f0c8186ad60a20dd92ad446c25d7ca7dea907f59f1ff090a60c6c2302a2bbc8",
+    "assets/kart/production/tracks/holo_city/curve_right_30.glb": "aea29966fe9ea7c44e9de6594c4295da94ff20743cb328ac956553b4a38cacdc",
+    "assets/kart/production/tracks/holo_city/curve_right_30_terrain.glb": "fa458a091245f6c1e8993b585ccd460409abe9f35e2de95b0dc176c16e5b474b",
+    "assets/kart/production/tracks/holo_city/portal_entry.glb": "ebca9a3da2b7b11d093bcf4d4f8c6fdbaa5942a5a8cb03c248346b168cdd2290",
+    "assets/kart/production/tracks/holo_city/portal_entry_terrain.glb": "6a248068a3b719eade47196df9852b6c035a92a07331e6ada0cee1975bad236a",
+    "assets/kart/production/tracks/holo_city/portal_exit.glb": "95925e62415c22423e72e00a3bf88d6cc1958976fbc132a86b23a97ee39d2d3c",
+    "assets/kart/production/tracks/holo_city/portal_exit_terrain.glb": "82c5a105ea78b3ca47d57bf2353e106f6a0656539c7489f48c69b0ecd84c26e5",
+    "assets/kart/production/tracks/holo_city/straight_12m.glb": "2b783d1b81349d305a52062ef430d80757017436d6d9fb935b32ee1852086c47",
+    "assets/kart/production/tracks/holo_city/straight_12m_terrain.glb": "faa1aa5abc1c0933fb2ec781bcd6e981dc2b5446ef448cda53a65d8ebc6edf4d",
+    "assets/kart/production/tracks/jungle_temple/curve_right_30.glb": "d72815ba0c6b48866f4b08670596d5e534d9435a6efc63005b28c3b2eb5fdf79",
+    "assets/kart/production/tracks/jungle_temple/curve_right_30_terrain.glb": "39b8cf9b40ab6eed74c16f0eafdf44a927862b6354e6a81db2dcdffb266b3dc4",
+    "assets/kart/production/tracks/jungle_temple/portal_entry.glb": "13ad81529e441fa7962b32cf232fa6c87cf4ff02c05bfd84e52006632b82ff69",
+    "assets/kart/production/tracks/jungle_temple/portal_entry_terrain.glb": "4b01b275b6ebae7488a8681f71f2c8a59d9ddf0526d2572909d033471a5b2615",
+    "assets/kart/production/tracks/jungle_temple/portal_exit.glb": "85bd490f232c56120ff215c0ff1d547b8ec534ad93b7d9e0e9e72e7fd5557223",
+    "assets/kart/production/tracks/jungle_temple/portal_exit_terrain.glb": "6e5575de7665b45a9a20f630c037112fd5ec2a669771afb1d5c63a8d10fd93d0",
+    "assets/kart/production/tracks/jungle_temple/straight_12m.glb": "50e72ac379baa0e151d65b1913fe3c63dee96b3f553fc7d6715135386361c23f",
+    "assets/kart/production/tracks/jungle_temple/straight_12m_terrain.glb": "8771c2a01a92bfef1a7f02e00cca8a54ab09d65b54a5a58e0baddb9b06273ff0",
+    "assets/kart/production/tracks/learning_lab/curve_right_30.glb": "015fb35904e338a83845279938b026cbd489315f5a3f358e77e398fd3a63a30f",
+    "assets/kart/production/tracks/learning_lab/curve_right_30_terrain.glb": "5f058af75ae88082fe42dcda5a0eb6520610773c65be5c7fdad780a0e8138b9a",
+    "assets/kart/production/tracks/learning_lab/portal_entry.glb": "69efa9cc04f779aa4660b6652ff63c9ae084d3e5b67f4e37002bf37cbd274859",
+    "assets/kart/production/tracks/learning_lab/portal_entry_terrain.glb": "38aa1d36c58e789a2130f63d6c78b27eaa0e9a311cfe6a87024dbf5ec3d0a289",
+    "assets/kart/production/tracks/learning_lab/portal_exit.glb": "c7eb4f38452e9e444b6d175ead820a3133ae736f6a295a354c15568e2397e5e8",
+    "assets/kart/production/tracks/learning_lab/portal_exit_terrain.glb": "b152801571e96b909413d14dace3b415f59b9b5fef4ebac88056b4477e3a1668",
+    "assets/kart/production/tracks/learning_lab/straight_12m.glb": "fec3b927ba6f9c69e8a518df14158f96c8bd2aa93b2652088a0b1d2b843a02a1",
+    "assets/kart/production/tracks/learning_lab/straight_12m_terrain.glb": "1fed80c38df0a2957d51f8e870060fafc913165013c98118b063603ae6758582",
+    "assets/kart/production/tracks/volcano_night/curve_right_30.glb": "228cbc1254f5001c3c3fa4bbe63c055ab1bd586d465ac290452b4b7808e6c50c",
+    "assets/kart/production/tracks/volcano_night/curve_right_30_terrain.glb": "74f9ae715303dc943999218c441809fc40ebc63a25d9438960690fc2c14268b9",
+    "assets/kart/production/tracks/volcano_night/portal_entry.glb": "af9e14838e94e685f7aaed1c603e93d57a655b5af0eadf32139038d250c15ec5",
+    "assets/kart/production/tracks/volcano_night/portal_entry_terrain.glb": "3b77ef0950fe995503f0970335abaa497e405796fa8c5e8c94ec1015c63653ed",
+    "assets/kart/production/tracks/volcano_night/portal_exit.glb": "0513d72b92499df7897e2e17005e6dac9c236fc4b2cad05d69fc2aecb7c1b03f",
+    "assets/kart/production/tracks/volcano_night/portal_exit_terrain.glb": "7a9837fc309278f746c809a3ef72be8d806d19d19414d7f32b52704741d3b931",
+    "assets/kart/production/tracks/volcano_night/straight_12m.glb": "8e89e6c38bb6534eac2828685a73779d9473329a9bc5650b87f7e84f3803972d",
+    "assets/kart/production/tracks/volcano_night/straight_12m_terrain.glb": "9f50a1e1c220f6e8303b26bf15e5a47a7dd95b64d4997d319911370a0a411984",
+    "assets/kart/production/tracks/winter_sprint/curve_right_30.glb": "409c013f46420d9e0129eea4f5966dd48d59d8c81c7a722134f7fac444855388",
+    "assets/kart/production/tracks/winter_sprint/curve_right_30_terrain.glb": "f4964dd96b6442691bf2704009828a26def516109d32760f8c2f61e0a4a247b8",
+    "assets/kart/production/tracks/winter_sprint/portal_entry.glb": "07e96fd976600705700c5feec3095d1a912e9d2fca19ab41119c3f70dbff7711",
+    "assets/kart/production/tracks/winter_sprint/portal_entry_terrain.glb": "134fb087ba92df0d284f16c784a461537b8739892c23b47f1c4184a7e495df4e",
+    "assets/kart/production/tracks/winter_sprint/portal_exit.glb": "d332f86309dd4624f3f7c4011b4eec762e28f0b06dfedbb065d7dad01c7f5b09",
+    "assets/kart/production/tracks/winter_sprint/portal_exit_terrain.glb": "67a51cba76a08fb10567a66611cabdf83fc7441f094973cba9a7fc299286503e",
+    "assets/kart/production/tracks/winter_sprint/straight_12m.glb": "884edaa5c7db66f6db363df5c3399e7b04b034662d189170a6655d6bcaf1a695",
+    "assets/kart/production/tracks/winter_sprint/straight_12m_terrain.glb": "85193b451495d5b9e8272bdb518f23d57b758695f98bc8d80a570d07b1170ead",
+    "assets/kart/production/tracks/zauberwald/curve_right_30.glb": "f4792072529d753379071f3f5cb93c55685ba5a256e8a2a8443dfb6a958f473c",
+    "assets/kart/production/tracks/zauberwald/curve_right_30_terrain.glb": "7620bedd8d7ae4a3ce323e9e79277b8cc69bd767919ee473fda68e8988c3328d",
+    "assets/kart/production/tracks/zauberwald/portal_entry.glb": "3a63f9ac91a3aae490c0169fb49f6762c04b1baaeafc272064986793f0f0bc0f",
+    "assets/kart/production/tracks/zauberwald/portal_entry_terrain.glb": "ee4ac2210a9bf7f95a71f7bb1fc26c1bdac86a8610bf946294ced51b48b24b51",
+    "assets/kart/production/tracks/zauberwald/portal_exit.glb": "77f65cc6f0a636f3f5ff2f294cf35e2069d88d2be5c2a925c8e8ebc292009c97",
+    "assets/kart/production/tracks/zauberwald/portal_exit_terrain.glb": "9c2446d30146c0d46df3db94ba88f5079430aef7f5f5e1088ce9c93e729efdf2",
+    "assets/kart/production/tracks/zauberwald/straight_12m.glb": "99cb3c00516f27c23473e005540a638f3700be7452b0744abeead4f8c2ff734a",
+    "assets/kart/production/tracks/zauberwald/straight_12m_terrain.glb": "833df58efea2a54b37d0a22361ee62c4331adff6f97d2ce28debf6ce01cd33da",
+    "evidence/lumo_kart_art/tracks/normal_probe/zauberwald_straight_12m_flat_caps.glb": "833df58efea2a54b37d0a22361ee62c4331adff6f97d2ce28debf6ce01cd33da",
+    "evidence/lumo_kart_art/tracks/normal_probe/zauberwald_straight_12m_smooth_caps.glb": "3c7629006bdcbfd8b035166b78a539ddfc4e98757f25a1f2ff510bc6b60d8a0d"
+  }
+}

@@ -1,0 +1,3352 @@
+{
+  "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "captures": [
+    {
+      "attempts": 0,
+      "background_depth": [
+        23.1405010223389,
+        58.9121055603027
+      ],
+      "complete": false,
+      "controls": [
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "1"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "2"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "3"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "rect_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "text": "Hinweis"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "rect_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "text": "Neu"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "rect_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "text": "Anhören"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "rect_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "text": "Lumo fragen"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "text": "Zur Aufgabe"
+        }
+      ],
+      "density": 1.0,
+      "explanation": "Tippe auf den Gegenstand zum englischen Wort.",
+      "footer_px": [
+        12.0,
+        208.0,
+        616.0,
+        140.0
+      ],
+      "foreground_far_depth": 17.8715724945068,
+      "header_px": [
+        12.0,
+        12.0,
+        616.0,
+        83.0
+      ],
+      "hint_level": 0,
+      "lumo_px": [
+        212.946228027344,
+        105.910003662109,
+        55.218017578125,
+        91.1799926757812
+      ],
+      "name": "english-ruler-640x360-start",
+      "objects": [
+        {
+          "bounds_px": [
+            281.34375,
+            167.708541870117,
+            42.2112731933594,
+            27.6728668212891
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 924,
+          "word": "ruler"
+        },
+        {
+          "bounds_px": [
+            333.093139648438,
+            153.112518310547,
+            42.2112731933594,
+            42.2688903808594
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 3572,
+          "word": "apple"
+        },
+        {
+          "bounds_px": [
+            384.842529296875,
+            142.775695800781,
+            42.2112731933594,
+            52.6970367431641
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 5812,
+          "word": "sun"
+        }
+      ],
+      "objects_order": [
+        "ruler",
+        "apple",
+        "sun"
+      ],
+      "observation_source": "platform_fixture",
+      "png": "english-ruler-640x360-start.png",
+      "sha256": "f2ea22a9480ba2c2265aee239a5de71f2af1ab8dec7e75d9bb66658ad09eda0b",
+      "stage_px": [
+        16.0,
+        103.0,
+        608.0,
+        97.0
+      ],
+      "status": "Tippe den Gegenstand oder seine Zahl an.",
+      "title": "Englisch · ruler",
+      "window_px": [
+        640,
+        360
+      ],
+      "word": "ruler"
+    },
+    {
+      "attempts": 1,
+      "background_depth": [
+        23.1405010223389,
+        58.9121055603027
+      ],
+      "complete": false,
+      "controls": [
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "1"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "2"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "3"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "rect_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "text": "Hinweis"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "rect_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "text": "Neu"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "rect_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "text": "Anhören"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "rect_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "text": "Lumo fragen"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "text": "Zur Aufgabe"
+        }
+      ],
+      "density": 1.0,
+      "explanation": "Damit misst du gerade Strecken. Die kleinen Striche zeigen die Länge.",
+      "footer_px": [
+        12.0,
+        208.0,
+        616.0,
+        140.0
+      ],
+      "foreground_far_depth": 17.8715724945068,
+      "header_px": [
+        12.0,
+        12.0,
+        616.0,
+        113.0
+      ],
+      "hint_level": 1,
+      "lumo_px": [
+        246.055618286133,
+        135.009994506836,
+        38.1402740478516,
+        62.9799957275391
+      ],
+      "name": "english-ruler-640x360-first-hint",
+      "objects": [
+        {
+          "bounds_px": [
+            293.299285888672,
+            177.695587158203,
+            29.1562194824219,
+            19.1142425537109
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 924,
+          "word": "ruler"
+        },
+        {
+          "bounds_px": [
+            329.043701171875,
+            167.613800048828,
+            29.15625,
+            29.1960296630859
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 3572,
+          "word": "apple"
+        },
+        {
+          "bounds_px": [
+            364.788146972656,
+            160.473922729492,
+            29.1562194824219,
+            36.3989868164062
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 5812,
+          "word": "sun"
+        }
+      ],
+      "objects_order": [
+        "ruler",
+        "apple",
+        "sun"
+      ],
+      "observation_source": "platform_fixture",
+      "png": "english-ruler-640x360-first-hint.png",
+      "sha256": "eb1d3f0cbfd163ae80ed84cfb0ec201aa69ec061e9aa1a54e94cb58c1a6da2d4",
+      "stage_px": [
+        16.0,
+        133.0,
+        608.0,
+        67.0
+      ],
+      "status": "Tippe den Gegenstand oder seine Zahl an.",
+      "title": "Englisch · ruler",
+      "window_px": [
+        640,
+        360
+      ],
+      "word": "ruler"
+    },
+    {
+      "attempts": 0,
+      "background_depth": [
+        23.1405010223389,
+        58.9121055603027
+      ],
+      "complete": false,
+      "controls": [
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "1"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "2"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "3"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "rect_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "text": "Hinweis"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "rect_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "text": "Neu"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "rect_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "text": "Anhören"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "rect_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "text": "Lumo fragen"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "text": "Zur Aufgabe"
+        }
+      ],
+      "density": 1.0,
+      "explanation": "Tippe auf den Gegenstand zum englischen Wort.",
+      "footer_px": [
+        12.0,
+        208.0,
+        616.0,
+        140.0
+      ],
+      "foreground_far_depth": 17.8715724945068,
+      "header_px": [
+        12.0,
+        12.0,
+        616.0,
+        83.0
+      ],
+      "hint_level": 0,
+      "lumo_px": [
+        212.946228027344,
+        105.910003662109,
+        55.218017578125,
+        91.1799926757812
+      ],
+      "name": "english-rubber-640x360-start",
+      "objects": [
+        {
+          "bounds_px": [
+            281.34375,
+            165.788787841797,
+            42.2112731933594,
+            29.5926208496094
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 744,
+          "word": "rubber"
+        },
+        {
+          "bounds_px": [
+            333.093139648438,
+            166.106536865234,
+            42.2112731933594,
+            29.2748718261719
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 1544,
+          "word": "paper"
+        },
+        {
+          "bounds_px": [
+            384.842529296875,
+            162.713027954102,
+            42.2112731933594,
+            32.7597045898438
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2164,
+          "word": "book"
+        }
+      ],
+      "objects_order": [
+        "rubber",
+        "paper",
+        "book"
+      ],
+      "observation_source": "platform_fixture",
+      "png": "english-rubber-640x360-start.png",
+      "sha256": "57e09c5d247a72ada65dbc038d6ecd30fa6a947f39ddfd752313bb8cad98b5be",
+      "stage_px": [
+        16.0,
+        103.0,
+        608.0,
+        97.0
+      ],
+      "status": "Tippe den Gegenstand oder seine Zahl an.",
+      "title": "Englisch · rubber",
+      "window_px": [
+        640,
+        360
+      ],
+      "word": "rubber"
+    },
+    {
+      "attempts": 1,
+      "background_depth": [
+        23.1405010223389,
+        58.9121055603027
+      ],
+      "complete": false,
+      "controls": [
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "1"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "2"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "3"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "rect_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "text": "Hinweis"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "rect_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "text": "Neu"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "rect_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "text": "Anhören"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "rect_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "text": "Lumo fragen"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "text": "Zur Aufgabe"
+        }
+      ],
+      "density": 1.0,
+      "explanation": "Damit entfernst du Bleistiftstriche. Das weiche Stück steckt in einer Papierhülle.",
+      "footer_px": [
+        12.0,
+        208.0,
+        616.0,
+        140.0
+      ],
+      "foreground_far_depth": 17.8715724945068,
+      "header_px": [
+        12.0,
+        12.0,
+        616.0,
+        113.0
+      ],
+      "hint_level": 1,
+      "lumo_px": [
+        246.055618286133,
+        135.009994506836,
+        38.1402740478516,
+        62.9799957275391
+      ],
+      "name": "english-rubber-640x360-first-hint",
+      "objects": [
+        {
+          "bounds_px": [
+            293.299285888672,
+            176.369567871094,
+            29.1562194824219,
+            20.4402618408203
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 744,
+          "word": "rubber"
+        },
+        {
+          "bounds_px": [
+            329.043701171875,
+            176.58903503418,
+            29.15625,
+            20.2207946777344
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 1544,
+          "word": "paper"
+        },
+        {
+          "bounds_px": [
+            364.788146972656,
+            174.245086669922,
+            29.1562194824219,
+            22.6278228759766
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2164,
+          "word": "book"
+        }
+      ],
+      "objects_order": [
+        "rubber",
+        "paper",
+        "book"
+      ],
+      "observation_source": "platform_fixture",
+      "png": "english-rubber-640x360-first-hint.png",
+      "sha256": "eb4dc190ad315ea08d3ea97231607288ef8ba99a99d8d9543af2e13aaaaca0a3",
+      "stage_px": [
+        16.0,
+        133.0,
+        608.0,
+        67.0
+      ],
+      "status": "Tippe den Gegenstand oder seine Zahl an.",
+      "title": "Englisch · rubber",
+      "window_px": [
+        640,
+        360
+      ],
+      "word": "rubber"
+    },
+    {
+      "attempts": 0,
+      "background_depth": [
+        23.1405010223389,
+        58.9121055603027
+      ],
+      "complete": false,
+      "controls": [
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "1"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "2"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "3"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "rect_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "text": "Hinweis"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "rect_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "text": "Neu"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "rect_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "text": "Anhören"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "rect_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "text": "Lumo fragen"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "text": "Zur Aufgabe"
+        }
+      ],
+      "density": 1.0,
+      "explanation": "Tippe auf den Gegenstand zum englischen Wort.",
+      "footer_px": [
+        12.0,
+        208.0,
+        616.0,
+        140.0
+      ],
+      "foreground_far_depth": 17.8715724945068,
+      "header_px": [
+        12.0,
+        12.0,
+        616.0,
+        83.0
+      ],
+      "hint_level": 0,
+      "lumo_px": [
+        212.946228027344,
+        105.910003662109,
+        55.218017578125,
+        91.1799926757812
+      ],
+      "name": "english-chair-640x360-start",
+      "objects": [
+        {
+          "bounds_px": [
+            281.34375,
+            148.276229858398,
+            42.2112731933594,
+            47.1051788330078
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 828,
+          "word": "desk"
+        },
+        {
+          "bounds_px": [
+            333.093139648438,
+            144.138168334961,
+            42.2112731933594,
+            51.2432403564453
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 1508,
+          "word": "chair"
+        },
+        {
+          "bounds_px": [
+            384.842529296875,
+            149.50944519043,
+            42.2112731933594,
+            45.9632873535156
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2848,
+          "word": "school bag"
+        }
+      ],
+      "objects_order": [
+        "desk",
+        "chair",
+        "school bag"
+      ],
+      "observation_source": "platform_fixture",
+      "png": "english-chair-640x360-start.png",
+      "sha256": "73fc88ce17b2c81713ee25bc8883805ab5671765b6e396b1c0a07ed4eed31e02",
+      "stage_px": [
+        16.0,
+        103.0,
+        608.0,
+        97.0
+      ],
+      "status": "Tippe den Gegenstand oder seine Zahl an.",
+      "title": "Englisch · chair",
+      "window_px": [
+        640,
+        360
+      ],
+      "word": "chair"
+    },
+    {
+      "attempts": 1,
+      "background_depth": [
+        23.1405010223389,
+        58.9121055603027
+      ],
+      "complete": false,
+      "controls": [
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "1"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "2"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "3"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "rect_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "text": "Hinweis"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "rect_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "text": "Neu"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "rect_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "text": "Anhören"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "rect_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "text": "Lumo fragen"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "text": "Zur Aufgabe"
+        }
+      ],
+      "density": 1.0,
+      "explanation": "Darauf kannst du sitzen. Suche die Sitzfläche und die hohe Rückenlehne.",
+      "footer_px": [
+        12.0,
+        208.0,
+        616.0,
+        140.0
+      ],
+      "foreground_far_depth": 17.8715724945068,
+      "header_px": [
+        12.0,
+        12.0,
+        616.0,
+        113.0
+      ],
+      "hint_level": 1,
+      "lumo_px": [
+        246.055618286133,
+        135.009994506836,
+        38.1402740478516,
+        62.9799957275391
+      ],
+      "name": "english-chair-640x360-first-hint",
+      "objects": [
+        {
+          "bounds_px": [
+            293.299285888672,
+            164.27326965332,
+            29.1562194824219,
+            32.5365600585938
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 828,
+          "word": "desk"
+        },
+        {
+          "bounds_px": [
+            329.043701171875,
+            161.415008544922,
+            29.15625,
+            35.3948211669922
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 1508,
+          "word": "chair"
+        },
+        {
+          "bounds_px": [
+            364.788146972656,
+            165.125076293945,
+            29.1562194824219,
+            31.7478332519531
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2848,
+          "word": "school bag"
+        }
+      ],
+      "objects_order": [
+        "desk",
+        "chair",
+        "school bag"
+      ],
+      "observation_source": "platform_fixture",
+      "png": "english-chair-640x360-first-hint.png",
+      "sha256": "6a298606de9c1360b74ea2e990a6398dedca65a16ccbfa23e6efec97947d2c8c",
+      "stage_px": [
+        16.0,
+        133.0,
+        608.0,
+        67.0
+      ],
+      "status": "Tippe den Gegenstand oder seine Zahl an.",
+      "title": "Englisch · chair",
+      "window_px": [
+        640,
+        360
+      ],
+      "word": "chair"
+    },
+    {
+      "attempts": 0,
+      "background_depth": [
+        23.1404991149902,
+        58.9121017456055
+      ],
+      "complete": false,
+      "controls": [
+        {
+          "enabled": true,
+          "exposed_px": [
+            204.25,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "rect_px": [
+            204.25,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "text": "1"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            361.75,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "rect_px": [
+            361.75,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "text": "2"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            519.25,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "rect_px": [
+            519.25,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "text": "3"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            676.75,
+            812.249938964844,
+            233.625,
+            136.5
+          ],
+          "rect_px": [
+            676.75,
+            812.249938964844,
+            233.625,
+            136.5
+          ],
+          "text": "Hinweis"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            931.375,
+            812.249938964844,
+            152.25,
+            136.5
+          ],
+          "rect_px": [
+            931.375,
+            812.249938964844,
+            152.25,
+            136.5
+          ],
+          "text": "Neu"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            1104.625,
+            812.249938964844,
+            252.0,
+            136.5
+          ],
+          "rect_px": [
+            1104.625,
+            812.249938964844,
+            252.0,
+            136.5
+          ],
+          "text": "Anhören"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            1377.625,
+            812.249938964844,
+            338.625,
+            136.5
+          ],
+          "rect_px": [
+            1377.625,
+            812.249938964844,
+            338.625,
+            136.5
+          ],
+          "text": "Lumo fragen"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            1737.25,
+            812.249938964844,
+            328.125,
+            136.5
+          ],
+          "rect_px": [
+            1737.25,
+            812.249938964844,
+            328.125,
+            136.5
+          ],
+          "text": "Zur Aufgabe"
+        }
+      ],
+      "density": 2.625,
+      "explanation": "Tippe auf den Gegenstand zum englischen Wort.",
+      "footer_px": [
+        167.5,
+        775.499938964844,
+        2201.0,
+        210.0
+      ],
+      "foreground_far_depth": 17.8715705871582,
+      "header_px": [
+        167.5,
+        31.5,
+        2201.0,
+        217.875
+      ],
+      "hint_level": 0,
+      "lumo_px": [
+        733.69677734375,
+        284.898773193359,
+        275.591979980469,
+        455.077484130859
+      ],
+      "name": "english-paper-2400x1080-start",
+      "objects": [
+        {
+          "bounds_px": [
+            1075.0673828125,
+            585.33837890625,
+            210.675659179688,
+            146.110290527344
+          ],
+          "spatial_48dp_target_px": [
+            1117.4052734375,
+            518.206176757812,
+            126.0,
+            126.0
+          ],
+          "triangles": 840,
+          "word": "paper"
+        },
+        {
+          "bounds_px": [
+            1333.34765625,
+            568.401550292969,
+            210.675537109375,
+            163.047119140625
+          ],
+          "spatial_48dp_target_px": [
+            1375.68542480469,
+            518.206176757812,
+            126.0,
+            126.0
+          ],
+          "triangles": 1508,
+          "word": "book"
+        },
+        {
+          "bounds_px": [
+            1591.62780761719,
+            583.752502441406,
+            210.675537109375,
+            148.151916503906
+          ],
+          "spatial_48dp_target_px": [
+            1633.96557617188,
+            518.206176757812,
+            126.0,
+            126.0
+          ],
+          "triangles": 2104,
+          "word": "rubber"
+        }
+      ],
+      "objects_order": [
+        "paper",
+        "book",
+        "rubber"
+      ],
+      "observation_source": "platform_fixture",
+      "png": "english-paper-2400x1080-start.png",
+      "sha256": "2a446c21228032d5e027a3d5cefe8e7c8689ef1bba79f5284a465189a394bfd4",
+      "stage_px": [
+        178.0,
+        270.375,
+        2180.0,
+        484.124938964844
+      ],
+      "status": "Tippe den Gegenstand oder seine Zahl an.",
+      "title": "Englisch · paper",
+      "window_px": [
+        2400,
+        1080
+      ],
+      "word": "paper"
+    },
+    {
+      "attempts": 1,
+      "background_depth": [
+        23.1405010223389,
+        58.9121055603027
+      ],
+      "complete": false,
+      "controls": [
+        {
+          "enabled": true,
+          "exposed_px": [
+            204.25,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "rect_px": [
+            204.25,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "text": "1"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            361.75,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "rect_px": [
+            361.75,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "text": "2"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            519.25,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "rect_px": [
+            519.25,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "text": "3"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            676.75,
+            812.249938964844,
+            233.625,
+            136.5
+          ],
+          "rect_px": [
+            676.75,
+            812.249938964844,
+            233.625,
+            136.5
+          ],
+          "text": "Hinweis"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            931.375,
+            812.249938964844,
+            152.25,
+            136.5
+          ],
+          "rect_px": [
+            931.375,
+            812.249938964844,
+            152.25,
+            136.5
+          ],
+          "text": "Neu"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            1104.625,
+            812.249938964844,
+            252.0,
+            136.5
+          ],
+          "rect_px": [
+            1104.625,
+            812.249938964844,
+            252.0,
+            136.5
+          ],
+          "text": "Anhören"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            1377.625,
+            812.249938964844,
+            338.625,
+            136.5
+          ],
+          "rect_px": [
+            1377.625,
+            812.249938964844,
+            338.625,
+            136.5
+          ],
+          "text": "Lumo fragen"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            1737.25,
+            812.249938964844,
+            328.125,
+            136.5
+          ],
+          "rect_px": [
+            1737.25,
+            812.249938964844,
+            328.125,
+            136.5
+          ],
+          "text": "Zur Aufgabe"
+        }
+      ],
+      "density": 2.625,
+      "explanation": "Auf diesem dünnen weißen Blatt kannst du schreiben oder zeichnen. Die Linien helfen dir dabei.",
+      "footer_px": [
+        167.5,
+        775.499938964844,
+        2201.0,
+        210.0
+      ],
+      "foreground_far_depth": 17.8715724945068,
+      "header_px": [
+        167.5,
+        31.5,
+        2201.0,
+        296.625
+      ],
+      "hint_level": 1,
+      "lumo_px": [
+        820.609008789062,
+        361.286193847656,
+        230.762939453125,
+        381.052490234375
+      ],
+      "name": "english-paper-2400x1080-first-hint",
+      "objects": [
+        {
+          "bounds_px": [
+            1106.45080566406,
+            612.854919433594,
+            176.406005859375,
+            122.343322753906
+          ],
+          "spatial_48dp_target_px": [
+            1131.65380859375,
+            546.394897460938,
+            126.0,
+            126.0
+          ],
+          "triangles": 840,
+          "word": "paper"
+        },
+        {
+          "bounds_px": [
+            1322.71789550781,
+            598.673095703125,
+            176.406005859375,
+            136.525146484375
+          ],
+          "spatial_48dp_target_px": [
+            1347.9208984375,
+            546.394897460938,
+            126.0,
+            126.0
+          ],
+          "triangles": 1508,
+          "word": "book"
+        },
+        {
+          "bounds_px": [
+            1538.98498535156,
+            611.527038574219,
+            176.406005859375,
+            124.052795410156
+          ],
+          "spatial_48dp_target_px": [
+            1564.18798828125,
+            546.394897460938,
+            126.0,
+            126.0
+          ],
+          "triangles": 2104,
+          "word": "rubber"
+        }
+      ],
+      "objects_order": [
+        "paper",
+        "book",
+        "rubber"
+      ],
+      "observation_source": "platform_fixture",
+      "png": "english-paper-2400x1080-first-hint.png",
+      "sha256": "20d7590af38ff37c434daee2eca12b38ece19f97c2312a18749ac6478822ce1a",
+      "stage_px": [
+        178.0,
+        349.125,
+        2180.0,
+        405.374938964844
+      ],
+      "status": "Tippe den Gegenstand oder seine Zahl an.",
+      "title": "Englisch · paper",
+      "window_px": [
+        2400,
+        1080
+      ],
+      "word": "paper"
+    }
+  ],
+  "checks": 2397,
+  "engine": {
+    "build": "official",
+    "hash": "7d41c59c457bd5a245092b4e7eb2d833e3b3f8c3",
+    "hex": 263683,
+    "major": 4,
+    "minor": 6,
+    "patch": 3,
+    "status": "stable",
+    "string": "4.6.3-stable (official)",
+    "timestamp": 0
+  },
+  "failures": [
+    "english-ruler-640x360-start: real object projection remains at least48dp across both axes",
+    "english-ruler-640x360-start: real object projection remains at least48dp across both axes",
+    "english-ruler-640x360-start: real object projection remains at least48dp across both axes",
+    "english-ruler-640x360-start: original Lumo stays at a readable projected height rather than a thumbnail",
+    "english-ruler-640x360-first-hint: real object projection remains at least48dp across both axes",
+    "english-ruler-640x360-first-hint: real object projection remains at least48dp across both axes",
+    "english-ruler-640x360-first-hint: real object projection remains at least48dp across both axes",
+    "english-ruler-640x360-first-hint: original Lumo stays at a readable projected height rather than a thumbnail",
+    "ruler: first hint layout: real object projection remains at least48dp across both axes",
+    "ruler: first hint layout: real object projection remains at least48dp across both axes",
+    "ruler: first hint layout: real object projection remains at least48dp across both axes",
+    "ruler: first hint layout: original Lumo stays at a readable projected height rather than a thumbnail",
+    "english-rubber-640x360-start: real object projection remains at least48dp across both axes",
+    "english-rubber-640x360-start: real object projection remains at least48dp across both axes",
+    "english-rubber-640x360-start: real object projection remains at least48dp across both axes",
+    "english-rubber-640x360-start: original Lumo stays at a readable projected height rather than a thumbnail",
+    "english-rubber-640x360-first-hint: real object projection remains at least48dp across both axes",
+    "english-rubber-640x360-first-hint: real object projection remains at least48dp across both axes",
+    "english-rubber-640x360-first-hint: real object projection remains at least48dp across both axes",
+    "english-rubber-640x360-first-hint: original Lumo stays at a readable projected height rather than a thumbnail",
+    "rubber: first hint layout: real object projection remains at least48dp across both axes",
+    "rubber: first hint layout: real object projection remains at least48dp across both axes",
+    "rubber: first hint layout: real object projection remains at least48dp across both axes",
+    "rubber: first hint layout: original Lumo stays at a readable projected height rather than a thumbnail",
+    "english-chair-640x360-start: real object projection remains at least48dp across both axes",
+    "english-chair-640x360-start: real object projection remains at least48dp across both axes",
+    "english-chair-640x360-start: real object projection remains at least48dp across both axes",
+    "english-chair-640x360-start: original Lumo stays at a readable projected height rather than a thumbnail",
+    "english-chair-640x360-first-hint: real object projection remains at least48dp across both axes",
+    "english-chair-640x360-first-hint: real object projection remains at least48dp across both axes",
+    "english-chair-640x360-first-hint: real object projection remains at least48dp across both axes",
+    "english-chair-640x360-first-hint: original Lumo stays at a readable projected height rather than a thumbnail",
+    "chair: first hint layout: real object projection remains at least48dp across both axes",
+    "chair: first hint layout: real object projection remains at least48dp across both axes",
+    "chair: first hint layout: real object projection remains at least48dp across both axes",
+    "chair: first hint layout: original Lumo stays at a readable projected height rather than a thumbnail",
+    "english-paper-2400x1080-first-hint: real object projection remains at least48dp across both axes",
+    "english-paper-2400x1080-first-hint: real object projection remains at least48dp across both axes",
+    "paper: first hint layout: real object projection remains at least48dp across both axes",
+    "paper: first hint layout: real object projection remains at least48dp across both axes"
+  ],
+  "hint_layouts": [
+    {
+      "attempts": 1,
+      "background_depth": [
+        23.1405010223389,
+        58.9121055603027
+      ],
+      "complete": false,
+      "controls": [
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "1"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "2"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "3"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "rect_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "text": "Hinweis"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "rect_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "text": "Neu"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "rect_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "text": "Anhören"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "rect_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "text": "Lumo fragen"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "text": "Zur Aufgabe"
+        }
+      ],
+      "density": 1.0,
+      "explanation": "Damit misst du gerade Strecken. Die kleinen Striche zeigen die Länge.",
+      "footer_px": [
+        12.0,
+        208.0,
+        616.0,
+        140.0
+      ],
+      "foreground_far_depth": 17.8715724945068,
+      "header_px": [
+        12.0,
+        12.0,
+        616.0,
+        113.0
+      ],
+      "hint_level": 1,
+      "lumo_px": [
+        246.055618286133,
+        135.009994506836,
+        38.1402740478516,
+        62.9799957275391
+      ],
+      "name": "ruler: first hint layout",
+      "objects": [
+        {
+          "bounds_px": [
+            293.299285888672,
+            177.695587158203,
+            29.1562194824219,
+            19.1142425537109
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 924,
+          "word": "ruler"
+        },
+        {
+          "bounds_px": [
+            329.043701171875,
+            167.613800048828,
+            29.15625,
+            29.1960296630859
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 3572,
+          "word": "apple"
+        },
+        {
+          "bounds_px": [
+            364.788146972656,
+            160.473922729492,
+            29.1562194824219,
+            36.3989868164062
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 5812,
+          "word": "sun"
+        }
+      ],
+      "objects_order": [
+        "ruler",
+        "apple",
+        "sun"
+      ],
+      "observation_source": "platform_fixture",
+      "stage_px": [
+        16.0,
+        133.0,
+        608.0,
+        67.0
+      ],
+      "status": "Tippe den Gegenstand oder seine Zahl an.",
+      "title": "Englisch · ruler",
+      "window_px": [
+        640,
+        360
+      ],
+      "word": "ruler"
+    },
+    {
+      "attempts": 1,
+      "background_depth": [
+        23.1405010223389,
+        58.9121055603027
+      ],
+      "complete": false,
+      "controls": [
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "1"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "2"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "3"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "rect_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "text": "Hinweis"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "rect_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "text": "Neu"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "rect_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "text": "Anhören"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "rect_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "text": "Lumo fragen"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "text": "Zur Aufgabe"
+        }
+      ],
+      "density": 1.0,
+      "explanation": "Damit entfernst du Bleistiftstriche. Das weiche Stück steckt in einer Papierhülle.",
+      "footer_px": [
+        12.0,
+        208.0,
+        616.0,
+        140.0
+      ],
+      "foreground_far_depth": 17.8715724945068,
+      "header_px": [
+        12.0,
+        12.0,
+        616.0,
+        113.0
+      ],
+      "hint_level": 1,
+      "lumo_px": [
+        246.055618286133,
+        135.009994506836,
+        38.1402740478516,
+        62.9799957275391
+      ],
+      "name": "rubber: first hint layout",
+      "objects": [
+        {
+          "bounds_px": [
+            293.299285888672,
+            176.369567871094,
+            29.1562194824219,
+            20.4402618408203
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 744,
+          "word": "rubber"
+        },
+        {
+          "bounds_px": [
+            329.043701171875,
+            176.58903503418,
+            29.15625,
+            20.2207946777344
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 1544,
+          "word": "paper"
+        },
+        {
+          "bounds_px": [
+            364.788146972656,
+            174.245086669922,
+            29.1562194824219,
+            22.6278228759766
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2164,
+          "word": "book"
+        }
+      ],
+      "objects_order": [
+        "rubber",
+        "paper",
+        "book"
+      ],
+      "observation_source": "platform_fixture",
+      "stage_px": [
+        16.0,
+        133.0,
+        608.0,
+        67.0
+      ],
+      "status": "Tippe den Gegenstand oder seine Zahl an.",
+      "title": "Englisch · rubber",
+      "window_px": [
+        640,
+        360
+      ],
+      "word": "rubber"
+    },
+    {
+      "attempts": 1,
+      "background_depth": [
+        23.1405010223389,
+        58.9121055603027
+      ],
+      "complete": false,
+      "controls": [
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "1"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            86.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "2"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "rect_px": [
+            146.0,
+            222.0,
+            52.0,
+            52.0
+          ],
+          "text": "3"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "rect_px": [
+            206.0,
+            222.0,
+            89.0,
+            52.0
+          ],
+          "text": "Hinweis"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "rect_px": [
+            303.0,
+            222.0,
+            58.0,
+            52.0
+          ],
+          "text": "Neu"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "rect_px": [
+            369.0,
+            222.0,
+            96.0,
+            52.0
+          ],
+          "text": "Anhören"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "rect_px": [
+            473.0,
+            222.0,
+            129.0,
+            52.0
+          ],
+          "text": "Lumo fragen"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "rect_px": [
+            26.0,
+            282.0,
+            125.0,
+            52.0
+          ],
+          "text": "Zur Aufgabe"
+        }
+      ],
+      "density": 1.0,
+      "explanation": "Darauf kannst du sitzen. Suche die Sitzfläche und die hohe Rückenlehne.",
+      "footer_px": [
+        12.0,
+        208.0,
+        616.0,
+        140.0
+      ],
+      "foreground_far_depth": 17.8715724945068,
+      "header_px": [
+        12.0,
+        12.0,
+        616.0,
+        113.0
+      ],
+      "hint_level": 1,
+      "lumo_px": [
+        246.055618286133,
+        135.009994506836,
+        38.1402740478516,
+        62.9799957275391
+      ],
+      "name": "chair: first hint layout",
+      "objects": [
+        {
+          "bounds_px": [
+            293.299285888672,
+            164.27326965332,
+            29.1562194824219,
+            32.5365600585938
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 828,
+          "word": "desk"
+        },
+        {
+          "bounds_px": [
+            329.043701171875,
+            161.415008544922,
+            29.15625,
+            35.3948211669922
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 1508,
+          "word": "chair"
+        },
+        {
+          "bounds_px": [
+            364.788146972656,
+            165.125076293945,
+            29.1562194824219,
+            31.7478332519531
+          ],
+          "spatial_48dp_target_px": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2848,
+          "word": "school bag"
+        }
+      ],
+      "objects_order": [
+        "desk",
+        "chair",
+        "school bag"
+      ],
+      "observation_source": "platform_fixture",
+      "stage_px": [
+        16.0,
+        133.0,
+        608.0,
+        67.0
+      ],
+      "status": "Tippe den Gegenstand oder seine Zahl an.",
+      "title": "Englisch · chair",
+      "window_px": [
+        640,
+        360
+      ],
+      "word": "chair"
+    },
+    {
+      "attempts": 1,
+      "background_depth": [
+        23.1405010223389,
+        58.9121055603027
+      ],
+      "complete": false,
+      "controls": [
+        {
+          "enabled": true,
+          "exposed_px": [
+            204.25,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "rect_px": [
+            204.25,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "text": "1"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            361.75,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "rect_px": [
+            361.75,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "text": "2"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            519.25,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "rect_px": [
+            519.25,
+            812.249938964844,
+            136.5,
+            136.5
+          ],
+          "text": "3"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            676.75,
+            812.249938964844,
+            233.625,
+            136.5
+          ],
+          "rect_px": [
+            676.75,
+            812.249938964844,
+            233.625,
+            136.5
+          ],
+          "text": "Hinweis"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            931.375,
+            812.249938964844,
+            152.25,
+            136.5
+          ],
+          "rect_px": [
+            931.375,
+            812.249938964844,
+            152.25,
+            136.5
+          ],
+          "text": "Neu"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            1104.625,
+            812.249938964844,
+            252.0,
+            136.5
+          ],
+          "rect_px": [
+            1104.625,
+            812.249938964844,
+            252.0,
+            136.5
+          ],
+          "text": "Anhören"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            1377.625,
+            812.249938964844,
+            338.625,
+            136.5
+          ],
+          "rect_px": [
+            1377.625,
+            812.249938964844,
+            338.625,
+            136.5
+          ],
+          "text": "Lumo fragen"
+        },
+        {
+          "enabled": true,
+          "exposed_px": [
+            1737.25,
+            812.249938964844,
+            328.125,
+            136.5
+          ],
+          "rect_px": [
+            1737.25,
+            812.249938964844,
+            328.125,
+            136.5
+          ],
+          "text": "Zur Aufgabe"
+        }
+      ],
+      "density": 2.625,
+      "explanation": "Auf diesem dünnen weißen Blatt kannst du schreiben oder zeichnen. Die Linien helfen dir dabei.",
+      "footer_px": [
+        167.5,
+        775.499938964844,
+        2201.0,
+        210.0
+      ],
+      "foreground_far_depth": 17.8715724945068,
+      "header_px": [
+        167.5,
+        31.5,
+        2201.0,
+        296.625
+      ],
+      "hint_level": 1,
+      "lumo_px": [
+        820.609008789062,
+        361.286193847656,
+        230.762939453125,
+        381.052490234375
+      ],
+      "name": "paper: first hint layout",
+      "objects": [
+        {
+          "bounds_px": [
+            1106.45080566406,
+            612.854919433594,
+            176.406005859375,
+            122.343322753906
+          ],
+          "spatial_48dp_target_px": [
+            1131.65380859375,
+            546.394897460938,
+            126.0,
+            126.0
+          ],
+          "triangles": 840,
+          "word": "paper"
+        },
+        {
+          "bounds_px": [
+            1322.71789550781,
+            598.673095703125,
+            176.406005859375,
+            136.525146484375
+          ],
+          "spatial_48dp_target_px": [
+            1347.9208984375,
+            546.394897460938,
+            126.0,
+            126.0
+          ],
+          "triangles": 1508,
+          "word": "book"
+        },
+        {
+          "bounds_px": [
+            1538.98498535156,
+            611.527038574219,
+            176.406005859375,
+            124.052795410156
+          ],
+          "spatial_48dp_target_px": [
+            1564.18798828125,
+            546.394897460938,
+            126.0,
+            126.0
+          ],
+          "triangles": 2104,
+          "word": "rubber"
+        }
+      ],
+      "objects_order": [
+        "paper",
+        "book",
+        "rubber"
+      ],
+      "observation_source": "platform_fixture",
+      "stage_px": [
+        178.0,
+        349.125,
+        2180.0,
+        405.374938964844
+      ],
+      "status": "Tippe den Gegenstand oder seine Zahl an.",
+      "title": "Englisch · paper",
+      "window_px": [
+        2400,
+        1080
+      ],
+      "word": "paper"
+    }
+  ],
+  "input_events": [
+    {
+      "context": "ruler: wrong visible object choice",
+      "position": [
+        112.0,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 9616
+    },
+    {
+      "context": "ruler: wrong visible object choice",
+      "position": [
+        112.0,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 9616
+    },
+    {
+      "context": "ruler: first targeted hint",
+      "position": [
+        250.5,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 10339
+    },
+    {
+      "context": "ruler: first targeted hint",
+      "position": [
+        250.5,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 10339
+    },
+    {
+      "context": "ruler: bounded outline hint",
+      "position": [
+        250.5,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 11970
+    },
+    {
+      "context": "ruler: bounded outline hint",
+      "position": [
+        250.5,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 11972
+    },
+    {
+      "context": "ruler: correct actual object",
+      "position": [
+        52.0,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 12600
+    },
+    {
+      "context": "ruler: correct actual object",
+      "position": [
+        52.0,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 12600
+    },
+    {
+      "context": "ruler: existing local German readback",
+      "position": [
+        401.0,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 13328
+    },
+    {
+      "context": "ruler: existing local German readback",
+      "position": [
+        401.0,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 13328
+    },
+    {
+      "context": "ruler: restart local illustration",
+      "position": [
+        316.0,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 14751
+    },
+    {
+      "context": "ruler: restart local illustration",
+      "position": [
+        316.0,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 14751
+    },
+    {
+      "context": "ruler: return to actual host task",
+      "position": [
+        88.5,
+        308.0
+      ],
+      "pressed": true,
+      "ticks_msec": 15421
+    },
+    {
+      "context": "ruler: return to actual host task",
+      "position": [
+        88.5,
+        308.0
+      ],
+      "pressed": false,
+      "ticks_msec": 15421
+    },
+    {
+      "context": "rubber: wrong visible object choice",
+      "position": [
+        112.0,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 18609
+    },
+    {
+      "context": "rubber: wrong visible object choice",
+      "position": [
+        112.0,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 18609
+    },
+    {
+      "context": "rubber: first targeted hint",
+      "position": [
+        250.5,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 19257
+    },
+    {
+      "context": "rubber: first targeted hint",
+      "position": [
+        250.5,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 19258
+    },
+    {
+      "context": "rubber: bounded outline hint",
+      "position": [
+        250.5,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 20529
+    },
+    {
+      "context": "rubber: bounded outline hint",
+      "position": [
+        250.5,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 20530
+    },
+    {
+      "context": "rubber: correct actual object",
+      "position": [
+        52.0,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 21081
+    },
+    {
+      "context": "rubber: correct actual object",
+      "position": [
+        52.0,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 21081
+    },
+    {
+      "context": "rubber: existing local German readback",
+      "position": [
+        401.0,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 21758
+    },
+    {
+      "context": "rubber: existing local German readback",
+      "position": [
+        401.0,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 21758
+    },
+    {
+      "context": "rubber: restart local illustration",
+      "position": [
+        316.0,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 23098
+    },
+    {
+      "context": "rubber: restart local illustration",
+      "position": [
+        316.0,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 23098
+    },
+    {
+      "context": "rubber: return to actual host task",
+      "position": [
+        88.5,
+        308.0
+      ],
+      "pressed": true,
+      "ticks_msec": 23892
+    },
+    {
+      "context": "rubber: return to actual host task",
+      "position": [
+        88.5,
+        308.0
+      ],
+      "pressed": false,
+      "ticks_msec": 23893
+    },
+    {
+      "context": "chair: wrong visible object choice",
+      "position": [
+        172.0,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 27919
+    },
+    {
+      "context": "chair: wrong visible object choice",
+      "position": [
+        172.0,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 27920
+    },
+    {
+      "context": "chair: first targeted hint",
+      "position": [
+        250.5,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 28536
+    },
+    {
+      "context": "chair: first targeted hint",
+      "position": [
+        250.5,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 28537
+    },
+    {
+      "context": "chair: bounded outline hint",
+      "position": [
+        250.5,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 30077
+    },
+    {
+      "context": "chair: bounded outline hint",
+      "position": [
+        250.5,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 30079
+    },
+    {
+      "context": "chair: correct actual object",
+      "position": [
+        112.0,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 30755
+    },
+    {
+      "context": "chair: correct actual object",
+      "position": [
+        112.0,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 30755
+    },
+    {
+      "context": "chair: existing local German readback",
+      "position": [
+        401.0,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 31311
+    },
+    {
+      "context": "chair: existing local German readback",
+      "position": [
+        401.0,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 31311
+    },
+    {
+      "context": "chair: restart local illustration",
+      "position": [
+        316.0,
+        248.0
+      ],
+      "pressed": true,
+      "ticks_msec": 32864
+    },
+    {
+      "context": "chair: restart local illustration",
+      "position": [
+        316.0,
+        248.0
+      ],
+      "pressed": false,
+      "ticks_msec": 32864
+    },
+    {
+      "context": "chair: return to actual host task",
+      "position": [
+        88.5,
+        308.0
+      ],
+      "pressed": true,
+      "ticks_msec": 33442
+    },
+    {
+      "context": "chair: return to actual host task",
+      "position": [
+        88.5,
+        308.0
+      ],
+      "pressed": false,
+      "ticks_msec": 33443
+    },
+    {
+      "context": "paper: wrong visible object choice",
+      "position": [
+        430.0,
+        880.499938964844
+      ],
+      "pressed": true,
+      "ticks_msec": 40543
+    },
+    {
+      "context": "paper: wrong visible object choice",
+      "position": [
+        430.0,
+        880.499938964844
+      ],
+      "pressed": false,
+      "ticks_msec": 40544
+    },
+    {
+      "context": "paper: first targeted hint",
+      "position": [
+        793.5625,
+        880.499938964844
+      ],
+      "pressed": true,
+      "ticks_msec": 41838
+    },
+    {
+      "context": "paper: first targeted hint",
+      "position": [
+        793.5625,
+        880.499938964844
+      ],
+      "pressed": false,
+      "ticks_msec": 41838
+    },
+    {
+      "context": "paper: bounded outline hint",
+      "position": [
+        793.5625,
+        880.499938964844
+      ],
+      "pressed": true,
+      "ticks_msec": 45747
+    },
+    {
+      "context": "paper: bounded outline hint",
+      "position": [
+        793.5625,
+        880.499938964844
+      ],
+      "pressed": false,
+      "ticks_msec": 45748
+    },
+    {
+      "context": "paper: correct actual object",
+      "position": [
+        272.5,
+        880.499938964844
+      ],
+      "pressed": true,
+      "ticks_msec": 47253
+    },
+    {
+      "context": "paper: correct actual object",
+      "position": [
+        272.5,
+        880.499938964844
+      ],
+      "pressed": false,
+      "ticks_msec": 47253
+    },
+    {
+      "context": "paper: existing local German readback",
+      "position": [
+        1188.625,
+        880.499938964844
+      ],
+      "pressed": true,
+      "ticks_msec": 48694
+    },
+    {
+      "context": "paper: existing local German readback",
+      "position": [
+        1188.625,
+        880.499938964844
+      ],
+      "pressed": false,
+      "ticks_msec": 48694
+    },
+    {
+      "context": "paper: restart local illustration",
+      "position": [
+        965.5,
+        880.499938964844
+      ],
+      "pressed": true,
+      "ticks_msec": 51715
+    },
+    {
+      "context": "paper: restart local illustration",
+      "position": [
+        965.5,
+        880.499938964844
+      ],
+      "pressed": false,
+      "ticks_msec": 51716
+    },
+    {
+      "context": "paper: return to actual host task",
+      "position": [
+        1901.3125,
+        880.499938964844
+      ],
+      "pressed": true,
+      "ticks_msec": 53233
+    },
+    {
+      "context": "paper: return to actual host task",
+      "position": [
+        1901.3125,
+        880.499938964844
+      ],
+      "pressed": false,
+      "ticks_msec": 53234
+    }
+  ],
+  "renderer": "X11",
+  "scope": "Four existing English CI profiles with real llvmpipe screenshots; full CI gate runs separately",
+  "source_sha256": {
+    "scripts/learning/english_object_gallery.gd": "9e18d9139748a5aa40e938e9800dd491b3909d69aa057080a1c2a4022445a093",
+    "scripts/learning/english_vocabulary.gd": "86c2bbab28b130ba4ae9f74f265cbb9f95c81e2a4d78fa7dd4716a1d51ef7f20",
+    "scripts/learning/learning_activity.gd": "5b59e33fa78c7e8edfb61c427b6d8ac37dd838fd9fd748a7e13182a91099a7fe",
+    "scripts/learning/learning_world.gd": "11b9b24943b63c5fe8837600d4a3c1c38adac4999f962d46858e413d6e7b9ec1",
+    "scripts/tests/learning_english_regression.gd": "c6ce712d4b8539c6cb08e0accbd94853cc7c53aa87f43c16342055073f5578e9"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "scope": "Same routed bridge_ten screenshots across prior and corrected scene. Independent captures may differ in animated background; this reports actual bytes and pixels.",
+  "images": [
+    {
+      "image": "bridge_ten_1280x720.png",
+      "before_exists": true,
+      "after_sha256": "81fadd039a53be6eb5918dfdcf702a20cfb0df94ab2448b9eb69404e1c5f9d88",
+      "before_sha256": "81fadd039a53be6eb5918dfdcf702a20cfb0df94ab2448b9eb69404e1c5f9d88",
+      "same_dimensions": true,
+      "pixel_identical": true,
+      "changed_pixels": 0,
+      "total_pixels": 921600,
+      "changed_fraction": 0.0
+    },
+    {
+      "image": "bridge_ten_412x915.png",
+      "before_exists": true,
+      "after_sha256": "a5b8459f89224d1445f043b156e9109421de9eb6efe69c81f3b0293e8bfa95e8",
+      "before_sha256": "a5b8459f89224d1445f043b156e9109421de9eb6efe69c81f3b0293e8bfa95e8",
+      "same_dimensions": true,
+      "pixel_identical": true,
+      "changed_pixels": 0,
+      "total_pixels": 376980,
+      "changed_fraction": 0.0
+    },
+    {
+      "image": "bridge_ten_412x960.png",
+      "before_exists": true,
+      "after_sha256": "fda64e19b35c8a4a74dcc4a3b441346dd44d1c8b6e85cedcf070759cb6136d8f",
+      "before_sha256": "fda64e19b35c8a4a74dcc4a3b441346dd44d1c8b6e85cedcf070759cb6136d8f",
+      "same_dimensions": true,
+      "pixel_identical": true,
+      "changed_pixels": 0,
+      "total_pixels": 395520,
+      "changed_fraction": 0.0
+    },
+    {
+      "image": "bridge_ten_750x832.png",
+      "before_exists": true,
+      "after_sha256": "b70cc130e1938e9d0a01bb03acdec16e90dc6e912dd0dcdf0e7697a9bc249aec",
+      "before_sha256": "b70cc130e1938e9d0a01bb03acdec16e90dc6e912dd0dcdf0e7697a9bc249aec",
+      "same_dimensions": true,
+      "pixel_identical": true,
+      "changed_pixels": 0,
+      "total_pixels": 624000,
+      "changed_fraction": 0.0
+    },
+    {
+      "image": "bridge_ten_after_two.png",
+      "before_exists": true,
+      "after_sha256": "0e0bdafa312a5284648b90d6fce281ccb147dacd358c6d174b3101d8a9ae2990",
+      "before_sha256": "0e0bdafa312a5284648b90d6fce281ccb147dacd358c6d174b3101d8a9ae2990",
+      "same_dimensions": true,
+      "pixel_identical": true,
+      "changed_pixels": 0,
+      "total_pixels": 921600,
+      "changed_fraction": 0.0
+    }
+  ]
+}

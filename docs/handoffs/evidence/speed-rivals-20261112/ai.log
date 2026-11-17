@@ -1,0 +1,21 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: sonnenhafen mode=race
+[KartAI] off-road recover max frame delta: 0.866 m
+[KartAI] cruise max frame delta: 0.866 m
+[KartAI] rubber-band check: ahead 27.075 m, behind 27.075 m (diff 0.000 m)
+[KartAI] gemuetlich: +234.28 m in 8.0 s, mean |lateral-line| 0.744 m
+[KartAI] flott: +327.50 m in 8.0 s, mean |lateral-line| 0.785 m
+[KartAI] pro: +403.01 m in 8.0 s, mean |lateral-line| 0.683 m
+[KartAI] estimated lap times: Entdecken 63.23 s, Abenteuer 45.23 s, Sternen-Profi 36.76 s
+[KartAI] same unobstructed50m road: { "gemuetlich": 0.56411637403433, "flott": 0.01108185532805, "pro": 0.16766471711416 }
+[KartAI] PASS: no teleport, no rubber-band, difficulty order holds

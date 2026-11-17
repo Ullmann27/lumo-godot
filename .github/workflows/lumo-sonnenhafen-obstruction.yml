@@ -1,0 +1,60 @@
+name: Lumo Sonnenhafen 1.85km obstacle-clearance regression
+on:
+  push:
+    branches:
+      - chatgpt/lumo-b6-clear-sonnenhafen-road-2026-10-17
+  pull_request:
+    paths:
+      - scripts/games/kart_world.gd
+      - scripts/tests/kart_sonnenhafen_obstruction_regression.gd
+      - .github/workflows/lumo-sonnenhafen-obstruction.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  road-clearance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install actual Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import actual original art and compile Godot source
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit \
+            2>&1 | tee "$RUNNER_TEMP/import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import.log"
+      - name: All 12 actual mountain mesh footprints must clear 1.85km track
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 240 \
+            --log "$RUNNER_TEMP/obstructions.log" \
+            --required '[RoadObstruction] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_sonnenhafen_obstruction_regression.gd
+      - name: 1.85km road and both 3D detail profiles must remain playable
+        run: |
+          set -euo pipefail
+          for case in 'kart_sonnenhafen_long_course_regression:[SonnenhafenLong] PASS:' 'kart_sonnenhafen_hero_coast_regression:[SonnenhafenHeroCoast] PASS:' 'kart_sonnenhafen_viaduct_regression:[CoastalViaduct] PASS:'; do
+            IFS=: read -r script marker <<< "$case"
+            python3 tools/run_godot_probe.py --timeout 240 \
+              --log "$RUNNER_TEMP/$script.log" --required "$marker" -- \
+              godot --headless --audio-driver Dummy --path . \
+              --script "res://scripts/tests/$script.gd"
+          done
+      - name: Save collision-clearance evidence and world logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sonnenhafen-unblocked-road-${{ github.run_id }}
+          path: ${{ runner.temp }}/*.log
+          if-no-files-found: warn

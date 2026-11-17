@@ -1,0 +1,216 @@
+{
+  "production_commit": "cdb624e9f7d76d577acdb6c3c82be1b61bcce906",
+  "equivalent_root_commit": "4db6c1f",
+  "frozen_runtime_snapshot": "505ed43c49c6a87885ba8a1a8d76c42a495c274e",
+  "required_scope_fix": "1e2ef7da3003868c911bd7fde95b96cd72b55cb6",
+  "headless_test_source_commit": "cdb624e9f7d76d577acdb6c3c82be1b61bcce906",
+  "headless_test_sha256": {
+    "scripts/tests/nextgen_avatar_contract_review.gd": "9b0f2fb8b54232fd74f9764d7e8e5f71a88dca49dd2db0cf9d03cbedebdbfb5f",
+    "scripts/tests/nextgen_learning_base_audio_regression.gd": "2ea3116afa0902928382243920f045cdf14892118461bc93383ad22d94386311",
+    "scripts/tests/nextgen_learning_route_review.gd": "670238045ef5305afbc30fc3a5b219b7ee84382b1837073f3ce3a619871aabb2"
+  },
+  "software_and_geometry_source_sha256": {
+    "scripts/learning/learning_world.gd": "11b9b24943b63c5fe8837600d4a3c1c38adac4999f962d46858e413d6e7b9ec1",
+    "scripts/learning/learning_frame_probe.gd": "8531f67483a69337ecd48788c2b2d1c11b946567f4f436b7749b93dbfd2fecd9",
+    "scripts/learning/learning_companion_scope.gd": "d498c1dbae91462a40f4afeb3a512df9c616506c9c3ba519133814e9677d0612",
+    "scripts/lumo_next/avatar_director.gd": "f3d805d4decf7cc9f0b90c52e44151bdafbef58c14ef97755af3563f0029441e",
+    "scripts/lumo_next/learning_lumo_actor.gd": "3bf21847f6384873ab22aae368cf3a2fb2826f09efa0bd19cab274055fbe521b",
+    "scripts/lumo_next/learning_target_registry.gd": "849ce50604846c1459eca3a60fa69dc7928e0580c61c1a1dcee3129103022884",
+    "scripts/lumo_next/learning_world_next.gd": "028b920e1ba39deac98805c7d0dea21bad381def26abb435d50d61d8baf87234",
+    "scripts/tests/nextgen_avatar_contract_review.gd": "9b0f2fb8b54232fd74f9764d7e8e5f71a88dca49dd2db0cf9d03cbedebdbfb5f",
+    "scripts/tests/nextgen_learning_base_audio_regression.gd": "2ea3116afa0902928382243920f045cdf14892118461bc93383ad22d94386311",
+    "scripts/tests/nextgen_learning_route_review.gd": "25ba78b2f88768731f348c6c913cde0d7a6751289767b2c687bb21a152830d9f",
+    "scripts/tests/nextgen_learning_perf_capture.gd": "a7b736540a41f3f0298b9077e209fb857d4aa4e1b83b870d6ff164a88e60dfb6",
+    "scripts/tests/nextgen_learning_geometry_probe.gd": "2a5b39b537a34c807b1f81c11f4684c519c57b7e59f473a3082c2110d674dfaa",
+    "assets/lumo_next/character/Lumo-Learning.glb": "cc210fb03bd831f21f0ba99aa12c7b7ef60f2fb5a38e0ca30a8b059d51f08163"
+  },
+  "checks": {
+    "actor": 300,
+    "original_base_fox": 69,
+    "headless_12_native_kinds_5_viewports": 5478,
+    "software_4_native_kinds_7_viewports": 2110,
+    "validate_project_pass": 118
+  },
+  "headless_errors": 0,
+  "software_script_errors": 0,
+  "software_renderer_warnings": [
+    "unsupported V-Sync changes",
+    "SSAA requires Forward+/Mobile",
+    "volumetric fog requires Forward+"
+  ],
+  "viewport_limits": "412x960 and 750x832 are indirect viewport scenarios, not physical Fold7 tests or measured density.",
+  "audio_limits": "Software measurement uses actual AudioStreamPlayer PCM test signal and Dummy output; no physical Android TTS or acoustic proof.",
+  "visual_limits": [
+    "Banane caption overlaps lower LUMO body/flower row",
+    "Task card overlaps parts of LUMO body; head remains visible"
+  ],
+  "coverage_limits": "12 bounded native activity kinds do not prove all Flutter task routes.",
+  "performance_limits": "Actual llvmpipe observations only; no 60 FPS pass, no physical Android result; first window has one cold-start sample.",
+  "artifacts": [
+    {
+      "path": "README.md",
+      "bytes": 7073,
+      "sha256": "0887c80ff6dadb975338fda0f3f5e42e989d83661b1e93cd3e27481a008c5c7b"
+    },
+    {
+      "path": "avatar.log",
+      "bytes": 518,
+      "sha256": "7cdc1026e8940d00365aeb27ff9ca6deef4dcd5baf6c5c12c1915fff2dd8ef14"
+    },
+    {
+      "path": "geometry.json",
+      "bytes": 6926,
+      "sha256": "8c989d5eee2d02de4b0c65d93dd932ff67660b971c9f93f2ed4333bdf07b7e48"
+    },
+    {
+      "path": "geometry.log",
+      "bytes": 5930,
+      "sha256": "ae4c300dc257ad2a17416236a12d4fdeba403eb738059282a17bf29048bc50b5"
+    },
+    {
+      "path": "original-base-audio.log",
+      "bytes": 514,
+      "sha256": "181656fbc11b99b2732ac482ca30a5e1ae03215cd5e2e467ef8baeaefcf9227c"
+    },
+    {
+      "path": "performance-windows.json",
+      "bytes": 3434,
+      "sha256": "102a35030f992c883771ea4a224b5637dc92f8fd25811b0d858347dbe1347bda"
+    },
+    {
+      "path": "route-headless-12-kinds.log",
+      "bytes": 1194,
+      "sha256": "819207f6f8b26f9df70f056b26293e58934c25f2783a45c7af76c86d21ce9150"
+    },
+    {
+      "path": "screenshots/bridge_ten_1280x720.png",
+      "bytes": 368881,
+      "sha256": "81fadd039a53be6eb5918dfdcf702a20cfb0df94ab2448b9eb69404e1c5f9d88"
+    },
+    {
+      "path": "screenshots/bridge_ten_412x915.png",
+      "bytes": 144447,
+      "sha256": "a5b8459f89224d1445f043b156e9109421de9eb6efe69c81f3b0293e8bfa95e8"
+    },
+    {
+      "path": "screenshots/bridge_ten_412x960.png",
+      "bytes": 153899,
+      "sha256": "fda64e19b35c8a4a74dcc4a3b441346dd44d1c8b6e85cedcf070759cb6136d8f"
+    },
+    {
+      "path": "screenshots/bridge_ten_750x832.png",
+      "bytes": 225427,
+      "sha256": "b70cc130e1938e9d0a01bb03acdec16e90dc6e912dd0dcdf0e7697a9bc249aec"
+    },
+    {
+      "path": "screenshots/bridge_ten_after_two.png",
+      "bytes": 375417,
+      "sha256": "0e0bdafa312a5284648b90d6fce281ccb147dacd358c6d174b3101d8a9ae2990"
+    },
+    {
+      "path": "screenshots/bridge_ten_perf_412x915.png",
+      "bytes": 146672,
+      "sha256": "747ad493468467ebadb50bff6a8dde93eac867b95ec8ef991737a36b58073f12"
+    },
+    {
+      "path": "screenshots/pattern_1280x720.png",
+      "bytes": 329434,
+      "sha256": "67814086b04ca8d780b9787bb33f549240f0878621b74ae32b09990946d7e859"
+    },
+    {
+      "path": "screenshots/pattern_412x915.png",
+      "bytes": 134078,
+      "sha256": "5fee12d8e6af8d6d7ffecceae1cdd88f15effed2f8f63f98f572c29de6faed40"
+    },
+    {
+      "path": "screenshots/pattern_412x960.png",
+      "bytes": 137696,
+      "sha256": "7dc13cd9f27693f50404b0e7ac8e41948276b0ab64e76e03e71ac373dbbe6566"
+    },
+    {
+      "path": "screenshots/pattern_750x832.png",
+      "bytes": 187880,
+      "sha256": "a63a634dd7af9ea0a11d85d66e95641e66b00c92f706c14d232b51ca69780a99"
+    },
+    {
+      "path": "screenshots/pattern_after_hint.png",
+      "bytes": 347722,
+      "sha256": "dee5af0823613f126924675060f3660d9d53249e2540ef5526331bfba61cbcf6"
+    },
+    {
+      "path": "screenshots/syllables_1280x720.png",
+      "bytes": 347854,
+      "sha256": "295697af5037f30b5a109e081aa125b0a415f766a27a4ea5702a8188cb723a59"
+    },
+    {
+      "path": "screenshots/syllables_412x915.png",
+      "bytes": 130131,
+      "sha256": "249457124ffcd7d0b67926b6f341f8e332e81cfcb13460eb10313583be9ae56e"
+    },
+    {
+      "path": "screenshots/syllables_412x960.png",
+      "bytes": 135217,
+      "sha256": "410ad4d644cf31a9834fd5455534ddc87d42392ddad1bae00014771a9449faa5"
+    },
+    {
+      "path": "screenshots/syllables_750x832.png",
+      "bytes": 213183,
+      "sha256": "0bdb52910dbb8228bf8010fa6d1a2fa30d31149535af28c874fc97b19ee084bf"
+    },
+    {
+      "path": "screenshots/task_card_1280x720.png",
+      "bytes": 343229,
+      "sha256": "75f4834bf77bafeaf76b1a9503bdda4ba0090f21a402b9e75541274e16fa0ab8"
+    },
+    {
+      "path": "screenshots/task_card_412x915.png",
+      "bytes": 115458,
+      "sha256": "5ff964ab4d5ddbc052a40078212ed97f2e591e98632fa51c62507efa8ab322ce"
+    },
+    {
+      "path": "screenshots/task_card_412x960.png",
+      "bytes": 124876,
+      "sha256": "5df33a35e7145a0f4885cccb1df3faab0636bb136dd35f1d550f58ba9c3447b2"
+    },
+    {
+      "path": "screenshots/task_card_750x832.png",
+      "bytes": 204930,
+      "sha256": "9fb708ca81bb2bbeb8f74d52f67175462f5660c1b13ca6f967abde7426dc5efe"
+    },
+    {
+      "path": "software-perf-first-run.json",
+      "bytes": 448,
+      "sha256": "d7b50bb539258d2be3a7c0c5c5d3661f85569a9ede393902610a4e8e28f69988"
+    },
+    {
+      "path": "software-perf-first.log",
+      "bytes": 2859,
+      "sha256": "ebb479d3d1356084e2b4bd39660c954f78cea01f4e7844ef81dfd8bf371b425f"
+    },
+    {
+      "path": "software-perf-three-windows-run.json",
+      "bytes": 450,
+      "sha256": "167dff9c0541899642ecacd70029065ca9f70f41754bd36de939c5e4678d3502"
+    },
+    {
+      "path": "software-perf-three-windows.log",
+      "bytes": 3607,
+      "sha256": "a439bc6d86663782c8031a7f7bfa2485a159a3b5f31b1eeb89f3876d9868f9cc"
+    },
+    {
+      "path": "software-route-run.json",
+      "bytes": 515,
+      "sha256": "6dda8871539ac945140f754c315924c385c45bd1f0917c49974c2ffad7b32bf3"
+    },
+    {
+      "path": "software-route.log",
+      "bytes": 4419,
+      "sha256": "fc8c735c295df2b4da11ec0735c731961dbca7ca60a0d074e9236dae1a291115"
+    },
+    {
+      "path": "validate-project.log",
+      "bytes": 5508,
+      "sha256": "e04d8c44e231e5a994937734bc3a32134b4f8dd8b387907b2e1c6dae09bfc22a"
+    }
+  ]
+}

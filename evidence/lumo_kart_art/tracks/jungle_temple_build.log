@@ -1,0 +1,119 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:08:36 | INFO: Starting glTF 2.0 export
+21:08:36 | INFO: Extracting primitive: Cube.028
+21:08:37 | INFO: Primitives created: 7
+21:08:37 | INFO: Finished glTF 2.0 export in 1.3246450424194336 s
+
+21:08:39 | INFO: Starting glTF 2.0 export
+21:08:39 | INFO: Extracting primitive: Cube.052
+21:08:40 | INFO: Primitives created: 7
+21:08:40 | INFO: Finished glTF 2.0 export in 1.3221077919006348 s
+
+21:08:41 | INFO: Starting glTF 2.0 export
+21:08:41 | INFO: Extracting primitive: TunnelShellCollision_Mesh
+21:08:41 | INFO: Primitives created: 1
+21:08:41 | INFO: Finished glTF 2.0 export in 0.033750295639038086 s
+
+LUMO_TRACK_MODULE jungle_temple portal_entry 8628 7
+21:08:41 | INFO: Starting glTF 2.0 export
+21:08:41 | INFO: Extracting primitive: Cube.104
+21:08:43 | INFO: Primitives created: 7
+21:08:43 | INFO: Finished glTF 2.0 export in 1.561279296875 s
+
+21:08:44 | INFO: Starting glTF 2.0 export
+21:08:44 | INFO: Extracting primitive: Cube.128
+21:08:45 | INFO: Primitives created: 7
+21:08:45 | INFO: Finished glTF 2.0 export in 1.067204475402832 s
+
+21:08:45 | INFO: Starting glTF 2.0 export
+21:08:45 | INFO: Extracting primitive: TunnelShellCollision_Mesh.001
+21:08:45 | INFO: Primitives created: 1
+21:08:45 | INFO: Finished glTF 2.0 export in 0.025980472564697266 s
+
+LUMO_TRACK_MODULE jungle_temple portal_exit 8628 7
+21:08:46 | INFO: Starting glTF 2.0 export
+21:08:46 | INFO: Extracting primitive: Cube.184
+21:08:47 | INFO: Primitives created: 7
+21:08:47 | INFO: Finished glTF 2.0 export in 1.2790277004241943 s
+
+21:08:48 | INFO: Starting glTF 2.0 export
+21:08:48 | INFO: Extracting primitive: Cube.216
+21:08:49 | INFO: Primitives created: 7
+21:08:49 | INFO: Finished glTF 2.0 export in 0.7099480628967285 s
+
+21:08:49 | INFO: Starting glTF 2.0 export
+21:08:49 | INFO: Extracting primitive: TunnelShellCollision_Mesh.002
+21:08:49 | INFO: Primitives created: 1
+21:08:49 | INFO: Finished glTF 2.0 export in 0.022471904754638672 s
+
+LUMO_TRACK_MODULE jungle_temple straight_12m 14188 7
+21:08:50 | INFO: Starting glTF 2.0 export
+21:08:50 | INFO: Extracting primitive: Cube.296
+21:08:51 | INFO: Primitives created: 7
+21:08:51 | INFO: Finished glTF 2.0 export in 0.9564704895019531 s
+
+21:08:53 | INFO: Starting glTF 2.0 export
+21:08:53 | INFO: Extracting primitive: Cube.344
+21:08:53 | INFO: Primitives created: 7
+21:08:53 | INFO: Finished glTF 2.0 export in 0.7071332931518555 s
+
+21:08:54 | INFO: Starting glTF 2.0 export
+21:08:54 | INFO: Extracting primitive: TunnelShellCollision_Mesh.003
+21:08:54 | INFO: Primitives created: 1
+21:08:54 | INFO: Finished glTF 2.0 export in 0.02373218536376953 s
+
+LUMO_TRACK_MODULE jungle_temple curve_left_30 21004 7
+21:08:55 | INFO: Starting glTF 2.0 export
+21:08:55 | INFO: Extracting primitive: Cube.440
+21:08:55 | INFO: Primitives created: 7
+21:08:55 | INFO: Finished glTF 2.0 export in 0.874791145324707 s
+
+21:08:56 | INFO: Starting glTF 2.0 export
+21:08:56 | INFO: Extracting primitive: Cube.488
+21:08:57 | INFO: Primitives created: 7
+21:08:57 | INFO: Finished glTF 2.0 export in 0.4001743793487549 s
+
+21:08:57 | INFO: Starting glTF 2.0 export
+21:08:57 | INFO: Extracting primitive: TunnelShellCollision_Mesh.004
+21:08:57 | INFO: Primitives created: 1
+21:08:57 | INFO: Finished glTF 2.0 export in 0.04105114936828613 s
+
+LUMO_TRACK_MODULE jungle_temple curve_right_30 21004 7
+21:08:59 | INFO: Starting glTF 2.0 export
+21:08:59 | INFO: Extracting primitive: Cube.568
+21:08:59 | INFO: Primitives created: 7
+21:08:59 | INFO: Finished glTF 2.0 export in 0.7402379512786865 s
+
+21:09:01 | INFO: Starting glTF 2.0 export
+21:09:01 | INFO: Extracting primitive: Cube.600
+21:09:01 | INFO: Primitives created: 7
+21:09:01 | INFO: Finished glTF 2.0 export in 0.9778099060058594 s
+
+21:09:02 | INFO: Starting glTF 2.0 export
+21:09:02 | INFO: Extracting primitive: TunnelShellCollision_Mesh.005
+21:09:02 | INFO: Primitives created: 1
+21:09:02 | INFO: Finished glTF 2.0 export in 0.04740142822265625 s
+
+LUMO_TRACK_MODULE jungle_temple grade_down 14188 7
+21:09:03 | INFO: Starting glTF 2.0 export
+21:09:03 | INFO: Extracting primitive: Cube.664
+21:09:03 | INFO: Primitives created: 7
+21:09:03 | INFO: Finished glTF 2.0 export in 0.4553227424621582 s
+
+21:09:04 | INFO: Starting glTF 2.0 export
+21:09:04 | INFO: Extracting primitive: Cube.696
+21:09:04 | INFO: Primitives created: 7
+21:09:04 | INFO: Finished glTF 2.0 export in 0.2839393615722656 s
+
+21:09:05 | INFO: Starting glTF 2.0 export
+21:09:05 | INFO: Extracting primitive: TunnelShellCollision_Mesh.006
+21:09:05 | INFO: Primitives created: 1
+21:09:05 | INFO: Finished glTF 2.0 export in 0.05037951469421387 s
+
+LUMO_TRACK_MODULE jungle_temple grade_up 14188 7
+Info: Packed 5 file(s)
+Info: Saved "jungle_temple_tunnel_workshop.blend"
+LUMO_TRACK_THEME_DONE jungle_temple
+Blender 4.3.2
+
+Blender quit

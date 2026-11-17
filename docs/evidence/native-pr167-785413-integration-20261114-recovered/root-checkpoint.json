@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "recorded_at_utc": "2026-11-14T08:04:37.520148+00:00",
+  "parent": "504c8ba70d02702cbccc370d0d96c36a292c5d27",
+  "parent_tree": "05ba53c02321da069007d5c4b045622f06cc9175",
+  "source_changes": 7,
+  "checkpoint_kind": "source_checkpoint_tests_pending",
+  "archive_binding": {
+    "schema": 1,
+    "archive": "complete-original-pack.tar.gz",
+    "bytes": 168467,
+    "sha256": "e943c3ac64d1ce1f175ac9a2e4d29289499a8dd4c17a338a596d6e551eac325a",
+    "members": 31,
+    "every_member_readback_matches_original": true,
+    "original_manifest_sha256": "e619f64f82a4c7bad1abdb5afc15c1ffa8aced6a4f8cf0f2f229017ee30145cd"
+  },
+  "limits": [
+    "No new APK, Android acceptance, device FPS or public delivery is claimed.",
+    "Existing source worktrees, producer branches and protected branches remain unchanged.",
+    "The isolated temporary checkout uses read-only Git object alternates; this source and evidence are published before tests."
+  ]
+}

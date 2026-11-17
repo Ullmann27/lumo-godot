@@ -1,0 +1,60 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+ERROR: [KartWorldExpansion] winter_sprint/low: race pause freezes the cableway
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_world_expansion_regression.gd:275)
+       [1] _check_cable_cars (res://scripts/tests/kart_world_expansion_regression.gd:185)
+       [2] _check_world (res://scripts/tests/kart_world_expansion_regression.gd:115)
+       [3] _run (res://scripts/tests/kart_world_expansion_regression.gd:59)
+ERROR: [KartWorldExpansion] winter_sprint/low: reduced-motion preference freezes the cableway
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_world_expansion_regression.gd:275)
+       [1] _check_cable_cars (res://scripts/tests/kart_world_expansion_regression.gd:191)
+       [2] _check_world (res://scripts/tests/kart_world_expansion_regression.gd:115)
+       [3] _run (res://scripts/tests/kart_world_expansion_regression.gd:59)
+ERROR: [KartWorldExpansion] winter_sprint/low: hidden cableway performs no animation updates
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_world_expansion_regression.gd:275)
+       [1] _check_cable_cars (res://scripts/tests/kart_world_expansion_regression.gd:198)
+       [2] _check_world (res://scripts/tests/kart_world_expansion_regression.gd:115)
+       [3] _run (res://scripts/tests/kart_world_expansion_regression.gd:59)
+[KartWorldExpansion] CPU cabin-upload state checked; renderer readback requires X11
+[Perf] quality_profile:medium
+[KartWorldExpansion] winter_sprint/low pieces=174 road_segments=3447
+ERROR: [KartWorldExpansion] winter_sprint/full: race pause freezes the cableway
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_world_expansion_regression.gd:275)
+       [1] _check_cable_cars (res://scripts/tests/kart_world_expansion_regression.gd:185)
+       [2] _check_world (res://scripts/tests/kart_world_expansion_regression.gd:115)
+       [3] _run (res://scripts/tests/kart_world_expansion_regression.gd:59)
+       [4] _check_world (res://scripts/tests/kart_world_expansion_regression.gd:160)
+ERROR: [KartWorldExpansion] winter_sprint/full: reduced-motion preference freezes the cableway
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_world_expansion_regression.gd:275)
+       [1] _check_cable_cars (res://scripts/tests/kart_world_expansion_regression.gd:191)
+       [2] _check_world (res://scripts/tests/kart_world_expansion_regression.gd:115)
+       [3] _run (res://scripts/tests/kart_world_expansion_regression.gd:59)
+       [4] _check_world (res://scripts/tests/kart_world_expansion_regression.gd:160)
+ERROR: [KartWorldExpansion] winter_sprint/full: hidden cableway performs no animation updates
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_world_expansion_regression.gd:275)
+       [1] _check_cable_cars (res://scripts/tests/kart_world_expansion_regression.gd:198)
+       [2] _check_world (res://scripts/tests/kart_world_expansion_regression.gd:115)
+       [3] _run (res://scripts/tests/kart_world_expansion_regression.gd:59)
+       [4] _check_world (res://scripts/tests/kart_world_expansion_regression.gd:160)
+[KartWorldExpansion] CPU cabin-upload state checked; renderer readback requires X11
+[KartWorldExpansion] winter_sprint/full pieces=242 road_segments=3447
+[KartWorldExpansion] FAIL checks=39 triangles=4128 failures=6

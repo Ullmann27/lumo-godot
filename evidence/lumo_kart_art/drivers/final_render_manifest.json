@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "Final PNG existence, dimensions, source hashes and render/source freshness. This does not automate visual art judgement.",
+  "images": [
+    {
+      "file": "evidence/lumo_kart_art/drivers/roster_front.png",
+      "sha256": "669e19bc3c625a6811454237fa21d0f46846f96d9a4b4c75b42243dd3217d4f8",
+      "bytes": 5512061,
+      "resolution": [
+        2800,
+        1300
+      ],
+      "inputs": [
+        {
+          "file": "art/lumo_kart/blender/drivers/lion.blend",
+          "sha256": "5a027d47e6c8422d91376c1c4779f88526ce43a769bd9f8c4397a5da96ed9d26"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/owl.blend",
+          "sha256": "bfc91810204fd8d919a42674ed85fe0e7c36582c8becfb929942b7cf9d8c5a4f"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/rabbit.blend",
+          "sha256": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/squirrel.blend",
+          "sha256": "85b6d967e669f41df802fcf5ff4e723775b74c8706819787631b8c20d290a404"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/turtle.blend",
+          "sha256": "340fe30bce916df85db245a736798f7b9ab8bf85c9a33fc77473f404b927646b"
+        }
+      ],
+      "view": "front",
+      "renderer": "Blender Cycles CPU",
+      "samples_max": 32
+    },
+    {
+      "file": "evidence/lumo_kart_art/drivers/roster_three_quarter.png",
+      "sha256": "29f0613bf1f821f11a38d6bd59b4080b0a0e9e49c353e34334acff92bc1f0483",
+      "bytes": 5567050,
+      "resolution": [
+        2800,
+        1300
+      ],
+      "inputs": [
+        {
+          "file": "art/lumo_kart/blender/drivers/lion.blend",
+          "sha256": "5a027d47e6c8422d91376c1c4779f88526ce43a769bd9f8c4397a5da96ed9d26"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/owl.blend",
+          "sha256": "bfc91810204fd8d919a42674ed85fe0e7c36582c8becfb929942b7cf9d8c5a4f"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/rabbit.blend",
+          "sha256": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/squirrel.blend",
+          "sha256": "85b6d967e669f41df802fcf5ff4e723775b74c8706819787631b8c20d290a404"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/turtle.blend",
+          "sha256": "340fe30bce916df85db245a736798f7b9ab8bf85c9a33fc77473f404b927646b"
+        }
+      ],
+      "view": "three_quarter",
+      "renderer": "Blender Cycles CPU",
+      "samples_max": 32
+    },
+    {
+      "file": "evidence/lumo_kart_art/drivers/roster_side.png",
+      "sha256": "5f1782b4a9724a4ec5062dc1d6529ad51e068cc7d5067078f753bd0d3674a46c",
+      "bytes": 5302094,
+      "resolution": [
+        2800,
+        1300
+      ],
+      "inputs": [
+        {
+          "file": "art/lumo_kart/blender/drivers/lion.blend",
+          "sha256": "5a027d47e6c8422d91376c1c4779f88526ce43a769bd9f8c4397a5da96ed9d26"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/owl.blend",
+          "sha256": "bfc91810204fd8d919a42674ed85fe0e7c36582c8becfb929942b7cf9d8c5a4f"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/rabbit.blend",
+          "sha256": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/squirrel.blend",
+          "sha256": "85b6d967e669f41df802fcf5ff4e723775b74c8706819787631b8c20d290a404"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/turtle.blend",
+          "sha256": "340fe30bce916df85db245a736798f7b9ab8bf85c9a33fc77473f404b927646b"
+        }
+      ],
+      "view": "side",
+      "renderer": "Blender Cycles CPU",
+      "samples_max": 32
+    },
+    {
+      "file": "evidence/lumo_kart_art/drivers/roster_rear.png",
+      "sha256": "5da47728ec91850a739f2c50214dfbd206ef205a002417cd7b0dfd1fa53d5284",
+      "bytes": 5504085,
+      "resolution": [
+        2800,
+        1300
+      ],
+      "inputs": [
+        {
+          "file": "art/lumo_kart/blender/drivers/lion.blend",
+          "sha256": "5a027d47e6c8422d91376c1c4779f88526ce43a769bd9f8c4397a5da96ed9d26"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/owl.blend",
+          "sha256": "bfc91810204fd8d919a42674ed85fe0e7c36582c8becfb929942b7cf9d8c5a4f"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/rabbit.blend",
+          "sha256": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/squirrel.blend",
+          "sha256": "85b6d967e669f41df802fcf5ff4e723775b74c8706819787631b8c20d290a404"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/turtle.blend",
+          "sha256": "340fe30bce916df85db245a736798f7b9ab8bf85c9a33fc77473f404b927646b"
+        }
+      ],
+      "view": "rear",
+      "renderer": "Blender Cycles CPU",
+      "samples_max": 32
+    },
+    {
+      "file": "evidence/lumo_kart_art/drivers/roster_kart_rear_three_quarter.png",
+      "sha256": "2bd8f1e79cda2361bd774397e4b0839bbe7fd0f50f370ed753ca3ed537fb9f22",
+      "bytes": 3581014,
+      "resolution": [
+        2400,
+        885
+      ],
+      "inputs": [
+        {
+          "file": "art/lumo_kart/blender/drivers/lion.blend",
+          "sha256": "5a027d47e6c8422d91376c1c4779f88526ce43a769bd9f8c4397a5da96ed9d26"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/owl.blend",
+          "sha256": "bfc91810204fd8d919a42674ed85fe0e7c36582c8becfb929942b7cf9d8c5a4f"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/rabbit.blend",
+          "sha256": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/squirrel.blend",
+          "sha256": "85b6d967e669f41df802fcf5ff4e723775b74c8706819787631b8c20d290a404"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/turtle.blend",
+          "sha256": "340fe30bce916df85db245a736798f7b9ab8bf85c9a33fc77473f404b927646b"
+        },
+        {
+          "file": "assets/kart/production/karts/aurora_comet.glb",
+          "sha256": "d2b80327d4c35f8f5cd43929966c0c887ae2aa01ceaaba9b35b87ffd46a37f2f"
+        }
+      ],
+      "view": "rear_three_quarter",
+      "renderer": "Blender Cycles CPU",
+      "samples_max": 32
+    },
+    {
+      "file": "evidence/lumo_kart_art/drivers/roster_kart_rear.png",
+      "sha256": "f55ff936d52d0a236f534f560632b5630ebc6a618891500a93506ae0bd3a1808",
+      "bytes": 3551736,
+      "resolution": [
+        2400,
+        885
+      ],
+      "inputs": [
+        {
+          "file": "art/lumo_kart/blender/drivers/lion.blend",
+          "sha256": "5a027d47e6c8422d91376c1c4779f88526ce43a769bd9f8c4397a5da96ed9d26"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/owl.blend",
+          "sha256": "bfc91810204fd8d919a42674ed85fe0e7c36582c8becfb929942b7cf9d8c5a4f"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/rabbit.blend",
+          "sha256": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/squirrel.blend",
+          "sha256": "85b6d967e669f41df802fcf5ff4e723775b74c8706819787631b8c20d290a404"
+        },
+        {
+          "file": "art/lumo_kart/blender/drivers/turtle.blend",
+          "sha256": "340fe30bce916df85db245a736798f7b9ab8bf85c9a33fc77473f404b927646b"
+        },
+        {
+          "file": "assets/kart/production/karts/aurora_comet.glb",
+          "sha256": "d2b80327d4c35f8f5cd43929966c0c887ae2aa01ceaaba9b35b87ffd46a37f2f"
+        }
+      ],
+      "view": "rear",
+      "renderer": "Blender Cycles CPU",
+      "samples_max": 32
+    },
+    {
+      "file": "evidence/lumo_kart_art/drivers/rabbit/rabbit_and_original_lumo_front.png",
+      "sha256": "395dfa8ab29967b900c27f9a16b1caa16ab6fb85bedd09f06a1f9b6118e5220c",
+      "bytes": 4073826,
+      "resolution": [
+        1900,
+        1500
+      ],
+      "inputs": [
+        {
+          "file": "art/lumo_kart/blender/drivers/rabbit.blend",
+          "sha256": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16"
+        },
+        {
+          "file": "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb",
+          "sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5"
+        }
+      ],
+      "view": "front",
+      "renderer": "Blender Cycles CPU",
+      "samples_max": 48
+    },
+    {
+      "file": "evidence/lumo_kart_art/drivers/rabbit/rabbit_and_original_lumo_three_quarter.png",
+      "sha256": "e70d72045a1227efe27e6c53a14272921fdb70bfd75a2df4b91ad0dd69fff265",
+      "bytes": 4097877,
+      "resolution": [
+        1900,
+        1500
+      ],
+      "inputs": [
+        {
+          "file": "art/lumo_kart/blender/drivers/rabbit.blend",
+          "sha256": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16"
+        },
+        {
+          "file": "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb",
+          "sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5"
+        }
+      ],
+      "view": "three_quarter",
+      "renderer": "Blender Cycles CPU",
+      "samples_max": 48
+    }
+  ],
+  "comparison": {
+    "source": "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb",
+    "source_modified": false,
+    "same_camera_and_lighting": true,
+    "comparison_normalization": "Uniform scale from visible skinned mesh foot minimum to central head crown; long rabbit ears and hidden Blender custom-bone display Icosphere excluded. No nonuniform scaling.",
+    "original_lumo_scale": 0.886306842674283,
+    "original_lumo_measured_body_height": 1.6145651868985738,
+    "target_body_height_m": 1.4310001730918884,
+    "post_transform_floor_m": -8.526512829121202e-14,
+    "post_transform_body_height_m": 1.431000113487329,
+    "visible_source_meshes": [
+      "Mesh_0"
+    ],
+    "driver_source": "art/lumo_kart/blender/drivers/rabbit.blend",
+    "driver_source_sha256": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16",
+    "source_sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+    "resolution": [
+      1900,
+      1500
+    ],
+    "samples_max": 48
+  }
+}

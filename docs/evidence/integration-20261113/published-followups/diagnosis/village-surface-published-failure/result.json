@@ -1,0 +1,39 @@
+{
+  "command": [
+    "python",
+    "tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-surface-published-failure/engine.log",
+    "--timeout",
+    "210",
+    "--required",
+    "[VillageScene] PASS",
+    "--",
+    "godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+    "--script",
+    "res://scripts/tests/build_village_scene_regression.gd"
+  ],
+  "exit_code": 1,
+  "seconds": 15.705,
+  "source_before": {
+    "scripts/creative/build_settlement_world.gd": "cd5e7a41991ac8591408b86094db182be85124a8ef4a48b28bf3717011bf576e",
+    "scripts/tests/build_village_scene_regression.gd": "5f595ef911cb9df1b4f068a68c7193782e7abadafad38ee2ee6c61817a5d3905"
+  },
+  "source_after": {
+    "scripts/creative/build_settlement_world.gd": "cd5e7a41991ac8591408b86094db182be85124a8ef4a48b28bf3717011bf576e",
+    "scripts/tests/build_village_scene_regression.gd": "5f595ef911cb9df1b4f068a68c7193782e7abadafad38ee2ee6c61817a5d3905"
+  },
+  "engine_sha256": "fc084aafd5307c4c11542b4424a84df8c3e378ab0a251f19fe0dfc5caa576570",
+  "findings": [
+    "WARNING: [VillageScene] Real horizontal drags expose Kapitel",
+    "[VillageScene] toolbar diagnostic caption=Kapitel scroll=0 viewport=[P: (14.0, 802.0), S: (232.0, 56.0)] target=[P: (473.0, 802.0), S: (110.0, 48.0)] density=1.0",
+    "WARNING: [VillageScene] Real horizontal drags expose Stadtkasse",
+    "[VillageScene] toolbar diagnostic caption=Stadtkasse scroll=0 viewport=[P: (14.0, 270.0), S: (460.0, 56.0)] target=[P: (727.0, 270.0), S: (110.0, 48.0)] density=1.0",
+    "[VillageScene] FAIL checks=99 failures=[\"Real horizontal drags expose Kapitel\", \"Real horizontal drags expose Stadtkasse\"]"
+  ]
+}

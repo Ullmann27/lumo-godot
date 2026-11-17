@@ -1,0 +1,19 @@
+{
+  "movie": "evidence/lumo_kart_art/review/lumo_aurora_karts.mp4",
+  "sha256": "2e7272d7131cca74a9aed75abbe931226cb8b8088e9217c6c8031136aeddab99",
+  "bytes": 2583398,
+  "capture_receipt": "evidence/lumo_kart_art/review/turntable_capture.json",
+  "capture_receipt_sha256": "e73f7233d27a134026610b4317bfeac2e50f9f96d8139ac6b48b98f5929151d0",
+  "captured_frames": 144,
+  "encoded_frames": 144,
+  "width": 1200,
+  "height": 750,
+  "fps": "24/1",
+  "duration_seconds": 6.0,
+  "codec": "h264",
+  "pixel_format": "yuv420p",
+  "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "physical_android": false,
+  "runtime_fps_measurement": false,
+  "method": "Frame-by-frame capture of actual Godot rendering; encoded with FFmpeg, no generated concept imagery"
+}

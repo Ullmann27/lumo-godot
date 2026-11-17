@@ -32,16 +32,58 @@ func is_embedded() -> bool:
 	return is_instance_valid(_host)
 
 
+static func supports_method(host: Object, method: StringName) -> bool:
+	if not is_instance_valid(host) or method.is_empty():
+		return false
+	if host.has_method(method):
+		return true
+	# Godot 4.6.3 JNISingleton registers @UsedByGodot methods outside ClassDB.
+	# Object.has_method cannot see that map; its bound has_java_method API can.
+	# Never call a guessed legacy API when neither reflection path confirms it.
+	if not host.has_method("has_java_method"):
+		return false
+	var supported: Variant = host.call("has_java_method", method)
+	return supported is bool and supported
+
+
 static func validated_options(raw: Dictionary) -> Dictionary:
 	var options: Dictionary = raw.duplicate(true)
 	options["grade"] = clampi(int(raw.get("grade", 1)), 1, 4)
 	options["stars"] = maxi(0, int(raw.get("stars", 0)))
 	options["scene"] = str(raw.get("game", raw.get("scene", "kart")))
-	if options["scene"] not in ["kart", "jump", "puzzle", "build", "rhythm", "treasure", "games", "home"]:
+	if options["scene"] == "settlement":
+		# The village is a separate opt-in; never launch a classic settlement
+		# or the Kart fallback when Flutter requested a children's economy.
+		if (
+			raw.get("livingVillage", false) != true
+			or str(raw.get("settlementMode", "")) != "settlement"
+		):
+			options["scene"] = "games"
+		else:
+			options["livingVillage"] = true
+			options["settlementMode"] = "settlement"
+	elif (
+		options["scene"]
+		not in [
+			"kart",
+			"jump",
+			"puzzle",
+			"build",
+			"rhythm",
+			"treasure",
+			"learning",
+			"cards",
+			"connect_four",
+			"memory",
+			"quiz",
+			"games",
+			"home"
+		]
+	):
 		options["scene"] = "kart"
 	if (
 		str(raw.get("subject", "Mathematik"))
-		not in ["Mathematik", "Deutsch", "Sachunterricht", "Logik"]
+		not in ["Mathematik", "Deutsch", "Sachunterricht", "Englisch", "Logik"]
 	):
 		options["subject"] = "Mathematik"
 	return options

@@ -7,6 +7,8 @@ uniform vec4 shallow_water : source_color = vec4(0.10, 0.57, 0.66, 1.0);
 // Optional beach foam is enabled only for full-detail Sonnenhafen.
 // Uses the same authored shoreline profile as LumoRaceWorld._ground_height().
 uniform float coastal_foam : hint_range(0.0, 1.0) = 0.0;
+// Godot passes the actual island bounds. Legacy maps still default to 101x91m.
+uniform vec2 coastal_extent = vec2(101.0, 91.0);
 varying vec3 world_position;
 
 void vertex() {
@@ -26,7 +28,7 @@ void fragment() {
 		// island contour without a texture lookup or additional geometry.
 		float angle = atan(p.y, p.x);
 		float shoreline = 1.0 + sin(angle * 5.0 + 0.6) * 0.035 + sin(angle * 9.0) * 0.018;
-		float radius = length(vec2(p.x / 101.0, p.y / 91.0));
+		float radius = length(p / max(coastal_extent, vec2(1.0)));
 		float rim = 1.0 - smoothstep(0.004, 0.042, abs(radius - shoreline));
 		float breakers = 0.70 + 0.30 * sin(p.x * 0.26 - p.y * 0.37 + TIME * 1.75);
 		float foam_amount = clamp(coastal_foam * rim * breakers * 0.72, 0.0, 0.72);

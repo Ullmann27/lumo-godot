@@ -1,0 +1,119 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:02:12 | INFO: Starting glTF 2.0 export
+21:02:12 | INFO: Extracting primitive: ContinuousVault_Mesh.001
+21:02:14 | INFO: Primitives created: 4
+21:02:14 | INFO: Finished glTF 2.0 export in 1.8738853931427002 s
+
+21:02:15 | INFO: Starting glTF 2.0 export
+21:02:15 | INFO: Extracting primitive: ContinuousVault_Mesh.002
+21:02:16 | INFO: Primitives created: 4
+21:02:16 | INFO: Finished glTF 2.0 export in 1.4893665313720703 s
+
+21:02:16 | INFO: Starting glTF 2.0 export
+21:02:16 | INFO: Extracting primitive: TunnelShellCollision_Mesh
+21:02:17 | INFO: Primitives created: 1
+21:02:17 | INFO: Finished glTF 2.0 export in 0.05138206481933594 s
+
+LUMO_TRACK_MODULE holo_city portal_entry 10964 4
+21:02:18 | INFO: Starting glTF 2.0 export
+21:02:18 | INFO: Extracting primitive: ContinuousVault_Mesh.004
+21:02:20 | INFO: Primitives created: 4
+21:02:20 | INFO: Finished glTF 2.0 export in 1.8187036514282227 s
+
+21:02:20 | INFO: Starting glTF 2.0 export
+21:02:20 | INFO: Extracting primitive: ContinuousVault_Mesh.005
+21:02:21 | INFO: Primitives created: 4
+21:02:21 | INFO: Finished glTF 2.0 export in 1.3619532585144043 s
+
+21:02:22 | INFO: Starting glTF 2.0 export
+21:02:22 | INFO: Extracting primitive: TunnelShellCollision_Mesh.001
+21:02:22 | INFO: Primitives created: 1
+21:02:22 | INFO: Finished glTF 2.0 export in 0.061411142349243164 s
+
+LUMO_TRACK_MODULE holo_city portal_exit 10964 4
+21:02:23 | INFO: Starting glTF 2.0 export
+21:02:23 | INFO: Extracting primitive: ContinuousVault_Mesh.007
+21:02:24 | INFO: Primitives created: 4
+21:02:24 | INFO: Finished glTF 2.0 export in 1.269873857498169 s
+
+21:02:25 | INFO: Starting glTF 2.0 export
+21:02:25 | INFO: Extracting primitive: ContinuousVault_Mesh.008
+21:02:26 | INFO: Primitives created: 4
+21:02:26 | INFO: Finished glTF 2.0 export in 1.0845484733581543 s
+
+21:02:26 | INFO: Starting glTF 2.0 export
+21:02:26 | INFO: Extracting primitive: TunnelShellCollision_Mesh.002
+21:02:26 | INFO: Primitives created: 1
+21:02:26 | INFO: Finished glTF 2.0 export in 0.05127453804016113 s
+
+LUMO_TRACK_MODULE holo_city straight_12m 10076 4
+21:02:27 | INFO: Starting glTF 2.0 export
+21:02:28 | INFO: Extracting primitive: ContinuousVault_Mesh.010
+21:02:29 | INFO: Primitives created: 4
+21:02:29 | INFO: Finished glTF 2.0 export in 1.3677124977111816 s
+
+21:02:30 | INFO: Starting glTF 2.0 export
+21:02:30 | INFO: Extracting primitive: ContinuousVault_Mesh.011
+21:02:31 | INFO: Primitives created: 4
+21:02:31 | INFO: Finished glTF 2.0 export in 1.3347480297088623 s
+
+21:02:32 | INFO: Starting glTF 2.0 export
+21:02:32 | INFO: Extracting primitive: TunnelShellCollision_Mesh.003
+21:02:32 | INFO: Primitives created: 1
+21:02:32 | INFO: Finished glTF 2.0 export in 0.05933332443237305 s
+
+LUMO_TRACK_MODULE holo_city curve_left_30 14836 4
+21:02:33 | INFO: Starting glTF 2.0 export
+21:02:33 | INFO: Extracting primitive: ContinuousVault_Mesh.013
+21:02:34 | INFO: Primitives created: 4
+21:02:34 | INFO: Finished glTF 2.0 export in 1.1645398139953613 s
+
+21:02:36 | INFO: Starting glTF 2.0 export
+21:02:36 | INFO: Extracting primitive: ContinuousVault_Mesh.014
+21:02:37 | INFO: Primitives created: 4
+21:02:38 | INFO: Finished glTF 2.0 export in 1.767967939376831 s
+
+21:02:38 | INFO: Starting glTF 2.0 export
+21:02:38 | INFO: Extracting primitive: TunnelShellCollision_Mesh.004
+21:02:38 | INFO: Primitives created: 1
+21:02:38 | INFO: Finished glTF 2.0 export in 0.05783700942993164 s
+
+LUMO_TRACK_MODULE holo_city curve_right_30 14836 4
+21:02:39 | INFO: Starting glTF 2.0 export
+21:02:40 | INFO: Extracting primitive: ContinuousVault_Mesh.016
+21:02:41 | INFO: Primitives created: 4
+21:02:41 | INFO: Finished glTF 2.0 export in 1.180748462677002 s
+
+21:02:42 | INFO: Starting glTF 2.0 export
+21:02:42 | INFO: Extracting primitive: ContinuousVault_Mesh.017
+21:02:44 | INFO: Primitives created: 4
+21:02:44 | INFO: Finished glTF 2.0 export in 1.7171611785888672 s
+
+21:02:44 | INFO: Starting glTF 2.0 export
+21:02:44 | INFO: Extracting primitive: TunnelShellCollision_Mesh.005
+21:02:44 | INFO: Primitives created: 1
+21:02:44 | INFO: Finished glTF 2.0 export in 0.04900312423706055 s
+
+LUMO_TRACK_MODULE holo_city grade_down 10076 4
+21:02:46 | INFO: Starting glTF 2.0 export
+21:02:46 | INFO: Extracting primitive: ContinuousVault_Mesh.019
+21:02:47 | INFO: Primitives created: 4
+21:02:47 | INFO: Finished glTF 2.0 export in 1.5481629371643066 s
+
+21:02:49 | INFO: Starting glTF 2.0 export
+21:02:49 | INFO: Extracting primitive: ContinuousVault_Mesh.020
+21:02:50 | INFO: Primitives created: 4
+21:02:50 | INFO: Finished glTF 2.0 export in 1.2135658264160156 s
+
+21:02:50 | INFO: Starting glTF 2.0 export
+21:02:50 | INFO: Extracting primitive: TunnelShellCollision_Mesh.006
+21:02:50 | INFO: Primitives created: 1
+21:02:50 | INFO: Finished glTF 2.0 export in 0.06685662269592285 s
+
+LUMO_TRACK_MODULE holo_city grade_up 10076 4
+Info: Packed 5 file(s)
+Info: Saved "holo_city_tunnel_workshop.blend"
+LUMO_TRACK_THEME_DONE holo_city
+Blender 4.3.2
+
+Blender quit

@@ -1,0 +1,159 @@
+{
+  "schema": "lumo.graphics_ci_handoff.v1",
+  "repository": "Ullmann27/lumo-godot",
+  "pull_request": 160,
+  "head_sha": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "source_tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "run_id": 43458897683,
+  "run_attempt": 1,
+  "event": "pull_request",
+  "status": "completed",
+  "conclusion": "success",
+  "run_updated_at": "2026-11-13T16:22:01Z",
+  "run_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43458897683",
+  "jobs": [
+    {
+      "id": 132000244237,
+      "name": "Actual worlds scene and interaction",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-13T16:04:00Z",
+      "completed_at": "2026-11-13T16:06:20Z"
+    },
+    {
+      "id": 132000244768,
+      "name": "Actual home scene and interaction",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-13T16:04:00Z",
+      "completed_at": "2026-11-13T16:22:00Z"
+    },
+    {
+      "id": 132000245043,
+      "name": "Actual feedback scene and interaction",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-13T16:04:01Z",
+      "completed_at": "2026-11-13T16:06:15Z"
+    }
+  ],
+  "archives": [
+    {
+      "area": "home",
+      "archive": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/home-14056672152.zip",
+      "archive_sha256": "f699c6cf5a0d61c398afded89ce67ce8eb871f002db5bc48db63c625b7facf4c",
+      "artifact_id": 14056672152,
+      "proof_metadata_sha256": "b4a7821e9fa929705a6b5cef528d90286734cba4267114ed000e4d53817afe36",
+      "original_required_files": [
+        "artifact.json",
+        "cards-header.log",
+        "engine.txt",
+        "home-promenade.log",
+        "image-manifest.json",
+        "preserved-garage.log",
+        "preserved-spatial-menu.log",
+        "preview-resolution.log",
+        "regression.log",
+        "render.log",
+        "source-dirty.txt",
+        "source-sha.txt",
+        "source-tree.txt"
+      ],
+      "images": 44
+    },
+    {
+      "area": "worlds",
+      "archive": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/worlds-14055182823.zip",
+      "archive_sha256": "55b6cad5e63684d483b1704563015350b47c05c780d1199a5cff21f5b322e196",
+      "artifact_id": 14055182823,
+      "proof_metadata_sha256": "9e656c22c1a9c4b62d50dea454a8b9de0049f630571aa91cb528f636c1e1331a",
+      "original_required_files": [
+        "artifact.json",
+        "engine.txt",
+        "image-manifest.json",
+        "regression.log",
+        "render-crystal_canyon.log",
+        "render-winter_sprint.log",
+        "source-dirty.txt",
+        "source-sha.txt",
+        "source-tree.txt",
+        "winter-visibility.log"
+      ],
+      "images": 12
+    },
+    {
+      "area": "feedback",
+      "archive": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/feedback-14054878169.zip",
+      "archive_sha256": "c099f7f20aec7f94b7c862082bb53cda1d11b4862d8987eefff86d5f12ccebd6",
+      "artifact_id": 14054878169,
+      "proof_metadata_sha256": "ebc4c61c2879bf5c7ac77a265b8348dd93c412d82e9a94a80ba4f228f4a21651",
+      "original_required_files": [
+        "artifact.json",
+        "engine.txt",
+        "image-manifest.json",
+        "regression.log",
+        "render.log",
+        "source-dirty.txt",
+        "source-sha.txt",
+        "source-tree.txt"
+      ],
+      "images": 6
+    }
+  ],
+  "proofs_directory": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/proofs",
+  "current_png_count": 36,
+  "baseline_png_count": 26,
+  "artifact_logs_checked": 40,
+  "all_original_checked_gates_clean": true,
+  "current_and_prior_imports_successful": true,
+  "baseline_head": "ada5ed81ad62339f15289da62670c0a4f9f7f2b9",
+  "baseline_tree": "2e93cc5587b477ceee2d159c8aa981ff5188171b",
+  "shared_capture_harness_sha256": {
+    "home": "99fb94c992750d543ed0b61e9f4ba48c571b2c8143f16eb2707fd8da1dd7e641",
+    "worlds": "5f8722732147f3ea7ea9ba8cb5b2355098f0c51585e04156405ac9ccb206857e"
+  },
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "render_backend": "X11, OpenGL Compatibility, Mesa llvmpipe software renderer",
+  "png_decoder": "Pillow 13.0.0: Image.verify and full Image.load for every current and baseline PNG",
+  "project_validation_warnings": {
+    "home": [
+      "[WARN] asset: lumo_fox fehlt (assets/models/lumo_fox.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: hub_island fehlt (assets/models/hub_island.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: portal_learn fehlt (assets/models/portal_learn.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: portal_games fehlt (assets/models/portal_games.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: portal_parent fehlt (assets/models/portal_parent.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: star_collectible fehlt (assets/models/star_collectible.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] tool: tools/build_web_bundle.sh nicht ausfuehrbar (chmod +x fehlt)",
+      "SUMMARY: 117 PASS / 7 WARN / 0 FAIL"
+    ],
+    "worlds": [
+      "[WARN] asset: lumo_fox fehlt (assets/models/lumo_fox.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: hub_island fehlt (assets/models/hub_island.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: portal_learn fehlt (assets/models/portal_learn.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: portal_games fehlt (assets/models/portal_games.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: portal_parent fehlt (assets/models/portal_parent.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: star_collectible fehlt (assets/models/star_collectible.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] tool: tools/build_web_bundle.sh nicht ausfuehrbar (chmod +x fehlt)",
+      "SUMMARY: 117 PASS / 7 WARN / 0 FAIL"
+    ],
+    "feedback": [
+      "[WARN] asset: lumo_fox fehlt (assets/models/lumo_fox.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: hub_island fehlt (assets/models/hub_island.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: portal_learn fehlt (assets/models/portal_learn.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: portal_games fehlt (assets/models/portal_games.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: portal_parent fehlt (assets/models/portal_parent.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] asset: star_collectible fehlt (assets/models/star_collectible.glb) - AssetLoader nutzt Placeholder",
+      "[WARN] tool: tools/build_web_bundle.sh nicht ausfuehrbar (chmod +x fehlt)",
+      "SUMMARY: 117 PASS / 7 WARN / 0 FAIL"
+    ]
+  },
+  "root_visual_review": "Root owns the actual inspection of these fresh original images. No earlier source review is reused or asserted here.",
+  "receipt_created_by_this_task": false,
+  "source_or_ref_mutations_by_graphics_task": false,
+  "limits": [
+    "This is the Graphics workflow only; the separate Nextgen Gameplay resource-leak failure is not approved by these results.",
+    "World images use stationary production scenes and staged player/cameras; landmark uses a context camera.",
+    "No physical Android device, APK/AAR acceptance, or measured frame-rate claim.",
+    "All raw project-validator warnings are retained in the original logs."
+  ]
+}

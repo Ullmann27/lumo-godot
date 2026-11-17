@@ -1,0 +1,20 @@
+--- /workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_full_field_regression.gd
++++ negative-fixture/kart_full_field_regression.gd
+@@ -6,6 +6,7 @@
+ const LOOP_KEY: StringName = &"lumo_physical_loop"
+ const LASSO_RULES = preload("res://scripts/games/kart_lasso_rules.gd")
+ var game
++var intentionally_held_audio: AudioStreamPlayback = null
+ var failed: bool = false
+ var selected_level: String = ""
+ var stopped_player: bool = false
+@@ -315,6 +316,9 @@
+ 	var playbacks: Array[WeakRef] = []
+ 	for player: Node in game.find_children("*", "AudioStreamPlayer", true, false):
+ 		if player.has_stream_playback():
++			if intentionally_held_audio == null:
++				intentionally_held_audio = player.get_stream_playback()
++				print("[NegativeHold] retaining real playback resource=%s type=%s" % [player.stream.resource_path, intentionally_held_audio.get_class()])
+ 			playbacks.append(weakref(player.get_stream_playback()))
+ 	var scene: WeakRef = weakref(game)
+ 	game.abandoned = true

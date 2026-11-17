@@ -1,0 +1,9 @@
+{
+  "original_before_and_after_identical": true,
+  "original_sha256": "8c312153ffc7a791b7a3e46ebfc130b547bf1e6dc56a1e97765fb2a5af931769",
+  "archive": "source-hashes.json.gz",
+  "archive_sha256": "4e7bf950f73dd9b9caff36a2e140d3de4b96dc808ae3d219391eeac9f4c2ac31",
+  "tracked_files": 2095,
+  "source_commit": "305ab1a3e61e313a26806ff1b828b049e4e07275",
+  "scope": "Archive of identical pre/post tracked-source manifests; evidence added after tests without runtime edits."
+}

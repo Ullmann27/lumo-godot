@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "completed_at": "2026-11-13T16:34:51.055663+00:00",
+  "source_base": {
+    "published_head": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+    "local_head": "a59dca033d1ad6afa4afbf0b51b03e04fe8c4ef9",
+    "tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee"
+  },
+  "files": [
+    {
+      "path": "scripts/tests/host_bridge_regression.gd",
+      "bytes": 12296,
+      "sha256": "10d1460a5f0033f7c80622f78f9e2b78154771d52d623d5ed58de1b98bc08ba2",
+      "git_blob": "93c0547b3ef4ab5721f5244c1610d495103d1b43",
+      "saved": "final-sources/host_bridge_regression.gd.gz",
+      "saved_sha256": "ff339407301fc7462f100351739e3299bb2d886a856c0c15102f7f25ff6e6f48"
+    },
+    {
+      "path": "scripts/tests/kart_race_bridge_regression.gd",
+      "bytes": 8072,
+      "sha256": "58e289a4b1f35f16707250848ec534251f03e31ff00fab7e956b57ec58ee5800",
+      "git_blob": "cb01b827b0e34d5c46dae68a78ec32cbd4df0fd6",
+      "saved": "final-sources/kart_race_bridge_regression.gd.gz",
+      "saved_sha256": "1ac2d6aa7cb245cfa1354fdc2f4444359d1505f7ebdf42d6bebf95ba687a110b"
+    },
+    {
+      "path": "scripts/tests/kart_physics_regression.gd",
+      "bytes": 20821,
+      "sha256": "0b23b736822b00c175b85cc940c9110d26f7ab415daadea1343e304daa7e89b3",
+      "git_blob": "da9e5186a46316996cc44a44b1f2c6c4a83f7d61",
+      "saved": "final-sources/kart_physics_regression.gd.gz",
+      "saved_sha256": "b6246cecc134d695c7af2a57fc7ff5c2d37d11a7b1bf881ca94c2d65ab2227c8"
+    },
+    {
+      "path": "scripts/tests/kart_jump_regression.gd",
+      "bytes": 8287,
+      "sha256": "e49d318c410f31238c58f7c4b379c9542fbad8071dbb144b1512600160c88192",
+      "git_blob": "ab0790300651fb63888a8ccf29183b51299e1639",
+      "saved": "final-sources/kart_jump_regression.gd.gz",
+      "saved_sha256": "562ccdba50a7ee7a39eeab488e3afec65ba6c4b24a6234d9eee7ca87249262fc"
+    },
+    {
+      "path": "scripts/tests/kart_touch_regression.gd",
+      "bytes": 5340,
+      "sha256": "6c6294bc2d392428c2ff00c174653df5af422c31da6e74f68d9cdc99b8fe2ee1",
+      "git_blob": "14c84c22391f8ebb398aa9aefd29d308237d2d7a",
+      "saved": "final-sources/kart_touch_regression.gd.gz",
+      "saved_sha256": "f009b9afb7a46873fc4efdd7a4b916f9e4f5f7c00734b7a880af9bd30e9cccb3"
+    },
+    {
+      "path": "scripts/tests/kart_compact_selection_regression.gd",
+      "bytes": 7428,
+      "sha256": "3b88da88970a26c8e3c99140e1dc6662dece0f8277100d2a17524b7dc4fee138",
+      "git_blob": "b8c7e7a511a94f132e5336e8758e4189a159bf14",
+      "saved": "final-sources/kart_compact_selection_regression.gd.gz",
+      "saved_sha256": "f2b55f09bec6c46ec4bb580cef96fa42ec9946ecc81bc15def92b7a0794f9270"
+    }
+  ],
+  "helper": {
+    "path": "scripts/tests/helpers/kart_scene_teardown.gd",
+    "git_blob": "03939804a22a0c7792de798676a5ef7d5338aa15",
+    "sha256": "63f4138d64d4bc0d9bd8f5698ad34c1b305062567197f4d28ba01c02995bf885",
+    "release_limit_ms": 2000
+  },
+  "probe_runner": {
+    "path": "tools/run_godot_probe.py",
+    "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+    "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+    "unchanged_from_source_tree": true
+  },
+  "validation": {
+    "probes": 6,
+    "passed": 6,
+    "release_calls": 12,
+    "tracked_playbacks": 22,
+    "release_elapsed_ms": [
+      100,
+      15,
+      65,
+      67,
+      189,
+      83,
+      126,
+      52,
+      140,
+      69,
+      83,
+      81
+    ],
+    "total_seconds": 96.445,
+    "static_original_assert_check_calls_preserved": 240,
+    "source_hashes_unchanged_during_each_probe": true,
+    "engine_error_or_retained_resource_lines": 0
+  },
+  "patch": {
+    "path": "six-consumer.patch.gz",
+    "original_bytes": 11304,
+    "original_sha256": "a2b26866f254c560157de1698e9a31b9a5e2062232681cfa481eeeb1c813b98c",
+    "stored_sha256": "d77fabbcfda3c6d4d8905be804e5d2ba4f3812e36a071f87cc72046b55eb6238"
+  },
+  "claim_boundary": "Only kart_regression.gd had an observed CI teardown failure. These six consumers had source-proven missing release conditions, now connected to the shared frozen helper. All six existing positive headless probes passed; no failing baseline is claimed for these six."
+}

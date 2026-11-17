@@ -1,0 +1,23 @@
+{
+  "scope": "Three small exact source files, no Godot/renderer",
+  "files": [
+    {
+      "path": "tools/verify_studio_2020_rasters.py",
+      "source": "/tmp/native-studio-52-gate-integration-20261114/final-source/tools/verify_studio_2020_rasters.py",
+      "bytes": 23524,
+      "sha256": "4deca56cc7f4a6751b16da8e01352044d44e5c7428bcde6594d48576e675e792"
+    },
+    {
+      "path": "tools/verify_village_rasters.py",
+      "source": "/tmp/native-studio-52-gate-integration-20261114/final-source/tools/verify_village_rasters.py",
+      "bytes": 3905,
+      "sha256": "23834a1baaaa2f98ffc3df5b0b4e2a4b3bbf23e41f402a7f051adeae9fd230a8"
+    },
+    {
+      "path": "tools/tests/test_studio_2020_rasters.py",
+      "source": "/tmp/native-pr167-ci-corrections-acf51d3-20261114/final-source/tools/tests/test_studio_2020_rasters.py",
+      "bytes": 31297,
+      "sha256": "26ed168572f3a2a03cc185f2936a808c86325060b06f7679dc34574acfa2c2d0"
+    }
+  ]
+}

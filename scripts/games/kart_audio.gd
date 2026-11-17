@@ -4,6 +4,8 @@ extends Node
 ## set_paused(bool). The owner persists its existing sound preference.
 
 const MUSIC_PATH := "res://assets/audio/kart/%s.ogg"
+const JUNGLE_ID := "jungle_emerald_3600"
+const JUNGLE_AMBIENCE = preload("res://scripts/games/kart_jungle_audio.gd")
 const TRACKS := ["sonnenhafen", "zauberwald", "bergwelt", "holo_city"]
 const EFFECTS := ["start", "boost", "drift", "item", "finish", "countdown", "collision"]
 const MUSIC_DB := -17.0
@@ -17,6 +19,8 @@ var _last_effect: Dictionary = {}
 var _active: int = 0
 var _effect_cursor: int = 0
 var _current: String = ""
+var _track_id: String = ""
+var _ambience: Node3D
 var _muted: bool = false
 var _paused: bool = false
 var _focused: bool = true
@@ -58,6 +62,8 @@ func set_volumes(music: float, effects: float) -> void:
 		if is_instance_valid(_fade):
 			_fade.kill()
 		_music[_active].volume_db = music_db()
+	if is_instance_valid(_ambience):
+		_ambience.set_audio_state(_blocked(), effects_volume)
 
 
 func music_db() -> float:
@@ -69,6 +75,7 @@ func effect_db() -> float:
 
 
 func play_menu() -> void:
+	_track_id = ""
 	_play_music("garage")
 
 
@@ -78,12 +85,16 @@ func play_track(track_id: Variant) -> void:
 		track = TRACKS[clampi(int(track_id), 0, TRACKS.size() - 1)]
 	if track == "arena":
 		track = "holo_city"
+	_track_id = track
+	if track == JUNGLE_ID:
+		_play_music(JUNGLE_ID + "/main")
+		return
 	if not TRACKS.has(track):
 		track = "sonnenhafen"
 	_play_music(track)
 
 
-func _play_music(track: String) -> void:
+func _play_music(track: String, preserve_phase: bool = false) -> void:
 	_ensure_players()
 	if track == _current:
 		_apply_pause()
@@ -95,18 +106,46 @@ func _play_music(track: String) -> void:
 	if is_instance_valid(_fade):
 		_fade.kill()
 	var previous := _music[_active]
+	var phase := previous.get_playback_position() if preserve_phase and previous.playing else 0.0
 	_active = 1 - _active
 	var next := _music[_active]
 	next.stop()
 	next.stream = stream
 	next.volume_db = QUIET_DB if previous.playing else music_db()
-	next.play()
+	next.play(fposmod(phase, maxf(stream.get_length(), 0.01)))
 	if previous.playing and is_inside_tree():
+		var transition: float = 1.2 if preserve_phase else 0.45
 		_fade = create_tween().set_parallel(true)
-		_fade.tween_property(previous, "volume_db", QUIET_DB, 0.45)
-		_fade.tween_property(next, "volume_db", music_db(), 0.45)
+		_fade.tween_property(previous, "volume_db", QUIET_DB, transition)
+		_fade.tween_property(next, "volume_db", music_db(), transition)
 		_fade.chain().tween_callback(previous.stop)
 	_apply_pause()
+
+
+func bind_world(world) -> void:
+	if is_instance_valid(_ambience):
+		_ambience.queue_free()
+	_ambience = null
+	if world == null or str(world.track_id) != JUNGLE_ID:
+		return
+	_ambience = JUNGLE_AMBIENCE.new()
+	world.add_child(_ambience)
+	_ambience.configure(world)
+	_ambience.set_audio_state(_blocked(), effects_volume)
+
+
+func update_course_state(delta: float, distance: float, length: float, final_lap: bool, finished: bool, listener: Vector3) -> void:
+	if _track_id != JUNGLE_ID:
+		return
+	if not finished and not _blocked():
+		var metres := fposmod(distance, maxf(length, 1.0))
+		var calm: bool = (metres >= 1200.0 and metres < 1500.0) or (metres >= 2100.0 and metres < 2400.0)
+		var variation := "calm" if calm else "final" if final_lap else "main"
+		if _current != JUNGLE_ID + "/" + variation:
+			_play_music(JUNGLE_ID + "/" + variation, true)
+	if is_instance_valid(_ambience):
+		_ambience.set_audio_state(_blocked() or finished, effects_volume)
+		_ambience.advance(delta, listener)
 
 
 func effect(kind: String) -> void:
@@ -117,7 +156,8 @@ func effect(kind: String) -> void:
 	var cooldown := 300 if kind in ["drift", "collision"] else 85
 	if now - int(_last_effect.get(kind, -1000)) < cooldown:
 		return
-	var stream := _load_stream(kind, false)
+	var key := JUNGLE_ID + "/" + kind if _track_id == JUNGLE_ID and kind in ["start", "finish"] else kind
+	var stream := _load_stream(key, false)
 	if stream == null:
 		return
 	_last_effect[kind] = now
@@ -150,6 +190,13 @@ func _apply_pause() -> void:
 	if blocked:
 		for player in _effects:
 			player.stop()
+	if _track_id == JUNGLE_ID and is_instance_valid(_fade) and _fade.is_valid():
+		if blocked:
+			_fade.pause()
+		else:
+			_fade.play()
+	if is_instance_valid(_ambience):
+		_ambience.set_audio_state(blocked, effects_volume)
 
 
 func _load_stream(key: String, loop: bool) -> AudioStreamOggVorbis:
@@ -186,7 +233,20 @@ func _notification(what: int) -> void:
 func _exit_tree() -> void:
 	if is_instance_valid(_fade):
 		_fade.kill()
+	_fade = null
+	# Exit can interrupt a crossfade or an effect. Release both the players'
+	# stream references and our cache, including when this node is detached
+	# and later re-entered instead of immediately destroyed.
 	for player in _music:
 		player.stop()
+		player.stream = null
 	for player in _effects:
 		player.stop()
+		player.stream = null
+	_streams.clear()
+	_last_effect.clear()
+	_current = ""
+	_track_id = ""
+	if is_instance_valid(_ambience):
+		_ambience.queue_free()
+	_ambience = null
