@@ -22,7 +22,8 @@ func _capture(game, name: String) -> void:
 	var error: Error = root.get_texture().get_image().save_png(path)
 	assert(error == OK, "Capture saved")
 	shots += 1
-	print("[SeamCapture] saved ", path)
+	var calls: int = int(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
+	print("[SeamCapture] saved %s (draw calls %d)" % [path, calls])
 
 
 func _look(game, from: Vector3, at: Vector3, fov: float = 58.0) -> void:

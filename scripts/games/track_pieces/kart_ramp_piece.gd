@@ -63,6 +63,7 @@ static func build(
 	)
 	var material := StandardMaterial3D.new()
 	material.vertex_color_use_as_albedo = true
+	material.vertex_color_is_srgb = true
 	material.roughness = 0.55
 	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	var node := MeshInstance3D.new()

@@ -161,8 +161,8 @@ func _check_gap_ramp() -> void:
 	print("[TrackPieces] slow launch %s, landing '%s', falls %d" % [slow_launched, game.last_precision_landing, game.gap_falls - falls_before])
 	_check(game.gap_falls > falls_before, "too slow falls into the real gap and is rescued")
 	print("[TrackPieces] gap ramp: reference %.1f m/s -> %s, slow -> fell %d" % [good, landed, game.gap_falls - falls_before])
-	var side: Vector3 = game.world.position_at(float(kicker.take_off) + 3.0, -14.0) + Vector3.UP * 6.0
-	await _capture("pieces_gap_ramp_side", side, game.world.position_at(float(kicker.take_off) + 4.0))
+	var side: Vector3 = game.world.position_at(float(kicker.take_off) - 22.0, -7.0) + Vector3.UP * 9.0
+	await _capture("pieces_gap_ramp_overview", side, game.world.position_at(float(kicker.take_off) + 6.0))
 	await _capture(
 		"pieces_gap_ramp_foot",
 		game.world.position_at(float(kicker.start) - 6.0, -3.5) + Vector3.UP * 1.5,
@@ -237,8 +237,8 @@ func _check_lava() -> void:
 	print("[TrackPieces] lava: entry %.1f m/s -> slowest %.1f m/s" % [entry_speed, slowest])
 	await _capture(
 		"pieces_lava",
-		game.world.position_at(float(piece.start) - 14.0, -1.0) + Vector3.UP * 3.0,
-		game.world.position_at(float(piece.start) + 10.0, float(piece.lane))
+		game.world.position_at(float(piece.start) - 6.0, -2.5) + Vector3.UP * 4.5,
+		game.world.position_at(float(piece.start) + 14.0, float(piece.lane))
 	)
 
 
@@ -260,8 +260,8 @@ func _check_ice() -> void:
 	print("[TrackPieces] ice: velocity turned %.1f deg on ice vs %.1f deg on asphalt" % [turns[true], turns[false]])
 	await _capture(
 		"pieces_ice",
-		game.world.position_at(float(piece.start) - 14.0, -1.0) + Vector3.UP * 3.0,
-		game.world.position_at(float(piece.start) + 10.0, float(piece.lane))
+		game.world.position_at(float(piece.start) - 6.0, -2.5) + Vector3.UP * 4.5,
+		game.world.position_at(float(piece.start) + 14.0, float(piece.lane))
 	)
 
 

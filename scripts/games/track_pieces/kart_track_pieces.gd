@@ -325,6 +325,7 @@ static func _build_zone(world, piece: Dictionary) -> void:
 	material.emission_energy_multiplier = 1.4 if lava else 0.35
 	material.roughness = 0.9 if lava else 0.06
 	material.metallic = 0.0 if lava else 0.35
+	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	var node := MeshInstance3D.new()
 	node.name = "HazardZone_%s_%d" % [piece.params.kind, int(piece.start)]
 	node.mesh = tool.commit()
