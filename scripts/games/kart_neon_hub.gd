@@ -332,7 +332,7 @@ func _layout() -> void:
 		super._layout()
 		return
 	if is_inside_tree():
-		ADAPTIVE_LAYOUT.apply(self)
+		ADAPTIVE_LAYOUT.arrange(self)
 
 
 func _publish_stage_region() -> void:
