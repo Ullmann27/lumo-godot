@@ -33,6 +33,9 @@ const PRODUCTION_TUNNELS = preload("res://scripts/games/kart_production_tunnels.
 const PRODUCTION_TUNNEL_LAYOUT = preload("res://scripts/games/kart_production_tunnel_layout.gd")
 const TRACK_PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces.gd")
 var _piece_markers: Array = []
+## Abenteuer-Dramaturgie je Strecke (Menü/Strecken-Bot, 17.11.2026); nur Deko, Licht,
+## Platzierung und Bauteil-Marker, keine Straßen-/Loop-/Rampengeometrie.
+const ADVENTURE_DRESSING = preload("res://scripts/games/kart_adventure_dressing.gd")
 var production_tunnels
 var production_tunnel_layout: Dictionary = {}
 var action_obstacles: Array[Vector3] = []
@@ -115,6 +118,8 @@ func build(
 			jungle_environment.name = "DschungelherzEnvironment"
 			add_child(jungle_environment)
 			jungle_environment.build(self)
+		if not geometry_only:
+			ADVENTURE_DRESSING.build(self)
 		_flush_instances()
 		return
 	if track_id=="bergwelt":
@@ -130,6 +135,8 @@ func build(
 		TRACK_DETAIL.build(self)
 		MODULAR_PARTS.build(self)
 		ADVENTURE_TUNNELS.build(self)
+		if not geometry_only:
+			ADVENTURE_DRESSING.build(self)
 		_flush_instances()
 		if not geometry_only:
 			AAA_GATES.decorate(self)
@@ -148,6 +155,8 @@ func build(
 		TRACK_DETAIL.build(self)
 		MODULAR_PARTS.build(self)
 		ADVENTURE_TUNNELS.build(self)
+		if not geometry_only:
+			ADVENTURE_DRESSING.build(self)
 		_flush_instances()
 		if not geometry_only:
 			AAA_GATES.decorate(self)
@@ -180,6 +189,8 @@ func build(
 	TRACK_DETAIL.build(self)
 	MODULAR_PARTS.build(self)
 	ADVENTURE_TUNNELS.build(self)
+	if not geometry_only:
+		ADVENTURE_DRESSING.build(self)
 	_flush_instances()
 	if not geometry_only:
 		AAA_GATES.decorate(self)

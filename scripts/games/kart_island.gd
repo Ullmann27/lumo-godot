@@ -22,6 +22,7 @@ const RIVAL_FLIGHT = preload("res://scripts/games/kart_rival_flight.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const DARKRIDE_EVENT = preload("res://scripts/games/kart_darkride_event_director.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
+const ADVENTURE_DRAMA = preload("res://scripts/games/kart_adventure_drama.gd")
 const ROADSIDE_LASSO = preload("res://scripts/games/kart_roadside_lasso.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
@@ -443,21 +444,11 @@ func _build_world() -> void:
 			stunt_star.material_override = _glow_material(Color("ffc94a"), 0.6)
 			gems.append(stunt_star)
 			gem_distances.append(STUNT.loop_start(world))
-		for fraction in [0.12, 0.42, 0.74]:
-			_turbo_pad(fraction * track_length)
-		var item_layout: Array = [
-			[0.18, -2.7],
-			[0.34, 2.7],
-			[0.53, 0.0],
-			[0.69, -2.7],
-			[0.86, 2.7],
-		]
-		if track_id == "jungle_emerald_3600":
-			item_layout = [
-				[0.045, -3.0], [0.13, 3.0], [0.21, 0.0], [0.29, -3.0],
-				[0.365, 2.7], [0.455, 0.0], [0.535, -2.7], [0.63, 0.0],
-				[0.705, 2.7], [0.795, -3.0], [0.875, 0.0], [0.95, 3.0]
-			]
+		# Turbo-Felder und Item-Ringe folgen der Abenteuer-Dramaturgie je Strecke
+		# (kart_adventure_drama.gd); Strecken ohne eigene Dramaturgie behalten die alten Werte.
+		for fraction in ADVENTURE_DRAMA.turbo_fractions(track_id):
+			_turbo_pad(float(fraction) * track_length)
+		var item_layout: Array = ADVENTURE_DRAMA.item_layout(track_id)
 		for entry in item_layout:
 			_item_box(float(entry[0]) * track_length, float(entry[1]))
 	player = VEHICLE.new()
@@ -679,13 +670,14 @@ func _hide_reference_landing() -> void:
 func _reference_select_mode(selected: String) -> void:
 	if not is_instance_valid(garage):
 		return
+	if _is_catalog_track(selected):
+		# Neon-Menü: Strecken-Highlight und Wochen-Abenteuer wählen echte Katalogstrecken.
+		garage.setup["track"] = selected
+		return
 	match selected:
 		"race", "cup", "time_trial", "training", "arena":
 			# Mode selection updates the actual next race on the same live stage.
 			garage.setup["mode"] = selected
-			return
-		"volcano_night", "jungle_emerald_3600", "desert_drift", "sonnenhafen":
-			garage.setup["track"] = selected
 			return
 		"driver":
 			garage.step = 1
@@ -703,6 +695,13 @@ func _reference_select_mode(selected: String) -> void:
 	garage._refresh()
 	garage._apply_responsive_layout.call_deferred()
 
+
+
+static func _is_catalog_track(id: String) -> bool:
+	for entry in CATALOG.TRACKS:
+		if str(entry.id) == id:
+			return true
+	return false
 
 
 func _reference_rotate_kart(radians: float) -> void:
@@ -745,6 +744,8 @@ func _menu_back() -> void:
 	elif is_instance_valid(garage) and garage.handle_back():
 		return
 	elif is_instance_valid(reference_landing) and reference_landing.visible:
+		if reference_landing.has_method("handle_back") and reference_landing.handle_back():
+			return
 		_return_to_world()
 	elif is_instance_valid(garage):
 		garage._back()
@@ -2745,7 +2746,11 @@ func _track_events() -> void:
 		if separation.length() < 0.9 and hit_timer <= 0.0 and shield_time <= 0.0:
 			hit_timer = 0.15
 			speed *= 0.88
-			message.text = "Hütchen! Lenke durch die freie Mitte."
+			message.text = (
+				"Hindernis! Weiche zur freien Spur aus."
+				if ADVENTURE_DRAMA.has(track_id) and track_id != "sonnenhafen"
+				else "Hütchen! Lenke durch die freie Mitte."
+			)
 			_sound_effect("collision")
 	for i in range(opponents.size()):
 		var away: Vector3 = player.position - opponents[i].position
@@ -2790,8 +2795,8 @@ func _track_events() -> void:
 				"Impuls" if item == "pulse" else "Schild" if item == "shield" else "Schub"
 			]
 			_sound_effect("item")
-	for fraction in [0.12, 0.42, 0.74]:
-		if absf(fposmod(distance, track_length) - fraction * track_length - 1.1) < 1.2 and absf(lane) < 2.1:
+	for fraction in ADVENTURE_DRAMA.turbo_fractions(track_id):
+		if absf(fposmod(distance, track_length) - float(fraction) * track_length - 1.1) < 1.2 and absf(lane) < 2.1:
 			boost_time = maxf(boost_time, _boost_for(1.0))
 
 
