@@ -31,6 +31,8 @@ const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const GENERATION = preload("res://scripts/games/kart_sonnenhafen_generation.gd")
 const PRODUCTION_TUNNELS = preload("res://scripts/games/kart_production_tunnels.gd")
 const PRODUCTION_TUNNEL_LAYOUT = preload("res://scripts/games/kart_production_tunnel_layout.gd")
+const TRACK_PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces.gd")
+var _piece_markers: Array = []
 var production_tunnels
 var production_tunnel_layout: Dictionary = {}
 var action_obstacles: Array[Vector3] = []
@@ -79,10 +81,12 @@ var _rng := RandomNumberGenerator.new()
 func build(
 	lightweight: bool, selected_track: String = "sonnenhafen", geometry_only: bool = false
 ) -> void:
+	_piece_markers = TRACK_PIECES.collect_markers(self)
 	for child in get_children():
 		remove_child(child)
 		child.queue_free()
 	groups.clear()
+	set_meta(TRACK_PIECES.PIECES_META, [])
 	production_tunnels = null
 	production_tunnel_layout = {}
 	if has_meta("production_tunnel"):
@@ -236,7 +240,9 @@ func road_width_at(distance: float) -> float:
 	return JUNGLE.width_at(distance) if track_id == JUNGLE.ID else WIDTH
 
 func wall_lateral_at(distance: float) -> float:
-	return JUNGLE.wall_at(distance) if track_id == JUNGLE.ID else WALL_LATERAL
+	if track_id == JUNGLE.ID:
+		return JUNGLE.wall_at(distance)
+	return TRACK_PIECES.wall_lateral(self, fposmod(distance, length), WALL_LATERAL)
 
 
 func forward(distance: float) -> Vector3:
@@ -908,6 +914,7 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 
 func _road() -> void:
 	action = ACTION.plan(self)
+	TRACK_PIECES.plan(self, _piece_markers)
 	_install_production_tunnel()
 	var asphalt := ShaderMaterial.new()
 	asphalt.shader=preload("res://assets/shaders/kart_asphalt.gdshader")
@@ -975,6 +982,7 @@ func _road() -> void:
 		for column in range(16):
 			_prop("box",position_at(row*0.64+1.0,(column-7.5)*0.65)+frame(0).y*0.035,Vector3(0.65,0.035,0.64),Color("f6fbfa") if (row+column)%2==0 else Color("162940"),frame(0))
 	ACTION.build(self)
+	TRACK_PIECES.build(self)
 	if track_id=="bergwelt":
 		SKY_ISLANDS.start_gate(self)
 		SKY_ISLANDS.road_lights(self)

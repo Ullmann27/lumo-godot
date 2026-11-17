@@ -16,6 +16,7 @@ const TRACK_PASS = preload("res://scripts/games/kart_track_pass.gd")
 const ARENA = preload("res://scripts/games/kart_arena.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const PHYSICAL_LOOP = preload("res://scripts/games/kart_physical_loop.gd")
+const TRACK_PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces.gd")
 const RIVAL_STUNTS = preload("res://scripts/games/kart_rival_stunts.gd")
 const RIVAL_FLIGHT = preload("res://scripts/games/kart_rival_flight.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
@@ -1616,6 +1617,7 @@ func _physics_process(delta: float) -> void:
 		else:
 			_drive_opponents(delta)
 			_track_events()
+			TRACK_PIECES.race_tick(self, delta)
 			if is_instance_valid(roadside_lasso):
 				roadside_lasso.advance(self, delta)
 			darkride_event.tick(distance, track_length, delta, reduced_motion)

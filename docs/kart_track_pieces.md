@@ -4,7 +4,7 @@ Stand: 17.11.2026, Branch `lumo-2040/kart-20261117` (Draft-PR #196). Zuständig:
 Streckenführung, Dramaturgie, Deko, Licht und Menü liegen bei `lumo-kart/menu-strecken-20261117`;
 dieser Branch setzt nur **Marker-Knoten**. Die Bauteile hier erzeugen Geometrie, Kontakt und Warnsignale.
 
-Statusspalte: **fertig** = im Branch, getestet; **in Arbeit** = Schnittstelle fest, Implementierung folgt in diesem PR.
+Statusspalte: **fertig** = im Branch, mit Regressionstest.
 
 ## 1. Grundprinzip: alles in Streckenmetern
 
@@ -26,9 +26,17 @@ der Straßenpunkt mit gleichem Spurversatz, angehoben um `DECK_LIFT` = 0,012 m (
 
 ## 2. Platzierung per Marker-Knoten
 
-Namenskonvention: **`PieceMarker_<typ>_<n>`** (`<n>` ab 1, je Typ fortlaufend), Kinder eines `Node3D`
-namens `TrackPieceMarkers` unter der Kart-Welt (`KartWorld`). Die Transform des Markers ist nur Orientierung
-für Editor und Review; maßgeblich sind die Metadaten:
+Skript: `scripts/games/track_pieces/kart_track_pieces.gd` (`TRACK_PIECES` in `kart_world.gd`).
+Drei gleichwertige Quellen, in dieser Reihenfolge zusammengeführt:
+
+1. **Marker-Knoten** `PieceMarker_<typ>_<n>` (`<n>` ab 1, je Typ fortlaufend) als Kinder eines `Node3D`
+   namens `TrackPieceMarkers` unter der Kart-Welt. `KartWorld.build()` liest sie **vor** dem Neuaufbau
+   (`collect_markers`). Die Transform ist nur Orientierung für Editor und Review; maßgeblich sind die Metadaten.
+2. Streckendefinition: Key `"track_pieces"` (Array von Dictionaries) im Rückgabewert von `TRACKS.definition(id)`
+   – der einfachste Weg für prozedurale Strecken.
+3. Welt-Meta `"track_piece_markers"` (gleiches Format), vor `world.build()` gesetzt.
+
+Metadaten der Marker-Knoten:
 
 | Meta-Key | Typ | Pflicht | Bedeutung |
 |---|---|---|---|
@@ -36,10 +44,12 @@ für Editor und Review; maßgeblich sind die Metadaten:
 | `piece_lane` | float | nein (0) | Spurversatz |
 | `piece_params` | Dictionary | nein | typ-spezifische Parameter (unten) |
 
-Gleichwertig ohne Knoten: `world.set_meta("track_piece_markers", [{"type": "...", "distance": ..., "lane": ..., "params": {...}}])`.
+Dictionary-Format (Quelle 2 und 3): `{"type": "gap_ramp"|"narrow"|"hazard_zone", "distance": m, "lane": m, "params": {...}}`.
 
-Der Einbau prüft Überlappung mit Start/Ziel, Tunneln, Loop und anderen Bauteilen (dieselben Sperrzonen wie
-`kart_action_course.gd`, `CLEARANCE` 14 m) und überspringt kollidierende Marker mit einer Warnung im Log.
+Der Einbau prüft Überlappung mit Start/Ziel, Tunnel, Sprung, Loop, Action-Parcours und anderen Bauteilen
+(inkl. 32 m Warnvorlauf) und überspringt kollidierende Marker mit `push_warning("[TrackPieces] …")`.
+Freie Stelle finden: `TRACK_PIECES.free_distance(world, wunsch_m, länge_m)` (−1 = kein Platz).
+Geplante Bauteile: `TRACK_PIECES.pieces_of(world)` (Welt-Meta `"track_pieces"`).
 
 ## 3. Bauteile
 
@@ -70,24 +80,48 @@ world.loop_layout = {"start": world.length * 0.72, "lane": 4.0, "exit_shift": -2
 	"deck_half_width": 1.2, "lateral_limit": 0.3, "lane_tolerance": 1.3}
 ```
 
-### 3.2 `gap_ramp` – Rampe über eine echte Lücke (**in Arbeit**)
-Parameter: `ramp_length` (m), `height` (m), `gap_length` (m), `landing_length` (m), `half_width` (m, ≤ halbe Straßenbreite).
-Anschluss: Rampenfuß bündig (`DECK_LIFT`), Landezone mit grünem Start- und orangem Endbalken, Warnschild 40 m davor.
-Flugmodell: `kart_precision_jump.gd` (gleiche Zahlen für Hinweis und Flug), Wolkenrettung bei Absturz.
+### 3.2 `gap_ramp` – Rampe über eine echte Lücke (**fertig**)
+Parameter (Standard): `ramp_length` 12, `height` 2,6, `gap_length` 10, `landing_length` 18, `gravity` 14.
+Wird als Präzisions-Schanze in `world.action.kickers` eingetragen (`track_piece: true`): echte Straßenlücke
+(`in_gap`), Flug nach `kart_precision_jump.gd` (Tempo-Hinweis = Flug), Landezone mit Markierungen,
+Wolkenrettung bei zu kurzem Sprung, Rivalen fliegen `rival_speed` (Mitte der Landezone).
+Geometrie: `STUNT.build_precision_ramp` (Deck/Körper/Wände, Fuß bündig +0,02 m). Warnschild „SPRUNG!“ 32 m davor.
+Länge inkl. Landezone: `ramp_length + gap_length + landing_length`.
 
-### 3.3 `narrow` – Engstelle mit Warnmarkierung (**in Arbeit**)
-Parameter: `length` (m), `open_width` (m, ≥ 5,0 für Kinder), `side` (−1 links, +1 rechts, 0 beidseitig).
-Gelb-schwarze Schraffur am Einzug, Leuchtpfeile, Warnschild 30 m davor.
+### 3.3 `narrow` – Engstelle mit echten Wänden (**fertig**)
+Parameter (Standard): `length` 26, `open_width` 6,0 (Minimum 5,0), `taper` 8 (weicher Einzug, Smoothstep).
+Symmetrisch zur Mittellinie: `world.wall_lateral_at()` liefert in der Engstelle `open_width/2`, dadurch gilt die
+Wand für Spieler und Rivalen physikalisch. Optik: weiße Blöcke mit roter Leuchtkante, gelb-schwarze Kante,
+Boden-Chevrons 18 m davor, Schild „ENGSTELLE – Mitte halten“ 32 m davor.
 
-### 3.4 `roller` – rollende Hindernisse (**in Arbeit**)
-Parameter: `count`, `period` (s), `amplitude` (m quer zur Fahrbahn), `theme` (Kugel/Fass/Schneeball).
-Deterministisch über die Rennzeit (Speicherstände bleiben gültig), Treffer = kurzes Abbremsen, kein Ausscheiden.
+### 3.4 `hazard_zone` – Lava- bzw. Eiszone (**fertig**)
+Parameter (Standard): `length` 36, `width` 4,2 (max. 60 % der Straßenbreite), `kind` = `lava` | `ice`; `lane` vom Marker
+(wird so geklemmt, dass die Zone auf der Straße bleibt). Es bleibt immer eine sichere Spur frei.
+- `lava`: Tempo wird weich (9 m/s²) auf 62 % des Eintrittstempos begrenzt, nie gestoppt; Schutzschild hebt das auf.
+- `ice`: nur 18 % Grip pro Tick, das Kart rutscht weiter. Hinweistext im HUD-Meldungsfeld.
+Optik: eigene Fläche (Lava glühend, Eis glänzend), gestreifter Leuchtrand, Schild 32 m davor. Rivalen: unbeeinflusst
+(offen, siehe PR).
 
-### 3.5 `hazard_zone` – Lava- bzw. Eiszone (**in Arbeit**)
-Parameter: `length` (m), `lane`, `width` (m), `kind` = `lava` (Tempo-Bremse, Glut-Rand) | `ice` (weniger Grip).
-Farbiger Rand + Schild davor; nie über die volle Breite (es bleibt immer eine sichere Spur).
+### 3.5 Sprungschanzen des Action-Parcours (**fertig**, Anschluss-Fix)
+`scripts/games/track_pieces/kart_ramp_piece.gd`: `RAMP.build(world, start, length, height, half_width, colors)`
+→ ein geschlossener, entlang der Straße (Kurve + Banking) gezogener Keil, 1 Mesh = 1 Draw Call. Profil = Kontaktprofil
+`kicker_height()`. Ersetzt die bisherigen 1-m-Box-Stufen in `kart_action_course._build_kicker`.
 
-## 4. Nachweis
+## 4. Beispiel
+
+```gdscript
+# In einer Streckendefinition (kart_tracks.gd / kart_expansion_tracks.gd):
+"track_pieces": [
+	{"type": "gap_ramp", "distance": 420.0, "params": {"gap_length": 9.0}},
+	{"type": "narrow", "distance": 780.0, "params": {"open_width": 6.5}},
+	{"type": "hazard_zone", "distance": 1120.0, "lane": 2.6, "params": {"kind": "lava"}},
+]
+```
+Als Knoten (Editor): `KartWorld/TrackPieceMarkers/PieceMarker_hazard_zone_1` mit
+`piece_distance = 1120.0`, `piece_lane = 2.6`, `piece_params = {"kind": "ice"}`.
+
+## 5. Nachweis
 - `scripts/tests/kart_loop_seam_regression.gd`: misst Spalt, Versatz, Knick, Banking, Breite, Reihen-Schritt und
   Abstand auf-/absteigende Bahn an allen Loops (Sonnenhafen, Candy Cloud, Vulkannacht, Galaxie-Ring).
+- `scripts/tests/kart_track_pieces_regression.gd`: echtes Rennen (Zauberwald) mit allen Bauteilen über Marker.
 - `scripts/tests/kart_track_seam_capture.gd`: echte OpenGL-Nahaufnahmen aller Übergänge (`LUMO_CAPTURE_DIR`).
