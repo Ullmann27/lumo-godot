@@ -1,0 +1,43 @@
+{
+  "touches": [
+    {
+      "step": "premium-start",
+      "button": "START",
+      "tap": [
+        615,
+        858
+      ]
+    }
+  ],
+  "expected_mode": "cup",
+  "expected_track": "sonnenhafen",
+  "garage_replaced": {
+    "changed_fraction": 0.892,
+    "mean_channel_delta": 106.99
+  },
+  "rendered_frame": {
+    "size": [
+      2400,
+      1080
+    ],
+    "visible_fractions": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "detail": [
+      {
+        "colour_bins": 588,
+        "bright_fraction": 0.956
+      },
+      {
+        "colour_bins": 525,
+        "bright_fraction": 0.995
+      },
+      {
+        "colour_bins": 854,
+        "bright_fraction": 0.978
+      }
+    ]
+  }
+}

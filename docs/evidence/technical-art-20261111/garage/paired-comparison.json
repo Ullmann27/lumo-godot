@@ -1,0 +1,53 @@
+[
+  {
+    "image": "garage-1280x720.png",
+    "before_draw_calls": 213,
+    "after_draw_calls": 147,
+    "same_resolution": true,
+    "same_preview_resolution": true,
+    "same_fov": true,
+    "same_animation_and_position": true,
+    "same_yaw": true,
+    "maximum_camera_component_difference": 1.0000000000287557e-06,
+    "camera_note": "At most 0.000001 basis rounding from Godot transform assignment; identical position/FOV/framing.",
+    "before_commit": "c9b77eeab3750508268cbff45cde2d0a5ea4ef37",
+    "after_local_commit": "2d2288dced90b49e8df7a9427f3e5b8be62ba170",
+    "after_remote_identical_tree_commit": "6e0759be728c130dcff87a170d4bb671aefa60ee",
+    "after_tree": "b1d637e73c8931ab994530fecda1c51d5670c3c7",
+    "clean_tracked_source": true
+  },
+  {
+    "image": "garage-412x915.png",
+    "before_draw_calls": 207,
+    "after_draw_calls": 138,
+    "same_resolution": true,
+    "same_preview_resolution": true,
+    "same_fov": true,
+    "same_animation_and_position": true,
+    "same_yaw": true,
+    "maximum_camera_component_difference": 1.0000000000287557e-06,
+    "camera_note": "At most 0.000001 basis rounding from Godot transform assignment; identical position/FOV/framing.",
+    "before_commit": "c9b77eeab3750508268cbff45cde2d0a5ea4ef37",
+    "after_local_commit": "2d2288dced90b49e8df7a9427f3e5b8be62ba170",
+    "after_remote_identical_tree_commit": "6e0759be728c130dcff87a170d4bb671aefa60ee",
+    "after_tree": "b1d637e73c8931ab994530fecda1c51d5670c3c7",
+    "clean_tracked_source": true
+  },
+  {
+    "image": "garage-690x829.png",
+    "before_draw_calls": 220,
+    "after_draw_calls": 150,
+    "same_resolution": true,
+    "same_preview_resolution": true,
+    "same_fov": true,
+    "same_animation_and_position": true,
+    "same_yaw": true,
+    "maximum_camera_component_difference": 1.0000000000287557e-06,
+    "camera_note": "At most 0.000001 basis rounding from Godot transform assignment; identical position/FOV/framing.",
+    "before_commit": "c9b77eeab3750508268cbff45cde2d0a5ea4ef37",
+    "after_local_commit": "2d2288dced90b49e8df7a9427f3e5b8be62ba170",
+    "after_remote_identical_tree_commit": "6e0759be728c130dcff87a170d4bb671aefa60ee",
+    "after_tree": "b1d637e73c8931ab994530fecda1c51d5670c3c7",
+    "clean_tracked_source": true
+  }
+]

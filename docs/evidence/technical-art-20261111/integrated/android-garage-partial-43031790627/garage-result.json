@@ -1,0 +1,200 @@
+{
+  "status": "RUNNING",
+  "source": "2718f405e69c193d0121c6f6447fe53769d7c803",
+  "godot_source": "b357b2f8decb4b11b0cc45e9fde2b8df5ec9cbe1",
+  "source_run": 43024454590,
+  "apk_sha256": "b863bc25bc07a7ca3fb78ad4fd56a6f816d091f821c5b9af27bfb0a7aecbcb4e",
+  "steps": [
+    {
+      "step": "apk-identity",
+      "status": "PASS",
+      "evidence": {
+        "actual_apk": {
+          "package": "dev.ullmann.lumo.lumo_lernen.coachpreview",
+          "versionCode": 2015,
+          "versionName": "0.13.3",
+          "minSdk": 24,
+          "targetSdk": 36,
+          "abis": [
+            "x86_64"
+          ],
+          "elf16KiBAligned": true,
+          "resourcesArscAligned": true,
+          "bytes": 321859082,
+          "sha256": "b863bc25bc07a7ca3fb78ad4fd56a6f816d091f821c5b9af27bfb0a7aecbcb4e",
+          "signingCertificateSha256": "a6b1ef61bf59db4e0794c742aeb3b5506d130f4d21175c9975140e6acdb80702",
+          "godot": {
+            "repository": "https://github.com/Ullmann27/lumo-godot.git",
+            "revision": "b357b2f8decb4b11b0cc45e9fde2b8df5ec9cbe1",
+            "engine": "4.6.3",
+            "pck_sha256": "b5a500087a21dbf42f9b0e34deaf5e22b631fbba5831e01155b8f393f6f6b6bc",
+            "bytes": 62876672
+          },
+          "offlineVoice": {
+            "profile": "lumo-free-supertonic-de-v1",
+            "preset": "F2",
+            "speakerId": 1,
+            "sampleRate": 44100,
+            "onnxruntimeVersion": "1.23.1",
+            "clipCount": 155,
+            "modelSha256": {
+              "duration_predictor.int8.onnx": "c3eb91414d5ff8a7a239b7fe9e34e7e2bf8a8140d8375ffb14718b1c639325db",
+              "text_encoder.int8.onnx": "c7befd5ea8c3119769e8a6c1486c4edc6a3bc8365c67621c881bbb774b9902ff",
+              "vector_estimator.int8.onnx": "20cd86fa5c6effedfda0e7cffe5b0569ca401c440a0c3a1d72bf39286c0db3fd",
+              "vocoder.int8.onnx": "e923d60f53f95eb1ce235f1dc33ec56d9c057823c96fa6f8acf98f32b0da6152",
+              "tts.json": "42078d3aef1cd43ab43021f3c54f47d2d75ceb4e75f627f118890128b06a0d09",
+              "voice.bin": "67d5209b0ee8ce6c74105ffbe12fe6a7628aea3b4ba2fcb308a4a67938a93ce8",
+              "unicode_indexer.bin": "8402ca48e5189a8950138580b0fff64db6f072f24ac07cd54ba8b2fbb9883b30"
+            },
+            "modelLicenseSha256": "0d944a9110fed9a9602d60e0423a272903e7bd21ab060490774efc77c2275e9f",
+            "scope": "Actual APK package validation, not audible playback acceptance"
+          }
+        },
+        "provenance": {
+          "apk_sha256": "b863bc25bc07a7ca3fb78ad4fd56a6f816d091f821c5b9af27bfb0a7aecbcb4e",
+          "flutter_source_commit": "2718f405e69c193d0121c6f6447fe53769d7c803",
+          "godot_revision": "b357b2f8decb4b11b0cc45e9fde2b8df5ec9cbe1",
+          "godot_pck_sha256": "b5a500087a21dbf42f9b0e34deaf5e22b631fbba5831e01155b8f393f6f6b6bc",
+          "versionName": "0.13.3",
+          "versionCode": 2015,
+          "signingCertificateSha256": "a6b1ef61bf59db4e0794c742aeb3b5506d130f4d21175c9975140e6acdb80702",
+          "checks": {
+            "sha256_matches_provenance": true,
+            "sha256_matches_build_sums": true,
+            "flutter_source_is_this_commit": true,
+            "tracked_source_clean": true,
+            "godot_revision_is_pinned": true,
+            "signing_certificate": true,
+            "version_matches_pubspec": true,
+            "x86_64_native_code": true
+          }
+        }
+      },
+      "wall_seconds": 7.455
+    },
+    {
+      "step": "onboarding",
+      "status": "PASS",
+      "evidence": {
+        "status": "PASS",
+        "profile_name": "LumoTest",
+        "captures": [
+          {
+            "file": "07_home_after_onboarding.png",
+            "width": 1080,
+            "height": 2400,
+            "sha256": "b83b8ee003c43a1f52a5ee2c67487ace1666f4799c221072d6639163eb68fe03",
+            "render_readiness": {
+              "width": 1080,
+              "height": 2400,
+              "content_entropy_bits": 5.553,
+              "threshold_bits": 3.0,
+              "visually_ready": true,
+              "scope": "Rendered content readiness, not an accessibility or gameplay check"
+            }
+          },
+          {
+            "file": "08_games_after_navigation.png",
+            "width": 1080,
+            "height": 2400,
+            "sha256": "a9f4a43540e2255b8cbce4d40781013a8d9d146f4317285678734a773787c40a"
+          }
+        ],
+        "games_label": "Spiele"
+      },
+      "wall_seconds": 36.788
+    },
+    {
+      "step": "phone-garage-cancel-back",
+      "status": "RUNNING"
+    }
+  ],
+  "races": [],
+  "not_tested": [
+    "physical Android hardware, thermals, RAM, 60 FPS",
+    "full Sonnenhafen laps, loops or ramps on Android",
+    "Fold racing: Fold cases exercise the actual native Garage only",
+    "48 dp hit-area measurement: OCR bounds are text bounds, not touch bounds",
+    "audio playback and haptic sensation"
+  ],
+  "native_state_access": "read only; no file writes or pose/unlock injection",
+  "root_readiness": {
+    "status": "PASS",
+    "attempts": [
+      {
+        "arguments": [
+          "get-serialno"
+        ],
+        "elapsed_seconds": 0.0,
+        "status": "PASS",
+        "return_code": 0,
+        "output": "emulator-5554"
+      },
+      {
+        "arguments": [
+          "-s",
+          "emulator-5554",
+          "root"
+        ],
+        "elapsed_seconds": 0.004,
+        "status": "PASS",
+        "return_code": 0,
+        "output": "restarting adbd as root"
+      },
+      {
+        "arguments": [
+          "-s",
+          "emulator-5554",
+          "wait-for-device"
+        ],
+        "elapsed_seconds": 1.332,
+        "status": "PASS",
+        "return_code": 0,
+        "output": ""
+      },
+      {
+        "arguments": [
+          "-s",
+          "emulator-5554",
+          "shell",
+          "id",
+          "-u"
+        ],
+        "elapsed_seconds": 1.336,
+        "status": "PASS",
+        "return_code": 0,
+        "output": "0"
+      },
+      {
+        "arguments": [
+          "-s",
+          "emulator-5554",
+          "shell",
+          "getprop",
+          "sys.boot_completed"
+        ],
+        "elapsed_seconds": 1.393,
+        "status": "PASS",
+        "return_code": 0,
+        "output": "1"
+      }
+    ],
+    "root_transport_recovered": false,
+    "initial_offline_recovered": false,
+    "initial_missing_recovered": false,
+    "verification": "actual shell id -u == 0 and sys.boot_completed == 1",
+    "scope": "disposable emulator setup; this does not pass installation or gameplay",
+    "serial": "emulator-5554",
+    "last_shell_uid": "0",
+    "last_boot_completed": "1",
+    "shell_uid": 0,
+    "boot_completed": true,
+    "elapsed_seconds": 1.428
+  },
+  "installed_package": {
+    "userId": "10209",
+    "firstInstallTime": "2026-11-11 13:47:37",
+    "versionCode": "2015 minSdk=24 targetSdk=36",
+    "versionName": "0.13.3"
+  }
+}

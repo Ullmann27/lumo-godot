@@ -1,0 +1,45 @@
+{
+	"adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+	"android_test": false,
+	"attention_supported": false,
+	"camera_fov": 37,
+	"camera_position": [
+		0.85,
+		1.9,
+		-3.75
+	],
+	"camera_target": [
+		0,
+		1.0,
+		-0.1
+	],
+	"capture_kind": "production vehicle and original model, explicit state fixture",
+	"capture_script": "lumo_attention_capture.gd",
+	"display": "X11",
+	"duration_seconds": 7.6,
+	"failures": 0,
+	"fps_measured": false,
+	"frame_count": 114,
+	"godot": "4.6.3-stable (official)",
+	"lighting": "original kart_stage lights and camera-owned environment copy",
+	"model_sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+	"playback_frame_rate": 15,
+	"quality": "medium",
+	"renderer": "gl_compatibility",
+	"resolution": [
+		1000,
+		800
+	],
+	"source_commit": "207bfbc5377c0f3e8be800854c83ddf2110ac3f6",
+	"timeline": [
+		"rest",
+		"left attention",
+		"right attention",
+		"forward",
+		"airborne vehicle sample",
+		"grounded vehicle sample",
+		"settle",
+		"selection nod",
+		"restored"
+	]
+}
