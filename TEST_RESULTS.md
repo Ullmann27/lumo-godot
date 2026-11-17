@@ -44,3 +44,29 @@ Stand: 10.11.2026, Abschluss nach Nutzungslimit. Head vor diesem Commit: 93af86a
 
 ## Nächster Schritt
 Rhythm neu rendern, mit preopt vergleichen, Regression + validate_project.sh, dann Abnahme.
+
+---
+
+# TEST_RESULTS – lumo-nullpunkt/integration-20261117 (PR #197) – Stand 17.11.2026 13:30 (Europe/Vienna)
+
+Abbruch wegen Nutzungslimit (90 %). **Nicht nach main gemergt**: CI auf dem Kopf-SHA ist nicht grün.
+
+## Reparaturen in diesem Zweig
+- `scripts/games/kart_jungle_environment.gd` fehlte auf allen Branches → Dschungelherz stürzte ab. Neu implementiert (Wald, Wasser, Wahrzeichen, Glühwürmchen, Regen, Zielblüten) + `kart_jungle_environment_regression.gd` (lokal PASS).
+- `kart_jungle_audio.gd`: fehlende Original-Ambience-Loops → stiller Fallback statt Fehler.
+- `kart_neon_layout.gd`: griff auf nicht existierende `badge_label`/`art_frame` zu → Absturz im Kart-Menü. Lokal: `kart_aaa_menu_capture` PASS.
+- `kart_regression` Lenk-Flake: Ursache ist persistiertes `auto_gas=false` in `user://kart_preferences.cfg` (von anderen Kart-Tests gespeichert). Mit dieser Datei vor dem Fix reproduzierbar FAIL, nach dem Fix PASS.
+- Tests an 13 Strecken / Gate-Struktur / Jungle-Leitplanken angepasst. `build.yml`: Pillow installiert; Release/Pages nur noch bei manuellem Start mit publish=true.
+
+## Lokal (Box, Godot 4.6.3)
+validate_project rc=0, import PASS, kart_precision_jump PASS, sonnenhafen stunt/water/darkride/long/visual_finish/hero_coast PASS, kart_regression PASS, progress_profile_lifetime PASS, kart_nextgen_ui_smoke PASS, kart_reference_host_visual PASS.
+
+## Offen / rot (mit Grund)
+- CI `real-two-lap-race` (`kart_complete_flow_regression.gd:450`): nach „Zur Spieleauswahl“ ist die letzte Rückgabe nicht `completed` mit der erwarteten resultId. Lokal reproduziert, Ursache noch nicht gefunden (Diagnosemeldung ergänzt).
+- CI `build` → `kart_jump_regression`: „A real flight (0.48 s)“ (> 0.5 s erwartet). Nicht untersucht.
+- CI `nextgen-visual`: `kart_reference_host_visual` Timeout 120 s in CI, lokal PASS.
+- CI `grounded-harbor`: einmal Segfault 139 (Vulkan-Fehler im Runner), Re-Run angestoßen.
+- `kart-stage2` (kart_physics_regression): Ergebnis nach den Test-Anpassungen noch ausstehend.
+- Integration-2 (lumo-2040/*, lumo-kart/*, #196/#200-Mapping, #529 Memory-Fix): **nicht begonnen**.
+- lumo-2013 WIP-Stränge #143/#145/#146 und #144 nicht gemergt (Konflikte, siehe Inventur).
+- DEVICE/FOLD7 NOT RUN.

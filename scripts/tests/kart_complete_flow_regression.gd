@@ -447,7 +447,8 @@ func _run() -> void:
 	)
 	host.return_ack = 1
 	await _tap(_button("Zur Spieleauswahl"))
-	assert(host.returns[-1].status == "completed" and host.returns[-1].resultId == expected_id)
+	assert(host.returns[-1].status == "completed" and host.returns[-1].resultId == expected_id,
+		"Completed return %s, expected %s" % [JSON.stringify(host.returns[-1]), expected_id])
 	assert(not FileAccess.file_exists(game.SESSION), "Durable ACK removes completed save")
 	bridge._return_pending = false
 	await _drop()
